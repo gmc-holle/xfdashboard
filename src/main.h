@@ -26,6 +26,31 @@
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE
 #include <libwnck/libwnck.h>
 
+#ifndef WNCK_CHECK_VERSION
+/* If macro WNCK_CHECK_VERSION is missing we have a
+ * version prior 3.0 and we need the version given in
+ * WNCK_MAJOR_VERSION, WNCK_MINOR_VERSION, WNCK_MICRO_VERSION
+ * and provide our own WNCK_CHECK_VERSION macto
+ */
+#ifndef WNCK_MAJOR_VERSION
+#error "WNCK_MAJOR_VERSION must be set"
+#endif
+
+#ifndef WNCK_MINOR_VERSION
+#error "WNCK_MINOR_VERSION must be set"
+#endif
+
+#ifndef WNCK_MICRO_VERSION
+#error "WNCK_MICRO_VERSION must be set"
+#endif
+
+#define WNCK_CHECK_VERSION(major,minor,micro)                           \
+    (WNCK_MAJOR_VERSION > (major) ||                                    \
+     (WNCK_MAJOR_VERSION == (major) && WNCK_MINOR_VERSION > (minor)) || \
+     (WNCK_MAJOR_VERSION == (major) && WNCK_MINOR_VERSION == (minor) && \
+      WNCK_MICRO_VERSION >= (micro)))
+#endif
+
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
 #include <clutter/x11/clutter-x11-texture-pixmap.h>
