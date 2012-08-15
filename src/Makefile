@@ -17,7 +17,7 @@ HEADERS = main.h winlist.h
 all: xfdashboard
 
 xfdashboard: Makefile ${SOURCES} ${HEADERS}
-	g++ ${CFLAGS} -o xfdashboard ${SOURCES} ${LDFLAGS}
+	gcc ${CFLAGS} -o xfdashboard ${SOURCES} ${LDFLAGS}
 
 clean:
 	rm -f xfdashboard *.o
