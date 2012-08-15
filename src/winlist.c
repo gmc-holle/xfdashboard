@@ -21,7 +21,9 @@
  * 
  */
 
-/* TODO: #include "config.h"*/
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "winlist.h"
 #include "main.h"
@@ -38,9 +40,7 @@ typedef struct
 	/* Actors for live window */
 	ClutterActor	*actorWindow;
 	ClutterActor	*actorLabel;
-#if !CLUTTER_CHECK_VERSION(1,10,0)
 	ClutterActor	*actorLabelBackground;
-#endif
 	ClutterActor	*actorAppIcon;
 
 	/* Window the actors belong to */
@@ -68,11 +68,7 @@ static gboolean previewWindow_onActorClicked(ClutterActor *inActor, ClutterEvent
 {
 	sPreviewWindow	*previewWindow=(sPreviewWindow*)inUserData;
 
-#if WNCK_CHECK_VERSION(2,10,0)
 	wnck_window_activate_transient(previewWindow->window, CLUTTER_CURRENT_TIME);
-#else
-	wnck_window_activate_transient(previewWindow->window);
-#endif
 
 	clutter_main_quit();
 
@@ -85,9 +81,6 @@ sPreviewWindow* previewWindow_new(WnckWindow *inWindow, ClutterContainer *inPare
 	sPreviewWindow	*mapping;
 	GdkPixbuf		*windowIcon;
 	GError			*error;
-#if CLUTTER_CHECK_VERSION(1,10,0)
-	ClutterMargin	labelMargin={ windowLabelMargin, windowLabelMargin, windowLabelMargin, windowLabelMargin };
-#endif
 	
 	g_return_val_if_fail(inWindow!=NULL, NULL);
 
@@ -123,11 +116,9 @@ sPreviewWindow* previewWindow_new(WnckWindow *inWindow, ClutterContainer *inPare
 		g_error("Error creating label actor for window!");
 		return(NULL);
 	}
-#if CLUTTER_CHECK_VERSION(1,10,0)
-	clutter_actor_set_margin(mapping->actorLabel, &labelMargin);
+	clutter_text_set_single_line_mode(CLUTTER_TEXT(mapping->actorLabel), TRUE);
+	clutter_text_set_ellipsize(CLUTTER_TEXT(mapping->actorLabel), windowLabelEllipsize);
 
-	clutter_actor_set_background_color(mapping->actorLabel, &windowLabelBackgroundColor);
-#else
 	mapping->actorLabelBackground=clutter_rectangle_new_with_color(&windowLabelBackgroundColor);
 	if(!mapping->actorLabelBackground)
 	{
@@ -135,9 +126,6 @@ sPreviewWindow* previewWindow_new(WnckWindow *inWindow, ClutterContainer *inPare
 		g_error("Error creating label background actor for window!");
 		return(NULL);
 	}
-#endif
-	clutter_text_set_single_line_mode(CLUTTER_TEXT(mapping->actorLabel), TRUE);
-	clutter_text_set_ellipsize(CLUTTER_TEXT(mapping->actorLabel), windowLabelEllipsize);
 
 	/* Create actor for application icon of window */
 	windowIcon=wnck_window_get_icon(inWindow);
@@ -170,9 +158,7 @@ sPreviewWindow* previewWindow_new(WnckWindow *inWindow, ClutterContainer *inPare
 	/* Add actors to parent container (most likely the stage).
 	 * Order is important! Otherwise we should set z-depth of each actor */
 	clutter_container_add_actor(inParent, mapping->actorWindow);
-#if !CLUTTER_CHECK_VERSION(1,10,0)
 	clutter_container_add_actor(inParent, mapping->actorLabelBackground);
-#endif
 	clutter_container_add_actor(inParent, mapping->actorLabel);
 	clutter_container_add_actor(inParent, mapping->actorAppIcon);
 
@@ -186,9 +172,7 @@ void previewWindow_destroy(sPreviewWindow *inMapping)
 
 	if(inMapping->actorWindow) clutter_actor_destroy(inMapping->actorWindow);
 	if(inMapping->actorLabel) clutter_actor_destroy(inMapping->actorLabel);
-#if !CLUTTER_CHECK_VERSION(1,10,0)
 	if(inMapping->actorLabelBackground) clutter_actor_destroy(inMapping->actorLabelBackground);
-#endif
 	if(inMapping->actorAppIcon) clutter_actor_destroy(inMapping->actorAppIcon);
 	g_free(inMapping);
 }
@@ -213,10 +197,6 @@ void previewWindow_setPositionAndSize(sPreviewWindow *inMapping, gint inX, gint 
 
 		if(textWidth>inWidth) textWidth=inWidth;
 
-#if CLUTTER_CHECK_VERSION(1,10,0)
-		clutter_actor_set_position(inMapping->actorLabel, inX+(inWidth/2.0f)-(textWidth/2.0), inY+inHeight-textHeight);
-		clutter_actor_set_size(inMapping->actorLabel, textWidth, textHeight);
-#else
 		clutter_actor_set_position(inMapping->actorLabel, inX+(inWidth/2.0f)-(textWidth/2.0), inY+inHeight-textHeight-windowLabelMargin);
 		clutter_actor_set_size(inMapping->actorLabel, textWidth, textHeight);
 
@@ -226,7 +206,6 @@ void previewWindow_setPositionAndSize(sPreviewWindow *inMapping, gint inX, gint 
 		clutter_actor_set_size(inMapping->actorLabelBackground,
 									clutter_actor_get_width(inMapping->actorLabel)+(2*windowLabelMargin),
 									clutter_actor_get_height(inMapping->actorLabel)+(2*windowLabelMargin));
-#endif
 	}
 
 	/* Set application icon */

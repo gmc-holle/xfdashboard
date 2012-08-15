@@ -22,7 +22,9 @@
  * 
  */
 
-/* TODO: #include "config.h"*/
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "main.h"
 #include "winlist.h"
@@ -98,11 +100,7 @@ static void xfdashboard_onWorkspaceChanged(WnckScreen *inScreen, WnckWorkspace *
 	
 	/* Move clutter stage to new active workspace and make active */
 	wnck_window_move_to_workspace(xfdashboard_getStageWindow(), workspace);
-#if WNCK_CHECK_VERSION(2,10,0)
 	wnck_window_activate(xfdashboard_getStageWindow(), CLUTTER_CURRENT_TIME);
-#else
-	wnck_window_activate(xfdashboard_getStageWindow());
-#endif
 	
 	/* Re-new window list */
 	winlist_createActors(inScreen, workspace);
@@ -135,11 +133,7 @@ int main(int argc, char **argv)
 
 	/* Create clutter stage */
 	stage=clutter_stage_new();
-#if CLUTTER_CHECK_VERSION(1,10,0)
-	clutter_actor_set_background_color(stage, &stageColor);
-#else
 	clutter_stage_set_color(CLUTTER_STAGE(stage), &stageColor);
-#endif
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(stage), TRUE);
 	
 	/* TODO: Create background by copying background of Xfce */
