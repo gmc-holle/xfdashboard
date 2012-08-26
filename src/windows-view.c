@@ -263,7 +263,8 @@ ClutterActor* xfdashboard_windows_view_new()
 
 	/* Create layout manager used in this view */
 	layout=xfdashboard_scalingflow_layout_new();
-
+	xfdashboard_scalingflow_layout_set_spacing(XFDASHBOARD_SCALINGFLOW_LAYOUT(layout), 8.0f);
+	
 	/* Create object */
 	return(g_object_new(XFDASHBOARD_TYPE_WINDOWS_VIEW,
 						"layout-manager", layout,
