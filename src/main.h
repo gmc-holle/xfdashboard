@@ -1,5 +1,6 @@
 /*
- * main.h: Common functions and shared data
+ * main.h: Common functions, shared data
+ *         and main entry point of application
  * 
  * Copyright 2012 Stephan Haller <nomad@froevel.de>
  * 
@@ -21,27 +22,13 @@
  * 
  */
 
-#ifndef XFOVERVIEW_MAIN
+#ifndef __XFOVERVIEW_MAIN__
+#define __XFOVERVIEW_MAIN__
 
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE
-#include <libwnck/libwnck.h>
+G_BEGIN_DECLS
 
-#include <clutter/clutter.h>
-#include <clutter/x11/clutter-x11.h>
-#include <clutter/x11/clutter-x11-texture-pixmap.h>
+WnckWindow* xfdashboard_getAppWindow();
 
-
-/* Get window of stage */
-extern WnckWindow* xfoverview_getStageWindow();
-
-
-/* SCREEN AND WINDOWS */
-extern WnckScreen		*screen;
-extern WnckWorkspace	*workspace;
-extern GList			*windows;
-
-/* APPLICATION WINDOW */
-extern ClutterActor		*stage;
-extern ClutterActor		*actor;
+G_END_DECLS
 
 #endif

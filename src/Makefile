@@ -11,8 +11,19 @@ PKGS="${PKG_LIBWNCK} ${PKG_CLUTTER}"
 CFLAGS += -std=gnu99 `pkg-config ${PKGS} --cflags` -pedantic -Wall
 LDFLAGS += `pkg-config ${PKGS} --libs`
 
-SOURCES = main.c winlist.c
-HEADERS = main.h winlist.h
+SOURCES = \
+	livewindow.c \
+	main.c \
+	scalingflowlayout.c \
+	view.c \
+	windows-view.c
+
+HEADERS = \
+	livewindow.h \
+	main.h \
+	scalingflowlayout.h \
+	view.h \
+	windows-view.h
 
 all: xfdashboard
 

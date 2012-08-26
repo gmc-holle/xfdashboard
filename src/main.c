@@ -1,5 +1,5 @@
 /*
- * main.h: Common functions, shared data
+ * main.c: Common functions, shared data
  *         and main entry point of application
  * 
  * Copyright 2012 Stephan Haller <nomad@froevel.de>
@@ -22,41 +22,18 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "livewindow.h"
+#include "scalingflowlayout.h"
+#include "view.h"
+#include "windows-view.h"
 
-#include "main.h"
-#include "winlist.h"
-
-#include <stdlib.h>
-
-
-/*----------------------------------------------------------------------------*/
-/* CONSTANTS */
-
-/* Error codes for exit() */
-#define	kFatalErrorInitialization		1
-
-
-/*----------------------------------------------------------------------------*/
-/* GLOBAL VARIABLES */
-
-WnckScreen		*screen;
-WnckWorkspace	*workspace;
-GList			*windows=NULL;
-
+/* The one and only stage for clutter */
 ClutterActor	*stage=NULL;
-ClutterActor	*actor=NULL;
 
-
-/*----------------------------------------------------------------------------*/
-/* FUNCTIONS */
-
-/* Get window of stage */
-WnckWindow* xfdashboard_getStageWindow()
+/* Get window of application */
+WnckWindow* xfdashboard_getAppWindow()
 {
-	WnckWindow		*stageWindow=NULL;
+	static WnckWindow		*stageWindow=NULL;
 
 	if(!stageWindow)
 	{
@@ -67,12 +44,6 @@ WnckWindow* xfdashboard_getStageWindow()
 	}
 
 	return(stageWindow);
-}
-
-/* Stage has gone to fullscreen */
-static void xfdashboard_onStageFullscreen(ClutterStage *stage)
-{
-	winlist_layoutActors();
 }
 
 /* A pressed key was released */
@@ -92,69 +63,52 @@ static gboolean xfdashboard_onKeyRelease(ClutterActor *inActor, ClutterEvent *in
 	return(FALSE);
 }
 
-/* Workspace was changed */
-static void xfdashboard_onWorkspaceChanged(WnckScreen *inScreen, WnckWorkspace *inPrevWorkspace, gpointer inUserData)
-{
-	/* Get new active workspace */
-	workspace=wnck_screen_get_active_workspace(inScreen);
-	
-	/* Move clutter stage to new active workspace and make active */
-	wnck_window_move_to_workspace(xfdashboard_getStageWindow(), workspace);
-	wnck_window_activate(xfdashboard_getStageWindow(), CLUTTER_CURRENT_TIME);
-	
-	/* Re-new window list */
-	winlist_createActors(inScreen, workspace);
-}
-
 /* Main entry point */
 int main(int argc, char **argv)
 {
+	ClutterActor	*box;
 	ClutterColor	stageColor={ 0, 0, 0, 0xd0 };
 
 	/* Tell clutter to try to initialize an RGBA visual */
 	clutter_x11_set_use_argb_visual(TRUE);
-	
+
 	/* Initialize GTK+ and Clutter */
 	gtk_init(&argc, &argv);
 	if(!clutter_init(&argc, &argv))
 	{
 		g_error("Initializing clutter failed!");
-		exit(kFatalErrorInitialization);
+		return(1);
 	}
 
 	/* TODO: Check for running instance (libunique?) */
-	
-	/* Get current screen */
-	screen=wnck_screen_get_default();
-	
-	/* Get current workspace but we need to force an update before */
-	wnck_screen_force_update(screen);
-	workspace=wnck_screen_get_active_workspace(screen);
 
 	/* Create clutter stage */
 	stage=clutter_stage_new();
 	clutter_stage_set_color(CLUTTER_STAGE(stage), &stageColor);
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(stage), TRUE);
-	
+
 	/* TODO: Create background by copying background of Xfce */
-	
-	/* Create initial set of actors for open windows on active workspace */
-	winlist_createActors(screen, workspace);
-	
+
+	/* TODO: Create viewpad and add view(s) to viewpad */
+
+	/* Create windows view and add to stage */
+	box=xfdashboard_windows_view_new();
+	clutter_actor_set_size(box, clutter_actor_get_width(stage), clutter_actor_get_height(stage));
+	clutter_actor_add_constraint(box, clutter_bind_constraint_new(stage, CLUTTER_BIND_SIZE, 0.0));
+	clutter_container_add_actor(CLUTTER_CONTAINER(stage), box);
+
 	/* Set up event handlers */
 	clutter_stage_set_key_focus(CLUTTER_STAGE(stage), NULL);
 	
-	g_signal_connect(screen, "active-workspace-changed", G_CALLBACK(xfdashboard_onWorkspaceChanged), NULL);
 	g_signal_connect(stage, "destroy", G_CALLBACK(clutter_main_quit), NULL);
-	g_signal_connect(stage, "fullscreen", G_CALLBACK(xfdashboard_onStageFullscreen), NULL);
 	g_signal_connect(stage, "unfullscreen", G_CALLBACK(clutter_main_quit), NULL);
 	g_signal_connect(stage, "key-release-event", G_CALLBACK(xfdashboard_onKeyRelease), NULL);
 	
 	/* Show stage and go ;) */
-	clutter_actor_show_all(stage);
+	clutter_actor_show(stage);
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(stage), TRUE);
 
 	clutter_main();
-    
-	return(0);
+
+	return 0;
 }
