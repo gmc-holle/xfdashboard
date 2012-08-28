@@ -26,6 +26,7 @@
 #include "scalingflowlayout.h"
 #include "view.h"
 #include "windows-view.h"
+#include "quicklaunch.h"
 
 /* The one and only stage for clutter */
 ClutterActor	*stage=NULL;
@@ -66,8 +67,10 @@ static gboolean xfdashboard_onKeyRelease(ClutterActor *inActor, ClutterEvent *in
 /* Main entry point */
 int main(int argc, char **argv)
 {
-	ClutterActor	*box;
-	ClutterColor	stageColor={ 0, 0, 0, 0xd0 };
+	ClutterActor			*box;
+	ClutterLayoutManager	*boxLayout;
+	ClutterActor			*actor;
+	ClutterColor			stageColor={ 0, 0, 0, 0xd0 };
 
 	/* Tell clutter to try to initialize an RGBA visual */
 	clutter_x11_set_use_argb_visual(TRUE);
@@ -89,21 +92,44 @@ int main(int argc, char **argv)
 
 	/* TODO: Create background by copying background of Xfce */
 
-	/* TODO: Create viewpad and add view(s) to viewpad */
+	/* Create box holding all main elements of stage */
+	boxLayout=clutter_box_layout_new();
+	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(boxLayout), 8);
 
-	/* Create windows view and add to stage */
-	box=xfdashboard_windows_view_new();
-	clutter_actor_set_size(box, clutter_actor_get_width(stage), clutter_actor_get_height(stage));
+	box=clutter_box_new(boxLayout);
 	clutter_actor_add_constraint(box, clutter_bind_constraint_new(stage, CLUTTER_BIND_SIZE, 0.0));
 	clutter_container_add_actor(CLUTTER_CONTAINER(stage), box);
 
+	/* Create quicklaunch box and add to box */
+	actor=xfdashboard_quicklaunch_new();
+	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(boxLayout),
+								actor,
+								TRUE,
+								FALSE,
+								TRUE,
+								CLUTTER_BOX_ALIGNMENT_START,
+								CLUTTER_BOX_ALIGNMENT_CENTER);
+
+	/* TODO: Create viewpad and add view(s) to viewpad */
+
+	/* Create windows view and add to box */
+	actor=xfdashboard_windows_view_new();
+	//clutter_actor_set_size(box, clutter_actor_get_width(stage), clutter_actor_get_height(stage));
+	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(boxLayout),
+								actor,
+								TRUE,
+								TRUE,
+								TRUE,
+								CLUTTER_BOX_ALIGNMENT_CENTER,
+								CLUTTER_BOX_ALIGNMENT_CENTER);
+
 	/* Set up event handlers */
 	clutter_stage_set_key_focus(CLUTTER_STAGE(stage), NULL);
-	
+
 	g_signal_connect(stage, "destroy", G_CALLBACK(clutter_main_quit), NULL);
 	g_signal_connect(stage, "unfullscreen", G_CALLBACK(clutter_main_quit), NULL);
 	g_signal_connect(stage, "key-release-event", G_CALLBACK(xfdashboard_onKeyRelease), NULL);
-	
+
 	/* Show stage and go ;) */
 	clutter_actor_show(stage);
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(stage), TRUE);

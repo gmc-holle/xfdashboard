@@ -31,9 +31,9 @@
 static void clutter_container_iface_init(ClutterContainerIface *iface);
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardLiveWindow,
-                         xfdashboard_livewindow,
-                         CLUTTER_TYPE_ACTOR,
-                         G_IMPLEMENT_INTERFACE(CLUTTER_TYPE_CONTAINER, clutter_container_iface_init))
+						xfdashboard_livewindow,
+						CLUTTER_TYPE_ACTOR,
+						G_IMPLEMENT_INTERFACE(CLUTTER_TYPE_CONTAINER, clutter_container_iface_init))
                                                 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_LIVEWINDOW_GET_PRIVATE(obj) \
@@ -138,7 +138,7 @@ void _xfdashboard_livewindow_set_window(XfdashboardLiveWindow *self, const WnckW
 												CLUTTER_TEXTURE_NONE,
 												&error))
 	{
-		g_warning("Could not create application icon actor: %s", error->message ?  error->message : "unknown error");
+		g_warning("Could not create application icon actor: %s", (error && error->message) ?  error->message : "unknown error");
 		if(error!=NULL) g_error_free(error);
 	}
 
@@ -431,7 +431,7 @@ static void xfdashboard_livewindow_dispose(GObject *inObject)
 
 	for(list=priv->children; list; list=list->next)
 	{
-		ClutterActor			*child=list->data;
+		ClutterActor				*child=list->data;
 
 		clutter_actor_destroy(child);
 	}
@@ -624,6 +624,7 @@ static void xfdashboard_livewindow_init(XfdashboardLiveWindow *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR (self), TRUE);
 
 	/* Set up default values */
+	priv->children=NULL;
 	priv->actorWindow=NULL;
 	priv->actorLabel=NULL;
 	priv->actorLabelBackground=NULL;

@@ -64,7 +64,7 @@ static GParamSpec* XfdashboardViewProperties[PROP_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Sort children by their depth */
-static gint _sort_by_depth(gconstpointer inA, gconstpointer inB)
+static gint _xfdashboard_view_sort_by_depth(gconstpointer inA, gconstpointer inB)
 {
 	gfloat	depthA=clutter_actor_get_depth((ClutterActor*)inA);
 	gfloat	depthB=clutter_actor_get_depth((ClutterActor*)inB);
@@ -76,7 +76,7 @@ static gint _sort_by_depth(gconstpointer inA, gconstpointer inB)
 }
 
 /* Replace layout manager */
-void _set_layout_manager(XfdashboardView *self, ClutterLayoutManager *inManager)
+void _xfdashboard_view_set_layout_manager(XfdashboardView *self, ClutterLayoutManager *inManager)
 {
 	/* Get private structure */
 	XfdashboardViewPrivate	*priv=self->priv;
@@ -227,7 +227,7 @@ static void xfdashboard_view_sort_depth_order(ClutterContainer *self)
 {
 	XfdashboardViewPrivate	*priv=XFDASHBOARD_VIEW(self)->priv;
 
-	priv->children=g_list_sort(priv->children, _sort_by_depth);
+	priv->children=g_list_sort(priv->children, _xfdashboard_view_sort_by_depth);
 
 	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 }
@@ -364,7 +364,7 @@ static void xfdashboard_view_dispose(GObject *inObject)
 {
   XfdashboardView		*self=XFDASHBOARD_VIEW(inObject);
 
-  _set_layout_manager(self, NULL);
+  _xfdashboard_view_set_layout_manager(self, NULL);
 
   G_OBJECT_CLASS(xfdashboard_view_parent_class)->dispose(inObject);
 }
@@ -380,7 +380,7 @@ static void xfdashboard_view_set_property(GObject *inObject,
 	switch(inPropID)
 	{
 		case PROP_LAYOUT_MANAGER:
-			_set_layout_manager(self, g_value_get_object(inValue));
+			_xfdashboard_view_set_layout_manager(self, g_value_get_object(inValue));
 			break;
 
 		default:
@@ -471,7 +471,7 @@ void xfdashboard_view_set_layout_manager(XfdashboardView *self, ClutterLayoutMan
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
 	g_return_if_fail(CLUTTER_IS_LAYOUT_MANAGER(inManager));
 
-	_set_layout_manager(self, inManager);
+	_xfdashboard_view_set_layout_manager(self, inManager);
 }
 
 ClutterLayoutManager* xfdashboard_view_get_layout_manager(XfdashboardView *self)
