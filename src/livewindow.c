@@ -108,13 +108,14 @@ void _xfdashboard_livewindow_set_window(XfdashboardLiveWindow *self, const WnckW
 
 	priv->window=(WnckWindow*)inWindow;
 
-	/* Create actors */
+	/* Create live-window */
 	GdkPixbuf		*windowIcon;
 	GError			*error;
 
 	priv->actorWindow=clutter_x11_texture_pixmap_new_with_window(wnck_window_get_xid(priv->window));
 	clutter_x11_texture_pixmap_set_automatic(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow), TRUE);
 
+	/* Create label and its background */
 	priv->actorLabel=clutter_text_new();
 	clutter_text_set_text(CLUTTER_TEXT(priv->actorLabel), wnck_window_get_name(priv->window));
 	clutter_text_set_single_line_mode(CLUTTER_TEXT(priv->actorLabel), TRUE);
@@ -125,6 +126,7 @@ void _xfdashboard_livewindow_set_window(XfdashboardLiveWindow *self, const WnckW
 	priv->actorLabelBackground=clutter_rectangle_new();
 	if(priv->labelBackgroundColor) clutter_rectangle_set_color(CLUTTER_RECTANGLE(priv->actorLabelBackground), priv->labelBackgroundColor);
 
+	/* Create icon for application running in window */
 	windowIcon=wnck_window_get_icon(priv->window);
 	priv->actorAppIcon=clutter_texture_new();
 	error=NULL;
