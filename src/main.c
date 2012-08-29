@@ -30,6 +30,7 @@
 
 /* The one and only stage for clutter */
 ClutterActor	*stage=NULL;
+const gfloat	spacingToStage=8.0f;
 
 /* Get window of application */
 WnckWindow* xfdashboard_getAppWindow()
@@ -94,14 +95,16 @@ int main(int argc, char **argv)
 
 	/* Create box holding all main elements of stage */
 	boxLayout=clutter_box_layout_new();
-	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(boxLayout), 8);
+	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(boxLayout), spacingToStage);
 
 	box=clutter_box_new(boxLayout);
-	clutter_actor_add_constraint(box, clutter_bind_constraint_new(stage, CLUTTER_BIND_SIZE, 0.0));
+	clutter_actor_add_constraint(box, clutter_bind_constraint_new(stage, CLUTTER_BIND_Y, spacingToStage));
+	clutter_actor_add_constraint(box, clutter_bind_constraint_new(stage, CLUTTER_BIND_SIZE, -(2*spacingToStage)));
 	clutter_container_add_actor(CLUTTER_CONTAINER(stage), box);
 
 	/* Create quicklaunch box and add to box */
 	actor=xfdashboard_quicklaunch_new();
+	clutter_actor_add_constraint(actor, clutter_bind_constraint_new(box, CLUTTER_BIND_HEIGHT, 0.0));
 	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(boxLayout),
 								actor,
 								TRUE,
@@ -114,7 +117,7 @@ int main(int argc, char **argv)
 
 	/* Create windows view and add to box */
 	actor=xfdashboard_windows_view_new();
-	//clutter_actor_set_size(box, clutter_actor_get_width(stage), clutter_actor_get_height(stage));
+	clutter_actor_add_constraint(actor, clutter_bind_constraint_new(box, CLUTTER_BIND_HEIGHT, 0.0));
 	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(boxLayout),
 								actor,
 								TRUE,

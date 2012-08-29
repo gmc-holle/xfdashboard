@@ -1,6 +1,41 @@
-- Set area for views (window list, app menu, search results)
-- Add quicklaunch panel
-- Add search box
-- Add buttons to activate views (next to search box)
-- Add workspace selector panel?
+== GENERAL ==
+[done] Quit app by pressing ESC(ape)
 - Themable?
+
+== QUICKLAUNCH-BOX (FAVOURITES-SELECTOR) ==
+[done] Implement quicklaunch-box
+[done] Clicking quicklaunch icon starts application and quits
+- Allow drag-n-drop of quicklaunch icon to windows-list view and start app in current workspace and quit
+- Allow drag-n-drop of quicklaunch icon to workspace-box, start app in this workspace and quit
+
+== WORKSPACE-BOX (WORKSPACE-SELECTOR) ==
+- Implement workspace-box
+- Clicking on workspace-actor switches to workspace and quits
+- Mouse-wheel on workspace-actor switches workspace without quitting but updating windows-list view
+
+== VIEWPAD (VIEW AGGREGATOR) ==
+- Implement viewpad
+- For each view create a button to switch to this view
+
+== WINDOWS-LIST VIEW ==
+[done] Implement windows-list view
+[done] Click live-window actor
+- Multi-monitor support (show visible windows on the screen where it belongs to, fullscreen over all screens)
+- Allow closing window by clicking "X" button of live-window actor
+- Allow drag-n-drop of live-window actor to quicklaunch-box view and create shortcut
+- Allow drag-n-drop of live-window actor to another workspace by dropping window in workspace-box
+- React on new window appearing by creating a live-window actor for it
+- React on window disappearing by destroying appropiate live-window actor
+
+== APPLICATION-MENU VIEW ==
+- Implement application-menu view
+- Start application when clicked on application icon in view
+- Allow drag-n-drop of application icon to quicklaunch-box view and create shortcut
+- Allow drag-n-drop of application icon to workspace-box and start application on this workspace
+
+== SEARCH VIEW ==
+- Implement search view
+- Implement search input box
+- Start search for application ca. one second after entering and restart search one second after last input
+- Allow drag-n-drop of application icon to quicklaunch-box and create shortcut
+- Allow drag-n-drop of application icon to workspace-box and start application on this workspace

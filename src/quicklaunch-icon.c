@@ -28,7 +28,6 @@
 
 #include "quicklaunch-icon.h"
 
-#include <gio/gdesktopappinfo.h>
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
@@ -46,8 +45,8 @@ struct _XfdashboardQuicklaunchIconPrivate
 	/* Application information this actor represents */
 	GDesktopAppInfo		*appInfo;
 
-	/* Flag if application is running */
-	gboolean			isRunning;
+	/* Actor actions */
+	ClutterAction		*clickAction;
 };
 
 /* Properties */
@@ -56,18 +55,27 @@ enum
 	PROP_0,
 
 	PROP_DESKTOP_FILE,
-	PROP_IS_RUNNING,
+	PROP_DESKTOP_APPLICATION_INFO,
 	
 	PROP_LAST
 };
 
 static GParamSpec* XfdashboardQuicklaunchIconProperties[PROP_LAST]={ 0, };
 
+/* Signals */
+enum
+{
+	CLICKED,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardQuicklaunchIconSignals[SIGNAL_LAST]={ 0, };
+
 /* Private constants */
 
 /* IMPLEMENTATION: Private variables and methods */
-
-static guint	quicklaunch_icon_max_size=64;
+#define DEFAULT_ICON_SIZE		64
 
 /* Set desktop file and setup actors for display application icon */
 void _xfdashboard_quicklaunch_icon_set_desktop_file(XfdashboardQuicklaunchIcon *self, const gchar *inDesktopFile)
@@ -101,33 +109,35 @@ void _xfdashboard_quicklaunch_icon_set_desktop_file(XfdashboardQuicklaunchIcon *
 
 	iconInfo=gtk_icon_theme_lookup_by_gicon(gtk_icon_theme_get_default(),
 											icon,
-											quicklaunch_icon_max_size,
+											DEFAULT_ICON_SIZE,
 											0);
 	if(!iconInfo) g_warning("Could not lookup icon for '%s'", inDesktopFile);
 
 	error=NULL;
 	iconPixbuf=gtk_icon_info_load_icon(iconInfo, &error);
-	if(!iconPixbuf)
+	if(iconPixbuf)
 	{
-		g_warning("Could not load icon for quicklaunch: %s", (error && error->message) ?  error->message : "unknown error");
+		error=NULL;
+		if(!clutter_texture_set_from_rgb_data(CLUTTER_TEXTURE(self),
+													gdk_pixbuf_get_pixels(iconPixbuf),
+													gdk_pixbuf_get_has_alpha(iconPixbuf),
+													gdk_pixbuf_get_width(iconPixbuf),
+													gdk_pixbuf_get_height(iconPixbuf),
+													gdk_pixbuf_get_rowstride(iconPixbuf),
+													gdk_pixbuf_get_has_alpha(iconPixbuf) ? 4 : 3,
+													CLUTTER_TEXTURE_NONE,
+													&error))
+		{
+			g_warning("Could not create quicklaunch icon actor: %s",
+						(error && error->message) ?  error->message : "unknown error");
+		}
+
+		g_object_unref(iconPixbuf);
 	}
 		else
 		{
-			error=NULL;
-			if(!clutter_texture_set_from_rgb_data(CLUTTER_TEXTURE(self),
-														gdk_pixbuf_get_pixels(iconPixbuf),
-														gdk_pixbuf_get_has_alpha(iconPixbuf),
-														gdk_pixbuf_get_width(iconPixbuf),
-														gdk_pixbuf_get_height(iconPixbuf),
-														gdk_pixbuf_get_rowstride(iconPixbuf),
-														gdk_pixbuf_get_has_alpha(iconPixbuf) ? 4 : 3,
-														CLUTTER_TEXTURE_NONE,
-														&error))
-			{
-				g_warning("Could not create quicklaunch icon actor: %s", (error && error->message) ?  error->message : "unknown error");
-			}
-
-			g_object_unref(iconPixbuf);
+			g_warning("Could not load icon for quicklaunch: %s",
+						(error && error->message) ?  error->message : "unknown error");
 		}
 
 	if(error!=NULL) g_error_free(error);
@@ -135,6 +145,14 @@ void _xfdashboard_quicklaunch_icon_set_desktop_file(XfdashboardQuicklaunchIcon *
 
 	/* Queue a redraw as the actors are now available */
 	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+}
+
+/* proxy ClickAction signals */
+static void xfdashboard_quicklaunch_icon_clicked(ClutterClickAction *inAction,
+													ClutterActor *inActor,
+													gpointer inUserData)
+{
+	g_signal_emit(inActor, XfdashboardQuicklaunchIconSignals[CLICKED], 0);
 }
 
 /* IMPLEMENTATION: GObject */
@@ -188,8 +206,8 @@ static void xfdashboard_quicklaunch_icon_get_property(GObject *inObject,
 			g_value_set_string(outValue, g_desktop_app_info_get_filename(self->priv->appInfo));
 			break;
 
-		case PROP_IS_RUNNING:
-			g_value_set_boolean(outValue, self->priv->isRunning);
+		case PROP_DESKTOP_APPLICATION_INFO:
+			g_value_set_object(outValue, self->priv->appInfo);
 			break;
 
 		default:
@@ -222,14 +240,27 @@ static void xfdashboard_quicklaunch_icon_class_init(XfdashboardQuicklaunchIconCl
 							"",
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
-	XfdashboardQuicklaunchIconProperties[PROP_IS_RUNNING]=
-		g_param_spec_boolean("is-running",
-							"Is running",
-							"Is this application running",
-							FALSE,
+	XfdashboardQuicklaunchIconProperties[PROP_DESKTOP_APPLICATION_INFO]=
+		g_param_spec_object("desktop-application-info",
+							"Desktop application information",
+							"GDesktopAppInfo object containing all information about this application ",
+							G_TYPE_DESKTOP_APP_INFO,
 							G_PARAM_READABLE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardQuicklaunchIconProperties);
+
+	/* Define signals */
+	XfdashboardQuicklaunchIconSignals[CLICKED]=
+		g_signal_new("clicked",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchIconClass, clicked),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
 }
 
 /* Object initialization
@@ -244,9 +275,16 @@ static void xfdashboard_quicklaunch_icon_init(XfdashboardQuicklaunchIcon *self)
 	/* This actor is react on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
+	/* Sub-classed texture should synchronize its size to loaded texture */
+	clutter_texture_set_sync_size(CLUTTER_TEXTURE(self), TRUE);
+	
 	/* Set up default values */
 	priv->appInfo=NULL;
-	priv->isRunning=FALSE;
+
+	/* Connect signals */
+	priv->clickAction=clutter_click_action_new();
+	clutter_actor_add_action(CLUTTER_ACTOR(self), priv->clickAction);
+	g_signal_connect(priv->clickAction, "clicked", G_CALLBACK(xfdashboard_quicklaunch_icon_clicked), NULL);
 }
 
 /* Implementation: Public API */
@@ -266,6 +304,13 @@ ClutterActor* xfdashboard_quicklaunch_icon_new_full(const gchar *inDesktopFile)
 }
 
 /* Get/set desktop file */
+const gchar* xfdashboard_quicklaunch_icon_get_desktop_file(XfdashboardQuicklaunchIcon *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH_ICON(self), NULL);
+
+	return(g_desktop_app_info_get_filename(self->priv->appInfo));
+}
+
 void xfdashboard_quicklaunch_icon_set_desktop_file(XfdashboardQuicklaunchIcon *self, const gchar *inDesktopFile)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH_ICON(self));
@@ -273,9 +318,10 @@ void xfdashboard_quicklaunch_icon_set_desktop_file(XfdashboardQuicklaunchIcon *s
 	_xfdashboard_quicklaunch_icon_set_desktop_file(self, inDesktopFile);
 }
 
-const gchar* xfdashboard_quicklaunch_icon_get_desktop_file(XfdashboardQuicklaunchIcon *self)
+/* Get/set desktop application info */
+const GDesktopAppInfo* xfdashboard_quicklaunch_icon_get_desktop_application_info(XfdashboardQuicklaunchIcon *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH_ICON(self), NULL);
 
-	return(g_desktop_app_info_get_filename(self->priv->appInfo));
+	return(self->priv->appInfo);
 }

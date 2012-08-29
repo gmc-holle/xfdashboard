@@ -27,6 +27,7 @@
 
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
+#include <gio/gdesktopappinfo.h>
 
 G_BEGIN_DECLS
 
@@ -64,8 +65,10 @@ GType xfdashboard_quicklaunch_icon_get_type(void) G_GNUC_CONST;
 ClutterActor* xfdashboard_quicklaunch_icon_new(void);
 ClutterActor* xfdashboard_quicklaunch_icon_new_full(const gchar *inDesktopFile);
 
-void xfdashboard_quicklaunch_icon_set_desktop_file(XfdashboardQuicklaunchIcon *self, const gchar *inDesktopFile);
 const gchar* xfdashboard_quicklaunch_icon_get_desktop_file(XfdashboardQuicklaunchIcon *self);
+void xfdashboard_quicklaunch_icon_set_desktop_file(XfdashboardQuicklaunchIcon *self, const gchar *inDesktopFile);
+
+const GDesktopAppInfo* xfdashboard_quicklaunch_icon_get_desktop_application_info(XfdashboardQuicklaunchIcon *self);
 
 G_END_DECLS
 
