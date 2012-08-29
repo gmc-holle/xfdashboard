@@ -1,0 +1,55 @@
+commit d7edb69e1db2c8bd2a1ca1dadc7cbdfbb355817e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Aug 29 22:26:35 2012 +0200
+
+    Simplied quicklaunch by NOT sub-classing container actor. Fixed layout problems of quicklaunch icons. Allow starting application by clicking on appropiate quicklaunch icon.
+
+commit 3acf8b91ed81462399800eb28d819d0a6ce81714
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 28 07:04:17 2012 +0200
+
+    First simple implementation of quicklaunch box. Does not react on any event!
+
+commit 43cda51e6f440e9d6789f89ebf3eb1841ebea45e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Aug 26 12:55:25 2012 +0200
+
+    Add spacing between live windows in windows view.
+
+commit 18146958f3fbf256e15778719ba31aa56134475a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Aug 26 12:33:58 2012 +0200
+
+    Rewrote application to use gobject system and made real clutter actors.
+
+commit 074bb931d94510691ca34ffa632355ca6f76ccbf
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Aug 15 21:45:05 2012 +0200
+
+    Switch from g++ to gcc in Makefile otherwise it keeps to be loud :(
+
+commit 2ea7285dd19be872345ba9ada1feffeb1eb93cba
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Aug 15 12:35:46 2012 +0200
+
+    Set minimum version of external libraries as requirements to avoid using macros not available and makes handling different version a lot harder. BTW libwnck below 2.10 is
+    very old and hardly in use nowadays so we can not support these versions. Also made compiler more quiet with -std=gnu99 but should be still warn.
+
+commit 0fcbf7b8aaca43b098d09441dde6c844bca84066
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 14 10:47:55 2012 +0200
+
+    Allow libwnck library prior to version 3.0 and provide version checks
+    macros in this case. Changed also stupid Makefile to reflect this.
+
+commit f856f44640b5a5d67246c1baa3e5039eca4b0107
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Aug 13 23:27:24 2012 +0200
+
+    First usable state
+
+commit 2d0c26019ce26df78a422701265d2d31dfb708cf
+Author: gmc-holle <nomad@froevel.de>
+Date:   Mon Aug 13 13:59:22 2012 -0700
+
+    Initial commit
