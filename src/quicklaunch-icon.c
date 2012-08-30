@@ -98,7 +98,15 @@ void _xfdashboard_quicklaunch_icon_set_desktop_file(XfdashboardQuicklaunchIcon *
 	}
 
 	/* Get new application information of basename of desktop file given */
-	if(inDesktopFile) priv->appInfo=g_desktop_app_info_new(inDesktopFile);
+	if(inDesktopFile)
+	{
+		priv->appInfo=g_desktop_app_info_new(inDesktopFile);
+		if(!priv->appInfo)
+		{
+			g_warning("Could not get application info '%s' for quicklaunch icon",
+						inDesktopFile);
+		}
+	}
 
 	/* Set up icon of application */
 	if(priv->appInfo)
@@ -107,14 +115,27 @@ void _xfdashboard_quicklaunch_icon_set_desktop_file(XfdashboardQuicklaunchIcon *
 		if(!icon) g_warning("Could not get icon for desktop file '%s'", inDesktopFile);
 	}
 
-	iconInfo=gtk_icon_theme_lookup_by_gicon(gtk_icon_theme_get_default(),
-											icon,
-											DEFAULT_ICON_SIZE,
-											0);
-	if(!iconInfo) g_warning("Could not lookup icon for '%s'", inDesktopFile);
+	if(icon)
+	{
+		iconInfo=gtk_icon_theme_lookup_by_gicon(gtk_icon_theme_get_default(),
+												icon,
+												DEFAULT_ICON_SIZE,
+												0);
+		if(!iconInfo) g_warning("Could not lookup icon for '%s'", inDesktopFile);
+	}
 
-	error=NULL;
-	iconPixbuf=gtk_icon_info_load_icon(iconInfo, &error);
+	if(iconInfo)
+	{
+		error=NULL;
+		iconPixbuf=gtk_icon_info_load_icon(iconInfo, &error);
+		if(!iconPixbuf)
+		{
+			g_warning("Could not load icon for quicklaunch icon actor: %s",
+						(error && error->message) ?  error->message : "unknown error");
+			if(error!=NULL) g_error_free(error);
+		}
+	}
+	
 	if(iconPixbuf)
 	{
 		error=NULL;
@@ -132,16 +153,11 @@ void _xfdashboard_quicklaunch_icon_set_desktop_file(XfdashboardQuicklaunchIcon *
 						(error && error->message) ?  error->message : "unknown error");
 		}
 
+		if(error!=NULL) g_error_free(error);
 		g_object_unref(iconPixbuf);
 	}
-		else
-		{
-			g_warning("Could not load icon for quicklaunch: %s",
-						(error && error->message) ?  error->message : "unknown error");
-		}
-
-	if(error!=NULL) g_error_free(error);
-	gtk_icon_info_free(iconInfo);
+	
+	if(iconInfo) gtk_icon_info_free(iconInfo);
 
 	/* Queue a redraw as the actors are now available */
 	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));

@@ -82,7 +82,9 @@ static gchar	*quicklaunch_apps[]=	{
 											"firefox.desktop",
 											"evolution.desktop",
 											"Terminal.desktop",
-											"Thunar.desktop"
+											"Thunar.desktop",
+											"geany.desktop",
+											"unavailable"
 										};
 
 /* Icon was clicked */
@@ -421,8 +423,7 @@ static void xfdashboard_quicklaunch_allocate(ClutterActor *self,
 
 	/* Allocation for background and resize it */
 	clutter_actor_box_set_origin(box, 0, 0);
-	clutter_actor_box_set_size(box, allocW, allocH);
-	clutter_actor_set_size(priv->background, allocW, allocH);
+	clutter_actor_box_set_size(box, allocW+0.1, allocH+0.1);
 	clutter_actor_allocate(priv->background, box, inFlags);
 	
 	/* Call parent's class allocation method */
