@@ -133,7 +133,7 @@ static void _xfdashboard_quicklaunch_layout_icons(XfdashboardQuicklaunch *self)
 	{
 		ClutterActor				*actor=clutter_group_get_nth_child(iconGroup, i);
 		
-		clutter_actor_set_position(actor, priv->spacing, priv->spacing+i*(priv->normalIconSize+priv->spacing));
+		clutter_actor_set_position(actor, 0, i*(priv->normalIconSize+priv->spacing));
 		clutter_actor_set_size(actor, priv->normalIconSize, priv->normalIconSize);
 	}
 
@@ -407,23 +407,22 @@ static void xfdashboard_quicklaunch_allocate(ClutterActor *self,
 
 	/* Adjust allocation to maximum height of given allocation or
 	 * determined minimum height and increase for spacing.
-	 * 
-	 * We MUST decrease width and height because allocation will
-	 * not be changed and constraints will NOT work! Decreasing
-	 * by 0.1px should not harm but might scale icons */
-	allocW=iconsW;
-	allocW-=0.1f;
-	allocH=(iconsH>allocH ? iconsH : allocH);
-	allocH-=0.1f;
+	 */
+	allocW=iconsW+(2*priv->spacing);
+	if(allocH>(iconsH+priv->spacing)) iconsH=allocH-priv->spacing;
+		else allocH=iconsH+priv->spacing;
 
 	/* Set allocation and scale for icons */
-	clutter_actor_box_set_origin(box, 0.0f, 0.0f);
-	clutter_actor_box_set_size(box, allocW, allocH);
+	clutter_actor_box_set_origin(box, priv->spacing, priv->spacing);
+	clutter_actor_box_set_size(box, iconsW, iconsH);
 
 	clutter_actor_allocate(priv->icons, box, inFlags);
 	clutter_actor_set_scale(priv->icons, iconScale, iconScale);
 
-	/* Allocation for background */
+	/* Allocation for background and resize it */
+	clutter_actor_box_set_origin(box, 0, 0);
+	clutter_actor_box_set_size(box, allocW, allocH);
+	clutter_actor_set_size(priv->background, allocW, allocH);
 	clutter_actor_allocate(priv->background, box, inFlags);
 	
 	/* Call parent's class allocation method */
@@ -434,6 +433,7 @@ static void xfdashboard_quicklaunch_allocate(ClutterActor *self,
 
 	/* Update properties */
 	priv->maxIconsCount=(allocH/SCALE_MIN)/priv->normalIconSize;
+	priv->iconsScale=iconScale;
 }
 
 /* Destroy this actor */
@@ -642,11 +642,11 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	priv->icons=clutter_group_new();
 	clutter_actor_set_parent(priv->icons, CLUTTER_ACTOR(self));
 
-	constraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_POSITION, priv->spacing);
+	/*constraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_POSITION, priv->spacing);
 	clutter_actor_add_constraint(priv->icons, constraint);
 
 	constraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_SIZE, -(2*priv->spacing));
-	clutter_actor_add_constraint(priv->icons, constraint);
+	clutter_actor_add_constraint(priv->icons, constraint);*/
 
 	/* TODO: Remove the following actor(s) for application icons
 	 *       in quicklaunch box as soon as xfconf is implemented
