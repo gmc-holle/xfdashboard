@@ -162,7 +162,7 @@ static void xfdashboard_quicklaunch_paint(ClutterActor *self)
 	ClutterActorBox					allocation={ 0, };
 	gfloat							width, height;
 
-	if(priv->icons)
+	if(priv->icons && CLUTTER_ACTOR_IS_MAPPED(priv->icons))
 	{
 		/* Get allocation to paint background */
 		clutter_actor_get_allocation_box(self, &allocation);
@@ -204,7 +204,9 @@ static void xfdashboard_quicklaunch_pick(ClutterActor *self, const ClutterColor 
 	if(!clutter_actor_should_pick_paint(self)) return;
     
 	CLUTTER_ACTOR_CLASS(xfdashboard_quicklaunch_parent_class)->pick(self, inPick);
-	if(priv->icons) clutter_actor_paint(priv->icons);
+	
+	if(priv->icons &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->icons)) clutter_actor_paint(priv->icons);
 }
 
 /* Get preferred width/height */
