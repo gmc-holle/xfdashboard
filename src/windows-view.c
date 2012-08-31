@@ -26,8 +26,8 @@
 #endif
 
 #include "windows-view.h"
-#include "livewindow.h"
-#include "scalingflowlayout.h"
+#include "live-window.h"
+#include "scaling-flow-layout.h"
 #include "main.h"
 
 /* Define this class in GObject system */
@@ -85,11 +85,11 @@ static void _on_workspace_changed(WnckScreen *inScreen, WnckWorkspace *inPrevWor
 /* A live window was clicked */
 static gboolean _on_window_clicked(ClutterActor *inActor, gpointer inUserData)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVEWINDOW(inActor), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inActor), FALSE);
 
-	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVEWINDOW(inActor);
+	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(inActor);
 	
-	wnck_window_activate_transient((WnckWindow*)xfdashboard_livewindow_get_window(liveWindow), CLUTTER_CURRENT_TIME);
+	wnck_window_activate_transient((WnckWindow*)xfdashboard_live_window_get_window(liveWindow), CLUTTER_CURRENT_TIME);
 
 	clutter_main_quit();
 
@@ -147,7 +147,7 @@ void _set_active_workspace(XfdashboardWindowsView *self, WnckWorkspace *inWorksp
 			!wnck_window_is_skip_tasklist(window))
 		{
 			/* Create actor */
-			liveWindow=xfdashboard_livewindow_new(window);
+			liveWindow=xfdashboard_live_window_new(window);
 			clutter_container_add_actor(CLUTTER_CONTAINER(self), liveWindow);
 			g_signal_connect(liveWindow, "clicked", G_CALLBACK(_on_window_clicked), NULL);
 		}
@@ -262,8 +262,8 @@ ClutterActor* xfdashboard_windows_view_new()
 	workspace=wnck_screen_get_active_workspace(screen);
 
 	/* Create layout manager used in this view */
-	layout=xfdashboard_scalingflow_layout_new();
-	xfdashboard_scalingflow_layout_set_spacing(XFDASHBOARD_SCALINGFLOW_LAYOUT(layout), 8.0f);
+	layout=xfdashboard_scaling_flow_layout_new();
+	xfdashboard_scaling_flow_layout_set_spacing(XFDASHBOARD_SCALING_FLOW_LAYOUT(layout), 8.0f);
 	
 	/* Create object */
 	return(g_object_new(XFDASHBOARD_TYPE_WINDOWS_VIEW,

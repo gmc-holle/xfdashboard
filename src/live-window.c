@@ -25,19 +25,19 @@
 #include "config.h"
 #endif
 
-#include "livewindow.h"
+#include "live-window.h"
 
 /* Define this class in GObject system */
 static void clutter_container_iface_init(ClutterContainerIface *iface);
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardLiveWindow,
-						xfdashboard_livewindow,
+						xfdashboard_live_window,
 						CLUTTER_TYPE_ACTOR,
 						G_IMPLEMENT_INTERFACE(CLUTTER_TYPE_CONTAINER, clutter_container_iface_init))
                                                 
 /* Private structure - access only by public API if needed */
-#define XFDASHBOARD_LIVEWINDOW_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_LIVEWINDOW, XfdashboardLiveWindowPrivate))
+#define XFDASHBOARD_LIVE_WINDOW_GET_PRIVATE(obj) \
+	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_LIVE_WINDOW, XfdashboardLiveWindowPrivate))
 
 struct _XfdashboardLiveWindowPrivate
 {
@@ -96,13 +96,13 @@ static ClutterColor		defaultBackgroundColor={ 0x00, 0x00, 0x00, 0xd0 };
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Set window and setup actors for display live image of window with accessiors */
-void _xfdashboard_livewindow_set_window(XfdashboardLiveWindow *self, const WnckWindow *inWindow)
+void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const WnckWindow *inWindow)
 {
-	g_return_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
 	/* Set window and create actors */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	g_return_if_fail(priv->window==NULL);
 
@@ -157,20 +157,20 @@ void _xfdashboard_livewindow_set_window(XfdashboardLiveWindow *self, const WnckW
 /* IMPLEMENTATION: ClutterContainer */
 
 /* Add an actor to container */
-static void xfdashboard_livewindow_add(ClutterContainer *self, ClutterActor *inActor)
+static void xfdashboard_live_window_add(ClutterContainer *self, ClutterActor *inActor)
 {
-	g_return_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 
-	xfdashboard_livewindow_pack(XFDASHBOARD_LIVEWINDOW(self), inActor);
+	xfdashboard_live_window_pack(XFDASHBOARD_LIVE_WINDOW(self), inActor);
 }
 
 /* Remove an actor from container */
-static void xfdashboard_livewindow_remove(ClutterContainer *self, ClutterActor *inActor)
+static void xfdashboard_live_window_remove(ClutterContainer *self, ClutterActor *inActor)
 {
-	g_return_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	
 	/* Find actor in list of children and remove */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	GList							*list;
 
 	g_object_ref(inActor);
@@ -204,14 +204,14 @@ static void xfdashboard_livewindow_remove(ClutterContainer *self, ClutterActor *
 }
 
 /* For each child in list of children call callback */
-static void xfdashboard_livewindow_foreach(ClutterContainer *self,
+static void xfdashboard_live_window_foreach(ClutterContainer *self,
 											ClutterCallback inCallback,
 											gpointer inUserData)
 {
-	g_return_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	
 	/* Find actor in list of children and call callback on each child */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	GList							*list;
 
 	for(list=priv->children; list; list=list->next)
@@ -226,17 +226,17 @@ static void xfdashboard_livewindow_foreach(ClutterContainer *self,
 static void clutter_container_iface_init(ClutterContainerIface *inInterface)
 {
 	/* We do not override any method as this container is static */
-	inInterface->add=xfdashboard_livewindow_add;
-	inInterface->remove=xfdashboard_livewindow_remove;
-	inInterface->foreach=xfdashboard_livewindow_foreach;
+	inInterface->add=xfdashboard_live_window_add;
+	inInterface->remove=xfdashboard_live_window_remove;
+	inInterface->foreach=xfdashboard_live_window_foreach;
 }
 
 /* IMPLEMENTATION: ClutterActor */
 
 /* Show all children of this one */
-static void xfdashboard_livewindow_show_all(ClutterActor *self)
+static void xfdashboard_live_window_show_all(ClutterActor *self)
 {
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	GList							*list;
 
 	for(list=priv->children; list; list=list->next)
@@ -249,9 +249,9 @@ static void xfdashboard_livewindow_show_all(ClutterActor *self)
 }
 
 /* Hide all children of this one */
-static void xfdashboard_livewindow_hide_all(ClutterActor *self)
+static void xfdashboard_live_window_hide_all(ClutterActor *self)
 {
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	GList							*list;
 
 	clutter_actor_hide(self);
@@ -264,12 +264,12 @@ static void xfdashboard_livewindow_hide_all(ClutterActor *self)
 }
 
 /* Get preferred width/height */
-static void xfdashboard_livewindow_get_preferred_height(ClutterActor *self,
+static void xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 														gfloat inForWidth,
 														gfloat *outMinHeight,
 														gfloat *outNaturalHeight)
 {
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	clutter_actor_get_preferred_height(priv->actorWindow,
 										inForWidth,
@@ -277,12 +277,12 @@ static void xfdashboard_livewindow_get_preferred_height(ClutterActor *self,
 										outNaturalHeight);
 }
 
-static void xfdashboard_livewindow_get_preferred_width(ClutterActor *self,
+static void xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 														gfloat inForHeight,
 														gfloat *outMinWidth,
 														gfloat *outNaturalWidth)
 {
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	clutter_actor_get_preferred_width(priv->actorWindow,
 										inForHeight,
@@ -291,14 +291,14 @@ static void xfdashboard_livewindow_get_preferred_width(ClutterActor *self,
 }
 
 /* Allocate position and size of actor and its children*/
-static void xfdashboard_livewindow_allocate(ClutterActor *self,
+static void xfdashboard_live_window_allocate(ClutterActor *self,
 											const ClutterActorBox *inBox,
 											ClutterAllocationFlags inFlags)
 {
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	/* Call parent's class allocation */
-	CLUTTER_ACTOR_CLASS(xfdashboard_livewindow_parent_class)->allocate(self, inBox, inFlags);
+	CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->allocate(self, inBox, inFlags);
 
 	/* Set window actor by getting geometry of window and
 	 * determining position and size */
@@ -381,9 +381,9 @@ static void xfdashboard_livewindow_allocate(ClutterActor *self,
 }
 
 /* Paint actor */
-static void xfdashboard_livewindow_paint(ClutterActor *self)
+static void xfdashboard_live_window_paint(ClutterActor *self)
 {
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	GList							*list;
 
 	for(list=priv->children; list; list=list->next)
@@ -395,13 +395,13 @@ static void xfdashboard_livewindow_paint(ClutterActor *self)
 }
 
 /* Pick all the child actors */
-static void xfdashboard_livewindow_pick(ClutterActor *self, const ClutterColor *inColor)
+static void xfdashboard_live_window_pick(ClutterActor *self, const ClutterColor *inColor)
 {
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	GList							*list;
 
 	/* Chain up so we get a bounding box painted (if we are reactive) */
-	CLUTTER_ACTOR_CLASS(xfdashboard_livewindow_parent_class)->pick(self, inColor);
+	CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->pick(self, inColor);
 
 	/* clutter_actor_pick() is deprecated by clutter_actor_paint().
 	 * Do not know what to with ClutterColor here.
@@ -415,7 +415,7 @@ static void xfdashboard_livewindow_pick(ClutterActor *self, const ClutterColor *
 }
 
 /* proxy ClickAction signals */
-static void xfdashboard_livewindow_clicked(ClutterClickAction *inAction,
+static void xfdashboard_live_window_clicked(ClutterClickAction *inAction,
 											ClutterActor *inActor,
 											gpointer inUserData)
 {
@@ -425,10 +425,10 @@ static void xfdashboard_livewindow_clicked(ClutterClickAction *inAction,
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-static void xfdashboard_livewindow_dispose(GObject *inObject)
+static void xfdashboard_live_window_dispose(GObject *inObject)
 {
 	/* Destroy each child actor when this container is destroyed */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(inObject)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(inObject)->priv;
 	GList							*list;
 
 	for(list=priv->children; list; list=list->next)
@@ -445,41 +445,41 @@ static void xfdashboard_livewindow_dispose(GObject *inObject)
 	priv->labelFont=NULL;
 
 	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_livewindow_parent_class)->dispose(inObject);
+	G_OBJECT_CLASS(xfdashboard_live_window_parent_class)->dispose(inObject);
 }
 
 /* Set/get properties */
-static void xfdashboard_livewindow_set_property(GObject *inObject,
+static void xfdashboard_live_window_set_property(GObject *inObject,
 												guint inPropID,
 												const GValue *inValue,
 												GParamSpec *inSpec)
 {
-	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVEWINDOW(inObject);
+	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inObject);
 	
 	switch(inPropID)
 	{
 		case PROP_WINDOW:
-			_xfdashboard_livewindow_set_window(self, g_value_get_object(inValue));
+			_xfdashboard_live_window_set_window(self, g_value_get_object(inValue));
 			break;
 			
 		case PROP_FONT:
-			xfdashboard_livewindow_set_font(self, g_value_get_string(inValue));
+			xfdashboard_live_window_set_font(self, g_value_get_string(inValue));
 			break;
 
 		case PROP_COLOR:
-			xfdashboard_livewindow_set_color(self, clutter_value_get_color(inValue));
+			xfdashboard_live_window_set_color(self, clutter_value_get_color(inValue));
 			break;
 
 		case PROP_BACKGROUND_COLOR:
-			xfdashboard_livewindow_set_background_color(self, clutter_value_get_color(inValue));
+			xfdashboard_live_window_set_background_color(self, clutter_value_get_color(inValue));
 			break;
 
 		case PROP_MARGIN:
-			xfdashboard_livewindow_set_margin(self, g_value_get_int(inValue));
+			xfdashboard_live_window_set_margin(self, g_value_get_int(inValue));
 			break;
 
 		case PROP_ELLIPSIZE_MODE:
-			xfdashboard_livewindow_set_ellipsize_mode(self, g_value_get_enum(inValue));
+			xfdashboard_live_window_set_ellipsize_mode(self, g_value_get_enum(inValue));
 			break;
 
 		default:
@@ -488,12 +488,12 @@ static void xfdashboard_livewindow_set_property(GObject *inObject,
 	}
 }
 
-static void xfdashboard_livewindow_get_property(GObject *inObject,
+static void xfdashboard_live_window_get_property(GObject *inObject,
 												guint inPropID,
 												GValue *outValue,
 												GParamSpec *inSpec)
 {
-	XfdashboardLiveWindow	*self=XFDASHBOARD_LIVEWINDOW(inObject);
+	XfdashboardLiveWindow	*self=XFDASHBOARD_LIVE_WINDOW(inObject);
 
 	switch(inPropID)
 	{
@@ -531,23 +531,23 @@ static void xfdashboard_livewindow_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-static void xfdashboard_livewindow_class_init(XfdashboardLiveWindowClass *klass)
+static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass)
 {
 	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->dispose=xfdashboard_livewindow_dispose;
-	gobjectClass->set_property=xfdashboard_livewindow_set_property;
-	gobjectClass->get_property=xfdashboard_livewindow_get_property;
+	gobjectClass->dispose=xfdashboard_live_window_dispose;
+	gobjectClass->set_property=xfdashboard_live_window_set_property;
+	gobjectClass->get_property=xfdashboard_live_window_get_property;
 
-	actorClass->show_all=xfdashboard_livewindow_show_all;
-	actorClass->hide_all=xfdashboard_livewindow_hide_all;
-	actorClass->paint=xfdashboard_livewindow_paint;
-	actorClass->pick=xfdashboard_livewindow_pick;
-	actorClass->get_preferred_width=xfdashboard_livewindow_get_preferred_width;
-	actorClass->get_preferred_height=xfdashboard_livewindow_get_preferred_height;
-	actorClass->allocate=xfdashboard_livewindow_allocate;
+	actorClass->show_all=xfdashboard_live_window_show_all;
+	actorClass->hide_all=xfdashboard_live_window_hide_all;
+	actorClass->paint=xfdashboard_live_window_paint;
+	actorClass->pick=xfdashboard_live_window_pick;
+	actorClass->get_preferred_width=xfdashboard_live_window_get_preferred_width;
+	actorClass->get_preferred_height=xfdashboard_live_window_get_preferred_height;
+	actorClass->allocate=xfdashboard_live_window_allocate;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardLiveWindowPrivate));
@@ -616,11 +616,11 @@ static void xfdashboard_livewindow_class_init(XfdashboardLiveWindowClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-static void xfdashboard_livewindow_init(XfdashboardLiveWindow *self)
+static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 {
 	XfdashboardLiveWindowPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_LIVEWINDOW_GET_PRIVATE(self);
+	priv=self->priv=XFDASHBOARD_LIVE_WINDOW_GET_PRIVATE(self);
 
 	/* This actor is react on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR (self), TRUE);
@@ -637,27 +637,27 @@ static void xfdashboard_livewindow_init(XfdashboardLiveWindow *self)
 	/* Connect signals */
 	priv->clickAction=clutter_click_action_new();
 	clutter_actor_add_action(CLUTTER_ACTOR(self), priv->clickAction);
-	g_signal_connect(priv->clickAction, "clicked", G_CALLBACK(xfdashboard_livewindow_clicked), NULL);
+	g_signal_connect(priv->clickAction, "clicked", G_CALLBACK(xfdashboard_live_window_clicked), NULL);
 }
 
 /* Implementation: Public API */
 
 /* Create new actor */
-ClutterActor* xfdashboard_livewindow_new(WnckWindow* inWindow)
+ClutterActor* xfdashboard_live_window_new(WnckWindow* inWindow)
 {
-	return(g_object_new(XFDASHBOARD_TYPE_LIVEWINDOW,
+	return(g_object_new(XFDASHBOARD_TYPE_LIVE_WINDOW,
 						"window", inWindow,
 						NULL));
 }
 
 /* Packs actor into container */
-void xfdashboard_livewindow_pack(XfdashboardLiveWindow *self, ClutterActor *inActor)
+void xfdashboard_live_window_pack(XfdashboardLiveWindow *self, ClutterActor *inActor)
 {
-	g_return_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
 
 	/* Pack actor */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	priv->children=g_list_append(priv->children, inActor);
 	clutter_actor_set_parent(inActor, CLUTTER_ACTOR(self));
@@ -667,28 +667,28 @@ void xfdashboard_livewindow_pack(XfdashboardLiveWindow *self, ClutterActor *inAc
 }
 
 /* Get/set window to display */
-const WnckWindow* xfdashboard_livewindow_get_window(XfdashboardLiveWindow *self)
+const WnckWindow* xfdashboard_live_window_get_window(XfdashboardLiveWindow *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
 
 	return(self->priv->window);
 }
 
 /* Get/set font to use in label */
-const gchar* xfdashboard_livewindow_get_font(XfdashboardLiveWindow *self)
+const gchar* xfdashboard_live_window_get_font(XfdashboardLiveWindow *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
 
 	return(self->priv->labelFont);
 }
 
-void xfdashboard_livewindow_set_font(XfdashboardLiveWindow *self, const gchar *inFont)
+void xfdashboard_live_window_set_font(XfdashboardLiveWindow *self, const gchar *inFont)
 {
-	g_return_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(inFont!=NULL);
 
 	/* Set font of label */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	if(priv->labelFont) g_free(priv->labelFont);
 	priv->labelFont=g_strdup(inFont);
@@ -699,19 +699,19 @@ void xfdashboard_livewindow_set_font(XfdashboardLiveWindow *self, const gchar *i
 }
 
 /* Get/set color of text in label */
-const ClutterColor* xfdashboard_livewindow_get_color(XfdashboardLiveWindow *self)
+const ClutterColor* xfdashboard_live_window_get_color(XfdashboardLiveWindow *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
 
 	return(self->priv->labelTextColor);
 }
 
-void xfdashboard_livewindow_set_color(XfdashboardLiveWindow *self, const ClutterColor *inColor)
+void xfdashboard_live_window_set_color(XfdashboardLiveWindow *self, const ClutterColor *inColor)
 {
-	g_return_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 
 	/* Set text color of label */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	if(priv->labelTextColor) clutter_color_free(priv->labelTextColor);
 	priv->labelTextColor=clutter_color_copy(inColor);
@@ -722,19 +722,19 @@ void xfdashboard_livewindow_set_color(XfdashboardLiveWindow *self, const Clutter
 }
 
 /* Get/set color of label's background */
-const ClutterColor* xfdashboard_livewindow_get_background_color(XfdashboardLiveWindow *self)
+const ClutterColor* xfdashboard_live_window_get_background_color(XfdashboardLiveWindow *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
 
 	return(self->priv->labelBackgroundColor);
 }
 
-void xfdashboard_livewindow_set_background_color(XfdashboardLiveWindow *self, const ClutterColor *inColor)
+void xfdashboard_live_window_set_background_color(XfdashboardLiveWindow *self, const ClutterColor *inColor)
 {
-	g_return_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 
 	/* Set background color of label */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	if(priv->labelBackgroundColor) clutter_color_free(priv->labelBackgroundColor);
 	priv->labelBackgroundColor=clutter_color_copy(inColor);
@@ -745,19 +745,19 @@ void xfdashboard_livewindow_set_background_color(XfdashboardLiveWindow *self, co
 }
 
 /* Get/set margin of background to label */
-const gint xfdashboard_livewindow_get_margin(XfdashboardLiveWindow *self)
+const gint xfdashboard_live_window_get_margin(XfdashboardLiveWindow *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self), 0);
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), 0);
 
 	return(self->priv->labelMargin);
 }
 
-void xfdashboard_livewindow_set_margin(XfdashboardLiveWindow *self, const gint inMargin)
+void xfdashboard_live_window_set_margin(XfdashboardLiveWindow *self, const gint inMargin)
 {
-	g_return_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 
 	/* Set window to display */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	priv->labelMargin=inMargin;
 
@@ -765,19 +765,19 @@ void xfdashboard_livewindow_set_margin(XfdashboardLiveWindow *self, const gint i
 }
 
 /* Get/set ellipsize mode if label's text is getting too long */
-const PangoEllipsizeMode xfdashboard_livewindow_get_ellipsize_mode(XfdashboardLiveWindow *self)
+const PangoEllipsizeMode xfdashboard_live_window_get_ellipsize_mode(XfdashboardLiveWindow *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self), 0);
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), 0);
 
 	return(self->priv->labelEllipsize);
 }
 
-void xfdashboard_livewindow_set_ellipsize_mode(XfdashboardLiveWindow *self, const PangoEllipsizeMode inMode)
+void xfdashboard_live_window_set_ellipsize_mode(XfdashboardLiveWindow *self, const PangoEllipsizeMode inMode)
 {
-	g_return_if_fail(XFDASHBOARD_IS_LIVEWINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 
 	/* Set window to display */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVEWINDOW(self)->priv;
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	priv->labelEllipsize=inMode;
 

@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_WINDOWSVIEW__
-#define __XFDASHBOARD_WINDOWSVIEW__
+#ifndef __XFDASHBOARD_WINDOWS_VIEW__
+#define __XFDASHBOARD_WINDOWS_VIEW__
 
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE
 #include <libwnck/libwnck.h>

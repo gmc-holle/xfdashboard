@@ -292,7 +292,7 @@ static void xfdashboard_quicklaunch_icon_init(XfdashboardQuicklaunchIcon *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Sub-classed texture should synchronize its size to loaded texture */
-	clutter_texture_set_sync_size(CLUTTER_TEXTURE(self), TRUE);
+	clutter_texture_set_sync_size(CLUTTER_TEXTURE(self), FALSE);
 	
 	/* Set up default values */
 	priv->appInfo=NULL;

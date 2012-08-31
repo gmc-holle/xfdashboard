@@ -27,6 +27,7 @@
 
 #include "quicklaunch.h"
 #include "quicklaunch-icon.h"
+#include "scaling-box-layout.h"
 
 #include <math.h>
 
@@ -41,14 +42,17 @@ G_DEFINE_TYPE(XfdashboardQuicklaunch,
 
 struct _XfdashboardQuicklaunchPrivate
 {
-	/* Background cairo texture */
-	ClutterActor			*background;
+	/* Layout manager for ClutterBox */
+	ClutterLayoutManager	*layoutManager;
 	
-	/* Icon group (container of XfdashboardQuicklaunchIcon) */
+	/* Icons (of type XfdashboardQuicklaunchIcon) */
 	ClutterActor			*icons;
+	guint					iconsCount;
 	guint					maxIconsCount;
-	gfloat					iconsScale;
 	guint					normalIconSize;
+
+	/* Background */
+	ClutterColor			*backgroundColor;
 
 	/* Spacing between icons (is also margin to background */
 	gfloat					spacing;
@@ -61,31 +65,38 @@ enum
 
 	PROP_ICONS_COUNT,
 	PROP_ICONS_MAX_COUNT,
-	PROP_ICONS_SCALE,
 	PROP_ICONS_NORMAL_SIZE,
 
+	PROP_BACKGROUND_COLOR,
 	PROP_SPACING,
-	
+
 	PROP_LAST
 };
 
 static GParamSpec* XfdashboardQuicklaunchProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEG2RAD(deg)	(deg*(M_PI/180.0f))
+static ClutterColor		_xfdashboard_quicklaunch_default_background_color=
+							{ 0xff, 0xff, 0xff, 0x40 };
 
-#define SCALE_MIN		0.25
-#define SCALE_MAX		1.0
-#define SCALE_STEP		0.25
+/* TODO: Replace with xfconf */
+static gchar			*quicklaunch_apps[]=	{
+													"firefox.desktop",
+													"evolution.desktop",
+													"Terminal.desktop",
+													"Thunar.desktop",
+													"geany.desktop",
+													"unavailable"
+												};
+/* TODO: Replace with xfconf */
 
-static gchar	*quicklaunch_apps[]=	{
-											"firefox.desktop",
-											"evolution.desktop",
-											"Terminal.desktop",
-											"Thunar.desktop",
-											"geany.desktop",
-											"unavailable"
-										};
+/* Get number of icons */
+static guint _xfdashboard_quicklaunch_get_number_icons(XfdashboardQuicklaunch *self)
+{
+	GList		*children=clutter_container_get_children(CLUTTER_CONTAINER(self->priv->icons));
+
+	return(g_list_length(children));
+}
 
 /* Icon was clicked */
 static gboolean _xfdashboard_quicklaunch_on_clicked_icon(ClutterActor *inActor, gpointer inUserData)
@@ -122,174 +133,44 @@ static gboolean _xfdashboard_quicklaunch_on_clicked_icon(ClutterActor *inActor, 
 	return(TRUE);
 }
 
-/* Relayout icons */
-static void _xfdashboard_quicklaunch_layout_icons(XfdashboardQuicklaunch *self)
-{
-	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
-	gint							i, numberIcons;
-	ClutterGroup					*iconGroup;
-
-	iconGroup=CLUTTER_GROUP(priv->icons);
-	numberIcons=clutter_group_get_n_children(iconGroup);
-	for(i=0; i<numberIcons; i++)
-	{
-		ClutterActor				*actor=clutter_group_get_nth_child(iconGroup, i);
-		
-		clutter_actor_set_position(actor, 0, i*(priv->normalIconSize+priv->spacing));
-		clutter_actor_set_size(actor, priv->normalIconSize, priv->normalIconSize);
-	}
-
-	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
-}
-
-/* Check width/height of icons, scale icons to fit allocation and
- * enforce size of background etc. */
-static gfloat _xfdashboard_quicklaunch_check_size(XfdashboardQuicklaunch *self,
-													ClutterActorBox *ioBox)
-{
-	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
-	gfloat							maxW, maxH;
-	gfloat							iconW, iconH;
-	gfloat							iconScale;
-	gint							numberIcons;
-
-	/* If check fail return negative scaling to indicate failure */
-	g_return_val_if_fail(ioBox, -1.0f);
-
-	/* Get width and heigt of allocation box */
-	clutter_actor_box_get_size(ioBox, &maxW, &maxH);
-
-	/* Check if all children of icon group fits in width and height.
-	 * If thex do not scale them down from maximum scale to minimum
-	 * scale in defined steps until they fit.
-	 */
-	iconScale=SCALE_MAX+SCALE_STEP;
-	numberIcons=clutter_group_get_n_children(CLUTTER_GROUP(priv->icons));
-	do
-	{
-		/* Try next scaling */
-		iconScale-=SCALE_STEP;
-
-		/* Determine scaled width of icons */
-		iconW=priv->normalIconSize;
-		iconW*=iconScale;
-
-		/* Determine scaled height of icons */
-		iconH=numberIcons*(priv->normalIconSize+priv->spacing);
-		iconH*=iconScale;
-	}
-	while((iconW>maxW || iconH>maxH) && iconScale>SCALE_MIN);
-
-	/* Update properties */
-	priv->iconsScale=iconScale;
-
-	/* Update size in allocation box to scale size of icons */
-	clutter_actor_box_set_origin(ioBox, 0, 0);
-	clutter_actor_box_set_size(ioBox, iconW, iconH);
-
-	/* Return scaling */
-	return(iconScale);
-}
-
-/* Draw background into Cairo texture */
-static gboolean _xfdashboard_quicklaunch_draw_background(ClutterCairoTexture *inActor,
-															cairo_t *inCairo,
-															gpointer inUserData)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inUserData), FALSE);
-	
-	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inUserData)->priv;
-	guint							width, height;
-
-	/* Clear the contents of actor to avoid painting
-	 * over the previous contents
-	 */
-	clutter_cairo_texture_clear(inActor);
-
-	/* Scale to the size of actor */
-	clutter_cairo_texture_get_surface_size(inActor, &width, &height);
-
-	cairo_set_line_cap(inCairo, CAIRO_LINE_CAP_ROUND);
-	cairo_set_line_width(inCairo, 1.5);
-
-	/* Draw surrounding rectangle and fill it */
-	clutter_cairo_set_source_color(inCairo, CLUTTER_COLOR_White);
-
-	cairo_move_to(inCairo, 0, 0);
-	cairo_rel_line_to(inCairo, width-priv->spacing, 0);
-	cairo_arc(inCairo,
-				width-priv->spacing, priv->spacing,
-				priv->spacing,
-				DEG2RAD(-90), DEG2RAD(0));
-
-	cairo_move_to(inCairo, width, priv->spacing);
-	cairo_rel_line_to(inCairo, 0, height-(2*priv->spacing));
-	cairo_arc(inCairo,
-				width-priv->spacing, height-priv->spacing,
-				priv->spacing,
-				DEG2RAD(0), DEG2RAD(90));
-
-	cairo_move_to(inCairo, width-priv->spacing, height);
-	cairo_rel_line_to(inCairo, -(width-priv->spacing), 0);
-
-	cairo_close_path(inCairo);
-	cairo_stroke(inCairo);
-
-	return(TRUE);
-}
-
 /* IMPLEMENTATION: ClutterActor */
-
-/* Show this actor and all children */
-static void xfdashboard_quicklaunch_show_all(ClutterActor *self)
-{
-	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
-
-	clutter_actor_show(priv->background);
-	clutter_actor_show(priv->icons);
-	clutter_actor_show(self);
-}
-
-/* Hide this actor and all children */
-static void xfdashboard_quicklaunch_hide_all(ClutterActor *self)
-{
-	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
-
-	clutter_actor_hide(self);
-	clutter_actor_hide(priv->background);
-	clutter_actor_hide(priv->icons);
-}
 
 /* Paint actor */
 static void xfdashboard_quicklaunch_paint(ClutterActor *self)
 {
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+	ClutterActorBox					allocation={ 0, };
+	gfloat							width, height;
 
-	/* Paint background and icon group */
-	clutter_actor_paint(priv->background);
-	clutter_actor_paint(priv->icons);
-}
+	if(priv->icons)
+	{
+		/* Get allocation to paint background */
+		clutter_actor_get_allocation_box(self, &allocation);
+		clutter_actor_box_get_size(&allocation, &width, &height);
 
-/* Retrieve paint volume of this actor and its children */
-static gboolean xfdashboard_quicklaunch_get_paint_volume(ClutterActor *self,
-															ClutterPaintVolume *inVolume)
-{
-	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
-	const ClutterPaintVolume		*childVolume;
+		/* Set color to use when painting background */
+		cogl_set_source_color4ub(priv->backgroundColor->red,
+									priv->backgroundColor->green,
+									priv->backgroundColor->blue,
+									priv->backgroundColor->alpha);
 
-	/* Get paint volume of background */
-	childVolume=clutter_actor_get_transformed_paint_volume(priv->background, self);
-	if(!childVolume) return(FALSE);
+		/* Paint background */
+		cogl_path_move_to(0, 0);
+		cogl_path_line_to(width-priv->spacing, 0);
+		cogl_path_arc(width-priv->spacing, priv->spacing,
+						priv->spacing, priv->spacing,
+						-90, 0);
+		cogl_path_line_to(width, height-priv->spacing-1);
+		cogl_path_arc(width-priv->spacing, height-priv->spacing-1,
+						priv->spacing, priv->spacing,
+						0, 90);
+		cogl_path_line_to(0, height-1);
+		cogl_path_close();
+		cogl_path_fill();
 
-	clutter_paint_volume_union(inVolume, childVolume);
-
-	/* Union the paint volumes of icon group */
-	childVolume=clutter_actor_get_transformed_paint_volume(priv->icons, self);
-	if(!childVolume) return(FALSE);
-
-	clutter_paint_volume_union(inVolume, childVolume);
-
-	return(TRUE);
+		/* Paint icons */
+		clutter_actor_paint(priv->icons);
+	}
 }
 
 /* Pick all the child actors */
@@ -297,10 +178,13 @@ static void xfdashboard_quicklaunch_pick(ClutterActor *self, const ClutterColor 
 {
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
 
+	/* It is possible to avoid a costly paint by checking
+	 * whether the actor should really be painted in pick mode
+	 */
+	if(!clutter_actor_should_pick_paint(self)) return;
+    
 	CLUTTER_ACTOR_CLASS(xfdashboard_quicklaunch_parent_class)->pick(self, inPick);
-
-	clutter_actor_paint(priv->background);
-	clutter_actor_paint(priv->icons);
+	if(priv->icons) clutter_actor_paint(priv->icons);
 }
 
 /* Get preferred width/height */
@@ -310,32 +194,24 @@ static void xfdashboard_quicklaunch_get_preferred_width(ClutterActor *self,
 														gfloat *outNaturalWidth)
 {
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
-	gfloat							maxMinWidth, maxNaturalWidth;
 	gfloat							minWidth, naturalWidth;
 
-	/* Minimum size is at least size of box plus spacing twice */
-	maxMinWidth=maxNaturalWidth=priv->normalIconSize+(2*priv->spacing);
+	/* Get minimum and natural size of icons */
+	minWidth=naturalWidth=0.0f;
+	if(priv->icons && CLUTTER_ACTOR_IS_VISIBLE(priv->icons))
+	{
+		clutter_actor_get_preferred_width(priv->icons,
+											inForHeight,
+											&minWidth, &naturalWidth);
+	}
 
-	/* Get preferred size of background first */
-	clutter_actor_get_preferred_width(priv->background,
-										inForHeight,
-										&minWidth,
-										&naturalWidth);
+	/* Now add spacing to determined minimum and natural size */
+	minWidth+=(2*priv->spacing);
+	naturalWidth+=(2*priv->spacing);
 
-	if(minWidth>maxMinWidth) maxMinWidth=minWidth;
-	if(naturalWidth>maxNaturalWidth) maxNaturalWidth=naturalWidth;
-
-	/* Now get preferred size of icon group */
-	clutter_actor_get_preferred_width(priv->icons,
-										inForHeight,
-										&minWidth,
-										&naturalWidth);
-
-	if(minWidth>maxMinWidth) maxMinWidth=minWidth;
-	if(naturalWidth>maxNaturalWidth) maxNaturalWidth=naturalWidth;
-
-	*outMinWidth=maxMinWidth;
-	*outNaturalWidth=maxNaturalWidth;
+	/* Return sizes */
+	if(outMinWidth) *outMinWidth=minWidth;
+	if(outNaturalWidth) *outNaturalWidth=naturalWidth;
 }
 
 static void xfdashboard_quicklaunch_get_preferred_height(ClutterActor *self,
@@ -344,41 +220,24 @@ static void xfdashboard_quicklaunch_get_preferred_height(ClutterActor *self,
 															gfloat *outNaturalHeight)
 {
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
-	gfloat							maxMinHeight, maxNaturalHeight;
 	gfloat							minHeight, naturalHeight;
-	gint							numberIcons;
 
-	/* Minimum size is at least number of icons multiplied with size of
-	 * a single icon plus spacing and additionally increased by spacing
-	 * at minimum scale
-	 */
-	numberIcons=clutter_group_get_n_children(CLUTTER_GROUP(priv->icons));
+	/* Get minimum and natural size of icons */
+	minHeight=naturalHeight=0.0f;
+	if(priv->icons && CLUTTER_ACTOR_IS_VISIBLE(priv->icons))
+	{
+		clutter_actor_get_preferred_height(priv->icons,
+											inForWidth,
+											&minHeight, &naturalHeight);
+	}
 
-	maxMinHeight=(numberIcons*(priv->normalIconSize+priv->spacing))+priv->spacing;
-	maxMinHeight*=SCALE_MIN;
-	
-	maxNaturalHeight=maxMinHeight;
-			
-	/* Get preferred size of background first */
-	clutter_actor_get_preferred_height(priv->background,
-										inForWidth,
-										&minHeight,
-										&naturalHeight);
+	/* Now add spacing to determined minimum and natural size */
+	minHeight+=(2*priv->spacing);
+	naturalHeight+=(2*priv->spacing);
 
-	if(minHeight>maxMinHeight) maxMinHeight=minHeight;
-	if(naturalHeight>maxNaturalHeight) maxNaturalHeight=naturalHeight;
-
-	/* Now get preferred size of icon group */
-	clutter_actor_get_preferred_height(priv->icons,
-										inForWidth,
-										&minHeight,
-										&naturalHeight);
-
-	if(minHeight>maxMinHeight) maxMinHeight=minHeight;
-	if(naturalHeight>maxNaturalHeight) maxNaturalHeight=naturalHeight;
-
-	*outMinHeight=maxMinHeight;
-	*outNaturalHeight=maxNaturalHeight;
+	/* Return sizes */
+	if(outMinHeight) *outMinHeight=minHeight;
+	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
 /* Allocate position and size of actor and its children*/
@@ -387,54 +246,57 @@ static void xfdashboard_quicklaunch_allocate(ClutterActor *self,
 												ClutterAllocationFlags inFlags)
 {
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
-	ClutterActorBox					*box=NULL;
-	gfloat							allocW, allocH;
-	gfloat							iconsW, iconsH;
-	gfloat							iconScale;
+	ClutterActorBox					box={ 0, };
+	ClutterActorBox					boxIcons={ 0, };
+	gfloat							availableWidth, availableHeight;
 
-	/* Get size of allocation */
-	clutter_actor_box_get_size(inBox, &allocW, &allocH);
+	/* Get available size */
+	clutter_actor_box_get_size(inBox, &availableWidth, &availableHeight);
 
-	/* Determine minimum size for icons */
-	box=clutter_actor_box_copy(inBox);
-	iconScale=_xfdashboard_quicklaunch_check_size(XFDASHBOARD_QUICKLAUNCH(self), box);
-	if(G_UNLIKELY(iconScale<SCALE_MIN))
+	/* Allocate icons */
+	if(priv->icons)
 	{
-		g_warning("Icons of quicklaunch will not fit - using allocation unmodified!");
-		iconScale=SCALE_MIN;
-		clutter_actor_box_free(box);
-		box=clutter_actor_box_copy(inBox);
+		gfloat						availIconWidth, availIconHeight;
+		gfloat						iconsMinScale;
+		const ClutterActorBox		*boxIconsReal;
+		XfdashboardScalingBoxLayout	*layout=XFDASHBOARD_SCALING_BOX_LAYOUT(priv->layoutManager);
+
+		/* Update number of icons for later calculation */
+		priv->iconsCount=_xfdashboard_quicklaunch_get_number_icons(XFDASHBOARD_QUICKLAUNCH(self));
+		
+		/* Get available space for icons */
+		availIconWidth=availableWidth-(2*priv->spacing);
+		availIconHeight=availableHeight-(2*priv->spacing);
+
+		/* Set allocation for icons */
+		clutter_actor_box_set_origin(&boxIcons, priv->spacing, priv->spacing);
+		clutter_actor_box_set_size(&boxIcons, availIconWidth, availIconHeight);
+		clutter_actor_allocate(priv->icons, &boxIcons, inFlags);
+
+		/* Get allocated size of icons and set real allocation size for
+		 * icons because one direction might be too large and should be
+		 * shrinked
+		 */
+		boxIconsReal=xfdashboard_scaling_box_layout_get_last_allocation(layout);
+		clutter_actor_box_set_size(&boxIcons,
+									clutter_actor_box_get_width(boxIconsReal),
+									clutter_actor_box_get_height(boxIconsReal));
+		clutter_actor_allocate(priv->icons, &boxIcons, inFlags);
+
+		/* Update available size */
+		availableWidth=clutter_actor_box_get_width(&boxIcons)+(2*priv->spacing);
+
+		/* Determine maximum number of icons at lowest scale */
+		iconsMinScale=xfdashboard_scaling_box_layout_get_scale_minimum(layout);
+		priv->maxIconsCount=floor(availIconHeight/((priv->normalIconSize*iconsMinScale)+priv->spacing));
 	}
-	clutter_actor_box_get_size(box, &iconsW, &iconsH);
 
-	/* Adjust allocation to maximum height of given allocation or
-	 * determined minimum height and increase for spacing.
+	/* Create new allocation about available size and
+	 * chain up to store the allocation of the actor
 	 */
-	allocW=iconsW+(2*priv->spacing);
-	if(allocH>(iconsH+priv->spacing)) iconsH=allocH-priv->spacing;
-		else allocH=iconsH+priv->spacing;
-
-	/* Set allocation and scale for icons */
-	clutter_actor_box_set_origin(box, priv->spacing, priv->spacing);
-	clutter_actor_box_set_size(box, iconsW, iconsH);
-
-	clutter_actor_allocate(priv->icons, box, inFlags);
-	clutter_actor_set_scale(priv->icons, iconScale, iconScale);
-
-	/* Allocation for background and resize it */
-	clutter_actor_box_set_origin(box, 0, 0);
-	clutter_actor_box_set_size(box, allocW+0.1, allocH+0.1);
-	clutter_actor_allocate(priv->background, box, inFlags);
-	
-	/* Call parent's class allocation method */
-	CLUTTER_ACTOR_CLASS(xfdashboard_quicklaunch_parent_class)->allocate(self, box, inFlags);
-
-	/* Free copied allocation box */
-	clutter_actor_box_free(box);
-
-	/* Update properties */
-	priv->maxIconsCount=(allocH/SCALE_MIN)/priv->normalIconSize;
-	priv->iconsScale=iconScale;
+	clutter_actor_box_set_origin(&box, 0, 0);
+	clutter_actor_box_set_size(&box, availableWidth, availableHeight);
+	CLUTTER_ACTOR_CLASS(xfdashboard_quicklaunch_parent_class)->allocate(self, &box, inFlags);
 }
 
 /* Destroy this actor */
@@ -443,14 +305,9 @@ static void xfdashboard_quicklaunch_destroy(ClutterActor *self)
 	XfdashboardQuicklaunchPrivate		*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
 
 	/* Destroy background and all our children */
-	if(priv->background)
-	{
-		clutter_actor_destroy(priv->background);
-		priv->background=NULL;
-	}
-
 	if(priv->icons)
 	{
+		clutter_container_foreach(CLUTTER_CONTAINER(priv->icons), CLUTTER_CALLBACK(clutter_actor_destroy), self);
 		clutter_actor_destroy(priv->icons);
 		priv->icons=NULL;
 	}
@@ -479,18 +336,20 @@ static void xfdashboard_quicklaunch_set_property(GObject *inObject,
 													const GValue *inValue,
 													GParamSpec *inSpec)
 {
-	XfdashboardQuicklaunch		*self=XFDASHBOARD_QUICKLAUNCH(inObject);
-	
+	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inObject);
+
 	switch(inPropID)
 	{
 		case PROP_ICONS_NORMAL_SIZE:
-			self->priv->normalIconSize=g_value_get_uint(inValue);
-			_xfdashboard_quicklaunch_layout_icons(self);
+			xfdashboard_quicklaunch_set_normal_icon_size(self, g_value_get_uint(inValue));
+			break;
+
+		case PROP_BACKGROUND_COLOR:
+			xfdashboard_quicklaunch_set_background_color(self, clutter_value_get_color(inValue));
 			break;
 
 		case PROP_SPACING:
-			self->priv->spacing=g_value_get_float(inValue);
-			_xfdashboard_quicklaunch_layout_icons(self);
+			xfdashboard_quicklaunch_set_spacing(self, g_value_get_float(inValue));
 			break;
 
 		default:
@@ -504,28 +363,28 @@ static void xfdashboard_quicklaunch_get_property(GObject *inObject,
 													GValue *outValue,
 													GParamSpec *inSpec)
 {
-	XfdashboardQuicklaunch		*self=XFDASHBOARD_QUICKLAUNCH(inObject);
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inObject)->priv;
 
 	switch(inPropID)
 	{
 		case PROP_ICONS_COUNT:
-			g_value_set_uint(outValue, clutter_group_get_n_children(CLUTTER_GROUP(self->priv->icons)));
+			g_value_set_uint(outValue, priv->iconsCount);
 			break;
 
 		case PROP_ICONS_MAX_COUNT:
-			g_value_set_uint(outValue, self->priv->maxIconsCount);
-			break;
-
-		case PROP_ICONS_SCALE:
-			g_value_set_float(outValue, self->priv->iconsScale);
+			g_value_set_uint(outValue, priv->maxIconsCount);
 			break;
 
 		case PROP_ICONS_NORMAL_SIZE:
-			g_value_set_uint(outValue, self->priv->normalIconSize);
+			g_value_set_uint(outValue, priv->normalIconSize);
+			break;
+
+		case PROP_BACKGROUND_COLOR:
+			clutter_value_set_color(outValue, priv->backgroundColor);
 			break;
 
 		case PROP_SPACING:
-			g_value_set_float(outValue, self->priv->spacing);
+			g_value_set_float(outValue, priv->spacing);
 			break;
 
 		default:
@@ -544,10 +403,7 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 	ClutterActorClass		*actorClass=CLUTTER_ACTOR_CLASS(klass);
 
 	/* Override functions */
-	actorClass->show_all=xfdashboard_quicklaunch_show_all;
-	actorClass->hide_all=xfdashboard_quicklaunch_hide_all;
 	actorClass->paint=xfdashboard_quicklaunch_paint;
-	actorClass->get_paint_volume=xfdashboard_quicklaunch_get_paint_volume;
 	actorClass->pick=xfdashboard_quicklaunch_pick;
 	actorClass->get_preferred_width=xfdashboard_quicklaunch_get_preferred_width;
 	actorClass->get_preferred_height=xfdashboard_quicklaunch_get_preferred_height;
@@ -580,15 +436,6 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 							0,
 							G_PARAM_READABLE);
 
-	XfdashboardQuicklaunchProperties[PROP_ICONS_SCALE]=
-		g_param_spec_float("icons-scale",
-							"Scale factor for icons",
-							"Current scale factor used for icons in quicklaunch to make them fit",
-							0.0,
-							SCALE_MAX,
-							SCALE_MAX,
-							G_PARAM_READABLE);
-
 	XfdashboardQuicklaunchProperties[PROP_ICONS_NORMAL_SIZE]=
 		g_param_spec_uint("icons-normal-size",
 							"Normal size of an icon",
@@ -597,6 +444,13 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 							G_MAXUINT,
 							64,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+
+	XfdashboardQuicklaunchProperties[PROP_BACKGROUND_COLOR]=
+		clutter_param_spec_color("background-color",
+									"Background color",
+									"Background color of quicklaunch",
+									&_xfdashboard_quicklaunch_default_background_color,
+									G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardQuicklaunchProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
@@ -616,38 +470,26 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
-	ClutterConstraint				*constraint;
 	gint							i;
 
+	/* Set up default values */
 	priv=self->priv=XFDASHBOARD_QUICKLAUNCH_GET_PRIVATE(self);
 
-	/* Set up default values */
+	priv->iconsCount=0;
 	priv->maxIconsCount=0;
-	priv->iconsScale=SCALE_MAX;
-	priv->normalIconSize=0;
+	priv->normalIconSize=64;
 	priv->spacing=0.0f;
 
-	/* Set up background actor and bind its size to this box */
-	priv->background=clutter_cairo_texture_new(1, 1);
-	clutter_cairo_texture_set_auto_resize(CLUTTER_CAIRO_TEXTURE(priv->background), TRUE);
-	g_signal_connect(priv->background, "draw", G_CALLBACK(_xfdashboard_quicklaunch_draw_background), self);
-	clutter_actor_set_parent(priv->background, CLUTTER_ACTOR(self));
+	/* Set up this actor */
+	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
-	constraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_POSITION, 0);
-	clutter_actor_add_constraint(priv->background, constraint);
+	/* Set up ClutterBox to hold quicklaunch icons */
+	priv->layoutManager=xfdashboard_scaling_box_layout_new();
+	xfdashboard_scaling_box_layout_set_spacing(XFDASHBOARD_SCALING_BOX_LAYOUT(priv->layoutManager),
+												priv->spacing);
 
-	constraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_SIZE, 0);
-	clutter_actor_add_constraint(priv->background, constraint);
-
-	/* Set up icon group */
-	priv->icons=clutter_group_new();
+	priv->icons=clutter_box_new(priv->layoutManager);
 	clutter_actor_set_parent(priv->icons, CLUTTER_ACTOR(self));
-
-	/*constraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_POSITION, priv->spacing);
-	clutter_actor_add_constraint(priv->icons, constraint);
-
-	constraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_SIZE, -(2*priv->spacing));
-	clutter_actor_add_constraint(priv->icons, constraint);*/
 
 	/* TODO: Remove the following actor(s) for application icons
 	 *       in quicklaunch box as soon as xfconf is implemented
@@ -657,14 +499,12 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 		ClutterActor				*actor;
 		
 		actor=xfdashboard_quicklaunch_icon_new_full(quicklaunch_apps[i]);
+		clutter_actor_set_size(actor, priv->normalIconSize, priv->normalIconSize);
 		clutter_container_add_actor(CLUTTER_CONTAINER(priv->icons), actor);
 		g_signal_connect(actor, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_clicked_icon), self);
-	}
 
-	/* Re-layout icons. This also enforces a queued re-layout of
-	 * all children added
-	 */
-	_xfdashboard_quicklaunch_layout_icons(self);
+		priv->iconsCount++;
+	}
 }
 
 /* Implementation: Public API */
@@ -673,6 +513,22 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 ClutterActor* xfdashboard_quicklaunch_new(void)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_QUICKLAUNCH, NULL));
+}
+
+/* Get number of icons in quicklaunch */
+guint xfdashboard_quicklaunch_get_icon_count(XfdashboardQuicklaunch *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0);
+
+	return(self->priv->iconsCount);
+}
+
+/* Get maximum number of icons quicklaunch can hold at smallest scale */
+guint xfdashboard_quicklaunch_get_max_icon_count(XfdashboardQuicklaunch *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0);
+
+	return(self->priv->maxIconsCount);
 }
 
 /* Get/set icons' normal size */
@@ -687,8 +543,31 @@ void xfdashboard_quicklaunch_set_normal_icon_size(XfdashboardQuicklaunch *self, 
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 
+	/* Set normal icon size (defines size at scale of 1.0) */
 	self->priv->normalIconSize=inSize;
-	_xfdashboard_quicklaunch_layout_icons(self);
+	
+	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+}
+
+/* Get/set color of background */
+const ClutterColor* xfdashboard_quicklaunch_get_background_color(XfdashboardQuicklaunch *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), NULL);
+
+	return(self->priv->backgroundColor);
+}
+
+void xfdashboard_quicklaunch_set_background_color(XfdashboardQuicklaunch *self, const ClutterColor *inColor)
+{
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+
+	/* Set background color */
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+
+	if(priv->backgroundColor) clutter_color_free(priv->backgroundColor);
+	priv->backgroundColor=clutter_color_copy(inColor);
+
+	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 }
 
 /* Get/set spacing */
@@ -696,13 +575,22 @@ gfloat xfdashboard_quicklaunch_get_spacing(XfdashboardQuicklaunch *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0);
 
-	return(self->priv->normalIconSize);
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+	XfdashboardScalingBoxLayout		*layout=XFDASHBOARD_SCALING_BOX_LAYOUT(priv->layoutManager);
+
+	return(xfdashboard_scaling_box_layout_get_spacing(layout));
 }
 
 void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, gfloat inSpacing)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 
-	self->priv->spacing=inSpacing;
-	_xfdashboard_quicklaunch_layout_icons(self);
+	/* Set spacing */
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+	XfdashboardScalingBoxLayout		*layout=XFDASHBOARD_SCALING_BOX_LAYOUT(priv->layoutManager);
+
+	priv->spacing=inSpacing;
+	xfdashboard_scaling_box_layout_set_spacing(layout, priv->spacing);
+
+	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 }

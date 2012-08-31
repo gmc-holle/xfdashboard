@@ -22,8 +22,8 @@
  * 
  */
 
-#include "livewindow.h"
-#include "scalingflowlayout.h"
+#include "live-window.h"
+#include "scaling-flow-layout.h"
 #include "view.h"
 #include "windows-view.h"
 #include "quicklaunch.h"

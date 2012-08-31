@@ -1,6 +1,6 @@
 /*
- * scalingflowlayout.c: A flow layout scaling all actor to fit in
- *                      allocation of parent actor
+ * scaling-flow-layout.c: A flow layout scaling all actor to fit in
+ *                        allocation of parent actor
  * 
  * Copyright 2012 Stephan Haller <nomad@froevel.de>
  * 
@@ -26,18 +26,18 @@
 #include "config.h"
 #endif
 
-#include "scalingflowlayout.h"
+#include "scaling-flow-layout.h"
 
 #include <math.h>
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardScalingFlowLayout,
-				xfdashboard_scalingflow_layout,
+				xfdashboard_scaling_flow_layout,
 				CLUTTER_TYPE_LAYOUT_MANAGER)
 
 /* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SCALINGFLOW_LAYOUT_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SCALINGFLOW_LAYOUT, XfdashboardScalingFlowLayoutPrivate))
+#define XFDASHBOARD_SCALING_FLOW_LAYOUT_GET_PRIVATE(obj) \
+	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SCALING_FLOW_LAYOUT, XfdashboardScalingFlowLayoutPrivate))
 
 struct _XfdashboardScalingFlowLayoutPrivate
 {
@@ -69,7 +69,7 @@ static GParamSpec* XfdashboardScalingFlowLayoutProperties[PROP_LAST]={ 0, };
 /* IMPLEMENTATION: ClutterLayoutManager */
 
 /* Get preferred width/height */
-static void xfdashboard_scalingflow_layout_get_preferred_width(ClutterLayoutManager *inManager,
+static void xfdashboard_scaling_flow_layout_get_preferred_width(ClutterLayoutManager *inManager,
 																ClutterContainer *inContainer,
 																gfloat inForHeight,
 																gfloat *outMinWidth,
@@ -99,7 +99,7 @@ static void xfdashboard_scalingflow_layout_get_preferred_width(ClutterLayoutMana
 	if(outNaturalWidth) *outNaturalWidth=maxNaturalWidth;
 }
 
-static void xfdashboard_scalingflow_layout_get_preferred_height(ClutterLayoutManager *inManager,
+static void xfdashboard_scaling_flow_layout_get_preferred_height(ClutterLayoutManager *inManager,
 																ClutterContainer *inContainer,
 																gfloat inForWidth,
 																gfloat *outMinHeight,
@@ -130,12 +130,12 @@ static void xfdashboard_scalingflow_layout_get_preferred_height(ClutterLayoutMan
 }
 
 /* Re-layout and allocate children of container we manage */
-static void xfdashboard_scalingflow_layout_allocate(ClutterLayoutManager *inManager,
+static void xfdashboard_scaling_flow_layout_allocate(ClutterLayoutManager *inManager,
 													ClutterContainer *inContainer,
 													const ClutterActorBox *inAllocation,
 													ClutterAllocationFlags inFlags)
 {
-	XfdashboardScalingFlowLayout	*self=XFDASHBOARD_SCALINGFLOW_LAYOUT(inManager);
+	XfdashboardScalingFlowLayout	*self=XFDASHBOARD_SCALING_FLOW_LAYOUT(inManager);
 	int								numberRows, numberCols;
 	int								row=0, col=0;
 	int								cellWidth, cellHeight;
@@ -212,10 +212,10 @@ static void xfdashboard_scalingflow_layout_allocate(ClutterLayoutManager *inMana
 }
 
 /* Set container whose children to layout */
-static void xfdashboard_scalingflow_layout_set_container(ClutterLayoutManager *inManager,
+static void xfdashboard_scaling_flow_layout_set_container(ClutterLayoutManager *inManager,
 															ClutterContainer *inContainer)
 {
-	XfdashboardScalingFlowLayoutPrivate		*priv=XFDASHBOARD_SCALINGFLOW_LAYOUT(inManager)->priv;
+	XfdashboardScalingFlowLayoutPrivate		*priv=XFDASHBOARD_SCALING_FLOW_LAYOUT(inManager)->priv;
 	ClutterLayoutManagerClass				*parentClass;
 
 	priv->container=inContainer;
@@ -227,38 +227,38 @@ static void xfdashboard_scalingflow_layout_set_container(ClutterLayoutManager *i
 		clutter_actor_set_request_mode(CLUTTER_ACTOR(priv->container), CLUTTER_REQUEST_HEIGHT_FOR_WIDTH);
 	}
 
-	parentClass=CLUTTER_LAYOUT_MANAGER_CLASS(xfdashboard_scalingflow_layout_parent_class);
+	parentClass=CLUTTER_LAYOUT_MANAGER_CLASS(xfdashboard_scaling_flow_layout_parent_class);
 	parentClass->set_container(inManager, inContainer);
 }
 
 /* IMPLEMENTATION: GObject */
 
 /* Finally free up all resource of this object as it will be destroyed */
-static void xfdashboard_scalingflow_layout_finalize(GObject *inObject)
+static void xfdashboard_scaling_flow_layout_finalize(GObject *inObject)
 {
-	G_OBJECT_CLASS(xfdashboard_scalingflow_layout_parent_class)->finalize(inObject);
+	G_OBJECT_CLASS(xfdashboard_scaling_flow_layout_parent_class)->finalize(inObject);
 }
 
 /* Set/get properties */
-static void xfdashboard_scalingflow_layout_set_property(GObject *inObject,
+static void xfdashboard_scaling_flow_layout_set_property(GObject *inObject,
 														guint inPropID,
 														const GValue *inValue,
 														GParamSpec *inSpec)
 {
-	XfdashboardScalingFlowLayout	*self=XFDASHBOARD_SCALINGFLOW_LAYOUT(inObject);
+	XfdashboardScalingFlowLayout	*self=XFDASHBOARD_SCALING_FLOW_LAYOUT(inObject);
 	
 	switch(inPropID)
 	{
 		case PROP_RELATIVE_SCALE:
-			xfdashboard_scalingflow_layout_set_relative_scale(self, g_value_get_boolean(inValue));
+			xfdashboard_scaling_flow_layout_set_relative_scale(self, g_value_get_boolean(inValue));
 			break;
 
 		case PROP_ROW_SPACING:
-			xfdashboard_scalingflow_layout_set_row_spacing(self, g_value_get_float(inValue));
+			xfdashboard_scaling_flow_layout_set_row_spacing(self, g_value_get_float(inValue));
 			break;
 
 		case PROP_COLUMN_SPACING:
-			xfdashboard_scalingflow_layout_set_column_spacing(self, g_value_get_float(inValue));
+			xfdashboard_scaling_flow_layout_set_column_spacing(self, g_value_get_float(inValue));
 			break;
 
 		default:
@@ -267,12 +267,12 @@ static void xfdashboard_scalingflow_layout_set_property(GObject *inObject,
 	}
 }
 
-static void xfdashboard_scalingflow_layout_get_property(GObject *inObject,
+static void xfdashboard_scaling_flow_layout_get_property(GObject *inObject,
 														guint inPropID,
 														GValue *outValue,
 														GParamSpec *inSpec)
 {
-	XfdashboardScalingFlowLayout	*self=XFDASHBOARD_SCALINGFLOW_LAYOUT(inObject);
+	XfdashboardScalingFlowLayout	*self=XFDASHBOARD_SCALING_FLOW_LAYOUT(inObject);
 
 	switch(inPropID)
 	{
@@ -298,20 +298,20 @@ static void xfdashboard_scalingflow_layout_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-static void xfdashboard_scalingflow_layout_class_init(XfdashboardScalingFlowLayoutClass *klass)
+static void xfdashboard_scaling_flow_layout_class_init(XfdashboardScalingFlowLayoutClass *klass)
 {
 	ClutterLayoutManagerClass	*layoutClass=CLUTTER_LAYOUT_MANAGER_CLASS(klass);
 	GObjectClass				*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->finalize=xfdashboard_scalingflow_layout_finalize;
-	gobjectClass->set_property=xfdashboard_scalingflow_layout_set_property;
-	gobjectClass->get_property=xfdashboard_scalingflow_layout_get_property;
+	gobjectClass->finalize=xfdashboard_scaling_flow_layout_finalize;
+	gobjectClass->set_property=xfdashboard_scaling_flow_layout_set_property;
+	gobjectClass->get_property=xfdashboard_scaling_flow_layout_get_property;
 
-	layoutClass->get_preferred_width=xfdashboard_scalingflow_layout_get_preferred_width;
-	layoutClass->get_preferred_height=xfdashboard_scalingflow_layout_get_preferred_height;
-	layoutClass->allocate=xfdashboard_scalingflow_layout_allocate;
-	layoutClass->set_container=xfdashboard_scalingflow_layout_set_container;
+	layoutClass->get_preferred_width=xfdashboard_scaling_flow_layout_get_preferred_width;
+	layoutClass->get_preferred_height=xfdashboard_scaling_flow_layout_get_preferred_height;
+	layoutClass->allocate=xfdashboard_scaling_flow_layout_allocate;
+	layoutClass->set_container=xfdashboard_scaling_flow_layout_set_container;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardScalingFlowLayoutPrivate));
@@ -346,31 +346,31 @@ static void xfdashboard_scalingflow_layout_class_init(XfdashboardScalingFlowLayo
 /* Object initialization
  * Create private structure and set up default values
  */
-static void xfdashboard_scalingflow_layout_init(XfdashboardScalingFlowLayout *self)
+static void xfdashboard_scaling_flow_layout_init(XfdashboardScalingFlowLayout *self)
 {
 	XfdashboardScalingFlowLayoutPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_SCALINGFLOW_LAYOUT_GET_PRIVATE(self);
+	priv=self->priv=XFDASHBOARD_SCALING_FLOW_LAYOUT_GET_PRIVATE(self);
 }
 
 /* Implementation: Public API */
 
-ClutterLayoutManager* xfdashboard_scalingflow_layout_new()
+ClutterLayoutManager* xfdashboard_scaling_flow_layout_new()
 {
-	return(g_object_new(XFDASHBOARD_TYPE_SCALINGFLOW_LAYOUT, NULL));
+	return(g_object_new(XFDASHBOARD_TYPE_SCALING_FLOW_LAYOUT, NULL));
 }
 
 /* Get/set relative scaling of all children to largest one */
-gboolean xfdashboard_scalingflow_layout_get_relative_scale(XfdashboardScalingFlowLayout *self)
+gboolean xfdashboard_scaling_flow_layout_get_relative_scale(XfdashboardScalingFlowLayout *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SCALINGFLOW_LAYOUT(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_SCALING_FLOW_LAYOUT(self), FALSE);
 
 	return(self->priv->relativeScale);
 }
 
-void xfdashboard_scalingflow_layout_set_relative_scale(XfdashboardScalingFlowLayout *self, gboolean inScaling)
+void xfdashboard_scaling_flow_layout_set_relative_scale(XfdashboardScalingFlowLayout *self, gboolean inScaling)
 {
-	g_return_if_fail(XFDASHBOARD_IS_SCALINGFLOW_LAYOUT(self));
+	g_return_if_fail(XFDASHBOARD_IS_SCALING_FLOW_LAYOUT(self));
 
 	/* Set relative scaling */
 	self->priv->relativeScale=inScaling;
@@ -379,9 +379,9 @@ void xfdashboard_scalingflow_layout_set_relative_scale(XfdashboardScalingFlowLay
 }
 
 /* Set relative row and column spacing to same value at once */
-void xfdashboard_scalingflow_layout_set_spacing(XfdashboardScalingFlowLayout *self, gfloat inSpacing)
+void xfdashboard_scaling_flow_layout_set_spacing(XfdashboardScalingFlowLayout *self, gfloat inSpacing)
 {
-	g_return_if_fail(XFDASHBOARD_IS_SCALINGFLOW_LAYOUT(self));
+	g_return_if_fail(XFDASHBOARD_IS_SCALING_FLOW_LAYOUT(self));
 
 	/* Set row and column spacing */
 	self->priv->rowSpacing=inSpacing;
@@ -391,16 +391,16 @@ void xfdashboard_scalingflow_layout_set_spacing(XfdashboardScalingFlowLayout *se
 }
 
 /* Get/set row spacing */
-gfloat xfdashboard_scalingflow_layout_get_row_spacing(XfdashboardScalingFlowLayout *self)
+gfloat xfdashboard_scaling_flow_layout_get_row_spacing(XfdashboardScalingFlowLayout *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SCALINGFLOW_LAYOUT(self), 0.0f);
+	g_return_val_if_fail(XFDASHBOARD_IS_SCALING_FLOW_LAYOUT(self), 0.0f);
 
 	return(self->priv->rowSpacing);
 }
 
-void xfdashboard_scalingflow_layout_set_row_spacing(XfdashboardScalingFlowLayout *self, gfloat inSpacing)
+void xfdashboard_scaling_flow_layout_set_row_spacing(XfdashboardScalingFlowLayout *self, gfloat inSpacing)
 {
-	g_return_if_fail(XFDASHBOARD_IS_SCALINGFLOW_LAYOUT(self));
+	g_return_if_fail(XFDASHBOARD_IS_SCALING_FLOW_LAYOUT(self));
 
 	/* Set row spacing */
 	self->priv->rowSpacing=inSpacing;
@@ -409,16 +409,16 @@ void xfdashboard_scalingflow_layout_set_row_spacing(XfdashboardScalingFlowLayout
 }
 
 /* Get/set columns spacing */
-gfloat xfdashboard_scalingflow_layout_get_column_spacing(XfdashboardScalingFlowLayout *self)
+gfloat xfdashboard_scaling_flow_layout_get_column_spacing(XfdashboardScalingFlowLayout *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SCALINGFLOW_LAYOUT(self), 0.0f);
+	g_return_val_if_fail(XFDASHBOARD_IS_SCALING_FLOW_LAYOUT(self), 0.0f);
 
 	return(self->priv->columnSpacing);
 }
 
-void xfdashboard_scalingflow_layout_set_column_spacing(XfdashboardScalingFlowLayout *self, gfloat inSpacing)
+void xfdashboard_scaling_flow_layout_set_column_spacing(XfdashboardScalingFlowLayout *self, gfloat inSpacing)
 {
-	g_return_if_fail(XFDASHBOARD_IS_SCALINGFLOW_LAYOUT(self));
+	g_return_if_fail(XFDASHBOARD_IS_SCALING_FLOW_LAYOUT(self));
 
 	/* Set column spacing */
 	self->priv->columnSpacing=inSpacing;

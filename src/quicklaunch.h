@@ -58,8 +58,15 @@ GType xfdashboard_quicklaunch_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_quicklaunch_new(void);
 
+guint xfdashboard_quicklaunch_get_icon_count(XfdashboardQuicklaunch *self);
+
+guint xfdashboard_quicklaunch_get_max_icon_count(XfdashboardQuicklaunch *self);
+
 guint xfdashboard_quicklaunch_get_normal_icon_size(XfdashboardQuicklaunch *self);
 void xfdashboard_quicklaunch_set_normal_icon_size(XfdashboardQuicklaunch *self, guint inSize);
+
+const ClutterColor* xfdashboard_quicklaunch_get_background_color(XfdashboardQuicklaunch *self);
+void xfdashboard_quicklaunch_set_background_color(XfdashboardQuicklaunch *self, const ClutterColor *inColor);
 
 gfloat xfdashboard_quicklaunch_get_spacing(XfdashboardQuicklaunch *self);
 void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, gfloat inSpacing);
