@@ -79,17 +79,6 @@ static GParamSpec* XfdashboardQuicklaunchProperties[PROP_LAST]={ 0, };
 static ClutterColor		_xfdashboard_quicklaunch_default_background_color=
 							{ 0xff, 0xff, 0xff, 0x40 };
 
-/* TODO: Replace with xfconf */
-static gchar			*quicklaunch_apps[]=	{
-													"firefox.desktop",
-													"evolution.desktop",
-													"Terminal.desktop",
-													"Thunar.desktop",
-													"geany.desktop",
-													"unavailable"
-												};
-/* TODO: Replace with xfconf */
-
 /* Get number of icons */
 static guint _xfdashboard_quicklaunch_get_number_icons(XfdashboardQuicklaunch *self)
 {
@@ -130,6 +119,37 @@ static gboolean _xfdashboard_quicklaunch_on_clicked_icon(ClutterActor *inActor, 
 	 */
 	clutter_main_quit();
 
+	return(TRUE);
+}
+
+/* Add an icon to this quicklaunch box */
+static gboolean _xfdashboard_quicklaunch_add_icon_to_quicklaunch(XfdashboardQuicklaunch *self,
+																	XfdashboardQuicklaunchIcon *inIcon)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH_ICON(inIcon), FALSE);
+
+	/* Check if quicklaunch has reached its limit and warn.
+	 * But it does only make sense if max icon counter was set.
+	 * That means it is beyond zero.
+	 */
+	if(self->priv->maxIconsCount>0 &&
+		self->priv->iconsCount>=self->priv->maxIconsCount)
+	{
+		g_warning("Quicklaunch has reached its limit of %d icons. Icon might not be visible!",
+					self->priv->maxIconsCount);
+	}
+	
+	/* Add and count icon to quicklaunch box and connect "clicked" signal */
+	clutter_actor_set_size(CLUTTER_ACTOR(inIcon), self->priv->normalIconSize, self->priv->normalIconSize);
+	clutter_container_add_actor(CLUTTER_CONTAINER(self->priv->icons), CLUTTER_ACTOR(inIcon));
+	g_signal_connect(inIcon, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_clicked_icon), self);
+
+	self->priv->iconsCount++;
+
+	/* Queue a relayout of all children as a new icon was added */
+	clutter_actor_queue_relayout(self->priv->icons);
+	
 	return(TRUE);
 }
 
@@ -470,7 +490,6 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
-	gint							i;
 
 	/* Set up default values */
 	priv=self->priv=XFDASHBOARD_QUICKLAUNCH_GET_PRIVATE(self);
@@ -490,21 +509,6 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 
 	priv->icons=clutter_box_new(priv->layoutManager);
 	clutter_actor_set_parent(priv->icons, CLUTTER_ACTOR(self));
-
-	/* TODO: Remove the following actor(s) for application icons
-	 *       in quicklaunch box as soon as xfconf is implemented
-	 */
-	for(i=0; i<(sizeof(quicklaunch_apps)/sizeof(quicklaunch_apps[0])); i++)
-	{
-		ClutterActor				*actor;
-		
-		actor=xfdashboard_quicklaunch_icon_new_full(quicklaunch_apps[i]);
-		clutter_actor_set_size(actor, priv->normalIconSize, priv->normalIconSize);
-		clutter_container_add_actor(CLUTTER_CONTAINER(priv->icons), actor);
-		g_signal_connect(actor, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_clicked_icon), self);
-
-		priv->iconsCount++;
-	}
 }
 
 /* Implementation: Public API */
@@ -593,4 +597,26 @@ void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, gfloat in
 	xfdashboard_scaling_box_layout_set_spacing(layout, priv->spacing);
 
 	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+}
+
+/* Add icon to quicklaunch */
+gboolean xfdashboard_quicklaunch_add_icon(XfdashboardQuicklaunch *self, XfdashboardQuicklaunchIcon *inIcon)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH_ICON(inIcon), FALSE);
+
+	return(_xfdashboard_quicklaunch_add_icon_to_quicklaunch(self, inIcon));
+}
+
+gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch *self, const gchar *inDesktopFile)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
+	g_return_val_if_fail(inDesktopFile, FALSE);
+
+	/* Create icon from desktop file */
+	ClutterActor				*actor;
+		
+	actor=xfdashboard_quicklaunch_icon_new_full(inDesktopFile);
+	
+	return(_xfdashboard_quicklaunch_add_icon_to_quicklaunch(self, XFDASHBOARD_QUICKLAUNCH_ICON(actor)));
 }

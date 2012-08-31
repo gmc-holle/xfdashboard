@@ -32,6 +32,18 @@
 ClutterActor	*stage=NULL;
 const gfloat	spacingToStage=8.0f;
 
+/* TODO: Replace with xfconf */
+static gchar			*quicklaunch_apps[]=	{
+													"firefox.desktop",
+													"evolution.desktop",
+													"Terminal.desktop",
+													"Thunar.desktop",
+													"geany.desktop",
+													"unavailable"
+												};
+/* TODO: Replace with xfconf */
+
+
 /* Get window of application */
 WnckWindow* xfdashboard_getAppWindow()
 {
@@ -112,6 +124,14 @@ int main(int argc, char **argv)
 								TRUE,
 								CLUTTER_BOX_ALIGNMENT_START,
 								CLUTTER_BOX_ALIGNMENT_CENTER);
+
+	/* TODO: Remove the following actor(s) for application icons
+	 *       in quicklaunch box as soon as xfconf is implemented
+	 */
+	for(gint i=0; i<(sizeof(quicklaunch_apps)/sizeof(quicklaunch_apps[0])); i++)
+	{
+		xfdashboard_quicklaunch_add_icon_by_desktop_file(XFDASHBOARD_QUICKLAUNCH(actor), quicklaunch_apps[i]);
+	}
 
 	/* TODO: Create viewpad and add view(s) to viewpad */
 

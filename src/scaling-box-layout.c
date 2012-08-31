@@ -363,7 +363,7 @@ static void xfdashboard_scaling_box_layout_class_init(XfdashboardScalingBoxLayou
 	g_type_class_add_private(klass, sizeof(XfdashboardScalingBoxLayoutPrivate));
 
 	/* Define properties */
-	XfdashboardScalingBoxLayoutProperties[PROP_SCALE_MIN]=
+	XfdashboardScalingBoxLayoutProperties[PROP_SCALE_CURRENT]=
 		g_param_spec_float("scale",
 								"Current scale",
 								"Current scale to used to get children fit allocation",

@@ -24,6 +24,8 @@
 #ifndef __XFDASHBOARD_QUICKLAUNCH__
 #define __XFDASHBOARD_QUICKLAUNCH__
 
+#include "quicklaunch-icon.h"
+
 #include <clutter/clutter.h>
 
 G_BEGIN_DECLS
@@ -70,6 +72,9 @@ void xfdashboard_quicklaunch_set_background_color(XfdashboardQuicklaunch *self, 
 
 gfloat xfdashboard_quicklaunch_get_spacing(XfdashboardQuicklaunch *self);
 void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, gfloat inSpacing);
+
+gboolean xfdashboard_quicklaunch_add_icon(XfdashboardQuicklaunch *self, XfdashboardQuicklaunchIcon *inIcon);
+gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch *self, const gchar *inDesktopFile);
 
 G_END_DECLS
 
