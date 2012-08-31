@@ -65,8 +65,6 @@ GType xfdashboard_live_window_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_live_window_new(WnckWindow* inWindow);
 
-void xfdashboard_live_window_pack(XfdashboardLiveWindow *self, ClutterActor *inActor);
-
 const WnckWindow* xfdashboard_live_window_get_window(XfdashboardLiveWindow *self);
 
 const gchar* xfdashboard_live_window_get_font(XfdashboardLiveWindow *self);

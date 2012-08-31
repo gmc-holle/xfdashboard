@@ -28,12 +28,10 @@
 #include "live-window.h"
 
 /* Define this class in GObject system */
-static void clutter_container_iface_init(ClutterContainerIface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardLiveWindow,
-						xfdashboard_live_window,
-						CLUTTER_TYPE_ACTOR,
-						G_IMPLEMENT_INTERFACE(CLUTTER_TYPE_CONTAINER, clutter_container_iface_init))
+G_DEFINE_TYPE(XfdashboardLiveWindow,
+				xfdashboard_live_window,
+				CLUTTER_TYPE_ACTOR)
                                                 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_LIVE_WINDOW_GET_PRIVATE(obj) \
@@ -42,7 +40,6 @@ G_DEFINE_TYPE_WITH_CODE(XfdashboardLiveWindow,
 struct _XfdashboardLiveWindowPrivate
 {
 	/* Actors for live window */
-	GList				*children;
 	ClutterActor		*actorWindow;
 	ClutterActor		*actorLabel;
 	ClutterActor		*actorLabelBackground;
@@ -113,10 +110,14 @@ void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const Wnck
 	GError			*error;
 
 	priv->actorWindow=clutter_x11_texture_pixmap_new_with_window(wnck_window_get_xid(priv->window));
+	clutter_actor_set_parent(priv->actorWindow, CLUTTER_ACTOR(self));
+
 	clutter_x11_texture_pixmap_set_automatic(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow), TRUE);
 
 	/* Create label and its background */
 	priv->actorLabel=clutter_text_new();
+	clutter_actor_set_parent(priv->actorLabel, CLUTTER_ACTOR(self));
+
 	clutter_text_set_text(CLUTTER_TEXT(priv->actorLabel), wnck_window_get_name(priv->window));
 	clutter_text_set_single_line_mode(CLUTTER_TEXT(priv->actorLabel), TRUE);
 	clutter_text_set_ellipsize(CLUTTER_TEXT(priv->actorLabel), priv->labelEllipsize);
@@ -124,11 +125,16 @@ void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const Wnck
 	if(priv->labelTextColor) clutter_text_set_color(CLUTTER_TEXT(priv->actorLabel), priv->labelTextColor);
 
 	priv->actorLabelBackground=clutter_rectangle_new();
+	clutter_actor_set_parent(priv->actorLabelBackground, CLUTTER_ACTOR(self));
+
 	if(priv->labelBackgroundColor) clutter_rectangle_set_color(CLUTTER_RECTANGLE(priv->actorLabelBackground), priv->labelBackgroundColor);
 
 	/* Create icon for application running in window */
 	windowIcon=wnck_window_get_icon(priv->window);
+
 	priv->actorAppIcon=clutter_texture_new();
+	clutter_actor_set_parent(priv->actorAppIcon, CLUTTER_ACTOR(self));
+
 	error=NULL;
 	if(!clutter_texture_set_from_rgb_data(CLUTTER_TEXTURE(priv->actorAppIcon),
 												gdk_pixbuf_get_pixels(windowIcon),
@@ -144,91 +150,8 @@ void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const Wnck
 		if(error!=NULL) g_error_free(error);
 	}
 
-	/* Add actors to container. Order is important! */
-	clutter_container_add_actor(CLUTTER_CONTAINER(self), priv->actorWindow);
-	clutter_container_add_actor(CLUTTER_CONTAINER(self), priv->actorLabelBackground);
-	clutter_container_add_actor(CLUTTER_CONTAINER(self), priv->actorLabel);
-	clutter_container_add_actor(CLUTTER_CONTAINER(self), priv->actorAppIcon);
-
 	/* Queue a redraw as the actors are now available */
 	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
-}
-
-/* IMPLEMENTATION: ClutterContainer */
-
-/* Add an actor to container */
-static void xfdashboard_live_window_add(ClutterContainer *self, ClutterActor *inActor)
-{
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-
-	xfdashboard_live_window_pack(XFDASHBOARD_LIVE_WINDOW(self), inActor);
-}
-
-/* Remove an actor from container */
-static void xfdashboard_live_window_remove(ClutterContainer *self, ClutterActor *inActor)
-{
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	
-	/* Find actor in list of children and remove */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
-	GList							*list;
-
-	g_object_ref(inActor);
-
-	for(list=priv->children; list; list=list->next)
-	{
-		ClutterActor				*child=list->data;
-
-		if(child==inActor)
-		{
-			if(child==priv->actorWindow) priv->actorWindow=NULL;
-			if(child==priv->actorLabel) priv->actorLabel=NULL;
-			if(child==priv->actorLabelBackground) priv->actorLabelBackground=NULL;
-			if(child==priv->actorAppIcon) priv->actorAppIcon=NULL;
-
-			clutter_actor_unparent(child);
-
-			priv->children=g_list_remove_link(priv->children, list);
-			g_list_free(list);
-
-			g_signal_emit_by_name(self, "actor-removed", inActor);
-
-			/* Queue a relayout of the container */
-			clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
-
-			break;
-		}
-	}
-	
-	g_object_unref(inActor);
-}
-
-/* For each child in list of children call callback */
-static void xfdashboard_live_window_foreach(ClutterContainer *self,
-											ClutterCallback inCallback,
-											gpointer inUserData)
-{
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	
-	/* Find actor in list of children and call callback on each child */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
-	GList							*list;
-
-	for(list=priv->children; list; list=list->next)
-	{
-		ClutterActor				*child=list->data;
-
-		(*inCallback)(child, inUserData);
-	}
-}
-
-/* Override interface virtual methods */
-static void clutter_container_iface_init(ClutterContainerIface *inInterface)
-{
-	/* We do not override any method as this container is static */
-	inInterface->add=xfdashboard_live_window_add;
-	inInterface->remove=xfdashboard_live_window_remove;
-	inInterface->foreach=xfdashboard_live_window_foreach;
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -237,14 +160,11 @@ static void clutter_container_iface_init(ClutterContainerIface *inInterface)
 static void xfdashboard_live_window_show_all(ClutterActor *self)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
-	GList							*list;
 
-	for(list=priv->children; list; list=list->next)
-	{
-		ClutterActor				*child=list->data;
-
-		clutter_actor_show(child);
-	}
+	clutter_actor_show(priv->actorWindow);
+	clutter_actor_show(priv->actorLabel);
+	clutter_actor_show(priv->actorLabelBackground);
+	clutter_actor_show(priv->actorAppIcon);
 	clutter_actor_show(self);
 }
 
@@ -252,15 +172,12 @@ static void xfdashboard_live_window_show_all(ClutterActor *self)
 static void xfdashboard_live_window_hide_all(ClutterActor *self)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
-	GList							*list;
 
 	clutter_actor_hide(self);
-	for(list=priv->children; list; list=list->next)
-	{
-		ClutterActor				*child=list->data;
-
-		clutter_actor_hide(child);
-	}
+	clutter_actor_hide(priv->actorWindow);
+	clutter_actor_hide(priv->actorLabel);
+	clutter_actor_hide(priv->actorLabelBackground);
+	clutter_actor_hide(priv->actorAppIcon);
 }
 
 /* Get preferred width/height */
@@ -297,7 +214,7 @@ static void xfdashboard_live_window_allocate(ClutterActor *self,
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
-	/* Call parent's class allocation */
+	/* Chain up to store the allocation of the actor */
 	CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->allocate(self, inBox, inFlags);
 
 	/* Set window actor by getting geometry of window and
@@ -384,34 +301,44 @@ static void xfdashboard_live_window_allocate(ClutterActor *self,
 static void xfdashboard_live_window_paint(ClutterActor *self)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
-	GList							*list;
 
-	for(list=priv->children; list; list=list->next)
-	{
-		ClutterActor				*child=list->data;
+	/* Order of actors being painted is important! */
+	if(priv->actorWindow &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorWindow)) clutter_actor_paint(priv->actorWindow);
 
-		if(CLUTTER_ACTOR_IS_MAPPED(child)) clutter_actor_paint(child);
-	}
+	if(priv->actorLabelBackground &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabelBackground)) clutter_actor_paint(priv->actorLabelBackground);
+
+	if(priv->actorLabel &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabel)) clutter_actor_paint(priv->actorLabel);
+
+	if(priv->actorAppIcon &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorAppIcon)) clutter_actor_paint(priv->actorAppIcon);
 }
 
 /* Pick all the child actors */
 static void xfdashboard_live_window_pick(ClutterActor *self, const ClutterColor *inColor)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
-	GList							*list;
 
 	/* Chain up so we get a bounding box painted (if we are reactive) */
 	CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->pick(self, inColor);
 
-	/* clutter_actor_pick() is deprecated by clutter_actor_paint().
+	/* clutter_actor_pick() might be deprecated by clutter_actor_paint().
 	 * Do not know what to with ClutterColor here.
+	 * Order of actors being painted is important!
 	 */
-	for(list=priv->children; list; list=list->next)
-	{
-		ClutterActor				*child=list->data;
+	if(priv->actorWindow &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorWindow)) clutter_actor_paint(priv->actorWindow);
 
-		if(CLUTTER_ACTOR_IS_MAPPED(child)) clutter_actor_paint(child);
-	}
+	if(priv->actorLabelBackground &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabelBackground)) clutter_actor_paint(priv->actorLabelBackground);
+
+	if(priv->actorLabel &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabel)) clutter_actor_paint(priv->actorLabel);
+
+	if(priv->actorAppIcon &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorAppIcon)) clutter_actor_paint(priv->actorAppIcon);
 }
 
 /* proxy ClickAction signals */
@@ -422,27 +349,41 @@ static void xfdashboard_live_window_clicked(ClutterClickAction *inAction,
 	g_signal_emit(inActor, XfdashboardLiveWindowSignals[CLICKED], 0);
 }
 
+/* Destroy this actor */
+static void xfdashboard_live_window_destroy(ClutterActor *self)
+{
+	/* Destroy each child actor when this actor is destroyed */
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
+
+	if(priv->actorWindow) clutter_actor_destroy(priv->actorWindow);
+	priv->actorWindow=NULL;
+
+	if(priv->actorLabel) clutter_actor_destroy(priv->actorLabel);
+	priv->actorLabel=NULL;
+
+	if(priv->actorLabelBackground) clutter_actor_destroy(priv->actorLabelBackground);
+	priv->actorLabelBackground=NULL;
+
+	if(priv->actorAppIcon) clutter_actor_destroy(priv->actorAppIcon);
+	priv->actorAppIcon=NULL;
+
+	/* Call parent's class destroy method */
+	if(CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->destroy)
+	{
+		CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->destroy(self);
+	}
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
 static void xfdashboard_live_window_dispose(GObject *inObject)
 {
-	/* Destroy each child actor when this container is destroyed */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(inObject)->priv;
-	GList							*list;
-
-	for(list=priv->children; list; list=list->next)
-	{
-		ClutterActor				*child=list->data;
-
-		clutter_actor_destroy(child);
-	}
-	g_list_free(priv->children);
-	priv->children=NULL;
-
 	/* Release our allocated variables */
-	g_free(priv->labelFont);
-	priv->labelFont=NULL;
+	XfdashboardLiveWindow	*self=XFDASHBOARD_LIVE_WINDOW(inObject);
+
+	g_free(self->priv->labelFont);
+	self->priv->labelFont=NULL;
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_live_window_parent_class)->dispose(inObject);
@@ -548,6 +489,7 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 	actorClass->get_preferred_width=xfdashboard_live_window_get_preferred_width;
 	actorClass->get_preferred_height=xfdashboard_live_window_get_preferred_height;
 	actorClass->allocate=xfdashboard_live_window_allocate;
+	actorClass->destroy=xfdashboard_live_window_destroy;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardLiveWindowPrivate));
@@ -623,10 +565,9 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv=self->priv=XFDASHBOARD_LIVE_WINDOW_GET_PRIVATE(self);
 
 	/* This actor is react on events */
-	clutter_actor_set_reactive(CLUTTER_ACTOR (self), TRUE);
+	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set up default values */
-	priv->children=NULL;
 	priv->actorWindow=NULL;
 	priv->actorLabel=NULL;
 	priv->actorLabelBackground=NULL;
@@ -648,22 +589,6 @@ ClutterActor* xfdashboard_live_window_new(WnckWindow* inWindow)
 	return(g_object_new(XFDASHBOARD_TYPE_LIVE_WINDOW,
 						"window", inWindow,
 						NULL));
-}
-
-/* Packs actor into container */
-void xfdashboard_live_window_pack(XfdashboardLiveWindow *self, ClutterActor *inActor)
-{
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
-
-	/* Pack actor */
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
-
-	priv->children=g_list_append(priv->children, inActor);
-	clutter_actor_set_parent(inActor, CLUTTER_ACTOR(self));
-
-	/* Queue a relayout of the container */
-	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 }
 
 /* Get/set window to display */
