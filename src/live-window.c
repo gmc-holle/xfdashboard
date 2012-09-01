@@ -55,7 +55,7 @@ struct _XfdashboardLiveWindowPrivate
 	gchar				*labelFont;
 	ClutterColor		*labelTextColor;
 	ClutterColor		*labelBackgroundColor;
-	gint				labelMargin;
+	gfloat				labelMargin;
 	PangoEllipsizeMode	labelEllipsize;
 };
 
@@ -68,7 +68,7 @@ enum
 	PROP_FONT,
 	PROP_COLOR,
 	PROP_BACKGROUND_COLOR,
-	PROP_MARGIN,
+	PROP_LABEL_MARGIN,
 	PROP_ELLIPSIZE_MODE,
 	
 	PROP_LAST
@@ -87,6 +87,8 @@ enum
 static guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 
 /* Private constants */
+#define DEFAULT_FONT	"Cantarell 12px"
+
 static ClutterColor		defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 static ClutterColor		defaultBackgroundColor={ 0x00, 0x00, 0x00, 0xd0 };
 
@@ -415,8 +417,8 @@ static void xfdashboard_live_window_set_property(GObject *inObject,
 			xfdashboard_live_window_set_background_color(self, clutter_value_get_color(inValue));
 			break;
 
-		case PROP_MARGIN:
-			xfdashboard_live_window_set_margin(self, g_value_get_int(inValue));
+		case PROP_LABEL_MARGIN:
+			xfdashboard_live_window_set_margin(self, g_value_get_float(inValue));
 			break;
 
 		case PROP_ELLIPSIZE_MODE:
@@ -454,8 +456,8 @@ static void xfdashboard_live_window_get_property(GObject *inObject,
 			clutter_value_set_color(outValue, self->priv->labelBackgroundColor);
 			break;
 
-		case PROP_MARGIN:
-			g_value_set_int(outValue, self->priv->labelMargin);
+		case PROP_LABEL_MARGIN:
+			g_value_set_float(outValue, self->priv->labelMargin);
 			break;
 
 		case PROP_ELLIPSIZE_MODE:
@@ -506,7 +508,7 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 		g_param_spec_string("font",
 							"Label font",
 							"Font description to use in label",
-							"Cantarell 12px",
+							DEFAULT_FONT,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardLiveWindowProperties[PROP_COLOR]=
@@ -523,13 +525,12 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 									&defaultBackgroundColor,
 									G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
-	XfdashboardLiveWindowProperties[PROP_MARGIN]=
-		g_param_spec_int("margin",
+	XfdashboardLiveWindowProperties[PROP_LABEL_MARGIN]=
+		g_param_spec_float("label-margin",
 							"Label background margin",
 							"Margin of label's background in pixels",
-							1,
-							G_MAXINT32,
-							4,
+							0.0f, G_MAXFLOAT,
+							4.0f,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardLiveWindowProperties[PROP_ELLIPSIZE_MODE]=
@@ -670,14 +671,14 @@ void xfdashboard_live_window_set_background_color(XfdashboardLiveWindow *self, c
 }
 
 /* Get/set margin of background to label */
-const gint xfdashboard_live_window_get_margin(XfdashboardLiveWindow *self)
+const gfloat xfdashboard_live_window_get_margin(XfdashboardLiveWindow *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), 0);
 
 	return(self->priv->labelMargin);
 }
 
-void xfdashboard_live_window_set_margin(XfdashboardLiveWindow *self, const gint inMargin)
+void xfdashboard_live_window_set_margin(XfdashboardLiveWindow *self, const gfloat inMargin)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 

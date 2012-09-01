@@ -76,8 +76,8 @@ void xfdashboard_live_window_set_color(XfdashboardLiveWindow *self, const Clutte
 const ClutterColor* xfdashboard_live_window_get_background_color(XfdashboardLiveWindow *self);
 void xfdashboard_live_window_set_background_color(XfdashboardLiveWindow *self, const ClutterColor *inColor);
 
-const gint xfdashboard_live_window_get_margin(XfdashboardLiveWindow *self);
-void xfdashboard_live_window_set_margin(XfdashboardLiveWindow *self, const gint inMargin);
+const gfloat xfdashboard_live_window_get_margin(XfdashboardLiveWindow *self);
+void xfdashboard_live_window_set_margin(XfdashboardLiveWindow *self, const gfloat inMargin);
 
 const PangoEllipsizeMode xfdashboard_live_window_get_ellipsize_mode(XfdashboardLiveWindow *self);
 void xfdashboard_live_window_set_ellipsize_mode(XfdashboardLiveWindow *self, const PangoEllipsizeMode inMode);
