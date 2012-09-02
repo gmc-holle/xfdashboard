@@ -215,7 +215,7 @@ static void xfdashboard_scaling_box_layout_allocate(ClutterLayoutManager *inMana
 		ClutterActor					*child=CLUTTER_ACTOR(children->data);
 		gfloat							childWidth, childHeight;
 
-		/* Calculate new position and size of child */		
+		/* Calculate new position and size of child */
 		clutter_actor_get_preferred_width(child, -1, NULL, &childWidth);
 		clutter_actor_get_preferred_height(child, -1, NULL, &childHeight);
 

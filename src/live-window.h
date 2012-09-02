@@ -67,20 +67,20 @@ ClutterActor* xfdashboard_live_window_new(WnckWindow* inWindow);
 
 const WnckWindow* xfdashboard_live_window_get_window(XfdashboardLiveWindow *self);
 
-const gchar* xfdashboard_live_window_get_font(XfdashboardLiveWindow *self);
-void xfdashboard_live_window_set_font(XfdashboardLiveWindow *self, const gchar *inFont);
+const gchar* xfdashboard_live_window_get_label_font(XfdashboardLiveWindow *self);
+void xfdashboard_live_window_set_label_font(XfdashboardLiveWindow *self, const gchar *inFont);
 
-const ClutterColor* xfdashboard_live_window_get_color(XfdashboardLiveWindow *self);
-void xfdashboard_live_window_set_color(XfdashboardLiveWindow *self, const ClutterColor *inColor);
+const ClutterColor* xfdashboard_live_window_get_label_color(XfdashboardLiveWindow *self);
+void xfdashboard_live_window_set_label_color(XfdashboardLiveWindow *self, const ClutterColor *inColor);
 
-const ClutterColor* xfdashboard_live_window_get_background_color(XfdashboardLiveWindow *self);
-void xfdashboard_live_window_set_background_color(XfdashboardLiveWindow *self, const ClutterColor *inColor);
+const ClutterColor* xfdashboard_live_window_get_label_background_color(XfdashboardLiveWindow *self);
+void xfdashboard_live_window_set_label_background_color(XfdashboardLiveWindow *self, const ClutterColor *inColor);
 
-const gfloat xfdashboard_live_window_get_margin(XfdashboardLiveWindow *self);
-void xfdashboard_live_window_set_margin(XfdashboardLiveWindow *self, const gfloat inMargin);
+const gfloat xfdashboard_live_window_get_label_margin(XfdashboardLiveWindow *self);
+void xfdashboard_live_window_set_label_margin(XfdashboardLiveWindow *self, const gfloat inMargin);
 
-const PangoEllipsizeMode xfdashboard_live_window_get_ellipsize_mode(XfdashboardLiveWindow *self);
-void xfdashboard_live_window_set_ellipsize_mode(XfdashboardLiveWindow *self, const PangoEllipsizeMode inMode);
+const PangoEllipsizeMode xfdashboard_live_window_get_label_ellipsize_mode(XfdashboardLiveWindow *self);
+void xfdashboard_live_window_set_label_ellipsize_mode(XfdashboardLiveWindow *self, const PangoEllipsizeMode inMode);
 
 G_END_DECLS
 

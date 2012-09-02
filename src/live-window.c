@@ -65,11 +65,11 @@ enum
 	PROP_0,
 
 	PROP_WINDOW,
-	PROP_FONT,
-	PROP_COLOR,
-	PROP_BACKGROUND_COLOR,
+	PROP_LABEL_FONT,
+	PROP_LABEL_COLOR,
+	PROP_LABEL_BACKGROUND_COLOR,
 	PROP_LABEL_MARGIN,
-	PROP_ELLIPSIZE_MODE,
+	PROP_LABEL_ELLIPSIZE_MODE,
 	
 	PROP_LAST
 };
@@ -405,24 +405,24 @@ static void xfdashboard_live_window_set_property(GObject *inObject,
 			_xfdashboard_live_window_set_window(self, g_value_get_object(inValue));
 			break;
 			
-		case PROP_FONT:
-			xfdashboard_live_window_set_font(self, g_value_get_string(inValue));
+		case PROP_LABEL_FONT:
+			xfdashboard_live_window_set_label_font(self, g_value_get_string(inValue));
 			break;
 
-		case PROP_COLOR:
-			xfdashboard_live_window_set_color(self, clutter_value_get_color(inValue));
+		case PROP_LABEL_COLOR:
+			xfdashboard_live_window_set_label_color(self, clutter_value_get_color(inValue));
 			break;
 
-		case PROP_BACKGROUND_COLOR:
-			xfdashboard_live_window_set_background_color(self, clutter_value_get_color(inValue));
+		case PROP_LABEL_BACKGROUND_COLOR:
+			xfdashboard_live_window_set_label_background_color(self, clutter_value_get_color(inValue));
 			break;
 
 		case PROP_LABEL_MARGIN:
-			xfdashboard_live_window_set_margin(self, g_value_get_float(inValue));
+			xfdashboard_live_window_set_label_margin(self, g_value_get_float(inValue));
 			break;
 
-		case PROP_ELLIPSIZE_MODE:
-			xfdashboard_live_window_set_ellipsize_mode(self, g_value_get_enum(inValue));
+		case PROP_LABEL_ELLIPSIZE_MODE:
+			xfdashboard_live_window_set_label_ellipsize_mode(self, g_value_get_enum(inValue));
 			break;
 
 		default:
@@ -444,15 +444,15 @@ static void xfdashboard_live_window_get_property(GObject *inObject,
 			g_value_set_object(outValue, self->priv->window);
 			break;
 
-		case PROP_FONT:
+		case PROP_LABEL_FONT:
 			g_value_set_string(outValue, self->priv->labelFont);
 			break;
 
-		case PROP_COLOR:
+		case PROP_LABEL_COLOR:
 			clutter_value_set_color(outValue, self->priv->labelTextColor);
 			break;
 
-		case PROP_BACKGROUND_COLOR:
+		case PROP_LABEL_BACKGROUND_COLOR:
 			clutter_value_set_color(outValue, self->priv->labelBackgroundColor);
 			break;
 
@@ -460,7 +460,7 @@ static void xfdashboard_live_window_get_property(GObject *inObject,
 			g_value_set_float(outValue, self->priv->labelMargin);
 			break;
 
-		case PROP_ELLIPSIZE_MODE:
+		case PROP_LABEL_ELLIPSIZE_MODE:
 			g_value_set_enum(outValue, self->priv->labelEllipsize);
 			break;
 
@@ -504,21 +504,21 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 							WNCK_TYPE_WINDOW,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
-	XfdashboardLiveWindowProperties[PROP_FONT]=
+	XfdashboardLiveWindowProperties[PROP_LABEL_FONT]=
 		g_param_spec_string("font",
 							"Label font",
 							"Font description to use in label",
 							DEFAULT_FONT,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
-	XfdashboardLiveWindowProperties[PROP_COLOR]=
+	XfdashboardLiveWindowProperties[PROP_LABEL_COLOR]=
 		clutter_param_spec_color("color",
 									"Label text color",
 									"Text color of label",
 									&defaultTextColor,
 									G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
-	XfdashboardLiveWindowProperties[PROP_BACKGROUND_COLOR]=
+	XfdashboardLiveWindowProperties[PROP_LABEL_BACKGROUND_COLOR]=
 		clutter_param_spec_color("background-color",
 									"Label background color",
 									"Background color of label",
@@ -533,7 +533,7 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 							4.0f,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
-	XfdashboardLiveWindowProperties[PROP_ELLIPSIZE_MODE]=
+	XfdashboardLiveWindowProperties[PROP_LABEL_ELLIPSIZE_MODE]=
 		g_param_spec_enum("ellipsize-mode",
 							"Label ellipsize mode",
 							"Mode of ellipsize if text in label is too long",
@@ -601,14 +601,14 @@ const WnckWindow* xfdashboard_live_window_get_window(XfdashboardLiveWindow *self
 }
 
 /* Get/set font to use in label */
-const gchar* xfdashboard_live_window_get_font(XfdashboardLiveWindow *self)
+const gchar* xfdashboard_live_window_get_label_font(XfdashboardLiveWindow *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
 
 	return(self->priv->labelFont);
 }
 
-void xfdashboard_live_window_set_font(XfdashboardLiveWindow *self, const gchar *inFont)
+void xfdashboard_live_window_set_label_font(XfdashboardLiveWindow *self, const gchar *inFont)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(inFont!=NULL);
@@ -625,14 +625,14 @@ void xfdashboard_live_window_set_font(XfdashboardLiveWindow *self, const gchar *
 }
 
 /* Get/set color of text in label */
-const ClutterColor* xfdashboard_live_window_get_color(XfdashboardLiveWindow *self)
+const ClutterColor* xfdashboard_live_window_get_label_color(XfdashboardLiveWindow *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
 
 	return(self->priv->labelTextColor);
 }
 
-void xfdashboard_live_window_set_color(XfdashboardLiveWindow *self, const ClutterColor *inColor)
+void xfdashboard_live_window_set_label_color(XfdashboardLiveWindow *self, const ClutterColor *inColor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 
@@ -648,14 +648,14 @@ void xfdashboard_live_window_set_color(XfdashboardLiveWindow *self, const Clutte
 }
 
 /* Get/set color of label's background */
-const ClutterColor* xfdashboard_live_window_get_background_color(XfdashboardLiveWindow *self)
+const ClutterColor* xfdashboard_live_window_get_label_background_color(XfdashboardLiveWindow *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
 
 	return(self->priv->labelBackgroundColor);
 }
 
-void xfdashboard_live_window_set_background_color(XfdashboardLiveWindow *self, const ClutterColor *inColor)
+void xfdashboard_live_window_set_label_background_color(XfdashboardLiveWindow *self, const ClutterColor *inColor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 
@@ -671,14 +671,14 @@ void xfdashboard_live_window_set_background_color(XfdashboardLiveWindow *self, c
 }
 
 /* Get/set margin of background to label */
-const gfloat xfdashboard_live_window_get_margin(XfdashboardLiveWindow *self)
+const gfloat xfdashboard_live_window_get_label_margin(XfdashboardLiveWindow *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), 0);
 
 	return(self->priv->labelMargin);
 }
 
-void xfdashboard_live_window_set_margin(XfdashboardLiveWindow *self, const gfloat inMargin)
+void xfdashboard_live_window_set_label_margin(XfdashboardLiveWindow *self, const gfloat inMargin)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 
@@ -691,14 +691,14 @@ void xfdashboard_live_window_set_margin(XfdashboardLiveWindow *self, const gfloa
 }
 
 /* Get/set ellipsize mode if label's text is getting too long */
-const PangoEllipsizeMode xfdashboard_live_window_get_ellipsize_mode(XfdashboardLiveWindow *self)
+const PangoEllipsizeMode xfdashboard_live_window_get_label_ellipsize_mode(XfdashboardLiveWindow *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), 0);
 
 	return(self->priv->labelEllipsize);
 }
 
-void xfdashboard_live_window_set_ellipsize_mode(XfdashboardLiveWindow *self, const PangoEllipsizeMode inMode)
+void xfdashboard_live_window_set_label_ellipsize_mode(XfdashboardLiveWindow *self, const PangoEllipsizeMode inMode)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 

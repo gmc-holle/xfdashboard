@@ -13,20 +13,20 @@ CFLAGS += -std=gnu99 `pkg-config ${PKGS} --cflags` -pedantic -Wall -g
 LDFLAGS += `pkg-config ${PKGS} --libs`
 
 SOURCES = \
+	application-icon.c \
 	live-window.c \
 	main.c \
 	quicklaunch.c \
-	quicklaunch-icon.c \
 	scaling-box-layout.c \
 	scaling-flow-layout.c \
 	view.c \
 	windows-view.c
 
 HEADERS = \
+	application-icon.h \
 	live-window.h \
 	main.h \
 	quicklaunch.h \
-	quicklaunch-icon.h \
 	scaling-box-layout.h \
 	scaling-flow-layout.h \
 	view.h \

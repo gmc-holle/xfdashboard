@@ -25,8 +25,8 @@
 #include "config.h"
 #endif
 
+
 #include "quicklaunch.h"
-#include "quicklaunch-icon.h"
 #include "scaling-box-layout.h"
 
 #include <math.h>
@@ -90,15 +90,15 @@ static guint _xfdashboard_quicklaunch_get_number_icons(XfdashboardQuicklaunch *s
 /* Icon was clicked */
 static gboolean _xfdashboard_quicklaunch_on_clicked_icon(ClutterActor *inActor, gpointer inUserData)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH_ICON(inActor), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inActor), FALSE);
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inUserData), FALSE);
 
-	XfdashboardQuicklaunchIcon	*icon=XFDASHBOARD_QUICKLAUNCH_ICON(inActor);
+	XfdashboardApplicationIcon	*icon=XFDASHBOARD_APPLICATION_ICON(inActor);
 	const GDesktopAppInfo		*appInfo;
 	GError						*error=NULL;
 
 	/* Get application information object from icon */
-	appInfo=xfdashboard_quicklaunch_icon_get_desktop_application_info(icon);
+	appInfo=xfdashboard_application_icon_get_desktop_application_info(icon);
 	if(!appInfo)
 	{
 		g_warning("Could not launch application: NULL-application-info-object");
@@ -124,10 +124,10 @@ static gboolean _xfdashboard_quicklaunch_on_clicked_icon(ClutterActor *inActor, 
 
 /* Add an icon to this quicklaunch box */
 static gboolean _xfdashboard_quicklaunch_add_icon_to_quicklaunch(XfdashboardQuicklaunch *self,
-																	XfdashboardQuicklaunchIcon *inIcon)
+																	XfdashboardApplicationIcon *inIcon)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH_ICON(inIcon), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inIcon), FALSE);
 
 	/* Check if quicklaunch has reached its limit and warn.
 	 * But it does only make sense if max icon counter was set.
@@ -602,11 +602,14 @@ void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, gfloat in
 }
 
 /* Add icon to quicklaunch */
-gboolean xfdashboard_quicklaunch_add_icon(XfdashboardQuicklaunch *self, XfdashboardQuicklaunchIcon *inIcon)
+gboolean xfdashboard_quicklaunch_add_icon(XfdashboardQuicklaunch *self, XfdashboardApplicationIcon *inIcon)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH_ICON(inIcon), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inIcon), FALSE);
 
+	/* Hide label in quicklaunch */
+	xfdashboard_application_icon_set_label_visible(inIcon, FALSE);
+	
 	return(_xfdashboard_quicklaunch_add_icon_to_quicklaunch(self, inIcon));
 }
 
@@ -615,10 +618,11 @@ gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
 	g_return_val_if_fail(inDesktopFile, FALSE);
 
-	/* Create icon from desktop file */
+	/* Create icon from desktop file and hide label in quicklaunch */
 	ClutterActor				*actor;
 		
-	actor=xfdashboard_quicklaunch_icon_new_full(inDesktopFile);
-	
-	return(_xfdashboard_quicklaunch_add_icon_to_quicklaunch(self, XFDASHBOARD_QUICKLAUNCH_ICON(actor)));
+	actor=xfdashboard_application_icon_new_full(inDesktopFile);
+	xfdashboard_application_icon_set_label_visible(XFDASHBOARD_APPLICATION_ICON(actor), FALSE);
+
+	return(_xfdashboard_quicklaunch_add_icon_to_quicklaunch(self, XFDASHBOARD_APPLICATION_ICON(actor)));
 }
