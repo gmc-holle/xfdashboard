@@ -505,21 +505,21 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
 	XfdashboardLiveWindowProperties[PROP_LABEL_FONT]=
-		g_param_spec_string("font",
+		g_param_spec_string("label-font",
 							"Label font",
 							"Font description to use in label",
 							DEFAULT_FONT,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardLiveWindowProperties[PROP_LABEL_COLOR]=
-		clutter_param_spec_color("color",
+		clutter_param_spec_color("label-color",
 									"Label text color",
 									"Text color of label",
 									&defaultTextColor,
 									G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardLiveWindowProperties[PROP_LABEL_BACKGROUND_COLOR]=
-		clutter_param_spec_color("background-color",
+		clutter_param_spec_color("label-background-color",
 									"Label background color",
 									"Background color of label",
 									&defaultBackgroundColor,
@@ -534,7 +534,7 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardLiveWindowProperties[PROP_LABEL_ELLIPSIZE_MODE]=
-		g_param_spec_enum("ellipsize-mode",
+		g_param_spec_enum("label-ellipsize-mode",
 							"Label ellipsize mode",
 							"Mode of ellipsize if text in label is too long",
 							PANGO_TYPE_ELLIPSIZE_MODE,
