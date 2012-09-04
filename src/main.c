@@ -43,6 +43,36 @@ static gchar			*quicklaunch_apps[]=	{
 												};
 /* TODO: Replace with xfconf */
 
+/* Get root application menu */
+GarconMenu* xfdashboard_getApplicationMenu()
+{
+	static GarconMenu		*menu=NULL;
+
+	/* If it is the first time (or if it failed previously)
+	 * load the menus now
+	 */
+	if(!menu)
+	{
+		/* Try to get the root menu */
+		menu=garcon_menu_new_applications();
+
+		if(G_UNLIKELY(!garcon_menu_load(menu, NULL, &error)))
+		{
+			gchar *uri;
+
+			uri=g_file_get_uri(garcon_menu_get_file (menu));
+			g_error("Could not load menu from %s: %s", uri, error->message);
+			g_free(uri);
+
+			g_error_free(error);
+
+			g_object_unref(menu);
+			menu=NULL;
+		}
+	}
+
+	return(menu);
+}
 
 /* Get window of application */
 WnckWindow* xfdashboard_getAppWindow()

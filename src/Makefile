@@ -6,8 +6,9 @@ BINDIR = ${PREFIX}/bin
 PKG_LIBWNCK="libwnck-1.0"
 PKG_CLUTTER="clutter-1.0 clutter-cogl-1.0"
 PKG_GIO="gio-2.0 gio-unix-2.0"
+PKG_GARCON="garcon-1"
 
-PKGS="${PKG_LIBWNCK} ${PKG_CLUTTER} ${PKG_GIO}"
+PKGS="${PKG_LIBWNCK} ${PKG_CLUTTER} ${PKG_GIO} ${PKG_GARCON}"
 
 CFLAGS += -std=gnu99 `pkg-config ${PKGS} --cflags` -pedantic -Wall -g
 LDFLAGS += `pkg-config ${PKGS} --libs`

@@ -25,9 +25,16 @@
 #ifndef __XFOVERVIEW_MAIN__
 #define __XFOVERVIEW_MAIN__
 
+#define WNCK_I_KNOW_THIS_IS_UNSTABLE
+#include <libwnck/libwnck.h>
+
+#include <garcon/garcon.h>
+
 G_BEGIN_DECLS
 
 WnckWindow* xfdashboard_getAppWindow();
+
+GarconMenu* xfdashboard_getApplicationMenu()
 
 G_END_DECLS
 
