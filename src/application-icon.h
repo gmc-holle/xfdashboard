@@ -1,5 +1,5 @@
 /*
- * application-icon.c: An actor representing an application
+ * application-icon.h: An actor representing an application
  * 
  * Copyright 2012 Stephan Haller <nomad@froevel.de>
  * 
@@ -44,7 +44,7 @@ typedef struct _XfdashboardApplicationIconPrivate		XfdashboardApplicationIconPri
 struct _XfdashboardApplicationIcon
 {
 	/* Parent instance */
-	ClutterTexture						parent_instance;
+	ClutterActor						parent_instance;
 
 	/* Private structure */
 	XfdashboardApplicationIconPrivate	*priv;
@@ -53,7 +53,7 @@ struct _XfdashboardApplicationIcon
 struct _XfdashboardApplicationIconClass
 {
 	/* Parent class */
-	ClutterTextureClass					parent_class;
+	ClutterActorClass					parent_class;
 
 	/* Virtual functions */
 	void (*clicked)(XfdashboardApplicationIcon *self);
