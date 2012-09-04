@@ -22,6 +22,7 @@
  * 
  */
 
+#include "main.h"
 #include "live-window.h"
 #include "scaling-flow-layout.h"
 #include "view.h"
@@ -53,6 +54,8 @@ GarconMenu* xfdashboard_getApplicationMenu()
 	 */
 	if(!menu)
 	{
+		GError				*error=NULL;
+		
 		/* Try to get the root menu */
 		menu=garcon_menu_new_applications();
 

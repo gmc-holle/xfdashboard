@@ -34,7 +34,7 @@ G_BEGIN_DECLS
 
 WnckWindow* xfdashboard_getAppWindow();
 
-GarconMenu* xfdashboard_getApplicationMenu()
+GarconMenu* xfdashboard_getApplicationMenu();
 
 G_END_DECLS
 
