@@ -136,16 +136,23 @@ void _xfdashboard_application_icon_set_desktop_file(XfdashboardApplicationIcon *
 	if(priv->appInfo)
 	{
 		icon=g_app_info_get_icon(G_APP_INFO(priv->appInfo));
-		if(!icon) g_warning("Could not get icon for desktop file '%s'", inDesktopFile);
+		if(icon)
+		{
+			iconInfo=gtk_icon_theme_lookup_by_gicon(gtk_icon_theme_get_default(),
+													icon,
+													DEFAULT_ICON_SIZE,
+													0);
+		}
+			else g_warning("Could not get icon for desktop file '%s'", inDesktopFile);
 	}
-
-	if(icon)
+	
+	if(!iconInfo)
 	{
-		iconInfo=gtk_icon_theme_lookup_by_gicon(gtk_icon_theme_get_default(),
-												icon,
-												DEFAULT_ICON_SIZE,
-												0);
-		if(!iconInfo) g_warning("Could not lookup icon for '%s'", inDesktopFile);
+		iconInfo=gtk_icon_theme_lookup_icon(gtk_icon_theme_get_default(),
+											GTK_STOCK_MISSING_IMAGE,
+											DEFAULT_ICON_SIZE,
+											0);
+		if(!iconInfo) g_error("Could not lookup fallback icon for '%s'", inDesktopFile);
 	}
 
 	if(iconInfo)
@@ -162,6 +169,16 @@ void _xfdashboard_application_icon_set_desktop_file(XfdashboardApplicationIcon *
 	
 	if(iconPixbuf)
 	{
+		/* Scale icon */
+		GdkPixbuf						*oldIcon=iconPixbuf;
+
+		iconPixbuf=gdk_pixbuf_scale_simple(oldIcon,
+											DEFAULT_ICON_SIZE,
+											DEFAULT_ICON_SIZE,
+											GDK_INTERP_BILINEAR);
+		g_object_unref(oldIcon);
+		
+		/* Set texture */
 		error=NULL;
 		if(!clutter_texture_set_from_rgb_data(CLUTTER_TEXTURE(priv->actorIcon),
 													gdk_pixbuf_get_pixels(iconPixbuf),
@@ -182,9 +199,15 @@ void _xfdashboard_application_icon_set_desktop_file(XfdashboardApplicationIcon *
 	}
 	
 	if(iconInfo) gtk_icon_info_free(iconInfo);
-
+	if(icon) g_object_unref(icon);
+	
 	/* Set up label actors */
-	clutter_text_set_text(CLUTTER_TEXT(priv->actorLabel), g_app_info_get_name(G_APP_INFO(priv->appInfo)));
+	if(priv->appInfo)
+	{
+		clutter_text_set_text(CLUTTER_TEXT(priv->actorLabel),
+								g_app_info_get_name(G_APP_INFO(priv->appInfo)));
+	}
+		else clutter_text_set_text(CLUTTER_TEXT(priv->actorLabel), "");
 
 	/* Queue a redraw as the actors are now available */
 	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
@@ -468,17 +491,17 @@ static void xfdashboard_application_icon_dispose(GObject *inObject)
 	XfdashboardApplicationIconPrivate	*priv=XFDASHBOARD_APPLICATION_ICON(inObject)->priv;
 
 	/* Dispose allocated resources */
-	if(priv->appInfo)
-	{
-		g_object_unref(priv->appInfo);
-		priv->appInfo=NULL;
-	}
+	if(priv->appInfo) g_object_unref(priv->appInfo);
+	priv->appInfo=NULL;
 
-	if(priv->labelFont)
-	{
-		g_free(priv->labelFont);
-		priv->labelFont=NULL;
-	}
+	if(priv->labelFont) g_free(priv->labelFont);
+	priv->labelFont=NULL;
+
+	if(priv->labelTextColor) clutter_color_free(priv->labelTextColor);
+	priv->labelTextColor=NULL;
+
+	if(priv->labelBackgroundColor) clutter_color_free(priv->labelBackgroundColor);
+	priv->labelBackgroundColor=NULL;
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_application_icon_parent_class)->dispose(inObject);
