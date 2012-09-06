@@ -346,8 +346,12 @@ static void xfdashboard_quicklaunch_destroy(ClutterActor *self)
 /* Dispose this object */
 static void xfdashboard_quicklaunch_dispose(GObject *inObject)
 {
-	G_GNUC_UNUSED XfdashboardQuicklaunch		*self=XFDASHBOARD_QUICKLAUNCH(inObject);
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inObject)->priv;
 
+	/* Release allocated resources */
+	if(priv->backgroundColor) clutter_color_free(priv->backgroundColor);
+	priv->backgroundColor=NULL;
+	
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_quicklaunch_parent_class)->dispose(inObject);
 }
@@ -500,6 +504,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	priv->maxIconsCount=0;
 	priv->normalIconSize=64;
 	priv->spacing=0.0f;
+	priv->backgroundColor=NULL;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
