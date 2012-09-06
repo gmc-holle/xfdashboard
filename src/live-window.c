@@ -382,10 +382,16 @@ static void xfdashboard_live_window_destroy(ClutterActor *self)
 static void xfdashboard_live_window_dispose(GObject *inObject)
 {
 	/* Release our allocated variables */
-	XfdashboardLiveWindow	*self=XFDASHBOARD_LIVE_WINDOW(inObject);
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(inObject)->priv;
 
-	g_free(self->priv->labelFont);
-	self->priv->labelFont=NULL;
+	if(priv->labelFont) g_free(priv->labelFont);
+	priv->labelFont=NULL;
+
+	if(priv->labelTextColor) clutter_color_free(priv->labelTextColor);
+	priv->labelTextColor=NULL;
+	
+	if(priv->labelBackgroundColor) clutter_color_free(priv->labelBackgroundColor);
+	priv->labelBackgroundColor=NULL;
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_live_window_parent_class)->dispose(inObject);
@@ -574,6 +580,9 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->actorLabelBackground=NULL;
 	priv->actorAppIcon=NULL;
 
+	priv->labelTextColor=NULL;
+	priv->labelBackgroundColor=NULL;
+	
 	priv->window=NULL;
 
 	/* Connect signals */
@@ -682,7 +691,7 @@ void xfdashboard_live_window_set_label_margin(XfdashboardLiveWindow *self, const
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 
-	/* Set window to display */
+	/* Set margin */
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	priv->labelMargin=inMargin;
@@ -702,7 +711,7 @@ void xfdashboard_live_window_set_label_ellipsize_mode(XfdashboardLiveWindow *sel
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 
-	/* Set window to display */
+	/* Set ellipsize mode */
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	priv->labelEllipsize=inMode;
