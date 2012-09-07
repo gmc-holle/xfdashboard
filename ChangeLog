@@ -1,3 +1,108 @@
+commit 62dd7a855a0fc32e5a7939a0130543557fdd9d72
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Sep 6 13:46:14 2012 +0200
+
+    Fixed memory leaks once more
+
+commit 67470fae97ae7a9dfeb458500b119f2ea30910e5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Sep 6 13:43:27 2012 +0200
+
+    Fixed more memory leaks and corrected some comments
+
+commit 4c34bb25e3f96869912635218dcf0da7e6ba08c4
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Sep 6 13:36:21 2012 +0200
+
+    Fixed memory leaks
+
+commit cbede294c81c908a014bcbf1e5d44b99e43fa88d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Sep 4 21:40:08 2012 +0200
+
+    Fixed wrong parent class in header file of XfdashboardApplicationIcon
+
+commit e0de5d5e384c83a082e0f877b02b06f0c9045750
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Sep 4 06:58:02 2012 +0200
+
+    Fixed typos
+
+commit f64fec33beee1725b9c08eb49acabb5581770e7d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Sep 4 06:56:12 2012 +0200
+
+    Prepare for application menu
+
+commit 5b7c8f938318cf53028be29e11b518369b778d7a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Sep 2 14:17:07 2012 +0200
+
+    Forgot to rename properties in XfdashboardLiveWindow
+
+commit 6e1578cfc4454d9f6d66b1569d82db46122adf5e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Sep 2 13:15:16 2012 +0200
+
+    Rename XfdashboardQuicklaunchIcon to a more general usable XfdashboardApplicationIcon - an actor to display icon of an application optionally with label.
+
+commit 90da6f0b9e73833c178c2a44bc1aa49b5a1d87d3
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Sep 2 00:11:25 2012 +0200
+
+    Converted margin in live window actor from integer to float.
+
+commit 3641934c2901baaef034f833071376c2f980f1fa
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Aug 31 22:49:51 2012 +0200
+
+    Added sanity checks to paint and pick of object XfdashboardQuicklaunch.
+
+commit 4d6a657f54f97d3e4f64a6a98050a4a6fd9b9ad3
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Aug 31 22:46:54 2012 +0200
+
+    Simplified XfdashboardLiveWindow as I learned from quicklaunch box and quickbox icon.
+
+commit 86d122176733d218fddb7179fc11c9ae9aaddcf2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Aug 31 22:20:53 2012 +0200
+
+    Quicklaunch icon can bow be added to quicklaunch box by public API.
+
+commit b7d55859547b1594ed513097f805d835338f0bc5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Aug 31 15:12:50 2012 +0200
+
+    Try to solve layout and scaling problems in quicklaunch by creating a new layout manager
+    (XfdashboardScalingBoxLayout). A side effect is that it simplifies the quicklaunch actor :) Also filenames have been
+    cleaned up to match gobject method prefixes.
+
+commit 936fe1c8b41134e74a9336d225bb32f34a8f815c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Aug 30 13:22:17 2012 +0200
+
+    Fixed missing resize of quicklaunch on allocating a larger area. Cleaner error messages in quicklaunch icon if
+    desktop file or application icon could not loaded.
+
+commit 3235518eb83726ae9ac364bd88997883654eecce
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Aug 30 06:42:31 2012 +0200
+
+    Fixed initial one step scale down of quicklaunch icon in quicklaunch.
+
+commit 15b9ac8096000ba3560799bd58ef9cc75121158d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Aug 29 22:41:24 2012 +0200
+
+    Added some comment to live-window actor
+
+commit 453cc3cc1b37a948f5949f3cb640318e2ac2be65
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Aug 29 22:28:03 2012 +0200
+
+    Added ChangeLog
+
 commit d7edb69e1db2c8bd2a1ca1dadc7cbdfbb355817e
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Wed Aug 29 22:26:35 2012 +0200

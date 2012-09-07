@@ -199,7 +199,6 @@ void _xfdashboard_application_icon_set_desktop_file(XfdashboardApplicationIcon *
 	}
 	
 	if(iconInfo) gtk_icon_info_free(iconInfo);
-	if(icon) g_object_unref(icon);
 	
 	/* Set up label actors */
 	if(priv->appInfo)

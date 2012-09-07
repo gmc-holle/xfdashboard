@@ -113,6 +113,7 @@ static gboolean xfdashboard_onKeyRelease(ClutterActor *inActor, ClutterEvent *in
 /* Main entry point */
 int main(int argc, char **argv)
 {
+	gulong					stageDestroySignalID=0L;
 	ClutterActor			*box;
 	ClutterLayoutManager	*boxLayout;
 	ClutterActor			*actor;
@@ -182,7 +183,7 @@ int main(int argc, char **argv)
 	/* Set up event handlers */
 	clutter_stage_set_key_focus(CLUTTER_STAGE(stage), NULL);
 
-	g_signal_connect(stage, "destroy", G_CALLBACK(clutter_main_quit), NULL);
+	stageDestroySignalID=g_signal_connect(stage, "destroy", G_CALLBACK(clutter_main_quit), NULL);
 	g_signal_connect(stage, "unfullscreen", G_CALLBACK(clutter_main_quit), NULL);
 	g_signal_connect(stage, "key-release-event", G_CALLBACK(xfdashboard_onKeyRelease), NULL);
 
@@ -191,6 +192,14 @@ int main(int argc, char **argv)
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(stage), TRUE);
 
 	clutter_main();
+
+	if(stageDestroySignalID &&
+		g_signal_handler_is_connected(stage, stageDestroySignalID))
+	{
+		g_signal_handler_disconnect(stage, stageDestroySignalID);
+		stageDestroySignalID=0L;
+	}
+	clutter_actor_destroy(stage);
 
 	return 0;
 }
