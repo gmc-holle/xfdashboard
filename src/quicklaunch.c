@@ -110,7 +110,7 @@ static gboolean _xfdashboard_quicklaunch_on_clicked_icon(ClutterActor *inActor, 
 	{
 		g_warning("Could not launch application %s",
 					(error && error->message) ?  error->message : "unknown error");
-					
+		if(error) g_error_free(error);
 		return(FALSE);
 	}
 
