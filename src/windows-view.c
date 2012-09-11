@@ -159,11 +159,13 @@ void _set_active_workspace(XfdashboardWindowsView *self, WnckWorkspace *inWorksp
 /* Dispose this object */
 static void xfdashboard_windows_view_dispose(GObject *inObject)
 {
-  XfdashboardWindowsView		*self=XFDASHBOARD_WINDOWS_VIEW(inObject);
+	XfdashboardWindowsView		*self=XFDASHBOARD_WINDOWS_VIEW(inObject);
 
-  _set_active_workspace(self, NULL);
+	/* Release allocated resources */
+	_set_active_workspace(self, NULL);
 
-  G_OBJECT_CLASS(xfdashboard_windows_view_parent_class)->dispose(inObject);
+	/* Call parent's class dispose method */
+	G_OBJECT_CLASS(xfdashboard_windows_view_parent_class)->dispose(inObject);
 }
 
 /* Set/get properties */
