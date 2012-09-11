@@ -52,11 +52,17 @@ struct _XfdashboardViewClass
 {
 	/* Parent class */
 	ClutterActorClass		parent_class;
+
+	/* Virtual functions */
+	void (*name_changed)(XfdashboardView *self, gchar *inName);
 };
 
 GType xfdashboard_view_get_type(void) G_GNUC_CONST;
 
 void xfdashboard_view_remove_all(XfdashboardView *self);
+
+const gchar* xfdashboard_view_get_view_name(XfdashboardView *self);
+void xfdashboard_view_set_view_name(XfdashboardView *self, const gchar *inName);
 
 void xfdashboard_view_set_layout_manager(XfdashboardView *self, ClutterLayoutManager *inManager);
 ClutterLayoutManager *xfdashboard_view_get_layout_manager(XfdashboardView *self);

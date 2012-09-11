@@ -44,6 +44,9 @@ struct _XfdashboardViewPrivate
 	/* Children (list of ClutterActor) of this view */
 	GList					*children;
 
+	/* View name */
+	gchar					*viewName;
+
 	/* Layout manager */
 	ClutterLayoutManager	*layoutManager;
 	guint					signalChangedID;
@@ -54,12 +57,23 @@ enum
 {
 	PROP_0,
 
+	PROP_VIEW_NAME,
 	PROP_LAYOUT_MANAGER,
-	
+
 	PROP_LAST
 };
 
 static GParamSpec* XfdashboardViewProperties[PROP_LAST]={ 0, };
+
+/* Signals */
+enum
+{
+	NAME_CHANGED,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardViewSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -362,11 +376,17 @@ static void xfdashboard_view_destroy(ClutterActor *inActor)
 /* Dispose this object */
 static void xfdashboard_view_dispose(GObject *inObject)
 {
-  XfdashboardView		*self=XFDASHBOARD_VIEW(inObject);
+	XfdashboardView			*self=XFDASHBOARD_VIEW(inObject);
+	XfdashboardViewPrivate	*priv=self->priv;
 
-  _xfdashboard_view_set_layout_manager(self, NULL);
+	/* Release allocated resources */
+	_xfdashboard_view_set_layout_manager(self, NULL);
 
-  G_OBJECT_CLASS(xfdashboard_view_parent_class)->dispose(inObject);
+	if(priv->viewName) g_free(priv->viewName);
+	priv->viewName=NULL;
+
+	/* Call parent's class dispose method */
+	G_OBJECT_CLASS(xfdashboard_view_parent_class)->dispose(inObject);
 }
 
 /* Set/get properties */
@@ -379,8 +399,12 @@ static void xfdashboard_view_set_property(GObject *inObject,
 	
 	switch(inPropID)
 	{
+		case PROP_VIEW_NAME:
+			xfdashboard_view_set_view_name(self, g_value_get_string(inValue));
+			break;
+			
 		case PROP_LAYOUT_MANAGER:
-			_xfdashboard_view_set_layout_manager(self, g_value_get_object(inValue));
+			xfdashboard_view_set_layout_manager(self, CLUTTER_LAYOUT_MANAGER(g_value_get_object(inValue)));
 			break;
 
 		default:
@@ -398,6 +422,10 @@ static void xfdashboard_view_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
+		case PROP_VIEW_NAME:
+			g_value_set_string(outValue, self->priv->viewName);
+			break;
+
 		case PROP_LAYOUT_MANAGER:
 			g_value_set_object(outValue, self->priv->layoutManager);
 			break;
@@ -434,6 +462,13 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 	g_type_class_add_private(klass, sizeof(XfdashboardViewPrivate));
 
 	/* Define properties */
+	XfdashboardViewProperties[PROP_VIEW_NAME]=
+		g_param_spec_string("view-name",
+							"View name",
+							"View name used in button",
+							"",
+							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+
 	XfdashboardViewProperties[PROP_LAYOUT_MANAGER]=
 		g_param_spec_object ("layout-manager",
 								"Layout Manager",
@@ -442,6 +477,19 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 								G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewProperties);
+
+	/* Define signals */
+	XfdashboardViewSignals[NAME_CHANGED]=
+		g_signal_new("name-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewClass, name_changed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__STRING,
+						G_TYPE_NONE,
+						1,
+						G_TYPE_STRING);
 }
 
 /* Object initialization
@@ -449,7 +497,13 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
  */
 static void xfdashboard_view_init(XfdashboardView *self)
 {
-	self->priv=XFDASHBOARD_VIEW_GET_PRIVATE(self);
+	XfdashboardViewPrivate	*priv;
+
+	priv=self->priv=XFDASHBOARD_VIEW_GET_PRIVATE(self);
+
+	/* Set up default values */
+	priv->viewName=NULL;
+	priv->layoutManager=NULL;
 }
 
 /* Implementation: Public API */
@@ -463,6 +517,28 @@ void xfdashboard_view_remove_all(XfdashboardView *self)
 	g_list_foreach(self->priv->children, (GFunc)clutter_actor_destroy, NULL);
 	g_list_free(self->priv->children);
 	self->priv->children=NULL;
+}
+
+/* Get/set font to use in label */
+const gchar* xfdashboard_view_get_view_name(XfdashboardView *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), NULL);
+
+	return(self->priv->viewName);
+}
+
+void xfdashboard_view_set_view_name(XfdashboardView *self, const gchar *inName)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+	g_return_if_fail(inName!=NULL);
+
+	/* Set font of label */
+	XfdashboardViewPrivate	*priv=XFDASHBOARD_VIEW_GET_PRIVATE(self);
+
+	if(priv->viewName) g_free(priv->viewName);
+	priv->viewName=g_strdup(inName);
+
+	g_signal_emit_by_name(self, "name-changed", priv->viewName);
 }
 
 /* Get/Set layout manager */
