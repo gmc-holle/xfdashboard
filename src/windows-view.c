@@ -137,7 +137,8 @@ void _set_active_workspace(XfdashboardWindowsView *self, WnckWorkspace *inWorksp
 	/* Create live window actors for new workspace */
 	if(priv->workspace==NULL) return;
 
-	for(windowsList=wnck_screen_get_windows_stacked(self->priv->screen); windowsList!=NULL; windowsList=windowsList->next)
+	windowsList=wnck_screen_get_windows_stacked(self->priv->screen);
+	for(windowsList=g_list_last(windowsList); windowsList!=NULL; windowsList=windowsList->prev)
 	{
 		WnckWindow		*window=WNCK_WINDOW(windowsList->data);
 		ClutterActor	*liveWindow;
