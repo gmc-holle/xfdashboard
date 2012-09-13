@@ -1,3 +1,34 @@
+commit 8d57e25c1ce5b556d85c212ac540243f74d79c0b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Sep 12 22:35:17 2012 +0200
+
+    Changed order of live windows to LAFS (last-active, first-shown) by just simply reverse the list of stacked windows
+
+commit 8deed7bb43fe05de0fce79c681a13feb8de4d19d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Sep 11 06:07:55 2012 +0200
+
+    Fixed indention
+
+commit 5627081f89179ab01f1057760cddbbb3203d40fc
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Sep 11 06:06:42 2012 +0200
+
+    Prepare view for viewpad
+
+commit 98a3b6571fe8af202b5f96018aec4213be573616
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Sep 9 12:35:25 2012 +0200
+
+    Fix memory leak
+
+commit 58351c23b3d7d546e7c2a3555c90d2342504dc76
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Sep 7 11:53:58 2012 +0200
+
+    Unreffed an object which was not reffed when returned by public API of glib causing segmentation faults. Fixed
+    calling stage's destroy signal handler when application is quitted causing a Clutter critical warning.
+
 commit 62dd7a855a0fc32e5a7939a0130543557fdd9d72
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Thu Sep 6 13:46:14 2012 +0200

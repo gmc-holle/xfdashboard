@@ -26,6 +26,7 @@
 #endif
 
 #include "view.h"
+#include "viewpad.h"
 
 /* Define this class in GObject system */
 static void clutter_container_iface_init(ClutterContainerIface *iface);
@@ -68,7 +69,12 @@ static GParamSpec* XfdashboardViewProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
+	ACTIVATED,
+	DEACTIVATED,
+	
 	NAME_CHANGED,
+
+	RESET_SCROLLBARS,
 
 	SIGNAL_LAST
 };
@@ -350,7 +356,6 @@ static void xfdashboard_view_allocate(ClutterActor *inActor,
 
 	clutter_actor_box_set_origin(&box, 0.0f, 0.0f);
 	clutter_actor_box_set_size(&box, w, h);
-
 	clutter_layout_manager_allocate(priv->layoutManager,
 									CLUTTER_CONTAINER(inActor),
 									&box,
@@ -479,6 +484,28 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewProperties);
 
 	/* Define signals */
+	XfdashboardViewSignals[ACTIVATED]=
+		g_signal_new("activated",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewClass, activated),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardViewSignals[DEACTIVATED]=
+		g_signal_new("deactivated",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewClass, deactivated),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
 	XfdashboardViewSignals[NAME_CHANGED]=
 		g_signal_new("name-changed",
 						G_TYPE_FROM_CLASS(klass),
@@ -490,6 +517,17 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 						G_TYPE_NONE,
 						1,
 						G_TYPE_STRING);
+
+	XfdashboardViewSignals[RESET_SCROLLBARS]=
+		g_signal_new("reset-scrollbars",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewClass, reset_scrollbars),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
 }
 
 /* Object initialization
@@ -555,4 +593,19 @@ ClutterLayoutManager* xfdashboard_view_get_layout_manager(XfdashboardView *self)
   g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), NULL);
 
   return(self->priv->layoutManager);
+}
+
+/* Reset scroll bars in viewpad this view is connected to */
+void xfdashboard_view_reset_scrollbars(XfdashboardView *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+
+	/* Check if this view is connected to a viewpad */
+	ClutterActor	*parent=clutter_actor_get_parent(CLUTTER_ACTOR(self));
+	
+	if(!parent) return;
+	
+	/* Reset scroll bars */
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(parent));
+	g_signal_emit_by_name(self, "reset-scrollbars", NULL);
 }

@@ -54,7 +54,12 @@ struct _XfdashboardViewClass
 	ClutterActorClass		parent_class;
 
 	/* Virtual functions */
+	void (*activated)(XfdashboardView *self);
+	void (*deactivated)(XfdashboardView *self);
+
 	void (*name_changed)(XfdashboardView *self, gchar *inName);
+
+	void (*reset_scrollbars)(XfdashboardView *self);
 };
 
 GType xfdashboard_view_get_type(void) G_GNUC_CONST;
@@ -66,6 +71,8 @@ void xfdashboard_view_set_view_name(XfdashboardView *self, const gchar *inName);
 
 void xfdashboard_view_set_layout_manager(XfdashboardView *self, ClutterLayoutManager *inManager);
 ClutterLayoutManager *xfdashboard_view_get_layout_manager(XfdashboardView *self);
+
+void xfdashboard_view_reset_scrollbars(XfdashboardView *self);
 
 G_END_DECLS
 

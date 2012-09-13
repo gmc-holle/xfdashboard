@@ -168,6 +168,9 @@ static void xfdashboard_quicklaunch_paint(ClutterActor *self)
 		clutter_actor_get_allocation_box(self, &allocation);
 		clutter_actor_box_get_size(&allocation, &width, &height);
 
+		/* Start a new path */
+		cogl_path_new();
+		
 		/* Set color to use when painting background */
 		cogl_set_source_color4ub(priv->backgroundColor->red,
 									priv->backgroundColor->green,

@@ -30,6 +30,14 @@
 
 #include <garcon/garcon.h>
 
+#ifndef DEBUG_ALLOC_BOX
+#if 1
+#define DEBUG_ALLOC_BOX(b) g_message("%s: %s=%.0f,%.0f - %.0f,%.0f [%.2fx%.2f]", __func__, #b, b->x1, b->y1, b->x2, b->y2, b->x2-b->x1, b->y2-b->y1);
+#else
+#define DEBUG_ALLOC_BOX(b)
+#endif
+#endif
+
 G_BEGIN_DECLS
 
 WnckWindow* xfdashboard_getAppWindow();

@@ -1,5 +1,6 @@
 == GENERAL ==
 [done] Quit app by pressing ESC(ape)
+- Store settings, e.g. quicklaunch shortcuts, in Xfconf4 and listen for updates
 - Themable?
 
 == QUICKLAUNCH-BOX (FAVOURITES-SELECTOR) ==
@@ -14,8 +15,10 @@
 - Mouse-wheel on workspace-actor switches workspace without quitting but updating windows-list view
 
 == VIEWPAD (VIEW AGGREGATOR) ==
-- Implement viewpad
-- For each view create a button to switch to this view
+[done] - Implement viewpad
+[done] - For each view create a button to switch to this view
+- Check why we need to slowly double-click on text to switch view - should be single-click
+- Scroll bars should be shown or hidden automatically depending on if view fits the space in this direction
 
 == WINDOWS-LIST VIEW ==
 [done] Implement windows-list view
@@ -28,8 +31,8 @@
 - React on window disappearing by destroying appropiate live-window actor
 
 == APPLICATION-MENU VIEW ==
-- Implement application-menu view
-- Start application when clicked on application icon in view
+[done] - Implement application-menu view
+[done] - Start application when clicked on application icon in view
 - Allow drag-n-drop of application icon to quicklaunch-box view and create shortcut
 - Allow drag-n-drop of application icon to workspace-box and start application on this workspace
 

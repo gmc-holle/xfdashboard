@@ -14,23 +14,35 @@ CFLAGS += -std=gnu99 `pkg-config ${PKGS} --cflags` -pedantic -Wall -g
 LDFLAGS += `pkg-config ${PKGS} --libs`
 
 SOURCES = \
+	application-entry.c \
 	application-icon.c \
+	applications-view.c \
+	fill-box-layout.c \
 	live-window.c \
 	main.c \
 	quicklaunch.c \
 	scaling-box-layout.c \
 	scaling-flow-layout.c \
+	scrollbar.c \
 	view.c \
+	viewpad.c \
+	view-selector.c \
 	windows-view.c
 
 HEADERS = \
+	application-entry.h \
 	application-icon.h \
+	applications-view.h \
+	fill-box-layout.h \
 	live-window.h \
 	main.h \
 	quicklaunch.h \
+	scrollbar.h \
 	scaling-box-layout.h \
 	scaling-flow-layout.h \
 	view.h \
+	viewpad.h \
+	view-selector.h \
 	windows-view.h
 
 all: xfdashboard

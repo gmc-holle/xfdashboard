@@ -25,9 +25,12 @@
 #include "main.h"
 #include "live-window.h"
 #include "scaling-flow-layout.h"
-#include "view.h"
+#include "viewpad.h"
+#include "view-selector.h"
+#include "applications-view.h"
 #include "windows-view.h"
 #include "quicklaunch.h"
+#include "scrollbar.h"
 
 /* The one and only stage for clutter */
 ClutterActor	*stage=NULL;
@@ -40,6 +43,7 @@ static gchar			*quicklaunch_apps[]=	{
 													"Terminal.desktop",
 													"Thunar.desktop",
 													"geany.desktop",
+													"gajim.desktop",
 													"unavailable"
 												};
 /* TODO: Replace with xfconf */
@@ -110,13 +114,26 @@ static gboolean xfdashboard_onKeyRelease(ClutterActor *inActor, ClutterEvent *in
 	return(FALSE);
 }
 
+void __temp_value_changed(ClutterActor *inActor, int inValue, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor));
+
+	XfdashboardScrollbar		*self=XFDASHBOARD_SCROLLBAR(inActor);
+
+	g_message("%s@%p: dir=%s, value=%.2f [max=%.2f]",
+				G_OBJECT_TYPE_NAME(inActor), (void*)inActor,
+				xfdashboard_scrollbar_get_vertical(self) ? "vertical" : "horizontal",
+				xfdashboard_scrollbar_get_value(self),
+				xfdashboard_scrollbar_get_range(self));
+}
+
 /* Main entry point */
 int main(int argc, char **argv)
 {
 	gulong					stageDestroySignalID=0L;
-	ClutterActor			*box;
-	ClutterLayoutManager	*boxLayout;
-	ClutterActor			*actor;
+	ClutterActor			*box, *viewpadBox;
+	ClutterLayoutManager	*boxLayout, *viewpadBoxLayout;
+	ClutterActor			*actor, *viewpad;
 	ClutterColor			stageColor={ 0, 0, 0, 0xd0 };
 
 	/* Tell clutter to try to initialize an RGBA visual */
@@ -150,7 +167,7 @@ int main(int argc, char **argv)
 
 	/* Create quicklaunch box and add to box */
 	actor=xfdashboard_quicklaunch_new();
-	clutter_actor_add_constraint(actor, clutter_bind_constraint_new(box, CLUTTER_BIND_HEIGHT, 0.0));
+	clutter_actor_add_constraint(actor, clutter_bind_constraint_new(box, CLUTTER_BIND_HEIGHT, 0.0f));
 	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(boxLayout),
 								actor,
 								TRUE,
@@ -170,15 +187,45 @@ int main(int argc, char **argv)
 	/* TODO: Create viewpad and add view(s) to viewpad */
 
 	/* Create windows view and add to box */
-	actor=xfdashboard_windows_view_new();
-	clutter_actor_add_constraint(actor, clutter_bind_constraint_new(box, CLUTTER_BIND_HEIGHT, 0.0));
+	viewpadBoxLayout=clutter_box_layout_new();
+	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(viewpadBoxLayout), spacingToStage);
+	clutter_box_layout_set_vertical(CLUTTER_BOX_LAYOUT(viewpadBoxLayout), TRUE);
+
+	viewpadBox=clutter_box_new(viewpadBoxLayout);
 	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(boxLayout),
-								actor,
+								viewpadBox,
 								TRUE,
 								TRUE,
 								TRUE,
 								CLUTTER_BOX_ALIGNMENT_CENTER,
 								CLUTTER_BOX_ALIGNMENT_CENTER);
+
+	viewpad=xfdashboard_viewpad_new();
+
+	actor=xfdashboard_view_selector_new(XFDASHBOARD_VIEWPAD(viewpad));
+	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(viewpadBoxLayout),
+								actor,
+								TRUE,
+								TRUE,
+								FALSE,
+								CLUTTER_BOX_ALIGNMENT_START,
+								CLUTTER_BOX_ALIGNMENT_START);
+
+	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(viewpadBoxLayout),
+								viewpad,
+								TRUE,
+								TRUE,
+								TRUE,
+								CLUTTER_BOX_ALIGNMENT_CENTER,
+								CLUTTER_BOX_ALIGNMENT_CENTER);
+
+	actor=xfdashboard_windows_view_new();
+	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(actor));
+	xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(actor));
+
+	actor=xfdashboard_applications_view_new();
+	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(actor));
+	xfdashboard_applications_view_set_active_menu(XFDASHBOARD_APPLICATIONS_VIEW(actor), xfdashboard_getApplicationMenu());
 
 	/* Set up event handlers */
 	clutter_stage_set_key_focus(CLUTTER_STAGE(stage), NULL);

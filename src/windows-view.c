@@ -270,6 +270,7 @@ ClutterActor* xfdashboard_windows_view_new()
 	
 	/* Create object */
 	return(g_object_new(XFDASHBOARD_TYPE_WINDOWS_VIEW,
+						"view-name", "Windows",
 						"layout-manager", layout,
 						"workspace", workspace,
 						NULL));
