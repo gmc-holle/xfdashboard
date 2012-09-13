@@ -573,26 +573,29 @@ void xfdashboard_view_set_view_name(XfdashboardView *self, const gchar *inName)
 	/* Set font of label */
 	XfdashboardViewPrivate	*priv=XFDASHBOARD_VIEW_GET_PRIVATE(self);
 
-	if(priv->viewName) g_free(priv->viewName);
-	priv->viewName=g_strdup(inName);
+	if(g_strcmp0(priv->viewName, inName)!=0)
+	{
+		if(priv->viewName) g_free(priv->viewName);
+		priv->viewName=g_strdup(inName);
 
-	g_signal_emit_by_name(self, "name-changed", priv->viewName);
+		g_signal_emit_by_name(self, "name-changed", priv->viewName);
+	}
 }
 
 /* Get/Set layout manager */
+ClutterLayoutManager* xfdashboard_view_get_layout_manager(XfdashboardView *self)
+{
+  g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), NULL);
+
+  return(self->priv->layoutManager);
+}
+
 void xfdashboard_view_set_layout_manager(XfdashboardView *self, ClutterLayoutManager *inManager)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
 	g_return_if_fail(CLUTTER_IS_LAYOUT_MANAGER(inManager));
 
 	_xfdashboard_view_set_layout_manager(self, inManager);
-}
-
-ClutterLayoutManager* xfdashboard_view_get_layout_manager(XfdashboardView *self)
-{
-  g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), NULL);
-
-  return(self->priv->layoutManager);
 }
 
 /* Reset scroll bars in viewpad this view is connected to */

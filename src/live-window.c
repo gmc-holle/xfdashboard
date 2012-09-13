@@ -620,17 +620,19 @@ const gchar* xfdashboard_live_window_get_label_font(XfdashboardLiveWindow *self)
 void xfdashboard_live_window_set_label_font(XfdashboardLiveWindow *self, const gchar *inFont)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	g_return_if_fail(inFont!=NULL);
+	g_return_if_fail(inFont);
 
 	/* Set font of label */
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
-	if(priv->labelFont) g_free(priv->labelFont);
-	priv->labelFont=g_strdup(inFont);
+	if(!priv->labelFont || g_strcmp0(priv->labelFont, inFont)!=0)
+	{
+		if(priv->labelFont) g_free(priv->labelFont);
+		priv->labelFont=g_strdup(inFont);
 
-	clutter_text_set_font_name(CLUTTER_TEXT(priv->actorLabel), priv->labelFont);
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_text_set_font_name(CLUTTER_TEXT(priv->actorLabel), priv->labelFont);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set color of text in label */
@@ -648,12 +650,14 @@ void xfdashboard_live_window_set_label_color(XfdashboardLiveWindow *self, const 
 	/* Set text color of label */
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
-	if(priv->labelTextColor) clutter_color_free(priv->labelTextColor);
-	priv->labelTextColor=clutter_color_copy(inColor);
+	if(!priv->labelTextColor || !clutter_color_equal(inColor, priv->labelTextColor))
+	{
+		if(priv->labelTextColor) clutter_color_free(priv->labelTextColor);
+		priv->labelTextColor=clutter_color_copy(inColor);
 
-	clutter_text_set_color(CLUTTER_TEXT(priv->actorLabel), priv->labelTextColor);
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_text_set_color(CLUTTER_TEXT(priv->actorLabel), priv->labelTextColor);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set color of label's background */
@@ -671,12 +675,14 @@ void xfdashboard_live_window_set_label_background_color(XfdashboardLiveWindow *s
 	/* Set background color of label */
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
-	if(priv->labelBackgroundColor) clutter_color_free(priv->labelBackgroundColor);
-	priv->labelBackgroundColor=clutter_color_copy(inColor);
+	if(!priv->labelBackgroundColor || !clutter_color_equal(inColor, priv->labelBackgroundColor))
+	{
+		if(priv->labelBackgroundColor) clutter_color_free(priv->labelBackgroundColor);
+		priv->labelBackgroundColor=clutter_color_copy(inColor);
 
-	clutter_rectangle_set_color(CLUTTER_RECTANGLE(priv->actorLabelBackground), priv->labelBackgroundColor);
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_rectangle_set_color(CLUTTER_RECTANGLE(priv->actorLabelBackground), priv->labelBackgroundColor);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set margin of background to label */
@@ -690,13 +696,16 @@ const gfloat xfdashboard_live_window_get_label_margin(XfdashboardLiveWindow *sel
 void xfdashboard_live_window_set_label_margin(XfdashboardLiveWindow *self, const gfloat inMargin)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+	g_return_if_fail(inMargin>=0.0f);
 
 	/* Set margin */
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
-	priv->labelMargin=inMargin;
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	if(priv->labelMargin!=inMargin)
+	{
+		priv->labelMargin=inMargin;
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set ellipsize mode if label's text is getting too long */
@@ -714,9 +723,11 @@ void xfdashboard_live_window_set_label_ellipsize_mode(XfdashboardLiveWindow *sel
 	/* Set ellipsize mode */
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
-	priv->labelEllipsize=inMode;
+	if(priv->labelEllipsize!=inMode)
+	{
+		priv->labelEllipsize=inMode;
 
-	clutter_text_set_ellipsize(CLUTTER_TEXT(priv->actorLabel), priv->labelEllipsize);
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_text_set_ellipsize(CLUTTER_TEXT(priv->actorLabel), priv->labelEllipsize);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }

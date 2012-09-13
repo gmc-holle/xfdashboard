@@ -128,10 +128,13 @@ void _xfdashboard_application_menu_entry_set_custom_icon(XfdashboardApplicationM
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(self));
 
 	/* Set new icon name */
-	if(self->priv->iconName) g_free(self->priv->iconName);
-	self->priv->iconName=(inIconName ? g_strdup(inIconName) : NULL);
+	if(g_strcmp0(self->priv->iconName, inIconName)!=0)
+	{
+		if(self->priv->iconName) g_free(self->priv->iconName);
+		self->priv->iconName=(inIconName ? g_strdup(inIconName) : NULL);
 
-	_xfdashboard_application_menu_entry_set_menu_item(self, self->priv->menuElement);
+		_xfdashboard_application_menu_entry_set_menu_item(self, self->priv->menuElement);
+	}
 }
 
 void _xfdashboard_application_menu_entry_set_custom_title(XfdashboardApplicationMenuEntry *self, const gchar *inTitle)
@@ -139,10 +142,13 @@ void _xfdashboard_application_menu_entry_set_custom_title(XfdashboardApplication
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(self));
 
 	/* Set new title */
-	if(self->priv->title) g_free(self->priv->title);
-	self->priv->title=(inTitle ? g_strdup(inTitle) : NULL);
+	if(g_strcmp0(self->priv->iconName, inTitle)!=0)
+	{
+		if(self->priv->title) g_free(self->priv->title);
+		self->priv->title=(inTitle ? g_strdup(inTitle) : NULL);
 
-	_xfdashboard_application_menu_entry_set_menu_item(self, self->priv->menuElement);
+		_xfdashboard_application_menu_entry_set_menu_item(self, self->priv->menuElement);
+	}
 }
 
 void _xfdashboard_application_menu_entry_set_custom_description(XfdashboardApplicationMenuEntry *self, const gchar *inDescription)
@@ -150,10 +156,13 @@ void _xfdashboard_application_menu_entry_set_custom_description(XfdashboardAppli
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(self));
 
 	/* Set new description */
-	if(self->priv->description) g_free(self->priv->description);
-	self->priv->description=(inDescription ? g_strdup(inDescription) : NULL);
+	if(g_strcmp0(self->priv->iconName, inDescription)!=0)
+	{
+		if(self->priv->description) g_free(self->priv->description);
+		self->priv->description=(inDescription ? g_strdup(inDescription) : NULL);
 
-	_xfdashboard_application_menu_entry_set_menu_item(self, self->priv->menuElement);
+		_xfdashboard_application_menu_entry_set_menu_item(self, self->priv->menuElement);
+	}
 }
 
 /* Get GdkPixbuf object for themed icon name or absolute icon filename.
@@ -996,13 +1005,16 @@ const gfloat xfdashboard_application_menu_entry_get_margin(XfdashboardApplicatio
 void xfdashboard_application_menu_entry_set_margin(XfdashboardApplicationMenuEntry *self, const gfloat inMargin)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(self));
+	g_return_if_fail(inMargin>=0.0f);
 
 	/* Set margin */
 	XfdashboardApplicationMenuEntryPrivate	*priv=XFDASHBOARD_APPLICATION_MENU_ENTRY(self)->priv;
 
-	priv->margin=inMargin;
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	if(priv->margin!=inMargin)
+	{
+		priv->margin=inMargin;
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set margin of actor */
@@ -1016,13 +1028,16 @@ const gfloat xfdashboard_application_menu_entry_get_text_spacing(XfdashboardAppl
 void xfdashboard_application_menu_entry_set_text_spacing(XfdashboardApplicationMenuEntry *self, const gfloat inSpacing)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(self));
-
+	g_return_if_fail(inSpacing>=0.0f);
+	
 	/* Set margin */
 	XfdashboardApplicationMenuEntryPrivate	*priv=XFDASHBOARD_APPLICATION_MENU_ENTRY(self)->priv;
 
-	priv->textSpacing=inSpacing;
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	if(priv->textSpacing!=inSpacing)
+	{
+		priv->textSpacing=inSpacing;
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set background color */
@@ -1036,14 +1051,18 @@ const ClutterColor* xfdashboard_application_menu_entry_get_background_color(Xfda
 void xfdashboard_application_menu_entry_set_background_color(XfdashboardApplicationMenuEntry *self, const ClutterColor *inColor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(self));
+	g_return_if_fail(inColor);
 
 	/* Set background color */
 	XfdashboardApplicationMenuEntryPrivate	*priv=XFDASHBOARD_APPLICATION_MENU_ENTRY(self)->priv;
 
-	if(priv->backgroundColor) clutter_color_free(priv->backgroundColor);
-	priv->backgroundColor=clutter_color_copy(inColor);
+	if(!priv->backgroundColor || !clutter_color_equal(inColor, priv->backgroundColor))
+	{
+		if(priv->backgroundColor) clutter_color_free(priv->backgroundColor);
+		priv->backgroundColor=clutter_color_copy(inColor);
 
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set font to use in title */
@@ -1057,17 +1076,19 @@ const gchar* xfdashboard_application_menu_entry_get_title_font(XfdashboardApplic
 void xfdashboard_application_menu_entry_set_title_font(XfdashboardApplicationMenuEntry *self, const gchar *inFont)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(self));
-	g_return_if_fail(inFont!=NULL);
+	g_return_if_fail(inFont);
 
 	/* Set font of title */
 	XfdashboardApplicationMenuEntryPrivate	*priv=XFDASHBOARD_APPLICATION_MENU_ENTRY(self)->priv;
 
-	if(priv->titleFont) g_free(priv->titleFont);
-	priv->titleFont=g_strdup(inFont);
+	if(!priv->titleFont || g_strcmp0(priv->titleFont, inFont)!=0)
+	{
+		if(priv->titleFont) g_free(priv->titleFont);
+		priv->titleFont=g_strdup(inFont);
 
-	clutter_text_set_font_name(CLUTTER_TEXT(priv->actorTitle), priv->titleFont);
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_text_set_font_name(CLUTTER_TEXT(priv->actorTitle), priv->titleFont);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set color of text in title */
@@ -1081,16 +1102,19 @@ const ClutterColor* xfdashboard_application_menu_entry_get_title_color(Xfdashboa
 void xfdashboard_application_menu_entry_set_title_color(XfdashboardApplicationMenuEntry *self, const ClutterColor *inColor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(self));
+	g_return_if_fail(inColor);
 
 	/* Set text color of title */
 	XfdashboardApplicationMenuEntryPrivate	*priv=XFDASHBOARD_APPLICATION_MENU_ENTRY(self)->priv;
 
-	if(priv->titleColor) clutter_color_free(priv->titleColor);
-	priv->titleColor=clutter_color_copy(inColor);
+	if(!priv->titleColor || !clutter_color_equal(inColor, priv->titleColor))
+	{
+		if(priv->titleColor) clutter_color_free(priv->titleColor);
+		priv->titleColor=clutter_color_copy(inColor);
 
-	clutter_text_set_color(CLUTTER_TEXT(priv->actorTitle), priv->titleColor);
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_text_set_color(CLUTTER_TEXT(priv->actorTitle), priv->titleColor);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set ellipsize mode if title text is getting too long */
@@ -1108,11 +1132,13 @@ void xfdashboard_application_menu_entry_set_title_ellipsize_mode(XfdashboardAppl
 	/* Set ellipsize mode of description */
 	XfdashboardApplicationMenuEntryPrivate	*priv=XFDASHBOARD_APPLICATION_MENU_ENTRY(self)->priv;
 
-	priv->titleEllipsize=inMode;
+	if(priv->titleEllipsize!=inMode)
+	{
+		priv->titleEllipsize=inMode;
 
-	clutter_text_set_ellipsize(CLUTTER_TEXT(priv->actorTitle), priv->titleEllipsize);
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_text_set_ellipsize(CLUTTER_TEXT(priv->actorTitle), priv->titleEllipsize);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set font to use in description */
@@ -1126,17 +1152,19 @@ const gchar* xfdashboard_application_menu_entry_get_description_font(Xfdashboard
 void xfdashboard_application_menu_entry_set_description_font(XfdashboardApplicationMenuEntry *self, const gchar *inFont)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(self));
-	g_return_if_fail(inFont!=NULL);
+	g_return_if_fail(inFont);
 
 	/* Set font of description */
 	XfdashboardApplicationMenuEntryPrivate	*priv=XFDASHBOARD_APPLICATION_MENU_ENTRY(self)->priv;
 
-	if(priv->descriptionFont) g_free(priv->descriptionFont);
-	priv->descriptionFont=g_strdup(inFont);
+	if(!priv->descriptionFont || g_strcmp0(priv->descriptionFont, inFont)!=0)
+	{
+		if(priv->descriptionFont) g_free(priv->descriptionFont);
+		priv->descriptionFont=g_strdup(inFont);
 
-	clutter_text_set_font_name(CLUTTER_TEXT(priv->actorDescription), priv->descriptionFont);
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_text_set_font_name(CLUTTER_TEXT(priv->actorDescription), priv->descriptionFont);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set color of text in description */
@@ -1150,16 +1178,19 @@ const ClutterColor* xfdashboard_application_menu_entry_get_description_color(Xfd
 void xfdashboard_application_menu_entry_set_description_color(XfdashboardApplicationMenuEntry *self, const ClutterColor *inColor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(self));
+	g_return_if_fail(inColor);
 
 	/* Set text color of description */
 	XfdashboardApplicationMenuEntryPrivate	*priv=XFDASHBOARD_APPLICATION_MENU_ENTRY(self)->priv;
 
-	if(priv->descriptionColor) clutter_color_free(priv->descriptionColor);
-	priv->descriptionColor=clutter_color_copy(inColor);
+	if(!priv->descriptionColor || !clutter_color_equal(inColor, priv->descriptionColor))
+	{
+		if(priv->descriptionColor) clutter_color_free(priv->descriptionColor);
+		priv->descriptionColor=clutter_color_copy(inColor);
 
-	clutter_text_set_color(CLUTTER_TEXT(priv->actorDescription), priv->descriptionColor);
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_text_set_color(CLUTTER_TEXT(priv->actorDescription), priv->descriptionColor);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set ellipsize mode if description text is getting too long */
@@ -1177,9 +1208,11 @@ void xfdashboard_application_menu_entry_set_description_ellipsize_mode(Xfdashboa
 	/* Set ellipsize mode of description */
 	XfdashboardApplicationMenuEntryPrivate	*priv=XFDASHBOARD_APPLICATION_MENU_ENTRY(self)->priv;
 
-	priv->descriptionEllipsize=inMode;
+	if(priv->descriptionEllipsize!=inMode)
+	{
+		priv->descriptionEllipsize=inMode;
 
-	clutter_text_set_ellipsize(CLUTTER_TEXT(priv->actorDescription), priv->descriptionEllipsize);
-
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_text_set_ellipsize(CLUTTER_TEXT(priv->actorDescription), priv->descriptionEllipsize);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }

@@ -178,7 +178,7 @@ int main(int argc, char **argv)
 
 	/* Create viewpad and view selector */
 	viewpad=xfdashboard_viewpad_new();
-	viewSelector=xfdashboard_view_selector_new(viewpad);
+	viewSelector=xfdashboard_view_selector_new(XFDASHBOARD_VIEWPAD(viewpad));
 
 	clutter_actor_add_constraint(viewSelector, clutter_snap_constraint_new(quicklaunch, CLUTTER_SNAP_EDGE_LEFT, CLUTTER_SNAP_EDGE_RIGHT, spacingToStage));
 	clutter_actor_add_constraint(viewSelector, clutter_snap_constraint_new(group, CLUTTER_SNAP_EDGE_RIGHT, CLUTTER_SNAP_EDGE_RIGHT, -spacingToStage));

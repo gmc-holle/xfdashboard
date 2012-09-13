@@ -556,11 +556,16 @@ guint xfdashboard_quicklaunch_get_normal_icon_size(XfdashboardQuicklaunch *self)
 void xfdashboard_quicklaunch_set_normal_icon_size(XfdashboardQuicklaunch *self, guint inSize)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(inSize>0);
 
 	/* Set normal icon size (defines size at scale of 1.0) */
-	self->priv->normalIconSize=inSize;
-	
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+
+	if(priv->normalIconSize!=inSize)
+	{
+		priv->normalIconSize=inSize;
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set color of background */
@@ -574,14 +579,18 @@ const ClutterColor* xfdashboard_quicklaunch_get_background_color(XfdashboardQuic
 void xfdashboard_quicklaunch_set_background_color(XfdashboardQuicklaunch *self, const ClutterColor *inColor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(inColor);
 
 	/* Set background color */
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
 
-	if(priv->backgroundColor) clutter_color_free(priv->backgroundColor);
-	priv->backgroundColor=clutter_color_copy(inColor);
+	if(!priv->backgroundColor || !clutter_color_equal(inColor, priv->backgroundColor))
+	{
+		if(priv->backgroundColor) clutter_color_free(priv->backgroundColor);
+		priv->backgroundColor=clutter_color_copy(inColor);
 
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set spacing */
@@ -598,15 +607,19 @@ gfloat xfdashboard_quicklaunch_get_spacing(XfdashboardQuicklaunch *self)
 void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, gfloat inSpacing)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(inSpacing>=0.0f);
 
 	/* Set spacing */
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
 	XfdashboardScalingBoxLayout		*layout=XFDASHBOARD_SCALING_BOX_LAYOUT(priv->layoutManager);
 
-	priv->spacing=inSpacing;
-	xfdashboard_scaling_box_layout_set_spacing(layout, priv->spacing);
+	if(priv->spacing!=inSpacing)
+	{
+		priv->spacing=inSpacing;
 
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		xfdashboard_scaling_box_layout_set_spacing(layout, priv->spacing);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Add icon to quicklaunch */

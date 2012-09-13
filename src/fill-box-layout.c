@@ -476,9 +476,11 @@ void xfdashboard_fill_box_layout_set_vertical(XfdashboardFillBoxLayout *self, gb
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 
 	/* Set orientation */
-	self->priv->isVertical=inIsVertical;
-	
-	clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	if(self->priv->isVertical!=inIsVertical)
+	{
+		self->priv->isVertical=inIsVertical;
+		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	}
 }
 
 /* Get/set homogenous */
@@ -494,9 +496,11 @@ void xfdashboard_fill_box_layout_set_homogenous(XfdashboardFillBoxLayout *self, 
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 
 	/* Set homogenous */
-	self->priv->isHomogeneous=inIsHomogenous;
-	
-	clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	if(self->priv->isHomogeneous!=inIsHomogenous)
+	{
+		self->priv->isHomogeneous=inIsHomogenous;
+		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	}
 }
 
 /* Get/set spacing */
@@ -510,9 +514,12 @@ gfloat xfdashboard_fill_box_layout_get_spacing(XfdashboardFillBoxLayout *self)
 void xfdashboard_fill_box_layout_set_spacing(XfdashboardFillBoxLayout *self, gfloat inSpacing)
 {
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
+	g_return_if_fail(inSpacing>=0.0f);
 
 	/* Set spacing */
-	self->priv->spacing=inSpacing;
-
-	clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	if(self->priv->spacing!=inSpacing)
+	{
+		self->priv->spacing=inSpacing;
+		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	}
 }

@@ -455,16 +455,22 @@ gfloat xfdashboard_scaling_box_layout_get_scale_minimum(XfdashboardScalingBoxLay
 void xfdashboard_scaling_box_layout_set_scale_minimum(XfdashboardScalingBoxLayout *self, gfloat inScale)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SCALING_BOX_LAYOUT(self));
-
+	g_return_if_fail(inScale>0.0f);
+	
 	/* Set scale */
-	if(inScale>self->priv->scaleMax)
-	{
-		self->priv->scaleMin=self->priv->scaleMax;
-		self->priv->scaleMax=inScale;
-	}
-		else self->priv->scaleMin=inScale;
+	XfdashboardScalingBoxLayoutPrivate		*priv=XFDASHBOARD_SCALING_BOX_LAYOUT(self)->priv;
 
-	clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	if(priv->scaleMax!=inScale)
+	{
+		if(inScale>priv->scaleMax)
+		{
+			priv->scaleMin=priv->scaleMax;
+			priv->scaleMax=inScale;
+		}
+			else priv->scaleMin=inScale;
+
+		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	}
 }
 
 gfloat xfdashboard_scaling_box_layout_get_scale_maximum(XfdashboardScalingBoxLayout *self)
@@ -477,16 +483,22 @@ gfloat xfdashboard_scaling_box_layout_get_scale_maximum(XfdashboardScalingBoxLay
 void xfdashboard_scaling_box_layout_set_scale_maximum(XfdashboardScalingBoxLayout *self, gfloat inScale)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SCALING_BOX_LAYOUT(self));
+	g_return_if_fail(inScale>0.0f);
 
 	/* Set scale */
-	if(inScale<self->priv->scaleMin)
-	{
-		self->priv->scaleMax=self->priv->scaleMin;
-		self->priv->scaleMin=inScale;
-	}
-		else self->priv->scaleMax=inScale;
+	XfdashboardScalingBoxLayoutPrivate		*priv=XFDASHBOARD_SCALING_BOX_LAYOUT(self)->priv;
 
-	clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	if(priv->scaleMin!=inScale)
+	{
+		if(inScale<priv->scaleMin)
+		{
+			priv->scaleMax=priv->scaleMin;
+			priv->scaleMin=inScale;
+		}
+			else priv->scaleMax=inScale;
+
+		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	}
 }
 
 gfloat xfdashboard_scaling_box_layout_get_scale_step(XfdashboardScalingBoxLayout *self)
@@ -502,9 +514,14 @@ void xfdashboard_scaling_box_layout_set_scale_step(XfdashboardScalingBoxLayout *
 	g_return_if_fail(inScale<=(self->priv->scaleMax-self->priv->scaleMin));
 	
 	/* Set scale */
-	self->priv->scaleStep=inScale;
+	XfdashboardScalingBoxLayoutPrivate		*priv=XFDASHBOARD_SCALING_BOX_LAYOUT(self)->priv;
 
-	clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	if(priv->scaleStep!=inScale)
+	{
+		priv->scaleStep=inScale;
+
+		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	}
 }
 
 /* Get/set spacing */
@@ -518,11 +535,17 @@ gfloat xfdashboard_scaling_box_layout_get_spacing(XfdashboardScalingBoxLayout *s
 void xfdashboard_scaling_box_layout_set_spacing(XfdashboardScalingBoxLayout *self, gfloat inSpacing)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SCALING_BOX_LAYOUT(self));
-
+	g_return_if_fail(inSpacing>=0.0f);
+	
 	/* Set spacing */
-	self->priv->spacing=inSpacing;
+	XfdashboardScalingBoxLayoutPrivate		*priv=XFDASHBOARD_SCALING_BOX_LAYOUT(self)->priv;
 
-	clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	if(priv->spacing!=inSpacing)
+	{
+		priv->spacing=inSpacing;
+
+		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	}
 }
 
 /* Get allocation computed on last allocation run */

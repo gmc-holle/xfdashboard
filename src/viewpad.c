@@ -661,6 +661,9 @@ void xfdashboard_viewpad_set_active_view(XfdashboardViewpad *self, XfdashboardVi
 
 	XfdashboardViewpadPrivate	*priv=self->priv;
 
+	/* Only change active view if new one differs from old one */
+	if(priv->activeView==inView) return;
+	
 	/* Check if view to activate exists */
 	if(G_UNLIKELY(inView && !g_list_find(self->priv->views, inView)))
 	{
