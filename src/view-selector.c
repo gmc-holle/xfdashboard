@@ -129,7 +129,6 @@ void _xfdashboard_view_selector_update(XfdashboardViewSelector *self, gboolean i
 		views=xfdashboard_viewpad_get_views(priv->viewpad);
 		for( ; views; views=views->next)
 		{
-			XfdashboardView		*view=XFDASHBOARD_VIEW(views->data);
 			ClutterActor		*button;
 			ClutterAction		*action;
 

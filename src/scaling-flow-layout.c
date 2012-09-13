@@ -78,22 +78,9 @@ static void xfdashboard_scaling_flow_layout_get_preferred_width(ClutterLayoutMan
 	gfloat									maxMinWidth, maxNaturalWidth;
 	GList									*children;
 
-	maxMinWidth=maxNaturalWidth=0.0f;
-	for(children=clutter_container_get_children(inContainer); children; children=children->next)
-	{
-		ClutterActor						*child=CLUTTER_ACTOR(children->data);
-		gfloat								childMinWidth, childNaturalWidth;
-
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
-
-		clutter_actor_get_preferred_width(child,
-											inForHeight,
-											&childMinWidth,
-											&childNaturalWidth);
-
-		if(childMinWidth>maxMinWidth) maxMinWidth=childMinWidth;
-		if(childNaturalWidth>maxNaturalWidth) maxNaturalWidth=childNaturalWidth;
-	}
+	/* Return really small sizes because the children will be scaled on allocation */
+	maxMinWidth=0.0f;
+	maxNaturalWidth=1.0f;
 
 	if(outMinWidth) *outMinWidth=maxMinWidth;
 	if(outNaturalWidth) *outNaturalWidth=maxNaturalWidth;
@@ -108,25 +95,12 @@ static void xfdashboard_scaling_flow_layout_get_preferred_height(ClutterLayoutMa
 	gfloat									maxMinHeight, maxNaturalHeight;
 	GList									*children;
 
-	maxMinHeight=maxNaturalHeight=0.0f;
-	for(children=clutter_container_get_children(inContainer); children; children=children->next)
-	{
-		ClutterActor						*child=CLUTTER_ACTOR(children->data);
-		gfloat								childMinHeight, childNaturalHeight;
+	/* Return really small sizes because the children will be scaled on allocation */
+	maxMinHeight=0.0f;
+	maxNaturalHeight=1.0f;
 
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
-		
-		clutter_actor_get_preferred_height(child,
-											inForWidth,
-											&childMinHeight,
-											&childNaturalHeight);
-
-		if(childMinHeight>maxMinHeight) maxMinHeight=childMinHeight;
-		if(childNaturalHeight>maxMinHeight) maxNaturalHeight=childNaturalHeight;
-	}
-
-	*outMinHeight=maxMinHeight;
-	*outNaturalHeight=maxNaturalHeight;
+	if(outMinHeight) *outMinHeight=maxMinHeight;
+	if(outNaturalHeight) *outNaturalHeight=maxNaturalHeight;
 }
 
 /* Re-layout and allocate children of container we manage */
@@ -204,7 +178,7 @@ static void xfdashboard_scaling_flow_layout_allocate(ClutterLayoutManager *inMan
 		childAllocation.y2=ceil(childAllocation.y1+childHeight);
 
 		clutter_actor_allocate(child, &childAllocation, inFlags);
-		
+
 		/* Set up for next child */
 		col=(col+1) % numberCols;
 		if(col==0) row++;

@@ -131,9 +131,9 @@ void __temp_value_changed(ClutterActor *inActor, int inValue, gpointer inUserDat
 int main(int argc, char **argv)
 {
 	gulong					stageDestroySignalID=0L;
-	ClutterActor			*box, *viewpadBox;
-	ClutterLayoutManager	*boxLayout, *viewpadBoxLayout;
-	ClutterActor			*actor, *viewpad;
+	ClutterActor			*group;
+	ClutterActor			*quicklaunch;
+	ClutterActor			*viewpad, *viewSelector, *view;
 	ClutterColor			stageColor={ 0, 0, 0, 0xd0 };
 
 	/* Tell clutter to try to initialize an RGBA visual */
@@ -154,78 +154,52 @@ int main(int argc, char **argv)
 	clutter_stage_set_color(CLUTTER_STAGE(stage), &stageColor);
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(stage), TRUE);
 
+	/* Create group holding all actors for stage */
+	group=clutter_group_new();
+	clutter_actor_set_position(group, 0.0f, spacingToStage);
+	clutter_actor_add_constraint(group, clutter_bind_constraint_new(stage, CLUTTER_BIND_WIDTH, 0.0f));
+	clutter_actor_add_constraint(group, clutter_bind_constraint_new(stage, CLUTTER_BIND_HEIGHT, -(2*spacingToStage)));
+	clutter_container_add_actor(CLUTTER_CONTAINER(stage), group);
+
 	/* TODO: Create background by copying background of Xfce */
 
-	/* Create box holding all main elements of stage */
-	boxLayout=clutter_box_layout_new();
-	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(boxLayout), spacingToStage);
-
-	box=clutter_box_new(boxLayout);
-	clutter_actor_add_constraint(box, clutter_bind_constraint_new(stage, CLUTTER_BIND_Y, spacingToStage));
-	clutter_actor_add_constraint(box, clutter_bind_constraint_new(stage, CLUTTER_BIND_SIZE, -(2*spacingToStage)));
-	clutter_container_add_actor(CLUTTER_CONTAINER(stage), box);
-
 	/* Create quicklaunch box and add to box */
-	actor=xfdashboard_quicklaunch_new();
-	clutter_actor_add_constraint(actor, clutter_bind_constraint_new(box, CLUTTER_BIND_HEIGHT, 0.0f));
-	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(boxLayout),
-								actor,
-								TRUE,
-								FALSE,
-								TRUE,
-								CLUTTER_BOX_ALIGNMENT_START,
-								CLUTTER_BOX_ALIGNMENT_CENTER);
+	quicklaunch=xfdashboard_quicklaunch_new();
+	clutter_actor_add_constraint(quicklaunch, clutter_bind_constraint_new(group, CLUTTER_BIND_HEIGHT, 0.0f));
+	clutter_container_add_actor(CLUTTER_CONTAINER(group), quicklaunch);
 
 	/* TODO: Remove the following actor(s) for application icons
 	 *       in quicklaunch box as soon as xfconf is implemented
 	 */
 	for(gint i=0; i<(sizeof(quicklaunch_apps)/sizeof(quicklaunch_apps[0])); i++)
 	{
-		xfdashboard_quicklaunch_add_icon_by_desktop_file(XFDASHBOARD_QUICKLAUNCH(actor), quicklaunch_apps[i]);
+		xfdashboard_quicklaunch_add_icon_by_desktop_file(XFDASHBOARD_QUICKLAUNCH(quicklaunch), quicklaunch_apps[i]);
 	}
 
-	/* TODO: Create viewpad and add view(s) to viewpad */
-
-	/* Create windows view and add to box */
-	viewpadBoxLayout=clutter_box_layout_new();
-	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(viewpadBoxLayout), spacingToStage);
-	clutter_box_layout_set_vertical(CLUTTER_BOX_LAYOUT(viewpadBoxLayout), TRUE);
-
-	viewpadBox=clutter_box_new(viewpadBoxLayout);
-	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(boxLayout),
-								viewpadBox,
-								TRUE,
-								TRUE,
-								TRUE,
-								CLUTTER_BOX_ALIGNMENT_CENTER,
-								CLUTTER_BOX_ALIGNMENT_CENTER);
-
+	/* Create viewpad and view selector */
 	viewpad=xfdashboard_viewpad_new();
+	viewSelector=xfdashboard_view_selector_new(viewpad);
 
-	actor=xfdashboard_view_selector_new(XFDASHBOARD_VIEWPAD(viewpad));
-	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(viewpadBoxLayout),
-								actor,
-								TRUE,
-								TRUE,
-								FALSE,
-								CLUTTER_BOX_ALIGNMENT_START,
-								CLUTTER_BOX_ALIGNMENT_START);
+	clutter_actor_add_constraint(viewSelector, clutter_snap_constraint_new(quicklaunch, CLUTTER_SNAP_EDGE_LEFT, CLUTTER_SNAP_EDGE_RIGHT, spacingToStage));
+	clutter_actor_add_constraint(viewSelector, clutter_snap_constraint_new(group, CLUTTER_SNAP_EDGE_RIGHT, CLUTTER_SNAP_EDGE_RIGHT, -spacingToStage));
+	clutter_actor_add_constraint(viewSelector, clutter_bind_constraint_new(quicklaunch, CLUTTER_BIND_Y, 0.0f));
+	clutter_container_add_actor(CLUTTER_CONTAINER(group), viewSelector);
 
-	clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(viewpadBoxLayout),
-								viewpad,
-								TRUE,
-								TRUE,
-								TRUE,
-								CLUTTER_BOX_ALIGNMENT_CENTER,
-								CLUTTER_BOX_ALIGNMENT_CENTER);
+	clutter_actor_add_constraint(viewpad, clutter_snap_constraint_new(quicklaunch, CLUTTER_SNAP_EDGE_LEFT, CLUTTER_SNAP_EDGE_RIGHT, spacingToStage));
+	clutter_actor_add_constraint(viewpad, clutter_snap_constraint_new(group, CLUTTER_SNAP_EDGE_RIGHT, CLUTTER_SNAP_EDGE_RIGHT, -spacingToStage));
+	clutter_actor_add_constraint(viewpad, clutter_snap_constraint_new(viewSelector, CLUTTER_SNAP_EDGE_TOP, CLUTTER_SNAP_EDGE_BOTTOM, spacingToStage));
+	clutter_actor_add_constraint(viewpad, clutter_snap_constraint_new(group, CLUTTER_SNAP_EDGE_BOTTOM, CLUTTER_SNAP_EDGE_BOTTOM, -spacingToStage));
+	clutter_container_add_actor(CLUTTER_CONTAINER(group), viewpad);
 
-	actor=xfdashboard_windows_view_new();
-	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(actor));
-	xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(actor));
 
-	actor=xfdashboard_applications_view_new();
-	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(actor));
-	xfdashboard_applications_view_set_active_menu(XFDASHBOARD_APPLICATIONS_VIEW(actor), xfdashboard_getApplicationMenu());
+	/* Create views and add them to viewpad */
+	view=xfdashboard_windows_view_new();
+	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
+	xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
+
+	view=xfdashboard_applications_view_new();
+	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
+	xfdashboard_applications_view_set_active_menu(XFDASHBOARD_APPLICATIONS_VIEW(view), xfdashboard_getApplicationMenu());
 
 	/* Set up event handlers */
 	clutter_stage_set_key_focus(CLUTTER_STAGE(stage), NULL);
@@ -248,5 +222,5 @@ int main(int argc, char **argv)
 	}
 	clutter_actor_destroy(stage);
 
-	return 0;
+	return(0);
 }
