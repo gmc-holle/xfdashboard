@@ -55,6 +55,7 @@ struct _XfdashboardScrollbarClass
 
 	/* Virtual functions */
 	void (*value_changed)(XfdashboardScrollbar *self, gfloat inNewValue);
+	void (*range_changed)(XfdashboardScrollbar *self, gfloat inNewValue);
 };
 
 GType xfdashboard_scrollbar_get_type(void) G_GNUC_CONST;

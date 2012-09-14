@@ -72,8 +72,8 @@ static ClutterColor		_xfdashboard_view_selector_default_selected_color=
 							{ 0xff, 0xff, 0xff, 0xff };
 
 /* A button in view selector was clicked */
-void _xfdashboard_view_selector_clicked(ClutterClickAction *inAction,
-										ClutterActor *inActor,
+void _xfdashboard_view_selector_clicked(ClutterActor *inActor,
+										ClutterEvent *inEvent,
 										gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(inUserData));
@@ -82,6 +82,9 @@ void _xfdashboard_view_selector_clicked(ClutterClickAction *inAction,
 	GList							*views;
 	GList							*buttons;
 
+	/* Only change view if actor was left-clicked */
+	if(clutter_event_get_button(inEvent)!=1) return;
+	
 	/* Iterate through button and find the one to which this action
 	 * is connected to
 	 */
@@ -98,7 +101,7 @@ void _xfdashboard_view_selector_clicked(ClutterClickAction *inAction,
 		ClutterText			*button=CLUTTER_TEXT(buttons->data);
 		XfdashboardView		*view=XFDASHBOARD_VIEW(views->data);
 
-		if(clutter_actor_get_action(CLUTTER_ACTOR(button), "click")==CLUTTER_ACTION(inAction))
+		if(CLUTTER_ACTOR(button)==inActor)
 		{
 			xfdashboard_viewpad_set_active_view(priv->viewpad, view);
 		}
@@ -130,7 +133,6 @@ void _xfdashboard_view_selector_update(XfdashboardViewSelector *self, gboolean i
 		for( ; views; views=views->next)
 		{
 			ClutterActor		*button;
-			ClutterAction		*action;
 
 			/* Create actor */
 			button=clutter_text_new();
@@ -143,9 +145,7 @@ void _xfdashboard_view_selector_update(XfdashboardViewSelector *self, gboolean i
 								NULL);
 
 			/* Connect signals to actor */
-			action=clutter_click_action_new();
-			clutter_actor_add_action_with_name(button, "click", action);
-			g_signal_connect(action, "clicked", G_CALLBACK(_xfdashboard_view_selector_clicked), self);
+			g_signal_connect(button, "button-press-event", G_CALLBACK(_xfdashboard_view_selector_clicked), self);
 		}
 	}
 

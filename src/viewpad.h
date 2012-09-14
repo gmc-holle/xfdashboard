@@ -25,6 +25,7 @@
 #define __XFDASHBOARD_VIEWPAD__
 
 #include <clutter/clutter.h>
+#include <gtk/gtk.h>
 
 #include "view.h"
 #include "scrollbar.h"
@@ -76,6 +77,13 @@ void xfdashboard_viewpad_set_active_view(XfdashboardViewpad *self, XfdashboardVi
 
 XfdashboardScrollbar* xfdashboard_viewpad_get_vertical_scrollbar(XfdashboardViewpad *self);
 XfdashboardScrollbar* xfdashboard_viewpad_get_horizontal_scrollbar(XfdashboardViewpad *self);
+
+void xfdashboard_viewpad_get_scrollbar_policy(XfdashboardViewpad *self,
+												GtkPolicyType *outHorizontalPolicy,
+												GtkPolicyType *outVerticalPolicy);
+void xfdashboard_viewpad_set_scrollbar_policy(XfdashboardViewpad *self,
+												GtkPolicyType inHorizontalPolicy,
+												GtkPolicyType inVerticalPolicy);
 
 gfloat xfdashboard_viewpad_get_thickness(XfdashboardViewpad *self);
 void xfdashboard_viewpad_set_thickness(XfdashboardViewpad *self, gfloat inThickness);

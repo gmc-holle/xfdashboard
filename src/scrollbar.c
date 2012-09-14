@@ -79,6 +79,7 @@ static GParamSpec* XfdashboardScrollbarProperties[PROP_LAST]={ 0, };
 enum
 {
 	VALUE_CHANGED,
+	RANGE_CHANGED,
 
 	SIGNAL_LAST
 };
@@ -673,6 +674,18 @@ static void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 						G_TYPE_NONE,
 						1,
 						G_TYPE_FLOAT);
+
+	XfdashboardScrollbarSignals[RANGE_CHANGED]=
+		g_signal_new("range-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardScrollbarClass, range_changed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__FLOAT,
+						G_TYPE_NONE,
+						1,
+						G_TYPE_FLOAT);
 }
 
 /* Object initialization
@@ -736,12 +749,13 @@ void xfdashboard_scrollbar_set_value(XfdashboardScrollbar *self, gfloat inValue)
 		inValue=priv->range;
 	}
 
-	if(inValue==priv->value) return;
-
-	/* Set new value, emit signal and redraw scroll bar */
-	priv->value=inValue;
-	g_signal_emit_by_name(self, "value-changed", priv->value);
-	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	if(inValue!=priv->value)
+	{
+		/* Set new value, emit signal and redraw scroll bar */
+		priv->value=inValue;
+		g_signal_emit_by_name(self, "value-changed", priv->value);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set range to scroll within */
@@ -764,6 +778,7 @@ void xfdashboard_scrollbar_set_range(XfdashboardScrollbar *self, gfloat inRange)
 	{
 		priv->range=inRange;
 
+		g_signal_emit_by_name(self, "range-changed", priv->value);
 		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 	}
 }

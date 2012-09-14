@@ -17,8 +17,8 @@
 == VIEWPAD (VIEW AGGREGATOR) ==
 [done] - Implement viewpad
 [done] - For each view create a button to switch to this view
-- Check why we need to slowly double-click on text to switch view - should be single-click
-- Scroll bars should be shown or hidden automatically depending on if view fits the space in this direction
+[done] - Check why we need to slowly double-click on text to switch view - should be single-click
+[done] - Scroll bars should be shown or hidden automatically depending on if view fits the space in this direction
 
 == WINDOWS-LIST VIEW ==
 [done] Implement windows-list view

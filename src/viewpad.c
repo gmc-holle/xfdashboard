@@ -46,8 +46,14 @@ struct _XfdashboardViewpadPrivate
 
 	/* Scroll bars */
 	gfloat					thickness;
-	ClutterActor			*verticalScrollbar;
+
+	gboolean				horizontalScrollbarVisible;
 	ClutterActor			*horizontalScrollbar;
+	GtkPolicyType			horizontalScrollbarPolicy;
+
+	gboolean				verticalScrollbarVisible;
+	ClutterActor			*verticalScrollbar;
+	GtkPolicyType			verticalScrollbarPolicy;
 };
 
 /* Properties */
@@ -60,7 +66,9 @@ enum
 	PROP_ACTIVE_VIEW,
 
 	PROP_VERTICAL_SCROLLBAR,
+	PROP_VERTICAL_SCROLLBAR_POLICY,
 	PROP_HORIZONTAL_SCROLLBAR,
+	PROP_HORIZONTAL_SCROLLBAR_POLICY,
 
 	PROP_LAST
 };
@@ -81,7 +89,8 @@ enum
 static guint XfdashboardViewpadSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_THICKNESS		8.0f
+#define DEFAULT_THICKNESS			8.0f
+#define DEFAULT_SCROLLBAR_POLICY	GTK_POLICY_AUTOMATIC
 
 /* Resetting scroll bars was requested */
 static void _xfdashboard_viewpad_reset_scrollbars(ClutterActor *inActor, gpointer inUserData)
@@ -175,10 +184,14 @@ static void xfdashboard_viewpad_paint(ClutterActor *inActor)
 	if(priv->activeView && CLUTTER_ACTOR_IS_VISIBLE(priv->activeView))
 		clutter_actor_paint(CLUTTER_ACTOR(priv->activeView));
 
-	if(priv->verticalScrollbar && CLUTTER_ACTOR_IS_VISIBLE(priv->verticalScrollbar))
+	if(priv->verticalScrollbar &&
+		CLUTTER_ACTOR_IS_VISIBLE(priv->verticalScrollbar) &&
+		priv->verticalScrollbarVisible)
 		clutter_actor_paint(priv->verticalScrollbar);
 
-	if(priv->horizontalScrollbar && CLUTTER_ACTOR_IS_VISIBLE(priv->horizontalScrollbar))
+	if(priv->horizontalScrollbar &&
+		CLUTTER_ACTOR_IS_VISIBLE(priv->horizontalScrollbar) &&
+		priv->horizontalScrollbarVisible)
 		clutter_actor_paint(priv->horizontalScrollbar);
 }
 
@@ -219,7 +232,9 @@ static void xfdashboard_viewpad_get_preferred_width(ClutterActor *inActor,
 												-1.0f,
 												NULL,
 												&viewNaturalHeight);
-			if(viewNaturalHeight>inForHeight)
+			if(priv->horizontalScrollbarPolicy==GTK_POLICY_ALWAYS ||
+				(priv->horizontalScrollbarPolicy==GTK_POLICY_AUTOMATIC &&
+					viewNaturalHeight>inForHeight))
 			{
 				clutter_actor_get_preferred_width(priv->verticalScrollbar,
 													inForHeight,
@@ -264,7 +279,9 @@ static void xfdashboard_viewpad_get_preferred_height(ClutterActor *inActor,
 												-1.0f,
 												NULL,
 												&viewNaturalWidth);
-			if(viewNaturalWidth>inForWidth)
+			if(priv->verticalScrollbarPolicy==GTK_POLICY_ALWAYS ||
+				(priv->verticalScrollbarPolicy==GTK_POLICY_AUTOMATIC &&
+					viewNaturalWidth>inForWidth))
 			{
 				clutter_actor_get_preferred_height(priv->verticalScrollbar,
 													inForWidth,
@@ -290,7 +307,7 @@ static void xfdashboard_viewpad_allocate(ClutterActor *inActor,
 	ClutterActorClass			*klass;
 	ClutterActorBox				*box;
 	gfloat						viewWidth, viewHeight;
-	gboolean					vScrollVisible, hScrollVisible;
+	gfloat						scrollbarCheckWidth, scrollbarCheckHeight;
 	gfloat						vScrollWidth, vScrollHeight;
 	gfloat						hScrollWidth, hScrollHeight;
 
@@ -298,35 +315,51 @@ static void xfdashboard_viewpad_allocate(ClutterActor *inActor,
 	klass=CLUTTER_ACTOR_CLASS(xfdashboard_viewpad_parent_class);
 	klass->allocate(inActor, inAllocation, inFlags);
 
-	/* Initialize largest possible allocation for view */
+	/* Initialize largest possible allocation for view and determine
+	 * real size of view to show. The real size is used to determine
+	 * scroll bar visibility if policy is automatic */
 	viewWidth=clutter_actor_box_get_width(inAllocation);
 	viewHeight=clutter_actor_box_get_height(inAllocation);
 
 	/* Set allocation for visible scroll bars */
-	vScrollVisible=(priv->verticalScrollbar && CLUTTER_ACTOR_IS_VISIBLE(priv->verticalScrollbar));
+	priv->horizontalScrollbarVisible=FALSE;
+	if(priv->horizontalScrollbarPolicy==GTK_POLICY_ALWAYS ||
+		(priv->horizontalScrollbarPolicy==GTK_POLICY_AUTOMATIC &&
+			xfdashboard_scrollbar_get_range(XFDASHBOARD_SCROLLBAR(priv->horizontalScrollbar))>viewWidth))
+	{
+		priv->horizontalScrollbarVisible=TRUE;
+	}
+
+	priv->verticalScrollbarVisible=FALSE;
+	if(priv->verticalScrollbarPolicy==GTK_POLICY_ALWAYS ||
+		(priv->verticalScrollbarPolicy==GTK_POLICY_AUTOMATIC &&
+			xfdashboard_scrollbar_get_range(XFDASHBOARD_SCROLLBAR(priv->verticalScrollbar))>viewHeight))
+	{
+		priv->verticalScrollbarVisible=TRUE;
+	}
+
 	vScrollWidth=0.0f;
 	vScrollHeight=viewHeight;
-	if(vScrollVisible) clutter_actor_get_preferred_width(priv->verticalScrollbar, -1, NULL, &vScrollWidth);
+	clutter_actor_get_preferred_width(priv->verticalScrollbar, -1, NULL, &vScrollWidth);
 
-	hScrollVisible=(priv->horizontalScrollbar && CLUTTER_ACTOR_IS_VISIBLE(priv->horizontalScrollbar));
 	hScrollWidth=viewWidth;
 	hScrollHeight=0.0f;
-	if(hScrollVisible) clutter_actor_get_preferred_height(priv->horizontalScrollbar, -1, NULL, &hScrollHeight);
+	clutter_actor_get_preferred_height(priv->horizontalScrollbar, -1, NULL, &hScrollHeight);
 
-	if(vScrollVisible && hScrollVisible)
+	if(priv->horizontalScrollbarVisible && priv->verticalScrollbarVisible)
 	{
 		vScrollHeight-=hScrollHeight;
 		hScrollWidth-=vScrollWidth;
 	}
 
-	if(vScrollVisible)
+	if(priv->verticalScrollbarVisible)
 	{
 		box=clutter_actor_box_new(viewWidth-vScrollWidth, 0, viewWidth, vScrollHeight);
 		clutter_actor_allocate(priv->verticalScrollbar, box, inFlags);
 		clutter_actor_box_free(box);
 	}
 
-	if(hScrollVisible)
+	if(priv->horizontalScrollbarVisible)
 	{
 		box=clutter_actor_box_new(0, viewHeight-hScrollHeight, hScrollWidth, viewHeight);
 		clutter_actor_allocate(priv->horizontalScrollbar, box, inFlags);
@@ -341,8 +374,8 @@ static void xfdashboard_viewpad_allocate(ClutterActor *inActor,
 		gfloat					x, y;
 		
 		/* Set allocation */
-		if(vScrollVisible) viewWidth-=vScrollWidth;
-		if(hScrollVisible) viewHeight-=hScrollHeight;
+		if(priv->verticalScrollbarVisible) viewWidth-=vScrollWidth;
+		if(priv->horizontalScrollbarVisible) viewHeight-=hScrollHeight;
 
 		x=ceilf(xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->horizontalScrollbar)));
 		y=ceilf(xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->verticalScrollbar)));
@@ -397,6 +430,18 @@ static void xfdashboard_viewpad_set_property(GObject *inObject,
 			xfdashboard_viewpad_set_active_view(self, XFDASHBOARD_VIEW(g_value_get_object(inValue)));
 			break;
 
+		case PROP_VERTICAL_SCROLLBAR_POLICY:
+			xfdashboard_viewpad_set_scrollbar_policy(self,
+														self->priv->horizontalScrollbarPolicy,
+														g_value_get_enum(inValue));
+			break;
+
+		case PROP_HORIZONTAL_SCROLLBAR_POLICY:
+			xfdashboard_viewpad_set_scrollbar_policy(self,
+														g_value_get_enum(inValue),
+														self->priv->verticalScrollbarPolicy);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -424,8 +469,16 @@ static void xfdashboard_viewpad_get_property(GObject *inObject,
 			g_value_set_object(outValue, self->priv->verticalScrollbar);
 			break;
 
+		case PROP_VERTICAL_SCROLLBAR_POLICY:
+			g_value_set_enum(outValue, self->priv->verticalScrollbarPolicy);
+			break;
+
 		case PROP_HORIZONTAL_SCROLLBAR:
 			g_value_set_object(outValue, self->priv->horizontalScrollbar);
+			break;
+
+		case PROP_HORIZONTAL_SCROLLBAR_POLICY:
+			g_value_set_enum(outValue, self->priv->verticalScrollbarPolicy);
 			break;
 
 		default:
@@ -480,12 +533,28 @@ static void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 							XFDASHBOARD_TYPE_SCROLLBAR,
 							G_PARAM_READABLE);
 
+	XfdashboardViewpadProperties[PROP_VERTICAL_SCROLLBAR_POLICY]=
+		g_param_spec_enum("vertical-scrollbar-policy",
+							"Vertical scrollbar policy",
+							"When the vertical scrollbar is displayed",
+							GTK_TYPE_POLICY_TYPE,
+							DEFAULT_SCROLLBAR_POLICY,
+							G_PARAM_READWRITE);
+
 	XfdashboardViewpadProperties[PROP_HORIZONTAL_SCROLLBAR]=
 		g_param_spec_object("horizontal-scrollbar",
 							"Horizontal scroll bar",
 							"The horizontal scroll bar",
 							XFDASHBOARD_TYPE_SCROLLBAR,
 							G_PARAM_READABLE);
+
+	XfdashboardViewpadProperties[PROP_HORIZONTAL_SCROLLBAR_POLICY]=
+		g_param_spec_enum("horizontal-scrollbar-policy",
+							"Horizontal scrollbar policy",
+							"When the horizontal scrollbar is displayed",
+							GTK_TYPE_POLICY_TYPE,
+							DEFAULT_SCROLLBAR_POLICY,
+							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewpadProperties);
 
@@ -552,6 +621,10 @@ static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	priv->views=NULL;
 	priv->activeView=NULL;
 	priv->thickness=DEFAULT_THICKNESS;
+	priv->horizontalScrollbarVisible=FALSE;
+	priv->verticalScrollbarVisible=FALSE;
+	priv->horizontalScrollbarPolicy=DEFAULT_SCROLLBAR_POLICY;
+	priv->verticalScrollbarPolicy=DEFAULT_SCROLLBAR_POLICY;
 
 	/* Create scroll bar actors */
 	priv->verticalScrollbar=xfdashboard_scrollbar_new_with_thickness(priv->thickness);
@@ -675,6 +748,8 @@ void xfdashboard_viewpad_set_active_view(XfdashboardViewpad *self, XfdashboardVi
 	/* Deactivate current active view by hiding it */
 	if(priv->activeView)
 	{
+		/* Hide actor but remove any clipping before */
+		clutter_actor_remove_clip(CLUTTER_ACTOR(priv->activeView));
 		clutter_actor_hide(CLUTTER_ACTOR(priv->activeView));
 		g_signal_emit_by_name(priv->activeView, "deactivated", NULL);
 		g_signal_emit_by_name(self, "view-deactivated", priv->activeView);
@@ -687,9 +762,11 @@ void xfdashboard_viewpad_set_active_view(XfdashboardViewpad *self, XfdashboardVi
 		/* Set range for scroll bars */
 		gfloat					w, h;
 
-		clutter_actor_get_size(CLUTTER_ACTOR(inView), &w, &h);
+		clutter_actor_get_preferred_size(CLUTTER_ACTOR(inView), NULL, NULL, &w, &h);
 		xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->horizontalScrollbar), w);
 		xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->verticalScrollbar), h);
+		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->horizontalScrollbar), 0);
+		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->verticalScrollbar), 0);
 
 		/* Show view */
 		priv->activeView=inView;
@@ -714,6 +791,36 @@ XfdashboardScrollbar* xfdashboard_viewpad_get_horizontal_scrollbar(XfdashboardVi
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
 
 	return(XFDASHBOARD_SCROLLBAR(self->priv->horizontalScrollbar));
+}
+
+/* Get/set scroll bar policy */
+void xfdashboard_viewpad_get_scrollbar_policy(XfdashboardViewpad *self,
+												GtkPolicyType *outHorizontalPolicy,
+												GtkPolicyType *outVerticalPolicy)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	if(outHorizontalPolicy) *outHorizontalPolicy=self->priv->horizontalScrollbarPolicy;
+	if(outVerticalPolicy) *outVerticalPolicy=self->priv->verticalScrollbarPolicy;
+}
+
+void xfdashboard_viewpad_set_scrollbar_policy(XfdashboardViewpad *self,
+												GtkPolicyType inHorizontalPolicy,
+												GtkPolicyType inVerticalPolicy)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	/* Only set new value if it differs from current value */
+	XfdashboardViewpadPrivate	*priv=self->priv;
+
+	if(inHorizontalPolicy!=priv->horizontalScrollbarPolicy ||
+		inVerticalPolicy!=priv->verticalScrollbarPolicy)
+	{
+		priv->horizontalScrollbarPolicy=inHorizontalPolicy;
+		priv->verticalScrollbarPolicy=inVerticalPolicy;
+
+		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Get/set thickness of scroll bars */
