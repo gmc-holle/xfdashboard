@@ -61,6 +61,7 @@ struct _XfdashboardLiveWindowClass
 	void (*clicked)(XfdashboardLiveWindow *self);
 };
 
+/* Public API */
 GType xfdashboard_live_window_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_live_window_new(WnckWindow* inWindow);

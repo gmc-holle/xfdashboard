@@ -30,6 +30,7 @@
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 #include <string.h>
+#include <math.h>
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationMenuEntry,
@@ -115,7 +116,7 @@ static guint XfdashboardApplicationMenuEntrySignals[SIGNAL_LAST]={ 0, };
 
 static ClutterColor			defaultTitleColor={ 0xff, 0xff , 0xff, 0xff };
 static ClutterColor			defaultDescriptionColor={ 0xe0, 0xe0 , 0xe0, 0xff };
-static ClutterColor			defaultBackgroundColor={ 0x80, 0x80, 0x80, 0xff };
+static ClutterColor			defaultBackgroundColor={ 0x80, 0x80, 0x80, 0x40 };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_ICON_SIZE		64
@@ -173,7 +174,7 @@ void _xfdashboard_application_menu_entry_set_custom_description(XfdashboardAppli
  * The return GdkPixbuf object (if not NULL) must be unreffed with
  * g_object_unref().
  */
-GdkPixbuf* _get_pixbuf_for_icon_name(const gchar *inIconName, const gchar *inFallbackIconName)
+GdkPixbuf* _xfdashboard_application_menu_entry_get_pixbuf_for_icon_name(const gchar *inIconName, const gchar *inFallbackIconName)
 {
 	GdkPixbuf		*icon=NULL;
 	GtkIconTheme	*iconTheme=gtk_icon_theme_get_default();
@@ -270,7 +271,7 @@ void _xfdashboard_application_menu_entry_set_menu_item(XfdashboardApplicationMen
 			if(iconName)
 			{
 				/* Get icon for icon name */
-				icon=_get_pixbuf_for_icon_name(iconName, GTK_STOCK_MISSING_IMAGE);
+				icon=_xfdashboard_application_menu_entry_get_pixbuf_for_icon_name(iconName, GTK_STOCK_MISSING_IMAGE);
 
 				/* Set icon as texture */
 				if(icon)
@@ -466,7 +467,7 @@ static void xfdashboard_application_menu_entry_allocate(ClutterActor *self,
 	width=clutter_actor_box_get_width(inBox)-clutter_actor_box_get_width(boxIcon)-(3*priv->margin);
 	width=MAX(MIN(childWidth, width), 0);
 	height=childHeight;
-	boxTitle=clutter_actor_box_new(left, top, left+width, top+height);
+	boxTitle=clutter_actor_box_new(floor(left), floor(top), floor(left+width), floor(top+height));
 	clutter_actor_allocate(priv->actorTitle, boxTitle, inFlags);
 
 	/* Set allocation of description if menu element is not a menu */
@@ -484,7 +485,7 @@ static void xfdashboard_application_menu_entry_allocate(ClutterActor *self,
 		width=MAX(MIN(childWidth, width), 0);
 		height=clutter_actor_box_get_height(inBox)-top;
 		height=MAX(MIN(childHeight, height), 0);
-		boxDescription=clutter_actor_box_new(left, top, left+width, top+height);
+		boxDescription=clutter_actor_box_new(floor(left), floor(top), floor(left+width), floor(top+height));
 		clutter_actor_allocate(priv->actorDescription, boxDescription, inFlags);
 		clutter_actor_box_free(boxDescription);
 	}

@@ -200,6 +200,7 @@ int main(int argc, char **argv)
 	view=xfdashboard_applications_view_new();
 	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
 	xfdashboard_applications_view_set_active_menu(XFDASHBOARD_APPLICATIONS_VIEW(view), xfdashboard_getApplicationMenu());
+	xfdashboard_applications_view_set_list_mode(XFDASHBOARD_APPLICATIONS_VIEW(view), XFDASHBOARD_APPLICATIONS_VIEW_ICON);
 
 	/* Set up event handlers */
 	clutter_stage_set_key_focus(CLUTTER_STAGE(stage), NULL);

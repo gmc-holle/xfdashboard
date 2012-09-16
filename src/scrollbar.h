@@ -58,6 +58,7 @@ struct _XfdashboardScrollbarClass
 	void (*range_changed)(XfdashboardScrollbar *self, gfloat inNewValue);
 };
 
+/* Public API */
 GType xfdashboard_scrollbar_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_scrollbar_new(void);

@@ -27,6 +27,7 @@
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
 #include <gio/gdesktopappinfo.h>
+#include <garcon/garcon.h>
 
 G_BEGIN_DECLS
 
@@ -59,15 +60,24 @@ struct _XfdashboardApplicationIconClass
 	void (*clicked)(XfdashboardApplicationIcon *self);
 };
 
+/* Public API */
 GType xfdashboard_application_icon_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_application_icon_new(void);
-ClutterActor* xfdashboard_application_icon_new_full(const gchar *inDesktopFile);
+ClutterActor* xfdashboard_application_icon_new_by_desktop_file(const gchar *inDesktopFile);
+ClutterActor* xfdashboard_application_icon_new_by_menu_item(const GarconMenuElement *inMenuElement);
+ClutterActor* xfdashboard_application_icon_new_with_custom(const GarconMenuElement *inMenuElement,
+															const gchar *inIconName,
+															const gchar *inTitle,
+															const gchar *inDescription);
 
 const gchar* xfdashboard_application_icon_get_desktop_file(XfdashboardApplicationIcon *self);
 void xfdashboard_application_icon_set_desktop_file(XfdashboardApplicationIcon *self, const gchar *inDesktopFile);
 
-const GDesktopAppInfo* xfdashboard_application_icon_get_desktop_application_info(XfdashboardApplicationIcon *self);
+const GarconMenuElement* xfdashboard_application_icon_get_menu_element(XfdashboardApplicationIcon *self);
+void xfdashboard_application_icon_set_menu_element(XfdashboardApplicationIcon *self, GarconMenuElement *inMenuElement);
+
+const GAppInfo* xfdashboard_application_icon_get_application_info(XfdashboardApplicationIcon *self);
 
 const gboolean xfdashboard_application_icon_get_label_visible(XfdashboardApplicationIcon *self);
 void xfdashboard_application_icon_set_label_visible(XfdashboardApplicationIcon *self, const gboolean inVisible);

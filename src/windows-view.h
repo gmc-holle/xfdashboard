@@ -57,6 +57,7 @@ struct _XfdashboardWindowsViewClass
 	XfdashboardViewClass			parent_class;
 };
 
+/* Public API */
 GType xfdashboard_windows_view_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_windows_view_new();

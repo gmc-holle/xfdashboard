@@ -55,6 +55,7 @@ struct _XfdashboardScalingBoxLayoutClass
 	ClutterLayoutManagerClass			parent_class;
 };
 
+/* Public API */
 GType xfdashboard_scaling_box_layout_get_type(void) G_GNUC_CONST;
 
 ClutterLayoutManager* xfdashboard_scaling_box_layout_new();

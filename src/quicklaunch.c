@@ -94,11 +94,11 @@ static gboolean _xfdashboard_quicklaunch_on_clicked_icon(ClutterActor *inActor, 
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inUserData), FALSE);
 
 	XfdashboardApplicationIcon	*icon=XFDASHBOARD_APPLICATION_ICON(inActor);
-	const GDesktopAppInfo		*appInfo;
+	const GAppInfo				*appInfo;
 	GError						*error=NULL;
 
 	/* Get application information object from icon */
-	appInfo=xfdashboard_application_icon_get_desktop_application_info(icon);
+	appInfo=xfdashboard_application_icon_get_application_info(icon);
 	if(!appInfo)
 	{
 		g_warning("Could not launch application: NULL-application-info-object");
@@ -642,7 +642,7 @@ gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch
 	/* Create icon from desktop file and hide label in quicklaunch */
 	ClutterActor				*actor;
 		
-	actor=xfdashboard_application_icon_new_full(inDesktopFile);
+	actor=xfdashboard_application_icon_new_by_desktop_file(inDesktopFile);
 	xfdashboard_application_icon_set_label_visible(XFDASHBOARD_APPLICATION_ICON(actor), FALSE);
 
 	return(_xfdashboard_quicklaunch_add_icon_to_quicklaunch(self, XFDASHBOARD_APPLICATION_ICON(actor)));

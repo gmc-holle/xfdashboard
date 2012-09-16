@@ -13,6 +13,8 @@ PKGS="${PKG_LIBWNCK} ${PKG_CLUTTER} ${PKG_GIO} ${PKG_GARCON}"
 CFLAGS += -std=gnu99 `pkg-config ${PKGS} --cflags` -pedantic -Wall -g
 LDFLAGS += `pkg-config ${PKGS} --libs`
 
+GLIB_MKENUMS=/usr/bin/glib-mkenums
+
 SOURCES = \
 	application-entry.c \
 	application-icon.c \
@@ -45,10 +47,22 @@ HEADERS = \
 	view-selector.h \
 	windows-view.h
 
+ENUMS_SOURCE = \
+	enums.c
+
+ENUMS_HEADER = \
+	enums.h
+	
 all: xfdashboard
 
-xfdashboard: Makefile ${SOURCES} ${HEADERS}
-	gcc ${CFLAGS} -o xfdashboard ${SOURCES} ${LDFLAGS}
+enums.h: enums.h.template ${HEADERS}
+	$(GLIB_MKENUMS) --template enums.h.template ${HEADERS} > $@
+
+enums.c: enums.c.template ${SOURCES} ${HEADERS}
+	$(GLIB_MKENUMS) --template enums.c.template ${HEADERS} > $@
+
+xfdashboard: Makefile ${ENUMS_HEADER} ${ENUMS_SOURCE} ${SOURCES} ${HEADERS}
+	gcc ${CFLAGS} -o xfdashboard ${ENUMS_SOURCE} ${SOURCES} ${LDFLAGS}
 
 clean:
 	rm -f xfdashboard *.o

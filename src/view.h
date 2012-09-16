@@ -62,6 +62,7 @@ struct _XfdashboardViewClass
 	void (*reset_scrollbars)(XfdashboardView *self);
 };
 
+/* Public API */
 GType xfdashboard_view_get_type(void) G_GNUC_CONST;
 
 void xfdashboard_view_remove_all(XfdashboardView *self);

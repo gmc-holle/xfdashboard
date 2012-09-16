@@ -197,17 +197,19 @@ static gboolean _xfdashboard_scrollbar_scroll_event(ClutterActor *inActor,
 
 	if(priv->isVertical)
 	{
-		if(priv->range>height) barSize=(height/priv->range)*height;
+		if(priv->range>0.0f && priv->range>height) barSize=(height/priv->range)*height;
 			else barSize=height;
 
-		maxValue=((height-barSize)/height)*priv->range;
+		if(height>0.0f) maxValue=((height-barSize)/height)*priv->range;
+			else maxValue=0.0f;
 	}
 		else
 		{
-			if(priv->range>width) barSize=(width/priv->range)*width;
+			if(priv->range>0.0f && priv->range>width) barSize=(width/priv->range)*width;
 				else barSize=width;
 
-			maxValue=((width-barSize)/width)*priv->range;
+			if(width>0.0f) maxValue=((width-barSize)/width)*priv->range;
+				else maxValue=0.0f;
 		}
 
 	maxValue=MAX(0, MIN(priv->range, maxValue));

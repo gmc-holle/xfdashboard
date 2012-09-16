@@ -61,6 +61,7 @@ struct _XfdashboardApplicationMenuEntryClass
 
 GType xfdashboard_application_menu_entry_get_type(void) G_GNUC_CONST;
 
+/* Public API */
 ClutterActor* xfdashboard_application_menu_entry_new(void);
 ClutterActor* xfdashboard_application_menu_entry_new_with_menu_item(const GarconMenuElement *inMenuElement);
 ClutterActor* xfdashboard_application_menu_entry_new_with_custom(const GarconMenuElement *inMenuElement,

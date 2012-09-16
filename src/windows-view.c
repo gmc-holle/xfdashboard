@@ -250,7 +250,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 
 /* Implementation: Public API */
 
-/* Create new object */
+/* Create new actor */
 ClutterActor* xfdashboard_windows_view_new()
 {
 	WnckScreen				*screen;
@@ -268,7 +268,7 @@ ClutterActor* xfdashboard_windows_view_new()
 	layout=xfdashboard_scaling_flow_layout_new();
 	xfdashboard_scaling_flow_layout_set_spacing(XFDASHBOARD_SCALING_FLOW_LAYOUT(layout), 8.0f);
 	
-	/* Create object */
+	/* Create actor */
 	return(g_object_new(XFDASHBOARD_TYPE_WINDOWS_VIEW,
 						"view-name", "Windows",
 						"layout-manager", layout,

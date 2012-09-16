@@ -225,8 +225,8 @@ static void xfdashboard_viewpad_get_preferred_width(ClutterActor *inActor,
 		/* Check if we need to add space for vertical scroll-bar */
 		if(inForHeight>=0)
 		{
-			gfloat					viewNaturalHeight;
-			gfloat					scrollbarMinWidth, scrollbarNaturalWidth;
+			gfloat				viewNaturalHeight;
+			gfloat				scrollbarMinWidth, scrollbarNaturalWidth;
 
 			clutter_actor_get_preferred_height(CLUTTER_ACTOR(priv->activeView),
 												-1.0f,
@@ -272,8 +272,8 @@ static void xfdashboard_viewpad_get_preferred_height(ClutterActor *inActor,
 		/* Check if we need to add space for horizontal scroll-bar */
 		if(inForWidth>=0)
 		{
-			gfloat					viewNaturalWidth;
-			gfloat					scrollbarMinHeight, scrollbarNaturalHeight;
+			gfloat				viewNaturalWidth;
+			gfloat				scrollbarMinHeight, scrollbarNaturalHeight;
 
 			clutter_actor_get_preferred_width(CLUTTER_ACTOR(priv->activeView),
 												-1.0f,
@@ -307,7 +307,6 @@ static void xfdashboard_viewpad_allocate(ClutterActor *inActor,
 	ClutterActorClass			*klass;
 	ClutterActorBox				*box;
 	gfloat						viewWidth, viewHeight;
-	gfloat						scrollbarCheckWidth, scrollbarCheckHeight;
 	gfloat						vScrollWidth, vScrollHeight;
 	gfloat						hScrollWidth, hScrollHeight;
 

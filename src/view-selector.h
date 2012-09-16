@@ -56,6 +56,7 @@ struct _XfdashboardViewSelectorClass
 	ClutterActorClass				parent_class;
 };
 
+/* Public API */
 GType xfdashboard_view_selector_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_view_selector_new(const XfdashboardViewpad *inViewpad);

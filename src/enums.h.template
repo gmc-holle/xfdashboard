@@ -1,6 +1,6 @@
+/*** BEGIN file-header ***/
 /*
- * main.h: Common functions, shared data
- *         and main entry point of application
+ * enums.h: Definitions of enumerations and flags used in GObject objects
  * 
  * Copyright 2012 Stephan Haller <nomad@froevel.de>
  * 
@@ -22,29 +22,25 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_MAIN__
-#define __XFOVERVIEW_MAIN__
+#ifndef __XFDASHBOARD_ENUMS__
+#define __XFDASHBOARD_ENUMS__
 
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE
-#include <libwnck/libwnck.h>
-
-#include <garcon/garcon.h>
-
-#ifndef DEBUG_ALLOC_BOX
-#if 1
-#define DEBUG_ALLOC_BOX(b) g_message("%s: %s=%.0f,%.0f - %.0f,%.0f [%.2fx%.2f]", __func__, #b, (b)->x1, (b)->y1, (b)->x2, (b)->y2, (b)->x2-(b)->x1, (b)->y2-(b)->y1);
-#else
-#define DEBUG_ALLOC_BOX(b)
-#endif
-#endif
+#include <glib-object.h>
 
 G_BEGIN_DECLS
+/*** END file-header ***/
 
-/* Public API */
-WnckWindow* xfdashboard_getAppWindow();
+/*** BEGIN file-production ***/
 
-GarconMenu* xfdashboard_getApplicationMenu();
+/* enumerations from "@filename@" */
+/*** END file-production ***/
+/*** BEGIN value-header ***/
+GType @enum_name@_get_type(void) G_GNUC_CONST;
+#define @ENUMPREFIX@_TYPE_@ENUMSHORT@	(@enum_name@_get_type())
+/*** END value-header ***/
 
+/*** BEGIN file-tail ***/
 G_END_DECLS
 
 #endif
+/*** END file-tail ***/

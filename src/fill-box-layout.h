@@ -55,6 +55,7 @@ struct _XfdashboardFillBoxLayoutClass
 	ClutterLayoutManagerClass			parent_class;
 };
 
+/* Public API */
 GType xfdashboard_fill_box_layout_get_type(void) G_GNUC_CONST;
 
 ClutterLayoutManager* xfdashboard_fill_box_layout_new();

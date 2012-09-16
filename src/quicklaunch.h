@@ -56,6 +56,7 @@ struct _XfdashboardQuicklaunchClass
 	ClutterActorClass				parent_class;
 };
 
+/* Public API */
 GType xfdashboard_quicklaunch_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_quicklaunch_new(void);

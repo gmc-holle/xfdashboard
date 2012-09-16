@@ -64,6 +64,7 @@ struct _XfdashboardViewpadClass
 	void (*view_deactivated)(XfdashboardViewpad *self, XfdashboardView *inView);
 };
 
+/* Public API */
 GType xfdashboard_viewpad_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_viewpad_new();

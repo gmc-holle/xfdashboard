@@ -27,6 +27,8 @@
 
 #include "live-window.h"
 
+#include <math.h>
+
 /* Define this class in GObject system */
 
 G_DEFINE_TYPE(XfdashboardLiveWindow,
@@ -259,7 +261,7 @@ static void xfdashboard_live_window_allocate(ClutterActor *self,
 	left=right-iconWidth;
 	bottom=clutter_actor_box_get_y(boxActorWindow)+clutter_actor_box_get_height(boxActorWindow)-priv->labelMargin;
 	top=bottom-iconHeight;
-	boxActorAppIcon=clutter_actor_box_new(left, top, right, bottom);
+	boxActorAppIcon=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
 	clutter_actor_allocate(priv->actorAppIcon, boxActorAppIcon, inFlags);
 
 	/* Set label actors */
@@ -282,14 +284,14 @@ static void xfdashboard_live_window_allocate(ClutterActor *self,
 		right=maxRight;
 	}
 	if(left>right) left=right-1.0f;
-	boxActorLabel=clutter_actor_box_new(left, top, right, bottom);
+	boxActorLabel=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
 	clutter_actor_allocate(priv->actorLabel, boxActorLabel, inFlags);
 
 	left-=priv->labelMargin;
 	top-=priv->labelMargin;
 	right+=priv->labelMargin;
 	bottom+=priv->labelMargin;
-	boxActorLabelBackground=clutter_actor_box_new(left, top, right, bottom);
+	boxActorLabelBackground=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
 	clutter_actor_allocate(priv->actorLabelBackground, boxActorLabelBackground, inFlags);
 
 	/* Release allocated memory */
