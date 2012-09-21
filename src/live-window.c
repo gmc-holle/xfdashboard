@@ -27,6 +27,7 @@
 
 #include "live-window.h"
 
+#include <clutter/x11/clutter-x11.h>
 #include <math.h>
 
 /* Define this class in GObject system */

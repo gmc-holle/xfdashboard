@@ -25,7 +25,6 @@
 #define __XFOVERVIEW_LIVE_WINDOW__
 
 #include <clutter/clutter.h>
-#include <clutter/x11/clutter-x11.h>
 
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE
 #include <libwnck/libwnck.h>

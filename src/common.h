@@ -1,6 +1,5 @@
 /*
- * main.h: Common functions, shared data
- *         and main entry point of application
+ * common.h: Common function and definitions
  * 
  * Copyright 2012 Stephan Haller <nomad@froevel.de>
  * 
@@ -22,8 +21,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_MAIN__
-#define __XFOVERVIEW_MAIN__
+#ifndef __XFOVERVIEW_COMMON__
+#define __XFOVERVIEW_COMMON__
 
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE
 #include <libwnck/libwnck.h>
@@ -41,9 +40,12 @@
 G_BEGIN_DECLS
 
 /* Public API */
-WnckWindow* xfdashboard_getAppWindow();
+WnckWindow* xfdashboard_get_stage_window();
 
-GarconMenu* xfdashboard_getApplicationMenu();
+GarconMenu* xfdashboard_get_application_menu();
+
+GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name(const gchar *inIconName, gint inSize);
+GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name_scaled(const gchar *inIconName, gint inSize);
 
 G_END_DECLS
 

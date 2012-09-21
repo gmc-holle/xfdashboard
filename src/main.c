@@ -22,7 +22,11 @@
  * 
  */
 
-#include "main.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include "common.h"
 #include "live-window.h"
 #include "scaling-flow-layout.h"
 #include "viewpad.h"
@@ -43,59 +47,9 @@ static gchar			*quicklaunch_apps[]=	{
 													"Terminal.desktop",
 													"Thunar.desktop",
 													"geany.desktop",
-													"gajim.desktop",
-													"unavailable"
+													"gajim.desktop"
 												};
 /* TODO: Replace with xfconf */
-
-/* Get root application menu */
-GarconMenu* xfdashboard_getApplicationMenu()
-{
-	static GarconMenu		*menu=NULL;
-
-	/* If it is the first time (or if it failed previously)
-	 * load the menus now
-	 */
-	if(!menu)
-	{
-		GError				*error=NULL;
-		
-		/* Try to get the root menu */
-		menu=garcon_menu_new_applications();
-
-		if(G_UNLIKELY(!garcon_menu_load(menu, NULL, &error)))
-		{
-			gchar *uri;
-
-			uri=g_file_get_uri(garcon_menu_get_file (menu));
-			g_error("Could not load menu from %s: %s", uri, error->message);
-			g_free(uri);
-
-			g_error_free(error);
-
-			g_object_unref(menu);
-			menu=NULL;
-		}
-	}
-
-	return(menu);
-}
-
-/* Get window of application */
-WnckWindow* xfdashboard_getAppWindow()
-{
-	static WnckWindow		*stageWindow=NULL;
-
-	if(!stageWindow)
-	{
-		Window		xWindow;
-
-		xWindow=clutter_x11_get_stage_window(CLUTTER_STAGE(stage));
-		stageWindow=wnck_window_get(xWindow);
-	}
-
-	return(stageWindow);
-}
 
 /* A pressed key was released */
 static gboolean xfdashboard_onKeyRelease(ClutterActor *inActor, ClutterEvent *inEvent, gpointer inUserData)
@@ -112,19 +66,6 @@ static gboolean xfdashboard_onKeyRelease(ClutterActor *inActor, ClutterEvent *in
 
 	/* We did not handle this event so let next in clutter's chain handle it */
 	return(FALSE);
-}
-
-void __temp_value_changed(ClutterActor *inActor, int inValue, gpointer inUserData)
-{
-	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor));
-
-	XfdashboardScrollbar		*self=XFDASHBOARD_SCROLLBAR(inActor);
-
-	g_message("%s@%p: dir=%s, value=%.2f [max=%.2f]",
-				G_OBJECT_TYPE_NAME(inActor), (void*)inActor,
-				xfdashboard_scrollbar_get_vertical(self) ? "vertical" : "horizontal",
-				xfdashboard_scrollbar_get_value(self),
-				xfdashboard_scrollbar_get_range(self));
 }
 
 /* Main entry point */
@@ -199,7 +140,7 @@ int main(int argc, char **argv)
 
 	view=xfdashboard_applications_view_new();
 	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
-	xfdashboard_applications_view_set_active_menu(XFDASHBOARD_APPLICATIONS_VIEW(view), xfdashboard_getApplicationMenu());
+	xfdashboard_applications_view_set_active_menu(XFDASHBOARD_APPLICATIONS_VIEW(view), xfdashboard_get_application_menu());
 	xfdashboard_applications_view_set_list_mode(XFDASHBOARD_APPLICATIONS_VIEW(view), XFDASHBOARD_APPLICATIONS_VIEW_ICON);
 
 	/* Set up event handlers */

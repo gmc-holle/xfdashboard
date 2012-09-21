@@ -33,7 +33,7 @@
 #include "application-icon.h"
 #include "fill-box-layout.h"
 #include "viewpad.h"
-#include "main.h"
+#include "common.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsView,
@@ -208,7 +208,7 @@ void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
 	if(priv->activeMenu==NULL) return;
 
 	/* If menu shown is not root menu add "Go up ..." item first */
-	if(priv->activeMenu!=xfdashboard_getApplicationMenu())
+	if(priv->activeMenu!=xfdashboard_get_application_menu())
 	{
 		ClutterActor					*actor;
 

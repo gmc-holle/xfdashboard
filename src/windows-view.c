@@ -28,7 +28,7 @@
 #include "windows-view.h"
 #include "live-window.h"
 #include "scaling-flow-layout.h"
-#include "main.h"
+#include "common.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardWindowsView,
@@ -75,8 +75,8 @@ static void _on_workspace_changed(WnckScreen *inScreen, WnckWorkspace *inPrevWor
 	workspace=wnck_screen_get_active_workspace(inScreen);
 
 	/* Move clutter stage to new active workspace and make active */
-	wnck_window_move_to_workspace(xfdashboard_getAppWindow(), workspace);
-	wnck_window_activate(xfdashboard_getAppWindow(), CLUTTER_CURRENT_TIME);
+	wnck_window_move_to_workspace(xfdashboard_get_stage_window(), workspace);
+	wnck_window_activate(xfdashboard_get_stage_window(), CLUTTER_CURRENT_TIME);
 	
 	/* Update window list */
 	_set_active_workspace(self, workspace);

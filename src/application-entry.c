@@ -26,6 +26,7 @@
 #endif
 
 #include "application-entry.h"
+#include "common.h"
 
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
@@ -166,72 +167,6 @@ void _xfdashboard_application_menu_entry_set_custom_description(XfdashboardAppli
 	}
 }
 
-/* Get GdkPixbuf object for themed icon name or absolute icon filename.
- * If icon does not exists the themed icon name in inFallbackIconName
- * will be returned.
- * If even the themed icon name in inFallbackIconName cannot be found
- * we return NULL.
- * The return GdkPixbuf object (if not NULL) must be unreffed with
- * g_object_unref().
- */
-GdkPixbuf* _xfdashboard_application_menu_entry_get_pixbuf_for_icon_name(const gchar *inIconName, const gchar *inFallbackIconName)
-{
-	GdkPixbuf		*icon=NULL;
-	GtkIconTheme	*iconTheme=gtk_icon_theme_get_default();
-	GError			*error=NULL;
-	
-	/* Check if we have an absolute filename */
-	if(g_path_is_absolute(inIconName) &&
-		g_file_test(inIconName, G_FILE_TEST_EXISTS))
-	{
-		error=NULL;
-		icon=gdk_pixbuf_new_from_file_at_scale(inIconName,
-												DEFAULT_ICON_SIZE,
-												DEFAULT_ICON_SIZE,
-												TRUE,
-												NULL);
-
-		if(!icon) g_warning("Could not load icon '%s' for application entry actor: %s",
-							inIconName, (error && error->message) ?  error->message : "unknown error");
-
-		if(error!=NULL) g_error_free(error);
-	}
-		else
-		{
-			/* Try to load the icon name directly using the icon theme */
-			error=NULL;
-			icon=gtk_icon_theme_load_icon(iconTheme,
-											inIconName,
-											DEFAULT_ICON_SIZE,
-											GTK_ICON_LOOKUP_USE_BUILTIN,
-											&error);
-
-			if(!icon) g_warning("Could not load themed icon '%s' for application entry actor: %s",
-								inIconName, (error && error->message) ?  error->message : "unknown error");
-
-			if(error!=NULL) g_error_free(error);
-		}
-
-	/* If no icon could be loaded use fallback */
-	if(!icon && inFallbackIconName)
-	{
-		error=NULL;
-		icon=gtk_icon_theme_load_icon(iconTheme,
-										inFallbackIconName,
-										DEFAULT_ICON_SIZE,
-										GTK_ICON_LOOKUP_USE_BUILTIN,
-										&error);
-
-		if(!icon) g_error("Could not load fallback icon for application entry actor: %s",
-							(error && error->message) ?  error->message : "unknown error");
-
-		if(error!=NULL) g_error_free(error);
-	}
-
-	/* Return icon pixbuf */
-	return(icon);
-}
-
 /* Set desktop file and setup actors for display application icon */
 void _xfdashboard_application_menu_entry_set_menu_item(XfdashboardApplicationMenuEntry *self, const GarconMenuElement *inMenuElement)
 {
@@ -270,20 +205,10 @@ void _xfdashboard_application_menu_entry_set_menu_item(XfdashboardApplicationMen
 
 			if(iconName)
 			{
-				/* Get icon for icon name */
-				icon=_xfdashboard_application_menu_entry_get_pixbuf_for_icon_name(iconName, GTK_STOCK_MISSING_IMAGE);
-
-				/* Set icon as texture */
+				/* Get icon for icon name and set icon as texture */
+				icon=xfdashboard_get_pixbuf_for_icon_name_scaled(iconName, DEFAULT_ICON_SIZE);
 				if(icon)
 				{
-					/* Scale icon */
-					GdkPixbuf				*oldIcon=icon;
-					
-					icon=gdk_pixbuf_scale_simple(oldIcon,
-													DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
-													GDK_INTERP_BILINEAR);
-					g_object_unref(oldIcon);
-
 					/* Set texture */
 					error=NULL;
 					if(!clutter_texture_set_from_rgb_data(CLUTTER_TEXTURE(priv->actorIcon),
