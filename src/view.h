@@ -54,7 +54,10 @@ struct _XfdashboardViewClass
 	ClutterActorClass		parent_class;
 
 	/* Virtual functions */
+	void (*activating)(XfdashboardView *self);
 	void (*activated)(XfdashboardView *self);
+
+	void (*deactivating)(XfdashboardView *self);
 	void (*deactivated)(XfdashboardView *self);
 
 	void (*name_changed)(XfdashboardView *self, gchar *inName);

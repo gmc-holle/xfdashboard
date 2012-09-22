@@ -748,6 +748,7 @@ void xfdashboard_viewpad_set_active_view(XfdashboardViewpad *self, XfdashboardVi
 	if(priv->activeView)
 	{
 		/* Hide actor but remove any clipping before */
+		g_signal_emit_by_name(priv->activeView, "deactivating", NULL);
 		clutter_actor_remove_clip(CLUTTER_ACTOR(priv->activeView));
 		clutter_actor_hide(CLUTTER_ACTOR(priv->activeView));
 		g_signal_emit_by_name(priv->activeView, "deactivated", NULL);
@@ -758,6 +759,13 @@ void xfdashboard_viewpad_set_active_view(XfdashboardViewpad *self, XfdashboardVi
 	/* Activate requested view by showing it */
 	if(inView)
 	{
+		/* Show view */
+		priv->activeView=inView;
+		g_signal_emit_by_name(priv->activeView, "activating", NULL);
+		clutter_actor_show(CLUTTER_ACTOR(priv->activeView));
+		g_signal_emit_by_name(priv->activeView, "activated", NULL);
+		g_signal_emit_by_name(self, "view-activated", priv->activeView);
+
 		/* Set range for scroll bars */
 		gfloat					w, h;
 
@@ -766,12 +774,6 @@ void xfdashboard_viewpad_set_active_view(XfdashboardViewpad *self, XfdashboardVi
 		xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->verticalScrollbar), h);
 		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->horizontalScrollbar), 0);
 		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->verticalScrollbar), 0);
-
-		/* Show view */
-		priv->activeView=inView;
-		clutter_actor_show(CLUTTER_ACTOR(priv->activeView));
-		g_signal_emit_by_name(priv->activeView, "activated", NULL);
-		g_signal_emit_by_name(self, "view-activated", priv->activeView);
 
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 	}

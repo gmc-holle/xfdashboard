@@ -51,8 +51,22 @@ static gchar			*quicklaunch_apps[]=	{
 												};
 /* TODO: Replace with xfconf */
 
+/* Application view was activated */
+void _xfdashboard_on_application_view_activated(ClutterActor *inView, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inView));
+
+	/* Check if application view has an active menu. If not set top most menu. */
+	XfdashboardApplicationsView		*view=XFDASHBOARD_APPLICATIONS_VIEW(inView);
+
+	if(!xfdashboard_applications_view_get_active_menu(view))
+	{
+		xfdashboard_applications_view_set_active_menu(view, xfdashboard_get_application_menu());
+	}
+}
+
 /* A pressed key was released */
-static gboolean xfdashboard_onKeyRelease(ClutterActor *inActor, ClutterEvent *inEvent, gpointer inUserData)
+gboolean _xfdashboard_on_key_release(ClutterActor *inActor, ClutterEvent *inEvent, gpointer inUserData)
 {
 	ClutterKeyEvent		*keyEvent=(ClutterKeyEvent*)inEvent;
 
@@ -140,15 +154,15 @@ int main(int argc, char **argv)
 
 	view=xfdashboard_applications_view_new();
 	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
-	xfdashboard_applications_view_set_active_menu(XFDASHBOARD_APPLICATIONS_VIEW(view), xfdashboard_get_application_menu());
 	xfdashboard_applications_view_set_list_mode(XFDASHBOARD_APPLICATIONS_VIEW(view), XFDASHBOARD_VIEW_ICON);
+	g_signal_connect(view, "activated", G_CALLBACK(_xfdashboard_on_application_view_activated), NULL);
 
 	/* Set up event handlers */
 	clutter_stage_set_key_focus(CLUTTER_STAGE(stage), NULL);
 
 	stageDestroySignalID=g_signal_connect(stage, "destroy", G_CALLBACK(clutter_main_quit), NULL);
 	g_signal_connect(stage, "unfullscreen", G_CALLBACK(clutter_main_quit), NULL);
-	g_signal_connect(stage, "key-release-event", G_CALLBACK(xfdashboard_onKeyRelease), NULL);
+	g_signal_connect(stage, "key-release-event", G_CALLBACK(_xfdashboard_on_key_release), NULL);
 
 	/* Show stage and go ;) */
 	clutter_actor_show(stage);

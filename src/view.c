@@ -69,7 +69,9 @@ static GParamSpec* XfdashboardViewProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
+	ACTIVATING,
 	ACTIVATED,
+	DEACTIVATING,
 	DEACTIVATED,
 	
 	NAME_CHANGED,
@@ -484,11 +486,33 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewProperties);
 
 	/* Define signals */
+	XfdashboardViewSignals[ACTIVATING]=
+		g_signal_new("activating",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewClass, activating),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
 	XfdashboardViewSignals[ACTIVATED]=
 		g_signal_new("activated",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
 						G_STRUCT_OFFSET(XfdashboardViewClass, activated),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardViewSignals[DEACTIVATING]=
+		g_signal_new("deactivating",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewClass, deactivating),
 						NULL,
 						NULL,
 						g_cclosure_marshal_VOID__VOID,
