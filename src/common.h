@@ -39,6 +39,21 @@
 
 G_BEGIN_DECLS
 
+/* List mode for views */
+typedef enum
+{
+	XFDASHBOARD_VIEW_LIST=0,
+	XFDASHBOARD_VIEW_ICON
+} XfdashboardViewMode;
+
+/* Visibility policy (e.g. for scroll bars in views) */
+typedef enum
+{
+	XFDASHBOARD_POLICY_NEVER=0,
+	XFDASHBOARD_POLICY_AUTOMATIC,
+	XFDASHBOARD_POLICY_ALWAYS
+} XfdashboardPolicy;
+
 /* Public API */
 WnckWindow* xfdashboard_get_stage_window();
 

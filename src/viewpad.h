@@ -29,19 +29,20 @@
 
 #include "view.h"
 #include "scrollbar.h"
+#include "common.h"
 
 G_BEGIN_DECLS
 
 #define XFDASHBOARD_TYPE_VIEWPAD				(xfdashboard_viewpad_get_type())
 #define XFDASHBOARD_VIEWPAD(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_VIEWPAD, XfdashboardViewpad))
-#define XFDASHBOARD_IS_VIEWPAD(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_VIEWPAD))
+#define XFDASHBOARD_IS_VIEWPAD(obj)				(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_VIEWPAD))
 #define XFDASHBOARD_VIEWPAD_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST((klass), XFDASHBOARD_TYPE_VIEWPAD, XfdashboardViewpadClass))
-#define XFDASHBOARD_IS_VIEWPAD_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE((klass), XFDASHBOARD_TYPE_VIEWPAD))
+#define XFDASHBOARD_IS_VIEWPAD_CLASS(klass)		(G_TYPE_CHECK_CLASS_TYPE((klass), XFDASHBOARD_TYPE_VIEWPAD))
 #define XFDASHBOARD_VIEWPAD_GET_CLASS(obj)		(G_TYPE_INSTANCE_GET_CLASS((obj), XFDASHBOARD_TYPE_VIEWPAD, XfdashboardViewpadClass))
 
 typedef struct _XfdashboardViewpad				XfdashboardViewpad; 
 typedef struct _XfdashboardViewpadPrivate		XfdashboardViewpadPrivate;
-typedef struct _XfdashboardViewpadClass		XfdashboardViewpadClass;
+typedef struct _XfdashboardViewpadClass			XfdashboardViewpadClass;
 
 struct _XfdashboardViewpad
 {
@@ -80,11 +81,11 @@ XfdashboardScrollbar* xfdashboard_viewpad_get_vertical_scrollbar(XfdashboardView
 XfdashboardScrollbar* xfdashboard_viewpad_get_horizontal_scrollbar(XfdashboardViewpad *self);
 
 void xfdashboard_viewpad_get_scrollbar_policy(XfdashboardViewpad *self,
-												GtkPolicyType *outHorizontalPolicy,
-												GtkPolicyType *outVerticalPolicy);
+												XfdashboardPolicy *outHorizontalPolicy,
+												XfdashboardPolicy *outVerticalPolicy);
 void xfdashboard_viewpad_set_scrollbar_policy(XfdashboardViewpad *self,
-												GtkPolicyType inHorizontalPolicy,
-												GtkPolicyType inVerticalPolicy);
+												XfdashboardPolicy inHorizontalPolicy,
+												XfdashboardPolicy inVerticalPolicy);
 
 gfloat xfdashboard_viewpad_get_thickness(XfdashboardViewpad *self);
 void xfdashboard_viewpad_set_thickness(XfdashboardViewpad *self, gfloat inThickness);

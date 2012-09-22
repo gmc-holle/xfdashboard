@@ -161,8 +161,8 @@ GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name_scaled(const gchar *inIconName, 
 
 	unscaledIcon=xfdashboard_get_pixbuf_for_icon_name(inIconName, inSize);
 	if(!unscaledIcon ||
-		(gdk_pixbuf_get_width(unscaledIcon)!=inSize &&
-			gdk_pixbuf_get_height(unscaledIcon)!=inSize))
+		(gdk_pixbuf_get_width(unscaledIcon)==inSize &&
+			gdk_pixbuf_get_height(unscaledIcon)==inSize))
 	{
 		return(unscaledIcon);
 	}

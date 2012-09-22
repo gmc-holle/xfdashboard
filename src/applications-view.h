@@ -27,6 +27,7 @@
 #include <garcon/garcon.h>
 
 #include "view.h"
+#include "common.h"
 
 G_BEGIN_DECLS
 
@@ -56,20 +57,13 @@ struct _XfdashboardApplicationsViewClass
 	XfdashboardViewClass				parent_class;
 };
 
-/* List mode for applications view */
-typedef enum
-{
-	XFDASHBOARD_APPLICATIONS_VIEW_LIST=0,
-	XFDASHBOARD_APPLICATIONS_VIEW_ICON
-} XfdashboardApplicationsViewListMode;
-
 /* Public API */
 GType xfdashboard_applications_view_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_applications_view_new();
 
-XfdashboardApplicationsViewListMode xfdashboard_applications_view_get_list_mode(XfdashboardApplicationsView *self);
-void xfdashboard_applications_view_set_list_mode(XfdashboardApplicationsView *self, XfdashboardApplicationsViewListMode inListMode);
+XfdashboardViewMode xfdashboard_applications_view_get_list_mode(XfdashboardApplicationsView *self);
+void xfdashboard_applications_view_set_list_mode(XfdashboardApplicationsView *self, XfdashboardViewMode inListMode);
 
 const GarconMenu* xfdashboard_applications_view_get_active_menu(XfdashboardApplicationsView *self);
 void xfdashboard_applications_view_set_active_menu(XfdashboardApplicationsView *self, const GarconMenu *inMenu);

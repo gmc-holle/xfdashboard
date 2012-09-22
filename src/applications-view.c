@@ -47,13 +47,13 @@ G_DEFINE_TYPE(XfdashboardApplicationsView,
 struct _XfdashboardApplicationsViewPrivate
 {
 	/* List mode */
-	gint				listMode;
+	gint					listMode;
 
-	gboolean			hasOldHorizontalPolicy;
-	GtkPolicyType		oldHorizontalPolicy;
+	gboolean				hasOldHorizontalPolicy;
+	XfdashboardPolicy		oldHorizontalPolicy;
 	
 	/* Active menu */
-	GarconMenu			*activeMenu;
+	GarconMenu				*activeMenu;
 };
 
 /* Properties */
@@ -84,7 +84,7 @@ void _xfdashboard_applications_view_on_parent_menu_entry_clicked(ClutterActor *i
 	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
 	GarconMenuElement					*element=NULL;
 
-	if(priv->listMode==XFDASHBOARD_APPLICATIONS_VIEW_LIST)
+	if(priv->listMode==XFDASHBOARD_VIEW_LIST)
 	{
 		XfdashboardApplicationMenuEntry	*item;
 
@@ -121,7 +121,7 @@ static gboolean _xfdashboard_applications_view_on_entry_clicked(ClutterActor *in
 	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
 	GarconMenuElement					*element=NULL;
 
-	if(priv->listMode==XFDASHBOARD_APPLICATIONS_VIEW_LIST)
+	if(priv->listMode==XFDASHBOARD_VIEW_LIST)
 	{
 		XfdashboardApplicationMenuEntry	*item;
 
@@ -212,7 +212,7 @@ void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
 	{
 		ClutterActor					*actor;
 
-		if(priv->listMode==XFDASHBOARD_APPLICATIONS_VIEW_LIST)
+		if(priv->listMode==XFDASHBOARD_VIEW_LIST)
 		{
 			actor=xfdashboard_application_menu_entry_new_with_custom(GARCON_MENU_ELEMENT(garcon_menu_get_parent(priv->activeMenu)),
 																		GTK_STOCK_GO_UP,
@@ -244,7 +244,7 @@ void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
 			garcon_menu_element_get_show_in_environment(item))
 		{
 			/* Create actor */
-			if(priv->listMode==XFDASHBOARD_APPLICATIONS_VIEW_LIST)
+			if(priv->listMode==XFDASHBOARD_VIEW_LIST)
 			{
 				actor=xfdashboard_application_menu_entry_new_with_menu_item(item);
 			}
@@ -280,11 +280,11 @@ void _xfdashboard_applications_view_set_active_menu(XfdashboardApplicationsView 
 }
 
 /* Create and return layout manager object for list mode */
-ClutterLayoutManager* _xfdashboard_applications_view_get_layout_manager_for_list_mode(XfdashboardApplicationsViewListMode inListMode)
+ClutterLayoutManager* _xfdashboard_applications_view_get_layout_manager_for_list_mode(XfdashboardViewMode inListMode)
 {
 	ClutterLayoutManager				*layout=NULL;
 
-	if(inListMode==XFDASHBOARD_APPLICATIONS_VIEW_LIST)
+	if(inListMode==XFDASHBOARD_VIEW_LIST)
 	{
 		layout=xfdashboard_fill_box_layout_new();
 		xfdashboard_fill_box_layout_set_vertical(XFDASHBOARD_FILL_BOX_LAYOUT(layout), TRUE);
@@ -321,7 +321,7 @@ void _xfdashboard_applications_view_set_scroll_bar_policies(XfdashboardApplicati
 		/* Check if we should restore old policies */
 		if(inDoRestore && priv->hasOldHorizontalPolicy)
 		{
-			GtkPolicyType	vPolicy;
+			XfdashboardPolicy			vPolicy;
 		
 			xfdashboard_viewpad_get_scrollbar_policy(viewpad, NULL, &vPolicy);
 			xfdashboard_viewpad_set_scrollbar_policy(viewpad, priv->oldHorizontalPolicy, vPolicy);
@@ -330,13 +330,13 @@ void _xfdashboard_applications_view_set_scroll_bar_policies(XfdashboardApplicati
 
 		/* Check if we should set new policies */
 		if(!inDoRestore &&
-			priv->listMode==XFDASHBOARD_APPLICATIONS_VIEW_ICON &&
+			priv->listMode==XFDASHBOARD_VIEW_ICON &&
 			!priv->hasOldHorizontalPolicy)
 		{
-			GtkPolicyType	vPolicy;
+			XfdashboardPolicy			vPolicy;
 		
 			xfdashboard_viewpad_get_scrollbar_policy(viewpad, &priv->oldHorizontalPolicy, &vPolicy);
-			xfdashboard_viewpad_set_scrollbar_policy(viewpad, GTK_POLICY_NEVER, vPolicy);
+			xfdashboard_viewpad_set_scrollbar_policy(viewpad, XFDASHBOARD_POLICY_NEVER, vPolicy);
 			priv->hasOldHorizontalPolicy=TRUE;
 		}
 	}
@@ -351,7 +351,7 @@ static void _xfdashboard_applications_view_on_activation_changed(ClutterActor *i
 }
 
 /* Set list mode and refresh display of this actor */
-void _xfdashboard_applications_view_set_list_mode(XfdashboardApplicationsView *self, XfdashboardApplicationsViewListMode inListMode)
+void _xfdashboard_applications_view_set_list_mode(XfdashboardApplicationsView *self, XfdashboardViewMode inListMode)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 
@@ -384,7 +384,7 @@ static void xfdashboard_applications_view_dispose(GObject *inObject)
 	/* Reset scroll bar policy if necessary by setting view to list view.
 	 * That's because of the dirty hack we need to do when switching to icon view
 	 */
-	_xfdashboard_applications_view_set_list_mode(self, XFDASHBOARD_APPLICATIONS_VIEW_LIST);
+	_xfdashboard_applications_view_set_list_mode(self, XFDASHBOARD_VIEW_LIST);
 
 	/* Set to no-active-menu to remove all item actors and releasing reference to menu */
 	_xfdashboard_applications_view_set_active_menu(self, NULL);
@@ -461,8 +461,8 @@ static void xfdashboard_applications_view_class_init(XfdashboardApplicationsView
 		g_param_spec_enum("list-mode",
 							"List mode",
 							"List mode to use in view",
-							XFDASHBOARD_TYPE_APPLICATIONS_VIEW_LIST_MODE,
-							XFDASHBOARD_APPLICATIONS_VIEW_ICON,
+							XFDASHBOARD_TYPE_VIEW_MODE,
+							XFDASHBOARD_VIEW_ICON,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardApplicationsViewProperties[PROP_ACTIVE_MENU]=
@@ -500,25 +500,24 @@ ClutterActor* xfdashboard_applications_view_new()
 	/* Create layout manager for default list mode */
 	ClutterLayoutManager				*layout=NULL;
 
-	layout=_xfdashboard_applications_view_get_layout_manager_for_list_mode(XFDASHBOARD_APPLICATIONS_VIEW_LIST);
+	layout=_xfdashboard_applications_view_get_layout_manager_for_list_mode(XFDASHBOARD_VIEW_LIST);
 
 	/* Create actor */
 	return(g_object_new(XFDASHBOARD_TYPE_APPLICATIONS_VIEW,
 						"view-name", "Applications",
-						"list-mode", XFDASHBOARD_APPLICATIONS_VIEW_LIST,
-						//"layout-manager", layout,
+						"list-mode", XFDASHBOARD_VIEW_LIST,
 						NULL));
 }
 
 /* Get/set list mode */
-XfdashboardApplicationsViewListMode xfdashboard_applications_view_get_list_mode(XfdashboardApplicationsView *self)
+XfdashboardViewMode xfdashboard_applications_view_get_list_mode(XfdashboardApplicationsView *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), XFDASHBOARD_APPLICATIONS_VIEW_ICON);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), XFDASHBOARD_VIEW_ICON);
 
 	return(self->priv->listMode);
 }
 
-void xfdashboard_applications_view_set_list_mode(XfdashboardApplicationsView *self, XfdashboardApplicationsViewListMode inListMode)
+void xfdashboard_applications_view_set_list_mode(XfdashboardApplicationsView *self, XfdashboardViewMode inListMode)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 	

@@ -593,7 +593,7 @@ ClutterLayoutManager* xfdashboard_view_get_layout_manager(XfdashboardView *self)
 void xfdashboard_view_set_layout_manager(XfdashboardView *self, ClutterLayoutManager *inManager)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
-	g_return_if_fail(CLUTTER_IS_LAYOUT_MANAGER(inManager));
+	g_return_if_fail(!inManager || CLUTTER_IS_LAYOUT_MANAGER(inManager));
 
 	_xfdashboard_view_set_layout_manager(self, inManager);
 }
