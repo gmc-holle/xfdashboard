@@ -302,14 +302,29 @@ static gboolean xfdashboard_view_get_paint_volume(ClutterActor *inActor,
 	return(TRUE);
 }
 
-/* Pick all the child actors */
-static void xfdashboard_view_pick(ClutterActor *inActor, const ClutterColor *inPick)
+/* Pick this actor and possibly all the child actors.
+ * That means that this function should draw a solid shape of actor's silouhette
+ * in the given color. This shape is drawn to an invisible offscreen and is used
+ * by Clutter to determine an actor fast by inspecting the color at the position.
+ * The default implementation is to draw a solid rectangle covering the allocation
+ * of THIS actor.
+ * If we could not use this default implementation we have chain up to parent class
+ * and call the paint function of any child we know and which can be reactive.
+ */
+static void xfdashboard_view_pick(ClutterActor *self, const ClutterColor *inColor)
 {
-	XfdashboardViewPrivate	*priv=XFDASHBOARD_VIEW(inActor)->priv;
+	XfdashboardViewPrivate	*priv=XFDASHBOARD_VIEW(self)->priv;
 
-	CLUTTER_ACTOR_CLASS(xfdashboard_view_parent_class)->pick(inActor, inPick);
+	/* It is possible to avoid a costly paint by checking
+	 * whether the actor should really be painted in pick mode
+	 */
+	if(!clutter_actor_should_pick_paint(self)) return;
 
-	g_list_foreach(priv->children, (GFunc)clutter_actor_paint, NULL);
+	/* Chain up so we get a bounding box painted (if we are reactive) */
+	CLUTTER_ACTOR_CLASS(xfdashboard_view_parent_class)->pick(self, inColor);
+
+	/* Paint children */
+	g_list_foreach(priv->children, (GFunc)clutter_actor_paint, (gpointer)inColor);
 }
 
 /* Get preferred width/height */
@@ -566,6 +581,9 @@ static void xfdashboard_view_init(XfdashboardView *self)
 	/* Set up default values */
 	priv->viewName=NULL;
 	priv->layoutManager=NULL;
+
+	/* This actor should receive events */
+	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 }
 
 /* Implementation: Public API */

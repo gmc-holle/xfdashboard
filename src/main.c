@@ -166,7 +166,7 @@ int main(int argc, char **argv)
 
 	/* Show stage and go ;) */
 	clutter_actor_show(stage);
-	clutter_stage_set_fullscreen(CLUTTER_STAGE(stage), TRUE);
+	//clutter_stage_set_fullscreen(CLUTTER_STAGE(stage), TRUE);
 
 	clutter_main();
 

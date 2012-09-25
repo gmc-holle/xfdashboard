@@ -743,7 +743,7 @@ void xfdashboard_scrollbar_set_value(XfdashboardScrollbar *self, gfloat inValue)
 	g_return_if_fail(inValue>=0.0f);
 
 	/* Only set new value if it differs from current one */
-	XfdashboardScrollbarPrivate		*priv=XFDASHBOARD_SCROLLBAR_GET_PRIVATE(self);
+	XfdashboardScrollbarPrivate		*priv=self->priv;
 
 	if(inValue>priv->range)
 	{
@@ -774,7 +774,7 @@ void xfdashboard_scrollbar_set_range(XfdashboardScrollbar *self, gfloat inRange)
 	g_return_if_fail(inRange>=1.0f);
 
 	/* Only set new value if it differs from current value */
-	XfdashboardScrollbarPrivate	*priv=XFDASHBOARD_SCROLLBAR_GET_PRIVATE(self);
+	XfdashboardScrollbarPrivate	*priv=self->priv;
 
 	if(inRange!=priv->range)
 	{

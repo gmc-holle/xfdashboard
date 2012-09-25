@@ -367,7 +367,7 @@ void _xfdashboard_applications_view_set_list_mode(XfdashboardApplicationsView *s
 	layout=_xfdashboard_applications_view_get_layout_manager_for_list_mode(priv->listMode);
 	xfdashboard_view_set_layout_manager(XFDASHBOARD_VIEW(self), layout);
 	_xfdashboard_applications_view_set_scroll_bar_policies(self, FALSE);
-	
+
 	/* Set up items to display */
 	_xfdashboard_applications_view_refresh(self);
 }
@@ -463,7 +463,7 @@ static void xfdashboard_applications_view_class_init(XfdashboardApplicationsView
 							"List mode to use in view",
 							XFDASHBOARD_TYPE_VIEW_MODE,
 							XFDASHBOARD_VIEW_ICON,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+							G_PARAM_READWRITE);
 
 	XfdashboardApplicationsViewProperties[PROP_ACTIVE_MENU]=
 		g_param_spec_object("active-menu",
@@ -497,11 +497,6 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 /* Create new actor */
 ClutterActor* xfdashboard_applications_view_new()
 {
-	/* Create layout manager for default list mode */
-	ClutterLayoutManager				*layout=NULL;
-
-	layout=_xfdashboard_applications_view_get_layout_manager_for_list_mode(XFDASHBOARD_VIEW_LIST);
-
 	/* Create actor */
 	return(g_object_new(XFDASHBOARD_TYPE_APPLICATIONS_VIEW,
 						"view-name", "Applications",

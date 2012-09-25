@@ -195,12 +195,47 @@ static void xfdashboard_viewpad_paint(ClutterActor *inActor)
 		clutter_actor_paint(priv->horizontalScrollbar);
 }
 
-/* Pick all the child actors */
-static void xfdashboard_viewpad_pick(ClutterActor *inActor, const ClutterColor *inPick)
+/* Pick this actor and possibly all the child actors.
+ * That means that this function should draw a solid shape of actor's silouhette
+ * in the given color. This shape is drawn to an invisible offscreen and is used
+ * by Clutter to determine an actor fast by inspecting the color at the position.
+ * The default implementation is to draw a solid rectangle covering the allocation
+ * of THIS actor.
+ * If we could not use this default implementation we have chain up to parent class
+ * and call the paint function of any child we know and which can be reactive.
+ */
+static void xfdashboard_viewpad_pick(ClutterActor *self, const ClutterColor *inColor)
 {
-	CLUTTER_ACTOR_CLASS(xfdashboard_viewpad_parent_class)->pick(inActor, inPick);
+	XfdashboardViewpadPrivate	*priv=XFDASHBOARD_VIEWPAD(self)->priv;
 
-	xfdashboard_viewpad_paint(inActor);
+	/* It is possible to avoid a costly paint by checking
+	 * whether the actor should really be painted in pick mode
+	 */
+	if(!clutter_actor_should_pick_paint(self)) return;
+
+	/* Chain up so we get a bounding box painted (if we are reactive) */
+	CLUTTER_ACTOR_CLASS(xfdashboard_viewpad_parent_class)->pick(self, inColor);
+
+	/* Draw silouhette of active view and visible scroll bars */
+	if(priv->activeView &&
+		CLUTTER_ACTOR_IS_VISIBLE(priv->activeView))
+	{
+		clutter_actor_paint(CLUTTER_ACTOR(priv->activeView));
+	}
+
+	if(priv->verticalScrollbar &&
+		CLUTTER_ACTOR_IS_VISIBLE(priv->verticalScrollbar) &&
+		priv->verticalScrollbarVisible)
+	{
+		clutter_actor_paint(priv->verticalScrollbar);
+	}
+
+	if(priv->horizontalScrollbar &&
+		CLUTTER_ACTOR_IS_VISIBLE(priv->horizontalScrollbar) &&
+		priv->horizontalScrollbarVisible)
+	{
+		clutter_actor_paint(priv->horizontalScrollbar);
+	}
 }
 
 /* Get preferred width/height */

@@ -462,33 +462,24 @@ static void xfdashboard_application_menu_entry_paint(ClutterActor *self)
 	}
 }
 
-/* Pick all the child actors */
+/* Pick this actor and possibly all the child actors.
+ * That means that this function should draw a solid shape of actor's silouhette
+ * in the given color. This shape is drawn to an invisible offscreen and is used
+ * by Clutter to determine an actor fast by inspecting the color at the position.
+ * The default implementation is to draw a solid rectangle covering the allocation
+ * of THIS actor.
+ * If we could not use this default implementation we have chain up to parent class
+ * and call the paint function of any child we know and which can be reactive.
+ */
 static void xfdashboard_application_menu_entry_pick(ClutterActor *self, const ClutterColor *inColor)
 {
-	XfdashboardApplicationMenuEntryPrivate	*priv=XFDASHBOARD_APPLICATION_MENU_ENTRY(self)->priv;
+	/* It is possible to avoid a costly paint by checking
+	 * whether the actor should really be painted in pick mode
+	 */
+	if(!clutter_actor_should_pick_paint(self)) return;
 
 	/* Chain up so we get a bounding box painted (if we are reactive) */
 	CLUTTER_ACTOR_CLASS(xfdashboard_application_menu_entry_parent_class)->pick(self, inColor);
-
-	/* clutter_actor_pick() might be deprecated by clutter_actor_paint().
-	 * Do not know what to with ClutterColor here.
-	 * Order of actors being painted is important!
-	 */
-	if(priv->actorIcon &&
-		CLUTTER_ACTOR_IS_MAPPED(priv->actorIcon)) clutter_actor_paint(priv->actorIcon);
-
-	if(priv->actorTitle &&
-		CLUTTER_ACTOR_IS_MAPPED(priv->actorTitle)) clutter_actor_paint(priv->actorTitle);
-
-	if(priv->actorDescription &&
-		CLUTTER_ACTOR_IS_MAPPED(priv->actorDescription))
-	{
-		if(!priv->isMenu ||
-			(priv->description && strlen(priv->description)>0))
-		{
-			clutter_actor_paint(priv->actorDescription);
-		}
-	}
 }
 
 /* Destroy this actor */
