@@ -81,6 +81,9 @@ void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardStyl
 const gchar* xfdashboard_button_get_icon(XfdashboardButton *self);
 void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconName);
 
+GdkPixbuf* xfdashboard_button_get_icon_pixbuf(XfdashboardButton *self);
+void xfdashboard_button_set_icon_pixbuf(XfdashboardButton *self, GdkPixbuf *inIcon);
+
 gint xfdashboard_button_get_icon_size(XfdashboardButton *self);
 void xfdashboard_button_set_icon_size(XfdashboardButton *self, gint inSize);
 

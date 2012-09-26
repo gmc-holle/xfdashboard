@@ -46,17 +46,14 @@ struct _XfdashboardLiveWindowPrivate
 	/* Actors for live window */
 	ClutterActor		*actorWindow;
 	ClutterActor		*actorLabel;
-	ClutterActor		*actorLabelBackground;
-	ClutterActor		*actorAppIcon;
-	
 	ClutterActor		*actorClose;
-	gboolean			wasClosedClicked;
 
 	/* Window the actors belong to */
 	WnckWindow			*window;
 
 	/* Actor actions */
 	ClutterAction		*clickAction;
+	gboolean			wasClosedClicked;
 
 	/* Settings */
 	gchar				*labelFont;
@@ -122,57 +119,34 @@ void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const Wnck
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
-	/* Set window and create actors */
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
+	XfdashboardButton				*button=NULL;
 
+	/* Set window and create actors */
 	g_return_if_fail(priv->window==NULL);
 
 	priv->window=(WnckWindow*)inWindow;
 
 	/* Create live-window */
-	GdkPixbuf		*windowIcon;
-	GError			*error;
-
 	priv->actorWindow=clutter_x11_texture_pixmap_new_with_window(wnck_window_get_xid(priv->window));
 	clutter_actor_set_parent(priv->actorWindow, CLUTTER_ACTOR(self));
 
 	clutter_x11_texture_pixmap_set_automatic(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow), TRUE);
 
-	/* Create label and its background */
-	priv->actorLabel=clutter_text_new();
+	/* Create label with icon and background*/
+	priv->actorLabel=xfdashboard_button_new_with_text(wnck_window_get_name(priv->window));
+	button=XFDASHBOARD_BUTTON(priv->actorLabel);
+	
+	xfdashboard_button_set_style(button, XFDASHBOARD_STYLE_BOTH);
+	xfdashboard_button_set_icon_pixbuf(button, wnck_window_get_icon(priv->window));
+	xfdashboard_button_set_margin(button, priv->labelMargin);
+	xfdashboard_button_set_font(button, priv->labelFont);
+	if(priv->labelTextColor) xfdashboard_button_set_color(button, priv->labelTextColor);
+	xfdashboard_button_set_ellipsize_mode(button, priv->labelEllipsize);
+	xfdashboard_button_set_background_visibility(button, TRUE);
+	if(priv->labelBackgroundColor) xfdashboard_button_set_background_color(button, priv->labelBackgroundColor);
+	clutter_actor_set_reactive(priv->actorLabel, FALSE);
 	clutter_actor_set_parent(priv->actorLabel, CLUTTER_ACTOR(self));
-
-	clutter_text_set_text(CLUTTER_TEXT(priv->actorLabel), wnck_window_get_name(priv->window));
-	clutter_text_set_single_line_mode(CLUTTER_TEXT(priv->actorLabel), TRUE);
-	clutter_text_set_ellipsize(CLUTTER_TEXT(priv->actorLabel), priv->labelEllipsize);
-	if(priv->labelFont) clutter_text_set_font_name(CLUTTER_TEXT(priv->actorLabel), priv->labelFont);
-	if(priv->labelTextColor) clutter_text_set_color(CLUTTER_TEXT(priv->actorLabel), priv->labelTextColor);
-
-	priv->actorLabelBackground=clutter_rectangle_new();
-	clutter_actor_set_parent(priv->actorLabelBackground, CLUTTER_ACTOR(self));
-
-	if(priv->labelBackgroundColor) clutter_rectangle_set_color(CLUTTER_RECTANGLE(priv->actorLabelBackground), priv->labelBackgroundColor);
-
-	/* Create icon for application running in window */
-	windowIcon=wnck_window_get_icon(priv->window);
-
-	priv->actorAppIcon=clutter_texture_new();
-	clutter_actor_set_parent(priv->actorAppIcon, CLUTTER_ACTOR(self));
-
-	error=NULL;
-	if(!clutter_texture_set_from_rgb_data(CLUTTER_TEXTURE(priv->actorAppIcon),
-												gdk_pixbuf_get_pixels(windowIcon),
-												gdk_pixbuf_get_has_alpha(windowIcon),
-												gdk_pixbuf_get_width(windowIcon),
-												gdk_pixbuf_get_height(windowIcon),
-												gdk_pixbuf_get_rowstride(windowIcon),
-												gdk_pixbuf_get_has_alpha(windowIcon) ? 4 : 3,
-												CLUTTER_TEXTURE_NONE,
-												&error))
-	{
-		g_warning("Could not create application icon actor: %s", (error && error->message) ?  error->message : "unknown error");
-		if(error!=NULL) g_error_free(error);
-	}
 
 	/* Create close button */
 	priv->actorClose=xfdashboard_button_new_with_icon(GTK_STOCK_CLOSE);
@@ -192,8 +166,6 @@ static void xfdashboard_live_window_show_all(ClutterActor *self)
 
 	clutter_actor_show(priv->actorWindow);
 	clutter_actor_show(priv->actorLabel);
-	clutter_actor_show(priv->actorLabelBackground);
-	clutter_actor_show(priv->actorAppIcon);
 	clutter_actor_show(priv->actorClose);
 	clutter_actor_show(self);
 }
@@ -206,8 +178,6 @@ static void xfdashboard_live_window_hide_all(ClutterActor *self)
 	clutter_actor_hide(self);
 	clutter_actor_hide(priv->actorWindow);
 	clutter_actor_hide(priv->actorLabel);
-	clutter_actor_hide(priv->actorLabelBackground);
-	clutter_actor_hide(priv->actorAppIcon);
 	clutter_actor_hide(priv->actorClose);
 }
 
@@ -279,47 +249,24 @@ static void xfdashboard_live_window_allocate(ClutterActor *self,
 	boxActorWindow=clutter_actor_box_new(left, top, right, bottom);
 	clutter_actor_allocate(priv->actorWindow, boxActorWindow, inFlags);
 
-	/* Set application icon */
-	ClutterActorBox				*boxActorAppIcon;
-	gdouble						iconWidth=clutter_actor_get_width(priv->actorAppIcon);
-	gdouble						iconHeight=clutter_actor_get_height(priv->actorAppIcon);
-
-	right=clutter_actor_box_get_x(boxActorWindow)+clutter_actor_box_get_width(boxActorWindow)-priv->labelMargin;
-	left=right-iconWidth;
-	bottom=clutter_actor_box_get_y(boxActorWindow)+clutter_actor_box_get_height(boxActorWindow)-priv->labelMargin;
-	top=bottom-iconHeight;
-	boxActorAppIcon=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
-	clutter_actor_allocate(priv->actorAppIcon, boxActorAppIcon, inFlags);
-
 	/* Set label actors */
-	ClutterActorBox				*boxActorLabel, *boxActorLabelBackground;
-	gfloat						textWidth, textHeight, maxRight;
+	ClutterActorBox				*boxActorLabel;
+	gfloat						labelWidth, labelHeight, maxWidth;
 
-	clutter_actor_get_preferred_width(priv->actorLabel, -1, NULL, &textWidth);
-	textHeight=clutter_actor_get_height(priv->actorLabel);
-	maxRight=clutter_actor_box_get_x(boxActorAppIcon)-(2*priv->labelMargin);
+	clutter_actor_get_preferred_size(priv->actorLabel,
+										NULL, NULL,
+										&labelWidth, &labelHeight);
 
-	if(textWidth>clutter_actor_box_get_width(inBox)) textWidth=clutter_actor_box_get_width(inBox);
+	maxWidth=clutter_actor_box_get_width(boxActorWindow)-(2*priv->labelMargin);
+	if(labelWidth>maxWidth) labelWidth=maxWidth;
 
-	left=clutter_actor_box_get_x(boxActorWindow)+((clutter_actor_box_get_width(boxActorWindow)-textWidth)/2.0f);
-	right=left+textWidth;
+	left=clutter_actor_box_get_x(boxActorWindow)+((clutter_actor_box_get_width(boxActorWindow)-labelWidth)/2.0f);
+	right=left+labelWidth;
 	bottom=clutter_actor_box_get_y(boxActorWindow)+clutter_actor_box_get_height(boxActorWindow)-(2*priv->labelMargin);
-	top=bottom-textHeight;
-	if(right>maxRight)
-	{
-		left+=(right-maxRight);
-		right=maxRight;
-	}
+	top=bottom-labelHeight;
 	if(left>right) left=right-1.0f;
 	boxActorLabel=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
 	clutter_actor_allocate(priv->actorLabel, boxActorLabel, inFlags);
-
-	left-=priv->labelMargin;
-	top-=priv->labelMargin;
-	right+=priv->labelMargin;
-	bottom+=priv->labelMargin;
-	boxActorLabelBackground=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
-	clutter_actor_allocate(priv->actorLabelBackground, boxActorLabelBackground, inFlags);
 
 	/* Set close actor */
 	ClutterActorBox				*boxActorClose;
@@ -339,8 +286,6 @@ static void xfdashboard_live_window_allocate(ClutterActor *self,
 	/* Release allocated memory */
 	clutter_actor_box_free(boxActorWindow);
 	clutter_actor_box_free(boxActorLabel);
-	clutter_actor_box_free(boxActorLabelBackground);
-	clutter_actor_box_free(boxActorAppIcon);
 	clutter_actor_box_free(boxActorClose);
 }
 
@@ -353,14 +298,8 @@ static void xfdashboard_live_window_paint(ClutterActor *self)
 	if(priv->actorWindow &&
 		CLUTTER_ACTOR_IS_MAPPED(priv->actorWindow)) clutter_actor_paint(priv->actorWindow);
 
-	if(priv->actorLabelBackground &&
-		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabelBackground)) clutter_actor_paint(priv->actorLabelBackground);
-
 	if(priv->actorLabel &&
 		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabel)) clutter_actor_paint(priv->actorLabel);
-
-	if(priv->actorAppIcon &&
-		CLUTTER_ACTOR_IS_MAPPED(priv->actorAppIcon)) clutter_actor_paint(priv->actorAppIcon);
 
 	if(priv->actorClose &&
 		CLUTTER_ACTOR_IS_MAPPED(priv->actorClose)) clutter_actor_paint(priv->actorClose);
@@ -388,14 +327,8 @@ static void xfdashboard_live_window_pick(ClutterActor *self, const ClutterColor 
 	if(priv->actorWindow &&
 		CLUTTER_ACTOR_IS_MAPPED(priv->actorWindow)) clutter_actor_paint(priv->actorWindow);
 
-	if(priv->actorLabelBackground &&
-		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabelBackground)) clutter_actor_paint(priv->actorLabelBackground);
-
 	if(priv->actorLabel &&
 		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabel)) clutter_actor_paint(priv->actorLabel);
-
-	if(priv->actorAppIcon &&
-		CLUTTER_ACTOR_IS_MAPPED(priv->actorAppIcon)) clutter_actor_paint(priv->actorAppIcon);
 
 	if(priv->actorClose &&
 		CLUTTER_ACTOR_IS_MAPPED(priv->actorClose)) clutter_actor_paint(priv->actorClose);
@@ -428,12 +361,6 @@ static void xfdashboard_live_window_destroy(ClutterActor *self)
 
 	if(priv->actorLabel) clutter_actor_destroy(priv->actorLabel);
 	priv->actorLabel=NULL;
-
-	if(priv->actorLabelBackground) clutter_actor_destroy(priv->actorLabelBackground);
-	priv->actorLabelBackground=NULL;
-
-	if(priv->actorAppIcon) clutter_actor_destroy(priv->actorAppIcon);
-	priv->actorAppIcon=NULL;
 
 	if(priv->actorClose) clutter_actor_destroy(priv->actorClose);
 	priv->actorClose=NULL;
@@ -657,16 +584,14 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	/* Set up default values */
 	priv->actorWindow=NULL;
 	priv->actorLabel=NULL;
-	priv->actorLabelBackground=NULL;
-	priv->actorAppIcon=NULL;
-
 	priv->actorClose=NULL;
+
+	priv->window=NULL;
+
 	priv->wasClosedClicked=FALSE;
-	
+
 	priv->labelTextColor=NULL;
 	priv->labelBackgroundColor=NULL;
-	
-	priv->window=NULL;
 
 	/* Connect signals */
 	priv->clickAction=clutter_click_action_new();
@@ -713,8 +638,12 @@ void xfdashboard_live_window_set_label_font(XfdashboardLiveWindow *self, const g
 		if(priv->labelFont) g_free(priv->labelFont);
 		priv->labelFont=g_strdup(inFont);
 
-		clutter_text_set_font_name(CLUTTER_TEXT(priv->actorLabel), priv->labelFont);
-		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		/* Set property of actor and queue a redraw if actors are created */
+		if(priv->actorLabel)
+		{
+			xfdashboard_button_set_font(XFDASHBOARD_BUTTON(priv->actorLabel), priv->labelFont);
+			clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		}
 	}
 }
 
@@ -738,8 +667,12 @@ void xfdashboard_live_window_set_label_color(XfdashboardLiveWindow *self, const 
 		if(priv->labelTextColor) clutter_color_free(priv->labelTextColor);
 		priv->labelTextColor=clutter_color_copy(inColor);
 
-		clutter_text_set_color(CLUTTER_TEXT(priv->actorLabel), priv->labelTextColor);
-		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		/* Set property of actor and queue a redraw if actors are created */
+		if(priv->actorLabel)
+		{
+			xfdashboard_button_set_color(XFDASHBOARD_BUTTON(priv->actorLabel), priv->labelTextColor);
+			clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		}
 	}
 }
 
@@ -754,6 +687,7 @@ const ClutterColor* xfdashboard_live_window_get_label_background_color(Xfdashboa
 void xfdashboard_live_window_set_label_background_color(XfdashboardLiveWindow *self, const ClutterColor *inColor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+	g_return_if_fail(inColor);
 
 	/* Set background color of label */
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
@@ -763,8 +697,12 @@ void xfdashboard_live_window_set_label_background_color(XfdashboardLiveWindow *s
 		if(priv->labelBackgroundColor) clutter_color_free(priv->labelBackgroundColor);
 		priv->labelBackgroundColor=clutter_color_copy(inColor);
 
-		clutter_rectangle_set_color(CLUTTER_RECTANGLE(priv->actorLabelBackground), priv->labelBackgroundColor);
-		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		/* Set property of actor and queue a redraw if actors are created */
+		if(priv->actorLabel)
+		{
+			xfdashboard_button_set_background_color(XFDASHBOARD_BUTTON(priv->actorLabel), priv->labelBackgroundColor);
+			clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		}
 	}
 }
 
@@ -787,7 +725,13 @@ void xfdashboard_live_window_set_label_margin(XfdashboardLiveWindow *self, const
 	if(priv->labelMargin!=inMargin)
 	{
 		priv->labelMargin=inMargin;
-		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+
+		/* Set property of actor and queue a redraw if actors are created */
+		if(priv->actorLabel)
+		{
+			xfdashboard_button_set_margin(XFDASHBOARD_BUTTON(priv->actorLabel), priv->labelMargin);
+			clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		}
 	}
 }
 
@@ -810,7 +754,11 @@ void xfdashboard_live_window_set_label_ellipsize_mode(XfdashboardLiveWindow *sel
 	{
 		priv->labelEllipsize=inMode;
 
-		clutter_text_set_ellipsize(CLUTTER_TEXT(priv->actorLabel), priv->labelEllipsize);
-		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		/* Set property of actor and queue a redraw if actors are created */
+		if(priv->actorLabel)
+		{
+			xfdashboard_button_set_ellipsize_mode(XFDASHBOARD_BUTTON(priv->actorLabel), priv->labelEllipsize);
+			clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		}
 	}
 }

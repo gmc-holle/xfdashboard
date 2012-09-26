@@ -276,7 +276,7 @@ void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self
 			!wnck_window_is_skip_pager(window))
 		{
 			/* Create actor */
-			liveWindow=_xfdashboard_windows_view_create_actor(XFDASHBOARD_WINDOWS_VIEW(self), window);
+			liveWindow=CLUTTER_ACTOR(_xfdashboard_windows_view_create_actor(XFDASHBOARD_WINDOWS_VIEW(self), window));
 			if(liveWindow) clutter_container_add_actor(CLUTTER_CONTAINER(self), liveWindow);
 		}
 	}

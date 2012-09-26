@@ -57,6 +57,7 @@ struct _XfdashboardButtonPrivate
 	XfdashboardStyle		style;
 
 	gchar					*iconName;
+	GdkPixbuf				*iconPixbuf;
 	gboolean				iconSyncSize;
 	gint					iconSize;
 	XfdashboardOrientation	iconOrientation;
@@ -79,6 +80,7 @@ enum
 	PROP_STYLE,
 
 	PROP_ICON_NAME,
+	PROP_ICON_PIXBUF,
 	PROP_ICON_SYNC_SIZE,
 	PROP_ICON_SIZE,
 	PROP_ICON_ORIENTATION,
@@ -122,10 +124,10 @@ void _xfdashboard_button_update_icon(XfdashboardButton *self)
 
 	XfdashboardButtonPrivate	*priv=self->priv;
 	gint						size;
-	GdkPixbuf					*icon;
+	GdkPixbuf					*icon=NULL;
 	GError						*error;
 
-	g_return_if_fail(priv->iconName);
+	g_return_if_fail(priv->iconName || priv->iconPixbuf);
 	
 	/* Determine size of icon to load by checking if icon should be
 	 * synchronized to label height or width
@@ -145,8 +147,24 @@ void _xfdashboard_button_update_icon(XfdashboardButton *self)
 	}
 		else size=priv->iconSize;
 
-	/* Get scaled icon */
-	icon=xfdashboard_get_pixbuf_for_icon_name_scaled(priv->iconName, size);
+	/* Get scaled icon from themed icon (if icon name is set) or use icon pixbuf set */
+	if(priv->iconName)
+	{
+		icon=xfdashboard_get_pixbuf_for_icon_name_scaled(priv->iconName, size);
+	}
+		else if(priv->iconPixbuf)
+		{
+			/* If pixbuf is not of requested size scale it */
+			if(gdk_pixbuf_get_width(priv->iconPixbuf)==size &&
+					gdk_pixbuf_get_height(priv->iconPixbuf)==size)
+			{
+				icon=g_object_ref(priv->iconPixbuf);
+			}
+				else
+				{
+					icon=gdk_pixbuf_scale_simple(priv->iconPixbuf, size, size, GDK_INTERP_BILINEAR);
+				}
+		}
 	g_return_if_fail(icon);
 	
 	/* Update texture of actor */
@@ -611,6 +629,9 @@ static void xfdashboard_button_dispose(GObject *inObject)
 	if(priv->iconName) g_free(priv->iconName);
 	priv->iconName=NULL;
 
+	if(priv->iconPixbuf) g_object_unref(priv->iconPixbuf);
+	priv->iconPixbuf=NULL;
+	
 	if(priv->font) g_free(priv->font);
 	priv->font=NULL;
 
@@ -648,6 +669,10 @@ static void xfdashboard_button_set_property(GObject *inObject,
 
 		case PROP_ICON_NAME:
 			xfdashboard_button_set_icon(self, g_value_get_string(inValue));
+			break;
+
+		case PROP_ICON_PIXBUF:
+			xfdashboard_button_set_icon_pixbuf(self, GDK_PIXBUF(g_value_get_object(inValue)));
 			break;
 
 		case PROP_ICON_SYNC_SIZE:
@@ -716,6 +741,10 @@ static void xfdashboard_button_get_property(GObject *inObject,
 
 		case PROP_ICON_NAME:
 			g_value_set_string(outValue, priv->iconName);
+			break;
+
+		case PROP_ICON_PIXBUF:
+			g_value_set_object(outValue, priv->iconPixbuf);
 			break;
 
 		case PROP_ICON_SYNC_SIZE:
@@ -818,6 +847,13 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							"",
 							G_PARAM_READWRITE);
 
+	XfdashboardButtonProperties[PROP_ICON_PIXBUF]=
+		g_param_spec_object("icon-pixbuf",
+							"Icon Pixbuf",
+							"Pixbuf of icon",
+							GDK_TYPE_PIXBUF,
+							G_PARAM_READWRITE);
+
 	XfdashboardButtonProperties[PROP_ICON_SYNC_SIZE]=
 		g_param_spec_boolean("sync-icon-size",
 								"Synchronize icon size",
@@ -916,6 +952,7 @@ static void xfdashboard_button_init(XfdashboardButton *self)
 	priv->spacing=0.0f;
 	priv->style=-1;
 	priv->iconName=NULL;
+	priv->iconPixbuf=NULL;
 	priv->iconSyncSize=TRUE;
 	priv->iconSize=DEFAULT_SIZE;
 	priv->iconOrientation=-1;
@@ -1069,10 +1106,40 @@ void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconNam
 	/* Set themed icon name or icon file name */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
-	if(g_strcmp0(priv->iconName, inIconName)!=0)
+	if(priv->iconPixbuf || g_strcmp0(priv->iconName, inIconName)!=0)
 	{
 		if(priv->iconName) g_free(priv->iconName);
 		priv->iconName=g_strdup(inIconName);
+
+		if(priv->iconPixbuf) g_object_unref(priv->iconPixbuf);
+		priv->iconPixbuf=NULL;
+
+		_xfdashboard_button_update_icon(self);
+	}
+}
+
+GdkPixbuf* xfdashboard_button_get_icon_pixbuf(XfdashboardButton *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), NULL);
+
+	return(self->priv->iconPixbuf);
+}
+
+void xfdashboard_button_set_icon_pixbuf(XfdashboardButton *self, GdkPixbuf *inIcon)
+{
+	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
+	g_return_if_fail(GDK_IS_PIXBUF(inIcon));
+
+	/* Set themed icon name or icon file name */
+	XfdashboardButtonPrivate	*priv=self->priv;
+
+	if(priv->iconName || inIcon!=priv->iconPixbuf)
+	{
+		if(priv->iconName) g_free(priv->iconName);
+		priv->iconName=NULL;
+
+		if(priv->iconPixbuf) g_object_unref(priv->iconPixbuf);
+		priv->iconPixbuf=g_object_ref(inIcon);
 
 		_xfdashboard_button_update_icon(self);
 	}
@@ -1183,15 +1250,14 @@ const gchar* xfdashboard_button_get_font(XfdashboardButton *self)
 void xfdashboard_button_set_font(XfdashboardButton *self, const gchar *inFont)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
-	g_return_if_fail(inFont);
 
 	/* Set font of label */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
-	if(!priv->font || g_strcmp0(priv->font, inFont)!=0)
+	if(g_strcmp0(priv->font, inFont)!=0)
 	{
 		if(priv->font) g_free(priv->font);
-		priv->font=g_strdup(inFont);
+		priv->font=(inFont ? g_strdup(inFont) : NULL);
 
 		clutter_text_set_font_name(priv->actorLabel, priv->font);
 		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
@@ -1209,6 +1275,7 @@ const ClutterColor* xfdashboard_button_get_color(XfdashboardButton *self)
 void xfdashboard_button_set_color(XfdashboardButton *self, const ClutterColor *inColor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
+	g_return_if_fail(inColor);
 
 	/* Set text color of label */
 	XfdashboardButtonPrivate	*priv=self->priv;
@@ -1280,6 +1347,7 @@ const ClutterColor* xfdashboard_button_get_background_color(XfdashboardButton *s
 void xfdashboard_button_set_background_color(XfdashboardButton *self, const ClutterColor *inColor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
+	g_return_if_fail(inColor);
 
 	/* Set background color */
 	XfdashboardButtonPrivate	*priv=self->priv;

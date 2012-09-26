@@ -110,7 +110,7 @@ GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name(const gchar *inIconName, gint in
 												TRUE,
 												NULL);
 
-		if(!icon) g_warning("Could not load icon '%s' for application entry actor: %s",
+		if(!icon) g_warning("Could not load icon from file %s: %s",
 							inIconName, (error && error->message) ?  error->message : "unknown error");
 
 		if(error!=NULL) g_error_free(error);
@@ -125,7 +125,7 @@ GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name(const gchar *inIconName, gint in
 											GTK_ICON_LOOKUP_USE_BUILTIN,
 											&error);
 
-			if(!icon) g_warning("Could not load themed icon '%s' for application entry actor: %s",
+			if(!icon) g_warning("Could not load themed icon '%s': %s",
 								inIconName, (error && error->message) ?  error->message : "unknown error");
 
 			if(error!=NULL) g_error_free(error);
@@ -141,7 +141,8 @@ GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name(const gchar *inIconName, gint in
 										GTK_ICON_LOOKUP_USE_BUILTIN,
 										&error);
 
-		if(!icon) g_error("Could not load fallback icon for application entry actor: %s",
+		if(!icon) g_error("Could not load fallback icon for '%s': %s",
+							inIconName,
 							(error && error->message) ?  error->message : "unknown error");
 
 		if(error!=NULL) g_error_free(error);
