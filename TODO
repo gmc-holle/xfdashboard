@@ -24,11 +24,11 @@
 [done] Implement windows-list view
 [done] Click live-window actor
 - Multi-monitor support (show visible windows on the screen where it belongs to, fullscreen over all screens)
-- Allow closing window by clicking "X" button of live-window actor
+[done] - Allow closing window by clicking "X" button of live-window actor
 - Allow drag-n-drop of live-window actor to quicklaunch-box view and create shortcut
 - Allow drag-n-drop of live-window actor to another workspace by dropping window in workspace-box
-- React on new window appearing by creating a live-window actor for it
-- React on window disappearing by destroying appropiate live-window actor
+[done] - React on new window appearing by creating a live-window actor for it
+[done] - React on window disappearing by destroying appropiate live-window actor
 
 == APPLICATION-MENU VIEW ==
 [done] - Implement application-menu view

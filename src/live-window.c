@@ -26,6 +26,7 @@
 #endif
 
 #include "live-window.h"
+#include "button.h"
 
 #include <clutter/x11/clutter-x11.h>
 #include <math.h>
@@ -47,6 +48,9 @@ struct _XfdashboardLiveWindowPrivate
 	ClutterActor		*actorLabel;
 	ClutterActor		*actorLabelBackground;
 	ClutterActor		*actorAppIcon;
+	
+	ClutterActor		*actorClose;
+	gboolean			wasClosedClicked;
 
 	/* Window the actors belong to */
 	WnckWindow			*window;
@@ -83,6 +87,7 @@ static GParamSpec* XfdashboardLiveWindowProperties[PROP_LAST]={ 0, };
 enum
 {
 	CLICKED,
+	CLOSE,
 
 	SIGNAL_LAST
 };
@@ -96,6 +101,20 @@ static ClutterColor		defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 static ClutterColor		defaultBackgroundColor={ 0x00, 0x00, 0x00, 0xd0 };
 
 /* IMPLEMENTATION: Private variables and methods */
+
+/* "Close" button of this actor was clicked */
+void _xfdashboard_live_window_on_close_clicked(ClutterActor *inActor, gpointer inUserData)
+{
+	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inActor);
+	XfdashboardLiveWindowPrivate	*priv=self->priv;
+
+	/* Emit "close" signal */
+	g_signal_emit(inActor, XfdashboardLiveWindowSignals[CLOSE], 0);
+
+	/* Set flag that closed button was clicked to prevent
+	 * a click-fallthrough to live window */
+	priv->wasClosedClicked=TRUE;
+}
 
 /* Set window and setup actors for display live image of window with accessiors */
 void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const WnckWindow *inWindow)
@@ -155,6 +174,11 @@ void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const Wnck
 		if(error!=NULL) g_error_free(error);
 	}
 
+	/* Create close button */
+	priv->actorClose=xfdashboard_button_new_with_icon(GTK_STOCK_CLOSE);
+	clutter_actor_set_parent(priv->actorClose, CLUTTER_ACTOR(self));
+	g_signal_connect_swapped(priv->actorClose, "clicked", G_CALLBACK(_xfdashboard_live_window_on_close_clicked), self);
+
 	/* Queue a redraw as the actors are now available */
 	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 }
@@ -170,6 +194,7 @@ static void xfdashboard_live_window_show_all(ClutterActor *self)
 	clutter_actor_show(priv->actorLabel);
 	clutter_actor_show(priv->actorLabelBackground);
 	clutter_actor_show(priv->actorAppIcon);
+	clutter_actor_show(priv->actorClose);
 	clutter_actor_show(self);
 }
 
@@ -183,6 +208,7 @@ static void xfdashboard_live_window_hide_all(ClutterActor *self)
 	clutter_actor_hide(priv->actorLabel);
 	clutter_actor_hide(priv->actorLabelBackground);
 	clutter_actor_hide(priv->actorAppIcon);
+	clutter_actor_hide(priv->actorClose);
 }
 
 /* Get preferred width/height */
@@ -295,11 +321,27 @@ static void xfdashboard_live_window_allocate(ClutterActor *self,
 	boxActorLabelBackground=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
 	clutter_actor_allocate(priv->actorLabelBackground, boxActorLabelBackground, inFlags);
 
+	/* Set close actor */
+	ClutterActorBox				*boxActorClose;
+	gfloat						buttonWidth, buttonHeight;
+
+	clutter_actor_get_preferred_size(priv->actorClose,
+										NULL, NULL,
+										&buttonWidth, &buttonHeight);
+										
+	right=clutter_actor_box_get_x(boxActorWindow)+clutter_actor_box_get_width(boxActorWindow)-priv->labelMargin;
+	left=MAX(right-buttonWidth, priv->labelMargin);
+	top=clutter_actor_box_get_y(boxActorWindow)+priv->labelMargin;
+	bottom=top+buttonHeight;
+	boxActorClose=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
+	clutter_actor_allocate(priv->actorClose, boxActorClose, inFlags);
+
 	/* Release allocated memory */
 	clutter_actor_box_free(boxActorWindow);
 	clutter_actor_box_free(boxActorLabel);
 	clutter_actor_box_free(boxActorLabelBackground);
 	clutter_actor_box_free(boxActorAppIcon);
+	clutter_actor_box_free(boxActorClose);
 }
 
 /* Paint actor */
@@ -319,16 +361,16 @@ static void xfdashboard_live_window_paint(ClutterActor *self)
 
 	if(priv->actorAppIcon &&
 		CLUTTER_ACTOR_IS_MAPPED(priv->actorAppIcon)) clutter_actor_paint(priv->actorAppIcon);
+
+	if(priv->actorClose &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorClose)) clutter_actor_paint(priv->actorClose);
 }
 
 /* Pick this actor and possibly all the child actors.
- * That means that this function should draw a solid shape of actor's silouhette
- * in the given color. This shape is drawn to an invisible offscreen and is used
- * by Clutter to determine an actor fast by inspecting the color at the position.
- * The default implementation is to draw a solid rectangle covering the allocation
- * of THIS actor.
- * If we could not use this default implementation we have chain up to parent class
- * and call the paint function of any child we know and which can be reactive.
+ * That means this function should paint its silouhette as a solid shape in the
+ * given color and call the paint function of its children. But never call the
+ * paint function of itself especially if the paint function sets a different
+ * color, e.g. by cogl_set_source_color* function family.
  */
 static void xfdashboard_live_window_pick(ClutterActor *self, const ClutterColor *inColor)
 {
@@ -341,6 +383,22 @@ static void xfdashboard_live_window_pick(ClutterActor *self, const ClutterColor 
 
 	/* Chain up so we get a bounding box painted (if we are reactive) */
 	CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->pick(self, inColor);
+
+	/* Pick children */
+	if(priv->actorWindow &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorWindow)) clutter_actor_paint(priv->actorWindow);
+
+	if(priv->actorLabelBackground &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabelBackground)) clutter_actor_paint(priv->actorLabelBackground);
+
+	if(priv->actorLabel &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabel)) clutter_actor_paint(priv->actorLabel);
+
+	if(priv->actorAppIcon &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorAppIcon)) clutter_actor_paint(priv->actorAppIcon);
+
+	if(priv->actorClose &&
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorClose)) clutter_actor_paint(priv->actorClose);
 }
 
 /* proxy ClickAction signals */
@@ -348,7 +406,15 @@ static void xfdashboard_live_window_clicked(ClutterClickAction *inAction,
 											ClutterActor *inActor,
 											gpointer inUserData)
 {
-	g_signal_emit(inActor, XfdashboardLiveWindowSignals[CLICKED], 0);
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inActor));
+
+	/* Only emit click signal if close button was not pressed before. If the closed button
+	 * was pressed before its click signal was handled but clutter keeps falling through
+	 * this element and causes the click action for live window to be emitted and handled here */
+	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(inActor)->priv;
+
+	if(!priv->wasClosedClicked) g_signal_emit(inActor, XfdashboardLiveWindowSignals[CLICKED], 0);
+	priv->wasClosedClicked=FALSE;
 }
 
 /* Destroy this actor */
@@ -368,6 +434,9 @@ static void xfdashboard_live_window_destroy(ClutterActor *self)
 
 	if(priv->actorAppIcon) clutter_actor_destroy(priv->actorAppIcon);
 	priv->actorAppIcon=NULL;
+
+	if(priv->actorClose) clutter_actor_destroy(priv->actorClose);
+	priv->actorClose=NULL;
 
 	/* Call parent's class destroy method */
 	if(CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->destroy)
@@ -560,6 +629,17 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 						g_cclosure_marshal_VOID__VOID,
 						G_TYPE_NONE,
 						0);
+
+	XfdashboardLiveWindowSignals[CLOSE]=
+		g_signal_new("close",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardLiveWindowClass, clicked),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
 }
 
 /* Object initialization
@@ -580,6 +660,9 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->actorLabelBackground=NULL;
 	priv->actorAppIcon=NULL;
 
+	priv->actorClose=NULL;
+	priv->wasClosedClicked=FALSE;
+	
 	priv->labelTextColor=NULL;
 	priv->labelBackgroundColor=NULL;
 	

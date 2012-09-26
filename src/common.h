@@ -54,6 +54,23 @@ typedef enum
 	XFDASHBOARD_POLICY_ALWAYS
 } XfdashboardPolicy;
 
+/* Style (e.g. used in buttons) */
+typedef enum
+{
+	XFDASHBOARD_STYLE_TEXT=0,
+	XFDASHBOARD_STYLE_ICON,
+	XFDASHBOARD_STYLE_BOTH,
+} XfdashboardStyle;
+
+/* Orientation (e.g. used in buttons) */
+typedef enum
+{
+	XFDASHBOARD_ORIENTATION_LEFT=0,
+	XFDASHBOARD_ORIENTATION_RIGHT,
+	XFDASHBOARD_ORIENTATION_TOP,
+	XFDASHBOARD_ORIENTATION_BOTTOM,
+} XfdashboardOrientation;
+
 /* Public API */
 WnckWindow* xfdashboard_get_stage_window();
 

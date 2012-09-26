@@ -588,6 +588,14 @@ static void xfdashboard_view_init(XfdashboardView *self)
 
 /* Implementation: Public API */
 
+/* Return list of children in this view */
+const GList* xfdashboard_view_get_children(XfdashboardView *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), NULL);
+
+	return(self->priv->children);
+}
+
 /* Remove all children from view */
 void xfdashboard_view_remove_all(XfdashboardView *self)
 {
