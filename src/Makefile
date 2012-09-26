@@ -19,6 +19,7 @@ SOURCES = \
 	application-entry.c \
 	application-icon.c \
 	applications-view.c \
+	button.c \
 	common.c \
 	fill-box-layout.c \
 	live-window.c \
@@ -36,6 +37,7 @@ HEADERS = \
 	application-entry.h \
 	application-icon.h \
 	applications-view.h \
+	button.h \
 	common.h \
 	fill-box-layout.h \
 	live-window.h \
