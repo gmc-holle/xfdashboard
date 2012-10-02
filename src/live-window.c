@@ -92,8 +92,6 @@ enum
 static guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 
 /* Private constants */
-#define DEFAULT_FONT	"Cantarell 12px"
-
 static ClutterColor		defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 static ClutterColor		defaultBackgroundColor={ 0x00, 0x00, 0x00, 0xd0 };
 
@@ -513,8 +511,8 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 		g_param_spec_string("label-font",
 							"Label font",
 							"Font description to use in label",
-							DEFAULT_FONT,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+							NULL,
+							G_PARAM_READWRITE);
 
 	XfdashboardLiveWindowProperties[PROP_LABEL_COLOR]=
 		clutter_param_spec_color("label-color",
@@ -593,6 +591,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 
 	priv->wasClosedClicked=FALSE;
 
+	priv->labelFont=NULL;
 	priv->labelTextColor=NULL;
 	priv->labelBackgroundColor=NULL;
 

@@ -109,7 +109,6 @@ enum
 static guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
 
 /* Private constants */
-#define DEFAULT_FONT	"Cantarell 12px"
 #define DEFAULT_SIZE	64
 
 static ClutterColor		defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
@@ -891,7 +890,7 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 		g_param_spec_string("font",
 							"Font",
 							"Font of label",
-							DEFAULT_FONT,
+							NULL,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_TEXT_COLOR]=
