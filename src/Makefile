@@ -16,7 +16,6 @@ LDFLAGS += `pkg-config ${PKGS} --libs`
 GLIB_MKENUMS=/usr/bin/glib-mkenums
 
 SOURCES = \
-	application-entry.c \
 	application-icon.c \
 	applications-view.c \
 	button.c \
@@ -34,7 +33,6 @@ SOURCES = \
 	windows-view.c
 
 HEADERS = \
-	application-entry.h \
 	application-icon.h \
 	applications-view.h \
 	button.h \

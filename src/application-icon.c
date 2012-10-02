@@ -293,7 +293,8 @@ void _xfdashboard_application_icon_update_custom(XfdashboardApplicationIcon *sel
 	}
 
 	/* Set and remember title */
-	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), priv->customTitle);
+	if(priv->customTitle) xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), priv->customTitle);
+		else xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), "");
 
 	/* Ensure no application information is set to prevent launching by accident */
 	if(G_UNLIKELY(priv->appInfo))

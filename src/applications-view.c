@@ -29,7 +29,6 @@
 
 #include "enums.h"
 #include "applications-view.h"
-#include "application-entry.h"
 #include "application-icon.h"
 #include "fill-box-layout.h"
 #include "viewpad.h"
@@ -76,34 +75,15 @@ void _xfdashboard_applications_view_set_active_menu(XfdashboardApplicationsView 
 void _xfdashboard_applications_view_on_parent_menu_entry_clicked(ClutterActor *inActor, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inActor));
 
-	/* If sub-menu was clicked change into it otherwise start application
-	 * of menu item and quit application
-	 */
+	/* Change to parent menu */
 	XfdashboardApplicationsView			*self=XFDASHBOARD_APPLICATIONS_VIEW(inUserData);
-	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
+	XfdashboardApplicationIcon			*item=XFDASHBOARD_APPLICATION_ICON(inActor);
 	GarconMenuElement					*element=NULL;
 
-	if(priv->listMode==XFDASHBOARD_VIEW_LIST)
-	{
-		XfdashboardApplicationMenuEntry	*item;
-
-		g_return_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(inActor));
-
-		item=XFDASHBOARD_APPLICATION_MENU_ENTRY(inActor);
-		element=(GarconMenuElement*)xfdashboard_application_menu_entry_get_menu_element(item);
-	}
-		else
-		{
-			XfdashboardApplicationIcon		*item;
-
-			g_return_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inActor));
-
-			item=XFDASHBOARD_APPLICATION_ICON(inActor);
-			element=(GarconMenuElement*)xfdashboard_application_icon_get_menu_element(item);
-		}
-
 	/* Set new active menu */
+	element=(GarconMenuElement*)xfdashboard_application_icon_get_menu_element(item);
 	g_return_if_fail(element);
 	
 	_xfdashboard_applications_view_set_active_menu(self, GARCON_MENU(element));
@@ -113,33 +93,16 @@ void _xfdashboard_applications_view_on_parent_menu_entry_clicked(ClutterActor *i
 static gboolean _xfdashboard_applications_view_on_entry_clicked(ClutterActor *inActor, gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inUserData), FALSE);
-
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inActor), FALSE);
+	
 	/* If sub-menu was clicked change into it otherwise start application
 	 * of menu item and quit application
 	 */
 	XfdashboardApplicationsView			*self=XFDASHBOARD_APPLICATIONS_VIEW(inUserData);
-	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
+	XfdashboardApplicationIcon			*item=XFDASHBOARD_APPLICATION_ICON(inActor);
 	GarconMenuElement					*element=NULL;
 
-	if(priv->listMode==XFDASHBOARD_VIEW_LIST)
-	{
-		XfdashboardApplicationMenuEntry	*item;
-
-		g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_MENU_ENTRY(inActor), FALSE);
-
-		item=XFDASHBOARD_APPLICATION_MENU_ENTRY(inActor);
-		element=(GarconMenuElement*)xfdashboard_application_menu_entry_get_menu_element(item);
-	}
-		else
-		{
-			XfdashboardApplicationIcon		*item;
-
-			g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inActor), FALSE);
-
-			item=XFDASHBOARD_APPLICATION_ICON(inActor);
-			element=(GarconMenuElement*)xfdashboard_application_icon_get_menu_element(item);
-		}
-
+	element=(GarconMenuElement*)xfdashboard_application_icon_get_menu_element(item);
 	g_return_val_if_fail(element, FALSE);
 
 	if(GARCON_IS_MENU(element))
@@ -212,20 +175,35 @@ void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
 	{
 		ClutterActor					*actor;
 
+		actor=xfdashboard_application_icon_new_with_custom(GARCON_MENU_ELEMENT(garcon_menu_get_parent(priv->activeMenu)),
+															GTK_STOCK_GO_UP,
+															"Back",
+															"Go back to previous menu");
+
 		if(priv->listMode==XFDASHBOARD_VIEW_LIST)
 		{
-			actor=xfdashboard_application_menu_entry_new_with_custom(GARCON_MENU_ELEMENT(garcon_menu_get_parent(priv->activeMenu)),
-																		GTK_STOCK_GO_UP,
-																		"Back",
-																		"Go back to previous menu");
+			gchar						*newText, *title, *description;
+
+			/* Get title and description from icon */
+			g_object_get(G_OBJECT(actor),
+							"custom-title", &title,
+							"custom-description", &description,
+							NULL);
+
+			/* Setup actor for view */
+			xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_BOTH);
+			xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_ORIENTATION_LEFT);
+			xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
+
+			/* Override text in icon */
+			newText=g_strdup_printf("<b><big>%s</big></b>\n%s", title, description);
+			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), newText);
+
+			/* Release allocated resources */
+			g_free(newText);
+			g_free(title);
+			g_free(description);
 		}
-			else
-			{
-				actor=xfdashboard_application_icon_new_with_custom(GARCON_MENU_ELEMENT(garcon_menu_get_parent(priv->activeMenu)),
-																			GTK_STOCK_GO_UP,
-																			"Back",
-																			"Go back to previous menu");
-			}
 
 		clutter_container_add_actor(CLUTTER_CONTAINER(self), actor);
 		g_signal_connect(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_parent_menu_entry_clicked), self);
@@ -244,13 +222,27 @@ void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
 			garcon_menu_element_get_show_in_environment(item))
 		{
 			/* Create actor */
+			actor=xfdashboard_application_icon_new_by_menu_item(item);
+
 			if(priv->listMode==XFDASHBOARD_VIEW_LIST)
 			{
-				actor=xfdashboard_application_menu_entry_new_with_menu_item(item);
+				gchar					*newText;
+
+				/* Setup actor for view */
+				xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_BOTH);
+				xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_ORIENTATION_LEFT);
+				xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
+
+				/* Override text from menu element in icon */
+				newText=g_strdup_printf("<b><big>%s</big></b>\n%s",
+										garcon_menu_element_get_name(item),
+										garcon_menu_element_get_comment(item));
+				xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), newText);
+				g_free(newText);
 			}
 				else
 				{
-					actor=xfdashboard_application_icon_new_by_menu_item(item);
+					/* Setup actor for view */
 					xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(actor), FALSE);
 				}
 

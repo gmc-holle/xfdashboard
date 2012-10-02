@@ -154,7 +154,6 @@ int main(int argc, char **argv)
 
 	view=xfdashboard_applications_view_new();
 	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
-	xfdashboard_applications_view_set_list_mode(XFDASHBOARD_APPLICATIONS_VIEW(view), XFDASHBOARD_VIEW_ICON);
 	g_signal_connect(view, "activated", G_CALLBACK(_xfdashboard_on_application_view_activated), NULL);
 
 	/* Set up event handlers */
