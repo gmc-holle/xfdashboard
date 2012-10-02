@@ -150,6 +150,9 @@ void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const Wnck
 
 	/* Create close button */
 	priv->actorClose=xfdashboard_button_new_with_icon(GTK_STOCK_CLOSE);
+	button=XFDASHBOARD_BUTTON(priv->actorClose);
+
+	xfdashboard_button_set_background_visibility(button, TRUE);
 	clutter_actor_set_parent(priv->actorClose, CLUTTER_ACTOR(self));
 	g_signal_connect_swapped(priv->actorClose, "clicked", G_CALLBACK(_xfdashboard_live_window_on_close_clicked), self);
 

@@ -251,6 +251,7 @@ void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
 				else
 				{
 					actor=xfdashboard_application_icon_new_by_menu_item(item);
+					xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(actor), FALSE);
 				}
 
 			clutter_container_add_actor(CLUTTER_CONTAINER(self), actor);

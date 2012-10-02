@@ -642,7 +642,7 @@ gboolean xfdashboard_quicklaunch_add_icon(XfdashboardQuicklaunch *self, Xfdashbo
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inIcon), FALSE);
 
 	/* Hide label in quicklaunch */
-	xfdashboard_application_icon_set_label_visible(inIcon, FALSE);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(inIcon), XFDASHBOARD_STYLE_ICON);
 	
 	return(_xfdashboard_quicklaunch_add_icon_to_quicklaunch(self, inIcon));
 }
@@ -656,7 +656,7 @@ gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch
 	ClutterActor				*actor;
 		
 	actor=xfdashboard_application_icon_new_by_desktop_file(inDesktopFile);
-	xfdashboard_application_icon_set_label_visible(XFDASHBOARD_APPLICATION_ICON(actor), FALSE);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_ICON);
 
 	return(_xfdashboard_quicklaunch_add_icon_to_quicklaunch(self, XFDASHBOARD_APPLICATION_ICON(actor)));
 }

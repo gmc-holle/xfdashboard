@@ -24,6 +24,8 @@
 #ifndef __XFOVERVIEW_APPLICATION_ICON__
 #define __XFOVERVIEW_APPLICATION_ICON__
 
+#include "button.h"
+
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
 #include <gio/gdesktopappinfo.h>
@@ -45,7 +47,7 @@ typedef struct _XfdashboardApplicationIconPrivate		XfdashboardApplicationIconPri
 struct _XfdashboardApplicationIcon
 {
 	/* Parent instance */
-	ClutterActor						parent_instance;
+	XfdashboardButton					parent_instance;
 
 	/* Private structure */
 	XfdashboardApplicationIconPrivate	*priv;
@@ -54,7 +56,7 @@ struct _XfdashboardApplicationIcon
 struct _XfdashboardApplicationIconClass
 {
 	/* Parent class */
-	ClutterActorClass					parent_class;
+	XfdashboardButtonClass				parent_class;
 
 	/* Virtual functions */
 	void (*clicked)(XfdashboardApplicationIcon *self);
@@ -78,24 +80,6 @@ const GarconMenuElement* xfdashboard_application_icon_get_menu_element(Xfdashboa
 void xfdashboard_application_icon_set_menu_element(XfdashboardApplicationIcon *self, GarconMenuElement *inMenuElement);
 
 const GAppInfo* xfdashboard_application_icon_get_application_info(XfdashboardApplicationIcon *self);
-
-const gboolean xfdashboard_application_icon_get_label_visible(XfdashboardApplicationIcon *self);
-void xfdashboard_application_icon_set_label_visible(XfdashboardApplicationIcon *self, const gboolean inVisible);
-
-const gchar* xfdashboard_application_icon_get_label_font(XfdashboardApplicationIcon *self);
-void xfdashboard_application_icon_set_label_font(XfdashboardApplicationIcon *self, const gchar *inFont);
-
-const ClutterColor* xfdashboard_application_icon_get_label_color(XfdashboardApplicationIcon *self);
-void xfdashboard_application_icon_set_label_color(XfdashboardApplicationIcon *self, const ClutterColor *inColor);
-
-const ClutterColor* xfdashboard_application_icon_get_label_background_color(XfdashboardApplicationIcon *self);
-void xfdashboard_application_icon_set_label_background_color(XfdashboardApplicationIcon *self, const ClutterColor *inColor);
-
-const gfloat xfdashboard_application_icon_get_label_margin(XfdashboardApplicationIcon *self);
-void xfdashboard_application_icon_set_label_margin(XfdashboardApplicationIcon *self, const gfloat inMargin);
-
-const PangoEllipsizeMode xfdashboard_application_icon_get_label_ellipsize_mode(XfdashboardApplicationIcon *self);
-void xfdashboard_application_icon_set_label_ellipsize_mode(XfdashboardApplicationIcon *self, const PangoEllipsizeMode inMode);
 
 G_END_DECLS
 

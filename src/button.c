@@ -415,6 +415,9 @@ static void xfdashboard_button_allocate(ClutterActor *self,
 		clutter_actor_get_preferred_size(CLUTTER_ACTOR(priv->actorIcon),
 											NULL, NULL,
 											&iconWidth, &iconHeight);
+
+		iconWidth=MIN(iconWidth, clutter_actor_box_get_width(inBox)-2*priv->margin);
+		iconHeight=MIN(iconHeight, clutter_actor_box_get_height(inBox)-2*priv->margin);
 	}
 		else spacing=iconWidth=iconHeight=0.0f;
 
@@ -910,7 +913,7 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 		g_param_spec_boolean("background-visible",
 								"Background visibility",
 								"Should background be shown",
-								FALSE,
+								TRUE,
 								G_PARAM_READWRITE);
 
 	XfdashboardButtonProperties[PROP_BACKGROUND_COLOR]=
@@ -1329,7 +1332,7 @@ void xfdashboard_button_set_background_visibility(XfdashboardButton *self, gbool
 	/* Set background visibility */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
-	if(!priv->showBackground!=inVisible)
+	if(priv->showBackground!=inVisible)
 	{
 		priv->showBackground=inVisible;
 		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
