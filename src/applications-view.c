@@ -226,7 +226,8 @@ void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
 
 			if(priv->listMode==XFDASHBOARD_VIEW_LIST)
 			{
-				gchar						*newText, *title, *description;
+				gchar						*newText;
+				const gchar					*title, *description;
 
 				/* Get title and description from menu element */
 				title=garcon_menu_element_get_name(item);
