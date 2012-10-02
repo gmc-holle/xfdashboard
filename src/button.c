@@ -891,7 +891,7 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							"Font",
 							"Font of label",
 							NULL,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+							G_PARAM_READWRITE);
 
 	XfdashboardButtonProperties[PROP_TEXT_COLOR]=
 		clutter_param_spec_color("color",
