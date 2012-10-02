@@ -226,7 +226,11 @@ void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
 
 			if(priv->listMode==XFDASHBOARD_VIEW_LIST)
 			{
-				gchar					*newText;
+				gchar						*newText, *title, *description;
+
+				/* Get title and description from menu element */
+				title=garcon_menu_element_get_name(item);
+				description=garcon_menu_element_get_comment(item);
 
 				/* Setup actor for view */
 				xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_BOTH);
@@ -234,10 +238,10 @@ void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
 				xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
 
 				/* Override text from menu element in icon */
-				newText=g_strdup_printf("<b><big>%s</big></b>\n%s",
-										garcon_menu_element_get_name(item),
-										garcon_menu_element_get_comment(item));
+				newText=g_strdup_printf("<b><big>%s</big></b>\n%s", title, description ? description : "");
 				xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), newText);
+
+				/* Release allocated resources */
 				g_free(newText);
 			}
 				else
