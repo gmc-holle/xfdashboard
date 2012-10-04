@@ -90,6 +90,9 @@ int main(int argc, char **argv)
 	ClutterActor			*quicklaunch;
 	ClutterActor			*viewpad, *viewSelector, *view;
 	ClutterColor			stageColor={ 0, 0, 0, 0xd0 };
+	GdkScreen				*screen;
+	gint					primary;
+	GdkRectangle			primarySize;
 
 	/* Tell clutter to try to initialize an RGBA visual */
 	clutter_x11_set_use_argb_visual(TRUE);
@@ -104,10 +107,16 @@ int main(int argc, char **argv)
 
 	/* TODO: Check for running instance (libunique?) */
 
+	/* Get size of primary monitor to set size of stage */
+	screen=gdk_screen_get_default();
+	primary=gdk_screen_get_primary_monitor(screen);
+	gdk_screen_get_monitor_geometry(screen, primary, &primarySize);
+	
 	/* Create clutter stage */
 	stage=clutter_stage_new();
 	clutter_stage_set_color(CLUTTER_STAGE(stage), &stageColor);
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(stage), TRUE);
+	clutter_actor_set_size(stage, primarySize.width, primarySize.height);
 
 	/* Create group holding all actors for stage */
 	group=clutter_group_new();
