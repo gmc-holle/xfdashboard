@@ -97,6 +97,30 @@ static ClutterColor		defaultBackgroundColor={ 0x00, 0x00, 0x00, 0xd0 };
 
 /* IMPLEMENTATION: Private variables and methods */
 
+/* Window icon changed */
+void _xfdashboard_live_window_on_icon_changed(WnckWindow *inWindow, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
+
+	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
+	XfdashboardLiveWindowPrivate	*priv=self->priv;
+
+	/* Set new window icon in label actor */
+	xfdashboard_button_set_icon_pixbuf(XFDASHBOARD_BUTTON(priv->actorLabel), wnck_window_get_icon(priv->window));
+}
+
+/* Window title changed */
+void _xfdashboard_live_window_on_title_changed(WnckWindow *inWindow, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
+
+	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
+	XfdashboardLiveWindowPrivate	*priv=self->priv;
+
+	/* Set new window title in label actor */
+	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorLabel), wnck_window_get_name(priv->window));
+}
+
 /* "Close" button of this actor was clicked */
 void _xfdashboard_live_window_on_close_clicked(ClutterActor *inActor, gpointer inUserData)
 {
@@ -120,10 +144,12 @@ void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const Wnck
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	XfdashboardButton				*button=NULL;
 
-	/* Set window and create actors */
+	/* Set window and connect signals to window */
 	g_return_if_fail(priv->window==NULL);
 
 	priv->window=(WnckWindow*)inWindow;
+	g_signal_connect(priv->window, "icon-changed", G_CALLBACK(_xfdashboard_live_window_on_icon_changed), self);
+	g_signal_connect(priv->window, "name-changed", G_CALLBACK(_xfdashboard_live_window_on_title_changed), self);
 
 	/* Create live-window */
 	priv->actorWindow=clutter_x11_texture_pixmap_new_with_window(wnck_window_get_xid(priv->window));
