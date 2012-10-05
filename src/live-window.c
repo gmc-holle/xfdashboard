@@ -50,6 +50,8 @@ struct _XfdashboardLiveWindowPrivate
 
 	/* Window the actors belong to */
 	WnckWindow			*window;
+	gulong				signalIconChangedID;
+	gulong				signalNameChangedID;
 
 	/* Actor actions */
 	ClutterAction		*clickAction;
@@ -148,8 +150,14 @@ void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const Wnck
 	g_return_if_fail(priv->window==NULL);
 
 	priv->window=(WnckWindow*)inWindow;
-	g_signal_connect(priv->window, "icon-changed", G_CALLBACK(_xfdashboard_live_window_on_icon_changed), self);
-	g_signal_connect(priv->window, "name-changed", G_CALLBACK(_xfdashboard_live_window_on_title_changed), self);
+	priv->signalIconChangedID=g_signal_connect(priv->window,
+												"icon-changed",
+												G_CALLBACK(_xfdashboard_live_window_on_icon_changed),
+												self);
+	priv->signalNameChangedID=g_signal_connect(priv->window,
+												"name-changed",
+												G_CALLBACK(_xfdashboard_live_window_on_title_changed),
+												self);
 
 	/* Create live-window */
 	priv->actorWindow=clutter_x11_texture_pixmap_new_with_window(wnck_window_get_xid(priv->window));
@@ -407,6 +415,23 @@ static void xfdashboard_live_window_dispose(GObject *inObject)
 	/* Release our allocated variables */
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(inObject)->priv;
 
+	if(priv->window)
+	{
+		if(priv->signalIconChangedID &&
+			g_signal_handler_is_connected(priv->window, priv->signalIconChangedID))
+		{
+			g_signal_handler_disconnect(priv->window, priv->signalIconChangedID);
+			priv->signalIconChangedID=0L;
+		}
+
+		if(priv->signalNameChangedID &&
+			g_signal_handler_is_connected(priv->window, priv->signalNameChangedID))
+		{
+			g_signal_handler_disconnect(priv->window, priv->signalNameChangedID);
+			priv->signalNameChangedID=0L;
+		}
+	}
+	
 	if(priv->labelFont) g_free(priv->labelFont);
 	priv->labelFont=NULL;
 
@@ -614,6 +639,8 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->actorClose=NULL;
 
 	priv->window=NULL;
+	priv->signalIconChangedID=0L;
+	priv->signalNameChangedID=0L;
 
 	priv->wasClosedClicked=FALSE;
 
