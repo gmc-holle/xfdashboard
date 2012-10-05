@@ -50,8 +50,14 @@ struct _XfdashboardLiveWindowPrivate
 
 	/* Window the actors belong to */
 	WnckWindow			*window;
+	gulong				signalActionsChangedID;
+	gulong				signalGeometryChangedID;
 	gulong				signalIconChangedID;
 	gulong				signalNameChangedID;
+	gulong				signalStateChangedID;
+	gulong				signalWorkspaceChangedID;
+	gboolean			canClose;
+	gboolean			isVisible;
 
 	/* Actor actions */
 	ClutterAction		*clickAction;
@@ -87,6 +93,9 @@ enum
 {
 	CLICKED,
 	CLOSE,
+	GEOMETRY_CHANGED,
+	VISIBILITY_CHANGED,
+	WORKSPACE_CHANGED,
 
 	SIGNAL_LAST
 };
@@ -96,8 +105,47 @@ static guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 /* Private constants */
 static ClutterColor		defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 static ClutterColor		defaultBackgroundColor={ 0x00, 0x00, 0x00, 0xd0 };
+static gint				interestingVisibilityStates=(WNCK_WINDOW_STATE_SKIP_PAGER |
+														WNCK_WINDOW_STATE_SKIP_TASKLIST |
+														WNCK_WINDOW_STATE_HIDDEN);
 
 /* IMPLEMENTATION: Private variables and methods */
+
+/* Window's action has changed */
+void _xfdashboard_live_window_on_actions_changed(WnckWindow *inWindow,
+													WnckWindowActions inChangedMask,
+													WnckWindowActions inNewState,
+													gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
+
+	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
+	XfdashboardLiveWindowPrivate	*priv=self->priv;
+
+	/* Check if action on "close" has changed */
+	if(inChangedMask & WNCK_WINDOW_ACTION_CLOSE)
+	{
+		gboolean	canClose;
+		
+		canClose=((inNewState & WNCK_WINDOW_ACTION_CLOSE) ? TRUE : FALSE);
+		if(priv->canClose!=canClose)
+		{
+			priv->canClose=canClose;
+			clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		}
+	}
+}
+
+/* Window's position and/or size (geometry) has changed */
+void _xfdashboard_live_window_on_geometry_changed(WnckWindow *inWindow, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
+
+	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
+
+	/* Emit "geometry-changed" signal */
+	g_signal_emit(self, XfdashboardLiveWindowSignals[GEOMETRY_CHANGED], 0);
+}
 
 /* Window icon changed */
 void _xfdashboard_live_window_on_icon_changed(WnckWindow *inWindow, gpointer inUserData)
@@ -121,6 +169,42 @@ void _xfdashboard_live_window_on_title_changed(WnckWindow *inWindow, gpointer in
 
 	/* Set new window title in label actor */
 	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorLabel), wnck_window_get_name(priv->window));
+}
+
+/* Window's state has changed */
+void _xfdashboard_live_window_on_state_changed(WnckWindow *inWindow,
+												WnckWindowState inChangedMask,
+												WnckWindowState inNewState,
+												gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
+
+	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
+	XfdashboardLiveWindowPrivate	*priv=self->priv;
+
+	/* Check if state in interessant states has changed */
+	if(inChangedMask & interestingVisibilityStates)
+	{
+		gboolean	isVisible;
+		
+		isVisible=((inNewState & interestingVisibilityStates) ? FALSE : TRUE);
+		if(priv->isVisible!=isVisible)
+		{
+			priv->isVisible=isVisible;
+			g_signal_emit(self, XfdashboardLiveWindowSignals[VISIBILITY_CHANGED], 0);
+		}
+	}
+}
+
+/* Window's workspace has changed */
+void _xfdashboard_live_window_on_workspace_changed(WnckWindow *inWindow, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
+
+	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
+
+	/* Emit "workspace-changed" signal */
+	g_signal_emit(self, XfdashboardLiveWindowSignals[WORKSPACE_CHANGED], 0);
 }
 
 /* "Close" button of this actor was clicked */
@@ -150,6 +234,17 @@ void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const Wnck
 	g_return_if_fail(priv->window==NULL);
 
 	priv->window=(WnckWindow*)inWindow;
+	priv->canClose=((wnck_window_get_actions(priv->window) & WNCK_WINDOW_ACTION_CLOSE) ? TRUE : FALSE);
+	priv->isVisible=((wnck_window_get_state(priv->window) & interestingVisibilityStates) ? FALSE : TRUE);
+
+	priv->signalActionsChangedID=g_signal_connect(priv->window,
+													"actions-changed",
+													G_CALLBACK(_xfdashboard_live_window_on_actions_changed),
+													self);
+	priv->signalGeometryChangedID=g_signal_connect(priv->window,
+													"icon-changed",
+													G_CALLBACK(_xfdashboard_live_window_on_geometry_changed),
+													self);
 	priv->signalIconChangedID=g_signal_connect(priv->window,
 												"icon-changed",
 												G_CALLBACK(_xfdashboard_live_window_on_icon_changed),
@@ -158,6 +253,14 @@ void _xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, const Wnck
 												"name-changed",
 												G_CALLBACK(_xfdashboard_live_window_on_title_changed),
 												self);
+	priv->signalWorkspaceChangedID=g_signal_connect(priv->window,
+													"workspace-changed",
+													G_CALLBACK(_xfdashboard_live_window_on_workspace_changed),
+													self);
+	priv->signalStateChangedID=g_signal_connect(priv->window,
+													"state-changed",
+													G_CALLBACK(_xfdashboard_live_window_on_state_changed),
+													self);
 
 	/* Create live-window */
 	priv->actorWindow=clutter_x11_texture_pixmap_new_with_window(wnck_window_get_xid(priv->window));
@@ -337,7 +440,8 @@ static void xfdashboard_live_window_paint(ClutterActor *self)
 		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabel)) clutter_actor_paint(priv->actorLabel);
 
 	if(priv->actorClose &&
-		CLUTTER_ACTOR_IS_MAPPED(priv->actorClose)) clutter_actor_paint(priv->actorClose);
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorClose) &&
+		priv->canClose) clutter_actor_paint(priv->actorClose);
 }
 
 /* Pick this actor and possibly all the child actors.
@@ -366,7 +470,8 @@ static void xfdashboard_live_window_pick(ClutterActor *self, const ClutterColor 
 		CLUTTER_ACTOR_IS_MAPPED(priv->actorLabel)) clutter_actor_paint(priv->actorLabel);
 
 	if(priv->actorClose &&
-		CLUTTER_ACTOR_IS_MAPPED(priv->actorClose)) clutter_actor_paint(priv->actorClose);
+		CLUTTER_ACTOR_IS_MAPPED(priv->actorClose) &&
+		priv->canClose) clutter_actor_paint(priv->actorClose);
 }
 
 /* proxy ClickAction signals */
@@ -417,6 +522,20 @@ static void xfdashboard_live_window_dispose(GObject *inObject)
 
 	if(priv->window)
 	{
+		if(priv->signalActionsChangedID &&
+			g_signal_handler_is_connected(priv->window, priv->signalActionsChangedID))
+		{
+			g_signal_handler_disconnect(priv->window, priv->signalActionsChangedID);
+			priv->signalActionsChangedID=0L;
+		}
+
+		if(priv->signalGeometryChangedID &&
+			g_signal_handler_is_connected(priv->window, priv->signalGeometryChangedID))
+		{
+			g_signal_handler_disconnect(priv->window, priv->signalGeometryChangedID);
+			priv->signalGeometryChangedID=0L;
+		}
+
 		if(priv->signalIconChangedID &&
 			g_signal_handler_is_connected(priv->window, priv->signalIconChangedID))
 		{
@@ -429,6 +548,20 @@ static void xfdashboard_live_window_dispose(GObject *inObject)
 		{
 			g_signal_handler_disconnect(priv->window, priv->signalNameChangedID);
 			priv->signalNameChangedID=0L;
+		}
+
+		if(priv->signalStateChangedID &&
+			g_signal_handler_is_connected(priv->window, priv->signalStateChangedID))
+		{
+			g_signal_handler_disconnect(priv->window, priv->signalStateChangedID);
+			priv->signalStateChangedID=0L;
+		}
+
+		if(priv->signalWorkspaceChangedID &&
+			g_signal_handler_is_connected(priv->window, priv->signalWorkspaceChangedID))
+		{
+			g_signal_handler_disconnect(priv->window, priv->signalWorkspaceChangedID);
+			priv->signalWorkspaceChangedID=0L;
 		}
 	}
 	
@@ -613,7 +746,41 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 		g_signal_new("close",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardLiveWindowClass, clicked),
+						G_STRUCT_OFFSET(XfdashboardLiveWindowClass, close),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardLiveWindowSignals[GEOMETRY_CHANGED]=
+		g_signal_new("geometry-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardLiveWindowClass, geometry_changed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardLiveWindowSignals[VISIBILITY_CHANGED]=
+		g_signal_new("visibility-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardLiveWindowClass, visibility_changed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__BOOLEAN,
+						G_TYPE_NONE,
+						1,
+						G_TYPE_BOOLEAN);
+
+	XfdashboardLiveWindowSignals[WORKSPACE_CHANGED]=
+		g_signal_new("workspace-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardLiveWindowClass, workspace_changed),
 						NULL,
 						NULL,
 						g_cclosure_marshal_VOID__VOID,
@@ -639,8 +806,14 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->actorClose=NULL;
 
 	priv->window=NULL;
+	priv->canClose=FALSE;
+	priv->isVisible=FALSE;
+	priv->signalActionsChangedID=0L;
+	priv->signalGeometryChangedID=0L;
 	priv->signalIconChangedID=0L;
 	priv->signalNameChangedID=0L;
+	priv->signalStateChangedID=0L;
+	priv->signalWorkspaceChangedID=0L;
 
 	priv->wasClosedClicked=FALSE;
 

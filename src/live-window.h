@@ -58,6 +58,10 @@ struct _XfdashboardLiveWindowClass
 
 	/* Virtual functions */
 	void (*clicked)(XfdashboardLiveWindow *self);
+	void (*close)(XfdashboardLiveWindow *self);
+	void (*geometry_changed)(XfdashboardLiveWindow *self);
+	void (*visibility_changed)(XfdashboardLiveWindow *self, gboolean inVisible);
+	void (*workspace_changed)(XfdashboardLiveWindow *self);
 };
 
 /* Public API */

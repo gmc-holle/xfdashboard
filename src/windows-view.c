@@ -188,6 +188,48 @@ gboolean _xfdashboard_windows_view_on_window_clicked(ClutterActor *inActor,
 	return(TRUE);
 }
 
+/* A window was moved or resized */
+void _xfdashboard_windows_view_on_window_geometry_changed(XfdashboardLiveWindow *inWindow, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inWindow));
+
+	/* Force a relayout to reflect new size of window */
+	clutter_actor_queue_relayout(CLUTTER_ACTOR(inWindow));
+}
+
+/* A window was hidden or shown */
+void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardLiveWindow *inWindow,
+															gboolean inIsVisible,
+															gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inWindow));
+
+	/* If window is shown, show it in window list - otherwise hide it.
+	 * We should not destroy the live window actor as the window might
+	 * get visible again.
+	 */
+	if(inIsVisible) clutter_actor_show(CLUTTER_ACTOR(inWindow));
+		else  clutter_actor_hide(CLUTTER_ACTOR(inWindow));
+}
+
+/* A window changed workspace or was pinned to all workspaces */
+void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardLiveWindow *inWindow, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inUserData));
+
+	XfdashboardWindowsView			*self=XFDASHBOARD_WINDOWS_VIEW(inUserData);
+	XfdashboardWindowsViewPrivate	*priv=self->priv;
+	WnckWindow						*window=(WnckWindow*)xfdashboard_live_window_get_window(inWindow);
+
+	/* If window is neither on this workspace nor pinned then destroy it */
+	if(!wnck_window_is_pinned(window) &&
+		wnck_window_get_workspace(window)!=priv->workspace)
+	{
+		clutter_actor_destroy(CLUTTER_ACTOR(inWindow));
+	}
+}
+
 /* Create actor for wnck-window and connect signals */
 XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self,
 																WnckWindow *inWindow)
@@ -201,6 +243,9 @@ XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindows
 	actor=xfdashboard_live_window_new(inWindow);
 	g_signal_connect(actor, "clicked", G_CALLBACK(_xfdashboard_windows_view_on_window_clicked), NULL);
 	g_signal_connect(actor, "close", G_CALLBACK(_xfdashboard_windows_view_on_window_close_clicked), NULL);
+	g_signal_connect(actor, "geometry-changed", G_CALLBACK(_xfdashboard_windows_view_on_window_geometry_changed), NULL);
+	g_signal_connect(actor, "visibility-changed", G_CALLBACK(_xfdashboard_windows_view_on_window_visibility_changed), NULL);
+	g_signal_connect(actor, "workspace-changed", G_CALLBACK(_xfdashboard_windows_view_on_window_workspace_changed), NULL);
 
 	return(XFDASHBOARD_LIVE_WINDOW(actor));
 }
