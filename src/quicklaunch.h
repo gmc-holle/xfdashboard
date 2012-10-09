@@ -81,6 +81,8 @@ void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, gfloat in
 gboolean xfdashboard_quicklaunch_add_icon(XfdashboardQuicklaunch *self, XfdashboardApplicationIcon *inIcon);
 gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch *self, const gchar *inDesktopFile);
 
+void xfdashboard_quicklaunch_mark_view_button(XfdashboardQuicklaunch *self, gboolean inIsMarked);
+
 G_END_DECLS
 
 #endif

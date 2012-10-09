@@ -46,6 +46,7 @@ struct _XfdashboardQuicklaunchPrivate
 	ClutterLayoutManager	*layoutManager;
 	
 	/* Icons (of type XfdashboardQuicklaunchIcon) */
+	ClutterActor			*viewButton;
 	ClutterActor			*icons;
 	guint					itemsCount;
 	guint					maxItemsCount;
@@ -98,30 +99,20 @@ static guint _xfdashboard_quicklaunch_get_number_icons(XfdashboardQuicklaunch *s
 	return(g_list_length(children));
 }
 
-/* "Switch to application view" button was clicked */
+/* "Switch to view" button was clicked */
 void _xfdashboard_quicklaunch_on_application_view_clicked(ClutterActor *inSelf, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inSelf));
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inUserData));
 	
-	XfdashboardQuicklaunch		*self=XFDASHBOARD_QUICKLAUNCH(inSelf);
-	XfdashboardButton			*appViewButton=XFDASHBOARD_BUTTON(inUserData);
-	gboolean					isApplicationViewShown;
-	
-	/* Emit signal that "application view" button was clicked
-	 * with its new state - that means TRUE to show it and FALSE to hide
-	 */
-	isApplicationViewShown=xfdashboard_button_get_background_visibility(appViewButton);
-	if(isApplicationViewShown)
-	{
-		g_signal_emit(self, XfdashboardQuicklaunchSignals[VIEW_HIDE], 0);
-		xfdashboard_button_set_background_visibility(appViewButton, FALSE);
-	}
-		else
-		{
-			g_signal_emit(self, XfdashboardQuicklaunchSignals[VIEW_SHOW], 0);
-			xfdashboard_button_set_background_visibility(appViewButton, TRUE);
-		}
+	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inSelf);
+	XfdashboardQuicklaunchPrivate	*priv=self->priv;
+	gboolean						isViewMarked;
+
+	/* Toggle "view button" mark */
+	isViewMarked=xfdashboard_button_get_background_visibility(XFDASHBOARD_BUTTON(priv->viewButton));
+
+	if(isViewMarked) xfdashboard_quicklaunch_mark_view_button(self, FALSE);
+		else xfdashboard_quicklaunch_mark_view_button(self, TRUE);
 }
 
 /* Application icon was clicked */
@@ -584,7 +575,6 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
-	XfdashboardButton				*appViewButton;
 
 	/* Set up default values */
 	priv=self->priv=XFDASHBOARD_QUICKLAUNCH_GET_PRIVATE(self);
@@ -607,14 +597,15 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	clutter_actor_set_parent(priv->icons, CLUTTER_ACTOR(self));
 
 	/* Add "Switch to application view" icon as first one to box */
-	appViewButton=XFDASHBOARD_BUTTON(xfdashboard_button_new_full(GTK_STOCK_HOME, "Applications"));
-	xfdashboard_button_set_icon_orientation(appViewButton, XFDASHBOARD_ORIENTATION_TOP);
-	xfdashboard_button_set_style(appViewButton, XFDASHBOARD_STYLE_ICON);
-	xfdashboard_button_set_sync_icon_size(appViewButton, FALSE);
-	xfdashboard_button_set_background_visibility(appViewButton, FALSE);
-	
-	_xfdashboard_quicklaunch_add_button(self, appViewButton);
-	g_signal_connect_swapped(appViewButton, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_application_view_clicked), self);
+	priv->viewButton=xfdashboard_button_new_with_icon(GTK_STOCK_HOME);
+	xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(priv->viewButton), XFDASHBOARD_ORIENTATION_TOP);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->viewButton), XFDASHBOARD_STYLE_ICON);
+	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->viewButton), FALSE);
+	xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(priv->viewButton), FALSE);
+	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->viewButton), "Switch to applications");
+
+	_xfdashboard_quicklaunch_add_button(self, XFDASHBOARD_BUTTON(priv->viewButton));
+	g_signal_connect_swapped(priv->viewButton, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_application_view_clicked), self);
 }
 
 /* Implementation: Public API */
@@ -742,4 +733,30 @@ gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch
 	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_ICON);
 
 	return(_xfdashboard_quicklaunch_add_application_icon(self, XFDASHBOARD_APPLICATION_ICON(actor)));
+}
+
+/* Mark or unmark "view button" */
+void xfdashboard_quicklaunch_mark_view_button(XfdashboardQuicklaunch *self, gboolean inIsMarked)
+{
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+
+	/* Check if mark has changed */
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+	gboolean						isViewMarked=xfdashboard_button_get_background_visibility(XFDASHBOARD_BUTTON(priv->viewButton));
+
+	if(inIsMarked==isViewMarked) return;
+
+	/* Emit signal "show" or "hide" of "view button" and set mark */
+	if(inIsMarked)
+	{
+		g_signal_emit(self, XfdashboardQuicklaunchSignals[VIEW_SHOW], 0);
+		xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(priv->viewButton), TRUE);
+		xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->viewButton), "Switch to windows");
+	}
+		else
+		{
+			g_signal_emit(self, XfdashboardQuicklaunchSignals[VIEW_HIDE], 0);
+			xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(priv->viewButton), FALSE);
+			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->viewButton), "Switch to applications");
+		}
 }

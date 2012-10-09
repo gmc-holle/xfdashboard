@@ -71,6 +71,24 @@ void _xfdashboard_on_switch_to_view_clicked(ClutterActor *inView, gpointer inUse
 	}
 }
 
+/* Windows view was activated */
+void _xfdashboard_on_windows_view_activated(ClutterActor *inView, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inView));
+
+	XfdashboardWindowsView			*view=XFDASHBOARD_WINDOWS_VIEW(inView);
+
+	/* Unmark "view button" in quicklaunch */
+	if(XFDASHBOARD_IS_QUICKLAUNCH(inUserData))
+	{
+		XfdashboardQuicklaunch		*quicklaunch=XFDASHBOARD_QUICKLAUNCH(inUserData);
+		
+		g_signal_handlers_block_by_func(quicklaunch, (gpointer)(_xfdashboard_on_switch_to_view_clicked), view);
+		xfdashboard_quicklaunch_mark_view_button(quicklaunch, FALSE);
+		g_signal_handlers_unblock_by_func(quicklaunch, (gpointer)(_xfdashboard_on_switch_to_view_clicked), view);
+	}
+}
+
 /* Application view was activated */
 void _xfdashboard_on_application_view_activated(ClutterActor *inView, gpointer inUserData)
 {
@@ -82,6 +100,16 @@ void _xfdashboard_on_application_view_activated(ClutterActor *inView, gpointer i
 	if(!xfdashboard_applications_view_get_active_menu(view))
 	{
 		xfdashboard_applications_view_set_active_menu(view, xfdashboard_get_application_menu());
+	}
+
+	/* Mark "view button" in quicklaunch */
+	if(XFDASHBOARD_IS_QUICKLAUNCH(inUserData))
+	{
+		XfdashboardQuicklaunch		*quicklaunch=XFDASHBOARD_QUICKLAUNCH(inUserData);
+		
+		g_signal_handlers_block_by_func(quicklaunch, (gpointer)(_xfdashboard_on_switch_to_view_clicked), view);
+		xfdashboard_quicklaunch_mark_view_button(quicklaunch, TRUE);
+		g_signal_handlers_unblock_by_func(quicklaunch, (gpointer)(_xfdashboard_on_switch_to_view_clicked), view);
 	}
 }
 
@@ -179,11 +207,12 @@ int main(int argc, char **argv)
 	view=xfdashboard_windows_view_new();
 	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
 	xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
+	g_signal_connect(view, "activated", G_CALLBACK(_xfdashboard_on_windows_view_activated), quicklaunch);
 	g_signal_connect_swapped(quicklaunch, "view-hide", G_CALLBACK(_xfdashboard_on_switch_to_view_clicked), view);
 
 	view=xfdashboard_applications_view_new();
 	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
-	g_signal_connect(view, "activated", G_CALLBACK(_xfdashboard_on_application_view_activated), NULL);
+	g_signal_connect(view, "activated", G_CALLBACK(_xfdashboard_on_application_view_activated), quicklaunch);
 	g_signal_connect_swapped(quicklaunch, "view-show", G_CALLBACK(_xfdashboard_on_switch_to_view_clicked), view);
 
 	/* Set up event handlers and connect signals */
