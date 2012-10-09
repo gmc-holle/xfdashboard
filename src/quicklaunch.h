@@ -54,6 +54,10 @@ struct _XfdashboardQuicklaunchClass
 {
 	/* Parent class */
 	ClutterActorClass				parent_class;
+
+	/* Virtual functions */
+	void (*view_show)(XfdashboardQuicklaunch *self);
+	void (*view_hide)(XfdashboardQuicklaunch *self);
 };
 
 /* Public API */

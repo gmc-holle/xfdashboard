@@ -47,8 +47,8 @@ struct _XfdashboardQuicklaunchPrivate
 	
 	/* Icons (of type XfdashboardQuicklaunchIcon) */
 	ClutterActor			*icons;
-	guint					iconsCount;
-	guint					maxIconsCount;
+	guint					itemsCount;
+	guint					maxItemsCount;
 	guint					normalIconSize;
 
 	/* Background */
@@ -75,6 +75,17 @@ enum
 
 static GParamSpec* XfdashboardQuicklaunchProperties[PROP_LAST]={ 0, };
 
+/* Signals */
+enum
+{
+	VIEW_SHOW,
+	VIEW_HIDE,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
+
 /* IMPLEMENTATION: Private variables and methods */
 static ClutterColor		_xfdashboard_quicklaunch_default_background_color=
 							{ 0xff, 0xff, 0xff, 0x40 };
@@ -87,8 +98,34 @@ static guint _xfdashboard_quicklaunch_get_number_icons(XfdashboardQuicklaunch *s
 	return(g_list_length(children));
 }
 
-/* Icon was clicked */
-static gboolean _xfdashboard_quicklaunch_on_clicked_icon(ClutterActor *inActor, gpointer inUserData)
+/* "Switch to application view" button was clicked */
+void _xfdashboard_quicklaunch_on_application_view_clicked(ClutterActor *inSelf, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inSelf));
+	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inUserData));
+	
+	XfdashboardQuicklaunch		*self=XFDASHBOARD_QUICKLAUNCH(inSelf);
+	XfdashboardButton			*appViewButton=XFDASHBOARD_BUTTON(inUserData);
+	gboolean					isApplicationViewShown;
+	
+	/* Emit signal that "application view" button was clicked
+	 * with its new state - that means TRUE to show it and FALSE to hide
+	 */
+	isApplicationViewShown=xfdashboard_button_get_background_visibility(appViewButton);
+	if(isApplicationViewShown)
+	{
+		g_signal_emit(self, XfdashboardQuicklaunchSignals[VIEW_HIDE], 0);
+		xfdashboard_button_set_background_visibility(appViewButton, FALSE);
+	}
+		else
+		{
+			g_signal_emit(self, XfdashboardQuicklaunchSignals[VIEW_SHOW], 0);
+			xfdashboard_button_set_background_visibility(appViewButton, TRUE);
+		}
+}
+
+/* Application icon was clicked */
+gboolean _xfdashboard_quicklaunch_on_application_icon_clicked(ClutterActor *inActor, gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inActor), FALSE);
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inUserData), FALSE);
@@ -122,34 +159,46 @@ static gboolean _xfdashboard_quicklaunch_on_clicked_icon(ClutterActor *inActor, 
 	return(TRUE);
 }
 
-/* Add an icon to this quicklaunch box */
-static gboolean _xfdashboard_quicklaunch_add_icon_to_quicklaunch(XfdashboardQuicklaunch *self,
-																	XfdashboardApplicationIcon *inIcon)
+/* Add an icon or button to this quicklaunch box */
+gboolean _xfdashboard_quicklaunch_add_button(XfdashboardQuicklaunch *self,
+												XfdashboardButton *inButton)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inIcon), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(inButton), FALSE);
 
 	/* Check if quicklaunch has reached its limit and warn.
-	 * But it does only make sense if max icon counter was set.
+	 * But it does only make sense if max item counter was set.
 	 * That means it is beyond zero.
 	 */
-	if(self->priv->maxIconsCount>0 &&
-		self->priv->iconsCount>=self->priv->maxIconsCount)
+	if(self->priv->maxItemsCount>0 &&
+		self->priv->itemsCount>=self->priv->maxItemsCount)
 	{
-		g_warning("Quicklaunch has reached its limit of %d icons. Icon might not be visible!",
-					self->priv->maxIconsCount);
+		g_warning("Quicklaunch has reached its limit of %d items. Item might not be visible!",
+					self->priv->maxItemsCount);
 	}
 	
-	/* Add and count icon to quicklaunch box and connect "clicked" signal */
-	clutter_actor_set_size(CLUTTER_ACTOR(inIcon), self->priv->normalIconSize, self->priv->normalIconSize);
-	clutter_container_add_actor(CLUTTER_CONTAINER(self->priv->icons), CLUTTER_ACTOR(inIcon));
-	g_signal_connect(inIcon, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_clicked_icon), self);
+	/* Add and count item to quicklaunch box */
+	clutter_actor_set_size(CLUTTER_ACTOR(inButton), self->priv->normalIconSize, self->priv->normalIconSize);
+	clutter_container_add_actor(CLUTTER_CONTAINER(self->priv->icons), CLUTTER_ACTOR(inButton));
 
-	self->priv->iconsCount++;
+	self->priv->itemsCount++;
 
 	/* Queue a relayout of all children as a new icon was added */
 	clutter_actor_queue_relayout(self->priv->icons);
 	
+	return(TRUE);
+}
+
+gboolean _xfdashboard_quicklaunch_add_application_icon(XfdashboardQuicklaunch *self,
+											XfdashboardApplicationIcon *inIcon)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inIcon), FALSE);
+
+	/* Add icon to quicklaunch box and connect "clicked" signal */
+	if(!_xfdashboard_quicklaunch_add_button(self, XFDASHBOARD_BUTTON(inIcon))) return(FALSE);
+	g_signal_connect(inIcon, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_application_icon_clicked), self);
+
 	return(TRUE);
 }
 
@@ -300,7 +349,7 @@ static void xfdashboard_quicklaunch_allocate(ClutterActor *self,
 		XfdashboardScalingBoxLayout	*layout=XFDASHBOARD_SCALING_BOX_LAYOUT(priv->layoutManager);
 
 		/* Update number of icons for later calculation */
-		priv->iconsCount=_xfdashboard_quicklaunch_get_number_icons(XFDASHBOARD_QUICKLAUNCH(self));
+		priv->itemsCount=_xfdashboard_quicklaunch_get_number_icons(XFDASHBOARD_QUICKLAUNCH(self));
 		
 		/* Get available space for icons */
 		availIconWidth=availableWidth-(2*priv->spacing);
@@ -326,7 +375,7 @@ static void xfdashboard_quicklaunch_allocate(ClutterActor *self,
 
 		/* Determine maximum number of icons at lowest scale */
 		iconsMinScale=xfdashboard_scaling_box_layout_get_scale_minimum(layout);
-		priv->maxIconsCount=floor(availIconHeight/((priv->normalIconSize*iconsMinScale)+priv->spacing));
+		priv->maxItemsCount=floor(availIconHeight/((priv->normalIconSize*iconsMinScale)+priv->spacing));
 	}
 
 	/* Create new allocation about available size and
@@ -410,11 +459,11 @@ static void xfdashboard_quicklaunch_get_property(GObject *inObject,
 	switch(inPropID)
 	{
 		case PROP_ICONS_COUNT:
-			g_value_set_uint(outValue, priv->iconsCount);
+			g_value_set_uint(outValue, priv->itemsCount);
 			break;
 
 		case PROP_ICONS_MAX_COUNT:
-			g_value_set_uint(outValue, priv->maxIconsCount);
+			g_value_set_uint(outValue, priv->maxItemsCount);
 			break;
 
 		case PROP_ICONS_NORMAL_SIZE:
@@ -504,6 +553,29 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardQuicklaunchProperties);
+
+	/* Define signals */
+	XfdashboardQuicklaunchSignals[VIEW_SHOW]=
+		g_signal_new("view-show",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, view_show),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardQuicklaunchSignals[VIEW_HIDE]=
+		g_signal_new("view-hide",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, view_show),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
 }
 
 /* Object initialization
@@ -512,12 +584,13 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
+	XfdashboardButton				*appViewButton;
 
 	/* Set up default values */
 	priv=self->priv=XFDASHBOARD_QUICKLAUNCH_GET_PRIVATE(self);
 
-	priv->iconsCount=0;
-	priv->maxIconsCount=0;
+	priv->itemsCount=0;
+	priv->maxItemsCount=0;
 	priv->normalIconSize=64;
 	priv->spacing=0.0f;
 	priv->backgroundColor=NULL;
@@ -532,6 +605,16 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 
 	priv->icons=clutter_box_new(priv->layoutManager);
 	clutter_actor_set_parent(priv->icons, CLUTTER_ACTOR(self));
+
+	/* Add "Switch to application view" icon as first one to box */
+	appViewButton=XFDASHBOARD_BUTTON(xfdashboard_button_new_full(GTK_STOCK_HOME, "Applications"));
+	xfdashboard_button_set_icon_orientation(appViewButton, XFDASHBOARD_ORIENTATION_TOP);
+	xfdashboard_button_set_style(appViewButton, XFDASHBOARD_STYLE_ICON);
+	xfdashboard_button_set_sync_icon_size(appViewButton, FALSE);
+	xfdashboard_button_set_background_visibility(appViewButton, FALSE);
+	
+	_xfdashboard_quicklaunch_add_button(self, appViewButton);
+	g_signal_connect_swapped(appViewButton, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_application_view_clicked), self);
 }
 
 /* Implementation: Public API */
@@ -547,7 +630,7 @@ guint xfdashboard_quicklaunch_get_icon_count(XfdashboardQuicklaunch *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0);
 
-	return(self->priv->iconsCount);
+	return(self->priv->itemsCount);
 }
 
 /* Get maximum number of icons quicklaunch can hold at smallest scale */
@@ -555,7 +638,7 @@ guint xfdashboard_quicklaunch_get_max_icon_count(XfdashboardQuicklaunch *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0);
 
-	return(self->priv->maxIconsCount);
+	return(self->priv->maxItemsCount);
 }
 
 /* Get/set icons' normal size */
@@ -644,7 +727,7 @@ gboolean xfdashboard_quicklaunch_add_icon(XfdashboardQuicklaunch *self, Xfdashbo
 	/* Hide label in quicklaunch */
 	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(inIcon), XFDASHBOARD_STYLE_ICON);
 	
-	return(_xfdashboard_quicklaunch_add_icon_to_quicklaunch(self, inIcon));
+	return(_xfdashboard_quicklaunch_add_application_icon(self, inIcon));
 }
 
 gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch *self, const gchar *inDesktopFile)
@@ -658,5 +741,5 @@ gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch
 	actor=xfdashboard_application_icon_new_by_desktop_file(inDesktopFile);
 	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_ICON);
 
-	return(_xfdashboard_quicklaunch_add_icon_to_quicklaunch(self, XFDASHBOARD_APPLICATION_ICON(actor)));
+	return(_xfdashboard_quicklaunch_add_application_icon(self, XFDASHBOARD_APPLICATION_ICON(actor)));
 }

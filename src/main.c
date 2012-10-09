@@ -51,6 +51,26 @@ static gchar			*quicklaunch_apps[]=	{
 												};
 /* TODO: Replace with xfconf */
 
+/* "Switch to a view" button in quicklaunch was clicked */
+void _xfdashboard_on_switch_to_view_clicked(ClutterActor *inView, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
+
+	XfdashboardView		*view=XFDASHBOARD_VIEW(inView);
+	ClutterActor		*viewpad=clutter_actor_get_parent(CLUTTER_ACTOR(view));
+
+	/* Iterate through parent actors of view and find viewpad */
+	while(viewpad)
+	{
+		/* If viewpad found, activate view */
+		if(XFDASHBOARD_IS_VIEWPAD(viewpad))
+		{
+			xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(viewpad), view);
+			return;
+		}
+	}
+}
+
 /* Application view was activated */
 void _xfdashboard_on_application_view_activated(ClutterActor *inView, gpointer inUserData)
 {
@@ -155,17 +175,18 @@ int main(int argc, char **argv)
 	clutter_actor_add_constraint(viewpad, clutter_snap_constraint_new(group, CLUTTER_SNAP_EDGE_BOTTOM, CLUTTER_SNAP_EDGE_BOTTOM, -spacingToStage));
 	clutter_container_add_actor(CLUTTER_CONTAINER(group), viewpad);
 
-
 	/* Create views and add them to viewpad */
 	view=xfdashboard_windows_view_new();
 	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
 	xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
+	g_signal_connect_swapped(quicklaunch, "view-hide", G_CALLBACK(_xfdashboard_on_switch_to_view_clicked), view);
 
 	view=xfdashboard_applications_view_new();
 	xfdashboard_viewpad_add_view(XFDASHBOARD_VIEWPAD(viewpad), XFDASHBOARD_VIEW(view));
 	g_signal_connect(view, "activated", G_CALLBACK(_xfdashboard_on_application_view_activated), NULL);
+	g_signal_connect_swapped(quicklaunch, "view-show", G_CALLBACK(_xfdashboard_on_switch_to_view_clicked), view);
 
-	/* Set up event handlers */
+	/* Set up event handlers and connect signals */
 	clutter_stage_set_key_focus(CLUTTER_STAGE(stage), NULL);
 
 	stageDestroySignalID=g_signal_connect(stage, "destroy", G_CALLBACK(clutter_main_quit), NULL);
