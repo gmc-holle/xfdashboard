@@ -16,7 +16,8 @@
 
 == VIEWPAD (VIEW AGGREGATOR) ==
 [done] - Implement viewpad
-[done] - For each view create a button to switch to this view
+[done] - For each view create a button to switch to this view (may be replace with "view button" in quicklaunch)
+[done] - Implement "view button" as first icon in quicklaunch
 [done] - Check why we need to slowly double-click on text to switch view - should be single-click
 [done] - Scroll bars should be shown or hidden automatically depending on if view fits the space in this direction
 
