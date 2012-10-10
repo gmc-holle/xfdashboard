@@ -44,7 +44,7 @@ G_DEFINE_TYPE(XfdashboardButton,
 
 struct _XfdashboardButtonPrivate
 {
-	/* Actors for live window */
+	/* Actors for icon and label of button */
 	ClutterTexture			*actorIcon;
 	ClutterText				*actorLabel;
 
