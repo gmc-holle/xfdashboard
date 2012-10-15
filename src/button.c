@@ -126,8 +126,6 @@ void _xfdashboard_button_update_icon(XfdashboardButton *self)
 	GdkPixbuf					*icon=NULL;
 	GError						*error;
 
-	g_return_if_fail(priv->iconName || priv->iconPixbuf);
-	
 	/* Determine size of icon to load by checking if icon should be
 	 * synchronized to label height or width
 	 */
@@ -147,25 +145,26 @@ void _xfdashboard_button_update_icon(XfdashboardButton *self)
 		else size=priv->iconSize;
 
 	/* Get scaled icon from themed icon (if icon name is set) or use icon pixbuf set */
-	if(priv->iconName)
+	if(priv->iconPixbuf)
 	{
-		icon=xfdashboard_get_pixbuf_for_icon_name_scaled(priv->iconName, size);
-	}
-		else if(priv->iconPixbuf)
+		/* If pixbuf is not of requested size scale it */
+		if(gdk_pixbuf_get_width(priv->iconPixbuf)==size &&
+				gdk_pixbuf_get_height(priv->iconPixbuf)==size)
 		{
-			/* If pixbuf is not of requested size scale it */
-			if(gdk_pixbuf_get_width(priv->iconPixbuf)==size &&
-					gdk_pixbuf_get_height(priv->iconPixbuf)==size)
-			{
-				icon=g_object_ref(priv->iconPixbuf);
-			}
-				else
-				{
-					icon=gdk_pixbuf_scale_simple(priv->iconPixbuf, size, size, GDK_INTERP_BILINEAR);
-				}
+			icon=g_object_ref(priv->iconPixbuf);
 		}
+			else
+			{
+				icon=gdk_pixbuf_scale_simple(priv->iconPixbuf, size, size, GDK_INTERP_BILINEAR);
+			}
+	}
+		else
+		{
+			icon=xfdashboard_get_pixbuf_for_icon_name_scaled(priv->iconName, size);
+		}
+
 	g_return_if_fail(icon);
-	
+
 	/* Update texture of actor */
 	error=NULL;
 	if(!clutter_texture_set_from_rgb_data(CLUTTER_TEXTURE(priv->actorIcon),

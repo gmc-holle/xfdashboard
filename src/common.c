@@ -99,37 +99,40 @@ GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name(const gchar *inIconName, gint in
 	GtkIconTheme	*iconTheme=gtk_icon_theme_get_default();
 	GError			*error=NULL;
 	
-	/* Check if we have an absolute filename */
-	if(g_path_is_absolute(inIconName) &&
-		g_file_test(inIconName, G_FILE_TEST_EXISTS))
+	if(inIconName)
 	{
-		error=NULL;
-		icon=gdk_pixbuf_new_from_file_at_scale(inIconName,
-												inSize,
-												inSize,
-												TRUE,
-												NULL);
-
-		if(!icon) g_warning("Could not load icon from file %s: %s",
-							inIconName, (error && error->message) ?  error->message : "unknown error");
-
-		if(error!=NULL) g_error_free(error);
-	}
-		else
+		/* Check if we have an absolute filename */
+		if(g_path_is_absolute(inIconName) &&
+			g_file_test(inIconName, G_FILE_TEST_EXISTS))
 		{
-			/* Try to load the icon name directly using the icon theme */
 			error=NULL;
-			icon=gtk_icon_theme_load_icon(iconTheme,
-											inIconName,
-											inSize,
-											GTK_ICON_LOOKUP_USE_BUILTIN,
-											&error);
+			icon=gdk_pixbuf_new_from_file_at_scale(inIconName,
+													inSize,
+													inSize,
+													TRUE,
+													NULL);
 
-			if(!icon) g_warning("Could not load themed icon '%s': %s",
+			if(!icon) g_warning("Could not load icon from file %s: %s",
 								inIconName, (error && error->message) ?  error->message : "unknown error");
 
 			if(error!=NULL) g_error_free(error);
 		}
+			else
+			{
+				/* Try to load the icon name directly using the icon theme */
+				error=NULL;
+				icon=gtk_icon_theme_load_icon(iconTheme,
+												inIconName,
+												inSize,
+												GTK_ICON_LOOKUP_USE_BUILTIN,
+												&error);
+
+				if(!icon) g_warning("Could not load themed icon '%s': %s",
+									inIconName, (error && error->message) ?  error->message : "unknown error");
+
+				if(error!=NULL) g_error_free(error);
+			}
+	}
 
 	/* If no icon could be loaded use fallback */
 	if(!icon)
