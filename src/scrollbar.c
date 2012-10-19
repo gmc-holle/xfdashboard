@@ -775,7 +775,10 @@ void xfdashboard_scrollbar_set_range(XfdashboardScrollbar *self, gfloat inRange)
 
 	XfdashboardScrollbarPrivate	*priv=self->priv;
 
-	/* Range should be 1.0 or higher. If lower adjust to 1.0 */
+	/* Range will be used in division, so check if range is at least 1.0 as it can
+	 * be 0.0 which is invalid math. So adjust it to be at least 1.0 (which causes
+	 * the value to be unchanged in divisions).
+	 */
 	if(inRange<1.0f)
 	{
 		g_warning("Scroll bar range should be 1.0 or higher (current=%.2f). Setting to 1.0.", inRange);
