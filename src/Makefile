@@ -27,6 +27,7 @@ SOURCES = \
 	scaling-box-layout.c \
 	scaling-flow-layout.c \
 	scrollbar.c \
+	searchbox.c \
 	view.c \
 	viewpad.c \
 	view-selector.c \
@@ -40,9 +41,10 @@ HEADERS = \
 	fill-box-layout.h \
 	live-window.h \
 	quicklaunch.h \
-	scrollbar.h \
 	scaling-box-layout.h \
 	scaling-flow-layout.h \
+	scrollbar.h \
+	searchbox.h \
 	view.h \
 	viewpad.h \
 	view-selector.h \

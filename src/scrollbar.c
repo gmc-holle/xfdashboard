@@ -771,11 +771,18 @@ gfloat xfdashboard_scrollbar_get_range(XfdashboardScrollbar *self)
 void xfdashboard_scrollbar_set_range(XfdashboardScrollbar *self, gfloat inRange)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(self));
-	g_return_if_fail(inRange>=1.0f);
+	g_return_if_fail(inRange>=0.0f);
 
-	/* Only set new value if it differs from current value */
 	XfdashboardScrollbarPrivate	*priv=self->priv;
 
+	/* Range should be 1.0 or higher. If lower adjust to 1.0 */
+	if(inRange<1.0f)
+	{
+		g_warning("Scroll bar range should be 1.0 or higher (current=%.2f). Setting to 1.0.", inRange);
+		inRange=1.0f;
+	}
+
+	/* Only set new value if it differs from current value */
 	if(inRange!=priv->range)
 	{
 		priv->range=inRange;

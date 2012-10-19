@@ -68,6 +68,9 @@ void xfdashboard_applications_view_set_list_mode(XfdashboardApplicationsView *se
 const GarconMenu* xfdashboard_applications_view_get_active_menu(XfdashboardApplicationsView *self);
 void xfdashboard_applications_view_set_active_menu(XfdashboardApplicationsView *self, const GarconMenu *inMenu);
 
+const gchar* xfdashboard_applications_view_get_filter_text(XfdashboardApplicationsView *self);
+void xfdashboard_applications_view_set_filter_text(XfdashboardApplicationsView *self, const gchar *inFilterText);
+
 G_END_DECLS
 
 #endif

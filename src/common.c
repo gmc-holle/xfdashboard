@@ -98,7 +98,7 @@ GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name(const gchar *inIconName, gint in
 	GdkPixbuf		*icon=NULL;
 	GtkIconTheme	*iconTheme=gtk_icon_theme_get_default();
 	GError			*error=NULL;
-	
+
 	if(inIconName)
 	{
 		/* Check if we have an absolute filename */
@@ -133,7 +133,7 @@ GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name(const gchar *inIconName, gint in
 				if(error!=NULL) g_error_free(error);
 			}
 	}
-
+	
 	/* If no icon could be loaded use fallback */
 	if(!icon)
 	{
