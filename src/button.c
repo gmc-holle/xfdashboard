@@ -144,7 +144,7 @@ void _xfdashboard_button_update_icon(XfdashboardButton *self)
 	}
 		else size=priv->iconSize;
 
-	/* Get scaled icon from pixbuf if set otherweise lookup themed icon by icon name */
+	/* Get scaled icon from pixbuf if set otherwise lookup themed icon by icon name */
 	if(priv->iconPixbuf)
 	{
 		/* If pixbuf is not of requested size scale it */
