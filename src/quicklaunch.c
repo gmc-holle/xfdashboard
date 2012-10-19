@@ -44,9 +44,14 @@ struct _XfdashboardQuicklaunchPrivate
 {
 	/* Layout manager for ClutterBox */
 	ClutterLayoutManager	*layoutManager;
-	
+
+	/* Mark button */
+	ClutterActor			*markButton;
+	gchar					*markIcon;
+	gchar					*markedText;
+	gchar					*unmarkedText;
+
 	/* Icons (of type XfdashboardQuicklaunchIcon) */
-	ClutterActor			*viewButton;
 	ClutterActor			*icons;
 	guint					itemsCount;
 	guint					maxItemsCount;
@@ -71,6 +76,10 @@ enum
 	PROP_BACKGROUND_COLOR,
 	PROP_SPACING,
 
+	PROP_MARK_ICON,
+	PROP_MARKED_TEXT,
+	PROP_UNMARKED_TEXT,
+
 	PROP_LAST
 };
 
@@ -79,8 +88,8 @@ static GParamSpec* XfdashboardQuicklaunchProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
-	VIEW_SHOW,
-	VIEW_HIDE,
+	MARKED,
+	UNMARKED,
 
 	SIGNAL_LAST
 };
@@ -100,19 +109,19 @@ static guint _xfdashboard_quicklaunch_get_number_icons(XfdashboardQuicklaunch *s
 }
 
 /* "Switch to view" button was clicked */
-void _xfdashboard_quicklaunch_on_application_view_clicked(ClutterActor *inSelf, gpointer inUserData)
+void _xfdashboard_quicklaunch_on_mark_button_clicked(ClutterActor *inSelf, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inSelf));
 	
 	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inSelf);
 	XfdashboardQuicklaunchPrivate	*priv=self->priv;
-	gboolean						isViewMarked;
+	gboolean						isMarked;
 
-	/* Toggle "view button" mark */
-	isViewMarked=xfdashboard_button_get_background_visibility(XFDASHBOARD_BUTTON(priv->viewButton));
+	/* Toggle mark state */
+	isMarked=xfdashboard_button_get_background_visibility(XFDASHBOARD_BUTTON(priv->markButton));
 
-	if(isViewMarked) xfdashboard_quicklaunch_mark_view_button(self, FALSE);
-		else xfdashboard_quicklaunch_mark_view_button(self, TRUE);
+	if(isMarked) xfdashboard_quicklaunch_set_mark_state(self, FALSE);
+		else xfdashboard_quicklaunch_set_mark_state(self, TRUE);
 }
 
 /* Application icon was clicked */
@@ -407,7 +416,16 @@ static void xfdashboard_quicklaunch_dispose(GObject *inObject)
 	/* Release allocated resources */
 	if(priv->backgroundColor) clutter_color_free(priv->backgroundColor);
 	priv->backgroundColor=NULL;
-	
+
+	if(priv->markedText) g_free(priv->markedText);
+	priv->markedText=NULL;
+
+	if(priv->unmarkedText) g_free(priv->unmarkedText);
+	priv->unmarkedText=NULL;
+
+	if(priv->markIcon) g_free(priv->markIcon);
+	priv->markIcon=NULL;
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_quicklaunch_parent_class)->dispose(inObject);
 }
@@ -432,6 +450,18 @@ static void xfdashboard_quicklaunch_set_property(GObject *inObject,
 
 		case PROP_SPACING:
 			xfdashboard_quicklaunch_set_spacing(self, g_value_get_float(inValue));
+			break;
+
+		case PROP_MARK_ICON:
+			xfdashboard_quicklaunch_set_mark_icon(self, g_value_get_string(inValue));
+			break;
+
+		case PROP_MARKED_TEXT:
+			xfdashboard_quicklaunch_set_marked_text(self, g_value_get_string(inValue));
+			break;
+
+		case PROP_UNMARKED_TEXT:
+			xfdashboard_quicklaunch_set_unmarked_text(self, g_value_get_string(inValue));
 			break;
 
 		default:
@@ -467,6 +497,18 @@ static void xfdashboard_quicklaunch_get_property(GObject *inObject,
 
 		case PROP_SPACING:
 			g_value_set_float(outValue, priv->spacing);
+			break;
+
+		case PROP_MARK_ICON:
+			g_value_set_string(outValue, priv->markIcon);
+			break;
+
+		case PROP_MARKED_TEXT:
+			g_value_set_string(outValue, priv->markedText);
+			break;
+
+		case PROP_UNMARKED_TEXT:
+			g_value_set_string(outValue, priv->unmarkedText);
 			break;
 
 		default:
@@ -543,11 +585,32 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 							8.0,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
+	XfdashboardQuicklaunchProperties[PROP_MARK_ICON]=
+		g_param_spec_string("mark-icon",
+							"Mark button icon",
+							"Icon to show in mark button",
+							NULL,
+							G_PARAM_READWRITE);
+
+	XfdashboardQuicklaunchProperties[PROP_MARKED_TEXT]=
+		g_param_spec_string("marked-text",
+							"Marked text",
+							"Text for marked button",
+							NULL,
+							G_PARAM_READWRITE);
+
+	XfdashboardQuicklaunchProperties[PROP_UNMARKED_TEXT]=
+		g_param_spec_string("unmarked-text",
+							"Unmarked text",
+							"Text for unmarked button",
+							NULL,
+							G_PARAM_READWRITE);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardQuicklaunchProperties);
 
 	/* Define signals */
-	XfdashboardQuicklaunchSignals[VIEW_SHOW]=
-		g_signal_new("view-show",
+	XfdashboardQuicklaunchSignals[MARKED]=
+		g_signal_new("marked",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
 						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, view_show),
@@ -557,8 +620,8 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 						G_TYPE_NONE,
 						0);
 
-	XfdashboardQuicklaunchSignals[VIEW_HIDE]=
-		g_signal_new("view-hide",
+	XfdashboardQuicklaunchSignals[UNMARKED]=
+		g_signal_new("unmarked",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
 						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, view_show),
@@ -585,6 +648,10 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	priv->spacing=0.0f;
 	priv->backgroundColor=NULL;
 
+	priv->markedText=NULL;
+	priv->unmarkedText=NULL;
+	priv->markIcon=NULL;
+
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
@@ -596,16 +663,15 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	priv->icons=clutter_box_new(priv->layoutManager);
 	clutter_actor_set_parent(priv->icons, CLUTTER_ACTOR(self));
 
-	/* Add "Switch to application view" icon as first one to box */
-	priv->viewButton=xfdashboard_button_new_with_icon(GTK_STOCK_HOME);
-	xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(priv->viewButton), XFDASHBOARD_ORIENTATION_TOP);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->viewButton), XFDASHBOARD_STYLE_ICON);
-	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->viewButton), FALSE);
-	xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(priv->viewButton), FALSE);
-	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->viewButton), "Switch to applications");
+	/* Add mark button as first icon to box */
+	priv->markButton=xfdashboard_button_new_with_text(priv->unmarkedText);
+	xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(priv->markButton), XFDASHBOARD_ORIENTATION_TOP);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->markButton), XFDASHBOARD_STYLE_ICON);
+	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->markButton), FALSE);
+	xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(priv->markButton), FALSE);
 
-	_xfdashboard_quicklaunch_add_button(self, XFDASHBOARD_BUTTON(priv->viewButton));
-	g_signal_connect_swapped(priv->viewButton, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_application_view_clicked), self);
+	_xfdashboard_quicklaunch_add_button(self, XFDASHBOARD_BUTTON(priv->markButton));
+	g_signal_connect_swapped(priv->markButton, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_mark_button_clicked), self);
 }
 
 /* Implementation: Public API */
@@ -735,28 +801,108 @@ gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch
 	return(_xfdashboard_quicklaunch_add_application_icon(self, XFDASHBOARD_APPLICATION_ICON(actor)));
 }
 
-/* Mark or unmark "view button" */
-void xfdashboard_quicklaunch_mark_view_button(XfdashboardQuicklaunch *self, gboolean inIsMarked)
+/* Get/set text for marked button */
+const gchar* xfdashboard_quicklaunch_get_marked_text(XfdashboardQuicklaunch *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), NULL);
+
+	return(self->priv->markedText);
+}
+
+void xfdashboard_quicklaunch_set_marked_text(XfdashboardQuicklaunch *self, const gchar *inText)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 
 	/* Check if mark has changed */
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
-	gboolean						isViewMarked=xfdashboard_button_get_background_visibility(XFDASHBOARD_BUTTON(priv->viewButton));
+	gboolean						isMarked;
 
-	if(inIsMarked==isViewMarked) return;
+	if(g_strcmp0(inText, priv->markedText)==0) return;
+
+	/* Get mark state */
+	isMarked=xfdashboard_button_get_background_visibility(XFDASHBOARD_BUTTON(priv->markButton));
+
+	/* Store new text */
+	if(priv->markedText) g_free(priv->markedText);
+	priv->markedText=g_strdup(inText);
+	
+	/* Set new text if button is in right mark state */
+	if(isMarked) xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->markButton), priv->markedText);
+}
+
+/* Get/set text for unmarked button */
+const gchar* xfdashboard_quicklaunch_get_unmarked_text(XfdashboardQuicklaunch *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), NULL);
+
+	return(self->priv->unmarkedText);
+}
+
+void xfdashboard_quicklaunch_set_unmarked_text(XfdashboardQuicklaunch *self, const gchar *inText)
+{
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+
+	/* Check if mark has changed */
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+	gboolean						isMarked;
+
+	if(g_strcmp0(inText, priv->unmarkedText)==0) return;
+
+	/* Get mark state */
+	isMarked=xfdashboard_button_get_background_visibility(XFDASHBOARD_BUTTON(priv->markButton));
+
+	/* Store new text */
+	if(priv->unmarkedText) g_free(priv->unmarkedText);
+	priv->unmarkedText=g_strdup(inText);
+	
+	/* Set new text if button is in right mark state */
+	if(!isMarked) xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->markButton), priv->unmarkedText);
+}
+
+/* Get/set icon for "mark button" */
+const gchar* xfdashboard_quicklaunch_get_mark_icon(XfdashboardQuicklaunch *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), NULL);
+
+	return(self->priv->unmarkedText);
+}
+
+void xfdashboard_quicklaunch_set_mark_icon(XfdashboardQuicklaunch *self, const gchar *inIcon)
+{
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+
+	/* Check if icon changes */
+	if(g_strcmp0(inIcon, priv->markIcon)==0) return;
+
+	/* Change icon */
+	xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(priv->markButton), inIcon);
+}
+
+/* Mark or unmark "mark button" */
+void xfdashboard_quicklaunch_set_mark_state(XfdashboardQuicklaunch *self, gboolean inIsMarked)
+{
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+
+	/* Check if mark changes */
+	gboolean						isMarked=xfdashboard_button_get_background_visibility(XFDASHBOARD_BUTTON(priv->markButton));
+
+	if(inIsMarked==isMarked) return;
 
 	/* Emit signal "show" or "hide" of "view button" and set mark */
 	if(inIsMarked)
 	{
-		g_signal_emit(self, XfdashboardQuicklaunchSignals[VIEW_SHOW], 0);
-		xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(priv->viewButton), TRUE);
-		xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->viewButton), "Switch to windows");
+		g_signal_emit(self, XfdashboardQuicklaunchSignals[MARKED], 0);
+		xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(priv->markButton), TRUE);
+		xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->markButton), priv->markedText);
 	}
 		else
 		{
-			g_signal_emit(self, XfdashboardQuicklaunchSignals[VIEW_HIDE], 0);
-			xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(priv->viewButton), FALSE);
-			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->viewButton), "Switch to applications");
+			g_signal_emit(self, XfdashboardQuicklaunchSignals[UNMARKED], 0);
+			xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(priv->markButton), FALSE);
+			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->markButton), priv->unmarkedText);
 		}
 }

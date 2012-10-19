@@ -144,7 +144,7 @@ void _xfdashboard_button_update_icon(XfdashboardButton *self)
 	}
 		else size=priv->iconSize;
 
-	/* Get scaled icon from themed icon (if icon name is set) or use icon pixbuf set */
+	/* Get scaled icon from pixbuf if set otherweise lookup themed icon by icon name */
 	if(priv->iconPixbuf)
 	{
 		/* If pixbuf is not of requested size scale it */
@@ -164,7 +164,7 @@ void _xfdashboard_button_update_icon(XfdashboardButton *self)
 		}
 
 	g_return_if_fail(icon);
-
+	
 	/* Update texture of actor */
 	error=NULL;
 	if(!clutter_texture_set_from_rgb_data(CLUTTER_TEXTURE(priv->actorIcon),
@@ -1227,7 +1227,6 @@ const gchar* xfdashboard_button_get_text(XfdashboardButton *self)
 void xfdashboard_button_set_text(XfdashboardButton *self, const gchar *inMarkupText)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
-	g_return_if_fail(inMarkupText);
 
 	/* Set text of label */
 	XfdashboardButtonPrivate	*priv=self->priv;
