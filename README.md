@@ -12,5 +12,7 @@ clutter >= 1.8
 glib >= 2.30.3
 gio >= 2.30.3
 gio-unix-2.0 >= 2.30.3
+xfconf >= 4.10.0
+dbus-glib >= 0.98
 
 ... and the dependencies of these libraries of course ;)

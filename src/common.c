@@ -31,12 +31,28 @@
 #include <clutter/x11/clutter-x11.h>
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
+#include <dbus/dbus-glib.h>
 
 /* Private or external variables and methods */
 extern ClutterActor				*stage;
 
 /* Private constants */
 #define FALLBACK_ICON_NAME		GTK_STOCK_MISSING_IMAGE
+
+/* Gobject type for pointer arrays (GPtrArray) */
+GType xfdashboard_value_array_get_type(void)
+{
+	static volatile gsize	type__volatile=0;
+	GType					type;
+
+	if(g_once_init_enter(&type__volatile))
+	{
+		type=dbus_g_type_get_collection("GPtrArray", G_TYPE_VALUE);
+		g_once_init_leave(&type__volatile, type);
+	}
+
+	return(type__volatile);
+}
 
 /* Get window of application */
 WnckWindow* xfdashboard_get_stage_window()

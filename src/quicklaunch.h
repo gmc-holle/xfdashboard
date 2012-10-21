@@ -78,9 +78,6 @@ void xfdashboard_quicklaunch_set_background_color(XfdashboardQuicklaunch *self, 
 gfloat xfdashboard_quicklaunch_get_spacing(XfdashboardQuicklaunch *self);
 void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, gfloat inSpacing);
 
-gboolean xfdashboard_quicklaunch_add_icon(XfdashboardQuicklaunch *self, XfdashboardApplicationIcon *inIcon);
-gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch *self, const gchar *inDesktopFile);
-
 const gchar* xfdashboard_quicklaunch_get_marked_text(XfdashboardQuicklaunch *self);
 void xfdashboard_quicklaunch_set_marked_text(XfdashboardQuicklaunch *self, const gchar *inText);
 

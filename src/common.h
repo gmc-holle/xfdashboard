@@ -39,6 +39,9 @@
 
 G_BEGIN_DECLS
 
+/* Gobject type of pointer array (GPtrArray) */
+#define XFDASHBOARD_TYPE_VALUE_ARRAY	(xfdashboard_value_array_get_type())
+
 /* List mode for views */
 typedef enum
 {
@@ -72,6 +75,8 @@ typedef enum
 } XfdashboardOrientation;
 
 /* Public API */
+GType xfdashboard_value_array_get_type(void) G_GNUC_CONST;
+
 WnckWindow* xfdashboard_get_stage_window();
 
 GarconMenu* xfdashboard_get_application_menu();

@@ -36,6 +36,8 @@
 #include "quicklaunch.h"
 #include "scrollbar.h"
 
+#include <xfconf/xfconf.h>
+
 /* Stage and child actors */
 ClutterActor	*stage=NULL;
 ClutterActor	*group=NULL;
@@ -48,16 +50,10 @@ gulong			signalSearchEndedID=0L;
 
 const gfloat	spacingToStage=8.0f;
 
-/* TODO: Replace with xfconf */
-static gchar	*quicklaunch_apps[]=	{
-											"firefox.desktop",
-											"evolution.desktop",
-											"Terminal.desktop",
-											"Thunar.desktop",
-											"geany.desktop",
-											"gajim.desktop"
-										};
-/* TODO: Replace with xfconf */
+/* Xfconf */
+#define XFDASHBOARD_XFCONF_CHANNEL		"xfdashboard"
+
+XfconfChannel	*xfdashboardChannel=NULL;
 
 /* Search request ended */
 void _xfdashboard_on_search_ended(ClutterActor *inSearchbox, gpointer inUserData)
@@ -231,27 +227,14 @@ gboolean _xfdashboard_on_key_release(ClutterActor *inActor, ClutterEvent *inEven
 	return(FALSE);
 }
 
-/* Main entry point */
-int main(int argc, char **argv)
+/* Create and setup stage */
+void _xfdashboard_create_stage()
 {
 	ClutterColor			stageColor={ 0, 0, 0, 0xd0 };
 	GdkScreen				*screen;
 	gint					primary;
 	GdkRectangle			primarySize;
 	ClutterActor			*view;
-
-	/* Tell clutter to try to initialize an RGBA visual */
-	clutter_x11_set_use_argb_visual(TRUE);
-
-	/* Initialize GTK+ and Clutter */
-	gtk_init(&argc, &argv);
-	if(!clutter_init(&argc, &argv))
-	{
-		g_error("Initializing clutter failed!");
-		return(1);
-	}
-
-	/* TODO: Check for running instance (libunique?) */
 
 	/* Get size of primary monitor to set size of stage */
 	screen=gdk_screen_get_default();
@@ -280,14 +263,7 @@ int main(int argc, char **argv)
 	xfdashboard_quicklaunch_set_unmarked_text(XFDASHBOARD_QUICKLAUNCH(quicklaunch), "Switch to applications");
 	clutter_actor_add_constraint(quicklaunch, clutter_bind_constraint_new(group, CLUTTER_BIND_HEIGHT, 0.0f));
 	clutter_container_add_actor(CLUTTER_CONTAINER(group), quicklaunch);
-
-	/* TODO: Remove the following actor(s) for application icons
-	 *       in quicklaunch box as soon as xfconf is implemented
-	 */
-	for(gint i=0; i<(sizeof(quicklaunch_apps)/sizeof(quicklaunch_apps[0])); i++)
-	{
-		xfdashboard_quicklaunch_add_icon_by_desktop_file(XFDASHBOARD_QUICKLAUNCH(quicklaunch), quicklaunch_apps[i]);
-	}
+	xfconf_g_property_bind(xfdashboardChannel, "/favourites", XFDASHBOARD_TYPE_VALUE_ARRAY, quicklaunch, "desktop-files");
 
 	/* Create search box */
 	searchbox=xfdashboard_searchbox_new();
@@ -332,9 +308,14 @@ int main(int argc, char **argv)
 	/* Show stage and go ;) */
 	clutter_actor_show(stage);
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(stage), TRUE);
+}
 
-	clutter_main();
-
+/* Destroy and clean up stage */
+void _xfdashboard_destroy_stage()
+{
+	/* Remove signal handler handling stage destruction to prevent
+	 * event handling loop
+	 */
 	if(signalStageDestroyID &&
 		g_signal_handler_is_connected(stage, signalStageDestroyID))
 	{
@@ -342,6 +323,47 @@ int main(int argc, char **argv)
 		signalStageDestroyID=0L;
 	}
 	clutter_actor_destroy(stage);
+}
+
+/* Main entry point */
+int main(int argc, char **argv)
+{
+	GError			*error=NULL;
+	
+	/* Tell clutter to try to initialize an RGBA visual */
+	clutter_x11_set_use_argb_visual(TRUE);
+
+	/* Initialize GTK+ and Clutter */
+	gtk_init(&argc, &argv);
+	if(!clutter_init(&argc, &argv))
+	{
+		g_error("Initializing clutter failed!");
+		return(1);
+	}
+
+	/* TODO: Check for running instance (libunique?) */
+
+	/* Initialize xfconf */
+	if(!xfconf_init(&error))
+	{
+		g_error("Could not initialize xfconf: %s", (error && error->message) ? error->message : "unknown error");
+		if(error!=NULL) g_error_free(error);
+		return(1);
+	}
+
+	xfdashboardChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
+
+	/* Create and setup stage */
+	_xfdashboard_create_stage();
+
+	/* Start main loop */
+	clutter_main();
+
+	/* Destroy and clean up stage */
+	_xfdashboard_destroy_stage();
+
+	/* Shutdown xfconf */
+	xfconf_shutdown();
 
 	return(0);
 }

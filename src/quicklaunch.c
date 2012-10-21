@@ -25,10 +25,11 @@
 #include "config.h"
 #endif
 
-
+#include "common.h"
 #include "quicklaunch.h"
 #include "scaling-box-layout.h"
 
+#include <xfconf/xfconf.h>
 #include <math.h>
 
 /* Define this class in GObject system */
@@ -52,6 +53,7 @@ struct _XfdashboardQuicklaunchPrivate
 	gchar					*unmarkedText;
 
 	/* Icons (of type XfdashboardQuicklaunchIcon) */
+	GPtrArray				*desktopFiles;
 	ClutterActor			*icons;
 	guint					itemsCount;
 	guint					maxItemsCount;
@@ -68,6 +70,8 @@ struct _XfdashboardQuicklaunchPrivate
 enum
 {
 	PROP_0,
+
+	PROP_DESKTOP_FILES,
 
 	PROP_ICONS_COUNT,
 	PROP_ICONS_MAX_COUNT,
@@ -190,7 +194,7 @@ gboolean _xfdashboard_quicklaunch_add_button(XfdashboardQuicklaunch *self,
 }
 
 gboolean _xfdashboard_quicklaunch_add_application_icon(XfdashboardQuicklaunch *self,
-											XfdashboardApplicationIcon *inIcon)
+														XfdashboardApplicationIcon *inIcon)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inIcon), FALSE);
@@ -200,6 +204,40 @@ gboolean _xfdashboard_quicklaunch_add_application_icon(XfdashboardQuicklaunch *s
 	g_signal_connect(inIcon, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_application_icon_clicked), self);
 
 	return(TRUE);
+}
+
+/* Update icons in quicklaunch */
+void _xfdashboard_quicklaunch_update_icons_destroy_application_icons(ClutterActor *inIcon, gpointer inUserData)
+{
+	/* Only remove and destroy actor if it is an application icon */
+	if(XFDASHBOARD_IS_APPLICATION_ICON(inIcon)) clutter_actor_destroy(inIcon);
+}
+
+void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+	gint							i;
+	
+	/* Remove all application icons */
+	clutter_container_foreach(CLUTTER_CONTAINER(priv->icons),
+								CLUTTER_CALLBACK(_xfdashboard_quicklaunch_update_icons_destroy_application_icons),
+								self);
+
+	/* Now re-add all application icons for current list of desktop files */
+	for(i=0; i<priv->desktopFiles->len; i++)
+	{
+		/* Create icon from desktop file and hide label in quicklaunch */
+		ClutterActor				*actor;
+		GValue						*desktopFile;
+
+		desktopFile=(GValue*)g_ptr_array_index(priv->desktopFiles, i);
+
+		actor=xfdashboard_application_icon_new_by_desktop_file(g_value_get_string(desktopFile));
+		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_ICON);
+		_xfdashboard_quicklaunch_add_application_icon(self, XFDASHBOARD_APPLICATION_ICON(actor));
+	}
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -414,6 +452,9 @@ static void xfdashboard_quicklaunch_dispose(GObject *inObject)
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inObject)->priv;
 
 	/* Release allocated resources */
+	if(priv->desktopFiles) xfconf_array_free(priv->desktopFiles);
+	priv->desktopFiles=NULL;
+
 	if(priv->backgroundColor) clutter_color_free(priv->backgroundColor);
 	priv->backgroundColor=NULL;
 
@@ -437,9 +478,46 @@ static void xfdashboard_quicklaunch_set_property(GObject *inObject,
 													GParamSpec *inSpec)
 {
 	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inObject);
+	XfdashboardQuicklaunchPrivate	*priv=self->priv;
 
 	switch(inPropID)
 	{
+		case PROP_DESKTOP_FILES:
+		{
+			GPtrArray				*desktopFiles;
+			gint					i;
+			GValue					*element;
+			GValue					*desktopFile;
+
+			/* Free current list of desktop files */
+			if(priv->desktopFiles) xfconf_array_free(priv->desktopFiles);
+			priv->desktopFiles=NULL;
+
+			/* Copy array of string pointing to desktop files */
+			desktopFiles=g_value_get_boxed(inValue);
+			if(desktopFiles)
+			{
+				priv->desktopFiles=g_ptr_array_sized_new(desktopFiles->len);
+				for(i=0; i<desktopFiles->len; ++i)
+				{
+					element=(GValue*)g_ptr_array_index(desktopFiles, i);
+
+					/* Filter string value types */
+					if(G_VALUE_HOLDS_STRING(element))
+					{
+						desktopFile=g_value_init(g_new0(GValue, 1), G_TYPE_STRING);
+						g_value_copy(element, desktopFile);
+						g_ptr_array_add(priv->desktopFiles, desktopFile);
+					}
+				}
+			}
+				else priv->desktopFiles=g_ptr_array_new();
+
+			/* Update list of icons for desktop files */
+			_xfdashboard_quicklaunch_update_icons(self);
+			break;
+		}
+
 		case PROP_ICONS_NORMAL_SIZE:
 			xfdashboard_quicklaunch_set_normal_icon_size(self, g_value_get_uint(inValue));
 			break;
@@ -479,6 +557,10 @@ static void xfdashboard_quicklaunch_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
+		case PROP_DESKTOP_FILES:
+			g_value_set_boxed(outValue, priv->desktopFiles);
+			break;
+
 		case PROP_ICONS_COUNT:
 			g_value_set_uint(outValue, priv->itemsCount);
 			break;
@@ -542,6 +624,13 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 	g_type_class_add_private(klass, sizeof(XfdashboardQuicklaunchPrivate));
 
 	/* Define properties */
+	XfdashboardQuicklaunchProperties[PROP_DESKTOP_FILES]=
+		g_param_spec_boxed("desktop-files",
+							"Desktop files",
+							"An array of strings pointing to desktop files shown as icons in quicklaunch",
+							XFDASHBOARD_TYPE_VALUE_ARRAY,
+							G_PARAM_READWRITE);
+
 	XfdashboardQuicklaunchProperties[PROP_ICONS_COUNT]=
 		g_param_spec_uint("icons-count",
 							"Number of icons",
@@ -642,6 +731,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	/* Set up default values */
 	priv=self->priv=XFDASHBOARD_QUICKLAUNCH_GET_PRIVATE(self);
 
+	priv->desktopFiles=g_ptr_array_new();
 	priv->itemsCount=0;
 	priv->maxItemsCount=0;
 	priv->normalIconSize=64;
@@ -669,7 +759,6 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->markButton), XFDASHBOARD_STYLE_ICON);
 	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->markButton), FALSE);
 	xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(priv->markButton), FALSE);
-
 	_xfdashboard_quicklaunch_add_button(self, XFDASHBOARD_BUTTON(priv->markButton));
 	g_signal_connect_swapped(priv->markButton, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_mark_button_clicked), self);
 }
@@ -773,32 +862,6 @@ void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, gfloat in
 		xfdashboard_scaling_box_layout_set_spacing(layout, priv->spacing);
 		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 	}
-}
-
-/* Add icon to quicklaunch */
-gboolean xfdashboard_quicklaunch_add_icon(XfdashboardQuicklaunch *self, XfdashboardApplicationIcon *inIcon)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inIcon), FALSE);
-
-	/* Hide label in quicklaunch */
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(inIcon), XFDASHBOARD_STYLE_ICON);
-	
-	return(_xfdashboard_quicklaunch_add_application_icon(self, inIcon));
-}
-
-gboolean xfdashboard_quicklaunch_add_icon_by_desktop_file(XfdashboardQuicklaunch *self, const gchar *inDesktopFile)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
-	g_return_val_if_fail(inDesktopFile, FALSE);
-
-	/* Create icon from desktop file and hide label in quicklaunch */
-	ClutterActor				*actor;
-		
-	actor=xfdashboard_application_icon_new_by_desktop_file(inDesktopFile);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_ICON);
-
-	return(_xfdashboard_quicklaunch_add_application_icon(self, XFDASHBOARD_APPLICATION_ICON(actor)));
 }
 
 /* Get/set text for marked button */
