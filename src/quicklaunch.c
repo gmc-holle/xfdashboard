@@ -224,6 +224,7 @@ void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
 	clutter_container_foreach(CLUTTER_CONTAINER(priv->icons),
 								CLUTTER_CALLBACK(_xfdashboard_quicklaunch_update_icons_destroy_application_icons),
 								self);
+	self->priv->itemsCount=0;
 
 	/* Now re-add all application icons for current list of desktop files */
 	for(i=0; i<priv->desktopFiles->len; i++)
