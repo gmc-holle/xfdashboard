@@ -2,6 +2,7 @@
 [done] Quit app by pressing ESC(ape) but if search is active clear it first (needs pressing ESC twice to quit app)
 - More control by keyboard (e.g. selecting and starting application by arrow keys and ENTER)
 [done] - Store settings, e.g. quicklaunch shortcuts, in Xfconf4 and listen for updates
+[done] - Only run one instance (libunique? GApplication?)
 
 - Start search for application ca. one second after entering and restart search one second after last input in a thread?
 - Sort search result in search view alphabetically and/or by relevance?

@@ -51,6 +51,7 @@ gulong			signalSearchEndedID=0L;
 const gfloat	spacingToStage=8.0f;
 
 /* Xfconf */
+#define XFDASHBOARD_APP_ID				"de.froevel.nomad.xfdashboard"
 #define XFDASHBOARD_XFCONF_CHANNEL		"xfdashboard"
 
 XfconfChannel	*xfdashboardChannel=NULL;
@@ -227,6 +228,14 @@ gboolean _xfdashboard_on_key_release(ClutterActor *inActor, ClutterEvent *inEven
 	return(FALSE);
 }
 
+/* Application was activated (either on start-up of primary instance or by remote ones) */
+void _xfdashboard_on_application_activated(GApplication *inApplication, gpointer inUserData)
+{
+	/* Do nothing. This signal handler only exists because GApplication expects at least
+	 * this signal handler
+	 */
+}
+
 /* Create and setup stage */
 void _xfdashboard_create_stage()
 {
@@ -329,7 +338,23 @@ void _xfdashboard_destroy_stage()
 int main(int argc, char **argv)
 {
 	GError			*error=NULL;
-	
+	GApplication	*app=NULL;
+
+	/* Check for running instance (keep only one instance)
+	 * Note: At least the signal "activate" _MUST_ be connected even
+	 * it its handler is a dummy doing nothing. GApplication expects
+	 * at least this signal connected or the virtual function "activate"
+	 * overriden by an object derived from GApplication */
+	app=g_application_new(XFDASHBOARD_APP_ID, 0);
+	g_signal_connect(app, "activate", G_CALLBACK(_xfdashboard_on_application_activated), NULL);
+
+	g_application_run(app, argc, argv);
+	if(g_application_get_is_remote(app)==TRUE)
+	{
+		g_message("An instance of %s is running already. Exiting!", XFDASHBOARD_APP_ID);
+		return(0);
+	}
+
 	/* Tell clutter to try to initialize an RGBA visual */
 	clutter_x11_set_use_argb_visual(TRUE);
 
@@ -340,8 +365,6 @@ int main(int argc, char **argv)
 		g_error("Initializing clutter failed!");
 		return(1);
 	}
-
-	/* TODO: Check for running instance (libunique?) */
 
 	/* Initialize xfconf */
 	if(!xfconf_init(&error))
