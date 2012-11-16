@@ -1,0 +1,167 @@
+dnl
+dnl xfdashboard - Maybe a Gnome shell like dashboard for Xfce
+dnl
+dnl Copyright (c) 2012 Stephan Haller <nomad@froevel.de>
+dnl
+
+dnl ***************************
+dnl *** Version information ***
+dnl ***************************
+m4_define([xfdashboard_version_major], [0])
+m4_define([xfdashboard_version_minor], [0])
+m4_define([xfdashboard_version_micro], [1])
+m4_define([xfdashboard_version_build], [@REVISION@])
+m4_define([xfdashboard_version_tag],   [git])
+m4_define([xfdashboard_version], [xfdashboard_version_major().xfdashboard_version_minor().xfdashboard_version_micro()ifelse(xfdashboard_version_tag(), [git], [xfdashboard_version_tag().xfdashboard_version_build()], [xfdashboard_version_tag()])])
+
+dnl **************************************
+dnl *** Minimum package version needed ***
+dnl **************************************
+m4_define([wnck_minimum_version], [2.10])
+m4_define([clutter_minimum_version], [1.8.0])
+m4_define([gio_minimum_version], [2.30.2])
+m4_define([garcon_minimum_version], [0.2.0])
+m4_define([xfconf_minimum_version], [4.10.0])
+m4_define([dbus_glib_minimum_version], [0.98])
+m4_define([intltool_minimum_version], [0.31])
+
+dnl *******************************************
+dnl *** Debugging support for GIT snapshots ***
+dnl *******************************************
+m4_define([xfdashboard_debug_default], [ifelse(xfdashboard_version_tag(), [git], [yes], [minimum])])
+
+dnl ***************************
+dnl *** Initialize autoconf ***
+dnl ***************************
+AC_COPYRIGHT([Copyright (c) 2012 Stephan Haller <nomad@froevel.de>])
+AC_INIT([xfdahboard], [xfdashboard_version], [https://github.com/gmc-holle/xfdashboard], [xfdashboard])
+AC_PREREQ([2.50])
+AC_REVISION([xfdashboard_version_build])
+
+dnl ***************************
+dnl *** Initialize automake ***
+dnl ***************************
+AM_CONFIG_HEADER([config.h])
+AM_INIT_AUTOMAKE([1.8 no-dist-gzip dist-bzip2 tar-ustar])
+AM_MAINTAINER_MODE()
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
+dnl *******************************
+dnl *** Check for UNIX variants ***
+dnl *******************************
+AC_AIX()
+AC_ISC_POSIX()
+
+dnl ********************************
+dnl *** Check for basic programs ***
+dnl ********************************
+AC_PROG_CC()
+AM_PROG_CC_C_O()
+AC_PROG_LD()
+AC_PROG_INSTALL()
+AC_PROG_INTLTOOL()
+AC_CHECK_PROGS([PERL], [perl5 perl])
+m4_ifdef([AC_PROG_SED], [AC_PROG_SED], [AC_CHECK_PROG(SED, sed, sed)])
+
+dnl **************************
+dnl *** Initialize libtool ***
+dnl **************************
+LT_PREREQ([2.2.6])
+LT_INIT([disable-static])
+
+dnl **************************
+dnl *** Substitute version ***
+dnl **************************
+XFDASHBOARD_VERSION=xfdashboard_version()
+XFDASHBOARD_VERSION_MAJOR=xfdashboard_version_major()
+XFDASHBOARD_VERSION_MINOR=xfdashboard_version_minor()
+XFDASHBOARD_VERSION_MICRO=xfdashboard_version_micro()
+AC_SUBST([XFDASHBOARD_VERSION])
+AC_SUBST([XFDASHBOARD_VERSION_MAJOR])
+AC_SUBST([XFDASHBOARD_VERSION_MINOR])
+AC_SUBST([XFDASHBOARD_VERSION_MICRO])
+
+dnl **********************************
+dnl *** Check for standard headers ***
+dnl **********************************
+AC_HEADER_STDC()
+AC_CHECK_HEADERS([stdlib.h unistd.h locale.h stdio.h errno.h time.h string.h \
+                  math.h sys/types.h sys/wait.h memory.h signal.h sys/prctl.h \
+                  libintl.h])
+AC_CHECK_FUNCS([bind_textdomain_codeset])
+
+dnl ******************************
+dnl *** Check for i18n support ***
+dnl ******************************
+XDT_I18N([@LINGUAS@])
+
+dnl *******************************
+dnl *** Check for X11 installed ***
+dnl *******************************
+XDT_CHECK_LIBX11_REQUIRE()
+
+dnl ***********************************
+dnl *** Check for required packages ***
+dnl ***********************************
+XDT_CHECK_PACKAGE([LIBWNCK], [libwnck-1.0], [wnck_minimum_version])
+XDT_CHECK_PACKAGE([CLUTTER], [clutter-1.0], [clutter_minimum_version])
+XDT_CHECK_PACKAGE([CLUTTER_COGL], [clutter-cogl-1.0], [clutter_minimum_version])
+XDT_CHECK_PACKAGE([GIO], [gio-2.0], [gio_minimum_version])
+XDT_CHECK_PACKAGE([GIO_UNIX], [gio-unix-2.0], [gio_minimum_version])
+XDT_CHECK_PACKAGE([GARCON], [garcon-1], [garcon_minimum_version])
+XDT_CHECK_PACKAGE([LIBXFCONF], libxfconf-0, [xfconf_minimum_version])
+XDT_CHECK_PACKAGE([DBUS_GLIB], [dbus-glib-1], [dbus_glib_minimum_version])
+
+dnl ***********************************
+dnl *** Check for debugging support ***
+dnl ***********************************
+XDT_FEATURE_DEBUG([xfdashboard_debug_default])
+
+dnl **************************************
+dnl *** Check for linker optimizations ***
+dnl **************************************
+XDT_FEATURE_LINKER_OPTS()
+
+dnl *********************************
+dnl *** Substitute platform flags ***
+dnl *********************************
+AC_MSG_CHECKING([PLATFORM_CPPFLAGS])
+AC_MSG_RESULT([$PLATFORM_CPPFLAGS])
+AC_SUBST([PLATFORM_CPPFLAGS])
+AC_MSG_CHECKING([PLATFORM_CFLAGS])
+AC_MSG_RESULT([$PLATFORM_CFLAGS])
+AC_SUBST([PLATFORM_CFLAGS])
+AC_MSG_CHECKING([PLATFORM_LDFLAGS])
+AC_MSG_RESULT([$PLATFORM_LDFLAGS])
+AC_SUBST([PLATFORM_LDFLAGS])
+
+AC_OUTPUT([
+Makefile
+po/Makefile.in
+src/Makefile
+])
+
+dnl ***************************
+dnl *** Print configuration ***
+dnl ***************************
+echo
+echo "Build Configuration for $PACKAGE version $VERSION revision $REVISION:"
+echo
+echo "  libwcnck cflags:   $LIBWNCK_CFLAGS"
+echo "  libwcnck libs:     $LIBWNCK_LIBS"
+echo
+echo "  clutter cflags:    $CLUTTER_CFLAGS $CLUTTER_COGL_CFLAGS"
+echo "  clutter libs:      $CLUTTER_LIBS $CLUTTER_COGL_LIBS"
+echo
+echo "  gio cflags:        $GIO_CFLAGS $GIO_UNIX_CFLAGS"
+echo "  gio libs:          $GIO_LIBS $GIO_UNIX_LIBS"
+echo
+echo "  garcon cflags:     $GARCON_CFLAGS"
+echo "  garcon libs:       $GARCON_LIBS"
+echo
+echo "  libxconf cflags:   $LIBXFCONF_CFLAGS"
+echo "  libxconf libs:     $LIBXFCONF_LIBS"
+echo
+echo "  dbus-glib cflags:  $DBUS_GLIB_CFLAGS"
+echo "  dbus-glib libs:    $DBUS_GLIB_LIBS"
+echo
