@@ -1,3 +1,231 @@
+commit 89a0c0e9211a84edaff3dc10245ddc54d28f431e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 16 22:39:53 2012 +0100
+
+    Migrate to autotools build system
+
+commit 9d4a1f7169e82b492a9a2539c3cb019d9935ff62
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 9 12:34:01 2012 +0100
+
+    Implement running only one instance of this application
+
+commit fa48a9e064f694a8eef6e62985c3a9768baaab42
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Nov 7 19:16:46 2012 +0100
+
+    Forget to reset item counter when destroying icons while updating quicklaunch
+
+commit 8b423d3cc1ab83221b972db04ae165b94a789c9c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Oct 22 09:03:10 2012 +0200
+
+    Fixed Makefile to include new dependies on xfconf and dbus-glib
+
+commit 993ff3369b1378b7e177437de83b9b419d54f974
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Oct 21 12:05:44 2012 +0200
+
+    New dependencies on xfconf and dbus-glib. Quicklaunch icons are not static anymore. Its settings are stored in xfconf now.
+
+commit 75d60cbf0ce049e73a9e1f2ed18553e0a8aaf495
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Oct 19 23:22:33 2012 +0200
+
+    Better explanation why range in scrollbar should be at least 1.0 or higher even if lower values are allowed in function parameters.
+
+commit f7241cc07d7e0416f5cf202ba5103d19b9bfc967
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Oct 19 22:58:02 2012 +0200
+
+    Fixed typo
+
+commit f4e7fec448b48abb0fe25ce6d86081b790d53567
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Oct 19 22:54:58 2012 +0200
+
+    Updated TODO
+
+commit f8932ad2b7c39f75192ea75569124b1194c55f4b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Oct 19 22:50:41 2012 +0200
+
+    Implement text box for filtering application view also known as search view.
+
+commit bde78b13bcb29ee36a9fd601d210bde3884471a8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Oct 19 22:46:55 2012 +0200
+
+    Make mark button (aka known as "view button") in quicklaunch more flexible.
+
+commit 61f1aee473e53415444340c51ebe8b216e442a6c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Oct 15 22:41:25 2012 +0200
+
+    Do not fail if a .desktop file does specify an icon. Show fallback icon instead.
+
+commit c10e7c822de070603b495f98fa88270c64b4c758
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 10 19:15:56 2012 +0200
+
+    Fixed typo
+
+commit c42511a941eaf90badfd5bd9fa892074aae9f7c3
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 9 21:16:47 2012 +0200
+
+    Updated TODO
+
+commit 473f0d284a31aaaadc0d52d18535836ff9d71f4b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 9 21:09:43 2012 +0200
+
+    Highlite or unhighlite new view button in quicklaunch also when view was changed by view selector by listening to activation and deactivation signals from views.
+
+commit ba1a005129e3838bac96b33af821ee2cd9aaa48e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 9 20:28:12 2012 +0200
+
+    Add view-selector for application and windows view as button to quicklaunch. It could replace the view-selector actor.
+
+commit e28b0736efb914101c2a4663f9f90846dd826724
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Oct 5 21:32:12 2012 +0200
+
+    Hopefully connected and handled all posible signal of a window. This is untested because I don't know how to test :(
+
+commit 834e7a5617474dfe52ccde00755026324a151bd1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Oct 5 10:15:20 2012 +0200
+
+    Remove signal from window to stop getting notified if live window actor is destroyed as WnckWindow will not be destroyed and might keep emitting signals.
+
+commit 82195980ee1c5884ecd8ed26f2e2719f35d01471
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Oct 5 10:10:14 2012 +0200
+
+    Update live window label if window title or icon changes
+
+commit 09940f5e4aca954bba36961bbe0a638a69efd88e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Oct 4 10:33:39 2012 +0200
+
+    Prevent resizing and relayouting of all actors on start-up caused by setting stage window to fullscreen.
+
+commit 19addafe5fc8a1176a229ef54cc0b757afce55e8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 3 00:16:55 2012 +0200
+
+    No need to set NULL font on XfdashboardApplicationIcon construction because font is set to NULL in object initialization.
+
+commit 3745a879e747c13d6a5a74100045ea138e6f6ad1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 3 00:14:16 2012 +0200
+
+    Suppress compiler warnings
+
+commit ea73602a7bbab1d135fd0b60b9747e0ddef60fc5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 3 00:13:01 2012 +0200
+
+    Get rid of hard-coded default font and use default font of Xfce.
+
+commit 3ca36048aa7826633aa3ae7fe83aa7ba7084e4e6
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 3 00:05:53 2012 +0200
+
+    Handle menu element without descriptions (NULL pointer in comments) in application view
+
+commit 9fa34cb01404728a17de8c44e9f9e06e6379640e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 3 00:01:58 2012 +0200
+
+    Replace XfdashboardApplicationEntry with XfdashboardApplicationIcon and set default view mode of "applications" view to list.
+
+commit 1265c86b35eb05067dca3dd968694e2d9ed5a94d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 2 06:53:07 2012 +0200
+
+    Fixed typo in XfdashboardButton when setting background visibility. Simplify XfdashboardApplicationIcon by deriving it from XfdashboardButton instead of ClutterActor.
+
+commit 497579ff1e7d6f6981fc88aee0130bdbb97999a5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Sep 26 13:38:51 2012 +0200
+
+    Replace old label and icon implementation in live window actor with new button.
+
+commit 12cbbefd73f672a397a9c846bef9398fc14d8d67
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Sep 26 11:34:46 2012 +0200
+
+    Support for closing windows in windows view. Windows view will now also add new live windows when a new windows is opened and it will destroy a live window as soon as its window was closed.
+
+commit 0476213eb22315e629e74d58d826e280637502f5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Sep 26 08:51:46 2012 +0200
+
+    Implement a new button actor which emits "click" signals and show an icon or a label or both.
+
+commit 6636aa28f09bfa12ee57a40bcaf5796c762a1cfa
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Sep 25 21:08:09 2012 +0200
+
+    Correct implementation of virtual pick method of ClutterActor.
+
+commit 878b447c3150fa4ea2072924fe7e160131a316f8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Sep 22 11:51:14 2012 +0200
+
+    Load menu structure at first use of applications view. That should speed up application's start-up.
+
+commit 8f070b4c82ff0224d86897394c214cc2643dc99e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Sep 22 10:49:58 2012 +0200
+
+    Fixed getting scaled GdkPixbuf for icon. Moved enumerations to common.h
+
+commit 115f89866fd9f0b2ad10bd7d73955c637cea7200
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Sep 21 23:07:00 2012 +0200
+
+    Moved common and redundant functions to new file common.c/h.
+
+commit 0e3bfc3fb2277737cd9e94d709aa7b38ec9dd1ee
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Sep 16 11:48:01 2012 +0200
+
+    Prepared applications view for list and icon view mode. Added "Public API" comments to header files. Enumerations and flags used in GObject-Type system will now be generated automatically by Makefile. Changed default view mode for applications view to new icon view mode.
+
+commit d8618089f8093e1b64ee583632b84e9f6574789b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Sep 14 12:11:35 2012 +0200
+
+    Implement scroll bar policy in viewpad to show scroll bar if needed or always or never.
+
+commit e23052e463c49bf66d092ad37d459733b5c2366f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Sep 13 22:11:56 2012 +0200
+
+    Add more sanity check for value to set to properties. Only change value of properties if they differ to current value to prevent unnecessary actor redraws and relayouting.
+
+commit 4de12ac215afd0e11fd3f042ce6cad75210c2aba
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Sep 13 21:27:50 2012 +0200
+
+    Rewrote stage setup (creating and adding actors) and fixed scaling flow layout manager to get windows view to an always-non-scrolling state.
+
+commit 6f5d3ad2da5b584c0047ddf7649b05b336240f1a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Sep 13 15:42:49 2012 +0200
+
+    This is a greater update.
+    - Added applications view for browsing menu entries and lauching apps
+    - Added view selector to switch between views (currently only windows view and applications view)
+    - Added base abstract class XfdashboardView which all views are derived from
+    - Tried to clean up layout and using layout manager in a more correct way when setting up stage
+    - Added a fill box layout manager which always expands an actor in the opposite direction as the actors laid out
+    - Added viewpad which shows view selector and the active view. Currently scroll bars are always shown
+
 commit 8d57e25c1ce5b556d85c212ac540243f74d79c0b
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Wed Sep 12 22:35:17 2012 +0200

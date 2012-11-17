@@ -1,0 +1,17 @@
+src/application-icon.c
+src/applications-view.c
+src/button.c
+src/common.c
+src/enums.c
+src/fill-box-layout.c
+src/live-window.c
+src/main.c
+src/quicklaunch.c
+src/scaling-box-layout.c
+src/scaling-flow-layout.c
+src/scrollbar.c
+src/searchbox.c
+src/view.c
+src/viewpad.c
+src/view-selector.c
+src/windows-view.c
