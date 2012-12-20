@@ -107,9 +107,14 @@ static ClutterColor		_xfdashboard_quicklaunch_default_background_color=
 /* Get number of icons */
 static guint _xfdashboard_quicklaunch_get_number_icons(XfdashboardQuicklaunch *self)
 {
-	GList		*children=clutter_container_get_children(CLUTTER_CONTAINER(self->priv->icons));
+	GList		*children;
+	guint		len;
 
-	return(g_list_length(children));
+	children=clutter_container_get_children(CLUTTER_CONTAINER(self->priv->icons));
+	len=g_list_length(children);
+	g_list_free(children);
+
+	return(len);
 }
 
 /* "Switch to view" button was clicked */

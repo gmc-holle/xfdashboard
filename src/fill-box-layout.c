@@ -73,11 +73,11 @@ ClutterActorBox* _xfdashboard_fill_box_layout_get_largest_size(ClutterLayoutMana
 	g_return_val_if_fail(CLUTTER_IS_CONTAINER(inContainer), NULL);
 
 	/* Iterate through all children and determine largest width and height */
-	GList		*children;
+	GList		*children, *childrenList;
 	gfloat		maxWidth, maxHeight;
 
 	maxWidth=maxHeight=0.0f;
-	for(children=clutter_container_get_children(inContainer); children; children=children->next)
+	for(childrenList=children=clutter_container_get_children(inContainer); children; children=children->next)
 	{
 		ClutterActor						*child=CLUTTER_ACTOR(children->data);
 		gfloat								childWidth, childHeight;
@@ -91,6 +91,7 @@ ClutterActorBox* _xfdashboard_fill_box_layout_get_largest_size(ClutterLayoutMana
 		maxWidth=MAX(maxWidth, childWidth);
 		maxHeight=MAX(maxHeight, childHeight);
 	}
+	g_list_free(childrenList);
 
 	/* Create actor box describing largest width and height */
 	return(clutter_actor_box_new(0, 0, maxWidth, maxHeight));
@@ -109,11 +110,14 @@ static void xfdashboard_fill_box_layout_get_preferred_width(ClutterLayoutManager
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 
 	XfdashboardFillBoxLayoutPrivate		*priv=XFDASHBOARD_FILL_BOX_LAYOUT(inManager)->priv;
-	GList								*children=clutter_container_get_children(inContainer);
+	GList								*children, *childrenList;
 	gint								numberChildren;
 	gfloat								minWidth, naturalWidth;
 	gfloat								allMaxMinimumWidth, allMaxNaturalWidth;
 	ClutterActorBox						*largestBox;
+
+	/* Get children of container */
+	childrenList=children=clutter_container_get_children(inContainer);
 
 	/* Set empty sizes */
 	minWidth=naturalWidth=0.0f;
@@ -170,6 +174,9 @@ static void xfdashboard_fill_box_layout_get_preferred_width(ClutterLayoutManager
 			naturalWidth-=priv->spacing;
 		}
 
+	/* Release list of children */
+	g_list_free(childrenList);
+
 	/* Return determined sizes */
 	if(outMinWidth) *outMinWidth=minWidth;
 	if(outNaturalWidth) *outNaturalWidth=naturalWidth;
@@ -185,11 +192,14 @@ static void xfdashboard_fill_box_layout_get_preferred_height(ClutterLayoutManage
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 
 	XfdashboardFillBoxLayoutPrivate		*priv=XFDASHBOARD_FILL_BOX_LAYOUT(inManager)->priv;
-	GList								*children=clutter_container_get_children(inContainer);
+	GList								*children, *childrenList;
 	gint								numberChildren;
 	gfloat								minHeight, naturalHeight;
 	gfloat								allMaxMinimumHeight, allMaxNaturalHeight;
 	ClutterActorBox						*largestBox;
+
+	/* Get children of container */
+	childrenList=children=clutter_container_get_children(inContainer);
 
 	/* Set empty sizes */
 	minHeight=naturalHeight=0.0f;
@@ -246,6 +256,9 @@ static void xfdashboard_fill_box_layout_get_preferred_height(ClutterLayoutManage
 			naturalHeight-=priv->spacing;
 		}
 
+	/* Release list of children */
+	g_list_free(childrenList);
+
 	/* Return determined sizes */
 	if(outMinHeight) *outMinHeight=minHeight;
 	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
@@ -261,12 +274,12 @@ static void xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inManager
 	XfdashboardFillBoxLayoutPrivate		*priv=self->priv;
 	gfloat								availableWidth, availableHeight;
 	gfloat								largestWidth, largestHeight;
-	GList								*children;
+	GList								*children, *childrenList;
 	ClutterActorBox						*box;
 	ClutterActorBox						childAllocation={ 0, };
 
 	/* Get list of children to layout */
-	children=clutter_container_get_children(inContainer);
+	childrenList=children=clutter_container_get_children(inContainer);
 
 	/* Get available size */
 	clutter_actor_box_get_size(inBox, &availableWidth, &availableHeight);
@@ -317,6 +330,9 @@ static void xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inManager
 		if(priv->isVertical) childAllocation.y1=childAllocation.y2+priv->spacing;
 			else childAllocation.x1=childAllocation.x2+priv->spacing;
 	}
+
+	/* Release list of children */
+	g_list_free(childrenList);
 }
 
 /* Set container whose children to layout */

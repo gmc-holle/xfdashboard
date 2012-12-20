@@ -114,14 +114,13 @@ static void xfdashboard_scaling_flow_layout_allocate(ClutterLayoutManager *inMan
 	gfloat							maxWidth, maxHeight;
 	gfloat							largestWidth, largestHeight;
 	ClutterActorBox					childAllocation;
-	GList							*children;
+	GList							*children, *childrenList;
 
-	/* Get list of children to layout */
-	children=clutter_container_get_children(inContainer);
-	
 	/* Find best fitting number of rows and colums for layout */
+	children=clutter_container_get_children(inContainer);
 	numberCols=ceil(sqrt((double)g_list_length(children)));
 	numberRows=ceil((double)g_list_length(children) / (double)numberCols);
+	g_list_free(children);
 
 	/* Get size of container holding children to layout */
 	clutter_actor_get_size(CLUTTER_ACTOR(inContainer), &maxWidth, &maxHeight);
@@ -136,7 +135,7 @@ static void xfdashboard_scaling_flow_layout_allocate(ClutterLayoutManager *inMan
 	 * to largest width and height found if relative scaling is TRUE */
 	if(self->priv->relativeScale)
 	{
-		for(children=clutter_container_get_children(inContainer); children; children=children->next)
+		for(childrenList=children=clutter_container_get_children(inContainer); children; children=children->next)
 		{
 			gfloat			childWidth, childHeight;
 			ClutterActor	*child=CLUTTER_ACTOR(children->data);
@@ -150,10 +149,11 @@ static void xfdashboard_scaling_flow_layout_allocate(ClutterLayoutManager *inMan
 			if(childWidth>largestWidth) largestWidth=childWidth;
 			if(childHeight>largestHeight) largestHeight=childHeight;
 		}
+		g_list_free(childrenList);
 	}
 	
 	/* Calculate new position and size of visible children */
-	for(children=clutter_container_get_children(inContainer) ; children; children=children->next)
+	for(childrenList=children=clutter_container_get_children(inContainer) ; children; children=children->next)
 	{
 		ClutterActor	*child;
 		gfloat			childWidth, childHeight;
@@ -188,6 +188,7 @@ static void xfdashboard_scaling_flow_layout_allocate(ClutterLayoutManager *inMan
 		col=(col+1) % numberCols;
 		if(col==0) row++;
 	}
+	g_list_free(childrenList);
 }
 
 /* Set container whose children to layout */

@@ -92,10 +92,10 @@ static void xfdashboard_scaling_box_layout_get_preferred_width(ClutterLayoutMana
 	g_return_if_fail(XFDASHBOARD_IS_SCALING_BOX_LAYOUT(inManager));
 
 	gfloat									maxMinWidth, maxNaturalWidth;
-	GList									*children;
+	GList									*children, *childrenList;
 
 	maxMinWidth=maxNaturalWidth=0.0f;
-	for(children=clutter_container_get_children(inContainer); children; children=children->next)
+	for(childrenList=children=clutter_container_get_children(inContainer); children; children=children->next)
 	{
 		ClutterActor						*child=CLUTTER_ACTOR(children->data);
 		gfloat								childMinWidth, childNaturalWidth;
@@ -110,6 +110,7 @@ static void xfdashboard_scaling_box_layout_get_preferred_width(ClutterLayoutMana
 		if(childMinWidth>maxMinWidth) maxMinWidth=childMinWidth;
 		if(childNaturalWidth>maxNaturalWidth) maxNaturalWidth=childNaturalWidth;
 	}
+	g_list_free(childrenList);
 
 	if(outMinWidth) *outMinWidth=maxMinWidth;
 	if(outNaturalWidth) *outNaturalWidth=maxNaturalWidth;
@@ -125,11 +126,11 @@ static void xfdashboard_scaling_box_layout_get_preferred_height(ClutterLayoutMan
 
 	XfdashboardScalingBoxLayoutPrivate		*priv=XFDASHBOARD_SCALING_BOX_LAYOUT(inManager)->priv;
 	gfloat									maxMinHeight, maxNaturalHeight;
-	GList									*children;
+	GList									*children, *childrenList;
 	gint									numberChildren=0;
 
 	maxMinHeight=maxNaturalHeight=0.0f;
-	for(children=clutter_container_get_children(inContainer);
+	for(childrenList=children=clutter_container_get_children(inContainer);
 			children;
 			children=children->next)
 	{
@@ -148,6 +149,7 @@ static void xfdashboard_scaling_box_layout_get_preferred_height(ClutterLayoutMan
 
 		numberChildren++;
 	}
+	g_list_free(childrenList);
 
 	if(outMinHeight) *outMinHeight=maxMinHeight+((numberChildren-1)*priv->spacing);
 	if(outNaturalHeight) *outNaturalHeight=maxNaturalHeight+((numberChildren-1)*priv->spacing);
@@ -166,11 +168,11 @@ static void xfdashboard_scaling_box_layout_allocate(ClutterLayoutManager *inMana
 	gfloat								iconsWidth, iconsHeight;
 	gfloat								iconsScaleWidth, iconsScaleHeight;
 	ClutterActorBox						childAllocation={ 0, };
-	GList								*children;
+	GList								*children, *childrenList;
 	gint								numberChildren;
 
 	/* Get list of children to layout */
-	children=clutter_container_get_children(inContainer);
+	childrenList=children=clutter_container_get_children(inContainer);
 	numberChildren=g_list_length(children);
 
 	/* Get available size */
@@ -242,6 +244,9 @@ static void xfdashboard_scaling_box_layout_allocate(ClutterLayoutManager *inMana
 	/* Store allocation containing all children */
 	clutter_actor_box_set_origin(&priv->lastAllocation, 0, 0);
 	clutter_actor_box_set_size(&priv->lastAllocation, maxWidth, maxHeight);
+
+	/* Release list of children */
+	g_list_free(childrenList);
 }
 
 /* Set container whose children to layout */
