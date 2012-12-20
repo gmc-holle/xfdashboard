@@ -82,6 +82,9 @@ ClutterActorBox* _xfdashboard_fill_box_layout_get_largest_size(ClutterLayoutMana
 		ClutterActor						*child=CLUTTER_ACTOR(children->data);
 		gfloat								childWidth, childHeight;
 
+		/* Is child visible? */
+		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+
 		if(inDetermineMinimum) clutter_actor_get_preferred_size(child, &childWidth, &childHeight, NULL, NULL);
 			else clutter_actor_get_preferred_size(child, NULL, NULL, &childWidth, &childHeight);
 
@@ -154,6 +157,9 @@ static void xfdashboard_fill_box_layout_get_preferred_width(ClutterLayoutManager
 			{
 				ClutterActor			*child=CLUTTER_ACTOR(children->data);
 				gfloat					childMinWidth, childNaturalWidth;
+
+				/* Is child visible? */
+				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
 
 				clutter_actor_get_preferred_width(child, -1, &childMinWidth, &childNaturalWidth);
 				minWidth+=childMinWidth+priv->spacing;
@@ -228,6 +234,9 @@ static void xfdashboard_fill_box_layout_get_preferred_height(ClutterLayoutManage
 				ClutterActor			*child=CLUTTER_ACTOR(children->data);
 				gfloat					childMinHeight, childNaturalHeight;
 
+				/* Is child visible? */
+				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+
 				clutter_actor_get_preferred_height(child, -1, &childMinHeight, &childNaturalHeight);
 				minHeight+=childMinHeight+priv->spacing;
 				naturalHeight+=childNaturalHeight+priv->spacing;
@@ -271,13 +280,16 @@ static void xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inManager
 		clutter_actor_box_free(box);
 	}
 	
-	/* Iterate through children and calculate their position and size */
+	/* Iterate through visible children and calculate their position and size */
 	clutter_actor_box_set_origin(&childAllocation, 0, 0);
 	
 	for(; children; children=children->next)
 	{
 		ClutterActor					*child=CLUTTER_ACTOR(children->data);
 		gfloat							childWidth, childHeight;
+
+		/* Is child visible? */
+		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
 
 		/* Get child's preferred sizes */
 		clutter_actor_get_preferred_width(child, -1, NULL, &childWidth);
