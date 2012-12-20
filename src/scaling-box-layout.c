@@ -208,12 +208,15 @@ static void xfdashboard_scaling_box_layout_allocate(ClutterLayoutManager *inMana
 		
 	priv->scaleCurrent=MIN(iconsScaleWidth, iconsScaleHeight);
 
-	/* Calculate new position and size of children */
+	/* Calculate new position and size of visible children */
 	maxWidth=maxHeight=0.0f;
 	for(; children; children=children->next)
 	{
 		ClutterActor					*child=CLUTTER_ACTOR(children->data);
 		gfloat							childWidth, childHeight;
+
+		/* Is child visible? */
+		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
 
 		/* Calculate new position and size of child */
 		clutter_actor_get_preferred_width(child, -1, NULL, &childWidth);

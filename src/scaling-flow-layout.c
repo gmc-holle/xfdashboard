@@ -139,16 +139,20 @@ static void xfdashboard_scaling_flow_layout_allocate(ClutterLayoutManager *inMan
 		for(children=clutter_container_get_children(inContainer); children; children=children->next)
 		{
 			gfloat			childWidth, childHeight;
+			ClutterActor	*child=CLUTTER_ACTOR(children->data);
 
-			clutter_actor_get_preferred_width(CLUTTER_ACTOR(children->data), -1, NULL, &childWidth);
-			clutter_actor_get_preferred_height(CLUTTER_ACTOR(children->data), -1, NULL, &childHeight);
+			/* Is child visible? */
+			if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+
+			clutter_actor_get_preferred_width(child, -1, NULL, &childWidth);
+			clutter_actor_get_preferred_height(child, -1, NULL, &childHeight);
 
 			if(childWidth>largestWidth) largestWidth=childWidth;
 			if(childHeight>largestHeight) largestHeight=childHeight;
 		}
 	}
 	
-	/* Calculate new position and size of children */
+	/* Calculate new position and size of visible children */
 	for(children=clutter_container_get_children(inContainer) ; children; children=children->next)
 	{
 		ClutterActor	*child;
@@ -156,8 +160,11 @@ static void xfdashboard_scaling_flow_layout_allocate(ClutterLayoutManager *inMan
 
 		/* Get child */
 		child=CLUTTER_ACTOR(children->data);
-		
-		/* Calculate new position and size of child */		
+
+		/* Is child visible? */
+		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+
+		/* Calculate new position and size of child */
 		childWidth=cellWidth;
 		childHeight=cellHeight;
 		
