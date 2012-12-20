@@ -80,7 +80,7 @@ void _xfdashboard_view_selector_clicked(ClutterActor *inActor,
 
 	XfdashboardViewSelectorPrivate	*priv=XFDASHBOARD_VIEW_SELECTOR(inUserData)->priv;
 	GList							*views;
-	GList							*buttons;
+	GList							*buttons, *buttonsList;
 
 	/* Only change view if actor was left-clicked */
 	if(clutter_event_get_button(inEvent)!=1) return;
@@ -88,7 +88,7 @@ void _xfdashboard_view_selector_clicked(ClutterActor *inActor,
 	/* Iterate through button and find the one to which this action
 	 * is connected to
 	 */
-	buttons=clutter_container_get_children(CLUTTER_CONTAINER(priv->buttons));
+	buttonsList=buttons=clutter_container_get_children(CLUTTER_CONTAINER(priv->buttons));
 	views=xfdashboard_viewpad_get_views(priv->viewpad);
 	if(G_UNLIKELY(g_list_length(buttons)!=g_list_length(views)))
 	{
@@ -106,6 +106,9 @@ void _xfdashboard_view_selector_clicked(ClutterActor *inActor,
 			xfdashboard_viewpad_set_active_view(priv->viewpad, view);
 		}
 	}
+
+	/* Release list of buttons */
+	g_list_free(buttonsList);
 }
 
 /* Update buttons for views */
@@ -116,14 +119,15 @@ void _xfdashboard_view_selector_update(XfdashboardViewSelector *self, gboolean i
 	XfdashboardViewSelectorPrivate	*priv=self->priv;
 	XfdashboardView					*activeView;
 	GList							*views;
-	GList							*buttons;
+	GList							*buttons, *buttonsList;
 
 	/* Check if we should (re)create actors */
 	if(inCreateActors)
 	{
 		/* Destroy all current actors */
-		buttons=clutter_container_get_children(CLUTTER_CONTAINER(priv->buttons));
+		buttonsList=buttons=clutter_container_get_children(CLUTTER_CONTAINER(priv->buttons));
 		g_list_foreach(buttons, (GFunc)clutter_actor_destroy, NULL);
+		g_list_free(buttonsList);
 
 		/* Create actors only if we have a viewpad assigned */
 		if(!priv->viewpad) return;
@@ -155,7 +159,7 @@ void _xfdashboard_view_selector_update(XfdashboardViewSelector *self, gboolean i
 	/* Iterate through buttons and set color depending on
 	 * if view is active (selected) or not
 	 */
-	buttons=clutter_container_get_children(CLUTTER_CONTAINER(priv->buttons));
+	buttonsList=buttons=clutter_container_get_children(CLUTTER_CONTAINER(priv->buttons));
 	views=xfdashboard_viewpad_get_views(priv->viewpad);
 	if(G_UNLIKELY(g_list_length(buttons)!=g_list_length(views)))
 	{
@@ -196,6 +200,7 @@ void _xfdashboard_view_selector_update(XfdashboardViewSelector *self, gboolean i
 				clutter_text_set_color(button, priv->color);
 			}
 	}
+	g_list_free(buttonsList);
 }
 
 /* Another view was activated */
