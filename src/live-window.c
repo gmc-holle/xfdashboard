@@ -117,7 +117,6 @@ void _xfdashboard_live_window_on_actions_changed(WnckWindow *inWindow,
 													WnckWindowActions inNewState,
 													gpointer inUserData)
 {
-g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
@@ -140,7 +139,6 @@ g_message("%s", __func__);
 /* Window's position and/or size (geometry) has changed */
 void _xfdashboard_live_window_on_geometry_changed(WnckWindow *inWindow, gpointer inUserData)
 {
-g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
@@ -152,7 +150,6 @@ g_message("%s", __func__);
 /* Window icon changed */
 void _xfdashboard_live_window_on_icon_changed(WnckWindow *inWindow, gpointer inUserData)
 {
-g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
@@ -165,7 +162,6 @@ g_message("%s", __func__);
 /* Window title changed */
 void _xfdashboard_live_window_on_title_changed(WnckWindow *inWindow, gpointer inUserData)
 {
-g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
@@ -181,7 +177,6 @@ void _xfdashboard_live_window_on_state_changed(WnckWindow *inWindow,
 												WnckWindowState inNewState,
 												gpointer inUserData)
 {
-g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
@@ -204,7 +199,6 @@ g_message("%s", __func__);
 /* Window's workspace has changed */
 void _xfdashboard_live_window_on_workspace_changed(WnckWindow *inWindow, gpointer inUserData)
 {
-g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
