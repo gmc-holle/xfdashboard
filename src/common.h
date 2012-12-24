@@ -77,6 +77,8 @@ typedef enum
 /* Public API */
 GType xfdashboard_value_array_get_type(void) G_GNUC_CONST;
 
+guint32 xfdashboard_get_current_time(void);
+
 WnckWindow* xfdashboard_get_stage_window();
 
 GarconMenu* xfdashboard_get_application_menu();

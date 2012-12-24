@@ -9,15 +9,22 @@ INCLUDES = \
 bin_PROGRAMS = \
 	xfdashboard
 
+xfdashboard_marshal_prefix = xfdashboard
+
 xfdashboard_built_sources = \
 	enums.h \
-	enums.c
+	enums.c \
+	marshal.h \
+	marshal.c
 
 xfdashboard_headers = \
 	application-icon.h \
 	applications-view.h \
 	button.h \
 	common.h \
+	drag-action.h \
+	drop-action.h \
+	drop-targets.h \
 	fill-box-layout.h \
 	live-window.h \
 	quicklaunch.h \
@@ -37,6 +44,9 @@ xfdashboard_SOURCES = \
 	applications-view.c \
 	button.c \
 	common.c \
+	drag-action.c \
+	drop-action.c \
+	drop-targets.c \
 	fill-box-layout.c \
 	live-window.c \
 	main.c \
@@ -77,11 +87,42 @@ xfdashboard_LDADD = \
 
 if MAINTAINER_MODE
 
+CLEANFILES = \
+	xgen-xmc \
+	xgen-xmh
+
 enums.h: $(xfdashboard_headers) Makefile
-	$(AM_V_GEN) glib-mkenums --template enums.h.template $(xfdashboard_headers) > $@
+	$(AM_V_GEN) $(GLIB_MKENUMS) --template enums.h.template $(xfdashboard_headers) > $@
 
 enums.c: $(xfdashboard_headers) Makefile
-	$(AM_V_GEN) glib-mkenums --template enums.c.template $(xfdashboard_headers) > $@
+	$(AM_V_GEN) $(GLIB_MKENUMS) --template enums.c.template $(xfdashboard_headers) > $@
+
+marshal.h: stamp-marshal.h
+	@true
+
+stamp-marshal.h: marshal.list Makefile
+	$(AM_V_GEN) \
+	( \
+		cd $(srcdir) \
+		&& ( $(GLIB_GENMARSHAL) \
+			--prefix=_xfdashboard_marshal \
+			--header marshal.list ) > xgen-xmh \
+		&& ( cmp -s xgen-xmh marshal.h || cp xgen-xmh marshal.h ) \
+		&& rm -f xgen-xmh \
+		&& echo timestamp > $(@F) \
+	)
+
+marshal.c: marshal.list Makefile
+	$(AM_V_GEN) \
+	( \
+		cd $(srcdir) \
+		&& echo "#include \"marshal.h\"" > xgen-xmc \
+		&& ( $(GLIB_GENMARSHAL) \
+			--prefix=_xfdashboard_marshal \
+			--body marshal.list ) >> xgen-xmc \
+		&& cp xgen-xmc marshal.c \
+		&& rm -f xgen-xmc \
+	)
 
 DISTCLEANFILES = \
 	$(xfdashboard_built_sources)
@@ -93,6 +134,5 @@ endif
 
 EXTRA_DIST = \
 	enums.h.template \
-	enums.c.template
-
-# vi:set ts=8 sw=8 noet ai nocindent syntax=automake:
+	enums.c.template \
+	marshal.list

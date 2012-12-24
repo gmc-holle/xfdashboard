@@ -107,7 +107,7 @@ void _xfdashboard_windows_view_on_workspace_changed(WnckScreen *inScreen,
 
 	/* Move clutter stage to new active workspace and make active */
 	wnck_window_move_to_workspace(xfdashboard_get_stage_window(), workspace);
-	wnck_window_activate(xfdashboard_get_stage_window(), CLUTTER_CURRENT_TIME);
+	wnck_window_activate(xfdashboard_get_stage_window(), xfdashboard_get_current_time());
 	
 	/* Update window list */
 	_xfdashboard_windows_view_set_active_workspace(self, workspace);
@@ -168,7 +168,7 @@ gboolean _xfdashboard_windows_view_on_window_close_clicked(ClutterActor *inActor
 
 	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(inActor);
 	
-	wnck_window_close((WnckWindow*)xfdashboard_live_window_get_window(liveWindow), CLUTTER_CURRENT_TIME);
+	wnck_window_close((WnckWindow*)xfdashboard_live_window_get_window(liveWindow), xfdashboard_get_current_time());
 
 	return(TRUE);
 }
@@ -181,7 +181,7 @@ gboolean _xfdashboard_windows_view_on_window_clicked(ClutterActor *inActor,
 
 	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(inActor);
 	
-	wnck_window_activate_transient((WnckWindow*)xfdashboard_live_window_get_window(liveWindow), CLUTTER_CURRENT_TIME);
+	wnck_window_activate_transient((WnckWindow*)xfdashboard_live_window_get_window(liveWindow), xfdashboard_get_current_time());
 
 	clutter_main_quit();
 

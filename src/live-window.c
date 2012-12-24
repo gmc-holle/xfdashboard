@@ -1,5 +1,5 @@
 /*
- * livewindow.c: An actor showing and updating a window live
+ * live-window.c: An actor showing and updating a window live
  * 
  * Copyright 2012 Stephan Haller <nomad@froevel.de>
  * 
@@ -117,6 +117,7 @@ void _xfdashboard_live_window_on_actions_changed(WnckWindow *inWindow,
 													WnckWindowActions inNewState,
 													gpointer inUserData)
 {
+g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
@@ -139,6 +140,7 @@ void _xfdashboard_live_window_on_actions_changed(WnckWindow *inWindow,
 /* Window's position and/or size (geometry) has changed */
 void _xfdashboard_live_window_on_geometry_changed(WnckWindow *inWindow, gpointer inUserData)
 {
+g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
@@ -150,6 +152,7 @@ void _xfdashboard_live_window_on_geometry_changed(WnckWindow *inWindow, gpointer
 /* Window icon changed */
 void _xfdashboard_live_window_on_icon_changed(WnckWindow *inWindow, gpointer inUserData)
 {
+g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
@@ -162,6 +165,7 @@ void _xfdashboard_live_window_on_icon_changed(WnckWindow *inWindow, gpointer inU
 /* Window title changed */
 void _xfdashboard_live_window_on_title_changed(WnckWindow *inWindow, gpointer inUserData)
 {
+g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
@@ -177,6 +181,7 @@ void _xfdashboard_live_window_on_state_changed(WnckWindow *inWindow,
 												WnckWindowState inNewState,
 												gpointer inUserData)
 {
+g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
@@ -199,6 +204,7 @@ void _xfdashboard_live_window_on_state_changed(WnckWindow *inWindow,
 /* Window's workspace has changed */
 void _xfdashboard_live_window_on_workspace_changed(WnckWindow *inWindow, gpointer inUserData)
 {
+g_message("%s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
@@ -326,11 +332,47 @@ static void xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 														gfloat *outNaturalHeight)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
+	gfloat							minHeight, naturalHeight;
+	gfloat							childMinHeight, childNaturalHeight;
 
-	clutter_actor_get_preferred_height(priv->actorWindow,
-										inForWidth,
-										outMinHeight,
-										outNaturalHeight);
+	minHeight=naturalHeight=0.0f;
+
+	/* Determine size of window if visible (should usually be the largest actor) */
+	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindow))
+	{
+		clutter_actor_get_preferred_height(priv->actorWindow,
+											inForWidth,
+											&childMinHeight,
+											&childNaturalHeight);
+		if(childMinHeight>minHeight) minHeight=childMinHeight;
+		if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
+	}
+
+	/* Determine size of label if visible */
+	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorLabel))
+	{
+		clutter_actor_get_preferred_height(priv->actorLabel,
+											inForWidth,
+											&childMinHeight,
+											&childNaturalHeight);
+		if(childMinHeight>minHeight) minHeight=childMinHeight;
+		if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
+	}
+
+	/* Determine size of close button if visible */
+	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorClose))
+	{
+		clutter_actor_get_preferred_height(priv->actorClose,
+											inForWidth,
+											&childMinHeight,
+											&childNaturalHeight);
+		if(childMinHeight>minHeight) minHeight=childMinHeight;
+		if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
+	}
+
+	/* Store sizes computed */
+	if(outMinHeight) *outMinHeight=minHeight;
+	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
 static void xfdashboard_live_window_get_preferred_width(ClutterActor *self,
@@ -339,11 +381,47 @@ static void xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 														gfloat *outNaturalWidth)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
+	gfloat							minWidth, naturalWidth;
+	gfloat							childMinWidth, childNaturalWidth;
 
-	clutter_actor_get_preferred_width(priv->actorWindow,
-										inForHeight,
-										outMinWidth,
-										outNaturalWidth);
+	minWidth=naturalWidth=0.0f;
+
+	/* Determine size of window if visible (should usually be the largest actor) */
+	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindow))
+	{
+		clutter_actor_get_preferred_width(priv->actorWindow,
+											inForHeight,
+											&childMinWidth,
+											&childNaturalWidth);
+		if(childMinWidth>minWidth) minWidth=childMinWidth;
+		if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
+	}
+
+	/* Determine size of label if visible */
+	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorLabel))
+	{
+		clutter_actor_get_preferred_width(priv->actorLabel,
+											inForHeight,
+											&childMinWidth,
+											&childNaturalWidth);
+		if(childMinWidth>minWidth) minWidth=childMinWidth;
+		if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
+	}
+
+	/* Determine size of close button if visible */
+	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorClose))
+	{
+		clutter_actor_get_preferred_width(priv->actorClose,
+											inForHeight,
+											&childMinWidth,
+											&childNaturalWidth);
+		if(childMinWidth>minWidth) minWidth=childMinWidth;
+		if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
+	}
+
+	/* Store sizes computed */
+	if(outMinWidth) *outMinWidth=minWidth;
+	if(outNaturalWidth) *outNaturalWidth=naturalWidth;
 }
 
 /* Allocate position and size of actor and its children*/
@@ -585,7 +663,7 @@ static void xfdashboard_live_window_set_property(GObject *inObject,
 												GParamSpec *inSpec)
 {
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inObject);
-	
+
 	switch(inPropID)
 	{
 		case PROP_WINDOW:

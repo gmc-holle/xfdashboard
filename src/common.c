@@ -54,6 +54,20 @@ GType xfdashboard_value_array_get_type(void)
 	return(type__volatile);
 }
 
+/* Get current time, e.g. for events */
+guint32 xfdashboard_get_current_time(void)
+{
+	const ClutterEvent		*currentClutterEvent;
+
+	/* We don't use clutter_get_current_event_time as it can give us a
+	 * too old timestamp if there is no current event.
+	 */
+	currentClutterEvent=clutter_get_current_event();
+
+	if(currentClutterEvent!=NULL) return(clutter_event_get_time(currentClutterEvent));
+		else return(CLUTTER_CURRENT_TIME);
+}
+
 /* Get window of application */
 WnckWindow* xfdashboard_get_stage_window()
 {

@@ -66,6 +66,7 @@ struct _XfdashboardApplicationIconClass
 GType xfdashboard_application_icon_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_application_icon_new(void);
+ClutterActor* xfdashboard_application_icon_new_copy(XfdashboardApplicationIcon *inIcon);
 ClutterActor* xfdashboard_application_icon_new_by_desktop_file(const gchar *inDesktopFile);
 ClutterActor* xfdashboard_application_icon_new_by_menu_item(const GarconMenuElement *inMenuElement);
 ClutterActor* xfdashboard_application_icon_new_with_custom(const GarconMenuElement *inMenuElement,

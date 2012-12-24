@@ -1,5 +1,5 @@
 /*
- * livewindow.h: An actor showing and updating a window live
+ * live-window.h: An actor showing and updating a window live
  * 
  * Copyright 2012 Stephan Haller <nomad@froevel.de>
  * 

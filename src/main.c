@@ -170,7 +170,7 @@ void _xfdashboard_on_windows_view_activated(ClutterActor *inView, gpointer inUse
 	if(XFDASHBOARD_IS_QUICKLAUNCH(inUserData))
 	{
 		XfdashboardQuicklaunch		*quicklaunch=XFDASHBOARD_QUICKLAUNCH(inUserData);
-		
+
 		g_signal_handlers_block_by_func(quicklaunch, (gpointer)(_xfdashboard_on_switch_to_view_clicked), view);
 		xfdashboard_quicklaunch_set_mark_state(quicklaunch, FALSE);
 		g_signal_handlers_unblock_by_func(quicklaunch, (gpointer)(_xfdashboard_on_switch_to_view_clicked), view);

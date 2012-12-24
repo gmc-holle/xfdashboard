@@ -134,7 +134,15 @@ void _xfdashboard_application_icon_set_desktop_file(XfdashboardApplicationIcon *
 	/* Get new application information of basename of desktop file given */
 	if(inDesktopFile)
 	{
-		priv->appInfo=G_APP_INFO(g_desktop_app_info_new(inDesktopFile));
+		if(g_path_is_absolute(inDesktopFile))
+		{
+			priv->appInfo=G_APP_INFO(g_desktop_app_info_new_from_filename(inDesktopFile));
+		}
+			else
+			{
+				priv->appInfo=G_APP_INFO(g_desktop_app_info_new(inDesktopFile));
+			}
+
 		if(!priv->appInfo)
 		{
 			g_warning("Could not get application info '%s' for quicklaunch icon",
@@ -558,8 +566,8 @@ static void xfdashboard_application_icon_class_init(XfdashboardApplicationIconCl
 	/* Define properties */
 	XfdashboardApplicationIconProperties[PROP_DESKTOP_FILE]=
 		g_param_spec_string("desktop-file",
-							"Basename of desktop file",
-							"Basename of desktop file containing all information about this application",
+							"Desktop file",
+							"Basename or absolute path of desktop file containing all information about this application",
 							"",
 							G_PARAM_READWRITE);
 
@@ -637,6 +645,42 @@ ClutterActor* xfdashboard_application_icon_new()
 {
 	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_ICON,
 						NULL));
+}
+
+ClutterActor* xfdashboard_application_icon_new_copy(XfdashboardApplicationIcon *inIcon)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inIcon), NULL);
+
+	ClutterActor			*newIcon=NULL;
+	const gchar				*desktopFile;
+
+	/* We will only copy the source the given application icon is set up from. The new
+	 * icon will have default style, orientation and other properties.
+	 */
+	switch(inIcon->priv->type)
+	{
+		case eTypeDesktopFile:
+			desktopFile=xfdashboard_application_icon_get_desktop_file(inIcon);
+			newIcon=xfdashboard_application_icon_new_by_desktop_file(desktopFile);
+			break;
+
+		case eTypeMenuItem:
+			newIcon=xfdashboard_application_icon_new_by_menu_item(inIcon->priv->menuElement);
+			break;
+
+		case eTypeCustom:
+			newIcon=xfdashboard_application_icon_new_with_custom(inIcon->priv->customMenuElement,
+																	inIcon->priv->customIconName,
+																	inIcon->priv->customTitle,
+																	inIcon->priv->customDescription);
+			break;
+
+		default:
+			g_error("Cannot create new application icon from existing one of type %d", inIcon->priv->type);
+			break;
+	}
+
+	return(newIcon);
 }
 
 ClutterActor* xfdashboard_application_icon_new_by_desktop_file(const gchar *inDesktopFile)
