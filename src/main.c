@@ -380,6 +380,10 @@ int main(int argc, char **argv)
 	_xfdashboard_create_stage();
 
 	/* Start main loop */
+#if !CLUTTER_CHECK_VERSION(1,10,0)
+	g_message("Setting default frame rate to 60");
+	clutter_set_default_frame_rate(60);
+#endif
 	clutter_main();
 
 	/* Destroy and clean up stage */
