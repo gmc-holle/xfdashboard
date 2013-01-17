@@ -109,8 +109,15 @@ XDT_CHECK_PACKAGE([CLUTTER_COGL], [clutter-cogl-1.0], [clutter_minimum_version])
 XDT_CHECK_PACKAGE([GIO], [gio-2.0], [gio_minimum_version])
 XDT_CHECK_PACKAGE([GIO_UNIX], [gio-unix-2.0], [gio_minimum_version])
 XDT_CHECK_PACKAGE([GARCON], [garcon-1], [garcon_minimum_version])
-XDT_CHECK_PACKAGE([LIBXFCONF], libxfconf-0, [xfconf_minimum_version])
-XDT_CHECK_PACKAGE([DBUS_GLIB], [dbus-glib-1], [dbus_glib_minimum_version])
+XDT_CHECK_PACKAGE([LIBXFCONF], [libxfconf-0], [xfconf_minimum_version])
+XDT_CHECK_PACKAGE([DBUS_GLIB], [dbus-glib-1], [dbus_glib_minimum_version], [
+	XDT_PROG_PKG_CONFIG()
+
+	GLIB_MKENUMS=`$PKG_CONFIG --variable=glib_mkenums glib-2.0`
+	AC_SUBST(GLIB_MKENUMS)
+
+	GLIB_GENMARSHAL=`$PKG_CONFIG --variable=glib_genmarshal glib-2.0`
+	AC_SUBST(GLIB_GENMARSHAL)])
 
 dnl ***********************************
 dnl *** Check for debugging support ***
@@ -164,4 +171,7 @@ echo "  libxconf libs:     $LIBXFCONF_LIBS"
 echo
 echo "  dbus-glib cflags:  $DBUS_GLIB_CFLAGS"
 echo "  dbus-glib libs:    $DBUS_GLIB_LIBS"
+echo
+echo "  glib-genmarshal:   $GLIB_GENMARSHAL"
+echo "  glib-mkenums:      $GLIB_MKENUMS"
 echo
