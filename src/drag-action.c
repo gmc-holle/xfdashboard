@@ -81,6 +81,71 @@ static guint XfdashboardDragActionSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
+/* Callback to sort list of drop action targets */
+gint _xfdashboard_drag_action_sort_targets_callback(gconstpointer inLeft, gconstpointer inRight)
+{
+g_message("%s: left=%p (%s), right=%p (%s)", __func__, (void*)inLeft, G_OBJECT_TYPE_NAME(inLeft), (void*)inRight, G_OBJECT_TYPE_NAME(inRight));
+
+	g_return_val_if_fail(XFDASHBOARD_IS_DROP_ACTION(inLeft) && XFDASHBOARD_IS_DROP_ACTION(inRight), 0);
+
+	ClutterActor	*actor1=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(inLeft));
+	ClutterActor	*actor2=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(inRight));
+	gfloat			depth1, depth2;
+	gfloat			x1, y1, w1, h1;
+	gfloat			x2, y2, w2, h2;
+	ClutterActorBox	*box1, *box2;
+	gint			numberPoint1, numberPoint2;
+
+g_message("%s: left actor=%p (%s), right actor=%p (%s)", __func__, (void*)actor1, G_OBJECT_TYPE_NAME(actor1), (void*)actor2, G_OBJECT_TYPE_NAME(actor2));
+
+	/* Return -1 if actor in inLeft should be inserted before actor in inRight
+	 * and return 1 if otherwise. If both actors can be handled equal then
+	 * return 0. But how to decide?
+	 * The actor with higher z-depth should be inserted before. If both actors
+	 * have equal z-depth then the actor with the most edge points within the
+	 * other actor (=overlap) should be inserted before. Edge points are:
+	 * [left,top], [right,top], [left,bottom] and [right, bottom].
+	 */
+	depth1=clutter_actor_get_depth(actor1);
+	depth2=clutter_actor_get_depth(actor2);
+	if(depth1>depth2) return(-1);
+		else if(depth2>depth1) return(1);
+
+	clutter_actor_get_transformed_position(actor1, &x1, &y1);
+	clutter_actor_get_transformed_size(actor1, &w1, &y1);
+	box1=clutter_actor_box_new(x1, y1, x1+w1, y1+h1);
+
+	clutter_actor_get_transformed_position(actor2, &x2, &y2);
+	clutter_actor_get_transformed_size(actor2, &w2, &y2);
+	box2=clutter_actor_box_new(x2, y2, x2+w2, y2+h2);
+
+	numberPoint1 =(clutter_actor_box_contains(box1, x2   , y2   )==TRUE ? 1 : 0);
+	numberPoint1+=(clutter_actor_box_contains(box1, x2+w2, y2   )==TRUE ? 1 : 0);
+	numberPoint1+=(clutter_actor_box_contains(box1, x2,    y2+h2)==TRUE ? 1 : 0);
+	numberPoint1+=(clutter_actor_box_contains(box1, x2+w2, y2+h2)==TRUE ? 1 : 0);
+
+	numberPoint2 =(clutter_actor_box_contains(box2, x1,    y1   )==TRUE ? 1 : 0);
+	numberPoint2+=(clutter_actor_box_contains(box2, x1+w1, y1   )==TRUE ? 1 : 0);
+	numberPoint2+=(clutter_actor_box_contains(box2, x1,    y1+h1)==TRUE ? 1 : 0);
+	numberPoint2+=(clutter_actor_box_contains(box2, x1+w1, y1+h1)==TRUE ? 1 : 0);
+
+	clutter_actor_box_free(box1);
+	clutter_actor_box_free(box2);
+
+	if(numberPoint1>numberPoint2) return(-1);
+		else if(numberPoint2>numberPoint1) return(1);
+	return(0);
+}
+
+void _xfdashboard_drag_action_sort_targets(ClutterDragAction *inAction)
+{
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inAction));
+
+	XfdashboardDragActionPrivate	*priv=XFDASHBOARD_DRAG_ACTION(inAction)->priv;
+
+	priv->targets=g_slist_sort(priv->targets, _xfdashboard_drag_action_sort_targets_callback);
+}
+
 /* Transform stage coordinates to drop action's target actor coordinates */
 void _xfdashboard_drag_action_transform_stage_point(XfdashboardDropAction *inDropTarget,
 													gfloat inStageX,
@@ -165,7 +230,8 @@ void xfdashboard_drag_action_drag_begin(ClutterDragAction *inAction,
 	 * while dragging */
 	priv->targets=xfdashboard_drop_targets_get_all();
 
-	/* Emit "begin" signal on all drop targets to prepare them for dragging */
+	/* Emit "begin" signal on all drop targets to prepare them for dragging
+	 * and sort them */
 	for(list=priv->targets; list; list=list->next)
 	{
 		XfdashboardDropAction		*dropTarget=XFDASHBOARD_DROP_ACTION(list->data);
@@ -182,6 +248,7 @@ void xfdashboard_drag_action_drag_begin(ClutterDragAction *inAction,
 			g_slist_free_1(list);
 		}
 	}
+	_xfdashboard_drag_action_sort_targets(self);
 
 	/* Setup for dragging */
 	priv->lastDropTarget=NULL;
@@ -259,6 +326,7 @@ void xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 										gfloat inStageY,
 										ClutterModifierType inModifiers)
 {
+g_message("start: %s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inAction));
 
 	XfdashboardDragAction			*self=XFDASHBOARD_DRAG_ACTION(inAction);
@@ -315,6 +383,7 @@ void xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 
 	/* Reset variables */
 	priv->lastDropTarget=NULL;
+g_message("end: %s", __func__);
 }
 
 /* IMPLEMENTATION: ClutterActorMeta */
