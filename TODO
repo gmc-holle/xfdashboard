@@ -7,6 +7,7 @@
 - Localization
 - Start search for application ca. one second after entering and restart search one second after last input in a thread?
 - Sort search result in search view alphabetically and/or by relevance?
+- Get rid of duplicates in search view
 - Effects?
 - Themable?
 
@@ -14,6 +15,7 @@
 [done] Implement quicklaunch-box
 [done] Clicking quicklaunch icon starts application and quits
 [done] Reorder quicklaunch icon by drag-n-drop
+[done] Remove quicklaunch icon by drag-n-drop to trash icon in quicklaunch
 - Allow drag-n-drop of quicklaunch icon to windows-list view and start app in current workspace
 - Allow drag-n-drop of quicklaunch icon to workspace-box, start app in this workspace
 
@@ -32,6 +34,7 @@
 == WINDOWS-LIST VIEW ==
 [done] Implement windows-list view
 [done] Click live-window actor
+- Lazy initialization by getting rid of blocking sync of libwnck and listening to signals (needs implementing a window-list manager)
 - Multi-monitor support (show visible windows on the screen where it belongs to, fullscreen over all screens)
 [done] - Allow closing window by clicking "X" button of live-window actor
 - Allow drag-n-drop of live-window actor to quicklaunch-box view and create shortcut
