@@ -433,8 +433,6 @@ void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardDropAction *inDropAction,
 	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inUserData);
 	XfdashboardQuicklaunchPrivate	*priv=self->priv;
 	ClutterActor					*draggedActor;
-	GPtrArray						*desktopFiles;
-	gint							i;
 
 	/* Get dragged actor */
 	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
