@@ -84,8 +84,6 @@ static guint XfdashboardDragActionSignals[SIGNAL_LAST]={ 0, };
 /* Callback to sort list of drop action targets */
 gint _xfdashboard_drag_action_sort_targets_callback(gconstpointer inLeft, gconstpointer inRight)
 {
-g_message("%s: left=%p (%s), right=%p (%s)", __func__, (void*)inLeft, G_OBJECT_TYPE_NAME(inLeft), (void*)inRight, G_OBJECT_TYPE_NAME(inRight));
-
 	g_return_val_if_fail(XFDASHBOARD_IS_DROP_ACTION(inLeft) && XFDASHBOARD_IS_DROP_ACTION(inRight), 0);
 
 	ClutterActor	*actor1=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(inLeft));
@@ -95,8 +93,6 @@ g_message("%s: left=%p (%s), right=%p (%s)", __func__, (void*)inLeft, G_OBJECT_T
 	gfloat			x2, y2, w2, h2;
 	ClutterActorBox	*box1, *box2;
 	gint			numberPoint1, numberPoint2;
-
-g_message("%s: left actor=%p (%s), right actor=%p (%s)", __func__, (void*)actor1, G_OBJECT_TYPE_NAME(actor1), (void*)actor2, G_OBJECT_TYPE_NAME(actor2));
 
 	/* Return -1 if actor in inLeft should be inserted before actor in inRight
 	 * and return 1 if otherwise. If both actors can be handled equal then
