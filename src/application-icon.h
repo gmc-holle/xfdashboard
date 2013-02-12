@@ -62,6 +62,15 @@ struct _XfdashboardApplicationIconClass
 	void (*clicked)(XfdashboardApplicationIcon *self);
 };
 
+/* Type of application icon */
+typedef enum
+{
+	XFDASHBOARD_APPLICATION_ICON_TYPE_NONE=0,
+	XFDASHBOARD_APPLICATION_ICON_TYPE_DESKTOP_FILE,
+	XFDASHBOARD_APPLICATION_ICON_TYPE_MENU_ITEM,
+	XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM
+} XfdashboardApplicationIconType;
+
 /* Public API */
 GType xfdashboard_application_icon_get_type(void) G_GNUC_CONST;
 
@@ -73,6 +82,8 @@ ClutterActor* xfdashboard_application_icon_new_with_custom(const GarconMenuEleme
 															const gchar *inIconName,
 															const gchar *inTitle,
 															const gchar *inDescription);
+
+XfdashboardApplicationIconType xfdashboard_application_icon_get_icon_type(XfdashboardApplicationIcon *self);
 
 const gchar* xfdashboard_application_icon_get_desktop_file(XfdashboardApplicationIcon *self);
 void xfdashboard_application_icon_set_desktop_file(XfdashboardApplicationIcon *self, const gchar *inDesktopFile);

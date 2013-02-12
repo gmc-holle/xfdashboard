@@ -21,8 +21,6 @@
  * 
  */
 
-#define LIST_VIEW
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -33,6 +31,7 @@
 #include "fill-box-layout.h"
 #include "viewpad.h"
 #include "common.h"
+#include "drag-action.h"
 
 #include <string.h>
 
@@ -160,6 +159,61 @@ static gboolean _xfdashboard_applications_view_on_entry_clicked(ClutterActor *in
 		}
 
 	return(TRUE);
+}
+
+/* Drag of an icon begins */
+void _xfdashboard_applications_view_on_icon_drag_begin(ClutterDragAction *inAction,
+														ClutterActor *inActor,
+														gfloat inStageX,
+														gfloat inStageY,
+														ClutterModifierType inModifiers,
+														gpointer inUserData)
+{
+	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inUserData));
+
+	XfdashboardApplicationsView		*self=XFDASHBOARD_APPLICATIONS_VIEW(inUserData);
+	ClutterActor					*dragHandle;
+	ClutterStage					*stage;
+
+	/* Prevent signal "clicked" from being emitted on dragged icon */
+	g_signal_handlers_block_by_func(inActor, _xfdashboard_applications_view_on_entry_clicked, self);
+
+	/* Get stage */
+	stage=CLUTTER_STAGE(clutter_actor_get_stage(inActor));
+
+	/* Create a copy of application icon just showing the icon for drag handle */
+	dragHandle=xfdashboard_application_icon_new_copy(XFDASHBOARD_APPLICATION_ICON(inActor));
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(dragHandle), XFDASHBOARD_STYLE_ICON);
+	clutter_actor_set_position(dragHandle, inStageX, inStageY);
+	clutter_container_add_actor(CLUTTER_CONTAINER(stage), dragHandle);
+
+	clutter_drag_action_set_drag_handle(inAction, dragHandle);
+}
+
+/* Drag of an icon ends */
+void _xfdashboard_applications_view_on_icon_drag_end(ClutterDragAction *inAction,
+														ClutterActor *inActor,
+														gfloat inStageX,
+														gfloat inStageY,
+														ClutterModifierType inModifiers,
+														gpointer inUserData)
+{
+	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inUserData));
+
+	XfdashboardApplicationsView		*self=XFDASHBOARD_APPLICATIONS_VIEW(inUserData);
+	ClutterActor					*dragHandle=NULL;
+
+	/* Destroy application icon used as drag handle */
+	dragHandle=clutter_drag_action_get_drag_handle(inAction);
+	clutter_drag_action_set_drag_handle(inAction, NULL);
+	clutter_actor_destroy(dragHandle);
+
+	/* Allow signal "clicked" from being emitted again */
+	g_signal_handlers_unblock_by_func(inActor, _xfdashboard_applications_view_on_entry_clicked, inUserData);
 }
 
 /* Create search result (if current list of found items is NULL) or
@@ -342,6 +396,7 @@ void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
 	{
 		GarconMenuElement				*item=GARCON_MENU_ELEMENT(items->data);
 		ClutterActor					*actor;
+		ClutterAction					*dragAction;
 
 		/* Only add menu items or sub-menus */
 		if((GARCON_IS_MENU(item) || GARCON_IS_MENU_ITEM(item)) &&
@@ -381,6 +436,13 @@ void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
 
 			clutter_container_add_actor(CLUTTER_CONTAINER(self), actor);
 			g_signal_connect(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_entry_clicked), self);
+
+			/* Set up drag action for actor */
+			dragAction=xfdashboard_drag_action_new(CLUTTER_ACTOR(self));
+			clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(dragAction), -1, -1);
+			clutter_actor_add_action(actor, dragAction);
+			g_signal_connect(dragAction, "drag-begin", G_CALLBACK(_xfdashboard_applications_view_on_icon_drag_begin), self);
+			g_signal_connect(dragAction, "drag-end", G_CALLBACK(_xfdashboard_applications_view_on_icon_drag_end), self);
 		}
 	}
 }

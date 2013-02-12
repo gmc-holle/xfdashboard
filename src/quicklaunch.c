@@ -28,7 +28,9 @@
 #include "common.h"
 #include "quicklaunch.h"
 #include "scaling-box-layout.h"
+#include "drag-action.h"
 #include "drop-action.h"
+#include "applications-view.h"
 
 #include <xfconf/xfconf.h>
 #include <math.h>
@@ -189,7 +191,7 @@ gboolean _xfdashboard_quicklaunch_on_application_icon_clicked(ClutterActor *inAc
 	return(TRUE);
 }
 
-/* Drag of an quicklaunch icon begins */
+/* Drag of a quicklaunch icon begins */
 void _xfdashboard_quicklaunch_on_icon_drag_begin(ClutterDragAction *inAction,
 													ClutterActor *inActor,
 													gfloat inStageX,
@@ -222,7 +224,7 @@ void _xfdashboard_quicklaunch_on_icon_drag_begin(ClutterDragAction *inAction,
 	clutter_drag_action_set_drag_handle(inAction, dragHandle);
 }
 
-/* Drag of an quicklaunch icon ends */
+/* Drag of a quicklaunch icon ends */
 void _xfdashboard_quicklaunch_on_icon_drag_end(ClutterDragAction *inAction,
 											ClutterActor *inActor,
 											gfloat inStageX,
@@ -270,6 +272,9 @@ gboolean _xfdashboard_quicklaunch_on_drop_begin(XfdashboardDropAction *inDropAct
 	if(XFDASHBOARD_IS_QUICKLAUNCH(dragSource) &&
 		XFDASHBOARD_IS_APPLICATION_ICON(draggedActor)) priv->dragMode=DRAG_MODE_REORDER;
 
+	if(XFDASHBOARD_IS_APPLICATIONS_VIEW(dragSource) &&
+		XFDASHBOARD_IS_APPLICATION_ICON(draggedActor)) priv->dragMode=DRAG_MODE_NEW;
+
 	/* Create a visible copy of dragged application icon and insert it
 	 * after dragged icon in quicklaunch. This one is the one which is
 	 * moved within quicklaunch. It is used as preview how quicklaunch
@@ -285,6 +290,7 @@ gboolean _xfdashboard_quicklaunch_on_drop_begin(XfdashboardDropAction *inDropAct
 		priv->dragPreviewIcon=xfdashboard_application_icon_new_copy(XFDASHBOARD_APPLICATION_ICON(draggedActor));
 		clutter_actor_set_size(priv->dragPreviewIcon, priv->normalIconSize, priv->normalIconSize);
 		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->dragPreviewIcon), XFDASHBOARD_STYLE_ICON);
+		if(priv->dragMode==DRAG_MODE_NEW) clutter_actor_hide(priv->dragPreviewIcon);
 		clutter_container_add_actor(CLUTTER_CONTAINER(priv->icons), priv->dragPreviewIcon);
 
 		if(priv->dragMode==DRAG_MODE_REORDER)
@@ -308,9 +314,11 @@ void _xfdashboard_quicklaunch_on_drop_enter(XfdashboardDropAction *inDropAction,
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inUserData));
 
-	ClutterActor		*dragSource;
-	ClutterActor		*dragHandle;
-	
+	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inUserData);
+	XfdashboardQuicklaunchPrivate	*priv=self->priv;
+	ClutterActor					*dragSource;
+	ClutterActor					*dragHandle;
+
 	/* Get source where dragging started and actor being dragged */
 	dragSource=xfdashboard_drag_action_get_source(inDragAction);
 	dragHandle=clutter_drag_action_get_drag_handle(CLUTTER_DRAG_ACTION(inDragAction));
@@ -350,6 +358,19 @@ void _xfdashboard_quicklaunch_on_drop_motion(XfdashboardDropAction *inDropAction
 	 */
 	if(XFDASHBOARD_IS_APPLICATION_ICON(draggedActor))
 	{
+		gboolean					oldReactivePreview, oldReactiveDragHandle;
+
+		/* Preview icon and drag handle should not be reactive to prevent
+		 * clutter_stage_get_actor_at_pos() choosing one of both as the
+		 * actor under mouse. But remember their state to reset it later.
+		 */
+		oldReactivePreview=clutter_actor_get_reactive(priv->dragPreviewIcon);
+		clutter_actor_set_reactive(priv->dragPreviewIcon, FALSE);
+
+		oldReactiveDragHandle=clutter_actor_get_reactive(dragHandle);
+		clutter_actor_set_reactive(dragHandle, FALSE);
+
+		/* Get new position and move preview icon */
 		clutter_drag_action_get_motion_coords(CLUTTER_DRAG_ACTION(inDragAction), &stageX, &stageY);
 		xfdashboard_drag_action_get_motion_delta(inDragAction, NULL, &deltaY);
 
@@ -360,7 +381,16 @@ void _xfdashboard_quicklaunch_on_drop_motion(XfdashboardDropAction *inDropAction
 		{
 			if(deltaY<0) clutter_actor_lower(priv->dragPreviewIcon, actorUnderMouse);
 				else clutter_actor_raise(priv->dragPreviewIcon, actorUnderMouse);
+
+			/* Show preview icon now if drag mode is "new". Doing it earlier will
+			 * show preview icon at wrong position when entering quicklaunch
+			 */
+			if(priv->dragMode==DRAG_MODE_NEW) clutter_actor_show(priv->dragPreviewIcon);
 		}
+
+		/* Reset reactive state of preview icon and drag handle */
+		clutter_actor_set_reactive(priv->dragPreviewIcon, oldReactivePreview);
+		clutter_actor_set_reactive(dragHandle, oldReactiveDragHandle);
 	}
 }
 
@@ -373,15 +403,20 @@ void _xfdashboard_quicklaunch_on_drop_leave(XfdashboardDropAction *inDropAction,
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inUserData));
 
-	ClutterActor		*dragSource;
-	ClutterActor		*dragHandle;
-	
+	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inUserData);
+	XfdashboardQuicklaunchPrivate	*priv=self->priv;
+	ClutterActor					*dragSource;
+	ClutterActor					*dragHandle;
+
 	/* Get source where dragging started and actor being dragged */
 	dragSource=xfdashboard_drag_action_get_source(inDragAction);
 	dragHandle=clutter_drag_action_get_drag_handle(CLUTTER_DRAG_ACTION(inDragAction));
 
 	/* Show drag handle as pointer if source is quicklaunch and now outside quicklaunch */
 	if(XFDASHBOARD_IS_QUICKLAUNCH(dragSource)) clutter_actor_show(dragHandle);
+
+	/* Hide preview icon if source is applications view */
+	if(XFDASHBOARD_IS_APPLICATIONS_VIEW(dragSource)) clutter_actor_hide(priv->dragPreviewIcon);
 }
 
 /* Dragged actor was dropped on quicklaunch as drop target */

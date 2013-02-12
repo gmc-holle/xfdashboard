@@ -228,7 +228,8 @@ void xfdashboard_drag_action_drag_begin(ClutterDragAction *inAction,
 
 	/* Emit "begin" signal on all drop targets to prepare them for dragging
 	 * and sort them */
-	for(list=priv->targets; list; list=list->next)
+	list=priv->targets;
+	while(list)
 	{
 		XfdashboardDropAction		*dropTarget=XFDASHBOARD_DROP_ACTION(list->data);
 		gboolean					canHandle=TRUE;
@@ -236,15 +237,20 @@ void xfdashboard_drag_action_drag_begin(ClutterDragAction *inAction,
 		g_signal_emit_by_name(dropTarget, "begin", self, &canHandle);
 		if(!canHandle)
 		{
+			GSList					*next;
+
 			/* Drop target cannot handle dragged actor so unref it and
 			 * remove it from list of drop targets
 			 */
+			next=list->next;
 			priv->targets=g_slist_remove_link(priv->targets, list);
 			g_object_unref(list->data);
 			g_slist_free_1(list);
+			list=next;
 		}
+			else list=list->next;
 	}
-	_xfdashboard_drag_action_sort_targets(self);
+	_xfdashboard_drag_action_sort_targets(CLUTTER_DRAG_ACTION(self));
 
 	/* Setup for dragging */
 	priv->lastDropTarget=NULL;
@@ -322,7 +328,6 @@ void xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 										gfloat inStageY,
 										ClutterModifierType inModifiers)
 {
-g_message("start: %s", __func__);
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inAction));
 
 	XfdashboardDragAction			*self=XFDASHBOARD_DRAG_ACTION(inAction);
@@ -379,7 +384,6 @@ g_message("start: %s", __func__);
 
 	/* Reset variables */
 	priv->lastDropTarget=NULL;
-g_message("end: %s", __func__);
 }
 
 /* IMPLEMENTATION: ClutterActorMeta */

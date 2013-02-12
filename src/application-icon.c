@@ -27,6 +27,7 @@
 
 #include "application-icon.h"
 #include "common.h"
+#include "enums.h"
 
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
@@ -40,14 +41,6 @@ G_DEFINE_TYPE(XfdashboardApplicationIcon,
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_APPLICATION_ICON_GET_PRIVATE(obj) \
 	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_APPLICATION_ICON, XfdashboardApplicationIconPrivate))
-
-typedef enum
-{
-	eTypeNone,
-	eTypeDesktopFile,
-	eTypeMenuItem,
-	eTypeCustom
-} XfdashboardApplicationIconType;
 
 struct _XfdashboardApplicationIconPrivate
 {
@@ -66,6 +59,7 @@ enum
 {
 	PROP_0,
 
+	PROP_TYPE,
 	PROP_DESKTOP_FILE,
 	PROP_MENU_ELEMENT,
 	PROP_CUSTOM_MENU_ELEMENT,
@@ -90,7 +84,7 @@ void _xfdashboard_application_icon_clear(XfdashboardApplicationIcon *self)
 	/* Release any allocated resource and reset type to none */
 	XfdashboardApplicationIconPrivate	*priv=XFDASHBOARD_APPLICATION_ICON(self)->priv;
 
-	priv->type=eTypeNone;
+	priv->type=XFDASHBOARD_APPLICATION_ICON_TYPE_NONE;
 	
 	if(priv->appInfo) g_object_unref(priv->appInfo);
 	priv->appInfo=NULL;
@@ -129,7 +123,7 @@ void _xfdashboard_application_icon_set_desktop_file(XfdashboardApplicationIcon *
 	_xfdashboard_application_icon_clear(self);
 
 	/* Set type to desktop file */
-	priv->type=eTypeDesktopFile;
+	priv->type=XFDASHBOARD_APPLICATION_ICON_TYPE_DESKTOP_FILE;
 
 	/* Get new application information of basename of desktop file given */
 	if(inDesktopFile)
@@ -212,7 +206,7 @@ void _xfdashboard_application_icon_set_menu_element(XfdashboardApplicationIcon *
 	_xfdashboard_application_icon_clear(self);
 
 	/* Set type to menu item */
-	priv->type=eTypeMenuItem;
+	priv->type=XFDASHBOARD_APPLICATION_ICON_TYPE_MENU_ITEM;
 
 	/* Set new menu item */
 	priv->menuElement=GARCON_MENU_ELEMENT(g_object_ref((gpointer)inMenuElement));
@@ -225,6 +219,7 @@ void _xfdashboard_application_icon_set_menu_element(XfdashboardApplicationIcon *
 		else
 		{
 			const gchar						*iconName;
+			const gchar						*desktopID;
 			GAppInfo						*appInfo;
 			const gchar						*appInfoCommand;
 			const gchar						*appInfoName;
@@ -246,23 +241,34 @@ void _xfdashboard_application_icon_set_menu_element(XfdashboardApplicationIcon *
 			/* Create application info */
 			if(GARCON_IS_MENU_ITEM(priv->menuElement))
 			{
-				appInfoCommand=garcon_menu_item_get_command(GARCON_MENU_ITEM(priv->menuElement));
-				appInfoName=garcon_menu_item_get_name(GARCON_MENU_ITEM(priv->menuElement));
-
-				appInfoFlags=G_APP_INFO_CREATE_NONE;
-				if(garcon_menu_item_supports_startup_notification(GARCON_MENU_ITEM(priv->menuElement))) appInfoFlags|=G_APP_INFO_CREATE_SUPPORTS_STARTUP_NOTIFICATION;
-				if(garcon_menu_item_requires_terminal(GARCON_MENU_ITEM(priv->menuElement))) appInfoFlags|=G_APP_INFO_CREATE_NEEDS_TERMINAL;
-
-				appInfo=g_app_info_create_from_commandline(appInfoCommand, appInfoName, appInfoFlags, &error);
-				if(!appInfo || error)
+				desktopID=garcon_menu_item_get_desktop_id(priv->menuElement);
+				if(desktopID)
 				{
-					g_warning("Could not create application information for command '%s': %s",
-								appInfoCommand,
-								(error && error->message) ?  error->message : "unknown error");
-					if(error) g_error_free(error);
-					if(appInfo) g_object_unref(appInfo);
-					appInfo=NULL;
+					/* Set desktop file */
+					if(g_path_is_absolute(desktopID)) appInfo=G_APP_INFO(g_desktop_app_info_new_from_filename(desktopID));
+						else appInfo=G_APP_INFO(g_desktop_app_info_new(desktopID));
 				}
+					else
+					{
+						/* Create desktop file from command-line and flags */
+						appInfoCommand=garcon_menu_item_get_command(GARCON_MENU_ITEM(priv->menuElement));
+						appInfoName=garcon_menu_item_get_name(GARCON_MENU_ITEM(priv->menuElement));
+
+						appInfoFlags=G_APP_INFO_CREATE_NONE;
+						if(garcon_menu_item_supports_startup_notification(GARCON_MENU_ITEM(priv->menuElement))) appInfoFlags|=G_APP_INFO_CREATE_SUPPORTS_STARTUP_NOTIFICATION;
+						if(garcon_menu_item_requires_terminal(GARCON_MENU_ITEM(priv->menuElement))) appInfoFlags|=G_APP_INFO_CREATE_NEEDS_TERMINAL;
+
+						appInfo=g_app_info_create_from_commandline(appInfoCommand, appInfoName, appInfoFlags, &error);
+						if(!appInfo || error)
+						{
+							g_warning("Could not create application information for command '%s': %s",
+										appInfoCommand,
+										(error && error->message) ?  error->message : "unknown error");
+							if(error) g_error_free(error);
+							if(appInfo) g_object_unref(appInfo);
+							appInfo=NULL;
+						}
+					}
 
 				priv->appInfo=appInfo;
 			}
@@ -291,7 +297,7 @@ void _xfdashboard_application_icon_update_custom(XfdashboardApplicationIcon *sel
 
 	/* Get private structure */
 	priv=XFDASHBOARD_APPLICATION_ICON(self)->priv;
-	g_return_if_fail(priv->type==eTypeCustom);
+	g_return_if_fail(priv->type==XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM);
 
 	/* Get and remember icon name */
 	if(priv->customIconName)
@@ -328,7 +334,7 @@ void _xfdashboard_application_icon_set_custom_menu_element(XfdashboardApplicatio
 	priv=XFDASHBOARD_APPLICATION_ICON(self)->priv;
 
 	/* Check if value changed */
-	if(priv->type==eTypeCustom &&
+	if(priv->type==XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM &&
 		inMenuElement &&
 		priv->customMenuElement &&
 		garcon_menu_element_equal(inMenuElement, priv->customMenuElement)) return;
@@ -343,7 +349,7 @@ void _xfdashboard_application_icon_set_custom_menu_element(XfdashboardApplicatio
 	_xfdashboard_application_icon_clear(self);
 
 	/* Set values and set type to custom */
-	priv->type=eTypeCustom;
+	priv->type=XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM;
 	priv->customMenuElement=menuElement;
 	priv->customIconName=iconName;
 	priv->customTitle=title;
@@ -365,7 +371,7 @@ void _xfdashboard_application_icon_set_custom_icon(XfdashboardApplicationIcon *s
 	priv=XFDASHBOARD_APPLICATION_ICON(self)->priv;
 
 	/* Check if value changed */
-	if(priv->type==eTypeCustom && g_strcmp0(inIconName, priv->customIconName)==0) return;
+	if(priv->type==XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM && g_strcmp0(inIconName, priv->customIconName)==0) return;
 
 	/* Get values to set */
 	menuElement=GARCON_MENU_ELEMENT(g_object_ref((gpointer)priv->customMenuElement));
@@ -377,7 +383,7 @@ void _xfdashboard_application_icon_set_custom_icon(XfdashboardApplicationIcon *s
 	_xfdashboard_application_icon_clear(self);
 
 	/* Set values and set type to custom */
-	priv->type=eTypeCustom;
+	priv->type=XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM;
 	priv->customMenuElement=menuElement;
 	priv->customIconName=iconName;
 	priv->customTitle=title;
@@ -399,7 +405,7 @@ void _xfdashboard_application_icon_set_custom_title(XfdashboardApplicationIcon *
 	priv=XFDASHBOARD_APPLICATION_ICON(self)->priv;
 
 	/* Check if value changed */
-	if(priv->type==eTypeCustom && g_strcmp0(inTitle, priv->customTitle)==0) return;
+	if(priv->type==XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM && g_strcmp0(inTitle, priv->customTitle)==0) return;
 
 	/* Get values to set */
 	menuElement=GARCON_MENU_ELEMENT(g_object_ref((gpointer)priv->customMenuElement));
@@ -411,7 +417,7 @@ void _xfdashboard_application_icon_set_custom_title(XfdashboardApplicationIcon *
 	_xfdashboard_application_icon_clear(self);
 
 	/* Set values and set type to custom */
-	priv->type=eTypeCustom;
+	priv->type=XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM;
 	priv->customMenuElement=menuElement;
 	priv->customIconName=iconName;
 	priv->customTitle=title;
@@ -433,7 +439,7 @@ void _xfdashboard_application_icon_set_custom_description(XfdashboardApplication
 	priv=XFDASHBOARD_APPLICATION_ICON(self)->priv;
 
 	/* Check if value changed */
-	if(priv->type==eTypeCustom && g_strcmp0(inDescription, priv->customDescription)==0) return;
+	if(priv->type==XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM && g_strcmp0(inDescription, priv->customDescription)==0) return;
 
 	/* Get values to set */
 	menuElement=GARCON_MENU_ELEMENT(g_object_ref((gpointer)priv->customMenuElement));
@@ -442,7 +448,7 @@ void _xfdashboard_application_icon_set_custom_description(XfdashboardApplication
 	description=g_strdup(inDescription);
 
 	/* Set values and set type to custom */
-	priv->type=eTypeCustom;
+	priv->type=XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM;
 	priv->customMenuElement=menuElement;
 	priv->customIconName=iconName;
 	priv->customTitle=title;
@@ -513,6 +519,10 @@ static void xfdashboard_application_icon_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
+		case PROP_TYPE:
+			g_value_set_enum(outValue, self->priv->type);
+			break;
+
 		case PROP_DESKTOP_FILE:
 			g_value_set_string(outValue, g_desktop_app_info_get_filename(G_DESKTOP_APP_INFO(self->priv->appInfo)));
 			break;
@@ -564,6 +574,14 @@ static void xfdashboard_application_icon_class_init(XfdashboardApplicationIconCl
 	g_type_class_add_private(klass, sizeof(XfdashboardApplicationIconPrivate));
 
 	/* Define properties */
+	XfdashboardApplicationIconProperties[PROP_TYPE]=
+		g_param_spec_enum("type",
+							"Type",
+							"Type of application icon",
+							XFDASHBOARD_TYPE_APPLICATION_ICON_TYPE,
+							XFDASHBOARD_APPLICATION_ICON_TYPE_NONE,
+							G_PARAM_READABLE);
+
 	XfdashboardApplicationIconProperties[PROP_DESKTOP_FILE]=
 		g_param_spec_string("desktop-file",
 							"Desktop file",
@@ -629,7 +647,7 @@ static void xfdashboard_application_icon_init(XfdashboardApplicationIcon *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set up default values */
-	priv->type=eTypeNone;
+	priv->type=XFDASHBOARD_APPLICATION_ICON_TYPE_NONE;
 	priv->appInfo=NULL;
 	priv->menuElement=NULL;
 	priv->customMenuElement=NULL;
@@ -659,16 +677,16 @@ ClutterActor* xfdashboard_application_icon_new_copy(XfdashboardApplicationIcon *
 	 */
 	switch(inIcon->priv->type)
 	{
-		case eTypeDesktopFile:
+		case XFDASHBOARD_APPLICATION_ICON_TYPE_DESKTOP_FILE:
 			desktopFile=xfdashboard_application_icon_get_desktop_file(inIcon);
 			newIcon=xfdashboard_application_icon_new_by_desktop_file(desktopFile);
 			break;
 
-		case eTypeMenuItem:
+		case XFDASHBOARD_APPLICATION_ICON_TYPE_MENU_ITEM:
 			newIcon=xfdashboard_application_icon_new_by_menu_item(inIcon->priv->menuElement);
 			break;
 
-		case eTypeCustom:
+		case XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM:
 			newIcon=xfdashboard_application_icon_new_with_custom(inIcon->priv->customMenuElement,
 																	inIcon->priv->customIconName,
 																	inIcon->priv->customTitle,
@@ -722,10 +740,19 @@ ClutterActor* xfdashboard_application_icon_new_with_custom(const GarconMenuEleme
 						NULL));
 }
 
+/* Get type of application icon */
+XfdashboardApplicationIconType xfdashboard_application_icon_get_icon_type(XfdashboardApplicationIcon *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(self), XFDASHBOARD_APPLICATION_ICON_TYPE_NONE);
+
+	return(self->priv->type);
+}
+
 /* Get/set desktop file */
 const gchar* xfdashboard_application_icon_get_desktop_file(XfdashboardApplicationIcon *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(self), NULL);
+	g_return_val_if_fail(G_IS_DESKTOP_APP_INFO(self->priv->appInfo), NULL);
 
 	return(g_desktop_app_info_get_filename(G_DESKTOP_APP_INFO(self->priv->appInfo)));
 }
@@ -742,7 +769,7 @@ const GarconMenuElement* xfdashboard_application_icon_get_menu_element(Xfdashboa
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(self), NULL);
 
-	return(self->priv->type==eTypeCustom ? self->priv->customMenuElement : self->priv->menuElement);
+	return(self->priv->type==XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM ? self->priv->customMenuElement : self->priv->menuElement);
 }
 
 void xfdashboard_application_icon_set_menu_element(XfdashboardApplicationIcon *self, GarconMenuElement *inMenuElement)

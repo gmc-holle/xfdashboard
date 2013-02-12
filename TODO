@@ -5,6 +5,7 @@
 [done] - Store settings, e.g. quicklaunch shortcuts, in Xfconf4 and listen for updates
 [done] - Only run one instance (libunique? GApplication?)
 - Localization
+- Search should be non-blocking
 - Start search for application ca. one second after entering and restart search one second after last input in a thread?
 - Sort search result in search view alphabetically and/or by relevance?
 - Get rid of duplicates in search view
@@ -45,7 +46,7 @@
 == APPLICATION-MENU VIEW ==
 [done] - Implement application-menu view
 [done] - Start application when clicked on application icon in view
-- Allow drag-n-drop of application icon to quicklaunch-box view and create shortcut
+[done] - Allow drag-n-drop of application icon to quicklaunch-box view and create shortcut
 - Allow drag-n-drop of application icon to workspace-box and start application on this workspace
 
 == SEARCH VIEW ==
@@ -54,5 +55,5 @@
 [done] - Switch to search view on non-empty search term (that means search started)
 [done] - Merge search view with applications view (search view will be removed and impleted as filter in applications view)
 [done] - Switch back to previous view if search term is empty (that means search has ended)
-- Allow drag-n-drop of application icon to quicklaunch-box and create shortcut
+[done] - Allow drag-n-drop of application icon to quicklaunch-box and create shortcut
 - Allow drag-n-drop of application icon to workspace-box and start application on this workspace
