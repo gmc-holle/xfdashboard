@@ -3,11 +3,11 @@
 [done] Migrate fully to autotools build system
 [done] Quit app by pressing ESC(ape) but if search is active clear it first (needs pressing ESC twice to quit app)
 - More control by keyboard (e.g. selecting and starting application by arrow keys and ENTER)
-[done] - Store settings, e.g. quicklaunch shortcuts, in Xfconf4 and listen for updates
-[done] - Only run one instance (libunique? GApplication?)
+[done] Store settings, e.g. quicklaunch shortcuts, in Xfconf4 and listen for updates
+[done] Only run one instance (libunique? GApplication?)
 - Localization
-- Search should be non-blocking
-- Start search for application ca. one second after entering and restart search one second after last input in a thread?
+[done] Search should be non-blocking (but workaround: still blocking but speed up a lot)
+[done] Start search for application ca. one second after entering and restart search one second after last input in a thread? (not needed anymore because it was speed up a lot)
 - Sort search result in search view alphabetically and/or by relevance?
 - Get rid of duplicates in search view
 - Effects?
