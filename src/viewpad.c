@@ -132,7 +132,20 @@ static void _xfdashboard_viewpad_value_changed(ClutterActor *inActor, gfloat inN
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor));
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inUserData));
 
-	clutter_actor_queue_relayout(CLUTTER_ACTOR(inUserData));
+	XfdashboardViewpadPrivate	*priv=XFDASHBOARD_VIEWPAD(inUserData)->priv;
+
+	if(clutter_actor_has_clip(CLUTTER_ACTOR(priv->activeView)))
+	{
+		gfloat					x, y, w, h;
+
+		clutter_actor_get_clip(CLUTTER_ACTOR(priv->activeView), &x, &y, &w, &h);
+		if(inActor==priv->verticalScrollbar) y=inNewValue;
+			else if(inActor==priv->horizontalScrollbar) x=inNewValue;
+			else g_warning("Got 'value-changed' signal for unknown scrollbar!");
+
+		clutter_actor_set_position(CLUTTER_ACTOR(priv->activeView), -x, -y);
+		clutter_actor_set_clip(CLUTTER_ACTOR(priv->activeView), x, y, w, h);
+	}
 }
 
 /* A scroll event occured in scroll bar (e.g. by mouse-wheel) */
