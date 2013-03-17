@@ -46,6 +46,7 @@ struct _XfdashboardApplicationIconPrivate
 {
 	/* Application information this actor represents */
 	XfdashboardApplicationIconType	type;
+	gboolean						showSecondary;
 	GAppInfo						*appInfo;
 	GarconMenuElement				*menuElement;
 	GarconMenuElement				*customMenuElement;
@@ -60,6 +61,7 @@ enum
 	PROP_0,
 
 	PROP_TYPE,
+	PROP_SHOW_SECONDARY,
 	PROP_DESKTOP_FILE,
 	PROP_MENU_ELEMENT,
 	PROP_CUSTOM_MENU_ELEMENT,
@@ -103,6 +105,55 @@ void _xfdashboard_application_icon_clear(XfdashboardApplicationIcon *self)
 
 	if(priv->customDescription) g_free(priv->customDescription);
 	priv->customDescription=NULL;
+}
+
+/* Update label of application icon */
+void _xfdashboard_application_icon_update_label(XfdashboardApplicationIcon *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(self));
+
+	XfdashboardApplicationIconPrivate	*priv=XFDASHBOARD_APPLICATION_ICON(self)->priv;
+	const gchar							*title=NULL;
+	const gchar							*description=NULL;
+	gchar								*text=NULL;
+
+	/* Get title and description where available */
+	switch(priv->type)
+	{
+		case XFDASHBOARD_APPLICATION_ICON_TYPE_NONE:
+			/* Do nothing */
+			break;
+
+		case XFDASHBOARD_APPLICATION_ICON_TYPE_DESKTOP_FILE:
+			title=g_app_info_get_name(G_APP_INFO(priv->appInfo));
+			description=g_app_info_get_description(G_APP_INFO(priv->appInfo));
+			break;
+
+		case XFDASHBOARD_APPLICATION_ICON_TYPE_MENU_ITEM:
+			title=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(priv->menuElement));
+			description=garcon_menu_element_get_comment(GARCON_MENU_ELEMENT(priv->menuElement));
+			break;
+
+		case XFDASHBOARD_APPLICATION_ICON_TYPE_CUSTOM:
+			title=priv->customTitle;
+			description=priv->customDescription;
+			break;
+
+		default:
+			g_critical("Cannot update text of icon because of unknown type (%d)", priv->type);
+			break;
+	}
+
+	/* Create text depending on show-secondary property and set at button */
+	if(priv->showSecondary)
+	{
+		text=g_strdup_printf("<b><big>%s</big></b>\n%s", title ? title : "", description ? description : "");
+	}
+		else text=g_strdup_printf("%s", title ? title : "");
+
+	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), text);
+
+	g_free(text);
 }
 
 /* Set desktop file and setup actors for display application icon */
@@ -180,12 +231,7 @@ void _xfdashboard_application_icon_set_desktop_file(XfdashboardApplicationIcon *
 	if(iconInfo) gtk_icon_info_free(iconInfo);
 	
 	/* Set up label actors */
-	if(priv->appInfo)
-	{
-		xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self),
-									g_app_info_get_name(G_APP_INFO(priv->appInfo)));
-	}
-		else xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), "");
+	_xfdashboard_application_icon_update_label(self);
 
 	/* Queue a redraw as the actors are now available */
 	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
@@ -236,12 +282,12 @@ void _xfdashboard_application_icon_set_menu_element(XfdashboardApplicationIcon *
 			}
 
 			/* Set and remember title */
-			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), garcon_menu_element_get_name(priv->menuElement));
+			_xfdashboard_application_icon_update_label(self);
 
 			/* Create application info */
 			if(GARCON_IS_MENU_ITEM(priv->menuElement))
 			{
-				desktopID=garcon_menu_item_get_desktop_id(priv->menuElement);
+				desktopID=garcon_menu_item_get_desktop_id(GARCON_MENU_ITEM(priv->menuElement));
 				if(desktopID)
 				{
 					/* Set desktop file */
@@ -307,8 +353,7 @@ void _xfdashboard_application_icon_update_custom(XfdashboardApplicationIcon *sel
 	}
 
 	/* Set and remember title */
-	if(priv->customTitle) xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), priv->customTitle);
-		else xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), "");
+	_xfdashboard_application_icon_update_label(self);
 
 	/* Ensure no application information is set to prevent launching by accident */
 	if(G_UNLIKELY(priv->appInfo))
@@ -484,6 +529,10 @@ static void xfdashboard_application_icon_set_property(GObject *inObject,
 			_xfdashboard_application_icon_set_desktop_file(self, g_value_get_string(inValue));
 			break;
 
+		case PROP_SHOW_SECONDARY:
+			xfdashboard_application_icon_set_show_secondary(self, g_value_get_boolean(inValue));
+			break;
+
 		case PROP_MENU_ELEMENT:
 			xfdashboard_application_icon_set_menu_element(self, GARCON_MENU_ELEMENT(g_value_get_object(inValue)));
 			break;
@@ -521,6 +570,10 @@ static void xfdashboard_application_icon_get_property(GObject *inObject,
 	{
 		case PROP_TYPE:
 			g_value_set_enum(outValue, self->priv->type);
+			break;
+
+		case PROP_SHOW_SECONDARY:
+			g_value_set_boolean(outValue, self->priv->showSecondary);
 			break;
 
 		case PROP_DESKTOP_FILE:
@@ -581,6 +634,13 @@ static void xfdashboard_application_icon_class_init(XfdashboardApplicationIconCl
 							XFDASHBOARD_TYPE_APPLICATION_ICON_TYPE,
 							XFDASHBOARD_APPLICATION_ICON_TYPE_NONE,
 							G_PARAM_READABLE);
+
+	XfdashboardApplicationIconProperties[PROP_SHOW_SECONDARY]=
+		g_param_spec_boolean("show-secondary",
+								"Show secondary",
+								"Show secondary text (name is bold and next line isdescription)",
+								FALSE,
+								G_PARAM_READWRITE);
 
 	XfdashboardApplicationIconProperties[PROP_DESKTOP_FILE]=
 		g_param_spec_string("desktop-file",
@@ -648,6 +708,7 @@ static void xfdashboard_application_icon_init(XfdashboardApplicationIcon *self)
 
 	/* Set up default values */
 	priv->type=XFDASHBOARD_APPLICATION_ICON_TYPE_NONE;
+	priv->showSecondary=FALSE;
 	priv->appInfo=NULL;
 	priv->menuElement=NULL;
 	priv->customMenuElement=NULL;
@@ -786,4 +847,29 @@ const GAppInfo* xfdashboard_application_icon_get_application_info(XfdashboardApp
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(self), NULL);
 
 	return(self->priv->appInfo);
+}
+
+/* Get/set show secondary text */
+gboolean xfdashboard_application_icon_get_show_secondary(XfdashboardApplicationIcon *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(self), FALSE);
+
+	return(self->priv->showSecondary);
+}
+
+void xfdashboard_application_icon_set_show_secondary(XfdashboardApplicationIcon *self, gboolean inShowSecondary)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_ICON(self));
+
+	XfdashboardApplicationIconPrivate		*priv=self->priv;
+
+	/* Only update text actor if value really changes */
+	if(priv->showSecondary!=inShowSecondary)
+	{
+		/* Set new value */
+		priv->showSecondary=inShowSecondary;
+
+		/* Updated text of label */
+		_xfdashboard_application_icon_update_label(self);
+	}
 }

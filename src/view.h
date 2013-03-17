@@ -70,6 +70,8 @@ GType xfdashboard_view_get_type(void) G_GNUC_CONST;
 
 const GList* xfdashboard_view_get_children(XfdashboardView *self);
 
+void xfdashboard_view_show_all(XfdashboardView *self);
+void xfdashboard_view_hide_all(XfdashboardView *self);
 void xfdashboard_view_remove_all(XfdashboardView *self);
 
 const gchar* xfdashboard_view_get_view_name(XfdashboardView *self);

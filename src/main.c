@@ -114,7 +114,8 @@ void _xfdashboard_on_search_update(ClutterActor *inSearchbox, const gchar *inTex
 
 	/* Switch to view if not active */
 	activeView=xfdashboard_viewpad_get_active_view(XFDASHBOARD_VIEWPAD(viewpad));
-	if(activeView!=view)
+	if(!xfdashboard_searchbox_is_empty_text(XFDASHBOARD_SEARCHBOX(searchbox)) &&
+		activeView!=view)
 	{
 		xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(viewpad), view);
 	}
@@ -166,13 +167,17 @@ void _xfdashboard_on_windows_view_activated(ClutterActor *inView, gpointer inUse
 
 	XfdashboardWindowsView			*view=XFDASHBOARD_WINDOWS_VIEW(inView);
 
-	/* Unmark "view button" in quicklaunch */
+	/* Unmark "view button" in quicklaunch and reset search */
 	if(XFDASHBOARD_IS_QUICKLAUNCH(inUserData))
 	{
 		XfdashboardQuicklaunch		*quicklaunch=XFDASHBOARD_QUICKLAUNCH(inUserData);
 
 		g_signal_handlers_block_by_func(quicklaunch, (gpointer)(_xfdashboard_on_switch_to_view_clicked), view);
 		xfdashboard_quicklaunch_set_mark_state(quicklaunch, FALSE);
+		if(!xfdashboard_searchbox_is_empty_text(XFDASHBOARD_SEARCHBOX(searchbox)))
+		{
+			xfdashboard_searchbox_set_text(XFDASHBOARD_SEARCHBOX(searchbox), NULL);
+		}
 		g_signal_handlers_unblock_by_func(quicklaunch, (gpointer)(_xfdashboard_on_switch_to_view_clicked), view);
 	}
 }

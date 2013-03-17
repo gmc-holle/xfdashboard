@@ -56,8 +56,8 @@ struct _XfdashboardApplicationsViewPrivate
 	GarconMenu				*activeMenu;
 
 	/* Filter */
-	gchar					*filterText;
-	GList					*filteredItems;
+	gchar					*filter;
+	ClutterModel			*model;
 };
 
 /* Properties */
@@ -75,7 +75,102 @@ enum
 static GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+enum
+{
+	COLUMN_ACTOR,
+	COLUMN_MENU_ITEM,
+	COLUMN_PARENT_MENU
+};
+
 void _xfdashboard_applications_view_set_active_menu(XfdashboardApplicationsView *self, const GarconMenu *inMenu);
+
+/* Filter model by name */
+gboolean _xfdashboard_applications_view_filter_by_name(ClutterModel *inModel,
+														ClutterModelIter *inIter,
+														gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inUserData));
+
+	XfdashboardApplicationsView			*self=XFDASHBOARD_APPLICATIONS_VIEW(inUserData);
+	XfdashboardApplicationsViewPrivate	*priv=self->priv;
+	GarconMenuElement					*element;
+	const gchar							*checkText, *foundPos;
+	gchar								*lowerCaseText;
+	gboolean							isMatch=FALSE;
+
+	/* Get element from model */
+	clutter_model_iter_get(inIter, COLUMN_MENU_ITEM, &element, -1);
+
+	/* If menu element is an item check if it matches filter */
+	if(GARCON_IS_MENU_ITEM(element))
+	{
+		/* Check if title, description or command from menu element matches filter */
+		if(!isMatch)
+		{
+			checkText=garcon_menu_element_get_name(element);
+			if(checkText)
+			{
+				lowerCaseText=g_utf8_strdown(checkText, -1);
+				if(g_strstr_len(lowerCaseText, -1, priv->filter)) isMatch=TRUE;
+				g_free(lowerCaseText);
+			}
+		}
+
+		if(!isMatch)
+		{
+			checkText=garcon_menu_element_get_comment(element);
+			if(!isMatch && checkText)
+			{
+				lowerCaseText=g_utf8_strdown(checkText, -1);
+				if(g_strstr_len(lowerCaseText, -1, priv->filter)) isMatch=TRUE;
+				g_free(lowerCaseText);
+			}
+		}
+
+		if(!isMatch)
+		{
+			checkText=garcon_menu_item_get_command(GARCON_MENU_ITEM(element));
+			if(!isMatch && checkText)
+			{
+				lowerCaseText=g_utf8_strdown(checkText, -1);
+				if(foundPos &&
+					(foundPos==checkText || (*(foundPos--))=='/')) isMatch=TRUE;
+				g_free(lowerCaseText);
+			}
+		}
+	}
+
+	/* Release allocated resources */
+	if(element) g_object_unref(element);
+
+	return(isMatch);
+}
+
+/* Filter model by menu */
+gboolean _xfdashboard_applications_view_filter_by_menu(ClutterModel *inModel,
+														ClutterModelIter *inIter,
+														gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inUserData));
+
+	XfdashboardApplicationsView			*self=XFDASHBOARD_APPLICATIONS_VIEW(inUserData);
+	XfdashboardApplicationsViewPrivate	*priv=self->priv;
+	GarconMenu							*parentMenu;
+	gboolean							isMatch=FALSE;
+	GarconMenuElement					*checkMenu;
+
+	/* Get element from model */
+	clutter_model_iter_get(inIter, COLUMN_PARENT_MENU, &parentMenu, -1);
+
+	/* Check if parent menu of element matches filter */
+	if((priv->activeMenu && parentMenu==priv->activeMenu) ||
+		(!priv->activeMenu && parentMenu==xfdashboard_get_application_menu())) isMatch=TRUE;
+
+	/* Release allocated resources */
+	if(parentMenu) g_object_unref(parentMenu);
+
+	return(isMatch);
+}
 
 /* "Go up ..." item was clicked */
 void _xfdashboard_applications_view_on_parent_menu_entry_clicked(ClutterActor *inActor, gpointer inUserData)
@@ -91,7 +186,7 @@ void _xfdashboard_applications_view_on_parent_menu_entry_clicked(ClutterActor *i
 	/* Set new active menu */
 	element=(GarconMenuElement*)xfdashboard_application_icon_get_menu_element(item);
 	g_return_if_fail(element);
-	
+
 	_xfdashboard_applications_view_set_active_menu(self, GARCON_MENU(element));
 }
 
@@ -216,235 +311,60 @@ void _xfdashboard_applications_view_on_icon_drag_end(ClutterDragAction *inAction
 	g_signal_handlers_unblock_by_func(inActor, _xfdashboard_applications_view_on_entry_clicked, inUserData);
 }
 
-/* Create search result (if current list of found items is NULL) or
- * update existing search result
- */
-void _xfdashboard_applications_view_filter_items(XfdashboardApplicationsView *self,
-													GList *inMenuItems,
-													GList **outFoundItems)
-{
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
-	g_return_if_fail(outFoundItems!=NULL);
-
-	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
-
-	/* Iterate through list and check for matches */
-	for( ; inMenuItems; inMenuItems=inMenuItems->next)
-	{
-		GarconMenuElement				*item=GARCON_MENU_ELEMENT(inMenuItems->data);
-
-		/* Only search displayed menu elements */
-		if(garcon_menu_element_get_visible(item) &&
-			!garcon_menu_element_get_no_display(item) &&
-			garcon_menu_element_get_show_in_environment(item))
-		{
-			/* If menu element is a sub-menu step down into it and search it */
-			if(GARCON_IS_MENU(item))
-			{
-				GList					*list=garcon_menu_get_elements(GARCON_MENU(item));
-
-				_xfdashboard_applications_view_filter_items(self, list, outFoundItems);
-			}
-				/* If menu element is an item check if it matches filter text */
-				else if(GARCON_IS_MENU_ITEM(item))
-				{
-					const gchar			*title, *description, *command;
-					gchar				*lowerCaseText;
-					const gchar			*foundPos;
-					gboolean			isMatch=FALSE;
-
-					/* Get title, description and command from menu element */
-					title=garcon_menu_element_get_name(item);
-					description=garcon_menu_element_get_comment(item);
-					command=garcon_menu_item_get_command(GARCON_MENU_ITEM(item));
-
-					/* Check if filter text exists in title or description at any position */
-					if(title)
-					{
-						lowerCaseText=g_utf8_strdown(title, -1);
-						if(g_strstr_len(lowerCaseText, -1, priv->filterText)) isMatch=TRUE;
-						g_free(lowerCaseText);
-					}
-
-					if(!isMatch && description)
-					{
-						lowerCaseText=g_utf8_strdown(description, -1);
-						if(g_strstr_len(lowerCaseText, -1, priv->filterText)) isMatch=TRUE;
-						g_free(lowerCaseText);
-					}
-
-					/* Check if filter text occures in command at the beginning
-					 * or directly after a path seperator
-					 */
-					if(!isMatch && command)
-					{
-						lowerCaseText=g_utf8_strdown(command, -1);
-						foundPos=g_strstr_len(lowerCaseText, -1, priv->filterText);
-						if(foundPos &&
-							(foundPos==command || (*(foundPos--))=='/')) isMatch=TRUE;
-						g_free(lowerCaseText);
-					}
-
-					/* If we found a match add menu element to list of found items */
-					if(isMatch)
-					{
-						*outFoundItems=g_list_prepend(*outFoundItems, g_object_ref(G_OBJECT(item)));
-					}
-				}
-		}
-	}
-}
-
-/* Clear filtered items list */
-void _xfdashboard_applications_view_clear_filtered_items(XfdashboardApplicationsView *self)
+/* Refresh view on filtered model */
+void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsView *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 
 	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
-
-	/* Clear filtered items list */
-	if(priv->filteredItems)
-	{
-		GList							*list;
-		
-		for(list=priv->filteredItems; list; list=list->next) g_object_unref(GARCON_MENU_ITEM(list->data));
-		g_list_free(priv->filteredItems);
-		priv->filteredItems=NULL;
-	}
-}
-
-/* Set active menu */
-void _xfdashboard_applications_view_refresh(XfdashboardApplicationsView *self)
-{
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
-
-	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
-	GList								*items;
+	ClutterModelIter					*iter;
 
 	/* Remove all item actors and reset scroll bars */
-	xfdashboard_view_remove_all(XFDASHBOARD_VIEW(self));
+	xfdashboard_view_hide_all(XFDASHBOARD_VIEW(self));
 	xfdashboard_view_reset_scrollbars(XFDASHBOARD_VIEW(self));
 
-	/* If filter text is set filter all menu items */
-	if(priv->filterText)
+	/* Create item actors for current (filtered) items */
+	iter=clutter_model_get_first_iter(priv->model);
+	while(iter && !clutter_model_iter_is_last(iter))
 	{
-		GarconMenu				*rootMenu;
-		GList					*menuItems;
-
-		/* Clear filtered items list */
-		_xfdashboard_applications_view_clear_filtered_items(self);
-		
-		/* Filter all menu items */
-		rootMenu=xfdashboard_get_application_menu();
-		menuItems=garcon_menu_get_elements(rootMenu);
-
-		_xfdashboard_applications_view_filter_items(self, menuItems, &priv->filteredItems);
-
-		/* Set pointer to list of actors to create */
-		items=priv->filteredItems;
-	}
-		else
-		{
-			/* If there is no active menu do nothing after removing item actors */
-			if(priv->activeMenu==NULL) return;
-
-			/* If menu shown is not root menu add "Go up ..." item first */
-			if(priv->activeMenu!=xfdashboard_get_application_menu())
-			{
-				ClutterActor					*actor;
-
-				actor=xfdashboard_application_icon_new_with_custom(GARCON_MENU_ELEMENT(garcon_menu_get_parent(priv->activeMenu)),
-																	GTK_STOCK_GO_UP,
-																	"Back",
-																	"Go back to previous menu");
-
-				if(priv->listMode==XFDASHBOARD_VIEW_LIST)
-				{
-					gchar						*newText, *title, *description;
-
-					/* Get title and description from icon */
-					g_object_get(G_OBJECT(actor),
-									"custom-title", &title,
-									"custom-description", &description,
-									NULL);
-
-					/* Setup actor for view */
-					xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_BOTH);
-					xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_ORIENTATION_LEFT);
-					xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
-
-					/* Override text in icon */
-					newText=g_strdup_printf("<b><big>%s</big></b>\n%s", title, description);
-					xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), newText);
-
-					/* Release allocated resources */
-					g_free(newText);
-					g_free(title);
-					g_free(description);
-				}
-
-				clutter_container_add_actor(CLUTTER_CONTAINER(self), actor);
-				g_signal_connect(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_parent_menu_entry_clicked), self);
-			}
-
-			/* Set pointer to list of actors to create */
-			items=garcon_menu_get_elements(priv->activeMenu);
-		}
-
-	/* Create item actors for new active menu */
-	for(; items; items=items->next)
-	{
-		GarconMenuElement				*item=GARCON_MENU_ELEMENT(items->data);
 		ClutterActor					*actor;
-		ClutterAction					*dragAction;
 
-		/* Only add menu items or sub-menus */
-		if((GARCON_IS_MENU(item) || GARCON_IS_MENU_ITEM(item)) &&
-			garcon_menu_element_get_visible(item) &&
-			!garcon_menu_element_get_no_display(item) &&
-			garcon_menu_element_get_show_in_environment(item))
+		/* Get menu element from model */
+		clutter_model_iter_get(iter, COLUMN_ACTOR, &actor, -1);
+
+		/* Update actor depending on list mode */
+		if(priv->listMode==XFDASHBOARD_VIEW_LIST)
 		{
-			/* Create actor */
-			actor=xfdashboard_application_icon_new_by_menu_item(item);
-
-			if(priv->listMode==XFDASHBOARD_VIEW_LIST)
-			{
-				gchar						*newText;
-				const gchar					*title, *description;
-
-				/* Get title and description from menu element */
-				title=garcon_menu_element_get_name(item);
-				description=garcon_menu_element_get_comment(item);
-
-				/* Setup actor for view */
-				xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_BOTH);
-				xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_ORIENTATION_LEFT);
-				xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
-
-				/* Override text from menu element in icon */
-				newText=g_strdup_printf("<b><big>%s</big></b>\n%s", title, description ? description : "");
-				xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), newText);
-
-				/* Release allocated resources */
-				g_free(newText);
-			}
-				else
-				{
-					/* Setup actor for view */
-					xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(actor), FALSE);
-				}
-
-			clutter_container_add_actor(CLUTTER_CONTAINER(self), actor);
-			g_signal_connect(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_entry_clicked), self);
-
-			/* Set up drag action for actor */
-			dragAction=xfdashboard_drag_action_new(CLUTTER_ACTOR(self));
-			clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(dragAction), -1, -1);
-			clutter_actor_add_action(actor, dragAction);
-			g_signal_connect(dragAction, "drag-begin", G_CALLBACK(_xfdashboard_applications_view_on_icon_drag_begin), self);
-			g_signal_connect(dragAction, "drag-end", G_CALLBACK(_xfdashboard_applications_view_on_icon_drag_end), self);
+			xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(actor), TRUE);
+			xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_BOTH);
+			xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_ORIENTATION_LEFT);
+			xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
 		}
+			else
+			{
+				xfdashboard_button_set_background_visibility(XFDASHBOARD_BUTTON(actor), FALSE);
+				xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_ICON);
+				xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_ORIENTATION_LEFT);
+				xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), TRUE);
+			}
+
+		/* Update label of actor */
+		if(XFDASHBOARD_IS_APPLICATION_ICON(actor))
+		{
+			xfdashboard_application_icon_set_show_secondary(XFDASHBOARD_APPLICATION_ICON(actor),
+																priv->listMode==XFDASHBOARD_VIEW_LIST ? TRUE : FALSE);
+		}
+
+		/* Show actor */
+		clutter_actor_show(actor);
+
+		/* Release allocated resources */
+		if(actor) g_object_unref(actor);
+
+		/* Go to next item in model */
+		iter=clutter_model_iter_next(iter);
 	}
+	g_object_unref(iter);
 }
 
 /* Set active menu */
@@ -459,12 +379,16 @@ void _xfdashboard_applications_view_set_active_menu(XfdashboardApplicationsView 
 	if(inMenu==priv->activeMenu) return;
 
 	/* Set new active menu */
-	if(priv->activeMenu) g_object_unref(priv->activeMenu);
-	priv->activeMenu=NULL;
+	if(priv->activeMenu)
+	{
+		g_object_unref(priv->activeMenu);
+		priv->activeMenu=NULL;
+	}
+
 	if(inMenu) priv->activeMenu=GARCON_MENU(g_object_ref((gpointer)inMenu));
 
-	/* Set up items to display */
-	_xfdashboard_applications_view_refresh(self);
+	/* Filter model by new active menu */
+	clutter_model_set_filter(priv->model, _xfdashboard_applications_view_filter_by_menu, self, NULL);
 }
 
 /* Create and return layout manager object for list mode */
@@ -556,8 +480,96 @@ void _xfdashboard_applications_view_set_list_mode(XfdashboardApplicationsView *s
 	xfdashboard_view_set_layout_manager(XFDASHBOARD_VIEW(self), layout);
 	_xfdashboard_applications_view_set_scroll_bar_policies(self, FALSE);
 
-	/* Set up items to display */
-	_xfdashboard_applications_view_refresh(self);
+	/* Refresh view by telling that filter changed */
+	_xfdashboard_applications_view_on_filter_changed(self, priv->model);
+}
+
+/* Populate model */
+void _xfdashboard_applications_view_populate_model_with_menu(XfdashboardApplicationsView *self, GarconMenu *inMenu, GarconMenu *inParentMenu)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+	g_return_if_fail(GARCON_IS_MENU(inMenu));
+	g_return_if_fail(!inParentMenu || GARCON_IS_MENU(inParentMenu));
+
+	XfdashboardApplicationsViewPrivate		*priv=self->priv;
+	GList									*items, *iter;
+	GarconMenuElement						*element;
+	ClutterActor							*actor;
+	ClutterAction							*dragAction;
+
+	/* First of all add "Go up ..." item for menu if parent menu is available */
+	if(inParentMenu)
+	{
+		actor=xfdashboard_application_icon_new_with_custom(GARCON_MENU_ELEMENT(inParentMenu),
+															GTK_STOCK_GO_UP,
+															"Back",
+															"Go back to previous menu");
+		xfdashboard_application_icon_set_show_secondary(XFDASHBOARD_APPLICATION_ICON(actor),
+															priv->listMode==XFDASHBOARD_VIEW_LIST ? TRUE : FALSE);
+		g_signal_connect(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_parent_menu_entry_clicked), self);
+
+		clutter_model_append(priv->model, COLUMN_ACTOR, actor, COLUMN_MENU_ITEM, NULL, COLUMN_PARENT_MENU, inMenu, -1);
+		clutter_container_add_actor(CLUTTER_CONTAINER(self), actor);
+	}
+
+	/* Iterate through items and add to model */
+	items=garcon_menu_get_elements(inMenu);
+	for(iter=items; iter; iter=iter->next)
+	{
+		element=GARCON_MENU_ELEMENT(iter->data);
+
+		/* Create actor and connect signals */
+		actor=xfdashboard_application_icon_new_by_menu_item(element);
+		xfdashboard_application_icon_set_show_secondary(XFDASHBOARD_APPLICATION_ICON(actor),
+															priv->listMode==XFDASHBOARD_VIEW_LIST ? TRUE : FALSE);
+		g_signal_connect(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_entry_clicked), self);
+		clutter_container_add_actor(CLUTTER_CONTAINER(self), actor);
+
+		/* Set up drag action for actor */
+		dragAction=xfdashboard_drag_action_new(CLUTTER_ACTOR(self));
+		clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(dragAction), -1, -1);
+		clutter_actor_add_action(actor, dragAction);
+		g_signal_connect(dragAction, "drag-begin", G_CALLBACK(_xfdashboard_applications_view_on_icon_drag_begin), self);
+		g_signal_connect(dragAction, "drag-end", G_CALLBACK(_xfdashboard_applications_view_on_icon_drag_end), self);
+
+		/* If menu element is a menu call ourselve recursively */
+		if(GARCON_IS_MENU(element))
+		{
+			clutter_model_append(priv->model, COLUMN_ACTOR, actor, COLUMN_MENU_ITEM, element, COLUMN_PARENT_MENU, inMenu, -1);
+			_xfdashboard_applications_view_populate_model_with_menu(self, GARCON_MENU(element), inMenu);
+		}
+			/* Otherwise check if element is menu item and add to model */
+			else if(GARCON_IS_MENU_ITEM(element))
+			{
+				clutter_model_append(priv->model, COLUMN_ACTOR, actor, COLUMN_MENU_ITEM, element, COLUMN_PARENT_MENU, inMenu, -1);
+			}
+	}
+	g_list_free(items);
+}
+
+void _xfdashboard_applications_view_populate_model(XfdashboardApplicationsView *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+
+	XfdashboardApplicationsViewPrivate		*priv=self->priv;
+	ClutterActor							*actor;
+
+	/* If available, destroy current model */
+	if(priv->model)
+	{
+		g_object_unref(priv->model);
+		priv->model=NULL;
+	}
+
+	/* Create new model and connect signals */
+	priv->model=clutter_list_model_new(3,
+										XFDASHBOARD_TYPE_APPLICATION_ICON, "actor",	/* COLUMN_ACTOR */
+										GARCON_TYPE_MENU_ELEMENT, "menu-element",	/* COLUMN_MENU_ITEM */
+										GARCON_TYPE_MENU, "parent-menu");			/* COLUMN_PARENT_MENU */
+	g_signal_connect_swapped(priv->model, "filter-changed", G_CALLBACK(_xfdashboard_applications_view_on_filter_changed), self);
+
+	/* Fill model with application data */
+	_xfdashboard_applications_view_populate_model_with_menu(self, xfdashboard_get_application_menu(), NULL);
 }
 
 /* IMPLEMENTATION: GObject */
@@ -568,16 +580,22 @@ static void xfdashboard_applications_view_dispose(GObject *inObject)
 	XfdashboardApplicationsView		*self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
 
 	/* Release allocated resources */
-	if(self->priv->filterText) g_free(self->priv->filterText);
-	self->priv->filterText=NULL;
+	if(self->priv->filter)
+	{
+		g_free(self->priv->filter);
+		self->priv->filter=NULL;
+	}
+
+	if(self->priv->model)
+	{
+		g_object_unref(self->priv->model);
+		self->priv->model=NULL;
+	}
 
 	/* Reset scroll bar policy if necessary by setting view to list view.
 	 * That's because of the dirty hack we need to do when switching to icon view
 	 */
 	_xfdashboard_applications_view_set_list_mode(self, XFDASHBOARD_VIEW_LIST);
-
-	/* Clear filtered items list */
-	_xfdashboard_applications_view_clear_filtered_items(self);
 
 	/* Set to no-active-menu to remove all item actors and releasing reference to menu */
 	_xfdashboard_applications_view_set_active_menu(self, NULL);
@@ -632,7 +650,7 @@ static void xfdashboard_applications_view_get_property(GObject *inObject,
 			break;
 
 		case PROP_FILTER_TEXT:
-			g_value_set_string(outValue, self->priv->filterText);
+			g_value_set_string(outValue, self->priv->filter);
 			break;
 
 		default:
@@ -694,10 +712,13 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 
 	/* Set up default values */
 	priv->activeMenu=NULL;
-	priv->filterText=NULL;
-	priv->filteredItems=NULL;
+	priv->filter=NULL;
+	priv->model=NULL;
 	priv->listMode=-1;
 	priv->hasOldHorizontalPolicy=FALSE;
+
+	/* Create model */
+	_xfdashboard_applications_view_populate_model(self);
 
 	/* Connect signals */
 	g_signal_connect(self, "activated", G_CALLBACK(_xfdashboard_applications_view_on_activation_changed), GINT_TO_POINTER(FALSE));
@@ -754,7 +775,7 @@ const gchar* xfdashboard_applications_view_get_filter_text(XfdashboardApplicatio
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), NULL);
 
-	return(self->priv->filterText);
+	return(self->priv->filter);
 }
 
 void xfdashboard_applications_view_set_filter_text(XfdashboardApplicationsView *self, const gchar *inFilterText)
@@ -762,60 +783,66 @@ void xfdashboard_applications_view_set_filter_text(XfdashboardApplicationsView *
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 
 	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
-	gchar								*filterText=NULL;
-	GarconMenu							*rootMenu=NULL;
+	gchar								*filter=NULL;
 
 	/* Get lower-case and stripped filter text if set */
 	if(inFilterText)
 	{
-		gchar		*filterTextStripped;
-		gchar		*filterTextLowerCase;
+		gchar		*filterStripped;
+		gchar		*filterLowerCase;
 
 		/* Copy filter text for futher string manipulation */
-		filterText=g_strdup(inFilterText);
+		filter=g_strdup(inFilterText);
 
 		/* Strip white-spaces from beginning and end of filter text
-		 * (This string _MUST_ not be free as function only moves
-		 *  pointer and sets new NULL at end of string) */
-		filterTextStripped=g_strstrip(filterText);
+		 * (This string _MUST_ not be free because the function only
+		 *  moves pointer and sets new NULL at end of string) */
+		filterStripped=g_strstrip(filter);
 
 		/* Get lower-case of stripped filter text */
-		filterTextLowerCase=g_utf8_strdown(filterTextStripped, -1);
+		filterLowerCase=g_utf8_strdown(filterStripped, -1);
 
 		/* Release allocated memory */
-		g_free(filterText);
+		g_free(filter);
 
 		/* Set filter text to new stripped and lower-case filter text */
-		filterText=filterTextLowerCase;
+		filter=filterLowerCase;
 	}
 
 	/* If length of filter text is zero handle it as a NULL-pointer */
-	if(filterText && strlen(filterText)==0)
+	if(filter && strlen(filter)==0)
 	{
-		if(filterText) g_free(filterText);
-		filterText=NULL;
+		if(filter) g_free(filter);
+		filter=NULL;
 	}
 
 	/* Only change filter text if it changes */
-	if(g_strcmp0(filterText, priv->filterText)==0) return;
+	if(g_strcmp0(filter, priv->filter)!=0)
+	{
+		/* Set active menu back to root menu to get it displayed when search ended */
+		if(priv->activeMenu)
+		{
+			g_object_unref(priv->activeMenu);
+			priv->activeMenu=NULL;
+		}
 
-	/* Set new filter text */
-	if(priv->filterText) g_free(priv->filterText);
-	
-	if(filterText) priv->filterText=g_strdup(filterText);
-		else priv->filterText=NULL;
+		/* Set new filter text and filter function depending on
+		 * length of filter text
+		 */
+		if(priv->filter) g_free(priv->filter);
+		
+		if(filter)
+		{
+			priv->filter=g_strdup(filter);
+			clutter_model_set_filter(priv->model, _xfdashboard_applications_view_filter_by_name, self, NULL);
+		}
+			else
+			{
+				priv->filter=NULL;
+				clutter_model_set_filter(priv->model, _xfdashboard_applications_view_filter_by_menu, self, NULL);
+			}
+	}
 
 	/* Release allocated memory */
-	if(filterText) g_free(filterText);
-
-	/* Set active menu back to root menu to get it display when search ended */
-	rootMenu=xfdashboard_get_application_menu();
-	if(priv->activeMenu!=rootMenu)
-	{
-		if(priv->activeMenu) g_object_unref(priv->activeMenu);
-		priv->activeMenu=GARCON_MENU(g_object_ref((gpointer)rootMenu));
-	}
-	
-	/* Update filter list and set up items to display */
-	_xfdashboard_applications_view_refresh(self);
+	if(filter) g_free(filter);
 }

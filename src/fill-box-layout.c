@@ -123,9 +123,6 @@ static void xfdashboard_fill_box_layout_get_preferred_width(ClutterLayoutManager
 	minWidth=naturalWidth=0.0f;
 	allMaxMinimumWidth=allMaxNaturalWidth=0.0f;
 
-	/* Determine number of children */
-	numberChildren=g_list_length(children);
-
 	/* Determine largest width and height among all children */
 	largestBox=_xfdashboard_fill_box_layout_get_largest_size(inManager, inContainer, TRUE);
 	if(G_LIKELY(largestBox))
@@ -149,6 +146,11 @@ static void xfdashboard_fill_box_layout_get_preferred_width(ClutterLayoutManager
 	}
 		else if(priv->isHomogeneous)
 		{
+			for(numberChildren=0; children; children=children->next)
+			{
+				if(CLUTTER_ACTOR_IS_VISIBLE(CLUTTER_ACTOR(children->data))) numberChildren++;
+			}
+
 			minWidth=numberChildren*allMaxMinimumWidth;
 			minWidth+=(numberChildren>0 ? (numberChildren-1)*priv->spacing : 0.0f);
 
@@ -205,9 +207,6 @@ static void xfdashboard_fill_box_layout_get_preferred_height(ClutterLayoutManage
 	minHeight=naturalHeight=0.0f;
 	allMaxMinimumHeight=allMaxNaturalHeight=0.0f;
 
-	/* Determine number of children */
-	numberChildren=g_list_length(children);
-
 	/* Determine largest width and height among all children */
 	largestBox=_xfdashboard_fill_box_layout_get_largest_size(inManager, inContainer, TRUE);
 	if(G_LIKELY(largestBox))
@@ -231,6 +230,11 @@ static void xfdashboard_fill_box_layout_get_preferred_height(ClutterLayoutManage
 	}
 		else if(priv->isHomogeneous)
 		{
+			for(numberChildren=0; children; children=children->next)
+			{
+				if(CLUTTER_ACTOR_IS_VISIBLE(CLUTTER_ACTOR(children->data))) numberChildren++;
+			}
+
 			minHeight=numberChildren*allMaxMinimumHeight;
 			minHeight+=(numberChildren>0 ? (numberChildren-1)*priv->spacing : 0.0f);
 

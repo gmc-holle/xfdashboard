@@ -596,6 +596,24 @@ const GList* xfdashboard_view_get_children(XfdashboardView *self)
 	return(self->priv->children);
 }
 
+/* Show all children from view */
+void xfdashboard_view_show_all(XfdashboardView *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+
+	/* Show all our children */
+	g_list_foreach(self->priv->children, (GFunc)clutter_actor_show, NULL);
+}
+
+/* Hide all children from view */
+void xfdashboard_view_hide_all(XfdashboardView *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+
+	/* Hide all our children */
+	g_list_foreach(self->priv->children, (GFunc)clutter_actor_hide, NULL);
+}
+
 /* Remove all children from view */
 void xfdashboard_view_remove_all(XfdashboardView *self)
 {

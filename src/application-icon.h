@@ -93,6 +93,9 @@ void xfdashboard_application_icon_set_menu_element(XfdashboardApplicationIcon *s
 
 const GAppInfo* xfdashboard_application_icon_get_application_info(XfdashboardApplicationIcon *self);
 
+gboolean xfdashboard_application_icon_get_show_secondary(XfdashboardApplicationIcon *self);
+void xfdashboard_application_icon_set_show_secondary(XfdashboardApplicationIcon *self, gboolean inShowSecondary);
+
 G_END_DECLS
 
 #endif
