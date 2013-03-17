@@ -9,6 +9,7 @@ src/enums.[ch]
 src/marshal.[ch]
 src/stamp-marshal.h
 src/xfdashboard
+xfoverview.geany
 
 # Ignore autotools files
 COPYING
@@ -30,6 +31,7 @@ ltmain.sh
 missing
 mkinstalldirs
 stamp-h1
+configure.ac
 
 # Ignore language files
 /po/POTFILES
