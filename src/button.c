@@ -1,8 +1,8 @@
 /*
- * button.c: An actor representing a label and an icon (both optional)
- *           and can react on click actions
+ * button: An actor representing a label and an icon (both optional)
+ *         and can react on click actions
  * 
- * Copyright 2012 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,15 +29,15 @@
 #include "button.h"
 #include "enums.h"
 
+#include <glib/gi18n-lib.h>
 #include <gdk/gdk.h>
 #include <math.h>
 
 /* Define this class in GObject system */
-
 G_DEFINE_TYPE(XfdashboardButton,
 				xfdashboard_button,
-				CLUTTER_TYPE_ACTOR)
-                                                
+				XFDASHBOARD_TYPE_BACKGROUND)
+
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_BUTTON_GET_PRIVATE(obj) \
 	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_BUTTON, XfdashboardButtonPrivate))
@@ -45,7 +45,7 @@ G_DEFINE_TYPE(XfdashboardButton,
 struct _XfdashboardButtonPrivate
 {
 	/* Actors for icon and label of button */
-	ClutterTexture			*actorIcon;
+	ClutterActor			*actorIcon;
 	ClutterText				*actorLabel;
 
 	/* Actor actions */
@@ -57,7 +57,7 @@ struct _XfdashboardButtonPrivate
 	XfdashboardStyle		style;
 
 	gchar					*iconName;
-	GdkPixbuf				*iconPixbuf;
+	ClutterImage			*iconImage;
 	gboolean				iconSyncSize;
 	gint					iconSize;
 	XfdashboardOrientation	iconOrientation;
@@ -65,9 +65,6 @@ struct _XfdashboardButtonPrivate
 	gchar					*font;
 	ClutterColor			*labelColor;
 	PangoEllipsizeMode		labelEllipsize;
-
-	gboolean				showBackground;
-	ClutterColor			*backgroundColor;
 };
 
 /* Properties */
@@ -80,7 +77,7 @@ enum
 	PROP_STYLE,
 
 	PROP_ICON_NAME,
-	PROP_ICON_PIXBUF,
+	PROP_ICON_IMAGE,
 	PROP_ICON_SYNC_SIZE,
 	PROP_ICON_SIZE,
 	PROP_ICON_ORIENTATION,
@@ -90,44 +87,41 @@ enum
 	PROP_TEXT_COLOR,
 	PROP_TEXT_ELLIPSIZE_MODE,
 
-	PROP_BACKGROUND_VISIBLE,
-	PROP_BACKGROUND_COLOR,
-
 	PROP_LAST
 };
 
-static GParamSpec* XfdashboardButtonProperties[PROP_LAST]={ 0, };
+GParamSpec* XfdashboardButtonProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
 {
-	CLICKED,
+	SIGNAL_CLICKED,
 
 	SIGNAL_LAST
 };
 
-static guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
+guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
 
 /* Private constants */
-#define DEFAULT_SIZE	64
+#define DEFAULT_SIZE	64													// TODO: Replace by settings/theming object
 
-static ClutterColor		defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
-static ClutterColor		defaultBackgroundColor={ 0x00, 0x00, 0x00, 0xd0 };
+ClutterColor			defaultTextColor={ 0xff, 0xff , 0xff, 0xff };		// TODO: Replace by settings/theming object
+ClutterColor			defaultBackgroundColor={ 0x00, 0x00, 0x00, 0xd0 };	// TODO: Replace by settings/theming object
 
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Update icon */
-void _xfdashboard_button_update_icon(XfdashboardButton *self)
+void _xfdashboard_button_update_icon_image_size(XfdashboardButton *self)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
 	XfdashboardButtonPrivate	*priv=self->priv;
-	gint						size;
-	GdkPixbuf					*icon=NULL;
-	GError						*error;
+	gfloat						iconWidth=-1.0f, iconHeight=-1.0f;
+	gfloat						maxSize=0.0f;
 
-	/* Determine size of icon to load by checking if icon should be
-	 * synchronized to label height or width
+	/* Determine maximum size of icon either from label size if icon size
+	 * should be synchronized or to icon size set if greater than zero.
+	 * Otherwise the default size of icon will be set
 	 */
 	if(priv->iconSyncSize)
 	{
@@ -138,51 +132,33 @@ void _xfdashboard_button_update_icon(XfdashboardButton *self)
 											NULL, NULL,
 											&labelWidth, &labelHeight);
 
-		/* Determine size of icon */
-		/* TODO: Respect orientation -> height is orientation is left or right otherwise width */
-		size=(gint)labelHeight;
+		if(labelWidth>labelHeight) maxSize=labelWidth;
+			else maxSize=labelHeight;
 	}
-		else size=priv->iconSize;
+		else if(priv->iconSize>0.0f) maxSize=priv->iconSize;
 
-	/* Get scaled icon from pixbuf if set otherwise lookup themed icon by icon name */
-	if(priv->iconPixbuf)
+	/* Get size of icon if maximum size is set*/
+	if(maxSize>0.0f)
 	{
-		/* If pixbuf is not of requested size scale it */
-		if(gdk_pixbuf_get_width(priv->iconPixbuf)==size &&
-				gdk_pixbuf_get_height(priv->iconPixbuf)==size)
+		/* Get preferred size of icon */
+		clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
+											&iconWidth, &iconHeight);
+
+		/* Determine size of icon */
+		if(iconWidth>iconHeight)
 		{
-			icon=g_object_ref(priv->iconPixbuf);
+			iconHeight=maxSize*(iconHeight/iconWidth);
+			iconWidth=maxSize;
 		}
 			else
 			{
-				icon=gdk_pixbuf_scale_simple(priv->iconPixbuf, size, size, GDK_INTERP_BILINEAR);
+				iconWidth=maxSize*(iconWidth/iconHeight);
+				iconHeight=maxSize;
 			}
 	}
-		else
-		{
-			icon=xfdashboard_get_pixbuf_for_icon_name_scaled(priv->iconName, size);
-		}
 
-	g_return_if_fail(icon);
-	
-	/* Update texture of actor */
-	error=NULL;
-	if(!clutter_texture_set_from_rgb_data(CLUTTER_TEXTURE(priv->actorIcon),
-												gdk_pixbuf_get_pixels(icon),
-												gdk_pixbuf_get_has_alpha(icon),
-												gdk_pixbuf_get_width(icon),
-												gdk_pixbuf_get_height(icon),
-												gdk_pixbuf_get_rowstride(icon),
-												gdk_pixbuf_get_has_alpha(icon) ? 4 : 3,
-												CLUTTER_TEXTURE_NONE,
-												&error))
-	{
-		g_warning("Could not update icon of %s: %s",
-					G_OBJECT_TYPE_NAME(self),
-					(error && error->message) ?  error->message : "unknown error");
-		if(error!=NULL) g_error_free(error);
-	}
-	g_object_unref(icon);
+	/* Update size of icon actor */
+	clutter_actor_set_size(priv->actorIcon, iconWidth, iconHeight);
 
 	/* Queue a redraw as the actors are now available */
 	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
@@ -190,8 +166,8 @@ void _xfdashboard_button_update_icon(XfdashboardButton *self)
 
 /* IMPLEMENTATION: ClutterActor */
 
-/* Show all children of this one */
-static void xfdashboard_button_show_all(ClutterActor *self)
+/* Show all children of this actor */
+void _xfdashboard_button_show_all(ClutterActor *self)
 {
 	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
 
@@ -212,8 +188,8 @@ static void xfdashboard_button_show_all(ClutterActor *self)
 	clutter_actor_show(self);
 }
 
-/* Hide all children of this one */
-static void xfdashboard_button_hide_all(ClutterActor *self)
+/* Hide all children of this actor */
+void _xfdashboard_button_hide_all(ClutterActor *self)
 {
 	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
 
@@ -223,10 +199,10 @@ static void xfdashboard_button_hide_all(ClutterActor *self)
 }
 
 /* Get preferred width/height */
-static void xfdashboard_button_get_preferred_height(ClutterActor *self,
-														gfloat inForWidth,
-														gfloat *outMinHeight,
-														gfloat *outNaturalHeight)
+void _xfdashboard_button_get_preferred_height(ClutterActor *self,
+												gfloat inForWidth,
+												gfloat *outMinHeight,
+												gfloat *outNaturalHeight)
 {
 	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
 	gfloat						minHeight, naturalHeight;
@@ -301,10 +277,10 @@ static void xfdashboard_button_get_preferred_height(ClutterActor *self,
 	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
-static void xfdashboard_button_get_preferred_width(ClutterActor *self,
-														gfloat inForHeight,
-														gfloat *outMinWidth,
-														gfloat *outNaturalWidth)
+void _xfdashboard_button_get_preferred_width(ClutterActor *self,
+												gfloat inForHeight,
+												gfloat *outMinWidth,
+												gfloat *outNaturalWidth)
 {
 	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
 	gfloat						minWidth, naturalWidth;
@@ -380,9 +356,9 @@ static void xfdashboard_button_get_preferred_width(ClutterActor *self,
 }
 
 /* Allocate position and size of actor and its children*/
-static void xfdashboard_button_allocate(ClutterActor *self,
-											const ClutterActorBox *inBox,
-											ClutterAllocationFlags inFlags)
+void _xfdashboard_button_allocate(ClutterActor *self,
+									const ClutterActorBox *inBox,
+									ClutterAllocationFlags inFlags)
 {
 	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
 	ClutterActorBox				*boxLabel=NULL;
@@ -426,7 +402,8 @@ static void xfdashboard_button_allocate(ClutterActor *self,
 		{
 			case XFDASHBOARD_ORIENTATION_TOP:
 				textWidth=MIN(clutter_actor_box_get_width(inBox)-(2*priv->margin), textWidth);
-				
+				if(textWidth<0.0f) textWidth=0.0f;
+
 				left=((clutter_actor_box_get_width(inBox)-textWidth)/2.0f);
 				right=left+textWidth;
 				top=priv->margin+iconHeight+spacing;
@@ -435,6 +412,7 @@ static void xfdashboard_button_allocate(ClutterActor *self,
 
 			case XFDASHBOARD_ORIENTATION_BOTTOM:
 				textWidth=MIN(clutter_actor_box_get_width(inBox)-(2*priv->margin), textWidth);
+				if(textWidth<0.0f) textWidth=0.0f;
 
 				left=((clutter_actor_box_get_width(inBox)-textWidth)/2.0f);
 				right=left+textWidth;
@@ -444,7 +422,8 @@ static void xfdashboard_button_allocate(ClutterActor *self,
 
 			case XFDASHBOARD_ORIENTATION_RIGHT:
 				textWidth=MIN(clutter_actor_box_get_width(inBox)-(2*priv->margin)-iconWidth-spacing, textWidth);
-				
+				if(textWidth<0.0f) textWidth=0.0f;
+
 				left=priv->margin;
 				right=left+textWidth;
 				top=priv->margin;
@@ -454,7 +433,8 @@ static void xfdashboard_button_allocate(ClutterActor *self,
 			case XFDASHBOARD_ORIENTATION_LEFT:
 			default:
 				textWidth=MIN(clutter_actor_box_get_width(inBox)-(2*priv->margin)-iconWidth-spacing, textWidth);
-				
+				if(textWidth<0.0f) textWidth=0.0f;
+
 				left=priv->margin+iconWidth+spacing;
 				right=left+textWidth;
 				top=priv->margin;
@@ -510,147 +490,78 @@ static void xfdashboard_button_allocate(ClutterActor *self,
 	if(boxIcon) clutter_actor_box_free(boxIcon);
 }
 
-/* Paint actor */
-static void xfdashboard_button_paint(ClutterActor *self)
-{
-	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
-
-	/* Order of actors being painted is important! */
-	if(priv->showBackground && priv->backgroundColor)
-	{
-		ClutterActorBox			allocation={ 0, };
-		gfloat					width, height;
-
-		/* Get allocation to paint background */
-		clutter_actor_get_allocation_box(self, &allocation);
-		clutter_actor_box_get_size(&allocation, &width, &height);
-
-		/* Draw rectangle with round edges if margin is not zero */
-		cogl_path_new();
-
-		cogl_set_source_color4ub(priv->backgroundColor->red,
-									priv->backgroundColor->green,
-									priv->backgroundColor->blue,
-									priv->backgroundColor->alpha);
-
-		if(priv->margin>0.0f)
-		{
-			cogl_path_round_rectangle(0, 0, width, height, priv->margin, 0.1f);
-		}
-			else cogl_path_rectangle(0, 0, width, height);
-
-		cogl_path_fill();
-	}
-	
-	if(priv->actorIcon &&
-		CLUTTER_ACTOR_IS_VISIBLE(priv->actorIcon)) clutter_actor_paint(CLUTTER_ACTOR(priv->actorIcon));
-
-	if(priv->actorLabel &&
-		CLUTTER_ACTOR_IS_VISIBLE(priv->actorLabel)) clutter_actor_paint(CLUTTER_ACTOR(priv->actorLabel));
-}
-
-/* Pick this actor and possibly all the child actors.
- * That means this function should paint its silouhette as a solid shape in the
- * given color and call the paint function of its children. But never call the
- * paint function of itself especially if the paint function sets a different
- * color, e.g. by cogl_set_source_color* function family.
- */
-static void xfdashboard_button_pick(ClutterActor *self, const ClutterColor *inColor)
-{
-	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
-
-	/* It is possible to avoid a costly paint by checking
-	 * whether the actor should really be painted in pick mode
-	 */
-	if(!clutter_actor_should_pick_paint(self)) return;
-
-	/* Chain up so we get a bounding box painted (if we are reactive) */
-	CLUTTER_ACTOR_CLASS(xfdashboard_button_parent_class)->pick(self, inColor);
-
-	/* Pick children */
-	if(priv->showBackground && priv->backgroundColor)
-	{
-		ClutterActorBox			allocation={ 0, };
-		gfloat					width, height;
-
-		clutter_actor_get_allocation_box(self, &allocation);
-		clutter_actor_box_get_size(&allocation, &width, &height);
-
-		cogl_path_new();
-		if(priv->margin>0.0f)
-		{
-			cogl_path_round_rectangle(0, 0, width, height, priv->margin, 0.1f);
-		}
-			else cogl_path_rectangle(0, 0, width, height);
-		cogl_path_fill();
-	}
-	
-	if(priv->actorIcon &&
-		CLUTTER_ACTOR_IS_VISIBLE(priv->actorIcon)) clutter_actor_paint(CLUTTER_ACTOR(priv->actorIcon));
-
-	if(priv->actorLabel &&
-		CLUTTER_ACTOR_IS_VISIBLE(priv->actorLabel)) clutter_actor_paint(CLUTTER_ACTOR(priv->actorLabel));
-}
-
 /* proxy ClickAction signals */
-static void xfdashboard_button_clicked(ClutterClickAction *inAction,
+void xfdashboard_button_clicked(ClutterClickAction *inAction,
 											ClutterActor *self,
 											gpointer inUserData)
 {
-	g_signal_emit(self, XfdashboardButtonSignals[CLICKED], 0);
+	g_signal_emit(self, XfdashboardButtonSignals[SIGNAL_CLICKED], 0);
 }
 
 /* Destroy this actor */
-static void xfdashboard_button_destroy(ClutterActor *self)
+void _xfdashboard_button_destroy(ClutterActor *self)
 {
 	/* Destroy each child actor when this actor is destroyed */
 	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
 
-	if(priv->actorIcon) clutter_actor_destroy(CLUTTER_ACTOR(priv->actorIcon));
-	priv->actorIcon=NULL;
+	if(priv->actorIcon)
+	{
+		clutter_actor_destroy(CLUTTER_ACTOR(priv->actorIcon));
+		priv->actorIcon=NULL;
+	}
 
-	if(priv->actorLabel) clutter_actor_destroy(CLUTTER_ACTOR(priv->actorLabel));
-	priv->actorLabel=NULL;
+	if(priv->actorLabel)
+	{
+		clutter_actor_destroy(CLUTTER_ACTOR(priv->actorLabel));
+		priv->actorLabel=NULL;
+	}
 
 	/* Call parent's class destroy method */
-	if(CLUTTER_ACTOR_CLASS(xfdashboard_button_parent_class)->destroy)
-	{
-		CLUTTER_ACTOR_CLASS(xfdashboard_button_parent_class)->destroy(self);
-	}
+	CLUTTER_ACTOR_CLASS(xfdashboard_button_parent_class)->destroy(self);
 }
 
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-static void xfdashboard_button_dispose(GObject *inObject)
+void _xfdashboard_button_dispose(GObject *inObject)
 {
 	/* Release our allocated variables */
-	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(inObject)->priv;
+	XfdashboardButton			*self=XFDASHBOARD_BUTTON(inObject);
+	XfdashboardButtonPrivate	*priv=self->priv;
 
-	if(priv->iconName) g_free(priv->iconName);
-	priv->iconName=NULL;
+	if(priv->iconName)
+	{
+		g_free(priv->iconName);
+		priv->iconName=NULL;
+	}
 
-	if(priv->iconPixbuf) g_object_unref(priv->iconPixbuf);
-	priv->iconPixbuf=NULL;
-	
-	if(priv->font) g_free(priv->font);
-	priv->font=NULL;
+	if(priv->iconImage)
+	{
+		g_object_unref(priv->iconImage);
+		priv->iconImage=NULL;
+	}
 
-	if(priv->labelColor) clutter_color_free(priv->labelColor);
-	priv->labelColor=NULL;
+	if(priv->font)
+	{
+		g_free(priv->font);
+		priv->font=NULL;
+	}
 
-	if(priv->backgroundColor) clutter_color_free(priv->backgroundColor);
-	priv->backgroundColor=NULL;
+	if(priv->labelColor)
+	{
+		clutter_color_free(priv->labelColor);
+		priv->labelColor=NULL;
+	}
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_button_parent_class)->dispose(inObject);
 }
 
 /* Set/get properties */
-static void xfdashboard_button_set_property(GObject *inObject,
-												guint inPropID,
-												const GValue *inValue,
-												GParamSpec *inSpec)
+void _xfdashboard_button_set_property(GObject *inObject,
+										guint inPropID,
+										const GValue *inValue,
+										GParamSpec *inSpec)
 {
 	XfdashboardButton			*self=XFDASHBOARD_BUTTON(inObject);
 	
@@ -672,8 +583,8 @@ static void xfdashboard_button_set_property(GObject *inObject,
 			xfdashboard_button_set_icon(self, g_value_get_string(inValue));
 			break;
 
-		case PROP_ICON_PIXBUF:
-			xfdashboard_button_set_icon_pixbuf(self, GDK_PIXBUF(g_value_get_object(inValue)));
+		case PROP_ICON_IMAGE:
+			xfdashboard_button_set_icon_image(self, g_value_get_object(inValue));
 			break;
 
 		case PROP_ICON_SYNC_SIZE:
@@ -704,24 +615,16 @@ static void xfdashboard_button_set_property(GObject *inObject,
 			xfdashboard_button_set_ellipsize_mode(self, g_value_get_enum(inValue));
 			break;
 
-		case PROP_BACKGROUND_VISIBLE:
-			xfdashboard_button_set_background_visibility(self, g_value_get_boolean(inValue));
-			break;
-
-		case PROP_BACKGROUND_COLOR:
-			xfdashboard_button_set_background_color(self, clutter_value_get_color(inValue));
-			break;
-
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
 	}
 }
 
-static void xfdashboard_button_get_property(GObject *inObject,
-												guint inPropID,
-												GValue *outValue,
-												GParamSpec *inSpec)
+void _xfdashboard_button_get_property(GObject *inObject,
+										guint inPropID,
+										GValue *outValue,
+										GParamSpec *inSpec)
 {
 	XfdashboardButton			*self=XFDASHBOARD_BUTTON(inObject);
 	XfdashboardButtonPrivate	*priv=self->priv;
@@ -744,8 +647,8 @@ static void xfdashboard_button_get_property(GObject *inObject,
 			g_value_set_string(outValue, priv->iconName);
 			break;
 
-		case PROP_ICON_PIXBUF:
-			g_value_set_object(outValue, priv->iconPixbuf);
+		case PROP_ICON_IMAGE:
+			g_value_set_object(outValue, priv->iconImage);
 			break;
 
 		case PROP_ICON_SYNC_SIZE:
@@ -776,14 +679,6 @@ static void xfdashboard_button_get_property(GObject *inObject,
 			g_value_set_enum(outValue, priv->labelEllipsize);
 			break;
 
-		case PROP_BACKGROUND_VISIBLE:
-			g_value_set_boolean(outValue, priv->showBackground);
-			break;
-
-		case PROP_BACKGROUND_COLOR:
-			clutter_value_set_color(outValue, priv->backgroundColor);
-			break;
-
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -794,24 +689,22 @@ static void xfdashboard_button_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
+void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 {
 	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->dispose=xfdashboard_button_dispose;
-	gobjectClass->set_property=xfdashboard_button_set_property;
-	gobjectClass->get_property=xfdashboard_button_get_property;
+	gobjectClass->dispose=_xfdashboard_button_dispose;
+	gobjectClass->set_property=_xfdashboard_button_set_property;
+	gobjectClass->get_property=_xfdashboard_button_get_property;
 
-	actorClass->show_all=xfdashboard_button_show_all;
-	actorClass->hide_all=xfdashboard_button_hide_all;
-	actorClass->paint=xfdashboard_button_paint;
-	actorClass->pick=xfdashboard_button_pick;
-	actorClass->get_preferred_width=xfdashboard_button_get_preferred_width;
-	actorClass->get_preferred_height=xfdashboard_button_get_preferred_height;
-	actorClass->allocate=xfdashboard_button_allocate;
-	actorClass->destroy=xfdashboard_button_destroy;
+	actorClass->show_all=_xfdashboard_button_show_all;
+	actorClass->hide_all=_xfdashboard_button_hide_all;
+	actorClass->get_preferred_width=_xfdashboard_button_get_preferred_width;
+	actorClass->get_preferred_height=_xfdashboard_button_get_preferred_height;
+	actorClass->allocate=_xfdashboard_button_allocate;
+	actorClass->destroy=_xfdashboard_button_destroy;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardButtonPrivate));
@@ -819,112 +712,98 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 	/* Define properties */
 	XfdashboardButtonProperties[PROP_MARGIN]=
 		g_param_spec_float("margin",
-							"Margin",
-							"Margin between background and elements",
+							_("Margin"),
+							_("Margin between background and elements"),
 							0.0f, G_MAXFLOAT,
 							4.0f,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-							"Spacing",
-							"Spacing between text and icon",
+							_("Spacing"),
+							_("Spacing between text and icon"),
 							0.0f, G_MAXFLOAT,
 							4.0f,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_STYLE]=
 		g_param_spec_enum("style",
-							"Style",
-							"Style of button showing text and/or icon",
+							_("Style"),
+							_("Style of button showing text and/or icon"),
 							XFDASHBOARD_TYPE_STYLE,
 							XFDASHBOARD_STYLE_TEXT,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_ICON_NAME]=
 		g_param_spec_string("icon-name",
-							"Icon name",
-							"Themed icon name or file name of icon",
-							"",
+							_("Icon name"),
+							_("Themed icon name or file name of icon"),
+							N_(""),
 							G_PARAM_READWRITE);
 
-	XfdashboardButtonProperties[PROP_ICON_PIXBUF]=
-		g_param_spec_object("icon-pixbuf",
-							"Icon Pixbuf",
-							"Pixbuf of icon",
-							GDK_TYPE_PIXBUF,
+	XfdashboardButtonProperties[PROP_ICON_IMAGE]=
+		g_param_spec_object("icon-image",
+							_("Icon image"),
+							_("Image of icon"),
+							CLUTTER_TYPE_IMAGE,
 							G_PARAM_READWRITE);
 
 	XfdashboardButtonProperties[PROP_ICON_SYNC_SIZE]=
 		g_param_spec_boolean("sync-icon-size",
-								"Synchronize icon size",
-								"Synchronize icon size with text height or width depending on orientation",
+								_("Synchronize icon size"),
+								_("Synchronize icon size with text size"),
 								TRUE,
 								G_PARAM_READWRITE);
 
 	XfdashboardButtonProperties[PROP_ICON_SIZE]=
 		g_param_spec_uint("icon-size",
-							"Icon size",
-							"Size of icon if size of icon is not synchronized",
+							_("Icon size"),
+							_("Size of icon if size of icon is not synchronized. -1 is valid for icon images and sets icon image's default size."),
 							1, G_MAXUINT,
 							DEFAULT_SIZE,
 							G_PARAM_READWRITE);
 
 	XfdashboardButtonProperties[PROP_ICON_ORIENTATION]=
 		g_param_spec_enum("icon-orientation",
-							"Icon orientation",
-							"Orientation of icon to label",
+							_("Icon orientation"),
+							_("Orientation of icon to label"),
 							XFDASHBOARD_TYPE_ORIENTATION,
 							XFDASHBOARD_ORIENTATION_LEFT,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_TEXT]=
 		g_param_spec_string("text",
-							"Label text",
-							"Text of label",
-							"",
+							_("Label text"),
+							_("Text of label"),
+							N_(""),
 							G_PARAM_READWRITE);
 
 	XfdashboardButtonProperties[PROP_TEXT_FONT]=
 		g_param_spec_string("font",
-							"Font",
-							"Font of label",
+							_("Font"),
+							_("Font of label"),
 							NULL,
 							G_PARAM_READWRITE);
 
 	XfdashboardButtonProperties[PROP_TEXT_COLOR]=
 		clutter_param_spec_color("color",
-									"Color",
-									"Color of label",
+									_("Color"),
+									_("Color of label"),
 									&defaultTextColor,
 									G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_TEXT_ELLIPSIZE_MODE]=
 		g_param_spec_enum("ellipsize-mode",
-							"Ellipsize mode",
-							"Mode of ellipsize if text in label is too long",
+							_("Ellipsize mode"),
+							_("Mode of ellipsize if text in label is too long"),
 							PANGO_TYPE_ELLIPSIZE_MODE,
 							PANGO_ELLIPSIZE_MIDDLE,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
-	XfdashboardButtonProperties[PROP_BACKGROUND_VISIBLE]=
-		g_param_spec_boolean("background-visible",
-								"Background visibility",
-								"Should background be shown",
-								TRUE,
-								G_PARAM_READWRITE);
-
-	XfdashboardButtonProperties[PROP_BACKGROUND_COLOR]=
-		clutter_param_spec_color("background-color",
-									"Background color",
-									"Background color of icon and text",
-									&defaultBackgroundColor,
-									G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardButtonProperties);
 
 	/* Define signals */
-	XfdashboardButtonSignals[CLICKED]=
+	XfdashboardButtonSignals[SIGNAL_CLICKED]=
 		g_signal_new("clicked",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
@@ -939,13 +818,13 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-static void xfdashboard_button_init(XfdashboardButton *self)
+void xfdashboard_button_init(XfdashboardButton *self)
 {
 	XfdashboardButtonPrivate	*priv;
 
 	priv=self->priv=XFDASHBOARD_BUTTON_GET_PRIVATE(self);
 
-	/* This actor is react on events */
+	/* This actor reacts on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set up default values */
@@ -953,23 +832,21 @@ static void xfdashboard_button_init(XfdashboardButton *self)
 	priv->spacing=0.0f;
 	priv->style=-1;
 	priv->iconName=NULL;
-	priv->iconPixbuf=NULL;
+	priv->iconImage=NULL;
 	priv->iconSyncSize=TRUE;
 	priv->iconSize=DEFAULT_SIZE;
 	priv->iconOrientation=-1;
 	priv->font=NULL;
 	priv->labelColor=NULL;
 	priv->labelEllipsize=-1;
-	priv->showBackground=TRUE;
-	priv->backgroundColor=NULL;
 
 	/* Create actors */
-	priv->actorIcon=CLUTTER_TEXTURE(clutter_texture_new());
-	clutter_actor_set_parent(CLUTTER_ACTOR(priv->actorIcon), CLUTTER_ACTOR(self));
-	clutter_actor_set_reactive(CLUTTER_ACTOR(priv->actorIcon), FALSE);
+	priv->actorIcon=clutter_actor_new();
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorIcon);
+	clutter_actor_set_reactive(priv->actorIcon, FALSE);
 
 	priv->actorLabel=CLUTTER_TEXT(clutter_text_new());
-	clutter_actor_set_parent(CLUTTER_ACTOR(priv->actorLabel), CLUTTER_ACTOR(self));
+	clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(priv->actorLabel));
 	clutter_actor_set_reactive(CLUTTER_ACTOR(priv->actorLabel), FALSE);
 	clutter_text_set_selectable(priv->actorLabel, FALSE);
 
@@ -982,6 +859,14 @@ static void xfdashboard_button_init(XfdashboardButton *self)
 /* Implementation: Public API */
 
 /* Create new actor */
+ClutterActor* xfdashboard_button_new(void)
+{
+	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
+						"text", N_(""),
+						"style", XFDASHBOARD_STYLE_TEXT,
+						NULL));
+}
+
 ClutterActor* xfdashboard_button_new_with_text(const gchar *inText)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
@@ -1008,7 +893,7 @@ ClutterActor* xfdashboard_button_new_full(const gchar *inIconName, const gchar *
 }
 
 /* Get/set margin of background to text and icon actors */
-const gfloat xfdashboard_button_get_margin(XfdashboardButton *self)
+gfloat xfdashboard_button_get_margin(XfdashboardButton *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), 0);
 
@@ -1020,18 +905,25 @@ void xfdashboard_button_set_margin(XfdashboardButton *self, const gfloat inMargi
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 	g_return_if_fail(inMargin>=0.0f);
 
-	/* Set margin */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
+	/* Set value if changed */
 	if(priv->margin!=inMargin)
 	{
+		/* Set value */
 		priv->margin=inMargin;
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+		/* Update actor */
+		xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(self), priv->margin);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_MARGIN]);
 	}
 }
 
 /* Get/set spacing between text and icon actors */
-const gfloat xfdashboard_button_get_spacing(XfdashboardButton *self)
+gfloat xfdashboard_button_get_spacing(XfdashboardButton *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), 0);
 
@@ -1043,13 +935,17 @@ void xfdashboard_button_set_spacing(XfdashboardButton *self, const gfloat inSpac
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	/* Set spacing */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
+	/* Set value if changed */
 	if(priv->spacing!=inSpacing)
 	{
+		/* Set value */
 		priv->spacing=inSpacing;
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_SPACING]);
 	}
 }
 
@@ -1065,11 +961,12 @@ void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardStyl
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	/* Set style */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
+	/* Set value if changed */
 	if(priv->style!=inStyle)
 	{
+		/* Set value */
 		priv->style=inStyle;
 
 		/* Show actors depending on style */
@@ -1088,6 +985,9 @@ void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardStyl
 			else clutter_actor_hide(CLUTTER_ACTOR(priv->actorIcon));
 
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_STYLE]);
 	}
 }
 
@@ -1104,45 +1004,68 @@ void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconNam
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 	g_return_if_fail(inIconName);
 
-	/* Set themed icon name or icon file name */
 	XfdashboardButtonPrivate	*priv=self->priv;
+	ClutterImage				*image;
 
-	if(priv->iconPixbuf || g_strcmp0(priv->iconName, inIconName)!=0)
+	/* Set value if changed */
+	if(priv->iconImage || g_strcmp0(priv->iconName, inIconName)!=0)
 	{
+		/* Set value */
 		if(priv->iconName) g_free(priv->iconName);
 		priv->iconName=g_strdup(inIconName);
 
-		if(priv->iconPixbuf) g_object_unref(priv->iconPixbuf);
-		priv->iconPixbuf=NULL;
+		if(priv->iconImage)
+		{
+			clutter_actor_set_content(priv->actorIcon, NULL);
+			g_object_unref(priv->iconImage);
+			priv->iconImage=NULL;
+		}
 
-		_xfdashboard_button_update_icon(self);
+		image=xfdashboard_get_image_for_icon_name(priv->iconName, priv->iconSize);
+		clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
+		g_object_unref(image);
+
+		_xfdashboard_button_update_icon_image_size(self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_ICON_NAME]);
 	}
 }
 
-GdkPixbuf* xfdashboard_button_get_icon_pixbuf(XfdashboardButton *self)
+ClutterImage* xfdashboard_button_get_icon_image(XfdashboardButton *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), NULL);
 
-	return(self->priv->iconPixbuf);
+	return(self->priv->iconImage);
 }
 
-void xfdashboard_button_set_icon_pixbuf(XfdashboardButton *self, GdkPixbuf *inIcon)
+void xfdashboard_button_set_icon_image(XfdashboardButton *self, ClutterImage *inIconImage)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
-	g_return_if_fail(GDK_IS_PIXBUF(inIcon));
+	g_return_if_fail(CLUTTER_IS_IMAGE(inIconImage));
 
-	/* Set themed icon name or icon file name */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
-	if(priv->iconName || inIcon!=priv->iconPixbuf)
+	/* Set value if changed */
+	if(priv->iconName || inIconImage!=priv->iconImage)
 	{
+		/* Set value */
 		if(priv->iconName) g_free(priv->iconName);
 		priv->iconName=NULL;
 
-		if(priv->iconPixbuf) g_object_unref(priv->iconPixbuf);
-		priv->iconPixbuf=g_object_ref(inIcon);
+		if(priv->iconImage)
+		{
+			clutter_actor_set_content(CLUTTER_ACTOR(self), NULL);
+			g_object_unref(priv->iconImage);
+		}
 
-		_xfdashboard_button_update_icon(self);
+		priv->iconImage=g_object_ref(inIconImage);
+		clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(priv->iconImage));
+
+		_xfdashboard_button_update_icon_image_size(self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_ICON_IMAGE]);
 	}
 }
 
@@ -1157,16 +1080,29 @@ gint xfdashboard_button_get_icon_size(XfdashboardButton *self)
 void xfdashboard_button_set_icon_size(XfdashboardButton *self, gint inSize)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
-	g_return_if_fail(inSize>0);
+	g_return_if_fail(inSize==-1 || inSize>0);
 
-	/* Set size of icon */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
+	/* Set value if changed */
 	if(priv->iconSize!=inSize)
 	{
+		/* Set value */
 		priv->iconSize=inSize;
 
-		_xfdashboard_button_update_icon(self);
+		if(priv->iconName)
+		{
+			ClutterImage		*image;
+
+			image=xfdashboard_get_image_for_icon_name(priv->iconName, priv->iconSize);
+			clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
+			g_object_unref(image);
+		}
+
+		_xfdashboard_button_update_icon_image_size(self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_ICON_SIZE]);
 	}
 }
 
@@ -1182,14 +1118,18 @@ void xfdashboard_button_set_sync_icon_size(XfdashboardButton *self, gboolean inS
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	/* Set if icon size will be synchronized */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
+	/* Set value if changed */
 	if(priv->iconSyncSize!=inSync)
 	{
+		/* Set value */
 		priv->iconSyncSize=inSync;
 
-		_xfdashboard_button_update_icon(self);
+		_xfdashboard_button_update_icon_image_size(self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_ICON_SYNC_SIZE]);
 	}
 }
 
@@ -1205,14 +1145,18 @@ void xfdashboard_button_set_icon_orientation(XfdashboardButton *self, const Xfda
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	/* Set orientation of icon */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
+	/* Set value if changed */
 	if(priv->iconOrientation!=inOrientation)
 	{
+		/* Set value */
 		priv->iconOrientation=inOrientation;
 
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_ICON_ORIENTATION]);
 	}
 }
 
@@ -1228,13 +1172,17 @@ void xfdashboard_button_set_text(XfdashboardButton *self, const gchar *inMarkupT
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	/* Set text of label */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
+	/* Set value if changed */
 	if(g_strcmp0(clutter_text_get_text(priv->actorLabel), inMarkupText)!=0)
 	{
+		/* Set value */
 		clutter_text_set_markup(priv->actorLabel, inMarkupText);
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(priv->actorLabel));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_TEXT]);
 	}
 }
 
@@ -1251,16 +1199,20 @@ void xfdashboard_button_set_font(XfdashboardButton *self, const gchar *inFont)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	/* Set font of label */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
+	/* Set value if changed */
 	if(g_strcmp0(priv->font, inFont)!=0)
 	{
+		/* Set value */
 		if(priv->font) g_free(priv->font);
 		priv->font=(inFont ? g_strdup(inFont) : NULL);
 
 		clutter_text_set_font_name(priv->actorLabel, priv->font);
 		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_TEXT_FONT]);
 	}
 }
 
@@ -1277,21 +1229,25 @@ void xfdashboard_button_set_color(XfdashboardButton *self, const ClutterColor *i
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 	g_return_if_fail(inColor);
 
-	/* Set text color of label */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
+	/* Set value if changed */
 	if(!priv->labelColor || !clutter_color_equal(inColor, priv->labelColor))
 	{
+		/* Set value */
 		if(priv->labelColor) clutter_color_free(priv->labelColor);
 		priv->labelColor=clutter_color_copy(inColor);
 
 		clutter_text_set_color(priv->actorLabel, priv->labelColor);
 		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_TEXT_COLOR]);
 	}
 }
 
 /* Get/set ellipsize mode if label's text is getting too long */
-const PangoEllipsizeMode xfdashboard_button_get_ellipsize_mode(XfdashboardButton *self)
+PangoEllipsizeMode xfdashboard_button_get_ellipsize_mode(XfdashboardButton *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), 0);
 
@@ -1302,61 +1258,18 @@ void xfdashboard_button_set_ellipsize_mode(XfdashboardButton *self, const PangoE
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	/* Set ellipsize mode */
 	XfdashboardButtonPrivate	*priv=self->priv;
 
+	/* Set value if changed */
 	if(priv->labelEllipsize!=inMode)
 	{
+		/* Set value */
 		priv->labelEllipsize=inMode;
 
 		clutter_text_set_ellipsize(priv->actorLabel, priv->labelEllipsize);
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
-	}
-}
 
-/* Get/set visibility of background */
-gboolean xfdashboard_button_get_background_visibility(XfdashboardButton *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), FALSE);
-
-	return(self->priv->showBackground);
-}
-
-void xfdashboard_button_set_background_visibility(XfdashboardButton *self, gboolean inVisible)
-{
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
-
-	/* Set background visibility */
-	XfdashboardButtonPrivate	*priv=self->priv;
-
-	if(priv->showBackground!=inVisible)
-	{
-		priv->showBackground=inVisible;
-		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
-	}
-}
-
-/* Get/set color of background */
-const ClutterColor* xfdashboard_button_get_background_color(XfdashboardButton *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), NULL);
-
-	return(self->priv->backgroundColor);
-}
-
-void xfdashboard_button_set_background_color(XfdashboardButton *self, const ClutterColor *inColor)
-{
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
-	g_return_if_fail(inColor);
-
-	/* Set background color */
-	XfdashboardButtonPrivate	*priv=self->priv;
-
-	if(!priv->backgroundColor || !clutter_color_equal(inColor, priv->backgroundColor))
-	{
-		if(priv->backgroundColor) clutter_color_free(priv->backgroundColor);
-		priv->backgroundColor=clutter_color_copy(inColor);
-
-		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_TEXT_ELLIPSIZE_MODE]);
 	}
 }

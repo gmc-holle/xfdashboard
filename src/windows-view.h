@@ -1,7 +1,7 @@
 /*
- * windows-view.h: A view showing all visible windows
+ * windows-view: A view showing visible windows
  * 
- * Copyright 2012 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE
 #include <libwnck/libwnck.h>
 
+#include <clutter/clutter.h>
 #include "view.h"
 
 G_BEGIN_DECLS
@@ -53,6 +54,7 @@ struct _XfdashboardWindowsView
 
 struct _XfdashboardWindowsViewClass
 {
+	/*< private >*/
 	/* Parent class */
 	XfdashboardViewClass			parent_class;
 };
@@ -60,7 +62,7 @@ struct _XfdashboardWindowsViewClass
 /* Public API */
 GType xfdashboard_windows_view_get_type(void) G_GNUC_CONST;
 
-ClutterActor* xfdashboard_windows_view_new();
+ClutterActor* xfdashboard_windows_view_new(void);
 
 WnckScreen* xfdashboard_windows_view_get_screen(XfdashboardWindowsView *self);
 WnckWorkspace* xfdashboard_windows_view_get_workspace(XfdashboardWindowsView *self);

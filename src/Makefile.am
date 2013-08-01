@@ -18,46 +18,29 @@ xfdashboard_built_sources = \
 	marshal.c
 
 xfdashboard_headers = \
-	application-icon.h \
-	applications-view.h \
+	application.h \
+	background.h \
 	button.h \
 	common.h \
-	drag-action.h \
-	drop-action.h \
-	drop-targets.h \
-	fill-box-layout.h \
 	live-window.h \
-	quicklaunch.h \
-	scaling-box-layout.h \
-	scaling-flow-layout.h \
-	scrollbar.h \
-	searchbox.h \
+	scaled-table-layout.h \
+	stage.h \
+	types.h \
 	view.h \
-	viewpad.h \
-	view-selector.h \
 	windows-view.h
 
 xfdashboard_SOURCES = \
 	$(xfdashboard_built_sources) \
 	$(xfdashboard_headers) \
-	application-icon.c \
-	applications-view.c \
+	application.c \
+	background.c \
 	button.c \
 	common.c \
-	drag-action.c \
-	drop-action.c \
-	drop-targets.c \
-	fill-box-layout.c \
 	live-window.c \
 	main.c \
-	quicklaunch.c \
-	scaling-box-layout.c \
-	scaling-flow-layout.c \
-	scrollbar.c \
-	searchbox.c \
+	scaled-table-layout.c \
+	stage.c \
 	view.c \
-	viewpad.c \
-	view-selector.c \
 	windows-view.c
 
 xfdashboard_CFLAGS = \

@@ -1,8 +1,8 @@
 /*
- * button.h: An actor representing a label and an icon (both optional)
- *           and can react on click actions
+ * button: An actor representing a label and an icon (both optional)
+ *         and can react on click actions
  * 
- * Copyright 2012 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,11 @@
 #ifndef __XFOVERVIEW_BUTTON__
 #define __XFOVERVIEW_BUTTON__
 
-#include "common.h"
-
 #include <clutter/clutter.h>
+
+#include "background.h"
+#include "types.h"
+#include "common.h"
 
 G_BEGIN_DECLS
 
@@ -45,7 +47,7 @@ typedef struct _XfdashboardButtonPrivate		XfdashboardButtonPrivate;
 struct _XfdashboardButton
 {
 	/* Parent instance */
-	ClutterActor				parent_instance;
+	XfdashboardBackground		parent_instance;
 
 	/* Private structure */
 	XfdashboardButtonPrivate	*priv;
@@ -53,9 +55,11 @@ struct _XfdashboardButton
 
 struct _XfdashboardButtonClass
 {
+	/*< private >*/
 	/* Parent class */
-	ClutterActorClass			parent_class;
+	XfdashboardBackgroundClass	parent_class;
 
+	/*< public >*/
 	/* Virtual functions */
 	void (*clicked)(XfdashboardButton *self);
 };
@@ -63,15 +67,16 @@ struct _XfdashboardButtonClass
 /* Public API */
 GType xfdashboard_button_get_type(void) G_GNUC_CONST;
 
+ClutterActor* xfdashboard_button_new(void);
 ClutterActor* xfdashboard_button_new_with_text(const gchar *inText);
 ClutterActor* xfdashboard_button_new_with_icon(const gchar *inIconName);
 ClutterActor* xfdashboard_button_new_full(const gchar *inIconName, const gchar *inText);
 
 /* General functions */
-const gfloat xfdashboard_button_get_margin(XfdashboardButton *self);
+gfloat xfdashboard_button_get_margin(XfdashboardButton *self);
 void xfdashboard_button_set_margin(XfdashboardButton *self, const gfloat inMargin);
 
-const gfloat xfdashboard_button_get_spacing(XfdashboardButton *self);
+gfloat xfdashboard_button_get_spacing(XfdashboardButton *self);
 void xfdashboard_button_set_spacing(XfdashboardButton *self, const gfloat inSpacing);
 
 XfdashboardStyle xfdashboard_button_get_style(XfdashboardButton *self);
@@ -81,8 +86,8 @@ void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardStyl
 const gchar* xfdashboard_button_get_icon(XfdashboardButton *self);
 void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconName);
 
-GdkPixbuf* xfdashboard_button_get_icon_pixbuf(XfdashboardButton *self);
-void xfdashboard_button_set_icon_pixbuf(XfdashboardButton *self, GdkPixbuf *inIcon);
+ClutterImage* xfdashboard_button_get_icon_image(XfdashboardButton *self);
+void xfdashboard_button_set_icon_image(XfdashboardButton *self, ClutterImage *inIconImage);
 
 gint xfdashboard_button_get_icon_size(XfdashboardButton *self);
 void xfdashboard_button_set_icon_size(XfdashboardButton *self, gint inSize);
@@ -103,15 +108,8 @@ void xfdashboard_button_set_font(XfdashboardButton *self, const gchar *inFont);
 const ClutterColor* xfdashboard_button_get_color(XfdashboardButton *self);
 void xfdashboard_button_set_color(XfdashboardButton *self, const ClutterColor *inColor);
 
-const PangoEllipsizeMode xfdashboard_button_get_ellipsize_mode(XfdashboardButton *self);
+PangoEllipsizeMode xfdashboard_button_get_ellipsize_mode(XfdashboardButton *self);
 void xfdashboard_button_set_ellipsize_mode(XfdashboardButton *self, const PangoEllipsizeMode inMode);
-
-/* Background functions */
-gboolean xfdashboard_button_get_background_visibility(XfdashboardButton *self);
-void xfdashboard_button_set_background_visibility(XfdashboardButton *self, gboolean inVisible);
-
-const ClutterColor* xfdashboard_button_get_background_color(XfdashboardButton *self);
-void xfdashboard_button_set_background_color(XfdashboardButton *self, const ClutterColor *inColor);
 
 G_END_DECLS
 

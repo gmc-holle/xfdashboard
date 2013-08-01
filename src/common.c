@@ -1,5 +1,5 @@
 /*
- * common.c: Common function and definitions
+ * common: Common function and definitions
  * 
  * Copyright 2012 Stephan Haller <nomad@froevel.de>
  * 
@@ -27,129 +27,79 @@
 
 #include "common.h"
 
+#include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
-#include <clutter/x11/clutter-x11.h>
-#include <gdk/gdk.h>
 #include <gtk/gtk.h>
-#include <dbus/dbus-glib.h>
-
-/* Private or external variables and methods */
-extern ClutterActor				*stage;
 
 /* Private constants */
-#define FALLBACK_ICON_NAME		GTK_STOCK_MISSING_IMAGE
-
-/* Gobject type for pointer arrays (GPtrArray) */
-GType xfdashboard_value_array_get_type(void)
-{
-	static volatile gsize	type__volatile=0;
-	GType					type;
-
-	if(g_once_init_enter(&type__volatile))
-	{
-		type=dbus_g_type_get_collection("GPtrArray", G_TYPE_VALUE);
-		g_once_init_leave(&type__volatile, type);
-	}
-
-	return(type__volatile);
-}
+#define FALLBACK_ICON_NAME		GTK_STOCK_MISSING_IMAGE		// TODO: Replace by settings/theming object? I do not think so ;)
 
 /* Get current time, e.g. for events */
 guint32 xfdashboard_get_current_time(void)
 {
 	const ClutterEvent		*currentClutterEvent;
+	guint32					timestamp;
 
-	/* We don't use clutter_get_current_event_time as it can give us a
-	 * too old timestamp if there is no current event.
+	/* We don't use clutter_get_current_event_time as it can return
+	 * a too old timestamp if there is no current event.
 	 */
 	currentClutterEvent=clutter_get_current_event();
-
 	if(currentClutterEvent!=NULL) return(clutter_event_get_time(currentClutterEvent));
-		else return(CLUTTER_CURRENT_TIME);
+
+	/* Next we try timestamp of last GTK+ event */
+	timestamp=gtk_get_current_event_time();
+	if(timestamp>0) return(timestamp);
+
+	/* Next we try to ask GDK for a timestamp */
+	timestamp=gdk_x11_display_get_user_time(gdk_display_get_default());
+	if(timestamp>0) return(timestamp);
+
+	return(CLUTTER_CURRENT_TIME);
 }
 
-/* Get window of application */
-WnckWindow* xfdashboard_get_stage_window()
-{
-	static WnckWindow		*stageWindow=NULL;
-
-	if(!stageWindow)
-	{
-		Window		xWindow;
-
-		xWindow=clutter_x11_get_stage_window(CLUTTER_STAGE(stage));
-		stageWindow=wnck_window_get(xWindow);
-	}
-
-	return(stageWindow);
-}
-
-/* Get root application menu */
-GarconMenu* xfdashboard_get_application_menu()
-{
-	static GarconMenu		*menu=NULL;
-
-	/* If it is the first time (or if it failed previously)
-	 * load the menus now
-	 */
-	if(!menu)
-	{
-		GError				*error=NULL;
-		
-		/* Try to get the root menu */
-		menu=garcon_menu_new_applications();
-
-		if(G_UNLIKELY(!garcon_menu_load(menu, NULL, &error)))
-		{
-			gchar *uri;
-
-			uri=g_file_get_uri(garcon_menu_get_file (menu));
-			g_error("Could not load menu from %s: %s", uri, error->message);
-			g_free(uri);
-
-			g_error_free(error);
-
-			g_object_unref(menu);
-			menu=NULL;
-		}
-	}
-
-	return(menu);
-}
-
-/* Get GdkPixbuf object for themed icon name or absolute icon filename.
+/* Get ClutterImage object for themed icon name or absolute icon filename.
  * If icon does not exists a themed fallback icon will be returned.
  * If even the themed fallback icon cannot be found we return NULL.
- * The return GdkPixbuf object (if not NULL) must be unreffed with
+ * The return ClutterImage object (if not NULL) must be unreffed with
  * g_object_unref().
  */
-GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name(const gchar *inIconName, gint inSize)
+ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint inSize)
 {
+	g_return_val_if_fail(inIconName!=NULL, NULL);
+	g_return_val_if_fail(inSize>0, NULL);
+
+	ClutterContent	*image=NULL;
 	GdkPixbuf		*icon=NULL;
 	GtkIconTheme	*iconTheme=gtk_icon_theme_get_default();
 	GError			*error=NULL;
 
 	if(inIconName)
 	{
-		/* Check if we have an absolute filename */
+		/* Check if we have an absolute filename then load this file directly ... */
 		if(g_path_is_absolute(inIconName) &&
 			g_file_test(inIconName, G_FILE_TEST_EXISTS))
 		{
-			error=NULL;
 			icon=gdk_pixbuf_new_from_file_at_scale(inIconName,
 													inSize,
 													inSize,
 													TRUE,
 													NULL);
 
-			if(!icon) g_warning("Could not load icon from file %s: %s",
-								inIconName, (error && error->message) ?  error->message : "unknown error");
+			if(!icon)
+			{
+				g_warning(_("Could not load icon from file %s: %s"),
+							inIconName, (error && error->message) ? error->message : _("unknown error"));
+			}
 
-			if(error!=NULL) g_error_free(error);
+			if(error!=NULL)
+			{
+				g_error_free(error);
+				error=NULL;
+			}
 		}
+			/* ... otherwise try to load the icon name directly using the icon theme */
 			else
 			{
-				/* Try to load the icon name directly using the icon theme */
 				error=NULL;
 				icon=gtk_icon_theme_load_icon(iconTheme,
 												inIconName,
@@ -157,13 +107,20 @@ GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name(const gchar *inIconName, gint in
 												GTK_ICON_LOOKUP_USE_BUILTIN,
 												&error);
 
-				if(!icon) g_warning("Could not load themed icon '%s': %s",
-									inIconName, (error && error->message) ?  error->message : "unknown error");
+				if(!icon)
+				{
+					g_warning(_("Could not load themed icon '%s': %s"),
+								inIconName, (error && error->message) ? error->message : _("unknown error"));
+				}
 
-				if(error!=NULL) g_error_free(error);
+				if(error!=NULL)
+				{
+					g_error_free(error);
+					error=NULL;
+				}
 			}
 	}
-	
+
 	/* If no icon could be loaded use fallback */
 	if(!icon)
 	{
@@ -174,36 +131,57 @@ GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name(const gchar *inIconName, gint in
 										GTK_ICON_LOOKUP_USE_BUILTIN,
 										&error);
 
-		if(!icon) g_error("Could not load fallback icon for '%s': %s",
-							inIconName,
-							(error && error->message) ?  error->message : "unknown error");
+		if(!icon)
+		{
+			g_error(_("Could not load fallback icon for '%s': %s"),
+						inIconName, (error && error->message) ? error->message : _("unknown error"));
+		}
 
-		if(error!=NULL) g_error_free(error);
+		if(error!=NULL)
+		{
+			g_error_free(error);
+			error=NULL;
+		}
 	}
 
-	/* Return icon pixbuf */
-	return(icon);
+	/* Create ClutterImage for icon loaded */
+	if(icon)
+	{
+		image=clutter_image_new();
+		clutter_image_set_data(CLUTTER_IMAGE(image),
+								gdk_pixbuf_get_pixels(icon),
+								gdk_pixbuf_get_has_alpha(icon) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
+								gdk_pixbuf_get_width(icon),
+								gdk_pixbuf_get_height(icon),
+								gdk_pixbuf_get_rowstride(icon),
+								NULL);
+		g_object_unref(icon);
+	}
+
+	/* Return ClutterImage */
+	return(CLUTTER_IMAGE(image));
 }
 
-/* Get scaled GdkPixbuf object for themed icon name or absolute icon filename.
- * See _xfdashboard_get_pixbuf_for_icon_name for more details
+/* Get ClutterImage object for GdkPixbuf object.
+ * The return ClutterImage object (if not NULL) must be unreffed with
+ * g_object_unref().
  */
-GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name_scaled(const gchar *inIconName, gint inSize)
+ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf)
 {
-	/* Get icon pixbuf */
-	GdkPixbuf						*unscaledIcon, *scaledIcon;
+	g_return_val_if_fail(GDK_IS_PIXBUF(inPixbuf), NULL);
 
-	unscaledIcon=xfdashboard_get_pixbuf_for_icon_name(inIconName, inSize);
-	if(!unscaledIcon ||
-		(gdk_pixbuf_get_width(unscaledIcon)==inSize &&
-			gdk_pixbuf_get_height(unscaledIcon)==inSize))
-	{
-		return(unscaledIcon);
-	}
-	
-	/* Scale icon */
-	scaledIcon=gdk_pixbuf_scale_simple(unscaledIcon, inSize, inSize, GDK_INTERP_BILINEAR);
-	g_object_unref(unscaledIcon);
+	ClutterContent		*image=NULL;
 
-	return(scaledIcon);
+	/* Create ClutterImage for pixbuf */
+	image=clutter_image_new();
+	clutter_image_set_data(CLUTTER_IMAGE(image),
+							gdk_pixbuf_get_pixels(inPixbuf),
+							gdk_pixbuf_get_has_alpha(inPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
+							gdk_pixbuf_get_width(inPixbuf),
+							gdk_pixbuf_get_height(inPixbuf),
+							gdk_pixbuf_get_rowstride(inPixbuf),
+							NULL);
+
+	/* Return ClutterImage */
+	return(CLUTTER_IMAGE(image));
 }

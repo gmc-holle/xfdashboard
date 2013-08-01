@@ -1,7 +1,7 @@
 /*
- * common.h: Common function and definitions
+ * common: Common function and definitions
  * 
- * Copyright 2012 Stephan Haller <nomad@froevel.de>
+ * Copyrigt 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,68 +24,20 @@
 #ifndef __XFOVERVIEW_COMMON__
 #define __XFOVERVIEW_COMMON__
 
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE
-#include <libwnck/libwnck.h>
+#define DEBUG_OBJECT_NAME(x) ((x)!=NULL ? G_OBJECT_TYPE_NAME((x)) : "<nil>")
+#define DEBUG_NOTIFY(self, property, format, ...) g_message("%s: Property '%s' of %p (%s) changed to "format, __func__, property, (self), (self) ? G_OBJECT_TYPE_NAME((self)) : "<nil>", ## __VA_ARGS__)
 
-#include <garcon/garcon.h>
-
-#ifndef DEBUG_ALLOC_BOX
-#if 1
-#define DEBUG_ALLOC_BOX(b) g_message("%s: %s=%.0f,%.0f - %.0f,%.0f [%.2fx%.2f]", __func__, #b, (b)->x1, (b)->y1, (b)->x2, (b)->y2, (b)->x2-(b)->x1, (b)->y2-(b)->y1);
-#else
-#define DEBUG_ALLOC_BOX(b)
-#endif
-#endif
+#include <clutter/clutter.h>
+#include <gdk/gdk.h>
 
 G_BEGIN_DECLS
 
-/* Gobject type of pointer array (GPtrArray) */
-#define XFDASHBOARD_TYPE_VALUE_ARRAY	(xfdashboard_value_array_get_type())
-
-/* List mode for views */
-typedef enum
-{
-	XFDASHBOARD_VIEW_LIST=0,
-	XFDASHBOARD_VIEW_ICON
-} XfdashboardViewMode;
-
-/* Visibility policy (e.g. for scroll bars in views) */
-typedef enum
-{
-	XFDASHBOARD_POLICY_NEVER=0,
-	XFDASHBOARD_POLICY_AUTOMATIC,
-	XFDASHBOARD_POLICY_ALWAYS
-} XfdashboardPolicy;
-
-/* Style (e.g. used in buttons) */
-typedef enum
-{
-	XFDASHBOARD_STYLE_TEXT=0,
-	XFDASHBOARD_STYLE_ICON,
-	XFDASHBOARD_STYLE_BOTH,
-} XfdashboardStyle;
-
-/* Orientation (e.g. used in buttons) */
-typedef enum
-{
-	XFDASHBOARD_ORIENTATION_LEFT=0,
-	XFDASHBOARD_ORIENTATION_RIGHT,
-	XFDASHBOARD_ORIENTATION_TOP,
-	XFDASHBOARD_ORIENTATION_BOTTOM,
-} XfdashboardOrientation;
-
 /* Public API */
-GType xfdashboard_value_array_get_type(void) G_GNUC_CONST;
-
 guint32 xfdashboard_get_current_time(void);
 
-WnckWindow* xfdashboard_get_stage_window();
-
-GarconMenu* xfdashboard_get_application_menu();
-
-GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name(const gchar *inIconName, gint inSize);
-GdkPixbuf* xfdashboard_get_pixbuf_for_icon_name_scaled(const gchar *inIconName, gint inSize);
+ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint inSize);
+ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf);
 
 G_END_DECLS
 
-#endif
+#endif	/* __XFOVERVIEW_COMMON__ */

@@ -1,7 +1,7 @@
 /*
- * view.h: A view optional with scrollbars
+ * view: Abstract class for views, optional with scrollbars
  * 
- * Copyright 2012 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,11 @@ struct _XfdashboardView
 
 struct _XfdashboardViewClass
 {
+	/*< private >*/
 	/* Parent class */
 	ClutterActorClass		parent_class;
 
+	/*< public >*/
 	/* Virtual functions */
 	void (*activating)(XfdashboardView *self);
 	void (*activated)(XfdashboardView *self);
@@ -61,6 +63,7 @@ struct _XfdashboardViewClass
 	void (*deactivated)(XfdashboardView *self);
 
 	void (*name_changed)(XfdashboardView *self, gchar *inName);
+	void (*icon_changed)(XfdashboardView *self, ClutterImage *inIcon);
 
 	void (*reset_scrollbars)(XfdashboardView *self);
 };
@@ -68,19 +71,15 @@ struct _XfdashboardViewClass
 /* Public API */
 GType xfdashboard_view_get_type(void) G_GNUC_CONST;
 
-const GList* xfdashboard_view_get_children(XfdashboardView *self);
+const gchar* xfdashboard_view_get_name(XfdashboardView *self);
+void xfdashboard_view_set_name(XfdashboardView *self, const gchar *inName);
 
-void xfdashboard_view_show_all(XfdashboardView *self);
-void xfdashboard_view_hide_all(XfdashboardView *self);
-void xfdashboard_view_remove_all(XfdashboardView *self);
-
-const gchar* xfdashboard_view_get_view_name(XfdashboardView *self);
-void xfdashboard_view_set_view_name(XfdashboardView *self, const gchar *inName);
-
-void xfdashboard_view_set_layout_manager(XfdashboardView *self, ClutterLayoutManager *inManager);
-ClutterLayoutManager *xfdashboard_view_get_layout_manager(XfdashboardView *self);
+const gchar* xfdashboard_view_get_icon(XfdashboardView *self);
+void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIconName);
 
 void xfdashboard_view_reset_scrollbars(XfdashboardView *self);
+
+void xfdashboard_view_activate(XfdashboardView *self);
 
 G_END_DECLS
 
