@@ -141,6 +141,9 @@ int main(int argc, char **argv)
 	GError						*error=NULL;
 	gint						status;
 
+	/* Initialize GObject type system */
+	g_type_init();
+
 	/* Check for running instance (keep only one instance) */
 	app=xfdashboard_application_get_default();
 

@@ -230,7 +230,7 @@ static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	clutter_grid_layout_attach(CLUTTER_GRID_LAYOUT(priv->layout), priv->scrollbarHorizontal, 1, 0, 1, 1);
 
 	/* Create instance of each registered view type and add it to this actor */
-	for(views=xfdashboard_view_get_registered(); views; views=g_list_next(views))
+	for(views=xfdashboard_view_manager_get_registered(); views; views=g_list_next(views))
 	{
 		GObject					*view;
 		GType					viewType;

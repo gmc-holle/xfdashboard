@@ -34,7 +34,7 @@
 
 #include "stage.h"
 #include "types.h"
-#include "view.h"
+#include "view-manager.h"
 #include "windows-view.h"
 
 /* Define this class in GObject system */
@@ -49,14 +49,13 @@ G_DEFINE_TYPE(XfdashboardApplication,
 struct _XfdashboardApplicationPrivate
 {
 	/* Properties related */
-	XfconfChannel				*xfconfChannel;
+	gboolean					isDaemon;
 
 	/* Instance related */
 	gboolean					inited;
 	gboolean					shouldInit;
-
-	/* Settings */
-	gboolean					isDaemon;
+	XfconfChannel				*xfconfChannel;
+	XfdashboardViewManager		*viewManager;
 };
 
 /* Properties */
@@ -189,7 +188,9 @@ gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
 	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
 
 	/* Register views */
-	xfdashboard_view_register(XFDASHBOARD_TYPE_WINDOWS_VIEW);
+	priv->viewManager=xfdashboard_view_manager_get_default();
+
+	xfdashboard_view_manager_register(XFDASHBOARD_TYPE_WINDOWS_VIEW);
 
 	/* Create primary stage on first monitor */
 	// TODO: Create stage for each monitor connected
@@ -319,15 +320,20 @@ void _xfdashboard_application_dispose(GObject *inObject)
 	XfdashboardApplication			*self=XFDASHBOARD_APPLICATION(inObject);
 	XfdashboardApplicationPrivate	*priv=self->priv;
 
-	/* Release allocated resouces */
-	if(G_LIKELY(application==inObject)) application=NULL;
-
-	/* Unregister views */
-	xfdashboard_view_unregister(XFDASHBOARD_TYPE_WINDOWS_VIEW);
+	/* Release allocated resources */
+	if(priv->viewManager)
+	{
+		/* Unregisters all remaining registered views - no need to unregister them here */
+		g_object_unref(priv->viewManager);
+		priv->viewManager=NULL;
+	}
 
 	/* Shutdown xfconf */
 	xfconf_shutdown();
 	priv->xfconfChannel=NULL;
+
+	/* Unset singleton */
+	if(G_LIKELY(application==inObject)) application=NULL;
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_application_parent_class)->dispose(inObject);
@@ -426,6 +432,7 @@ void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->shouldInit=FALSE;
 	priv->isDaemon=FALSE;
 	priv->xfconfChannel=NULL;
+	priv->viewManager=NULL;
 }
 
 /* Implementation: Public API */
@@ -435,8 +442,6 @@ XfdashboardApplication* xfdashboard_application_get_default(void)
 {
 	if(G_UNLIKELY(application==NULL))
 	{
-		g_type_init();
-
 		application=g_object_new(XFDASHBOARD_TYPE_APPLICATION,
 									"application-id", XFDASHBOARD_APP_ID,
 									"flags", G_APPLICATION_HANDLES_COMMAND_LINE,

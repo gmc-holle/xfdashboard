@@ -79,8 +79,6 @@ static guint XfdashboardViewSignals[SIGNAL_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_ICON_SIZE	64		// TODO: Replace by settings/theming object
 
-static GList				*registeredViews=NULL;
-
 /* IMPLEMENTATION: GObject */
 
 /* Called last in object instance creation chain */
@@ -324,56 +322,4 @@ void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon)
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_VIEW_ICON]);
 		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_ICON_CHANGED], 0, priv->viewIconImage);
 	}
-}
-
-/* Register a view */
-void xfdashboard_view_register(GType inViewType)
-{
-	/* Check if given type is not a XfdashboardView but a derived type from it */
-	if(inViewType==XFDASHBOARD_TYPE_VIEW ||
-		g_type_is_a(inViewType, XFDASHBOARD_TYPE_VIEW)!=TRUE)
-	{
-		g_warning(_("%s: View %s is not a %s and cannot be registered"),
-					G_STRLOC,
-					g_type_name(inViewType),
-					g_type_name(XFDASHBOARD_TYPE_VIEW));
-		return;
-	}
-
-	/* Register type if not already registered */
-	if(g_list_find(registeredViews, GINT_TO_POINTER(inViewType))==NULL)
-	{
-		g_debug(_("Registering view %s"), g_type_name(inViewType));
-		registeredViews=g_list_append(registeredViews, GINT_TO_POINTER(inViewType));
-	}
-}
-
-/* Unregister a view */
-void xfdashboard_view_unregister(GType inViewType)
-{
-	/* Check if given type is not a XfdashboardView but a derived type from it */
-	if(inViewType==XFDASHBOARD_TYPE_VIEW ||
-		g_type_is_a(inViewType, XFDASHBOARD_TYPE_VIEW)!=TRUE)
-	{
-		g_warning(_("%s: View %s is not a %s and cannot be unregistered"),
-					G_STRLOC,
-					g_type_name(inViewType),
-					g_type_name(XFDASHBOARD_TYPE_VIEW));
-		return;
-	}
-
-	/* Register type if not already registered */
-	if(g_list_find(registeredViews, GINT_TO_POINTER(inViewType))!=NULL)
-	{
-		g_debug(_("Unregistering view %s"), g_type_name(inViewType));
-		registeredViews=g_list_remove(registeredViews, GINT_TO_POINTER(inViewType));
-	}
-}
-
-/* Get list of registered views types
- * Note: Returned list is owned by XfdashboardView and must not be modified or freed.
- */
-const GList* xfdashboard_view_get_registered(void)
-{
-	return(registeredViews);
 }

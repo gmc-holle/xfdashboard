@@ -71,10 +71,6 @@ void xfdashboard_view_set_name(XfdashboardView *self, const gchar *inName);
 const gchar* xfdashboard_view_get_icon(XfdashboardView *self);
 void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon);
 
-void xfdashboard_view_register(GType inViewType);
-void xfdashboard_view_unregister(GType inViewType);
-const GList* xfdashboard_view_get_registered(void);
-
 G_END_DECLS
 
 #endif
