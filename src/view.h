@@ -56,16 +56,10 @@ struct _XfdashboardViewClass
 
 	/*< public >*/
 	/* Virtual functions */
-	void (*activating)(XfdashboardView *self);
-	void (*activated)(XfdashboardView *self);
-
-	void (*deactivating)(XfdashboardView *self);
-	void (*deactivated)(XfdashboardView *self);
+	void (*created)(XfdashboardView *self);
 
 	void (*name_changed)(XfdashboardView *self, gchar *inName);
 	void (*icon_changed)(XfdashboardView *self, ClutterImage *inIcon);
-
-	void (*reset_scrollbars)(XfdashboardView *self);
 };
 
 /* Public API */
@@ -75,11 +69,11 @@ const gchar* xfdashboard_view_get_name(XfdashboardView *self);
 void xfdashboard_view_set_name(XfdashboardView *self, const gchar *inName);
 
 const gchar* xfdashboard_view_get_icon(XfdashboardView *self);
-void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIconName);
+void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon);
 
-void xfdashboard_view_reset_scrollbars(XfdashboardView *self);
-
-void xfdashboard_view_activate(XfdashboardView *self);
+void xfdashboard_view_register(GType inViewType);
+void xfdashboard_view_unregister(GType inViewType);
+const GList* xfdashboard_view_get_registered(void);
 
 G_END_DECLS
 

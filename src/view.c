@@ -26,9 +26,10 @@
 #endif
 
 #include <glib/gi18n-lib.h>
+#include <gtk/gtk.h>
 
 #include "view.h"
-// TODO: #include "viewpad.h"
+#include "common.h"
 
 /* Define this class in GObject system */
 G_DEFINE_ABSTRACT_TYPE(XfdashboardView,
@@ -44,8 +45,8 @@ struct _XfdashboardViewPrivate
 	/* Properties related */
 	gchar					*viewName;
 
-	gchar					*viewIconName;
-	ClutterImage			*viewIcon;
+	gchar					*viewIcon;
+	ClutterImage			*viewIconImage;
 
 	/* Layout manager */
 	guint					signalChangedID;
@@ -67,15 +68,8 @@ static GParamSpec* XfdashboardViewProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
-	SIGNAL_ACTIVATING,
-	SIGNAL_ACTIVATED,
-	SIGNAL_DEACTIVATING,
-	SIGNAL_DEACTIVATED,
-
 	SIGNAL_NAME_CHANGED,
 	SIGNAL_ICON_CHANGED,
-
-	SIGNAL_RESET_SCROLLBARS,
 
 	SIGNAL_LAST
 };
@@ -85,63 +79,58 @@ static guint XfdashboardViewSignals[SIGNAL_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_ICON_SIZE	64		// TODO: Replace by settings/theming object
 
-static XfdashboardView		*XfdashboardViewCurrentActiveView=NULL;
-
-/* Activate (means show) given view and deactivate (means hide) current view */
-void _xfdashboard_view_activate(XfdashboardView *inNewView)
-{
-	g_return_if_fail(inNewView==NULL || XFDASHBOARD_IS_VIEW(inNewView));
-
-	/* Change view if a different one was chosen */
-	if(inNewView!=XfdashboardViewCurrentActiveView)
-	{
-		/* Deactivate current view */
-		if(XfdashboardViewCurrentActiveView)
-		{
-			g_signal_emit(XfdashboardViewCurrentActiveView, XfdashboardViewSignals[SIGNAL_DEACTIVATING], 0);
-			clutter_actor_hide(CLUTTER_ACTOR(XfdashboardViewCurrentActiveView));
-			g_signal_emit(XfdashboardViewCurrentActiveView, XfdashboardViewSignals[SIGNAL_DEACTIVATED], 0);
-			XfdashboardViewCurrentActiveView=NULL;
-		}
-
-		/* Activate this view */
-		if(inNewView)
-		{
-			g_signal_emit(inNewView, XfdashboardViewSignals[SIGNAL_DEACTIVATING], 0);
-			clutter_actor_show(CLUTTER_ACTOR(inNewView));
-			g_signal_emit(inNewView, XfdashboardViewSignals[SIGNAL_DEACTIVATED], 0);
-			XfdashboardViewCurrentActiveView=inNewView;
-		}
-	}
-}
+static GList				*registeredViews=NULL;
 
 /* IMPLEMENTATION: GObject */
 
+/* Called last in object instance creation chain */
+void _xfdashboard_view_constructed(GObject *inObject)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inObject));
+
+	XfdashboardView			*self=XFDASHBOARD_VIEW(inObject);
+	XfdashboardViewClass	*klass=XFDASHBOARD_VIEW_GET_CLASS(self);
+
+	/* Call parent's class constructed method */
+	G_OBJECT_CLASS(xfdashboard_view_parent_class)->constructed(inObject);
+
+	/* Call our virtual function "created" */
+	if(klass->created) (klass->created)(self);
+		else
+		{
+			g_warning(_("%s has not implemented virtual function 'created'"), G_OBJECT_TYPE_NAME(inObject));
+
+			/* Set up default values for properties */
+			g_object_set(G_OBJECT(self),
+							"view-name", _("unnamed"),
+							"view-icon", GTK_STOCK_MISSING_IMAGE,
+							NULL);
+		}
+}
+
 /* Dispose this object */
-static void _xfdashboard_view_dispose(GObject *inObject)
+void _xfdashboard_view_dispose(GObject *inObject)
 {
 	XfdashboardView			*self=XFDASHBOARD_VIEW(inObject);
 	XfdashboardViewPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
-	_xfdashboard_view_activate(NULL);
-
 	if(priv->viewName)
 	{
 		g_free(priv->viewName);
 		priv->viewName=NULL;
 	}
 
-	if(priv->viewIconName)
-	{
-		g_free(priv->viewIconName);
-		priv->viewIconName=NULL;
-	}
-
 	if(priv->viewIcon)
 	{
-		g_object_unref(priv->viewIcon);
+		g_free(priv->viewIcon);
 		priv->viewIcon=NULL;
+	}
+
+	if(priv->viewIconImage)
+	{
+		g_object_unref(priv->viewIconImage);
+		priv->viewIconImage=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -149,7 +138,7 @@ static void _xfdashboard_view_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-static void _xfdashboard_view_set_property(GObject *inObject,
+void _xfdashboard_view_set_property(GObject *inObject,
 												guint inPropID,
 												const GValue *inValue,
 												GParamSpec *inSpec)
@@ -186,7 +175,7 @@ static void _xfdashboard_view_get_property(GObject *inObject,
 			break;
 
 		case PROP_VIEW_ICON:
-			g_value_set_string(outValue, self->priv->viewIconName);
+			g_value_set_string(outValue, self->priv->viewIcon);
 			break;
 
 		default:
@@ -199,14 +188,17 @@ static void _xfdashboard_view_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
+void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 {
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	gobjectClass->constructed=_xfdashboard_view_constructed;
 	gobjectClass->set_property=_xfdashboard_view_set_property;
 	gobjectClass->get_property=_xfdashboard_view_get_property;
 	gobjectClass->dispose=_xfdashboard_view_dispose;
+
+	klass->created=NULL;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardViewPrivate));
@@ -216,63 +208,19 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 		g_param_spec_string("view-name",
 							_("View name"),
 							_("Name of view used to display"),
-							N_(""),
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+							NULL,
+							G_PARAM_READWRITE);
 
 	XfdashboardViewProperties[PROP_VIEW_ICON]=
 		g_param_spec_string("view-icon",
 							_("View icon"),
 							_("Icon of view used to display. Icon name can be a themed icon name or file name"),
-							N_(""),
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+							NULL,
+							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewProperties);
 
 	/* Define signals */
-	XfdashboardViewSignals[SIGNAL_ACTIVATING]=
-		g_signal_new("activating",
-						G_TYPE_FROM_CLASS(klass),
-						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardViewClass, activating),
-						NULL,
-						NULL,
-						g_cclosure_marshal_VOID__VOID,
-						G_TYPE_NONE,
-						0);
-
-	XfdashboardViewSignals[SIGNAL_ACTIVATED]=
-		g_signal_new("activated",
-						G_TYPE_FROM_CLASS(klass),
-						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardViewClass, activated),
-						NULL,
-						NULL,
-						g_cclosure_marshal_VOID__VOID,
-						G_TYPE_NONE,
-						0);
-
-	XfdashboardViewSignals[SIGNAL_DEACTIVATING]=
-		g_signal_new("deactivating",
-						G_TYPE_FROM_CLASS(klass),
-						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardViewClass, deactivating),
-						NULL,
-						NULL,
-						g_cclosure_marshal_VOID__VOID,
-						G_TYPE_NONE,
-						0);
-
-	XfdashboardViewSignals[SIGNAL_DEACTIVATED]=
-		g_signal_new("deactivated",
-						G_TYPE_FROM_CLASS(klass),
-						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardViewClass, deactivated),
-						NULL,
-						NULL,
-						g_cclosure_marshal_VOID__VOID,
-						G_TYPE_NONE,
-						0);
-
 	XfdashboardViewSignals[SIGNAL_NAME_CHANGED]=
 		g_signal_new("name-changed",
 						G_TYPE_FROM_CLASS(klass),
@@ -297,16 +245,6 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 						1,
 						CLUTTER_TYPE_IMAGE);
 
-	XfdashboardViewSignals[SIGNAL_RESET_SCROLLBARS]=
-		g_signal_new("reset-scrollbars",
-						G_TYPE_FROM_CLASS(klass),
-						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardViewClass, reset_scrollbars),
-						NULL,
-						NULL,
-						g_cclosure_marshal_VOID__VOID,
-						G_TYPE_NONE,
-						0);
 }
 
 /* Object initialization
@@ -320,8 +258,8 @@ static void xfdashboard_view_init(XfdashboardView *self)
 
 	/* Set up default values */
 	priv->viewName=NULL;
-	priv->viewIconName=NULL;
 	priv->viewIcon=NULL;
+	priv->viewIconImage=NULL;
 
 	/* Set up actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -364,48 +302,78 @@ const gchar* xfdashboard_view_get_icon(XfdashboardView *self)
   return(self->priv->viewIcon);
 }
 
-void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIconName)
+void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
-	g_return_if_fail(inIconName!=NULL);
+	g_return_if_fail(inIcon!=NULL);
 
 	XfdashboardViewPrivate	*priv=self->priv;
 
 	/* Set value if changed */
-	if(g_strcmp0(priv->viewIconName, inIconName)!=0)
+	if(g_strcmp0(priv->viewIcon, inIcon)!=0)
 	{
 		/* Set new icon name */
-		if(priv->viewIconName) g_free(priv->viewIconName);
-		priv->viewIconName=g_strdup(inIconName);
+		if(priv->viewIcon) g_free(priv->viewIcon);
+		priv->viewIcon=g_strdup(inIcon);
 
 		/* Set new icon */
-		if(priv->viewIcon) g_object_unref(priv->viewIcon);
-		priv->viewIcon=xfdashboard_get_image_for_icon_name(inIconName, DEFAULT_ICON_SIZE);
+		if(priv->viewIconImage) g_object_unref(priv->viewIconImage);
+		priv->viewIconImage=xfdashboard_get_image_for_icon_name(priv->viewIcon, DEFAULT_ICON_SIZE);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_VIEW_ICON]);
-		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_ICON_CHANGED], 0, priv->viewIcon);
+		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_ICON_CHANGED], 0, priv->viewIconImage);
 	}
 }
 
-/* Reset scroll bars in viewpad this view is connected to */
-void xfdashboard_view_reset_scrollbars(XfdashboardView *self)
+/* Register a view */
+void xfdashboard_view_register(GType inViewType)
 {
-	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+	/* Check if given type is not a XfdashboardView but a derived type from it */
+	if(inViewType==XFDASHBOARD_TYPE_VIEW ||
+		g_type_is_a(inViewType, XFDASHBOARD_TYPE_VIEW)!=TRUE)
+	{
+		g_warning(_("%s: View %s is not a %s and cannot be registered"),
+					G_STRLOC,
+					g_type_name(inViewType),
+					g_type_name(XFDASHBOARD_TYPE_VIEW));
+		return;
+	}
 
-	/* Check if this view is connected to a viewpad */
-	ClutterActor	*parent=clutter_actor_get_parent(CLUTTER_ACTOR(self));
-
-	// TODO: g_return_if_fail(parent && XFDASHBOARD_IS_VIEWPAD(parent));
-
-	/* Reset scroll bars */
-	g_signal_emit(self, XfdashboardViewSignals[SIGNAL_RESET_SCROLLBARS], 0);
+	/* Register type if not already registered */
+	if(g_list_find(registeredViews, GINT_TO_POINTER(inViewType))==NULL)
+	{
+		g_debug(_("Registering view %s"), g_type_name(inViewType));
+		registeredViews=g_list_append(registeredViews, GINT_TO_POINTER(inViewType));
+	}
 }
 
-/* Activate (means show) view */
-void xfdashboard_view_activate(XfdashboardView *self)
+/* Unregister a view */
+void xfdashboard_view_unregister(GType inViewType)
 {
-	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+	/* Check if given type is not a XfdashboardView but a derived type from it */
+	if(inViewType==XFDASHBOARD_TYPE_VIEW ||
+		g_type_is_a(inViewType, XFDASHBOARD_TYPE_VIEW)!=TRUE)
+	{
+		g_warning(_("%s: View %s is not a %s and cannot be unregistered"),
+					G_STRLOC,
+					g_type_name(inViewType),
+					g_type_name(XFDASHBOARD_TYPE_VIEW));
+		return;
+	}
 
-	_xfdashboard_view_activate(self);
+	/* Register type if not already registered */
+	if(g_list_find(registeredViews, GINT_TO_POINTER(inViewType))!=NULL)
+	{
+		g_debug(_("Unregistering view %s"), g_type_name(inViewType));
+		registeredViews=g_list_remove(registeredViews, GINT_TO_POINTER(inViewType));
+	}
+}
+
+/* Get list of registered views types
+ * Note: Returned list is owned by XfdashboardView and must not be modified or freed.
+ */
+const GList* xfdashboard_view_get_registered(void)
+{
+	return(registeredViews);
 }

@@ -34,6 +34,8 @@
 
 #include "stage.h"
 #include "types.h"
+#include "view.h"
+#include "windows-view.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplication,
@@ -101,7 +103,7 @@ static const GOptionEntry XfdashboardApplicationOptions[]=
 	};
 
 /* Single instance of application */
-XfdashboardApplication*		application=NULL;
+static XfdashboardApplication*		application=NULL;
 
 /* Quit application depending on daemon mode and force parameter */
 void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean inForceQuit)
@@ -185,6 +187,9 @@ gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
 	}
 
 	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
+
+	/* Register views */
+	xfdashboard_view_register(XFDASHBOARD_TYPE_WINDOWS_VIEW);
 
 	/* Create primary stage on first monitor */
 	// TODO: Create stage for each monitor connected
@@ -316,7 +321,10 @@ void _xfdashboard_application_dispose(GObject *inObject)
 
 	/* Release allocated resouces */
 	if(G_LIKELY(application==inObject)) application=NULL;
-	
+
+	/* Unregister views */
+	xfdashboard_view_unregister(XFDASHBOARD_TYPE_WINDOWS_VIEW);
+
 	/* Shutdown xfconf */
 	xfconf_shutdown();
 	priv->xfconfChannel=NULL;

@@ -349,6 +349,20 @@ void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_WORKSPACE]);
 }
 
+/* IMPLEMENTATION: XfdashboardView */
+
+/* Called when view instance was created */
+void _xfdashboard_windows_view_created(XfdashboardView *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+
+	/* Set up default values for properties */
+	g_object_set(G_OBJECT(self),
+					"view-name", "Windows",
+					"view-icon", DEFAULT_VIEW_ICON,
+					NULL);
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -415,12 +429,15 @@ static void _xfdashboard_windows_view_get_property(GObject *inObject,
  */
 static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *klass)
 {
+	XfdashboardViewClass	*viewClass=XFDASHBOARD_VIEW_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_windows_view_dispose;
 	gobjectClass->set_property=_xfdashboard_windows_view_set_property;
 	gobjectClass->get_property=_xfdashboard_windows_view_get_property;
+
+	viewClass->created=_xfdashboard_windows_view_created;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardWindowsViewPrivate));
@@ -482,10 +499,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 /* Create new actor */
 ClutterActor* xfdashboard_windows_view_new(void)
 {
-	return(g_object_new(XFDASHBOARD_TYPE_WINDOWS_VIEW,
-						"view-name", "Windows",
-						"view-icon", DEFAULT_VIEW_ICON,
-						NULL));
+	return(g_object_new(XFDASHBOARD_TYPE_WINDOWS_VIEW, NULL));
 }
 
 /* Get active screen */
