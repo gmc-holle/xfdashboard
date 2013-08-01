@@ -65,6 +65,9 @@ GType xfdashboard_viewpad_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_viewpad_new(void);
 
+gfloat xfdashboard_viewpad_get_spacing(XfdashboardViewpad *self);
+void xfdashboard_viewpad_set_spacing(XfdashboardViewpad *self, gfloat inSpacing);
+
 G_END_DECLS
 
 #endif
