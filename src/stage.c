@@ -33,7 +33,7 @@
 
 #include "common.h"
 #include "application.h"
-#include "windows-view.h"
+#include "viewpad.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,
@@ -51,8 +51,6 @@ struct _XfdashboardStagePrivate
 	ClutterActor		*searchbox;
 	ClutterActor		*workspaces;
 	ClutterActor		*viewpad;
-	ClutterActor		*windowsView;
-	ClutterActor		*applicationsView;
 
 	/* Instance related */
 	WnckScreen			*screen;
@@ -106,11 +104,10 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_add_child(groupVertical, priv->searchbox);
 
 	/* Views */
-	// TODO: Add viewpad and other views
-	priv->windowsView=xfdashboard_windows_view_new();
-	clutter_actor_set_x_expand(priv->windowsView, TRUE);
-	clutter_actor_set_y_expand(priv->windowsView, TRUE);
-	clutter_actor_add_child(groupVertical, priv->windowsView);
+	priv->viewpad=xfdashboard_viewpad_new();
+	clutter_actor_set_x_expand(priv->viewpad, TRUE);
+	clutter_actor_set_y_expand(priv->viewpad, TRUE);
+	clutter_actor_add_child(groupVertical, priv->viewpad);
 
 	/* Set up layout objects */
 	layout=clutter_box_layout_new();
@@ -250,18 +247,6 @@ void _xfdashboard_stage_dispose(GObject *inObject)
 		priv->viewpad=NULL;
 	}
 
-	if(priv->windowsView)
-	{
-		clutter_actor_destroy(priv->windowsView);
-		priv->windowsView=NULL;
-	}
-
-	if(priv->applicationsView)
-	{
-		clutter_actor_destroy(priv->applicationsView);
-		priv->applicationsView=NULL;
-	}
-
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_stage_parent_class)->dispose(inObject);
 }
@@ -333,8 +318,6 @@ void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->searchbox=NULL;
 	priv->workspaces=NULL;
 	priv->viewpad=NULL;
-	priv->windowsView=NULL;
-	priv->applicationsView=NULL;
 
 	/* Set up stage */
 	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &stageColor);

@@ -27,6 +27,7 @@ xfdashboard_headers = \
 	stage.h \
 	types.h \
 	view.h \
+	viewpad.h \
 	windows-view.h
 
 xfdashboard_SOURCES = \
@@ -41,6 +42,7 @@ xfdashboard_SOURCES = \
 	scaled-table-layout.c \
 	stage.c \
 	view.c \
+	viewpad.c \
 	windows-view.c
 
 xfdashboard_CFLAGS = \
