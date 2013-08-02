@@ -58,6 +58,11 @@ struct _XfdashboardViewClass
 	/* Virtual functions */
 	void (*created)(XfdashboardView *self);
 
+	void (*activating)(XfdashboardView *self);
+	void (*activated)(XfdashboardView *self);
+	void (*deactivating)(XfdashboardView *self);
+	void (*deactivated)(XfdashboardView *self);
+
 	void (*name_changed)(XfdashboardView *self, gchar *inName);
 	void (*icon_changed)(XfdashboardView *self, ClutterImage *inIcon);
 };

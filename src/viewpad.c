@@ -74,7 +74,6 @@ enum
 {
 	SIGNAL_VIEW_ACTIVATING,
 	SIGNAL_VIEW_ACTIVATED,
-
 	SIGNAL_VIEW_DEACTIVATING,
 	SIGNAL_VIEW_DEACTIVATED,
 
@@ -110,7 +109,9 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 	{
 		/* Hide current view and emit signal before and after deactivation */
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_DEACTIVATING], 0, priv->activeView);
+		g_signal_emit_by_name(priv->activeView, "deactivating");
 		clutter_actor_hide(CLUTTER_ACTOR(priv->activeView));
+		g_signal_emit_by_name(priv->activeView, "deactivated");
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_DEACTIVATED], 0, priv->activeView);
 
 		g_object_unref(priv->activeView);
@@ -125,7 +126,9 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 		priv->activeView=g_object_ref(inView);
 
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATING], 0, priv->activeView);
+		g_signal_emit_by_name(priv->activeView, "activating");
 		clutter_actor_show(CLUTTER_ACTOR(priv->activeView));
+		g_signal_emit_by_name(priv->activeView, "activated");
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATED], 0, priv->activeView);
 	}
 
