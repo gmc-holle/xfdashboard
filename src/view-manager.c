@@ -60,58 +60,6 @@ guint XfdashboardViewManagerSignals[SIGNAL_LAST]={ 0, };
 /* Single instance of view manager */
 static XfdashboardViewManager*		viewManager=NULL;
 
-/* Register a view */
-void _xfdashboard_view_manager_register(XfdashboardViewManager *self, GType inViewType)
-{
-	g_return_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(self));
-
-	XfdashboardViewManagerPrivate	*priv=self->priv;
-
-	/* Check if given type is not a XfdashboardView but a derived type from it */
-	if(inViewType==XFDASHBOARD_TYPE_VIEW ||
-		g_type_is_a(inViewType, XFDASHBOARD_TYPE_VIEW)!=TRUE)
-	{
-		g_warning(_("View %s is not a %s and cannot be registered"),
-					g_type_name(inViewType),
-					g_type_name(XFDASHBOARD_TYPE_VIEW));
-		return;
-	}
-
-	/* Register type if not already registered */
-	if(g_list_find(priv->registeredViews, GINT_TO_POINTER(inViewType))==NULL)
-	{
-		g_debug(_("Registering view %s"), g_type_name(inViewType));
-		priv->registeredViews=g_list_append(priv->registeredViews, GINT_TO_POINTER(inViewType));
-		g_signal_emit(self, XfdashboardViewManagerSignals[SIGNAL_REGISTERED], 0, inViewType);
-	}
-}
-
-/* Unregister a view */
-void _xfdashboard_view_manager_unregister(XfdashboardViewManager *self, GType inViewType)
-{
-	g_return_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(self));
-
-	XfdashboardViewManagerPrivate	*priv=self->priv;
-
-	/* Check if given type is not a XfdashboardView but a derived type from it */
-	if(inViewType==XFDASHBOARD_TYPE_VIEW ||
-		g_type_is_a(inViewType, XFDASHBOARD_TYPE_VIEW)!=TRUE)
-	{
-		g_warning(_("View %s is not a %s and cannot be unregistered"),
-					g_type_name(inViewType),
-					g_type_name(XFDASHBOARD_TYPE_VIEW));
-		return;
-	}
-
-	/* Register type if not already registered */
-	if(g_list_find(priv->registeredViews, GINT_TO_POINTER(inViewType))!=NULL)
-	{
-		g_debug(_("Unregistering view %s"), g_type_name(inViewType));
-		priv->registeredViews=g_list_remove(priv->registeredViews, GINT_TO_POINTER(inViewType));
-		g_signal_emit(self, XfdashboardViewManagerSignals[SIGNAL_UNREGISTERED], 0, inViewType);
-	}
-}
-
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -119,7 +67,7 @@ void _xfdashboard_view_manager_dispose_unregister_view(gpointer inData, gpointer
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(inUserData));
 
-	_xfdashboard_view_manager_unregister(XFDASHBOARD_VIEW_MANAGER(inUserData), GPOINTER_TO_INT(inData));
+	xfdashboard_view_manager_unregister(XFDASHBOARD_VIEW_MANAGER(inUserData), LISTITEM_TO_GTYPE(inData));
 }
 
 void _xfdashboard_view_manager_dispose(GObject *inObject)
@@ -167,7 +115,7 @@ void xfdashboard_view_manager_class_init(XfdashboardViewManagerClass *klass)
 						g_cclosure_marshal_VOID__OBJECT,
 						G_TYPE_NONE,
 						1,
-						XFDASHBOARD_TYPE_VIEW);
+						G_TYPE_GTYPE);
 
 	XfdashboardViewManagerSignals[SIGNAL_UNREGISTERED]=
 		g_signal_new("unregistered",
@@ -179,7 +127,7 @@ void xfdashboard_view_manager_class_init(XfdashboardViewManagerClass *klass)
 						g_cclosure_marshal_VOID__OBJECT,
 						G_TYPE_NONE,
 						1,
-						XFDASHBOARD_TYPE_VIEW);
+						G_TYPE_GTYPE);
 }
 
 /* Object initialization
@@ -209,33 +157,63 @@ XfdashboardViewManager* xfdashboard_view_manager_get_default(void)
 }
 
 /* Register a view */
-void xfdashboard_view_manager_register(GType inViewType)
+void xfdashboard_view_manager_register(XfdashboardViewManager *self, GType inViewType)
 {
-	XfdashboardViewManager			*self=xfdashboard_view_manager_get_default();
+	g_return_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(self));
 
-	g_return_if_fail(self);
+	XfdashboardViewManagerPrivate	*priv=self->priv;
 
-	_xfdashboard_view_manager_register(self, inViewType);
+	/* Check if given type is not a XfdashboardView but a derived type from it */
+	if(inViewType==XFDASHBOARD_TYPE_VIEW ||
+		g_type_is_a(inViewType, XFDASHBOARD_TYPE_VIEW)!=TRUE)
+	{
+		g_warning(_("View %s is not a %s and cannot be registered"),
+					g_type_name(inViewType),
+					g_type_name(XFDASHBOARD_TYPE_VIEW));
+		return;
+	}
+
+	/* Register type if not already registered */
+	if(g_list_find(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType))==NULL)
+	{
+		g_debug(_("Registering view %s"), g_type_name(inViewType));
+		priv->registeredViews=g_list_append(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType));
+		g_signal_emit(self, XfdashboardViewManagerSignals[SIGNAL_REGISTERED], 0, inViewType);
+	}
 }
 
 /* Unregister a view */
-void xfdashboard_view_manager_unregister(GType inViewType)
+void xfdashboard_view_manager_unregister(XfdashboardViewManager *self, GType inViewType)
 {
-	XfdashboardViewManager			*self=xfdashboard_view_manager_get_default();
+	g_return_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(self));
 
-	g_return_if_fail(self);
+	XfdashboardViewManagerPrivate	*priv=self->priv;
 
-	_xfdashboard_view_manager_unregister(self, inViewType);
+	/* Check if given type is not a XfdashboardView but a derived type from it */
+	if(inViewType==XFDASHBOARD_TYPE_VIEW ||
+		g_type_is_a(inViewType, XFDASHBOARD_TYPE_VIEW)!=TRUE)
+	{
+		g_warning(_("View %s is not a %s and cannot be unregistered"),
+					g_type_name(inViewType),
+					g_type_name(XFDASHBOARD_TYPE_VIEW));
+		return;
+	}
+
+	/* Register type if not already registered */
+	if(g_list_find(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType))!=NULL)
+	{
+		g_debug(_("Unregistering view %s"), g_type_name(inViewType));
+		priv->registeredViews=g_list_remove(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType));
+		g_signal_emit(self, XfdashboardViewManagerSignals[SIGNAL_UNREGISTERED], 0, inViewType);
+	}
 }
 
 /* Get list of registered views types
  * Note: Returned list is owned by XfdashboardView and must not be modified or freed.
  */
-const GList* xfdashboard_view_manager_get_registered(void)
+const GList* xfdashboard_view_manager_get_registered(XfdashboardViewManager *self)
 {
-	XfdashboardViewManager			*self=xfdashboard_view_manager_get_default();
-
-	g_return_val_if_fail(self, NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(self), NULL);
 
 	/* Return list of registered view types */
 	return(self->priv->registeredViews);

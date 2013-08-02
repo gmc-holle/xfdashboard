@@ -29,6 +29,7 @@
 #include <gtk/gtk.h>
 
 #include "viewpad.h"
+#include "view-manager.h"
 #include "common.h"
 
 /* Define this class in GObject system */
@@ -47,6 +48,8 @@ struct _XfdashboardViewpadPrivate
 	XfdashboardView			*activeView;
 
 	/* Instance related */
+	XfdashboardViewManager	*viewManager;
+
 	ClutterLayoutManager	*layout;
 	ClutterActor			*container;
 	ClutterActor			*scrollbarHorizontal;
@@ -69,26 +72,157 @@ static GParamSpec* XfdashboardViewpadProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
+	SIGNAL_VIEW_ACTIVATING,
+	SIGNAL_VIEW_ACTIVATED,
+
+	SIGNAL_VIEW_DEACTIVATING,
+	SIGNAL_VIEW_DEACTIVATED,
+
 	SIGNAL_LAST
 };
 
 static guint XfdashboardViewpadSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_SPACING		4.0f			// TODO: Replace by settings/theming object
+#define DEFAULT_SPACING		4.0f
+
+/* Set new active view and deactive current one */
+void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardView *inView)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_if_fail(inView==NULL || XFDASHBOARD_IS_VIEW(inView));
+
+	XfdashboardViewpadPrivate	*priv=self->priv;
+
+	/* Check if view is a child of this actor */
+	if(inView && clutter_actor_contains(CLUTTER_ACTOR(self), CLUTTER_ACTOR(inView))==FALSE)
+	{
+		g_warning(_("View %s is not a child of %s and cannot be activated"),
+					G_OBJECT_TYPE_NAME(inView), G_OBJECT_TYPE_NAME(self));
+		return;
+	}
+
+	/* Only set value if it changes */
+	if(inView==priv->activeView) return;
+
+	/* Deactivate current view */
+	if(priv->activeView)
+	{
+		/* Hide current view and emit signal before and after deactivation */
+		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_DEACTIVATING], 0, priv->activeView);
+		clutter_actor_hide(CLUTTER_ACTOR(priv->activeView));
+		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_DEACTIVATED], 0, priv->activeView);
+
+		g_object_unref(priv->activeView);
+		priv->activeView=NULL;
+	}
+
+	/* Activate new view (if available) by showing new view
+	 * and emitting signal before and after activation
+	 */
+	if(inView)
+	{
+		priv->activeView=g_object_ref(inView);
+
+		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATING], 0, priv->activeView);
+		clutter_actor_show(CLUTTER_ACTOR(priv->activeView));
+		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATED], 0, priv->activeView);
+	}
+
+	/* Notify about property change */
+	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_ACTIVE_VIEW]);
+}
+
+/* Create view of given type and add to this actor */
+void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, GType inViewType)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	XfdashboardViewpadPrivate	*priv=self->priv;
+	GObject						*view;
+
+	/* Create instance and check if it is a view */
+	g_debug("Creating view %s for viewpad", g_type_name(inViewType));
+
+	view=g_object_new(inViewType, NULL);
+	if(view==NULL)
+	{
+		g_critical(_("Failed to create view instance of %s"), g_type_name(inViewType));
+		return;
+	}
+
+	if(XFDASHBOARD_IS_VIEW(view)!=TRUE)
+	{
+		g_critical(_("Instance %s is not a %s and cannot be added to %s"),
+					g_type_name(inViewType), g_type_name(XFDASHBOARD_TYPE_VIEW), G_OBJECT_TYPE_NAME(self));
+		return;
+	}
+
+	/* Add new view instance to this actor but hidden */
+	clutter_actor_hide(CLUTTER_ACTOR(view));
+	clutter_actor_add_child(priv->container, CLUTTER_ACTOR(view));
+
+	/* Set active view if none active (usually it is the first view created) */
+	if(priv->activeView==NULL) _xfdashboard_viewpad_activate_view(self, XFDASHBOARD_VIEW(view));
+}
+
+/* Called when a new view type was registered */
+void _xfdashboard_viewpad_on_view_registered(XfdashboardViewpad *self,
+												GType inViewType,
+												gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	_xfdashboard_viewpad_add_view(self, inViewType);
+}
+
+/* Called when a view type was unregistered */
+void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
+												GType inViewType,
+												gpointer inUserData)
+{
+g_message("%s: unregister-view=%lu (%s) at viewpad=%p (%s) from emitter=%p (%s)",
+			G_STRLOC, inViewType, g_type_name(inViewType), self, DEBUG_OBJECT_NAME(self), inUserData, DEBUG_OBJECT_NAME(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	XfdashboardViewpadPrivate	*priv=self->priv;
+	ClutterActorIter			iter;
+	ClutterActor				*child, *firstActivatableView;
+
+	/* Iterate through create views and lookup view of given type */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Check if child is a view otherwise continue iterating */
+		if(XFDASHBOARD_IS_VIEW(child)!=TRUE) continue;
+
+		/* If child is not of type being unregistered it will get
+		 * the first activatable view after we destroyed all views found.
+		 */
+		if(G_OBJECT_TYPE(child)!=inViewType) firstActivatableView=child;
+			else
+			{
+				if(child==priv->activeView) _xfdashboard_viewpad_activate_view(self, NULL);
+				clutter_actor_destroy(child);
+			}
+	}
+
+	/* Now activate the first activatable view we found during iteration */
+	if(firstActivatableView) _xfdashboard_viewpad_activate_view(self, firstActivatableView);
+}
 
 /* IMPLEMENTATION: ClutterActor */
 
-/* Show all children of this actor */
-void _xfdashboard_viewpad_show_all(ClutterActor *self)
+/* Show this actor and the current active view */
+void _xfdashboard_viewpad_show(ClutterActor *self)
 {
 	XfdashboardViewpadPrivate	*priv=XFDASHBOARD_VIEWPAD(self)->priv;
 
 	/* Only show active view again */
 	if(priv->activeView) clutter_actor_show(CLUTTER_ACTOR(priv->activeView));
 
-	/* Show this actor again */
-	clutter_actor_show(self);
+	/* Call parent's class show method */
+	CLUTTER_ACTOR_CLASS(xfdashboard_viewpad_parent_class)->show(self);
 }
 
 /* IMPLEMENTATION: GObject */
@@ -98,6 +232,17 @@ void _xfdashboard_viewpad_dispose(GObject *inObject)
 {
 	XfdashboardViewpad			*self=XFDASHBOARD_VIEWPAD(inObject);
 	XfdashboardViewpadPrivate	*priv=self->priv;
+
+	/* Deactivate current view */
+	if(priv->activeView) _xfdashboard_viewpad_activate_view(self, NULL);
+
+	/* Disconnect signals handlers */
+	if(priv->viewManager)
+	{
+		g_signal_handlers_disconnect_by_data(priv->viewManager, self);
+		g_object_unref(priv->viewManager);
+		priv->viewManager=NULL;
+	}
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_viewpad_parent_class)->dispose(inObject);
@@ -136,6 +281,10 @@ static void _xfdashboard_viewpad_get_property(GObject *inObject,
 			g_value_set_float(outValue, self->priv->spacing);
 			break;
 
+		case PROP_ACTIVE_VIEW:
+			g_value_set_object(outValue, self->priv->activeView);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -156,7 +305,7 @@ void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 	gobjectClass->get_property=_xfdashboard_viewpad_get_property;
 	gobjectClass->dispose=_xfdashboard_viewpad_dispose;
 
-	actorClass->show_all=_xfdashboard_viewpad_show_all;
+	actorClass->show=_xfdashboard_viewpad_show;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardViewpadPrivate));
@@ -175,9 +324,58 @@ void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 								_("Active view"),
 								_("The current active view in viewpad"),
 								XFDASHBOARD_TYPE_VIEW,
-								G_PARAM_READWRITE);
+								G_PARAM_READABLE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewpadProperties);
+
+	/* Define signals */
+	XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATING]=
+		g_signal_new("view-activating",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewpadClass, view_activating),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_VIEW);
+
+	XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATED]=
+		g_signal_new("view-activated",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewpadClass, view_activated),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_VIEW);
+
+	XfdashboardViewpadSignals[SIGNAL_VIEW_DEACTIVATING]=
+		g_signal_new("view-deactivating",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewpadClass, view_deactivating),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_VIEW);
+
+	XfdashboardViewpadSignals[SIGNAL_VIEW_DEACTIVATED]=
+		g_signal_new("view-deactivated",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewpadClass, view_deactivated),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_VIEW);
 }
 
 /* Object initialization
@@ -192,6 +390,7 @@ static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	priv=self->priv=XFDASHBOARD_VIEWPAD_GET_PRIVATE(self);
 
 	/* Set up default values */
+	priv->viewManager=XFDASHBOARD_VIEW_MANAGER(g_object_ref(xfdashboard_view_manager_get_default()));
 	priv->activeView=NULL;
 	priv->spacing=DEFAULT_SPACING;
 
@@ -230,37 +429,17 @@ static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	clutter_grid_layout_attach(CLUTTER_GRID_LAYOUT(priv->layout), priv->scrollbarHorizontal, 1, 0, 1, 1);
 
 	/* Create instance of each registered view type and add it to this actor */
-	for(views=xfdashboard_view_manager_get_registered(); views; views=g_list_next(views))
+	for(views=xfdashboard_view_manager_get_registered(priv->viewManager); views; views=g_list_next(views))
 	{
-		GObject					*view;
 		GType					viewType;
 
-		/* Create instance and check if it is a view */
-		viewType=(GType)GPOINTER_TO_INT(views->data);
-		g_debug("Creating view %s for viewpad", g_type_name(viewType));
-
-		view=g_object_new(viewType, NULL);
-		if(view==NULL)
-		{
-			g_critical(_("Failed to create view instance of %s"), g_type_name(viewType));
-			continue;
-		}
-
-		if(XFDASHBOARD_IS_VIEW(view)!=TRUE)
-		{
-			g_critical(_("Instance %s is not a %s and cannot be added to %s"),
-						g_type_name(viewType), g_type_name(XFDASHBOARD_TYPE_VIEW), G_OBJECT_TYPE_NAME(self));
-			continue;
-		}
-
-		/* Add new view instance to this actor */
-		// TODO: clutter_actor_set_x_expand(CLUTTER_ACTOR(view), TRUE);
-		// TODO: clutter_actor_set_y_expand(CLUTTER_ACTOR(view), TRUE);
-		// TODO: clutter_actor_set_x_align(CLUTTER_ACTOR(view), CLUTTER_ACTOR_ALIGN_CENTER);
-		// TODO: clutter_actor_set_y_align(CLUTTER_ACTOR(view), CLUTTER_ACTOR_ALIGN_CENTER);
-		clutter_actor_add_child(priv->container, CLUTTER_ACTOR(view));
+		viewType=(GType)LISTITEM_TO_GTYPE(views->data);
+		_xfdashboard_viewpad_add_view(self, viewType);
 	}
 
+	/* Connect signals */
+	g_signal_connect_swapped(priv->viewManager, "registered", G_CALLBACK(_xfdashboard_viewpad_on_view_registered), self);
+	g_signal_connect_swapped(priv->viewManager, "unregistered", G_CALLBACK(_xfdashboard_viewpad_on_view_unregistered), self);
 }
 
 /* Implementation: Public API */
@@ -300,4 +479,12 @@ void xfdashboard_viewpad_set_spacing(XfdashboardViewpad *self, gfloat inSpacing)
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_SPACING]);
+}
+
+/* Get current active view */
+XfdashboardView* xfdashboard_viewpad_get_active_view(XfdashboardViewpad *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
+
+	return(self->priv->activeView);
 }

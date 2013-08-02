@@ -190,7 +190,7 @@ gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
 	/* Register views */
 	priv->viewManager=xfdashboard_view_manager_get_default();
 
-	xfdashboard_view_manager_register(XFDASHBOARD_TYPE_WINDOWS_VIEW);
+	xfdashboard_view_manager_register(priv->viewManager, XFDASHBOARD_TYPE_WINDOWS_VIEW);
 
 	/* Create primary stage on first monitor */
 	// TODO: Create stage for each monitor connected

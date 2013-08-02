@@ -58,6 +58,10 @@ struct _XfdashboardViewpadClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*view_activating)(XfdashboardViewpad *self, XfdashboardView *inView);
+	void (*view_activated)(XfdashboardViewpad *self, XfdashboardView *inView);
+	void (*view_deactivating)(XfdashboardViewpad *self, XfdashboardView *inView);
+	void (*view_deactivated)(XfdashboardViewpad *self, XfdashboardView *inView);
 };
 
 /* Public API */
@@ -67,6 +71,8 @@ ClutterActor* xfdashboard_viewpad_new(void);
 
 gfloat xfdashboard_viewpad_get_spacing(XfdashboardViewpad *self);
 void xfdashboard_viewpad_set_spacing(XfdashboardViewpad *self, gfloat inSpacing);
+
+XfdashboardView* xfdashboard_viewpad_get_active_view(XfdashboardViewpad *self);
 
 G_END_DECLS
 
