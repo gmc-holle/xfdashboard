@@ -1,23 +1,22 @@
 == GENERAL ==
-- Make drag'n'drop code compatible with Clutter 1.10+ (does not recognize start of drag and therefore does nothing)
 [done] Migrate fully to autotools build system
-[done] Quit app by pressing ESC(ape) but if search is active clear it first (needs pressing ESC twice to quit app)
+- Quit app by pressing ESC(ape) but if search is active clear it first (needs pressing ESC twice to quit app)
 - More control by keyboard (e.g. selecting and starting application by arrow keys and ENTER)
-[done] Store settings, e.g. quicklaunch shortcuts, in Xfconf4 and listen for updates
+- Store settings, e.g. quicklaunch shortcuts, in Xfconf4 and listen for updates
 [done] Only run one instance (libunique? GApplication?)
-- Localization
-[done] Search should be non-blocking (but workaround: still blocking but speed up a lot)
-[done] Start search for application ca. one second after entering and restart search one second after last input in a thread? (not needed anymore because it was speed up a lot)
+[done] Localization
+- Search should be non-blocking (but workaround: still blocking but speed up a lot)
+- Start search for application ca. one second after entering and restart search one second after last input in a thread? (not needed anymore because it was speed up a lot)
 - Sort search result in search view alphabetically and/or by relevance?
 - Get rid of duplicates in search view
 - Effects?
-- Themable?
+[prepared] Themable?
 
 == QUICKLAUNCH-BOX (FAVOURITES-SELECTOR) ==
-[done] Implement quicklaunch-box
-[done] Clicking quicklaunch icon starts application and quits
-[done] Reorder quicklaunch icon by drag-n-drop
-[done] Remove quicklaunch icon by drag-n-drop to trash icon in quicklaunch
+- Implement quicklaunch-box
+- Clicking quicklaunch icon starts application and quits
+- Reorder quicklaunch icon by drag-n-drop
+- Remove quicklaunch icon by drag-n-drop to trash icon in quicklaunch
 - Allow drag-n-drop of quicklaunch icon to windows-list view and start app in current workspace
 - Allow drag-n-drop of quicklaunch icon to workspace-box, start app in this workspace
 
@@ -27,17 +26,16 @@
 - Mouse-wheel on workspace-actor switches workspace without quitting but updating windows-list view
 
 == VIEWPAD (VIEW AGGREGATOR) ==
-[done] - Implement viewpad
-[done] - For each view create a button to switch to this view (may be replace with "view button" in quicklaunch)
-[done] - Implement "view button" as first icon in quicklaunch
-[done] - Check why we need to slowly double-click on text to switch view - should be single-click
-[done] - Scroll bars should be shown or hidden automatically depending on if view fits the space in this direction
+[wip] - Implement viewpad
+- view-selector: For each view create a button to switch to this view (may be replace with "view button" in quicklaunch)
+- Implement "view button" as first icon in quicklaunch
+- Scroll bars should be shown or hidden automatically depending on if view fits the space in this direction
 
 == WINDOWS-LIST VIEW ==
 [done] Implement windows-list view
 [done] Click live-window actor
-- Lazy initialization by getting rid of blocking sync of libwnck and listening to signals (needs implementing a window-list manager)
-- Multi-monitor support (show visible windows on the screen where it belongs to, fullscreen over all screens)
+[done] Lazy initialization by getting rid of blocking sync of libwnck and listening to signals
+[prepared] Multi-monitor support (show visible windows on the screen where it belongs to, fullscreen over all screens)
 [done] - Allow closing window by clicking "X" button of live-window actor
 - Allow drag-n-drop of live-window actor to quicklaunch-box view and create shortcut
 - Allow drag-n-drop of live-window actor to another workspace by dropping window in workspace-box
@@ -45,16 +43,16 @@
 [done] - React on window disappearing by destroying appropiate live-window actor
 
 == APPLICATION-MENU VIEW ==
-[done] - Implement application-menu view
-[done] - Start application when clicked on application icon in view
-[done] - Allow drag-n-drop of application icon to quicklaunch-box view and create shortcut
+- Implement application-menu view
+- Start application when clicked on application icon in view
+- Allow drag-n-drop of application icon to quicklaunch-box view and create shortcut
 - Allow drag-n-drop of application icon to workspace-box and start application on this workspace
 
 == SEARCH VIEW ==
-[done] - Implement search view
-[done] - Implement search input box
-[done] - Switch to search view on non-empty search term (that means search started)
-[done] - Merge search view with applications view (search view will be removed and impleted as filter in applications view)
-[done] - Switch back to previous view if search term is empty (that means search has ended)
-[done] - Allow drag-n-drop of application icon to quicklaunch-box and create shortcut
+- Implement search view
+- Implement search input box
+- Switch to search view on non-empty search term (that means search started)
+- Merge search view with applications view (search view will be removed and impleted as filter in applications view)
+- Switch back to previous view if search term is empty (that means search has ended)
+- Allow drag-n-drop of application icon to quicklaunch-box and create shortcut
 - Allow drag-n-drop of application icon to workspace-box and start application on this workspace
