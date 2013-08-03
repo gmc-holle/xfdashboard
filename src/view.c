@@ -29,7 +29,7 @@
 #include <gtk/gtk.h>
 
 #include "view.h"
-#include "common.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 G_DEFINE_ABSTRACT_TYPE(XfdashboardView,

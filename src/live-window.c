@@ -40,7 +40,7 @@
 
 #include "button.h"
 #include "stage.h"
-#include "common.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWindow,

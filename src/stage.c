@@ -31,7 +31,7 @@
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
 
-#include "common.h"
+#include "utils.h"
 #include "application.h"
 #include "viewpad.h"
 

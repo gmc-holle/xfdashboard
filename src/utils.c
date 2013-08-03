@@ -1,5 +1,5 @@
 /*
- * common: Common function and definitions
+ * utils: Common functions, helpers and definitions
  * 
  * Copyright 2012 Stephan Haller <nomad@froevel.de>
  * 
@@ -25,14 +25,14 @@
 #include "config.h"
 #endif
 
-#include "common.h"
+#include "utils.h"
 
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <gtk/gtk.h>
 
 /* Private constants */
-#define FALLBACK_ICON_NAME		GTK_STOCK_MISSING_IMAGE		// TODO: Replace by settings/theming object? I do not think so ;)
+#define FALLBACK_ICON_NAME		GTK_STOCK_MISSING_IMAGE
 
 /* Get current time, e.g. for events */
 guint32 xfdashboard_get_current_time(void)

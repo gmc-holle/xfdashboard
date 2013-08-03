@@ -30,7 +30,7 @@
 #include "windows-view.h"
 #include "live-window.h"
 #include "scaled-table-layout.h"
-#include "common.h"
+#include "utils.h"
 #include "stage.h"
 #include "application.h"
 #include "view.h"

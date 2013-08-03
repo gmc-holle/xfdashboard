@@ -1,5 +1,5 @@
 /*
- * common: Common function and definitions
+ * utils: Common functions, helpers and definitions
  * 
  * Copyrigt 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_COMMON__
-#define __XFOVERVIEW_COMMON__
+#ifndef __XFOVERVIEW_UTILS__
+#define __XFOVERVIEW_UTILS__
 
 #define DEBUG_OBJECT_NAME(x) ((x)!=NULL ? G_OBJECT_TYPE_NAME((x)) : "<nil>")
 #define DEBUG_NOTIFY(self, property, format, ...) g_message("%s: Property '%s' of %p (%s) changed to "format, __func__, property, (self), (self) ? G_OBJECT_TYPE_NAME((self)) : "<nil>", ## __VA_ARGS__)
@@ -40,4 +40,4 @@ ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf);
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_COMMON__ */
+#endif	/* __XFOVERVIEW_UTILS__ */

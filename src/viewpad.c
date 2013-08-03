@@ -30,7 +30,7 @@
 
 #include "viewpad.h"
 #include "view-manager.h"
-#include "common.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardViewpad,

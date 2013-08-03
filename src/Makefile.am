@@ -21,7 +21,7 @@ xfdashboard_headers = \
 	application.h \
 	background.h \
 	button.h \
-	common.h \
+	utils.h \
 	live-window.h \
 	scaled-table-layout.h \
 	stage.h \
