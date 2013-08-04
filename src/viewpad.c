@@ -67,7 +67,7 @@ enum
 	PROP_LAST
 };
 
-static GParamSpec* XfdashboardViewpadProperties[PROP_LAST]={ 0, };
+GParamSpec* XfdashboardViewpadProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -80,7 +80,7 @@ enum
 	SIGNAL_LAST
 };
 
-static guint XfdashboardViewpadSignals[SIGNAL_LAST]={ 0, };
+guint XfdashboardViewpadSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_SPACING		4.0f

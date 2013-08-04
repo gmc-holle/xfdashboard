@@ -71,7 +71,7 @@ GParamSpec* XfdashboardStageProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
-ClutterColor		stageColor={ 0x00, 0x00, 0x00, 0xe0 }; // TODO: Replace by settings/theming object
+ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 }; // TODO: Replace by settings/theming object
 
 /* Set up stage */
 void _xfdashboard_stage_setup(XfdashboardStage *self)
@@ -320,7 +320,7 @@ void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->viewpad=NULL;
 
 	/* Set up stage */
-	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &stageColor);
+	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &defaultStageColor);
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(self), TRUE);
 	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), FALSE);
 	// TODO: clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);

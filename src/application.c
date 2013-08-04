@@ -86,14 +86,14 @@ guint XfdashboardApplicationSignals[SIGNAL_LAST]={ 0, };
 #define XFDASHBOARD_XFCONF_CHANNEL		"xfdashboard"
 
 /* Application options */
-static struct applicationOptions
+struct applicationOptions
 {
 	gboolean	doDaemonize;
 	gboolean	doReplace;
 	gboolean	doQuit;
 } applicationOptions;
 
-static const GOptionEntry XfdashboardApplicationOptions[]=
+const GOptionEntry XfdashboardApplicationOptions[]=
 	{
 		{"daemonize", 'd', 0, G_OPTION_ARG_NONE, &applicationOptions.doDaemonize, N_("Fork to background"), NULL},
 		{"restart", 'r', 0, G_OPTION_ARG_NONE, &applicationOptions.doReplace, N_("Replace existing instance"), NULL},
@@ -102,7 +102,7 @@ static const GOptionEntry XfdashboardApplicationOptions[]=
 	};
 
 /* Single instance of application */
-static XfdashboardApplication*		application=NULL;
+XfdashboardApplication*		application=NULL;
 
 /* Quit application depending on daemon mode and force parameter */
 void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean inForceQuit)

@@ -63,7 +63,7 @@ enum
 	PROP_LAST
 };
 
-static GParamSpec* XfdashboardWindowsViewProperties[PROP_LAST]={ 0, };
+GParamSpec* XfdashboardWindowsViewProperties[PROP_LAST]={ 0, };
 
 /* Forward declaration */
 XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self, WnckWindow *inWindow);

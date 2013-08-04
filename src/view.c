@@ -63,7 +63,7 @@ enum
 	PROP_LAST
 };
 
-static GParamSpec* XfdashboardViewProperties[PROP_LAST]={ 0, };
+GParamSpec* XfdashboardViewProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -79,7 +79,7 @@ enum
 	SIGNAL_LAST
 };
 
-static guint XfdashboardViewSignals[SIGNAL_LAST]={ 0, };
+guint XfdashboardViewSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_ICON_SIZE	64		// TODO: Replace by settings/theming object

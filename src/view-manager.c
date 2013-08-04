@@ -58,7 +58,7 @@ guint XfdashboardViewManagerSignals[SIGNAL_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Single instance of view manager */
-static XfdashboardViewManager*		viewManager=NULL;
+XfdashboardViewManager*		viewManager=NULL;
 
 /* IMPLEMENTATION: GObject */
 

@@ -103,10 +103,9 @@ enum
 guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
 
 /* Private constants */
-#define DEFAULT_SIZE	64													// TODO: Replace by settings/theming object
+#define DEFAULT_SIZE	64
 
-ClutterColor			defaultTextColor={ 0xff, 0xff , 0xff, 0xff };		// TODO: Replace by settings/theming object
-ClutterColor			defaultBackgroundColor={ 0x00, 0x00, 0x00, 0xd0 };	// TODO: Replace by settings/theming object
+ClutterColor			defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 
 /* IMPLEMENTATION: Private variables and methods */
 
