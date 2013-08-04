@@ -21,11 +21,11 @@ xfdashboard_headers = \
 	application.h \
 	background.h \
 	button.h \
-	utils.h \
 	live-window.h \
 	scaled-table-layout.h \
 	stage.h \
 	types.h \
+	utils.h \
 	view.h \
 	view-manager.h \
 	viewpad.h \
@@ -37,11 +37,11 @@ xfdashboard_SOURCES = \
 	application.c \
 	background.c \
 	button.c \
-	common.c \
 	live-window.c \
 	main.c \
 	scaled-table-layout.c \
 	stage.c \
+	utils.c \
 	view.c \
 	view-manager.c \
 	viewpad.c \

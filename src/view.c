@@ -164,10 +164,10 @@ void _xfdashboard_view_set_property(GObject *inObject,
 	}
 }
 
-static void _xfdashboard_view_get_property(GObject *inObject,
-												guint inPropID,
-												GValue *outValue,
-												GParamSpec *inSpec)
+void _xfdashboard_view_get_property(GObject *inObject,
+									guint inPropID,
+									GValue *outValue,
+									GParamSpec *inSpec)
 {
 	XfdashboardView		*self=XFDASHBOARD_VIEW(inObject);
 
@@ -297,7 +297,7 @@ void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-static void xfdashboard_view_init(XfdashboardView *self)
+void xfdashboard_view_init(XfdashboardView *self)
 {
 	XfdashboardViewPrivate	*priv;
 

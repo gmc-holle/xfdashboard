@@ -331,10 +331,10 @@ void _xfdashboard_live_window_destroy(ClutterActor *self)
 #endif
 
 /* Get preferred width/height */
-static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
-															gfloat inForWidth,
-															gfloat *outMinHeight,
-															gfloat *outNaturalHeight)
+void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
+													gfloat inForWidth,
+													gfloat *outMinHeight,
+													gfloat *outNaturalHeight)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	gfloat							minHeight, naturalHeight;
@@ -380,10 +380,10 @@ static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
-static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
-															gfloat inForHeight,
-															gfloat *outMinWidth,
-															gfloat *outNaturalWidth)
+void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
+													gfloat inForHeight,
+													gfloat *outMinWidth,
+													gfloat *outNaturalWidth)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	gfloat							minWidth, naturalWidth;
@@ -430,9 +430,9 @@ static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 }
 
 /* Allocate position and size of actor and its children*/
-static void _xfdashboard_live_window_allocate(ClutterActor *self,
-												const ClutterActorBox *inBox,
-												ClutterAllocationFlags inFlags)
+void _xfdashboard_live_window_allocate(ClutterActor *self,
+										const ClutterActorBox *inBox,
+										ClutterAllocationFlags inFlags)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	ClutterActorBox					*boxActorWindow=NULL;

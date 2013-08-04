@@ -366,7 +366,7 @@ void _xfdashboard_windows_view_created(XfdashboardView *self)
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-static void _xfdashboard_windows_view_dispose(GObject *inObject)
+void _xfdashboard_windows_view_dispose(GObject *inObject)
 {
 	XfdashboardWindowsView			*self=XFDASHBOARD_WINDOWS_VIEW(inObject);
 	XfdashboardWindowsViewPrivate	*priv=XFDASHBOARD_WINDOWS_VIEW(self)->priv;
@@ -385,10 +385,10 @@ static void _xfdashboard_windows_view_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-static void _xfdashboard_windows_view_set_property(GObject *inObject,
-													guint inPropID,
-													const GValue *inValue,
-													GParamSpec *inSpec)
+void _xfdashboard_windows_view_set_property(GObject *inObject,
+											guint inPropID,
+											const GValue *inValue,
+											GParamSpec *inSpec)
 {
 	XfdashboardWindowsView		*self=XFDASHBOARD_WINDOWS_VIEW(inObject);
 	
@@ -404,10 +404,10 @@ static void _xfdashboard_windows_view_set_property(GObject *inObject,
 	}
 }
 
-static void _xfdashboard_windows_view_get_property(GObject *inObject,
-													guint inPropID,
-													GValue *outValue,
-													GParamSpec *inSpec)
+void _xfdashboard_windows_view_get_property(GObject *inObject,
+											guint inPropID,
+											GValue *outValue,
+											GParamSpec *inSpec)
 {
 	XfdashboardWindowsView		*self=XFDASHBOARD_WINDOWS_VIEW(inObject);
 
@@ -427,7 +427,7 @@ static void _xfdashboard_windows_view_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *klass)
+void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *klass)
 {
 	XfdashboardViewClass	*viewClass=XFDASHBOARD_VIEW_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
@@ -456,7 +456,7 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 /* Object initialization
  * Create private structure and set up default values
  */
-static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
+void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 {
 	XfdashboardWindowsViewPrivate	*priv;
 	ClutterLayoutManager			*layout;

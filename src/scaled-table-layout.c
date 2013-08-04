@@ -115,11 +115,11 @@ void _xfdashboard_scaled_table_layout_update_rows_and_columns(XfdashboardScaledT
 /* IMPLEMENTATION: ClutterLayoutManager */
 
 /* Get preferred width/height */
-static void _xfdashboard_scaled_table_layout_get_preferred_width(ClutterLayoutManager *self,
-																	ClutterContainer *inContainer,
-																	gfloat inForHeight,
-																	gfloat *outMinWidth,
-																	gfloat *outNaturalWidth)
+void _xfdashboard_scaled_table_layout_get_preferred_width(ClutterLayoutManager *self,
+															ClutterContainer *inContainer,
+															gfloat inForHeight,
+															gfloat *outMinWidth,
+															gfloat *outNaturalWidth)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -146,11 +146,11 @@ static void _xfdashboard_scaled_table_layout_get_preferred_width(ClutterLayoutMa
 	if(outNaturalWidth) *outNaturalWidth=maxNaturalWidth;
 }
 
-static void _xfdashboard_scaled_table_layout_get_preferred_height(ClutterLayoutManager *self,
-																	ClutterContainer *inContainer,
-																	gfloat inForWidth,
-																	gfloat *outMinHeight,
-																	gfloat *outNaturalHeight)
+void _xfdashboard_scaled_table_layout_get_preferred_height(ClutterLayoutManager *self,
+															ClutterContainer *inContainer,
+															gfloat inForWidth,
+															gfloat *outMinHeight,
+															gfloat *outNaturalHeight)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -178,10 +178,10 @@ static void _xfdashboard_scaled_table_layout_get_preferred_height(ClutterLayoutM
 }
 
 /* Re-layout and allocate children of container we manage */
-static void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self,
-														ClutterContainer *inContainer,
-														const ClutterActorBox *inAllocation,
-														ClutterAllocationFlags inFlags)
+void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self,
+												ClutterContainer *inContainer,
+												const ClutterActorBox *inAllocation,
+												ClutterAllocationFlags inFlags)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));

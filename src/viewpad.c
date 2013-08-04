@@ -184,8 +184,6 @@ void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
 												GType inViewType,
 												gpointer inUserData)
 {
-g_message("%s: unregister-view=%lu (%s) at viewpad=%p (%s) from emitter=%p (%s)",
-			G_STRLOC, inViewType, g_type_name(inViewType), self, DEBUG_OBJECT_NAME(self), inUserData, DEBUG_OBJECT_NAME(inUserData));
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 
 	XfdashboardViewpadPrivate	*priv=self->priv;
@@ -271,10 +269,10 @@ void _xfdashboard_viewpad_set_property(GObject *inObject,
 	}
 }
 
-static void _xfdashboard_viewpad_get_property(GObject *inObject,
-												guint inPropID,
-												GValue *outValue,
-												GParamSpec *inSpec)
+void _xfdashboard_viewpad_get_property(GObject *inObject,
+										guint inPropID,
+										GValue *outValue,
+										GParamSpec *inSpec)
 {
 	XfdashboardViewpad		*self=XFDASHBOARD_VIEWPAD(inObject);
 
@@ -384,7 +382,7 @@ void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
+void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 {
 	XfdashboardViewpadPrivate	*priv;
 	GList						*views;
