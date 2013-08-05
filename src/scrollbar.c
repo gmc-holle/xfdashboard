@@ -84,7 +84,7 @@ guint XfdashboardScrollbarSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_SPACING			2.0f
-#define DEFAULT_SLIDER_WIDTH	4.0f
+#define DEFAULT_SLIDER_WIDTH	8.0f
 #define DEFAULT_SLIDER_RADIUS	(DEFAULT_SLIDER_WIDTH/2.0f)
 #define DEFAULT_ORIENTATION		CLUTTER_ORIENTATION_HORIZONTAL
 
@@ -147,7 +147,7 @@ gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self,
 			if(barPosition+barSize>sliderHeight) barPosition=sliderHeight-barSize;
 
 			left=priv->spacing;
-			right=sliderWidth;
+			right=(gdouble)sliderWidth;
 			top=barPosition;
 			bottom=barPosition+barSize;
 		}
@@ -158,7 +158,7 @@ gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self,
 		cairo_move_to(inContext, left, top+radius);
 		cairo_arc(inContext, left+radius, top+radius, radius, G_PI, G_PI*1.5);
 
-		cairo_line_to(inContext, right-radius, 0);
+		cairo_line_to(inContext, right-radius, top);
 		cairo_arc(inContext, right-radius, top+radius, radius, G_PI*1.5, 0);
 
 		cairo_line_to(inContext, right, bottom-radius);
@@ -210,12 +210,6 @@ void _xfdashboard_scrollbar_get_preferred_height(ClutterActor *self,
 												&minHeight,
 												&naturalHeight);
 			}
-
-			/* If parent's class method did not set sizes set defaults */
-			if(minHeight==0.0f || naturalHeight==0.0f)
-			{
-				minHeight=naturalHeight=(2*priv->spacing)+priv->sliderWidth;
-			}
 		}
 
 	/* Store sizes computed */
@@ -249,12 +243,6 @@ void _xfdashboard_scrollbar_get_preferred_width(ClutterActor *self,
 												inForHeight,
 												&minWidth,
 												&naturalWidth);
-			}
-
-			/* If parent's class method did not set sizes set defaults */
-			if(minWidth==0.0f || naturalWidth==0.0f)
-			{
-				minWidth=naturalWidth=(2*priv->spacing)+priv->sliderWidth;
 			}
 		}
 

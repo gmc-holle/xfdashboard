@@ -27,6 +27,7 @@
 #include <clutter/clutter.h>
 
 #include "view.h"
+#include "types.h"
 
 G_BEGIN_DECLS
 
@@ -73,6 +74,15 @@ gfloat xfdashboard_viewpad_get_spacing(XfdashboardViewpad *self);
 void xfdashboard_viewpad_set_spacing(XfdashboardViewpad *self, gfloat inSpacing);
 
 XfdashboardView* xfdashboard_viewpad_get_active_view(XfdashboardViewpad *self);
+
+gboolean xfdashboard_viewpad_get_horizontal_scrollbar_visible(XfdashboardViewpad *self);
+gboolean xfdashboard_viewpad_get_vertical_scrollbar_visible(XfdashboardViewpad *self);
+
+XfdashboardPolicy xfdashboard_viewpad_get_horizontal_scrollbar_policy(XfdashboardViewpad *self);
+void xfdashboard_viewpad_set_horizontal_scrollbar_policy(XfdashboardViewpad *self, XfdashboardPolicy inPolicy);
+
+XfdashboardPolicy xfdashboard_viewpad_get_vertical_scrollbar_policy(XfdashboardViewpad *self);
+void xfdashboard_viewpad_set_vertical_scrollbar_policy(XfdashboardViewpad *self, XfdashboardPolicy inPolicy);
 
 G_END_DECLS
 

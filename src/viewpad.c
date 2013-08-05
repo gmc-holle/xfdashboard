@@ -32,6 +32,7 @@
 #include "view-manager.h"
 #include "scrollbar.h"
 #include "utils.h"
+#include "enums.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardViewpad,
@@ -47,14 +48,18 @@ struct _XfdashboardViewpadPrivate
 	/* Properties related */
 	gfloat					spacing;
 	XfdashboardView			*activeView;
+	XfdashboardPolicy		hScrollbarPolicy;
+	gboolean				hScrollbarVisible;
+	XfdashboardPolicy		vScrollbarPolicy;
+	gboolean				vScrollbarVisible;
 
 	/* Instance related */
 	XfdashboardViewManager	*viewManager;
 
 	ClutterLayoutManager	*layout;
 	ClutterActor			*container;
-	ClutterActor			*scrollbarHorizontal;
-	ClutterActor			*scrollbarVertical;
+	ClutterActor			*hScrollbar;
+	ClutterActor			*vScrollbar;
 };
 
 /* Properties */
@@ -64,6 +69,10 @@ enum
 
 	PROP_SPACING,
 	PROP_ACTIVE_VIEW,
+	PROP_HSCROLLBAR_POLICY,
+	PROP_HSCROLLBAR_VISIBLE,
+	PROP_VSCROLLBAR_POLICY,
+	PROP_VSCROLLBAR_VISIBLE,
 
 	PROP_LAST
 };
@@ -84,7 +93,8 @@ enum
 guint XfdashboardViewpadSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_SPACING		4.0f
+#define DEFAULT_SPACING				4.0f
+#define DEFAULT_SCROLLBAR_POLICY	XFDASHBOARD_POLICY_AUTOMATIC
 
 /* Set new active view and deactive current one */
 void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardView *inView)
@@ -93,6 +103,7 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 	g_return_if_fail(inView==NULL || XFDASHBOARD_IS_VIEW(inView));
 
 	XfdashboardViewpadPrivate	*priv=self->priv;
+	gfloat						w, h;
 
 	/* Check if view is a child of this actor */
 	if(inView && clutter_actor_contains(CLUTTER_ACTOR(self), CLUTTER_ACTOR(inView))==FALSE)
@@ -119,8 +130,8 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 		priv->activeView=NULL;
 	}
 
-	/* Activate new view (if available) by showing new view
-	 * and emitting signal before and after activation
+	/* Activate new view (if available) by showing new view, setting up
+	 * scrollbars and emitting signal before and after activation
 	 */
 	if(inView)
 	{
@@ -128,13 +139,41 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATING], 0, priv->activeView);
 		g_signal_emit_by_name(priv->activeView, "activating");
+
+		clutter_actor_get_preferred_size(CLUTTER_ACTOR(priv->activeView), NULL, NULL, &w, &h);
+		xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), w);
+		xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->vScrollbar), h);
+		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), 0);
+		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar), 0);
 		clutter_actor_show(CLUTTER_ACTOR(priv->activeView));
+
 		g_signal_emit_by_name(priv->activeView, "activated");
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATED], 0, priv->activeView);
 	}
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_ACTIVE_VIEW]);
+}
+
+/* Allocation of a view changed */
+void _xfdashboard_viewpad_on_allocation_changed(ClutterActor *inActor,
+												ClutterActorBox *inBox,
+												ClutterAllocationFlags inFlags,
+												gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inUserData));
+
+	XfdashboardViewpadPrivate	*priv=XFDASHBOARD_VIEWPAD(inActor)->priv;
+	gfloat						w, h;
+
+	/* Set range of scroll bar to width and height of view
+	 * which allocation just changed
+	 */
+	clutter_actor_get_preferred_size(inActor, NULL, NULL, &w, &h);
+
+	xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), w);
+	xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->vScrollbar), h);
 }
 
 /* Create view of given type and add to this actor */
@@ -165,6 +204,7 @@ void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, GType inViewType)
 	/* Add new view instance to this actor but hidden */
 	clutter_actor_hide(CLUTTER_ACTOR(view));
 	clutter_actor_add_child(priv->container, CLUTTER_ACTOR(view));
+	g_signal_connect_swapped(CLUTTER_ACTOR(view), "allocation-changed", G_CALLBACK(_xfdashboard_viewpad_on_allocation_changed), self);
 
 	/* Set active view if none active (usually it is the first view created) */
 	if(priv->activeView==NULL) _xfdashboard_viewpad_activate_view(self, XFDASHBOARD_VIEW(view));
@@ -210,7 +250,7 @@ void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
 	}
 
 	/* Now activate the first activatable view we found during iteration */
-	if(firstActivatableView) _xfdashboard_viewpad_activate_view(self, firstActivatableView);
+	if(firstActivatableView) _xfdashboard_viewpad_activate_view(self, XFDASHBOARD_VIEW(firstActivatableView));
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -219,12 +259,117 @@ void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
 void _xfdashboard_viewpad_show(ClutterActor *self)
 {
 	XfdashboardViewpadPrivate	*priv=XFDASHBOARD_VIEWPAD(self)->priv;
+	ClutterActorClass			*actorClass=CLUTTER_ACTOR_CLASS(xfdashboard_viewpad_parent_class);
 
 	/* Only show active view again */
 	if(priv->activeView) clutter_actor_show(CLUTTER_ACTOR(priv->activeView));
 
 	/* Call parent's class show method */
-	CLUTTER_ACTOR_CLASS(xfdashboard_viewpad_parent_class)->show(self);
+	if(actorClass->show) actorClass->show(self);
+}
+
+/* Allocate position and size of actor and its children*/
+void _xfdashboard_viewpad_allocate(ClutterActor *self,
+										const ClutterActorBox *inBox,
+										ClutterAllocationFlags inFlags)
+{
+	XfdashboardViewpadPrivate	*priv=XFDASHBOARD_VIEWPAD(self)->priv;
+	ClutterActorClass			*actorClass=CLUTTER_ACTOR_CLASS(xfdashboard_viewpad_parent_class);
+	gfloat						viewWidth, viewHeight;
+	gfloat						vScrollbarWidth, vScrollbarHeight;
+	gfloat						hScrollbarWidth, hScrollbarHeight;
+	gboolean					hScrollbarVisible, vScrollbarVisible;
+	ClutterActorBox				*box;
+	gfloat						x, y;
+
+	/* Chain up to store the allocation of the actor */
+	if(actorClass->allocate) actorClass->allocate(self, inBox, inFlags);
+
+	/* Initialize largest possible allocation for view and determine
+	 * real size of view to show. The real size is used to determine
+	 * scroll bar visibility if policy is automatic */
+	viewWidth=clutter_actor_box_get_width(inBox);
+	viewHeight=clutter_actor_box_get_height(inBox);
+
+	/* Determine visibility of scroll bars */
+	hScrollbarVisible=FALSE;
+	if(priv->hScrollbarPolicy==XFDASHBOARD_POLICY_ALWAYS ||
+		(priv->hScrollbarPolicy==XFDASHBOARD_POLICY_AUTOMATIC &&
+			xfdashboard_scrollbar_get_range(XFDASHBOARD_SCROLLBAR(priv->hScrollbar))>viewWidth))
+	{
+		hScrollbarVisible=TRUE;
+	}
+
+	vScrollbarVisible=FALSE;
+	if(priv->vScrollbarPolicy==XFDASHBOARD_POLICY_ALWAYS ||
+		(priv->vScrollbarPolicy==XFDASHBOARD_POLICY_AUTOMATIC &&
+			xfdashboard_scrollbar_get_range(XFDASHBOARD_SCROLLBAR(priv->vScrollbar))>viewHeight))
+	{
+		vScrollbarVisible=TRUE;
+	}
+
+	/* Set allocation for visible scroll bars */
+	vScrollbarWidth=0.0f;
+	vScrollbarHeight=viewHeight;
+	clutter_actor_get_preferred_width(priv->vScrollbar, -1, NULL, &vScrollbarWidth);
+
+	hScrollbarWidth=viewWidth;
+	hScrollbarHeight=0.0f;
+	clutter_actor_get_preferred_height(priv->hScrollbar, -1, NULL, &hScrollbarHeight);
+
+	if(hScrollbarVisible && vScrollbarVisible)
+	{
+		vScrollbarHeight-=hScrollbarHeight;
+		hScrollbarWidth-=vScrollbarWidth;
+	}
+
+	if(vScrollbarVisible==FALSE) box=clutter_actor_box_new(0, 0, 0, 0);
+		else box=clutter_actor_box_new(viewWidth-vScrollbarWidth, 0, viewWidth, vScrollbarHeight);
+	clutter_actor_allocate(priv->vScrollbar, box, inFlags);
+	clutter_actor_box_free(box);
+
+	if(hScrollbarVisible==FALSE) box=clutter_actor_box_new(0, 0, 0, 0);
+		else box=clutter_actor_box_new(0, viewHeight-hScrollbarHeight, hScrollbarWidth, viewHeight);
+	clutter_actor_allocate(priv->hScrollbar, box, inFlags);
+	clutter_actor_box_free(box);
+
+	/* Reduce allocation for view by any visible scroll bar
+	 * and set allocation and clipping of view
+	 */
+	if(priv->activeView)
+	{
+		/* Set allocation */
+		if(vScrollbarVisible) viewWidth-=vScrollbarWidth;
+		if(hScrollbarVisible) viewHeight-=hScrollbarHeight;
+
+		x=ceilf(xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar)));
+		y=ceilf(xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar)));
+
+		box=clutter_actor_box_new(-x, -y, viewWidth-x, viewHeight-y);
+		clutter_actor_allocate(CLUTTER_ACTOR(priv->activeView), box, inFlags);
+		clutter_actor_box_free(box);
+
+		// TODO: clutter_actor_set_clip(CLUTTER_ACTOR(priv->activeView), x, y, viewWidth, viewHeight);
+	}
+
+	/* Only set value if it changes */
+	if(priv->hScrollbarVisible!=hScrollbarVisible)
+	{
+		/* Set new value */
+		priv->hScrollbarVisible=hScrollbarVisible;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_HSCROLLBAR_VISIBLE]);
+	}
+
+	if(priv->vScrollbarVisible!=vScrollbarVisible)
+	{
+		/* Set new value */
+		priv->vScrollbarVisible=vScrollbarVisible;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_VSCROLLBAR_VISIBLE]);
+	}
 }
 
 /* IMPLEMENTATION: GObject */
@@ -264,6 +409,14 @@ void _xfdashboard_viewpad_set_property(GObject *inObject,
 			xfdashboard_viewpad_set_spacing(self, g_value_get_float(inValue));
 			break;
 
+		case PROP_HSCROLLBAR_POLICY:
+			xfdashboard_viewpad_set_horizontal_scrollbar_policy(self, (XfdashboardPolicy)g_value_get_enum(inValue));
+			break;
+
+		case PROP_VSCROLLBAR_POLICY:
+			xfdashboard_viewpad_set_vertical_scrollbar_policy(self, (XfdashboardPolicy)g_value_get_enum(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -287,6 +440,22 @@ void _xfdashboard_viewpad_get_property(GObject *inObject,
 			g_value_set_object(outValue, self->priv->activeView);
 			break;
 
+		case PROP_HSCROLLBAR_POLICY:
+			g_value_set_enum(outValue, self->priv->hScrollbarPolicy);
+			break;
+
+		case PROP_HSCROLLBAR_VISIBLE:
+			g_value_set_boolean(outValue, self->priv->hScrollbarVisible);
+			break;
+
+		case PROP_VSCROLLBAR_POLICY:
+			g_value_set_enum(outValue, self->priv->vScrollbarPolicy);
+			break;
+
+		case PROP_VSCROLLBAR_VISIBLE:
+			g_value_set_boolean(outValue, self->priv->vScrollbarVisible);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -308,6 +477,7 @@ void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 	gobjectClass->dispose=_xfdashboard_viewpad_dispose;
 
 	actorClass->show=_xfdashboard_viewpad_show;
+	actorClass->allocate=_xfdashboard_viewpad_allocate;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardViewpadPrivate));
@@ -327,6 +497,36 @@ void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 								_("The current active view in viewpad"),
 								XFDASHBOARD_TYPE_VIEW,
 								G_PARAM_READABLE);
+
+	XfdashboardViewpadProperties[PROP_HSCROLLBAR_VISIBLE]=
+		g_param_spec_boolean("horinzontal-scrollbar-visible",
+								_("Horinzontal scrollbar visibility"),
+								_("This flag indicates if horizontal scrollbar is visible"),
+								FALSE,
+								G_PARAM_READABLE);
+
+	XfdashboardViewpadProperties[PROP_HSCROLLBAR_POLICY]=
+		g_param_spec_enum("horinzontal-scrollbar-policy",
+							_("Horinzontal scrollbar policy"),
+							_("The policy for horizontal scrollbar controlling when it is displayed"),
+							XFDASHBOARD_TYPE_POLICY,
+							DEFAULT_SCROLLBAR_POLICY,
+							G_PARAM_READWRITE);
+
+	XfdashboardViewpadProperties[PROP_VSCROLLBAR_VISIBLE]=
+		g_param_spec_boolean("vertical-scrollbar-visible",
+								_("Vertical scrollbar visibility"),
+								_("This flag indicates if vertical scrollbar is visible"),
+								FALSE,
+								G_PARAM_READABLE);
+
+	XfdashboardViewpadProperties[PROP_VSCROLLBAR_POLICY]=
+		g_param_spec_enum("vertical-scrollbar-policy",
+							_("Vertical scrollbar policy"),
+							_("The policy for vertical scrollbar controlling when it is displayed"),
+							XFDASHBOARD_TYPE_POLICY,
+							DEFAULT_SCROLLBAR_POLICY,
+							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewpadProperties);
 
@@ -395,6 +595,10 @@ void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	priv->viewManager=XFDASHBOARD_VIEW_MANAGER(g_object_ref(xfdashboard_view_manager_get_default()));
 	priv->activeView=NULL;
 	priv->spacing=DEFAULT_SPACING;
+	priv->hScrollbarVisible=FALSE;
+	priv->hScrollbarPolicy=DEFAULT_SCROLLBAR_POLICY;
+	priv->vScrollbarVisible=FALSE;
+	priv->vScrollbarPolicy=DEFAULT_SCROLLBAR_POLICY;
 
 	/* Set up actor */
 	priv->container=clutter_actor_new();
@@ -405,8 +609,8 @@ void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	priv->layout=clutter_bin_layout_new(CLUTTER_BIN_ALIGNMENT_FILL, CLUTTER_BIN_ALIGNMENT_FILL);
 	clutter_actor_set_layout_manager(priv->container, priv->layout);
 
-	priv->scrollbarHorizontal=xfdashboard_scrollbar_new(CLUTTER_ORIENTATION_HORIZONTAL);
-	priv->scrollbarVertical=xfdashboard_scrollbar_new(CLUTTER_ORIENTATION_VERTICAL);
+	priv->hScrollbar=xfdashboard_scrollbar_new(CLUTTER_ORIENTATION_HORIZONTAL);
+	priv->vScrollbar=xfdashboard_scrollbar_new(CLUTTER_ORIENTATION_VERTICAL);
 
 	priv->layout=clutter_grid_layout_new();
 	clutter_grid_layout_set_column_spacing(CLUTTER_GRID_LAYOUT(priv->layout), priv->spacing);
@@ -414,8 +618,8 @@ void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), FALSE);
 	clutter_grid_layout_attach(CLUTTER_GRID_LAYOUT(priv->layout), priv->container, 0, 0, 1, 1);
-	clutter_grid_layout_attach(CLUTTER_GRID_LAYOUT(priv->layout), priv->scrollbarVertical, 0, 1, 1, 1);
-	clutter_grid_layout_attach(CLUTTER_GRID_LAYOUT(priv->layout), priv->scrollbarHorizontal, 1, 0, 1, 1);
+	clutter_grid_layout_attach(CLUTTER_GRID_LAYOUT(priv->layout), priv->vScrollbar, 0, 1, 1, 1);
+	clutter_grid_layout_attach(CLUTTER_GRID_LAYOUT(priv->layout), priv->hScrollbar, 1, 0, 1, 1);
 
 	/* Create instance of each registered view type and add it to this actor */
 	for(views=xfdashboard_view_manager_get_registered(priv->viewManager); views; views=g_list_next(views))
@@ -476,4 +680,68 @@ XfdashboardView* xfdashboard_viewpad_get_active_view(XfdashboardViewpad *self)
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
 
 	return(self->priv->activeView);
+}
+
+/* Get/set scroll bar visibility */
+gboolean xfdashboard_viewpad_get_horizontal_scrollbar_visible(XfdashboardViewpad *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	return(self->priv->hScrollbarVisible);
+}
+
+gboolean xfdashboard_viewpad_get_vertical_scrollbar_visible(XfdashboardViewpad *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	return(self->priv->vScrollbarVisible);
+}
+
+/* Get/set scroll bar policy */
+XfdashboardPolicy xfdashboard_viewpad_get_horizontal_scrollbar_policy(XfdashboardViewpad *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	return(self->priv->hScrollbarPolicy);
+}
+
+void xfdashboard_viewpad_set_horizontal_scrollbar_policy(XfdashboardViewpad *self, XfdashboardPolicy inPolicy)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	XfdashboardViewpadPrivate	*priv=self->priv;
+
+	/* Only set new value if it differs from current value */
+	if(priv->hScrollbarPolicy==inPolicy) return;
+
+	/* Set new value */
+	priv->hScrollbarPolicy=inPolicy;
+	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+	/* Notify about property change */
+	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_HSCROLLBAR_POLICY]);
+}
+
+XfdashboardPolicy xfdashboard_viewpad_get_vertical_scrollbar_policy(XfdashboardViewpad *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	return(self->priv->vScrollbarPolicy);
+}
+
+void xfdashboard_viewpad_set_vertical_scrollbar_policy(XfdashboardViewpad *self, XfdashboardPolicy inPolicy)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	XfdashboardViewpadPrivate	*priv=self->priv;
+
+	/* Only set new value if it differs from current value */
+	if(priv->vScrollbarPolicy==inPolicy) return;
+
+	/* Set new value */
+	priv->vScrollbarPolicy=inPolicy;
+	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+	/* Notify about property change */
+	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_VSCROLLBAR_POLICY]);
 }
