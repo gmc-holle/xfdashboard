@@ -476,6 +476,7 @@ const ClutterColor* xfdashboard_background_get_color(XfdashboardBackground *self
 void xfdashboard_background_set_color(XfdashboardBackground *self, const ClutterColor *inColor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
+	g_return_if_fail(inColor);
 
 	XfdashboardBackgroundPrivate	*priv=self->priv;
 

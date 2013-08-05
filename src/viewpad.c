@@ -30,6 +30,7 @@
 
 #include "viewpad.h"
 #include "view-manager.h"
+#include "scrollbar.h"
 #include "utils.h"
 
 /* Define this class in GObject system */
@@ -404,21 +405,8 @@ void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	priv->layout=clutter_bin_layout_new(CLUTTER_BIN_ALIGNMENT_FILL, CLUTTER_BIN_ALIGNMENT_FILL);
 	clutter_actor_set_layout_manager(priv->container, priv->layout);
 
-	/* TODO: BEGIN - Implement scrollbars and remove color variable as scrollbars should derive XfdashboardBackground */
-	ClutterColor				color={ 0xd0, 0xd0, 0xd0, 0xff };
-
-	priv->scrollbarHorizontal=clutter_actor_new();
-	clutter_actor_set_background_color(priv->scrollbarHorizontal, &color);
-	clutter_actor_set_size(priv->scrollbarHorizontal, 8, 8);
-	clutter_actor_set_x_expand(priv->scrollbarHorizontal, TRUE);
-	clutter_actor_set_y_expand(priv->scrollbarHorizontal, FALSE);
-
-	priv->scrollbarVertical=clutter_actor_new();
-	clutter_actor_set_background_color(priv->scrollbarVertical, &color);
-	clutter_actor_set_size(priv->scrollbarVertical, 8, 8);
-	clutter_actor_set_x_expand(priv->scrollbarHorizontal, FALSE);
-	clutter_actor_set_y_expand(priv->scrollbarHorizontal, TRUE);
-	/* TODO: END - Implement scrollbars and remove color variable as scrollbars should derive XfdashboardBackground */
+	priv->scrollbarHorizontal=xfdashboard_scrollbar_new(CLUTTER_ORIENTATION_HORIZONTAL);
+	priv->scrollbarVertical=xfdashboard_scrollbar_new(CLUTTER_ORIENTATION_VERTICAL);
 
 	priv->layout=clutter_grid_layout_new();
 	clutter_grid_layout_set_column_spacing(CLUTTER_GRID_LAYOUT(priv->layout), priv->spacing);
