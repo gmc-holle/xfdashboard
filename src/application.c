@@ -35,6 +35,7 @@
 #include "stage.h"
 #include "types.h"
 #include "view-manager.h"
+#include "applications-view.h"
 #include "windows-view.h"
 
 /* Define this class in GObject system */
@@ -187,9 +188,11 @@ gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
 
 	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
 
-	/* Register views */
+	/* Register views (order of registration is important) */
 	priv->viewManager=xfdashboard_view_manager_get_default();
 
+	// TODO: Reorder!
+	xfdashboard_view_manager_register(priv->viewManager, XFDASHBOARD_TYPE_APPLICATIONS_VIEW);
 	xfdashboard_view_manager_register(priv->viewManager, XFDASHBOARD_TYPE_WINDOWS_VIEW);
 
 	/* Create primary stage on first monitor */

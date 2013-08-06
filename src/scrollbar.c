@@ -52,6 +52,13 @@ struct _XfdashboardScrollbarPrivate
 
 	/* Instance related */
 	ClutterContent			*slider;
+	ClutterSize				lastViewportSize;
+	ClutterSize				lastSliderSize;
+	gfloat					sliderPosition, sliderSize;
+	gfloat					dragAlignment;
+	ClutterInputDevice		*dragDevice;
+	guint					signalButtonReleasedID;
+	guint					signalMotionEventID;
 };
 
 /* Properties */
@@ -61,6 +68,7 @@ enum
 
 	PROP_ORIENTATION,
 	PROP_VALUE,
+	PROP_VALUE_RANGE,
 	PROP_RANGE,
 	PROP_SPACING,
 	PROP_SLIDER_WIDTH,
@@ -90,6 +98,181 @@ guint XfdashboardScrollbarSignals[SIGNAL_LAST]={ 0, };
 
 ClutterColor		defaultSliderColor={ 0xff, 0xff, 0xff, 0xff };
 
+/* Get value from coord */
+gfloat _xfdashboard_scrollbar_get_value_from_coord(XfdashboardScrollbar *self,
+													gfloat inX,
+													gfloat inY,
+													gfloat inAlignment)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(self), 0.0f);
+	g_return_val_if_fail(inAlignment>=0.0f && inAlignment<=1.0f, 0.0f);
+
+	XfdashboardScrollbarPrivate		*priv=self->priv;
+	gfloat							coord;
+	gfloat							width;
+	gfloat							value;
+
+	/* Get coordinate for calculation depending on orientation and
+	 * subtract spacing
+	 */
+	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
+	{
+		coord=inX;
+		width=priv->lastSliderSize.width;
+	}
+		else
+		{
+			coord=inY;
+			width=priv->lastSliderSize.height;
+		}
+
+	coord-=priv->spacing;
+
+	/* Apply alignment */
+	coord-=(priv->sliderSize*inAlignment);
+
+	/* Calculate new value to set by coordinate */
+	value=(coord/width)*priv->range;
+	value=MAX(0.0f, value);
+	value=MIN(value, priv->range-priv->valueRange);
+
+	/* Return calculated value */
+	return(value);
+}
+
+/* Pointer moved inside scroll bar (usually called after button-pressed event) */
+gboolean _xfdashboard_scrollbar_on_motion_event(ClutterActor *inActor,
+												ClutterEvent *inEvent,
+												gpointer inUserData)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+
+	XfdashboardScrollbar			*self=XFDASHBOARD_SCROLLBAR(inActor);
+	XfdashboardScrollbarPrivate		*priv=self->priv;
+	gfloat							eventX, eventY;
+	gfloat							x, y;
+	gfloat							value;
+
+	/* Get coords where event happened */
+	clutter_event_get_coords(inEvent, &eventX, &eventY);
+	if(!clutter_actor_transform_stage_point(inActor, eventX, eventY, &x, &y)) return(FALSE);
+
+	/* Set value from motion */
+	value=_xfdashboard_scrollbar_get_value_from_coord(self, x, y, priv->dragAlignment);
+	xfdashboard_scrollbar_set_value(self, value);
+
+	return(TRUE);
+}
+
+/* User released button in scroll bar */
+gboolean _xfdashboard_scrollbar_on_button_released(ClutterActor *inActor,
+													ClutterEvent *inEvent,
+													gpointer inUserData)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+
+	XfdashboardScrollbar			*self=XFDASHBOARD_SCROLLBAR(inActor);
+	XfdashboardScrollbarPrivate		*priv=self->priv;
+	gfloat							eventX, eventY;
+	gfloat							x, y;
+	gfloat							value;
+
+	/* If user did not release a left-click do nothing */
+	if(clutter_event_get_button(inEvent)!=1) return(FALSE);
+
+	/* Release exclusive handling of pointer events and
+	 * disconnect motion and button-release events
+	 */
+	if(priv->dragDevice)
+	{
+		clutter_input_device_ungrab(priv->dragDevice);
+		priv->dragDevice=NULL;
+	}
+
+	if(priv->signalMotionEventID)
+	{
+		g_signal_handler_disconnect(inActor, priv->signalMotionEventID);
+		priv->signalMotionEventID=0L;
+	}
+
+	if(priv->signalButtonReleasedID)
+	{
+		g_signal_handler_disconnect(inActor, priv->signalButtonReleasedID);
+		priv->signalButtonReleasedID=0L;
+	}
+
+	/* Get coords where event happened */
+	clutter_event_get_coords(inEvent, &eventX, &eventY);
+	if(!clutter_actor_transform_stage_point(inActor, eventX, eventY, &x, &y)) return(FALSE);
+
+	/* Set new value */
+	value=_xfdashboard_scrollbar_get_value_from_coord(self, x, y, priv->dragAlignment);
+	xfdashboard_scrollbar_set_value(self, value);
+
+	return(TRUE);
+}
+
+/* User pressed button in scroll bar */
+gboolean _xfdashboard_scrollbar_on_button_pressed(ClutterActor *inActor,
+													ClutterEvent *inEvent,
+													gpointer inUserData)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+
+	XfdashboardScrollbar			*self=XFDASHBOARD_SCROLLBAR(inActor);
+	XfdashboardScrollbarPrivate		*priv=self->priv;
+	gfloat							eventX, eventY;
+	gfloat							x, y;
+	gfloat							value;
+	gfloat							dragOffset;
+
+	/* If user left-clicked into scroll bar adjust value to point
+	 * where the click happened
+	 */
+	if(clutter_event_get_button(inEvent)!=1) return(FALSE);
+
+	/* Get coords where event happened. If coords are not in bar handle set value
+	 * otherwise only determine offset used in event handlers and do not adjust
+	 * value as this would cause a movement of bar handle */
+	clutter_event_get_coords(inEvent, &eventX, &eventY);
+	if(!clutter_actor_transform_stage_point(inActor, eventX, eventY, &x, &y)) return(FALSE);
+
+	value=_xfdashboard_scrollbar_get_value_from_coord(self, x, y, 0.0f);
+	if(value<priv->value || value>=(priv->value+priv->valueRange))
+	{
+		/* Set new value */
+		value=_xfdashboard_scrollbar_get_value_from_coord(self, x, y, 0.5f);
+		xfdashboard_scrollbar_set_value(self, value);
+		return(FALSE);
+	}
+
+	/* Remember event values for drag'n'drop of slider */
+	dragOffset=-(priv->spacing+priv->sliderPosition);
+	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) dragOffset+=x;
+		else dragOffset+=y;
+
+	priv->dragAlignment=dragOffset/priv->sliderSize;
+
+	/* Connect signals for motion and button-release events */
+	priv->signalMotionEventID=g_signal_connect_after(inActor,
+														"motion-event",
+														G_CALLBACK(_xfdashboard_scrollbar_on_motion_event),
+														NULL);
+	priv->signalButtonReleasedID=g_signal_connect_after(inActor,
+															"button-release-event",
+															G_CALLBACK(_xfdashboard_scrollbar_on_button_released),
+															NULL);
+
+	/* Handle pointer events exclusively */
+	priv->dragDevice=clutter_event_get_device(inEvent);
+	clutter_input_device_grab(priv->dragDevice, inActor);
+
+	return(TRUE);
+}
+
 /* Rectangle canvas should be redrawn */
 gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self,
 												cairo_t *inContext,
@@ -103,8 +286,7 @@ gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self,
 	XfdashboardScrollbarPrivate		*priv=self->priv;
 	gdouble							radius;
 	gdouble							top, left, bottom, right;
-	gdouble							barPosition, barSize;
-	gdouble							sliderWidth, sliderHeight;
+	gdouble							barValueRange;
 
 	/* Clear current contents of the canvas */
 	cairo_save(inContext);
@@ -121,35 +303,49 @@ gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self,
 	radius=MIN(priv->sliderRadius, inWidth/2.0f);
 	radius=MIN(radius, inHeight/2.0f);
 
-	/* Calculate bounding coordinates for slider */
-	sliderWidth=MAX(0, inWidth-(2*priv->spacing));
-	sliderHeight=MAX(0, inHeight-(2*priv->spacing));
+	/* Calculate bounding coordinates for slider and viewport */
+	priv->lastViewportSize.width=inWidth;
+	priv->lastViewportSize.height=inHeight;
+	priv->lastSliderSize.width=MAX(0, inWidth-(2*priv->spacing));
+	priv->lastSliderSize.height=MAX(0, inHeight-(2*priv->spacing));
 
 	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
 	{
-		if(priv->range>sliderWidth) barSize=(sliderWidth/priv->range)*sliderWidth;
-			else barSize=sliderWidth;
+		if(priv->range > priv->lastViewportSize.width)
+		{
+			priv->sliderSize=(priv->lastViewportSize.width/priv->range)*priv->lastSliderSize.width;
+		}
+			else priv->sliderSize=priv->lastSliderSize.width;
 
-		barPosition=MIN(MAX(0, (priv->value/priv->range)*sliderWidth), sliderWidth);
-		if(barPosition+barSize>sliderWidth) barPosition=sliderWidth-barSize;
+		barValueRange=(priv->sliderSize/priv->lastSliderSize.width)*priv->range;
+
+		priv->sliderPosition=MAX(0, (priv->value/priv->range)*priv->lastSliderSize.width);
+		priv->sliderPosition=MIN(priv->sliderPosition, priv->lastSliderSize.width);
+		if(priv->sliderPosition+priv->sliderSize>priv->lastSliderSize.width) priv->sliderPosition=priv->lastSliderSize.width-priv->sliderSize;
 
 		top=priv->spacing;
-		bottom=(gdouble)sliderHeight;
-		left=barPosition;
-		right=barPosition+barSize;
+		bottom=priv->lastSliderSize.height;
+		left=priv->sliderPosition;
+		right=priv->sliderPosition+priv->sliderSize;
 	}
 		else
 		{
-			if(priv->range>sliderHeight) barSize=(sliderHeight/priv->range)*sliderHeight;
-				else barSize=sliderHeight;
+			if(priv->range > priv->lastViewportSize.height)
+			{
+				priv->sliderSize=(priv->lastViewportSize.height/priv->range)*priv->lastSliderSize.height;
+			}
+				else priv->sliderSize=priv->lastSliderSize.height;
 
-			barPosition=MIN(MAX(0, (priv->value/priv->range)*sliderHeight), sliderHeight);
-			if(barPosition+barSize>sliderHeight) barPosition=sliderHeight-barSize;
+			barValueRange=(priv->sliderSize/priv->lastSliderSize.height)*priv->range;
+
+			priv->sliderPosition=MAX(0, (priv->value/priv->range)*priv->lastSliderSize.height);
+			priv->sliderPosition=MIN(priv->sliderPosition, priv->lastSliderSize.height);
+			if(priv->sliderPosition+priv->sliderSize>priv->lastSliderSize.height) priv->sliderPosition=priv->lastSliderSize.height-priv->sliderSize;
 
 			left=priv->spacing;
-			right=(gdouble)sliderWidth;
-			top=barPosition;
-			bottom=barPosition+barSize;
+			right=priv->lastSliderSize.width;
+			top=priv->sliderPosition;
+			bottom=priv->sliderPosition+priv->sliderSize;
 		}
 
 	/* Draw slider */
@@ -175,6 +371,22 @@ gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self,
 		}
 
 	cairo_fill(inContext);
+
+	/* Set value if changed */
+	if(barValueRange!=priv->valueRange)
+	{
+		/* Set value */
+		priv->valueRange=barValueRange;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardScrollbarProperties[PROP_VALUE_RANGE]);
+
+		/* Adjust value to fit into range (respecting value-range) if needed */
+		if(priv->value+priv->valueRange>priv->range)
+		{
+			xfdashboard_scrollbar_set_value(self, priv->range-priv->valueRange);
+		}
+	}
 
 	/* Done drawing */
 	return(TRUE);
@@ -288,6 +500,24 @@ void _xfdashboard_scrollbar_dispose(GObject *inObject)
 		priv->slider=NULL;
 	}
 
+	if(priv->dragDevice)
+	{
+		clutter_input_device_ungrab(priv->dragDevice);
+		priv->dragDevice=NULL;
+	}
+
+	if(priv->signalMotionEventID)
+	{
+		g_signal_handler_disconnect(self, priv->signalMotionEventID);
+		priv->signalMotionEventID=0L;
+	}
+
+	if(priv->signalButtonReleasedID)
+	{
+		g_signal_handler_disconnect(self, priv->signalButtonReleasedID);
+		priv->signalButtonReleasedID=0L;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_scrollbar_parent_class)->dispose(inObject);
 }
@@ -353,6 +583,10 @@ void _xfdashboard_scrollbar_get_property(GObject *inObject,
 			g_value_set_float(outValue, self->priv->value);
 			break;
 
+		case PROP_VALUE_RANGE:
+			g_value_set_float(outValue, self->priv->valueRange);
+			break;
+
 		case PROP_RANGE:
 			g_value_set_float(outValue, self->priv->range);
 			break;
@@ -416,6 +650,14 @@ void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE);
+
+	XfdashboardScrollbarProperties[PROP_VALUE_RANGE]=
+		g_param_spec_float("value-range",
+							_("Value range"),
+							_("The range the slider of scroll bar covers"),
+							0.0f, G_MAXFLOAT,
+							0.0f,
+							G_PARAM_READABLE);
 
 	XfdashboardScrollbarProperties[PROP_RANGE]=
 		g_param_spec_float("range",
@@ -491,6 +733,9 @@ void xfdashboard_scrollbar_init(XfdashboardScrollbar *self)
 	priv->sliderRadius=DEFAULT_SLIDER_RADIUS;
 	priv->sliderColor=NULL;
 	priv->slider=clutter_canvas_new();
+	priv->signalButtonReleasedID=0;
+	priv->signalMotionEventID=0;
+	priv->dragDevice=NULL;
 
 	/* Set up actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -500,6 +745,8 @@ void xfdashboard_scrollbar_init(XfdashboardScrollbar *self)
 
 	/* Connect signals */
 	g_signal_connect_swapped(priv->slider, "draw", G_CALLBACK(_xfdashboard_scrollbar_on_draw_slider), self);
+	g_signal_connect(self, "button-press-event", G_CALLBACK(_xfdashboard_scrollbar_on_button_pressed), NULL);
+	//~ g_signal_connect(self, "scroll-event", G_CALLBACK(_xfdashboard_scrollbar_on_scroll_event), NULL);
 }
 
 /* Implementation: Public API */
@@ -559,10 +806,10 @@ void xfdashboard_scrollbar_set_value(XfdashboardScrollbar *self, gfloat inValue)
 	XfdashboardScrollbarPrivate		*priv=self->priv;
 
 	/* Check if value is within range */
-	if(inValue>priv->range)
+	if(inValue+priv->valueRange>priv->range)
 	{
 		g_warning(_("Adjusting value %.2f in scrollbar to fit range %.2f"), inValue, priv->range);
-		inValue=priv->range;
+		inValue=priv->range-priv->valueRange;
 	}
 
 	/* Only set value if it changes */
@@ -575,6 +822,7 @@ void xfdashboard_scrollbar_set_value(XfdashboardScrollbar *self, gfloat inValue)
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardScrollbarProperties[PROP_VALUE]);
+	g_signal_emit(self, XfdashboardScrollbarSignals[SIGNAL_VALUE_CHANGED], 0, priv->value);
 }
 
 /* Get value range */

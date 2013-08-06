@@ -19,6 +19,7 @@ xfdashboard_built_sources = \
 
 xfdashboard_headers = \
 	application.h \
+	applications-view.h \
 	background.h \
 	button.h \
 	live-window.h \
@@ -36,6 +37,7 @@ xfdashboard_SOURCES = \
 	$(xfdashboard_built_sources) \
 	$(xfdashboard_headers) \
 	application.c \
+	applications-view.c \
 	background.c \
 	button.c \
 	live-window.c \
