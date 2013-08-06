@@ -273,6 +273,53 @@ gboolean _xfdashboard_scrollbar_on_button_pressed(ClutterActor *inActor,
 	return(TRUE);
 }
 
+/* A scroll event occured in scroll bar (e.g. by mouse-wheel) */
+gboolean _xfdashboard_scrollbar_on_scroll_event(ClutterActor *inActor,
+												ClutterEvent *inEvent,
+												gpointer inUserData)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+
+	XfdashboardScrollbar			*self=XFDASHBOARD_SCROLLBAR(inActor);
+	XfdashboardScrollbarPrivate		*priv=self->priv;
+	gfloat							eventX, eventY;
+	gfloat							x, y;
+	gfloat							value;
+	gfloat							directionFactor;
+
+	/* Get direction of scroll event */
+	switch(clutter_event_get_scroll_direction(inEvent))
+	{
+		case CLUTTER_SCROLL_UP:
+		case CLUTTER_SCROLL_LEFT:
+			directionFactor=-1.0f;
+			break;
+
+		case CLUTTER_SCROLL_DOWN:
+		case CLUTTER_SCROLL_RIGHT:
+			directionFactor=1.0f;
+			break;
+
+		/* Unhandled directions */
+		default:
+			g_debug("Cannot handle scroll direction %d in scrollbar", clutter_event_get_scroll_direction(inEvent));
+			return(FALSE);
+	}
+
+	/* Calculate new value by increasing or decreasing value by value-range
+	 * of slider and adjust new value to fit into range (respecting value-range)
+	 */
+	value=priv->value+(priv->valueRange*directionFactor);
+	value=MAX(value, 0);
+	value=MIN(priv->range-priv->valueRange, value);
+
+	/* Set new value */
+	xfdashboard_scrollbar_set_value(self, value);
+
+	return(TRUE);
+}
+
 /* Rectangle canvas should be redrawn */
 gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self,
 												cairo_t *inContext,
@@ -746,7 +793,7 @@ void xfdashboard_scrollbar_init(XfdashboardScrollbar *self)
 	/* Connect signals */
 	g_signal_connect_swapped(priv->slider, "draw", G_CALLBACK(_xfdashboard_scrollbar_on_draw_slider), self);
 	g_signal_connect(self, "button-press-event", G_CALLBACK(_xfdashboard_scrollbar_on_button_pressed), NULL);
-	//~ g_signal_connect(self, "scroll-event", G_CALLBACK(_xfdashboard_scrollbar_on_scroll_event), NULL);
+	g_signal_connect(self, "scroll-event", G_CALLBACK(_xfdashboard_scrollbar_on_scroll_event), NULL);
 }
 
 /* Implementation: Public API */
