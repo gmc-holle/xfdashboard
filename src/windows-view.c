@@ -59,7 +59,7 @@ enum
 	PROP_0,
 
 	PROP_WORKSPACE,
-	
+
 	PROP_LAST
 };
 
@@ -473,11 +473,7 @@ void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	xfdashboard_scaled_table_layout_set_relative_scale(XFDASHBOARD_SCALED_TABLE_LAYOUT(layout), TRUE);
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), layout);
 
-	/* Connect signal for "active-workspace-changed". It will be reconnected
-	 * when the first "active-workspace-changed" signal will be emitted because
-	 * the workspace this view knows is still NULL. This signal is usually emitted
-	 * shortly after application start-up.
-	 */
+	/* Connect signals */
 	g_signal_connect_swapped(priv->screen,
 								"active-workspace-changed",
 								G_CALLBACK(_xfdashboard_windows_view_on_active_workspace_changed),
