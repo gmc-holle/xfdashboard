@@ -94,7 +94,7 @@ guint XfdashboardViewpadSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_SPACING				4.0f
-#define DEFAULT_SCROLLBAR_POLICY	XFDASHBOARD_POLICY_ALWAYS
+#define DEFAULT_SCROLLBAR_POLICY	XFDASHBOARD_POLICY_AUTOMATIC
 
 /* Update view depending on scrollbar values */
 void _xfdashboard_viewpad_update_view_viewport(XfdashboardViewpad *self)
