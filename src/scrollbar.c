@@ -45,6 +45,7 @@ struct _XfdashboardScrollbarPrivate
 	gfloat					value;
 	gfloat					valueRange;
 	gfloat					range;
+	gfloat					pageSizeFactor;
 	gfloat					spacing;
 	gfloat					sliderWidth;
 	gfloat					sliderRadius;
@@ -70,6 +71,7 @@ enum
 	PROP_VALUE,
 	PROP_VALUE_RANGE,
 	PROP_RANGE,
+	PROP_PAGE_SIZE_FACTOR,
 	PROP_SPACING,
 	PROP_SLIDER_WIDTH,
 	PROP_SLIDER_RADIUS,
@@ -91,10 +93,11 @@ enum
 guint XfdashboardScrollbarSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_SPACING			2.0f
-#define DEFAULT_SLIDER_WIDTH	8.0f
-#define DEFAULT_SLIDER_RADIUS	(DEFAULT_SLIDER_WIDTH/2.0f)
-#define DEFAULT_ORIENTATION		CLUTTER_ORIENTATION_HORIZONTAL
+#define DEFAULT_PAGE_SIZE_FACTOR	0.5f
+#define DEFAULT_SPACING				2.0f
+#define DEFAULT_SLIDER_WIDTH		8.0f
+#define DEFAULT_SLIDER_RADIUS		(DEFAULT_SLIDER_WIDTH/2.0f)
+#define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_HORIZONTAL
 
 ClutterColor		defaultSliderColor={ 0xff, 0xff, 0xff, 0xff };
 
@@ -293,12 +296,12 @@ gboolean _xfdashboard_scrollbar_on_scroll_event(ClutterActor *inActor,
 	{
 		case CLUTTER_SCROLL_UP:
 		case CLUTTER_SCROLL_LEFT:
-			directionFactor=-1.0f;
+			directionFactor=-priv->pageSizeFactor;
 			break;
 
 		case CLUTTER_SCROLL_DOWN:
 		case CLUTTER_SCROLL_RIGHT:
-			directionFactor=1.0f;
+			directionFactor=priv->pageSizeFactor;
 			break;
 
 		/* Unhandled directions */
@@ -591,6 +594,10 @@ void _xfdashboard_scrollbar_set_property(GObject *inObject,
 			xfdashboard_scrollbar_set_range(self, g_value_get_float(inValue));
 			break;
 
+		case PROP_PAGE_SIZE_FACTOR:
+			xfdashboard_scrollbar_set_page_size_factor(self, g_value_get_float(inValue));
+			break;
+
 		case PROP_SPACING:
 			xfdashboard_scrollbar_set_spacing(self, g_value_get_float(inValue));
 			break;
@@ -636,6 +643,10 @@ void _xfdashboard_scrollbar_get_property(GObject *inObject,
 
 		case PROP_RANGE:
 			g_value_set_float(outValue, self->priv->range);
+			break;
+
+		case PROP_PAGE_SIZE_FACTOR:
+			g_value_set_float(outValue, self->priv->pageSizeFactor);
 			break;
 
 		case PROP_SPACING:
@@ -714,6 +725,14 @@ void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 							1.0f,
 							G_PARAM_READWRITE);
 
+	XfdashboardScrollbarProperties[PROP_PAGE_SIZE_FACTOR]=
+		g_param_spec_float("page-size-factor",
+							_("Page size factor"),
+							_("The factor of value range to increase or decrease value by on pointer scroll events."),
+							0.1f, 1.0f,
+							DEFAULT_PAGE_SIZE_FACTOR,
+							G_PARAM_READWRITE);
+
 	XfdashboardScrollbarProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
 							_("Spacing"),
@@ -775,6 +794,7 @@ void xfdashboard_scrollbar_init(XfdashboardScrollbar *self)
 	priv->value=0.0f;
 	priv->valueRange=0.0f;
 	priv->range=1.0f;
+	priv->pageSizeFactor=DEFAULT_PAGE_SIZE_FACTOR;
 	priv->spacing=DEFAULT_SPACING;
 	priv->sliderWidth=DEFAULT_SLIDER_WIDTH;
 	priv->sliderRadius=DEFAULT_SLIDER_RADIUS;
@@ -918,6 +938,31 @@ void xfdashboard_scrollbar_set_range(XfdashboardScrollbar *self, gfloat inRange)
 
 	/* Thaw notification */
 	g_object_thaw_notify(G_OBJECT(self));
+}
+
+/* Get/set page-size factor */
+gfloat xfdashboard_scrollbar_get_page_size_factor(XfdashboardScrollbar *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(self), 0.0f);
+
+	return(self->priv->pageSizeFactor);
+}
+
+void xfdashboard_scrollbar_set_page_size_factor(XfdashboardScrollbar *self, gfloat inFactor)
+{
+	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(self));
+	g_return_if_fail(inFactor>=0.1f && inFactor<=1.0f);
+
+	XfdashboardScrollbarPrivate		*priv=self->priv;
+
+	/* Only set value if it changes */
+	if(inFactor==priv->pageSizeFactor) return;
+
+	/* Set new value */
+	priv->pageSizeFactor=inFactor;
+
+	/* Notify about property change */
+	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardScrollbarProperties[PROP_PAGE_SIZE_FACTOR]);
 }
 
 /* Get/set spacing */

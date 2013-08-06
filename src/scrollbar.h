@@ -76,6 +76,9 @@ gfloat xfdashboard_scrollbar_get_value_range(XfdashboardScrollbar *self);
 gfloat xfdashboard_scrollbar_get_range(XfdashboardScrollbar *self);
 void xfdashboard_scrollbar_set_range(XfdashboardScrollbar *self, gfloat inRange);
 
+gfloat xfdashboard_scrollbar_get_page_size_factor(XfdashboardScrollbar *self);
+void xfdashboard_scrollbar_set_page_size_factor(XfdashboardScrollbar *self, gfloat inFactor);
+
 gfloat xfdashboard_scrollbar_get_spacing(XfdashboardScrollbar *self);
 void xfdashboard_scrollbar_set_spacing(XfdashboardScrollbar *self, gfloat inSpacing);
 
