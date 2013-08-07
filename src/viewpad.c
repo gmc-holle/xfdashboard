@@ -165,6 +165,7 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 	g_return_if_fail(inView==NULL || XFDASHBOARD_IS_VIEW(inView));
 
 	XfdashboardViewpadPrivate	*priv=self->priv;
+	gfloat						x, y;
 
 	/* Check if view is a child of this actor */
 	if(inView && clutter_actor_contains(CLUTTER_ACTOR(self), CLUTTER_ACTOR(inView))==FALSE)
@@ -204,9 +205,11 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATING], 0, priv->activeView);
 		g_signal_emit_by_name(priv->activeView, "activating");
 
+		clutter_actor_get_clip(CLUTTER_ACTOR(priv->activeView), &x, &y, NULL, NULL);
 		_xfdashboard_viewpad_update_scrollbars(self);
-		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), 0);
-		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar), 0);
+		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), x);
+		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar), y);
+		_xfdashboard_viewpad_update_view_viewport(self);
 		clutter_actor_show(CLUTTER_ACTOR(priv->activeView));
 		g_debug("Activated view %s", G_OBJECT_TYPE_NAME(priv->activeView));
 
