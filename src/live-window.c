@@ -360,6 +360,8 @@ void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 											inForWidth,
 											&childMinHeight,
 											&childNaturalHeight);
+		childMinHeight+=(2*priv->marginTitleActor);
+		childNaturalHeight+=(2*priv->marginTitleActor);
 		if(childMinHeight>minHeight) minHeight=childMinHeight;
 		if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
 	}
@@ -371,6 +373,8 @@ void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 											inForWidth,
 											&childMinHeight,
 											&childNaturalHeight);
+		childMinHeight+=(2*priv->marginCloseButton);
+		childNaturalHeight+=(2*priv->marginCloseButton);
 		if(childMinHeight>minHeight) minHeight=childMinHeight;
 		if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
 	}
@@ -409,6 +413,8 @@ void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 											inForHeight,
 											&childMinWidth,
 											 &childNaturalWidth);
+		childMinWidth+=(2*priv->marginTitleActor);
+		childNaturalWidth+=(2*priv->marginTitleActor);
 		if(childMinWidth>minWidth) minWidth=childMinWidth;
 		if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
 	}
@@ -420,6 +426,8 @@ void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 											inForHeight,
 											&childMinWidth,
 											&childNaturalWidth);
+		childMinWidth+=(2*priv->marginCloseButton);
+		childNaturalWidth+=(2*priv->marginCloseButton);
 		if(childMinWidth>minWidth) minWidth=childMinWidth;
 		if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
 	}
@@ -443,6 +451,7 @@ void _xfdashboard_live_window_allocate(ClutterActor *self,
 	gfloat							closeWidth, closeHeight;
 	gfloat							left, top, right, bottom;
 
+
 	CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->allocate(self, inBox, inFlags);
 
 	/* Set allocation on window texture */
@@ -454,7 +463,7 @@ void _xfdashboard_live_window_allocate(ClutterActor *self,
 	clutter_actor_get_preferred_size(priv->actorClose,
 										NULL, NULL,
 										&closeWidth, &closeHeight);
-										
+
 	right=clutter_actor_box_get_x(boxActorWindow)+clutter_actor_box_get_width(boxActorWindow)-priv->marginCloseButton;
 	left=MAX(right-closeWidth, priv->marginCloseButton);
 	top=clutter_actor_box_get_y(boxActorWindow)+priv->marginCloseButton;

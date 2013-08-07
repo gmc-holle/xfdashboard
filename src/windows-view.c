@@ -467,7 +467,7 @@ void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	priv->screen=wnck_screen_get_default();
 	priv->workspace=NULL;
 
-	/* Create layout manager used in this view */
+	/* Setup actor */
 	layout=xfdashboard_scaled_table_layout_new();
 	xfdashboard_scaled_table_layout_set_spacing(XFDASHBOARD_SCALED_TABLE_LAYOUT(layout), DEFAULT_SPACING);
 	xfdashboard_scaled_table_layout_set_relative_scale(XFDASHBOARD_SCALED_TABLE_LAYOUT(layout), TRUE);

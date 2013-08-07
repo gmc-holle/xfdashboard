@@ -103,7 +103,7 @@ enum
 guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
 
 /* Private constants */
-#define DEFAULT_SIZE	64
+#define DEFAULT_SIZE	16
 
 ClutterColor			defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 
@@ -131,12 +131,19 @@ void _xfdashboard_button_update_icon_image_size(XfdashboardButton *self)
 											NULL, NULL,
 											&labelWidth, &labelHeight);
 
-		if(labelWidth>labelHeight) maxSize=labelWidth;
-			else maxSize=labelHeight;
+		if(priv->iconOrientation==XFDASHBOARD_ORIENTATION_TOP ||
+			priv->iconOrientation==XFDASHBOARD_ORIENTATION_BOTTOM)
+		{
+			maxSize=labelWidth;
+		}
+			else
+			{
+				maxSize=labelHeight;
+			}
 	}
 		else if(priv->iconSize>0.0f) maxSize=priv->iconSize;
 
-	/* Get size of icon if maximum size is set*/
+	/* Get size of icon if maximum size is set */
 	if(maxSize>0.0f)
 	{
 		/* Get preferred size of icon */

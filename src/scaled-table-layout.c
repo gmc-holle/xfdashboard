@@ -126,6 +126,7 @@ void _xfdashboard_scaled_table_layout_get_preferred_width(ClutterLayoutManager *
 
 	XfdashboardScaledTableLayoutPrivate		*priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
 	gfloat									maxMinWidth, maxNaturalWidth;
+	ClutterActor							*parent;
 
 	/* Set up default values */
 	maxMinWidth=0.0f;
@@ -134,11 +135,15 @@ void _xfdashboard_scaled_table_layout_get_preferred_width(ClutterLayoutManager *
 	/* Update number of rows and columns needed for layout */
 	_xfdashboard_scaled_table_layout_update_rows_and_columns(XFDASHBOARD_SCALED_TABLE_LAYOUT(self), inContainer);
 
+	/* Get size of parent if this child is parented */
+	parent=clutter_actor_get_parent(CLUTTER_ACTOR(inContainer));
+	if(parent) clutter_actor_get_size(CLUTTER_ACTOR(parent), &maxNaturalWidth, NULL);
+
 	/* Calculate width */
 	if(priv->columns>0)
 	{
-		maxMinWidth+=(priv->columns-1)*priv->columnSpacing;
-		maxNaturalWidth+=(priv->columns-1)*priv->columnSpacing;
+		maxMinWidth=(priv->columns-1)*priv->columnSpacing;
+		if(maxNaturalWidth==0.0f) maxNaturalWidth=(priv->columns-1)*priv->columnSpacing;
 	}
 
 	/* Set return values */
@@ -157,6 +162,7 @@ void _xfdashboard_scaled_table_layout_get_preferred_height(ClutterLayoutManager 
 
 	XfdashboardScaledTableLayoutPrivate		*priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
 	gfloat									maxMinHeight, maxNaturalHeight;
+	ClutterActor							*parent;
 
 	/* Set up default values */
 	maxMinHeight=0.0f;
@@ -165,11 +171,15 @@ void _xfdashboard_scaled_table_layout_get_preferred_height(ClutterLayoutManager 
 	/* Update number of rows and columns needed for layout */
 	_xfdashboard_scaled_table_layout_update_rows_and_columns(XFDASHBOARD_SCALED_TABLE_LAYOUT(self), inContainer);
 
+	/* Get size of parent if this child is parented */
+	parent=clutter_actor_get_parent(CLUTTER_ACTOR(inContainer));
+	if(parent) clutter_actor_get_size(CLUTTER_ACTOR(parent), NULL, &maxNaturalHeight);
+
 	/* Calculate height */
 	if(priv->rows>0)
 	{
-		maxMinHeight+=(priv->rows-1)*priv->rowSpacing;
-		maxNaturalHeight+=(priv->rows-1)*priv->rowSpacing;
+		maxMinHeight=(priv->rows-1)*priv->rowSpacing;
+		if(maxNaturalHeight==0.0f) maxNaturalHeight=(priv->rows-1)*priv->rowSpacing;
 	}
 
 	/* Set return values */

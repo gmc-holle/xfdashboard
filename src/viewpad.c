@@ -27,6 +27,7 @@
 
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
+#include <math.h>
 
 #include "viewpad.h"
 #include "view-manager.h"
@@ -82,6 +83,9 @@ GParamSpec* XfdashboardViewpadProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
+	SIGNAL_VIEW_ADDED,
+	SIGNAL_VIEW_REMOVED,
+
 	SIGNAL_VIEW_ACTIVATING,
 	SIGNAL_VIEW_ACTIVATED,
 	SIGNAL_VIEW_DEACTIVATING,
@@ -122,7 +126,7 @@ void _xfdashboard_viewpad_update_view_viewport(XfdashboardViewpad *self)
 	/* Set transformation (offset) */
 	cogl_matrix_init_identity(&transform);
 	cogl_matrix_translate(&transform, -x, -y, 0.0f);
-	clutter_actor_set_transform(priv->activeView, &transform);
+	clutter_actor_set_transform(CLUTTER_ACTOR(priv->activeView), &transform);
 
 	/* Set new clipping */
 	clutter_actor_set_clip(CLUTTER_ACTOR(priv->activeView), x, y, w, h);
@@ -147,7 +151,7 @@ void _xfdashboard_viewpad_update_scrollbars(XfdashboardViewpad *self)
 	gfloat						w, h;
 
 	/* Set range of scroll bar to width and height of active view */
-	if(priv->activeView) clutter_actor_get_preferred_size(priv->activeView, NULL, NULL, &w, &h);
+	if(priv->activeView) clutter_actor_get_preferred_size(CLUTTER_ACTOR(priv->activeView), NULL, NULL, &w, &h);
 		else w=h=1.0f;
 
 	xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), w);
@@ -161,7 +165,6 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 	g_return_if_fail(inView==NULL || XFDASHBOARD_IS_VIEW(inView));
 
 	XfdashboardViewpadPrivate	*priv=self->priv;
-	gfloat						w, h;
 
 	/* Check if view is a child of this actor */
 	if(inView && clutter_actor_contains(CLUTTER_ACTOR(self), CLUTTER_ACTOR(inView))==FALSE)
@@ -263,6 +266,7 @@ void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, GType inViewType)
 	clutter_actor_hide(CLUTTER_ACTOR(view));
 	clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(view));
 	g_signal_connect_swapped(CLUTTER_ACTOR(view), "allocation-changed", G_CALLBACK(_xfdashboard_viewpad_on_allocation_changed), self);
+	g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ADDED], 0, view);
 
 	/* Set active view if none active (usually it is the first view created) */
 	if(priv->activeView==NULL) _xfdashboard_viewpad_activate_view(self, XFDASHBOARD_VIEW(view));
@@ -302,7 +306,8 @@ void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
 		if(G_OBJECT_TYPE(child)!=inViewType) firstActivatableView=child;
 			else
 			{
-				if(child==priv->activeView) _xfdashboard_viewpad_activate_view(self, NULL);
+				if(G_OBJECT(child)==G_OBJECT(priv->activeView)) _xfdashboard_viewpad_activate_view(self, NULL);
+				g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_REMOVED], 0, child);
 				clutter_actor_destroy(child);
 			}
 	}
@@ -440,7 +445,7 @@ void _xfdashboard_viewpad_allocate(ClutterActor *self,
 		x=ceilf(xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar)));
 		y=ceilf(xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar)));
 
-		clutter_actor_get_preferred_size(priv->activeView, NULL, NULL, &w, &h);
+		clutter_actor_get_preferred_size(CLUTTER_ACTOR(priv->activeView), NULL, NULL, &w, &h);
 
 		box=clutter_actor_box_new(0, 0, w, h);
 		clutter_actor_allocate(CLUTTER_ACTOR(priv->activeView), box, inFlags);
@@ -630,6 +635,30 @@ void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewpadProperties);
 
 	/* Define signals */
+	XfdashboardViewpadSignals[SIGNAL_VIEW_ADDED]=
+		g_signal_new("view-added",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewpadClass, view_added),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_VIEW);
+
+	XfdashboardViewpadSignals[SIGNAL_VIEW_REMOVED]=
+		g_signal_new("view-removed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewpadClass, view_removed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_VIEW);
+
 	XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATING]=
 		g_signal_new("view-activating",
 						G_TYPE_FROM_CLASS(klass),
@@ -762,7 +791,29 @@ void xfdashboard_viewpad_set_spacing(XfdashboardViewpad *self, gfloat inSpacing)
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_SPACING]);
 }
 
-/* Get current active view */
+/* Get list of views */
+GList* xfdashboard_viewpad_get_views(XfdashboardViewpad *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
+
+	XfdashboardViewpadPrivate	*priv=self->priv;
+	ClutterActorIter			iter;
+	ClutterActor				*child;
+	GList						*list=NULL;
+
+	/* Iterate through children and create list of views */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Check if child is a view and add to list */
+		if(XFDASHBOARD_IS_VIEW(child)==TRUE) list=g_list_prepend(list, child);
+	}
+	list=g_list_reverse(list);
+
+	return(list);
+}
+
+/* Get/set active view */
 XfdashboardView* xfdashboard_viewpad_get_active_view(XfdashboardViewpad *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
@@ -770,17 +821,28 @@ XfdashboardView* xfdashboard_viewpad_get_active_view(XfdashboardViewpad *self)
 	return(self->priv->activeView);
 }
 
+void xfdashboard_viewpad_set_active_view(XfdashboardViewpad *self, XfdashboardView *inView)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
+
+	XfdashboardViewpadPrivate	*priv=self->priv;
+
+	/* Only activate view if it changes */
+	if(priv->activeView!=inView) _xfdashboard_viewpad_activate_view(self, inView);
+}
+
 /* Get/set scroll bar visibility */
 gboolean xfdashboard_viewpad_get_horizontal_scrollbar_visible(XfdashboardViewpad *self)
 {
-	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), FALSE);
 
 	return(self->priv->hScrollbarVisible);
 }
 
 gboolean xfdashboard_viewpad_get_vertical_scrollbar_visible(XfdashboardViewpad *self)
 {
-	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), FALSE);
 
 	return(self->priv->vScrollbarVisible);
 }
@@ -788,7 +850,7 @@ gboolean xfdashboard_viewpad_get_vertical_scrollbar_visible(XfdashboardViewpad *
 /* Get/set scroll bar policy */
 XfdashboardPolicy xfdashboard_viewpad_get_horizontal_scrollbar_policy(XfdashboardViewpad *self)
 {
-	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), DEFAULT_SCROLLBAR_POLICY);
 
 	return(self->priv->hScrollbarPolicy);
 }
@@ -812,7 +874,7 @@ void xfdashboard_viewpad_set_horizontal_scrollbar_policy(XfdashboardViewpad *sel
 
 XfdashboardPolicy xfdashboard_viewpad_get_vertical_scrollbar_policy(XfdashboardViewpad *self)
 {
-	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), DEFAULT_SCROLLBAR_POLICY);
 
 	return(self->priv->vScrollbarPolicy);
 }

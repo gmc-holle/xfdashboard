@@ -34,6 +34,7 @@
 #include "utils.h"
 #include "application.h"
 #include "viewpad.h"
+#include "view-selector.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,
@@ -51,6 +52,7 @@ struct _XfdashboardStagePrivate
 	ClutterActor		*searchbox;
 	ClutterActor		*workspaces;
 	ClutterActor		*viewpad;
+	ClutterActor		*viewSelector;
 
 	/* Instance related */
 	WnckScreen			*screen;
@@ -78,7 +80,7 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 {
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 
-	// TODO: Implement missing actors, do setup nicer and themable
+	// TODO: Implement missing actors, do setup nicer and themable/layoutable
 
 	XfdashboardStagePrivate		*priv=self->priv;
 	ClutterActor				*groupHorizontal;
@@ -90,29 +92,44 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 	layout=clutter_box_layout_new();
 	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_VERTICAL);
 	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(layout), 8.0f);
+	clutter_box_layout_set_homogeneous(CLUTTER_BOX_LAYOUT(layout), FALSE);
 	groupVertical=clutter_actor_new();
 	clutter_actor_set_x_expand(groupVertical, TRUE);
 	clutter_actor_set_y_expand(groupVertical, TRUE);
 	clutter_actor_set_layout_manager(groupVertical, layout);
 
-	/* Searchbox */
+	/* Searchbox and view selector */
+	layout=clutter_box_layout_new();
+	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_HORIZONTAL);
+	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(layout), 8.0f);
+	groupHorizontal=clutter_actor_new();
+	clutter_actor_set_x_expand(groupHorizontal, TRUE);
+	clutter_actor_set_layout_manager(groupHorizontal, layout);
+
 	priv->searchbox=clutter_actor_new();
-	clutter_actor_set_size(priv->searchbox, 32, 32);
+	clutter_actor_set_size(priv->searchbox, 16, 16);
 	clutter_color_init(&color, 0x00, 0xff, 0x00, 0x80);
 	clutter_actor_set_background_color(priv->searchbox, &color);
 	clutter_actor_set_x_expand(priv->searchbox, TRUE);
-	clutter_actor_add_child(groupVertical, priv->searchbox);
+	clutter_actor_add_child(groupHorizontal, priv->searchbox);
+
+	priv->viewSelector=xfdashboard_view_selector_new();
+	clutter_actor_add_child(groupHorizontal, priv->viewSelector);
+
+	clutter_actor_add_child(groupVertical, groupHorizontal);
 
 	/* Views */
 	priv->viewpad=xfdashboard_viewpad_new();
 	clutter_actor_set_x_expand(priv->viewpad, TRUE);
 	clutter_actor_set_y_expand(priv->viewpad, TRUE);
 	clutter_actor_add_child(groupVertical, priv->viewpad);
+	xfdashboard_view_selector_set_viewpad(priv->viewSelector, priv->viewpad);
 
 	/* Set up layout objects */
 	layout=clutter_box_layout_new();
 	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_HORIZONTAL);
 	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(layout), 8.0f);
+	clutter_box_layout_set_homogeneous(CLUTTER_BOX_LAYOUT(layout), FALSE);
 	groupHorizontal=clutter_actor_new();
 	clutter_actor_set_x_expand(groupHorizontal, TRUE);
 	clutter_actor_set_y_expand(groupHorizontal, TRUE);
@@ -241,6 +258,12 @@ void _xfdashboard_stage_dispose(GObject *inObject)
 		priv->workspaces=NULL;
 	}
 
+	if(priv->viewSelector)
+	{
+		clutter_actor_destroy(priv->viewSelector);
+		priv->viewSelector=NULL;
+	}
+
 	if(priv->viewpad)
 	{
 		clutter_actor_destroy(priv->viewpad);
@@ -297,8 +320,6 @@ void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardStagePrivate));
-
-	/* Define properties */
 }
 
 /* Object initialization
@@ -318,6 +339,7 @@ void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->searchbox=NULL;
 	priv->workspaces=NULL;
 	priv->viewpad=NULL;
+	priv->viewSelector=NULL;
 
 	/* Set up stage */
 	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &defaultStageColor);

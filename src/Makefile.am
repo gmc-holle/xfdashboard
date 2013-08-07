@@ -30,6 +30,7 @@ xfdashboard_headers = \
 	utils.h \
 	view.h \
 	view-manager.h \
+	view-selector.h \
 	viewpad.h \
 	windows-view.h
 
@@ -48,6 +49,7 @@ xfdashboard_SOURCES = \
 	utils.c \
 	view.c \
 	view-manager.c \
+	view-selector.c \
 	viewpad.c \
 	windows-view.c
 

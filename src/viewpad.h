@@ -59,6 +59,9 @@ struct _XfdashboardViewpadClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*view_added)(XfdashboardViewpad *self, XfdashboardView *inView);
+	void (*view_removed)(XfdashboardViewpad *self, XfdashboardView *inView);
+
 	void (*view_activating)(XfdashboardViewpad *self, XfdashboardView *inView);
 	void (*view_activated)(XfdashboardViewpad *self, XfdashboardView *inView);
 	void (*view_deactivating)(XfdashboardViewpad *self, XfdashboardView *inView);
@@ -73,7 +76,10 @@ ClutterActor* xfdashboard_viewpad_new(void);
 gfloat xfdashboard_viewpad_get_spacing(XfdashboardViewpad *self);
 void xfdashboard_viewpad_set_spacing(XfdashboardViewpad *self, gfloat inSpacing);
 
+GList* xfdashboard_viewpad_get_views(XfdashboardViewpad *self);
+
 XfdashboardView* xfdashboard_viewpad_get_active_view(XfdashboardViewpad *self);
+void xfdashboard_viewpad_set_active_view(XfdashboardViewpad *self, XfdashboardView *inView);
 
 gboolean xfdashboard_viewpad_get_horizontal_scrollbar_visible(XfdashboardViewpad *self);
 gboolean xfdashboard_viewpad_get_vertical_scrollbar_visible(XfdashboardViewpad *self);
