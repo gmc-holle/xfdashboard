@@ -27,8 +27,7 @@
 
 == VIEWPAD (VIEW AGGREGATOR) ==
 [done] Implement viewpad
-- view-selector: For each view create a button to switch to this view (may be replace with "view button" in quicklaunch)
-- Implement "view button" as first icon in quicklaunch
+[done] view-selector: For each view create a button to switch to this view
 [done] Scroll bars should be shown or hidden automatically depending on if view fits the space in this direction
 
 == WINDOWS-LIST VIEW ==
