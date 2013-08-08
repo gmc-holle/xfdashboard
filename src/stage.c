@@ -106,15 +106,15 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_set_x_expand(groupHorizontal, TRUE);
 	clutter_actor_set_layout_manager(groupHorizontal, layout);
 
+	priv->viewSelector=xfdashboard_view_selector_new();
+	clutter_actor_add_child(groupHorizontal, priv->viewSelector);
+
 	priv->searchbox=clutter_actor_new();
 	clutter_actor_set_size(priv->searchbox, 16, 16);
 	clutter_color_init(&color, 0x00, 0xff, 0x00, 0x80);
 	clutter_actor_set_background_color(priv->searchbox, &color);
 	clutter_actor_set_x_expand(priv->searchbox, TRUE);
 	clutter_actor_add_child(groupHorizontal, priv->searchbox);
-
-	priv->viewSelector=xfdashboard_view_selector_new();
-	clutter_actor_add_child(groupHorizontal, priv->viewSelector);
 
 	clutter_actor_add_child(groupVertical, groupHorizontal);
 
