@@ -319,6 +319,34 @@ void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
 	if(firstActivatableView) _xfdashboard_viewpad_activate_view(self, XFDASHBOARD_VIEW(firstActivatableView));
 }
 
+/* Scroll event happened at this actor because it was not handled
+ * with any child actor
+ */
+gboolean _xfdashboard_viewpad_on_scroll_event(ClutterActor *inActor,
+												ClutterEvent *inEvent,
+												gpointer inUserData)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(inActor), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+
+	XfdashboardViewpad				*self=XFDASHBOARD_VIEWPAD(inActor);
+	XfdashboardViewpadPrivate		*priv=self->priv;
+	gboolean						result=CLUTTER_EVENT_PROPAGATE;
+
+	/* If vertical scroll bar is visible emit scroll event there */
+	if(priv->vScrollbarVisible)
+	{
+		result=clutter_actor_event(priv->vScrollbar, inEvent, FALSE);
+	}
+		/* Otherwise try horizontal scroll bar if visible */
+		else if(priv->hScrollbarVisible)
+		{
+			result=clutter_actor_event(priv->hScrollbar, inEvent, FALSE);
+		}
+
+	return(result);
+}
+
 /* IMPLEMENTATION: ClutterActor */
 
 /* Show this actor and the current active view */
@@ -731,7 +759,11 @@ void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	priv->vScrollbarVisible=FALSE;
 	priv->vScrollbarPolicy=DEFAULT_SCROLLBAR_POLICY;
 
-	/* Set up actor */
+	/* Set up this actor */
+	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
+	g_signal_connect(self, "scroll-event", G_CALLBACK(_xfdashboard_viewpad_on_scroll_event), NULL);
+
+	/* Set up child actors */
 	priv->hScrollbar=xfdashboard_scrollbar_new(CLUTTER_ORIENTATION_HORIZONTAL);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->hScrollbar);
 	g_signal_connect_swapped(priv->hScrollbar, "value-changed", G_CALLBACK(_xfdashboard_viewpad_on_scrollbar_value_changed), self);
