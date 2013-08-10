@@ -200,7 +200,7 @@ void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *self,
 }
 
 /* A live window was clicked */
-gboolean _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *self,
+void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *self,
 														gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), FALSE);
@@ -211,12 +211,10 @@ gboolean _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *sel
 	wnck_window_activate_transient((WnckWindow*)xfdashboard_live_window_get_window(liveWindow), xfdashboard_get_current_time());
 
 	xfdashboard_application_quit();
-
-	return(TRUE);
 }
 
 /* The close button of a live window was clicked */
-gboolean _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindowsView *self,
+void _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindowsView *self,
 															gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), FALSE);
@@ -225,8 +223,6 @@ gboolean _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindowsVie
 	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
 	wnck_window_close((WnckWindow*)xfdashboard_live_window_get_window(liveWindow), xfdashboard_get_current_time());
-
-	return(TRUE);
 }
 
 /* A window was moved or resized */

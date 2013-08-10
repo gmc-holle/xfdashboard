@@ -130,7 +130,7 @@ gboolean _xfdashboard_applications_view_on_draw_canvas(XfdashboardApplicationsVi
 	cairo_stroke(inContext);
 
 	/* Done drawing */
-	return(TRUE);
+	return(CLUTTER_EVENT_STOP);
 }
 
 /* IMPLEMENTATION: XfdashboardView */

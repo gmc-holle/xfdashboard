@@ -165,7 +165,7 @@ gboolean _xfdashboard_scrollbar_on_motion_event(ClutterActor *inActor,
 	value=_xfdashboard_scrollbar_get_value_from_coord(self, x, y, priv->dragAlignment);
 	xfdashboard_scrollbar_set_value(self, value);
 
-	return(TRUE);
+	return(CLUTTER_EVENT_STOP);
 }
 
 /* User released button in scroll bar */
@@ -214,7 +214,7 @@ gboolean _xfdashboard_scrollbar_on_button_released(ClutterActor *inActor,
 	value=_xfdashboard_scrollbar_get_value_from_coord(self, x, y, priv->dragAlignment);
 	xfdashboard_scrollbar_set_value(self, value);
 
-	return(TRUE);
+	return(CLUTTER_EVENT_STOP);
 }
 
 /* User pressed button in scroll bar */
@@ -273,7 +273,7 @@ gboolean _xfdashboard_scrollbar_on_button_pressed(ClutterActor *inActor,
 	priv->dragDevice=clutter_event_get_device(inEvent);
 	clutter_input_device_grab(priv->dragDevice, inActor);
 
-	return(TRUE);
+	return(CLUTTER_EVENT_STOP);
 }
 
 /* A scroll event occured in scroll bar (e.g. by mouse-wheel) */
@@ -320,7 +320,7 @@ gboolean _xfdashboard_scrollbar_on_scroll_event(ClutterActor *inActor,
 	/* Set new value */
 	xfdashboard_scrollbar_set_value(self, value);
 
-	return(TRUE);
+	return(CLUTTER_EVENT_STOP);
 }
 
 /* Rectangle canvas should be redrawn */
@@ -439,7 +439,7 @@ gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self,
 	}
 
 	/* Done drawing */
-	return(TRUE);
+	return(CLUTTER_EVENT_STOP);
 }
 
 /* IMPLEMENTATION: ClutterActor */

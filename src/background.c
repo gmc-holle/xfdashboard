@@ -152,7 +152,7 @@ gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *self,
 	cairo_fill(inContext);
 
 	/* Done drawing */
-	return(TRUE);
+	return(CLUTTER_EVENT_STOP);
 }
 
 /* IMPLEMENTATION: ClutterActor */

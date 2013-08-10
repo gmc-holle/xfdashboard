@@ -150,7 +150,7 @@ gboolean _xfdashboard_application_on_delete_stage(XfdashboardApplication *self,
 	_xfdashboard_application_quit(self, FALSE);
 
 	/* Prevent the default handler being called */
-	return(TRUE);
+	return(CLUTTER_EVENT_STOP);
 }
 
 /* A stage window was unfullscreened */

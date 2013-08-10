@@ -23,11 +23,6 @@
  * 
  */
 
-/* Automatic updates of ClutterX11TexturePixmap can break signaling of libwnk.
- * Uncomment next line if it does not happen on your system
- */
-#undef CLUTTER_X11_TEXTURE_PIXMAP_AUTOMATIC_UPDATES_BREAKS_LIBWNCK_SIGNALING
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -57,9 +52,6 @@ struct _XfdashboardLiveWindowPrivate
 	WnckWindow		*window;
 
 	/* Instance related */
-#ifdef CLUTTER_X11_TEXTURE_PIXMAP_AUTOMATIC_UPDATES_BREAKS_LIBWNCK_SIGNALING
-	gboolean		destroyed;
-#endif
 	gboolean		isVisible;
 
 	ClutterActor	*actorWindow;
@@ -108,47 +100,6 @@ guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 #define DEFAULT_MARGIN_TITLE_ACTOR		4.0f			// TODO: Replace by settings/theming object
 #define DEFAULT_MARGIN_CLOSE_BUTTON		4.0f			// TODO: Replace by settings/theming object
 #define WINDOW_CLOSE_BUTTON_ICON		GTK_STOCK_CLOSE	// TODO: Replace by settings/theming object
-
-#ifdef CLUTTER_X11_TEXTURE_PIXMAP_AUTOMATIC_UPDATES_BREAKS_LIBWNCK_SIGNALING
-/* Timeout callback used to update window texture when clutter breaks
- * libwnck signaling (e.g. we do not receive any "window-opened" signals
- * anymore). Source of this signal-lost is unknown. The only thing we know
- * that signaling is restored forever as soon as we switch workspace once.
- * But as long the source is not found this workaround can be activated.
- */
-gboolean _xfdashboard_live_window_on_idle(gpointer inUserData)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData), FALSE);
-
-	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inUserData);
-	XfdashboardLiveWindowPrivate	*priv=self->priv;
-
-	/* Check if actor was destroyed, so unref this doubly-reffed instance
-	 * and return FALSE to remove this timeout source function callback.
-	 */
-	if(priv->destroyed)
-	{
-		const gchar					*title=NULL;
-
-		if(priv->window) title=wnck_window_get_name(priv->window);
-		g_debug(_("Live window '%s' was destroyed so remove this callback."), title ? title : _("<unnamed>"));
-
-		g_object_unref(self);
-		return(FALSE);
-	}
-
-	/* Actor is still valid and active so update window if available */
-	if(priv->window)
-	{
-		gint						w, h;
-
-		wnck_window_get_geometry(priv->window, NULL, NULL, &w, &h);
-		clutter_x11_texture_pixmap_update_area(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow), 0, 0, w, h);
-	}
-
-	return(TRUE);
-}
-#endif
 
 /* Determine if window state flags specify window's visibility */
 gboolean _xfdashboard_live_window_is_window_visiblity_flag(XfdashboardLiveWindow *self, WnckWindowState inState)
@@ -319,16 +270,6 @@ void _xfdashboard_live_window_on_workspace_changed(XfdashboardLiveWindow *self, 
 }
 
 /* IMPLEMENTATION: ClutterActor */
-
-#ifdef CLUTTER_X11_TEXTURE_PIXMAP_AUTOMATIC_UPDATES_BREAKS_LIBWNCK_SIGNALING
-void _xfdashboard_live_window_destroy(ClutterActor *self)
-{
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
-
-	priv->destroyed=TRUE;
-	clutter_actor_hide(CLUTTER_ACTOR(self));
-}
-#endif
 
 /* Get preferred width/height */
 void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
@@ -622,9 +563,6 @@ void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass)
 	actorClass->get_preferred_width=_xfdashboard_live_window_get_preferred_width;
 	actorClass->get_preferred_height=_xfdashboard_live_window_get_preferred_height;
 	actorClass->allocate=_xfdashboard_live_window_allocate;
-#ifdef CLUTTER_X11_TEXTURE_PIXMAP_AUTOMATIC_UPDATES_BREAKS_LIBWNCK_SIGNALING
-	actorClass->destroy=_xfdashboard_live_window_destroy;
-#endif
 
 	gobjectClass->dispose=_xfdashboard_live_window_dispose;
 	gobjectClass->set_property=_xfdashboard_live_window_set_property;
@@ -745,10 +683,6 @@ void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set default values */
-#ifdef CLUTTER_X11_TEXTURE_PIXMAP_AUTOMATIC_UPDATES_BREAKS_LIBWNCK_SIGNALING
-	priv->destroyed=FALSE;
-	g_object_ref(self);
-#endif
 	priv->window=NULL;
 	priv->marginTitleActor=DEFAULT_MARGIN_TITLE_ACTOR;
 	priv->marginCloseButton=DEFAULT_MARGIN_CLOSE_BUTTON;
@@ -835,20 +769,7 @@ void xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, WnckWindow 
 	/* Setup window actor */
 	clutter_x11_texture_pixmap_set_window(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow), wnck_window_get_xid(priv->window), TRUE);
 	clutter_x11_texture_pixmap_sync_window(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow));
-#ifndef CLUTTER_X11_TEXTURE_PIXMAP_AUTOMATIC_UPDATES_BREAKS_LIBWNCK_SIGNALING
 	clutter_x11_texture_pixmap_set_automatic(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow), TRUE);
-#else
-	const gchar						*title=NULL;
-
-	if(priv->window) title=wnck_window_get_name(priv->window);
-	g_debug(_("Libwnck-Clutter workaround activated - live window '%s' will be updated by timeout callback."), title ? title : _("<unnamed>"));
-
-	clutter_threads_add_timeout_full(G_PRIORITY_HIGH,
-										1000/clutter_get_default_frame_rate(),
-										_xfdashboard_live_window_on_idle,
-										self,
-										NULL);
-#endif
 
 	/* Connect signals */
 	g_signal_connect_swapped(inWindow, "geometry-changed", G_CALLBACK(_xfdashboard_live_window_on_geometry_changed), self);
