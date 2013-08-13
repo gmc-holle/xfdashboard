@@ -72,6 +72,9 @@ void xfdashboard_view_selector_set_viewpad(XfdashboardViewSelector *self, Xfdash
 gfloat xfdashboard_view_selector_get_spacing(XfdashboardViewSelector *self);
 void xfdashboard_view_selector_set_spacing(XfdashboardViewSelector *self, gfloat inSpacing);
 
+ClutterOrientation xfdashboard_view_selector_get_orientation(XfdashboardViewSelector *self);
+void xfdashboard_view_selector_set_orientation(XfdashboardViewSelector *self, ClutterOrientation inOrientation);
+
 G_END_DECLS
 
 #endif

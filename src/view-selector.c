@@ -45,6 +45,7 @@ struct _XfdashboardViewSelectorPrivate
 	/* Properties related */
 	gfloat					spacing;
 	XfdashboardViewpad		*viewpad;
+	ClutterOrientation		orientation;
 
 	/* Instance related */
 	ClutterLayoutManager	*layout;
@@ -57,6 +58,7 @@ enum
 
 	PROP_VIEWPAD,
 	PROP_SPACING,
+	PROP_ORIENTATION,
 
 	PROP_LAST
 };
@@ -66,6 +68,7 @@ GParamSpec* XfdashboardViewSelectorProperties[PROP_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_SPACING				0.0f
 #define DEFAULT_BUTTON_STYLE		XFDASHBOARD_STYLE_ICON
+#define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_HORIZONTAL
 
 /* A view button was clicked to activate it */
 void _xfdashboard_view_selector_on_view_button_clicked(XfdashboardViewSelector *self, gpointer inUserData)
@@ -175,6 +178,10 @@ void _xfdashboard_view_selector_set_property(GObject *inObject,
 			xfdashboard_view_selector_set_spacing(self, g_value_get_float(inValue));
 			break;
 
+		case PROP_ORIENTATION:
+			xfdashboard_view_selector_set_orientation(self, g_value_get_enum(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -196,6 +203,10 @@ void _xfdashboard_view_selector_get_property(GObject *inObject,
 
 		case PROP_SPACING:
 			g_value_set_float(outValue, self->priv->spacing);
+			break;
+
+		case PROP_ORIENTATION:
+			g_value_set_enum(outValue, self->priv->orientation);
 			break;
 
 		default:
@@ -236,6 +247,14 @@ void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *klass)
 							DEFAULT_SPACING,
 							G_PARAM_READWRITE);
 
+	XfdashboardViewSelectorProperties[PROP_ORIENTATION]=
+		g_param_spec_enum("orientation",
+							_("Orientation"),
+							_("Orientation of view selector"),
+							CLUTTER_TYPE_ORIENTATION,
+							DEFAULT_ORIENTATION,
+							G_PARAM_READWRITE);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewSelectorProperties);
 }
 
@@ -251,13 +270,14 @@ void xfdashboard_view_selector_init(XfdashboardViewSelector *self)
 	/* Set up default values */
 	priv->viewpad=NULL;
 	priv->spacing=DEFAULT_SPACING;
+	priv->orientation=DEFAULT_ORIENTATION;
+
 	priv->layout=clutter_box_layout_new();
+	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(priv->layout), priv->orientation);
 
 	/* Set up actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
-	// TODO: if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) clutter_box_layout_set_vertical(CLUTTER_BOX_LAYOUT(priv->layout), FALSE);
-		// TODO: else clutter_box_layout_set_vertical(CLUTTER_BOX_LAYOUT(priv->layout), TRUE);
 }
 
 /* Implementation: Public API */
@@ -350,4 +370,31 @@ void xfdashboard_view_selector_set_spacing(XfdashboardViewSelector *self, gfloat
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewSelectorProperties[PROP_SPACING]);
+}
+
+/* Get/set orientation */
+ClutterOrientation xfdashboard_view_selector_get_orientation(XfdashboardViewSelector *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self), DEFAULT_SPACING);
+
+	return(self->priv->orientation);
+}
+
+void xfdashboard_view_selector_set_orientation(XfdashboardViewSelector *self, ClutterOrientation inOrientation)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
+	g_return_if_fail(inOrientation!=CLUTTER_ORIENTATION_HORIZONTAL || inOrientation!=CLUTTER_ORIENTATION_VERTICAL);
+
+	XfdashboardViewSelectorPrivate	*priv=self->priv;
+
+	/* Only set value if it changes */
+	if(inOrientation==priv->orientation) return;
+
+	/* Set new value */
+	priv->orientation=inOrientation;
+	if(priv->layout) clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(priv->layout), priv->orientation);
+	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+	/* Notify about property change */
+	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewSelectorProperties[PROP_ORIENTATION]);
 }
