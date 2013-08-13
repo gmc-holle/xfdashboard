@@ -29,7 +29,7 @@
 G_BEGIN_DECLS
 
 /* Application start-up error codes */
-typedef enum
+typedef enum /*< skip,prefix=XFDASHBOARD_APPLICATION_ERROR >*/
 {
 	XFDASHBOARD_APPLICATION_ERROR_NONE=0,
 	XFDASHBOARD_APPLICATION_ERROR_FAILED,
@@ -38,14 +38,14 @@ typedef enum
 } XfdashboardApplicationErrorCode;
 
 /* List mode for views */
-typedef enum
+typedef enum /*< prefix=XFDASHBOARD_VIEW >*/
 {
 	XFDASHBOARD_VIEW_LIST=0,
 	XFDASHBOARD_VIEW_ICON
 } XfdashboardViewMode;
 
 /* Visibility policy (e.g. for scroll bars in views) */
-typedef enum
+typedef enum /*< prefix=XFDASHBOARD_POLICY >*/
 {
 	XFDASHBOARD_POLICY_NEVER=0,
 	XFDASHBOARD_POLICY_AUTOMATIC,
@@ -53,7 +53,7 @@ typedef enum
 } XfdashboardPolicy;
 
 /* Style (e.g. used in buttons) */
-typedef enum
+typedef enum /*< prefix=XFDASHBOARD_STYLE >*/
 {
 	XFDASHBOARD_STYLE_TEXT=0,
 	XFDASHBOARD_STYLE_ICON,
@@ -61,7 +61,7 @@ typedef enum
 } XfdashboardStyle;
 
 /* Orientation (e.g. used in buttons) */
-typedef enum
+typedef enum /*< prefix=XFDASHBOARD_ORIENTATION >*/
 {
 	XFDASHBOARD_ORIENTATION_LEFT=0,
 	XFDASHBOARD_ORIENTATION_RIGHT,
@@ -70,7 +70,7 @@ typedef enum
 } XfdashboardOrientation;
 
 /* Background types */
-typedef enum
+typedef enum /*< prefix=XFDASHBOARD_BACKGROUND_TYPE >*/
 {
 	XFDASHBOARD_BACKGROUND_TYPE_NONE=0,
 	XFDASHBOARD_BACKGROUND_TYPE_RECTANGLE,
@@ -78,7 +78,7 @@ typedef enum
 } XfdashboardBackgroundType;
 
 /* Corners (e.g. used in background for rounded rectangles) */
-typedef enum
+typedef enum /*< flags,prefix=XFDASHBOARD_CORNERS >*/
 {
 	XFDASHBOARD_CORNERS_NONE=0,
 
