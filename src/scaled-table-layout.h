@@ -62,7 +62,7 @@ struct _XfdashboardScaledTableLayoutClass
 /* Public API */
 GType xfdashboard_scaled_table_layout_get_type(void) G_GNUC_CONST;
 
-ClutterLayoutManager* xfdashboard_scaled_table_layout_new();
+ClutterLayoutManager* xfdashboard_scaled_table_layout_new(void);
 
 gboolean xfdashboard_scaled_table_layout_get_relative_scale(XfdashboardScaledTableLayout *self);
 void xfdashboard_scaled_table_layout_set_relative_scale(XfdashboardScaledTableLayout *self, gboolean inScaling);

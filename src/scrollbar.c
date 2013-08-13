@@ -286,8 +286,6 @@ gboolean _xfdashboard_scrollbar_on_scroll_event(ClutterActor *inActor,
 
 	XfdashboardScrollbar			*self=XFDASHBOARD_SCROLLBAR(inActor);
 	XfdashboardScrollbarPrivate		*priv=self->priv;
-	gfloat							eventX, eventY;
-	gfloat							x, y;
 	gfloat							value;
 	gfloat							directionFactor;
 

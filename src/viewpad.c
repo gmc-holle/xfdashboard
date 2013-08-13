@@ -294,7 +294,8 @@ void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
 
 	XfdashboardViewpadPrivate	*priv=self->priv;
 	ClutterActorIter			iter;
-	ClutterActor				*child, *firstActivatableView;
+	ClutterActor				*child;
+	ClutterActor				*firstActivatableView=NULL;
 
 	/* Iterate through create views and lookup view of given type */
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
@@ -368,7 +369,6 @@ void _xfdashboard_viewpad_get_preferred_height(ClutterActor *self,
 													gfloat *outMinHeight,
 													gfloat *outNaturalHeight)
 {
-	XfdashboardScrollbarPrivate		*priv=XFDASHBOARD_VIEWPAD(self)->priv;
 	gfloat							minHeight, naturalHeight;
 
 	/* Do not set any minimum or natural sizes. The parent actor is responsible
@@ -386,7 +386,6 @@ void _xfdashboard_viewpad_get_preferred_width(ClutterActor *self,
 												gfloat *outMinWidth,
 												gfloat *outNaturalWidth)
 {
-	XfdashboardScrollbarPrivate		*priv=XFDASHBOARD_VIEWPAD(self)->priv;
 	gfloat							minWidth, naturalWidth;
 
 	/* Do not set any minimum or natural sizes. The parent actor is responsible
@@ -745,8 +744,7 @@ void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 {
 	XfdashboardViewpadPrivate	*priv;
-	GList						*views;
-	ClutterLayoutManager		*layout;
+	const GList					*views;
 
 	priv=self->priv=XFDASHBOARD_VIEWPAD_GET_PRIVATE(self);
 
@@ -831,7 +829,6 @@ GList* xfdashboard_viewpad_get_views(XfdashboardViewpad *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
 
-	XfdashboardViewpadPrivate	*priv=self->priv;
 	ClutterActorIter			iter;
 	ClutterActor				*child;
 	GList						*list=NULL;

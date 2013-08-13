@@ -30,6 +30,7 @@
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <gtk/gtk.h>
+#include <gdk/gdkx.h>
 
 /* Private constants */
 #define FALLBACK_ICON_NAME		GTK_STOCK_MISSING_IMAGE

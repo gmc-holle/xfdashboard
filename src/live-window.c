@@ -32,6 +32,7 @@
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
+#include <math.h>
 
 #include "button.h"
 #include "stage.h"
@@ -192,7 +193,6 @@ void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *self,
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
 
 	XfdashboardLiveWindowPrivate	*priv=self->priv;
-	WnckWindow						*window=WNCK_WINDOW(inUserData);
 
 	/* Show or hide close button actor */
 	if(inChangedMask & WNCK_WINDOW_ACTION_CLOSE)
@@ -261,9 +261,6 @@ void _xfdashboard_live_window_on_workspace_changed(XfdashboardLiveWindow *self, 
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
-
-	XfdashboardLiveWindowPrivate	*priv=self->priv;
-	WnckWindow						*window=WNCK_WINDOW(inUserData);
 
 	/* Emit "workspace-changed" signal */
 	g_signal_emit(self, XfdashboardLiveWindowSignals[SIGNAL_WORKSPACE_CHANGED], 0);
@@ -721,7 +718,7 @@ void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 /* Implementation: Public API */
 
 /* Create new instance */
-ClutterActor* xfdashboard_live_window_new()
+ClutterActor* xfdashboard_live_window_new(void)
 {
 	return(CLUTTER_ACTOR(g_object_new(XFDASHBOARD_TYPE_LIVE_WINDOW, NULL)));
 }
@@ -795,7 +792,7 @@ XfdashboardButton* xfdashboard_live_window_get_title_actor(XfdashboardLiveWindow
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
 
-	return(self->priv->actorTitle);
+	return(XFDASHBOARD_BUTTON(self->priv->actorTitle));
 }
 
 /* Get/set margin of title actor */
@@ -830,7 +827,7 @@ XfdashboardButton* xfdashboard_live_window_get_close_button(XfdashboardLiveWindo
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
 
-	return(self->priv->actorClose);
+	return(XFDASHBOARD_BUTTON(self->priv->actorClose));
 }
 
 /* Get/set margin of close button actor */

@@ -63,14 +63,6 @@ enum
 
 GParamSpec* XfdashboardViewSelectorProperties[PROP_LAST]={ 0, };
 
-/* Signals */
-enum
-{
-	SIGNAL_LAST
-};
-
-guint XfdashboardViewSelectorSignals[SIGNAL_LAST]={ 0, };
-
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_SPACING				0.0f
 #define DEFAULT_BUTTON_STYLE		XFDASHBOARD_STYLE_ICON
@@ -98,7 +90,6 @@ void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *self,
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
 
-	XfdashboardViewSelectorPrivate		*priv=self->priv;
 	ClutterActor						*button;
 	const gchar							*viewName, *viewIcon;
 
@@ -126,27 +117,24 @@ void _xfdashboard_view_selector_on_view_removed(XfdashboardViewSelector *self,
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 
-	XfdashboardViewSelectorPrivate		*priv=self->priv;
 	ClutterActorIter					iter;
 	ClutterActor						*child;
+	gpointer							view;
 
 	/* Iterate through create views and lookup view of given type */
-	//// TODO: clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-	//// TODO: while(clutter_actor_iter_next(&iter, &child))
-	//// TODO: {
-		//// TODO: /* Check if child is a view otherwise continue iterating */
-		//// TODO: if(XFDASHBOARD_IS_VIEW(child)!=TRUE) continue;
-//// TODO: 
-		//// TODO: /* If child is not of type being unregistered it will get
-		 //// TODO: * the first activatable view after we destroyed all views found.
-		 //// TODO: */
-		//// TODO: if(G_OBJECT_TYPE(child)!=inViewType) firstActivatableView=child;
-			//// TODO: else
-			//// TODO: {
-				//// TODO: if(child==priv->activeView) _xfdashboard_view_selector_activate_view(self, NULL);
-				//// TODO: clutter_actor_destroy(child);
-			//// TODO: }
-	//// TODO: }
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Check if child is a button otherwise continue iterating */
+		if(XFDASHBOARD_IS_BUTTON(child)!=TRUE) continue;
+
+		/* If button has reference to view destroy it */
+		view=g_object_get_data(G_OBJECT(child), "view");
+		if(XFDASHBOARD_IS_VIEW(view) && XFDASHBOARD_VIEW(view)==inView)
+		{
+			clutter_actor_destroy(child);
+		}
+	}
 }
 
 /* IMPLEMENTATION: GObject */
@@ -257,8 +245,6 @@ void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *klass)
 void xfdashboard_view_selector_init(XfdashboardViewSelector *self)
 {
 	XfdashboardViewSelectorPrivate		*priv;
-	GList								*views;
-	ClutterLayoutManager				*layout;
 
 	priv=self->priv=XFDASHBOARD_VIEW_SELECTOR_GET_PRIVATE(self);
 
@@ -270,8 +256,8 @@ void xfdashboard_view_selector_init(XfdashboardViewSelector *self)
 	/* Set up actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
-	//// TODO: if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) clutter_box_layout_set_vertical(CLUTTER_BOX_LAYOUT(priv->layout), FALSE);
-		//// TODO: else clutter_box_layout_set_vertical(CLUTTER_BOX_LAYOUT(priv->layout), TRUE);
+	// TODO: if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) clutter_box_layout_set_vertical(CLUTTER_BOX_LAYOUT(priv->layout), FALSE);
+		// TODO: else clutter_box_layout_set_vertical(CLUTTER_BOX_LAYOUT(priv->layout), TRUE);
 }
 
 /* Implementation: Public API */

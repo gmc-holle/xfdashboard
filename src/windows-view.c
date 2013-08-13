@@ -203,8 +203,8 @@ void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *self,
 void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *self,
 														gpointer inUserData)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), FALSE);
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData), FALSE);
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
@@ -217,8 +217,8 @@ void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *self,
 void _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindowsView *self,
 															gpointer inUserData)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), FALSE);
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData), FALSE);
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 

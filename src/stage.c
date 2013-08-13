@@ -123,7 +123,7 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_set_x_expand(priv->viewpad, TRUE);
 	clutter_actor_set_y_expand(priv->viewpad, TRUE);
 	clutter_actor_add_child(groupVertical, priv->viewpad);
-	xfdashboard_view_selector_set_viewpad(priv->viewSelector, priv->viewpad);
+	xfdashboard_view_selector_set_viewpad(XFDASHBOARD_VIEW_SELECTOR(priv->viewSelector), XFDASHBOARD_VIEWPAD(priv->viewpad));
 
 	/* Set up layout objects */
 	layout=clutter_box_layout_new();
@@ -168,7 +168,6 @@ void _xfdashboard_stage_on_active_window_changed(XfdashboardStage *self, WnckWin
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(inPreviousWindow==NULL || WNCK_IS_WINDOW(inPreviousWindow));
 
-	XfdashboardStagePrivate		*priv=self->priv;
 	WnckWindow					*stageWindow;
 
 	/* Check if active window deactivated is this stage window */
@@ -274,37 +273,6 @@ void _xfdashboard_stage_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_stage_parent_class)->dispose(inObject);
 }
 
-/* Set/get properties */
-void _xfdashboard_stage_set_property(GObject *inObject,
-										guint inPropID,
-										const GValue *inValue,
-										GParamSpec *inSpec)
-{
-	XfdashboardStage			*self=XFDASHBOARD_STAGE(inObject);
-
-	switch(inPropID)
-	{
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
-}
-
-void _xfdashboard_stage_get_property(GObject *inObject,
-										guint inPropID,
-										GValue *outValue,
-										GParamSpec *inSpec)
-{
-	XfdashboardStage	*self=XFDASHBOARD_STAGE(inObject);
-
-	switch(inPropID)
-	{
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
-}
-
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
@@ -315,8 +283,6 @@ void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_stage_dispose;
-	gobjectClass->set_property=_xfdashboard_stage_set_property;
-	gobjectClass->get_property=_xfdashboard_stage_get_property;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardStagePrivate));
@@ -328,7 +294,6 @@ void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 void xfdashboard_stage_init(XfdashboardStage *self)
 {
 	XfdashboardStagePrivate		*priv;
-	XfdashboardApplication		*application;
 
 	priv=self->priv=XFDASHBOARD_STAGE_GET_PRIVATE(self);
 

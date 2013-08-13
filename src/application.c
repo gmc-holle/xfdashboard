@@ -175,7 +175,7 @@ gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
 
 	XfdashboardApplicationPrivate	*priv=self->priv;
 	GError							*error=NULL;
-	XfdashboardStage				*stage;
+	ClutterActor					*stage;
 
 	/* Initialize xfconf */
 	if(!xfconf_init(&error))
@@ -201,7 +201,7 @@ gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
 	//       setup for primary display
 	stage=xfdashboard_stage_new();
 
-	clutter_actor_show(CLUTTER_ACTOR(stage));
+	clutter_actor_show(stage);
 	g_signal_connect_swapped(stage, "delete-event", G_CALLBACK(_xfdashboard_application_on_delete_stage), self);
 
 	/* Initialization was successful so return TRUE */
@@ -336,7 +336,7 @@ void _xfdashboard_application_dispose(GObject *inObject)
 	priv->xfconfChannel=NULL;
 
 	/* Unset singleton */
-	if(G_LIKELY(application==inObject)) application=NULL;
+	if(G_LIKELY(G_OBJECT(application)==inObject)) application=NULL;
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_application_parent_class)->dispose(inObject);
@@ -348,8 +348,6 @@ void _xfdashboard_application_set_property(GObject *inObject,
 														const GValue *inValue,
 														GParamSpec *inSpec)
 {
-	XfdashboardApplication		*self=XFDASHBOARD_APPLICATION(inObject);
-
 	switch(inPropID)
 	{
 		default:

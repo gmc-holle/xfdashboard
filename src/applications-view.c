@@ -26,6 +26,7 @@
 #endif
 
 #include <glib/gi18n-lib.h>
+#include <math.h>
 
 #include "applications-view.h"
 #include "utils.h"
@@ -185,37 +186,6 @@ void _xfdashboard_applications_view_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_applications_view_parent_class)->dispose(inObject);
 }
 
-/* Set/get properties */
-void _xfdashboard_applications_view_set_property(GObject *inObject,
-											guint inPropID,
-											const GValue *inValue,
-											GParamSpec *inSpec)
-{
-	XfdashboardApplicationsView		*self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
-	
-	switch(inPropID)
-	{
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
-}
-
-void _xfdashboard_applications_view_get_property(GObject *inObject,
-											guint inPropID,
-											GValue *outValue,
-											GParamSpec *inSpec)
-{
-	XfdashboardApplicationsView		*self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
-
-	switch(inPropID)
-	{
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
-}
-
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
@@ -228,8 +198,6 @@ void xfdashboard_applications_view_class_init(XfdashboardApplicationsViewClass *
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_applications_view_dispose;
-	gobjectClass->set_property=_xfdashboard_applications_view_set_property;
-	gobjectClass->get_property=_xfdashboard_applications_view_get_property;
 
 	actorClass->allocate=_xfdashboard_applications_view_allocate;
 

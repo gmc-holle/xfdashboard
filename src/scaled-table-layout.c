@@ -222,11 +222,11 @@ void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self,
 	/* Iterate through children and find largest one
 	 * if relative scale was set
 	 */
+	largestWidth=largestHeight=0.0f;
 	if(priv->relativeScale==TRUE)
 	{
 		gfloat								w, h;
 
-		largestWidth=largestHeight=0.0f;
 		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
 		while(clutter_actor_iter_next(&iter, &child))
 		{
@@ -427,9 +427,10 @@ void xfdashboard_scaled_table_layout_init(XfdashboardScaledTableLayout *self)
 
 /* Implementation: Public API */
 
-ClutterLayoutManager* xfdashboard_scaled_table_layout_new()
+/* Create new instance */
+ClutterLayoutManager* xfdashboard_scaled_table_layout_new(void)
 {
-	return(g_object_new(XFDASHBOARD_TYPE_SCALED_TABLE_LAYOUT, NULL));
+	return(CLUTTER_LAYOUT_MANAGER(g_object_new(XFDASHBOARD_TYPE_SCALED_TABLE_LAYOUT, NULL)));
 }
 
 /* Get/set relative scaling of all children to largest one */

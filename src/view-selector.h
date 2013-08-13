@@ -69,6 +69,9 @@ ClutterActor* xfdashboard_view_selector_new_for_viewpad(XfdashboardViewpad *inVi
 XfdashboardViewpad* xfdashboard_view_selector_get_viewpad(XfdashboardViewSelector *self);
 void xfdashboard_view_selector_set_viewpad(XfdashboardViewSelector *self, XfdashboardViewpad *inViewpad);
 
+gfloat xfdashboard_view_selector_get_spacing(XfdashboardViewSelector *self);
+void xfdashboard_view_selector_set_spacing(XfdashboardViewSelector *self, gfloat inSpacing);
+
 G_END_DECLS
 
 #endif
