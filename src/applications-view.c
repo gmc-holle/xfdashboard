@@ -134,20 +134,6 @@ gboolean _xfdashboard_applications_view_on_draw_canvas(XfdashboardApplicationsVi
 	return(CLUTTER_EVENT_STOP);
 }
 
-/* IMPLEMENTATION: XfdashboardView */
-
-/* Called when view instance was created */
-void _xfdashboard_applications_view_created(XfdashboardView *self)
-{
-	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
-
-	/* Set up default values for properties */
-	g_object_set(G_OBJECT(self),
-					"view-name", "Applications",
-					"view-icon", DEFAULT_VIEW_ICON,
-					NULL);
-}
-
 /* IMPLEMENTATION: ClutterActor */
 
 /* Allocate position and size of actor and its children*/
@@ -162,9 +148,6 @@ void _xfdashboard_applications_view_allocate(ClutterActor *self,
 
 	/* Set size of slider canvas */
 	clutter_content_invalidate(priv->canvas);
-	//~ clutter_canvas_set_size(CLUTTER_CANVAS(priv->canvas),
-								//~ clutter_actor_box_get_width(inBox),
-								//~ clutter_actor_box_get_height(inBox));
 }
 
 /* IMPLEMENTATION: GObject */
@@ -201,8 +184,6 @@ void xfdashboard_applications_view_class_init(XfdashboardApplicationsViewClass *
 
 	actorClass->allocate=_xfdashboard_applications_view_allocate;
 
-	viewClass->created=_xfdashboard_applications_view_created;
-
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardApplicationsViewPrivate));
 }
@@ -228,6 +209,11 @@ void xfdashboard_applications_view_init(XfdashboardApplicationsView *self)
 	clutter_actor_set_size(CLUTTER_ACTOR(self), ACTOR_WIDTH, ACTOR_HEIGHT);
 #undef ACTOR_HEIGHT
 #undef ACTOR_WIDTH
+
+	/* Set up view */
+	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "applications");
+	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Applications"));
+	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), DEFAULT_VIEW_ICON);
 }
 
 /* Implementation: Public API */

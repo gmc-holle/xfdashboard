@@ -345,20 +345,6 @@ void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_WORKSPACE]);
 }
 
-/* IMPLEMENTATION: XfdashboardView */
-
-/* Called when view instance was created */
-void _xfdashboard_windows_view_created(XfdashboardView *self)
-{
-	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
-
-	/* Set up default values for properties */
-	g_object_set(G_OBJECT(self),
-					"view-name", "Windows",
-					"view-icon", DEFAULT_VIEW_ICON,
-					NULL);
-}
-
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -433,8 +419,6 @@ void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *klass)
 	gobjectClass->set_property=_xfdashboard_windows_view_set_property;
 	gobjectClass->get_property=_xfdashboard_windows_view_get_property;
 
-	viewClass->created=_xfdashboard_windows_view_created;
-
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardWindowsViewPrivate));
 
@@ -462,6 +446,11 @@ void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	/* Set up default values */
 	priv->screen=wnck_screen_get_default();
 	priv->workspace=NULL;
+
+	/* Set up view */
+	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "windows");
+	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Windows"));
+	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), DEFAULT_VIEW_ICON);
 
 	/* Setup actor */
 	layout=xfdashboard_scaled_table_layout_new();

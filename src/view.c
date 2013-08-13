@@ -43,6 +43,8 @@ G_DEFINE_ABSTRACT_TYPE(XfdashboardView,
 struct _XfdashboardViewPrivate
 {
 	/* Properties related */
+	gchar					*viewInternalName;
+
 	gchar					*viewName;
 
 	gchar					*viewIcon;
@@ -57,6 +59,7 @@ enum
 {
 	PROP_0,
 
+	PROP_VIEW_INTERNAL_NAME,
 	PROP_VIEW_NAME,
 	PROP_VIEW_ICON,
 
@@ -86,31 +89,6 @@ guint XfdashboardViewSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: GObject */
 
-/* Called last in object instance creation chain */
-void _xfdashboard_view_constructed(GObject *inObject)
-{
-	g_return_if_fail(XFDASHBOARD_IS_VIEW(inObject));
-
-	XfdashboardView			*self=XFDASHBOARD_VIEW(inObject);
-	XfdashboardViewClass	*klass=XFDASHBOARD_VIEW_GET_CLASS(self);
-
-	/* Call parent's class constructed method */
-	G_OBJECT_CLASS(xfdashboard_view_parent_class)->constructed(inObject);
-
-	/* Call our virtual function "created" */
-	if(klass->created) (klass->created)(self);
-		else
-		{
-			g_warning(_("%s has not implemented virtual function 'created'"), G_OBJECT_TYPE_NAME(inObject));
-
-			/* Set up default values for properties */
-			g_object_set(G_OBJECT(self),
-							"view-name", _("unnamed"),
-							"view-icon", GTK_STOCK_MISSING_IMAGE,
-							NULL);
-		}
-}
-
 /* Dispose this object */
 void _xfdashboard_view_dispose(GObject *inObject)
 {
@@ -118,6 +96,12 @@ void _xfdashboard_view_dispose(GObject *inObject)
 	XfdashboardViewPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
+	if(priv->viewInternalName)
+	{
+		g_free(priv->viewInternalName);
+		priv->viewInternalName=NULL;
+	}
+
 	if(priv->viewName)
 	{
 		g_free(priv->viewName);
@@ -150,6 +134,10 @@ void _xfdashboard_view_set_property(GObject *inObject,
 	
 	switch(inPropID)
 	{
+		case PROP_VIEW_INTERNAL_NAME:
+			xfdashboard_view_set_internal_name(self, g_value_get_string(inValue));
+			break;
+
 		case PROP_VIEW_NAME:
 			xfdashboard_view_set_name(self, g_value_get_string(inValue));
 			break;
@@ -173,6 +161,10 @@ void _xfdashboard_view_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
+		case PROP_VIEW_INTERNAL_NAME:
+			g_value_set_string(outValue, self->priv->viewInternalName);
+			break;
+
 		case PROP_VIEW_NAME:
 			g_value_set_string(outValue, self->priv->viewName);
 			break;
@@ -196,17 +188,21 @@ void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->constructed=_xfdashboard_view_constructed;
 	gobjectClass->set_property=_xfdashboard_view_set_property;
 	gobjectClass->get_property=_xfdashboard_view_get_property;
 	gobjectClass->dispose=_xfdashboard_view_dispose;
-
-	klass->created=NULL;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardViewPrivate));
 
 	/* Define properties */
+	XfdashboardViewProperties[PROP_VIEW_INTERNAL_NAME]=
+		g_param_spec_string("view-internal-name",
+							_("View internal name"),
+							_("Internal and untranslated name of view used in application"),
+							NULL,
+							G_PARAM_READWRITE);
+
 	XfdashboardViewProperties[PROP_VIEW_NAME]=
 		g_param_spec_string("view-name",
 							_("View name"),
@@ -313,6 +309,32 @@ void xfdashboard_view_init(XfdashboardView *self)
 }
 
 /* Implementation: Public API */
+
+/* Get/set internal name of view */
+const gchar* xfdashboard_view_get_internal_name(XfdashboardView *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), NULL);
+
+	return(self->priv->viewInternalName);
+}
+
+void xfdashboard_view_set_internal_name(XfdashboardView *self, const gchar *inInternalName)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+	g_return_if_fail(inInternalName!=NULL);
+
+	XfdashboardViewPrivate	*priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->viewInternalName, inInternalName)!=0)
+	{
+		if(priv->viewInternalName) g_free(priv->viewInternalName);
+		priv->viewInternalName=g_strdup(inInternalName);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_VIEW_INTERNAL_NAME]);
+	}
+}
 
 /* Get/set name of view */
 const gchar* xfdashboard_view_get_name(XfdashboardView *self)

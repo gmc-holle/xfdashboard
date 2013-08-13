@@ -56,8 +56,6 @@ struct _XfdashboardViewClass
 
 	/*< public >*/
 	/* Virtual functions */
-	void (*created)(XfdashboardView *self);
-
 	void (*activating)(XfdashboardView *self);
 	void (*activated)(XfdashboardView *self);
 	void (*deactivating)(XfdashboardView *self);
@@ -69,6 +67,9 @@ struct _XfdashboardViewClass
 
 /* Public API */
 GType xfdashboard_view_get_type(void) G_GNUC_CONST;
+
+const gchar* xfdashboard_view_get_internal_name(XfdashboardView *self);
+void xfdashboard_view_set_internal_name(XfdashboardView *self, const gchar *inInternalName);
 
 const gchar* xfdashboard_view_get_name(XfdashboardView *self);
 void xfdashboard_view_set_name(XfdashboardView *self, const gchar *inName);
