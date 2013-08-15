@@ -26,6 +26,7 @@ xfdashboard_headers = \
 	scaled-table-layout.h \
 	scrollbar.h \
 	stage.h \
+	textbox.h \
 	types.h \
 	utils.h \
 	view.h \
@@ -46,6 +47,7 @@ xfdashboard_SOURCES = \
 	scaled-table-layout.c \
 	scrollbar.c \
 	stage.c \
+	textbox.c \
 	utils.c \
 	view.c \
 	view-manager.c \

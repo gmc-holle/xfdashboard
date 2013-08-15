@@ -35,6 +35,7 @@
 #include "application.h"
 #include "viewpad.h"
 #include "view-selector.h"
+#include "textbox.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,
@@ -109,11 +110,11 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 	priv->viewSelector=xfdashboard_view_selector_new();
 	clutter_actor_add_child(groupHorizontal, priv->viewSelector);
 
-	priv->searchbox=clutter_actor_new();
-	clutter_actor_set_size(priv->searchbox, 16, 16);
-	clutter_color_init(&color, 0x00, 0xff, 0x00, 0x80);
-	clutter_actor_set_background_color(priv->searchbox, &color);
+	priv->searchbox=xfdashboard_text_box_new();
 	clutter_actor_set_x_expand(priv->searchbox, TRUE);
+	xfdashboard_text_box_set_hint_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), _("Just type to search..."));
+	xfdashboard_text_box_set_primary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_FIND);
+	xfdashboard_text_box_set_secondary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_CLEAR);
 	clutter_actor_add_child(groupHorizontal, priv->searchbox);
 
 	clutter_actor_add_child(groupVertical, groupHorizontal);

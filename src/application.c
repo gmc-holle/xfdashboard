@@ -103,7 +103,7 @@ const GOptionEntry XfdashboardApplicationOptions[]=
 	};
 
 /* Single instance of application */
-XfdashboardApplication*		application=NULL;
+static XfdashboardApplication*		application=NULL;
 
 /* Quit application depending on daemon mode and force parameter */
 void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean inForceQuit)

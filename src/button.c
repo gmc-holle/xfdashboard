@@ -105,7 +105,7 @@ guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
 /* Private constants */
 #define DEFAULT_SIZE	16
 
-ClutterColor			defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
+static ClutterColor			defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 
 /* IMPLEMENTATION: Private variables and methods */
 
