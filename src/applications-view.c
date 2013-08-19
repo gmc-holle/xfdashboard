@@ -33,6 +33,7 @@
 #include "stage.h"
 #include "application.h"
 #include "view.h"
+#include "fit-box-layout.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsView,
@@ -48,7 +49,9 @@ struct _XfdashboardApplicationsViewPrivate
 	/* Properties related */
 
 	/* Instance related */
-	ClutterContent			*canvas;
+	ClutterActor			*clockActor;
+	ClutterContent			*clockCanvas;
+	guint					timeoutID;
 };
 
 /* Properties */
@@ -134,6 +137,47 @@ gboolean _xfdashboard_applications_view_on_draw_canvas(XfdashboardApplicationsVi
 	return(CLUTTER_EVENT_STOP);
 }
 
+/* Timeout source callback which invalidate clock canvas */
+gboolean _xfdashboard_applications_view_on_timeout(gpointer inUserData)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inUserData), FALSE);
+
+	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(inUserData)->priv;
+
+	/* Invalidate clock canvas which force a redraw with current time */
+	clutter_content_invalidate(CLUTTER_CONTENT(priv->clockCanvas));
+
+	return(TRUE);
+}
+
+/* IMPLEMENTATION: XfdashboardView */
+
+/* View was activated */
+void _xfdashboard_applications_view_activated(XfdashboardApplicationsView *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+
+	XfdashboardApplicationsViewPrivate	*priv=self->priv;
+
+	/* Create timeout source will invalidate canvas each second */
+	priv->timeoutID=clutter_threads_add_timeout(1000, _xfdashboard_applications_view_on_timeout, self);
+}
+
+/* View will be deactivated */
+void _xfdashboard_applications_view_deactivating(XfdashboardApplicationsView *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+
+	XfdashboardApplicationsViewPrivate	*priv=self->priv;
+
+	/* Remove timeout source if available */
+	if(priv->timeoutID)
+	{
+		g_source_remove(priv->timeoutID);
+		priv->timeoutID=0;
+	}
+}
+
 /* IMPLEMENTATION: ClutterActor */
 
 /* Allocate position and size of actor and its children*/
@@ -142,12 +186,17 @@ void _xfdashboard_applications_view_allocate(ClutterActor *self,
 												ClutterAllocationFlags inFlags)
 {
 	XfdashboardApplicationsViewPrivate		*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
+	ClutterActorBox							childAllocation;
 
 	/* Chain up to store the allocation of the actor */
 	CLUTTER_ACTOR_CLASS(xfdashboard_applications_view_parent_class)->allocate(self, inBox, inFlags);
 
-	/* Set size of slider canvas */
-	clutter_content_invalidate(priv->canvas);
+	/* Set size of actor and canvas */
+	clutter_actor_allocate(priv->clockActor, inBox, inFlags);
+
+	clutter_canvas_set_size(CLUTTER_CANVAS(priv->clockCanvas),
+								clutter_actor_box_get_width(inBox),
+								clutter_actor_box_get_height(inBox));
 }
 
 /* IMPLEMENTATION: GObject */
@@ -159,10 +208,22 @@ void _xfdashboard_applications_view_dispose(GObject *inObject)
 	XfdashboardApplicationsViewPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
-	if(priv->canvas)
+	if(priv->timeoutID)
 	{
-		g_object_unref(priv->canvas);
-		priv->canvas=NULL;
+		g_source_remove(priv->timeoutID);
+		priv->timeoutID=0;
+	}
+
+	if(priv->clockActor)
+	{
+		clutter_actor_destroy(priv->clockActor);
+		priv->clockActor=NULL;
+	}
+
+	if(priv->clockCanvas)
+	{
+		g_object_unref(priv->clockCanvas);
+		priv->clockCanvas=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -184,6 +245,9 @@ void xfdashboard_applications_view_class_init(XfdashboardApplicationsViewClass *
 
 	actorClass->allocate=_xfdashboard_applications_view_allocate;
 
+	viewClass->activated=_xfdashboard_applications_view_activated;
+	viewClass->deactivating=_xfdashboard_applications_view_deactivating;
+
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardApplicationsViewPrivate));
 }
@@ -194,21 +258,28 @@ void xfdashboard_applications_view_class_init(XfdashboardApplicationsViewClass *
 void xfdashboard_applications_view_init(XfdashboardApplicationsView *self)
 {
 	XfdashboardApplicationsViewPrivate	*priv;
+	ClutterLayoutManager				*layout;
 
 	self->priv=priv=XFDASHBOARD_APPLICATIONS_VIEW_GET_PRIVATE(self);
 
-#define ACTOR_WIDTH 1600.0f
-#define ACTOR_HEIGHT 900.0f
-
 	/* Set up default values */
-	priv->canvas=clutter_canvas_new();
-	clutter_canvas_set_size(CLUTTER_CANVAS(priv->canvas), ACTOR_WIDTH, ACTOR_HEIGHT);
-	g_signal_connect_swapped(priv->canvas, "draw", G_CALLBACK(_xfdashboard_applications_view_on_draw_canvas), self);
+	priv->timeoutID=0;
 
-	clutter_actor_set_content(CLUTTER_ACTOR(self), priv->canvas);
-	clutter_actor_set_size(CLUTTER_ACTOR(self), ACTOR_WIDTH, ACTOR_HEIGHT);
-#undef ACTOR_HEIGHT
-#undef ACTOR_WIDTH
+	/* Set up this actor */
+	layout=xfdashboard_fit_box_layout_new_with_orientation(CLUTTER_ORIENTATION_VERTICAL);
+	xfdashboard_fit_box_layout_set_homogeneous(XFDASHBOARD_FIT_BOX_LAYOUT(layout), TRUE);
+	xfdashboard_fit_box_layout_set_keep_aspect(XFDASHBOARD_FIT_BOX_LAYOUT(layout), TRUE);
+	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), layout);
+
+	priv->clockCanvas=clutter_canvas_new();
+	clutter_canvas_set_size(CLUTTER_CANVAS(priv->clockCanvas), 100.0f, 100.0f);
+	g_signal_connect_swapped(priv->clockCanvas, "draw", G_CALLBACK(_xfdashboard_applications_view_on_draw_canvas), self);
+
+	priv->clockActor=clutter_actor_new();
+	clutter_actor_show(priv->clockActor);
+	clutter_actor_set_content(priv->clockActor, priv->clockCanvas);
+	clutter_actor_set_size(priv->clockActor, 100.0f, 100.0f);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->clockActor);
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "applications");

@@ -149,13 +149,30 @@ void _xfdashboard_viewpad_update_scrollbars(XfdashboardViewpad *self)
 
 	XfdashboardViewpadPrivate	*priv=self->priv;
 	gfloat						w, h;
+	gfloat						viewpadWidth, viewpadHeight;
 
-	/* Set range of scroll bar to width and height of active view */
+	/* Set range of scroll bar to width and height of active view
+	 * But we need to check for nan-values here - I do not get rid of it :(
+	 */
 	if(priv->activeView) clutter_actor_get_preferred_size(CLUTTER_ACTOR(priv->activeView), NULL, NULL, &w, &h);
 		else w=h=1.0f;
 
-	xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), w);
-	xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->vScrollbar), h);
+	xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), isnan(w)==0 ? w : 0.0f);
+	xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->vScrollbar), isnan(h)==0 ? h : 0.0f);
+
+	/* If any scroll bar policy is automatic then reallocate the
+	 * same allocation again in an unkindly way to force a recalculation
+	 * if scroll bars needed to shown (or hidden what is unlikely)
+	 */
+	if(CLUTTER_ACTOR_IS_VISIBLE(self) &&
+		(priv->hScrollbarPolicy==XFDASHBOARD_POLICY_AUTOMATIC ||
+			priv->vScrollbarPolicy==XFDASHBOARD_POLICY_AUTOMATIC))
+	{
+		ClutterActorBox			box;
+
+		clutter_actor_get_allocation_box(CLUTTER_ACTOR(self), &box);
+		_xfdashboard_viewpad_allocate(CLUTTER_ACTOR(self), &box, CLUTTER_DELEGATE_LAYOUT);
+	}
 }
 
 /* Set new active view and deactive current one */

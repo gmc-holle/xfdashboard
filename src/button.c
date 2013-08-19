@@ -448,6 +448,9 @@ void _xfdashboard_button_allocate(ClutterActor *self,
 				break;
 		}
 
+		right=MAX(left, right);
+		bottom=MAX(top, bottom);
+
 		boxLabel=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
 		clutter_actor_allocate(CLUTTER_ACTOR(priv->actorLabel), boxLabel, inFlags);
 	}
@@ -486,6 +489,9 @@ void _xfdashboard_button_allocate(ClutterActor *self,
 				bottom=top+iconHeight;
 				break;
 		}
+
+		right=MAX(left, right);
+		bottom=MAX(top, bottom);
 
 		boxIcon=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
 		clutter_actor_allocate(CLUTTER_ACTOR(priv->actorIcon), boxIcon, inFlags);

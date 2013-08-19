@@ -389,7 +389,7 @@ void _xfdashboard_live_window_allocate(ClutterActor *self,
 	gfloat							closeWidth, closeHeight;
 	gfloat							left, top, right, bottom;
 
-
+	/* Chain up to store the allocation of the actor */
 	CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->allocate(self, inBox, inFlags);
 
 	/* Set allocation on window texture */
@@ -406,6 +406,10 @@ void _xfdashboard_live_window_allocate(ClutterActor *self,
 	left=MAX(right-closeWidth, priv->marginCloseButton);
 	top=clutter_actor_box_get_y(boxActorWindow)+priv->marginCloseButton;
 	bottom=top+closeHeight;
+
+	right=MAX(left, right);
+	bottom=MAX(top, bottom);
+
 	boxActorClose=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
 	clutter_actor_allocate(priv->actorClose, boxActorClose, inFlags);
 
@@ -437,6 +441,9 @@ void _xfdashboard_live_window_allocate(ClutterActor *self,
 			bottom=top+titleHeight;
 		}
 	}
+
+	right=MAX(left, right);
+	bottom=MAX(top, bottom);
 
 	boxActorTitle=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
 	clutter_actor_allocate(priv->actorTitle, boxActorTitle, inFlags);
