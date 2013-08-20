@@ -1,6 +1,7 @@
 /*
- * fit-box-layout: A box layout expanding actors in direction of axis
- *                 (fit parent) and using natural size in other direction
+ * fill-box-layout: A box layout expanding actors in one direction
+ *                  (fill to fit parent's size) and using natural
+ *                  size in other direction
  * 
  * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
@@ -26,22 +27,22 @@
 #include "config.h"
 #endif
 
-#include "fit-box-layout.h"
+#include "fill-box-layout.h"
 
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <math.h>
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardFitBoxLayout,
-				xfdashboard_fit_box_layout,
+G_DEFINE_TYPE(XfdashboardFillBoxLayout,
+				xfdashboard_fill_box_layout,
 				CLUTTER_TYPE_LAYOUT_MANAGER)
 
 /* Private structure - access only by public API if needed */
-#define XFDASHBOARD_FIT_BOX_LAYOUT_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_FIT_BOX_LAYOUT, XfdashboardFitBoxLayoutPrivate))
+#define XFDASHBOARD_FILL_BOX_LAYOUT_GET_PRIVATE(obj) \
+	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_FILL_BOX_LAYOUT, XfdashboardFillBoxLayoutPrivate))
 
-struct _XfdashboardFitBoxLayoutPrivate
+struct _XfdashboardFillBoxLayoutPrivate
 {
 	/* Properties related */
 	ClutterOrientation	orientation;
@@ -63,7 +64,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardFitBoxLayoutProperties[PROP_LAST]={ 0, };
+GParamSpec* XfdashboardFillBoxLayoutProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_HORIZONTAL
@@ -71,18 +72,18 @@ GParamSpec* XfdashboardFitBoxLayoutProperties[PROP_LAST]={ 0, };
 /* Get largest minimum and natural size of all visible children
  * for calculation of one child and returns the number of visible ones
  */
-gint _xfdashboard_fit_box_layout_get_largest_sizes(XfdashboardFitBoxLayout *self,
+gint _xfdashboard_fill_box_layout_get_largest_sizes(XfdashboardFillBoxLayout *self,
 													ClutterContainer *inContainer,
 													gfloat *outMinWidth,
 													gfloat *outNaturalWidth,
 													gfloat *outMinHeight,
 													gfloat *outNaturalHeight)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(self), 0);
+	g_return_val_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self), 0);
 	g_return_val_if_fail(CLUTTER_IS_CONTAINER(inContainer), 0);
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inContainer), 0);
 
-	XfdashboardFitBoxLayoutPrivate		*priv=self->priv;
+	XfdashboardFillBoxLayoutPrivate		*priv=self->priv;
 	ClutterActor						*child;
 	ClutterActorIter					iter;
 	gint								numberChildren;
@@ -174,18 +175,18 @@ gint _xfdashboard_fit_box_layout_get_largest_sizes(XfdashboardFitBoxLayout *self
 }
 
 /* Get minimum and natural size of all visible children */
-void _xfdashboard_fit_box_layout_get_sizes_for_all(XfdashboardFitBoxLayout *self,
+void _xfdashboard_fill_box_layout_get_sizes_for_all(XfdashboardFillBoxLayout *self,
 													ClutterContainer *inContainer,
 													gfloat *outMinWidth,
 													gfloat *outNaturalWidth,
 													gfloat *outMinHeight,
 													gfloat *outNaturalHeight)
 {
-	g_return_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(self));
+	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 	g_return_if_fail(CLUTTER_IS_ACTOR(inContainer));
 
-	XfdashboardFitBoxLayoutPrivate		*priv=self->priv;
+	XfdashboardFillBoxLayoutPrivate		*priv=self->priv;
 	ClutterActor						*child;
 	ClutterActorIter					iter;
 	gint								numberChildren;
@@ -241,7 +242,7 @@ void _xfdashboard_fit_box_layout_get_sizes_for_all(XfdashboardFitBoxLayout *self
 			/* Get number of visible children and also largest minimum
 			 * and natural size
 			 */
-			numberChildren=_xfdashboard_fit_box_layout_get_largest_sizes(self,
+			numberChildren=_xfdashboard_fill_box_layout_get_largest_sizes(self,
 																			inContainer,
 																			&childMinWidth, &childNaturalWidth,
 																			&childMinHeight, &childNaturalHeight);
@@ -336,16 +337,16 @@ void _xfdashboard_fit_box_layout_get_sizes_for_all(XfdashboardFitBoxLayout *self
 /* IMPLEMENTATION: ClutterLayoutManager */
 
 /* Get preferred width/height */
-void _xfdashboard_fit_box_layout_get_preferred_width(ClutterLayoutManager *inLayoutManager,
+void _xfdashboard_fill_box_layout_get_preferred_width(ClutterLayoutManager *inLayoutManager,
 															ClutterContainer *inContainer,
 															gfloat inForHeight,
 															gfloat *outMinWidth,
 															gfloat *outNaturalWidth)
 {
-	g_return_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(inLayoutManager));
+	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(inLayoutManager));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 
-	XfdashboardFitBoxLayout				*self=XFDASHBOARD_FIT_BOX_LAYOUT(inLayoutManager);
+	XfdashboardFillBoxLayout				*self=XFDASHBOARD_FILL_BOX_LAYOUT(inLayoutManager);
 	gfloat								maxMinWidth, maxNaturalWidth;
 
 	/* Set up default values */
@@ -353,23 +354,23 @@ void _xfdashboard_fit_box_layout_get_preferred_width(ClutterLayoutManager *inLay
 	maxNaturalWidth=0.0f;
 
 	/* Get sizes */
-	_xfdashboard_fit_box_layout_get_sizes_for_all(self, inContainer, &maxMinWidth, &maxNaturalWidth, NULL, NULL);
+	_xfdashboard_fill_box_layout_get_sizes_for_all(self, inContainer, &maxMinWidth, &maxNaturalWidth, NULL, NULL);
 
 	/* Set return values */
 	if(outMinWidth) *outMinWidth=maxMinWidth;
 	if(outNaturalWidth) *outNaturalWidth=maxNaturalWidth;
 }
 
-void _xfdashboard_fit_box_layout_get_preferred_height(ClutterLayoutManager *inLayoutManager,
+void _xfdashboard_fill_box_layout_get_preferred_height(ClutterLayoutManager *inLayoutManager,
 															ClutterContainer *inContainer,
 															gfloat inForWidth,
 															gfloat *outMinHeight,
 															gfloat *outNaturalHeight)
 {
-	g_return_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(inLayoutManager));
+	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(inLayoutManager));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 
-	XfdashboardFitBoxLayout				*self=XFDASHBOARD_FIT_BOX_LAYOUT(inLayoutManager);
+	XfdashboardFillBoxLayout				*self=XFDASHBOARD_FILL_BOX_LAYOUT(inLayoutManager);
 	gfloat								maxMinHeight, maxNaturalHeight;
 
 	/* Set up default values */
@@ -377,7 +378,7 @@ void _xfdashboard_fit_box_layout_get_preferred_height(ClutterLayoutManager *inLa
 	maxNaturalHeight=0.0f;
 
 	/* Get sizes */
-	_xfdashboard_fit_box_layout_get_sizes_for_all(self, inContainer, NULL, NULL, &maxMinHeight, &maxNaturalHeight);
+	_xfdashboard_fill_box_layout_get_sizes_for_all(self, inContainer, NULL, NULL, &maxMinHeight, &maxNaturalHeight);
 
 	/* Set return values */
 	if(outMinHeight) *outMinHeight=maxMinHeight;
@@ -385,16 +386,16 @@ void _xfdashboard_fit_box_layout_get_preferred_height(ClutterLayoutManager *inLa
 }
 
 /* Re-layout and allocate children of container we manage */
-void _xfdashboard_fit_box_layout_allocate(ClutterLayoutManager *inLayoutManager,
+void _xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inLayoutManager,
 												ClutterContainer *inContainer,
 												const ClutterActorBox *inAllocation,
 												ClutterAllocationFlags inFlags)
 {
-	g_return_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(inLayoutManager));
+	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(inLayoutManager));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 
-	XfdashboardFitBoxLayout				*self=XFDASHBOARD_FIT_BOX_LAYOUT(inLayoutManager);
-	XfdashboardFitBoxLayoutPrivate		*priv=self->priv;
+	XfdashboardFillBoxLayout				*self=XFDASHBOARD_FILL_BOX_LAYOUT(inLayoutManager);
+	XfdashboardFillBoxLayoutPrivate		*priv=self->priv;
 	ClutterActor						*child;
 	ClutterActorIter					iter;
 	gfloat								parentWidth, parentHeight;
@@ -412,11 +413,11 @@ void _xfdashboard_fit_box_layout_allocate(ClutterLayoutManager *inLayoutManager,
 	{
 		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
 		{
-			_xfdashboard_fit_box_layout_get_largest_sizes(self, inContainer, NULL, &homogeneousSize, NULL, NULL);
+			_xfdashboard_fill_box_layout_get_largest_sizes(self, inContainer, NULL, &homogeneousSize, NULL, NULL);
 		}
 			else
 			{
-				_xfdashboard_fit_box_layout_get_largest_sizes(self, inContainer, NULL, NULL, NULL, &homogeneousSize);
+				_xfdashboard_fill_box_layout_get_largest_sizes(self, inContainer, NULL, NULL, NULL, &homogeneousSize);
 			}
 	}
 
@@ -476,29 +477,29 @@ void _xfdashboard_fit_box_layout_allocate(ClutterLayoutManager *inLayoutManager,
 /* IMPLEMENTATION: GObject */
 
 /* Set/get properties */
-void _xfdashboard_fit_box_layout_set_property(GObject *inObject,
+void _xfdashboard_fill_box_layout_set_property(GObject *inObject,
 														guint inPropID,
 														const GValue *inValue,
 														GParamSpec *inSpec)
 {
-	XfdashboardFitBoxLayout			*self=XFDASHBOARD_FIT_BOX_LAYOUT(inObject);
+	XfdashboardFillBoxLayout			*self=XFDASHBOARD_FILL_BOX_LAYOUT(inObject);
 	
 	switch(inPropID)
 	{
 		case PROP_ORIENTATION:
-			xfdashboard_fit_box_layout_set_orientation(self, g_value_get_enum(inValue));
+			xfdashboard_fill_box_layout_set_orientation(self, g_value_get_enum(inValue));
 			break;
 
 		case PROP_SPACING:
-			xfdashboard_fit_box_layout_set_spacing(self, g_value_get_float(inValue));
+			xfdashboard_fill_box_layout_set_spacing(self, g_value_get_float(inValue));
 			break;
 
 		case PROP_HOMOGENEOUS:
-			xfdashboard_fit_box_layout_set_homogeneous(self, g_value_get_boolean(inValue));
+			xfdashboard_fill_box_layout_set_homogeneous(self, g_value_get_boolean(inValue));
 			break;
 
 		case PROP_KEEP_ASPECT:
-			xfdashboard_fit_box_layout_set_keep_aspect(self, g_value_get_boolean(inValue));
+			xfdashboard_fill_box_layout_set_keep_aspect(self, g_value_get_boolean(inValue));
 			break;
 
 		default:
@@ -507,12 +508,12 @@ void _xfdashboard_fit_box_layout_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_fit_box_layout_get_property(GObject *inObject,
+void _xfdashboard_fill_box_layout_get_property(GObject *inObject,
 														guint inPropID,
 														GValue *outValue,
 														GParamSpec *inSpec)
 {
-	XfdashboardFitBoxLayout	*self=XFDASHBOARD_FIT_BOX_LAYOUT(inObject);
+	XfdashboardFillBoxLayout	*self=XFDASHBOARD_FILL_BOX_LAYOUT(inObject);
 
 	switch(inPropID)
 	{
@@ -542,24 +543,24 @@ void _xfdashboard_fit_box_layout_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_fit_box_layout_class_init(XfdashboardFitBoxLayoutClass *klass)
+void xfdashboard_fill_box_layout_class_init(XfdashboardFillBoxLayoutClass *klass)
 {
 	ClutterLayoutManagerClass	*layoutClass=CLUTTER_LAYOUT_MANAGER_CLASS(klass);
 	GObjectClass				*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	layoutClass->get_preferred_width=_xfdashboard_fit_box_layout_get_preferred_width;
-	layoutClass->get_preferred_height=_xfdashboard_fit_box_layout_get_preferred_height;
-	layoutClass->allocate=_xfdashboard_fit_box_layout_allocate;
+	layoutClass->get_preferred_width=_xfdashboard_fill_box_layout_get_preferred_width;
+	layoutClass->get_preferred_height=_xfdashboard_fill_box_layout_get_preferred_height;
+	layoutClass->allocate=_xfdashboard_fill_box_layout_allocate;
 
-	gobjectClass->set_property=_xfdashboard_fit_box_layout_set_property;
-	gobjectClass->get_property=_xfdashboard_fit_box_layout_get_property;
+	gobjectClass->set_property=_xfdashboard_fill_box_layout_set_property;
+	gobjectClass->get_property=_xfdashboard_fill_box_layout_get_property;
 
 	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardFitBoxLayoutPrivate));
+	g_type_class_add_private(klass, sizeof(XfdashboardFillBoxLayoutPrivate));
 
 	/* Define properties */
-	XfdashboardFitBoxLayoutProperties[PROP_ORIENTATION]=
+	XfdashboardFillBoxLayoutProperties[PROP_ORIENTATION]=
 		g_param_spec_enum("orientation",
 							_("Orientation"),
 							_("The orientation to layout children"),
@@ -567,7 +568,7 @@ void xfdashboard_fit_box_layout_class_init(XfdashboardFitBoxLayoutClass *klass)
 							DEFAULT_ORIENTATION,
 							G_PARAM_READWRITE);
 
-	XfdashboardFitBoxLayoutProperties[PROP_SPACING]=
+	XfdashboardFillBoxLayoutProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
 								_("spacing"),
 								_("The spacing between children"),
@@ -576,31 +577,31 @@ void xfdashboard_fit_box_layout_class_init(XfdashboardFitBoxLayoutClass *klass)
 								0.0f,
 								G_PARAM_READWRITE);
 
-	XfdashboardFitBoxLayoutProperties[PROP_HOMOGENEOUS]=
+	XfdashboardFillBoxLayoutProperties[PROP_HOMOGENEOUS]=
 		g_param_spec_boolean("homogeneous",
 								_("Homogeneous"),
 								_("Whether the layout should be homogeneous, i.e. all childs get the same size"),
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
-	XfdashboardFitBoxLayoutProperties[PROP_KEEP_ASPECT]=
+	XfdashboardFillBoxLayoutProperties[PROP_KEEP_ASPECT]=
 		g_param_spec_boolean("keep-aspect",
 								_("Keep aspect"),
 								_("Whether all children should keep their aspect"),
 								FALSE,
 								G_PARAM_READWRITE);
 
-	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardFitBoxLayoutProperties);
+	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardFillBoxLayoutProperties);
 }
 
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_fit_box_layout_init(XfdashboardFitBoxLayout *self)
+void xfdashboard_fill_box_layout_init(XfdashboardFillBoxLayout *self)
 {
-	XfdashboardFitBoxLayoutPrivate	*priv;
+	XfdashboardFillBoxLayoutPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_FIT_BOX_LAYOUT_GET_PRIVATE(self);
+	priv=self->priv=XFDASHBOARD_FILL_BOX_LAYOUT_GET_PRIVATE(self);
 
 	/* Set default values */
 	priv->orientation=DEFAULT_ORIENTATION;
@@ -612,40 +613,40 @@ void xfdashboard_fit_box_layout_init(XfdashboardFitBoxLayout *self)
 /* Implementation: Public API */
 
 /* Create new instance */
-ClutterLayoutManager* xfdashboard_fit_box_layout_new(void)
+ClutterLayoutManager* xfdashboard_fill_box_layout_new(void)
 {
-	return(CLUTTER_LAYOUT_MANAGER(g_object_new(XFDASHBOARD_TYPE_FIT_BOX_LAYOUT, NULL)));
+	return(CLUTTER_LAYOUT_MANAGER(g_object_new(XFDASHBOARD_TYPE_FILL_BOX_LAYOUT, NULL)));
 }
 
-ClutterLayoutManager* xfdashboard_fit_box_layout_new_with_orientation(ClutterOrientation inOrientation)
+ClutterLayoutManager* xfdashboard_fill_box_layout_new_with_orientation(ClutterOrientation inOrientation)
 {
-	return(CLUTTER_LAYOUT_MANAGER(g_object_new(XFDASHBOARD_TYPE_FIT_BOX_LAYOUT,
+	return(CLUTTER_LAYOUT_MANAGER(g_object_new(XFDASHBOARD_TYPE_FILL_BOX_LAYOUT,
 												"orientation", inOrientation,
 												NULL)));
 }
 
 /* Get/set orientation */
-ClutterOrientation xfdashboard_fit_box_layout_get_orientation(XfdashboardFitBoxLayout *self)
+ClutterOrientation xfdashboard_fill_box_layout_get_orientation(XfdashboardFillBoxLayout *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(self), DEFAULT_ORIENTATION);
+	g_return_val_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self), DEFAULT_ORIENTATION);
 
 	return(self->priv->orientation);
 }
 
-void xfdashboard_fit_box_layout_set_orientation(XfdashboardFitBoxLayout *self, ClutterOrientation inOrientation)
+void xfdashboard_fill_box_layout_set_orientation(XfdashboardFillBoxLayout *self, ClutterOrientation inOrientation)
 {
-	g_return_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(self));
+	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 	g_return_if_fail(inOrientation==CLUTTER_ORIENTATION_HORIZONTAL ||
 						inOrientation==CLUTTER_ORIENTATION_VERTICAL);
 
-	XfdashboardFitBoxLayoutPrivate		*priv=XFDASHBOARD_FIT_BOX_LAYOUT(self)->priv;
+	XfdashboardFillBoxLayoutPrivate		*priv=XFDASHBOARD_FILL_BOX_LAYOUT(self)->priv;
 
 	/* Set new values if changed */
 	if(priv->orientation!=inOrientation)
 	{
 		/* Set new values and notify about properties changes */
 		priv->orientation=inOrientation;
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardFitBoxLayoutProperties[PROP_ORIENTATION]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardFillBoxLayoutProperties[PROP_ORIENTATION]);
 
 		/* Notify for upcoming layout changes */
 		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
@@ -653,26 +654,26 @@ void xfdashboard_fit_box_layout_set_orientation(XfdashboardFitBoxLayout *self, C
 }
 
 /* Get/set spacing */
-gfloat xfdashboard_fit_box_layout_get_spacing(XfdashboardFitBoxLayout *self)
+gfloat xfdashboard_fill_box_layout_get_spacing(XfdashboardFillBoxLayout *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(self), 0.0f);
+	g_return_val_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self), 0.0f);
 
 	return(self->priv->spacing);
 }
 
-void xfdashboard_fit_box_layout_set_spacing(XfdashboardFitBoxLayout *self, gfloat inSpacing)
+void xfdashboard_fill_box_layout_set_spacing(XfdashboardFillBoxLayout *self, gfloat inSpacing)
 {
-	g_return_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(self));
+	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	XfdashboardFitBoxLayoutPrivate		*priv=XFDASHBOARD_FIT_BOX_LAYOUT(self)->priv;
+	XfdashboardFillBoxLayoutPrivate		*priv=XFDASHBOARD_FILL_BOX_LAYOUT(self)->priv;
 
 	/* Set new values if changed */
 	if(priv->spacing!=inSpacing)
 	{
 		/* Set new values and notify about properties changes */
 		priv->spacing=inSpacing;
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardFitBoxLayoutProperties[PROP_SPACING]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardFillBoxLayoutProperties[PROP_SPACING]);
 
 		/* Notify for upcoming layout changes */
 		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
@@ -680,25 +681,25 @@ void xfdashboard_fit_box_layout_set_spacing(XfdashboardFitBoxLayout *self, gfloa
 }
 
 /* Get/set homogenous */
-gboolean xfdashboard_fit_box_layout_get_homogeneous(XfdashboardFitBoxLayout *self)
+gboolean xfdashboard_fill_box_layout_get_homogeneous(XfdashboardFillBoxLayout *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self), FALSE);
 
 	return(self->priv->isHomogeneous);
 }
 
-void xfdashboard_fit_box_layout_set_homogeneous(XfdashboardFitBoxLayout *self, gboolean inIsHomogeneous)
+void xfdashboard_fill_box_layout_set_homogeneous(XfdashboardFillBoxLayout *self, gboolean inIsHomogeneous)
 {
-	g_return_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(self));
+	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 
-	XfdashboardFitBoxLayoutPrivate		*priv=XFDASHBOARD_FIT_BOX_LAYOUT(self)->priv;
+	XfdashboardFillBoxLayoutPrivate		*priv=XFDASHBOARD_FILL_BOX_LAYOUT(self)->priv;
 
 	/* Set new values if changed */
 	if(priv->isHomogeneous!=inIsHomogeneous)
 	{
 		/* Set new values and notify about properties changes */
 		priv->isHomogeneous=inIsHomogeneous;
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardFitBoxLayoutProperties[PROP_HOMOGENEOUS]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardFillBoxLayoutProperties[PROP_HOMOGENEOUS]);
 
 		/* Notify for upcoming layout changes */
 		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
@@ -706,25 +707,25 @@ void xfdashboard_fit_box_layout_set_homogeneous(XfdashboardFitBoxLayout *self, g
 }
 
 /* Get/set keep aspect ratio */
-gboolean xfdashboard_fit_box_layout_get_keep_aspect(XfdashboardFitBoxLayout *self)
+gboolean xfdashboard_fill_box_layout_get_keep_aspect(XfdashboardFillBoxLayout *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self), FALSE);
 
 	return(self->priv->keepAspect);
 }
 
-void xfdashboard_fit_box_layout_set_keep_aspect(XfdashboardFitBoxLayout *self, gboolean inKeepAspect)
+void xfdashboard_fill_box_layout_set_keep_aspect(XfdashboardFillBoxLayout *self, gboolean inKeepAspect)
 {
-	g_return_if_fail(XFDASHBOARD_IS_FIT_BOX_LAYOUT(self));
+	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 
-	XfdashboardFitBoxLayoutPrivate		*priv=XFDASHBOARD_FIT_BOX_LAYOUT(self)->priv;
+	XfdashboardFillBoxLayoutPrivate		*priv=XFDASHBOARD_FILL_BOX_LAYOUT(self)->priv;
 
 	/* Set new values if changed */
 	if(priv->keepAspect!=inKeepAspect)
 	{
 		/* Set new values and notify about properties changes */
 		priv->keepAspect=inKeepAspect;
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardFitBoxLayoutProperties[PROP_KEEP_ASPECT]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardFillBoxLayoutProperties[PROP_KEEP_ASPECT]);
 
 		/* Notify for upcoming layout changes */
 		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));

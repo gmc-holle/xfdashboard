@@ -22,7 +22,7 @@ xfdashboard_headers = \
 	applications-view.h \
 	background.h \
 	button.h \
-	fit-box-layout.h \
+	fill-box-layout.h \
 	live-window.h \
 	scaled-table-layout.h \
 	scrollbar.h \
@@ -43,7 +43,7 @@ xfdashboard_SOURCES = \
 	applications-view.c \
 	background.c \
 	button.c \
-	fit-box-layout.c \
+	fill-box-layout.c \
 	live-window.c \
 	main.c \
 	scaled-table-layout.c \

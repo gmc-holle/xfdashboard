@@ -33,7 +33,7 @@
 #include "stage.h"
 #include "application.h"
 #include "view.h"
-#include "fit-box-layout.h"
+#include "fill-box-layout.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsView,
@@ -266,9 +266,9 @@ void xfdashboard_applications_view_init(XfdashboardApplicationsView *self)
 	priv->timeoutID=0;
 
 	/* Set up this actor */
-	layout=xfdashboard_fit_box_layout_new_with_orientation(CLUTTER_ORIENTATION_VERTICAL);
-	xfdashboard_fit_box_layout_set_homogeneous(XFDASHBOARD_FIT_BOX_LAYOUT(layout), TRUE);
-	xfdashboard_fit_box_layout_set_keep_aspect(XFDASHBOARD_FIT_BOX_LAYOUT(layout), TRUE);
+	layout=xfdashboard_fill_box_layout_new_with_orientation(CLUTTER_ORIENTATION_VERTICAL);
+	xfdashboard_fill_box_layout_set_homogeneous(XFDASHBOARD_FILL_BOX_LAYOUT(layout), TRUE);
+	xfdashboard_fill_box_layout_set_keep_aspect(XFDASHBOARD_FILL_BOX_LAYOUT(layout), TRUE);
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), layout);
 
 	priv->clockCanvas=clutter_canvas_new();
