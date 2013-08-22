@@ -26,12 +26,10 @@
 #endif
 
 #include <glib/gi18n-lib.h>
-#include <math.h>
+#include <gtk/gtk.h>
 
 #include "applications-view.h"
 #include "utils.h"
-#include "stage.h"
-#include "application.h"
 #include "view.h"
 #include "fill-box-layout.h"
 
@@ -285,12 +283,4 @@ void xfdashboard_applications_view_init(XfdashboardApplicationsView *self)
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "applications");
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Applications"));
 	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), DEFAULT_VIEW_ICON);
-}
-
-/* Implementation: Public API */
-
-/* Create new actor */
-ClutterActor* xfdashboard_applications_view_new(void)
-{
-	return(g_object_new(XFDASHBOARD_TYPE_APPLICATIONS_VIEW, NULL));
 }

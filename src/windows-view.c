@@ -477,12 +477,6 @@ void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 
 /* Implementation: Public API */
 
-/* Create new actor */
-ClutterActor* xfdashboard_windows_view_new(void)
-{
-	return(g_object_new(XFDASHBOARD_TYPE_WINDOWS_VIEW, NULL));
-}
-
 /* Get active screen */
 WnckScreen* xfdashboard_windows_view_get_screen(XfdashboardWindowsView *self)
 {

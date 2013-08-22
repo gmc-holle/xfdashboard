@@ -24,10 +24,6 @@
 #ifndef __XFDASHBOARD_APPLICATIONS_VIEW__
 #define __XFDASHBOARD_APPLICATIONS_VIEW__
 
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE
-#include <libwnck/libwnck.h>
-
-#include <clutter/clutter.h>
 #include "view.h"
 
 G_BEGIN_DECLS
@@ -61,8 +57,6 @@ struct _XfdashboardApplicationsViewClass
 
 /* Public API */
 GType xfdashboard_applications_view_get_type(void) G_GNUC_CONST;
-
-ClutterActor* xfdashboard_applications_view_new(void);
 
 G_END_DECLS
 
