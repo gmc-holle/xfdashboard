@@ -286,15 +286,6 @@ void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *self,
 			inForHeight-=2*priv->margin;
 			inForHeight=MAX(0.0f, inForHeight);
 
-			/* Get label size if visible */
-			if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorLabel))
-			{
-				clutter_actor_get_preferred_width(CLUTTER_ACTOR(priv->actorLabel),
-													inForHeight,
-													&minSize, &naturalSize);
-				labelSize=(inGetPreferred==TRUE ? naturalSize : minSize);
-			}
-
 			/* Get icon size if visible */
 			if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorIcon))
 			{
@@ -315,6 +306,21 @@ void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *self,
 					}
 
 				iconSize=(inGetPreferred==TRUE ? naturalSize : minSize);
+			}
+
+			/* Get label size if visible */
+			if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorLabel))
+			{
+				if(priv->iconOrientation==XFDASHBOARD_ORIENTATION_TOP ||
+						priv->iconOrientation==XFDASHBOARD_ORIENTATION_BOTTOM)
+				{
+					inForHeight-=iconSize;
+				}
+
+				clutter_actor_get_preferred_width(CLUTTER_ACTOR(priv->actorLabel),
+													inForHeight,
+													&minSize, &naturalSize);
+				labelSize=(inGetPreferred==TRUE ? naturalSize : minSize);
 			}
 		}
 
@@ -497,15 +503,6 @@ void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *self,
 			inForWidth-=2*priv->margin;
 			inForWidth=MAX(0.0f, inForWidth);
 
-			/* Get label size if visible */
-			if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorLabel))
-			{
-				clutter_actor_get_preferred_height(CLUTTER_ACTOR(priv->actorLabel),
-													inForWidth,
-													&minSize, &naturalSize);
-				labelSize=(inGetPreferred==TRUE ? naturalSize : minSize);
-			}
-
 			/* Get icon size if visible */
 			if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorIcon))
 			{
@@ -525,6 +522,21 @@ void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *self,
 															&minSize, &naturalSize);
 					}
 				iconSize=(inGetPreferred==TRUE ? naturalSize : minSize);
+			}
+
+			/* Get label size if visible */
+			if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorLabel))
+			{
+				if(priv->iconOrientation==XFDASHBOARD_ORIENTATION_LEFT ||
+						priv->iconOrientation==XFDASHBOARD_ORIENTATION_RIGHT)
+				{
+					inForWidth-=iconSize;
+				}
+
+				clutter_actor_get_preferred_height(CLUTTER_ACTOR(priv->actorLabel),
+													inForWidth,
+													&minSize, &naturalSize);
+				labelSize=(inGetPreferred==TRUE ? naturalSize : minSize);
 			}
 		}
 
