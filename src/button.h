@@ -111,6 +111,9 @@ void xfdashboard_button_set_color(XfdashboardButton *self, const ClutterColor *i
 PangoEllipsizeMode xfdashboard_button_get_ellipsize_mode(XfdashboardButton *self);
 void xfdashboard_button_set_ellipsize_mode(XfdashboardButton *self, const PangoEllipsizeMode inMode);
 
+gboolean xfdashboard_button_get_single_line_mode(XfdashboardButton *self);
+void xfdashboard_button_set_single_line_mode(XfdashboardButton *self, const gboolean inSingleLine);
+
 G_END_DECLS
 
 #endif
