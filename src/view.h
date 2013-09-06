@@ -26,6 +26,8 @@
 
 #include <clutter/clutter.h>
 
+#include "types.h"
+
 G_BEGIN_DECLS
 
 #define XFDASHBOARD_TYPE_VIEW				(xfdashboard_view_get_type())
@@ -56,6 +58,8 @@ struct _XfdashboardViewClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*set_fit_mode)(XfdashboardView *self, XfdashboardFitMode inFitMode);
+
 	void (*activating)(XfdashboardView *self);
 	void (*activated)(XfdashboardView *self);
 	void (*deactivating)(XfdashboardView *self);
@@ -76,6 +80,9 @@ void xfdashboard_view_set_name(XfdashboardView *self, const gchar *inName);
 
 const gchar* xfdashboard_view_get_icon(XfdashboardView *self);
 void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon);
+
+XfdashboardFitMode xfdashboard_view_get_fit_mode(XfdashboardView *self);
+void xfdashboard_view_set_fit_mode(XfdashboardView *self, XfdashboardFitMode inFitMode);
 
 G_END_DECLS
 

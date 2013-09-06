@@ -50,6 +50,8 @@ struct _XfdashboardViewPrivate
 	gchar					*viewIcon;
 	ClutterImage			*viewIconImage;
 
+	XfdashboardFitMode		fitMode;
+
 	/* Layout manager */
 	guint					signalChangedID;
 };
@@ -62,6 +64,8 @@ enum
 	PROP_VIEW_INTERNAL_NAME,
 	PROP_VIEW_NAME,
 	PROP_VIEW_ICON,
+
+	PROP_FIT_MODE,
 
 	PROP_LAST
 };
@@ -217,6 +221,13 @@ void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 							NULL,
 							G_PARAM_READWRITE);
 
+	XfdashboardViewProperties[PROP_FIT_MODE]=
+		g_param_spec_string("fit-mode",
+							_("Fit mode"),
+							_("Defines if view should be fit into viewpad and its orientation"),
+							XFDASHBOARD_FIT_MODE_NONE,
+							G_PARAM_READWRITE);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewProperties);
 
 	/* Define signals */
@@ -303,6 +314,7 @@ void xfdashboard_view_init(XfdashboardView *self)
 	priv->viewName=NULL;
 	priv->viewIcon=NULL;
 	priv->viewIconImage=NULL;
+	priv->fitMode=XFDASHBOARD_FIT_MODE_NONE;
 
 	/* Set up actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -392,5 +404,34 @@ void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon)
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_VIEW_ICON]);
 		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_ICON_CHANGED], 0, priv->viewIconImage);
+	}
+}
+
+/* Get/Set fit mode of view */
+XfdashboardFitMode xfdashboard_view_get_fit_mode(XfdashboardView *self)
+{
+  g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), XFDASHBOARD_FIT_MODE_NONE);
+
+  return(self->priv->fitMode);
+}
+
+void xfdashboard_view_set_fit_mode(XfdashboardView *self, XfdashboardFitMode inFitMode)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+
+	XfdashboardViewPrivate	*priv=self->priv;
+	XfdashboardViewClass	*klass=XFDASHBOARD_VIEW_GET_CLASS(self);
+
+	/* Set value if changed */
+	if(priv->fitMode!=inFitMode)
+	{
+		/* Set new fit mode */
+		priv->fitMode=inFitMode;
+
+		/* Call virtual function for setting fit mode */
+		if(klass->set_fit_mode) klass->set_fit_mode(self, inFitMode);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_FIT_MODE]);
 	}
 }

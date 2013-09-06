@@ -61,6 +61,8 @@ struct _XfdashboardViewpadPrivate
 	ClutterActor			*container;
 	ClutterActor			*hScrollbar;
 	ClutterActor			*vScrollbar;
+
+	guint					scrollbarUpdateID;
 };
 
 /* Properties */
@@ -96,6 +98,9 @@ enum
 
 guint XfdashboardViewpadSignals[SIGNAL_LAST]={ 0, };
 
+/* Forward declaration */
+void _xfdashboard_viewpad_allocate(ClutterActor *self, const ClutterActorBox *inBox, ClutterAllocationFlags inFlags);
+
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_SPACING				4.0f
 #define DEFAULT_SCROLLBAR_POLICY	XFDASHBOARD_POLICY_AUTOMATIC
@@ -116,12 +121,20 @@ void _xfdashboard_viewpad_update_view_viewport(XfdashboardViewpad *self)
 		return;
 	}
 
-	/* Get offset from scrollbars */
-	x=xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar));
-	y=xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar));
+	if(clutter_actor_has_clip(CLUTTER_ACTOR(priv->activeView))!=TRUE)
+	{
+		g_warning(_("Cannot update viewport of view because clipping was not set"));
+		return;
+	}
 
-	/* Get view size from clipping */
-	clutter_actor_get_clip(CLUTTER_ACTOR(priv->activeView), NULL, NULL, &w, &h);
+	/* Get offset from scrollbars and view size from clipping */
+	clutter_actor_get_clip(CLUTTER_ACTOR(priv->activeView), &x, &y, &w, &h);
+
+	/* To avoid blur convert float to ints (virtually) */
+	x=ceil(x);
+	y=ceil(y);
+	w=ceil(w);
+	h=ceil(h);
 
 	/* Set transformation (offset) */
 	cogl_matrix_init_identity(&transform);
@@ -138,7 +151,27 @@ void _xfdashboard_viewpad_on_scrollbar_value_changed(XfdashboardViewpad *self,
 														gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(inUserData));
 
+	XfdashboardViewpadPrivate	*priv=self->priv;
+	ClutterActor				*scrollbar=CLUTTER_ACTOR(inUserData);
+	gfloat						x,y,w,h;
+
+	/* Update clipping */
+	if(clutter_actor_has_clip(CLUTTER_ACTOR(priv->activeView)))
+	{
+		clutter_actor_get_clip(CLUTTER_ACTOR(priv->activeView), &x, &y, &w, &h);
+		if(scrollbar==priv->hScrollbar) x=inValue;
+			else if(scrollbar==priv->vScrollbar) y=inValue;
+	}
+		else
+		{
+			x=y=0.0f;
+			clutter_actor_get_size(CLUTTER_ACTOR(priv->activeView), &w, &h);
+		}
+	clutter_actor_set_clip(CLUTTER_ACTOR(priv->activeView), x, y, w, h);
+
+	/* Update viewport */
 	_xfdashboard_viewpad_update_view_viewport(self);
 }
 
@@ -154,7 +187,7 @@ void _xfdashboard_viewpad_update_scrollbars(XfdashboardViewpad *self)
 	/* Set range of scroll bar to width and height of active view
 	 * But we need to check for nan-values here - I do not get rid of it :(
 	 */
-	if(priv->activeView) clutter_actor_get_preferred_size(CLUTTER_ACTOR(priv->activeView), NULL, NULL, &w, &h);
+	if(priv->activeView) clutter_actor_get_size(CLUTTER_ACTOR(priv->activeView), &w, &h);
 		else w=h=1.0f;
 
 	xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), isnan(w)==0 ? w : 0.0f);
@@ -213,7 +246,10 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 	}
 
 	/* Activate new view (if available) by showing new view, setting up
-	 * scrollbars and emitting signal before and after activation
+	 * scrollbars and emitting signal before and after activation.
+	 * Prevent signal handling for scrollbars' "value-changed" as it will
+	 * mess up with clipping and viewport. We only need to set value of
+	 * scrollbars but we do not need to handle the changed value.
 	 */
 	if(inView)
 	{
@@ -222,6 +258,9 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATING], 0, priv->activeView);
 		g_signal_emit_by_name(priv->activeView, "activating");
 
+		g_signal_handlers_block_by_func(priv->hScrollbar, _xfdashboard_viewpad_on_scrollbar_value_changed, self);
+		g_signal_handlers_block_by_func(priv->vScrollbar, _xfdashboard_viewpad_on_scrollbar_value_changed, self);
+
 		clutter_actor_get_clip(CLUTTER_ACTOR(priv->activeView), &x, &y, NULL, NULL);
 		_xfdashboard_viewpad_update_scrollbars(self);
 		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), x);
@@ -229,6 +268,9 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 		_xfdashboard_viewpad_update_view_viewport(self);
 		clutter_actor_show(CLUTTER_ACTOR(priv->activeView));
 		g_debug("Activated view %s", G_OBJECT_TYPE_NAME(priv->activeView));
+
+		g_signal_handlers_unblock_by_func(priv->hScrollbar, _xfdashboard_viewpad_on_scrollbar_value_changed, self);
+		g_signal_handlers_unblock_by_func(priv->vScrollbar, _xfdashboard_viewpad_on_scrollbar_value_changed, self);
 
 		g_signal_emit_by_name(priv->activeView, "activated");
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATED], 0, priv->activeView);
@@ -239,6 +281,21 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 }
 
 /* Allocation of a view changed */
+gboolean _xfdashboard_viewpad_on_allocation_changed_repaint_callback(gpointer inUserData)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(inUserData), G_SOURCE_REMOVE);
+
+	XfdashboardViewpad			*self=XFDASHBOARD_VIEWPAD(inUserData);
+	XfdashboardViewpadPrivate	*priv=self->priv;
+
+	/* Update scrollbars */
+	_xfdashboard_viewpad_update_scrollbars(self);
+
+	/* Do not call this callback again */
+	priv->scrollbarUpdateID=0;
+	return(G_SOURCE_REMOVE);
+}
+
 void _xfdashboard_viewpad_on_allocation_changed(ClutterActor *inActor,
 												ClutterActorBox *inBox,
 												ClutterAllocationFlags inFlags,
@@ -251,10 +308,17 @@ void _xfdashboard_viewpad_on_allocation_changed(ClutterActor *inActor,
 	XfdashboardViewpadPrivate	*priv=self->priv;
 	XfdashboardView				*view=XFDASHBOARD_VIEW(inUserData);
 
-	/* Update scrollbars only if view whose allocation has changed
-	 * is the active one
+	/* Defer updating scrollbars but only if view whose allocation
+	 * has changed is the active one
 	 */
-	if(view==priv->activeView) _xfdashboard_viewpad_update_scrollbars(self);
+	if(priv->scrollbarUpdateID==0)
+	{
+		priv->scrollbarUpdateID=
+			clutter_threads_add_repaint_func_full(CLUTTER_REPAINT_FLAGS_QUEUE_REDRAW_ON_ADD | CLUTTER_REPAINT_FLAGS_POST_PAINT,
+													_xfdashboard_viewpad_on_allocation_changed_repaint_callback,
+													self,
+													NULL);
+	}
 }
 
 /* Create view of given type and add to this actor */
@@ -487,12 +551,31 @@ void _xfdashboard_viewpad_allocate(ClutterActor *self,
 	{
 		/* Set allocation */
 		if(vScrollbarVisible) viewWidth-=vScrollbarWidth;
+
 		if(hScrollbarVisible) viewHeight-=hScrollbarHeight;
 
-		x=ceilf(xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar)));
-		y=ceilf(xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar)));
+		x=y=0.0f;
+		if(clutter_actor_has_clip(CLUTTER_ACTOR(priv->activeView)))
+		{
+			clutter_actor_get_clip(CLUTTER_ACTOR(priv->activeView), &x, &y, NULL, NULL);
+		}
 
-		clutter_actor_get_preferred_size(CLUTTER_ACTOR(priv->activeView), NULL, NULL, &w, &h);
+		switch(xfdashboard_view_get_fit_mode(XFDASHBOARD_VIEW(priv->activeView)))
+		{
+			case XFDASHBOARD_FIT_MODE_HORIZONTAL:
+				w=viewWidth;
+				clutter_actor_get_preferred_height(CLUTTER_ACTOR(priv->activeView), w, NULL, &h);
+				break;
+
+			case XFDASHBOARD_FIT_MODE_VERTICAL:
+				h=viewHeight;
+				clutter_actor_get_preferred_width(CLUTTER_ACTOR(priv->activeView), h, NULL, &w);
+				break;
+
+			default:
+				clutter_actor_get_preferred_size(CLUTTER_ACTOR(priv->activeView), NULL, NULL, &w, &h);
+				break;
+		}
 
 		box=clutter_actor_box_new(0, 0, w, h);
 		clutter_actor_allocate(CLUTTER_ACTOR(priv->activeView), box, inFlags);
@@ -773,6 +856,7 @@ void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	priv->hScrollbarPolicy=DEFAULT_SCROLLBAR_POLICY;
 	priv->vScrollbarVisible=FALSE;
 	priv->vScrollbarPolicy=DEFAULT_SCROLLBAR_POLICY;
+	priv->scrollbarUpdateID=0;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
