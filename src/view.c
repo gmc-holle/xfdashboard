@@ -150,6 +150,10 @@ void _xfdashboard_view_set_property(GObject *inObject,
 			xfdashboard_view_set_icon(self, g_value_get_string(inValue));
 			break;
 
+		case PROP_FIT_MODE:
+			xfdashboard_view_set_fit_mode(self, (XfdashboardFitMode)g_value_get_enum(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -175,6 +179,10 @@ void _xfdashboard_view_get_property(GObject *inObject,
 
 		case PROP_VIEW_ICON:
 			g_value_set_string(outValue, self->priv->viewIcon);
+			break;
+
+		case PROP_FIT_MODE:
+			g_value_set_enum(outValue, self->priv->fitMode);
 			break;
 
 		default:
