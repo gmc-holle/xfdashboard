@@ -155,7 +155,7 @@ void _xfdashboard_viewpad_on_scrollbar_value_changed(XfdashboardViewpad *self,
 
 	XfdashboardViewpadPrivate	*priv=self->priv;
 	ClutterActor				*scrollbar=CLUTTER_ACTOR(inUserData);
-	gfloat						x,y,w,h;
+	gfloat						x, y, w, h;
 
 	/* Update clipping */
 	if(clutter_actor_has_clip(CLUTTER_ACTOR(priv->activeView)))
@@ -321,6 +321,46 @@ void _xfdashboard_viewpad_on_allocation_changed(ClutterActor *inActor,
 	}
 }
 
+/* Scroll to requested position in view */
+void _xfdashboard_viewpad_on_view_scroll_to(ClutterActor *inActor,
+											gfloat inX,
+											gfloat inY,
+											gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inUserData));
+
+	XfdashboardViewpad			*self=XFDASHBOARD_VIEWPAD(inActor);
+	XfdashboardViewpadPrivate	*priv=self->priv;
+	XfdashboardView				*view=XFDASHBOARD_VIEW(inUserData);
+	gfloat						x, y, w, h;
+
+	/* If to-scroll view is the active view in viewpad
+	 * just set scrollbar value to the new ones
+	 */
+	if(view==priv->activeView)
+	{
+		if(inX>=0.0f) xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), inX);
+		if(inY>=0.0f) xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar), inY);
+	}
+		/* If to-scroll view is not the active one update its clipping */
+		else
+		{
+			if(clutter_actor_has_clip(CLUTTER_ACTOR(view)))
+			{
+				clutter_actor_get_clip(CLUTTER_ACTOR(view), &x, &y, &w, &h);
+				if(inX>=0.0f) x=inX;
+				if(inY>=0.0f) y=inY;
+			}
+				else
+				{
+					x=y=0.0f;
+					clutter_actor_get_size(CLUTTER_ACTOR(view), &w, &h);
+				}
+			clutter_actor_set_clip(CLUTTER_ACTOR(view), x, y, w, h);
+		}
+}
+
 /* Create view of given type and add to this actor */
 void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, GType inViewType)
 {
@@ -350,6 +390,7 @@ void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, GType inViewType)
 	clutter_actor_hide(CLUTTER_ACTOR(view));
 	clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(view));
 	g_signal_connect_swapped(CLUTTER_ACTOR(view), "allocation-changed", G_CALLBACK(_xfdashboard_viewpad_on_allocation_changed), self);
+	g_signal_connect_swapped(CLUTTER_ACTOR(view), "scroll-to", G_CALLBACK(_xfdashboard_viewpad_on_view_scroll_to), self);
 	g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ADDED], 0, view);
 
 	/* Set active view if none active (usually it is the first view created) */

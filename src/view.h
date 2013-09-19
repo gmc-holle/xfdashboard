@@ -67,6 +67,8 @@ struct _XfdashboardViewClass
 
 	void (*name_changed)(XfdashboardView *self, gchar *inName);
 	void (*icon_changed)(XfdashboardView *self, ClutterImage *inIcon);
+
+	void (*scroll_to)(XfdashboardView *self, gfloat inX, gfloat inY);
 };
 
 /* Public API */
@@ -83,6 +85,8 @@ void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon);
 
 XfdashboardFitMode xfdashboard_view_get_fit_mode(XfdashboardView *self);
 void xfdashboard_view_set_fit_mode(XfdashboardView *self, XfdashboardFitMode inFitMode);
+
+void xfdashboard_view_scroll_to(XfdashboardView *self, gfloat inX, gfloat inY);
 
 G_END_DECLS
 
