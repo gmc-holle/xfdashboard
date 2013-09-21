@@ -32,6 +32,10 @@
 #include "utils.h"
 #include "view.h"
 #include "fill-box-layout.h"
+#include "applications-menu-model.h"
+#include "types.h"
+#include "button.h"
+#include "application.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsView,
@@ -47,9 +51,9 @@ struct _XfdashboardApplicationsViewPrivate
 	/* Properties related */
 
 	/* Instance related */
-	ClutterActor			*clockActor;
-	ClutterContent			*clockCanvas;
-	guint					timeoutID;
+	ClutterLayoutManager				*layout;
+	XfdashboardApplicationsMenuModel	*apps;
+	GarconMenuElement					*currentRootMenuElement;
 };
 
 /* Properties */
@@ -63,139 +67,214 @@ enum
 GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_VIEW_ICON	GTK_STOCK_HOME	// TODO: Replace by settings/theming object
+#define ACTOR_USER_DATA_KEY			"xfdashboard-applications-view-user-data"
 
-/* Rectangle canvas should be redrawn */
-gboolean _xfdashboard_applications_view_on_draw_canvas(XfdashboardApplicationsView *self,
-														cairo_t *inContext,
-														int inWidth,
-														int inHeight,
-														gpointer inUserData)
+#define DEFAULT_VIEW_ICON			GTK_STOCK_HOME			// TODO: Replace by settings/theming object
+#define DEFAULT_SPACING				4.0f					// TODO: Replace by settings/theming object
+#define DEFAULT_MENU_ICON_SIZE		64						// TODO: Replace by settings/theming object
+
+/* Creates menu item actor */
+ClutterActor* _xfdashboard_applications_view_create_menu_item_actor(const gchar *inIconName,
+																	const gchar *inName,
+																	const gchar *inDescription,
+																	GarconMenuElement *inMenuElement)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), TRUE);
-	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
+	g_return_val_if_fail(inName, NULL);
+	g_return_val_if_fail(inMenuElement==NULL || GARCON_IS_MENU_ELEMENT(inMenuElement), NULL);
 
-	GDateTime		*now;
-	gfloat			hours, minutes, seconds;
-	ClutterColor	color;
+	ClutterActor	*actor;
+	gchar			*actorText;
 
-	/* Get the current time and compute the angles */
-	now=g_date_time_new_now_local();
-	seconds=g_date_time_get_second(now)*G_PI/30;
-	minutes=g_date_time_get_minute(now)*G_PI/30;
-	hours=g_date_time_get_hour(now)*G_PI/6;
-	g_date_time_unref(now);
+	/* Set up text for actor */
+	if(inDescription) actorText=g_strdup_printf("<b>%s</b>\n\n%s", inName, inDescription);
+		else actorText=g_strdup_printf("<b>%s</b>", inName);
 
-	/* Clear the contents of the canvas, to avoid painting
-	 * over the previous frame
-	 */
-	cairo_save(inContext);
+	/* Create actor */
+	actor=xfdashboard_button_new_full(inIconName ? inIconName : GTK_STOCK_MISSING_IMAGE, actorText);
+	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), DEFAULT_MENU_ICON_SIZE);
+	xfdashboard_button_set_single_line_mode(XFDASHBOARD_BUTTON(actor), FALSE);
+	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
+	if(inMenuElement) g_object_set_data_full(G_OBJECT(actor), ACTOR_USER_DATA_KEY, g_object_ref(inMenuElement), (GDestroyNotify)g_object_unref);
 
-	cairo_set_operator(inContext, CAIRO_OPERATOR_CLEAR);
-	cairo_paint(inContext);
+	/* Free allocated resources */
+	if(actorText) g_free(actorText);
 
-	cairo_restore(inContext);
-
-	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
-
-	/* Scale the modelview to the size of the surface */
-	cairo_scale(inContext, inWidth, inHeight);
-
-	cairo_set_line_cap(inContext, CAIRO_LINE_CAP_ROUND);
-	cairo_set_line_width(inContext, 0.1);
-
-	/* The black rail that holds the seconds indicator */
-	clutter_cairo_set_source_color(inContext, CLUTTER_COLOR_Blue);
-	cairo_translate(inContext, 0.5, 0.5);
-	cairo_arc(inContext, 0, 0, 0.4, 0, G_PI*2);
-	cairo_stroke(inContext);
-
-	/* The seconds indicator */
-	color=*CLUTTER_COLOR_White;
-	color.alpha=128;
-	clutter_cairo_set_source_color(inContext, &color);
-	cairo_move_to(inContext, 0, 0);
-	cairo_arc(inContext, sinf(seconds)*0.4, -cosf(seconds)*0.4, 0.05, 0, G_PI*2);
-	cairo_fill(inContext);
-
-	/* The minutes hand */
-	color=*CLUTTER_COLOR_LightChameleon;
-	color.alpha=196;
-	clutter_cairo_set_source_color(inContext, &color);
-	cairo_move_to(inContext, 0, 0);
-	cairo_line_to(inContext, sinf(minutes)*0.4, -cosf(minutes)*0.4);
-	cairo_stroke(inContext);
-
-	/* The hours hand */
-	cairo_move_to(inContext, 0, 0);
-	cairo_line_to(inContext, sinf(hours)*0.2, -cosf(hours)*0.2);
-	cairo_stroke(inContext);
-
-	/* Done drawing */
-	return(CLUTTER_EVENT_STOP);
+	/* Return created actor */
+	return(actor);
 }
 
-/* Timeout source callback which invalidate clock canvas */
-gboolean _xfdashboard_applications_view_on_timeout(gpointer inUserData)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inUserData), FALSE);
-
-	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(inUserData)->priv;
-
-	/* Invalidate clock canvas which force a redraw with current time */
-	clutter_content_invalidate(CLUTTER_CONTENT(priv->clockCanvas));
-
-	return(TRUE);
-}
-
-/* IMPLEMENTATION: XfdashboardView */
-
-/* View was activated */
-void _xfdashboard_applications_view_activated(XfdashboardApplicationsView *self)
+/* Filter of applications data model has changed */
+void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inUserData));
 
 	XfdashboardApplicationsViewPrivate	*priv=self->priv;
+	XfdashboardButton					*button=XFDASHBOARD_BUTTON(inUserData);
+	GarconMenuElement					*element;
 
-	/* Create timeout source will invalidate canvas each second */
-	priv->timeoutID=clutter_threads_add_timeout(1000, _xfdashboard_applications_view_on_timeout, self);
-}
+	/* Get associated menu element of button */
+	element=GARCON_MENU_ELEMENT(g_object_get_data(G_OBJECT(button), ACTOR_USER_DATA_KEY));
 
-/* View will be deactivated */
-void _xfdashboard_applications_view_deactivating(XfdashboardApplicationsView *self)
-{
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
-
-	XfdashboardApplicationsViewPrivate	*priv=self->priv;
-
-	/* Remove timeout source if available */
-	if(priv->timeoutID)
+	/* If menu element is a sub-menu filter model */
+	if(GARCON_IS_MENU(element))
 	{
-		g_source_remove(priv->timeoutID);
-		priv->timeoutID=0;
+		priv->currentRootMenuElement=element;
+		xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(element));
+		xfdashboard_view_scroll_to(XFDASHBOARD_VIEW(self), -1, 0);
+	}
+		/* Otherwise execute command of menu item clicked and quit application */
+		else if(GARCON_IS_MENU_ITEM(element))
+		{
+			GarconMenuItem			*menuItem=GARCON_MENU_ITEM(element);
+			const gchar				*command=garcon_menu_item_get_command(menuItem);
+			const gchar				*name=garcon_menu_item_get_name(menuItem);
+			GAppInfo				*appInfo;
+			GAppInfoCreateFlags		flags=G_APP_INFO_CREATE_NONE;
+			GError					*error=NULL;
+
+			/* Create application info for launching */
+			if(garcon_menu_item_supports_startup_notification(menuItem)) flags|=G_APP_INFO_CREATE_SUPPORTS_STARTUP_NOTIFICATION;
+			if(garcon_menu_item_requires_terminal(menuItem)) flags|=G_APP_INFO_CREATE_NEEDS_TERMINAL;
+
+			appInfo=g_app_info_create_from_commandline(command, name, flags, &error);
+			if(!appInfo || error)
+			{
+				g_warning(_("Could not create application information for command '%s': %s"),
+							command,
+							(error && error->message) ? error->message : "unknown error");
+				if(error) g_error_free(error);
+				if(appInfo) g_object_unref(appInfo);
+				return;
+			}
+
+			/* Launch application */
+			error=NULL;
+			if(!g_app_info_launch(appInfo, NULL, NULL, &error))
+			{
+				g_warning(_("Could not launch application: %s"),
+							(error && error->message) ? error->message : "unknown error");
+				if(error) g_error_free(error);
+				g_object_unref(appInfo);
+				return;
+			}
+
+			/* Clean up allocated resources */
+			g_object_unref(appInfo);
+
+			/* Quit application */
+			xfdashboard_application_quit();
+			return;
+		}
+}
+
+void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsView *self, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+
+	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
+	ClutterModelIter					*iterator;
+	ClutterActor						*actor;
+	gchar								*name=NULL, *description=NULL, *icon=NULL;
+	GarconMenuElement					*menuElement=NULL;
+	GarconMenu							*parentMenu=NULL;
+
+	/* Destroy all children */
+	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
+
+	/* Get parent menu */
+	if(priv->currentRootMenuElement &&
+		GARCON_IS_MENU(priv->currentRootMenuElement))
+	{
+		parentMenu=garcon_menu_get_parent(GARCON_MENU(priv->currentRootMenuElement));
+	}
+
+	/* If menu element to filter by is not the root menu element, add an "up ..." entry */
+	if(parentMenu!=NULL)
+	{
+		/* Create actor for menu element */
+		actor=_xfdashboard_applications_view_create_menu_item_actor(GTK_STOCK_GO_UP, _("Back"), _("Go back to previous menu"), GARCON_MENU_ELEMENT(parentMenu));
+		clutter_actor_show(actor);
+		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_item_clicked), self);
+
+		/* Add actor to view */
+		clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(priv->layout),
+									actor,
+									TRUE,
+									TRUE,
+									TRUE,
+									CLUTTER_BOX_ALIGNMENT_START,
+									CLUTTER_BOX_ALIGNMENT_START);
+	}
+
+	/* Iterate through (filtered) data model and create actor for each entry */
+	iterator=clutter_model_get_first_iter(CLUTTER_MODEL(priv->apps));
+	if(iterator && CLUTTER_IS_MODEL_ITER(iterator))
+	{
+		while(!clutter_model_iter_is_last(iterator))
+		{
+			/* Get data from model */
+			clutter_model_iter_get(iterator,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE, &name,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_DESCRIPTION, &description,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_ICON, &icon,
+									-1);
+
+			if(menuElement)
+			{
+				/* Create actor for menu element */
+				actor=_xfdashboard_applications_view_create_menu_item_actor(icon, name, description, menuElement);
+				clutter_actor_show(actor);
+				g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_item_clicked), self);
+
+				/* Add actor to view */
+				clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(priv->layout),
+											actor,
+											TRUE,
+											TRUE,
+											TRUE,
+											CLUTTER_BOX_ALIGNMENT_START,
+											CLUTTER_BOX_ALIGNMENT_START);
+			}
+
+			/* Release allocated resources */
+			if(menuElement)
+			{
+				g_object_unref(menuElement);
+				menuElement=NULL;
+			}
+
+			if(name)
+			{
+				g_free(name);
+				name=NULL;
+			}
+
+			if(description)
+			{
+				g_free(description);
+				description=NULL;
+			}
+
+			if(icon)
+			{
+				g_free(icon);
+				icon=NULL;
+			}
+
+			/* Go to next entry in model */
+			iterator=clutter_model_iter_next(iterator);
+		}
+		g_object_unref(iterator);
 	}
 }
 
+/* IMPLEMENTATION: XfdashboardView */
+// TODO: Insert code here or remove comment "IMPLEMENTATION: ..."
+
 /* IMPLEMENTATION: ClutterActor */
-
-/* Allocate position and size of actor and its children*/
-void _xfdashboard_applications_view_allocate(ClutterActor *self,
-												const ClutterActorBox *inBox,
-												ClutterAllocationFlags inFlags)
-{
-	XfdashboardApplicationsViewPrivate		*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
-	ClutterActorBox							childAllocation;
-
-	/* Chain up to store the allocation of the actor */
-	CLUTTER_ACTOR_CLASS(xfdashboard_applications_view_parent_class)->allocate(self, inBox, inFlags);
-
-	/* Set size of actor and canvas */
-	clutter_actor_allocate(priv->clockActor, inBox, inFlags);
-
-	clutter_canvas_set_size(CLUTTER_CANVAS(priv->clockCanvas),
-								clutter_actor_box_get_width(inBox),
-								clutter_actor_box_get_height(inBox));
-}
+// TODO: Insert code here or remove comment "IMPLEMENTATION: ..."
 
 /* IMPLEMENTATION: GObject */
 
@@ -206,22 +285,12 @@ void _xfdashboard_applications_view_dispose(GObject *inObject)
 	XfdashboardApplicationsViewPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
-	if(priv->timeoutID)
-	{
-		g_source_remove(priv->timeoutID);
-		priv->timeoutID=0;
-	}
+	if(priv->layout) priv->layout=NULL;
 
-	if(priv->clockActor)
+	if(priv->apps)
 	{
-		clutter_actor_destroy(priv->clockActor);
-		priv->clockActor=NULL;
-	}
-
-	if(priv->clockCanvas)
-	{
-		g_object_unref(priv->clockCanvas);
-		priv->clockCanvas=NULL;
+		g_object_unref(priv->apps);
+		priv->apps=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -234,17 +303,10 @@ void _xfdashboard_applications_view_dispose(GObject *inObject)
  */
 void xfdashboard_applications_view_class_init(XfdashboardApplicationsViewClass *klass)
 {
-	XfdashboardViewClass	*viewClass=XFDASHBOARD_VIEW_CLASS(klass);
-	ClutterActorClass		*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_applications_view_dispose;
-
-	actorClass->allocate=_xfdashboard_applications_view_allocate;
-
-	viewClass->activated=_xfdashboard_applications_view_activated;
-	viewClass->deactivating=_xfdashboard_applications_view_deactivating;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardApplicationsViewPrivate));
@@ -256,31 +318,32 @@ void xfdashboard_applications_view_class_init(XfdashboardApplicationsViewClass *
 void xfdashboard_applications_view_init(XfdashboardApplicationsView *self)
 {
 	XfdashboardApplicationsViewPrivate	*priv;
-	ClutterLayoutManager				*layout;
 
 	self->priv=priv=XFDASHBOARD_APPLICATIONS_VIEW_GET_PRIVATE(self);
 
 	/* Set up default values */
-	priv->timeoutID=0;
-
-	/* Set up this actor */
-	layout=xfdashboard_fill_box_layout_new_with_orientation(CLUTTER_ORIENTATION_VERTICAL);
-	xfdashboard_fill_box_layout_set_homogeneous(XFDASHBOARD_FILL_BOX_LAYOUT(layout), TRUE);
-	xfdashboard_fill_box_layout_set_keep_aspect(XFDASHBOARD_FILL_BOX_LAYOUT(layout), TRUE);
-	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), layout);
-
-	priv->clockCanvas=clutter_canvas_new();
-	clutter_canvas_set_size(CLUTTER_CANVAS(priv->clockCanvas), 100.0f, 100.0f);
-	g_signal_connect_swapped(priv->clockCanvas, "draw", G_CALLBACK(_xfdashboard_applications_view_on_draw_canvas), self);
-
-	priv->clockActor=clutter_actor_new();
-	clutter_actor_show(priv->clockActor);
-	clutter_actor_set_content(priv->clockActor, priv->clockCanvas);
-	clutter_actor_set_size(priv->clockActor, 100.0f, 100.0f);
-	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->clockActor);
+	priv->apps=XFDASHBOARD_APPLICATIONS_MENU_MODEL(xfdashboard_applications_menu_model_new());
+	priv->currentRootMenuElement=NULL;
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "applications");
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Applications"));
 	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), DEFAULT_VIEW_ICON);
+
+	/* Set up actor */
+	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_HORIZONTAL);
+
+	priv->layout=clutter_box_layout_new();
+	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(priv->layout), CLUTTER_ORIENTATION_VERTICAL);
+	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(priv->layout), DEFAULT_SPACING);
+	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
+
+	/* TODO: Remove next line */
+	xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(priv->currentRootMenuElement));
+	clutter_model_set_sorting_column(CLUTTER_MODEL(priv->apps), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE);
+	_xfdashboard_applications_view_on_filter_changed(self, priv->apps);
+	/* TODO: Remove previous line */
+
+	/* Connect signals */
+	g_signal_connect_swapped(priv->apps, "filter-changed", G_CALLBACK(_xfdashboard_applications_view_on_filter_changed), self);
 }

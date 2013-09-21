@@ -30,6 +30,7 @@
 
 #include "view.h"
 #include "utils.h"
+#include "marshal.h"
 
 /* Define this class in GObject system */
 G_DEFINE_ABSTRACT_TYPE(XfdashboardView,
@@ -82,6 +83,8 @@ enum
 
 	SIGNAL_NAME_CHANGED,
 	SIGNAL_ICON_CHANGED,
+
+	SIGNAL_SCROLL_TO,
 
 	SIGNAL_LAST
 };
@@ -307,6 +310,18 @@ void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 						1,
 						CLUTTER_TYPE_IMAGE);
 
+	XfdashboardViewSignals[SIGNAL_SCROLL_TO]=
+		g_signal_new("scroll-to",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardViewClass, scroll_to),
+						NULL,
+						NULL,
+						_xfdashboard_marshal_VOID__FLOAT_FLOAT,
+						G_TYPE_NONE,
+						2,
+						G_TYPE_FLOAT,
+						G_TYPE_FLOAT);
 }
 
 /* Object initialization
@@ -442,4 +457,12 @@ void xfdashboard_view_set_fit_mode(XfdashboardView *self, XfdashboardFitMode inF
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_FIT_MODE]);
 	}
+}
+
+/* Scroll view to requested coordinates */
+void xfdashboard_view_scroll_to(XfdashboardView *self, gfloat inX, gfloat inY)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+
+	g_signal_emit(self, XfdashboardViewSignals[SIGNAL_SCROLL_TO], 0, inX, inY);
 }
