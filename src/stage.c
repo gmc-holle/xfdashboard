@@ -36,6 +36,7 @@
 #include "viewpad.h"
 #include "view-selector.h"
 #include "textbox.h"
+#include "quicklaunch.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,
@@ -137,10 +138,8 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_set_layout_manager(groupHorizontal, layout);
 
 	/* Quicklaunch */
-	priv->quicklaunch=clutter_actor_new();
-	clutter_actor_set_size(priv->quicklaunch, 64, 64);
-	clutter_color_init(&color, 0xff, 0x00, 0x00, 0x80);
-	clutter_actor_set_background_color(priv->quicklaunch, &color);
+	priv->quicklaunch=xfdashboard_quicklaunch_new();
+	/* TODO: Remove this line */ clutter_actor_set_size(priv->quicklaunch, 64, 64);
 	clutter_actor_set_y_expand(priv->quicklaunch, TRUE);
 	clutter_actor_add_child(groupHorizontal, priv->quicklaunch);
 
