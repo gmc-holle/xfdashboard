@@ -377,6 +377,8 @@ void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 							_("Image to draw as background"),
 							CLUTTER_TYPE_IMAGE,
 							G_PARAM_READWRITE);
+
+	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardBackgroundProperties);
 }
 
 /* Object initialization

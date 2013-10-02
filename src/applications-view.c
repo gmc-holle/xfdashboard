@@ -36,6 +36,7 @@
 #include "types.h"
 #include "button.h"
 #include "application.h"
+#include "application-button.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsView,
@@ -73,39 +74,10 @@ GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 #define DEFAULT_SPACING				4.0f					// TODO: Replace by settings/theming object
 #define DEFAULT_MENU_ICON_SIZE		64						// TODO: Replace by settings/theming object
 
-/* Creates menu item actor */
-ClutterActor* _xfdashboard_applications_view_create_menu_item_actor(const gchar *inIconName,
-																	const gchar *inName,
-																	const gchar *inDescription,
-																	GarconMenuElement *inMenuElement)
-{
-	g_return_val_if_fail(inName, NULL);
-	g_return_val_if_fail(inMenuElement==NULL || GARCON_IS_MENU_ELEMENT(inMenuElement), NULL);
-
-	ClutterActor	*actor;
-	gchar			*actorText;
-
-	/* Set up text for actor */
-	if(inDescription) actorText=g_strdup_printf("<b>%s</b>\n\n%s", inName, inDescription);
-		else actorText=g_strdup_printf("<b>%s</b>", inName);
-
-	/* Create actor */
-	actor=xfdashboard_button_new_full(inIconName ? inIconName : GTK_STOCK_MISSING_IMAGE, actorText);
-	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), DEFAULT_MENU_ICON_SIZE);
-	xfdashboard_button_set_single_line_mode(XFDASHBOARD_BUTTON(actor), FALSE);
-	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
-	if(inMenuElement) g_object_set_data_full(G_OBJECT(actor), ACTOR_USER_DATA_KEY, g_object_ref(inMenuElement), (GDestroyNotify)g_object_unref);
-
-	/* Free allocated resources */
-	if(actorText) g_free(actorText);
-
-	/* Return created actor */
-	return(actor);
-}
-
 /* Filter of applications data model has changed */
-void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
+void _xfdashboard_applications_view_on_parent_menu_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
 {
+g_message("%s: self=%p (%s), user-data=%p (%s)", __func__, self, DEBUG_OBJECT_NAME(self), inUserData, DEBUG_OBJECT_NAME(inUserData));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inUserData));
 
@@ -116,55 +88,45 @@ void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView 
 	/* Get associated menu element of button */
 	element=GARCON_MENU_ELEMENT(g_object_get_data(G_OBJECT(button), ACTOR_USER_DATA_KEY));
 
-	/* If menu element is a sub-menu filter model */
 	if(GARCON_IS_MENU(element))
 	{
 		priv->currentRootMenuElement=element;
 		xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(element));
 		xfdashboard_view_scroll_to(XFDASHBOARD_VIEW(self), -1, 0);
 	}
-		/* Otherwise execute command of menu item clicked and quit application */
+}
+
+void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
+
+	XfdashboardApplicationsViewPrivate	*priv=self->priv;
+	XfdashboardApplicationButton		*button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
+	GarconMenuElement					*element;
+
+	/* Get associated menu element of button */
+	element=xfdashboard_application_button_get_menu_element(button);
+
+	/* If clicked item is a menu set it as new parent one */
+	if(GARCON_IS_MENU(element))
+	{
+		priv->currentRootMenuElement=element;
+		xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(element));
+		xfdashboard_view_scroll_to(XFDASHBOARD_VIEW(self), -1, 0);
+	}
+		/* If clicked item is a menu item execute command of menu item clicked
+		 * and quit application
+		 */
 		else if(GARCON_IS_MENU_ITEM(element))
 		{
-			GarconMenuItem			*menuItem=GARCON_MENU_ITEM(element);
-			const gchar				*command=garcon_menu_item_get_command(menuItem);
-			const gchar				*name=garcon_menu_item_get_name(menuItem);
-			GAppInfo				*appInfo;
-			GAppInfoCreateFlags		flags=G_APP_INFO_CREATE_NONE;
-			GError					*error=NULL;
-
-			/* Create application info for launching */
-			if(garcon_menu_item_supports_startup_notification(menuItem)) flags|=G_APP_INFO_CREATE_SUPPORTS_STARTUP_NOTIFICATION;
-			if(garcon_menu_item_requires_terminal(menuItem)) flags|=G_APP_INFO_CREATE_NEEDS_TERMINAL;
-
-			appInfo=g_app_info_create_from_commandline(command, name, flags, &error);
-			if(!appInfo || error)
-			{
-				g_warning(_("Could not create application information for command '%s': %s"),
-							command,
-							(error && error->message) ? error->message : "unknown error");
-				if(error) g_error_free(error);
-				if(appInfo) g_object_unref(appInfo);
-				return;
-			}
-
 			/* Launch application */
-			error=NULL;
-			if(!g_app_info_launch(appInfo, NULL, NULL, &error))
+			if(xfdashboard_application_button_execute(button))
 			{
-				g_warning(_("Could not launch application: %s"),
-							(error && error->message) ? error->message : "unknown error");
-				if(error) g_error_free(error);
-				g_object_unref(appInfo);
+				/* Launching application seems to be successfuly so quit application */
+				xfdashboard_application_quit();
 				return;
 			}
-
-			/* Clean up allocated resources */
-			g_object_unref(appInfo);
-
-			/* Quit application */
-			xfdashboard_application_quit();
-			return;
 		}
 }
 
@@ -175,7 +137,6 @@ void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsVie
 	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
 	ClutterModelIter					*iterator;
 	ClutterActor						*actor;
-	gchar								*name=NULL, *description=NULL, *icon=NULL;
 	GarconMenuElement					*menuElement=NULL;
 	GarconMenu							*parentMenu=NULL;
 
@@ -192,10 +153,18 @@ void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsVie
 	/* If menu element to filter by is not the root menu element, add an "up ..." entry */
 	if(parentMenu!=NULL)
 	{
+		gchar							*actorText=NULL;
+
 		/* Create actor for menu element */
-		actor=_xfdashboard_applications_view_create_menu_item_actor(GTK_STOCK_GO_UP, _("Back"), _("Go back to previous menu"), GARCON_MENU_ELEMENT(parentMenu));
+		actorText=g_strdup_printf("<b><big>%s</big></b>\n\n%s", _("Back"), _("Go back to previous menu"));
+		actor=xfdashboard_button_new_full(GTK_STOCK_GO_UP, actorText);
+		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), DEFAULT_MENU_ICON_SIZE);
+		xfdashboard_button_set_single_line_mode(XFDASHBOARD_BUTTON(actor), FALSE);
+		xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
+		g_object_set_data_full(G_OBJECT(actor), ACTOR_USER_DATA_KEY, g_object_ref(parentMenu), (GDestroyNotify)g_object_unref);
 		clutter_actor_show(actor);
-		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_item_clicked), self);
+		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_parent_menu_clicked), self);
+		g_free(actorText);
 
 		/* Add actor to view */
 		clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(priv->layout),
@@ -216,15 +185,14 @@ void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsVie
 			/* Get data from model */
 			clutter_model_iter_get(iterator,
 									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
-									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE, &name,
-									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_DESCRIPTION, &description,
-									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_ICON, &icon,
 									-1);
 
 			if(menuElement)
 			{
 				/* Create actor for menu element */
-				actor=_xfdashboard_applications_view_create_menu_item_actor(icon, name, description, menuElement);
+				actor=xfdashboard_application_button_new_from_menu(menuElement);
+				xfdashboard_application_button_set_show_description(XFDASHBOARD_APPLICATION_BUTTON(actor), TRUE);
+				xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
 				clutter_actor_show(actor);
 				g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_item_clicked), self);
 
@@ -245,36 +213,12 @@ void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsVie
 				menuElement=NULL;
 			}
 
-			if(name)
-			{
-				g_free(name);
-				name=NULL;
-			}
-
-			if(description)
-			{
-				g_free(description);
-				description=NULL;
-			}
-
-			if(icon)
-			{
-				g_free(icon);
-				icon=NULL;
-			}
-
 			/* Go to next entry in model */
 			iterator=clutter_model_iter_next(iterator);
 		}
 		g_object_unref(iterator);
 	}
 }
-
-/* IMPLEMENTATION: XfdashboardView */
-// TODO: Insert code here or remove comment "IMPLEMENTATION: ..."
-
-/* IMPLEMENTATION: ClutterActor */
-// TODO: Insert code here or remove comment "IMPLEMENTATION: ..."
 
 /* IMPLEMENTATION: GObject */
 
@@ -333,16 +277,14 @@ void xfdashboard_applications_view_init(XfdashboardApplicationsView *self)
 	/* Set up actor */
 	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_HORIZONTAL);
 
+	xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(priv->currentRootMenuElement));
+	clutter_model_set_sorting_column(CLUTTER_MODEL(priv->apps), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE);
+	_xfdashboard_applications_view_on_filter_changed(self, priv->apps);
+
 	priv->layout=clutter_box_layout_new();
 	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(priv->layout), CLUTTER_ORIENTATION_VERTICAL);
 	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(priv->layout), DEFAULT_SPACING);
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
-
-	/* TODO: Remove next line */
-	xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(priv->currentRootMenuElement));
-	clutter_model_set_sorting_column(CLUTTER_MODEL(priv->apps), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE);
-	_xfdashboard_applications_view_on_filter_changed(self, priv->apps);
-	/* TODO: Remove previous line */
 
 	/* Connect signals */
 	g_signal_connect_swapped(priv->apps, "filter-changed", G_CALLBACK(_xfdashboard_applications_view_on_filter_changed), self);

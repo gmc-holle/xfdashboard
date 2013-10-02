@@ -36,6 +36,7 @@ G_BEGIN_DECLS
 guint32 xfdashboard_get_current_time(void);
 
 ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint inSize);
+ClutterImage* xfdashboard_get_image_for_gicon(GIcon *inIcon, gint inSize);
 ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf);
 
 G_END_DECLS

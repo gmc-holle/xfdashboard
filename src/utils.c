@@ -163,6 +163,55 @@ ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint 
 	return(CLUTTER_IMAGE(image));
 }
 
+/* Get ClutterImage object for GIcon object.
+ * The return ClutterImage object (if not NULL) must be unreffed with
+ * g_object_unref().
+ */
+ClutterImage* xfdashboard_get_image_for_gicon(GIcon *inIcon, gint inSize)
+{
+	g_return_val_if_fail(G_IS_ICON(inIcon), NULL);
+	g_return_val_if_fail(inSize>0, NULL);
+
+	ClutterContent		*image;
+	GtkIconInfo			*iconInfo;
+	GdkPixbuf			*iconPixbuf;
+	GError				*error=NULL;
+
+	/* Get icon information */
+	iconInfo=gtk_icon_theme_lookup_by_gicon(gtk_icon_theme_get_default(),
+												inIcon,
+												inSize,
+												GTK_ICON_LOOKUP_USE_BUILTIN);
+	if(!iconInfo)
+	{
+		g_warning(_("Could not lookup icon for gicon '%s'"), g_icon_to_string(inIcon));
+		return(NULL);
+	}
+
+	/* Load icon */
+	iconPixbuf=gtk_icon_info_load_icon(iconInfo, &error);
+	if(!iconPixbuf)
+	{
+		g_warning(_("Could not load icon for gicon '%s': %s"),
+					g_icon_to_string(inIcon), (error && error->message) ? error->message : _("unknown error"));
+		if(error!=NULL) g_error_free(error);
+		return(NULL);
+	}
+
+	/* Create ClutterImage for icon loaded */
+	image=clutter_image_new();
+	clutter_image_set_data(CLUTTER_IMAGE(image),
+							gdk_pixbuf_get_pixels(iconPixbuf),
+							gdk_pixbuf_get_has_alpha(iconPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
+							gdk_pixbuf_get_width(iconPixbuf),
+							gdk_pixbuf_get_height(iconPixbuf),
+							gdk_pixbuf_get_rowstride(iconPixbuf),
+							NULL);
+
+	/* Return ClutterImage */
+	return(CLUTTER_IMAGE(image));
+}
+
 /* Get ClutterImage object for GdkPixbuf object.
  * The return ClutterImage object (if not NULL) must be unreffed with
  * g_object_unref().
