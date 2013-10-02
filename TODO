@@ -42,14 +42,14 @@
 [done] - React on window disappearing by destroying appropiate live-window actor
 
 == APPLICATION-MENU VIEW ==
-- Implement application-menu view
-- Start application when clicked on application icon in view
+[done] - Implement application-menu view
+[done] - Start application when clicked on application icon in view
 - Allow drag-n-drop of application icon to quicklaunch-box view and create shortcut
 - Allow drag-n-drop of application icon to workspace-box and start application on this workspace
 
 == SEARCH VIEW ==
 - Implement search view
-- Implement search input box
+[done] - Implement search input box
 - Switch to search view on non-empty search term (that means search started)
 - Merge search view with applications view (search view will be removed and impleted as filter in applications view)
 - Switch back to previous view if search term is empty (that means search has ended)
