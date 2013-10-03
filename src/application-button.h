@@ -78,6 +78,12 @@ void xfdashboard_application_button_set_desktop_filename(XfdashboardApplicationB
 gboolean xfdashboard_application_button_get_show_description(XfdashboardApplicationButton *self);
 void xfdashboard_application_button_set_show_description(XfdashboardApplicationButton *self, gboolean inShowDescription);
 
+const gchar* xfdashboard_application_button_get_format_title_only(XfdashboardApplicationButton *self);
+void xfdashboard_application_button_set_format_title_only(XfdashboardApplicationButton *self, const gchar *inFormat);
+
+const gchar* xfdashboard_application_button_get_format_title_description(XfdashboardApplicationButton *self);
+void xfdashboard_application_button_set_format_title_description(XfdashboardApplicationButton *self, const gchar *inFormat);
+
 gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self);
 
 G_END_DECLS
