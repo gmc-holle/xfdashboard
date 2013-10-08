@@ -37,6 +37,7 @@
 #include "button.h"
 #include "application.h"
 #include "application-button.h"
+#include "enums.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsView,
@@ -50,6 +51,7 @@ G_DEFINE_TYPE(XfdashboardApplicationsView,
 struct _XfdashboardApplicationsViewPrivate
 {
 	/* Properties related */
+	XfdashboardViewMode					viewMode;
 
 	/* Instance related */
 	ClutterLayoutManager				*layout;
@@ -62,6 +64,8 @@ enum
 {
 	PROP_0,
 
+	PROP_VIEW_MODE,
+
 	PROP_LAST
 };
 
@@ -70,9 +74,79 @@ GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 #define ACTOR_USER_DATA_KEY			"xfdashboard-applications-view-user-data"
 
-#define DEFAULT_VIEW_ICON			GTK_STOCK_HOME			// TODO: Replace by settings/theming object
-#define DEFAULT_SPACING				4.0f					// TODO: Replace by settings/theming object
-#define DEFAULT_MENU_ICON_SIZE		64						// TODO: Replace by settings/theming object
+#define DEFAULT_VIEW_MODE			XFDASHBOARD_VIEW_MODE_ICON	// TODO: Replace by settings/theming object
+#define DEFAULT_VIEW_ICON			GTK_STOCK_HOME				// TODO: Replace by settings/theming object
+#define DEFAULT_SPACING				4.0f						// TODO: Replace by settings/theming object
+#define DEFAULT_MENU_ICON_SIZE		64							// TODO: Replace by settings/theming object
+
+/* Update style of all child actors */
+void _xfdashboard_applications_view_update_buttons_style(XfdashboardApplicationsView *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+
+	XfdashboardApplicationsViewPrivate	*priv=self->priv;
+	ClutterActor						*child;
+	ClutterActorIter					iter;
+	const gchar							*actorFormat=NULL;
+	gchar								*actorText=NULL;
+	ClutterActor						*appButton;
+
+	/* Iterate through all child actor and
+	 * update style of each one depending on view mode
+	 */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		switch(priv->viewMode)
+		{
+			case XFDASHBOARD_VIEW_MODE_LIST:
+				if(XFDASHBOARD_IS_APPLICATION_BUTTON(child))
+				{
+					xfdashboard_application_button_set_show_description(XFDASHBOARD_APPLICATION_BUTTON(child), TRUE);
+				}
+					else if(XFDASHBOARD_IS_BUTTON(child))
+					{
+						/* Get text to set and format to use in "parent menu" button */
+						appButton=xfdashboard_application_button_new();
+
+						actorFormat=xfdashboard_application_button_get_format_title_description(XFDASHBOARD_APPLICATION_BUTTON(appButton));
+						actorText=g_strdup_printf(actorFormat, _("Back"), _("Go back to previous menu"));
+						xfdashboard_button_set_text(XFDASHBOARD_BUTTON(child), actorText);
+
+						g_object_unref(appButton);
+						g_free(actorText);
+					}
+				xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(child), XFDASHBOARD_ORIENTATION_LEFT);
+				break;
+
+			case XFDASHBOARD_VIEW_MODE_ICON:
+				if(XFDASHBOARD_IS_APPLICATION_BUTTON(child))
+				{
+					xfdashboard_application_button_set_show_description(XFDASHBOARD_APPLICATION_BUTTON(child), FALSE);
+				}
+					else if(XFDASHBOARD_IS_BUTTON(child))
+					{
+						/* Get text to set and format to use in "parent menu" button */
+						appButton=xfdashboard_application_button_new();
+
+						actorFormat=xfdashboard_application_button_get_format_title_only(XFDASHBOARD_APPLICATION_BUTTON(appButton));
+						actorText=g_strdup_printf(actorFormat, _("Back"));
+						xfdashboard_button_set_text(XFDASHBOARD_BUTTON(child), actorText);
+
+						g_object_unref(appButton);
+						g_free(actorText);
+					}
+				xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(child), XFDASHBOARD_ORIENTATION_TOP);
+				break;
+
+			default:
+				g_assert_not_reached();
+		}
+	}
+
+	/* Relayout children */
+	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+}
 
 /* Filter of applications data model has changed */
 void _xfdashboard_applications_view_on_parent_menu_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
@@ -152,27 +226,14 @@ void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsVie
 	/* If menu element to filter by is not the root menu element, add an "up ..." entry */
 	if(parentMenu!=NULL)
 	{
-		const gchar						*actorFormat=NULL;
-		gchar							*actorText=NULL;
-		ClutterActor					*appButton;
-
-		/* Get text to set in "parent menu" button */
-		appButton=xfdashboard_application_button_new();
-		actorFormat=xfdashboard_application_button_get_format_title_description(XFDASHBOARD_APPLICATION_BUTTON(appButton));
-		actorText=g_strdup_printf(actorFormat, _("Back"), _("Go back to previous menu"));
-
 		/* Create and adjust of "parent menu" button to application buttons */
-		actor=xfdashboard_button_new_full(GTK_STOCK_GO_UP, actorText);
+		actor=xfdashboard_button_new_full(GTK_STOCK_GO_UP, "");
 		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), DEFAULT_MENU_ICON_SIZE);
 		xfdashboard_button_set_single_line_mode(XFDASHBOARD_BUTTON(actor), FALSE);
 		xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
 		g_object_set_data_full(G_OBJECT(actor), ACTOR_USER_DATA_KEY, g_object_ref(parentMenu), (GDestroyNotify)g_object_unref);
 		clutter_actor_show(actor);
 		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_parent_menu_clicked), self);
-
-		/* Release allocated resources */
-		g_object_unref(appButton);
-		g_free(actorText);
 
 		/* Add actor to view */
 		clutter_actor_set_x_expand(actor, TRUE);
@@ -196,7 +257,7 @@ void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsVie
 				/* Create actor for menu element */
 				actor=xfdashboard_application_button_new_from_menu(menuElement);
 				xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), DEFAULT_MENU_ICON_SIZE);
-				xfdashboard_application_button_set_show_description(XFDASHBOARD_APPLICATION_BUTTON(actor), TRUE);
+				xfdashboard_button_set_single_line_mode(XFDASHBOARD_BUTTON(actor), FALSE);
 				xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
 				clutter_actor_show(actor);
 				g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_item_clicked), self);
@@ -220,7 +281,8 @@ void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsVie
 		g_object_unref(iterator);
 	}
 
-	/* Adjust style of "parent menu" button (if available) to application buttons */
+	/* Adjust style of buttons */
+	_xfdashboard_applications_view_update_buttons_style(self);
 }
 
 /* IMPLEMENTATION: GObject */
@@ -244,6 +306,46 @@ void _xfdashboard_applications_view_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_applications_view_parent_class)->dispose(inObject);
 }
 
+/* Set/get properties */
+void _xfdashboard_applications_view_set_property(GObject *inObject,
+													guint inPropID,
+													const GValue *inValue,
+													GParamSpec *inSpec)
+{
+	XfdashboardApplicationsView				*self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
+
+	switch(inPropID)
+	{
+		case PROP_VIEW_MODE:
+			xfdashboard_applications_view_set_view_mode(self, (XfdashboardViewMode)g_value_get_enum(inValue));
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
+void _xfdashboard_applications_view_get_property(GObject *inObject,
+													guint inPropID,
+													GValue *outValue,
+													GParamSpec *inSpec)
+{
+	XfdashboardApplicationsView				*self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
+	XfdashboardApplicationsViewPrivate		*priv=self->priv;
+
+	switch(inPropID)
+	{
+		case PROP_VIEW_MODE:
+			g_value_set_enum(outValue, priv->viewMode);
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
@@ -254,9 +356,22 @@ void xfdashboard_applications_view_class_init(XfdashboardApplicationsViewClass *
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_applications_view_dispose;
+	gobjectClass->set_property=_xfdashboard_applications_view_set_property;
+	gobjectClass->get_property=_xfdashboard_applications_view_get_property;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardApplicationsViewPrivate));
+
+	/* Define properties */
+	XfdashboardApplicationsViewProperties[PROP_VIEW_MODE]=
+		g_param_spec_enum("view-mode",
+							_("View mode"),
+							_("The view mode used in this view"),
+							XFDASHBOARD_TYPE_VIEW_MODE,
+							DEFAULT_VIEW_MODE,
+							G_PARAM_READWRITE);
+
+	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardApplicationsViewProperties);
 }
 
 /* Object initialization
@@ -271,6 +386,7 @@ void xfdashboard_applications_view_init(XfdashboardApplicationsView *self)
 	/* Set up default values */
 	priv->apps=XFDASHBOARD_APPLICATIONS_MENU_MODEL(xfdashboard_applications_menu_model_new());
 	priv->currentRootMenuElement=NULL;
+	priv->viewMode=-1;
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "applications");
@@ -279,11 +395,7 @@ void xfdashboard_applications_view_init(XfdashboardApplicationsView *self)
 
 	/* Set up actor */
 	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_HORIZONTAL);
-
-	priv->layout=clutter_box_layout_new();
-	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(priv->layout), CLUTTER_ORIENTATION_VERTICAL);
-	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(priv->layout), DEFAULT_SPACING);
-	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
+	xfdashboard_applications_view_set_view_mode(self, DEFAULT_VIEW_MODE);
 
 	xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(priv->currentRootMenuElement));
 	clutter_model_set_sorting_column(CLUTTER_MODEL(priv->apps), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE);
@@ -291,4 +403,61 @@ void xfdashboard_applications_view_init(XfdashboardApplicationsView *self)
 
 	/* Connect signals */
 	g_signal_connect_swapped(priv->apps, "filter-changed", G_CALLBACK(_xfdashboard_applications_view_on_filter_changed), self);
+}
+
+/* Get/set view mode of view */
+XfdashboardViewMode xfdashboard_applications_view_get_view_mode(XfdashboardApplicationsView *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), DEFAULT_VIEW_MODE);
+
+	return(self->priv->viewMode);
+}
+
+void xfdashboard_applications_view_set_view_mode(XfdashboardApplicationsView *self, const XfdashboardViewMode inMode)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+	g_return_if_fail(inMode<=XFDASHBOARD_VIEW_MODE_ICON);
+
+	XfdashboardApplicationsViewPrivate	*priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->viewMode!=inMode)
+	{
+		/* Set value */
+		if(priv->layout)
+		{
+			clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), NULL);
+			priv->layout=NULL;
+		}
+
+		priv->viewMode=inMode;
+
+		/* Set new layout manager */
+		switch(priv->viewMode)
+		{
+			case XFDASHBOARD_VIEW_MODE_LIST:
+				priv->layout=clutter_box_layout_new();
+				clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(priv->layout), CLUTTER_ORIENTATION_VERTICAL);
+				clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(priv->layout), DEFAULT_SPACING);
+				clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
+				break;
+
+			case XFDASHBOARD_VIEW_MODE_ICON:
+				priv->layout=clutter_flow_layout_new(CLUTTER_FLOW_HORIZONTAL);
+				clutter_flow_layout_set_homogeneous(CLUTTER_FLOW_LAYOUT(priv->layout), TRUE);
+				clutter_flow_layout_set_row_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), DEFAULT_SPACING);
+				clutter_flow_layout_set_column_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), DEFAULT_SPACING);
+				clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
+				break;
+
+			default:
+				g_assert_not_reached();
+		}
+
+		/* Update style of actors */
+		_xfdashboard_applications_view_update_buttons_style(self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationsViewProperties[PROP_VIEW_MODE]);
+	}
 }

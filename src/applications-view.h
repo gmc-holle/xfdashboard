@@ -58,6 +58,9 @@ struct _XfdashboardApplicationsViewClass
 /* Public API */
 GType xfdashboard_applications_view_get_type(void) G_GNUC_CONST;
 
+XfdashboardViewMode xfdashboard_applications_view_get_view_mode(XfdashboardApplicationsView *self);
+void xfdashboard_applications_view_set_view_mode(XfdashboardApplicationsView *self, const XfdashboardViewMode inMode);
+
 G_END_DECLS
 
 #endif
