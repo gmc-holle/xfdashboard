@@ -38,10 +38,10 @@ typedef enum /*< skip,prefix=XFDASHBOARD_APPLICATION_ERROR >*/
 } XfdashboardApplicationErrorCode;
 
 /* List mode for views */
-typedef enum /*< prefix=XFDASHBOARD_VIEW >*/
+typedef enum /*< prefix=XFDASHBOARD_VIEW_MODE >*/
 {
-	XFDASHBOARD_VIEW_LIST=0,
-	XFDASHBOARD_VIEW_ICON
+	XFDASHBOARD_VIEW_MODE_LIST=0,
+	XFDASHBOARD_VIEW_MODE_ICON
 } XfdashboardViewMode;
 
 /* Visibility policy (e.g. for scroll bars in views) */

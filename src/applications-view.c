@@ -175,13 +175,9 @@ void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsVie
 		g_free(actorText);
 
 		/* Add actor to view */
-		clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(priv->layout),
-									actor,
-									TRUE,
-									TRUE,
-									TRUE,
-									CLUTTER_BOX_ALIGNMENT_START,
-									CLUTTER_BOX_ALIGNMENT_START);
+		clutter_actor_set_x_expand(actor, TRUE);
+		clutter_actor_set_y_expand(actor, TRUE);
+		clutter_actor_add_child(CLUTTER_ACTOR(self), actor);
 	}
 
 	/* Iterate through (filtered) data model and create actor for each entry */
@@ -206,13 +202,9 @@ void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsVie
 				g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_item_clicked), self);
 
 				/* Add actor to view */
-				clutter_box_layout_pack(CLUTTER_BOX_LAYOUT(priv->layout),
-											actor,
-											TRUE,
-											TRUE,
-											TRUE,
-											CLUTTER_BOX_ALIGNMENT_START,
-											CLUTTER_BOX_ALIGNMENT_START);
+				clutter_actor_set_x_expand(actor, TRUE);
+				clutter_actor_set_y_expand(actor, TRUE);
+				clutter_actor_add_child(CLUTTER_ACTOR(self), actor);
 			}
 
 			/* Release allocated resources */

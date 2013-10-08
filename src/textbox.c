@@ -171,7 +171,7 @@ void _xfdashboard_text_box_on_secondary_icon_clicked(ClutterClickAction *inActio
 /* IMPLEMENTATION: ClutterActor */
 
 /* Show all children of this one */
-static void xfdashboard_text_box_show(ClutterActor *inActor)
+void _xfdashboard_text_box_show(ClutterActor *inActor)
 {
 	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inActor);
 	XfdashboardTextBoxPrivate	*priv=self->priv;
@@ -195,10 +195,10 @@ static void xfdashboard_text_box_show(ClutterActor *inActor)
 }
 
 /* Get preferred width/height */
-static void xfdashboard_text_box_get_preferred_height(ClutterActor *self,
-														gfloat inForWidth,
-														gfloat *outMinHeight,
-														gfloat *outNaturalHeight)
+void _xfdashboard_text_box_get_preferred_height(ClutterActor *self,
+												gfloat inForWidth,
+												gfloat *outMinHeight,
+												gfloat *outNaturalHeight)
 {
 	XfdashboardTextBoxPrivate	*priv=XFDASHBOARD_TEXT_BOX(self)->priv;
 	gfloat						minHeight, naturalHeight;
@@ -228,10 +228,10 @@ static void xfdashboard_text_box_get_preferred_height(ClutterActor *self,
 	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
-static void xfdashboard_text_box_get_preferred_width(ClutterActor *self,
-														gfloat inForHeight,
-														gfloat *outMinWidth,
-														gfloat *outNaturalWidth)
+void _xfdashboard_text_box_get_preferred_width(ClutterActor *self,
+												gfloat inForHeight,
+												gfloat *outMinWidth,
+												gfloat *outNaturalWidth)
 {
 	XfdashboardTextBoxPrivate	*priv=XFDASHBOARD_TEXT_BOX(self)->priv;
 	gfloat						minWidth, naturalWidth;
@@ -305,9 +305,9 @@ static void xfdashboard_text_box_get_preferred_width(ClutterActor *self,
 }
 
 /* Allocate position and size of actor and its children*/
-static void xfdashboard_text_box_allocate(ClutterActor *self,
-											const ClutterActorBox *inBox,
-											ClutterAllocationFlags inFlags)
+void _xfdashboard_text_box_allocate(ClutterActor *self,
+									const ClutterActorBox *inBox,
+									ClutterAllocationFlags inFlags)
 {
 	XfdashboardTextBoxPrivate	*priv=XFDASHBOARD_TEXT_BOX(self)->priv;
 	ClutterActorBox				*box=NULL;
@@ -400,7 +400,7 @@ static void xfdashboard_text_box_allocate(ClutterActor *self,
 }
 
 /* Destroy this actor */
-static void xfdashboard_text_box_destroy(ClutterActor *self)
+void _xfdashboard_text_box_destroy(ClutterActor *self)
 {
 	/* Destroy each child actor when this actor is destroyed */
 	XfdashboardTextBoxPrivate	*priv=XFDASHBOARD_TEXT_BOX(self)->priv;
@@ -436,7 +436,7 @@ static void xfdashboard_text_box_destroy(ClutterActor *self)
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-static void xfdashboard_text_box_dispose(GObject *inObject)
+void _xfdashboard_text_box_dispose(GObject *inObject)
 {
 	/* Release our allocated variables */
 	XfdashboardTextBoxPrivate	*priv=XFDASHBOARD_TEXT_BOX(inObject)->priv;
@@ -482,10 +482,10 @@ static void xfdashboard_text_box_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-static void xfdashboard_text_box_set_property(GObject *inObject,
-												guint inPropID,
-												const GValue *inValue,
-												GParamSpec *inSpec)
+void _xfdashboard_text_box_set_property(GObject *inObject,
+										guint inPropID,
+										const GValue *inValue,
+										GParamSpec *inSpec)
 {
 	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inObject);
 
@@ -537,10 +537,10 @@ static void xfdashboard_text_box_set_property(GObject *inObject,
 	}
 }
 
-static void xfdashboard_text_box_get_property(GObject *inObject,
-												guint inPropID,
-												GValue *outValue,
-												GParamSpec *inSpec)
+void _xfdashboard_text_box_get_property(GObject *inObject,
+										guint inPropID,
+										GValue *outValue,
+										GParamSpec *inSpec)
 {
 	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inObject);
 	XfdashboardTextBoxPrivate		*priv=self->priv;
@@ -597,21 +597,21 @@ static void xfdashboard_text_box_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
+void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 {
 	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->dispose=xfdashboard_text_box_dispose;
-	gobjectClass->set_property=xfdashboard_text_box_set_property;
-	gobjectClass->get_property=xfdashboard_text_box_get_property;
+	gobjectClass->dispose=_xfdashboard_text_box_dispose;
+	gobjectClass->set_property=_xfdashboard_text_box_set_property;
+	gobjectClass->get_property=_xfdashboard_text_box_get_property;
 
-	actorClass->show_all=xfdashboard_text_box_show;
-	actorClass->get_preferred_width=xfdashboard_text_box_get_preferred_width;
-	actorClass->get_preferred_height=xfdashboard_text_box_get_preferred_height;
-	actorClass->allocate=xfdashboard_text_box_allocate;
-	actorClass->destroy=xfdashboard_text_box_destroy;
+	actorClass->show_all=_xfdashboard_text_box_show;
+	actorClass->get_preferred_width=_xfdashboard_text_box_get_preferred_width;
+	actorClass->get_preferred_height=_xfdashboard_text_box_get_preferred_height;
+	actorClass->allocate=_xfdashboard_text_box_allocate;
+	actorClass->destroy=_xfdashboard_text_box_destroy;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardTextBoxPrivate));
@@ -730,7 +730,7 @@ static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-static void xfdashboard_text_box_init(XfdashboardTextBox *self)
+void xfdashboard_text_box_init(XfdashboardTextBox *self)
 {
 	XfdashboardTextBoxPrivate	*priv;
 

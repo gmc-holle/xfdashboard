@@ -208,7 +208,7 @@ void _xfdashboard_application_button_on_icon_size_changed(XfdashboardApplication
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-static void xfdashboard_application_button_dispose(GObject *inObject)
+void xfdashboard_application_button_dispose(GObject *inObject)
 {
 	XfdashboardApplicationButton		*self=XFDASHBOARD_APPLICATION_BUTTON(inObject);
 
@@ -220,10 +220,10 @@ static void xfdashboard_application_button_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-static void xfdashboard_application_button_set_property(GObject *inObject,
-														guint inPropID,
-														const GValue *inValue,
-														GParamSpec *inSpec)
+void xfdashboard_application_button_set_property(GObject *inObject,
+													guint inPropID,
+													const GValue *inValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardApplicationButton			*self=XFDASHBOARD_APPLICATION_BUTTON(inObject);
 
@@ -255,10 +255,10 @@ static void xfdashboard_application_button_set_property(GObject *inObject,
 	}
 }
 
-static void xfdashboard_application_button_get_property(GObject *inObject,
-												guint inPropID,
-												GValue *outValue,
-												GParamSpec *inSpec)
+void xfdashboard_application_button_get_property(GObject *inObject,
+													guint inPropID,
+													GValue *outValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardApplicationButton			*self=XFDASHBOARD_APPLICATION_BUTTON(inObject);
 	XfdashboardApplicationButtonPrivate		*priv=self->priv;

@@ -68,7 +68,7 @@ static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-static void xfdashboard_quicklaunch_dispose(GObject *inObject)
+void _xfdashboard_quicklaunch_dispose(GObject *inObject)
 {
 	/* Release our allocated variables */
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inObject)->priv;
@@ -78,10 +78,10 @@ static void xfdashboard_quicklaunch_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-static void xfdashboard_quicklaunch_set_property(GObject *inObject,
-												guint inPropID,
-												const GValue *inValue,
-												GParamSpec *inSpec)
+void _xfdashboard_quicklaunch_set_property(GObject *inObject,
+											guint inPropID,
+											const GValue *inValue,
+											GParamSpec *inSpec)
 {
 	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inObject);
 
@@ -93,10 +93,10 @@ static void xfdashboard_quicklaunch_set_property(GObject *inObject,
 	}
 }
 
-static void xfdashboard_quicklaunch_get_property(GObject *inObject,
-												guint inPropID,
-												GValue *outValue,
-												GParamSpec *inSpec)
+void _xfdashboard_quicklaunch_get_property(GObject *inObject,
+											guint inPropID,
+											GValue *outValue,
+											GParamSpec *inSpec)
 {
 	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inObject);
 	XfdashboardQuicklaunchPrivate	*priv=self->priv;
@@ -113,14 +113,14 @@ static void xfdashboard_quicklaunch_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klass)
+void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klass)
 {
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->dispose=xfdashboard_quicklaunch_dispose;
-	gobjectClass->set_property=xfdashboard_quicklaunch_set_property;
-	gobjectClass->get_property=xfdashboard_quicklaunch_get_property;
+	gobjectClass->dispose=_xfdashboard_quicklaunch_dispose;
+	gobjectClass->set_property=_xfdashboard_quicklaunch_set_property;
+	gobjectClass->get_property=_xfdashboard_quicklaunch_get_property;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardQuicklaunchPrivate));
@@ -137,7 +137,7 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 /* Object initialization
  * Create private structure and set up default values
  */
-static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
+void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
 

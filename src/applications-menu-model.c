@@ -29,7 +29,6 @@
 #include <glib/gi18n-lib.h>
 
 #include "applications-menu-model.h"
-/* TODO: Remove this line */ #include "utils.h"
 
 /* Define these classes in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsMenuModel,
