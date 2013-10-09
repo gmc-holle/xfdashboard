@@ -874,7 +874,7 @@ void xfdashboard_scrollbar_set_value(XfdashboardScrollbar *self, gfloat inValue)
 	if(inValue+priv->valueRange>priv->range)
 	{
 		g_warning(_("Adjusting value %.2f in scrollbar to fit range %.2f"), inValue, priv->range);
-		inValue=priv->range-priv->valueRange;
+		inValue=MAX(0.0f, priv->range-priv->valueRange);
 	}
 
 	/* Only set value if it changes */

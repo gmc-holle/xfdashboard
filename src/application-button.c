@@ -83,7 +83,7 @@ static GParamSpec* XfdashboardApplicationButtonProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_ICON_SIZE					64								// TODO: Replace by settings/theming object
-#define DEFAULT_FORMAT_TITLE_ONLY			"%s"							// TODO: Replace by settings/theming object
+#define DEFAULT_FORMAT_TITLE_ONLY			"<b>%s</b>"						// TODO: Replace by settings/theming object
 #define DEFAULT_FORMAT_TITLE_DESCRIPTION	"<b><big>%s</big></b>\n\n%s"	// TODO: Replace by settings/theming object
 
 /* Reset and release allocated resources of application button */

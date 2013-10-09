@@ -117,6 +117,7 @@ void _xfdashboard_applications_view_update_buttons_style(XfdashboardApplications
 						g_free(actorText);
 					}
 				xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(child), XFDASHBOARD_ORIENTATION_LEFT);
+				xfdashboard_button_set_text_justification(XFDASHBOARD_BUTTON(child), PANGO_ALIGN_LEFT);
 				break;
 
 			case XFDASHBOARD_VIEW_MODE_ICON:
@@ -137,6 +138,7 @@ void _xfdashboard_applications_view_update_buttons_style(XfdashboardApplications
 						g_free(actorText);
 					}
 				xfdashboard_button_set_icon_orientation(XFDASHBOARD_BUTTON(child), XFDASHBOARD_ORIENTATION_TOP);
+				xfdashboard_button_set_text_justification(XFDASHBOARD_BUTTON(child), PANGO_ALIGN_CENTER);
 				break;
 
 			default:
@@ -447,6 +449,7 @@ void xfdashboard_applications_view_set_view_mode(XfdashboardApplicationsView *se
 				clutter_flow_layout_set_homogeneous(CLUTTER_FLOW_LAYOUT(priv->layout), TRUE);
 				clutter_flow_layout_set_row_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), DEFAULT_SPACING);
 				clutter_flow_layout_set_column_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), DEFAULT_SPACING);
+				clutter_flow_layout_set_column_width(CLUTTER_FLOW_LAYOUT(priv->layout), 2*DEFAULT_MENU_ICON_SIZE, 2*DEFAULT_MENU_ICON_SIZE);
 				clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
 				break;
 

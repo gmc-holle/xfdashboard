@@ -114,6 +114,9 @@ void xfdashboard_button_set_ellipsize_mode(XfdashboardButton *self, const PangoE
 gboolean xfdashboard_button_get_single_line_mode(XfdashboardButton *self);
 void xfdashboard_button_set_single_line_mode(XfdashboardButton *self, const gboolean inSingleLine);
 
+PangoAlignment xfdashboard_button_get_text_justification(XfdashboardButton *self);
+void xfdashboard_button_set_text_justification(XfdashboardButton *self, const PangoAlignment inJustification);
+
 G_END_DECLS
 
 #endif

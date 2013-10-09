@@ -66,6 +66,7 @@ struct _XfdashboardButtonPrivate
 	ClutterColor			*labelColor;
 	PangoEllipsizeMode		labelEllipsize;
 	gboolean				isSingleLineMode;
+	PangoAlignment			textJustification;
 };
 
 /* Properties */
@@ -88,6 +89,7 @@ enum
 	PROP_TEXT_COLOR,
 	PROP_TEXT_ELLIPSIZE_MODE,
 	PROP_TEXT_SINGLE_LINE,
+	PROP_TEXT_JUSTIFY,
 
 	PROP_LAST
 };
@@ -105,9 +107,10 @@ enum
 guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
 
 /* Private constants */
-#define DEFAULT_SIZE	16
+#define DEFAULT_SIZE			16
+#define DEFAULT_JUSTIFY_TEXT	PANGO_ALIGN_LEFT
 
-static ClutterColor			defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
+static ClutterColor				defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -1094,6 +1097,10 @@ void _xfdashboard_button_set_property(GObject *inObject,
 			xfdashboard_button_set_single_line_mode(self, g_value_get_boolean(inValue));
 			break;
 
+		case PROP_TEXT_JUSTIFY:
+			xfdashboard_button_set_text_justification(self, g_value_get_enum(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -1160,6 +1167,10 @@ void _xfdashboard_button_get_property(GObject *inObject,
 
 		case PROP_TEXT_SINGLE_LINE:
 			g_value_set_boolean(outValue, priv->isSingleLineMode);
+			break;
+
+		case PROP_TEXT_JUSTIFY:
+			g_value_set_enum(outValue, priv->textJustification);
 			break;
 
 		default:
@@ -1289,6 +1300,14 @@ void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 								_("Flag to determine if text can only be in one or multiple lines"),
 								TRUE,
 								G_PARAM_READWRITE);
+
+	XfdashboardButtonProperties[PROP_TEXT_JUSTIFY]=
+		g_param_spec_enum("text-justify",
+							_("Text justify"),
+							_("Justification (line alignment) of label"),
+							PANGO_TYPE_ALIGNMENT,
+							DEFAULT_JUSTIFY_TEXT,
+							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardButtonProperties);
 
@@ -1770,7 +1789,7 @@ void xfdashboard_button_set_ellipsize_mode(XfdashboardButton *self, const PangoE
 /* Get/set single line mode */
 gboolean xfdashboard_button_get_single_line_mode(XfdashboardButton *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), 0);
+	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), FALSE);
 
 	return(self->priv->isSingleLineMode);
 }
@@ -1789,6 +1808,34 @@ void xfdashboard_button_set_single_line_mode(XfdashboardButton *self, const gboo
 
 		clutter_text_set_single_line_mode(priv->actorLabel, priv->isSingleLineMode);
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_TEXT_SINGLE_LINE]);
+	}
+}
+
+/* Get/set justification (line alignment) of label */
+PangoAlignment xfdashboard_button_get_text_justification(XfdashboardButton *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), DEFAULT_JUSTIFY_TEXT);
+
+	return(self->priv->textJustification);
+}
+
+void xfdashboard_button_set_text_justification(XfdashboardButton *self, const PangoAlignment inJustification)
+{
+	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
+
+	XfdashboardButtonPrivate	*priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->textJustification!=inJustification)
+	{
+		/* Set value */
+		priv->textJustification=inJustification;
+
+		clutter_text_set_line_alignment(priv->actorLabel, priv->textJustification);
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_TEXT_SINGLE_LINE]);
