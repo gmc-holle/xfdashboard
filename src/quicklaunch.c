@@ -27,6 +27,7 @@
 
 #include "quicklaunch.h"
 #include "enums.h"
+#include "application.h"
 
 #include <glib/gi18n-lib.h>
 #include <math.h>
@@ -42,7 +43,8 @@ G_DEFINE_TYPE(XfdashboardQuicklaunch,
 
 struct _XfdashboardQuicklaunchPrivate
 {
-	void *dummy; // TODO: Remove - it's just a dummy
+	/* Instance related */
+	XfconfChannel	*xfconfChannel;
 };
 
 /* Properties */
@@ -70,8 +72,10 @@ static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 /* Dispose this object */
 void _xfdashboard_quicklaunch_dispose(GObject *inObject)
 {
-	/* Release our allocated variables */
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inObject)->priv;
+
+	/* Release our allocated variables */
+	priv->xfconfChannel=NULL;
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_quicklaunch_parent_class)->dispose(inObject);
@@ -147,7 +151,7 @@ void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set up default values */
-
+	priv->xfconfChannel=XFCONF_CHANNEL(g_object_ref(xfdashboard_application_get_xfconf_channel()));
 }
 
 /* Implementation: Public API */

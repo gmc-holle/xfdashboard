@@ -30,7 +30,6 @@
 
 #include <glib/gi18n-lib.h>
 #include <clutter/x11/clutter-x11.h>
-#include <xfconf/xfconf.h>
 
 #include "stage.h"
 #include "types.h"
@@ -332,8 +331,8 @@ void _xfdashboard_application_dispose(GObject *inObject)
 	}
 
 	/* Shutdown xfconf */
-	xfconf_shutdown();
 	priv->xfconfChannel=NULL;
+	xfconf_shutdown();
 
 	/* Unset singleton */
 	if(G_LIKELY(G_OBJECT(application)==inObject)) application=NULL;
@@ -450,6 +449,16 @@ XfdashboardApplication* xfdashboard_application_get_default(void)
 	}
 
 	return(application);
+}
+
+/* Get xfconf channel for this application */
+XfconfChannel* xfdashboard_application_get_xfconf_channel(void)
+{
+	XfconfChannel	*channel=NULL;
+
+	if(G_LIKELY(application!=NULL)) channel=application->priv->xfconfChannel;
+
+	return(channel);
 }
 
 /* Quit application */

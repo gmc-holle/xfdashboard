@@ -26,6 +26,7 @@
 #define __XFOVERVIEW_APPLICATION__
 
 #include <gio/gio.h>
+#include <xfconf/xfconf.h>
 
 G_BEGIN_DECLS
 
@@ -64,6 +65,8 @@ struct _XfdashboardApplicationClass
 GType xfdashboard_application_get_type(void) G_GNUC_CONST;
 
 XfdashboardApplication* xfdashboard_application_get_default(void);
+
+XfconfChannel* xfdashboard_application_get_xfconf_channel(void);
 
 void xfdashboard_application_quit(void);
 void xfdashboard_application_quit_forced(void);
