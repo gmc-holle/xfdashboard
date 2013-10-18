@@ -37,7 +37,6 @@
 #include "application.h"
 #include "application-button.h"
 #include "enums.h"
-#include "dynamic-table-layout.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsView,
