@@ -211,11 +211,15 @@ void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *self,
 			inForHeight=MAX(0.0f, inForHeight);
 
 			/* Get scale factor of icon */
-			clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
-												&iconWidth, &iconHeight);
-			iconScale=(iconWidth/iconHeight);
-			iconWidth=(iconHeight/iconWidth)*inForHeight;
-			iconHeight=iconWidth/iconScale;
+			if(CLUTTER_IS_CONTENT(clutter_actor_get_content(priv->actorIcon)))
+			{
+				clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
+													&iconWidth, &iconHeight);
+				iconScale=(iconWidth/iconHeight);
+				iconWidth=(iconHeight/iconWidth)*inForHeight;
+				iconHeight=iconWidth/iconScale;
+			}
+				else iconScale=iconWidth=iconHeight=0.0f;
 
 			/* Get minimum size of label because we should never
 			 * go down below this minimum size
@@ -296,10 +300,14 @@ void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *self,
 					(priv->iconOrientation==XFDASHBOARD_ORIENTATION_LEFT ||
 						priv->iconOrientation==XFDASHBOARD_ORIENTATION_RIGHT))
 				{
-					/* Get scale factor of icon and scale icon */
-					clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
-														&iconWidth, &iconHeight);
-					minSize=naturalSize=inForHeight*(iconWidth/iconHeight);
+					if(CLUTTER_IS_CONTENT(clutter_actor_get_content(priv->actorIcon)))
+					{
+						/* Get scale factor of icon and scale icon */
+						clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
+															&iconWidth, &iconHeight);
+						minSize=naturalSize=inForHeight*(iconWidth/iconHeight);
+					}
+						else minSize=naturalSize=0.0f;
 				}
 					else
 					{
@@ -428,11 +436,15 @@ void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *self,
 			inForWidth=MAX(0.0f, inForWidth);
 
 			/* Get scale factor of icon */
-			clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
-												&iconWidth, &iconHeight);
-			iconScale=(iconWidth/iconHeight);
-			iconWidth=(iconHeight/iconWidth)*inForWidth;
-			iconHeight=iconWidth/iconScale;
+			if(CLUTTER_IS_CONTENT(clutter_actor_get_content(priv->actorIcon)))
+			{
+				clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
+													&iconWidth, &iconHeight);
+				iconScale=(iconWidth/iconHeight);
+				iconWidth=(iconHeight/iconWidth)*inForWidth;
+				iconHeight=iconWidth/iconScale;
+			}
+				else iconScale=iconWidth=iconHeight=0.0f;
 
 			/* Get minimum size of label because we should never
 			 * go down below this minimum size
@@ -513,10 +525,14 @@ void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *self,
 					(priv->iconOrientation==XFDASHBOARD_ORIENTATION_TOP ||
 						priv->iconOrientation==XFDASHBOARD_ORIENTATION_BOTTOM))
 				{
-					/* Get scale factor of icon and scale icon */
-					clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
-														&iconWidth, &iconHeight);
-					minSize=naturalSize=inForWidth*(iconHeight/iconWidth);
+					if(CLUTTER_IS_CONTENT(clutter_actor_get_content(priv->actorIcon)))
+					{
+						/* Get scale factor of icon and scale icon */
+						clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
+															&iconWidth, &iconHeight);
+						minSize=naturalSize=inForWidth*(iconHeight/iconWidth);
+					}
+						else minSize=naturalSize=0.0f;
 				}
 					else
 					{
@@ -583,7 +599,7 @@ void _xfdashboard_button_update_icon_image_size(XfdashboardButton *self)
 		else if(priv->iconSize>0.0f) maxSize=priv->iconSize;
 
 	/* Get size of icon if maximum size is set */
-	if(maxSize>0.0f)
+	if(maxSize>0.0f && clutter_actor_get_content(priv->actorIcon))
 	{
 		/* Get preferred size of icon */
 		clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
@@ -824,7 +840,7 @@ void _xfdashboard_button_allocate(ClutterActor *inActor,
 	iconWidth=iconHeight=0.0f;
 	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorIcon))
 	{
-		gfloat					iconScale;
+		gfloat					iconScale=1.0f;
 
 		if(priv->iconSyncSize==TRUE)
 		{
@@ -841,7 +857,7 @@ void _xfdashboard_button_allocate(ClutterActor *inActor,
 															&iconHeight,
 															NULL);
 			if(priv->iconSyncSize==TRUE) iconWidth=iconHeight*iconScale;
-				else clutter_actor_get_preferred_height(CLUTTER_ACTOR(priv->actorIcon), iconHeight, NULL, &iconWidth);
+				else clutter_actor_get_preferred_width(CLUTTER_ACTOR(priv->actorIcon), iconHeight, NULL, &iconWidth);
 		}
 			else
 			{
@@ -856,6 +872,7 @@ void _xfdashboard_button_allocate(ClutterActor *inActor,
 	}
 
 	/* Set allocation of label if visible*/
+	textWidth=textHeight=0.0f;
 	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorLabel))
 	{
 		switch(priv->iconOrientation)

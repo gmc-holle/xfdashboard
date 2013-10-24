@@ -139,7 +139,9 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 
 	/* Quicklaunch */
 	priv->quicklaunch=xfdashboard_quicklaunch_new();
-	/* TODO: Remove this line */ clutter_actor_set_size(priv->quicklaunch, 64, 64);
+	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->quicklaunch), XFDASHBOARD_BACKGROUND_TYPE_RECTANGLE);
+	xfdashboard_background_set_color(XFDASHBOARD_BACKGROUND(priv->quicklaunch), &color);
 	clutter_actor_set_y_expand(priv->quicklaunch, TRUE);
 	clutter_actor_add_child(groupHorizontal, priv->quicklaunch);
 

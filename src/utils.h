@@ -32,7 +32,12 @@
 
 G_BEGIN_DECLS
 
+/* Gobject type of pointer array (GPtrArray) */
+#define XFDASHBOARD_TYPE_POINTER_ARRAY		(xfdashboard_pointer_array_get_type())
+
 /* Public API */
+GType xfdashboard_pointer_array_get_type(void);
+
 guint32 xfdashboard_get_current_time(void);
 
 ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint inSize);

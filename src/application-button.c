@@ -30,6 +30,7 @@
 #include "enums.h"
 
 #include <glib/gi18n-lib.h>
+#include <gtk/gtk.h>
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationButton,
@@ -139,8 +140,11 @@ void _xfdashboard_application_button_update_text(XfdashboardApplicationButton *s
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
-			title=g_app_info_get_name(priv->appInfo);
-			description=g_app_info_get_description(priv->appInfo);
+			if(priv->appInfo)
+			{
+				title=g_app_info_get_name(priv->appInfo);
+				description=g_app_info_get_description(priv->appInfo);
+			}
 			break;
 
 		default:
@@ -163,6 +167,8 @@ void _xfdashboard_application_button_update_icon(XfdashboardApplicationButton *s
 	XfdashboardApplicationButtonPrivate		*priv=self->priv;
 	ClutterImage							*icon=NULL;
 	gint									iconSize;
+	const gchar								*iconName;
+	GIcon									*gicon;
 
 	/* Determine icon size */
 	iconSize=xfdashboard_button_get_icon_size(XFDASHBOARD_BUTTON(self));
@@ -176,11 +182,17 @@ void _xfdashboard_application_button_update_icon(XfdashboardApplicationButton *s
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
-			icon=xfdashboard_get_image_for_icon_name(garcon_menu_element_get_icon_name(priv->menuElement), iconSize);
+			iconName=garcon_menu_element_get_icon_name(priv->menuElement);
+			if(iconName) icon=xfdashboard_get_image_for_icon_name(iconName, iconSize);
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
-			icon=xfdashboard_get_image_for_gicon(g_app_info_get_icon(priv->appInfo), iconSize);
+			if(priv->appInfo)
+			{
+				gicon=g_app_info_get_icon(priv->appInfo);
+				if(gicon) icon=xfdashboard_get_image_for_gicon(gicon, iconSize);
+			}
+				else icon=xfdashboard_get_image_for_icon_name(GTK_STOCK_MISSING_IMAGE, iconSize);
 			break;
 
 		default:
@@ -477,7 +489,7 @@ void xfdashboard_application_button_set_desktop_filename(XfdashboardApplicationB
 
 			if(!priv->appInfo)
 			{
-				g_warning(_("Could not get application info '%s'."), priv->desktopFilename);
+				g_warning(_("Could not get application info for '%s'"), priv->desktopFilename);
 			}
 		}
 
@@ -617,6 +629,12 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
+			if(!priv->appInfo)
+			{
+				g_warning(_("Could not launch application: No application info"));
+				return(FALSE);
+			}
+
 			appInfo=G_APP_INFO(g_object_ref(priv->appInfo));
 			break;
 

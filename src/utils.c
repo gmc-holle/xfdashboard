@@ -31,9 +31,25 @@
 #include <clutter/clutter.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+#include <dbus/dbus-glib.h>
 
 /* Private constants */
 #define FALLBACK_ICON_NAME		GTK_STOCK_MISSING_IMAGE
+
+/* Gobject type for pointer arrays (GPtrArray) */
+GType xfdashboard_pointer_array_get_type(void)
+{
+	static volatile gsize	type__volatile=0;
+	GType					type;
+
+	if(g_once_init_enter(&type__volatile))
+	{
+		type=dbus_g_type_get_collection("GPtrArray", G_TYPE_VALUE);
+		g_once_init_leave(&type__volatile, type);
+	}
+
+	return(type__volatile);
+}
 
 /* Get current time, e.g. for events */
 guint32 xfdashboard_get_current_time(void)

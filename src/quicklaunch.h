@@ -63,6 +63,9 @@ GType xfdashboard_quicklaunch_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_quicklaunch_new(void);
 
+gfloat xfdashboard_quicklaunch_get_spacing(XfdashboardQuicklaunch *self);
+void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, const gfloat inSpacing);
+
 G_END_DECLS
 
 #endif	/* __XFOVERVIEW_QUICKLAUNCH__ */
