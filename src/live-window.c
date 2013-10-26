@@ -706,7 +706,7 @@ void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	// TODO: xfdashboard_button_set_font(XFDASHBOARD_BUTTON(priv->actorTitle), priv->labelFont);
 	// TODO: if(priv->labelTextColor) xfdashboard_button_set_color(XFDASHBOARD_BUTTON(priv->actorTitle), priv->labelTextColor);
 	// TODO: xfdashboard_button_set_ellipsize_mode(XFDASHBOARD_BUTTON(priv->actorTitle), priv->labelEllipsize);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorTitle), XFDASHBOARD_BACKGROUND_TYPE_RECTANGLE);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorTitle), XFDASHBOARD_BACKGROUND_TYPE_FILL);
 	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorTitle), priv->marginTitleActor);
 	// TODO: if(priv->labelBackgroundColor) xfdashboard_background_set_color(XFDASHBOARD_BACKGROUND(self), priv->labelBackgroundColor);
 
@@ -715,7 +715,7 @@ void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorTitle);
 
 	priv->actorClose=xfdashboard_button_new_with_icon(WINDOW_CLOSE_BUTTON_ICON);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorClose), XFDASHBOARD_BACKGROUND_TYPE_RECTANGLE);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorClose), XFDASHBOARD_BACKGROUND_TYPE_FILL);
 	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorClose), priv->marginCloseButton);
 	clutter_actor_show(priv->actorClose);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorClose);

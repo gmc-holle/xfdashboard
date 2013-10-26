@@ -336,14 +336,11 @@ void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
 	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inActor);
 	XfdashboardQuicklaunchPrivate	*priv=self->priv;
 	gfloat							minWidth, naturalWidth;
-	gfloat							minHeight, naturalHeight;
 	ClutterActor					*child;
 	ClutterActorIter				iter;
 	gfloat							childMinWidth, childNaturalWidth;
-	gfloat							childMinHeight, childNaturalHeight;
 	gint							numberChildren;
 	gfloat							scale;
-	gfloat							scalableHeight;
 
 	/* Set up default values */
 	minWidth=naturalWidth=0.0f;
@@ -417,6 +414,7 @@ void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 	priv->scaleCurrent=_xfdashboard_quicklaunch_get_scale_for_height(self, availableHeight, FALSE);
 
 	/* Calculate new position and size of visible children */
+	childAllocation.y1=priv->spacing;
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
@@ -430,7 +428,7 @@ void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 		 */
 		clutter_actor_get_preferred_size(child, NULL, &childWidth, NULL, &childHeight);
 
-		childAllocation.x1=ceil(MAX((availableWidth-childWidth)/2.0f, 0.0f));
+		childAllocation.x1=ceil(MAX(((availableWidth-(childWidth*priv->scaleCurrent))/2.0f), priv->spacing));
 		childAllocation.x2=ceil(childAllocation.x1+childWidth);
 		childAllocation.y2=ceil(childAllocation.y1+childHeight);
 

@@ -71,10 +71,16 @@ ClutterActor* xfdashboard_background_new(void);
 XfdashboardBackgroundType xfdashboard_background_get_background_type(XfdashboardBackground *self);
 void xfdashboard_background_set_background_type(XfdashboardBackground *self, const XfdashboardBackgroundType inType);
 
-const ClutterColor* xfdashboard_background_get_color(XfdashboardBackground *self);
-void xfdashboard_background_set_color(XfdashboardBackground *self, const ClutterColor *inColor);
-
 /* Rectangle functions */
+const ClutterColor* xfdashboard_background_get_fill_color(XfdashboardBackground *self);
+void xfdashboard_background_set_fill_color(XfdashboardBackground *self, const ClutterColor *inColor);
+
+const ClutterColor* xfdashboard_background_get_outline_color(XfdashboardBackground *self);
+void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const ClutterColor *inColor);
+
+gfloat xfdashboard_background_get_outline_width(XfdashboardBackground *self);
+void xfdashboard_background_set_outline_width(XfdashboardBackground *self, const gfloat inWidth);
+
 XfdashboardCorners xfdashboard_background_get_corners(XfdashboardBackground *self);
 void xfdashboard_background_set_corners(XfdashboardBackground *self, XfdashboardCorners inCorners);
 

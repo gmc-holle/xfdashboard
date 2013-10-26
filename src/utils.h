@@ -25,6 +25,7 @@
 #define __XFOVERVIEW_UTILS__
 
 #define DEBUG_OBJECT_NAME(x) ((x)!=NULL ? G_OBJECT_TYPE_NAME((x)) : "<nil>")
+#define DEBUG_BOX(msg, box) g_message("%s: %s: x1=%.2f, y1=%.2f, x2=%.2f, y2=%.2f [%.2fx%.2f]", __func__, msg, (box).x1, (box).y1, (box).x2, (box).y2, (box).x2-(box).x1, (box).y2-(box).y1)
 #define DEBUG_NOTIFY(self, property, format, ...) g_message("%s: Property '%s' of %p (%s) changed to "format, __func__, property, (self), (self) ? G_OBJECT_TYPE_NAME((self)) : "<nil>", ## __VA_ARGS__)
 
 #include <clutter/clutter.h>

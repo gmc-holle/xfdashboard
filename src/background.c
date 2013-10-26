@@ -44,15 +44,21 @@ G_DEFINE_TYPE(XfdashboardBackground,
 
 struct _XfdashboardBackgroundPrivate
 {
-	/* Settings */
+	/* Properties related */
 	XfdashboardBackgroundType	type;
 
-	ClutterContent				*canvas;
-	ClutterColor				*color;
+	ClutterColor				*fillColor;
+
+	ClutterColor				*outlineColor;
+	gfloat						outlineWidth;
+
 	XfdashboardCorners			corners;
 	gfloat						cornersRadius;
 
 	ClutterContent				*image;
+
+	/* Instance related */
+	ClutterContent				*canvas;
 };
 
 /* Properties */
@@ -62,7 +68,9 @@ enum
 
 	PROP_TYPE,
 
-	PROP_COLOR,
+	PROP_FILL_COLOR,
+	PROP_OUTLINE_COLOR,
+	PROP_OUTLINE_WIDTH,
 	PROP_CORNERS,
 	PROP_CORNERS_RADIUS,
 
@@ -94,9 +102,6 @@ gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *self,
 	cairo_restore(inContext);
 
 	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
-
-	/* Set color for background */
-	if(priv->color) clutter_cairo_set_source_color(inContext, priv->color);
 
 	/* Draw rectangle with or without rounded corners */
 	if((priv->corners & XFDASHBOARD_CORNERS_ALL) &&
@@ -149,9 +154,31 @@ gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *self,
 			cairo_rectangle(inContext, 0, 0, inWidth, inHeight);
 		}
 
-	cairo_fill(inContext);
+	/* Fill if type requests it */
+	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE)
+	{
+		/* Set color for filling */
+		if(priv->fillColor) clutter_cairo_set_source_color(inContext, priv->fillColor);
+
+		/* Fill */
+		cairo_fill_preserve(inContext);
+	}
+
+	/* Draw outline if type requests it */
+	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_OUTLINE ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE)
+	{
+		/* Set up line properties for outline */
+		if(priv->outlineColor) clutter_cairo_set_source_color(inContext, priv->outlineColor);
+		cairo_set_line_width(inContext, priv->outlineWidth);
+
+		/* Draw outline */
+		cairo_stroke_preserve(inContext);
+	}
 
 	/* Done drawing */
+	cairo_close_path(inContext);
 	return(CLUTTER_EVENT_STOP);
 }
 
@@ -168,8 +195,10 @@ void _xfdashboard_background_get_preferred_height(ClutterActor *self,
 	
 	minHeight=naturalHeight=0.0f;
 
-	/* Determine size if rounded rectangle should be drawn */
-	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_RECTANGLE)
+	/* Determine size if any type of rectangle should be drawn */
+	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_OUTLINE ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE)
 	{
 		naturalHeight=priv->cornersRadius*2.0f;
 	}
@@ -189,8 +218,10 @@ void _xfdashboard_background_get_preferred_width(ClutterActor *self,
 
 	minWidth=naturalWidth=0.0f;
 
-	/* Determine size if rounded rectangle should be drawn */
-	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_RECTANGLE)
+	/* Determine size if any type of rectangle should be drawn */
+	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_OUTLINE ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE)
 	{
 		naturalWidth=priv->cornersRadius*2.0f;
 	}
@@ -230,10 +261,16 @@ void _xfdashboard_background_dispose(GObject *inObject)
 		priv->canvas=NULL;
 	}
 
-	if(priv->color)
+	if(priv->fillColor)
 	{
-		clutter_color_free(priv->color);
-		priv->color=NULL;
+		clutter_color_free(priv->fillColor);
+		priv->fillColor=NULL;
+	}
+
+	if(priv->outlineColor)
+	{
+		clutter_color_free(priv->outlineColor);
+		priv->outlineColor=NULL;
 	}
 
 	if(priv->image)
@@ -260,8 +297,16 @@ void _xfdashboard_background_set_property(GObject *inObject,
 			xfdashboard_background_set_background_type(self, g_value_get_enum(inValue));
 			break;
 
-		case PROP_COLOR:
-			xfdashboard_background_set_color(self, clutter_value_get_color(inValue));
+		case PROP_FILL_COLOR:
+			xfdashboard_background_set_fill_color(self, clutter_value_get_color(inValue));
+			break;
+
+		case PROP_OUTLINE_COLOR:
+			xfdashboard_background_set_outline_color(self, clutter_value_get_color(inValue));
+			break;
+
+		case PROP_OUTLINE_WIDTH:
+			xfdashboard_background_set_outline_width(self, g_value_get_float(inValue));
 			break;
 
 		case PROP_CORNERS:
@@ -296,8 +341,16 @@ void _xfdashboard_background_get_property(GObject *inObject,
 			g_value_set_enum(outValue, priv->type);
 			break;
 
-		case PROP_COLOR:
-			clutter_value_set_color(outValue, priv->color);
+		case PROP_FILL_COLOR:
+			clutter_value_set_color(outValue, priv->fillColor);
+			break;
+
+		case PROP_OUTLINE_COLOR:
+			clutter_value_set_color(outValue, priv->outlineColor);
+			break;
+
+		case PROP_OUTLINE_WIDTH:
+			g_value_set_float(outValue, priv->outlineWidth);
 			break;
 
 		case PROP_CORNERS:
@@ -348,12 +401,27 @@ void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 							XFDASHBOARD_BACKGROUND_TYPE_NONE,
 							G_PARAM_READWRITE);
 
-	XfdashboardBackgroundProperties[PROP_COLOR]=
-		clutter_param_spec_color("color",
-									_("Color"),
+	XfdashboardBackgroundProperties[PROP_FILL_COLOR]=
+		clutter_param_spec_color("fill-color",
+									_("Fill color"),
 									_("Color to fill background with"),
 									CLUTTER_COLOR_Black,
 									G_PARAM_READWRITE);
+
+	XfdashboardBackgroundProperties[PROP_OUTLINE_COLOR]=
+		clutter_param_spec_color("outline-color",
+									_("Outline color"),
+									_("Color to draw outline with"),
+									CLUTTER_COLOR_White,
+									G_PARAM_READWRITE);
+
+	XfdashboardBackgroundProperties[PROP_OUTLINE_WIDTH]=
+		g_param_spec_float("outline-width",
+							_("Outline width"),
+							_("Width of line used to draw outline"),
+							0.0f, G_MAXFLOAT,
+							1.0f,
+							G_PARAM_READWRITE);
 
 	XfdashboardBackgroundProperties[PROP_CORNERS]=
 		g_param_spec_flags("corners",
@@ -396,7 +464,9 @@ void xfdashboard_background_init(XfdashboardBackground *self)
 	/* Set up default values */
 	priv->type=XFDASHBOARD_BACKGROUND_TYPE_NONE;
 	priv->canvas=clutter_canvas_new();
-	priv->color=NULL;
+	priv->fillColor=clutter_color_copy(CLUTTER_COLOR_Black);
+	priv->outlineColor=clutter_color_copy(CLUTTER_COLOR_White);
+	priv->outlineWidth=1.0f;
 	priv->corners=XFDASHBOARD_CORNERS_ALL;
 	priv->cornersRadius=0.0f;
 	priv->image=NULL;
@@ -446,7 +516,9 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 				clutter_actor_set_content(CLUTTER_ACTOR(self), NULL);
 				break;
 
-			case XFDASHBOARD_BACKGROUND_TYPE_RECTANGLE:
+			case XFDASHBOARD_BACKGROUND_TYPE_FILL:
+			case XFDASHBOARD_BACKGROUND_TYPE_OUTLINE:
+			case XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE:
 				clutter_actor_set_content(CLUTTER_ACTOR(self), priv->canvas);
 				break;
 
@@ -467,15 +539,15 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 	}
 }
 
-/* Get/set color to use when drawing a rectangle */
-const ClutterColor* xfdashboard_background_get_color(XfdashboardBackground *self)
+/* Get/set color to fill background with */
+const ClutterColor* xfdashboard_background_get_fill_color(XfdashboardBackground *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), NULL);
 
-	return(self->priv->color);
+	return(self->priv->fillColor);
 }
 
-void xfdashboard_background_set_color(XfdashboardBackground *self, const ClutterColor *inColor)
+void xfdashboard_background_set_fill_color(XfdashboardBackground *self, const ClutterColor *inColor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 	g_return_if_fail(inColor);
@@ -483,17 +555,76 @@ void xfdashboard_background_set_color(XfdashboardBackground *self, const Clutter
 	XfdashboardBackgroundPrivate	*priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->color==NULL || clutter_color_equal(inColor, priv->color)==FALSE)
+	if(priv->fillColor==NULL || clutter_color_equal(inColor, priv->fillColor)==FALSE)
 	{
 		/* Set value */
-		if(priv->color) clutter_color_free(priv->color);
-		priv->color=clutter_color_copy(inColor);
+		if(priv->fillColor) clutter_color_free(priv->fillColor);
+		priv->fillColor=clutter_color_copy(inColor);
 
 		/* Invalidate canvas to get it redrawn */
 		if(priv->canvas) clutter_content_invalidate(priv->canvas);
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_COLOR]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_FILL_COLOR]);
+	}
+}
+
+/* Get/set color to draw outline with */
+const ClutterColor* xfdashboard_background_get_outline_color(XfdashboardBackground *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), NULL);
+
+	return(self->priv->outlineColor);
+}
+
+void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const ClutterColor *inColor)
+{
+	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
+	g_return_if_fail(inColor);
+
+	XfdashboardBackgroundPrivate	*priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->outlineColor==NULL || clutter_color_equal(inColor, priv->outlineColor)==FALSE)
+	{
+		/* Set value */
+		if(priv->outlineColor) clutter_color_free(priv->outlineColor);
+		priv->outlineColor=clutter_color_copy(inColor);
+
+		/* Invalidate canvas to get it redrawn */
+		if(priv->canvas) clutter_content_invalidate(priv->canvas);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_COLOR]);
+	}
+}
+
+/* Get/set line width for outline */
+gfloat xfdashboard_background_get_outline_width(XfdashboardBackground *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), 0.0f);
+
+	return(self->priv->outlineWidth);
+}
+
+void xfdashboard_background_set_outline_width(XfdashboardBackground *self, const gfloat inWidth)
+{
+	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
+	g_return_if_fail(inWidth>=0.0f);
+
+	XfdashboardBackgroundPrivate	*priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->outlineWidth!=inWidth)
+	{
+		/* Set value */
+		priv->outlineWidth=inWidth;
+
+		/* Invalidate canvas to get it redrawn */
+		if(priv->canvas) clutter_content_invalidate(priv->canvas);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_WIDTH]);
 	}
 }
 
