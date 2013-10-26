@@ -176,6 +176,106 @@ void _xfdashboard_quicklaunch_set_favourites(XfdashboardQuicklaunch *self, const
 	_xfdashboard_quicklaunch_update_icons(self);
 }
 
+/* Get scale factor to fit all children into given height */
+gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaunch *self,
+														gfloat inForHeight,
+														gboolean inDoMinimumSize)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0.0f);
+	g_return_val_if_fail(inForHeight, 0.0f);
+
+	XfdashboardQuicklaunchPrivate	*priv=self->priv;
+	ClutterActor					*child;
+	ClutterActorIter				iter;
+	gint							numberChildren;
+	gfloat							totalHeight, scalableHeight;
+	gfloat							childHeight;
+	gfloat							childMinHeight, childNaturalHeight;
+	gfloat							scale;
+	gboolean						recheckHeight;
+
+	/* Count visible children and determine their total height */
+	numberChildren=0;
+	totalHeight=0.0f;
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Only check visible children */
+		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+
+		/* Get height of child */
+		clutter_actor_get_preferred_height(child, -1, &childMinHeight, &childNaturalHeight);
+		if(inDoMinimumSize==TRUE) childHeight=childMinHeight;
+			else childHeight=childNaturalHeight;
+
+		/* Determine total size so far */
+		totalHeight+=ceil(childHeight);
+
+		/* Count visible children */
+		numberChildren++;
+	}
+	if(numberChildren==0) return(priv->scaleMax);
+
+	/* Determine scalable height. That is the height without spacing
+	 * betwen children and the spacing used as margin.
+	 */
+	scalableHeight=inForHeight-((numberChildren+1)*priv->spacing);
+
+	/* Get scale factor */
+	scale=priv->scaleMax;
+	if(totalHeight>0.0f)
+	{
+		scale=floorf((scalableHeight/totalHeight)/priv->scaleStep)*priv->scaleStep;
+		scale=MIN(scale, priv->scaleMax);
+		scale=MAX(scale, priv->scaleMin);
+	}
+
+	/* Check if all visible children would really fit into height
+	 * otherwise we need to decrease scale factor one step down
+	 */
+	if(scale>priv->scaleMin)
+	{
+		do
+		{
+			recheckHeight=FALSE;
+			totalHeight=priv->spacing;
+
+			/* Iterate through visible children and sum their scaled
+			 * heights. The total height will be initialized with unscaled
+			 * spacing and all visible children's scaled height will also
+			 * be added with unscaled spacing to have the margin added.
+			 */
+			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+			while(clutter_actor_iter_next(&iter, &child))
+			{
+				/* Only check visible children */
+				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+
+				/* Get scaled size of child and add to total height */
+				clutter_actor_get_preferred_height(child, -1, &childMinHeight, &childNaturalHeight);
+				if(inDoMinimumSize==TRUE) childHeight=childMinHeight;
+					else childHeight=childNaturalHeight;
+
+				childHeight*=scale;
+				totalHeight+=ceil(childHeight)+priv->spacing;
+			}
+
+			/* If total height is greater than given height
+			 * decrease scale factor by one step and recheck
+			 */
+			if(totalHeight>inForHeight && scale>priv->scaleMin)
+			{
+				scale-=priv->scaleStep;
+				recheckHeight=TRUE;
+			}
+		}
+		while(recheckHeight==TRUE);
+	}
+
+	/* Return found scale factor */
+	return(scale);
+}
+
 /* IMPLEMENTATION: ClutterActor */
 
 /* Get preferred width/height */
@@ -216,11 +316,11 @@ void _xfdashboard_quicklaunch_get_preferred_height(ClutterActor *inActor,
 		numberChildren++;
 	}
 
-	/* Add spacing */
+	/* Add spacing between children and spacing as margin */
 	if(numberChildren>0)
 	{
-		minHeight+=(numberChildren-1)*priv->spacing;
-		naturalHeight+=(numberChildren-1)*priv->spacing;
+		minHeight+=(numberChildren+1)*priv->spacing;
+		naturalHeight+=(numberChildren+1)*priv->spacing;
 	}
 
 	/* Store sizes computed */
@@ -233,7 +333,8 @@ void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
 													gfloat *outMinWidth,
 													gfloat *outNaturalWidth)
 {
-	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inActor)->priv;
+	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inActor);
+	XfdashboardQuicklaunchPrivate	*priv=self->priv;
 	gfloat							minWidth, naturalWidth;
 	gfloat							minHeight, naturalHeight;
 	ClutterActor					*child;
@@ -247,7 +348,7 @@ void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
 	/* Set up default values */
 	minWidth=naturalWidth=0.0f;
 
-	/* Iterate through visible children and determine width */
+	/* Iterate through visible children and determine widths */
 	numberChildren=0;
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
 	while(clutter_actor_iter_next(&iter, &child))
@@ -257,61 +358,35 @@ void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
 
 		/* Get sizes of child */
 		clutter_actor_get_preferred_width(child,
-											inForHeight,
+											-1,
 											&childMinWidth,
 											&childNaturalWidth);
-
-		clutter_actor_get_preferred_height(child,
-											childMinWidth,
-											&childMinHeight,
-											NULL);
-		clutter_actor_get_preferred_height(child,
-											childNaturalWidth,
-											NULL,
-											&childNaturalHeight);
 
 		/* Determine width and height */
 		minWidth=MAX(minWidth, childMinWidth);
 		naturalWidth=MAX(naturalWidth, childNaturalWidth);
 
-		minHeight+=childMinHeight;
-		naturalHeight+=childNaturalHeight;
-
 		/* Count visible children */
 		numberChildren++;
 	}
 
-	/* If height was request find scaling and new width */
-	if(inForHeight>0.0f)
+	/* Check if we need to scale width because of the need to fit
+	 * all visible children into given limiting height
+	 */
+	if(inForHeight>=0.0f)
 	{
-		/* Scale only the height occupied by children - no spacing */
-		scalableHeight=MAX(0.0f, inForHeight-((numberChildren-1)*priv->spacing));
+		scale=_xfdashboard_quicklaunch_get_scale_for_height(self, inForHeight, TRUE);
+		minWidth*=scale;
 
-		/* Find scaling and minimum and natural heights*/
-		if(minHeight>0.0f)
-		{
-			scale=floorf((scalableHeight/minHeight)/priv->scaleStep)*priv->scaleStep;
-			scale=MIN(scale, priv->scaleMax);
-			scale=MAX(scale, priv->scaleMin);
-			minHeight*=scale;
-			minWidth*=scale;
-		}
-
-		if(minHeight>0.0f)
-		{
-			scale=floorf((scalableHeight/naturalHeight)/priv->scaleStep)*priv->scaleStep;
-			scale=MIN(scale, priv->scaleMax);
-			scale=MAX(scale, priv->scaleMin);
-			naturalHeight*=scale;
-			naturalWidth*=scale;
-		}
+		scale=_xfdashboard_quicklaunch_get_scale_for_height(self, inForHeight, FALSE);
+		naturalWidth*=scale;
 	}
 
-	/* Add spacing to height*/
+	/* Add spacing as margin */
 	if(numberChildren>0)
 	{
-		minHeight+=(numberChildren-1)*priv->spacing;
-		naturalHeight+=(numberChildren-1)*priv->spacing;
+		minWidth+=2*priv->spacing;
+		naturalWidth+=2*priv->spacing;
 	}
 
 	/* Store sizes computed */
@@ -324,14 +399,12 @@ void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 										const ClutterActorBox *inBox,
 										ClutterAllocationFlags inFlags)
 {
-	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inActor)->priv;
+	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inActor);
+	XfdashboardQuicklaunchPrivate	*priv=self->priv;
 	gfloat							availableWidth, availableHeight;
 	gfloat							childWidth, childHeight;
-	gfloat							totalWidth, totalHeight;
-	gfloat							scaleWidth, scaleHeight;
 	ClutterActor					*child;
 	ClutterActorIter				iter;
-	gint							numberChildren;
 	ClutterActorBox					childAllocation={ 0, };
 
 	/* Chain up to store the allocation of the actor */
@@ -340,42 +413,8 @@ void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 	/* Get available size */
 	clutter_actor_box_get_size(inBox, &availableWidth, &availableHeight);
 
-	/* Get number of visible children and their real total size to layout */
-	numberChildren=0;
-	totalWidth=totalHeight=0.0f;
-	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
-	while(clutter_actor_iter_next(&iter, &child))
-	{
-		/* Only check visible children */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
-
-		/* Get width and height of child */
-		clutter_actor_get_preferred_size(child, NULL, &childWidth, NULL, &childHeight);
-
-		/* Determine total size so far */
-		totalWidth=MAX(totalWidth, childWidth);
-		totalHeight+=childHeight;
-
-		/* Count visible children */
-		numberChildren++;
-	}
-
 	/* Find scaling to get all children fit the allocation */
-	scaleWidth=scaleHeight=priv->scaleMax;
-	if(totalWidth>0.0f)
-	{
-		scaleWidth=MIN(availableWidth/totalWidth, priv->scaleMax);
-		scaleWidth=MAX(scaleWidth, priv->scaleMin);
-	}
-
-	if(totalHeight>0.0f)
-	{
-		scaleHeight=floorf((availableHeight/totalHeight)/priv->scaleStep)*priv->scaleStep;
-		scaleHeight=MIN(scaleHeight, priv->scaleMax);
-		scaleHeight=MAX(scaleHeight, priv->scaleMin);
-	}
-
-	priv->scaleCurrent=MIN(scaleWidth, scaleHeight);
+	priv->scaleCurrent=_xfdashboard_quicklaunch_get_scale_for_height(self, availableHeight, FALSE);
 
 	/* Calculate new position and size of visible children */
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
