@@ -13,8 +13,9 @@
 [prepared] Themable?
 
 == QUICKLAUNCH-BOX (FAVOURITES-SELECTOR) ==
-- Implement quicklaunch-box
-- Clicking quicklaunch icon starts application and quits
+[done] Implement quicklaunch-box
+- Allow orientation (horizontal or vertical) in quicklaunch
+[done] Clicking quicklaunch icon starts application and quits
 - Reorder quicklaunch icon by drag-n-drop
 - Remove quicklaunch icon by drag-n-drop to trash icon in quicklaunch
 - Allow drag-n-drop of quicklaunch icon to windows-list view and start app in current workspace
