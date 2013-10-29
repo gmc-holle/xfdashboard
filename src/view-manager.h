@@ -58,8 +58,8 @@ struct _XfdashboardViewManagerClass
 
 	/*< public >*/
 	/* Virtual functions */
-	void (*registered)(XfdashboardViewManager *self, GType inView);
-	void (*unregistered)(XfdashboardViewManager *self, GType inView);
+	void (*registered)(XfdashboardViewManager *self, GType inViewType);
+	void (*unregistered)(XfdashboardViewManager *self, GType inViewType);
 };
 
 /* Public API */
