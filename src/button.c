@@ -1584,7 +1584,7 @@ void xfdashboard_button_set_icon_image(XfdashboardButton *self, ClutterImage *in
 
 		if(priv->iconImage)
 		{
-			clutter_actor_set_content(CLUTTER_ACTOR(self), NULL);
+			clutter_actor_set_content(CLUTTER_ACTOR(priv->actorIcon), NULL);
 			g_object_unref(priv->iconImage);
 		}
 
