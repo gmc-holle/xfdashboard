@@ -26,6 +26,7 @@
 #endif
 
 #include "view-manager.h"
+#include "utils.h"
 
 #include <glib/gi18n-lib.h>
 
@@ -208,13 +209,16 @@ void xfdashboard_view_manager_unregister(XfdashboardViewManager *self, GType inV
 	}
 }
 
-/* Get list of registered views types
- * Note: Returned list is owned by XfdashboardView and must not be modified or freed.
+/* Get list of registered views types.
+ * Returned GList must be freed with g_list_free by caller.
  */
-const GList* xfdashboard_view_manager_get_registered(XfdashboardViewManager *self)
+GList* xfdashboard_view_manager_get_registered(XfdashboardViewManager *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(self), NULL);
 
-	/* Return list of registered view types */
-	return(self->priv->registeredViews);
+	/* Return a copy of list of registered view types */
+	GList		*copy;
+
+	copy=g_list_copy(self->priv->registeredViews);
+	return(copy);
 }

@@ -63,16 +63,13 @@ struct _XfdashboardViewManagerClass
 };
 
 /* Public API */
-#define GTYPE_TO_LISTITEM(gtype)	(GSIZE_TO_POINTER(gtype))
-#define LISTITEM_TO_GTYPE(item)		((GType)GPOINTER_TO_SIZE(item))
-
 GType xfdashboard_view_manager_get_type(void) G_GNUC_CONST;
 
 XfdashboardViewManager* xfdashboard_view_manager_get_default(void);
 
 void xfdashboard_view_manager_register(XfdashboardViewManager *self, GType inViewType);
 void xfdashboard_view_manager_unregister(XfdashboardViewManager *self, GType inViewType);
-const GList* xfdashboard_view_manager_get_registered(XfdashboardViewManager *self);
+GList* xfdashboard_view_manager_get_registered(XfdashboardViewManager *self);
 
 G_END_DECLS
 

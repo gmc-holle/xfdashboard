@@ -37,6 +37,9 @@ G_BEGIN_DECLS
 #define XFDASHBOARD_TYPE_POINTER_ARRAY		(xfdashboard_pointer_array_get_type())
 
 /* Public API */
+#define GTYPE_TO_LISTITEM(gtype)	(GSIZE_TO_POINTER(gtype))
+#define LISTITEM_TO_GTYPE(item)		((GType)GPOINTER_TO_SIZE(item))
+
 GType xfdashboard_pointer_array_get_type(void);
 
 guint32 xfdashboard_get_current_time(void);

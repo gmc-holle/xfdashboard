@@ -885,7 +885,7 @@ void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 {
 	XfdashboardViewpadPrivate	*priv;
-	const GList					*views;
+	const GList					*views, *viewEntry;
 
 	priv=self->priv=XFDASHBOARD_VIEWPAD_GET_PRIVATE(self);
 
@@ -915,13 +915,15 @@ void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	/* Create instance of each registered view type and add it to this actor
 	 * and connect signals
 	 */
-	for(views=xfdashboard_view_manager_get_registered(priv->viewManager); views; views=g_list_next(views))
+	views=viewEntry=xfdashboard_view_manager_get_registered(priv->viewManager);
+	for(; viewEntry; viewEntry=g_list_next(viewEntry))
 	{
 		GType					viewType;
 
-		viewType=(GType)LISTITEM_TO_GTYPE(views->data);
+		viewType=(GType)LISTITEM_TO_GTYPE(viewEntry->data);
 		_xfdashboard_viewpad_add_view(self, viewType);
 	}
+	g_list_free(views);
 
 	g_signal_connect_swapped(priv->viewManager, "registered", G_CALLBACK(_xfdashboard_viewpad_on_view_registered), self);
 	g_signal_connect_swapped(priv->viewManager, "unregistered", G_CALLBACK(_xfdashboard_viewpad_on_view_unregistered), self);
