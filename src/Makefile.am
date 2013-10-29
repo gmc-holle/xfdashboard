@@ -29,6 +29,8 @@ xfdashboard_headers = \
 	quicklaunch.h \
 	scaled-table-layout.h \
 	scrollbar.h \
+	search-manager.h \
+	search-plugin.h \
 	stage.h \
 	textbox.h \
 	types.h \
@@ -54,6 +56,8 @@ xfdashboard_SOURCES = \
 	quicklaunch.c \
 	scaled-table-layout.c \
 	scrollbar.c \
+	search-manager.c \
+	search-plugin.c \
 	stage.c \
 	textbox.c \
 	utils.c \
