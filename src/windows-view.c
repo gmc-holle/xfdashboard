@@ -221,8 +221,10 @@ void _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindowsView *s
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
+	WnckWindow				*window;
 
-	wnck_window_close((WnckWindow*)xfdashboard_live_window_get_window(liveWindow), xfdashboard_get_current_time());
+	window=WNCK_WINDOW(xfdashboard_live_window_get_window(liveWindow));
+	wnck_window_close(window, xfdashboard_get_current_time());
 }
 
 /* A window was moved or resized */
@@ -252,7 +254,7 @@ void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWindowsVi
 	 * get visible again.
 	 */
 	if(inIsVisible) clutter_actor_show(CLUTTER_ACTOR(liveWindow));
-		else  clutter_actor_hide(CLUTTER_ACTOR(liveWindow));
+		else clutter_actor_hide(CLUTTER_ACTOR(liveWindow));
 }
 
 /* A window changed workspace or was pinned to all workspaces */
