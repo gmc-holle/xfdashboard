@@ -153,8 +153,8 @@ void _xfdashboard_application_button_update_text(XfdashboardApplicationButton *s
 	}
 
 	/* Create text depending on show-secondary property and set up button */
-	if(priv->showDescription==FALSE) text=g_strdup_printf(priv->formatTitleOnly, title ? title : "");
-		else text=g_strdup_printf(priv->formatTitleDescription, title ? title : "", description ? description : "");
+	if(priv->showDescription==FALSE) text=g_markup_printf_escaped(priv->formatTitleOnly, title ? title : "");
+		else text=g_markup_printf_escaped(priv->formatTitleDescription, title ? title : "", description ? description : "");
 	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), text);
 	if(text) g_free(text);
 }
