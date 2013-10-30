@@ -138,7 +138,7 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_set_layout_manager(groupHorizontal, layout);
 
 	/* Quicklaunch */
-	priv->quicklaunch=xfdashboard_quicklaunch_new();
+	priv->quicklaunch=xfdashboard_quicklaunch_new_with_orientation(CLUTTER_ORIENTATION_VERTICAL);
 	xfdashboard_quicklaunch_set_spacing(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch), 4.0f);
 	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->quicklaunch), XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE);
 	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);

@@ -62,9 +62,13 @@ struct _XfdashboardQuicklaunchClass
 GType xfdashboard_quicklaunch_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_quicklaunch_new(void);
+ClutterActor* xfdashboard_quicklaunch_new_with_orientation(ClutterOrientation inOrientation);
 
 gfloat xfdashboard_quicklaunch_get_spacing(XfdashboardQuicklaunch *self);
 void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, const gfloat inSpacing);
+
+ClutterOrientation xfdashboard_quicklaunch_get_orientation(XfdashboardQuicklaunch *self);
+void xfdashboard_quicklaunch_set_orientation(XfdashboardQuicklaunch *self, ClutterOrientation inOrientation);
 
 G_END_DECLS
 
