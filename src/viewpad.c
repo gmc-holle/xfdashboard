@@ -217,6 +217,9 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 	XfdashboardViewpadPrivate	*priv=self->priv;
 	gfloat						x, y;
 
+	/* Only set value if it changes */
+	if(inView==priv->activeView) return;
+
 	/* Check if view is a child of this actor */
 	if(inView && clutter_actor_contains(CLUTTER_ACTOR(self), CLUTTER_ACTOR(inView))==FALSE)
 	{
@@ -225,8 +228,13 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 		return;
 	}
 
-	/* Only set value if it changes */
-	if(inView==priv->activeView) return;
+	/* Only allow enabled views to be activated */
+	if(inView && !xfdashboard_view_get_enabled(inView))
+	{
+		g_warning(_("Cannot activate disabled view %s at %s"),
+					G_OBJECT_TYPE_NAME(inView), G_OBJECT_TYPE_NAME(self));
+		return;
+	}
 
 	/* Deactivate current view */
 	if(priv->activeView)
@@ -278,6 +286,61 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_ACTIVE_VIEW]);
+}
+
+/* A view was disabled */
+void _xfdashboard_viewpad_on_view_disabled(XfdashboardViewpad *self, XfdashboardView *inView)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
+
+	XfdashboardViewpadPrivate	*priv=self->priv;
+	ClutterActorIter			iter;
+	ClutterActor				*child;
+	XfdashboardView				*firstActivatableView=NULL;
+
+	/* If the currently disabled view is the active one, activate a next available view */
+	if(inView==priv->activeView)
+	{
+		/* Iterate through create views and lookup view of given type */
+		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+		while(clutter_actor_iter_next(&iter, &child))
+		{
+			/* Check if child is a view otherwise continue iterating */
+			if(XFDASHBOARD_IS_VIEW(child)!=TRUE) continue;
+
+			/* If child is not the view being disabled check if it could
+			 * become the next activatable view
+			 * the first activatable view after we destroyed all views found.
+			 */
+			if(XFDASHBOARD_VIEW(child)!=inView &&
+				xfdashboard_view_get_enabled(XFDASHBOARD_VIEW(child)))
+			{
+				firstActivatableView=XFDASHBOARD_VIEW(child);
+			}
+		}
+
+		/* Now activate the first activatable view we found during iteration.
+		 * It can also be no view (NULL pointer).
+		 */
+		g_debug("Disabled view %s was the active view in %s - will activate %s",
+					G_OBJECT_TYPE_NAME(inView),
+					G_OBJECT_TYPE_NAME(self),
+					firstActivatableView ? G_OBJECT_TYPE_NAME(firstActivatableView) : "no other view");
+		_xfdashboard_viewpad_activate_view(self, firstActivatableView);
+	}
+}
+
+/* A view was enabled */
+void _xfdashboard_viewpad_on_view_enabled(XfdashboardViewpad *self, XfdashboardView *inView)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
+
+	XfdashboardViewpadPrivate	*priv=self->priv;
+
+	/* If no view is active this new enabled view will be activated  */
+	if(!priv->activeView) _xfdashboard_viewpad_activate_view(self, inView);
 }
 
 /* Allocation of a view changed */
@@ -389,12 +452,18 @@ void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, GType inViewType)
 	/* Add new view instance to this actor but hidden */
 	clutter_actor_hide(CLUTTER_ACTOR(view));
 	clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(view));
-	g_signal_connect_swapped(CLUTTER_ACTOR(view), "allocation-changed", G_CALLBACK(_xfdashboard_viewpad_on_allocation_changed), self);
-	g_signal_connect_swapped(CLUTTER_ACTOR(view), "scroll-to", G_CALLBACK(_xfdashboard_viewpad_on_view_scroll_to), self);
+	g_signal_connect_swapped(view, "allocation-changed", G_CALLBACK(_xfdashboard_viewpad_on_allocation_changed), self);
+	g_signal_connect_swapped(view, "scroll-to", G_CALLBACK(_xfdashboard_viewpad_on_view_scroll_to), self);
+	g_signal_connect_swapped(view, "disabled", G_CALLBACK(_xfdashboard_viewpad_on_view_disabled), self);
+	g_signal_connect_swapped(view, "enabled", G_CALLBACK(_xfdashboard_viewpad_on_view_enabled), self);
 	g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ADDED], 0, view);
 
 	/* Set active view if none active (usually it is the first view created) */
-	if(priv->activeView==NULL) _xfdashboard_viewpad_activate_view(self, XFDASHBOARD_VIEW(view));
+	if(priv->activeView==NULL &&
+		xfdashboard_view_get_enabled(XFDASHBOARD_VIEW(view)))
+	{
+		_xfdashboard_viewpad_activate_view(self, XFDASHBOARD_VIEW(view));
+	}
 }
 
 /* Called when a new view type was registered */
@@ -429,7 +498,10 @@ void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
 		/* If child is not of type being unregistered it will get
 		 * the first activatable view after we destroyed all views found.
 		 */
-		if(G_OBJECT_TYPE(child)!=inViewType) firstActivatableView=child;
+		if(G_OBJECT_TYPE(child)!=inViewType)
+		{
+			if(xfdashboard_view_get_enabled(XFDASHBOARD_VIEW(child))) firstActivatableView=child;
+		}
 			else
 			{
 				if(G_OBJECT(child)==G_OBJECT(priv->activeView)) _xfdashboard_viewpad_activate_view(self, NULL);
@@ -774,15 +846,15 @@ void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 								G_PARAM_READABLE);
 
 	XfdashboardViewpadProperties[PROP_HSCROLLBAR_VISIBLE]=
-		g_param_spec_boolean("horinzontal-scrollbar-visible",
-								_("Horinzontal scrollbar visibility"),
+		g_param_spec_boolean("horizontal-scrollbar-visible",
+								_("Horizontal scrollbar visibility"),
 								_("This flag indicates if horizontal scrollbar is visible"),
 								FALSE,
 								G_PARAM_READABLE);
 
 	XfdashboardViewpadProperties[PROP_HSCROLLBAR_POLICY]=
-		g_param_spec_enum("horinzontal-scrollbar-policy",
-							_("Horinzontal scrollbar policy"),
+		g_param_spec_enum("horizontal-scrollbar-policy",
+							_("Horizontal scrollbar policy"),
 							_("The policy for horizontal scrollbar controlling when it is displayed"),
 							XFDASHBOARD_TYPE_POLICY,
 							DEFAULT_SCROLLBAR_POLICY,
@@ -885,7 +957,7 @@ void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 {
 	XfdashboardViewpadPrivate	*priv;
-	const GList					*views, *viewEntry;
+	GList						*views, *viewEntry;
 
 	priv=self->priv=XFDASHBOARD_VIEWPAD_GET_PRIVATE(self);
 

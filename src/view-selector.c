@@ -85,6 +85,18 @@ void _xfdashboard_view_selector_on_view_button_clicked(XfdashboardViewSelector *
 	xfdashboard_viewpad_set_active_view(priv->viewpad, view);
 }
 
+/* Called when a view was enabled or will be disabled */
+void _xfdashboard_view_selector_on_view_enable_state_changed(XfdashboardView *inView, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inUserData));
+
+	ClutterActor						*button=CLUTTER_ACTOR(inUserData);
+
+	if(!xfdashboard_view_get_enabled(inView)) clutter_actor_hide(button);
+		else clutter_actor_show(button);
+}
+
 /* Called when a new view was added to viewpad */
 void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *self,
 												XfdashboardView *inView,
@@ -108,6 +120,14 @@ void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *self,
 	g_object_set_data(G_OBJECT(button), "view", inView);
 
 	g_signal_connect_swapped(button, "clicked", G_CALLBACK(_xfdashboard_view_selector_on_view_button_clicked), self);
+
+	/* If view is disabled hide button and connect signal to get notified
+	 * if enabled state has changed */
+	if(!xfdashboard_view_get_enabled(inView)) clutter_actor_hide(button);
+		else clutter_actor_show(button);
+
+	g_signal_connect(inView, "disabled", G_CALLBACK(_xfdashboard_view_selector_on_view_enable_state_changed), button);
+	g_signal_connect(inView, "enabled", G_CALLBACK(_xfdashboard_view_selector_on_view_enable_state_changed), button);
 
 	/* Add button as child actor */
 	clutter_actor_add_child(CLUTTER_ACTOR(self), button);

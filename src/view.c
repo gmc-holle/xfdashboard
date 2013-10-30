@@ -53,6 +53,8 @@ struct _XfdashboardViewPrivate
 
 	XfdashboardFitMode		fitMode;
 
+	gboolean				isEnabled;
+
 	/* Layout manager */
 	guint					signalChangedID;
 };
@@ -68,6 +70,8 @@ enum
 
 	PROP_FIT_MODE,
 
+	PROP_ENABLED,
+
 	PROP_LAST
 };
 
@@ -80,6 +84,11 @@ enum
 	SIGNAL_ACTIVATED,
 	SIGNAL_DEACTIVATING,
 	SIGNAL_DEACTIVATED,
+
+	SIGNAL_ENABLING,
+	SIGNAL_ENABLED,
+	SIGNAL_DISABLING,
+	SIGNAL_DISABLED,
 
 	SIGNAL_NAME_CHANGED,
 	SIGNAL_ICON_CHANGED,
@@ -157,6 +166,10 @@ void _xfdashboard_view_set_property(GObject *inObject,
 			xfdashboard_view_set_fit_mode(self, (XfdashboardFitMode)g_value_get_enum(inValue));
 			break;
 
+		case PROP_ENABLED:
+			xfdashboard_view_set_enabled(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -186,6 +199,10 @@ void _xfdashboard_view_get_property(GObject *inObject,
 
 		case PROP_FIT_MODE:
 			g_value_set_enum(outValue, self->priv->fitMode);
+			break;
+
+		case PROP_ENABLED:
+			g_value_set_boolean(outValue, self->priv->isEnabled);
 			break;
 
 		default:
@@ -239,6 +256,13 @@ void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 							XFDASHBOARD_FIT_MODE_NONE,
 							G_PARAM_READWRITE);
 
+	XfdashboardViewProperties[PROP_ENABLED]=
+		g_param_spec_boolean("enabled",
+								_("Enabled"),
+								_("This flag indicates if is view is enabled and activable"),
+								TRUE,
+								G_PARAM_READABLE);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewProperties);
 
 	/* Define signals */
@@ -280,6 +304,50 @@ void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
 						G_STRUCT_OFFSET(XfdashboardViewClass, activated),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardViewSignals[SIGNAL_ENABLING]=
+		g_signal_new("enabling",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewClass, enabling),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardViewSignals[SIGNAL_ENABLED]=
+		g_signal_new("enabled",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewClass, enabled),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardViewSignals[SIGNAL_DISABLING]=
+		g_signal_new("disabling",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewClass, disabling),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardViewSignals[SIGNAL_DISABLED]=
+		g_signal_new("disabled",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewClass, disabled),
 						NULL,
 						NULL,
 						g_cclosure_marshal_VOID__VOID,
@@ -338,6 +406,7 @@ void xfdashboard_view_init(XfdashboardView *self)
 	priv->viewIcon=NULL;
 	priv->viewIconImage=NULL;
 	priv->fitMode=XFDASHBOARD_FIT_MODE_NONE;
+	priv->isEnabled=TRUE;
 
 	/* Set up actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -398,7 +467,7 @@ void xfdashboard_view_set_name(XfdashboardView *self, const gchar *inName)
 	}
 }
 
-/* Get/Set icon of view */
+/* Get/set icon of view */
 const gchar* xfdashboard_view_get_icon(XfdashboardView *self)
 {
   g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), NULL);
@@ -430,7 +499,7 @@ void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon)
 	}
 }
 
-/* Get/Set fit mode of view */
+/* Get/set fit mode of view */
 XfdashboardFitMode xfdashboard_view_get_fit_mode(XfdashboardView *self)
 {
   g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), XFDASHBOARD_FIT_MODE_NONE);
@@ -456,6 +525,39 @@ void xfdashboard_view_set_fit_mode(XfdashboardView *self, XfdashboardFitMode inF
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_FIT_MODE]);
+	}
+}
+
+/* Get/set enabled state of view */
+gboolean xfdashboard_view_get_enabled(XfdashboardView *self)
+{
+  g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), FALSE);
+
+  return(self->priv->isEnabled);
+}
+
+void xfdashboard_view_set_enabled(XfdashboardView *self, gboolean inIsEnabled)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+
+	XfdashboardViewPrivate	*priv=self->priv;
+	XfdashboardViewClass	*klass=XFDASHBOARD_VIEW_GET_CLASS(self);
+	guint					signalBeforeID, signalAfterID;
+
+	/* Set value if changed */
+	if(priv->isEnabled!=inIsEnabled)
+	{
+		/* Get signal ID to emit depending on enabled state */
+		signalBeforeID=(inIsEnabled==TRUE ? SIGNAL_ENABLING : SIGNAL_DISABLING);
+		signalAfterID=(inIsEnabled==TRUE ? SIGNAL_ENABLED : SIGNAL_DISABLED);
+
+		/* Set new enabled state */
+		g_signal_emit(self, XfdashboardViewSignals[signalBeforeID], 0, self);
+		priv->isEnabled=inIsEnabled;
+		g_signal_emit(self, XfdashboardViewSignals[signalAfterID], 0, self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_ENABLED]);
 	}
 }
 

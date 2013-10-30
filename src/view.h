@@ -65,6 +65,11 @@ struct _XfdashboardViewClass
 	void (*deactivating)(XfdashboardView *self);
 	void (*deactivated)(XfdashboardView *self);
 
+	void (*enabling)(XfdashboardView *self);
+	void (*enabled)(XfdashboardView *self);
+	void (*disabling)(XfdashboardView *self);
+	void (*disabled)(XfdashboardView *self);
+
 	void (*name_changed)(XfdashboardView *self, gchar *inName);
 	void (*icon_changed)(XfdashboardView *self, ClutterImage *inIcon);
 
@@ -85,6 +90,9 @@ void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon);
 
 XfdashboardFitMode xfdashboard_view_get_fit_mode(XfdashboardView *self);
 void xfdashboard_view_set_fit_mode(XfdashboardView *self, XfdashboardFitMode inFitMode);
+
+gboolean xfdashboard_view_get_enabled(XfdashboardView *self);
+void xfdashboard_view_set_enabled(XfdashboardView *self, gboolean inIsEnabled);
 
 void xfdashboard_view_scroll_to(XfdashboardView *self, gfloat inX, gfloat inY);
 
