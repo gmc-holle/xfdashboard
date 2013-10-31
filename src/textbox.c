@@ -178,14 +178,12 @@ void _xfdashboard_text_box_show(ClutterActor *inActor)
 	gboolean					isEmpty=xfdashboard_text_box_is_empty(self);
 
 	/* Show icons */
-	if(priv->showPrimaryIcon &&
-		priv->showPrimaryIcon!=FALSE)
+	if(priv->showPrimaryIcon!=FALSE)
 	{
 		clutter_actor_show(CLUTTER_ACTOR(priv->actorPrimaryIcon));
 	}
 
-	if(priv->showSecondaryIcon &&
-		priv->showSecondaryIcon!=FALSE)
+	if(priv->showSecondaryIcon!=FALSE)
 	{
 		clutter_actor_show(CLUTTER_ACTOR(priv->actorSecondaryIcon));
 	}
