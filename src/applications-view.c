@@ -106,6 +106,7 @@ void _xfdashboard_applications_view_add_button_for_list_mode(XfdashboardApplicat
 			g_free(actorText);
 		}
 
+	xfdashboard_button_set_style(inButton, XFDASHBOARD_STYLE_BOTH);
 	xfdashboard_button_set_icon_size(inButton, DEFAULT_MENU_ICON_SIZE);
 	xfdashboard_button_set_single_line_mode(inButton, FALSE);
 	xfdashboard_button_set_sync_icon_size(inButton, FALSE);
