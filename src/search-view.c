@@ -91,3 +91,13 @@ void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), DEFAULT_VIEW_ICON);
 	xfdashboard_view_set_enabled(XFDASHBOARD_VIEW(self), FALSE);
 }
+
+/* Implementation: Public API */
+
+/* Update search view by looking up result for new search text */
+void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gchar *inText)
+{
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
+
+	g_message("*TODO* Updating search results for new criteria '%s'", inText);
+}

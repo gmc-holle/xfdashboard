@@ -178,8 +178,17 @@ void _xfdashboard_text_box_show(ClutterActor *inActor)
 	gboolean					isEmpty=xfdashboard_text_box_is_empty(self);
 
 	/* Show icons */
-	if(priv->showPrimaryIcon) clutter_actor_show(CLUTTER_ACTOR(priv->actorPrimaryIcon));
-	if(priv->showSecondaryIcon) clutter_actor_show(CLUTTER_ACTOR(priv->actorSecondaryIcon));
+	if(priv->showPrimaryIcon &&
+		priv->showPrimaryIcon!=FALSE)
+	{
+		clutter_actor_show(CLUTTER_ACTOR(priv->actorPrimaryIcon));
+	}
+
+	if(priv->showSecondaryIcon &&
+		priv->showSecondaryIcon!=FALSE)
+	{
+		clutter_actor_show(CLUTTER_ACTOR(priv->actorSecondaryIcon));
+	}
 
 	/* Show hint label depending if text box is empty or not */
 	if(xfdashboard_text_box_is_empty(self))
@@ -542,7 +551,7 @@ void _xfdashboard_text_box_get_property(GObject *inObject,
 										GValue *outValue,
 										GParamSpec *inSpec)
 {
-	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inObject);
+	XfdashboardTextBox				*self=XFDASHBOARD_TEXT_BOX(inObject);
 	XfdashboardTextBoxPrivate		*priv=self->priv;
 
 	switch(inPropID)
@@ -892,11 +901,11 @@ void xfdashboard_text_box_set_text(XfdashboardTextBox *self, const gchar *inMark
 		text=clutter_text_get_text(CLUTTER_TEXT(priv->actorTextBox));
 		if(text==NULL || *text==0)
 		{
-			clutter_actor_hide(priv->actorHintLabel);
+			clutter_actor_show(priv->actorHintLabel);
 		}
 			else
 			{
-				clutter_actor_show(priv->actorHintLabel);
+				clutter_actor_hide(priv->actorHintLabel);
 			}
 
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
@@ -987,7 +996,6 @@ const gchar* xfdashboard_text_box_get_hint_text(XfdashboardTextBox *self)
 void xfdashboard_text_box_set_hint_text(XfdashboardTextBox *self, const gchar *inMarkupText)
 {
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
-	g_return_if_fail(inMarkupText);
 
 	XfdashboardTextBoxPrivate	*priv=self->priv;
 
@@ -1079,13 +1087,21 @@ void xfdashboard_text_box_set_primary_icon(XfdashboardTextBox *self, const gchar
 	if(g_strcmp0(priv->primaryIconName, inIconName)!=0)
 	{
 		/* Set new primary icon name */
-		if(priv->primaryIconName) g_free(priv->primaryIconName);
-		priv->primaryIconName=g_strdup(inIconName);
+		if(priv->primaryIconName)
+		{
+			g_free(priv->primaryIconName);
+			priv->primaryIconName=NULL;
+		}
 
-		/* Load and set new icon */
-		image=xfdashboard_get_image_for_icon_name(priv->primaryIconName, DEFAULT_ICON_SIZE);
-		clutter_actor_set_content(priv->actorPrimaryIcon, CLUTTER_CONTENT(image));
-		g_object_unref(image);
+		if(inIconName)
+		{
+			priv->primaryIconName=g_strdup(inIconName);
+
+			/* Load and set new icon */
+			image=xfdashboard_get_image_for_icon_name(priv->primaryIconName, DEFAULT_ICON_SIZE);
+			clutter_actor_set_content(priv->actorPrimaryIcon, CLUTTER_CONTENT(image));
+			g_object_unref(image);
+		}
 
 		/* If NULL or empty icon name was set hide primary icon */
 		if(priv->primaryIconName==NULL || *priv->primaryIconName==0)
@@ -1136,13 +1152,21 @@ void xfdashboard_text_box_set_secondary_icon(XfdashboardTextBox *self, const gch
 	if(g_strcmp0(priv->secondaryIconName, inIconName)!=0)
 	{
 		/* Set new primary icon name */
-		if(priv->secondaryIconName) g_free(priv->secondaryIconName);
-		priv->secondaryIconName=g_strdup(inIconName);
+		if(priv->secondaryIconName)
+		{
+			g_free(priv->secondaryIconName);
+			priv->secondaryIconName=NULL;
+		}
 
-		/* Load and set new icon */
-		image=xfdashboard_get_image_for_icon_name(priv->secondaryIconName, DEFAULT_ICON_SIZE);
-		clutter_actor_set_content(priv->actorSecondaryIcon, CLUTTER_CONTENT(image));
-		g_object_unref(image);
+		if(inIconName)
+		{
+			priv->secondaryIconName=g_strdup(inIconName);
+
+			/* Load and set new icon */
+			image=xfdashboard_get_image_for_icon_name(priv->secondaryIconName, DEFAULT_ICON_SIZE);
+			clutter_actor_set_content(priv->actorSecondaryIcon, CLUTTER_CONTENT(image));
+			g_object_unref(image);
+		}
 
 		/* If NULL or empty icon name was set hide primary icon */
 		if(priv->secondaryIconName==NULL || *priv->secondaryIconName==0)

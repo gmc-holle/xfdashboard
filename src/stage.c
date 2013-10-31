@@ -134,6 +134,9 @@ void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self, gchar 
 		/* Enable view */
 		xfdashboard_view_set_enabled(searchView, TRUE);
 
+		/* Activate "clear" button on text box */
+		xfdashboard_text_box_set_secondary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_CLEAR);
+
 		/* Emit "search-started" signal */
 		g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_STARTED], 0);
 	}
@@ -142,8 +145,8 @@ void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self, gchar 
 	 * and update search criterias
 	 */
 	xfdashboard_viewpad_set_active_view(priv->viewpad, searchView);
+	xfdashboard_search_view_update_search(searchView, text);
 	g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_CHANGED], 0, text);
-	// TODO: xfdashboard_search_manager_update_search(searchManage, text);
 
 	/* Check if current text length is zero and previous text length was greater
 	 * than zero. If check if successful it marks the end of current search. Emit
@@ -160,6 +163,9 @@ void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self, gchar 
 			priv->viewBeforeSearch=NULL;
 		}
 
+		/* Deactivate "clear" button on text box */
+		xfdashboard_text_box_set_secondary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
+
 		/* Disable search view */
 		xfdashboard_view_set_enabled(searchView, FALSE);
 
@@ -169,6 +175,18 @@ void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self, gchar 
 
 	/* Trace text length changes */
 	priv->lastSearchTextLength=textLength;
+}
+
+/* Secondary icon ("clear") on text box was clicked */
+void _xfdashboard_stage_on_searchbox_secondary_icon_clicked(XfdashboardStage *self, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
+
+	XfdashboardTextBox			*textBox=XFDASHBOARD_TEXT_BOX(inUserData);
+
+	/* Clear search text box */
+	xfdashboard_text_box_set_text(textBox, NULL);
 }
 
 /* Active view in viewpad has changed */
@@ -234,8 +252,8 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_set_x_expand(priv->searchbox, TRUE);
 	xfdashboard_text_box_set_hint_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), _("Just type to search..."));
 	xfdashboard_text_box_set_primary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_FIND);
-	xfdashboard_text_box_set_secondary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_CLEAR);
 	g_signal_connect_swapped(priv->searchbox, "text-changed", G_CALLBACK(_xfdashboard_stage_on_searchbox_text_changed), self);
+	g_signal_connect_swapped(priv->searchbox, "secondary-icon-clicked", G_CALLBACK(_xfdashboard_stage_on_searchbox_secondary_icon_clicked), self);
 	clutter_actor_add_child(groupHorizontal, priv->searchbox);
 
 	clutter_actor_add_child(groupVertical, groupHorizontal);

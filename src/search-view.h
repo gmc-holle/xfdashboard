@@ -58,6 +58,8 @@ struct _XfdashboardSearchViewClass
 /* Public API */
 GType xfdashboard_search_view_get_type(void) G_GNUC_CONST;
 
+void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gchar *inText);
+
 G_END_DECLS
 
 #endif
