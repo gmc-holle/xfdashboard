@@ -26,8 +26,6 @@
 
 #include <glib-object.h>
 
-#include "search-plugin.h"
-
 G_BEGIN_DECLS
 
 #define XFDASHBOARD_TYPE_SEARCH_MANAGER				(xfdashboard_search_manager_get_type())

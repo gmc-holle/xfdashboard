@@ -1,5 +1,5 @@
 /*
- * search-plugin: Abstract class for search plugins
+ * search-provider: Abstract class for search plugins called providers
  * 
  * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
@@ -25,20 +25,20 @@
 #include "config.h"
 #endif
 
-#include "search-plugin.h"
+#include "search-provider.h"
 
 #include <glib/gi18n-lib.h>
 
 /* Define this class in GObject system */
-G_DEFINE_ABSTRACT_TYPE(XfdashboardSearchPlugin,
-						xfdashboard_search_plugin,
+G_DEFINE_ABSTRACT_TYPE(XfdashboardSearchProvider,
+						xfdashboard_search_provider,
 						G_TYPE_OBJECT)
 
 /* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SEARCH_PLUGIN_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SEARCH_PLUGIN, XfdashboardSearchPluginPrivate))
+#define XFDASHBOARD_SEARCH_PROVIDER_GET_PRIVATE(obj) \
+	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SEARCH_PROVIDER, XfdashboardSearchProviderPrivate))
 
-struct _XfdashboardSearchPluginPrivate
+struct _XfdashboardSearchProviderPrivate
 {
 	/* Instance related */
 	void				*dummy;
@@ -52,7 +52,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardSearchPluginProperties[PROP_LAST]={ 0, };
+GParamSpec* XfdashboardSearchProviderProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -60,31 +60,31 @@ enum
 	SIGNAL_LAST
 };
 
-guint XfdashboardSearchPluginSignals[SIGNAL_LAST]={ 0, };
+guint XfdashboardSearchProviderSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_search_plugin_dispose(GObject *inObject)
+void _xfdashboard_search_provider_dispose(GObject *inObject)
 {
-	XfdashboardSearchPlugin			*self=XFDASHBOARD_SEARCH_PLUGIN(inObject);
-	XfdashboardSearchPluginPrivate	*priv=self->priv;
+	XfdashboardSearchProvider			*self=XFDASHBOARD_SEARCH_PROVIDER(inObject);
+	XfdashboardSearchProviderPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
 
 	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_search_plugin_parent_class)->dispose(inObject);
+	G_OBJECT_CLASS(xfdashboard_search_provider_parent_class)->dispose(inObject);
 }
 
 /* Set/get properties */
-void _xfdashboard_search_plugin_set_property(GObject *inObject,
+void _xfdashboard_search_provider_set_property(GObject *inObject,
 												guint inPropID,
 												const GValue *inValue,
 												GParamSpec *inSpec)
 {
-	XfdashboardSearchPlugin		*self=XFDASHBOARD_SEARCH_PLUGIN(inObject);
+	XfdashboardSearchProvider		*self=XFDASHBOARD_SEARCH_PROVIDER(inObject);
 	
 	switch(inPropID)
 	{
@@ -94,12 +94,12 @@ void _xfdashboard_search_plugin_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_search_plugin_get_property(GObject *inObject,
+void _xfdashboard_search_provider_get_property(GObject *inObject,
 									guint inPropID,
 									GValue *outValue,
 									GParamSpec *inSpec)
 {
-	XfdashboardSearchPlugin		*self=XFDASHBOARD_SEARCH_PLUGIN(inObject);
+	XfdashboardSearchProvider		*self=XFDASHBOARD_SEARCH_PROVIDER(inObject);
 
 	switch(inPropID)
 	{
@@ -113,27 +113,27 @@ void _xfdashboard_search_plugin_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_search_plugin_class_init(XfdashboardSearchPluginClass *klass)
+void xfdashboard_search_provider_class_init(XfdashboardSearchProviderClass *klass)
 {
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->set_property=_xfdashboard_search_plugin_set_property;
-	gobjectClass->get_property=_xfdashboard_search_plugin_get_property;
-	gobjectClass->dispose=_xfdashboard_search_plugin_dispose;
+	gobjectClass->set_property=_xfdashboard_search_provider_set_property;
+	gobjectClass->get_property=_xfdashboard_search_provider_get_property;
+	gobjectClass->dispose=_xfdashboard_search_provider_dispose;
 
 	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardSearchPluginPrivate));
+	g_type_class_add_private(klass, sizeof(XfdashboardSearchProviderPrivate));
 }
 
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_search_plugin_init(XfdashboardSearchPlugin *self)
+void xfdashboard_search_provider_init(XfdashboardSearchProvider *self)
 {
-	XfdashboardSearchPluginPrivate	*priv;
+	XfdashboardSearchProviderPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_SEARCH_PLUGIN_GET_PRIVATE(self);
+	priv=self->priv=XFDASHBOARD_SEARCH_PROVIDER_GET_PRIVATE(self);
 }
 
 /* Implementation: Public API */

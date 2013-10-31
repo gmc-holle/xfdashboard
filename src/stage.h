@@ -59,6 +59,9 @@ struct _XfdashboardStageClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*search_started)(XfdashboardStage *self);
+	void (*search_changed)(XfdashboardStage *self, gchar *inText);
+	void (*search_ended)(XfdashboardStage *self);
 };
 
 /* Public API */

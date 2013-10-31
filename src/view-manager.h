@@ -26,8 +26,6 @@
 
 #include <glib-object.h>
 
-#include "view.h"
-
 G_BEGIN_DECLS
 
 #define XFDASHBOARD_TYPE_VIEW_MANAGER				(xfdashboard_view_manager_get_type())

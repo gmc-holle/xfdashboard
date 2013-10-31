@@ -37,6 +37,8 @@
 #include "view-selector.h"
 #include "textbox.h"
 #include "quicklaunch.h"
+#include "search-view.h"
+#include "textbox.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,
@@ -59,6 +61,9 @@ struct _XfdashboardStagePrivate
 	/* Instance related */
 	WnckScreen			*screen;
 	WnckWindow			*window;
+
+	gint				lastSearchTextLength;
+	XfdashboardView		*viewBeforeSearch;
 };
 
 /* Properties */
@@ -73,9 +78,123 @@ enum
 GParamSpec* XfdashboardStageProperties[PROP_LAST]={ 0, };
 */
 
-/* IMPLEMENTATION: Private variables and methods */
+/* Signals */
+enum
+{
+	SIGNAL_SEARCH_STARTED,
+	SIGNAL_SEARCH_CHANGED,
+	SIGNAL_SEARCH_ENDED,
 
+	SIGNAL_LAST
+};
+
+guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
+
+
+/* IMPLEMENTATION: Private variables and methods */
 ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 }; // TODO: Replace by settings/theming object
+
+/* Text in search text-box has changed */
+void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self, gchar *inText, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
+
+	XfdashboardStagePrivate		*priv=self->priv;
+	XfdashboardTextBox			*textBox=XFDASHBOARD_TEXT_BOX(inUserData);
+	XfdashboardView				*searchView;
+	gint						textLength;
+	const gchar					*text;
+
+	/* Get search view */
+	searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
+	if(searchView==NULL)
+	{
+		g_critical(_("Cannot perform search because search view was not found in viewpad."));
+		return;
+	}
+
+	/* Get text and length of text in text-box */
+	text=xfdashboard_text_box_get_text(textBox);
+	textLength=xfdashboard_text_box_get_length(textBox);
+
+	/* Check if current text length if greater than zero and previous text length
+	 * was zero. If check if successful it marks the start of a search. Emit the
+	 * "search-started" signal. There is no need to start a search a search over
+	 * all search providers as it will be done later by updating search criterias.
+	 * There is also no need to activate search view because we will ensure that
+	 * search view is activate on any change in search text box but we enable that
+	 * view to be able to activate it ;)
+	 */
+	if(textLength>0 && priv->lastSearchTextLength==0)
+	{
+		/* Remember current active view to restore it when search ended */
+		priv->viewBeforeSearch=XFDASHBOARD_VIEW(g_object_ref(xfdashboard_viewpad_get_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad))));
+
+		/* Enable view */
+		xfdashboard_view_set_enabled(searchView, TRUE);
+
+		/* Emit "search-started" signal */
+		g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_STARTED], 0);
+	}
+
+	/* Ensure that search view is active, emit signal for text changed
+	 * and update search criterias
+	 */
+	xfdashboard_viewpad_set_active_view(priv->viewpad, searchView);
+	g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_CHANGED], 0, text);
+	// TODO: xfdashboard_search_manager_update_search(searchManage, text);
+
+	/* Check if current text length is zero and previous text length was greater
+	 * than zero. If check if successful it marks the end of current search. Emit
+	 * the "search-ended" signal, reactivate view before search was started and
+	 * disable search view.
+	 */
+	if(textLength==0 && priv->lastSearchTextLength>0)
+	{
+		/* Reactivate active view before search has started */
+		if(priv->viewBeforeSearch)
+		{
+			xfdashboard_viewpad_set_active_view(priv->viewpad, priv->viewBeforeSearch);
+			g_object_unref(priv->viewBeforeSearch);
+			priv->viewBeforeSearch=NULL;
+		}
+
+		/* Disable search view */
+		xfdashboard_view_set_enabled(searchView, FALSE);
+
+		/* Emit "search-ended" signal */
+		g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_ENDED], 0);
+	}
+
+	/* Trace text length changes */
+	priv->lastSearchTextLength=textLength;
+}
+
+/* Active view in viewpad has changed */
+void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, XfdashboardView *inView, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inUserData));
+
+	XfdashboardStagePrivate		*priv=self->priv;
+	XfdashboardViewpad			*viewpad=XFDASHBOARD_VIEWPAD(inUserData);
+
+	/* If we have remembered a view "before-search" then a search is going on.
+	 * If user switches between views while a search is going on remember the
+	 * last one activated to restore it when search ends but do not remember
+	 * the search view!
+	 */
+	if(priv->viewBeforeSearch &&
+		G_OBJECT_TYPE(inView)!=XFDASHBOARD_TYPE_SEARCH_VIEW)
+	{
+		/* Release old remembered view */
+		g_object_unref(priv->viewBeforeSearch);
+
+		/* Remember new active view */
+		priv->viewBeforeSearch=XFDASHBOARD_VIEW(g_object_ref(inView));
+	}
+}
 
 /* Set up stage */
 void _xfdashboard_stage_setup(XfdashboardStage *self)
@@ -116,6 +235,7 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 	xfdashboard_text_box_set_hint_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), _("Just type to search..."));
 	xfdashboard_text_box_set_primary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_FIND);
 	xfdashboard_text_box_set_secondary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_CLEAR);
+	g_signal_connect_swapped(priv->searchbox, "text-changed", G_CALLBACK(_xfdashboard_stage_on_searchbox_text_changed), self);
 	clutter_actor_add_child(groupHorizontal, priv->searchbox);
 
 	clutter_actor_add_child(groupVertical, groupHorizontal);
@@ -124,6 +244,7 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 	priv->viewpad=xfdashboard_viewpad_new();
 	clutter_actor_set_x_expand(priv->viewpad, TRUE);
 	clutter_actor_set_y_expand(priv->viewpad, TRUE);
+	g_signal_connect_swapped(priv->viewpad, "view-activated", G_CALLBACK(_xfdashboard_stage_on_view_activated), self);
 	clutter_actor_add_child(groupVertical, priv->viewpad);
 	xfdashboard_view_selector_set_viewpad(XFDASHBOARD_VIEW_SELECTOR(priv->viewSelector), XFDASHBOARD_VIEWPAD(priv->viewpad));
 
@@ -274,6 +395,12 @@ void _xfdashboard_stage_dispose(GObject *inObject)
 		priv->viewpad=NULL;
 	}
 
+	if(priv->viewBeforeSearch)
+	{
+		g_object_unref(priv->viewBeforeSearch);
+		priv->viewBeforeSearch=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_stage_parent_class)->dispose(inObject);
 }
@@ -291,6 +418,41 @@ void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardStagePrivate));
+
+	/* Define signals */
+	XfdashboardStageSignals[SIGNAL_SEARCH_STARTED]=
+		g_signal_new("search-started",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardStageClass, search_started),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardStageSignals[SIGNAL_SEARCH_CHANGED]=
+		g_signal_new("search-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardStageClass, search_changed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__STRING,
+						G_TYPE_NONE,
+						1,
+						G_TYPE_STRING);
+
+	XfdashboardStageSignals[SIGNAL_SEARCH_ENDED]=
+		g_signal_new("search-ended",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardStageClass, search_ended),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
 }
 
 /* Object initialization
@@ -310,6 +472,8 @@ void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->workspaces=NULL;
 	priv->viewpad=NULL;
 	priv->viewSelector=NULL;
+	priv->lastSearchTextLength=0;
+	priv->viewBeforeSearch=NULL;
 
 	/* Set up stage */
 	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &defaultStageColor);
@@ -340,7 +504,7 @@ WnckWindow* xfdashboard_stage_get_window(XfdashboardStage *self)
 	XfdashboardStagePrivate		*priv=self->priv;
 
 	/* Determine window object if not done already */
-	if(priv->window==NULL)
+	if(G_UNLIKELY(priv->window==NULL))
 	{
 		Window					xWindow;
 

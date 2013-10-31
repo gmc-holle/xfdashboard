@@ -26,6 +26,7 @@
 #endif
 
 #include "search-manager.h"
+#include "search-provider.h"
 #include "utils.h"
 
 #include <glib/gi18n-lib.h>
@@ -165,12 +166,12 @@ void xfdashboard_search_manager_register(XfdashboardSearchManager *self, GType i
 	XfdashboardSearchManagerPrivate	*priv=self->priv;
 
 	/* Check if given type is not a XfdashboardSearchPlugin but a derived type from it */
-	if(inPluginType==XFDASHBOARD_TYPE_SEARCH_PLUGIN ||
-		g_type_is_a(inPluginType, XFDASHBOARD_TYPE_SEARCH_PLUGIN)!=TRUE)
+	if(inPluginType==XFDASHBOARD_TYPE_SEARCH_PROVIDER ||
+		g_type_is_a(inPluginType, XFDASHBOARD_TYPE_SEARCH_PROVIDER)!=TRUE)
 	{
 		g_warning(_("Search plugin %s is not a %s and cannot be registered"),
 					g_type_name(inPluginType),
-					g_type_name(XFDASHBOARD_TYPE_SEARCH_PLUGIN));
+					g_type_name(XFDASHBOARD_TYPE_SEARCH_PROVIDER));
 		return;
 	}
 
@@ -191,12 +192,12 @@ void xfdashboard_search_manager_unregister(XfdashboardSearchManager *self, GType
 	XfdashboardSearchManagerPrivate	*priv=self->priv;
 
 	/* Check if given type is not a XfdashboardView but a derived type from it */
-	if(inPluginType==XFDASHBOARD_TYPE_SEARCH_PLUGIN ||
-		g_type_is_a(inPluginType, XFDASHBOARD_TYPE_SEARCH_PLUGIN)!=TRUE)
+	if(inPluginType==XFDASHBOARD_TYPE_SEARCH_PROVIDER ||
+		g_type_is_a(inPluginType, XFDASHBOARD_TYPE_SEARCH_PROVIDER)!=TRUE)
 	{
 		g_warning(_("Search plugin %s is not a %s and cannot be unregistered"),
 					g_type_name(inPluginType),
-					g_type_name(XFDASHBOARD_TYPE_SEARCH_PLUGIN));
+					g_type_name(XFDASHBOARD_TYPE_SEARCH_PROVIDER));
 		return;
 	}
 

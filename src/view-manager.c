@@ -26,6 +26,7 @@
 #endif
 
 #include "view-manager.h"
+#include "view.h"
 #include "utils.h"
 
 #include <glib/gi18n-lib.h>

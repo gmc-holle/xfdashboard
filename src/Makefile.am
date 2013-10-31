@@ -30,7 +30,8 @@ xfdashboard_headers = \
 	scaled-table-layout.h \
 	scrollbar.h \
 	search-manager.h \
-	search-plugin.h \
+	search-provider.h \
+	search-view.h \
 	stage.h \
 	textbox.h \
 	types.h \
@@ -57,7 +58,8 @@ xfdashboard_SOURCES = \
 	scaled-table-layout.c \
 	scrollbar.c \
 	search-manager.c \
-	search-plugin.c \
+	search-provider.c \
+	search-view.c \
 	stage.c \
 	textbox.c \
 	utils.c \

@@ -99,10 +99,10 @@ static GParamSpec* XfdashboardTextBoxProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
-	TEXT_CHANGED,
+	SIGNAL_TEXT_CHANGED,
 
-	PRIMARY_ICON_CLICKED,
-	SECONDARY_ICON_CLICKED,
+	SIGNAL_PRIMARY_ICON_CLICKED,
+	SIGNAL_SECONDARY_ICON_CLICKED,
 
 	SIGNAL_LAST
 };
@@ -139,7 +139,7 @@ void _xfdashboard_text_box_on_text_changed(XfdashboardTextBox *self, gpointer in
 		}
 
 	/* Emit signal for text changed */
-	g_signal_emit(self, XfdashboardTextBoxSignals[TEXT_CHANGED], 0, clutter_text_get_text(actorText));
+	g_signal_emit(self, XfdashboardTextBoxSignals[SIGNAL_TEXT_CHANGED], 0, clutter_text_get_text(actorText));
 }
 
 /* Primary icon was clicked */
@@ -152,7 +152,7 @@ void _xfdashboard_text_box_on_primary_icon_clicked(ClutterClickAction *inAction,
 	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inUserData);
 
 	/* Emit signal for clicking primary icon */
-	g_signal_emit(self, XfdashboardTextBoxSignals[PRIMARY_ICON_CLICKED], 0);
+	g_signal_emit(self, XfdashboardTextBoxSignals[SIGNAL_PRIMARY_ICON_CLICKED], 0);
 }
 
 /* Secondary icon was clicked */
@@ -165,7 +165,7 @@ void _xfdashboard_text_box_on_secondary_icon_clicked(ClutterClickAction *inActio
 	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inUserData);
 
 	/* Emit signal for clicking secondary icon */
-	g_signal_emit(self, XfdashboardTextBoxSignals[SECONDARY_ICON_CLICKED], 0);
+	g_signal_emit(self, XfdashboardTextBoxSignals[SIGNAL_SECONDARY_ICON_CLICKED], 0);
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -692,7 +692,7 @@ void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardTextBoxProperties);
 
 	/* Define signals */
-	XfdashboardTextBoxSignals[TEXT_CHANGED]=
+	XfdashboardTextBoxSignals[SIGNAL_TEXT_CHANGED]=
 		g_signal_new("text-changed",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
@@ -704,7 +704,7 @@ void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 						1,
 						G_TYPE_STRING);
 
-	XfdashboardTextBoxSignals[PRIMARY_ICON_CLICKED]=
+	XfdashboardTextBoxSignals[SIGNAL_PRIMARY_ICON_CLICKED]=
 		g_signal_new("primary-icon-clicked",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
@@ -715,7 +715,7 @@ void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 						G_TYPE_NONE,
 						0);
 
-	XfdashboardTextBoxSignals[SECONDARY_ICON_CLICKED]=
+	XfdashboardTextBoxSignals[SIGNAL_SECONDARY_ICON_CLICKED]=
 		g_signal_new("secondary-icon-clicked",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
@@ -855,6 +855,19 @@ gboolean xfdashboard_text_box_is_empty(XfdashboardTextBox *self)
 	const gchar					*text=clutter_text_get_text(CLUTTER_TEXT(priv->actorTextBox));
 
 	return(text==NULL || *text==0);
+}
+
+gint xfdashboard_text_box_get_length(XfdashboardTextBox *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(self), 0);
+
+	XfdashboardTextBoxPrivate	*priv=self->priv;
+	const gchar					*text=clutter_text_get_text(CLUTTER_TEXT(priv->actorTextBox));
+	gint						textLength=0;
+
+	if(text) textLength=strlen(text);
+
+	return(textLength);
 }
 
 const gchar* xfdashboard_text_box_get_text(XfdashboardTextBox *self)

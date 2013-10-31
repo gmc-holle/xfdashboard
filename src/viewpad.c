@@ -182,7 +182,6 @@ void _xfdashboard_viewpad_update_scrollbars(XfdashboardViewpad *self)
 
 	XfdashboardViewpadPrivate	*priv=self->priv;
 	gfloat						w, h;
-	gfloat						viewpadWidth, viewpadHeight;
 
 	/* Set range of scroll bar to width and height of active view
 	 * But we need to check for nan-values here - I do not get rid of it :(
@@ -1059,6 +1058,56 @@ GList* xfdashboard_viewpad_get_views(XfdashboardViewpad *self)
 	list=g_list_reverse(list);
 
 	return(list);
+}
+
+/* Find view by type */
+XfdashboardView* xfdashboard_viewpad_find_view_by_type(XfdashboardViewpad *self, GType inType)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
+
+	ClutterActorIter			iter;
+	ClutterActor				*child;
+	XfdashboardView				*view=NULL;
+
+	/* Iterate through children and create list of views */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(!view && clutter_actor_iter_next(&iter, &child))
+	{
+		/* Check if child is a view and of type looking for */
+		if(XFDASHBOARD_IS_VIEW(child)==TRUE &&
+			G_OBJECT_TYPE(child)==inType)
+		{
+			view=child;
+		}
+	}
+
+	/* Return view found which may be NULL if no view of requested type was found */
+	return(view);
+}
+
+/* Find view by internal name */
+XfdashboardView* xfdashboard_viewpad_find_view_by_name(XfdashboardViewpad *self, const gchar *inInternalName)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
+
+	ClutterActorIter			iter;
+	ClutterActor				*child;
+	XfdashboardView				*view=NULL;
+
+	/* Iterate through children and lookup view matching requested name */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(!view && clutter_actor_iter_next(&iter, &child))
+	{
+		/* Check if child is a view and its internal name matches requested name */
+		if(XFDASHBOARD_IS_VIEW(child)==TRUE &&
+			g_strcmp0(xfdashboard_view_get_internal_name(XFDASHBOARD_VIEW(child)), inInternalName)==0)
+		{
+			view=child;
+		}
+	}
+
+	/* Return view found which may be NULL if no view of requested type was found */
+	return(view);
 }
 
 /* Get/set active view */
