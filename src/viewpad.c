@@ -268,6 +268,7 @@ void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardVie
 		g_signal_handlers_block_by_func(priv->hScrollbar, _xfdashboard_viewpad_on_scrollbar_value_changed, self);
 		g_signal_handlers_block_by_func(priv->vScrollbar, _xfdashboard_viewpad_on_scrollbar_value_changed, self);
 
+		x=y=0.0f;
 		clutter_actor_get_clip(CLUTTER_ACTOR(priv->activeView), &x, &y, NULL, NULL);
 		_xfdashboard_viewpad_update_scrollbars(self);
 		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), x);

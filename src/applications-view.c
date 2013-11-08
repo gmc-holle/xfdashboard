@@ -74,8 +74,8 @@ GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 #define ACTOR_USER_DATA_KEY			"xfdashboard-applications-view-user-data"
 
-#define DEFAULT_VIEW_MODE			XFDASHBOARD_VIEW_MODE_LIST	// TODO: Replace by settings/theming object
 #define DEFAULT_VIEW_ICON			GTK_STOCK_HOME				// TODO: Replace by settings/theming object
+#define DEFAULT_VIEW_MODE			XFDASHBOARD_VIEW_MODE_LIST	// TODO: Replace by settings/theming object
 #define DEFAULT_SPACING				4.0f						// TODO: Replace by settings/theming object
 #define DEFAULT_MENU_ICON_SIZE		64							// TODO: Replace by settings/theming object
 #define DEFAULT_PARENT_MENU_ICON	GTK_STOCK_GO_UP				// TODO: Replace by settings/theming object

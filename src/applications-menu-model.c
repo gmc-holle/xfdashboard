@@ -42,8 +42,8 @@ G_DEFINE_TYPE(XfdashboardApplicationsMenuModel,
 struct _XfdashboardApplicationsMenuModelPrivate
 {
 	/* Instance related */
-	GarconMenu								*rootMenu;
-	GHashTable								*sections;
+	GarconMenu		*rootMenu;
+	GHashTable		*sections;
 };
 
 /* IMPLEMENTATION: Private variables and methods */
@@ -150,7 +150,7 @@ gboolean _xfdashboard_applications_menu_model_filter_by_menu(ClutterModel *inMod
 			if(garcon_menu_item_pool_lookup(itemPool, desktopID)!=FALSE) doShow=TRUE;
 		}
 
-	/* If we get here return TRUE to show model data item */
+	/* If we get here return TRUE to show model data item or FALSE to hide */
 	g_object_unref(menuElement);
 	return(doShow);
 }
@@ -199,7 +199,7 @@ gboolean _xfdashboard_applications_menu_model_filter_by_section(ClutterModel *in
 	g_object_unref(menuElement);
 	g_object_unref(parentMenu);
 
-	/* If we get here return TRUE to show model data item */
+	/* If we get here return TRUE to show model data item or FALSE to hide */
 	return(doShow);
 }
 
@@ -551,7 +551,7 @@ void xfdashboard_applications_menu_model_filter_by_section(XfdashboardApplicatio
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 	g_return_if_fail(inSection==NULL || GARCON_IS_MENU(inSection));
 
-	XfdashboardApplicationsMenuModelPrivate					*priv=self->priv;
+	XfdashboardApplicationsMenuModelPrivate		*priv=self->priv;
 
 	/* If requested section is NULL filter root menu */
 	if(inSection==NULL) inSection=priv->rootMenu;

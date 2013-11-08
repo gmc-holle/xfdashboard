@@ -1,5 +1,5 @@
 /*
- * search-view: A view showing search results
+ * search-view: A view showing applications matching search criterias
  * 
  * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
@@ -57,6 +57,9 @@ struct _XfdashboardSearchViewClass
 
 /* Public API */
 GType xfdashboard_search_view_get_type(void) G_GNUC_CONST;
+
+XfdashboardViewMode xfdashboard_search_view_get_view_mode(XfdashboardSearchView *self);
+void xfdashboard_search_view_set_view_mode(XfdashboardSearchView *self, const XfdashboardViewMode inMode);
 
 void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gchar *inText);
 
