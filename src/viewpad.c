@@ -121,14 +121,16 @@ void _xfdashboard_viewpad_update_view_viewport(XfdashboardViewpad *self)
 		return;
 	}
 
-	if(clutter_actor_has_clip(CLUTTER_ACTOR(priv->activeView))!=TRUE)
-	{
-		g_warning(_("Cannot update viewport of view because clipping was not set"));
-		return;
-	}
-
 	/* Get offset from scrollbars and view size from clipping */
-	clutter_actor_get_clip(CLUTTER_ACTOR(priv->activeView), &x, &y, &w, &h);
+	if(clutter_actor_has_clip(CLUTTER_ACTOR(priv->activeView)))
+	{
+		clutter_actor_get_clip(CLUTTER_ACTOR(priv->activeView), &x, &y, &w, &h);
+	}
+		else
+		{
+ 			x=y=0.0f;
+			clutter_actor_get_size(CLUTTER_ACTOR(priv->activeView), &w, &h);
+		}
 
 	/* To avoid blur convert float to ints (virtually) */
 	x=ceil(x);
