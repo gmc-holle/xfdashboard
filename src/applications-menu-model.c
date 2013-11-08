@@ -206,7 +206,8 @@ gboolean _xfdashboard_applications_menu_model_filter_by_section(ClutterModel *in
 /* Fill model */
 void _xfdashboard_applications_menu_model_fill_model_collect_menu(XfdashboardApplicationsMenuModel *self,
 																	GarconMenu *inMenu,
-																	GarconMenu *inSection)
+																	GarconMenu *inSection,
+																	guint *ioSequenceID)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 	g_return_if_fail(GARCON_IS_MENU(inMenu));
@@ -265,7 +266,9 @@ void _xfdashboard_applications_menu_model_fill_model_collect_menu(XfdashboardApp
 			if(GARCON_IS_MENU_ITEM(menuElement)) command=garcon_menu_item_get_command(GARCON_MENU_ITEM(menuElement));
 
 			/* Add menu item to model */
+			*ioSequenceID=(*ioSequenceID)+1;
 			clutter_model_append(CLUTTER_MODEL(self),
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID, *ioSequenceID,
 									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, menuElement,
 									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU, inMenu,
 									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE, title,
@@ -279,7 +282,7 @@ void _xfdashboard_applications_menu_model_fill_model_collect_menu(XfdashboardApp
 		if(GARCON_IS_MENU(menuElement))
 		{
 			if(inSection) _xfdashboard_applications_menu_model_add_to_section(self, inSection, GARCON_MENU(menuElement));
-			_xfdashboard_applications_menu_model_fill_model_collect_menu(self, GARCON_MENU(menuElement), inSection);
+			_xfdashboard_applications_menu_model_fill_model_collect_menu(self, GARCON_MENU(menuElement), inSection, ioSequenceID);
 		}
 	}
 	g_list_free(menuElements);
@@ -294,6 +297,7 @@ void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicationsMenu
 
 	XfdashboardApplicationsMenuModelPrivate		*priv=self->priv;
 	GError										*error=NULL;
+	guint										sequenceID=0;
 
 	/* Clear model data */
 	_xfdashboard_applications_menu_model_clear(self);
@@ -315,7 +319,7 @@ void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicationsMenu
 											NULL,
 											(GDestroyNotify)g_list_free);
 
-	_xfdashboard_applications_menu_model_fill_model_collect_menu(self, priv->rootMenu, NULL);
+	_xfdashboard_applications_menu_model_fill_model_collect_menu(self, priv->rootMenu, NULL, &sequenceID);
 }
 
 /* IMPLEMENTATION: ClutterModel */
@@ -403,6 +407,19 @@ gint _xfdashboard_applications_menu_model_resort_string_callback(ClutterModel *i
 	return(g_strcmp0(leftValue, rightValue));
 }
 
+gint _xfdashboard_applications_menu_model_resort_uint_callback(ClutterModel *inModel,
+																const GValue *inLeft,
+																const GValue *inRight,
+																gpointer inUserData)
+{
+	guint		leftValue=g_value_get_uint(inLeft);
+	guint		rightValue=g_value_get_uint(inRight);
+
+	if(leftValue<rightValue) return(-1);
+		else if(leftValue>rightValue) return(1);
+	return(0);
+}
+
 void _xfdashboard_applications_menu_model_resort(ClutterModel *inModel,
 													ClutterModelSortFunc inSortCallback,
 													gpointer inUserData)
@@ -416,6 +433,10 @@ void _xfdashboard_applications_menu_model_resort(ClutterModel *inModel,
 
 		switch(sortColumn)
 		{
+			case XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID:
+				inSortCallback=_xfdashboard_applications_menu_model_resort_uint_callback;
+				break;
+
 			case XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT:
 				inSortCallback=_xfdashboard_applications_menu_model_resort_menu_element_callback;
 				break;
@@ -500,6 +521,7 @@ void xfdashboard_applications_menu_model_init(XfdashboardApplicationsMenuModel *
 
 	/* Set up model */
 	GType			columnTypes[]=	{
+										G_TYPE_UINT, /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID */
 										GARCON_TYPE_MENU_ELEMENT, /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT */
 										GARCON_TYPE_MENU, /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU */
 										G_TYPE_STRING, /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE */
@@ -508,6 +530,7 @@ void xfdashboard_applications_menu_model_init(XfdashboardApplicationsMenuModel *
 										G_TYPE_STRING /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_COMMAND */
 									};
 	const gchar*	columnNames[]=	{
+										_("ID"), /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID */
 										_("Menu item"), /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT */
 										_("Parent menu"), /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU */
 										_("Title"), /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE */

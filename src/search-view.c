@@ -128,6 +128,7 @@ gboolean _xfdashboard_search_view_filter_title_only(ClutterModel *inModel,
 
 	/* Get menu element at iterator */
 	clutter_model_iter_get(inIter,
+							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID, &iterRow,
 							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
 							-1);
 	if(menuElement==NULL) return(FALSE);
@@ -170,8 +171,6 @@ gboolean _xfdashboard_search_view_filter_title_only(ClutterModel *inModel,
 	 */
 	if(isMatch==TRUE)
 	{
-		iterRow=clutter_model_iter_get_row(inIter);
-
 		if(g_hash_table_contains(searchData->pool, desktopID)!=TRUE)
 		{
 			g_hash_table_insert(searchData->pool, g_strdup(desktopID), GINT_TO_POINTER(iterRow));
@@ -205,6 +204,7 @@ gboolean _xfdashboard_search_view_filter_title_and_description(ClutterModel *inM
 
 	/* Get menu element at iterator */
 	clutter_model_iter_get(inIter,
+							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID, &iterRow,
 							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
 							-1);
 	if(menuElement==NULL) return(FALSE);
@@ -255,8 +255,6 @@ gboolean _xfdashboard_search_view_filter_title_and_description(ClutterModel *inM
 	 */
 	if(isMatch==TRUE)
 	{
-		iterRow=clutter_model_iter_get_row(inIter);
-
 		if(g_hash_table_contains(searchData->pool, desktopID)!=TRUE)
 		{
 			g_hash_table_insert(searchData->pool, g_strdup(desktopID), GINT_TO_POINTER(iterRow));
