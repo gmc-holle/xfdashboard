@@ -177,7 +177,7 @@ void _xfdashboard_text_box_key_focus_in(ClutterActor *inActor)
 	XfdashboardTextBoxPrivate	*priv=self->priv;
 
 	/* Push key focus forward to text box */
-	clutter_actor_grab_key_focus(priv->actorTextBox);
+	clutter_stage_set_key_focus(clutter_actor_get_stage(inActor), priv->actorTextBox);
 }
 
 /* Show all children of this one */
