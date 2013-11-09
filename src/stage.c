@@ -144,8 +144,8 @@ void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self, gchar 
 	/* Ensure that search view is active, emit signal for text changed
 	 * and update search criterias
 	 */
-	xfdashboard_viewpad_set_active_view(priv->viewpad, searchView);
-	xfdashboard_search_view_update_search(searchView, text);
+	xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), searchView);
+	xfdashboard_search_view_update_search(XFDASHBOARD_SEARCH_VIEW(searchView), text);
 	g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_CHANGED], 0, text);
 
 	/* Check if current text length is zero and previous text length was greater
@@ -304,6 +304,10 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_add_constraint(groupHorizontal, clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_WIDTH, 0.0f));
 	clutter_actor_add_constraint(groupHorizontal, clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_HEIGHT, -16.0f));
 	clutter_actor_add_child(CLUTTER_ACTOR(self), groupHorizontal);
+
+	/* Set key focus to searchbox */
+	clutter_stage_set_accept_focus(CLUTTER_STAGE(self), TRUE);
+	clutter_stage_set_key_focus(CLUTTER_STAGE(self), priv->searchbox);
 }
 
 /* The active window changed. Reselect stage window as active if it is visible */

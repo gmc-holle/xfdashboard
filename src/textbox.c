@@ -170,6 +170,16 @@ void _xfdashboard_text_box_on_secondary_icon_clicked(ClutterClickAction *inActio
 
 /* IMPLEMENTATION: ClutterActor */
 
+/* Actor got key focus */
+void _xfdashboard_text_box_key_focus_in(ClutterActor *inActor)
+{
+	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inActor);
+	XfdashboardTextBoxPrivate	*priv=self->priv;
+
+	/* Push key focus forward to text box */
+	clutter_actor_grab_key_focus(priv->actorTextBox);
+}
+
 /* Show all children of this one */
 void _xfdashboard_text_box_show(ClutterActor *inActor)
 {
@@ -619,6 +629,7 @@ void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 	actorClass->get_preferred_height=_xfdashboard_text_box_get_preferred_height;
 	actorClass->allocate=_xfdashboard_text_box_allocate;
 	actorClass->destroy=_xfdashboard_text_box_destroy;
+	actorClass->key_focus_in=_xfdashboard_text_box_key_focus_in;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardTextBoxPrivate));
