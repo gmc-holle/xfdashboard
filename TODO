@@ -5,16 +5,18 @@
 [prepared] Store settings, e.g. quicklaunch shortcuts, in Xfconf4 and listen for updates
 [done] Only run one instance (libunique? GApplication?)
 [done] Localization
+[done] - Get rid of duplicates in application search view/provider
+- Implement search provider manager and search provider abstract class to collect result from many and different sources (not only applications)
+- Implement application search provider as built-in
 - Search should be non-blocking (but workaround: still blocking but speed up a lot)
-- Start search for application ca. one second after entering and restart search one second after last input in a thread? (not needed anymore because it was speed up a lot)
+- Start search approx. one second after entering and restart search one second after last input in a thread? (could be needed for search providers collecting remote results)
 - Sort search result in search view alphabetically and/or by relevance?
-- Get rid of duplicates in search view
 - Effects?
 [prepared] Themable?
 
 == QUICKLAUNCH-BOX (FAVOURITES-SELECTOR) ==
 [done] Implement quicklaunch-box
-- Allow orientation (horizontal or vertical) in quicklaunch
+[done] - Allow orientation (horizontal or vertical) in quicklaunch
 [done] Clicking quicklaunch icon starts application and quits
 - Reorder quicklaunch icon by drag-n-drop
 - Remove quicklaunch icon by drag-n-drop to trash icon in quicklaunch
@@ -49,10 +51,11 @@
 - Allow drag-n-drop of application icon to workspace-box and start application on this workspace
 
 == SEARCH VIEW ==
-- Implement search view
+[done] - Implement search view
 [done] - Implement search input box
-- Switch to search view on non-empty search term (that means search started)
-- Merge search view with applications view (search view will be removed and impleted as filter in applications view)
-- Switch back to previous view if search term is empty (that means search has ended)
+[done] - Switch to search view on non-empty search term (that means search started)
+[done] - Switch back to previous view if search input box is empty (that means search has ended)
+- Support search provider manager
+- Support grouping of results by search providers
 - Allow drag-n-drop of application icon to quicklaunch-box and create shortcut
 - Allow drag-n-drop of application icon to workspace-box and start application on this workspace
