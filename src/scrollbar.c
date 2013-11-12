@@ -102,10 +102,10 @@ guint XfdashboardScrollbarSignals[SIGNAL_LAST]={ 0, };
 ClutterColor		defaultSliderColor={ 0xff, 0xff, 0xff, 0xff };
 
 /* Get value from coord */
-gfloat _xfdashboard_scrollbar_get_value_from_coord(XfdashboardScrollbar *self,
-													gfloat inX,
-													gfloat inY,
-													gfloat inAlignment)
+static gfloat _xfdashboard_scrollbar_get_value_from_coord(XfdashboardScrollbar *self,
+															gfloat inX,
+															gfloat inY,
+															gfloat inAlignment)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(self), 0.0f);
 	g_return_val_if_fail(inAlignment>=0.0f && inAlignment<=1.0f, 0.0f);
@@ -144,9 +144,9 @@ gfloat _xfdashboard_scrollbar_get_value_from_coord(XfdashboardScrollbar *self,
 }
 
 /* Pointer moved inside scroll bar (usually called after button-pressed event) */
-gboolean _xfdashboard_scrollbar_on_motion_event(ClutterActor *inActor,
-												ClutterEvent *inEvent,
-												gpointer inUserData)
+static gboolean _xfdashboard_scrollbar_on_motion_event(ClutterActor *inActor,
+														ClutterEvent *inEvent,
+														gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
 	g_return_val_if_fail(inEvent, FALSE);
@@ -169,9 +169,9 @@ gboolean _xfdashboard_scrollbar_on_motion_event(ClutterActor *inActor,
 }
 
 /* User released button in scroll bar */
-gboolean _xfdashboard_scrollbar_on_button_released(ClutterActor *inActor,
-													ClutterEvent *inEvent,
-													gpointer inUserData)
+static gboolean _xfdashboard_scrollbar_on_button_released(ClutterActor *inActor,
+															ClutterEvent *inEvent,
+															gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
 	g_return_val_if_fail(inEvent, FALSE);
@@ -218,9 +218,9 @@ gboolean _xfdashboard_scrollbar_on_button_released(ClutterActor *inActor,
 }
 
 /* User pressed button in scroll bar */
-gboolean _xfdashboard_scrollbar_on_button_pressed(ClutterActor *inActor,
-													ClutterEvent *inEvent,
-													gpointer inUserData)
+static gboolean _xfdashboard_scrollbar_on_button_pressed(ClutterActor *inActor,
+															ClutterEvent *inEvent,
+															gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
 	g_return_val_if_fail(inEvent, FALSE);
@@ -277,9 +277,9 @@ gboolean _xfdashboard_scrollbar_on_button_pressed(ClutterActor *inActor,
 }
 
 /* A scroll event occured in scroll bar (e.g. by mouse-wheel) */
-gboolean _xfdashboard_scrollbar_on_scroll_event(ClutterActor *inActor,
-												ClutterEvent *inEvent,
-												gpointer inUserData)
+static gboolean _xfdashboard_scrollbar_on_scroll_event(ClutterActor *inActor,
+														ClutterEvent *inEvent,
+														gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
 	g_return_val_if_fail(inEvent, FALSE);
@@ -322,11 +322,11 @@ gboolean _xfdashboard_scrollbar_on_scroll_event(ClutterActor *inActor,
 }
 
 /* Rectangle canvas should be redrawn */
-gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self,
-												cairo_t *inContext,
-												int inWidth,
-												int inHeight,
-												gpointer inUserData)
+static gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self,
+														cairo_t *inContext,
+														int inWidth,
+														int inHeight,
+														gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(self), TRUE);
 	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
@@ -443,10 +443,10 @@ gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self,
 /* IMPLEMENTATION: ClutterActor */
 
 /* Get preferred width/height */
-void _xfdashboard_scrollbar_get_preferred_height(ClutterActor *self,
-													gfloat inForWidth,
-													gfloat *outMinHeight,
-													gfloat *outNaturalHeight)
+static void _xfdashboard_scrollbar_get_preferred_height(ClutterActor *self,
+														gfloat inForWidth,
+														gfloat *outMinHeight,
+														gfloat *outNaturalHeight)
 {
 	XfdashboardScrollbarPrivate		*priv=XFDASHBOARD_SCROLLBAR(self)->priv;
 	gfloat							minHeight, naturalHeight;
@@ -477,10 +477,10 @@ void _xfdashboard_scrollbar_get_preferred_height(ClutterActor *self,
 	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
-void _xfdashboard_scrollbar_get_preferred_width(ClutterActor *self,
-												gfloat inForHeight,
-												gfloat *outMinWidth,
-												gfloat *outNaturalWidth)
+static void _xfdashboard_scrollbar_get_preferred_width(ClutterActor *self,
+														gfloat inForHeight,
+														gfloat *outMinWidth,
+														gfloat *outNaturalWidth)
 {
 	XfdashboardScrollbarPrivate		*priv=XFDASHBOARD_SCROLLBAR(self)->priv;
 	gfloat							minWidth, naturalWidth;
@@ -512,9 +512,9 @@ void _xfdashboard_scrollbar_get_preferred_width(ClutterActor *self,
 }
 
 /* Allocate position and size of actor and its children*/
-void _xfdashboard_scrollbar_allocate(ClutterActor *self,
-										const ClutterActorBox *inBox,
-										ClutterAllocationFlags inFlags)
+static void _xfdashboard_scrollbar_allocate(ClutterActor *self,
+												const ClutterActorBox *inBox,
+												ClutterAllocationFlags inFlags)
 {
 	XfdashboardScrollbarPrivate		*priv=XFDASHBOARD_SCROLLBAR(self)->priv;
 
@@ -530,7 +530,7 @@ void _xfdashboard_scrollbar_allocate(ClutterActor *self,
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_scrollbar_dispose(GObject *inObject)
+static void _xfdashboard_scrollbar_dispose(GObject *inObject)
 {
 	XfdashboardScrollbar			*self=XFDASHBOARD_SCROLLBAR(inObject);
 	XfdashboardScrollbarPrivate		*priv=self->priv;
@@ -571,7 +571,7 @@ void _xfdashboard_scrollbar_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_scrollbar_set_property(GObject *inObject,
+static void _xfdashboard_scrollbar_set_property(GObject *inObject,
 												guint inPropID,
 												const GValue *inValue,
 												GParamSpec *inSpec)
@@ -618,10 +618,10 @@ void _xfdashboard_scrollbar_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_scrollbar_get_property(GObject *inObject,
-											guint inPropID,
-											GValue *outValue,
-											GParamSpec *inSpec)
+static void _xfdashboard_scrollbar_get_property(GObject *inObject,
+												guint inPropID,
+												GValue *outValue,
+												GParamSpec *inSpec)
 {
 	XfdashboardScrollbar		*self=XFDASHBOARD_SCROLLBAR(inObject);
 

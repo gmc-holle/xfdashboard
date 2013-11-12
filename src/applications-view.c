@@ -81,8 +81,8 @@ GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 #define DEFAULT_PARENT_MENU_ICON	GTK_STOCK_GO_UP				// TODO: Replace by settings/theming object
 
 /* Update style of all child actors */
-void _xfdashboard_applications_view_add_button_for_list_mode(XfdashboardApplicationsView *self,
-																XfdashboardButton *inButton)
+static void _xfdashboard_applications_view_add_button_for_list_mode(XfdashboardApplicationsView *self,
+																	XfdashboardButton *inButton)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inButton));
@@ -119,8 +119,8 @@ void _xfdashboard_applications_view_add_button_for_list_mode(XfdashboardApplicat
 	clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(inButton));
 }
 
-void _xfdashboard_applications_view_add_button_for_icon_mode(XfdashboardApplicationsView *self,
-																XfdashboardButton *inButton)
+static void _xfdashboard_applications_view_add_button_for_icon_mode(XfdashboardApplicationsView *self,
+																	XfdashboardButton *inButton)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inButton));
@@ -157,7 +157,7 @@ void _xfdashboard_applications_view_add_button_for_icon_mode(XfdashboardApplicat
 }
 
 /* Filter of applications data model has changed */
-void _xfdashboard_applications_view_on_parent_menu_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
+static void _xfdashboard_applications_view_on_parent_menu_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 
@@ -176,7 +176,7 @@ void _xfdashboard_applications_view_on_parent_menu_clicked(XfdashboardApplicatio
 	}
 }
 
-void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
+static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
@@ -210,7 +210,7 @@ void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView 
 		}
 }
 
-void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsView *self, gpointer inUserData)
+static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsView *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 
@@ -288,7 +288,7 @@ void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsVie
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_applications_view_dispose(GObject *inObject)
+static void _xfdashboard_applications_view_dispose(GObject *inObject)
 {
 	XfdashboardApplicationsView			*self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
 	XfdashboardApplicationsViewPrivate	*priv=self->priv;
@@ -313,10 +313,10 @@ void _xfdashboard_applications_view_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_applications_view_set_property(GObject *inObject,
-													guint inPropID,
-													const GValue *inValue,
-													GParamSpec *inSpec)
+static void _xfdashboard_applications_view_set_property(GObject *inObject,
+														guint inPropID,
+														const GValue *inValue,
+														GParamSpec *inSpec)
 {
 	XfdashboardApplicationsView				*self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
 
@@ -332,10 +332,10 @@ void _xfdashboard_applications_view_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_applications_view_get_property(GObject *inObject,
-													guint inPropID,
-													GValue *outValue,
-													GParamSpec *inSpec)
+static void _xfdashboard_applications_view_get_property(GObject *inObject,
+														guint inPropID,
+														GValue *outValue,
+														GParamSpec *inSpec)
 {
 	XfdashboardApplicationsView				*self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
 	XfdashboardApplicationsViewPrivate		*priv=self->priv;

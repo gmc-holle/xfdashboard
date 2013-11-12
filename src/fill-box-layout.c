@@ -72,12 +72,12 @@ GParamSpec* XfdashboardFillBoxLayoutProperties[PROP_LAST]={ 0, };
 /* Get largest minimum and natural size of all visible children
  * for calculation of one child and returns the number of visible ones
  */
-gint _xfdashboard_fill_box_layout_get_largest_sizes(XfdashboardFillBoxLayout *self,
-													ClutterContainer *inContainer,
-													gfloat *outMinWidth,
-													gfloat *outNaturalWidth,
-													gfloat *outMinHeight,
-													gfloat *outNaturalHeight)
+static gint _xfdashboard_fill_box_layout_get_largest_sizes(XfdashboardFillBoxLayout *self,
+															ClutterContainer *inContainer,
+															gfloat *outMinWidth,
+															gfloat *outNaturalWidth,
+															gfloat *outMinHeight,
+															gfloat *outNaturalHeight)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self), 0);
 	g_return_val_if_fail(CLUTTER_IS_CONTAINER(inContainer), 0);
@@ -175,12 +175,12 @@ gint _xfdashboard_fill_box_layout_get_largest_sizes(XfdashboardFillBoxLayout *se
 }
 
 /* Get minimum and natural size of all visible children */
-void _xfdashboard_fill_box_layout_get_sizes_for_all(XfdashboardFillBoxLayout *self,
-													ClutterContainer *inContainer,
-													gfloat *outMinWidth,
-													gfloat *outNaturalWidth,
-													gfloat *outMinHeight,
-													gfloat *outNaturalHeight)
+static void _xfdashboard_fill_box_layout_get_sizes_for_all(XfdashboardFillBoxLayout *self,
+															ClutterContainer *inContainer,
+															gfloat *outMinWidth,
+															gfloat *outNaturalWidth,
+															gfloat *outMinHeight,
+															gfloat *outNaturalHeight)
 {
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -337,11 +337,11 @@ void _xfdashboard_fill_box_layout_get_sizes_for_all(XfdashboardFillBoxLayout *se
 /* IMPLEMENTATION: ClutterLayoutManager */
 
 /* Get preferred width/height */
-void _xfdashboard_fill_box_layout_get_preferred_width(ClutterLayoutManager *inLayoutManager,
-															ClutterContainer *inContainer,
-															gfloat inForHeight,
-															gfloat *outMinWidth,
-															gfloat *outNaturalWidth)
+static void _xfdashboard_fill_box_layout_get_preferred_width(ClutterLayoutManager *inLayoutManager,
+																ClutterContainer *inContainer,
+																gfloat inForHeight,
+																gfloat *outMinWidth,
+																gfloat *outNaturalWidth)
 {
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(inLayoutManager));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -361,11 +361,11 @@ void _xfdashboard_fill_box_layout_get_preferred_width(ClutterLayoutManager *inLa
 	if(outNaturalWidth) *outNaturalWidth=maxNaturalWidth;
 }
 
-void _xfdashboard_fill_box_layout_get_preferred_height(ClutterLayoutManager *inLayoutManager,
-															ClutterContainer *inContainer,
-															gfloat inForWidth,
-															gfloat *outMinHeight,
-															gfloat *outNaturalHeight)
+static void _xfdashboard_fill_box_layout_get_preferred_height(ClutterLayoutManager *inLayoutManager,
+																ClutterContainer *inContainer,
+																gfloat inForWidth,
+																gfloat *outMinHeight,
+																gfloat *outNaturalHeight)
 {
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(inLayoutManager));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -386,10 +386,10 @@ void _xfdashboard_fill_box_layout_get_preferred_height(ClutterLayoutManager *inL
 }
 
 /* Re-layout and allocate children of container we manage */
-void _xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inLayoutManager,
-												ClutterContainer *inContainer,
-												const ClutterActorBox *inAllocation,
-												ClutterAllocationFlags inFlags)
+static void _xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inLayoutManager,
+													ClutterContainer *inContainer,
+													const ClutterActorBox *inAllocation,
+													ClutterAllocationFlags inFlags)
 {
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(inLayoutManager));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -477,7 +477,7 @@ void _xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inLayoutManager
 /* IMPLEMENTATION: GObject */
 
 /* Set/get properties */
-void _xfdashboard_fill_box_layout_set_property(GObject *inObject,
+static void _xfdashboard_fill_box_layout_set_property(GObject *inObject,
 														guint inPropID,
 														const GValue *inValue,
 														GParamSpec *inSpec)
@@ -508,7 +508,7 @@ void _xfdashboard_fill_box_layout_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_fill_box_layout_get_property(GObject *inObject,
+static void _xfdashboard_fill_box_layout_get_property(GObject *inObject,
 														guint inPropID,
 														GValue *outValue,
 														GParamSpec *inSpec)

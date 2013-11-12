@@ -106,7 +106,7 @@ guint XfdashboardViewSignals[SIGNAL_LAST]={ 0, };
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_view_dispose(GObject *inObject)
+static void _xfdashboard_view_dispose(GObject *inObject)
 {
 	XfdashboardView			*self=XFDASHBOARD_VIEW(inObject);
 	XfdashboardViewPrivate	*priv=self->priv;
@@ -141,10 +141,10 @@ void _xfdashboard_view_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_view_set_property(GObject *inObject,
-												guint inPropID,
-												const GValue *inValue,
-												GParamSpec *inSpec)
+static void _xfdashboard_view_set_property(GObject *inObject,
+											guint inPropID,
+											const GValue *inValue,
+											GParamSpec *inSpec)
 {
 	XfdashboardView		*self=XFDASHBOARD_VIEW(inObject);
 	
@@ -176,10 +176,10 @@ void _xfdashboard_view_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_view_get_property(GObject *inObject,
-									guint inPropID,
-									GValue *outValue,
-									GParamSpec *inSpec)
+static void _xfdashboard_view_get_property(GObject *inObject,
+											guint inPropID,
+											GValue *outValue,
+											GParamSpec *inSpec)
 {
 	XfdashboardView		*self=XFDASHBOARD_VIEW(inObject);
 

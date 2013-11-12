@@ -81,7 +81,7 @@ struct _XfdashboardSearchViewFilterData
 typedef struct _XfdashboardSearchViewFilterData			XfdashboardSearchViewFilterData; 
 
 /* Filter functions */
-void _xfdashboard_search_view_on_filter_data_destroy(gpointer inUserData)
+static void _xfdashboard_search_view_on_filter_data_destroy(gpointer inUserData)
 {
 	g_return_if_fail(inUserData);
 
@@ -103,17 +103,17 @@ void _xfdashboard_search_view_on_filter_data_destroy(gpointer inUserData)
 	g_free(searchData);
 }
 
-gboolean _xfdashboard_search_view_filter_nothing(ClutterModel *inModel,
-													ClutterModelIter *inIter,
-													gpointer inUserData)
+static gboolean _xfdashboard_search_view_filter_nothing(ClutterModel *inModel,
+														ClutterModelIter *inIter,
+														gpointer inUserData)
 {
 	/* Always return FALSE to hide model item */
 	return(FALSE);
 }
 
-gboolean _xfdashboard_search_view_filter_title_only(ClutterModel *inModel,
-													ClutterModelIter *inIter,
-													gpointer inUserData)
+static gboolean _xfdashboard_search_view_filter_title_only(ClutterModel *inModel,
+															ClutterModelIter *inIter,
+															gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(inModel), FALSE);
 	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
@@ -187,9 +187,9 @@ gboolean _xfdashboard_search_view_filter_title_only(ClutterModel *inModel,
 	return(isMatch);
 }
 
-gboolean _xfdashboard_search_view_filter_title_and_description(ClutterModel *inModel,
-																ClutterModelIter *inIter,
-																gpointer inUserData)
+static gboolean _xfdashboard_search_view_filter_title_and_description(ClutterModel *inModel,
+																		ClutterModelIter *inIter,
+																		gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(inModel), FALSE);
 	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
@@ -272,8 +272,8 @@ gboolean _xfdashboard_search_view_filter_title_and_description(ClutterModel *inM
 }
 
 /* Update style of all child actors */
-void _xfdashboard_search_view_add_button_for_list_mode(XfdashboardSearchView *self,
-														XfdashboardButton *inButton)
+static void _xfdashboard_search_view_add_button_for_list_mode(XfdashboardSearchView *self,
+																XfdashboardButton *inButton)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inButton));
@@ -310,8 +310,8 @@ void _xfdashboard_search_view_add_button_for_list_mode(XfdashboardSearchView *se
 	clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(inButton));
 }
 
-void _xfdashboard_search_view_add_button_for_icon_mode(XfdashboardSearchView *self,
-														XfdashboardButton *inButton)
+static void _xfdashboard_search_view_add_button_for_icon_mode(XfdashboardSearchView *self,
+																XfdashboardButton *inButton)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inButton));
@@ -348,7 +348,7 @@ void _xfdashboard_search_view_add_button_for_icon_mode(XfdashboardSearchView *se
 }
 
 /* Filter of applications data model has changed */
-void _xfdashboard_search_view_on_item_clicked(XfdashboardSearchView *self, gpointer inUserData)
+static void _xfdashboard_search_view_on_item_clicked(XfdashboardSearchView *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
@@ -372,7 +372,7 @@ void _xfdashboard_search_view_on_item_clicked(XfdashboardSearchView *self, gpoin
 	}
 }
 
-void _xfdashboard_search_view_on_filter_changed(XfdashboardSearchView *self, gpointer inUserData)
+static void _xfdashboard_search_view_on_filter_changed(XfdashboardSearchView *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 
@@ -425,7 +425,7 @@ void _xfdashboard_search_view_on_filter_changed(XfdashboardSearchView *self, gpo
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_search_view_dispose(GObject *inObject)
+static void _xfdashboard_search_view_dispose(GObject *inObject)
 {
 	XfdashboardSearchView			*self=XFDASHBOARD_SEARCH_VIEW(inObject);
 	XfdashboardSearchViewPrivate	*priv=self->priv;
@@ -450,10 +450,10 @@ void _xfdashboard_search_view_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_search_view_set_property(GObject *inObject,
-											guint inPropID,
-											const GValue *inValue,
-											GParamSpec *inSpec)
+static void _xfdashboard_search_view_set_property(GObject *inObject,
+													guint inPropID,
+													const GValue *inValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardSearchView				*self=XFDASHBOARD_SEARCH_VIEW(inObject);
 
@@ -469,10 +469,10 @@ void _xfdashboard_search_view_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_search_view_get_property(GObject *inObject,
-											guint inPropID,
-											GValue *outValue,
-											GParamSpec *inSpec)
+static void _xfdashboard_search_view_get_property(GObject *inObject,
+													guint inPropID,
+													GValue *outValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardSearchView				*self=XFDASHBOARD_SEARCH_VIEW(inObject);
 	XfdashboardSearchViewPrivate		*priv=self->priv;

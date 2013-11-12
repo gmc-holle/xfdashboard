@@ -73,8 +73,8 @@ GParamSpec* XfdashboardScaledTableLayoutProperties[PROP_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Updates the minimum number of rows and columns needed for layout */
-void _xfdashboard_scaled_table_layout_update_rows_and_columns(XfdashboardScaledTableLayout *self,
-																ClutterContainer *inContainer)
+static void _xfdashboard_scaled_table_layout_update_rows_and_columns(XfdashboardScaledTableLayout *self,
+																		ClutterContainer *inContainer)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -115,11 +115,11 @@ void _xfdashboard_scaled_table_layout_update_rows_and_columns(XfdashboardScaledT
 /* IMPLEMENTATION: ClutterLayoutManager */
 
 /* Get preferred width/height */
-void _xfdashboard_scaled_table_layout_get_preferred_width(ClutterLayoutManager *self,
-															ClutterContainer *inContainer,
-															gfloat inForHeight,
-															gfloat *outMinWidth,
-															gfloat *outNaturalWidth)
+static void _xfdashboard_scaled_table_layout_get_preferred_width(ClutterLayoutManager *self,
+																	ClutterContainer *inContainer,
+																	gfloat inForHeight,
+																	gfloat *outMinWidth,
+																	gfloat *outNaturalWidth)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -151,11 +151,11 @@ void _xfdashboard_scaled_table_layout_get_preferred_width(ClutterLayoutManager *
 	if(outNaturalWidth) *outNaturalWidth=maxNaturalWidth;
 }
 
-void _xfdashboard_scaled_table_layout_get_preferred_height(ClutterLayoutManager *self,
-															ClutterContainer *inContainer,
-															gfloat inForWidth,
-															gfloat *outMinHeight,
-															gfloat *outNaturalHeight)
+static void _xfdashboard_scaled_table_layout_get_preferred_height(ClutterLayoutManager *self,
+																	ClutterContainer *inContainer,
+																	gfloat inForWidth,
+																	gfloat *outMinHeight,
+																	gfloat *outNaturalHeight)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -188,10 +188,10 @@ void _xfdashboard_scaled_table_layout_get_preferred_height(ClutterLayoutManager 
 }
 
 /* Re-layout and allocate children of container we manage */
-void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self,
-												ClutterContainer *inContainer,
-												const ClutterActorBox *inAllocation,
-												ClutterAllocationFlags inFlags)
+static void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self,
+														ClutterContainer *inContainer,
+														const ClutterActorBox *inAllocation,
+														ClutterAllocationFlags inFlags)
 {
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -304,10 +304,10 @@ void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self,
 /* IMPLEMENTATION: GObject */
 
 /* Set/get properties */
-void _xfdashboard_scaled_table_layout_set_property(GObject *inObject,
-														guint inPropID,
-														const GValue *inValue,
-														GParamSpec *inSpec)
+static void _xfdashboard_scaled_table_layout_set_property(GObject *inObject,
+															guint inPropID,
+															const GValue *inValue,
+															GParamSpec *inSpec)
 {
 	XfdashboardScaledTableLayout			*self=XFDASHBOARD_SCALED_TABLE_LAYOUT(inObject);
 	
@@ -331,10 +331,10 @@ void _xfdashboard_scaled_table_layout_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_scaled_table_layout_get_property(GObject *inObject,
-														guint inPropID,
-														GValue *outValue,
-														GParamSpec *inSpec)
+static void _xfdashboard_scaled_table_layout_get_property(GObject *inObject,
+															guint inPropID,
+															GValue *outValue,
+															GParamSpec *inSpec)
 {
 	XfdashboardScaledTableLayout	*self=XFDASHBOARD_SCALED_TABLE_LAYOUT(inObject);
 

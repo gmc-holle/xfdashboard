@@ -119,11 +119,11 @@ static ClutterColor				defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
  * reduced by margin on all affected sides. The returned sizes are also
  * without these margins.
  */
-void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *self,
-														gboolean inGetPreferred,
-														gfloat inForHeight,
-														gfloat *outIconSize,
-														gfloat *outLabelSize)
+static void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *self,
+															gboolean inGetPreferred,
+															gfloat inForHeight,
+															gfloat *outIconSize,
+															gfloat *outLabelSize)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
@@ -345,11 +345,11 @@ void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *self,
  * reduced by margins and spacing. The returned sizes are alsowithout
  * these margins and spacing.
  */
-void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *self,
-														gboolean inGetPreferred,
-														gfloat inForWidth,
-														gfloat *outIconSize,
-														gfloat *outLabelSize)
+static void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *self,
+															gboolean inGetPreferred,
+															gfloat inForWidth,
+															gfloat *outIconSize,
+															gfloat *outLabelSize)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
@@ -565,7 +565,7 @@ void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *self,
 }
 
 /* Update icon */
-void _xfdashboard_button_update_icon_image_size(XfdashboardButton *self)
+static void _xfdashboard_button_update_icon_image_size(XfdashboardButton *self)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
@@ -628,7 +628,7 @@ void _xfdashboard_button_update_icon_image_size(XfdashboardButton *self)
 /* IMPLEMENTATION: ClutterActor */
 
 /* Show all children of this actor */
-void _xfdashboard_button_show_all(ClutterActor *self)
+static void _xfdashboard_button_show_all(ClutterActor *self)
 {
 	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
 
@@ -650,7 +650,7 @@ void _xfdashboard_button_show_all(ClutterActor *self)
 }
 
 /* Hide all children of this actor */
-void _xfdashboard_button_hide_all(ClutterActor *self)
+static void _xfdashboard_button_hide_all(ClutterActor *self)
 {
 	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
 
@@ -660,10 +660,10 @@ void _xfdashboard_button_hide_all(ClutterActor *self)
 }
 
 /* Get preferred width/height */
-void _xfdashboard_button_get_preferred_height(ClutterActor *inActor,
-												gfloat inForWidth,
-												gfloat *outMinHeight,
-												gfloat *outNaturalHeight)
+static void _xfdashboard_button_get_preferred_height(ClutterActor *inActor,
+														gfloat inForWidth,
+														gfloat *outMinHeight,
+														gfloat *outNaturalHeight)
 {
 	XfdashboardButton			*self=XFDASHBOARD_BUTTON(inActor);
 	XfdashboardButtonPrivate	*priv=self->priv;
@@ -734,10 +734,10 @@ void _xfdashboard_button_get_preferred_height(ClutterActor *inActor,
 	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
-void _xfdashboard_button_get_preferred_width(ClutterActor *inActor,
-												gfloat inForHeight,
-												gfloat *outMinWidth,
-												gfloat *outNaturalWidth)
+static void _xfdashboard_button_get_preferred_width(ClutterActor *inActor,
+													gfloat inForHeight,
+													gfloat *outMinWidth,
+													gfloat *outNaturalWidth)
 {
 	XfdashboardButton			*self=XFDASHBOARD_BUTTON(inActor);
 	XfdashboardButtonPrivate	*priv=self->priv;
@@ -809,9 +809,9 @@ void _xfdashboard_button_get_preferred_width(ClutterActor *inActor,
 }
 
 /* Allocate position and size of actor and its children*/
-void _xfdashboard_button_allocate(ClutterActor *inActor,
-									const ClutterActorBox *inBox,
-									ClutterAllocationFlags inFlags)
+static void _xfdashboard_button_allocate(ClutterActor *inActor,
+											const ClutterActorBox *inBox,
+											ClutterAllocationFlags inFlags)
 {
 	XfdashboardButton			*self=XFDASHBOARD_BUTTON(inActor);
 	XfdashboardButtonPrivate	*priv=self->priv;
@@ -986,15 +986,15 @@ void _xfdashboard_button_allocate(ClutterActor *inActor,
 }
 
 /* proxy ClickAction signals */
-void xfdashboard_button_clicked(ClutterClickAction *inAction,
-											ClutterActor *self,
-											gpointer inUserData)
+static void _xfdashboard_button_clicked(ClutterClickAction *inAction,
+										ClutterActor *self,
+										gpointer inUserData)
 {
 	g_signal_emit(self, XfdashboardButtonSignals[SIGNAL_CLICKED], 0);
 }
 
 /* Destroy this actor */
-void _xfdashboard_button_destroy(ClutterActor *self)
+static void _xfdashboard_button_destroy(ClutterActor *self)
 {
 	/* Destroy each child actor when this actor is destroyed */
 	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
@@ -1018,7 +1018,7 @@ void _xfdashboard_button_destroy(ClutterActor *self)
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_button_dispose(GObject *inObject)
+static void _xfdashboard_button_dispose(GObject *inObject)
 {
 	/* Release our allocated variables */
 	XfdashboardButton			*self=XFDASHBOARD_BUTTON(inObject);
@@ -1053,10 +1053,10 @@ void _xfdashboard_button_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_button_set_property(GObject *inObject,
-										guint inPropID,
-										const GValue *inValue,
-										GParamSpec *inSpec)
+static void _xfdashboard_button_set_property(GObject *inObject,
+												guint inPropID,
+												const GValue *inValue,
+												GParamSpec *inSpec)
 {
 	XfdashboardButton			*self=XFDASHBOARD_BUTTON(inObject);
 	
@@ -1124,10 +1124,10 @@ void _xfdashboard_button_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_button_get_property(GObject *inObject,
-										guint inPropID,
-										GValue *outValue,
-										GParamSpec *inSpec)
+static void _xfdashboard_button_get_property(GObject *inObject,
+												guint inPropID,
+												GValue *outValue,
+												GParamSpec *inSpec)
 {
 	XfdashboardButton			*self=XFDASHBOARD_BUTTON(inObject);
 	XfdashboardButtonPrivate	*priv=self->priv;
@@ -1382,7 +1382,7 @@ void xfdashboard_button_init(XfdashboardButton *self)
 	/* Connect signals */
 	priv->clickAction=clutter_click_action_new();
 	clutter_actor_add_action(CLUTTER_ACTOR(self), priv->clickAction);
-	g_signal_connect(priv->clickAction, "clicked", G_CALLBACK(xfdashboard_button_clicked), NULL);
+	g_signal_connect(priv->clickAction, "clicked", G_CALLBACK(_xfdashboard_button_clicked), NULL);
 }
 
 /* Implementation: Public API */

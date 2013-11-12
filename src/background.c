@@ -84,11 +84,11 @@ GParamSpec* XfdashboardBackgroundProperties[PROP_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Rectangle canvas should be redrawn */
-gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *self,
-													cairo_t *inContext,
-													int inWidth,
-													int inHeight,
-													gpointer inUserData)
+static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *self,
+														cairo_t *inContext,
+														int inWidth,
+														int inHeight,
+														gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), TRUE);
 	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
@@ -185,7 +185,7 @@ gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *self,
 /* IMPLEMENTATION: ClutterActor */
 
 /* Get preferred width/height */
-void _xfdashboard_background_get_preferred_height(ClutterActor *self,
+static void _xfdashboard_background_get_preferred_height(ClutterActor *self,
 															gfloat inForWidth,
 															gfloat *outMinHeight,
 															gfloat *outNaturalHeight)
@@ -208,7 +208,7 @@ void _xfdashboard_background_get_preferred_height(ClutterActor *self,
 	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
-void _xfdashboard_background_get_preferred_width(ClutterActor *self,
+static void _xfdashboard_background_get_preferred_width(ClutterActor *self,
 														gfloat inForHeight,
 														gfloat *outMinWidth,
 														gfloat *outNaturalWidth)
@@ -232,7 +232,7 @@ void _xfdashboard_background_get_preferred_width(ClutterActor *self,
 }
 
 /* Allocate position and size of actor and its children*/
-void _xfdashboard_background_allocate(ClutterActor *self,
+static void _xfdashboard_background_allocate(ClutterActor *self,
 												const ClutterActorBox *inBox,
 												ClutterAllocationFlags inFlags)
 {
@@ -250,7 +250,7 @@ void _xfdashboard_background_allocate(ClutterActor *self,
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_background_dispose(GObject *inObject)
+static void _xfdashboard_background_dispose(GObject *inObject)
 {
 	/* Release our allocated variables */
 	XfdashboardBackgroundPrivate	*priv=XFDASHBOARD_BACKGROUND(inObject)->priv;
@@ -284,13 +284,13 @@ void _xfdashboard_background_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_background_set_property(GObject *inObject,
-												guint inPropID,
-												const GValue *inValue,
-												GParamSpec *inSpec)
+static void _xfdashboard_background_set_property(GObject *inObject,
+													guint inPropID,
+													const GValue *inValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardBackground			*self=XFDASHBOARD_BACKGROUND(inObject);
-	
+
 	switch(inPropID)
 	{
 		case PROP_TYPE:
@@ -327,10 +327,10 @@ void _xfdashboard_background_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_background_get_property(GObject *inObject,
-												guint inPropID,
-												GValue *outValue,
-												GParamSpec *inSpec)
+static void _xfdashboard_background_get_property(GObject *inObject,
+													guint inPropID,
+													GValue *outValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardBackground			*self=XFDASHBOARD_BACKGROUND(inObject);
 	XfdashboardBackgroundPrivate	*priv=self->priv;

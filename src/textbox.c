@@ -120,7 +120,7 @@ static ClutterColor		defaultHintTextColor={ 0xc0, 0xc0, 0xc0, 0xff };
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Text of editable text box has changed */
-void _xfdashboard_text_box_on_text_changed(XfdashboardTextBox *self, gpointer inUserData)
+static void _xfdashboard_text_box_on_text_changed(XfdashboardTextBox *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 	g_return_if_fail(CLUTTER_IS_TEXT(inUserData));
@@ -143,9 +143,9 @@ void _xfdashboard_text_box_on_text_changed(XfdashboardTextBox *self, gpointer in
 }
 
 /* Primary icon was clicked */
-void _xfdashboard_text_box_on_primary_icon_clicked(ClutterClickAction *inAction,
-													ClutterActor *inActor,
-													gpointer inUserData)
+static void _xfdashboard_text_box_on_primary_icon_clicked(ClutterClickAction *inAction,
+															ClutterActor *inActor,
+															gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
 
@@ -156,9 +156,9 @@ void _xfdashboard_text_box_on_primary_icon_clicked(ClutterClickAction *inAction,
 }
 
 /* Secondary icon was clicked */
-void _xfdashboard_text_box_on_secondary_icon_clicked(ClutterClickAction *inAction,
-														ClutterActor *inActor,
-														gpointer inUserData)
+static void _xfdashboard_text_box_on_secondary_icon_clicked(ClutterClickAction *inAction,
+															ClutterActor *inActor,
+															gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
 
@@ -171,7 +171,7 @@ void _xfdashboard_text_box_on_secondary_icon_clicked(ClutterClickAction *inActio
 /* IMPLEMENTATION: ClutterActor */
 
 /* Actor got key focus */
-void _xfdashboard_text_box_key_focus_in(ClutterActor *inActor)
+static void _xfdashboard_text_box_key_focus_in(ClutterActor *inActor)
 {
 	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inActor);
 	XfdashboardTextBoxPrivate	*priv=self->priv;
@@ -181,7 +181,7 @@ void _xfdashboard_text_box_key_focus_in(ClutterActor *inActor)
 }
 
 /* Show all children of this one */
-void _xfdashboard_text_box_show(ClutterActor *inActor)
+static void _xfdashboard_text_box_show(ClutterActor *inActor)
 {
 	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inActor);
 	XfdashboardTextBoxPrivate	*priv=self->priv;
@@ -212,10 +212,10 @@ void _xfdashboard_text_box_show(ClutterActor *inActor)
 }
 
 /* Get preferred width/height */
-void _xfdashboard_text_box_get_preferred_height(ClutterActor *self,
-												gfloat inForWidth,
-												gfloat *outMinHeight,
-												gfloat *outNaturalHeight)
+static void _xfdashboard_text_box_get_preferred_height(ClutterActor *self,
+														gfloat inForWidth,
+														gfloat *outMinHeight,
+														gfloat *outNaturalHeight)
 {
 	XfdashboardTextBoxPrivate	*priv=XFDASHBOARD_TEXT_BOX(self)->priv;
 	gfloat						minHeight, naturalHeight;
@@ -245,10 +245,10 @@ void _xfdashboard_text_box_get_preferred_height(ClutterActor *self,
 	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
-void _xfdashboard_text_box_get_preferred_width(ClutterActor *self,
-												gfloat inForHeight,
-												gfloat *outMinWidth,
-												gfloat *outNaturalWidth)
+static void _xfdashboard_text_box_get_preferred_width(ClutterActor *self,
+														gfloat inForHeight,
+														gfloat *outMinWidth,
+														gfloat *outNaturalWidth)
 {
 	XfdashboardTextBoxPrivate	*priv=XFDASHBOARD_TEXT_BOX(self)->priv;
 	gfloat						minWidth, naturalWidth;
@@ -322,9 +322,9 @@ void _xfdashboard_text_box_get_preferred_width(ClutterActor *self,
 }
 
 /* Allocate position and size of actor and its children*/
-void _xfdashboard_text_box_allocate(ClutterActor *self,
-									const ClutterActorBox *inBox,
-									ClutterAllocationFlags inFlags)
+static void _xfdashboard_text_box_allocate(ClutterActor *self,
+											const ClutterActorBox *inBox,
+											ClutterAllocationFlags inFlags)
 {
 	XfdashboardTextBoxPrivate	*priv=XFDASHBOARD_TEXT_BOX(self)->priv;
 	ClutterActorBox				*box=NULL;
@@ -417,7 +417,7 @@ void _xfdashboard_text_box_allocate(ClutterActor *self,
 }
 
 /* Destroy this actor */
-void _xfdashboard_text_box_destroy(ClutterActor *self)
+static void _xfdashboard_text_box_destroy(ClutterActor *self)
 {
 	/* Destroy each child actor when this actor is destroyed */
 	XfdashboardTextBoxPrivate	*priv=XFDASHBOARD_TEXT_BOX(self)->priv;
@@ -453,7 +453,7 @@ void _xfdashboard_text_box_destroy(ClutterActor *self)
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_text_box_dispose(GObject *inObject)
+static void _xfdashboard_text_box_dispose(GObject *inObject)
 {
 	/* Release our allocated variables */
 	XfdashboardTextBoxPrivate	*priv=XFDASHBOARD_TEXT_BOX(inObject)->priv;
@@ -499,10 +499,10 @@ void _xfdashboard_text_box_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_text_box_set_property(GObject *inObject,
-										guint inPropID,
-										const GValue *inValue,
-										GParamSpec *inSpec)
+static void _xfdashboard_text_box_set_property(GObject *inObject,
+												guint inPropID,
+												const GValue *inValue,
+												GParamSpec *inSpec)
 {
 	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inObject);
 
@@ -554,10 +554,10 @@ void _xfdashboard_text_box_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_text_box_get_property(GObject *inObject,
-										guint inPropID,
-										GValue *outValue,
-										GParamSpec *inSpec)
+static void _xfdashboard_text_box_get_property(GObject *inObject,
+												guint inPropID,
+												GValue *outValue,
+												GParamSpec *inSpec)
 {
 	XfdashboardTextBox				*self=XFDASHBOARD_TEXT_BOX(inObject);
 	XfdashboardTextBoxPrivate		*priv=self->priv;

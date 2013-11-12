@@ -71,7 +71,7 @@ GParamSpec* XfdashboardViewSelectorProperties[PROP_LAST]={ 0, };
 #define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_HORIZONTAL
 
 /* A view button was clicked to activate it */
-void _xfdashboard_view_selector_on_view_button_clicked(XfdashboardViewSelector *self, gpointer inUserData)
+static void _xfdashboard_view_selector_on_view_button_clicked(XfdashboardViewSelector *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inUserData));
@@ -86,7 +86,7 @@ void _xfdashboard_view_selector_on_view_button_clicked(XfdashboardViewSelector *
 }
 
 /* Called when a view was enabled or will be disabled */
-void _xfdashboard_view_selector_on_view_enable_state_changed(XfdashboardView *inView, gpointer inUserData)
+static void _xfdashboard_view_selector_on_view_enable_state_changed(XfdashboardView *inView, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
 	g_return_if_fail(CLUTTER_IS_ACTOR(inUserData));
@@ -98,9 +98,9 @@ void _xfdashboard_view_selector_on_view_enable_state_changed(XfdashboardView *in
 }
 
 /* Called when a new view was added to viewpad */
-void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *self,
-												XfdashboardView *inView,
-												gpointer inUserData)
+static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *self,
+														XfdashboardView *inView,
+														gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
@@ -134,9 +134,9 @@ void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *self,
 }
 
 /* Called when a view was removed to viewpad */
-void _xfdashboard_view_selector_on_view_removed(XfdashboardViewSelector *self,
-												XfdashboardView *inView,
-												gpointer inUserData)
+static void _xfdashboard_view_selector_on_view_removed(XfdashboardViewSelector *self,
+														XfdashboardView *inView,
+														gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 
@@ -163,7 +163,7 @@ void _xfdashboard_view_selector_on_view_removed(XfdashboardViewSelector *self,
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_view_selector_dispose(GObject *inObject)
+static void _xfdashboard_view_selector_dispose(GObject *inObject)
 {
 	XfdashboardViewSelector			*self=XFDASHBOARD_VIEW_SELECTOR(inObject);
 	XfdashboardViewSelectorPrivate	*priv=self->priv;
@@ -181,10 +181,10 @@ void _xfdashboard_view_selector_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_view_selector_set_property(GObject *inObject,
-												guint inPropID,
-												const GValue *inValue,
-												GParamSpec *inSpec)
+static void _xfdashboard_view_selector_set_property(GObject *inObject,
+													guint inPropID,
+													const GValue *inValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardViewSelector		*self=XFDASHBOARD_VIEW_SELECTOR(inObject);
 	
@@ -208,10 +208,10 @@ void _xfdashboard_view_selector_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_view_selector_get_property(GObject *inObject,
-										guint inPropID,
-										GValue *outValue,
-										GParamSpec *inSpec)
+static void _xfdashboard_view_selector_get_property(GObject *inObject,
+													guint inPropID,
+													GValue *outValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardViewSelector		*self=XFDASHBOARD_VIEW_SELECTOR(inObject);
 

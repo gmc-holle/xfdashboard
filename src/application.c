@@ -106,7 +106,7 @@ const GOptionEntry XfdashboardApplicationOptions[]=
 static XfdashboardApplication*		application=NULL;
 
 /* Quit application depending on daemon mode and force parameter */
-void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean inForceQuit)
+static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean inForceQuit)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(self));
 
@@ -140,9 +140,9 @@ void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean inForc
 }
 
 /* A stage window should be destroyed */
-gboolean _xfdashboard_application_on_delete_stage(XfdashboardApplication *self,
-													ClutterEvent *inEvent,
-													gpointer inUserData)
+static gboolean _xfdashboard_application_on_delete_stage(XfdashboardApplication *self,
+															ClutterEvent *inEvent,
+															gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
 
@@ -154,7 +154,7 @@ gboolean _xfdashboard_application_on_delete_stage(XfdashboardApplication *self,
 }
 
 /* A stage window was unfullscreened */
-void _xfdashboard_application_on_unfullscreen_stage(XfdashboardApplication *self, gpointer inUserData)
+static void _xfdashboard_application_on_unfullscreen_stage(XfdashboardApplication *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(self));
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(inUserData));
@@ -169,7 +169,7 @@ void _xfdashboard_application_on_unfullscreen_stage(XfdashboardApplication *self
 }
 
 /* Perform full initialization of this application instance */
-gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
+static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
 
@@ -211,7 +211,7 @@ gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
 /* IMPLEMENTATION: GApplication */
 
 /* Received "activate" signal on primary instance */
-void _xfdashboard_application_activate(GApplication *inApplication)
+static void _xfdashboard_application_activate(GApplication *inApplication)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication));
 
@@ -227,7 +227,7 @@ void _xfdashboard_application_activate(GApplication *inApplication)
 }
 
 /* Primary instance is starting up */
-void _xfdashboard_application_startup(GApplication *inApplication)
+static void _xfdashboard_application_startup(GApplication *inApplication)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication));
 
@@ -244,7 +244,7 @@ void _xfdashboard_application_startup(GApplication *inApplication)
 }
 
 /* Handle command-line on primary instance */
-int _xfdashboard_application_command_line(GApplication *inApplication, GApplicationCommandLine *inCommandLine)
+static int _xfdashboard_application_command_line(GApplication *inApplication, GApplicationCommandLine *inCommandLine)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication), 1);
 
@@ -318,7 +318,7 @@ int _xfdashboard_application_command_line(GApplication *inApplication, GApplicat
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_application_dispose(GObject *inObject)
+static void _xfdashboard_application_dispose(GObject *inObject)
 {
 	XfdashboardApplication			*self=XFDASHBOARD_APPLICATION(inObject);
 	XfdashboardApplicationPrivate	*priv=self->priv;
@@ -343,10 +343,10 @@ void _xfdashboard_application_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_application_set_property(GObject *inObject,
-														guint inPropID,
-														const GValue *inValue,
-														GParamSpec *inSpec)
+static void _xfdashboard_application_set_property(GObject *inObject,
+													guint inPropID,
+													const GValue *inValue,
+													GParamSpec *inSpec)
 {
 	switch(inPropID)
 	{
@@ -356,10 +356,10 @@ void _xfdashboard_application_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_application_get_property(GObject *inObject,
-														guint inPropID,
-														GValue *outValue,
-														GParamSpec *inSpec)
+static void _xfdashboard_application_get_property(GObject *inObject,
+													guint inPropID,
+													GValue *outValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardApplication	*self=XFDASHBOARD_APPLICATION(inObject);
 

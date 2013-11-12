@@ -103,14 +103,14 @@ guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 #define WINDOW_CLOSE_BUTTON_ICON		GTK_STOCK_CLOSE	// TODO: Replace by settings/theming object
 
 /* Determine if window state flags specify window's visibility */
-gboolean _xfdashboard_live_window_is_window_visiblity_flag(XfdashboardLiveWindow *self, WnckWindowState inState)
+static gboolean _xfdashboard_live_window_is_window_visiblity_flag(XfdashboardLiveWindow *self, WnckWindowState inState)
 {
 	return((inState & WNCK_WINDOW_STATE_SKIP_PAGER) ||
 			(inState & WNCK_WINDOW_STATE_SKIP_TASKLIST));
 }
 
 /* Check if window should be shown */
-gboolean _xfdashboard_live_window_is_visible_window(XfdashboardLiveWindow *self, WnckWindow *inWindow)
+static gboolean _xfdashboard_live_window_is_visible_window(XfdashboardLiveWindow *self, WnckWindow *inWindow)
 {
 	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
 
@@ -129,7 +129,7 @@ gboolean _xfdashboard_live_window_is_visible_window(XfdashboardLiveWindow *self,
 }
 
 /* The close button of this actor was clicked */
-void _xfdashboard_live_window_on_close_clicked(XfdashboardLiveWindow *self, gpointer inUserData)
+static void _xfdashboard_live_window_on_close_clicked(XfdashboardLiveWindow *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 
@@ -138,7 +138,7 @@ void _xfdashboard_live_window_on_close_clicked(XfdashboardLiveWindow *self, gpoi
 }
 
 /* This actor was clicked */
-void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, ClutterActor *inActor, gpointer inUserData)
+static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, ClutterActor *inActor, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
@@ -171,7 +171,7 @@ void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, ClutterAct
 }
 
 /* Position and/or size of window has changed */
-void _xfdashboard_live_window_on_geometry_changed(XfdashboardLiveWindow *self, gpointer inUserData)
+static void _xfdashboard_live_window_on_geometry_changed(XfdashboardLiveWindow *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
@@ -184,10 +184,10 @@ void _xfdashboard_live_window_on_geometry_changed(XfdashboardLiveWindow *self, g
 }
 
 /* Action items of window has changed */
-void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *self,
-													WnckWindowActions inChangedMask,
-													WnckWindowActions inNewValue,
-													gpointer inUserData)
+static void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *self,
+														WnckWindowActions inChangedMask,
+														WnckWindowActions inNewValue,
+														gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
@@ -203,7 +203,7 @@ void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *self,
 }
 
 /* Icon of window has changed */
-void _xfdashboard_live_window_on_icon_changed(XfdashboardLiveWindow *self, gpointer inUserData)
+static void _xfdashboard_live_window_on_icon_changed(XfdashboardLiveWindow *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
@@ -219,7 +219,7 @@ void _xfdashboard_live_window_on_icon_changed(XfdashboardLiveWindow *self, gpoin
 }
 
 /* Title of window has changed */
-void _xfdashboard_live_window_on_name_changed(XfdashboardLiveWindow *self, gpointer inUserData)
+static void _xfdashboard_live_window_on_name_changed(XfdashboardLiveWindow *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
@@ -232,10 +232,10 @@ void _xfdashboard_live_window_on_name_changed(XfdashboardLiveWindow *self, gpoin
 }
 
 /* Window's state has changed */
-void _xfdashboard_live_window_on_state_changed(XfdashboardLiveWindow *self,
-												WnckWindowState inChangedMask,
-												WnckWindowState inNewState,
-												gpointer inUserData)
+static void _xfdashboard_live_window_on_state_changed(XfdashboardLiveWindow *self,
+														WnckWindowState inChangedMask,
+														WnckWindowState inNewState,
+														gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
@@ -257,7 +257,7 @@ void _xfdashboard_live_window_on_state_changed(XfdashboardLiveWindow *self,
 }
 
 /* Window's workspace has changed */
-void _xfdashboard_live_window_on_workspace_changed(XfdashboardLiveWindow *self, gpointer inUserData)
+static void _xfdashboard_live_window_on_workspace_changed(XfdashboardLiveWindow *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
@@ -269,10 +269,10 @@ void _xfdashboard_live_window_on_workspace_changed(XfdashboardLiveWindow *self, 
 /* IMPLEMENTATION: ClutterActor */
 
 /* Get preferred width/height */
-void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
-													gfloat inForWidth,
-													gfloat *outMinHeight,
-													gfloat *outNaturalHeight)
+static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
+															gfloat inForWidth,
+															gfloat *outMinHeight,
+															gfloat *outNaturalHeight)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	gfloat							minHeight, naturalHeight;
@@ -322,10 +322,10 @@ void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
-void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
-													gfloat inForHeight,
-													gfloat *outMinWidth,
-													gfloat *outNaturalWidth)
+static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
+															gfloat inForHeight,
+															gfloat *outMinWidth,
+															gfloat *outNaturalWidth)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	gfloat							minWidth, naturalWidth;
@@ -376,9 +376,9 @@ void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 }
 
 /* Allocate position and size of actor and its children*/
-void _xfdashboard_live_window_allocate(ClutterActor *self,
-										const ClutterActorBox *inBox,
-										ClutterAllocationFlags inFlags)
+static void _xfdashboard_live_window_allocate(ClutterActor *self,
+												const ClutterActorBox *inBox,
+												ClutterAllocationFlags inFlags)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	ClutterActorBox					*boxActorWindow=NULL;
@@ -457,7 +457,7 @@ void _xfdashboard_live_window_allocate(ClutterActor *self,
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_live_window_dispose(GObject *inObject)
+static void _xfdashboard_live_window_dispose(GObject *inObject)
 {
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inObject);
 	XfdashboardLiveWindowPrivate	*priv=self->priv;
@@ -492,10 +492,10 @@ void _xfdashboard_live_window_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_live_window_set_property(GObject *inObject,
-														guint inPropID,
-														const GValue *inValue,
-														GParamSpec *inSpec)
+static void _xfdashboard_live_window_set_property(GObject *inObject,
+													guint inPropID,
+													const GValue *inValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardLiveWindow			*self=XFDASHBOARD_LIVE_WINDOW(inObject);
 	
@@ -519,10 +519,10 @@ void _xfdashboard_live_window_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_live_window_get_property(GObject *inObject,
-														guint inPropID,
-														GValue *outValue,
-														GParamSpec *inSpec)
+static void _xfdashboard_live_window_get_property(GObject *inObject,
+													guint inPropID,
+													GValue *outValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardLiveWindow	*self=XFDASHBOARD_LIVE_WINDOW(inObject);
 

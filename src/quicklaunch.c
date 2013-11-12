@@ -87,8 +87,8 @@ static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 #define DEFAULT_SCALE_MAX		1.0
 #define DEFAULT_SCALE_STEP		0.1
 
-/* Update icons in quicklaunch */
-void _xfdashboard_quicklaunch_on_application_button_clicked(XfdashboardQuicklaunch *self, gpointer inUserData)
+/* An application icon in quicklaunch was clicked - try to start application */
+static void _xfdashboard_quicklaunch_on_application_button_clicked(XfdashboardQuicklaunch *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
@@ -104,7 +104,8 @@ void _xfdashboard_quicklaunch_on_application_button_clicked(XfdashboardQuicklaun
 	}
 }
 
-void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
+/* Update icons in quicklaunch */
+static void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 
@@ -140,7 +141,7 @@ void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
 }
 
 /* Set up favourites array from string array value */
-void _xfdashboard_quicklaunch_set_favourites(XfdashboardQuicklaunch *self, const GValue *inValue)
+static void _xfdashboard_quicklaunch_set_favourites(XfdashboardQuicklaunch *self, const GValue *inValue)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(G_IS_VALUE(inValue));
@@ -180,9 +181,9 @@ void _xfdashboard_quicklaunch_set_favourites(XfdashboardQuicklaunch *self, const
 }
 
 /* Get scale factor to fit all children into given width */
-gfloat _xfdashboard_quicklaunch_get_scale_for_width(XfdashboardQuicklaunch *self,
-														gfloat inForWidth,
-														gboolean inDoMinimumSize)
+static gfloat _xfdashboard_quicklaunch_get_scale_for_width(XfdashboardQuicklaunch *self,
+															gfloat inForWidth,
+															gboolean inDoMinimumSize)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0.0f);
 	g_return_val_if_fail(inForWidth>=0.0f, 0.0f);
@@ -280,9 +281,9 @@ gfloat _xfdashboard_quicklaunch_get_scale_for_width(XfdashboardQuicklaunch *self
 }
 
 /* Get scale factor to fit all children into given height */
-gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaunch *self,
-														gfloat inForHeight,
-														gboolean inDoMinimumSize)
+static gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaunch *self,
+															gfloat inForHeight,
+															gboolean inDoMinimumSize)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0.0f);
 	g_return_val_if_fail(inForHeight>=0.0f, 0.0f);
@@ -382,10 +383,10 @@ gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaunch *sel
 /* IMPLEMENTATION: ClutterActor */
 
 /* Get preferred width/height */
-void _xfdashboard_quicklaunch_get_preferred_height(ClutterActor *inActor,
-													gfloat inForWidth,
-													gfloat *outMinHeight,
-													gfloat *outNaturalHeight)
+static void _xfdashboard_quicklaunch_get_preferred_height(ClutterActor *inActor,
+															gfloat inForWidth,
+															gfloat *outMinHeight,
+															gfloat *outNaturalHeight)
 {
 	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inActor);
 	XfdashboardQuicklaunchPrivate	*priv=self->priv;
@@ -481,10 +482,10 @@ void _xfdashboard_quicklaunch_get_preferred_height(ClutterActor *inActor,
 	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
-void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
-													gfloat inForHeight,
-													gfloat *outMinWidth,
-													gfloat *outNaturalWidth)
+static void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
+															gfloat inForHeight,
+															gfloat *outMinWidth,
+															gfloat *outNaturalWidth)
 {
 	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inActor);
 	XfdashboardQuicklaunchPrivate	*priv=self->priv;
@@ -581,9 +582,9 @@ void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
 }
 
 /* Allocate position and size of actor and its children*/
-void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
-										const ClutterActorBox *inBox,
-										ClutterAllocationFlags inFlags)
+static void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
+												const ClutterActorBox *inBox,
+												ClutterAllocationFlags inFlags)
 {
 	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inActor);
 	XfdashboardQuicklaunchPrivate	*priv=self->priv;
@@ -644,7 +645,7 @@ void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_quicklaunch_dispose(GObject *inObject)
+static void _xfdashboard_quicklaunch_dispose(GObject *inObject)
 {
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inObject)->priv;
 
@@ -656,10 +657,10 @@ void _xfdashboard_quicklaunch_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_quicklaunch_set_property(GObject *inObject,
-											guint inPropID,
-											const GValue *inValue,
-											GParamSpec *inSpec)
+static void _xfdashboard_quicklaunch_set_property(GObject *inObject,
+													guint inPropID,
+													const GValue *inValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inObject);
 
@@ -683,10 +684,10 @@ void _xfdashboard_quicklaunch_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_quicklaunch_get_property(GObject *inObject,
-											guint inPropID,
-											GValue *outValue,
-											GParamSpec *inSpec)
+static void _xfdashboard_quicklaunch_get_property(GObject *inObject,
+													guint inPropID,
+													GValue *outValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardQuicklaunch			*self=XFDASHBOARD_QUICKLAUNCH(inObject);
 	XfdashboardQuicklaunchPrivate	*priv=self->priv;

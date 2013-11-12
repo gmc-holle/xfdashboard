@@ -66,15 +66,15 @@ enum
 GParamSpec* XfdashboardWindowsViewProperties[PROP_LAST]={ 0, };
 
 /* Forward declaration */
-XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self, WnckWindow *inWindow);
-void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self, WnckWorkspace *inWorkspace);
+static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self, WnckWindow *inWindow);
+static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self, WnckWorkspace *inWorkspace);
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_SPACING		8.0f					// TODO: Replace by settings/theming object
 #define DEFAULT_VIEW_ICON	GTK_STOCK_FULLSCREEN	// TODO: Replace by settings/theming object
 
 /* Check if window is a stage window */
-gboolean _xfdashboard_windows_view_is_stage_window(WnckWindow *inWindow)
+static gboolean _xfdashboard_windows_view_is_stage_window(WnckWindow *inWindow)
 {
 	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
 
@@ -99,8 +99,8 @@ gboolean _xfdashboard_windows_view_is_stage_window(WnckWindow *inWindow)
 }
 
 /* Find live window actor by wnck-window */
-XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_wnck_window(XfdashboardWindowsView *self,
-																		WnckWindow *inWindow)
+static XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_wnck_window(XfdashboardWindowsView *self,
+																			WnckWindow *inWindow)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), NULL);
 	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
@@ -124,9 +124,9 @@ XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_wnck_window(Xfdashboard
 }
 
 /* Workspace was changed */
-void _xfdashboard_windows_view_on_active_workspace_changed(XfdashboardWindowsView *self,
-															WnckWorkspace *inPrevWorkspace,
-															gpointer inUserData)
+static void _xfdashboard_windows_view_on_active_workspace_changed(XfdashboardWindowsView *self,
+																	WnckWorkspace *inPrevWorkspace,
+																	gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(WNCK_IS_SCREEN(inUserData));
@@ -153,9 +153,9 @@ void _xfdashboard_windows_view_on_active_workspace_changed(XfdashboardWindowsVie
 }
 
 /* A window was opened */
-void _xfdashboard_windows_view_on_window_opened(XfdashboardWindowsView *self,
-												WnckWindow *inWindow,
-												gpointer inUserData)
+static void _xfdashboard_windows_view_on_window_opened(XfdashboardWindowsView *self,
+														WnckWindow *inWindow,
+														gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(WNCK_IS_SCREEN(inUserData));
@@ -178,9 +178,9 @@ void _xfdashboard_windows_view_on_window_opened(XfdashboardWindowsView *self,
 }
 
 /* A window was closed */
-void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *self,
-												WnckWindow *inWindow,
-												gpointer inUserData)
+static void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *self,
+														WnckWindow *inWindow,
+														gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(WNCK_IS_SCREEN(inUserData));
@@ -200,7 +200,7 @@ void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *self,
 }
 
 /* A live window was clicked */
-void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *self,
+static void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *self,
 														gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
@@ -214,8 +214,8 @@ void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *self,
 }
 
 /* The close button of a live window was clicked */
-void _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindowsView *self,
-															gpointer inUserData)
+static void _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindowsView *self,
+																gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
@@ -228,7 +228,8 @@ void _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindowsView *s
 }
 
 /* A window was moved or resized */
-void _xfdashboard_windows_view_on_window_geometry_changed(XfdashboardWindowsView *self, gpointer inUserData)
+static void _xfdashboard_windows_view_on_window_geometry_changed(XfdashboardWindowsView *self,
+																	gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
@@ -240,9 +241,9 @@ void _xfdashboard_windows_view_on_window_geometry_changed(XfdashboardWindowsView
 }
 
 /* A window was hidden or shown */
-void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWindowsView *self,
-															gboolean inIsVisible,
-															gpointer inUserData)
+static void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWindowsView *self,
+																	gboolean inIsVisible,
+																	gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
@@ -258,7 +259,8 @@ void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWindowsVi
 }
 
 /* A window changed workspace or was pinned to all workspaces */
-void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWindowsView *self, gpointer inUserData)
+static void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWindowsView *self,
+																	gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
@@ -276,8 +278,8 @@ void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWindowsVie
 }
 
 /* Create actor for wnck-window and connect signals */
-XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self,
-																WnckWindow *inWindow)
+static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self,
+																		WnckWindow *inWindow)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), NULL);
 	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
@@ -304,8 +306,8 @@ XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindows
 }
 
 /* Set active screen */
-void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self,
-													WnckWorkspace *inWorkspace)
+static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self,
+															WnckWorkspace *inWorkspace)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(inWorkspace==NULL || WNCK_IS_WORKSPACE(inWorkspace));
@@ -350,7 +352,7 @@ void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_windows_view_dispose(GObject *inObject)
+static void _xfdashboard_windows_view_dispose(GObject *inObject)
 {
 	XfdashboardWindowsView			*self=XFDASHBOARD_WINDOWS_VIEW(inObject);
 	XfdashboardWindowsViewPrivate	*priv=XFDASHBOARD_WINDOWS_VIEW(self)->priv;
@@ -369,10 +371,10 @@ void _xfdashboard_windows_view_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void _xfdashboard_windows_view_set_property(GObject *inObject,
-											guint inPropID,
-											const GValue *inValue,
-											GParamSpec *inSpec)
+static void _xfdashboard_windows_view_set_property(GObject *inObject,
+													guint inPropID,
+													const GValue *inValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardWindowsView		*self=XFDASHBOARD_WINDOWS_VIEW(inObject);
 	
@@ -388,10 +390,10 @@ void _xfdashboard_windows_view_set_property(GObject *inObject,
 	}
 }
 
-void _xfdashboard_windows_view_get_property(GObject *inObject,
-											guint inPropID,
-											GValue *outValue,
-											GParamSpec *inSpec)
+static void _xfdashboard_windows_view_get_property(GObject *inObject,
+													guint inPropID,
+													GValue *outValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardWindowsView		*self=XFDASHBOARD_WINDOWS_VIEW(inObject);
 

@@ -88,7 +88,7 @@ static GParamSpec* XfdashboardApplicationButtonProperties[PROP_LAST]={ 0, };
 #define DEFAULT_FORMAT_TITLE_DESCRIPTION	"<b><big>%s</big></b>\n\n%s"	// TODO: Replace by settings/theming object
 
 /* Reset and release allocated resources of application button */
-void _xfdashboard_application_button_clear(XfdashboardApplicationButton *self)
+static void _xfdashboard_application_button_clear(XfdashboardApplicationButton *self)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 
@@ -118,7 +118,7 @@ void _xfdashboard_application_button_clear(XfdashboardApplicationButton *self)
 }
 
 /* Update text of button actor */
-void _xfdashboard_application_button_update_text(XfdashboardApplicationButton *self)
+static void _xfdashboard_application_button_update_text(XfdashboardApplicationButton *self)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 
@@ -160,7 +160,7 @@ void _xfdashboard_application_button_update_text(XfdashboardApplicationButton *s
 }
 
 /* Update icon of button actor */
-void _xfdashboard_application_button_update_icon(XfdashboardApplicationButton *self)
+static void _xfdashboard_application_button_update_icon(XfdashboardApplicationButton *self)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 
@@ -209,10 +209,9 @@ void _xfdashboard_application_button_update_icon(XfdashboardApplicationButton *s
 }
 
 /* The icon-size in button has changed */
-void _xfdashboard_application_button_on_icon_size_changed(XfdashboardApplicationButton *self,
-															GParamSpec *inSpec,
-															gpointer inUserData)
-
+static void _xfdashboard_application_button_on_icon_size_changed(XfdashboardApplicationButton *self,
+																	GParamSpec *inSpec,
+																	gpointer inUserData)
 {
 	_xfdashboard_application_button_update_icon(self);
 }

@@ -65,14 +65,14 @@ XfdashboardViewManager*		viewManager=NULL;
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_view_manager_dispose_unregister_view(gpointer inData, gpointer inUserData)
+static void _xfdashboard_view_manager_dispose_unregister_view(gpointer inData, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(inUserData));
 
 	xfdashboard_view_manager_unregister(XFDASHBOARD_VIEW_MANAGER(inUserData), LISTITEM_TO_GTYPE(inData));
 }
 
-void _xfdashboard_view_manager_dispose(GObject *inObject)
+static void _xfdashboard_view_manager_dispose(GObject *inObject)
 {
 	XfdashboardViewManager			*self=XFDASHBOARD_VIEW_MANAGER(inObject);
 	XfdashboardViewManagerPrivate	*priv=self->priv;

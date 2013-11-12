@@ -49,7 +49,7 @@ struct _XfdashboardApplicationsMenuModelPrivate
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Clear all data in model and also release all allocated resources needed for this model */
-void _xfdashboard_applications_menu_model_clear(XfdashboardApplicationsMenuModel *self)
+static void _xfdashboard_applications_menu_model_clear(XfdashboardApplicationsMenuModel *self)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 
@@ -77,9 +77,9 @@ void _xfdashboard_applications_menu_model_clear(XfdashboardApplicationsMenuModel
 }
 
 /* Add a menu to section list */
-void _xfdashboard_applications_menu_model_add_to_section(XfdashboardApplicationsMenuModel *self,
-															GarconMenu *inSection,
-															GarconMenu *inMenu)
+static void _xfdashboard_applications_menu_model_add_to_section(XfdashboardApplicationsMenuModel *self,
+																GarconMenu *inSection,
+																GarconMenu *inMenu)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 	g_return_if_fail(GARCON_IS_MENU(inSection));
@@ -105,9 +105,9 @@ void _xfdashboard_applications_menu_model_add_to_section(XfdashboardApplications
 }
 
 /* Helper function to filter model data */
-gboolean _xfdashboard_applications_menu_model_filter_by_menu(ClutterModel *inModel,
-																ClutterModelIter *inIter,
-																gpointer inUserData)
+static gboolean _xfdashboard_applications_menu_model_filter_by_menu(ClutterModel *inModel,
+																	ClutterModelIter *inIter,
+																	gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(inModel), FALSE);
 	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
@@ -155,9 +155,9 @@ gboolean _xfdashboard_applications_menu_model_filter_by_menu(ClutterModel *inMod
 	return(doShow);
 }
 
-gboolean _xfdashboard_applications_menu_model_filter_by_section(ClutterModel *inModel,
-																ClutterModelIter *inIter,
-																gpointer inUserData)
+static gboolean _xfdashboard_applications_menu_model_filter_by_section(ClutterModel *inModel,
+																		ClutterModelIter *inIter,
+																		gpointer inUserData)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(inModel), FALSE);
 	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
@@ -204,10 +204,10 @@ gboolean _xfdashboard_applications_menu_model_filter_by_section(ClutterModel *in
 }
 
 /* Fill model */
-void _xfdashboard_applications_menu_model_fill_model_collect_menu(XfdashboardApplicationsMenuModel *self,
-																	GarconMenu *inMenu,
-																	GarconMenu *inSection,
-																	guint *ioSequenceID)
+static void _xfdashboard_applications_menu_model_fill_model_collect_menu(XfdashboardApplicationsMenuModel *self,
+																			GarconMenu *inMenu,
+																			GarconMenu *inSection,
+																			guint *ioSequenceID)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 	g_return_if_fail(GARCON_IS_MENU(inMenu));
@@ -291,7 +291,7 @@ void _xfdashboard_applications_menu_model_fill_model_collect_menu(XfdashboardApp
 	g_object_unref(inMenu);
 }
 
-void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicationsMenuModel *self)
+static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicationsMenuModel *self)
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 
@@ -325,10 +325,10 @@ void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicationsMenu
 /* IMPLEMENTATION: ClutterModel */
 
 /* Resort model */
-gint _xfdashboard_applications_menu_model_resort_menu_element_callback(ClutterModel *inModel,
-																		const GValue *inLeft,
-																		const GValue *inRight,
-																		gpointer inUserData)
+static gint _xfdashboard_applications_menu_model_resort_menu_element_callback(ClutterModel *inModel,
+																				const GValue *inLeft,
+																				const GValue *inRight,
+																				gpointer inUserData)
 {
 	GarconMenuElement		*leftValue=GARCON_MENU_ELEMENT(g_value_get_object(inLeft));
 	GarconMenuElement		*rightValue=GARCON_MENU_ELEMENT(g_value_get_object(inRight));
@@ -338,7 +338,7 @@ gint _xfdashboard_applications_menu_model_resort_menu_element_callback(ClutterMo
 	return(g_strcmp0(leftName, rightName));
 }
 
-gint _xfdashboard_applications_menu_model_resort_parent_menu_callback(ClutterModel *inModel,
+static gint _xfdashboard_applications_menu_model_resort_parent_menu_callback(ClutterModel *inModel,
 																		const GValue *inLeft,
 																		const GValue *inRight,
 																		gpointer inUserData)
@@ -396,10 +396,10 @@ gint _xfdashboard_applications_menu_model_resort_parent_menu_callback(ClutterMod
 	return(result);
 }
 
-gint _xfdashboard_applications_menu_model_resort_string_callback(ClutterModel *inModel,
-																	const GValue *inLeft,
-																	const GValue *inRight,
-																	gpointer inUserData)
+static gint _xfdashboard_applications_menu_model_resort_string_callback(ClutterModel *inModel,
+																		const GValue *inLeft,
+																		const GValue *inRight,
+																		gpointer inUserData)
 {
 	const gchar		*leftValue=g_value_get_string(inLeft);
 	const gchar		*rightValue=g_value_get_string(inRight);
@@ -407,10 +407,10 @@ gint _xfdashboard_applications_menu_model_resort_string_callback(ClutterModel *i
 	return(g_strcmp0(leftValue, rightValue));
 }
 
-gint _xfdashboard_applications_menu_model_resort_uint_callback(ClutterModel *inModel,
-																const GValue *inLeft,
-																const GValue *inRight,
-																gpointer inUserData)
+static gint _xfdashboard_applications_menu_model_resort_uint_callback(ClutterModel *inModel,
+																		const GValue *inLeft,
+																		const GValue *inRight,
+																		gpointer inUserData)
 {
 	guint		leftValue=g_value_get_uint(inLeft);
 	guint		rightValue=g_value_get_uint(inRight);
@@ -420,7 +420,7 @@ gint _xfdashboard_applications_menu_model_resort_uint_callback(ClutterModel *inM
 	return(0);
 }
 
-void _xfdashboard_applications_menu_model_resort(ClutterModel *inModel,
+static void _xfdashboard_applications_menu_model_resort(ClutterModel *inModel,
 													ClutterModelSortFunc inSortCallback,
 													gpointer inUserData)
 {
@@ -466,7 +466,7 @@ void _xfdashboard_applications_menu_model_resort(ClutterModel *inModel,
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_applications_menu_model_dispose(GObject *inObject)
+static void _xfdashboard_applications_menu_model_dispose(GObject *inObject)
 {
 	XfdashboardApplicationsMenuModel			*self=XFDASHBOARD_APPLICATIONS_MENU_MODEL(inObject);
 	XfdashboardApplicationsMenuModelPrivate		*priv=self->priv;

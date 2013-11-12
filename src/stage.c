@@ -95,7 +95,9 @@ guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 }; // TODO: Replace by settings/theming object
 
 /* Text in search text-box has changed */
-void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self, gchar *inText, gpointer inUserData)
+static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
+															gchar *inText,
+															gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
@@ -178,7 +180,7 @@ void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self, gchar 
 }
 
 /* Secondary icon ("clear") on text box was clicked */
-void _xfdashboard_stage_on_searchbox_secondary_icon_clicked(XfdashboardStage *self, gpointer inUserData)
+static void _xfdashboard_stage_on_searchbox_secondary_icon_clicked(XfdashboardStage *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
@@ -190,7 +192,7 @@ void _xfdashboard_stage_on_searchbox_secondary_icon_clicked(XfdashboardStage *se
 }
 
 /* Active view in viewpad has changed */
-void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, XfdashboardView *inView, gpointer inUserData)
+static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, XfdashboardView *inView, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inUserData));
@@ -215,7 +217,7 @@ void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, XfdashboardVie
 }
 
 /* Set up stage */
-void _xfdashboard_stage_setup(XfdashboardStage *self)
+static void _xfdashboard_stage_setup(XfdashboardStage *self)
 {
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 
@@ -311,7 +313,7 @@ void _xfdashboard_stage_setup(XfdashboardStage *self)
 }
 
 /* The active window changed. Reselect stage window as active if it is visible */
-void _xfdashboard_stage_on_active_window_changed(XfdashboardStage *self, WnckWindow *inPreviousWindow, gpointer inUserData)
+static void _xfdashboard_stage_on_active_window_changed(XfdashboardStage *self, WnckWindow *inPreviousWindow, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(inPreviousWindow==NULL || WNCK_IS_WINDOW(inPreviousWindow));
@@ -333,7 +335,7 @@ void _xfdashboard_stage_on_active_window_changed(XfdashboardStage *self, WnckWin
 /* A window was created
  * Check for stage window and set up window properties
  */
-void _xfdashboard_stage_on_window_opened(XfdashboardStage *self, WnckWindow *inWindow, gpointer inUserData)
+static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self, WnckWindow *inWindow, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
@@ -375,7 +377,7 @@ void _xfdashboard_stage_on_window_opened(XfdashboardStage *self, WnckWindow *inW
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void _xfdashboard_stage_dispose(GObject *inObject)
+static void _xfdashboard_stage_dispose(GObject *inObject)
 {
 	XfdashboardStage			*self=XFDASHBOARD_STAGE(inObject);
 	XfdashboardStagePrivate		*priv=self->priv;
