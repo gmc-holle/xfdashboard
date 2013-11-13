@@ -46,6 +46,16 @@ struct _XfdashboardApplicationsMenuModelPrivate
 	GHashTable		*sections;
 };
 
+/* Signals */
+enum
+{
+	SIGNAL_LOADED,
+
+	SIGNAL_LAST
+};
+
+guint XfdashboardApplicationsMenuModelSignals[SIGNAL_LAST]={ 0, };
+
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Clear all data in model and also release all allocated resources needed for this model */
@@ -310,6 +320,9 @@ static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicati
 		if(error) g_error_free(error);
 		g_object_unref(priv->rootMenu);
 		priv->rootMenu=NULL;
+
+		/* Emit "loaded" signal even if it fails */
+		g_signal_emit(self, XfdashboardApplicationsMenuModelSignals[SIGNAL_LOADED], 0);
 		return;
 	}
 
@@ -320,7 +333,20 @@ static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicati
 											(GDestroyNotify)g_list_free);
 
 	_xfdashboard_applications_menu_model_fill_model_collect_menu(self, priv->rootMenu, NULL, &sequenceID);
+
+	/* Emit signal */
+	g_signal_emit(self, XfdashboardApplicationsMenuModelSignals[SIGNAL_LOADED], 0);
 }
+
+/* Idle callback to fill model */
+#include "utils.h"
+static gboolean _xfdashboard_applications_menu_model_init_idle(gpointer inUserData)
+{
+	g_message("%s: user-data=%p (%s)", __func__, inUserData, DEBUG_OBJECT_NAME(inUserData));
+	_xfdashboard_applications_menu_model_fill_model(XFDASHBOARD_APPLICATIONS_MENU_MODEL(inUserData));
+	return(G_SOURCE_REMOVE);
+}
+
 
 /* IMPLEMENTATION: ClutterModel */
 
@@ -504,6 +530,18 @@ void xfdashboard_applications_menu_model_class_init(XfdashboardApplicationsMenuM
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardApplicationsMenuModelPrivate));
+
+	/* Define signals */
+	XfdashboardApplicationsMenuModelSignals[SIGNAL_LOADED]=
+		g_signal_new("loaded",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardApplicationsMenuModelClass, loaded),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
 }
 
 /* Object initialization
@@ -542,8 +580,8 @@ void xfdashboard_applications_menu_model_init(XfdashboardApplicationsMenuModel *
 	clutter_model_set_types(CLUTTER_MODEL(self), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_LAST, columnTypes);
 	clutter_model_set_names(CLUTTER_MODEL(self), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_LAST, columnNames);
 
-	/* Fill model */
-	_xfdashboard_applications_menu_model_fill_model(self);
+	/* Defer filling model */
+	clutter_threads_add_idle(_xfdashboard_applications_menu_model_init_idle, self);
 }
 
 /* Implementation: Public API */

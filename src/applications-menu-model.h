@@ -58,6 +58,7 @@ struct _XfdashboardApplicationsMenuModelClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*loaded)(XfdashboardApplicationsMenuModel *self);
 };
 
 /* Public API */
