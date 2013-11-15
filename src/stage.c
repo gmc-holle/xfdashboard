@@ -355,7 +355,7 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	/* Quicklaunch */
 	priv->quicklaunch=xfdashboard_quicklaunch_new_with_orientation(CLUTTER_ORIENTATION_VERTICAL);
 	xfdashboard_quicklaunch_set_spacing(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch), 4.0f);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->quicklaunch), XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->quicklaunch), XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED);
 	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
 	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->quicklaunch), &color);
 	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->quicklaunch), 0.5f);

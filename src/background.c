@@ -95,6 +95,7 @@ static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *se
 	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
 
 	XfdashboardBackgroundPrivate	*priv=self->priv;
+	gboolean						doRounded=FALSE;
 
 	/* Clear current contents of the canvas */
 	cairo_save(inContext);
@@ -104,8 +105,20 @@ static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *se
 
 	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
 
+	/* Do nothing if type is none (we should not get here but just in case we do) */
+	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_NONE) return(CLUTTER_EVENT_STOP);
+
+	/* Determine if we should draw rounded corners */
+	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_ROUNDED ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_OUTLINE_ROUNDED ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED)
+	{
+		doRounded=TRUE;
+	}
+
 	/* Draw rectangle with or without rounded corners */
-	if((priv->corners & XFDASHBOARD_CORNERS_ALL) &&
+	if(doRounded==TRUE &&
+		(priv->corners & XFDASHBOARD_CORNERS_ALL) &&
 		priv->cornersRadius>0.0f)
 	{
 		/* Determine radius for rounded corners */
@@ -157,7 +170,9 @@ static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *se
 
 	/* Fill if type requests it */
 	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE)
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_ROUNDED ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED)
 	{
 		/* Set color for filling */
 		if(priv->fillColor) clutter_cairo_set_source_color(inContext, priv->fillColor);
@@ -168,7 +183,9 @@ static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *se
 
 	/* Draw outline if type requests it */
 	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_OUTLINE ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE)
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_OUTLINE_ROUNDED ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE ||
+		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED)
 	{
 		/* Set up line properties for outline */
 		if(priv->outlineColor) clutter_cairo_set_source_color(inContext, priv->outlineColor);
@@ -523,8 +540,11 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 				break;
 
 			case XFDASHBOARD_BACKGROUND_TYPE_FILL:
+			case XFDASHBOARD_BACKGROUND_TYPE_FILL_ROUNDED:
 			case XFDASHBOARD_BACKGROUND_TYPE_OUTLINE:
+			case XFDASHBOARD_BACKGROUND_TYPE_OUTLINE_ROUNDED:
 			case XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE:
+			case XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED:
 				clutter_actor_set_content(CLUTTER_ACTOR(self), priv->canvas);
 				clutter_content_invalidate(priv->canvas);
 				break;
@@ -536,7 +556,7 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 			default:
 				g_error(_("Invalid type %d for %s"), inType, G_OBJECT_TYPE_NAME(self));
 
-				/* Set old value again because new one is invalid */
+				/* Set old value again because new value is invalid */
 				priv->type=oldType;
 
 				return;
