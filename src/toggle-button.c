@@ -76,6 +76,12 @@ static void _xfdashboard_toggle_button_clicked(XfdashboardToggleButton *self)
 	XfdashboardToggleButtonPrivate	*priv=self->priv;
 	gboolean						state;
 
+	/* Call parent's class default click signal handler */
+	if(XFDASHBOARD_BUTTON_CLASS(xfdashboard_toggle_button_parent_class)->clicked)
+	{
+		XFDASHBOARD_BUTTON_CLASS(xfdashboard_toggle_button_parent_class)->clicked(self);
+	}
+
 	/* Set new toggle state */
 	xfdashboard_toggle_button_set_toggle_state(self, !priv->toggleState);
 }
