@@ -84,6 +84,7 @@ GParamSpec* XfdashboardBackgroundProperties[PROP_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Rectangle canvas should be redrawn */
+#include "toggle-button.h"
 static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *self,
 														cairo_t *inContext,
 														int inWidth,
@@ -503,10 +504,15 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 
 	XfdashboardBackgroundPrivate	*priv=self->priv;
+	XfdashboardBackgroundType		oldType;
 
 	/* Set value if changed */
 	if(priv->type!=inType)
 	{
+		/* Set value */
+		oldType=priv->type;
+		priv->type=inType;
+
 		/* Set content for actor depending on new type.
 		 * Also check for valid type.
 		 */
@@ -520,6 +526,7 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 			case XFDASHBOARD_BACKGROUND_TYPE_OUTLINE:
 			case XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE:
 				clutter_actor_set_content(CLUTTER_ACTOR(self), priv->canvas);
+				clutter_content_invalidate(priv->canvas);
 				break;
 
 			case XFDASHBOARD_BACKGROUND_TYPE_IMAGE:
@@ -528,11 +535,12 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 
 			default:
 				g_error(_("Invalid type %d for %s"), inType, G_OBJECT_TYPE_NAME(self));
+
+				/* Set old value again because new one is invalid */
+				priv->type=oldType;
+
 				return;
 		}
-
-		/* Set value */
-		priv->type=inType;
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_TYPE]);
