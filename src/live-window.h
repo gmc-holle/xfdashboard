@@ -80,13 +80,13 @@ void xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, WnckWindow 
 
 XfdashboardButton* xfdashboard_live_window_get_title_actor(XfdashboardLiveWindow *self);
 
-gfloat xfdashboard_live_window_get_title_actor_margin(XfdashboardLiveWindow *self);
-void xfdashboard_live_window_set_title_actor_margin(XfdashboardLiveWindow *self, gfloat inMargin);
+gfloat xfdashboard_live_window_get_title_actor_padding(XfdashboardLiveWindow *self);
+void xfdashboard_live_window_set_title_actor_padding(XfdashboardLiveWindow *self, gfloat inPadding);
 
 XfdashboardButton* xfdashboard_live_window_get_close_button(XfdashboardLiveWindow *self);
 
-gfloat xfdashboard_live_window_get_close_button_margin(XfdashboardLiveWindow *self);
-void xfdashboard_live_window_set_close_button_margin(XfdashboardLiveWindow *self, gfloat inMargin);
+gfloat xfdashboard_live_window_get_close_button_padding(XfdashboardLiveWindow *self);
+void xfdashboard_live_window_set_close_button_padding(XfdashboardLiveWindow *self, gfloat inPadding);
 
 G_END_DECLS
 

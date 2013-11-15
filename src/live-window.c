@@ -60,8 +60,8 @@ struct _XfdashboardLiveWindowPrivate
 	ClutterActor	*actorTitle;
 
 	/* Settings */
-	gfloat			marginCloseButton;
-	gfloat			marginTitleActor;
+	gfloat			paddingClose;
+	gfloat			paddingTitle;
 };
 
 /* Properties */
@@ -72,10 +72,10 @@ enum
 	PROP_WINDOW,
 
 	PROP_CLOSE_BUTTON,
-	PROP_CLOSE_BUTTON_MARGIN,
+	PROP_CLOSE_BUTTON_PADDING,
 
 	PROP_TITLE_ACTOR,
-	PROP_TITLE_ACTOR_MARGIN,
+	PROP_TITLE_ACTOR_PADDING,
 
 	PROP_LAST
 };
@@ -98,9 +98,9 @@ enum
 guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_MARGIN_TITLE_ACTOR		4.0f			// TODO: Replace by settings/theming object
-#define DEFAULT_MARGIN_CLOSE_BUTTON		4.0f			// TODO: Replace by settings/theming object
-#define WINDOW_CLOSE_BUTTON_ICON		GTK_STOCK_CLOSE	// TODO: Replace by settings/theming object
+#define DEFAULT_PADDING_TITLE		4.0f			// TODO: Replace by settings/theming object
+#define DEFAULT_PADDING_CLOSE		4.0f			// TODO: Replace by settings/theming object
+#define WINDOW_CLOSE_BUTTON_ICON	GTK_STOCK_CLOSE	// TODO: Replace by settings/theming object
 
 /* Determine if window state flags specify window's visibility */
 static gboolean _xfdashboard_live_window_is_window_visiblity_flag(XfdashboardLiveWindow *self, WnckWindowState inState)
@@ -298,8 +298,8 @@ static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 											inForWidth,
 											&childMinHeight,
 											&childNaturalHeight);
-		childMinHeight+=(2*priv->marginTitleActor);
-		childNaturalHeight+=(2*priv->marginTitleActor);
+		childMinHeight+=(2*priv->paddingTitle);
+		childNaturalHeight+=(2*priv->paddingTitle);
 		if(childMinHeight>minHeight) minHeight=childMinHeight;
 		if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
 	}
@@ -311,8 +311,8 @@ static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 											inForWidth,
 											&childMinHeight,
 											&childNaturalHeight);
-		childMinHeight+=(2*priv->marginCloseButton);
-		childNaturalHeight+=(2*priv->marginCloseButton);
+		childMinHeight+=(2*priv->paddingClose);
+		childNaturalHeight+=(2*priv->paddingClose);
 		if(childMinHeight>minHeight) minHeight=childMinHeight;
 		if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
 	}
@@ -351,8 +351,8 @@ static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 											inForHeight,
 											&childMinWidth,
 											 &childNaturalWidth);
-		childMinWidth+=(2*priv->marginTitleActor);
-		childNaturalWidth+=(2*priv->marginTitleActor);
+		childMinWidth+=(2*priv->paddingTitle);
+		childNaturalWidth+=(2*priv->paddingTitle);
 		if(childMinWidth>minWidth) minWidth=childMinWidth;
 		if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
 	}
@@ -364,8 +364,8 @@ static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 											inForHeight,
 											&childMinWidth,
 											&childNaturalWidth);
-		childMinWidth+=(2*priv->marginCloseButton);
-		childNaturalWidth+=(2*priv->marginCloseButton);
+		childMinWidth+=(2*priv->paddingClose);
+		childNaturalWidth+=(2*priv->paddingClose);
 		if(childMinWidth>minWidth) minWidth=childMinWidth;
 		if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
 	}
@@ -402,9 +402,9 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 										NULL, NULL,
 										&closeWidth, &closeHeight);
 
-	right=clutter_actor_box_get_x(boxActorWindow)+clutter_actor_box_get_width(boxActorWindow)-priv->marginCloseButton;
-	left=MAX(right-closeWidth, priv->marginCloseButton);
-	top=clutter_actor_box_get_y(boxActorWindow)+priv->marginCloseButton;
+	right=clutter_actor_box_get_x(boxActorWindow)+clutter_actor_box_get_width(boxActorWindow)-priv->paddingClose;
+	left=MAX(right-closeWidth, priv->paddingClose);
+	top=clutter_actor_box_get_y(boxActorWindow)+priv->paddingClose;
 	bottom=top+closeHeight;
 
 	right=MAX(left, right);
@@ -420,19 +420,19 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 										NULL, NULL,
 										&titleWidth, &titleHeight);
 
-	maxWidth=clutter_actor_box_get_width(boxActorWindow)-(2*priv->marginTitleActor);
+	maxWidth=clutter_actor_box_get_width(boxActorWindow)-(2*priv->paddingTitle);
 	if(titleWidth>maxWidth) titleWidth=maxWidth;
 
 	left=clutter_actor_box_get_x(boxActorWindow)+((clutter_actor_box_get_width(boxActorWindow)-titleWidth)/2.0f);
 	right=left+titleWidth;
-	bottom=clutter_actor_box_get_y(boxActorWindow)+clutter_actor_box_get_height(boxActorWindow)-(2*priv->marginTitleActor);
+	bottom=clutter_actor_box_get_y(boxActorWindow)+clutter_actor_box_get_height(boxActorWindow)-(2*priv->paddingTitle);
 	top=bottom-titleHeight;
 	if(left>right) left=right-1.0f;
 	if(top<(clutter_actor_box_get_y(boxActorClose)+clutter_actor_box_get_height(boxActorClose)))
 	{
 		if(right>=clutter_actor_box_get_x(boxActorClose))
 		{
-			right=clutter_actor_box_get_x(boxActorClose)-MIN(priv->marginTitleActor, priv->marginCloseButton);
+			right=clutter_actor_box_get_x(boxActorClose)-MIN(priv->paddingTitle, priv->paddingClose);
 		}
 
 		if(top<clutter_actor_box_get_y(boxActorClose))
@@ -505,12 +505,12 @@ static void _xfdashboard_live_window_set_property(GObject *inObject,
 			xfdashboard_live_window_set_window(self, g_value_get_object(inValue));
 			break;
 
-		case PROP_CLOSE_BUTTON_MARGIN:
-			xfdashboard_live_window_set_close_button_margin(self, g_value_get_float(inValue));
+		case PROP_CLOSE_BUTTON_PADDING:
+			xfdashboard_live_window_set_close_button_padding(self, g_value_get_float(inValue));
 			break;
 
-		case PROP_TITLE_ACTOR_MARGIN:
-			xfdashboard_live_window_set_title_actor_margin(self, g_value_get_float(inValue));
+		case PROP_TITLE_ACTOR_PADDING:
+			xfdashboard_live_window_set_title_actor_padding(self, g_value_get_float(inValue));
 			break;
 
 		default:
@@ -536,16 +536,16 @@ static void _xfdashboard_live_window_get_property(GObject *inObject,
 			g_value_set_object(outValue, self->priv->actorClose);
 			break;
 
-		case PROP_CLOSE_BUTTON_MARGIN:
-			g_value_set_float(outValue, self->priv->marginCloseButton);
+		case PROP_CLOSE_BUTTON_PADDING:
+			g_value_set_float(outValue, self->priv->paddingClose);
 			break;
 
 		case PROP_TITLE_ACTOR:
 			g_value_set_object(outValue, self->priv->actorTitle);
 			break;
 
-		case PROP_TITLE_ACTOR_MARGIN:
-			g_value_set_float(outValue, self->priv->marginTitleActor);
+		case PROP_TITLE_ACTOR_PADDING:
+			g_value_set_float(outValue, self->priv->paddingTitle);
 			break;
 
 		default:
@@ -590,12 +590,12 @@ void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass)
 								XFDASHBOARD_TYPE_BUTTON,
 								G_PARAM_READABLE);
 
-	XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON_MARGIN]=
-		g_param_spec_float("close-button-margin",
-							_("Close button margin"),
-							_("Margin of close button to window actor in pixels"),
+	XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON_PADDING]=
+		g_param_spec_float("close-button-padding",
+							_("Close button padding"),
+							_("Padding of close button to window actor in pixels"),
 							0.0f, G_MAXFLOAT,
-							DEFAULT_MARGIN_CLOSE_BUTTON,
+							DEFAULT_PADDING_CLOSE,
 							G_PARAM_READWRITE);
 
 	XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR]=
@@ -605,12 +605,12 @@ void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass)
 								XFDASHBOARD_TYPE_BUTTON,
 								G_PARAM_READABLE);
 
-	XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR_MARGIN]=
-		g_param_spec_float("title-actor-margin",
-							_("Title actor margin"),
-							_("Margin of title actor to window actor in pixels"),
+	XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR_PADDING]=
+		g_param_spec_float("title-actor-padding",
+							_("Title actor padding"),
+							_("Padding of title actor to window actor in pixels"),
 							0.0f, G_MAXFLOAT,
-							DEFAULT_MARGIN_TITLE_ACTOR,
+							DEFAULT_PADDING_TITLE,
 							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWindowProperties);
@@ -688,8 +688,8 @@ void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 
 	/* Set default values */
 	priv->window=NULL;
-	priv->marginTitleActor=DEFAULT_MARGIN_TITLE_ACTOR;
-	priv->marginCloseButton=DEFAULT_MARGIN_CLOSE_BUTTON;
+	priv->paddingTitle=DEFAULT_PADDING_TITLE;
+	priv->paddingClose=DEFAULT_PADDING_CLOSE;
 
 	/* Connect signals to this actor */
 	action=clutter_click_action_new();
@@ -707,7 +707,7 @@ void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	// TODO: if(priv->labelTextColor) xfdashboard_button_set_color(XFDASHBOARD_BUTTON(priv->actorTitle), priv->labelTextColor);
 	// TODO: xfdashboard_button_set_ellipsize_mode(XFDASHBOARD_BUTTON(priv->actorTitle), priv->labelEllipsize);
 	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorTitle), XFDASHBOARD_BACKGROUND_TYPE_FILL);
-	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorTitle), priv->marginTitleActor);
+	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorTitle), priv->paddingTitle);
 	// TODO: if(priv->labelBackgroundColor) xfdashboard_background_set_color(XFDASHBOARD_BACKGROUND(self), priv->labelBackgroundColor);
 
 	clutter_actor_set_reactive(priv->actorTitle, FALSE);
@@ -716,7 +716,7 @@ void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 
 	priv->actorClose=xfdashboard_button_new_with_icon(WINDOW_CLOSE_BUTTON_ICON);
 	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorClose), XFDASHBOARD_BACKGROUND_TYPE_FILL);
-	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorClose), priv->marginCloseButton);
+	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorClose), priv->paddingClose);
 	clutter_actor_show(priv->actorClose);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorClose);
 	g_signal_connect_swapped(priv->actorClose, "clicked", G_CALLBACK(_xfdashboard_live_window_on_close_clicked), self);
@@ -802,31 +802,32 @@ XfdashboardButton* xfdashboard_live_window_get_title_actor(XfdashboardLiveWindow
 	return(XFDASHBOARD_BUTTON(self->priv->actorTitle));
 }
 
-/* Get/set margin of title actor */
-gfloat xfdashboard_live_window_get_title_actor_margin(XfdashboardLiveWindow *self)
+/* Get/set padding of title actor */
+gfloat xfdashboard_live_window_get_title_actor_padding(XfdashboardLiveWindow *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), 0.0f);
 
-	return(self->priv->marginTitleActor);
+	return(self->priv->paddingTitle);
 }
 
-void xfdashboard_live_window_set_title_actor_margin(XfdashboardLiveWindow *self, gfloat inMargin)
+void xfdashboard_live_window_set_title_actor_padding(XfdashboardLiveWindow *self, gfloat inPadding)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	g_return_if_fail(inMargin>=0.0f);
+	g_return_if_fail(inPadding>=0.0f);
 
 	XfdashboardLiveWindowPrivate	*priv=self->priv;
 
-	/* Only set value if it changes */
-	if(inMargin==priv->marginTitleActor) return;
+	/* Set value if changed */
+	if(priv->paddingTitle!=inPadding)
+	{
+		/* Set value */
+		priv->paddingTitle=inPadding;
+		xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorTitle), priv->paddingTitle);
+		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 
-	/* Set new value */
-	priv->marginTitleActor=inMargin;
-	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorTitle), priv->marginTitleActor);
-	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
-
-	/* Notify about property change */
-	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR_MARGIN]);
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR_PADDING]);
+	}
 }
 
 /* Get close button actor */
@@ -837,29 +838,30 @@ XfdashboardButton* xfdashboard_live_window_get_close_button(XfdashboardLiveWindo
 	return(XFDASHBOARD_BUTTON(self->priv->actorClose));
 }
 
-/* Get/set margin of close button actor */
-gfloat xfdashboard_live_window_get_close_button_margin(XfdashboardLiveWindow *self)
+/* Get/set padding of close button actor */
+gfloat xfdashboard_live_window_get_close_button_padding(XfdashboardLiveWindow *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), 0.0f);
 
-	return(self->priv->marginCloseButton);
+	return(self->priv->paddingClose);
 }
 
-void xfdashboard_live_window_set_close_button_margin(XfdashboardLiveWindow *self, gfloat inMargin)
+void xfdashboard_live_window_set_close_button_padding(XfdashboardLiveWindow *self, gfloat inPadding)
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	g_return_if_fail(inMargin>=0.0f);
+	g_return_if_fail(inPadding>=0.0f);
 
 	XfdashboardLiveWindowPrivate	*priv=self->priv;
 
-	/* Only set value if it changes */
-	if(inMargin==priv->marginCloseButton) return;
+	/* Set value if changed */
+	if(priv->paddingClose!=inPadding)
+	{
+		/* Set value */
+		priv->paddingClose=inPadding;
+		xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorClose), priv->paddingClose);
+		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 
-	/* Set new value */
-	priv->marginCloseButton=inMargin;
-	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorClose), priv->marginCloseButton);
-	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
-
-	/* Notify about property change */
-	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON_MARGIN]);
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON_PADDING]);
+	}
 }
