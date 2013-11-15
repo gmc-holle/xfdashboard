@@ -52,7 +52,7 @@ struct _XfdashboardButtonPrivate
 	ClutterAction			*clickAction;
 
 	/* Settings */
-	gfloat					margin;
+	gfloat					padding;
 	gfloat					spacing;
 	XfdashboardStyle		style;
 
@@ -74,7 +74,7 @@ enum
 {
 	PROP_0,
 
-	PROP_MARGIN,
+	PROP_PADDING,
 	PROP_SPACING,
 	PROP_STYLE,
 
@@ -115,9 +115,9 @@ static ClutterColor				defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Get preferred width of icon and label child actors
- * We do not respect margins here so if height is given it must be
- * reduced by margin on all affected sides. The returned sizes are also
- * without these margins.
+ * We do not respect paddings here so if height is given it must be
+ * reduced by padding on all affected sides. The returned sizes are also
+ * without these paddings.
  */
 static void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *self,
 															gboolean inGetPreferred,
@@ -205,9 +205,9 @@ static void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *se
 			gfloat		labelMinimumSize;
 			gfloat		requestSize, newRequestSize;
 
-			/* Reduce size by margin and spacing */
+			/* Reduce size by padding and spacing */
 			inForHeight-=priv->spacing;
-			inForHeight-=2*priv->margin;
+			inForHeight-=2*priv->padding;
 			inForHeight=MAX(0.0f, inForHeight);
 
 			/* Get scale factor of icon */
@@ -282,7 +282,7 @@ static void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *se
 		/* Size is given but nothing special */
 		else
 		{
-			/* Reduce size by margin and if both icon and label are visible
+			/* Reduce size by padding and if both icon and label are visible
 			 * also reduce by spacing
 			 */
 			if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorIcon) &&
@@ -290,7 +290,7 @@ static void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *se
 			{
 				inForHeight-=priv->spacing;
 			}
-			inForHeight-=2*priv->margin;
+			inForHeight-=2*priv->padding;
 			inForHeight=MAX(0.0f, inForHeight);
 
 			/* Get icon size if visible */
@@ -341,9 +341,9 @@ static void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *se
 }
 
 /* Get preferred height of icon and label child actors
- * We do not respect margins here so if width is given it must be
- * reduced by margins and spacing. The returned sizes are alsowithout
- * these margins and spacing.
+ * We do not respect paddings here so if width is given it must be
+ * reduced by paddings and spacing. The returned sizes are alsowithout
+ * these paddings and spacing.
  */
 static void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *self,
 															gboolean inGetPreferred,
@@ -430,9 +430,9 @@ static void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *s
 			gfloat		labelMinimumSize;
 			gfloat		requestSize, newRequestSize;
 
-			/* Reduce size by margin and spacing */
+			/* Reduce size by padding and spacing */
 			inForWidth-=priv->spacing;
-			inForWidth-=2*priv->margin;
+			inForWidth-=2*priv->padding;
 			inForWidth=MAX(0.0f, inForWidth);
 
 			/* Get scale factor of icon */
@@ -507,7 +507,7 @@ static void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *s
 		/* Size is given but nothing special */
 		else
 		{
-			/* Reduce size by margin and if both icon and label are visible
+			/* Reduce size by padding and if both icon and label are visible
 			 * also reduce by spacing
 			 */
 			if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorIcon) &&
@@ -515,7 +515,7 @@ static void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *s
 			{
 				inForWidth-=priv->spacing;
 			}
-			inForWidth-=2*priv->margin;
+			inForWidth-=2*priv->padding;
 			inForWidth=MAX(0.0f, inForWidth);
 
 			/* Get icon size if visible */
@@ -725,9 +725,9 @@ static void _xfdashboard_button_get_preferred_height(ClutterActor *inActor,
 		naturalHeight+=spacing;
 	}
 
-	// Add margin
-	minHeight+=2*priv->margin;
-	naturalHeight+=2*priv->margin;
+	// Add padding
+	minHeight+=2*priv->padding;
+	naturalHeight+=2*priv->padding;
 
 	/* Store sizes computed */
 	if(outMinHeight) *outMinHeight=minHeight;
@@ -799,9 +799,9 @@ static void _xfdashboard_button_get_preferred_width(ClutterActor *inActor,
 		naturalWidth+=spacing;
 	}
 
-	// Add margin
-	minWidth+=2*priv->margin;
-	naturalWidth+=2*priv->margin;
+	// Add padding
+	minWidth+=2*priv->padding;
+	naturalWidth+=2*priv->padding;
 
 	/* Store sizes computed */
 	if(outMinWidth) *outMinWidth=minWidth;
@@ -878,55 +878,55 @@ static void _xfdashboard_button_allocate(ClutterActor *inActor,
 		switch(priv->iconOrientation)
 		{
 			case XFDASHBOARD_ORIENTATION_TOP:
-				textWidth=MAX(0.0f, clutter_actor_box_get_width(inBox)-2*priv->margin);
+				textWidth=MAX(0.0f, clutter_actor_box_get_width(inBox)-2*priv->padding);
 
-				textHeight=clutter_actor_box_get_height(inBox)-iconHeight-2*priv->margin;
+				textHeight=clutter_actor_box_get_height(inBox)-iconHeight-2*priv->padding;
 				if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorIcon)) textHeight-=priv->spacing;
 				textHeight=MAX(0.0f, textHeight);
 
 				left=((clutter_actor_box_get_width(inBox)-textWidth)/2.0f);
 				right=left+textWidth;
-				top=priv->margin+iconHeight+spacing;
+				top=priv->padding+iconHeight+spacing;
 				bottom=top+textHeight;
 				break;
 
 			case XFDASHBOARD_ORIENTATION_BOTTOM:
-				textWidth=MAX(0.0f, clutter_actor_box_get_width(inBox)-2*priv->margin);
+				textWidth=MAX(0.0f, clutter_actor_box_get_width(inBox)-2*priv->padding);
 
-				textHeight=clutter_actor_box_get_height(inBox)-iconHeight-2*priv->margin;
+				textHeight=clutter_actor_box_get_height(inBox)-iconHeight-2*priv->padding;
 				if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorIcon)) textHeight-=priv->spacing;
 				textHeight=MAX(0.0f, textHeight);
 
 				left=((clutter_actor_box_get_width(inBox)-textWidth)/2.0f);
 				right=left+textWidth;
-				top=priv->margin;
+				top=priv->padding;
 				bottom=top+textHeight;
 				break;
 
 			case XFDASHBOARD_ORIENTATION_RIGHT:
-				textWidth=clutter_actor_box_get_width(inBox)-iconWidth-2*priv->margin;
+				textWidth=clutter_actor_box_get_width(inBox)-iconWidth-2*priv->padding;
 				if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorIcon)) textWidth-=priv->spacing;
 				textWidth=MAX(0.0f, textWidth);
 
-				textHeight=MAX(0.0f, clutter_actor_box_get_height(inBox)-2*priv->margin);
+				textHeight=MAX(0.0f, clutter_actor_box_get_height(inBox)-2*priv->padding);
 
-				left=priv->margin;
+				left=priv->padding;
 				right=left+textWidth;
-				top=priv->margin;
+				top=priv->padding;
 				bottom=top+textHeight;
 				break;
 
 			case XFDASHBOARD_ORIENTATION_LEFT:
 			default:
-				textWidth=clutter_actor_box_get_width(inBox)-iconWidth-2*priv->margin;
+				textWidth=clutter_actor_box_get_width(inBox)-iconWidth-2*priv->padding;
 				if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorIcon)) textWidth-=priv->spacing;
 				textWidth=MAX(0.0f, textWidth);
 
-				textHeight=MAX(0.0f, clutter_actor_box_get_height(inBox)-2*priv->margin);
+				textHeight=MAX(0.0f, clutter_actor_box_get_height(inBox)-2*priv->padding);
 
-				left=priv->margin+iconWidth+spacing;
+				left=priv->padding+iconWidth+spacing;
 				right=left+textWidth;
-				top=priv->margin;
+				top=priv->padding;
 				bottom=top+textHeight;
 				break;
 		}
@@ -946,29 +946,29 @@ static void _xfdashboard_button_allocate(ClutterActor *inActor,
 			case XFDASHBOARD_ORIENTATION_TOP:
 				left=((clutter_actor_box_get_width(inBox)-iconWidth)/2.0f);
 				right=left+iconWidth;
-				top=priv->margin;
+				top=priv->padding;
 				bottom=top+iconHeight;
 				break;
 
 			case XFDASHBOARD_ORIENTATION_BOTTOM:
 				left=((clutter_actor_box_get_width(inBox)-iconWidth)/2.0f);
 				right=left+iconWidth;
-				top=priv->margin+textHeight+spacing;
+				top=priv->padding+textHeight+spacing;
 				bottom=top+iconHeight;
 				break;
 
 			case XFDASHBOARD_ORIENTATION_RIGHT:
-				left=clutter_actor_box_get_width(inBox)-priv->margin-iconWidth;
-				right=clutter_actor_box_get_width(inBox)-priv->margin;
-				top=priv->margin;
+				left=clutter_actor_box_get_width(inBox)-priv->padding-iconWidth;
+				right=clutter_actor_box_get_width(inBox)-priv->padding;
+				top=priv->padding;
 				bottom=top+iconHeight;
 				break;
 
 			case XFDASHBOARD_ORIENTATION_LEFT:
 			default:
-				left=priv->margin;
+				left=priv->padding;
 				right=left+iconWidth;
-				top=priv->margin;
+				top=priv->padding;
 				bottom=top+iconHeight;
 				break;
 		}
@@ -1062,8 +1062,8 @@ static void _xfdashboard_button_set_property(GObject *inObject,
 	
 	switch(inPropID)
 	{
-		case PROP_MARGIN:
-			xfdashboard_button_set_margin(self, g_value_get_float(inValue));
+		case PROP_PADDING:
+			xfdashboard_button_set_padding(self, g_value_get_float(inValue));
 			break;
 
 		case PROP_SPACING:
@@ -1134,8 +1134,8 @@ static void _xfdashboard_button_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
-		case PROP_MARGIN:
-			g_value_set_float(outValue, priv->margin);
+		case PROP_PADDING:
+			g_value_set_float(outValue, priv->padding);
 			break;
 
 		case PROP_SPACING:
@@ -1221,10 +1221,10 @@ void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 	g_type_class_add_private(klass, sizeof(XfdashboardButtonPrivate));
 
 	/* Define properties */
-	XfdashboardButtonProperties[PROP_MARGIN]=
-		g_param_spec_float("margin",
-							_("Margin"),
-							_("Margin between background and elements"),
+	XfdashboardButtonProperties[PROP_PADDING]=
+		g_param_spec_float("padding",
+							_("Padding"),
+							_("Padding between background and elements"),
 							0.0f, G_MAXFLOAT,
 							4.0f,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
@@ -1354,7 +1354,7 @@ void xfdashboard_button_init(XfdashboardButton *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set up default values */
-	priv->margin=0.0f;
+	priv->padding=0.0f;
 	priv->spacing=0.0f;
 	priv->style=-1;
 	priv->iconName=NULL;
@@ -1421,33 +1421,33 @@ ClutterActor* xfdashboard_button_new_full(const gchar *inIconName, const gchar *
 						NULL));
 }
 
-/* Get/set margin of background to text and icon actors */
-gfloat xfdashboard_button_get_margin(XfdashboardButton *self)
+/* Get/set padding of background to text and icon actors */
+gfloat xfdashboard_button_get_padding(XfdashboardButton *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), 0);
 
-	return(self->priv->margin);
+	return(self->priv->padding);
 }
 
-void xfdashboard_button_set_margin(XfdashboardButton *self, const gfloat inMargin)
+void xfdashboard_button_set_padding(XfdashboardButton *self, const gfloat inPadding)
 {
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
-	g_return_if_fail(inMargin>=0.0f);
+	g_return_if_fail(inPadding>=0.0f);
 
 	XfdashboardButtonPrivate	*priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->margin!=inMargin)
+	if(priv->padding!=inPadding)
 	{
 		/* Set value */
-		priv->margin=inMargin;
+		priv->padding=inPadding;
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 
 		/* Update actor */
-		xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(self), priv->margin);
+		xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(self), priv->padding);
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_MARGIN]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_PADDING]);
 	}
 }
 

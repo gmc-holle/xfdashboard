@@ -73,8 +73,8 @@ ClutterActor* xfdashboard_button_new_with_icon(const gchar *inIconName);
 ClutterActor* xfdashboard_button_new_full(const gchar *inIconName, const gchar *inText);
 
 /* General functions */
-gfloat xfdashboard_button_get_margin(XfdashboardButton *self);
-void xfdashboard_button_set_margin(XfdashboardButton *self, const gfloat inMargin);
+gfloat xfdashboard_button_get_padding(XfdashboardButton *self);
+void xfdashboard_button_set_padding(XfdashboardButton *self, const gfloat inPadding);
 
 gfloat xfdashboard_button_get_spacing(XfdashboardButton *self);
 void xfdashboard_button_set_spacing(XfdashboardButton *self, const gfloat inSpacing);
