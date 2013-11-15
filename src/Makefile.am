@@ -32,6 +32,7 @@ xfdashboard_headers = \
 	search-view.h \
 	stage.h \
 	textbox.h \
+	toggle-button.h \
 	types.h \
 	utils.h \
 	view.h \
@@ -58,6 +59,7 @@ xfdashboard_SOURCES = \
 	search-view.c \
 	stage.c \
 	textbox.c \
+	toggle-button.c \
 	utils.c \
 	view.c \
 	view-manager.c \
