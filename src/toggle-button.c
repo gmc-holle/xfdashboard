@@ -32,7 +32,7 @@
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardToggleButton,
 				xfdashboard_toggle_button,
-				XFDASHBOARD_TYPE_TOGGLE_BUTTON)
+				XFDASHBOARD_TYPE_BUTTON)
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_TOGGLE_BUTTON_GET_PRIVATE(obj) \
@@ -237,5 +237,8 @@ void xfdashboard_toggle_button_set_toggle_state(XfdashboardToggleButton *self, g
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardToggleButtonProperties[PROP_TOGGLE_STATE]);
+
+		/* Emit signal for change of toggle state */
+		g_signal_emit(self, XfdashboardToggleButtonSignals[SIGNAL_TOGGLED], 0);
 	}
 }

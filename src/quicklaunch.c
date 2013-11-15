@@ -29,9 +29,11 @@
 #include "enums.h"
 #include "application.h"
 #include "application-button.h"
+#include "toggle-button.h"
 
 #include <glib/gi18n-lib.h>
 #include <math.h>
+#include <gtk/gtk.h>
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardQuicklaunch,
@@ -58,6 +60,7 @@ struct _XfdashboardQuicklaunchPrivate
 	/* Instance related */
 	XfconfChannel			*xfconfChannel;
 	gfloat					scaleCurrent;
+	ClutterActor			*mainButton;
 };
 
 /* Properties */
@@ -86,6 +89,23 @@ static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 #define DEFAULT_SCALE_MIN		0.1
 #define DEFAULT_SCALE_MAX		1.0
 #define DEFAULT_SCALE_STEP		0.1
+
+#define DEFAULT_MAIN_ICON		GTK_STOCK_HOME											// TODO: Replace by settings/theming object
+static ClutterColor				defaultMainBackgroundColor={ 0xff, 0xff , 0xff, 0xff };	// TODO: Replace by settings/theming object
+
+/* The main button (action button) was changed its state */
+static void _xfdashboard_quicklaunch_on_main_button_toggled(XfdashboardQuicklaunch *self, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+
+	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+	gboolean						state;
+
+	/* Depending on state change background of button */
+	state=xfdashboard_toggle_button_get_toggle_state(XFDASHBOARD_TOGGLE_BUTTON(priv->mainButton));
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->mainButton),
+												state==FALSE ? XFDASHBOARD_BACKGROUND_TYPE_NONE : XFDASHBOARD_BACKGROUND_TYPE_FILL);
+}
 
 /* An application icon in quicklaunch was clicked - try to start application */
 static void _xfdashboard_quicklaunch_on_application_button_clicked(XfdashboardQuicklaunch *self, gpointer inUserData)
@@ -787,6 +807,14 @@ void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 	requestMode=(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL ? CLUTTER_REQUEST_HEIGHT_FOR_WIDTH : CLUTTER_REQUEST_WIDTH_FOR_HEIGHT);
 	clutter_actor_set_request_mode(CLUTTER_ACTOR(self), requestMode);
+
+	priv->mainButton=xfdashboard_toggle_button_new_full(DEFAULT_MAIN_ICON, _("Applications"));
+	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->mainButton), 64);
+	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->mainButton), FALSE);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->mainButton), XFDASHBOARD_STYLE_ICON);
+	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->mainButton), &defaultMainBackgroundColor);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->mainButton);
+	g_signal_connect_swapped(priv->mainButton, "toggled", G_CALLBACK(_xfdashboard_quicklaunch_on_main_button_toggled), self);
 
 	/* Bind to xfconf to react on changes */
 	xfconf_g_property_bind(priv->xfconfChannel, "/favourites", XFDASHBOARD_TYPE_POINTER_ARRAY, self, "favourites");
