@@ -339,10 +339,8 @@ static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicati
 }
 
 /* Idle callback to fill model */
-#include "utils.h"
 static gboolean _xfdashboard_applications_menu_model_init_idle(gpointer inUserData)
 {
-	g_message("%s: user-data=%p (%s)", __func__, inUserData, DEBUG_OBJECT_NAME(inUserData));
 	_xfdashboard_applications_menu_model_fill_model(XFDASHBOARD_APPLICATIONS_MENU_MODEL(inUserData));
 	return(G_SOURCE_REMOVE);
 }
