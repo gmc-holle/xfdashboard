@@ -156,10 +156,14 @@ static gboolean _xfdashboard_search_view_filter_title_only(ClutterModel *inModel
 	{
 		checkText=g_utf8_strdown(command, -1);
 		foundPos=g_strstr_len(checkText, -1, searchData->searchText);
-		if(foundPos &&
-			(foundPos==checkText || (*(foundPos--))=='/'))
+		if(foundPos)
 		{
-			isMatch=TRUE;
+			if(foundPos==checkText) isMatch=TRUE;
+				else if(foundPos>checkText)
+				{
+					foundPos--;
+					if(*foundPos=='/') isMatch=TRUE;
+				}
 		}
 		g_free(checkText);
 	}
@@ -240,10 +244,14 @@ static gboolean _xfdashboard_search_view_filter_title_and_description(ClutterMod
 	{
 		checkText=g_utf8_strdown(command, -1);
 		foundPos=g_strstr_len(checkText, -1, searchData->searchText);
-		if(foundPos &&
-			(foundPos==checkText || (*(foundPos--))=='/'))
+		if(foundPos)
 		{
-			isMatch=TRUE;
+			if(foundPos==checkText) isMatch=TRUE;
+				else if(foundPos>checkText)
+				{
+					foundPos--;
+					if(*foundPos=='/') isMatch=TRUE;
+				}
 		}
 		g_free(checkText);
 	}
