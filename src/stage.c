@@ -94,6 +94,32 @@ guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 }; // TODO: Replace by settings/theming object
 
+/* App-button in quicklaunch was activated */
+static void _xfdashboard_stage_on_show_apps(XfdashboardStage *self, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+
+	XfdashboardStagePrivate		*priv=self->priv;
+	XfdashboardView				*view;
+
+	/* Find "applications" view and activate */
+	view=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), "applications");
+	if(view) xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), view);
+}
+
+/* App-button in quicklaunch was deactivated */
+static void _xfdashboard_stage_on_hide_apps(XfdashboardStage *self, gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+
+	XfdashboardStagePrivate		*priv=self->priv;
+	XfdashboardView				*view;
+
+	/* Find "windows-view" view and activate */
+	view=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), "windows");
+	if(view) xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), view);
+}
+
 /* Text in search text-box has changed */
 static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 															gchar *inText,
@@ -264,8 +290,8 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	priv->viewpad=xfdashboard_viewpad_new();
 	clutter_actor_set_x_expand(priv->viewpad, TRUE);
 	clutter_actor_set_y_expand(priv->viewpad, TRUE);
-	g_signal_connect_swapped(priv->viewpad, "view-activated", G_CALLBACK(_xfdashboard_stage_on_view_activated), self);
 	clutter_actor_add_child(groupVertical, priv->viewpad);
+	g_signal_connect_swapped(priv->viewpad, "view-activated", G_CALLBACK(_xfdashboard_stage_on_view_activated), self);
 	xfdashboard_view_selector_set_viewpad(XFDASHBOARD_VIEW_SELECTOR(priv->viewSelector), XFDASHBOARD_VIEWPAD(priv->viewpad));
 
 	/* Set up layout objects */
@@ -288,6 +314,8 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	xfdashboard_background_set_corners(XFDASHBOARD_BACKGROUND(priv->quicklaunch), XFDASHBOARD_CORNERS_RIGHT);
 	clutter_actor_set_y_expand(priv->quicklaunch, TRUE);
 	clutter_actor_add_child(groupHorizontal, priv->quicklaunch);
+	g_signal_connect_swapped(priv->quicklaunch, "show-apps", G_CALLBACK(_xfdashboard_stage_on_show_apps), self);
+	g_signal_connect_swapped(priv->quicklaunch, "hide-apps", G_CALLBACK(_xfdashboard_stage_on_hide_apps), self);
 
 	/* Set up layout objects */
 	clutter_actor_add_child(groupHorizontal, groupVertical);

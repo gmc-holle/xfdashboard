@@ -45,7 +45,7 @@ struct _XfdashboardQuicklaunch
 	XfdashboardBackground			parent_instance;
 
 	/* Private structure */
-	XfdashboardQuicklaunchPrivate		*priv;
+	XfdashboardQuicklaunchPrivate	*priv;
 };
 
 struct _XfdashboardQuicklaunchClass
@@ -56,6 +56,8 @@ struct _XfdashboardQuicklaunchClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*show_apps)(XfdashboardQuicklaunch *self);
+	void (*hide_apps)(XfdashboardQuicklaunch *self);
 };
 
 /* Public API */
