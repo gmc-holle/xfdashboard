@@ -97,7 +97,7 @@ static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 static ClutterColor				defaultMainBackgroundColor={ 0xc0, 0xc0 , 0xc0, 0xa0 };	// TODO: Replace by settings/theming object
 
 /* The main button (action button) was changed its state */
-static void _xfdashboard_quicklaunch_on_main_button_toggled(XfdashboardQuicklaunch *self, gpointer inUserData)
+static void _xfdashboard_quicklaunch_on_apps_button_toggled(XfdashboardQuicklaunch *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 
@@ -851,7 +851,7 @@ void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->appsButton), XFDASHBOARD_STYLE_ICON);
 	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->appsButton), &defaultMainBackgroundColor);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->appsButton);
-	g_signal_connect_swapped(priv->appsButton, "toggled", G_CALLBACK(_xfdashboard_quicklaunch_on_main_button_toggled), self);
+	g_signal_connect_swapped(priv->appsButton, "toggled", G_CALLBACK(_xfdashboard_quicklaunch_on_apps_button_toggled), self);
 
 	/* Bind to xfconf to react on changes */
 	xfconf_g_property_bind(priv->xfconfChannel, "/favourites", XFDASHBOARD_TYPE_POINTER_ARRAY, self, "favourites");
