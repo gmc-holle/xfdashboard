@@ -80,49 +80,17 @@ static GParamSpec* XfdashboardQuicklaunchProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
-	SIGNAL_SHOW_APPS,
-	SIGNAL_HIDE_APPS,
-
 	SIGNAL_LAST
 };
 
 static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_SCALE_MIN		0.1
-#define DEFAULT_SCALE_MAX		1.0
-#define DEFAULT_SCALE_STEP		0.1
+#define DEFAULT_SCALE_MIN			0.1
+#define DEFAULT_SCALE_MAX			1.0
+#define DEFAULT_SCALE_STEP			0.1
 
-#define DEFAULT_MAIN_ICON		GTK_STOCK_HOME											// TODO: Replace by settings/theming object
-static ClutterColor				defaultMainBackgroundColor={ 0xc0, 0xc0 , 0xc0, 0xa0 };	// TODO: Replace by settings/theming object
-
-/* The main button (action button) was changed its state */
-static void _xfdashboard_quicklaunch_on_apps_button_toggled(XfdashboardQuicklaunch *self, gpointer inUserData)
-{
-	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
-
-	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
-	gboolean						state;
-
-	/* Depending on state change background of button */
-	state=xfdashboard_toggle_button_get_toggle_state(XFDASHBOARD_TOGGLE_BUTTON(priv->appsButton));
-	if(state==FALSE)
-	{
-		/* Unhilight main action button */
-		xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->appsButton), XFDASHBOARD_BACKGROUND_TYPE_NONE);
-
-		/* Emit signal */
-		g_signal_emit(self, XfdashboardQuicklaunchSignals[SIGNAL_HIDE_APPS], 0);
-	}
-		else
-		{
-			/* Hilight main action button */
-			xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->appsButton), XFDASHBOARD_BACKGROUND_TYPE_FILL);
-
-			/* Emit signal */
-			g_signal_emit(self, XfdashboardQuicklaunchSignals[SIGNAL_SHOW_APPS], 0);
-		}
-}
+#define DEFAULT_APPS_BUTTON_ICON	GTK_STOCK_HOME	// TODO: Replace by settings/theming object
 
 /* An application icon in quicklaunch was clicked - try to start application */
 static void _xfdashboard_quicklaunch_on_application_button_clicked(XfdashboardQuicklaunch *self, gpointer inUserData)
@@ -797,27 +765,7 @@ void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klass)
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardQuicklaunchProperties);
 
 	/* Define signals */
-	XfdashboardQuicklaunchSignals[SIGNAL_SHOW_APPS]=
-		g_signal_new("show-apps",
-						G_TYPE_FROM_CLASS(klass),
-						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, show_apps),
-						NULL,
-						NULL,
-						g_cclosure_marshal_VOID__VOID,
-						G_TYPE_NONE,
-						0);
-
-	XfdashboardQuicklaunchSignals[SIGNAL_HIDE_APPS]=
-		g_signal_new("hide-apps",
-						G_TYPE_FROM_CLASS(klass),
-						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, hide_apps),
-						NULL,
-						NULL,
-						g_cclosure_marshal_VOID__VOID,
-						G_TYPE_NONE,
-						0);
+	// TODO: define signals
 }
 
 /* Object initialization
@@ -845,13 +793,11 @@ void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	requestMode=(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL ? CLUTTER_REQUEST_HEIGHT_FOR_WIDTH : CLUTTER_REQUEST_WIDTH_FOR_HEIGHT);
 	clutter_actor_set_request_mode(CLUTTER_ACTOR(self), requestMode);
 
-	priv->appsButton=xfdashboard_toggle_button_new_full(DEFAULT_MAIN_ICON, _("Applications"));
+	priv->appsButton=xfdashboard_toggle_button_new_full(DEFAULT_APPS_BUTTON_ICON, _("Applications"));
 	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->appsButton), 64);
 	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->appsButton), FALSE);
 	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->appsButton), XFDASHBOARD_STYLE_ICON);
-	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->appsButton), &defaultMainBackgroundColor);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->appsButton);
-	g_signal_connect_swapped(priv->appsButton, "toggled", G_CALLBACK(_xfdashboard_quicklaunch_on_apps_button_toggled), self);
 
 	/* Bind to xfconf to react on changes */
 	xfconf_g_property_bind(priv->xfconfChannel, "/favourites", XFDASHBOARD_TYPE_POINTER_ARRAY, self, "favourites");
@@ -934,4 +880,12 @@ void xfdashboard_quicklaunch_set_orientation(XfdashboardQuicklaunch *self, Clutt
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardQuicklaunchProperties[PROP_ORIENTATION]);
 	}
+}
+
+/* Get apps button */
+XfdashboardToggleButton* xfdashboard_quicklaunch_get_apps_button(XfdashboardQuicklaunch *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), CLUTTER_ORIENTATION_VERTICAL);
+
+	return(XFDASHBOARD_TOGGLE_BUTTON(self->priv->appsButton));
 }

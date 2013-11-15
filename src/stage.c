@@ -37,8 +37,11 @@
 #include "view-selector.h"
 #include "textbox.h"
 #include "quicklaunch.h"
+#include "applications-view.h"
+#include "windows-view.h"
 #include "search-view.h"
 #include "textbox.h"
+#include "toggle-button.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,
@@ -62,6 +65,7 @@ struct _XfdashboardStagePrivate
 	WnckScreen			*screen;
 	WnckWindow			*window;
 
+	gboolean			searchActive;
 	gint				lastSearchTextLength;
 	XfdashboardView		*viewBeforeSearch;
 };
@@ -92,32 +96,45 @@ guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
-ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 }; // TODO: Replace by settings/theming object
+ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 };				// TODO: Replace by settings/theming object
+ClutterColor		defaultAppsButtonHighlightColor={ 0xc0, 0xc0, 0xc0, 0xa0 };	// TODO: Replace by settings/theming object
 
-/* App-button in quicklaunch was activated */
-static void _xfdashboard_stage_on_show_apps(XfdashboardStage *self, gpointer inUserData)
+/* App-button was toggled */
+static void _xfdashboard_stage_on_quicklaunch_apps_button_toggled(XfdashboardStage *self, gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 
 	XfdashboardStagePrivate		*priv=self->priv;
+	XfdashboardToggleButton		*appsButton;
+	gboolean					state;
 	XfdashboardView				*view;
 
-	/* Find "applications" view and activate */
-	view=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), "applications");
-	if(view) xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), view);
-}
+	/* Get state of apps button */
+	appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
+	g_return_if_fail(appsButton);
 
-/* App-button in quicklaunch was deactivated */
-static void _xfdashboard_stage_on_hide_apps(XfdashboardStage *self, gpointer inUserData)
-{
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	state=xfdashboard_toggle_button_get_toggle_state(XFDASHBOARD_TOGGLE_BUTTON(appsButton));
 
-	XfdashboardStagePrivate		*priv=self->priv;
-	XfdashboardView				*view;
+	/* Depending on state activate view and set up new appearance of apps button */
+	if(state==FALSE)
+	{
+		/* Find "windows-view" view and activate */
+		view=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_WINDOWS_VIEW);
+		if(view) xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), view);
 
-	/* Find "windows-view" view and activate */
-	view=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), "windows");
-	if(view) xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), view);
+		/* Set up new appearance of apps button */
+		xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(appsButton), XFDASHBOARD_BACKGROUND_TYPE_NONE);
+	}
+		else
+		{
+			/* Find "applications" or "search" view and activate */
+			if(!priv->searchActive) view=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_APPLICATIONS_VIEW);
+				else view=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
+			if(view) xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), view);
+
+			/* Set up new appearance of apps button */
+			xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(appsButton), XFDASHBOARD_BACKGROUND_TYPE_FILL);
+		}
 }
 
 /* Text in search text-box has changed */
@@ -133,6 +150,7 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 	XfdashboardView				*searchView;
 	gint						textLength;
 	const gchar					*text;
+	XfdashboardToggleButton		*appsButton;
 
 	/* Get search view */
 	searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
@@ -145,6 +163,9 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 	/* Get text and length of text in text-box */
 	text=xfdashboard_text_box_get_text(textBox);
 	textLength=xfdashboard_text_box_get_length(textBox);
+
+	/* Get apps button of quicklaunch */
+	appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
 
 	/* Check if current text length if greater than zero and previous text length
 	 * was zero. If check if successful it marks the start of a search. Emit the
@@ -165,16 +186,22 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		/* Activate "clear" button on text box */
 		xfdashboard_text_box_set_secondary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_CLEAR);
 
+		/* Change apps button appearance */
+		if(appsButton) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(appsButton), GTK_STOCK_FIND);
+
 		/* Emit "search-started" signal */
 		g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_STARTED], 0);
+		priv->searchActive=TRUE;
 	}
 
 	/* Ensure that search view is active, emit signal for text changed
-	 * and update search criterias
+	 * update search criterias and set active toggle state at apps button
 	 */
 	xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), searchView);
 	xfdashboard_search_view_update_search(XFDASHBOARD_SEARCH_VIEW(searchView), text);
 	g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_CHANGED], 0, text);
+
+	if(appsButton) xfdashboard_toggle_button_set_toggle_state(appsButton, TRUE);
 
 	/* Check if current text length is zero and previous text length was greater
 	 * than zero. If check if successful it marks the end of current search. Emit
@@ -197,8 +224,12 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		/* Disable search view */
 		xfdashboard_view_set_enabled(searchView, FALSE);
 
+		/* Change apps button appearance */
+		if(appsButton) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(appsButton), GTK_STOCK_HOME);
+
 		/* Emit "search-ended" signal */
 		g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_ENDED], 0);
+		priv->searchActive=FALSE;
 	}
 
 	/* Trace text length changes */
@@ -225,6 +256,7 @@ static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, Xfdashb
 
 	XfdashboardStagePrivate		*priv=self->priv;
 	XfdashboardViewpad			*viewpad=XFDASHBOARD_VIEWPAD(inUserData);
+	XfdashboardToggleButton		*appsButton;
 
 	/* If we have remembered a view "before-search" then a search is going on.
 	 * If user switches between views while a search is going on remember the
@@ -240,6 +272,21 @@ static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, Xfdashb
 		/* Remember new active view */
 		priv->viewBeforeSearch=XFDASHBOARD_VIEW(g_object_ref(inView));
 	}
+
+	/* Update toggle state of apps button */
+	appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
+	if(appsButton)
+	{
+		if(G_OBJECT_TYPE(inView)==XFDASHBOARD_TYPE_SEARCH_VIEW ||
+			G_OBJECT_TYPE(inView)==XFDASHBOARD_TYPE_APPLICATIONS_VIEW)
+		{
+			xfdashboard_toggle_button_set_toggle_state(appsButton, TRUE);
+		}
+			else
+			{
+				xfdashboard_toggle_button_set_toggle_state(appsButton, FALSE);
+			}
+	}
 }
 
 /* Set up stage */
@@ -254,6 +301,7 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	ClutterActor				*groupVertical;
 	ClutterLayoutManager		*layout;
 	ClutterColor				color={ 0x00, 0x00, 0x00, 0x80 };
+	XfdashboardToggleButton		*appsButton;
 
 	/* Set up layout objects */
 	layout=clutter_box_layout_new();
@@ -314,8 +362,13 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	xfdashboard_background_set_corners(XFDASHBOARD_BACKGROUND(priv->quicklaunch), XFDASHBOARD_CORNERS_RIGHT);
 	clutter_actor_set_y_expand(priv->quicklaunch, TRUE);
 	clutter_actor_add_child(groupHorizontal, priv->quicklaunch);
-	g_signal_connect_swapped(priv->quicklaunch, "show-apps", G_CALLBACK(_xfdashboard_stage_on_show_apps), self);
-	g_signal_connect_swapped(priv->quicklaunch, "hide-apps", G_CALLBACK(_xfdashboard_stage_on_hide_apps), self);
+
+	appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
+	if(appsButton)
+	{
+		xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(appsButton), &defaultAppsButtonHighlightColor);
+		g_signal_connect_swapped(appsButton, "toggled", G_CALLBACK(_xfdashboard_stage_on_quicklaunch_apps_button_toggled), self);
+	}
 
 	/* Set up layout objects */
 	clutter_actor_add_child(groupHorizontal, groupVertical);
@@ -526,6 +579,7 @@ void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->viewSelector=NULL;
 	priv->lastSearchTextLength=0;
 	priv->viewBeforeSearch=NULL;
+	priv->searchActive=FALSE;
 
 	/* Set up stage */
 	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &defaultStageColor);

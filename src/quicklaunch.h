@@ -25,6 +25,7 @@
 #define __XFOVERVIEW_QUICKLAUNCH__
 
 #include "background.h"
+#include "toggle-button.h"
 
 G_BEGIN_DECLS
 
@@ -56,8 +57,6 @@ struct _XfdashboardQuicklaunchClass
 
 	/*< public >*/
 	/* Virtual functions */
-	void (*show_apps)(XfdashboardQuicklaunch *self);
-	void (*hide_apps)(XfdashboardQuicklaunch *self);
 };
 
 /* Public API */
@@ -71,6 +70,8 @@ void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, const gfl
 
 ClutterOrientation xfdashboard_quicklaunch_get_orientation(XfdashboardQuicklaunch *self);
 void xfdashboard_quicklaunch_set_orientation(XfdashboardQuicklaunch *self, ClutterOrientation inOrientation);
+
+XfdashboardToggleButton* xfdashboard_quicklaunch_get_apps_button(XfdashboardQuicklaunch *self);
 
 G_END_DECLS
 
