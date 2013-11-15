@@ -54,7 +54,7 @@ struct _XfdashboardTextBoxPrivate
 	ClutterAction			*secondaryIconClickAction;
 
 	/* Settings */
-	gfloat					margin;
+	gfloat					padding;
 	gfloat					spacing;
 
 	gchar					*primaryIconName;
@@ -76,7 +76,7 @@ enum
 {
 	PROP_0,
 
-	PROP_MARGIN,
+	PROP_PADDING,
 	PROP_SPACING,
 
 	PROP_PRIMARY_ICON_NAME,
@@ -111,7 +111,7 @@ static guint XfdashboardTextBoxSignals[SIGNAL_LAST]={ 0, };
 
 /* Private constants */
 #define DEFAULT_ICON_SIZE	16
-#define DEFAULT_MARGIN		4.0f
+#define DEFAULT_PADDING		4.0f
 #define DEFAULT_SPACING		4.0f
 
 static ClutterColor		defaultTextColor={ 0xff, 0xff, 0xff, 0xff };
@@ -236,9 +236,9 @@ static void _xfdashboard_text_box_get_preferred_height(ClutterActor *self,
 	if(childMinHeight>minHeight) minHeight=childMinHeight;
 	if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
 
-	// Add margin
-	minHeight+=2*priv->margin;
-	naturalHeight+=2*priv->margin;
+	// Add padding
+	minHeight+=2*priv->padding;
+	naturalHeight+=2*priv->padding;
 
 	/* Store sizes computed */
 	if(outMinHeight) *outMinHeight=minHeight;
@@ -312,9 +312,9 @@ static void _xfdashboard_text_box_get_preferred_width(ClutterActor *self,
 		naturalWidth+=(numberChildren*priv->spacing);
 	}
 
-	// Add margin
-	minWidth+=2*priv->margin;
-	naturalWidth+=2*priv->margin;
+	// Add padding
+	minWidth+=2*priv->padding;
+	naturalWidth+=2*priv->padding;
 
 	/* Store sizes computed */
 	if(outMinWidth) *outMinWidth=minWidth;
@@ -335,9 +335,9 @@ static void _xfdashboard_text_box_allocate(ClutterActor *self,
 	CLUTTER_ACTOR_CLASS(xfdashboard_text_box_parent_class)->allocate(self, inBox, inFlags);
 
 	/* Initialize bounding box (except right side) of allocation used in actors */
-	left=top=priv->margin;
-	right=clutter_actor_box_get_width(inBox)-priv->margin;
-	bottom=clutter_actor_box_get_height(inBox)-priv->margin;
+	left=top=priv->padding;
+	right=clutter_actor_box_get_width(inBox)-priv->padding;
+	bottom=clutter_actor_box_get_height(inBox)-priv->padding;
 
 	/* Set allocation of primary icon if visible */
 	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorPrimaryIcon))
@@ -508,8 +508,8 @@ static void _xfdashboard_text_box_set_property(GObject *inObject,
 
 	switch(inPropID)
 	{
-		case PROP_MARGIN:
-			xfdashboard_text_box_set_margin(self, g_value_get_float(inValue));
+		case PROP_PADDING:
+			xfdashboard_text_box_set_padding(self, g_value_get_float(inValue));
 			break;
 
 		case PROP_SPACING:
@@ -564,8 +564,8 @@ static void _xfdashboard_text_box_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
-		case PROP_MARGIN:
-			g_value_set_float(outValue, priv->margin);
+		case PROP_PADDING:
+			g_value_set_float(outValue, priv->padding);
 			break;
 
 		case PROP_SPACING:
@@ -635,12 +635,12 @@ void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 	g_type_class_add_private(klass, sizeof(XfdashboardTextBoxPrivate));
 
 	/* Define properties */
-	XfdashboardTextBoxProperties[PROP_MARGIN]=
-		g_param_spec_float("margin",
-							_("Margin"),
-							_("Margin between background and elements"),
+	XfdashboardTextBoxProperties[PROP_PADDING]=
+		g_param_spec_float("padding",
+							_("Padding"),
+							_("Padding between background and elements"),
 							0.0f, G_MAXFLOAT,
-							DEFAULT_MARGIN,
+							DEFAULT_PADDING,
 							G_PARAM_READWRITE);
 
 	XfdashboardTextBoxProperties[PROP_SPACING]=
@@ -758,7 +758,7 @@ void xfdashboard_text_box_init(XfdashboardTextBox *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set up default values */
-	priv->margin=DEFAULT_MARGIN;
+	priv->padding=DEFAULT_PADDING;
 	priv->spacing=DEFAULT_SPACING;
 	priv->primaryIconName=NULL;
 	priv->secondaryIconName=NULL;
@@ -812,29 +812,29 @@ ClutterActor* xfdashboard_text_box_new(void)
 	return(g_object_new(XFDASHBOARD_TYPE_TEXT_BOX, NULL));
 }
 
-/* Get/set margin of background to text and icon actors */
-gfloat xfdashboard_text_box_get_margin(XfdashboardTextBox *self)
+/* Get/set padding of background to text and icon actors */
+gfloat xfdashboard_text_box_get_padding(XfdashboardTextBox *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(self), 0);
 
-	return(self->priv->margin);
+	return(self->priv->padding);
 }
 
-void xfdashboard_text_box_set_margin(XfdashboardTextBox *self, gfloat inMargin)
+void xfdashboard_text_box_set_padding(XfdashboardTextBox *self, gfloat inPadding)
 {
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
-	g_return_if_fail(inMargin>=0.0f);
+	g_return_if_fail(inPadding>=0.0f);
 
 	XfdashboardTextBoxPrivate	*priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->margin!=inMargin)
+	if(priv->padding!=inPadding)
 	{
-		priv->margin=inMargin;
+		priv->padding=inPadding;
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardTextBoxProperties[PROP_MARGIN]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardTextBoxProperties[PROP_PADDING]);
 	}
 }
 

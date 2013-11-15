@@ -68,8 +68,8 @@ GType xfdashboard_text_box_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_text_box_new(void);
 
-gfloat xfdashboard_text_box_get_margin(XfdashboardTextBox *self);
-void xfdashboard_text_box_set_margin(XfdashboardTextBox *self, gfloat inMargin);
+gfloat xfdashboard_text_box_get_padding(XfdashboardTextBox *self);
+void xfdashboard_text_box_set_padding(XfdashboardTextBox *self, gfloat inPadding);
 
 gfloat xfdashboard_text_box_get_spacing(XfdashboardTextBox *self);
 void xfdashboard_text_box_set_spacing(XfdashboardTextBox *self, gfloat inSpacing);
