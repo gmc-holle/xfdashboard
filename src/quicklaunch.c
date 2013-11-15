@@ -226,7 +226,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_width(XfdashboardQuicklaunc
 	if(numberChildren==0) return(priv->scaleMax);
 
 	/* Determine scalable width. That is the width without spacing
-	 * between children and the spacing used as margin.
+	 * between children and the spacing used as padding.
 	 */
 	scalableWidth=inForWidth-((numberChildren+1)*priv->spacing);
 
@@ -252,7 +252,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_width(XfdashboardQuicklaunc
 			/* Iterate through visible children and sum their scaled
 			 * widths. The total width will be initialized with unscaled
 			 * spacing and all visible children's scaled width will also
-			 * be added with unscaled spacing to have the margin added.
+			 * be added with unscaled spacing to have the padding added.
 			 */
 			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
 			while(clutter_actor_iter_next(&iter, &child))
@@ -326,7 +326,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaun
 	if(numberChildren==0) return(priv->scaleMax);
 
 	/* Determine scalable height. That is the height without spacing
-	 * between children and the spacing used as margin.
+	 * between children and the spacing used as padding.
 	 */
 	scalableHeight=inForHeight-((numberChildren+1)*priv->spacing);
 
@@ -352,7 +352,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaun
 			/* Iterate through visible children and sum their scaled
 			 * heights. The total height will be initialized with unscaled
 			 * spacing and all visible children's scaled height will also
-			 * be added with unscaled spacing to have the margin added.
+			 * be added with unscaled spacing to have the padding added.
 			 */
 			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
 			while(clutter_actor_iter_next(&iter, &child))
@@ -442,7 +442,7 @@ static void _xfdashboard_quicklaunch_get_preferred_height(ClutterActor *inActor,
 			naturalHeight*=scale;
 		}
 
-		/* Add spacing as margin */
+		/* Add spacing as padding */
 		if(numberChildren>0)
 		{
 			minHeight+=2*priv->spacing;
@@ -474,7 +474,7 @@ static void _xfdashboard_quicklaunch_get_preferred_height(ClutterActor *inActor,
 				numberChildren++;
 			}
 
-			/* Add spacing between children and spacing as margin */
+			/* Add spacing between children and spacing as padding */
 			if(numberChildren>0)
 			{
 				minHeight+=(numberChildren+1)*priv->spacing;
@@ -529,7 +529,7 @@ static void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
 			numberChildren++;
 		}
 
-		/* Add spacing between children and spacing as margin */
+		/* Add spacing between children and spacing as padding */
 		if(numberChildren>0)
 		{
 			minWidth+=(numberChildren+1)*priv->spacing;
@@ -573,7 +573,7 @@ static void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
 				naturalWidth*=scale;
 			}
 
-			/* Add spacing as margin */
+			/* Add spacing as padding */
 			if(numberChildren>0)
 			{
 				minWidth+=2*priv->spacing;
