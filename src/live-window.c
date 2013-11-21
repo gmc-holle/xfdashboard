@@ -128,15 +128,6 @@ static gboolean _xfdashboard_live_window_is_visible_window(XfdashboardLiveWindow
 	return(TRUE);
 }
 
-/* The close button of this actor was clicked */
-static void _xfdashboard_live_window_on_close_clicked(XfdashboardLiveWindow *self, gpointer inUserData)
-{
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-
-	/* Emit "close" signal */
-	g_signal_emit(self, XfdashboardLiveWindowSignals[SIGNAL_CLOSE], 0);
-}
-
 /* This actor was clicked */
 static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, ClutterActor *inActor, gpointer inUserData)
 {
@@ -152,21 +143,18 @@ static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, Clu
 	priv=self->priv;
 	action=CLUTTER_CLICK_ACTION(inUserData);
 
-	/* TODO: Do I use ClutterClickAction wrong here or problem in proxying "click" signal
-	 *       in XfdashboardButton or Clutter bug?
-	 *
-	 * Every second click on the close button of this actor emits the "clicked" signal
-	 * for this actor instead emitting for the close button. So we need to check if
-	 * this "clicked" action was really emitted by this actor.
-	 */
-	clutter_click_action_get_coords(action, &eventX, &eventY);
-	eventActor=clutter_stage_get_actor_at_pos(CLUTTER_STAGE(clutter_actor_get_stage(inActor)),
-												CLUTTER_PICK_REACTIVE,
-												eventX, eventY);
-	if(eventActor==priv->actorClose)
+	/* Check if click happened in "close button" */
+	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorClose))
 	{
-		_xfdashboard_live_window_on_close_clicked(self, NULL);
-		return;
+		clutter_click_action_get_coords(action, &eventX, &eventY);
+		eventActor=clutter_stage_get_actor_at_pos(CLUTTER_STAGE(clutter_actor_get_stage(inActor)),
+													CLUTTER_PICK_REACTIVE,
+													eventX, eventY);
+		if(eventActor==priv->actorClose)
+		{
+			g_signal_emit(self, XfdashboardLiveWindowSignals[SIGNAL_CLOSE], 0);
+			return;
+		}
 	}
 
 	/* Emit "clicked" signal */
@@ -716,6 +704,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorWindow);
 
 	priv->actorTitle=xfdashboard_button_new();
+	clutter_actor_set_reactive(priv->actorTitle, FALSE);
 	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->actorTitle), XFDASHBOARD_STYLE_BOTH);
 	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorTitle), XFDASHBOARD_BACKGROUND_TYPE_FILL_ROUNDED);
 	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorTitle), priv->paddingTitle);
@@ -723,11 +712,11 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorTitle);
 
 	priv->actorClose=xfdashboard_button_new_with_icon(WINDOW_CLOSE_BUTTON_ICON);
+	clutter_actor_set_reactive(priv->actorClose, FALSE);
 	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorClose), XFDASHBOARD_BACKGROUND_TYPE_FILL_ROUNDED);
 	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorClose), priv->paddingClose);
 	clutter_actor_show(priv->actorClose);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorClose);
-	g_signal_connect_swapped(priv->actorClose, "clicked", G_CALLBACK(_xfdashboard_live_window_on_close_clicked), self);
 }
 
 /* Implementation: Public API */
