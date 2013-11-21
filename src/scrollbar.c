@@ -80,7 +80,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardScrollbarProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardScrollbarProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -90,7 +90,7 @@ enum
 	SIGNAL_LAST
 };
 
-guint XfdashboardScrollbarSignals[SIGNAL_LAST]={ 0, };
+static guint XfdashboardScrollbarSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_PAGE_SIZE_FACTOR	0.5f
@@ -673,7 +673,7 @@ static void _xfdashboard_scrollbar_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
+static void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 {
 	ClutterActorClass		*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
@@ -781,7 +781,7 @@ void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_scrollbar_init(XfdashboardScrollbar *self)
+static void xfdashboard_scrollbar_init(XfdashboardScrollbar *self)
 {
 	XfdashboardScrollbarPrivate		*priv;
 

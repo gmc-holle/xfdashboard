@@ -75,7 +75,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardViewProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardViewProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -98,7 +98,7 @@ enum
 	SIGNAL_LAST
 };
 
-guint XfdashboardViewSignals[SIGNAL_LAST]={ 0, };
+static guint XfdashboardViewSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_ICON_SIZE	64		// TODO: Replace by settings/theming object
@@ -215,7 +215,7 @@ static void _xfdashboard_view_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_view_class_init(XfdashboardViewClass *klass)
+static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 {
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
@@ -395,7 +395,7 @@ void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_view_init(XfdashboardView *self)
+static void xfdashboard_view_init(XfdashboardView *self)
 {
 	XfdashboardViewPrivate	*priv;
 

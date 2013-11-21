@@ -306,7 +306,7 @@ void xfdashboard_application_button_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_application_button_class_init(XfdashboardApplicationButtonClass *klass)
+static void xfdashboard_application_button_class_init(XfdashboardApplicationButtonClass *klass)
 {
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
@@ -360,7 +360,7 @@ void xfdashboard_application_button_class_init(XfdashboardApplicationButtonClass
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_application_button_init(XfdashboardApplicationButton *self)
+static void xfdashboard_application_button_init(XfdashboardApplicationButton *self)
 {
 	XfdashboardApplicationButtonPrivate	*priv;
 

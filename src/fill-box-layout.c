@@ -64,7 +64,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardFillBoxLayoutProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardFillBoxLayoutProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_HORIZONTAL
@@ -543,7 +543,7 @@ static void _xfdashboard_fill_box_layout_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_fill_box_layout_class_init(XfdashboardFillBoxLayoutClass *klass)
+static void xfdashboard_fill_box_layout_class_init(XfdashboardFillBoxLayoutClass *klass)
 {
 	ClutterLayoutManagerClass	*layoutClass=CLUTTER_LAYOUT_MANAGER_CLASS(klass);
 	GObjectClass				*gobjectClass=G_OBJECT_CLASS(klass);
@@ -597,7 +597,7 @@ void xfdashboard_fill_box_layout_class_init(XfdashboardFillBoxLayoutClass *klass
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_fill_box_layout_init(XfdashboardFillBoxLayout *self)
+static void xfdashboard_fill_box_layout_init(XfdashboardFillBoxLayout *self)
 {
 	XfdashboardFillBoxLayoutPrivate	*priv;
 

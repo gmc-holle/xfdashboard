@@ -54,7 +54,7 @@ enum
 	SIGNAL_LAST
 };
 
-guint XfdashboardApplicationsMenuModelSignals[SIGNAL_LAST]={ 0, };
+static guint XfdashboardApplicationsMenuModelSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -516,7 +516,7 @@ static void _xfdashboard_applications_menu_model_dispose(GObject *inObject)
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_applications_menu_model_class_init(XfdashboardApplicationsMenuModelClass *klass)
+static void xfdashboard_applications_menu_model_class_init(XfdashboardApplicationsMenuModelClass *klass)
 {
 	ClutterModelClass		*modelClass=CLUTTER_MODEL_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
@@ -545,7 +545,7 @@ void xfdashboard_applications_menu_model_class_init(XfdashboardApplicationsMenuM
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_applications_menu_model_init(XfdashboardApplicationsMenuModel *self)
+static void xfdashboard_applications_menu_model_init(XfdashboardApplicationsMenuModel *self)
 {
 	XfdashboardApplicationsMenuModelPrivate	*priv;
 

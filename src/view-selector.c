@@ -63,7 +63,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardViewSelectorProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardViewSelectorProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_SPACING				0.0f
@@ -239,7 +239,7 @@ static void _xfdashboard_view_selector_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *klass)
+static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *klass)
 {
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
@@ -281,7 +281,7 @@ void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_view_selector_init(XfdashboardViewSelector *self)
+static void xfdashboard_view_selector_init(XfdashboardViewSelector *self)
 {
 	XfdashboardViewSelectorPrivate		*priv;
 

@@ -614,7 +614,7 @@ static void _xfdashboard_text_box_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
+static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 {
 	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
@@ -748,7 +748,7 @@ void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_text_box_init(XfdashboardTextBox *self)
+static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 {
 	XfdashboardTextBoxPrivate	*priv;
 

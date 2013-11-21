@@ -69,7 +69,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardApplicationProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardApplicationProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -79,7 +79,7 @@ enum
 	SIGNAL_LAST
 };
 
-guint XfdashboardApplicationSignals[SIGNAL_LAST]={ 0, };
+static guint XfdashboardApplicationSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -379,7 +379,7 @@ static void _xfdashboard_application_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_application_class_init(XfdashboardApplicationClass *klass)
+static void xfdashboard_application_class_init(XfdashboardApplicationClass *klass)
 {
 	GApplicationClass	*appClass=G_APPLICATION_CLASS(klass);
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
@@ -422,7 +422,7 @@ void xfdashboard_application_class_init(XfdashboardApplicationClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_application_init(XfdashboardApplication *self)
+static void xfdashboard_application_init(XfdashboardApplication *self)
 {
 	XfdashboardApplicationPrivate	*priv;
 

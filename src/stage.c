@@ -79,7 +79,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardStageProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardStageProperties[PROP_LAST]={ 0, };
 */
 
 /* Signals */
@@ -92,7 +92,7 @@ enum
 	SIGNAL_LAST
 };
 
-guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
+static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
@@ -514,7 +514,7 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
+static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 {
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
@@ -563,7 +563,7 @@ void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_stage_init(XfdashboardStage *self)
+static void xfdashboard_stage_init(XfdashboardStage *self)
 {
 	XfdashboardStagePrivate		*priv;
 

@@ -63,7 +63,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardWindowsViewProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardWindowsViewProperties[PROP_LAST]={ 0, };
 
 /* Forward declaration */
 static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self, WnckWindow *inWindow);
@@ -413,7 +413,7 @@ static void _xfdashboard_windows_view_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *klass)
+static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *klass)
 {
 	XfdashboardViewClass	*viewClass=XFDASHBOARD_VIEW_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
@@ -440,7 +440,7 @@ void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
+static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 {
 	XfdashboardWindowsViewPrivate	*priv;
 	ClutterLayoutManager			*layout;

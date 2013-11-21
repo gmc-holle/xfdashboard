@@ -68,7 +68,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardScaledTableLayoutProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardScaledTableLayoutProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -362,7 +362,7 @@ static void _xfdashboard_scaled_table_layout_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLayoutClass *klass)
+static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLayoutClass *klass)
 {
 	ClutterLayoutManagerClass	*layoutClass=CLUTTER_LAYOUT_MANAGER_CLASS(klass);
 	GObjectClass				*gobjectClass=G_OBJECT_CLASS(klass);
@@ -410,7 +410,7 @@ void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLayoutClas
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_scaled_table_layout_init(XfdashboardScaledTableLayout *self)
+static void xfdashboard_scaled_table_layout_init(XfdashboardScaledTableLayout *self)
 {
 	XfdashboardScaledTableLayoutPrivate	*priv;
 

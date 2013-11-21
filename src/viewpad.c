@@ -80,7 +80,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardViewpadProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardViewpadProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -96,7 +96,7 @@ enum
 	SIGNAL_LAST
 };
 
-guint XfdashboardViewpadSignals[SIGNAL_LAST]={ 0, };
+static guint XfdashboardViewpadSignals[SIGNAL_LAST]={ 0, };
 
 /* Forward declaration */
 static void _xfdashboard_viewpad_allocate(ClutterActor *self, const ClutterActorBox *inBox, ClutterAllocationFlags inFlags);
@@ -813,7 +813,7 @@ static void _xfdashboard_viewpad_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
+static void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 {
 	ClutterActorClass		*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
@@ -956,7 +956,7 @@ void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_viewpad_init(XfdashboardViewpad *self)
+static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 {
 	XfdashboardViewpadPrivate	*priv;
 	GList						*views, *viewEntry;

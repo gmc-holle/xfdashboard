@@ -55,7 +55,7 @@ enum
 	SIGNAL_LAST
 };
 
-guint XfdashboardViewManagerSignals[SIGNAL_LAST]={ 0, };
+static guint XfdashboardViewManagerSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -96,7 +96,7 @@ static void _xfdashboard_view_manager_dispose(GObject *inObject)
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_view_manager_class_init(XfdashboardViewManagerClass *klass)
+static void xfdashboard_view_manager_class_init(XfdashboardViewManagerClass *klass)
 {
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
@@ -135,7 +135,7 @@ void xfdashboard_view_manager_class_init(XfdashboardViewManagerClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_view_manager_init(XfdashboardViewManager *self)
+static void xfdashboard_view_manager_init(XfdashboardViewManager *self)
 {
 	XfdashboardViewManagerPrivate	*priv;
 

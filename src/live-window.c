@@ -80,7 +80,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardLiveWindowProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardLiveWindowProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -95,7 +95,7 @@ enum
 	SIGNAL_LAST
 };
 
-guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
+static guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_PADDING_TITLE		4.0f			// TODO: Replace by settings/theming object
@@ -558,7 +558,7 @@ static void _xfdashboard_live_window_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass)
+static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass)
 {
 	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
@@ -676,7 +676,7 @@ void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
+static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 {
 	XfdashboardLiveWindowPrivate	*priv;
 	ClutterAction					*action;

@@ -54,7 +54,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardToggleButtonProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardToggleButtonProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -64,7 +64,7 @@ enum
 	SIGNAL_LAST
 };
 
-guint XfdashboardToggleButtonSignals[SIGNAL_LAST]={ 0, };
+static guint XfdashboardToggleButtonSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -132,7 +132,7 @@ static void _xfdashboard_toggle_button_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *klass)
+static void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *klass)
 {
 	XfdashboardButtonClass	*buttonClass=XFDASHBOARD_BUTTON_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
@@ -172,7 +172,7 @@ void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_toggle_button_init(XfdashboardToggleButton *self)
+static void xfdashboard_toggle_button_init(XfdashboardToggleButton *self)
 {
 	XfdashboardToggleButtonPrivate	*priv;
 

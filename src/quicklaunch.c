@@ -721,7 +721,7 @@ static void _xfdashboard_quicklaunch_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klass)
+static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klass)
 {
 	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
@@ -771,7 +771,7 @@ void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
+static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterRequestMode				requestMode;

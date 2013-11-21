@@ -94,7 +94,7 @@ enum
 	PROP_LAST
 };
 
-GParamSpec* XfdashboardButtonProperties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardButtonProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -104,7 +104,7 @@ enum
 	SIGNAL_LAST
 };
 
-guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
+static guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
 
 /* Private constants */
 #define DEFAULT_SIZE			16
@@ -1200,7 +1200,7 @@ static void _xfdashboard_button_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
+static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 {
 	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
@@ -1344,7 +1344,7 @@ void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_button_init(XfdashboardButton *self)
+static void xfdashboard_button_init(XfdashboardButton *self)
 {
 	XfdashboardButtonPrivate	*priv;
 
