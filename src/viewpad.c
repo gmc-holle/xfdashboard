@@ -385,7 +385,7 @@ static void _xfdashboard_viewpad_on_allocation_changed(ClutterActor *inActor,
 {
 	XfdashboardViewpad			*self;
 	XfdashboardViewpadPrivate	*priv;
-	XfdashboardView				*view;
+	XfdashboardView				*view G_GNUC_UNUSED;
 
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inActor));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inUserData));
@@ -1120,7 +1120,7 @@ XfdashboardView* xfdashboard_viewpad_find_view_by_type(XfdashboardViewpad *self,
 		if(XFDASHBOARD_IS_VIEW(child)==TRUE &&
 			G_OBJECT_TYPE(child)==inType)
 		{
-			view=child;
+			view=XFDASHBOARD_VIEW(child);
 		}
 	}
 
@@ -1147,7 +1147,7 @@ XfdashboardView* xfdashboard_viewpad_find_view_by_name(XfdashboardViewpad *self,
 		if(XFDASHBOARD_IS_VIEW(child)==TRUE &&
 			g_strcmp0(xfdashboard_view_get_internal_name(XFDASHBOARD_VIEW(child)), inInternalName)==0)
 		{
-			view=child;
+			view=XFDASHBOARD_VIEW(child);
 		}
 	}
 

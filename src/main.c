@@ -141,8 +141,10 @@ int main(int argc, char **argv)
 	GError						*error=NULL;
 	gint						status;
 
+#if !defined(GLIB_CHECK_VERSION) || !GLIB_CHECK_VERSION(2, 36, 0)
 	/* Initialize GObject type system */
 	g_type_init();
+#endif
 
 	/* Check for running instance (keep only one instance) */
 	app=xfdashboard_application_get_default();

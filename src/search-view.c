@@ -34,6 +34,7 @@
 #include "utils.h"
 #include "applications-menu-model.h"
 #include "application-button.h"
+#include "application.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardSearchView,
@@ -372,14 +373,12 @@ static void _xfdashboard_search_view_add_button_for_icon_mode(XfdashboardSearchV
 /* Filter of applications data model has changed */
 static void _xfdashboard_search_view_on_item_clicked(XfdashboardSearchView *self, gpointer inUserData)
 {
-	XfdashboardSearchViewPrivate	*priv;
 	XfdashboardApplicationButton	*button;
 	GarconMenuElement				*element;
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
 
-	priv=self->priv;
 	button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
 
 	/* Get associated menu element of button */

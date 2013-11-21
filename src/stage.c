@@ -217,7 +217,7 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		/* Reactivate active view before search has started */
 		if(priv->viewBeforeSearch)
 		{
-			xfdashboard_viewpad_set_active_view(priv->viewpad, priv->viewBeforeSearch);
+			xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->viewBeforeSearch);
 			g_object_unref(priv->viewBeforeSearch);
 			priv->viewBeforeSearch=NULL;
 		}
@@ -243,10 +243,12 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 /* Secondary icon ("clear") on text box was clicked */
 static void _xfdashboard_stage_on_searchbox_secondary_icon_clicked(XfdashboardStage *self, gpointer inUserData)
 {
+	XfdashboardTextBox			*textBox;
+
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
 
-	XfdashboardTextBox			*textBox=XFDASHBOARD_TEXT_BOX(inUserData);
+	textBox=XFDASHBOARD_TEXT_BOX(inUserData);
 
 	/* Clear search text box */
 	xfdashboard_text_box_set_text(textBox, NULL);
@@ -256,7 +258,7 @@ static void _xfdashboard_stage_on_searchbox_secondary_icon_clicked(XfdashboardSt
 static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, XfdashboardView *inView, gpointer inUserData)
 {
 	XfdashboardStagePrivate		*priv;
-	XfdashboardViewpad			*viewpad;
+	XfdashboardViewpad			*viewpad G_GNUC_UNUSED;
 	XfdashboardToggleButton		*appsButton;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));

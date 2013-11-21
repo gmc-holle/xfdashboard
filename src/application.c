@@ -156,23 +156,6 @@ static gboolean _xfdashboard_application_on_delete_stage(XfdashboardApplication 
 	return(CLUTTER_EVENT_STOP);
 }
 
-/* A stage window was unfullscreened */
-static void _xfdashboard_application_on_unfullscreen_stage(XfdashboardApplication *self, gpointer inUserData)
-{
-	XfdashboardStage				*stage;
-
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(self));
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(inUserData));
-
-	stage=XFDASHBOARD_STAGE(inUserData);
-
-	/* Set window fullscreen again just in case the application will not quit */
-	clutter_stage_set_fullscreen(CLUTTER_STAGE(stage), TRUE);
-
-	/* Quit application */
-	_xfdashboard_application_quit(self, FALSE);
-}
-
 /* Perform full initialization of this application instance */
 static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
 {

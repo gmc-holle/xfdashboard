@@ -182,9 +182,11 @@ static void _xfdashboard_text_box_key_focus_in(ClutterActor *inActor)
 {
 	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inActor);
 	XfdashboardTextBoxPrivate	*priv=self->priv;
+	ClutterStage				*stage;
 
 	/* Push key focus forward to text box */
-	clutter_stage_set_key_focus(clutter_actor_get_stage(inActor), priv->actorTextBox);
+	stage=CLUTTER_STAGE(clutter_actor_get_stage(inActor));
+	clutter_stage_set_key_focus(stage, priv->actorTextBox);
 }
 
 /* Show all children of this one */
@@ -192,7 +194,6 @@ static void _xfdashboard_text_box_show(ClutterActor *inActor)
 {
 	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inActor);
 	XfdashboardTextBoxPrivate	*priv=self->priv;
-	gboolean					isEmpty=xfdashboard_text_box_is_empty(self);
 
 	/* Show icons */
 	if(priv->showPrimaryIcon!=FALSE)

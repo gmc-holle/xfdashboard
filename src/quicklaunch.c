@@ -78,12 +78,12 @@ enum
 static GParamSpec* XfdashboardQuicklaunchProperties[PROP_LAST]={ 0, };
 
 /* Signals */
-enum
-{
-	SIGNAL_LAST
-};
-
-static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
+// TODO: enum
+// TODO: {
+	// TODO: SIGNAL_LAST
+// TODO: };
+// TODO: 
+// TODO: static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_SCALE_MIN			0.1
@@ -117,7 +117,7 @@ static void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
 	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterActor					*child;
 	ClutterActorIter				iter;
-	gint							i;
+	guint							i;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 
@@ -154,7 +154,7 @@ static void _xfdashboard_quicklaunch_set_favourites(XfdashboardQuicklaunch *self
 {
 	XfdashboardQuicklaunchPrivate	*priv;
 	GPtrArray						*desktopFiles;
-	gint							i;
+	guint							i;
 	GValue							*element;
 	GValue							*desktopFile;
 
@@ -899,7 +899,7 @@ void xfdashboard_quicklaunch_set_orientation(XfdashboardQuicklaunch *self, Clutt
 /* Get apps button */
 XfdashboardToggleButton* xfdashboard_quicklaunch_get_apps_button(XfdashboardQuicklaunch *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), CLUTTER_ORIENTATION_VERTICAL);
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), NULL);
 
 	return(XFDASHBOARD_TOGGLE_BUTTON(self->priv->appsButton));
 }

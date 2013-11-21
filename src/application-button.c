@@ -229,7 +229,7 @@ static void _xfdashboard_application_button_on_icon_size_changed(XfdashboardAppl
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-void xfdashboard_application_button_dispose(GObject *inObject)
+static void _xfdashboard_application_button_dispose(GObject *inObject)
 {
 	XfdashboardApplicationButton		*self=XFDASHBOARD_APPLICATION_BUTTON(inObject);
 
@@ -241,10 +241,10 @@ void xfdashboard_application_button_dispose(GObject *inObject)
 }
 
 /* Set/get properties */
-void xfdashboard_application_button_set_property(GObject *inObject,
-													guint inPropID,
-													const GValue *inValue,
-													GParamSpec *inSpec)
+static void _xfdashboard_application_button_set_property(GObject *inObject,
+															guint inPropID,
+															const GValue *inValue,
+															GParamSpec *inSpec)
 {
 	XfdashboardApplicationButton			*self=XFDASHBOARD_APPLICATION_BUTTON(inObject);
 
@@ -276,10 +276,10 @@ void xfdashboard_application_button_set_property(GObject *inObject,
 	}
 }
 
-void xfdashboard_application_button_get_property(GObject *inObject,
-													guint inPropID,
-													GValue *outValue,
-													GParamSpec *inSpec)
+static void _xfdashboard_application_button_get_property(GObject *inObject,
+															guint inPropID,
+															GValue *outValue,
+															GParamSpec *inSpec)
 {
 	XfdashboardApplicationButton			*self=XFDASHBOARD_APPLICATION_BUTTON(inObject);
 	XfdashboardApplicationButtonPrivate		*priv=self->priv;
@@ -321,9 +321,9 @@ static void xfdashboard_application_button_class_init(XfdashboardApplicationButt
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->dispose=xfdashboard_application_button_dispose;
-	gobjectClass->set_property=xfdashboard_application_button_set_property;
-	gobjectClass->get_property=xfdashboard_application_button_get_property;
+	gobjectClass->dispose=_xfdashboard_application_button_dispose;
+	gobjectClass->set_property=_xfdashboard_application_button_set_property;
+	gobjectClass->get_property=_xfdashboard_application_button_get_property;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardApplicationButtonPrivate));
@@ -518,7 +518,7 @@ void xfdashboard_application_button_set_desktop_filename(XfdashboardApplicationB
 /* Get/set flag to show description */
 gboolean xfdashboard_application_button_get_show_description(XfdashboardApplicationButton *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), FALSE);
 
 	return(self->priv->showDescription);
 }

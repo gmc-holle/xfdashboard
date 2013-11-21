@@ -238,13 +238,11 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 	XfdashboardApplicationsMenuModelPrivate			*priv;
 	GList											*menuElements, *entry;
 	GarconMenuElement								*menuElement;
-	GList											*sectionList;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 	g_return_if_fail(GARCON_IS_MENU(inMenu));
 
 	priv=self->priv;
-	sectionList=NULL;
 
 	/* Check if this menu is visible and should be processed.
 	 * Root menu is an exception as it must be processed or model is empty.

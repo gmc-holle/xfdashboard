@@ -548,13 +548,11 @@ gboolean xfdashboard_view_get_enabled(XfdashboardView *self)
 void xfdashboard_view_set_enabled(XfdashboardView *self, gboolean inIsEnabled)
 {
 	XfdashboardViewPrivate	*priv;
-	XfdashboardViewClass	*klass;
 	guint					signalBeforeID, signalAfterID;
 
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
 
 	priv=self->priv;
-	klass=XFDASHBOARD_VIEW_GET_CLASS(self);
 
 	/* Set value if changed */
 	if(priv->isEnabled!=inIsEnabled)

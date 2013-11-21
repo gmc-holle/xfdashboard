@@ -437,7 +437,6 @@ static void _xfdashboard_windows_view_get_property(GObject *inObject,
  */
 static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *klass)
 {
-	XfdashboardViewClass	*viewClass=XFDASHBOARD_VIEW_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
