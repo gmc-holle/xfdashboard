@@ -90,9 +90,11 @@ static GParamSpec* XfdashboardApplicationButtonProperties[PROP_LAST]={ 0, };
 /* Reset and release allocated resources of application button */
 static void _xfdashboard_application_button_clear(XfdashboardApplicationButton *self)
 {
+	XfdashboardApplicationButtonPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 
-	XfdashboardApplicationButtonPrivate		*priv=self->priv;
+	priv=self->priv;
 
 	/* Release allocated resources */
 	if(priv->menuElement)
@@ -120,12 +122,17 @@ static void _xfdashboard_application_button_clear(XfdashboardApplicationButton *
 /* Update text of button actor */
 static void _xfdashboard_application_button_update_text(XfdashboardApplicationButton *self)
 {
+	XfdashboardApplicationButtonPrivate		*priv;
+	const gchar								*title;
+	const gchar								*description;
+	gchar									*text;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 
-	XfdashboardApplicationButtonPrivate		*priv=self->priv;
-	const gchar								*title=NULL;
-	const gchar								*description=NULL;
-	gchar									*text=NULL;
+	priv=self->priv;
+	title=NULL;
+	description=NULL;
+	text=NULL;
 
 	/* Get title and description where available */
 	switch(priv->type)
@@ -162,13 +169,16 @@ static void _xfdashboard_application_button_update_text(XfdashboardApplicationBu
 /* Update icon of button actor */
 static void _xfdashboard_application_button_update_icon(XfdashboardApplicationButton *self)
 {
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
-
-	XfdashboardApplicationButtonPrivate		*priv=self->priv;
-	ClutterImage							*icon=NULL;
+	XfdashboardApplicationButtonPrivate		*priv;
+	ClutterImage							*icon;
 	gint									iconSize;
 	const gchar								*iconName;
 	GIcon									*gicon;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
+
+	priv=self->priv;
+	icon=NULL;
 
 	/* Determine icon size */
 	iconSize=xfdashboard_button_get_icon_size(XFDASHBOARD_BUTTON(self));
@@ -423,10 +433,12 @@ GarconMenuElement* xfdashboard_application_button_get_menu_element(XfdashboardAp
 
 void xfdashboard_application_button_set_menu_element(XfdashboardApplicationButton *self, GarconMenuElement *inMenuElement)
 {
+	XfdashboardApplicationButtonPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 	g_return_if_fail(GARCON_IS_MENU_ELEMENT(inMenuElement));
 
-	XfdashboardApplicationButtonPrivate		*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->type!=XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM ||
@@ -458,10 +470,12 @@ const gchar* xfdashboard_application_button_get_desktop_filename(XfdashboardAppl
 
 void xfdashboard_application_button_set_desktop_filename(XfdashboardApplicationButton *self, const gchar *inDesktopFilename)
 {
+	XfdashboardApplicationButtonPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 	g_return_if_fail(inDesktopFilename!=NULL);
 
-	XfdashboardApplicationButtonPrivate		*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->type!=XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE ||
@@ -511,9 +525,11 @@ gboolean xfdashboard_application_button_get_show_description(XfdashboardApplicat
 
 void xfdashboard_application_button_set_show_description(XfdashboardApplicationButton *self, gboolean inShowDescription)
 {
+	XfdashboardApplicationButtonPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 
-	XfdashboardApplicationButtonPrivate		*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->showDescription!=inShowDescription)
@@ -539,10 +555,12 @@ const gchar* xfdashboard_application_button_get_format_title_only(XfdashboardApp
 
 void xfdashboard_application_button_set_format_title_only(XfdashboardApplicationButton *self, const gchar *inFormat)
 {
+	XfdashboardApplicationButtonPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 	g_return_if_fail(inFormat);
 
-	XfdashboardApplicationButtonPrivate		*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(g_strcmp0(priv->formatTitleOnly, inFormat)!=0)
@@ -569,10 +587,12 @@ const gchar* xfdashboard_application_button_get_format_title_description(Xfdashb
 
 void xfdashboard_application_button_set_format_title_description(XfdashboardApplicationButton *self, const gchar *inFormat)
 {
+	XfdashboardApplicationButtonPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 	g_return_if_fail(inFormat);
 
-	XfdashboardApplicationButtonPrivate		*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(g_strcmp0(priv->formatTitleDescription, inFormat)!=0)
@@ -592,13 +612,19 @@ void xfdashboard_application_button_set_format_title_description(XfdashboardAppl
 /* Execute command of represented application by application button */
 gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self)
 {
+	XfdashboardApplicationButtonPrivate		*priv;
+	GAppInfo								*appInfo;
+	GAppInfoCreateFlags						flags;
+	GError									*error;
+	gboolean								started;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), FALSE);
 
-	XfdashboardApplicationButtonPrivate		*priv=self->priv;
-	GAppInfo								*appInfo=NULL;
-	GAppInfoCreateFlags						flags=G_APP_INFO_CREATE_NONE;
-	GError									*error=NULL;
-	gboolean								started=FALSE;
+	priv=self->priv;
+	appInfo=NULL;
+	flags=G_APP_INFO_CREATE_NONE;
+	error=NULL;
+	started=FALSE;
 
 	switch(priv->type)
 	{

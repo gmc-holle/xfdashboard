@@ -83,9 +83,11 @@ typedef struct _XfdashboardSearchViewFilterData			XfdashboardSearchViewFilterDat
 /* Filter functions */
 static void _xfdashboard_search_view_on_filter_data_destroy(gpointer inUserData)
 {
+	XfdashboardSearchViewFilterData		*searchData;
+
 	g_return_if_fail(inUserData);
 
-	XfdashboardSearchViewFilterData		*searchData=(XfdashboardSearchViewFilterData*)inUserData;
+	searchData=(XfdashboardSearchViewFilterData*)inUserData;
 
 	/* Release allocated resources */
 	if(searchData->pool)
@@ -115,16 +117,20 @@ static gboolean _xfdashboard_search_view_filter_title_only(ClutterModel *inModel
 															ClutterModelIter *inIter,
 															gpointer inUserData)
 {
+	XfdashboardSearchViewFilterData		*searchData;
+	guint								iterRow, poolRow;
+	gboolean							isMatch;
+	GarconMenuElement					*menuElement;
+	const gchar							*title, *command, *desktopID;
+	gchar								*checkText, *foundPos;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(inModel), FALSE);
 	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
 	g_return_val_if_fail(inUserData, FALSE);
 
-	XfdashboardSearchViewFilterData		*searchData=(XfdashboardSearchViewFilterData*)inUserData;
-	guint								iterRow, poolRow;
-	gboolean							isMatch=FALSE;
-	GarconMenuElement					*menuElement=NULL;
-	const gchar							*title, *command, *desktopID;
-	gchar								*checkText, *foundPos;
+	searchData=(XfdashboardSearchViewFilterData*)inUserData;
+	isMatch=FALSE;
+	menuElement=NULL;
 
 	/* Get menu element at iterator */
 	clutter_model_iter_get(inIter,
@@ -195,16 +201,20 @@ static gboolean _xfdashboard_search_view_filter_title_and_description(ClutterMod
 																		ClutterModelIter *inIter,
 																		gpointer inUserData)
 {
+	XfdashboardSearchViewFilterData		*searchData;
+	guint								iterRow, poolRow;
+	gboolean							isMatch;
+	GarconMenuElement					*menuElement;
+	const gchar							*title, *description, *command, *desktopID;
+	gchar								*checkText, *foundPos;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(inModel), FALSE);
 	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
 	g_return_val_if_fail(inUserData, FALSE);
 
-	XfdashboardSearchViewFilterData		*searchData=(XfdashboardSearchViewFilterData*)inUserData;
-	guint								iterRow, poolRow;
-	gboolean							isMatch=FALSE;
-	GarconMenuElement					*menuElement=NULL;
-	const gchar							*title, *description, *command, *desktopID;
-	gchar								*checkText, *foundPos;
+	searchData=(XfdashboardSearchViewFilterData*)inUserData;
+	isMatch=FALSE;
+	menuElement=NULL;
 
 	/* Get menu element at iterator */
 	clutter_model_iter_get(inIter,
@@ -283,12 +293,14 @@ static gboolean _xfdashboard_search_view_filter_title_and_description(ClutterMod
 static void _xfdashboard_search_view_add_button_for_list_mode(XfdashboardSearchView *self,
 																XfdashboardButton *inButton)
 {
+	XfdashboardSearchViewPrivate	*priv;
+	const gchar						*actorFormat;
+	gchar							*actorText;
+
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inButton));
 
-	XfdashboardSearchViewPrivate	*priv=self->priv;
-	const gchar						*actorFormat;
-	gchar							*actorText;
+	priv=self->priv;
 
 	/* If button is a real application button set it up */
 	if(XFDASHBOARD_IS_APPLICATION_BUTTON(inButton))
@@ -321,12 +333,14 @@ static void _xfdashboard_search_view_add_button_for_list_mode(XfdashboardSearchV
 static void _xfdashboard_search_view_add_button_for_icon_mode(XfdashboardSearchView *self,
 																XfdashboardButton *inButton)
 {
+	XfdashboardSearchViewPrivate	*priv;
+	const gchar						*actorFormat;
+	gchar							*actorText;
+
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inButton));
 
-	XfdashboardSearchViewPrivate	*priv=self->priv;
-	const gchar						*actorFormat;
-	gchar							*actorText;
+	priv=self->priv;
 
 	/* If button is a real application button set it up */
 	if(XFDASHBOARD_IS_APPLICATION_BUTTON(inButton))
@@ -358,12 +372,15 @@ static void _xfdashboard_search_view_add_button_for_icon_mode(XfdashboardSearchV
 /* Filter of applications data model has changed */
 static void _xfdashboard_search_view_on_item_clicked(XfdashboardSearchView *self, gpointer inUserData)
 {
+	XfdashboardSearchViewPrivate	*priv;
+	XfdashboardApplicationButton	*button;
+	GarconMenuElement				*element;
+
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
 
-	XfdashboardSearchViewPrivate	*priv=self->priv;
-	XfdashboardApplicationButton	*button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
-	GarconMenuElement				*element;
+	priv=self->priv;
+	button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
 
 	/* Get associated menu element of button */
 	element=xfdashboard_application_button_get_menu_element(button);
@@ -382,12 +399,15 @@ static void _xfdashboard_search_view_on_item_clicked(XfdashboardSearchView *self
 
 static void _xfdashboard_search_view_on_filter_changed(XfdashboardSearchView *self, gpointer inUserData)
 {
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
-
-	XfdashboardSearchViewPrivate	*priv=XFDASHBOARD_SEARCH_VIEW(self)->priv;
+	XfdashboardSearchViewPrivate	*priv;
 	ClutterModelIter				*iterator;
 	ClutterActor					*actor;
-	GarconMenuElement				*menuElement=NULL;
+	GarconMenuElement				*menuElement;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
+
+	priv=XFDASHBOARD_SEARCH_VIEW(self)->priv;
+	menuElement=NULL;
 
 	/* Destroy all children */
 	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
@@ -566,10 +586,12 @@ XfdashboardViewMode xfdashboard_search_view_get_view_mode(XfdashboardSearchView 
 
 void xfdashboard_search_view_set_view_mode(XfdashboardSearchView *self, const XfdashboardViewMode inMode)
 {
+	XfdashboardSearchViewPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 	g_return_if_fail(inMode<=XFDASHBOARD_VIEW_MODE_ICON);
 
-	XfdashboardSearchViewPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->viewMode!=inMode)
@@ -616,12 +638,16 @@ void xfdashboard_search_view_set_view_mode(XfdashboardSearchView *self, const Xf
 /* Update search view by looking up result for new search text */
 void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gchar *inText)
 {
+	XfdashboardSearchViewPrivate		*priv;
+	gint								searchTextLength;
+	ClutterModelFilterFunc				filterFunc;
+	XfdashboardSearchViewFilterData		*searchData;
+
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 
-	XfdashboardSearchViewPrivate		*priv=self->priv;
-	gint								searchTextLength;
-	ClutterModelFilterFunc				filterFunc=_xfdashboard_search_view_filter_nothing;
-	XfdashboardSearchViewFilterData		*searchData=NULL;
+	priv=self->priv;
+	filterFunc=_xfdashboard_search_view_filter_nothing;
+	searchData=NULL;
 
 	/* Initialize search data */
 	searchData=g_try_new0(XfdashboardSearchViewFilterData, 1);

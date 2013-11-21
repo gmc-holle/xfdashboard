@@ -96,18 +96,20 @@ static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
-ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 };				// TODO: Replace by settings/theming object
-ClutterColor		defaultAppsButtonHighlightColor={ 0xc0, 0xc0, 0xc0, 0xa0 };	// TODO: Replace by settings/theming object
+static ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 };				// TODO: Replace by settings/theming object
+static ClutterColor		defaultAppsButtonHighlightColor={ 0xc0, 0xc0, 0xc0, 0xa0 };	// TODO: Replace by settings/theming object
 
 /* App-button was toggled */
 static void _xfdashboard_stage_on_quicklaunch_apps_button_toggled(XfdashboardStage *self, gpointer inUserData)
 {
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-
-	XfdashboardStagePrivate		*priv=self->priv;
+	XfdashboardStagePrivate		*priv;
 	XfdashboardToggleButton		*appsButton;
 	gboolean					state;
 	XfdashboardView				*view;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+
+	priv=self->priv;
 
 	/* Get state of apps button */
 	appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
@@ -142,15 +144,17 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 															gchar *inText,
 															gpointer inUserData)
 {
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
-
-	XfdashboardStagePrivate		*priv=self->priv;
+	XfdashboardStagePrivate		*priv;
 	XfdashboardTextBox			*textBox=XFDASHBOARD_TEXT_BOX(inUserData);
 	XfdashboardView				*searchView;
 	gint						textLength;
 	const gchar					*text;
 	XfdashboardToggleButton		*appsButton;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
+
+	priv=self->priv;
 
 	/* Get search view */
 	searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
@@ -251,12 +255,15 @@ static void _xfdashboard_stage_on_searchbox_secondary_icon_clicked(XfdashboardSt
 /* Active view in viewpad has changed */
 static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, XfdashboardView *inView, gpointer inUserData)
 {
+	XfdashboardStagePrivate		*priv;
+	XfdashboardViewpad			*viewpad;
+	XfdashboardToggleButton		*appsButton;
+
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inUserData));
 
-	XfdashboardStagePrivate		*priv=self->priv;
-	XfdashboardViewpad			*viewpad=XFDASHBOARD_VIEWPAD(inUserData);
-	XfdashboardToggleButton		*appsButton;
+	priv=self->priv;
+	viewpad=XFDASHBOARD_VIEWPAD(inUserData);
 
 	/* If we have remembered a view "before-search" then a search is going on.
 	 * If user switches between views while a search is going on remember the
@@ -292,16 +299,18 @@ static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, Xfdashb
 /* Set up stage */
 static void _xfdashboard_stage_setup(XfdashboardStage *self)
 {
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-
 	// TODO: Implement missing actors, do setup nicer and themable/layoutable
 
-	XfdashboardStagePrivate		*priv=self->priv;
+	XfdashboardStagePrivate		*priv;
 	ClutterActor				*groupHorizontal;
 	ClutterActor				*groupVertical;
 	ClutterLayoutManager		*layout;
-	ClutterColor				color={ 0x00, 0x00, 0x00, 0x80 };
+	ClutterColor				color;
 	XfdashboardToggleButton		*appsButton;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+
+	priv=self->priv;
 
 	/* Set up layout objects */
 	layout=clutter_box_layout_new();
@@ -396,10 +405,10 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 /* The active window changed. Reselect stage window as active if it is visible */
 static void _xfdashboard_stage_on_active_window_changed(XfdashboardStage *self, WnckWindow *inPreviousWindow, gpointer inUserData)
 {
+	WnckWindow					*stageWindow;
+
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(inPreviousWindow==NULL || WNCK_IS_WINDOW(inPreviousWindow));
-
-	WnckWindow					*stageWindow;
 
 	/* Check if active window deactivated is this stage window */
 	stageWindow=xfdashboard_stage_get_window(self);
@@ -418,12 +427,14 @@ static void _xfdashboard_stage_on_active_window_changed(XfdashboardStage *self, 
  */
 static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self, WnckWindow *inWindow, gpointer inUserData)
 {
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
-
 	XfdashboardStagePrivate		*priv=self->priv;
 	WnckWindow					*stageWindow;
 	// TODO: gint						x, y;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
+
+	priv=self->priv;
 
 	/* Check if window opened is this stage window */
 	stageWindow=xfdashboard_stage_get_window(self);
@@ -605,9 +616,11 @@ ClutterActor* xfdashboard_stage_new(void)
 /* Get window of application */
 WnckWindow* xfdashboard_stage_get_window(XfdashboardStage *self)
 {
+	XfdashboardStagePrivate		*priv;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(self), NULL);
 
-	XfdashboardStagePrivate		*priv=self->priv;
+	priv=self->priv;
 
 	/* Determine window object if not done already */
 	if(G_UNLIKELY(priv->window==NULL))

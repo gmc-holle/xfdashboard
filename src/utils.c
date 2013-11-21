@@ -82,13 +82,18 @@ guint32 xfdashboard_get_current_time(void)
  */
 ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint inSize)
 {
+	ClutterContent	*image;
+	GdkPixbuf		*icon;
+	GtkIconTheme	*iconTheme;
+	GError			*error;
+
 	g_return_val_if_fail(inIconName!=NULL, NULL);
 	g_return_val_if_fail(inSize>0, NULL);
 
-	ClutterContent	*image=NULL;
-	GdkPixbuf		*icon=NULL;
-	GtkIconTheme	*iconTheme=gtk_icon_theme_get_default();
-	GError			*error=NULL;
+	image=NULL;
+	icon=NULL;
+	iconTheme=gtk_icon_theme_get_default();
+	error=NULL;
 
 	if(inIconName)
 	{
@@ -185,13 +190,15 @@ ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint 
  */
 ClutterImage* xfdashboard_get_image_for_gicon(GIcon *inIcon, gint inSize)
 {
-	g_return_val_if_fail(G_IS_ICON(inIcon), NULL);
-	g_return_val_if_fail(inSize>0, NULL);
-
 	ClutterContent		*image;
 	GtkIconInfo			*iconInfo;
 	GdkPixbuf			*iconPixbuf;
-	GError				*error=NULL;
+	GError				*error;
+
+	g_return_val_if_fail(G_IS_ICON(inIcon), NULL);
+	g_return_val_if_fail(inSize>0, NULL);
+
+	error=NULL;
 
 	/* Get icon information */
 	iconInfo=gtk_icon_theme_lookup_by_gicon(gtk_icon_theme_get_default(),
@@ -234,9 +241,11 @@ ClutterImage* xfdashboard_get_image_for_gicon(GIcon *inIcon, gint inSize)
  */
 ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf)
 {
+	ClutterContent		*image;
+
 	g_return_val_if_fail(GDK_IS_PIXBUF(inPixbuf), NULL);
 
-	ClutterContent		*image=NULL;
+	image=NULL;
 
 	/* Create ClutterImage for pixbuf */
 	image=clutter_image_new();

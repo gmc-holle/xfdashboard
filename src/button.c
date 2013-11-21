@@ -125,12 +125,14 @@ static void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *se
 															gfloat *outIconSize,
 															gfloat *outLabelSize)
 {
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
-
-	XfdashboardButtonPrivate	*priv=self->priv;
+	XfdashboardButtonPrivate	*priv;
 	gfloat						iconWidth, iconHeight, iconScale;
 	gfloat						iconSize, labelSize;
 	gfloat						minSize, naturalSize;
+
+	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
+
+	priv=self->priv;
 
 	/* Initialize sizes */
 	iconSize=labelSize=0.0f;
@@ -351,12 +353,14 @@ static void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *s
 															gfloat *outIconSize,
 															gfloat *outLabelSize)
 {
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
-
-	XfdashboardButtonPrivate	*priv=self->priv;
+	XfdashboardButtonPrivate	*priv;
 	gfloat						iconWidth, iconHeight, iconScale;
 	gfloat						iconSize, labelSize;
 	gfloat						minSize, naturalSize;
+
+	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
+
+	priv=self->priv;
 
 	/* Initialize sizes */
 	iconSize=labelSize=0.0f;
@@ -567,11 +571,15 @@ static void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *s
 /* Update icon */
 static void _xfdashboard_button_update_icon_image_size(XfdashboardButton *self)
 {
+	XfdashboardButtonPrivate	*priv;
+	gfloat						iconWidth, iconHeight;
+	gfloat						maxSize;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	XfdashboardButtonPrivate	*priv=self->priv;
-	gfloat						iconWidth=-1.0f, iconHeight=-1.0f;
-	gfloat						maxSize=0.0f;
+	priv=self->priv;
+	iconWidth=iconHeight=-1.0f;
+	maxSize=0.0f;
 
 	/* Determine maximum size of icon either from label size if icon size
 	 * should be synchronized or to icon size set if greater than zero.
@@ -1431,10 +1439,12 @@ gfloat xfdashboard_button_get_padding(XfdashboardButton *self)
 
 void xfdashboard_button_set_padding(XfdashboardButton *self, const gfloat inPadding)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 	g_return_if_fail(inPadding>=0.0f);
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->padding!=inPadding)
@@ -1461,10 +1471,12 @@ gfloat xfdashboard_button_get_spacing(XfdashboardButton *self)
 
 void xfdashboard_button_set_spacing(XfdashboardButton *self, const gfloat inSpacing)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->spacing!=inSpacing)
@@ -1488,9 +1500,11 @@ XfdashboardStyle xfdashboard_button_get_style(XfdashboardButton *self)
 
 void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardStyle inStyle)
 {
+	XfdashboardButtonPrivate	*priv=self->priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->style!=inStyle)
@@ -1530,11 +1544,13 @@ const gchar* xfdashboard_button_get_icon(XfdashboardButton *self)
 
 void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconName)
 {
+	XfdashboardButtonPrivate	*priv;
+	ClutterImage				*image;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 	g_return_if_fail(inIconName);
 
-	XfdashboardButtonPrivate	*priv=self->priv;
-	ClutterImage				*image;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->iconImage || g_strcmp0(priv->iconName, inIconName)!=0)
@@ -1570,10 +1586,12 @@ ClutterImage* xfdashboard_button_get_icon_image(XfdashboardButton *self)
 
 void xfdashboard_button_set_icon_image(XfdashboardButton *self, ClutterImage *inIconImage)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 	g_return_if_fail(CLUTTER_IS_IMAGE(inIconImage));
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->iconName || inIconImage!=priv->iconImage)
@@ -1608,10 +1626,12 @@ gint xfdashboard_button_get_icon_size(XfdashboardButton *self)
 
 void xfdashboard_button_set_icon_size(XfdashboardButton *self, gint inSize)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 	g_return_if_fail(inSize==-1 || inSize>0);
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->iconSize!=inSize)
@@ -1645,9 +1665,11 @@ gboolean xfdashboard_button_get_sync_icon_size(XfdashboardButton *self)
 
 void xfdashboard_button_set_sync_icon_size(XfdashboardButton *self, gboolean inSync)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->iconSyncSize!=inSync)
@@ -1672,9 +1694,11 @@ XfdashboardOrientation xfdashboard_button_get_icon_orientation(XfdashboardButton
 
 void xfdashboard_button_set_icon_orientation(XfdashboardButton *self, const XfdashboardOrientation inOrientation)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->iconOrientation!=inOrientation)
@@ -1699,9 +1723,11 @@ const gchar* xfdashboard_button_get_text(XfdashboardButton *self)
 
 void xfdashboard_button_set_text(XfdashboardButton *self, const gchar *inMarkupText)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(g_strcmp0(clutter_text_get_text(priv->actorLabel), inMarkupText)!=0)
@@ -1726,9 +1752,11 @@ const gchar* xfdashboard_button_get_font(XfdashboardButton *self)
 
 void xfdashboard_button_set_font(XfdashboardButton *self, const gchar *inFont)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(g_strcmp0(priv->font, inFont)!=0)
@@ -1755,10 +1783,12 @@ const ClutterColor* xfdashboard_button_get_color(XfdashboardButton *self)
 
 void xfdashboard_button_set_color(XfdashboardButton *self, const ClutterColor *inColor)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 	g_return_if_fail(inColor);
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(!priv->labelColor || !clutter_color_equal(inColor, priv->labelColor))
@@ -1785,9 +1815,11 @@ PangoEllipsizeMode xfdashboard_button_get_ellipsize_mode(XfdashboardButton *self
 
 void xfdashboard_button_set_ellipsize_mode(XfdashboardButton *self, const PangoEllipsizeMode inMode)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->labelEllipsize!=inMode)
@@ -1813,9 +1845,11 @@ gboolean xfdashboard_button_get_single_line_mode(XfdashboardButton *self)
 
 void xfdashboard_button_set_single_line_mode(XfdashboardButton *self, const gboolean inSingleLineMode)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->isSingleLineMode!=inSingleLineMode)
@@ -1841,9 +1875,11 @@ PangoAlignment xfdashboard_button_get_text_justification(XfdashboardButton *self
 
 void xfdashboard_button_set_text_justification(XfdashboardButton *self, const PangoAlignment inJustification)
 {
+	XfdashboardButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
-	XfdashboardButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->textJustification!=inJustification)

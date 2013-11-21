@@ -76,15 +76,17 @@ static GParamSpec* XfdashboardScaledTableLayoutProperties[PROP_LAST]={ 0, };
 static void _xfdashboard_scaled_table_layout_update_rows_and_columns(XfdashboardScaledTableLayout *self,
 																		ClutterContainer *inContainer)
 {
-	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
-	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
-	g_return_if_fail(CLUTTER_IS_ACTOR(inContainer));
-
-	XfdashboardScaledTableLayoutPrivate		*priv=self->priv;
+	XfdashboardScaledTableLayoutPrivate		*priv;
 	ClutterActor							*child;
 	ClutterActorIter						iter;
 	ClutterRequestMode						requestMode;
 	gint									numberChildren;
+
+	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
+	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inContainer));
+
+	priv=self->priv;
 
 	/* Get number of visible child actors */
 	numberChildren=0;
@@ -121,12 +123,14 @@ static void _xfdashboard_scaled_table_layout_get_preferred_width(ClutterLayoutMa
 																	gfloat *outMinWidth,
 																	gfloat *outNaturalWidth)
 {
+	XfdashboardScaledTableLayoutPrivate		*priv;
+	gfloat									maxMinWidth, maxNaturalWidth;
+	ClutterActor							*parent;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 
-	XfdashboardScaledTableLayoutPrivate		*priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
-	gfloat									maxMinWidth, maxNaturalWidth;
-	ClutterActor							*parent;
+	priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
 
 	/* Set up default values */
 	maxMinWidth=0.0f;
@@ -157,12 +161,14 @@ static void _xfdashboard_scaled_table_layout_get_preferred_height(ClutterLayoutM
 																	gfloat *outMinHeight,
 																	gfloat *outNaturalHeight)
 {
+	XfdashboardScaledTableLayoutPrivate		*priv;
+	gfloat									maxMinHeight, maxNaturalHeight;
+	ClutterActor							*parent;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 
-	XfdashboardScaledTableLayoutPrivate		*priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
-	gfloat									maxMinHeight, maxNaturalHeight;
-	ClutterActor							*parent;
+	priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
 
 	/* Set up default values */
 	maxMinHeight=0.0f;
@@ -193,10 +199,7 @@ static void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self
 														const ClutterActorBox *inAllocation,
 														ClutterAllocationFlags inFlags)
 {
-	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
-	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
-
-	XfdashboardScaledTableLayoutPrivate		*priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
+	XfdashboardScaledTableLayoutPrivate		*priv;
 	gint									row, col;
 	ClutterActor							*child;
 	ClutterActorIter						iter;
@@ -207,6 +210,11 @@ static void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self
 	gfloat									aspectRatio;
 	gfloat									x, y;
 	ClutterActorBox							childAllocation;
+
+	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
+	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
+
+	priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
 
 	/* Get size of container holding children to layout and
 	 * determine size of a cell
@@ -443,9 +451,11 @@ gboolean xfdashboard_scaled_table_layout_get_relative_scale(XfdashboardScaledTab
 
 void xfdashboard_scaled_table_layout_set_relative_scale(XfdashboardScaledTableLayout *self, gboolean inScaling)
 {
+	XfdashboardScaledTableLayoutPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 
-	XfdashboardScaledTableLayoutPrivate		*priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
+	priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
 
 	/* Set new value if changed */
 	if(priv->relativeScale!=inScaling)
@@ -462,10 +472,12 @@ void xfdashboard_scaled_table_layout_set_relative_scale(XfdashboardScaledTableLa
 /* Set relative row and column spacing to same value at once */
 void xfdashboard_scaled_table_layout_set_spacing(XfdashboardScaledTableLayout *self, gfloat inSpacing)
 {
+	XfdashboardScaledTableLayoutPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	XfdashboardScaledTableLayoutPrivate		*priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
+	priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
 
 	/* Set new values if changed */
 	if(priv->rowSpacing!=inSpacing || priv->columnSpacing!=inSpacing)
@@ -492,10 +504,12 @@ gfloat xfdashboard_scaled_table_layout_get_row_spacing(XfdashboardScaledTableLay
 
 void xfdashboard_scaled_table_layout_set_row_spacing(XfdashboardScaledTableLayout *self, gfloat inSpacing)
 {
+	XfdashboardScaledTableLayoutPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	XfdashboardScaledTableLayoutPrivate		*priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
+	priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
 
 	/* Set new value if changed */
 	if(priv->rowSpacing!=inSpacing)
@@ -519,10 +533,12 @@ gfloat xfdashboard_scaled_table_layout_get_column_spacing(XfdashboardScaledTable
 
 void xfdashboard_scaled_table_layout_set_column_spacing(XfdashboardScaledTableLayout *self, gfloat inSpacing)
 {
+	XfdashboardScaledTableLayoutPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	XfdashboardScaledTableLayoutPrivate		*priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
+	priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
 
 	/* Set new value if changed */
 	if(priv->columnSpacing!=inSpacing)

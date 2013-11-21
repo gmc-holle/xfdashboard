@@ -99,7 +99,7 @@ static guint XfdashboardScrollbarSignals[SIGNAL_LAST]={ 0, };
 #define DEFAULT_SLIDER_RADIUS		(DEFAULT_SLIDER_WIDTH/2.0f)
 #define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_HORIZONTAL
 
-ClutterColor		defaultSliderColor={ 0xff, 0xff, 0xff, 0xff };
+static ClutterColor					defaultSliderColor={ 0xff, 0xff, 0xff, 0xff };
 
 /* Get value from coord */
 static gfloat _xfdashboard_scrollbar_get_value_from_coord(XfdashboardScrollbar *self,
@@ -107,13 +107,15 @@ static gfloat _xfdashboard_scrollbar_get_value_from_coord(XfdashboardScrollbar *
 															gfloat inY,
 															gfloat inAlignment)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(self), 0.0f);
-	g_return_val_if_fail(inAlignment>=0.0f && inAlignment<=1.0f, 0.0f);
-
-	XfdashboardScrollbarPrivate		*priv=self->priv;
+	XfdashboardScrollbarPrivate		*priv;
 	gfloat							coord;
 	gfloat							width;
 	gfloat							value;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(self), 0.0f);
+	g_return_val_if_fail(inAlignment>=0.0f && inAlignment<=1.0f, 0.0f);
+
+	priv=self->priv;
 
 	/* Get coordinate for calculation depending on orientation and
 	 * subtract spacing
@@ -148,14 +150,17 @@ static gboolean _xfdashboard_scrollbar_on_motion_event(ClutterActor *inActor,
 														ClutterEvent *inEvent,
 														gpointer inUserData)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
-	g_return_val_if_fail(inEvent, FALSE);
-
-	XfdashboardScrollbar			*self=XFDASHBOARD_SCROLLBAR(inActor);
-	XfdashboardScrollbarPrivate		*priv=self->priv;
+	XfdashboardScrollbar			*self;
+	XfdashboardScrollbarPrivate		*priv;
 	gfloat							eventX, eventY;
 	gfloat							x, y;
 	gfloat							value;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+
+	self=XFDASHBOARD_SCROLLBAR(inActor);
+	priv=self->priv;
 
 	/* Get coords where event happened */
 	clutter_event_get_coords(inEvent, &eventX, &eventY);
@@ -173,14 +178,17 @@ static gboolean _xfdashboard_scrollbar_on_button_released(ClutterActor *inActor,
 															ClutterEvent *inEvent,
 															gpointer inUserData)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
-	g_return_val_if_fail(inEvent, FALSE);
-
-	XfdashboardScrollbar			*self=XFDASHBOARD_SCROLLBAR(inActor);
-	XfdashboardScrollbarPrivate		*priv=self->priv;
+	XfdashboardScrollbar			*self;
+	XfdashboardScrollbarPrivate		*priv;
 	gfloat							eventX, eventY;
 	gfloat							x, y;
 	gfloat							value;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+
+	self=XFDASHBOARD_SCROLLBAR(inActor);
+	priv=self->priv;
 
 	/* If user did not release a left-click do nothing */
 	if(clutter_event_get_button(inEvent)!=1) return(FALSE);
@@ -222,15 +230,18 @@ static gboolean _xfdashboard_scrollbar_on_button_pressed(ClutterActor *inActor,
 															ClutterEvent *inEvent,
 															gpointer inUserData)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
-	g_return_val_if_fail(inEvent, FALSE);
-
-	XfdashboardScrollbar			*self=XFDASHBOARD_SCROLLBAR(inActor);
-	XfdashboardScrollbarPrivate		*priv=self->priv;
+	XfdashboardScrollbar			*self;
+	XfdashboardScrollbarPrivate		*priv;
 	gfloat							eventX, eventY;
 	gfloat							x, y;
 	gfloat							value;
 	gfloat							dragOffset;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+
+	self=XFDASHBOARD_SCROLLBAR(inActor);
+	priv=self->priv;
 
 	/* If user left-clicked into scroll bar adjust value to point
 	 * where the click happened
@@ -281,13 +292,16 @@ static gboolean _xfdashboard_scrollbar_on_scroll_event(ClutterActor *inActor,
 														ClutterEvent *inEvent,
 														gpointer inUserData)
 {
+	XfdashboardScrollbar			*self;
+	XfdashboardScrollbarPrivate		*priv;
+	gfloat							value;
+	gfloat							directionFactor;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(inActor), FALSE);
 	g_return_val_if_fail(inEvent, FALSE);
 
-	XfdashboardScrollbar			*self=XFDASHBOARD_SCROLLBAR(inActor);
-	XfdashboardScrollbarPrivate		*priv=self->priv;
-	gfloat							value;
-	gfloat							directionFactor;
+	self=XFDASHBOARD_SCROLLBAR(inActor);
+	priv=self->priv;
 
 	/* Get direction of scroll event */
 	switch(clutter_event_get_scroll_direction(inEvent))
@@ -328,13 +342,15 @@ static gboolean _xfdashboard_scrollbar_on_draw_slider(XfdashboardScrollbar *self
 														int inHeight,
 														gpointer inUserData)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(self), TRUE);
-	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
-
-	XfdashboardScrollbarPrivate		*priv=self->priv;
+	XfdashboardScrollbarPrivate		*priv;
 	gdouble							radius;
 	gdouble							top, left, bottom, right;
 	gdouble							barValueRange;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(self), TRUE);
+	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
+
+	priv=self->priv;
 
 	/* Clear current contents of the canvas */
 	cairo_save(inContext);
@@ -834,10 +850,12 @@ gfloat xfdashboard_scrollbar_get_orientation(XfdashboardScrollbar *self)
 
 void xfdashboard_scrollbar_set_orientation(XfdashboardScrollbar *self, ClutterOrientation inOrientation)
 {
+	XfdashboardScrollbarPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(self));
 	g_return_if_fail(inOrientation==CLUTTER_ORIENTATION_HORIZONTAL || inOrientation==CLUTTER_ORIENTATION_VERTICAL);
 
-	XfdashboardScrollbarPrivate		*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set value if it changes */
 	if(inOrientation==priv->orientation) return;
@@ -865,10 +883,12 @@ gfloat xfdashboard_scrollbar_get_value(XfdashboardScrollbar *self)
 
 void xfdashboard_scrollbar_set_value(XfdashboardScrollbar *self, gfloat inValue)
 {
+	XfdashboardScrollbarPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(self));
 	g_return_if_fail(inValue>=0.0f);
 
-	XfdashboardScrollbarPrivate		*priv=self->priv;
+	priv=self->priv;
 
 	/* Check if value is within range */
 	if(inValue+priv->valueRange>priv->range)
@@ -908,10 +928,12 @@ gfloat xfdashboard_scrollbar_get_range(XfdashboardScrollbar *self)
 
 void xfdashboard_scrollbar_set_range(XfdashboardScrollbar *self, gfloat inRange)
 {
+	XfdashboardScrollbarPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(self));
 	g_return_if_fail(inRange>=0.0f);
 
-	XfdashboardScrollbarPrivate		*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set value if it changes */
 	if(inRange==priv->range) return;
@@ -948,10 +970,12 @@ gfloat xfdashboard_scrollbar_get_page_size_factor(XfdashboardScrollbar *self)
 
 void xfdashboard_scrollbar_set_page_size_factor(XfdashboardScrollbar *self, gfloat inFactor)
 {
+	XfdashboardScrollbarPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(self));
 	g_return_if_fail(inFactor>=0.1f && inFactor<=1.0f);
 
-	XfdashboardScrollbarPrivate		*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set value if it changes */
 	if(inFactor==priv->pageSizeFactor) return;
@@ -973,10 +997,12 @@ gfloat xfdashboard_scrollbar_get_spacing(XfdashboardScrollbar *self)
 
 void xfdashboard_scrollbar_set_spacing(XfdashboardScrollbar *self, gfloat inSpacing)
 {
+	XfdashboardScrollbarPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	XfdashboardScrollbarPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set value if it changes */
 	if(inSpacing==priv->spacing) return;
@@ -999,10 +1025,12 @@ gfloat xfdashboard_scrollbar_get_slider_width(XfdashboardScrollbar *self)
 
 void xfdashboard_scrollbar_set_slider_width(XfdashboardScrollbar *self, gfloat inWidth)
 {
+	XfdashboardScrollbarPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(self));
 	g_return_if_fail(inWidth>=1.0f);
 
-	XfdashboardScrollbarPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set value if it changes */
 	if(inWidth==priv->sliderWidth) return;
@@ -1025,10 +1053,12 @@ gfloat xfdashboard_scrollbar_get_slider_radius(XfdashboardScrollbar *self)
 
 void xfdashboard_scrollbar_set_slider_radius(XfdashboardScrollbar *self, gfloat inRadius)
 {
+	XfdashboardScrollbarPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(self));
 	g_return_if_fail(inRadius>=0.0f);
 
-	XfdashboardScrollbarPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set value if it changes */
 	if(inRadius==priv->sliderRadius) return;
@@ -1051,10 +1081,12 @@ const ClutterColor* xfdashboard_scrollbar_get_slider_color(XfdashboardScrollbar 
 
 void xfdashboard_scrollbar_set_slider_color(XfdashboardScrollbar *self, const ClutterColor *inColor)
 {
+	XfdashboardScrollbarPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(self));
 	g_return_if_fail(inColor);
 
-	XfdashboardScrollbarPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->sliderColor==NULL || clutter_color_equal(inColor, priv->sliderColor)==FALSE)

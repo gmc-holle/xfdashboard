@@ -95,10 +95,12 @@ static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 /* An application icon in quicklaunch was clicked - try to start application */
 static void _xfdashboard_quicklaunch_on_application_button_clicked(XfdashboardQuicklaunch *self, gpointer inUserData)
 {
+	XfdashboardApplicationButton		*button;
+
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
 
-	XfdashboardApplicationButton		*button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
+	button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
 
 	/* Launch application */
 	if(xfdashboard_application_button_execute(button))
@@ -112,12 +114,14 @@ static void _xfdashboard_quicklaunch_on_application_button_clicked(XfdashboardQu
 /* Update icons in quicklaunch */
 static void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
 {
-	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
-
-	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(self)->priv;
+	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterActor					*child;
 	ClutterActorIter				iter;
 	gint							i;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+
+	priv=self->priv;
 
 	/* Remove all application buttons */
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
@@ -148,14 +152,16 @@ static void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
 /* Set up favourites array from string array value */
 static void _xfdashboard_quicklaunch_set_favourites(XfdashboardQuicklaunch *self, const GValue *inValue)
 {
-	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
-	g_return_if_fail(G_IS_VALUE(inValue));
-
-	XfdashboardQuicklaunchPrivate	*priv=self->priv;
+	XfdashboardQuicklaunchPrivate	*priv;
 	GPtrArray						*desktopFiles;
 	gint							i;
 	GValue							*element;
 	GValue							*desktopFile;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(G_IS_VALUE(inValue));
+
+	priv=self->priv;
 
 	/* Free current list of favourites */
 	if(priv->favourites) xfconf_array_free(priv->favourites);
@@ -190,10 +196,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_width(XfdashboardQuicklaunc
 															gfloat inForWidth,
 															gboolean inDoMinimumSize)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0.0f);
-	g_return_val_if_fail(inForWidth>=0.0f, 0.0f);
-
-	XfdashboardQuicklaunchPrivate	*priv=self->priv;
+	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterActor					*child;
 	ClutterActorIter				iter;
 	gint							numberChildren;
@@ -202,6 +205,11 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_width(XfdashboardQuicklaunc
 	gfloat							childMinWidth, childNaturalWidth;
 	gfloat							scale;
 	gboolean						recheckWidth;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0.0f);
+	g_return_val_if_fail(inForWidth>=0.0f, 0.0f);
+
+	priv=self->priv;
 
 	/* Count visible children and determine their total width */
 	numberChildren=0;
@@ -290,10 +298,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaun
 															gfloat inForHeight,
 															gboolean inDoMinimumSize)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0.0f);
-	g_return_val_if_fail(inForHeight>=0.0f, 0.0f);
-
-	XfdashboardQuicklaunchPrivate	*priv=self->priv;
+	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterActor					*child;
 	ClutterActorIter				iter;
 	gint							numberChildren;
@@ -302,6 +307,11 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaun
 	gfloat							childMinHeight, childNaturalHeight;
 	gfloat							scale;
 	gboolean						recheckHeight;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0.0f);
+	g_return_val_if_fail(inForHeight>=0.0f, 0.0f);
+
+	priv=self->priv;
 
 	/* Count visible children and determine their total height */
 	numberChildren=0;
@@ -830,10 +840,12 @@ gfloat xfdashboard_quicklaunch_get_spacing(XfdashboardQuicklaunch *self)
 
 void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, const gfloat inSpacing)
 {
+	XfdashboardQuicklaunchPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	XfdashboardQuicklaunchPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->spacing!=inSpacing)
@@ -859,12 +871,14 @@ ClutterOrientation xfdashboard_quicklaunch_get_orientation(XfdashboardQuicklaunc
 
 void xfdashboard_quicklaunch_set_orientation(XfdashboardQuicklaunch *self, ClutterOrientation inOrientation)
 {
+	XfdashboardQuicklaunchPrivate	*priv;
+	ClutterRequestMode				requestMode;
+
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(inOrientation==CLUTTER_ORIENTATION_HORIZONTAL ||
 						inOrientation==CLUTTER_ORIENTATION_VERTICAL);
 
-	XfdashboardQuicklaunchPrivate	*priv=self->priv;
-	ClutterRequestMode				requestMode;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->orientation!=inOrientation)

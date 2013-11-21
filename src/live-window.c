@@ -112,9 +112,9 @@ static gboolean _xfdashboard_live_window_is_window_visiblity_flag(XfdashboardLiv
 /* Check if window should be shown */
 static gboolean _xfdashboard_live_window_is_visible_window(XfdashboardLiveWindow *self, WnckWindow *inWindow)
 {
-	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
-
 	WnckWindowState		state;
+
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
 
 	/* Determine if windows should be shown depending on its state */
 	state=wnck_window_get_state(inWindow);
@@ -140,14 +140,17 @@ static void _xfdashboard_live_window_on_close_clicked(XfdashboardLiveWindow *sel
 /* This actor was clicked */
 static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, ClutterActor *inActor, gpointer inUserData)
 {
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
-	g_return_if_fail(CLUTTER_IS_CLICK_ACTION(inUserData));
-
 	XfdashboardLiveWindowPrivate	*priv=self->priv;
 	ClutterClickAction				*action=CLUTTER_CLICK_ACTION(inUserData);
 	gfloat							eventX, eventY;
 	ClutterActor					*eventActor;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
+	g_return_if_fail(CLUTTER_IS_CLICK_ACTION(inUserData));
+
+	priv=self->priv;
+	action=CLUTTER_CLICK_ACTION(inUserData);
 
 	/* TODO: Do I use ClutterClickAction wrong here or problem in proxying "click" signal
 	 *       in XfdashboardButton or Clutter bug?
@@ -189,10 +192,12 @@ static void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *s
 														WnckWindowActions inNewValue,
 														gpointer inUserData)
 {
+	XfdashboardLiveWindowPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
 
-	XfdashboardLiveWindowPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Show or hide close button actor */
 	if(inChangedMask & WNCK_WINDOW_ACTION_CLOSE)
@@ -205,12 +210,15 @@ static void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *s
 /* Icon of window has changed */
 static void _xfdashboard_live_window_on_icon_changed(XfdashboardLiveWindow *self, gpointer inUserData)
 {
+	XfdashboardLiveWindowPrivate	*priv;
+	WnckWindow						*window;
+	ClutterImage					*icon;
+
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
 
-	XfdashboardLiveWindowPrivate	*priv=self->priv;
-	WnckWindow						*window=WNCK_WINDOW(inUserData);
-	ClutterImage					*icon;
+	priv=self->priv;
+	window=WNCK_WINDOW(inUserData);
 
 	/* Set new icon in title actor */
 	icon=xfdashboard_get_image_for_pixbuf(wnck_window_get_icon(window));
@@ -221,11 +229,14 @@ static void _xfdashboard_live_window_on_icon_changed(XfdashboardLiveWindow *self
 /* Title of window has changed */
 static void _xfdashboard_live_window_on_name_changed(XfdashboardLiveWindow *self, gpointer inUserData)
 {
+	XfdashboardLiveWindowPrivate	*priv;
+	WnckWindow						*window;
+
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
 
-	XfdashboardLiveWindowPrivate	*priv=self->priv;
-	WnckWindow						*window=WNCK_WINDOW(inUserData);
+	priv=self->priv;
+	window=WNCK_WINDOW(inUserData);
 
 	/* Set new icon in title actor */
 	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorTitle), wnck_window_get_name(window));
@@ -237,12 +248,15 @@ static void _xfdashboard_live_window_on_state_changed(XfdashboardLiveWindow *sel
 														WnckWindowState inNewState,
 														gpointer inUserData)
 {
+	XfdashboardLiveWindowPrivate	*priv;
+	WnckWindow						*window;
+	gboolean						isVisible;
+
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
 
-	XfdashboardLiveWindowPrivate	*priv=self->priv;
-	WnckWindow						*window=WNCK_WINDOW(inUserData);
-	gboolean						isVisible;
+	priv=self->priv;
+	window=WNCK_WINDOW(inUserData);
 
 	/* If certain state flags has changed check window's visibility */
 	if(_xfdashboard_live_window_is_window_visiblity_flag(self, inChangedMask))
@@ -743,10 +757,12 @@ WnckWindow* xfdashboard_live_window_get_window(XfdashboardLiveWindow *self)
 
 void xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, WnckWindow *inWindow)
 {
+	XfdashboardLiveWindowPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
-	XfdashboardLiveWindowPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set value if it changes */
 	if(inWindow==priv->window) return;
@@ -806,10 +822,12 @@ gfloat xfdashboard_live_window_get_title_actor_padding(XfdashboardLiveWindow *se
 
 void xfdashboard_live_window_set_title_actor_padding(XfdashboardLiveWindow *self, gfloat inPadding)
 {
+	XfdashboardLiveWindowPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(inPadding>=0.0f);
 
-	XfdashboardLiveWindowPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->paddingTitle!=inPadding)
@@ -842,10 +860,12 @@ gfloat xfdashboard_live_window_get_close_button_padding(XfdashboardLiveWindow *s
 
 void xfdashboard_live_window_set_close_button_padding(XfdashboardLiveWindow *self, gfloat inPadding)
 {
+	XfdashboardLiveWindowPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(inPadding>=0.0f);
 
-	XfdashboardLiveWindowPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->paddingClose!=inPadding)

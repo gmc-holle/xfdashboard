@@ -108,11 +108,13 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self, const ClutterActor
 /* Update view depending on scrollbar values */
 static void _xfdashboard_viewpad_update_view_viewport(XfdashboardViewpad *self)
 {
-	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
-
-	XfdashboardViewpadPrivate	*priv=self->priv;
+	XfdashboardViewpadPrivate	*priv;
 	ClutterMatrix				transform;
 	gfloat						x, y, w, h;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	priv=self->priv;
 
 	/* Check for active view */
 	if(priv->activeView==NULL)
@@ -152,12 +154,15 @@ static void _xfdashboard_viewpad_on_scrollbar_value_changed(XfdashboardViewpad *
 															gfloat inValue,
 															gpointer inUserData)
 {
+	XfdashboardViewpadPrivate	*priv;
+	ClutterActor				*scrollbar;
+	gfloat						x, y, w, h;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(inUserData));
 
-	XfdashboardViewpadPrivate	*priv=self->priv;
-	ClutterActor				*scrollbar=CLUTTER_ACTOR(inUserData);
-	gfloat						x, y, w, h;
+	priv=self->priv;
+	scrollbar=CLUTTER_ACTOR(inUserData);
 
 	/* Update clipping */
 	if(clutter_actor_has_clip(CLUTTER_ACTOR(priv->activeView)))
@@ -180,10 +185,12 @@ static void _xfdashboard_viewpad_on_scrollbar_value_changed(XfdashboardViewpad *
 /* Allocation of a view changed */
 static void _xfdashboard_viewpad_update_scrollbars(XfdashboardViewpad *self)
 {
+	XfdashboardViewpadPrivate	*priv;
+	gfloat						w, h;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 
-	XfdashboardViewpadPrivate	*priv=self->priv;
-	gfloat						w, h;
+	priv=self->priv;
 
 	/* Set range of scroll bar to width and height of active view
 	 * But we need to check for nan-values here - I do not get rid of it :(
@@ -212,11 +219,13 @@ static void _xfdashboard_viewpad_update_scrollbars(XfdashboardViewpad *self)
 /* Set new active view and deactive current one */
 static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, XfdashboardView *inView)
 {
+	XfdashboardViewpadPrivate	*priv;
+	gfloat						x, y;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 	g_return_if_fail(inView==NULL || XFDASHBOARD_IS_VIEW(inView));
 
-	XfdashboardViewpadPrivate	*priv=self->priv;
-	gfloat						x, y;
+	priv=self->priv;
 
 	/* Only set value if it changes */
 	if(inView==priv->activeView) return;
@@ -293,13 +302,16 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 /* A view was disabled */
 static void _xfdashboard_viewpad_on_view_disabled(XfdashboardViewpad *self, XfdashboardView *inView)
 {
+	XfdashboardViewpadPrivate	*priv;
+	ClutterActorIter			iter;
+	ClutterActor				*child;
+	XfdashboardView				*firstActivatableView;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
 
-	XfdashboardViewpadPrivate	*priv=self->priv;
-	ClutterActorIter			iter;
-	ClutterActor				*child;
-	XfdashboardView				*firstActivatableView=NULL;
+	priv=self->priv;
+	firstActivatableView=NULL;
 
 	/* If the currently disabled view is the active one, activate a next available view */
 	if(inView==priv->activeView)
@@ -336,10 +348,12 @@ static void _xfdashboard_viewpad_on_view_disabled(XfdashboardViewpad *self, Xfda
 /* A view was enabled */
 static void _xfdashboard_viewpad_on_view_enabled(XfdashboardViewpad *self, XfdashboardView *inView)
 {
+	XfdashboardViewpadPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
 
-	XfdashboardViewpadPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* If no view is active this new enabled view will be activated  */
 	if(!priv->activeView) _xfdashboard_viewpad_activate_view(self, inView);
@@ -348,10 +362,13 @@ static void _xfdashboard_viewpad_on_view_enabled(XfdashboardViewpad *self, Xfdas
 /* Allocation of a view changed */
 static gboolean _xfdashboard_viewpad_on_allocation_changed_repaint_callback(gpointer inUserData)
 {
+	XfdashboardViewpad			*self;
+	XfdashboardViewpadPrivate	*priv;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(inUserData), G_SOURCE_REMOVE);
 
-	XfdashboardViewpad			*self=XFDASHBOARD_VIEWPAD(inUserData);
-	XfdashboardViewpadPrivate	*priv=self->priv;
+	self=XFDASHBOARD_VIEWPAD(inUserData);
+	priv=self->priv;
 
 	/* Update scrollbars */
 	_xfdashboard_viewpad_update_scrollbars(self);
@@ -366,12 +383,16 @@ static void _xfdashboard_viewpad_on_allocation_changed(ClutterActor *inActor,
 														ClutterAllocationFlags inFlags,
 														gpointer inUserData)
 {
+	XfdashboardViewpad			*self;
+	XfdashboardViewpadPrivate	*priv;
+	XfdashboardView				*view;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inActor));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inUserData));
 
-	XfdashboardViewpad			*self=XFDASHBOARD_VIEWPAD(inActor);
-	XfdashboardViewpadPrivate	*priv=self->priv;
-	XfdashboardView				*view=XFDASHBOARD_VIEW(inUserData);
+	self=XFDASHBOARD_VIEWPAD(inActor);
+	priv=self->priv;
+	view=XFDASHBOARD_VIEW(inUserData);
 
 	/* Defer updating scrollbars but only if view whose allocation
 	 * has changed is the active one
@@ -392,13 +413,17 @@ static void _xfdashboard_viewpad_on_view_scroll_to(ClutterActor *inActor,
 													gfloat inY,
 													gpointer inUserData)
 {
+	XfdashboardViewpad			*self;
+	XfdashboardViewpadPrivate	*priv;
+	XfdashboardView				*view;
+	gfloat						x, y, w, h;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inActor));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inUserData));
 
-	XfdashboardViewpad			*self=XFDASHBOARD_VIEWPAD(inActor);
-	XfdashboardViewpadPrivate	*priv=self->priv;
-	XfdashboardView				*view=XFDASHBOARD_VIEW(inUserData);
-	gfloat						x, y, w, h;
+	self=XFDASHBOARD_VIEWPAD(inActor);
+	priv=self->priv;
+	view=XFDASHBOARD_VIEW(inUserData);
 
 	/* If to-scroll view is the active view in viewpad
 	 * just set scrollbar value to the new ones
@@ -429,10 +454,12 @@ static void _xfdashboard_viewpad_on_view_scroll_to(ClutterActor *inActor,
 /* Create view of given type and add to this actor */
 static void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, GType inViewType)
 {
+	XfdashboardViewpadPrivate	*priv;
+	GObject						*view;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 
-	XfdashboardViewpadPrivate	*priv=self->priv;
-	GObject						*view;
+	priv=self->priv;
 
 	/* Create instance and check if it is a view */
 	g_debug("Creating view %s for viewpad", g_type_name(inViewType));
@@ -483,12 +510,15 @@ static void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
 														GType inViewType,
 														gpointer inUserData)
 {
-	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
-
-	XfdashboardViewpadPrivate	*priv=self->priv;
+	XfdashboardViewpadPrivate	*priv;
 	ClutterActorIter			iter;
 	ClutterActor				*child;
-	ClutterActor				*firstActivatableView=NULL;
+	ClutterActor				*firstActivatableView;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+
+	priv=self->priv;
+	firstActivatableView=NULL;
 
 	/* Iterate through create views and lookup view of given type */
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
@@ -523,12 +553,16 @@ static gboolean _xfdashboard_viewpad_on_scroll_event(ClutterActor *inActor,
 														ClutterEvent *inEvent,
 														gpointer inUserData)
 {
+	XfdashboardViewpad				*self;
+	XfdashboardViewpadPrivate		*priv;
+	gboolean						result;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(inActor), FALSE);
 	g_return_val_if_fail(inEvent, FALSE);
 
-	XfdashboardViewpad				*self=XFDASHBOARD_VIEWPAD(inActor);
-	XfdashboardViewpadPrivate		*priv=self->priv;
-	gboolean						result=CLUTTER_EVENT_PROPAGATE;
+	self=XFDASHBOARD_VIEWPAD(inActor);
+	priv=self->priv;
+	result=CLUTTER_EVENT_PROPAGATE;
 
 	/* If vertical scroll bar is visible emit scroll event there */
 	if(priv->vScrollbarVisible)
@@ -1021,10 +1055,12 @@ gfloat xfdashboard_viewpad_get_spacing(XfdashboardViewpad *self)
 
 void xfdashboard_viewpad_set_spacing(XfdashboardViewpad *self, gfloat inSpacing)
 {
+	XfdashboardViewpadPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	XfdashboardViewpadPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set value if it changes */
 	if(inSpacing==priv->spacing) return;
@@ -1045,11 +1081,13 @@ void xfdashboard_viewpad_set_spacing(XfdashboardViewpad *self, gfloat inSpacing)
 /* Get list of views */
 GList* xfdashboard_viewpad_get_views(XfdashboardViewpad *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
-
 	ClutterActorIter			iter;
 	ClutterActor				*child;
-	GList						*list=NULL;
+	GList						*list;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
+
+	list=NULL;
 
 	/* Iterate through children and create list of views */
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
@@ -1066,11 +1104,13 @@ GList* xfdashboard_viewpad_get_views(XfdashboardViewpad *self)
 /* Find view by type */
 XfdashboardView* xfdashboard_viewpad_find_view_by_type(XfdashboardViewpad *self, GType inType)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
-
 	ClutterActorIter			iter;
 	ClutterActor				*child;
-	XfdashboardView				*view=NULL;
+	XfdashboardView				*view;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
+
+	view=NULL;
 
 	/* Iterate through children and create list of views */
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
@@ -1091,11 +1131,13 @@ XfdashboardView* xfdashboard_viewpad_find_view_by_type(XfdashboardViewpad *self,
 /* Find view by internal name */
 XfdashboardView* xfdashboard_viewpad_find_view_by_name(XfdashboardViewpad *self, const gchar *inInternalName)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
-
 	ClutterActorIter			iter;
 	ClutterActor				*child;
-	XfdashboardView				*view=NULL;
+	XfdashboardView				*view;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
+
+	view=NULL;
 
 	/* Iterate through children and lookup view matching requested name */
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
@@ -1123,10 +1165,12 @@ XfdashboardView* xfdashboard_viewpad_get_active_view(XfdashboardViewpad *self)
 
 void xfdashboard_viewpad_set_active_view(XfdashboardViewpad *self, XfdashboardView *inView)
 {
+	XfdashboardViewpadPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
 
-	XfdashboardViewpadPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Only activate view if it changes */
 	if(priv->activeView!=inView) _xfdashboard_viewpad_activate_view(self, inView);
@@ -1157,9 +1201,11 @@ XfdashboardPolicy xfdashboard_viewpad_get_horizontal_scrollbar_policy(Xfdashboar
 
 void xfdashboard_viewpad_set_horizontal_scrollbar_policy(XfdashboardViewpad *self, XfdashboardPolicy inPolicy)
 {
+	XfdashboardViewpadPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 
-	XfdashboardViewpadPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set new value if it differs from current value */
 	if(priv->hScrollbarPolicy==inPolicy) return;
@@ -1181,9 +1227,11 @@ XfdashboardPolicy xfdashboard_viewpad_get_vertical_scrollbar_policy(XfdashboardV
 
 void xfdashboard_viewpad_set_vertical_scrollbar_policy(XfdashboardViewpad *self, XfdashboardPolicy inPolicy)
 {
+	XfdashboardViewpadPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 
-	XfdashboardViewpadPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set new value if it differs from current value */
 	if(priv->vScrollbarPolicy==inPolicy) return;

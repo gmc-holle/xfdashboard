@@ -76,9 +76,9 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 /* Check if window is a stage window */
 static gboolean _xfdashboard_windows_view_is_stage_window(WnckWindow *inWindow)
 {
-	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
-
 	GSList					*stages, *entry;
+
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
 
 	/* Iterate through stages and check if stage window matches requested one */
 	stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
@@ -102,10 +102,10 @@ static gboolean _xfdashboard_windows_view_is_stage_window(WnckWindow *inWindow)
 static XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_wnck_window(XfdashboardWindowsView *self,
 																			WnckWindow *inWindow)
 {
+	GList			*children;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), NULL);
 	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
-
-	GList			*children;
 
 	/* Iterate through list of current actors and find the one for requested window */
 	for(children=clutter_actor_get_children(CLUTTER_ACTOR(self)); children; children=g_list_next(children))
@@ -128,12 +128,14 @@ static void _xfdashboard_windows_view_on_active_workspace_changed(XfdashboardWin
 																	WnckWorkspace *inPrevWorkspace,
 																	gpointer inUserData)
 {
+	WnckScreen				*screen;
+	WnckWorkspace			*workspace;
+	XfdashboardStage		*stage;
+
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(WNCK_IS_SCREEN(inUserData));
 
-	WnckScreen				*screen=WNCK_SCREEN(inUserData);
-	WnckWorkspace			*workspace;
-	XfdashboardStage		*stage;
+	screen=WNCK_SCREEN(inUserData);
 
 	/* Get new active workspace */
 	workspace=wnck_screen_get_active_workspace(screen);
@@ -157,14 +159,17 @@ static void _xfdashboard_windows_view_on_window_opened(XfdashboardWindowsView *s
 														WnckWindow *inWindow,
 														gpointer inUserData)
 {
+	XfdashboardWindowsViewPrivate	*priv;
+	WnckScreen						*screen;
+	WnckWorkspace					*workspace;
+	XfdashboardLiveWindow			*liveWindow;
+
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(WNCK_IS_SCREEN(inUserData));
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
-	XfdashboardWindowsViewPrivate	*priv=self->priv;
-	WnckScreen						*screen=WNCK_SCREEN(inUserData);
-	WnckWorkspace					*workspace;
-	XfdashboardLiveWindow			*liveWindow;
+	priv=self->priv;
+	screen=WNCK_SCREEN(inUserData);
 
 	/* Check if event happened on active screen and active workspace */
 	if(screen!=priv->screen) return;
@@ -182,13 +187,16 @@ static void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *s
 														WnckWindow *inWindow,
 														gpointer inUserData)
 {
+	WnckScreen						*screen;
+	XfdashboardWindowsViewPrivate	*priv;
+	XfdashboardLiveWindow			*liveWindow;
+
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(WNCK_IS_SCREEN(inUserData));
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
-	WnckScreen						*screen=WNCK_SCREEN(inUserData);
-	XfdashboardWindowsViewPrivate	*priv=self->priv;
-	XfdashboardLiveWindow			*liveWindow;
+	screen=WNCK_SCREEN(inUserData);
+	priv=self->priv;
 
 	/* Check if event happened on active screen and active workspace */
 	if(screen!=priv->screen) return;
@@ -203,10 +211,12 @@ static void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *s
 static void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *self,
 														gpointer inUserData)
 {
+	XfdashboardLiveWindow	*liveWindow;
+
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
-	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
+	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
 	wnck_window_activate_transient((WnckWindow*)xfdashboard_live_window_get_window(liveWindow), xfdashboard_get_current_time());
 
@@ -217,11 +227,13 @@ static void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *
 static void _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindowsView *self,
 																gpointer inUserData)
 {
+	XfdashboardLiveWindow	*liveWindow;
+	WnckWindow				*window;
+
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
-	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
-	WnckWindow				*window;
+	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
 	window=WNCK_WINDOW(xfdashboard_live_window_get_window(liveWindow));
 	wnck_window_close(window, xfdashboard_get_current_time());
@@ -231,10 +243,12 @@ static void _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindows
 static void _xfdashboard_windows_view_on_window_geometry_changed(XfdashboardWindowsView *self,
 																	gpointer inUserData)
 {
+	XfdashboardLiveWindow	*liveWindow;
+
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
-	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
+	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
 	/* Force a relayout to reflect new size of window */
 	clutter_actor_queue_relayout(CLUTTER_ACTOR(liveWindow));
@@ -245,10 +259,12 @@ static void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWi
 																	gboolean inIsVisible,
 																	gpointer inUserData)
 {
+	XfdashboardLiveWindow	*liveWindow;
+
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
-	XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
+	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
 	/* If window is shown, show it in window list - otherwise hide it.
 	 * We should not destroy the live window actor as the window might
@@ -262,12 +278,16 @@ static void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWi
 static void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWindowsView *self,
 																	gpointer inUserData)
 {
+	XfdashboardWindowsViewPrivate	*priv;
+	XfdashboardLiveWindow			*liveWindow;
+	WnckWindow						*window;
+
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
-	XfdashboardWindowsViewPrivate	*priv=self->priv;
-	XfdashboardLiveWindow			*liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
-	WnckWindow						*window=xfdashboard_live_window_get_window(liveWindow);
+	priv=self->priv;
+	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
+	window=xfdashboard_live_window_get_window(liveWindow);
 
 	/* If window is neither on this workspace nor pinned then destroy it */
 	if(!wnck_window_is_pinned(window) &&
@@ -281,6 +301,8 @@ static void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWin
 static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self,
 																		WnckWindow *inWindow)
 {
+	ClutterActor	*actor;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), NULL);
 	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
 
@@ -292,8 +314,6 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 	}
 
 	/* Create actor and connect signals */
-	ClutterActor	*actor;
-
 	actor=xfdashboard_live_window_new();
 	g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_windows_view_on_window_clicked), self);
 	g_signal_connect_swapped(actor, "close", G_CALLBACK(_xfdashboard_windows_view_on_window_close_clicked), self);
@@ -309,11 +329,13 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self,
 															WnckWorkspace *inWorkspace)
 {
+	XfdashboardWindowsViewPrivate	*priv;
+	GList							*windowsList;
+
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(inWorkspace==NULL || WNCK_IS_WORKSPACE(inWorkspace));
 
-	XfdashboardWindowsViewPrivate	*priv=XFDASHBOARD_WINDOWS_VIEW(self)->priv;
-	GList							*windowsList;
+	priv=XFDASHBOARD_WINDOWS_VIEW(self)->priv;
 
 	/* Do not anything if workspace is the same as before */
 	if(inWorkspace==priv->workspace) return;

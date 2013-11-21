@@ -161,9 +161,11 @@ XfdashboardViewManager* xfdashboard_view_manager_get_default(void)
 /* Register a view */
 void xfdashboard_view_manager_register(XfdashboardViewManager *self, GType inViewType)
 {
+	XfdashboardViewManagerPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(self));
 
-	XfdashboardViewManagerPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Check if given type is not a XfdashboardView but a derived type from it */
 	if(inViewType==XFDASHBOARD_TYPE_VIEW ||
@@ -187,9 +189,11 @@ void xfdashboard_view_manager_register(XfdashboardViewManager *self, GType inVie
 /* Unregister a view */
 void xfdashboard_view_manager_unregister(XfdashboardViewManager *self, GType inViewType)
 {
+	XfdashboardViewManagerPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(self));
 
-	XfdashboardViewManagerPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Check if given type is not a XfdashboardView but a derived type from it */
 	if(inViewType==XFDASHBOARD_TYPE_VIEW ||
@@ -215,11 +219,11 @@ void xfdashboard_view_manager_unregister(XfdashboardViewManager *self, GType inV
  */
 GList* xfdashboard_view_manager_get_registered(XfdashboardViewManager *self)
 {
+	GList		*copy;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(self), NULL);
 
 	/* Return a copy of list of registered view types */
-	GList		*copy;
-
 	copy=g_list_copy(self->priv->registeredViews);
 	return(copy);
 }

@@ -73,12 +73,15 @@ static GParamSpec* XfdashboardViewSelectorProperties[PROP_LAST]={ 0, };
 /* A view button was clicked to activate it */
 static void _xfdashboard_view_selector_on_view_button_clicked(XfdashboardViewSelector *self, gpointer inUserData)
 {
+	XfdashboardViewSelectorPrivate		*priv;
+	XfdashboardButton					*button;
+	XfdashboardView						*view;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inUserData));
 
-	XfdashboardViewSelectorPrivate		*priv=self->priv;
-	XfdashboardButton					*button=XFDASHBOARD_BUTTON(inUserData);
-	XfdashboardView						*view;
+	priv=self->priv;
+	button=XFDASHBOARD_BUTTON(inUserData);
 
 	view=XFDASHBOARD_VIEW(g_object_get_data(G_OBJECT(button), "view"));
 
@@ -88,10 +91,12 @@ static void _xfdashboard_view_selector_on_view_button_clicked(XfdashboardViewSel
 /* Called when a view was enabled or will be disabled */
 static void _xfdashboard_view_selector_on_view_enable_state_changed(XfdashboardView *inView, gpointer inUserData)
 {
+	ClutterActor						*button;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
 	g_return_if_fail(CLUTTER_IS_ACTOR(inUserData));
 
-	ClutterActor						*button=CLUTTER_ACTOR(inUserData);
+	button=CLUTTER_ACTOR(inUserData);
 
 	if(!xfdashboard_view_get_enabled(inView)) clutter_actor_hide(button);
 		else clutter_actor_show(button);
@@ -102,11 +107,11 @@ static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *se
 														XfdashboardView *inView,
 														gpointer inUserData)
 {
-	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
-	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
-
 	ClutterActor						*button;
 	const gchar							*viewName, *viewIcon;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
 
 	/* Create button for newly added view */
 	viewName=xfdashboard_view_get_name(inView);
@@ -138,11 +143,11 @@ static void _xfdashboard_view_selector_on_view_removed(XfdashboardViewSelector *
 														XfdashboardView *inView,
 														gpointer inUserData)
 {
-	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
-
 	ClutterActorIter					iter;
 	ClutterActor						*child;
 	gpointer							view;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 
 	/* Iterate through create views and lookup view of given type */
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
@@ -325,11 +330,13 @@ XfdashboardViewpad* xfdashboard_view_selector_get_viewpad(XfdashboardViewSelecto
 
 void xfdashboard_view_selector_set_viewpad(XfdashboardViewSelector *self, XfdashboardViewpad *inViewpad)
 {
+	XfdashboardViewSelectorPrivate		*priv;
+	GList								*views, *entry;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inViewpad));
 
-	XfdashboardViewSelectorPrivate		*priv=self->priv;
-	GList								*views, *entry;
+	priv=self->priv;
 
 	/* Only set new value if it differs from current value */
 	if(priv->viewpad==inViewpad) return;
@@ -375,10 +382,12 @@ gfloat xfdashboard_view_selector_get_spacing(XfdashboardViewSelector *self)
 
 void xfdashboard_view_selector_set_spacing(XfdashboardViewSelector *self, gfloat inSpacing)
 {
+	XfdashboardViewSelectorPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	XfdashboardViewSelectorPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set value if it changes */
 	if(inSpacing==priv->spacing) return;
@@ -402,10 +411,12 @@ ClutterOrientation xfdashboard_view_selector_get_orientation(XfdashboardViewSele
 
 void xfdashboard_view_selector_set_orientation(XfdashboardViewSelector *self, ClutterOrientation inOrientation)
 {
+	XfdashboardViewSelectorPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 	g_return_if_fail(inOrientation!=CLUTTER_ORIENTATION_HORIZONTAL || inOrientation!=CLUTTER_ORIENTATION_VERTICAL);
 
-	XfdashboardViewSelectorPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Only set value if it changes */
 	if(inOrientation==priv->orientation) return;

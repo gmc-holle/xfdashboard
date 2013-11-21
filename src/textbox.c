@@ -122,11 +122,14 @@ static ClutterColor		defaultHintTextColor={ 0xc0, 0xc0, 0xc0, 0xff };
 /* Text of editable text box has changed */
 static void _xfdashboard_text_box_on_text_changed(XfdashboardTextBox *self, gpointer inUserData)
 {
+	XfdashboardTextBoxPrivate	*priv;
+	ClutterText					*actorText;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 	g_return_if_fail(CLUTTER_IS_TEXT(inUserData));
 
-	XfdashboardTextBoxPrivate	*priv=self->priv;
-	ClutterText					*actorText=CLUTTER_TEXT(inUserData);
+	priv=self->priv;
+	actorText=CLUTTER_TEXT(inUserData);
 
 	/* Show hint label depending if text box is empty or not */
 	if(xfdashboard_text_box_is_empty(self))
@@ -147,9 +150,11 @@ static void _xfdashboard_text_box_on_primary_icon_clicked(ClutterClickAction *in
 															ClutterActor *inActor,
 															gpointer inUserData)
 {
+	XfdashboardTextBox			*self;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
 
-	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inUserData);
+	self=XFDASHBOARD_TEXT_BOX(inUserData);
 
 	/* Emit signal for clicking primary icon */
 	g_signal_emit(self, XfdashboardTextBoxSignals[SIGNAL_PRIMARY_ICON_CLICKED], 0);
@@ -160,9 +165,11 @@ static void _xfdashboard_text_box_on_secondary_icon_clicked(ClutterClickAction *
 															ClutterActor *inActor,
 															gpointer inUserData)
 {
+	XfdashboardTextBox			*self;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
 
-	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inUserData);
+	self=XFDASHBOARD_TEXT_BOX(inUserData);
 
 	/* Emit signal for clicking secondary icon */
 	g_signal_emit(self, XfdashboardTextBoxSignals[SIGNAL_SECONDARY_ICON_CLICKED], 0);
@@ -822,10 +829,12 @@ gfloat xfdashboard_text_box_get_padding(XfdashboardTextBox *self)
 
 void xfdashboard_text_box_set_padding(XfdashboardTextBox *self, gfloat inPadding)
 {
+	XfdashboardTextBoxPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 	g_return_if_fail(inPadding>=0.0f);
 
-	XfdashboardTextBoxPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->padding!=inPadding)
@@ -848,10 +857,12 @@ gfloat xfdashboard_text_box_get_spacing(XfdashboardTextBox *self)
 
 void xfdashboard_text_box_set_spacing(XfdashboardTextBox *self, gfloat inSpacing)
 {
+	XfdashboardTextBoxPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	XfdashboardTextBoxPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->spacing!=inSpacing)
@@ -867,22 +878,23 @@ void xfdashboard_text_box_set_spacing(XfdashboardTextBox *self, gfloat inSpacing
 /* Get/set text of editable text box */
 gboolean xfdashboard_text_box_is_empty(XfdashboardTextBox *self)
 {
+	const gchar					*text;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(self), TRUE);
 
-	XfdashboardTextBoxPrivate	*priv=self->priv;
-	const gchar					*text=clutter_text_get_text(CLUTTER_TEXT(priv->actorTextBox));
+	text=clutter_text_get_text(CLUTTER_TEXT(self->priv->actorTextBox));
 
 	return(text==NULL || *text==0);
 }
 
 gint xfdashboard_text_box_get_length(XfdashboardTextBox *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(self), 0);
-
-	XfdashboardTextBoxPrivate	*priv=self->priv;
-	const gchar					*text=clutter_text_get_text(CLUTTER_TEXT(priv->actorTextBox));
+	const gchar					*text;
 	gint						textLength=0;
 
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(self), 0);
+
+	text=clutter_text_get_text(CLUTTER_TEXT(self->priv->actorTextBox));
 	if(text) textLength=strlen(text);
 
 	return(textLength);
@@ -897,10 +909,12 @@ const gchar* xfdashboard_text_box_get_text(XfdashboardTextBox *self)
 
 void xfdashboard_text_box_set_text(XfdashboardTextBox *self, const gchar *inMarkupText)
 {
+	XfdashboardTextBoxPrivate	*priv;
+	const gchar					*text;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 
-	XfdashboardTextBoxPrivate	*priv=self->priv;
-	const gchar					*text;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(g_strcmp0(clutter_text_get_text(CLUTTER_TEXT(priv->actorTextBox)), inMarkupText)!=0)
@@ -934,9 +948,11 @@ const gchar* xfdashboard_text_box_get_text_font(XfdashboardTextBox *self)
 
 void xfdashboard_text_box_set_text_font(XfdashboardTextBox *self, const gchar *inFont)
 {
+	XfdashboardTextBoxPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 
-	XfdashboardTextBoxPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(g_strcmp0(priv->textFont, inFont)!=0)
@@ -962,11 +978,13 @@ const ClutterColor* xfdashboard_text_box_get_text_color(XfdashboardTextBox *self
 
 void xfdashboard_text_box_set_text_color(XfdashboardTextBox *self, const ClutterColor *inColor)
 {
+	XfdashboardTextBoxPrivate	*priv;
+	ClutterColor				selectionColor;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 	g_return_if_fail(inColor);
 
-	XfdashboardTextBoxPrivate	*priv=self->priv;
-	ClutterColor				selectionColor;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(!priv->textColor || !clutter_color_equal(inColor, priv->textColor))
@@ -1004,9 +1022,11 @@ const gchar* xfdashboard_text_box_get_hint_text(XfdashboardTextBox *self)
 
 void xfdashboard_text_box_set_hint_text(XfdashboardTextBox *self, const gchar *inMarkupText)
 {
+	XfdashboardTextBoxPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 
-	XfdashboardTextBoxPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(g_strcmp0(clutter_text_get_text(CLUTTER_TEXT(priv->actorHintLabel)), inMarkupText)!=0)
@@ -1029,9 +1049,11 @@ const gchar* xfdashboard_text_box_get_hint_text_font(XfdashboardTextBox *self)
 
 void xfdashboard_text_box_set_hint_text_font(XfdashboardTextBox *self, const gchar *inFont)
 {
+	XfdashboardTextBoxPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 
-	XfdashboardTextBoxPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(g_strcmp0(priv->hintTextFont, inFont)!=0)
@@ -1057,10 +1079,12 @@ const ClutterColor* xfdashboard_text_box_get_hint_text_color(XfdashboardTextBox 
 
 void xfdashboard_text_box_set_hint_text_color(XfdashboardTextBox *self, const ClutterColor *inColor)
 {
+	XfdashboardTextBoxPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 	g_return_if_fail(inColor);
 
-	XfdashboardTextBoxPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(!priv->hintTextColor || !clutter_color_equal(inColor, priv->hintTextColor))
@@ -1086,13 +1110,15 @@ const gchar* xfdashboard_text_box_get_primary_icon(XfdashboardTextBox *self)
 
 void xfdashboard_text_box_set_primary_icon(XfdashboardTextBox *self, const gchar *inIconName)
 {
+	XfdashboardTextBoxPrivate	*priv;
+	ClutterImage				*image;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 	g_return_if_fail(!inIconName || strlen(inIconName)>0);
 
-	/* Set themed icon name or icon file name for primary icon */
-	XfdashboardTextBoxPrivate	*priv=self->priv;
-	ClutterImage				*image;
+	priv=self->priv;
 
+	/* Set themed icon name or icon file name for primary icon */
 	if(g_strcmp0(priv->primaryIconName, inIconName)!=0)
 	{
 		/* Set new primary icon name */
@@ -1151,13 +1177,15 @@ const gchar* xfdashboard_text_box_get_secondary_icon(XfdashboardTextBox *self)
 
 void xfdashboard_text_box_set_secondary_icon(XfdashboardTextBox *self, const gchar *inIconName)
 {
+	XfdashboardTextBoxPrivate	*priv;
+	ClutterImage				*image;
+
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 	g_return_if_fail(!inIconName || strlen(inIconName)>0);
 
-	/* Set themed icon name or icon file name for primary icon */
-	XfdashboardTextBoxPrivate	*priv=self->priv;
-	ClutterImage				*image;
+	priv=self->priv;
 
+	/* Set themed icon name or icon file name for primary icon */
 	if(g_strcmp0(priv->secondaryIconName, inIconName)!=0)
 	{
 		/* Set new primary icon name */

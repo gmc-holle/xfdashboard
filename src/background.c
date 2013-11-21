@@ -91,11 +91,13 @@ static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *se
 														int inHeight,
 														gpointer inUserData)
 {
+	XfdashboardBackgroundPrivate	*priv;
+	gboolean						doRounded=FALSE;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), TRUE);
 	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
 
-	XfdashboardBackgroundPrivate	*priv=self->priv;
-	gboolean						doRounded=FALSE;
+	priv=self->priv;
 
 	/* Clear current contents of the canvas */
 	cairo_save(inContext);
@@ -518,10 +520,12 @@ XfdashboardBackgroundType xfdashboard_background_get_background_type(Xfdashboard
 
 void xfdashboard_background_set_background_type(XfdashboardBackground *self, const XfdashboardBackgroundType inType)
 {
+	XfdashboardBackgroundPrivate	*priv;
+	XfdashboardBackgroundType		oldType;
+
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 
-	XfdashboardBackgroundPrivate	*priv=self->priv;
-	XfdashboardBackgroundType		oldType;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->type!=inType)
@@ -577,10 +581,12 @@ const ClutterColor* xfdashboard_background_get_fill_color(XfdashboardBackground 
 
 void xfdashboard_background_set_fill_color(XfdashboardBackground *self, const ClutterColor *inColor)
 {
+	XfdashboardBackgroundPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 	g_return_if_fail(inColor);
 
-	XfdashboardBackgroundPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->fillColor==NULL || clutter_color_equal(inColor, priv->fillColor)==FALSE)
@@ -607,10 +613,12 @@ const ClutterColor* xfdashboard_background_get_outline_color(XfdashboardBackgrou
 
 void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const ClutterColor *inColor)
 {
+	XfdashboardBackgroundPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 	g_return_if_fail(inColor);
 
-	XfdashboardBackgroundPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->outlineColor==NULL || clutter_color_equal(inColor, priv->outlineColor)==FALSE)
@@ -637,10 +645,12 @@ gfloat xfdashboard_background_get_outline_width(XfdashboardBackground *self)
 
 void xfdashboard_background_set_outline_width(XfdashboardBackground *self, const gfloat inWidth)
 {
+	XfdashboardBackgroundPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 	g_return_if_fail(inWidth>=0.0f);
 
-	XfdashboardBackgroundPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->outlineWidth!=inWidth)
@@ -666,9 +676,11 @@ XfdashboardCorners xfdashboard_background_get_corners(XfdashboardBackground *sel
 
 void xfdashboard_background_set_corners(XfdashboardBackground *self, XfdashboardCorners inCorners)
 {
+	XfdashboardBackgroundPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 
-	XfdashboardBackgroundPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->corners!=inCorners)
@@ -694,10 +706,12 @@ gfloat xfdashboard_background_get_corner_radius(XfdashboardBackground *self)
 
 void xfdashboard_background_set_corner_radius(XfdashboardBackground *self, const gfloat inRadius)
 {
+	XfdashboardBackgroundPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 	g_return_if_fail(inRadius>=0.0f);
 
-	XfdashboardBackgroundPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->cornersRadius!=inRadius)
@@ -723,10 +737,12 @@ ClutterImage* xfdashboard_background_get_image(XfdashboardBackground *self)
 
 void xfdashboard_background_set_image(XfdashboardBackground *self, ClutterImage *inImage)
 {
+	XfdashboardBackgroundPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 	g_return_if_fail(CLUTTER_IS_IMAGE(inImage));
 
-	XfdashboardBackgroundPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->image!=CLUTTER_CONTENT(inImage))

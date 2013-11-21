@@ -79,11 +79,7 @@ static gint _xfdashboard_fill_box_layout_get_largest_sizes(XfdashboardFillBoxLay
 															gfloat *outMinHeight,
 															gfloat *outNaturalHeight)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self), 0);
-	g_return_val_if_fail(CLUTTER_IS_CONTAINER(inContainer), 0);
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inContainer), 0);
-
-	XfdashboardFillBoxLayoutPrivate		*priv=self->priv;
+	XfdashboardFillBoxLayoutPrivate		*priv;
 	ClutterActor						*child;
 	ClutterActorIter					iter;
 	gint								numberChildren;
@@ -94,6 +90,12 @@ static gint _xfdashboard_fill_box_layout_get_largest_sizes(XfdashboardFillBoxLay
 	ClutterActor						*parent;
 	gfloat								parentWidth, parentHeight;
 	gfloat								aspectRatio;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self), 0);
+	g_return_val_if_fail(CLUTTER_IS_CONTAINER(inContainer), 0);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inContainer), 0);
+
+	priv=self->priv;
 
 	/* Iterate through all children and determine sizes */
 	numberChildren=0;
@@ -182,11 +184,7 @@ static void _xfdashboard_fill_box_layout_get_sizes_for_all(XfdashboardFillBoxLay
 															gfloat *outMinHeight,
 															gfloat *outNaturalHeight)
 {
-	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
-	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
-	g_return_if_fail(CLUTTER_IS_ACTOR(inContainer));
-
-	XfdashboardFillBoxLayoutPrivate		*priv=self->priv;
+	XfdashboardFillBoxLayoutPrivate		*priv;
 	ClutterActor						*child;
 	ClutterActorIter					iter;
 	gint								numberChildren;
@@ -197,6 +195,12 @@ static void _xfdashboard_fill_box_layout_get_sizes_for_all(XfdashboardFillBoxLay
 	ClutterActor						*parent;
 	gfloat								parentWidth, parentHeight;
 	gfloat								aspectRatio;
+
+	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
+	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inContainer));
+
+	priv=self->priv;
 
 	/* Initialize return values */
 	numberChildren=0;
@@ -343,11 +347,13 @@ static void _xfdashboard_fill_box_layout_get_preferred_width(ClutterLayoutManage
 																gfloat *outMinWidth,
 																gfloat *outNaturalWidth)
 {
+	XfdashboardFillBoxLayout			*self;
+	gfloat								maxMinWidth, maxNaturalWidth;
+
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(inLayoutManager));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 
-	XfdashboardFillBoxLayout				*self=XFDASHBOARD_FILL_BOX_LAYOUT(inLayoutManager);
-	gfloat								maxMinWidth, maxNaturalWidth;
+	self=XFDASHBOARD_FILL_BOX_LAYOUT(inLayoutManager);
 
 	/* Set up default values */
 	maxMinWidth=0.0f;
@@ -367,11 +373,13 @@ static void _xfdashboard_fill_box_layout_get_preferred_height(ClutterLayoutManag
 																gfloat *outMinHeight,
 																gfloat *outNaturalHeight)
 {
+	XfdashboardFillBoxLayout			*self;
+	gfloat								maxMinHeight, maxNaturalHeight;
+
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(inLayoutManager));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 
-	XfdashboardFillBoxLayout				*self=XFDASHBOARD_FILL_BOX_LAYOUT(inLayoutManager);
-	gfloat								maxMinHeight, maxNaturalHeight;
+	self=XFDASHBOARD_FILL_BOX_LAYOUT(inLayoutManager);
 
 	/* Set up default values */
 	maxMinHeight=0.0f;
@@ -391,11 +399,8 @@ static void _xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inLayout
 													const ClutterActorBox *inAllocation,
 													ClutterAllocationFlags inFlags)
 {
-	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(inLayoutManager));
-	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
-
-	XfdashboardFillBoxLayout				*self=XFDASHBOARD_FILL_BOX_LAYOUT(inLayoutManager);
-	XfdashboardFillBoxLayoutPrivate		*priv=self->priv;
+	XfdashboardFillBoxLayout			*self=XFDASHBOARD_FILL_BOX_LAYOUT(inLayoutManager);
+	XfdashboardFillBoxLayoutPrivate		*priv;
 	ClutterActor						*child;
 	ClutterActorIter					iter;
 	gfloat								parentWidth, parentHeight;
@@ -403,6 +408,12 @@ static void _xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inLayout
 	gfloat								x, y, w, h;
 	gfloat								aspectRatio;
 	ClutterActorBox						childAllocation;
+
+	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(inLayoutManager));
+	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
+
+	self=XFDASHBOARD_FILL_BOX_LAYOUT(inLayoutManager);
+	priv=self->priv;
 
 	/* Get dimension of allocation */
 	parentWidth=clutter_actor_box_get_width(inAllocation);
@@ -635,11 +646,13 @@ ClutterOrientation xfdashboard_fill_box_layout_get_orientation(XfdashboardFillBo
 
 void xfdashboard_fill_box_layout_set_orientation(XfdashboardFillBoxLayout *self, ClutterOrientation inOrientation)
 {
+	XfdashboardFillBoxLayoutPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 	g_return_if_fail(inOrientation==CLUTTER_ORIENTATION_HORIZONTAL ||
 						inOrientation==CLUTTER_ORIENTATION_VERTICAL);
 
-	XfdashboardFillBoxLayoutPrivate		*priv=XFDASHBOARD_FILL_BOX_LAYOUT(self)->priv;
+	priv=self->priv;
 
 	/* Set new values if changed */
 	if(priv->orientation!=inOrientation)
@@ -663,10 +676,12 @@ gfloat xfdashboard_fill_box_layout_get_spacing(XfdashboardFillBoxLayout *self)
 
 void xfdashboard_fill_box_layout_set_spacing(XfdashboardFillBoxLayout *self, gfloat inSpacing)
 {
+	XfdashboardFillBoxLayoutPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	XfdashboardFillBoxLayoutPrivate		*priv=XFDASHBOARD_FILL_BOX_LAYOUT(self)->priv;
+	priv=self->priv;
 
 	/* Set new values if changed */
 	if(priv->spacing!=inSpacing)
@@ -690,9 +705,11 @@ gboolean xfdashboard_fill_box_layout_get_homogeneous(XfdashboardFillBoxLayout *s
 
 void xfdashboard_fill_box_layout_set_homogeneous(XfdashboardFillBoxLayout *self, gboolean inIsHomogeneous)
 {
+	XfdashboardFillBoxLayoutPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 
-	XfdashboardFillBoxLayoutPrivate		*priv=XFDASHBOARD_FILL_BOX_LAYOUT(self)->priv;
+	priv=self->priv;
 
 	/* Set new values if changed */
 	if(priv->isHomogeneous!=inIsHomogeneous)
@@ -716,9 +733,11 @@ gboolean xfdashboard_fill_box_layout_get_keep_aspect(XfdashboardFillBoxLayout *s
 
 void xfdashboard_fill_box_layout_set_keep_aspect(XfdashboardFillBoxLayout *self, gboolean inKeepAspect)
 {
+	XfdashboardFillBoxLayoutPrivate		*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self));
 
-	XfdashboardFillBoxLayoutPrivate		*priv=XFDASHBOARD_FILL_BOX_LAYOUT(self)->priv;
+	priv=self->priv;
 
 	/* Set new values if changed */
 	if(priv->keepAspect!=inKeepAspect)

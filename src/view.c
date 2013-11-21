@@ -424,10 +424,12 @@ const gchar* xfdashboard_view_get_internal_name(XfdashboardView *self)
 
 void xfdashboard_view_set_internal_name(XfdashboardView *self, const gchar *inInternalName)
 {
+	XfdashboardViewPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
 	g_return_if_fail(inInternalName!=NULL);
 
-	XfdashboardViewPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(g_strcmp0(priv->viewInternalName, inInternalName)!=0)
@@ -450,10 +452,12 @@ const gchar* xfdashboard_view_get_name(XfdashboardView *self)
 
 void xfdashboard_view_set_name(XfdashboardView *self, const gchar *inName)
 {
+	XfdashboardViewPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
 	g_return_if_fail(inName!=NULL);
 
-	XfdashboardViewPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(g_strcmp0(priv->viewName, inName)!=0)
@@ -477,10 +481,12 @@ const gchar* xfdashboard_view_get_icon(XfdashboardView *self)
 
 void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon)
 {
+	XfdashboardViewPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
 	g_return_if_fail(inIcon!=NULL);
 
-	XfdashboardViewPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(g_strcmp0(priv->viewIcon, inIcon)!=0)
@@ -509,10 +515,13 @@ XfdashboardFitMode xfdashboard_view_get_fit_mode(XfdashboardView *self)
 
 void xfdashboard_view_set_fit_mode(XfdashboardView *self, XfdashboardFitMode inFitMode)
 {
+	XfdashboardViewPrivate	*priv;
+	XfdashboardViewClass	*klass;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
 
-	XfdashboardViewPrivate	*priv=self->priv;
-	XfdashboardViewClass	*klass=XFDASHBOARD_VIEW_GET_CLASS(self);
+	priv=self->priv;
+	klass=XFDASHBOARD_VIEW_GET_CLASS(self);
 
 	/* Set value if changed */
 	if(priv->fitMode!=inFitMode)
@@ -538,11 +547,14 @@ gboolean xfdashboard_view_get_enabled(XfdashboardView *self)
 
 void xfdashboard_view_set_enabled(XfdashboardView *self, gboolean inIsEnabled)
 {
+	XfdashboardViewPrivate	*priv;
+	XfdashboardViewClass	*klass;
+	guint					signalBeforeID, signalAfterID;
+
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
 
-	XfdashboardViewPrivate	*priv=self->priv;
-	XfdashboardViewClass	*klass=XFDASHBOARD_VIEW_GET_CLASS(self);
-	guint					signalBeforeID, signalAfterID;
+	priv=self->priv;
+	klass=XFDASHBOARD_VIEW_GET_CLASS(self);
 
 	/* Set value if changed */
 	if(priv->isEnabled!=inIsEnabled)

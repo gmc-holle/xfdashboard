@@ -84,12 +84,14 @@ static GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 static void _xfdashboard_applications_view_add_button_for_list_mode(XfdashboardApplicationsView *self,
 																	XfdashboardButton *inButton)
 {
+	XfdashboardApplicationsViewPrivate	*priv;
+	const gchar							*actorFormat;
+	gchar								*actorText;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inButton));
 
-	XfdashboardApplicationsViewPrivate	*priv=self->priv;
-	const gchar							*actorFormat;
-	gchar								*actorText;
+	priv=self->priv;
 
 	/* If button is a real application button set it up */
 	if(XFDASHBOARD_IS_APPLICATION_BUTTON(inButton))
@@ -122,12 +124,14 @@ static void _xfdashboard_applications_view_add_button_for_list_mode(XfdashboardA
 static void _xfdashboard_applications_view_add_button_for_icon_mode(XfdashboardApplicationsView *self,
 																	XfdashboardButton *inButton)
 {
+	XfdashboardApplicationsViewPrivate	*priv;
+	const gchar							*actorFormat;
+	gchar								*actorText;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inButton));
 
-	XfdashboardApplicationsViewPrivate	*priv=self->priv;
-	const gchar							*actorFormat;
-	gchar								*actorText;
+	priv=self->priv;
 
 	/* If button is a real application button set it up */
 	if(XFDASHBOARD_IS_APPLICATION_BUTTON(inButton))
@@ -159,10 +163,12 @@ static void _xfdashboard_applications_view_add_button_for_icon_mode(XfdashboardA
 /* Filter of applications data model has changed */
 static void _xfdashboard_applications_view_on_parent_menu_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
 {
+	XfdashboardApplicationsViewPrivate	*priv;
+	GarconMenuElement					*element;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 
-	XfdashboardApplicationsViewPrivate	*priv=self->priv;
-	GarconMenuElement					*element;
+	priv=self->priv;
 
 	/* Get associated menu element of button */
 	if(priv->currentRootMenuElement &&
@@ -178,12 +184,15 @@ static void _xfdashboard_applications_view_on_parent_menu_clicked(XfdashboardApp
 
 static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
 {
+	XfdashboardApplicationsViewPrivate	*priv;
+	XfdashboardApplicationButton		*button;
+	GarconMenuElement					*element;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
 
-	XfdashboardApplicationsViewPrivate	*priv=self->priv;
-	XfdashboardApplicationButton		*button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
-	GarconMenuElement					*element;
+	priv=self->priv;
+	button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
 
 	/* Get associated menu element of button */
 	element=xfdashboard_application_button_get_menu_element(button);
@@ -212,13 +221,15 @@ static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicatio
 
 static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsView *self, gpointer inUserData)
 {
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
-
-	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
+	XfdashboardApplicationsViewPrivate	*priv;
 	ClutterModelIter					*iterator;
 	ClutterActor						*actor;
 	GarconMenuElement					*menuElement=NULL;
 	GarconMenu							*parentMenu=NULL;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+
+	priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
 
 	/* Destroy all children */
 	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
@@ -288,9 +299,11 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 /* Application model has fully loaded */
 static void _xfdashboard_applications_view_on_model_loaded(XfdashboardApplicationsView *self, gpointer inUserData)
 {
+	XfdashboardApplicationsViewPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 
-	XfdashboardApplicationsViewPrivate	*priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
+	priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
 
 	xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(priv->currentRootMenuElement));
 }
@@ -328,7 +341,9 @@ static void _xfdashboard_applications_view_set_property(GObject *inObject,
 														const GValue *inValue,
 														GParamSpec *inSpec)
 {
-	XfdashboardApplicationsView				*self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
+	XfdashboardApplicationsView				*self;
+
+	self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
 
 	switch(inPropID)
 	{
@@ -347,8 +362,11 @@ static void _xfdashboard_applications_view_get_property(GObject *inObject,
 														GValue *outValue,
 														GParamSpec *inSpec)
 {
-	XfdashboardApplicationsView				*self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
-	XfdashboardApplicationsViewPrivate		*priv=self->priv;
+	XfdashboardApplicationsView				*self;
+	XfdashboardApplicationsViewPrivate		*priv;
+
+	self=XFDASHBOARD_APPLICATIONS_VIEW(inObject);
+	priv=self->priv;
 
 	switch(inPropID)
 	{
@@ -430,10 +448,12 @@ XfdashboardViewMode xfdashboard_applications_view_get_view_mode(XfdashboardAppli
 
 void xfdashboard_applications_view_set_view_mode(XfdashboardApplicationsView *self, const XfdashboardViewMode inMode)
 {
+	XfdashboardApplicationsViewPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 	g_return_if_fail(inMode<=XFDASHBOARD_VIEW_MODE_ICON);
 
-	XfdashboardApplicationsViewPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->viewMode!=inMode)

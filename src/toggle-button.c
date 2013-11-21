@@ -71,10 +71,12 @@ static guint XfdashboardToggleButtonSignals[SIGNAL_LAST]={ 0, };
 /* Toggle button was clicked so toggle state */
 static void _xfdashboard_toggle_button_clicked(XfdashboardToggleButton *self)
 {
+	XfdashboardToggleButtonPrivate	*priv;
+	gboolean						state;
+
 	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(self));
 
-	XfdashboardToggleButtonPrivate	*priv=self->priv;
-	gboolean						state;
+	priv=self->priv;
 
 	/* Call parent's class default click signal handler */
 	if(XFDASHBOARD_BUTTON_CLASS(xfdashboard_toggle_button_parent_class)->clicked)
@@ -231,9 +233,11 @@ gboolean xfdashboard_toggle_button_get_toggle_state(XfdashboardToggleButton *sel
 
 void xfdashboard_toggle_button_set_toggle_state(XfdashboardToggleButton *self, gboolean inToggleState)
 {
+	XfdashboardToggleButtonPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(self));
 
-	XfdashboardToggleButtonPrivate	*priv=self->priv;
+	priv=self->priv;
 
 	/* Set value if changed */
 	if(priv->toggleState!=inToggleState)

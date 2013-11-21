@@ -108,11 +108,14 @@ static XfdashboardApplication*		application=NULL;
 /* Quit application depending on daemon mode and force parameter */
 static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean inForceQuit)
 {
+	XfdashboardApplicationPrivate	*priv;
+	gboolean						shouldQuit;
+	GSList							*stages, *entry;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(self));
 
-	XfdashboardApplicationPrivate	*priv=self->priv;
-	gboolean						shouldQuit=FALSE;
-	GSList							*stages, *entry;
+	priv=self->priv;
+	shouldQuit=FALSE;
 
 	/* Check if we should really quit this instance */
 	if(inForceQuit==TRUE || priv->isDaemon==FALSE) shouldQuit=TRUE;
@@ -156,10 +159,12 @@ static gboolean _xfdashboard_application_on_delete_stage(XfdashboardApplication 
 /* A stage window was unfullscreened */
 static void _xfdashboard_application_on_unfullscreen_stage(XfdashboardApplication *self, gpointer inUserData)
 {
+	XfdashboardStage				*stage;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(self));
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(inUserData));
 
-	XfdashboardStage				*stage=XFDASHBOARD_STAGE(inUserData);
+	stage=XFDASHBOARD_STAGE(inUserData);
 
 	/* Set window fullscreen again just in case the application will not quit */
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(stage), TRUE);
@@ -171,11 +176,14 @@ static void _xfdashboard_application_on_unfullscreen_stage(XfdashboardApplicatio
 /* Perform full initialization of this application instance */
 static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
-
 	XfdashboardApplicationPrivate	*priv=self->priv;
 	GError							*error=NULL;
 	ClutterActor					*stage;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
+
+	priv=self->priv;
+	error=NULL;
 
 	/* Initialize xfconf */
 	if(!xfconf_init(&error))
@@ -213,9 +221,9 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 /* Received "activate" signal on primary instance */
 static void _xfdashboard_application_activate(GApplication *inApplication)
 {
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication));
-
 	GSList							*stages, *entry;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication));
 
 	/* Show all stages again */
 	stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
@@ -229,10 +237,13 @@ static void _xfdashboard_application_activate(GApplication *inApplication)
 /* Primary instance is starting up */
 static void _xfdashboard_application_startup(GApplication *inApplication)
 {
+	XfdashboardApplication			*self;
+	XfdashboardApplicationPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication));
 
-	XfdashboardApplication			*self=XFDASHBOARD_APPLICATION(inApplication);
-	XfdashboardApplicationPrivate	*priv=self->priv;
+	self=XFDASHBOARD_APPLICATION(inApplication);
+	priv=self->priv;
 
 	/* Call parent's class startup method */
 	G_APPLICATION_CLASS(xfdashboard_application_parent_class)->startup(inApplication);
@@ -246,15 +257,19 @@ static void _xfdashboard_application_startup(GApplication *inApplication)
 /* Handle command-line on primary instance */
 static int _xfdashboard_application_command_line(GApplication *inApplication, GApplicationCommandLine *inCommandLine)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication), 1);
-
-	XfdashboardApplication			*self=XFDASHBOARD_APPLICATION(inApplication);
-	XfdashboardApplicationPrivate	*priv=self->priv;
+	XfdashboardApplication			*self;
+	XfdashboardApplicationPrivate	*priv;
 	GOptionContext					*context;
 	gboolean						result;
 	gint							argc;
 	gchar							**argv;
-	GError							*error=NULL;
+	GError							*error;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication), 1);
+
+	self=XFDASHBOARD_APPLICATION(inApplication);
+	priv=self->priv;
+	error=NULL;
 
 	/* Set up options */
 	context=g_option_context_new(N_("- A Gnome Shell like dashboard for Xfce4"));
