@@ -28,6 +28,7 @@
 
 #include "button.h"
 #include "enums.h"
+#include "click-action.h"
 
 #include <glib/gi18n-lib.h>
 #include <gdk/gdk.h>
@@ -1388,7 +1389,7 @@ static void xfdashboard_button_init(XfdashboardButton *self)
 	clutter_text_set_single_line_mode(priv->actorLabel, priv->isSingleLineMode);
 
 	/* Connect signals */
-	priv->clickAction=clutter_click_action_new();
+	priv->clickAction=xfdashboard_click_action_new();
 	clutter_actor_add_action(CLUTTER_ACTOR(self), priv->clickAction);
 	g_signal_connect(priv->clickAction, "clicked", G_CALLBACK(_xfdashboard_button_clicked), NULL);
 }

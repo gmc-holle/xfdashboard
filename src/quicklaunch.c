@@ -118,6 +118,8 @@ static void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
 	ClutterActor					*child;
 	ClutterActorIter				iter;
 	guint							i;
+	ClutterActor					*actor;
+	GValue							*desktopFile;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 
@@ -134,9 +136,6 @@ static void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
 	for(i=0; i<priv->favourites->len; i++)
 	{
 		/* Create application button from desktop file and hide label in quicklaunch */
-		ClutterActor					*actor;
-		GValue							*desktopFile;
-
 		desktopFile=(GValue*)g_ptr_array_index(priv->favourites, i);
 
 		actor=xfdashboard_application_button_new_from_desktop_file(g_value_get_string(desktopFile));
