@@ -25,6 +25,8 @@ xfdashboard_headers = \
 	background.h \
 	button.h \
 	click-action.h \
+	drag-action.h \
+	drop-action.h \
 	fill-box-layout.h \
 	live-window.h \
 	quicklaunch.h \
@@ -52,6 +54,8 @@ xfdashboard_SOURCES = \
 	background.c \
 	button.c \
 	click-action.c \
+	drag-action.c \
+	drop-action.c \
 	fill-box-layout.c \
 	live-window.c \
 	main.c \

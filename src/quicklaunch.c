@@ -30,6 +30,8 @@
 #include "application.h"
 #include "application-button.h"
 #include "toggle-button.h"
+#include "drag-action.h"
+#include "drop-action.h"
 
 #include <glib/gi18n-lib.h>
 #include <math.h>
@@ -49,6 +51,7 @@ struct _XfdashboardQuicklaunchPrivate
 	/* Properties related */
 	GPtrArray				*favourites;
 
+	gfloat					normalIconSize;
 	gfloat					scaleMin;
 	gfloat					scaleMax;
 	gfloat					scaleStep;
@@ -59,8 +62,14 @@ struct _XfdashboardQuicklaunchPrivate
 
 	/* Instance related */
 	XfconfChannel			*xfconfChannel;
+
 	gfloat					scaleCurrent;
+
 	ClutterActor			*appsButton;
+	ClutterActor			*trashButton;
+
+	guint					dragMode;
+	ClutterActor			*dragPreviewIcon;
 };
 
 /* Properties */
@@ -69,6 +78,7 @@ enum
 	PROP_0,
 
 	PROP_FAVOURITES,
+	PROP_NORMAL_ICON_SIZE,
 	PROP_SPACING,
 	PROP_ORIENTATION,
 
@@ -86,14 +96,26 @@ static GParamSpec* XfdashboardQuicklaunchProperties[PROP_LAST]={ 0, };
 // TODO: static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+#define DEFAULT_NORMAL_ICON_SIZE	64					// TODO: Replace by settings/theming object
 #define DEFAULT_SCALE_MIN			0.1
 #define DEFAULT_SCALE_MAX			1.0
 #define DEFAULT_SCALE_STEP			0.1
 
-#define DEFAULT_APPS_BUTTON_ICON	GTK_STOCK_HOME	// TODO: Replace by settings/theming object
+#define DEFAULT_APPS_BUTTON_ICON	GTK_STOCK_HOME		// TODO: Replace by settings/theming object
+#define DEFAULT_TRASH_BUTTON_ICON	GTK_STOCK_DELETE	// TODO: Replace by settings/theming object
 
-/* An application icon in quicklaunch was clicked - try to start application */
-static void _xfdashboard_quicklaunch_on_application_button_clicked(XfdashboardQuicklaunch *self, gpointer inUserData)
+enum
+{
+	DRAG_MODE_NONE,
+	DRAG_MODE_CREATE,
+	DRAG_MODE_MOVE_EXISTING
+};
+
+/* Forward declarations */
+static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuicklaunch *self);
+
+/* An application icon (favourite) in quicklaunch was clicked */
+static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch *self, gpointer inUserData)
 {
 	XfdashboardApplicationButton		*button;
 
@@ -111,8 +133,519 @@ static void _xfdashboard_quicklaunch_on_application_button_clicked(XfdashboardQu
 	}
 }
 
-/* Update icons in quicklaunch */
-static void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
+/* Drag of a quicklaunch icon begins */
+static void _xfdashboard_quicklaunch_on_favourite_drag_begin(ClutterDragAction *inAction,
+																ClutterActor *inActor,
+																gfloat inStageX,
+																gfloat inStageY,
+																ClutterModifierType inModifiers,
+																gpointer inUserData)
+{
+	XfdashboardQuicklaunch			*self;
+	XfdashboardQuicklaunchPrivate	*priv;
+	ClutterActor					*dragHandle;
+	ClutterStage					*stage;
+	gfloat							scaleX, scaleY;
+
+	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inUserData));
+
+	self=XFDASHBOARD_QUICKLAUNCH(inUserData);
+	priv=self->priv;
+
+	/* Prevent signal "clicked" from being emitted on dragged icon */
+	g_signal_handlers_block_by_func(inActor, _xfdashboard_quicklaunch_on_favourite_clicked, inUserData);
+
+	/* Get stage */
+	stage=CLUTTER_STAGE(clutter_actor_get_stage(inActor));
+
+	/* Create a clone of application icon for drag handle and hide it
+	 * initially. It is only shown if pointer is outside of quicklaunch.
+	 */
+	dragHandle=clutter_clone_new(inActor);
+	clutter_actor_set_position(dragHandle, inStageX, inStageY);
+	clutter_actor_set_scale(dragHandle, priv->scaleCurrent, priv->scaleCurrent);
+	clutter_actor_hide(dragHandle);
+	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
+
+	clutter_drag_action_set_drag_handle(inAction, dragHandle);
+}
+
+/* Drag of a quicklaunch icon ends */
+static void _xfdashboard_quicklaunch_on_favourite_drag_end(ClutterDragAction *inAction,
+															ClutterActor *inActor,
+															gfloat inStageX,
+															gfloat inStageY,
+															ClutterModifierType inModifiers,
+															gpointer inUserData)
+{
+	ClutterActor					*dragHandle;
+
+	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inUserData));
+
+	/* Destroy clone of application icon used as drag handle */
+	dragHandle=clutter_drag_action_get_drag_handle(inAction);
+	if(dragHandle)
+	{
+#if CLUTTER_CHECK_VERSION(1, 14, 0)
+		/* Only unset drag handle if not running Clutter in version
+		 * 1.12. This prevents a critical warning message in 1.12.
+		 * Later versions of Clutter are fixed already.
+		 */
+		clutter_drag_action_set_drag_handle(inAction, NULL);
+#endif
+		clutter_actor_destroy(dragHandle);
+	}
+
+	/* Allow signal "clicked" from being emitted again */
+	g_signal_handlers_unblock_by_func(inActor, _xfdashboard_quicklaunch_on_favourite_clicked, inUserData);
+}
+
+/* Drag of an actor to quicklaunch as drop target begins */
+static gboolean _xfdashboard_quicklaunch_on_drop_begin(XfdashboardQuicklaunch *self,
+														XfdashboardDragAction *inDragAction,
+														gpointer inUserData)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+	ClutterActor					*dragSource;
+	ClutterActor					*draggedActor;
+	const gchar						*desktopID;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData), FALSE);
+
+	priv=self->priv;
+
+	/* Get source where dragging started and actor being dragged */
+	dragSource=xfdashboard_drag_action_get_source(inDragAction);
+	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+
+	/* Check if we can handle dragged actor from given source */
+	priv->dragMode=DRAG_MODE_NONE;
+
+	if(XFDASHBOARD_IS_QUICKLAUNCH(dragSource) &&
+		XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor) &&
+		xfdashboard_application_button_get_desktop_filename(XFDASHBOARD_APPLICATION_BUTTON(draggedActor)))
+	{
+		priv->dragMode=DRAG_MODE_MOVE_EXISTING;
+	}
+
+	// TODO: if(XFDASHBOARD_IS_APPLICATIONS_VIEW(dragSource) &&
+		// TODO: XFDASHBOARD_IS_APPLICATION_ICON(draggedActor)) priv->dragMode=DRAG_MODE_CREATE;
+
+	/* Create a visible copy of dragged application button and insert it
+	 * after dragged icon in quicklaunch. This one is the one which is
+	 * moved within quicklaunch. It is used as preview how quicklaunch
+	 * will look like if drop will be successful. It is also needed to
+	 * restore original order of all favourite icons if drag was
+	 * cancelled by just destroying this preview icon.
+	 * If dragging an favourite icon we will hide the it and leave it
+	 * untouched when drag is cancelled.
+	 */
+	if(priv->dragMode!=DRAG_MODE_NONE)
+	{
+		desktopID=xfdashboard_application_button_get_desktop_filename(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
+
+		priv->dragPreviewIcon=xfdashboard_application_button_new_from_desktop_file(desktopID);
+		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->dragPreviewIcon), priv->normalIconSize);
+		xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->dragPreviewIcon), FALSE);
+		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->dragPreviewIcon), XFDASHBOARD_STYLE_ICON);
+		if(priv->dragMode==DRAG_MODE_CREATE) clutter_actor_hide(priv->dragPreviewIcon);
+		clutter_actor_add_child(CLUTTER_ACTOR(self), priv->dragPreviewIcon);
+
+		if(priv->dragMode==DRAG_MODE_MOVE_EXISTING)
+		{
+			clutter_actor_set_child_below_sibling(CLUTTER_ACTOR(self),
+													priv->dragPreviewIcon,
+													draggedActor);
+			clutter_actor_hide(draggedActor);
+		}
+	}
+
+	/* If drag mode is set return TRUE because we can handle dragged actor
+	 * otherwise return FALSE
+	 */
+	return(priv->dragMode!=DRAG_MODE_NONE ? TRUE : FALSE);
+}
+
+/* Dragged actor was dropped on this drop target */
+static void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardQuicklaunch *self,
+													XfdashboardDragAction *inDragAction,
+													gfloat inX,
+													gfloat inY,
+													gpointer inUserData)
+{
+	XfdashboardQuicklaunchPrivate		*priv;
+	ClutterActor						*draggedActor;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	priv=self->priv;
+
+	/* Get dragged actor */
+	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+
+	/* If drag mode is reorder move originally dragged application icon
+	 * to its final position and destroy preview application icon.
+	 */
+	if(priv->dragMode==DRAG_MODE_MOVE_EXISTING)
+	{
+		clutter_actor_set_child_below_sibling(CLUTTER_ACTOR(self),
+												draggedActor,
+												priv->dragPreviewIcon);
+		clutter_actor_show(draggedActor);
+
+		if(priv->dragPreviewIcon)
+		{
+			clutter_actor_destroy(priv->dragPreviewIcon);
+			priv->dragPreviewIcon=NULL;
+		}
+	}
+
+	/* Update favourites from icon order */
+	_xfdashboard_quicklaunch_update_property_from_icons(self);
+
+	/* Reset drag mode */
+	priv->dragMode=DRAG_MODE_NONE;
+}
+
+/* Drag of an actor to this drop target ended without actor being dropped here */
+static void _xfdashboard_quicklaunch_on_drop_end(XfdashboardQuicklaunch *self,
+													XfdashboardDragAction *inDragAction,
+													gpointer inUserData)
+{
+	XfdashboardQuicklaunchPrivate		*priv;
+	ClutterActor						*draggedActor;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	priv=self->priv;
+
+	/* Get dragged actor */
+	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+
+	/* Destroy preview icon and show originally dragged favourite icon.
+	 * Doing it this way will restore the order of favourite icons.
+	 */
+	if(priv->dragPreviewIcon)
+	{
+		clutter_actor_destroy(priv->dragPreviewIcon);
+		priv->dragPreviewIcon=NULL;
+	}
+
+	if(priv->dragMode==DRAG_MODE_MOVE_EXISTING) clutter_actor_show(draggedActor);
+	priv->dragMode=DRAG_MODE_NONE;
+}
+
+/* Drag of an actor entered this drop target */
+static void _xfdashboard_quicklaunch_on_drop_enter(XfdashboardQuicklaunch *self,
+													XfdashboardDragAction *inDragAction,
+													gpointer inUserData)
+{
+	ClutterActor					*dragSource;
+	ClutterActor					*dragHandle;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	/* Get source where dragging started and actor being dragged */
+	dragSource=xfdashboard_drag_action_get_source(inDragAction);
+	dragHandle=clutter_drag_action_get_drag_handle(CLUTTER_DRAG_ACTION(inDragAction));
+
+	/* Hide drag handle if source of dragged actor is this quicklaunch
+	 * as drag handle is now inside this quicklaunch */
+	if(dragSource==CLUTTER_ACTOR(self)) clutter_actor_hide(dragHandle);
+}
+
+/* Drag of an actor moves over this drop target */
+static void _xfdashboard_quicklaunch_on_drop_motion(XfdashboardQuicklaunch *self,
+													XfdashboardDragAction *inDragAction,
+													gfloat inX,
+													gfloat inY,
+													gpointer inUserData)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+	ClutterActor					*draggedActor;
+	ClutterActor					*dragHandle;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	priv=self->priv;
+
+	/* Get actor being dragged and the drag handle */
+	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+	dragHandle=clutter_drag_action_get_drag_handle(CLUTTER_DRAG_ACTION(inDragAction));
+
+	/* Get new position of preview application icon in quicklaunch
+	 * if dragged actor is an application icon
+	 */
+	if(XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor))
+	{
+		ClutterStage				*stage;
+		gboolean					oldPreviewReactive;
+		gboolean					oldHandleReactive;
+		gfloat						stageX, stageY;
+		gfloat						deltaX, deltaY;
+		ClutterActor				*actorUnderMouse;
+
+		/* Preview icon and drag handle should not be reactive to prevent
+		 * clutter_stage_get_actor_at_pos() choosing one of both as the
+		 * actor under mouse. But remember their state to reset it later.
+		 */
+		oldPreviewReactive=clutter_actor_get_reactive(priv->dragPreviewIcon);
+		clutter_actor_set_reactive(priv->dragPreviewIcon, FALSE);
+
+		oldHandleReactive=clutter_actor_get_reactive(dragHandle);
+		clutter_actor_set_reactive(dragHandle, FALSE);
+
+		/* Get new position and move preview icon */
+		clutter_drag_action_get_motion_coords(CLUTTER_DRAG_ACTION(inDragAction), &stageX, &stageY);
+		xfdashboard_drag_action_get_motion_delta(inDragAction, &deltaX, &deltaY);
+
+		stage=CLUTTER_STAGE(clutter_actor_get_stage(dragHandle));
+		actorUnderMouse=clutter_stage_get_actor_at_pos(stage, CLUTTER_PICK_REACTIVE, stageX, stageY);
+		if(XFDASHBOARD_IS_APPLICATION_BUTTON(actorUnderMouse) &&
+			actorUnderMouse!=priv->dragPreviewIcon)
+		{
+			if((priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && deltaX<0) ||
+				(priv->orientation==CLUTTER_ORIENTATION_VERTICAL && deltaY<0))
+			{
+				clutter_actor_set_child_below_sibling(CLUTTER_ACTOR(self),
+														priv->dragPreviewIcon,
+														actorUnderMouse);
+			}
+				else
+				{
+					clutter_actor_set_child_above_sibling(CLUTTER_ACTOR(self),
+															priv->dragPreviewIcon,
+															actorUnderMouse);
+				}
+
+			/* Show preview icon now if drag mode is "new". Doing it earlier will
+			 * show preview icon at wrong position when entering quicklaunch
+			 */
+			if(priv->dragMode==DRAG_MODE_CREATE) clutter_actor_show(priv->dragPreviewIcon);
+		}
+
+		/* Reset reactive state of preview icon and drag handle */
+		clutter_actor_set_reactive(priv->dragPreviewIcon, oldPreviewReactive);
+		clutter_actor_set_reactive(dragHandle, oldHandleReactive);
+	}
+}
+
+/* Drag of an actor entered this drop target */
+static void _xfdashboard_quicklaunch_on_drop_leave(XfdashboardQuicklaunch *self,
+													XfdashboardDragAction *inDragAction,
+													gpointer inUserData)
+{
+	ClutterActor					*dragSource;
+	ClutterActor					*dragHandle;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	/* Get source where dragging started and drag handle */
+	dragSource=xfdashboard_drag_action_get_source(inDragAction);
+	dragHandle=clutter_drag_action_get_drag_handle(CLUTTER_DRAG_ACTION(inDragAction));
+
+	/* Show drag handle if source of dragged actor is this quicklaunch
+	 * as drag handle is now inside this quicklaunch */
+	if(dragSource==CLUTTER_ACTOR(self)) clutter_actor_show(dragHandle);
+}
+
+/* Drag of an actor to trash drop target begins */
+static gboolean _xfdashboard_quicklaunch_on_trash_drop_begin(XfdashboardQuicklaunch *self,
+																XfdashboardDragAction *inDragAction,
+																gpointer inUserData)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+	ClutterActor					*dragSource;
+	ClutterActor					*draggedActor;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData), FALSE);
+
+	priv=self->priv;
+
+	/* Get source where dragging started and actor being dragged */
+	dragSource=xfdashboard_drag_action_get_source(inDragAction);
+	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+
+	/* Check if we can handle dragged actor from given source */
+	if(XFDASHBOARD_IS_QUICKLAUNCH(dragSource) &&
+		XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor))
+	{
+		/* Dragged actor is a favourite icon from quicklaunch. So hide
+		 * "applications" button and show an unhighlited trash button instead.
+		 * Trash button will be hidden and "applications" button shown again
+		 * when drag ends.
+		 */
+		clutter_actor_hide(priv->appsButton);
+		clutter_actor_show(priv->trashButton);
+
+		return(TRUE);
+	}
+
+	/* If we get here we cannot handle dragged actor at trash drop target */
+	return(FALSE);
+}
+
+/* Dragged actor was dropped on trash drop target */
+static void _xfdashboard_quicklaunch_on_trash_drop_drop(XfdashboardQuicklaunch *self,
+															XfdashboardDragAction *inDragAction,
+															gfloat inX,
+															gfloat inY,
+															gpointer inUserData)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+	ClutterActor					*draggedActor;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	priv=self->priv;
+
+	/* Destroy dragged favourite icon before updating property */
+	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+	clutter_actor_destroy(draggedActor);
+
+	/* Destroy preview icon before updating property */
+	if(priv->dragPreviewIcon)
+	{
+		clutter_actor_destroy(priv->dragPreviewIcon);
+		priv->dragPreviewIcon=NULL;
+	}
+
+	/* Show "applications" button again and hide trash button instead */
+	clutter_actor_hide(priv->trashButton);
+	clutter_actor_show(priv->appsButton);
+
+	/* Update favourites from icon order */
+	_xfdashboard_quicklaunch_update_property_from_icons(self);
+
+	/* Reset drag mode */
+	priv->dragMode=DRAG_MODE_NONE;
+
+}
+
+/* Drag of an actor to trash drop target ended without actor being dropped here */
+static void _xfdashboard_quicklaunch_on_trash_drop_end(XfdashboardQuicklaunch *self,
+														XfdashboardDragAction *inDragAction,
+														gpointer inUserData)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	priv=self->priv;
+
+	/* Show "applications" button again and hide trash button instead */
+	clutter_actor_hide(priv->trashButton);
+	clutter_actor_show(priv->appsButton);
+}
+
+/* Drag of an actor entered trash drop target */
+static void _xfdashboard_quicklaunch_on_trash_drop_enter(XfdashboardQuicklaunch *self,
+															XfdashboardDragAction *inDragAction,
+															gpointer inUserData)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+	ClutterActor					*dragHandle;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	priv=self->priv;
+
+	/* Set toggle state on trash drop target as dragged actor is over it */
+	xfdashboard_toggle_button_set_toggle_state(XFDASHBOARD_TOGGLE_BUTTON(priv->trashButton), TRUE);
+}
+
+/* Drag of an actor leaves trash drop target */
+static void _xfdashboard_quicklaunch_on_trash_drop_leave(XfdashboardQuicklaunch *self,
+															XfdashboardDragAction *inDragAction,
+															gpointer inUserData)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+	ClutterActor					*dragHandle;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	priv=self->priv;
+
+	/* Set toggle state on trash drop target as dragged actor is over it */
+	xfdashboard_toggle_button_set_toggle_state(XFDASHBOARD_TOGGLE_BUTTON(priv->trashButton), FALSE);
+}
+
+/* Update property from icons in quicklaunch */
+static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuicklaunch *self)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+	ClutterActor					*child;
+	ClutterActorIter				iter;
+	XfdashboardApplicationButton	*button;
+	const gchar						*desktopFile;
+	GValue							*desktopValue;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+
+	priv=self->priv;
+
+	/* Free current list of desktop files */
+	if(priv->favourites)
+	{
+		xfconf_array_free(priv->favourites);
+		priv->favourites=NULL;
+	}
+
+	/* Create array of strings pointing to desktop files for new order,
+	 * update quicklaunch and store settings
+	 */
+	priv->favourites=g_ptr_array_new();
+
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Only add desktop file if it is an application button and
+		 * provides a desktop file name
+		 */
+ 		if(!XFDASHBOARD_IS_APPLICATION_BUTTON(child)) continue;
+
+		button=XFDASHBOARD_APPLICATION_BUTTON(child);
+		desktopFile=xfdashboard_application_button_get_desktop_filename(button);
+		if(!desktopFile) continue;
+
+		/* Add desktop file name to array */
+		desktopValue=g_value_init(g_new0(GValue, 1), G_TYPE_STRING);
+		g_value_set_string(desktopValue, desktopFile);
+		g_ptr_array_add(priv->favourites, desktopValue);
+	}
+
+	/* Notify about property change */
+	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardQuicklaunchProperties[PROP_FAVOURITES]);
+}
+
+/* Update icons in quicklaunch from property */
+static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuicklaunch *self)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterActor					*child;
@@ -120,6 +653,7 @@ static void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
 	guint							i;
 	ClutterActor					*actor;
 	GValue							*desktopFile;
+	ClutterAction					*dragAction;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 
@@ -139,12 +673,19 @@ static void _xfdashboard_quicklaunch_update_icons(XfdashboardQuicklaunch *self)
 		desktopFile=(GValue*)g_ptr_array_index(priv->favourites, i);
 
 		actor=xfdashboard_application_button_new_from_desktop_file(g_value_get_string(desktopFile));
-		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), 64);
+		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), priv->normalIconSize);
 		xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
 		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_ICON);
 		clutter_actor_show(actor);
 		clutter_actor_add_child(CLUTTER_ACTOR(self), actor);
-		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_application_button_clicked), self);
+		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_clicked), self);
+
+		/* Set up drag'n'drop */
+		dragAction=xfdashboard_drag_action_new_with_source(CLUTTER_ACTOR(self));
+		clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(dragAction), -1, -1);
+		clutter_actor_add_action(actor, dragAction);
+		g_signal_connect(dragAction, "drag-begin", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_drag_begin), self);
+		g_signal_connect(dragAction, "drag-end", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_drag_end), self);
 	}
 }
 
@@ -163,8 +704,11 @@ static void _xfdashboard_quicklaunch_set_favourites(XfdashboardQuicklaunch *self
 	priv=self->priv;
 
 	/* Free current list of favourites */
-	if(priv->favourites) xfconf_array_free(priv->favourites);
-	priv->favourites=NULL;
+	if(priv->favourites)
+	{
+		xfconf_array_free(priv->favourites);
+		priv->favourites=NULL;
+	}
 
 	/* Copy array of string pointing to desktop files */
 	desktopFiles=g_value_get_boxed(inValue);
@@ -187,7 +731,7 @@ static void _xfdashboard_quicklaunch_set_favourites(XfdashboardQuicklaunch *self
 		else priv->favourites=g_ptr_array_new();
 
 	/* Update list of icons for desktop files */
-	_xfdashboard_quicklaunch_update_icons(self);
+	_xfdashboard_quicklaunch_update_icons_from_property(self);
 }
 
 /* Get scale factor to fit all children into given width */
@@ -684,6 +1228,10 @@ static void _xfdashboard_quicklaunch_set_property(GObject *inObject,
 			_xfdashboard_quicklaunch_set_favourites(self, inValue);
 			break;
 
+		case PROP_NORMAL_ICON_SIZE:
+			xfdashboard_quicklaunch_set_normal_icon_size(self, g_value_get_float(inValue));
+			break;
+
 		case PROP_SPACING:
 			xfdashboard_quicklaunch_set_spacing(self, g_value_get_float(inValue));
 			break;
@@ -710,6 +1258,10 @@ static void _xfdashboard_quicklaunch_get_property(GObject *inObject,
 	{
 		case PROP_FAVOURITES:
 			g_value_set_boxed(outValue, priv->favourites);
+			break;
+
+		case PROP_NORMAL_ICON_SIZE:
+			g_value_set_float(outValue, priv->normalIconSize);
 			break;
 
 		case PROP_SPACING:
@@ -755,6 +1307,14 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 							XFDASHBOARD_TYPE_POINTER_ARRAY,
 							G_PARAM_READWRITE);
 
+	XfdashboardQuicklaunchProperties[PROP_NORMAL_ICON_SIZE]=
+		g_param_spec_float("normal-icon-size",
+								_("Normal icon size"),
+								_("Unscale size of icon"),
+								0.0, G_MAXFLOAT,
+								DEFAULT_NORMAL_ICON_SIZE,
+								G_PARAM_READWRITE);
+
 	XfdashboardQuicklaunchProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
 								_("Spacing"),
@@ -784,6 +1344,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterRequestMode				requestMode;
+	ClutterAction					*dropAction;
 
 	priv=self->priv=XFDASHBOARD_QUICKLAUNCH_GET_PRIVATE(self);
 
@@ -791,25 +1352,55 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	priv->favourites=NULL;
 	priv->spacing=0.0f;
 	priv->orientation=CLUTTER_ORIENTATION_VERTICAL;
+	priv->normalIconSize=DEFAULT_NORMAL_ICON_SIZE;
 	priv->scaleCurrent=DEFAULT_SCALE_MAX;
 	priv->scaleMin=DEFAULT_SCALE_MIN;
 	priv->scaleMax=DEFAULT_SCALE_MAX;
 	priv->scaleStep=DEFAULT_SCALE_STEP;
 	priv->xfconfChannel=XFCONF_CHANNEL(g_object_ref(xfdashboard_application_get_xfconf_channel()));
+	priv->dragMode=DRAG_MODE_NONE;
+	priv->dragPreviewIcon=NULL;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 	requestMode=(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL ? CLUTTER_REQUEST_HEIGHT_FOR_WIDTH : CLUTTER_REQUEST_WIDTH_FOR_HEIGHT);
 	clutter_actor_set_request_mode(CLUTTER_ACTOR(self), requestMode);
 
+	/* Add "applications" button */
 	priv->appsButton=xfdashboard_toggle_button_new_full(DEFAULT_APPS_BUTTON_ICON, _("Applications"));
-	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->appsButton), 64);
+	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->appsButton), priv->normalIconSize);
 	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->appsButton), FALSE);
 	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->appsButton), XFDASHBOARD_STYLE_ICON);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->appsButton);
 
+	/* Next add trash button to box but initially hidden and register as drop target */
+	priv->trashButton=xfdashboard_toggle_button_new_full(DEFAULT_TRASH_BUTTON_ICON, _("Remove"));
+	clutter_actor_hide(priv->trashButton);
+	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->trashButton), priv->normalIconSize);
+	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->trashButton), FALSE);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->trashButton), XFDASHBOARD_STYLE_ICON);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->trashButton);
+
+	dropAction=xfdashboard_drop_action_new();
+	clutter_actor_add_action(priv->trashButton, CLUTTER_ACTION(dropAction));
+	g_signal_connect_swapped(dropAction, "begin", G_CALLBACK(_xfdashboard_quicklaunch_on_trash_drop_begin), self);
+	g_signal_connect_swapped(dropAction, "drop", G_CALLBACK(_xfdashboard_quicklaunch_on_trash_drop_drop), self);
+	g_signal_connect_swapped(dropAction, "end", G_CALLBACK(_xfdashboard_quicklaunch_on_trash_drop_end), self);
+	g_signal_connect_swapped(dropAction, "drag-enter", G_CALLBACK(_xfdashboard_quicklaunch_on_trash_drop_enter), self);
+	g_signal_connect_swapped(dropAction, "drag-leave", G_CALLBACK(_xfdashboard_quicklaunch_on_trash_drop_leave), self);
+
 	/* Bind to xfconf to react on changes */
 	xfconf_g_property_bind(priv->xfconfChannel, "/favourites", XFDASHBOARD_TYPE_POINTER_ARRAY, self, "favourites");
+
+	/* Register this actor as drop target */
+	dropAction=xfdashboard_drop_action_new();
+	clutter_actor_add_action(CLUTTER_ACTOR(self), dropAction);
+	g_signal_connect_swapped(dropAction, "begin", G_CALLBACK(_xfdashboard_quicklaunch_on_drop_begin), self);
+	g_signal_connect_swapped(dropAction, "drop", G_CALLBACK(_xfdashboard_quicklaunch_on_drop_drop), self);
+	g_signal_connect_swapped(dropAction, "end", G_CALLBACK(_xfdashboard_quicklaunch_on_drop_end), self);
+	g_signal_connect_swapped(dropAction, "drag-enter", G_CALLBACK(_xfdashboard_quicklaunch_on_drop_enter), self);
+	g_signal_connect_swapped(dropAction, "drag-motion", G_CALLBACK(_xfdashboard_quicklaunch_on_drop_motion), self);
+	g_signal_connect_swapped(dropAction, "drag-leave", G_CALLBACK(_xfdashboard_quicklaunch_on_drop_leave), self);
 }
 
 /* Implementation: Public API */
@@ -827,6 +1418,35 @@ ClutterActor* xfdashboard_quicklaunch_new_with_orientation(ClutterOrientation in
 	return(g_object_new(XFDASHBOARD_TYPE_QUICKLAUNCH,
 						"orientation", inOrientation,
 						NULL));
+}
+
+/* Get/set spacing between children */
+gfloat xfdashboard_quicklaunch_get_normal_icon_size(XfdashboardQuicklaunch *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), 0.0f);
+
+	return(self->priv->normalIconSize);
+}
+
+void xfdashboard_quicklaunch_set_normal_icon_size(XfdashboardQuicklaunch *self, const gfloat inIconSize)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(inIconSize>=0.0f);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->normalIconSize!=inIconSize)
+	{
+		/* Set value */
+		priv->normalIconSize=inIconSize;
+		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardQuicklaunchProperties[PROP_NORMAL_ICON_SIZE]);
+	}
 }
 
 /* Get/set spacing between children */

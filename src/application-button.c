@@ -457,6 +457,24 @@ void xfdashboard_application_button_set_menu_element(XfdashboardApplicationButto
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_MENU_ELEMENT]);
+
+		/* Get desktop ID if available */
+		if(GARCON_IS_MENU_ITEM(inMenuElement))
+		{
+			const char						*desktopID;
+
+			/* Get desktop ID */
+			desktopID=garcon_menu_item_get_desktop_id(GARCON_MENU_ITEM(inMenuElement));
+
+			if(desktopID)
+			{
+				/* Set value */
+				priv->desktopFilename=g_strdup(desktopID);
+
+				/* Notify about property change */
+				g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]);
+			}
+		}
 	}
 }
 
