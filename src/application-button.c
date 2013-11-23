@@ -101,6 +101,9 @@ static void _xfdashboard_application_button_clear(XfdashboardApplicationButton *
 	{
 		g_object_unref(priv->menuElement);
 		priv->menuElement=NULL;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_MENU_ELEMENT]);
 	}
 
 	if(priv->appInfo)
@@ -113,6 +116,9 @@ static void _xfdashboard_application_button_clear(XfdashboardApplicationButton *
 	{
 		g_free(priv->desktopFilename);
 		priv->desktopFilename=NULL;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]);
 	}
 
 	/* Reset application button */
@@ -447,6 +453,9 @@ void xfdashboard_application_button_set_menu_element(XfdashboardApplicationButto
 	if(priv->type!=XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM ||
 		garcon_menu_element_equal(inMenuElement, priv->menuElement)==FALSE)
 	{
+		/* Freeze notifications and collect them */
+		g_object_freeze_notify(G_OBJECT(self));
+
 		/* Clear application button */
 		_xfdashboard_application_button_clear(self);
 
@@ -488,6 +497,9 @@ void xfdashboard_application_button_set_menu_element(XfdashboardApplicationButto
 			/* Notify about property change */
 			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]);
 		}
+
+		/* Thaw notifications and send them now */
+		g_object_thaw_notify(G_OBJECT(self));
 	}
 }
 
@@ -512,6 +524,9 @@ void xfdashboard_application_button_set_desktop_filename(XfdashboardApplicationB
 	if(priv->type!=XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE ||
 		g_strcmp0(inDesktopFilename, priv->desktopFilename)!=0)
 	{
+		/* Freeze notifications and collect them */
+		g_object_freeze_notify(G_OBJECT(self));
+
 		/* Clear application button */
 		_xfdashboard_application_button_clear(self);
 
@@ -543,6 +558,9 @@ void xfdashboard_application_button_set_desktop_filename(XfdashboardApplicationB
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]);
+
+		/* Thaw notifications and send them now */
+		g_object_thaw_notify(G_OBJECT(self));
 	}
 }
 

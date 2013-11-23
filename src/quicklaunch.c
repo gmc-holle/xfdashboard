@@ -146,7 +146,7 @@ static void _xfdashboard_quicklaunch_on_favourite_drag_begin(ClutterDragAction *
 	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterActor					*dragHandle;
 	ClutterStage					*stage;
-	gfloat							scaleX, scaleY;
+	const gchar						*desktopName;
 
 	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inActor));
@@ -164,10 +164,13 @@ static void _xfdashboard_quicklaunch_on_favourite_drag_begin(ClutterDragAction *
 	/* Create a clone of application icon for drag handle and hide it
 	 * initially. It is only shown if pointer is outside of quicklaunch.
 	 */
-	dragHandle=clutter_clone_new(inActor);
+	desktopName=xfdashboard_application_button_get_desktop_filename(XFDASHBOARD_APPLICATION_BUTTON(inActor));
+
+	dragHandle=xfdashboard_application_button_new_from_desktop_file(desktopName);
 	clutter_actor_set_position(dragHandle, inStageX, inStageY);
-	clutter_actor_set_scale(dragHandle, priv->scaleCurrent, priv->scaleCurrent);
-	clutter_actor_hide(dragHandle);
+	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(dragHandle), priv->normalIconSize);
+	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(dragHandle), FALSE);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(dragHandle), XFDASHBOARD_STYLE_ICON);
 	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
 
 	clutter_drag_action_set_drag_handle(inAction, dragHandle);
@@ -571,7 +574,6 @@ static void _xfdashboard_quicklaunch_on_trash_drop_enter(XfdashboardQuicklaunch 
 															gpointer inUserData)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
-	ClutterActor					*dragHandle;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
@@ -589,7 +591,6 @@ static void _xfdashboard_quicklaunch_on_trash_drop_leave(XfdashboardQuicklaunch 
 															gpointer inUserData)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
-	ClutterActor					*dragHandle;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
