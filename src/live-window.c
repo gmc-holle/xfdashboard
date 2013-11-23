@@ -134,7 +134,8 @@ static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, Clu
 	XfdashboardLiveWindowPrivate	*priv=self->priv;
 	ClutterClickAction				*action=CLUTTER_CLICK_ACTION(inUserData);
 	gfloat							eventX, eventY;
-	ClutterActor					*eventActor;
+	gfloat							relX, relY;
+	ClutterActorBox					closeBox;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
@@ -147,13 +148,14 @@ static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, Clu
 	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorClose))
 	{
 		clutter_click_action_get_coords(action, &eventX, &eventY);
-		eventActor=clutter_stage_get_actor_at_pos(CLUTTER_STAGE(clutter_actor_get_stage(inActor)),
-													CLUTTER_PICK_REACTIVE,
-													eventX, eventY);
-		if(eventActor==priv->actorClose)
+		if(clutter_actor_transform_stage_point(CLUTTER_ACTOR(self), eventX, eventY, &relX, &relY))
 		{
-			g_signal_emit(self, XfdashboardLiveWindowSignals[SIGNAL_CLOSE], 0);
-			return;
+			clutter_actor_get_allocation_box(priv->actorClose, &closeBox);
+			if(clutter_actor_box_contains(&closeBox, relX, relY))
+			{
+				g_signal_emit(self, XfdashboardLiveWindowSignals[SIGNAL_CLOSE], 0);
+				return;
+			}
 		}
 	}
 
