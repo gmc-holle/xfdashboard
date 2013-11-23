@@ -105,6 +105,8 @@ static GParamSpec* XfdashboardQuicklaunchProperties[PROP_LAST]={ 0, };
 #define DEFAULT_APPS_BUTTON_ICON	GTK_STOCK_HOME		// TODO: Replace by settings/theming object
 #define DEFAULT_TRASH_BUTTON_ICON	GTK_STOCK_DELETE	// TODO: Replace by settings/theming object
 
+#define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_VERTICAL
+
 enum
 {
 	DRAG_MODE_NONE,
@@ -1334,7 +1336,7 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 							_("Orientation"),
 							_("The orientation to layout children"),
 							CLUTTER_TYPE_ORIENTATION,
-							CLUTTER_ORIENTATION_VERTICAL,
+							DEFAULT_ORIENTATION,
 							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardQuicklaunchProperties);
@@ -1357,7 +1359,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	/* Set up default values */
 	priv->favourites=NULL;
 	priv->spacing=0.0f;
-	priv->orientation=CLUTTER_ORIENTATION_VERTICAL;
+	priv->orientation=DEFAULT_ORIENTATION;
 	priv->normalIconSize=DEFAULT_NORMAL_ICON_SIZE;
 	priv->scaleCurrent=DEFAULT_SCALE_MAX;
 	priv->scaleMin=DEFAULT_SCALE_MIN;
@@ -1488,7 +1490,7 @@ void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, const gfl
 /* Get/set orientation */
 ClutterOrientation xfdashboard_quicklaunch_get_orientation(XfdashboardQuicklaunch *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), CLUTTER_ORIENTATION_VERTICAL);
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), DEFAULT_ORIENTATION);
 
 	return(self->priv->orientation);
 }

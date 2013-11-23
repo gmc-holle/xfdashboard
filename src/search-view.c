@@ -385,7 +385,7 @@ static void _xfdashboard_search_view_add_button_for_list_mode(XfdashboardSearchV
 		{
 			/* Get text to set and format to use in "parent menu" button */
 			actorFormat=xfdashboard_application_button_get_format_title_description(priv->appButton);
-			actorText=g_strdup_printf(actorFormat, _("Back"), _("Go back to previous menu"));
+			actorText=g_markup_printf_escaped(actorFormat, _("Back"), _("Go back to previous menu"));
 			xfdashboard_button_set_text(inButton, actorText);
 			g_free(actorText);
 		}
@@ -425,7 +425,7 @@ static void _xfdashboard_search_view_add_button_for_icon_mode(XfdashboardSearchV
 		{
 			/* Get text to set and format to use in "parent menu" button */
 			actorFormat=xfdashboard_application_button_get_format_title_only(priv->appButton);
-			actorText=g_strdup_printf(actorFormat, _("Back"));
+			actorText=g_markup_printf_escaped(actorFormat, _("Back"));
 			xfdashboard_button_set_text(inButton, actorText);
 			g_free(actorText);
 		}

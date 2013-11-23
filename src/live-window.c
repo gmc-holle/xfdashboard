@@ -219,6 +219,7 @@ static void _xfdashboard_live_window_on_name_changed(XfdashboardLiveWindow *self
 {
 	XfdashboardLiveWindowPrivate	*priv;
 	WnckWindow						*window;
+	gchar							*windowName;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
@@ -227,7 +228,9 @@ static void _xfdashboard_live_window_on_name_changed(XfdashboardLiveWindow *self
 	window=WNCK_WINDOW(inUserData);
 
 	/* Set new icon in title actor */
-	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorTitle), wnck_window_get_name(window));
+	windowName=g_markup_printf_escaped("%s", wnck_window_get_name(window));
+	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorTitle), windowName);
+	g_free(windowName);
 }
 
 /* Window's state has changed */

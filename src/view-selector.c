@@ -108,13 +108,14 @@ static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *se
 														gpointer inUserData)
 {
 	ClutterActor						*button;
-	const gchar							*viewName, *viewIcon;
+	gchar								*viewName;
+	const gchar							*viewIcon;
 
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
 
 	/* Create button for newly added view */
-	viewName=xfdashboard_view_get_name(inView);
+	viewName=g_markup_printf_escaped("%s", xfdashboard_view_get_name(inView));
 	viewIcon=xfdashboard_view_get_icon(inView);
 
 	button=xfdashboard_button_new();
@@ -125,6 +126,8 @@ static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *se
 	g_object_set_data(G_OBJECT(button), "view", inView);
 
 	g_signal_connect_swapped(button, "clicked", G_CALLBACK(_xfdashboard_view_selector_on_view_button_clicked), self);
+
+	g_free(viewName);
 
 	/* If view is disabled hide button and connect signal to get notified
 	 * if enabled state has changed */
