@@ -202,7 +202,6 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 				gicon=g_app_info_get_icon(priv->appInfo);
 				if(gicon) icon=xfdashboard_get_image_for_gicon(gicon, iconSize);
 			}
-				else icon=xfdashboard_get_image_for_icon_name(GTK_STOCK_MISSING_IMAGE, iconSize);
 			break;
 
 		default:
@@ -211,6 +210,8 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 	}
 
 	/* Set up button and release allocated resources */
+	if(!icon) icon=xfdashboard_get_image_for_icon_name(GTK_STOCK_MISSING_IMAGE, iconSize);
+
 	if(icon)
 	{
 		xfdashboard_button_set_icon_image(XFDASHBOARD_BUTTON(self), icon);
@@ -434,6 +435,8 @@ GarconMenuElement* xfdashboard_application_button_get_menu_element(XfdashboardAp
 void xfdashboard_application_button_set_menu_element(XfdashboardApplicationButton *self, GarconMenuElement *inMenuElement)
 {
 	XfdashboardApplicationButtonPrivate		*priv;
+	const gchar								*desktopName;
+	GDesktopAppInfo							*appInfo;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 	g_return_if_fail(GARCON_IS_MENU_ELEMENT(inMenuElement));
@@ -461,19 +464,29 @@ void xfdashboard_application_button_set_menu_element(XfdashboardApplicationButto
 		/* Get desktop ID if available */
 		if(GARCON_IS_MENU_ITEM(inMenuElement))
 		{
-			const char						*desktopID;
-
-			/* Get desktop ID */
-			desktopID=garcon_menu_item_get_desktop_id(GARCON_MENU_ITEM(inMenuElement));
-
-			if(desktopID)
+			/* Get desktop file. First we try desktop ID but it may be unresolvable by GIO,
+			 * e.g. Wine uses multi-level subdirectories. GIO (and MenuSpec?) only resolve
+			 * subdirectories in one level. If resolving by desktop ID does not work we
+			 * fallback to use the full absolute URI (converted to path) to get desktop file.
+			 */
+			desktopName=garcon_menu_item_get_desktop_id(GARCON_MENU_ITEM(inMenuElement));
+			if(desktopName)
 			{
-				/* Set value */
-				priv->desktopFilename=g_strdup(desktopID);
-
-				/* Notify about property change */
-				g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]);
+				appInfo=g_desktop_app_info_new(desktopName);
+				if(!appInfo)
+				{
+					desktopName=garcon_menu_item_get_uri(GARCON_MENU_ITEM(inMenuElement));
+					if(desktopName) priv->desktopFilename=g_filename_from_uri(desktopName, NULL, NULL);
+				}
+					else
+					{
+						g_object_unref(appInfo);
+						priv->desktopFilename=g_strdup(desktopName);
+					}
 			}
+
+			/* Notify about property change */
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]);
 		}
 	}
 }

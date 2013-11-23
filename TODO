@@ -47,7 +47,7 @@
 == APPLICATION-MENU VIEW ==
 [done] Implement application-menu view
 [done] Start application when clicked on application icon in view
-- Allow drag-n-drop of application icon to quicklaunch-box view and create shortcut
+[done] Allow drag-n-drop of application icon to quicklaunch-box view and create shortcut
 - Allow drag-n-drop of application icon to workspace-box and start application on this workspace
 
 == SEARCH VIEW ==
@@ -57,5 +57,5 @@
 [done] Switch back to previous view if search input box is empty (that means search has ended)
 - Support search provider manager
 - Support grouping of results by search providers
-- Allow drag-n-drop of application icon to quicklaunch-box and create shortcut
+[done] Allow drag-n-drop of application icon to quicklaunch-box and create shortcut
 - Allow drag-n-drop of application icon to workspace-box and start application on this workspace

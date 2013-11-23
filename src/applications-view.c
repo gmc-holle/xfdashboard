@@ -37,6 +37,7 @@
 #include "application.h"
 #include "application-button.h"
 #include "enums.h"
+#include "drag-action.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsView,
@@ -79,6 +80,77 @@ static GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 #define DEFAULT_SPACING				4.0f						// TODO: Replace by settings/theming object
 #define DEFAULT_MENU_ICON_SIZE		64							// TODO: Replace by settings/theming object
 #define DEFAULT_PARENT_MENU_ICON	GTK_STOCK_GO_UP				// TODO: Replace by settings/theming object
+
+/* Forward declarations */
+static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData);
+
+/* Drag of an menu item begins */
+static void _xfdashboard_applications_view_on_drag_begin(ClutterDragAction *inAction,
+															ClutterActor *inActor,
+															gfloat inStageX,
+															gfloat inStageY,
+															ClutterModifierType inModifiers,
+															gpointer inUserData)
+{
+	const gchar							*desktopName;
+	ClutterActor						*dragHandle;
+	ClutterStage						*stage;
+
+	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inUserData));
+
+	/* Prevent signal "clicked" from being emitted on dragged icon */
+	g_signal_handlers_block_by_func(inActor, _xfdashboard_applications_view_on_item_clicked, inUserData);
+
+	/* Get stage */
+	stage=CLUTTER_STAGE(clutter_actor_get_stage(inActor));
+
+	/* Create a application icon for drag handle */
+	desktopName=xfdashboard_application_button_get_desktop_filename(XFDASHBOARD_APPLICATION_BUTTON(inActor));
+
+	dragHandle=xfdashboard_application_button_new_from_desktop_file(desktopName);
+	clutter_actor_set_position(dragHandle, inStageX, inStageY);
+	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(dragHandle), DEFAULT_MENU_ICON_SIZE);
+	xfdashboard_button_set_single_line_mode(XFDASHBOARD_BUTTON(dragHandle), FALSE);
+	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(dragHandle), FALSE);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(dragHandle), XFDASHBOARD_STYLE_ICON);
+	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
+
+	clutter_drag_action_set_drag_handle(inAction, dragHandle);
+}
+
+/* Drag of an menu item ends */
+static void _xfdashboard_applications_view_on_drag_end(ClutterDragAction *inAction,
+														ClutterActor *inActor,
+														gfloat inStageX,
+														gfloat inStageY,
+														ClutterModifierType inModifiers,
+														gpointer inUserData)
+{
+	ClutterActor					*dragHandle;
+
+	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inUserData));
+
+	/* Destroy clone of application icon used as drag handle */
+	dragHandle=clutter_drag_action_get_drag_handle(inAction);
+	if(dragHandle)
+	{
+#if CLUTTER_CHECK_VERSION(1, 14, 0)
+		/* Only unset drag handle if not running Clutter in version
+		 * 1.12. This prevents a critical warning message in 1.12.
+		 * Later versions of Clutter are fixed already.
+		 */
+		clutter_drag_action_set_drag_handle(inAction, NULL);
+#endif
+		clutter_actor_destroy(dragHandle);
+	}
+
+	/* Allow signal "clicked" from being emitted again */
+	g_signal_handlers_unblock_by_func(inActor, _xfdashboard_applications_view_on_item_clicked, inUserData);
+}
 
 /* Update style of all child actors */
 static void _xfdashboard_applications_view_add_button_for_list_mode(XfdashboardApplicationsView *self,
@@ -226,6 +298,7 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 	ClutterActor						*actor;
 	GarconMenuElement					*menuElement=NULL;
 	GarconMenu							*parentMenu=NULL;
+	ClutterAction						*dragAction;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 
@@ -272,7 +345,9 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 
 			if(!menuElement) continue;
 
-			/* Create actor for menu element */
+			/* Create actor for menu element. Support drag'n'drop at actor if
+			 * menu element is a menu item.
+			 */
 			actor=xfdashboard_application_button_new_from_menu(menuElement);
 			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
 			{
@@ -284,6 +359,15 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 				}
 			clutter_actor_show(actor);
 			g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_item_clicked), self);
+
+			if(GARCON_IS_MENU_ITEM(menuElement))
+			{
+				dragAction=xfdashboard_drag_action_new_with_source(CLUTTER_ACTOR(self));
+				clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(dragAction), -1, -1);
+				clutter_actor_add_action(actor, dragAction);
+				g_signal_connect(dragAction, "drag-begin", G_CALLBACK(_xfdashboard_applications_view_on_drag_begin), self);
+				g_signal_connect(dragAction, "drag-end", G_CALLBACK(_xfdashboard_applications_view_on_drag_end), self);
+			}
 
 			/* Release allocated resources */
 			g_object_unref(menuElement);
