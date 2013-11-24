@@ -34,6 +34,9 @@
 #include "stage.h"
 #include "application.h"
 #include "view.h"
+#include "drop-action.h"
+#include "quicklaunch.h"
+#include "application-button.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardWindowsView,
@@ -121,6 +124,59 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_wnck_window(Xfda
 
 	/* If we get here we did not find the window and we return NULL */
 	return(NULL);
+}
+
+/* Drag of an actor to this view as drop target begins */
+static gboolean _xfdashboard_windows_view_on_drop_begin(XfdashboardWindowsView *self,
+														XfdashboardDragAction *inDragAction,
+														gpointer inUserData)
+{
+	ClutterActor					*dragSource;
+	ClutterActor					*draggedActor;
+	gboolean						canHandle;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData), FALSE);
+
+	canHandle=FALSE;
+
+	/* Get source where dragging started and actor being dragged */
+	dragSource=xfdashboard_drag_action_get_source(inDragAction);
+	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+
+	/* Check if we can handle dragged actor from given source */
+	if(XFDASHBOARD_IS_QUICKLAUNCH(dragSource) &&
+		XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor))
+	{
+		canHandle=TRUE;
+	}
+
+	/* Return TRUE if we can handle dragged actor in this drop target
+	 * otherwise FALSE
+	 */
+	return(canHandle);
+}
+
+/* Dragged actor was dropped on this drop target */
+static void _xfdashboard_windows_view_on_drop_drop(XfdashboardWindowsView *self,
+													XfdashboardDragAction *inDragAction,
+													gfloat inX,
+													gfloat inY,
+													gpointer inUserData)
+{
+	ClutterActor						*draggedActor;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	/* Get dragged actor */
+	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor));
+
+	/* Launch application being dragged here */
+	xfdashboard_application_button_execute(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
 }
 
 /* Workspace was changed */
@@ -465,6 +521,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 {
 	XfdashboardWindowsViewPrivate	*priv;
 	ClutterLayoutManager			*layout;
+	ClutterAction					*action;
 
 	self->priv=priv=XFDASHBOARD_WINDOWS_VIEW_GET_PRIVATE(self);
 
@@ -482,6 +539,11 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	xfdashboard_scaled_table_layout_set_spacing(XFDASHBOARD_SCALED_TABLE_LAYOUT(layout), DEFAULT_SPACING);
 	xfdashboard_scaled_table_layout_set_relative_scale(XFDASHBOARD_SCALED_TABLE_LAYOUT(layout), TRUE);
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), layout);
+
+	action=xfdashboard_drop_action_new();
+	clutter_actor_add_action(CLUTTER_ACTOR(self), action);
+	g_signal_connect_swapped(action, "begin", G_CALLBACK(_xfdashboard_windows_view_on_drop_begin), self);
+	g_signal_connect_swapped(action, "drop", G_CALLBACK(_xfdashboard_windows_view_on_drop_drop), self);
 
 	/* Connect signals */
 	g_signal_connect_swapped(priv->screen,

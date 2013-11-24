@@ -20,7 +20,7 @@
 [done] Clicking quicklaunch icon starts application and quits
 [done] Reorder quicklaunch icon by drag-n-drop
 [done] Remove quicklaunch icon by drag-n-drop to trash icon in quicklaunch
-- Allow drag-n-drop of quicklaunch icon to windows-list view and start app in current workspace
+[done] Allow drag-n-drop of quicklaunch icon to windows-list view and start app in current workspace
 - Allow drag-n-drop of quicklaunch icon to workspace-box, start app in this workspace
 
 == WORKSPACE-BOX (WORKSPACE-SELECTOR) ==
