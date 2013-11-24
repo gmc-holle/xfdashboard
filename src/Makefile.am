@@ -42,7 +42,8 @@ xfdashboard_headers = \
 	view-manager.h \
 	view-selector.h \
 	viewpad.h \
-	windows-view.h
+	windows-view.h \
+	workspace-selector.h
 
 xfdashboard_SOURCES = \
 	$(xfdashboard_built_sources) \
@@ -71,7 +72,8 @@ xfdashboard_SOURCES = \
 	view-manager.c \
 	view-selector.c \
 	viewpad.c \
-	windows-view.c
+	windows-view.c \
+	workspace-selector.c
 
 xfdashboard_CFLAGS = \
 	$(LIBWNCK_CFLAGS) \

@@ -24,7 +24,7 @@
 - Allow drag-n-drop of quicklaunch icon to workspace-box, start app in this workspace
 
 == WORKSPACE-BOX (WORKSPACE-SELECTOR) ==
-- Implement workspace-box
+[partial] Implement workspace-box
 - Clicking on workspace-actor switches to workspace and quits
 - Mouse-wheel on workspace-actor switches workspace without quitting but updating windows-list view
 

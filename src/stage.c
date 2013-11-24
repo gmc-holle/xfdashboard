@@ -42,6 +42,7 @@
 #include "search-view.h"
 #include "textbox.h"
 #include "toggle-button.h"
+#include "workspace-selector.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,
@@ -309,6 +310,7 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	ClutterLayoutManager		*layout;
 	ClutterColor				color;
 	XfdashboardToggleButton		*appsButton;
+	ClutterActor				*actor;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 
@@ -385,12 +387,22 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_add_child(groupHorizontal, groupVertical);
 
 	/* Workspaces selector */
-	priv->workspaces=clutter_actor_new();
-	clutter_actor_set_size(priv->workspaces, 48, 48);
-	clutter_color_init(&color, 0x00, 0x00, 0xff, 0x80);
-	clutter_actor_set_background_color(priv->workspaces, &color);
+	priv->workspaces=xfdashboard_workspace_selector_new();
+	xfdashboard_workspace_selector_set_spacing(XFDASHBOARD_WORKSPACE_SELECTOR(priv->workspaces), 4.0f);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->workspaces), XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED);
+	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
+	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->workspaces), &color);
+	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->workspaces), 0.5f);
+	xfdashboard_background_set_corners(XFDASHBOARD_BACKGROUND(priv->workspaces), XFDASHBOARD_CORNERS_LEFT);
 	clutter_actor_set_y_expand(priv->workspaces, TRUE);
 	clutter_actor_add_child(groupHorizontal, priv->workspaces);
+
+	actor=clutter_actor_new();
+	clutter_actor_set_size(actor, 48, 48);
+	clutter_color_init(&color, 0xff, 0x00, 0x00, 0x80);
+	clutter_actor_set_background_color(actor, &color);
+	clutter_actor_show(actor),
+	clutter_actor_add_child(priv->workspaces, actor);
 
 	/* Set up layout objects */
 	clutter_actor_add_constraint(groupHorizontal, clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_X, 0.0f));
