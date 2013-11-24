@@ -443,6 +443,7 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self, WnckWind
 	if(stageWindow!=inWindow) return;
 
 	/* Move window to position of monitor it belongs to */
+	wnck_window_maximize(inWindow);
 	// TODO: if(xfdashboard_window_manager_get_monitor_allocation(priv->windowManager,
 															// TODO: priv->monitorIndex,
 															// TODO: &x, &y, NULL, NULL))
@@ -597,7 +598,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	/* Set up stage */
 	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &defaultStageColor);
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(self), TRUE);
-	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), FALSE);
+	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), TRUE);
 	// TODO: clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
 
 	_xfdashboard_stage_setup(self);
