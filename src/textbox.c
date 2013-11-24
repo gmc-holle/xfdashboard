@@ -1078,7 +1078,6 @@ const ClutterColor* xfdashboard_text_box_get_selection_text_color(XfdashboardTex
 void xfdashboard_text_box_set_selection_text_color(XfdashboardTextBox *self, const ClutterColor *inColor)
 {
 	XfdashboardTextBoxPrivate	*priv;
-	gboolean					colorChanged;
 	ClutterColor				selectionColor;
 
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
