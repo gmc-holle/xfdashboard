@@ -659,6 +659,11 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self,
 	{
 		hScrollbarVisible=TRUE;
 	}
+	if(xfdashboard_view_get_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_FIT_MODE_HORIZONTAL ||
+		xfdashboard_view_get_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_FIT_MODE_BOTH)
+	{
+		hScrollbarVisible=FALSE;
+	}
 
 	vScrollbarVisible=FALSE;
 	if(priv->vScrollbarPolicy==XFDASHBOARD_POLICY_ALWAYS ||
@@ -666,6 +671,11 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self,
 			xfdashboard_scrollbar_get_range(XFDASHBOARD_SCROLLBAR(priv->vScrollbar))>viewHeight))
 	{
 		vScrollbarVisible=TRUE;
+	}
+	if(xfdashboard_view_get_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_FIT_MODE_VERTICAL ||
+		xfdashboard_view_get_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_FIT_MODE_BOTH)
+	{
+		vScrollbarVisible=FALSE;
 	}
 
 	/* Set allocation for visible scroll bars */
@@ -700,7 +710,6 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self,
 	{
 		/* Set allocation */
 		if(vScrollbarVisible) viewWidth-=vScrollbarWidth;
-
 		if(hScrollbarVisible) viewHeight-=hScrollbarHeight;
 
 		x=y=0.0f;
@@ -711,6 +720,11 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self,
 
 		switch(xfdashboard_view_get_fit_mode(XFDASHBOARD_VIEW(priv->activeView)))
 		{
+			case XFDASHBOARD_FIT_MODE_BOTH:
+				w=viewWidth;
+				h=viewHeight;
+				break;
+
 			case XFDASHBOARD_FIT_MODE_HORIZONTAL:
 				w=viewWidth;
 				clutter_actor_get_preferred_height(CLUTTER_ACTOR(priv->activeView), w, NULL, &h);
