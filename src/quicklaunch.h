@@ -27,6 +27,8 @@
 #include "background.h"
 #include "toggle-button.h"
 
+#include <gio/gdesktopappinfo.h>
+
 G_BEGIN_DECLS
 
 #define XFDASHBOARD_TYPE_QUICKLAUNCH				(xfdashboard_quicklaunch_get_type())
@@ -57,6 +59,8 @@ struct _XfdashboardQuicklaunchClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*favourite_added)(XfdashboardQuicklaunch *self, GAppInfo *inAppInfo);
+	void (*favourite_removed)(XfdashboardQuicklaunch *self, GAppInfo *inAppInfo);
 };
 
 /* Public API */

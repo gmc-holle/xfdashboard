@@ -70,14 +70,6 @@ enum
 
 static GParamSpec* XfdashboardWorkspaceSelectorProperties[PROP_LAST]={ 0, };
 
-/* Signals */
-// TODO: enum
-// TODO: {
-	// TODO: SIGNAL_LAST
-// TODO: };
-// TODO: 
-// TODO: static guint XfdashboardWorkspaceSelectorSignals[SIGNAL_LAST]={ 0, };
-
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_NORMAL_ICON_SIZE	64					// TODO: Replace by settings/theming object
 #define DEFAULT_SCALE_MIN			0.1
@@ -557,10 +549,6 @@ static void _xfdashboard_workspace_selector_allocate(ClutterActor *inActor,
 /* Dispose this object */
 static void _xfdashboard_workspace_selector_dispose(GObject *inObject)
 {
-	XfdashboardWorkspaceSelectorPrivate	*priv=XFDASHBOARD_WORKSPACE_SELECTOR(inObject)->priv;
-
-	/* Release our allocated variables */
-
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_workspace_selector_parent_class)->dispose(inObject);
 }
@@ -668,9 +656,6 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWorkspaceSelectorProperties);
-
-	/* Define signals */
-	// TODO: define signals
 }
 
 /* Object initialization

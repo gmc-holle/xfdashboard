@@ -186,10 +186,11 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	xfdashboard_view_manager_register(priv->viewManager, XFDASHBOARD_TYPE_APPLICATIONS_VIEW);
 	xfdashboard_view_manager_register(priv->viewManager, XFDASHBOARD_TYPE_SEARCH_VIEW);
 
-	/* Create primary stage on first monitor */
-	// TODO: Create stage for each monitor connected
-	//       but only primary monitor gets its stage
-	//       setup for primary display
+	/* Create primary stage on first monitor
+	 * TODO: Create stage for each monitor connected
+	 *       but only primary monitor gets its stage
+	 *       setup for primary display
+	 */
 	stage=xfdashboard_stage_new();
 
 	clutter_actor_show(stage);

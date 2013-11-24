@@ -85,6 +85,12 @@ void xfdashboard_text_box_set_text_font(XfdashboardTextBox *self, const gchar *i
 const ClutterColor* xfdashboard_text_box_get_text_color(XfdashboardTextBox *self);
 void xfdashboard_text_box_set_text_color(XfdashboardTextBox *self, const ClutterColor *inColor);
 
+const ClutterColor* xfdashboard_text_box_get_selection_text_color(XfdashboardTextBox *self);
+void xfdashboard_text_box_set_selection_text_color(XfdashboardTextBox *self, const ClutterColor *inColor);
+
+const ClutterColor* xfdashboard_text_box_get_selection_background_color(XfdashboardTextBox *self);
+void xfdashboard_text_box_set_selection_background_color(XfdashboardTextBox *self, const ClutterColor *inColor);
+
 const gchar* xfdashboard_text_box_get_hint_text(XfdashboardTextBox *self);
 void xfdashboard_text_box_set_hint_text(XfdashboardTextBox *self, const gchar *inMarkupText);
 

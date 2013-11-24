@@ -658,34 +658,31 @@ void xfdashboard_application_button_set_format_title_description(XfdashboardAppl
 	}
 }
 
-/* Execute command of represented application by application button */
-gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self)
+/* Get application information */
+GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButton *self)
 {
 	XfdashboardApplicationButtonPrivate		*priv;
 	GAppInfo								*appInfo;
-	GAppInfoCreateFlags						flags;
-	GError									*error;
-	gboolean								started;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), FALSE);
 
 	priv=self->priv;
 	appInfo=NULL;
-	flags=G_APP_INFO_CREATE_NONE;
-	error=NULL;
-	started=FALSE;
 
+	/* Get GAppInfo depending on type */
 	switch(priv->type)
 	{
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_NONE:
-			g_warning(_("Cannot execute command of an unconfigured application button."));
-			return(FALSE);
+			g_warning(_("No application information for an unconfigured application button."));
+			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
 			{
 				GarconMenuItem			*menuItem=GARCON_MENU_ITEM(priv->menuElement);
 				const gchar				*command=garcon_menu_item_get_command(menuItem);
 				const gchar				*name=garcon_menu_item_get_name(menuItem);
+				GAppInfoCreateFlags		flags=G_APP_INFO_CREATE_NONE;
+				GError					*error=NULL;
 
 				/* Create application info for launching */
 				if(garcon_menu_item_supports_startup_notification(menuItem)) flags|=G_APP_INFO_CREATE_SUPPORTS_STARTUP_NOTIFICATION;
@@ -694,8 +691,8 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 				appInfo=g_app_info_create_from_commandline(command, name, flags, &error);
 				if(error)
 				{
-					g_warning(_("Could not create application information for command '%s': %s"),
-								command,
+					g_warning(_("Could not create application information for menu item '%s': %s"),
+								name,
 								error->message ? error->message : "unknown error");
 					g_error_free(error);
 				}
@@ -703,21 +700,33 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
-			if(!priv->appInfo)
-			{
-				g_warning(_("Could not launch application: No application info"));
-				return(FALSE);
-			}
-
-			appInfo=G_APP_INFO(g_object_ref(priv->appInfo));
+			if(priv->appInfo) appInfo=G_APP_INFO(g_object_ref(priv->appInfo));
 			break;
 
 		default:
-			g_critical(_("Cannot execute command of application button of unknown type (%d)"), priv->type);
-			return(FALSE);
+			g_assert_not_reached();
+			break;
 	}
 
+	/* Return GAppInfo */
+	return(appInfo);
+}
+
+/* Execute command of represented application by application button */
+gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self)
+{
+	GAppInfo								*appInfo;
+	GError									*error;
+	gboolean								started;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), FALSE);
+
+	started=FALSE;
+
 	/* Launch application */
+	appInfo=xfdashboard_application_button_get_app_info(self);
+	if(!appInfo) return(FALSE);
+
 	error=NULL;
 	if(!g_app_info_launch(appInfo, NULL, NULL, &error))
 	{

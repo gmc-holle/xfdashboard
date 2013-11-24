@@ -71,18 +71,6 @@ struct _XfdashboardStagePrivate
 	XfdashboardView		*viewBeforeSearch;
 };
 
-/* Properties */
-/* TODO:
-enum
-{
-	PROP_0,
-
-	PROP_LAST
-};
-
-static GParamSpec* XfdashboardStageProperties[PROP_LAST]={ 0, };
-*/
-
 /* Signals */
 enum
 {
@@ -302,7 +290,8 @@ static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, Xfdashb
 /* Set up stage */
 static void _xfdashboard_stage_setup(XfdashboardStage *self)
 {
-	// TODO: Implement missing actors, do setup nicer and themable/layoutable
+	/* TODO: Implement missing actors, do setup nicer and themable/layoutable */
+	/* TODO: Create background by copying background of Xfce */
 
 	XfdashboardStagePrivate		*priv;
 	ClutterActor				*groupHorizontal;
@@ -443,7 +432,9 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self, WnckWind
 {
 	XfdashboardStagePrivate		*priv=self->priv;
 	WnckWindow					*stageWindow;
-	// TODO: gint						x, y;
+	GdkScreen					*screen;
+	gint						primaryMonitor;
+	GdkRectangle				geometry;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
@@ -454,19 +445,17 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self, WnckWind
 	stageWindow=xfdashboard_stage_get_window(self);
 	if(stageWindow!=inWindow) return;
 
-	/* Move window to position of monitor it belongs to */
-	wnck_window_maximize(inWindow);
-	// TODO: if(xfdashboard_window_manager_get_monitor_allocation(priv->windowManager,
-															// TODO: priv->monitorIndex,
-															// TODO: &x, &y, NULL, NULL))
-	// TODO: {
-		// TODO: wnck_window_set_geometry(inWindow,
-									// TODO: WNCK_WINDOW_GRAVITY_CURRENT,
-									// TODO: WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y,
-									// TODO: x, y, 0, 0);
-		// TODO: g_message("%s: Moved stage window %p of stage %p to %d,%d", __func__, inWindow, inUserData, x, y);
-	// TODO: }
-		// TODO: else g_warning("Could not get position of monitor %d", priv->monitorIndex);
+	/* TODO: As long as we do not support multi-monitors
+	 *       use this hack to ensure stage is in right size
+	 */
+	screen=gdk_screen_get_default();
+	primaryMonitor=gdk_screen_get_primary_monitor(screen);
+	gdk_screen_get_monitor_geometry(screen, primaryMonitor, &geometry);
+	clutter_actor_set_size(CLUTTER_ACTOR(self), geometry.width, geometry.height);
+	wnck_window_set_geometry(inWindow,
+								WNCK_WINDOW_GRAVITY_STATIC,
+								WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y | WNCK_WINDOW_CHANGE_WIDTH | WNCK_WINDOW_CHANGE_HEIGHT,
+								geometry.x, geometry.y, geometry.width, geometry.height);
 
 	/* Window of stage should always be above all other windows,
 	 * pinned to all workspaces and not be listed in window pager
@@ -610,8 +599,8 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	/* Set up stage */
 	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &defaultStageColor);
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(self), TRUE);
-	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), TRUE);
-	// TODO: clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
+	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), FALSE);
+	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
 
 	_xfdashboard_stage_setup(self);
 

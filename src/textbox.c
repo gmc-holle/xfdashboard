@@ -62,6 +62,8 @@ struct _XfdashboardTextBoxPrivate
 
 	gchar					*textFont;
 	ClutterColor			*textColor;
+	ClutterColor			*selectionTextColor;
+	ClutterColor			*selectionBackgroundColor;
 
 	gchar					*hintTextFont;
 	ClutterColor			*hintTextColor;
@@ -69,6 +71,8 @@ struct _XfdashboardTextBoxPrivate
 	/* Internal variables */
 	gboolean				showPrimaryIcon;
 	gboolean				showSecondaryIcon;
+
+	gboolean				selectionColorSet;
 };
 
 /* Properties */
@@ -85,7 +89,8 @@ enum
 	PROP_TEXT,
 	PROP_TEXT_FONT,
 	PROP_TEXT_COLOR,
-	// TODO: PROP_SELECTION_COLOR,
+	PROP_SELECTION_TEXT_COLOR,
+	PROP_SELECTION_BACKGROUND_COLOR,
 
 	PROP_HINT_TEXT,
 	PROP_HINT_TEXT_FONT,
@@ -490,6 +495,18 @@ static void _xfdashboard_text_box_dispose(GObject *inObject)
 		priv->textColor=NULL;
 	}
 
+	if(priv->selectionTextColor)
+	{
+		clutter_color_free(priv->selectionTextColor);
+		priv->selectionTextColor=NULL;
+	}
+
+	if(priv->selectionBackgroundColor)
+	{
+		clutter_color_free(priv->selectionBackgroundColor);
+		priv->selectionBackgroundColor=NULL;
+	}
+
 	if(priv->hintTextFont)
 	{
 		g_free(priv->hintTextFont);
@@ -542,6 +559,14 @@ static void _xfdashboard_text_box_set_property(GObject *inObject,
 
 		case PROP_TEXT_COLOR:
 			xfdashboard_text_box_set_text_color(self, clutter_value_get_color(inValue));
+			break;
+
+		case PROP_SELECTION_TEXT_COLOR:
+			xfdashboard_text_box_set_selection_text_color(self, clutter_value_get_color(inValue));
+			break;
+
+		case PROP_SELECTION_BACKGROUND_COLOR:
+			xfdashboard_text_box_set_selection_background_color(self, clutter_value_get_color(inValue));
 			break;
 
 		case PROP_HINT_TEXT:
@@ -598,6 +623,14 @@ static void _xfdashboard_text_box_get_property(GObject *inObject,
 
 		case PROP_TEXT_COLOR:
 			clutter_value_set_color(outValue, priv->textColor);
+			break;
+
+		case PROP_SELECTION_TEXT_COLOR:
+			clutter_value_set_color(outValue, priv->selectionTextColor);
+			break;
+
+		case PROP_SELECTION_BACKGROUND_COLOR:
+			clutter_value_set_color(outValue, priv->selectionBackgroundColor);
 			break;
 
 		case PROP_HINT_TEXT:
@@ -694,6 +727,21 @@ static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 									&defaultTextColor,
 									G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
+
+	XfdashboardTextBoxProperties[PROP_SELECTION_TEXT_COLOR]=
+		clutter_param_spec_color("selection-text-color",
+									_("Selection text color"),
+									_("Color of text of selected text"),
+									NULL,
+									G_PARAM_READWRITE);
+
+	XfdashboardTextBoxProperties[PROP_SELECTION_BACKGROUND_COLOR]=
+		clutter_param_spec_color("selection-background-color",
+									_("Selection background color"),
+									_("Color of background of selected text"),
+									NULL,
+									G_PARAM_READWRITE);
+
 	XfdashboardTextBoxProperties[PROP_HINT_TEXT]=
 		g_param_spec_string("hint-text",
 							_("Hint text"),
@@ -772,10 +820,13 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 	priv->secondaryIconName=NULL;
 	priv->textFont=NULL;
 	priv->textColor=NULL;
+	priv->selectionTextColor=NULL;
+	priv->selectionBackgroundColor=NULL;
 	priv->hintTextFont=NULL;
 	priv->hintTextColor=NULL;
 	priv->showPrimaryIcon=FALSE;
 	priv->showSecondaryIcon=FALSE;
+	priv->selectionColorSet=FALSE;
 
 	/* Create actors */
 	priv->actorPrimaryIcon=clutter_actor_new();
@@ -995,21 +1046,171 @@ void xfdashboard_text_box_set_text_color(XfdashboardTextBox *self, const Clutter
 
 		clutter_text_set_color(CLUTTER_TEXT(priv->actorTextBox), priv->textColor);
 
-		/* Selection text color is inverted text color */
-		selectionColor.red=0xff-priv->textColor->red;
-		selectionColor.green=0xff-priv->textColor->green;
-		selectionColor.blue=0xff-priv->textColor->blue;
-		selectionColor.alpha=priv->textColor->alpha;
-		clutter_text_set_selected_text_color(CLUTTER_TEXT(priv->actorTextBox), &selectionColor);
+		/* Selection text and background color is inverted text color if not set */
+		if(!priv->selectionColorSet)
+		{
+			selectionColor.red=0xff-priv->textColor->red;
+			selectionColor.green=0xff-priv->textColor->green;
+			selectionColor.blue=0xff-priv->textColor->blue;
+			selectionColor.alpha=priv->textColor->alpha;
+			clutter_text_set_selected_text_color(CLUTTER_TEXT(priv->actorTextBox), &selectionColor);
 
-		/* Selection color is the same as text color */
-		clutter_text_set_selection_color(CLUTTER_TEXT(priv->actorTextBox), priv->textColor);
+			/* Selection color is the same as text color */
+			clutter_text_set_selection_color(CLUTTER_TEXT(priv->actorTextBox), priv->textColor);
+		}
 
 		/* Redraw actor in new color */
 		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardTextBoxProperties[PROP_TEXT_COLOR]);
+	}
+}
+
+/* Get/set color of text of selected text */
+const ClutterColor* xfdashboard_text_box_get_selection_text_color(XfdashboardTextBox *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(self), NULL);
+
+	return(self->priv->selectionTextColor);
+}
+
+void xfdashboard_text_box_set_selection_text_color(XfdashboardTextBox *self, const ClutterColor *inColor)
+{
+	XfdashboardTextBoxPrivate	*priv;
+	gboolean					colorChanged;
+	ClutterColor				selectionColor;
+
+	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->selectionTextColor!=inColor ||
+		(priv->selectionTextColor &&
+			inColor &&
+			!clutter_color_equal(inColor, priv->selectionTextColor)))
+	{
+		/* Freeze notifications and collect them */
+		g_object_freeze_notify(G_OBJECT(self));
+
+		/* Release old color */
+		if(priv->selectionTextColor)
+		{
+			clutter_color_free(priv->selectionTextColor);
+			priv->selectionTextColor=NULL;
+
+			/* Check if any selection color is set */
+			priv->selectionColorSet=((priv->selectionTextColor && priv->selectionBackgroundColor) ? TRUE : FALSE);
+
+			/* Notify about property change */
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardTextBoxProperties[PROP_SELECTION_TEXT_COLOR]);
+		}
+
+		/* Set new color if available */
+		if(inColor)
+		{
+			priv->selectionTextColor=clutter_color_copy(inColor);
+			clutter_text_set_selected_text_color(CLUTTER_TEXT(priv->actorTextBox), priv->selectionTextColor);
+
+			/* Any selection color was set */
+			priv->selectionColorSet=TRUE;
+
+			/* Notify about property change */
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardTextBoxProperties[PROP_SELECTION_TEXT_COLOR]);
+		}
+
+		/* Selection text and background color is inverted text color if not set */
+		if(!priv->selectionColorSet)
+		{
+			selectionColor.red=0xff-priv->textColor->red;
+			selectionColor.green=0xff-priv->textColor->green;
+			selectionColor.blue=0xff-priv->textColor->blue;
+			selectionColor.alpha=priv->textColor->alpha;
+			clutter_text_set_selected_text_color(CLUTTER_TEXT(priv->actorTextBox), &selectionColor);
+
+			/* Selection color is the same as text color */
+			clutter_text_set_selection_color(CLUTTER_TEXT(priv->actorTextBox), priv->textColor);
+		}
+
+		/* Redraw actor in new color */
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+
+		/* Thaw notifications and send them now */
+		g_object_thaw_notify(G_OBJECT(self));
+	}
+}
+
+/* Get/set color of background of selected text */
+const ClutterColor* xfdashboard_text_box_get_selection_background_color(XfdashboardTextBox *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(self), NULL);
+
+	return(self->priv->selectionBackgroundColor);
+}
+
+void xfdashboard_text_box_set_selection_background_color(XfdashboardTextBox *self, const ClutterColor *inColor)
+{
+	XfdashboardTextBoxPrivate	*priv;
+	ClutterColor				selectionColor;
+
+	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->selectionBackgroundColor!=inColor ||
+		(priv->selectionBackgroundColor &&
+			inColor &&
+			!clutter_color_equal(inColor, priv->selectionBackgroundColor)))
+	{
+		/* Freeze notifications and collect them */
+		g_object_freeze_notify(G_OBJECT(self));
+
+		/* Release old color */
+		if(priv->selectionBackgroundColor)
+		{
+			clutter_color_free(priv->selectionBackgroundColor);
+			priv->selectionBackgroundColor=NULL;
+
+			/* Check if any selection color is set */
+			priv->selectionColorSet=((priv->selectionTextColor && priv->selectionBackgroundColor) ? TRUE : FALSE);
+
+			/* Notify about property change */
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardTextBoxProperties[PROP_SELECTION_BACKGROUND_COLOR]);
+		}
+
+		/* Set new color if available */
+		if(inColor)
+		{
+			priv->selectionBackgroundColor=clutter_color_copy(inColor);
+			clutter_text_set_selection_color(CLUTTER_TEXT(priv->actorTextBox), priv->selectionBackgroundColor);
+
+			/* Any selection color was set */
+			priv->selectionColorSet=TRUE;
+
+			/* Notify about property change */
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardTextBoxProperties[PROP_SELECTION_BACKGROUND_COLOR]);
+		}
+
+		/* Selection text and background color is inverted text color if not set */
+		if(!priv->selectionColorSet)
+		{
+			selectionColor.red=0xff-priv->textColor->red;
+			selectionColor.green=0xff-priv->textColor->green;
+			selectionColor.blue=0xff-priv->textColor->blue;
+			selectionColor.alpha=priv->textColor->alpha;
+			clutter_text_set_selected_text_color(CLUTTER_TEXT(priv->actorTextBox), &selectionColor);
+
+			/* Selection color is the same as text color */
+			clutter_text_set_selection_color(CLUTTER_TEXT(priv->actorTextBox), priv->textColor);
+		}
+
+		/* Redraw actor in new color */
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+
+		/* Thaw notifications and send them now */
+		g_object_thaw_notify(G_OBJECT(self));
 	}
 }
 

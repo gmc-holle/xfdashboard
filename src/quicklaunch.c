@@ -89,12 +89,15 @@ enum
 static GParamSpec* XfdashboardQuicklaunchProperties[PROP_LAST]={ 0, };
 
 /* Signals */
-// TODO: enum
-// TODO: {
-	// TODO: SIGNAL_LAST
-// TODO: };
-// TODO: 
-// TODO: static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
+enum
+{
+	SIGNAL_FAVOURITE_ADDED,
+	SIGNAL_FAVOURITE_REMOVED,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_NORMAL_ICON_SIZE	64					// TODO: Replace by settings/theming object
@@ -291,6 +294,7 @@ static void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardQuicklaunch *self,
 {
 	XfdashboardQuicklaunchPrivate		*priv;
 	ClutterActor						*draggedActor;
+	GAppInfo							*appInfo;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
@@ -300,6 +304,17 @@ static void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardQuicklaunch *self,
 
 	/* Get dragged actor */
 	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+
+	/* Emit signal when a favourite icon was added */
+	if(priv->dragMode==DRAG_MODE_CREATE)
+	{
+		appInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
+		if(appInfo)
+		{
+			g_signal_emit(self, XfdashboardQuicklaunchSignals[SIGNAL_FAVOURITE_ADDED], 0, appInfo);
+			g_object_unref(appInfo);
+		}
+	}
 
 	/* If drag mode is reorder move originally dragged application icon
 	 * to its final position and destroy preview application icon.
@@ -522,6 +537,7 @@ static void _xfdashboard_quicklaunch_on_trash_drop_drop(XfdashboardQuicklaunch *
 {
 	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterActor					*draggedActor;
+	GAppInfo						*appInfo;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
@@ -529,8 +545,18 @@ static void _xfdashboard_quicklaunch_on_trash_drop_drop(XfdashboardQuicklaunch *
 
 	priv=self->priv;
 
-	/* Destroy dragged favourite icon before updating property */
+	/* Get dragged favourite icon */
 	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+
+	/* Emit signal */
+	appInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
+	if(appInfo)
+	{
+		g_signal_emit(self, XfdashboardQuicklaunchSignals[SIGNAL_FAVOURITE_REMOVED], 0, appInfo);
+		g_object_unref(appInfo);
+	}
+
+	/* Destroy dragged favourite icon before updating property */
 	clutter_actor_destroy(draggedActor);
 
 	/* Destroy preview icon before updating property */
@@ -1342,7 +1368,29 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardQuicklaunchProperties);
 
 	/* Define signals */
-	// TODO: define signals
+	XfdashboardQuicklaunchSignals[SIGNAL_FAVOURITE_ADDED]=
+		g_signal_new("favourite-added",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, favourite_added),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						G_TYPE_APP_INFO);
+
+	XfdashboardQuicklaunchSignals[SIGNAL_FAVOURITE_REMOVED]=
+		g_signal_new("favourite-removed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, favourite_removed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						G_TYPE_APP_INFO);
 }
 
 /* Object initialization
