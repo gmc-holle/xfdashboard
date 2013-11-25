@@ -86,7 +86,30 @@ static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 static ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 };				// TODO: Replace by settings/theming object
-static ClutterColor		defaultAppsButtonHighlightColor={ 0xc0, 0xc0, 0xc0, 0xa0 };	// TODO: Replace by settings/theming object
+static ClutterColor		defaultButtonHighlightColor={ 0xc0, 0xc0, 0xc0, 0xa0 };	// TODO: Replace by settings/theming object
+
+/* A view button in view-selector was toggled */
+static void _xfdashboard_stage_on_view_selector_button_toggled(XfdashboardStage *self,
+																XfdashboardToggleButton *inViewButton,
+																gpointer inUserData)
+{
+	gboolean					state;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(inViewButton));
+
+	/* Get state of view button and set up new appearance */
+	state=xfdashboard_toggle_button_get_toggle_state(inViewButton);
+	if(state==FALSE)
+	{
+		xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(inViewButton), XFDASHBOARD_BACKGROUND_TYPE_NONE);
+	}
+		else
+		{
+			xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(inViewButton), &defaultButtonHighlightColor);
+			xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(inViewButton), XFDASHBOARD_BACKGROUND_TYPE_FILL);
+		}
+}
 
 /* App-button was toggled */
 static void _xfdashboard_stage_on_quicklaunch_apps_button_toggled(XfdashboardStage *self, gpointer inUserData)
@@ -324,9 +347,19 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 
 	priv->viewSelector=xfdashboard_view_selector_new();
 	clutter_actor_add_child(groupHorizontal, priv->viewSelector);
+	g_signal_connect_swapped(priv->viewSelector, "state-changed", G_CALLBACK(_xfdashboard_stage_on_view_selector_button_toggled), self);
 
 	priv->searchbox=xfdashboard_text_box_new();
 	clutter_actor_set_x_expand(priv->searchbox, TRUE);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->searchbox), XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED);
+	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
+	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->searchbox), &color);
+	clutter_color_init(&color, 0x80, 0x80, 0x80, 0xff);
+	xfdashboard_background_set_outline_color(XFDASHBOARD_BACKGROUND(priv->searchbox), &color);
+	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->searchbox), 0.5f);
+	xfdashboard_background_set_corners(XFDASHBOARD_BACKGROUND(priv->searchbox), XFDASHBOARD_CORNERS_ALL);
+	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->searchbox), 4.0f);
+	xfdashboard_text_box_set_padding(XFDASHBOARD_TEXT_BOX(priv->searchbox), 4.0f);
 	xfdashboard_text_box_set_hint_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), _("Just type to search..."));
 	xfdashboard_text_box_set_primary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_FIND);
 	g_signal_connect_swapped(priv->searchbox, "text-changed", G_CALLBACK(_xfdashboard_stage_on_searchbox_text_changed), self);
@@ -367,7 +400,7 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
 	if(appsButton)
 	{
-		xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(appsButton), &defaultAppsButtonHighlightColor);
+		xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(appsButton), &defaultButtonHighlightColor);
 		g_signal_connect_swapped(appsButton, "toggled", G_CALLBACK(_xfdashboard_stage_on_quicklaunch_apps_button_toggled), self);
 	}
 

@@ -29,7 +29,6 @@
 
 #include "view-selector.h"
 #include "view.h"
-#include "button.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardViewSelector,
@@ -65,27 +64,54 @@ enum
 
 static GParamSpec* XfdashboardViewSelectorProperties[PROP_LAST]={ 0, };
 
+/* Signals */
+enum
+{
+	SIGNAL_STATE_CHANGED,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardViewSelectorSignals[SIGNAL_LAST]={ 0, };
+
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_SPACING				0.0f
 #define DEFAULT_BUTTON_STYLE		XFDASHBOARD_STYLE_ICON
 #define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_HORIZONTAL
 
+/* A view button changed its toggle state */
+static void _xfdashboard_view_selector_on_toggle_button_state_changed(XfdashboardViewSelector *self, gpointer inUserData)
+{
+	XfdashboardToggleButton				*button;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
+	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(inUserData));
+
+	button=XFDASHBOARD_TOGGLE_BUTTON(inUserData);
+	g_signal_emit(self, XfdashboardViewSelectorSignals[SIGNAL_STATE_CHANGED], 0, button);
+}
+
 /* A view button was clicked to activate it */
 static void _xfdashboard_view_selector_on_view_button_clicked(XfdashboardViewSelector *self, gpointer inUserData)
 {
 	XfdashboardViewSelectorPrivate		*priv;
-	XfdashboardButton					*button;
+	XfdashboardToggleButton				*button;
 	XfdashboardView						*view;
 
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inUserData));
 
 	priv=self->priv;
-	button=XFDASHBOARD_BUTTON(inUserData);
+	button=XFDASHBOARD_TOGGLE_BUTTON(inUserData);
 
 	view=XFDASHBOARD_VIEW(g_object_get_data(G_OBJECT(button), "view"));
 
 	xfdashboard_viewpad_set_active_view(priv->viewpad, view);
+
+	/* Set toggle state to FALSE as it will be reset to TRUE by signal handler
+	 * for view "activated". This should ensure proper display of button's state
+	 */
+	xfdashboard_toggle_button_set_toggle_state(button, FALSE);
 }
 
 /* Called when a view was enabled or will be disabled */
@@ -102,40 +128,77 @@ static void _xfdashboard_view_selector_on_view_enable_state_changed(XfdashboardV
 		else clutter_actor_show(button);
 }
 
+/* Called when a view was activated or deactivated */
+static void _xfdashboard_view_selector_on_view_activated(XfdashboardView *inView, gpointer inUserData)
+{
+	XfdashboardToggleButton				*button;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
+	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(inUserData));
+
+	button=XFDASHBOARD_TOGGLE_BUTTON(inUserData);
+	xfdashboard_toggle_button_set_toggle_state(button, TRUE);
+}
+
+static void _xfdashboard_view_selector_on_view_deactivated(XfdashboardView *inView, gpointer inUserData)
+{
+	XfdashboardToggleButton				*button;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
+	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(inUserData));
+
+	button=XFDASHBOARD_TOGGLE_BUTTON(inUserData);
+	xfdashboard_toggle_button_set_toggle_state(button, FALSE);
+}
+
 /* Called when a new view was added to viewpad */
 static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *self,
 														XfdashboardView *inView,
 														gpointer inUserData)
 {
+	XfdashboardViewSelectorPrivate		*priv;
 	ClutterActor						*button;
 	gchar								*viewName;
 	const gchar							*viewIcon;
+	gboolean							isActive;
 
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
+
+	priv=self->priv;
 
 	/* Create button for newly added view */
 	viewName=g_markup_printf_escaped("%s", xfdashboard_view_get_name(inView));
 	viewIcon=xfdashboard_view_get_icon(inView);
 
-	button=xfdashboard_button_new();
+	button=xfdashboard_toggle_button_new();
 	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(button), viewName);
 	xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(button), viewIcon);
 	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(button), DEFAULT_BUTTON_STYLE);
 	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(button), TRUE);
 	g_object_set_data(G_OBJECT(button), "view", inView);
-
 	g_signal_connect_swapped(button, "clicked", G_CALLBACK(_xfdashboard_view_selector_on_view_button_clicked), self);
 
 	g_free(viewName);
 
-	/* If view is disabled hide button and connect signal to get notified
-	 * if enabled state has changed */
+	/* Set toggle state depending of if view is active or not and connect
+	 * signal to get notified if toggle state changes to proxy signal
+	 */
+	g_signal_connect_swapped(button, "toggled", G_CALLBACK(_xfdashboard_view_selector_on_toggle_button_state_changed), self);
+
+	isActive=(xfdashboard_viewpad_get_active_view(priv->viewpad)==inView);
+	xfdashboard_toggle_button_set_toggle_state(XFDASHBOARD_TOGGLE_BUTTON(button), isActive);
+
+	/* If view is disabled hide button otherwise show and connect signals
+	 * to get notified if enabled state has changed
+	 */
 	if(!xfdashboard_view_get_enabled(inView)) clutter_actor_hide(button);
 		else clutter_actor_show(button);
 
 	g_signal_connect(inView, "disabled", G_CALLBACK(_xfdashboard_view_selector_on_view_enable_state_changed), button);
 	g_signal_connect(inView, "enabled", G_CALLBACK(_xfdashboard_view_selector_on_view_enable_state_changed), button);
+	g_signal_connect(inView, "activated", G_CALLBACK(_xfdashboard_view_selector_on_view_activated), button);
+	g_signal_connect(inView, "deactivated", G_CALLBACK(_xfdashboard_view_selector_on_view_deactivated), button);
 
 	/* Add button as child actor */
 	clutter_actor_add_child(CLUTTER_ACTOR(self), button);
@@ -157,7 +220,7 @@ static void _xfdashboard_view_selector_on_view_removed(XfdashboardViewSelector *
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Check if child is a button otherwise continue iterating */
-		if(XFDASHBOARD_IS_BUTTON(child)!=TRUE) continue;
+		if(!XFDASHBOARD_IS_TOGGLE_BUTTON(child)) continue;
 
 		/* If button has reference to view destroy it */
 		view=g_object_get_data(G_OBJECT(child), "view");
@@ -175,8 +238,22 @@ static void _xfdashboard_view_selector_dispose(GObject *inObject)
 {
 	XfdashboardViewSelector			*self=XFDASHBOARD_VIEW_SELECTOR(inObject);
 	XfdashboardViewSelectorPrivate	*priv=self->priv;
+	ClutterActorIter					iter;
+	ClutterActor						*child;
+	gpointer							view;
 
 	/* Release allocated resources */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Check if child is a button otherwise continue iterating */
+		if(!XFDASHBOARD_IS_TOGGLE_BUTTON(child)) continue;
+
+		/* If button has reference to a view remove signal handlers it */
+		view=g_object_get_data(G_OBJECT(child), "view");
+		if(view) g_signal_handlers_disconnect_by_data(view, child);
+	}
+
 	if(priv->viewpad)
 	{
 		g_signal_handlers_disconnect_by_data(priv->viewpad, self);
@@ -284,6 +361,19 @@ static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *k
 							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewSelectorProperties);
+
+	/* Define signals */
+	XfdashboardViewSelectorSignals[SIGNAL_STATE_CHANGED]=
+		g_signal_new("state-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardViewSelectorClass, state_changed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_TOGGLE_BUTTON);
 }
 
 /* Object initialization

@@ -27,6 +27,7 @@
 #include <clutter/clutter.h>
 
 #include "viewpad.h"
+#include "toggle-button.h"
 
 G_BEGIN_DECLS
 
@@ -58,6 +59,7 @@ struct _XfdashboardViewSelectorClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*state_changed)(XfdashboardViewSelector *self, XfdashboardToggleButton *inButton);
 };
 
 /* Public API */
