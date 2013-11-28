@@ -323,6 +323,7 @@ static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicati
 	XfdashboardApplicationsMenuModelPrivate		*priv;
 	GError										*error;
 	guint										sequenceID;
+	GarconMenuItemCache							*cache;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 
@@ -332,6 +333,13 @@ static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicati
 
 	/* Clear model data */
 	_xfdashboard_applications_menu_model_clear(self);
+
+	/* Clear garcon's menu item cache otherwise some items will not be loaded
+	 * if this is a reload of the model or a second(, third, ...) instance of model
+	 */
+	cache=garcon_menu_item_cache_get_default();
+	garcon_menu_item_cache_invalidate(cache);
+	g_object_unref(cache);
 
 	/* Load root menu */
 	priv->rootMenu=garcon_menu_new_applications();
