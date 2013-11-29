@@ -16,3 +16,9 @@ xfconf >= 4.10.0
 dbus-glib >= 0.98
 
 ... and the dependencies of these libraries of course ;)
+
+
+Documentation
+=============
+
+A simple quick quide with screenshots can be found at http://gmc-holle.github.io/xfdashboard/
