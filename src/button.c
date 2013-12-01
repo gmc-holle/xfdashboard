@@ -45,14 +45,7 @@ G_DEFINE_TYPE(XfdashboardButton,
 
 struct _XfdashboardButtonPrivate
 {
-	/* Actors for icon and label of button */
-	ClutterActor			*actorIcon;
-	ClutterText				*actorLabel;
-
-	/* Actor actions */
-	ClutterAction			*clickAction;
-
-	/* Settings */
+	/* Properties related */
 	gfloat					padding;
 	gfloat					spacing;
 	XfdashboardStyle		style;
@@ -68,6 +61,13 @@ struct _XfdashboardButtonPrivate
 	PangoEllipsizeMode		labelEllipsize;
 	gboolean				isSingleLineMode;
 	PangoAlignment			textJustification;
+
+	/* Instance related */
+	ClutterActor			*actorIcon;
+	ClutterText				*actorLabel;
+	ClutterAction			*clickAction;
+
+	gboolean				iconNameLoaded;
 };
 
 /* Properties */
@@ -114,6 +114,36 @@ static guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
 static ClutterColor				defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 
 /* IMPLEMENTATION: Private variables and methods */
+
+/* Actor was mapped or unmapped */
+static void _xfdashboard_button_on_mapped_changed(XfdashboardButton *self,
+													GParamSpec *inSpec,
+													gpointer inUserData)
+{
+	XfdashboardButtonPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
+
+	priv=self->priv;
+
+	/* If actor is mapped now and an image by icon name was set but not
+	 * loaded yet then set icon image now
+	 */
+	if(CLUTTER_ACTOR_IS_MAPPED(self) &&
+		priv->iconNameLoaded==FALSE &&
+		priv->iconName)
+	{
+		ClutterImage	*image;
+
+		image=xfdashboard_get_image_for_icon_name(priv->iconName, priv->iconSize);
+		clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
+		g_object_unref(image);
+
+		priv->iconNameLoaded=TRUE;
+
+		g_debug("Loaded and set deferred image '%s' at size %d for %s@%p ", priv->iconName, priv->iconSize, G_OBJECT_TYPE_NAME(self), self);
+	}
+}
 
 /* Get preferred width of icon and label child actors
  * We do not respect paddings here so if height is given it must be
@@ -168,9 +198,13 @@ static void _xfdashboard_button_get_preferred_width_intern(XfdashboardButton *se
 				labelHeight=(inGetPreferred==TRUE ? naturalSize : minSize);
 
 				/* Get size of icon depending on opposize size of label */
-				clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
-													&iconWidth, &iconHeight);
-				iconSize=(iconWidth/iconHeight)*labelHeight;
+				if(CLUTTER_IS_CONTENT(clutter_actor_get_content(priv->actorIcon)))
+				{
+					clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
+														&iconWidth, &iconHeight);
+					iconSize=(iconWidth/iconHeight)*labelHeight;
+				}
+					else iconSize=labelHeight;
 			}
 				else iconSize=labelSize;
 		}
@@ -396,9 +430,13 @@ static void _xfdashboard_button_get_preferred_height_intern(XfdashboardButton *s
 				labelWidth=(inGetPreferred==TRUE ? naturalSize : minSize);
 
 				/* Get size of icon depending on opposize size of label */
-				clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
-													&iconWidth, &iconHeight);
-				iconSize=(iconHeight/iconWidth)*labelWidth;
+				if(CLUTTER_IS_CONTENT(clutter_actor_get_content(priv->actorIcon)))
+				{
+					clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
+														&iconWidth, &iconHeight);
+					iconSize=(iconHeight/iconWidth)*labelWidth;
+				}
+					else iconSize=labelWidth;
 			}
 				else iconSize=labelSize;
 		}
@@ -608,7 +646,7 @@ static void _xfdashboard_button_update_icon_image_size(XfdashboardButton *self)
 		else if(priv->iconSize>0.0f) maxSize=priv->iconSize;
 
 	/* Get size of icon if maximum size is set */
-	if(maxSize>0.0f && clutter_actor_get_content(priv->actorIcon))
+	if(maxSize>0.0f && CLUTTER_IS_CONTENT(clutter_actor_get_content(priv->actorIcon)))
 	{
 		/* Get preferred size of icon */
 		clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
@@ -851,7 +889,8 @@ static void _xfdashboard_button_allocate(ClutterActor *inActor,
 	{
 		gfloat					iconScale=1.0f;
 
-		if(priv->iconSyncSize==TRUE)
+		if(priv->iconSyncSize==TRUE &&
+			CLUTTER_IS_CONTENT(clutter_actor_get_content(priv->actorIcon)))
 		{
 			clutter_content_get_preferred_size(clutter_actor_get_content(priv->actorIcon),
 												&iconWidth, &iconHeight);
@@ -1389,6 +1428,8 @@ static void xfdashboard_button_init(XfdashboardButton *self)
 	clutter_text_set_single_line_mode(priv->actorLabel, priv->isSingleLineMode);
 
 	/* Connect signals */
+	g_signal_connect(self, "notify::mapped", G_CALLBACK(_xfdashboard_button_on_mapped_changed), NULL);
+
 	priv->clickAction=xfdashboard_click_action_new();
 	clutter_actor_add_action(CLUTTER_ACTOR(self), priv->clickAction);
 	g_signal_connect(priv->clickAction, "clicked", G_CALLBACK(_xfdashboard_button_clicked), NULL);
@@ -1559,6 +1600,7 @@ void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconNam
 		/* Set value */
 		if(priv->iconName) g_free(priv->iconName);
 		priv->iconName=g_strdup(inIconName);
+		priv->iconNameLoaded=FALSE;
 
 		if(priv->iconImage)
 		{
@@ -1567,9 +1609,15 @@ void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconNam
 			priv->iconImage=NULL;
 		}
 
-		image=xfdashboard_get_image_for_icon_name(priv->iconName, priv->iconSize);
-		clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
-		g_object_unref(image);
+		if(CLUTTER_ACTOR_IS_MAPPED(self))
+		{
+			/* Actor is mapped so we cannot defer loading and setting image */
+			image=xfdashboard_get_image_for_icon_name(priv->iconName, priv->iconSize);
+			clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
+			g_object_unref(image);
+
+			priv->iconNameLoaded=TRUE;
+		}
 
 		_xfdashboard_button_update_icon_image_size(self);
 
@@ -1600,6 +1648,7 @@ void xfdashboard_button_set_icon_image(XfdashboardButton *self, ClutterImage *in
 		/* Set value */
 		if(priv->iconName) g_free(priv->iconName);
 		priv->iconName=NULL;
+		priv->iconNameLoaded=FALSE;
 
 		if(priv->iconImage)
 		{
