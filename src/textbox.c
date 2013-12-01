@@ -1,6 +1,6 @@
 /*
  * textbox: An actor representing an editable or read-only text-box
- *          with icons optinally
+ *          with optional icons 
  * 
  * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
@@ -28,6 +28,7 @@
 
 #include "textbox.h"
 #include "enums.h"
+#include "button.h"
 
 #include <glib/gi18n-lib.h>
 #include <math.h>
@@ -43,17 +44,7 @@ G_DEFINE_TYPE(XfdashboardTextBox,
 
 struct _XfdashboardTextBoxPrivate
 {
-	/* Actors for text box, hint label and icons */
-	ClutterActor			*actorTextBox;
-	ClutterActor			*actorHintLabel;
-	ClutterActor			*actorPrimaryIcon;
-	ClutterActor			*actorSecondaryIcon;
-
-	/* Actor actions */
-	ClutterAction			*primaryIconClickAction;
-	ClutterAction			*secondaryIconClickAction;
-
-	/* Settings */
+	/* Properties related */
 	gfloat					padding;
 	gfloat					spacing;
 
@@ -68,9 +59,15 @@ struct _XfdashboardTextBoxPrivate
 	gchar					*hintTextFont;
 	ClutterColor			*hintTextColor;
 
-	/* Internal variables */
+	/* Instance related */
+	ClutterActor			*actorTextBox;
+	ClutterActor			*actorHintLabel;
+
 	gboolean				showPrimaryIcon;
+	ClutterActor			*actorPrimaryIcon;
+
 	gboolean				showSecondaryIcon;
+	ClutterActor			*actorSecondaryIcon;
 
 	gboolean				selectionColorSet;
 };
@@ -151,30 +148,20 @@ static void _xfdashboard_text_box_on_text_changed(XfdashboardTextBox *self, gpoi
 }
 
 /* Primary icon was clicked */
-static void _xfdashboard_text_box_on_primary_icon_clicked(ClutterClickAction *inAction,
-															ClutterActor *inActor,
+static void _xfdashboard_text_box_on_primary_icon_clicked(XfdashboardTextBox *self,
 															gpointer inUserData)
 {
-	XfdashboardTextBox			*self;
-
-	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
-
-	self=XFDASHBOARD_TEXT_BOX(inUserData);
+	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 
 	/* Emit signal for clicking primary icon */
 	g_signal_emit(self, XfdashboardTextBoxSignals[SIGNAL_PRIMARY_ICON_CLICKED], 0);
 }
 
 /* Secondary icon was clicked */
-static void _xfdashboard_text_box_on_secondary_icon_clicked(ClutterClickAction *inAction,
-															ClutterActor *inActor,
+static void _xfdashboard_text_box_on_secondary_icon_clicked(XfdashboardTextBox *self,
 															gpointer inUserData)
 {
-	XfdashboardTextBox			*self;
-
-	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inUserData));
-
-	self=XFDASHBOARD_TEXT_BOX(inUserData);
+	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 
 	/* Emit signal for clicking secondary icon */
 	g_signal_emit(self, XfdashboardTextBoxSignals[SIGNAL_SECONDARY_ICON_CLICKED], 0);
@@ -347,7 +334,7 @@ static void _xfdashboard_text_box_allocate(ClutterActor *self,
 	/* Chain up to store the allocation of the actor */
 	CLUTTER_ACTOR_CLASS(xfdashboard_text_box_parent_class)->allocate(self, inBox, inFlags);
 
-	/* Initialize bounding box (except right side) of allocation used in actors */
+	/* Initialize bounding box of allocation used in actors */
 	left=top=priv->padding;
 	right=clutter_actor_box_get_width(inBox)-priv->padding;
 	bottom=clutter_actor_box_get_height(inBox)-priv->padding;
@@ -356,12 +343,11 @@ static void _xfdashboard_text_box_allocate(ClutterActor *self,
 	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorPrimaryIcon))
 	{
 		gfloat					childRight;
-		ClutterContent			*iconContent;
 
 		/* Get scale size of primary icon */
-		iconContent=clutter_actor_get_content(priv->actorPrimaryIcon);
-		clutter_content_get_preferred_size(iconContent, &iconWidth, &iconHeight);
-		iconWidth=(bottom-top)*(iconWidth/iconHeight);
+		iconWidth=iconHeight=0.0f;
+		clutter_actor_get_size(priv->actorPrimaryIcon, &iconWidth, &iconHeight);
+		if(iconHeight>0.0f) iconWidth=(bottom-top)*(iconWidth/iconHeight);
 
 		/* Set allocation */
 		childRight=left+iconWidth;
@@ -378,12 +364,11 @@ static void _xfdashboard_text_box_allocate(ClutterActor *self,
 	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorSecondaryIcon))
 	{
 		gfloat					childLeft;
-		ClutterContent			*iconContent;
 
-		/* Get scale size of primary icon */
-		iconContent=clutter_actor_get_content(priv->actorSecondaryIcon);
-		clutter_content_get_preferred_size(iconContent, &iconWidth, &iconHeight);
-		iconWidth=(bottom-top)*(iconWidth/iconHeight);
+		/* Get scale size of secondary icon */
+		iconWidth=0.0f;
+		clutter_actor_get_size(priv->actorSecondaryIcon, &iconWidth, &iconHeight);
+		if(iconHeight>0.0f) iconWidth=(bottom-top)*(iconWidth/iconHeight);
 
 		/* Set allocation */
 		childLeft=right-iconWidth;
@@ -829,23 +814,23 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 	priv->selectionColorSet=FALSE;
 
 	/* Create actors */
-	priv->actorPrimaryIcon=clutter_actor_new();
+	priv->actorPrimaryIcon=xfdashboard_button_new();
+	xfdashboard_button_set_padding(XFDASHBOARD_BUTTON(priv->actorPrimaryIcon), 0.0f);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->actorPrimaryIcon), XFDASHBOARD_STYLE_ICON);
+	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->actorPrimaryIcon), FALSE);
+	clutter_actor_set_reactive(priv->actorPrimaryIcon, TRUE);
 	clutter_actor_hide(priv->actorPrimaryIcon);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorPrimaryIcon);
-	clutter_actor_set_reactive(priv->actorPrimaryIcon, TRUE);
+	g_signal_connect_swapped(priv->actorPrimaryIcon, "clicked", G_CALLBACK(_xfdashboard_text_box_on_primary_icon_clicked), self);
 
-	priv->primaryIconClickAction=clutter_click_action_new();
-	clutter_actor_add_action(priv->actorPrimaryIcon, priv->primaryIconClickAction);
-	g_signal_connect(priv->primaryIconClickAction, "clicked", G_CALLBACK(_xfdashboard_text_box_on_primary_icon_clicked), self);
-
-	priv->actorSecondaryIcon=clutter_actor_new();
+	priv->actorSecondaryIcon=xfdashboard_button_new();
+	xfdashboard_button_set_padding(XFDASHBOARD_BUTTON(priv->actorSecondaryIcon), 0.0f);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->actorSecondaryIcon), XFDASHBOARD_STYLE_ICON);
+	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->actorSecondaryIcon), FALSE);
+	clutter_actor_set_reactive(priv->actorSecondaryIcon, TRUE);
 	clutter_actor_hide(priv->actorSecondaryIcon);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorSecondaryIcon);
-	clutter_actor_set_reactive(priv->actorSecondaryIcon, TRUE);
-
-	priv->secondaryIconClickAction=clutter_click_action_new();
-	clutter_actor_add_action(priv->actorSecondaryIcon, priv->secondaryIconClickAction);
-	g_signal_connect(priv->secondaryIconClickAction, "clicked", G_CALLBACK(_xfdashboard_text_box_on_secondary_icon_clicked), self);
+	g_signal_connect_swapped(priv->actorSecondaryIcon, "clicked", G_CALLBACK(_xfdashboard_text_box_on_secondary_icon_clicked), self);
 
 	priv->actorTextBox=clutter_text_new();
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorTextBox);
@@ -1312,7 +1297,6 @@ const gchar* xfdashboard_text_box_get_primary_icon(XfdashboardTextBox *self)
 void xfdashboard_text_box_set_primary_icon(XfdashboardTextBox *self, const gchar *inIconName)
 {
 	XfdashboardTextBoxPrivate	*priv;
-	ClutterImage				*image;
 
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 	g_return_if_fail(!inIconName || strlen(inIconName)>0);
@@ -1331,36 +1315,21 @@ void xfdashboard_text_box_set_primary_icon(XfdashboardTextBox *self, const gchar
 
 		if(inIconName)
 		{
-			priv->primaryIconName=g_strdup(inIconName);
-
 			/* Load and set new icon */
-			image=xfdashboard_get_image_for_icon_name(priv->primaryIconName, DEFAULT_ICON_SIZE);
-			clutter_actor_set_content(priv->actorPrimaryIcon, CLUTTER_CONTENT(image));
-			g_object_unref(image);
-		}
+			priv->primaryIconName=g_strdup(inIconName);
+			xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(priv->actorPrimaryIcon), priv->primaryIconName);
 
-		/* If NULL or empty icon name was set hide primary icon */
-		if(priv->primaryIconName==NULL || *priv->primaryIconName==0)
-		{
-			if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorPrimaryIcon))
-			{
-				clutter_actor_hide(priv->actorPrimaryIcon);
-				clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
-			}
-
-			priv->showPrimaryIcon=FALSE;
+			/* Show icon */
+			priv->showPrimaryIcon=TRUE;
+			clutter_actor_show(priv->actorPrimaryIcon);
+			clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 		}
-			/* Otherwise set new primary icon and show it */
 			else
 			{
-
-				if(!CLUTTER_ACTOR_IS_VISIBLE(priv->actorPrimaryIcon))
-				{
-					clutter_actor_show(priv->actorPrimaryIcon);
-					clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
-				}
-
-				priv->showPrimaryIcon=TRUE;
+				/* Hide icon */
+				priv->showPrimaryIcon=FALSE;
+				clutter_actor_hide(priv->actorPrimaryIcon);
+				clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 			}
 
 		/* Notify about property change */
@@ -1379,7 +1348,6 @@ const gchar* xfdashboard_text_box_get_secondary_icon(XfdashboardTextBox *self)
 void xfdashboard_text_box_set_secondary_icon(XfdashboardTextBox *self, const gchar *inIconName)
 {
 	XfdashboardTextBoxPrivate	*priv;
-	ClutterImage				*image;
 
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 	g_return_if_fail(!inIconName || strlen(inIconName)>0);
@@ -1398,35 +1366,21 @@ void xfdashboard_text_box_set_secondary_icon(XfdashboardTextBox *self, const gch
 
 		if(inIconName)
 		{
-			priv->secondaryIconName=g_strdup(inIconName);
-
 			/* Load and set new icon */
-			image=xfdashboard_get_image_for_icon_name(priv->secondaryIconName, DEFAULT_ICON_SIZE);
-			clutter_actor_set_content(priv->actorSecondaryIcon, CLUTTER_CONTENT(image));
-			g_object_unref(image);
-		}
+			priv->secondaryIconName=g_strdup(inIconName);
+			xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(priv->actorSecondaryIcon), priv->secondaryIconName);
 
-		/* If NULL or empty icon name was set hide primary icon */
-		if(priv->secondaryIconName==NULL || *priv->secondaryIconName==0)
-		{
-			if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorSecondaryIcon))
-			{
-				clutter_actor_hide(priv->actorSecondaryIcon);
-				clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
-			}
-
-			priv->showSecondaryIcon=FALSE;
+			/* Show icon */
+			priv->showSecondaryIcon=TRUE;
+			clutter_actor_show(priv->actorSecondaryIcon);
+			clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 		}
-			/* Otherwise set new primary icon and show it */
 			else
 			{
-				if(!CLUTTER_ACTOR_IS_VISIBLE(priv->actorSecondaryIcon))
-				{
-					clutter_actor_show(priv->actorSecondaryIcon);
-					clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
-				}
-
+				/* Hide icon */
 				priv->showSecondaryIcon=FALSE;
+				clutter_actor_hide(priv->actorSecondaryIcon);
+				clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 			}
 
 		/* Notify about property change */

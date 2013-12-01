@@ -1,6 +1,6 @@
 /*
  * textbox: An actor representing an editable or read-only text-box
- *          with icons optinally
+ *          with optinal icons
  * 
  * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
  * 

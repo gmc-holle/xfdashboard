@@ -115,36 +115,6 @@ static ClutterColor				defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 
 /* IMPLEMENTATION: Private variables and methods */
 
-/* Actor was mapped or unmapped */
-static void _xfdashboard_button_on_mapped_changed(XfdashboardButton *self,
-													GParamSpec *inSpec,
-													gpointer inUserData)
-{
-	XfdashboardButtonPrivate	*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
-
-	priv=self->priv;
-
-	/* If actor is mapped now and an image by icon name was set but not
-	 * loaded yet then set icon image now
-	 */
-	if(CLUTTER_ACTOR_IS_MAPPED(self) &&
-		priv->iconNameLoaded==FALSE &&
-		priv->iconName)
-	{
-		ClutterImage	*image;
-
-		image=xfdashboard_get_image_for_icon_name(priv->iconName, priv->iconSize);
-		clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
-		g_object_unref(image);
-
-		priv->iconNameLoaded=TRUE;
-
-		g_debug("Loaded and set deferred image '%s' at size %d for %s@%p ", priv->iconName, priv->iconSize, G_OBJECT_TYPE_NAME(self), self);
-	}
-}
-
 /* Get preferred width of icon and label child actors
  * We do not respect paddings here so if height is given it must be
  * reduced by padding on all affected sides. The returned sizes are also
@@ -670,6 +640,40 @@ static void _xfdashboard_button_update_icon_image_size(XfdashboardButton *self)
 
 	/* Queue a redraw as the actors are now available */
 	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+}
+
+/* Actor was mapped or unmapped */
+static void _xfdashboard_button_on_mapped_changed(XfdashboardButton *self,
+													GParamSpec *inSpec,
+													gpointer inUserData)
+{
+	XfdashboardButtonPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
+
+	priv=self->priv;
+
+	/* If actor is mapped now and an image by icon name was set but not
+	 * loaded yet then set icon image now
+	 */
+	if(CLUTTER_ACTOR_IS_MAPPED(self) &&
+		priv->iconNameLoaded==FALSE &&
+		priv->iconName)
+	{
+		ClutterImage	*image;
+
+		/* Set icon image */
+		image=xfdashboard_get_image_for_icon_name(priv->iconName, priv->iconSize);
+		clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
+		g_object_unref(image);
+
+		priv->iconNameLoaded=TRUE;
+
+		/* Calculate icon size as image content is now available */
+		_xfdashboard_button_update_icon_image_size(self);
+
+		g_debug("Loaded and set deferred image '%s' at size %d for %s@%p ", priv->iconName, priv->iconSize, G_OBJECT_TYPE_NAME(self), self);
+	}
 }
 
 /* IMPLEMENTATION: ClutterActor */
