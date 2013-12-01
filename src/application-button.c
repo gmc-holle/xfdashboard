@@ -176,19 +176,12 @@ static void _xfdashboard_application_button_update_text(XfdashboardApplicationBu
 static void _xfdashboard_application_button_update_icon(XfdashboardApplicationButton *self)
 {
 	XfdashboardApplicationButtonPrivate		*priv;
-	ClutterImage							*icon;
-	gint									iconSize;
 	const gchar								*iconName;
-	GIcon									*gicon;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 
 	priv=self->priv;
-	icon=NULL;
-
-	/* Determine icon size */
-	iconSize=xfdashboard_button_get_icon_size(XFDASHBOARD_BUTTON(self));
-	if(iconSize<=0) iconSize=DEFAULT_ICON_SIZE;
+	iconName=NULL;
 
 	/* Get icon where available */
 	switch(priv->type)
@@ -199,14 +192,15 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
 			iconName=garcon_menu_element_get_icon_name(priv->menuElement);
-			if(iconName) icon=xfdashboard_get_image_for_icon_name(iconName, iconSize);
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
 			if(priv->appInfo)
 			{
+				GIcon						*gicon;
+
 				gicon=g_app_info_get_icon(priv->appInfo);
-				if(gicon) icon=xfdashboard_get_image_for_gicon(gicon, iconSize);
+				if(gicon) iconName=g_icon_to_string(gicon);
 			}
 			break;
 
@@ -216,13 +210,7 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 	}
 
 	/* Set up button and release allocated resources */
-	if(!icon) icon=xfdashboard_get_image_for_icon_name(GTK_STOCK_MISSING_IMAGE, iconSize);
-
-	if(icon)
-	{
-		xfdashboard_button_set_icon_image(XFDASHBOARD_BUTTON(self), icon);
-		g_object_unref(icon);
-	}
+	if(iconName) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(self), iconName);
 }
 
 /* The icon-size in button has changed */
