@@ -59,6 +59,7 @@ struct _XfdashboardApplicationClass
 	/*< public >*/
 	/* Virtual functions */
 	void (*quit)(XfdashboardApplication *self);
+	void (*shutdown_final)(XfdashboardApplication *self);
 };
 
 /* Public API */

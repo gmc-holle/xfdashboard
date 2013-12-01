@@ -28,6 +28,7 @@ xfdashboard_headers = \
 	drag-action.h \
 	drop-action.h \
 	fill-box-layout.h \
+	image.h \
 	live-window.h \
 	quicklaunch.h \
 	scaled-table-layout.h \
@@ -58,6 +59,7 @@ xfdashboard_SOURCES = \
 	drag-action.c \
 	drop-action.c \
 	fill-box-layout.c \
+	image.c \
 	live-window.c \
 	main.c \
 	quicklaunch.c \

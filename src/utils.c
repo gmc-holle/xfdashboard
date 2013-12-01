@@ -26,6 +26,7 @@
 #endif
 
 #include "utils.h"
+#include "image.h"
 
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
@@ -86,6 +87,7 @@ ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint 
 	GdkPixbuf		*icon;
 	GtkIconTheme	*iconTheme;
 	GError			*error;
+	gchar			*key;
 
 	g_return_val_if_fail(inIconName!=NULL, NULL);
 	g_return_val_if_fail(inSize>0, NULL);
@@ -95,6 +97,16 @@ ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint 
 	iconTheme=gtk_icon_theme_get_default();
 	error=NULL;
 
+	/* Check if we have a cache image for icon */
+	key=g_strdup_printf("%s,%d", inIconName, inSize);
+	image=xfdashboard_image_get_cached_image(key);
+	if(image)
+	{
+		g_free(key);
+		return(CLUTTER_IMAGE(image));
+	}
+
+	/* Load icon by name */
 	if(inIconName)
 	{
 		/* Check if we have an absolute filename then load this file directly ... */
@@ -166,10 +178,10 @@ ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint 
 		}
 	}
 
-	/* Create ClutterImage for icon loaded */
+	/* Create ClutterImage for icon loaded and cache it */
 	if(icon)
 	{
-		image=clutter_image_new();
+		image=CLUTTER_CONTENT(g_object_new(XFDASHBOARD_TYPE_IMAGE, "key", key, NULL));
 		clutter_image_set_data(CLUTTER_IMAGE(image),
 								gdk_pixbuf_get_pixels(icon),
 								gdk_pixbuf_get_has_alpha(icon) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
@@ -179,6 +191,9 @@ ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint 
 								NULL);
 		g_object_unref(icon);
 	}
+
+	/* Release allocated resources */
+	if(key) g_free(key);
 
 	/* Return ClutterImage */
 	return(CLUTTER_IMAGE(image));
@@ -194,11 +209,21 @@ ClutterImage* xfdashboard_get_image_for_gicon(GIcon *inIcon, gint inSize)
 	GtkIconInfo			*iconInfo;
 	GdkPixbuf			*iconPixbuf;
 	GError				*error;
+	gchar				*key;
 
 	g_return_val_if_fail(G_IS_ICON(inIcon), NULL);
 	g_return_val_if_fail(inSize>0, NULL);
 
 	error=NULL;
+
+	/* Check if we have a cache image for icon */
+	key=g_strdup_printf("%s,%d", g_icon_to_string(inIcon), inSize);
+	image=xfdashboard_image_get_cached_image(key);
+	if(image)
+	{
+		g_free(key);
+		return(CLUTTER_IMAGE(image));
+	}
 
 	/* Get icon information */
 	iconInfo=gtk_icon_theme_lookup_by_gicon(gtk_icon_theme_get_default(),
@@ -221,8 +246,8 @@ ClutterImage* xfdashboard_get_image_for_gicon(GIcon *inIcon, gint inSize)
 		return(NULL);
 	}
 
-	/* Create ClutterImage for icon loaded */
-	image=clutter_image_new();
+	/* Create ClutterImage for icon loaded and cache it */
+	image=CLUTTER_CONTENT(g_object_new(XFDASHBOARD_TYPE_IMAGE, "key", key, NULL));
 	clutter_image_set_data(CLUTTER_IMAGE(image),
 							gdk_pixbuf_get_pixels(iconPixbuf),
 							gdk_pixbuf_get_has_alpha(iconPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
@@ -230,6 +255,9 @@ ClutterImage* xfdashboard_get_image_for_gicon(GIcon *inIcon, gint inSize)
 							gdk_pixbuf_get_height(iconPixbuf),
 							gdk_pixbuf_get_rowstride(iconPixbuf),
 							NULL);
+
+	/* Release allocated resources */
+	if(key) g_free(key);
 
 	/* Return ClutterImage */
 	return(CLUTTER_IMAGE(image));
@@ -247,7 +275,9 @@ ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf)
 
 	image=NULL;
 
-	/* Create ClutterImage for pixbuf */
+	/* Create ClutterImage for pixbuf directly because images
+	 * from GdkPixbuf will not be cached
+	 */
 	image=clutter_image_new();
 	clutter_image_set_data(CLUTTER_IMAGE(image),
 							gdk_pixbuf_get_pixels(inPixbuf),

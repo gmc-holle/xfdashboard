@@ -75,6 +75,7 @@ static GParamSpec* XfdashboardApplicationProperties[PROP_LAST]={ 0, };
 enum
 {
 	SIGNAL_QUIT,
+	SIGNAL_SHUTDOWN_FINAL,
 
 	SIGNAL_LAST
 };
@@ -322,6 +323,9 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	XfdashboardApplication			*self=XFDASHBOARD_APPLICATION(inObject);
 	XfdashboardApplicationPrivate	*priv=self->priv;
 
+	/* Signal "shutdown-final" of application */
+	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SHUTDOWN_FINAL], 0);
+
 	/* Release allocated resources */
 	if(priv->viewManager)
 	{
@@ -411,6 +415,17 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
 						G_STRUCT_OFFSET(XfdashboardApplicationClass, quit),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardApplicationSignals[SIGNAL_SHUTDOWN_FINAL]=
+		g_signal_new("shutdown-final",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardApplicationClass, shutdown_final),
 						NULL,
 						NULL,
 						g_cclosure_marshal_VOID__VOID,
