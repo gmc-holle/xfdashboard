@@ -819,7 +819,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_width(XfdashboardQuicklaunc
 	scale=priv->scaleMax;
 	if(totalWidth>0.0f)
 	{
-		scale=floorf((scalableWidth/totalWidth)/priv->scaleStep)*priv->scaleStep;
+		scale=floor((scalableWidth/totalWidth)/priv->scaleStep)*priv->scaleStep;
 		scale=MIN(scale, priv->scaleMax);
 		scale=MAX(scale, priv->scaleMin);
 	}
@@ -921,7 +921,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaun
 	scale=priv->scaleMax;
 	if(totalHeight>0.0f)
 	{
-		scale=floorf((scalableHeight/totalHeight)/priv->scaleStep)*priv->scaleStep;
+		scale=floor((scalableHeight/totalHeight)/priv->scaleStep)*priv->scaleStep;
 		scale=MIN(scale, priv->scaleMax);
 		scale=MAX(scale, priv->scaleMin);
 	}

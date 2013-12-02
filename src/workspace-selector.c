@@ -129,7 +129,7 @@ static gfloat _xfdashboard_workspace_selector_get_scale_for_width(XfdashboardWor
 	scale=priv->scaleMax;
 	if(totalWidth>0.0f)
 	{
-		scale=floorf((scalableWidth/totalWidth)/priv->scaleStep)*priv->scaleStep;
+		scale=floor((scalableWidth/totalWidth)/priv->scaleStep)*priv->scaleStep;
 		scale=MIN(scale, priv->scaleMax);
 		scale=MAX(scale, priv->scaleMin);
 	}
@@ -231,7 +231,7 @@ static gfloat _xfdashboard_workspace_selector_get_scale_for_height(XfdashboardWo
 	scale=priv->scaleMax;
 	if(totalHeight>0.0f)
 	{
-		scale=floorf((scalableHeight/totalHeight)/priv->scaleStep)*priv->scaleStep;
+		scale=floor((scalableHeight/totalHeight)/priv->scaleStep)*priv->scaleStep;
 		scale=MIN(scale, priv->scaleMax);
 		scale=MAX(scale, priv->scaleMin);
 	}
