@@ -100,7 +100,8 @@ xfdashboard_LDADD = \
 	$(GIO_UNIX_LIBS) \
 	$(GARCON_LIBS) \
 	$(LIBXFCONF_LIBS) \
-	$(DBUS_GLIB_LIBS)
+	$(DBUS_GLIB_LIBS) \
+	-lm
 
 if MAINTAINER_MODE
 
