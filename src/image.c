@@ -63,7 +63,7 @@ enum
 static GParamSpec* XfdashboardImageProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-static GHashTable	*_xfdashboard_image_cache=NULL;
+static GHashTable*	_xfdashboard_image_cache=NULL;
 static guint		_xfdashboard_image_cache_shutdownSignalID=0;
 
 /* Destroy cache hashtable */
@@ -82,9 +82,9 @@ static void _xfdashboard_image_destroy_cache(void)
 
 	/* Destroy cache hashtable */
 	cacheSize=g_hash_table_size(_xfdashboard_image_cache);
-	if(cacheSize>0) g_warning(_("Destroying cache still containing %d images."), cacheSize);
+	if(cacheSize>0) g_warning(_("Destroying image cache still containing %d images."), cacheSize);
 
-	g_debug("Destroying cache hashtable");
+	g_debug("Destroying image cache hashtable");
 	g_hash_table_destroy(_xfdashboard_image_cache);
 	_xfdashboard_image_cache=NULL;
 }
@@ -99,7 +99,7 @@ static void _xfdashboard_image_create_cache(void)
 
 	/* Create create hashtable */
 	_xfdashboard_image_cache=g_hash_table_new(g_str_hash, g_str_equal);
-	g_debug("Created cache hashtable");
+	g_debug("Created image cache hashtable");
 
 	/* Connect to "shutdown" signal of application to
 	 * clean up hashtable
