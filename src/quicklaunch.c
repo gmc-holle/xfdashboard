@@ -1208,7 +1208,7 @@ static void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 		 * width and height but the position should be "translated" to
 		 * scaled sizes.
 		 */
-		clutter_actor_get_preferred_size(child, NULL, &childWidth, NULL, &childHeight);
+		clutter_actor_get_preferred_size(child, NULL, NULL, &childWidth, &childHeight);
 
 		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
 		{
