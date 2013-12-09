@@ -24,9 +24,6 @@
 #ifndef __XFDASHBOARD_WINDOWS_VIEW__
 #define __XFDASHBOARD_WINDOWS_VIEW__
 
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE
-#include <libwnck/libwnck.h>
-
 #include "view.h"
 
 G_BEGIN_DECLS
@@ -60,9 +57,6 @@ struct _XfdashboardWindowsViewClass
 
 /* Public API */
 GType xfdashboard_windows_view_get_type(void) G_GNUC_CONST;
-
-WnckScreen* xfdashboard_windows_view_get_screen(XfdashboardWindowsView *self);
-WnckWorkspace* xfdashboard_windows_view_get_workspace(XfdashboardWindowsView *self);
 
 G_END_DECLS
 

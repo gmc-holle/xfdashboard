@@ -50,18 +50,19 @@ G_DEFINE_TYPE(XfdashboardLiveWindow,
 struct _XfdashboardLiveWindowPrivate
 {
 	/* Properties related */
-	WnckWindow		*window;
+	WnckWindow					*window;
+	
+	gfloat						paddingClose;
+	gfloat						paddingTitle;
 
 	/* Instance related */
-	gboolean		isVisible;
+	XfdashboardWindowTracker	*windowTracker;
 
-	ClutterActor	*actorWindow;
-	ClutterActor	*actorClose;
-	ClutterActor	*actorTitle;
+	gboolean					isVisible;
 
-	/* Settings */
-	gfloat			paddingClose;
-	gfloat			paddingTitle;
+	ClutterActor				*actorWindow;
+	ClutterActor				*actorClose;
+	ClutterActor				*actorTitle;
 };
 
 /* Properties */
@@ -71,10 +72,7 @@ enum
 
 	PROP_WINDOW,
 
-	PROP_CLOSE_BUTTON,
 	PROP_CLOSE_BUTTON_PADDING,
-
-	PROP_TITLE_ACTOR,
 	PROP_TITLE_ACTOR_PADDING,
 
 	PROP_LAST
@@ -164,10 +162,17 @@ static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, Clu
 }
 
 /* Position and/or size of window has changed */
-static void _xfdashboard_live_window_on_geometry_changed(XfdashboardLiveWindow *self, gpointer inUserData)
+static void _xfdashboard_live_window_on_geometry_changed(XfdashboardLiveWindow *self, WnckWindow *inWindow, gpointer inUserData)
 {
+	XfdashboardLiveWindowPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
+
+	priv=self->priv;
+
+	/* Check if signal is for this window */
+	if(inWindow!=priv->window) return;
 
 	/* Actor's allocation may change because of new geometry so relayout */
 	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
@@ -178,6 +183,7 @@ static void _xfdashboard_live_window_on_geometry_changed(XfdashboardLiveWindow *
 
 /* Action items of window has changed */
 static void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *self,
+														WnckWindow *inWindow,
 														WnckWindowActions inChangedMask,
 														WnckWindowActions inNewValue,
 														gpointer inUserData)
@@ -185,9 +191,12 @@ static void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *s
 	XfdashboardLiveWindowPrivate	*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
 	priv=self->priv;
+
+	/* Check if signal is for this window */
+	if(inWindow!=priv->window) return;
 
 	/* Show or hide close button actor */
 	if(inChangedMask & WNCK_WINDOW_ACTION_CLOSE)
@@ -198,63 +207,71 @@ static void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *s
 }
 
 /* Icon of window has changed */
-static void _xfdashboard_live_window_on_icon_changed(XfdashboardLiveWindow *self, gpointer inUserData)
+static void _xfdashboard_live_window_on_icon_changed(XfdashboardLiveWindow *self,
+														WnckWindow *inWindow,
+														gpointer inUserData)
 {
 	XfdashboardLiveWindowPrivate	*priv;
-	WnckWindow						*window;
 	ClutterImage					*icon;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
 	priv=self->priv;
-	window=WNCK_WINDOW(inUserData);
+
+	/* Check if signal is for this window */
+	if(inWindow!=priv->window) return;
 
 	/* Set new icon in title actor */
-	icon=xfdashboard_get_image_for_pixbuf(wnck_window_get_icon(window));
+	icon=xfdashboard_get_image_for_pixbuf(wnck_window_get_icon(inWindow));
 	xfdashboard_button_set_icon_image(XFDASHBOARD_BUTTON(priv->actorTitle), icon);
 	g_object_unref(icon);
 }
 
 /* Title of window has changed */
-static void _xfdashboard_live_window_on_name_changed(XfdashboardLiveWindow *self, gpointer inUserData)
+static void _xfdashboard_live_window_on_name_changed(XfdashboardLiveWindow *self,
+														WnckWindow *inWindow,
+														gpointer inUserData)
 {
 	XfdashboardLiveWindowPrivate	*priv;
-	WnckWindow						*window;
 	gchar							*windowName;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
 	priv=self->priv;
-	window=WNCK_WINDOW(inUserData);
+
+	/* Check if signal is for this window */
+	if(inWindow!=priv->window) return;
 
 	/* Set new icon in title actor */
-	windowName=g_markup_printf_escaped("%s", wnck_window_get_name(window));
+	windowName=g_markup_printf_escaped("%s", wnck_window_get_name(inWindow));
 	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorTitle), windowName);
 	g_free(windowName);
 }
 
 /* Window's state has changed */
 static void _xfdashboard_live_window_on_state_changed(XfdashboardLiveWindow *self,
+														WnckWindow *inWindow,
 														WnckWindowState inChangedMask,
 														WnckWindowState inNewState,
 														gpointer inUserData)
 {
 	XfdashboardLiveWindowPrivate	*priv;
-	WnckWindow						*window;
 	gboolean						isVisible;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
 	priv=self->priv;
-	window=WNCK_WINDOW(inUserData);
+
+	/* Check if signal is for this window */
+	if(inWindow!=priv->window) return;
 
 	/* If certain state flags has changed check window's visibility */
 	if(_xfdashboard_live_window_is_window_visiblity_flag(self, inChangedMask))
 	{
-		isVisible=_xfdashboard_live_window_is_visible_window(self, window);
+		isVisible=_xfdashboard_live_window_is_visible_window(self, inWindow);
 		if(priv->isVisible!=isVisible)
 		{
 			priv->isVisible=isVisible;
@@ -264,10 +281,19 @@ static void _xfdashboard_live_window_on_state_changed(XfdashboardLiveWindow *sel
 }
 
 /* Window's workspace has changed */
-static void _xfdashboard_live_window_on_workspace_changed(XfdashboardLiveWindow *self, gpointer inUserData)
+static void _xfdashboard_live_window_on_workspace_changed(XfdashboardLiveWindow *self,
+															WnckWindow *inWindow,
+															gpointer inUserData)
 {
+	XfdashboardLiveWindowPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
-	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
+
+	priv=self->priv;
+
+	/* Check if signal is for this window */
+	if(inWindow!=priv->window) return;
 
 	/* Emit "workspace-changed" signal */
 	g_signal_emit(self, XfdashboardLiveWindowSignals[SIGNAL_WORKSPACE_CHANGED], 0);
@@ -472,8 +498,14 @@ static void _xfdashboard_live_window_dispose(GObject *inObject)
 	/* Dispose allocated resources */
 	if(priv->window)
 	{
-		g_signal_handlers_disconnect_by_data(priv->window, self);
 		priv->window=NULL;
+	}
+
+	if(priv->windowTracker)
+	{
+		g_signal_handlers_disconnect_by_data(priv->windowTracker, self);
+		g_object_unref(priv->windowTracker);
+		priv->windowTracker=NULL;
 	}
 
 	if(priv->actorWindow)
@@ -539,16 +571,8 @@ static void _xfdashboard_live_window_get_property(GObject *inObject,
 			g_value_set_object(outValue, self->priv->window);
 			break;
 
-		case PROP_CLOSE_BUTTON:
-			g_value_set_object(outValue, self->priv->actorClose);
-			break;
-
 		case PROP_CLOSE_BUTTON_PADDING:
 			g_value_set_float(outValue, self->priv->paddingClose);
-			break;
-
-		case PROP_TITLE_ACTOR:
-			g_value_set_object(outValue, self->priv->actorTitle);
 			break;
 
 		case PROP_TITLE_ACTOR_PADDING:
@@ -590,13 +614,6 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 								WNCK_TYPE_WINDOW,
 								G_PARAM_READWRITE);
 
-	XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON]=
-		g_param_spec_object("close-button",
-								_("Close button"),
-								_("The actor used to show the close button"),
-								XFDASHBOARD_TYPE_BUTTON,
-								G_PARAM_READABLE);
-
 	XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON_PADDING]=
 		g_param_spec_float("close-button-padding",
 							_("Close button padding"),
@@ -604,13 +621,6 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 							0.0f, G_MAXFLOAT,
 							DEFAULT_PADDING_CLOSE,
 							G_PARAM_READWRITE);
-
-	XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR]=
-		g_param_spec_object("title-actor",
-								_("Title actor"),
-								_("The actor used to show the window title and icon"),
-								XFDASHBOARD_TYPE_BUTTON,
-								G_PARAM_READABLE);
 
 	XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR_PADDING]=
 		g_param_spec_float("title-actor-padding",
@@ -694,14 +704,10 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set default values */
+	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->window=NULL;
 	priv->paddingTitle=DEFAULT_PADDING_TITLE;
 	priv->paddingClose=DEFAULT_PADDING_CLOSE;
-
-	/* Connect signals to this actor */
-	action=clutter_click_action_new();
-	clutter_actor_add_action(CLUTTER_ACTOR(self), action);
-	g_signal_connect_swapped(action, "clicked", G_CALLBACK(_xfdashboard_live_window_on_clicked), self);
 
 	/* Set up child actors (order is important) */
 	priv->actorWindow=clutter_x11_texture_pixmap_new();
@@ -722,6 +728,17 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorClose), priv->paddingClose);
 	clutter_actor_show(priv->actorClose);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorClose);
+
+	/* Connect signals */
+	action=clutter_click_action_new();
+	clutter_actor_add_action(CLUTTER_ACTOR(self), action);
+	g_signal_connect_swapped(action, "clicked", G_CALLBACK(_xfdashboard_live_window_on_clicked), self);
+
+	g_signal_connect_swapped(priv->windowTracker, "window-geometry-changed", G_CALLBACK(_xfdashboard_live_window_on_geometry_changed), self);
+	g_signal_connect_swapped(priv->windowTracker, "window-actions-changed", G_CALLBACK(_xfdashboard_live_window_on_actions_changed), self);
+	g_signal_connect_swapped(priv->windowTracker, "window-icon-changed", G_CALLBACK(_xfdashboard_live_window_on_icon_changed), self);
+	g_signal_connect_swapped(priv->windowTracker, "window-name-changed", G_CALLBACK(_xfdashboard_live_window_on_name_changed), self);
+	g_signal_connect_swapped(priv->windowTracker, "window-workspace-changed", G_CALLBACK(_xfdashboard_live_window_on_workspace_changed), self);
 }
 
 /* Implementation: Public API */
@@ -779,31 +796,16 @@ void xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, WnckWindow 
 	clutter_x11_texture_pixmap_sync_window(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow));
 	clutter_x11_texture_pixmap_set_automatic(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow), TRUE);
 
-	/* Connect signals */
-	g_signal_connect_swapped(inWindow, "geometry-changed", G_CALLBACK(_xfdashboard_live_window_on_geometry_changed), self);
-	g_signal_connect_swapped(inWindow, "actions-changed", G_CALLBACK(_xfdashboard_live_window_on_actions_changed), self);
-	g_signal_connect_swapped(inWindow, "icon-changed", G_CALLBACK(_xfdashboard_live_window_on_icon_changed), self);
-	g_signal_connect_swapped(inWindow, "name-changed", G_CALLBACK(_xfdashboard_live_window_on_name_changed), self);
-	g_signal_connect_swapped(inWindow, "workspace-changed", G_CALLBACK(_xfdashboard_live_window_on_workspace_changed), self);
-
 	/* Set up this actor and child actor by calling each signal handler now */
-	_xfdashboard_live_window_on_geometry_changed(self, priv->window);
-	_xfdashboard_live_window_on_actions_changed(self, -1, wnck_window_get_actions(priv->window), priv->window);
-	_xfdashboard_live_window_on_icon_changed(self, priv->window);
-	_xfdashboard_live_window_on_name_changed(self, priv->window);
-	_xfdashboard_live_window_on_state_changed(self, -1, wnck_window_get_state(priv->window), priv->window);
-	_xfdashboard_live_window_on_workspace_changed(self, priv->window);
+	_xfdashboard_live_window_on_geometry_changed(self, priv->window, priv->windowTracker);
+	_xfdashboard_live_window_on_actions_changed(self, priv->window, -1, wnck_window_get_actions(priv->window), priv->windowTracker);
+	_xfdashboard_live_window_on_icon_changed(self, priv->window, priv->windowTracker);
+	_xfdashboard_live_window_on_name_changed(self, priv->window, priv->windowTracker);
+	_xfdashboard_live_window_on_state_changed(self, priv->window, -1, wnck_window_get_state(priv->window), priv->windowTracker);
+	_xfdashboard_live_window_on_workspace_changed(self, priv->window, priv->windowTracker);
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowProperties[PROP_WINDOW]);
-}
-
-/* Get title actor */
-XfdashboardButton* xfdashboard_live_window_get_title_actor(XfdashboardLiveWindow *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
-
-	return(XFDASHBOARD_BUTTON(self->priv->actorTitle));
 }
 
 /* Get/set padding of title actor */
@@ -834,14 +836,6 @@ void xfdashboard_live_window_set_title_actor_padding(XfdashboardLiveWindow *self
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR_PADDING]);
 	}
-}
-
-/* Get close button actor */
-XfdashboardButton* xfdashboard_live_window_get_close_button(XfdashboardLiveWindow *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
-
-	return(XFDASHBOARD_BUTTON(self->priv->actorClose));
 }
 
 /* Get/set padding of close button actor */

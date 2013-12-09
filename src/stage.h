@@ -26,8 +26,7 @@
 
 #include <clutter/clutter.h>
 
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE
-#include <libwnck/libwnck.h>
+#include "window-tracker.h"
 
 G_BEGIN_DECLS
 
@@ -68,8 +67,6 @@ struct _XfdashboardStageClass
 GType xfdashboard_stage_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_stage_new(void);
-
-WnckWindow* xfdashboard_stage_get_window(XfdashboardStage *self);
 
 G_END_DECLS
 

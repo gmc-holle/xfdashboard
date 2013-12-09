@@ -25,9 +25,6 @@
 #include "config.h"
 #endif
 
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE
-#include <libwnck/libwnck.h>
-
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
@@ -100,9 +97,6 @@ int main(int argc, char **argv)
 		g_error(_("Initializing clutter failed!"));
 		return(1);
 	}
-
-	/* Set up libwnck library (must be done _after_ gtk_init) */
-	wnck_set_client_type(WNCK_CLIENT_TYPE_PAGER);
 
 	/* Handle command-line on primary instance */
 	status=g_application_run(G_APPLICATION(app), argc, argv);

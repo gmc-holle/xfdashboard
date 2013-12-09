@@ -26,11 +26,10 @@
 #ifndef __XFOVERVIEW_LIVE_WINDOW__
 #define __XFOVERVIEW_LIVE_WINDOW__
 
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE
-#include <libwnck/libwnck.h>
 #include <clutter/clutter.h>
 
 #include "button.h"
+#include "window-tracker.h"
 
 G_BEGIN_DECLS
 
@@ -78,12 +77,8 @@ ClutterActor* xfdashboard_live_window_new_for_window(WnckWindow *inWindow);
 WnckWindow* xfdashboard_live_window_get_window(XfdashboardLiveWindow *self);
 void xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, WnckWindow *inWindow);
 
-XfdashboardButton* xfdashboard_live_window_get_title_actor(XfdashboardLiveWindow *self);
-
 gfloat xfdashboard_live_window_get_title_actor_padding(XfdashboardLiveWindow *self);
 void xfdashboard_live_window_set_title_actor_padding(XfdashboardLiveWindow *self, gfloat inPadding);
-
-XfdashboardButton* xfdashboard_live_window_get_close_button(XfdashboardLiveWindow *self);
 
 gfloat xfdashboard_live_window_get_close_button_padding(XfdashboardLiveWindow *self);
 void xfdashboard_live_window_set_close_button_padding(XfdashboardLiveWindow *self, gfloat inPadding);
