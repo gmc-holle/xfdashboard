@@ -31,8 +31,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_CLICK_ACTION__
-#define __XFOVERVIEW_CLICK_ACTION__
+#ifndef __XFDASHBOARD_CLICK_ACTION__
+#define __XFDASHBOARD_CLICK_ACTION__
 
 #include <clutter/clutter.h>
 
@@ -82,4 +82,4 @@ void xfdashboard_click_action_release(XfdashboardClickAction *self);
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_CLICK_ACTION__ */
+#endif	/* __XFDASHBOARD_CLICK_ACTION__ */

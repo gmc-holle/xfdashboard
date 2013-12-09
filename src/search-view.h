@@ -65,4 +65,4 @@ void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gc
 
 G_END_DECLS
 
-#endif
+#endif	/* __XFDASHBOARD_SEARCH_VIEW__ */

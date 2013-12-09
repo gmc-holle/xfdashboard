@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_APPLICATION_BUTTON__
-#define __XFOVERVIEW_APPLICATION_BUTTON__
+#ifndef __XFDASHBOARD_APPLICATION_BUTTON__
+#define __XFDASHBOARD_APPLICATION_BUTTON__
 
 #include <garcon/garcon.h>
 #include <gio/gdesktopappinfo.h>
@@ -90,4 +90,4 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_APPLICATION_BUTTON__ */
+#endif	/* __XFDASHBOARD_APPLICATION_BUTTON__ */

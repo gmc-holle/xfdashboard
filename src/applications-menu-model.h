@@ -88,4 +88,5 @@ void xfdashboard_applications_menu_model_filter_by_section(XfdashboardApplicatio
 
 G_END_DECLS
 
-#endif
+#endif	/* __XFDASHBOARD_APPLICATIONS_MENU_MODEL__ */
+

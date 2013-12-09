@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_IMAGE__
-#define __XFOVERVIEW_IMAGE__
+#ifndef __XFDASHBOARD_IMAGE__
+#define __XFDASHBOARD_IMAGE__
 
 #include <clutter/clutter.h>
 
@@ -67,4 +67,4 @@ ClutterContent* xfdashboard_image_get_cached_image(const gchar *inKey);
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_IMAGE__ */
+#endif	/* __XFDASHBOARD_IMAGE__ */

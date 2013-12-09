@@ -79,4 +79,4 @@ void xfdashboard_view_selector_set_orientation(XfdashboardViewSelector *self, Cl
 
 G_END_DECLS
 
-#endif
+#endif	/* __XFDASHBOARD_VIEW_SELECTOR__ */

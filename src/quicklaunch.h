@@ -21,13 +21,13 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_QUICKLAUNCH__
-#define __XFOVERVIEW_QUICKLAUNCH__
+#ifndef __XFDASHBOARD_QUICKLAUNCH__
+#define __XFDASHBOARD_QUICKLAUNCH__
+
+#include <gio/gdesktopappinfo.h>
 
 #include "background.h"
 #include "toggle-button.h"
-
-#include <gio/gdesktopappinfo.h>
 
 G_BEGIN_DECLS
 
@@ -82,4 +82,4 @@ XfdashboardToggleButton* xfdashboard_quicklaunch_get_apps_button(XfdashboardQuic
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_QUICKLAUNCH__ */
+#endif	/* __XFDASHBOARD_QUICKLAUNCH__ */

@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_TOGGLE_BUTTON__
-#define __XFOVERVIEW_TOGGLE_BUTTON__
+#ifndef __XFDASHBOARD_TOGGLE_BUTTON__
+#define __XFDASHBOARD_TOGGLE_BUTTON__
 
 #include "button.h"
 
@@ -72,4 +72,4 @@ void xfdashboard_toggle_button_set_toggle_state(XfdashboardToggleButton *self, g
 
 G_END_DECLS
 
-#endif
+#endif	/* __XFDASHBOARD_TOGGLE_BUTTON__ */

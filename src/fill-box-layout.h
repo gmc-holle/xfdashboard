@@ -23,8 +23,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_FILL_BOX_LAYOUT__
-#define __XFOVERVIEW_FILL_BOX_LAYOUT__
+#ifndef __XFDASHBOARD_FILL_BOX_LAYOUT__
+#define __XFDASHBOARD_FILL_BOX_LAYOUT__
 
 #include <clutter/clutter.h>
 
@@ -77,4 +77,4 @@ void xfdashboard_fill_box_layout_set_keep_aspect(XfdashboardFillBoxLayout *self,
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_FILL_BOX_LAYOUT__ */
+#endif	/* __XFDASHBOARD_FILL_BOX_LAYOUT__ */

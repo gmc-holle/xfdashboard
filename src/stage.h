@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_STAGE__
-#define __XFOVERVIEW_STAGE__
+#ifndef __XFDASHBOARD_STAGE__
+#define __XFDASHBOARD_STAGE__
 
 #include <clutter/clutter.h>
 
@@ -70,4 +70,4 @@ ClutterActor* xfdashboard_stage_new(void);
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_STAGE__ */
+#endif	/* __XFDASHBOARD_STAGE__ */

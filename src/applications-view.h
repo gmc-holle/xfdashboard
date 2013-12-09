@@ -63,4 +63,4 @@ void xfdashboard_applications_view_set_view_mode(XfdashboardApplicationsView *se
 
 G_END_DECLS
 
-#endif
+#endif	/* __XFDASHBOARD_APPLICATIONS_VIEW__ */

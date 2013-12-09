@@ -25,6 +25,7 @@
 #define __XFDASHBOARD_SCROLLBAR__
 
 #include <clutter/clutter.h>
+
 #include "background.h"
 
 G_BEGIN_DECLS
@@ -93,4 +94,4 @@ void xfdashboard_scrollbar_set_slider_color(XfdashboardScrollbar *self, const Cl
 
 G_END_DECLS
 
-#endif
+#endif	/* __XFDASHBOARD_SCROLLBAR__ */

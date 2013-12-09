@@ -98,4 +98,4 @@ void xfdashboard_view_scroll_to(XfdashboardView *self, gfloat inX, gfloat inY);
 
 G_END_DECLS
 
-#endif
+#endif	/* __XFDASHBOARD_VIEW__ */

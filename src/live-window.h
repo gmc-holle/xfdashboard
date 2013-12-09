@@ -23,8 +23,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_LIVE_WINDOW__
-#define __XFOVERVIEW_LIVE_WINDOW__
+#ifndef __XFDASHBOARD_LIVE_WINDOW__
+#define __XFDASHBOARD_LIVE_WINDOW__
 
 #include <clutter/clutter.h>
 
@@ -85,4 +85,4 @@ void xfdashboard_live_window_set_close_button_padding(XfdashboardLiveWindow *sel
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_LIVE_WINDOW__ */
+#endif	/* __XFDASHBOARD_LIVE_WINDOW__ */

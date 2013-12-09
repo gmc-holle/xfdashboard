@@ -94,4 +94,4 @@ void xfdashboard_viewpad_set_vertical_scrollbar_policy(XfdashboardViewpad *self,
 
 G_END_DECLS
 
-#endif
+#endif	/* __XFDASHBOARD_VIEWPAD__ */

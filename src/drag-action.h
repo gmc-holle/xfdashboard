@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_DRAG_ACTION__
-#define __XFOVERVIEW_DRAG_ACTION__
+#ifndef __XFDASHBOARD_DRAG_ACTION__
+#define __XFDASHBOARD_DRAG_ACTION__
 
 #include <clutter/clutter.h>
 
@@ -72,4 +72,4 @@ void xfdashboard_drag_action_get_motion_delta(XfdashboardDragAction *self, gfloa
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_DRAG_ACTION__ */
+#endif	/* __XFDASHBOARD_DRAG_ACTION__ */

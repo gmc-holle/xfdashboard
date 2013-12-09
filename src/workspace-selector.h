@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_WORKSPACE_SELECTOR__
-#define __XFOVERVIEW_WORKSPACE_SELECTOR__
+#ifndef __XFDASHBOARD_WORKSPACE_SELECTOR__
+#define __XFDASHBOARD_WORKSPACE_SELECTOR__
 
 #include "background.h"
 
@@ -75,4 +75,4 @@ void xfdashboard_workspace_selector_set_orientation(XfdashboardWorkspaceSelector
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_WORKSPACE_SELECTOR__ */
+#endif	/* __XFDASHBOARD_WORKSPACE_SELECTOR__ */

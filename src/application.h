@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_APPLICATION__
-#define __XFOVERVIEW_APPLICATION__
+#ifndef __XFDASHBOARD_APPLICATION__
+#define __XFDASHBOARD_APPLICATION__
 
 #include <gio/gio.h>
 #include <xfconf/xfconf.h>
@@ -74,4 +74,4 @@ void xfdashboard_application_quit_forced(void);
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_APPLICATION__ */
+#endif	/* __XFDASHBOARD_APPLICATION__ */

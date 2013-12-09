@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_VIEW_MANAGER__
-#define __XFOVERVIEW_VIEW_MANAGER__
+#ifndef __XFDASHBOARD_VIEW_MANAGER__
+#define __XFDASHBOARD_VIEW_MANAGER__
 
 #include <glib-object.h>
 
@@ -71,4 +71,4 @@ GList* xfdashboard_view_manager_get_registered(XfdashboardViewManager *self);
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_VIEW_MANAGER__ */
+#endif	/* __XFDASHBOARD_VIEW_MANAGER__ */

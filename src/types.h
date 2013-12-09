@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_TYPES__
-#define __XFOVERVIEW_TYPES__
+#ifndef __XFDASHBOARD_TYPES__
+#define __XFDASHBOARD_TYPES__
 
 #include <glib.h>
 
@@ -115,4 +115,4 @@ typedef enum /*< prefix=XFDASHBOARD_FIT_MODE >*/
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_TYPES__ */
+#endif	/* __XFDASHBOARD_TYPES__ */

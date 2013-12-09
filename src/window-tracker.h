@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFOVERVIEW_WINDOW_TRACKER__
-#define __XFOVERVIEW_WINDOW_TRACKER__
+#ifndef __XFDASHBOARD_WINDOW_TRACKER__
+#define __XFDASHBOARD_WINDOW_TRACKER__
 
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE
 #include <libwnck/libwnck.h>
@@ -84,4 +84,4 @@ WnckWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindow
 
 G_END_DECLS
 
-#endif	/* __XFOVERVIEW_WINDOW_TRACKER__ */
+#endif	/* __XFDASHBOARD_WINDOW_TRACKER__ */
