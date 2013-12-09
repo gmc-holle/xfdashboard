@@ -7,7 +7,7 @@ Maybe a Gnome shell like dashboard for Xfce
 Requirements
 ============
 
-libwnck >= 2.10
+libwnck >= 2.30
 clutter >= 1.12
 glib >= 2.30.3
 gio >= 2.30.3
