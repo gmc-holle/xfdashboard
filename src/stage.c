@@ -29,6 +29,7 @@
 
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
+#include <gtk/gtk.h>
 
 #include "utils.h"
 #include "application.h"
@@ -430,46 +431,48 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 
 /* The active window changed. Reselect stage window as active if it is visible */
 static void _xfdashboard_stage_on_active_window_changed(XfdashboardStage *self,
-															WnckWindow *inPreviousWindow,
-															WnckWindow *inNewWindow,
+															XfdashboardWindowTrackerWindow *inPreviousWindow,
+															XfdashboardWindowTrackerWindow *inNewWindow,
 															gpointer inUserData)
 {
-	WnckWindow					*stageWindow;
+	XfdashboardWindowTrackerWindow		*stageWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(inPreviousWindow==NULL || WNCK_IS_WINDOW(inPreviousWindow));
-	g_return_if_fail(WNCK_IS_WINDOW(inNewWindow));
+	g_return_if_fail(inPreviousWindow==NULL || XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inPreviousWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inNewWindow));
 
 	/* Check if active window deactivated is this stage window */
-	stageWindow=xfdashboard_get_stage_window(CLUTTER_STAGE(self));
+	stageWindow=xfdashboard_window_tracker_window_get_stage_window(CLUTTER_STAGE(self));
 	if(stageWindow!=inPreviousWindow) return;
 
 	/* Check if stage window should be visible */
 	if(CLUTTER_ACTOR_IS_VISIBLE(CLUTTER_ACTOR(self))==TRUE)
 	{
 		g_debug("Reselect stage window as active window because it is still visible!");
-		wnck_window_activate(stageWindow, xfdashboard_get_current_time());
+		xfdashboard_window_tracker_window_activate(stageWindow);
 	}
 }
 
 /* A window was created
  * Check for stage window and set up window properties
  */
-static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self, WnckWindow *inWindow, gpointer inUserData)
+static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
+													XfdashboardWindowTrackerWindow *inWindow,
+													gpointer inUserData)
 {
-	XfdashboardStagePrivate		*priv=self->priv;
-	WnckWindow					*stageWindow;
-	GdkScreen					*screen;
-	gint						primaryMonitor;
-	GdkRectangle				geometry;
+	XfdashboardStagePrivate				*priv=self->priv;
+	XfdashboardWindowTrackerWindow		*stageWindow;
+	GdkScreen							*screen;
+	gint								primaryMonitor;
+	GdkRectangle						geometry;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
 	priv=self->priv;
 
 	/* Check if window opened is this stage window */
-	stageWindow=xfdashboard_get_stage_window(CLUTTER_STAGE(self));
+	stageWindow=xfdashboard_window_tracker_window_get_stage_window(CLUTTER_STAGE(self));
 	if(stageWindow!=inWindow) return;
 
 	/* TODO: As long as we do not support multi-monitors
@@ -479,18 +482,12 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self, WnckWind
 	primaryMonitor=gdk_screen_get_primary_monitor(screen);
 	gdk_screen_get_monitor_geometry(screen, primaryMonitor, &geometry);
 	clutter_actor_set_size(CLUTTER_ACTOR(self), geometry.width, geometry.height);
-	wnck_window_set_geometry(inWindow,
-								WNCK_WINDOW_GRAVITY_STATIC,
-								WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y | WNCK_WINDOW_CHANGE_WIDTH | WNCK_WINDOW_CHANGE_HEIGHT,
-								geometry.x, geometry.y, geometry.width, geometry.height);
+	xfdashboard_window_tracker_window_move_resize(stageWindow,
+													geometry.x, geometry.y,
+													geometry.width, geometry.height);
 
-	/* Window of stage should always be above all other windows,
-	 * pinned to all workspaces and not be listed in window pager
-	 */
-	wnck_window_set_skip_tasklist(inWindow, TRUE);
-	wnck_window_set_skip_pager(inWindow, TRUE);
-	wnck_window_make_above(inWindow);
-	wnck_window_pin(inWindow);
+	/* Set up window for use as stage window */
+	xfdashboard_window_tracker_window_make_stage_window(inWindow);
 
 	/* Disconnect signal handler as this is a one-time setup of stage window */
 	g_debug(_("Stage window was opened and set up. Removing signal handler."));
@@ -499,25 +496,25 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self, WnckWind
 
 /* Active workspace has changed. Move stage window and reselect as active if it is visible*/
 static void _xfdashboard_stage_on_active_workspace_changed(XfdashboardStage *self,
-																WnckWorkspace *inPrevWorkspace,
-																WnckWorkspace *inNewWorkspace,
-																gpointer inUserData)
+															XfdashboardWindowTrackerWorkspace *inPrevWorkspace,
+															XfdashboardWindowTrackerWorkspace *inNewWorkspace,
+															gpointer inUserData)
 {
-	WnckWindow			*stageWindow;
+	XfdashboardWindowTrackerWindow		*stageWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(WNCK_IS_WORKSPACE(inNewWorkspace));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inNewWorkspace));
 
 	/* Move clutter stage to new active workspace */
-	stageWindow=xfdashboard_get_stage_window(CLUTTER_STAGE(self));
-	wnck_window_move_to_workspace(stageWindow, inNewWorkspace);
+	stageWindow=xfdashboard_window_tracker_window_get_stage_window(CLUTTER_STAGE(self));
+	xfdashboard_window_tracker_window_move_to_workspace(stageWindow, inNewWorkspace);
 	g_debug("Moved stage window to new active workspace");
 
 	/* Check if stage window should be visible */
 	if(CLUTTER_ACTOR_IS_VISIBLE(CLUTTER_ACTOR(self))==TRUE)
 	{
 		g_debug("Reselect stage window as active window because it is still visible!");
-		wnck_window_activate(stageWindow, xfdashboard_get_current_time());
+		xfdashboard_window_tracker_window_activate(stageWindow);
 	}
 }
 

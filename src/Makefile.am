@@ -44,6 +44,8 @@ xfdashboard_headers = \
 	view-selector.h \
 	viewpad.h \
 	window-tracker.h \
+	window-tracker-window.h \
+	window-tracker-workspace.h \
 	windows-view.h \
 	workspace-selector.h
 
@@ -76,6 +78,8 @@ xfdashboard_SOURCES = \
 	view-selector.c \
 	viewpad.c \
 	window-tracker.c \
+	window-tracker-window.c \
+	window-tracker-workspace.c \
 	windows-view.c \
 	workspace-selector.c
 

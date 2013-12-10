@@ -1,6 +1,11 @@
 /*
  * window-tracker: Tracks windows, workspaces, monitors and
- *                 listens for changes
+ *                 listens for changes. It also bundles libwnck into one
+ *                 class.
+ *                 By wrapping libwnck objects we can use a virtual
+ *                 stable API while the API in libwnck changes within versions.
+ *                 We only need to use #ifdefs in window tracker object
+ *                 and nowhere else in the code.
  * 
  * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
@@ -27,6 +32,9 @@
 #endif
 
 #include "window-tracker.h"
+
+#define WNCK_I_KNOW_THIS_IS_UNSTABLE
+#include <libwnck/libwnck.h>
 
 #include <glib/gi18n-lib.h>
 
@@ -126,7 +134,7 @@ static void _xfdashboard_window_tracker_on_window_actions_changed(XfdashboardWin
 
 	/* Emit signal */
 	g_debug("Window '%s' changed actions to %u with mask %u", wnck_window_get_name(window), inNewValue, inChangedMask);
-	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_ACTIONS_CHANGED], 0, window, inChangedMask, inNewValue);
+	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_ACTIONS_CHANGED], 0, window);
 }
 
 /* State of window has changed */
@@ -144,7 +152,7 @@ static void _xfdashboard_window_tracker_on_window_state_changed(XfdashboardWindo
 
 	/* Emit signal */
 	g_debug("Window '%s' changed state to %u with mask %u", wnck_window_get_name(window), inNewValue, inChangedMask);
-	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_STATE_CHANGED], 0, window, inChangedMask, inNewValue);
+	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_STATE_CHANGED], 0, window);
 }
 
 /* Icon of window has changed */
@@ -676,8 +684,33 @@ XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void)
 
 }
 
+/* Get list of all windows (if wanted in stack order) */
+GList* xfdashboard_window_tracker_get_windows(XfdashboardWindowTracker *self)
+{
+	XfdashboardWindowTrackerPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
+
+	priv=self->priv;
+
+	/* Return list of window (should be in order as they were opened) */
+	return(wnck_screen_get_windows(priv->screen));
+}
+
+GList* xfdashboard_window_tracker_get_windows_stacked(XfdashboardWindowTracker *self)
+{
+	XfdashboardWindowTrackerPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
+
+	priv=self->priv;
+
+	/* Return list of window in stack order */
+	return(wnck_screen_get_windows_stacked(priv->screen));
+}
+
 /* Get active window */
-WnckWindow* xfdashboard_window_tracker_get_active_window(XfdashboardWindowTracker *self)
+XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_active_window(XfdashboardWindowTracker *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
 
@@ -685,7 +718,7 @@ WnckWindow* xfdashboard_window_tracker_get_active_window(XfdashboardWindowTracke
 }
 
 /* Get active workspace */
-WnckWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindowTracker *self)
+XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindowTracker *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
 

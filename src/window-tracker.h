@@ -1,6 +1,11 @@
 /*
  * window-tracker: Tracks windows, workspaces, monitors and
- *                 listens for changes
+ *                 listens for changes. It also bundles libwnck into one
+ *                 class.
+ *                 By wrapping libwnck objects we can use a virtual
+ *                 stable API while the API in libwnck changes within versions.
+ *                 We only need to use #ifdefs in window tracker object
+ *                 and nowhere else in the code.
  * 
  * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
  * 
@@ -25,8 +30,10 @@
 #ifndef __XFDASHBOARD_WINDOW_TRACKER__
 #define __XFDASHBOARD_WINDOW_TRACKER__
 
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE
-#include <libwnck/libwnck.h>
+#include <glib-object.h>
+
+#include "window-tracker-window.h"
+#include "window-tracker-workspace.h"
 
 G_BEGIN_DECLS
 
@@ -35,7 +42,7 @@ G_BEGIN_DECLS
 #define XFDASHBOARD_IS_WINDOW_TRACKER(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER))
 #define XFDASHBOARD_WINDOW_TRACKER_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST((klass), XFDASHBOARD_TYPE_WINDOW_TRACKER, XfdashboardWindowTrackerClass))
 #define XFDASHBOARD_IS_WINDOW_TRACKER_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE((klass), XFDASHBOARD_TYPE_WINDOW_TRACKER))
-#define XFDASHBOARD_WINDOW_TRACKER_GET_CLASS(obj)	G_TYPE_INSTANCE_GET_CLASS((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER, XfdashboardWindowTrackerClass))
+#define XFDASHBOARD_WINDOW_TRACKER_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER, XfdashboardWindowTrackerClass))
 
 typedef struct _XfdashboardWindowTracker			XfdashboardWindowTracker;
 typedef struct _XfdashboardWindowTrackerClass		XfdashboardWindowTrackerClass;
@@ -58,20 +65,26 @@ struct _XfdashboardWindowTrackerClass
 
 	/*< public >*/
 	/* Virtual functions */
-	void (*active_window_changed)(XfdashboardWindowTracker *self, WnckWindow *inOldWindow, WnckWindow *inNewWindow);
-	void (*window_opened)(XfdashboardWindowTracker *self, WnckWindow *inWindow);
-	void (*window_closed)(XfdashboardWindowTracker *self, WnckWindow *inWindow);
-	void (*window_geometry_changed)(XfdashboardWindowTracker *self, WnckWindow *inWindow);
-	void (*window_actions_changed)(XfdashboardWindowTracker *self, WnckWindow *inWindow);
-	void (*window_state_changed)(XfdashboardWindowTracker *self, WnckWindow *inWindow);
-	void (*window_icon_changed)(XfdashboardWindowTracker *self, WnckWindow *inWindow);
-	void (*window_name_changed)(XfdashboardWindowTracker *self, WnckWindow *inWindow);
-	void (*window_workspace_changed)(XfdashboardWindowTracker *self, WnckWindow *inWindow, WnckWorkspace *inWorkspace);
+	void (*active_window_changed)(XfdashboardWindowTracker *self,
+									XfdashboardWindowTrackerWindow *inOldWindow,
+									XfdashboardWindowTrackerWindow *inNewWindow);
+	void (*window_opened)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWindow *inWindow);
+	void (*window_closed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWindow *inWindow);
+	void (*window_geometry_changed)(XfdashboardWindowTracker *self,XfdashboardWindowTrackerWindow *inWindow);
+	void (*window_actions_changed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWindow *inWindow);
+	void (*window_state_changed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWindow *inWindow);
+	void (*window_icon_changed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWindow *inWindow);
+	void (*window_name_changed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWindow *inWindow);
+	void (*window_workspace_changed)(XfdashboardWindowTracker *self,
+										XfdashboardWindowTrackerWindow *inWindow,
+										XfdashboardWindowTrackerWorkspace *inWorkspace);
 
-	void (*active_workspace_changed)(XfdashboardWindowTracker *self, WnckWorkspace *inOldWorkspace, WnckWorkspace *inNewWorkspace);
-	void (*workspace_added)(XfdashboardWindowTracker *self, WnckWorkspace *inWorkspace);
-	void (*workspace_removed)(XfdashboardWindowTracker *self, WnckWorkspace *inWorkspace);
-	void (*workspace_name_changed)(XfdashboardWindowTracker *self, WnckWorkspace *inWorkspace);
+	void (*active_workspace_changed)(XfdashboardWindowTracker *self,
+										XfdashboardWindowTrackerWorkspace *inOldWorkspace,
+										XfdashboardWindowTrackerWorkspace *inNewWorkspace);
+	void (*workspace_added)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
+	void (*workspace_removed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
+	void (*workspace_name_changed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
 };
 
 /* Public API */
@@ -79,8 +92,11 @@ GType xfdashboard_window_tracker_get_type(void) G_GNUC_CONST;
 
 XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void);
 
-WnckWindow* xfdashboard_window_tracker_get_active_window(XfdashboardWindowTracker *self);
-WnckWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindowTracker *self);
+GList* xfdashboard_window_tracker_get_windows(XfdashboardWindowTracker *self);
+GList* xfdashboard_window_tracker_get_windows_stacked(XfdashboardWindowTracker *self);
+XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_active_window(XfdashboardWindowTracker *self);
+
+XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindowTracker *self);
 
 G_END_DECLS
 

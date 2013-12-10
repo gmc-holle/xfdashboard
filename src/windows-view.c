@@ -26,6 +26,7 @@
 #endif
 
 #include <glib/gi18n-lib.h>
+#include <gtk/gtk.h>
 
 #include "windows-view.h"
 #include "live-window.h"
@@ -51,7 +52,7 @@ G_DEFINE_TYPE(XfdashboardWindowsView,
 struct _XfdashboardWindowsViewPrivate
 {
 	/* Properties related */
-	WnckWorkspace				*workspace;
+	XfdashboardWindowTrackerWorkspace				*workspace;
 
 	/* Instance related */
 	XfdashboardWindowTracker	*windowTracker;
@@ -70,8 +71,8 @@ enum
 static GParamSpec* XfdashboardWindowsViewProperties[PROP_LAST]={ 0, };
 
 /* Forward declaration */
-static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self, WnckWindow *inWindow);
-static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self, WnckWorkspace *inWorkspace);
+static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self, XfdashboardWindowTrackerWindow *inWindow);
+static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_SPACING		8.0f					// TODO: Replace by settings/theming object
@@ -79,25 +80,25 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 
 
 /* Find live window actor by wnck-window */
-static XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_wnck_window(XfdashboardWindowsView *self,
-																			WnckWindow *inWindow)
+static XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_window(XfdashboardWindowsView *self,
+																		XfdashboardWindowTrackerWindow *inWindow)
 {
-	GList			*children;
+	XfdashboardLiveWindow	*liveWindow;
+	ClutterActor			*child;
+	ClutterActorIter		iter;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), NULL);
-	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
 
 	/* Iterate through list of current actors and find the one for requested window */
-	for(children=clutter_actor_get_children(CLUTTER_ACTOR(self)); children; children=g_list_next(children))
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
 	{
-		if(XFDASHBOARD_IS_LIVE_WINDOW(children->data))
-		{
-			XfdashboardLiveWindow	*liveWindow=XFDASHBOARD_LIVE_WINDOW(children->data);
+		if(!XFDASHBOARD_IS_LIVE_WINDOW(child)) continue;
 
-			if(xfdashboard_live_window_get_window(liveWindow)==inWindow) return(liveWindow);
-		}
+		liveWindow=XFDASHBOARD_LIVE_WINDOW(child);
+		if(xfdashboard_live_window_get_window(liveWindow)==inWindow) return(liveWindow);
 	}
-	g_list_free(children);
 
 	/* If we get here we did not find the window and we return NULL */
 	return(NULL);
@@ -158,8 +159,8 @@ static void _xfdashboard_windows_view_on_drop_drop(XfdashboardWindowsView *self,
 
 /* Active workspace was changed */
 static void _xfdashboard_windows_view_on_active_workspace_changed(XfdashboardWindowsView *self,
-																	WnckWorkspace *inPrevWorkspace,
-																	WnckWorkspace *inNewWorkspace,
+																	XfdashboardWindowTrackerWorkspace *inPrevWorkspace,
+																	XfdashboardWindowTrackerWorkspace *inNewWorkspace,
 																	gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
@@ -170,20 +171,20 @@ static void _xfdashboard_windows_view_on_active_workspace_changed(XfdashboardWin
 
 /* A window was opened */
 static void _xfdashboard_windows_view_on_window_opened(XfdashboardWindowsView *self,
-														WnckWindow *inWindow,
+														XfdashboardWindowTrackerWindow *inWindow,
 														gpointer inUserData)
 {
-	XfdashboardWindowsViewPrivate	*priv;
-	WnckWorkspace					*workspace;
-	XfdashboardLiveWindow			*liveWindow;
+	XfdashboardWindowsViewPrivate		*priv;
+	XfdashboardWindowTrackerWorkspace	*workspace;
+	XfdashboardLiveWindow				*liveWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
-	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
 	priv=self->priv;
 
 	/* Check if event happened on active screen and active workspace */
-	workspace=wnck_window_get_workspace(inWindow);
+	workspace=xfdashboard_window_tracker_window_get_workspace(inWindow);
 	if(workspace==NULL || workspace!=priv->workspace) return;
 
 	/* Create actor */
@@ -193,16 +194,16 @@ static void _xfdashboard_windows_view_on_window_opened(XfdashboardWindowsView *s
 
 /* A window was closed */
 static void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *self,
-														WnckWindow *inWindow,
+														XfdashboardWindowTrackerWindow *inWindow,
 														gpointer inUserData)
 {
-	XfdashboardLiveWindow			*liveWindow;
+	XfdashboardLiveWindow				*liveWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
-	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
 	/* Find live window for window just being closed and destroy it */
-	liveWindow=_xfdashboard_windows_view_find_by_wnck_window(self, inWindow);
+	liveWindow=_xfdashboard_windows_view_find_by_window(self, inWindow);
 	if(G_LIKELY(liveWindow)) clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
 }
 
@@ -210,17 +211,19 @@ static void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *s
 static void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *self,
 														gpointer inUserData)
 {
-	XfdashboardLiveWindow	*liveWindow;
-	WnckWindow				*window;
+	XfdashboardLiveWindow				*liveWindow;
+	XfdashboardWindowTrackerWindow		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
-	window=WNCK_WINDOW(xfdashboard_live_window_get_window(liveWindow));
-	wnck_window_activate_transient(window, xfdashboard_get_current_time());
+	/* Activate clicked window */
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(xfdashboard_live_window_get_window(liveWindow));
+	xfdashboard_window_tracker_window_activate(window);
 
+	/* Quit application */
 	xfdashboard_application_quit();
 }
 
@@ -228,23 +231,24 @@ static void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *
 static void _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindowsView *self,
 																gpointer inUserData)
 {
-	XfdashboardLiveWindow	*liveWindow;
-	WnckWindow				*window;
+	XfdashboardLiveWindow				*liveWindow;
+	XfdashboardWindowTrackerWindow		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
 	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
-	window=WNCK_WINDOW(xfdashboard_live_window_get_window(liveWindow));
-	wnck_window_close(window, xfdashboard_get_current_time());
+	/* Close clicked window */
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(xfdashboard_live_window_get_window(liveWindow));
+	xfdashboard_window_tracker_window_close(window);
 }
 
 /* A window was moved or resized */
 static void _xfdashboard_windows_view_on_window_geometry_changed(XfdashboardWindowsView *self,
 																	gpointer inUserData)
 {
-	XfdashboardLiveWindow	*liveWindow;
+	XfdashboardLiveWindow				*liveWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
@@ -260,7 +264,7 @@ static void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWi
 																	gboolean inIsVisible,
 																	gpointer inUserData)
 {
-	XfdashboardLiveWindow	*liveWindow;
+	XfdashboardLiveWindow				*liveWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
@@ -279,9 +283,9 @@ static void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWi
 static void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWindowsView *self,
 																	gpointer inUserData)
 {
-	XfdashboardWindowsViewPrivate	*priv;
-	XfdashboardLiveWindow			*liveWindow;
-	WnckWindow						*window;
+	XfdashboardWindowsViewPrivate		*priv;
+	XfdashboardLiveWindow				*liveWindow;
+	XfdashboardWindowTrackerWindow		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
@@ -291,8 +295,8 @@ static void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWin
 
 	/* If window is neither on this workspace nor pinned then destroy it */
 	window=xfdashboard_live_window_get_window(liveWindow);
-	if(!wnck_window_is_pinned(window) &&
-		wnck_window_get_workspace(window)!=priv->workspace)
+	if(!xfdashboard_window_tracker_window_is_pinned(window) &&
+		xfdashboard_window_tracker_window_get_workspace(window)!=priv->workspace)
 	{
 		clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
 	}
@@ -300,15 +304,15 @@ static void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWin
 
 /* Create actor for wnck-window and connect signals */
 static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self,
-																		WnckWindow *inWindow)
+																		XfdashboardWindowTrackerWindow *inWindow)
 {
 	ClutterActor	*actor;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), NULL);
-	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
 
 	/* Check if window opened is a stage window */
-	if(xfdashboard_find_stage_by_window(inWindow))
+	if(xfdashboard_window_tracker_window_find_stage(inWindow))
 	{
 		g_debug("Will not create live-window actor for stage window.");
 		return(NULL);
@@ -328,13 +332,13 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 
 /* Set active screen */
 static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self,
-															WnckWorkspace *inWorkspace)
+															XfdashboardWindowTrackerWorkspace *inWorkspace)
 {
-	XfdashboardWindowsViewPrivate	*priv;
-	GList							*windowsList;
+	XfdashboardWindowsViewPrivate			*priv;
+	GList									*windowsList;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
-	g_return_if_fail(inWorkspace==NULL || WNCK_IS_WORKSPACE(inWorkspace));
+	g_return_if_fail(inWorkspace==NULL || XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace));
 
 	priv=XFDASHBOARD_WINDOWS_VIEW(self)->priv;
 
@@ -350,21 +354,30 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 	/* Create live window actors for new workspace */
 	if(priv->workspace!=NULL)
 	{
-		windowsList=wnck_screen_get_windows(wnck_screen_get_default());
-		for(windowsList=g_list_last(windowsList); windowsList; windowsList=g_list_previous(windowsList))
+		/* Get list of all windows open */
+		windowsList=xfdashboard_window_tracker_get_windows(priv->windowTracker);
+
+		/* Iterate through list of window (from last to first), check if window
+		 * is visible and create actor for it if it is.
+		 */
+		windowsList=g_list_last(windowsList);
+		while(windowsList)
 		{
-			WnckWindow				*window=WNCK_WINDOW(windowsList->data);
-			XfdashboardLiveWindow	*liveWindow;
+			XfdashboardWindowTrackerWindow	*window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windowsList->data);
+			XfdashboardLiveWindow			*liveWindow;
 
 			/* Window must be on workspace and must not be flagged to skip tasklist */
-			if(wnck_window_is_visible_on_workspace(window, priv->workspace) &&
-				wnck_window_is_skip_pager(window)==FALSE &&
-				wnck_window_is_skip_tasklist(window)==FALSE)
+			if(xfdashboard_window_tracker_window_is_visible_on_workspace(window, priv->workspace) &&
+				xfdashboard_window_tracker_window_is_skip_pager(window)==FALSE &&
+				xfdashboard_window_tracker_window_is_skip_tasklist(window)==FALSE)
 			{
 				/* Create actor */
 				liveWindow=_xfdashboard_windows_view_create_actor(XFDASHBOARD_WINDOWS_VIEW(self), window);
 				if(liveWindow) clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow));
 			}
+
+			/* Next window */
+			windowsList=g_list_previous(windowsList);
 		}
 	}
 
@@ -454,7 +467,7 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 		g_param_spec_object ("workspace",
 								_("Current workspace"),
 								_("The current workspace whose windows are shown"),
-								WNCK_TYPE_WORKSPACE,
+								XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE,
 								G_PARAM_READABLE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowsViewProperties);

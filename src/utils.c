@@ -30,7 +30,6 @@
 
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
-#include <clutter/x11/clutter-x11.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include <dbus/dbus-glib.h>
@@ -290,46 +289,4 @@ ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf)
 
 	/* Return ClutterImage */
 	return(CLUTTER_IMAGE(image));
-}
-
-/* Find stage by requested window */
-ClutterStage* xfdashboard_find_stage_by_window(WnckWindow *inWindow)
-{
-	ClutterStage			*foundStage;
-	ClutterStage			*stage;
-	Window					stageXWindow;
-	GSList					*stages, *entry;
-
-	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
-
-	/* Iterate through stages and check if stage window matches requested one */
-	foundStage=NULL;
-	stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
-	for(entry=stages; !foundStage && entry; entry=g_slist_next(entry))
-	{
-		stage=CLUTTER_STAGE(entry->data);
-		if(stage)
-		{
-			stageXWindow=clutter_x11_get_stage_window(stage);
-			if(stageXWindow==wnck_window_get_xid(inWindow)) foundStage=stage;
-		}
-	}
-	g_slist_free(stages);
-
-	return(foundStage);
-}
-
-/* Get window of stage */
-WnckWindow* xfdashboard_get_stage_window(ClutterStage *inStage)
-{
-	Window					stageXWindow;
-	WnckWindow				*window;
-
-	g_return_val_if_fail(CLUTTER_IS_STAGE(inStage), NULL);
-
-	/* Get stage X window and translate to needed window type */
-	stageXWindow=clutter_x11_get_stage_window(inStage);
-	window=wnck_window_get(stageXWindow);
-
-	return(window);
 }

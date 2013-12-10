@@ -30,6 +30,7 @@
 
 #include <glib/gi18n-lib.h>
 #include <clutter/x11/clutter-x11.h>
+#include <gtk/gtk.h>
 
 #include "stage.h"
 #include "types.h"

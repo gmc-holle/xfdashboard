@@ -28,9 +28,6 @@
 #define DEBUG_BOX(msg, box) g_message("%s: %s: x1=%.2f, y1=%.2f, x2=%.2f, y2=%.2f [%.2fx%.2f]", __func__, msg, (box).x1, (box).y1, (box).x2, (box).y2, (box).x2-(box).x1, (box).y2-(box).y1)
 #define DEBUG_NOTIFY(self, property, format, ...) g_message("%s: Property '%s' of %p (%s) changed to "format, __func__, property, (self), (self) ? G_OBJECT_TYPE_NAME((self)) : "<nil>", ## __VA_ARGS__)
 
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE
-#include <libwnck/libwnck.h>
-
 #include <clutter/clutter.h>
 #include <gdk/gdk.h>
 
@@ -50,9 +47,6 @@ guint32 xfdashboard_get_current_time(void);
 ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint inSize);
 ClutterImage* xfdashboard_get_image_for_gicon(GIcon *inIcon, gint inSize);
 ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf);
-
-ClutterStage* xfdashboard_find_stage_by_window(WnckWindow *inWindow);
-WnckWindow* xfdashboard_get_stage_window(ClutterStage *inStage);
 
 G_END_DECLS
 

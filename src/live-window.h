@@ -72,10 +72,10 @@ struct _XfdashboardLiveWindowClass
 GType xfdashboard_live_window_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_live_window_new(void);
-ClutterActor* xfdashboard_live_window_new_for_window(WnckWindow *inWindow);
+ClutterActor* xfdashboard_live_window_new_for_window(XfdashboardWindowTrackerWindow *inWindow);
 
-WnckWindow* xfdashboard_live_window_get_window(XfdashboardLiveWindow *self);
-void xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, WnckWindow *inWindow);
+XfdashboardWindowTrackerWindow* xfdashboard_live_window_get_window(XfdashboardLiveWindow *self);
+void xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, XfdashboardWindowTrackerWindow *inWindow);
 
 gfloat xfdashboard_live_window_get_title_actor_padding(XfdashboardLiveWindow *self);
 void xfdashboard_live_window_set_title_actor_padding(XfdashboardLiveWindow *self, gfloat inPadding);
