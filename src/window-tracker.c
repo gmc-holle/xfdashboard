@@ -743,6 +743,35 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_active_window(Xfd
 	return(self->priv->activeWindow);
 }
 
+/* Get number of workspaces */
+gint xfdashboard_window_tracker_get_workspaces_count(XfdashboardWindowTracker *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), 0);
+
+	/* Return number of workspaces */
+	return(wnck_screen_get_workspace_count(self->priv->screen));
+}
+
+/* Get list of workspaces */
+GList* xfdashboard_window_tracker_get_workspaces(XfdashboardWindowTracker *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
+
+	/* Return list of workspaces */
+	return(wnck_screen_get_workspaces(self->priv->screen));
+}
+
+/* Get workspace by number */
+XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_workspace_by_number(XfdashboardWindowTracker *self,
+																						gint inNumber)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
+	g_return_val_if_fail(inNumber>=0 && inNumber<wnck_screen_get_workspace_count(self->priv->screen), NULL);
+
+	/* Return list of workspaces */
+	return(wnck_screen_get_workspace(self->priv->screen, inNumber));
+}
+
 /* Get active workspace */
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindowTracker *self)
 {

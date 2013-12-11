@@ -318,8 +318,8 @@ static gboolean _xfdashboard_scrollbar_on_scroll_event(ClutterActor *inActor,
 
 		/* Unhandled directions */
 		default:
-			g_debug("Cannot handle scroll direction %d in scrollbar", clutter_event_get_scroll_direction(inEvent));
-			return(FALSE);
+			g_debug("Cannot handle scroll direction %d in %s", clutter_event_get_scroll_direction(inEvent), G_OBJECT_TYPE_NAME(self));
+			return(CLUTTER_EVENT_PROPAGATE);
 	}
 
 	/* Calculate new value by increasing or decreasing value by value-range

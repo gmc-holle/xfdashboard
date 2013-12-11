@@ -411,6 +411,57 @@ static void _xfdashboard_workspace_selector_on_active_workspace_changed(Xfdashbo
 	}
 }
 
+/* A scroll event occured in workspace selector (e.g. by mouse-wheel) */
+static gboolean _xfdashboard_workspace_selector_on_scroll_event(ClutterActor *inActor,
+														ClutterEvent *inEvent,
+														gpointer inUserData)
+{
+	XfdashboardWorkspaceSelector			*self;
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	gint									direction;
+	gint									currentWorkspace;
+	gint									maxWorkspace;
+	XfdashboardWindowTrackerWorkspace		*workspace;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inActor), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+
+	self=XFDASHBOARD_WORKSPACE_SELECTOR(inActor);
+	priv=self->priv;
+
+	/* Get direction of scroll event */
+	switch(clutter_event_get_scroll_direction(inEvent))
+	{
+		case CLUTTER_SCROLL_UP:
+		case CLUTTER_SCROLL_LEFT:
+			direction=-1;
+			break;
+
+		case CLUTTER_SCROLL_DOWN:
+		case CLUTTER_SCROLL_RIGHT:
+			direction=1;
+			break;
+
+		/* Unhandled directions */
+		default:
+			g_debug("Cannot handle scroll direction %d in %s", clutter_event_get_scroll_direction(inEvent), G_OBJECT_TYPE_NAME(self));
+			return(CLUTTER_EVENT_PROPAGATE);
+	}
+
+	/* Get next workspace in scroll direction */
+	currentWorkspace=xfdashboard_window_tracker_workspace_get_number(priv->activeWorkspace);
+	maxWorkspace=xfdashboard_window_tracker_get_workspaces_count(priv->windowTracker);
+
+	currentWorkspace+=direction;
+	if(currentWorkspace<0 || currentWorkspace>=maxWorkspace) return(CLUTTER_EVENT_STOP);
+
+	/* Activate new workspace */
+	workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
+	xfdashboard_window_tracker_workspace_activate(workspace);
+
+	return(CLUTTER_EVENT_STOP);
+}
+
 /* IMPLEMENTATION: ClutterActor */
 
 /* Get preferred width/height */
@@ -821,11 +872,13 @@ static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *se
 	priv->scaleStep=DEFAULT_SCALE_STEP;
 
 	/* Set up this actor */
-	clutter_actor_set_reactive(CLUTTER_ACTOR(self), FALSE);
+	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 	requestMode=(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL ? CLUTTER_REQUEST_HEIGHT_FOR_WIDTH : CLUTTER_REQUEST_WIDTH_FOR_HEIGHT);
 	clutter_actor_set_request_mode(CLUTTER_ACTOR(self), requestMode);
 
 	/* Connect signals */
+	g_signal_connect(self, "scroll-event", G_CALLBACK(_xfdashboard_workspace_selector_on_scroll_event), NULL);
+
 	g_signal_connect_swapped(priv->windowTracker,
 								"workspace-added",
 								G_CALLBACK(_xfdashboard_workspace_selector_on_workspace_added),

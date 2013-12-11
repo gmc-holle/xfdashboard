@@ -98,6 +98,10 @@ GList* xfdashboard_window_tracker_get_windows(XfdashboardWindowTracker *self);
 GList* xfdashboard_window_tracker_get_windows_stacked(XfdashboardWindowTracker *self);
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_active_window(XfdashboardWindowTracker *self);
 
+gint xfdashboard_window_tracker_get_workspaces_count(XfdashboardWindowTracker *self);
+GList* xfdashboard_window_tracker_get_workspaces(XfdashboardWindowTracker *self);
+XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_workspace_by_number(XfdashboardWindowTracker *self,
+																						gint inNumber);
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindowTracker *self);
 
 G_END_DECLS

@@ -26,7 +26,7 @@
 == WORKSPACE-BOX (WORKSPACE-SELECTOR) ==
 [basic] Implement workspace-box
 [done] Clicking on workspace-actor switches to workspace and quit
-- Mouse-wheel on workspace-actor switches workspace without quitting but updating windows-list view
+[done] Mouse-wheel on workspace-actor switches workspace without quitting but updating windows-list view
 
 == VIEWPAD (VIEW AGGREGATOR) ==
 [done] Implement viewpad
