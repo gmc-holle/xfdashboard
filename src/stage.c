@@ -494,30 +494,6 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
 }
 
-/* Active workspace has changed. Move stage window and reselect as active if it is visible*/
-static void _xfdashboard_stage_on_active_workspace_changed(XfdashboardStage *self,
-															XfdashboardWindowTrackerWorkspace *inPrevWorkspace,
-															XfdashboardWindowTrackerWorkspace *inNewWorkspace,
-															gpointer inUserData)
-{
-	XfdashboardWindowTrackerWindow		*stageWindow;
-
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inNewWorkspace));
-
-	/* Move clutter stage to new active workspace */
-	stageWindow=xfdashboard_window_tracker_window_get_stage_window(CLUTTER_STAGE(self));
-	xfdashboard_window_tracker_window_move_to_workspace(stageWindow, inNewWorkspace);
-	g_debug("Moved stage window to new active workspace");
-
-	/* Check if stage window should be visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(CLUTTER_ACTOR(self))==TRUE)
-	{
-		g_debug("Reselect stage window as active window because it is still visible!");
-		xfdashboard_window_tracker_window_activate(stageWindow);
-	}
-}
-
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -656,7 +632,6 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	/* Connect signals */
 	g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
 	g_signal_connect_swapped(priv->windowTracker, "active-window-changed", G_CALLBACK(_xfdashboard_stage_on_active_window_changed), self);
-	g_signal_connect_swapped(priv->windowTracker, "active-workspace-changed", G_CALLBACK(_xfdashboard_stage_on_active_workspace_changed), self);
 }
 
 /* Implementation: Public API */

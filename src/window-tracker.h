@@ -65,6 +65,8 @@ struct _XfdashboardWindowTrackerClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*window_stacking_changed)(XfdashboardWindowTracker *self);
+
 	void (*active_window_changed)(XfdashboardWindowTracker *self,
 									XfdashboardWindowTrackerWindow *inOldWindow,
 									XfdashboardWindowTrackerWindow *inNewWindow);

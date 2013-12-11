@@ -77,6 +77,8 @@ static GParamSpec* XfdashboardWindowTrackerProperties[PROP_LAST]={ 0, };
 
 enum
 {
+	SIGNAL_WINDOW_STACKING_CHANGED,
+
 	SIGNAL_ACTIVE_WINDOW_CHANGED,
 	SIGNAL_WINDOW_OPENED,
 	SIGNAL_WINDOW_CLOSED,
@@ -289,6 +291,17 @@ static void _xfdashboard_window_tracker_on_window_opened(XfdashboardWindowTracke
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_OPENED], 0, inWindow);
 }
 
+/* Window stacking has changed */
+static void _xfdashboard_window_tracker_on_window_stacking_changed(XfdashboardWindowTracker *self,
+																	gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
+
+	/* Emit signal */
+	g_debug("Window stacking has changed");
+	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_STACKING_CHANGED], 0);
+}
+
 /* A workspace changed its name */
 static void _xfdashboard_window_tracker_on_workspace_name_changed(XfdashboardWindowTracker *self,
 																	gpointer inUserData)
@@ -478,6 +491,17 @@ void xfdashboard_window_tracker_class_init(XfdashboardWindowTrackerClass *klass)
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowTrackerProperties);
 
 	/* Define signals */
+	XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_STACKING_CHANGED]=
+		g_signal_new("window-stacking-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardWindowTrackerClass, window_stacking_changed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
 	XfdashboardWindowTrackerSignals[SIGNAL_ACTIVE_WINDOW_CHANGED]=
 		g_signal_new("active-window-changed",
 						G_TYPE_FROM_CLASS(klass),
@@ -659,6 +683,8 @@ void xfdashboard_window_tracker_init(XfdashboardWindowTracker *self)
 	wnck_set_client_type(WNCK_CLIENT_TYPE_PAGER);
 
 	/* Connect signals to screen */
+	g_signal_connect_swapped(priv->screen, "window-stacking-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_stacking_changed), self);
+
 	g_signal_connect_swapped(priv->screen, "window-closed", G_CALLBACK(_xfdashboard_window_tracker_on_window_closed), self);
 	g_signal_connect_swapped(priv->screen, "window-opened", G_CALLBACK(_xfdashboard_window_tracker_on_window_opened), self);
 	g_signal_connect_swapped(priv->screen, "active-window-changed", G_CALLBACK(_xfdashboard_window_tracker_on_active_window_changed), self);

@@ -26,10 +26,13 @@
 #endif
 
 #include "workspace-selector.h"
-#include "enums.h"
 
 #include <glib/gi18n-lib.h>
 #include <math.h>
+
+#include "enums.h"
+#include "window-tracker.h"
+#include "live-workspace.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardWorkspaceSelector,
@@ -43,17 +46,20 @@ G_DEFINE_TYPE(XfdashboardWorkspaceSelector,
 struct _XfdashboardWorkspaceSelectorPrivate
 {
 	/* Properties related */
-	gfloat					normalSize;
-	gfloat					scaleMin;
-	gfloat					scaleMax;
-	gfloat					scaleStep;
+	gfloat								normalSize;
+	gfloat								scaleMin;
+	gfloat								scaleMax;
+	gfloat								scaleStep;
 
-	gfloat					spacing;
+	gfloat								spacing;
 
-	ClutterOrientation		orientation;
+	ClutterOrientation					orientation;
 
 	/* Instance related */
-	gfloat					scaleCurrent;
+	XfdashboardWindowTracker			*windowTracker;
+	XfdashboardWindowTrackerWorkspace	*activeWorkspace;
+
+	gfloat								scaleCurrent;
 };
 
 /* Properties */
@@ -77,6 +83,34 @@ static GParamSpec* XfdashboardWorkspaceSelectorProperties[PROP_LAST]={ 0, };
 #define DEFAULT_SCALE_STEP			0.1
 
 #define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_VERTICAL
+
+/* Find live workspace actor for native workspace */
+static XfdashboardLiveWorkspace* _xfdashboard_workspace_selector_find_actor_for_workspace(XfdashboardWorkspaceSelector *self,
+																							XfdashboardWindowTrackerWorkspace *inWorkspace)
+{
+	ClutterActorIter				iter;
+	ClutterActor					*child;
+	XfdashboardLiveWorkspace		*liveWorkspace;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace), NULL);
+
+	/* Iterate through workspace actor and lookup the one handling requesting workspace */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		if(XFDASHBOARD_IS_LIVE_WORKSPACE(child))
+		{
+			liveWorkspace=XFDASHBOARD_LIVE_WORKSPACE(child);
+			if(xfdashboard_live_workspace_get_workspace(liveWorkspace)==inWorkspace)
+			{
+				return(liveWorkspace);
+			}
+		}
+	}
+
+	return(NULL);
+}
 
 /* Get scale factor to fit all children into given width */
 static gfloat _xfdashboard_workspace_selector_get_scale_for_width(XfdashboardWorkspaceSelector *self,
@@ -280,6 +314,97 @@ static gfloat _xfdashboard_workspace_selector_get_scale_for_height(XfdashboardWo
 
 	/* Return found scale factor */
 	return(scale);
+}
+
+/* A live workspace was clicked */
+static void _xfdashboard_workspace_selector_on_workspace_clicked(XfdashboardWorkspaceSelector *self,
+																	gpointer inUserData)
+{
+	XfdashboardLiveWorkspace	*liveWorkspace;
+
+	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(inUserData));
+
+	liveWorkspace=XFDASHBOARD_LIVE_WORKSPACE(inUserData);
+
+	/* Active workspace */
+	xfdashboard_window_tracker_workspace_activate(xfdashboard_live_workspace_get_workspace(liveWorkspace));
+}
+
+/* A workspace was destroyed */
+static void _xfdashboard_workspace_selector_on_workspace_removed(XfdashboardWorkspaceSelector *self,
+																	XfdashboardWindowTrackerWorkspace *inWorkspace,
+																	gpointer inUserData)
+{
+	XfdashboardLiveWorkspace		*liveWorkspace;
+
+	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace));
+
+	/* Iterate through children and find workspace to destroy */
+	liveWorkspace=_xfdashboard_workspace_selector_find_actor_for_workspace(self, inWorkspace);
+	if(liveWorkspace) clutter_actor_destroy(CLUTTER_ACTOR(liveWorkspace));
+}
+
+/* A workspace was created */
+static void _xfdashboard_workspace_selector_on_workspace_added(XfdashboardWorkspaceSelector *self,
+																	XfdashboardWindowTrackerWorkspace *inWorkspace,
+																	gpointer inUserData)
+{
+	ClutterActor		*actor;
+	gint				index;
+
+	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace));
+
+	/* Get index of workspace for insertion */
+	index=xfdashboard_window_tracker_workspace_get_number(inWorkspace);
+
+	/* Create new live workspace actor and insert at index */
+	actor=xfdashboard_live_workspace_new_for_workspace(inWorkspace);
+	xfdashboard_background_set_outline_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_White);
+	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(actor), 4.0f);
+	g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_workspace_selector_on_workspace_clicked), self);
+	clutter_actor_insert_child_at_index(CLUTTER_ACTOR(self), actor, index);
+}
+
+/* The active workspace has changed */
+static void _xfdashboard_workspace_selector_on_active_workspace_changed(XfdashboardWorkspaceSelector *self,
+																		XfdashboardWindowTrackerWorkspace *inPrevWorkspace,
+																		gpointer inUserData)
+{
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	XfdashboardLiveWorkspace				*liveWorkspace;
+	XfdashboardWindowTrackerWorkspace		*workspace;
+
+	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
+
+	priv=self->priv;
+
+	/* Unmark previous workspace */
+	if(inPrevWorkspace)
+	{
+		liveWorkspace=_xfdashboard_workspace_selector_find_actor_for_workspace(self, inPrevWorkspace);
+		if(liveWorkspace)
+		{
+			xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(liveWorkspace), XFDASHBOARD_BACKGROUND_TYPE_NONE);
+		}
+
+		priv->activeWorkspace=NULL;
+	}
+
+	/* Mark new active workspace */
+	workspace=xfdashboard_window_tracker_get_active_workspace(priv->windowTracker);
+	if(workspace)
+	{
+		priv->activeWorkspace=workspace;
+
+		liveWorkspace=_xfdashboard_workspace_selector_find_actor_for_workspace(self, priv->activeWorkspace);
+		if(liveWorkspace)
+		{
+			xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(liveWorkspace), XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
+		}
+	}
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -513,32 +638,27 @@ static void _xfdashboard_workspace_selector_allocate(ClutterActor *inActor,
 		/* Is child visible? */
 		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
 
-		/* Calculate new position and size of child. Because we will set
-		 * a scale factor to the actor we have to set the real unscaled
-		 * width and height but the position should be "translated" to
-		 * scaled sizes.
-		 */
-		clutter_actor_get_preferred_size(child, NULL, &childWidth, NULL, &childHeight);
+		/* Calculate new position and size of child but respect scaling */
+		clutter_actor_get_preferred_size(child, NULL, NULL, &childWidth, &childHeight);
+		childWidth*=priv->scaleCurrent;
+		childHeight*=priv->scaleCurrent;
 
 		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
 		{
-			childAllocation.y1=ceil(MAX(((availableHeight-(childHeight*priv->scaleCurrent))/2.0f), priv->spacing));
+			childAllocation.y1=ceil(MAX(((availableHeight-childHeight))/2.0f, priv->spacing));
 			childAllocation.y2=ceil(childAllocation.y1+childHeight);
 			childAllocation.x2=ceil(childAllocation.x1+childWidth);
 		}
 			else
 			{
-				childAllocation.x1=ceil(MAX(((availableWidth-(childWidth*priv->scaleCurrent))/2.0f), priv->spacing));
+				childAllocation.x1=ceil(MAX(((availableWidth-childWidth))/2.0f, priv->spacing));
 				childAllocation.x2=ceil(childAllocation.x1+childWidth);
 				childAllocation.y2=ceil(childAllocation.y1+childHeight);
 			}
 
-		clutter_actor_set_scale(child, priv->scaleCurrent, priv->scaleCurrent);
 		clutter_actor_allocate(child, &childAllocation, inFlags);
 
 		/* Set up for next child */
-		childWidth*=priv->scaleCurrent;
-		childHeight*=priv->scaleCurrent;
 		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) childAllocation.x1=ceil(childAllocation.x1+childWidth+priv->spacing);
 			else childAllocation.y1=ceil(childAllocation.y1+childHeight+priv->spacing);
 	}
@@ -549,6 +669,23 @@ static void _xfdashboard_workspace_selector_allocate(ClutterActor *inActor,
 /* Dispose this object */
 static void _xfdashboard_workspace_selector_dispose(GObject *inObject)
 {
+	XfdashboardWorkspaceSelector			*self=XFDASHBOARD_WORKSPACE_SELECTOR(inObject);
+	XfdashboardWorkspaceSelectorPrivate		*priv=self->priv;
+
+	/* Release allocated resources */
+	if(priv->activeWorkspace)
+	{
+		_xfdashboard_workspace_selector_on_active_workspace_changed(self, NULL, priv->activeWorkspace);
+		priv->activeWorkspace=NULL;
+	}
+
+	if(priv->windowTracker)
+	{
+		g_signal_handlers_disconnect_by_data(priv->windowTracker, self);
+		g_object_unref(priv->windowTracker);
+		priv->windowTracker=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_workspace_selector_parent_class)->dispose(inObject);
 }
@@ -668,6 +805,9 @@ static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *se
 
 	priv=self->priv=XFDASHBOARD_WORKSPACE_SELECTOR_GET_PRIVATE(self);
 
+	/* Set up default values */
+	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->activeWorkspace=NULL;
 	priv->spacing=0.0f;
 	priv->orientation=DEFAULT_ORIENTATION;
 	priv->normalSize=DEFAULT_NORMAL_ICON_SIZE;
@@ -680,6 +820,22 @@ static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *se
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), FALSE);
 	requestMode=(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL ? CLUTTER_REQUEST_HEIGHT_FOR_WIDTH : CLUTTER_REQUEST_WIDTH_FOR_HEIGHT);
 	clutter_actor_set_request_mode(CLUTTER_ACTOR(self), requestMode);
+
+	/* Connect signals */
+	g_signal_connect_swapped(priv->windowTracker,
+								"workspace-added",
+								G_CALLBACK(_xfdashboard_workspace_selector_on_workspace_added),
+								self);
+
+	g_signal_connect_swapped(priv->windowTracker,
+								"workspace-removed",
+								G_CALLBACK(_xfdashboard_workspace_selector_on_workspace_removed),
+								self);
+
+	g_signal_connect_swapped(priv->windowTracker,
+								"active-workspace-changed",
+								G_CALLBACK(_xfdashboard_workspace_selector_on_active_workspace_changed),
+								self);
 }
 
 /* Implementation: Public API */

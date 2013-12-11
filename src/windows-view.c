@@ -79,7 +79,7 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 #define DEFAULT_VIEW_ICON	GTK_STOCK_FULLSCREEN	// TODO: Replace by settings/theming object
 
 
-/* Find live window actor by wnck-window */
+/* Find live window actor by window */
 static XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_window(XfdashboardWindowsView *self,
 																		XfdashboardWindowTrackerWindow *inWindow)
 {

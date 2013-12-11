@@ -172,6 +172,35 @@ void xfdashboard_window_tracker_window_close(XfdashboardWindowTrackerWindow *inW
 	wnck_window_close(WNCK_WINDOW(inWindow), xfdashboard_get_current_time());
 }
 
+/* Get position and size of window */
+void xfdashboard_window_tracker_window_get_position(XfdashboardWindowTrackerWindow *inWindow, gint *outX, gint *outY)
+{
+	xfdashboard_window_tracker_window_get_position_size(inWindow, outX, outY, NULL, NULL);
+}
+
+void xfdashboard_window_tracker_window_get_size(XfdashboardWindowTrackerWindow *inWindow, gint *outWidth, gint *outHeight)
+{
+	xfdashboard_window_tracker_window_get_position_size(inWindow, NULL, NULL, outWidth, outHeight);
+}
+
+void xfdashboard_window_tracker_window_get_position_size(XfdashboardWindowTrackerWindow *inWindow,
+															gint *outX, gint *outY,
+															gint *outWidth, gint *outHeight)
+{
+	gint		x, y, w, h;
+
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
+
+	/* Get window geometry */
+	wnck_window_get_client_window_geometry(WNCK_WINDOW(inWindow), &x, &y, &w, &h);
+
+	/* Set result */
+	if(outX) *outX=x;
+	if(outX) *outY=y;
+	if(outWidth) *outWidth=w;
+	if(outHeight) *outHeight=h;
+}
+
 /* Move and resize window */
 void xfdashboard_window_tracker_window_move(XfdashboardWindowTrackerWindow *inWindow,
 												gint inX,

@@ -74,6 +74,12 @@ void xfdashboard_window_tracker_window_activate(XfdashboardWindowTrackerWindow *
 
 void xfdashboard_window_tracker_window_close(XfdashboardWindowTrackerWindow *inWindow);
 
+void xfdashboard_window_tracker_window_get_position(XfdashboardWindowTrackerWindow *inWindow, gint *outX, gint *outY);
+void xfdashboard_window_tracker_window_get_size(XfdashboardWindowTrackerWindow *inWindow, gint *outWidth, gint *outHeight);
+void xfdashboard_window_tracker_window_get_position_size(XfdashboardWindowTrackerWindow *inWindow,
+															gint *outX, gint *outY,
+															gint *outWidth, gint *outHeight);
+
 void xfdashboard_window_tracker_window_move(XfdashboardWindowTrackerWindow *inWindow, gint inX, gint inY);
 void xfdashboard_window_tracker_window_resize(XfdashboardWindowTrackerWindow *inWindow, gint inWidth, gint inHeight);
 void xfdashboard_window_tracker_window_move_resize(XfdashboardWindowTrackerWindow *inWindow,

@@ -30,6 +30,7 @@ xfdashboard_headers = \
 	fill-box-layout.h \
 	image.h \
 	live-window.h \
+	live-workspace.h \
 	quicklaunch.h \
 	scaled-table-layout.h \
 	scrollbar.h \
@@ -64,6 +65,7 @@ xfdashboard_SOURCES = \
 	fill-box-layout.c \
 	image.c \
 	live-window.c \
+	live-workspace.c \
 	main.c \
 	quicklaunch.c \
 	scaled-table-layout.c \

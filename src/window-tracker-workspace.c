@@ -39,6 +39,7 @@
 #include <glib/gi18n-lib.h>
 
 #include "marshal.h"
+#include "utils.h"
 
 /* Usually we found define a class in GObject system here but
  * this class is a wrapper around WnckWorkspace to create a virtual stable
@@ -51,4 +52,60 @@
 GType xfdashboard_window_tracker_workspace_get_type(void)
 {
 	return(WNCK_TYPE_WORKSPACE);
+}
+
+/* Get number of workspace */
+gint xfdashboard_window_tracker_workspace_get_number(XfdashboardWindowTrackerWorkspace *inWorkspace)
+{
+	g_return_val_if_fail(WNCK_IS_WORKSPACE(inWorkspace), -1);
+
+	return(wnck_workspace_get_number(WNCK_WORKSPACE(inWorkspace)));
+}
+
+/* Get name of workspace */
+const gchar* xfdashboard_window_tracker_workspace_get_name(XfdashboardWindowTrackerWorkspace *inWorkspace)
+{
+	g_return_val_if_fail(WNCK_IS_WORKSPACE(inWorkspace), NULL);
+
+	return(wnck_workspace_get_name(WNCK_WORKSPACE(inWorkspace)));
+}
+
+/* Get size of workspace */
+gint xfdashboard_window_tracker_workspace_get_width(XfdashboardWindowTrackerWorkspace *inWorkspace)
+{
+	g_return_val_if_fail(WNCK_IS_WORKSPACE(inWorkspace), 0);
+
+	return(wnck_workspace_get_width(WNCK_WORKSPACE(inWorkspace)));
+}
+
+gint xfdashboard_window_tracker_workspace_get_height(XfdashboardWindowTrackerWorkspace *inWorkspace)
+{
+	g_return_val_if_fail(WNCK_IS_WORKSPACE(inWorkspace), 0);
+
+	return(wnck_workspace_get_height(WNCK_WORKSPACE(inWorkspace)));
+}
+
+void xfdashboard_window_tracker_workspace_get_size(XfdashboardWindowTrackerWorkspace *inWorkspace,
+													gint *outWidth,
+													gint *outHeight)
+{
+	gint		width, height;
+
+	g_return_if_fail(WNCK_IS_WORKSPACE(inWorkspace));
+
+	/* Get width and height of workspace */
+	width=wnck_workspace_get_width(WNCK_WORKSPACE(inWorkspace));
+	height=wnck_workspace_get_height(WNCK_WORKSPACE(inWorkspace));
+
+	/* Set values */
+	if(outWidth) *outWidth=width;
+	if(outHeight) *outHeight=height;
+}
+
+/* Activate workspace */
+void xfdashboard_window_tracker_workspace_activate(XfdashboardWindowTrackerWorkspace *inWorkspace)
+{
+	g_return_if_fail(WNCK_IS_WORKSPACE(inWorkspace));
+
+	wnck_workspace_activate(WNCK_WORKSPACE(inWorkspace), xfdashboard_get_current_time());
 }
