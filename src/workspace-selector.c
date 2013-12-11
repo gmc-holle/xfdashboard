@@ -33,6 +33,7 @@
 #include "enums.h"
 #include "window-tracker.h"
 #include "live-workspace.h"
+#include "application.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardWorkspaceSelector,
@@ -329,6 +330,9 @@ static void _xfdashboard_workspace_selector_on_workspace_clicked(XfdashboardWork
 
 	/* Active workspace */
 	xfdashboard_window_tracker_workspace_activate(xfdashboard_live_workspace_get_workspace(liveWorkspace));
+
+	/* Quit application */
+	xfdashboard_application_quit();
 }
 
 /* A workspace was destroyed */
