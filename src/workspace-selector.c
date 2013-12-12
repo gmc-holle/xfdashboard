@@ -78,12 +78,12 @@ enum
 static GParamSpec* XfdashboardWorkspaceSelectorProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_NORMAL_ICON_SIZE	64					// TODO: Replace by settings/theming object
+#define DEFAULT_NORMAL_ICON_SIZE	64								// TODO: Replace by settings/theming object
 #define DEFAULT_SCALE_MIN			0.1
 #define DEFAULT_SCALE_MAX			1.0
 #define DEFAULT_SCALE_STEP			0.1
 
-#define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_VERTICAL
+#define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_VERTICAL	// TODO: Replace by settings/theming object
 
 /* Find live workspace actor for native workspace */
 static XfdashboardLiveWorkspace* _xfdashboard_workspace_selector_find_actor_for_workspace(XfdashboardWorkspaceSelector *self,
@@ -413,8 +413,8 @@ static void _xfdashboard_workspace_selector_on_active_workspace_changed(Xfdashbo
 
 /* A scroll event occured in workspace selector (e.g. by mouse-wheel) */
 static gboolean _xfdashboard_workspace_selector_on_scroll_event(ClutterActor *inActor,
-														ClutterEvent *inEvent,
-														gpointer inUserData)
+																ClutterEvent *inEvent,
+																gpointer inUserData)
 {
 	XfdashboardWorkspaceSelector			*self;
 	XfdashboardWorkspaceSelectorPrivate		*priv;
