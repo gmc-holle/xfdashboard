@@ -441,9 +441,9 @@ static void _xfdashboard_stage_on_active_window_changed(XfdashboardStage *self,
 	g_return_if_fail(inPreviousWindow==NULL || XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inPreviousWindow));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inNewWindow));
 
-	/* Check if active window deactivated is this stage window */
+	/* Check if active window is not this stage window */
 	stageWindow=xfdashboard_window_tracker_window_get_stage_window(CLUTTER_STAGE(self));
-	if(stageWindow!=inPreviousWindow) return;
+	if(inNewWindow!=stageWindow) return;
 
 	/* Check if stage window should be visible */
 	if(CLUTTER_ACTOR_IS_VISIBLE(CLUTTER_ACTOR(self))==TRUE)
