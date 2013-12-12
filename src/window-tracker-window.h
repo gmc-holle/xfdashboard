@@ -86,6 +86,7 @@ void xfdashboard_window_tracker_window_move_resize(XfdashboardWindowTrackerWindo
 													gint inX, gint inY,
 													gint inWidth, gint inHeight);
 
+gboolean xfdashboard_window_tracker_window_is_stage(XfdashboardWindowTrackerWindow *inWindow);
 ClutterStage* xfdashboard_window_tracker_window_find_stage(XfdashboardWindowTrackerWindow *inWindow);
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_stage_window(ClutterStage *inStage);
 

@@ -78,6 +78,29 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 #define DEFAULT_SPACING		8.0f					// TODO: Replace by settings/theming object
 #define DEFAULT_VIEW_ICON	GTK_STOCK_FULLSCREEN	// TODO: Replace by settings/theming object
 
+/* Check if window should be shown */
+static gboolean _xfdashboard_windows_view_is_visible_window(XfdashboardWindowsView *self,
+																XfdashboardWindowTrackerWindow *inWindow)
+{
+	XfdashboardWindowsViewPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), FALSE);
+
+	priv=self->priv;
+
+	/* Determine if windows should be shown depending on its state */
+	if(xfdashboard_window_tracker_window_is_skip_pager(inWindow) ||
+		xfdashboard_window_tracker_window_is_skip_tasklist(inWindow) ||
+		(priv->workspace && !xfdashboard_window_tracker_window_is_visible_on_workspace(inWindow, priv->workspace)) ||
+		xfdashboard_window_tracker_window_is_stage(inWindow))
+	{
+		return(FALSE);
+	}
+
+	/* If we get here the window should be shown */
+	return(TRUE);
+}
 
 /* Find live window actor by window */
 static XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_window(XfdashboardWindowsView *self,
@@ -174,18 +197,13 @@ static void _xfdashboard_windows_view_on_window_opened(XfdashboardWindowsView *s
 														XfdashboardWindowTrackerWindow *inWindow,
 														gpointer inUserData)
 {
-	XfdashboardWindowsViewPrivate		*priv;
-	XfdashboardWindowTrackerWorkspace	*workspace;
 	XfdashboardLiveWindow				*liveWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
-	priv=self->priv;
-
-	/* Check if event happened on active screen and active workspace */
-	workspace=xfdashboard_window_tracker_window_get_workspace(inWindow);
-	if(workspace==NULL || workspace!=priv->workspace) return;
+	/* Check if window is visible on this workspace */
+	if(!_xfdashboard_windows_view_is_visible_window(self, inWindow)) return;
 
 	/* Create actor */
 	liveWindow=_xfdashboard_windows_view_create_actor(self, inWindow);
@@ -312,7 +330,7 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
 
 	/* Check if window opened is a stage window */
-	if(xfdashboard_window_tracker_window_find_stage(inWindow))
+	if(xfdashboard_window_tracker_window_is_stage(inWindow))
 	{
 		g_debug("Will not create live-window actor for stage window.");
 		return(NULL);
@@ -366,10 +384,8 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 			XfdashboardWindowTrackerWindow	*window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windowsList->data);
 			XfdashboardLiveWindow			*liveWindow;
 
-			/* Window must be on workspace and must not be flagged to skip tasklist */
-			if(xfdashboard_window_tracker_window_is_visible_on_workspace(window, priv->workspace) &&
-				xfdashboard_window_tracker_window_is_skip_pager(window)==FALSE &&
-				xfdashboard_window_tracker_window_is_skip_tasklist(window)==FALSE)
+			/* Check if window is visible on this workspace */
+			if(_xfdashboard_windows_view_is_visible_window(self, window))
 			{
 				/* Create actor */
 				liveWindow=_xfdashboard_windows_view_create_actor(XFDASHBOARD_WINDOWS_VIEW(self), window);

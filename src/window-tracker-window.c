@@ -240,7 +240,14 @@ void xfdashboard_window_tracker_window_move_resize(XfdashboardWindowTrackerWindo
 								inX, inY, inWidth, inHeight);
 }
 
-/* Find stage by requested window */
+/* Determine and find stage by requested window */
+gboolean xfdashboard_window_tracker_window_is_stage(XfdashboardWindowTrackerWindow *inWindow)
+{
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
+
+	return(xfdashboard_window_tracker_window_find_stage(inWindow)!=NULL);
+}
+
 ClutterStage* xfdashboard_window_tracker_window_find_stage(XfdashboardWindowTrackerWindow *inWindow)
 {
 	ClutterStage			*foundStage;
@@ -248,7 +255,7 @@ ClutterStage* xfdashboard_window_tracker_window_find_stage(XfdashboardWindowTrac
 	Window					stageXWindow;
 	GSList					*stages, *entry;
 
-	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
 
 	/* Iterate through stages and check if stage window matches requested one */
 	foundStage=NULL;

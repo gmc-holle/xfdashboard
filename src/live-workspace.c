@@ -94,7 +94,8 @@ static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWor
 	/* Determine if windows should be shown depending on its state */
 	if(xfdashboard_window_tracker_window_is_skip_pager(inWindow) ||
 		xfdashboard_window_tracker_window_is_skip_tasklist(inWindow) ||
-		!xfdashboard_window_tracker_window_is_visible_on_workspace(inWindow, priv->workspace))
+		(priv->workspace && !xfdashboard_window_tracker_window_is_visible_on_workspace(inWindow, priv->workspace)) ||
+		xfdashboard_window_tracker_window_is_stage(inWindow))
 	{
 		return(FALSE);
 	}
@@ -103,7 +104,7 @@ static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWor
 	return(TRUE);
 }
 
-/* Find live window actor by wnck-window */
+/* Find live window actor by window */
 static ClutterActor* _xfdashboard_live_workspace_find_by_window(XfdashboardLiveWorkspace *self,
 																			XfdashboardWindowTrackerWindow *inWindow)
 {
