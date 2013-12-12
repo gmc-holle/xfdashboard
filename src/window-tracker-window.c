@@ -54,6 +54,76 @@ GType xfdashboard_window_tracker_window_get_type(void)
 	return(WNCK_TYPE_WINDOW);
 }
 
+/* Get last timestamp for use in wnck */
+static guint32 _xfdashboard_window_tracker_window_get_time(void)
+{
+	guint32			timestamp;
+	GdkDisplay		*display;
+	GdkWindow		*window;
+	GdkEventMask	eventMask;
+	GSList			*stages, *entry;
+	ClutterStage	*stage;
+
+	/* First try default function to get current time */
+	timestamp=xfdashboard_get_current_time();
+	if(timestamp!=0) return(timestamp);
+
+	/* Next we try to retrieve timestamp of last X11 event in clutter */
+	g_debug("No timestamp for windows - trying timestamp of last X11 event in Clutter");
+	timestamp=(guint32)clutter_x11_get_current_event_time();
+	if(timestamp!=0)
+	{
+		g_debug("Got timestamp %u of last X11 event in Clutter", timestamp);
+		return(timestamp);
+	}
+
+	/* Last resort is to get X11 server time via stage windows */
+	g_debug("No timestamp for windows - trying last resort via stage windows");
+
+	display=gdk_display_get_default();
+	if(!display)
+	{
+		g_debug("No default display found in GDK");
+		return(0);
+	}
+
+	/* Iterate through stages, get their GDK window and try to retrieve timestamp */
+	timestamp=0;
+	stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
+	for(entry=stages; timestamp==0 && entry; entry=g_slist_next(entry))
+	{
+		/* Get stage */
+		stage=CLUTTER_STAGE(entry->data);
+		if(stage)
+		{
+			/* Get GDK window of stage */
+			window=gdk_x11_window_lookup_for_display(display, clutter_x11_get_stage_window(stage));
+			if(!window)
+			{
+				g_debug("No GDK window found for stage %p", stage);
+				continue;
+			}
+
+			/* Check if GDK window supports GDK_PROPERTY_CHANGE_MASK event
+			 * or application (or worst X server) will hang
+			 */
+			eventMask=gdk_window_get_events(window);
+			if(!(eventMask & GDK_PROPERTY_CHANGE_MASK))
+			{
+				g_debug("GDK window %p for stage %p does not support GDK_PROPERTY_CHANGE_MASK", window, stage);
+				continue;
+			}
+
+			timestamp=gdk_x11_get_server_time(window);
+		}
+	}
+	g_slist_free(stages);
+
+	/* Return timestamp of last resort */
+	g_debug("Last resort timestamp %s (%u)", timestamp ? "found" : "not found", timestamp);
+	return(timestamp);
+}
+
 /* Determine if window is visible */
 gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *inWindow)
 {
@@ -161,7 +231,7 @@ void xfdashboard_window_tracker_window_activate(XfdashboardWindowTrackerWindow *
 {
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
-	wnck_window_activate_transient(WNCK_WINDOW(inWindow), xfdashboard_get_current_time());
+	wnck_window_activate_transient(WNCK_WINDOW(inWindow), _xfdashboard_window_tracker_window_get_time());
 }
 
 /* Close window */
@@ -169,7 +239,7 @@ void xfdashboard_window_tracker_window_close(XfdashboardWindowTrackerWindow *inW
 {
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
-	wnck_window_close(WNCK_WINDOW(inWindow), xfdashboard_get_current_time());
+	wnck_window_close(WNCK_WINDOW(inWindow), _xfdashboard_window_tracker_window_get_time());
 }
 
 /* Get position and size of window */
