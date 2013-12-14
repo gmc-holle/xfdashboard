@@ -57,6 +57,7 @@ struct _XfdashboardBackgroundPrivate
 
 	/* Instance related */
 	ClutterContent				*canvas;
+	ClutterImage				*image;
 };
 
 /* Properties */
@@ -71,6 +72,8 @@ enum
 	PROP_OUTLINE_WIDTH,
 	PROP_CORNERS,
 	PROP_CORNERS_RADIUS,
+
+	PROP_IMAGE,
 
 	PROP_LAST
 };
@@ -186,6 +189,31 @@ static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *se
 
 /* IMPLEMENTATION: ClutterActor */
 
+/* Paint actor */
+static void _xfdashboard_background_paint_node(ClutterActor *self,
+												ClutterPaintNode *inRootNode)
+{
+	XfdashboardBackgroundPrivate	*priv=XFDASHBOARD_BACKGROUND(self)->priv;
+	ClutterContentIface				*iface;
+
+	/* First draw canvas for background */
+	if(priv->type!=XFDASHBOARD_BACKGROUND_TYPE_NONE)
+	{
+		iface=CLUTTER_CONTENT_GET_IFACE(priv->canvas);
+		if(iface->paint_content) iface->paint_content(priv->canvas, self, inRootNode);
+	}
+
+	/* If available draw image for background */
+	if(priv->image)
+	{
+		iface=CLUTTER_CONTENT_GET_IFACE(priv->image);
+		if(iface->paint_content) iface->paint_content(CLUTTER_CONTENT(priv->image), self, inRootNode);
+	}
+
+	/* Now chain up to draw the actor */
+	CLUTTER_ACTOR_CLASS(xfdashboard_background_parent_class)->paint(self);
+}
+
 /* Get preferred width/height */
 static void _xfdashboard_background_get_preferred_height(ClutterActor *self,
 															gfloat inForWidth,
@@ -259,6 +287,12 @@ static void _xfdashboard_background_dispose(GObject *inObject)
 		priv->canvas=NULL;
 	}
 
+	if(priv->image)
+	{
+		g_object_unref(priv->image);
+		priv->image=NULL;
+	}
+
 	if(priv->fillColor)
 	{
 		clutter_color_free(priv->fillColor);
@@ -309,6 +343,10 @@ static void _xfdashboard_background_set_property(GObject *inObject,
 			xfdashboard_background_set_corner_radius(self, g_value_get_float(inValue));
 			break;
 
+		case PROP_IMAGE:
+			xfdashboard_background_set_image(self, CLUTTER_IMAGE(g_value_get_object(inValue)));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -349,6 +387,10 @@ static void _xfdashboard_background_get_property(GObject *inObject,
 			g_value_set_float(outValue, priv->cornersRadius);
 			break;
 
+		case PROP_IMAGE:
+			g_value_set_object(outValue, priv->image);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -369,6 +411,7 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 	gobjectClass->set_property=_xfdashboard_background_set_property;
 	gobjectClass->get_property=_xfdashboard_background_get_property;
 
+	actorClass->paint_node=_xfdashboard_background_paint_node;
 	actorClass->get_preferred_width=_xfdashboard_background_get_preferred_width;
 	actorClass->get_preferred_height=_xfdashboard_background_get_preferred_height;
 	actorClass->allocate=_xfdashboard_background_allocate;
@@ -423,6 +466,14 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 							0.0f,
 							G_PARAM_READWRITE);
 
+	XfdashboardBackgroundProperties[PROP_IMAGE]=
+		g_param_spec_object("image",
+							_("Image"),
+							_("Image to draw as background"),
+							CLUTTER_TYPE_IMAGE,
+							G_PARAM_READWRITE);
+
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardBackgroundProperties);
 }
 
@@ -446,6 +497,7 @@ static void xfdashboard_background_init(XfdashboardBackground *self)
 	priv->outlineWidth=1.0f;
 	priv->corners=XFDASHBOARD_CORNERS_ALL;
 	priv->cornersRadius=0.0f;
+	priv->image=NULL;
 
 	/* Set up actor */
 	clutter_actor_set_content_scaling_filters(CLUTTER_ACTOR(self),
@@ -494,11 +546,11 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 		switch(inType)
 		{
 			case XFDASHBOARD_BACKGROUND_TYPE_NONE:
-				clutter_actor_set_content(CLUTTER_ACTOR(self), NULL);
+				// TODO: clutter_actor_set_content(CLUTTER_ACTOR(self), NULL);
 				break;
 
 			default:
-				clutter_actor_set_content(CLUTTER_ACTOR(self), priv->canvas);
+				// TODO: clutter_actor_set_content(CLUTTER_ACTOR(self), priv->canvas);
 				clutter_content_invalidate(priv->canvas);
 				return;
 		}
@@ -661,5 +713,42 @@ void xfdashboard_background_set_corner_radius(XfdashboardBackground *self, const
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_CORNERS_RADIUS]);
+	}
+}
+
+/* Get/set image for background */
+ClutterImage* xfdashboard_background_get_image(XfdashboardBackground *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), NULL);
+
+	return(self->priv->image);
+}
+
+void xfdashboard_background_set_image(XfdashboardBackground *self, ClutterImage *inImage)
+{
+	XfdashboardBackgroundPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
+	g_return_if_fail(inImage==NULL || CLUTTER_IS_IMAGE(inImage));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->image!=inImage)
+	{
+		/* Set value */
+		if(priv->image)
+		{
+			g_object_unref(priv->image);
+			priv->image=NULL;
+		}
+
+		if(inImage) priv->image=CLUTTER_IMAGE(g_object_ref(inImage));
+
+		/* Invalidate canvas to get it redrawn */
+		if(priv->image) clutter_content_invalidate(CLUTTER_CONTENT(priv->image));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_IMAGE]);
 	}
 }

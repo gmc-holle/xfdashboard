@@ -209,7 +209,7 @@ static void _xfdashboard_live_workspace_on_window_opened(XfdashboardLiveWorkspac
 	actor=xfdashboard_background_new();
 	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(actor),
 												XFDASHBOARD_BACKGROUND_TYPE_FILL | XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
-	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_Red);
+	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_Black);
 	xfdashboard_background_set_outline_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_White);
 	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(actor), 4.0f);
 	g_object_set_data(G_OBJECT(actor), "window-tracker-window", inWindow);
@@ -218,7 +218,8 @@ static void _xfdashboard_live_workspace_on_window_opened(XfdashboardLiveWorkspac
 	/* Get image for window icon and set actor's content */
 	windowIcon=xfdashboard_window_tracker_window_get_icon(inWindow);
 	image=xfdashboard_get_image_for_pixbuf(windowIcon);
-	clutter_actor_set_content(actor, CLUTTER_CONTENT(image));
+	// TODO: clutter_actor_set_content(actor, CLUTTER_CONTENT(image));
+	xfdashboard_background_set_image(XFDASHBOARD_BACKGROUND(actor), image);
 	g_object_unref(image);
 }
 
@@ -230,6 +231,7 @@ static void _xfdashboard_live_workspace_on_window_stacking_changed(XfdashboardLi
 	GList								*windows;
 	XfdashboardWindowTrackerWindow		*window;
 	ClutterActor						*actor;
+	ClutterActor						*topActor;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
 
@@ -250,10 +252,22 @@ static void _xfdashboard_live_workspace_on_window_stacking_changed(XfdashboardLi
 		actor=_xfdashboard_live_workspace_find_by_window(self, window);
 		if(!actor) continue;
 
+		/* Remove visible attributes for active window (first child) */
+		topActor=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+		if(topActor &&
+			XFDASHBOARD_IS_BACKGROUND(topActor))
+		{
+			xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(topActor), CLUTTER_COLOR_Black);
+		}
+
 		/* If we get here the window actor was found so move to bottom */
 		g_object_ref(actor);
 		clutter_actor_remove_child(CLUTTER_ACTOR(self), actor);
 		clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, NULL);
+		if(XFDASHBOARD_IS_BACKGROUND(actor))
+		{
+			xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_Red);
+		}
 		g_object_unref(actor);
 	}
 }

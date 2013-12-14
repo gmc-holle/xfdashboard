@@ -87,6 +87,10 @@ void xfdashboard_background_set_corners(XfdashboardBackground *self, Xfdashboard
 gfloat xfdashboard_background_get_corner_radius(XfdashboardBackground *self);
 void xfdashboard_background_set_corner_radius(XfdashboardBackground *self, const gfloat inRadius);
 
+/* Image functions */
+ClutterImage* xfdashboard_background_get_image(XfdashboardBackground *self);
+void xfdashboard_background_set_image(XfdashboardBackground *self, ClutterImage *inImage);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_BACKGROUND__ */
