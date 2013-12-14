@@ -546,11 +546,10 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 		switch(inType)
 		{
 			case XFDASHBOARD_BACKGROUND_TYPE_NONE:
-				// TODO: clutter_actor_set_content(CLUTTER_ACTOR(self), NULL);
+				/* No background type set so avoid invalidating its content */
 				break;
 
 			default:
-				// TODO: clutter_actor_set_content(CLUTTER_ACTOR(self), priv->canvas);
 				clutter_content_invalidate(priv->canvas);
 				return;
 		}
