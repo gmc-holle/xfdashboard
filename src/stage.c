@@ -350,7 +350,10 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 
 	priv->searchbox=xfdashboard_text_box_new();
 	clutter_actor_set_x_expand(priv->searchbox, TRUE);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->searchbox), XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->searchbox),
+												XFDASHBOARD_BACKGROUND_TYPE_FILL |
+												XFDASHBOARD_BACKGROUND_TYPE_OUTLINE |
+												XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
 	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
 	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->searchbox), &color);
 	clutter_color_init(&color, 0x80, 0x80, 0x80, 0xff);
@@ -388,7 +391,10 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	/* Quicklaunch */
 	priv->quicklaunch=xfdashboard_quicklaunch_new_with_orientation(CLUTTER_ORIENTATION_VERTICAL);
 	xfdashboard_quicklaunch_set_spacing(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch), 4.0f);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->quicklaunch), XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->quicklaunch),
+												XFDASHBOARD_BACKGROUND_TYPE_FILL |
+												XFDASHBOARD_BACKGROUND_TYPE_OUTLINE |
+												XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
 	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
 	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->quicklaunch), &color);
 	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->quicklaunch), 0.5f);
@@ -409,7 +415,10 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	/* Workspaces selector */
 	priv->workspaces=xfdashboard_workspace_selector_new();
 	xfdashboard_workspace_selector_set_spacing(XFDASHBOARD_WORKSPACE_SELECTOR(priv->workspaces), 4.0f);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->workspaces), XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->workspaces),
+												XFDASHBOARD_BACKGROUND_TYPE_FILL |
+												XFDASHBOARD_BACKGROUND_TYPE_OUTLINE |
+												XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
 	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
 	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->workspaces), &color);
 	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->workspaces), 0.5f);

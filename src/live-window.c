@@ -707,14 +707,16 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->actorTitle=xfdashboard_button_new();
 	clutter_actor_set_reactive(priv->actorTitle, FALSE);
 	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->actorTitle), XFDASHBOARD_STYLE_BOTH);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorTitle), XFDASHBOARD_BACKGROUND_TYPE_FILL_ROUNDED);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorTitle),
+												XFDASHBOARD_BACKGROUND_TYPE_FILL | XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
 	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorTitle), priv->paddingTitle);
 	clutter_actor_show(priv->actorTitle);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorTitle);
 
 	priv->actorClose=xfdashboard_button_new_with_icon(WINDOW_CLOSE_BUTTON_ICON);
 	clutter_actor_set_reactive(priv->actorClose, FALSE);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorClose), XFDASHBOARD_BACKGROUND_TYPE_FILL_ROUNDED);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorClose),
+												XFDASHBOARD_BACKGROUND_TYPE_FILL | XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
 	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorClose), priv->paddingClose);
 	clutter_actor_show(priv->actorClose);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorClose);

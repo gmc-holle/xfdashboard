@@ -55,8 +55,6 @@ struct _XfdashboardBackgroundPrivate
 	XfdashboardCorners			corners;
 	gfloat						cornersRadius;
 
-	ClutterContent				*image;
-
 	/* Instance related */
 	ClutterContent				*canvas;
 };
@@ -74,8 +72,6 @@ enum
 	PROP_CORNERS,
 	PROP_CORNERS_RADIUS,
 
-	PROP_IMAGE,
-
 	PROP_LAST
 };
 
@@ -84,7 +80,6 @@ static GParamSpec* XfdashboardBackgroundProperties[PROP_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Rectangle canvas should be redrawn */
-#include "toggle-button.h"
 static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *self,
 														cairo_t *inContext,
 														int inWidth,
@@ -92,7 +87,6 @@ static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *se
 														gpointer inUserData)
 {
 	XfdashboardBackgroundPrivate	*priv;
-	gboolean						doRounded=FALSE;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), TRUE);
 	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
@@ -108,18 +102,12 @@ static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *se
 	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
 
 	/* Do nothing if type is none (we should not get here but just in case we do) */
-	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_NONE) return(CLUTTER_EVENT_STOP);
+	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_NONE) return(CLUTTER_EVENT_PROPAGATE);
 
 	/* Determine if we should draw rounded corners */
-	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_ROUNDED ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_OUTLINE_ROUNDED ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED)
-	{
-		doRounded=TRUE;
-	}
 
 	/* Draw rectangle with or without rounded corners */
-	if(doRounded==TRUE &&
+	if((priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS) && 
 		(priv->corners & XFDASHBOARD_CORNERS_ALL) &&
 		priv->cornersRadius>0.0f)
 	{
@@ -171,10 +159,7 @@ static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *se
 		}
 
 	/* Fill if type requests it */
-	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_ROUNDED ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED)
+	if(priv->type & XFDASHBOARD_BACKGROUND_TYPE_FILL)
 	{
 		/* Set color for filling */
 		if(priv->fillColor) clutter_cairo_set_source_color(inContext, priv->fillColor);
@@ -184,10 +169,7 @@ static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *se
 	}
 
 	/* Draw outline if type requests it */
-	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_OUTLINE ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_OUTLINE_ROUNDED ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED)
+	if(priv->type & XFDASHBOARD_BACKGROUND_TYPE_OUTLINE)
 	{
 		/* Set up line properties for outline */
 		if(priv->outlineColor) clutter_cairo_set_source_color(inContext, priv->outlineColor);
@@ -199,7 +181,7 @@ static gboolean _xfdashboard_background_on_draw_canvas(XfdashboardBackground *se
 
 	/* Done drawing */
 	cairo_close_path(inContext);
-	return(CLUTTER_EVENT_STOP);
+	return(CLUTTER_EVENT_PROPAGATE);
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -216,9 +198,7 @@ static void _xfdashboard_background_get_preferred_height(ClutterActor *self,
 	minHeight=naturalHeight=0.0f;
 
 	/* Determine size if any type of rectangle should be drawn */
-	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_OUTLINE ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE)
+	if(priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS)
 	{
 		naturalHeight=priv->cornersRadius*2.0f;
 	}
@@ -239,9 +219,7 @@ static void _xfdashboard_background_get_preferred_width(ClutterActor *self,
 	minWidth=naturalWidth=0.0f;
 
 	/* Determine size if any type of rectangle should be drawn */
-	if(priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_OUTLINE ||
-		priv->type==XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE)
+	if(priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS)
 	{
 		naturalWidth=priv->cornersRadius*2.0f;
 	}
@@ -293,12 +271,6 @@ static void _xfdashboard_background_dispose(GObject *inObject)
 		priv->outlineColor=NULL;
 	}
 
-	if(priv->image)
-	{
-		g_object_unref(priv->image);
-		priv->image=NULL;
-	}
-
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_background_parent_class)->dispose(inObject);
 }
@@ -314,7 +286,7 @@ static void _xfdashboard_background_set_property(GObject *inObject,
 	switch(inPropID)
 	{
 		case PROP_TYPE:
-			xfdashboard_background_set_background_type(self, g_value_get_enum(inValue));
+			xfdashboard_background_set_background_type(self, g_value_get_flags(inValue));
 			break;
 
 		case PROP_FILL_COLOR:
@@ -330,15 +302,11 @@ static void _xfdashboard_background_set_property(GObject *inObject,
 			break;
 
 		case PROP_CORNERS:
-			xfdashboard_background_set_corners(self, g_value_get_enum(inValue));
+			xfdashboard_background_set_corners(self, g_value_get_flags(inValue));
 			break;
 
 		case PROP_CORNERS_RADIUS:
 			xfdashboard_background_set_corner_radius(self, g_value_get_float(inValue));
-			break;
-
-		case PROP_IMAGE:
-			xfdashboard_background_set_image(self, g_value_get_object(inValue));
 			break;
 
 		default:
@@ -358,7 +326,7 @@ static void _xfdashboard_background_get_property(GObject *inObject,
 	switch(inPropID)
 	{
 		case PROP_TYPE:
-			g_value_set_enum(outValue, priv->type);
+			g_value_set_flags(outValue, priv->type);
 			break;
 
 		case PROP_FILL_COLOR:
@@ -374,15 +342,11 @@ static void _xfdashboard_background_get_property(GObject *inObject,
 			break;
 
 		case PROP_CORNERS:
-			g_value_set_enum(outValue, priv->corners);
+			g_value_set_flags(outValue, priv->corners);
 			break;
 
 		case PROP_CORNERS_RADIUS:
 			g_value_set_float(outValue, priv->cornersRadius);
-			break;
-
-		case PROP_IMAGE:
-			g_value_set_object(outValue, priv->image);
 			break;
 
 		default:
@@ -414,7 +378,7 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 
 	/* Define properties */
 	XfdashboardBackgroundProperties[PROP_TYPE]=
-		g_param_spec_enum("type",
+		g_param_spec_flags("type",
 							_("Type"),
 							_("Background type"),
 							XFDASHBOARD_TYPE_BACKGROUND_TYPE,
@@ -459,13 +423,6 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 							0.0f,
 							G_PARAM_READWRITE);
 
-	XfdashboardBackgroundProperties[PROP_IMAGE]=
-		g_param_spec_object("image",
-							_("Image"),
-							_("Image to draw as background"),
-							CLUTTER_TYPE_IMAGE,
-							G_PARAM_READWRITE);
-
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardBackgroundProperties);
 }
 
@@ -489,7 +446,6 @@ static void xfdashboard_background_init(XfdashboardBackground *self)
 	priv->outlineWidth=1.0f;
 	priv->corners=XFDASHBOARD_CORNERS_ALL;
 	priv->cornersRadius=0.0f;
-	priv->image=NULL;
 
 	/* Set up actor */
 	clutter_actor_set_content_scaling_filters(CLUTTER_ACTOR(self),
@@ -521,7 +477,6 @@ XfdashboardBackgroundType xfdashboard_background_get_background_type(Xfdashboard
 void xfdashboard_background_set_background_type(XfdashboardBackground *self, const XfdashboardBackgroundType inType)
 {
 	XfdashboardBackgroundPrivate	*priv;
-	XfdashboardBackgroundType		oldType;
 
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 
@@ -531,7 +486,6 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 	if(priv->type!=inType)
 	{
 		/* Set value */
-		oldType=priv->type;
 		priv->type=inType;
 
 		/* Set content for actor depending on new type.
@@ -543,26 +497,9 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 				clutter_actor_set_content(CLUTTER_ACTOR(self), NULL);
 				break;
 
-			case XFDASHBOARD_BACKGROUND_TYPE_FILL:
-			case XFDASHBOARD_BACKGROUND_TYPE_FILL_ROUNDED:
-			case XFDASHBOARD_BACKGROUND_TYPE_OUTLINE:
-			case XFDASHBOARD_BACKGROUND_TYPE_OUTLINE_ROUNDED:
-			case XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE:
-			case XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE_ROUNDED:
+			default:
 				clutter_actor_set_content(CLUTTER_ACTOR(self), priv->canvas);
 				clutter_content_invalidate(priv->canvas);
-				break;
-
-			case XFDASHBOARD_BACKGROUND_TYPE_IMAGE:
-				clutter_actor_set_content(CLUTTER_ACTOR(self), priv->image);
-				break;
-
-			default:
-				g_error(_("Invalid type %d for %s"), inType, G_OBJECT_TYPE_NAME(self));
-
-				/* Set old value again because new value is invalid */
-				priv->type=oldType;
-
 				return;
 		}
 
@@ -724,37 +661,5 @@ void xfdashboard_background_set_corner_radius(XfdashboardBackground *self, const
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_CORNERS_RADIUS]);
-	}
-}
-
-/* Get/set image to draw when type is image */
-ClutterImage* xfdashboard_background_get_image(XfdashboardBackground *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), NULL);
-
-	return(self->priv->image ? CLUTTER_IMAGE(self->priv->image) : NULL);
-}
-
-void xfdashboard_background_set_image(XfdashboardBackground *self, ClutterImage *inImage)
-{
-	XfdashboardBackgroundPrivate	*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
-	g_return_if_fail(CLUTTER_IS_IMAGE(inImage));
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->image!=CLUTTER_CONTENT(inImage))
-	{
-		/* Set value */
-		if(priv->image) g_object_unref(priv->image);
-		priv->image=g_object_ref(inImage);
-
-		/* Invalidate canvas to get it redrawn */
-		if(priv->image) clutter_content_invalidate(priv->image);
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_IMAGE]);
 	}
 }

@@ -207,7 +207,8 @@ static void _xfdashboard_live_workspace_on_window_opened(XfdashboardLiveWorkspac
 
 	/* Create actor */
 	actor=xfdashboard_background_new();
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(actor), XFDASHBOARD_BACKGROUND_TYPE_FILL_OUTLINE);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(actor),
+												XFDASHBOARD_BACKGROUND_TYPE_FILL | XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
 	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_Red);
 	xfdashboard_background_set_outline_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_White);
 	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(actor), 4.0f);
