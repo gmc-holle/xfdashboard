@@ -539,20 +539,7 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 	{
 		/* Set value */
 		priv->type=inType;
-
-		/* Set content for actor depending on new type.
-		 * Also check for valid type.
-		 */
-		switch(inType)
-		{
-			case XFDASHBOARD_BACKGROUND_TYPE_NONE:
-				/* No background type set so avoid invalidating its content */
-				break;
-
-			default:
-				clutter_content_invalidate(priv->canvas);
-				return;
-		}
+		clutter_content_invalidate(priv->canvas);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_TYPE]);
