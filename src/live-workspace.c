@@ -252,7 +252,7 @@ static void _xfdashboard_live_workspace_on_window_stacking_changed(XfdashboardLi
 		actor=_xfdashboard_live_workspace_find_by_window(self, window);
 		if(!actor) continue;
 
-		/* Remove visible attributes for active window (first child) */
+		/* Remove visible attributes for active window (last child) */
 		topActor=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
 		if(topActor &&
 			XFDASHBOARD_IS_BACKGROUND(topActor))
