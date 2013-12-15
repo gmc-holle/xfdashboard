@@ -38,6 +38,7 @@
 #include "button.h"
 #include "stage.h"
 #include "utils.h"
+#include "click-action.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWindow,
@@ -121,22 +122,22 @@ static gboolean _xfdashboard_live_window_is_visible_window(XfdashboardLiveWindow
 static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, ClutterActor *inActor, gpointer inUserData)
 {
 	XfdashboardLiveWindowPrivate	*priv=self->priv;
-	ClutterClickAction				*action=CLUTTER_CLICK_ACTION(inUserData);
+	XfdashboardClickAction			*action=XFDASHBOARD_CLICK_ACTION(inUserData);
 	gfloat							eventX, eventY;
 	gfloat							relX, relY;
 	ClutterActorBox					closeBox;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
-	g_return_if_fail(CLUTTER_IS_CLICK_ACTION(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_CLICK_ACTION(inUserData));
 
 	priv=self->priv;
-	action=CLUTTER_CLICK_ACTION(inUserData);
+	action=XFDASHBOARD_CLICK_ACTION(inUserData);
 
 	/* Check if click happened in "close button" */
 	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorClose))
 	{
-		clutter_click_action_get_coords(action, &eventX, &eventY);
+		xfdashboard_click_action_get_coords(action, &eventX, &eventY);
 		if(clutter_actor_transform_stage_point(CLUTTER_ACTOR(self), eventX, eventY, &relX, &relY))
 		{
 			clutter_actor_get_allocation_box(priv->actorClose, &closeBox);
@@ -722,7 +723,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorClose);
 
 	/* Connect signals */
-	action=clutter_click_action_new();
+	action=xfdashboard_click_action_new();
 	clutter_actor_add_action(CLUTTER_ACTOR(self), action);
 	g_signal_connect_swapped(action, "clicked", G_CALLBACK(_xfdashboard_live_window_on_clicked), self);
 

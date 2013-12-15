@@ -37,6 +37,7 @@
 #include "utils.h"
 #include "live-window.h"
 #include "window-tracker.h"
+#include "click-action.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWorkspace,
@@ -535,7 +536,7 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Connect signals */
-	action=clutter_click_action_new();
+	action=xfdashboard_click_action_new();
 	clutter_actor_add_action(CLUTTER_ACTOR(self), action);
 	g_signal_connect_swapped(action, "clicked", G_CALLBACK(_xfdashboard_live_workspace_on_clicked), self);
 

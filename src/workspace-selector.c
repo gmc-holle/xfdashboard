@@ -34,6 +34,9 @@
 #include "window-tracker.h"
 #include "live-workspace.h"
 #include "application.h"
+#include "drop-action.h"
+#include "windows-view.h"
+#include "live-window.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardWorkspaceSelector,
@@ -317,6 +320,65 @@ static gfloat _xfdashboard_workspace_selector_get_scale_for_height(XfdashboardWo
 	return(scale);
 }
 
+/* Drag of an actor to this view as drop target begins */
+static gboolean _xfdashboard_workspace_selector_on_drop_begin(XfdashboardLiveWorkspace *self,
+																XfdashboardDragAction *inDragAction,
+																gpointer inUserData)
+{
+	ClutterActor					*dragSource;
+	ClutterActor					*draggedActor;
+	gboolean						canHandle;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData), FALSE);
+
+	canHandle=FALSE;
+
+	/* Get source where dragging started and actor being dragged */
+	dragSource=xfdashboard_drag_action_get_source(inDragAction);
+	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+
+	/* Check if we can handle dragged actor from given source */
+	if(XFDASHBOARD_IS_WINDOWS_VIEW(dragSource) &&
+		XFDASHBOARD_IS_LIVE_WINDOW(draggedActor))
+	{
+		canHandle=TRUE;
+	}
+
+	/* Return TRUE if we can handle dragged actor in this drop target
+	 * otherwise FALSE
+	 */
+	return(canHandle);
+}
+
+/* Dragged actor was dropped on this drop target */
+static void _xfdashboard_workspace_selector_on_drop_drop(XfdashboardLiveWorkspace *self,
+															XfdashboardDragAction *inDragAction,
+															gfloat inX,
+															gfloat inY,
+															gpointer inUserData)
+{
+	ClutterActor						*draggedActor;
+	XfdashboardWindowTrackerWindow		*window;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	/* Get dragged actor */
+	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(draggedActor));
+
+	/* Get window */
+	window=xfdashboard_live_window_get_window(XFDASHBOARD_LIVE_WINDOW(draggedActor));
+	g_return_if_fail(window);
+
+	/* Move window to workspace */
+	xfdashboard_window_tracker_window_move_to_workspace(window, xfdashboard_live_workspace_get_workspace(self));
+}
+
+
 /* A live workspace was clicked */
 static void _xfdashboard_workspace_selector_on_workspace_clicked(XfdashboardWorkspaceSelector *self,
 																	gpointer inUserData)
@@ -352,11 +414,12 @@ static void _xfdashboard_workspace_selector_on_workspace_removed(XfdashboardWork
 
 /* A workspace was created */
 static void _xfdashboard_workspace_selector_on_workspace_added(XfdashboardWorkspaceSelector *self,
-																	XfdashboardWindowTrackerWorkspace *inWorkspace,
-																	gpointer inUserData)
+																XfdashboardWindowTrackerWorkspace *inWorkspace,
+																gpointer inUserData)
 {
 	ClutterActor		*actor;
 	gint				index;
+	ClutterAction		*action;
 
 	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace));
@@ -370,6 +433,11 @@ static void _xfdashboard_workspace_selector_on_workspace_added(XfdashboardWorksp
 	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(actor), 4.0f);
 	g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_workspace_selector_on_workspace_clicked), self);
 	clutter_actor_insert_child_at_index(CLUTTER_ACTOR(self), actor, index);
+
+	action=xfdashboard_drop_action_new();
+	clutter_actor_add_action(actor, action);
+	g_signal_connect_swapped(action, "begin", G_CALLBACK(_xfdashboard_workspace_selector_on_drop_begin), actor);
+	g_signal_connect_swapped(action, "drop", G_CALLBACK(_xfdashboard_workspace_selector_on_drop_drop), actor);
 }
 
 /* The active workspace has changed */

@@ -75,8 +75,9 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_SPACING		8.0f					// TODO: Replace by settings/theming object
-#define DEFAULT_VIEW_ICON	GTK_STOCK_FULLSCREEN	// TODO: Replace by settings/theming object
+#define DEFAULT_SPACING				8.0f					// TODO: Replace by settings/theming object
+#define DEFAULT_VIEW_ICON			GTK_STOCK_FULLSCREEN	// TODO: Replace by settings/theming object
+#define DEFAULT_DRAG_HANDLE_SIZE	32.0f					// TODO: Replace by settings/theming object
 
 /* Check if window should be shown */
 static gboolean _xfdashboard_windows_view_is_visible_window(XfdashboardWindowsView *self,
@@ -320,11 +321,87 @@ static void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWin
 	}
 }
 
+/* Drag of a live window begins */
+static void _xfdashboard_windows_view_on_drag_begin(ClutterDragAction *inAction,
+													ClutterActor *inActor,
+													gfloat inStageX,
+													gfloat inStageY,
+													ClutterModifierType inModifiers,
+													gpointer inUserData)
+{
+	ClutterActor					*dragHandle;
+	ClutterStage					*stage;
+	GdkPixbuf						*windowIcon;
+	ClutterImage					*image;
+	XfdashboardLiveWindow			*liveWindow;
+
+	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inUserData));
+
+	liveWindow=XFDASHBOARD_LIVE_WINDOW(inActor);
+
+	/* Prevent signal "clicked" from being emitted on dragged icon */
+	g_signal_handlers_block_by_func(inActor, _xfdashboard_windows_view_on_window_clicked, inUserData);
+
+	/* Get stage */
+	stage=CLUTTER_STAGE(clutter_actor_get_stage(inActor));
+
+	/* Create a application icon for drag handle */
+	windowIcon=xfdashboard_window_tracker_window_get_icon(xfdashboard_live_window_get_window(liveWindow));
+	image=xfdashboard_get_image_for_pixbuf(windowIcon);
+
+	dragHandle=xfdashboard_background_new();
+	clutter_actor_set_position(dragHandle, inStageX, inStageY);
+	clutter_actor_set_size(dragHandle, DEFAULT_DRAG_HANDLE_SIZE, DEFAULT_DRAG_HANDLE_SIZE);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(dragHandle), XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
+	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(dragHandle), 2.0f);
+	xfdashboard_background_set_image(XFDASHBOARD_BACKGROUND(dragHandle), image);
+	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
+
+	clutter_drag_action_set_drag_handle(inAction, dragHandle);
+
+	g_object_unref(image);
+}
+
+/* Drag of a live window ends */
+static void _xfdashboard_windows_view_on_drag_end(ClutterDragAction *inAction,
+													ClutterActor *inActor,
+													gfloat inStageX,
+													gfloat inStageY,
+													ClutterModifierType inModifiers,
+													gpointer inUserData)
+{
+	ClutterActor					*dragHandle;
+
+	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inUserData));
+
+	/* Destroy clone of application icon used as drag handle */
+	dragHandle=clutter_drag_action_get_drag_handle(inAction);
+	if(dragHandle)
+	{
+#if CLUTTER_CHECK_VERSION(1, 14, 0)
+		/* Only unset drag handle if not running Clutter in version
+		 * 1.12. This prevents a critical warning message in 1.12.
+		 * Later versions of Clutter are fixed already.
+		 */
+		clutter_drag_action_set_drag_handle(inAction, NULL);
+#endif
+		clutter_actor_destroy(dragHandle);
+	}
+
+	/* Allow signal "clicked" from being emitted again */
+	g_signal_handlers_unblock_by_func(inActor, _xfdashboard_windows_view_on_window_clicked, inUserData);
+}
+
 /* Create actor for wnck-window and connect signals */
 static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self,
 																		XfdashboardWindowTrackerWindow *inWindow)
 {
 	ClutterActor	*actor;
+	ClutterAction	*dragAction;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
@@ -344,6 +421,12 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 	g_signal_connect_swapped(actor, "visibility-changed", G_CALLBACK(_xfdashboard_windows_view_on_window_visibility_changed), self);
 	g_signal_connect_swapped(actor, "workspace-changed", G_CALLBACK(_xfdashboard_windows_view_on_window_workspace_changed), self);
 	xfdashboard_live_window_set_window(XFDASHBOARD_LIVE_WINDOW(actor), inWindow);
+
+	dragAction=xfdashboard_drag_action_new_with_source(CLUTTER_ACTOR(self));
+	clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(dragAction), -1, -1);
+	clutter_actor_add_action(actor, dragAction);
+	g_signal_connect(dragAction, "drag-begin", G_CALLBACK(_xfdashboard_windows_view_on_drag_begin), self);
+	g_signal_connect(dragAction, "drag-end", G_CALLBACK(_xfdashboard_windows_view_on_drag_end), self);
 
 	return(XFDASHBOARD_LIVE_WINDOW(actor));
 }
