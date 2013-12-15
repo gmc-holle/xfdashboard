@@ -268,7 +268,7 @@ static gboolean _xfdashboard_click_action_on_captured_event(XfdashboardClickActi
 			if(!priv->isHeld) return(CLUTTER_EVENT_STOP);
 
 			if((hasButton && clutter_event_get_button(inEvent)!=priv->pressButton) ||
-				(hasButton && clutter_event_get_click_count(inEvent)!= 1) ||
+				(hasButton && clutter_event_get_click_count(inEvent)!=1) ||
 				clutter_event_get_device_id(inEvent)!=priv->pressDeviceID ||
 				clutter_event_get_event_sequence(inEvent)!=priv->pressSequence)
 			{
