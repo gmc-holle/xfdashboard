@@ -385,7 +385,7 @@ static void xfdashboard_application_button_init(XfdashboardApplicationButton *se
 	g_signal_connect(self, "notify::icon-size", G_CALLBACK(_xfdashboard_application_button_on_icon_size_changed), NULL);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new actor */
 ClutterActor* xfdashboard_application_button_new(void)

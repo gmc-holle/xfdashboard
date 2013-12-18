@@ -346,7 +346,7 @@ void xfdashboard_drop_action_init(XfdashboardDropAction *self)
 	priv->actor=NULL;
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new actor */
 ClutterAction* xfdashboard_drop_action_new(void)

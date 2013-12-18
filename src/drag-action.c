@@ -604,7 +604,7 @@ void xfdashboard_drag_action_init(XfdashboardDragAction *self)
 	priv->lastDeltaY=0.0f;
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new action */
 ClutterAction* xfdashboard_drag_action_new(void)

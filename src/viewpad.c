@@ -1051,7 +1051,7 @@ static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	g_signal_connect_swapped(priv->viewManager, "unregistered", G_CALLBACK(_xfdashboard_viewpad_on_view_unregistered), self);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 ClutterActor* xfdashboard_viewpad_new(void)

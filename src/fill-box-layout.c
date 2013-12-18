@@ -621,7 +621,7 @@ static void xfdashboard_fill_box_layout_init(XfdashboardFillBoxLayout *self)
 	priv->keepAspect=FALSE;
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 ClutterLayoutManager* xfdashboard_fill_box_layout_new(void)

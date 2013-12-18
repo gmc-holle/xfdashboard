@@ -643,7 +643,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	g_signal_connect_swapped(priv->windowTracker, "active-window-changed", G_CALLBACK(_xfdashboard_stage_on_active_window_changed), self);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 ClutterActor* xfdashboard_stage_new(void)

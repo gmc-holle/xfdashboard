@@ -451,7 +451,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->viewManager=NULL;
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Get single instance of application */
 XfdashboardApplication* xfdashboard_application_get_default(void)

@@ -655,7 +655,7 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	g_signal_connect_swapped(priv->apps, "filter-changed", G_CALLBACK(_xfdashboard_search_view_on_filter_changed), self);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Get/set view mode of view */
 XfdashboardViewMode xfdashboard_search_view_get_view_mode(XfdashboardSearchView *self)

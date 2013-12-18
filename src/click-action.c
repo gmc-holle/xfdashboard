@@ -639,7 +639,7 @@ static void xfdashboard_click_action_init(XfdashboardClickAction *self)
 	priv->longPressDuration=-1;
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new action */
 ClutterAction* xfdashboard_click_action_new(void)

@@ -188,7 +188,7 @@ static void xfdashboard_toggle_button_init(XfdashboardToggleButton *self)
 	priv->toggleState=FALSE;
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new actor */
 ClutterActor* xfdashboard_toggle_button_new(void)

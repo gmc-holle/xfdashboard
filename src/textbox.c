@@ -848,7 +848,7 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 	clutter_text_set_single_line_mode(CLUTTER_TEXT(priv->actorHintLabel), TRUE);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new actor */
 ClutterActor* xfdashboard_text_box_new(void)

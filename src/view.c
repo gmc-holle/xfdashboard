@@ -412,7 +412,7 @@ static void xfdashboard_view_init(XfdashboardView *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Get/set internal name of view */
 const gchar* xfdashboard_view_get_internal_name(XfdashboardView *self)

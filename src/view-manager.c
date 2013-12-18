@@ -145,7 +145,7 @@ static void xfdashboard_view_manager_init(XfdashboardViewManager *self)
 	priv->registeredViews=NULL;
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Get single instance of application */
 XfdashboardViewManager* xfdashboard_view_manager_get_default(void)

@@ -398,7 +398,7 @@ static void xfdashboard_view_selector_init(XfdashboardViewSelector *self)
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 ClutterActor* xfdashboard_view_selector_new(void)

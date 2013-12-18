@@ -247,7 +247,7 @@ void xfdashboard_image_init(XfdashboardImage *self)
 	priv->key=NULL;
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Get image from cache if available */
 ClutterContent* xfdashboard_image_get_cached_image(const gchar *inKey)

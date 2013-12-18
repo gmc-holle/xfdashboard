@@ -694,7 +694,7 @@ void xfdashboard_window_tracker_init(XfdashboardWindowTracker *self)
 	g_signal_connect_swapped(priv->screen, "active-workspace-changed", G_CALLBACK(_xfdashboard_window_tracker_on_active_workspace_changed), self);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void)

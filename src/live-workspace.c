@@ -549,7 +549,7 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	g_signal_connect_swapped(priv->windowTracker, "window-stacking-changed", G_CALLBACK(_xfdashboard_live_workspace_on_window_stacking_changed), self);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 ClutterActor* xfdashboard_live_workspace_new(void)

@@ -433,7 +433,7 @@ static void xfdashboard_scaled_table_layout_init(XfdashboardScaledTableLayout *s
 	priv->columns=0;
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 ClutterLayoutManager* xfdashboard_scaled_table_layout_new(void)

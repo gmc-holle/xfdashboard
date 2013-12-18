@@ -735,7 +735,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	g_signal_connect_swapped(priv->windowTracker, "window-workspace-changed", G_CALLBACK(_xfdashboard_live_window_on_workspace_changed), self);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 ClutterActor* xfdashboard_live_window_new(void)

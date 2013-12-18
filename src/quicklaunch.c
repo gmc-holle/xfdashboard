@@ -1458,7 +1458,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	xfconf_g_property_bind(priv->xfconfChannel, "/favourites", XFDASHBOARD_TYPE_POINTER_ARRAY, self, "favourites");
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new actor */
 ClutterActor* xfdashboard_quicklaunch_new(void)

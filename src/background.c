@@ -508,7 +508,7 @@ static void xfdashboard_background_init(XfdashboardBackground *self)
 	g_signal_connect_swapped(priv->canvas, "draw", G_CALLBACK(_xfdashboard_background_on_draw_canvas), self);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new actor */
 ClutterActor* xfdashboard_background_new(void)

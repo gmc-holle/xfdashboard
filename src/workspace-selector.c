@@ -963,7 +963,7 @@ static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *se
 								self);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new actor */
 ClutterActor* xfdashboard_workspace_selector_new(void)

@@ -610,7 +610,7 @@ static void xfdashboard_applications_menu_model_init(XfdashboardApplicationsMenu
 	clutter_threads_add_idle(_xfdashboard_applications_menu_model_init_idle, self);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 ClutterModel* xfdashboard_applications_menu_model_new(void)
 {

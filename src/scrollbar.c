@@ -830,7 +830,7 @@ static void xfdashboard_scrollbar_init(XfdashboardScrollbar *self)
 	g_signal_connect(self, "scroll-event", G_CALLBACK(_xfdashboard_scrollbar_on_scroll_event), NULL);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new actor */
 ClutterActor* xfdashboard_scrollbar_new(ClutterOrientation inOrientation)

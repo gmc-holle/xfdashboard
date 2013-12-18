@@ -47,7 +47,7 @@
  * libwnck API regardless of its version.
  */
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Return type of WnckWindow as our type */
 GType xfdashboard_window_tracker_window_get_type(void)

@@ -1439,7 +1439,7 @@ static void xfdashboard_button_init(XfdashboardButton *self)
 	g_signal_connect(priv->clickAction, "clicked", G_CALLBACK(_xfdashboard_button_clicked), NULL);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new actor */
 ClutterActor* xfdashboard_button_new(void)
