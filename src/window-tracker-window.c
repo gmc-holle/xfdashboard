@@ -78,7 +78,7 @@ static guint32 _xfdashboard_window_tracker_window_get_time(void)
 	display=gdk_display_get_default();
 	if(!display)
 	{
-		g_debug("No default display found in GDK");
+		g_debug("No default display found in GDK to get timestamp for windows");
 		return(0);
 	}
 
@@ -95,7 +95,7 @@ static guint32 _xfdashboard_window_tracker_window_get_time(void)
 			window=gdk_x11_window_lookup_for_display(display, clutter_x11_get_stage_window(stage));
 			if(!window)
 			{
-				g_debug("No GDK window found for stage %p", stage);
+				g_debug("No GDK window found for stage %p to get timestamp for windows", stage);
 				continue;
 			}
 
@@ -105,7 +105,8 @@ static guint32 _xfdashboard_window_tracker_window_get_time(void)
 			eventMask=gdk_window_get_events(window);
 			if(!(eventMask & GDK_PROPERTY_CHANGE_MASK))
 			{
-				g_debug("GDK window %p for stage %p does not support GDK_PROPERTY_CHANGE_MASK", window, stage);
+				g_debug("GDK window %p for stage %p does not support GDK_PROPERTY_CHANGE_MASK to get timestamp for windows",
+							window, stage);
 				continue;
 			}
 
@@ -115,7 +116,7 @@ static guint32 _xfdashboard_window_tracker_window_get_time(void)
 	g_slist_free(stages);
 
 	/* Return timestamp of last resort */
-	g_debug("Last resort timestamp %s (%u)", timestamp ? "found" : "not found", timestamp);
+	g_debug("Last resort timestamp for windows %s (%u)", timestamp ? "found" : "not found", timestamp);
 	return(timestamp);
 }
 
