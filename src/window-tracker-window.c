@@ -47,13 +47,7 @@
  * libwnck API regardless of its version.
  */
 
-/* IMPLEMENTATION: Public API */
-
-/* Return type of WnckWindow as our type */
-GType xfdashboard_window_tracker_window_get_type(void)
-{
-	return(WNCK_TYPE_WINDOW);
-}
+/* IMPLEMENTATION: Private variables and methods */
 
 /* Get last timestamp for use in wnck */
 static guint32 _xfdashboard_window_tracker_window_get_time(void)
@@ -123,6 +117,80 @@ static guint32 _xfdashboard_window_tracker_window_get_time(void)
 	/* Return timestamp of last resort */
 	g_debug("Last resort timestamp %s (%u)", timestamp ? "found" : "not found", timestamp);
 	return(timestamp);
+}
+
+/* State of stage window changed */
+static void _xfdashboard_window_tracker_window_on_stage_state_changed(WnckWindow *inWindow,
+																		WnckWindowState inChangedMask,
+																		WnckWindowState inNewValue,
+																		gpointer inUserData)
+{
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
+
+	/* Set 'skip-tasklist' if changed */
+	if((inChangedMask & WNCK_WINDOW_STATE_SKIP_TASKLIST) &&
+		!(inNewValue & WNCK_WINDOW_STATE_SKIP_TASKLIST))
+	{
+		wnck_window_set_skip_tasklist(WNCK_WINDOW(inWindow), TRUE);
+		g_debug("State 'skip-tasklist' for stage window %p needs reset", inWindow);
+	}
+
+	/* Set 'skip-pager' if changed */
+	if((inChangedMask & WNCK_WINDOW_STATE_SKIP_PAGER) &&
+		!(inNewValue & WNCK_WINDOW_STATE_SKIP_PAGER))
+	{
+		wnck_window_set_skip_pager(WNCK_WINDOW(inWindow), TRUE);
+		g_debug("State 'skip-pager' for stage window %p needs reset", inWindow);
+	}
+
+	/* Set 'make-above' if changed */
+	if((inChangedMask & WNCK_WINDOW_STATE_ABOVE) &&
+		!(inNewValue & WNCK_WINDOW_STATE_ABOVE))
+	{
+		wnck_window_make_above(WNCK_WINDOW(inWindow));
+		g_debug("State 'make-above' for stage window %p needs reset", inWindow);
+	}
+}
+
+/* The active window changed. Reselect stage window as active one if it is visible */
+static void _xfdashboard_window_tracker_window_on_stage_active_window_changed(WnckScreen *self,
+																				WnckWindow *inPreviousWindow,
+																				gpointer inUserData)
+{
+	WnckWindow		*stageWindow;
+	WnckWindow		*activeWindow;
+	gboolean		reselect;
+
+	g_return_if_fail(WNCK_IS_SCREEN(self));
+	g_return_if_fail(inPreviousWindow==NULL || WNCK_IS_WINDOW(inPreviousWindow));
+	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
+
+	stageWindow=WNCK_WINDOW(inUserData);
+	reselect=FALSE;
+
+	/* Reactive stage window if not hidden */
+	activeWindow=wnck_screen_get_active_window(self);
+
+	if(inPreviousWindow && inPreviousWindow==stageWindow) reselect=TRUE;
+	if(!activeWindow || activeWindow!=stageWindow) reselect=TRUE;
+	if(!(wnck_window_get_state(stageWindow) & (WNCK_WINDOW_STATE_MINIMIZED | WNCK_WINDOW_STATE_HIDDEN))) reselect=TRUE;
+
+	if(reselect)
+	{
+		wnck_window_activate_transient(stageWindow, _xfdashboard_window_tracker_window_get_time());
+		g_debug("Active window changed from %p (%s) to %p (%s) but stage window %p is visible and should be active one",
+					inPreviousWindow, inPreviousWindow ? wnck_window_get_name(inPreviousWindow) : "<nil>",
+					activeWindow, activeWindow ? wnck_window_get_name(activeWindow) : "<nil>",
+					stageWindow);
+	}
+}
+
+/* IMPLEMENTATION: Public API */
+
+/* Return type of WnckWindow as our type */
+GType xfdashboard_window_tracker_window_get_type(void)
+{
+	return(WNCK_TYPE_WINDOW);
 }
 
 /* Determine if window is visible */
@@ -364,6 +432,10 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_stage_wind
 /* Set up window for use as stage window */
 void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTrackerWindow *inWindow)
 {
+	WnckScreen	*screen;
+	guint		signalID;
+	gulong		handlerID;
+
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
 	/* Window of stage should always be above all other windows,
@@ -373,6 +445,38 @@ void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTracke
 	wnck_window_set_skip_pager(WNCK_WINDOW(inWindow), TRUE);
 	wnck_window_make_above(WNCK_WINDOW(inWindow));
 	wnck_window_pin(WNCK_WINDOW(inWindow));
+
+	/* Get screen of window */
+	screen=wnck_window_get_screen(WNCK_WINDOW(inWindow));
+
+	/* Connect signals if not already connected */
+	signalID=g_signal_lookup("state-changed", WNCK_TYPE_WINDOW);
+	handlerID=g_signal_handler_find(inWindow,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									signalID,
+									0,
+									NULL,
+									G_CALLBACK(_xfdashboard_window_tracker_window_on_stage_state_changed),
+									NULL);
+	if(!handlerID)
+	{
+		g_signal_connect(inWindow, "state-changed", G_CALLBACK(_xfdashboard_window_tracker_window_on_stage_state_changed), NULL);
+		g_debug("Connecting signal to 'state-changed' at window %p", inWindow);
+	}
+
+	signalID=g_signal_lookup("active-window-changed", WNCK_TYPE_SCREEN);
+	handlerID=g_signal_handler_find(screen,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									signalID,
+									0,
+									NULL,
+									G_CALLBACK(_xfdashboard_window_tracker_window_on_stage_active_window_changed),
+									NULL);
+	if(!handlerID)
+	{
+		g_signal_connect(screen, "active-window-changed", G_CALLBACK(_xfdashboard_window_tracker_window_on_stage_active_window_changed), inWindow);
+		g_debug("Connecting signal to 'active-window-changed' at screen %p of window %p", screen, inWindow);
+	}
 }
 
 /* Get X window ID of window */

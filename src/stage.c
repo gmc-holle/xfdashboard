@@ -438,30 +438,6 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_stage_set_key_focus(CLUTTER_STAGE(self), priv->searchbox);
 }
 
-/* The active window changed. Reselect stage window as active if it is visible */
-static void _xfdashboard_stage_on_active_window_changed(XfdashboardStage *self,
-															XfdashboardWindowTrackerWindow *inPreviousWindow,
-															XfdashboardWindowTrackerWindow *inNewWindow,
-															gpointer inUserData)
-{
-	XfdashboardWindowTrackerWindow		*stageWindow;
-
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(inPreviousWindow==NULL || XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inPreviousWindow));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inNewWindow));
-
-	/* Check if active window is not this stage window */
-	stageWindow=xfdashboard_window_tracker_window_get_stage_window(CLUTTER_STAGE(self));
-	if(inNewWindow!=stageWindow) return;
-
-	/* Check if stage window should be visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(CLUTTER_ACTOR(self))==TRUE)
-	{
-		g_debug("Reselect stage window as active window because it is still visible!");
-		xfdashboard_window_tracker_window_activate(stageWindow);
-	}
-}
-
 /* A window was created
  * Check for stage window and set up window properties
  */
@@ -640,7 +616,6 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 
 	/* Connect signals */
 	g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
-	g_signal_connect_swapped(priv->windowTracker, "active-window-changed", G_CALLBACK(_xfdashboard_stage_on_active_window_changed), self);
 }
 
 /* IMPLEMENTATION: Public API */
