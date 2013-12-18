@@ -37,6 +37,9 @@
 #include <libwnck/libwnck.h>
 
 #include <glib/gi18n-lib.h>
+#include <clutter/clutter.h>
+#include <clutter/x11/clutter-x11.h>
+#include <gdk/gdkx.h>
 
 #include "marshal.h"
 
@@ -708,6 +711,88 @@ XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void)
 
 	return(_xfdashboard_window_tracker_singleton);
 
+}
+
+/* Get last timestamp for use in libwnck */
+guint32 xfdashboard_window_tracker_get_time(void)
+{
+	const ClutterEvent		*currentClutterEvent;
+	guint32					timestamp;
+	GdkDisplay				*display;
+	GdkWindow				*window;
+	GdkEventMask			eventMask;
+	GSList					*stages, *entry;
+	ClutterStage			*stage;
+
+	/* We don't use clutter_get_current_event_time as it can return
+	 * a too old timestamp if there is no current event.
+	 */
+	currentClutterEvent=clutter_get_current_event();
+	if(currentClutterEvent!=NULL) return(clutter_event_get_time(currentClutterEvent));
+
+	/* Next we try timestamp of last GTK+ event */
+	timestamp=gtk_get_current_event_time();
+	if(timestamp>0) return(timestamp);
+
+	/* Next we try to ask GDK for a timestamp */
+	timestamp=gdk_x11_display_get_user_time(gdk_display_get_default());
+	if(timestamp>0) return(timestamp);
+
+	/* Next we try to retrieve timestamp of last X11 event in clutter */
+	g_debug("No timestamp for windows - trying timestamp of last X11 event in Clutter");
+	timestamp=(guint32)clutter_x11_get_current_event_time();
+	if(timestamp!=0)
+	{
+		g_debug("Got timestamp %u of last X11 event in Clutter", timestamp);
+		return(timestamp);
+	}
+
+	/* Last resort is to get X11 server time via stage windows */
+	g_debug("No timestamp for windows - trying last resort via stage windows");
+
+	display=gdk_display_get_default();
+	if(!display)
+	{
+		g_debug("No default display found in GDK to get timestamp for windows");
+		return(0);
+	}
+
+	/* Iterate through stages, get their GDK window and try to retrieve timestamp */
+	timestamp=0;
+	stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
+	for(entry=stages; timestamp==0 && entry; entry=g_slist_next(entry))
+	{
+		/* Get stage */
+		stage=CLUTTER_STAGE(entry->data);
+		if(stage)
+		{
+			/* Get GDK window of stage */
+			window=gdk_x11_window_lookup_for_display(display, clutter_x11_get_stage_window(stage));
+			if(!window)
+			{
+				g_debug("No GDK window found for stage %p to get timestamp for windows", stage);
+				continue;
+			}
+
+			/* Check if GDK window supports GDK_PROPERTY_CHANGE_MASK event
+			 * or application (or worst X server) will hang
+			 */
+			eventMask=gdk_window_get_events(window);
+			if(!(eventMask & GDK_PROPERTY_CHANGE_MASK))
+			{
+				g_debug("GDK window %p for stage %p does not support GDK_PROPERTY_CHANGE_MASK to get timestamp for windows",
+							window, stage);
+				continue;
+			}
+
+			timestamp=gdk_x11_get_server_time(window);
+		}
+	}
+	g_slist_free(stages);
+
+	/* Return timestamp of last resort */
+	g_debug("Last resort timestamp for windows %s (%u)", timestamp ? "found" : "not found", timestamp);
+	return(timestamp);
 }
 
 /* Get list of all windows (if wanted in stack order) */

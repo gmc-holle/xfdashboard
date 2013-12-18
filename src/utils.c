@@ -31,7 +31,6 @@
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 #include <dbus/dbus-glib.h>
 
 /* Private constants */
@@ -50,29 +49,6 @@ GType xfdashboard_pointer_array_get_type(void)
 	}
 
 	return(type__volatile);
-}
-
-/* Get current time, e.g. for events */
-guint32 xfdashboard_get_current_time(void)
-{
-	const ClutterEvent		*currentClutterEvent;
-	guint32					timestamp;
-
-	/* We don't use clutter_get_current_event_time as it can return
-	 * a too old timestamp if there is no current event.
-	 */
-	currentClutterEvent=clutter_get_current_event();
-	if(currentClutterEvent!=NULL) return(clutter_event_get_time(currentClutterEvent));
-
-	/* Next we try timestamp of last GTK+ event */
-	timestamp=gtk_get_current_event_time();
-	if(timestamp>0) return(timestamp);
-
-	/* Next we try to ask GDK for a timestamp */
-	timestamp=gdk_x11_display_get_user_time(gdk_display_get_default());
-	if(timestamp>0) return(timestamp);
-
-	return(CLUTTER_CURRENT_TIME);
 }
 
 /* Get ClutterImage object for themed icon name or absolute icon filename.

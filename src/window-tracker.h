@@ -94,6 +94,8 @@ GType xfdashboard_window_tracker_get_type(void) G_GNUC_CONST;
 
 XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void);
 
+guint32 xfdashboard_window_tracker_get_time(void);
+
 GList* xfdashboard_window_tracker_get_windows(XfdashboardWindowTracker *self);
 GList* xfdashboard_window_tracker_get_windows_stacked(XfdashboardWindowTracker *self);
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_active_window(XfdashboardWindowTracker *self);

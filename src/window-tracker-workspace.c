@@ -38,6 +38,7 @@
 
 #include <glib/gi18n-lib.h>
 
+#include "window-tracker.h"
 #include "marshal.h"
 #include "utils.h"
 
@@ -107,5 +108,5 @@ void xfdashboard_window_tracker_workspace_activate(XfdashboardWindowTrackerWorks
 {
 	g_return_if_fail(WNCK_IS_WORKSPACE(inWorkspace));
 
-	wnck_workspace_activate(WNCK_WORKSPACE(inWorkspace), xfdashboard_get_current_time());
+	wnck_workspace_activate(WNCK_WORKSPACE(inWorkspace), xfdashboard_window_tracker_get_time());
 }
