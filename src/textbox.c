@@ -48,6 +48,8 @@ struct _XfdashboardTextBoxPrivate
 	gfloat					padding;
 	gfloat					spacing;
 
+	gboolean				isEditable;
+
 	gchar					*primaryIconName;
 	gchar					*secondaryIconName;
 
@@ -79,6 +81,8 @@ enum
 
 	PROP_PADDING,
 	PROP_SPACING,
+
+	PROP_EDITABLE,
 
 	PROP_PRIMARY_ICON_NAME,
 	PROP_SECONDARY_ICON_NAME,
@@ -134,7 +138,7 @@ static void _xfdashboard_text_box_on_text_changed(XfdashboardTextBox *self, gpoi
 	actorText=CLUTTER_TEXT(inUserData);
 
 	/* Show hint label depending if text box is empty or not */
-	if(xfdashboard_text_box_is_empty(self))
+	if(xfdashboard_text_box_is_empty(self) && priv->isEditable)
 	{
 		clutter_actor_show(priv->actorHintLabel);
 	}
@@ -199,7 +203,7 @@ static void _xfdashboard_text_box_show(ClutterActor *inActor)
 	}
 
 	/* Show hint label depending if text box is empty or not */
-	if(xfdashboard_text_box_is_empty(self))
+	if(xfdashboard_text_box_is_empty(self) && priv->isEditable)
 	{
 		clutter_actor_show(priv->actorHintLabel);
 	}
@@ -526,6 +530,10 @@ static void _xfdashboard_text_box_set_property(GObject *inObject,
 			xfdashboard_text_box_set_spacing(self, g_value_get_float(inValue));
 			break;
 
+		case PROP_EDITABLE:
+			xfdashboard_text_box_set_editable(self, g_value_get_boolean(inValue));
+			break;
+
 		case PROP_PRIMARY_ICON_NAME:
 			xfdashboard_text_box_set_primary_icon(self, g_value_get_string(inValue));
 			break;
@@ -588,6 +596,10 @@ static void _xfdashboard_text_box_get_property(GObject *inObject,
 
 		case PROP_SPACING:
 			g_value_set_float(outValue, priv->spacing);
+			break;
+
+		case PROP_EDITABLE:
+			g_value_set_boolean(outValue, priv->isEditable);
 			break;
 
 		case PROP_PRIMARY_ICON_NAME:
@@ -676,6 +688,13 @@ static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 							0.0f, G_MAXFLOAT,
 							DEFAULT_SPACING,
 							G_PARAM_READWRITE);
+
+	XfdashboardTextBoxProperties[PROP_EDITABLE]=
+		g_param_spec_boolean("editable",
+								_("Editable"),
+								_("Flag to set if text is editable"),
+								FALSE,
+								G_PARAM_READWRITE);
 
 	XfdashboardTextBoxProperties[PROP_PRIMARY_ICON_NAME]=
 		g_param_spec_string("primary-icon-name",
@@ -801,6 +820,7 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 	/* Set up default values */
 	priv->padding=DEFAULT_PADDING;
 	priv->spacing=DEFAULT_SPACING;
+	priv->isEditable=FALSE;
 	priv->primaryIconName=NULL;
 	priv->secondaryIconName=NULL;
 	priv->textFont=NULL;
@@ -835,8 +855,8 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 	priv->actorTextBox=clutter_text_new();
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorTextBox);
 	clutter_actor_set_reactive(priv->actorTextBox, TRUE);
-	clutter_text_set_selectable(CLUTTER_TEXT(priv->actorTextBox), TRUE);
-	clutter_text_set_editable(CLUTTER_TEXT(priv->actorTextBox), TRUE);
+	clutter_text_set_selectable(CLUTTER_TEXT(priv->actorTextBox), FALSE);
+	clutter_text_set_editable(CLUTTER_TEXT(priv->actorTextBox), FALSE);
 	clutter_text_set_single_line_mode(CLUTTER_TEXT(priv->actorTextBox), TRUE);
 	g_signal_connect_swapped(priv->actorTextBox, "text-changed", G_CALLBACK(_xfdashboard_text_box_on_text_changed), self);
 
@@ -846,6 +866,7 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 	clutter_text_set_selectable(CLUTTER_TEXT(priv->actorHintLabel), FALSE);
 	clutter_text_set_editable(CLUTTER_TEXT(priv->actorHintLabel), FALSE);
 	clutter_text_set_single_line_mode(CLUTTER_TEXT(priv->actorHintLabel), TRUE);
+	clutter_actor_hide(priv->actorHintLabel);
 }
 
 /* IMPLEMENTATION: Public API */
@@ -912,6 +933,49 @@ void xfdashboard_text_box_set_spacing(XfdashboardTextBox *self, gfloat inSpacing
 	}
 }
 
+/* Get/set flag to mark text editable */
+gboolean xfdashboard_text_box_get_editable(XfdashboardTextBox *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(self), FALSE);
+
+	return(self->priv->isEditable);
+}
+
+void xfdashboard_text_box_set_editable(XfdashboardTextBox *self, gboolean isEditable)
+{
+	XfdashboardTextBoxPrivate	*priv;
+	const gchar					*text;
+
+	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->isEditable!=isEditable)
+	{
+		priv->isEditable=isEditable;
+
+		/* Set up actors */
+		clutter_text_set_selectable(CLUTTER_TEXT(priv->actorTextBox), priv->isEditable);
+		clutter_text_set_editable(CLUTTER_TEXT(priv->actorTextBox), priv->isEditable);
+
+		text=clutter_text_get_text(CLUTTER_TEXT(priv->actorTextBox));
+		if((text==NULL || *text==0) && priv->isEditable)
+		{
+			clutter_actor_show(priv->actorHintLabel);
+		}
+			else
+			{
+				clutter_actor_hide(priv->actorHintLabel);
+			}
+
+		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardTextBoxProperties[PROP_EDITABLE]);
+	}
+}
+
 /* Get/set text of editable text box */
 gboolean xfdashboard_text_box_is_empty(XfdashboardTextBox *self)
 {
@@ -959,7 +1023,7 @@ void xfdashboard_text_box_set_text(XfdashboardTextBox *self, const gchar *inMark
 		clutter_text_set_markup(CLUTTER_TEXT(priv->actorTextBox), inMarkupText);
 
 		text=clutter_text_get_text(CLUTTER_TEXT(priv->actorTextBox));
-		if(text==NULL || *text==0)
+		if((text==NULL || *text==0) && priv->isEditable)
 		{
 			clutter_actor_show(priv->actorHintLabel);
 		}

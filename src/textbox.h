@@ -74,6 +74,9 @@ void xfdashboard_text_box_set_padding(XfdashboardTextBox *self, gfloat inPadding
 gfloat xfdashboard_text_box_get_spacing(XfdashboardTextBox *self);
 void xfdashboard_text_box_set_spacing(XfdashboardTextBox *self, gfloat inSpacing);
 
+gboolean xfdashboard_text_box_get_editable(XfdashboardTextBox *self);
+void xfdashboard_text_box_set_editable(XfdashboardTextBox *self, gboolean isEditable);
+
 gboolean xfdashboard_text_box_is_empty(XfdashboardTextBox *self);
 gint xfdashboard_text_box_get_length(XfdashboardTextBox *self);
 const gchar* xfdashboard_text_box_get_text(XfdashboardTextBox *self);

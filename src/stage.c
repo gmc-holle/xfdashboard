@@ -362,6 +362,7 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	xfdashboard_background_set_corners(XFDASHBOARD_BACKGROUND(priv->searchbox), XFDASHBOARD_CORNERS_ALL);
 	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->searchbox), 4.0f);
 	xfdashboard_text_box_set_padding(XFDASHBOARD_TEXT_BOX(priv->searchbox), 4.0f);
+	xfdashboard_text_box_set_editable(XFDASHBOARD_TEXT_BOX(priv->searchbox), TRUE);
 	xfdashboard_text_box_set_hint_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), _("Just type to search..."));
 	xfdashboard_text_box_set_primary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_FIND);
 	g_signal_connect_swapped(priv->searchbox, "text-changed", G_CALLBACK(_xfdashboard_stage_on_searchbox_text_changed), self);
