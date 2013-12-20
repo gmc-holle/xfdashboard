@@ -274,13 +274,6 @@ static void _xfdashboard_window_tracker_on_window_opened(XfdashboardWindowTracke
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 	g_return_if_fail(WNCK_IS_SCREEN(inUserData));
 
-	/* Check if window has a workspace set so it is a so called "real" window */
-	if(!wnck_window_get_workspace(inWindow))
-	{
-		g_debug("Window '%s' has no workspace - do not emit signal!", wnck_window_get_name(inWindow));
-		return;
-	}
-
 	/* Connect signals on newly opened window */
 	g_signal_connect_swapped(inWindow, "geometry-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_geometry_changed), self);
 	g_signal_connect_swapped(inWindow, "actions-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_actions_changed), self);
