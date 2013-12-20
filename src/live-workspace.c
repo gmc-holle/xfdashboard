@@ -279,7 +279,10 @@ static void _xfdashboard_live_workspace_on_window_state_changed(XfdashboardLiveW
 	if(newVisible!=currentVisible)
 	{
 		if(newVisible) _xfdashboard_live_workspace_on_window_opened(self, inWindow, NULL);
-			else clutter_actor_destroy(windowActor);
+			else
+			{
+				if(windowActor) clutter_actor_destroy(windowActor);
+			}
 	}
 }
 
