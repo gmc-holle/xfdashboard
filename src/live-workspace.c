@@ -137,46 +137,7 @@ static void _xfdashboard_live_workspace_on_clicked(XfdashboardLiveWorkspace *sel
 	g_signal_emit(self, XfdashboardLiveWorkspaceSignals[SIGNAL_CLICKED], 0);
 }
 
-/* A window's position and/or size has changed */
-static void _xfdashboard_live_workspace_on_window_geometry_changed(XfdashboardLiveWorkspace *self,
-																	XfdashboardWindowTrackerWindow *inWindow,
-																	gpointer inUserData)
-{
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
-
-	/* Actor's allocation may change because of new geometry so relayout */
-	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
-}
-
-/* A window's state has changed */
-static void _xfdashboard_live_workspace_on_window_state_changed(XfdashboardLiveWorkspace *self,
-																XfdashboardWindowTrackerWindow *inWindow,
-																gpointer inUserData)
-{
-	ClutterActor		*windowActor;
-	gboolean			newVisible;
-	gboolean			currentVisible;
-
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
-
-	/* Find window and get current visibility state */
-	windowActor=_xfdashboard_live_workspace_find_by_window(self, inWindow);
-	if(!windowActor) return;
-
-	currentVisible=!!CLUTTER_ACTOR_IS_VISIBLE(windowActor);
-
-	/* Check if window's visibility has changed */
-	newVisible=_xfdashboard_live_workspace_is_visible_window(self, inWindow);
-	if(newVisible!=currentVisible)
-	{
-		if(newVisible) clutter_actor_show(windowActor);
-			else clutter_actor_hide(windowActor);
-	}
-}
-
-/* A window was opened */
+/* A window was closed */
 static void _xfdashboard_live_workspace_on_window_closed(XfdashboardLiveWorkspace *self,
 															XfdashboardWindowTrackerWindow *inWindow,
 															gpointer inUserData)
@@ -221,6 +182,18 @@ static void _xfdashboard_live_workspace_on_window_opened(XfdashboardLiveWorkspac
 	image=xfdashboard_get_image_for_pixbuf(windowIcon);
 	xfdashboard_background_set_image(XFDASHBOARD_BACKGROUND(actor), image);
 	g_object_unref(image);
+}
+
+/* A window's position and/or size has changed */
+static void _xfdashboard_live_workspace_on_window_geometry_changed(XfdashboardLiveWorkspace *self,
+																	XfdashboardWindowTrackerWindow *inWindow,
+																	gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+
+	/* Actor's allocation may change because of new geometry so relayout */
+	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 }
 
 /* Window stacking has changed */
@@ -269,6 +242,44 @@ static void _xfdashboard_live_workspace_on_window_stacking_changed(XfdashboardLi
 			xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_Red);
 		}
 		g_object_unref(actor);
+	}
+}
+
+/* A window's state has changed */
+static void _xfdashboard_live_workspace_on_window_state_changed(XfdashboardLiveWorkspace *self,
+																XfdashboardWindowTrackerWindow *inWindow,
+																gpointer inUserData)
+{
+	/* We need to see it from the point of view of a workspace.
+	 * If a window is visible on the workspace but we have no actor
+	 * for this window then create it. If a window is not visible anymore
+	 * on this workspace then destroy the corresponding actor.
+	 * That is why initially we set any window to invisible because if
+	 * changed window is not visible on this workspace it will do nothing.
+	 */
+
+	ClutterActor		*windowActor;
+	gboolean			newVisible;
+	gboolean			currentVisible;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+
+	currentVisible=FALSE;
+
+	/* Find window and get current visibility state */
+	windowActor=_xfdashboard_live_workspace_find_by_window(self, inWindow);
+	if(windowActor)
+	{
+		currentVisible=!!CLUTTER_ACTOR_IS_VISIBLE(windowActor);
+	}
+
+	/* Check if window's visibility has changed */
+	newVisible=_xfdashboard_live_workspace_is_visible_window(self, inWindow);
+	if(newVisible!=currentVisible)
+	{
+		if(newVisible) _xfdashboard_live_workspace_on_window_opened(self, inWindow, NULL);
+			else clutter_actor_destroy(windowActor);
 	}
 }
 
