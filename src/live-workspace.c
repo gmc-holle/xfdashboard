@@ -219,7 +219,6 @@ static void _xfdashboard_live_workspace_on_window_opened(XfdashboardLiveWorkspac
 	/* Get image for window icon and set actor's content */
 	windowIcon=xfdashboard_window_tracker_window_get_icon(inWindow);
 	image=xfdashboard_get_image_for_pixbuf(windowIcon);
-	// TODO: clutter_actor_set_content(actor, CLUTTER_CONTENT(image));
 	xfdashboard_background_set_image(XFDASHBOARD_BACKGROUND(actor), image);
 	g_object_unref(image);
 }
