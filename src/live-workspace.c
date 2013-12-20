@@ -293,7 +293,7 @@ static void _xfdashboard_live_workspace_on_window_workspace_changed(XfdashboardL
 {
 	XfdashboardLiveWorkspacePrivate		*priv;
 	XfdashboardWindowTrackerWorkspace	*workspace;
-	ClutterActor						*actor;
+	ClutterActor						*windowActor;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -301,14 +301,15 @@ static void _xfdashboard_live_workspace_on_window_workspace_changed(XfdashboardL
 	priv=self->priv;
 
 	/* Find actor for windw */
-	actor=_xfdashboard_live_workspace_find_by_window(self, inWindow);
-	if(!actor) return;
+	windowActor=_xfdashboard_live_workspace_find_by_window(self, inWindow);
 
 	/* Check if window was removed from workspace or added */
 	workspace=xfdashboard_window_tracker_window_get_workspace(inWindow);
-	if(!workspace) return;
 	
-	if(workspace!=priv->workspace) _xfdashboard_live_workspace_on_window_closed(self, inWindow, inUserData);
+	if(workspace!=priv->workspace)
+	{
+		if(windowActor) clutter_actor_destroy(windowActor);
+	}
 		else _xfdashboard_live_workspace_on_window_opened(self, inWindow, inUserData);
 }
 
