@@ -128,6 +128,35 @@ static ClutterActor* _xfdashboard_live_workspace_find_by_window(XfdashboardLiveW
 	return(NULL);
 }
 
+/* Create actor for wnck-window */
+static ClutterActor* _xfdashboard_live_workspace_create_actor(XfdashboardLiveWorkspace *self,
+																XfdashboardWindowTrackerWindow *inWindow)
+{
+	ClutterActor		*actor;
+	GdkPixbuf			*windowIcon;
+	ClutterImage		*image;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
+
+	/* Create actor */
+	actor=xfdashboard_background_new();
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(actor),
+												XFDASHBOARD_BACKGROUND_TYPE_FILL | XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
+	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_Black);
+	xfdashboard_background_set_outline_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_White);
+	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(actor), 4.0f);
+	g_object_set_data(G_OBJECT(actor), "window-tracker-window", inWindow);
+
+	/* Get image for window icon and set actor's content */
+	windowIcon=xfdashboard_window_tracker_window_get_icon(inWindow);
+	image=xfdashboard_get_image_for_pixbuf(windowIcon);
+	xfdashboard_background_set_image(XFDASHBOARD_BACKGROUND(actor), image);
+	g_object_unref(image);
+
+	return(actor);
+}
+
 /* This actor was clicked */
 static void _xfdashboard_live_workspace_on_clicked(XfdashboardLiveWorkspace *self, ClutterActor *inActor, gpointer inUserData)
 {
@@ -158,8 +187,6 @@ static void _xfdashboard_live_workspace_on_window_opened(XfdashboardLiveWorkspac
 															gpointer inUserData)
 {
 	ClutterActor		*actor;
-	GdkPixbuf			*windowIcon;
-	ClutterImage		*image;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -167,21 +194,9 @@ static void _xfdashboard_live_workspace_on_window_opened(XfdashboardLiveWorkspac
 	/* Check if window is visible on this workspace */
 	if(!_xfdashboard_live_workspace_is_visible_window(self, inWindow)) return;
 
-	/* Create actor */
-	actor=xfdashboard_background_new();
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(actor),
-												XFDASHBOARD_BACKGROUND_TYPE_FILL | XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
-	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_Black);
-	xfdashboard_background_set_outline_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_White);
-	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(actor), 4.0f);
-	g_object_set_data(G_OBJECT(actor), "window-tracker-window", inWindow);
+	/* Create actor for window */
+	actor=_xfdashboard_live_workspace_create_actor(self, inWindow),
 	clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, NULL);
-
-	/* Get image for window icon and set actor's content */
-	windowIcon=xfdashboard_window_tracker_window_get_icon(inWindow);
-	image=xfdashboard_get_image_for_pixbuf(windowIcon);
-	xfdashboard_background_set_image(XFDASHBOARD_BACKGROUND(actor), image);
-	g_object_unref(image);
 }
 
 /* A window's position and/or size has changed */
@@ -259,6 +274,7 @@ static void _xfdashboard_live_workspace_on_window_state_changed(XfdashboardLiveW
 	 */
 
 	ClutterActor		*windowActor;
+	ClutterActor		*actor;
 	gboolean			newVisible;
 	gboolean			currentVisible;
 
@@ -278,7 +294,11 @@ static void _xfdashboard_live_workspace_on_window_state_changed(XfdashboardLiveW
 	newVisible=_xfdashboard_live_workspace_is_visible_window(self, inWindow);
 	if(newVisible!=currentVisible)
 	{
-		if(newVisible) _xfdashboard_live_workspace_on_window_opened(self, inWindow, NULL);
+		if(newVisible)
+		{
+			actor=_xfdashboard_live_workspace_create_actor(self, inWindow);
+			clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, NULL);
+		}
 			else
 			{
 				if(windowActor) clutter_actor_destroy(windowActor);
@@ -294,6 +314,7 @@ static void _xfdashboard_live_workspace_on_window_workspace_changed(XfdashboardL
 	XfdashboardLiveWorkspacePrivate		*priv;
 	XfdashboardWindowTrackerWorkspace	*workspace;
 	ClutterActor						*windowActor;
+	ClutterActor						*actor;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -310,7 +331,11 @@ static void _xfdashboard_live_workspace_on_window_workspace_changed(XfdashboardL
 	{
 		if(windowActor) clutter_actor_destroy(windowActor);
 	}
-		else _xfdashboard_live_workspace_on_window_opened(self, inWindow, inUserData);
+		else
+		{
+			actor=_xfdashboard_live_workspace_create_actor(self, inWindow);
+			clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, NULL);
+		}
 }
 
 /* IMPLEMENTATION: ClutterActor */
