@@ -306,6 +306,29 @@ static void _xfdashboard_live_workspace_on_window_state_changed(XfdashboardLiveW
 	}
 }
 
+/* A window's icon has changed */
+static void _xfdashboard_live_workspace_on_window_icon_changed(XfdashboardLiveWorkspace *self,
+																XfdashboardWindowTrackerWindow *inWindow,
+																gpointer inUserData)
+{
+	ClutterActor		*windowActor;
+	GdkPixbuf			*windowIcon;
+	ClutterImage		*image;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+
+	/* Find actor for window */
+	windowActor=_xfdashboard_live_workspace_find_by_window(self, inWindow);
+	if(!windowActor) return;
+
+	/* Get image for window icon and set actor's content */
+	windowIcon=xfdashboard_window_tracker_window_get_icon(inWindow);
+	image=xfdashboard_get_image_for_pixbuf(windowIcon);
+	xfdashboard_background_set_image(XFDASHBOARD_BACKGROUND(windowActor), image);
+	g_object_unref(image);
+}
+
 /* A window's workspace has changed */
 static void _xfdashboard_live_workspace_on_window_workspace_changed(XfdashboardLiveWorkspace *self,
 																	XfdashboardWindowTrackerWindow *inWindow,
@@ -321,7 +344,7 @@ static void _xfdashboard_live_workspace_on_window_workspace_changed(XfdashboardL
 
 	priv=self->priv;
 
-	/* Find actor for windw */
+	/* Find actor for window */
 	windowActor=_xfdashboard_live_workspace_find_by_window(self, inWindow);
 
 	/* Check if window was removed from workspace or added */
@@ -583,7 +606,7 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	g_signal_connect_swapped(priv->windowTracker, "window-closed", G_CALLBACK(_xfdashboard_live_workspace_on_window_closed), self);
 	g_signal_connect_swapped(priv->windowTracker, "window-geometry-changed", G_CALLBACK(_xfdashboard_live_workspace_on_window_geometry_changed), self);
 	g_signal_connect_swapped(priv->windowTracker, "window-state-changed", G_CALLBACK(_xfdashboard_live_workspace_on_window_state_changed), self);
-	// TODO: g_signal_connect_swapped(priv->windowTracker, "window-icon-changed", G_CALLBACK(_xfdashboard_live_window_on_icon_changed), self);
+	g_signal_connect_swapped(priv->windowTracker, "window-icon-changed", G_CALLBACK(_xfdashboard_live_workspace_on_window_icon_changed), self);
 	g_signal_connect_swapped(priv->windowTracker, "window-workspace-changed", G_CALLBACK(_xfdashboard_live_workspace_on_window_workspace_changed), self);
 	g_signal_connect_swapped(priv->windowTracker, "window-stacking-changed", G_CALLBACK(_xfdashboard_live_workspace_on_window_stacking_changed), self);
 }
