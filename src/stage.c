@@ -183,7 +183,7 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 	appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
 
 	/* Check if current text length if greater than zero and previous text length
-	 * was zero. If check if successful it marks the start of a search. Emit the
+	 * was zero. If check is successful it marks the start of a search. Emit the
 	 * "search-started" signal. There is no need to start a search a search over
 	 * all search providers as it will be done later by updating search criterias.
 	 * There is also no need to activate search view because we will ensure that
@@ -195,7 +195,7 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		/* Remember current active view to restore it when search ended */
 		priv->viewBeforeSearch=XFDASHBOARD_VIEW(g_object_ref(xfdashboard_viewpad_get_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad))));
 
-		/* Enable view */
+		/* Enable search view */
 		xfdashboard_view_set_enabled(searchView, TRUE);
 
 		/* Activate "clear" button on text box */
@@ -209,7 +209,7 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		priv->searchActive=TRUE;
 	}
 
-	/* Ensure that search view is active, emit signal for text changed
+	/* Ensure that search view is active, emit signal for text changed,
 	 * update search criterias and set active toggle state at apps button
 	 */
 	xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), searchView);
@@ -219,7 +219,7 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 	if(appsButton) xfdashboard_toggle_button_set_toggle_state(appsButton, TRUE);
 
 	/* Check if current text length is zero and previous text length was greater
-	 * than zero. If check if successful it marks the end of current search. Emit
+	 * than zero. If check is successful it marks the end of current search. Emit
 	 * the "search-ended" signal, reactivate view before search was started and
 	 * disable search view.
 	 */
