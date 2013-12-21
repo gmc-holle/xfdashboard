@@ -1173,7 +1173,7 @@ static void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
 	if(outNaturalWidth) *outNaturalWidth=naturalWidth;
 }
 
-/* Allocate position and size of actor and its children*/
+/* Allocate position and size of actor and its children */
 static void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 												const ClutterActorBox *inBox,
 												ClutterAllocationFlags inFlags)

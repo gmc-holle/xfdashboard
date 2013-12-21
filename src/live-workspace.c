@@ -416,7 +416,7 @@ static void _xfdashboard_live_workspace_get_preferred_width(ClutterActor *self,
 	if(outNaturalWidth) *outNaturalWidth=naturalWidth;
 }
 
-/* Allocate position and size of actor and its children*/
+/* Allocate position and size of actor and its children */
 static void _xfdashboard_live_workspace_allocate(ClutterActor *self,
 												const ClutterActorBox *inBox,
 												ClutterAllocationFlags inFlags)

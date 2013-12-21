@@ -527,7 +527,7 @@ static void _xfdashboard_scrollbar_get_preferred_width(ClutterActor *self,
 	if(outNaturalWidth) *outNaturalWidth=naturalWidth;
 }
 
-/* Allocate position and size of actor and its children*/
+/* Allocate position and size of actor and its children */
 static void _xfdashboard_scrollbar_allocate(ClutterActor *self,
 												const ClutterActorBox *inBox,
 												ClutterAllocationFlags inFlags)
