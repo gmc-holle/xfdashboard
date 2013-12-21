@@ -43,6 +43,7 @@
 #include "textbox.h"
 #include "toggle-button.h"
 #include "workspace-selector.h"
+#include "notification.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,
