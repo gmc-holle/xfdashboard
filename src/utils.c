@@ -26,12 +26,14 @@
 #endif
 
 #include "utils.h"
-#include "image.h"
 
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <gtk/gtk.h>
 #include <dbus/dbus-glib.h>
+
+#include "image.h"
+#include "stage.h"
 
 /* Private constants */
 #define FALLBACK_ICON_NAME		GTK_STOCK_MISSING_IMAGE
@@ -265,4 +267,36 @@ ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf)
 
 	/* Return ClutterImage */
 	return(CLUTTER_IMAGE(image));
+}
+
+/* Show a notification */
+void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const gchar *inText)
+{
+	XfdashboardStage				*stage;
+	ClutterStageManager				*stageManager;
+	const GSList					*stages;
+
+	g_return_if_fail(inSender==NULL || CLUTTER_IS_ACTOR(inSender));
+
+	stage=NULL;
+
+	/* Get stage of sending actor if available */
+	if(inSender) stage=XFDASHBOARD_STAGE(clutter_actor_get_stage(inSender));
+
+	/* No sending actor specified or no stage found so get default stage */
+	if(!stage)
+	{
+		stageManager=clutter_stage_manager_get_default();
+		stage=XFDASHBOARD_STAGE(clutter_stage_manager_get_default_stage(stageManager));
+
+		/* If we did not get default stage use first stage from manager */
+		if(!stage)
+		{
+			stages=clutter_stage_manager_peek_stages(stageManager);
+			stage=XFDASHBOARD_STAGE(stages->data);
+		}
+	}
+
+	/* Show notification on stage */
+	xfdashboard_stage_show_notification(stage, inIconName, inText);
 }

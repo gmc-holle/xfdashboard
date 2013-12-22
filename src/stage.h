@@ -68,6 +68,8 @@ GType xfdashboard_stage_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_stage_new(void);
 
+void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *inIconName, const gchar *inText);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_STAGE__ */

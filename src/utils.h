@@ -46,6 +46,8 @@ ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint 
 ClutterImage* xfdashboard_get_image_for_gicon(GIcon *inIcon, gint inSize);
 ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf);
 
+void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const gchar *inText);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_UTILS__ */

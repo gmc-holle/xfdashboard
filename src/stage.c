@@ -43,7 +43,6 @@
 #include "textbox.h"
 #include "toggle-button.h"
 #include "workspace-selector.h"
-#include "notification.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,
@@ -62,6 +61,7 @@ struct _XfdashboardStagePrivate
 	ClutterActor				*workspaces;
 	ClutterActor				*viewpad;
 	ClutterActor				*viewSelector;
+	ClutterActor				*notification;
 
 	/* Instance related */
 	XfdashboardWindowTracker	*windowTracker;
@@ -85,8 +85,12 @@ static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
-static ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 };				// TODO: Replace by settings/theming object
-static ClutterColor		defaultButtonHighlightColor={ 0xc0, 0xc0, 0xc0, 0xa0 };	// TODO: Replace by settings/theming object
+static ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 };					// TODO: Replace by settings/theming object
+static ClutterColor		defaultButtonHighlightColor={ 0xc0, 0xc0, 0xc0, 0xa0 };			// TODO: Replace by settings/theming object
+static ClutterColor		defaultNotificationFillColor={ 0x13, 0x50, 0xff, 0xff };		// TODO: Replace by settings/theming object
+static ClutterColor		defaultNotificationOutlineColor={ 0x63, 0xb0, 0xff, 0xff };		// TODO: Replace by settings/theming object
+
+#define DEFAULT_NOTIFICATION_OUTLINE_WIDTH		1.0f									// TODO: Replace by settings/theming object
 
 /* A view button in view-selector was toggled */
 static void _xfdashboard_stage_on_view_selector_button_toggled(XfdashboardStage *self,
@@ -435,6 +439,22 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_add_constraint(groupHorizontal, clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_HEIGHT, -16.0f));
 	clutter_actor_add_child(CLUTTER_ACTOR(self), groupHorizontal);
 
+	/* Notification actor (this actor is above all others and hidden by default) */
+	priv->notification=xfdashboard_text_box_new();
+	clutter_actor_hide(priv->notification);
+	clutter_actor_set_reactive(priv->notification, FALSE);
+	clutter_actor_set_fixed_position_set(priv->notification, TRUE);
+	clutter_actor_set_z_position(priv->notification, 0.1f);
+	clutter_actor_set_request_mode(priv->notification, CLUTTER_REQUEST_HEIGHT_FOR_WIDTH);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->notification),
+												XFDASHBOARD_BACKGROUND_TYPE_FILL | XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
+	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->notification), &defaultNotificationFillColor);
+	xfdashboard_background_set_outline_color(XFDASHBOARD_BACKGROUND(priv->notification), &defaultNotificationOutlineColor);
+	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->notification), DEFAULT_NOTIFICATION_OUTLINE_WIDTH);
+	clutter_actor_add_constraint(priv->notification, clutter_align_constraint_new(CLUTTER_ACTOR(self), CLUTTER_ALIGN_X_AXIS, 0.5f));
+	clutter_actor_add_constraint(priv->notification, clutter_align_constraint_new(groupHorizontal, CLUTTER_ALIGN_Y_AXIS, 1.0f));
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->notification);
+
 	/* Set key focus to searchbox */
 	clutter_stage_set_accept_focus(CLUTTER_STAGE(self), TRUE);
 	clutter_stage_set_key_focus(CLUTTER_STAGE(self), priv->searchbox);
@@ -495,6 +515,12 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 		g_signal_handlers_disconnect_by_data(priv->windowTracker, self);
 		g_object_unref(priv->windowTracker);
 		priv->windowTracker=NULL;
+	}
+
+	if(priv->notification)
+	{
+		clutter_actor_destroy(CLUTTER_ACTOR(priv->notification));
+		priv->notification=NULL;
 	}
 
 	if(priv->quicklaunch)
@@ -604,6 +630,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->workspaces=NULL;
 	priv->viewpad=NULL;
 	priv->viewSelector=NULL;
+	priv->notification=NULL;
 	priv->lastSearchTextLength=0;
 	priv->viewBeforeSearch=NULL;
 	priv->searchActive=FALSE;
@@ -626,4 +653,19 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 ClutterActor* xfdashboard_stage_new(void)
 {
 	return(CLUTTER_ACTOR(g_object_new(XFDASHBOARD_TYPE_STAGE, NULL)));
+}
+
+/* Show a notification on stage */
+void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *inIconName, const gchar *inText)
+{
+	XfdashboardStagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+
+	priv=self->priv;
+
+	/* Show notification on stage */
+	xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->notification), inText);
+	xfdashboard_text_box_set_primary_icon(XFDASHBOARD_TEXT_BOX(priv->notification), inIconName);
+	clutter_actor_show(CLUTTER_ACTOR(priv->notification));
 }
