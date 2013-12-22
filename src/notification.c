@@ -306,9 +306,10 @@ static void xfdashboard_notification_init(XfdashboardNotification *self)
 	priv->placement=DEFAULT_PLACEMENT;
 	priv->margin=DEFAULT_MARGIN;
 
-	/* Set up this actor */
+	/* Set up this actor (this actor is above all others) */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), FALSE);
 	clutter_actor_set_fixed_position_set(CLUTTER_ACTOR(self), TRUE);
+	clutter_actor_set_z_position(CLUTTER_ACTOR(self), 1.0f);
 	clutter_actor_set_request_mode(CLUTTER_ACTOR(self), CLUTTER_REQUEST_HEIGHT_FOR_WIDTH);
 	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(self),
 												XFDASHBOARD_BACKGROUND_TYPE_FILL | XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
