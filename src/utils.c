@@ -270,11 +270,13 @@ ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf)
 }
 
 /* Show a notification */
-void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const gchar *inText)
+void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const gchar *inFormatText, ...)
 {
 	XfdashboardStage				*stage;
 	ClutterStageManager				*stageManager;
 	const GSList					*stages;
+	va_list							args;
+	gchar							*text;
 
 	g_return_if_fail(inSender==NULL || CLUTTER_IS_ACTOR(inSender));
 
@@ -297,6 +299,14 @@ void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const g
 		}
 	}
 
+	/* Build text to display */
+	va_start(args, inFormatText);
+	text=g_strdup_vprintf(inFormatText, args);
+	va_end(args);
+
 	/* Show notification on stage */
-	xfdashboard_stage_show_notification(stage, inIconName, inText);
+	xfdashboard_stage_show_notification(stage, inIconName, text);
+
+	/* Release allocated resources */
+	g_free(text);
 }

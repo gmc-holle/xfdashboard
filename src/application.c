@@ -200,7 +200,11 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	g_signal_connect_swapped(stage, "delete-event", G_CALLBACK(_xfdashboard_application_on_delete_stage), self);
 
 	/* Initialization was successful so return TRUE */
-	xfdashboard_notify(NULL, NULL, _("Welcome to xfdashboard!"));
+#ifdef DEBUG
+	xfdashboard_notify(NULL, NULL, _("Welcome to %s (%s)!"), PACKAGE_NAME, PACKAGE_VERSION);
+#else
+	xfdashboard_notify(NULL, NULL, _("Welcome to %s!"), PACKAGE_NAME);
+#endif
 	return(TRUE);
 }
 
