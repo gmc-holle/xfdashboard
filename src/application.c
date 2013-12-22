@@ -38,6 +38,7 @@
 #include "applications-view.h"
 #include "windows-view.h"
 #include "search-view.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplication,
@@ -199,6 +200,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	g_signal_connect_swapped(stage, "delete-event", G_CALLBACK(_xfdashboard_application_on_delete_stage), self);
 
 	/* Initialization was successful so return TRUE */
+	xfdashboard_notify(NULL, NULL, _("Welcome to xfdashboard!"));
 	return(TRUE);
 }
 
