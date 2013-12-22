@@ -700,6 +700,82 @@ GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButt
 	return(appInfo);
 }
 
+/* Get display name of application button */
+const gchar* xfdashboard_application_button_get_display_name(XfdashboardApplicationButton *self)
+{
+	XfdashboardApplicationButtonPrivate		*priv;
+	const gchar								*title;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), NULL);
+
+	priv=self->priv;
+	title=NULL;
+
+	/* Get title where available */
+	switch(priv->type)
+	{
+		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_NONE:
+			/* Do nothing */
+			break;
+
+		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
+			title=garcon_menu_element_get_name(priv->menuElement);
+			break;
+
+		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
+			if(priv->appInfo) title=g_app_info_get_name(priv->appInfo);
+			break;
+
+		default:
+			g_critical(_("Cannot get display name of application icon because of unknown type (%d)"), priv->type);
+			break;
+	}
+
+	/* Return display name */
+	return(title);
+}
+
+/* Get icon name of application button */
+const gchar* xfdashboard_application_button_get_icon_name(XfdashboardApplicationButton *self)
+{
+	XfdashboardApplicationButtonPrivate		*priv;
+	const gchar								*iconName;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), NULL);
+
+	priv=self->priv;
+	iconName=NULL;
+
+	/* Get icon where available */
+	switch(priv->type)
+	{
+		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_NONE:
+			/* Do nothing */
+			break;
+
+		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
+			iconName=garcon_menu_element_get_icon_name(priv->menuElement);
+			break;
+
+		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
+			if(priv->appInfo)
+			{
+				GIcon						*gicon;
+
+				gicon=g_app_info_get_icon(priv->appInfo);
+				if(gicon) iconName=g_icon_to_string(gicon);
+			}
+			break;
+
+		default:
+			g_critical(_("Cannot get icon name of application icon because of unknown type (%d)"), priv->type);
+			break;
+	}
+
+	/* Return display name */
+	return(iconName);
+}
+
 /* Execute command of represented application by application button */
 gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self)
 {
@@ -718,11 +794,23 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 	error=NULL;
 	if(!g_app_info_launch(appInfo, NULL, NULL, &error))
 	{
+		xfdashboard_notify(CLUTTER_ACTOR(self),
+							xfdashboard_application_button_get_icon_name(self),
+							_("Launching application '%s' failed: %s"),
+							xfdashboard_application_button_get_display_name(self),
+							(error && error->message) ? error->message : _("unknown error"));
 		g_warning(_("Could not launch application: %s"),
-					(error && error->message) ? error->message : "unknown error");
+					(error && error->message) ? error->message : _("unknown error"));
 		if(error) g_error_free(error);
 	}
-		else started=TRUE;
+		else
+		{
+			xfdashboard_notify(CLUTTER_ACTOR(self),
+								xfdashboard_application_button_get_icon_name(self),
+								_("Application '%s' launched"),
+								xfdashboard_application_button_get_display_name(self));
+			started=TRUE;
+		}
 
 	/* Clean up allocated resources */
 	g_object_unref(appInfo);

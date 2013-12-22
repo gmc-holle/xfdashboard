@@ -85,6 +85,8 @@ const gchar* xfdashboard_application_button_get_format_title_description(Xfdashb
 void xfdashboard_application_button_set_format_title_description(XfdashboardApplicationButton *self, const gchar *inFormat);
 
 GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButton *self);
+const gchar* xfdashboard_application_button_get_display_name(XfdashboardApplicationButton *self);
+const gchar* xfdashboard_application_button_get_icon_name(XfdashboardApplicationButton *self);
 
 gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self);
 

@@ -311,6 +311,10 @@ static void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardQuicklaunch *self,
 		appInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
 		if(appInfo)
 		{
+			xfdashboard_notify(CLUTTER_ACTOR(self),
+								xfdashboard_application_button_get_icon_name(XFDASHBOARD_APPLICATION_BUTTON(draggedActor)),
+								_("Favourite '%s' added"),
+								xfdashboard_application_button_get_display_name(XFDASHBOARD_APPLICATION_BUTTON(draggedActor)));
 			g_signal_emit(self, XfdashboardQuicklaunchSignals[SIGNAL_FAVOURITE_ADDED], 0, appInfo);
 			g_object_unref(appInfo);
 		}
@@ -552,6 +556,10 @@ static void _xfdashboard_quicklaunch_on_trash_drop_drop(XfdashboardQuicklaunch *
 	appInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
 	if(appInfo)
 	{
+		xfdashboard_notify(CLUTTER_ACTOR(self),
+							xfdashboard_application_button_get_icon_name(XFDASHBOARD_APPLICATION_BUTTON(draggedActor)),
+							_("Favourite '%s' removed"),
+							xfdashboard_application_button_get_display_name(XFDASHBOARD_APPLICATION_BUTTON(draggedActor)));
 		g_signal_emit(self, XfdashboardQuicklaunchSignals[SIGNAL_FAVOURITE_REMOVED], 0, appInfo);
 		g_object_unref(appInfo);
 	}
