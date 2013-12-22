@@ -69,6 +69,8 @@ struct _XfdashboardStagePrivate
 	gboolean					searchActive;
 	gint						lastSearchTextLength;
 	XfdashboardView				*viewBeforeSearch;
+
+	guint						notificationTimeoutID;
 };
 
 /* Signals */
@@ -91,6 +93,39 @@ static ClutterColor		defaultNotificationFillColor={ 0x13, 0x50, 0xff, 0xff };		/
 static ClutterColor		defaultNotificationOutlineColor={ 0x63, 0xb0, 0xff, 0xff };		// TODO: Replace by settings/theming object
 
 #define DEFAULT_NOTIFICATION_OUTLINE_WIDTH		1.0f									// TODO: Replace by settings/theming object
+#define DEFAULT_NOTIFICATION_TIMEOUT			3000									// TODO: Replace by settings/theming object
+
+/* Notification timeout has been reached */
+static void _xfdashboard_stage_on_notification_timeout_destroyed(gpointer inUserData)
+{
+	XfdashboardStage			*self;
+	XfdashboardStagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(inUserData));
+
+	self=XFDASHBOARD_STAGE(inUserData);
+	priv=self->priv;
+
+	/* Timeout source was destroy so just reset ID to 0 */
+	priv->notificationTimeoutID=0;
+}
+
+static gboolean _xfdashboard_stage_on_notification_timeout(gpointer inUserData)
+{
+	XfdashboardStage			*self;
+	XfdashboardStagePrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(inUserData), G_SOURCE_REMOVE);
+
+	self=XFDASHBOARD_STAGE(inUserData);
+	priv=self->priv;
+
+	/* Timeout reached so hide notification */
+	clutter_actor_hide(priv->notification);
+
+	/* Tell main context to remove this source */
+	return(G_SOURCE_REMOVE);
+}
 
 /* A view button in view-selector was toggled */
 static void _xfdashboard_stage_on_view_selector_button_toggled(XfdashboardStage *self,
@@ -510,6 +545,12 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 	XfdashboardStagePrivate		*priv=self->priv;
 
 	/* Release allocated resources */
+	if(priv->notificationTimeoutID)
+	{
+		g_source_remove(priv->notificationTimeoutID);
+		priv->notificationTimeoutID=0;
+	}
+
 	if(priv->windowTracker)
 	{
 		g_signal_handlers_disconnect_by_data(priv->windowTracker, self);
@@ -634,6 +675,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->lastSearchTextLength=0;
 	priv->viewBeforeSearch=NULL;
 	priv->searchActive=FALSE;
+	priv->notificationTimeoutID=0;
 
 	/* Set up stage */
 	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &defaultStageColor);
@@ -664,8 +706,23 @@ void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *in
 
 	priv=self->priv;
 
-	/* Show notification on stage */
+	/* Stop current running timeout source because it would hide this
+	 * new notification to soon.
+	 */
+	if(priv->notificationTimeoutID)
+	{
+		g_source_remove(priv->notificationTimeoutID);
+		priv->notificationTimeoutID=0;
+	}
+
+	/* Show notification on stage and set up timeout source */
 	xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->notification), inText);
 	xfdashboard_text_box_set_primary_icon(XFDASHBOARD_TEXT_BOX(priv->notification), inIconName);
 	clutter_actor_show(CLUTTER_ACTOR(priv->notification));
+
+	priv->notificationTimeoutID=clutter_threads_add_timeout_full(G_PRIORITY_DEFAULT,
+																	DEFAULT_NOTIFICATION_TIMEOUT,
+																	_xfdashboard_stage_on_notification_timeout,
+																	self,
+																	_xfdashboard_stage_on_notification_timeout_destroyed);
 }
