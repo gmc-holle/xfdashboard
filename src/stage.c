@@ -701,6 +701,7 @@ ClutterActor* xfdashboard_stage_new(void)
 void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *inIconName, const gchar *inText)
 {
 	XfdashboardStagePrivate		*priv;
+	gint						interval;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 
@@ -715,13 +716,18 @@ void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *in
 		priv->notificationTimeoutID=0;
 	}
 
-	/* Show notification on stage and set up timeout source */
+	/* Show notification on stage */
 	xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->notification), inText);
 	xfdashboard_text_box_set_primary_icon(XFDASHBOARD_TEXT_BOX(priv->notification), inIconName);
 	clutter_actor_show(CLUTTER_ACTOR(priv->notification));
 
+	/* Set up timeout source. The timeout interval differs and depends on the length
+	 * of the notification text to show but never drops below the minimum timeout configured.
+	 * The interval is calculated by one second for 30 characters.
+	 */
+	interval=MAX((gint)((strlen(inText)/30.0f)*1000.0f), DEFAULT_NOTIFICATION_TIMEOUT);
 	priv->notificationTimeoutID=clutter_threads_add_timeout_full(G_PRIORITY_DEFAULT,
-																	DEFAULT_NOTIFICATION_TIMEOUT,
+																	interval,
 																	_xfdashboard_stage_on_notification_timeout,
 																	self,
 																	_xfdashboard_stage_on_notification_timeout_destroyed);
