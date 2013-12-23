@@ -64,9 +64,6 @@ GType xfdashboard_workspace_selector_get_type(void) G_GNUC_CONST;
 ClutterActor* xfdashboard_workspace_selector_new(void);
 ClutterActor* xfdashboard_workspace_selector_new_with_orientation(ClutterOrientation inOrientation);
 
-gfloat xfdashboard_workspace_selector_get_normal_size(XfdashboardWorkspaceSelector *self);
-void xfdashboard_workspace_selector_set_normal_size(XfdashboardWorkspaceSelector *self, const gfloat inSize);
-
 gfloat xfdashboard_workspace_selector_get_spacing(XfdashboardWorkspaceSelector *self);
 void xfdashboard_workspace_selector_set_spacing(XfdashboardWorkspaceSelector *self, const gfloat inSpacing);
 

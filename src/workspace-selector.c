@@ -50,7 +50,6 @@ G_DEFINE_TYPE(XfdashboardWorkspaceSelector,
 struct _XfdashboardWorkspaceSelectorPrivate
 {
 	/* Properties related */
-	gfloat								normalSize;
 	gfloat								scaleMin;
 	gfloat								scaleMax;
 	gfloat								scaleStep;
@@ -71,7 +70,6 @@ enum
 {
 	PROP_0,
 
-	PROP_NORMAL_SIZE,
 	PROP_SPACING,
 	PROP_ORIENTATION,
 
@@ -81,7 +79,6 @@ enum
 static GParamSpec* XfdashboardWorkspaceSelectorProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_NORMAL_ICON_SIZE	64								// TODO: Replace by settings/theming object
 #define DEFAULT_SCALE_MIN			0.1
 #define DEFAULT_SCALE_MAX			1.0
 #define DEFAULT_SCALE_STEP			0.1
@@ -823,10 +820,6 @@ static void _xfdashboard_workspace_selector_set_property(GObject *inObject,
 
 	switch(inPropID)
 	{
-		case PROP_NORMAL_SIZE:
-			xfdashboard_workspace_selector_set_normal_size(self, g_value_get_float(inValue));
-			break;
-
 		case PROP_SPACING:
 			xfdashboard_workspace_selector_set_spacing(self, g_value_get_float(inValue));
 			break;
@@ -851,10 +844,6 @@ static void _xfdashboard_workspace_selector_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
-		case PROP_NORMAL_SIZE:
-			g_value_set_float(outValue, priv->normalSize);
-			break;
-
 		case PROP_SPACING:
 			g_value_set_float(outValue, priv->spacing);
 			break;
@@ -891,14 +880,6 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 	g_type_class_add_private(klass, sizeof(XfdashboardWorkspaceSelectorPrivate));
 
 	/* Define properties */
-	XfdashboardWorkspaceSelectorProperties[PROP_NORMAL_SIZE]=
-		g_param_spec_float("normal-size",
-								_("Normal size"),
-								_("Unscale size of workspace"),
-								0.0, G_MAXFLOAT,
-								DEFAULT_NORMAL_ICON_SIZE,
-								G_PARAM_READWRITE);
-
 	XfdashboardWorkspaceSelectorProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
 								_("Spacing"),
@@ -933,7 +914,6 @@ static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *se
 	priv->activeWorkspace=NULL;
 	priv->spacing=0.0f;
 	priv->orientation=DEFAULT_ORIENTATION;
-	priv->normalSize=DEFAULT_NORMAL_ICON_SIZE;
 	priv->scaleCurrent=DEFAULT_SCALE_MAX;
 	priv->scaleMin=DEFAULT_SCALE_MIN;
 	priv->scaleMax=DEFAULT_SCALE_MAX;
@@ -978,35 +958,6 @@ ClutterActor* xfdashboard_workspace_selector_new_with_orientation(ClutterOrienta
 	return(g_object_new(XFDASHBOARD_TYPE_WORKSPACE_SELECTOR,
 						"orientation", inOrientation,
 						NULL));
-}
-
-/* Get/set spacing between children */
-gfloat xfdashboard_workspace_selector_get_normal_size(XfdashboardWorkspaceSelector *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), 0.0f);
-
-	return(self->priv->normalSize);
-}
-
-void xfdashboard_workspace_selector_set_normal_size(XfdashboardWorkspaceSelector *self, const gfloat inSize)
-{
-	XfdashboardWorkspaceSelectorPrivate	*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
-	g_return_if_fail(inSize>=0.0f);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->normalSize!=inSize)
-	{
-		/* Set value */
-		priv->normalSize=inSize;
-		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWorkspaceSelectorProperties[PROP_NORMAL_SIZE]);
-	}
 }
 
 /* Get/set spacing between children */

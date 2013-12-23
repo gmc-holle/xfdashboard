@@ -158,6 +158,11 @@ static void _xfdashboard_application_button_update_text(XfdashboardApplicationBu
 				title=g_app_info_get_name(priv->appInfo);
 				description=g_app_info_get_description(priv->appInfo);
 			}
+				else
+				{
+					title=priv->desktopFilename;
+					description=_("No information available for application!");
+				}
 			break;
 
 		default:
@@ -202,6 +207,7 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 				gicon=g_app_info_get_icon(priv->appInfo);
 				if(gicon) iconName=g_icon_to_string(gicon);
 			}
+				else iconName=GTK_STOCK_MISSING_IMAGE;
 			break;
 
 		default:
@@ -724,6 +730,7 @@ const gchar* xfdashboard_application_button_get_display_name(XfdashboardApplicat
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
 			if(priv->appInfo) title=g_app_info_get_name(priv->appInfo);
+				else title=priv->desktopFilename;
 			break;
 
 		default:
@@ -779,17 +786,30 @@ const gchar* xfdashboard_application_button_get_icon_name(XfdashboardApplication
 /* Execute command of represented application by application button */
 gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self)
 {
+	XfdashboardApplicationButtonPrivate		*priv;
 	GAppInfo								*appInfo;
 	GError									*error;
 	gboolean								started;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), FALSE);
 
+	priv=self->priv;
 	started=FALSE;
 
 	/* Launch application */
 	appInfo=xfdashboard_application_button_get_app_info(self);
-	if(!appInfo) return(FALSE);
+	if(!appInfo)
+	{
+		xfdashboard_notify(CLUTTER_ACTOR(self),
+							GTK_STOCK_DIALOG_ERROR,
+							_("Launching application '%s' failed: %s"),
+							priv->desktopFilename,
+							_("No information available for application"));
+		g_warning(_("Launching application '%s' failed: %s"),
+					priv->desktopFilename,
+					_("No information available for application"));
+		return(FALSE);
+	}
 
 	error=NULL;
 	if(!g_app_info_launch(appInfo, NULL, NULL, &error))
@@ -799,7 +819,8 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 							_("Launching application '%s' failed: %s"),
 							xfdashboard_application_button_get_display_name(self),
 							(error && error->message) ? error->message : _("unknown error"));
-		g_warning(_("Could not launch application: %s"),
+		g_warning(_("Launching application '%s' failed: %s"),
+					xfdashboard_application_button_get_display_name(self),
 					(error && error->message) ? error->message : _("unknown error"));
 		if(error) g_error_free(error);
 	}
