@@ -26,7 +26,7 @@
 #include "config.h"
 #endif
 
-#include "textbox.h"
+#include "text-box.h"
 #include "enums.h"
 #include "button.h"
 

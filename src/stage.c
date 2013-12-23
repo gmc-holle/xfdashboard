@@ -35,12 +35,11 @@
 #include "application.h"
 #include "viewpad.h"
 #include "view-selector.h"
-#include "textbox.h"
+#include "text-box.h"
 #include "quicklaunch.h"
 #include "applications-view.h"
 #include "windows-view.h"
 #include "search-view.h"
-#include "textbox.h"
 #include "toggle-button.h"
 #include "workspace-selector.h"
 
