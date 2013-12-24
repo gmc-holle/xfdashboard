@@ -434,6 +434,9 @@ static void _xfdashboard_drag_action_drag_motion(ClutterDragAction *inAction,
 				/* Get actor from entry */
 				actor=CLUTTER_ACTOR(list->data);
 
+				/* Actor must be one same stage where event happened */
+				if(clutter_actor_get_stage(actor)!=CLUTTER_ACTOR(stage)) continue;
+
 				/* Get position and size of actor in stage coordinates */
 				clutter_actor_get_transformed_position(actor, &x, &y);
 				clutter_actor_get_transformed_size(actor, &w, &h);
