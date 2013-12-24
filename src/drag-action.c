@@ -240,6 +240,32 @@ static void _xfdashboard_drag_action_set_source(XfdashboardDragAction *self, Clu
 	}
 }
 
+/* A known "motion actor" is going to be destroyed. Do not swap parameters for
+ * usual use of g_signal_connect_swapped to reuse this function for g_slist_foreach.
+ */
+#include "utils.h"
+static void _xfdashboard_drag_action_on_motion_actor_destroyed(gpointer inActor,
+																gpointer inUserData)
+{
+	XfdashboardDragAction			*self;
+	XfdashboardDragActionPrivate	*priv;
+	ClutterActor					*actor;
+gint n;
+
+	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inUserData));
+
+	actor=CLUTTER_ACTOR(inActor);
+	self=XFDASHBOARD_DRAG_ACTION(inUserData);
+	priv=self->priv;
+
+	/* Disconnect signal */
+	g_signal_handlers_disconnect_by_func(actor, G_CALLBACK(_xfdashboard_drag_action_on_motion_actor_destroyed), self);
+
+	/* Remove from list */
+	priv->lastMotionActors=g_slist_remove(priv->lastMotionActors, actor);
+}
+
 /* IMPLEMENTATION: ClutterDragAction */
 
 /* Dragging of actor begins */
@@ -462,6 +488,9 @@ static void _xfdashboard_drag_action_drag_motion(ClutterDragAction *inAction,
 					 */
 					else
 					{
+						/* Disconnect signal */
+						g_signal_handlers_disconnect_by_func(actor, G_CALLBACK(_xfdashboard_drag_action_on_motion_actor_destroyed), self);
+
 						/* Remove from list */
 						priv->lastMotionActors=g_slist_remove_link(priv->lastMotionActors, list);
 						g_slist_free_1(list);
@@ -501,6 +530,15 @@ static void _xfdashboard_drag_action_drag_motion(ClutterDragAction *inAction,
 						g_signal_emit_by_name(motionActor, "enter-event", actorEvent, &result);
 
 						clutter_event_free(actorEvent);
+
+						/* To prevent emiting these motion events on actors being
+						 * destroyed while drag is in progress we connect to 'destroy'
+						 * signal of each "motion actor" added to list. The signal
+						 * handler will be removed either on actor's destruction by
+						 * signal handler's callback, when pointer leaves actor or on
+						 * end of drag.
+						 */
+						g_signal_connect(motionActor, "destroy", G_CALLBACK(_xfdashboard_drag_action_on_motion_actor_destroyed), self);
 					}
 
 					/* Get parent */
@@ -591,8 +629,12 @@ static void _xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 	priv->targets=NULL;
 
 	/* Free list of actor we crossed by motion */
-	if(priv->lastMotionActors) g_slist_free(priv->lastMotionActors);
-	priv->lastMotionActors=NULL;
+	if(priv->lastMotionActors)
+	{
+		g_slist_foreach(priv->lastMotionActors, _xfdashboard_drag_action_on_motion_actor_destroyed, self);
+		if(priv->lastMotionActors) g_slist_free(priv->lastMotionActors);
+		priv->lastMotionActors=NULL;
+	}
 
 	/* Reset variables */
 	priv->lastDropTarget=NULL;
