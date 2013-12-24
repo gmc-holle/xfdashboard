@@ -42,6 +42,7 @@
 #include "search-view.h"
 #include "toggle-button.h"
 #include "workspace-selector.h"
+#include "collapse-box.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,
@@ -357,6 +358,7 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	XfdashboardStagePrivate		*priv;
 	ClutterActor				*groupHorizontal;
 	ClutterActor				*groupVertical;
+	ClutterActor				*collapseBox;
 	ClutterLayoutManager		*layout;
 	ClutterColor				color;
 	XfdashboardToggleButton		*appsButton;
@@ -464,7 +466,13 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->workspaces), 0.5f);
 	xfdashboard_background_set_corners(XFDASHBOARD_BACKGROUND(priv->workspaces), XFDASHBOARD_CORNERS_LEFT);
 	clutter_actor_set_y_expand(priv->workspaces, TRUE);
-	clutter_actor_add_child(groupHorizontal, priv->workspaces);
+
+	collapseBox=xfdashboard_collapse_box_new();
+	xfdashboard_collapse_box_set_collapsed_size(XFDASHBOARD_COLLAPSE_BOX(collapseBox), 64.0f);
+	xfdashboard_collapse_box_set_collapse_orientation(XFDASHBOARD_COLLAPSE_BOX(collapseBox), XFDASHBOARD_ORIENTATION_LEFT);
+	clutter_actor_set_y_expand(collapseBox, TRUE);
+	clutter_actor_add_child(collapseBox, priv->workspaces);
+	clutter_actor_add_child(groupHorizontal, collapseBox);
 
 	/* Set up layout objects */
 	clutter_actor_add_constraint(groupHorizontal, clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_X, 0.0f));

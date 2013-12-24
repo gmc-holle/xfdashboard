@@ -26,10 +26,11 @@
 #endif
 
 #include "drag-action.h"
-#include "drop-action.h"
-#include "marshal.h"
 
 #include <glib/gi18n-lib.h>
+
+#include "drop-action.h"
+#include "marshal.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardDragAction,
@@ -50,6 +51,7 @@ struct _XfdashboardDragActionPrivate
 	GSList					*targets;
 	XfdashboardDropAction	*lastDropTarget;
 	gfloat					lastDeltaX, lastDeltaY;
+	GSList					*lastMotionActors;
 };
 
 /* Properties */
@@ -179,7 +181,7 @@ static XfdashboardDropAction* _xfdashboard_drag_action_find_drop_traget_at_coord
 	/* Iterate through list and return first drop target in list
 	 * where coordinates fit in
 	 */
-	for(list=priv->targets; list; list=list->next)
+	for(list=priv->targets; list; list=g_slist_next(list))
 	{
 		ClutterActorMeta			*actorMeta=CLUTTER_ACTOR_META(list->data);
 		ClutterActor				*actor=clutter_actor_meta_get_actor(actorMeta);
@@ -314,6 +316,7 @@ static void _xfdashboard_drag_action_drag_begin(ClutterDragAction *inAction,
 
 	/* Setup for dragging */
 	priv->lastDropTarget=NULL;
+	priv->lastMotionActors=NULL;
 }
 
 /* Dragged actor moved */
@@ -328,6 +331,7 @@ static void _xfdashboard_drag_action_drag_motion(ClutterDragAction *inAction,
 	gfloat								stageX, stageY;
 	XfdashboardDropAction				*dropTarget;
 	gfloat								dropX, dropY;
+	const ClutterEvent					*event;
 
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inAction));
 
@@ -387,6 +391,120 @@ static void _xfdashboard_drag_action_drag_motion(ClutterDragAction *inAction,
 														stageX, stageY,
 														&dropX, &dropY);
 		g_signal_emit_by_name(priv->lastDropTarget, "drag-motion", self, dropX, dropY, NULL);
+	}
+
+	/* We are derived from ClutterDragAction and this one disables stage motion
+	 * so no "enter-event", "motion-event" and "leave-event" will be emitted while
+	 * dragging. We need to do it on our own.
+	 */
+	event=clutter_get_current_event();
+	if(event && clutter_event_type(event)==CLUTTER_MOTION)
+	{
+		GSList							*list, *next;
+		ClutterStage					*stage;
+		ClutterActor					*motionActor;
+		gboolean						newMotionActor;
+		ClutterActor					*actor;
+		gfloat							x, y, w, h;
+		gboolean						result;
+		ClutterEvent					*actorEvent;
+
+		/* Get stage where event happened */
+		stage=clutter_event_get_stage(event);
+		if(stage)
+		{
+			/* Get actor under pointer */
+			newMotionActor=TRUE;
+			motionActor=clutter_stage_get_actor_at_pos(stage,
+														CLUTTER_PICK_REACTIVE,
+														stageX, stageY);
+
+			/* Iterate through list of crossed actors so far and check if pointer
+			 * is still inside. If pointer is outside of an actor emit "leave-event".
+			 * For each actor the pointer is still inside emit this "motion-event".
+			 * Also check if actor under pointer is already is list to prevent
+			 * "enter-event" to be emitted more than once.
+			 */
+			list=priv->lastMotionActors;
+			while(list)
+			{
+				/* Get next entry now as this entry might get deleted */
+				next=g_slist_next(list);
+
+				/* Get actor from entry */
+				actor=CLUTTER_ACTOR(list->data);
+
+				/* Get position and size of actor in stage coordinates */
+				clutter_actor_get_transformed_position(actor, &x, &y);
+				clutter_actor_get_transformed_size(actor, &w, &h);
+
+				/* Check if pointer is still inside actor */
+				if(stageX>=x && stageX<(x+w) &&
+					stageY>=y && stageY<(y+h))
+				{
+
+					/* Check if actor is the "new" motion actor. If so set flag. */
+					if(actor==motionActor) newMotionActor=FALSE;
+
+					/* Emit "motion-event" */
+					actorEvent=clutter_event_copy(event);
+					actorEvent->motion.source=actor;
+
+					g_signal_emit_by_name(actor, "motion-event", actorEvent, &result);
+
+					clutter_event_free(actorEvent);
+				}
+					/* Pointer is not inside actor anymore so remove actor from list
+					 * of last known "motion actors" and send "leave-event"
+					 */
+					else
+					{
+						/* Remove from list */
+						priv->lastMotionActors=g_slist_remove_link(priv->lastMotionActors, list);
+						g_slist_free_1(list);
+
+						/* Emit "leave-event" */
+						actorEvent=clutter_event_copy(event);
+						actorEvent->crossing.source=actor;
+
+						g_signal_emit_by_name(actor, "leave-event", actorEvent, &result);
+
+						clutter_event_free(actorEvent);
+					}
+
+				/* Proceed with next actor */
+				list=next;
+			}
+
+			/* We have an actor under pointer and was not seen while iterating
+			 * through list of all last known "motion actors" then add this actor
+			 * to list and emit "enter-event" and also all parent actors because
+			 * if pointer is inside their child then it is also inside them.
+			 */
+			if(motionActor && newMotionActor)
+			{
+				while(motionActor)
+				{
+					/* Avoid duplicates */
+					if(!g_slist_find(priv->lastMotionActors, motionActor))
+					{
+						/* Add to list */
+						priv->lastMotionActors=g_slist_append(priv->lastMotionActors, motionActor);
+
+						/* Emit "enter-event" */
+						actorEvent=clutter_event_copy(event);
+						actorEvent->crossing.source=motionActor;
+
+						g_signal_emit_by_name(motionActor, "enter-event", actorEvent, &result);
+
+						clutter_event_free(actorEvent);
+					}
+
+					/* Get parent */
+					motionActor=clutter_actor_get_parent(motionActor);
+				}
+			}
+		}
 	}
 }
 
@@ -468,6 +586,10 @@ static void _xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 	/* Free list of drop targets and unref each drop target */
 	if(priv->targets) g_slist_free_full(priv->targets, g_object_unref);
 	priv->targets=NULL;
+
+	/* Free list of actor we crossed by motion */
+	if(priv->lastMotionActors) g_slist_free(priv->lastMotionActors);
+	priv->lastMotionActors=NULL;
 
 	/* Reset variables */
 	priv->lastDropTarget=NULL;
