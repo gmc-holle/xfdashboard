@@ -48,6 +48,9 @@ struct _XfdashboardDragActionPrivate
 	ClutterActor			*actor;
 
 	/* Instance related */
+	guint					actorDestroySignalID;
+	gboolean				dragCancelled;
+
 	GSList					*targets;
 	XfdashboardDropAction	*lastDropTarget;
 	gfloat					lastDeltaX, lastDeltaY;
@@ -240,6 +243,30 @@ static void _xfdashboard_drag_action_set_source(XfdashboardDragAction *self, Clu
 	}
 }
 
+/* The dragged actor is going to be destroy. Cancel drag action */
+static void _xfdashboard_drag_action_on_dragged_actor_destroyed(XfdashboardDragAction *self,
+																gpointer inUserData)
+{
+	XfdashboardDragActionPrivate	*priv;
+	gfloat							x, y;
+
+	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(self));
+
+	priv=self->priv;
+	x=y=0.0f;
+
+	/* Remove signal from dragged actor although it is going to be destroyed now */
+	g_signal_handler_disconnect(priv->actor, priv->actorDestroySignalID);
+	priv->actorDestroySignalID=0;
+
+	/* Mark drag action being cancelled */
+	priv->dragCancelled=TRUE;
+
+	/* Emit "drag-end" signal */
+	clutter_drag_action_get_motion_coords(CLUTTER_DRAG_ACTION(self), &x, &y);
+	g_signal_emit_by_name(self, "drag-end", priv->actor, x, y, 0, NULL);
+}
+
 /* A known "motion actor" is going to be destroyed. Do not swap parameters for
  * usual use of g_signal_connect_swapped to reuse this function for g_slist_foreach.
  */
@@ -287,8 +314,9 @@ static void _xfdashboard_drag_action_drag_begin(ClutterDragAction *inAction,
 	/* Call parent's class method */
 	if(dragActionClass->drag_begin) dragActionClass->drag_begin(inAction, inActor, inStageX, inStageY, inModifiers);
 
-	/* Remember dragged actor while dragging */
+	/* Remember dragged actor while dragging and listen to possible 'destroy' signal emissions */
 	priv->actor=inActor;
+	priv->actorDestroySignalID=g_signal_connect_swapped(priv->actor, "destroy", G_CALLBACK(_xfdashboard_drag_action_on_dragged_actor_destroyed), self);
 
 	/* Get list of drop targets. It is a new list with all current
 	 * drop targets already reffed. So the drop targets will be valid
@@ -339,6 +367,7 @@ static void _xfdashboard_drag_action_drag_begin(ClutterDragAction *inAction,
 	}
 
 	/* Setup for dragging */
+	priv->dragCancelled=FALSE;
 	priv->lastDropTarget=NULL;
 	priv->lastMotionActors=NULL;
 }
@@ -568,6 +597,20 @@ static void _xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 	priv=self->priv;
 	dragActionClass=CLUTTER_DRAG_ACTION_CLASS(xfdashboard_drag_action_parent_class);
 	canDrop=FALSE;
+	dropTarget=NULL;
+
+	/* Hold a reference on ourselve as ClutterAction as the actor where we are bound to
+	 * may be destroyed in this function. We need to keep alive this action until
+	 * function ends.
+	 */
+	g_object_ref(self);
+
+	/* Remove 'destroy' signal on dragged actor */
+	if(priv->actorDestroySignalID)
+	{
+		g_signal_handler_disconnect(priv->actor, priv->actorDestroySignalID);
+		priv->actorDestroySignalID=0;
+	}
 
 	/* Remove our listerners for allocation changes */
 	for(list=priv->targets; list; list=g_slist_next(list))
@@ -579,8 +622,8 @@ static void _xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 		g_signal_handlers_disconnect_by_func(actor, G_CALLBACK(_xfdashboard_drag_on_drop_target_allocation_changed), self);
 	}
 
-	/* Find drop target at stage coordinate */
-	dropTarget=_xfdashboard_drag_action_find_drop_traget_at_coord(self, inStageX, inStageY);
+	/* Find drop target at stage coordinate if dragged actor was not destroyed */
+	if(!priv->dragCancelled) dropTarget=_xfdashboard_drag_action_find_drop_traget_at_coord(self, inStageX, inStageY);
 
 	/* If drop target was found check if we are allowed to drop on it. */
 	if(dropTarget)
@@ -595,7 +638,7 @@ static void _xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 	}
 
 	/* If we cannot drop the draggged actor emit "drag-cancel" on dragged actor */
-	if(!canDrop) g_signal_emit_by_name(inAction, "drag-cancel", inActor, inStageX, inStageY, NULL);
+	if(!canDrop) g_signal_emit_by_name(inAction, "drag-cancel", priv->actor, inStageX, inStageY, NULL);
 
 	/* Iterate through list of drop targets to emit the "end" signal to the ones
 	* on which the dragged actor will not be drop (either they were not the target
@@ -636,6 +679,9 @@ static void _xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 
 	/* Reset variables */
 	priv->lastDropTarget=NULL;
+
+	/* Release the reference we took at function beginning */
+	g_object_unref(self);
 }
 
 /* IMPLEMENTATION: GObject */
@@ -763,6 +809,8 @@ void xfdashboard_drag_action_init(XfdashboardDragAction *self)
 	/* Set up default values */
 	priv->source=NULL;
 	priv->actor=NULL;
+	priv->actorDestroySignalID=0;
+	priv->dragCancelled=FALSE;
 	priv->targets=NULL;
 	priv->lastDropTarget=NULL;
 	priv->lastDeltaX=0.0f;
