@@ -795,7 +795,7 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 	GAppLaunchContext						*context;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), FALSE);
-	g_return_val_if_fail(G_IS_APP_LAUNCH_CONTEXT(inContext), FALSE);
+	g_return_val_if_fail(inContext==NULL || G_IS_APP_LAUNCH_CONTEXT(inContext), FALSE);
 
 	priv=self->priv;
 	started=FALSE;
