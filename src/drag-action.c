@@ -243,14 +243,12 @@ static void _xfdashboard_drag_action_set_source(XfdashboardDragAction *self, Clu
 /* A known "motion actor" is going to be destroyed. Do not swap parameters for
  * usual use of g_signal_connect_swapped to reuse this function for g_slist_foreach.
  */
-#include "utils.h"
 static void _xfdashboard_drag_action_on_motion_actor_destroyed(gpointer inActor,
 																gpointer inUserData)
 {
 	XfdashboardDragAction			*self;
 	XfdashboardDragActionPrivate	*priv;
 	ClutterActor					*actor;
-gint n;
 
 	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inUserData));
