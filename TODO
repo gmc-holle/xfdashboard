@@ -21,7 +21,7 @@
 [done] Reorder quicklaunch icon by drag-n-drop
 [done] Remove quicklaunch icon by drag-n-drop to trash icon in quicklaunch
 [done] Allow drag-n-drop of quicklaunch icon to windows-list view and start app in current workspace
-- Allow drag-n-drop of quicklaunch icon to workspace-box, start app in this workspace
+[done] Allow drag-n-drop of quicklaunch icon to workspace-box, start app in this workspace
 
 == WORKSPACE-BOX (WORKSPACE-SELECTOR) ==
 [basic] Implement workspace-box
@@ -48,7 +48,7 @@
 [done] Implement application-menu view
 [done] Start application when clicked on application icon in view
 [done] Allow drag-n-drop of application icon to quicklaunch-box view and create shortcut
-- Allow drag-n-drop of application icon to workspace-box and start application on this workspace
+[done] Allow drag-n-drop of application icon to workspace-box and start application on this workspace
 
 == SEARCH VIEW ==
 [done] Implement search view
@@ -58,4 +58,4 @@
 - Support search provider manager
 - Support grouping of results by search providers
 [done] Allow drag-n-drop of application icon to quicklaunch-box and create shortcut
-- Allow drag-n-drop of application icon to workspace-box and start application on this workspace
+[done] Allow drag-n-drop of application icon to workspace-box and start application on this workspace

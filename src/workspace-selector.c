@@ -37,6 +37,8 @@
 #include "drop-action.h"
 #include "windows-view.h"
 #include "live-window.h"
+#include "application-button.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardWorkspaceSelector,
@@ -343,6 +345,11 @@ static gboolean _xfdashboard_workspace_selector_on_drop_begin(XfdashboardLiveWor
 		canHandle=TRUE;
 	}
 
+	if(XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor))
+	{
+		canHandle=TRUE;
+	}
+
 	/* Return TRUE if we can handle dragged actor in this drop target
 	 * otherwise FALSE
 	 */
@@ -357,7 +364,6 @@ static void _xfdashboard_workspace_selector_on_drop_drop(XfdashboardLiveWorkspac
 															gpointer inUserData)
 {
 	ClutterActor						*draggedActor;
-	XfdashboardWindowTrackerWindow		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
@@ -365,16 +371,35 @@ static void _xfdashboard_workspace_selector_on_drop_drop(XfdashboardLiveWorkspac
 
 	/* Get dragged actor */
 	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(draggedActor));
 
-	/* Get window */
-	window=xfdashboard_live_window_get_window(XFDASHBOARD_LIVE_WINDOW(draggedActor));
-	g_return_if_fail(window);
+	/* Check if dragged actor is a window so move window to workspace */
+	if(XFDASHBOARD_IS_LIVE_WINDOW(draggedActor))
+	{
+		XfdashboardWindowTrackerWindow	*window;
 
-	/* Move window to workspace */
-	xfdashboard_window_tracker_window_move_to_workspace(window, xfdashboard_live_workspace_get_workspace(self));
+		/* Get window */
+		window=xfdashboard_live_window_get_window(XFDASHBOARD_LIVE_WINDOW(draggedActor));
+		g_return_if_fail(window);
+
+		/* Move window to workspace */
+		xfdashboard_window_tracker_window_move_to_workspace(window, xfdashboard_live_workspace_get_workspace(self));
+	}
+
+	/* Check if dragged actor is a application button so launch app at workspace */
+	if(XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor))
+	{
+		XfdashboardApplicationButton	*button;
+		GAppLaunchContext				*context;
+
+		/* Get application button */
+		button=XFDASHBOARD_APPLICATION_BUTTON(draggedActor);
+
+		/* Launch application at workspace where application button was dropped */
+		context=xfdashboard_create_app_context(xfdashboard_live_workspace_get_workspace(self));
+		xfdashboard_application_button_execute(button, context);
+		g_object_unref(context);
+	}
 }
-
 
 /* A live workspace was clicked */
 static void _xfdashboard_workspace_selector_on_workspace_clicked(XfdashboardWorkspaceSelector *self,

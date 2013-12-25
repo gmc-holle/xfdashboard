@@ -460,7 +460,7 @@ static void _xfdashboard_search_view_on_item_clicked(XfdashboardSearchView *self
 	 * and quit application
 	 */
 	if(GARCON_IS_MENU_ITEM(element) &&
-		xfdashboard_application_button_execute(button))
+		xfdashboard_application_button_execute(button, NULL))
 	{
 		/* Launching application seems to be successfuly so quit application */
 		xfdashboard_application_quit();

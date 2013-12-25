@@ -131,7 +131,7 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 	button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
 
 	/* Launch application */
-	if(xfdashboard_application_button_execute(button))
+	if(xfdashboard_application_button_execute(button, NULL))
 	{
 		/* Launching application seems to be successfuly so quit application */
 		xfdashboard_application_quit();

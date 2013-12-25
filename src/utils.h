@@ -30,6 +30,9 @@
 
 #include <clutter/clutter.h>
 #include <gdk/gdk.h>
+#include <gio/gio.h>
+
+#include "window-tracker-workspace.h"
 
 G_BEGIN_DECLS
 
@@ -47,6 +50,8 @@ ClutterImage* xfdashboard_get_image_for_gicon(GIcon *inIcon, gint inSize);
 ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf);
 
 void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const gchar *inFormatText, ...) G_GNUC_PRINTF(3, 4);
+
+GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorkspace *inWorkspace);
 
 G_END_DECLS
 

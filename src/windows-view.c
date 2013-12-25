@@ -52,10 +52,10 @@ G_DEFINE_TYPE(XfdashboardWindowsView,
 struct _XfdashboardWindowsViewPrivate
 {
 	/* Properties related */
-	XfdashboardWindowTrackerWorkspace				*workspace;
+	XfdashboardWindowTrackerWorkspace	*workspace;
 
 	/* Instance related */
-	XfdashboardWindowTracker	*windowTracker;
+	XfdashboardWindowTracker			*windowTracker;
 };
 
 /* Properties */
@@ -167,18 +167,24 @@ static void _xfdashboard_windows_view_on_drop_drop(XfdashboardWindowsView *self,
 													gfloat inY,
 													gpointer inUserData)
 {
+	XfdashboardWindowsViewPrivate		*priv;
 	ClutterActor						*draggedActor;
+	GAppLaunchContext					*context;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
 	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inUserData));
+
+	priv=self->priv;
 
 	/* Get dragged actor */
 	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor));
 
 	/* Launch application being dragged here */
-	xfdashboard_application_button_execute(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
+	context=xfdashboard_create_app_context(priv->workspace);
+	xfdashboard_application_button_execute(XFDASHBOARD_APPLICATION_BUTTON(draggedActor), context);
+	g_object_unref(context);
 }
 
 /* Active workspace was changed */

@@ -282,7 +282,7 @@ static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicatio
 		else if(GARCON_IS_MENU_ITEM(element))
 		{
 			/* Launch application */
-			if(xfdashboard_application_button_execute(button))
+			if(xfdashboard_application_button_execute(button, NULL))
 			{
 				/* Launching application seems to be successfuly so quit application */
 				xfdashboard_application_quit();

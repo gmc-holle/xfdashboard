@@ -88,7 +88,7 @@ GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButt
 const gchar* xfdashboard_application_button_get_display_name(XfdashboardApplicationButton *self);
 const gchar* xfdashboard_application_button_get_icon_name(XfdashboardApplicationButton *self);
 
-gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self);
+gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self, GAppLaunchContext *inContext);
 
 G_END_DECLS
 

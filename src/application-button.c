@@ -27,10 +27,12 @@
 #endif
 
 #include "application-button.h"
-#include "enums.h"
 
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
+
+#include "enums.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationButton,
@@ -784,14 +786,16 @@ const gchar* xfdashboard_application_button_get_icon_name(XfdashboardApplication
 }
 
 /* Execute command of represented application by application button */
-gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self)
+gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self, GAppLaunchContext *inContext)
 {
 	XfdashboardApplicationButtonPrivate		*priv;
 	GAppInfo								*appInfo;
 	GError									*error;
 	gboolean								started;
+	GAppLaunchContext						*context;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), FALSE);
+	g_return_val_if_fail(G_IS_APP_LAUNCH_CONTEXT(inContext), FALSE);
 
 	priv=self->priv;
 	started=FALSE;
@@ -811,8 +815,11 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 		return(FALSE);
 	}
 
+	if(inContext) context=G_APP_LAUNCH_CONTEXT(g_object_ref(inContext));
+		else context=xfdashboard_create_app_context(NULL);
+
 	error=NULL;
-	if(!g_app_info_launch(appInfo, NULL, NULL, &error))
+	if(!g_app_info_launch(appInfo, NULL, context, &error))
 	{
 		xfdashboard_notify(CLUTTER_ACTOR(self),
 							xfdashboard_application_button_get_icon_name(self),
@@ -835,6 +842,7 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 
 	/* Clean up allocated resources */
 	g_object_unref(appInfo);
+	g_object_unref(context);
 
 	/* Return status */
 	return(started);

@@ -310,3 +310,38 @@ void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const g
 	/* Release allocated resources */
 	g_free(text);
 }
+
+/* Create a application context for launching application by GIO.
+ * Object returned must be freed with g_object_unref().
+ */
+GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorkspace *inWorkspace)
+{
+	GdkAppLaunchContext			*context;
+	const ClutterEvent			*event;
+	XfdashboardWindowTracker	*tracker;
+
+	g_return_val_if_fail(inWorkspace==NULL || XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace), NULL);
+
+	/* Get last event for timestamp */
+	event=clutter_get_current_event();
+
+	/* Get active workspace if not specified */
+	if(!inWorkspace)
+	{
+		tracker=xfdashboard_window_tracker_get_default();
+		inWorkspace=xfdashboard_window_tracker_get_active_workspace(tracker);
+		g_object_unref(tracker);
+	}
+
+	/* Create and set up application context to use either the workspace specified
+	 * or otherwise current active workspace. We will even set the current active
+	 * explicitly to launch the application on current workspace even if user changes
+	 * workspace in the time between launching application and showing first window.
+	 */
+	context=gdk_app_launch_context_new();
+	if(event) gdk_app_launch_context_set_timestamp(context, clutter_event_get_time(event));
+	gdk_app_launch_context_set_desktop(context, xfdashboard_window_tracker_workspace_get_number(inWorkspace));
+
+	/* Return application context */
+	return(G_APP_LAUNCH_CONTEXT(context));
+}
