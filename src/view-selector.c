@@ -1,7 +1,7 @@
 /*
  * view-selector: A selector for registered views
  * 
- * Copyright 2012-2013 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2014 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
