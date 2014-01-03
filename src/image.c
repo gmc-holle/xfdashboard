@@ -32,9 +32,6 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
-// TODO: #undef g_debug
-// TODO: #define g_debug g_message
-
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardImage,
 				xfdashboard_image,
