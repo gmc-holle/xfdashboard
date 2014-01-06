@@ -24,6 +24,7 @@ m4_define([garcon_minimum_version], [0.2.0])
 m4_define([xfconf_minimum_version], [4.10.0])
 m4_define([dbus_glib_minimum_version], [0.98])
 m4_define([intltool_minimum_version], [0.31])
+m4_define([xcomposite_minimum_version], [0.2])
 
 dnl *******************************************
 dnl *** Debugging support for GIT snapshots ***
@@ -62,6 +63,7 @@ AC_PROG_INSTALL()
 AC_PROG_INTLTOOL()
 AC_CHECK_PROGS([PERL], [perl5 perl])
 m4_ifdef([AC_PROG_SED], [AC_PROG_SED], [AC_CHECK_PROG(SED, sed, sed)])
+XDT_PROG_PKG_CONFIG()
 
 dnl **************************
 dnl *** Initialize libtool ***
@@ -99,6 +101,30 @@ dnl *******************************
 dnl *** Check for X11 installed ***
 dnl *******************************
 XDT_CHECK_LIBX11_REQUIRE()
+
+dnl *******************************************
+dnl *** Check for X11 extension: XComposite ***
+dnl *******************************************
+x11_extension_composite="no"
+HAVE_XCOMPOSITE=""
+if $PKG_CONFIG --print-errors --exists xcomposite 2>&1; then
+	PKG_CHECK_MODULES(XCOMPOSITE, xcomposite >= [xcomposite_minimum_version])
+	AC_DEFINE([HAVE_XCOMPOSITE], [1], [Define if XComposite extension is available])
+	x11_extension_composite="yes"
+fi
+AC_SUBST(HAVE_XCOMPOSITE)
+
+dnl ****************************************
+dnl *** Check for X11 extension: XDamage ***
+dnl ****************************************
+x11_extension_damage="no"
+HAVE_XDAMAGE=""
+if $PKG_CONFIG --print-errors --exists xdamage 2>&1; then
+	PKG_CHECK_MODULES(XDAMAGE, xdamage)
+	AC_DEFINE([HAVE_XDAMAGE], [1], [Define if XDamage extension is available])
+	x11_extension_damage="yes"
+fi
+AC_SUBST(HAVE_XDAMAGE)
 
 dnl ***********************************
 dnl *** Check for required packages ***

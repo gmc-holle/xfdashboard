@@ -39,6 +39,7 @@
 #include "stage.h"
 #include "utils.h"
 #include "click-action.h"
+#include "window-content.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWindow,
@@ -52,19 +53,19 @@ G_DEFINE_TYPE(XfdashboardLiveWindow,
 struct _XfdashboardLiveWindowPrivate
 {
 	/* Properties related */
-	XfdashboardWindowTrackerWindow					*window;
-	
-	gfloat						paddingClose;
-	gfloat						paddingTitle;
+	XfdashboardWindowTrackerWindow		*window;
+
+	gfloat								paddingClose;
+	gfloat								paddingTitle;
 
 	/* Instance related */
-	XfdashboardWindowTracker	*windowTracker;
+	XfdashboardWindowTracker			*windowTracker;
 
-	gboolean					isVisible;
+	gboolean							isVisible;
 
-	ClutterActor				*actorWindow;
-	ClutterActor				*actorClose;
-	ClutterActor				*actorTitle;
+	ClutterActor						*actorWindow;
+	ClutterActor						*actorClose;
+	ClutterActor						*actorTitle;
 };
 
 /* Properties */
@@ -301,18 +302,22 @@ static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	gfloat							minHeight, naturalHeight;
 	gfloat							childMinHeight, childNaturalHeight;
+	ClutterContent					*content;
 
 	minHeight=naturalHeight=0.0f;
 
 	/* Determine size of window if available and visible (should usually be the largest actor) */
-	if(priv->actorWindow && CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindow))
+	if(priv->actorWindow &&
+		CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindow))
 	{
-		clutter_actor_get_preferred_height(priv->actorWindow,
-											inForWidth,
-											&childMinHeight,
-											&childNaturalHeight);
-		if(childMinHeight>minHeight) minHeight=childMinHeight;
-		if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
+		content=clutter_actor_get_content(priv->actorWindow);
+		if(content &&
+			XFDASHBOARD_IS_WINDOW_CONTENT(content) &&
+			clutter_content_get_preferred_size(content, NULL, &childNaturalHeight))
+		{
+			if(childNaturalHeight>minHeight) minHeight=childNaturalHeight;
+			if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
+		}
 	}
 
 	/* Determine size of title actor if visible */
@@ -354,18 +359,22 @@ static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	gfloat							minWidth, naturalWidth;
 	gfloat							childMinWidth, childNaturalWidth;
+	ClutterContent					*content;
 
 	minWidth=naturalWidth=0.0f;
 
 	/* Determine size of window if available and visible (should usually be the largest actor) */
-	if(priv->actorWindow && CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindow))
+	if(priv->actorWindow &&
+		CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindow))
 	{
-		clutter_actor_get_preferred_width(priv->actorWindow,
-											inForHeight,
-											&childMinWidth,
-											&childNaturalWidth);
-		if(childMinWidth>minWidth) minWidth=childMinWidth;
-		if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
+		content=clutter_actor_get_content(priv->actorWindow);
+		if(content &&
+			XFDASHBOARD_IS_WINDOW_CONTENT(content) &&
+			clutter_content_get_preferred_size(content, &childNaturalWidth, NULL))
+		{
+			if(childNaturalWidth>minWidth) minWidth=childNaturalWidth;
+			if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
+		}
 	}
 
 	/* Determine size of title actor if visible */
@@ -701,7 +710,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->paddingClose=DEFAULT_PADDING_CLOSE;
 
 	/* Set up child actors (order is important) */
-	priv->actorWindow=clutter_x11_texture_pixmap_new();
+	priv->actorWindow=clutter_actor_new();
 	clutter_actor_show(priv->actorWindow);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorWindow);
 
@@ -763,6 +772,7 @@ XfdashboardWindowTrackerWindow* xfdashboard_live_window_get_window(XfdashboardLi
 void xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, XfdashboardWindowTrackerWindow *inWindow)
 {
 	XfdashboardLiveWindowPrivate	*priv;
+	ClutterContent					*content;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -786,9 +796,9 @@ void xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, Xfdashboard
 	priv->isVisible=_xfdashboard_live_window_is_visible_window(self, priv->window);
 
 	/* Setup window actor */
-	clutter_x11_texture_pixmap_set_window(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow), xfdashboard_window_tracker_window_get_xid(priv->window), TRUE);
-	clutter_x11_texture_pixmap_sync_window(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow));
-	clutter_x11_texture_pixmap_set_automatic(CLUTTER_X11_TEXTURE_PIXMAP(priv->actorWindow), TRUE);
+	content=xfdashboard_window_content_new_for_window(priv->window);
+	clutter_actor_set_content(priv->actorWindow, content);
+	g_object_unref(content);
 
 	/* Set up this actor and child actor by calling each signal handler now */
 	_xfdashboard_live_window_on_geometry_changed(self, priv->window, priv->windowTracker);
