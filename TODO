@@ -13,6 +13,7 @@
 - Sort search result in search view alphabetically and/or by relevance?
 - Effects?
 [prepared] Themable?
+- Fix daemon mode
 
 == QUICKLAUNCH-BOX (FAVOURITES-SELECTOR) ==
 [done] Implement quicklaunch-box
