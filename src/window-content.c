@@ -977,6 +977,14 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_content_get_window(Xfdashboar
 	return(self->priv->window);
 }
 
+/* Get state of suspension */
+gboolean xfdashboard_window_content_is_suspended(XfdashboardWindowContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self), TRUE);
+
+	return(self->priv->isSuspended);
+}
+
 /* Get/set color to draw outline with */
 const ClutterColor* xfdashboard_window_content_get_outline_color(XfdashboardWindowContent *self)
 {

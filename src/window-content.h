@@ -67,6 +67,8 @@ ClutterContent* xfdashboard_window_content_new_for_window(XfdashboardWindowTrack
 
 XfdashboardWindowTrackerWindow* xfdashboard_window_content_get_window(XfdashboardWindowContent *self);
 
+gboolean xfdashboard_window_content_is_suspended(XfdashboardWindowContent *self);
+
 const ClutterColor* xfdashboard_window_content_get_outline_color(XfdashboardWindowContent *self);
 void xfdashboard_window_content_set_outline_color(XfdashboardWindowContent *self, const ClutterColor *inColor);
 
