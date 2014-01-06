@@ -1,3 +1,1258 @@
+commit affb00d1b7f4b7e69a052b0c1d6229384b69fec9
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Jan 6 09:33:38 2014 +0100
+
+    Updated TODO (added a new task that came in mind just now)
+
+commit 6b1a59799590b0d8e643e331e947faee82c95de5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Jan 6 09:31:52 2014 +0100
+
+    When ESC is pressed first clear text in searchbox to end current search request. If no search is in progress quit application.
+
+commit 9f849c753090df9b6eea1310d00a8ebe3e680a7c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Jan 6 09:06:38 2014 +0100
+
+    Updating missed files to new year 2014
+
+commit dc7d471b71a20245b80059d568077cf5788f96e2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Jan 6 09:04:10 2014 +0100
+
+    Updated TODO
+
+commit c104929ebca6ec1d9e8e7a0fd9126127c1defd3a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Jan 6 09:01:27 2014 +0100
+
+    Add function to get suspend state of XfdashboardWindowContent to get the state not only by fetching property of instance.
+
+commit a09b034d0ac7a3ec8729921666ebca481cfeb45b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Jan 6 08:53:21 2014 +0100
+
+    Created a ClutterContent-derived object called XfdashboardWindowContent which handles displaying an image for windows optionally with live updates. This content can be shared and will be shared between XfdashboardLiveWindow (used in windows view) and XfdashboardLiveWorkspace (used in workspace selector) for continuous and simulatenous live updates in all object using this content.
+
+commit ebe7ae61c4a043bf131a5656a821406f69a16530
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jan 3 12:05:30 2014 +0100
+
+    Remove left-over and unused debug message macros
+
+commit 17a8c3b41867462da22c318dbd54088b8ab79ef7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jan 3 10:51:55 2014 +0100
+
+    Update configure.ac.in to new year
+
+commit cb1a51d9bb0357a7896496923e7b8074da36922c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Jan 2 10:43:16 2014 +0100
+
+    Happy new year :) Updating to new year 2014
+
+commit 48fbb6eea0ecbbf65d32987141927f79d5aaeb14
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Dec 25 13:00:29 2013 +0100
+
+    Cancel drag action if dragged actor is being destroyed while a drag is in progress
+
+commit 2d1799ccbe07d882c6fbac38ffca3053525efa51
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Dec 25 09:25:44 2013 +0100
+
+    Launching applications through XfdashboardApplicationButton with a NULL context although catching code exists because we did not check for valid NULL pointers :(
+
+commit 06fb41c899426eb5af74398d23495a928e8a9a9e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Dec 25 09:07:02 2013 +0100
+
+    Dragging a XfdashboardApplicationButton and dropping it on XfdashboardLiveWorkspace will launch the application at that workspace.
+
+commit 9ec52af3108341786c533000ff33f6349e6b6103
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Dec 25 08:36:57 2013 +0100
+
+    Remove accidently left over debugging code in XfdashboardDragAction
+
+commit d0895e5919d6dfef58d9853cc8228969819fc3ea
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Dec 24 23:48:08 2013 +0100
+
+    To prevent emiting our motion events in XfdashboardDragAction on actors being destroyed while drag is in progress (e.g. a window actor was destroyed because its window was closed) we connect to 'destroy' signal of each "motion actor" added to list. The signal handler will be removed either on actor's destruction by signal handler's callback, when pointer leaves actor or on end of drag.
+
+commit e5d40302ac61f5401a68d8520ac69f9ef0059ea1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Dec 24 16:05:54 2013 +0100
+
+    Actor must be one same stage where event happened when handling motion events for enter/leave/motion.
+
+commit 4fef9ccb00efbd9842437dd5439bb5f92d0fac2f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Dec 24 16:00:53 2013 +0100
+
+    Add new actor XfdashboardCollapseBox which holds (better: handles) only one child and acts like a expander. The stage puts XfdashboardWorkspaceSelector into such a collapse box to save space in stage. The workspace selector will then expand as soon as the pointer moves into it and will collapse when pointer moved out. XfdashboardDragAction has to handle and emit 'enter-event', 'leave-event' and 'motion-event' on its own because ClutterDragAction will turn off motion handling but it is needed to keep XfdashboardCollapseBox functional. That means the collapse box should still expand and collapse while a drag is in progress.
+
+commit e17cec26210ceb99662079058a0d61d5b672a457
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Dec 23 13:45:22 2013 +0100
+
+    textbox.{c,h} are the only files not matching the filename convention for objects/classes. Rename them to text-box.{c,h}.
+
+commit 0807117c07267e0da32a0cd3186194c67a8ea063
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Dec 23 10:30:49 2013 +0100
+
+    Remove unneeded variable and functions in XfdashboardWorkspaceSelector. Fix application button and quicklaunch to handle invalid desktop files, e.g. application was uninstalled after favourite for it was added to quicklaunch.
+
+commit 7cbbf64027fd6c2b21f1697f92d676fee5a5122d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 22 22:25:53 2013 +0100
+
+    Remove enums not needed anymore
+
+commit 4da4285c8287b13978673a919bde5f87e7c9127d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 22 22:04:40 2013 +0100
+
+    Display timeout of notification depends on length of text to display. Personally I say that one seconds for 50 characters should be enough. But we never drop below the default notification timeout (currently hard-coded to 3 seconds).
+
+commit be589ddf1143c16757c735f96a9c40290689f9b2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 22 21:45:58 2013 +0100
+
+    Add more notifications
+
+commit 94fe1a7a6d48d8f88fe53c053836412c21d53c3a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 22 21:29:18 2013 +0100
+
+    Fix typo
+
+commit 2dd5921aacd0f3f307fac3060878675837700668
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 22 21:27:50 2013 +0100
+
+    Notification can now take a variable number of arguments in the same way like printf to build the message to show.
+
+commit 34f9ceb1c50de539f27b217af2e3f6a6e989a591
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 22 21:12:36 2013 +0100
+
+    First notification ;) It was just for testing but now I like it ;)
+
+commit ddc278ad94d8856732053eba71614d67e7c94055
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 22 18:27:38 2013 +0100
+
+    Complete notification system at stage
+
+commit 87bd04ffe20157064752f1cf26f9558304612d00
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 22 17:48:49 2013 +0100
+
+    Simplify notification actor. Make it just a text box which is set up specially by stage when it set ups itself. Create a notify function in utils.{h,c} to show a notification.
+
+commit f0002913704457f98f3b1192ba0ffd5d91bccb40
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 22 10:45:10 2013 +0100
+
+    Notification should always be above all other actors so set z-position when setting up actor
+
+commit 7167f3a4ead294b91450dd1002c16be606d026d0
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 22 00:23:13 2013 +0100
+
+    Fix typo
+
+commit 56ff25e2719445dcce77ea304e66d70624c5797c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 22 00:20:19 2013 +0100
+
+    Add new actor for notifications which is not used currently.
+
+commit 1f0bdfb87ab9486fb1172ee330f5eeee4c7ff2bd
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Dec 21 12:08:41 2013 +0100
+
+    Fix typos
+
+commit 116047667e8d859d7cc772529b91b2a5a705e169
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Dec 21 01:38:32 2013 +0100
+
+    Handle also "icon-changed" for any window in workspaces
+
+commit f35e91ca331daaa75b1ccc2ebac2c445e1e28424
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Dec 21 01:31:33 2013 +0100
+
+    Concentrate creating actors in one function
+
+commit 52b3257fff32dadbda5bd5c3a0d0ea97ba7e0710
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Dec 21 00:50:45 2013 +0100
+
+    Also respect window moving between workspaces
+
+commit 0565112b68259249efb64030012b8f82043a0580
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Dec 21 00:18:48 2013 +0100
+
+    Only destroy valid actors!
+
+commit 8297aeca6472ef6fc5df296b2f5ea36513cb4b9a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Dec 21 00:15:09 2013 +0100
+
+    We need to see it from the point of view of a workspace.
+    If a window is visible on the workspace of XfdashboardLiveWorkspace but we have no actor for this window then create it.
+    If a window is not visible anymore on the workspace of XfdashboardLiveWorkspace then destroy its corresponding actor.
+
+commit 867e8c173b42ce80f7c4c70a1da74240acba6968
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Dec 21 00:01:07 2013 +0100
+
+    Remove unused line
+
+commit 47fe71a2e4ffba29938af33e0a4c2c0136802f2b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Dec 20 23:56:54 2013 +0100
+
+    Remove check if window has a workspace on 'window-opened' signal in XfdashboardWindowTracker as pinned windows (visible on all workspaces) may not have a workspace set. As long as the check is done no 'window-opened' by XfdashboardWindowTracker will be emitted and will not show the window, e.g. in XfdashboardLiveWorkspace.
+
+commit ef1250895db2bafb56de043c0365f2a2ef173d4c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Dec 19 06:52:26 2013 +0100
+
+    Add property 'editable' to XfdashboardTextBox to use it as an uneditable label. If used as a label do not show hint text even if label is empty.
+
+commit d5b40b44c45ee906a9dcf33e1cb1f5c8002f67af
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Dec 18 21:42:49 2013 +0100
+
+    Move xfdashboard_get_current_time() to window tracker as it is only needed there
+
+commit b475e17d0665abb777c5eb9689a0d7b2373f5a4a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Dec 18 21:23:58 2013 +0100
+
+    Better debug message for timestamp retrieval
+
+commit 4bf650e8eedc864419b0b3e2982c9efaef753378
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Dec 18 21:20:51 2013 +0100
+
+    Try to make stage windows more robust for being kept as active one if they visible
+
+commit cef224b00ec50a52ce16a2c4a52676e2ddcefe3f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Dec 18 20:32:19 2013 +0100
+
+    Fixed typos
+
+commit c98554108e1578407f2aaea34b0890d7259a0088
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Dec 17 00:19:46 2013 +0100
+
+    Fix compiler warnings for XfdashboardWindowTrackerWindow
+
+commit 9197229510593631c4645b9756c94e18bb5a1311
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 15 21:55:58 2013 +0100
+
+    Fixed formatting
+
+commit 6aeddbb602a6f0ccaae93fe07d0d97036633e20b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 15 21:42:49 2013 +0100
+
+    Implement drag'n'drop of live window to workspace to move them between workspaces
+
+commit ce7597fd111c30e252a4e25ec845851d0eaf26a3
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 15 00:23:30 2013 +0100
+
+    Invalidation of background in XfdashboardBackground is needed everytime when type is changed even if background type is set to none to get it cleared.
+
+commit a2a445b1ec7e990ae888278d1e98aa3ce6ef803a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 15 00:19:40 2013 +0100
+
+    Remove unused commented "// TODO:" lines in XfdashboardBackground
+
+commit 0525d978af01cf8dcb37f0a0680bd352d64037ba
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 15 00:12:46 2013 +0100
+
+    Fix typo in comment
+
+commit 46fa10fe92eff3e49617165174ed0413bb3c96e9
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 15 00:09:48 2013 +0100
+
+    Add image as seperate content to XfdashboardImage which is always above canvas. XfdashboardBackground does not set content of actor anymore to keep this way open for derived actors. To show example XfdashboardLiveWorkspace uses this option.
+
+commit b6c175b2f9ef314dba780c8884e001c6482193b4
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Dec 14 15:57:44 2013 +0100
+
+    Get rid of image in background as it is used since its introduction. Change enum for background to flags for easy combination of its different styles.
+
+commit 533ed308c800b33e7c0a2e21544b3eb54bb0e27d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Dec 14 01:06:04 2013 +0100
+
+    Fixed typo
+
+commit d5042622e479215aced2614e226076b5f3dea635
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Dec 12 22:31:06 2013 +0100
+
+    Activate stage window if it is _NOT_ the new active window
+
+commit f344b5259700b8181694b6ca9737608f56493b36
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Dec 12 22:30:27 2013 +0100
+
+    Mark themable variables/constants
+
+commit e25b80cc87a78858b32df7d55649b10323aeb8dc
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Dec 12 22:29:39 2013 +0100
+
+    Try to get better timestamps for window activation
+
+commit 617fa5679abfa8658916cbce3a53b5b2f0449357
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Dec 12 20:45:01 2013 +0100
+
+    Do display and manage stage windows
+
+commit a059edc5868a61261d1d163c47e524e6e5e74b6b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Dec 11 23:18:26 2013 +0100
+
+    Add function to scroll through workspace with mouse-wheel
+
+commit 1b68b17f229ad1fbe9198f59b60e66da4195420d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Dec 11 22:39:29 2013 +0100
+
+    Added missing function to quit application when an workspace to activate was selected by clicking on it
+
+commit 60b18b859f10d45640cfa874025ed8778915cc06
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Dec 11 22:35:01 2013 +0100
+
+    Commit initial basic workspace selector what is like a pager. It is a simple one for now as it only shows the windows' icon in relative size to their real size and not the window content. The active workspace will be highlighted by an white outline. Workspace can be activated by clicking on it. Drag'n'drop support is not yet implemented.
+
+commit 6a4b04b59a1181e98f0fc3ba0d7ca34d33ab9c13
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Dec 10 22:58:05 2013 +0100
+
+    Remove any reference to libwnck in all object except for window tracker related objects. Window tracker objects wrap libwnck resources directly but are accessible in a "virtual" stable API. Doing it this way should provide a stable API for libwnck throughout all code and the only place to work with #ifdef's to work around changing libwnck API are the window tracker objects.
+
+commit 31ea5ddb794dafd297f4ba20ad3b8c70fd5f4473
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Dec 9 20:55:16 2013 +0100
+
+    Replace relicts of old application name with current name
+
+commit c867b0659f0e1f6a722dccdb586efa195535f200
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Dec 9 20:35:43 2013 +0100
+
+    Because of API changes in libwnck (especially signal callback parameters) from previous minimum version (2.10) up to commonly used version (2.30) in most distribution I raise minimum version of libwnck to 2.30
+
+commit 68f400bad053c78107bd76e5d5fd115de2f8b7ab
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Dec 9 20:21:59 2013 +0100
+
+    Bundle all signal handlers for libwnck signals in a simple window manager called XfdashboardWindowTracker and connect all windows/workspace related signals in all other objects to this new window tracker. Simply said: The window tracker is a proxy to the underlying window managing library.
+
+commit d757befee11dc219965bed1deac3de32099efb81
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 8 13:40:24 2013 +0100
+
+    Fixed using wrong values when calculating child allocations in quicklaunch
+
+commit f77a5ff16022c8b7347d5adec236f861e4dcbc4b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Dec 7 22:41:40 2013 +0100
+
+    More precise debug messages
+
+commit a7503b0b9721eac02829263c9e598ead49269c20
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Dec 3 06:21:07 2013 +0100
+
+    Should fix build issues resulting in unresolved symbols while linking on some systems.
+
+commit 15cb42554bd6c9337c233be6bf064e237f314944
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Dec 2 22:09:09 2013 +0100
+
+    Do not speciliazed functions like floorf, ceilf etc. to unify function usage.
+
+commit 342e9d8f527cb488998acbd689dca3857c166822
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 1 15:07:10 2013 +0100
+
+    Replace basic actors for icons in XfdashboardTextBox with XfdashboardButton and used it deferred loading mechanism.
+
+commit 4bdc1087d91f8c4081c65378f79400aa9f3feaff
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 1 13:34:25 2013 +0100
+
+    Using deferred loading mechanism of XfdashboardButton in XfdashboardApplicationButton by setting icon name instead of loading image from cache directly.
+
+commit 7814d2edf6cbaf082ade13ea717978c67884e997
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 1 13:24:19 2013 +0100
+
+    Defer loading images in XfdashboardButton to avoid loading and creating textures of unused images.
+
+commit 78254b7e9b38d51482b1d3ac2177eeb5ef196a45
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Dec 1 12:52:07 2013 +0100
+
+    Implement image cache to reduce resource usage by textures displaying the same image over and over again
+
+commit 0a18406275509e43c5a161530e47c03c4b7f8c44
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 29 06:51:18 2013 +0100
+
+    Added link to quick quide documentation with screenshots
+
+commit 8fde5ffe6283016a2303b88e038f2bf366828d26
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Nov 28 17:58:35 2013 +0100
+
+    Clear garcon's menu item cache otherwise some items will not be loaded if it is a reload of an already instanciated applications menu model or a new second/third/fourth/... instance
+
+commit e6f85d26710ddc566e6af5c194928417e205969a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Nov 25 15:30:20 2013 +0100
+
+    Replace buttons in XfdashboardViewSelector with toggle buttons as they provide pressed and not-pressed states which can be used to reflect the view's activated/deactivated state by highlighting like the apps-button in quicklaunch.
+
+commit b25aa9ac84b53e710ee1ff2e9234c7c233721449
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Nov 24 14:00:46 2013 +0100
+
+    Remove testing actor for workspace selector. Make ready for release preview release.
+
+commit 90ef41bd844c7fd2ac403d9873743ae2b213fb17
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Nov 24 13:43:48 2013 +0100
+
+    Clean up TODOs. Support selection colors for text and background in XfdashboardTextBox. As long as we do not support multi-monitors we use a hack to ensure stage is in right size.
+
+commit a2ca20b0feb1e4ce2e6425026d06849dbb765529
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Nov 24 11:13:15 2013 +0100
+
+    Basic implementation of workspace selector. Does nothing at the moment
+
+commit e550e0c757c7cea98bb05a3b94f2c4b8959c8e0b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Nov 24 10:28:30 2013 +0100
+
+    Windows view should now really always fit into viewpad without scrollbars to flicker. There is caution to use the new enum XFDASHBOARD_FIT_MODE_BOTH as the view _MUST_ be able to scale itself to fit into allocation _ALWAYS_ otherwise it will be clipped without being able to scroll (as there are no scrollbars in this mode).
+
+commit 0ab34a4cf11374675acbef129763df7d9a0bf736
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Nov 24 09:35:55 2013 +0100
+
+    Support of starting application by drag'n'drop favourite icon on windows view
+
+commit 173cd75bc4bd9e090e9fc3f8202506f7f6041e5f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Nov 24 09:18:07 2013 +0100
+
+    Maximize stage window when opened
+
+commit 27457281dc30a85a2419c17592a4d94ca8d23fc9
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Nov 23 09:06:59 2013 +0100
+
+    Fix determination if close button in live window was clicked to emit "close" instead "click".
+
+commit 1a84eae5615010f562bdb08120fbb41d6abed225
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Nov 23 07:27:47 2013 +0100
+
+    Escape markup text properly
+
+commit c4112160d5d0ddf3c10129d6c6756c161188189f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Nov 23 07:02:35 2013 +0100
+
+    Get rid of cloning and use an application button instead as drag handle of favourites in quicklaunch. Also do not scale drag handle to match size of favourite icon of quicklaunch in size as it flickers and jumps :(
+
+commit 954d4b9992409e6a1eb30d195237f4c39825cd26
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Nov 23 06:47:55 2013 +0100
+
+    Now support drag'n'drop of application icons from applications and search view to quicklaunch to create a new favourite.
+
+commit 08c9c151bca233276cf10e246a423cc1e4ad89ec
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 22 22:31:39 2013 +0100
+
+    Fixed typos in TODO
+
+commit 214f6e0c10ada2feb1669703dbe43da0d0b18721
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 22 22:30:56 2013 +0100
+
+    Update TODO
+
+commit eab19fe53ecee84f58fac705769cb988aa8d7a73
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 22 22:29:01 2013 +0100
+
+    Implement general drag'n'drop support with XfdashboardDragAction and XfdashboardDropAction. Quicklaunch is the first actor implementing drag'n'drop support.
+
+commit 2b2e6582198fbdc46036c7b7e6a8248ce47d7685
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 22 08:03:35 2013 +0100
+
+    Bad workaround for click action which prevents e.g. drag actions to work properly at least since clutter version 1.12. The click action will always win and "drag-begin" will never be emitted.
+    
+    This object/file is a complete copy of the original clutter-click-action.{c,h} files of clutter 1.12 except for one line, renamed function names and applied coding style. As the clutter-click-action.{c,h} files of later clutter versions do not differ much from this one this object is expected to work even in this versions.
+    
+    See bug: https://bugzilla.gnome.org/show_bug.cgi?id=714993
+
+commit f65759d6124dffc6423419c96e2697083d6c10ca
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Nov 21 21:05:24 2013 +0100
+
+    Simplify "clicked" signal handling in XfdashboardLiveWindow
+
+commit 40e96f188b7d28fbd143f50ca49d20cc7d357785
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Nov 21 20:39:37 2013 +0100
+
+    Fixed more compiler warnings
+
+commit 02220d1c8910f361689af40a79c492a29291c5ba
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Nov 21 18:33:32 2013 +0100
+
+    Fix compiler warning by not mixing code and declarations
+
+commit 30f7177b93b29eb235ce71e16eac8f322b5032e6
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Nov 21 12:11:16 2013 +0100
+
+    Fixed more private variables and functions
+
+commit 7b2aecf720a9ffcb5db449b9ce08f46935c80d0d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Nov 16 00:43:22 2013 +0100
+
+    Fixed searching command-line
+
+commit d6a93304b07ffa4eaea4af69ea5aca08d9c3e100
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 22:51:08 2013 +0100
+
+    Increase number of possible background type by all possible combinations. I cannot use a flag and had to use an enum because of a single option called "image".
+
+commit 922ea2e065640cb5e513e410d0bf58a5a5ec0c3a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 22:29:58 2013 +0100
+
+    Renamed all occurences of margin to padding because margin is already provided in ClutterActor and I do actually padding even if I called it margin ... that's why I renamed it to padding.
+
+commit a3d5dc4cfb88a4f01a8449589de1d024e49806b8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 22:29:15 2013 +0100
+
+    Rename property and variable margin to padding in XfdashboardTextBox
+
+commit e6ccd2fc73aaebf6a2c45a84b695be4b003810fa
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 22:26:37 2013 +0100
+
+    Rename property and variable margin to padding in XfdashboardLiveWindow
+
+commit d192b3c6229e23ec8a7464523411247b8206859d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 22:19:21 2013 +0100
+
+    Rename property and variable margin to padding in XfdashboardButton
+
+commit f2913d7c030c75db1ca21b9ad2edf584b189fd92
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 22:12:21 2013 +0100
+
+    Call XfdashboardToggleButton's parent class default click signal handler
+
+commit f1f02d334822215cdc3953df713b203cb12b9b4a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 14:44:45 2013 +0100
+
+    Apps button in quicklaunch is now control from stage and reflects if we are in search mode or not.
+
+commit cd72104433510817280102671a6c1322a879e6cd
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 12:21:49 2013 +0100
+
+    Rename function to reflect variable name and usage
+
+commit cb2c02c24b0cb9db1396141f905fb567071ecec5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 11:36:11 2013 +0100
+
+    Main button in quicklaunch renamed in app-button and now it can really switch between windows and applications view.
+
+commit acfe9b5230f327a81a7818e4d752677a956f67c2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 09:00:06 2013 +0100
+
+    Fixed background to invalidate and redraw background canvas if type changes.
+
+commit 6ad4e97f5f2ec94fdbd6b5862af0736469d14f8c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 06:54:28 2013 +0100
+
+    Add main action button to quicklaunch. It will be used to toggle between window and applications view.
+
+commit 58d4fcf2ff7f8ac7f07991c06b8c8d0386615b39
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 06:35:38 2013 +0100
+
+    Add files for newly created XfdashboardToggleButton ;) Forget them in previous commit.
+
+commit 2cdeb1402f18faf10780b1cd84ca1540e583eba0
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 06:34:43 2013 +0100
+
+    Implement toggle button XfdashboardToggleButton which is derived from XfdashboardButton but can toggle its state between on and off.
+
+commit 7ae39352119c7c83355b4422ea159ec6cc08193e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 15 06:10:05 2013 +0100
+
+    Clean up
+
+commit 97e9f01cbcf6daa53539d2e6d8615339d39e3540
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Nov 13 17:18:28 2013 +0100
+
+    Updated TODO
+
+commit ad0e9ee4b2c88a4090acb2d32db6668354caea92
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Nov 13 15:23:48 2013 +0100
+
+    Defer filling model data with applications in XfdashboardApplicationsMenuModel and signal loading with signal "loaded" to speed up initialization.
+
+commit ee4239b7ea5e745573579b7ed7d12768d85cb301
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Nov 12 13:24:45 2013 +0100
+
+    Because I did not knew better I have to re-add the "static" keyword to each private function (private functions begin with underscore in name) to get them really private.
+
+commit 59b47b1aa36c4cd3b7059822d0e49154da56a72a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Nov 10 08:55:28 2013 +0100
+
+    Updated TODO
+
+commit d6b8f81964db4d990d68a2e1b24e70e2262dd32a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Nov 9 18:40:54 2013 +0100
+
+    Better set key focus via ClutterStage than grabbing key focus - I think.
+
+commit fd2434afaf1b021c58daf5bedb6ff8f1d75798ca
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Nov 9 08:32:52 2013 +0100
+
+    Searchbox grabs now the key focus on startup so the user can now really "just type to search" when application started.
+
+commit e20786e7002bdb0c97262bab8ac9e65f68ffd7d7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 8 22:30:51 2013 +0100
+
+    Show no warning if clipping information of active view is not available and just use 0,0 as offset and actor's width and height as size.
+
+commit 231593273c29c13c2b8f99994ae671f9ee65088b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 8 22:20:49 2013 +0100
+
+    Fixed deduplication code in search view by adding a sequence ID number to XfdashboardApplicationMenuModel and checking this ID of current row and first row seen of iterator.
+
+commit c425b5a5a5b2e92e2e951ff447b7b8dc0772475b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Nov 8 13:46:41 2013 +0100
+
+    Completed search view but recognition of duplicates will not work because each item in model checked will have row 0 set in given ClutterModelIter.
+
+commit 5a9849c50cf510cfc1f8e09b726fb2de57b35340
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Nov 7 06:57:32 2013 +0100
+
+    Simplify search by just providing a search view. Remove search manager and search provider abstract class for now. Search view will just lookup and show applications which title and/or description will match the search criterias.
+
+commit 96348f63466c4e679e0ed0b52aae0413889a7e78
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Oct 31 21:35:30 2013 +0100
+
+    Unneccessary double-check of boolean condition to check if primary and/or secondary icon in text box should be shown or not.
+
+commit fa259bf0d2cb798934b052e21ed3f0b878febb00
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Oct 31 21:29:22 2013 +0100
+
+    Fixed setting and unsetting primary and secondary icon in text box. Secondary icon ("clear icon") in search box will now only be shown if any search is active (but the search is not performed currently) otherwise the secondary icon is hidden.
+
+commit e304b7ef864b8de7e79f77f6b4555c5d2bebf928
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Oct 31 21:06:51 2013 +0100
+
+    More preparation for implementation of search
+
+commit 989ce9995a49dd68de19efcdd415646962f914c6
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Oct 31 06:48:01 2013 +0100
+
+    Fixed showing title and description for "back" button in XfdashboardApplicationsView
+
+commit 407f94b48ef09f1215d6e0c77a94d3f5ef3240f7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 30 14:04:47 2013 +0100
+
+    Implement enabled/disabled state of a view. XfdashboardViewpad will not allow to activate a disabled view and switch to first activatable view if the current active view was disabled. XfdashboardViewSelector will show or hide the button for a view depending on its enable/disable state.
+
+commit 8009a1e8d3d9e3455b3593eb79fbbb3af5ad5424
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 30 12:11:08 2013 +0100
+
+    Fixed escaping title and description for markup in XfdashboardApplicationButton
+
+commit c915cf131960cd6ecf79e235101638c221b01863
+Merge: 63dac34 624608a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 30 12:01:20 2013 +0100
+
+    Merge branch 'clutter-1.12' of github.com:gmc-holle/xfdashboard into clutter-1.12
+
+commit 63dac34959e5b855b27ddc897b86e550e2f34f9c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 30 12:00:43 2013 +0100
+
+    XfdashboardQuicklaunch now supports orientation (default is vertical)
+
+commit 624608a247a699127cfd5ae7e15eaf9fccbe8f31
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 29 18:59:23 2013 +0100
+
+    Updated TODO
+
+commit ef90a9933d975b3c42acc60241c07b08e9557945
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 29 15:10:48 2013 +0100
+
+    Saner retrieval of WnckWindow for closing
+
+commit afccbd4f4b1f20b544a3c0bf1c0ae29ec1c59bba
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 29 15:06:26 2013 +0100
+
+    Prepare object for search plugins - first commit of search plugin manager and abstract class for search plugins
+
+commit e400b49eb8934185b9ff2186bcb667a220e4a5b6
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 29 14:47:44 2013 +0100
+
+    Fixed naming
+
+commit 49ad2f67a3a7ad44f34420d2623018531b7f577d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 29 14:44:48 2013 +0100
+
+    Return a copy of list of registered view to avoid invalid list pointers if list is modified somewhere else at the same time
+
+commit 90a95711926739c8119252b1debc3bcadd1bc9f7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 29 12:30:42 2013 +0100
+
+    Fixed releasing content at wrong actor in button when unsetting image.
+
+commit c080691a61295552999ef1625174ac2f5fb14170
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Oct 26 21:31:47 2013 +0200
+
+    XfdashboardBackground now supports also outlining next to filling. Fixed horizontal alignment in quicklaunch.
+
+commit d7d4bee264896e8e5785104bffa5ba6b3f32efca
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Oct 26 11:12:04 2013 +0200
+
+    Fixed get_preferred_{height,width} and allocate function for quicklaunch
+
+commit 4e5083fa1cdd9e7121d475f60c04e77d43736770
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Oct 24 14:37:59 2013 +0200
+
+    Commit first working version of XfdashboardQuicklaunch
+
+commit a5d476d59e9c1c393ede48e73e05e05077cdb123
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Oct 18 16:06:35 2013 +0200
+
+    Connect quickbox to xfconf
+
+commit 67c317bb3998526d634689b43d2b914e8245d35d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Oct 18 16:03:06 2013 +0200
+
+    Fixed including remove header file in applications view.
+
+commit 2049f7f4c51dd895c4a6b6ac2e252d54780af78c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Oct 18 12:43:45 2013 +0200
+
+    Set flow layout for icon view. Revert default view mode of application view to list mode.
+
+commit df3d2e71a96d161f939fa6c57e24f9bb769ede6a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 9 10:19:11 2013 +0200
+
+    Completed icon and list view mode in XfdashboardApplicationsView
+
+commit 870cbbd988f8394587cd16c2613300dc501f889c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 8 15:47:36 2013 +0200
+
+    Implement view mode in XfdashboardApplicationsView (but still buggy)
+
+commit a591a69dd313087951fabf23aa69f0cf32b585b6
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Oct 8 13:13:18 2013 +0200
+
+    Removed static keywords and added prefix "_" to function names to unify coding style. Corrected constant names in enum to unify naming also ;)
+
+commit d3ac2caa0ceadba9837751d6e36dad6a4108a1d1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Oct 3 10:04:51 2013 +0200
+
+    Make XfdashboardApplicationButton more configurable. Adjust style (or to be more precise: only the format string) of "parent menu" button in XfdashboardApplicationsView to XfdashboardApplicationButton.
+
+commit e07d9ed1a38bc5da204c84adfed224a613d71db0
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 2 20:17:31 2013 +0200
+
+    Updated TODO and README (corrected minimum version of clutter)
+
+commit ae37dad8574fe7e3e244486d459ac02bb0340e37
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 2 18:44:30 2013 +0200
+
+    Until I added a property to XfdashboardApplicationsView to switch between list and icon mode and calling filter_changed signal handler explicitly I should move the code after the part which creates the layout manager for this view.
+
+commit 95d3f4ab1213ef56413da9d5456fd837de8cd4e1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Oct 2 15:27:19 2013 +0200
+
+    Added new actor called XfdashboardApplicationButton which is a button but its text and icon to display is retrieved either by a GarconMenuElement or a GAppInfo. This actor can also the associated application defined by either one of them. The application view was modified to use them.
+
+commit 2b5bb65c8e880cfa7fde66556cf9f2086c1dc474
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Sep 25 06:57:45 2013 +0200
+
+    Added missing files for quicklaunch.
+
+commit 2de9f4f9c6dabdd44310122b61008cf8b82a9180
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Sep 25 06:56:49 2013 +0200
+
+    Basic structure of quicklaunch actor. Replaced placeholder in stage with new (and still empty) quicklaunch actor.
+
+commit e2ce16415fb0d95cba1c355ee000235c08bf9667
+Merge: aa42bc9 9f25e87
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Sep 21 09:54:00 2013 +0200
+
+    Merge branch 'clutter-1.12' of github.com:gmc-holle/xfdashboard into clutter-1.12
+
+commit aa42bc996cf02605a5fe64f4e7952c173a329c33
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Sep 21 09:44:16 2013 +0200
+
+    Implemented applications menu model which collects menu entries via garcon library. It can be used to display menu entries in a view in different ways: all entries, all entries of a menu and by sections like games, office etc. Two helper functions will help to filter the entries by menu or section.
+    
+    Changed applications view to show applications menu entries instead of a clock ;) Clicking on a folder will show its contents but clicking on a menu item will start the associated application.
+    
+    Also improved view to allow to scroll to requested position.
+
+commit 9f25e877ac00dec3a173c209a5f63b3e3f3f0751
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Sep 19 13:47:10 2013 +0200
+
+    Implement action signal to scroll any view. The viewpad will react on scoll-to signals of any view (active or inactive ones) and scroll to requested position either by setting scrollbar values directly (if active view) or by updating clipping data (inactive views).
+
+commit f3200277a63bcd1c0e172bd704c2ea38e1934e1c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Sep 7 00:08:51 2013 +0200
+
+    Forgot to handle value changes in property "fit-mode" of abstract class XfdashboardView via property get and set functions.
+
+commit e70715dd4ceb6eaf571345248a21af065905fa80
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Sep 6 16:15:53 2013 +0200
+
+    Improved viewpad to allow fitting a view in one direction into viewpad. Therefore a new virtual function (*set_fit_mode) was added to abstract class XfdashboardView for reacting on fit mode changed in view (new type XfdashboardFitMode). Corrected scrollbar and clipping behaviour of viewpad.
+
+commit e770d763fff53c47b9375f23751739a071f799ff
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Sep 5 20:37:37 2013 +0200
+
+    Another fix for allocation functions in button widget but now if icon synchronization is _NOT_ enabled.
+
+commit 26474908df6fb816e88a3f132f07923b97c13cb1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Sep 5 20:25:58 2013 +0200
+
+    Correct allocation related functions. The button widget was not able to determine and allocate its size correctly especially if icon's size should synchronize to label's width or height (depending on its orientation).
+
+commit 145f6acd3b04da1a1e4950856e654b89016f773e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Aug 22 06:50:22 2013 +0200
+
+    Clean up from unneeded and unused code
+
+commit c7a290fc607c2fe3611c4202a4f79c12ac8e4778
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 20 06:45:31 2013 +0200
+
+    Renamed XfdashboardFitBoxLayout to XfdashboardFillBoxLayout as I think the name matches better to its function.
+
+commit 960fe241050c95ed393a8a3fa2754eb279e254c5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Aug 19 23:23:47 2013 +0200
+
+    Implemented basic version of XfdashboardFitBoxLayout which layouts children like ClutterBoxLayout but takes care to fit into parent actor's width or height depending on orientation. It will alway set width or height of every child to match parent's size but it can scale it to keep aspect ratio if wanted. When implementing this layout manager also some minor errors and misbehaviours of some other actors were corrected (and hopefully throw no warnings or criticals anymore).
+
+commit 84505f2592a23faa760063e01054d367e752d070
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Aug 15 07:38:28 2013 +0200
+
+    Implemented text box
+
+commit 397399a4809c1deb8b751d5d15af3a93da8a2ddc
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 13 23:11:00 2013 +0200
+
+    Get rid of virtual function "created" of abstract class XfdashboardView. Set name and icon of view at view instance creation. Also implement new property "view-internal-name" to store an untranslated name of view for use in application and maybe future plugins to recognize role of view.
+
+commit 0a6a7efbd087acc9fd746969e253321b2e923ddb
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 13 22:44:37 2013 +0200
+
+    Completed types with annotations for glib-mkenum to generate correct nick-names for enums and flags. Also added annotation to skip not used enums like XfdashboardApplicationErrorCode
+
+commit c3c221efe85c3264c8a7b41f8551f73fa0bfead0
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 13 22:34:04 2013 +0200
+
+    Implemented missing but prepared property "orientation" in XfdashboardViewSelector
+
+commit dc6aea628666b0715f577a8e52c43a3230102598
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 13 22:20:48 2013 +0200
+
+    Fixed compiler warnings except for warning produced by CFLAGS "-Wdeclaration-after-statement" and "-Wmissing-declarations".
+
+commit 258380776a5720d5e222cac12b2a46d3c4f11fb3
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Aug 10 09:39:25 2013 +0200
+
+    Handle scroll events in viewpad if not handled by any child actor like active view, horizontal or vertical scrollbar.
+
+commit b0dd73a6b9dad8fc5c63432ab7573a0f035adaf3
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Aug 10 09:03:56 2013 +0200
+
+    Remove workaround in XfdashboardLiveWindow as this problem did not happen anymore (and should not - this is expected). Replaced TRUE and FALSE with CLUTTER_EVENT_PROPAGATE and CLUTTER_EVENT_STOP where appropiate.
+
+commit b4f4667a75559bcb57237aaed4e26e868bc22e0e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Aug 8 06:47:25 2013 +0200
+
+    View selector is too far away from quicklaunch and needs heavy use of pointer device. Put it near to quicklaunch ;)
+
+commit b1129bacfffcd72bcd89acdc787966b7c316bda5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Aug 7 23:19:36 2013 +0200
+
+    Fixed viewport and scrollbar when switching between views forth and back.
+
+commit f05a4d9869856259d797588e366d119a0ad5c3f1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Aug 7 16:13:13 2013 +0200
+
+    Updated TODO
+
+commit 10e71353cd43847aae58fc3ba057797c95aae203
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Aug 7 16:08:59 2013 +0200
+
+    Fixed layout manager. Corrected calculation of minimal/preferred sizes of custom actors. Implemented view selector and added to stage window. Views in viewpad can be selected (activated) by clicking on button in view selector.
+
+commit db2c859a7ae5eee4d3072f57818a6daefd8e52cf
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 6 23:36:47 2013 +0200
+
+    Updated TODO
+
+commit 92a9e0de638523f17603db69e6b0d880ce89af7f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 6 23:35:31 2013 +0200
+
+    Set default scrollbar visibility policy in viewpad to automatic
+
+commit da9cf97bef2a8d1eb438d08210f9afed48eb41e9
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 6 23:28:37 2013 +0200
+
+    Make page-size for pointer scroll events configurable. The value is a factor between 0.1 and 1.0 and is the factor multiplied with slider size by which the slider is moved.
+
+commit 528b02c96f9821a52f661fd546564dce9b43b5b5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 6 23:19:21 2013 +0200
+
+    Allow scrolling by pointer wheel
+
+commit df899b883b510bcbe255c0676f1da56f9dcf45f1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 6 23:09:20 2013 +0200
+
+    Implement scrolling viewport in viewpad and allow scrolling to specific point by clicking into scrollbar not occupied by slider or allow smooth scrolling by drag'n'drop slider of scrollbar.
+
+commit c005cf7410a84a8ae4b5fa36c739b42be5af74e3
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 6 11:18:27 2013 +0200
+
+    Fixed indention and comments
+
+commit 04576b82991d0f7eeccc69caccc1996f83541eb7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Aug 5 15:43:14 2013 +0200
+
+    Implemented scrollbar visiblity policy
+
+commit feb5e67953c746e63a21e66237f9d2b66a3e10cd
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Aug 5 12:55:00 2013 +0200
+
+    First and basic implementation of scrollbar. Does not react on events yet!
+
+commit fd22deca6ee13c05ea364bc97ac5e770f917dca4
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Aug 4 09:47:34 2013 +0200
+
+    Removed also static keyword from variables
+
+commit 64276bd5adaa25865d5dcb92ed5a21e4e3ef39a8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Aug 4 09:30:10 2013 +0200
+
+    Removed static keyword from functions. Fixed build issue - still tried to compile common.c which was renamed to utils.c
+
+commit d5146b0f547fe7b8d118d64fa0f1cc96a219eb2e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Aug 3 11:12:08 2013 +0200
+
+    Rename common.{h,c} to utils.{h,c}
+
+commit 6dcf76f1720c3816a655f43d22f444c8265e60af
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Aug 2 13:57:48 2013 +0200
+
+    Allow views themselve to emit activation and deactivation signals like viewpad.
+
+commit a44a68398663ebd6ff1ea31f5a3951ccde401a47
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Aug 2 13:49:30 2013 +0200
+
+    Viewpad and ViewManager improved to react on registered and unregistered views during runtime.
+
+commit b41b7bb64ec2aee63e80c98cd0a08fd5daa15025
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Aug 2 07:00:56 2013 +0200
+
+    Updated TODO
+
+commit 5e83f8862fab696db4cbd846e75c5064632a37a2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Aug 1 22:03:44 2013 +0200
+
+    Implemented view manager
+
+commit 90cb8afb9601166c2f565d412eaca8da8d6df9b5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Aug 1 21:07:03 2013 +0200
+
+    Prepare viewpad compositing actor for scrollbars. Set up properties for viewpad. Implemented spacing between view and (future) scrollbars in viewpad. Prepared "active-view" property in viewpad.
+
+commit 8feacd19a49e3d432bd17d1b99103129ce0de37c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Aug 1 15:19:28 2013 +0200
+
+    Add missing files for basic viewpad implemented (was the files for viewpad itself ;) ). Also set layout manager.
+
+commit 73c919c0e31d2069b2db620b856fc615ff5ce16e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Aug 1 14:58:59 2013 +0200
+
+    Implement basic viewpad (needs a layout manager which allocated viewpad's allocation to each of its children)
+
+commit a57ec5283bec97378326cdfe3c08f317e3910572
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Aug 1 13:56:09 2013 +0200
+
+    Make view self-declaring (name and icon) by overriding created function. Also implement view registering system.
+
+commit 389f95df58c5b1226c12b8e61f646ccbf7144960
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Aug 1 06:54:48 2013 +0200
+
+    Initial commit on new branch for full rewrite based on clutter-1.12
+
+commit 38619e776518465e026d97c16006a204b9fc6e64
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Mar 17 16:41:12 2013 +0100
+
+    Speed up scrolling because it got worse after speeding up search. The reason was that each time the scrollbar moved (value-changed signal emitted) all actors were re-allocated and re-layouted even the hidden ones. Speeding it up by just moving view and clipping of view but only it view has clipping.
+
+commit 451440aab8d32aeab637da9c6d740686fa274e4e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Mar 17 15:12:35 2013 +0100
+
+    Updated TODO
+
+commit 8f10f1b50a9ffcb0ff2bba8b577741b0c6f03f54
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Mar 17 15:10:55 2013 +0100
+
+    Updated .gitignore
+
+commit eb8a221d638828bee2d779413963a11145565576
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Mar 17 15:10:08 2013 +0100
+
+    Speed up and optimize search
+
+commit 219a16ef168bacf88422df917e1e7b18637fc2c2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Feb 28 21:11:51 2013 +0100
+
+    Update TODO
+
+commit a9701b6e274734c94c7cab2d1e8ce581266924f2
+Merge: 195c6e0 681d8d7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Feb 12 09:44:18 2013 +0100
+
+    Merge branch 'master' of github.com:gmc-holle/xfdashboard
+
+commit 195c6e0d64ba3e71c6631334125e600f55e8bd45
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Feb 12 09:42:33 2013 +0100
+
+    User can now add favourites to quicklaunch by dragging an icon from applications/search view to quicklaunch. Also fixed failure in removing drop targets from list of targets interested in dragged item.
+
+commit 681d8d73f731220e05f48f76931c04999422d567
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Jan 24 10:10:50 2013 +0100
+
+    Removed unused variables in quicklaunch
+
+commit 8665ce58662c49827e5d4676131057c9dd8aecb3
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Jan 24 06:43:47 2013 +0100
+
+    Removed debug messages
+
+commit 603b0459892dede4a230bad35849570a31304e30
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Jan 23 21:32:20 2013 +0100
+
+    Updated TODO
+
+commit c9365622ca67e9a817579849004740c427df6e10
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Jan 23 21:25:55 2013 +0100
+
+    Application icons in quicklaunch can now be removed by dragging the icon to the trash or delete icon (depends on theme) in quicklaunch which appears as soon as an icon of quicklaunch is being dragged. The "all application" icon in quicklaunch will be hidden while dragging.
+
+commit 0be0f3073b09d786b295caca2b6e48d5e1074c39
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Jan 17 08:26:15 2013 +0100
+
+    Fixed compilation error because of undefined variables GLIB_MKENUMS and GLIB_GENMARSHAL. Without them enums.[ch] and marshal.[ch] could not generated and compilation fails. Added substitution for this variables in configure.ac.in.
+
+commit 86a518c98618974781c0c030ef16dd7e139ab25a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Dec 24 15:25:47 2012 +0100
+
+    It helped me to improve performance. Sadly this might not work for clutter 1.10.0 or higher as this function it marked deprecated.
+
+commit 34ebe9e2203e7d932a18716e1b4c1a3ae95fde7e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Dec 24 14:42:22 2012 +0100
+
+    Updated TODO
+
+commit e5cd245bfebf9980c2a08b7f5a532557e00fa42d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Dec 24 14:40:37 2012 +0100
+
+    Removed debug messages
+
+commit e30e65ba562220f8b0ec46cdbaf4f3fd5ebbb555
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Dec 24 14:35:52 2012 +0100
+
+    Initial support for drag-n-drop. I needed to implement my own DropAction because I could get clutter's own one get working e.g. for just quicklaunch area. As soon as I crossed an application icon in quicklaunch it stopped emitting signals to underlying quicklaunch. And implementing my own DropAction caused implementing my own DragAction which is derived from clutter's one.
+
+commit a88164c7c5c60455401051355b0f1331f54cb3aa
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Dec 20 20:49:14 2012 +0100
+
+    Fixed more memory leaks when retrieving and iterating through list of children of a container.
+
+commit 76e62bb2ad594ce92a918b662e806041e5bb0f8c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Dec 20 14:45:33 2012 +0100
+
+    Fixed a memory leak when retrieving and iterating through list of children of a container. I forgot to free the retrieved list after use.
+
+commit f4a304fcae1e1f48e0a043f56f44d94ad675f3d6
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Dec 20 11:19:49 2012 +0100
+
+    Missed one layout manager which should also respect children's visible state.
+
+commit 0ffedeac92cd662162c94a70361634b5c4ba5267
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Dec 20 11:07:42 2012 +0100
+
+    Layout manager should respect actor's visibility state.
+
+commit 216aa01bd6e22fa27eef1103dee1fc8bad8cb61d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Nov 17 09:12:50 2012 +0100
+
+    Updated TODO and set up POTFILES.in
+
 commit 89a0c0e9211a84edaff3dc10245ddc54d28f431e
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Fri Nov 16 22:39:53 2012 +0100

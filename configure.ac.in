@@ -70,6 +70,7 @@ dnl *** Initialize libtool ***
 dnl **************************
 LT_PREREQ([2.2.6])
 LT_INIT([disable-static])
+AC_CONFIG_MACRO_DIR([m4])
 
 dnl **************************
 dnl *** Substitute version ***
@@ -154,6 +155,11 @@ dnl **************************************
 dnl *** Check for linker optimizations ***
 dnl **************************************
 XDT_FEATURE_LINKER_OPTS()
+
+dnl *****************************************************
+dnl *** Prevent _FORTIFY_SOURCE redefinition warnings ***
+dnl *****************************************************
+PLATFORM_CPPFLAGS="-U_FORTIFY_SOURCE $PLATFORM_CPPFLAGS"
 
 dnl *********************************
 dnl *** Substitute platform flags ***

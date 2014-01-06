@@ -1,5 +1,7 @@
 @SET_MAKE@
 
+ACLOCAL_AMFLAGS=-I m4
+
 EXTRA_DIST =								\
 	intltool-extract.in						\
 	intltool-merge.in						\
