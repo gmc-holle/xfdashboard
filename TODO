@@ -1,6 +1,6 @@
 == GENERAL ==
 [done] Migrate fully to autotools build system
-- Quit app by pressing ESC(ape) but if search is active clear it first (needs pressing ESC twice to quit app)
+[done] Quit app by pressing ESC(ape) but if search is active clear it first (needs pressing ESC twice to quit app)
 - More control by keyboard (e.g. selecting and starting application by arrow keys and ENTER)
 [prepared] Store settings, e.g. quicklaunch shortcuts, in Xfconf4 and listen for updates
 [done] Only run one instance (libunique? GApplication?)

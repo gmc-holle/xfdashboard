@@ -127,6 +127,39 @@ static gboolean _xfdashboard_stage_on_notification_timeout(gpointer inUserData)
 	return(G_SOURCE_REMOVE);
 }
 
+/* A pressed key was released */
+static gboolean _xfdashboard_stage_on_key_release(XfdashboardStage *self,
+													ClutterEvent *inEvent,
+													gpointer inUserData)
+{
+	XfdashboardStagePrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(self), CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+
+	/* Handle escape key */
+	if(inEvent->key.keyval==CLUTTER_Escape)
+	{
+		/* If search is active then end search by clearing search box ... */
+		if(priv->searchbox &&
+			!xfdashboard_text_box_is_empty(XFDASHBOARD_TEXT_BOX(priv->searchbox)))
+		{
+			xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
+			return(CLUTTER_EVENT_STOP);
+		}
+			/* ... otherwise quit application */
+			else
+			{
+				xfdashboard_application_quit();
+				return(CLUTTER_EVENT_STOP);
+			}
+	}
+
+	/* We did not handle this event so let next actor in clutter's chain handle it */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
 /* A view button in view-selector was toggled */
 static void _xfdashboard_stage_on_view_selector_button_toggled(XfdashboardStage *self,
 																XfdashboardToggleButton *inViewButton,
@@ -691,6 +724,8 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
 
 	_xfdashboard_stage_setup(self);
+
+	g_signal_connect_swapped(self, "key-release-event", G_CALLBACK(_xfdashboard_stage_on_key_release), self);
 
 	/* Connect signals */
 	g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
