@@ -211,7 +211,10 @@ static void _xfdashboard_background_paint_node(ClutterActor *self,
 	}
 
 	/* Now chain up to draw the actor */
-	CLUTTER_ACTOR_CLASS(xfdashboard_background_parent_class)->paint(self);
+	if(CLUTTER_ACTOR_CLASS(xfdashboard_background_parent_class)->paint_node)
+	{
+		CLUTTER_ACTOR_CLASS(xfdashboard_background_parent_class)->paint_node(self, inRootNode);
+	}
 }
 
 /* Get preferred width/height */
