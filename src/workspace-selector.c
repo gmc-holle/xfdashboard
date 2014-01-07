@@ -452,7 +452,8 @@ static void _xfdashboard_workspace_selector_on_workspace_added(XfdashboardWorksp
 	/* Create new live workspace actor and insert at index */
 	actor=xfdashboard_live_workspace_new_for_workspace(inWorkspace);
 	xfdashboard_background_set_outline_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_White);
-	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(actor), 4.0f);
+	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(actor), 1.0f);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(actor), XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
 	g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_workspace_selector_on_workspace_clicked), self);
 	clutter_actor_insert_child_at_index(CLUTTER_ACTOR(self), actor, index);
 
@@ -481,7 +482,7 @@ static void _xfdashboard_workspace_selector_on_active_workspace_changed(Xfdashbo
 		liveWorkspace=_xfdashboard_workspace_selector_find_actor_for_workspace(self, inPrevWorkspace);
 		if(liveWorkspace)
 		{
-			xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(liveWorkspace), XFDASHBOARD_BACKGROUND_TYPE_NONE);
+			xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(liveWorkspace), 1.0f);
 		}
 
 		priv->activeWorkspace=NULL;
@@ -496,7 +497,7 @@ static void _xfdashboard_workspace_selector_on_active_workspace_changed(Xfdashbo
 		liveWorkspace=_xfdashboard_workspace_selector_find_actor_for_workspace(self, priv->activeWorkspace);
 		if(liveWorkspace)
 		{
-			xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(liveWorkspace), XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
+			xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(liveWorkspace), 4.0f);
 		}
 	}
 }
