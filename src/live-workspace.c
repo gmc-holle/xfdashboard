@@ -279,7 +279,7 @@ static void _xfdashboard_live_workspace_on_window_state_changed(XfdashboardLiveW
 		if(newVisible)
 		{
 			actor=_xfdashboard_live_workspace_create_actor(self, inWindow);
-			clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, NULL);
+			clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, NULL);
 		}
 			else
 			{
@@ -291,32 +291,31 @@ static void _xfdashboard_live_workspace_on_window_state_changed(XfdashboardLiveW
 /* A window's workspace has changed */
 static void _xfdashboard_live_workspace_on_window_workspace_changed(XfdashboardLiveWorkspace *self,
 																	XfdashboardWindowTrackerWindow *inWindow,
+																	XfdashboardWindowTrackerWorkspace *inWorkspace,
 																	gpointer inUserData)
 {
 	XfdashboardLiveWorkspacePrivate		*priv;
-	XfdashboardWindowTrackerWorkspace	*workspace;
 	ClutterActor						*windowActor;
-	ClutterActor						*actor;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
 	priv=self->priv;
 
-	/* Find actor for window */
-	windowActor=_xfdashboard_live_workspace_find_by_window(self, inWindow);
-
 	/* Check if window was removed from workspace or added */
-	workspace=xfdashboard_window_tracker_window_get_workspace(inWindow);
-	
-	if(workspace!=priv->workspace)
+	if(inWorkspace!=priv->workspace)
 	{
+		/* Find actor for window */
+		windowActor=_xfdashboard_live_workspace_find_by_window(self, inWindow);
+
+		/* Destroy window actor */
 		if(windowActor) clutter_actor_destroy(windowActor);
 	}
 		else
 		{
-			actor=_xfdashboard_live_workspace_create_actor(self, inWindow);
-			clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, NULL);
+			/* Add window actor */
+			windowActor=_xfdashboard_live_workspace_create_actor(self, inWindow);
+			clutter_actor_insert_child_above(CLUTTER_ACTOR(self), windowActor, NULL);
 		}
 }
 
