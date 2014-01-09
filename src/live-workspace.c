@@ -340,8 +340,8 @@ static void _xfdashboard_live_workspace_get_preferred_height(ClutterActor *self,
 		childWidth=(gfloat)xfdashboard_window_tracker_workspace_get_width(priv->workspace);
 		childHeight=(gfloat)xfdashboard_window_tracker_workspace_get_height(priv->workspace);
 
-		if(inForWidth<0.0f) minHeight=naturalHeight=childHeight;
-			else minHeight=naturalHeight=(childHeight/childWidth)*inForWidth;
+		if(inForWidth<0.0f) naturalHeight=childHeight;
+			else naturalHeight=(childHeight/childWidth)*inForWidth;
 	}
 
 	/* Store sizes computed */
@@ -366,8 +366,8 @@ static void _xfdashboard_live_workspace_get_preferred_width(ClutterActor *self,
 		childWidth=(gfloat)xfdashboard_window_tracker_workspace_get_width(priv->workspace);
 		childHeight=(gfloat)xfdashboard_window_tracker_workspace_get_height(priv->workspace);
 
-		if(inForHeight<0.0f) minWidth=naturalWidth=childWidth;
-			else minWidth=naturalWidth=(childWidth/childHeight)*inForHeight;
+		if(inForHeight<0.0f) naturalWidth=childWidth;
+			else naturalWidth=(childWidth/childHeight)*inForHeight;
 	}
 
 	/* Store sizes computed */

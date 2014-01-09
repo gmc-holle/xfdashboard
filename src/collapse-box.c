@@ -231,7 +231,7 @@ static void _xfdashboard_collapse_box_get_preferred_height(ClutterActor *inActor
 	/* Get size of child actor */
 	if(priv->child)
 	{
-		clutter_actor_get_preferred_width(priv->child,
+		clutter_actor_get_preferred_height(priv->child,
 											inForWidth,
 											&minHeight,
 											&naturalHeight);

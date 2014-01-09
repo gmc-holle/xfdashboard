@@ -52,19 +52,12 @@ G_DEFINE_TYPE(XfdashboardWorkspaceSelector,
 struct _XfdashboardWorkspaceSelectorPrivate
 {
 	/* Properties related */
-	gfloat								scaleMin;
-	gfloat								scaleMax;
-	gfloat								scaleStep;
-
 	gfloat								spacing;
-
 	ClutterOrientation					orientation;
 
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
 	XfdashboardWindowTrackerWorkspace	*activeWorkspace;
-
-	gfloat								scaleCurrent;
 };
 
 /* Properties */
@@ -81,9 +74,7 @@ enum
 static GParamSpec* XfdashboardWorkspaceSelectorProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_SCALE_MIN			0.1
-#define DEFAULT_SCALE_MAX			1.0
-#define DEFAULT_SCALE_STEP			0.1
+#define MAX_SIZE					256.0f
 
 #define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_VERTICAL	// TODO: Replace by settings/theming object
 
@@ -115,208 +106,102 @@ static XfdashboardLiveWorkspace* _xfdashboard_workspace_selector_find_actor_for_
 	return(NULL);
 }
 
-/* Get scale factor to fit all children into given width */
-static gfloat _xfdashboard_workspace_selector_get_scale_for_width(XfdashboardWorkspaceSelector *self,
-																	gfloat inForWidth,
-																	gboolean inDoMinimumSize)
+/* Get height of a child of this actor */
+static void _xfdashboard_workspace_selector_get_preferred_height_for_child(XfdashboardWorkspaceSelector *self,
+																			ClutterActor *inChild,
+																			gfloat inForWidth,
+																			gfloat *outMinHeight,
+																			gfloat *outNaturalHeight)
 {
-	XfdashboardWorkspaceSelectorPrivate		*priv;
-	ClutterActor							*child;
-	ClutterActorIter						iter;
-	gint									numberChildren;
-	gfloat									totalWidth, scalableWidth;
-	gfloat									childWidth;
-	gfloat									childMinWidth, childNaturalWidth;
-	gfloat									scale;
-	gboolean								recheckWidth;
+	XfdashboardWorkspaceSelectorPrivate		*priv=self->priv;
+	gfloat									minHeight, naturalHeight;
+	gfloat									maxSize;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), 0.0f);
-	g_return_val_if_fail(inForWidth>=0.0f, 0.0f);
+	/* Set up default values */
+	minHeight=naturalHeight=0.0f;
 
-	priv=self->priv;
-
-	/* Count visible children and determine their total width */
-	numberChildren=0;
-	totalWidth=0.0f;
-	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-	while(clutter_actor_iter_next(&iter, &child))
+	/* Determine height for horizontal orientation ... */
+	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
 	{
-		/* Only check visible children */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+		/* Get height of child */
+		clutter_actor_get_preferred_height(inChild, inForWidth, &minHeight, &naturalHeight);
 
-		/* Get width of child */
-		clutter_actor_get_preferred_width(child, -1, &childMinWidth, &childNaturalWidth);
-		if(inDoMinimumSize==TRUE) childWidth=childMinWidth;
-			else childWidth=childNaturalWidth;
-
-		/* Determine total size so far */
-		totalWidth+=ceil(childWidth);
-
-		/* Count visible children */
-		numberChildren++;
-	}
-	if(numberChildren==0) return(priv->scaleMax);
-
-	/* Determine scalable width. That is the width without spacing
-	 * between children and the spacing used as padding.
-	 */
-	scalableWidth=inForWidth-((numberChildren+1)*priv->spacing);
-
-	/* Get scale factor */
-	scale=priv->scaleMax;
-	if(totalWidth>0.0f)
-	{
-		scale=floor((scalableWidth/totalWidth)/priv->scaleStep)*priv->scaleStep;
-		scale=MIN(scale, priv->scaleMax);
-		scale=MAX(scale, priv->scaleMin);
-	}
-
-	/* Check if all visible children would really fit into width
-	 * otherwise we need to decrease scale factor one step down
-	 */
-	if(scale>priv->scaleMin)
-	{
-		do
+		/* Adjust child's height to maximum height */
+		if(MAX_SIZE>=0.0)
 		{
-			recheckWidth=FALSE;
-			totalWidth=priv->spacing;
+			/* Determine limit */
+			maxSize=MAX_SIZE-(2*priv->spacing);
 
-			/* Iterate through visible children and sum their scaled
-			 * widths. The total width will be initialized with unscaled
-			 * spacing and all visible children's scaled width will also
-			 * be added with unscaled spacing to have the padding added.
-			 */
-			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-			while(clutter_actor_iter_next(&iter, &child))
-			{
-				/* Only check visible children */
-				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+			/* Adjust minimum width if it exceed limit */
+			if(minHeight>maxSize) minHeight=maxSize;
 
-				/* Get scaled size of child and add to total width */
-				clutter_actor_get_preferred_width(child, -1, &childMinWidth, &childNaturalWidth);
-				if(inDoMinimumSize==TRUE) childWidth=childMinWidth;
-					else childWidth=childNaturalWidth;
-
-				childWidth*=scale;
-				totalWidth+=ceil(childWidth)+priv->spacing;
-			}
-
-			/* If total width is greater than given width
-			 * decrease scale factor by one step and recheck
-			 */
-			if(totalWidth>inForWidth && scale>priv->scaleMin)
-			{
-				scale-=priv->scaleStep;
-				recheckWidth=TRUE;
-			}
+			/* Adjust natural width if it exceed limit */
+			if(naturalHeight>maxSize) naturalHeight=maxSize;
 		}
-		while(recheckWidth==TRUE);
 	}
+		/* ... otherwise determine height for vertical orientation */
+		else
+		{
+			/* Adjust requested width to maximum width */
+			maxSize=MAX_SIZE-(2*priv->spacing);
+			if(maxSize>=0.0f && inForWidth>maxSize) inForWidth=maxSize;
 
-	/* Return found scale factor */
-	return(scale);
+			/* Get height of child */
+			clutter_actor_get_preferred_height(inChild, inForWidth, &minHeight, &naturalHeight);
+		}
+
+	/* Store sizes computed */
+	if(outMinHeight) *outMinHeight=minHeight;
+	if(outNaturalHeight) *outNaturalHeight=naturalHeight;
 }
 
-/* Get scale factor to fit all children into given height */
-static gfloat _xfdashboard_workspace_selector_get_scale_for_height(XfdashboardWorkspaceSelector *self,
-																	gfloat inForHeight,
-																	gboolean inDoMinimumSize)
+/* Get width of a child of this actor */
+static void _xfdashboard_workspace_selector_get_preferred_width_for_child(XfdashboardWorkspaceSelector *self,
+																			ClutterActor *inChild,
+																			gfloat inForHeight,
+																			gfloat *outMinWidth,
+																			gfloat *outNaturalWidth)
 {
-	XfdashboardWorkspaceSelectorPrivate		*priv;
-	ClutterActor							*child;
-	ClutterActorIter						iter;
-	gint									numberChildren;
-	gfloat									totalHeight, scalableHeight;
-	gfloat									childHeight;
-	gfloat									childMinHeight, childNaturalHeight;
-	gfloat									scale;
-	gboolean								recheckHeight;
+	XfdashboardWorkspaceSelectorPrivate		*priv=self->priv;
+	gfloat									minWidth, naturalWidth;
+	gfloat									maxSize;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), 0.0f);
-	g_return_val_if_fail(inForHeight>=0.0f, 0.0f);
+	/* Set up default values */
+	minWidth=naturalWidth=0.0f;
 
-	priv=self->priv;
-
-	/* Count visible children and determine their total height */
-	numberChildren=0;
-	totalHeight=0.0f;
-	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-	while(clutter_actor_iter_next(&iter, &child))
+	/* Determine width for horizontal orientation ... */
+	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
 	{
-		/* Only check visible children */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+		/* Adjust requested height to maximum height */
+		maxSize=MAX_SIZE-(2*priv->spacing);
+		if(maxSize>=0.0f && inForHeight>maxSize) inForHeight=maxSize;
 
-		/* Get height of child */
-		clutter_actor_get_preferred_height(child, -1, &childMinHeight, &childNaturalHeight);
-		if(inDoMinimumSize==TRUE) childHeight=childMinHeight;
-			else childHeight=childNaturalHeight;
-
-		/* Determine total size so far */
-		totalHeight+=ceil(childHeight);
-
-		/* Count visible children */
-		numberChildren++;
+		/* Get width of child */
+		clutter_actor_get_preferred_width(inChild, inForHeight, &minWidth, &naturalWidth);
 	}
-	if(numberChildren==0) return(priv->scaleMax);
-
-	/* Determine scalable height. That is the height without spacing
-	 * between children and the spacing used as padding.
-	 */
-	scalableHeight=inForHeight-((numberChildren+1)*priv->spacing);
-
-	/* Get scale factor */
-	scale=priv->scaleMax;
-	if(totalHeight>0.0f)
-	{
-		scale=floor((scalableHeight/totalHeight)/priv->scaleStep)*priv->scaleStep;
-		scale=MIN(scale, priv->scaleMax);
-		scale=MAX(scale, priv->scaleMin);
-	}
-
-	/* Check if all visible children would really fit into height
-	 * otherwise we need to decrease scale factor one step down
-	 */
-	if(scale>priv->scaleMin)
-	{
-		do
+		/* ... otherwise determine height for vertical orientation */
+		else
 		{
-			recheckHeight=FALSE;
-			totalHeight=priv->spacing;
+			/* Get width of child */
+			clutter_actor_get_preferred_width(inChild, inForHeight, &minWidth, &naturalWidth);
 
-			/* Iterate through visible children and sum their scaled
-			 * heights. The total height will be initialized with unscaled
-			 * spacing and all visible children's scaled height will also
-			 * be added with unscaled spacing to have the padding added.
-			 */
-			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-			while(clutter_actor_iter_next(&iter, &child))
+			/* Adjust child's width to maximum width */
+			if(MAX_SIZE>=0.0)
 			{
-				/* Only check visible children */
-				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+				/* Determine limit */
+				maxSize=MAX_SIZE-(2*priv->spacing);
 
-				/* Get scaled size of child and add to total height */
-				clutter_actor_get_preferred_height(child, -1, &childMinHeight, &childNaturalHeight);
-				if(inDoMinimumSize==TRUE) childHeight=childMinHeight;
-					else childHeight=childNaturalHeight;
+				/* Adjust minimum width if it exceed limit */
+				if(minWidth>maxSize) minWidth=maxSize;
 
-				childHeight*=scale;
-				totalHeight+=ceil(childHeight)+priv->spacing;
-			}
-
-			/* If total height is greater than given height
-			 * decrease scale factor by one step and recheck
-			 */
-			if(totalHeight>inForHeight && scale>priv->scaleMin)
-			{
-				scale-=priv->scaleStep;
-				recheckHeight=TRUE;
+				/* Adjust natural width if it exceed limit */
+				if(naturalWidth>maxSize) naturalWidth=maxSize;
 			}
 		}
-		while(recheckHeight==TRUE);
-	}
 
-	/* Return found scale factor */
-	return(scale);
+	/* Store sizes computed */
+	if(outMinWidth) *outMinWidth=minWidth;
+	if(outNaturalWidth) *outNaturalWidth=naturalWidth;
 }
 
 /* Drag of an actor to this view as drop target begins */
@@ -568,49 +453,56 @@ static void _xfdashboard_workspace_selector_get_preferred_height(ClutterActor *i
 	ClutterActorIter						iter;
 	gfloat									childMinHeight, childNaturalHeight;
 	gint									numberChildren;
-	gfloat									scale;
+	gfloat									requestChildSize;
 
 	/* Set up default values */
 	minHeight=naturalHeight=0.0f;
 
-	/* Determine height for horizontal orientation ... */
+	/* Determine width for horizontal orientation ... */
 	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
 	{
-		/* Iterate through visible children and determine heights */
+		/* Count visible children */
 		numberChildren=0;
 		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
 		while(clutter_actor_iter_next(&iter, &child))
 		{
 			/* Only check visible children */
+			if(CLUTTER_ACTOR_IS_VISIBLE(child)) numberChildren++;
+		}
+
+		/* All workspace actors should have the same size because they
+		 * reside on the same screen and share its size. That's why
+		 * we can devide the requested size (reduced by spacings) by
+		 * the number of visible actors to get the preferred size for
+		 * the "requested size" of each actor.
+		 */
+		requestChildSize=-1.0f;
+		if(numberChildren>0 && inForWidth>=0.0f)
+		{
+			requestChildSize=inForWidth;
+			requestChildSize-=(numberChildren+1)*priv->spacing;
+			requestChildSize/=numberChildren;
+		}
+
+		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
+		while(clutter_actor_iter_next(&iter, &child))
+		{
+			/* Only handle visible children */
 			if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
 
-			/* Get sizes of child */
-			clutter_actor_get_preferred_height(child,
-												-1,
-												&childMinHeight,
-												&childNaturalHeight);
+			/* Get child's size */
+			_xfdashboard_workspace_selector_get_preferred_height_for_child(self,
+																			child,
+																			requestChildSize,
+																			&childMinHeight,
+																			&childNaturalHeight);
 
 			/* Determine heights */
 			minHeight=MAX(minHeight, childMinHeight);
 			naturalHeight=MAX(naturalHeight, childNaturalHeight);
-
-			/* Count visible children */
-			numberChildren++;
 		}
 
-		/* Check if we need to scale width because of the need to fit
-		 * all visible children into given limiting width
-		 */
-		if(inForWidth>=0.0f)
-		{
-			scale=_xfdashboard_workspace_selector_get_scale_for_width(self, inForWidth, TRUE);
-			minHeight*=scale;
-
-			scale=_xfdashboard_workspace_selector_get_scale_for_width(self, inForWidth, FALSE);
-			naturalHeight*=scale;
-		}
-
-		/* Add spacing as padding */
+		/* Add spacing between children and spacing as padding */
 		if(numberChildren>0)
 		{
 			minHeight+=2*priv->spacing;
@@ -620,21 +512,25 @@ static void _xfdashboard_workspace_selector_get_preferred_height(ClutterActor *i
 		/* ... otherwise determine height for vertical orientation */
 		else
 		{
-			/* Iterate through visible children and determine height */
+			/* Reduce requested width by spacing */
+			if(inForWidth>=0.0f) inForWidth-=2*priv->spacing;
+
+			/* Calculate children heights */
 			numberChildren=0;
 			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
 			while(clutter_actor_iter_next(&iter, &child))
 			{
-				/* Only check visible children */
+				/* Only handle visible children */
 				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
 
 				/* Get child's size */
-				clutter_actor_get_preferred_height(child,
-													inForWidth,
-													&childMinHeight,
-													&childNaturalHeight);
+				_xfdashboard_workspace_selector_get_preferred_height_for_child(self,
+																				child,
+																				inForWidth,
+																				&childMinHeight,
+																				&childNaturalHeight);
 
-				/* Determine heights */
+				/* Sum heights */
 				minHeight+=childMinHeight;
 				naturalHeight+=childNaturalHeight;
 
@@ -667,7 +563,7 @@ static void _xfdashboard_workspace_selector_get_preferred_width(ClutterActor *in
 	ClutterActorIter						iter;
 	gfloat									childMinWidth, childNaturalWidth;
 	gint									numberChildren;
-	gfloat									scale;
+	gfloat									requestChildSize;
 
 	/* Set up default values */
 	minWidth=naturalWidth=0.0f;
@@ -675,21 +571,25 @@ static void _xfdashboard_workspace_selector_get_preferred_width(ClutterActor *in
 	/* Determine width for horizontal orientation ... */
 	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
 	{
-		/* Iterate through visible children and determine width */
+		/* Reduce requested height by spacing */
+		if(inForHeight>=0.0f) inForHeight-=2*priv->spacing;
+
+		/* Calculate children widths */
 		numberChildren=0;
 		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
 		while(clutter_actor_iter_next(&iter, &child))
 		{
-			/* Only check visible children */
+			/* Only handle visible children */
 			if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
 
 			/* Get child's size */
-			clutter_actor_get_preferred_width(child,
-												inForHeight,
-												&childMinWidth,
-												&childNaturalWidth);
+			_xfdashboard_workspace_selector_get_preferred_width_for_child(self,
+																			child,
+																			inForHeight,
+																			&childMinWidth,
+																			&childNaturalWidth);
 
-			/* Determine widths */
+			/* Sum widths */
 			minWidth+=childMinWidth;
 			naturalWidth+=childNaturalWidth;
 
@@ -704,44 +604,55 @@ static void _xfdashboard_workspace_selector_get_preferred_width(ClutterActor *in
 			naturalWidth+=(numberChildren+1)*priv->spacing;
 		}
 	}
-		/* ... otherwise determine width for vertical orientation */
+		/* ... otherwise determine height for vertical orientation */
 		else
 		{
-			/* Iterate through visible children and determine widths */
+			/* Count visible children */
 			numberChildren=0;
 			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
 			while(clutter_actor_iter_next(&iter, &child))
 			{
 				/* Only check visible children */
+				if(CLUTTER_ACTOR_IS_VISIBLE(child)) numberChildren++;
+			}
+
+			/* All workspace actors should have the same size because they
+			 * reside on the same screen and share its size. That's why
+			 * we can devide the requested size (reduced by spacings) by
+			 * the number of visible actors to get the preferred size for
+			 * the "requested size" of each actor.
+			 */
+			requestChildSize=-1.0f;
+			if(numberChildren>0 && inForHeight>=0.0f)
+			{
+				requestChildSize=inForHeight;
+				requestChildSize-=(numberChildren+1)*priv->spacing;
+				requestChildSize/=numberChildren;
+			}
+
+			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
+			while(clutter_actor_iter_next(&iter, &child))
+			{
+				/* Only handle visible children */
 				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
 
-				/* Get sizes of child */
-				clutter_actor_get_preferred_width(child,
-													-1,
-													&childMinWidth,
-													&childNaturalWidth);
+				/* Get child's size */
+				_xfdashboard_workspace_selector_get_preferred_width_for_child(self,
+																				child,
+																				requestChildSize,
+																				&childMinWidth,
+																				&childNaturalWidth);
 
-				/* Determine widths */
+				/* Adjust size to maximal size allowed */
+				childMinWidth=MIN(MAX_SIZE, childMinWidth);
+				childNaturalWidth=MIN(MAX_SIZE, childNaturalWidth);
+
+				/* Determine heights */
 				minWidth=MAX(minWidth, childMinWidth);
 				naturalWidth=MAX(naturalWidth, childNaturalWidth);
-
-				/* Count visible children */
-				numberChildren++;
 			}
 
-			/* Check if we need to scale width because of the need to fit
-			 * all visible children into given limiting height
-			 */
-			if(inForHeight>=0.0f)
-			{
-				scale=_xfdashboard_workspace_selector_get_scale_for_height(self, inForHeight, TRUE);
-				minWidth*=scale;
-
-				scale=_xfdashboard_workspace_selector_get_scale_for_height(self, inForHeight, FALSE);
-				naturalWidth*=scale;
-			}
-
-			/* Add spacing as padding */
+			/* Add spacing between children and spacing as padding */
 			if(numberChildren>0)
 			{
 				minWidth+=2*priv->spacing;
@@ -773,9 +684,6 @@ static void _xfdashboard_workspace_selector_allocate(ClutterActor *inActor,
 	/* Get available size */
 	clutter_actor_box_get_size(inBox, &availableWidth, &availableHeight);
 
-	/* Find scaling to get all children fit the allocation */
-	priv->scaleCurrent=_xfdashboard_workspace_selector_get_scale_for_height(self, availableHeight, FALSE);
-
 	/* Calculate new position and size of visible children */
 	childAllocation.x1=childAllocation.y1=priv->spacing;
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
@@ -784,29 +692,31 @@ static void _xfdashboard_workspace_selector_allocate(ClutterActor *inActor,
 		/* Is child visible? */
 		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
 
-		/* Calculate new position and size of child but respect scaling */
-		clutter_actor_get_preferred_size(child, NULL, NULL, &childWidth, &childHeight);
-		childWidth*=priv->scaleCurrent;
-		childHeight*=priv->scaleCurrent;
-
+		/* Calculate new position and size of child */
 		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
 		{
+			childHeight=availableHeight-(2*priv->spacing);
+			clutter_actor_get_preferred_width(child, childHeight, NULL, &childWidth);
+
 			childAllocation.y1=ceil(MAX(((availableHeight-childHeight))/2.0f, priv->spacing));
-			childAllocation.y2=ceil(childAllocation.y1+childHeight);
-			childAllocation.x2=ceil(childAllocation.x1+childWidth);
+			childAllocation.y2=floor(childAllocation.y1+childHeight);
+			childAllocation.x2=floor(childAllocation.x1+childWidth);
 		}
 			else
 			{
+				childWidth=availableWidth-(2*priv->spacing);
+				clutter_actor_get_preferred_height(child, childWidth, NULL, &childHeight);
+
 				childAllocation.x1=ceil(MAX(((availableWidth-childWidth))/2.0f, priv->spacing));
-				childAllocation.x2=ceil(childAllocation.x1+childWidth);
-				childAllocation.y2=ceil(childAllocation.y1+childHeight);
+				childAllocation.x2=floor(childAllocation.x1+childWidth);
+				childAllocation.y2=floor(childAllocation.y1+childHeight);
 			}
 
 		clutter_actor_allocate(child, &childAllocation, inFlags);
 
 		/* Set up for next child */
-		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) childAllocation.x1=ceil(childAllocation.x1+childWidth+priv->spacing);
-			else childAllocation.y1=ceil(childAllocation.y1+childHeight+priv->spacing);
+		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) childAllocation.x1=floor(childAllocation.x1+childWidth+priv->spacing);
+			else childAllocation.y1=floor(childAllocation.y1+childHeight+priv->spacing);
 	}
 }
 
@@ -940,13 +850,10 @@ static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *se
 	priv->activeWorkspace=NULL;
 	priv->spacing=0.0f;
 	priv->orientation=DEFAULT_ORIENTATION;
-	priv->scaleCurrent=DEFAULT_SCALE_MAX;
-	priv->scaleMin=DEFAULT_SCALE_MIN;
-	priv->scaleMax=DEFAULT_SCALE_MAX;
-	priv->scaleStep=DEFAULT_SCALE_STEP;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
+
 	requestMode=(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL ? CLUTTER_REQUEST_HEIGHT_FOR_WIDTH : CLUTTER_REQUEST_WIDTH_FOR_HEIGHT);
 	clutter_actor_set_request_mode(CLUTTER_ACTOR(self), requestMode);
 

@@ -44,6 +44,11 @@
 #include "workspace-selector.h"
 #include "collapse-box.h"
 
+/* TODO: Replace by settings/theming object (or check monitor directions if more than one monitor)
+ * Meanwhile #undef STAGE_USE_HORIZONTAL_WORKSPACE_SELECTOR for vertical workspace
+ */
+#undef STAGE_USE_HORIZONTAL_WORKSPACE_SELECTOR
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,
 				xfdashboard_stage,
@@ -453,6 +458,29 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	g_signal_connect_swapped(priv->viewpad, "view-activated", G_CALLBACK(_xfdashboard_stage_on_view_activated), self);
 	xfdashboard_view_selector_set_viewpad(XFDASHBOARD_VIEW_SELECTOR(priv->viewSelector), XFDASHBOARD_VIEWPAD(priv->viewpad));
 
+#ifdef STAGE_USE_HORIZONTAL_WORKSPACE_SELECTOR
+	/* Workspaces selector */
+	priv->workspaces=xfdashboard_workspace_selector_new();
+	xfdashboard_workspace_selector_set_orientation(XFDASHBOARD_WORKSPACE_SELECTOR(priv->workspaces), CLUTTER_ORIENTATION_HORIZONTAL);
+	xfdashboard_workspace_selector_set_spacing(XFDASHBOARD_WORKSPACE_SELECTOR(priv->workspaces), 4.0f);
+	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->workspaces),
+												XFDASHBOARD_BACKGROUND_TYPE_FILL |
+												XFDASHBOARD_BACKGROUND_TYPE_OUTLINE |
+												XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
+	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
+	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->workspaces), &color);
+	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->workspaces), 0.5f);
+	xfdashboard_background_set_corners(XFDASHBOARD_BACKGROUND(priv->workspaces), XFDASHBOARD_CORNERS_TOP);
+	clutter_actor_set_x_expand(priv->workspaces, TRUE);
+
+	collapseBox=xfdashboard_collapse_box_new();
+	xfdashboard_collapse_box_set_collapsed_size(XFDASHBOARD_COLLAPSE_BOX(collapseBox), 64.0f);
+	xfdashboard_collapse_box_set_collapse_orientation(XFDASHBOARD_COLLAPSE_BOX(collapseBox), XFDASHBOARD_ORIENTATION_TOP);
+	clutter_actor_set_x_expand(collapseBox, TRUE);
+	clutter_actor_add_child(collapseBox, priv->workspaces);
+	clutter_actor_add_child(groupVertical, collapseBox);
+#endif
+
 	/* Set up layout objects */
 	layout=clutter_box_layout_new();
 	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_HORIZONTAL);
@@ -487,6 +515,7 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	/* Set up layout objects */
 	clutter_actor_add_child(groupHorizontal, groupVertical);
 
+#ifndef STAGE_USE_HORIZONTAL_WORKSPACE_SELECTOR
 	/* Workspaces selector */
 	priv->workspaces=xfdashboard_workspace_selector_new();
 	xfdashboard_workspace_selector_set_spacing(XFDASHBOARD_WORKSPACE_SELECTOR(priv->workspaces), 4.0f);
@@ -506,6 +535,7 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_set_y_expand(collapseBox, TRUE);
 	clutter_actor_add_child(collapseBox, priv->workspaces);
 	clutter_actor_add_child(groupHorizontal, collapseBox);
+#endif
 
 	/* Set up layout objects */
 	clutter_actor_add_constraint(groupHorizontal, clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_X, 0.0f));
