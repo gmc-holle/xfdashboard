@@ -70,6 +70,14 @@ void xfdashboard_workspace_selector_set_spacing(XfdashboardWorkspaceSelector *se
 ClutterOrientation xfdashboard_workspace_selector_get_orientation(XfdashboardWorkspaceSelector *self);
 void xfdashboard_workspace_selector_set_orientation(XfdashboardWorkspaceSelector *self, ClutterOrientation inOrientation);
 
+gfloat xfdashboard_workspace_selector_get_maximum_size(XfdashboardWorkspaceSelector *self);
+void xfdashboard_workspace_selector_set_maximum_size(XfdashboardWorkspaceSelector *self, const gfloat inSize);
+
+gfloat xfdashboard_workspace_selector_get_maximum_fraction(XfdashboardWorkspaceSelector *self);
+void xfdashboard_workspace_selector_set_maximum_fraction(XfdashboardWorkspaceSelector *self, const gfloat inFraction);
+
+gboolean xfdashboard_workspace_selector_is_using_fraction(XfdashboardWorkspaceSelector *self);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_WORKSPACE_SELECTOR__ */

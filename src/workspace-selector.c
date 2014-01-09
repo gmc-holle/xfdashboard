@@ -54,6 +54,9 @@ struct _XfdashboardWorkspaceSelectorPrivate
 	/* Properties related */
 	gfloat								spacing;
 	ClutterOrientation					orientation;
+	gfloat								maxSize;
+	gfloat								maxFraction;
+	gboolean							usingFraction;
 
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
@@ -66,7 +69,12 @@ enum
 	PROP_0,
 
 	PROP_SPACING,
+
 	PROP_ORIENTATION,
+
+	PROP_MAX_SIZE,
+	PROP_MAX_FRACTION,
+	PROP_USING_FRACTION,
 
 	PROP_LAST
 };
@@ -74,9 +82,68 @@ enum
 static GParamSpec* XfdashboardWorkspaceSelectorProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define MAX_SIZE					256.0f
-
+#define DEFAULT_MAX_SIZE			256.0f							// TODO: Replace by settings/theming object
+#define DEFAULT_MAX_FRACTION		0.25f							// TODO: Replace by settings/theming object
+#define DEFAULT_USING_FRACTION		TRUE							// TODO: Replace by settings/theming object
 #define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_VERTICAL	// TODO: Replace by settings/theming object
+
+/* Get maximum (horizontal or vertical) size either by static size or fraction */
+static gfloat _xfdashboard_workspace_selector_get_max_size_internal(XfdashboardWorkspaceSelector *self)
+{
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	ClutterActor							*stage;
+	gfloat									w, h;
+	gfloat									size, fraction;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), 0.0f);
+
+	priv=self->priv;
+
+	/* Get stage's size to either determine maximum size by fraction or
+	 * to update maximum size or fraction and send notifications
+	 */
+	stage=clutter_actor_get_stage(CLUTTER_ACTOR(self));
+	if(!stage) return(0.0f);
+
+	clutter_actor_get_size(CLUTTER_ACTOR(stage), &w, &h);
+
+	/* If fraction should be used to determine maximum size get width or height
+	 * of stage depending on orientation and calculate size by fraction
+	 */
+	if(priv->usingFraction)
+	{
+		/* Calculate size by fraction */
+		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) size=w*priv->maxFraction;
+			else size=h*priv->maxFraction;
+
+		/* Update maximum size if it has changed */
+		if(priv->maxSize!=size)
+		{
+			priv->maxSize=size;
+
+			/* Notify about property change */
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWorkspaceSelectorProperties[PROP_MAX_SIZE]);
+		}
+
+		return(size);
+	}
+
+	/* Calculate fraction from size */
+	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) fraction=priv->maxSize/w;
+		else fraction=priv->maxSize/h;
+
+	/* Update maximum fraction if it has changed */
+	if(priv->maxFraction!=fraction)
+	{
+		priv->maxFraction=fraction;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWorkspaceSelectorProperties[PROP_MAX_FRACTION]);
+	}
+
+	/* Otherwise return static maximum size configured */
+	return(priv->maxSize);
+}
 
 /* Find live workspace actor for native workspace */
 static XfdashboardLiveWorkspace* _xfdashboard_workspace_selector_find_actor_for_workspace(XfdashboardWorkspaceSelector *self,
@@ -113,9 +180,13 @@ static void _xfdashboard_workspace_selector_get_preferred_height_for_child(Xfdas
 																			gfloat *outMinHeight,
 																			gfloat *outNaturalHeight)
 {
-	XfdashboardWorkspaceSelectorPrivate		*priv=self->priv;
+	XfdashboardWorkspaceSelectorPrivate		*priv;
 	gfloat									minHeight, naturalHeight;
 	gfloat									maxSize;
+
+	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
+
+	priv=self->priv;
 
 	/* Set up default values */
 	minHeight=naturalHeight=0.0f;
@@ -127,11 +198,9 @@ static void _xfdashboard_workspace_selector_get_preferred_height_for_child(Xfdas
 		clutter_actor_get_preferred_height(inChild, inForWidth, &minHeight, &naturalHeight);
 
 		/* Adjust child's height to maximum height */
-		if(MAX_SIZE>=0.0)
+		maxSize=_xfdashboard_workspace_selector_get_max_size_internal(self)-(2*priv->spacing);
+		if(maxSize>=0.0)
 		{
-			/* Determine limit */
-			maxSize=MAX_SIZE-(2*priv->spacing);
-
 			/* Adjust minimum width if it exceed limit */
 			if(minHeight>maxSize) minHeight=maxSize;
 
@@ -143,7 +212,7 @@ static void _xfdashboard_workspace_selector_get_preferred_height_for_child(Xfdas
 		else
 		{
 			/* Adjust requested width to maximum width */
-			maxSize=MAX_SIZE-(2*priv->spacing);
+			maxSize=_xfdashboard_workspace_selector_get_max_size_internal(self)-(2*priv->spacing);
 			if(maxSize>=0.0f && inForWidth>maxSize) inForWidth=maxSize;
 
 			/* Get height of child */
@@ -162,9 +231,13 @@ static void _xfdashboard_workspace_selector_get_preferred_width_for_child(Xfdash
 																			gfloat *outMinWidth,
 																			gfloat *outNaturalWidth)
 {
-	XfdashboardWorkspaceSelectorPrivate		*priv=self->priv;
+	XfdashboardWorkspaceSelectorPrivate		*priv;
 	gfloat									minWidth, naturalWidth;
 	gfloat									maxSize;
+
+	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
+
+	priv=self->priv;
 
 	/* Set up default values */
 	minWidth=naturalWidth=0.0f;
@@ -173,7 +246,7 @@ static void _xfdashboard_workspace_selector_get_preferred_width_for_child(Xfdash
 	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
 	{
 		/* Adjust requested height to maximum height */
-		maxSize=MAX_SIZE-(2*priv->spacing);
+		maxSize=_xfdashboard_workspace_selector_get_max_size_internal(self)-(2*priv->spacing);
 		if(maxSize>=0.0f && inForHeight>maxSize) inForHeight=maxSize;
 
 		/* Get width of child */
@@ -186,11 +259,9 @@ static void _xfdashboard_workspace_selector_get_preferred_width_for_child(Xfdash
 			clutter_actor_get_preferred_width(inChild, inForHeight, &minWidth, &naturalWidth);
 
 			/* Adjust child's width to maximum width */
-			if(MAX_SIZE>=0.0)
+			maxSize=_xfdashboard_workspace_selector_get_max_size_internal(self)-(2*priv->spacing);
+			if(maxSize>=0.0)
 			{
-				/* Determine limit */
-				maxSize=MAX_SIZE-(2*priv->spacing);
-
 				/* Adjust minimum width if it exceed limit */
 				if(minWidth>maxSize) minWidth=maxSize;
 
@@ -454,6 +525,7 @@ static void _xfdashboard_workspace_selector_get_preferred_height(ClutterActor *i
 	gfloat									childMinHeight, childNaturalHeight;
 	gint									numberChildren;
 	gfloat									requestChildSize;
+	gfloat									maxSize;
 
 	/* Set up default values */
 	minHeight=naturalHeight=0.0f;
@@ -461,6 +533,9 @@ static void _xfdashboard_workspace_selector_get_preferred_height(ClutterActor *i
 	/* Determine width for horizontal orientation ... */
 	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
 	{
+		/* Determine maximum size */
+		maxSize=_xfdashboard_workspace_selector_get_max_size_internal(self)-(2*priv->spacing);
+
 		/* Count visible children */
 		numberChildren=0;
 		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
@@ -496,6 +571,10 @@ static void _xfdashboard_workspace_selector_get_preferred_height(ClutterActor *i
 																			requestChildSize,
 																			&childMinHeight,
 																			&childNaturalHeight);
+
+			/* Adjust size to maximal size allowed */
+			childMinHeight=MIN(maxSize, childMinHeight);
+			childNaturalHeight=MIN(maxSize, childNaturalHeight);
 
 			/* Determine heights */
 			minHeight=MAX(minHeight, childMinHeight);
@@ -564,6 +643,7 @@ static void _xfdashboard_workspace_selector_get_preferred_width(ClutterActor *in
 	gfloat									childMinWidth, childNaturalWidth;
 	gint									numberChildren;
 	gfloat									requestChildSize;
+	gfloat									maxSize;
 
 	/* Set up default values */
 	minWidth=naturalWidth=0.0f;
@@ -607,6 +687,9 @@ static void _xfdashboard_workspace_selector_get_preferred_width(ClutterActor *in
 		/* ... otherwise determine height for vertical orientation */
 		else
 		{
+			/* Determine maximum size */
+			maxSize=_xfdashboard_workspace_selector_get_max_size_internal(self)-(2*priv->spacing);
+
 			/* Count visible children */
 			numberChildren=0;
 			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
@@ -644,10 +727,10 @@ static void _xfdashboard_workspace_selector_get_preferred_width(ClutterActor *in
 																				&childNaturalWidth);
 
 				/* Adjust size to maximal size allowed */
-				childMinWidth=MIN(MAX_SIZE, childMinWidth);
-				childNaturalWidth=MIN(MAX_SIZE, childNaturalWidth);
+				childMinWidth=MIN(maxSize, childMinWidth);
+				childNaturalWidth=MIN(maxSize, childNaturalWidth);
 
-				/* Determine heights */
+				/* Determine widths */
 				minWidth=MAX(minWidth, childMinWidth);
 				naturalWidth=MAX(naturalWidth, childNaturalWidth);
 			}
@@ -764,6 +847,14 @@ static void _xfdashboard_workspace_selector_set_property(GObject *inObject,
 			xfdashboard_workspace_selector_set_orientation(self, g_value_get_enum(inValue));
 			break;
 
+		case PROP_MAX_SIZE:
+			xfdashboard_workspace_selector_set_maximum_size(self, g_value_get_float(inValue));
+			break;
+
+		case PROP_MAX_FRACTION:
+			xfdashboard_workspace_selector_set_maximum_fraction(self, g_value_get_float(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -786,6 +877,18 @@ static void _xfdashboard_workspace_selector_get_property(GObject *inObject,
 
 		case PROP_ORIENTATION:
 			g_value_set_enum(outValue, priv->orientation);
+			break;
+
+		case PROP_MAX_SIZE:
+			g_value_set_float(outValue, priv->maxSize);
+			break;
+
+		case PROP_MAX_FRACTION:
+			g_value_set_float(outValue, priv->maxFraction);
+			break;
+
+		case PROP_USING_FRACTION:
+			g_value_set_boolean(outValue, priv->usingFraction);
 			break;
 
 		default:
@@ -832,6 +935,29 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 							DEFAULT_ORIENTATION,
 							G_PARAM_READWRITE);
 
+	XfdashboardWorkspaceSelectorProperties[PROP_MAX_SIZE]=
+		g_param_spec_float("max-size",
+								_("Maximum size"),
+								_("The maximum size of this actor for opposite direction of orientation"),
+								0.0, G_MAXFLOAT,
+								DEFAULT_MAX_SIZE,
+								G_PARAM_READWRITE);
+
+	XfdashboardWorkspaceSelectorProperties[PROP_MAX_FRACTION]=
+		g_param_spec_float("max-fraction",
+								_("Maximum fraction"),
+								_("The maximum size of this actor for opposite direction of orientation defined by fraction between 0.0 and 1.0"),
+								0.0, G_MAXFLOAT,
+								DEFAULT_MAX_FRACTION,
+								G_PARAM_READWRITE);
+
+	XfdashboardWorkspaceSelectorProperties[PROP_USING_FRACTION]=
+		g_param_spec_boolean("using-fraction",
+								_("Using fraction"),
+								_("Flag indicating if maximum size is static or defined by fraction between 0.0 and 1.0"),
+								DEFAULT_USING_FRACTION,
+								G_PARAM_READABLE);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWorkspaceSelectorProperties);
 }
 
@@ -850,6 +976,9 @@ static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *se
 	priv->activeWorkspace=NULL;
 	priv->spacing=0.0f;
 	priv->orientation=DEFAULT_ORIENTATION;
+	priv->maxSize=DEFAULT_MAX_SIZE;
+	priv->maxFraction=DEFAULT_MAX_FRACTION;
+	priv->usingFraction=DEFAULT_USING_FRACTION;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -957,4 +1086,112 @@ void xfdashboard_workspace_selector_set_orientation(XfdashboardWorkspaceSelector
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWorkspaceSelectorProperties[PROP_ORIENTATION]);
 	}
+}
+
+/* Get/set static maximum size of children */
+gfloat xfdashboard_workspace_selector_get_maximum_size(XfdashboardWorkspaceSelector *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), 0.0f);
+
+	return(self->priv->maxSize);
+}
+
+void xfdashboard_workspace_selector_set_maximum_size(XfdashboardWorkspaceSelector *self, const gfloat inSize)
+{
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	gboolean								needRelayout;
+
+	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
+	g_return_if_fail(inSize>=0.0f);
+
+	priv=self->priv;
+	needRelayout=FALSE;
+
+	/* Freeze notification */
+	g_object_freeze_notify(G_OBJECT(self));
+
+	/* Set values if changed */
+	if(priv->usingFraction)
+	{
+		/* Set value */
+		priv->usingFraction=FALSE;
+		needRelayout=TRUE;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWorkspaceSelectorProperties[PROP_USING_FRACTION]);
+	}
+
+	if(priv->maxSize!=inSize)
+	{
+		/* Set value */
+		priv->maxSize=inSize;
+		needRelayout=TRUE;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWorkspaceSelectorProperties[PROP_MAX_SIZE]);
+	}
+
+	/* Queue a relayout if needed */
+	if(needRelayout) clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+	/* Thaw notification */
+	g_object_thaw_notify(G_OBJECT(self));
+}
+
+/* Get/set maximum size of children by fraction */
+gfloat xfdashboard_workspace_selector_get_maximum_fraction(XfdashboardWorkspaceSelector *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), 0.0f);
+
+	return(self->priv->maxFraction);
+}
+
+void xfdashboard_workspace_selector_set_maximum_fraction(XfdashboardWorkspaceSelector *self, const gfloat inFraction)
+{
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	gboolean								needRelayout;
+
+	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
+	g_return_if_fail(inFraction>0.0f && inFraction<=1.0f);
+
+	priv=self->priv;
+	needRelayout=FALSE;
+
+	/* Freeze notification */
+	g_object_freeze_notify(G_OBJECT(self));
+
+	/* Set values if changed */
+	if(!priv->usingFraction)
+	{
+		/* Set value */
+		priv->usingFraction=TRUE;
+		needRelayout=TRUE;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWorkspaceSelectorProperties[PROP_USING_FRACTION]);
+	}
+
+	if(priv->maxFraction!=inFraction)
+	{
+		/* Set value */
+		priv->maxFraction=inFraction;
+		needRelayout=TRUE;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWorkspaceSelectorProperties[PROP_MAX_FRACTION]);
+	}
+
+	/* Queue a relayout if needed */
+	if(needRelayout) clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+	/* Thaw notification */
+	g_object_thaw_notify(G_OBJECT(self));
+}
+
+/* Get state if maximum size is static or calculated by fraction dynamically */
+gboolean xfdashboard_workspace_selector_is_using_fraction(XfdashboardWorkspaceSelector *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), FALSE);
+
+	return(self->priv->usingFraction);
 }
