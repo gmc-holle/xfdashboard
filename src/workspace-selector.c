@@ -113,8 +113,8 @@ static gfloat _xfdashboard_workspace_selector_get_max_size_internal(XfdashboardW
 	if(priv->usingFraction)
 	{
 		/* Calculate size by fraction */
-		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) size=w*priv->maxFraction;
-			else size=h*priv->maxFraction;
+		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) size=h*priv->maxFraction;
+			else size=w*priv->maxFraction;
 
 		/* Update maximum size if it has changed */
 		if(priv->maxSize!=size)
@@ -129,8 +129,8 @@ static gfloat _xfdashboard_workspace_selector_get_max_size_internal(XfdashboardW
 	}
 
 	/* Calculate fraction from size */
-	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) fraction=priv->maxSize/w;
-		else fraction=priv->maxSize/h;
+	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) fraction=priv->maxSize/h;
+		else fraction=priv->maxSize/w;
 
 	/* Update maximum fraction if it has changed */
 	if(priv->maxFraction!=fraction)
