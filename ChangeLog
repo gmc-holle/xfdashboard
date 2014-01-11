@@ -1,3 +1,51 @@
+commit dd6e9b86036ec4ed5c40d53a7db289a0fa7543d2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 11 13:58:21 2014 +0100
+
+    We cannot assume that each window newly opened or moved to a workspace will be on top of all other windows. It highly depends on the window manager and personal settings. We need to respect window stacking. Therefore we iterate through list of windows in stacking order to find the last window the live workspace has an actor for before we the window requested to insert a new actor at this position or move an existing window actor to this position.
+
+commit f8ee446d496812817292b4db41a9447261bb6bbf
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jan 10 00:15:13 2014 +0100
+
+    Fix calculation of max size by max-size/max-fraction
+
+commit 15129e5292c4b28fa05d86065ae3afbbcc2119f0
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Jan 9 23:33:35 2014 +0100
+
+    Fix handling signal "window-workspace-changed" (window changed workspace it resides on) in XfdashboardLiveWorkspace
+
+commit 6f7299001f154ec0e863ccaf95bebfa468b18e22
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Jan 9 16:07:50 2014 +0100
+
+    Allow setting maximum size for each children of workspace selector either statically or dynamically by calculating width or height (depending on orientation) from stage's width or height by fraction.
+
+commit 264bb1ebd25dbe75a3ad0299b0f059479600d5d8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Jan 9 14:47:32 2014 +0100
+
+    Fix calculation of minimum and preferred width and height of XfdashboardCollapseBox, XfdashboardWorkspaceSelector and XfdashboardLiveWorkspace
+
+commit 0a9cca44addd101bd3f145cf49920e2831b17577
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Jan 7 08:07:44 2014 +0100
+
+    Draw an outline at every live workspace but the active one will have the thicker outline of all
+
+commit 1857964d39a1167dc7ff101ce593c2de01f68704
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Jan 7 08:04:47 2014 +0100
+
+    Correct paint node function in XfdashboardBackground
+
+commit 61e614082e3842cb0b84cac8e90dfbaca05f13f2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Jan 6 11:50:12 2014 +0100
+
+    Fixed build system and updated ChangeLog
+
 commit affb00d1b7f4b7e69a052b0c1d6229384b69fec9
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Mon Jan 6 09:33:38 2014 +0100
