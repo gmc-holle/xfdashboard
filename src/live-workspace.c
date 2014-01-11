@@ -108,7 +108,7 @@ static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWor
 
 /* Find live window actor by window */
 static ClutterActor* _xfdashboard_live_workspace_find_by_window(XfdashboardLiveWorkspace *self,
-																			XfdashboardWindowTrackerWindow *inWindow)
+																XfdashboardWindowTrackerWindow *inWindow)
 {
 	ClutterActor						*child;
 	ClutterActorIter					iter;
@@ -133,21 +133,65 @@ static ClutterActor* _xfdashboard_live_workspace_find_by_window(XfdashboardLiveW
 	return(NULL);
 }
 
-/* Create actor for wnck-window */
-static ClutterActor* _xfdashboard_live_workspace_create_actor(XfdashboardLiveWorkspace *self,
-																XfdashboardWindowTrackerWindow *inWindow)
+/* Create actor for window but respect window stacking when adding */
+static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(XfdashboardLiveWorkspace *self,
+																				XfdashboardWindowTrackerWindow *inWindow)
 {
-	ClutterActor		*actor;
-	ClutterContent		*content;
+	XfdashboardLiveWorkspacePrivate	*priv;
+	ClutterActor					*actor;
+	ClutterContent					*content;
+	GList							*windows;
+	ClutterActor					*lastWindowActor;
+	XfdashboardWindowTrackerWindow	*window;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
 
-	/* Create actor */
-	actor=clutter_actor_new();
-	content=xfdashboard_window_content_new_for_window(inWindow);
-	clutter_actor_set_content(actor, content);
-	g_object_unref(content);
+	priv=self->priv;
+
+	/* We cannot assume that each window newly opened or moved to this workspace
+	 * will be on top of all other windows. We need to respect window stacking.
+	 * Therefore we iterate through list of windows in stacking order and find
+	 * the last window we have an actor for before we the window requested.
+	 */
+	lastWindowActor=NULL;
+	windows=xfdashboard_window_tracker_get_windows_stacked(priv->windowTracker);
+	for( ; windows; windows=g_list_next(windows))
+	{
+		/* Get window from list */
+		window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windows->data);
+		if(!window) continue;
+
+		/* We do not need to check if window would be visible on this workspace
+		 * as it should not have been created if it is not visible.
+		 */
+		lastWindowActor=_xfdashboard_live_workspace_find_by_window(self, window);
+		if(lastWindowActor) break;
+	}
+
+	/* Check if we have to "move" an existing window actor or if we have to create
+	 * a new actor for window
+	 */
+	actor=_xfdashboard_live_workspace_find_by_window(self, inWindow);
+	if(actor)
+	{
+		/* Move existing window actor to new stacking position */
+		g_object_ref(actor);
+		clutter_actor_remove_child(CLUTTER_ACTOR(self), actor);
+		clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
+		g_object_unref(actor);
+	}
+		else
+		{
+			/* Create actor */
+			actor=clutter_actor_new();
+			content=xfdashboard_window_content_new_for_window(inWindow);
+			clutter_actor_set_content(actor, content);
+			g_object_unref(content);
+
+			/* Add new actor at right stacking position */
+			clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
+		}
 
 	return(actor);
 }
@@ -181,8 +225,6 @@ static void _xfdashboard_live_workspace_on_window_opened(XfdashboardLiveWorkspac
 															XfdashboardWindowTrackerWindow *inWindow,
 															gpointer inUserData)
 {
-	ClutterActor		*actor;
-
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
@@ -190,8 +232,7 @@ static void _xfdashboard_live_workspace_on_window_opened(XfdashboardLiveWorkspac
 	if(!_xfdashboard_live_workspace_is_visible_window(self, inWindow)) return;
 
 	/* Create actor for window */
-	actor=_xfdashboard_live_workspace_create_actor(self, inWindow),
-	clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, NULL);
+	_xfdashboard_live_workspace_create_and_add_window_actor(self, inWindow);
 }
 
 /* A window's position and/or size has changed */
@@ -256,7 +297,6 @@ static void _xfdashboard_live_workspace_on_window_state_changed(XfdashboardLiveW
 	 */
 
 	ClutterActor		*windowActor;
-	ClutterActor		*actor;
 	gboolean			newVisible;
 	gboolean			currentVisible;
 
@@ -276,15 +316,8 @@ static void _xfdashboard_live_workspace_on_window_state_changed(XfdashboardLiveW
 	newVisible=_xfdashboard_live_workspace_is_visible_window(self, inWindow);
 	if(newVisible!=currentVisible)
 	{
-		if(newVisible)
-		{
-			actor=_xfdashboard_live_workspace_create_actor(self, inWindow);
-			clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, NULL);
-		}
-			else
-			{
-				if(windowActor) clutter_actor_destroy(windowActor);
-			}
+		if(newVisible) _xfdashboard_live_workspace_create_and_add_window_actor(self, inWindow);
+			else if(windowActor) clutter_actor_destroy(windowActor);
 	}
 }
 
@@ -314,8 +347,7 @@ static void _xfdashboard_live_workspace_on_window_workspace_changed(XfdashboardL
 		else
 		{
 			/* Add window actor */
-			windowActor=_xfdashboard_live_workspace_create_actor(self, inWindow);
-			clutter_actor_insert_child_above(CLUTTER_ACTOR(self), windowActor, NULL);
+			_xfdashboard_live_workspace_create_and_add_window_actor(self, inWindow);
 		}
 }
 
@@ -638,9 +670,6 @@ void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, Xf
 		content=clutter_actor_get_content(child);
 		if(!content || !XFDASHBOARD_IS_WINDOW_CONTENT(content)) continue;
 
-		window=xfdashboard_window_content_get_window(XFDASHBOARD_WINDOW_CONTENT(content));
-		if(!window) continue;
-
 		/* Destroy window actor */
 		clutter_actor_destroy(child);
 	}
@@ -656,8 +685,10 @@ void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, Xf
 		/* Create window actor if window is visible */
 		if(!_xfdashboard_live_workspace_is_visible_window(self, window)) continue;
 
-		actor=_xfdashboard_live_workspace_create_actor(self, window);
-		if(!actor) continue;
+		actor=clutter_actor_new();
+		content=xfdashboard_window_content_new_for_window(window);
+		clutter_actor_set_content(actor, content);
+		g_object_unref(content);
 
 		/* Insert new actor at bottom */
 		clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, NULL);
