@@ -1,3 +1,33 @@
+commit 1ad713f1ebf7ec978b5da637d9c2b21b75219169
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Jan 12 22:31:00 2014 +0100
+
+    Post-release version bump to 0.1.2
+
+commit ffb8f83896b5ab759edb84548ea83f483d5740e9
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Jan 12 22:28:32 2014 +0100
+
+    I screwed up with tagging for releasing the development version 0.1.0 and instead of a force re-tag I release an updated version 0.1.1
+
+commit 245d9601c15476ad0933c52142efe6b58fae661f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 11 14:22:40 2014 +0100
+
+    Post-release version bump to 0.1.1
+
+commit 119ac64f0533d73d485ee9178638bbbb73df28ae
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 11 14:18:33 2014 +0100
+
+    Bump version, initial development release
+
+commit eedbd0bfc6758c426049a7c6417152ea901a3c75
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 11 14:13:57 2014 +0100
+
+    Update ChangeLog
+
 commit dd6e9b86036ec4ed5c40d53a7db289a0fa7543d2
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Sat Jan 11 13:58:21 2014 +0100
