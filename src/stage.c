@@ -98,7 +98,8 @@ static ClutterColor		defaultNotificationFillColor={ 0x13, 0x50, 0xff, 0xff };		/
 static ClutterColor		defaultNotificationOutlineColor={ 0x63, 0xb0, 0xff, 0xff };		// TODO: Replace by settings/theming object
 
 #define DEFAULT_NOTIFICATION_OUTLINE_WIDTH		1.0f									// TODO: Replace by settings/theming object
-#define DEFAULT_NOTIFICATION_TIMEOUT			3000									// TODO: Replace by settings/theming object
+#define DEFAULT_NOTIFICATION_TIMEOUT			3000
+#define NOTIFICATION_TIMEOUT_XFCONF_PROP		"/min-notification-timeout"
 
 /* Notification timeout has been reached */
 static void _xfdashboard_stage_on_notification_timeout_destroyed(gpointer inUserData)
@@ -797,7 +798,11 @@ void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *in
 	 * of the notification text to show but never drops below the minimum timeout configured.
 	 * The interval is calculated by one second for 30 characters.
 	 */
-	interval=MAX((gint)((strlen(inText)/30.0f)*1000.0f), DEFAULT_NOTIFICATION_TIMEOUT);
+	interval=xfconf_channel_get_uint(xfdashboard_application_get_xfconf_channel(),
+										NOTIFICATION_TIMEOUT_XFCONF_PROP,
+										DEFAULT_NOTIFICATION_TIMEOUT);
+	interval=MAX((gint)((strlen(inText)/30.0f)*1000.0f), interval);
+
 	priv->notificationTimeoutID=clutter_threads_add_timeout_full(G_PRIORITY_DEFAULT,
 																	interval,
 																	_xfdashboard_stage_on_notification_timeout,
