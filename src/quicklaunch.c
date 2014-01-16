@@ -1424,7 +1424,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	priv->scaleMin=DEFAULT_SCALE_MIN;
 	priv->scaleMax=DEFAULT_SCALE_MAX;
 	priv->scaleStep=DEFAULT_SCALE_STEP;
-	priv->xfconfChannel=XFCONF_CHANNEL(g_object_ref(xfdashboard_application_get_xfconf_channel()));
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
 	priv->dragMode=DRAG_MODE_NONE;
 	priv->dragPreviewIcon=NULL;
 
