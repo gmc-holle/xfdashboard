@@ -55,6 +55,7 @@ struct _XfdashboardApplicationPrivate
 	gboolean					isDaemon;
 
 	/* Instance related */
+	gboolean					isPrimaryInstance;
 	gboolean					inited;
 	gboolean					shouldInit;
 	XfconfChannel				*xfconfChannel;
@@ -240,6 +241,11 @@ static void _xfdashboard_application_startup(GApplication *inApplication)
 	/* Call parent's class startup method */
 	G_APPLICATION_CLASS(xfdashboard_application_parent_class)->startup(inApplication);
 
+	/* "start-up" signal gets only called on primary instance
+	 * so set flag that this one is the primary one
+	 */
+	priv->isPrimaryInstance=TRUE;
+
 	/* Set flag indicating that command-line handler
 	 * should initialize this instance as it is the primary one
 	 */
@@ -285,26 +291,34 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 		return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
 	}
 
-	/* Handle options: restart, quit */
-	if(applicationOptions.doReplace==TRUE || applicationOptions.doQuit==TRUE)
+	/* Handle options only available in primary instance */
+	if(priv->isPrimaryInstance)
 	{
-		/* Quit existing instance */
-		g_debug(_("Quitting running instance!"));
-		_xfdashboard_application_quit(self, TRUE);
+		/* Handle options: restart, quit */
+		if(applicationOptions.doReplace==TRUE || applicationOptions.doQuit==TRUE)
+		{
+			/* Quit existing instance */
+			g_debug(_("Quitting running instance!"));
+			_xfdashboard_application_quit(self, TRUE);
 
-		/* If we should just quit the running instance return here */
-		if(applicationOptions.doQuit==TRUE) return(XFDASHBOARD_APPLICATION_ERROR_QUIT);
+			/* If we should just quit the running instance return here */
+			if(applicationOptions.doQuit==TRUE) return(XFDASHBOARD_APPLICATION_ERROR_QUIT);
 
-		/* If we get here we are going to replace the just quitted instance,
-		 * so force full initialization of this instance
-		 */
-		g_debug(_("Replacing running instance - force full initialization"));
-		priv->shouldInit=TRUE;
+			/* If we get here we are going to replace the just quitted instance,
+			 * so force full initialization of this instance
+			 */
+			g_debug(_("Replacing running instance - force full initialization"));
+			priv->shouldInit=TRUE;
+		}
 	}
 
-	/* Handle options: daemonized */
-	priv->isDaemon=applicationOptions.doDaemonize;
-	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_DAEMONIZED]);
+	/* Handle options only available in uninitialized instance */
+	if(!priv->inited)
+	{
+		/* Handle options: daemonized */
+		priv->isDaemon=applicationOptions.doDaemonize;
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_DAEMONIZED]);
+	}
 
 	/* Check if this instance needs to be initialized fully */
 	if(priv->shouldInit==TRUE)
@@ -450,6 +464,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv=self->priv=XFDASHBOARD_APPLICATION_GET_PRIVATE(self);
 
 	/* Set default values */
+	priv->isPrimaryInstance=FALSE;
 	priv->inited=FALSE;
 	priv->shouldInit=FALSE;
 	priv->isDaemon=FALSE;
