@@ -197,7 +197,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	 */
 	stage=xfdashboard_stage_new();
 
-	clutter_actor_show(stage);
+	if(!priv->isDaemon) clutter_actor_show(stage);
 	g_signal_connect_swapped(stage, "delete-event", G_CALLBACK(_xfdashboard_application_on_delete_stage), self);
 
 	/* Initialization was successful so return TRUE */
