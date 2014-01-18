@@ -358,7 +358,6 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_stage_wind
 	return(window);
 }
 
-
 /* Set up window for use as stage window */
 void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTrackerWindow *inWindow)
 {
@@ -369,12 +368,14 @@ void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTracke
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
 	/* Window of stage should always be above all other windows,
-	 * pinned to all workspaces and not be listed in window pager
+	 * pinned to all workspaces, not be listed in window pager
+	 * and set to fullscreen
 	 */
 	wnck_window_set_skip_tasklist(WNCK_WINDOW(inWindow), TRUE);
 	wnck_window_set_skip_pager(WNCK_WINDOW(inWindow), TRUE);
 	wnck_window_make_above(WNCK_WINDOW(inWindow));
 	wnck_window_pin(WNCK_WINDOW(inWindow));
+	wnck_window_set_fullscreen(WNCK_WINDOW(inWindow), TRUE);
 
 	/* Get screen of window */
 	screen=wnck_window_get_screen(WNCK_WINDOW(inWindow));
@@ -406,6 +407,48 @@ void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTracke
 	{
 		g_signal_connect(screen, "active-window-changed", G_CALLBACK(_xfdashboard_window_tracker_window_on_stage_active_window_changed), inWindow);
 		g_debug("Connecting signal to 'active-window-changed' at screen %p of window %p", screen, inWindow);
+	}
+}
+
+/* Unset up stage window (only remove connected signals) */
+void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrackerWindow *inWindow)
+{
+	WnckScreen	*screen;
+	guint		signalID;
+	gulong		handlerID;
+
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
+
+	/* Get screen of window */
+	screen=wnck_window_get_screen(WNCK_WINDOW(inWindow));
+
+	/* Disconnect signals */
+	signalID=g_signal_lookup("state-changed", WNCK_TYPE_WINDOW);
+	handlerID=g_signal_handler_find(inWindow,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									signalID,
+									0,
+									NULL,
+									G_CALLBACK(_xfdashboard_window_tracker_window_on_stage_state_changed),
+									NULL);
+	if(handlerID)
+	{
+		g_signal_handler_disconnect(inWindow, handlerID);
+		g_debug("Disconnecting handler %lu for signal 'state-changed' at window %p", handlerID, inWindow);
+	}
+
+	signalID=g_signal_lookup("active-window-changed", WNCK_TYPE_SCREEN);
+	handlerID=g_signal_handler_find(screen,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									signalID,
+									0,
+									NULL,
+									G_CALLBACK(_xfdashboard_window_tracker_window_on_stage_active_window_changed),
+									NULL);
+	if(handlerID)
+	{
+		g_signal_handler_disconnect(screen, handlerID);
+		g_debug("Disconnecting handler %lu for signal 'active-window-changed' at screen %p of window %p", handlerID, screen, inWindow);
 	}
 }
 

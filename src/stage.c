@@ -61,21 +61,22 @@ G_DEFINE_TYPE(XfdashboardStage,
 struct _XfdashboardStagePrivate
 {
 	/* Actors */
-	ClutterActor				*quicklaunch;
-	ClutterActor				*searchbox;
-	ClutterActor				*workspaces;
-	ClutterActor				*viewpad;
-	ClutterActor				*viewSelector;
-	ClutterActor				*notification;
+	ClutterActor					*quicklaunch;
+	ClutterActor					*searchbox;
+	ClutterActor					*workspaces;
+	ClutterActor					*viewpad;
+	ClutterActor					*viewSelector;
+	ClutterActor					*notification;
 
 	/* Instance related */
-	XfdashboardWindowTracker	*windowTracker;
+	XfdashboardWindowTracker		*windowTracker;
+	XfdashboardWindowTrackerWindow	*stageWindow;
 
-	gboolean					searchActive;
-	gint						lastSearchTextLength;
-	XfdashboardView				*viewBeforeSearch;
+	gboolean						searchActive;
+	gint							lastSearchTextLength;
+	XfdashboardView					*viewBeforeSearch;
 
-	guint						notificationTimeoutID;
+	guint							notificationTimeoutID;
 };
 
 /* Signals */
@@ -600,11 +601,69 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 													geometry.width, geometry.height);
 
 	/* Set up window for use as stage window */
-	xfdashboard_window_tracker_window_make_stage_window(inWindow);
+	priv->stageWindow=inWindow;
+	xfdashboard_window_tracker_window_make_stage_window(priv->stageWindow);
 
 	/* Disconnect signal handler as this is a one-time setup of stage window */
 	g_debug(_("Stage window was opened and set up. Removing signal handler."));
 	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
+}
+
+/* IMPLEMENTATION: ClutterActor */
+
+/* This actor is going to be shown (will be visible) */
+static void _xfdashboard_stage_show(ClutterActor *inActor)
+{
+	XfdashboardStage			*self;
+	XfdashboardStagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(inActor));
+
+	self=XFDASHBOARD_STAGE(inActor);
+	priv=self->priv;
+
+	/* Set stage to fullscreen just in case it forgot about it */
+	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
+
+	/* Connect signals */
+	g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
+
+	/* Call parent's class show method */
+	if(CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->show)
+	{
+		CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->show(inActor);
+	}
+}
+
+/* This actor is going to be hidden (will be invisible) */
+static void _xfdashboard_stage_hide(ClutterActor *inActor)
+{
+	XfdashboardStage			*self;
+	XfdashboardStagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(inActor));
+
+	self=XFDASHBOARD_STAGE(inActor);
+	priv=self->priv;
+
+	/* Unset up stage window */
+	if(priv->stageWindow)
+	{
+		xfdashboard_window_tracker_window_unmake_stage_window(priv->stageWindow);
+		priv->stageWindow=NULL;
+	}
+
+	/* Disconnect signal handler as stage will be hidden. It should not be
+	 * neccessary normally but in case the stage will be hidden before
+	 * the signal handler was called we disconnect it here (again)
+	 */
+	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
+
+	/* Call parent's class hide method */
+	if(CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->hide)
+	{
+		CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->hide(inActor);
+	}
 }
 
 /* IMPLEMENTATION: GObject */
@@ -616,6 +675,12 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 	XfdashboardStagePrivate		*priv=self->priv;
 
 	/* Release allocated resources */
+	if(priv->stageWindow)
+	{
+		xfdashboard_window_tracker_window_unmake_stage_window(priv->stageWindow);
+		priv->stageWindow=NULL;
+	}
+
 	if(priv->notificationTimeoutID)
 	{
 		g_source_remove(priv->notificationTimeoutID);
@@ -681,9 +746,13 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
  */
 static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 {
+	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	actorClass->show=_xfdashboard_stage_show;
+	actorClass->hide=_xfdashboard_stage_hide;
+
 	gobjectClass->dispose=_xfdashboard_stage_dispose;
 
 	/* Set up private structure */
@@ -736,6 +805,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 
 	/* Set default values */
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->stageWindow=NULL;
 
 	priv->quicklaunch=NULL;
 	priv->searchbox=NULL;
@@ -752,14 +822,10 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &defaultStageColor);
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(self), TRUE);
 	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), FALSE);
-	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
 
 	_xfdashboard_stage_setup(self);
 
 	g_signal_connect_swapped(self, "key-release-event", G_CALLBACK(_xfdashboard_stage_on_key_release), self);
-
-	/* Connect signals */
-	g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
 }
 
 /* IMPLEMENTATION: Public API */

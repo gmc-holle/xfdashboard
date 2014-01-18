@@ -91,6 +91,7 @@ ClutterStage* xfdashboard_window_tracker_window_find_stage(XfdashboardWindowTrac
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_stage_window(ClutterStage *inStage);
 
 void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTrackerWindow *inWindow);
+void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrackerWindow *inWindow);
 
 gulong xfdashboard_window_tracker_window_get_xid(XfdashboardWindowTrackerWindow *inWindow);
 
