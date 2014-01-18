@@ -303,12 +303,6 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 
 			/* If we should just quit the running instance return here */
 			if(applicationOptions.doQuit==TRUE) return(XFDASHBOARD_APPLICATION_ERROR_QUIT);
-
-			/* If we get here we are going to replace the just quitted instance,
-			 * so force full initialization of this instance
-			 */
-			g_debug(_("Replacing running instance - force full initialization"));
-			priv->shouldInit=TRUE;
 		}
 	}
 

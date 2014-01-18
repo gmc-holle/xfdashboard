@@ -657,7 +657,10 @@ static void _xfdashboard_stage_hide(ClutterActor *inActor)
 	 * neccessary normally but in case the stage will be hidden before
 	 * the signal handler was called we disconnect it here (again)
 	 */
-	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
+	if(priv->windowTracker)
+	{
+		g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
+	}
 
 	/* Call parent's class hide method */
 	if(CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->hide)
