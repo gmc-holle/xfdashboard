@@ -86,25 +86,8 @@ enum
 static guint XfdashboardApplicationSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-
 #define XFDASHBOARD_APP_ID				"de.froevel.nomad.xfdashboard"
 #define XFDASHBOARD_XFCONF_CHANNEL		"xfdashboard"
-
-/* Application options */
-struct applicationOptions
-{
-	gboolean	doDaemonize;
-	gboolean	doReplace;
-	gboolean	doQuit;
-} applicationOptions;
-
-const GOptionEntry XfdashboardApplicationOptions[]=
-	{
-		{"daemonize", 'd', 0, G_OPTION_ARG_NONE, &applicationOptions.doDaemonize, N_("Fork to background"), NULL},
-		{"restart", 'r', 0, G_OPTION_ARG_NONE, &applicationOptions.doReplace, N_("Replace existing instance"), NULL},
-		{"quit", 'q', 0, G_OPTION_ARG_NONE, &applicationOptions.doQuit, N_("Quit existing instance"), NULL},
-		{NULL}
-	};
 
 /* Single instance of application */
 static XfdashboardApplication*		application=NULL;
@@ -245,11 +228,6 @@ static void _xfdashboard_application_startup(GApplication *inApplication)
 	 * so set flag that this one is the primary one
 	 */
 	priv->isPrimaryInstance=TRUE;
-
-	/* Set flag indicating that command-line handler
-	 * should initialize this instance as it is the primary one
-	 */
-	priv->shouldInit=TRUE;
 }
 
 /* Handle command-line on primary instance */
@@ -262,6 +240,14 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	gint							argc;
 	gchar							**argv;
 	GError							*error;
+	gboolean						optionDaemonize;
+	gboolean						optionQuit;
+	GOptionEntry					XfdashboardApplicationOptions[]=
+									{
+										{"daemonize", 'd', 0, G_OPTION_ARG_NONE, &optionDaemonize, N_("Fork to background"), NULL},
+										{"quit", 'q', 0, G_OPTION_ARG_NONE, &optionQuit, N_("Quit existing instance"), NULL},
+										{NULL}
+									};
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication), 1);
 
@@ -270,16 +256,15 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	error=NULL;
 
 	/* Set up options */
+	optionDaemonize=FALSE;
+	optionQuit=FALSE;
+
 	context=g_option_context_new(N_("- A Gnome Shell like dashboard for Xfce4"));
 	g_option_context_add_group(context, gtk_get_option_group(TRUE));
 	g_option_context_add_group(context, clutter_get_option_group_without_init());
 	g_option_context_add_main_entries(context, XfdashboardApplicationOptions, GETTEXT_PACKAGE);
 
 	/* Parse command-line arguments */
-	applicationOptions.doDaemonize=FALSE;
-	applicationOptions.doReplace=FALSE;
-	applicationOptions.doQuit=FALSE;
-
 	argv=g_application_command_line_get_arguments(inCommandLine, &argc);
 	result=g_option_context_parse(context, &argc, &argv, &error);
 	g_strfreev(argv);
@@ -291,43 +276,34 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 		return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
 	}
 
-	/* Handle options only available in primary instance */
-	if(priv->isPrimaryInstance)
+	/* Handle options: quit */
+	if(optionQuit && priv->isPrimaryInstance)
 	{
-		/* Handle options: restart, quit */
-		if(applicationOptions.doReplace==TRUE || applicationOptions.doQuit==TRUE)
-		{
-			/* Quit existing instance */
-			g_debug(_("Quitting running instance!"));
-			_xfdashboard_application_quit(self, TRUE);
+		/* Quit existing instance */
+		g_debug(_("Quitting running instance!"));
+		_xfdashboard_application_quit(self, TRUE);
 
-			/* If we should just quit the running instance return here */
-			if(applicationOptions.doQuit==TRUE) return(XFDASHBOARD_APPLICATION_ERROR_QUIT);
-		}
+		return(XFDASHBOARD_APPLICATION_ERROR_QUIT);
 	}
 
-	/* Handle options only available in uninitialized instance */
+	/* Handle options: daemonize */
 	if(!priv->inited)
 	{
-		/* Handle options: daemonized */
-		priv->isDaemon=applicationOptions.doDaemonize;
+		priv->isDaemon=optionDaemonize;
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_DAEMONIZED]);
 	}
 
 	/* Check if this instance needs to be initialized fully */
-	if(priv->shouldInit==TRUE)
+	if(!priv->inited && priv->isPrimaryInstance)
 	{
 		/* Perform full initialization of this application instance */
 		result=_xfdashboard_application_initialize_full(self);
 		if(result==FALSE) return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
-
-		/* Prevent further accident initialization on this instance */
-		priv->shouldInit=FALSE;
 	}
 
 	/* All done successfully so return status code 0 for success */
 	priv->inited=TRUE;
-	return(applicationOptions.doReplace==FALSE ? XFDASHBOARD_APPLICATION_ERROR_NONE : XFDASHBOARD_APPLICATION_ERROR_RESTART);
+	return(XFDASHBOARD_APPLICATION_ERROR_NONE);
 }
 
 /* IMPLEMENTATION: GObject */

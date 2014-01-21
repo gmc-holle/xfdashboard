@@ -59,32 +59,29 @@ int main(int argc, char **argv)
 
 	if(g_application_get_is_remote(G_APPLICATION(app))==TRUE)
 	{
-		/* Handle command-line on primary instance of application */
+		/* Handle command-line on primary instance of application
+		 * and activate primary instance if handling command-line
+		 * was successful
+		 */
 		status=g_application_run(G_APPLICATION(app), argc, argv);
-		if(status!=XFDASHBOARD_APPLICATION_ERROR_RESTART)
+		switch(status)
 		{
-			/* Activate primary instance of application */
-			if(status==XFDASHBOARD_APPLICATION_ERROR_NONE) g_application_activate(G_APPLICATION(app));
+			case XFDASHBOARD_APPLICATION_ERROR_NONE:
+				g_application_activate(G_APPLICATION(app));
+				break;
 
-			/* Exit this instance of application */
-			g_object_unref(app);
-			return(status);
+			case XFDASHBOARD_APPLICATION_ERROR_QUIT:
+				/* Do nothing at remote instance */
+				break;
+
+			default:
+				g_error(_("Initializing application failed with status code %d"), status);
+				break;
 		}
 
-		/* If we get here we should replace running instance */
-		g_debug(_("Replacing existing instance!"));
-
+		/* Exit this instance of application */
 		g_object_unref(app);
-
-		app=xfdashboard_application_get_default();
-		g_application_register(G_APPLICATION(app), NULL, &error);
-		if(error!=NULL)
-		{
-			g_warning(_("Unable to register application: %s"), error->message);
-			g_error_free(error);
-			error=NULL;
-			return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
-		}
+		return(status);
 	}
 
 	/* Tell clutter to try to initialize an RGBA visual */
@@ -100,7 +97,6 @@ int main(int argc, char **argv)
 
 	/* Handle command-line on primary instance */
 	status=g_application_run(G_APPLICATION(app), argc, argv);
-	if(status==XFDASHBOARD_APPLICATION_ERROR_RESTART) status=XFDASHBOARD_APPLICATION_ERROR_NONE;
 	if(status!=XFDASHBOARD_APPLICATION_ERROR_NONE)
 	{
 		g_object_unref(app);
