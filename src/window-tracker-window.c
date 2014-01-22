@@ -140,6 +140,21 @@ gboolean xfdashboard_window_tracker_window_is_visible_on_workspace(XfdashboardWi
 	return(wnck_window_is_visible_on_workspace(WNCK_WINDOW(inWindow), WNCK_WORKSPACE(inWorkspace)));
 }
 
+/* Set visibility of window (show/hide) */
+void xfdashboard_window_tracker_window_show(XfdashboardWindowTrackerWindow *inWindow)
+{
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
+
+	wnck_window_unminimize(WNCK_WINDOW(inWindow), xfdashboard_window_tracker_get_time());
+}
+
+void xfdashboard_window_tracker_window_hide(XfdashboardWindowTrackerWindow *inWindow)
+{
+	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
+
+	wnck_window_minimize(WNCK_WINDOW(inWindow));
+}
+
 /* Get workspace where window is on */
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_window_get_workspace(XfdashboardWindowTrackerWindow *inWindow)
 {
@@ -371,11 +386,10 @@ void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTracke
 	 * pinned to all workspaces, not be listed in window pager
 	 * and set to fullscreen
 	 */
-	wnck_window_set_skip_tasklist(WNCK_WINDOW(inWindow), TRUE);
-	wnck_window_set_skip_pager(WNCK_WINDOW(inWindow), TRUE);
-	wnck_window_make_above(WNCK_WINDOW(inWindow));
-	wnck_window_pin(WNCK_WINDOW(inWindow));
-	wnck_window_set_fullscreen(WNCK_WINDOW(inWindow), TRUE);
+	if(!wnck_window_is_skip_tasklist(WNCK_WINDOW(inWindow))) wnck_window_set_skip_tasklist(WNCK_WINDOW(inWindow), TRUE);
+	if(!wnck_window_is_skip_pager(WNCK_WINDOW(inWindow))) wnck_window_set_skip_pager(WNCK_WINDOW(inWindow), TRUE);
+	if(!wnck_window_is_above(WNCK_WINDOW(inWindow))) wnck_window_make_above(WNCK_WINDOW(inWindow));
+	if(!wnck_window_is_pinned(WNCK_WINDOW(inWindow))) wnck_window_pin(WNCK_WINDOW(inWindow));
 
 	/* Get screen of window */
 	screen=wnck_window_get_screen(WNCK_WINDOW(inWindow));

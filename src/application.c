@@ -79,6 +79,8 @@ enum
 {
 	SIGNAL_QUIT,
 	SIGNAL_SHUTDOWN_FINAL,
+	SIGNAL_SUSPEND,
+	SIGNAL_RESUME,
 
 	SIGNAL_LAST
 };
@@ -108,25 +110,26 @@ static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean
 	if(inForceQuit==TRUE || priv->isDaemon==FALSE) shouldQuit=TRUE;
 
 	/* If application is not in daemon mode or if forced is set to TRUE
-	 * destroy all stage windows. Otherwise just hide them.
+	 * destroy all stage windows ...
 	 */
-	stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
-	for(entry=stages; entry!=NULL; entry=g_slist_next(entry))
-	{
-		if(shouldQuit==TRUE) clutter_actor_destroy(CLUTTER_ACTOR(entry->data));
-			else clutter_actor_hide(CLUTTER_ACTOR(entry->data));
-	}
-	g_slist_free(stages);
-
-	/* Quit main loop if we should */
 	if(shouldQuit==TRUE)
 	{
+		/* Destroy stages */
+		stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
+		for(entry=stages; entry!=NULL; entry=g_slist_next(entry)) clutter_actor_destroy(CLUTTER_ACTOR(entry->data));
+		g_slist_free(stages);
+
 		/* Emit "quit" signal */
 		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_QUIT], 0);
 
 		/* Really quit application here and now */
 		if(priv->inited) clutter_main_quit();
 	}
+		/* ... otherwise emit "suspend" signal */
+		else
+		{
+			g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SUSPEND], 0);
+		}
 }
 
 /* A stage window should be destroyed */
@@ -197,17 +200,14 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 /* Received "activate" signal on primary instance */
 static void _xfdashboard_application_activate(GApplication *inApplication)
 {
-	GSList							*stages, *entry;
+	XfdashboardApplication			*self;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication));
 
-	/* Show all stages again */
-	stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
-	for(entry=stages; entry!=NULL; entry=g_slist_next(entry))
-	{
-		clutter_actor_show(CLUTTER_ACTOR(stages->data));
-	}
-	g_slist_free(stages);
+	self=XFDASHBOARD_APPLICATION(inApplication);
+
+	/* Emit "resume" signal */
+	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_RESUME], 0);
 }
 
 /* Primary instance is starting up */
@@ -417,6 +417,28 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
 						G_STRUCT_OFFSET(XfdashboardApplicationClass, shutdown_final),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardApplicationSignals[SIGNAL_SUSPEND]=
+		g_signal_new("suspend",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardApplicationClass, suspend),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardApplicationSignals[SIGNAL_RESUME]=
+		g_signal_new("resume",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardApplicationClass, resume),
 						NULL,
 						NULL,
 						g_cclosure_marshal_VOID__VOID,

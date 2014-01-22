@@ -53,6 +53,9 @@ GType xfdashboard_window_tracker_window_get_type(void) G_GNUC_CONST;
 gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_visible_on_workspace(XfdashboardWindowTrackerWindow *inWindow,
 																	XfdashboardWindowTrackerWorkspace *inWorkspace);
+void xfdashboard_window_tracker_window_show(XfdashboardWindowTrackerWindow *inWindow);
+void xfdashboard_window_tracker_window_hide(XfdashboardWindowTrackerWindow *inWindow);
+
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_window_get_workspace(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_on_workspace(XfdashboardWindowTrackerWindow *inWindow,
 															XfdashboardWindowTrackerWorkspace *inWorkspace);

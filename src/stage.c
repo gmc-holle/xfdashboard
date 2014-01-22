@@ -609,64 +609,59 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
 }
 
-/* IMPLEMENTATION: ClutterActor */
-
-/* This actor is going to be shown (will be visible) */
-static void _xfdashboard_stage_show(ClutterActor *inActor)
+/* The application will be suspended */
+static void _xfdashboard_stage_on_application_suspend(XfdashboardStage *self, gpointer inUserData)
 {
-	XfdashboardStage			*self;
-	XfdashboardStagePrivate		*priv;
+	XfdashboardStagePrivate				*priv=self->priv;
 
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
 
-	self=XFDASHBOARD_STAGE(inActor);
 	priv=self->priv;
 
-	/* Set stage to fullscreen just in case it forgot about it */
-	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
-
-	/* Connect signals */
-	g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
-
-	/* Call parent's class show method */
-	if(CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->show)
-	{
-		CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->show(inActor);
-	}
-}
-
-/* This actor is going to be hidden (will be invisible) */
-static void _xfdashboard_stage_hide(ClutterActor *inActor)
-{
-	XfdashboardStage			*self;
-	XfdashboardStagePrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(inActor));
-
-	self=XFDASHBOARD_STAGE(inActor);
-	priv=self->priv;
-
-	/* Unset up stage window */
+	/* Instead of hiding stage actor just hide stage's window. It should be safe
+	 * to just hide the window as it should be listed on any task list and is not
+	 * selectable by user. The advantage should be that the window is already mapped
+	 * and its state is already set up like fullscreen, sticky and so on. This
+	 * prevents that window will not be shown in fullscreen again (just maximized
+	 * and flickers) if we use clutter_actor_show to show stage actor and its window
+	 * again. But we can only do this if the window is known and set up ;)
+	 */
 	if(priv->stageWindow)
 	{
 		xfdashboard_window_tracker_window_unmake_stage_window(priv->stageWindow);
-		priv->stageWindow=NULL;
+		xfdashboard_window_tracker_window_hide(priv->stageWindow);
 	}
+}
 
-	/* Disconnect signal handler as stage will be hidden. It should not be
-	 * neccessary normally but in case the stage will be hidden before
-	 * the signal handler was called we disconnect it here (again)
-	 */
-	if(priv->windowTracker)
-	{
-		g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
-	}
+/* The application will be resumed */
+static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpointer inUserData)
+{
+	XfdashboardStagePrivate				*priv=self->priv;
 
-	/* Call parent's class hide method */
-	if(CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->hide)
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+
+	priv=self->priv;
+
+	/* If stage window is known just show it again ... */
+	if(priv->stageWindow)
 	{
-		CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->hide(inActor);
+		xfdashboard_window_tracker_window_make_stage_window(priv->stageWindow);
+		xfdashboard_window_tracker_window_show(priv->stageWindow);
 	}
+		/* ... otherwise set it up by calling clutter_actor_show() etc. */
+		else
+		{
+			/* Set stage to fullscreen just in case it forgot about it */
+			clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
+
+			/* Connect signals */
+			g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
+
+			/* Show stage and force window creation */
+			clutter_actor_show(CLUTTER_ACTOR(self));
+		}
 }
 
 /* IMPLEMENTATION: GObject */
@@ -749,13 +744,9 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
  */
 static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 {
-	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	actorClass->show=_xfdashboard_stage_show;
-	actorClass->hide=_xfdashboard_stage_hide;
-
 	gobjectClass->dispose=_xfdashboard_stage_dispose;
 
 	/* Set up private structure */
@@ -803,6 +794,7 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 static void xfdashboard_stage_init(XfdashboardStage *self)
 {
 	XfdashboardStagePrivate		*priv;
+	XfdashboardApplication		*application;
 
 	priv=self->priv=XFDASHBOARD_STAGE_GET_PRIVATE(self);
 
@@ -825,10 +817,16 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &defaultStageColor);
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(self), TRUE);
 	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), FALSE);
+	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
 
 	_xfdashboard_stage_setup(self);
 
 	g_signal_connect_swapped(self, "key-release-event", G_CALLBACK(_xfdashboard_stage_on_key_release), self);
+
+	/* Connect signal to application */
+	application=xfdashboard_application_get_default();
+	g_signal_connect_swapped(application, "suspend", G_CALLBACK(_xfdashboard_stage_on_application_suspend), self);
+	g_signal_connect_swapped(application, "resume", G_CALLBACK(_xfdashboard_stage_on_application_resume), self);
 }
 
 /* IMPLEMENTATION: Public API */
