@@ -653,15 +653,39 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 		/* ... otherwise set it up by calling clutter_actor_show() etc. */
 		else
 		{
-			/* Set stage to fullscreen just in case it forgot about it */
-			clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
-
-			/* Connect signals */
-			g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
-
 			/* Show stage and force window creation */
 			clutter_actor_show(CLUTTER_ACTOR(self));
 		}
+}
+
+/* IMPLEMENTATION: ClutterActor */
+
+/* The stage actor should be shown */
+static void _xfdashboard_stage_show(ClutterActor *inActor)
+{
+	XfdashboardStage			*self;
+	XfdashboardStagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(inActor));
+
+	self=XFDASHBOARD_STAGE(inActor);
+	priv=self->priv;
+
+	/* Set stage to fullscreen just in case it forgot about it */
+	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
+
+	/* If we do not know the stage window connect signal to find it */
+	if(!priv->stageWindow)
+	{
+		/* Connect signals */
+		g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
+	}
+
+	/* Call parent's show method */
+	if(CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->show)
+	{
+		CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->show(inActor);
+	}
 }
 
 /* IMPLEMENTATION: GObject */
@@ -744,9 +768,12 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
  */
 static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 {
+	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	actorClass->show=_xfdashboard_stage_show;
+
 	gobjectClass->dispose=_xfdashboard_stage_dispose;
 
 	/* Set up private structure */
