@@ -102,6 +102,9 @@ static ClutterColor		defaultNotificationOutlineColor={ 0x63, 0xb0, 0xff, 0xff };
 #define DEFAULT_NOTIFICATION_TIMEOUT			3000
 #define NOTIFICATION_TIMEOUT_XFCONF_PROP		"/min-notification-timeout"
 
+#define DEFAULT_RESET_SEARCH_ON_RESUME			TRUE
+#define RESET_SEARCH_ON_RESUME_XFCONF_PROP		"/reset-search-on-resume"
+
 /* Notification timeout has been reached */
 static void _xfdashboard_stage_on_notification_timeout_destroyed(gpointer inUserData)
 {
@@ -638,6 +641,7 @@ static void _xfdashboard_stage_on_application_suspend(XfdashboardStage *self, gp
 static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpointer inUserData)
 {
 	XfdashboardStagePrivate				*priv=self->priv;
+	gboolean							doResetSearch;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
@@ -648,7 +652,11 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 	if(priv->stageWindow)
 	{
 		/* If search is active then end search by clearing search box */
+		doResetSearch=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(),
+												RESET_SEARCH_ON_RESUME_XFCONF_PROP,
+												DEFAULT_RESET_SEARCH_ON_RESUME);
 		if(priv->searchbox &&
+			doResetSearch &&
 			!xfdashboard_text_box_is_empty(XFDASHBOARD_TEXT_BOX(priv->searchbox)))
 		{
 			xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
