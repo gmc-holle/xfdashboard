@@ -67,9 +67,6 @@ int main(int argc, char **argv)
 		switch(status)
 		{
 			case XFDASHBOARD_APPLICATION_ERROR_NONE:
-				g_application_activate(G_APPLICATION(app));
-				break;
-
 			case XFDASHBOARD_APPLICATION_ERROR_QUIT:
 				/* Do nothing at remote instance */
 				break;

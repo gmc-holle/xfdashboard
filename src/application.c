@@ -277,7 +277,7 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	}
 
 	/* Handle options: quit */
-	if(optionQuit && priv->isPrimaryInstance)
+	if(optionQuit)
 	{
 		/* Quit existing instance */
 		g_debug(_("Quitting running instance!"));
@@ -294,12 +294,17 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	}
 
 	/* Check if this instance needs to be initialized fully */
-	if(!priv->inited && priv->isPrimaryInstance)
+	if(!priv->inited)
 	{
 		/* Perform full initialization of this application instance */
 		result=_xfdashboard_application_initialize_full(self);
 		if(result==FALSE) return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
 	}
+
+	/* Check if this instance need to be activated. Is should only be done
+	 * if instance is initialized
+	 */
+	if(priv->inited) _xfdashboard_application_activate(inApplication);
 
 	/* All done successfully so return status code 0 for success */
 	priv->inited=TRUE;
