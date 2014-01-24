@@ -647,6 +647,14 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 	/* If stage window is known just show it again ... */
 	if(priv->stageWindow)
 	{
+		/* If search is active then end search by clearing search box */
+		if(priv->searchbox &&
+			!xfdashboard_text_box_is_empty(XFDASHBOARD_TEXT_BOX(priv->searchbox)))
+		{
+			xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
+		}
+
+		/* Set up stage and show it */
 		xfdashboard_window_tracker_window_make_stage_window(priv->stageWindow);
 		xfdashboard_window_tracker_window_show(priv->stageWindow);
 	}
