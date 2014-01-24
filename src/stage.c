@@ -99,11 +99,10 @@ static ClutterColor		defaultNotificationFillColor={ 0x13, 0x50, 0xff, 0xff };		/
 static ClutterColor		defaultNotificationOutlineColor={ 0x63, 0xb0, 0xff, 0xff };		// TODO: Replace by settings/theming object
 
 #define DEFAULT_NOTIFICATION_OUTLINE_WIDTH		1.0f									// TODO: Replace by settings/theming object
-#define DEFAULT_NOTIFICATION_TIMEOUT			3000
 #define NOTIFICATION_TIMEOUT_XFCONF_PROP		"/min-notification-timeout"
-
-#define DEFAULT_RESET_SEARCH_ON_RESUME			TRUE
+#define DEFAULT_NOTIFICATION_TIMEOUT			3000
 #define RESET_SEARCH_ON_RESUME_XFCONF_PROP		"/reset-search-on-resume"
+#define DEFAULT_RESET_SEARCH_ON_RESUME			TRUE
 
 /* Notification timeout has been reached */
 static void _xfdashboard_stage_on_notification_timeout_destroyed(gpointer inUserData)
