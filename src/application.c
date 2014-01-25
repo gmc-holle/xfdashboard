@@ -404,8 +404,8 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 
 	/* Define properties */
 	XfdashboardApplicationProperties[PROP_DAEMONIZED]=
-		g_param_spec_boolean("daemonized",
-								_("Daemonized"),
+		g_param_spec_boolean("is-daemonized",
+								_("is-daemonized"),
 								_("Flag indicating if application is daemonized"),
 								FALSE,
 								G_PARAM_READABLE);
