@@ -53,6 +53,7 @@ struct _XfdashboardApplicationPrivate
 {
 	/* Properties related */
 	gboolean					isDaemon;
+	gboolean					isSuspended;
 
 	/* Instance related */
 	gboolean					inited;
@@ -67,6 +68,7 @@ enum
 	PROP_0,
 
 	PROP_DAEMONIZED,
+	PROP_SUSPENDED,
 
 	PROP_LAST
 };
@@ -127,7 +129,16 @@ static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean
 		/* ... otherwise emit "suspend" signal */
 		else
 		{
-			g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SUSPEND], 0);
+			/* Only send signal if not suspended already */
+			if(!priv->isSuspended)
+			{
+				/* Send signal */
+				g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SUSPEND], 0);
+
+				/* Set flag for suspension */
+				priv->isSuspended=TRUE;
+				g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_SUSPENDED]);
+			}
 		}
 }
 
@@ -200,13 +211,22 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 static void _xfdashboard_application_activate(GApplication *inApplication)
 {
 	XfdashboardApplication			*self;
+	XfdashboardApplicationPrivate	*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication));
 
 	self=XFDASHBOARD_APPLICATION(inApplication);
+	priv=self->priv;
 
 	/* Emit "resume" signal */
 	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_RESUME], 0);
+
+	/* Unset flag for suspension */
+	if(priv->isSuspended)
+	{
+		priv->isSuspended=FALSE;
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_SUSPENDED]);
+	}
 }
 
 /* Handle command-line on primary instance */
@@ -270,6 +290,12 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	{
 		priv->isDaemon=optionDaemonize;
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_DAEMONIZED]);
+
+		if(!priv->isSuspended)
+		{
+			priv->isSuspended=TRUE;
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_SUSPENDED]);
+		}
 	}
 
 	/* Check if this instance needs to be initialized fully */
@@ -347,6 +373,10 @@ static void _xfdashboard_application_get_property(GObject *inObject,
 			g_value_set_boolean(outValue, self->priv->isDaemon);
 			break;
 
+		case PROP_SUSPENDED:
+			g_value_set_boolean(outValue, self->priv->isSuspended);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -378,6 +408,13 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 		g_param_spec_boolean("daemonized",
 								_("Daemonized"),
 								_("Flag indicating if application is daemonized"),
+								FALSE,
+								G_PARAM_READABLE);
+
+	XfdashboardApplicationProperties[PROP_SUSPENDED]=
+		g_param_spec_boolean("is-suspended",
+								_("Is suspended"),
+								_("Flag indicating if application is suspended currently"),
 								FALSE,
 								G_PARAM_READABLE);
 
@@ -439,9 +476,10 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv=self->priv=XFDASHBOARD_APPLICATION_GET_PRIVATE(self);
 
 	/* Set default values */
+	priv->isDaemon=FALSE;
+	priv->isSuspended=FALSE;
 	priv->inited=FALSE;
 	priv->shouldInit=FALSE;
-	priv->isDaemon=FALSE;
 	priv->xfconfChannel=NULL;
 	priv->viewManager=NULL;
 }
