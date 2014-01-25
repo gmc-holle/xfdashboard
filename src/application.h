@@ -70,6 +70,9 @@ GType xfdashboard_application_get_type(void) G_GNUC_CONST;
 
 XfdashboardApplication* xfdashboard_application_get_default(void);
 
+gboolean xfdashboard_application_is_daemonized(XfdashboardApplication *self);
+gboolean xfdashboard_application_is_suspended(XfdashboardApplication *self);
+
 XfconfChannel* xfdashboard_application_get_xfconf_channel(void);
 
 void xfdashboard_application_quit(void);

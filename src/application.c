@@ -498,6 +498,22 @@ XfdashboardApplication* xfdashboard_application_get_default(void)
 	return(application);
 }
 
+/* Get flag if application is running in daemonized mode */
+gboolean xfdashboard_application_is_daemonized(XfdashboardApplication *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
+
+	return(self->priv->isDaemon);
+}
+
+/* Get flag if application is suspended or resumed */
+gboolean xfdashboard_application_is_suspended(XfdashboardApplication *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
+
+	return(self->priv->isSuspended);
+}
+
 /* Get xfconf channel for this application */
 XfconfChannel* xfdashboard_application_get_xfconf_channel(void)
 {
