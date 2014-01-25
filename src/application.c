@@ -57,7 +57,6 @@ struct _XfdashboardApplicationPrivate
 
 	/* Instance related */
 	gboolean					inited;
-	gboolean					shouldInit;
 	XfconfChannel				*xfconfChannel;
 	XfdashboardViewManager		*viewManager;
 };
@@ -479,7 +478,6 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->isDaemon=FALSE;
 	priv->isSuspended=FALSE;
 	priv->inited=FALSE;
-	priv->shouldInit=FALSE;
 	priv->xfconfChannel=NULL;
 	priv->viewManager=NULL;
 }
