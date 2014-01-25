@@ -1,3 +1,129 @@
+commit ad21f7ea2187c7711d821fa2efd7c6a567e9601f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 17:33:26 2014 +0100
+
+    Suspend updating window content if application is suspended but resume available windows when application resumes.
+
+commit 009ac44403643a2c6759a78caadb2b29ff00f4c1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 14:53:10 2014 +0100
+
+    Add convenient function get property values of XfdashboardApplication
+
+commit 2d64ab06fcf7e059e7e9a61fc677f87b457cd310
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 14:48:41 2014 +0100
+
+    Rename property "daemonized" in XfdashboardApplication to "is-daemonized" to standarize names
+
+commit 3df4c5898729546d6c607e10d79fae6ae48044d5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 14:47:56 2014 +0100
+
+    Remove unused variable
+
+commit c1e445d30fc5608284da7e51555029f2861b057a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 14:47:08 2014 +0100
+
+    Add read-only property "is-suspended" to XfdashboardApplication
+
+commit d8b14f54a4d3cf54f3f86d4d7879759b86f0e20f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 14:36:32 2014 +0100
+
+    Remove flag isPrimaryInstance in XfdashboardApplication as it is not needed and not useful anymore. Because of this we do not need to override virtual function startup() anymore.
+
+commit 3061a18dbad6ed833733e56e9052befa91a52d1f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 09:17:10 2014 +0100
+
+    Updated TODO
+
+commit 356ecce2778496a9c55bc6c20f54dfc84de9b0ff
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 00:29:43 2014 +0100
+
+    Swap lines for better readability
+
+commit 2e4c8ff5fff92a28b9eb2f93906de9e121c53521
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 00:27:53 2014 +0100
+
+    Make resetting search (end active search) when resuming to primary instance initiated by remote instance configurable through xfconf property "/reset-search-on-resume" in our xfconf channel.
+
+commit e8221940418bb3fb640725415a6099a0f5a675f3
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 00:22:33 2014 +0100
+
+    End active search when resuming to primary instance initiated by remote instance
+
+commit 1628ab691a7127625545193ba10e23d85ef87dee
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jan 24 14:51:18 2014 +0100
+
+    This change should ensure that each remote instance will force the primary instance to resume (means show the stage window). Before this change g_application_activate() called from remote instance did not send the dbus signal to the primary instance or the signal did not reach the primary instance. Because of this the stage window was not (re-)shown reliable.
+
+commit 4eee64f7c37d5ac8f8d60aed635ae7bccbbc8d02
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Jan 23 20:30:05 2014 +0100
+
+    Move logic to connect signals for getting stage window and setting fullscreen state of stage to overriden virtual function show() of ClutterActor. Therefore it should always work (to handle emitted signals) where ever show() of stage was called at.
+
+commit 53e72a8e2c95289945ceb6a71d46e9971d86e128
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Jan 22 20:35:26 2014 +0100
+
+    Fix restoring stage window when primary instance was activated by a remote instance
+
+commit 1b412d3d422ea87c61a03887dd51704a1eaa0b41
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Jan 21 20:10:46 2014 +0100
+
+    Fix command-line parsing and handling options. Remove command-line option "--restart" for now as it cause more trouble than it is helpful. BTW option should be called "--replace" ;)
+
+commit 0d46802249359cb7c314c4b85053ab618a7e6617
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 18 12:06:08 2014 +0100
+
+    Fix application set up and signal disconnects in stage if daemonized application is going to be replace by a new instance
+
+commit 57e3062524b080d31934b24d4818d012d8dae0a8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 18 11:54:47 2014 +0100
+
+    Correct signal handling for stage windows if running in daemonized mode
+
+commit 6f9feed0fc5f7eba6aadd3982bf216f8588dcd7c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 18 10:32:45 2014 +0100
+
+    Do not show stage if primary instance was launched in daemonize mode
+
+commit cfde59e7ca31d28b10cb78d5e16987e81a0ba53c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 18 10:30:34 2014 +0100
+
+    Fix that primary instance running in daemon mode will be quitted if remote instance is called without "-d" (for daemonize) in command-line
+
+commit 2a2481fe019bd0ee169443c20aac12f8de93660c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Jan 16 10:08:31 2014 +0100
+
+    Make minimum notification timeout of notifications in stage configurable through xfconf
+
+commit c3457296777f039cfb20fcf5211fb4823740e048
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Jan 16 06:35:08 2014 +0100
+
+    Do not ref XfconfChannel as it will not be unref'ed in dispose() function
+
+commit a97c8c2a15fa8fa3b8779330a746ca68c1c938cb
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Jan 13 21:39:29 2014 +0100
+
+    Mention direct dependency on garcon and update ChangeLog
+
 commit 1ad713f1ebf7ec978b5da637d9c2b21b75219169
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Sun Jan 12 22:31:00 2014 +0100
