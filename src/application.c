@@ -55,7 +55,6 @@ struct _XfdashboardApplicationPrivate
 	gboolean					isDaemon;
 
 	/* Instance related */
-	gboolean					isPrimaryInstance;
 	gboolean					inited;
 	gboolean					shouldInit;
 	XfconfChannel				*xfconfChannel;
@@ -208,26 +207,6 @@ static void _xfdashboard_application_activate(GApplication *inApplication)
 
 	/* Emit "resume" signal */
 	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_RESUME], 0);
-}
-
-/* Primary instance is starting up */
-static void _xfdashboard_application_startup(GApplication *inApplication)
-{
-	XfdashboardApplication			*self;
-	XfdashboardApplicationPrivate	*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication));
-
-	self=XFDASHBOARD_APPLICATION(inApplication);
-	priv=self->priv;
-
-	/* Call parent's class startup method */
-	G_APPLICATION_CLASS(xfdashboard_application_parent_class)->startup(inApplication);
-
-	/* "start-up" signal gets only called on primary instance
-	 * so set flag that this one is the primary one
-	 */
-	priv->isPrimaryInstance=TRUE;
 }
 
 /* Handle command-line on primary instance */
@@ -385,7 +364,6 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 
 	/* Override functions */
 	appClass->activate=_xfdashboard_application_activate;
-	appClass->startup=_xfdashboard_application_startup;
 	appClass->command_line=_xfdashboard_application_command_line;
 
 	gobjectClass->dispose=_xfdashboard_application_dispose;
@@ -461,7 +439,6 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv=self->priv=XFDASHBOARD_APPLICATION_GET_PRIVATE(self);
 
 	/* Set default values */
-	priv->isPrimaryInstance=FALSE;
 	priv->inited=FALSE;
 	priv->shouldInit=FALSE;
 	priv->isDaemon=FALSE;
