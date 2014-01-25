@@ -72,6 +72,10 @@ struct _XfdashboardWindowContentPrivate
 #ifdef HAVE_XDAMAGE
 	Damage								damage;
 #endif
+
+	guint								suspendSignalID;
+	gboolean							isMapped;
+	gboolean							isAppSuspended;
 };
 
 /* Properties */
@@ -161,6 +165,35 @@ static void _xfdashboard_window_content_check_extension(void)
 #endif
 }
 
+/* Suspension state of application changed */
+static void _xfdashboard_window_content_on_application_suspended_changed(XfdashboardWindowContent *self,
+																			GParamSpec *inSpec,
+																			gpointer inUserData)
+{
+	XfdashboardWindowContentPrivate		*priv;
+	XfdashboardApplication				*app;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+
+	priv=self->priv;
+	app=XFDASHBOARD_APPLICATION(inUserData);
+
+	/* Get application suspend state */
+	priv->isAppSuspended=xfdashboard_application_is_suspended(app);
+
+	/* If application is suspended then suspend this window too ... */
+	if(priv->isAppSuspended)
+	{
+		_xfdashboard_window_content_suspend(self);
+	}
+		/* ... otherwise resume window if it is mapped */
+		else
+		{
+			if(priv->isMapped) _xfdashboard_window_content_resume(self);
+		}
+}
+
 /* Filter X events for damages */
 static ClutterX11FilterReturn _xfdashboard_window_content_on_x_event(XEvent *inXEvent, ClutterEvent *inEvent, gpointer inUserData)
 {
@@ -181,11 +214,13 @@ static ClutterX11FilterReturn _xfdashboard_window_content_on_x_event(XEvent *inX
 		{
 			case MapNotify:
 			case ConfigureNotify:
-				_xfdashboard_window_content_resume(self);
+				priv->isMapped=TRUE;
+				if(!priv->isAppSuspended) _xfdashboard_window_content_resume(self);
 				break;
 
 			case UnmapNotify:
 			case DestroyNotify:
+				priv->isMapped=FALSE;
 				_xfdashboard_window_content_suspend(self);
 				break;
 
@@ -202,6 +237,7 @@ static ClutterX11FilterReturn _xfdashboard_window_content_on_x_event(XEvent *inX
 		inXEvent->type==(_xfdashboard_window_content_damage_event_base + XDamageNotify) &&
 		((XDamageNotifyEvent*)inXEvent)->damage==priv->damage)
 	{
+		/* Update texture for live window content */
 		clutter_content_invalidate(CLUTTER_CONTENT(self));
 	}
 #endif
@@ -394,7 +430,7 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 
 		/* Create cogl X11 texture for live updates */
 		context=clutter_backend_get_cogl_context(clutter_get_default_backend());
-		windowTexture=COGL_TEXTURE(cogl_texture_pixmap_x11_new(context, priv->pixmap, FALSE, &error));
+		windowTexture=COGL_TEXTURE(cogl_texture_pixmap_x11_new(context, priv->pixmap, TRUE, &error));
 		if(!windowTexture || error)
 		{
 			/* Creating texture may fail if window is _NOT_ on active workspace
@@ -537,6 +573,7 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 
 	/* Acquire new window and handle live updates */
 	_xfdashboard_window_content_resume(self);
+	priv->isMapped=!priv->isSuspended;
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_WINDOW_CONTENT]);
@@ -785,6 +822,12 @@ static void _xfdashboard_window_content_dispose(GObject *inObject)
 		priv->window=NULL;
 	}
 
+	if(priv->suspendSignalID)
+	{
+		g_signal_handler_disconnect(xfdashboard_application_get_default(), priv->suspendSignalID);
+		priv->suspendSignalID=0;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_window_content_parent_class)->dispose(inObject);
 }
@@ -903,7 +946,8 @@ void xfdashboard_window_content_class_init(XfdashboardWindowContentClass *klass)
  */
 void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 {
-	XfdashboardWindowContentPrivate	*priv;
+	XfdashboardWindowContentPrivate		*priv;
+	XfdashboardApplication				*app;
 
 	priv=self->priv=XFDASHBOARD_WINDOW_CONTENT_GET_PRIVATE(self);
 
@@ -919,12 +963,22 @@ void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 	priv->outlineColor=clutter_color_copy(CLUTTER_COLOR_Black);
 	priv->outlineWidth=1.0f;
 	priv->isSuspended=TRUE;
+	priv->suspendSignalID=0;
+	priv->isMapped=FALSE;
 
 	/* Check extensions (will only be done once) */
 	_xfdashboard_window_content_check_extension();
 
 	/* Add event filter for this instance */
 	clutter_x11_add_filter(_xfdashboard_window_content_on_x_event, self);
+
+	/* Handle suspension signals from application */
+	app=xfdashboard_application_get_default();
+	priv->suspendSignalID=g_signal_connect_swapped(app,
+													"notify::is-suspended",
+													G_CALLBACK(_xfdashboard_window_content_on_application_suspended_changed),
+													self);
+	priv->isAppSuspended=xfdashboard_application_is_suspended(app);
 }
 
 /* Implementation: Public API */
