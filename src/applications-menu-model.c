@@ -58,6 +58,24 @@ static guint XfdashboardApplicationsMenuModelSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
+/* Forward declarations */
+static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicationsMenuModel *self);
+
+/* A menu was changed and needs to be reloaded */
+static void _xfdashboard_applications_menu_model_on_reload_required(XfdashboardApplicationsMenuModel *self,
+																	gpointer inUserData)
+{
+	GarconMenu		*menu;
+
+	g_return_if_fail(GARCON_IS_MENU(inUserData));
+
+	menu=GARCON_MENU(inUserData);
+
+	/* Reload menu by filling it again. This also emits all necessary signals. */
+	g_debug("Menu '%s' changed and needs to be reloaded.", garcon_menu_element_get_name(GARCON_MENU_ELEMENT(menu)));
+	_xfdashboard_applications_menu_model_fill_model(self);
+}
+
 /* Clear all data in model and also release all allocated resources needed for this model */
 static void _xfdashboard_applications_menu_model_clear(XfdashboardApplicationsMenuModel *self)
 {
@@ -313,6 +331,9 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 		}
 	}
 	g_list_free(menuElements);
+
+	/* Connect signal 'reload-required' to recognize changes in menus */
+	g_signal_connect_swapped(inMenu, "reload-required", G_CALLBACK(_xfdashboard_applications_menu_model_on_reload_required), self);
 
 	/* Release allocated resources */
 	g_object_unref(inMenu);

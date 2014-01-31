@@ -389,6 +389,10 @@ static void _xfdashboard_applications_view_on_model_loaded(XfdashboardApplicatio
 
 	priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
 
+	/* Reset to root menu as menu referenced will not be available anymore
+	 * and re-filter to update view
+	 */
+	priv->currentRootMenuElement=NULL;
 	xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(priv->currentRootMenuElement));
 }
 
