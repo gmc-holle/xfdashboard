@@ -290,7 +290,7 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 		priv->isDaemon=optionDaemonize;
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_DAEMONIZED]);
 
-		if(!priv->isSuspended)
+		if(priv->isDaemon)
 		{
 			priv->isSuspended=TRUE;
 			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_SUSPENDED]);
