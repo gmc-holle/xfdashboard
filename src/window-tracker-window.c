@@ -149,7 +149,9 @@ gboolean xfdashboard_window_tracker_window_is_visible_on_workspace(XfdashboardWi
 	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
 	g_return_val_if_fail(WNCK_IS_WORKSPACE(inWorkspace), FALSE);
 
-	return(wnck_window_is_visible_on_workspace(WNCK_WINDOW(inWindow), WNCK_WORKSPACE(inWorkspace)));
+	/* Check if window is visible generally and if it is on requested workspace */
+	return(xfdashboard_window_tracker_window_is_visible(inWindow) &&
+			wnck_window_is_on_workspace(WNCK_WINDOW(inWindow), WNCK_WORKSPACE(inWorkspace)));
 }
 
 /* Set visibility of window (show/hide) */
