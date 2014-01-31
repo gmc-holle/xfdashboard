@@ -126,9 +126,21 @@ GType xfdashboard_window_tracker_window_get_type(void)
 /* Determine if window is visible */
 gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *inWindow)
 {
+	WnckWindowState		state;
+
 	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
 
-	return((wnck_window_get_state(WNCK_WINDOW(inWindow)) & WNCK_WINDOW_STATE_HIDDEN) ? FALSE : TRUE);
+	state=wnck_window_get_state(WNCK_WINDOW(inWindow));
+
+	/* Windows are invisible if hidden but not minimized */
+	if((state & WNCK_WINDOW_STATE_HIDDEN) &&
+		!(state & WNCK_WINDOW_STATE_MINIMIZED))
+	{
+		return(FALSE);
+	}
+
+	/* If we get here the window is visible */
+	return(TRUE);
 }
 
 gboolean xfdashboard_window_tracker_window_is_visible_on_workspace(XfdashboardWindowTrackerWindow *inWindow,
