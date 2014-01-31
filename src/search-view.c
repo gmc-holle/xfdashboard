@@ -142,7 +142,7 @@ static gboolean _xfdashboard_search_view_filter_title_only(ClutterModel *inModel
 							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID, &iterRow,
 							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
 							-1);
-	if(menuElement==NULL) return(FALSE);
+	if(!menuElement) return(FALSE);
 
 	/* Only menu items and sub-menus can be visible */
 	if(!GARCON_IS_MENU_ITEM(menuElement))
@@ -226,7 +226,7 @@ static gboolean _xfdashboard_search_view_filter_title_and_description(ClutterMod
 							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID, &iterRow,
 							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
 							-1);
-	if(menuElement==NULL) return(FALSE);
+	if(!menuElement) return(FALSE);
 
 	/* Only menu items and sub-menus can be visible */
 	if(!GARCON_IS_MENU_ITEM(menuElement))
