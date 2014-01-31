@@ -80,6 +80,8 @@ static void _xfdashboard_applications_menu_model_on_reload_required(XfdashboardA
 static void _xfdashboard_applications_menu_model_clear(XfdashboardApplicationsMenuModel *self)
 {
 	XfdashboardApplicationsMenuModelPrivate		*priv;
+	ClutterModelIter							*iterator;
+	GarconMenuElement							*menuElement;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 
@@ -88,8 +90,30 @@ static void _xfdashboard_applications_menu_model_clear(XfdashboardApplicationsMe
 	/* Unset filter (forces all rows being accessible and not being skipped/filtered) */
 	clutter_model_set_filter(CLUTTER_MODEL(self), NULL, NULL, NULL);
 
-	/* Remove all rows */
-	while(clutter_model_get_n_rows(CLUTTER_MODEL(self))) clutter_model_remove(CLUTTER_MODEL(self), 0);
+	/* Clean up and remove all rows */
+	while(clutter_model_get_n_rows(CLUTTER_MODEL(self)))
+	{
+		/* Get data from model for clean up */
+		menuElement=NULL;
+
+		iterator=clutter_model_get_iter_at_row(CLUTTER_MODEL(self), 0);
+		clutter_model_iter_get(iterator,
+								XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
+								-1);
+
+		/* Remove signal handler from menu element */
+		if(menuElement)
+		{
+			g_signal_handlers_disconnect_by_func(menuElement, G_CALLBACK(_xfdashboard_applications_menu_model_on_reload_required), self);
+		}
+
+		/* Remove row */
+		clutter_model_remove(CLUTTER_MODEL(self), 0);
+
+		/* Release iterator */
+		if(menuElement) g_object_unref(menuElement);
+		g_object_unref(iterator);
+	}
 
 	/* Clear sections */
 	if(priv->sections)
