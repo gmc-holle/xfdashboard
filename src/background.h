@@ -28,7 +28,6 @@
 #include <clutter/clutter.h>
 
 #include "types.h"
-#include "utils.h"
 
 G_BEGIN_DECLS
 

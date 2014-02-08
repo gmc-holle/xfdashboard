@@ -25,15 +25,16 @@
 #include "config.h"
 #endif
 
+#include "viewpad.h"
+
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 #include <math.h>
 
-#include "viewpad.h"
 #include "view-manager.h"
 #include "scrollbar.h"
-#include "utils.h"
 #include "enums.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardViewpad,

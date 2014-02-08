@@ -31,7 +31,6 @@
 #include "search-view.h"
 #include "types.h"
 #include "enums.h"
-#include "utils.h"
 #include "applications-menu-model.h"
 #include "application-button.h"
 #include "application.h"

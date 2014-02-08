@@ -34,7 +34,6 @@
 #include <math.h>
 
 #include "button.h"
-#include "utils.h"
 #include "live-window.h"
 #include "window-tracker.h"
 #include "click-action.h"

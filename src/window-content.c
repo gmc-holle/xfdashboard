@@ -41,7 +41,6 @@
 #endif
 
 #include "application.h"
-#include "utils.h"
 #include "marshal.h"
 
 /* Define this class in GObject system */

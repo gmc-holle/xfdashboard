@@ -31,7 +31,6 @@
 #include <clutter/clutter.h>
 #include <gtk/gtk.h>
 
-#include "utils.h"
 #include "application.h"
 #include "viewpad.h"
 #include "view-selector.h"

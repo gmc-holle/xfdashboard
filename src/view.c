@@ -25,12 +25,13 @@
 #include "config.h"
 #endif
 
+#include "view.h"
+
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
-#include "view.h"
-#include "utils.h"
 #include "marshal.h"
+#include "image.h"
 
 /* Define this class in GObject system */
 G_DEFINE_ABSTRACT_TYPE(XfdashboardView,
@@ -497,7 +498,7 @@ void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon)
 
 		/* Set new icon */
 		if(priv->viewIconImage) g_object_unref(priv->viewIconImage);
-		priv->viewIconImage=xfdashboard_get_image_for_icon_name(priv->viewIcon, DEFAULT_ICON_SIZE);
+		priv->viewIconImage=xfdashboard_image_new_for_icon_name(priv->viewIcon, DEFAULT_ICON_SIZE);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_VIEW_ICON]);

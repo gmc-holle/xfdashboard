@@ -26,6 +26,11 @@
 #endif
 
 #include "quicklaunch.h"
+
+#include <glib/gi18n-lib.h>
+#include <math.h>
+#include <gtk/gtk.h>
+
 #include "enums.h"
 #include "application.h"
 #include "application-button.h"
@@ -33,10 +38,7 @@
 #include "drag-action.h"
 #include "drop-action.h"
 #include "applications-view.h"
-
-#include <glib/gi18n-lib.h>
-#include <math.h>
-#include <gtk/gtk.h>
+#include "utils.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardQuicklaunch,

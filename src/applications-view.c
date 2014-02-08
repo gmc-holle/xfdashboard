@@ -29,7 +29,6 @@
 #include <gtk/gtk.h>
 
 #include "applications-view.h"
-#include "utils.h"
 #include "view.h"
 #include "applications-menu-model.h"
 #include "types.h"

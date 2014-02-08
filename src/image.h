@@ -25,6 +25,7 @@
 #define __XFDASHBOARD_IMAGE__
 
 #include <clutter/clutter.h>
+#include <gdk/gdk.h>
 
 G_BEGIN_DECLS
 
@@ -63,7 +64,9 @@ struct _XfdashboardImageClass
 /* Public API */
 GType xfdashboard_image_get_type(void) G_GNUC_CONST;
 
-ClutterContent* xfdashboard_image_get_cached_image(const gchar *inKey);
+ClutterImage* xfdashboard_image_new_for_icon_name(const gchar *inIconName, gint inSize);
+ClutterImage* xfdashboard_image_new_for_gicon(GIcon *inIcon, gint inSize);
+ClutterImage* xfdashboard_image_new_for_pixbuf(GdkPixbuf *inPixbuf);
 
 G_END_DECLS
 

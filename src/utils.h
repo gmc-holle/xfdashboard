@@ -29,7 +29,6 @@
 #define DEBUG_NOTIFY(self, property, format, ...) g_message("%s: Property '%s' of %p (%s) changed to "format, __func__, property, (self), (self) ? G_OBJECT_TYPE_NAME((self)) : "<nil>", ## __VA_ARGS__)
 
 #include <clutter/clutter.h>
-#include <gdk/gdk.h>
 #include <gio/gio.h>
 
 #include "window-tracker-workspace.h"
@@ -44,10 +43,6 @@ G_BEGIN_DECLS
 #define LISTITEM_TO_GTYPE(item)		((GType)GPOINTER_TO_SIZE(item))
 
 GType xfdashboard_pointer_array_get_type(void);
-
-ClutterImage* xfdashboard_get_image_for_icon_name(const gchar *inIconName, gint inSize);
-ClutterImage* xfdashboard_get_image_for_gicon(GIcon *inIcon, gint inSize);
-ClutterImage* xfdashboard_get_image_for_pixbuf(GdkPixbuf *inPixbuf);
 
 void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const gchar *inFormatText, ...) G_GNUC_PRINTF(3, 4);
 

@@ -40,7 +40,6 @@
 
 #include "window-tracker.h"
 #include "marshal.h"
-#include "utils.h"
 
 /* Usually we would define a class in GObject system here but
  * this class is a wrapper around WnckWindow to create a virtual stable
