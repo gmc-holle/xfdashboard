@@ -59,6 +59,10 @@ struct _XfdashboardImagePrivate
 	/* Instance related */
 	ImageType		type;
 	gboolean		isLoaded;
+	GtkIconTheme	*iconTheme;
+
+	guint			contentAttachedSignalID;
+	guint			iconThemeChangedSignalID;
 };
 
 /* Properties */
@@ -212,14 +216,12 @@ static void _xfdashboard_image_store_in_cache(XfdashboardImage *self, const gcha
 static void _xfdashboard_image_load_from_icon_name(XfdashboardImage *self)
 {
 	XfdashboardImagePrivate		*priv;
-	GtkIconTheme				*iconTheme;
 	GdkPixbuf					*iconPixbuf;
 	GError						*error;
 
 	g_return_if_fail(XFDASHBOARD_IS_IMAGE(self));
 
 	priv=self->priv;
-	iconTheme=gtk_icon_theme_get_default();
 	iconPixbuf=NULL;
 	error=NULL;
 
@@ -254,11 +256,11 @@ static void _xfdashboard_image_load_from_icon_name(XfdashboardImage *self)
 		else
 		{
 			error=NULL;
-			iconPixbuf=gtk_icon_theme_load_icon(iconTheme,
-												priv->iconName,
-												priv->iconSize,
-												GTK_ICON_LOOKUP_USE_BUILTIN,
-												&error);
+			iconPixbuf=gtk_icon_theme_load_icon(priv->iconTheme,
+													priv->iconName,
+													priv->iconSize,
+													GTK_ICON_LOOKUP_USE_BUILTIN,
+													&error);
 
 			if(!iconPixbuf)
 			{
@@ -277,7 +279,7 @@ static void _xfdashboard_image_load_from_icon_name(XfdashboardImage *self)
 	if(!iconPixbuf)
 	{
 		error=NULL;
-		iconPixbuf=gtk_icon_theme_load_icon(iconTheme,
+		iconPixbuf=gtk_icon_theme_load_icon(priv->iconTheme,
 												XFDASHBOARD_IMAGE_FALLBACK_ICON_NAME,
 												priv->iconSize,
 												GTK_ICON_LOOKUP_USE_BUILTIN,
@@ -317,7 +319,6 @@ static void _xfdashboard_image_load_from_gicon(XfdashboardImage *self)
 {
 	XfdashboardImagePrivate		*priv;
 	GtkIconInfo					*iconInfo;
-	GtkIconTheme				*iconTheme;
 	GdkPixbuf					*iconPixbuf;
 	GError						*error;
 
@@ -325,7 +326,6 @@ static void _xfdashboard_image_load_from_gicon(XfdashboardImage *self)
 
 	priv=self->priv;
 	iconInfo=NULL;
-	iconTheme=gtk_icon_theme_get_default();
 	iconPixbuf=NULL;
 	error=NULL;
 
@@ -335,7 +335,7 @@ static void _xfdashboard_image_load_from_gicon(XfdashboardImage *self)
 	g_return_if_fail(priv->iconSize>0);
 
 	/* Get icon information */
-	iconInfo=gtk_icon_theme_lookup_by_gicon(gtk_icon_theme_get_default(),
+	iconInfo=gtk_icon_theme_lookup_by_gicon(priv->iconTheme,
 												priv->gicon,
 												priv->iconSize,
 												GTK_ICON_LOOKUP_USE_BUILTIN);
@@ -361,7 +361,7 @@ static void _xfdashboard_image_load_from_gicon(XfdashboardImage *self)
 	if(!iconPixbuf)
 	{
 		error=NULL;
-		iconPixbuf=gtk_icon_theme_load_icon(iconTheme,
+		iconPixbuf=gtk_icon_theme_load_icon(priv->iconTheme,
 												XFDASHBOARD_IMAGE_FALLBACK_ICON_NAME,
 												priv->iconSize,
 												GTK_ICON_LOOKUP_USE_BUILTIN,
@@ -399,6 +399,40 @@ static void _xfdashboard_image_load_from_gicon(XfdashboardImage *self)
 	g_debug("Loaded image with key '%s' from gicon '%s' at size %u", priv->key, g_icon_to_string(priv->gicon), priv->iconSize);
 }
 
+/* Icon theme has changed */
+static void _xfdashboard_image_on_icon_theme_changed(XfdashboardImage *self,
+														gpointer inUserData)
+{
+	XfdashboardImagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_IMAGE(self));
+
+	priv=self->priv;
+
+	/* If icon has not been loaded yet then there is no need to do it now */
+	if(!priv->isLoaded) return;
+
+	/* Reload image */
+	switch(priv->type)
+	{
+		case IMAGE_TYPE_NONE:
+			g_warning(_("Cannot load image '%s' without type"), priv->key);
+			break;
+
+		case IMAGE_TYPE_ICON_NAME:
+			_xfdashboard_image_load_from_icon_name(self);
+			break;
+
+		case IMAGE_TYPE_GICON:
+			_xfdashboard_image_load_from_gicon(self);
+			break;
+
+		default:
+			g_warning(_("Cannot load image '%s' of unknown type %d"), priv->key, priv->type);
+			break;
+	}
+}
+
 /* IMPLEMENTATION: ClutterContent */
 
 /* Image was attached to an actor */
@@ -417,8 +451,12 @@ static void _xfdashboard_image_on_attached(ClutterContent *inContent,
 	/* Check if image was already loaded */
 	if(priv->isLoaded) return;
 
-	/* Mark image loaded regardless if loading will succeed or fail */
+	/* Mark image loaded regardless if loading will succeed or fail. */
 	priv->isLoaded=TRUE;
+
+	/* Also disconnect signal handler as it should not be called anymore. */
+	g_signal_handler_disconnect(self, priv->contentAttachedSignalID);
+	priv->contentAttachedSignalID=0;
 
 	/* Load icon */
 	switch(priv->type)
@@ -451,6 +489,18 @@ static void _xfdashboard_image_dispose(GObject *inObject)
 
 	/* Release allocated resources */
 	priv->type=IMAGE_TYPE_NONE;
+
+	if(priv->contentAttachedSignalID)
+	{
+		g_signal_handler_disconnect(self, priv->contentAttachedSignalID);
+		priv->contentAttachedSignalID=0;
+	}
+
+	if(priv->iconThemeChangedSignalID)
+	{
+		g_signal_handler_disconnect(priv->iconTheme, priv->iconThemeChangedSignalID);
+		priv->iconThemeChangedSignalID=0;
+	}
 
 	if(priv->key)
 	{
@@ -586,12 +636,24 @@ void xfdashboard_image_init(XfdashboardImage *self)
 	priv->gicon=NULL;
 	priv->iconSize=0;
 	priv->isLoaded=FALSE;
+	priv->iconTheme=gtk_icon_theme_get_default();
 
 	/* Connect to "attached" signal of ClutterContent to get notified
 	 * when this image is used. We will load image when this image is
 	 * attached the first time.
 	 */
-	g_signal_connect(self, "attached", G_CALLBACK(_xfdashboard_image_on_attached), NULL);
+	priv->contentAttachedSignalID=g_signal_connect(self,
+													"attached",
+													G_CALLBACK(_xfdashboard_image_on_attached),
+													NULL);
+
+	/* Connect to "changed" signal of GtkIconTheme to get notified
+	 * when icon theme has changed to reload loaded images.
+	 */
+	priv->iconThemeChangedSignalID=g_signal_connect_swapped(priv->iconTheme,
+															"changed",
+															G_CALLBACK(_xfdashboard_image_on_icon_theme_changed),
+															self);
 }
 
 /* IMPLEMENTATION: Public API */
