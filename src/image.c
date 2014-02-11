@@ -36,6 +36,14 @@ G_DEFINE_TYPE(XfdashboardImage,
 				xfdashboard_image,
 				CLUTTER_TYPE_IMAGE)
 
+/* Local definitions */
+typedef enum
+{
+	IMAGE_TYPE_NONE=0,
+	IMAGE_TYPE_ICON_NAME,
+	IMAGE_TYPE_GICON,
+} ImageType;
+
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_IMAGE_GET_PRIVATE(obj) \
 	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_IMAGE, XfdashboardImagePrivate))
@@ -44,6 +52,13 @@ struct _XfdashboardImagePrivate
 {
 	/* Properties related */
 	gchar			*key;
+	gchar			*iconName;
+	GIcon			*gicon;
+	guint			iconSize;
+
+	/* Instance related */
+	ImageType		type;
+	gboolean		isLoaded;
 };
 
 /* Properties */
@@ -52,6 +67,11 @@ enum
 	PROP_0,
 
 	PROP_KEY,
+
+	PROP_ICON_NAME,
+	PROP_GICON,
+
+	PROP_ICON_SIZE,
 
 	PROP_LAST
 };
@@ -188,6 +208,48 @@ static void _xfdashboard_image_store_in_cache(XfdashboardImage *self, const gcha
 	g_debug("Added image '%s' with ref-count %d" , priv->key, G_OBJECT(self)->ref_count);
 }
 
+/* IMPLEMENTATION: ClutterContent */
+
+/* Image was attached to an actor */
+static void _xfdashboard_image_on_attached(ClutterContent *inContent,
+											ClutterActor *inActor,
+											gpointer inUserData)
+{
+	XfdashboardImage			*self;
+	XfdashboardImagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_IMAGE(inContent));
+
+	self=XFDASHBOARD_IMAGE(inContent);
+	priv=self->priv;
+
+	/* Check if image was already loaded */
+	if(priv->isLoaded) return;
+
+	/* Mark image loaded regardless if loading will succeed or fail */
+	priv->isLoaded=TRUE;
+
+	/* Load icon */
+	switch(priv->type)
+	{
+		case IMAGE_TYPE_NONE:
+			g_warning(_("Cannot load image '%s' without type"), priv->key);
+			break;
+
+		case IMAGE_TYPE_ICON_NAME:
+			g_message("Image '%s' was attached the first time so load icon '%s' at size %u now!", priv->key, priv->iconName, priv->iconSize);
+			break;
+
+		case IMAGE_TYPE_GICON:
+			g_message("Image '%s' was attached the first time so load gicon '%s' at size %u now!", priv->key, g_icon_to_string(priv->gicon), priv->iconSize);
+			break;
+
+		default:
+			g_warning(_("Cannot load image '%s' of unknown type %d"), priv->key, priv->type);
+			break;
+	}
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -197,11 +259,25 @@ static void _xfdashboard_image_dispose(GObject *inObject)
 	XfdashboardImagePrivate		*priv=self->priv;
 
 	/* Release allocated resources */
+	priv->type=IMAGE_TYPE_NONE;
+
 	if(priv->key)
 	{
 		_xfdashboard_image_remove_from_cache(self);
 		g_free(priv->key);
 		priv->key=NULL;
+	}
+
+	if(priv->iconName)
+	{
+		g_free(priv->iconName);
+		priv->iconName=NULL;
+	}
+
+	if(priv->gicon)
+	{
+		g_object_unref(priv->gicon);
+		priv->gicon=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -215,11 +291,38 @@ static void _xfdashboard_image_set_property(GObject *inObject,
 											GParamSpec *inSpec)
 {
 	XfdashboardImage			*self=XFDASHBOARD_IMAGE(inObject);
+	XfdashboardImagePrivate		*priv=self->priv;
 
 	switch(inPropID)
 	{
 		case PROP_KEY:
 			_xfdashboard_image_store_in_cache(self, g_value_get_string(inValue));
+			break;
+
+		case PROP_ICON_NAME:
+			if(priv->type!=IMAGE_TYPE_NONE)
+			{
+				g_error(_("Image '%s' already set up. Ignoring icon name."), priv->key ? priv->key : _("unnamed"));
+				return;
+			}
+
+			priv->type=IMAGE_TYPE_ICON_NAME;
+			priv->iconName=g_strdup(g_value_get_string(inValue));
+			break;
+
+		case PROP_GICON:
+			if(priv->type!=IMAGE_TYPE_NONE)
+			{
+				g_error(_("Image '%s' already set up. Ignoring GIcon."), priv->key ? priv->key : _("unnamed"));
+				return;
+			}
+
+			priv->type=IMAGE_TYPE_GICON;
+			priv->gicon=G_ICON(g_object_ref(g_value_get_object(inValue)));
+			break;
+
+		case PROP_ICON_SIZE:
+			priv->iconSize=g_value_get_uint(inValue);
 			break;
 
 		default:
@@ -251,6 +354,28 @@ void xfdashboard_image_class_init(XfdashboardImageClass *klass)
 							N_(""),
 							G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY);
 
+	XfdashboardImageProperties[PROP_ICON_NAME]=
+		g_param_spec_string("icon-name",
+							_("Icon name"),
+							_("Themed icon name or relative or absolute path to image file"),
+							N_(""),
+							G_PARAM_WRITABLE);
+
+	XfdashboardImageProperties[PROP_GICON]=
+		g_param_spec_object("gicon",
+							_("GIcon"),
+							_("GIcon object to load as image"),
+							G_TYPE_ICON,
+							G_PARAM_WRITABLE);
+
+	XfdashboardImageProperties[PROP_ICON_SIZE]=
+		g_param_spec_uint("icon-size",
+							_("Icon size"),
+							_("Size of icon"),
+							0, G_MAXUINT,
+							0,
+							G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardImageProperties);
 }
 
@@ -265,6 +390,17 @@ void xfdashboard_image_init(XfdashboardImage *self)
 
 	/* Set up default values */
 	priv->key=NULL;
+	priv->type=IMAGE_TYPE_NONE;
+	priv->iconName=NULL;
+	priv->gicon=NULL;
+	priv->iconSize=0;
+	priv->isLoaded=FALSE;
+
+	/* Connect to "attached" signal of ClutterContent to get notified
+	 * when this image is used. We will load image when this image is
+	 * attached the first time.
+	 */
+	g_signal_connect(self, "attached", G_CALLBACK(_xfdashboard_image_on_attached), NULL);
 }
 
 /* IMPLEMENTATION: Public API */
@@ -371,7 +507,11 @@ ClutterImage* xfdashboard_image_new_for_icon_name(const gchar *inIconName, gint 
 	/* Create ClutterImage for icon loaded and cache it */
 	if(iconPixbuf)
 	{
-		image=CLUTTER_CONTENT(g_object_new(XFDASHBOARD_TYPE_IMAGE, "key", key, NULL));
+		image=CLUTTER_CONTENT(g_object_new(XFDASHBOARD_TYPE_IMAGE,
+											"key", key,
+											"icon-name", inIconName,
+											"icon-size", inSize,
+											NULL));
 		clutter_image_set_data(CLUTTER_IMAGE(image),
 								gdk_pixbuf_get_pixels(iconPixbuf),
 								gdk_pixbuf_get_has_alpha(iconPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
@@ -471,7 +611,11 @@ ClutterImage* xfdashboard_image_new_for_gicon(GIcon *inIcon, gint inSize)
 	/* Create ClutterImage for icon loaded and cache it */
 	if(iconPixbuf)
 	{
-		image=CLUTTER_CONTENT(g_object_new(XFDASHBOARD_TYPE_IMAGE, "key", key, NULL));
+		image=CLUTTER_CONTENT(g_object_new(XFDASHBOARD_TYPE_IMAGE,
+											"key", key,
+											"gicon", inIcon,
+											"icon-size", inSize,
+											NULL));
 		clutter_image_set_data(CLUTTER_IMAGE(image),
 								gdk_pixbuf_get_pixels(iconPixbuf),
 								gdk_pixbuf_get_has_alpha(iconPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
