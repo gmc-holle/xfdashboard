@@ -264,6 +264,16 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 
 	/* Parse command-line arguments */
 	argv=g_application_command_line_get_arguments(inCommandLine, &argc);
+
+#ifdef DEBUG
+	/* I always forget the name of the environment variable to get the debug
+	 * message display which are emitted with g_debug(). So display a hint
+	 * if application was compiled with debug enabled.
+	 */
+	g_print("** To get debug messages set environment variable G_MESSAGES_DEBUG to %s\n", PACKAGE_NAME);
+	g_print("** e.g.: G_MESSAGES_DEBUG=%s %s\n", PACKAGE_NAME, argv[0]);
+#endif
+
 	result=g_option_context_parse(context, &argc, &argv, &error);
 	g_strfreev(argv);
 	g_option_context_free(context);
