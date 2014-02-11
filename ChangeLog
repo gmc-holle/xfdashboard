@@ -1,3 +1,119 @@
+commit 6a4a479dc730d5e8ad8339120eeeae9eb13b5230
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Feb 11 20:33:24 2014 +0100
+
+    Show hint message for debug message if compiled with debug enabled
+    
+    I always forget the name of the environment variable to get the debug message display which are emitted with g_debug(). So display a hint if application was compiled with debug enabled.
+
+commit 9ef46bd1b550b0bb8620946839e2eee46c4639e6
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Feb 11 20:16:42 2014 +0100
+
+    Reload images on icon theme changes
+    
+    Reload loaded images when icon theme in GTK+ changes
+
+commit c5ffc6ba17a48c380c4d67a09c44b99098a4cfe7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Feb 11 06:47:33 2014 +0100
+
+    Moved image loading functions into class
+    
+    This is the next step to get images reloaded when icon theme changes as we now have the loading functions in class. We are now able to recall them on icon theme changes.
+
+commit 5781e96504130a9b1f249e16fede12fe921b47cc
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Feb 11 06:18:48 2014 +0100
+
+    Prepare XfdashboardImage to move loading functions into class
+    
+    This step is the first step to get images reloaded when icon theme changes. This preparation is needed to get loading functions moved from instance creation functions into seperate private class functions. If we keep them in instance creation functions it will still be a one-time called.
+
+commit f754bce70a534e4b65f11df66d811b31cf7f0d0f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Feb 10 21:59:12 2014 +0100
+
+    Added missing license in file COPYING
+    
+    If I understood the table at http://www.gnu.org/licenses/gpl-faq.html#AllCompatibility then I could not use any other license than GPL-2+ because all library I use (or better I link to) are LGPL-2.1 only or LGPL-2.1+ except for xfconf. xfconf might be GPL-2 only and incompatible to GPL-3 or its LGPL-2.1 only but compatible to GPL-3. xfconf mixes the "short license text" in source code and includes GPL-2 in COPYING. As long as I cannot determine the "real" license I use GPL-2 just in case.
+    
+    My thoughts are only valid if I understood the table and if linking to other libraries is "I want to use a library" (in context of table).
+
+commit e0e2630de52eb639f6e4ff676dec67ce6e3ec7af
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Feb 8 13:09:27 2014 +0100
+
+    Move logic to get image (either new instance or cached one) from utils.h to image.c
+    
+    Move logic function to get either a new instance for an image or a cached one to implementation of XfdashboardImage like we did for XfdashboardWindowContent. This reduces also the number of dependencies to utils.h.
+
+commit afd22267be47993d0229a7293eb1d74e4a33aa40
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jan 31 17:47:39 2014 +0100
+
+    Fixed that windows will never receive live update when running in non-daemon mode
+    
+    This issue was caused by XfdashboardApplication because it set the suspend flag even in non-daemon mode which is read by XfdashboardWindowContent and forces removal of XDamage object from X windows. So it never received any update from X.
+
+commit 1fd9a2df80ad498a35c8a57f55405e58ecd63207
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jan 31 16:34:11 2014 +0100
+
+    Unify coding style
+
+commit 222c6fa285c61101aaf9f0bc163c93005f1e1b2b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jan 31 16:27:02 2014 +0100
+
+    Clean up rows in application model when model is cleared.
+    
+    Remove signal handlers for getting notified when menu items has changed. Otherwise we might get notified for "dead" model data.
+
+commit e328b005bbeaa8957ba16b5e6e52073bbef61660
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jan 31 11:54:15 2014 +0100
+
+    Reload application menu model when menu changed
+    
+    By connecting to signal "reload-required" at each GarconMenu we get notified if menu structure or menu items changed (e.g. an application was installed or removed). The XfdashboardApplicationModel will then clear and (re-)load itself to get the new menu structure. After that it emits signal "loaded" (as it will on creation) to notify all handlers about (re-)load.
+
+commit acde7686f27c13a3a01dd683e38c1fc0e1c37d3b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jan 31 10:48:18 2014 +0100
+
+    Consider minimized window as visible ones also when requested for a specific workspace.
+    
+    See also commit 9b1cb52d8ae9a90141811638913dcdaaa3b9465d
+
+commit 9b1cb52d8ae9a90141811638913dcdaaa3b9465d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jan 31 10:38:50 2014 +0100
+
+    Consider minimized window as visible ones.
+    
+    In real minimized windows are hidden but with additional flag "minimized". To distinguish between completely hidden window and just minimized window we check flag "minimized" additionally. Only if flag "hidden" is set and "minimized" flag is not set the window is recognized as hidden by application. Without this differentiation also minimized window will not show up in windows view and will not be selectable or restorable to previous state (a visible state) anymore. At least not via xfdashboard but via task switcher (ALT+Tab).
+
+commit 09c1ee872fbbb47abda6153d9c547167abb39d3f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Jan 30 07:22:49 2014 +0100
+
+    Make optional dependencies really configurable
+    
+    Using XComposite and XDamage are optional dependencies but used automatically when libraries and headers were installed at build time. This was done automatically and you cannot influence this behaviour. Now the use of this optional features can be configure by using "--(enable/disable)-xcomposite" etc.
+
+commit 44a92b785d14b45c1a233d7c9dc384440ae34dcb
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 17:40:51 2014 +0100
+
+    Post-release version bump to 0.1.3
+
+commit 8a75090c5b6b122d224ad2972f30b8812908e662
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jan 25 17:37:11 2014 +0100
+
+    Bump version to 0.1.2
+
 commit ad21f7ea2187c7711d821fa2efd7c6a567e9601f
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Sat Jan 25 17:33:26 2014 +0100
