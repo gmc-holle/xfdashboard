@@ -88,9 +88,31 @@ static gboolean _xfdashboard_collapse_box_on_leave_event(XfdashboardCollapseBox 
 															ClutterEvent *inEvent,
 															gpointer inUserData)
 {
+	ClutterActor	*related;
+	ClutterActor	*stage;
+	gfloat			eventX, eventY;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_COLLAPSE_BOX(self), CLUTTER_EVENT_PROPAGATE);
 
-	/* Collapse to minimum size */
+	/* Check if new target (related actor) is a direct or deeper child of
+	 * this actor. This is an easy and inexpensive check and will likely
+	 * succeed if pointer is still inside this actor.
+	 */
+	related=clutter_event_get_related(inEvent);
+	if(clutter_actor_contains(CLUTTER_ACTOR(self), related)) return(CLUTTER_EVENT_PROPAGATE);
+
+	/* There are few cases where above check will fail although pointer
+	 * is still inside this actor. So do now a more expensive check
+	 * by determining the actor under pointer first and then check if
+	 * found actor under pointer is a direct or deeper child of this
+	 * actor. This check should be very accurate but more expensive.
+	 */
+	stage=clutter_actor_get_stage(CLUTTER_ACTOR(self));
+	clutter_event_get_coords(inEvent, &eventX, &eventY);
+	related=clutter_stage_get_actor_at_pos(CLUTTER_STAGE(stage), CLUTTER_PICK_ALL, eventX, eventY);
+	if(related && clutter_actor_contains(CLUTTER_ACTOR(self), related)) return(CLUTTER_EVENT_PROPAGATE);
+
+	/* Pointer is not inside this actor so collapse to minimum size */
 	xfdashboard_collapse_box_set_collapsed(self, TRUE);
 	return(CLUTTER_EVENT_PROPAGATE);
 }
