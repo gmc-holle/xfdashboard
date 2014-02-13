@@ -522,9 +522,17 @@ static void _xfdashboard_drag_action_drag_motion(ClutterDragAction *inAction,
 						priv->lastMotionActors=g_slist_remove_link(priv->lastMotionActors, list);
 						g_slist_free_1(list);
 
-						/* Emit "leave-event" */
-						actorEvent=clutter_event_copy(event);
+						/* Create and emit "leave-event" */
+						actorEvent=clutter_event_new(CLUTTER_LEAVE);
+						actorEvent->crossing.time=event->motion.time;
+						actorEvent->crossing.flags=event->motion.flags;
+						actorEvent->crossing.stage=event->motion.stage;
 						actorEvent->crossing.source=actor;
+
+						actorEvent->crossing.x=event->motion.x;
+						actorEvent->crossing.y=event->motion.y;
+						actorEvent->crossing.device=event->motion.device;
+						actorEvent->crossing.related=event->motion.source;
 
 						g_signal_emit_by_name(actor, "leave-event", actorEvent, &result);
 
@@ -550,9 +558,17 @@ static void _xfdashboard_drag_action_drag_motion(ClutterDragAction *inAction,
 						/* Add to list */
 						priv->lastMotionActors=g_slist_append(priv->lastMotionActors, motionActor);
 
-						/* Emit "enter-event" */
-						actorEvent=clutter_event_copy(event);
-						actorEvent->crossing.source=motionActor;
+						/* Create and emit "enter-event" */
+						actorEvent=clutter_event_new(CLUTTER_ENTER);
+						actorEvent->crossing.time=event->motion.time;
+						actorEvent->crossing.flags=event->motion.flags;
+						actorEvent->crossing.stage=event->motion.stage;
+						actorEvent->crossing.source=event->motion.source;
+
+						actorEvent->crossing.x=event->motion.x;
+						actorEvent->crossing.y=event->motion.y;
+						actorEvent->crossing.device=event->motion.device;
+						actorEvent->crossing.related=motionActor;
 
 						g_signal_emit_by_name(motionActor, "enter-event", actorEvent, &result);
 
