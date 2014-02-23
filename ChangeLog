@@ -1,3 +1,47 @@
+commit 80dc6729d1b4ac0040211c2abf240a84e193cf46
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Feb 23 12:38:31 2014 +0100
+
+    Add theming support
+    
+    Added support for theming xfdashboard. In addition it is now a requirement that least one theme is installed and referenced in xfconf at property /theme. A default theme named "xfdashboard" is included and used if xfconf property is not set. This theme is a copy of the previously hard coded style.
+
+commit 1f884afd59b89f737789928ccc9f583453d0425f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Feb 15 10:49:05 2014 +0100
+
+    Set window type of stage to _NET_WM_WINDOW_TYPE_DOCK
+    
+    Windows of type _NET_WM_WINDOW_TYPE_DOCK should be kept atop all other windows by window manager. I hope this reduces flicker when changing workspace.
+
+commit 4f249d7ea58de97fd2027c4302f0a01d1e07f8d1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Feb 13 14:25:13 2014 +0100
+
+    Emit correct enter and leave events in XfdashboardDragAction
+    
+    As seen while fixing XfdashboardCollapseBox it is necessary to create and set up correct enter and leave events in XfdashboardDragAction to get handled correctly (at least by XfdashboardCollapseBox).
+
+commit 4cd8e4e1aa0fca8550274bb091612cd92e2ef62b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Feb 12 22:36:32 2014 +0100
+
+    Fix bug that XfdashboardCollapseBox collapse even if pointer device is still inside actor
+    
+    There are a few situations where only a "leave-event" signal without a following "enter-event" signal is emitted although the pointer is still inside the XfdashboardCollapseBox actor. So the actor is shrinked to minimum size accidently. This happens most when switching through workspaces. So we first check if the new target actor is a direct or deeper child of the collapse box and if it is not then we check if the actor under pointer device is a direct or deeper child. If both checks fails then the pointer device should be really outside the collapse box and it is allowed to shrink to minimum size.
+
+commit 71bffce0e29cf8ab06e651b3c44d350b2b74930a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Feb 11 20:37:45 2014 +0100
+
+    Post-release version bump to 0.1.4
+
+commit e2fcdc6dcf9c93e711bd5fdb64e2bf55e9956c6b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Feb 11 20:36:04 2014 +0100
+
+    Bump version to 0.1.3
+
 commit 6a4a479dc730d5e8ad8339120eeeae9eb13b5230
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Tue Feb 11 20:33:24 2014 +0100
