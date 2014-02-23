@@ -102,15 +102,9 @@ enum
 static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_NORMAL_ICON_SIZE	64					// TODO: Replace by settings/theming object
 #define DEFAULT_SCALE_MIN			0.1
 #define DEFAULT_SCALE_MAX			1.0
 #define DEFAULT_SCALE_STEP			0.1
-
-#define DEFAULT_APPS_BUTTON_ICON	GTK_STOCK_HOME		// TODO: Replace by settings/theming object
-#define DEFAULT_TRASH_BUTTON_ICON	GTK_STOCK_DELETE	// TODO: Replace by settings/theming object
-
-#define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_VERTICAL
 
 enum
 {
@@ -1331,17 +1325,18 @@ static void _xfdashboard_quicklaunch_get_property(GObject *inObject,
  */
 static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klass)
 {
-	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
-	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
+	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_quicklaunch_dispose;
 	gobjectClass->set_property=_xfdashboard_quicklaunch_set_property;
 	gobjectClass->get_property=_xfdashboard_quicklaunch_get_property;
 
-	actorClass->get_preferred_width=_xfdashboard_quicklaunch_get_preferred_width;
-	actorClass->get_preferred_height=_xfdashboard_quicklaunch_get_preferred_height;
-	actorClass->allocate=_xfdashboard_quicklaunch_allocate;
+	clutterActorClass->get_preferred_width=_xfdashboard_quicklaunch_get_preferred_width;
+	clutterActorClass->get_preferred_height=_xfdashboard_quicklaunch_get_preferred_height;
+	clutterActorClass->allocate=_xfdashboard_quicklaunch_allocate;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardQuicklaunchPrivate));
@@ -1358,8 +1353,8 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 		g_param_spec_float("normal-icon-size",
 								_("Normal icon size"),
 								_("Unscale size of icon"),
-								0.0, G_MAXFLOAT,
-								DEFAULT_NORMAL_ICON_SIZE,
+								1.0, G_MAXFLOAT,
+								1.0f,
 								G_PARAM_READWRITE);
 
 	XfdashboardQuicklaunchProperties[PROP_SPACING]=
@@ -1375,10 +1370,15 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 							_("Orientation"),
 							_("The orientation to layout children"),
 							CLUTTER_TYPE_ORIENTATION,
-							DEFAULT_ORIENTATION,
+							CLUTTER_ORIENTATION_VERTICAL,
 							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardQuicklaunchProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardQuicklaunchProperties[PROP_NORMAL_ICON_SIZE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardQuicklaunchProperties[PROP_SPACING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardQuicklaunchProperties[PROP_ORIENTATION]);
 
 	/* Define signals */
 	XfdashboardQuicklaunchSignals[SIGNAL_FAVOURITE_ADDED]=
@@ -1420,8 +1420,8 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	/* Set up default values */
 	priv->favourites=NULL;
 	priv->spacing=0.0f;
-	priv->orientation=DEFAULT_ORIENTATION;
-	priv->normalIconSize=DEFAULT_NORMAL_ICON_SIZE;
+	priv->orientation=CLUTTER_ORIENTATION_VERTICAL;
+	priv->normalIconSize=1.0f;
 	priv->scaleCurrent=DEFAULT_SCALE_MAX;
 	priv->scaleMin=DEFAULT_SCALE_MIN;
 	priv->scaleMax=DEFAULT_SCALE_MAX;
@@ -1445,18 +1445,18 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	g_signal_connect_swapped(dropAction, "drag-leave", G_CALLBACK(_xfdashboard_quicklaunch_on_drop_leave), self);
 
 	/* Add "applications" button */
-	priv->appsButton=xfdashboard_toggle_button_new_full(DEFAULT_APPS_BUTTON_ICON, _("Applications"));
+	priv->appsButton=xfdashboard_toggle_button_new_with_text(_("Applications"));
+	clutter_actor_set_name(priv->appsButton, "applications-button");
 	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->appsButton), priv->normalIconSize);
 	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->appsButton), FALSE);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->appsButton), XFDASHBOARD_STYLE_ICON);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->appsButton);
 
 	/* Next add trash button to box but initially hidden and register as drop target */
-	priv->trashButton=xfdashboard_toggle_button_new_full(DEFAULT_TRASH_BUTTON_ICON, _("Remove"));
+	priv->trashButton=xfdashboard_toggle_button_new_with_text( _("Remove"));
+	clutter_actor_set_name(priv->trashButton, "trash-button");
 	clutter_actor_hide(priv->trashButton);
 	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->trashButton), priv->normalIconSize);
 	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->trashButton), FALSE);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->trashButton), XFDASHBOARD_STYLE_ICON);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->trashButton);
 
 	dropAction=xfdashboard_drop_action_new();
@@ -1512,6 +1512,9 @@ void xfdashboard_quicklaunch_set_normal_icon_size(XfdashboardQuicklaunch *self, 
 		priv->normalIconSize=inIconSize;
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 
+		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->appsButton), priv->normalIconSize);
+		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->trashButton), priv->normalIconSize);
+
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardQuicklaunchProperties[PROP_NORMAL_ICON_SIZE]);
 	}
@@ -1551,7 +1554,7 @@ void xfdashboard_quicklaunch_set_spacing(XfdashboardQuicklaunch *self, const gfl
 /* Get/set orientation */
 ClutterOrientation xfdashboard_quicklaunch_get_orientation(XfdashboardQuicklaunch *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), DEFAULT_ORIENTATION);
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), CLUTTER_ORIENTATION_VERTICAL);
 
 	return(self->priv->orientation);
 }

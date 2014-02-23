@@ -1,12 +1,12 @@
 /*
  * click-action: Bad workaround for click action which prevent drag actions
- *               to work properly at least since clutter version 1.12.
+ *               to work properly since clutter version 1.12 at least.
  *               This object/file is a complete copy of the original
  *               clutter-click-action.{c,h} files of clutter 1.12 except
- *               for one line and the renamed functions name and applied
- *               coding style. As the clutter-click-action.{c,h} files of
- *               later clutter version do not differ much from this one
- *               this object should work also for this versions.
+ *               for one line, the renamed function names and the applied
+ *               coding style. The clutter-click-action.{c,h} files of
+ *               later clutter versions do not differ much from this one
+ *               so this object should work also for this versions.
  *
  *               See bug: https://bugzilla.gnome.org/show_bug.cgi?id=714993
  * 
@@ -36,17 +36,21 @@
 #endif
 
 #include "click-action.h"
-#include "marshal.h"
 
 #include <glib/gi18n-lib.h>
 
+#include "marshal.h"
+#include "actor.h"
+
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardClickAction, xfdashboard_click_action, CLUTTER_TYPE_ACTION);
+G_DEFINE_TYPE(XfdashboardClickAction,
+				xfdashboard_click_action,
+				CLUTTER_TYPE_ACTION);
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_CLICK_ACTION_GET_PRIVATE(obj) \
 	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_CLICK_ACTION, XfdashboardClickActionPrivate))
-	
+
 struct _XfdashboardClickActionPrivate
 {
 	/* Properties related */
@@ -105,6 +109,7 @@ guint XfdashboardClickActionSignals[SIGNAL_LAST]={ 0, };
 static void _xfdashboard_click_action_set_pressed(XfdashboardClickAction *self, gboolean isPressed)
 {
 	XfdashboardClickActionPrivate	*priv;
+	ClutterActor					*actor;
 
 	g_return_if_fail(XFDASHBOARD_IS_CLICK_ACTION(self));
 
@@ -118,6 +123,14 @@ static void _xfdashboard_click_action_set_pressed(XfdashboardClickAction *self, 
 		/* Set value */
 		priv->isPressed=isPressed;
 
+		/* Style state */
+		actor=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
+		if(XFDASHBOARD_IS_ACTOR(actor))
+		{
+			if(priv->isPressed) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(actor), "pressed");
+				else xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(actor), "pressed");
+		}
+
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardClickActionProperties[PROP_PRESSED]);
 	}
@@ -127,6 +140,7 @@ static void _xfdashboard_click_action_set_pressed(XfdashboardClickAction *self, 
 static void _xfdashboard_click_action_set_held(XfdashboardClickAction *self, gboolean isHeld)
 {
 	XfdashboardClickActionPrivate	*priv;
+	ClutterActor					*actor;
 
 	g_return_if_fail(XFDASHBOARD_IS_CLICK_ACTION(self));
 
@@ -139,6 +153,14 @@ static void _xfdashboard_click_action_set_held(XfdashboardClickAction *self, gbo
 	{
 		/* Set value */
 		priv->isHeld=isHeld;
+
+		/* Style state */
+		actor=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
+		if(XFDASHBOARD_IS_ACTOR(actor))
+		{
+			if(priv->isPressed) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(actor), "press-held");
+				else xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(actor), "press-held");
+		}
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardClickActionProperties[PROP_HELD]);

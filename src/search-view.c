@@ -49,11 +49,12 @@ struct _XfdashboardSearchViewPrivate
 {
 	/* Properties related */
 	XfdashboardViewMode					viewMode;
+	gchar								*formatTitleOnly;
+	gchar								*formatTitleDescription;
 
 	/* Instance related */
 	ClutterLayoutManager				*layout;
 	XfdashboardApplicationsMenuModel	*apps;
-	XfdashboardApplicationButton		*appButton;
 };
 
 /* Properties */
@@ -63,16 +64,16 @@ enum
 
 	PROP_VIEW_MODE,
 
+	PROP_FORMAT_TITLE_ONLY,
+	PROP_FORMAT_TITLE_DESCRIPTION,
+
 	PROP_LAST
 };
 
 static GParamSpec* XfdashboardSearchViewProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_VIEW_ICON			GTK_STOCK_FIND				// TODO: Replace by settings/theming object
-#define DEFAULT_VIEW_MODE			XFDASHBOARD_VIEW_MODE_LIST	// TODO: Replace by settings/theming object
-#define DEFAULT_SPACING				4.0f						// TODO: Replace by settings/theming object
-#define DEFAULT_MENU_ICON_SIZE		64							// TODO: Replace by settings/theming object
+#define DEFAULT_SPACING				4.0f		// TODO: Replace by layout
 
 struct _XfdashboardSearchViewFilterData
 {
@@ -320,10 +321,6 @@ static void _xfdashboard_search_view_on_drag_begin(ClutterDragAction *inAction,
 
 	dragHandle=xfdashboard_application_button_new_from_desktop_file(desktopName);
 	clutter_actor_set_position(dragHandle, inStageX, inStageY);
-	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(dragHandle), DEFAULT_MENU_ICON_SIZE);
-	xfdashboard_button_set_single_line_mode(XFDASHBOARD_BUTTON(dragHandle), FALSE);
-	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(dragHandle), FALSE);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(dragHandle), XFDASHBOARD_STYLE_ICON);
 	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
 
 	clutter_drag_action_set_drag_handle(inAction, dragHandle);
@@ -359,86 +356,6 @@ static void _xfdashboard_search_view_on_drag_end(ClutterDragAction *inAction,
 
 	/* Allow signal "clicked" from being emitted again */
 	g_signal_handlers_unblock_by_func(inActor, _xfdashboard_search_view_on_item_clicked, inUserData);
-}
-
-/* Update style of all child actors */
-static void _xfdashboard_search_view_add_button_for_list_mode(XfdashboardSearchView *self,
-																XfdashboardButton *inButton)
-{
-	XfdashboardSearchViewPrivate	*priv;
-	const gchar						*actorFormat;
-	gchar							*actorText;
-
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inButton));
-
-	priv=self->priv;
-
-	/* If button is a real application button set it up */
-	if(XFDASHBOARD_IS_APPLICATION_BUTTON(inButton))
-	{
-		xfdashboard_application_button_set_show_description(XFDASHBOARD_APPLICATION_BUTTON(inButton), TRUE);
-	}
-		/* Otherwise it is a normal button for "go back" */
-		else
-		{
-			/* Get text to set and format to use in "parent menu" button */
-			actorFormat=xfdashboard_application_button_get_format_title_description(priv->appButton);
-			actorText=g_markup_printf_escaped(actorFormat, _("Back"), _("Go back to previous menu"));
-			xfdashboard_button_set_text(inButton, actorText);
-			g_free(actorText);
-		}
-
-	xfdashboard_button_set_style(inButton, XFDASHBOARD_STYLE_BOTH);
-	xfdashboard_button_set_icon_size(inButton, DEFAULT_MENU_ICON_SIZE);
-	xfdashboard_button_set_single_line_mode(inButton, FALSE);
-	xfdashboard_button_set_sync_icon_size(inButton, FALSE);
-	xfdashboard_button_set_icon_orientation(inButton, XFDASHBOARD_ORIENTATION_LEFT);
-	xfdashboard_button_set_text_justification(inButton, PANGO_ALIGN_LEFT);
-
-	/* Add to view and layout */
-	clutter_actor_set_x_expand(CLUTTER_ACTOR(inButton), TRUE);
-	clutter_actor_set_y_expand(CLUTTER_ACTOR(inButton), TRUE);
-	clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(inButton));
-}
-
-static void _xfdashboard_search_view_add_button_for_icon_mode(XfdashboardSearchView *self,
-																XfdashboardButton *inButton)
-{
-	XfdashboardSearchViewPrivate	*priv;
-	const gchar						*actorFormat;
-	gchar							*actorText;
-
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inButton));
-
-	priv=self->priv;
-
-	/* If button is a real application button set it up */
-	if(XFDASHBOARD_IS_APPLICATION_BUTTON(inButton))
-	{
-		xfdashboard_application_button_set_show_description(XFDASHBOARD_APPLICATION_BUTTON(inButton), FALSE);
-	}
-		/* Otherwise it is a normal button for "go back" */
-		else
-		{
-			/* Get text to set and format to use in "parent menu" button */
-			actorFormat=xfdashboard_application_button_get_format_title_only(priv->appButton);
-			actorText=g_markup_printf_escaped(actorFormat, _("Back"));
-			xfdashboard_button_set_text(inButton, actorText);
-			g_free(actorText);
-		}
-
-	xfdashboard_button_set_icon_size(inButton, DEFAULT_MENU_ICON_SIZE);
-	xfdashboard_button_set_single_line_mode(inButton, FALSE);
-	xfdashboard_button_set_sync_icon_size(inButton, FALSE);
-	xfdashboard_button_set_icon_orientation(inButton, XFDASHBOARD_ORIENTATION_TOP);
-	xfdashboard_button_set_text_justification(inButton, PANGO_ALIGN_CENTER);
-
-	/* Add to view and layout */
-	clutter_actor_set_x_expand(CLUTTER_ACTOR(inButton), TRUE);
-	clutter_actor_set_y_expand(CLUTTER_ACTOR(inButton), TRUE);
-	clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(inButton));
 }
 
 /* Filter of applications data model has changed */
@@ -499,14 +416,14 @@ static void _xfdashboard_search_view_on_filter_changed(XfdashboardSearchView *se
 
 			/* Create actor for menu element */
 			actor=xfdashboard_application_button_new_from_menu(menuElement);
-			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
-			{
-				_xfdashboard_search_view_add_button_for_list_mode(self, XFDASHBOARD_BUTTON(actor));
-			}
-				else
-				{
-					_xfdashboard_search_view_add_button_for_icon_mode(self, XFDASHBOARD_BUTTON(actor));
-				}
+			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(actor), "view-mode-list");
+				else xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(actor), "view-mode-icon");
+	
+			/* Add to view and layout */
+			clutter_actor_set_x_expand(CLUTTER_ACTOR(actor), TRUE);
+			clutter_actor_set_y_expand(CLUTTER_ACTOR(actor), TRUE);
+			clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(actor));
+
 			clutter_actor_show(actor);
 			g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_search_view_on_item_clicked), self);
 
@@ -547,10 +464,16 @@ static void _xfdashboard_search_view_dispose(GObject *inObject)
 		priv->apps=NULL;
 	}
 
-	if(priv->appButton)
+	if(priv->formatTitleDescription)
 	{
-		clutter_actor_destroy(CLUTTER_ACTOR(priv->appButton));
-		priv->appButton=NULL;
+		g_free(priv->formatTitleDescription);
+		priv->formatTitleDescription=NULL;
+	}
+
+	if(priv->formatTitleOnly)
+	{
+		g_free(priv->formatTitleOnly);
+		priv->formatTitleOnly=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -569,6 +492,14 @@ static void _xfdashboard_search_view_set_property(GObject *inObject,
 	{
 		case PROP_VIEW_MODE:
 			xfdashboard_search_view_set_view_mode(self, (XfdashboardViewMode)g_value_get_enum(inValue));
+			break;
+
+		case PROP_FORMAT_TITLE_ONLY:
+			xfdashboard_search_view_set_format_title_only(self, g_value_get_string(inValue));
+			break;
+
+		case PROP_FORMAT_TITLE_DESCRIPTION:
+			xfdashboard_search_view_set_format_title_description(self, g_value_get_string(inValue));
 			break;
 
 		default:
@@ -591,6 +522,14 @@ static void _xfdashboard_search_view_get_property(GObject *inObject,
 			g_value_set_enum(outValue, priv->viewMode);
 			break;
 
+		case PROP_FORMAT_TITLE_ONLY:
+			g_value_set_string(outValue, priv->formatTitleOnly);
+			break;
+
+		case PROP_FORMAT_TITLE_DESCRIPTION:
+			g_value_set_string(outValue, priv->formatTitleDescription);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -603,6 +542,7 @@ static void _xfdashboard_search_view_get_property(GObject *inObject,
  */
 static void xfdashboard_search_view_class_init(XfdashboardSearchViewClass *klass)
 {
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
@@ -619,10 +559,29 @@ static void xfdashboard_search_view_class_init(XfdashboardSearchViewClass *klass
 							_("View mode"),
 							_("The view mode used in this view"),
 							XFDASHBOARD_TYPE_VIEW_MODE,
-							DEFAULT_VIEW_MODE,
+							XFDASHBOARD_VIEW_MODE_LIST,
 							G_PARAM_READWRITE);
 
+	XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_ONLY]=
+		g_param_spec_string("format-title-only",
+								_("Format title only"),
+								_("Format string used when only title is display"),
+								NULL,
+								G_PARAM_READWRITE);
+
+	XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]=
+		g_param_spec_string("format-title-description",
+								_("Format title and description"),
+								_("Format string used when title and description is display. First argument is title and second one is description."),
+								NULL,
+								G_PARAM_READWRITE);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSearchViewProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchViewProperties[PROP_VIEW_MODE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_ONLY]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]);
 }
 
 /* Object initialization
@@ -637,17 +596,18 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	/* Set up default values */
 	priv->apps=XFDASHBOARD_APPLICATIONS_MENU_MODEL(xfdashboard_applications_menu_model_new());
 	priv->viewMode=-1;
-	priv->appButton=XFDASHBOARD_APPLICATION_BUTTON(xfdashboard_application_button_new());
-
+	priv->formatTitleOnly=g_strdup("%s");
+	priv->formatTitleDescription=g_strdup("%s\n%s");
+	
 	/* Set up view (Note: Search view is disabled by default!) */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "search");
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Search"));
-	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), DEFAULT_VIEW_ICON);
+	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), GTK_STOCK_FIND);
 	xfdashboard_view_set_enabled(XFDASHBOARD_VIEW(self), FALSE);
 
 	/* Set up actor */
 	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_HORIZONTAL);
-	xfdashboard_search_view_set_view_mode(self, DEFAULT_VIEW_MODE);
+	xfdashboard_search_view_set_view_mode(self, XFDASHBOARD_VIEW_MODE_LIST);
 
 	/* Set up application model */
 	clutter_model_set_sorting_column(CLUTTER_MODEL(priv->apps), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE);
@@ -659,7 +619,7 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 /* Get/set view mode of view */
 XfdashboardViewMode xfdashboard_search_view_get_view_mode(XfdashboardSearchView *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), DEFAULT_VIEW_MODE);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), XFDASHBOARD_VIEW_MODE_LIST);
 
 	return(self->priv->viewMode);
 }
@@ -712,6 +672,70 @@ void xfdashboard_search_view_set_view_mode(XfdashboardSearchView *self, const Xf
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchViewProperties[PROP_VIEW_MODE]);
+	}
+}
+
+/* Get/set format string to use when displaying only title */
+const gchar* xfdashboard_search_view_get_format_title_only(XfdashboardSearchView *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
+
+	return(self->priv->formatTitleOnly);
+}
+
+void xfdashboard_search_view_set_format_title_only(XfdashboardSearchView *self, const gchar *inFormat)
+{
+	XfdashboardSearchViewPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
+	g_return_if_fail(inFormat);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->formatTitleOnly, inFormat)!=0)
+	{
+		/* Set value */
+		if(priv->formatTitleOnly) g_free(priv->formatTitleOnly);
+		priv->formatTitleOnly=g_strdup(inFormat);
+
+		/* Update actor */
+		_xfdashboard_search_view_on_filter_changed(self, NULL);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_ONLY]);
+	}
+}
+
+/* Get/set format string to use when displaying title and description */
+const gchar* xfdashboard_search_view_get_format_title_description(XfdashboardSearchView *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
+
+	return(self->priv->formatTitleDescription);
+}
+
+void xfdashboard_search_view_set_format_title_description(XfdashboardSearchView *self, const gchar *inFormat)
+{
+	XfdashboardSearchViewPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
+	g_return_if_fail(inFormat);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->formatTitleDescription, inFormat)!=0)
+	{
+		/* Set value */
+		if(priv->formatTitleOnly) g_free(priv->formatTitleDescription);
+		priv->formatTitleDescription=g_strdup(inFormat);
+
+		/* Update actor */
+		_xfdashboard_search_view_on_filter_changed(self, NULL);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]);
 	}
 }
 

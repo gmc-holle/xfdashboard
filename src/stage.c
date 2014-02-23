@@ -93,11 +93,7 @@ static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 static ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 };					// TODO: Replace by settings/theming object
-static ClutterColor		defaultButtonHighlightColor={ 0xc0, 0xc0, 0xc0, 0xa0 };			// TODO: Replace by settings/theming object
-static ClutterColor		defaultNotificationFillColor={ 0x13, 0x50, 0xff, 0xff };		// TODO: Replace by settings/theming object
-static ClutterColor		defaultNotificationOutlineColor={ 0x63, 0xb0, 0xff, 0xff };		// TODO: Replace by settings/theming object
-
-#define DEFAULT_NOTIFICATION_OUTLINE_WIDTH		1.0f									// TODO: Replace by settings/theming object
+	
 #define NOTIFICATION_TIMEOUT_XFCONF_PROP		"/min-notification-timeout"
 #define DEFAULT_NOTIFICATION_TIMEOUT			3000
 #define RESET_SEARCH_ON_RESUME_XFCONF_PROP		"/reset-search-on-resume"
@@ -168,29 +164,6 @@ static gboolean _xfdashboard_stage_on_key_release(XfdashboardStage *self,
 	return(CLUTTER_EVENT_PROPAGATE);
 }
 
-/* A view button in view-selector was toggled */
-static void _xfdashboard_stage_on_view_selector_button_toggled(XfdashboardStage *self,
-																XfdashboardToggleButton *inViewButton,
-																gpointer inUserData)
-{
-	gboolean					state;
-
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(inViewButton));
-
-	/* Get state of view button and set up new appearance */
-	state=xfdashboard_toggle_button_get_toggle_state(inViewButton);
-	if(state==FALSE)
-	{
-		xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(inViewButton), XFDASHBOARD_BACKGROUND_TYPE_NONE);
-	}
-		else
-		{
-			xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(inViewButton), &defaultButtonHighlightColor);
-			xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(inViewButton), XFDASHBOARD_BACKGROUND_TYPE_FILL);
-		}
-}
-
 /* App-button was toggled */
 static void _xfdashboard_stage_on_quicklaunch_apps_button_toggled(XfdashboardStage *self, gpointer inUserData)
 {
@@ -200,24 +173,20 @@ static void _xfdashboard_stage_on_quicklaunch_apps_button_toggled(XfdashboardSta
 	XfdashboardView				*view;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(inUserData));
 
 	priv=self->priv;
+	appsButton=XFDASHBOARD_TOGGLE_BUTTON(inUserData);
 
 	/* Get state of apps button */
-	appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
-	g_return_if_fail(appsButton);
+	state=xfdashboard_toggle_button_get_toggle_state(appsButton);
 
-	state=xfdashboard_toggle_button_get_toggle_state(XFDASHBOARD_TOGGLE_BUTTON(appsButton));
-
-	/* Depending on state activate view and set up new appearance of apps button */
+	/* Depending on state activate views */
 	if(state==FALSE)
 	{
 		/* Find "windows-view" view and activate */
 		view=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_WINDOWS_VIEW);
 		if(view) xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), view);
-
-		/* Set up new appearance of apps button */
-		xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(appsButton), XFDASHBOARD_BACKGROUND_TYPE_NONE);
 	}
 		else
 		{
@@ -225,9 +194,6 @@ static void _xfdashboard_stage_on_quicklaunch_apps_button_toggled(XfdashboardSta
 			if(!priv->searchActive) view=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_APPLICATIONS_VIEW);
 				else view=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
 			if(view) xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), view);
-
-			/* Set up new appearance of apps button */
-			xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(appsButton), XFDASHBOARD_BACKGROUND_TYPE_FILL);
 		}
 }
 
@@ -280,10 +246,11 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		xfdashboard_view_set_enabled(searchView, TRUE);
 
 		/* Activate "clear" button on text box */
-		xfdashboard_text_box_set_secondary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_CLEAR);
+		xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->searchbox), "search-active");
 
 		/* Change apps button appearance */
-		if(appsButton) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(appsButton), GTK_STOCK_FIND);
+		// TODO: if(appsButton) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(appsButton), GTK_STOCK_FIND);
+		if(appsButton) xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(appsButton), "search-active");
 
 		/* Emit "search-started" signal */
 		g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_STARTED], 0);
@@ -315,13 +282,15 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		}
 
 		/* Deactivate "clear" button on text box */
-		xfdashboard_text_box_set_secondary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
+		// TODO: xfdashboard_text_box_set_secondary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
+		xfdashboard_actor_remove_style_class(XFDASHBOARD_ACTOR(priv->searchbox), "search-active");
 
 		/* Disable search view */
 		xfdashboard_view_set_enabled(searchView, FALSE);
 
 		/* Change apps button appearance */
-		if(appsButton) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(appsButton), GTK_STOCK_HOME);
+		// TODO: if(appsButton) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(appsButton), GTK_STOCK_HOME);
+		if(appsButton) xfdashboard_actor_remove_style_class(XFDASHBOARD_ACTOR(appsButton), "search-active");
 
 		/* Emit "search-ended" signal */
 		g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_ENDED], 0);
@@ -401,7 +370,6 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	ClutterActor				*groupVertical;
 	ClutterActor				*collapseBox;
 	ClutterLayoutManager		*layout;
-	ClutterColor				color;
 	XfdashboardToggleButton		*appsButton;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
@@ -427,26 +395,14 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_set_layout_manager(groupHorizontal, layout);
 
 	priv->viewSelector=xfdashboard_view_selector_new();
+	clutter_actor_set_name(priv->viewSelector, "view-selector");
 	clutter_actor_add_child(groupHorizontal, priv->viewSelector);
-	g_signal_connect_swapped(priv->viewSelector, "state-changed", G_CALLBACK(_xfdashboard_stage_on_view_selector_button_toggled), self);
 
 	priv->searchbox=xfdashboard_text_box_new();
+	clutter_actor_set_name(priv->searchbox, "searchbox");
 	clutter_actor_set_x_expand(priv->searchbox, TRUE);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->searchbox),
-												XFDASHBOARD_BACKGROUND_TYPE_FILL |
-												XFDASHBOARD_BACKGROUND_TYPE_OUTLINE |
-												XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
-	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
-	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->searchbox), &color);
-	clutter_color_init(&color, 0x80, 0x80, 0x80, 0xff);
-	xfdashboard_background_set_outline_color(XFDASHBOARD_BACKGROUND(priv->searchbox), &color);
-	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->searchbox), 0.5f);
-	xfdashboard_background_set_corners(XFDASHBOARD_BACKGROUND(priv->searchbox), XFDASHBOARD_CORNERS_ALL);
-	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->searchbox), 4.0f);
-	xfdashboard_text_box_set_padding(XFDASHBOARD_TEXT_BOX(priv->searchbox), 4.0f);
 	xfdashboard_text_box_set_editable(XFDASHBOARD_TEXT_BOX(priv->searchbox), TRUE);
 	xfdashboard_text_box_set_hint_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), _("Just type to search..."));
-	xfdashboard_text_box_set_primary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), GTK_STOCK_FIND);
 	g_signal_connect_swapped(priv->searchbox, "text-changed", G_CALLBACK(_xfdashboard_stage_on_searchbox_text_changed), self);
 	g_signal_connect_swapped(priv->searchbox, "secondary-icon-clicked", G_CALLBACK(_xfdashboard_stage_on_searchbox_secondary_icon_clicked), self);
 	clutter_actor_add_child(groupHorizontal, priv->searchbox);
@@ -461,29 +417,6 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	g_signal_connect_swapped(priv->viewpad, "view-activated", G_CALLBACK(_xfdashboard_stage_on_view_activated), self);
 	xfdashboard_view_selector_set_viewpad(XFDASHBOARD_VIEW_SELECTOR(priv->viewSelector), XFDASHBOARD_VIEWPAD(priv->viewpad));
 
-#ifdef STAGE_USE_HORIZONTAL_WORKSPACE_SELECTOR
-	/* Workspaces selector */
-	priv->workspaces=xfdashboard_workspace_selector_new();
-	xfdashboard_workspace_selector_set_orientation(XFDASHBOARD_WORKSPACE_SELECTOR(priv->workspaces), CLUTTER_ORIENTATION_HORIZONTAL);
-	xfdashboard_workspace_selector_set_spacing(XFDASHBOARD_WORKSPACE_SELECTOR(priv->workspaces), 4.0f);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->workspaces),
-												XFDASHBOARD_BACKGROUND_TYPE_FILL |
-												XFDASHBOARD_BACKGROUND_TYPE_OUTLINE |
-												XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
-	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
-	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->workspaces), &color);
-	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->workspaces), 0.5f);
-	xfdashboard_background_set_corners(XFDASHBOARD_BACKGROUND(priv->workspaces), XFDASHBOARD_CORNERS_TOP);
-	clutter_actor_set_x_expand(priv->workspaces, TRUE);
-
-	collapseBox=xfdashboard_collapse_box_new();
-	xfdashboard_collapse_box_set_collapsed_size(XFDASHBOARD_COLLAPSE_BOX(collapseBox), 64.0f);
-	xfdashboard_collapse_box_set_collapse_orientation(XFDASHBOARD_COLLAPSE_BOX(collapseBox), XFDASHBOARD_ORIENTATION_TOP);
-	clutter_actor_set_x_expand(collapseBox, TRUE);
-	clutter_actor_add_child(collapseBox, priv->workspaces);
-	clutter_actor_add_child(groupVertical, collapseBox);
-#endif
-
 	/* Set up layout objects */
 	layout=clutter_box_layout_new();
 	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_HORIZONTAL);
@@ -496,49 +429,29 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 
 	/* Quicklaunch */
 	priv->quicklaunch=xfdashboard_quicklaunch_new_with_orientation(CLUTTER_ORIENTATION_VERTICAL);
-	xfdashboard_quicklaunch_set_spacing(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch), 4.0f);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->quicklaunch),
-												XFDASHBOARD_BACKGROUND_TYPE_FILL |
-												XFDASHBOARD_BACKGROUND_TYPE_OUTLINE |
-												XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
-	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
-	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->quicklaunch), &color);
-	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->quicklaunch), 0.5f);
-	xfdashboard_background_set_corners(XFDASHBOARD_BACKGROUND(priv->quicklaunch), XFDASHBOARD_CORNERS_RIGHT);
+	clutter_actor_set_name(priv->quicklaunch, "quicklaunch");
 	clutter_actor_set_y_expand(priv->quicklaunch, TRUE);
 	clutter_actor_add_child(groupHorizontal, priv->quicklaunch);
 
 	appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
 	if(appsButton)
 	{
-		xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(appsButton), &defaultButtonHighlightColor);
 		g_signal_connect_swapped(appsButton, "toggled", G_CALLBACK(_xfdashboard_stage_on_quicklaunch_apps_button_toggled), self);
 	}
 
 	/* Set up layout objects */
 	clutter_actor_add_child(groupHorizontal, groupVertical);
 
-#ifndef STAGE_USE_HORIZONTAL_WORKSPACE_SELECTOR
 	/* Workspaces selector */
 	priv->workspaces=xfdashboard_workspace_selector_new();
-	xfdashboard_workspace_selector_set_spacing(XFDASHBOARD_WORKSPACE_SELECTOR(priv->workspaces), 4.0f);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->workspaces),
-												XFDASHBOARD_BACKGROUND_TYPE_FILL |
-												XFDASHBOARD_BACKGROUND_TYPE_OUTLINE |
-												XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
-	clutter_color_init(&color, 0xff, 0xff, 0xff, 0x18);
-	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->workspaces), &color);
-	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->workspaces), 0.5f);
-	xfdashboard_background_set_corners(XFDASHBOARD_BACKGROUND(priv->workspaces), XFDASHBOARD_CORNERS_LEFT);
+	clutter_actor_set_name(priv->workspaces, "workspace-selector");
 	clutter_actor_set_y_expand(priv->workspaces, TRUE);
 
 	collapseBox=xfdashboard_collapse_box_new();
-	xfdashboard_collapse_box_set_collapsed_size(XFDASHBOARD_COLLAPSE_BOX(collapseBox), 64.0f);
-	xfdashboard_collapse_box_set_collapse_orientation(XFDASHBOARD_COLLAPSE_BOX(collapseBox), XFDASHBOARD_ORIENTATION_LEFT);
+	clutter_actor_set_name(collapseBox, "workspace-selector-collapse-box");
 	clutter_actor_set_y_expand(collapseBox, TRUE);
 	clutter_actor_add_child(collapseBox, priv->workspaces);
 	clutter_actor_add_child(groupHorizontal, collapseBox);
-#endif
 
 	/* Set up layout objects */
 	clutter_actor_add_constraint(groupHorizontal, clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_X, 0.0f));
@@ -549,16 +462,12 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 
 	/* Notification actor (this actor is above all others and hidden by default) */
 	priv->notification=xfdashboard_text_box_new();
+	clutter_actor_set_name(priv->notification, "notification");
 	clutter_actor_hide(priv->notification);
 	clutter_actor_set_reactive(priv->notification, FALSE);
 	clutter_actor_set_fixed_position_set(priv->notification, TRUE);
 	clutter_actor_set_z_position(priv->notification, 0.1f);
 	clutter_actor_set_request_mode(priv->notification, CLUTTER_REQUEST_HEIGHT_FOR_WIDTH);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->notification),
-												XFDASHBOARD_BACKGROUND_TYPE_FILL | XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
-	xfdashboard_background_set_fill_color(XFDASHBOARD_BACKGROUND(priv->notification), &defaultNotificationFillColor);
-	xfdashboard_background_set_outline_color(XFDASHBOARD_BACKGROUND(priv->notification), &defaultNotificationOutlineColor);
-	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(priv->notification), DEFAULT_NOTIFICATION_OUTLINE_WIDTH);
 	clutter_actor_add_constraint(priv->notification, clutter_align_constraint_new(CLUTTER_ACTOR(self), CLUTTER_ALIGN_X_AXIS, 0.5f));
 	clutter_actor_add_constraint(priv->notification, clutter_align_constraint_new(groupHorizontal, CLUTTER_ALIGN_Y_AXIS, 1.0f));
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->notification);

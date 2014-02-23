@@ -26,6 +26,7 @@
 
 #include <clutter/clutter.h>
 
+#include "actor.h"
 #include "types.h"
 
 G_BEGIN_DECLS
@@ -44,17 +45,17 @@ typedef struct _XfdashboardViewClass		XfdashboardViewClass;
 struct _XfdashboardView
 {
 	/* Parent instance */
-	ClutterActor			parent_instance;
+	XfdashboardActor			parent_instance;
 
 	/* Private structure */
-	XfdashboardViewPrivate	*priv;
+	XfdashboardViewPrivate		*priv;
 };
 
 struct _XfdashboardViewClass
 {
 	/*< private >*/
 	/* Parent class */
-	ClutterActorClass		parent_class;
+	XfdashboardActorClass		parent_class;
 
 	/*< public >*/
 	/* Virtual functions */

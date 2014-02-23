@@ -195,7 +195,7 @@ ClutterActor* xfdashboard_toggle_button_new(void)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"text", N_(""),
-						"style", XFDASHBOARD_STYLE_TEXT,
+						"button-style", XFDASHBOARD_STYLE_TEXT,
 						NULL));
 }
 
@@ -203,7 +203,7 @@ ClutterActor* xfdashboard_toggle_button_new_with_text(const gchar *inText)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"text", inText,
-						"style", XFDASHBOARD_STYLE_TEXT,
+						"button-style", XFDASHBOARD_STYLE_TEXT,
 						NULL));
 }
 
@@ -211,7 +211,7 @@ ClutterActor* xfdashboard_toggle_button_new_with_icon(const gchar *inIconName)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"icon-name", inIconName,
-						"style", XFDASHBOARD_STYLE_ICON,
+						"button-style", XFDASHBOARD_STYLE_ICON,
 						NULL));
 }
 
@@ -220,7 +220,7 @@ ClutterActor* xfdashboard_toggle_button_new_full(const gchar *inIconName, const 
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"text", inText,
 						"icon-name", inIconName,
-						"style", XFDASHBOARD_STYLE_BOTH,
+						"button-style", XFDASHBOARD_STYLE_BOTH,
 						NULL));
 }
 
@@ -245,6 +245,10 @@ void xfdashboard_toggle_button_set_toggle_state(XfdashboardToggleButton *self, g
 	{
 		/* Set value */
 		priv->toggleState=inToggleState;
+
+		/* Set style classes */
+		if(priv->toggleState) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(self), "toggled");
+			else xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(self), "toggled");
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardToggleButtonProperties[PROP_TOGGLE_STATE]);

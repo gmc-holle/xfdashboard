@@ -56,13 +56,14 @@ struct _XfdashboardApplicationButtonPrivate
 	/* Properties related */
 	GarconMenuElement					*menuElement;
 	gchar								*desktopFilename;
+
 	gboolean							showDescription;
+	gchar								*formatTitleOnly;
+	gchar								*formatTitleDescription;
 
 	/* Instance related */
 	XfdashboardApplicationButtonType	type;
 	GAppInfo							*appInfo;
-	gchar								*formatTitleOnly;
-	gchar								*formatTitleDescription;
 };
 
 /* Properties */
@@ -85,9 +86,6 @@ static GParamSpec* XfdashboardApplicationButtonProperties[PROP_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_ICON_SIZE					64								// TODO: Replace by settings/theming object
-#define DEFAULT_FORMAT_TITLE_ONLY			"<b>%s</b>"						// TODO: Replace by settings/theming object
-#define DEFAULT_FORMAT_TITLE_DESCRIPTION	"<b><big>%s</big></b>\n\n%s"	// TODO: Replace by settings/theming object
 
 /* Reset and release allocated resources of application button */
 static void _xfdashboard_application_button_clear(XfdashboardApplicationButton *self)
@@ -173,8 +171,16 @@ static void _xfdashboard_application_button_update_text(XfdashboardApplicationBu
 	}
 
 	/* Create text depending on show-secondary property and set up button */
-	if(priv->showDescription==FALSE) text=g_markup_printf_escaped(priv->formatTitleOnly, title ? title : "");
-		else text=g_markup_printf_escaped(priv->formatTitleDescription, title ? title : "", description ? description : "");
+	if(priv->showDescription==FALSE)
+	{
+		if(priv->formatTitleOnly) text=g_markup_printf_escaped(priv->formatTitleOnly, title ? title : "");
+			else text=g_strdup(title ? title : "");
+	}
+		else
+		{
+			if(priv->formatTitleDescription) text=g_markup_printf_escaped(priv->formatTitleDescription, title ? title : "", description ? description : "");
+				else text=g_strdup_printf("%s\n%s", title ? title : "", description ? description : "");
+		}
 	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), text);
 	if(text) g_free(text);
 }
@@ -321,7 +327,8 @@ static void _xfdashboard_application_button_get_property(GObject *inObject,
  */
 static void xfdashboard_application_button_class_init(XfdashboardApplicationButtonClass *klass)
 {
-	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_application_button_dispose;
@@ -357,17 +364,22 @@ static void xfdashboard_application_button_class_init(XfdashboardApplicationButt
 		g_param_spec_string("format-title-only",
 								_("Format title only"),
 								_("Format string used when only title is display"),
-								DEFAULT_FORMAT_TITLE_ONLY,
-								G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+								NULL,
+								G_PARAM_READWRITE);
 
 	XfdashboardApplicationButtonProperties[PROP_FORMAT_TITLE_DESCRIPTION]=
 		g_param_spec_string("format-title-description",
 								_("Format title and description"),
 								_("Format string used when title and description is display. First argument is title and second one is description."),
-								DEFAULT_FORMAT_TITLE_DESCRIPTION,
-								G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+								NULL,
+								G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardApplicationButtonProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardApplicationButtonProperties[PROP_SHOW_DESCRIPTION]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardApplicationButtonProperties[PROP_FORMAT_TITLE_ONLY]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardApplicationButtonProperties[PROP_FORMAT_TITLE_DESCRIPTION]);
 }
 
 /* Object initialization
@@ -388,6 +400,8 @@ static void xfdashboard_application_button_init(XfdashboardApplicationButton *se
 	priv->appInfo=NULL;
 	priv->desktopFilename=NULL;
 	priv->showDescription=FALSE;
+	priv->formatTitleOnly=NULL;
+	priv->formatTitleDescription=NULL;
 
 	/* Connect signals */
 	g_signal_connect(self, "notify::icon-size", G_CALLBACK(_xfdashboard_application_button_on_icon_size_changed), NULL);
@@ -399,7 +413,7 @@ static void xfdashboard_application_button_init(XfdashboardApplicationButton *se
 ClutterActor* xfdashboard_application_button_new(void)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
-							"style", XFDASHBOARD_STYLE_BOTH,
+							"button-style", XFDASHBOARD_STYLE_BOTH,
 							"single-line", FALSE,
 							NULL));
 }
@@ -409,7 +423,7 @@ ClutterActor* xfdashboard_application_button_new_from_desktop_file(const gchar *
 	g_return_val_if_fail(inDesktopFilename, NULL);
 
 	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
-							"style", XFDASHBOARD_STYLE_BOTH,
+							"button-style", XFDASHBOARD_STYLE_BOTH,
 							"single-line", FALSE,
 							"desktop-filename", inDesktopFilename,
 							NULL));
@@ -420,7 +434,7 @@ ClutterActor* xfdashboard_application_button_new_from_menu(GarconMenuElement *in
 	g_return_val_if_fail(GARCON_IS_MENU_ELEMENT(inMenuElement), NULL);
 
 	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
-							"style", XFDASHBOARD_STYLE_BOTH,
+							"button-style", XFDASHBOARD_STYLE_BOTH,
 							"single-line", FALSE,
 							"menu-element", inMenuElement,
 							NULL));

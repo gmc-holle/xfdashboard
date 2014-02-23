@@ -36,8 +36,8 @@
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardBackground,
 				xfdashboard_background,
-				CLUTTER_TYPE_ACTOR)
-                                                
+				XFDASHBOARD_TYPE_ACTOR)
+
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_BACKGROUND_GET_PRIVATE(obj) \
 	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_BACKGROUND, XfdashboardBackgroundPrivate))
@@ -281,7 +281,7 @@ static void _xfdashboard_background_allocate(ClutterActor *self,
 /* Dispose this object */
 static void _xfdashboard_background_dispose(GObject *inObject)
 {
-	/* Release our allocated variables */
+	/* Release allocated variables */
 	XfdashboardBackgroundPrivate	*priv=XFDASHBOARD_BACKGROUND(inObject)->priv;
 
 	if(priv->canvas)
@@ -406,34 +406,35 @@ static void _xfdashboard_background_get_property(GObject *inObject,
  */
 static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 {
-	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
-	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
+	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_background_dispose;
 	gobjectClass->set_property=_xfdashboard_background_set_property;
 	gobjectClass->get_property=_xfdashboard_background_get_property;
 
-	actorClass->paint_node=_xfdashboard_background_paint_node;
-	actorClass->get_preferred_width=_xfdashboard_background_get_preferred_width;
-	actorClass->get_preferred_height=_xfdashboard_background_get_preferred_height;
-	actorClass->allocate=_xfdashboard_background_allocate;
+	clutterActorClass->paint_node=_xfdashboard_background_paint_node;
+	clutterActorClass->get_preferred_width=_xfdashboard_background_get_preferred_width;
+	clutterActorClass->get_preferred_height=_xfdashboard_background_get_preferred_height;
+	clutterActorClass->allocate=_xfdashboard_background_allocate;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardBackgroundPrivate));
 
 	/* Define properties */
 	XfdashboardBackgroundProperties[PROP_TYPE]=
-		g_param_spec_flags("type",
-							_("Type"),
+		g_param_spec_flags("background-type",
+							_("Background type"),
 							_("Background type"),
 							XFDASHBOARD_TYPE_BACKGROUND_TYPE,
 							XFDASHBOARD_BACKGROUND_TYPE_NONE,
 							G_PARAM_READWRITE);
 
 	XfdashboardBackgroundProperties[PROP_FILL_COLOR]=
-		clutter_param_spec_color("fill-color",
-									_("Fill color"),
+		clutter_param_spec_color("background-fill-color",
+									_("Background fill color"),
 									_("Color to fill background with"),
 									CLUTTER_COLOR_Black,
 									G_PARAM_READWRITE);
@@ -476,8 +477,16 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 							CLUTTER_TYPE_IMAGE,
 							G_PARAM_READWRITE);
 
-
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardBackgroundProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_TYPE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_FILL_COLOR]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_OUTLINE_COLOR]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_OUTLINE_WIDTH]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_CORNERS]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_CORNERS_RADIUS]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_IMAGE]);
 }
 
 /* Object initialization
@@ -517,7 +526,7 @@ static void xfdashboard_background_init(XfdashboardBackground *self)
 ClutterActor* xfdashboard_background_new(void)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_BACKGROUND,
-						"type", XFDASHBOARD_BACKGROUND_TYPE_NONE,
+						"background-type", XFDASHBOARD_BACKGROUND_TYPE_NONE,
 						NULL));
 }
 

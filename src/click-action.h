@@ -1,12 +1,12 @@
 /*
  * click-action: Bad workaround for click action which prevent drag actions
- *               to work properly at least since clutter version 1.12.
+ *               to work properly since clutter version 1.12 at least.
  *               This object/file is a complete copy of the original
  *               clutter-click-action.{c,h} files of clutter 1.12 except
- *               for one line and the renamed functions name and applied
- *               coding style. As the clutter-click-action.{c,h} files of
- *               later clutter version do not differ much from this one
- *               this object should work also for this versions.
+ *               for one line, the renamed function names and the applied
+ *               coding style. The clutter-click-action.{c,h} files of
+ *               later clutter versions do not differ much from this one
+ *               so this object should work also for this versions.
  *
  *               See bug: https://bugzilla.gnome.org/show_bug.cgi?id=714993
  * 

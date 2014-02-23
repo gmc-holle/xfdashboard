@@ -93,13 +93,6 @@ enum
 static guint XfdashboardScrollbarSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_PAGE_SIZE_FACTOR	0.5f
-#define DEFAULT_SPACING				2.0f
-#define DEFAULT_SLIDER_WIDTH		8.0f
-#define DEFAULT_SLIDER_RADIUS		(DEFAULT_SLIDER_WIDTH/2.0f)
-#define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_HORIZONTAL
-
-static ClutterColor					defaultSliderColor={ 0xff, 0xff, 0xff, 0xff };
 
 /* Get value from coord */
 static gfloat _xfdashboard_scrollbar_get_value_from_coord(XfdashboardScrollbar *self,
@@ -214,6 +207,9 @@ static gboolean _xfdashboard_scrollbar_on_button_released(ClutterActor *inActor,
 		priv->signalButtonReleasedID=0L;
 	}
 
+	/* Remove style */
+	xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(self), "pressed");
+
 	/* Get coords where event happened */
 	clutter_event_get_coords(inEvent, &eventX, &eventY);
 	if(!clutter_actor_transform_stage_point(inActor, eventX, eventY, &x, &y)) return(FALSE);
@@ -279,6 +275,9 @@ static gboolean _xfdashboard_scrollbar_on_button_pressed(ClutterActor *inActor,
 															"button-release-event",
 															G_CALLBACK(_xfdashboard_scrollbar_on_button_released),
 															NULL);
+
+	/* Add style */
+	xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(self), "pressed");
 
 	/* Handle pointer events exclusively */
 	priv->dragDevice=clutter_event_get_device(inEvent);
@@ -691,7 +690,8 @@ static void _xfdashboard_scrollbar_get_property(GObject *inObject,
  */
 static void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 {
-	ClutterActorClass		*actorClass=CLUTTER_ACTOR_CLASS(klass);
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
@@ -699,9 +699,9 @@ static void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 	gobjectClass->get_property=_xfdashboard_scrollbar_get_property;
 	gobjectClass->dispose=_xfdashboard_scrollbar_dispose;
 
-	actorClass->get_preferred_width=_xfdashboard_scrollbar_get_preferred_width;
-	actorClass->get_preferred_height=_xfdashboard_scrollbar_get_preferred_height;
-	actorClass->allocate=_xfdashboard_scrollbar_allocate;
+	clutterActorClass->get_preferred_width=_xfdashboard_scrollbar_get_preferred_width;
+	clutterActorClass->get_preferred_height=_xfdashboard_scrollbar_get_preferred_height;
+	clutterActorClass->allocate=_xfdashboard_scrollbar_allocate;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardScrollbarPrivate));
@@ -712,7 +712,7 @@ static void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 							_("Orientation"),
 							_("Defines if scrollbar is horizontal or vertical"),
 							CLUTTER_TYPE_ORIENTATION,
-							DEFAULT_ORIENTATION,
+							CLUTTER_ORIENTATION_HORIZONTAL,
 							G_PARAM_READWRITE);
 
 	XfdashboardScrollbarProperties[PROP_VALUE]=
@@ -744,7 +744,7 @@ static void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 							_("Page size factor"),
 							_("The factor of value range to increase or decrease value by on pointer scroll events."),
 							0.1f, 1.0f,
-							DEFAULT_PAGE_SIZE_FACTOR,
+							0.5f,
 							G_PARAM_READWRITE);
 
 	XfdashboardScrollbarProperties[PROP_SPACING]=
@@ -752,7 +752,7 @@ static void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 							_("Spacing"),
 							_("The spacing between scrollbar and background"),
 							0.0f, G_MAXFLOAT,
-							DEFAULT_SPACING,
+							0.0f,
 							G_PARAM_READWRITE);
 
 	XfdashboardScrollbarProperties[PROP_SLIDER_WIDTH]=
@@ -760,7 +760,7 @@ static void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 							_("Slider width"),
 							_("The width of slider"),
 							1.0f, G_MAXFLOAT,
-							DEFAULT_SLIDER_WIDTH,
+							1.0f,
 							G_PARAM_READWRITE);
 
 	XfdashboardScrollbarProperties[PROP_SLIDER_RADIUS]=
@@ -768,17 +768,25 @@ static void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 							_("Slider radius"),
 							_("The radius of slider's rounded corners"),
 							0.0f, G_MAXFLOAT,
-							DEFAULT_SLIDER_RADIUS,
+							0.0f,
 							G_PARAM_READWRITE);
 
 	XfdashboardScrollbarProperties[PROP_SLIDER_COLOR]=
 		clutter_param_spec_color("slider-color",
 									_("Slider color"),
 									_("Color of slider"),
-									&defaultSliderColor,
+									CLUTTER_COLOR_White,
 									G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardScrollbarProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardScrollbarProperties[PROP_ORIENTATION]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardScrollbarProperties[PROP_PAGE_SIZE_FACTOR]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardScrollbarProperties[PROP_SPACING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardScrollbarProperties[PROP_SLIDER_WIDTH]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardScrollbarProperties[PROP_SLIDER_RADIUS]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardScrollbarProperties[PROP_SLIDER_COLOR]);
 
 	/* Define signals */
 	XfdashboardScrollbarSignals[SIGNAL_VALUE_CHANGED]=
@@ -808,10 +816,10 @@ static void xfdashboard_scrollbar_init(XfdashboardScrollbar *self)
 	priv->value=0.0f;
 	priv->valueRange=0.0f;
 	priv->range=1.0f;
-	priv->pageSizeFactor=DEFAULT_PAGE_SIZE_FACTOR;
-	priv->spacing=DEFAULT_SPACING;
-	priv->sliderWidth=DEFAULT_SLIDER_WIDTH;
-	priv->sliderRadius=DEFAULT_SLIDER_RADIUS;
+	priv->pageSizeFactor=0.5f;
+	priv->spacing=0.0f;
+	priv->sliderWidth=1.0f;
+	priv->sliderRadius=0.0f;
 	priv->sliderColor=NULL;
 	priv->slider=clutter_canvas_new();
 	priv->signalButtonReleasedID=0;
@@ -843,7 +851,7 @@ ClutterActor* xfdashboard_scrollbar_new(ClutterOrientation inOrientation)
 /* Get/set orientation */
 gfloat xfdashboard_scrollbar_get_orientation(XfdashboardScrollbar *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(self), DEFAULT_ORIENTATION);
+	g_return_val_if_fail(XFDASHBOARD_IS_SCROLLBAR(self), CLUTTER_ORIENTATION_HORIZONTAL);
 
 	return(self->priv->spacing);
 }

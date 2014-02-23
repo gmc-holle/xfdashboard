@@ -37,7 +37,7 @@ static void _xfdashboard_collapse_box_container_iface_init(ClutterContainerIface
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardCollapseBox,
 						xfdashboard_collapse_box,
-						CLUTTER_TYPE_ACTOR,
+						XFDASHBOARD_TYPE_ACTOR,
 						G_IMPLEMENT_INTERFACE(CLUTTER_TYPE_CONTAINER, _xfdashboard_collapse_box_container_iface_init));
 
 /* Private structure - access only by public API if needed */
@@ -81,7 +81,6 @@ enum
 static guint XfdashboardCollapseBoxSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_COLLAPSE_ORIENTATION		XFDASHBOARD_ORIENTATION_LEFT	// TODO: Replace by settings/theming object
 
 /* Pointer device left this actor */
 static gboolean _xfdashboard_collapse_box_on_leave_event(XfdashboardCollapseBox *self,
@@ -454,13 +453,14 @@ static void _xfdashboard_collapse_box_get_property(GObject *inObject,
  */
 static void xfdashboard_collapse_box_class_init(XfdashboardCollapseBoxClass *klass)
 {
-	ClutterActorClass		*actorClass=CLUTTER_ACTOR_CLASS(klass);
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	actorClass->get_preferred_width=_xfdashboard_collapse_box_get_preferred_width;
-	actorClass->get_preferred_height=_xfdashboard_collapse_box_get_preferred_height;
-	actorClass->allocate=_xfdashboard_collapse_box_allocate;
+	clutterActorClass->get_preferred_width=_xfdashboard_collapse_box_get_preferred_width;
+	clutterActorClass->get_preferred_height=_xfdashboard_collapse_box_get_preferred_height;
+	clutterActorClass->allocate=_xfdashboard_collapse_box_allocate;
 
 	gobjectClass->set_property=_xfdashboard_collapse_box_set_property;
 	gobjectClass->get_property=_xfdashboard_collapse_box_get_property;
@@ -490,10 +490,14 @@ static void xfdashboard_collapse_box_class_init(XfdashboardCollapseBoxClass *kla
 							_("Collapse orientation"),
 							_("Orientation of area being visible in collapsed state"),
 							XFDASHBOARD_TYPE_ORIENTATION,
-							DEFAULT_COLLAPSE_ORIENTATION,
+							XFDASHBOARD_ORIENTATION_LEFT,
 							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardCollapseBoxProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardCollapseBoxProperties[PROP_COLLAPSED_SIZE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardCollapseBoxProperties[PROP_COLLAPSE_ORIENTATION]);
 
 	/* Define signals */
 	XfdashboardCollapseBoxSignals[SIGNAL_COLLAPSED_CHANGED]=
@@ -521,7 +525,7 @@ static void xfdashboard_collapse_box_init(XfdashboardCollapseBox *self)
 	/* Set up default values */
 	priv->isCollapsed=TRUE;
 	priv->collapsedSize=0.0f;
-	priv->collapseOrientation=DEFAULT_COLLAPSE_ORIENTATION;
+	priv->collapseOrientation=XFDASHBOARD_ORIENTATION_LEFT;
 	priv->child=NULL;
 	priv->requestModeSignalID=0;
 

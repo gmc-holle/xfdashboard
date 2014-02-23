@@ -1,0 +1,307 @@
+/* Notifications */
+#notification
+{
+	background-type: fill outline;
+	background-fill-color: #1350ffff;
+	outline-color: #63b0ffff;
+	outline-width: 1.0;
+}
+
+/* Quicklaunch */
+#quicklaunch
+{
+	spacing: 4.0;
+	background-type: fill outline rounded-corners;
+	background-fill-color: #ffffff18;
+	outline-width: 0.5;
+	corners: right;
+}
+
+#quicklaunch XfdashboardButton
+{
+	icon-size: 64;
+}
+
+#quicklaunch:drop-target
+{
+	background-fill-color: #ffffff30;
+	outline-width: 1.5;
+}
+
+XfdashboardQuicklaunch
+{
+	normal-icon-size: 64.0;
+}
+
+XfdashboardQuicklaunch #applications-button
+{
+	background-fill-color: #c0c0c0a0;
+	icon-name: gtk-home;
+	background-type: none;
+	button-style: icon;
+}
+
+XfdashboardQuicklaunch #applications-button.search-active
+{
+	icon-name: gtk-find;
+}
+
+XfdashboardQuicklaunch #applications-button:toggled
+{
+	background-type: fill;
+}
+
+XfdashboardQuicklaunch #trash-button
+{
+	icon-name: gtk-delete;
+	button-style: icon;
+}
+
+/* Live windows */
+XfdashboardLiveWindow
+{
+	title-padding: 4.0;
+	close-padding: 4.0;
+}
+
+XfdashboardLiveWindow .title
+{
+	button-style: both;
+	background-type: fill rounded-corners;
+	corner-radius: 4.0;
+}
+
+XfdashboardLiveWindow .close-button
+{
+	icon-name: gtk-close;
+	button-style: icon;
+	background-type: fill rounded-corners;
+	corner-radius: 4.0;
+}
+
+.drag-actor-XfdashboardLiveWindow:drag-handle
+{
+	background-type: outline;
+	outline-color: #ffffff;
+	outline-width: 2.0;
+}
+
+/* Live workspaces */
+XfdashboardLiveWorkspace
+{
+	background-type: outline;
+	outline-color: #ffffff;
+	outline-width: 1.0;
+}
+
+XfdashboardLiveWorkspace:active
+{
+	outline-color: #ff0000;
+	outline-width: 4.0;
+}
+
+/* Scrollbars */
+XfdashboardScrollbar
+{
+	spacing: 2.0;
+	page-size-factor: 0.5;
+	slider-width: 8.0;
+	slider-radius: 4.0;
+	slider-color: #c0c0c0;
+}
+XfdashboardScrollbar:pressed
+{
+	slider-color: #ffffff;
+}
+
+/* Text boxes */
+XfdashboardTextBox
+{
+	padding: 4.0;
+	spacing: 4.0;
+	text-color: #ffffffff;
+	hint-text-color: #c0c0c0ff;
+}
+
+XfdashboardTextBox .primary-icon,
+XfdashboardTextBox .secondary-icon
+{
+	padding: 0.0;
+	button-style: icon;
+	icon-sync-size: false;
+}
+
+/* Buttons */
+XfdashboardButton
+{
+	icon-size: 16;
+	text-justify: left;
+	color: #ffffffff;
+}
+
+/* Application buttons */
+XfdashboardApplicationButton
+{
+	format-title-only: "<b>%s</b>";
+	format-title-description: "<b><big>%s</big></b>\n\n%s";
+}
+
+XfdashboardApplicationButton.view-mode-icon
+{
+	show-description: false;
+}
+
+XfdashboardApplicationButton.view-mode-list
+{
+	show-description: true;
+}
+
+/* Workspace selector (incl. collapse box) */
+#workspace-selector
+{
+	spacing: 4.0;
+	background-type: fill outline rounded-corners;
+	background-fill-color: #ffffff18;
+	outline-width: 0.5;
+	corners: left;
+	orientation: vertical;
+	max-fraction: 0.25;
+	using-fraction: true;
+	orientation: vertical;
+}
+
+#workspace-selector-collapse-box
+{
+	collapsed-size: 64.0;
+	collapse-orientation: left;
+}
+
+XfdashboardCollapseBox
+{
+	collapse-orientation: left;
+}
+
+/* Search text box */
+#searchbox
+{
+	background-type: fill outline rounded-corners;
+	background-fill-color: #ffffff18;
+	outline-color: #808080ff;
+	outline-width: 0.5;
+	corners: all;
+	corner-radius: 4.0;
+	padding: 4.0;
+	primary-icon-name: gtk-find;
+}
+
+#searchbox.search-active
+{
+	secondary-icon-name: gtk-clear;
+}
+
+/* View selector */
+#view-selector
+{
+	spacing: 4.0f;
+}
+
+#view-selector XfdashboardToggleButton
+{
+	background-type: none;
+	button-style: icon;
+	sync-icon-size: true;
+}
+
+#view-selector XfdashboardToggleButton:toggled
+{
+	background-type: fill;
+	background-fill-color: #c0c0c0a0;
+}
+
+/* Viewpad */
+#viewpad
+{
+	spacing: 4.0;
+	horizontal-scrollbar-policy: automatic;
+	vertical-scrollbar-policy: automatic;
+}
+
+
+/* Search view */
+XfdashboardSearchView
+{
+	view-mode: list;
+}
+
+XfdashboardSearchView,
+XfdashboardSearchView XfdashboardApplicationButton
+{
+	format-title-only: "<b>%s</b>";
+	format-title-description: "<b><big>%s</big></b>\n\n%s";
+}
+
+XfdashboardSearchView XfdashboardButton.view-mode-icon
+{
+	icon-size: 64.0;
+	single-line: false;
+	sync-icon-size: false;
+	icon-orientation: top;
+	text-justify: center;
+}
+
+XfdashboardSearchView XfdashboardButton.view-mode-list
+{
+	button-style: both;
+	icon-size: 64.0;
+	single-line: false;
+	sync-icon-size: false;
+	icon-orientation: left;
+	text-justify: left;
+}
+
+.drag-source-XfdashboardSearchView:drag-handle
+{
+	icon-size: 64.0;
+	button-style: icon;
+	sync-icon-size: false;
+}
+
+/* Applications view */
+XfdashboardApplicationsView
+{
+	view-mode: list;
+}
+
+XfdashboardApplicationsView,
+XfdashboardApplicationsView XfdashboardApplicationButton
+{
+	parent-menu-icon: gtk-go-up;
+	format-title-only: "<b>%s</b>";
+	format-title-description: "<b><big>%s</big></b>\n\n%s";
+}
+
+XfdashboardApplicationsView XfdashboardButton.view-mode-icon
+{
+	icon-size: 64.0;
+	single-line: false;
+	sync-icon-size: false;
+	icon-orientation: top;
+	text-justify: center;   
+}
+
+XfdashboardApplicationsView XfdashboardButton.view-mode-list
+{
+	button-style: both;
+	icon-size: 64.0;
+	single-line: false;
+	sync-icon-size: false;
+	icon-orientation: left;
+	text-justify: left;
+}
+
+.drag-source-XfdashboardApplicationsView:drag-handle
+{
+	icon-size: 64.0;
+	button-style: icon;
+	sync-icon-size: false;
+}

@@ -608,7 +608,6 @@ void xfdashboard_window_tracker_class_init(XfdashboardWindowTrackerClass *klass)
 						WNCK_TYPE_WINDOW,
 						WNCK_TYPE_WORKSPACE);
 
-
 	XfdashboardWindowTrackerSignals[SIGNAL_ACTIVE_WORKSPACE_CHANGED]=
 		g_signal_new("active-workspace-changed",
 						G_TYPE_FROM_CLASS(klass),

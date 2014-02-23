@@ -34,3 +34,4 @@ src/window-tracker.c
 src/window-tracker-window.c
 src/window-tracker-workspace.c
 src/workspace-selector.c
+data/themes/default/xfdashboard.theme.in

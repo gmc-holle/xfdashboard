@@ -110,10 +110,6 @@ enum
 static guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
 
 /* Private constants */
-#define DEFAULT_SIZE			16
-#define DEFAULT_JUSTIFY_TEXT	PANGO_ALIGN_LEFT
-
-static ClutterColor				defaultTextColor={ 0xff, 0xff , 0xff, 0xff };
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -1256,20 +1252,21 @@ static void _xfdashboard_button_get_property(GObject *inObject,
  */
 static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 {
-	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
-	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
+	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_button_dispose;
 	gobjectClass->set_property=_xfdashboard_button_set_property;
 	gobjectClass->get_property=_xfdashboard_button_get_property;
 
-	actorClass->show_all=_xfdashboard_button_show_all;
-	actorClass->hide_all=_xfdashboard_button_hide_all;
-	actorClass->get_preferred_width=_xfdashboard_button_get_preferred_width;
-	actorClass->get_preferred_height=_xfdashboard_button_get_preferred_height;
-	actorClass->allocate=_xfdashboard_button_allocate;
-	actorClass->destroy=_xfdashboard_button_destroy;
+	clutterActorClass->show_all=_xfdashboard_button_show_all;
+	clutterActorClass->hide_all=_xfdashboard_button_hide_all;
+	clutterActorClass->get_preferred_width=_xfdashboard_button_get_preferred_width;
+	clutterActorClass->get_preferred_height=_xfdashboard_button_get_preferred_height;
+	clutterActorClass->allocate=_xfdashboard_button_allocate;
+	clutterActorClass->destroy=_xfdashboard_button_destroy;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardButtonPrivate));
@@ -1292,8 +1289,8 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_STYLE]=
-		g_param_spec_enum("style",
-							_("Style"),
+		g_param_spec_enum("button-style",
+							_("Button style"),
 							_("Style of button showing text and/or icon"),
 							XFDASHBOARD_TYPE_STYLE,
 							XFDASHBOARD_STYLE_TEXT,
@@ -1325,7 +1322,7 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							_("Icon size"),
 							_("Size of icon if size of icon is not synchronized. -1 is valid for icon images and sets icon image's default size."),
 							1, G_MAXUINT,
-							DEFAULT_SIZE,
+							16,
 							G_PARAM_READWRITE);
 
 	XfdashboardButtonProperties[PROP_ICON_ORIENTATION]=
@@ -1354,8 +1351,8 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 		clutter_param_spec_color("color",
 									_("Color"),
 									_("Color of label"),
-									&defaultTextColor,
-									G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+									NULL,
+									G_PARAM_READWRITE);
 
 	XfdashboardButtonProperties[PROP_TEXT_ELLIPSIZE_MODE]=
 		g_param_spec_enum("ellipsize-mode",
@@ -1377,10 +1374,26 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							_("Text justify"),
 							_("Justification (line alignment) of label"),
 							PANGO_TYPE_ALIGNMENT,
-							DEFAULT_JUSTIFY_TEXT,
+							PANGO_ALIGN_LEFT,
 							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardButtonProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_PADDING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_SPACING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_STYLE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_ICON_NAME]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_ICON_IMAGE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_ICON_SYNC_SIZE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_ICON_SIZE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_ICON_ORIENTATION]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_TEXT]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_TEXT_FONT]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_TEXT_COLOR]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_TEXT_ELLIPSIZE_MODE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_TEXT_SINGLE_LINE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_TEXT_JUSTIFY]);
 
 	/* Define signals */
 	XfdashboardButtonSignals[SIGNAL_CLICKED]=
@@ -1414,7 +1427,7 @@ static void xfdashboard_button_init(XfdashboardButton *self)
 	priv->iconName=NULL;
 	priv->iconImage=NULL;
 	priv->iconSyncSize=TRUE;
-	priv->iconSize=DEFAULT_SIZE;
+	priv->iconSize=16;
 	priv->iconOrientation=-1;
 	priv->font=NULL;
 	priv->labelColor=NULL;
@@ -1448,7 +1461,7 @@ ClutterActor* xfdashboard_button_new(void)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
 						"text", N_(""),
-						"style", XFDASHBOARD_STYLE_TEXT,
+						"button-style", XFDASHBOARD_STYLE_TEXT,
 						NULL));
 }
 
@@ -1456,7 +1469,7 @@ ClutterActor* xfdashboard_button_new_with_text(const gchar *inText)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
 						"text", inText,
-						"style", XFDASHBOARD_STYLE_TEXT,
+						"button-style", XFDASHBOARD_STYLE_TEXT,
 						NULL));
 }
 
@@ -1464,7 +1477,7 @@ ClutterActor* xfdashboard_button_new_with_icon(const gchar *inIconName)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
 						"icon-name", inIconName,
-						"style", XFDASHBOARD_STYLE_ICON,
+						"button-style", XFDASHBOARD_STYLE_ICON,
 						NULL));
 }
 
@@ -1473,7 +1486,7 @@ ClutterActor* xfdashboard_button_new_full(const gchar *inIconName, const gchar *
 	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
 						"text", inText,
 						"icon-name", inIconName,
-						"style", XFDASHBOARD_STYLE_BOTH,
+						"button-style", XFDASHBOARD_STYLE_BOTH,
 						NULL));
 }
 
@@ -1924,7 +1937,7 @@ void xfdashboard_button_set_single_line_mode(XfdashboardButton *self, const gboo
 /* Get/set justification (line alignment) of label */
 PangoAlignment xfdashboard_button_get_text_justification(XfdashboardButton *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), DEFAULT_JUSTIFY_TEXT);
+	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), PANGO_ALIGN_LEFT);
 
 	return(self->priv->textJustification);
 }

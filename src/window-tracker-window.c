@@ -403,7 +403,6 @@ void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTracke
 	if(!wnck_window_is_skip_pager(WNCK_WINDOW(inWindow))) wnck_window_set_skip_pager(WNCK_WINDOW(inWindow), TRUE);
 	if(!wnck_window_is_above(WNCK_WINDOW(inWindow))) wnck_window_make_above(WNCK_WINDOW(inWindow));
 	if(!wnck_window_is_pinned(WNCK_WINDOW(inWindow))) wnck_window_pin(WNCK_WINDOW(inWindow));
-	if(wnck_window_get_window_type(WNCK_WINDOW(inWindow))!=WNCK_WINDOW_DOCK) wnck_window_set_window_type(WNCK_WINDOW(inWindow), WNCK_WINDOW_DOCK);
 
 	/* Get screen of window */
 	screen=wnck_window_get_screen(WNCK_WINDOW(inWindow));

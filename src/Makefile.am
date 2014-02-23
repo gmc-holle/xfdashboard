@@ -1,8 +1,7 @@
 INCLUDES = \
 	-I$(top_srcdir) \
 	-DG_LOG_DOMAIN=\"xfdashboard\" \
-	-DDATADIR=\"$(datadir)/xfce4\" \
-	-DLIBDIR=\"$(libdir)/xfce4\" \
+	-DPACKAGE_DATADIR=\"$(datadir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
 	$(PLATFORM_CPPFLAGS)
 
@@ -18,6 +17,7 @@ xfdashboard_built_sources = \
 	marshal.c
 
 xfdashboard_headers = \
+	actor.h \
 	application.h \
 	application-button.h \
 	applications-menu-model.h \
@@ -38,6 +38,7 @@ xfdashboard_headers = \
 	search-view.h \
 	stage.h \
 	text-box.h \
+	theme-css.h \
 	toggle-button.h \
 	types.h \
 	utils.h \
@@ -55,6 +56,7 @@ xfdashboard_headers = \
 xfdashboard_SOURCES = \
 	$(xfdashboard_built_sources) \
 	$(xfdashboard_headers) \
+	actor.c \
 	application.c \
 	application-button.c \
 	applications-menu-model.c \
@@ -76,6 +78,7 @@ xfdashboard_SOURCES = \
 	search-view.c \
 	stage.c \
 	text-box.c \
+	theme-css.c \
 	toggle-button.c \
 	utils.c \
 	view.c \

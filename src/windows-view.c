@@ -77,9 +77,9 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_SPACING				8.0f					// TODO: Replace by settings/theming object
-#define DEFAULT_VIEW_ICON			GTK_STOCK_FULLSCREEN	// TODO: Replace by settings/theming object
-#define DEFAULT_DRAG_HANDLE_SIZE	32.0f					// TODO: Replace by settings/theming object
+#define DEFAULT_SPACING				8.0f					// TODO: Replace by layout object
+#define DEFAULT_VIEW_ICON			GTK_STOCK_FULLSCREEN
+#define DEFAULT_DRAG_HANDLE_SIZE	32.0f
 
 /* Check if window should be shown */
 static gboolean _xfdashboard_windows_view_is_visible_window(XfdashboardWindowsView *self,
@@ -362,8 +362,6 @@ static void _xfdashboard_windows_view_on_drag_begin(ClutterDragAction *inAction,
 	dragHandle=xfdashboard_background_new();
 	clutter_actor_set_position(dragHandle, inStageX, inStageY);
 	clutter_actor_set_size(dragHandle, DEFAULT_DRAG_HANDLE_SIZE, DEFAULT_DRAG_HANDLE_SIZE);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(dragHandle), XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
-	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(dragHandle), 2.0f);
 	xfdashboard_background_set_image(XFDASHBOARD_BACKGROUND(dragHandle), image);
 	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
 

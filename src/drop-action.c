@@ -26,9 +26,11 @@
 #endif
 
 #include "drop-action.h"
-#include "marshal.h"
 
 #include <glib/gi18n-lib.h>
+
+#include "marshal.h"
+#include "actor.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardDropAction,
@@ -67,28 +69,39 @@ guint XfdashboardDropActionSignals[SIGNAL_LAST]={ 0, };
 static GSList		*_xfdashboard_drop_action_targets=NULL;
 
 /* Register a new drop target */
-static void _xfdashboard_drop_action_register_target(XfdashboardDropAction *inDropAction)
+static void _xfdashboard_drop_action_register_target(XfdashboardDropAction *self)
 {
-	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inDropAction));
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(self));
 
 	/* Check if target is already registered */
-	if(g_slist_find(_xfdashboard_drop_action_targets, inDropAction))
+	if(g_slist_find(_xfdashboard_drop_action_targets, self))
 	{
-		g_warning(_("Target %s is already registered"), G_OBJECT_TYPE_NAME(inDropAction));
+		g_warning(_("Target %s is already registered"), G_OBJECT_TYPE_NAME(self));
 		return;
 	}
 
 	/* Add object to list of dropable targets */
-	_xfdashboard_drop_action_targets=g_slist_prepend(_xfdashboard_drop_action_targets, inDropAction);
+	_xfdashboard_drop_action_targets=g_slist_prepend(_xfdashboard_drop_action_targets, self);
 }
 
 /* Unregister a drop target */
-static void _xfdashboard_drop_action_unregister_target(XfdashboardDropAction *inDropAction)
+static void _xfdashboard_drop_action_unregister_target(XfdashboardDropAction *self)
 {
-	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(inDropAction));
+	XfdashboardDropActionPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(self));
+
+	priv=self->priv;
+
+	/* Unset style */
+	if(priv->actor &&
+		XFDASHBOARD_IS_ACTOR(priv->actor))
+	{
+		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "drop-target");
+	}
 
 	/* Remove target from list of dropable targets */
-	_xfdashboard_drop_action_targets=g_slist_remove(_xfdashboard_drop_action_targets, inDropAction);
+	_xfdashboard_drop_action_targets=g_slist_remove(_xfdashboard_drop_action_targets, self);
 }
 
 /* Signal accumulator which stops further signal emission on first
@@ -152,6 +165,24 @@ static gboolean _xfdashboard_drop_action_class_real_begin(XfdashboardDropAction 
 			CLUTTER_ACTOR_IS_REACTIVE(priv->actor));
 }
 
+/* Default signal handler for "end" */
+static void _xfdashboard_drop_action_class_real_end(XfdashboardDropAction *self,
+													XfdashboardDragAction *inDragAction)
+{
+	XfdashboardDropActionPrivate		*priv=self->priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(self));
+
+	priv=self->priv;
+
+	/* Unset style */
+	if(priv->actor &&
+		XFDASHBOARD_IS_ACTOR(priv->actor))
+	{
+		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "drop-target");
+	}
+}
+
 /* Default signal handler for "can-drop" */
 static gboolean _xfdashboard_drop_action_class_real_can_drop(XfdashboardDropAction *self,
 																XfdashboardDragAction *inDragAction,
@@ -175,6 +206,42 @@ static gboolean _xfdashboard_drop_action_class_real_can_drop(XfdashboardDropActi
 			CLUTTER_ACTOR_IS_REACTIVE(priv->actor));
 }
 
+/* Default signal handler for "drag-enter" */
+static void _xfdashboard_drop_action_class_real_drag_enter(XfdashboardDropAction *self,
+															XfdashboardDragAction *inDragAction)
+{
+	XfdashboardDropActionPrivate		*priv=self->priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(self));
+
+	priv=self->priv;
+
+	/* Unset style */
+	if(priv->actor &&
+		XFDASHBOARD_IS_ACTOR(priv->actor))
+	{
+		xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "drop-target");
+	}
+}
+
+/* Default signal handler for "drag-leave" */
+static void _xfdashboard_drop_action_class_real_drag_leave(XfdashboardDropAction *self,
+															XfdashboardDragAction *inDragAction)
+{
+	XfdashboardDropActionPrivate		*priv=self->priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(self));
+
+	priv=self->priv;
+
+	/* Unset style */
+	if(priv->actor &&
+		XFDASHBOARD_IS_ACTOR(priv->actor))
+	{
+		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "drop-target");
+	}
+}
+
 /* IMPLEMENTATION: ClutterActorMeta */
 
 /* Called when attaching and detaching a ClutterActorMeta instance to a ClutterActor */
@@ -194,6 +261,12 @@ static void _xfdashboard_drop_action_set_actor(ClutterActorMeta *inActorMeta, Cl
 	{
 		/* Disconnect signals */
 		if(priv->destroySignalID) g_signal_handler_disconnect(priv->actor, priv->destroySignalID);
+
+		/* Unset style */
+		if(XFDASHBOARD_IS_ACTOR(priv->actor))
+		{
+			xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "drop-target");
+		}
 
 		/* Unregister drop target */
 		_xfdashboard_drop_action_unregister_target(self);
@@ -235,7 +308,10 @@ void xfdashboard_drop_action_class_init(XfdashboardDropActionClass *klass)
 	actorMetaClass->set_actor=_xfdashboard_drop_action_set_actor;
 
 	klass->begin=_xfdashboard_drop_action_class_real_begin;
+	klass->end=_xfdashboard_drop_action_class_real_end;
 	klass->can_drop=_xfdashboard_drop_action_class_real_can_drop;
+	klass->drag_enter=_xfdashboard_drop_action_class_real_drag_enter;
+	klass->drag_leave=_xfdashboard_drop_action_class_real_drag_leave;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardDropActionPrivate));

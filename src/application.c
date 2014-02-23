@@ -59,6 +59,7 @@ struct _XfdashboardApplicationPrivate
 	gboolean					inited;
 	XfconfChannel				*xfconfChannel;
 	XfdashboardViewManager		*viewManager;
+	XfdashboardThemeCSS			*theme;
 };
 
 /* Properties */
@@ -90,6 +91,11 @@ static guint XfdashboardApplicationSignals[SIGNAL_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_APP_ID				"de.froevel.nomad.xfdashboard"
 #define XFDASHBOARD_XFCONF_CHANNEL		"xfdashboard"
+
+#define THEME_NAME_XFCONF_PROP			"/theme"
+#define XFDASHBOARD_THEME_SUBPATH		"xfdashboard-1.0"
+#define XFDASHBOARD_THEME_CSS_FILE		"xfdashboard.css"
+#define DEFAULT_THEME_NAME				"xfdashboard"
 
 /* Single instance of application */
 static XfdashboardApplication*		application=NULL;
@@ -155,11 +161,143 @@ static gboolean _xfdashboard_application_on_delete_stage(XfdashboardApplication 
 	return(CLUTTER_EVENT_STOP);
 }
 
+/* Load theme */
+static gboolean _xfdashboard_application_load_theme(XfdashboardApplication *self)
+{
+	XfdashboardApplicationPrivate	*priv;
+	GError							*error;
+	gchar							*themeName;
+	gchar							*themeFile;
+	XfdashboardThemeCSS				*theme;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
+
+	priv=self->priv;
+	error=NULL;
+	themeName=NULL;
+	themeFile=NULL;
+	theme=NULL;
+
+	/* Determine theme file to load and check if file exists */
+	themeName=xfconf_channel_get_string(priv->xfconfChannel,
+											THEME_NAME_XFCONF_PROP,
+											DEFAULT_THEME_NAME);
+	if(!themeName || strlen(themeName)==0)
+	{
+		g_critical(_("Could not get theme name to load!"));
+		return(FALSE);
+	}
+
+#ifdef DEBUG
+	/* If debug is enabled search in project's data dir first assuming
+	 * that current path is project's top level dir.
+	 * That means we look for: "./data/themes/<<theme name>>/xfdashboard.css" */
+	if(!themeFile)
+	{
+		gchar						*currentPath;
+
+		currentPath=g_get_current_dir();
+		if(currentPath)
+		{
+			themeFile=g_build_filename(currentPath, "data", "themes", themeName, XFDASHBOARD_THEME_CSS_FILE, NULL);
+			g_debug("Trying theme file: %s", themeFile);
+			if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+			{
+				g_free(themeFile);
+				themeFile=NULL;
+			}
+
+			g_free(currentPath);
+		}
+	}
+#endif
+
+	/* Search theme file in user's config dir first */
+	if(!themeFile)
+	{
+		themeFile=g_build_filename(g_get_user_data_dir(), "themes", themeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_CSS_FILE, NULL);
+		g_debug("Trying theme file: %s", themeFile);
+		if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+		{
+			g_free(themeFile);
+			themeFile=NULL;
+		}
+	}
+
+	/* If file not found search in user's home directory */
+	if(!themeFile)
+	{
+		const gchar					*homeDirectory;
+
+		homeDirectory=g_get_home_dir();
+		if(homeDirectory)
+		{
+			themeFile=g_build_filename(homeDirectory, ".themes", themeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_CSS_FILE, NULL);
+			g_debug("Trying theme file: %s", themeFile);
+			if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+			{
+				g_free(themeFile);
+				themeFile=NULL;
+			}
+		}
+	}
+
+	/* If file not found search in system-wide paths */
+	if(!themeFile)
+	{
+		themeFile=g_build_filename(PACKAGE_DATADIR, "themes", themeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_CSS_FILE, NULL);
+		g_debug("Trying theme file: %s", themeFile);
+		if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+		{
+			g_free(themeFile);
+			themeFile=NULL;
+		}
+	}
+
+	/* If file is still not found we cannot load theme */
+	if(!themeFile)
+	{
+		g_critical(_("Could not find theme files for theme '%s'!"), themeName);
+		g_free(themeName);
+		return(FALSE);
+	}
+
+	/* Create new theme instance and load theme */
+	theme=xfdashboard_theme_css_new();
+	if(!xfdashboard_theme_css_add_file(theme, themeFile, 0, &error))
+	{
+		g_critical(_("Could not load file '%s' of theme '%s': %s"),
+					themeFile,
+					themeName,
+					(error && error->message) ? error->message : _("unknown error"));
+		if(error!=NULL) g_error_free(error);
+		g_free(themeFile);
+		g_free(themeName);
+		g_object_unref(theme);
+		return(FALSE);
+	}
+
+	/* Release current theme and store new one */
+	if(priv->theme)
+	{
+		g_object_unref(priv->theme);
+		priv->theme=NULL;
+	}
+
+	priv->theme=theme;
+
+	/* Release allocated resources */
+	g_free(themeFile);
+	g_free(themeName);
+
+	return(TRUE);
+}
+
 /* Perform full initialization of this application instance */
 static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self)
 {
-	XfdashboardApplicationPrivate	*priv=self->priv;
-	GError							*error=NULL;
+	XfdashboardApplicationPrivate	*priv;
+	GError							*error;
 	ClutterActor					*stage;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
@@ -177,6 +315,9 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	}
 
 	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
+
+	/* Load theme */
+	if(!_xfdashboard_application_load_theme(self)) return(FALSE);
 
 	/* Register views (order of registration is important) */
 	priv->viewManager=xfdashboard_view_manager_get_default();
@@ -337,6 +478,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SHUTDOWN_FINAL], 0);
 
 	/* Release allocated resources */
+	if(priv->theme)
+	{
+		g_object_unref(priv->theme);
+		priv->theme=NULL;
+	}
+
 	if(priv->viewManager)
 	{
 		/* Unregisters all remaining registered views - no need to unregister them here */
@@ -490,6 +637,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->inited=FALSE;
 	priv->xfconfChannel=NULL;
 	priv->viewManager=NULL;
+	priv->theme=NULL;
 }
 
 /* IMPLEMENTATION: Public API */
@@ -524,16 +672,6 @@ gboolean xfdashboard_application_is_suspended(XfdashboardApplication *self)
 	return(self->priv->isSuspended);
 }
 
-/* Get xfconf channel for this application */
-XfconfChannel* xfdashboard_application_get_xfconf_channel(void)
-{
-	XfconfChannel	*channel=NULL;
-
-	if(G_LIKELY(application!=NULL)) channel=application->priv->xfconfChannel;
-
-	return(channel);
-}
-
 /* Quit application */
 void xfdashboard_application_quit(void)
 {
@@ -550,4 +688,24 @@ void xfdashboard_application_quit_forced(void)
 		_xfdashboard_application_quit(application, TRUE);
 	}
 		else clutter_main_quit();
+}
+
+/* Get xfconf channel for this application */
+XfconfChannel* xfdashboard_application_get_xfconf_channel(void)
+{
+	XfconfChannel			*channel=NULL;
+
+	if(G_LIKELY(application!=NULL)) channel=application->priv->xfconfChannel;
+
+	return(channel);
+}
+
+/* Get current theme used */
+XfdashboardThemeCSS* xfdashboard_application_get_theme(void)
+{
+	XfdashboardThemeCSS		*theme=NULL;
+
+	if(G_LIKELY(application!=NULL)) theme=application->priv->theme;
+
+	return(theme);
 }

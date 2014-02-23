@@ -67,7 +67,6 @@ enum
 static GParamSpec* XfdashboardFillBoxLayoutProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_HORIZONTAL
 
 /* Get largest minimum and natural size of all visible children
  * for calculation of one child and returns the number of visible ones
@@ -576,7 +575,7 @@ static void xfdashboard_fill_box_layout_class_init(XfdashboardFillBoxLayoutClass
 							_("Orientation"),
 							_("The orientation to layout children"),
 							CLUTTER_TYPE_ORIENTATION,
-							DEFAULT_ORIENTATION,
+							CLUTTER_ORIENTATION_HORIZONTAL,
 							G_PARAM_READWRITE);
 
 	XfdashboardFillBoxLayoutProperties[PROP_SPACING]=
@@ -615,7 +614,7 @@ static void xfdashboard_fill_box_layout_init(XfdashboardFillBoxLayout *self)
 	priv=self->priv=XFDASHBOARD_FILL_BOX_LAYOUT_GET_PRIVATE(self);
 
 	/* Set default values */
-	priv->orientation=DEFAULT_ORIENTATION;
+	priv->orientation=CLUTTER_ORIENTATION_HORIZONTAL;
 	priv->spacing=0.0f;
 	priv->isHomogeneous=FALSE;
 	priv->keepAspect=FALSE;
@@ -639,7 +638,7 @@ ClutterLayoutManager* xfdashboard_fill_box_layout_new_with_orientation(ClutterOr
 /* Get/set orientation */
 ClutterOrientation xfdashboard_fill_box_layout_get_orientation(XfdashboardFillBoxLayout *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self), DEFAULT_ORIENTATION);
+	g_return_val_if_fail(XFDASHBOARD_IS_FILL_BOX_LAYOUT(self), CLUTTER_ORIENTATION_HORIZONTAL);
 
 	return(self->priv->orientation);
 }

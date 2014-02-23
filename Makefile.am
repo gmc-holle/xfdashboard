@@ -12,8 +12,9 @@ DISTCLEANFILES =							\
 	intltool-merge							\
 	intltool-update
 
-SUBDIRS = 									\
-	po 										\
+SUBDIRS = 								\
+	data								\
+	po 								\
 	src
 
 distclean-local:
@@ -22,7 +23,7 @@ distclean-local:
 html: Makefile
 	make -C doc html
 
-dist-bz2: dist
+dist-bz2: dist-gzip
 	zcat $(PACKAGE)-$(VERSION).tar.gz | \
 	bzip2 --best -c > $(PACKAGE)-$(VERSION).tar.bz2
 

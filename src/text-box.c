@@ -116,12 +116,6 @@ enum
 static guint XfdashboardTextBoxSignals[SIGNAL_LAST]={ 0, };
 
 /* Private constants */
-#define DEFAULT_ICON_SIZE	16
-#define DEFAULT_PADDING		4.0f
-#define DEFAULT_SPACING		4.0f
-
-static ClutterColor		defaultTextColor={ 0xff, 0xff, 0xff, 0xff };
-static ClutterColor		defaultHintTextColor={ 0xc0, 0xc0, 0xc0, 0xff };
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -457,9 +451,10 @@ static void _xfdashboard_text_box_destroy(ClutterActor *self)
 /* Dispose this object */
 static void _xfdashboard_text_box_dispose(GObject *inObject)
 {
-	/* Release our allocated variables */
-	XfdashboardTextBoxPrivate	*priv=XFDASHBOARD_TEXT_BOX(inObject)->priv;
+	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inObject);
+	XfdashboardTextBoxPrivate	*priv=self->priv;
 
+	/* Release our allocated variables */
 	if(priv->primaryIconName)
 	{
 		g_free(priv->primaryIconName);
@@ -654,20 +649,21 @@ static void _xfdashboard_text_box_get_property(GObject *inObject,
  */
 static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 {
-	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
-	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
+	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_text_box_dispose;
 	gobjectClass->set_property=_xfdashboard_text_box_set_property;
 	gobjectClass->get_property=_xfdashboard_text_box_get_property;
 
-	actorClass->show_all=_xfdashboard_text_box_show;
-	actorClass->get_preferred_width=_xfdashboard_text_box_get_preferred_width;
-	actorClass->get_preferred_height=_xfdashboard_text_box_get_preferred_height;
-	actorClass->allocate=_xfdashboard_text_box_allocate;
-	actorClass->destroy=_xfdashboard_text_box_destroy;
-	actorClass->key_focus_in=_xfdashboard_text_box_key_focus_in;
+	clutterActorClass->show_all=_xfdashboard_text_box_show;
+	clutterActorClass->get_preferred_width=_xfdashboard_text_box_get_preferred_width;
+	clutterActorClass->get_preferred_height=_xfdashboard_text_box_get_preferred_height;
+	clutterActorClass->allocate=_xfdashboard_text_box_allocate;
+	clutterActorClass->destroy=_xfdashboard_text_box_destroy;
+	clutterActorClass->key_focus_in=_xfdashboard_text_box_key_focus_in;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardTextBoxPrivate));
@@ -678,7 +674,7 @@ static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 							_("Padding"),
 							_("Padding between background and elements"),
 							0.0f, G_MAXFLOAT,
-							DEFAULT_PADDING,
+							0.0f,
 							G_PARAM_READWRITE);
 
 	XfdashboardTextBoxProperties[PROP_SPACING]=
@@ -686,7 +682,7 @@ static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 							_("Spacing"),
 							_("Spacing between text and icon"),
 							0.0f, G_MAXFLOAT,
-							DEFAULT_SPACING,
+							0.0f,
 							G_PARAM_READWRITE);
 
 	XfdashboardTextBoxProperties[PROP_EDITABLE]=
@@ -728,8 +724,8 @@ static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 		clutter_param_spec_color("text-color",
 									_("Text color"),
 									_("Color of text in editable text box"),
-									&defaultTextColor,
-									G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+									NULL,
+									G_PARAM_READWRITE);
 
 
 	XfdashboardTextBoxProperties[PROP_SELECTION_TEXT_COLOR]=
@@ -764,10 +760,21 @@ static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 		clutter_param_spec_color("hint-text-color",
 									_("Hint text color"),
 									_("Color of hint text shown if editable text box is empty"),
-									&defaultHintTextColor,
-									G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+									NULL,
+									G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardTextBoxProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardTextBoxProperties[PROP_PADDING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardTextBoxProperties[PROP_SPACING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardTextBoxProperties[PROP_PRIMARY_ICON_NAME]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardTextBoxProperties[PROP_SECONDARY_ICON_NAME]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardTextBoxProperties[PROP_TEXT_FONT]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardTextBoxProperties[PROP_TEXT_COLOR]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardTextBoxProperties[PROP_SELECTION_BACKGROUND_COLOR]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardTextBoxProperties[PROP_HINT_TEXT_FONT]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardTextBoxProperties[PROP_HINT_TEXT_COLOR]);
 
 	/* Define signals */
 	XfdashboardTextBoxSignals[SIGNAL_TEXT_CHANGED]=
@@ -818,8 +825,8 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set up default values */
-	priv->padding=DEFAULT_PADDING;
-	priv->spacing=DEFAULT_SPACING;
+	priv->padding=0.0f;
+	priv->spacing=0.0f;
 	priv->isEditable=FALSE;
 	priv->primaryIconName=NULL;
 	priv->secondaryIconName=NULL;
@@ -835,18 +842,14 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 
 	/* Create actors */
 	priv->actorPrimaryIcon=xfdashboard_button_new();
-	xfdashboard_button_set_padding(XFDASHBOARD_BUTTON(priv->actorPrimaryIcon), 0.0f);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->actorPrimaryIcon), XFDASHBOARD_STYLE_ICON);
-	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->actorPrimaryIcon), FALSE);
+	xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->actorPrimaryIcon), "primary-icon");
 	clutter_actor_set_reactive(priv->actorPrimaryIcon, TRUE);
 	clutter_actor_hide(priv->actorPrimaryIcon);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorPrimaryIcon);
 	g_signal_connect_swapped(priv->actorPrimaryIcon, "clicked", G_CALLBACK(_xfdashboard_text_box_on_primary_icon_clicked), self);
 
 	priv->actorSecondaryIcon=xfdashboard_button_new();
-	xfdashboard_button_set_padding(XFDASHBOARD_BUTTON(priv->actorSecondaryIcon), 0.0f);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->actorSecondaryIcon), XFDASHBOARD_STYLE_ICON);
-	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->actorSecondaryIcon), FALSE);
+	xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->actorSecondaryIcon), "secondary-icon");
 	clutter_actor_set_reactive(priv->actorSecondaryIcon, TRUE);
 	clutter_actor_hide(priv->actorSecondaryIcon);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorSecondaryIcon);
@@ -954,6 +957,8 @@ void xfdashboard_text_box_set_editable(XfdashboardTextBox *self, gboolean isEdit
 	if(priv->isEditable!=isEditable)
 	{
 		priv->isEditable=isEditable;
+		if(priv->isEditable) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(self), "editable");
+			else xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(self), "editable");
 
 		/* Set up actors */
 		clutter_text_set_selectable(CLUTTER_TEXT(priv->actorTextBox), priv->isEditable);

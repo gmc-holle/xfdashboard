@@ -36,7 +36,7 @@
 /* Define this class in GObject system */
 G_DEFINE_ABSTRACT_TYPE(XfdashboardView,
 						xfdashboard_view,
-						CLUTTER_TYPE_ACTOR)
+						XFDASHBOARD_TYPE_ACTOR)
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_VIEW_GET_PRIVATE(obj) \
@@ -102,7 +102,6 @@ enum
 static guint XfdashboardViewSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_ICON_SIZE	64		// TODO: Replace by settings/theming object
 
 /* IMPLEMENTATION: GObject */
 
@@ -498,7 +497,7 @@ void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon)
 
 		/* Set new icon */
 		if(priv->viewIconImage) g_object_unref(priv->viewIconImage);
-		priv->viewIconImage=xfdashboard_image_new_for_icon_name(priv->viewIcon, DEFAULT_ICON_SIZE);
+		priv->viewIconImage=xfdashboard_image_new_for_icon_name(priv->viewIcon, 64.0f);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_VIEW_ICON]);
@@ -564,7 +563,11 @@ void xfdashboard_view_set_enabled(XfdashboardView *self, gboolean inIsEnabled)
 
 		/* Set new enabled state */
 		g_signal_emit(self, XfdashboardViewSignals[signalBeforeID], 0, self);
+
 		priv->isEnabled=inIsEnabled;
+		if(priv->isEnabled) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(self), "enabled");
+			else xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(self), "enabled");
+
 		g_signal_emit(self, XfdashboardViewSignals[signalAfterID], 0, self);
 
 		/* Notify about property change */

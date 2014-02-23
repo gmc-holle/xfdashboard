@@ -188,6 +188,9 @@ AC_SUBST([PLATFORM_LDFLAGS])
 
 AC_OUTPUT([
 Makefile
+data/Makefile
+data/themes/Makefile
+data/themes/xfdashboard/Makefile
 po/Makefile.in
 src/Makefile
 ])

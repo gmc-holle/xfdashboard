@@ -44,7 +44,7 @@
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWindow,
 				xfdashboard_live_window,
-				CLUTTER_TYPE_ACTOR)
+				XFDASHBOARD_TYPE_ACTOR)
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_LIVE_WINDOW_GET_PRIVATE(obj) \
@@ -99,9 +99,6 @@ enum
 static guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_PADDING_TITLE		4.0f			// TODO: Replace by settings/theming object
-#define DEFAULT_PADDING_CLOSE		4.0f			// TODO: Replace by settings/theming object
-#define WINDOW_CLOSE_BUTTON_ICON	GTK_STOCK_CLOSE	// TODO: Replace by settings/theming object
 
 /* Check if window should be shown */
 static gboolean _xfdashboard_live_window_is_visible_window(XfdashboardLiveWindow *self, XfdashboardWindowTrackerWindow *inWindow)
@@ -591,13 +588,14 @@ static void _xfdashboard_live_window_get_property(GObject *inObject,
  */
 static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass)
 {
-	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
-	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
+	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	actorClass->get_preferred_width=_xfdashboard_live_window_get_preferred_width;
-	actorClass->get_preferred_height=_xfdashboard_live_window_get_preferred_height;
-	actorClass->allocate=_xfdashboard_live_window_allocate;
+	clutterActorClass->get_preferred_width=_xfdashboard_live_window_get_preferred_width;
+	clutterActorClass->get_preferred_height=_xfdashboard_live_window_get_preferred_height;
+	clutterActorClass->allocate=_xfdashboard_live_window_allocate;
 
 	gobjectClass->dispose=_xfdashboard_live_window_dispose;
 	gobjectClass->set_property=_xfdashboard_live_window_set_property;
@@ -615,22 +613,26 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 								G_PARAM_READWRITE);
 
 	XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON_PADDING]=
-		g_param_spec_float("close-button-padding",
+		g_param_spec_float("close-padding",
 							_("Close button padding"),
 							_("Padding of close button to window actor in pixels"),
 							0.0f, G_MAXFLOAT,
-							DEFAULT_PADDING_CLOSE,
+							0.0f,
 							G_PARAM_READWRITE);
 
 	XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR_PADDING]=
-		g_param_spec_float("title-actor-padding",
+		g_param_spec_float("title-padding",
 							_("Title actor padding"),
 							_("Padding of title actor to window actor in pixels"),
 							0.0f, G_MAXFLOAT,
-							DEFAULT_PADDING_TITLE,
+							0.0f,
 							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWindowProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON_PADDING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR_PADDING]);
 
 	/* Define signals */
 	XfdashboardLiveWindowSignals[SIGNAL_CLICKED]=
@@ -706,8 +708,8 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	/* Set default values */
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->window=NULL;
-	priv->paddingTitle=DEFAULT_PADDING_TITLE;
-	priv->paddingClose=DEFAULT_PADDING_CLOSE;
+	priv->paddingTitle=0.0f;
+	priv->paddingClose=0.0f;
 
 	/* Set up child actors (order is important) */
 	priv->actorWindow=clutter_actor_new();
@@ -715,19 +717,14 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorWindow);
 
 	priv->actorTitle=xfdashboard_button_new();
+	xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->actorTitle), "title");
 	clutter_actor_set_reactive(priv->actorTitle, FALSE);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->actorTitle), XFDASHBOARD_STYLE_BOTH);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorTitle),
-												XFDASHBOARD_BACKGROUND_TYPE_FILL | XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
-	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorTitle), priv->paddingTitle);
 	clutter_actor_show(priv->actorTitle);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorTitle);
 
-	priv->actorClose=xfdashboard_button_new_with_icon(WINDOW_CLOSE_BUTTON_ICON);
+	priv->actorClose=xfdashboard_button_new();
+	xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->actorClose), "close-button");
 	clutter_actor_set_reactive(priv->actorClose, FALSE);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(priv->actorClose),
-												XFDASHBOARD_BACKGROUND_TYPE_FILL | XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS);
-	xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorClose), priv->paddingClose);
 	clutter_actor_show(priv->actorClose);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorClose);
 

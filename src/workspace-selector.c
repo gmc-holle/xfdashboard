@@ -44,7 +44,7 @@
 G_DEFINE_TYPE(XfdashboardWorkspaceSelector,
 				xfdashboard_workspace_selector,
 				XFDASHBOARD_TYPE_BACKGROUND)
-                                                
+
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_WORKSPACE_SELECTOR_GET_PRIVATE(obj) \
 	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_WORKSPACE_SELECTOR, XfdashboardWorkspaceSelectorPrivate))
@@ -82,10 +82,10 @@ enum
 static GParamSpec* XfdashboardWorkspaceSelectorProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_MAX_SIZE			256.0f							// TODO: Replace by settings/theming object
-#define DEFAULT_MAX_FRACTION		0.25f							// TODO: Replace by settings/theming object
-#define DEFAULT_USING_FRACTION		TRUE							// TODO: Replace by settings/theming object
-#define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_VERTICAL	// TODO: Replace by settings/theming object
+#define DEFAULT_MAX_SIZE			256.0f
+#define DEFAULT_MAX_FRACTION		0.25f
+#define DEFAULT_USING_FRACTION		TRUE
+#define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_VERTICAL
 
 /* Get maximum (horizontal or vertical) size either by static size or fraction */
 static gfloat _xfdashboard_workspace_selector_get_max_size_internal(XfdashboardWorkspaceSelector *self)
@@ -407,9 +407,6 @@ static void _xfdashboard_workspace_selector_on_workspace_added(XfdashboardWorksp
 
 	/* Create new live workspace actor and insert at index */
 	actor=xfdashboard_live_workspace_new_for_workspace(inWorkspace);
-	xfdashboard_background_set_outline_color(XFDASHBOARD_BACKGROUND(actor), CLUTTER_COLOR_White);
-	xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(actor), 1.0f);
-	xfdashboard_background_set_background_type(XFDASHBOARD_BACKGROUND(actor), XFDASHBOARD_BACKGROUND_TYPE_OUTLINE);
 	g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_workspace_selector_on_workspace_clicked), self);
 	clutter_actor_insert_child_at_index(CLUTTER_ACTOR(self), actor, index);
 
@@ -436,10 +433,7 @@ static void _xfdashboard_workspace_selector_on_active_workspace_changed(Xfdashbo
 	if(inPrevWorkspace)
 	{
 		liveWorkspace=_xfdashboard_workspace_selector_find_actor_for_workspace(self, inPrevWorkspace);
-		if(liveWorkspace)
-		{
-			xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(liveWorkspace), 1.0f);
-		}
+		if(liveWorkspace) xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(liveWorkspace), "active");
 
 		priv->activeWorkspace=NULL;
 	}
@@ -451,10 +445,7 @@ static void _xfdashboard_workspace_selector_on_active_workspace_changed(Xfdashbo
 		priv->activeWorkspace=workspace;
 
 		liveWorkspace=_xfdashboard_workspace_selector_find_actor_for_workspace(self, priv->activeWorkspace);
-		if(liveWorkspace)
-		{
-			xfdashboard_background_set_outline_width(XFDASHBOARD_BACKGROUND(liveWorkspace), 4.0f);
-		}
+		if(liveWorkspace) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(liveWorkspace), "active");
 	}
 }
 
@@ -903,17 +894,18 @@ static void _xfdashboard_workspace_selector_get_property(GObject *inObject,
  */
 static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelectorClass *klass)
 {
-	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
-	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
+	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_workspace_selector_dispose;
 	gobjectClass->set_property=_xfdashboard_workspace_selector_set_property;
 	gobjectClass->get_property=_xfdashboard_workspace_selector_get_property;
 
-	actorClass->get_preferred_width=_xfdashboard_workspace_selector_get_preferred_width;
-	actorClass->get_preferred_height=_xfdashboard_workspace_selector_get_preferred_height;
-	actorClass->allocate=_xfdashboard_workspace_selector_allocate;
+	clutterActorClass->get_preferred_width=_xfdashboard_workspace_selector_get_preferred_width;
+	clutterActorClass->get_preferred_height=_xfdashboard_workspace_selector_get_preferred_height;
+	clutterActorClass->allocate=_xfdashboard_workspace_selector_allocate;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardWorkspaceSelectorPrivate));
@@ -959,6 +951,12 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 								G_PARAM_READABLE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWorkspaceSelectorProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_SPACING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_ORIENTATION]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_MAX_SIZE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_MAX_FRACTION]);
 }
 
 /* Object initialization
@@ -1032,7 +1030,7 @@ gfloat xfdashboard_workspace_selector_get_spacing(XfdashboardWorkspaceSelector *
 
 void xfdashboard_workspace_selector_set_spacing(XfdashboardWorkspaceSelector *self, const gfloat inSpacing)
 {
-	XfdashboardWorkspaceSelectorPrivate	*priv;
+	XfdashboardWorkspaceSelectorPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
 	g_return_if_fail(inSpacing>=0.0f);
@@ -1063,8 +1061,8 @@ ClutterOrientation xfdashboard_workspace_selector_get_orientation(XfdashboardWor
 
 void xfdashboard_workspace_selector_set_orientation(XfdashboardWorkspaceSelector *self, ClutterOrientation inOrientation)
 {
-	XfdashboardWorkspaceSelectorPrivate	*priv;
-	ClutterRequestMode				requestMode;
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	ClutterRequestMode						requestMode;
 
 	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
 	g_return_if_fail(inOrientation==CLUTTER_ORIENTATION_HORIZONTAL ||

@@ -26,6 +26,7 @@
 
 #include <clutter/clutter.h>
 
+#include "actor.h"
 #include "viewpad.h"
 #include "toggle-button.h"
 
@@ -45,7 +46,7 @@ typedef struct _XfdashboardViewSelectorClass		XfdashboardViewSelectorClass;
 struct _XfdashboardViewSelector
 {
 	/* Parent instance */
-	ClutterActor					parent_instance;
+	XfdashboardActor				parent_instance;
 
 	/* Private structure */
 	XfdashboardViewSelectorPrivate	*priv;
@@ -55,7 +56,7 @@ struct _XfdashboardViewSelectorClass
 {
 	/*< private >*/
 	/* Parent class */
-	ClutterActorClass				parent_class;
+	XfdashboardActorClass			parent_class;
 
 	/*< public >*/
 	/* Virtual functions */

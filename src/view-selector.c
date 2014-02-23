@@ -33,7 +33,7 @@
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardViewSelector,
 				xfdashboard_view_selector,
-				CLUTTER_TYPE_ACTOR)
+				XFDASHBOARD_TYPE_ACTOR)
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_VIEW_SELECTOR_GET_PRIVATE(obj) \
@@ -75,9 +75,6 @@ enum
 static guint XfdashboardViewSelectorSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_SPACING				0.0f
-#define DEFAULT_BUTTON_STYLE		XFDASHBOARD_STYLE_ICON
-#define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_HORIZONTAL
 
 /* A view button changed its toggle state */
 static void _xfdashboard_view_selector_on_toggle_button_state_changed(XfdashboardViewSelector *self, gpointer inUserData)
@@ -171,11 +168,7 @@ static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *se
 	viewName=g_markup_printf_escaped("%s", xfdashboard_view_get_name(inView));
 	viewIcon=xfdashboard_view_get_icon(inView);
 
-	button=xfdashboard_toggle_button_new();
-	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(button), viewName);
-	xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(button), viewIcon);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(button), DEFAULT_BUTTON_STYLE);
-	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(button), TRUE);
+	button=xfdashboard_toggle_button_new_full(viewIcon, viewName);
 	g_object_set_data(G_OBJECT(button), "view", inView);
 	g_signal_connect_swapped(button, "clicked", G_CALLBACK(_xfdashboard_view_selector_on_view_button_clicked), self);
 
@@ -326,6 +319,7 @@ static void _xfdashboard_view_selector_get_property(GObject *inObject,
  */
 static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *klass)
 {
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
@@ -349,7 +343,7 @@ static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *k
 							_("Spacing"),
 							_("The spacing between views and scrollbars"),
 							0.0f, G_MAXFLOAT,
-							DEFAULT_SPACING,
+							0.0f,
 							G_PARAM_READWRITE);
 
 	XfdashboardViewSelectorProperties[PROP_ORIENTATION]=
@@ -357,10 +351,14 @@ static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *k
 							_("Orientation"),
 							_("Orientation of view selector"),
 							CLUTTER_TYPE_ORIENTATION,
-							DEFAULT_ORIENTATION,
+							CLUTTER_ORIENTATION_HORIZONTAL,
 							G_PARAM_READWRITE);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewSelectorProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardViewSelectorProperties[PROP_SPACING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardViewSelectorProperties[PROP_ORIENTATION]);
 
 	/* Define signals */
 	XfdashboardViewSelectorSignals[SIGNAL_STATE_CHANGED]=
@@ -387,8 +385,8 @@ static void xfdashboard_view_selector_init(XfdashboardViewSelector *self)
 
 	/* Set up default values */
 	priv->viewpad=NULL;
-	priv->spacing=DEFAULT_SPACING;
-	priv->orientation=DEFAULT_ORIENTATION;
+	priv->spacing=0.0f;
+	priv->orientation=CLUTTER_ORIENTATION_HORIZONTAL;
 
 	priv->layout=clutter_box_layout_new();
 	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(priv->layout), priv->orientation);
@@ -468,7 +466,7 @@ void xfdashboard_view_selector_set_viewpad(XfdashboardViewSelector *self, Xfdash
 /* Get/set spacing */
 gfloat xfdashboard_view_selector_get_spacing(XfdashboardViewSelector *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self), DEFAULT_SPACING);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self), 0.0f);
 
 	return(self->priv->spacing);
 }
@@ -497,7 +495,7 @@ void xfdashboard_view_selector_set_spacing(XfdashboardViewSelector *self, gfloat
 /* Get/set orientation */
 ClutterOrientation xfdashboard_view_selector_get_orientation(XfdashboardViewSelector *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self), DEFAULT_SPACING);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self), CLUTTER_ORIENTATION_HORIZONTAL);
 
 	return(self->priv->orientation);
 }
