@@ -10,6 +10,7 @@ src/marshal.[ch]
 src/stamp-marshal.h
 src/xfdashboard
 xfoverview.geany
+data/themes/xfdashboard/xfdashboard.theme
 
 # Ignore autotools files
 COPYING
@@ -32,9 +33,11 @@ missing
 mkinstalldirs
 stamp-h1
 configure.ac
+m4/*
 
 # Ignore language files
-/po/POTFILES
-/po/*.gmo
-/po/Makefile.in.in
-/po/stamp-it
+po/POTFILES
+po/*.gmo
+po/Makefile.in.in
+po/stamp-it
+po/.intltool-merge-cache
