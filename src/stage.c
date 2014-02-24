@@ -249,7 +249,6 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->searchbox), "search-active");
 
 		/* Change apps button appearance */
-		// TODO: if(appsButton) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(appsButton), GTK_STOCK_FIND);
 		if(appsButton) xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(appsButton), "search-active");
 
 		/* Emit "search-started" signal */
@@ -282,14 +281,12 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		}
 
 		/* Deactivate "clear" button on text box */
-		// TODO: xfdashboard_text_box_set_secondary_icon(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
 		xfdashboard_actor_remove_style_class(XFDASHBOARD_ACTOR(priv->searchbox), "search-active");
 
 		/* Disable search view */
 		xfdashboard_view_set_enabled(searchView, FALSE);
 
 		/* Change apps button appearance */
-		// TODO: if(appsButton) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(appsButton), GTK_STOCK_HOME);
 		if(appsButton) xfdashboard_actor_remove_style_class(XFDASHBOARD_ACTOR(appsButton), "search-active");
 
 		/* Emit "search-ended" signal */
