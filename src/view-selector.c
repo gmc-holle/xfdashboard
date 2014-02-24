@@ -336,7 +336,7 @@ static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *k
 								_("Viewpad"),
 								_("The viewpad this selector belongs to"),
 								XFDASHBOARD_TYPE_VIEWPAD,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewSelectorProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
@@ -344,7 +344,7 @@ static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *k
 							_("The spacing between views and scrollbars"),
 							0.0f, G_MAXFLOAT,
 							0.0f,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewSelectorProperties[PROP_ORIENTATION]=
 		g_param_spec_enum("orientation",
@@ -352,7 +352,7 @@ static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *k
 							_("Orientation of view selector"),
 							CLUTTER_TYPE_ORIENTATION,
 							CLUTTER_ORIENTATION_HORIZONTAL,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewSelectorProperties);
 

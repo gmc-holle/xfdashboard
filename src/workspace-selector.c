@@ -917,7 +917,7 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 								_("The spacing between children"),
 								0.0, G_MAXFLOAT,
 								0.0,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWorkspaceSelectorProperties[PROP_ORIENTATION]=
 		g_param_spec_enum("orientation",
@@ -925,7 +925,7 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 							_("The orientation to layout children"),
 							CLUTTER_TYPE_ORIENTATION,
 							DEFAULT_ORIENTATION,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWorkspaceSelectorProperties[PROP_MAX_SIZE]=
 		g_param_spec_float("max-size",
@@ -933,7 +933,7 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 								_("The maximum size of this actor for opposite direction of orientation"),
 								0.0, G_MAXFLOAT,
 								DEFAULT_MAX_SIZE,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWorkspaceSelectorProperties[PROP_MAX_FRACTION]=
 		g_param_spec_float("max-fraction",
@@ -941,14 +941,14 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 								_("The maximum size of this actor for opposite direction of orientation defined by fraction between 0.0 and 1.0"),
 								0.0, G_MAXFLOAT,
 								DEFAULT_MAX_FRACTION,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWorkspaceSelectorProperties[PROP_USING_FRACTION]=
 		g_param_spec_boolean("using-fraction",
 								_("Using fraction"),
 								_("Flag indicating if maximum size is static or defined by fraction between 0.0 and 1.0"),
 								DEFAULT_USING_FRACTION,
-								G_PARAM_READABLE);
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWorkspaceSelectorProperties);
 

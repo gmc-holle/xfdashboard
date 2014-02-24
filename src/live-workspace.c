@@ -556,7 +556,7 @@ static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass 
 								_("Workspace"),
 								_("The workspace to show"),
 								XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWorkspaceProperties);
 

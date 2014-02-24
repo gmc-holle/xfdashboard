@@ -475,7 +475,7 @@ static void xfdashboard_collapse_box_class_init(XfdashboardCollapseBoxClass *kla
 								_("Collapsed"),
 								_("If TRUE this actor is collapsed otherwise it is expanded to real size"),
 								TRUE,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardCollapseBoxProperties[PROP_COLLAPSED_SIZE]=
 		g_param_spec_float("collapsed-size",
@@ -483,7 +483,7 @@ static void xfdashboard_collapse_box_class_init(XfdashboardCollapseBoxClass *kla
 							_("The size of actor when collapsed"),
 							0.0f, G_MAXFLOAT,
 							0.0f,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardCollapseBoxProperties[PROP_COLLAPSE_ORIENTATION]=
 		g_param_spec_enum("collapse-orientation",
@@ -491,7 +491,7 @@ static void xfdashboard_collapse_box_class_init(XfdashboardCollapseBoxClass *kla
 							_("Orientation of area being visible in collapsed state"),
 							XFDASHBOARD_TYPE_ORIENTATION,
 							XFDASHBOARD_ORIENTATION_LEFT,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardCollapseBoxProperties);
 

@@ -565,14 +565,14 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 								_("is-daemonized"),
 								_("Flag indicating if application is daemonized"),
 								FALSE,
-								G_PARAM_READABLE);
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationProperties[PROP_SUSPENDED]=
 		g_param_spec_boolean("is-suspended",
 								_("Is suspended"),
 								_("Flag indicating if application is suspended currently"),
 								FALSE,
-								G_PARAM_READABLE);
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardApplicationProperties);
 

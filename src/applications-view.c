@@ -455,28 +455,28 @@ static void xfdashboard_applications_view_class_init(XfdashboardApplicationsView
 							_("The view mode used in this view"),
 							XFDASHBOARD_TYPE_VIEW_MODE,
 							XFDASHBOARD_VIEW_MODE_LIST,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationsViewProperties[PROP_PARENT_MENU_ICON]=
 		g_param_spec_string("parent-menu-icon",
 								_("Parent menu icon"),
 								_("Name of icon to use for 'go-back-to-parent-menu' entries"),
 								NULL,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationsViewProperties[PROP_FORMAT_TITLE_ONLY]=
 		g_param_spec_string("format-title-only",
 								_("Format title only"),
 								_("Format string used when only title is display"),
 								NULL,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationsViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]=
 		g_param_spec_string("format-title-description",
 								_("Format title and description"),
 								_("Format string used when title and description is display. First argument is title and second one is description."),
 								NULL,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardApplicationsViewProperties);
 

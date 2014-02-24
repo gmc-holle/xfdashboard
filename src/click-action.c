@@ -593,14 +593,14 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 								_("Pressed"),
 								_("Whether the clickable should be in pressed state"),
 								FALSE,
-								G_PARAM_READABLE);
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardClickActionProperties[PROP_HELD]=
 		g_param_spec_boolean("held",
 								_("Held"),
 								_("Whether the clickable has a grab"),
 								FALSE,
-								G_PARAM_READABLE);
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardClickActionProperties[PROP_LONG_PRESS_DURATION]=
 		g_param_spec_int("long-press-duration",
@@ -609,7 +609,7 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 							-1,
 							G_MAXINT,
 							-1,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardClickActionProperties[PROP_LONG_PRESS_THRESHOLD]=
 		g_param_spec_int("long-press-threshold",
@@ -618,7 +618,7 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 							-1,
 							G_MAXINT,
 							-1,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardClickActionProperties);
 

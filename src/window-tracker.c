@@ -468,21 +468,21 @@ void xfdashboard_window_tracker_class_init(XfdashboardWindowTrackerClass *klass)
 							_("Active window"),
 							_("The current active window"),
 							WNCK_TYPE_WINDOW,
-							G_PARAM_READABLE);
+							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowTrackerProperties[PROP_ACTIVE_WORKSPACE]=
 		g_param_spec_object("active-workspace",
 							_("Active workspace"),
 							_("The current active workspace"),
 							WNCK_TYPE_WORKSPACE,
-							G_PARAM_READABLE);
+							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	// TODO: XfdashboardWindowTrackerProperties[PROP_PRIMARY_MONITOR]=
 		// TODO: g_param_spec_object("primary-monitor",
 							// TODO: _("Primary monitor"),
 							// TODO: _("The current primary monitor"),
 							// TODO: XFDASHBOARD_TYPE_MONITOR,
-							// TODO: G_PARAM_READABLE);
+							// TODO: G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowTrackerProperties);
 

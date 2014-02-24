@@ -394,7 +394,7 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 								0.0f,
 								G_MAXFLOAT,
 								0.0f,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScaledTableLayoutProperties[PROP_COLUMN_SPACING]=
 		g_param_spec_float("column-spacing",
@@ -403,14 +403,14 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 								0.0f,
 								G_MAXFLOAT,
 								0.0f,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScaledTableLayoutProperties[PROP_RELATIVE_SCALE]=
 		g_param_spec_boolean("relative-scale",
 								_("Relative scale"),
 								_("Whether all children should be scaled relatively to largest child"),
 								FALSE,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardScaledTableLayoutProperties);
 }

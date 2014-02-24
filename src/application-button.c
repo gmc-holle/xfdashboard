@@ -344,35 +344,35 @@ static void xfdashboard_application_button_class_init(XfdashboardApplicationButt
 								_("Menu element"),
 								_("The menu element whose title and description to display"),
 								GARCON_TYPE_MENU_ELEMENT,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]=
 		g_param_spec_string("desktop-filename",
 								_("Desktop file name"),
 								_("File name of desktop file whose title and description to display"),
 								NULL,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationButtonProperties[PROP_SHOW_DESCRIPTION]=
 		g_param_spec_boolean("show-description",
 								_("Show description"),
 								_("Show also description next to tile"),
 								FALSE,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationButtonProperties[PROP_FORMAT_TITLE_ONLY]=
 		g_param_spec_string("format-title-only",
 								_("Format title only"),
 								_("Format string used when only title is display"),
 								NULL,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationButtonProperties[PROP_FORMAT_TITLE_DESCRIPTION]=
 		g_param_spec_string("format-title-description",
 								_("Format title and description"),
 								_("Format string used when title and description is display. First argument is title and second one is description."),
 								NULL,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardApplicationButtonProperties);
 

@@ -1278,7 +1278,7 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							_("Padding between background and elements"),
 							0.0f, G_MAXFLOAT,
 							4.0f,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
@@ -1286,7 +1286,7 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							_("Spacing between text and icon"),
 							0.0f, G_MAXFLOAT,
 							4.0f,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_STYLE]=
 		g_param_spec_enum("button-style",
@@ -1294,28 +1294,28 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							_("Style of button showing text and/or icon"),
 							XFDASHBOARD_TYPE_STYLE,
 							XFDASHBOARD_STYLE_TEXT,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_ICON_NAME]=
 		g_param_spec_string("icon-name",
 							_("Icon name"),
 							_("Themed icon name or file name of icon"),
 							N_(""),
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardButtonProperties[PROP_ICON_IMAGE]=
 		g_param_spec_object("icon-image",
 							_("Icon image"),
 							_("Image of icon"),
 							CLUTTER_TYPE_IMAGE,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardButtonProperties[PROP_ICON_SYNC_SIZE]=
 		g_param_spec_boolean("sync-icon-size",
 								_("Synchronize icon size"),
 								_("Synchronize icon size with text size"),
 								TRUE,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardButtonProperties[PROP_ICON_SIZE]=
 		g_param_spec_uint("icon-size",
@@ -1323,7 +1323,7 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							_("Size of icon if size of icon is not synchronized. -1 is valid for icon images and sets icon image's default size."),
 							1, G_MAXUINT,
 							16,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardButtonProperties[PROP_ICON_ORIENTATION]=
 		g_param_spec_enum("icon-orientation",
@@ -1331,28 +1331,28 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							_("Orientation of icon to label"),
 							XFDASHBOARD_TYPE_ORIENTATION,
 							XFDASHBOARD_ORIENTATION_LEFT,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_TEXT]=
 		g_param_spec_string("text",
 							_("Label text"),
 							_("Text of label"),
 							N_(""),
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardButtonProperties[PROP_TEXT_FONT]=
 		g_param_spec_string("font",
 							_("Font"),
 							_("Font of label"),
 							NULL,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardButtonProperties[PROP_TEXT_COLOR]=
 		clutter_param_spec_color("color",
 									_("Color"),
 									_("Color of label"),
 									NULL,
-									G_PARAM_READWRITE);
+									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardButtonProperties[PROP_TEXT_ELLIPSIZE_MODE]=
 		g_param_spec_enum("ellipsize-mode",
@@ -1360,14 +1360,14 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							_("Mode of ellipsize if text in label is too long"),
 							PANGO_TYPE_ELLIPSIZE_MODE,
 							PANGO_ELLIPSIZE_MIDDLE,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_TEXT_SINGLE_LINE]=
 		g_param_spec_boolean("single-line",
 								_("Single line"),
 								_("Flag to determine if text can only be in one or multiple lines"),
 								TRUE,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardButtonProperties[PROP_TEXT_JUSTIFY]=
 		g_param_spec_enum("text-justify",
@@ -1375,7 +1375,7 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							_("Justification (line alignment) of label"),
 							PANGO_TYPE_ALIGNMENT,
 							PANGO_ALIGN_LEFT,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardButtonProperties);
 

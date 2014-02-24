@@ -430,21 +430,21 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 							_("Background type"),
 							XFDASHBOARD_TYPE_BACKGROUND_TYPE,
 							XFDASHBOARD_BACKGROUND_TYPE_NONE,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_FILL_COLOR]=
 		clutter_param_spec_color("background-fill-color",
 									_("Background fill color"),
 									_("Color to fill background with"),
 									CLUTTER_COLOR_Black,
-									G_PARAM_READWRITE);
+									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_OUTLINE_COLOR]=
 		clutter_param_spec_color("outline-color",
 									_("Outline color"),
 									_("Color to draw outline with"),
 									CLUTTER_COLOR_White,
-									G_PARAM_READWRITE);
+									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_OUTLINE_WIDTH]=
 		g_param_spec_float("outline-width",
@@ -452,7 +452,7 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 							_("Width of line used to draw outline"),
 							0.0f, G_MAXFLOAT,
 							1.0f,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_CORNERS]=
 		g_param_spec_flags("corners",
@@ -460,7 +460,7 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 							_("Determines which corners are rounded"),
 							XFDASHBOARD_TYPE_CORNERS,
 							XFDASHBOARD_CORNERS_ALL,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_CORNERS_RADIUS]=
 		g_param_spec_float("corner-radius",
@@ -468,14 +468,14 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 							_("Radius of rounded corners"),
 							0.0f, G_MAXFLOAT,
 							0.0f,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_IMAGE]=
 		g_param_spec_object("image",
 							_("Image"),
 							_("Image to draw as background"),
 							CLUTTER_TYPE_IMAGE,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardBackgroundProperties);
 

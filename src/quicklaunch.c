@@ -1347,7 +1347,7 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 							_("Favourites"),
 							_("An array of strings pointing to desktop files shown as icons"),
 							XFDASHBOARD_TYPE_POINTER_ARRAY,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardQuicklaunchProperties[PROP_NORMAL_ICON_SIZE]=
 		g_param_spec_float("normal-icon-size",
@@ -1355,7 +1355,7 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 								_("Unscale size of icon"),
 								1.0, G_MAXFLOAT,
 								1.0f,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardQuicklaunchProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
@@ -1363,7 +1363,7 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 								_("The spacing between children"),
 								0.0, G_MAXFLOAT,
 								0.0,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardQuicklaunchProperties[PROP_ORIENTATION]=
 		g_param_spec_enum("orientation",
@@ -1371,7 +1371,7 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 							_("The orientation to layout children"),
 							CLUTTER_TYPE_ORIENTATION,
 							CLUTTER_ORIENTATION_VERTICAL,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardQuicklaunchProperties);
 

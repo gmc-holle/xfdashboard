@@ -456,14 +456,14 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 							_("Style classes"),
 							_("String representing list of classes separated by '.'"),
 							NULL,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardActorProperties[PROP_STYLE_PSEUDO_CLASSES]=
 		g_param_spec_string("style-pseudo-classes",
 							_("Style pseudo-classes"),
 							_("String representing list of pseudo-classes, e.g. current state, separated by ':'"),
 							NULL,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardActorProperties);
 

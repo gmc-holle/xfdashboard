@@ -593,21 +593,21 @@ void xfdashboard_image_class_init(XfdashboardImageClass *klass)
 							_("Key"),
 							_("The hash key for caching this image"),
 							N_(""),
-							G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY);
+							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	XfdashboardImageProperties[PROP_ICON_NAME]=
 		g_param_spec_string("icon-name",
 							_("Icon name"),
 							_("Themed icon name or relative or absolute path to image file"),
 							N_(""),
-							G_PARAM_WRITABLE);
+							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardImageProperties[PROP_GICON]=
 		g_param_spec_object("gicon",
 							_("GIcon"),
 							_("GIcon object to load as image"),
 							G_TYPE_ICON,
-							G_PARAM_WRITABLE);
+							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardImageProperties[PROP_ICON_SIZE]=
 		g_param_spec_uint("icon-size",
@@ -615,7 +615,7 @@ void xfdashboard_image_class_init(XfdashboardImageClass *klass)
 							_("Size of icon"),
 							0, G_MAXUINT,
 							0,
-							G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY);
+							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardImageProperties);
 }

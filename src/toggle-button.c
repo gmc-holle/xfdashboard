@@ -155,7 +155,7 @@ static void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *k
 								_("Toggle state"),
 								_("State of toggle"),
 								FALSE,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardToggleButtonProperties);
 

@@ -233,35 +233,35 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 							_("View internal name"),
 							_("Internal and untranslated name of view used in application"),
 							NULL,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewProperties[PROP_VIEW_NAME]=
 		g_param_spec_string("view-name",
 							_("View name"),
 							_("Name of view used to display"),
 							NULL,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewProperties[PROP_VIEW_ICON]=
 		g_param_spec_string("view-icon",
 							_("View icon"),
 							_("Icon of view used to display. Icon name can be a themed icon name or file name"),
 							NULL,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewProperties[PROP_FIT_MODE]=
 		g_param_spec_string("fit-mode",
 							_("Fit mode"),
 							_("Defines if view should be fit into viewpad and its orientation"),
 							XFDASHBOARD_FIT_MODE_NONE,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewProperties[PROP_ENABLED]=
 		g_param_spec_boolean("enabled",
 								_("Enabled"),
 								_("This flag indicates if is view is enabled and activable"),
 								TRUE,
-								G_PARAM_READABLE);
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewProperties);
 

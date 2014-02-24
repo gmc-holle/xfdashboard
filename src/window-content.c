@@ -913,21 +913,21 @@ void xfdashboard_window_content_class_init(XfdashboardWindowContentClass *klass)
 							_("Window"),
 							_("The window to handle and display"),
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	XfdashboardWindowContentProperties[PROP_SUSPENDED]=
 		g_param_spec_boolean("suspended",
 							_("Suspended"),
 							_("Is this window suspended"),
 							TRUE,
-							G_PARAM_READABLE);
+							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentProperties[PROP_OUTLINE_COLOR]=
 		clutter_param_spec_color("outline-color",
 									_("Outline color"),
 									_("Color to draw outline of mapped windows with"),
 									CLUTTER_COLOR_Black,
-									G_PARAM_READWRITE);
+									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentProperties[PROP_OUTLINE_WIDTH]=
 		g_param_spec_float("outline-width",
@@ -935,7 +935,7 @@ void xfdashboard_window_content_class_init(XfdashboardWindowContentClass *klass)
 							_("Width of line used to draw outline of mapped windows"),
 							0.0f, G_MAXFLOAT,
 							1.0f,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowContentProperties);
 }

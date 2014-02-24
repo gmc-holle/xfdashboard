@@ -921,7 +921,7 @@ void xfdashboard_drag_action_class_init(XfdashboardDragActionClass *klass)
 							_("Source"),
 							_("The source actor where drag began"),
 							CLUTTER_TYPE_ACTOR,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardDragActionProperties);
 

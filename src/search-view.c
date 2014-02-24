@@ -560,21 +560,21 @@ static void xfdashboard_search_view_class_init(XfdashboardSearchViewClass *klass
 							_("The view mode used in this view"),
 							XFDASHBOARD_TYPE_VIEW_MODE,
 							XFDASHBOARD_VIEW_MODE_LIST,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_ONLY]=
 		g_param_spec_string("format-title-only",
 								_("Format title only"),
 								_("Format string used when only title is display"),
 								NULL,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]=
 		g_param_spec_string("format-title-description",
 								_("Format title and description"),
 								_("Format string used when title and description is display. First argument is title and second one is description."),
 								NULL,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSearchViewProperties);
 

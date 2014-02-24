@@ -610,7 +610,7 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 								_("Window"),
 								_("The window to show"),
 								XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW,
-								G_PARAM_READWRITE);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON_PADDING]=
 		g_param_spec_float("close-padding",
@@ -618,7 +618,7 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 							_("Padding of close button to window actor in pixels"),
 							0.0f, G_MAXFLOAT,
 							0.0f,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR_PADDING]=
 		g_param_spec_float("title-padding",
@@ -626,7 +626,7 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 							_("Padding of title actor to window actor in pixels"),
 							0.0f, G_MAXFLOAT,
 							0.0f,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWindowProperties);
 

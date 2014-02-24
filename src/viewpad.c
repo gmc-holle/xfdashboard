@@ -886,21 +886,21 @@ static void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 							_("The spacing between views and scrollbars"),
 							0.0f, G_MAXFLOAT,
 							0.0f,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewpadProperties[PROP_ACTIVE_VIEW]=
 		g_param_spec_object("active-view",
 								_("Active view"),
 								_("The current active view in viewpad"),
 								XFDASHBOARD_TYPE_VIEW,
-								G_PARAM_READABLE);
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewpadProperties[PROP_HSCROLLBAR_VISIBLE]=
 		g_param_spec_boolean("horizontal-scrollbar-visible",
 								_("Horizontal scrollbar visibility"),
 								_("This flag indicates if horizontal scrollbar is visible"),
 								FALSE,
-								G_PARAM_READABLE);
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewpadProperties[PROP_HSCROLLBAR_POLICY]=
 		g_param_spec_enum("horizontal-scrollbar-policy",
@@ -908,14 +908,14 @@ static void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 							_("The policy for horizontal scrollbar controlling when it is displayed"),
 							XFDASHBOARD_TYPE_POLICY,
 							XFDASHBOARD_POLICY_AUTOMATIC,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewpadProperties[PROP_VSCROLLBAR_VISIBLE]=
 		g_param_spec_boolean("vertical-scrollbar-visible",
 								_("Vertical scrollbar visibility"),
 								_("This flag indicates if vertical scrollbar is visible"),
 								FALSE,
-								G_PARAM_READABLE);
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewpadProperties[PROP_VSCROLLBAR_POLICY]=
 		g_param_spec_enum("vertical-scrollbar-policy",
@@ -923,7 +923,7 @@ static void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 							_("The policy for vertical scrollbar controlling when it is displayed"),
 							XFDASHBOARD_TYPE_POLICY,
 							XFDASHBOARD_POLICY_AUTOMATIC,
-							G_PARAM_READWRITE);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewpadProperties);
 
