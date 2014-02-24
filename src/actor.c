@@ -590,8 +590,8 @@ void xfdashboard_actor_install_stylable_property(XfdashboardActorClass *klass, G
 	/* Add param-spec to pool of themable properties */
 	stylableParamSpec=g_param_spec_internal(G_PARAM_SPEC_TYPE(inParamSpec),
 												g_param_spec_get_name(inParamSpec),
-												NULL, // TODO: g_param_spec_get_nick(inParamSpec),
-												NULL, // TODO: g_param_spec_get_blurb(inParamSpec),
+												NULL,
+												NULL,
 												0);
 	g_param_spec_set_qdata_full(stylableParamSpec,
 									XFDASHBOARD_ACTOR_PARAM_SPEC_REF,
