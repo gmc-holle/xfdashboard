@@ -864,7 +864,7 @@ void xfdashboard_actor_remove_style_pseudo_class(XfdashboardActor *self, const g
 void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
 {
 	XfdashboardActorPrivate		*priv;
-	GObjectClass				*klass;
+	XfdashboardActorClass		*klass;
 	XfdashboardThemeCSS			*theme;
 	GHashTable					*possibleStyleSet;
 	GParamSpec					*paramSpec;
@@ -881,7 +881,7 @@ void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
 
 	priv=self->priv;
-	klass=G_OBJECT_GET_CLASS(self);
+	klass=XFDASHBOARD_ACTOR_GET_CLASS(self);
 	theme=xfdashboard_application_get_theme();
 
 	/* Only recompute style for mapped actors */
@@ -890,11 +890,7 @@ void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
 	/* First get list of all stylable properties.
 	 * It is used to determine if key in theme style sets are valid.
 	 */
-	possibleStyleSet=g_hash_table_new_full(g_str_hash,
-											g_str_equal,
-											g_free,
-											(GDestroyNotify)g_param_spec_unref);
-	_xfdashboard_actor_hashtable_get_all_stylable_param_specs(possibleStyleSet, klass);
+	possibleStyleSet=xfdashboard_actor_get_stylable_properties(klass);
 
 #ifdef DEBUG
 	if(doDebug)
