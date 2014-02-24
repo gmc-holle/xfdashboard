@@ -619,6 +619,23 @@ void xfdashboard_actor_install_stylable_property_by_name(XfdashboardActorClass *
 		}
 }
 
+/* Get hash-table with all stylable properties of class */
+GHashTable* xfdashboard_actor_get_stylable_properties(XfdashboardActorClass *klass)
+{
+	GHashTable		*stylableProps;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR_CLASS(klass), NULL);
+
+	/* Create hashtable and insert stylable properties */
+	stylableProps=g_hash_table_new_full(g_str_hash,
+											g_str_equal,
+											g_free,
+											(GDestroyNotify)g_param_spec_unref);
+	_xfdashboard_actor_hashtable_get_all_stylable_param_specs(stylableProps, G_OBJECT_CLASS(klass));
+
+	return(stylableProps);
+}
+
 /* Get/set style classes of actor */
 const gchar* xfdashboard_actor_get_style_classes(XfdashboardActor *self)
 {
