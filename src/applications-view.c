@@ -81,7 +81,6 @@ static GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 #define ACTOR_USER_DATA_KEY			"xfdashboard-applications-view-user-data"
 
 #define DEFAULT_SPACING				4.0f						// TODO: Replace by layout
-// TODO: #define DEFAULT_PARENT_MENU_ICON	GTK_STOCK_GO_UP				// TODO: Replace by settings/theming object
 
 /* Forward declarations */
 static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData);
