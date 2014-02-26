@@ -66,6 +66,7 @@ ClutterActor* xfdashboard_actor_new(void);
 void xfdashboard_actor_install_stylable_property(XfdashboardActorClass *klass, GParamSpec *inParamSpec);
 void xfdashboard_actor_install_stylable_property_by_name(XfdashboardActorClass *klass, const gchar *inParamName);
 GHashTable* xfdashboard_actor_get_stylable_properties(XfdashboardActorClass *klass);
+GHashTable* xfdashboard_actor_get_stylable_properties_full(XfdashboardActorClass *klass);
 
 const gchar* xfdashboard_actor_get_style_classes(XfdashboardActor *self);
 void xfdashboard_actor_set_style_classes(XfdashboardActor *self, const gchar *inStyleClass);
