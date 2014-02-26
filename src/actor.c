@@ -213,10 +213,10 @@ static void _xfdashboard_actor_gvalue_transform_string_flags(const GValue *inSou
 	g_type_class_unref(flagsClass);
 }
 
-/* Add parameter specification of stylable properties to hashtable recursively
- * over all inherited classes
+/* Get parameter specification of stylable properties and add them to hashtable.
+ * If requested do it recursively over all parent classes.
  */
-static void _xfdashboard_actor_hashtable_get_all_stylable_param_specs(GHashTable *ioHashtable, GObjectClass *inClass)
+static void _xfdashboard_actor_hashtable_get_all_stylable_param_specs(GHashTable *ioHashtable, GObjectClass *inClass, gboolean inRecursive)
 {
 	GList						*paramSpecs, *entry;
 	GObjectClass				*parentClass;
@@ -238,9 +238,9 @@ static void _xfdashboard_actor_hashtable_get_all_stylable_param_specs(GHashTable
 	}
 	g_list_free(paramSpecs);
 
-	/* Call us recursive for parent class if it exists */
+	/* Call us recursive for parent class if it exists and requested */
 	parentClass=g_type_class_peek_parent(inClass);
-	if(parentClass) _xfdashboard_actor_hashtable_get_all_stylable_param_specs(ioHashtable, parentClass);
+	if(inRecursive && parentClass) _xfdashboard_actor_hashtable_get_all_stylable_param_specs(ioHashtable, parentClass, inRecursive);
 }
 
 /* Remove entries from hashtable whose key is a duplicate
@@ -619,7 +619,9 @@ void xfdashboard_actor_install_stylable_property_by_name(XfdashboardActorClass *
 		}
 }
 
-/* Get hash-table with all stylable properties of class */
+/* Get hash-table with all stylable properties of this class or
+ * recursively of this and all parent classes
+ */
 GHashTable* xfdashboard_actor_get_stylable_properties(XfdashboardActorClass *klass)
 {
 	GHashTable		*stylableProps;
@@ -631,7 +633,23 @@ GHashTable* xfdashboard_actor_get_stylable_properties(XfdashboardActorClass *kla
 											g_str_equal,
 											g_free,
 											(GDestroyNotify)g_param_spec_unref);
-	_xfdashboard_actor_hashtable_get_all_stylable_param_specs(stylableProps, G_OBJECT_CLASS(klass));
+	_xfdashboard_actor_hashtable_get_all_stylable_param_specs(stylableProps, G_OBJECT_CLASS(klass), FALSE);
+
+	return(stylableProps);
+}
+
+GHashTable* xfdashboard_actor_get_stylable_properties_full(XfdashboardActorClass *klass)
+{
+	GHashTable		*stylableProps;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR_CLASS(klass), NULL);
+
+	/* Create hashtable and insert stylable properties */
+	stylableProps=g_hash_table_new_full(g_str_hash,
+											g_str_equal,
+											g_free,
+											(GDestroyNotify)g_param_spec_unref);
+	_xfdashboard_actor_hashtable_get_all_stylable_param_specs(stylableProps, G_OBJECT_CLASS(klass), TRUE);
 
 	return(stylableProps);
 }
@@ -887,10 +905,10 @@ void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
 	/* Only recompute style for mapped actors */
 	if(!CLUTTER_ACTOR_IS_MAPPED(self)) return;
 
-	/* First get list of all stylable properties.
+	/* First get list of all stylable properties of this and parent classes.
 	 * It is used to determine if key in theme style sets are valid.
 	 */
-	possibleStyleSet=xfdashboard_actor_get_stylable_properties(klass);
+	possibleStyleSet=xfdashboard_actor_get_stylable_properties_full(klass);
 
 #ifdef DEBUG
 	if(doDebug)
