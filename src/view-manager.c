@@ -181,7 +181,7 @@ void xfdashboard_view_manager_register(XfdashboardViewManager *self, GType inVie
 	/* Register type if not already registered */
 	if(g_list_find(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType))==NULL)
 	{
-		g_debug(_("Registering view %s"), g_type_name(inViewType));
+		g_debug("Registering view %s", g_type_name(inViewType));
 		priv->registeredViews=g_list_append(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType));
 		g_signal_emit(self, XfdashboardViewManagerSignals[SIGNAL_REGISTERED], 0, inViewType);
 	}
@@ -209,7 +209,7 @@ void xfdashboard_view_manager_unregister(XfdashboardViewManager *self, GType inV
 	/* Register type if not already registered */
 	if(g_list_find(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType))!=NULL)
 	{
-		g_debug(_("Unregistering view %s"), g_type_name(inViewType));
+		g_debug("Unregistering view %s", g_type_name(inViewType));
 		priv->registeredViews=g_list_remove(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType));
 		g_signal_emit(self, XfdashboardViewManagerSignals[SIGNAL_UNREGISTERED], 0, inViewType);
 	}

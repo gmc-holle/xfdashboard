@@ -311,7 +311,7 @@ static void _xfdashboard_window_content_release_resources(XfdashboardWindowConte
 	trapError=clutter_x11_untrap_x_errors();
 	if(trapError!=0)
 	{
-		g_debug(_("X error %d occured while releasing resources for window '%s"), trapError, xfdashboard_window_tracker_window_get_title(priv->window));
+		g_debug("X error %d occured while releasing resources for window '%s", trapError, xfdashboard_window_tracker_window_get_title(priv->window));
 		return;
 	}
 
@@ -374,7 +374,7 @@ static void _xfdashboard_window_content_suspend(XfdashboardWindowContent *self)
 	trapError=clutter_x11_untrap_x_errors();
 	if(trapError!=0)
 	{
-		g_debug(_("X error %d occured while suspending '%s"), trapError, xfdashboard_window_tracker_window_get_title(priv->window));
+		g_debug("X error %d occured while suspending '%s", trapError, xfdashboard_window_tracker_window_get_title(priv->window));
 		return;
 	}
 
@@ -435,7 +435,7 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 			/* Creating texture may fail if window is _NOT_ on active workspace
 			 * so display error message just as debug message (this time)
 			 */
-			g_debug(_("Could not create texture for window '%s': %s"),
+			g_debug("Could not create texture for window '%s': %s",
 						xfdashboard_window_tracker_window_get_title(priv->window),
 						error ? error->message : _("Unknown error"));
 			if(error)
@@ -504,7 +504,7 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 	trapError=clutter_x11_untrap_x_errors();
 	if(trapError!=0)
 	{
-		g_debug(_("X error %d occured while resuming window '%s"), trapError, xfdashboard_window_tracker_window_get_title(priv->window));
+		g_debug("X error %d occured while resuming window '%s", trapError, xfdashboard_window_tracker_window_get_title(priv->window));
 		return;
 	}
 

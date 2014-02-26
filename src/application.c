@@ -429,7 +429,7 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	if(optionQuit)
 	{
 		/* Quit existing instance */
-		g_debug(_("Quitting running instance!"));
+		g_debug("Quitting running instance!");
 		_xfdashboard_application_quit(self, TRUE);
 
 		return(XFDASHBOARD_APPLICATION_ERROR_QUIT);

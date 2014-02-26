@@ -512,7 +512,7 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	xfdashboard_window_tracker_window_make_stage_window(priv->stageWindow);
 
 	/* Disconnect signal handler as this is a one-time setup of stage window */
-	g_debug(_("Stage window was opened and set up. Removing signal handler."));
+	g_debug("Stage window was opened and set up. Removing signal handler.");
 	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
 }
 
