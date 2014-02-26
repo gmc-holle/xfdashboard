@@ -61,7 +61,7 @@ static guint XfdashboardViewManagerSignals[SIGNAL_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Single instance of view manager */
-XfdashboardViewManager*		viewManager=NULL;
+static XfdashboardViewManager*		_xfdashboard_view_manager=NULL;
 
 /* IMPLEMENTATION: GObject */
 
@@ -87,7 +87,7 @@ static void _xfdashboard_view_manager_dispose(GObject *inObject)
 	}
 
 	/* Unset singleton */
-	if(G_LIKELY(G_OBJECT(viewManager)==inObject)) viewManager=NULL;
+	if(G_LIKELY(G_OBJECT(_xfdashboard_view_manager)==inObject)) _xfdashboard_view_manager=NULL;
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_view_manager_parent_class)->dispose(inObject);
@@ -151,12 +151,12 @@ static void xfdashboard_view_manager_init(XfdashboardViewManager *self)
 /* Get single instance of application */
 XfdashboardViewManager* xfdashboard_view_manager_get_default(void)
 {
-	if(G_UNLIKELY(viewManager==NULL))
+	if(G_UNLIKELY(_xfdashboard_view_manager==NULL))
 	{
-		viewManager=g_object_new(XFDASHBOARD_TYPE_VIEW_MANAGER, NULL);
+		_xfdashboard_view_manager=g_object_new(XFDASHBOARD_TYPE_VIEW_MANAGER, NULL);
 	}
 
-	return(viewManager);
+	return(_xfdashboard_view_manager);
 }
 
 /* Register a view */
