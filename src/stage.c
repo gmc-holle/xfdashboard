@@ -483,9 +483,6 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 {
 	XfdashboardStagePrivate				*priv=self->priv;
 	XfdashboardWindowTrackerWindow		*stageWindow;
-	GdkScreen							*screen;
-	gint								primaryMonitor;
-	GdkRectangle						geometry;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -495,17 +492,6 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	/* Check if window opened is this stage window */
 	stageWindow=xfdashboard_window_tracker_window_get_stage_window(CLUTTER_STAGE(self));
 	if(stageWindow!=inWindow) return;
-
-	/* TODO: As long as we do not support multi-monitors
-	 *       use this hack to ensure stage is in right size
-	 */
-	screen=gdk_screen_get_default();
-	primaryMonitor=gdk_screen_get_primary_monitor(screen);
-	gdk_screen_get_monitor_geometry(screen, primaryMonitor, &geometry);
-	clutter_actor_set_size(CLUTTER_ACTOR(self), geometry.width, geometry.height);
-	xfdashboard_window_tracker_window_move_resize(stageWindow,
-													geometry.x, geometry.y,
-													geometry.width, geometry.height);
 
 	/* Set up window for use as stage window */
 	priv->stageWindow=inWindow;
@@ -742,6 +728,9 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 {
 	XfdashboardStagePrivate		*priv;
 	XfdashboardApplication		*application;
+	GdkScreen					*screen;
+	gint						primaryMonitor;
+	GdkRectangle				geometry;
 
 	priv=self->priv=XFDASHBOARD_STAGE_GET_PRIVATE(self);
 
@@ -769,6 +758,14 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	_xfdashboard_stage_setup(self);
 
 	g_signal_connect_swapped(self, "key-release-event", G_CALLBACK(_xfdashboard_stage_on_key_release), self);
+
+	/* TODO: As long as we do not support multi-monitors
+	 *       use this hack to ensure stage is in right size
+	 */
+	screen=gdk_screen_get_default();
+	primaryMonitor=gdk_screen_get_primary_monitor(screen);
+	gdk_screen_get_monitor_geometry(screen, primaryMonitor, &geometry);
+	clutter_actor_set_size(CLUTTER_ACTOR(self), geometry.width, geometry.height);
 
 	/* Connect signal to application */
 	application=xfdashboard_application_get_default();
