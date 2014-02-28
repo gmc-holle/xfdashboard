@@ -140,7 +140,6 @@ static void _xfdashboard_click_action_set_pressed(XfdashboardClickAction *self, 
 static void _xfdashboard_click_action_set_held(XfdashboardClickAction *self, gboolean isHeld)
 {
 	XfdashboardClickActionPrivate	*priv;
-	ClutterActor					*actor;
 
 	g_return_if_fail(XFDASHBOARD_IS_CLICK_ACTION(self));
 
@@ -153,14 +152,6 @@ static void _xfdashboard_click_action_set_held(XfdashboardClickAction *self, gbo
 	{
 		/* Set value */
 		priv->isHeld=isHeld;
-
-		/* Style state */
-		actor=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
-		if(XFDASHBOARD_IS_ACTOR(actor))
-		{
-			if(priv->isPressed) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(actor), "press-held");
-				else xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(actor), "press-held");
-		}
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardClickActionProperties[PROP_HELD]);
