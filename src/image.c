@@ -31,6 +31,8 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
+#define LOAD_ASYNC 1
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardImage,
 				xfdashboard_image,
@@ -208,159 +210,335 @@ static void _xfdashboard_image_store_in_cache(XfdashboardImage *self, const gcha
 	g_debug("Added image '%s' with ref-count %d" , priv->key, G_OBJECT(self)->ref_count);
 }
 
+/* Set an empty image of size 1x1 pixels (e.g. when loading asynchronously) */
+static void _xfdashboard_image_set_empty_image(XfdashboardImage *self)
+{
+	static guchar		empty[]={ 0, 0, 0, 0xff };
+
+	g_return_if_fail(XFDASHBOARD_IS_IMAGE(self));
+
+	clutter_image_set_data(CLUTTER_IMAGE(self),
+							empty,
+							COGL_PIXEL_FORMAT_RGBA_8888,
+							1, /* width */
+							1, /* height */
+							1, /* row-stride */
+							NULL);
+}
+
+/* Callback when loading icon asynchronously has finished */
+static void _xfdashboard_image_loading_async_callback(GObject *inSource, GAsyncResult *inResult, gpointer inUserData)
+{
+	XfdashboardImage			*self=XFDASHBOARD_IMAGE(inUserData);
+	XfdashboardImagePrivate		*priv=self->priv;
+	GdkPixbuf					*pixbuf;
+	GError						*error=NULL;
+	gboolean					success=TRUE;
+
+	/* Get pixbuf loaded */
+	pixbuf=gdk_pixbuf_new_from_stream_finish(inResult, &error);
+	if(pixbuf)
+	{
+		/* Set image data into content */
+		if(!clutter_image_set_data(CLUTTER_IMAGE(self),
+									gdk_pixbuf_get_pixels(pixbuf),
+									gdk_pixbuf_get_has_alpha(pixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
+									gdk_pixbuf_get_width(pixbuf),
+									gdk_pixbuf_get_height(pixbuf),
+									gdk_pixbuf_get_rowstride(pixbuf),
+									&error))
+		{
+			g_warning(_("Failed to load image data into content for key '%s': %s"),
+						priv->key ? priv->key : "<nil>",
+						error ? error->message : _("Unknown error"));
+			if(error)
+			{
+				g_error_free(error);
+				error=NULL;
+			}
+
+			/* Set empty image */
+			_xfdashboard_image_set_empty_image(self);
+
+			/* Emit "loading-failed" signal */
+			// TODO: g_signal_emit(self, XfdashboardImageSignals[SIGNAL_LOADING_FAILED], 0);
+			success=FALSE;
+		}
+	}
+		else
+		{
+			g_warning(_("Failed to load image for key '%s': %s"),
+						priv->key ? priv->key : "<nil>",
+						error ? error->message : _("Unknown error"));
+			if(error)
+			{
+				g_error_free(error);
+				error=NULL;
+			}
+
+			/* Set empty image */
+			_xfdashboard_image_set_empty_image(self);
+
+			/* Emit "loading-failed" signal */
+			// TODO: g_signal_emit(self, XfdashboardImageSignals[SIGNAL_LOADING_FAILED], 0);
+			success=FALSE;
+		}
+
+	/* Release allocated resources */
+	if(pixbuf) g_object_unref(pixbuf);
+
+	/* Emit "success" signal if loading was successful */
+	if(success)
+	{
+		// TODO: g_signal_emit(self, XfdashboardImageSignals[SIGNAL_LOADED], 0);
+		g_debug("Successfully loaded image for key '%s' asynchronously", priv->key ? priv->key : "<nil>");
+	}
+
+	/* Now release the extra reference we took to keep this instance alive
+	 * while loading asynchronously.
+	 */
+	g_object_unref(self);
+}
+
 /* Load image from file */
 static void _xfdashboard_image_load_from_file(XfdashboardImage *self)
 {
 	XfdashboardImagePrivate		*priv;
-	GdkPixbuf					*iconPixbuf;
-	GError						*error;
+	const gchar					*filename;
 
 	g_return_if_fail(XFDASHBOARD_IS_IMAGE(self));
 
 	priv=self->priv;
-	iconPixbuf=NULL;
-	error=NULL;
+	filename=NULL;
 
 	/* Check if type of image is valid and all needed parameters are set */
 	g_return_if_fail(priv->type==IMAGE_TYPE_FILE);
 	g_return_if_fail(priv->iconName);
 	g_return_if_fail(priv->iconSize>0);
 
-	/* If file exists then load this file and setup pixbuf */
-	if(g_file_test(priv->iconName, G_FILE_TEST_EXISTS))
+	/* If file does not exists then load fallback icon */
+	if(!g_file_test(priv->iconName, G_FILE_TEST_EXISTS))
 	{
-		iconPixbuf=gdk_pixbuf_new_from_file_at_scale(priv->iconName,
-														priv->iconSize,
-														priv->iconSize,
-														TRUE,
-														NULL);
+		GtkIconInfo				*iconInfo;
 
-		if(!iconPixbuf)
+		g_warning(_("Icon file '%s' does not exist - trying fallback icon"), priv->iconName);
+
+		iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
+											XFDASHBOARD_IMAGE_FALLBACK_ICON_NAME,
+											priv->iconSize,
+											GTK_ICON_LOOKUP_USE_BUILTIN);
+
+		if(!iconInfo)
 		{
-			g_warning(_("Could not load icon from file %s: %s"),
-						priv->iconName, (error && error->message) ? error->message : _("unknown error"));
+			g_error(_("Could not load fallback icon for file '%s'"), priv->iconName);
+			_xfdashboard_image_set_empty_image(self);
+			return;
 		}
 
-		if(error!=NULL)
+		/* Check if have to use built-in GdkPixbuf for icon ... */
+		filename=gtk_icon_info_get_filename(iconInfo);
+		if(!filename)
 		{
-			g_error_free(error);
-			error=NULL;
+			GdkPixbuf			*iconPixbuf;
+			GError				*error=NULL;
+
+			iconPixbuf=gtk_icon_info_get_builtin_pixbuf(iconInfo);
+			if(!clutter_image_set_data(CLUTTER_IMAGE(self),
+										gdk_pixbuf_get_pixels(iconPixbuf),
+										gdk_pixbuf_get_has_alpha(iconPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
+										gdk_pixbuf_get_width(iconPixbuf),
+										gdk_pixbuf_get_height(iconPixbuf),
+										gdk_pixbuf_get_rowstride(iconPixbuf),
+										&error))
+			{
+				g_warning(_("Failed to load image data into content for icon '%s': %s"),
+							priv->iconName,
+							error ? error->message : _("Unknown error"));
+				if(error)
+				{
+					g_error_free(error);
+					error=NULL;
+				}
+			}
+				else g_debug("Loaded fallback icon for file '%s' from built-in pixbuf", priv->iconName);
+
+			g_object_unref(iconPixbuf);
 		}
+
+		/* Release allocated resources */
+		gtk_icon_info_free(iconInfo);
 	}
+		/* ... otherwise set up to load icon async */
+		else filename=priv->iconName;
 
-	/* If no icon pixbuf is available we have to load fallback icon */
-	if(!iconPixbuf)
+	/* Load image asynchronously if filename is given */
+	if(filename)
 	{
-		error=NULL;
-		iconPixbuf=gtk_icon_theme_load_icon(priv->iconTheme,
-												XFDASHBOARD_IMAGE_FALLBACK_ICON_NAME,
-												priv->iconSize,
-												GTK_ICON_LOOKUP_USE_BUILTIN,
-												&error);
+		GFile				*file;
+		GInputStream		*stream;
+		GError				*error=NULL;
 
-		if(!iconPixbuf)
+		/* Create stream for loading async */
+		file=g_file_new_for_path(filename);
+		stream=G_INPUT_STREAM(g_file_read(file, NULL, &error));
+		if(!stream)
 		{
-			g_error(_("Could not load fallback icon for '%s': %s"),
-						priv->iconName, (error && error->message) ? error->message : _("unknown error"));
+			g_warning(_("Could not create stream for file '%s' of icon '%s': %s"),
+						filename,
+						priv->iconName,
+						error ? error->message : _("Unknown error"));
+
+			if(error!=NULL)
+			{
+				g_error_free(error);
+				error=NULL;
+			}
+
+			/* Release allocated resources */
+			g_object_unref(file);
+
+			return;
 		}
 
-		if(error!=NULL)
-		{
-			g_error_free(error);
-			error=NULL;
-		}
-	}
+		/* We are going to load the icon asynchronously. To keep this
+		 * image instance alive until async loading finishs and calls
+		 * the callback function we take an extra reference on this
+		 * instance. It will be release in callback function.
+		 */
+		gdk_pixbuf_new_from_stream_at_scale_async(stream,
+													priv->iconSize,
+													priv->iconSize,
+													TRUE,
+													NULL,
+													(GAsyncReadyCallback)_xfdashboard_image_loading_async_callback,
+													g_object_ref(self));
 
-	/* Create ClutterImage for icon loaded and cache it */
-	if(iconPixbuf)
-	{
-		clutter_image_set_data(CLUTTER_IMAGE(self),
-								gdk_pixbuf_get_pixels(iconPixbuf),
-								gdk_pixbuf_get_has_alpha(iconPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
-								gdk_pixbuf_get_width(iconPixbuf),
-								gdk_pixbuf_get_height(iconPixbuf),
-								gdk_pixbuf_get_rowstride(iconPixbuf),
-								NULL);
-		g_object_unref(iconPixbuf);
-	}
+		/* Release allocated resources */
+		g_object_unref(stream);
+		g_object_unref(file);
 
-	g_debug("Loaded image with key '%s' from icon name '%s' at size %u", priv->key, priv->iconName, priv->iconSize);
+		g_debug("Loading icon '%s' from file %s", priv->iconName, filename);
+	}
 }
 
 /* Load image from icon theme */
 static void _xfdashboard_image_load_from_icon_name(XfdashboardImage *self)
 {
 	XfdashboardImagePrivate		*priv;
-	GdkPixbuf					*iconPixbuf;
-	GError						*error;
+	GtkIconInfo					*iconInfo;
+	const gchar					*filename;
 
 	g_return_if_fail(XFDASHBOARD_IS_IMAGE(self));
 
 	priv=self->priv;
-	iconPixbuf=NULL;
-	error=NULL;
+	iconInfo=NULL;
 
 	/* Check if type of image is valid and all needed parameters are set */
 	g_return_if_fail(priv->type==IMAGE_TYPE_ICON_NAME);
 	g_return_if_fail(priv->iconName);
 	g_return_if_fail(priv->iconSize>0);
 
-	/* Try to load the icon name directly using the icon theme */
-	iconPixbuf=gtk_icon_theme_load_icon(priv->iconTheme,
-											priv->iconName,
+	/* Get icon info for icon name */
+	iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
+										priv->iconName,
+										priv->iconSize,
+										GTK_ICON_LOOKUP_USE_BUILTIN);
+
+	/* If we got no icon info we try to fallback icon next */
+	if(!iconInfo)
+	{
+		g_warning(_("Could not lookup themed icon '%s'"), priv->iconName);
+
+		iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
+											XFDASHBOARD_IMAGE_FALLBACK_ICON_NAME,
 											priv->iconSize,
-											GTK_ICON_LOOKUP_USE_BUILTIN,
-											&error);
-
-	if(!iconPixbuf)
-	{
-		g_warning(_("Could not load themed icon '%s': %s"),
-					priv->iconName, (error && error->message) ? error->message : _("unknown error"));
+											GTK_ICON_LOOKUP_USE_BUILTIN);
 	}
 
-	if(error!=NULL)
+	/* If we still got no icon info then we cannot load icon at all */
+	if(!iconInfo)
 	{
-		g_error_free(error);
-		error=NULL;
+		g_error(_("Could not lookup fallback icon for icon '%s'"), priv->iconName);
+		return;
 	}
 
-	/* If no icon pixbuf is available we have to load fallback icon */
-	if(!iconPixbuf)
+	/* Check if have to use built-in GdkPixbuf for icon ... */
+	filename=gtk_icon_info_get_filename(iconInfo);
+	if(!filename)
 	{
-		error=NULL;
-		iconPixbuf=gtk_icon_theme_load_icon(priv->iconTheme,
-												XFDASHBOARD_IMAGE_FALLBACK_ICON_NAME,
-												priv->iconSize,
-												GTK_ICON_LOOKUP_USE_BUILTIN,
-												&error);
+		GdkPixbuf				*iconPixbuf;
+		GError					*error=NULL;
 
-		if(!iconPixbuf)
+		iconPixbuf=gtk_icon_info_get_builtin_pixbuf(iconInfo);
+		if(!clutter_image_set_data(CLUTTER_IMAGE(self),
+									gdk_pixbuf_get_pixels(iconPixbuf),
+									gdk_pixbuf_get_has_alpha(iconPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
+									gdk_pixbuf_get_width(iconPixbuf),
+									gdk_pixbuf_get_height(iconPixbuf),
+									gdk_pixbuf_get_rowstride(iconPixbuf),
+									&error))
 		{
-			g_error(_("Could not load fallback icon for '%s': %s"),
-						priv->iconName, (error && error->message) ? error->message : _("unknown error"));
+			g_warning(_("Failed to load image data into content for icon '%s': %s"),
+						priv->iconName,
+						error ? error->message : _("Unknown error"));
+			if(error)
+			{
+				g_error_free(error);
+				error=NULL;
+			}
 		}
+			else g_debug("Loaded image data into content for icon '%s' from built-in pixbuf", priv->iconName);
 
-		if(error!=NULL)
-		{
-			g_error_free(error);
-			error=NULL;
-		}
-	}
-
-	/* Create ClutterImage for icon loaded and cache it */
-	if(iconPixbuf)
-	{
-		clutter_image_set_data(CLUTTER_IMAGE(self),
-								gdk_pixbuf_get_pixels(iconPixbuf),
-								gdk_pixbuf_get_has_alpha(iconPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
-								gdk_pixbuf_get_width(iconPixbuf),
-								gdk_pixbuf_get_height(iconPixbuf),
-								gdk_pixbuf_get_rowstride(iconPixbuf),
-								NULL);
 		g_object_unref(iconPixbuf);
 	}
+		/* ... otherwise set up to load icon async */
+		else
+		{
+			GFile				*file;
+			GInputStream		*stream;
+			GError				*error=NULL;
 
-	g_debug("Loaded image with key '%s' from icon name '%s' at size %u", priv->key, priv->iconName, priv->iconSize);
+			/* Create stream for loading async */
+			file=g_file_new_for_path(filename);
+			stream=G_INPUT_STREAM(g_file_read(file, NULL, &error));
+			if(!stream)
+			{
+				g_warning(_("Could not create stream for file %s of icon '%s': %s"),
+							filename,
+							priv->iconName,
+							error ? error->message : _("Unknown error"));
+
+				if(error!=NULL)
+				{
+					g_error_free(error);
+					error=NULL;
+				}
+
+				/* Release allocated resources */
+				g_object_unref(file);
+
+				return;
+			}
+
+			/* We are going to load the icon asynchronously. To keep this
+			 * image instance alive until async loading finishs and calls
+			 * the callback function we take an extra reference on this
+			 * instance. It will be release in callback function.
+			 */
+			gdk_pixbuf_new_from_stream_async(stream,
+												NULL,
+												(GAsyncReadyCallback)_xfdashboard_image_loading_async_callback,
+												g_object_ref(self));
+
+			/* Release allocated resources */
+			g_object_unref(stream);
+			g_object_unref(file);
+
+			g_debug("Loading icon '%s' from file %s", priv->iconName, filename);
+		}
+
+	/* Release allocated resources */
+	gtk_icon_info_free(iconInfo);
 }
 
 /* Load image from GIcon */
@@ -368,84 +546,121 @@ static void _xfdashboard_image_load_from_gicon(XfdashboardImage *self)
 {
 	XfdashboardImagePrivate		*priv;
 	GtkIconInfo					*iconInfo;
-	GdkPixbuf					*iconPixbuf;
-	GError						*error;
+	const gchar					*filename;
 
 	g_return_if_fail(XFDASHBOARD_IS_IMAGE(self));
 
 	priv=self->priv;
 	iconInfo=NULL;
-	iconPixbuf=NULL;
-	error=NULL;
 
 	/* Check if type of image is valid and all needed parameters are set */
 	g_return_if_fail(priv->type==IMAGE_TYPE_GICON);
 	g_return_if_fail(priv->gicon);
 	g_return_if_fail(priv->iconSize>0);
 
-	/* Get icon information */
+	/* Get icon info for icon name */
 	iconInfo=gtk_icon_theme_lookup_by_gicon(priv->iconTheme,
-												priv->gicon,
-												priv->iconSize,
-												GTK_ICON_LOOKUP_USE_BUILTIN);
-	if(iconInfo)
-	{
-		/* Load icon */
-		iconPixbuf=gtk_icon_info_load_icon(iconInfo, &error);
-		if(!iconPixbuf)
-		{
-			g_warning(_("Could not load icon for gicon '%s': %s"),
-						g_icon_to_string(priv->gicon), (error && error->message) ? error->message : _("unknown error"));
+											priv->gicon,
+											priv->iconSize,
+											GTK_ICON_LOOKUP_USE_BUILTIN);
 
-			if(error!=NULL)
+	/* If we got no icon info we try to fallback icon next */
+	if(!iconInfo)
+	{
+		g_warning(_("Could not lookup gicon '%s'"), g_icon_to_string(priv->gicon));
+
+		iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
+											XFDASHBOARD_IMAGE_FALLBACK_ICON_NAME,
+											priv->iconSize,
+											GTK_ICON_LOOKUP_USE_BUILTIN);
+	}
+
+	/* If we still got no icon info then we cannot load icon at all */
+	if(!iconInfo)
+	{
+		g_error(_("Could not lookup fallback icon for gicon '%s'"), g_icon_to_string(priv->gicon));
+		return;
+	}
+
+	/* Check if have to use built-in GdkPixbuf for icon ... */
+	filename=gtk_icon_info_get_filename(iconInfo);
+	if(!filename)
+	{
+		GdkPixbuf				*iconPixbuf;
+		GError					*error=NULL;
+
+		iconPixbuf=gtk_icon_info_get_builtin_pixbuf(iconInfo);
+		if(!clutter_image_set_data(CLUTTER_IMAGE(self),
+									gdk_pixbuf_get_pixels(iconPixbuf),
+									gdk_pixbuf_get_has_alpha(iconPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
+									gdk_pixbuf_get_width(iconPixbuf),
+									gdk_pixbuf_get_height(iconPixbuf),
+									gdk_pixbuf_get_rowstride(iconPixbuf),
+									&error))
+		{
+			g_warning(_("Failed to load image data into content for gicon '%s': %s"),
+						g_icon_to_string(priv->gicon),
+						error ? error->message : _("Unknown error"));
+			if(error)
 			{
 				g_error_free(error);
 				error=NULL;
 			}
 		}
-	}
-		else g_warning(_("Could not lookup icon for gicon '%s'"), g_icon_to_string(priv->gicon));
+			else g_debug("Loaded image data into content for gicon '%s' from built-in pixbuf", g_icon_to_string(priv->gicon));
 
-	/* If no icon could be loaded use fallback */
-	if(!iconPixbuf)
-	{
-		error=NULL;
-		iconPixbuf=gtk_icon_theme_load_icon(priv->iconTheme,
-												XFDASHBOARD_IMAGE_FALLBACK_ICON_NAME,
-												priv->iconSize,
-												GTK_ICON_LOOKUP_USE_BUILTIN,
-												&error);
-
-		if(!iconPixbuf)
-		{
-			g_error(_("Could not load fallback gicon for '%s': %s"),
-						g_icon_to_string(priv->gicon), (error && error->message) ? error->message : _("unknown error"));
-		}
-
-		if(error!=NULL)
-		{
-			g_error_free(error);
-			error=NULL;
-		}
-	}
-
-	/* Create ClutterImage for icon loaded and cache it */
-	if(iconPixbuf)
-	{
-		clutter_image_set_data(CLUTTER_IMAGE(self),
-								gdk_pixbuf_get_pixels(iconPixbuf),
-								gdk_pixbuf_get_has_alpha(iconPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
-								gdk_pixbuf_get_width(iconPixbuf),
-								gdk_pixbuf_get_height(iconPixbuf),
-								gdk_pixbuf_get_rowstride(iconPixbuf),
-								NULL);
 		g_object_unref(iconPixbuf);
 	}
+		/* ... otherwise set up to load icon async */
+		else
+		{
+			GFile				*file;
+			GInputStream		*stream;
+			GError				*error=NULL;
+
+			/* Create stream for loading async */
+			file=g_file_new_for_path(filename);
+			stream=G_INPUT_STREAM(g_file_read(file, NULL, &error));
+			if(!stream)
+			{
+				g_warning(_("Could not create stream for file %s of gicon '%s': %s"),
+							filename,
+							g_icon_to_string(priv->gicon),
+							error ? error->message : _("Unknown error"));
+
+				if(error!=NULL)
+				{
+					g_error_free(error);
+					error=NULL;
+				}
+
+				/* Release allocated resources */
+				g_object_unref(file);
+
+				return;
+			}
+
+			/* We are going to load the icon asynchronously. To keep this
+			 * image instance alive until async loading finishs and calls
+			 * the callback function we take an extra reference on this
+			 * instance. It will be release in callback function.
+			 */
+			gdk_pixbuf_new_from_stream_async(stream,
+												NULL,
+												(GAsyncReadyCallback)_xfdashboard_image_loading_async_callback,
+												g_object_ref(self));
+
+			/* Release allocated resources */
+			g_object_unref(stream);
+			g_object_unref(file);
+
+			g_debug("Loading gicon '%s' from file %s",
+						g_icon_to_string(priv->gicon),
+						filename);
+		}
 
 	/* Release allocated resources */
-	if(iconInfo) gtk_icon_info_free(iconInfo);
-
-	g_debug("Loaded image with key '%s' from gicon '%s' at size %u", priv->key, g_icon_to_string(priv->gicon), priv->iconSize);
+	gtk_icon_info_free(iconInfo);
 }
 
 /* Icon theme has changed */
@@ -460,6 +675,9 @@ static void _xfdashboard_image_on_icon_theme_changed(XfdashboardImage *self,
 
 	/* If icon has not been loaded yet then there is no need to do it now */
 	if(!priv->isLoaded) return;
+
+	/* Set empty image - just for the case loading failed at any point */
+	_xfdashboard_image_set_empty_image(self);
 
 	/* Reload image */
 	switch(priv->type)
@@ -551,12 +769,15 @@ static void _xfdashboard_image_on_attached(ClutterContent *inContent,
 	/* Check if image was already loaded */
 	if(priv->isLoaded) return;
 
-	/* Mark image loaded regardless if loading will succeed or fail. */
+	/* Mark image loaded regardless if loading will succeed or fail */
 	priv->isLoaded=TRUE;
 
-	/* Also disconnect signal handler as it should not be called anymore. */
+	/* Also disconnect signal handler as it should not be called anymore */
 	g_signal_handler_disconnect(self, priv->contentAttachedSignalID);
 	priv->contentAttachedSignalID=0;
+
+	/* Set empty image - just for the case loading failed at any point */
+	_xfdashboard_image_set_empty_image(self);
 
 	/* Load icon */
 	switch(priv->type)
@@ -797,22 +1018,37 @@ ClutterImage* xfdashboard_image_new_for_gicon(GIcon *inIcon, gint inSize)
 ClutterImage* xfdashboard_image_new_for_pixbuf(GdkPixbuf *inPixbuf)
 {
 	ClutterContent		*image;
+	GError				*error;
 
 	g_return_val_if_fail(GDK_IS_PIXBUF(inPixbuf), NULL);
 
 	image=NULL;
+	error=NULL;
 
 	/* Create ClutterImage for pixbuf directly because images
 	 * from GdkPixbuf will not be cached
 	 */
 	image=clutter_image_new();
-	clutter_image_set_data(CLUTTER_IMAGE(image),
-							gdk_pixbuf_get_pixels(inPixbuf),
-							gdk_pixbuf_get_has_alpha(inPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
-							gdk_pixbuf_get_width(inPixbuf),
-							gdk_pixbuf_get_height(inPixbuf),
-							gdk_pixbuf_get_rowstride(inPixbuf),
-							NULL);
+	if(!clutter_image_set_data(CLUTTER_IMAGE(image),
+								gdk_pixbuf_get_pixels(inPixbuf),
+								gdk_pixbuf_get_has_alpha(inPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
+								gdk_pixbuf_get_width(inPixbuf),
+								gdk_pixbuf_get_height(inPixbuf),
+								gdk_pixbuf_get_rowstride(inPixbuf),
+								&error))
+	{
+		g_warning("Failed to load image data from pixbuf into content: %s",
+					error ? error->message : _("Unknown error"));
+
+		if(error)
+		{
+			g_error_free(error);
+			error=NULL;
+		}
+
+		/* Set empty image */
+		_xfdashboard_image_set_empty_image(XFDASHBOARD_IMAGE(image));
+	}
 
 	/* Return ClutterImage */
 	return(CLUTTER_IMAGE(image));
