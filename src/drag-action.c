@@ -441,7 +441,7 @@ static void _xfdashboard_drag_action_drag_begin(ClutterDragAction *inAction,
 
 	if(XFDASHBOARD_IS_ACTOR(priv->actor))
 	{
-		xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(priv->source), "dragged");
+		xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "dragged");
 	}
 
 	priv->dragHandle=clutter_drag_action_get_drag_handle(CLUTTER_DRAG_ACTION(self));
@@ -722,7 +722,7 @@ static void _xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 
 	if(XFDASHBOARD_IS_ACTOR(priv->actor))
 	{
-		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->source), "dragged");
+		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "dragged");
 	}
 
 	if(priv->dragHandle &&
