@@ -40,6 +40,7 @@ G_DEFINE_TYPE(XfdashboardImage,
 typedef enum
 {
 	IMAGE_TYPE_NONE=0,
+	IMAGE_TYPE_FILE,
 	IMAGE_TYPE_ICON_NAME,
 	IMAGE_TYPE_GICON,
 } ImageType;
@@ -207,8 +208,8 @@ static void _xfdashboard_image_store_in_cache(XfdashboardImage *self, const gcha
 	g_debug("Added image '%s' with ref-count %d" , priv->key, G_OBJECT(self)->ref_count);
 }
 
-/* Load image from icon theme or file */
-static void _xfdashboard_image_load_from_icon_name(XfdashboardImage *self)
+/* Load image from file */
+static void _xfdashboard_image_load_from_file(XfdashboardImage *self)
 {
 	XfdashboardImagePrivate		*priv;
 	GdkPixbuf					*iconPixbuf;
@@ -221,13 +222,12 @@ static void _xfdashboard_image_load_from_icon_name(XfdashboardImage *self)
 	error=NULL;
 
 	/* Check if type of image is valid and all needed parameters are set */
-	g_return_if_fail(priv->type==IMAGE_TYPE_ICON_NAME);
+	g_return_if_fail(priv->type==IMAGE_TYPE_FILE);
 	g_return_if_fail(priv->iconName);
 	g_return_if_fail(priv->iconSize>0);
 
-	/* Check if we have an absolute filename then load this file directly ... */
-	if(g_path_is_absolute(priv->iconName) &&
-		g_file_test(priv->iconName, G_FILE_TEST_EXISTS))
+	/* If file exists then load this file and setup pixbuf */
+	if(g_file_test(priv->iconName, G_FILE_TEST_EXISTS))
 	{
 		iconPixbuf=gdk_pixbuf_new_from_file_at_scale(priv->iconName,
 														priv->iconSize,
@@ -247,30 +247,84 @@ static void _xfdashboard_image_load_from_icon_name(XfdashboardImage *self)
 			error=NULL;
 		}
 	}
-		/* ... otherwise try to load the icon name directly using the icon theme */
-		else
+
+	/* If no icon pixbuf is available we have to load fallback icon */
+	if(!iconPixbuf)
+	{
+		error=NULL;
+		iconPixbuf=gtk_icon_theme_load_icon(priv->iconTheme,
+												XFDASHBOARD_IMAGE_FALLBACK_ICON_NAME,
+												priv->iconSize,
+												GTK_ICON_LOOKUP_USE_BUILTIN,
+												&error);
+
+		if(!iconPixbuf)
 		{
-			error=NULL;
-			iconPixbuf=gtk_icon_theme_load_icon(priv->iconTheme,
-													priv->iconName,
-													priv->iconSize,
-													GTK_ICON_LOOKUP_USE_BUILTIN,
-													&error);
-
-			if(!iconPixbuf)
-			{
-				g_warning(_("Could not load themed icon '%s': %s"),
-							priv->iconName, (error && error->message) ? error->message : _("unknown error"));
-			}
-
-			if(error!=NULL)
-			{
-				g_error_free(error);
-				error=NULL;
-			}
+			g_error(_("Could not load fallback icon for '%s': %s"),
+						priv->iconName, (error && error->message) ? error->message : _("unknown error"));
 		}
 
-	/* If no icon could be loaded use fallback */
+		if(error!=NULL)
+		{
+			g_error_free(error);
+			error=NULL;
+		}
+	}
+
+	/* Create ClutterImage for icon loaded and cache it */
+	if(iconPixbuf)
+	{
+		clutter_image_set_data(CLUTTER_IMAGE(self),
+								gdk_pixbuf_get_pixels(iconPixbuf),
+								gdk_pixbuf_get_has_alpha(iconPixbuf) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
+								gdk_pixbuf_get_width(iconPixbuf),
+								gdk_pixbuf_get_height(iconPixbuf),
+								gdk_pixbuf_get_rowstride(iconPixbuf),
+								NULL);
+		g_object_unref(iconPixbuf);
+	}
+
+	g_debug("Loaded image with key '%s' from icon name '%s' at size %u", priv->key, priv->iconName, priv->iconSize);
+}
+
+/* Load image from icon theme */
+static void _xfdashboard_image_load_from_icon_name(XfdashboardImage *self)
+{
+	XfdashboardImagePrivate		*priv;
+	GdkPixbuf					*iconPixbuf;
+	GError						*error;
+
+	g_return_if_fail(XFDASHBOARD_IS_IMAGE(self));
+
+	priv=self->priv;
+	iconPixbuf=NULL;
+	error=NULL;
+
+	/* Check if type of image is valid and all needed parameters are set */
+	g_return_if_fail(priv->type==IMAGE_TYPE_ICON_NAME);
+	g_return_if_fail(priv->iconName);
+	g_return_if_fail(priv->iconSize>0);
+
+	/* Try to load the icon name directly using the icon theme */
+	iconPixbuf=gtk_icon_theme_load_icon(priv->iconTheme,
+											priv->iconName,
+											priv->iconSize,
+											GTK_ICON_LOOKUP_USE_BUILTIN,
+											&error);
+
+	if(!iconPixbuf)
+	{
+		g_warning(_("Could not load themed icon '%s': %s"),
+					priv->iconName, (error && error->message) ? error->message : _("unknown error"));
+	}
+
+	if(error!=NULL)
+	{
+		g_error_free(error);
+		error=NULL;
+	}
+
+	/* If no icon pixbuf is available we have to load fallback icon */
 	if(!iconPixbuf)
 	{
 		error=NULL;
@@ -414,6 +468,10 @@ static void _xfdashboard_image_on_icon_theme_changed(XfdashboardImage *self,
 			g_warning(_("Cannot load image '%s' without type"), priv->key);
 			break;
 
+		case IMAGE_TYPE_FILE:
+			_xfdashboard_image_load_from_file(self);
+			break;
+
 		case IMAGE_TYPE_ICON_NAME:
 			_xfdashboard_image_load_from_icon_name(self);
 			break;
@@ -428,7 +486,7 @@ static void _xfdashboard_image_on_icon_theme_changed(XfdashboardImage *self,
 	}
 }
 
-/* Setup image for loading icon from icon name */
+/* Setup image for loading icon from icon theme by name or absolute file name */
 static void _xfdashboard_image_setup_for_icon(XfdashboardImage *self,
 												const gchar *inIconName,
 												guint inSize)
@@ -444,8 +502,11 @@ static void _xfdashboard_image_setup_for_icon(XfdashboardImage *self,
 	/* Image must not be setup already */
 	g_return_if_fail(priv->type==IMAGE_TYPE_NONE);
 
+	/* Determine type of image to load icon from theme or file */
+	if(g_path_is_absolute(inIconName)) priv->type=IMAGE_TYPE_FILE;
+		else priv->type=IMAGE_TYPE_ICON_NAME;
+
 	/* Set up image */
-	priv->type=IMAGE_TYPE_ICON_NAME;
 	priv->iconName=g_strdup(inIconName);
 	priv->iconSize=inSize;
 }
@@ -502,6 +563,10 @@ static void _xfdashboard_image_on_attached(ClutterContent *inContent,
 	{
 		case IMAGE_TYPE_NONE:
 			g_warning(_("Cannot load image '%s' without type"), priv->key);
+			break;
+
+		case IMAGE_TYPE_FILE:
+			_xfdashboard_image_load_from_file(self);
 			break;
 
 		case IMAGE_TYPE_ICON_NAME:
