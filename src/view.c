@@ -565,8 +565,6 @@ void xfdashboard_view_set_enabled(XfdashboardView *self, gboolean inIsEnabled)
 		g_signal_emit(self, XfdashboardViewSignals[signalBeforeID], 0, self);
 
 		priv->isEnabled=inIsEnabled;
-		if(priv->isEnabled) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(self), "enabled");
-			else xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(self), "enabled");
 
 		g_signal_emit(self, XfdashboardViewSignals[signalAfterID], 0, self);
 
