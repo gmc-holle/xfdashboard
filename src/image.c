@@ -72,11 +72,6 @@ enum
 
 	PROP_KEY,
 
-	PROP_ICON_NAME,
-	PROP_GICON,
-
-	PROP_ICON_SIZE,
-
 	PROP_LAST
 };
 
@@ -433,6 +428,50 @@ static void _xfdashboard_image_on_icon_theme_changed(XfdashboardImage *self,
 	}
 }
 
+/* Setup image for loading icon from icon name */
+static void _xfdashboard_image_setup_for_icon(XfdashboardImage *self,
+												const gchar *inIconName,
+												guint inSize)
+{
+	XfdashboardImagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_IMAGE(self));
+	g_return_if_fail(inIconName && *inIconName);
+	g_return_if_fail(inSize>0);
+
+	priv=self->priv;
+
+	/* Image must not be setup already */
+	g_return_if_fail(priv->type==IMAGE_TYPE_NONE);
+
+	/* Set up image */
+	priv->type=IMAGE_TYPE_ICON_NAME;
+	priv->iconName=g_strdup(inIconName);
+	priv->iconSize=inSize;
+}
+
+/* Setup image for loading icon from GIcon */
+static void _xfdashboard_image_setup_for_gicon(XfdashboardImage *self,
+												GIcon *inIcon,
+												guint inSize)
+{
+	XfdashboardImagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_IMAGE(self));
+	g_return_if_fail(G_IS_ICON(inIcon));
+	g_return_if_fail(inSize>0);
+
+	priv=self->priv;
+
+	/* Image must not be setup already */
+	g_return_if_fail(priv->type==IMAGE_TYPE_NONE);
+
+	/* Set up image */
+	priv->type=IMAGE_TYPE_GICON;
+	priv->gicon=G_ICON(g_object_ref(inIcon));
+	priv->iconSize=inSize;
+}
+
 /* IMPLEMENTATION: ClutterContent */
 
 /* Image was attached to an actor */
@@ -532,38 +571,11 @@ static void _xfdashboard_image_set_property(GObject *inObject,
 											GParamSpec *inSpec)
 {
 	XfdashboardImage			*self=XFDASHBOARD_IMAGE(inObject);
-	XfdashboardImagePrivate		*priv=self->priv;
 
 	switch(inPropID)
 	{
 		case PROP_KEY:
 			_xfdashboard_image_store_in_cache(self, g_value_get_string(inValue));
-			break;
-
-		case PROP_ICON_NAME:
-			if(priv->type!=IMAGE_TYPE_NONE)
-			{
-				g_error(_("Image '%s' already set up. Ignoring icon name."), priv->key ? priv->key : _("unnamed"));
-				return;
-			}
-
-			priv->type=IMAGE_TYPE_ICON_NAME;
-			priv->iconName=g_strdup(g_value_get_string(inValue));
-			break;
-
-		case PROP_GICON:
-			if(priv->type!=IMAGE_TYPE_NONE)
-			{
-				g_error(_("Image '%s' already set up. Ignoring GIcon."), priv->key ? priv->key : _("unnamed"));
-				return;
-			}
-
-			priv->type=IMAGE_TYPE_GICON;
-			priv->gicon=G_ICON(g_object_ref(g_value_get_object(inValue)));
-			break;
-
-		case PROP_ICON_SIZE:
-			priv->iconSize=g_value_get_uint(inValue);
 			break;
 
 		default:
@@ -593,28 +605,6 @@ void xfdashboard_image_class_init(XfdashboardImageClass *klass)
 							_("Key"),
 							_("The hash key for caching this image"),
 							N_(""),
-							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
-
-	XfdashboardImageProperties[PROP_ICON_NAME]=
-		g_param_spec_string("icon-name",
-							_("Icon name"),
-							_("Themed icon name or relative or absolute path to image file"),
-							N_(""),
-							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardImageProperties[PROP_GICON]=
-		g_param_spec_object("gicon",
-							_("GIcon"),
-							_("GIcon object to load as image"),
-							G_TYPE_ICON,
-							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardImageProperties[PROP_ICON_SIZE]=
-		g_param_spec_uint("icon-size",
-							_("Icon size"),
-							_("Size of icon"),
-							0, G_MAXUINT,
-							0,
 							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardImageProperties);
@@ -685,9 +675,8 @@ ClutterImage* xfdashboard_image_new_for_icon_name(const gchar *inIconName, gint 
 	{
 		image=CLUTTER_IMAGE(g_object_new(XFDASHBOARD_TYPE_IMAGE,
 											"key", key,
-											"icon-name", inIconName,
-											"icon-size", inSize,
 											NULL));
+		_xfdashboard_image_setup_for_icon(XFDASHBOARD_IMAGE(image), inIconName, inSize);
 	}
 
 	g_free(key);
@@ -721,11 +710,10 @@ ClutterImage* xfdashboard_image_new_for_gicon(GIcon *inIcon, gint inSize)
 	image=_xfdashboard_image_get_cached_image(key);
 	if(!image)
 	{
-		image=CLUTTER_IMAGE(g_object_new(XFDASHBOARD_TYPE_IMAGE,
+		image=CLUTTER_IMAGE(g_object_new(XFDASHBOARD_TYPE_IMAGE, 
 											"key", key,
-											"gicon", inIcon,
-											"icon-size", inSize,
 											NULL));
+		_xfdashboard_image_setup_for_gicon(XFDASHBOARD_IMAGE(image), inIcon, inSize);
 	}
 
 	g_free(key);
