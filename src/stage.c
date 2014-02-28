@@ -483,6 +483,11 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 {
 	XfdashboardStagePrivate				*priv=self->priv;
 	XfdashboardWindowTrackerWindow		*stageWindow;
+#if !defined(CHECK_CLUTTER_VERSION) || !CLUTTER_CHECK_VERSION(1, 16, 0)
+	GdkScreen							*screen;
+	gint								primaryMonitor;
+	GdkRectangle						geometry;
+#endif
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -496,6 +501,16 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	/* Set up window for use as stage window */
 	priv->stageWindow=inWindow;
 	xfdashboard_window_tracker_window_make_stage_window(priv->stageWindow);
+
+#if !defined(CHECK_CLUTTER_VERSION) || !CLUTTER_CHECK_VERSION(1, 16, 0)
+	/* TODO: As long as we do not support multi-monitors
+	 *       use this hack to ensure stage is in right size
+	 */
+	screen=gdk_screen_get_default();
+	primaryMonitor=gdk_screen_get_primary_monitor(screen);
+	gdk_screen_get_monitor_geometry(screen, primaryMonitor, &geometry);
+	clutter_actor_set_size(CLUTTER_ACTOR(self), geometry.width, geometry.height);
+#endif
 
 	/* Disconnect signal handler as this is a one-time setup of stage window */
 	g_debug("Stage window was opened and set up. Removing signal handler.");
@@ -728,9 +743,11 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 {
 	XfdashboardStagePrivate		*priv;
 	XfdashboardApplication		*application;
+#if defined(CLUTTER_CHECK_VERSION) && CLUTTER_CHECK_VERSION(1, 16, 0)
 	GdkScreen					*screen;
 	gint						primaryMonitor;
 	GdkRectangle				geometry;
+#endif
 
 	priv=self->priv=XFDASHBOARD_STAGE_GET_PRIVATE(self);
 
@@ -759,6 +776,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 
 	g_signal_connect_swapped(self, "key-release-event", G_CALLBACK(_xfdashboard_stage_on_key_release), self);
 
+#if defined(CLUTTER_CHECK_VERSION) && CLUTTER_CHECK_VERSION(1, 16, 0)
 	/* TODO: As long as we do not support multi-monitors
 	 *       use this hack to ensure stage is in right size
 	 */
@@ -766,6 +784,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	primaryMonitor=gdk_screen_get_primary_monitor(screen);
 	gdk_screen_get_monitor_geometry(screen, primaryMonitor, &geometry);
 	clutter_actor_set_size(CLUTTER_ACTOR(self), geometry.width, geometry.height);
+#endif
 
 	/* Connect signal to application */
 	application=xfdashboard_application_get_default();
