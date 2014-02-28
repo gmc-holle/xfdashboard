@@ -699,8 +699,8 @@ void xfdashboard_search_view_set_format_title_only(XfdashboardSearchView *self, 
 		if(priv->formatTitleOnly) g_free(priv->formatTitleOnly);
 		priv->formatTitleOnly=g_strdup(inFormat);
 
-		/* Update actor */
-		_xfdashboard_search_view_on_filter_changed(self, NULL);
+		/* Update view only if view mode is icon which uses this format string */
+		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_ICON) _xfdashboard_search_view_on_filter_changed(self, NULL);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_ONLY]);
@@ -731,8 +731,8 @@ void xfdashboard_search_view_set_format_title_description(XfdashboardSearchView 
 		if(priv->formatTitleDescription) g_free(priv->formatTitleDescription);
 		priv->formatTitleDescription=g_strdup(inFormat);
 
-		/* Update actor */
-		_xfdashboard_search_view_on_filter_changed(self, NULL);
+		/* Update view only if view mode is list which uses this format string */
+		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) _xfdashboard_search_view_on_filter_changed(self, NULL);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]);
