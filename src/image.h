@@ -1,5 +1,5 @@
 /*
- * image: A synchronous loaded and cached image content
+ * image: An asynchronous loaded and cached image content
  * 
  * Copyright 2012-2014 Stephan Haller <nomad@froevel.de>
  * 
