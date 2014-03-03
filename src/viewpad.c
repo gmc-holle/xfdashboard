@@ -1017,7 +1017,7 @@ static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	priv=self->priv=XFDASHBOARD_VIEWPAD_GET_PRIVATE(self);
 
 	/* Set up default values */
-	priv->viewManager=XFDASHBOARD_VIEW_MANAGER(g_object_ref(xfdashboard_view_manager_get_default()));
+	priv->viewManager=xfdashboard_view_manager_get_default();
 	priv->activeView=NULL;
 	priv->spacing=0.0f;
 	priv->hScrollbarVisible=FALSE;

@@ -155,6 +155,7 @@ XfdashboardViewManager* xfdashboard_view_manager_get_default(void)
 	{
 		_xfdashboard_view_manager=g_object_new(XFDASHBOARD_TYPE_VIEW_MANAGER, NULL);
 	}
+		else g_object_ref(_xfdashboard_view_manager);
 
 	return(_xfdashboard_view_manager);
 }
@@ -216,7 +217,7 @@ void xfdashboard_view_manager_unregister(XfdashboardViewManager *self, GType inV
 }
 
 /* Get list of registered views types.
- * Returned GList must be freed with g_list_free by caller.
+ * Returned GList must be freed with g_list_free() by caller.
  */
 GList* xfdashboard_view_manager_get_registered(XfdashboardViewManager *self)
 {
