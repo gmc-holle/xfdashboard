@@ -81,6 +81,7 @@ gboolean xfdashboard_text_box_is_empty(XfdashboardTextBox *self);
 gint xfdashboard_text_box_get_length(XfdashboardTextBox *self);
 const gchar* xfdashboard_text_box_get_text(XfdashboardTextBox *self);
 void xfdashboard_text_box_set_text(XfdashboardTextBox *self, const gchar *inMarkupText);
+void xfdashboard_text_box_set_text_va(XfdashboardTextBox *self, const gchar *inFormat, ...) G_GNUC_PRINTF(2, 3);
 
 const gchar* xfdashboard_text_box_get_text_font(XfdashboardTextBox *self);
 void xfdashboard_text_box_set_text_font(XfdashboardTextBox *self, const gchar *inFont);
@@ -96,6 +97,7 @@ void xfdashboard_text_box_set_selection_background_color(XfdashboardTextBox *sel
 
 const gchar* xfdashboard_text_box_get_hint_text(XfdashboardTextBox *self);
 void xfdashboard_text_box_set_hint_text(XfdashboardTextBox *self, const gchar *inMarkupText);
+void xfdashboard_text_box_set_hint_text_va(XfdashboardTextBox *self, const gchar *inFormat, ...) G_GNUC_PRINTF(2, 3);
 
 const gchar* xfdashboard_text_box_get_hint_text_font(XfdashboardTextBox *self);
 void xfdashboard_text_box_set_hint_text_font(XfdashboardTextBox *self, const gchar *inFont);

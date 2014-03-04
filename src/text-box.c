@@ -1044,6 +1044,25 @@ void xfdashboard_text_box_set_text(XfdashboardTextBox *self, const gchar *inMark
 	}
 }
 
+void xfdashboard_text_box_set_text_va(XfdashboardTextBox *self, const gchar *inFormat, ...)
+{
+	gchar						*text;
+	va_list						args;
+
+	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
+
+	/* Build formatted text to set */
+	va_start(args, inFormat);
+	text=g_strdup_vprintf(inFormat, args);
+	va_end(args);
+
+	/* Set formatted text */
+	xfdashboard_text_box_set_text(self, text);
+
+	/* Release allocated resources */
+	g_free(text);
+}
+
 /* Get/set font of editable text box */
 const gchar* xfdashboard_text_box_get_text_font(XfdashboardTextBox *self)
 {
@@ -1292,6 +1311,25 @@ void xfdashboard_text_box_set_hint_text(XfdashboardTextBox *self, const gchar *i
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardTextBoxProperties[PROP_HINT_TEXT]);
 	}
+}
+
+void xfdashboard_text_box_set_hint_text_va(XfdashboardTextBox *self, const gchar *inFormat, ...)
+{
+	gchar						*text;
+	va_list						args;
+
+	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
+
+	/* Build formatted text to set */
+	va_start(args, inFormat);
+	text=g_strdup_vprintf(inFormat, args);
+	va_end(args);
+
+	/* Set formatted text */
+	xfdashboard_text_box_set_hint_text(self, text);
+
+	/* Release allocated resources */
+	g_free(text);
 }
 
 /* Get/set font of hint label */
