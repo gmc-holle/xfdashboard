@@ -554,7 +554,7 @@ GType xfdashboard_actor_get_type(void)
 		actorType=g_type_register_static(CLUTTER_TYPE_ACTOR,
 											g_intern_static_string("XfdashboardActor"),
 											&actorInfo,
-											G_TYPE_FLAG_ABSTRACT);
+											0);
 	}
 
 	return(actorType);
