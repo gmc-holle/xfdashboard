@@ -188,30 +188,6 @@ static gboolean _xfdashboard_application_load_theme(XfdashboardApplication *self
 		return(FALSE);
 	}
 
-#ifdef DEBUG
-	/* If debug is enabled search in project's data dir first assuming
-	 * that current path is project's top level dir.
-	 * That means we look for: "./data/themes/<<theme name>>/xfdashboard.css" */
-	if(!themeFile)
-	{
-		gchar						*currentPath;
-
-		currentPath=g_get_current_dir();
-		if(currentPath)
-		{
-			themeFile=g_build_filename(currentPath, "data", "themes", themeName, XFDASHBOARD_THEME_CSS_FILE, NULL);
-			g_debug("Trying theme file: %s", themeFile);
-			if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
-			{
-				g_free(themeFile);
-				themeFile=NULL;
-			}
-
-			g_free(currentPath);
-		}
-	}
-#endif
-
 	/* Search theme file in user's config dir first */
 	if(!themeFile)
 	{
