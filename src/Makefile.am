@@ -21,6 +21,7 @@ xfdashboard_headers = \
 	application.h \
 	application-button.h \
 	applications-menu-model.h \
+	applications-search-provider.h \
 	applications-view.h \
 	background.h \
 	button.h \
@@ -35,6 +36,10 @@ xfdashboard_headers = \
 	quicklaunch.h \
 	scaled-table-layout.h \
 	scrollbar.h \
+	search-manager.h \
+	search-provider.h \
+	search-result-container.h \
+	search-result-set.h \
 	search-view.h \
 	stage.h \
 	text-box.h \
@@ -60,6 +65,7 @@ xfdashboard_SOURCES = \
 	application.c \
 	application-button.c \
 	applications-menu-model.c \
+	applications-search-provider.c \
 	applications-view.c \
 	background.c \
 	button.c \
@@ -75,6 +81,10 @@ xfdashboard_SOURCES = \
 	quicklaunch.c \
 	scaled-table-layout.c \
 	scrollbar.c \
+	search-manager.c \
+	search-provider.c \
+	search-result-container.c \
+	search-result-set.c \
 	search-view.c \
 	stage.c \
 	text-box.c \

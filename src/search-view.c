@@ -25,16 +25,21 @@
 #include "config.h"
 #endif
 
+#include "search-view.h"
+
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
-#include "search-view.h"
-#include "types.h"
-#include "enums.h"
-#include "applications-menu-model.h"
-#include "application-button.h"
-#include "application.h"
+#include "search-manager.h"
+#include "search-result-container.h"
+#include "click-action.h"
 #include "drag-action.h"
+#include "utils.h"
+
+#ifdef g_debug
+#undef g_debug
+#endif
+#define g_debug g_message
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardSearchView,
@@ -47,403 +52,521 @@ G_DEFINE_TYPE(XfdashboardSearchView,
 
 struct _XfdashboardSearchViewPrivate
 {
-	/* Properties related */
-	XfdashboardViewMode					viewMode;
-	gchar								*formatTitleOnly;
-	gchar								*formatTitleDescription;
-
 	/* Instance related */
-	ClutterLayoutManager				*layout;
-	XfdashboardApplicationsMenuModel	*apps;
+	XfdashboardSearchManager			*searchManager;
+	GList								*providers;
+	gchar								*lastSearchString;
+	gchar								**lastSearchTermsList;
 };
 
-/* Properties */
+/* Signals */
 enum
 {
-	PROP_0,
+	SIGNAL_SEARCH_RESET,
+	SIGNAL_SEARCH_UPDATED,
 
-	PROP_VIEW_MODE,
-
-	PROP_FORMAT_TITLE_ONLY,
-	PROP_FORMAT_TITLE_DESCRIPTION,
-
-	PROP_LAST
+	SIGNAL_LAST
 };
 
-static GParamSpec* XfdashboardSearchViewProperties[PROP_LAST]={ 0, };
+static guint XfdashboardSearchViewSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_SPACING				4.0f		// TODO: Replace by layout
-
-struct _XfdashboardSearchViewFilterData
+typedef struct _XfdashboardSearchViewProviderData	XfdashboardSearchViewProviderData;
+struct _XfdashboardSearchViewProviderData
 {
-	GHashTable		*pool;
-	gchar			*searchText;
+	XfdashboardSearchView				*view;
+
+	XfdashboardSearchProvider			*provider;
+	XfdashboardSearchResultSet			*lastResultSet;
+	gulong								lastSearchTimestamp;
+
+	ClutterActor						*container;
+	GList								*mappings;
+
+	ClutterActor						*lastResultItemActorSeen;
 };
-typedef struct _XfdashboardSearchViewFilterData			XfdashboardSearchViewFilterData; 
 
-/* Forward declaration */
-static void _xfdashboard_search_view_on_item_clicked(XfdashboardSearchView *self, gpointer inUserData);
-
-/* Filter functions */
-static void _xfdashboard_search_view_on_filter_data_destroy(gpointer inUserData)
+typedef struct _XfdashboardSearchViewProviderItemsMapping	XfdashboardSearchViewProviderItemsMapping;
+struct _XfdashboardSearchViewProviderItemsMapping
 {
-	XfdashboardSearchViewFilterData		*searchData;
+	XfdashboardSearchViewProviderData	*providerData;
+	GVariant							*item;
+	ClutterActor						*actor;
+	guint								actorDestroyID;
+};
 
-	g_return_if_fail(inUserData);
+/* Remove a mapping between result set item and actor from stored mapping */
+static void _xfdashboard_search_view_provider_item_mapping_free(XfdashboardSearchViewProviderItemsMapping *inMapping)
+{
+	g_return_if_fail(inMapping);
 
-	searchData=(XfdashboardSearchViewFilterData*)inUserData;
+	/* Free mapping */
+	if(inMapping->item) g_variant_unref(inMapping->item);
+	if(inMapping->actor && inMapping->actorDestroyID) g_signal_handler_disconnect(inMapping->actor, inMapping->actorDestroyID);
+	g_free(inMapping);
+}
+
+/* Create a mapping between result set item and actor and store it */
+static XfdashboardSearchViewProviderItemsMapping* _xfdashboard_search_view_provider_item_mapping_new(GVariant *inItem, ClutterActor *inActor)
+{
+	XfdashboardSearchViewProviderItemsMapping	*mapping;
+
+	g_return_val_if_fail(inItem, NULL);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), NULL);
+
+	/* Set up mapping and add to array */
+	mapping=g_new0(XfdashboardSearchViewProviderItemsMapping, 1);
+	mapping->item=g_variant_ref(inItem);
+	mapping->actor=inActor;
+
+	return(mapping);
+}
+
+/* Free data for provider */
+static void _xfdashboard_search_view_provider_data_free(XfdashboardSearchViewProviderData *inData)
+{
+	g_return_if_fail(inData);
 
 	/* Release allocated resources */
-	if(searchData->pool)
-	{
-		g_hash_table_destroy(searchData->pool);
-		searchData->pool=NULL;
-	}
-
-	if(searchData->searchText)
-	{
-		g_free(searchData->searchText);
-		searchData->searchText=NULL;
-	}
-
-	g_free(searchData);
+	if(inData->mappings) g_list_free_full(inData->mappings, (GDestroyNotify)_xfdashboard_search_view_provider_item_mapping_free);
+	if(inData->lastResultSet) g_object_unref(inData->lastResultSet);
+	if(inData->container) clutter_actor_destroy(inData->container);
+	if(inData->provider) g_object_unref(inData->provider);
+	g_free(inData);
 }
 
-static gboolean _xfdashboard_search_view_filter_nothing(ClutterModel *inModel,
-														ClutterModelIter *inIter,
-														gpointer inUserData)
+/* Create data for provider */
+static XfdashboardSearchViewProviderData* _xfdashboard_search_view_provider_data_new(GType inProviderType)
 {
-	/* Always return FALSE to hide model item */
-	return(FALSE);
+	XfdashboardSearchViewProviderData	*data;
+
+	g_return_val_if_fail(inProviderType!=XFDASHBOARD_TYPE_SEARCH_PROVIDER && g_type_is_a(inProviderType, XFDASHBOARD_TYPE_SEARCH_PROVIDER), NULL);
+
+	/* Create data for provider */
+	data=g_new0(XfdashboardSearchViewProviderData, 1);
+	data->view=NULL;
+	data->provider=XFDASHBOARD_SEARCH_PROVIDER(g_object_new(inProviderType, NULL));
+	data->lastResultSet=NULL;
+	data->lastSearchTimestamp=0L;
+	data->container=NULL;
+	data->mappings=NULL;
+
+	return(data);
 }
 
-static gboolean _xfdashboard_search_view_filter_title_only(ClutterModel *inModel,
-															ClutterModelIter *inIter,
-															gpointer inUserData)
+/* Get data for requested provider */
+static XfdashboardSearchViewProviderData* _xfdashboard_search_view_get_provider_data(XfdashboardSearchView *self,
+																						GType inProviderType)
 {
-	XfdashboardSearchViewFilterData		*searchData;
-	guint								iterRow, poolRow;
-	gboolean							isMatch;
-	GarconMenuElement					*menuElement;
-	const gchar							*title, *command, *desktopID;
-	gchar								*checkText, *foundPos;
+	XfdashboardSearchViewPrivate		*priv;
+	XfdashboardSearchViewProviderData	*data;
+	GList								*entry;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(inModel), FALSE);
-	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
-	g_return_val_if_fail(inUserData, FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
 
-	searchData=(XfdashboardSearchViewFilterData*)inUserData;
-	isMatch=FALSE;
-	menuElement=NULL;
+	priv=self->priv;
 
-	/* Get menu element at iterator */
-	clutter_model_iter_get(inIter,
-							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID, &iterRow,
-							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
-							-1);
-	if(!menuElement) return(FALSE);
-
-	/* Only menu items and sub-menus can be visible */
-	if(!GARCON_IS_MENU_ITEM(menuElement))
+	/* Iterate through list of provider data and lookup requested one */
+	for(entry=priv->providers; entry; entry=g_list_next(entry))
 	{
-		g_object_unref(menuElement);
-		return(FALSE);
+		data=(XfdashboardSearchViewProviderData*)entry->data;
+
+		if(G_OBJECT_TYPE(data->provider)==inProviderType) return(data);
 	}
 
-	/* Check if title or command matches search criteria */
-	title=garcon_menu_element_get_name(menuElement);
-	command=garcon_menu_item_get_command(GARCON_MENU_ITEM(menuElement));
-	desktopID=garcon_menu_item_get_desktop_id(GARCON_MENU_ITEM(menuElement));
+	/* If we get here we did not find data for requested provider */
+	return(NULL);
+}
 
-	if(title && isMatch==FALSE)
-	{
-		checkText=g_utf8_strdown(title, -1);
-		if(g_strstr_len(checkText, -1, searchData->searchText)) isMatch=TRUE;
-		g_free(checkText);
-	}
+/* Remove mapping to provider data */
+static void _xfdashboard_search_view_provider_data_remove_mapping(XfdashboardSearchViewProviderItemsMapping *inMapping)
+{
+	XfdashboardSearchViewProviderData	*providerData;
+	GList								*entry;
 
-	if(command && isMatch==FALSE)
-	{
-		checkText=g_utf8_strdown(command, -1);
-		foundPos=g_strstr_len(checkText, -1, searchData->searchText);
-		if(foundPos)
-		{
-			if(foundPos==checkText) isMatch=TRUE;
-				else if(foundPos>checkText)
-				{
-					foundPos--;
-					if(*foundPos=='/') isMatch=TRUE;
-				}
-		}
-		g_free(checkText);
-	}
+	g_return_if_fail(inMapping);
 
-	/* If menu element matches search criteria determine if it should be shown
-	 * by checking if we haven't seen this desktop ID yet or if we have seen it
-	 * if the row the given iterator refers is the same row where we have seen
-	 * the menu element first.
+	/* Get provider data */
+	providerData=inMapping->providerData;
+
+	/* Find list entry */
+	entry=g_list_find(providerData->mappings, inMapping);
+	if(!entry) return;
+
+	/* Remove mapping from list in provider data */
+	providerData->mappings=g_list_remove_link(providerData->mappings, entry);
+}
+
+/* Add mapping to provider data */
+static gboolean _xfdashboard_search_view_provider_data_add_mapping(XfdashboardSearchViewProviderData *inProviderData,
+																	XfdashboardSearchViewProviderItemsMapping *inMapping)
+{
+	g_return_val_if_fail(inProviderData, FALSE);
+	g_return_val_if_fail(inMapping, FALSE);
+	g_return_val_if_fail(inMapping->providerData==NULL, FALSE);
+
+	/* Reference provider data in mapping */
+	inMapping->providerData=inProviderData;
+
+	/* Add to list of mapping in provider data */
+	inProviderData->mappings=g_list_prepend(inProviderData->mappings, inMapping);
+
+	return(TRUE);
+}
+
+/* Find mapping in provider data */
+static XfdashboardSearchViewProviderItemsMapping* _xfdashboard_search_view_provider_data_get_mapping_by_item(XfdashboardSearchViewProviderData *inProviderData,
+																												GVariant *inResultItem)
+{
+	XfdashboardSearchViewProviderItemsMapping	*mapping;
+	GList										*entry;
+
+	g_return_val_if_fail(inProviderData, NULL);
+	g_return_val_if_fail(inResultItem, NULL);
+
+	/* Iterate through mappings in provider data and return mapping
+	 * if the result set item in mapping is equal to given one
 	 */
-	if(isMatch==TRUE)
+	for(entry=inProviderData->mappings; entry; entry=g_list_next(entry))
 	{
-		if(g_hash_table_contains(searchData->pool, desktopID)!=TRUE)
-		{
-			g_hash_table_insert(searchData->pool, g_strdup(desktopID), GINT_TO_POINTER(iterRow));
-		}
-			else
-			{
-				poolRow=GPOINTER_TO_INT(g_hash_table_lookup(searchData->pool, desktopID));
-				if(poolRow!=iterRow) isMatch=FALSE;
-			}
+		mapping=(XfdashboardSearchViewProviderItemsMapping*)entry->data;
+
+		if(g_variant_compare(inResultItem, mapping->item)==0) return(mapping);
 	}
 
-	/* If we get here return TRUE to show model data item or FALSE to hide */
-	g_object_unref(menuElement);
-	return(isMatch);
+	/* If we get here we did not find a match */
+	return(NULL);
 }
 
-static gboolean _xfdashboard_search_view_filter_title_and_description(ClutterModel *inModel,
-																		ClutterModelIter *inIter,
+/* A provider icon was clicked */
+static void _xfdashboard_search_view_on_provider_icon_clicked(XfdashboardSearchResultContainer *inContainer,
+																gpointer inUserData)
+{
+	XfdashboardSearchViewProviderData			*providerData;
+	XfdashboardSearchView						*self;
+	XfdashboardSearchViewPrivate				*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(inContainer));
+	g_return_if_fail(inUserData);
+
+	providerData=(XfdashboardSearchViewProviderData*)inUserData;
+
+	/* Get search view and private data of view */
+	self=providerData->view;
+	priv=self->priv;
+
+	/* Tell provider to launch search */
+	xfdashboard_search_provider_launch_search(providerData->provider,
+												(const gchar**)priv->lastSearchTermsList);
+}
+
+/* A result item actor was clicked */
+static void _xfdashboard_search_view_on_provider_item_actor_clicked(ClutterClickAction *inAction,
+																		ClutterActor *inActor,
 																		gpointer inUserData)
 {
-	XfdashboardSearchViewFilterData		*searchData;
-	guint								iterRow, poolRow;
-	gboolean							isMatch;
-	GarconMenuElement					*menuElement;
-	const gchar							*title, *description, *command, *desktopID;
-	gchar								*checkText, *foundPos;
+	XfdashboardSearchViewProviderItemsMapping	*mapping;
+	XfdashboardSearchViewProviderData			*providerData;
+	XfdashboardSearchView						*self;
+	XfdashboardSearchViewPrivate				*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(inModel), FALSE);
-	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
-	g_return_val_if_fail(inUserData, FALSE);
+	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
+	g_return_if_fail(inUserData);
 
-	searchData=(XfdashboardSearchViewFilterData*)inUserData;
-	isMatch=FALSE;
-	menuElement=NULL;
+	mapping=(XfdashboardSearchViewProviderItemsMapping*)inUserData;
 
-	/* Get menu element at iterator */
-	clutter_model_iter_get(inIter,
-							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID, &iterRow,
-							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
-							-1);
-	if(!menuElement) return(FALSE);
+	/* Get provider data */
+	providerData=mapping->providerData;
 
-	/* Only menu items and sub-menus can be visible */
-	if(!GARCON_IS_MENU_ITEM(menuElement))
-	{
-		g_object_unref(menuElement);
-		return(FALSE);
-	}
+	/* Get search view and private data of view */
+	self=providerData->view;
+	priv=self->priv;
 
-	/* Check if title, description or command matches search criteria */
-	title=garcon_menu_element_get_name(menuElement);
-	description=garcon_menu_element_get_comment(menuElement);
-	command=garcon_menu_item_get_command(GARCON_MENU_ITEM(menuElement));
-	desktopID=garcon_menu_item_get_desktop_id(GARCON_MENU_ITEM(menuElement));
+	/* Tell provider that a result item was clicked */
+	xfdashboard_search_provider_activate_result(providerData->provider,
+													mapping->item,
+													mapping->actor,
+													(const gchar**)priv->lastSearchTermsList);
+}
 
-	if(title && isMatch==FALSE)
-	{
-		checkText=g_utf8_strdown(title, -1);
-		if(g_strstr_len(checkText, -1, searchData->searchText)) isMatch=TRUE;
-		g_free(checkText);
-	}
+/* A result item actor is going to be destroyed */
+static void _xfdashboard_search_view_on_provider_item_actor_destroy(ClutterActor *inActor, gpointer inUserData)
+{
+	XfdashboardSearchViewProviderItemsMapping	*mapping;
 
-	if(description && isMatch==FALSE)
-	{
-		checkText=g_utf8_strdown(description, -1);
-		if(g_strstr_len(checkText, -1, searchData->searchText)) isMatch=TRUE;
-		g_free(checkText);
-	}
+	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
+	g_return_if_fail(inUserData);
 
-	if(command && isMatch==FALSE)
-	{
-		checkText=g_utf8_strdown(command, -1);
-		foundPos=g_strstr_len(checkText, -1, searchData->searchText);
-		if(foundPos)
-		{
-			if(foundPos==checkText) isMatch=TRUE;
-				else if(foundPos>checkText)
-				{
-					foundPos--;
-					if(*foundPos=='/') isMatch=TRUE;
-				}
-		}
-		g_free(checkText);
-	}
+	mapping=(XfdashboardSearchViewProviderItemsMapping*)inUserData;
 
-	/* If menu element matches search criteria determine if it should be shown
-	 * by checking if we haven't seen this desktop ID yet or if we have seen it
-	 * if the row the given iterator refers is the same row where we have seen
-	 * the menu element first.
+	/* Remove mapping from list of mappings in provider */
+	_xfdashboard_search_view_provider_data_remove_mapping(mapping);
+
+	/* Disconnect signal handlers from actor and unset actor in mapping
+	 * because it is destroyed and cannot be cleaned up anymore
 	 */
-	if(isMatch==TRUE)
+	if(mapping->actorDestroyID)
 	{
-		if(g_hash_table_contains(searchData->pool, desktopID)!=TRUE)
-		{
-			g_hash_table_insert(searchData->pool, g_strdup(desktopID), GINT_TO_POINTER(iterRow));
-		}
-			else
-			{
-				poolRow=GPOINTER_TO_INT(g_hash_table_lookup(searchData->pool, desktopID));
-				if(poolRow!=iterRow) isMatch=FALSE;
-			}
+		g_signal_handler_disconnect(mapping->actor, mapping->actorDestroyID);
+		mapping->actorDestroyID=0;
 	}
+	mapping->actor=NULL;
 
-	/* If we get here return TRUE to show model data item or FALSE to hide */
-	g_object_unref(menuElement);
-	return(isMatch);
+	/* Release allocated resources used by mapping */
+	_xfdashboard_search_view_provider_item_mapping_free(mapping);
 }
 
-/* Drag of an menu item begins */
-static void _xfdashboard_search_view_on_drag_begin(ClutterDragAction *inAction,
-													ClutterActor *inActor,
-													gfloat inStageX,
-													gfloat inStageY,
-													ClutterModifierType inModifiers,
-													gpointer inUserData)
+/* Destroys actors in container of provider for items being not in result set anymore */
+static void _xfdashboard_search_view_update_provider_actor_destroy(gpointer inData, gpointer inUserData)
 {
-	const gchar							*desktopName;
-	ClutterActor						*dragHandle;
-	ClutterStage						*stage;
+	XfdashboardSearchViewProviderItemsMapping	*mapping;
+	XfdashboardSearchResultSet					*resultSet;
 
-	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inActor));
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inUserData));
+	g_return_if_fail(inData);
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(inUserData));
 
-	/* Prevent signal "clicked" from being emitted on dragged icon */
-	g_signal_handlers_block_by_func(inActor, _xfdashboard_search_view_on_item_clicked, inUserData);
+	mapping=(XfdashboardSearchViewProviderItemsMapping*)inData;
+	resultSet=XFDASHBOARD_SEARCH_RESULT_SET(inUserData);
 
-	/* Get stage */
-	stage=CLUTTER_STAGE(clutter_actor_get_stage(inActor));
+	/* Check if result item in mapping is still available in result set */
+	if(xfdashboard_search_result_set_get_index(resultSet, mapping->item)!=-1) return;
 
-	/* Create a application icon for drag handle */
-	desktopName=xfdashboard_application_button_get_desktop_filename(XFDASHBOARD_APPLICATION_BUTTON(inActor));
+	/* Remove mapping from list of mappings in provider */
+	_xfdashboard_search_view_provider_data_remove_mapping(mapping);
 
-	dragHandle=xfdashboard_application_button_new_from_desktop_file(desktopName);
-	clutter_actor_set_position(dragHandle, inStageX, inStageY);
-	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
-
-	clutter_drag_action_set_drag_handle(inAction, dragHandle);
-}
-
-/* Drag of an menu item ends */
-static void _xfdashboard_search_view_on_drag_end(ClutterDragAction *inAction,
-													ClutterActor *inActor,
-													gfloat inStageX,
-													gfloat inStageY,
-													ClutterModifierType inModifiers,
-													gpointer inUserData)
-{
-	ClutterActor					*dragHandle;
-
-	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inActor));
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inUserData));
-
-	/* Destroy clone of application icon used as drag handle */
-	dragHandle=clutter_drag_action_get_drag_handle(inAction);
-	if(dragHandle)
-	{
-#if CLUTTER_CHECK_VERSION(1, 14, 0)
-		/* Only unset drag handle if not running Clutter in version
-		 * 1.12. This prevents a critical warning message in 1.12.
-		 * Later versions of Clutter are fixed already.
-		 */
-		clutter_drag_action_set_drag_handle(inAction, NULL);
-#endif
-		clutter_actor_destroy(dragHandle);
-	}
-
-	/* Allow signal "clicked" from being emitted again */
-	g_signal_handlers_unblock_by_func(inActor, _xfdashboard_search_view_on_item_clicked, inUserData);
-}
-
-/* Filter of applications data model has changed */
-static void _xfdashboard_search_view_on_item_clicked(XfdashboardSearchView *self, gpointer inUserData)
-{
-	XfdashboardApplicationButton	*button;
-	GarconMenuElement				*element;
-
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
-
-	button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
-
-	/* Get associated menu element of button */
-	element=xfdashboard_application_button_get_menu_element(button);
-
-	/* If clicked item is a menu item execute command of menu item clicked
-	 * and quit application
+	/* Disconnect signal handlers from actor, destroy actor and
+	 * unset actor in mapping because it is cleaned up already
 	 */
-	if(GARCON_IS_MENU_ITEM(element) &&
-		xfdashboard_application_button_execute(button, NULL))
+	if(mapping->actorDestroyID)
 	{
-		/* Launching application seems to be successfuly so quit application */
-		xfdashboard_application_quit();
+		g_signal_handler_disconnect(mapping->actor, mapping->actorDestroyID);
+		mapping->actorDestroyID=0;
+	}
+	clutter_actor_destroy(mapping->actor);
+	mapping->actor=NULL;
+
+	/* Release allocated resources used by mapping */
+	_xfdashboard_search_view_provider_item_mapping_free(mapping);
+}
+
+/* Create new actors in container of provider for items being new in result set */
+static void _xfdashboard_search_view_update_provider_actor_new(gpointer inData,
+																gpointer inUserData)
+{
+	GVariant									*resultSetItem;
+	XfdashboardSearchViewProviderData			*providerData;
+	XfdashboardSearchViewProviderItemsMapping	*mapping;
+	ClutterActor								*actor;
+	ClutterAction								*action;
+	XfdashboardSearchView						*self;
+	GList										*actionsList, *actionsEntry;
+
+	g_return_if_fail(inData);
+	g_return_if_fail(inUserData);
+
+	resultSetItem=(GVariant*)inData;
+	providerData=(XfdashboardSearchViewProviderData*)inUserData;
+
+	/* Get search view and private data of view */
+	self=providerData->view;
+
+	/* Check if an actor for result set item exists already */
+	mapping=_xfdashboard_search_view_provider_data_get_mapping_by_item(providerData, resultSetItem);
+	if(mapping)
+	{
+		/* Remember this actor which is kept as last one seen for next actor added */
+		providerData->lastResultItemActorSeen=mapping->actor;
+
 		return;
 	}
+
+	/* Create actor for result set item and store in mapping */
+	actor=xfdashboard_search_provider_create_result_actor(providerData->provider, resultSetItem);
+	if(!actor)
+	{
+		g_warning(_("Failed to add actor for result item [%s] of provider %s: %s"),
+					g_variant_print(resultSetItem, TRUE),
+					G_OBJECT_TYPE_NAME(providerData->provider),
+					_("Failed to created actor"));
+		return;
+	}
+
+	mapping=_xfdashboard_search_view_provider_item_mapping_new(resultSetItem, actor);
+	if(!mapping)
+	{
+		g_warning(_("Failed to add actor for result item [%s] of provider %s: %s"),
+					g_variant_print(resultSetItem, TRUE),
+					G_OBJECT_TYPE_NAME(providerData->provider),
+					_("Failed to create item-actor mapping"));
+		clutter_actor_destroy(actor);
+		return;
+	}
+
+	if(!_xfdashboard_search_view_provider_data_add_mapping(providerData, mapping))
+	{
+		g_warning(_("Failed to add actor for result item [%s] of provider %s: %s"),
+					g_variant_print(resultSetItem, TRUE),
+					G_OBJECT_TYPE_NAME(providerData->provider),
+					_("Failed to store item-actor mapping"));
+		clutter_actor_destroy(actor);
+		return;
+	}
+
+	/* Connect actions and signals */
+	mapping->actorDestroyID=g_signal_connect(actor,
+												"destroy",
+												G_CALLBACK(_xfdashboard_search_view_on_provider_item_actor_destroy),
+												mapping);
+
+	action=xfdashboard_click_action_new();
+	clutter_actor_add_action(actor, action);
+	g_signal_connect(action,
+						"clicked",
+						G_CALLBACK(_xfdashboard_search_view_on_provider_item_actor_clicked),
+						mapping);
+
+	/* If actor has an action of type XfdashboardDragAction and has no source set
+	 * then set this view as source
+	 */
+	actionsList=clutter_actor_get_actions(actor);
+	if(actionsList)
+	{
+		for(actionsEntry=actionsList; actionsEntry; actionsEntry=g_list_next(actionsEntry))
+		{
+			if(XFDASHBOARD_IS_DRAG_ACTION(actionsEntry->data) &&
+				!xfdashboard_drag_action_get_source(XFDASHBOARD_DRAG_ACTION(actionsEntry->data)))
+			{
+				g_object_set(actionsEntry->data, "source", self, NULL);
+			}
+		}
+		g_list_free(actionsList);
+	}
+
+	/* Add newly created actor to container of provider */
+	xfdashboard_search_result_container_add_result_actor(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container), actor, providerData->lastResultItemActorSeen);
+
+	/* Remember newly created and added actor as last one seen for next actor added */
+	providerData->lastResultItemActorSeen=actor;
 }
 
-static void _xfdashboard_search_view_on_filter_changed(XfdashboardSearchView *self, gpointer inUserData)
+/* Updates container of provider with new result set and also creates or destroys
+ * this container if needed
+ */
+static void _xfdashboard_search_view_update_provider_container(XfdashboardSearchView *self,
+																XfdashboardSearchViewProviderData *inProviderData)
 {
-	XfdashboardSearchViewPrivate	*priv;
-	ClutterModelIter				*iterator;
-	ClutterActor					*actor;
-	GarconMenuElement				*menuElement;
-	ClutterAction					*dragAction;
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
+	g_return_if_fail(inProviderData);
+
+	/* If result set for provider is given then check if we need to create a container
+	 * or if we have to update one ...
+	 */
+	if(inProviderData->lastResultSet &&
+		xfdashboard_search_result_set_get_size(inProviderData->lastResultSet)>0)
+	{
+		/* Create container for provider if it does not exist yet */
+		if(!inProviderData->container)
+		{
+			ClutterActor		*actor;
+
+			actor=xfdashboard_search_result_container_new(inProviderData->provider);
+			if(!actor) return;
+
+			inProviderData->container=actor;
+			clutter_actor_add_child(CLUTTER_ACTOR(self), inProviderData->container);
+
+			g_signal_connect(inProviderData->container,
+								"icon-clicked",
+								G_CALLBACK(_xfdashboard_search_view_on_provider_icon_clicked),
+								inProviderData);
+		}
+
+		/* Create actors for new result set items in container */
+		inProviderData->lastResultItemActorSeen=NULL;
+		xfdashboard_search_result_set_foreach(inProviderData->lastResultSet,
+												_xfdashboard_search_view_update_provider_actor_new,
+												inProviderData);
+
+		/* Destroy actors for result set items in container which are not existent anymore */
+		if(inProviderData->mappings)
+		{
+			g_list_foreach(inProviderData->mappings,
+							(GFunc)_xfdashboard_search_view_update_provider_actor_destroy,
+							inProviderData->lastResultSet);
+		}
+	}
+		/* ... but if no result set for provider is given then destroy existing container */
+		else
+		{
+			/* Destroy mappings (releases allocated resources and disconnects signal handlers) */
+			if(inProviderData->mappings)
+			{
+				g_list_free_full(inProviderData->mappings, (GDestroyNotify)_xfdashboard_search_view_provider_item_mapping_free);
+				inProviderData->mappings=NULL;
+			}
+
+			/* Destroy container (also destroys actors for result items still alive) */
+			if(inProviderData->container)
+			{
+				clutter_actor_destroy(inProviderData->container);
+				inProviderData->container=NULL;
+			}
+		}
+}
+
+/* A search provider was registered */
+static void _xfdashboard_search_view_on_search_provider_registered(XfdashboardSearchView *self,
+																	GType inProviderType,
+																	gpointer inUserData)
+{
+	XfdashboardSearchViewPrivate		*priv;
+	XfdashboardSearchViewProviderData	*data;
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 
-	priv=XFDASHBOARD_SEARCH_VIEW(self)->priv;
-	menuElement=NULL;
+	priv=self->priv;
 
-	/* Destroy all children */
-	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
-	clutter_layout_manager_layout_changed(priv->layout);
-
-	/* Iterate through (filtered) data model and create actor for each entry */
-	iterator=clutter_model_get_first_iter(CLUTTER_MODEL(priv->apps));
-	if(iterator && CLUTTER_IS_MODEL_ITER(iterator))
+	/* Register search provider if not already registered */
+	data=_xfdashboard_search_view_get_provider_data(self, inProviderType);
+	if(!data)
 	{
-		while(!clutter_model_iter_is_last(iterator))
-		{
-			/* Get data from model */
-			clutter_model_iter_get(iterator,
-									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
-									-1);
+		data=_xfdashboard_search_view_provider_data_new(inProviderType);
+		data->view=self;
+		priv->providers=g_list_prepend(priv->providers, data);
 
-			if(!menuElement) continue;
+		g_debug("Created search provider %s of type %s in %s",
+					xfdashboard_search_provider_get_name(data->provider),
+					G_OBJECT_TYPE_NAME(data->provider),
+					G_OBJECT_TYPE_NAME(self));
+	}
+}
 
-			/* Create actor for menu element */
-			actor=xfdashboard_application_button_new_from_menu(menuElement);
-			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(actor), "view-mode-list");
-				else xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(actor), "view-mode-icon");
-	
-			/* Add to view and layout */
-			clutter_actor_set_x_expand(CLUTTER_ACTOR(actor), TRUE);
-			clutter_actor_set_y_expand(CLUTTER_ACTOR(actor), TRUE);
-			clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(actor));
+/* A search provider was unregistered */
+static void _xfdashboard_search_view_on_search_provider_unregistered(XfdashboardSearchView *self,
+																		GType inProviderType,
+																		gpointer inUserData)
+{
+	XfdashboardSearchViewPrivate		*priv;
+	XfdashboardSearchViewProviderData	*data;
+	GList								*entry;
 
-			clutter_actor_show(actor);
-			g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_search_view_on_item_clicked), self);
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 
-			if(GARCON_IS_MENU_ITEM(menuElement))
-			{
-				dragAction=xfdashboard_drag_action_new_with_source(CLUTTER_ACTOR(self));
-				clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(dragAction), -1, -1);
-				clutter_actor_add_action(actor, dragAction);
-				g_signal_connect(dragAction, "drag-begin", G_CALLBACK(_xfdashboard_search_view_on_drag_begin), self);
-				g_signal_connect(dragAction, "drag-end", G_CALLBACK(_xfdashboard_search_view_on_drag_end), self);
-			}
+	priv=self->priv;
 
-			/* Release allocated resources */
-			g_object_unref(menuElement);
-			menuElement=NULL;
+	/* Unregister search provider if it was registered before */
+	data=_xfdashboard_search_view_get_provider_data(self, inProviderType);
+	if(data)
+	{
+		g_debug("Unregistering search provider %s of type %s in %s",
+					xfdashboard_search_provider_get_name(data->provider),
+					G_OBJECT_TYPE_NAME(data->provider),
+					G_OBJECT_TYPE_NAME(self));
 
-			/* Go to next entry in model */
-			iterator=clutter_model_iter_next(iterator);
-		}
-		g_object_unref(iterator);
+		entry=g_list_find(priv->providers, data);
+		if(entry) priv->providers=g_list_delete_link(priv->providers, entry);
+
+		_xfdashboard_search_view_provider_data_free(data);
 	}
 }
 
@@ -456,84 +579,33 @@ static void _xfdashboard_search_view_dispose(GObject *inObject)
 	XfdashboardSearchViewPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
-	if(priv->layout) priv->layout=NULL;
-
-	if(priv->apps)
+	if(priv->providers)
 	{
-		g_object_unref(priv->apps);
-		priv->apps=NULL;
+		g_list_free_full(priv->providers, (GDestroyNotify)_xfdashboard_search_view_provider_data_free);
+		priv->providers=NULL;
 	}
 
-	if(priv->formatTitleDescription)
+	if(priv->lastSearchString)
 	{
-		g_free(priv->formatTitleDescription);
-		priv->formatTitleDescription=NULL;
+		g_free(priv->lastSearchString);
+		priv->lastSearchString=NULL;
 	}
 
-	if(priv->formatTitleOnly)
+	if(priv->lastSearchTermsList)
 	{
-		g_free(priv->formatTitleOnly);
-		priv->formatTitleOnly=NULL;
+		g_strfreev(priv->lastSearchTermsList);
+		priv->lastSearchTermsList=NULL;
+	}
+
+	if(priv->searchManager)
+	{
+		g_signal_handlers_disconnect_by_data(priv->searchManager, self);
+		g_object_unref(priv->searchManager);
+		priv->searchManager=NULL;
 	}
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_search_view_parent_class)->dispose(inObject);
-}
-
-/* Set/get properties */
-static void _xfdashboard_search_view_set_property(GObject *inObject,
-													guint inPropID,
-													const GValue *inValue,
-													GParamSpec *inSpec)
-{
-	XfdashboardSearchView				*self=XFDASHBOARD_SEARCH_VIEW(inObject);
-
-	switch(inPropID)
-	{
-		case PROP_VIEW_MODE:
-			xfdashboard_search_view_set_view_mode(self, (XfdashboardViewMode)g_value_get_enum(inValue));
-			break;
-
-		case PROP_FORMAT_TITLE_ONLY:
-			xfdashboard_search_view_set_format_title_only(self, g_value_get_string(inValue));
-			break;
-
-		case PROP_FORMAT_TITLE_DESCRIPTION:
-			xfdashboard_search_view_set_format_title_description(self, g_value_get_string(inValue));
-			break;
-
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
-}
-
-static void _xfdashboard_search_view_get_property(GObject *inObject,
-													guint inPropID,
-													GValue *outValue,
-													GParamSpec *inSpec)
-{
-	XfdashboardSearchView				*self=XFDASHBOARD_SEARCH_VIEW(inObject);
-	XfdashboardSearchViewPrivate		*priv=self->priv;
-
-	switch(inPropID)
-	{
-		case PROP_VIEW_MODE:
-			g_value_set_enum(outValue, priv->viewMode);
-			break;
-
-		case PROP_FORMAT_TITLE_ONLY:
-			g_value_set_string(outValue, priv->formatTitleOnly);
-			break;
-
-		case PROP_FORMAT_TITLE_DESCRIPTION:
-			g_value_set_string(outValue, priv->formatTitleDescription);
-			break;
-
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
 }
 
 /* Class initialization
@@ -542,46 +614,36 @@ static void _xfdashboard_search_view_get_property(GObject *inObject,
  */
 static void xfdashboard_search_view_class_init(XfdashboardSearchViewClass *klass)
 {
-	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_search_view_dispose;
-	gobjectClass->set_property=_xfdashboard_search_view_set_property;
-	gobjectClass->get_property=_xfdashboard_search_view_get_property;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardSearchViewPrivate));
 
-	/* Define properties */
-	XfdashboardSearchViewProperties[PROP_VIEW_MODE]=
-		g_param_spec_enum("view-mode",
-							_("View mode"),
-							_("The view mode used in this view"),
-							XFDASHBOARD_TYPE_VIEW_MODE,
-							XFDASHBOARD_VIEW_MODE_LIST,
-							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+	/* Define signals */
+	XfdashboardSearchViewSignals[SIGNAL_SEARCH_RESET]=
+		g_signal_new("search-reset",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardSearchViewClass, search_reset),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						0);
 
-	XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_ONLY]=
-		g_param_spec_string("format-title-only",
-								_("Format title only"),
-								_("Format string used when only title is display"),
-								NULL,
-								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]=
-		g_param_spec_string("format-title-description",
-								_("Format title and description"),
-								_("Format string used when title and description is display. First argument is title and second one is description."),
-								NULL,
-								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSearchViewProperties);
-
-	/* Define stylable properties */
-	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchViewProperties[PROP_VIEW_MODE]);
-	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_ONLY]);
-	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]);
+	XfdashboardSearchViewSignals[SIGNAL_SEARCH_UPDATED]=
+		g_signal_new("search-updated",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardSearchViewClass, search_updated),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
 }
 
 /* Object initialization
@@ -590,15 +652,17 @@ static void xfdashboard_search_view_class_init(XfdashboardSearchViewClass *klass
 static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 {
 	XfdashboardSearchViewPrivate	*priv;
+	GList							*providers, *entry;
+	ClutterLayoutManager			*layout;
 
 	self->priv=priv=XFDASHBOARD_SEARCH_VIEW_GET_PRIVATE(self);
 
 	/* Set up default values */
-	priv->apps=XFDASHBOARD_APPLICATIONS_MENU_MODEL(xfdashboard_applications_menu_model_new());
-	priv->viewMode=-1;
-	priv->formatTitleOnly=g_strdup("%s");
-	priv->formatTitleDescription=g_strdup("%s\n%s");
-	
+	priv->searchManager=xfdashboard_search_manager_get_default();
+	priv->providers=NULL;
+	priv->lastSearchString=NULL;
+	priv->lastSearchTermsList=NULL;
+
 	/* Set up view (Note: Search view is disabled by default!) */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "search");
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Search"));
@@ -606,169 +670,221 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	xfdashboard_view_set_enabled(XFDASHBOARD_VIEW(self), FALSE);
 
 	/* Set up actor */
-	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_HORIZONTAL);
-	xfdashboard_search_view_set_view_mode(self, XFDASHBOARD_VIEW_MODE_LIST);
+	layout=clutter_box_layout_new();
+	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_VERTICAL);
+	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), layout);
 
-	/* Set up application model */
-	clutter_model_set_sorting_column(CLUTTER_MODEL(priv->apps), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE);
-	g_signal_connect_swapped(priv->apps, "filter-changed", G_CALLBACK(_xfdashboard_search_view_on_filter_changed), self);
+	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_HORIZONTAL);
+
+	/* Create instance of each registered view type and add it to this actor
+	 * and connect signals
+	 */
+	providers=entry=xfdashboard_search_manager_get_registered(priv->searchManager);
+	for(; entry; entry=g_list_next(entry))
+	{
+		GType					providerType;
+
+		providerType=(GType)LISTITEM_TO_GTYPE(entry->data);
+		_xfdashboard_search_view_on_search_provider_registered(self, providerType, priv->searchManager);
+	}
+	g_list_free(providers);
+
+	g_signal_connect_swapped(priv->searchManager,
+								"registered",
+								G_CALLBACK(_xfdashboard_search_view_on_search_provider_registered),
+								self);
+	g_signal_connect_swapped(priv->searchManager,
+								"unregistered",
+								G_CALLBACK(_xfdashboard_search_view_on_search_provider_unregistered),
+								self);
 }
 
 /* IMPLEMENTATION: Public API */
 
-/* Get/set view mode of view */
-XfdashboardViewMode xfdashboard_search_view_get_view_mode(XfdashboardSearchView *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), XFDASHBOARD_VIEW_MODE_LIST);
-
-	return(self->priv->viewMode);
-}
-
-void xfdashboard_search_view_set_view_mode(XfdashboardSearchView *self, const XfdashboardViewMode inMode)
+/* Reset an ongoing search */
+void xfdashboard_search_view_reset_search(XfdashboardSearchView *self)
 {
 	XfdashboardSearchViewPrivate	*priv;
+	GList							*providers;
+	gint64							searchTimestamp;
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
-	g_return_if_fail(inMode<=XFDASHBOARD_VIEW_MODE_ICON);
 
 	priv=self->priv;
 
-	/* Set value if changed */
-	if(priv->viewMode!=inMode)
+	/* Release all allocated resources used for each search provider */
+	searchTimestamp=g_get_real_time();
+	for(providers=priv->providers; providers; providers=g_list_next(providers))
 	{
-		/* Set value */
-		if(priv->layout)
+		XfdashboardSearchViewProviderData	*providerData;
+
+		/* Get data for provider to reset */
+		providerData=(XfdashboardSearchViewProviderData*)providers->data;
+
+		/* Update search timestamp */
+		providerData->lastSearchTimestamp=searchTimestamp;
+
+		/* Update view for empty result set of search provider:
+		 * Destroy all item mappings first, then destroy container for provider
+		 * (will also destroy actors for result items which will not trigger
+		 * the "destroy" signal handler because it was disconnected before
+		 * when item mapping had been destroyed), and at last destroy last result set
+		 */
+		if(providerData->mappings)
 		{
-			clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), NULL);
-			priv->layout=NULL;
+			g_list_free_full(providerData->mappings, (GDestroyNotify)_xfdashboard_search_view_provider_item_mapping_free);
+			providerData->mappings=NULL;
 		}
 
-		priv->viewMode=inMode;
-
-		/* Set new layout manager */
-		switch(priv->viewMode)
+		if(providerData->container)
 		{
-			case XFDASHBOARD_VIEW_MODE_LIST:
-				priv->layout=clutter_box_layout_new();
-				clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(priv->layout), CLUTTER_ORIENTATION_VERTICAL);
-				clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(priv->layout), DEFAULT_SPACING);
-				clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
-				break;
-
-			case XFDASHBOARD_VIEW_MODE_ICON:
-				priv->layout=clutter_flow_layout_new(CLUTTER_FLOW_HORIZONTAL);
-				clutter_flow_layout_set_column_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), DEFAULT_SPACING);
-				clutter_flow_layout_set_row_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), DEFAULT_SPACING);
-				clutter_flow_layout_set_homogeneous(CLUTTER_FLOW_LAYOUT(priv->layout), TRUE);
-				clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
-				break;
-
-			default:
-				g_assert_not_reached();
+			clutter_actor_destroy(providerData->container);
+			providerData->container=NULL;
 		}
 
-		/* Rebuild view */
-		_xfdashboard_search_view_on_filter_changed(self, NULL);
+		if(providerData->lastResultSet)
+		{
+			g_object_unref(providerData->lastResultSet);
+			providerData->lastResultSet=NULL;
+		}
 
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchViewProperties[PROP_VIEW_MODE]);
+		g_debug("Resetting result set for %s", DEBUG_OBJECT_NAME(providerData->provider));
 	}
-}
 
-/* Get/set format string to use when displaying only title */
-const gchar* xfdashboard_search_view_get_format_title_only(XfdashboardSearchView *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
-
-	return(self->priv->formatTitleOnly);
-}
-
-void xfdashboard_search_view_set_format_title_only(XfdashboardSearchView *self, const gchar *inFormat)
-{
-	XfdashboardSearchViewPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
-	g_return_if_fail(inFormat);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(g_strcmp0(priv->formatTitleOnly, inFormat)!=0)
+	/* Unset last search terms */
+	if(priv->lastSearchString)
 	{
-		/* Set value */
-		if(priv->formatTitleOnly) g_free(priv->formatTitleOnly);
-		priv->formatTitleOnly=g_strdup(inFormat);
-
-		/* Update view only if view mode is icon which uses this format string */
-		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_ICON) _xfdashboard_search_view_on_filter_changed(self, NULL);
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_ONLY]);
+		g_free(priv->lastSearchString);
+		priv->lastSearchString=NULL;
 	}
-}
 
-/* Get/set format string to use when displaying title and description */
-const gchar* xfdashboard_search_view_get_format_title_description(XfdashboardSearchView *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
-
-	return(self->priv->formatTitleDescription);
-}
-
-void xfdashboard_search_view_set_format_title_description(XfdashboardSearchView *self, const gchar *inFormat)
-{
-	XfdashboardSearchViewPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
-	g_return_if_fail(inFormat);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(g_strcmp0(priv->formatTitleDescription, inFormat)!=0)
+	if(priv->lastSearchTermsList)
 	{
-		/* Set value */
-		if(priv->formatTitleDescription) g_free(priv->formatTitleDescription);
-		priv->formatTitleDescription=g_strdup(inFormat);
-
-		/* Update view only if view mode is list which uses this format string */
-		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) _xfdashboard_search_view_on_filter_changed(self, NULL);
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]);
+		g_strfreev(priv->lastSearchTermsList);
+		priv->lastSearchTermsList=NULL;
 	}
+
+	/* Emit signal that search was resetted */
+	g_signal_emit(self, XfdashboardSearchViewSignals[SIGNAL_SEARCH_RESET], 0);
 }
 
-/* Update search view by looking up result for new search text */
-void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gchar *inText)
+/* Start a new search or update an ongoing one */
+void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gchar *inSearchString)
 {
-	XfdashboardSearchViewPrivate		*priv;
-	gint								searchTextLength;
-	ClutterModelFilterFunc				filterFunc;
-	XfdashboardSearchViewFilterData		*searchData;
+	XfdashboardSearchViewPrivate	*priv;
+	gchar							**splittedSearchTerms;
+	gboolean						canSubsearch;
+	GList							*providers;
+	gint64							searchTimestamp;
+#ifdef DEBUG
+	GTimer								*timer=NULL;
+#endif
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 
 	priv=self->priv;
-	filterFunc=_xfdashboard_search_view_filter_nothing;
-	searchData=NULL;
 
-	/* Initialize search data */
-	searchData=g_try_new0(XfdashboardSearchViewFilterData, 1);
-	g_return_if_fail(searchData);
+	/* Only perform a search if new search term differs from old one */
+	if(g_strcmp0(inSearchString, priv->lastSearchString)==0) return;
 
-	searchData->pool=g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
-	searchData->searchText=g_strstrip(g_strdup(inText));
-
-	/* Get length of search text and determine filter function */
-	searchTextLength=g_utf8_strlen(searchData->searchText, -1);
-
-	if(searchTextLength>0)
+	/* Searching for NULL or an empty string is like resetting search */
+	if(!inSearchString || strlen(inSearchString)==0)
 	{
-		if(searchTextLength<3) filterFunc=_xfdashboard_search_view_filter_title_only;
-			else filterFunc=_xfdashboard_search_view_filter_title_and_description;
+		xfdashboard_search_view_reset_search(self);
+		return;
 	}
 
-	/* Filter model data */
-	clutter_model_set_filter(CLUTTER_MODEL(priv->apps), filterFunc, searchData, (GDestroyNotify)_xfdashboard_search_view_on_filter_data_destroy);
+	/* Split search terms into seperate trimmed strings */
+	splittedSearchTerms=xfdashboard_search_manager_get_search_terms_from_string(inSearchString, NULL);
+	if(!splittedSearchTerms)
+	{
+		xfdashboard_search_view_reset_search(self);
+		return;
+	}
+
+	/* Searching empty search terms is like resetting search */
+	if(g_strv_length(splittedSearchTerms)==0)
+	{
+		/* Release allocated resources */
+		g_strfreev(splittedSearchTerms);
+
+		/* Reset search */
+		xfdashboard_search_view_reset_search(self);
+		return;
+	}
+
+#ifdef DEBUG
+	/* Start timer for debug search performance */
+	timer=g_timer_new();
+#endif
+
+	/* Check for sub-search. A sub-search can be done if a (initial) search
+	 * was done before, the order of search terms has not changed and each term
+	 * in new search terms is a case-sensitive prefix of the term previously used.
+	 */
+	canSubsearch=FALSE;
+	if(splittedSearchTerms && priv->lastSearchTermsList)
+	{
+		gchar						**subsearchLeft, **subsearchRight;
+
+		subsearchLeft=priv->lastSearchTermsList;
+		subsearchRight=splittedSearchTerms;
+		while(*subsearchLeft && *subsearchRight)
+		{
+			if(g_strcmp0(*subsearchLeft, *subsearchRight)>0) break;
+
+			subsearchLeft++;
+			subsearchRight++;
+		}
+
+		if(*subsearchLeft==NULL && *subsearchRight==NULL) canSubsearch=TRUE;
+	}
+
+	/* Perform a full search or sub-search at all registered providers */
+	searchTimestamp=g_get_real_time();
+	for(providers=priv->providers; providers; providers=g_list_next(providers))
+	{
+		XfdashboardSearchViewProviderData		*providerData;
+		XfdashboardSearchResultSet				*providerNewResultSet;
+		XfdashboardSearchResultSet				*providerLastResultSet;
+
+		/* Get data for provider to perform search at */
+		providerData=(XfdashboardSearchViewProviderData*)providers->data;
+
+		/* Perform search */
+		if(canSubsearch) providerLastResultSet=providerData->lastResultSet;
+			else providerLastResultSet=NULL;
+
+		providerNewResultSet=xfdashboard_search_provider_get_result_set(providerData->provider,
+																		splittedSearchTerms,
+																		providerLastResultSet);
+
+		/* Remember new result set */
+		if(providerData->lastResultSet) g_object_unref(providerData->lastResultSet);
+		providerData->lastResultSet=providerNewResultSet;
+
+		/* Update search timestamp */
+		providerData->lastSearchTimestamp=searchTimestamp;
+
+		/* Update view for new result set of search provider */
+		_xfdashboard_search_view_update_provider_container(self, providerData);
+	}
+
+	/* Remember new search terms as last one */
+	if(priv->lastSearchString) g_free(priv->lastSearchString);
+	priv->lastSearchString=g_strdup(inSearchString);
+
+	if(priv->lastSearchTermsList) g_strfreev(priv->lastSearchTermsList);
+	priv->lastSearchTermsList=g_strdupv(splittedSearchTerms);
+
+	/* Release allocated resources */
+	g_strfreev(splittedSearchTerms);
+
+	/* Emit signal that search was updated */
+	g_signal_emit(self, XfdashboardSearchViewSignals[SIGNAL_SEARCH_UPDATED], 0);
+
+#ifdef DEBUG
+	g_debug("Updating search for '%s' took %f seconds", inSearchString, g_timer_elapsed(timer, NULL));
+	g_timer_destroy(timer);
+#endif
 }

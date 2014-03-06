@@ -55,6 +55,20 @@ XfdashboardQuicklaunch #trash-button
 {
 	icon-name: gtk-delete;
 	button-style: icon;
+	background-fill-color: #c0c0c0a0;
+	background-type: none;
+}
+
+XfdashboardQuicklaunch #trash-button:drop-target
+{
+	background-type: fill;
+}
+
+.drag-source-XfdashboardQuicklaunch:drag-handle
+{
+	icon-size: 64.0;
+	button-style: icon;
+	sync-icon-size: false;
 }
 
 /* Live windows */
@@ -228,19 +242,20 @@ XfdashboardCollapseBox
 
 
 /* Search view */
-XfdashboardSearchView
+XfdashboardSearchView XfdashboardSearchResultContainer
 {
+	title-format: "<u><b><big>%s</big></b></u>";
 	view-mode: list;
+	spacing: 4.0;
 }
 
-XfdashboardSearchView,
-XfdashboardSearchView XfdashboardApplicationButton
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardApplicationButton.result-item
 {
 	format-title-only: "<b>%s</b>";
 	format-title-description: "<b><big>%s</big></b>\n\n%s";
 }
 
-XfdashboardSearchView XfdashboardButton.view-mode-icon
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-item.view-mode-icon
 {
 	icon-size: 64.0;
 	single-line: false;
@@ -249,7 +264,7 @@ XfdashboardSearchView XfdashboardButton.view-mode-icon
 	text-justify: center;
 }
 
-XfdashboardSearchView XfdashboardButton.view-mode-list
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-item.view-mode-list
 {
 	button-style: both;
 	icon-size: 64.0;
@@ -270,6 +285,7 @@ XfdashboardSearchView XfdashboardButton.view-mode-list
 XfdashboardApplicationsView
 {
 	view-mode: list;
+	spacing: 4.0;
 }
 
 XfdashboardApplicationsView,

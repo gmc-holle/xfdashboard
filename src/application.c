@@ -38,6 +38,8 @@
 #include "applications-view.h"
 #include "windows-view.h"
 #include "search-view.h"
+#include "search-manager.h"
+#include "applications-search-provider.h"
 #include "utils.h"
 
 /* Define this class in GObject system */
@@ -59,6 +61,7 @@ struct _XfdashboardApplicationPrivate
 	gboolean					inited;
 	XfconfChannel				*xfconfChannel;
 	XfdashboardViewManager		*viewManager;
+	XfdashboardSearchManager	*searchManager;
 	XfdashboardThemeCSS			*theme;
 };
 
@@ -295,12 +298,17 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	/* Load theme */
 	if(!_xfdashboard_application_load_theme(self)) return(FALSE);
 
-	/* Register views (order of registration is important) */
+	/* Register built-in views (order of registration is important) */
 	priv->viewManager=xfdashboard_view_manager_get_default();
 
 	xfdashboard_view_manager_register(priv->viewManager, XFDASHBOARD_TYPE_WINDOWS_VIEW);
 	xfdashboard_view_manager_register(priv->viewManager, XFDASHBOARD_TYPE_APPLICATIONS_VIEW);
 	xfdashboard_view_manager_register(priv->viewManager, XFDASHBOARD_TYPE_SEARCH_VIEW);
+
+	/* Register built-in search providers */
+	priv->searchManager=xfdashboard_search_manager_get_default();
+
+	xfdashboard_search_manager_register(priv->searchManager, XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER);
 
 	/* Create primary stage on first monitor
 	 * TODO: Create stage for each monitor connected
@@ -465,6 +473,13 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 		/* Unregisters all remaining registered views - no need to unregister them here */
 		g_object_unref(priv->viewManager);
 		priv->viewManager=NULL;
+	}
+
+	if(priv->searchManager)
+	{
+		/* Unregisters all remaining registered providers - no need to unregister them here */
+		g_object_unref(priv->searchManager);
+		priv->searchManager=NULL;
 	}
 
 	/* Shutdown xfconf */

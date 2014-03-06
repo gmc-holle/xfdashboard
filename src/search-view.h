@@ -53,21 +53,18 @@ struct _XfdashboardSearchViewClass
 	/*< private >*/
 	/* Parent class */
 	XfdashboardViewClass			parent_class;
+
+	/*< public >*/
+	/* Virtual functions */
+	void (*search_reset)(XfdashboardSearchView *self);
+	void (*search_updated)(XfdashboardSearchView *self);
 };
 
 /* Public API */
 GType xfdashboard_search_view_get_type(void) G_GNUC_CONST;
 
-XfdashboardViewMode xfdashboard_search_view_get_view_mode(XfdashboardSearchView *self);
-void xfdashboard_search_view_set_view_mode(XfdashboardSearchView *self, const XfdashboardViewMode inMode);
-
-const gchar* xfdashboard_search_view_get_format_title_only(XfdashboardSearchView *self);
-void xfdashboard_search_view_set_format_title_only(XfdashboardSearchView *self, const gchar *inFormat);
-
-const gchar* xfdashboard_search_view_get_format_title_description(XfdashboardSearchView *self);
-void xfdashboard_search_view_set_format_title_description(XfdashboardSearchView *self, const gchar *inFormat);
-
-void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gchar *inText);
+void xfdashboard_search_view_reset_search(XfdashboardSearchView *self);
+void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gchar *inSearchString);
 
 G_END_DECLS
 

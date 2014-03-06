@@ -560,10 +560,19 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 		doResetSearch=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(),
 												RESET_SEARCH_ON_RESUME_XFCONF_PROP,
 												DEFAULT_RESET_SEARCH_ON_RESUME);
+
 		if(priv->searchbox &&
 			doResetSearch &&
 			!xfdashboard_text_box_is_empty(XFDASHBOARD_TEXT_BOX(priv->searchbox)))
 		{
+			XfdashboardView				*searchView;
+
+			/* Reset search in search view */
+			searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
+			if(searchView) xfdashboard_search_view_reset_search(XFDASHBOARD_SEARCH_VIEW(searchView));
+				else g_critical(_("Cannot reset search because search view was not found in viewpad."));
+
+			/* Reset text in search box */
 			xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
 		}
 

@@ -225,13 +225,22 @@ static void _xfdashboard_background_get_preferred_height(ClutterActor *self,
 {
 	XfdashboardBackgroundPrivate	*priv=XFDASHBOARD_BACKGROUND(self)->priv;
 	gfloat							minHeight, naturalHeight;
-	
+
 	minHeight=naturalHeight=0.0f;
+
+	/* Ask parent class for preferred size */
+	CLUTTER_ACTOR_CLASS(xfdashboard_background_parent_class)->get_preferred_height(self,
+																					inForWidth,
+																					&minHeight,
+																					&naturalHeight);
 
 	/* Determine size if any type of rectangle should be drawn */
 	if(priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS)
 	{
-		naturalHeight=priv->cornersRadius*2.0f;
+		gfloat						childNaturalHeight;
+
+		childNaturalHeight=priv->cornersRadius*2.0f;
+		if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
 	}
 
 	/* Store sizes computed */
@@ -249,10 +258,19 @@ static void _xfdashboard_background_get_preferred_width(ClutterActor *self,
 
 	minWidth=naturalWidth=0.0f;
 
+	/* Ask parent class for preferred size */
+	CLUTTER_ACTOR_CLASS(xfdashboard_background_parent_class)->get_preferred_width(self,
+																					inForHeight,
+																					&minWidth,
+																					&naturalWidth);
+
 	/* Determine size if any type of rectangle should be drawn */
 	if(priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS)
 	{
-		naturalWidth=priv->cornersRadius*2.0f;
+		gfloat						childNaturalWidth;
+
+		childNaturalWidth=priv->cornersRadius*2.0f;
+		if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
 	}
 
 	/* Store sizes computed */

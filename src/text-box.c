@@ -37,7 +37,7 @@
 G_DEFINE_TYPE(XfdashboardTextBox,
 				xfdashboard_text_box,
 				XFDASHBOARD_TYPE_BACKGROUND)
-                                                
+
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_TEXT_BOX_GET_PRIVATE(obj) \
 	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_TEXT_BOX, XfdashboardTextBoxPrivate))
@@ -114,8 +114,6 @@ enum
 };
 
 static guint XfdashboardTextBoxSignals[SIGNAL_LAST]={ 0, };
-
-/* Private constants */
 
 /* IMPLEMENTATION: Private variables and methods */
 
