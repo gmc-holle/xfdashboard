@@ -61,6 +61,9 @@ GType xfdashboard_applications_view_get_type(void) G_GNUC_CONST;
 XfdashboardViewMode xfdashboard_applications_view_get_view_mode(XfdashboardApplicationsView *self);
 void xfdashboard_applications_view_set_view_mode(XfdashboardApplicationsView *self, const XfdashboardViewMode inMode);
 
+gfloat xfdashboard_applications_view_get_spacing(XfdashboardApplicationsView *self);
+void xfdashboard_applications_view_set_spacing(XfdashboardApplicationsView *self, const gfloat inSpacing);
+
 const gchar* xfdashboard_applications_view_get_parent_menu_icon(XfdashboardApplicationsView *self);
 void xfdashboard_applications_view_set_parent_menu_icon(XfdashboardApplicationsView *self, const gchar *inIconName);
 

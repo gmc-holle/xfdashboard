@@ -51,6 +51,7 @@ struct _XfdashboardApplicationsViewPrivate
 {
 	/* Properties related */
 	XfdashboardViewMode					viewMode;
+	gfloat								spacing;
 	gchar								*parentMenuIcon;
 	gchar								*formatTitleOnly;
 	gchar								*formatTitleDescription;
@@ -67,6 +68,7 @@ enum
 	PROP_0,
 
 	PROP_VIEW_MODE,
+	PROP_SPACING,
 
 	PROP_PARENT_MENU_ICON,
 	PROP_FORMAT_TITLE_ONLY,
@@ -79,8 +81,6 @@ static GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define ACTOR_USER_DATA_KEY			"xfdashboard-applications-view-user-data"
-
-#define DEFAULT_SPACING				4.0f						// TODO: Replace by layout
 
 /* Forward declarations */
 static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData);
@@ -378,6 +378,10 @@ static void _xfdashboard_applications_view_set_property(GObject *inObject,
 			xfdashboard_applications_view_set_view_mode(self, (XfdashboardViewMode)g_value_get_enum(inValue));
 			break;
 
+		case PROP_SPACING:
+			xfdashboard_applications_view_set_spacing(self, g_value_get_float(inValue));
+			break;
+
 		case PROP_PARENT_MENU_ICON:
 			xfdashboard_applications_view_set_parent_menu_icon(self, g_value_get_string(inValue));
 			break;
@@ -411,6 +415,10 @@ static void _xfdashboard_applications_view_get_property(GObject *inObject,
 	{
 		case PROP_VIEW_MODE:
 			g_value_set_enum(outValue, priv->viewMode);
+			break;
+
+		case PROP_SPACING:
+			g_value_set_float(outValue, priv->spacing);
 			break;
 
 		case PROP_PARENT_MENU_ICON:
@@ -457,6 +465,14 @@ static void xfdashboard_applications_view_class_init(XfdashboardApplicationsView
 							XFDASHBOARD_VIEW_MODE_LIST,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardApplicationsViewProperties[PROP_SPACING]=
+		g_param_spec_float("spacing",
+							_("Spacing"),
+							_("Spacing between each element in view"),
+							0.0f, G_MAXFLOAT,
+							0.0f,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	XfdashboardApplicationsViewProperties[PROP_PARENT_MENU_ICON]=
 		g_param_spec_string("parent-menu-icon",
 								_("Parent menu icon"),
@@ -482,6 +498,7 @@ static void xfdashboard_applications_view_class_init(XfdashboardApplicationsView
 
 	/* Define stylable properties */
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardApplicationsViewProperties[PROP_VIEW_MODE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardApplicationsViewProperties[PROP_SPACING]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardApplicationsViewProperties[PROP_PARENT_MENU_ICON]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardApplicationsViewProperties[PROP_FORMAT_TITLE_ONLY]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardApplicationsViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]);
@@ -500,6 +517,7 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	priv->apps=XFDASHBOARD_APPLICATIONS_MENU_MODEL(xfdashboard_applications_menu_model_new());
 	priv->currentRootMenuElement=NULL;
 	priv->viewMode=-1;
+	priv->spacing=0.0f;
 	priv->parentMenuIcon=NULL;
 	priv->formatTitleOnly=g_strdup("%s");
 	priv->formatTitleDescription=g_strdup("%s\n%s");
@@ -554,14 +572,14 @@ void xfdashboard_applications_view_set_view_mode(XfdashboardApplicationsView *se
 			case XFDASHBOARD_VIEW_MODE_LIST:
 				priv->layout=clutter_box_layout_new();
 				clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(priv->layout), CLUTTER_ORIENTATION_VERTICAL);
-				clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(priv->layout), DEFAULT_SPACING);
+				clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(priv->layout), priv->spacing);
 				clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
 				break;
 
 			case XFDASHBOARD_VIEW_MODE_ICON:
 				priv->layout=clutter_flow_layout_new(CLUTTER_FLOW_HORIZONTAL);
-				clutter_flow_layout_set_column_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), DEFAULT_SPACING);
-				clutter_flow_layout_set_row_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), DEFAULT_SPACING);
+				clutter_flow_layout_set_column_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
+				clutter_flow_layout_set_row_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
 				clutter_flow_layout_set_homogeneous(CLUTTER_FLOW_LAYOUT(priv->layout), TRUE);
 				clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
 				break;
@@ -575,6 +593,50 @@ void xfdashboard_applications_view_set_view_mode(XfdashboardApplicationsView *se
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationsViewProperties[PROP_VIEW_MODE]);
+	}
+}
+
+/* Get/set spacing between result item actors */
+gfloat xfdashboard_applications_view_get_spacing(XfdashboardApplicationsView *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), 0.0f);
+
+	return(self->priv->spacing);
+}
+
+void xfdashboard_applications_view_set_spacing(XfdashboardApplicationsView *self, const gfloat inSpacing)
+{
+	XfdashboardApplicationsViewPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+	g_return_if_fail(inSpacing>=0.0f);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->spacing!=inSpacing)
+	{
+		/* Set value */
+		priv->spacing=inSpacing;
+
+		/* Update layout manager */
+		switch(priv->viewMode)
+		{
+			case XFDASHBOARD_VIEW_MODE_LIST:
+				clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(priv->layout), priv->spacing);
+				break;
+
+			case XFDASHBOARD_VIEW_MODE_ICON:
+				clutter_flow_layout_set_column_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
+				clutter_flow_layout_set_row_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
+				break;
+
+			default:
+				g_assert_not_reached();
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationsViewProperties[PROP_SPACING]);
 	}
 }
 
