@@ -26,12 +26,11 @@
 #endif
 
 #include "image.h"
-#include "application.h"
 
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
-#define LOAD_ASYNC 1
+#include "application.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardImage,
@@ -79,6 +78,17 @@ enum
 };
 
 static GParamSpec* XfdashboardImageProperties[PROP_LAST]={ 0, };
+
+/* Signals */
+enum
+{
+	SIGNAL_LOADED,
+	SIGNAL_LOADING_FAILED,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardImageSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 static GHashTable*	_xfdashboard_image_cache=NULL;
@@ -257,11 +267,8 @@ static void _xfdashboard_image_loading_async_callback(GObject *inSource, GAsyncR
 				error=NULL;
 			}
 
-			/* Set empty image */
+			/* Set failed state and empty image */
 			_xfdashboard_image_set_empty_image(self);
-
-			/* Emit "loading-failed" signal */
-			// TODO: g_signal_emit(self, XfdashboardImageSignals[SIGNAL_LOADING_FAILED], 0);
 			success=FALSE;
 		}
 	}
@@ -276,23 +283,26 @@ static void _xfdashboard_image_loading_async_callback(GObject *inSource, GAsyncR
 				error=NULL;
 			}
 
-			/* Set empty image */
+			/* Set failed state and empty image */
 			_xfdashboard_image_set_empty_image(self);
-
-			/* Emit "loading-failed" signal */
-			// TODO: g_signal_emit(self, XfdashboardImageSignals[SIGNAL_LOADING_FAILED], 0);
 			success=FALSE;
 		}
 
 	/* Release allocated resources */
 	if(pixbuf) g_object_unref(pixbuf);
 
-	/* Emit "success" signal if loading was successful */
+	/* Emit "loaded" signal if loading was successful ... */
 	if(success)
 	{
-		// TODO: g_signal_emit(self, XfdashboardImageSignals[SIGNAL_LOADED], 0);
+		g_signal_emit(self, XfdashboardImageSignals[SIGNAL_LOADED], 0);
 		g_debug("Successfully loaded image for key '%s' asynchronously", priv->key ? priv->key : "<nil>");
 	}
+		/* ... or emit "loading-failed" signal if loading has failed. */
+		else
+		{
+			g_signal_emit(self, XfdashboardImageSignals[SIGNAL_LOADING_FAILED], 0);
+			g_debug("Failed to load image for key '%s' asynchronously", priv->key ? priv->key : "<nil>");
+		}
 
 	/* Now release the extra reference we took to keep this instance alive
 	 * while loading asynchronously.
@@ -894,6 +904,29 @@ void xfdashboard_image_class_init(XfdashboardImageClass *klass)
 							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardImageProperties);
+
+	/* Define signals */
+	XfdashboardImageSignals[SIGNAL_LOADED]=
+		g_signal_new("loaded",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardImageClass, loaded),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	XfdashboardImageSignals[SIGNAL_LOADING_FAILED]=
+		g_signal_new("loading-failed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardImageClass, loading_failed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
 }
 
 /* Object initialization
@@ -935,9 +968,9 @@ void xfdashboard_image_init(XfdashboardImage *self)
 /* IMPLEMENTATION: Public API */
 
 /* Create new instance or use cached one for themed icon name or absolute icon filename.
- * If icon does not exists a themed fallback icon will be returned.
- * If even the themed fallback icon cannot be found we return NULL.
- * The returned ClutterImage object (if not NULL) must be unreffed with
+ * If icon does not exists a themed fallback icon will be used.
+ * If even the themed fallback icon cannot be found we set an empty image.
+ * In all cases a valid ClutterImage object is returned must be unreffed with
  * g_object_unref().
  */
 ClutterImage* xfdashboard_image_new_for_icon_name(const gchar *inIconName, gint inSize)
@@ -972,9 +1005,9 @@ ClutterImage* xfdashboard_image_new_for_icon_name(const gchar *inIconName, gint 
 }
 
 /* Create new instance or use cached one for GIcon object.
- * If icon does not exists a themed fallback icon will be returned.
- * If even the themed fallback icon cannot be found we return NULL.
- * The return ClutterImage object (if not NULL) must be unreffed with
+ * If icon does not exists a themed fallback icon will be used.
+ * If even the themed fallback icon cannot be found we set an empty image.
+ * In all cases a valid ClutterImage object is returned must be unreffed with
  * g_object_unref().
  */
 ClutterImage* xfdashboard_image_new_for_gicon(GIcon *inIcon, gint inSize)

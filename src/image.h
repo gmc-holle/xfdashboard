@@ -58,7 +58,7 @@ struct _XfdashboardImageClass
 	/*< public >*/
 	/* Virtual functions */
 	void (*loaded)(XfdashboardImage *self);
-	void (*failed)(XfdashboardImage *self);
+	void (*loading_failed)(XfdashboardImage *self);
 };
 
 /* Public API */

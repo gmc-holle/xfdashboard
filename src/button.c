@@ -109,8 +109,6 @@ enum
 
 static guint XfdashboardButtonSignals[SIGNAL_LAST]={ 0, };
 
-/* Private constants */
-
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Get preferred width of icon and label child actors

@@ -718,13 +718,13 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 	if(selectors)
 	{
 		priv->selectors=g_list_concat(priv->selectors, selectors);
-		g_debug("Successfully parsed '%s' and added %d selectors - total %d selectors", __func__, g_list_length(selectors), g_list_length(priv->selectors));
+		g_debug("Successfully parsed '%s' and added %d selectors - total %d selectors", inName, g_list_length(selectors), g_list_length(priv->selectors));
 	}
 
 	if(styles)
 	{
 		priv->styles=g_list_concat(priv->styles, styles);
-		g_debug("Successfully parsed '%s' and added %d styles - total %d style", __func__, g_list_length(styles), g_list_length(priv->styles));
+		g_debug("Successfully parsed '%s' and added %d styles - total %d style", inName, g_list_length(styles), g_list_length(priv->styles));
 	}
 
 	/* Destroy scanner */
