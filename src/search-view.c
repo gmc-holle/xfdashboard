@@ -36,11 +36,6 @@
 #include "drag-action.h"
 #include "utils.h"
 
-#ifdef g_debug
-#undef g_debug
-#endif
-#define g_debug g_message
-
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardSearchView,
 				xfdashboard_search_view,
