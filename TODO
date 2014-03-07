@@ -2,15 +2,15 @@
 [done] Migrate fully to autotools build system
 [done] Quit app by pressing ESC(ape) but if search is active clear it first (needs pressing ESC twice to quit app)
 - More control by keyboard (e.g. selecting and starting application by arrow keys and ENTER)
-[prepared] Store settings, e.g. quicklaunch shortcuts, in Xfconf4 and listen for updates
+[done] Store settings, e.g. quicklaunch shortcuts, in Xfconf4 and listen for updates
 [done] Only run one instance (libunique? GApplication?)
 [done] Localization
 [done] Get rid of duplicates in application search view/provider
-- Implement search provider manager and search provider abstract class to collect result from many and different sources (not only applications)
-- Implement application search provider as built-in
+[done] Implement search provider manager and search provider abstract class to collect result from many and different sources (not only applications)
+[done] Implement application search provider as built-in
 - Search should be non-blocking (but workaround: still blocking but speed up a lot)
 - Start search approx. one second after entering and restart search one second after last input in a thread? (could be needed for search providers collecting remote results)
-- Sort search result in search view alphabetically and/or by relevance?
+[done] Sort search result in search view alphabetically and/or by relevance?
 - Effects?
 [done] Theming
 [done] Fix daemon mode
@@ -56,7 +56,7 @@
 [done] Implement search input box
 [done] Switch to search view on non-empty search term (that means search started)
 [done] Switch back to previous view if search input box is empty (that means search has ended)
-- Support search provider manager
-- Support grouping of results by search providers
+[done] Support search provider manager
+[done] Support grouping of results by search providers
 [done] Allow drag-n-drop of application icon to quicklaunch-box and create shortcut
 [done] Allow drag-n-drop of application icon to workspace-box and start application on this workspace
