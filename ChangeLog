@@ -1,3 +1,316 @@
+commit edaa8b2073831ce00b104e4d24de6c28cd35cbda
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Mar 8 21:50:35 2014 +0100
+
+    Make more properties themable
+    
+    Add "padding" to XfdashboardSearchResultContainer and "spacing" to XfdashboardWindowsView. Adding these property eliminates some more "// TODO:" comments :) Also did some code cleanup
+
+commit 648e239ead55c47971f1cc4b6870a16d4c7c52a7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Mar 8 17:30:03 2014 +0100
+
+    Fix visual bug when drawing outlines of XfdashboardBackground derived actors
+    
+    The outline was drawn when virtual paint_node() function of XfdashboardBackground was drawn. Any XfdashboardBackground derived object could easily overdraw outline. Outline is now a effect which takes care that outline is drawn last and is always visible. Also a new property "outline-borders" (XfdashboardBackground) which "maps" to "borders" in new XfdashboardOutlineEffect class and manages which sides (and also which rounded corner) should be drawn.
+
+commit a2e2549163d4094ea0aebc763714fd8e751e4157
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Mar 8 09:37:31 2014 +0100
+
+    Improve search performance in "applications" search provider
+
+commit 81d4abbf9238a63beb6684dd713de064fbcfa215
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Mar 8 01:34:30 2014 +0100
+
+    Updated TODO
+
+commit ed3098f6c3c165c34bd7d90cb7f7f8bd78594427
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Mar 8 00:25:30 2014 +0100
+
+    Clean up code and add "TODO"-marked signals to XfdashboardImage
+    
+    XfdashboardImage will now emit the signal "loaded" if image was loaded successfully and "loading-failed" if not.
+
+commit 8b73940dfcc972d862db52a767937e9fca2fcb26
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Mar 7 09:58:17 2014 +0100
+
+    Updated TODO
+
+commit 6f8e27bdfccaabaab89323fc41ffc3e9bc9ea92c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Mar 7 09:03:20 2014 +0100
+
+    Remove redefinition of g_debug for debugging XfdashboardSearchView
+
+commit 4c0d2c9b4b5bd13a302c34e4d4f317f04802cf22
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Mar 6 22:29:48 2014 +0100
+
+    Rewrite search with new implemented search provider infrastructure
+    
+    Added infrastructure for search providers. Registered search providers will be called each time a search is performed - either as full search or as incremental search to a previous one if each search term in new search is a prefix of its counterpart in new search and if their order did not change. Search provider can use any source for their search but have to create an actor for each item in their result if requested. The newly added search manager manages all search providers at one place. Search view was rewritten to use this new search infrastructure.
+
+commit e130e36b579211920a8ab7ba118e17ac48f80c40
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Mar 6 17:01:44 2014 +0100
+
+    Handle drag action without source correctly and allow to modify source
+    
+    XfdashboardDragAction did not check if source is set correctly when it set and unset styles. This caused segementation faults. We also allow now to modify source after object was constructed but not via public API because it should not used normally.
+
+commit 38541aaf77f1f6e763bffd828cb0e2a98107ca77
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Mar 6 13:55:46 2014 +0100
+
+    Make spacing in applications view themable
+    
+    Remove constant spacing in applications view and add a themable property "spacing" instead.
+
+commit db0280ce4249437fe2244413dfd0e5418eab8cca
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Mar 4 21:34:48 2014 +0100
+
+    Remove lookup special path for theme in debug mode
+    
+    Do not lookup special path "./data/themes/<<theme name>>/xfdashboard.css" if compiled in debug mode. E.g. we can override default theme by creating a symlink in ~/.themes/xfdashboard/xfdashboard-1.0 to "./data/themes/<<theme name>>/xfdashboard.css"
+
+commit 6d8c9c12e251729d62359880a78f277e15ca6d43
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Mar 4 21:08:42 2014 +0100
+
+    Do not declare XfdashboardActor abstract
+    
+    Remove flag G_TYPE_FLAG_ABSTRACT from class XfdashboardActor to allow creating base actor instances like ClutterActor. Otherwise we can only add XfdashboardActor derived objects and not ClutterActor directly wrapped actors.
+
+commit 1c161f5d9f2d464c53699d04ffae141a6056f35f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Mar 4 21:01:30 2014 +0100
+
+    Allow variable list of argument to set text of XfdashboardTextBox
+    
+    Add *_va functions to XfdashboardTextBox to format and set text and hint text in XfdashboardTextBox with a variable number of arguments.
+
+commit f0147acd556e699d5c30c080c2bb0742a423f6f2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Mar 3 22:54:59 2014 +0100
+
+    Increment reference counter in XfdashboardViewManager instance
+    
+    xfdashboard_view_manager_get_default() returns now an reference-count-incremented instance. There is no need anymore to take a reference on returned value outside XfdashboardViewManager.
+
+commit 9e301c825f608f24363f7831002090062ac55899
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Mar 1 23:22:00 2014 +0100
+
+    Increase performance when browsing applications menu
+    
+    Avoid unnessary rebuilds of applicatios view when changing properties. E.g. it is not neccessary to rebuild applications view if format string to render title and description changes but view mode in search mode is "icon" which uses only the format string for title-only names.
+
+commit c315d384bc8857fd1fb6c572fe5cf5905f705f1d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Mar 1 23:20:03 2014 +0100
+
+    Fixed condition to free description format string in applications view
+
+commit 09a90a263f13b004c586e8c5544b735a04792376
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Feb 28 23:18:35 2014 +0100
+
+    Revert description of XfdashboardImage
+    
+    Now as images are really loaded asynchronously we can revert the changes of commit f22f1eaa71e86301c7831fd16dc4fa1c8f1890a0
+
+commit 836261c3f99a7a26cb35eb0aae5a20ab2aa69816
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Feb 28 15:37:24 2014 +0100
+
+    Remove setting pseudo-class ':press-held' in XfdashboardClickAction
+
+commit 29bac8b9a8f757f3d45931b4114456bd06c1d8f4
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Feb 28 15:35:11 2014 +0100
+
+    Remove pseudo-class ':enabled' from view base class
+    
+    The pseudo-class ':enabled' is misleading if only used in views. This pseudo-class is better used in XfdashboardActor to indicate if actor is reactive or not.
+
+commit 79a4567ca5d1157b35cd56f5fb6874d63de68398
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Feb 28 15:19:15 2014 +0100
+
+    Fixed setting pseudo-class ':dragged'
+    
+    Pseudo-class ':dragged' needs to be added and removed on drag actor instead on dragged source.
+
+commit d847e47075d1bda652358f73d7f0006942799a8f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Feb 28 15:12:30 2014 +0100
+
+    Increase performance when searching
+    
+    Avoid unnessary rebuilds of search results when changing properties. E.g. it is not neccessary to rebuild results in search view if format string to render title and description changes but view mode in search mode is "icon" which uses only the format string for title-only names.
+
+commit 53c2ef41b637415f9b85b3087d65e1fed3f4bdee
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Feb 28 15:09:49 2014 +0100
+
+    Fixed condition to free description format string in search view
+
+commit 6db8bb0f708366fedcfe41562916df385f77b643
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Feb 28 12:19:35 2014 +0100
+
+    Fix fullscreen stage window for clutter prior version 1.16
+    
+    Commit d82c491d2c15525d4f052100234274936ae03aa5 broke correct stage size when window is fullscreen. Add some checks at compile to restore old correct behaviour at least for clutter versions prior the problematic ones (1.16+)
+
+commit 24f4fc791dc6da032409ba68489432d6ad373128
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Feb 28 12:07:41 2014 +0100
+
+    Load images in XfdashboardImage asynchronously
+
+commit c501c27556a89d2b4ac2fd53fa0e96f1558dee93
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Feb 28 09:51:57 2014 +0100
+
+    When loading images differ between icons from icon theme or absolute file path
+
+commit 8dc8d31280bd975ec5feb35fdb19560e7a394d2e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Feb 28 08:40:10 2014 +0100
+
+    Remove write-only properties in XfdashboardImage
+    
+    The write-only properties removed are only used once for setting up XfdashboardImage. To ensure they could only set once and only from inside XfdashboardImage replace these properties with private functions.
+
+commit f22f1eaa71e86301c7831fd16dc4fa1c8f1890a0
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Feb 28 08:27:05 2014 +0100
+
+    Corrected function in description of XfdashboardImage
+
+commit d82c491d2c15525d4f052100234274936ae03aa5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Feb 27 06:31:45 2014 +0100
+
+    Do not resize stage after window was opened
+    
+    This commit addresses issue #1. It seems that starting with clutter 1.16 the way how the stage window is created within clutter changed resulting that coordinates in stage window were transformed wrongly although there were no visible differences. By setting stage actor's size (and therefore window size) when actor is created and before window is created by clutter the right transformation was restored.
+
+commit 2e740bfdd16e2568398bdcf94016bc6284b6dc71
+Merge: 59ae601 e730244
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Feb 26 20:11:05 2014 +0100
+
+    Merge branch 'master' of github.com:gmc-holle/xfdashboard
+
+commit 59ae601afba35d2a0352ed467c5d75fa7a6d9ad7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Feb 26 20:09:57 2014 +0100
+
+    Do not localize debug messages
+    
+    There were some debug messages which were marked for localization accidently.
+
+commit eb02bcb74e19673d80eafd4a5d1dd1b23a629dbe
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Feb 26 20:00:51 2014 +0100
+
+    More updated code styling
+    
+    Also corrects visibility of private (but global) variables
+
+commit 7d3091f5e13bea08da0ef29cb0c4ab96a9bf9389
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Feb 26 19:58:22 2014 +0100
+
+    Update code style
+
+commit e730244451f72bcefb4b00c943cf61b27a1df64f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Feb 26 12:41:13 2014 +0100
+
+    Support to get stylable properties of requested class only or of all parent classes as well
+    
+    xfdashboard_actor_get_stylable_properties is splitted into two functions: xfdashboard_actor_get_stylable_properties and xfdashboard_actor_get_stylable_properties_full. The first one will fill the hashtable only with stylable properties of requested and the latter one will also get the stylable properties of all parent classes recursively.
+
+commit 5ee8808579939a1edd12f102881a8437f52b26a8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Feb 24 23:24:40 2014 +0100
+
+    Declare strings static in parameter specification
+    
+    Reduces memory usage by not copying strings in parameter specification and could make string lookup and comparison faster.
+
+commit 2767d698c7fc50e2f5bfb31f56e57680971b0052
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Feb 24 22:41:31 2014 +0100
+
+    Removed TODO comments in XfdashboardApplicationsView
+    
+    Remove "TODO"-commented code as they are not needed and will not be reverted.
+
+commit d3e1afd8fa10e4f3a6bec04c2753e0cfe5204115
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Feb 24 22:40:07 2014 +0100
+
+    Removed TODO comments in XfdashboardStage
+    
+    Remove "TODO"-commented code as they are not needed and will not be reverted.
+
+commit 84662fc8230b220e15484be91779ffbc0b6fd344
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Feb 24 22:36:24 2014 +0100
+
+    Removed TODO comments in XfdashboardActor
+    
+    Remove "TODO"-commented code as they are not needed and will not be reverted.
+
+commit 9a7cce3c95f4d7b479a0b9d84e738a72c2b5d93a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Feb 24 22:32:21 2014 +0100
+
+    Use new public function xfdashboard_actor_get_stylable_properties in xfdashboard_actor_style_invalidate
+    
+    Using the new public function also in xfdashboard_actor_style_invalidate deduplicates code for creating hashtable holding references to parameter specifications. This also help to avoid missing changes at one place while the other place was changed because there is now only one place at all.
+
+commit 864c06da6acd56fbe23e8d87298d0ca6eb70662e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Feb 24 13:22:56 2014 +0100
+
+    Add public function to retrieve stylable properties of a class
+
+commit f155de79e279e1520b91f26efbeba247dd7e5ef3
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Feb 23 21:22:57 2014 +0100
+
+    New URL for documentation
+    
+    Updated URL for documentation to new site and added URL for homepage.
+
+commit 9a45929a9a089f8b82f12288ecbca2098c691ede
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Feb 23 15:57:28 2014 +0100
+
+    Update .gitignore
+
+commit 9fbe67870ab9c486043cdebf0e424893daa6e305
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Feb 23 15:54:46 2014 +0100
+
+    Post-release version bump to 0.1.5
+
+commit d5fecc7e4baec92e051cc9d200480b88c1411d86
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Feb 23 15:53:19 2014 +0100
+
+    Bump version to 0.1.4
+
 commit 80dc6729d1b4ac0040211c2abf240a84e193cf46
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Sun Feb 23 12:38:31 2014 +0100
