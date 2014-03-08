@@ -13,7 +13,9 @@
 	spacing: 4.0;
 	background-type: fill outline rounded-corners;
 	background-fill-color: #ffffff18;
+	outline-color: #ffffff40;
 	outline-width: 0.5;
+	outline-borders: top right bottom;
 	corners: right;
 }
 
@@ -104,12 +106,13 @@ XfdashboardLiveWindow .close-button
 XfdashboardLiveWorkspace
 {
 	background-type: outline;
-	outline-color: #ffffff;
-	outline-width: 1.0;
+	outline-color: #ffffff40;
+	outline-width: 2.0;
 }
 
 XfdashboardLiveWorkspace:active
 {
+	background-type: outline;
 	outline-color: #ff0000;
 	outline-width: 4.0;
 }
@@ -176,7 +179,9 @@ XfdashboardApplicationButton.view-mode-list
 	spacing: 4.0;
 	background-type: fill outline rounded-corners;
 	background-fill-color: #ffffff18;
+	outline-color: #ffffff40;
 	outline-width: 0.5;
+	outline-borders: top left bottom;
 	corners: left;
 	orientation: vertical;
 	max-fraction: 0.25;

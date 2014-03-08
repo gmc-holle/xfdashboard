@@ -71,21 +71,34 @@ ClutterActor* xfdashboard_background_new(void);
 XfdashboardBackgroundType xfdashboard_background_get_background_type(XfdashboardBackground *self);
 void xfdashboard_background_set_background_type(XfdashboardBackground *self, const XfdashboardBackgroundType inType);
 
-/* Rectangle functions */
+void xfdashboard_background_set_corners(XfdashboardBackground *self, XfdashboardCorners inCorners);
+void xfdashboard_background_set_corner_radius(XfdashboardBackground *self, const gfloat inRadius);
+
+/* Fill functions */
 const ClutterColor* xfdashboard_background_get_fill_color(XfdashboardBackground *self);
 void xfdashboard_background_set_fill_color(XfdashboardBackground *self, const ClutterColor *inColor);
 
+XfdashboardCorners xfdashboard_background_get_fill_corners(XfdashboardBackground *self);
+void xfdashboard_background_set_fill_corners(XfdashboardBackground *self, XfdashboardCorners inCorners);
+
+gfloat xfdashboard_background_get_fill_corner_radius(XfdashboardBackground *self);
+void xfdashboard_background_set_fill_corner_radius(XfdashboardBackground *self, const gfloat inRadius);
+
+/* Outline functions */
 const ClutterColor* xfdashboard_background_get_outline_color(XfdashboardBackground *self);
 void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const ClutterColor *inColor);
 
 gfloat xfdashboard_background_get_outline_width(XfdashboardBackground *self);
 void xfdashboard_background_set_outline_width(XfdashboardBackground *self, const gfloat inWidth);
 
-XfdashboardCorners xfdashboard_background_get_corners(XfdashboardBackground *self);
-void xfdashboard_background_set_corners(XfdashboardBackground *self, XfdashboardCorners inCorners);
+XfdashboardBorders xfdashboard_background_get_outline_borders(XfdashboardBackground *self);
+void xfdashboard_background_set_outline_borders(XfdashboardBackground *self, XfdashboardBorders inBorders);
 
-gfloat xfdashboard_background_get_corner_radius(XfdashboardBackground *self);
-void xfdashboard_background_set_corner_radius(XfdashboardBackground *self, const gfloat inRadius);
+XfdashboardCorners xfdashboard_background_get_outline_corners(XfdashboardBackground *self);
+void xfdashboard_background_set_outline_corners(XfdashboardBackground *self, XfdashboardCorners inCorners);
+
+gfloat xfdashboard_background_get_outline_corner_radius(XfdashboardBackground *self);
+void xfdashboard_background_set_outline_corner_radius(XfdashboardBackground *self, const gfloat inRadius);
 
 /* Image functions */
 ClutterImage* xfdashboard_background_get_image(XfdashboardBackground *self);
