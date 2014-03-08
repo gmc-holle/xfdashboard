@@ -121,87 +121,6 @@ static void _xfdashboard_applications_search_provider_on_drag_end(ClutterDragAct
 	}
 }
 
-/* Check if a word in given text matches a search term at the beginning of word */
-static gboolean _xfdashboard_applications_search_provider_string_match_search_terms(const gchar *inText,
-																					gchar **inSearchTerms,
-																					const gchar *inDelimiters)
-{
-	gchar			*checkText, *foundPos;
-	const gchar		*delimiter;
-	gboolean		isMatch;
-	guint			matchesFound, matchesExpected;
-	gchar			foundChar;
-
-	g_return_val_if_fail(inText && *inText, FALSE);
-	g_return_val_if_fail(inSearchTerms, FALSE);
-
-	/* To perform a case-insenstive search create lower-case string */
-	checkText=g_utf8_strdown(inText, -1);
-
-	/* Get number of search terms which will be the number of matches we expect */
-	matchesExpected=g_strv_length(inSearchTerms);
-
-	/* Iterate through search terms and stop searching at
-	 * first positive result
-	 */
-	matchesFound=0;
-	while(*inSearchTerms)
-	{
-		/* Reset "found" indicator */
-		isMatch=FALSE;
-
-		/* Check for current search term */
-		foundPos=checkText;
-		do
-		{
-			foundPos=g_strstr_len(foundPos, -1, *inSearchTerms);
-			if(foundPos)
-			{
-				/* If we found text at the beginning we do not need to
-				 * check delimiters ...
-				 */
-				if(foundPos==checkText)
-				{
-					isMatch=TRUE;
-					matchesFound++;
-				}
-					/* ... otherwise check if character before the
-					 * found position is a delimiter
-					 */
-					else if(inDelimiters)
-					{
-						foundChar=*(foundPos-1);
-						delimiter=inDelimiters;
-						while(*delimiter && !isMatch)
-						{
-							if(*delimiter==foundChar)
-							{
-								isMatch=TRUE;
-								matchesFound++;
-							}
-							delimiter++;
-						}
-					}
-
-				/* Move to next character just in case if we need to
-				 * continue iteration
-				 */
-				foundPos++;
-			}
-		}
-		while(foundPos && *foundPos && !isMatch);
-
-		/* Get next search term to check */
-		inSearchTerms++;
-	}
-
-	/* Free allocated resources */
-	g_free(checkText);
-
-	/* Return result */
-	return(matchesFound==matchesExpected);
-}
-
 /* Check if model data at iterator matches search terms */
 static gboolean _xfdashboard_applications_search_provider_is_match(ClutterModelIter *inIter,
 																	gchar **inSearchTerms,
@@ -212,7 +131,8 @@ static gboolean _xfdashboard_applications_search_provider_is_match(ClutterModelI
 	gboolean							isMatch;
 	GarconMenuElement					*menuElement;
 	const gchar							*title, *description, *command, *desktopID;
-	const gchar							dirSeparator[]={ G_DIR_SEPARATOR, 0 };
+	gchar								*lowerTitle, *lowerDescription;
+	gint								matchesFound, matchesExpected;
 
 	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
 	g_return_val_if_fail(!inLimitSet || XFDASHBOARD_IS_SEARCH_RESULT_SET(inLimitSet), FALSE);
@@ -255,37 +175,80 @@ static gboolean _xfdashboard_applications_search_provider_is_match(ClutterModelI
 	}
 
 	/* Empty search term matches no menu item */
-	if(!inSearchTerms || g_strv_length(inSearchTerms)==0)
+	if(!inSearchTerms)
 	{
 		g_object_unref(menuElement);
 		return(FALSE);
 	}
 
-	/* Check if title, description or command matches search criteria */
+	matchesExpected=g_strv_length(inSearchTerms);
+	if(matchesExpected==0)
+	{
+		g_object_unref(menuElement);
+		return(FALSE);
+	}
+
+	/* Check if title, description or command matches all search terms */
 	title=garcon_menu_element_get_name(menuElement);
 	description=garcon_menu_element_get_comment(menuElement);
 	command=garcon_menu_item_get_command(GARCON_MENU_ITEM(menuElement));
 	desktopID=garcon_menu_item_get_desktop_id(GARCON_MENU_ITEM(menuElement));
 
-	if(title && isMatch==FALSE)
+	if(title) lowerTitle=g_utf8_strdown(title, -1);
+		else lowerTitle=NULL;
+
+	if(description) lowerDescription=g_utf8_strdown(description, -1);
+		else lowerDescription=NULL;
+
+	matchesFound=0;
+	while(*inSearchTerms)
 	{
-		if(_xfdashboard_applications_search_provider_string_match_search_terms(title, inSearchTerms, DEFAULT_DELIMITERS)) isMatch=TRUE;
+		gboolean						termMatch;
+		gchar							*commandPos;
+
+		/* Reset "found" indicator */
+		termMatch=FALSE;
+
+		/* Check for current search term */
+		if(!termMatch &&
+			lowerTitle &&
+			g_strstr_len(lowerTitle, -1, *inSearchTerms))
+		{
+			termMatch=TRUE;
+		}
+
+		if(!termMatch &&
+			lowerDescription &&
+			g_strstr_len(lowerDescription, -1, *inSearchTerms))
+		{
+			termMatch=TRUE;
+		}
+
+		if(!termMatch && command)
+		{
+			commandPos=g_strstr_len(command, -1, *inSearchTerms);
+			if(commandPos &&
+				(commandPos==command || *(commandPos-1)==G_DIR_SEPARATOR))
+			{
+				termMatch=TRUE;
+			}
+		}
+
+		/* Increase match counter if we found a match */
+		if(termMatch) matchesFound++;
+
+		/* Continue with next search term */
+		inSearchTerms++;
 	}
 
-	if(description && isMatch==FALSE)
-	{
-		if(_xfdashboard_applications_search_provider_string_match_search_terms(description, inSearchTerms, DEFAULT_DELIMITERS)) isMatch=TRUE;
-	}
+	if(matchesFound>=matchesExpected) isMatch=TRUE;
 
-	if(command && isMatch==FALSE)
-	{
-		if(_xfdashboard_applications_search_provider_string_match_search_terms(command, inSearchTerms, dirSeparator)) isMatch=TRUE;
-	}
+	if(lowerTitle) g_free(lowerTitle);
+	if(lowerDescription) g_free(lowerDescription);
 
-	/* If menu element matches search criteria determine if it should be shown
-	 * by checking if we haven't seen this desktop ID yet or if we have seen it
-	 * if the row the given iterator refers is the same row where we have seen
-	 * the menu element first.
+	/* If menu element is a match check if it is a duplicate. It is a duplicate
+	 * if desktopID is already in hashtable provided or if the row where the
+	 * desktopID was found is not the current row.
 	 */
 	if(isMatch==TRUE)
 	{
