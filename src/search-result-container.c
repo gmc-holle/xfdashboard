@@ -51,6 +51,7 @@ struct _XfdashboardSearchResultContainerPrivate
 	gchar						*titleFormat;
 	XfdashboardViewMode			viewMode;
 	gfloat						spacing;
+	gfloat						padding;
 
 	/* Instance related */
 	ClutterLayoutManager		*layout;
@@ -68,6 +69,7 @@ enum
 	PROP_TITLE_FORMAT,
 	PROP_VIEW_MODE,
 	PROP_SPACING,
+	PROP_PADDING,
 
 	PROP_LAST
 };
@@ -203,6 +205,10 @@ static void _xfdashboard_search_result_container_set_property(GObject *inObject,
 			xfdashboard_search_result_container_set_spacing(self, g_value_get_float(inValue));
 			break;
 
+		case PROP_PADDING:
+			xfdashboard_search_result_container_set_padding(self, g_value_get_float(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -231,6 +237,10 @@ static void _xfdashboard_search_result_container_get_property(GObject *inObject,
 			g_value_set_float(outValue, priv->spacing);
 			break;
 
+		case PROP_PADDING:
+			g_value_set_float(outValue, priv->padding);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -244,17 +254,12 @@ static void _xfdashboard_search_result_container_get_property(GObject *inObject,
 static void xfdashboard_search_result_container_class_init(XfdashboardSearchResultContainerClass *klass)
 {
 	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
-	// TODO: ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_search_result_container_dispose;
 	gobjectClass->set_property=_xfdashboard_search_result_container_set_property;
 	gobjectClass->get_property=_xfdashboard_search_result_container_get_property;
-
-	// TODO: clutterActorClass->get_preferred_width=_xfdashboard_search_result_container_get_preferred_width;
-	// TODO: clutterActorClass->get_preferred_height=_xfdashboard_search_result_container_get_preferred_height;
-	// TODO: clutterActorClass->allocate=_xfdashboard_search_result_container_allocate;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardSearchResultContainerPrivate));
@@ -290,12 +295,21 @@ static void xfdashboard_search_result_container_class_init(XfdashboardSearchResu
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardSearchResultContainerProperties[PROP_PADDING]=
+		g_param_spec_float("padding",
+							_("Padding"),
+							_("Padding between title and item results container"),
+							0.0f, G_MAXFLOAT,
+							0.0f,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSearchResultContainerProperties);
 
 	/* Define stylable properties */
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_TITLE_FORMAT]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_VIEW_MODE]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_SPACING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_PADDING]);
 
 	/* Define signals */
 	XfdashboardSearchResultContainerSignals[SIGNAL_ICON_CLICKED]=
@@ -324,6 +338,7 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 	priv->titleFormat=NULL;
 	priv->viewMode=-1;
 	priv->spacing=0.0f;
+	priv->padding=0.0f;
 
 	/* Set up children */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), FALSE);
@@ -504,6 +519,44 @@ void xfdashboard_search_result_container_set_spacing(XfdashboardSearchResultCont
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchResultContainerProperties[PROP_SPACING]);
+	}
+}
+
+/* Get/set spacing between result item actors */
+gfloat xfdashboard_search_result_container_get_padding(XfdashboardSearchResultContainer *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), 0.0f);
+
+	return(self->priv->padding);
+}
+
+void xfdashboard_search_result_container_set_padding(XfdashboardSearchResultContainer *self, const gfloat inPadding)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+	ClutterMargin								margin;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+	g_return_if_fail(inPadding>=0.0f);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->padding!=inPadding)
+	{
+		/* Set value */
+		priv->padding=inPadding;
+
+		/* Update actors */
+		margin.left=priv->padding;
+		margin.right=priv->padding;
+		margin.top=priv->padding;
+		margin.bottom=priv->padding;
+
+		clutter_actor_set_margin(priv->titleTextBox, &margin);
+		clutter_actor_set_margin(priv->itemsContainer, &margin);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchResultContainerProperties[PROP_PADDING]);
 	}
 }
 

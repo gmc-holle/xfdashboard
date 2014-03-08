@@ -55,9 +55,11 @@ struct _XfdashboardWindowsViewPrivate
 {
 	/* Properties related */
 	XfdashboardWindowTrackerWorkspace	*workspace;
+	gfloat								spacing;
 
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
+	ClutterLayoutManager				*layout;
 };
 
 /* Properties */
@@ -66,6 +68,7 @@ enum
 	PROP_0,
 
 	PROP_WORKSPACE,
+	PROP_SPACING,
 
 	PROP_LAST
 };
@@ -77,7 +80,6 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_SPACING				8.0f					// TODO: Replace by layout object
 #define DEFAULT_VIEW_ICON			GTK_STOCK_FULLSCREEN
 #define DEFAULT_DRAG_HANDLE_SIZE	32.0f
 
@@ -501,6 +503,11 @@ static void _xfdashboard_windows_view_dispose(GObject *inObject)
 	/* Release allocated resources */
 	_xfdashboard_windows_view_set_active_workspace(self, NULL);
 
+	if(priv->layout)
+	{
+		priv->layout=NULL;
+	}
+
 	if(priv->windowTracker)
 	{
 		g_signal_handlers_disconnect_by_data(priv->windowTracker, self);
@@ -526,6 +533,10 @@ static void _xfdashboard_windows_view_set_property(GObject *inObject,
 			_xfdashboard_windows_view_set_active_workspace(self, g_value_get_object(inValue));
 			break;
 
+		case PROP_SPACING:
+			xfdashboard_windows_view_set_spacing(self, g_value_get_float(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -537,12 +548,17 @@ static void _xfdashboard_windows_view_get_property(GObject *inObject,
 													GValue *outValue,
 													GParamSpec *inSpec)
 {
-	XfdashboardWindowsView		*self=XFDASHBOARD_WINDOWS_VIEW(inObject);
+	XfdashboardWindowsView			*self=XFDASHBOARD_WINDOWS_VIEW(inObject);
+	XfdashboardWindowsViewPrivate	*priv=self->priv;
 
 	switch(inPropID)
 	{
 		case PROP_WORKSPACE:
-			g_value_set_object(outValue, self->priv->workspace);
+			g_value_set_object(outValue, priv->workspace);
+			break;
+
+		case PROP_SPACING:
+			g_value_set_float(outValue, priv->spacing);
 			break;
 
 		default:
@@ -557,6 +573,7 @@ static void _xfdashboard_windows_view_get_property(GObject *inObject,
  */
 static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *klass)
 {
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
@@ -569,13 +586,24 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 
 	/* Define properties */
 	XfdashboardWindowsViewProperties[PROP_WORKSPACE]=
-		g_param_spec_object ("workspace",
-								_("Current workspace"),
-								_("The current workspace whose windows are shown"),
-								XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE,
-								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+		g_param_spec_object("workspace",
+							_("Current workspace"),
+							_("The current workspace whose windows are shown"),
+							XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE,
+							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardWindowsViewProperties[PROP_SPACING]=
+		g_param_spec_float("spacing",
+							_("Spacing"),
+							_("Spacing between each element in view"),
+							0.0f, G_MAXFLOAT,
+							0.0f,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowsViewProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_SPACING]);
 }
 
 /* Object initialization
@@ -584,7 +612,6 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 {
 	XfdashboardWindowsViewPrivate	*priv;
-	ClutterLayoutManager			*layout;
 	ClutterAction					*action;
 
 	self->priv=priv=XFDASHBOARD_WINDOWS_VIEW_GET_PRIVATE(self);
@@ -592,6 +619,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	/* Set up default values */
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->workspace=NULL;
+	priv->spacing=0.0f;
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "windows");
@@ -600,10 +628,9 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_BOTH);
 
 	/* Setup actor */
-	layout=xfdashboard_scaled_table_layout_new();
-	xfdashboard_scaled_table_layout_set_spacing(XFDASHBOARD_SCALED_TABLE_LAYOUT(layout), DEFAULT_SPACING);
-	xfdashboard_scaled_table_layout_set_relative_scale(XFDASHBOARD_SCALED_TABLE_LAYOUT(layout), TRUE);
-	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), layout);
+	priv->layout=xfdashboard_scaled_table_layout_new();
+	xfdashboard_scaled_table_layout_set_relative_scale(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout), TRUE);
+	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
 
 	action=xfdashboard_drop_action_new();
 	clutter_actor_add_action(CLUTTER_ACTOR(self), action);
@@ -625,4 +652,40 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 								"window-closed",
 								G_CALLBACK(_xfdashboard_windows_view_on_window_closed),
 								self);
+}
+
+/* Implementation: Public API */
+
+/* Get/set spacing between elements */
+gfloat xfdashboard_windows_view_get_spacing(XfdashboardWindowsView *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), 0.0f);
+
+	return(self->priv->spacing);
+}
+
+void xfdashboard_windows_view_set_spacing(XfdashboardWindowsView *self, const gfloat inSpacing)
+{
+	XfdashboardWindowsViewPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+	g_return_if_fail(inSpacing>=0.0f);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->spacing!=inSpacing)
+	{
+		/* Set value */
+		priv->spacing=inSpacing;
+
+		/* Update layout manager */
+		if(priv->layout)
+		{
+			xfdashboard_scaled_table_layout_set_spacing(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout), priv->spacing);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_SPACING]);
+	}
 }

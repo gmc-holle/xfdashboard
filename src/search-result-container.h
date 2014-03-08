@@ -78,6 +78,9 @@ void xfdashboard_search_result_container_set_view_mode(XfdashboardSearchResultCo
 gfloat xfdashboard_search_result_container_get_spacing(XfdashboardSearchResultContainer *self);
 void xfdashboard_search_result_container_set_spacing(XfdashboardSearchResultContainer *self, const gfloat inSpacing);
 
+gfloat xfdashboard_search_result_container_get_padding(XfdashboardSearchResultContainer *self);
+void xfdashboard_search_result_container_set_padding(XfdashboardSearchResultContainer *self, const gfloat inPadding);
+
 void xfdashboard_search_result_container_add_result_actor(XfdashboardSearchResultContainer *self,
 															ClutterActor *inResultActor,
 															ClutterActor *inInsertAfter);

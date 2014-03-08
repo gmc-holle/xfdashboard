@@ -596,7 +596,7 @@ void xfdashboard_applications_view_set_view_mode(XfdashboardApplicationsView *se
 	}
 }
 
-/* Get/set spacing between result item actors */
+/* Get/set spacing between elements */
 gfloat xfdashboard_applications_view_get_spacing(XfdashboardApplicationsView *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), 0.0f);
@@ -639,6 +639,8 @@ void xfdashboard_applications_view_set_spacing(XfdashboardApplicationsView *self
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationsViewProperties[PROP_SPACING]);
 	}
 }
+
+/* Implementation: Public API */
 
 /* Get/set icon name for 'go-back-to-parent-menu' entries */
 const gchar* xfdashboard_applications_view_get_parent_menu_icon(XfdashboardApplicationsView *self)

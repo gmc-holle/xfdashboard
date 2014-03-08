@@ -249,9 +249,17 @@ XfdashboardCollapseBox
 /* Search view */
 XfdashboardSearchView XfdashboardSearchResultContainer
 {
-	title-format: "<u><b><big>%s</big></b></u>";
+	title-format: "<b><big>%s</big></b>";
 	view-mode: list;
 	spacing: 4.0;
+	padding: 4.0;
+}
+
+XfdashboardSearchView XfdashboardSearchResultContainer .title
+{
+	background-type: outline;
+	outline-color: #e0e0e0;
+	outline-borders: bottom;
 }
 
 XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardApplicationButton.result-item
@@ -325,4 +333,10 @@ XfdashboardApplicationsView XfdashboardButton.view-mode-list
 	icon-size: 64.0;
 	button-style: icon;
 	sync-icon-size: false;
+}
+
+/* Windows view */
+XfdashboardWindowsView
+{
+	spacing: 8.0;
 }

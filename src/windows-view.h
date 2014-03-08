@@ -58,6 +58,9 @@ struct _XfdashboardWindowsViewClass
 /* Public API */
 GType xfdashboard_windows_view_get_type(void) G_GNUC_CONST;
 
+gfloat xfdashboard_windows_view_get_spacing(XfdashboardWindowsView *self);
+void xfdashboard_windows_view_set_spacing(XfdashboardWindowsView *self, const gfloat inSpacing);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_WINDOWS_VIEW__ */
