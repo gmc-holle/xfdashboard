@@ -12,6 +12,7 @@
 - Start search approx. one second after entering and restart search one second after last input in a thread? (could be needed for search providers collecting remote results)
 [done] Sort search result in search view alphabetically and/or by relevance?
 - Effects?
+- Tooltips
 [done] Theming
 [done] Fix daemon mode
 
