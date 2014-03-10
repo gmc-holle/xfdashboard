@@ -287,23 +287,6 @@ static void _xfdashboard_actor_on_name_changed(GObject *inObject,
 	xfdashboard_actor_style_invalidate(self);
 }
 
-/* Actor was (re)parented */
-static void _xfdashboard_actor_on_parent_changed(ClutterActor *inActor,
-													ClutterActor *inOldParent,
-													gpointer inUserData)
-{
-	XfdashboardActor		*self;
-
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inActor));
-
-	self=XFDASHBOARD_ACTOR(inActor);
-
-	/* Invalide styling to get it recomputed because its ID (from point
-	 * of view of css) has changed
-	 */
-	xfdashboard_actor_style_invalidate(self);
-}
-
 /* Check if haystack contains needle.
  * The haystack is a string representing a list which entries is seperated
  * by a seperator character. This function looks up the haystack if it
@@ -350,6 +333,77 @@ static gboolean _xfdashboard_actor_list_contains(const gchar *inNeedle,
 
 	/* Needle was not found */
 	return(FALSE);
+}
+
+/* IMPLEMENTATION: ClutterActor */
+
+/* Pointer left actor */
+static gboolean _xfdashboard_actor_leave_event(ClutterActor *inActor, ClutterCrossingEvent *inEvent)
+{
+	XfdashboardActor		*self;
+	ClutterActorClass		*parentClass;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inActor), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_ACTOR(inActor);
+
+	/* Call parent's virtual function */
+	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
+	if(parentClass->leave_event)
+	{
+		parentClass->leave_event(inActor, inEvent);
+	}
+
+	/* Remove pseudo-class ":hover" because pointer left actor */
+	xfdashboard_actor_remove_style_pseudo_class(self, "hover");
+
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Pointer entered actor */
+static gboolean _xfdashboard_actor_enter_event(ClutterActor *inActor, ClutterCrossingEvent *inEvent)
+{
+	XfdashboardActor		*self;
+	ClutterActorClass		*parentClass;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inActor), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_ACTOR(inActor);
+
+	/* Call parent's virtual function */
+	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
+	if(parentClass->enter_event)
+	{
+		parentClass->enter_event(inActor, inEvent);
+	}
+
+	/* Add pseudo-class ":hover" because pointer entered actor */
+	xfdashboard_actor_add_style_pseudo_class(self, "hover");
+
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Actor was (re)parented */
+static void _xfdashboard_actor_parent_set(ClutterActor *inActor, ClutterActor *inOldParent)
+{
+	XfdashboardActor		*self;
+	ClutterActorClass		*parentClass;
+
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inActor));
+
+	self=XFDASHBOARD_ACTOR(inActor);
+
+	/* Call parent's virtual function */
+	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
+	if(parentClass->parent_set)
+	{
+		parentClass->parent_set(inActor, inOldParent);
+	}
+
+	/* Invalide styling to get it recomputed because its ID (from point
+	 * of view of css) has changed
+	 */
+	xfdashboard_actor_style_invalidate(self);
 }
 
 /* IMPLEMENTATION: GObject */
@@ -437,6 +491,7 @@ static void _xfdashboard_actor_get_property(GObject *inObject,
  */
 void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 {
+	ClutterActorClass			*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass				*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Get parent class */
@@ -446,6 +501,10 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 	gobjectClass->dispose=_xfdashboard_actor_dispose;
 	gobjectClass->set_property=_xfdashboard_actor_set_property;
 	gobjectClass->get_property=_xfdashboard_actor_get_property;
+
+	clutterActorClass->parent_set=_xfdashboard_actor_parent_set;
+	clutterActorClass->enter_event=_xfdashboard_actor_enter_event;
+	clutterActorClass->leave_event=_xfdashboard_actor_leave_event;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardActorPrivate));
@@ -502,7 +561,6 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 	/* Connect signals */
 	g_signal_connect(self, "notify::mapped", G_CALLBACK(_xfdashboard_actor_on_mapped_changed), NULL);
 	g_signal_connect(self, "notify::name", G_CALLBACK(_xfdashboard_actor_on_name_changed), NULL);
-	g_signal_connect(self, "parent-set", G_CALLBACK(_xfdashboard_actor_on_parent_changed), NULL);
 }
 
 /* Implementation: GType */
