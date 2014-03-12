@@ -387,7 +387,7 @@ static void xfdashboard_application_button_class_init(XfdashboardApplicationButt
  */
 static void xfdashboard_application_button_init(XfdashboardApplicationButton *self)
 {
-	XfdashboardApplicationButtonPrivate	*priv;
+	XfdashboardApplicationButtonPrivate		*priv;
 
 	priv=self->priv=XFDASHBOARD_APPLICATION_BUTTON_GET_PRIVATE(self);
 

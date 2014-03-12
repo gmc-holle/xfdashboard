@@ -30,6 +30,8 @@
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
+#include <math.h>
 
 #include "application.h"
 #include "viewpad.h"
@@ -42,6 +44,7 @@
 #include "toggle-button.h"
 #include "workspace-selector.h"
 #include "collapse-box.h"
+#include "tooltip-action.h"
 
 /* TODO: Replace by settings/theming object (or check monitor directions if more than one monitor)
  * Meanwhile #undef STAGE_USE_HORIZONTAL_WORKSPACE_SELECTOR for vertical workspace
@@ -66,6 +69,7 @@ struct _XfdashboardStagePrivate
 	ClutterActor					*viewpad;
 	ClutterActor					*viewSelector;
 	ClutterActor					*notification;
+	ClutterActor					*tooltip;
 
 	/* Instance related */
 	XfdashboardWindowTracker		*windowTracker;
@@ -85,6 +89,8 @@ enum
 	SIGNAL_SEARCH_CHANGED,
 	SIGNAL_SEARCH_ENDED,
 
+	SIGNAL_SHOW_TOOLTIP,
+
 	SIGNAL_LAST
 };
 
@@ -98,6 +104,85 @@ static ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 };					// TODO: 
 #define DEFAULT_NOTIFICATION_TIMEOUT			3000
 #define RESET_SEARCH_ON_RESUME_XFCONF_PROP		"/reset-search-on-resume"
 #define DEFAULT_RESET_SEARCH_ON_RESUME			TRUE
+
+/* The pointer has been moved after a tooltip was shown */
+static gboolean _xfdashboard_stage_on_captured_event_after_tooltip(XfdashboardStage *self,
+																	ClutterEvent *inEvent,
+																	gpointer inUserData)
+{
+	XfdashboardStagePrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(self), CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+
+	/* Disconnect signal */
+	g_signal_handlers_disconnect_by_func(self,
+											G_CALLBACK(_xfdashboard_stage_on_captured_event_after_tooltip),
+											NULL);
+
+	/* Hide tooltip */
+	clutter_actor_hide(priv->tooltip);
+
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Stage got signal to show a tooltip */
+static void _xfdashboard_stage_show_tooltip(XfdashboardStage *self, ClutterAction *inAction)
+{
+	XfdashboardStagePrivate		*priv;
+	XfdashboardTooltipAction	*tooltipAction;
+	const gchar					*tooltipText;
+	gfloat						tooltipX, tooltipY;
+	gfloat						tooltipWidth, tooltipHeight;
+	guint						cursorSize;
+	gfloat						x, y;
+	gfloat						stageWidth, stageHeight;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_TOOLTIP_ACTION(inAction));
+	g_return_if_fail(self->priv->tooltip);
+
+	priv=self->priv;
+	tooltipAction=XFDASHBOARD_TOOLTIP_ACTION(inAction);
+
+	/* Disconnect any signal handler for hiding tooltip because
+	 * we are going to resetup tooltip. Hide tooltip while setup
+	 * to avoid flicker.
+	 */
+	g_signal_handlers_disconnect_by_func(self,
+											G_CALLBACK(_xfdashboard_stage_on_captured_event_after_tooltip),
+											NULL);
+	clutter_actor_hide(priv->tooltip);
+
+	/* Get tooltip text and update text in tooltip actor */
+	tooltipText=xfdashboard_tooltip_action_get_text(tooltipAction);
+	xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->tooltip), tooltipText);
+
+	/* Determine coordinates where to show tooltip at */
+	xfdashboard_tooltip_action_get_position(tooltipAction, &tooltipX, &tooltipY);
+	clutter_actor_get_size(priv->tooltip, &tooltipWidth, &tooltipHeight);
+
+	cursorSize=gdk_display_get_default_cursor_size(gdk_display_get_default());
+
+	clutter_actor_get_size(CLUTTER_ACTOR(self), &stageWidth, &stageHeight);
+
+	x=tooltipX+cursorSize;
+	y=tooltipY+cursorSize;
+	if((x+tooltipWidth)>stageWidth) x=tooltipX-tooltipWidth;
+	if((y+tooltipHeight)>stageHeight) y=tooltipY-tooltipHeight;
+
+	clutter_actor_set_position(priv->tooltip, floor(x), floor(y));
+
+	/* Show tooltip */
+	clutter_actor_show(priv->tooltip);
+
+	/* Connect signal to hide tooltip on next movement of pointer */
+	g_signal_connect(self,
+						"captured-event",
+						G_CALLBACK(_xfdashboard_stage_on_captured_event_after_tooltip),
+						NULL);
+}
 
 /* Notification timeout has been reached */
 static void _xfdashboard_stage_on_notification_timeout_destroyed(gpointer inUserData)
@@ -469,6 +554,16 @@ static void _xfdashboard_stage_setup(XfdashboardStage *self)
 	clutter_actor_add_constraint(priv->notification, clutter_align_constraint_new(groupHorizontal, CLUTTER_ALIGN_Y_AXIS, 1.0f));
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->notification);
 
+	/* Tooltip actor (this actor is like a notification but positioned next to pointer) */
+	priv->tooltip=xfdashboard_text_box_new();
+	clutter_actor_set_name(priv->tooltip, "tooltip");
+	clutter_actor_hide(priv->tooltip);
+	clutter_actor_set_reactive(priv->tooltip, FALSE);
+	clutter_actor_set_fixed_position_set(priv->tooltip, TRUE);
+	clutter_actor_set_z_position(priv->tooltip, 0.1f);
+	clutter_actor_set_request_mode(priv->tooltip, CLUTTER_REQUEST_HEIGHT_FOR_WIDTH);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->tooltip);
+
 	/* Set key focus to searchbox */
 	clutter_stage_set_accept_focus(CLUTTER_STAGE(self), TRUE);
 	clutter_stage_set_key_focus(CLUTTER_STAGE(self), priv->searchbox);
@@ -652,6 +747,12 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 		priv->notification=NULL;
 	}
 
+	if(priv->tooltip)
+	{
+		clutter_actor_destroy(CLUTTER_ACTOR(priv->tooltip));
+		priv->tooltip=NULL;
+	}
+
 	if(priv->quicklaunch)
 	{
 		clutter_actor_destroy(priv->quicklaunch);
@@ -702,6 +803,8 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	klass->show_tooltip=_xfdashboard_stage_show_tooltip;
+
 	actorClass->show=_xfdashboard_stage_show;
 
 	gobjectClass->dispose=_xfdashboard_stage_dispose;
@@ -743,6 +846,18 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 						g_cclosure_marshal_VOID__VOID,
 						G_TYPE_NONE,
 						0);
+
+	XfdashboardStageSignals[SIGNAL_SHOW_TOOLTIP]=
+		g_signal_new("show-tooltip",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardStageClass, show_tooltip),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						CLUTTER_TYPE_ACTION);
 }
 
 /* Object initialization
@@ -770,6 +885,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->viewpad=NULL;
 	priv->viewSelector=NULL;
 	priv->notification=NULL;
+	priv->tooltip=NULL;
 	priv->lastSearchTextLength=0;
 	priv->viewBeforeSearch=NULL;
 	priv->searchActive=FALSE;

@@ -865,7 +865,6 @@ static void _xfdashboard_drag_action_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_drag_action_parent_class)->dispose(inObject);
 }
 
-
 /* Set/get properties */
 static void _xfdashboard_drag_action_set_property(GObject *inObject,
 													guint inPropID,

@@ -7,6 +7,16 @@
 	outline-width: 1.0;
 }
 
+/* Tooltip */
+#tooltip
+{
+	background-type: fill outline;
+	background-fill-color: #e0e000ff;
+	outline-color: #808000ff;
+	outline-width: 1.0;
+	text-color: #000000;
+}
+
 /* Quicklaunch */
 #quicklaunch
 {

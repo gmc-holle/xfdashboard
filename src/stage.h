@@ -61,6 +61,8 @@ struct _XfdashboardStageClass
 	void (*search_started)(XfdashboardStage *self);
 	void (*search_changed)(XfdashboardStage *self, gchar *inText);
 	void (*search_ended)(XfdashboardStage *self);
+
+	void (*show_tooltip)(XfdashboardStage *self, ClutterAction *inAction);
 };
 
 /* Public API */
