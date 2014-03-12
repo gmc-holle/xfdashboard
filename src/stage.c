@@ -635,6 +635,12 @@ static void _xfdashboard_stage_on_application_suspend(XfdashboardStage *self, gp
 		xfdashboard_window_tracker_window_unmake_stage_window(priv->stageWindow);
 		xfdashboard_window_tracker_window_hide(priv->stageWindow);
 	}
+
+	/* Hide tooltip and clean up */
+	if(priv->tooltip) clutter_actor_hide(priv->tooltip);
+	g_signal_handlers_disconnect_by_func(self,
+											G_CALLBACK(_xfdashboard_stage_on_captured_event_after_tooltip),
+											NULL);
 }
 
 /* The application will be resumed */
