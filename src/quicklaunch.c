@@ -39,6 +39,7 @@
 #include "drop-action.h"
 #include "applications-view.h"
 #include "utils.h"
+#include "tooltip-action.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardQuicklaunch,
@@ -694,7 +695,7 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 	guint							i;
 	ClutterActor					*actor;
 	GValue							*desktopFile;
-	ClutterAction					*dragAction;
+	ClutterAction					*action;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 
@@ -722,11 +723,17 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_clicked), self);
 
 		/* Set up drag'n'drop */
-		dragAction=xfdashboard_drag_action_new_with_source(CLUTTER_ACTOR(self));
-		clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(dragAction), -1, -1);
-		clutter_actor_add_action(actor, dragAction);
-		g_signal_connect(dragAction, "drag-begin", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_drag_begin), self);
-		g_signal_connect(dragAction, "drag-end", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_drag_end), self);
+		action=xfdashboard_drag_action_new_with_source(CLUTTER_ACTOR(self));
+		clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(action), -1, -1);
+		clutter_actor_add_action(actor, action);
+		g_signal_connect(action, "drag-begin", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_drag_begin), self);
+		g_signal_connect(action, "drag-end", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_drag_end), self);
+
+		/* Add tooltip */
+		action=xfdashboard_tooltip_action_new();
+		xfdashboard_tooltip_action_set_text(XFDASHBOARD_TOOLTIP_ACTION(action),
+											xfdashboard_application_button_get_display_name(XFDASHBOARD_APPLICATION_BUTTON(actor)));
+		clutter_actor_add_action(actor, action);
 	}
 }
 
