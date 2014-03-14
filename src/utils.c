@@ -126,3 +126,154 @@ GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorksp
 	/* Return application context */
 	return(G_APP_LAUNCH_CONTEXT(context));
 }
+
+/* GValue transformation function for G_TYPE_STRING to various other types */
+static void _xfdashboard_gvalue_transform_string_int(const GValue *inSourceValue, GValue *ioDestValue)
+{
+	ioDestValue->data[0].v_int=g_ascii_strtoll(inSourceValue->data[0].v_pointer, NULL, 10);
+}
+
+static void _xfdashboard_gvalue_transform_string_uint(const GValue *inSourceValue, GValue *ioDestValue)
+{
+	ioDestValue->data[0].v_uint=g_ascii_strtoull(inSourceValue->data[0].v_pointer, NULL, 10);
+}
+
+static void _xfdashboard_gvalue_transform_string_long(const GValue *inSourceValue, GValue *ioDestValue)
+{
+	ioDestValue->data[0].v_long=g_ascii_strtoll(inSourceValue->data[0].v_pointer, NULL, 10);
+}
+
+static void _xfdashboard_gvalue_transform_string_ulong(const GValue *inSourceValue, GValue *ioDestValue)
+{
+	ioDestValue->data[0].v_ulong=g_ascii_strtoull(inSourceValue->data[0].v_pointer, NULL, 10);
+}
+
+static void _xfdashboard_gvalue_transform_string_int64(const GValue *inSourceValue, GValue *ioDestValue)
+{
+	ioDestValue->data[0].v_int64=g_ascii_strtoll(inSourceValue->data[0].v_pointer, NULL, 10);
+}
+
+static void _xfdashboard_gvalue_transform_string_uint64(const GValue *inSourceValue, GValue *ioDestValue)
+{
+	ioDestValue->data[0].v_uint64=g_ascii_strtoull(inSourceValue->data[0].v_pointer, NULL, 10);
+}
+
+static void _xfdashboard_gvalue_transform_string_float(const GValue *inSourceValue, GValue *ioDestValue)
+{
+	ioDestValue->data[0].v_float=g_ascii_strtod(inSourceValue->data[0].v_pointer, NULL);
+}
+
+static void _xfdashboard_gvalue_transform_string_double(const GValue *inSourceValue, GValue *ioDestValue)
+{
+	ioDestValue->data[0].v_double=g_ascii_strtod(inSourceValue->data[0].v_pointer, NULL);
+}
+
+static void _xfdashboard_gvalue_transform_string_boolean(const GValue *inSourceValue, GValue *ioDestValue)
+{
+	/* Convert case-insentive "true" to TRUE */
+	if(!g_ascii_strncasecmp(inSourceValue->data[0].v_pointer, "true", 4))
+	{
+		ioDestValue->data[0].v_int=TRUE;
+	}
+		/* Convert case-insentive "false" to FALSE */
+		else if(!g_ascii_strncasecmp(inSourceValue->data[0].v_pointer, "false", 5))
+		{
+			ioDestValue->data[0].v_int=FALSE;
+		}
+		/* Convert to unsigned integer if set destination to TRUE if non-zero
+		 * otherweise set destination to FALSE
+		 */
+		else
+		{
+			ioDestValue->data[0].v_int=(g_ascii_strtoull(inSourceValue->data[0].v_pointer, NULL, 10)!=0 ? TRUE : FALSE);
+		}
+}
+
+static void _xfdashboard_gvalue_transform_string_enum(const GValue *inSourceValue, GValue *ioDestValue)
+{
+	GEnumClass		*enumClass;
+	GEnumValue		*enumValue;
+	const gchar		*value;
+
+	/* Reference enum class to keep it alive for transformation */
+	enumClass=g_type_class_ref(G_VALUE_TYPE(ioDestValue));
+
+	/* Get value to convert */
+	value=(const gchar*)inSourceValue->data[0].v_pointer;
+
+	/* Get enum value either by name or by nickname (whatever matches first) */
+	enumValue=g_enum_get_value_by_name(enumClass, value);
+	if(!enumValue) enumValue=g_enum_get_value_by_nick(enumClass, value);
+
+	/* Set value if enum could be found otherwise set 0 */
+	if(enumValue) ioDestValue->data[0].v_int=enumValue->value;
+		else
+		{
+			ioDestValue->data[0].v_int=0;
+			g_debug("Cannot get value for unknown enum '%s' for type %s",
+						value, g_type_name(G_VALUE_TYPE(ioDestValue)));
+		}
+
+	/* Release allocated resources */
+	g_type_class_unref(enumClass);
+}
+
+static void _xfdashboard_gvalue_transform_string_flags(const GValue *inSourceValue, GValue *ioDestValue)
+{
+	GFlagsClass		*flagsClass;
+	GFlagsValue		*flagsValue;
+	guint			finalValue;
+	gchar			**values, **entry;
+
+	/* Reference flags class to keep it alive for transformation */
+	flagsClass=g_type_class_ref(G_VALUE_TYPE(ioDestValue));
+
+	/* Split string into space-separated needles and lookup each needle
+	 * for a match and add found values OR'ed to final value
+	 */
+	finalValue=0;
+	entry=values=g_strsplit(inSourceValue->data[0].v_pointer, " ", 0);
+	while(*entry)
+	{
+		/* Do not look-up empty values */
+		if(!entry[0]) continue;
+
+		/* Get flags value either by name or by nickname (whatever matches first) */
+		flagsValue=g_flags_get_value_by_name(flagsClass, *entry);
+		if(!flagsValue) flagsValue=g_flags_get_value_by_nick(flagsClass, *entry);
+
+		/* Add value OR'ed if flags could be found */
+		if(flagsValue) finalValue|=flagsValue->value;
+			else
+			{
+				g_debug("Cannot get value for unknown flag '%s' for type %s",
+							*entry, g_type_name(G_VALUE_TYPE(ioDestValue)));
+			}
+
+		/* Continue with next entry */
+		entry++;
+	}
+	g_strfreev(values);
+
+	/* Set value */
+	ioDestValue->data[0].v_uint=finalValue;
+
+	/* Release allocated resources */
+	g_type_class_unref(flagsClass);
+}
+
+void xfdashboard_register_gvalue_transformation_funcs(void)
+{
+	/* Register GValue transformation functions not provided by Glib */
+	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_INT, _xfdashboard_gvalue_transform_string_int);
+	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_UINT, _xfdashboard_gvalue_transform_string_uint);
+	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_LONG, _xfdashboard_gvalue_transform_string_long);
+	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_ULONG, _xfdashboard_gvalue_transform_string_ulong);
+	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_INT64, _xfdashboard_gvalue_transform_string_int64);
+	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_UINT64, _xfdashboard_gvalue_transform_string_uint64);
+	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_FLOAT, _xfdashboard_gvalue_transform_string_float);
+	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_DOUBLE, _xfdashboard_gvalue_transform_string_double);
+	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_BOOLEAN, _xfdashboard_gvalue_transform_string_boolean);
+	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_FLAGS, _xfdashboard_gvalue_transform_string_flags);
+	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_ENUM, _xfdashboard_gvalue_transform_string_enum);
+}

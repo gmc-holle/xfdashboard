@@ -1079,7 +1079,7 @@ void xfdashboard_theme_css_init(XfdashboardThemeCSS *self)
 
 GQuark xfdashboard_theme_css_error_quark(void)
 {
-	return(g_quark_from_static_string("xfdashboard-theme-error-quark"));
+	return(g_quark_from_static_string("xfdashboard-theme-css-error-quark"));
 }
 
 /* Implementation: Public API */

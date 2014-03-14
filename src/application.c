@@ -611,6 +611,9 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 						g_cclosure_marshal_VOID__VOID,
 						G_TYPE_NONE,
 						0);
+
+	/* Register GValue transformation function not provided by any other library */
+	xfdashboard_register_gvalue_transformation_funcs();
 }
 
 /* Object initialization

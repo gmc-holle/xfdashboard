@@ -48,6 +48,8 @@ void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const g
 
 GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorkspace *inWorkspace);
 
+void xfdashboard_register_gvalue_transformation_funcs(void);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_UTILS__ */
