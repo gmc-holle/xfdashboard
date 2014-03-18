@@ -277,3 +277,28 @@ void xfdashboard_register_gvalue_transformation_funcs(void)
 	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_FLAGS, _xfdashboard_gvalue_transform_string_flags);
 	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_ENUM, _xfdashboard_gvalue_transform_string_enum);
 }
+
+/* Find child by name deeply beginning at given actor */
+ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar *inName)
+{
+	ClutterActorIter	iter;
+	ClutterActor		*child;
+	ClutterActor		*result;
+
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), NULL);
+	g_return_val_if_fail(inName && *inName, NULL);
+
+	/* Check if given actor is the one we should lookup */
+	if(g_strcmp0(clutter_actor_get_name(inActor), inName)==0) return(inActor);
+
+	/* For each child of actor call ourselve recursive */
+	clutter_actor_iter_init(&iter, inActor);
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		result=xfdashboard_find_actor_by_name(child, inName);
+		if(result) return(result);
+	}
+
+	/* If we get here you could not find actor having this name set */
+	return(NULL);
+}

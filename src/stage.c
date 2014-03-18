@@ -45,16 +45,16 @@
 #include "workspace-selector.h"
 #include "collapse-box.h"
 #include "tooltip-action.h"
-
-/* TODO: Replace by settings/theming object (or check monitor directions if more than one monitor)
- * Meanwhile #undef STAGE_USE_HORIZONTAL_WORKSPACE_SELECTOR for vertical workspace
- */
-#undef STAGE_USE_HORIZONTAL_WORKSPACE_SELECTOR
+#include "layoutable.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardStage,
-				xfdashboard_stage,
-				CLUTTER_TYPE_STAGE)
+static void _xfdashboard_stage_layoutable_iface_init(XfdashboardLayoutableInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardStage,
+						xfdashboard_stage,
+						CLUTTER_TYPE_STAGE,
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_LAYOUTABLE, _xfdashboard_stage_layoutable_iface_init))
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_STAGE_GET_PRIVATE(obj) \
@@ -441,134 +441,6 @@ static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, Xfdashb
 	}
 }
 
-/* Set up stage */
-static void _xfdashboard_stage_setup(XfdashboardStage *self)
-{
-	/* TODO: Implement missing actors, do setup nicer and themable/layoutable */
-	/* TODO: Create background by copying background of Xfce */
-
-	XfdashboardStagePrivate		*priv;
-	ClutterActor				*groupHorizontal;
-	ClutterActor				*groupVertical;
-	ClutterActor				*collapseBox;
-	ClutterLayoutManager		*layout;
-	XfdashboardToggleButton		*appsButton;
-
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-
-	priv=self->priv;
-
-	/* Set up layout objects */
-	layout=clutter_box_layout_new();
-	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_VERTICAL);
-	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(layout), 8.0f);
-	clutter_box_layout_set_homogeneous(CLUTTER_BOX_LAYOUT(layout), FALSE);
-	groupVertical=clutter_actor_new();
-	clutter_actor_set_x_expand(groupVertical, TRUE);
-	clutter_actor_set_y_expand(groupVertical, TRUE);
-	clutter_actor_set_layout_manager(groupVertical, layout);
-
-	/* Searchbox and view selector */
-	layout=clutter_box_layout_new();
-	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_HORIZONTAL);
-	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(layout), 8.0f);
-	groupHorizontal=clutter_actor_new();
-	clutter_actor_set_x_expand(groupHorizontal, TRUE);
-	clutter_actor_set_layout_manager(groupHorizontal, layout);
-
-	priv->viewSelector=xfdashboard_view_selector_new();
-	clutter_actor_set_name(priv->viewSelector, "view-selector");
-	clutter_actor_add_child(groupHorizontal, priv->viewSelector);
-
-	priv->searchbox=xfdashboard_text_box_new();
-	clutter_actor_set_name(priv->searchbox, "searchbox");
-	clutter_actor_set_x_expand(priv->searchbox, TRUE);
-	xfdashboard_text_box_set_editable(XFDASHBOARD_TEXT_BOX(priv->searchbox), TRUE);
-	xfdashboard_text_box_set_hint_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), _("Just type to search..."));
-	g_signal_connect_swapped(priv->searchbox, "text-changed", G_CALLBACK(_xfdashboard_stage_on_searchbox_text_changed), self);
-	g_signal_connect_swapped(priv->searchbox, "secondary-icon-clicked", G_CALLBACK(_xfdashboard_stage_on_searchbox_secondary_icon_clicked), self);
-	clutter_actor_add_child(groupHorizontal, priv->searchbox);
-
-	clutter_actor_add_child(groupVertical, groupHorizontal);
-
-	/* Views */
-	priv->viewpad=xfdashboard_viewpad_new();
-	clutter_actor_set_x_expand(priv->viewpad, TRUE);
-	clutter_actor_set_y_expand(priv->viewpad, TRUE);
-	clutter_actor_add_child(groupVertical, priv->viewpad);
-	g_signal_connect_swapped(priv->viewpad, "view-activated", G_CALLBACK(_xfdashboard_stage_on_view_activated), self);
-	xfdashboard_view_selector_set_viewpad(XFDASHBOARD_VIEW_SELECTOR(priv->viewSelector), XFDASHBOARD_VIEWPAD(priv->viewpad));
-
-	/* Set up layout objects */
-	layout=clutter_box_layout_new();
-	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_HORIZONTAL);
-	clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(layout), 8.0f);
-	clutter_box_layout_set_homogeneous(CLUTTER_BOX_LAYOUT(layout), FALSE);
-	groupHorizontal=clutter_actor_new();
-	clutter_actor_set_x_expand(groupHorizontal, TRUE);
-	clutter_actor_set_y_expand(groupHorizontal, TRUE);
-	clutter_actor_set_layout_manager(groupHorizontal, layout);
-
-	/* Quicklaunch */
-	priv->quicklaunch=xfdashboard_quicklaunch_new_with_orientation(CLUTTER_ORIENTATION_VERTICAL);
-	clutter_actor_set_name(priv->quicklaunch, "quicklaunch");
-	clutter_actor_set_y_expand(priv->quicklaunch, TRUE);
-	clutter_actor_add_child(groupHorizontal, priv->quicklaunch);
-
-	appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
-	if(appsButton)
-	{
-		g_signal_connect_swapped(appsButton, "toggled", G_CALLBACK(_xfdashboard_stage_on_quicklaunch_apps_button_toggled), self);
-	}
-
-	/* Set up layout objects */
-	clutter_actor_add_child(groupHorizontal, groupVertical);
-
-	/* Workspaces selector */
-	priv->workspaces=xfdashboard_workspace_selector_new();
-	clutter_actor_set_name(priv->workspaces, "workspace-selector");
-	clutter_actor_set_y_expand(priv->workspaces, TRUE);
-
-	collapseBox=xfdashboard_collapse_box_new();
-	clutter_actor_set_name(collapseBox, "workspace-selector-collapse-box");
-	clutter_actor_set_y_expand(collapseBox, TRUE);
-	clutter_actor_add_child(collapseBox, priv->workspaces);
-	clutter_actor_add_child(groupHorizontal, collapseBox);
-
-	/* Set up layout objects */
-	clutter_actor_add_constraint(groupHorizontal, clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_X, 0.0f));
-	clutter_actor_add_constraint(groupHorizontal, clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_Y, 8.0f));
-	clutter_actor_add_constraint(groupHorizontal, clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_WIDTH, 0.0f));
-	clutter_actor_add_constraint(groupHorizontal, clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_HEIGHT, -16.0f));
-	clutter_actor_add_child(CLUTTER_ACTOR(self), groupHorizontal);
-
-	/* Notification actor (this actor is above all others and hidden by default) */
-	priv->notification=xfdashboard_text_box_new();
-	clutter_actor_set_name(priv->notification, "notification");
-	clutter_actor_hide(priv->notification);
-	clutter_actor_set_reactive(priv->notification, FALSE);
-	clutter_actor_set_fixed_position_set(priv->notification, TRUE);
-	clutter_actor_set_z_position(priv->notification, 0.1f);
-	clutter_actor_set_request_mode(priv->notification, CLUTTER_REQUEST_HEIGHT_FOR_WIDTH);
-	clutter_actor_add_constraint(priv->notification, clutter_align_constraint_new(CLUTTER_ACTOR(self), CLUTTER_ALIGN_X_AXIS, 0.5f));
-	clutter_actor_add_constraint(priv->notification, clutter_align_constraint_new(groupHorizontal, CLUTTER_ALIGN_Y_AXIS, 1.0f));
-	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->notification);
-
-	/* Tooltip actor (this actor is like a notification but positioned next to pointer) */
-	priv->tooltip=xfdashboard_text_box_new();
-	clutter_actor_set_name(priv->tooltip, "tooltip");
-	clutter_actor_hide(priv->tooltip);
-	clutter_actor_set_reactive(priv->tooltip, FALSE);
-	clutter_actor_set_fixed_position_set(priv->tooltip, TRUE);
-	clutter_actor_set_z_position(priv->tooltip, 0.1f);
-	clutter_actor_set_request_mode(priv->tooltip, CLUTTER_REQUEST_HEIGHT_FOR_WIDTH);
-	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->tooltip);
-
-	/* Set key focus to searchbox */
-	clutter_stage_set_accept_focus(CLUTTER_STAGE(self), TRUE);
-	clutter_stage_set_key_focus(CLUTTER_STAGE(self), priv->searchbox);
-}
-
 /* A window was created
  * Check for stage window and set up window properties
  */
@@ -687,6 +559,104 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 			/* Show stage and force window creation */
 			clutter_actor_show(CLUTTER_ACTOR(self));
 		}
+}
+
+/* IMPLEMENTATION: Interface XfdashboardLayoutable */
+
+/* Virtual function "layout_completed" was called */
+static void _xfdashboard_stage_layoutable_layout_completed(XfdashboardLayoutable *iface)
+{
+	XfdashboardStage			*self;
+	XfdashboardStagePrivate		*priv;
+	ClutterActor				*actor;
+
+	g_return_if_fail(XFDASHBOARD_IS_LAYOUTABLE(iface));
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(iface));
+
+	self=XFDASHBOARD_STAGE(iface);
+	priv=self->priv;
+
+	/* Get children from built stage and connect signals */
+	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "view-selector");
+	if(actor && XFDASHBOARD_IS_VIEW_SELECTOR(actor)) priv->viewSelector=actor;
+
+	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "searchbox");
+	if(actor && XFDASHBOARD_IS_TEXT_BOX(actor))
+	{
+		priv->searchbox=actor;
+
+		/* Connect signals */
+		g_signal_connect_swapped(priv->searchbox,
+									"text-changed",
+									G_CALLBACK(_xfdashboard_stage_on_searchbox_text_changed),
+									self);
+		g_signal_connect_swapped(priv->searchbox,
+									"secondary-icon-clicked",
+									G_CALLBACK(_xfdashboard_stage_on_searchbox_secondary_icon_clicked),
+									self);
+
+		/* Set key focus to searchbox */
+		clutter_stage_set_accept_focus(CLUTTER_STAGE(self), TRUE);
+		clutter_stage_set_key_focus(CLUTTER_STAGE(self), priv->searchbox);
+	}
+
+	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "viewpad");
+	if(actor && XFDASHBOARD_IS_VIEWPAD(actor))
+	{
+		priv->viewpad=actor;
+
+		/* Connect signals */
+		g_signal_connect_swapped(priv->viewpad, "view-activated", G_CALLBACK(_xfdashboard_stage_on_view_activated), self);
+	}
+
+	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "quicklaunch");
+	if(actor && XFDASHBOARD_IS_QUICKLAUNCH(actor))
+	{
+		XfdashboardToggleButton		*appsButton;
+
+		priv->quicklaunch=actor;
+
+		/* Connect signals */
+		appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
+		if(appsButton)
+		{
+			g_signal_connect_swapped(appsButton,
+										"toggled",
+										G_CALLBACK(_xfdashboard_stage_on_quicklaunch_apps_button_toggled),
+										self);
+		}
+	}
+
+	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "workspace-selector");
+	if(actor && XFDASHBOARD_IS_WORKSPACE_SELECTOR(actor)) priv->workspaces=actor;
+
+	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "notification");
+	if(actor && XFDASHBOARD_IS_TEXT_BOX(actor))
+	{
+		priv->notification=actor;
+
+		/* Hide notification by default */
+		clutter_actor_hide(priv->notification);
+		clutter_actor_set_reactive(priv->notification, FALSE);
+	}
+
+	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "tooltip");
+	if(actor && XFDASHBOARD_IS_TEXT_BOX(actor))
+	{
+		priv->tooltip=actor;
+
+		/* Hide tooltip by default */
+		clutter_actor_hide(priv->tooltip);
+		clutter_actor_set_reactive(priv->tooltip, FALSE);
+	}
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_stage_layoutable_iface_init(XfdashboardLayoutableInterface *iface)
+{
+	iface->layout_completed=_xfdashboard_stage_layoutable_layout_completed;
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -902,8 +872,6 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(self), TRUE);
 	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), FALSE);
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
-
-	_xfdashboard_stage_setup(self);
 
 	g_signal_connect_swapped(self, "key-release-event", G_CALLBACK(_xfdashboard_stage_on_key_release), self);
 

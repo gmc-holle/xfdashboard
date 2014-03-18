@@ -1,3 +1,5 @@
 [Xfdashboard Theme]
 _Name=default
 _Comment=Default theme for xfdashboard
+Style=xfdashboard.css
+LayoutPrimary=xfdashboard.xml

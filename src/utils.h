@@ -50,6 +50,8 @@ GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorksp
 
 void xfdashboard_register_gvalue_transformation_funcs(void);
 
+ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar *inName);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_UTILS__ */

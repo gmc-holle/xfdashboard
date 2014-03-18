@@ -31,6 +31,7 @@ xfdashboard_headers = \
 	drop-action.h \
 	fill-box-layout.h \
 	image.h \
+	layoutable.h \
 	live-window.h \
 	live-workspace.h \
 	outline-effect.h \
@@ -44,7 +45,9 @@ xfdashboard_headers = \
 	search-view.h \
 	stage.h \
 	text-box.h \
+	theme.h \
 	theme-css.h \
+	theme-layout.h \
 	toggle-button.h \
 	tooltip-action.h \
 	types.h \
@@ -77,6 +80,7 @@ xfdashboard_SOURCES = \
 	drop-action.c \
 	fill-box-layout.c \
 	image.c \
+	layoutable.c \
 	live-window.c \
 	live-workspace.c \
 	main.c \
@@ -91,7 +95,9 @@ xfdashboard_SOURCES = \
 	search-view.c \
 	stage.c \
 	text-box.c \
+	theme.c \
 	theme-css.c \
+	theme-layout.c \
 	toggle-button.c \
 	tooltip-action.c \
 	utils.c \
@@ -118,6 +124,7 @@ xfdashboard_CFLAGS = \
 	$(PLATFORM_CFLAGS)
 
 xfdashboard_LDFLAGS = \
+	-export-dynamic \
 	-no-undefined \
 	$(PLATFORM_LDFLAGS)
 

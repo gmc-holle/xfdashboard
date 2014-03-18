@@ -28,7 +28,7 @@
 #include <gio/gio.h>
 #include <xfconf/xfconf.h>
 
-#include "theme-css.h"
+#include "theme.h"
 
 G_BEGIN_DECLS
 
@@ -80,7 +80,7 @@ void xfdashboard_application_quit_forced(void);
 
 XfconfChannel* xfdashboard_application_get_xfconf_channel(void);
 
-XfdashboardThemeCSS* xfdashboard_application_get_theme(void);
+XfdashboardTheme* xfdashboard_application_get_theme(void);
 
 G_END_DECLS
 
