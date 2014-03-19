@@ -44,7 +44,6 @@ static void _xfdashboard_layoutable_real_layout_completed(XfdashboardLayoutable 
 	g_return_if_fail(XFDASHBOARD_IS_LAYOUTABLE(self));
 
 	/* Do nothing by default */
-	g_message("%s: %p[%s]", __func__, self, G_OBJECT_TYPE_NAME(self));
 }
 
 /* IMPLEMENTATION: GObject */

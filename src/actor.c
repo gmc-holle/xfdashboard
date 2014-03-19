@@ -833,7 +833,7 @@ void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
 		gchar					*defaultsValStr;
 		GParamSpec				*realParamSpec;
 
-		g_debug("%s: Got param specs for %p (%s) with class '%s' and pseudo-class '%s'", __func__, self, G_OBJECT_TYPE_NAME(self), priv->styleClasses, priv->stylePseudoClasses);
+		g_debug("Got param specs for %p (%s) with class '%s' and pseudo-class '%s'", self, G_OBJECT_TYPE_NAME(self), priv->styleClasses, priv->stylePseudoClasses);
 
 		g_hash_table_iter_init(&hashIter, possibleStyleSet);
 		while(g_hash_table_iter_next(&hashIter, (gpointer*)&defaultsKey, (gpointer*)&paramSpec))
@@ -850,7 +850,7 @@ void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
 			g_value_unset(&defaultsVal);
 		}
 
-		g_debug("%s: End of param specs", __func__);
+		g_debug("End of param specs");
 	}
 #endif
 
@@ -862,7 +862,7 @@ void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
 	{
 		gint					i=0;
 
-		g_debug("%s: Got styles from theme for %p (%s) with class '%s' and pseudo-class '%s'", __func__, self, G_OBJECT_TYPE_NAME(self), priv->styleClasses, priv->stylePseudoClasses);
+		g_debug("Got styles from theme for %p (%s) with class '%s' and pseudo-class '%s'", self, G_OBJECT_TYPE_NAME(self), priv->styleClasses, priv->stylePseudoClasses);
 
 		g_hash_table_iter_init(&hashIter, themeStyleSet);
 		while(g_hash_table_iter_next(&hashIter, (gpointer*)&styleName, (gpointer*)&styleValue))
@@ -870,7 +870,7 @@ void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
 			g_debug("%d: [%s] %s=%s\n", ++i, styleValue->source, (gchar*)styleName, styleValue->string);
 		}
 
-		g_debug("%s: End of styles from theme", __func__);
+		g_debug("End of styles from theme");
 	}
 #endif
 
