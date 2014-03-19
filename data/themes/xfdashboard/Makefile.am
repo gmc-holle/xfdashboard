@@ -1,14 +1,18 @@
 themedir = $(datadir)/themes/xfdashboard/xfdashboard-1.0
-theme_in_files =							\
+
+theme_in_files = \
 	xfdashboard.theme.in
-theme_DATA = 								\
-	$(theme_in_files:.theme.in=.theme)				\
-	xfdashboard.css
+
+theme_DATA = \
+	$(theme_in_files:.theme.in=.theme) \
+	xfdashboard.css \
+	xfdashboard.xml
+
 @INTLTOOL_THEME_RULE@
 
-EXTRA_DIST =								\
-	$(theme_DATA)							\
+EXTRA_DIST = \
+	$(theme_DATA) \
 	xfdashboard.theme.in
 
-DISTCLEANFILES =							\
+DISTCLEANFILES = \
 	$(theme_in_files:.theme.in=.theme)
