@@ -104,11 +104,6 @@ static void _xfdashboard_view_selector_on_view_button_clicked(XfdashboardViewSel
 	view=XFDASHBOARD_VIEW(g_object_get_data(G_OBJECT(button), "view"));
 
 	xfdashboard_viewpad_set_active_view(priv->viewpad, view);
-
-	/* Set toggle state to FALSE as it will be reset to TRUE by signal handler
-	 * for view "activated". This should ensure proper display of button's state
-	 */
-	xfdashboard_toggle_button_set_toggle_state(button, FALSE);
 }
 
 /* Called when a view was enabled or will be disabled */
@@ -169,6 +164,7 @@ static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *se
 	viewIcon=xfdashboard_view_get_icon(inView);
 
 	button=xfdashboard_toggle_button_new_full(viewIcon, viewName);
+	xfdashboard_toggle_button_set_auto_toggle(XFDASHBOARD_TOGGLE_BUTTON(button), FALSE);
 	g_object_set_data(G_OBJECT(button), "view", inView);
 	g_signal_connect_swapped(button, "clicked", G_CALLBACK(_xfdashboard_view_selector_on_view_button_clicked), self);
 

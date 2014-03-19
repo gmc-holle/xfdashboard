@@ -70,6 +70,9 @@ ClutterActor* xfdashboard_toggle_button_new_full(const gchar *inIconName, const 
 gboolean xfdashboard_toggle_button_get_toggle_state(XfdashboardToggleButton *self);
 void xfdashboard_toggle_button_set_toggle_state(XfdashboardToggleButton *self, gboolean inToggleState);
 
+gboolean xfdashboard_toggle_button_get_auto_toggle(XfdashboardToggleButton *self);
+void xfdashboard_toggle_button_set_auto_toggle(XfdashboardToggleButton *self, gboolean inAuto);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_TOGGLE_BUTTON__ */

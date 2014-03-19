@@ -42,6 +42,7 @@ struct _XfdashboardToggleButtonPrivate
 {
 	/* Properties related */
 	gboolean		toggleState;
+	gboolean		autoToggleOnClick;
 };
 
 /* Properties */
@@ -50,6 +51,7 @@ enum
 	PROP_0,
 
 	PROP_TOGGLE_STATE,
+	PROP_AUTO_TOGGLE,
 
 	PROP_LAST
 };
@@ -85,8 +87,11 @@ static void _xfdashboard_toggle_button_clicked(XfdashboardButton *inButton)
 		XFDASHBOARD_BUTTON_CLASS(xfdashboard_toggle_button_parent_class)->clicked(inButton);
 	}
 
-	/* Set new toggle state */
-	xfdashboard_toggle_button_set_toggle_state(self, !priv->toggleState);
+	/* Set new toggle state if "auto-toggle" (on click) is set */
+	if(priv->autoToggleOnClick)
+	{
+		xfdashboard_toggle_button_set_toggle_state(self, !priv->toggleState);
+	}
 }
 
 /* IMPLEMENTATION: GObject */
@@ -137,8 +142,8 @@ static void _xfdashboard_toggle_button_get_property(GObject *inObject,
  */
 static void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *klass)
 {
-	XfdashboardButtonClass	*buttonClass=XFDASHBOARD_BUTTON_CLASS(klass);
-	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardButtonClass			*buttonClass=XFDASHBOARD_BUTTON_CLASS(klass);
+	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->set_property=_xfdashboard_toggle_button_set_property;
@@ -155,6 +160,13 @@ static void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *k
 								_("Toggle state"),
 								_("State of toggle"),
 								FALSE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardToggleButtonProperties[PROP_AUTO_TOGGLE]=
+		g_param_spec_boolean("auto-toggle",
+								_("Auto toggle"),
+								_("If set the toggle state will be toggled on each click"),
+								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardToggleButtonProperties);
@@ -186,6 +198,7 @@ static void xfdashboard_toggle_button_init(XfdashboardToggleButton *self)
 
 	/* Set up default values */
 	priv->toggleState=FALSE;
+	priv->autoToggleOnClick=TRUE;
 }
 
 /* IMPLEMENTATION: Public API */
@@ -250,10 +263,39 @@ void xfdashboard_toggle_button_set_toggle_state(XfdashboardToggleButton *self, g
 		if(priv->toggleState) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(self), "toggled");
 			else xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(self), "toggled");
 
+		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardToggleButtonProperties[PROP_TOGGLE_STATE]);
 
 		/* Emit signal for change of toggle state */
 		g_signal_emit(self, XfdashboardToggleButtonSignals[SIGNAL_TOGGLED], 0);
+	}
+}
+
+/* Get/set auto-toggle (on click) */
+gboolean xfdashboard_toggle_button_get_auto_toggle(XfdashboardToggleButton *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(self), 0);
+
+	return(self->priv->autoToggleOnClick);
+}
+
+void xfdashboard_toggle_button_set_auto_toggle(XfdashboardToggleButton *self, gboolean inAuto)
+{
+	XfdashboardToggleButtonPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->autoToggleOnClick!=inAuto)
+	{
+		/* Set value */
+		priv->autoToggleOnClick=inAuto;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardToggleButtonProperties[PROP_AUTO_TOGGLE]);
 	}
 }
