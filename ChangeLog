@@ -1,3 +1,99 @@
+commit bda0b032953b318b4ef67d4aba13b86d1edaa571
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 19 19:33:20 2014 +0100
+
+    Fix toggle button not showing correct toggle state in view-selector
+
+commit 91bdb4ea859e2daf787b17af54a1ebb70318e375
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 19 14:47:12 2014 +0100
+
+    Fixed applications search provider
+    
+    Fixed applications search provider when the result set contains menu elements with nested sub-folder paths (like Wine creates in ~/.local/share/applications/wine/[../..])
+
+commit 7d0755e6ade6faa0ee810d9499010737d4e3e3c5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 19 06:57:50 2014 +0100
+
+    Updated TODO
+
+commit d410a58c00fedb094186b45e718c9de40ce0405f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 19 06:56:57 2014 +0100
+
+    Added missing layout xml file for default theme
+
+commit 8d959ea4d6c679251ac4f901f9c52404b7dc3681
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 19 06:54:30 2014 +0100
+
+    Clean up debug messages
+
+commit e50ac6aaf03344bbcab0db94c012ca74e1ee9249
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Mar 18 22:38:34 2014 +0100
+
+    Initial commit of themable layout of xfdashboard
+    
+    Now xfdashboard is fully themable!
+
+commit b06677294f40379d690b9d0e14b6e0bc51b82620
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Mar 14 11:54:30 2014 +0100
+
+    Register our GValue transformation function on application initialization
+    
+    Move GValue transformation function to utils.c and created a public register function which registers all our transformation function. This register function is called when the first application instance is created to get these transformation function available at the earliest time because they might be needed not only in theming (in XfdashboardActor).
+
+commit 51d33aeb522019ba0d0754ecfa7f1dacdbc573bb
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 12 23:05:18 2014 +0100
+
+    Updated TODO
+
+commit 81f928e657b090dc80f414b1ce0eae1fdadb435d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 12 23:02:25 2014 +0100
+
+    Hide tooltip and clean up (disconnect signals etc.) when application suspends (in daemon mode)
+
+commit dbbb41fb965290d371f6db15b9f51d45d0fb3147
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 12 22:36:40 2014 +0100
+
+    Make use of new tooltips
+    
+    Quicklaunch will now add tooltips to favourites (application buttons) which will display the name of the favourite.
+
+commit 5492f615d36dea4e26b127d4108f7731aa02e46e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 12 22:30:58 2014 +0100
+
+    Initial support for tooltips
+    
+    Tooltips are implemented as a ClutterAction which can be added to an actor like a click actions or the drag'n'drop ones. The tooltip action will emit the action signal "show-tooltip" at the stage of the tooltip's actor which will take to display the tooltip.
+
+commit d1223fbf5bf05d572758a9503ee489f8f80cb08b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Mar 10 19:39:12 2014 +0100
+
+    Add pseudo-class "hover" and override default signal handlers in base actor
+    
+    Add pseudo-class "hover" to all XfdashboardActor derived actors and override default signal handlers instead on connecting to signals in base actor XfdashboardActor.
+
+commit 2400d70b18428ed3dfaaeb11ee2e3541599e1bf8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Mar 8 21:55:37 2014 +0100
+
+    Post-release version bump to 0.1.6
+
+commit dd2fefb17d917f34e4ca260cff792323fd003143
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Mar 8 21:54:34 2014 +0100
+
+    Bump version to 0.1.5
+
 commit edaa8b2073831ce00b104e4d24de6c28cd35cbda
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Sat Mar 8 21:50:35 2014 +0100
