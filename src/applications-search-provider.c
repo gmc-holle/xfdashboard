@@ -130,7 +130,7 @@ static gboolean _xfdashboard_applications_search_provider_is_match(ClutterModelI
 	guint								iterRow, poolRow;
 	gboolean							isMatch;
 	GarconMenuElement					*menuElement;
-	const gchar							*title, *description, *command, *desktopID;
+	const gchar							*title, *description, *command;
 	gchar								*lowerTitle, *lowerDescription;
 	gint								matchesFound, matchesExpected;
 
@@ -160,10 +160,21 @@ static gboolean _xfdashboard_applications_search_provider_is_match(ClutterModelI
 	 */
 	if(inLimitSet)
 	{
+		GFile							*fileDesktopID;
+		gchar							*pathDesktopID;
 		GVariant						*limitSetRow;
 		gint							index;
 
-		limitSetRow=g_variant_new_string(garcon_menu_item_get_desktop_id(GARCON_MENU_ITEM(menuElement)));
+		/* Set up item to lookup */
+		fileDesktopID=garcon_menu_item_get_file(GARCON_MENU_ITEM(menuElement));
+		pathDesktopID=g_file_get_path(fileDesktopID);
+
+		limitSetRow=g_variant_new_string(pathDesktopID);
+
+		g_free(pathDesktopID);
+		g_object_unref(fileDesktopID);
+
+		/* Lookup item and if not found return FALSE for no match */
 		index=xfdashboard_search_result_set_get_index(inLimitSet, limitSetRow);
 		g_variant_unref(limitSetRow);
 
@@ -192,7 +203,6 @@ static gboolean _xfdashboard_applications_search_provider_is_match(ClutterModelI
 	title=garcon_menu_element_get_name(menuElement);
 	description=garcon_menu_element_get_comment(menuElement);
 	command=garcon_menu_item_get_command(GARCON_MENU_ITEM(menuElement));
-	desktopID=garcon_menu_item_get_desktop_id(GARCON_MENU_ITEM(menuElement));
 
 	if(title) lowerTitle=g_utf8_strdown(title, -1);
 		else lowerTitle=NULL;
@@ -247,20 +257,29 @@ static gboolean _xfdashboard_applications_search_provider_is_match(ClutterModelI
 	if(lowerDescription) g_free(lowerDescription);
 
 	/* If menu element is a match check if it is a duplicate. It is a duplicate
-	 * if desktopID is already in hashtable provided or if the row where the
-	 * desktopID was found is not the current row.
+	 * if uri to desktop file is already in hashtable provided or if the row where the
+	 * uri of desktop file was found is not the current row.
 	 */
 	if(isMatch==TRUE)
 	{
-		if(g_hash_table_lookup_extended(ioPool, desktopID, NULL, NULL)!=TRUE)
+		GFile							*fileDesktopID;
+		gchar							*pathDesktopID;
+
+		fileDesktopID=garcon_menu_item_get_file(GARCON_MENU_ITEM(menuElement));
+		pathDesktopID=g_file_get_path(fileDesktopID);
+
+		if(g_hash_table_lookup_extended(ioPool, pathDesktopID, NULL, NULL)!=TRUE)
 		{
-			g_hash_table_insert(ioPool, g_strdup(desktopID), GINT_TO_POINTER(iterRow));
+			g_hash_table_insert(ioPool, g_strdup(pathDesktopID), GINT_TO_POINTER(iterRow));
 		}
 			else
 			{
-				poolRow=GPOINTER_TO_INT(g_hash_table_lookup(ioPool, desktopID));
+				poolRow=GPOINTER_TO_INT(g_hash_table_lookup(ioPool, pathDesktopID));
 				if(poolRow!=iterRow) isMatch=FALSE;
 			}
+
+		g_free(pathDesktopID);
+		g_object_unref(fileDesktopID);
 	}
 
 	/* If we get here return TRUE to show model data item or FALSE to hide */
@@ -288,11 +307,8 @@ static gint _xfdashboard_applications_search_provider_sort_result_set(GVariant *
 	rightID=g_variant_get_string(inRight, NULL);
 
 	/* Get desktop application information of both items */
-	if(g_path_is_absolute(leftID)) leftAppInfo=g_desktop_app_info_new_from_filename(leftID);
-		else leftAppInfo=g_desktop_app_info_new(leftID);
-
-	if(g_path_is_absolute(rightID)) rightAppInfo=g_desktop_app_info_new_from_filename(rightID);
-		else rightAppInfo=g_desktop_app_info_new(rightID);
+	leftAppInfo=g_desktop_app_info_new_from_filename(leftID);
+	rightAppInfo=g_desktop_app_info_new_from_filename(rightID);
 
 	/* Get result of comparing both desktop application information objects */
 	result=g_strcmp0(g_app_info_get_display_name(G_APP_INFO(leftAppInfo)),
