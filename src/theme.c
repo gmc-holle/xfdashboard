@@ -244,7 +244,7 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 	/* Create XML parser and load laout resources */
 	resources=g_key_file_get_string_list(themeKeyFile,
 											XFDASHBOARD_THEME_GROUP,
-											"LayoutPrimary",
+											"Layout",
 											NULL,
 											&error);
 	if(!resources)
