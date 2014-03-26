@@ -34,6 +34,7 @@
 
 #include "enums.h"
 #include "text-box.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardSearchResultContainer,
@@ -345,11 +346,11 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 
 	priv->titleTextBox=xfdashboard_text_box_new();
 	clutter_actor_set_x_expand(priv->titleTextBox, TRUE);
-	xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->titleTextBox), "title");
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->titleTextBox), "title");
 
 	priv->itemsContainer=xfdashboard_actor_new();
 	clutter_actor_set_x_expand(CLUTTER_ACTOR(priv->itemsContainer), TRUE);
-	xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->itemsContainer), "items-container");
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->itemsContainer), "items-container");
 	xfdashboard_search_result_container_set_view_mode(self, DEFAULT_VIEW_MODE);
 
 	/* Set up actor */
@@ -469,8 +470,8 @@ void xfdashboard_search_result_container_set_view_mode(XfdashboardSearchResultCo
 		{
 			if(!XFDASHBOARD_IS_ACTOR(child)) continue;
 
-			xfdashboard_actor_remove_style_class(XFDASHBOARD_ACTOR(child), removeClass);
-			xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(child), addClass);
+			xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(child), removeClass);
+			xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(child), addClass);
 		}
 
 		/* Notify about property change */
@@ -576,10 +577,10 @@ void xfdashboard_search_result_container_add_result_actor(XfdashboardSearchResul
 	/* Set style depending on view mode */
 	if(XFDASHBOARD_IS_ACTOR(inResultActor))
 	{
-		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(inResultActor), "view-mode-list");
-			else xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(inResultActor), "view-mode-icon");
+		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(inResultActor), "view-mode-list");
+			else xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(inResultActor), "view-mode-icon");
 
-		xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(inResultActor), "result-item");
+		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(inResultActor), "result-item");
 	}
 
 	/* Add actor to items container */

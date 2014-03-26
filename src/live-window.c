@@ -40,6 +40,7 @@
 #include "click-action.h"
 #include "window-content.h"
 #include "image.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWindow,
@@ -717,13 +718,13 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorWindow);
 
 	priv->actorTitle=xfdashboard_button_new();
-	xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->actorTitle), "title");
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorTitle), "title");
 	clutter_actor_set_reactive(priv->actorTitle, FALSE);
 	clutter_actor_show(priv->actorTitle);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorTitle);
 
 	priv->actorClose=xfdashboard_button_new();
-	xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->actorClose), "close-button");
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorClose), "close-button");
 	clutter_actor_set_reactive(priv->actorClose, FALSE);
 	clutter_actor_show(priv->actorClose);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorClose);

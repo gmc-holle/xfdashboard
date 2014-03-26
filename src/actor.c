@@ -30,6 +30,7 @@
 #include <glib/gi18n-lib.h>
 
 #include "application.h"
+#include "stylable.h"
 #include "utils.h"
 
 /* Define this class in GObject system */
@@ -63,9 +64,6 @@ enum
 
 	PROP_LAST
 };
-
-static GParamSpec* XfdashboardActorProperties[PROP_LAST]={ 0, };
-
 
 /* IMPLEMENTATION: Private variables and methods */
 static GParamSpecPool		*_xfdashboard_actor_stylable_properties_pool=NULL;
@@ -132,7 +130,7 @@ static void _xfdashboard_actor_on_mapped_changed(GObject *inObject,
 	self=XFDASHBOARD_ACTOR(inObject);
 
 	/* Invalide styling to get it recomputed */
-	xfdashboard_actor_style_invalidate(self);
+	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 }
 
 /* Actor was (re)named */
@@ -140,7 +138,7 @@ static void _xfdashboard_actor_on_name_changed(GObject *inObject,
 												GParamSpec *inSpec,
 												gpointer inUserData)
 {
-	XfdashboardActor		*self;
+	XfdashboardActor			*self;
 
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inObject));
 
@@ -149,435 +147,57 @@ static void _xfdashboard_actor_on_name_changed(GObject *inObject,
 	/* Invalide styling to get it recomputed because its ID (from point
 	 * of view of css) has changed
 	 */
-	xfdashboard_actor_style_invalidate(self);
+	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 }
 
-/* Check if haystack contains needle.
- * The haystack is a string representing a list which entries is seperated
- * by a seperator character. This function looks up the haystack if it
- * contains an entry matching the needle and returns TRUE in this case.
- * Otherwise FALSE is returned. A needle length of -1 signals that needle
- * is a NULL-terminated string and length should be determine automatically.
- */
-static gboolean _xfdashboard_actor_list_contains(const gchar *inNeedle,
-													gint inNeedleLength,
-													const gchar *inHaystack,
-													gchar inSeperator)
+/* IMPLEMENTATION: Interface XfdashboardStylable */
+
+/* Get stylable name of actor */
+static const gchar* _xfdashboard_actor_stylable_get_name(XfdashboardStylable *inStylable)
 {
-	const gchar		*start;
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inStylable), NULL);
 
-	g_return_val_if_fail(inNeedle && *inNeedle!=0, FALSE);
-	g_return_val_if_fail(inNeedleLength>0 || inNeedleLength==-1, FALSE);
-	g_return_val_if_fail(inHaystack && *inHaystack!=0, FALSE);
-	g_return_val_if_fail(inSeperator, FALSE);
-
-	/* If given length of needle is negative it is a NULL-terminated string */
-	if(inNeedleLength<0) inNeedleLength=strlen(inNeedle);
-
-	/* Lookup needle in haystack */
-	for(start=inHaystack; start; start=strchr(start, inSeperator))
-	{
-		gint		length;
-		gchar		*nextEntry;
-
-		/* Move to character after separator */
-		if(start[0]==inSeperator) start++;
-
-		/* Find end of this haystack entry */
-		nextEntry=strchr(start, inSeperator);
-		if(!nextEntry) length=strlen(start);
-			else length=nextEntry-start;
-
-		/* If enrty in haystack is not of same length as needle,
-		 * then it is not a match
-		 */
-		if(length!=inNeedleLength) continue;
-
-		if(!strncmp(inNeedle, start, inNeedleLength)) return(TRUE);
-	}
-
-	/* Needle was not found */
-	return(FALSE);
+	return(clutter_actor_get_name(CLUTTER_ACTOR(inStylable)));
 }
 
-/* IMPLEMENTATION: ClutterActor */
-
-/* Pointer left actor */
-static gboolean _xfdashboard_actor_leave_event(ClutterActor *inActor, ClutterCrossingEvent *inEvent)
+/* Get stylable parent of actor */
+static XfdashboardStylable* _xfdashboard_actor_stylable_get_parent(XfdashboardStylable *inStylable)
 {
-	XfdashboardActor		*self;
-	ClutterActorClass		*parentClass;
+	ClutterActor			*self;
+	ClutterActor			*parent;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inActor), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inStylable), NULL);
 
-	self=XFDASHBOARD_ACTOR(inActor);
+	self=CLUTTER_ACTOR(inStylable);
 
-	/* Call parent's virtual function */
-	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
-	if(parentClass->leave_event)
-	{
-		parentClass->leave_event(inActor, inEvent);
-	}
+	/* Get parent and check if stylable. If not return NULL. */
+	parent=clutter_actor_get_parent(self);
+	if(!XFDASHBOARD_IS_STYLABLE(parent)) return(NULL);
 
-	/* Remove pseudo-class ":hover" because pointer left actor */
-	xfdashboard_actor_remove_style_pseudo_class(self, "hover");
-
-	return(CLUTTER_EVENT_PROPAGATE);
-}
-
-/* Pointer entered actor */
-static gboolean _xfdashboard_actor_enter_event(ClutterActor *inActor, ClutterCrossingEvent *inEvent)
-{
-	XfdashboardActor		*self;
-	ClutterActorClass		*parentClass;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inActor), CLUTTER_EVENT_PROPAGATE);
-
-	self=XFDASHBOARD_ACTOR(inActor);
-
-	/* Call parent's virtual function */
-	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
-	if(parentClass->enter_event)
-	{
-		parentClass->enter_event(inActor, inEvent);
-	}
-
-	/* Add pseudo-class ":hover" because pointer entered actor */
-	xfdashboard_actor_add_style_pseudo_class(self, "hover");
-
-	return(CLUTTER_EVENT_PROPAGATE);
-}
-
-/* Actor was (re)parented */
-static void _xfdashboard_actor_parent_set(ClutterActor *inActor, ClutterActor *inOldParent)
-{
-	XfdashboardActor		*self;
-	ClutterActorClass		*parentClass;
-
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inActor));
-
-	self=XFDASHBOARD_ACTOR(inActor);
-
-	/* Call parent's virtual function */
-	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
-	if(parentClass->parent_set)
-	{
-		parentClass->parent_set(inActor, inOldParent);
-	}
-
-	/* Invalide styling to get it recomputed because its ID (from point
-	 * of view of css) has changed
-	 */
-	xfdashboard_actor_style_invalidate(self);
-}
-
-/* IMPLEMENTATION: GObject */
-
-/* Dispose this object */
-static void _xfdashboard_actor_dispose(GObject *inObject)
-{
-	XfdashboardActor			*self=XFDASHBOARD_ACTOR(inObject);
-	XfdashboardActorPrivate		*priv=self->priv;
-
-	/* Release allocated variables */
-	if(priv->styleClasses)
-	{
-		g_free(priv->styleClasses);
-		priv->styleClasses=NULL;
-	}
-
-	if(priv->stylePseudoClasses)
-	{
-		g_free(priv->stylePseudoClasses);
-		priv->stylePseudoClasses=NULL;
-	}
-
-	if(priv->lastThemeStyleSet)
-	{
-		g_hash_table_destroy(priv->lastThemeStyleSet);
-		priv->lastThemeStyleSet=NULL;
-	}
-
-	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_actor_parent_class)->dispose(inObject);
-}
-
-/* Set/get properties */
-static void _xfdashboard_actor_set_property(GObject *inObject,
-											guint inPropID,
-											const GValue *inValue,
-											GParamSpec *inSpec)
-{
-	XfdashboardActor			*self=XFDASHBOARD_ACTOR(inObject);
-
-	switch(inPropID)
-	{
-		case PROP_STYLE_CLASSES:
-			xfdashboard_actor_set_style_classes(self, g_value_get_string(inValue));
-			break;
-
-		case PROP_STYLE_PSEUDO_CLASSES:
-			xfdashboard_actor_set_style_pseudo_classes(self, g_value_get_string(inValue));
-			break;
-
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
-}
-
-static void _xfdashboard_actor_get_property(GObject *inObject,
-											guint inPropID,
-											GValue *outValue,
-											GParamSpec *inSpec)
-{
-	XfdashboardActor			*self=XFDASHBOARD_ACTOR(inObject);
-	XfdashboardActorPrivate		*priv=self->priv;
-
-	switch(inPropID)
-	{
-		case PROP_STYLE_CLASSES:
-			g_value_set_string(outValue, priv->styleClasses);
-			break;
-
-		case PROP_STYLE_PSEUDO_CLASSES:
-			g_value_set_string(outValue, priv->stylePseudoClasses);
-			break;
-
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
-}
-
-/* Class initialization
- * Override functions in parent classes and define properties
- * and signals
- */
-void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
-{
-	ClutterActorClass			*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
-	GObjectClass				*gobjectClass=G_OBJECT_CLASS(klass);
-
-	/* Get parent class */
-	xfdashboard_actor_parent_class=g_type_class_peek_parent(klass);
-
-	/* Override functions */
-	gobjectClass->dispose=_xfdashboard_actor_dispose;
-	gobjectClass->set_property=_xfdashboard_actor_set_property;
-	gobjectClass->get_property=_xfdashboard_actor_get_property;
-
-	clutterActorClass->parent_set=_xfdashboard_actor_parent_set;
-	clutterActorClass->enter_event=_xfdashboard_actor_enter_event;
-	clutterActorClass->leave_event=_xfdashboard_actor_leave_event;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardActorPrivate));
-
-	/* Define properties */
-	XfdashboardActorProperties[PROP_STYLE_CLASSES]=
-		g_param_spec_string("style-classes",
-							_("Style classes"),
-							_("String representing list of classes separated by '.'"),
-							NULL,
-							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardActorProperties[PROP_STYLE_PSEUDO_CLASSES]=
-		g_param_spec_string("style-pseudo-classes",
-							_("Style pseudo-classes"),
-							_("String representing list of pseudo-classes, e.g. current state, separated by ':'"),
-							NULL,
-							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardActorProperties);
-
-	/* Create param-spec pool for themable properties */
-	g_assert(_xfdashboard_actor_stylable_properties_pool==NULL);
-	_xfdashboard_actor_stylable_properties_pool=g_param_spec_pool_new(FALSE);
-}
-
-/* Object initialization
- * Create private structure and set up default values
- */
-void xfdashboard_actor_init(XfdashboardActor *self)
-{
-	XfdashboardActorPrivate		*priv;
-
-	priv=self->priv=XFDASHBOARD_ACTOR_GET_PRIVATE(self);
-
-	/* Set up default values */
-	priv->styleClasses=NULL;
-	priv->stylePseudoClasses=NULL;
-	priv->lastThemeStyleSet=NULL;
-
-	/* Connect signals */
-	g_signal_connect(self, "notify::mapped", G_CALLBACK(_xfdashboard_actor_on_mapped_changed), NULL);
-	g_signal_connect(self, "notify::name", G_CALLBACK(_xfdashboard_actor_on_name_changed), NULL);
-}
-
-/* Implementation: GType */
-
-/* Base class finalization */
-void xfdashboard_actor_base_class_finalize(XfdashboardActorClass *klass)
-{
-	GList				*paramSpecs, *entry;
-
-	paramSpecs=g_param_spec_pool_list_owned(_xfdashboard_actor_stylable_properties_pool, G_OBJECT_CLASS_TYPE(klass));
-	for(entry=paramSpecs; entry; entry=g_list_next(entry))
-	{
-		GParamSpec		*paramSpec=G_PARAM_SPEC(entry->data);
-
-		if(paramSpec)
-		{
-			g_param_spec_pool_remove(_xfdashboard_actor_stylable_properties_pool, paramSpec);
-
-			g_debug("Unregistered stylable property named '%s' for class '%s'",
-					g_param_spec_get_name(paramSpec), G_OBJECT_CLASS_NAME(klass));
-
-			g_param_spec_unref(paramSpec);
-		}
-	}
-	g_list_free(paramSpecs);
-}
-
-/* Register type to GObject system */
-GType xfdashboard_actor_get_type(void)
-{
-	static GType		actorType=0;
-
-	if(G_UNLIKELY(actorType==0))
-	{
-		const GTypeInfo actorInfo=
-		{
-			sizeof(XfdashboardActorClass),
-			NULL,
-			(GBaseFinalizeFunc)xfdashboard_actor_base_class_finalize,
-			(GClassInitFunc)xfdashboard_actor_class_init,
-			NULL, /* class_finalize */
-			NULL, /* class_data */
-			sizeof(XfdashboardActor),
-			0,    /* n_preallocs */
-			(GInstanceInitFunc)xfdashboard_actor_init,
-			NULL, /* value_table */
-		};
-
-		actorType=g_type_register_static(CLUTTER_TYPE_ACTOR,
-											g_intern_static_string("XfdashboardActor"),
-											&actorInfo,
-											0);
-	}
-
-	return(actorType);
-}
-
-/* Implementation: Public API */
-
-/* Create new actor */
-ClutterActor* xfdashboard_actor_new(void)
-{
-	return(CLUTTER_ACTOR(g_object_new(XFDASHBOARD_TYPE_ACTOR, NULL)));
-}
-
-/* Register stylable property of a class */
-void xfdashboard_actor_install_stylable_property(XfdashboardActorClass *klass, GParamSpec *inParamSpec)
-{
-	GParamSpec		*stylableParamSpec;
-
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR_CLASS(klass));
-	g_return_if_fail(G_IS_PARAM_SPEC(inParamSpec));
-	g_return_if_fail(inParamSpec->flags & G_PARAM_WRITABLE);
-	g_return_if_fail(!(inParamSpec->flags & G_PARAM_CONSTRUCT_ONLY));
-
-	/* Check if param-spec is already registered */
-	if(g_param_spec_pool_lookup(_xfdashboard_actor_stylable_properties_pool, g_param_spec_get_name(inParamSpec), G_OBJECT_CLASS_TYPE(klass), FALSE))
-	{
-		g_warning("Class '%s' already contains a stylable property '%s'",
-					G_OBJECT_CLASS_NAME(klass),
-					g_param_spec_get_name(inParamSpec));
-		return;
-	}
-
-	/* Add param-spec to pool of themable properties */
-	stylableParamSpec=g_param_spec_internal(G_PARAM_SPEC_TYPE(inParamSpec),
-												g_param_spec_get_name(inParamSpec),
-												NULL,
-												NULL,
-												0);
-	g_param_spec_set_qdata_full(stylableParamSpec,
-									XFDASHBOARD_ACTOR_PARAM_SPEC_REF,
-									g_param_spec_ref(inParamSpec),
-									(GDestroyNotify)g_param_spec_unref);
-	g_param_spec_pool_insert(_xfdashboard_actor_stylable_properties_pool, stylableParamSpec, G_OBJECT_CLASS_TYPE(klass));
-	g_debug("Registered stylable property '%s' for class '%s'",
-				g_param_spec_get_name(inParamSpec), G_OBJECT_CLASS_NAME(klass));
-}
-
-void xfdashboard_actor_install_stylable_property_by_name(XfdashboardActorClass *klass, const gchar *inParamName)
-{
-	GParamSpec		*paramSpec;
-
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR_CLASS(klass));
-	g_return_if_fail(inParamName && inParamName[0]);
-
-	/* Find parameter specification for property name and register it as stylable */
-	paramSpec=g_object_class_find_property(G_OBJECT_CLASS(klass), inParamName);
-	if(paramSpec) xfdashboard_actor_install_stylable_property(klass, paramSpec);
-		else
-		{
-			g_warning("Cannot register non-existent property '%s' of class '%s'",
-						inParamName, G_OBJECT_CLASS_NAME(klass));
-		}
-}
-
-/* Get hash-table with all stylable properties of this class or
- * recursively of this and all parent classes
- */
-GHashTable* xfdashboard_actor_get_stylable_properties(XfdashboardActorClass *klass)
-{
-	GHashTable		*stylableProps;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR_CLASS(klass), NULL);
-
-	/* Create hashtable and insert stylable properties */
-	stylableProps=g_hash_table_new_full(g_str_hash,
-											g_str_equal,
-											g_free,
-											(GDestroyNotify)g_param_spec_unref);
-	_xfdashboard_actor_hashtable_get_all_stylable_param_specs(stylableProps, G_OBJECT_CLASS(klass), FALSE);
-
-	return(stylableProps);
-}
-
-GHashTable* xfdashboard_actor_get_stylable_properties_full(XfdashboardActorClass *klass)
-{
-	GHashTable		*stylableProps;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR_CLASS(klass), NULL);
-
-	/* Create hashtable and insert stylable properties */
-	stylableProps=g_hash_table_new_full(g_str_hash,
-											g_str_equal,
-											g_free,
-											(GDestroyNotify)g_param_spec_unref);
-	_xfdashboard_actor_hashtable_get_all_stylable_param_specs(stylableProps, G_OBJECT_CLASS(klass), TRUE);
-
-	return(stylableProps);
+	/* Return stylable parent */
+	return(XFDASHBOARD_STYLABLE(parent));
 }
 
 /* Get/set style classes of actor */
-const gchar* xfdashboard_actor_get_style_classes(XfdashboardActor *self)
+static const gchar* _xfdashboard_actor_stylable_get_classes(XfdashboardStylable *inStylable)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(self), NULL);
+	XfdashboardActor			*self;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inStylable), NULL);
+
+	self=XFDASHBOARD_ACTOR(inStylable);
 
 	return(self->priv->styleClasses);
 }
 
-void xfdashboard_actor_set_style_classes(XfdashboardActor *self, const gchar *inStyleClasses)
+static void _xfdashboard_actor_stylable_set_classes(XfdashboardStylable *inStylable, const gchar *inStyleClasses)
 {
+	XfdashboardActor			*self;
 	XfdashboardActorPrivate		*priv;
 
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inStylable));
 
+	self=XFDASHBOARD_ACTOR(inStylable);
 	priv=self->priv;
 
 	/* Set value if changed */
@@ -593,103 +213,33 @@ void xfdashboard_actor_set_style_classes(XfdashboardActor *self, const gchar *in
 		if(inStyleClasses) priv->styleClasses=g_strdup(inStyleClasses);
 
 		/* Invalidate style to get it restyled and redrawn */
-		xfdashboard_actor_style_invalidate(self);
+		xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardActorProperties[PROP_STYLE_CLASSES]);
-	}
-}
-
-void xfdashboard_actor_add_style_class(XfdashboardActor *self, const gchar *inStyleClass)
-{
-	XfdashboardActorPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
-	g_return_if_fail(inStyleClass && inStyleClass[0]);
-
-	priv=self->priv;
-
-	/* If class is already in list of classes do nothing otherwise set new value */
-	if(!priv->styleClasses ||
-		!_xfdashboard_actor_list_contains(inStyleClass, -1, priv->styleClasses, '.'))
-	{
-		gchar					*newClasses;
-
-		/* Create new temporary string by concatenating current classes
-		 * and new class with dot separator. Set this new string representing
-		 * list of classes.
-		 */
-		if(priv->styleClasses) newClasses=g_strconcat(priv->styleClasses, ".", inStyleClass, NULL);
-			else newClasses=g_strdup(inStyleClass);
-
-		xfdashboard_actor_set_style_classes(self, newClasses);
-
-		g_free(newClasses);
-	}
-}
-
-void xfdashboard_actor_remove_style_class(XfdashboardActor *self, const gchar *inStyleClass)
-{
-	XfdashboardActorPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
-	g_return_if_fail(inStyleClass && inStyleClass[0]);
-
-	priv=self->priv;
-
-	/* If class is not in list of classes do nothing otherwise set new value */
-	if(priv->styleClasses &&
-		_xfdashboard_actor_list_contains(inStyleClass, -1, priv->styleClasses, '.'))
-	{
-		gchar					**oldClasses, **entry;
-		gchar					*newClasses, *newClassesTemp;
-
-		/* Create new temporary string with all current classes separated by dot
-		 * not matching class to remove. Set this new string representing list
-		 * of classes.
-		 */
-		entry=oldClasses=g_strsplit(priv->styleClasses, ".", -1);
-		newClasses=NULL;
-		while(*entry)
-		{
-			if(!strcmp(*entry, inStyleClass))
-			{
-				entry++;
-				continue;
-			}
-
-			if(newClasses)
-			{
-				newClassesTemp=g_strconcat(newClasses, ".", *entry, NULL);
-				g_free(newClasses);
-				newClasses=newClassesTemp;
-			}
-				else newClasses=g_strdup(*entry);
-
-			entry++;
-		}
-
-		xfdashboard_actor_set_style_classes(self, newClasses);
-
-		g_strfreev(oldClasses);
-		g_free(newClasses);
+		g_object_notify(G_OBJECT(self), "style-classes");
 	}
 }
 
 /* Get/set style pseudo-classes of actor */
-const gchar* xfdashboard_actor_get_style_pseudo_classes(XfdashboardActor *self)
+static const gchar* _xfdashboard_actor_stylable_get_pseudo_classes(XfdashboardStylable *inStylable)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(self), NULL);
+	XfdashboardActor			*self;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inStylable), NULL);
+
+	self=XFDASHBOARD_ACTOR(inStylable);
 
 	return(self->priv->stylePseudoClasses);
 }
 
-void xfdashboard_actor_set_style_pseudo_classes(XfdashboardActor *self, const gchar *inStylePseudoClasses)
+static void _xfdashboard_actor_stylable_set_pseudo_classes(XfdashboardStylable *inStylable, const gchar *inStylePseudoClasses)
 {
+	XfdashboardActor			*self;
 	XfdashboardActorPrivate		*priv;
 
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inStylable));
 
+	self=XFDASHBOARD_ACTOR(inStylable);
 	priv=self->priv;
 
 	/* Set value if changed */
@@ -705,92 +255,17 @@ void xfdashboard_actor_set_style_pseudo_classes(XfdashboardActor *self, const gc
 		if(inStylePseudoClasses) priv->stylePseudoClasses=g_strdup(inStylePseudoClasses);
 
 		/* Invalidate style to get it restyled and redrawn */
-		xfdashboard_actor_style_invalidate(self);
+		xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardActorProperties[PROP_STYLE_PSEUDO_CLASSES]);
-	}
-}
-
-void xfdashboard_actor_add_style_pseudo_class(XfdashboardActor *self, const gchar *inStylePseudoClass)
-{
-	XfdashboardActorPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
-	g_return_if_fail(inStylePseudoClass && inStylePseudoClass[0]);
-
-	priv=self->priv;
-
-	/* If class is already in list of classes do nothing otherwise set new value */
-	if(!priv->stylePseudoClasses ||
-		!_xfdashboard_actor_list_contains(inStylePseudoClass, -1, priv->stylePseudoClasses, ':'))
-	{
-		gchar					*newClasses;
-
-		/* Create new temporary string by concatenating current classes
-		 * and new class with dot separator. Set this new string representing
-		 * list of classes.
-		 */
-		if(priv->stylePseudoClasses) newClasses=g_strconcat(priv->stylePseudoClasses, ":", inStylePseudoClass, NULL);
-			else newClasses=g_strdup(inStylePseudoClass);
-
-		xfdashboard_actor_set_style_pseudo_classes(self, newClasses);
-
-		g_free(newClasses);
-	}
-}
-
-void xfdashboard_actor_remove_style_pseudo_class(XfdashboardActor *self, const gchar *inStylePseudoClass)
-{
-	XfdashboardActorPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
-	g_return_if_fail(inStylePseudoClass && inStylePseudoClass[0]);
-
-	priv=self->priv;
-
-	/* If class is not in list of classes do nothing otherwise set new value */
-	if(priv->stylePseudoClasses &&
-		_xfdashboard_actor_list_contains(inStylePseudoClass, -1, priv->stylePseudoClasses, ':'))
-	{
-		gchar					**oldClasses, **entry;
-		gchar					*newClasses, *newClassesTemp;
-
-		/* Create new temporary string with all current classes separated by dot
-		 * not matching class to remove. Set this new string representing list
-		 * of classes.
-		 */
-		entry=oldClasses=g_strsplit(priv->stylePseudoClasses, ":", -1);
-		newClasses=NULL;
-		while(*entry)
-		{
-			if(!strcmp(*entry, inStylePseudoClass))
-			{
-				entry++;
-				continue;
-			}
-
-			if(newClasses)
-			{
-				newClassesTemp=g_strconcat(newClasses, ":", *entry, NULL);
-				g_free(newClasses);
-				newClasses=newClassesTemp;
-			}
-				else newClasses=g_strdup(*entry);
-
-			entry++;
-		}
-
-		xfdashboard_actor_set_style_pseudo_classes(self, newClasses);
-
-		g_strfreev(oldClasses);
-		g_free(newClasses);
+		g_object_notify(G_OBJECT(self), "style-pseudo-classes");
 	}
 }
 
 /* Invalidate style to recompute styles */
-void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
+static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylable)
 {
+	XfdashboardActor			*self;
 	XfdashboardActorPrivate		*priv;
 	XfdashboardActorClass		*klass;
 	XfdashboardTheme			*theme;
@@ -807,8 +282,9 @@ void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
 	gboolean					doDebug=FALSE;
 #endif
 
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inStylable));
 
+	self=XFDASHBOARD_ACTOR(inStylable);
 	priv=self->priv;
 	klass=XFDASHBOARD_ACTOR_GET_CLASS(self);
 
@@ -855,7 +331,7 @@ void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
 #endif
 
 	/* Get style information from theme */
-	themeStyleSet=xfdashboard_theme_css_get_properties(themeCSS, self);
+	themeStyleSet=xfdashboard_theme_css_get_properties(themeCSS, XFDASHBOARD_STYLABLE(self));
 
 #ifdef DEBUG
 	if(doDebug)
@@ -1004,8 +480,390 @@ void xfdashboard_actor_style_invalidate(XfdashboardActor *self)
 	clutter_actor_iter_init(&actorIter, CLUTTER_ACTOR(self));
 	while(clutter_actor_iter_next(&actorIter, &child))
 	{
-		if(!XFDASHBOARD_IS_ACTOR(child)) continue;
+		if(!XFDASHBOARD_IS_STYLABLE(child)) continue;
 
-		xfdashboard_actor_style_invalidate(XFDASHBOARD_ACTOR(child));
+		xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(child));
 	}
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+static void _xfdashboard_actor_stylable_iface_init(XfdashboardStylableInterface *iface)
+{
+	iface->get_name=_xfdashboard_actor_stylable_get_name;
+	iface->get_parent=_xfdashboard_actor_stylable_get_parent;
+	iface->get_classes=_xfdashboard_actor_stylable_get_classes;
+	iface->set_classes=_xfdashboard_actor_stylable_set_classes;
+	iface->get_pseudo_classes=_xfdashboard_actor_stylable_get_pseudo_classes;
+	iface->set_pseudo_classes=_xfdashboard_actor_stylable_set_pseudo_classes;
+	iface->invalidate=_xfdashboard_actor_stylable_invalidate;
+}
+
+/* IMPLEMENTATION: ClutterActor */
+
+/* Pointer left actor */
+static gboolean _xfdashboard_actor_leave_event(ClutterActor *inActor, ClutterCrossingEvent *inEvent)
+{
+	XfdashboardActor		*self;
+	ClutterActorClass		*parentClass;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inActor), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_ACTOR(inActor);
+
+	/* Call parent's virtual function */
+	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
+	if(parentClass->leave_event)
+	{
+		parentClass->leave_event(inActor, inEvent);
+	}
+
+	/* Remove pseudo-class ":hover" because pointer left actor */
+	xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(self), "hover");
+
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Pointer entered actor */
+static gboolean _xfdashboard_actor_enter_event(ClutterActor *inActor, ClutterCrossingEvent *inEvent)
+{
+	XfdashboardActor		*self;
+	ClutterActorClass		*parentClass;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inActor), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_ACTOR(inActor);
+
+	/* Call parent's virtual function */
+	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
+	if(parentClass->enter_event)
+	{
+		parentClass->enter_event(inActor, inEvent);
+	}
+
+	/* Add pseudo-class ":hover" because pointer entered actor */
+	xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(self), "hover");
+
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Actor was (re)parented */
+static void _xfdashboard_actor_parent_set(ClutterActor *inActor, ClutterActor *inOldParent)
+{
+	XfdashboardActor		*self;
+	ClutterActorClass		*parentClass;
+
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inActor));
+
+	self=XFDASHBOARD_ACTOR(inActor);
+
+	/* Call parent's virtual function */
+	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
+	if(parentClass->parent_set)
+	{
+		parentClass->parent_set(inActor, inOldParent);
+	}
+
+	/* Invalide styling to get it recomputed because its ID (from point
+	 * of view of css) has changed
+	 */
+	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
+}
+
+/* IMPLEMENTATION: GObject */
+
+/* Dispose this object */
+static void _xfdashboard_actor_dispose(GObject *inObject)
+{
+	XfdashboardActor			*self=XFDASHBOARD_ACTOR(inObject);
+	XfdashboardActorPrivate		*priv=self->priv;
+
+	/* Release allocated variables */
+	if(priv->styleClasses)
+	{
+		g_free(priv->styleClasses);
+		priv->styleClasses=NULL;
+	}
+
+	if(priv->stylePseudoClasses)
+	{
+		g_free(priv->stylePseudoClasses);
+		priv->stylePseudoClasses=NULL;
+	}
+
+	if(priv->lastThemeStyleSet)
+	{
+		g_hash_table_destroy(priv->lastThemeStyleSet);
+		priv->lastThemeStyleSet=NULL;
+	}
+
+	/* Call parent's class dispose method */
+	G_OBJECT_CLASS(xfdashboard_actor_parent_class)->dispose(inObject);
+}
+
+/* Set/get properties */
+static void _xfdashboard_actor_set_property(GObject *inObject,
+											guint inPropID,
+											const GValue *inValue,
+											GParamSpec *inSpec)
+{
+	XfdashboardActor			*self=XFDASHBOARD_ACTOR(inObject);
+
+	switch(inPropID)
+	{
+		case PROP_STYLE_CLASSES:
+			_xfdashboard_actor_stylable_set_classes(XFDASHBOARD_STYLABLE(self),
+													g_value_get_string(inValue));
+			break;
+
+		case PROP_STYLE_PSEUDO_CLASSES:
+			_xfdashboard_actor_stylable_set_pseudo_classes(XFDASHBOARD_STYLABLE(self),
+															g_value_get_string(inValue));
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
+static void _xfdashboard_actor_get_property(GObject *inObject,
+											guint inPropID,
+											GValue *outValue,
+											GParamSpec *inSpec)
+{
+	XfdashboardActor			*self=XFDASHBOARD_ACTOR(inObject);
+	XfdashboardActorPrivate		*priv=self->priv;
+
+	switch(inPropID)
+	{
+		case PROP_STYLE_CLASSES:
+			g_value_set_string(outValue, priv->styleClasses);
+			break;
+
+		case PROP_STYLE_PSEUDO_CLASSES:
+			g_value_set_string(outValue, priv->stylePseudoClasses);
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
+/* Class initialization
+ * Override functions in parent classes and define properties
+ * and signals
+ */
+void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
+{
+	ClutterActorClass			*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
+	GObjectClass				*gobjectClass=G_OBJECT_CLASS(klass);
+
+	/* Get parent class */
+	xfdashboard_actor_parent_class=g_type_class_peek_parent(klass);
+
+	/* Override functions */
+	gobjectClass->dispose=_xfdashboard_actor_dispose;
+	gobjectClass->set_property=_xfdashboard_actor_set_property;
+	gobjectClass->get_property=_xfdashboard_actor_get_property;
+
+	clutterActorClass->parent_set=_xfdashboard_actor_parent_set;
+	clutterActorClass->enter_event=_xfdashboard_actor_enter_event;
+	clutterActorClass->leave_event=_xfdashboard_actor_leave_event;
+
+	/* Set up private structure */
+	g_type_class_add_private(klass, sizeof(XfdashboardActorPrivate));
+
+	/* Define properties */
+	g_object_class_override_property(gobjectClass, PROP_STYLE_CLASSES, "style-classes");
+	g_object_class_override_property(gobjectClass, PROP_STYLE_PSEUDO_CLASSES, "style-pseudo-classes");
+
+	/* Create param-spec pool for themable properties */
+	g_assert(_xfdashboard_actor_stylable_properties_pool==NULL);
+	_xfdashboard_actor_stylable_properties_pool=g_param_spec_pool_new(FALSE);
+}
+
+/* Object initialization
+ * Create private structure and set up default values
+ */
+void xfdashboard_actor_init(XfdashboardActor *self)
+{
+	XfdashboardActorPrivate		*priv;
+
+	priv=self->priv=XFDASHBOARD_ACTOR_GET_PRIVATE(self);
+
+	/* Set up default values */
+	priv->styleClasses=NULL;
+	priv->stylePseudoClasses=NULL;
+	priv->lastThemeStyleSet=NULL;
+
+	/* Connect signals */
+	g_signal_connect(self, "notify::mapped", G_CALLBACK(_xfdashboard_actor_on_mapped_changed), NULL);
+	g_signal_connect(self, "notify::name", G_CALLBACK(_xfdashboard_actor_on_name_changed), NULL);
+}
+
+/* Implementation: GType */
+
+/* Base class finalization */
+void xfdashboard_actor_base_class_finalize(XfdashboardActorClass *klass)
+{
+	GList				*paramSpecs, *entry;
+
+	paramSpecs=g_param_spec_pool_list_owned(_xfdashboard_actor_stylable_properties_pool, G_OBJECT_CLASS_TYPE(klass));
+	for(entry=paramSpecs; entry; entry=g_list_next(entry))
+	{
+		GParamSpec		*paramSpec=G_PARAM_SPEC(entry->data);
+
+		if(paramSpec)
+		{
+			g_param_spec_pool_remove(_xfdashboard_actor_stylable_properties_pool, paramSpec);
+
+			g_debug("Unregistered stylable property named '%s' for class '%s'",
+					g_param_spec_get_name(paramSpec), G_OBJECT_CLASS_NAME(klass));
+
+			g_param_spec_unref(paramSpec);
+		}
+	}
+	g_list_free(paramSpecs);
+}
+
+/* Register type to GObject system */
+GType xfdashboard_actor_get_type(void)
+{
+	static GType		actorType=0;
+
+	if(G_UNLIKELY(actorType==0))
+	{
+		/* Class info */
+		const GTypeInfo 		actorInfo=
+		{
+			sizeof(XfdashboardActorClass),
+			NULL,
+			(GBaseFinalizeFunc)xfdashboard_actor_base_class_finalize,
+			(GClassInitFunc)xfdashboard_actor_class_init,
+			NULL, /* class_finalize */
+			NULL, /* class_data */
+			sizeof(XfdashboardActor),
+			0,    /* n_preallocs */
+			(GInstanceInitFunc)xfdashboard_actor_init,
+			NULL, /* value_table */
+		};
+
+		/* Implemented interfaces info */
+		const GInterfaceInfo	actorStylableInterfaceInfo=
+		{
+			(GInterfaceInitFunc)_xfdashboard_actor_stylable_iface_init,
+			NULL,
+			NULL
+		};
+
+		/* Register class */
+		actorType=g_type_register_static(CLUTTER_TYPE_ACTOR,
+											g_intern_static_string("XfdashboardActor"),
+											&actorInfo,
+											0);
+
+		/* Add implemented interfaces */
+		g_type_add_interface_static(actorType,
+									XFDASHBOARD_TYPE_STYLABLE,
+									&actorStylableInterfaceInfo);
+	}
+
+	return(actorType);
+}
+
+/* Implementation: Public API */
+
+/* Create new actor */
+ClutterActor* xfdashboard_actor_new(void)
+{
+	return(CLUTTER_ACTOR(g_object_new(XFDASHBOARD_TYPE_ACTOR, NULL)));
+}
+
+/* Register stylable property of a class */
+void xfdashboard_actor_install_stylable_property(XfdashboardActorClass *klass, GParamSpec *inParamSpec)
+{
+	GParamSpec		*stylableParamSpec;
+
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR_CLASS(klass));
+	g_return_if_fail(G_IS_PARAM_SPEC(inParamSpec));
+	g_return_if_fail(inParamSpec->flags & G_PARAM_WRITABLE);
+	g_return_if_fail(!(inParamSpec->flags & G_PARAM_CONSTRUCT_ONLY));
+
+	/* Check if param-spec is already registered */
+	if(g_param_spec_pool_lookup(_xfdashboard_actor_stylable_properties_pool, g_param_spec_get_name(inParamSpec), G_OBJECT_CLASS_TYPE(klass), FALSE))
+	{
+		g_warning("Class '%s' already contains a stylable property '%s'",
+					G_OBJECT_CLASS_NAME(klass),
+					g_param_spec_get_name(inParamSpec));
+		return;
+	}
+
+	/* Add param-spec to pool of themable properties */
+	stylableParamSpec=g_param_spec_internal(G_PARAM_SPEC_TYPE(inParamSpec),
+												g_param_spec_get_name(inParamSpec),
+												NULL,
+												NULL,
+												0);
+	g_param_spec_set_qdata_full(stylableParamSpec,
+									XFDASHBOARD_ACTOR_PARAM_SPEC_REF,
+									g_param_spec_ref(inParamSpec),
+									(GDestroyNotify)g_param_spec_unref);
+	g_param_spec_pool_insert(_xfdashboard_actor_stylable_properties_pool, stylableParamSpec, G_OBJECT_CLASS_TYPE(klass));
+	g_debug("Registered stylable property '%s' for class '%s'",
+				g_param_spec_get_name(inParamSpec), G_OBJECT_CLASS_NAME(klass));
+}
+
+void xfdashboard_actor_install_stylable_property_by_name(XfdashboardActorClass *klass, const gchar *inParamName)
+{
+	GParamSpec		*paramSpec;
+
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR_CLASS(klass));
+	g_return_if_fail(inParamName && inParamName[0]);
+
+	/* Find parameter specification for property name and register it as stylable */
+	paramSpec=g_object_class_find_property(G_OBJECT_CLASS(klass), inParamName);
+	if(paramSpec) xfdashboard_actor_install_stylable_property(klass, paramSpec);
+		else
+		{
+			g_warning("Cannot register non-existent property '%s' of class '%s'",
+						inParamName, G_OBJECT_CLASS_NAME(klass));
+		}
+}
+
+/* Get hash-table with all stylable properties of this class or
+ * recursively of this and all parent classes
+ */
+GHashTable* xfdashboard_actor_get_stylable_properties(XfdashboardActorClass *klass)
+{
+	GHashTable		*stylableProps;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR_CLASS(klass), NULL);
+
+	/* Create hashtable and insert stylable properties */
+	stylableProps=g_hash_table_new_full(g_str_hash,
+											g_str_equal,
+											g_free,
+											(GDestroyNotify)g_param_spec_unref);
+	_xfdashboard_actor_hashtable_get_all_stylable_param_specs(stylableProps, G_OBJECT_CLASS(klass), FALSE);
+
+	return(stylableProps);
+}
+
+GHashTable* xfdashboard_actor_get_stylable_properties_full(XfdashboardActorClass *klass)
+{
+	GHashTable		*stylableProps;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR_CLASS(klass), NULL);
+
+	/* Create hashtable and insert stylable properties */
+	stylableProps=g_hash_table_new_full(g_str_hash,
+											g_str_equal,
+											g_free,
+											(GDestroyNotify)g_param_spec_unref);
+	_xfdashboard_actor_hashtable_get_all_stylable_param_specs(stylableProps, G_OBJECT_CLASS(klass), TRUE);
+
+	return(stylableProps);
 }

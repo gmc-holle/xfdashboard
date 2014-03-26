@@ -27,11 +27,13 @@
 #endif
 
 #include "text-box.h"
-#include "enums.h"
-#include "button.h"
 
 #include <glib/gi18n-lib.h>
 #include <math.h>
+
+#include "enums.h"
+#include "button.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardTextBox,
@@ -840,14 +842,14 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 
 	/* Create actors */
 	priv->actorPrimaryIcon=xfdashboard_button_new();
-	xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->actorPrimaryIcon), "primary-icon");
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorPrimaryIcon), "primary-icon");
 	clutter_actor_set_reactive(priv->actorPrimaryIcon, TRUE);
 	clutter_actor_hide(priv->actorPrimaryIcon);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorPrimaryIcon);
 	g_signal_connect_swapped(priv->actorPrimaryIcon, "clicked", G_CALLBACK(_xfdashboard_text_box_on_primary_icon_clicked), self);
 
 	priv->actorSecondaryIcon=xfdashboard_button_new();
-	xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->actorSecondaryIcon), "secondary-icon");
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorSecondaryIcon), "secondary-icon");
 	clutter_actor_set_reactive(priv->actorSecondaryIcon, TRUE);
 	clutter_actor_hide(priv->actorSecondaryIcon);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorSecondaryIcon);
@@ -955,8 +957,8 @@ void xfdashboard_text_box_set_editable(XfdashboardTextBox *self, gboolean isEdit
 	if(priv->isEditable!=isEditable)
 	{
 		priv->isEditable=isEditable;
-		if(priv->isEditable) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(self), "editable");
-			else xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(self), "editable");
+		if(priv->isEditable) xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(self), "editable");
+			else xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(self), "editable");
 
 		/* Set up actors */
 		clutter_text_set_selectable(CLUTTER_TEXT(priv->actorTextBox), priv->isEditable);

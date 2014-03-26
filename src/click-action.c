@@ -41,6 +41,7 @@
 
 #include "marshal.h"
 #include "actor.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardClickAction,
@@ -127,8 +128,8 @@ static void _xfdashboard_click_action_set_pressed(XfdashboardClickAction *self, 
 		actor=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
 		if(XFDASHBOARD_IS_ACTOR(actor))
 		{
-			if(priv->isPressed) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(actor), "pressed");
-				else xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(actor), "pressed");
+			if(priv->isPressed) xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(actor), "pressed");
+				else xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(actor), "pressed");
 		}
 
 		/* Notify about property change */

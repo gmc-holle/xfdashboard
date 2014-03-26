@@ -37,6 +37,7 @@
 #include "application-button.h"
 #include "enums.h"
 #include "drag-action.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsView,
@@ -247,8 +248,8 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 		xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), actorText);
 		g_free(actorText);
 
-		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(actor), "view-mode-list");
-			else xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(actor), "view-mode-icon");
+		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-list");
+			else xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-icon");
 
 		/* Add to view and layout */
 		clutter_actor_set_x_expand(CLUTTER_ACTOR(actor), TRUE);
@@ -276,8 +277,8 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 			 * menu element is a menu item.
 			 */
 			actor=xfdashboard_application_button_new_from_menu(menuElement);
-			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(actor), "view-mode-list");
-				else xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(actor), "view-mode-icon");
+			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-list");
+				else xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-icon");
 
 			/* Add to view and layout */
 			clutter_actor_set_x_expand(CLUTTER_ACTOR(actor), TRUE);

@@ -44,6 +44,7 @@ xfdashboard_headers = \
 	search-result-set.h \
 	search-view.h \
 	stage.h \
+	stylable.h \
 	text-box.h \
 	theme.h \
 	theme-css.h \
@@ -94,6 +95,7 @@ xfdashboard_SOURCES = \
 	search-result-set.c \
 	search-view.c \
 	stage.c \
+	stylable.c \
 	text-box.c \
 	theme.c \
 	theme-css.c \

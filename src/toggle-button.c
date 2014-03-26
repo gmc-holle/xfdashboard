@@ -29,6 +29,8 @@
 
 #include <glib/gi18n-lib.h>
 
+#include "stylable.h"
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardToggleButton,
 				xfdashboard_toggle_button,
@@ -260,8 +262,8 @@ void xfdashboard_toggle_button_set_toggle_state(XfdashboardToggleButton *self, g
 		priv->toggleState=inToggleState;
 
 		/* Set style classes */
-		if(priv->toggleState) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(self), "toggled");
-			else xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(self), "toggled");
+		if(priv->toggleState) xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(self), "toggled");
+			else xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(self), "toggled");
 
 		clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 

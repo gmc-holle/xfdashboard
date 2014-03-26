@@ -29,11 +29,13 @@
 
 #include "theme-css.h"
 
-#include <clutter/clutter.h>
+// TODO: #include <clutter/clutter.h>
 #include <glib/gi18n-lib.h>
 #include <glib.h>
 #include <gio/gio.h>
 #include <gio/gfiledescriptorbased.h>
+
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardThemeCSS,
@@ -784,7 +786,7 @@ static gboolean _xfdashboard_theme_css_list_contains(const gchar *inNeedle,
 
 /* Score given selector againt stylable node */
 static gint _xfdashboard_themes_css_score_node_matching_selector(XfdashboardThemeCSSSelector *inSelector,
-																	XfdashboardActor *inActor)
+																	XfdashboardStylable *inStylable)
 {
 	gint					score;
 	gint					a, b, c;
@@ -792,10 +794,10 @@ static gint _xfdashboard_themes_css_score_node_matching_selector(XfdashboardThem
 	const gchar				*classes;
 	const gchar				*pseudoClasses;
 	const gchar				*id;
-	ClutterActor			*actor;
-	XfdashboardActor		*parent;
+	// TODO: XfdashboardStylable		*actor;
+	XfdashboardStylable		*parent;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inActor), -1);
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(inStylable), -1);
 
 	/* For information about how the scoring is done, see documentation
 	 * "Cascading Style Sheets, level 1" of W3C, section "3.2 Cascading order"
@@ -829,9 +831,9 @@ static gint _xfdashboard_themes_css_score_node_matching_selector(XfdashboardThem
 	a=b=c=0;
 
 	/* Get properties for given stylable */
-	id=clutter_actor_get_name(CLUTTER_ACTOR(inActor));
-	classes=xfdashboard_actor_get_style_classes(inActor);
-	pseudoClasses=xfdashboard_actor_get_style_pseudo_classes(inActor);
+	id=xfdashboard_stylable_get_name(XFDASHBOARD_STYLABLE(inStylable));
+	classes=xfdashboard_stylable_get_classes(XFDASHBOARD_STYLABLE(inStylable));
+	pseudoClasses=xfdashboard_stylable_get_pseudo_classes(XFDASHBOARD_STYLABLE(inStylable));
 
 	/* Check and score type of selectors but ignore NULL or universal selectors */
 	if(inSelector->type && inSelector->type[0]!='*')
@@ -840,7 +842,7 @@ static gint _xfdashboard_themes_css_score_node_matching_selector(XfdashboardThem
 		gint				matched;
 		gint				depth;
 
-		typeID=G_OBJECT_CLASS_TYPE(G_OBJECT_GET_CLASS(inActor));
+		typeID=G_OBJECT_CLASS_TYPE(G_OBJECT_GET_CLASS(inStylable));
 		type=g_type_name(typeID);
 		matched=FALSE;
 
@@ -929,13 +931,12 @@ static gint _xfdashboard_themes_css_score_node_matching_selector(XfdashboardThem
 	}
 
 	/* Check and score parent */
-	actor=clutter_actor_get_parent(CLUTTER_ACTOR(inActor));
-	if(XFDASHBOARD_IS_ACTOR(actor)) parent=XFDASHBOARD_ACTOR(actor);
-		else parent=NULL;
+	parent=xfdashboard_stylable_get_parent(inStylable);
+	if(!XFDASHBOARD_IS_STYLABLE(parent)) parent=NULL;
 
 	if(inSelector->parent)
 	{
-		gint				numberMatches;
+		gint					numberMatches;
 
 		/* If node has no parent, no parent can match ;) so return immediately */
 		if(!parent) return(-1);
@@ -951,9 +952,8 @@ static gint _xfdashboard_themes_css_score_node_matching_selector(XfdashboardThem
 	/* Check and score ancestor */
 	if(inSelector->ancestor)
 	{
-		gint				numberMatches;
-		XfdashboardActor	*stylableParent, *ancestor;
-		ClutterActor		*actorParent;
+		gint					numberMatches;
+		XfdashboardStylable		*stylableParent, *ancestor;
 
 		/* If node has no parents, no ancestor can match so return immediately */
 		if(!parent) return(-1);
@@ -973,12 +973,11 @@ static gint _xfdashboard_themes_css_score_node_matching_selector(XfdashboardThem
 			}
 
 			/* Get next ancestor to check */
-			actorParent=clutter_actor_get_parent(CLUTTER_ACTOR(ancestor));
-			if(XFDASHBOARD_IS_ACTOR(actorParent)) stylableParent=XFDASHBOARD_ACTOR(actorParent);
-				else stylableParent=NULL;
+			stylableParent=xfdashboard_stylable_get_parent(ancestor);
+			if(!XFDASHBOARD_IS_STYLABLE(stylableParent)) stylableParent=NULL;
 
 			ancestor=stylableParent;
-			if(!ancestor || !XFDASHBOARD_IS_ACTOR(ancestor)) return(-1);
+			if(!ancestor || !XFDASHBOARD_IS_STYLABLE(ancestor)) return(-1);
 		}
 	}
 
@@ -1147,7 +1146,7 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 
 /* Return properties for a stylable actor */
 GHashTable* xfdashboard_theme_css_get_properties(XfdashboardThemeCSS *self,
-													XfdashboardActor *inActor)
+													XfdashboardStylable *inStylable)
 {
 	XfdashboardThemeCSSPrivate			*priv;
 	GList								*entry, *matches;
@@ -1163,17 +1162,17 @@ GHashTable* xfdashboard_theme_css_get_properties(XfdashboardThemeCSS *self,
 #endif
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
-	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inActor), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(inStylable), NULL);
 
 	priv=self->priv;
 	matches=NULL;
 	match=NULL;
 
 #ifdef DEBUG
-	styleID=clutter_actor_get_name(CLUTTER_ACTOR(inActor));
-	styleClasses=xfdashboard_actor_get_style_classes(inActor);
-	stylePseudoClasses=xfdashboard_actor_get_style_pseudo_classes(inActor);
-	styleTypeName=G_OBJECT_TYPE_NAME(inActor);
+	styleID=xfdashboard_stylable_get_name(inStylable);
+	styleClasses=xfdashboard_stylable_get_classes(inStylable);
+	stylePseudoClasses=xfdashboard_stylable_get_pseudo_classes(inStylable);
+	styleTypeName=G_OBJECT_TYPE_NAME(inStylable);
 	styleSelector=g_strdup_printf("%s%s%s%s%s%s%s",
 									(styleTypeName) ? styleTypeName : "",
 									(styleClasses) ? "." : "",
@@ -1192,7 +1191,7 @@ GHashTable* xfdashboard_theme_css_get_properties(XfdashboardThemeCSS *self,
 	{
 		gint							score;
 
-		score=_xfdashboard_themes_css_score_node_matching_selector(entry->data, inActor);
+		score=_xfdashboard_themes_css_score_node_matching_selector(entry->data, inStylable);
 		if(score>=0)
 		{
 			match=g_slice_new(XfdashboardThemeCSSSelectorMatch);

@@ -32,6 +32,7 @@
 #include "drop-action.h"
 #include "marshal.h"
 #include "actor.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardDragAction,
@@ -239,7 +240,7 @@ static void _xfdashboard_drag_action_set_source(XfdashboardDragAction *self, Clu
 		/* Unset style */
 		if(XFDASHBOARD_IS_ACTOR(priv->source))
 		{
-			xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->source), "current-drag-source");
+			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->source), "current-drag-source");
 		}
 
 		/* Release actor */
@@ -323,15 +324,15 @@ static void _xfdashboard_drag_action_on_drag_handle_changed(XfdashboardDragActio
 		if(priv->source)
 		{
 			styleClass=g_strdup_printf("drag-source-%s", G_OBJECT_TYPE_NAME(priv->source));
-			xfdashboard_actor_remove_style_class(XFDASHBOARD_ACTOR(priv->dragHandle), styleClass);
+			xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(priv->dragHandle), styleClass);
 			g_free(styleClass);
 		}
 
 		styleClass=g_strdup_printf("drag-actor-%s", G_OBJECT_TYPE_NAME(priv->actor));
-		xfdashboard_actor_remove_style_class(XFDASHBOARD_ACTOR(priv->dragHandle), styleClass);
+		xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(priv->dragHandle), styleClass);
 		g_free(styleClass);
 
-		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->dragHandle), "drag-handle");
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->dragHandle), "drag-handle");
 
 		/* Forget drag handle */
 		priv->dragHandle=NULL;
@@ -346,15 +347,15 @@ static void _xfdashboard_drag_action_on_drag_handle_changed(XfdashboardDragActio
 		if(priv->source)
 		{
 			styleClass=g_strdup_printf("drag-source-%s", G_OBJECT_TYPE_NAME(priv->source));
-			xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->dragHandle), styleClass);
+			xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->dragHandle), styleClass);
 			g_free(styleClass);
 		}
 
 		styleClass=g_strdup_printf("drag-actor-%s", G_OBJECT_TYPE_NAME(priv->actor));
-		xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->dragHandle), styleClass);
+		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->dragHandle), styleClass);
 		g_free(styleClass);
 
-		xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(priv->dragHandle), "drag-handle");
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->dragHandle), "drag-handle");
 	}
 
 }
@@ -442,12 +443,12 @@ static void _xfdashboard_drag_action_drag_begin(ClutterDragAction *inAction,
 	/* Set styles */
 	if(priv->source && XFDASHBOARD_IS_ACTOR(priv->source))
 	{
-		xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(priv->source), "drag-source");
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->source), "drag-source");
 	}
 
 	if(XFDASHBOARD_IS_ACTOR(priv->actor))
 	{
-		xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "dragged");
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->actor), "dragged");
 	}
 
 	priv->dragHandle=clutter_drag_action_get_drag_handle(CLUTTER_DRAG_ACTION(self));
@@ -459,15 +460,15 @@ static void _xfdashboard_drag_action_drag_begin(ClutterDragAction *inAction,
 		if(priv->source)
 		{
 			styleClass=g_strdup_printf("drag-source-%s", G_OBJECT_TYPE_NAME(priv->source));
-			xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->dragHandle), styleClass);
+			xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->dragHandle), styleClass);
 			g_free(styleClass);
 		}
 
 		styleClass=g_strdup_printf("drag-actor-%s", G_OBJECT_TYPE_NAME(priv->actor));
-		xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->dragHandle), styleClass);
+		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->dragHandle), styleClass);
 		g_free(styleClass);
 
-		xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(priv->dragHandle), "drag-handle");
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->dragHandle), "drag-handle");
 
 		/* Get notified if drag handle changes */
 		priv->dragHandleChangedID=g_signal_connect(self, "notify::drag-handle", G_CALLBACK(_xfdashboard_drag_action_on_drag_handle_changed), NULL);
@@ -726,12 +727,12 @@ static void _xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 	/* Unset styles */
 	if(priv->source && XFDASHBOARD_IS_ACTOR(priv->source))
 	{
-		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->source), "drag-source");
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->source), "drag-source");
 	}
 
 	if(XFDASHBOARD_IS_ACTOR(priv->actor))
 	{
-		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "dragged");
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->actor), "dragged");
 	}
 
 	if(priv->dragHandle &&
@@ -742,15 +743,15 @@ static void _xfdashboard_drag_action_drag_end(ClutterDragAction *inAction,
 		if(priv->source)
 		{
 			styleClass=g_strdup_printf("drag-source-%s", G_OBJECT_TYPE_NAME(priv->source));
-			xfdashboard_actor_remove_style_class(XFDASHBOARD_ACTOR(priv->dragHandle), styleClass);
+			xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(priv->dragHandle), styleClass);
 			g_free(styleClass);
 		}
 
 		styleClass=g_strdup_printf("drag-actor-%s", G_OBJECT_TYPE_NAME(priv->actor));
-		xfdashboard_actor_remove_style_class(XFDASHBOARD_ACTOR(priv->dragHandle), styleClass);
+		xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(priv->dragHandle), styleClass);
 		g_free(styleClass);
 
-		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->dragHandle), "drag-handle");
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->dragHandle), "drag-handle");
 
 		priv->dragHandle=NULL;
 	}

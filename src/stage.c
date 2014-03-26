@@ -46,15 +46,18 @@
 #include "collapse-box.h"
 #include "tooltip-action.h"
 #include "layoutable.h"
+#include "stylable.h"
 #include "utils.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_stage_layoutable_iface_init(XfdashboardLayoutableInterface *iface);
+static void _xfdashboard_stage_stylable_iface_init(XfdashboardStylableInterface *iface);
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardStage,
 						xfdashboard_stage,
 						CLUTTER_TYPE_STAGE,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_LAYOUTABLE, _xfdashboard_stage_layoutable_iface_init))
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_LAYOUTABLE, _xfdashboard_stage_layoutable_iface_init)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_STYLABLE, _xfdashboard_stage_stylable_iface_init))
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_STAGE_GET_PRIVATE(obj) \
@@ -62,6 +65,10 @@ G_DEFINE_TYPE_WITH_CODE(XfdashboardStage,
 
 struct _XfdashboardStagePrivate
 {
+	/* Properties related */
+	gchar							*styleClasses;
+	gchar							*stylePseudoClasses;
+
 	/* Actors */
 	ClutterActor					*quicklaunch;
 	ClutterActor					*searchbox;
@@ -80,6 +87,17 @@ struct _XfdashboardStagePrivate
 	XfdashboardView					*viewBeforeSearch;
 
 	guint							notificationTimeoutID;
+};
+
+/* Properties */
+enum
+{
+	PROP_0,
+
+	PROP_STYLE_CLASSES,
+	PROP_STYLE_PSEUDO_CLASSES,
+
+	PROP_LAST
 };
 
 /* Signals */
@@ -331,10 +349,10 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		xfdashboard_view_set_enabled(searchView, TRUE);
 
 		/* Activate "clear" button on text box */
-		xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(priv->searchbox), "search-active");
+		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->searchbox), "search-active");
 
 		/* Change apps button appearance */
-		if(appsButton) xfdashboard_actor_add_style_class(XFDASHBOARD_ACTOR(appsButton), "search-active");
+		if(appsButton) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(appsButton), "search-active");
 
 		/* Emit "search-started" signal */
 		g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_STARTED], 0);
@@ -366,13 +384,13 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		}
 
 		/* Deactivate "clear" button on text box */
-		xfdashboard_actor_remove_style_class(XFDASHBOARD_ACTOR(priv->searchbox), "search-active");
+		xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(priv->searchbox), "search-active");
 
 		/* Disable search view */
 		xfdashboard_view_set_enabled(searchView, FALSE);
 
 		/* Change apps button appearance */
-		if(appsButton) xfdashboard_actor_remove_style_class(XFDASHBOARD_ACTOR(appsButton), "search-active");
+		if(appsButton) xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(appsButton), "search-active");
 
 		/* Emit "search-ended" signal */
 		g_signal_emit(self, XfdashboardStageSignals[SIGNAL_SEARCH_ENDED], 0);
@@ -659,6 +677,78 @@ void _xfdashboard_stage_layoutable_iface_init(XfdashboardLayoutableInterface *if
 	iface->layout_completed=_xfdashboard_stage_layoutable_layout_completed;
 }
 
+/* IMPLEMENTATION: Interface XfdashboardStylable */
+
+/* Get stylable name of stage */
+static const gchar* _xfdashboard_stage_stylable_get_name(XfdashboardStylable *inStylable)
+{
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inStylable), NULL);
+
+	return(clutter_actor_get_name(CLUTTER_ACTOR(inStylable)));
+}
+
+/* Get stylable parent of stage */
+static XfdashboardStylable* _xfdashboard_stage_stylable_get_parent(XfdashboardStylable *inStylable)
+{
+	ClutterActor			*self;
+	ClutterActor			*parent;
+
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inStylable), NULL);
+
+	self=CLUTTER_ACTOR(inStylable);
+
+	/* Get parent and check if stylable. If not return NULL. */
+	parent=clutter_actor_get_parent(self);
+	if(!XFDASHBOARD_IS_STYLABLE(parent)) return(NULL);
+
+	/* Return stylable parent */
+	return(XFDASHBOARD_STYLABLE(parent));
+}
+
+/* Get/set style classes of stage */
+static const gchar* _xfdashboard_stage_stylable_get_classes(XfdashboardStylable *inStylable)
+{
+	/* Not implemented */
+	return(NULL);
+}
+
+static void _xfdashboard_stage_stylable_set_classes(XfdashboardStylable *inStylable, const gchar *inStyleClasses)
+{
+	/* Not implemented */
+}
+
+/* Get/set style pseudo-classes of stage */
+static const gchar* _xfdashboard_stage_stylable_get_pseudo_classes(XfdashboardStylable *inStylable)
+{
+	/* Not implemented */
+	return(NULL);
+}
+
+static void _xfdashboard_stage_stylable_set_pseudo_classes(XfdashboardStylable *inStylable, const gchar *inStylePseudoClasses)
+{
+	/* Not implemented */
+}
+
+/* Invalidate style to recompute styles */
+static void _xfdashboard_stage_stylable_invalidate(XfdashboardStylable *inStylable)
+{
+	/* Not implemented */
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_stage_stylable_iface_init(XfdashboardStylableInterface *iface)
+{
+	iface->get_name=_xfdashboard_stage_stylable_get_name;
+	iface->get_parent=_xfdashboard_stage_stylable_get_parent;
+	iface->get_classes=_xfdashboard_stage_stylable_get_classes;
+	iface->set_classes=_xfdashboard_stage_stylable_set_classes;
+	iface->get_pseudo_classes=_xfdashboard_stage_stylable_get_pseudo_classes;
+	iface->set_pseudo_classes=_xfdashboard_stage_stylable_set_pseudo_classes;
+	iface->invalidate=_xfdashboard_stage_stylable_invalidate;
+}
+
 /* IMPLEMENTATION: ClutterActor */
 
 /* The stage actor should be shown */
@@ -717,6 +807,18 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 		priv->windowTracker=NULL;
 	}
 
+	if(priv->styleClasses)
+	{
+		g_free(priv->styleClasses);
+		priv->styleClasses=NULL;
+	}
+
+	if(priv->stylePseudoClasses)
+	{
+		g_free(priv->stylePseudoClasses);
+		priv->stylePseudoClasses=NULL;
+	}
+
 	if(priv->notification)
 	{
 		clutter_actor_destroy(CLUTTER_ACTOR(priv->notification));
@@ -769,6 +871,56 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_stage_parent_class)->dispose(inObject);
 }
 
+/* Set/get properties */
+static void _xfdashboard_stage_set_property(GObject *inObject,
+											guint inPropID,
+											const GValue *inValue,
+											GParamSpec *inSpec)
+{
+	XfdashboardStage			*self=XFDASHBOARD_STAGE(inObject);
+
+	switch(inPropID)
+	{
+		case PROP_STYLE_CLASSES:
+			_xfdashboard_stage_stylable_set_classes(XFDASHBOARD_STYLABLE(self),
+													g_value_get_string(inValue));
+			break;
+
+		case PROP_STYLE_PSEUDO_CLASSES:
+			_xfdashboard_stage_stylable_set_pseudo_classes(XFDASHBOARD_STYLABLE(self),
+															g_value_get_string(inValue));
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
+static void _xfdashboard_stage_get_property(GObject *inObject,
+											guint inPropID,
+											GValue *outValue,
+											GParamSpec *inSpec)
+{
+	XfdashboardStage			*self=XFDASHBOARD_STAGE(inObject);
+	XfdashboardStagePrivate		*priv=self->priv;
+
+	switch(inPropID)
+	{
+		case PROP_STYLE_CLASSES:
+			g_value_set_string(outValue, priv->styleClasses);
+			break;
+
+		case PROP_STYLE_PSEUDO_CLASSES:
+			g_value_set_string(outValue, priv->stylePseudoClasses);
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
@@ -784,9 +936,15 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 	actorClass->show=_xfdashboard_stage_show;
 
 	gobjectClass->dispose=_xfdashboard_stage_dispose;
+	gobjectClass->set_property=_xfdashboard_stage_set_property;
+	gobjectClass->get_property=_xfdashboard_stage_get_property;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardStagePrivate));
+
+	/* Define properties */
+	g_object_class_override_property(gobjectClass, PROP_STYLE_CLASSES, "style-classes");
+	g_object_class_override_property(gobjectClass, PROP_STYLE_PSEUDO_CLASSES, "style-pseudo-classes");
 
 	/* Define signals */
 	XfdashboardStageSignals[SIGNAL_SEARCH_STARTED]=
@@ -854,6 +1012,8 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	/* Set default values */
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->stageWindow=NULL;
+	priv->styleClasses=NULL;
+	priv->stylePseudoClasses=NULL;
 
 	priv->quicklaunch=NULL;
 	priv->searchbox=NULL;

@@ -31,6 +31,7 @@
 
 #include "marshal.h"
 #include "actor.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardDropAction,
@@ -97,7 +98,7 @@ static void _xfdashboard_drop_action_unregister_target(XfdashboardDropAction *se
 	if(priv->actor &&
 		XFDASHBOARD_IS_ACTOR(priv->actor))
 	{
-		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "drop-target");
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->actor), "drop-target");
 	}
 
 	/* Remove target from list of dropable targets */
@@ -179,7 +180,7 @@ static void _xfdashboard_drop_action_class_real_end(XfdashboardDropAction *self,
 	if(priv->actor &&
 		XFDASHBOARD_IS_ACTOR(priv->actor))
 	{
-		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "drop-target");
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->actor), "drop-target");
 	}
 }
 
@@ -220,7 +221,7 @@ static void _xfdashboard_drop_action_class_real_drag_enter(XfdashboardDropAction
 	if(priv->actor &&
 		XFDASHBOARD_IS_ACTOR(priv->actor))
 	{
-		xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "drop-target");
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->actor), "drop-target");
 	}
 }
 
@@ -238,7 +239,7 @@ static void _xfdashboard_drop_action_class_real_drag_leave(XfdashboardDropAction
 	if(priv->actor &&
 		XFDASHBOARD_IS_ACTOR(priv->actor))
 	{
-		xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "drop-target");
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->actor), "drop-target");
 	}
 }
 
@@ -265,7 +266,7 @@ static void _xfdashboard_drop_action_set_actor(ClutterActorMeta *inActorMeta, Cl
 		/* Unset style */
 		if(XFDASHBOARD_IS_ACTOR(priv->actor))
 		{
-			xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(priv->actor), "drop-target");
+			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->actor), "drop-target");
 		}
 
 		/* Unregister drop target */

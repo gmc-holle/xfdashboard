@@ -39,6 +39,7 @@
 #include "live-window.h"
 #include "application-button.h"
 #include "utils.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardWorkspaceSelector,
@@ -433,7 +434,7 @@ static void _xfdashboard_workspace_selector_on_active_workspace_changed(Xfdashbo
 	if(inPrevWorkspace)
 	{
 		liveWorkspace=_xfdashboard_workspace_selector_find_actor_for_workspace(self, inPrevWorkspace);
-		if(liveWorkspace) xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(liveWorkspace), "active");
+		if(liveWorkspace) xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(liveWorkspace), "active");
 
 		priv->activeWorkspace=NULL;
 	}
@@ -445,7 +446,7 @@ static void _xfdashboard_workspace_selector_on_active_workspace_changed(Xfdashbo
 		priv->activeWorkspace=workspace;
 
 		liveWorkspace=_xfdashboard_workspace_selector_find_actor_for_workspace(self, priv->activeWorkspace);
-		if(liveWorkspace) xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(liveWorkspace), "active");
+		if(liveWorkspace) xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(liveWorkspace), "active");
 	}
 }
 

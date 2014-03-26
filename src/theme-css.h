@@ -28,7 +28,7 @@
 
 #include <glib-object.h>
 
-#include "actor.h"
+#include "stylable.h"
 
 G_BEGIN_DECLS
 
@@ -93,7 +93,7 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 											GError **outError);
 
 GHashTable* xfdashboard_theme_css_get_properties(XfdashboardThemeCSS *self,
-													XfdashboardActor *inActor);
+													XfdashboardStylable *inStylable);
 
 G_END_DECLS
 

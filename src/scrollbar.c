@@ -25,9 +25,11 @@
 #include "config.h"
 #endif
 
+#include "scrollbar.h"
+
 #include <glib/gi18n-lib.h>
 
-#include "scrollbar.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardScrollbar,
@@ -208,7 +210,7 @@ static gboolean _xfdashboard_scrollbar_on_button_released(ClutterActor *inActor,
 	}
 
 	/* Remove style */
-	xfdashboard_actor_remove_style_pseudo_class(XFDASHBOARD_ACTOR(self), "pressed");
+	xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(self), "pressed");
 
 	/* Get coords where event happened */
 	clutter_event_get_coords(inEvent, &eventX, &eventY);
@@ -277,7 +279,7 @@ static gboolean _xfdashboard_scrollbar_on_button_pressed(ClutterActor *inActor,
 															NULL);
 
 	/* Add style */
-	xfdashboard_actor_add_style_pseudo_class(XFDASHBOARD_ACTOR(self), "pressed");
+	xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(self), "pressed");
 
 	/* Handle pointer events exclusively */
 	priv->dragDevice=clutter_event_get_device(inEvent);

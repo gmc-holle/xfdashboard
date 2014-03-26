@@ -68,18 +68,6 @@ void xfdashboard_actor_install_stylable_property_by_name(XfdashboardActorClass *
 GHashTable* xfdashboard_actor_get_stylable_properties(XfdashboardActorClass *klass);
 GHashTable* xfdashboard_actor_get_stylable_properties_full(XfdashboardActorClass *klass);
 
-const gchar* xfdashboard_actor_get_style_classes(XfdashboardActor *self);
-void xfdashboard_actor_set_style_classes(XfdashboardActor *self, const gchar *inStyleClass);
-void xfdashboard_actor_add_style_class(XfdashboardActor *self, const gchar *inStyleClass);
-void xfdashboard_actor_remove_style_class(XfdashboardActor *self, const gchar *inStyleClass);
-
-const gchar* xfdashboard_actor_get_style_pseudo_classes(XfdashboardActor *self);
-void xfdashboard_actor_set_style_pseudo_classes(XfdashboardActor *self, const gchar *inStylePseudoClass);
-void xfdashboard_actor_add_style_pseudo_class(XfdashboardActor *self, const gchar *inStylePseudoClass);
-void xfdashboard_actor_remove_style_pseudo_class(XfdashboardActor *self, const gchar *inStylePseudoClass);
-
-void xfdashboard_actor_style_invalidate(XfdashboardActor *self);
-
 G_END_DECLS
 
 #endif
