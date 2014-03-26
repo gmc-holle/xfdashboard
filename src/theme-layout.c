@@ -1044,7 +1044,22 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 		}
 
 		/* Check tag's attributes */
-		objectData->id=g_strdup(tagData->tag.object.id);
+		if(tagData->tag.object.id)
+		{
+			objectData->id=g_strdup(tagData->tag.object.id);
+			if(strlen(objectData->id)==0)
+			{
+				_xfdashboard_theme_layout_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
+															_("Empty ID at tag '%s'"),
+															inElementName);
+				_xfdashboard_theme_layout_tag_data_unref(tagData);
+				_xfdashboard_theme_layout_object_data_unref(objectData);
+				return;
+			}
+		}
 
 		objectData->classType=_xfdashboard_theme_layout_resolve_type_lazy(tagData->tag.object.class);
 		if(objectData->classType==G_TYPE_INVALID)
@@ -1605,6 +1620,16 @@ static gboolean _xfdashboard_theme_layout_parse_xml(XfdashboardThemeLayout *self
 					XFDASHBOARD_THEME_LAYOUT_ERROR,
 					XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
 					_("File %s does not contain an interface"),
+					inPath);
+		success=FALSE;
+	}
+
+	if(success && !data->interface->id)
+	{
+		g_set_error(outError,
+					XFDASHBOARD_THEME_LAYOUT_ERROR,
+					XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
+					_("Interface at file %s has no ID"),
 					inPath);
 		success=FALSE;
 	}
