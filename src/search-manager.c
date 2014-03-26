@@ -211,7 +211,7 @@ void xfdashboard_search_manager_unregister(XfdashboardSearchManager *self, GType
 		return;
 	}
 
-	/* Register type if not already registered */
+	/* Unregister type if registered */
 	if(g_list_find(priv->registeredProviders, GTYPE_TO_LISTITEM(inProviderType))!=NULL)
 	{
 		g_debug("Unregistering search provider %s", g_type_name(inProviderType));

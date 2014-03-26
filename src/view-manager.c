@@ -207,7 +207,7 @@ void xfdashboard_view_manager_unregister(XfdashboardViewManager *self, GType inV
 		return;
 	}
 
-	/* Register type if not already registered */
+	/* Unregister type if registered */
 	if(g_list_find(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType))!=NULL)
 	{
 		g_debug("Unregistering view %s", g_type_name(inViewType));
