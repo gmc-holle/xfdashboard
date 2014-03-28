@@ -932,7 +932,7 @@ static gint _xfdashboard_themes_css_score_node_matching_selector(XfdashboardThem
 
 	/* Check and score parent */
 	parent=xfdashboard_stylable_get_parent(inStylable);
-	if(!XFDASHBOARD_IS_STYLABLE(parent)) parent=NULL;
+	if(parent && !XFDASHBOARD_IS_STYLABLE(parent)) parent=NULL;
 
 	if(inSelector->parent)
 	{
@@ -974,7 +974,7 @@ static gint _xfdashboard_themes_css_score_node_matching_selector(XfdashboardThem
 
 			/* Get next ancestor to check */
 			stylableParent=xfdashboard_stylable_get_parent(ancestor);
-			if(!XFDASHBOARD_IS_STYLABLE(stylableParent)) stylableParent=NULL;
+			if(stylableParent && !XFDASHBOARD_IS_STYLABLE(stylableParent)) stylableParent=NULL;
 
 			ancestor=stylableParent;
 			if(!ancestor || !XFDASHBOARD_IS_STYLABLE(ancestor)) return(-1);

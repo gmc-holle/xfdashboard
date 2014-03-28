@@ -45,6 +45,8 @@ struct _XfdashboardStylableInterface
 
 	/*< public >*/
 	/* Virtual functions */
+	GHashTable* (*get_stylable_properties)(XfdashboardStylable *self);
+
 	const gchar* (*get_name)(XfdashboardStylable *self);
 
 	XfdashboardStylable* (*get_parent)(XfdashboardStylable *self);
@@ -60,6 +62,8 @@ struct _XfdashboardStylableInterface
 
 /* Public API */
 GType xfdashboard_stylable_get_type(void) G_GNUC_CONST;
+
+GHashTable* xfdashboard_stylable_get_stylable_properties(XfdashboardStylable *self);
 
 const gchar* xfdashboard_stylable_get_name(XfdashboardStylable *self);
 

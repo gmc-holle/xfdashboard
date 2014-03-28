@@ -30,6 +30,8 @@
 
 #include <glib/gi18n-lib.h>
 
+#include "application.h"
+
 /* Define this interface in GObject system */
 G_DEFINE_INTERFACE(XfdashboardStylable,
 					xfdashboard_stylable,
@@ -53,7 +55,7 @@ static gboolean _xfdashboard_stylable_list_contains(const gchar *inNeedle,
 													const gchar *inHaystack,
 													gchar inSeperator)
 {
-	const gchar		*start;
+	const gchar					*start;
 
 	g_return_val_if_fail(inNeedle && *inNeedle!=0, FALSE);
 	g_return_val_if_fail(inNeedleLength>0 || inNeedleLength==-1, FALSE);
@@ -66,8 +68,8 @@ static gboolean _xfdashboard_stylable_list_contains(const gchar *inNeedle,
 	/* Lookup needle in haystack */
 	for(start=inHaystack; start; start=strchr(start, inSeperator))
 	{
-		gint		length;
-		gchar		*nextEntry;
+		gint					length;
+		gchar					*nextEntry;
 
 		/* Move to character after separator */
 		if(start[0]==inSeperator) start++;
@@ -89,6 +91,154 @@ static gboolean _xfdashboard_stylable_list_contains(const gchar *inNeedle,
 	return(FALSE);
 }
 
+/* Default implementation of virtual function "get_name" */
+static const gchar* _xfdashboard_stylable_real_get_name(XfdashboardStylable *self)
+{
+	const gchar			*name;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(self), NULL);
+
+	name=NULL;
+
+	/* If object implementing this interface is derived from ClutterActor
+	 * get actor's name.
+	 */
+	if(CLUTTER_IS_ACTOR(self)) name=clutter_actor_get_name(CLUTTER_ACTOR(self));
+
+	/* Return determined name for stylable object */
+	return(name);
+}
+
+/* Default implementation of virtual function "get_parent" */
+static XfdashboardStylable* _xfdashboard_stylable_real_get_parent(XfdashboardStylable *self)
+{
+	XfdashboardStylable		*parent;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(self), NULL);
+
+	parent=NULL;
+
+	/* If object implementing this interface is derived from ClutterActor
+	 * get actor's parent actor.
+	 */
+	if(CLUTTER_IS_ACTOR(self))
+	{
+		ClutterActor		*parentActor;
+
+		/* Get parent and if parent stylable set parent as result */
+		parentActor=clutter_actor_get_parent(CLUTTER_ACTOR(self));
+		if(parentActor &&
+			XFDASHBOARD_IS_STYLABLE(parentActor))
+		{
+			parent=XFDASHBOARD_STYLABLE(parentActor);
+		}
+	}
+
+	/* Return stylable parent */
+	return(parent);
+}
+
+/* Default implementation of virtual function "invalidate" */
+static void _xfdashboard_stylable_real_invalidate(XfdashboardStylable *self)
+{
+	XfdashboardTheme			*theme;
+	XfdashboardThemeCSS			*themeCSS;
+	GHashTable					*stylableProperties;
+	GHashTable					*themeStyleSet;
+	GHashTableIter				hashIter;
+	gchar						*propertyName;
+	GParamSpec					*propertyValueParamSpec;
+	XfdashboardThemeCSSValue	*styleValue;
+
+	g_return_if_fail(XFDASHBOARD_IS_STYLABLE(self));
+
+	/* Get hashtable with all stylable properties and their parameter
+	 * specification for default values.
+	 */
+	stylableProperties=xfdashboard_stylable_get_stylable_properties(self);
+	if(!stylableProperties) return;
+
+	/* Get theme CSS */
+	theme=xfdashboard_application_get_theme();
+	themeCSS=xfdashboard_theme_get_css(theme);
+
+	/* Get styled properties from theme CSS */
+	themeStyleSet=xfdashboard_theme_css_get_properties(themeCSS, self);
+
+	/* The 'property-changed' notification will be freezed and thawed
+	 * (fired at once) after all stylable properties of this instance are set.
+	 */
+	g_object_freeze_notify(G_OBJECT(self));
+
+	/* Iterate through stylable properties and check if we got a style of
+	 * that name from theme CSS. If we find such a style set the corresponding
+	 * property in object otherwise set default value to override any
+	 * previous value set by theme CSS to reset it.
+	 */
+	g_hash_table_iter_init(&hashIter, stylableProperties);
+	while(g_hash_table_iter_next(&hashIter, (gpointer*)&propertyName, (gpointer*)&propertyValueParamSpec))
+	{
+		/* Check if we got a style with this name from theme CSS and
+		 * set style's value if found ...
+		 */
+		if(!g_hash_table_lookup_extended(themeStyleSet, propertyName, NULL, (gpointer*)&styleValue))
+		{
+			GValue				cssValue=G_VALUE_INIT;
+			GValue				propertyValue=G_VALUE_INIT;
+
+			/* Convert style value to type of object property and set value
+			 * if conversion was successful. Otherwise do nothing.
+			 */
+			g_value_init(&cssValue, G_TYPE_STRING);
+			g_value_set_string(&cssValue, styleValue->string);
+
+			g_value_init(&propertyValue, G_PARAM_SPEC_VALUE_TYPE(propertyValueParamSpec));
+
+			if(g_param_value_convert(propertyValueParamSpec, &cssValue, &propertyValue, FALSE))
+			{
+				g_object_set_property(G_OBJECT(self), propertyName, &propertyValue);
+			}
+				else
+				{
+					g_warning(_("Could not transform CSS string value for property '%s' to type %s of class %s"),
+								propertyName,
+								g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertyValueParamSpec)),
+								G_OBJECT_TYPE_NAME(self));
+				}
+
+			/* Release allocated resources */
+			g_value_unset(&propertyValue);
+			g_value_unset(&cssValue);
+		}
+			/* ... otherwise set property's default value we got from
+			 * stylable interface of object.
+			 */
+			else
+			{
+				GValue			propertyValue=G_VALUE_INIT;
+
+				/* Initialize property value to its type and default value */
+				g_value_init(&propertyValue, G_PARAM_SPEC_VALUE_TYPE(propertyValueParamSpec));
+				g_param_value_set_default(propertyValueParamSpec, &propertyValue);
+
+				/* Set value at object property */
+				g_object_set_property(G_OBJECT(self), propertyName, &propertyValue);
+
+				/* Release allocated resources */
+				g_value_unset(&propertyValue);
+			}
+	}
+
+	/* All stylable properties are set now. So thaw 'property-changed'
+	 * notification now and fire all notifications at once.
+	 */
+	g_object_thaw_notify(G_OBJECT(self));
+
+	/* Release allocated resources */
+	g_hash_table_destroy(themeStyleSet);
+	g_hash_table_destroy(stylableProperties);
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Interface initialization
@@ -98,14 +248,19 @@ void xfdashboard_stylable_default_init(XfdashboardStylableInterface *iface)
 {
 	GParamSpec			*property;
 
-	/* All virtual function must be overridden */
-	iface->get_name=NULL;
-	iface->get_parent=NULL;
+	/* All the following virtual functions must be overridden */
+	iface->get_stylable_properties=NULL;
 	iface->get_classes=NULL;
 	iface->set_classes=NULL;
 	iface->get_pseudo_classes=NULL;
 	iface->set_pseudo_classes=NULL;
-	iface->invalidate=NULL;
+
+	/* The following virtual functions should be overriden if default
+	 * implementation does not fit.
+	 */
+	iface->get_name=_xfdashboard_stylable_real_get_name;
+	iface->get_parent=_xfdashboard_stylable_real_get_parent;
+	iface->invalidate=_xfdashboard_stylable_real_invalidate;
 
 	/* Define properties */
 	property=g_param_spec_string("style-classes",
@@ -124,6 +279,26 @@ void xfdashboard_stylable_default_init(XfdashboardStylableInterface *iface)
 }
 
 /* Implementation: Public API */
+
+/* Call virtual function "get_stylable_properties" */
+GHashTable* xfdashboard_stylable_get_stylable_properties(XfdashboardStylable *self)
+{
+	XfdashboardStylableInterface		*iface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(self), NULL);
+
+	iface=XFDASHBOARD_STYLABLE_GET_IFACE(self);
+
+	/* Call virtual function */
+	if(iface->get_name)
+	{
+		return(iface->get_stylable_properties(self));
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_STYLABLE_WARN_NOT_IMPLEMENTED(self, "get_stylable_properties");
+	return(NULL);
+}
 
 /* Call virtual function "get_name" */
 const gchar* xfdashboard_stylable_get_name(XfdashboardStylable *self)

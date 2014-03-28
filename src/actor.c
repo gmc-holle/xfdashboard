@@ -76,6 +76,34 @@ static GQuark _xfdashboard_actor_param_spec_ref_quark(void)
 	return(g_quark_from_static_string("xfdashboard-actor-param-spec-ref-quark"));
 }
 
+/* Invalidate all stylable children recursively beginning at given actor */
+static void _xfdashboard_actor_invalidate_recursive(ClutterActor *inActor)
+{
+	ClutterActor			*child;
+	ClutterActorIter		actorIter;
+
+	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
+
+	/* If actor is stylable invalidate it to get its style recomputed */
+	if(XFDASHBOARD_IS_STYLABLE(inActor))
+	{
+		xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(inActor));
+	}
+
+	/* Recompute styles for all children recursively */
+	clutter_actor_iter_init(&actorIter, inActor);
+	while(clutter_actor_iter_next(&actorIter, &child))
+	{
+		/* Call ourselve recursive with child as top-level actor.
+		 * We return immediately if it has no children but invalidate child
+		 * before. If it has children it will first invalidated and will be
+		 * iterated over its children then. In both cases the child will
+		 * be invalidated.
+		 */
+		_xfdashboard_actor_invalidate_recursive(child);
+	}
+}
+
 /* Get parameter specification of stylable properties and add them to hashtable.
  * If requested do it recursively over all parent classes.
  */
@@ -145,12 +173,30 @@ static void _xfdashboard_actor_on_name_changed(GObject *inObject,
 	self=XFDASHBOARD_ACTOR(inObject);
 
 	/* Invalide styling to get it recomputed because its ID (from point
-	 * of view of css) has changed
+	 * of view of css) has changed. Also invalidate children as they
+	 * might reference the old, invalid ID or the new, valid one.
 	 */
-	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
+	_xfdashboard_actor_invalidate_recursive(CLUTTER_ACTOR(self));
 }
 
 /* IMPLEMENTATION: Interface XfdashboardStylable */
+
+/* Get stylable properties of actor */
+static GHashTable* _xfdashboard_actor_stylable_get_stylable_properties(XfdashboardStylable *inStylable)
+{
+	XfdashboardActor		*self;
+	XfdashboardActorClass	*klass;
+
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inStylable), NULL);
+
+	self=XFDASHBOARD_ACTOR(inStylable);
+
+	/* Get actor class of instance */
+	klass=XFDASHBOARD_ACTOR_GET_CLASS(self);
+
+	/* Return full set of stylable properties of instance */
+	return(xfdashboard_actor_get_stylable_properties_full(klass));
+}
 
 /* Get stylable name of actor */
 static const gchar* _xfdashboard_actor_stylable_get_name(XfdashboardStylable *inStylable)
@@ -212,8 +258,11 @@ static void _xfdashboard_actor_stylable_set_classes(XfdashboardStylable *inStyla
 
 		if(inStyleClasses) priv->styleClasses=g_strdup(inStyleClasses);
 
-		/* Invalidate style to get it restyled and redrawn */
-		xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
+		/* Invalidate style to get it restyled and redrawn. Also invalidate
+		 * children as they might reference the old, invalid classes or
+		 * the new, valid ones.
+		 */
+		_xfdashboard_actor_invalidate_recursive(CLUTTER_ACTOR(self));
 
 		/* Notify about property change */
 		g_object_notify(G_OBJECT(self), "style-classes");
@@ -254,8 +303,11 @@ static void _xfdashboard_actor_stylable_set_pseudo_classes(XfdashboardStylable *
 
 		if(inStylePseudoClasses) priv->stylePseudoClasses=g_strdup(inStylePseudoClasses);
 
-		/* Invalidate style to get it restyled and redrawn */
-		xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
+		/* Invalidate style to get it restyled and redrawnAlso invalidate
+		 * children as they might reference the old, invalid pseudo-classes
+		 * or the new, valid ones.
+		 */
+		_xfdashboard_actor_invalidate_recursive(CLUTTER_ACTOR(self));
 
 		/* Notify about property change */
 		g_object_notify(G_OBJECT(self), "style-pseudo-classes");
@@ -276,8 +328,6 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 	GHashTable					*themeStyleSet;
 	gchar						*styleName;
 	XfdashboardThemeCSSValue	*styleValue;
-	ClutterActorIter			actorIter;
-	ClutterActor				*child;
 #ifdef DEBUG
 	gboolean					doDebug=FALSE;
 #endif
@@ -399,7 +449,7 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 		}
 			else
 			{
-				g_warning("Could not transform CSS string value for property '%s' to type %s of class %s",
+				g_warning(_("Could not transform CSS string value for property '%s' to type %s of class %s"),
 							styleName, g_type_name(G_PARAM_SPEC_VALUE_TYPE(realParamSpec)), G_OBJECT_CLASS_NAME(klass));
 			}
 
@@ -475,15 +525,6 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 	 * notification now and fire all notifications at once.
 	 */
 	g_object_thaw_notify(G_OBJECT(self));
-
-	/* Recompute styles for all children recursively */
-	clutter_actor_iter_init(&actorIter, CLUTTER_ACTOR(self));
-	while(clutter_actor_iter_next(&actorIter, &child))
-	{
-		if(!XFDASHBOARD_IS_STYLABLE(child)) continue;
-
-		xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(child));
-	}
 }
 
 /* Interface initialization
@@ -491,6 +532,7 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
  */
 static void _xfdashboard_actor_stylable_iface_init(XfdashboardStylableInterface *iface)
 {
+	iface->get_stylable_properties=_xfdashboard_actor_stylable_get_stylable_properties;
 	iface->get_name=_xfdashboard_actor_stylable_get_name;
 	iface->get_parent=_xfdashboard_actor_stylable_get_parent;
 	iface->get_classes=_xfdashboard_actor_stylable_get_classes;
@@ -566,9 +608,10 @@ static void _xfdashboard_actor_parent_set(ClutterActor *inActor, ClutterActor *i
 	}
 
 	/* Invalide styling to get it recomputed because its ID (from point
-	 * of view of css) has changed
+	 * of view of css) has changed. Also invalidate children as they might
+	 * reference the old, invalid parent or the new, valid one.
 	 */
-	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
+	_xfdashboard_actor_invalidate_recursive(CLUTTER_ACTOR(self));
 }
 
 /* IMPLEMENTATION: GObject */

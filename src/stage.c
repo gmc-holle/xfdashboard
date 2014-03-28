@@ -679,30 +679,11 @@ void _xfdashboard_stage_layoutable_iface_init(XfdashboardLayoutableInterface *if
 
 /* IMPLEMENTATION: Interface XfdashboardStylable */
 
-/* Get stylable name of stage */
-static const gchar* _xfdashboard_stage_stylable_get_name(XfdashboardStylable *inStylable)
+/* Get stylable properties of stage */
+static GHashTable* _xfdashboard_stage_stylable_get_stylable_properties(XfdashboardStylable *self)
 {
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inStylable), NULL);
-
-	return(clutter_actor_get_name(CLUTTER_ACTOR(inStylable)));
-}
-
-/* Get stylable parent of stage */
-static XfdashboardStylable* _xfdashboard_stage_stylable_get_parent(XfdashboardStylable *inStylable)
-{
-	ClutterActor			*self;
-	ClutterActor			*parent;
-
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inStylable), NULL);
-
-	self=CLUTTER_ACTOR(inStylable);
-
-	/* Get parent and check if stylable. If not return NULL. */
-	parent=clutter_actor_get_parent(self);
-	if(!XFDASHBOARD_IS_STYLABLE(parent)) return(NULL);
-
-	/* Return stylable parent */
-	return(XFDASHBOARD_STYLABLE(parent));
+	/* Not implemented */
+	return(NULL);
 }
 
 /* Get/set style classes of stage */
@@ -729,24 +710,16 @@ static void _xfdashboard_stage_stylable_set_pseudo_classes(XfdashboardStylable *
 	/* Not implemented */
 }
 
-/* Invalidate style to recompute styles */
-static void _xfdashboard_stage_stylable_invalidate(XfdashboardStylable *inStylable)
-{
-	/* Not implemented */
-}
-
 /* Interface initialization
  * Set up default functions
  */
 void _xfdashboard_stage_stylable_iface_init(XfdashboardStylableInterface *iface)
 {
-	iface->get_name=_xfdashboard_stage_stylable_get_name;
-	iface->get_parent=_xfdashboard_stage_stylable_get_parent;
+	iface->get_stylable_properties=_xfdashboard_stage_stylable_get_stylable_properties;
 	iface->get_classes=_xfdashboard_stage_stylable_get_classes;
 	iface->set_classes=_xfdashboard_stage_stylable_set_classes;
 	iface->get_pseudo_classes=_xfdashboard_stage_stylable_get_pseudo_classes;
 	iface->set_pseudo_classes=_xfdashboard_stage_stylable_set_pseudo_classes;
-	iface->invalidate=_xfdashboard_stage_stylable_invalidate;
 }
 
 /* IMPLEMENTATION: ClutterActor */
