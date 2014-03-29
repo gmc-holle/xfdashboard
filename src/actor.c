@@ -182,20 +182,15 @@ static void _xfdashboard_actor_on_name_changed(GObject *inObject,
 /* IMPLEMENTATION: Interface XfdashboardStylable */
 
 /* Get stylable properties of actor */
-static GHashTable* _xfdashboard_actor_stylable_get_stylable_properties(XfdashboardStylable *inStylable)
+static void _xfdashboard_actor_stylable_get_stylable_properties(XfdashboardStylable *inStylable,
+																		GHashTable *ioStylableProperties)
 {
-	XfdashboardActor		*self;
-	XfdashboardActorClass	*klass;
+	g_return_if_fail(CLUTTER_IS_ACTOR(inStylable));
 
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inStylable), NULL);
-
-	self=XFDASHBOARD_ACTOR(inStylable);
-
-	/* Get actor class of instance */
-	klass=XFDASHBOARD_ACTOR_GET_CLASS(self);
-
-	/* Return full set of stylable properties of instance */
-	return(xfdashboard_actor_get_stylable_properties_full(klass));
+	/* Set up hashtable of stylable properties for this instance */
+	_xfdashboard_actor_hashtable_get_all_stylable_param_specs(ioStylableProperties,
+																G_OBJECT_CLASS(inStylable),
+																TRUE);
 }
 
 /* Get stylable name of actor */

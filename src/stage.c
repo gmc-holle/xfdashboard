@@ -116,8 +116,6 @@ static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
-static ClutterColor		defaultStageColor={ 0x00, 0x00, 0x00, 0xe0 };					// TODO: Replace by settings/theming object
-	
 #define NOTIFICATION_TIMEOUT_XFCONF_PROP		"/min-notification-timeout"
 #define DEFAULT_NOTIFICATION_TIMEOUT			3000
 #define RESET_SEARCH_ON_RESUME_XFCONF_PROP		"/reset-search-on-resume"
@@ -680,10 +678,13 @@ void _xfdashboard_stage_layoutable_iface_init(XfdashboardLayoutableInterface *if
 /* IMPLEMENTATION: Interface XfdashboardStylable */
 
 /* Get stylable properties of stage */
-static GHashTable* _xfdashboard_stage_stylable_get_stylable_properties(XfdashboardStylable *self)
+static void _xfdashboard_stage_stylable_get_stylable_properties(XfdashboardStylable *self,
+																GHashTable *ioStylableProperties)
 {
-	/* Not implemented */
-	return(NULL);
+	g_return_if_fail(XFDASHBOARD_IS_STYLABLE(self));
+
+	/* Add stylable properties to hashtable */
+	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "background-color");
 }
 
 /* Get/set style classes of stage */
@@ -1000,11 +1001,11 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->searchActive=FALSE;
 	priv->notificationTimeoutID=0;
 
-	/* Set up stage */
-	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &defaultStageColor);
+	/* Set up stage and style it */
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(self), TRUE);
 	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), FALSE);
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
+	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 
 	g_signal_connect_swapped(self, "key-release-event", G_CALLBACK(_xfdashboard_stage_on_key_release), self);
 

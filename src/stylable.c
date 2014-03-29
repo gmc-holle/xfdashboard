@@ -181,7 +181,7 @@ static void _xfdashboard_stylable_real_invalidate(XfdashboardStylable *self)
 		/* Check if we got a style with this name from theme CSS and
 		 * set style's value if found ...
 		 */
-		if(!g_hash_table_lookup_extended(themeStyleSet, propertyName, NULL, (gpointer*)&styleValue))
+		if(g_hash_table_lookup_extended(themeStyleSet, propertyName, NULL, (gpointer*)&styleValue))
 		{
 			GValue				cssValue=G_VALUE_INIT;
 			GValue				propertyValue=G_VALUE_INIT;
@@ -284,20 +284,63 @@ void xfdashboard_stylable_default_init(XfdashboardStylableInterface *iface)
 GHashTable* xfdashboard_stylable_get_stylable_properties(XfdashboardStylable *self)
 {
 	XfdashboardStylableInterface		*iface;
+	GHashTable							*stylableProperties;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(self), NULL);
 
 	iface=XFDASHBOARD_STYLABLE_GET_IFACE(self);
 
 	/* Call virtual function */
-	if(iface->get_name)
+	if(iface->get_stylable_properties)
 	{
-		return(iface->get_stylable_properties(self));
+		/* Create hashtable to insert stylable properties at */
+		stylableProperties=g_hash_table_new_full(g_str_hash,
+													g_str_equal,
+													g_free,
+													(GDestroyNotify)g_param_spec_unref);
+
+		/* Get stylable properties */
+		iface->get_stylable_properties(self, stylableProperties);
+
+		/* If hashtable is empty, destroy it and return NULL */
+		if(g_hash_table_size(stylableProperties)==0)
+		{
+			g_hash_table_destroy(stylableProperties);
+			stylableProperties=NULL;
+		}
+
+		/* Return hashtable with stylable properties */
+		return(stylableProperties);
 	}
 
 	/* If we get here the virtual function was not overridden */
 	XFDASHBOARD_STYLABLE_WARN_NOT_IMPLEMENTED(self, "get_stylable_properties");
 	return(NULL);
+}
+
+/* Find and add parameter specification of a stylable property to hashtable */
+gboolean xfdashboard_stylable_add_stylable_property(XfdashboardStylable *self,
+													GHashTable *ioStylableProperties,
+													const gchar *inProperty)
+{
+	GParamSpec							*spec;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(self), FALSE);
+
+	/* Find property in instance */
+	spec=g_object_class_find_property(G_OBJECT_GET_CLASS(self), inProperty);
+	if(!spec)
+	{
+		g_warning(_("Could not find property '%s' for class %s"),
+					inProperty,
+					G_OBJECT_TYPE_NAME(self));
+		return(FALSE);
+	}
+
+	/* Add parameter specification of found property to hashtable */
+	g_hash_table_insert(ioStylableProperties, g_strdup(inProperty), g_param_spec_ref(spec));
+
+	return(TRUE);
 }
 
 /* Call virtual function "get_name" */
