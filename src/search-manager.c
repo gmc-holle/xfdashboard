@@ -152,7 +152,7 @@ static void xfdashboard_search_manager_init(XfdashboardSearchManager *self)
 
 /* IMPLEMENTATION: Public API */
 
-/* Get single instance of application */
+/* Get single instance of manager */
 XfdashboardSearchManager* xfdashboard_search_manager_get_default(void)
 {
 	if(G_UNLIKELY(_xfdashboard_search_manager==NULL))

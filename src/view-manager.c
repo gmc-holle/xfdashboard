@@ -148,7 +148,7 @@ static void xfdashboard_view_manager_init(XfdashboardViewManager *self)
 
 /* IMPLEMENTATION: Public API */
 
-/* Get single instance of application */
+/* Get single instance of manager */
 XfdashboardViewManager* xfdashboard_view_manager_get_default(void)
 {
 	if(G_UNLIKELY(_xfdashboard_view_manager==NULL))
