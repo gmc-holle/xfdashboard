@@ -307,14 +307,36 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 static gchar* _xfdashboard_theme_lookup_path_for_theme(XfdashboardTheme *self,
 														const gchar *inThemeName)
 {
-	gchar		*themeFile;
+	gchar				*themeFile;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), FALSE);
 	g_return_val_if_fail(inThemeName!=NULL && *inThemeName!=0, FALSE);
 
 	themeFile=NULL;
 
-	/* Search theme file in user's config dir first */
+	/* Search theme file in given environment variable if set.
+	 * This makes development easier when theme changes are needed
+	 * without changing theme or changing symlinks in any of below
+	 * searched paths.
+	 */
+	if(!themeFile)
+	{
+		const gchar		*envPath;
+
+		envPath=g_getenv("XFDASHBOARD_THEME_PATH");
+		if(envPath)
+		{
+			themeFile=g_build_filename(envPath, XFDASHBOARD_THEME_FILE, NULL);
+			g_debug("Trying theme file: %s", themeFile);
+			if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+			{
+				g_free(themeFile);
+				themeFile=NULL;
+			}
+		}
+	}
+
+	/* If file not found search in user's config directory */
 	if(!themeFile)
 	{
 		themeFile=g_build_filename(g_get_user_data_dir(), "themes", inThemeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_FILE, NULL);
@@ -329,7 +351,7 @@ static gchar* _xfdashboard_theme_lookup_path_for_theme(XfdashboardTheme *self,
 	/* If file not found search in user's home directory */
 	if(!themeFile)
 	{
-		const gchar					*homeDirectory;
+		const gchar		*homeDirectory;
 
 		homeDirectory=g_get_home_dir();
 		if(homeDirectory)
@@ -359,7 +381,7 @@ static gchar* _xfdashboard_theme_lookup_path_for_theme(XfdashboardTheme *self,
 	/* If file was found get path contaning file and return it */
 	if(themeFile)
 	{
-		gchar	*themePath;
+		gchar			*themePath;
 
 		themePath=g_path_get_dirname(themeFile);
 		g_free(themeFile);
