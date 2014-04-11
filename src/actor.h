@@ -63,6 +63,9 @@ GType xfdashboard_actor_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_actor_new(void);
 
+gboolean xfdashboard_actor_get_can_focus(XfdashboardActor *self);
+void xfdashboard_actor_set_can_focus(XfdashboardActor *self, gboolean inCanFous);
+
 void xfdashboard_actor_install_stylable_property(XfdashboardActorClass *klass, GParamSpec *inParamSpec);
 void xfdashboard_actor_install_stylable_property_by_name(XfdashboardActorClass *klass, const gchar *inParamName);
 GHashTable* xfdashboard_actor_get_stylable_properties(XfdashboardActorClass *klass);

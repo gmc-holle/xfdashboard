@@ -26,7 +26,7 @@
 
 #include <clutter/clutter.h>
 
-#include "actor.h"
+#include "background.h"
 #include "view.h"
 #include "types.h"
 
@@ -46,7 +46,7 @@ typedef struct _XfdashboardViewpadClass			XfdashboardViewpadClass;
 struct _XfdashboardViewpad
 {
 	/* Parent instance */
-	XfdashboardActor			parent_instance;
+	XfdashboardBackground		parent_instance;
 
 	/* Private structure */
 	XfdashboardViewpadPrivate	*priv;
@@ -56,7 +56,7 @@ struct _XfdashboardViewpadClass
 {
 	/*< private >*/
 	/* Parent class */
-	XfdashboardActorClass		parent_class;
+	XfdashboardBackgroundClass	parent_class;
 
 	/*< public >*/
 	/* Virtual functions */

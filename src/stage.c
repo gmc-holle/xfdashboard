@@ -48,6 +48,7 @@
 #include "layoutable.h"
 #include "stylable.h"
 #include "utils.h"
+#include "focus-manager.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_stage_layoutable_iface_init(XfdashboardLayoutableInterface *iface);
@@ -87,6 +88,8 @@ struct _XfdashboardStagePrivate
 	XfdashboardView					*viewBeforeSearch;
 
 	guint							notificationTimeoutID;
+
+	XfdashboardFocusManager			*focusManager;
 };
 
 /* Properties */
@@ -120,6 +123,148 @@ static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 #define DEFAULT_NOTIFICATION_TIMEOUT			3000
 #define RESET_SEARCH_ON_RESUME_XFCONF_PROP		"/reset-search-on-resume"
 #define DEFAULT_RESET_SEARCH_ON_RESUME			TRUE
+
+/* Handle an event */
+static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inEvent)
+{
+	XfdashboardStage			*self;
+	XfdashboardStagePrivate		*priv;
+	gboolean					result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(inActor), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_STAGE(inActor);
+	priv=self->priv;
+
+	/* Do only intercept any event if a focus manager is available */
+	if(!priv->focusManager) return(CLUTTER_EVENT_PROPAGATE);
+
+	/* Do only intercept "key-press" and "key-release" events */
+	if(clutter_event_type(inEvent)!=CLUTTER_KEY_PRESS &&
+		clutter_event_type(inEvent)!=CLUTTER_KEY_RELEASE)
+	{
+		return(CLUTTER_EVENT_PROPAGATE);
+	}
+
+	/* Handle key release event */
+	if(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
+	{
+		gboolean		isShift=FALSE;
+
+		/* Get modifiers we are interested in */
+		if(clutter_event_has_shift_modifier(inEvent)) isShift=TRUE;
+
+		/* Handle key */
+		switch(inEvent->key.keyval)
+		{
+			/* Handle TAB and SHIFT-TAB directly to move focus */
+			case CLUTTER_KEY_Tab:
+			case CLUTTER_KEY_ISO_Left_Tab:
+			{
+				XfdashboardFocusable	*currentFocusable;
+				XfdashboardFocusable	*newFocusable;
+
+				/* Get current focus */
+				currentFocusable=xfdashboard_focus_manager_get_focus(priv->focusManager);
+
+				/* If TAB is pressed without SHIFT move focus to next focusable actor.
+				 * If TAB is pressed with SHIFT move focus to previous focusable actor.
+				 */
+				if(!isShift)
+				{
+					newFocusable=xfdashboard_focus_manager_get_next_focusable(priv->focusManager, currentFocusable);
+					if(newFocusable) xfdashboard_focus_manager_set_focus(priv->focusManager, newFocusable);
+
+					return(CLUTTER_EVENT_STOP);
+				}
+					else
+					{
+						newFocusable=xfdashboard_focus_manager_get_previous_focusable(priv->focusManager, currentFocusable);
+						if(newFocusable) xfdashboard_focus_manager_set_focus(priv->focusManager, newFocusable);
+
+						return(CLUTTER_EVENT_STOP);
+					}
+			}
+			break;
+
+			/* Handle ESC key to clear search box or quit/suspend application */
+			case CLUTTER_KEY_Escape:
+			{
+				/* If search is active then end search by clearing search box ... */
+				if(priv->searchbox &&
+					!xfdashboard_text_box_is_empty(XFDASHBOARD_TEXT_BOX(priv->searchbox)))
+				{
+					xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
+					return(CLUTTER_EVENT_STOP);
+				}
+					/* ... otherwise quit application */
+					else
+					{
+						xfdashboard_application_quit();
+						return(CLUTTER_EVENT_STOP);
+					}
+			}
+			break;
+
+			default:
+				/* Fallthrough */
+				break;
+		}
+	}
+
+	/* Ask focus manager to handle this event */
+	result=xfdashboard_focus_manager_handle_key_event(priv->focusManager, inEvent);
+	if(result==CLUTTER_EVENT_STOP) return(result);
+
+	/* If even focus manager did not handle this event
+	 * send even to searchbox.
+	 */
+	if(priv->searchbox &&
+		XFDASHBOARD_IS_FOCUSABLE(priv->searchbox) &&
+		xfdashboard_focus_manager_is_registered(priv->focusManager, XFDASHBOARD_FOCUSABLE(priv->searchbox)))
+	{
+		result=xfdashboard_focusable_handle_key_event(XFDASHBOARD_FOCUSABLE(priv->searchbox), inEvent);
+		if(result==CLUTTER_EVENT_STOP) return(result);
+	}
+
+	/* If we get here there was no searchbox or it could not handle the event
+	 * so stop further processing.
+	 */
+	// TODO: g_message("%s: UNHANDLED -> actor=%p[%s], event=%p", __func__, inActor, G_OBJECT_TYPE_NAME(inActor), inEvent);
+	return(CLUTTER_EVENT_STOP);
+}
+
+/* Set focus in stage */
+static void _xfdashboard_stage_set_focus(XfdashboardStage *self)
+{
+	XfdashboardStagePrivate		*priv;
+	ClutterActor				*actor;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+
+	priv=self->priv;
+
+	/* Set focus if no focus is set */
+	actor=clutter_stage_get_key_focus(CLUTTER_STAGE(self));
+	if(!XFDASHBOARD_IS_FOCUSABLE(actor) ||
+		!xfdashboard_focus_manager_is_registered(priv->focusManager, XFDASHBOARD_FOCUSABLE(actor)))
+	{
+		XfdashboardFocusable	*focusable;
+
+		/* First try to set focus to searchbox ... */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->searchbox) &&
+			xfdashboard_focusable_can_focus(XFDASHBOARD_FOCUSABLE(priv->searchbox)))
+		{
+			xfdashboard_focus_manager_set_focus(priv->focusManager, XFDASHBOARD_FOCUSABLE(priv->searchbox));
+		}
+			/* ... then lookup first focusable actor */
+			else
+			{
+				focusable=xfdashboard_focus_manager_get_next_focusable(priv->focusManager, NULL);
+				if(focusable) xfdashboard_focus_manager_set_focus(priv->focusManager, focusable);
+			}
+	}
+}
 
 /* The pointer has been moved after a tooltip was shown */
 static gboolean _xfdashboard_stage_on_captured_event_after_tooltip(XfdashboardStage *self,
@@ -230,39 +375,6 @@ static gboolean _xfdashboard_stage_on_notification_timeout(gpointer inUserData)
 
 	/* Tell main context to remove this source */
 	return(G_SOURCE_REMOVE);
-}
-
-/* A pressed key was released */
-static gboolean _xfdashboard_stage_on_key_release(XfdashboardStage *self,
-													ClutterEvent *inEvent,
-													gpointer inUserData)
-{
-	XfdashboardStagePrivate		*priv;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(self), CLUTTER_EVENT_PROPAGATE);
-
-	priv=self->priv;
-
-	/* Handle escape key */
-	if(inEvent->key.keyval==CLUTTER_Escape)
-	{
-		/* If search is active then end search by clearing search box ... */
-		if(priv->searchbox &&
-			!xfdashboard_text_box_is_empty(XFDASHBOARD_TEXT_BOX(priv->searchbox)))
-		{
-			xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
-			return(CLUTTER_EVENT_STOP);
-		}
-			/* ... otherwise quit application */
-			else
-			{
-				xfdashboard_application_quit();
-				return(CLUTTER_EVENT_STOP);
-			}
-	}
-
-	/* We did not handle this event so let next actor in clutter's chain handle it */
-	return(CLUTTER_EVENT_PROPAGATE);
 }
 
 /* App-button was toggled */
@@ -498,6 +610,9 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	/* Disconnect signal handler as this is a one-time setup of stage window */
 	g_debug("Stage window was opened and set up. Removing signal handler.");
 	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
+
+	/* Set focus */
+	_xfdashboard_stage_set_focus(self);
 }
 
 /* The application will be suspended */
@@ -577,24 +692,64 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 		}
 }
 
+/* IMPLEMENTATION: ClutterActor */
+
+/* The stage actor should be shown */
+static void _xfdashboard_stage_show(ClutterActor *inActor)
+{
+	XfdashboardStage			*self;
+	XfdashboardStagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(inActor));
+
+	self=XFDASHBOARD_STAGE(inActor);
+	priv=self->priv;
+
+	/* Set stage to fullscreen just in case it forgot about it */
+	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
+
+	/* If we do not know the stage window connect signal to find it */
+	if(!priv->stageWindow)
+	{
+		/* Connect signals */
+		g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
+	}
+
+	/* Call parent's show method */
+	if(CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->show)
+	{
+		CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->show(inActor);
+	}
+}
+
 /* IMPLEMENTATION: Interface XfdashboardLayoutable */
 
 /* Virtual function "layout_completed" was called */
-static void _xfdashboard_stage_layoutable_layout_completed(XfdashboardLayoutable *iface)
+static void _xfdashboard_stage_layoutable_layout_completed(XfdashboardLayoutable *inLayoutable)
 {
 	XfdashboardStage			*self;
 	XfdashboardStagePrivate		*priv;
 	ClutterActor				*actor;
 
-	g_return_if_fail(XFDASHBOARD_IS_LAYOUTABLE(iface));
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(iface));
+	g_return_if_fail(XFDASHBOARD_IS_LAYOUTABLE(inLayoutable));
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(inLayoutable));
 
-	self=XFDASHBOARD_STAGE(iface);
+	self=XFDASHBOARD_STAGE(inLayoutable);
 	priv=self->priv;
 
 	/* Get children from built stage and connect signals */
 	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "view-selector");
-	if(actor && XFDASHBOARD_IS_VIEW_SELECTOR(actor)) priv->viewSelector=actor;
+	if(actor && XFDASHBOARD_IS_VIEW_SELECTOR(actor))
+	{
+		priv->viewSelector=actor;
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->viewSelector))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->viewSelector));
+		}
+	}
 
 	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "searchbox");
 	if(actor && XFDASHBOARD_IS_TEXT_BOX(actor))
@@ -611,9 +766,15 @@ static void _xfdashboard_stage_layoutable_layout_completed(XfdashboardLayoutable
 									G_CALLBACK(_xfdashboard_stage_on_searchbox_secondary_icon_clicked),
 									self);
 
-		/* Set key focus to searchbox */
-		clutter_stage_set_accept_focus(CLUTTER_STAGE(self), TRUE);
-		clutter_stage_set_key_focus(CLUTTER_STAGE(self), priv->searchbox);
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->searchbox))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->searchbox));
+
+			/* Set stage focus to searchbox to get cursor shown */
+			clutter_stage_set_key_focus(CLUTTER_STAGE(self), CLUTTER_ACTOR(priv->searchbox));
+		}
 	}
 
 	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "viewpad");
@@ -623,6 +784,13 @@ static void _xfdashboard_stage_layoutable_layout_completed(XfdashboardLayoutable
 
 		/* Connect signals */
 		g_signal_connect_swapped(priv->viewpad, "view-activated", G_CALLBACK(_xfdashboard_stage_on_view_activated), self);
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->viewpad))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->viewpad));
+		}
 	}
 
 	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "quicklaunch");
@@ -641,15 +809,39 @@ static void _xfdashboard_stage_layoutable_layout_completed(XfdashboardLayoutable
 										G_CALLBACK(_xfdashboard_stage_on_quicklaunch_apps_button_toggled),
 										self);
 		}
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->quicklaunch))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->quicklaunch));
+		}
 	}
 
 	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "workspace-selector");
-	if(actor && XFDASHBOARD_IS_WORKSPACE_SELECTOR(actor)) priv->workspaces=actor;
+	if(actor && XFDASHBOARD_IS_WORKSPACE_SELECTOR(actor))
+	{
+		priv->workspaces=actor;
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->workspaces))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->workspaces));
+		}
+	}
 
 	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "notification");
 	if(actor && XFDASHBOARD_IS_TEXT_BOX(actor))
 	{
 		priv->notification=actor;
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->notification))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->notification));
+		}
 
 		/* Hide notification by default */
 		clutter_actor_hide(priv->notification);
@@ -661,10 +853,20 @@ static void _xfdashboard_stage_layoutable_layout_completed(XfdashboardLayoutable
 	{
 		priv->tooltip=actor;
 
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->tooltip))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->tooltip));
+		}
+
 		/* Hide tooltip by default */
 		clutter_actor_hide(priv->tooltip);
 		clutter_actor_set_reactive(priv->tooltip, FALSE);
 	}
+
+	/* Set focus */
+	_xfdashboard_stage_set_focus(self);
 }
 
 /* Interface initialization
@@ -723,36 +925,6 @@ void _xfdashboard_stage_stylable_iface_init(XfdashboardStylableInterface *iface)
 	iface->set_pseudo_classes=_xfdashboard_stage_stylable_set_pseudo_classes;
 }
 
-/* IMPLEMENTATION: ClutterActor */
-
-/* The stage actor should be shown */
-static void _xfdashboard_stage_show(ClutterActor *inActor)
-{
-	XfdashboardStage			*self;
-	XfdashboardStagePrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(inActor));
-
-	self=XFDASHBOARD_STAGE(inActor);
-	priv=self->priv;
-
-	/* Set stage to fullscreen just in case it forgot about it */
-	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
-
-	/* If we do not know the stage window connect signal to find it */
-	if(!priv->stageWindow)
-	{
-		/* Connect signals */
-		g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
-	}
-
-	/* Call parent's show method */
-	if(CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->show)
-	{
-		CLUTTER_ACTOR_CLASS(xfdashboard_stage_parent_class)->show(inActor);
-	}
-}
-
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -766,6 +938,12 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 	{
 		xfdashboard_window_tracker_window_unmake_stage_window(priv->stageWindow);
 		priv->stageWindow=NULL;
+	}
+
+	if(priv->focusManager)
+	{
+		g_object_unref(priv->focusManager);
+		priv->focusManager=NULL;
 	}
 
 	if(priv->notificationTimeoutID)
@@ -908,6 +1086,7 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 	klass->show_tooltip=_xfdashboard_stage_show_tooltip;
 
 	actorClass->show=_xfdashboard_stage_show;
+	actorClass->event=xfdashboard_stage_event;
 
 	gobjectClass->dispose=_xfdashboard_stage_dispose;
 	gobjectClass->set_property=_xfdashboard_stage_set_property;
@@ -984,6 +1163,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv=self->priv=XFDASHBOARD_STAGE_GET_PRIVATE(self);
 
 	/* Set default values */
+	priv->focusManager=xfdashboard_focus_manager_get_default();
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->stageWindow=NULL;
 	priv->styleClasses=NULL;
@@ -1006,8 +1186,6 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), FALSE);
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
 	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
-
-	g_signal_connect_swapped(self, "key-release-event", G_CALLBACK(_xfdashboard_stage_on_key_release), self);
 
 #if defined(CLUTTER_CHECK_VERSION) && CLUTTER_CHECK_VERSION(1, 16, 0)
 	/* TODO: As long as we do not support multi-monitors

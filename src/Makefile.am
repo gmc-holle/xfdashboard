@@ -30,6 +30,8 @@ xfdashboard_headers = \
 	drag-action.h \
 	drop-action.h \
 	fill-box-layout.h \
+	focusable.h \
+	focus-manager.h \
 	image.h \
 	layoutable.h \
 	live-window.h \
@@ -80,6 +82,8 @@ xfdashboard_SOURCES = \
 	drag-action.c \
 	drop-action.c \
 	fill-box-layout.c \
+	focusable.c \
+	focus-manager.c \
 	image.c \
 	layoutable.c \
 	live-window.c \

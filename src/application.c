@@ -42,6 +42,7 @@
 #include "applications-search-provider.h"
 #include "utils.h"
 #include "theme.h"
+#include "focus-manager.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplication,
@@ -63,6 +64,7 @@ struct _XfdashboardApplicationPrivate
 	XfconfChannel				*xfconfChannel;
 	XfdashboardViewManager		*viewManager;
 	XfdashboardSearchManager	*searchManager;
+	XfdashboardFocusManager		*focusManager;
 	XfdashboardTheme			*theme;
 };
 
@@ -256,6 +258,11 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 
 	xfdashboard_search_manager_register(priv->searchManager, XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER);
 
+	/* Create single-instance of focus manager to keep it alive while
+	 * application is running.
+	 */
+	priv->focusManager=xfdashboard_focus_manager_get_default();
+
 	/* Create primary stage on first monitor
 	 * TODO: Create stage for each monitor connected
 	 *       but only primary monitor gets its stage
@@ -445,6 +452,15 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 		priv->searchManager=NULL;
 	}
 
+	if(priv->focusManager)
+	{
+		/* Unregisters all remaining registered focusable actors.
+		 * There is no need to unregister them here.
+		 */
+		g_object_unref(priv->focusManager);
+		priv->focusManager=NULL;
+	}
+
 	/* Shutdown xfconf */
 	priv->xfconfChannel=NULL;
 	xfconf_shutdown();
@@ -594,6 +610,8 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->inited=FALSE;
 	priv->xfconfChannel=NULL;
 	priv->viewManager=NULL;
+	priv->searchManager=NULL;
+	priv->focusManager=NULL;
 	priv->theme=NULL;
 }
 

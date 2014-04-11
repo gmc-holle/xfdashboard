@@ -31,6 +31,7 @@
 
 #include "application.h"
 #include "stylable.h"
+#include "focusable.h"
 #include "utils.h"
 
 /* Define this class in GObject system */
@@ -47,6 +48,8 @@ void xfdashboard_actor_base_class_finalize(XfdashboardActorClass *klass);
 struct _XfdashboardActorPrivate
 {
 	/* Properties related */
+	gboolean		canFocus;
+
 	gchar			*styleClasses;
 	gchar			*stylePseudoClasses;
 
@@ -59,11 +62,16 @@ enum
 {
 	PROP_0,
 
+	PROP_CAN_FOCUS,
+
+	/* Overriden properties of interface: XfdashboardStylable */
 	PROP_STYLE_CLASSES,
 	PROP_STYLE_PSEUDO_CLASSES,
 
 	PROP_LAST
 };
+
+static GParamSpec* XfdashboardActorProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 static GParamSpecPool		*_xfdashboard_actor_stylable_properties_pool=NULL;
@@ -177,6 +185,91 @@ static void _xfdashboard_actor_on_name_changed(GObject *inObject,
 	 * might reference the old, invalid ID or the new, valid one.
 	 */
 	_xfdashboard_actor_invalidate_recursive(CLUTTER_ACTOR(self));
+}
+
+/* IMPLEMENTATION: Interface XfdashboardFocusable */
+
+/* Check if actor can get focus */
+static gboolean _xfdashboard_actor_focusable_can_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardActor			*self;
+	XfdashboardActorPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inFocusable), FALSE);
+
+	self=XFDASHBOARD_ACTOR(inFocusable);
+	priv=self->priv;
+
+	/* This actor can only be focused if it is mapped, visibl	e and reactive */
+	if(priv->canFocus &&
+		CLUTTER_ACTOR_IS_MAPPED(self) &&
+		CLUTTER_ACTOR_IS_VISIBLE(self) &&
+		CLUTTER_ACTOR_IS_REACTIVE(self))
+	{
+		return(TRUE);
+	}
+
+	/* If we get here this actor does not fulfill the requirements to get focus */
+	return(FALSE);
+}
+
+/* Set focus to actor */
+static void _xfdashboard_actor_focusable_set_focus(XfdashboardFocusable *self)
+{
+	XfdashboardActor	*actor;
+	ClutterStage		*stage;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(self));
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
+
+	actor=XFDASHBOARD_ACTOR(self);
+
+	/* Get stage of actor to tell it where the keyboard focus to set to */
+	stage=CLUTTER_STAGE(clutter_actor_get_stage(CLUTTER_ACTOR(actor)));
+	if(!stage)
+	{
+		g_warning(_("Focusable actor %s is not on a stage"),
+					DEBUG_OBJECT_NAME(actor));
+		return;
+	}
+
+	/* Set focus and style for focus */
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "focus");
+}
+
+/* Unset focus to actor */
+static void _xfdashboard_actor_focusable_unset_focus(XfdashboardFocusable *self)
+{
+	XfdashboardActor	*actor;
+	ClutterStage		*stage;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(self));
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
+
+	actor=XFDASHBOARD_ACTOR(self);
+
+	/* Get stage of actor to tell it where the keyboard focus to set to */
+	stage=CLUTTER_STAGE(clutter_actor_get_stage(CLUTTER_ACTOR(actor)));
+	if(!stage)
+	{
+		g_warning(_("Focusable actor %s is not on a stage"),
+					DEBUG_OBJECT_NAME(actor));
+		return;
+	}
+
+	/* Set focus and style for focus */
+	xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(actor), "focus");
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+static void _xfdashboard_actor_focusable_iface_init(XfdashboardFocusableInterface *iface)
+{
+	iface->can_focus=_xfdashboard_actor_focusable_can_focus;
+	iface->set_focus=_xfdashboard_actor_focusable_set_focus;
+	iface->unset_focus=_xfdashboard_actor_focusable_unset_focus;
 }
 
 /* IMPLEMENTATION: Interface XfdashboardStylable */
@@ -650,6 +743,10 @@ static void _xfdashboard_actor_set_property(GObject *inObject,
 
 	switch(inPropID)
 	{
+		case PROP_CAN_FOCUS:
+			xfdashboard_actor_set_can_focus(self, g_value_get_boolean(inValue));
+			break;
+
 		case PROP_STYLE_CLASSES:
 			_xfdashboard_actor_stylable_set_classes(XFDASHBOARD_STYLABLE(self),
 													g_value_get_string(inValue));
@@ -676,6 +773,10 @@ static void _xfdashboard_actor_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
+		case PROP_CAN_FOCUS:
+			g_value_set_boolean(outValue, priv->canFocus);
+			break;
+
 		case PROP_STYLE_CLASSES:
 			g_value_set_string(outValue, priv->styleClasses);
 			break;
@@ -715,6 +816,14 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 	g_type_class_add_private(klass, sizeof(XfdashboardActorPrivate));
 
 	/* Define properties */
+	XfdashboardActorProperties[PROP_CAN_FOCUS]=
+		g_param_spec_boolean("can-focus",
+								_("Can focus"),
+								_("This flag indicates if this actor can be focused"),
+								FALSE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+	g_object_class_install_property(G_OBJECT_CLASS(klass), PROP_CAN_FOCUS, XfdashboardActorProperties[PROP_CAN_FOCUS]);
+
 	g_object_class_override_property(gobjectClass, PROP_STYLE_CLASSES, "style-classes");
 	g_object_class_override_property(gobjectClass, PROP_STYLE_PSEUDO_CLASSES, "style-pseudo-classes");
 
@@ -733,6 +842,7 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 	priv=self->priv=XFDASHBOARD_ACTOR_GET_PRIVATE(self);
 
 	/* Set up default values */
+	priv->canFocus=FALSE;
 	priv->styleClasses=NULL;
 	priv->stylePseudoClasses=NULL;
 	priv->lastThemeStyleSet=NULL;
@@ -797,6 +907,13 @@ GType xfdashboard_actor_get_type(void)
 			NULL
 		};
 
+		const GInterfaceInfo	actorFocusableInterfaceInfo=
+		{
+			(GInterfaceInitFunc)_xfdashboard_actor_focusable_iface_init,
+			NULL,
+			NULL
+		};
+
 		/* Register class */
 		actorType=g_type_register_static(CLUTTER_TYPE_ACTOR,
 											g_intern_static_string("XfdashboardActor"),
@@ -807,6 +924,10 @@ GType xfdashboard_actor_get_type(void)
 		g_type_add_interface_static(actorType,
 									XFDASHBOARD_TYPE_STYLABLE,
 									&actorStylableInterfaceInfo);
+
+		g_type_add_interface_static(actorType,
+									XFDASHBOARD_TYPE_FOCUSABLE,
+									&actorFocusableInterfaceInfo);
 	}
 
 	return(actorType);
@@ -818,6 +939,35 @@ GType xfdashboard_actor_get_type(void)
 ClutterActor* xfdashboard_actor_new(void)
 {
 	return(CLUTTER_ACTOR(g_object_new(XFDASHBOARD_TYPE_ACTOR, NULL)));
+}
+
+/* Get/set "can-focus" flag of actor to indicate
+ * if this actor is focusable or not.
+ */
+gboolean xfdashboard_actor_get_can_focus(XfdashboardActor *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(self), FALSE);
+
+	return(self->priv->canFocus);
+}
+
+void xfdashboard_actor_set_can_focus(XfdashboardActor *self, gboolean inCanFous)
+{
+	XfdashboardActorPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->canFocus!=inCanFous)
+	{
+		/* Set value */
+		priv->canFocus=inCanFous;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardActorProperties[PROP_CAN_FOCUS]);
+	}
 }
 
 /* Register stylable property of a class */

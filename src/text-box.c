@@ -34,11 +34,16 @@
 #include "enums.h"
 #include "button.h"
 #include "stylable.h"
+#include "focusable.h"
+#include "focus-manager.h"
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardTextBox,
-				xfdashboard_text_box,
-				XFDASHBOARD_TYPE_BACKGROUND)
+static void _xfdashboard_text_box_focusable_iface_init(XfdashboardFocusableInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardTextBox,
+						xfdashboard_text_box,
+						XFDASHBOARD_TYPE_BACKGROUND,
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_text_box_focusable_iface_init))
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_TEXT_BOX_GET_PRIVATE(obj) \
@@ -173,10 +178,17 @@ static void _xfdashboard_text_box_key_focus_in(ClutterActor *inActor)
 	XfdashboardTextBox			*self=XFDASHBOARD_TEXT_BOX(inActor);
 	XfdashboardTextBoxPrivate	*priv=self->priv;
 	ClutterStage				*stage;
+	XfdashboardFocusManager		*focusManager;
 
 	/* Push key focus forward to text box */
 	stage=CLUTTER_STAGE(clutter_actor_get_stage(inActor));
 	clutter_stage_set_key_focus(stage, priv->actorTextBox);
+
+	/* Update focus in focus manager */
+	focusManager=xfdashboard_focus_manager_get_default();
+	xfdashboard_focus_manager_set_focus(focusManager, XFDASHBOARD_FOCUSABLE(self));
+g_message("%s: focus-manager=%p, focusable=%p[%s]", __func__, focusManager, self, G_OBJECT_TYPE_NAME(self));
+	g_object_unref(focusManager);
 }
 
 /* Show all children of this one */
@@ -444,6 +456,70 @@ static void _xfdashboard_text_box_destroy(ClutterActor *self)
 
 	/* Call parent's class destroy method */
 	CLUTTER_ACTOR_CLASS(xfdashboard_text_box_parent_class)->destroy(self);
+}
+
+/* IMPLEMENTATION: Interface XfdashboardFocusable */
+
+/* Virtual function "can_focus" was called */
+static gboolean _xfdashboard_text_box_focusable_can_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardTextBox				*self;
+	XfdashboardTextBoxPrivate		*priv;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_TEXT_BOX(inFocusable);
+	priv=self->priv;
+
+	/* Check if actor could be focused at all ... */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->can_focus)
+	{
+		if(!parentIface->can_focus(inFocusable)) return(FALSE);
+	}
+
+	/* ... then only an editable text box can be focused */
+	if(priv->isEditable) return(TRUE);
+
+	/* If we get here this actor cannot be focused */
+	return(FALSE);
+}
+
+/* Virtual function "handle_key_event" was called */
+static gboolean _xfdashboard_text_box_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
+																	const ClutterEvent *inEvent)
+{
+	XfdashboardTextBox			*self;
+	XfdashboardTextBoxPrivate	*priv;
+	gboolean					result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_TEXT_BOX(inFocusable);
+	priv=self->priv;
+	result=CLUTTER_EVENT_PROPAGATE;
+
+	/* Push event to real text box if available */
+	if(priv->actorTextBox)
+	{
+		result=clutter_actor_event(priv->actorTextBox, inEvent, FALSE);
+	}
+
+	/* Return event handling result */
+	return(result);
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_text_box_focusable_iface_init(XfdashboardFocusableInterface *iface)
+{
+	iface->can_focus=_xfdashboard_text_box_focusable_can_focus;
+	iface->handle_key_event=_xfdashboard_text_box_focusable_handle_key_event;
 }
 
 /* IMPLEMENTATION: GObject */

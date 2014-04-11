@@ -356,3 +356,21 @@ XfdashboardWindowsView
 {
 	spacing: 8.0;
 }
+
+/* Focus */
+#searchbox.focus,
+#viewpad.focus,
+#workspace-selector.focus,
+#quicklaunch.focus,
+#view-selector.focus
+{
+	outline-color: #0000ff;
+	outline-width: 2.0;
+	background-fill-color: #ffffff30;
+}
+
+#viewpad.focus,
+#view-selector.focus
+{
+	background-type: outline;
+}
