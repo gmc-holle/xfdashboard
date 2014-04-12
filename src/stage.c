@@ -214,6 +214,12 @@ static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inE
 
 	/* Ask focus manager to handle this event */
 	result=xfdashboard_focus_manager_handle_key_event(priv->focusManager, inEvent);
+	// TODO: g_message("%s: KEY %s -> focus=%p[%s] => key=%x ==> %s",
+				// TODO: __func__,
+				// TODO: clutter_event_type(inEvent)==CLUTTER_KEY_PRESS ? "PRESS" : "RELEASE",
+				// TODO: xfdashboard_focus_manager_get_focus(priv->focusManager), DEBUG_OBJECT_NAME(xfdashboard_focus_manager_get_focus(priv->focusManager)),
+				// TODO: inEvent->key.keyval,
+				// TODO: result==CLUTTER_EVENT_STOP ? "HANDLED" : "unhandled");
 	if(result==CLUTTER_EVENT_STOP) return(result);
 
 	/* If even focus manager did not handle this event
@@ -230,7 +236,6 @@ static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inE
 	/* If we get here there was no searchbox or it could not handle the event
 	 * so stop further processing.
 	 */
-	// TODO: g_message("%s: UNHANDLED -> actor=%p[%s], event=%p", __func__, inActor, G_OBJECT_TYPE_NAME(inActor), inEvent);
 	return(CLUTTER_EVENT_STOP);
 }
 
@@ -771,9 +776,6 @@ static void _xfdashboard_stage_layoutable_layout_completed(XfdashboardLayoutable
 		{
 			xfdashboard_focus_manager_register(priv->focusManager,
 												XFDASHBOARD_FOCUSABLE(priv->searchbox));
-
-			/* Set stage focus to searchbox to get cursor shown */
-			clutter_stage_set_key_focus(CLUTTER_STAGE(self), CLUTTER_ACTOR(priv->searchbox));
 		}
 	}
 

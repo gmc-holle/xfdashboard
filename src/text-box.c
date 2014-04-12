@@ -512,12 +512,84 @@ static gboolean _xfdashboard_text_box_focusable_handle_key_event(XfdashboardFocu
 	return(result);
 }
 
+/* Set focus to actor */
+static void _xfdashboard_text_box_focusable_set_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardTextBox				*self;
+	XfdashboardTextBoxPrivate		*priv;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+	ClutterStage					*stage;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inFocusable));
+
+	self=XFDASHBOARD_TEXT_BOX(inFocusable);
+	priv=self->priv;
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->set_focus)
+	{
+		parentIface->set_focus(inFocusable);
+	}
+
+	/* Get stage of actor to tell it where the keyboard focus to set to */
+	stage=CLUTTER_STAGE(clutter_actor_get_stage(CLUTTER_ACTOR(self)));
+	if(!stage)
+	{
+		g_warning(_("Focusable actor %s is not on a stage"),
+					G_OBJECT_TYPE_NAME(self));
+		return;
+	}
+
+	clutter_stage_set_key_focus(stage, CLUTTER_ACTOR(priv->actorTextBox));
+}
+
+/* Unset focus from actor */
+static void _xfdashboard_text_box_focusable_unset_focus(XfdashboardFocusable *inFocusable)
+{
+	ClutterActor					*self;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+	ClutterStage					*stage;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inFocusable));
+
+	self=CLUTTER_ACTOR(inFocusable);
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->unset_focus)
+	{
+		parentIface->unset_focus(inFocusable);
+	}
+
+	/* Get stage of actor to tell it where the keyboard focus to set to */
+	stage=CLUTTER_STAGE(clutter_actor_get_stage(self));
+	if(!stage)
+	{
+		g_warning(_("Focusable actor %s is not on a stage"),
+					G_OBJECT_TYPE_NAME(self));
+		return;
+	}
+
+	clutter_stage_set_key_focus(stage, NULL);
+}
+
 /* Interface initialization
  * Set up default functions
  */
 void _xfdashboard_text_box_focusable_iface_init(XfdashboardFocusableInterface *iface)
 {
 	iface->can_focus=_xfdashboard_text_box_focusable_can_focus;
+	iface->set_focus=_xfdashboard_text_box_focusable_set_focus;
+	iface->unset_focus=_xfdashboard_text_box_focusable_unset_focus;
 	iface->handle_key_event=_xfdashboard_text_box_focusable_handle_key_event;
 }
 

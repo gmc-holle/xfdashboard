@@ -40,11 +40,15 @@
 #include "application-button.h"
 #include "utils.h"
 #include "stylable.h"
+#include "focusable.h"
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardWorkspaceSelector,
-				xfdashboard_workspace_selector,
-				XFDASHBOARD_TYPE_BACKGROUND)
+static void _xfdashboard_workspace_selector_focusable_iface_init(XfdashboardFocusableInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardWorkspaceSelector,
+						xfdashboard_workspace_selector,
+						XFDASHBOARD_TYPE_BACKGROUND,
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_workspace_selector_focusable_iface_init))
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_WORKSPACE_SELECTOR_GET_PRIVATE(obj) \
@@ -793,6 +797,74 @@ static void _xfdashboard_workspace_selector_allocate(ClutterActor *inActor,
 		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) childAllocation.x1=floor(childAllocation.x1+childWidth+priv->spacing);
 			else childAllocation.y1=floor(childAllocation.y1+childHeight+priv->spacing);
 	}
+}
+
+/* IMPLEMENTATION: Interface XfdashboardFocusable */
+
+/* Virtual function "handle_key_event" was called */
+static gboolean _xfdashboard_workspace_selector_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
+																			const ClutterEvent *inEvent)
+{
+	XfdashboardWorkspaceSelector			*self;
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	gint									currentWorkspace;
+	gint									maxWorkspace;
+	XfdashboardWindowTrackerWorkspace		*workspace;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
+	priv=self->priv;
+
+	/* Change workspace if a arrow key was pressed which makes sense
+	 * for orientation set
+	 */
+	if(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
+	{
+		/* Get current and last workspace */
+		currentWorkspace=xfdashboard_window_tracker_workspace_get_number(priv->activeWorkspace);
+		maxWorkspace=xfdashboard_window_tracker_get_workspaces_count(priv->windowTracker);
+
+		if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Up) ||
+			(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Left))
+		{
+			/* Activate previous workspace */
+			currentWorkspace--;
+			if(currentWorkspace>=0 && currentWorkspace<maxWorkspace)
+			{
+				workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
+				xfdashboard_window_tracker_workspace_activate(workspace);
+			}
+
+			/* Event handled */
+			return(CLUTTER_EVENT_STOP);
+		}
+			else if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Down) ||
+					(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Right))
+			{
+				/* Activate next workspace */
+				currentWorkspace++;
+				if(currentWorkspace>=0 && currentWorkspace<maxWorkspace)
+				{
+					workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
+					xfdashboard_window_tracker_workspace_activate(workspace);
+				}
+
+				/* Event handled */
+				return(CLUTTER_EVENT_STOP);
+			}
+	}
+
+	/* We did not handle this event */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_workspace_selector_focusable_iface_init(XfdashboardFocusableInterface *iface)
+{
+	iface->handle_key_event=_xfdashboard_workspace_selector_focusable_handle_key_event;
 }
 
 /* IMPLEMENTATION: GObject */

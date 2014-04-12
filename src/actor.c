@@ -218,45 +218,25 @@ static gboolean _xfdashboard_actor_focusable_can_focus(XfdashboardFocusable *inF
 static void _xfdashboard_actor_focusable_set_focus(XfdashboardFocusable *self)
 {
 	XfdashboardActor	*actor;
-	ClutterStage		*stage;
 
 	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(self));
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
 
 	actor=XFDASHBOARD_ACTOR(self);
-
-	/* Get stage of actor to tell it where the keyboard focus to set to */
-	stage=CLUTTER_STAGE(clutter_actor_get_stage(CLUTTER_ACTOR(actor)));
-	if(!stage)
-	{
-		g_warning(_("Focusable actor %s is not on a stage"),
-					DEBUG_OBJECT_NAME(actor));
-		return;
-	}
 
 	/* Set focus and style for focus */
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "focus");
 }
 
-/* Unset focus to actor */
+/* Unset focus from actor */
 static void _xfdashboard_actor_focusable_unset_focus(XfdashboardFocusable *self)
 {
 	XfdashboardActor	*actor;
-	ClutterStage		*stage;
 
 	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(self));
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
 
 	actor=XFDASHBOARD_ACTOR(self);
-
-	/* Get stage of actor to tell it where the keyboard focus to set to */
-	stage=CLUTTER_STAGE(clutter_actor_get_stage(CLUTTER_ACTOR(actor)));
-	if(!stage)
-	{
-		g_warning(_("Focusable actor %s is not on a stage"),
-					DEBUG_OBJECT_NAME(actor));
-		return;
-	}
 
 	/* Set focus and style for focus */
 	xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(actor), "focus");
