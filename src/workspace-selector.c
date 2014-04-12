@@ -816,15 +816,16 @@ static gboolean _xfdashboard_workspace_selector_focusable_handle_key_event(Xfdas
 	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
 	priv=self->priv;
 
-	/* Change workspace if a arrow key was pressed which makes sense
-	 * for orientation set
-	 */
+	/* Handle key events when key was released */
 	if(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
 	{
 		/* Get current and last workspace */
 		currentWorkspace=xfdashboard_window_tracker_workspace_get_number(priv->activeWorkspace);
 		maxWorkspace=xfdashboard_window_tracker_get_workspaces_count(priv->windowTracker);
 
+		/* Change workspace if a arrow key was pressed which makes sense
+		 * for orientation set
+		 */
 		if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Up) ||
 			(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Left))
 		{
@@ -853,6 +854,22 @@ static gboolean _xfdashboard_workspace_selector_focusable_handle_key_event(Xfdas
 				/* Event handled */
 				return(CLUTTER_EVENT_STOP);
 			}
+
+		/* Activate workspace on ENTER */
+		if(inEvent->key.keyval==CLUTTER_KEY_Return ||
+			inEvent->key.keyval==CLUTTER_KEY_KP_Enter ||
+			inEvent->key.keyval==CLUTTER_KEY_ISO_Enter)
+		{
+			/* Active workspace */
+			workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
+			xfdashboard_window_tracker_workspace_activate(workspace);
+
+			/* Quit application */
+			xfdashboard_application_quit();
+
+			/* Event handled */
+			return(CLUTTER_EVENT_STOP);
+		}
 	}
 
 	/* We did not handle this event */
