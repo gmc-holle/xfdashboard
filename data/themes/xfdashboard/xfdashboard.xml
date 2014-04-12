@@ -110,7 +110,7 @@
 
 						<child>
 							<object class="XfdashboardWorkspaceSelector" id="workspace-selector">
-								<property name="can-focus">false</property>
+								<property name="can-focus">true</property>
 								<property name="y-expand">true</property>
 							</object>
 						</child>

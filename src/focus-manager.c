@@ -30,6 +30,7 @@
 
 #include <glib/gi18n-lib.h>
 
+#include "marshal.h"
 #include "stylable.h"
 
 // TODO: #undef g_debug
@@ -57,6 +58,8 @@ enum
 {
 	SIGNAL_REGISTERED,
 	SIGNAL_UNREGISTERED,
+
+	SIGNAL_CHANGED,
 
 	SIGNAL_LAST
 };
@@ -165,6 +168,19 @@ static void xfdashboard_focus_manager_class_init(XfdashboardFocusManagerClass *k
 						g_cclosure_marshal_VOID__OBJECT,
 						G_TYPE_NONE,
 						1,
+						XFDASHBOARD_TYPE_FOCUSABLE);
+
+	XfdashboardFocusManagerSignals[SIGNAL_CHANGED]=
+		g_signal_new("changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardFocusManagerClass, changed),
+						NULL,
+						NULL,
+						_xfdashboard_marshal_VOID__OBJECT_OBJECT,
+						G_TYPE_NONE,
+						2,
+						XFDASHBOARD_TYPE_FOCUSABLE,
 						XFDASHBOARD_TYPE_FOCUSABLE);
 }
 
@@ -349,11 +365,13 @@ XfdashboardFocusable* xfdashboard_focus_manager_get_focus(XfdashboardFocusManage
 void xfdashboard_focus_manager_set_focus(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable)
 {
 	XfdashboardFocusManagerPrivate	*priv;
+	XfdashboardFocusable			*oldFocusable;
 
 	g_return_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self));
 	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
 
 	priv=self->priv;
+	oldFocusable=NULL;
 
 	/* Check if focusable actor is really registered */
 	if(g_list_find(priv->registeredFocusables, inFocusable)==NULL)
@@ -363,11 +381,18 @@ void xfdashboard_focus_manager_set_focus(XfdashboardFocusManager *self, Xfdashbo
 	}
 
 	/* Unset focus at current focused actor */
-	if(priv->currentFocus) xfdashboard_focusable_unset_focus(priv->currentFocus);
+	oldFocusable=priv->currentFocus;
+	if(priv->currentFocus)
+	{
+		xfdashboard_focusable_unset_focus(priv->currentFocus);
+	}
 
 	/* Set focus */
 	priv->currentFocus=inFocusable;
 	xfdashboard_focusable_set_focus(priv->currentFocus);
+
+	/* Emit signal for changed focus */
+	g_signal_emit(self, XfdashboardFocusManagerSignals[SIGNAL_CHANGED], 0, oldFocusable, priv->currentFocus);
 }
 
 /* Find next focusable actor from given focusable actor */

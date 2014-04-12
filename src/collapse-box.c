@@ -31,6 +31,8 @@
 #include <glib/gi18n-lib.h>
 
 #include "enums.h"
+#include "focus-manager.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_collapse_box_container_iface_init(ClutterContainerIface *inInterface);
@@ -54,6 +56,12 @@ struct _XfdashboardCollapseBoxPrivate
 	/* Instance related */
 	ClutterActor			*child;
 	guint					requestModeSignalID;
+
+	XfdashboardFocusManager	*focusManager;
+	guint					focusChangedSignalID;
+
+	gboolean				expandedByPointer;
+	gboolean				expandedByFocus;
 };
 
 /* Properties */
@@ -87,11 +95,14 @@ static gboolean _xfdashboard_collapse_box_on_leave_event(XfdashboardCollapseBox 
 															ClutterEvent *inEvent,
 															gpointer inUserData)
 {
-	ClutterActor	*related;
-	ClutterActor	*stage;
-	gfloat			eventX, eventY;
+	XfdashboardCollapseBoxPrivate	*priv;
+	ClutterActor					*related;
+	ClutterActor					*stage;
+	gfloat							eventX, eventY;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_COLLAPSE_BOX(self), CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
 
 	/* Check if new target (related actor) is a direct or deeper child of
 	 * this actor. This is an easy and inexpensive check and will likely
@@ -111,8 +122,13 @@ static gboolean _xfdashboard_collapse_box_on_leave_event(XfdashboardCollapseBox 
 	related=clutter_stage_get_actor_at_pos(CLUTTER_STAGE(stage), CLUTTER_PICK_ALL, eventX, eventY);
 	if(related && clutter_actor_contains(CLUTTER_ACTOR(self), related)) return(CLUTTER_EVENT_PROPAGATE);
 
-	/* Pointer is not inside this actor so collapse to minimum size */
-	xfdashboard_collapse_box_set_collapsed(self, TRUE);
+	/* Pointer is not inside so check to collapse actor to minimum size */
+	priv->expandedByPointer=FALSE;
+	if(!priv->expandedByPointer && !priv->expandedByFocus)
+	{
+		xfdashboard_collapse_box_set_collapsed(self, TRUE);
+	}
+
 	return(CLUTTER_EVENT_PROPAGATE);
 }
 
@@ -121,9 +137,14 @@ static gboolean _xfdashboard_collapse_box_on_enter_event(XfdashboardCollapseBox 
 															ClutterEvent *inEvent,
 															gpointer inUserData)
 {
+	XfdashboardCollapseBoxPrivate	*priv;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_COLLAPSE_BOX(self), CLUTTER_EVENT_PROPAGATE);
 
+	priv=self->priv;
+
 	/* Uncollapse (or better expand) to real size */
+	priv->expandedByPointer=TRUE;
 	xfdashboard_collapse_box_set_collapsed(self, FALSE);
 	return(CLUTTER_EVENT_PROPAGATE);
 }
@@ -152,6 +173,61 @@ static void _xfdashboard_collapse_box_on_child_actor_request_mode_changed(Xfdash
 	/* Apply actor's request mode to us */
 	requestMode=clutter_actor_get_request_mode(priv->child);
 	clutter_actor_set_request_mode(CLUTTER_ACTOR(self), requestMode);
+}
+
+/* Focus has been changed. Check if old and new focusable actor
+ * are a (deep) child of this collapse box.
+ * If both are children then do nothing because nothing changes
+ * and collapse box should be expanded already.
+ * If none are children also do nothing and collapse box should
+ * be collapsed already.
+ * If only one is a child of this collapse box then collapse box
+ * if the only child is the actor which lost the focus, otherwise
+ * expand collapse box.
+ */
+static void _xfdashboard_collapse_box_on_focus_changed(XfdashboardCollapseBox *self,
+														XfdashboardFocusable *inOldActor,
+														XfdashboardFocusable *inNewActor,
+														gpointer inUserData)
+{
+	XfdashboardCollapseBoxPrivate	*priv;
+	gboolean						oldActorIsChild;
+	gboolean						newActorIsChild;
+
+	g_return_if_fail(XFDASHBOARD_IS_COLLAPSE_BOX(self));
+
+	priv=self->priv;
+
+	/* Determine if old and new focusable actor are children of
+	 * this collapse box.
+	 */
+	oldActorIsChild=xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self),
+															CLUTTER_ACTOR(inOldActor));
+
+	newActorIsChild=xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self),
+															CLUTTER_ACTOR(inNewActor));
+
+	/* Do nothing if both actors are children of this collapse box */
+	if(oldActorIsChild==newActorIsChild) return;
+
+	/* Collapse box if old actor is the only child of this collapse box ... */
+	if(oldActorIsChild)
+	{
+		/* Check if a pointer is in this collapse box.
+		 * If it is do not collapse.
+		 */
+		priv->expandedByFocus=FALSE;
+		if(!priv->expandedByPointer && !priv->expandedByFocus)
+		{
+			xfdashboard_collapse_box_set_collapsed(self, TRUE);
+		}
+	}
+		/* ... otherwise expand box if new actor is the only child. */
+		else
+		{
+			priv->expandedByFocus=TRUE;
+			xfdashboard_collapse_box_set_collapsed(self, FALSE);
+		}
 }
 
 /* IMPLEMENTATION: Interface ClutterContainer */
@@ -387,6 +463,21 @@ static void _xfdashboard_collapse_box_dispose(GObject *inObject)
 	}
 	g_assert(priv->requestModeSignalID==0);
 
+	if(priv->focusManager)
+	{
+		if(priv->focusChangedSignalID)
+		{
+			/* Disconnect signal */
+			g_signal_handler_disconnect(priv->focusManager, priv->focusChangedSignalID);
+			priv->focusChangedSignalID=0;
+		}
+
+		/* Release reference to focus manager */
+		g_object_unref(priv->focusManager);
+		priv->focusManager=NULL;
+	}
+	g_assert(priv->focusChangedSignalID==0);
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_collapse_box_parent_class)->dispose(inObject);
 }
@@ -528,6 +619,10 @@ static void xfdashboard_collapse_box_init(XfdashboardCollapseBox *self)
 	priv->collapseOrientation=XFDASHBOARD_ORIENTATION_LEFT;
 	priv->child=NULL;
 	priv->requestModeSignalID=0;
+	priv->focusManager=xfdashboard_focus_manager_get_default();
+	priv->focusChangedSignalID=0;
+	priv->expandedByPointer=FALSE;
+	priv->expandedByFocus=FALSE;
 
 	/* Set up actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -537,6 +632,13 @@ static void xfdashboard_collapse_box_init(XfdashboardCollapseBox *self)
 	g_signal_connect_swapped(self, "enter-event", G_CALLBACK(_xfdashboard_collapse_box_on_enter_event), self);
 	g_signal_connect_swapped(self, "leave-event", G_CALLBACK(_xfdashboard_collapse_box_on_leave_event), self);
 
+	if(priv->focusManager)
+	{
+		priv->focusChangedSignalID=g_signal_connect_swapped(priv->focusManager,
+															"changed",
+															G_CALLBACK(_xfdashboard_collapse_box_on_focus_changed),
+															self);
+	}
 }
 
 /* IMPLEMENTATION: Public API */

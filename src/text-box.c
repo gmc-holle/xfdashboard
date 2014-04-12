@@ -187,7 +187,6 @@ static void _xfdashboard_text_box_key_focus_in(ClutterActor *inActor)
 	/* Update focus in focus manager */
 	focusManager=xfdashboard_focus_manager_get_default();
 	xfdashboard_focus_manager_set_focus(focusManager, XFDASHBOARD_FOCUSABLE(self));
-g_message("%s: focus-manager=%p, focusable=%p[%s]", __func__, focusManager, self, G_OBJECT_TYPE_NAME(self));
 	g_object_unref(focusManager);
 }
 

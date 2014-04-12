@@ -278,6 +278,35 @@ void xfdashboard_register_gvalue_transformation_funcs(void)
 	g_value_register_transform_func(G_TYPE_STRING, G_TYPE_ENUM, _xfdashboard_gvalue_transform_string_enum);
 }
 
+/* Determine if child is a sibling of actor deeply */
+gboolean xfdashboard_actor_contains_child_deep(ClutterActor *inActor, ClutterActor *inChild)
+{
+	ClutterActorIter	iter;
+	ClutterActor		*child;
+
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), FALSE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), FALSE);
+
+	/* For each child of actor call ourselve recursive */
+	clutter_actor_iter_init(&iter, inActor);
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* First check if current child of iterator is the one to lookup */
+		if(child==inChild) return(TRUE);
+
+		/* Then call ourselve with child as "top-parent" actor
+		 * to lookup recursively.
+		 */
+		if(xfdashboard_actor_contains_child_deep(child, inChild))
+		{
+			return(TRUE);
+		}
+	}
+
+	/* If we get here the child was not found deeply */
+	return(FALSE);
+}
+
 /* Find child by name deeply beginning at given actor */
 ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar *inName)
 {

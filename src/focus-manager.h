@@ -61,6 +61,10 @@ struct _XfdashboardFocusManagerClass
 	/* Virtual functions */
 	void (*registered)(XfdashboardFocusManager *self, XfdashboardFocusable *inActor);
 	void (*unregistered)(XfdashboardFocusManager *self, XfdashboardFocusable *inActor);
+
+	void (*changed)(XfdashboardFocusManager *self,
+						XfdashboardFocusable *oldActor,
+						XfdashboardFocusable *newActor);
 };
 
 /* Public API */
