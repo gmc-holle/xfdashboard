@@ -749,7 +749,7 @@ void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const
 		priv->outlineColor=clutter_color_copy(inColor);
 
 		/* Update effect */
-		xfdashboard_outline_effect_set_color(priv->outline, inColor);
+		if(priv->outline) xfdashboard_outline_effect_set_color(priv->outline, inColor);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_COLOR]);
@@ -780,7 +780,7 @@ void xfdashboard_background_set_outline_width(XfdashboardBackground *self, const
 		priv->outlineWidth=inWidth;
 
 		/* Update effect */
-		xfdashboard_outline_effect_set_width(priv->outline, inWidth);
+		if(priv->outline) xfdashboard_outline_effect_set_width(priv->outline, inWidth);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_WIDTH]);
@@ -810,7 +810,7 @@ void xfdashboard_background_set_outline_borders(XfdashboardBackground *self, Xfd
 		priv->outlineBorders=inBorders;
 
 		/* Update effect */
-		xfdashboard_outline_effect_set_borders(priv->outline, inBorders);
+		if(priv->outline) xfdashboard_outline_effect_set_borders(priv->outline, inBorders);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_BORDERS]);
@@ -840,7 +840,7 @@ void xfdashboard_background_set_outline_corners(XfdashboardBackground *self, Xfd
 		priv->outlineCorners=inCorners;
 
 		/* Update effect */
-		xfdashboard_outline_effect_set_corners(priv->outline, inCorners);
+		if(priv->outline) xfdashboard_outline_effect_set_corners(priv->outline, inCorners);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_CORNERS]);
@@ -871,7 +871,7 @@ void xfdashboard_background_set_outline_corner_radius(XfdashboardBackground *sel
 		priv->outlineCornersRadius=inRadius;
 
 		/* Update effect */
-		xfdashboard_outline_effect_set_corner_radius(priv->outline, inRadius);
+		if(priv->outline) xfdashboard_outline_effect_set_corner_radius(priv->outline, inRadius);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_CORNERS_RADIUS]);

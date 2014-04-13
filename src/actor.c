@@ -371,7 +371,7 @@ static void _xfdashboard_actor_stylable_set_pseudo_classes(XfdashboardStylable *
 
 		if(inStylePseudoClasses) priv->stylePseudoClasses=g_strdup(inStylePseudoClasses);
 
-		/* Invalidate style to get it restyled and redrawnAlso invalidate
+		/* Invalidate style to get it restyled and redrawn. Also invalidate
 		 * children as they might reference the old, invalid pseudo-classes
 		 * or the new, valid ones.
 		 */
@@ -396,6 +396,7 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 	GHashTable					*themeStyleSet;
 	gchar						*styleName;
 	XfdashboardThemeCSSValue	*styleValue;
+	gboolean					didChange;
 #ifdef DEBUG
 	gboolean					doDebug=FALSE;
 #endif
@@ -405,6 +406,7 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 	self=XFDASHBOARD_ACTOR(inStylable);
 	priv=self->priv;
 	klass=XFDASHBOARD_ACTOR_GET_CLASS(self);
+	didChange=FALSE;
 
 	/* Only recompute style for mapped actors */
 	if(!CLUTTER_ACTOR_IS_MAPPED(self)) return;
@@ -504,6 +506,7 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 		if(g_param_value_convert(realParamSpec, &cssValue, &propertyValue, FALSE))
 		{
 			g_object_set_property(G_OBJECT(self), styleName, &propertyValue);
+			didChange=TRUE;
 #ifdef DEBUG
 			if(doDebug)
 			{
@@ -559,6 +562,7 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 
 			/* Set value at object property */
 			g_object_set_property(G_OBJECT(self), styleName, &propertyValue);
+			didChange=TRUE;
 #ifdef DEBUG
 			if(doDebug)
 			{
@@ -588,6 +592,9 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 
 	/* Release allocated resources */
 	g_hash_table_destroy(possibleStyleSet);
+
+	/* Force a redraw if any change was made at this actor */
+	if(didChange) clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 
 	/* All stylable properties are set now. So thaw 'property-changed'
 	 * notification now and fire all notifications at once.

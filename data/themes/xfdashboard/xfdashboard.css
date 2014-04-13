@@ -374,3 +374,11 @@ XfdashboardWindowsView
 {
 	background-type: outline;
 }
+
+#quicklaunch XfdashboardButton:selected
+{
+	background-type: fill rounded-corners;
+	background-fill-color: #0000ff;
+	corners: all;
+	corner-radius: 4.0;
+}

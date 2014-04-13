@@ -40,12 +40,16 @@
 #include "applications-view.h"
 #include "utils.h"
 #include "tooltip-action.h"
+#include "focusable.h"
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardQuicklaunch,
-				xfdashboard_quicklaunch,
-				XFDASHBOARD_TYPE_BACKGROUND)
-                                                
+static void _xfdashboard_quicklaunch_focusable_iface_init(XfdashboardFocusableInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardQuicklaunch,
+						xfdashboard_quicklaunch,
+						XFDASHBOARD_TYPE_BACKGROUND,
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_quicklaunch_focusable_iface_init))
+
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_QUICKLAUNCH_GET_PRIVATE(obj) \
 	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_QUICKLAUNCH, XfdashboardQuicklaunchPrivate))
@@ -74,6 +78,8 @@ struct _XfdashboardQuicklaunchPrivate
 
 	guint					dragMode;
 	ClutterActor			*dragPreviewIcon;
+
+	ClutterActor			*selectedItem;
 };
 
 /* Properties */
@@ -701,6 +707,13 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 
 	priv=self->priv;
 
+	/* Unset selected item if any was selected by focusing this actor */
+	if(priv->selectedItem)
+	{
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+		priv->selectedItem=NULL;
+	}
+
 	/* Remove all application buttons */
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
 	while(clutter_actor_iter_next(&iter, &child))
@@ -986,6 +999,63 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaun
 	return(scale);
 }
 
+/* Get previous selectable actor in quicklaunch */
+static ClutterActor* xfdashboard_quicklaunch_get_previous_selectable(XfdashboardQuicklaunch *self,
+																		ClutterActor *inSelected)
+{
+	ClutterActorIter	iter;
+	ClutterActor		*child;
+	ClutterActor		*prevItem;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), NULL);
+
+	prevItem=NULL;
+
+	/* Iterate through children and return previous selectable item after given one */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* If this child is the lookup one return previous visible item seen */
+		if(child==inSelected) return(prevItem);
+
+		/* If this child is visible but not the one we lookup remember it as previous one */
+		if(CLUTTER_ACTOR_IS_VISIBLE(child)) prevItem=child;
+	}
+
+	/* If we get here there is no selectable item after given one, so return NULL */
+	return(NULL);
+}
+
+/* Get next selectable actor in quicklaunch */
+static ClutterActor* xfdashboard_quicklaunch_get_next_selectable(XfdashboardQuicklaunch *self,
+																	ClutterActor *inSelected)
+{
+	ClutterActorIter	iter;
+	ClutterActor		*child;
+	ClutterActor		*nextItem;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), NULL);
+
+	/* Iterate through children and return next selectable item after given one */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* If this child is the lookup one, lookup next visible item */
+		if(child==inSelected)
+		{
+			while(clutter_actor_iter_next(&iter, &nextItem))
+			{
+				if(CLUTTER_ACTOR_IS_VISIBLE(nextItem)) break;;
+			}
+
+			return(nextItem);
+		}
+	}
+
+	/* If we get here there is no selectable item after given one, so return NULL */
+	return(NULL);
+}
+
 /* IMPLEMENTATION: ClutterActor */
 
 /* Get preferred width/height */
@@ -1248,6 +1318,166 @@ static void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 	}
 }
 
+/* IMPLEMENTATION: Interface XfdashboardFocusable */
+
+/* Set focus to actor */
+static void _xfdashboard_quicklaunch_focusable_set_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardQuicklaunch			*self;
+	XfdashboardQuicklaunchPrivate	*priv;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inFocusable));
+
+	self=XFDASHBOARD_QUICKLAUNCH(inFocusable);
+	priv=self->priv;
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->set_focus)
+	{
+		parentIface->set_focus(inFocusable);
+	}
+
+	/* Reset selected item to first one */
+	if(!priv->selectedItem)
+	{
+		priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+	}
+
+	if(priv->selectedItem)
+	{
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+	}
+}
+
+/* Unset focus from actor */
+static void _xfdashboard_quicklaunch_focusable_unset_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardQuicklaunch			*self;
+	XfdashboardQuicklaunchPrivate	*priv;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inFocusable));
+
+	self=XFDASHBOARD_QUICKLAUNCH(inFocusable);
+	priv=self->priv;
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->set_focus)
+	{
+		parentIface->set_focus(inFocusable);
+	}
+
+	/* Reset selected item to first one */
+	if(priv->selectedItem)
+	{
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+	}
+}
+
+/* Virtual function "handle_key_event" was called */
+static gboolean _xfdashboard_quicklaunch_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
+																	const ClutterEvent *inEvent)
+{
+	XfdashboardQuicklaunch					*self;
+	XfdashboardQuicklaunchPrivate			*priv;
+	ClutterActor							*newItem;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_QUICKLAUNCH(inFocusable);
+	priv=self->priv;
+
+	/* Handle key events when key was released */
+	if(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
+	{
+		/* Move selection if an arrow key was pressed which makes sense
+		 * for orientation set
+		 */
+		if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Up) ||
+			(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Left))
+		{
+			/* Find previous item to select and set style to it but also unstyle previous one */
+			newItem=xfdashboard_quicklaunch_get_previous_selectable(self, priv->selectedItem);
+			if(newItem && newItem!=priv->selectedItem)
+			{
+				/* Unset current selected item if any */
+				if(priv->selectedItem)
+				{
+					xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+				}
+
+				/* Set new current selected item */
+				priv->selectedItem=newItem;
+				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+			}
+
+			/* Event handled */
+			return(CLUTTER_EVENT_STOP);
+		}
+			else if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Down) ||
+					(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Right))
+			{
+				/* Find next item to select and set style to it but also unstyle previous one */
+				newItem=xfdashboard_quicklaunch_get_next_selectable(self, priv->selectedItem);
+				if(newItem && newItem!=priv->selectedItem)
+				{
+					/* Unset current selected item if any */
+					if(priv->selectedItem)
+					{
+						xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+					}
+
+					/* Set new current selected item */
+					priv->selectedItem=newItem;
+					xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+				}
+
+				/* Event handled */
+				return(CLUTTER_EVENT_STOP);
+			}
+
+		/* Activate workspace on ENTER */
+		if(inEvent->key.keyval==CLUTTER_KEY_Return ||
+			inEvent->key.keyval==CLUTTER_KEY_KP_Enter ||
+			inEvent->key.keyval==CLUTTER_KEY_ISO_Enter)
+		{
+			/* Emit "clicked" signal at selected item */
+			if(priv->selectedItem)
+			{
+				g_signal_emit_by_name(priv->selectedItem, "clicked");
+			}
+
+			/* Event handled */
+			return(CLUTTER_EVENT_STOP);
+		}
+	}
+
+	/* We did not handle this event */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_quicklaunch_focusable_iface_init(XfdashboardFocusableInterface *iface)
+{
+	iface->set_focus=_xfdashboard_quicklaunch_focusable_set_focus;
+	iface->unset_focus=_xfdashboard_quicklaunch_focusable_unset_focus;
+	iface->handle_key_event=_xfdashboard_quicklaunch_focusable_handle_key_event;
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -1436,6 +1666,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
 	priv->dragMode=DRAG_MODE_NONE;
 	priv->dragPreviewIcon=NULL;
+	priv->selectedItem=NULL;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);

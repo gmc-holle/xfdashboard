@@ -811,6 +811,7 @@ static gboolean _xfdashboard_workspace_selector_focusable_handle_key_event(Xfdas
 	gint									maxWorkspace;
 	XfdashboardWindowTrackerWorkspace		*workspace;
 
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
 	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inFocusable), CLUTTER_EVENT_PROPAGATE);
 
 	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
@@ -823,7 +824,7 @@ static gboolean _xfdashboard_workspace_selector_focusable_handle_key_event(Xfdas
 		currentWorkspace=xfdashboard_window_tracker_workspace_get_number(priv->activeWorkspace);
 		maxWorkspace=xfdashboard_window_tracker_get_workspaces_count(priv->windowTracker);
 
-		/* Change workspace if a arrow key was pressed which makes sense
+		/* Change workspace if an arrow key was pressed which makes sense
 		 * for orientation set
 		 */
 		if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Up) ||

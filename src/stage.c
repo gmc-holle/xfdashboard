@@ -695,6 +695,9 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 			/* Show stage and force window creation */
 			clutter_actor_show(CLUTTER_ACTOR(self));
 		}
+
+	/* In any case force a redraw */
+	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 }
 
 /* IMPLEMENTATION: ClutterActor */
