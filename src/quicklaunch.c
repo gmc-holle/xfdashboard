@@ -1396,7 +1396,7 @@ static void _xfdashboard_quicklaunch_focusable_unset_focus(XfdashboardFocusable 
 
 	if(parentIface && parentIface->set_focus)
 	{
-		parentIface->set_focus(inFocusable);
+		parentIface->unset_focus(inFocusable);
 	}
 
 	/* Reset selected item to first one */
