@@ -35,11 +35,15 @@
 #include "scrollbar.h"
 #include "enums.h"
 #include "utils.h"
+#include "focusable.h"
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardViewpad,
-				xfdashboard_viewpad,
-				XFDASHBOARD_TYPE_BACKGROUND)
+static void _xfdashboard_viewpad_focusable_iface_init(XfdashboardFocusableInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardViewpad,
+						xfdashboard_viewpad,
+						XFDASHBOARD_TYPE_BACKGROUND,
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_viewpad_focusable_iface_init))
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_VIEWPAD_GET_PRIVATE(obj) \
@@ -764,6 +768,132 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self,
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_VSCROLLBAR_VISIBLE]);
 	}
+}
+
+/* IMPLEMENTATION: Interface XfdashboardFocusable */
+
+/* Determine if actor can get the focus */
+static gboolean _xfdashboard_viewpad_focusable_can_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardViewpad			*self;
+	XfdashboardViewpadPrivate	*priv;
+	gboolean					canFocus;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(inFocusable), FALSE);
+
+	self=XFDASHBOARD_VIEWPAD(inFocusable);
+	priv=self->priv;
+
+	/* Set current focusable result to FALSE (not focusable). It will be set
+	 * to TRUE automatically if current active view is focusable and its
+	 * virtual function will also return TRUE.
+	 */
+	canFocus=FALSE;
+
+	/* Viewpad is just a proxy for the current active view.
+	 * So check if current active view is focusable and call its
+	 * virtual function.
+	 */
+	if(priv->activeView &&
+		XFDASHBOARD_IS_FOCUSABLE(priv->activeView))
+	{
+		canFocus=xfdashboard_focusable_can_focus(XFDASHBOARD_FOCUSABLE(priv->activeView));
+	}
+
+	/* Return focusable state */
+	return(canFocus);
+}
+
+/* Set focus to actor */
+static void _xfdashboard_viewpad_focusable_set_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardViewpad			*self;
+	XfdashboardViewpadPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inFocusable));
+
+	self=XFDASHBOARD_VIEWPAD(inFocusable);
+	priv=self->priv;
+
+	/* Viewpad is just a proxy for the current active view.
+	 * So check if current active view is focusable and call its
+	 * virtual function.
+	 */
+	if(priv->activeView &&
+		XFDASHBOARD_IS_FOCUSABLE(priv->activeView))
+	{
+		xfdashboard_focusable_set_focus(XFDASHBOARD_FOCUSABLE(priv->activeView));
+	}
+}
+
+/* Unset focus from actor */
+static void _xfdashboard_viewpad_focusable_unset_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardViewpad			*self;
+	XfdashboardViewpadPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inFocusable));
+
+	self=XFDASHBOARD_VIEWPAD(inFocusable);
+	priv=self->priv;
+
+	/* Viewpad is just a proxy for the current active view.
+	 * So check if current active view is focusable and call its
+	 * virtual function.
+	 */
+	if(priv->activeView &&
+		XFDASHBOARD_IS_FOCUSABLE(priv->activeView))
+	{
+		xfdashboard_focusable_unset_focus(XFDASHBOARD_FOCUSABLE(priv->activeView));
+	}
+}
+
+/* Virtual function "handle_key_event" was called */
+static gboolean _xfdashboard_viewpad_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
+																const ClutterEvent *inEvent)
+{
+	XfdashboardViewpad			*self;
+	XfdashboardViewpadPrivate	*priv;
+	gboolean					handledEvent;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_VIEWPAD(inFocusable);
+	priv=self->priv;
+
+	/* Set handled key eventto CLUTTER_EVENT_PROPAGATE. It might be set to
+	 * CLUTTER_EVENT_STOP if current active view is focusable and it handled
+	 * the key event by its virtual function.
+	 */
+	handledEvent=CLUTTER_EVENT_PROPAGATE;
+
+	/* Viewpad is just a proxy for the current active view.
+	 * So check if current active view is focusable and call its
+	 * virtual function.
+	 */
+	if(priv->activeView &&
+		XFDASHBOARD_IS_FOCUSABLE(priv->activeView))
+	{
+		handledEvent=xfdashboard_focusable_handle_key_event(XFDASHBOARD_FOCUSABLE(priv->activeView), inEvent);
+	}
+
+	/* Return focusable state */
+	return(handledEvent);
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_viewpad_focusable_iface_init(XfdashboardFocusableInterface *iface)
+{
+	iface->can_focus=_xfdashboard_viewpad_focusable_can_focus;
+	iface->set_focus=_xfdashboard_viewpad_focusable_set_focus;
+	iface->unset_focus=_xfdashboard_viewpad_focusable_unset_focus;
+	iface->handle_key_event=_xfdashboard_viewpad_focusable_handle_key_event;
 }
 
 /* IMPLEMENTATION: GObject */

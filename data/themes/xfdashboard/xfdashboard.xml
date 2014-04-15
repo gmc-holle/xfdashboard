@@ -96,7 +96,7 @@
 
 						<child>
 							<object class="XfdashboardViewpad" id="viewpad">
-								<property name="can-focus">false</property>
+								<property name="can-focus">true</property>
 								<property name="x-expand">true</property>
 								<property name="y-expand">true</property>
 							</object>
