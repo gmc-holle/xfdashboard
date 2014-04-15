@@ -1016,14 +1016,16 @@ static ClutterActor* xfdashboard_quicklaunch_get_previous_selectable(Xfdashboard
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* If this child is the lookup one return previous visible item seen */
-		if(child==inSelected) return(prevItem);
+		if(child==inSelected && prevItem) return(prevItem);
 
 		/* If this child is visible but not the one we lookup remember it as previous one */
 		if(CLUTTER_ACTOR_IS_VISIBLE(child)) prevItem=child;
 	}
 
-	/* If we get here there is no selectable item after given one, so return NULL */
-	return(NULL);
+	/* If we get here there is no selectable item after given one, so return last
+	 * selectable item we have seen.
+	 */
+	return(prevItem);
 }
 
 /* Get next selectable actor in quicklaunch */
@@ -1032,27 +1034,46 @@ static ClutterActor* xfdashboard_quicklaunch_get_next_selectable(XfdashboardQuic
 {
 	ClutterActorIter	iter;
 	ClutterActor		*child;
-	ClutterActor		*nextItem;
+	gboolean			doLookup;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), NULL);
 
-	/* Iterate through children and return next selectable item after given one */
+	/* Iterate through children beginnig at current selected one and return next
+	 * selectable item after that one.
+	 */
+	doLookup=FALSE;
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* If this child is the lookup one, lookup next visible item */
-		if(child==inSelected)
-		{
-			while(clutter_actor_iter_next(&iter, &nextItem))
-			{
-				if(CLUTTER_ACTOR_IS_VISIBLE(nextItem)) break;;
-			}
+		if(child!=inSelected && doLookup==FALSE) continue;
 
-			return(nextItem);
-		}
+		/* Return child if visible */
+		if(doLookup && CLUTTER_ACTOR_IS_VISIBLE(child)) return(child);
+
+		/* If we get here we either found current selected one and we should
+		 * look for next selectable item or we looked for next selectable item
+		 * but it was not selectable. In both cases set flag to lookup for
+		 * selectable items.
+		 */
+		doLookup=TRUE;
 	}
 
-	/* If we get here there is no selectable item after given one, so return NULL */
+	/* If we get here we are at the end of list of children and no one was selectable.
+	 * Start over at the beginning of list of children up to the current selected one.
+	 * Return the first visible item.
+	 */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Stop at current selected one */
+		if(child==inSelected) break;
+
+		/* Return this child if visible */
+		if(CLUTTER_ACTOR_IS_VISIBLE(child)) return(child);
+	}
+
+	/* If we get here there is no selectable item was found, so return NULL */
 	return(NULL);
 }
 
