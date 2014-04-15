@@ -832,11 +832,10 @@ static gboolean _xfdashboard_workspace_selector_focusable_handle_key_event(Xfdas
 		{
 			/* Activate previous workspace */
 			currentWorkspace--;
-			if(currentWorkspace>=0 && currentWorkspace<maxWorkspace)
-			{
-				workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
-				xfdashboard_window_tracker_workspace_activate(workspace);
-			}
+			if(currentWorkspace<0) currentWorkspace=maxWorkspace-1;
+
+			workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
+			xfdashboard_window_tracker_workspace_activate(workspace);
 
 			/* Event handled */
 			return(CLUTTER_EVENT_STOP);
@@ -846,11 +845,10 @@ static gboolean _xfdashboard_workspace_selector_focusable_handle_key_event(Xfdas
 			{
 				/* Activate next workspace */
 				currentWorkspace++;
-				if(currentWorkspace>=0 && currentWorkspace<maxWorkspace)
-				{
-					workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
-					xfdashboard_window_tracker_workspace_activate(workspace);
-				}
+				if(currentWorkspace>=maxWorkspace) currentWorkspace=0;
+
+				workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
+				xfdashboard_window_tracker_workspace_activate(workspace);
 
 				/* Event handled */
 				return(CLUTTER_EVENT_STOP);
