@@ -38,11 +38,16 @@
 #include "enums.h"
 #include "drag-action.h"
 #include "stylable.h"
+#include "focusable.h"
+#include "focus-manager.h"
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardApplicationsView,
-				xfdashboard_applications_view,
-				XFDASHBOARD_TYPE_VIEW)
+static void _xfdashboard_applications_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardApplicationsView,
+						xfdashboard_applications_view,
+						XFDASHBOARD_TYPE_VIEW,
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_applications_view_focusable_iface_init))
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_APPLICATIONS_VIEW_GET_PRIVATE(obj) \
@@ -61,6 +66,9 @@ struct _XfdashboardApplicationsViewPrivate
 	ClutterLayoutManager				*layout;
 	XfdashboardApplicationsMenuModel	*apps;
 	GarconMenuElement					*currentRootMenuElement;
+
+	gboolean							hasFocus;
+	ClutterActor						*selectedItem;
 };
 
 /* Properties */
@@ -223,6 +231,7 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 	priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
 
 	/* Destroy all children */
+	priv->selectedItem=NULL;
 	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
 	clutter_layout_manager_layout_changed(priv->layout);
 
@@ -258,6 +267,13 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 		clutter_actor_show(actor);
 
 		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_parent_menu_clicked), self);
+
+		/* Select "parent menu" automatically */
+		if(priv->hasFocus)
+		{
+			priv->selectedItem=CLUTTER_ACTOR(actor);
+			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+		}
 	}
 
 	/* Iterate through (filtered) data model and create actor for each entry */
@@ -297,6 +313,15 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 				g_signal_connect(dragAction, "drag-end", G_CALLBACK(_xfdashboard_applications_view_on_drag_end), self);
 			}
 
+			/* If no item was selected (i.e. no "parent menu" item) select this one
+			 * which is usually the first menu item.
+			 */
+			if(priv->hasFocus && !priv->selectedItem)
+			{
+				priv->selectedItem=CLUTTER_ACTOR(actor);
+				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+			}
+
 			/* Release allocated resources */
 			g_object_unref(menuElement);
 			menuElement=NULL;
@@ -322,6 +347,198 @@ static void _xfdashboard_applications_view_on_model_loaded(XfdashboardApplicatio
 	 */
 	priv->currentRootMenuElement=NULL;
 	xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(priv->currentRootMenuElement));
+}
+
+/* IMPLEMENTATION: Interface XfdashboardFocusable */
+
+/* Determine if actor can get the focus */
+static gboolean _xfdashboard_applications_view_focusable_can_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardApplicationsView			*self;
+	XfdashboardFocusableInterface		*selfIface;
+	XfdashboardFocusableInterface		*parentIface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), FALSE);
+
+	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->can_focus)
+	{
+		if(!parentIface->can_focus(inFocusable)) return(FALSE);
+	}
+
+	/* If this view is not enabled it is not focusable */
+	if(!xfdashboard_view_get_enabled(XFDASHBOARD_VIEW(self))) return(FALSE);
+
+	/* If we get here this actor can be focused */
+	return(TRUE);
+}
+
+/* Set focus to actor */
+static void _xfdashboard_applications_view_focusable_set_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardApplicationsView				*self;
+	XfdashboardApplicationsViewPrivate		*priv;
+	XfdashboardFocusableInterface			*selfIface;
+	XfdashboardFocusableInterface			*parentIface;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable));
+
+	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
+	priv=self->priv;
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->set_focus)
+	{
+		parentIface->set_focus(inFocusable);
+	}
+
+	/* Reset selected item to first one */
+	if(!priv->selectedItem)
+	{
+		priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+	}
+
+	if(priv->selectedItem)
+	{
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+	}
+
+	/* This view gained focus */
+	priv->hasFocus=TRUE;
+}
+
+/* Unset focus from actor */
+static void _xfdashboard_applications_view_focusable_unset_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardApplicationsView				*self;
+	XfdashboardApplicationsViewPrivate		*priv;
+	XfdashboardFocusableInterface			*selfIface;
+	XfdashboardFocusableInterface			*parentIface;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable));
+
+	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
+	priv=self->priv;
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->set_focus)
+	{
+		parentIface->unset_focus(inFocusable);
+	}
+
+	/* Unstyle selected item */
+	if(priv->selectedItem)
+	{
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+	}
+
+	/* This view lost focus */
+	priv->hasFocus=FALSE;
+}
+
+/* Virtual function "handle_key_event" was called */
+static gboolean _xfdashboard_applications_view_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
+																			const ClutterEvent *inEvent)
+{
+	XfdashboardApplicationsView				*self;
+	XfdashboardApplicationsViewPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
+	priv=self->priv;
+
+	/* Handle key events when key was released */
+	if(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
+	{
+		/* Start selected application on ENTER */
+		switch(inEvent->key.keyval)
+		{
+			case CLUTTER_KEY_Return:
+			case CLUTTER_KEY_KP_Enter:
+			case CLUTTER_KEY_ISO_Enter:
+				if(priv->selectedItem)
+				{
+					if(XFDASHBOARD_IS_APPLICATION_BUTTON(priv->selectedItem))
+					{
+						_xfdashboard_applications_view_on_item_clicked(self, XFDASHBOARD_APPLICATION_BUTTON(priv->selectedItem));
+					}
+						else if(XFDASHBOARD_IS_BUTTON(priv->selectedItem))
+						{
+							_xfdashboard_applications_view_on_parent_menu_clicked(self, XFDASHBOARD_BUTTON(priv->selectedItem));
+						}
+				}
+				return(CLUTTER_EVENT_STOP);
+		}
+
+		/* Move selection if an arrow key was pressed */
+		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
+		{
+			ClutterActor					*newSelection;
+
+			newSelection=NULL;
+
+			/* Get new selected item */
+			if(inEvent->key.keyval==CLUTTER_KEY_Up)
+			{
+				if(!priv->selectedItem) newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+					else newSelection=clutter_actor_get_previous_sibling(priv->selectedItem);
+			}
+
+			if(inEvent->key.keyval==CLUTTER_KEY_Down)
+			{
+				if(!priv->selectedItem) newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+					else newSelection=clutter_actor_get_next_sibling(priv->selectedItem);
+			}
+
+			/* If selection did not changed do nothing */
+			if(!newSelection || newSelection==priv->selectedItem) return(CLUTTER_EVENT_STOP);
+
+			/* Unstyle current selection */
+			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+
+			/* Remember and style new selection */
+			priv->selectedItem=newSelection;
+			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+
+			/* Event handled */
+			return(CLUTTER_EVENT_STOP);
+		}
+			else
+			{
+				// TODO: Implement navigation for icon view mode
+				g_warning("Navigation in icon is not yet implemented");
+			}
+	}
+
+	/* We did not handle this event */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_applications_view_focusable_iface_init(XfdashboardFocusableInterface *iface)
+{
+	iface->can_focus=_xfdashboard_applications_view_focusable_can_focus;
+	iface->set_focus=_xfdashboard_applications_view_focusable_set_focus;
+	iface->unset_focus=_xfdashboard_applications_view_focusable_unset_focus;
+	iface->handle_key_event=_xfdashboard_applications_view_focusable_handle_key_event;
 }
 
 /* IMPLEMENTATION: GObject */
@@ -522,6 +739,8 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	priv->parentMenuIcon=NULL;
 	priv->formatTitleOnly=g_strdup("%s");
 	priv->formatTitleDescription=g_strdup("%s\n%s");
+	priv->hasFocus=FALSE;
+	priv->selectedItem=NULL;
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "applications");
@@ -529,6 +748,8 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), GTK_STOCK_HOME);
 
 	/* Set up actor */
+	xfdashboard_actor_set_can_focus(XFDASHBOARD_ACTOR(self), TRUE);
+
 	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_HORIZONTAL);
 	xfdashboard_applications_view_set_view_mode(self, XFDASHBOARD_VIEW_MODE_LIST);
 	clutter_model_set_sorting_column(CLUTTER_MODEL(priv->apps), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE);

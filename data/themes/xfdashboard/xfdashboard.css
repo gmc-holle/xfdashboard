@@ -383,9 +383,17 @@ XfdashboardWindowsView
 	corner-radius: 4.0;
 }
 
-XfdashboardLiveWindow:selected
+XfdashboardWindowsView XfdashboardLiveWindow:selected
 {
 	background-type: outline;
 	outline-color: #ff0000;
 	outline-width: 4.0;
+}
+
+XfdashboardApplicationsView XfdashboardButton:selected
+{
+	background-type: fill rounded-corners;
+	background-fill-color: #808080;
+	corners: all;
+	corner-radius: 4.0;
 }
