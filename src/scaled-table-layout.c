@@ -66,6 +66,10 @@ enum
 	PROP_COLUMN_SPACING,
 	PROP_RELATIVE_SCALE,
 
+	PROP_NUMBER_CHILDREN,
+	PROP_ROWS,
+	PROP_COLUMNS,
+
 	PROP_LAST
 };
 
@@ -81,7 +85,9 @@ static void _xfdashboard_scaled_table_layout_update_rows_and_columns(Xfdashboard
 	ClutterRequestMode						requestMode;
 	ClutterActorIter						iter;
 	ClutterActor							*child;
-
+	gint									numberChildren;
+	gint									rows;
+	gint									columns;
 
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -89,12 +95,21 @@ static void _xfdashboard_scaled_table_layout_update_rows_and_columns(Xfdashboard
 
 	priv=self->priv;
 
+	/* Freeze notification */
+	g_object_freeze_notify(G_OBJECT(self));
+
 	/* Get number of visible child actors */
-	priv->numberChildren=0;
+	numberChildren=0;
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
-		if(CLUTTER_ACTOR_IS_VISIBLE(child)) priv->numberChildren++;
+		if(CLUTTER_ACTOR_IS_VISIBLE(child)) numberChildren++;
+	}
+
+	if(numberChildren!=priv->numberChildren)
+	{
+		priv->numberChildren=numberChildren;
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardScaledTableLayoutProperties[PROP_NUMBER_CHILDREN]);
 	}
 
 	/* Get request mode to determine if more rows than colums are needed
@@ -105,14 +120,29 @@ static void _xfdashboard_scaled_table_layout_update_rows_and_columns(Xfdashboard
 	/* Calculate and update number of rows and columns */
 	if(requestMode==CLUTTER_REQUEST_HEIGHT_FOR_WIDTH)
 	{
-		priv->rows=ceil(sqrt((double)priv->numberChildren));
-		priv->columns=ceil((double)priv->numberChildren / (double)priv->rows);
+		rows=ceil(sqrt((double)priv->numberChildren));
+		columns=ceil((double)priv->numberChildren / (double)priv->rows);
 	}
 		else
 		{
-			priv->columns=ceil(sqrt((double)priv->numberChildren));
-			priv->rows=ceil((double)priv->numberChildren / (double)priv->columns);
+			columns=ceil(sqrt((double)priv->numberChildren));
+			rows=ceil((double)priv->numberChildren / (double)priv->columns);
 		}
+
+	if(rows!=priv->rows)
+	{
+		priv->rows=rows;
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardScaledTableLayoutProperties[PROP_ROWS]);
+	}
+
+	if(columns!=priv->columns)
+	{
+		priv->columns=columns;
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardScaledTableLayoutProperties[PROP_COLUMNS]);
+	}
+
+	/* Thaw notification */
+	g_object_thaw_notify(G_OBJECT(self));
 }
 
 /* IMPLEMENTATION: ClutterLayoutManager */
@@ -361,6 +391,18 @@ static void _xfdashboard_scaled_table_layout_get_property(GObject *inObject,
 			g_value_set_boolean(outValue, self->priv->relativeScale);
 			break;
 
+		case PROP_NUMBER_CHILDREN:
+			g_value_set_int(outValue, self->priv->numberChildren);
+			break;
+
+		case PROP_ROWS:
+			g_value_set_int(outValue, self->priv->rows);
+			break;
+
+		case PROP_COLUMNS:
+			g_value_set_int(outValue, self->priv->columns);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -413,6 +455,33 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardScaledTableLayoutProperties[PROP_NUMBER_CHILDREN]=
+		g_param_spec_float("number-children",
+								_("Number children"),
+								_("Current number of child actors in this layout"),
+								0,
+								G_MAXINT,
+								0,
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardScaledTableLayoutProperties[PROP_ROWS]=
+		g_param_spec_float("rows",
+								_("Rows"),
+								_("Current number of rows in this layout"),
+								0,
+								G_MAXINT,
+								0,
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardScaledTableLayoutProperties[PROP_COLUMNS]=
+		g_param_spec_float("columns",
+								_("Columns"),
+								_("Current number of columns in this layout"),
+								0,
+								G_MAXINT,
+								0,
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+	
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardScaledTableLayoutProperties);
 }
 
