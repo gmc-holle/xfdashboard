@@ -64,6 +64,10 @@ GType xfdashboard_scaled_table_layout_get_type(void) G_GNUC_CONST;
 
 ClutterLayoutManager* xfdashboard_scaled_table_layout_new(void);
 
+gint xfdashboard_scaled_table_layout_get_number_children(XfdashboardScaledTableLayout *self);
+gint xfdashboard_scaled_table_layout_get_rows(XfdashboardScaledTableLayout *self);
+gint xfdashboard_scaled_table_layout_get_columns(XfdashboardScaledTableLayout *self);
+
 gboolean xfdashboard_scaled_table_layout_get_relative_scale(XfdashboardScaledTableLayout *self);
 void xfdashboard_scaled_table_layout_set_relative_scale(XfdashboardScaledTableLayout *self, gboolean inScaling);
 

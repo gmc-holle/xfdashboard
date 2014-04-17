@@ -382,3 +382,10 @@ XfdashboardWindowsView
 	corners: all;
 	corner-radius: 4.0;
 }
+
+XfdashboardLiveWindow:selected
+{
+	background-type: outline;
+	outline-color: #ff0000;
+	outline-width: 4.0;
+}

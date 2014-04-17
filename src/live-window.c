@@ -45,7 +45,7 @@
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWindow,
 				xfdashboard_live_window,
-				XFDASHBOARD_TYPE_ACTOR)
+				XFDASHBOARD_TYPE_BACKGROUND)
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_LIVE_WINDOW_GET_PRIVATE(obj) \

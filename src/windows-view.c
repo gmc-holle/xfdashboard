@@ -41,11 +41,15 @@
 #include "window-tracker.h"
 #include "image.h"
 #include "utils.h"
+#include "focusable.h"
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardWindowsView,
-				xfdashboard_windows_view,
-				XFDASHBOARD_TYPE_VIEW)
+static void _xfdashboard_windows_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowsView,
+						xfdashboard_windows_view,
+						XFDASHBOARD_TYPE_VIEW,
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_windows_view_focusable_iface_init))
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_WINDOWS_VIEW_GET_PRIVATE(obj) \
@@ -60,6 +64,7 @@ struct _XfdashboardWindowsViewPrivate
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
 	ClutterLayoutManager				*layout;
+	ClutterActor						*selectedItem;
 };
 
 /* Properties */
@@ -226,14 +231,46 @@ static void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *s
 														XfdashboardWindowTrackerWindow *inWindow,
 														gpointer inUserData)
 {
+	XfdashboardWindowsViewPrivate		*priv;
 	XfdashboardLiveWindow				*liveWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
+	priv=self->priv;
+
 	/* Find live window for window just being closed and destroy it */
 	liveWindow=_xfdashboard_windows_view_find_by_window(self, inWindow);
-	if(G_LIKELY(liveWindow)) clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
+	if(G_LIKELY(liveWindow))
+	{
+		/* Move selection to next window as this one (the selected one)
+		 * will be destroyed.
+		 */
+		if(priv->selectedItem &&
+			(gpointer)liveWindow==(gpointer)priv->selectedItem)
+		{
+			/* Get next selectable window */
+			priv->selectedItem=clutter_actor_get_next_sibling(priv->selectedItem);
+
+			/* If no selectable window follows this one, select first one */
+			if(!priv->selectedItem)
+			{
+				priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+			}
+
+			/* If either next selectable window or first one was found,
+			 * style it.
+			 */
+			if(priv->selectedItem)
+			{
+				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem),
+														"selected");
+			}
+		}
+
+		/* Destroy actor */
+		clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
+	}
 }
 
 /* A live window was clicked */
@@ -293,11 +330,13 @@ static void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWi
 																	gboolean inIsVisible,
 																	gpointer inUserData)
 {
+	XfdashboardWindowsViewPrivate		*priv;
 	XfdashboardLiveWindow				*liveWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
+	priv=self->priv;
 	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
 	/* If window is shown, show it in window list - otherwise hide it.
@@ -305,7 +344,41 @@ static void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWi
 	 * get visible again.
 	 */
 	if(inIsVisible) clutter_actor_show(CLUTTER_ACTOR(liveWindow));
-		else clutter_actor_hide(CLUTTER_ACTOR(liveWindow));
+		else
+		{
+			/* Move selection to next window as this one (the selected one)
+			 * will be hidden and it does not make sense to keep a hidden
+			 * window selected ;)
+			 */
+			if(priv->selectedItem &&
+				(gpointer)liveWindow==(gpointer)priv->selectedItem)
+			{
+				/* Unstyle still selected window */
+				xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem),
+															"selected");
+
+				/* Get next selectable window */
+				priv->selectedItem=clutter_actor_get_next_sibling(priv->selectedItem);
+
+				/* If no selectable window follows this one, select first one */
+				if(!priv->selectedItem)
+				{
+					priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+				}
+
+				/* If either next selectable window or first one was found,
+				 * style it.
+				 */
+				if(priv->selectedItem)
+				{
+					xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem),
+															"selected");
+				}
+			}
+
+			/* Hide actor */
+			clutter_actor_hide(CLUTTER_ACTOR(liveWindow));
+		}
 }
 
 /* A window changed workspace or was pinned to all workspaces */
@@ -327,6 +400,32 @@ static void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWin
 	if(!xfdashboard_window_tracker_window_is_pinned(window) &&
 		xfdashboard_window_tracker_window_get_workspace(window)!=priv->workspace)
 	{
+		/* Move selection to next window as this one (the selected one)
+		 * will be destroyed.
+		 */
+		if(priv->selectedItem &&
+			(gpointer)liveWindow==(gpointer)priv->selectedItem)
+		{
+			/* Get next selectable window */
+			priv->selectedItem=clutter_actor_get_next_sibling(priv->selectedItem);
+
+			/* If no selectable window follows this one, select first one */
+			if(!priv->selectedItem)
+			{
+				priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+			}
+
+			/* If either next selectable window or first one was found,
+			 * style it.
+			 */
+			if(priv->selectedItem)
+			{
+				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem),
+														"selected");
+			}
+		}
+
+		/* Destroy actor */
 		clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
 	}
 }
@@ -459,6 +558,7 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 
 	/* Destroy all actors */
 	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
+	priv->selectedItem=NULL;
 
 	/* Create live window actors for new workspace */
 	if(priv->workspace!=NULL)
@@ -490,6 +590,267 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_WORKSPACE]);
+}
+
+/* IMPLEMENTATION: Interface XfdashboardFocusable */
+
+/* Determine if actor can get the focus */
+static gboolean _xfdashboard_windows_view_focusable_can_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardWindowsView			*self;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), FALSE);
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->can_focus)
+	{
+		if(!parentIface->can_focus(inFocusable)) return(FALSE);
+	}
+
+	/* If this view is not enabled it is not focusable */
+	if(!xfdashboard_view_get_enabled(XFDASHBOARD_VIEW(self))) return(FALSE);
+
+	/* If we get here this actor can be focused */
+	return(TRUE);
+}
+
+/* Set focus to actor */
+static void _xfdashboard_windows_view_focusable_set_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardWindowsView			*self;
+	XfdashboardWindowsViewPrivate	*priv;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable));
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
+	priv=self->priv;
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->set_focus)
+	{
+		parentIface->set_focus(inFocusable);
+	}
+
+	/* Reset selected item to first one */
+	if(!priv->selectedItem)
+	{
+		priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+	}
+
+	if(priv->selectedItem)
+	{
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+	}
+}
+
+/* Unset focus from actor */
+static void _xfdashboard_windows_view_focusable_unset_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardWindowsView			*self;
+	XfdashboardWindowsViewPrivate	*priv;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable));
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
+	priv=self->priv;
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->set_focus)
+	{
+		parentIface->unset_focus(inFocusable);
+	}
+
+	/* Unstyle selected item */
+	if(priv->selectedItem)
+	{
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+	}
+}
+
+/* Virtual function "handle_key_event" was called */
+static gboolean _xfdashboard_windows_view_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
+																		const ClutterEvent *inEvent)
+{
+	XfdashboardWindowsView					*self;
+	XfdashboardWindowsViewPrivate			*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
+	priv=self->priv;
+
+	/* Handle key events when key was released */
+	if(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
+	{
+		/* Activate selected window on ENTER or close window on DELETE/BACKSPACE */
+		switch(inEvent->key.keyval)
+		{
+			case CLUTTER_KEY_Return:
+			case CLUTTER_KEY_KP_Enter:
+			case CLUTTER_KEY_ISO_Enter:
+				if(priv->selectedItem)
+				{
+					_xfdashboard_windows_view_on_window_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
+				}
+				return(CLUTTER_EVENT_STOP);
+
+			case CLUTTER_KEY_BackSpace:
+			case CLUTTER_KEY_Delete:
+			case CLUTTER_KEY_KP_Delete:
+				if(priv->selectedItem)
+				{
+					_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
+				}
+				return(CLUTTER_EVENT_STOP);
+		}
+
+		/* Move selection if an arrow key was pressed */
+		if(inEvent->key.keyval==CLUTTER_KEY_Left ||
+			inEvent->key.keyval==CLUTTER_KEY_Right ||
+			inEvent->key.keyval==CLUTTER_KEY_Up ||
+			inEvent->key.keyval==CLUTTER_KEY_Down)
+		{
+			gint							index;
+			gint							newIndex;
+			gint							numberChildren;
+			gint							rows;
+			gint							columns;
+			gint							selectionRow;
+			gint							selectionColumn;
+			ClutterActorIter				iter;
+			ClutterActor					*child;
+
+			/* If there is nothing selected, select first actor and return */
+			if(!priv->selectedItem)
+			{
+				priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+
+				if(priv->selectedItem)
+				{
+					xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+				}
+
+				return(CLUTTER_EVENT_STOP);
+			}
+
+			/* Get number of rows and columns and also get number of children
+			 * of layout manager.
+			 */
+			numberChildren=xfdashboard_scaled_table_layout_get_number_children(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
+			rows=xfdashboard_scaled_table_layout_get_rows(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
+			columns=xfdashboard_scaled_table_layout_get_columns(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
+
+			/* Get index of current selection */
+			newIndex=index=0;
+			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+			while(clutter_actor_iter_next(&iter, &child) &&
+					child!=priv->selectedItem)
+			{
+				index++;
+				newIndex++;
+			}
+
+			selectionRow=(index / columns);
+			selectionColumn=(index % columns);
+
+			/* Determine index of new selection depending on arrow key pressed */
+			if(columns>1 && inEvent->key.keyval==CLUTTER_KEY_Left)
+			{
+				newIndex--;
+				if(newIndex<(selectionRow*columns))
+				{
+					newIndex=(selectionRow*columns)+columns-1;
+					if(newIndex>=numberChildren) newIndex=numberChildren-1;
+				}
+			}
+
+			if(columns>1 && inEvent->key.keyval==CLUTTER_KEY_Right)
+			{
+				newIndex++;
+				if(newIndex>=((selectionRow+1)*columns) ||
+					newIndex>=numberChildren)
+				{
+					newIndex=(selectionRow*columns);
+				}
+			}
+
+			if(rows>1 && inEvent->key.keyval==CLUTTER_KEY_Up)
+			{
+				newIndex-=columns;
+				if(newIndex<0)
+				{
+					newIndex=((rows-1)*columns)+selectionColumn;
+					if(newIndex>=numberChildren) newIndex-=columns;
+				}
+			}
+
+			if(rows>1 && inEvent->key.keyval==CLUTTER_KEY_Down)
+			{
+				newIndex+=columns;
+				if(newIndex>=numberChildren) newIndex=selectionColumn;
+			}
+
+			/* Only change selection and update the affected actors if index of
+			 * new and old selection differ.
+			 */
+			if(newIndex==index) return(CLUTTER_EVENT_STOP);
+
+			/* Unstyle current selection */
+			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+
+			/* Get new selection and style it */
+			index=newIndex;
+			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+			while(clutter_actor_iter_next(&iter, &priv->selectedItem) &&
+					index>0)
+			{
+				index--;
+			}
+
+			if(priv->selectedItem)
+			{
+				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+			}
+
+			/* Event handled */
+			return(CLUTTER_EVENT_STOP);
+		}
+	}
+
+	/* We did not handle this event */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_windows_view_focusable_iface_init(XfdashboardFocusableInterface *iface)
+{
+	iface->can_focus=_xfdashboard_windows_view_focusable_can_focus;
+	iface->set_focus=_xfdashboard_windows_view_focusable_set_focus;
+	iface->unset_focus=_xfdashboard_windows_view_focusable_unset_focus;
+	iface->handle_key_event=_xfdashboard_windows_view_focusable_handle_key_event;
 }
 
 /* IMPLEMENTATION: GObject */
@@ -620,6 +981,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->workspace=NULL;
 	priv->spacing=0.0f;
+	priv->selectedItem=NULL;
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "windows");
@@ -628,6 +990,8 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_BOTH);
 
 	/* Setup actor */
+	xfdashboard_actor_set_can_focus(XFDASHBOARD_ACTOR(self), TRUE);
+
 	priv->layout=xfdashboard_scaled_table_layout_new();
 	xfdashboard_scaled_table_layout_set_relative_scale(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout), TRUE);
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);

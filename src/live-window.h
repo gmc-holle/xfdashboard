@@ -28,7 +28,7 @@
 
 #include <clutter/clutter.h>
 
-#include "actor.h"
+#include "background.h"
 #include "button.h"
 #include "window-tracker.h"
 
@@ -48,7 +48,7 @@ typedef struct _XfdashboardLiveWindowPrivate		XfdashboardLiveWindowPrivate;
 struct _XfdashboardLiveWindow
 {
 	/* Parent instance */
-	XfdashboardActor				parent_instance;
+	XfdashboardBackground			parent_instance;
 
 	/* Private structure */
 	XfdashboardLiveWindowPrivate	*priv;
@@ -58,7 +58,7 @@ struct _XfdashboardLiveWindowClass
 {
 	/*< private >*/
 	/* Parent class */
-	XfdashboardActorClass			parent_class;
+	XfdashboardBackgroundClass		parent_class;
 
 	/*< public >*/
 	/* Virtual functions */

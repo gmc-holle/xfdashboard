@@ -808,8 +808,10 @@ static gboolean _xfdashboard_viewpad_focusable_can_focus(XfdashboardFocusable *i
 /* Set focus to actor */
 static void _xfdashboard_viewpad_focusable_set_focus(XfdashboardFocusable *inFocusable)
 {
-	XfdashboardViewpad			*self;
-	XfdashboardViewpadPrivate	*priv;
+	XfdashboardViewpad				*self;
+	XfdashboardViewpadPrivate		*priv;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
 
 	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inFocusable));
@@ -824,15 +826,27 @@ static void _xfdashboard_viewpad_focusable_set_focus(XfdashboardFocusable *inFoc
 	if(priv->activeView &&
 		XFDASHBOARD_IS_FOCUSABLE(priv->activeView))
 	{
+		/* Call virtual function of view to set focus */
 		xfdashboard_focusable_set_focus(XFDASHBOARD_FOCUSABLE(priv->activeView));
+
+		/* Call parent class interface function of this actor */
+		selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+		parentIface=g_type_interface_peek_parent(selfIface);
+
+		if(parentIface && parentIface->set_focus)
+		{
+			parentIface->set_focus(inFocusable);
+		}
 	}
 }
 
 /* Unset focus from actor */
 static void _xfdashboard_viewpad_focusable_unset_focus(XfdashboardFocusable *inFocusable)
 {
-	XfdashboardViewpad			*self;
-	XfdashboardViewpadPrivate	*priv;
+	XfdashboardViewpad				*self;
+	XfdashboardViewpadPrivate		*priv;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
 
 	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inFocusable));
@@ -847,7 +861,17 @@ static void _xfdashboard_viewpad_focusable_unset_focus(XfdashboardFocusable *inF
 	if(priv->activeView &&
 		XFDASHBOARD_IS_FOCUSABLE(priv->activeView))
 	{
+		/* Call virtual function of view to unset focus */
 		xfdashboard_focusable_unset_focus(XFDASHBOARD_FOCUSABLE(priv->activeView));
+
+		/* Call parent class interface function of this actor */
+		selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+		parentIface=g_type_interface_peek_parent(selfIface);
+
+		if(parentIface && parentIface->unset_focus)
+		{
+			parentIface->unset_focus(inFocusable);
+		}
 	}
 }
 

@@ -54,6 +54,7 @@ struct _XfdashboardScaledTableLayoutPrivate
 	/* Instance related */
 	gint		rows;
 	gint		columns;
+	gint		numberChildren;
 };
 
 /* Properties */
@@ -77,10 +78,10 @@ static void _xfdashboard_scaled_table_layout_update_rows_and_columns(Xfdashboard
 																		ClutterContainer *inContainer)
 {
 	XfdashboardScaledTableLayoutPrivate		*priv;
-	ClutterActor							*child;
-	ClutterActorIter						iter;
 	ClutterRequestMode						requestMode;
-	gint									numberChildren;
+	ClutterActorIter						iter;
+	ClutterActor							*child;
+
 
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -89,11 +90,11 @@ static void _xfdashboard_scaled_table_layout_update_rows_and_columns(Xfdashboard
 	priv=self->priv;
 
 	/* Get number of visible child actors */
-	numberChildren=0;
+	priv->numberChildren=0;
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
-		if(CLUTTER_ACTOR_IS_VISIBLE(child)) numberChildren++;
+		if(CLUTTER_ACTOR_IS_VISIBLE(child)) priv->numberChildren++;
 	}
 
 	/* Get request mode to determine if more rows than colums are needed
@@ -104,13 +105,13 @@ static void _xfdashboard_scaled_table_layout_update_rows_and_columns(Xfdashboard
 	/* Calculate and update number of rows and columns */
 	if(requestMode==CLUTTER_REQUEST_HEIGHT_FOR_WIDTH)
 	{
-		priv->rows=ceil(sqrt((double)numberChildren));
-		priv->columns=ceil((double)numberChildren / (double)priv->rows);
+		priv->rows=ceil(sqrt((double)priv->numberChildren));
+		priv->columns=ceil((double)priv->numberChildren / (double)priv->rows);
 	}
 		else
 		{
-			priv->columns=ceil(sqrt((double)numberChildren));
-			priv->rows=ceil((double)numberChildren / (double)priv->columns);
+			priv->columns=ceil(sqrt((double)priv->numberChildren));
+			priv->rows=ceil((double)priv->numberChildren / (double)priv->columns);
 		}
 }
 
@@ -431,6 +432,7 @@ static void xfdashboard_scaled_table_layout_init(XfdashboardScaledTableLayout *s
 
 	priv->rows=0;
 	priv->columns=0;
+	priv->numberChildren=0;
 }
 
 /* IMPLEMENTATION: Public API */
@@ -439,6 +441,30 @@ static void xfdashboard_scaled_table_layout_init(XfdashboardScaledTableLayout *s
 ClutterLayoutManager* xfdashboard_scaled_table_layout_new(void)
 {
 	return(CLUTTER_LAYOUT_MANAGER(g_object_new(XFDASHBOARD_TYPE_SCALED_TABLE_LAYOUT, NULL)));
+}
+
+/* Get number of (visible) children which will be layouted */
+gint xfdashboard_scaled_table_layout_get_number_children(XfdashboardScaledTableLayout *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self), 0);
+
+	return(self->priv->numberChildren);
+}
+
+/* Get number of rows */
+gint xfdashboard_scaled_table_layout_get_rows(XfdashboardScaledTableLayout *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self), 0);
+
+	return(self->priv->rows);
+}
+
+/* Get number of columns */
+gint xfdashboard_scaled_table_layout_get_columns(XfdashboardScaledTableLayout *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self), 0);
+
+	return(self->priv->columns);
 }
 
 /* Get/set relative scaling of all children to largest one */
