@@ -35,37 +35,18 @@
 #include "click-action.h"
 #include "drag-action.h"
 #include "utils.h"
+#include "focusable.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardSearchView,
-				xfdashboard_search_view,
-				XFDASHBOARD_TYPE_VIEW)
+static void _xfdashboard_search_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
 
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SEARCH_VIEW_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SEARCH_VIEW, XfdashboardSearchViewPrivate))
+G_DEFINE_TYPE_WITH_CODE(XfdashboardSearchView,
+						xfdashboard_search_view,
+						XFDASHBOARD_TYPE_VIEW,
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_search_view_focusable_iface_init))
 
-struct _XfdashboardSearchViewPrivate
-{
-	/* Instance related */
-	XfdashboardSearchManager			*searchManager;
-	GList								*providers;
-	gchar								*lastSearchString;
-	gchar								**lastSearchTermsList;
-};
-
-/* Signals */
-enum
-{
-	SIGNAL_SEARCH_RESET,
-	SIGNAL_SEARCH_UPDATED,
-
-	SIGNAL_LAST
-};
-
-static guint XfdashboardSearchViewSignals[SIGNAL_LAST]={ 0, };
-
-/* IMPLEMENTATION: Private variables and methods */
+/* IMPLEMENTATION: Private structures */
 typedef struct _XfdashboardSearchViewProviderData	XfdashboardSearchViewProviderData;
 struct _XfdashboardSearchViewProviderData
 {
@@ -89,6 +70,34 @@ struct _XfdashboardSearchViewProviderItemsMapping
 	ClutterActor						*actor;
 	guint								actorDestroyID;
 };
+
+/* Private structure - access only by public API if needed */
+#define XFDASHBOARD_SEARCH_VIEW_GET_PRIVATE(obj) \
+	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SEARCH_VIEW, XfdashboardSearchViewPrivate))
+
+struct _XfdashboardSearchViewPrivate
+{
+	/* Instance related */
+	XfdashboardSearchManager			*searchManager;
+	GList								*providers;
+	gchar								*lastSearchString;
+	gchar								**lastSearchTermsList;
+
+	XfdashboardSearchViewProviderData	*selectionProvider;
+};
+
+/* Signals */
+enum
+{
+	SIGNAL_SEARCH_RESET,
+	SIGNAL_SEARCH_UPDATED,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardSearchViewSignals[SIGNAL_LAST]={ 0, };
+
+/* IMPLEMENTATION: Private variables and methods */
 
 /* Remove a mapping between result set item and actor from stored mapping */
 static void _xfdashboard_search_view_provider_item_mapping_free(XfdashboardSearchViewProviderItemsMapping *inMapping)
@@ -558,12 +567,284 @@ static void _xfdashboard_search_view_on_search_provider_unregistered(Xfdashboard
 					G_OBJECT_TYPE_NAME(data->provider),
 					G_OBJECT_TYPE_NAME(self));
 
+		/* If provider data to free is the current selection reset selection to NULL.
+		 * There is no need to unset focus and to unstyle selected item in search result container
+		 * because it will be destroyed.
+		 */
+		if(data==priv->selectionProvider) priv->selectionProvider=NULL;
+
+		/* Find list entry to remove */
 		entry=g_list_find(priv->providers, data);
 		if(entry) priv->providers=g_list_delete_link(priv->providers, entry);
 
 		_xfdashboard_search_view_provider_data_free(data);
 	}
 }
+
+/* IMPLEMENTATION: Interface XfdashboardFocusable */
+
+/* Determine if actor can get the focus */
+static gboolean _xfdashboard_search_view_focusable_can_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardSearchView			*self;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->can_focus)
+	{
+		if(!parentIface->can_focus(inFocusable)) return(FALSE);
+	}
+
+	/* If this view is not enabled it is not focusable */
+	if(!xfdashboard_view_get_enabled(XFDASHBOARD_VIEW(self))) return(FALSE);
+
+	/* If we get here this actor can be focused */
+	return(TRUE);
+}
+
+/* Set focus to actor */
+static void _xfdashboard_search_view_focusable_set_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardSearchView			*self;
+	XfdashboardSearchViewPrivate	*priv;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable));
+
+	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
+	priv=self->priv;
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->set_focus)
+	{
+		parentIface->set_focus(inFocusable);
+	}
+
+	/* Reset selected item to first one */
+	if(!priv->selectionProvider)
+	{
+		priv->selectionProvider=(XfdashboardSearchViewProviderData*)g_list_nth_data(priv->providers, 0);
+	}
+
+	if(priv->selectionProvider &&
+		priv->selectionProvider->container)
+	{
+		ClutterActor				*item;
+
+		/* Set focus to search result container of selected provider */
+		xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+														TRUE);
+
+		/* Get current selectionr and style it */
+		item=xfdashboard_search_result_container_set_next_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END);
+		if(item &&
+			XFDASHBOARD_IS_STYLABLE(item))
+		{
+			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(item), "selected");
+		}
+	}
+}
+
+/* Unset focus from actor */
+static void _xfdashboard_search_view_focusable_unset_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardSearchView			*self;
+	XfdashboardSearchViewPrivate	*priv;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable));
+
+	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
+	priv=self->priv;
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->set_focus)
+	{
+		parentIface->unset_focus(inFocusable);
+	}
+
+	/* Unstyle selected item */
+	if(priv->selectionProvider &&
+		priv->selectionProvider->container)
+	{
+		ClutterActor				*item;
+
+		/* Get current selectionr and unstyle it */
+		item=xfdashboard_search_result_container_get_current_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container));
+		if(item &&
+			XFDASHBOARD_IS_STYLABLE(item))
+		{
+			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(item), "selected");
+		}
+
+		/* Unset focus from search result container of selected provider */
+		xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+														FALSE);
+	}
+}
+
+/* Virtual function "handle_key_event" was called */
+static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
+																	const ClutterEvent *inEvent)
+{
+	XfdashboardSearchView			*self;
+	XfdashboardSearchViewPrivate	*priv;
+	gboolean						handledEvent;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
+	priv=self->priv;
+	handledEvent=CLUTTER_EVENT_PROPAGATE;
+
+	/* Handle key events at container of selected provider */
+	if(priv->selectionProvider &&
+		priv->selectionProvider->container &&
+		clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
+	{
+		ClutterActor				*currentSelection;
+		ClutterActor				*newSelection;
+		gboolean					doGetPrevious;
+		gint						selectionDirection;
+
+		// TODO: Check for current selection and for ENTER released
+		//       to emit click signal on current selection
+
+		/* Move selection if an corresponding key was pressed */
+		switch(inEvent->key.keyval)
+		{
+			case CLUTTER_KEY_Up:
+				selectionDirection=XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_ROW;
+				doGetPrevious=TRUE;
+				handledEvent=CLUTTER_EVENT_STOP;
+				break;
+
+			case CLUTTER_KEY_Down:
+				selectionDirection=XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_ROW;
+				doGetPrevious=FALSE;
+				handledEvent=CLUTTER_EVENT_STOP;
+				break;
+
+			default:
+				break;
+		}
+
+		if(handledEvent==CLUTTER_EVENT_STOP)
+		{
+			/* Get current selection to determine if selection has changed */
+			currentSelection=xfdashboard_search_result_container_get_current_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container));
+
+			/* Get new selection */
+			if(doGetPrevious)
+			{
+				newSelection=xfdashboard_search_result_container_set_previous_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																						selectionDirection);
+			}
+				else
+				{
+					newSelection=xfdashboard_search_result_container_set_next_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																						selectionDirection);
+				}
+
+			/* If new selection is NULL move to next or previous container */
+			if(!newSelection)
+			{
+				GList								*newSelectionProviderInList;
+				XfdashboardSearchViewProviderData	*newSelectionProvider;
+
+				/* Get new selected provider to focus */
+				newSelectionProviderInList=g_list_find(priv->providers, priv->selectionProvider);
+				if(doGetPrevious)
+				{
+					/* Get previous provider to focus */
+					newSelectionProviderInList=g_list_previous(newSelectionProviderInList);
+					if(!newSelectionProviderInList) newSelectionProviderInList=g_list_last(priv->providers);
+					newSelectionProvider=(XfdashboardSearchViewProviderData*)newSelectionProviderInList->data;
+
+					/* Unset focus at current provider and set focus to new one if changed */
+					if(newSelectionProvider!=priv->selectionProvider)
+					{
+						xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																		FALSE);
+
+						priv->selectionProvider=newSelectionProvider;
+						xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																		TRUE);
+					}
+
+					/* Get last selectable item at newly selected provider */
+					newSelection=xfdashboard_search_result_container_set_previous_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																							XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END);
+				}
+					else
+					{
+						/* Get previous provider to focus */
+						newSelectionProviderInList=g_list_next(newSelectionProviderInList);
+						if(!newSelectionProviderInList) newSelectionProviderInList=g_list_first(priv->providers);
+						newSelectionProvider=(XfdashboardSearchViewProviderData*)newSelectionProviderInList->data;
+
+						/* Unset focus at current provider and set focus to new one if changed */
+						if(newSelectionProvider!=priv->selectionProvider)
+						{
+							xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																			FALSE);
+
+							priv->selectionProvider=newSelectionProvider;
+							xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																			TRUE);
+						}
+
+						/* Get last selectable item at newly selected provider */
+						newSelection=xfdashboard_search_result_container_set_next_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																							XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END);
+					}
+			}
+
+			/* Unstyle current selected item and style new selected item */
+			if(currentSelection) xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(currentSelection), "selected");
+			if(newSelection) xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(newSelection), "selected");
+
+			/* Event was handled */
+			return(CLUTTER_EVENT_STOP);
+		}
+	}
+
+	/* Return result of key handling */
+	return(handledEvent);
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_search_view_focusable_iface_init(XfdashboardFocusableInterface *iface)
+{
+	iface->can_focus=_xfdashboard_search_view_focusable_can_focus;
+	iface->set_focus=_xfdashboard_search_view_focusable_set_focus;
+	iface->unset_focus=_xfdashboard_search_view_focusable_unset_focus;
+	iface->handle_key_event=_xfdashboard_search_view_focusable_handle_key_event;
+}
+
 
 /* IMPLEMENTATION: GObject */
 
@@ -574,6 +855,11 @@ static void _xfdashboard_search_view_dispose(GObject *inObject)
 	XfdashboardSearchViewPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
+	if(priv->selectionProvider)
+	{
+		priv->selectionProvider=NULL;
+	}
+
 	if(priv->providers)
 	{
 		g_list_free_full(priv->providers, (GDestroyNotify)_xfdashboard_search_view_provider_data_free);
@@ -657,6 +943,7 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	priv->providers=NULL;
 	priv->lastSearchString=NULL;
 	priv->lastSearchTermsList=NULL;
+	priv->selectionProvider=NULL;
 
 	/* Set up view (Note: Search view is disabled by default!) */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "search");
@@ -665,6 +952,8 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	xfdashboard_view_set_enabled(XFDASHBOARD_VIEW(self), FALSE);
 
 	/* Set up actor */
+	xfdashboard_actor_set_can_focus(XFDASHBOARD_ACTOR(self), TRUE);
+
 	layout=clutter_box_layout_new();
 	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_VERTICAL);
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), layout);

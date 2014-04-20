@@ -58,6 +58,8 @@ struct _XfdashboardSearchResultContainerPrivate
 	ClutterLayoutManager		*layout;
 	ClutterActor				*titleTextBox;
 	ClutterActor				*itemsContainer;
+
+	ClutterActor				*selectedItem;
 };
 
 /* Properties */
@@ -340,6 +342,7 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 	priv->viewMode=-1;
 	priv->spacing=0.0f;
 	priv->padding=0.0f;
+	priv->selectedItem=NULL;
 
 	/* Set up children */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), FALSE);
@@ -354,6 +357,8 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 	xfdashboard_search_result_container_set_view_mode(self, DEFAULT_VIEW_MODE);
 
 	/* Set up actor */
+	xfdashboard_actor_set_can_focus(XFDASHBOARD_ACTOR(self), TRUE);
+
 	layout=clutter_box_layout_new();
 	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_VERTICAL);
 
@@ -588,4 +593,105 @@ void xfdashboard_search_result_container_add_result_actor(XfdashboardSearchResul
 
 	if(!inInsertAfter) clutter_actor_insert_child_below(priv->itemsContainer, inResultActor, NULL);
 		else clutter_actor_insert_child_above(priv->itemsContainer, inResultActor, inInsertAfter);
+}
+
+/* Set to or unset focus from container */
+void xfdashboard_search_result_container_set_focus(XfdashboardSearchResultContainer *self, gboolean inSetFocus)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+
+	priv=self->priv;
+
+	/* Unset selection */
+	priv->selectedItem=NULL;
+}
+
+/* Get current selection */
+ClutterActor* xfdashboard_search_result_container_get_current_selection(XfdashboardSearchResultContainer *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), NULL);
+
+	return(self->priv->selectedItem);
+}
+
+/* Get previous item in items container which can be selected */
+ClutterActor* xfdashboard_search_result_container_set_previous_selection(XfdashboardSearchResultContainer *self,
+																			XfdashboardSearchResultContainerSelectionDirection inDirection)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), NULL);
+
+	priv=self->priv;
+
+	/* Get previous selectable item to current one depending on view mode and direction.
+	 * only if there is an item selected currently.
+	 */
+	if(priv->selectedItem)
+	{
+		switch(inDirection)
+		{
+			case XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END:
+				priv->selectedItem=clutter_actor_get_last_child(priv->itemsContainer);
+				break;
+
+			case XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_ROW:
+				if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) priv->selectedItem=clutter_actor_get_previous_sibling(priv->selectedItem);
+				break;
+
+			default:
+				/* Do not change selection because it not be handled */
+				break;
+		}
+	}
+		/* If no item is selected, select first one */
+		else if(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END)
+		{
+			priv->selectedItem=clutter_actor_get_last_child(priv->itemsContainer);
+		}
+
+	/* Return newly set selectable item */
+	return(priv->selectedItem);
+}
+
+/* Get next item in items container which can be selected */
+ClutterActor* xfdashboard_search_result_container_set_next_selection(XfdashboardSearchResultContainer *self,
+																		XfdashboardSearchResultContainerSelectionDirection inDirection)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), NULL);
+
+	priv=self->priv;
+
+	/* Get next selectable item to current one depending on view mode and direction
+	 * only if there is an item selected currently.
+	 */
+	if(priv->selectedItem)
+	{
+		switch(inDirection)
+		{
+			case XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END:
+				priv->selectedItem=clutter_actor_get_first_child(priv->itemsContainer);
+				break;
+
+			case XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_ROW:
+				if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) priv->selectedItem=clutter_actor_get_next_sibling(priv->selectedItem);
+				break;
+
+			default:
+				/* Do not change selection because it not be handled */
+				break;
+		}
+	}
+		/* If no item is selected, select first one */
+		else if(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END)
+		{
+			priv->selectedItem=clutter_actor_get_first_child(priv->itemsContainer);
+		}
+
+	/* Return newly set selectable item */
+	return(priv->selectedItem);
 }

@@ -65,6 +65,14 @@ struct _XfdashboardSearchResultContainerClass
 };
 
 /* Public API */
+typedef enum /*< skip,prefix=XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION >*/
+{
+	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END,	/* Set to first or last item */
+	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_COLUMN,		/* Arrow left or arrow right key */
+	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_ROW,		/* Arrow up or arrow down key */
+	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_PAGE		/* Page-up or page-down key */
+} XfdashboardSearchResultContainerSelectionDirection;
+
 GType xfdashboard_search_result_container_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_search_result_container_new(XfdashboardSearchProvider *inProvider);
@@ -85,6 +93,13 @@ void xfdashboard_search_result_container_add_result_actor(XfdashboardSearchResul
 															ClutterActor *inResultActor,
 															ClutterActor *inInsertAfter);
 
+void xfdashboard_search_result_container_set_focus(XfdashboardSearchResultContainer *self, gboolean inSetFocus);
+
+ClutterActor* xfdashboard_search_result_container_get_current_selection(XfdashboardSearchResultContainer *self);
+ClutterActor* xfdashboard_search_result_container_set_previous_selection(XfdashboardSearchResultContainer *self,
+																			XfdashboardSearchResultContainerSelectionDirection inDirection);
+ClutterActor* xfdashboard_search_result_container_set_next_selection(XfdashboardSearchResultContainer *self,
+																		XfdashboardSearchResultContainerSelectionDirection inDirection);
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_SEARCH_RESULT_CONTAINER__ */

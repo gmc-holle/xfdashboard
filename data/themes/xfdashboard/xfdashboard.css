@@ -397,3 +397,11 @@ XfdashboardApplicationsView XfdashboardButton:selected
 	corners: all;
 	corner-radius: 4.0;
 }
+
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selected
+{
+	background-type: fill rounded-corners;
+	background-fill-color: #808080;
+	corners: all;
+	corner-radius: 4.0;
+}
