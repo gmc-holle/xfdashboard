@@ -68,6 +68,7 @@ struct _XfdashboardSearchViewProviderItemsMapping
 	XfdashboardSearchViewProviderData	*providerData;
 	GVariant							*item;
 	ClutterActor						*actor;
+	ClutterAction						*clickAction;
 	guint								actorDestroyID;
 };
 
@@ -242,6 +243,29 @@ static XfdashboardSearchViewProviderItemsMapping* _xfdashboard_search_view_provi
 	return(NULL);
 }
 
+static XfdashboardSearchViewProviderItemsMapping* _xfdashboard_search_view_provider_data_get_mapping_by_actor(XfdashboardSearchViewProviderData *inProviderData,
+																												ClutterActor *inActor)
+{
+	XfdashboardSearchViewProviderItemsMapping	*mapping;
+	GList										*entry;
+
+	g_return_val_if_fail(inProviderData, NULL);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), NULL);
+
+	/* Iterate through mappings in provider data and return mapping
+	 * if the actor in mapping is equal to given one
+	 */
+	for(entry=inProviderData->mappings; entry; entry=g_list_next(entry))
+	{
+		mapping=(XfdashboardSearchViewProviderItemsMapping*)entry->data;
+
+		if(mapping->actor==inActor) return(mapping);
+	}
+
+	/* If we get here we did not find a match */
+	return(NULL);
+}
+
 /* A provider icon was clicked */
 static void _xfdashboard_search_view_on_provider_icon_clicked(XfdashboardSearchResultContainer *inContainer,
 																gpointer inUserData)
@@ -265,9 +289,9 @@ static void _xfdashboard_search_view_on_provider_icon_clicked(XfdashboardSearchR
 }
 
 /* A result item actor was clicked */
-static void _xfdashboard_search_view_on_provider_item_actor_clicked(ClutterClickAction *inAction,
-																		ClutterActor *inActor,
-																		gpointer inUserData)
+static void _xfdashboard_search_view_on_provider_item_actor_clicked(XfdashboardClickAction *inAction,
+																	ClutterActor *inActor,
+																	gpointer inUserData)
 {
 	XfdashboardSearchViewProviderItemsMapping	*mapping;
 	XfdashboardSearchViewProviderData			*providerData;
@@ -361,7 +385,6 @@ static void _xfdashboard_search_view_update_provider_actor_new(gpointer inData,
 	XfdashboardSearchViewProviderData			*providerData;
 	XfdashboardSearchViewProviderItemsMapping	*mapping;
 	ClutterActor								*actor;
-	ClutterAction								*action;
 	XfdashboardSearchView						*self;
 	GList										*actionsList, *actionsEntry;
 
@@ -422,9 +445,9 @@ static void _xfdashboard_search_view_update_provider_actor_new(gpointer inData,
 												G_CALLBACK(_xfdashboard_search_view_on_provider_item_actor_destroy),
 												mapping);
 
-	action=xfdashboard_click_action_new();
-	clutter_actor_add_action(actor, action);
-	g_signal_connect(action,
+	mapping->clickAction=xfdashboard_click_action_new();
+	clutter_actor_add_action(actor, mapping->clickAction);
+	g_signal_connect(mapping->clickAction,
 						"clicked",
 						G_CALLBACK(_xfdashboard_search_view_on_provider_item_actor_clicked),
 						mapping);
@@ -728,8 +751,29 @@ static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardF
 		gboolean					doGetPrevious;
 		gint						selectionDirection;
 
-		// TODO: Check for current selection and for ENTER released
-		//       to emit click signal on current selection
+		/* Emit click on current selection when ENTER was pressed */
+		switch(inEvent->key.keyval)
+		{
+			case CLUTTER_KEY_Return:
+			case CLUTTER_KEY_KP_Enter:
+			case CLUTTER_KEY_ISO_Enter:
+				/* Get current selection to lookup mapping */
+				currentSelection=xfdashboard_search_result_container_get_current_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container));
+				if(currentSelection)
+				{
+					XfdashboardSearchViewProviderItemsMapping	*mapping;
+
+					/* Get mapping of current selection to determine actor where to emit click action */
+					mapping=_xfdashboard_search_view_provider_data_get_mapping_by_actor(priv->selectionProvider, currentSelection);
+					if(mapping)
+					{
+						_xfdashboard_search_view_on_provider_item_actor_clicked(XFDASHBOARD_CLICK_ACTION(mapping->clickAction),
+																				mapping->actor,
+																				mapping);
+					}
+				}
+				return(CLUTTER_EVENT_STOP);
+		}
 
 		/* Move selection if an corresponding key was pressed */
 		switch(inEvent->key.keyval)
