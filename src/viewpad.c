@@ -411,20 +411,18 @@ static void _xfdashboard_viewpad_on_allocation_changed(ClutterActor *inActor,
 }
 
 /* Scroll to requested position in view */
-static void _xfdashboard_viewpad_on_view_scroll_to(ClutterActor *inActor,
+static void _xfdashboard_viewpad_on_view_scroll_to(XfdashboardViewpad *self,
 													gfloat inX,
 													gfloat inY,
 													gpointer inUserData)
 {
-	XfdashboardViewpad			*self;
 	XfdashboardViewpadPrivate	*priv;
 	XfdashboardView				*view;
 	gfloat						x, y, w, h;
 
-	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inUserData));
 
-	self=XFDASHBOARD_VIEWPAD(inActor);
 	priv=self->priv;
 	view=XFDASHBOARD_VIEW(inUserData);
 
@@ -452,6 +450,91 @@ static void _xfdashboard_viewpad_on_view_scroll_to(ClutterActor *inActor,
 				}
 			clutter_actor_set_clip(CLUTTER_ACTOR(view), x, y, w, h);
 		}
+}
+
+/* Ensure that a child of a view is visible by scrolling if needed */
+static void _xfdashboard_viewpad_on_view_ensure_visible(XfdashboardViewpad *self,
+														ClutterActor *inActor,
+														gpointer inUserData)
+{
+	XfdashboardViewpadPrivate	*priv;
+	XfdashboardView				*view;
+	ClutterVertex				origin;
+	ClutterVertex				transformedUpperLeft;
+	ClutterVertex				transformedLowerRight;
+	gfloat						x, y, w, h;
+	gboolean					needScrolling;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inUserData));
+
+	priv=self->priv;
+	view=XFDASHBOARD_VIEW(inUserData);
+	needScrolling=FALSE;
+	origin.z=0.0f;
+
+	/* Get position and size of view but respect scrolled position */
+	if(view==priv->activeView)
+	{
+		x=xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar));
+		y=xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar));
+		clutter_actor_get_size(CLUTTER_ACTOR(self), &w, &h);
+	}
+		else
+		{
+			if(clutter_actor_has_clip(CLUTTER_ACTOR(view)))
+			{
+				clutter_actor_get_clip(CLUTTER_ACTOR(view), &x, &y, &w, &h);
+			}
+				else
+				{
+					x=y=0.0f;
+					clutter_actor_get_size(CLUTTER_ACTOR(view), &w, &h);
+				}
+		}
+
+	/* Check that upper left point of actor is visible otherwise set flag for scrolling */
+	origin.x=origin.y=0.0f;
+	clutter_actor_apply_relative_transform_to_point(inActor, CLUTTER_ACTOR(view), &origin, &transformedUpperLeft);
+	if(transformedUpperLeft.x<x ||
+		transformedUpperLeft.x>(x+w) ||
+		transformedUpperLeft.y<y ||
+		transformedUpperLeft.y>(y+h))
+	{
+		needScrolling=TRUE;
+	}
+
+	/* Check that lower right point of actor is visible otherwise set flag for scrolling */
+	clutter_actor_get_size(inActor, &origin.x, &origin.y);
+	clutter_actor_apply_relative_transform_to_point(inActor, CLUTTER_ACTOR(view), &origin, &transformedLowerRight);
+	if(transformedLowerRight.x<x ||
+		transformedLowerRight.x>(x+w) ||
+		transformedLowerRight.y<y ||
+		transformedLowerRight.y>(y+h))
+	{
+		needScrolling=TRUE;
+	}
+
+	/* Check if we need to scroll */
+	if(needScrolling)
+	{
+		gfloat					distanceUpperLeft;
+		gfloat					distanceLowerRight;
+
+		/* Find shortest way to scroll and then scroll */
+		distanceUpperLeft=sqrtf(powf(transformedUpperLeft.x-x, 2.0f)+powf(transformedUpperLeft.y-y, 2.0f));
+		distanceLowerRight=sqrtf(powf(transformedLowerRight.x-(x+w), 2.0f)+powf(transformedLowerRight.y-(y+h), 2.0f));
+
+		if(distanceUpperLeft<=distanceLowerRight)
+		{
+			_xfdashboard_viewpad_on_view_scroll_to(self, transformedUpperLeft.x, transformedUpperLeft.y, view);
+		}
+			else
+			{
+				_xfdashboard_viewpad_on_view_scroll_to(self, transformedUpperLeft.x, transformedLowerRight.y-h, view);
+			}
+	}
 }
 
 /* Create view of given type and add to this actor */
@@ -486,6 +569,7 @@ static void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, GType inView
 	clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(view));
 	g_signal_connect_swapped(view, "allocation-changed", G_CALLBACK(_xfdashboard_viewpad_on_allocation_changed), self);
 	g_signal_connect_swapped(view, "scroll-to", G_CALLBACK(_xfdashboard_viewpad_on_view_scroll_to), self);
+	g_signal_connect_swapped(view, "ensure-visible", G_CALLBACK(_xfdashboard_viewpad_on_view_ensure_visible), self);
 	g_signal_connect_swapped(view, "disabled", G_CALLBACK(_xfdashboard_viewpad_on_view_disabled), self);
 	g_signal_connect_swapped(view, "enabled", G_CALLBACK(_xfdashboard_viewpad_on_view_enabled), self);
 	g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ADDED], 0, view);

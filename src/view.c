@@ -32,6 +32,7 @@
 
 #include "marshal.h"
 #include "image.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 G_DEFINE_ABSTRACT_TYPE(XfdashboardView,
@@ -95,6 +96,7 @@ enum
 	SIGNAL_ICON_CHANGED,
 
 	SIGNAL_SCROLL_TO,
+	SIGNAL_ENSURE_VISIBLE,
 
 	SIGNAL_LAST
 };
@@ -390,6 +392,18 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 						2,
 						G_TYPE_FLOAT,
 						G_TYPE_FLOAT);
+
+	XfdashboardViewSignals[SIGNAL_ENSURE_VISIBLE]=
+		g_signal_new("ensure-visible",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardViewClass, ensure_visible),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						CLUTTER_TYPE_ACTOR);
 }
 
 /* Object initialization
@@ -579,4 +593,17 @@ void xfdashboard_view_scroll_to(XfdashboardView *self, gfloat inX, gfloat inY)
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
 
 	g_signal_emit(self, XfdashboardViewSignals[SIGNAL_SCROLL_TO], 0, inX, inY);
+}
+
+/* Ensure that a child of this view is visible by scrolling if needed */
+void xfdashboard_view_ensure_visible(XfdashboardView *self, ClutterActor *inActor)
+{
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
+
+	/* Only emit signal if given actor is a child of this view */
+	if(xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inActor))
+	{
+		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_ENSURE_VISIBLE], 0, inActor);
+	}
 }

@@ -75,6 +75,7 @@ struct _XfdashboardViewClass
 	void (*icon_changed)(XfdashboardView *self, ClutterImage *inIcon);
 
 	void (*scroll_to)(XfdashboardView *self, gfloat inX, gfloat inY);
+	void (*ensure_visible)(XfdashboardView *self, ClutterActor *inActor);
 };
 
 /* Public API */
@@ -96,6 +97,7 @@ gboolean xfdashboard_view_get_enabled(XfdashboardView *self);
 void xfdashboard_view_set_enabled(XfdashboardView *self, gboolean inIsEnabled);
 
 void xfdashboard_view_scroll_to(XfdashboardView *self, gfloat inX, gfloat inY);
+void xfdashboard_view_ensure_visible(XfdashboardView *self, ClutterActor *inActor);
 
 G_END_DECLS
 
