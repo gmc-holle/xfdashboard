@@ -214,12 +214,6 @@ static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inE
 
 	/* Ask focus manager to handle this event */
 	result=xfdashboard_focus_manager_handle_key_event(priv->focusManager, inEvent);
-	// TODO: g_message("%s: KEY %s -> focus=%p[%s] => key=%x ==> %s",
-				// TODO: __func__,
-				// TODO: clutter_event_type(inEvent)==CLUTTER_KEY_PRESS ? "PRESS" : "RELEASE",
-				// TODO: xfdashboard_focus_manager_get_focus(priv->focusManager), DEBUG_OBJECT_NAME(xfdashboard_focus_manager_get_focus(priv->focusManager)),
-				// TODO: inEvent->key.keyval,
-				// TODO: result==CLUTTER_EVENT_STOP ? "HANDLED" : "unhandled");
 	if(result==CLUTTER_EVENT_STOP) return(result);
 
 	/* If even focus manager did not handle this event
