@@ -451,11 +451,67 @@ static void _xfdashboard_applications_view_focusable_unset_focus(XfdashboardFocu
 }
 
 /* Virtual function "handle_key_event" was called */
+static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_icon_mode(XfdashboardApplicationsView *self,
+																						const ClutterEvent *inEvent)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), CLUTTER_EVENT_PROPAGATE);
+
+	// TODO: Implement navigation for icon view mode
+	g_warning("Navigation in icon is not yet implemented");
+
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_list_mode(XfdashboardApplicationsView *self,
+																						const ClutterEvent *inEvent)
+{
+	XfdashboardApplicationsViewPrivate		*priv;
+	ClutterActor							*newSelection;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+	newSelection=NULL;
+
+	/* Get new selected item */
+	if(inEvent->key.keyval==CLUTTER_KEY_Up)
+	{
+		/* Get previous item to select */
+		if(priv->selectedItem) newSelection=clutter_actor_get_previous_sibling(priv->selectedItem);
+
+		/* If there is no previous item, e.g. at begin of list, select last item in list */
+		if(!newSelection) newSelection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+	}
+
+	if(inEvent->key.keyval==CLUTTER_KEY_Down)
+	{
+		/* Get next item to select */
+		if(priv->selectedItem) newSelection=clutter_actor_get_next_sibling(priv->selectedItem);
+
+		/* If there is no next item, e.g. at end of list, select first item in list */
+		if(!newSelection) newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+	}
+
+	/* If selection did not changed do nothing */
+	if(!newSelection || newSelection==priv->selectedItem) return(CLUTTER_EVENT_STOP);
+
+	/* Unstyle current selection */
+	xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+
+	/* Remember and style new selection */
+	priv->selectedItem=newSelection;
+	xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+
+	/* Event handled */
+	return(CLUTTER_EVENT_STOP);
+}
+
 static gboolean _xfdashboard_applications_view_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
 																			const ClutterEvent *inEvent)
 {
 	XfdashboardApplicationsView				*self;
 	XfdashboardApplicationsViewPrivate		*priv;
+	gboolean								handledEvent;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
@@ -489,41 +545,14 @@ static gboolean _xfdashboard_applications_view_focusable_handle_key_event(Xfdash
 		/* Move selection if an arrow key was pressed */
 		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
 		{
-			ClutterActor					*newSelection;
-
-			newSelection=NULL;
-
-			/* Get new selected item */
-			if(inEvent->key.keyval==CLUTTER_KEY_Up)
-			{
-				if(!priv->selectedItem) newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
-					else newSelection=clutter_actor_get_previous_sibling(priv->selectedItem);
-			}
-
-			if(inEvent->key.keyval==CLUTTER_KEY_Down)
-			{
-				if(!priv->selectedItem) newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
-					else newSelection=clutter_actor_get_next_sibling(priv->selectedItem);
-			}
-
-			/* If selection did not changed do nothing */
-			if(!newSelection || newSelection==priv->selectedItem) return(CLUTTER_EVENT_STOP);
-
-			/* Unstyle current selection */
-			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-
-			/* Remember and style new selection */
-			priv->selectedItem=newSelection;
-			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-
-			/* Event handled */
-			return(CLUTTER_EVENT_STOP);
+			handledEvent=_xfdashboard_applications_view_focusable_handle_key_event_at_list_mode(self, inEvent);
 		}
 			else
 			{
-				// TODO: Implement navigation for icon view mode
-				g_warning("Navigation in icon is not yet implemented");
+				handledEvent=_xfdashboard_applications_view_focusable_handle_key_event_at_icon_mode(self, inEvent);
 			}
+
+		if(handledEvent==CLUTTER_EVENT_STOP) return(handledEvent);
 	}
 
 	/* We did not handle this event */
