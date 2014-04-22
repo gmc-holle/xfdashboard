@@ -89,7 +89,6 @@ enum
 static GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define ACTOR_USER_DATA_KEY			"xfdashboard-applications-view-user-data"
 
 /* Forward declarations */
 static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData);
