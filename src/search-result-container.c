@@ -92,6 +92,183 @@ static guint XfdashboardSearchResultContainerSignals[SIGNAL_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_VIEW_MODE		XFDASHBOARD_VIEW_MODE_LIST
 
+/* Find next selectable item depending on step size and direction for icon view mode */
+static void _xfdashboard_search_result_container_set_selection_icon_mode(XfdashboardSearchResultContainer *self,
+																			XfdashboardSearchResultContainerSelectionStepSize inStepSize,
+																			XfdashboardSearchResultContainerSelectionDirection inDirection)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+	gint										numberChildren, rows, columns;
+	gint										selectionIndex, newSelectionIndex;
+	gfloat										lastX, lastY;
+	ClutterActorIter							iter;
+	ClutterActor								*child;
+	ClutterActorBox								childBox;
+	ClutterActor								*newSelection;
+	gint										i;
+	gboolean									gotColumns;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+	g_return_if_fail(self->priv->selectedItem);
+	g_return_if_fail(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD || inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD);
+
+	priv=self->priv;
+
+	/* Check if items container exists because it is the one we iterating */
+	g_return_if_fail(priv->itemsContainer);
+
+	/* Determine number of rows and columns and total number of children */
+	numberChildren=rows=columns=0;
+	selectionIndex=-1;
+	lastX=lastY=0.0f;
+	gotColumns=FALSE;
+	clutter_actor_iter_init(&iter, priv->itemsContainer);
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Only count visible children */
+		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+
+		/* If x coordinate of this child is smaller than the one of last child
+		 * or if y coordinate is larger then a new row begins and we know
+		 * the number of columns.
+		 */
+		clutter_actor_get_allocation_box(child, &childBox);
+		if(!gotColumns &&
+			(childBox.x1<lastX || childBox.y1>lastY))
+		{
+			columns=numberChildren;
+			gotColumns=TRUE;
+		}
+		lastX=childBox.x1;
+		lastY=childBox.y1;
+
+		/* If current child is the selected one remember its index */
+		if(child==priv->selectedItem) selectionIndex=numberChildren;
+
+		/* Count total number of children */
+		numberChildren++;
+	}
+
+	if(gotColumns)
+	{
+		rows=1+(numberChildren/columns);
+	}
+		else if(numberChildren>0)
+		{
+			rows=1;
+			columns=numberChildren;
+		}
+
+	/* Determine index of new selectable item */
+	if(selectionIndex<0)
+	{
+		g_warning(_("Current selected item not found. Selecting first item."));
+		selectionIndex=0;
+	}
+
+	if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_ROW &&
+		inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD)
+	{
+		newSelectionIndex=selectionIndex-columns;
+	}
+		else if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_ROW &&
+				inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD)
+		{
+			newSelectionIndex=selectionIndex+columns;
+		}
+		else if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_COLUMN &&
+				inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD)
+		{
+			newSelectionIndex=selectionIndex-1;
+			if(newSelectionIndex<0 ||
+				(newSelectionIndex/columns)!=(selectionIndex/columns))
+			{
+				newSelectionIndex=((selectionIndex/columns)*columns)+columns-1;
+			}
+		}
+		else if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_COLUMN &&
+				inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD)
+		{
+			newSelectionIndex=selectionIndex+1;
+			if(newSelectionIndex>=numberChildren ||
+				(newSelectionIndex/columns)!=(selectionIndex/columns))
+			{
+				newSelectionIndex=(selectionIndex/columns)*columns;
+			}
+		}
+		else
+		{
+			newSelectionIndex=selectionIndex;
+		}
+
+	/* If selection would not change then do nothing */
+	if(newSelectionIndex==selectionIndex) return;
+
+	/* If new selection is invalid then set selection to NULL */
+	if(newSelectionIndex<0 ||
+		newSelectionIndex>=numberChildren)
+	{
+		priv->selectedItem=NULL;
+		return;
+	}
+
+	/* Find new item being selectable */
+	i=0;
+	newSelection=NULL;
+	clutter_actor_iter_init(&iter, priv->itemsContainer);
+	while(clutter_actor_iter_next(&iter, &child) &&
+			!newSelection)
+	{
+		/* Only count visible children */
+		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+
+		/* Check for child to lookup */
+		if(i==newSelectionIndex)
+		{
+			newSelection=child;
+			break;
+		}
+
+		/* Continue with next child */
+		i++;
+	}
+
+	/* Set new selection if it changed */
+	if(newSelection && newSelection!=priv->selectedItem)
+	{
+		priv->selectedItem=newSelection;
+	}
+}
+
+/* Find next selectable item depending on step size and direction for list view mode */
+static void _xfdashboard_search_result_container_set_selection_list_mode(XfdashboardSearchResultContainer *self,
+																			XfdashboardSearchResultContainerSelectionStepSize inStepSize,
+																			XfdashboardSearchResultContainerSelectionDirection inDirection)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+	g_return_if_fail(self->priv->selectedItem);
+	g_return_if_fail(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD || inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD);
+
+	priv=self->priv;
+
+	/* Check if items container exists because it is the one we iterating */
+	g_return_if_fail(priv->itemsContainer);
+
+	if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_ROW)
+	{
+		if(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD)
+		{
+			priv->selectedItem=clutter_actor_get_next_sibling(priv->selectedItem);
+		}
+			else if(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD)
+			{
+				priv->selectedItem=clutter_actor_get_previous_sibling(priv->selectedItem);
+			}
+	}
+}
+
 /* Primary icon (provider icon) in title was clicked */
 static void _xfdashboard_search_result_container_on_primary_icon_clicked(XfdashboardSearchResultContainer *self, gpointer inUserData)
 {
@@ -618,7 +795,7 @@ ClutterActor* xfdashboard_search_result_container_get_current_selection(Xfdashbo
 
 /* Get previous item in items container which can be selected */
 ClutterActor* xfdashboard_search_result_container_set_previous_selection(XfdashboardSearchResultContainer *self,
-																			XfdashboardSearchResultContainerSelectionDirection inDirection)
+																			XfdashboardSearchResultContainerSelectionStepSize inStepSize)
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
 
@@ -627,29 +804,26 @@ ClutterActor* xfdashboard_search_result_container_set_previous_selection(Xfdashb
 	priv=self->priv;
 
 	/* Get previous selectable item to current one depending on view mode and direction.
-	 * only if there is an item selected currently.
+	 * only if there is an item selected currently and if not the first item was requested.
 	 */
-	if(priv->selectedItem)
+	if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END)
 	{
-		switch(inDirection)
-		{
-			case XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END:
-				priv->selectedItem=clutter_actor_get_last_child(priv->itemsContainer);
-				break;
-
-			case XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_ROW:
-				if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) priv->selectedItem=clutter_actor_get_previous_sibling(priv->selectedItem);
-				break;
-
-			default:
-				/* Do not change selection because it not be handled */
-				break;
-		}
+		priv->selectedItem=clutter_actor_get_last_child(priv->itemsContainer);
 	}
-		/* If no item is selected, select first one */
-		else if(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END)
+		else if(priv->selectedItem)
 		{
-			priv->selectedItem=clutter_actor_get_last_child(priv->itemsContainer);
+			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
+			{
+				_xfdashboard_search_result_container_set_selection_list_mode(self,
+																				inStepSize,
+																				XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD);
+			}
+				else if(priv->viewMode==XFDASHBOARD_VIEW_MODE_ICON)
+				{
+					_xfdashboard_search_result_container_set_selection_icon_mode(self,
+																					inStepSize,
+																					XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD);
+				}
 		}
 
 	/* Return newly set selectable item */
@@ -658,7 +832,7 @@ ClutterActor* xfdashboard_search_result_container_set_previous_selection(Xfdashb
 
 /* Get next item in items container which can be selected */
 ClutterActor* xfdashboard_search_result_container_set_next_selection(XfdashboardSearchResultContainer *self,
-																		XfdashboardSearchResultContainerSelectionDirection inDirection)
+																		XfdashboardSearchResultContainerSelectionStepSize inStepSize)
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
 
@@ -667,29 +841,26 @@ ClutterActor* xfdashboard_search_result_container_set_next_selection(Xfdashboard
 	priv=self->priv;
 
 	/* Get next selectable item to current one depending on view mode and direction
-	 * only if there is an item selected currently.
+	 * only if there is an item selected currently and if not the last item was requested.
 	 */
-	if(priv->selectedItem)
+	if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END)
 	{
-		switch(inDirection)
-		{
-			case XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END:
-				priv->selectedItem=clutter_actor_get_first_child(priv->itemsContainer);
-				break;
-
-			case XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_ROW:
-				if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) priv->selectedItem=clutter_actor_get_next_sibling(priv->selectedItem);
-				break;
-
-			default:
-				/* Do not change selection because it not be handled */
-				break;
-		}
+		priv->selectedItem=clutter_actor_get_first_child(priv->itemsContainer);
 	}
-		/* If no item is selected, select first one */
-		else if(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END)
+		else if(priv->selectedItem)
 		{
-			priv->selectedItem=clutter_actor_get_first_child(priv->itemsContainer);
+			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
+			{
+				_xfdashboard_search_result_container_set_selection_list_mode(self,
+																				inStepSize,
+																				XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD);
+			}
+				else if(priv->viewMode==XFDASHBOARD_VIEW_MODE_ICON)
+				{
+					_xfdashboard_search_result_container_set_selection_icon_mode(self,
+																					inStepSize,
+																					XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD);
+				}
 		}
 
 	/* Return newly set selectable item */

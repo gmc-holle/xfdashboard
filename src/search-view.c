@@ -674,7 +674,7 @@ static void _xfdashboard_search_view_focusable_set_focus(XfdashboardFocusable *i
 
 		/* Get current selectionr and style it */
 		item=xfdashboard_search_result_container_set_next_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
-																	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END);
+																	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END);
 		if(item &&
 			XFDASHBOARD_IS_STYLABLE(item))
 		{
@@ -779,13 +779,25 @@ static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardF
 		switch(inEvent->key.keyval)
 		{
 			case CLUTTER_KEY_Up:
-				selectionDirection=XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_ROW;
+				selectionDirection=XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_ROW;
 				doGetPrevious=TRUE;
 				handledEvent=CLUTTER_EVENT_STOP;
 				break;
 
 			case CLUTTER_KEY_Down:
-				selectionDirection=XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_ROW;
+				selectionDirection=XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_ROW;
+				doGetPrevious=FALSE;
+				handledEvent=CLUTTER_EVENT_STOP;
+				break;
+
+			case CLUTTER_KEY_Left:
+				selectionDirection=XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_COLUMN;
+				doGetPrevious=TRUE;
+				handledEvent=CLUTTER_EVENT_STOP;
+				break;
+
+			case CLUTTER_KEY_Right:
+				selectionDirection=XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_COLUMN;
 				doGetPrevious=FALSE;
 				handledEvent=CLUTTER_EVENT_STOP;
 				break;
@@ -839,7 +851,7 @@ static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardF
 
 					/* Get last selectable item at newly selected provider */
 					newSelection=xfdashboard_search_result_container_set_previous_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
-																							XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END);
+																							XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END);
 				}
 					else
 					{
@@ -861,7 +873,7 @@ static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardF
 
 						/* Get last selectable item at newly selected provider */
 						newSelection=xfdashboard_search_result_container_set_next_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
-																							XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BEGIN_END);
+																							XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END);
 					}
 			}
 
