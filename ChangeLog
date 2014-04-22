@@ -1,3 +1,258 @@
+commit c2a0200ad6d58a65e653fa73a9021620e8b18d71
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 22 19:11:47 2014 +0200
+
+    Ensure selection is visible in applications view
+
+commit a6d575f31310d46df60fa13f5d7a4ef7def26766
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 22 18:57:31 2014 +0200
+
+    Complete navigation in search view
+    
+    Now it is possible to move selection in icon mode at search view
+
+commit ef0af6c14245464d9d9b22e55771547650e53f23
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 22 06:51:23 2014 +0200
+
+    Fix wrong assignments and remove unused code in XfdashboardApplicationsView
+
+commit 4fb163836ae80431d6d9670f36d15bc2cfbe1280
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 22 06:48:57 2014 +0200
+
+    Fix testing for stylable actor in XfdashboardSearchResultContainer
+
+commit 2afb54bb72059cc253c8d6a4e3dba36cf2eda004
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 22 05:32:01 2014 +0200
+
+    Fix showing "go-back" icon for parent menu in icon mode and revert change in default theme
+
+commit 3340059c03424107028ab8cad5aba48538356a5a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 22 05:24:03 2014 +0200
+
+    Complete navigation in applications view
+    
+    Now it is possible to move selection in icon mode at applications view
+
+commit a3d3f3a9408fe2dfcb1cf0f674a983d0f42bcb23
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Apr 20 23:59:41 2014 +0200
+
+    Clean up code
+
+commit a0f8e80453ba9ecf45cc2cf850393f2cab345439
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Apr 20 23:58:19 2014 +0200
+
+    Ensure selection in search view is visible
+    
+    Ensure selection in search view is visible by scrolling if needed
+
+commit d20f78ff157323c86cbe6d4c0425f6589b7543c7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Apr 20 21:46:58 2014 +0200
+
+    Implement key handling to activate currently selected result item
+    
+    Handle ENTER key to activate currently selected result item, e.g. start application of currently selected result item in application search provider at search view.
+
+commit aaa9746051689b4585f7af21372a49da00b61b9b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Apr 20 12:19:08 2014 +0200
+
+    Allow navigation in search view
+    
+    Currently only list mode (as defined in default theme) is supported. Arrow keys up and down will move the selection. ENTER is currently not being handled.
+
+commit ad249f94e08d71cb174f5b7603fee1c57e10ddad
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Apr 20 08:22:02 2014 +0200
+
+    Split key handling function in two functions
+    
+    Split key event handling function in two functions - one for handling keys in list mode which is already implemented and one for handling keys in icon view which still needs to get implemented.
+
+commit 737ac625f8a8e9793ac86bf7dc447758202b72ab
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Apr 17 23:01:55 2014 +0200
+
+    Updated TODO (again)
+
+commit 235354261dcebd503af5767e46ff43ef04e6f73e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Apr 17 23:01:01 2014 +0200
+
+    Updated TODO
+
+commit 70c9ed358ae073f04828c1822e003bb9d1f1fb5c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Apr 17 22:45:57 2014 +0200
+
+    Allow navigation in applications view
+    
+    Currently only list mode (as defined in default theme) is supported. Arrow keys up and down will move the selection and Enter will execute the selected application if not parent menu was selected. In this case the parent menu will be shown.
+
+commit 81a490f208addcf460d860c845ec5e2d2d47e4b9
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Apr 17 18:50:48 2014 +0200
+
+    Add read-only properties to XfdashboardScaledTableLayout for current number of children, rows and columns
+
+commit 4370b4c92b04c9cb6683c7b05774bf39bc80ea0b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Apr 17 18:28:35 2014 +0200
+
+    Allow selection of windows with keyboard when viewpad is focused and windows view is current active view
+    
+    Arrow keys will move the selection marker through visible windows. Enter will activate the selected window as it will when clicked with pointer device. Backspace or Delete will close the window like clicking the close button with pointer device.
+
+commit beca777f0e7f0d015f98b2b94ca0c20598f38734
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Apr 16 15:46:42 2014 +0200
+
+    Update TODO
+
+commit 82e8faa27fa33e00486c6c14150e92399c20f2cf
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 15 20:37:59 2014 +0200
+
+    Fix wrong called virtual function when unsetting focus from quicklaunch
+
+commit 8e273d5b149db9af14f69ddd44f444088071d54b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 15 20:37:11 2014 +0200
+
+    Viewpad is just a proxy for its current active view. So check if current active view is focusable and call its requested virtual function.
+
+commit 2020dfca4197e6a0612e9db7a6b9c5e895fbdf9c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 15 20:07:56 2014 +0200
+
+    Do not stop selection in workspace selector by keyboard at beginning or end of list of workspaces but start over for faster selection of wanted workspace
+
+commit ecd80abf19f91fb19a5421de6857e541bc666bc7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 15 20:05:16 2014 +0200
+
+    Do not stop selection in quicklaunch by keyboard at beginning or end of actors but start over
+
+commit fa152f10c3851b0c9a04c401215237306c01d700
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sun Apr 13 02:34:27 2014 +0200
+
+    Allow to nagivate through favourite items and to activate them if quicklaunch has focus
+    
+    Implements foucable interface at quicklaunch and fixes typo. Also force a redraw if stage is resume (i.e. if running in daemon mode)
+
+commit bd962dbefb539a77e3a60decd6e98764a816d925
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Apr 12 17:56:27 2014 +0200
+
+    Allow to activate workspace (and quit/suspend application) with ENTER keys if workspace selector has focus
+
+commit b42845af82ea1c469186ae732c8439515c97735b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Apr 12 16:33:53 2014 +0200
+
+    Allow to change workspace with arrow keys if workspace selector has focus
+
+commit 177c6fb185c06ae4a8edcf1dd0e0beadcdfec8c1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Apr 12 11:10:49 2014 +0200
+
+    Expand collapse box if any of its children gains the focus
+
+commit b541461752528bb0d96b51bd1d8068a6d847c7ba
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Apr 12 01:07:44 2014 +0200
+
+    Initial implementation of focus manager
+    
+    Initial implementation of focus manager supports focusing searchbox by default and routing all key press and key release events to this focusable actor except for TAB, Shift+TAB and ESC key presses (and/or release) which are handled by stage and/or focus-manager.
+
+commit f87a37ca89f1b67bebeadc23211fcda06e4f2d34
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Apr 9 19:48:27 2014 +0200
+
+    Allow theme path and configured theme to get overriden by environment variable XFDASHBOARD_THEME_PATH
+    
+    This makes development easier when theme changes are needed without changing theme in Xfconf or changing symlinks in any of the searched paths.
+
+commit ae35e016225929f9c04bc86b42e5a88ece72a61e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Apr 3 10:06:25 2014 +0200
+
+    Fix typo
+
+commit 4d81d87ceca23a485227ceeaa5ad8e268f183160
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Mar 29 08:03:16 2014 +0100
+
+    Make XfdashboardStage also stylable
+    
+    Add "background-color" of derived class ClutterActor in XfdashboardStage to stylable properties.
+
+commit dbbfe36d77644faeae593d5b720b735e79b13c5b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Mar 28 12:45:27 2014 +0100
+
+    Implement default code for some virtual functions XfdashboardStylable
+
+commit 7997357d06a8f534770fa4265b2633bde7ad8673
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 26 15:25:46 2014 +0100
+
+    Fix typos
+
+commit aac83fb2e80ff6c16484fa83a40d870f3b20bb70
+Merge: 7735f0d fb6fb62
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 26 13:09:04 2014 +0100
+
+    Merge branch 'master' of github.com:gmc-holle/xfdashboard
+
+commit 7735f0d7c1b3764c66d7052e3b88d1d56de4ca5c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 26 13:04:59 2014 +0100
+
+    Move stylable functions into an interface
+    
+    XfdashboardActor will not implement and provide styling possibilities but implements the new stylable interface (XfdashboardStylable). Moving the functionality into an interface gives us the opportunity to style non-actors also (anytime later).
+    
+    Why should non-actors be stylable by CSS? That's because non-actors like XfdashboardWindowContents or XfdashboardImage will be visible because they are used by (visible and drawn) actors. This is not implemented yet but prepared.
+
+commit fb6fb620f011bbfbd5c971257bfa77f0badb5b3e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon Mar 24 07:29:21 2014 +0100
+
+    Check for valid <interface> in theme layout file
+    
+    Check that <interface> in theme layout file has defined the attribute id because interfaces must have an ID.
+
+commit 355fec84a14980b8df45ebdcad26da2cd3e5a5a0
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Mar 20 22:31:21 2014 +0100
+
+    Rename key in theme file from "LayoutPrimary" to "Layout"
+    
+    When writing documentation about how to layout xfdashboard I saw that is was not wise to name the key "LayoutPrimary". Because the key takes a list of file, separated by semicolon, there is no need to differ between layout files and their purposes. Only the attribute "id" of the object element which is the child of interface needs to set correctly.
+
+commit ac9ae68b7af858bab5999588f6808d21e9229c2b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 19 21:41:10 2014 +0100
+
+    Post-release version bump to 0.1.7
+
+commit dbdc629464f2eb60c3239e0f898a2fd414ca4ac5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Mar 19 21:39:59 2014 +0100
+
+    Bump version to 0.1.6
+
 commit bda0b032953b318b4ef67d4aba13b86d1edaa571
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Wed Mar 19 19:33:20 2014 +0100
