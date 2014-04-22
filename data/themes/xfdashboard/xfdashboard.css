@@ -313,7 +313,7 @@ XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-
 /* Applications view */
 XfdashboardApplicationsView
 {
-	view-mode: list;
+	view-mode: icon;
 	spacing: 4.0;
 }
 

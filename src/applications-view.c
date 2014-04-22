@@ -454,12 +454,162 @@ static void _xfdashboard_applications_view_focusable_unset_focus(XfdashboardFocu
 static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_icon_mode(XfdashboardApplicationsView *self,
 																						const ClutterEvent *inEvent)
 {
+	XfdashboardApplicationsViewPrivate	*priv;
+	ClutterFlowLayout					*flowLayout;
+	gint								numberChildren, rows, columns;
+	gint								selectionIndex, newSelectionIndex;
+	gfloat								lastX, lastY;
+	ClutterActorIter					iter;
+	ClutterActor						*child;
+	ClutterActorBox						childBox;
+	ClutterActor						*newSelection;
+	gint								i;
+	gboolean							gotColumns;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), CLUTTER_EVENT_PROPAGATE);
 
-	// TODO: Implement navigation for icon view mode
-	g_warning("Navigation in icon is not yet implemented");
+	priv=self->priv;
 
-	return(CLUTTER_EVENT_PROPAGATE);
+	/* Get flow layout */
+	if(!CLUTTER_IS_FLOW_LAYOUT(priv->layout))
+	{
+		g_critical(_("%s in icon mode does not use a flow layout!"), G_OBJECT_TYPE_NAME(self));
+		return(CLUTTER_EVENT_PROPAGATE);
+	}
+
+	flowLayout=CLUTTER_FLOW_LAYOUT(priv->layout);
+
+	/* Determine number of rows and columns and total number of children */
+	numberChildren=rows=columns=0;
+	selectionIndex=-1;
+	lastX=lastY=0.0f;
+	gotColumns=FALSE;
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Only count visible children */
+		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+
+		/* If x coordinate of this child is smaller than the one of last child
+		 * or if y coordinate is larger then a new row begins and we know
+		 * the number of columns.
+		 */
+		clutter_actor_get_allocation_box(child, &childBox);
+		if(!gotColumns &&
+			(childBox.x1<lastX || childBox.y1>lastY))
+		{
+			columns=numberChildren;
+			gotColumns=TRUE;
+		}
+		lastX=childBox.x1;
+		lastY=childBox.y1;
+
+		/* If current child is the selected one remember its index */
+		if(child==priv->selectedItem) selectionIndex=numberChildren;
+
+		/* Count total number of children */
+		numberChildren++;
+	}
+
+	if(gotColumns)
+	{
+		rows=1+(numberChildren/columns);
+	}
+		else if(numberChildren>0)
+		{
+			rows=1;
+			columns=numberChildren;
+		}
+
+	/* Determine index of new item to select */
+	if(selectionIndex<0)
+	{
+		g_warning(_("Current selected item not found. Selecting first item."));
+		selectionIndex=0;
+	}
+
+	switch(inEvent->key.keyval)
+	{
+		case CLUTTER_KEY_Up:
+			newSelectionIndex=selectionIndex-columns;
+			if(newSelectionIndex<0)
+			{
+				newSelectionIndex+=(rows*columns);
+				while(newSelectionIndex>=numberChildren && newSelectionIndex>selectionIndex)
+				{
+					newSelectionIndex-=columns;
+				}
+			}
+			break;
+
+		case CLUTTER_KEY_Down:
+			newSelectionIndex=selectionIndex+columns;
+			if(newSelectionIndex>=numberChildren)
+			{
+				newSelectionIndex=(selectionIndex % columns);
+				if(newSelectionIndex>=numberChildren) newSelectionIndex=selectionIndex;
+			}
+			break;
+
+		case CLUTTER_KEY_Left:
+			newSelectionIndex=selectionIndex-1;
+			if(newSelectionIndex<0 ||
+				(newSelectionIndex/columns)!=(selectionIndex/columns))
+			{
+				newSelectionIndex=((selectionIndex/columns)*columns)+columns-1;
+			}
+			break;
+
+		case CLUTTER_KEY_Right:
+			newSelectionIndex=selectionIndex+1;
+			if(newSelectionIndex>=numberChildren ||
+				(newSelectionIndex/columns)!=(selectionIndex/columns))
+			{
+				newSelectionIndex=(selectionIndex/columns)*columns;
+			}
+			break;
+
+		default:
+			newSelection=selectionIndex;
+			break;
+	}
+
+	/* If selection did not changed do nothing */
+	if(newSelectionIndex==selectionIndex) return(CLUTTER_EVENT_STOP);
+
+	/* Find new item to select */
+	i=0;
+	newSelection=NULL;
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child) &&
+			!newSelection)
+	{
+		/* Only count visible children */
+		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+
+		/* Check for child to lookup */
+		if(i==newSelectionIndex)
+		{
+			newSelection=child;
+			break;
+		}
+
+		/* Continue with next child */
+		i++;
+	}
+
+	/* If selection did not changed do nothing */
+	if(!newSelection || newSelection==priv->selectedItem) return(CLUTTER_EVENT_STOP);
+
+	/* Unstyle current selection */
+	xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+
+	/* Remember and style new selection */
+	priv->selectedItem=newSelection;
+	xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+
+	/* Event handled */
+	return(CLUTTER_EVENT_STOP);
 }
 
 static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_list_mode(XfdashboardApplicationsView *self,
