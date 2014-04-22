@@ -454,7 +454,6 @@ static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_ico
 																						const ClutterEvent *inEvent)
 {
 	XfdashboardApplicationsViewPrivate	*priv;
-	ClutterFlowLayout					*flowLayout;
 	gint								numberChildren, rows, columns;
 	gint								selectionIndex, newSelectionIndex;
 	gfloat								lastX, lastY;
@@ -468,15 +467,6 @@ static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_ico
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), CLUTTER_EVENT_PROPAGATE);
 
 	priv=self->priv;
-
-	/* Get flow layout */
-	if(!CLUTTER_IS_FLOW_LAYOUT(priv->layout))
-	{
-		g_critical(_("%s in icon mode does not use a flow layout!"), G_OBJECT_TYPE_NAME(self));
-		return(CLUTTER_EVENT_PROPAGATE);
-	}
-
-	flowLayout=CLUTTER_FLOW_LAYOUT(priv->layout);
 
 	/* Determine number of rows and columns and total number of children */
 	numberChildren=rows=columns=0;
@@ -569,7 +559,7 @@ static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_ico
 			break;
 
 		default:
-			newSelection=selectionIndex;
+			newSelectionIndex=selectionIndex;
 			break;
 	}
 
