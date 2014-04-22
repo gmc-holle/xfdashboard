@@ -597,6 +597,9 @@ static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_ico
 	priv->selectedItem=newSelection;
 	xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
 
+	/* Ensure new selection is visible */
+	xfdashboard_view_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
+
 	/* Event handled */
 	return(CLUTTER_EVENT_STOP);
 }
@@ -640,6 +643,9 @@ static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_lis
 	/* Remember and style new selection */
 	priv->selectedItem=newSelection;
 	xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+
+	/* Ensure new selection is visible */
+	xfdashboard_view_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
 
 	/* Event handled */
 	return(CLUTTER_EVENT_STOP);
