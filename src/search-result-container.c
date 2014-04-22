@@ -473,7 +473,7 @@ void xfdashboard_search_result_container_set_view_mode(XfdashboardSearchResultCo
 		clutter_actor_iter_init(&iter, priv->itemsContainer);
 		while(clutter_actor_iter_next(&iter, &child))
 		{
-			if(!XFDASHBOARD_IS_ACTOR(child)) continue;
+			if(!XFDASHBOARD_IS_STYLABLE(child)) continue;
 
 			xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(child), removeClass);
 			xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(child), addClass);
@@ -580,7 +580,7 @@ void xfdashboard_search_result_container_add_result_actor(XfdashboardSearchResul
 	priv=self->priv;
 
 	/* Set style depending on view mode */
-	if(XFDASHBOARD_IS_ACTOR(inResultActor))
+	if(XFDASHBOARD_IS_STYLABLE(inResultActor))
 	{
 		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(inResultActor), "view-mode-list");
 			else xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(inResultActor), "view-mode-icon");
