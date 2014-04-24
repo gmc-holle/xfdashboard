@@ -338,9 +338,9 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	gboolean						optionToggle;
 	GOptionEntry					XfdashboardApplicationOptions[]=
 									{
-										{"daemonize", 'd', 0, G_OPTION_ARG_NONE, &optionDaemonize, N_("Fork to background"), NULL},
-										{"quit", 'q', 0, G_OPTION_ARG_NONE, &optionQuit, N_("Quit existing instance"), NULL},
-										{"toggle", 't', 0, G_OPTION_ARG_NONE, &optionToggle, N_("Toggle show/hide state"), NULL },
+										{ "daemonize", 'd', 0, G_OPTION_ARG_NONE, &optionDaemonize, N_("Fork to background"), NULL },
+										{ "quit", 'q', 0, G_OPTION_ARG_NONE, &optionQuit, N_("Quit existing instance"), NULL },
+										{ "toggle", 't', 0, G_OPTION_ARG_NONE, &optionToggle, N_("Toggles suspend/resume state if running instance was started in daemon mode otherwise it quits running non-daemon instance"), NULL },
 										{ NULL }
 									};
 
