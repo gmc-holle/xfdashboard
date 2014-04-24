@@ -335,11 +335,13 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	GError							*error;
 	gboolean						optionDaemonize;
 	gboolean						optionQuit;
+	gboolean						optionToggle;
 	GOptionEntry					XfdashboardApplicationOptions[]=
 									{
 										{"daemonize", 'd', 0, G_OPTION_ARG_NONE, &optionDaemonize, N_("Fork to background"), NULL},
 										{"quit", 'q', 0, G_OPTION_ARG_NONE, &optionQuit, N_("Quit existing instance"), NULL},
-										{NULL}
+										{"toggle", 't', 0, G_OPTION_ARG_NONE, &optionToggle, N_("Toggle show/hide state"), NULL },
+										{ NULL }
 									};
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication), 1);
@@ -351,6 +353,7 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	/* Set up options */
 	optionDaemonize=FALSE;
 	optionQuit=FALSE;
+	optionToggle=FALSE;
 
 	context=g_option_context_new(N_("- A Gnome Shell like dashboard for Xfce4"));
 	g_option_context_add_group(context, gtk_get_option_group(TRUE));
@@ -387,6 +390,27 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 		_xfdashboard_application_quit(self, TRUE);
 
 		return(XFDASHBOARD_APPLICATION_ERROR_QUIT);
+	}
+
+	/* Handle options: toggle
+	 * - If application was not inited yet, perform normal start-up as usual
+	 *   with command-line options given
+	 * - If running in daemon mode, resume if suspended otherwise suspend
+	 * - If not running in daemon mode, quit application
+	 */
+	if(priv->inited && optionToggle)
+	{
+		/* If application is running in daemon mode, toggle between suspend/resume ... */
+		if(priv->isDaemon)
+		{
+			if(priv->isSuspended) _xfdashboard_application_activate(inApplication);
+				else _xfdashboard_application_quit(self, FALSE);
+		}
+			/* ... otherwise if not running in daemon mode, just quit */
+			else _xfdashboard_application_quit(self, FALSE);
+
+		/* Stop here because option was handled and application does not get initialized */
+		return(XFDASHBOARD_APPLICATION_ERROR_NONE);
 	}
 
 	/* Handle options: daemonize */
