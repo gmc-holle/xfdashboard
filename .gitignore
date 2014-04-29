@@ -11,6 +11,10 @@ src/stamp-marshal.h
 src/xfdashboard
 xfoverview.geany
 data/themes/xfdashboard/xfdashboard.theme
+data/xfdashboard.desktop
+data/xfdashboard.desktop.in
+data/xfdashboard-autostart.desktop
+data/xfdashboard-autostart.desktop.in
 
 # Ignore autotools files
 COPYING

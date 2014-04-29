@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+_Name=Xfdashboard
+_Comment=Maybe a Gnome shell like dashboard for Xfce
+TryExec=@bindir@/xfdashboard
+Exec=@bindir@/xfdashboard
+OnlyShowIn=XFCE;
+Terminal=false

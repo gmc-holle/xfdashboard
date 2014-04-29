@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+_Name=Xfdashboard
+_Comment=Start xfdashboard as daemon in background
+TryExec=@bindir@/xfdashboard -d
+Exec=@bindir@/xfdashboard -d
+OnlyShowIn=XFCE;
+Terminal=false
+Hidden=true
