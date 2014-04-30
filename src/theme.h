@@ -81,6 +81,8 @@ GType xfdashboard_theme_get_type(void) G_GNUC_CONST;
 
 XfdashboardTheme* xfdashboard_theme_new(void);
 
+const gchar* xfdashboard_theme_get_path(XfdashboardTheme *self);
+
 const gchar* xfdashboard_theme_get_theme_name(XfdashboardTheme *self);
 const gchar* xfdashboard_theme_get_display_name(XfdashboardTheme *self);
 const gchar* xfdashboard_theme_get_comment(XfdashboardTheme *self);
