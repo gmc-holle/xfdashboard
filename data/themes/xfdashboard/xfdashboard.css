@@ -130,7 +130,7 @@ XfdashboardLiveWorkspace:active
 {
 	background-type: outline;
 	outline-color: #ff0000;
-	outline-width: 4.0;
+	outline-width: 2.0;
 }
 
 /* Scrollbars */
@@ -378,8 +378,9 @@ XfdashboardWindowsView
 
 #quicklaunch XfdashboardButton:selected
 {
-	background-type: fill rounded-corners;
-	background-fill-color: #b0b0b0;
+	background-type: outline rounded-corners;
+	outline-color: #ff0000;
+	outline-width: 2.0
 	corners: all;
 	corner-radius: 4.0;
 }
@@ -388,21 +389,23 @@ XfdashboardWindowsView XfdashboardLiveWindow:selected
 {
 	background-type: outline;
 	outline-color: #ff0000;
-	outline-width: 4.0;
+	outline-width: 2.0;
 }
 
 XfdashboardApplicationsView XfdashboardButton:selected
 {
-	background-type: fill rounded-corners;
-	background-fill-color: #808080;
+	background-type: outline rounded-corners;
+	outline-color: #ff0000;
+	outline-width: 2.0;
 	corners: all;
 	corner-radius: 4.0;
 }
 
 XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selected
 {
-	background-type: fill rounded-corners;
-	background-fill-color: #808080;
+	background-type: outline rounded-corners;
+	outline-color: #ff0000;
+	outline-width: 2.0;
 	corners: all;
 	corner-radius: 4.0;
 }
