@@ -314,6 +314,7 @@ static void _xfdashboard_image_loading_async_callback(GObject *inSource, GAsyncR
 static void _xfdashboard_image_load_from_file(XfdashboardImage *self)
 {
 	XfdashboardImagePrivate		*priv;
+	gchar						*lookupFilename;
 	const gchar					*filename;
 
 	g_return_if_fail(XFDASHBOARD_IS_IMAGE(self));
@@ -326,8 +327,29 @@ static void _xfdashboard_image_load_from_file(XfdashboardImage *self)
 	g_return_if_fail(priv->iconName);
 	g_return_if_fail(priv->iconSize>0);
 
+	/* If path of icon filename is relative build absolute path by prefixing theme path ... */
+	if(!g_path_is_absolute(priv->iconName))
+	{
+		XfdashboardTheme		*theme;
+		const gchar				*themePath;
+
+		/* Get theme path */
+		theme=xfdashboard_application_get_theme();
+		g_object_ref(theme);
+
+		themePath=xfdashboard_theme_get_path(theme);
+
+		/* Build absolute path from theme path and given relative path to icon */
+		lookupFilename=g_build_filename(themePath, priv->iconName, NULL);
+
+		/* Release allocated resources */
+		g_object_unref(theme);
+	}
+		/* ... otherwise it is an absolute path already so just copy it */
+		else lookupFilename=g_strdup(priv->iconName);
+
 	/* If file does not exists then load fallback icon */
-	if(!g_file_test(priv->iconName, G_FILE_TEST_EXISTS))
+	if(!g_file_test(lookupFilename, G_FILE_TEST_EXISTS))
 	{
 		GtkIconInfo				*iconInfo;
 
@@ -342,6 +364,7 @@ static void _xfdashboard_image_load_from_file(XfdashboardImage *self)
 		{
 			g_error(_("Could not load fallback icon for file '%s'"), priv->iconName);
 			_xfdashboard_image_set_empty_image(self);
+			g_free(lookupFilename);
 			return;
 		}
 
@@ -379,7 +402,7 @@ static void _xfdashboard_image_load_from_file(XfdashboardImage *self)
 		gtk_icon_info_free(iconInfo);
 	}
 		/* ... otherwise set up to load icon async */
-		else filename=priv->iconName;
+		else filename=lookupFilename;
 
 	/* Load image asynchronously if filename is given */
 	if(filename)
@@ -406,6 +429,7 @@ static void _xfdashboard_image_load_from_file(XfdashboardImage *self)
 
 			/* Release allocated resources */
 			g_object_unref(file);
+			g_free(lookupFilename);
 
 			return;
 		}
@@ -429,6 +453,9 @@ static void _xfdashboard_image_load_from_file(XfdashboardImage *self)
 
 		g_debug("Loading icon '%s' from file %s", priv->iconName, filename);
 	}
+
+	/* Release allocated resources */
+	g_free(lookupFilename);
 }
 
 /* Load image from icon theme */
