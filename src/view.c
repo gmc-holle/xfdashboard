@@ -31,7 +31,7 @@
 #include <gtk/gtk.h>
 
 #include "marshal.h"
-#include "image.h"
+#include "image-content.h"
 #include "utils.h"
 
 /* Define this class in GObject system */
@@ -511,7 +511,7 @@ void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon)
 
 		/* Set new icon */
 		if(priv->viewIconImage) g_object_unref(priv->viewIconImage);
-		priv->viewIconImage=xfdashboard_image_new_for_icon_name(priv->viewIcon, 64.0f);
+		priv->viewIconImage=xfdashboard_image_content_new_for_icon_name(priv->viewIcon, 64.0f);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_VIEW_ICON]);

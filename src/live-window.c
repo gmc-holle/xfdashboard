@@ -39,7 +39,7 @@
 #include "stage.h"
 #include "click-action.h"
 #include "window-content.h"
-#include "image.h"
+#include "image-content.h"
 #include "stylable.h"
 
 /* Define this class in GObject system */
@@ -218,7 +218,7 @@ static void _xfdashboard_live_window_on_icon_changed(XfdashboardLiveWindow *self
 	if(inWindow!=priv->window) return;
 
 	/* Set new icon in title actor */
-	icon=xfdashboard_image_new_for_pixbuf(xfdashboard_window_tracker_window_get_icon(inWindow));
+	icon=xfdashboard_image_content_new_for_pixbuf(xfdashboard_window_tracker_window_get_icon(inWindow));
 	xfdashboard_button_set_icon_image(XFDASHBOARD_BUTTON(priv->actorTitle), icon);
 	g_object_unref(icon);
 }

@@ -39,7 +39,7 @@
 #include "quicklaunch.h"
 #include "application-button.h"
 #include "window-tracker.h"
-#include "image.h"
+#include "image-content.h"
 #include "utils.h"
 #include "focusable.h"
 
@@ -458,7 +458,7 @@ static void _xfdashboard_windows_view_on_drag_begin(ClutterDragAction *inAction,
 
 	/* Create a application icon for drag handle */
 	windowIcon=xfdashboard_window_tracker_window_get_icon(xfdashboard_live_window_get_window(liveWindow));
-	image=xfdashboard_image_new_for_pixbuf(windowIcon);
+	image=xfdashboard_image_content_new_for_pixbuf(windowIcon);
 
 	dragHandle=xfdashboard_background_new();
 	clutter_actor_set_position(dragHandle, inStageX, inStageY);

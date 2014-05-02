@@ -34,7 +34,7 @@
 
 #include "enums.h"
 #include "click-action.h"
-#include "image.h"
+#include "image-content.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardButton,
@@ -659,7 +659,7 @@ static void _xfdashboard_button_on_mapped_changed(XfdashboardButton *self,
 		ClutterImage	*image;
 
 		/* Set icon image */
-		image=xfdashboard_image_new_for_icon_name(priv->iconName, priv->iconSize);
+		image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
 		clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
 		g_object_unref(image);
 
@@ -1629,7 +1629,7 @@ void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconNam
 		if(CLUTTER_ACTOR_IS_MAPPED(self))
 		{
 			/* Actor is mapped so we cannot defer loading and setting image */
-			image=xfdashboard_image_new_for_icon_name(priv->iconName, priv->iconSize);
+			image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
 			clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
 			g_object_unref(image);
 
@@ -1710,7 +1710,7 @@ void xfdashboard_button_set_icon_size(XfdashboardButton *self, gint inSize)
 		{
 			ClutterImage		*image;
 
-			image=xfdashboard_image_new_for_icon_name(priv->iconName, priv->iconSize);
+			image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
 			clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
 			g_object_unref(image);
 		}

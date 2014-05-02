@@ -32,7 +32,6 @@
 #include <gtk/gtk.h>
 #include <dbus/dbus-glib.h>
 
-#include "image.h"
 #include "stage.h"
 
 /* Gobject type for pointer arrays (GPtrArray) */
