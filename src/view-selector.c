@@ -143,6 +143,18 @@ static void _xfdashboard_view_selector_on_view_deactivated(XfdashboardView *inVi
 	xfdashboard_toggle_button_set_toggle_state(button, FALSE);
 }
 
+/* Called when an icon of a view has changed */
+static void _xfdashboard_view_selector_on_view_icon_changed(XfdashboardView *inView, ClutterImage *inImage, gpointer inUserData)
+{
+	XfdashboardButton					*button;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
+	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(inUserData));
+
+	button=XFDASHBOARD_BUTTON(inUserData);
+	xfdashboard_button_set_icon(button, xfdashboard_view_get_icon(inView));
+}
+
 /* Called when a new view was added to viewpad */
 static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *self,
 														XfdashboardView *inView,
@@ -188,6 +200,7 @@ static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *se
 	g_signal_connect(inView, "enabled", G_CALLBACK(_xfdashboard_view_selector_on_view_enable_state_changed), button);
 	g_signal_connect(inView, "activated", G_CALLBACK(_xfdashboard_view_selector_on_view_activated), button);
 	g_signal_connect(inView, "deactivated", G_CALLBACK(_xfdashboard_view_selector_on_view_deactivated), button);
+	g_signal_connect(inView, "icon-changed", G_CALLBACK(_xfdashboard_view_selector_on_view_icon_changed), button);
 
 	/* Add button as child actor */
 	clutter_actor_add_child(CLUTTER_ACTOR(self), button);
