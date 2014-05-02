@@ -25,10 +25,12 @@
 #include "config.h"
 #endif
 
+#include "view-selector.h"
+
 #include <glib/gi18n-lib.h>
 
-#include "view-selector.h"
 #include "view.h"
+#include "tooltip-action.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardViewSelector,
@@ -155,6 +157,18 @@ static void _xfdashboard_view_selector_on_view_icon_changed(XfdashboardView *inV
 	xfdashboard_button_set_icon(button, xfdashboard_view_get_icon(inView));
 }
 
+/* Called when the name of a view has changed */
+static void _xfdashboard_view_selector_on_view_name_changed(XfdashboardView *inView, const gchar *inName, gpointer inUserData)
+{
+	XfdashboardTooltipAction			*action;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
+	g_return_if_fail(XFDASHBOARD_IS_TOOLTIP_ACTION(inUserData));
+
+	action=XFDASHBOARD_TOOLTIP_ACTION(inUserData);
+	xfdashboard_tooltip_action_set_text(action, inName);
+}
+
 /* Called when a new view was added to viewpad */
 static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *self,
 														XfdashboardView *inView,
@@ -165,6 +179,7 @@ static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *se
 	gchar								*viewName;
 	const gchar							*viewIcon;
 	gboolean							isActive;
+	ClutterAction						*action;
 
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self));
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
@@ -180,8 +195,6 @@ static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *se
 	g_object_set_data(G_OBJECT(button), "view", inView);
 	g_signal_connect_swapped(button, "clicked", G_CALLBACK(_xfdashboard_view_selector_on_view_button_clicked), self);
 
-	g_free(viewName);
-
 	/* Set toggle state depending of if view is active or not and connect
 	 * signal to get notified if toggle state changes to proxy signal
 	 */
@@ -189,6 +202,11 @@ static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *se
 
 	isActive=(xfdashboard_viewpad_get_active_view(priv->viewpad)==inView);
 	xfdashboard_toggle_button_set_toggle_state(XFDASHBOARD_TOGGLE_BUTTON(button), isActive);
+
+	/* Add tooltip */
+	action=xfdashboard_tooltip_action_new();
+	xfdashboard_tooltip_action_set_text(XFDASHBOARD_TOOLTIP_ACTION(action), viewName);
+	clutter_actor_add_action(button, action);
 
 	/* If view is disabled hide button otherwise show and connect signals
 	 * to get notified if enabled state has changed
@@ -201,9 +219,13 @@ static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *se
 	g_signal_connect(inView, "activated", G_CALLBACK(_xfdashboard_view_selector_on_view_activated), button);
 	g_signal_connect(inView, "deactivated", G_CALLBACK(_xfdashboard_view_selector_on_view_deactivated), button);
 	g_signal_connect(inView, "icon-changed", G_CALLBACK(_xfdashboard_view_selector_on_view_icon_changed), button);
+	g_signal_connect(inView, "name-changed", G_CALLBACK(_xfdashboard_view_selector_on_view_name_changed), action);
 
 	/* Add button as child actor */
 	clutter_actor_add_child(CLUTTER_ACTOR(self), button);
+
+	/* Release allocated resources */
+	g_free(viewName);
 }
 
 /* Called when a view was removed to viewpad */
