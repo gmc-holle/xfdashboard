@@ -109,6 +109,8 @@ enum
 static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+#define FAVOURITES_XFCONF_PROP		"/favourites"
+
 #define DEFAULT_SCALE_MIN			0.1
 #define DEFAULT_SCALE_MAX			1.0
 #define DEFAULT_SCALE_STEP			0.1
@@ -793,6 +795,53 @@ static void _xfdashboard_quicklaunch_set_favourites(XfdashboardQuicklaunch *self
 
 	/* Update list of icons for desktop files */
 	_xfdashboard_quicklaunch_update_icons_from_property(self);
+}
+
+/* Set up default favourites (e.g. used when started for the very first time) */
+static void _xfdashboard_quicklaunch_setup_default_favourites(XfdashboardQuicklaunch *self)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+	guint							i;
+	const gchar						*defaultApplications[]=	{
+																"exo-web-browser.desktop"
+																"exo-mail-reader.desktop",
+																"exo-file-manager.desktop",
+																"exo-terminal-emulator.desktop",
+															};
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+
+	priv=self->priv;
+
+	/* Free current list of favourites */
+	if(priv->favourites)
+	{
+		xfconf_array_free(priv->favourites);
+		priv->favourites=NULL;
+	}
+
+	/* Build array with each available default application */
+	priv->favourites=g_ptr_array_new();
+	for(i=0; i<(sizeof(defaultApplications)/sizeof(defaultApplications[0])); i++)
+	{
+		GDesktopAppInfo				*appInfo;
+		GValue						*desktopFile;
+
+		appInfo=g_desktop_app_info_new(defaultApplications[i]);
+		if(appInfo)
+		{
+			/* Add desktop file to array */
+			desktopFile=g_value_init(g_new0(GValue, 1), G_TYPE_STRING);
+			g_value_set_string(desktopFile, defaultApplications[i]);
+			g_ptr_array_add(priv->favourites, desktopFile);
+
+			/* Release allocated resources */
+			g_object_unref(appInfo);
+		}
+	}
+
+	/* Notify about property change */
+	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardQuicklaunchProperties[PROP_FAVOURITES]);
 }
 
 /* Get scale factor to fit all children into given width */
@@ -1727,7 +1776,15 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	g_signal_connect_swapped(dropAction, "drag-leave", G_CALLBACK(_xfdashboard_quicklaunch_on_trash_drop_leave), self);
 
 	/* Bind to xfconf to react on changes */
-	xfconf_g_property_bind(priv->xfconfChannel, "/favourites", XFDASHBOARD_TYPE_POINTER_ARRAY, self, "favourites");
+	xfconf_g_property_bind(priv->xfconfChannel, FAVOURITES_XFCONF_PROP, XFDASHBOARD_TYPE_POINTER_ARRAY, self, "favourites");
+
+	/* Set up default favourite items if property in channel does not exist
+	 * because it indicates first start.
+	 */
+	if(!xfconf_channel_has_property(priv->xfconfChannel, FAVOURITES_XFCONF_PROP))
+	{
+		_xfdashboard_quicklaunch_setup_default_favourites(self);
+	}
 }
 
 /* IMPLEMENTATION: Public API */
