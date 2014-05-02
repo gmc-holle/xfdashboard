@@ -261,7 +261,6 @@ XfdashboardCollapseBox
 	vertical-scrollbar-policy: automatic;
 }
 
-
 /* Search view */
 XfdashboardSearchView XfdashboardSearchResultContainer
 {
@@ -356,6 +355,7 @@ XfdashboardApplicationsView XfdashboardButton.view-mode-list
 XfdashboardWindowsView
 {
 	spacing: 8.0;
+	view-icon: windows-view.png;
 }
 
 /* Focus */

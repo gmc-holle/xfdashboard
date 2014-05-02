@@ -6,7 +6,8 @@ theme_in_files = \
 theme_DATA = \
 	$(theme_in_files:.theme.in=.theme) \
 	xfdashboard.css \
-	xfdashboard.xml
+	xfdashboard.xml \
+	windows-view.png
 
 @INTLTOOL_THEME_RULE@
 

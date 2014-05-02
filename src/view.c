@@ -219,6 +219,7 @@ static void _xfdashboard_view_get_property(GObject *inObject,
  */
 static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 {
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
@@ -266,6 +267,9 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardViewProperties[PROP_VIEW_ICON]);
 
 	/* Define signals */
 	XfdashboardViewSignals[SIGNAL_ACTIVATING]=
