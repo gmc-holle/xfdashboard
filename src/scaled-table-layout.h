@@ -71,6 +71,9 @@ gint xfdashboard_scaled_table_layout_get_columns(XfdashboardScaledTableLayout *s
 gboolean xfdashboard_scaled_table_layout_get_relative_scale(XfdashboardScaledTableLayout *self);
 void xfdashboard_scaled_table_layout_set_relative_scale(XfdashboardScaledTableLayout *self, gboolean inScaling);
 
+gboolean xfdashboard_scaled_table_layout_get_prevent_upscaling(XfdashboardScaledTableLayout *self);
+void xfdashboard_scaled_table_layout_set_prevent_upscaling(XfdashboardScaledTableLayout *self, gboolean inPreventUpscaling);
+
 void xfdashboard_scaled_table_layout_set_spacing(XfdashboardScaledTableLayout *self, gfloat inSpacing);
 
 gfloat xfdashboard_scaled_table_layout_get_row_spacing(XfdashboardScaledTableLayout *self);

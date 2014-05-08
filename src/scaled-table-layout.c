@@ -50,6 +50,7 @@ struct _XfdashboardScaledTableLayoutPrivate
 	gfloat		rowSpacing;
 	gfloat		columnSpacing;
 	gboolean	relativeScale;
+	gboolean	preventUpscaling;
 
 	/* Instance related */
 	gint		rows;
@@ -65,6 +66,7 @@ enum
 	PROP_ROW_SPACING,
 	PROP_COLUMN_SPACING,
 	PROP_RELATIVE_SCALE,
+	PROP_PREVENT_UPSCALING,
 
 	PROP_NUMBER_CHILDREN,
 	PROP_ROWS,
@@ -236,6 +238,7 @@ static void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self
 	ClutterActorIter						iter;
 	gfloat									cellWidth, cellHeight;
 	gfloat									childWidth, childHeight;
+	gfloat									scaledChildWidth, scaledChildHeight;
 	gfloat									largestWidth, largestHeight;
 	gfloat									scaleWidth, scaleHeight;
 	gfloat									aspectRatio;
@@ -310,26 +313,42 @@ static void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self
 			aspectRatio=childHeight/childWidth;
 
 			/* Calculate new size of child */
-			childWidth=cellWidth*scaleWidth;
-			childHeight=childWidth*aspectRatio;
-			if(childHeight>cellHeight)
+			scaledChildWidth=cellWidth*scaleWidth;
+			scaledChildHeight=scaledChildWidth*aspectRatio;
+			if(scaledChildHeight>cellHeight)
 			{
-				childHeight=cellHeight*scaleHeight;
-				childWidth=cellHeight/aspectRatio;
+				scaledChildHeight=cellHeight*scaleHeight;
+				scaledChildWidth=scaledChildHeight/aspectRatio;
+			}
+
+			/* If upscaling should be prevent check if we are upscaling now */
+			if(priv->preventUpscaling)
+			{
+				if(scaledChildWidth>childWidth)
+				{
+					scaledChildWidth=childWidth;
+					scaledChildHeight=childWidth*aspectRatio;
+				}
+
+				if(scaledChildHeight>childHeight)
+				{
+					scaledChildHeight=childHeight;
+					scaledChildWidth=childHeight/aspectRatio;
+				}
 			}
 		}
 			else
 			{
 				/* Visually hidden so do not allocate any space */
-				childWidth=0.0f;
-				childHeight=0.0f;
+				scaledChildWidth=0.0f;
+				scaledChildHeight=0.0f;
 			}
 
 		/* Set new allocation of child */
-		childAllocation.x1=ceil(x+((cellWidth-childWidth)/2.0f));
-		childAllocation.y1=ceil(y+((cellHeight-childHeight)/2.0f));
-		childAllocation.x2=ceil(childAllocation.x1+childWidth);
-		childAllocation.y2=ceil(childAllocation.y1+childHeight);
+		childAllocation.x1=ceil(x+((cellWidth-scaledChildWidth)/2.0f));
+		childAllocation.y1=ceil(y+((cellHeight-scaledChildHeight)/2.0f));
+		childAllocation.x2=ceil(childAllocation.x1+scaledChildWidth);
+		childAllocation.y2=ceil(childAllocation.y1+scaledChildHeight);
 		clutter_actor_allocate(child, &childAllocation, inFlags);
 
 		/* Set up for next child */
@@ -364,6 +383,10 @@ static void _xfdashboard_scaled_table_layout_set_property(GObject *inObject,
 			xfdashboard_scaled_table_layout_set_relative_scale(self, g_value_get_boolean(inValue));
 			break;
 
+		case PROP_PREVENT_UPSCALING:
+			xfdashboard_scaled_table_layout_set_prevent_upscaling(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -389,6 +412,10 @@ static void _xfdashboard_scaled_table_layout_get_property(GObject *inObject,
 
 		case PROP_RELATIVE_SCALE:
 			g_value_set_boolean(outValue, self->priv->relativeScale);
+			break;
+
+		case PROP_PREVENT_UPSCALING:
+			g_value_set_boolean(outValue, self->priv->preventUpscaling);
 			break;
 
 		case PROP_NUMBER_CHILDREN:
@@ -455,6 +482,13 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardScaledTableLayoutProperties[PROP_PREVENT_UPSCALING]=
+		g_param_spec_boolean("prevent-upscaling",
+								_("Prevent upscaling"),
+								_("Whether this layout manager should prevent upsclaing any child beyond its real size"),
+								FALSE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	XfdashboardScaledTableLayoutProperties[PROP_NUMBER_CHILDREN]=
 		g_param_spec_float("number-children",
 								_("Number children"),
@@ -498,6 +532,7 @@ static void xfdashboard_scaled_table_layout_init(XfdashboardScaledTableLayout *s
 	priv->rowSpacing=0.0f;
 	priv->columnSpacing=0.0f;
 	priv->relativeScale=FALSE;
+	priv->preventUpscaling=FALSE;
 
 	priv->rows=0;
 	priv->columns=0;
@@ -550,7 +585,7 @@ void xfdashboard_scaled_table_layout_set_relative_scale(XfdashboardScaledTableLa
 
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 
-	priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
+	priv=self->priv;
 
 	/* Set new value if changed */
 	if(priv->relativeScale!=inScaling)
@@ -558,6 +593,34 @@ void xfdashboard_scaled_table_layout_set_relative_scale(XfdashboardScaledTableLa
 		/* Set new value and notify about property change */
 		priv->relativeScale=inScaling;
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardScaledTableLayoutProperties[PROP_RELATIVE_SCALE]);
+
+		/* Notify for upcoming layout changes */
+		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	}
+}
+
+/* Get/set if layout manager should prevent to size any child larger than its real size */
+gboolean xfdashboard_scaled_table_layout_get_prevent_upscaling(XfdashboardScaledTableLayout *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self), FALSE);
+
+	return(self->priv->preventUpscaling);
+}
+
+void xfdashboard_scaled_table_layout_set_prevent_upscaling(XfdashboardScaledTableLayout *self, gboolean inPreventUpscaling)
+{
+	XfdashboardScaledTableLayoutPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
+
+	priv=self->priv;
+
+	/* Set new value if changed */
+	if(priv->preventUpscaling!=inPreventUpscaling)
+	{
+		/* Set new value and notify about property change */
+		priv->preventUpscaling=inPreventUpscaling;
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardScaledTableLayoutProperties[PROP_PREVENT_UPSCALING]);
 
 		/* Notify for upcoming layout changes */
 		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
@@ -572,7 +635,7 @@ void xfdashboard_scaled_table_layout_set_spacing(XfdashboardScaledTableLayout *s
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
+	priv=self->priv;
 
 	/* Set new values if changed */
 	if(priv->rowSpacing!=inSpacing || priv->columnSpacing!=inSpacing)
@@ -604,7 +667,7 @@ void xfdashboard_scaled_table_layout_set_row_spacing(XfdashboardScaledTableLayou
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
+	priv=self->priv;
 
 	/* Set new value if changed */
 	if(priv->rowSpacing!=inSpacing)
@@ -633,7 +696,7 @@ void xfdashboard_scaled_table_layout_set_column_spacing(XfdashboardScaledTableLa
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
 	g_return_if_fail(inSpacing>=0.0f);
 
-	priv=XFDASHBOARD_SCALED_TABLE_LAYOUT(self)->priv;
+	priv=self->priv;
 
 	/* Set new value if changed */
 	if(priv->columnSpacing!=inSpacing)

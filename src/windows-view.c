@@ -60,6 +60,7 @@ struct _XfdashboardWindowsViewPrivate
 	/* Properties related */
 	XfdashboardWindowTrackerWorkspace	*workspace;
 	gfloat								spacing;
+	gboolean							preventUpscaling;
 
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
@@ -74,6 +75,7 @@ enum
 
 	PROP_WORKSPACE,
 	PROP_SPACING,
+	PROP_PREVENT_UPSCALING,
 
 	PROP_LAST
 };
@@ -898,6 +900,10 @@ static void _xfdashboard_windows_view_set_property(GObject *inObject,
 			xfdashboard_windows_view_set_spacing(self, g_value_get_float(inValue));
 			break;
 
+		case PROP_PREVENT_UPSCALING:
+			xfdashboard_windows_view_set_prevent_upscaling(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -920,6 +926,10 @@ static void _xfdashboard_windows_view_get_property(GObject *inObject,
 
 		case PROP_SPACING:
 			g_value_set_float(outValue, priv->spacing);
+			break;
+
+		case PROP_PREVENT_UPSCALING:
+			g_value_set_boolean(outValue, self->priv->preventUpscaling);
 			break;
 
 		default:
@@ -961,10 +971,18 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]=
+		g_param_spec_boolean("prevent-upscaling",
+								_("Prevent upscaling"),
+								_("Whether tthis view should prevent upsclaing any window beyond its real size"),
+								FALSE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowsViewProperties);
 
 	/* Define stylable properties */
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_SPACING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]);
 }
 
 /* Object initialization
@@ -981,6 +999,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->workspace=NULL;
 	priv->spacing=0.0f;
+	priv->preventUpscaling=FALSE;
 	priv->selectedItem=NULL;
 
 	/* Set up view */
@@ -994,6 +1013,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 
 	priv->layout=xfdashboard_scaled_table_layout_new();
 	xfdashboard_scaled_table_layout_set_relative_scale(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout), TRUE);
+	xfdashboard_scaled_table_layout_set_prevent_upscaling(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout), priv->preventUpscaling);
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
 
 	action=xfdashboard_drop_action_new();
@@ -1051,5 +1071,38 @@ void xfdashboard_windows_view_set_spacing(XfdashboardWindowsView *self, const gf
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_SPACING]);
+	}
+}
+
+/* Get/set if layout manager should prevent to size any child larger than its real size */
+gboolean xfdashboard_windows_view_get_prevent_upscaling(XfdashboardWindowsView *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), FALSE);
+
+	return(self->priv->preventUpscaling);
+}
+
+void xfdashboard_windows_view_set_prevent_upscaling(XfdashboardWindowsView *self, gboolean inPreventUpscaling)
+{
+	XfdashboardWindowsViewPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->preventUpscaling!=inPreventUpscaling)
+	{
+		/* Set value */
+		priv->preventUpscaling=inPreventUpscaling;
+
+		/* Update layout manager */
+		if(priv->layout)
+		{
+			xfdashboard_scaled_table_layout_set_prevent_upscaling(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout), priv->preventUpscaling);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]);
 	}
 }
