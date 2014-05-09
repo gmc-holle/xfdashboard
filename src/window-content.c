@@ -43,6 +43,8 @@
 #include "application.h"
 #include "marshal.h"
 
+#define INCLUDE_WINDOW_FRAME
+
 /* Define this class in GObject system */
 static void _xdashboard_window_content_clutter_content_iface_init(ClutterContentIface *inInterface);
 
@@ -67,6 +69,9 @@ struct _XfdashboardWindowContentPrivate
 	gboolean							isFallback;
 	CoglTexture							*texture;
 	Window								xWindowID;
+#ifdef INCLUDE_WINDOW_FRAME
+	Window								xParentWindowID;
+#endif
 	Pixmap								pixmap;
 #ifdef HAVE_XDAMAGE
 	Damage								damage;
@@ -511,6 +516,42 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 	g_debug("Resuming live texture updates for window '%s'", xfdashboard_window_tracker_window_get_title(priv->window));
 }
 
+#ifdef INCLUDE_WINDOW_FRAME
+/* Find X window for window frame of given X window content */
+static Window _xfdashboard_window_content_get_window_frame_xid(Display *inDisplay, Window inWindow)
+{
+	Window		iterXWindowID;
+	Window		rootXWindowID;
+	Window		foundXWindowID;
+
+	g_return_val_if_fail(inDisplay, 0);
+	g_return_val_if_fail(inWindow!=0, 0);
+
+	/* Iterate through X window tree list upwards until root window reached.
+	 * The last X window before root window is the one we are looking for.
+	 */
+	rootXWindowID=0;
+	foundXWindowID=0;
+	for(iterXWindowID=inWindow; iterXWindowID && iterXWindowID!=rootXWindowID; )
+	{
+		Window	*children;
+		guint	numberChildren;
+
+		children=NULL;
+		numberChildren=0;
+		foundXWindowID=iterXWindowID;
+		if(!XQueryTree(inDisplay, iterXWindowID, &rootXWindowID, &iterXWindowID, &children, &numberChildren))
+		{
+			iterXWindowID=0;
+		}
+		if(children) XFree(children);
+	}
+
+	/* Return found X window ID */
+	return(foundXWindowID);
+}
+#endif
+
 /* Set window to handle and to display */
 static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *self, XfdashboardWindowTrackerWindow *inWindow)
 {
@@ -522,6 +563,7 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
 	g_return_if_fail(inWindow!=NULL && XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 	g_return_if_fail(self->priv->window==NULL);
+	g_return_if_fail(self->priv->xWindowID==0);
 
 	priv=self->priv;
 
@@ -548,7 +590,11 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 	priv->isFallback=TRUE;
 
 	/* Get X window and its attributes */
-	priv->xWindowID=xfdashboard_window_tracker_window_get_xid(priv->window);
+#ifdef INCLUDE_WINDOW_FRAME
+	priv->xWindowID=_xfdashboard_window_content_get_window_frame_xid(display, xfdashboard_window_tracker_window_get_xid(priv->window));
+#endif
+	if(!priv->xWindowID) priv->xWindowID=xfdashboard_window_tracker_window_get_xid(priv->window);
+
 	if(!XGetWindowAttributes(display, priv->xWindowID, &windowAttrs))
 	{
 		g_warning(_("Could not get attributes of window '%s'"), xfdashboard_window_tracker_window_get_title(priv->window));
