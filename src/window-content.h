@@ -75,6 +75,9 @@ void xfdashboard_window_content_set_outline_color(XfdashboardWindowContent *self
 gfloat xfdashboard_window_content_get_outline_width(XfdashboardWindowContent *self);
 void xfdashboard_window_content_set_outline_width(XfdashboardWindowContent *self, const gfloat inWidth);
 
+gboolean xfdashboard_window_content_get_include_window_frame(XfdashboardWindowContent *self);
+void xfdashboard_window_content_set_include_window_frame(XfdashboardWindowContent *self, const gboolean inIncludeFrame);
+
 G_END_DECLS
 
 #endif	/* __XFOVERVIEW_WINDOW_CONTENT__ */

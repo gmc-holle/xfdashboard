@@ -43,8 +43,6 @@
 #include "application.h"
 #include "marshal.h"
 
-#define INCLUDE_WINDOW_FRAME
-
 /* Define this class in GObject system */
 static void _xdashboard_window_content_clutter_content_iface_init(ClutterContentIface *inInterface);
 
@@ -64,14 +62,12 @@ struct _XfdashboardWindowContentPrivate
 	ClutterColor						*outlineColor;
 	gfloat								outlineWidth;
 	gboolean							isSuspended;
+	gboolean							includeWindowFrame;
 
 	/* Instance related */
 	gboolean							isFallback;
 	CoglTexture							*texture;
 	Window								xWindowID;
-#ifdef INCLUDE_WINDOW_FRAME
-	Window								xParentWindowID;
-#endif
 	Pixmap								pixmap;
 #ifdef HAVE_XDAMAGE
 	Damage								damage;
@@ -91,6 +87,7 @@ enum
 	PROP_SUSPENDED,
 	PROP_OUTLINE_COLOR,
 	PROP_OUTLINE_WIDTH,
+	PROP_INCLUDE_WINDOW_FRAME,
 
 	PROP_LAST
 };
@@ -516,7 +513,6 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 	g_debug("Resuming live texture updates for window '%s'", xfdashboard_window_tracker_window_get_title(priv->window));
 }
 
-#ifdef INCLUDE_WINDOW_FRAME
 /* Find X window for window frame of given X window content */
 static Window _xfdashboard_window_content_get_window_frame_xid(Display *inDisplay, Window inWindow)
 {
@@ -550,7 +546,6 @@ static Window _xfdashboard_window_content_get_window_frame_xid(Display *inDispla
 	/* Return found X window ID */
 	return(foundXWindowID);
 }
-#endif
 
 /* Set window to handle and to display */
 static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *self, XfdashboardWindowTrackerWindow *inWindow)
@@ -590,10 +585,15 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 	priv->isFallback=TRUE;
 
 	/* Get X window and its attributes */
-#ifdef INCLUDE_WINDOW_FRAME
-	priv->xWindowID=_xfdashboard_window_content_get_window_frame_xid(display, xfdashboard_window_tracker_window_get_xid(priv->window));
-#endif
-	if(!priv->xWindowID) priv->xWindowID=xfdashboard_window_tracker_window_get_xid(priv->window);
+	if(priv->includeWindowFrame)
+	{
+		priv->xWindowID=_xfdashboard_window_content_get_window_frame_xid(display, xfdashboard_window_tracker_window_get_xid(priv->window));
+	}
+
+	if(!priv->xWindowID)
+	{
+		priv->xWindowID=xfdashboard_window_tracker_window_get_xid(priv->window);
+	}
 
 	if(!XGetWindowAttributes(display, priv->xWindowID, &windowAttrs))
 	{
@@ -899,6 +899,10 @@ static void _xfdashboard_window_content_set_property(GObject *inObject,
 			xfdashboard_window_content_set_outline_width(self, g_value_get_float(inValue));
 			break;
 
+		case PROP_INCLUDE_WINDOW_FRAME:
+			xfdashboard_window_content_set_include_window_frame(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -929,6 +933,10 @@ static void _xfdashboard_window_content_get_property(GObject *inObject,
 
 		case PROP_OUTLINE_WIDTH:
 			g_value_set_float(outValue, priv->outlineWidth);
+			break;
+
+		case PROP_INCLUDE_WINDOW_FRAME:
+			g_value_set_boolean(outValue, priv->includeWindowFrame);
 			break;
 
 		default:
@@ -983,6 +991,13 @@ void xfdashboard_window_content_class_init(XfdashboardWindowContentClass *klass)
 							1.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardWindowContentProperties[PROP_INCLUDE_WINDOW_FRAME]=
+		g_param_spec_boolean("include-window-frame",
+							_("Include window frame"),
+							_("Whether the window frame should be included or only the window content should be shown"),
+							FALSE,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowContentProperties);
 }
 
@@ -1010,6 +1025,7 @@ void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 	priv->isSuspended=TRUE;
 	priv->suspendSignalID=0;
 	priv->isMapped=FALSE;
+	priv->includeWindowFrame=FALSE;
 
 	/* Check extensions (will only be done once) */
 	_xfdashboard_window_content_check_extension();
@@ -1144,5 +1160,55 @@ void xfdashboard_window_content_set_outline_width(XfdashboardWindowContent *self
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_OUTLINE_WIDTH]);
+	}
+}
+
+/* Get/set flag to indicate whether to include the window frame or not */
+gboolean xfdashboard_window_content_get_include_window_frame(XfdashboardWindowContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self), TRUE);
+
+	return(self->priv->includeWindowFrame);
+}
+
+void xfdashboard_window_content_set_include_window_frame(XfdashboardWindowContent *self, const gboolean inIncludeFrame)
+{
+	XfdashboardWindowContentPrivate				*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->includeWindowFrame!=inIncludeFrame)
+	{
+		/* Set value */
+		priv->includeWindowFrame=inIncludeFrame;
+
+		/* (Re-)Setup window content */
+		if(priv->window)
+		{
+			XfdashboardWindowTrackerWindow		*window;
+
+			/* Re-setup window by releasing all resources first and unsetting window
+			 * but remember window to set it again.
+			 */
+			_xfdashboard_window_content_release_resources(self);
+
+			/* libwnck resources should never be freed. Just set to NULL */
+			window=priv->window;
+			priv->window=NULL;
+
+			/* Now set same window again which causes this object to set up all
+			 * needed X resources again.
+			 */
+			_xfdashboard_window_content_set_window(self, window);
+		}
+
+		/* Invalidate ourselve to get us redrawn */
+		clutter_content_invalidate(CLUTTER_CONTENT(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_INCLUDE_WINDOW_FRAME]);
 	}
 }
