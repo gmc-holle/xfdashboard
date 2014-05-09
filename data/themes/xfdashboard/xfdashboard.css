@@ -4,6 +4,12 @@ XfdashboardStage
 	background-color: #000000e0;
 }
 
+/* Window content */
+XfdashboardWindowContent
+{
+	include-window-frame: true;
+}
+
 /* Notifications */
 #notification
 {

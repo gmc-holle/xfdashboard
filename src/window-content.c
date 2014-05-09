@@ -42,14 +42,17 @@
 
 #include "application.h"
 #include "marshal.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
-static void _xdashboard_window_content_clutter_content_iface_init(ClutterContentIface *inInterface);
+static void _xdashboard_window_content_clutter_content_iface_init(ClutterContentIface *iface);
+static void _xfdashboard_window_content_stylable_iface_init(XfdashboardStylableInterface *iface);
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowContent,
 						xfdashboard_window_content,
 						G_TYPE_OBJECT,
-						G_IMPLEMENT_INTERFACE(CLUTTER_TYPE_CONTENT, _xdashboard_window_content_clutter_content_iface_init))
+						G_IMPLEMENT_INTERFACE(CLUTTER_TYPE_CONTENT, _xdashboard_window_content_clutter_content_iface_init)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_STYLABLE, _xfdashboard_window_content_stylable_iface_init))
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_WINDOW_CONTENT_GET_PRIVATE(obj) \
@@ -63,6 +66,9 @@ struct _XfdashboardWindowContentPrivate
 	gfloat								outlineWidth;
 	gboolean							isSuspended;
 	gboolean							includeWindowFrame;
+
+	gchar								*styleClasses;
+	gchar								*stylePseudoClasses;
 
 	/* Instance related */
 	gboolean							isFallback;
@@ -88,6 +94,10 @@ enum
 	PROP_OUTLINE_COLOR,
 	PROP_OUTLINE_WIDTH,
 	PROP_INCLUDE_WINDOW_FRAME,
+
+	/* From interface: XfdashboardStylable */
+	PROP_STYLE_CLASSES,
+	PROP_STYLE_PSEUDO_CLASSES,
 
 	PROP_LAST
 };
@@ -835,10 +845,58 @@ static gboolean _xdashboard_window_content_clutter_content_iface_get_preferred_s
 }
 
 /* Initialize interface of type ClutterContent */
-static void _xdashboard_window_content_clutter_content_iface_init(ClutterContentIface *inInterface)
+static void _xdashboard_window_content_clutter_content_iface_init(ClutterContentIface *iface)
 {
-	inInterface->get_preferred_size=_xdashboard_window_content_clutter_content_iface_get_preferred_size;
-	inInterface->paint_content=_xdashboard_window_content_clutter_content_iface_paint_content;
+	iface->get_preferred_size=_xdashboard_window_content_clutter_content_iface_get_preferred_size;
+	iface->paint_content=_xdashboard_window_content_clutter_content_iface_paint_content;
+}
+
+/* IMPLEMENTATION: Interface XfdashboardStylable */
+
+/* Get stylable properties of stage */
+static void _xfdashboard_window_content_stylable_get_stylable_properties(XfdashboardStylable *self,
+																			GHashTable *ioStylableProperties)
+{
+	g_return_if_fail(XFDASHBOARD_IS_STYLABLE(self));
+
+	/* Add stylable properties to hashtable */
+	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "include-window-frame");
+}
+
+/* Get/set style classes of stage */
+static const gchar* _xfdashboard_window_content_stylable_get_classes(XfdashboardStylable *inStylable)
+{
+	/* Not implemented */
+	return(NULL);
+}
+
+static void _xfdashboard_window_content_stylable_set_classes(XfdashboardStylable *inStylable, const gchar *inStyleClasses)
+{
+	/* Not implemented */
+}
+
+/* Get/set style pseudo-classes of stage */
+static const gchar* _xfdashboard_window_content_stylable_get_pseudo_classes(XfdashboardStylable *inStylable)
+{
+	/* Not implemented */
+	return(NULL);
+}
+
+static void _xfdashboard_window_content_stylable_set_pseudo_classes(XfdashboardStylable *inStylable, const gchar *inStylePseudoClasses)
+{
+	/* Not implemented */
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_window_content_stylable_iface_init(XfdashboardStylableInterface *iface)
+{
+	iface->get_stylable_properties=_xfdashboard_window_content_stylable_get_stylable_properties;
+	iface->get_classes=_xfdashboard_window_content_stylable_get_classes;
+	iface->set_classes=_xfdashboard_window_content_stylable_set_classes;
+	iface->get_pseudo_classes=_xfdashboard_window_content_stylable_get_pseudo_classes;
+	iface->set_pseudo_classes=_xfdashboard_window_content_stylable_set_pseudo_classes;
 }
 
 /* IMPLEMENTATION: GObject */
@@ -873,6 +931,18 @@ static void _xfdashboard_window_content_dispose(GObject *inObject)
 		priv->suspendSignalID=0;
 	}
 
+	if(priv->styleClasses)
+	{
+		g_free(priv->styleClasses);
+		priv->styleClasses=NULL;
+	}
+
+	if(priv->stylePseudoClasses)
+	{
+		g_free(priv->stylePseudoClasses);
+		priv->stylePseudoClasses=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_window_content_parent_class)->dispose(inObject);
 }
@@ -883,7 +953,7 @@ static void _xfdashboard_window_content_set_property(GObject *inObject,
 												const GValue *inValue,
 												GParamSpec *inSpec)
 {
-	XfdashboardWindowContent	*self=XFDASHBOARD_WINDOW_CONTENT(inObject);
+	XfdashboardWindowContent		*self=XFDASHBOARD_WINDOW_CONTENT(inObject);
 
 	switch(inPropID)
 	{
@@ -903,6 +973,14 @@ static void _xfdashboard_window_content_set_property(GObject *inObject,
 			xfdashboard_window_content_set_include_window_frame(self, g_value_get_boolean(inValue));
 			break;
 
+		case PROP_STYLE_CLASSES:
+			_xfdashboard_window_content_stylable_set_classes(XFDASHBOARD_STYLABLE(self), g_value_get_string(inValue));
+			break;
+
+		case PROP_STYLE_PSEUDO_CLASSES:
+			_xfdashboard_window_content_stylable_set_pseudo_classes(XFDASHBOARD_STYLABLE(self), g_value_get_string(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -914,8 +992,8 @@ static void _xfdashboard_window_content_get_property(GObject *inObject,
 												GValue *outValue,
 												GParamSpec *inSpec)
 {
-	XfdashboardWindowContent		*self=XFDASHBOARD_WINDOW_CONTENT(inObject);
-	XfdashboardWindowContentPrivate	*priv=self->priv;
+	XfdashboardWindowContent			*self=XFDASHBOARD_WINDOW_CONTENT(inObject);
+	XfdashboardWindowContentPrivate		*priv=self->priv;
 
 	switch(inPropID)
 	{
@@ -939,6 +1017,14 @@ static void _xfdashboard_window_content_get_property(GObject *inObject,
 			g_value_set_boolean(outValue, priv->includeWindowFrame);
 			break;
 
+		case PROP_STYLE_CLASSES:
+			g_value_set_string(outValue, priv->styleClasses);
+			break;
+
+		case PROP_STYLE_PSEUDO_CLASSES:
+			g_value_set_string(outValue, priv->stylePseudoClasses);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -951,12 +1037,16 @@ static void _xfdashboard_window_content_get_property(GObject *inObject,
  */
 void xfdashboard_window_content_class_init(XfdashboardWindowContentClass *klass)
 {
-	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
+	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardStylableInterface	*stylableIface;
+	GParamSpec						*paramSpec;
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_window_content_dispose;
 	gobjectClass->set_property=_xfdashboard_window_content_set_property;
 	gobjectClass->get_property=_xfdashboard_window_content_get_property;
+
+	stylableIface=g_type_default_interface_ref(XFDASHBOARD_TYPE_STYLABLE);
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardWindowContentPrivate));
@@ -998,7 +1088,18 @@ void xfdashboard_window_content_class_init(XfdashboardWindowContentClass *klass)
 							FALSE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	paramSpec=g_object_interface_find_property(stylableIface, "style-classes");
+	XfdashboardWindowContentProperties[PROP_STYLE_CLASSES]=
+		g_param_spec_override("style-classes", paramSpec);
+
+	paramSpec=g_object_interface_find_property(stylableIface, "style-pseudo-classes");
+	XfdashboardWindowContentProperties[PROP_STYLE_PSEUDO_CLASSES]=
+		g_param_spec_override("style-pseudo-classes", paramSpec);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowContentProperties);
+
+	/* Release allocated resources */
+	g_type_default_interface_unref(stylableIface);
 }
 
 /* Object initialization
@@ -1026,12 +1127,17 @@ void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 	priv->suspendSignalID=0;
 	priv->isMapped=FALSE;
 	priv->includeWindowFrame=FALSE;
+	priv->styleClasses=NULL;
+	priv->stylePseudoClasses=NULL;
 
 	/* Check extensions (will only be done once) */
 	_xfdashboard_window_content_check_extension();
 
 	/* Add event filter for this instance */
 	clutter_x11_add_filter(_xfdashboard_window_content_on_x_event, self);
+
+	/* Style content */
+	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 
 	/* Handle suspension signals from application */
 	app=xfdashboard_application_get_default();

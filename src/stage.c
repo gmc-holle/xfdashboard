@@ -97,6 +97,7 @@ enum
 {
 	PROP_0,
 
+	/* From interface: XfdashboardStylable */
 	PROP_STYLE_CLASSES,
 	PROP_STYLE_PSEUDO_CLASSES,
 
