@@ -1,3 +1,137 @@
+commit 2e523fc6e48ae61f89a7b91ade8d42d136e1e612
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 9 12:19:45 2014 +0200
+
+    Property "include-window-frame" of XfdashboardWindowContent is now configurable (stylable) via CSS
+    
+    This commit completes issue #10. The behaviour to show window frame of a window or just the window content can now be controlled via CSS by theme designer. Default theme will turn this feature on.
+
+commit 4ebbf7851049252541b7d678e6ba7a2d69359018
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 9 10:23:44 2014 +0200
+
+    Make including window frame at XfdashboardWindowContent configurable by adding a property
+
+commit ee7bfaefd025222df6b5eead4dc744d923619faa
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 9 09:51:55 2014 +0200
+
+    Include window frame (the window border) to XfdashboardWindowContent for live updates
+
+commit 7aca2a1ae1c220fd2f9fcde8f2ee74aea3d017ac
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 8 16:31:36 2014 +0200
+
+    Add support to prevent upscaling beyond real size in XfdashboardScaledTableLayout
+    
+    The layout manager XfdashboardScaledTableLayout got a new property called "prevent-upscaling" which is set to FALSE by default. This property manages if layout manager is allowed to scale a child larger than its real natural size or not. The windows view uses this new property and exports it by itself to allow windows to be scaled beyond their real size or not. As it is a stylable property it can be control by a theme.
+
+commit e04e68cc4503bbad077cceceda68c2e21cc65154
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 2 14:03:10 2014 +0200
+
+    Set up default favourites on very first start up of xfdashboard
+    
+    This commit addresses issue #3. When xfdashboard is started the very first time by user, means there is no /favourites property in our xfconf channel, set up a default list of favourites from applications supported by exo-helper (or better the installed desktop files of preferred application executed by exo library)
+
+commit 156f4546bfa3b0895ce26105e8f011bdf4578d11
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 2 10:30:19 2014 +0200
+
+    Add tooltips to icons in view selector
+    
+    This should help user to identify which button is for which view
+
+commit de76119ec50b208cac47ea90f56abcb0e88684cd
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 2 10:20:42 2014 +0200
+
+    Update icon in view selector if view icon has changed, e.g. by CSS of theme
+
+commit dbdce7f783ac9917f5fe3fb2eece706770bc6ac1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 2 10:04:30 2014 +0200
+
+    Allow view icon to be themed in CSS instead of enforcing use of default icon specified by view
+
+commit bf47686ffbf6edb10c36ae34b9047480b4811a5c
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 2 09:38:26 2014 +0200
+
+    Rename class XfdashboardImage to XfdashboardImageContent and refactor code
+    
+    Warning: Massive API break because of renamed class and functions. Renamed XfdashboardImage to XfdashboardImageContent to keep class name in sync with naming convention I used so far (see XfdashboardWindowContent for a ClutterContent derived class and ClutterImage, which XfdashboardImage is derived from, is also a ClutterContent derived class). Also XfdashboardImage is now free e.g. for an actor utilizing XfdashboardImageContent.
+
+commit 3eaa984aaf3d5b5161772fef6ccf1b6e462762cc
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 1 10:58:43 2014 +0200
+
+    Remove TODO because all open tasks are issues at GitHub now
+
+commit 12c4a312dd6dfbb0330780e23f4f62a73a1a215b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 1 10:58:21 2014 +0200
+
+    Update TODO
+
+commit 4a2b2029fa30a6b4b4942a5926fa7af792333ff2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 1 10:35:26 2014 +0200
+
+    Handle relative pathes to icon file properly
+    
+    Relative pathes to icons are now always relative pathes in path of current theme. When loading icon from file relative pathes will be prefixed with the path of current active theme and then loaded like an absolute path had been given.
+
+commit 5c4778b1abda0447f29a10b488257d20170f7527
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 1 00:57:39 2014 +0200
+
+    Add properties to XfdashboardTheme
+    
+    Add read-only properties to theme class and missing accessibility functions to these properties.
+
+commit 6bfa46cdf91eab80f1fa20d070ea9a5e408f8e5e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Apr 30 14:37:40 2014 +0200
+
+    Use the same color and outline-width for all focused and selected widgets.
+    
+    This commit addresses issue #5 and issue #6
+
+commit 825c99a203e82e4f4ee4252e5d33eff5cdafabbd
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 29 11:32:35 2014 +0200
+
+    Add auto-start .desktop file and application .desktop file for application menu
+    
+    This commit addresses issue #11. Adds a disabled-by-default auto-start desktop file to system-wide auto-start folder as defined by freedesktop.org and adds an application entry in applications menu.
+
+commit 988cb9ba5a4132be1a7f18f58046dba84e684044
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Apr 24 17:19:38 2014 +0200
+
+    Better description of command-line option -t/--toggle
+
+commit 685bca1b1ebbfe5b367a2fb7759301565d75a4c7
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu Apr 24 15:04:33 2014 +0200
+
+    Add command-line option -t/--toggle to toggle between suspend/resume state
+    
+    If application was not inited yet, perform normal start-up as usual with command-line options given. If running in daemon mode, resume if suspended otherwise suspend. If not running in daemon mode, quit application.
+
+commit 12286f02451b3b77133ff627b76670069f8f51f0
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 22 19:30:38 2014 +0200
+
+    Post-release version bump to 0.1.91
+
+commit 854c46b2b994c3c999b35cbabc6bba01aab6173f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Apr 22 19:29:53 2014 +0200
+
+    Bump version to 0.1.90
+
 commit c2a0200ad6d58a65e653fa73a9021620e8b18d71
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Tue Apr 22 19:11:47 2014 +0200
