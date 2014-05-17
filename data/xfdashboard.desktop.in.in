@@ -4,5 +4,6 @@ _Name=Xfdashboard
 _Comment=Maybe a Gnome shell like dashboard for Xfce
 TryExec=@bindir@/xfdashboard
 Exec=@bindir@/xfdashboard
+Categories=System;
 OnlyShowIn=XFCE;
 Terminal=false
