@@ -295,12 +295,7 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 		gboolean									hasVisibleItem;
 
 		/* Check if menu is visible */
-		if(garcon_menu_element_get_show_in_environment(GARCON_MENU_ELEMENT(inMenu))==FALSE ||
-			garcon_menu_element_get_visible(GARCON_MENU_ELEMENT(inMenu))==FALSE ||
-			garcon_menu_element_get_no_display(GARCON_MENU_ELEMENT(inMenu))==TRUE)
-		{
-			return;
-		}
+		if(!garcon_menu_element_get_visible(GARCON_MENU_ELEMENT(inMenu))) return;
 
 		/* Check if menu has at least one visible menu item */
 		hasVisibleItem=FALSE;
@@ -318,12 +313,7 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 			}
 
 			/* Check if menu element is visible */
-			if(garcon_menu_element_get_show_in_environment(menuElement)==FALSE ||
-				garcon_menu_element_get_visible(menuElement)==FALSE ||
-				garcon_menu_element_get_no_display(menuElement)==TRUE)
-			{
-				continue;
-			}
+			if(!garcon_menu_element_get_visible(menuElement)) continue;
 
 			/* Item is visible so set flag and stop iterating through menu item */
 			hasVisibleItem=TRUE;
@@ -354,12 +344,7 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 		menuElement=GARCON_MENU_ELEMENT(entry->data);
 
 		/* Check if menu element is visible */
-		if(garcon_menu_element_get_show_in_environment(menuElement)==FALSE ||
-			garcon_menu_element_get_visible(menuElement)==FALSE ||
-			garcon_menu_element_get_no_display(menuElement)==TRUE)
-		{
-			continue;
-		}
+		if(!garcon_menu_element_get_visible(menuElement)) continue;
 
 		/* Insert row into model if menu element is a sub-menu or a menu item */
 		if(GARCON_IS_MENU(menuElement) ||
