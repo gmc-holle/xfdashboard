@@ -286,15 +286,54 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 
 	priv=self->priv;
 
-	/* Check if this menu is visible and should be processed.
+	/* Check if this menu is visible, has at least one visible menu item
+	 * and should be processed.
 	 * Root menu is an exception as it must be processed or model is empty.
 	 */
-	if(inMenu!=priv->rootMenu &&
-		(garcon_menu_element_get_show_in_environment(GARCON_MENU_ELEMENT(inMenu))==FALSE ||
-			garcon_menu_element_get_visible(GARCON_MENU_ELEMENT(inMenu))==FALSE ||
-			garcon_menu_element_get_no_display(GARCON_MENU_ELEMENT(inMenu))==TRUE))
+	if(inMenu!=priv->rootMenu)
 	{
-		return;
+		gboolean									hasVisibleItem;
+
+		/* Check if menu is visible */
+		if(garcon_menu_element_get_show_in_environment(GARCON_MENU_ELEMENT(inMenu))==FALSE ||
+			garcon_menu_element_get_visible(GARCON_MENU_ELEMENT(inMenu))==FALSE ||
+			garcon_menu_element_get_no_display(GARCON_MENU_ELEMENT(inMenu))==TRUE)
+		{
+			return;
+		}
+
+		/* Check if menu has at least one visible menu item */
+		hasVisibleItem=FALSE;
+		menuElements=garcon_menu_get_elements(inMenu);
+		for(entry=menuElements; entry && !hasVisibleItem; entry=g_list_next(entry))
+		{
+			/* Get menu element from list */
+			menuElement=GARCON_MENU_ELEMENT(entry->data);
+
+			/* Check if current menu element is a menu or menu item */
+			if(!GARCON_IS_MENU(menuElement) &&
+				!GARCON_IS_MENU_ITEM(menuElement))
+			{
+				continue;
+			}
+
+			/* Check if menu element is visible */
+			if(garcon_menu_element_get_show_in_environment(menuElement)==FALSE ||
+				garcon_menu_element_get_visible(menuElement)==FALSE ||
+				garcon_menu_element_get_no_display(menuElement)==TRUE)
+			{
+				continue;
+			}
+
+			/* Item is visible so set flag and stop iterating through menu item */
+			hasVisibleItem=TRUE;
+		}
+		g_list_free(menuElements);
+
+		/* If no visible menu item was seen while iterating through menu
+		 * then stop processing it.
+		 */
+		if(!hasVisibleItem) return;
 	}
 
 	/* Increase reference on menu going to be processed */
