@@ -459,6 +459,40 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 }
 
 /* Load image from icon theme */
+static gboolean _xfdashboard_image_content_load_from_icon_name_is_supported_suffix(GdkPixbufFormat *inFormat,
+																					const gchar *inExtension)
+{
+	gchar			**extensions, **entry;
+	gboolean		isSupported;
+
+	g_return_val_if_fail(inFormat, FALSE);
+	g_return_val_if_fail(inExtension && *inExtension=='.' && *(inExtension+1), FALSE);
+
+	/* Get extensions supported by gdk-pixbuf format */
+	extensions=gdk_pixbuf_format_get_extensions(inFormat);
+
+	/* Iterate through list of extensions supported by format and check
+	 * if any of them matches given extension.
+	 */
+	isSupported=FALSE;
+	for(entry=extensions; *entry && !isSupported; entry++)
+	{
+		if(g_strcmp0(inExtension+1, *entry)==0)
+		{
+			isSupported=TRUE;
+			g_debug("Extension '%s' is supported by '%s'",
+						inExtension+1,
+						gdk_pixbuf_format_get_description(inFormat));
+		}
+	}
+
+	/* Free allocated resources */
+	g_strfreev(extensions);
+
+	/* Return status if extension is known and supported */
+	return(isSupported);
+}
+
 static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageContent *self)
 {
 	XfdashboardImageContentPrivate		*priv;
@@ -480,6 +514,68 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 										priv->iconName,
 										priv->iconSize,
 										GTK_ICON_LOOKUP_USE_BUILTIN);
+
+	/* If we got no icon info but a filename (icon name with suffix like
+	 * .png etc.) was given, retry without file extension/suffix.
+	 */
+	if(!iconInfo)
+	{
+		gchar							*extensionPosition;
+
+		extensionPosition=g_strrstr(priv->iconName, ".");
+		if(extensionPosition)
+		{
+			gchar						*extension;
+			GSList						*supportedFormats, *entry;
+			GdkPixbufFormat				*format;
+			gboolean					isSupported;
+
+			/* Get suffix - the file extension */
+			extension=g_utf8_casefold(extensionPosition, -1);
+			g_debug("Checking if icon filename '%s' with suffix '%s' is supported by gdk-pixbuf", priv->iconName, extensionPosition);
+
+			/* Get all formats supported by gdk-pixbuf and check if
+			 * suffix matches any of them.
+			 */
+			isSupported=FALSE;
+			supportedFormats=gdk_pixbuf_get_formats();
+			for(entry=supportedFormats; entry && !isSupported; entry=g_slist_next(entry))
+			{
+				format=(GdkPixbufFormat*)entry->data;
+
+				if(_xfdashboard_image_content_load_from_icon_name_is_supported_suffix(format, extension))
+				{
+					isSupported=TRUE;
+				}
+			}
+			g_slist_free(supportedFormats);
+
+			/* If extension is supported truncate filename by extension
+			 * and try again to retrieve icon info.
+			 */
+			if(isSupported)
+			{
+				gchar					*iconName;
+
+				/* Get icon name from icon filename without extension */
+				iconName=g_strndup(priv->iconName, extensionPosition-priv->iconName);
+
+				/* Try to get icon info for this icon name */
+				iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
+													priv->iconName,
+													priv->iconSize,
+													GTK_ICON_LOOKUP_USE_BUILTIN);
+				if(!iconInfo) g_warning(_("Could not lookup icon '%s' for filename '%s'"), iconName, priv->iconName);
+
+				/* Release allocated resources */
+				g_free(iconName);
+			}
+				else g_debug("Extension '%s' is not supported by gdk-pixbuf", extension);
+
+			/* Release allocated resources */
+			g_free(extension);
+		}
+	}
 
 	/* If we got no icon info we try to fallback icon next */
 	if(!iconInfo)
@@ -540,7 +636,7 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 			stream=G_INPUT_STREAM(g_file_read(file, NULL, &error));
 			if(!stream)
 			{
-				g_warning(_("Could not create stream for file %s of icon '%s': %s"),
+				g_warning(_("Could not create stream for icon file %s of icon '%s': %s"),
 							filename,
 							priv->iconName,
 							error ? error->message : _("Unknown error"));
@@ -571,7 +667,7 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 			g_object_unref(stream);
 			g_object_unref(file);
 
-			g_debug("Loading icon '%s' from file %s", priv->iconName, filename);
+			g_debug("Loading icon '%s' from icon file %s", priv->iconName, filename);
 		}
 
 	/* Release allocated resources */
