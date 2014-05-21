@@ -688,23 +688,65 @@ GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButt
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
 			{
-				GarconMenuItem			*menuItem=GARCON_MENU_ITEM(priv->menuElement);
-				const gchar				*command=garcon_menu_item_get_command(menuItem);
-				const gchar				*name=garcon_menu_item_get_name(menuItem);
-				GAppInfoCreateFlags		flags=G_APP_INFO_CREATE_NONE;
-				GError					*error=NULL;
+				const gchar					*desktopURI=NULL;
+				GarconMenuItem				*menuItem=GARCON_MENU_ITEM(priv->menuElement);
+				const gchar					*name=garcon_menu_item_get_name(menuItem);
+				GError						*error=NULL;
 
-				/* Create application info for launching */
-				if(garcon_menu_item_supports_startup_notification(menuItem)) flags|=G_APP_INFO_CREATE_SUPPORTS_STARTUP_NOTIFICATION;
-				if(garcon_menu_item_requires_terminal(menuItem)) flags|=G_APP_INFO_CREATE_NEEDS_TERMINAL;
-
-				appInfo=g_app_info_create_from_commandline(command, name, flags, &error);
-				if(error)
+				/* First try to create a desktop application info from desktop ID of menu element */
+				desktopURI=garcon_menu_item_get_uri(GARCON_MENU_ITEM(priv->menuElement));
+				if(desktopURI)
 				{
-					g_warning(_("Could not create application information for menu item '%s': %s"),
-								name,
-								error->message ? error->message : "unknown error");
-					g_error_free(error);
+					gchar					*desktopFilename=NULL;
+
+					/* Get file name which can be used to create desktop application info from */
+					desktopFilename=g_filename_from_uri(desktopURI, NULL, &error);
+					if(desktopFilename)
+					{
+						GDesktopAppInfo		*desktopAppInfo;
+
+						/* Create desktop application info from key file loaded successfully.
+						 * If we got a desktop application info return it.
+						 */
+						desktopAppInfo=g_desktop_app_info_new_from_filename(desktopFilename);
+						if(desktopAppInfo) appInfo=G_APP_INFO(desktopAppInfo);
+
+						/* Free allocated resources */
+						g_free(desktopFilename);
+					}
+						else
+						{
+							if(error)
+							{
+								g_warning(_("Could not create desktop application information for menu item '%s' from %s: %s"),
+											name,
+											desktopURI,
+											error->message ? error->message : "unknown error");
+								g_error_free(error);
+							}
+						}
+				}
+
+				/* If previous creation failed fallback to create a simple application info */
+				if(!appInfo)
+				{
+					const gchar				*command=garcon_menu_item_get_command(menuItem);
+					GAppInfoCreateFlags		flags=G_APP_INFO_CREATE_NONE;
+
+					g_debug("Creating GDesktopAppInfo for menu item '%s' failed. Using fallback method!", name);
+
+					/* Create simple application info with data from menu element */
+					if(garcon_menu_item_supports_startup_notification(menuItem)) flags|=G_APP_INFO_CREATE_SUPPORTS_STARTUP_NOTIFICATION;
+					if(garcon_menu_item_requires_terminal(menuItem)) flags|=G_APP_INFO_CREATE_NEEDS_TERMINAL;
+
+					appInfo=g_app_info_create_from_commandline(command, name, flags, &error);
+					if(error)
+					{
+						g_warning(_("Could not create application information for menu item '%s': %s"),
+									name,
+									error->message ? error->message : "unknown error");
+						g_error_free(error);
+					}
 				}
 			}
 			break;
