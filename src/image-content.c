@@ -562,10 +562,11 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 
 				/* Try to get icon info for this icon name */
 				iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
-													priv->iconName,
+													iconName,
 													priv->iconSize,
 													GTK_ICON_LOOKUP_USE_BUILTIN);
-				if(!iconInfo) g_warning(_("Could not lookup icon '%s' for filename '%s'"), iconName, priv->iconName);
+				if(!iconInfo) g_warning(_("Could not lookup icon name '%s' for icon '%s'"), iconName, priv->iconName);
+					else g_debug("Extension '%s' is supported and loaded icon name '%s' for icon '%s'", extension, iconName, priv->iconName);
 
 				/* Release allocated resources */
 				g_free(iconName);
