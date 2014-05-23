@@ -124,6 +124,8 @@ static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 #define DEFAULT_NOTIFICATION_TIMEOUT			3000
 #define RESET_SEARCH_ON_RESUME_XFCONF_PROP		"/reset-search-on-resume"
 #define DEFAULT_RESET_SEARCH_ON_RESUME			TRUE
+#define SWITCH_VIEW_ON_RESUME_XFCONF_PROP		"/switch-to-view-on-resume"
+#define DEFAULT_SWITCH_VIEW_ON_RESUME			NULL
 
 /* Handle an event */
 static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inEvent)
@@ -670,6 +672,37 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 			!xfdashboard_text_box_is_empty(XFDASHBOARD_TEXT_BOX(priv->searchbox)))
 		{
 			XfdashboardView				*searchView;
+			XfdashboardView				*resumeView;
+			gchar						*resumeViewInternalName;
+
+			/* If view should also be changed set the "previous" selected view to the requested one.
+			 * But prevent setting search view as this one will be hidden because search will be resetted.
+			 */
+			resumeView=NULL;
+			resumeViewInternalName=xfconf_channel_get_string(xfdashboard_application_get_xfconf_channel(),
+																SWITCH_VIEW_ON_RESUME_XFCONF_PROP,
+																DEFAULT_SWITCH_VIEW_ON_RESUME);
+			if(resumeViewInternalName)
+			{
+				/* Lookup view by its internal name */
+				resumeView=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewInternalName);
+				if(resumeView)
+				{
+					if(!XFDASHBOARD_IS_SEARCH_VIEW(resumeView))
+					{
+						/* Release old remembered view */
+						g_object_unref(priv->viewBeforeSearch);
+
+						/* Remember new active view */
+						priv->viewBeforeSearch=XFDASHBOARD_VIEW(g_object_ref(resumeView));
+					}
+						else g_warning(_("Will not switch to search view when resetting search."));
+				}
+					else g_warning(_("Could not switch to unknown view '%s'"), resumeViewInternalName);
+
+				/* Release allocated resources */
+				g_free(resumeViewInternalName);
+			}
 
 			/* Reset search in search view */
 			searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);

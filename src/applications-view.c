@@ -917,7 +917,7 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	priv->selectedItem=NULL;
 
 	/* Set up view */
-	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "applications");
+	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "built-in.applications");
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Applications"));
 	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), GTK_STOCK_HOME);
 
