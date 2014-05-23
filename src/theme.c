@@ -268,7 +268,7 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 	}
 	g_strfreev(resources);
 
-	/* Create XML parser and load laout resources */
+	/* Create XML parser and load layout resources */
 	resources=g_key_file_get_string_list(themeKeyFile,
 											XFDASHBOARD_THEME_GROUP,
 											"Layout",
