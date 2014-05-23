@@ -652,7 +652,6 @@ static void _xfdashboard_stage_on_application_suspend(XfdashboardStage *self, gp
 static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpointer inUserData)
 {
 	XfdashboardStagePrivate				*priv=self->priv;
-	gboolean							doResetSearch;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
@@ -662,56 +661,75 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 	/* If stage window is known just show it again ... */
 	if(priv->stageWindow)
 	{
-		/* If search is active then end search by clearing search box */
+		gchar							*resumeViewInternalName;
+		gboolean						doResetSearch;
+		XfdashboardView					*searchView;
+		XfdashboardView					*resumeView;
+
+		/* Get configured options */
 		doResetSearch=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(),
 												RESET_SEARCH_ON_RESUME_XFCONF_PROP,
 												DEFAULT_RESET_SEARCH_ON_RESUME);
+		resumeViewInternalName=xfconf_channel_get_string(xfdashboard_application_get_xfconf_channel(),
+															SWITCH_VIEW_ON_RESUME_XFCONF_PROP,
+															DEFAULT_SWITCH_VIEW_ON_RESUME);
 
+		/* Find search view */
+		searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
+		if(!searchView) g_critical(_("Cannot find search viewin viewpad to reset view."));
+
+		/* Find view to switch to if requested */
+		resumeView=NULL;
+		if(resumeViewInternalName)
+		{
+			/* Lookup view by its internal name */
+			resumeView=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewInternalName);
+			if(!resumeView) g_warning(_("Cannot switch to unknown view '%s'"), resumeViewInternalName);
+
+			/* If view to switch to is the search view behave like we did not find the view
+			 * because it does not make sense to switch to a view which might be hidden,
+			 * e.g. when resetting search on resume which causes the search view to be hidden
+			 * and the previous view to be shown.
+			 */
+			if(resumeView &&
+				searchView &&
+				resumeView==searchView)
+			{
+				resumeView=NULL;
+			}
+
+			/* Release allocated resources */
+			g_free(resumeViewInternalName);
+		}
+
+		/* If search is active then end search by clearing search box if requested ... */
 		if(priv->searchbox &&
 			doResetSearch &&
 			!xfdashboard_text_box_is_empty(XFDASHBOARD_TEXT_BOX(priv->searchbox)))
 		{
-			XfdashboardView				*searchView;
-			XfdashboardView				*resumeView;
-			gchar						*resumeViewInternalName;
-
-			/* If view should also be changed set the "previous" selected view to the requested one.
-			 * But prevent setting search view as this one will be hidden because search will be resetted.
+			/* If user wants to switch to a specific view set it as "previous" view now.
+			 * It will be restored automatically when search box is cleared.
 			 */
-			resumeView=NULL;
-			resumeViewInternalName=xfconf_channel_get_string(xfdashboard_application_get_xfconf_channel(),
-																SWITCH_VIEW_ON_RESUME_XFCONF_PROP,
-																DEFAULT_SWITCH_VIEW_ON_RESUME);
-			if(resumeViewInternalName)
+			if(resumeView)
 			{
-				/* Lookup view by its internal name */
-				resumeView=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewInternalName);
-				if(resumeView)
-				{
-					if(!XFDASHBOARD_IS_SEARCH_VIEW(resumeView))
-					{
-						/* Release old remembered view */
-						g_object_unref(priv->viewBeforeSearch);
+				/* Release old remembered view */
+				if(priv->viewBeforeSearch) g_object_unref(priv->viewBeforeSearch);
 
-						/* Remember new active view */
-						priv->viewBeforeSearch=XFDASHBOARD_VIEW(g_object_ref(resumeView));
-					}
-						else g_warning(_("Will not switch to search view when resetting search."));
-				}
-					else g_warning(_("Could not switch to unknown view '%s'"), resumeViewInternalName);
-
-				/* Release allocated resources */
-				g_free(resumeViewInternalName);
+				/* Remember new active view */
+				priv->viewBeforeSearch=XFDASHBOARD_VIEW(g_object_ref(resumeView));
 			}
 
 			/* Reset search in search view */
-			searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
 			if(searchView) xfdashboard_search_view_reset_search(XFDASHBOARD_SEARCH_VIEW(searchView));
-				else g_critical(_("Cannot reset search because search view was not found in viewpad."));
 
 			/* Reset text in search box */
 			xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
 		}
+			/* ... otherwise just switch to view if requested */
+			else if(resumeView)
+			{
+				xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeView);
+			}
 
 		/* Set up stage and show it */
 		xfdashboard_window_tracker_window_make_stage_window(priv->stageWindow);
