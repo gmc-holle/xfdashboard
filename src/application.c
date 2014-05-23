@@ -227,7 +227,9 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	GError							*error;
 	ClutterActor					*stage;
 	XfdashboardThemeLayout			*themeLayout;
+#if !GARCON_CHECK_VERSION(0,3,0)
 	const gchar						*desktop;
+#endif
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
 
@@ -235,6 +237,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	error=NULL;
 
 	/* Initialize garcon for current desktop environment */
+#if !GARCON_CHECK_VERSION(0,3,0)
 	desktop=g_getenv("XDG_CURRENT_DESKTOP");
 	if(G_LIKELY(desktop==NULL))
 	{
@@ -249,6 +252,9 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 		else if(*desktop==0) desktop=NULL;
 
 	garcon_set_environment(desktop);
+#else
+	garcon_set_environment_xdg(GARCON_ENVIRONMENT_XFCE);
+#endif
 
 	/* Initialize xfconf */
 	if(!xfconf_init(&error))
