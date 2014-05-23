@@ -1003,7 +1003,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	priv->selectedItem=NULL;
 
 	/* Set up view */
-	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "built-in.windows");
+	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "windows");
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Windows"));
 	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), DEFAULT_VIEW_ICON);
 	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_BOTH);
