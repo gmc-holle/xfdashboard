@@ -30,6 +30,7 @@
 
 #include <clutter/clutter.h>
 #include <gio/gio.h>
+#include <garcon/garcon.h>
 
 #include "window-tracker-workspace.h"
 
@@ -52,6 +53,8 @@ void xfdashboard_register_gvalue_transformation_funcs(void);
 
 gboolean xfdashboard_actor_contains_child_deep(ClutterActor *inActor, ClutterActor *inChild);
 ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar *inName);
+
+GAppInfo* xfdashboard_garcon_menu_item_get_app_info(GarconMenuItem *inMenuItem);
 
 G_END_DECLS
 
