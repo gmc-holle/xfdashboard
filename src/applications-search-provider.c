@@ -264,19 +264,27 @@ static gboolean _xfdashboard_applications_search_provider_is_match(ClutterModelI
 	{
 		GFile							*fileDesktopID;
 		gchar							*pathDesktopID;
+		GDesktopAppInfo					*appInfo;
 
 		fileDesktopID=garcon_menu_item_get_file(GARCON_MENU_ITEM(menuElement));
 		pathDesktopID=g_file_get_path(fileDesktopID);
 
-		if(g_hash_table_lookup_extended(ioPool, pathDesktopID, NULL, NULL)!=TRUE)
+		/* Test if desktop file could be loaded and parsed. If not do not add. */
+		appInfo=g_desktop_app_info_new_from_filename(pathDesktopID);
+		if(appInfo)
 		{
-			g_hash_table_insert(ioPool, g_strdup(pathDesktopID), GINT_TO_POINTER(iterRow));
-		}
-			else
+			if(g_hash_table_lookup_extended(ioPool, pathDesktopID, NULL, NULL)!=TRUE)
 			{
-				poolRow=GPOINTER_TO_INT(g_hash_table_lookup(ioPool, pathDesktopID));
-				if(poolRow!=iterRow) isMatch=FALSE;
+				g_hash_table_insert(ioPool, g_strdup(pathDesktopID), GINT_TO_POINTER(iterRow));
 			}
+				else
+				{
+					poolRow=GPOINTER_TO_INT(g_hash_table_lookup(ioPool, pathDesktopID));
+					if(poolRow!=iterRow) isMatch=FALSE;
+				}
+
+			g_object_unref(appInfo);
+		}
 
 		g_free(pathDesktopID);
 		g_object_unref(fileDesktopID);
@@ -297,6 +305,8 @@ static gint _xfdashboard_applications_search_provider_sort_result_set(GVariant *
 	const gchar			*rightID;
 	GDesktopAppInfo		*leftAppInfo;
 	GDesktopAppInfo		*rightAppInfo;
+	const gchar			*leftName;
+	const gchar			*rightName;
 	gint				result;
 
 	g_return_val_if_fail(inLeft, 0);
@@ -308,15 +318,19 @@ static gint _xfdashboard_applications_search_provider_sort_result_set(GVariant *
 
 	/* Get desktop application information of both items */
 	leftAppInfo=g_desktop_app_info_new_from_filename(leftID);
+	if(leftAppInfo) leftName=g_app_info_get_display_name(G_APP_INFO(leftAppInfo));
+		else leftName=NULL;
+
 	rightAppInfo=g_desktop_app_info_new_from_filename(rightID);
+	if(rightAppInfo) rightName=g_app_info_get_display_name(G_APP_INFO(rightAppInfo));
+		else rightName=NULL;
 
 	/* Get result of comparing both desktop application information objects */
-	result=g_strcmp0(g_app_info_get_display_name(G_APP_INFO(leftAppInfo)),
-						g_app_info_get_display_name(G_APP_INFO(rightAppInfo)));
+	result=g_strcmp0(leftName, rightName);
 
 	/* Release allocated resources */
-	g_object_unref(rightAppInfo);
-	g_object_unref(leftAppInfo);
+	if(rightAppInfo) g_object_unref(rightAppInfo);
+	if(leftAppInfo) g_object_unref(leftAppInfo);
 
 	return(result);
 }

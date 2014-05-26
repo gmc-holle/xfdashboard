@@ -232,7 +232,8 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 				gicon=g_app_info_get_icon(priv->appInfo);
 				if(gicon) iconName=g_icon_to_string(gicon);
 			}
-				else iconName=GTK_STOCK_MISSING_IMAGE;
+
+			if(!iconName) iconName=GTK_STOCK_MISSING_IMAGE;
 			break;
 
 		default:
