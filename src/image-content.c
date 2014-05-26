@@ -38,13 +38,13 @@ G_DEFINE_TYPE(XfdashboardImageContent,
 				CLUTTER_TYPE_IMAGE)
 
 /* Local definitions */
-typedef enum
+typedef enum /*< skip,prefix=XFDASHBOARD_IMAGE_TYPE >*/
 {
-	IMAGE_TYPE_NONE=0,
-	IMAGE_TYPE_FILE,
-	IMAGE_TYPE_ICON_NAME,
-	IMAGE_TYPE_GICON,
-} ImageType;
+	XFDASHBOARD_IMAGE_TYPE_NONE=0,
+	XFDASHBOARD_IMAGE_TYPE_FILE,
+	XFDASHBOARD_IMAGE_TYPE_ICON_NAME,
+	XFDASHBOARD_IMAGE_TYPE_GICON,
+} XfdashboardImageType;
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_IMAGE_CONTENT_GET_PRIVATE(obj) \
@@ -53,19 +53,19 @@ typedef enum
 struct _XfdashboardImageContentPrivate
 {
 	/* Properties related */
-	gchar			*key;
-	gchar			*iconName;
-	GIcon			*gicon;
-	guint			iconSize;
+	gchar					*key;
 
 	/* Instance related */
-	ImageType		type;
-	gboolean		isLoaded;
-	gboolean		successfulLoaded;
-	GtkIconTheme	*iconTheme;
+	XfdashboardImageType	type;
+	gboolean				isLoaded;
+	gboolean				successfulLoaded;
+	GtkIconTheme			*iconTheme;
+	gchar					*iconName;
+	GIcon					*gicon;
+	guint					iconSize;
 
-	guint			contentAttachedSignalID;
-	guint			iconThemeChangedSignalID;
+	guint					contentAttachedSignalID;
+	guint					iconThemeChangedSignalID;
 };
 
 /* Properties */
@@ -325,7 +325,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 	filename=NULL;
 
 	/* Check if type of image is valid and all needed parameters are set */
-	g_return_if_fail(priv->type==IMAGE_TYPE_FILE);
+	g_return_if_fail(priv->type==XFDASHBOARD_IMAGE_TYPE_FILE);
 	g_return_if_fail(priv->iconName);
 	g_return_if_fail(priv->iconSize>0);
 
@@ -507,7 +507,7 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 	iconInfo=NULL;
 
 	/* Check if type of image is valid and all needed parameters are set */
-	g_return_if_fail(priv->type==IMAGE_TYPE_ICON_NAME);
+	g_return_if_fail(priv->type==XFDASHBOARD_IMAGE_TYPE_ICON_NAME);
 	g_return_if_fail(priv->iconName);
 	g_return_if_fail(priv->iconSize>0);
 
@@ -690,7 +690,7 @@ static void _xfdashboard_image_content_load_from_gicon(XfdashboardImageContent *
 	iconInfo=NULL;
 
 	/* Check if type of image is valid and all needed parameters are set */
-	g_return_if_fail(priv->type==IMAGE_TYPE_GICON);
+	g_return_if_fail(priv->type==XFDASHBOARD_IMAGE_TYPE_GICON);
 	g_return_if_fail(priv->gicon);
 	g_return_if_fail(priv->iconSize>0);
 
@@ -818,19 +818,19 @@ static void _xfdashboard_image_content_on_icon_theme_changed(XfdashboardImageCon
 	/* Reload image */
 	switch(priv->type)
 	{
-		case IMAGE_TYPE_NONE:
+		case XFDASHBOARD_IMAGE_TYPE_NONE:
 			g_warning(_("Cannot load image '%s' without type"), priv->key);
 			break;
 
-		case IMAGE_TYPE_FILE:
+		case XFDASHBOARD_IMAGE_TYPE_FILE:
 			_xfdashboard_image_content_load_from_file(self);
 			break;
 
-		case IMAGE_TYPE_ICON_NAME:
+		case XFDASHBOARD_IMAGE_TYPE_ICON_NAME:
 			_xfdashboard_image_content_load_from_icon_name(self);
 			break;
 
-		case IMAGE_TYPE_GICON:
+		case XFDASHBOARD_IMAGE_TYPE_GICON:
 			_xfdashboard_image_content_load_from_gicon(self);
 			break;
 
@@ -854,10 +854,10 @@ static void _xfdashboard_image_content_setup_for_icon(XfdashboardImageContent *s
 	priv=self->priv;
 
 	/* Image must not be setup already */
-	g_return_if_fail(priv->type==IMAGE_TYPE_NONE);
+	g_return_if_fail(priv->type==XFDASHBOARD_IMAGE_TYPE_NONE);
 
 	/* Determine type of image to load icon from absolute path or theme or file */
-	if(g_path_is_absolute(inIconName)) priv->type=IMAGE_TYPE_FILE;
+	if(g_path_is_absolute(inIconName)) priv->type=XFDASHBOARD_IMAGE_TYPE_FILE;
 		else
 		{
 			XfdashboardTheme			*theme;
@@ -872,8 +872,8 @@ static void _xfdashboard_image_content_setup_for_icon(XfdashboardImageContent *s
 											NULL);
 
 			/* Check if image at absolute path build from theme path and relative path exists */
-			if(g_file_test(iconFilename, G_FILE_TEST_EXISTS)) priv->type=IMAGE_TYPE_FILE;
-				else priv->type=IMAGE_TYPE_ICON_NAME;
+			if(g_file_test(iconFilename, G_FILE_TEST_EXISTS)) priv->type=XFDASHBOARD_IMAGE_TYPE_FILE;
+				else priv->type=XFDASHBOARD_IMAGE_TYPE_ICON_NAME;
 
 			/* Release allocated resources */
 			g_free(iconFilename);
@@ -899,10 +899,10 @@ static void _xfdashboard_image_content_setup_for_gicon(XfdashboardImageContent *
 	priv=self->priv;
 
 	/* Image must not be setup already */
-	g_return_if_fail(priv->type==IMAGE_TYPE_NONE);
+	g_return_if_fail(priv->type==XFDASHBOARD_IMAGE_TYPE_NONE);
 
 	/* Set up image */
-	priv->type=IMAGE_TYPE_GICON;
+	priv->type=XFDASHBOARD_IMAGE_TYPE_GICON;
 	priv->gicon=G_ICON(g_object_ref(inIcon));
 	priv->iconSize=inSize;
 }
@@ -954,19 +954,19 @@ static void _xfdashboard_image_content_on_attached(ClutterContent *inContent,
 	/* Load icon */
 	switch(priv->type)
 	{
-		case IMAGE_TYPE_NONE:
+		case XFDASHBOARD_IMAGE_TYPE_NONE:
 			g_warning(_("Cannot load image '%s' without type"), priv->key);
 			break;
 
-		case IMAGE_TYPE_FILE:
+		case XFDASHBOARD_IMAGE_TYPE_FILE:
 			_xfdashboard_image_content_load_from_file(self);
 			break;
 
-		case IMAGE_TYPE_ICON_NAME:
+		case XFDASHBOARD_IMAGE_TYPE_ICON_NAME:
 			_xfdashboard_image_content_load_from_icon_name(self);
 			break;
 
-		case IMAGE_TYPE_GICON:
+		case XFDASHBOARD_IMAGE_TYPE_GICON:
 			_xfdashboard_image_content_load_from_gicon(self);
 			break;
 
@@ -985,7 +985,7 @@ static void _xfdashboard_image_content_dispose(GObject *inObject)
 	XfdashboardImageContentPrivate		*priv=self->priv;
 
 	/* Release allocated resources */
-	priv->type=IMAGE_TYPE_NONE;
+	priv->type=XFDASHBOARD_IMAGE_TYPE_NONE;
 
 	if(priv->contentAttachedSignalID)
 	{
@@ -1102,7 +1102,7 @@ void xfdashboard_image_content_init(XfdashboardImageContent *self)
 
 	/* Set up default values */
 	priv->key=NULL;
-	priv->type=IMAGE_TYPE_NONE;
+	priv->type=XFDASHBOARD_IMAGE_TYPE_NONE;
 	priv->iconName=NULL;
 	priv->gicon=NULL;
 	priv->iconSize=0;
