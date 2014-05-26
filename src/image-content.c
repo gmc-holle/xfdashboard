@@ -61,6 +61,7 @@ struct _XfdashboardImageContentPrivate
 	/* Instance related */
 	ImageType		type;
 	gboolean		isLoaded;
+	gboolean		successfulLoaded;
 	GtkIconTheme	*iconTheme;
 
 	guint			contentAttachedSignalID;
@@ -243,7 +244,8 @@ static void _xfdashboard_image_content_loading_async_callback(GObject *inSource,
 	XfdashboardImageContentPrivate		*priv=self->priv;
 	GdkPixbuf							*pixbuf;
 	GError								*error=NULL;
-	gboolean							success=TRUE;
+
+	priv->successfulLoaded=TRUE;
 
 	/* Get pixbuf loaded */
 	pixbuf=gdk_pixbuf_new_from_stream_finish(inResult, &error);
@@ -269,7 +271,7 @@ static void _xfdashboard_image_content_loading_async_callback(GObject *inSource,
 
 			/* Set failed state and empty image */
 			_xfdashboard_image_content_set_empty_image(self);
-			success=FALSE;
+			priv->successfulLoaded=FALSE;
 		}
 	}
 		else
@@ -285,14 +287,14 @@ static void _xfdashboard_image_content_loading_async_callback(GObject *inSource,
 
 			/* Set failed state and empty image */
 			_xfdashboard_image_content_set_empty_image(self);
-			success=FALSE;
+			priv->successfulLoaded=FALSE;
 		}
 
 	/* Release allocated resources */
 	if(pixbuf) g_object_unref(pixbuf);
 
 	/* Emit "loaded" signal if loading was successful ... */
-	if(success)
+	if(priv->successfulLoaded)
 	{
 		g_signal_emit(self, XfdashboardImageContentSignals[SIGNAL_LOADED], 0);
 		g_debug("Successfully loaded image for key '%s' asynchronously", priv->key ? priv->key : "<nil>");
@@ -920,8 +922,24 @@ static void _xfdashboard_image_content_on_attached(ClutterContent *inContent,
 	self=XFDASHBOARD_IMAGE_CONTENT(inContent);
 	priv=self->priv;
 
-	/* Check if image was already loaded */
-	if(priv->isLoaded) return;
+	/* Check if image was already loaded then emit signal
+	 * appropiate for last load status.
+	 */
+	if(priv->isLoaded)
+	{
+		/* Emit "loaded" signal if loading was successful ... */
+		if(priv->successfulLoaded)
+		{
+			g_signal_emit(self, XfdashboardImageContentSignals[SIGNAL_LOADED], 0);
+		}
+			/* ... or emit "loading-failed" signal if loading has failed. */
+			else
+			{
+				g_signal_emit(self, XfdashboardImageContentSignals[SIGNAL_LOADING_FAILED], 0);
+			}
+
+		return;
+	}
 
 	/* Mark image loaded regardless if loading will succeed or fail */
 	priv->isLoaded=TRUE;
@@ -1089,6 +1107,7 @@ void xfdashboard_image_content_init(XfdashboardImageContent *self)
 	priv->gicon=NULL;
 	priv->iconSize=0;
 	priv->isLoaded=FALSE;
+	priv->successfulLoaded=FALSE;
 	priv->iconTheme=gtk_icon_theme_get_default();
 
 	/* Connect to "attached" signal of ClutterContent to get notified
