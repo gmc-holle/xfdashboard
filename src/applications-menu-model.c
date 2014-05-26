@@ -43,7 +43,6 @@ struct _XfdashboardApplicationsMenuModelPrivate
 {
 	/* Instance related */
 	GarconMenu		*rootMenu;
-	GHashTable		*sections;
 };
 
 /* Signals */
@@ -57,6 +56,12 @@ enum
 static guint XfdashboardApplicationsMenuModelSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+typedef struct _XfdashboardApplicationsMenuModelFillData		XfdashboardApplicationsMenuModelFillData;
+struct _XfdashboardApplicationsMenuModelFillData
+{
+	gint		sequenceID;
+	GSList		*populatedMenus;
+};
 
 /* Forward declarations */
 static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicationsMenuModel *self);
@@ -115,13 +120,6 @@ static void _xfdashboard_applications_menu_model_clear(XfdashboardApplicationsMe
 		g_object_unref(iterator);
 	}
 
-	/* Clear sections */
-	if(priv->sections)
-	{
-		g_hash_table_destroy(priv->sections);
-		priv->sections=NULL;
-	}
-
 	/* Destroy root menu */
 	if(priv->rootMenu)
 	{
@@ -130,42 +128,15 @@ static void _xfdashboard_applications_menu_model_clear(XfdashboardApplicationsMe
 	}
 }
 
-/* Add a menu to section list */
-static void _xfdashboard_applications_menu_model_add_to_section(XfdashboardApplicationsMenuModel *self,
-																GarconMenu *inSection,
-																GarconMenu *inMenu)
-{
-	XfdashboardApplicationsMenuModelPrivate		*priv;
-	GList										*sectionList;
-	GList										*oldSectionList;
-
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
-	g_return_if_fail(GARCON_IS_MENU(inSection));
-	g_return_if_fail(GARCON_IS_MENU(inMenu));
-
-	priv=self->priv;
-	sectionList=NULL;
-
-	/* Get copy of current section list if available */
-	if(g_hash_table_contains(priv->sections, inSection))
-	{
-		oldSectionList=(GList*)g_hash_table_lookup(priv->sections, inSection);
-		sectionList=g_list_copy(oldSectionList);
-	}
-
-	/* Add menu to section list */
-	sectionList=g_list_append(sectionList, inMenu);
-
-	/* Store new section list */
-	g_hash_table_insert(priv->sections, inSection, sectionList);
-}
-
 /* Helper function to filter model data */
 static gboolean _xfdashboard_applications_menu_model_filter_by_menu(ClutterModel *inModel,
 																	ClutterModelIter *inIter,
 																	gpointer inUserData)
 {
+	XfdashboardApplicationsMenuModel			*self;
+	XfdashboardApplicationsMenuModelPrivate		*priv;
 	GarconMenu									*parentMenu;
+	GarconMenu									*requestedParentMenu;
 	GarconMenuElement							*menuElement;
 	GarconMenuItemPool							*itemPool;
 	const gchar									*desktopID;
@@ -175,13 +146,16 @@ static gboolean _xfdashboard_applications_menu_model_filter_by_menu(ClutterModel
 	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
 	g_return_val_if_fail(GARCON_IS_MENU(inUserData), FALSE);
 
-	parentMenu=GARCON_MENU(inUserData);
+	self=XFDASHBOARD_APPLICATIONS_MENU_MODEL(inModel);
+	priv=self->priv;
+	requestedParentMenu=GARCON_MENU(inUserData);
 	menuElement=NULL;
 	doShow=FALSE;
 
 	/* Get menu element at iterator */
 	clutter_model_iter_get(inIter,
 							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
+							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU, &parentMenu,
 							-1);
 	if(menuElement==NULL) return(FALSE);
 
@@ -195,7 +169,11 @@ static gboolean _xfdashboard_applications_menu_model_filter_by_menu(ClutterModel
 	/* If menu element is a menu check if it's parent menu is the requested one */
 	if(GARCON_IS_MENU(menuElement))
 	{
-		if(garcon_menu_get_parent(GARCON_MENU(menuElement))==parentMenu) doShow=TRUE;
+		if(requestedParentMenu==parentMenu ||
+			(!requestedParentMenu && parentMenu==priv->rootMenu))
+		{
+			doShow=TRUE;
+		}
 	}
 		/* Otherwise it is a menu item and check if item is in requested menu */
 		else
@@ -210,8 +188,11 @@ static gboolean _xfdashboard_applications_menu_model_filter_by_menu(ClutterModel
 			if(garcon_menu_item_pool_lookup(itemPool, desktopID)!=FALSE) doShow=TRUE;
 		}
 
-	/* If we get here return TRUE to show model data item or FALSE to hide */
+	/* Release allocated resources */
+	if(parentMenu) g_object_unref(parentMenu);
 	g_object_unref(menuElement);
+
+	/* If we get here return TRUE to show model data item or FALSE to hide */
 	return(doShow);
 }
 
@@ -219,13 +200,11 @@ static gboolean _xfdashboard_applications_menu_model_filter_by_section(ClutterMo
 																		ClutterModelIter *inIter,
 																		gpointer inUserData)
 {
-	XfdashboardApplicationsMenuModel						*self;
-	XfdashboardApplicationsMenuModelPrivate					*priv;
-	GarconMenu												*section;
-	GarconMenuElement										*menuElement;
-	GarconMenu												*parentMenu;
-	GList													*sectionList;
-	gboolean												doShow;
+	XfdashboardApplicationsMenuModel			*self;
+	XfdashboardApplicationsMenuModelPrivate		*priv;
+	GarconMenu									*section;
+	GarconMenu									*requestedSection;
+	gboolean									doShow;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(inModel), FALSE);
 	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
@@ -233,152 +212,266 @@ static gboolean _xfdashboard_applications_menu_model_filter_by_section(ClutterMo
 
 	self=XFDASHBOARD_APPLICATIONS_MENU_MODEL(inModel);
 	priv=self->priv;
-	section=GARCON_MENU(inUserData);
-	menuElement=NULL;
-	parentMenu=NULL;
-	sectionList=NULL;
+	requestedSection=GARCON_MENU(inUserData);
 	doShow=FALSE;
+
+	/* Check if root section is requested */
+	if(!requestedSection) requestedSection=priv->rootMenu;
 
 	/* Get menu element at iterator */
 	clutter_model_iter_get(inIter,
-							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
-							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU, &parentMenu,
+							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION, &section,
 							-1);
 
-	/* If menu element is a menu item check if its parent menu is member of section ... */
-	if(menuElement &&
-		GARCON_IS_MENU_ITEM(menuElement) &&
-		parentMenu)
-	{
-		sectionList=(GList*)g_hash_table_lookup(priv->sections, section);
-		if(sectionList && g_list_index(sectionList, parentMenu)!=-1) doShow=TRUE;
-	}
-
 	/* If menu element is a menu check if root menu is parent menu and root menu is requested */
-	if(menuElement &&
-		GARCON_IS_MENU(menuElement) &&
-		parentMenu==priv->rootMenu &&
-		section==priv->rootMenu)
+	if((section && section==requestedSection) ||
+		(!section && requestedSection==priv->rootMenu))
 	{
 		doShow=TRUE;
 	}
 
 	/* Release allocated resources */
-	g_object_unref(menuElement);
-	g_object_unref(parentMenu);
+	if(section) g_object_unref(section);
 
 	/* If we get here return TRUE to show model data item or FALSE to hide */
 	return(doShow);
 }
 
 /* Fill model */
+static GarconMenu* _xfdashboard_applications_menu_model_find_similar_menu(XfdashboardApplicationsMenuModel *self,
+																			GarconMenu *inMenu,
+																			XfdashboardApplicationsMenuModelFillData *inFillData)
+{
+	GarconMenu					*parentMenu;
+	GSList						*iter;
+	GarconMenu					*foundMenu;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self), NULL);
+	g_return_val_if_fail(GARCON_IS_MENU(inMenu), NULL);
+	g_return_val_if_fail(inFillData, NULL);
+
+	/* Check if menu is visible. Hidden menus do not need to be checked. */
+	if(!garcon_menu_element_get_visible(GARCON_MENU_ELEMENT(inMenu))) return(NULL);
+
+	/* Get parent menu to look for at each menu we iterate */
+	parentMenu=garcon_menu_get_parent(inMenu);
+	if(!parentMenu) return(NULL);
+
+	/* Iterate through parent menu up to current menu and lookup similar menu.
+	 * A similar menu is identified by either they share the same directory
+	 * or match in name, description and icon.
+	 */
+	foundMenu=NULL;
+	for(iter=inFillData->populatedMenus; iter && !foundMenu; iter=g_slist_next(iter))
+	{
+		GarconMenu				*menu;
+
+		/* Get menu element from list */
+		menu=GARCON_MENU(iter->data);
+
+		/* We can only process menus which have the same parent menu as the
+		 * requested menu and they need to be visible.
+		 */
+		if(garcon_menu_get_parent(menu) &&
+			garcon_menu_element_get_visible(GARCON_MENU_ELEMENT(menu)))
+		{
+			gboolean			isSimilar;
+
+			/* Check if both menus share the same directory. That will be the
+			 * case if iterator point to the menu which was given as function
+			 * parameter. So it's safe just to iterate through.
+			 */
+			isSimilar=garcon_menu_directory_equal(garcon_menu_get_directory(menu),
+													garcon_menu_get_directory(inMenu));
+
+			/* If both menus do not share the same directory, check if they
+			 * match in name, description and icon.
+			 */
+			if(!isSimilar)
+			{
+				const gchar		*left;
+				const gchar		*right;
+
+				/* Reset similar flag to TRUE as it will be set to FALSE again
+				 * on first item not matching.
+				 */
+				isSimilar=TRUE;
+
+				/* Check title */
+				if(isSimilar)
+				{
+					left=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(inMenu));
+					right=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(menu));
+					if(g_strcmp0(left, right)!=0) isSimilar=FALSE;
+				}
+
+
+				/* Check description */
+				if(isSimilar)
+				{
+					left=garcon_menu_element_get_comment(GARCON_MENU_ELEMENT(inMenu));
+					right=garcon_menu_element_get_comment(GARCON_MENU_ELEMENT(menu));
+					if(g_strcmp0(left, right)!=0) isSimilar=FALSE;
+				}
+
+
+				/* Check icon */
+				if(isSimilar)
+				{
+					left=garcon_menu_element_get_icon_name(GARCON_MENU_ELEMENT(inMenu));
+					right=garcon_menu_element_get_icon_name(GARCON_MENU_ELEMENT(menu));
+					if(g_strcmp0(left, right)!=0) isSimilar=FALSE;
+				}
+			}
+
+			/* If we get and we found a similar menu set result to return */
+			if(isSimilar) foundMenu=menu;
+		}
+	}
+
+	/* Return found menu */
+	return(foundMenu);
+}
+
+static GarconMenu* _xfdashboard_applications_menu_model_find_section(XfdashboardApplicationsMenuModel *self,
+																		GarconMenu *inMenu,
+																		XfdashboardApplicationsMenuModelFillData *inFillData)
+{
+	XfdashboardApplicationsMenuModelPrivate		*priv;
+	GarconMenu									*sectionMenu;
+	GarconMenu									*parentMenu;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self), NULL);
+	g_return_val_if_fail(GARCON_IS_MENU(inMenu), NULL);
+
+	priv=self->priv;
+
+	/* Finding section is technically the same as looking up similar menu
+	 * but only at top-level menus. So iterate through all parent menu
+	 * until menu is found which parent menu is root menu. That is the
+	 * section and we need to check for a similar one at that level.
+	 */
+	sectionMenu=inMenu;
+	do
+	{
+		/* Get parent menu */
+		parentMenu=garcon_menu_get_parent(sectionMenu);
+
+		/* Check if parent menu is root menu stop here */
+		if(!parentMenu || parentMenu==priv->rootMenu) break;
+
+		/* Set current parent menu as found section menu */
+		sectionMenu=parentMenu;
+	}
+	while(parentMenu);
+
+	/* Find similar menu to found section menu */
+	if(sectionMenu)
+	{
+		sectionMenu=_xfdashboard_applications_menu_model_find_similar_menu(self, sectionMenu, inFillData);
+	}
+
+	/* Return found section menu */
+	return(sectionMenu);
+}
+
 static void _xfdashboard_applications_menu_model_fill_model_collect_menu(XfdashboardApplicationsMenuModel *self,
 																			GarconMenu *inMenu,
-																			GarconMenu *inSection,
-																			guint *ioSequenceID)
+																			GarconMenu *inParentMenu,
+																			XfdashboardApplicationsMenuModelFillData *inFillData)
 {
 	XfdashboardApplicationsMenuModelPrivate			*priv;
-	GList											*menuElements, *entry;
-	GarconMenuElement								*menuElement;
+	GarconMenu										*menu;
+	GarconMenu										*section;
+	GList											*elements, *element;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 	g_return_if_fail(GARCON_IS_MENU(inMenu));
 
 	priv=self->priv;
+	section=NULL;
+	menu=priv->rootMenu;
 
-	/* Check if this menu is visible, has at least one visible menu item
-	 * and should be processed.
-	 * Root menu is an exception as it must be processed or model is empty.
-	 */
-	if(inMenu!=priv->rootMenu)
-	{
-		gboolean									hasVisibleItem;
-
-		/* Check if menu is visible */
-		if(!garcon_menu_element_get_visible(GARCON_MENU_ELEMENT(inMenu))) return;
-
-		/* Check if menu has at least one visible menu item */
-		hasVisibleItem=FALSE;
-		menuElements=garcon_menu_get_elements(inMenu);
-		for(entry=menuElements; entry && !hasVisibleItem; entry=g_list_next(entry))
-		{
-			/* Get menu element from list */
-			menuElement=GARCON_MENU_ELEMENT(entry->data);
-
-			/* Check if current menu element is a menu or menu item */
-			if(!GARCON_IS_MENU(menuElement) &&
-				!GARCON_IS_MENU_ITEM(menuElement))
-			{
-				continue;
-			}
-
-			/* Check if menu element is visible */
-			if(!garcon_menu_element_get_visible(menuElement)) continue;
-
-			/* Item is visible so set flag and stop iterating through menu item */
-			hasVisibleItem=TRUE;
-		}
-		g_list_free(menuElements);
-
-		/* If no visible menu item was seen while iterating through menu
-		 * then stop processing it.
-		 */
-		if(!hasVisibleItem) return;
-	}
-
-	/* Increase reference on menu going to be processed */
+	/* Increase reference on menu going to be processed to keep it alive */
 	g_object_ref(inMenu);
 
-	/* Check if menu is a menu item for a section and add section menu itself to the list */
-	if(inSection==NULL && garcon_menu_get_parent(inMenu)==priv->rootMenu)
+	/* Skip additional check on root menu as it must be processed normally and non-disruptively */
+	if(inMenu!=priv->rootMenu)
 	{
-		inSection=inMenu;
-		_xfdashboard_applications_menu_model_add_to_section(self, inSection, inMenu);
+		/* Find section to add menu to */
+		section=_xfdashboard_applications_menu_model_find_section(self, inMenu, inFillData);
+
+		/* Add menu to model if no duplicate or similar menu exist */
+		menu=_xfdashboard_applications_menu_model_find_similar_menu(self, inMenu, inFillData);
+		if(!menu)
+		{
+			const gchar									*title=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(inMenu));
+			const gchar									*description=garcon_menu_element_get_comment(GARCON_MENU_ELEMENT(inMenu));
+
+			/* Insert row into model because there is no duplicate
+			 * and no similar menu
+			 */
+			inFillData->sequenceID++;
+			clutter_model_append(CLUTTER_MODEL(self),
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID, inFillData->sequenceID,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, inMenu,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU, inParentMenu,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION, section,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE, title,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_DESCRIPTION, description,
+									-1);
+
+			/* Add menu to list of populated ones */
+			inFillData->populatedMenus=g_slist_prepend(inFillData->populatedMenus, inMenu);
+
+			/* All menu items should be added to this newly created menu */
+			menu=inMenu;
+
+			/* Find section of newly created menu to */
+			section=_xfdashboard_applications_menu_model_find_section(self, menu, inFillData);
+		}
 	}
 
 	/* Iterate through menu and add menu items and sub-menus */
-	menuElements=garcon_menu_get_elements(inMenu);
-	for(entry=menuElements; entry; entry=g_list_next(entry))
+	elements=garcon_menu_get_elements(inMenu);
+	for(element=elements; element; element=g_list_next(element))
 	{
+		GarconMenuElement							*menuElement;
+
 		/* Get menu element from list */
-		menuElement=GARCON_MENU_ELEMENT(entry->data);
+		menuElement=GARCON_MENU_ELEMENT(element->data);
 
 		/* Check if menu element is visible */
-		if(!garcon_menu_element_get_visible(menuElement)) continue;
+		if(!menuElement || !garcon_menu_element_get_visible(menuElement)) continue;
 
-		/* Insert row into model if menu element is a sub-menu or a menu item */
-		if(GARCON_IS_MENU(menuElement) ||
-			GARCON_IS_MENU_ITEM(menuElement))
+		/* If element is a menu call this function recursively */
+		if(GARCON_IS_MENU(menuElement))
+		{
+			_xfdashboard_applications_menu_model_fill_model_collect_menu(self, GARCON_MENU(menuElement), menu, inFillData);
+		}
+
+		/* Insert row into model if menu element is a menu item if it does not
+		 * belong to root menu.
+		 */
+		if(GARCON_IS_MENU_ITEM(menuElement) &&
+			menu!=priv->rootMenu)
 		{
 			const gchar								*title=garcon_menu_element_get_name(menuElement);
 			const gchar								*description=garcon_menu_element_get_comment(menuElement);
-			const gchar								*icon=garcon_menu_element_get_icon_name(menuElement);
-			const gchar								*command=NULL;
-
-			/* If menu element is a menu item, set up command column also */
-			if(GARCON_IS_MENU_ITEM(menuElement)) command=garcon_menu_item_get_command(GARCON_MENU_ITEM(menuElement));
 
 			/* Add menu item to model */
-			*ioSequenceID=(*ioSequenceID)+1;
+			inFillData->sequenceID++;
 			clutter_model_append(CLUTTER_MODEL(self),
-									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID, *ioSequenceID,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID, inFillData->sequenceID,
 									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, menuElement,
-									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU, inMenu,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU, menu,
+									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION, section,
 									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE, title,
 									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_DESCRIPTION, description,
-									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_ICON, icon,
-									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_COMMAND, command,
 									-1);
 		}
-
-		/* If menu element is a sub-menu call recursively */
-		if(GARCON_IS_MENU(menuElement))
-		{
-			if(inSection) _xfdashboard_applications_menu_model_add_to_section(self, inSection, GARCON_MENU(menuElement));
-			_xfdashboard_applications_menu_model_fill_model_collect_menu(self, GARCON_MENU(menuElement), inSection, ioSequenceID);
-		}
 	}
-	g_list_free(menuElements);
+	g_list_free(elements);
 
 	/* Connect signal 'reload-required' to recognize changes in menus */
 	g_signal_connect_swapped(inMenu, "reload-required", G_CALLBACK(_xfdashboard_applications_menu_model_on_reload_required), self);
@@ -391,14 +484,13 @@ static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicati
 {
 	XfdashboardApplicationsMenuModelPrivate		*priv;
 	GError										*error;
-	guint										sequenceID;
 	GarconMenuItemCache							*cache;
+	XfdashboardApplicationsMenuModelFillData	fillData;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 
 	priv=self->priv;
 	error=NULL;
-	sequenceID=0;
 
 	/* Clear model data */
 	_xfdashboard_applications_menu_model_clear(self);
@@ -425,12 +517,9 @@ static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicati
 	}
 
 	/* Iterate through menus recursively to add them to model */
-	priv->sections=g_hash_table_new_full(g_direct_hash,
-											g_direct_equal,
-											NULL,
-											(GDestroyNotify)g_list_free);
-
-	_xfdashboard_applications_menu_model_fill_model_collect_menu(self, priv->rootMenu, NULL, &sequenceID);
+	fillData.sequenceID=0;
+	fillData.populatedMenus=NULL;
+	_xfdashboard_applications_menu_model_fill_model_collect_menu(self, priv->rootMenu, NULL, &fillData);
 
 	/* Emit signal */
 	g_signal_emit(self, XfdashboardApplicationsMenuModelSignals[SIGNAL_LOADED], 0);
@@ -518,6 +607,31 @@ static gint _xfdashboard_applications_menu_model_resort_parent_menu_callback(Clu
 	return(result);
 }
 
+static gint _xfdashboard_applications_menu_model_resort_section_callback(ClutterModel *inModel,
+																				const GValue *inLeft,
+																				const GValue *inRight,
+																				gpointer inUserData)
+{
+	GObject					*leftValue=g_value_get_object(inLeft);
+	GObject					*rightValue=g_value_get_object(inLeft);
+	const gchar				*leftName=NULL;
+	const gchar				*rightName=NULL;
+
+	if(leftValue &&
+		GARCON_IS_MENU_ELEMENT(leftValue))
+	{
+		leftName=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(leftValue));
+	}
+
+	if(rightValue &&
+		GARCON_IS_MENU_ELEMENT(rightValue))
+	{
+		rightName=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(rightValue));
+	}
+
+	return(g_strcmp0(leftName, rightName));
+}
+
 static gint _xfdashboard_applications_menu_model_resort_string_callback(ClutterModel *inModel,
 																		const GValue *inLeft,
 																		const GValue *inRight,
@@ -567,10 +681,12 @@ static void _xfdashboard_applications_menu_model_resort(ClutterModel *inModel,
 				inSortCallback=_xfdashboard_applications_menu_model_resort_parent_menu_callback;
 				break;
 
+			case XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION:
+				inSortCallback=_xfdashboard_applications_menu_model_resort_section_callback;
+				break;
+
 			case XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE:
 			case XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_DESCRIPTION:
-			case XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_ICON:
-			case XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_COMMAND:
 				inSortCallback=_xfdashboard_applications_menu_model_resort_string_callback;
 				break;
 
@@ -594,12 +710,6 @@ static void _xfdashboard_applications_menu_model_dispose(GObject *inObject)
 	XfdashboardApplicationsMenuModelPrivate		*priv=self->priv;
 
 	/* Release allocated resources */
-	if(priv->sections)
-	{
-		g_hash_table_destroy(priv->sections);
-		priv->sections=NULL;
-	}
-
 	if(priv->rootMenu)
 	{
 		g_object_unref(priv->rootMenu);
@@ -650,26 +760,23 @@ static void xfdashboard_applications_menu_model_init(XfdashboardApplicationsMenu
 																G_TYPE_UINT, /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID */
 																GARCON_TYPE_MENU_ELEMENT, /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT */
 																GARCON_TYPE_MENU, /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU */
+																GARCON_TYPE_MENU, /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION */
 																G_TYPE_STRING, /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE */
-																G_TYPE_STRING, /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_DESCRIPTION */
-																G_TYPE_STRING, /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_ICON */
-																G_TYPE_STRING /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_COMMAND */
+																G_TYPE_STRING /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_DESCRIPTION */
 															};
 	const gchar*							columnNames[]=	{
 																_("ID"), /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID */
 																_("Menu item"), /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT */
 																_("Parent menu"), /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU */
+																_("Section"), /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION */
 																_("Title"), /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE */
 																_("Description"), /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_DESCRIPTION */
-																_("Icon"), /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_ICON */
-																_("Command") /* XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_COMMAND */
 															};
 
 	priv=self->priv=XFDASHBOARD_APPLICATIONS_MENU_MODEL_GET_PRIVATE(self);
 
 	/* Set up default values */
 	priv->rootMenu=NULL;
-	priv->sections=NULL;
 
 	/* Set up model */
 	clutter_model_set_types(CLUTTER_MODEL(self), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_LAST, columnTypes);
