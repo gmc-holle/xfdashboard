@@ -219,7 +219,9 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 				gicon=g_app_info_get_icon(priv->appInfo);
 				if(gicon) iconName=g_icon_to_string(gicon);
 			}
-				else iconName=garcon_menu_element_get_icon_name(priv->menuElement);
+
+			if(!iconName) iconName=garcon_menu_element_get_icon_name(priv->menuElement);
+			if(!iconName) iconName=GTK_STOCK_MISSING_IMAGE;
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
