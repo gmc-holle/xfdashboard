@@ -148,8 +148,16 @@ static void _xfdashboard_application_button_update_text(XfdashboardApplicationBu
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
-			title=garcon_menu_element_get_name(priv->menuElement);
-			description=garcon_menu_element_get_comment(priv->menuElement);
+			if(priv->appInfo)
+			{
+				title=g_app_info_get_name(priv->appInfo);
+				description=g_app_info_get_description(priv->appInfo);
+			}
+				else
+				{
+					title=garcon_menu_element_get_name(priv->menuElement);
+					description=garcon_menu_element_get_comment(priv->menuElement);
+				}
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
@@ -204,7 +212,14 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
-			iconName=garcon_menu_element_get_icon_name(priv->menuElement);
+			if(priv->appInfo)
+			{
+				GIcon						*gicon;
+
+				gicon=g_app_info_get_icon(priv->appInfo);
+				if(gicon) iconName=g_icon_to_string(gicon);
+			}
+				else iconName=garcon_menu_element_get_icon_name(priv->menuElement);
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
@@ -451,8 +466,6 @@ GarconMenuElement* xfdashboard_application_button_get_menu_element(XfdashboardAp
 void xfdashboard_application_button_set_menu_element(XfdashboardApplicationButton *self, GarconMenuElement *inMenuElement)
 {
 	XfdashboardApplicationButtonPrivate		*priv;
-	const gchar								*desktopName;
-	GDesktopAppInfo							*appInfo;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 	g_return_if_fail(GARCON_IS_MENU_ELEMENT(inMenuElement));
@@ -473,40 +486,22 @@ void xfdashboard_application_button_set_menu_element(XfdashboardApplicationButto
 		priv->type=XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM;
 		priv->menuElement=g_object_ref(GARCON_MENU_ELEMENT(inMenuElement));
 
+		/* Get desktop ID if available */
+		if(GARCON_IS_MENU_ITEM(inMenuElement))
+		{
+			priv->appInfo=xfdashboard_garcon_menu_item_get_app_info(GARCON_MENU_ITEM(inMenuElement));
+			if(priv->appInfo) priv->desktopFilename=g_strdup(g_app_info_get_id(priv->appInfo));
+
+			/* Notify about property change */
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]);
+		}
+
 		/* Update actor */
 		_xfdashboard_application_button_update_text(self);
 		_xfdashboard_application_button_update_icon(self);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_MENU_ELEMENT]);
-
-		/* Get desktop ID if available */
-		if(GARCON_IS_MENU_ITEM(inMenuElement))
-		{
-			/* Get desktop file. First we try desktop ID but it may be unresolvable by GIO,
-			 * e.g. Wine uses multi-level subdirectories. GIO (and MenuSpec?) only resolve
-			 * subdirectories in one level. If resolving by desktop ID does not work we
-			 * fallback to use the full absolute URI (converted to path) to get desktop file.
-			 */
-			desktopName=garcon_menu_item_get_desktop_id(GARCON_MENU_ITEM(inMenuElement));
-			if(desktopName)
-			{
-				appInfo=g_desktop_app_info_new(desktopName);
-				if(!appInfo)
-				{
-					desktopName=garcon_menu_item_get_uri(GARCON_MENU_ITEM(inMenuElement));
-					if(desktopName) priv->desktopFilename=g_filename_from_uri(desktopName, NULL, NULL);
-				}
-					else
-					{
-						g_object_unref(appInfo);
-						priv->desktopFilename=g_strdup(desktopName);
-					}
-			}
-
-			/* Notify about property change */
-			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]);
-		}
 
 		/* Thaw notifications and send them now */
 		g_object_thaw_notify(G_OBJECT(self));
@@ -687,72 +682,8 @@ GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButt
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
-			{
-				const gchar					*desktopURI=NULL;
-				GarconMenuItem				*menuItem=GARCON_MENU_ITEM(priv->menuElement);
-				const gchar					*name=garcon_menu_item_get_name(menuItem);
-				GError						*error=NULL;
-
-				/* First try to create a desktop application info from desktop ID of menu element */
-				desktopURI=garcon_menu_item_get_uri(GARCON_MENU_ITEM(priv->menuElement));
-				if(desktopURI)
-				{
-					gchar					*desktopFilename=NULL;
-
-					/* Get file name which can be used to create desktop application info from */
-					desktopFilename=g_filename_from_uri(desktopURI, NULL, &error);
-					if(desktopFilename)
-					{
-						GDesktopAppInfo		*desktopAppInfo;
-
-						/* Create desktop application info from key file loaded successfully.
-						 * If we got a desktop application info return it.
-						 */
-						desktopAppInfo=g_desktop_app_info_new_from_filename(desktopFilename);
-						if(desktopAppInfo) appInfo=G_APP_INFO(desktopAppInfo);
-
-						/* Free allocated resources */
-						g_free(desktopFilename);
-					}
-						else
-						{
-							if(error)
-							{
-								g_warning(_("Could not create desktop application information for menu item '%s' from %s: %s"),
-											name,
-											desktopURI,
-											error->message ? error->message : "unknown error");
-								g_error_free(error);
-							}
-						}
-				}
-
-				/* If previous creation failed fallback to create a simple application info */
-				if(!appInfo)
-				{
-					const gchar				*command=garcon_menu_item_get_command(menuItem);
-					GAppInfoCreateFlags		flags=G_APP_INFO_CREATE_NONE;
-
-					g_debug("Creating GDesktopAppInfo for menu item '%s' failed. Using fallback method!", name);
-
-					/* Create simple application info with data from menu element */
-					if(garcon_menu_item_supports_startup_notification(menuItem)) flags|=G_APP_INFO_CREATE_SUPPORTS_STARTUP_NOTIFICATION;
-					if(garcon_menu_item_requires_terminal(menuItem)) flags|=G_APP_INFO_CREATE_NEEDS_TERMINAL;
-
-					appInfo=g_app_info_create_from_commandline(command, name, flags, &error);
-					if(error)
-					{
-						g_warning(_("Could not create application information for menu item '%s': %s"),
-									name,
-									error->message ? error->message : "unknown error");
-						g_error_free(error);
-					}
-				}
-			}
-			break;
-
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
-			if(priv->appInfo) appInfo=G_APP_INFO(g_object_ref(priv->appInfo));
+			appInfo=G_APP_INFO(g_object_ref(priv->appInfo));
 			break;
 
 		default:
@@ -783,12 +714,8 @@ const gchar* xfdashboard_application_button_get_display_name(XfdashboardApplicat
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
-			title=garcon_menu_element_get_name(priv->menuElement);
-			break;
-
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
-			if(priv->appInfo) title=g_app_info_get_name(priv->appInfo);
-				else title=priv->desktopFilename;
+			title=g_app_info_get_name(priv->appInfo);
 			break;
 
 		default:
@@ -819,9 +746,6 @@ const gchar* xfdashboard_application_button_get_icon_name(XfdashboardApplication
 			break;
 
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
-			iconName=garcon_menu_element_get_icon_name(priv->menuElement);
-			break;
-
 		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
 			if(priv->appInfo)
 			{
