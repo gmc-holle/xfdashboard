@@ -348,6 +348,21 @@ static void _xfdashboard_applications_view_on_model_loaded(XfdashboardApplicatio
 	xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(priv->currentRootMenuElement));
 }
 
+/* The application will be resumed */
+static void _xfdashboard_applications_view_on_application_resume(XfdashboardApplicationsView *self, gpointer inUserData)
+{
+	XfdashboardApplicationsViewPrivate	*priv=self->priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+
+	priv=self->priv;
+
+	/* Go to top-level entry */
+	priv->currentRootMenuElement=NULL;
+	xfdashboard_applications_menu_model_filter_by_section(priv->apps, NULL);
+}
+
 /* IMPLEMENTATION: Interface XfdashboardFocusable */
 
 /* Determine if actor can get the focus */
@@ -902,6 +917,7 @@ static void xfdashboard_applications_view_class_init(XfdashboardApplicationsView
 static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self)
 {
 	XfdashboardApplicationsViewPrivate	*priv;
+	XfdashboardApplication				*application;
 
 	self->priv=priv=XFDASHBOARD_APPLICATIONS_VIEW_GET_PRIVATE(self);
 
@@ -931,6 +947,10 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	/* Connect signals */
 	g_signal_connect_swapped(priv->apps, "filter-changed", G_CALLBACK(_xfdashboard_applications_view_on_filter_changed), self);
 	g_signal_connect_swapped(priv->apps, "loaded", G_CALLBACK(_xfdashboard_applications_view_on_model_loaded), self);
+
+	/* Connect signal to application */
+	application=xfdashboard_application_get_default();
+	g_signal_connect_swapped(application, "resume", G_CALLBACK(_xfdashboard_applications_view_on_application_resume), self);
 }
 
 /* Get/set view mode of view */
