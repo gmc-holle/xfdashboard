@@ -1,7 +1,7 @@
 /* Stage */
 XfdashboardStage
 {
-	background-color: #000000e0;
+	background-color: #000000e8;
 }
 
 /* Window content */
@@ -14,19 +14,20 @@ XfdashboardWindowContent
 #notification
 {
 	background-type: fill outline;
-	background-fill-color: #1350ffff;
-	outline-color: #63b0ffff;
+	background-fill-color: #5792e2ff;
+	outline-color: #4681d1ff;
 	outline-width: 1.0;
+	text-color: #ffffffff;
 }
 
 /* Tooltip */
 #tooltip
 {
 	background-type: fill outline;
-	background-fill-color: #e0e000ff;
-	outline-color: #808000ff;
+	background-fill-color: #5792e2ff;
+	outline-color: #4681d1ff;
 	outline-width: 1.0;
-	text-color: #000000;
+	text-color: #ffffffe0;
 }
 
 /* Quicklaunch */
@@ -34,8 +35,8 @@ XfdashboardWindowContent
 {
 	spacing: 4.0;
 	background-type: fill outline rounded-corners;
-	background-fill-color: #ffffff18;
-	outline-color: #ffffff40;
+	background-fill-color: #5792e260;
+	outline-color: #5792e2ff;
 	outline-width: 0.5;
 	outline-borders: top right bottom;
 	corners: right;
@@ -48,7 +49,7 @@ XfdashboardWindowContent
 
 #quicklaunch:drop-target
 {
-	background-fill-color: #ffffff30;
+	background-fill-color: #93c1ff80;
 	outline-width: 1.5;
 }
 
@@ -59,7 +60,7 @@ XfdashboardQuicklaunch
 
 XfdashboardQuicklaunch #applications-button
 {
-	background-fill-color: #c0c0c0a0;
+	background-fill-color: #5792e2a0;
 	icon-name: gtk-home;
 	background-type: none;
 	button-style: icon;
@@ -79,7 +80,7 @@ XfdashboardQuicklaunch #trash-button
 {
 	icon-name: gtk-delete;
 	button-style: icon;
-	background-fill-color: #c0c0c0a0;
+	background-fill-color: #5792e2a0;
 	background-type: none;
 }
 
@@ -119,23 +120,27 @@ XfdashboardLiveWindow .close-button
 
 .drag-actor-XfdashboardLiveWindow:drag-handle
 {
-	background-type: outline;
-	outline-color: #ffffff;
-	outline-width: 2.0;
+	background-type: outline fill rounded-corners;
+	background-fill-color: #5792e2a0;
+	outline-color: #5792e2ff;
+	outline-width: 1.0;
+	corner-radius: 2.0;
 }
 
 /* Live workspaces */
 XfdashboardLiveWorkspace
 {
-	background-type: outline;
-	outline-color: #ffffff40;
-	outline-width: 2.0;
+	background-type: outline fill;
+	background-fill-color: #000000ff;
+	outline-color: #404040ff;
+	outline-width: 1.0;
 }
 
 XfdashboardLiveWorkspace:active
 {
-	background-type: outline;
-	outline-color: #ff0000;
+	background-type: outline fill;
+	background-fill-color: #000000ff;
+	outline-color: #ffff00ff;
 	outline-width: 2.0;
 }
 
@@ -146,12 +151,19 @@ XfdashboardScrollbar
 	page-size-factor: 0.5;
 	slider-width: 8.0;
 	slider-radius: 4.0;
-	slider-color: #c0c0c0;
+	slider-color: #5792e260;
 }
+
+XfdashboardScrollbar:hover
+{
+	slider-color: #5792e2a0;
+}
+
 XfdashboardScrollbar:pressed
 {
-	slider-color: #ffffff;
+	slider-color: #5792e2ff;
 }
+
 
 /* Text boxes */
 XfdashboardTextBox
@@ -198,15 +210,15 @@ XfdashboardApplicationButton.view-mode-list
 /* Workspace selector (incl. collapse box) */
 #workspace-selector
 {
-	spacing: 4.0;
+	spacing: 8.0;
 	background-type: fill outline rounded-corners;
-	background-fill-color: #ffffff18;
-	outline-color: #ffffff40;
+	background-fill-color: #5792e260;
+	outline-color: #5792e2ff;
 	outline-width: 0.5;
 	outline-borders: top left bottom;
 	corners: left;
 	orientation: vertical;
-	max-fraction: 0.25;
+	max-fraction: 0.20;
 	using-fraction: true;
 	orientation: vertical;
 }
@@ -227,7 +239,7 @@ XfdashboardCollapseBox
 {
 	background-type: fill outline rounded-corners;
 	background-fill-color: #ffffff18;
-	outline-color: #808080ff;
+	outline-color: #404040ff;
 	outline-width: 0.5;
 	corners: all;
 	corner-radius: 4.0;
@@ -256,7 +268,7 @@ XfdashboardCollapseBox
 #view-selector XfdashboardToggleButton:toggled
 {
 	background-type: fill;
-	background-fill-color: #c0c0c0a0;
+	background-fill-color: #5792e2ff;
 }
 
 /* Viewpad */
@@ -367,42 +379,55 @@ XfdashboardWindowsView
 
 /* Focus */
 #searchbox.focus,
-#viewpad.focus,
-#workspace-selector.focus,
-#quicklaunch.focus,
 #view-selector.focus
 {
-	outline-color: #0000ff;
+	outline-color: #0000ffff;
 	outline-width: 2.0;
-	background-fill-color: #ffffff30;
 }
 
-#viewpad.focus,
 #view-selector.focus
 {
 	background-type: outline;
 }
 
-#quicklaunch XfdashboardButton:selected
+#quicklaunch.focus,
+#workspace-selector.focus
+{
+	background-fill-color: #93c1ff80;
+	outline-width: 2.0;
+}
+
+#quicklaunch XfdashboardButton:selected,
+#workspace-selector XfdashboardLiveWorkspace:selected
 {
 	background-type: outline rounded-corners;
-	outline-color: #ff0000;
+	outline-color: #ffffffff;
 	outline-width: 2.0
 	corners: all;
 	corner-radius: 4.0;
 }
 
+#quicklaunch #applications-button:selected,
+#quicklaunch #applications-button.search-active:selected,
+#quicklaunch #applications-button:toggled:selected
+{
+	background-type: fill outline rounded-corners;
+	background-fill-color: #93c1ffff;
+	outline-color: #ffffffff;
+}
+
 XfdashboardWindowsView XfdashboardLiveWindow:selected
 {
 	background-type: outline;
-	outline-color: #ff0000;
-	outline-width: 2.0;
+	outline-color: #3d71ffff;
+	outline-width: 8.0;
 }
 
 XfdashboardApplicationsView XfdashboardButton:selected
 {
-	background-type: outline rounded-corners;
-	outline-color: #ff0000;
+	background-type: fill outline rounded-corners;
+	background-fill-color: #5792e260;
+	outline-color: #5792e2ff;
 	outline-width: 2.0;
 	corners: all;
 	corner-radius: 4.0;
@@ -410,8 +435,9 @@ XfdashboardApplicationsView XfdashboardButton:selected
 
 XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selected
 {
-	background-type: outline rounded-corners;
-	outline-color: #ff0000;
+	background-type: fill outline rounded-corners;
+	background-fill-color: #5792e260;
+	outline-color: #5792e2ff;
 	outline-width: 2.0;
 	corners: all;
 	corner-radius: 4.0;
