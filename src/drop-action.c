@@ -207,6 +207,26 @@ static gboolean _xfdashboard_drop_action_class_real_can_drop(XfdashboardDropActi
 			CLUTTER_ACTOR_IS_REACTIVE(priv->actor));
 }
 
+/* Default signal handler for "drop" */
+static void _xfdashboard_drop_action_class_real_drop(XfdashboardDropAction *self,
+														XfdashboardDragAction *inDragAction,
+														gfloat inX,
+														gfloat inY)
+{
+	XfdashboardDropActionPrivate		*priv=self->priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(self));
+
+	priv=self->priv;
+
+	/* Unset style */
+	if(priv->actor &&
+		XFDASHBOARD_IS_ACTOR(priv->actor))
+	{
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->actor), "drop-target");
+	}
+}
+
 /* Default signal handler for "drag-enter" */
 static void _xfdashboard_drop_action_class_real_drag_enter(XfdashboardDropAction *self,
 															XfdashboardDragAction *inDragAction)
@@ -311,6 +331,7 @@ void xfdashboard_drop_action_class_init(XfdashboardDropActionClass *klass)
 	klass->begin=_xfdashboard_drop_action_class_real_begin;
 	klass->end=_xfdashboard_drop_action_class_real_end;
 	klass->can_drop=_xfdashboard_drop_action_class_real_can_drop;
+	klass->drop=_xfdashboard_drop_action_class_real_drop;
 	klass->drag_enter=_xfdashboard_drop_action_class_real_drag_enter;
 	klass->drag_leave=_xfdashboard_drop_action_class_real_drag_leave;
 
