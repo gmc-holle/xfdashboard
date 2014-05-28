@@ -29,6 +29,7 @@
 
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
+#include <math.h>
 
 #include "application.h"
 
@@ -62,7 +63,7 @@ struct _XfdashboardImageContentPrivate
 	GtkIconTheme			*iconTheme;
 	gchar					*iconName;
 	GIcon					*gicon;
-	guint					iconSize;
+	gint					iconSize;
 
 	guint					contentAttachedSignalID;
 	guint					iconThemeChangedSignalID;
@@ -1248,4 +1249,27 @@ ClutterImage* xfdashboard_image_content_new_for_pixbuf(GdkPixbuf *inPixbuf)
 
 	/* Return ClutterImage */
 	return(CLUTTER_IMAGE(image));
+}
+
+/* Get size of image as specified when creating this object instance */
+gint xfdashboard_image_content_get_size(XfdashboardImageContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_IMAGE_CONTENT(self), 0);
+
+	return(self->priv->iconSize);
+}
+
+/* Get real size of image loaded */
+void xfdashboard_image_content_get_real_size(XfdashboardImageContent *self, gint *outWidth, gint *outHeight)
+{
+	gfloat			w, h;
+
+	g_return_if_fail(XFDASHBOARD_IS_IMAGE_CONTENT(self));
+
+	/* Get preferred size of ClutterImage as it will be the real size */
+	clutter_content_get_preferred_size(CLUTTER_CONTENT(self), &w, &h);
+
+	/* Store sizes computed */
+	if(outWidth) *outWidth=floor(w);
+	if(outHeight) *outHeight=floor(h);
 }

@@ -68,6 +68,9 @@ ClutterImage* xfdashboard_image_content_new_for_icon_name(const gchar *inIconNam
 ClutterImage* xfdashboard_image_content_new_for_gicon(GIcon *inIcon, gint inSize);
 ClutterImage* xfdashboard_image_content_new_for_pixbuf(GdkPixbuf *inPixbuf);
 
+gint xfdashboard_image_content_get_size(XfdashboardImageContent *self);
+void xfdashboard_image_content_get_real_size(XfdashboardImageContent *self, gint *outWidth, gint *outHeight);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_IMAGE_CONTENT__ */
