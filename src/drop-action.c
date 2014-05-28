@@ -239,7 +239,7 @@ static void _xfdashboard_drop_action_class_real_drag_leave(XfdashboardDropAction
 	if(priv->actor &&
 		XFDASHBOARD_IS_ACTOR(priv->actor))
 	{
-		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->actor), "drop-target");
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->actor), "drop-target");
 	}
 }
 
