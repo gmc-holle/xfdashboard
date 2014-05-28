@@ -245,6 +245,7 @@ XfdashboardCollapseBox
 	corner-radius: 4.0;
 	padding: 4.0;
 	primary-icon-name: gtk-find;
+	hint-text-color: #c0c0c080;
 }
 
 #searchbox.search-active
@@ -381,8 +382,14 @@ XfdashboardWindowsView
 #searchbox.focus,
 #view-selector.focus
 {
-	outline-color: #0000ffff;
+	outline-color: #3d71ffff;
 	outline-width: 2.0;
+}
+
+#searchbox.focus
+{
+	background-fill-color: #93c1ff50;
+	hint-text-color: #e0e0e0ff;
 }
 
 #view-selector.focus
