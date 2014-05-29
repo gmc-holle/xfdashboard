@@ -427,7 +427,15 @@ XfdashboardWindowsView XfdashboardLiveWindow:selected
 {
 	background-type: outline;
 	outline-color: #3d71ffff;
-	outline-width: 8.0;
+	outline-width: 2.0;
+}
+
+XfdashboardLiveWindow:selected XfdashboardButton.title
+{
+	background-type: outline fill rounded-corners;
+	background-fill-color: #5792e2f0;
+	outline-color: #508ad5ff;
+	outline-width: 1.0;
 }
 
 XfdashboardApplicationsView XfdashboardButton:selected
