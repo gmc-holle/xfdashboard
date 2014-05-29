@@ -1,3 +1,236 @@
+commit 57421ff41d9e3e3d406f77580d329958f940a240
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 29 09:27:39 2014 +0200
+
+    Make selected window in windows view better to recognize
+
+commit c14adf0735110cbb66b7971b645d6725cf533952
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 29 09:12:56 2014 +0200
+
+    Fix crash when moving selection after current selection was destroyed
+    
+    We connect to "destroy" signal at current selection and if it gets destroyed we move selection to next or previous actor whatever is available. Then we disconnect signal handler on old selection and connect it at new selection.
+
+commit b5d958215c210f4ef9b03eff59d5e70fd15ff140
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed May 28 21:34:15 2014 +0200
+
+    More changes to default theme
+
+commit 44534dca8bb3fbac2fb5740556e5650d59df04c2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed May 28 21:28:44 2014 +0200
+
+    Hopefully that is a nicer default theme
+
+commit a3620a22863cf14c7d0959ca7e79ee38ba278335
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed May 28 20:19:50 2014 +0200
+
+    Remove pseudo-class from drop-target when drop ends at this target
+
+commit 552dd52aa76ade8a0cc95925f74b5b2c4620388e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed May 28 20:04:17 2014 +0200
+
+    Fixed removing pseudo-class on leaving drop-target
+
+commit d59002e4c131d4c43de0869e95e823f2839702d0
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed May 28 19:20:11 2014 +0200
+
+    Removed empty space around the icon
+
+commit 24ce92be726c7ba41b29f6741a532ce1905853aa
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed May 28 14:38:08 2014 +0200
+
+    Also do not show desktop files in Ubuntu's Unity
+
+commit 8550eec3f5e98e39733e3369d04e0f418c3f3fd2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed May 28 14:29:52 2014 +0200
+
+    Use new application icon in desktop files
+    
+    Mofied the wrong .desktop file which got overridden by .desktop.in and .desktop.in.in. So commit f36f3459e06da8172f73650b32cc155682a2bce1 did not include the changes.
+
+commit b6ab4629f4e29a0ecfc53a8e723ad52aa9498d69
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed May 28 14:11:25 2014 +0200
+
+    Add function to retrieve sizes for XfdashboardImageContent
+
+commit f36f3459e06da8172f73650b32cc155682a2bce1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed May 28 14:09:48 2014 +0200
+
+    Add application icon for xfdashboard
+    
+    Thanks to NyankoSensei we have now an application icon and can close issue #12
+
+commit 63eb23f28c8148bae82df602268fab2eaf094f48
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue May 27 19:55:48 2014 +0200
+
+    Go to top-level menu in applications view when application resumes
+
+commit b39d1c78701e45af267c50c7a994a51149e0da3d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon May 26 21:47:05 2014 +0200
+
+    Ensure "missing-image" icon is shown if no icon was retrieved from desktop application info and remove applications from result set if their desktop file could not be loaded or parsed.
+
+commit 80e4e6bb811942aa628a9c4eec14c85db0db3f86
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon May 26 20:53:53 2014 +0200
+
+    Ensure "missing-image" icon is shown if no icon was retrieved
+
+commit 54cede10550dd9424d6fa507404b403effc443bb
+Merge: b6bd19c ce50fe5
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon May 26 20:52:52 2014 +0200
+
+    Merge branch 'master' of github.com:gmc-holle/xfdashboard
+
+commit b6bd19c6a5ef9fa5f21d1536337c4a6fbb8f3662
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon May 26 20:51:53 2014 +0200
+
+    Merge folders and/or sections
+    
+    Merge folders and/or section if there are duplicates or similar folders/section which match in name, description and icon.
+
+commit ce50fe5383a66cac7287b465b2b7f5b9080101f9
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon May 26 09:38:55 2014 +0200
+
+    Some minor clean-up and adjustments to coding style
+
+commit 31ec63be041048cc0104c10db0da52c4bbb03d51
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon May 26 09:32:45 2014 +0200
+
+    Emit "loaded" or "loading-failed" signal each time XfdashboardImage was attached
+    
+    Do not only emit these signals only once which can only retrieved by actor already created and already attached to theses signal. Emit these signals also each time an already loaded image is attached. But keep attention: You have to connect to these signals _before_ the image is attached to an actor and after the signal's callback was called it should be disconnected.
+
+commit e71b6eeabaccba438506c7840cdf26a35fb33155
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Mon May 26 08:59:18 2014 +0200
+
+    Simplify and make garcon menu element to GAppInfo conversion a common utility function
+
+commit b3361603d3ea352481ec3c6f75a47dbb10eacf69
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 23 23:12:27 2014 +0200
+
+    Use garcon_set_environment_xdg() to set Xfce environment when using garcon version 0.3.0 or higher
+
+commit bf1c91880b4a61230b39c5f372f5fbc802fcad94
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 23 15:07:04 2014 +0200
+
+    Fix typo
+
+commit 6da9e6c5f2eb834d423436915a47b9667a2531d1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 23 09:10:09 2014 +0200
+
+    Revert changed internal name of views
+
+commit fdac76e4993ab5765a2ba3d8ade234cdddee907f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 23 09:05:52 2014 +0200
+
+    Always switch to view on resume if "/switch-to-view-on-resume" was set
+
+commit e47558ec83595c45373e8056edf468048252987d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 23 06:59:20 2014 +0200
+
+    Add setting switch-to-view-on-resume to let user decide to which view to switch when resuming
+    
+    If setting switch-to-view-on-resume is set to a known internal name of a view and "reset-search-on-resume" is set to TRUE then switch to this view when resuming. If this setting is not set at all or empty or an unknown internal name then do the default behaviour to switch to previous selected view. This addresses issue #20
+
+commit eff71785e166cc23d9c8f84954dafba2e3848f5f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 22 15:29:05 2014 +0200
+
+    Fixed typo when loading themed icons with file extension and added debug messages
+    
+    This should finally fix issue #18
+
+commit 8a11e5481578fade83e7b416a004cd2ccb322d54
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 22 06:59:24 2014 +0200
+
+    Complete README
+
+commit 5cb6183c550b15f0b2bd6cd33a0823fd37f630b3
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed May 21 20:52:43 2014 +0200
+
+    Try to create GDesktopAppInfo for GarconMenuItem first then fallback to previous method
+    
+    We try first to create a GDesktopAppInfo for the requested GarconMenuItem. If it succeeds launching the application via this GDesktopAppInfo will behave as expected, e.g. setting working directory from "Path=..." of desktop file etc. If this creation fails fallback to old method with its restriction, e.g. not setting the working directory etc.
+
+commit 531e748cc63362ad65329071ecae6c15504981de
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue May 20 15:10:49 2014 +0200
+
+    Workaround if loading themed icon via filename with extension is not supported by default
+    
+    In cases where _xfdashboard_image_content_load_from_icon_name() gets a filename with extension, e.g. "skype.png", and gtk_icon_theme_lookup_icon() fails to lookup icon then fallback to lookup icon without extension. But before doing this lookup we check if gdk-pixbuf supports this file extension at any of its formats.
+
+commit 2de76acfb7faeee7eb71c87032c687cf06c23df6
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat May 17 12:30:42 2014 +0200
+
+    Added category to desktop file
+
+commit 03b9a507c929282b520a034d2db7847e2e5120bb
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat May 17 10:35:03 2014 +0200
+
+    Simplify checking visibility of a garcon menu element
+    
+    Just call get_visible() on a GarconMenuElement as it will do already all extensive checks if this element should be visible or not. There is no need to do our additional checks because they are already done. But we still have to count the number of visible sub-menus and menu items to determine if we should show or hide a menu.
+
+commit 794c04a7247e0acfecb3f56781befa9815f0d6af
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat May 17 10:00:00 2014 +0200
+
+    Do not list empty menus in application menu model
+    
+    To prevent listing empty menus we iterate through the menu items of a menu first and look if there is at least one visible (sub-)menu or menu item. If we do not find any visible ones we do not process this menu and do not add it to list of menus so it will not show up.
+
+commit 7a4dab2c8e0256ae07770372a67485bedec6f92f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 16 23:37:17 2014 +0200
+
+    Fix compiler warning
+
+commit 1e66263b4c231c92ee86ce5760438a9de2f79570
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 16 23:35:44 2014 +0200
+
+    Initialize garcon for the currently running desktop environment
+
+commit 985c674350d757b677657abe2e00a701aff0a7fc
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 9 13:39:54 2014 +0200
+
+    Post-release version bump to 0.1.92
+
+commit 4d17b321a285fe899a68746a5385cb3354ae2501
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 9 13:38:55 2014 +0200
+
+    Bump version to 0.1.91
+
 commit 2e523fc6e48ae61f89a7b91ade8d42d136e1e612
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Fri May 9 12:19:45 2014 +0200
