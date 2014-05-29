@@ -19,9 +19,11 @@ autostart_DATA = $(autostart_in_files:.desktop.in=.desktop)
 @INTLTOOL_DESKTOP_RULE@
 
 EXTRA_DIST = \
-	$(desktop_in_files) \
-	$(autostart_in_files)
+	$(desktop_in_files:.desktop.in=.desktop.in.in) \
+	$(autostart_in_files:.desktop.in=.desktop.in.in)
 
-DISTCLEANFILES = \
+CLEANFILES = \
+	$(desktop_in_files) \
 	$(desktop_DATA) \
+	$(autostart_in_files) \
 	$(autostart_DATA)
