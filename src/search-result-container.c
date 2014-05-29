@@ -60,6 +60,7 @@ struct _XfdashboardSearchResultContainerPrivate
 	ClutterActor				*itemsContainer;
 
 	ClutterActor				*selectedItem;
+	guint						selectedItemDestroySignalID;
 };
 
 /* Properties */
@@ -91,6 +92,88 @@ static guint XfdashboardSearchResultContainerSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_VIEW_MODE		XFDASHBOARD_VIEW_MODE_LIST
+
+/* Forward declarations */
+static void _xfdashboard_search_result_container_update_selection(XfdashboardSearchResultContainer *self,
+																	ClutterActor *inNewSelectedItem);
+
+/* The current selected item will be destroyed so move selection */
+static void _xfdashboard_search_result_container_on_destroy_selection(XfdashboardSearchResultContainer *self,
+																		gpointer inUserData)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+	ClutterActor								*actor;
+	ClutterActor								*newSelection;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inUserData));
+
+	priv=self->priv;
+	actor=CLUTTER_ACTOR(inUserData);
+
+	/* Only move selection if destroyed actor is the selected one. */
+	if(actor!=priv->selectedItem) return;
+
+	/* Get actor following the destroyed one. If we do not find an actor
+	 * get the previous one. If there is no previous one set NULL selection.
+	 * This should work well for both - icon and list mode.
+	 */
+	newSelection=clutter_actor_get_next_sibling(actor);
+	if(!newSelection) newSelection=clutter_actor_get_previous_sibling(actor);
+
+	/* Move selection */
+	_xfdashboard_search_result_container_update_selection(self, newSelection);
+}
+
+/* Set new selection, connect to signals and release old signal connections */
+static void _xfdashboard_search_result_container_update_selection(XfdashboardSearchResultContainer *self,
+																	ClutterActor *inNewSelectedItem)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+	g_return_if_fail(!inNewSelectedItem || CLUTTER_IS_ACTOR(inNewSelectedItem));
+
+	priv=self->priv;
+
+	/* Unset current selection and signal handler ID */
+	if(priv->selectedItem)
+	{
+		/* Disconnect signal handler */
+		if(priv->selectedItemDestroySignalID)
+		{
+			g_signal_handler_disconnect(priv->selectedItem, priv->selectedItemDestroySignalID);
+		}
+
+		/* Unstyle current selection */
+		if(XFDASHBOARD_IS_STYLABLE(priv->selectedItem))
+		{
+			/* Style new selection */
+			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+		}
+	}
+
+	priv->selectedItem=NULL;
+	priv->selectedItemDestroySignalID=0;
+
+	/* Set new selection and connect signals if given */
+	if(inNewSelectedItem)
+	{
+		priv->selectedItem=inNewSelectedItem;
+
+		/* Connect signals */
+		g_signal_connect_swapped(inNewSelectedItem,
+									"destroy",
+									G_CALLBACK(_xfdashboard_search_result_container_on_destroy_selection),
+									self);
+
+		/* Style new selection */
+		if(XFDASHBOARD_IS_STYLABLE(priv->selectedItem))
+		{
+			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+		}
+	}
+}
 
 /* Find next selectable item depending on step size and direction for icon view mode */
 static void _xfdashboard_search_result_container_set_selection_icon_mode(XfdashboardSearchResultContainer *self,
@@ -208,7 +291,7 @@ static void _xfdashboard_search_result_container_set_selection_icon_mode(Xfdashb
 	if(newSelectionIndex<0 ||
 		newSelectionIndex>=numberChildren)
 	{
-		priv->selectedItem=NULL;
+		_xfdashboard_search_result_container_update_selection(self, NULL);
 		return;
 	}
 
@@ -236,7 +319,7 @@ static void _xfdashboard_search_result_container_set_selection_icon_mode(Xfdashb
 	/* Set new selection if it changed */
 	if(newSelection && newSelection!=priv->selectedItem)
 	{
-		priv->selectedItem=newSelection;
+		_xfdashboard_search_result_container_update_selection(self, newSelection);
 	}
 }
 
@@ -260,11 +343,11 @@ static void _xfdashboard_search_result_container_set_selection_list_mode(Xfdashb
 	{
 		if(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD)
 		{
-			priv->selectedItem=clutter_actor_get_next_sibling(priv->selectedItem);
+			_xfdashboard_search_result_container_update_selection(self, clutter_actor_get_next_sibling(priv->selectedItem));
 		}
 			else if(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD)
 			{
-				priv->selectedItem=clutter_actor_get_previous_sibling(priv->selectedItem);
+				_xfdashboard_search_result_container_update_selection(self, clutter_actor_get_previous_sibling(priv->selectedItem));
 			}
 	}
 }
@@ -340,9 +423,12 @@ static void _xfdashboard_search_result_container_set_provider(XfdashboardSearchR
 /* Dispose this object */
 static void _xfdashboard_search_result_container_dispose(GObject *inObject)
 {
-	XfdashboardSearchResultContainerPrivate		*priv=XFDASHBOARD_SEARCH_RESULT_CONTAINER(inObject)->priv;
+	XfdashboardSearchResultContainer			*self=XFDASHBOARD_SEARCH_RESULT_CONTAINER(inObject);
+	XfdashboardSearchResultContainerPrivate		*priv=self->priv;
 
 	/* Release allocated variables */
+	_xfdashboard_search_result_container_update_selection(self, NULL);
+
 	if(priv->provider)
 	{
 		g_object_unref(priv->provider);
@@ -520,6 +606,7 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 	priv->spacing=0.0f;
 	priv->padding=0.0f;
 	priv->selectedItem=NULL;
+	priv->selectedItemDestroySignalID=0;
 
 	/* Set up children */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), FALSE);
@@ -775,14 +862,10 @@ void xfdashboard_search_result_container_add_result_actor(XfdashboardSearchResul
 /* Set to or unset focus from container */
 void xfdashboard_search_result_container_set_focus(XfdashboardSearchResultContainer *self, gboolean inSetFocus)
 {
-	XfdashboardSearchResultContainerPrivate		*priv;
-
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
 
-	priv=self->priv;
-
 	/* Unset selection */
-	priv->selectedItem=NULL;
+	_xfdashboard_search_result_container_update_selection(self, NULL);
 }
 
 /* Get current selection */
@@ -808,7 +891,7 @@ ClutterActor* xfdashboard_search_result_container_set_previous_selection(Xfdashb
 	 */
 	if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END)
 	{
-		priv->selectedItem=clutter_actor_get_last_child(priv->itemsContainer);
+		_xfdashboard_search_result_container_update_selection(self, clutter_actor_get_last_child(priv->itemsContainer));
 	}
 		else if(priv->selectedItem)
 		{
@@ -845,7 +928,7 @@ ClutterActor* xfdashboard_search_result_container_set_next_selection(Xfdashboard
 	 */
 	if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END)
 	{
-		priv->selectedItem=clutter_actor_get_first_child(priv->itemsContainer);
+		_xfdashboard_search_result_container_update_selection(self, clutter_actor_get_first_child(priv->itemsContainer));
 	}
 		else if(priv->selectedItem)
 		{

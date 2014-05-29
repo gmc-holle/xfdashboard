@@ -877,16 +877,8 @@ static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardF
 					}
 			}
 
-			/* Unstyle current selected item and style new selected item */
-			if(currentSelection) xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(currentSelection), "selected");
-			if(newSelection)
-			{
-				/* Style new selection */
-				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(newSelection), "selected");
-
-				/* Ensure new selection is visible */
-				xfdashboard_view_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
-			}
+			/* Ensure new selection is visible */
+			xfdashboard_view_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
 
 			/* Event was handled */
 			return(CLUTTER_EVENT_STOP);
