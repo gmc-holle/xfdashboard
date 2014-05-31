@@ -1,4 +1,6 @@
 [encoding: UTF-8]
+data/appdata/xfdashboard.appdata.xml.in
+data/themes/xfdashboard/xfdashboard.theme.in
 src/application-button.c
 src/application.c
 src/applications-menu-model.c
@@ -34,4 +36,3 @@ src/window-tracker.c
 src/window-tracker-window.c
 src/window-tracker-workspace.c
 src/workspace-selector.c
-data/themes/default/xfdashboard.theme.in

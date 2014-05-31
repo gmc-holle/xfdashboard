@@ -10,6 +10,7 @@ src/marshal.[ch]
 src/stamp-marshal.h
 src/xfdashboard
 xfoverview.geany
+data/appdata/xfdashboard.appdata.xml
 data/themes/xfdashboard/xfdashboard.theme
 data/xfdashboard.desktop
 data/xfdashboard.desktop.in

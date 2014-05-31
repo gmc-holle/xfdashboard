@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+	<id>xfdashboard.desktop</id>
+	<metadata_license>CC-BY-3.0</metadata_license>
+	<project_license>GPL-2.0+</project_license>
+	<name>xfdashboard</name>
+	<_summary>Maybe a Gnome shell like dashboard for Xfce</_summary>
+
+	<description>
+		<_p>fdashboard provides a GNOME shell dashboard like interface
+		for use with Xfce desktop.
+		</_p>
+		<_p>It can be configured to run to any keyboard shortcut and
+		when executed provides an overview of applications currently
+		open enabling the user to switch between different applications.
+		The search feature works like Xfce's app finder which makes
+		it convenient to search for and start applications.
+		</_p>
+	</description>
+
+	<screenshots>
+		<screenshot type="default">
+			<image>http://xfdashboard.froevel.de/images/starting-up.png</image>
+		</screenshot>
+		<screenshot>
+			<_caption>Browsing applications</_caption>
+			<image>http://xfdashboard.froevel.de/images/applications-view.png</image>
+		</screenshot>
+		<screenshot>
+			<_caption>Searching applications</_caption>
+			<image>http://xfdashboard.froevel.de/images/search-view.png</image>
+		</screenshot>
+	</screenshots>
+
+	<url type="homepage">http://xfdashboard.froevel.de/</url>
+	<url type="bugtracker">https://github.com/gmc-holle/xfdashboard/issues</url>
+	<url type="help">http://xfdashboard.froevel.de/doc.html</url>
+
+	<updatecontact>nomad@froevel.de</updatecontact>
+
+	<provides>
+		<binary>xfdashboard</binary>
+	</provides>
+
+	<releases>
+		<release version="0.2.0" timestamp="0">
+			<description>
+				<_p>Initial release.</_p>
+			</description>
+		</release>
+	</releases>
+</component>
