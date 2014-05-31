@@ -7,7 +7,7 @@
 	<_summary>Maybe a Gnome shell like dashboard for Xfce</_summary>
 
 	<description>
-		<_p>fdashboard provides a GNOME shell dashboard like interface
+		<_p>Xfdashboard provides a GNOME shell dashboard like interface
 		for use with Xfce desktop.
 		</_p>
 		<_p>It can be configured to run to any keyboard shortcut and
