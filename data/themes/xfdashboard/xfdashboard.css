@@ -47,6 +47,14 @@ XfdashboardWindowContent
 	icon-size: 64;
 }
 
+#quicklaunch XfdashboardButton:hover
+{
+	background-type: fill rounded-corners;
+	background-fill-color: #93c1ffff;
+	corners: all;
+	corner-radius: 4.0;
+}
+
 #quicklaunch:drop-target
 {
 	background-fill-color: #93c1ff80;
@@ -321,6 +329,14 @@ XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-
 	text-justify: left;
 }
 
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-item:hover
+{
+	background-type: fill rounded-corners;
+	background-fill-color: #5792e260;
+	corners: all;
+	corner-radius: 4.0;
+}
+
 .drag-source-XfdashboardSearchView:drag-handle
 {
 	icon-size: 64.0;
@@ -363,6 +379,14 @@ XfdashboardApplicationsView XfdashboardButton.view-mode-list
 	text-justify: left;
 }
 
+XfdashboardApplicationsView XfdashboardButton:hover
+{
+	background-type: fill rounded-corners;
+	background-fill-color: #5792e260;
+	corners: all;
+	corner-radius: 4.0;
+}
+
 .drag-source-XfdashboardApplicationsView:drag-handle
 {
 	icon-size: 64.0;
@@ -400,16 +424,28 @@ XfdashboardWindowsView
 #quicklaunch.focus,
 #workspace-selector.focus
 {
-	background-fill-color: #93c1ff80;
 	outline-width: 2.0;
 }
 
-#quicklaunch XfdashboardButton:selected,
+#workspace-selector.focus
+{
+	background-fill-color: #93c1ff80;
+}
+
+#quicklaunch XfdashboardButton:selected
+{
+	background-type: fill outline rounded-corners;
+	background-fill-color: #93c1ffff;
+	outline-color: #ffffffff;
+	corners: all;
+	corner-radius: 4.0;
+}
+
 #workspace-selector XfdashboardLiveWorkspace:selected
 {
 	background-type: outline rounded-corners;
 	outline-color: #ffffffff;
-	outline-width: 2.0
+	outline-width: 2.0;
 	corners: all;
 	corner-radius: 4.0;
 }
