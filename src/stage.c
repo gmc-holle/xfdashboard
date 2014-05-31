@@ -810,6 +810,13 @@ static void _xfdashboard_stage_layoutable_layout_completed(XfdashboardLayoutable
 	{
 		priv->searchbox=actor;
 
+		/* If no hint-text was defined, set default one */
+		if(!xfdashboard_text_box_is_hint_text_set(XFDASHBOARD_TEXT_BOX(priv->searchbox)))
+		{
+			xfdashboard_text_box_set_hint_text(XFDASHBOARD_TEXT_BOX(priv->searchbox),
+												_("Just type to search..."));
+		}
+
 		/* Connect signals */
 		g_signal_connect_swapped(priv->searchbox,
 									"text-changed",

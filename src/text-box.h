@@ -95,6 +95,7 @@ void xfdashboard_text_box_set_selection_text_color(XfdashboardTextBox *self, con
 const ClutterColor* xfdashboard_text_box_get_selection_background_color(XfdashboardTextBox *self);
 void xfdashboard_text_box_set_selection_background_color(XfdashboardTextBox *self, const ClutterColor *inColor);
 
+gboolean xfdashboard_text_box_is_hint_text_set(XfdashboardTextBox *self);
 const gchar* xfdashboard_text_box_get_hint_text(XfdashboardTextBox *self);
 void xfdashboard_text_box_set_hint_text(XfdashboardTextBox *self, const gchar *inMarkupText);
 void xfdashboard_text_box_set_hint_text_va(XfdashboardTextBox *self, const gchar *inFormat, ...) G_GNUC_PRINTF(2, 3);

@@ -65,6 +65,7 @@ struct _XfdashboardTextBoxPrivate
 	ClutterColor			*selectionTextColor;
 	ClutterColor			*selectionBackgroundColor;
 
+	gboolean				hintTextSet;
 	gchar					*hintTextFont;
 	ClutterColor			*hintTextColor;
 
@@ -103,6 +104,7 @@ enum
 	PROP_HINT_TEXT,
 	PROP_HINT_TEXT_FONT,
 	PROP_HINT_TEXT_COLOR,
+	PROP_HINT_TEXT_SET,
 
 	PROP_LAST
 };
@@ -784,6 +786,10 @@ static void _xfdashboard_text_box_get_property(GObject *inObject,
 			clutter_value_set_color(outValue, priv->hintTextColor);
 			break;
 
+		case PROP_HINT_TEXT_SET:
+			g_value_set_boolean(outValue, priv->hintTextSet);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -910,6 +916,13 @@ static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 									NULL,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardTextBoxProperties[PROP_HINT_TEXT_SET]=
+		g_param_spec_boolean("hint-text-set",
+								_("Hint text set"),
+								_("Flag indicating if a hint text was set"),
+								FALSE,
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardTextBoxProperties);
 
 	/* Define stylable properties */
@@ -986,6 +999,7 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 	priv->showPrimaryIcon=FALSE;
 	priv->showSecondaryIcon=FALSE;
 	priv->selectionColorSet=FALSE;
+	priv->hintTextSet=FALSE;
 
 	/* Create actors */
 	priv->actorPrimaryIcon=xfdashboard_button_new();
@@ -1433,6 +1447,14 @@ void xfdashboard_text_box_set_selection_background_color(XfdashboardTextBox *sel
 	}
 }
 
+/* Determine if a hint label was set */
+gboolean xfdashboard_text_box_is_hint_text_set(XfdashboardTextBox *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(self), FALSE);
+
+	return(self->priv->hintTextSet);
+}
+
 /* Get/set text of hint label */
 const gchar* xfdashboard_text_box_get_hint_text(XfdashboardTextBox *self)
 {
@@ -1444,20 +1466,42 @@ const gchar* xfdashboard_text_box_get_hint_text(XfdashboardTextBox *self)
 void xfdashboard_text_box_set_hint_text(XfdashboardTextBox *self, const gchar *inMarkupText)
 {
 	XfdashboardTextBoxPrivate	*priv;
+	gboolean					newHintTextSet;
 
 	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(self));
 
 	priv=self->priv;
+	newHintTextSet=FALSE;
+
+	/* Freeze notification */
+	g_object_freeze_notify(G_OBJECT(self));
 
 	/* Set value if changed */
 	if(g_strcmp0(clutter_text_get_text(CLUTTER_TEXT(priv->actorHintLabel)), inMarkupText)!=0)
 	{
+		/* Set value */
 		clutter_text_set_markup(CLUTTER_TEXT(priv->actorHintLabel), inMarkupText);
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardTextBoxProperties[PROP_HINT_TEXT]);
 	}
+
+	/* Check if a hint text was set and if read-only property changes.
+	 * Note: NULL string will unset "hint-text-set" property (set to FALSE)
+	 */
+	if(inMarkupText) newHintTextSet=TRUE;
+	if(newHintTextSet!=priv->hintTextSet)
+	{
+		/* Set flag */
+		priv->hintTextSet=newHintTextSet;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardTextBoxProperties[PROP_HINT_TEXT_SET]);
+	}
+
+	/* Thaw notification */
+	g_object_thaw_notify(G_OBJECT(self));
 }
 
 void xfdashboard_text_box_set_hint_text_va(XfdashboardTextBox *self, const gchar *inFormat, ...)

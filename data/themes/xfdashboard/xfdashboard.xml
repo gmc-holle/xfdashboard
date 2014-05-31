@@ -88,7 +88,6 @@
 										<property name="can-focus">true</property>
 										<property name="x-expand">true</property>
 										<property name="editable">true</property>
-										<property name="hint-text" translatable="yes">Just type to search...</property>
 									</object>
 								</child>
 							</object>
