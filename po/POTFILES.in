@@ -1,4 +1,6 @@
 [encoding: UTF-8]
+data/xfdashboard.desktop.in.in
+data/xfdashboard-autostart.desktop.in.in
 data/appdata/xfdashboard.appdata.xml.in
 data/themes/xfdashboard/xfdashboard.theme.in
 src/actor.c
