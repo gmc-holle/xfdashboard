@@ -1,3 +1,78 @@
+commit 5ea8b7969ada549a57908d56b958dbef170c86ae
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Jun 3 21:54:15 2014 +0200
+
+    Updated application icon set
+
+commit 2578b810deaaae07275beea9c12a65c7da3b1eed
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat May 31 12:09:53 2014 +0200
+
+    Set default hint label in search-box if none was set
+    
+    Check if a hint text was set and set default hint label if not. XfdashboardTextBox exports a read-only property "hint-text-set" for this purpose. If either an empty or non-empty (but not NULL) string is set as hint label this flag will be set TRUE. A NULL string will unset "hint-text-set" property, means set to FALSE.
+    
+    To get the default hint label set in search-box just do _not_ set property "hint-text" in theme's layout file. To get an empty hint label specify an empty "hint-text" in theme's layout file. Otherwise set hint label to the text wanted.
+    
+    This commit addresses issue #26
+
+commit fad71f4804c2fcb1b4e1b9c0b8fe3bbf7a56c1ec
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat May 31 08:21:52 2014 +0200
+
+    Added missing desktop files for translation
+
+commit e9d8fe83c13ff7d009d41bc8d7ef894bd6efac54
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat May 31 08:18:03 2014 +0200
+
+    Fixed typo in AppData
+
+commit af95ca8aeeee5342e831912f6d56380d6a0cdcf2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat May 31 08:15:12 2014 +0200
+
+    Fixed POTFILES.in for new and renamed files
+    
+    Finally it is possible to create xfdashboard.pot file with "make update-po" in sub-folder /po :)
+
+commit 06bd857eb2c41d6d8be0da7c40230da676131f78
+Merge: 00638f3 a2bc616
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat May 31 08:13:24 2014 +0200
+
+    Merge branch 'master' of github.com:gmc-holle/xfdashboard
+
+commit 00638f3d6ac7936137cf77dc620811b237193df8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat May 31 08:12:57 2014 +0200
+
+    Add support for AppData
+
+commit a2bc6166fcee77f0eb91adef698a4a0f1ae3c83f
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri May 30 14:20:10 2014 +0200
+
+    More changes to default theme and fixed a bug (missing semicolon)
+
+commit b3e911355efaa5a1219b6f3f1d963f41b604b016
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 29 13:10:34 2014 +0200
+
+    Fix creation of .desktop files
+
+commit 66bf8e276feb47b3dc336c2ecc57394fab9ac4fa
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 29 09:35:17 2014 +0200
+
+    Post-release version bump to 0.1.93
+
+commit f56b1ebebf7b27e57b9e050a4a5a58057945ed20
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Thu May 29 09:34:00 2014 +0200
+
+    Bump version to 0.1.92
+
 commit 57421ff41d9e3e3d406f77580d329958f940a240
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Thu May 29 09:27:39 2014 +0200
