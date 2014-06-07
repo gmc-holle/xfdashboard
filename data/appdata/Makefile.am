@@ -4,5 +4,9 @@ appdata_in_files = xfdashboard.appdata.xml.in
 
 @INTLTOOL_XML_RULE@
 
-DISTCLEANFILES =	\
-	$(appdata_DATA)
+EXTRA_DIST = \
+        $(appdata_DATA) \
+        xfdashboard.appdata.xml.in
+
+DISTCLEANFILES = \
+        $(appdata_in_files:.xml.in=.xml)

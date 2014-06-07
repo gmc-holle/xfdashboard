@@ -1,3 +1,9 @@
+commit 4d6b07b4bff861a3086e4eddce4ce3cd03e8629a
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jun 7 19:10:19 2014 +0200
+
+    Bump version to 0.2.0
+
 commit 5ea8b7969ada549a57908d56b958dbef170c86ae
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Tue Jun 3 21:54:15 2014 +0200
