@@ -43,7 +43,7 @@
 	</provides>
 
 	<releases>
-		<release version="0.2.0" timestamp="0">
+		<release version="0.2.0" timestamp="1402160953">
 			<description>
 				<_p>Initial release.</_p>
 			</description>
