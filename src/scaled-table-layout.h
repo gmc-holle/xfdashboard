@@ -1,5 +1,5 @@
 /*
- * scaled-table-layout: Layouts children in a dynamical table grid
+ * scaled-table-layout: Layouts children in a dynamic table grid
  *                      (rows and columns are inserted and deleted
  *                      automatically depending on the number of
  *                      child actors) and scaled to fit the allocation
