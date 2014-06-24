@@ -29,6 +29,7 @@ xfdashboard_headers = \
 	collapse-box.h \
 	drag-action.h \
 	drop-action.h \
+	dynamic-table-layout.h \
 	fill-box-layout.h \
 	focusable.h \
 	focus-manager.h \
@@ -79,6 +80,7 @@ xfdashboard_SOURCES = \
 	button.c \
 	click-action.c \
 	collapse-box.c \
+	dynamic-table-layout.c \
 	drag-action.c \
 	drop-action.c \
 	fill-box-layout.c \
