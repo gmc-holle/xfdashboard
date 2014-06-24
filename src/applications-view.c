@@ -40,6 +40,7 @@
 #include "stylable.h"
 #include "focusable.h"
 #include "focus-manager.h"
+#include "dynamic-table-layout.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_applications_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -993,10 +994,8 @@ void xfdashboard_applications_view_set_view_mode(XfdashboardApplicationsView *se
 				break;
 
 			case XFDASHBOARD_VIEW_MODE_ICON:
-				priv->layout=clutter_flow_layout_new(CLUTTER_FLOW_HORIZONTAL);
-				clutter_flow_layout_set_column_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
-				clutter_flow_layout_set_row_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
-				clutter_flow_layout_set_homogeneous(CLUTTER_FLOW_LAYOUT(priv->layout), TRUE);
+				priv->layout=xfdashboard_dynamic_table_layout_new();
+				xfdashboard_dynamic_table_layout_set_spacing(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(priv->layout), priv->spacing);
 				clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), priv->layout);
 				break;
 
