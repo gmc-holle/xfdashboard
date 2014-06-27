@@ -35,6 +35,7 @@
 #include "enums.h"
 #include "text-box.h"
 #include "stylable.h"
+#include "dynamic-table-layout.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardSearchResultContainer,
@@ -719,10 +720,8 @@ void xfdashboard_search_result_container_set_view_mode(XfdashboardSearchResultCo
 				break;
 
 			case XFDASHBOARD_VIEW_MODE_ICON:
-				priv->layout=clutter_flow_layout_new(CLUTTER_FLOW_HORIZONTAL);
-				clutter_flow_layout_set_column_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
-				clutter_flow_layout_set_row_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
-				clutter_flow_layout_set_homogeneous(CLUTTER_FLOW_LAYOUT(priv->layout), TRUE);
+				priv->layout=xfdashboard_dynamic_table_layout_new();
+				xfdashboard_dynamic_table_layout_set_spacing(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(priv->layout), priv->spacing);
 				clutter_actor_set_layout_manager(CLUTTER_ACTOR(priv->itemsContainer), priv->layout);
 
 				removeClass="view-mode-list";
@@ -779,8 +778,7 @@ void xfdashboard_search_result_container_set_spacing(XfdashboardSearchResultCont
 				break;
 
 			case XFDASHBOARD_VIEW_MODE_ICON:
-				clutter_flow_layout_set_column_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
-				clutter_flow_layout_set_row_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
+				xfdashboard_dynamic_table_layout_set_spacing(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(priv->layout), priv->spacing);
 				break;
 
 			default:
