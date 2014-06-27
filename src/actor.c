@@ -802,6 +802,10 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardActorPrivate));
 
+	/* Create param-spec pool for themable properties */
+	g_assert(_xfdashboard_actor_stylable_properties_pool==NULL);
+	_xfdashboard_actor_stylable_properties_pool=g_param_spec_pool_new(FALSE);
+
 	/* Define properties */
 	XfdashboardActorProperties[PROP_CAN_FOCUS]=
 		g_param_spec_boolean("can-focus",
@@ -814,9 +818,11 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 	g_object_class_override_property(gobjectClass, PROP_STYLE_CLASSES, "style-classes");
 	g_object_class_override_property(gobjectClass, PROP_STYLE_PSEUDO_CLASSES, "style-pseudo-classes");
 
-	/* Create param-spec pool for themable properties */
-	g_assert(_xfdashboard_actor_stylable_properties_pool==NULL);
-	_xfdashboard_actor_stylable_properties_pool=g_param_spec_pool_new(FALSE);
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property_by_name(klass, "x-expand");
+	xfdashboard_actor_install_stylable_property_by_name(klass, "y-expand");
+	xfdashboard_actor_install_stylable_property_by_name(klass, "x-align");
+	xfdashboard_actor_install_stylable_property_by_name(klass, "y-align");
 }
 
 /* Object initialization
