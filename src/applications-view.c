@@ -1042,8 +1042,7 @@ void xfdashboard_applications_view_set_spacing(XfdashboardApplicationsView *self
 				break;
 
 			case XFDASHBOARD_VIEW_MODE_ICON:
-				clutter_flow_layout_set_column_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
-				clutter_flow_layout_set_row_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
+				xfdashboard_dynamic_table_layout_set_spacing(CLUTTER_FLOW_LAYOUT(priv->layout), priv->spacing);
 				break;
 
 			default:
