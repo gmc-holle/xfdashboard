@@ -101,7 +101,6 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 
 	/* Freeze notification */
 	g_object_freeze_notify(G_OBJECT(self));
-g_message("%s[begin]: size=%.2f x %.2f", __func__, inWidth, inHeight);
 
 	/* Step one: Get number of visible child actors and determine largest width
 	 * and height of all visible child actors' natural size.
@@ -123,7 +122,6 @@ g_message("%s[begin]: size=%.2f x %.2f", __func__, inWidth, inHeight);
 			largestHeight=MAX(largestHeight, childHeight);
 		}
 	}
-g_message("%s: number-children=%d, largest=%.2f x %.2f", __func__, numberChildren, largestWidth, largestHeight);
 
 	if(numberChildren!=priv->numberChildren)
 	{
@@ -153,12 +151,17 @@ g_message("%s: number-children=%d, largest=%.2f x %.2f", __func__, numberChildre
 		}
 		else if(inHeight>0.0f)
 		{
-			// TODO: Take row spacing into account
-			rows=floor(inHeight/largestHeight);
-			rows=MIN(rows, priv->numberChildren);
+			rows=MIN(ceil(inHeight/largestHeight), priv->numberChildren);
+			do
+			{
+				childHeight=(rows*largestHeight)+((rows-1)*priv->rowSpacing);
+				rows--;
+			}
+			while(rows>1 && childHeight>inHeight);
+
+			largestHeight=floor(inHeight-((rows-1)*priv->rowSpacing))/rows;
 			columns=ceil((double)priv->numberChildren / (double)rows);
 		}
-g_message("%s: columns=%d, rows=%d", __func__, columns, rows);
 
 	if(rows!=priv->rows)
 	{
@@ -189,7 +192,6 @@ g_message("%s: columns=%d, rows=%d", __func__, columns, rows);
 		if(CLUTTER_ACTOR_IS_VISIBLE(child))
 		{
 			g_array_append_val(priv->columnCoords, x);
-g_message("%s: Column %d=%.2f", __func__, i, x);
 			x+=(largestWidth+priv->columnSpacing);
 
 			/* Increase counter for visible children */
@@ -223,7 +225,6 @@ g_message("%s: Column %d=%.2f", __func__, i, x);
 			{
 				y+=largestHeight+priv->rowSpacing;
 				g_array_append_val(priv->rowCoords, y);
-g_message("%s: Row %d=%.2f", __func__, (i/priv->columns), y);
 				largestHeight=0.0f;
 			}
 
@@ -238,11 +239,9 @@ g_message("%s: Row %d=%.2f", __func__, (i/priv->columns), y);
 
 	y+=largestHeight;
 	g_array_append_val(priv->rowCoords, y);
-g_message("%s: Row[last] %d=%.2f", __func__, (i/priv->columns), y);
 
 	/* Thaw notification */
 	g_object_thaw_notify(G_OBJECT(self));
-g_message("%s[end]", __func__);
 }
 
 /* IMPLEMENTATION: ClutterLayoutManager */
@@ -262,8 +261,6 @@ static void _xfdashboard_dynamic_table_layout_get_preferred_width(ClutterLayoutM
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 
 	priv=XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(self)->priv;
-
-g_message("%s[begin]: for-height=%.2f, column-spacing=%.2f", __func__, inForHeight, priv->columnSpacing);
 
 	/* Set up default values */
 	maxMinWidth=0.0f;
@@ -286,7 +283,6 @@ g_message("%s[begin]: for-height=%.2f, column-spacing=%.2f", __func__, inForHeig
 	/* Set return values */
 	if(outMinWidth) *outMinWidth=maxMinWidth;
 	if(outNaturalWidth) *outNaturalWidth=maxNaturalWidth;
-g_message("%s[end]: min-width=%.2f, natural-width=%.2f", __func__, maxMinWidth, maxNaturalWidth);
 }
 
 static void _xfdashboard_dynamic_table_layout_get_preferred_height(ClutterLayoutManager *self,
@@ -303,8 +299,6 @@ static void _xfdashboard_dynamic_table_layout_get_preferred_height(ClutterLayout
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
 
 	priv=XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(self)->priv;
-
-g_message("%s[begin]: for-width=%.2f, row-spacing=%.2f", __func__, inForWidth, priv->rowSpacing);
 
 	/* Set up default values */
 	maxMinHeight=0.0f;
@@ -327,7 +321,6 @@ g_message("%s[begin]: for-width=%.2f, row-spacing=%.2f", __func__, inForWidth, p
 	/* Set return values */
 	if(outMinHeight) *outMinHeight=maxMinHeight;
 	if(outNaturalHeight) *outNaturalHeight=maxNaturalHeight;
-g_message("%s[end]: min-height=%.2f, natural-height=%.2f", __func__, maxMinHeight, maxNaturalHeight);
 }
 
 /* Re-layout and allocate children of container we manage */
@@ -354,7 +347,6 @@ static void _xfdashboard_dynamic_table_layout_allocate(ClutterLayoutManager *sel
 	/* Get size of container holding children to layout */
 	width=clutter_actor_box_get_width(inAllocation);
 	height=clutter_actor_box_get_height(inAllocation);
-g_message("%s[begin]: allocation=%.2f x %.2f", __func__, width, height);
 
 	/* Update data needed for layout */
 	_xfdashboard_dynamic_table_layout_update_layout_data(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(self),
@@ -379,7 +371,6 @@ g_message("%s[begin]: allocation=%.2f x %.2f", __func__, width, height);
 			right=g_array_index(priv->columnCoords, gfloat, column+1)-priv->columnSpacing;
 			top=g_array_index(priv->rowCoords, gfloat, row);
 			bottom=g_array_index(priv->rowCoords, gfloat, row+1)-priv->rowSpacing;
-g_message("%s: column=%d, row=%d -> %.2f , %.2f [%.2f x %.2f]", __func__, column, row, left, top, right-left, bottom-top);
 
 			/* Get inner allocation for child */
 			clutter_actor_get_preferred_size(child, NULL, NULL, &childWidth, &childHeight);
@@ -401,8 +392,6 @@ g_message("%s: column=%d, row=%d -> %.2f , %.2f [%.2f x %.2f]", __func__, column
 			i++;
 		}
 	}
-
-g_message("%s[end]", __func__);
 }
 
 /* IMPLEMENTATION: GObject */
