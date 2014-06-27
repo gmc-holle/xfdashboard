@@ -366,26 +366,13 @@ static void _xfdashboard_dynamic_table_layout_allocate(ClutterLayoutManager *sel
 			column=floor(i % priv->columns);
 			row=floor(i / priv->columns);
 
-			/* Get outer allocation for child */
-			left=g_array_index(priv->columnCoords, gfloat, column);
-			right=g_array_index(priv->columnCoords, gfloat, column+1)-priv->columnSpacing;
-			top=g_array_index(priv->rowCoords, gfloat, row);
-			bottom=g_array_index(priv->rowCoords, gfloat, row+1)-priv->rowSpacing;
+			/* Get available allocation space for child*/
+			childAllocation.x1=g_array_index(priv->columnCoords, gfloat, column);
+			childAllocation.x2=g_array_index(priv->columnCoords, gfloat, column+1)-priv->columnSpacing;
+			childAllocation.y1=g_array_index(priv->rowCoords, gfloat, row);
+			childAllocation.y2=g_array_index(priv->rowCoords, gfloat, row+1)-priv->rowSpacing;
 
-			/* Get inner allocation for child */
-			clutter_actor_get_preferred_size(child, NULL, NULL, &childWidth, &childHeight);
-
-			left+=(right-left-childWidth)/2.0f;
-			right=left+childWidth;
-
-			top+=(bottom-top-childHeight)/2.0f;
-			bottom=top+childHeight;
-
-			/* Set new allocation of child */
-			childAllocation.x1=floor(left);
-			childAllocation.y1=floor(top);
-			childAllocation.x2=floor(right);
-			childAllocation.y2=floor(bottom);
+			/* Set allocation at child */
 			clutter_actor_allocate(child, &childAllocation, inFlags);
 
 			/* Increase counter for visible children */
