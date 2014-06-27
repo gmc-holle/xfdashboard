@@ -772,7 +772,7 @@ static void _xfdashboard_button_get_preferred_height(ClutterActor *inActor,
 		naturalHeight+=spacing;
 	}
 
-	// Add padding
+	/* Add padding */
 	minHeight+=2*priv->padding;
 	naturalHeight+=2*priv->padding;
 
@@ -846,7 +846,7 @@ static void _xfdashboard_button_get_preferred_width(ClutterActor *inActor,
 		naturalWidth+=spacing;
 	}
 
-	// Add padding
+	/* Add padding */
 	minWidth+=2*priv->padding;
 	naturalWidth+=2*priv->padding;
 
