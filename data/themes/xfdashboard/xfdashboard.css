@@ -1,3 +1,10 @@
+@constants
+{
+	background: #5792e260;
+	overlay-background: #5792e2ff;
+	overlay-outline: #4681d1ff;
+}
+
 /* Stage */
 XfdashboardStage
 {
@@ -14,8 +21,8 @@ XfdashboardWindowContent
 #notification
 {
 	background-type: fill outline;
-	background-fill-color: #5792e2ff;
-	outline-color: #4681d1ff;
+	background-fill-color: @overlay-background;
+	outline-color: @overlay-outline;
 	outline-width: 1.0;
 	text-color: #ffffffff;
 }
@@ -24,8 +31,8 @@ XfdashboardWindowContent
 #tooltip
 {
 	background-type: fill outline;
-	background-fill-color: #5792e2ff;
-	outline-color: #4681d1ff;
+	background-fill-color: @overlay-background;
+	outline-color: @overlay-outline;
 	outline-width: 1.0;
 	text-color: #ffffffe0;
 }
@@ -35,7 +42,7 @@ XfdashboardWindowContent
 {
 	spacing: 4.0;
 	background-type: fill outline rounded-corners;
-	background-fill-color: #5792e260;
+	background-fill-color: @background;
 	outline-color: #5792e2ff;
 	outline-width: 0.5;
 	outline-borders: top right bottom;
@@ -220,7 +227,7 @@ XfdashboardApplicationButton.view-mode-list
 {
 	spacing: 8.0;
 	background-type: fill outline rounded-corners;
-	background-fill-color: #5792e260;
+	background-fill-color: @background;
 	outline-color: #5792e2ff;
 	outline-width: 0.5;
 	outline-borders: top left bottom;
@@ -332,7 +339,7 @@ XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-
 XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-item:hover
 {
 	background-type: fill rounded-corners;
-	background-fill-color: #5792e260;
+	background-fill-color: @background;
 	corners: all;
 	corner-radius: 4.0;
 }
@@ -382,7 +389,7 @@ XfdashboardApplicationsView XfdashboardButton.view-mode-list
 XfdashboardApplicationsView XfdashboardButton:hover
 {
 	background-type: fill rounded-corners;
-	background-fill-color: #5792e260;
+	background-fill-color: @background;
 	corners: all;
 	corner-radius: 4.0;
 }
@@ -477,7 +484,7 @@ XfdashboardLiveWindow:selected XfdashboardButton.title
 XfdashboardApplicationsView XfdashboardButton:selected
 {
 	background-type: fill outline rounded-corners;
-	background-fill-color: #5792e260;
+	background-fill-color: @background;
 	outline-color: #5792e2ff;
 	outline-width: 2.0;
 	corners: all;
@@ -487,7 +494,7 @@ XfdashboardApplicationsView XfdashboardButton:selected
 XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selected
 {
 	background-type: fill outline rounded-corners;
-	background-fill-color: #5792e260;
+	background-fill-color: @background;
 	outline-color: #5792e2ff;
 	outline-width: 2.0;
 	corners: all;
