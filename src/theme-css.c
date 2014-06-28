@@ -188,9 +188,9 @@ static XfdashboardThemeCSSSelector* _xfdashboard_theme_css_selector_new(const gc
 }
 
 /* Resolve '@' identifier */
-static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardThemeCSS *self,
-																	GScanner *inScanner,
-																	GList *inScopeSelectors)
+static const gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardThemeCSS *self,
+																			GScanner *inScanner,
+																			GList *inScopeSelectors)
 {
 	XfdashboardThemeCSSPrivate		*priv;
 	GTokenType						token;
@@ -266,17 +266,24 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardT
 }
 
 static gchar* _xfdashboard_theme_css_resolve_at_identifier(XfdashboardThemeCSS *self,
-															GScanner *inScanner,
-															GList *inScopeSelectors)
+															GScanner *inScopeScanner,
+															GList *inScopeSelectors,
+															gchar *inValue)
 {
+	GTokenType		token;
 	gchar			*value;
+	gchar			*resolvedValue;
+	const gchar		*constantValue;
+	gboolean		haveResolvedAtIdentifier;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
-	g_return_val_if_fail(inScanner, NULL);
+	g_return_val_if_fail(inScopeScanner, NULL);
+	g_return_val_if_fail(inValue, NULL);
 
 	/* Resolve '@' identifier recursively */
-	value=_xfdashboard_theme_css_resolve_at_identifier_internal(self, inScanner, inScopeSelectors);
-	while(value && *value=='@')
+	value=g_strdup(inValue);
+
+	do
 	{
 		GScanner	*scanner;
 
@@ -291,21 +298,67 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier(XfdashboardThemeCSS *
 		 * - Identifiers cannot be single quoted
 		 * - Identifiers cannot be double quoted
 		 */
-		scanner->config->cset_identifier_nth=G_CSET_a_2_z "-_0123456789" G_CSET_A_2_Z G_CSET_LATINS G_CSET_LATINC;
+		scanner->config->cset_identifier_first=G_CSET_a_2_z "#_-0123456789" G_CSET_A_2_Z G_CSET_LATINS G_CSET_LATINC;
+		scanner->config->cset_identifier_nth=scanner->config->cset_identifier_first;
+		scanner->config->scan_identifier_1char=1;
+		scanner->config->char_2_token=FALSE;
+		scanner->config->cset_skip_characters="\n";
+		scanner->config->scan_string_sq=TRUE;
+		scanner->config->scan_string_dq=TRUE;
 		scanner->config->scan_float=FALSE;
-		scanner->config->cpair_comment_single="\1\n";
-		scanner->config->scan_hex=FALSE;
-		scanner->config->scan_string_sq=FALSE;
-		scanner->config->scan_string_dq=FALSE;
 
-		/* Parse value resolve from '@' identifier */
-		g_scanner_input_text(scanner, value+1, strlen(value)-1);
-		value=_xfdashboard_theme_css_resolve_at_identifier_internal(self, scanner, inScopeSelectors);
+		/* Parse value and resolve '@' identifier */
+		haveResolvedAtIdentifier=FALSE;
+		resolvedValue=NULL;
 
-		/* Destroy scanner */
-		g_scanner_destroy(scanner);
+		g_scanner_input_text(scanner, value, strlen(value));
+
+		token=g_scanner_get_next_token(scanner);
+		while(token!=G_TOKEN_EOF)
+		{
+			switch(token)
+			{
+				case G_TOKEN_IDENTIFIER:
+					resolvedValue=_xfdashboard_theme_css_append_string(resolvedValue, scanner->value.v_identifier);
+					break;
+
+				case G_TOKEN_STRING:
+					resolvedValue=_xfdashboard_theme_css_append_string(resolvedValue, scanner->value.v_string);
+					break;
+
+				case G_TOKEN_CHAR:
+					if(scanner->value.v_char=='@')
+					{
+						/* Append resolved value */
+						constantValue=_xfdashboard_theme_css_resolve_at_identifier_internal(self, scanner, inScopeSelectors);
+						if(constantValue)
+						{
+							resolvedValue=_xfdashboard_theme_css_append_string(resolvedValue, constantValue);
+						}
+
+						/* Set flag that we have resolved an '@' identifier to get the new value resolved */
+						haveResolvedAtIdentifier=TRUE;
+					}
+						else resolvedValue=_xfdashboard_theme_css_append_char(resolvedValue, scanner->value.v_char);
+					break;
+
+				default:
+					/* This code should never be reached! */
+					g_assert_not_reached();
+					break;
+			}
+
+			/* Continue with next token */
+			token=g_scanner_get_next_token(scanner);
+		}
+
+		/* Replace old value with resolved value */
+		g_free(value);
+		value=resolvedValue;
 	}
+	while(haveResolvedAtIdentifier);
 
+	/* Return resolved value */
 	return(value);
 }
 
@@ -326,7 +379,6 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 	gchar			*oldCsetSkipChars;
 	guint			oldScanStringSQ;
 	guint			oldScanStringDQ;
-	gchar			*atValue;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), G_TOKEN_ERROR);
 	g_return_val_if_fail(inScanner, G_TOKEN_ERROR);
@@ -373,7 +425,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 	inScanner->config->scan_string_sq=TRUE;
 	inScanner->config->scan_string_dq=TRUE;
 
-	while(inScanner->next_value.v_char != ';')
+	while(inScanner->next_value.v_char!=';')
 	{
 		token=g_scanner_get_next_token(inScanner);
 		switch(token)
@@ -383,38 +435,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 				break;
 
 			case G_TOKEN_CHAR:
-				/* If we should resolve '@' identifiers, check for '@' identifier and
-				 * append result of resolving this identifier to value ...
-				 */
-				if(inDoResolveAt &&
-					inScanner->value.v_char=='@')
-				{
-					/* Set old parser options */
-					inScanner->config->cset_identifier_nth=oldIDNth;
-					inScanner->config->cset_identifier_first=oldIDFirst;
-					inScanner->config->scan_identifier_1char=oldScanIdentifier1char;
-					inScanner->config->char_2_token=oldChar2Token;
-					inScanner->config->cset_skip_characters=oldCsetSkipChars;
-					inScanner->config->scan_string_sq=oldScanStringSQ;
-					inScanner->config->scan_string_dq=oldScanStringDQ;
-
-					/* Resolve '@' identifier */
-					atValue=_xfdashboard_theme_css_resolve_at_identifier(self, inScanner, inScopeSelectors);
-
-					/* Add resolved value to property value */
-					if(atValue) *outValue=_xfdashboard_theme_css_append_string(*outValue, atValue);
-
-					/* Set parser option to parse property value and parse them */
-					inScanner->config->cset_identifier_first=G_CSET_a_2_z "#_-0123456789" G_CSET_A_2_Z G_CSET_LATINS G_CSET_LATINC;
-					inScanner->config->cset_identifier_nth=inScanner->config->cset_identifier_first;
-					inScanner->config->scan_identifier_1char=1;
-					inScanner->config->char_2_token=FALSE;
-					inScanner->config->cset_skip_characters="\n";
-					inScanner->config->scan_string_sq=TRUE;
-					inScanner->config->scan_string_dq=TRUE;
-				}
-					/* ... otherwise just append character to value  */
-					else *outValue=_xfdashboard_theme_css_append_char(*outValue, inScanner->value.v_char);
+				*outValue=_xfdashboard_theme_css_append_char(*outValue, inScanner->value.v_char);
 				break;
 
 			case G_TOKEN_STRING:
@@ -428,12 +449,25 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 		g_scanner_peek_next_token(inScanner);
 	}
 
+	/* Resolve '@' identifiers if requested */
+	if(inDoResolveAt && *outValue)
+	{
+		gchar		*resolvedValue;
+
+		/* Resolve value */
+		resolvedValue=_xfdashboard_theme_css_resolve_at_identifier(self, inScanner, inScopeSelectors, *outValue);
+
+		/* Release old value and set new one */
+		g_free(*outValue);
+		*outValue=resolvedValue;
+	}
+
 	/* Property values must end at a semi-colon */
 	g_scanner_get_next_token(inScanner);
 	if(inScanner->value.v_char!=';') return(';');
 
 	/* Strip leading and trailing whitespace from value */
-	g_strstrip(*outValue);
+	if(*outValue) g_strstrip(*outValue);
 
 	/* Set old parser options */
 	inScanner->config->cset_identifier_nth=oldIDNth;
@@ -443,6 +477,11 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 	inScanner->config->cset_skip_characters=oldCsetSkipChars;
 	inScanner->config->scan_string_sq=oldScanStringSQ;
 	inScanner->config->scan_string_dq=oldScanStringDQ;
+
+	/* If no value (means NULL value) is set when '@' identifiers were resolved
+	 * then an error is occurred.
+	 */
+	if(inDoResolveAt && !*outValue) return(G_TOKEN_ERROR);
 
 	/* Successfully parsed */
 	return(G_TOKEN_NONE);
