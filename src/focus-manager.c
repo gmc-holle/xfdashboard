@@ -33,10 +33,6 @@
 #include "marshal.h"
 #include "stylable.h"
 
-// TODO: #undef g_debug
-// TODO: #define g_debug g_message
-// TODO: #include "utils.h"
-
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardFocusManager,
 				xfdashboard_focus_manager,
