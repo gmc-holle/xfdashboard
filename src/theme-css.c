@@ -187,9 +187,133 @@ static XfdashboardThemeCSSSelector* _xfdashboard_theme_css_selector_new(const gc
 	return(selector);
 }
 
+/* Resolve '@' identifier */
+static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardThemeCSS *self,
+																	GScanner *inScanner,
+																	GList *inScopeSelectors)
+{
+	XfdashboardThemeCSSPrivate		*priv;
+	GTokenType						token;
+	gchar							*identifier;
+	GList							*iter;
+	XfdashboardThemeCSSSelector		*selector;
+	gpointer						value;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
+	g_return_val_if_fail(inScanner, NULL);
+
+	priv=self->priv;
+
+	/* Get identifier */
+	token=g_scanner_get_next_token(inScanner);
+	if(token!=G_TOKEN_IDENTIFIER)
+	{
+		g_scanner_unexp_token(inScanner,
+								G_TOKEN_IDENTIFIER,
+								NULL,
+								NULL,
+								NULL,
+								_("An identifier must follow '@'"),
+								FALSE);
+		return(NULL);
+	}
+	identifier=g_strdup(inScanner->value.v_identifier);
+
+	/* Identifier is a constant so lookup constant by iterating through all
+	 * '@constants' selectors backwards and use first value found. We iterate
+	 * through these selectors backwards (first in selectors of current file/scope
+	 * then all previous ones) to let last definition win.
+	 */
+	for(iter=g_list_last(inScopeSelectors); iter; iter=g_list_previous(iter))
+	{
+		selector=(XfdashboardThemeCSSSelector*)iter->data;
+
+		/* Handle only '@constants' selectors */
+		if(g_strcmp0(selector->id, "@constants")==0)
+		{
+			if(g_hash_table_lookup_extended(selector->style, identifier, NULL, &value))
+			{
+				/* Release allocated resources */
+				g_free(identifier);
+
+				/* Return value found */
+				return(value);
+			}
+		}
+	}
+
+	for(iter=g_list_last(priv->selectors); iter; iter=g_list_previous(iter))
+	{
+		selector=(XfdashboardThemeCSSSelector*)iter->data;
+
+		/* Handle only '@constants' selectors */
+		if(g_strcmp0(selector->id, "@constants")==0)
+		{
+			if(g_hash_table_lookup_extended(selector->style, identifier, NULL, &value))
+			{
+				/* Release allocated resources */
+				g_free(identifier);
+
+				/* Return value found */
+				return(value);
+			}
+		}
+	}
+
+	/* Release allocated resources */
+	g_free(identifier);
+	return(NULL);
+}
+
+static gchar* _xfdashboard_theme_css_resolve_at_identifier(XfdashboardThemeCSS *self,
+															GScanner *inScanner,
+															GList *inScopeSelectors)
+{
+	gchar			*value;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
+	g_return_val_if_fail(inScanner, NULL);
+
+	/* Resolve '@' identifier recursively */
+	value=_xfdashboard_theme_css_resolve_at_identifier_internal(self, inScanner, inScopeSelectors);
+	while(value && *value=='@')
+	{
+		GScanner	*scanner;
+
+		/* Create scanner to resolve value of '@' identifier */
+		scanner=g_scanner_new(NULL);
+
+		/* Set up scanner config
+		 * - Identifiers are allowed to contain '-' (minus sign) as non-first characters
+		 * - Disallow scanning float values as we need '.' for identifiers
+		 * - Set up single comment line not to include '#' as this character is need for identifiers
+		 * - Disable parsing HEX values
+		 * - Identifiers cannot be single quoted
+		 * - Identifiers cannot be double quoted
+		 */
+		scanner->config->cset_identifier_nth=G_CSET_a_2_z "-_0123456789" G_CSET_A_2_Z G_CSET_LATINS G_CSET_LATINC;
+		scanner->config->scan_float=FALSE;
+		scanner->config->cpair_comment_single="\1\n";
+		scanner->config->scan_hex=FALSE;
+		scanner->config->scan_string_sq=FALSE;
+		scanner->config->scan_string_dq=FALSE;
+
+		/* Parse value resolve from '@' identifier */
+		g_scanner_input_text(scanner, value+1, strlen(value)-1);
+		value=_xfdashboard_theme_css_resolve_at_identifier_internal(self, scanner, inScopeSelectors);
+
+		/* Destroy scanner */
+		g_scanner_destroy(scanner);
+	}
+
+	return(value);
+}
+
 /* Parse CSS from stream */
 static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS *self,
 																GScanner *inScanner,
+																GList *inScopeSelectors,
+																gboolean inDoResolveAt,
 																gchar **outKey,
 																gchar **outValue)
 {
@@ -202,6 +326,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 	gchar			*oldCsetSkipChars;
 	guint			oldScanStringSQ;
 	guint			oldScanStringDQ;
+	gchar			*atValue;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), G_TOKEN_ERROR);
 	g_return_val_if_fail(inScanner, G_TOKEN_ERROR);
@@ -258,7 +383,38 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 				break;
 
 			case G_TOKEN_CHAR:
-				*outValue=_xfdashboard_theme_css_append_char(*outValue, inScanner->value.v_char);
+				/* If we should resolve '@' identifiers, check for '@' identifier and
+				 * append result of resolving this identifier to value ...
+				 */
+				if(inDoResolveAt &&
+					inScanner->value.v_char=='@')
+				{
+					/* Set old parser options */
+					inScanner->config->cset_identifier_nth=oldIDNth;
+					inScanner->config->cset_identifier_first=oldIDFirst;
+					inScanner->config->scan_identifier_1char=oldScanIdentifier1char;
+					inScanner->config->char_2_token=oldChar2Token;
+					inScanner->config->cset_skip_characters=oldCsetSkipChars;
+					inScanner->config->scan_string_sq=oldScanStringSQ;
+					inScanner->config->scan_string_dq=oldScanStringDQ;
+
+					/* Resolve '@' identifier */
+					atValue=_xfdashboard_theme_css_resolve_at_identifier(self, inScanner, inScopeSelectors);
+
+					/* Add resolved value to property value */
+					if(atValue) *outValue=_xfdashboard_theme_css_append_string(*outValue, atValue);
+
+					/* Set parser option to parse property value and parse them */
+					inScanner->config->cset_identifier_first=G_CSET_a_2_z "#_-0123456789" G_CSET_A_2_Z G_CSET_LATINS G_CSET_LATINC;
+					inScanner->config->cset_identifier_nth=inScanner->config->cset_identifier_first;
+					inScanner->config->scan_identifier_1char=1;
+					inScanner->config->char_2_token=FALSE;
+					inScanner->config->cset_skip_characters="\n";
+					inScanner->config->scan_string_sq=TRUE;
+					inScanner->config->scan_string_dq=TRUE;
+				}
+					/* ... otherwise just append character to value  */
+					else *outValue=_xfdashboard_theme_css_append_char(*outValue, inScanner->value.v_char);
 				break;
 
 			case G_TOKEN_STRING:
@@ -294,6 +450,8 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 
 static GTokenType _xfdashboard_theme_css_parse_css_styles(XfdashboardThemeCSS *self,
 															GScanner *inScanner,
+															GList *inScopeSelectors,
+															gboolean inDoResolveAt,
 															GHashTable *ioHashtable)
 {
 	GTokenType		token;
@@ -316,7 +474,12 @@ static GTokenType _xfdashboard_theme_css_parse_css_styles(XfdashboardThemeCSS *s
 		key=value=NULL;
 
 		/* Parse key and value */
-		token=_xfdashboard_theme_css_parse_css_key_value(self, inScanner, &key, &value);
+		token=_xfdashboard_theme_css_parse_css_key_value(self,
+															inScanner,
+															inScopeSelectors,
+															inDoResolveAt,
+															&key,
+															&value);
 		if(token!=G_TOKEN_NONE) return(token);
 
 		/* Insert key and value into hashtable */
@@ -453,6 +616,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 {
 	GTokenType						token;
 	XfdashboardThemeCSSSelector		*selector, *parent;
+	gboolean						hasAtSelector;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), G_TOKEN_ERROR);
 	g_return_val_if_fail(inScanner, G_TOKEN_ERROR);
@@ -461,10 +625,27 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 	/* Parse comma-seperated selectors until a left curly bracket is found */
 	parent=NULL;
 	selector=NULL;
+	hasAtSelector=FALSE;
 
 	token=g_scanner_peek_next_token(inScanner);
 	while(token!=G_TOKEN_LEFT_CURLY)
 	{
+		/* Check if a @-identifier was parsed because it can only be one
+		 * in a ruleset and @-identifers and selectors cannot be mixed.
+		 */
+		if(hasAtSelector)
+		{
+			g_scanner_get_next_token(inScanner);
+			g_scanner_unexp_token(inScanner,
+									G_TOKEN_LEFT_CURLY,
+									NULL,
+									NULL,
+									NULL,
+									_("Mixing selectors and '@' identifiers or defining more than one '@' identifier at once is not allowed"),
+									TRUE);
+			return(G_TOKEN_LEFT_CURLY);
+		}
+
 		switch((guint)token)
 		{
 			case G_TOKEN_IDENTIFIER:
@@ -503,7 +684,17 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 				g_scanner_get_next_token(inScanner);
 
 				/* Set last selector as parent */
-				if(!selector) g_warning("No parent when parsing '>'");
+				if(!selector)
+				{
+					g_scanner_unexp_token(inScanner,
+											G_TOKEN_IDENTIFIER,
+											NULL,
+											NULL,
+											NULL,
+											_("No parent when parsing '>'"),
+											TRUE);
+					return(token);
+				}
 				parent=selector;
 
 				/* Create new selector */
@@ -539,6 +730,60 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 				if(token!=G_TOKEN_NONE) return(token);
 				break;
 
+			case '@':
+				g_scanner_get_next_token(inScanner);
+
+				/* An identifier must follow the character '@' */
+				token=g_scanner_get_next_token(inScanner);
+				if(token!=G_TOKEN_IDENTIFIER)
+				{
+					g_scanner_unexp_token(inScanner,
+											G_TOKEN_IDENTIFIER,
+											NULL,
+											NULL,
+											NULL,
+											_("An identifier must follow '@'"),
+											TRUE);
+					return(token);
+				}
+
+				/* Check if '@'-identifier matches any expected one */
+				if(g_strcmp0(inScanner->value.v_identifier, "constants"))
+				{
+					gchar		*message;
+
+					/* Build warning message */
+					message=g_strdup_printf(_("Skipping block of unknown identifier '@%s'"),
+											inScanner->value.v_identifier);
+
+					/* Set warning */
+					g_scanner_unexp_token(inScanner,
+											G_TOKEN_IDENTIFIER,
+											_("'@' identifier"),
+											NULL,
+											NULL,
+											message,
+											FALSE);
+
+					/* Release allocated resources */
+					g_free(message);
+
+					/* As this is just a warning return G_TOKEN_NONE to continue
+					 * parsing CSS. Otherwise parses would stop with error.
+					 */
+					return(G_TOKEN_NONE);
+				}
+
+				/* Create selector for @-identifier */
+				hasAtSelector=TRUE;
+				selector=_xfdashboard_theme_css_selector_new(inScanner->input_name,
+																GPOINTER_TO_INT(inScanner->user_data),
+																g_scanner_cur_line(inScanner),
+																g_scanner_cur_position(inScanner));
+				selector->id=g_strdup_printf("@%s", inScanner->value.v_identifier);
+				*ioSelectors=g_list_prepend(*ioSelectors, selector);
+				break;
+
 			default:
 				g_scanner_get_next_token(inScanner);
 				g_scanner_unexp_token(inScanner,
@@ -547,10 +792,11 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 										NULL,
 										NULL,
 										_("Unhandled selector"),
-										1);
+										TRUE);
 				return('{');
 		}
 
+		/* Continue parsing with next token */
 		token=g_scanner_peek_next_token(inScanner);
 	}
 
@@ -565,9 +811,10 @@ static GTokenType _xfdashboard_theme_css_parse_css_block(XfdashboardThemeCSS *se
 {
 	GTokenType						token;
 	GList							*selectors;
-	GList							*entry;
+	GList							*iter;
 	GHashTable						*styles;
 	XfdashboardThemeCSSSelector		*selector;
+	gboolean						doResolveAt;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), G_TOKEN_ERROR);
 	g_return_val_if_fail(inScanner, G_TOKEN_ERROR);
@@ -587,24 +834,42 @@ static GTokenType _xfdashboard_theme_css_parse_css_block(XfdashboardThemeCSS *se
 		return(token);
 	}
 
+	/* Determine if we should resolve '@' identifiers or to copy property value only
+	 * because a '@' selector is parsed.
+	 */
+	doResolveAt=TRUE;
+	for(iter=selectors; iter; iter=g_list_next(iter))
+	{
+		selector=(XfdashboardThemeCSSSelector*)iter->data;
+		if(selector->id && *(selector->id)=='@')
+		{
+			g_assert(g_list_length(selectors)==1);
+			doResolveAt=FALSE;
+		}
+	}
+
 	/* Create a hash table for the properties */
 	styles=g_hash_table_new_full(g_str_hash,
-									g_direct_equal,
+									g_str_equal,
 									g_free,
 									(GDestroyNotify)g_free);
 
-	token=_xfdashboard_theme_css_parse_css_styles(self, inScanner, styles);
+	token=_xfdashboard_theme_css_parse_css_styles(self,
+													inScanner,
+													*ioSelectors,
+													doResolveAt,
+													styles);
 
 	/* Assign all the selectors to this style */
-	for(entry=selectors; entry; entry=g_list_next(entry))
+	for(iter=selectors; iter; iter=g_list_next(iter))
 	{
-		selector=(XfdashboardThemeCSSSelector*)entry->data;
+		selector=(XfdashboardThemeCSSSelector*)iter->data;
 		selector->style=styles;
 	}
 
 	/* Store selectors and styles */
-	*ioStyles=g_list_append(*ioStyles, styles);
 	*ioSelectors=g_list_concat(*ioSelectors, selectors);
+	*ioStyles=g_list_append(*ioStyles, styles);
 
 	return(token);
 }
