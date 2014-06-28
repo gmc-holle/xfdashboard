@@ -334,8 +334,6 @@ static void _xfdashboard_dynamic_table_layout_allocate(ClutterLayoutManager *sel
 	ClutterActorIter						iter;
 	ClutterActor							*child;
 	gint									column, row, i;
-	gfloat									left, right, top, bottom;
-	gfloat									childWidth, childHeight;
 	ClutterActorBox							childAllocation;
 
 	g_return_if_fail(XFDASHBOARD_IS_DYNAMIC_TABLE_LAYOUT(self));
