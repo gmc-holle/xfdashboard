@@ -29,7 +29,6 @@
 
 #include "theme-css.h"
 
-// TODO: #include <clutter/clutter.h>
 #include <glib/gi18n-lib.h>
 #include <glib.h>
 #include <gio/gio.h>
@@ -794,7 +793,6 @@ static gint _xfdashboard_themes_css_score_node_matching_selector(XfdashboardThem
 	const gchar				*classes;
 	const gchar				*pseudoClasses;
 	const gchar				*id;
-	// TODO: XfdashboardStylable		*actor;
 	XfdashboardStylable		*parent;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(inStylable), -1);
