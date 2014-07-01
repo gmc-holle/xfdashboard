@@ -271,7 +271,7 @@ XfdashboardCollapseBox
 /* View selector */
 #view-selector
 {
-	spacing: 4.0f;
+	spacing: 4.0;
 }
 
 #view-selector XfdashboardToggleButton
