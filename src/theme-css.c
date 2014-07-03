@@ -372,41 +372,38 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 {
 	GTokenType		token;
 	gboolean		propertyStartsWithDash;
-	gchar			*oldIDFirst;
-	gchar			*oldIDNth;
-	guint			oldScanIdentifier1char;
-	guint			oldChar2Token;
-	gchar			*oldCsetSkipChars;
-	guint			oldScanStringSQ;
-	guint			oldScanStringDQ;
+	GScannerConfig	*scannerConfig;
+	GScannerConfig	*oldScannerConfig;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), G_TOKEN_ERROR);
 	g_return_val_if_fail(inScanner, G_TOKEN_ERROR);
 	g_return_val_if_fail(outKey && *outKey==NULL, G_TOKEN_ERROR);
 	g_return_val_if_fail(outValue && *outValue==NULL, G_TOKEN_ERROR);
 
-	propertyStartsWithDash=FALSE;
-	oldIDFirst=inScanner->config->cset_identifier_first;
-	oldIDNth=inScanner->config->cset_identifier_nth;
-	oldScanIdentifier1char=inScanner->config->scan_identifier_1char;
-	oldChar2Token=inScanner->config->char_2_token;
-	oldCsetSkipChars=inScanner->config->cset_skip_characters;
-	oldScanStringSQ=inScanner->config->scan_string_sq;
-	oldScanStringDQ=inScanner->config->scan_string_dq;
-
-	/* Parse property name */
-	token=g_scanner_get_next_token(inScanner);
-
-	/* Property names can start with '-' but at least it needs
-	 * an identifier
+	/* Parse property name. Property names can start with '-' but it needs
+	 * an identifier at least
 	 */
+	propertyStartsWithDash=FALSE;
+
+	token=g_scanner_get_next_token(inScanner);
 	if(token=='-')
 	{
 		token=g_scanner_get_next_token(inScanner);
 		propertyStartsWithDash=TRUE;
 	}
 
-	if(token!=G_TOKEN_IDENTIFIER) return(G_TOKEN_IDENTIFIER);
+	if(token!=G_TOKEN_IDENTIFIER)
+	{
+		g_scanner_unexp_token(inScanner,
+								G_TOKEN_IDENTIFIER,
+								NULL,
+								NULL,
+								NULL,
+								_("Invalid property name"),
+								TRUE);
+
+		return(G_TOKEN_IDENTIFIER);
+	}
 
 	/* Build key */
 	if(propertyStartsWithDash) *outKey=g_strconcat("-", inScanner->value.v_identifier, NULL);
@@ -414,18 +411,36 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 
 	/* Key and value must be seperated by a colon */
 	token=g_scanner_get_next_token(inScanner);
-	if(token!=':') return(':');
+	if(token!=':')
+	{
+		/* Show parser error message */
+		g_scanner_unexp_token(inScanner,
+								':',
+								NULL,
+								NULL,
+								NULL,
+								_("Property names and values must be separated by colon"),
+								TRUE);
+
+		/* Return error result */
+		return(':');
+	}
 
 	/* Set parser option to parse property value and parse them */
-	inScanner->config->cset_identifier_first=G_CSET_a_2_z "#_-0123456789" G_CSET_A_2_Z G_CSET_LATINS G_CSET_LATINC;
-	inScanner->config->cset_identifier_nth=inScanner->config->cset_identifier_first;
-	inScanner->config->scan_identifier_1char=1;
-	inScanner->config->char_2_token=FALSE;
-	inScanner->config->cset_skip_characters="\n";
-	inScanner->config->scan_string_sq=TRUE;
-	inScanner->config->scan_string_dq=TRUE;
+	scannerConfig=(GScannerConfig*)g_memdup(inScanner->config, sizeof(GScannerConfig));
+	scannerConfig->cset_identifier_first=G_CSET_a_2_z "#_-0123456789" G_CSET_A_2_Z G_CSET_LATINS G_CSET_LATINC;
+	scannerConfig->cset_identifier_nth=scannerConfig->cset_identifier_first;
+	scannerConfig->scan_identifier_1char=1;
+	scannerConfig->char_2_token=FALSE;
+	scannerConfig->cset_skip_characters="\n";
+	scannerConfig->scan_string_sq=TRUE;
+	scannerConfig->scan_string_dq=TRUE;
 
-	while(inScanner->next_value.v_char!=';')
+	oldScannerConfig=inScanner->config;
+	inScanner->config=scannerConfig;
+
+	while(inScanner->next_token!=G_TOKEN_CHAR ||
+			inScanner->next_value.v_char!=';')
 	{
 		token=g_scanner_get_next_token(inScanner);
 		switch(token)
@@ -443,10 +458,46 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 				break;
 
 			default:
+				/* Restore old parser options */
+				inScanner->config=oldScannerConfig;
+				g_free(scannerConfig);
+
+				/* Show parser error message */
+				g_scanner_unexp_token(inScanner,
+										';',
+										NULL,
+										NULL,
+										NULL,
+										_("Invalid property value"),
+										TRUE);
+
+				/* Return error result */
 				return(';');
 		}
 
 		g_scanner_peek_next_token(inScanner);
+	}
+
+	/* Property values must end at a semi-colon */
+	token=g_scanner_get_next_token(inScanner);
+	if(token!=G_TOKEN_CHAR ||
+		inScanner->value.v_char!=';')
+	{
+		/* Restore old parser options */
+		inScanner->config=oldScannerConfig;
+		g_free(scannerConfig);
+
+		/* Show parser error message */
+		g_scanner_unexp_token(inScanner,
+								';',
+								NULL,
+								NULL,
+								NULL,
+								_("Property values must end with semi-colon"),
+								TRUE);
+
+		/* Return error result */
+		return(';');
 	}
 
 	/* Resolve '@' identifiers if requested */
@@ -462,21 +513,12 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 		*outValue=resolvedValue;
 	}
 
-	/* Property values must end at a semi-colon */
-	g_scanner_get_next_token(inScanner);
-	if(inScanner->value.v_char!=';') return(';');
-
 	/* Strip leading and trailing whitespace from value */
 	if(*outValue) g_strstrip(*outValue);
 
-	/* Set old parser options */
-	inScanner->config->cset_identifier_nth=oldIDNth;
-	inScanner->config->cset_identifier_first=oldIDFirst;
-	inScanner->config->scan_identifier_1char=oldScanIdentifier1char;
-	inScanner->config->char_2_token=oldChar2Token;
-	inScanner->config->cset_skip_characters=oldCsetSkipChars;
-	inScanner->config->scan_string_sq=oldScanStringSQ;
-	inScanner->config->scan_string_dq=oldScanStringDQ;
+	/* Restore old parser options */
+	inScanner->config=oldScannerConfig;
+	g_free(scannerConfig);
 
 	/* If no value (means NULL value) is set when '@' identifiers were resolved
 	 * then an error is occurred.
@@ -598,7 +640,18 @@ static GTokenType _xfdashboard_theme_css_parse_css_simple_selector(XfdashboardTh
 			case '#':
 				g_scanner_get_next_token(inScanner);
 				token=g_scanner_get_next_token(inScanner);
-				if(token!=G_TOKEN_IDENTIFIER) return(G_TOKEN_IDENTIFIER);
+				if(token!=G_TOKEN_IDENTIFIER)
+				{
+					g_scanner_unexp_token(inScanner,
+											G_TOKEN_IDENTIFIER,
+											NULL,
+											NULL,
+											NULL,
+											_("Invalid name identifier"),
+											TRUE);
+					return(G_TOKEN_IDENTIFIER);
+				}
+
 				ioSelector->id=g_strdup(inScanner->value.v_identifier);
 				break;
 
@@ -606,7 +659,18 @@ static GTokenType _xfdashboard_theme_css_parse_css_simple_selector(XfdashboardTh
 			case '.':
 				g_scanner_get_next_token(inScanner);
 				token=g_scanner_get_next_token(inScanner);
-				if(token!=G_TOKEN_IDENTIFIER) return(G_TOKEN_IDENTIFIER);
+				if(token!=G_TOKEN_IDENTIFIER)
+				{
+					g_scanner_unexp_token(inScanner,
+											G_TOKEN_IDENTIFIER,
+											NULL,
+											NULL,
+											NULL,
+											_("Invalid class identifier"),
+											TRUE);
+					return(G_TOKEN_IDENTIFIER);
+				}
+
 				ioSelector->class=g_strdup(inScanner->value.v_identifier);
 				break;
 
@@ -614,7 +678,17 @@ static GTokenType _xfdashboard_theme_css_parse_css_simple_selector(XfdashboardTh
 			case ':':
 				g_scanner_get_next_token(inScanner);
 				token=g_scanner_get_next_token(inScanner);
-				if(token!=G_TOKEN_IDENTIFIER) return(G_TOKEN_IDENTIFIER);
+				if(token!=G_TOKEN_IDENTIFIER)
+				{
+					g_scanner_unexp_token(inScanner,
+											G_TOKEN_IDENTIFIER,
+											NULL,
+											NULL,
+											NULL,
+											_("Invalid pseudo-class identifier"),
+											TRUE);
+					return(G_TOKEN_IDENTIFIER);
+				}
 
 				if(ioSelector->pseudoClass)
 				{
@@ -757,6 +831,21 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 			case ',':
 				g_scanner_get_next_token(inScanner);
 
+				/* A selector must have been defined before other one can follow
+				 * comma-separated.
+				 */
+				if(g_list_length(*ioSelectors)==0)
+				{
+					g_scanner_unexp_token(inScanner,
+											G_TOKEN_IDENTIFIER,
+											NULL,
+											NULL,
+											NULL,
+											_("A selector must have been defined before other one can follow comma-separated."),
+											TRUE);
+					return(token);
+				}
+
 				/* Create new selector */
 				selector=_xfdashboard_theme_css_selector_new(inScanner->input_name,
 																GPOINTER_TO_INT(inScanner->user_data),
@@ -832,7 +921,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 										NULL,
 										_("Unhandled selector"),
 										TRUE);
-				return('{');
+				return(G_TOKEN_LEFT_CURLY);
 		}
 
 		/* Continue parsing with next token */
@@ -898,6 +987,15 @@ static GTokenType _xfdashboard_theme_css_parse_css_block(XfdashboardThemeCSS *se
 													*ioSelectors,
 													doResolveAt,
 													styles);
+	if(token!=G_TOKEN_NONE)
+	{
+		g_list_foreach(selectors, (GFunc)_xfdashboard_theme_css_selector_free, NULL);
+		g_list_free(selectors);
+
+		g_hash_table_destroy(styles);
+
+		return(token);
+	}
 
 	/* Assign all the selectors to this style */
 	for(iter=selectors; iter; iter=g_list_next(iter))
