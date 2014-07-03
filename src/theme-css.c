@@ -291,7 +291,6 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier(XfdashboardThemeCSS *
 	GTokenType		token;
 	gchar			*value;
 	gchar			*resolvedValue;
-	const gchar		*constantValue;
 	gboolean		haveResolvedAtIdentifier;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
@@ -345,18 +344,26 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier(XfdashboardThemeCSS *
 					break;
 
 				case G_TOKEN_CHAR:
+					/* Check for character '@' identifing an identifier which needs to get resolved ... */
 					if(scanner->value.v_char=='@')
 					{
-						/* Append resolved value */
+						const gchar		*constantValue;
+
+						/* Resolved value. Stop parsing and return NULL if unresolvable. */
 						constantValue=_xfdashboard_theme_css_resolve_at_identifier_internal(self, scanner, inScopeSelectors, inScopeScanner);
-						if(constantValue)
+						if(!constantValue)
 						{
-							resolvedValue=_xfdashboard_theme_css_append_string(resolvedValue, constantValue);
+							g_free(value);
+							return(NULL);
 						}
+
+						/* Append resolved value */
+						resolvedValue=_xfdashboard_theme_css_append_string(resolvedValue, constantValue);
 
 						/* Set flag that we have resolved an '@' identifier to get the new value resolved */
 						haveResolvedAtIdentifier=TRUE;
 					}
+						/* ... otherwise just add character to value */
 						else resolvedValue=_xfdashboard_theme_css_append_char(resolvedValue, scanner->value.v_char);
 					break;
 
