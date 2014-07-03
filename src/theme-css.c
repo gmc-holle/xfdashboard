@@ -187,10 +187,13 @@ static XfdashboardThemeCSSSelector* _xfdashboard_theme_css_selector_new(const gc
 	return(selector);
 }
 
-/* Resolve '@' identifier */
+/* Resolve '@' identifier.
+ * Prints error message and returns NULL if unresolvable.
+ */
 static const gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardThemeCSS *self,
-																			GScanner *inScanner,
-																			GList *inScopeSelectors)
+																			GScanner *ioScanner,
+																			GList *inScopeSelectors,
+																			GScanner *inScopeScanner)
 {
 	XfdashboardThemeCSSPrivate		*priv;
 	GTokenType						token;
@@ -198,17 +201,18 @@ static const gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(Xfdash
 	GList							*iter;
 	XfdashboardThemeCSSSelector		*selector;
 	gpointer						value;
+	gchar							*errorMessage;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
-	g_return_val_if_fail(inScanner, NULL);
+	g_return_val_if_fail(ioScanner, NULL);
 
 	priv=self->priv;
 
 	/* Get identifier */
-	token=g_scanner_get_next_token(inScanner);
+	token=g_scanner_get_next_token(ioScanner);
 	if(token!=G_TOKEN_IDENTIFIER)
 	{
-		g_scanner_unexp_token(inScanner,
+		g_scanner_unexp_token(inScopeScanner,
 								G_TOKEN_IDENTIFIER,
 								NULL,
 								NULL,
@@ -217,7 +221,8 @@ static const gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(Xfdash
 								FALSE);
 		return(NULL);
 	}
-	identifier=g_strdup(inScanner->value.v_identifier);
+
+	identifier=g_strdup(ioScanner->value.v_identifier);
 
 	/* Identifier is a constant so lookup constant by iterating through all
 	 * '@constants' selectors backwards and use first value found. We iterate
@@ -260,8 +265,21 @@ static const gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(Xfdash
 		}
 	}
 
+	/* Identifier was unresolvable so print error message */
+	errorMessage=g_strdup_printf(_("Unresolvable identifier '@%s'"), identifier);
+	g_scanner_unexp_token(inScopeScanner,
+							G_TOKEN_ERROR,
+							NULL,
+							NULL,
+							NULL,
+							errorMessage,
+							FALSE);
+	g_free(errorMessage);
+
 	/* Release allocated resources */
 	g_free(identifier);
+
+	/* Identifier was unresolvable so return NULL */
 	return(NULL);
 }
 
@@ -330,7 +348,7 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier(XfdashboardThemeCSS *
 					if(scanner->value.v_char=='@')
 					{
 						/* Append resolved value */
-						constantValue=_xfdashboard_theme_css_resolve_at_identifier_internal(self, scanner, inScopeSelectors);
+						constantValue=_xfdashboard_theme_css_resolve_at_identifier_internal(self, scanner, inScopeSelectors, inScopeScanner);
 						if(constantValue)
 						{
 							resolvedValue=_xfdashboard_theme_css_append_string(resolvedValue, constantValue);
