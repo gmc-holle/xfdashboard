@@ -1559,7 +1559,7 @@ XfdashboardStyle xfdashboard_button_get_style(XfdashboardButton *self)
 
 void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardStyle inStyle)
 {
-	XfdashboardButtonPrivate	*priv=self->priv;
+	XfdashboardButtonPrivate	*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 

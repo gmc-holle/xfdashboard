@@ -352,7 +352,7 @@ static void _xfdashboard_applications_view_on_model_loaded(XfdashboardApplicatio
 /* The application will be resumed */
 static void _xfdashboard_applications_view_on_application_resume(XfdashboardApplicationsView *self, gpointer inUserData)
 {
-	XfdashboardApplicationsViewPrivate	*priv=self->priv;
+	XfdashboardApplicationsViewPrivate	*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));

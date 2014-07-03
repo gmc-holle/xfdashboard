@@ -398,7 +398,7 @@ static void _xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inLayout
 													const ClutterActorBox *inAllocation,
 													ClutterAllocationFlags inFlags)
 {
-	XfdashboardFillBoxLayout			*self=XFDASHBOARD_FILL_BOX_LAYOUT(inLayoutManager);
+	XfdashboardFillBoxLayout			*self;
 	XfdashboardFillBoxLayoutPrivate		*priv;
 	ClutterActor						*child;
 	ClutterActorIter					iter;

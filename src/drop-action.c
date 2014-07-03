@@ -148,7 +148,7 @@ static void _xfdashboard_drop_action_on_target_actor_destroy(XfdashboardDropActi
 static gboolean _xfdashboard_drop_action_class_real_begin(XfdashboardDropAction *self,
 															XfdashboardDragAction *inDragAction)
 {
-	XfdashboardDropActionPrivate		*priv=self->priv;
+	XfdashboardDropActionPrivate		*priv;
 	ClutterActorMeta					*actorMeta;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_DROP_ACTION(self), FALSE);
@@ -170,7 +170,7 @@ static gboolean _xfdashboard_drop_action_class_real_begin(XfdashboardDropAction 
 static void _xfdashboard_drop_action_class_real_end(XfdashboardDropAction *self,
 													XfdashboardDragAction *inDragAction)
 {
-	XfdashboardDropActionPrivate		*priv=self->priv;
+	XfdashboardDropActionPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(self));
 
@@ -213,7 +213,7 @@ static void _xfdashboard_drop_action_class_real_drop(XfdashboardDropAction *self
 														gfloat inX,
 														gfloat inY)
 {
-	XfdashboardDropActionPrivate		*priv=self->priv;
+	XfdashboardDropActionPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(self));
 
@@ -231,7 +231,7 @@ static void _xfdashboard_drop_action_class_real_drop(XfdashboardDropAction *self
 static void _xfdashboard_drop_action_class_real_drag_enter(XfdashboardDropAction *self,
 															XfdashboardDragAction *inDragAction)
 {
-	XfdashboardDropActionPrivate		*priv=self->priv;
+	XfdashboardDropActionPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(self));
 
@@ -249,7 +249,7 @@ static void _xfdashboard_drop_action_class_real_drag_enter(XfdashboardDropAction
 static void _xfdashboard_drop_action_class_real_drag_leave(XfdashboardDropAction *self,
 															XfdashboardDragAction *inDragAction)
 {
-	XfdashboardDropActionPrivate		*priv=self->priv;
+	XfdashboardDropActionPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_DROP_ACTION(self));
 

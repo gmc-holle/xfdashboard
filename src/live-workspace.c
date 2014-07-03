@@ -250,7 +250,7 @@ static void _xfdashboard_live_workspace_on_window_geometry_changed(XfdashboardLi
 static void _xfdashboard_live_workspace_on_window_stacking_changed(XfdashboardLiveWorkspace *self,
 																	gpointer inUserData)
 {
-	XfdashboardLiveWorkspacePrivate		*priv=XFDASHBOARD_LIVE_WORKSPACE(self)->priv;
+	XfdashboardLiveWorkspacePrivate		*priv;
 	GList								*windows;
 	XfdashboardWindowTrackerWindow		*window;
 	ClutterActor						*actor;

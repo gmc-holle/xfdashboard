@@ -505,7 +505,6 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 	g_return_if_fail(XFDASHBOARD_IS_IMAGE_CONTENT(self));
 
 	priv=self->priv;
-	iconInfo=NULL;
 
 	/* Check if type of image is valid and all needed parameters are set */
 	g_return_if_fail(priv->type==XFDASHBOARD_IMAGE_TYPE_ICON_NAME);
@@ -688,7 +687,6 @@ static void _xfdashboard_image_content_load_from_gicon(XfdashboardImageContent *
 	g_return_if_fail(XFDASHBOARD_IS_IMAGE_CONTENT(self));
 
 	priv=self->priv;
-	iconInfo=NULL;
 
 	/* Check if type of image is valid and all needed parameters are set */
 	g_return_if_fail(priv->type==XFDASHBOARD_IMAGE_TYPE_GICON);
@@ -1219,7 +1217,6 @@ ClutterImage* xfdashboard_image_content_new_for_pixbuf(GdkPixbuf *inPixbuf)
 
 	g_return_val_if_fail(GDK_IS_PIXBUF(inPixbuf), NULL);
 
-	image=NULL;
 	error=NULL;
 
 	/* Create ClutterImage for pixbuf directly because images

@@ -179,7 +179,6 @@ static gboolean _xfdashboard_application_load_theme(XfdashboardApplication *self
 
 	priv=self->priv;
 	error=NULL;
-	themeName=NULL;
 	theme=NULL;
 
 	/* Determine theme file to load and check if file exists */

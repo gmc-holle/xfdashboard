@@ -120,8 +120,8 @@ static gboolean _xfdashboard_live_window_is_visible_window(XfdashboardLiveWindow
 /* This actor was clicked */
 static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, ClutterActor *inActor, gpointer inUserData)
 {
-	XfdashboardLiveWindowPrivate	*priv=self->priv;
-	XfdashboardClickAction			*action=XFDASHBOARD_CLICK_ACTION(inUserData);
+	XfdashboardLiveWindowPrivate	*priv;
+	XfdashboardClickAction			*action;
 	gfloat							eventX, eventY;
 	gfloat							relX, relY;
 	ClutterActorBox					closeBox;
