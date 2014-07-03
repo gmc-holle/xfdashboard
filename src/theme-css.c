@@ -302,7 +302,7 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier(XfdashboardThemeCSS *
 		scanner->config->cset_identifier_nth=scanner->config->cset_identifier_first;
 		scanner->config->scan_identifier_1char=1;
 		scanner->config->char_2_token=FALSE;
-		scanner->config->cset_skip_characters="\n";
+		scanner->config->cset_skip_characters="";
 		scanner->config->scan_string_sq=TRUE;
 		scanner->config->scan_string_dq=TRUE;
 		scanner->config->scan_float=FALSE;
