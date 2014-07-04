@@ -578,7 +578,7 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 													XfdashboardWindowTrackerWindow *inWindow,
 													gpointer inUserData)
 {
-	XfdashboardStagePrivate				*priv
+	XfdashboardStagePrivate				*priv;
 	XfdashboardWindowTrackerWindow		*stageWindow;
 #if !defined(CHECK_CLUTTER_VERSION) || !CLUTTER_CHECK_VERSION(1, 16, 0)
 	GdkScreen							*screen;
