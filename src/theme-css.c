@@ -349,7 +349,7 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier(XfdashboardThemeCSS *
 					{
 						const gchar		*constantValue;
 
-						/* Resolved value. Stop parsing and return NULL if unresolvable. */
+						/* Resolve value but stop parsing and return NULL if unresolvable. */
 						constantValue=_xfdashboard_theme_css_resolve_at_identifier_internal(self, scanner, inScopeSelectors, inScopeScanner);
 						if(!constantValue)
 						{
