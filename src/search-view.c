@@ -841,8 +841,12 @@ static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardF
 					/* Unset focus at current provider and set focus to new one if changed */
 					if(newSelectionProvider!=priv->selectionProvider)
 					{
-						xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
-																		FALSE);
+						if(priv->selectionProvider &&
+							priv->selectionProvider->container)
+						{
+							xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																			FALSE);
+						}
 
 						priv->selectionProvider=newSelectionProvider;
 						xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
@@ -855,7 +859,7 @@ static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardF
 				}
 					else
 					{
-						/* Get previous provider to focus */
+						/* Get next provider to focus */
 						newSelectionProviderInList=g_list_next(newSelectionProviderInList);
 						if(!newSelectionProviderInList) newSelectionProviderInList=g_list_first(priv->providers);
 						newSelectionProvider=(XfdashboardSearchViewProviderData*)newSelectionProviderInList->data;
@@ -863,15 +867,19 @@ static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardF
 						/* Unset focus at current provider and set focus to new one if changed */
 						if(newSelectionProvider!=priv->selectionProvider)
 						{
-							xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
-																			FALSE);
+							if(priv->selectionProvider &&
+								priv->selectionProvider->container)
+							{
+								xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																				FALSE);
+							}
 
 							priv->selectionProvider=newSelectionProvider;
 							xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
 																			TRUE);
 						}
 
-						/* Get last selectable item at newly selected provider */
+						/* Get first selectable item at newly selected provider */
 						newSelection=xfdashboard_search_result_container_set_next_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
 																							XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END);
 					}
@@ -1226,4 +1234,44 @@ void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gc
 	g_debug("Updating search for '%s' took %f seconds", inSearchString, g_timer_elapsed(timer, NULL));
 	g_timer_destroy(timer);
 #endif
+}
+
+/* Reset selection to first item in current search result */
+void xfdashboard_search_view_reset_search_selection(XfdashboardSearchView *self)
+{
+	XfdashboardSearchViewPrivate		*priv;
+	XfdashboardSearchViewProviderData	*newSelectionProvider;
+	ClutterActor						*newSelection;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
+
+	priv=self->priv;
+
+	/* Do nothing if no provider was registered */
+	if(!priv->providers) return;
+
+	/* Get first provider to focus */
+	newSelectionProvider=(XfdashboardSearchViewProviderData*)priv->providers->data;
+
+	/* Unset focus at current provider and set focus to new one if changed */
+	if(newSelectionProvider!=priv->selectionProvider)
+	{
+		if(priv->selectionProvider &&
+			priv->selectionProvider->container)
+		{
+			xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+															FALSE);
+		}
+
+		priv->selectionProvider=newSelectionProvider;
+		xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+														TRUE);
+	}
+
+	/* Get frist selectable item at newly selected provider */
+	newSelection=xfdashboard_search_result_container_set_next_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																		XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END);
+
+	/* Ensure new selection is visible */
+	xfdashboard_view_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
 }

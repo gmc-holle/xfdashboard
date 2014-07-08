@@ -66,6 +66,8 @@ GType xfdashboard_search_view_get_type(void) G_GNUC_CONST;
 void xfdashboard_search_view_reset_search(XfdashboardSearchView *self);
 void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gchar *inSearchString);
 
+void xfdashboard_search_view_reset_search_selection(XfdashboardSearchView *self);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_SEARCH_VIEW__ */

@@ -219,15 +219,43 @@ static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inE
 	result=xfdashboard_focus_manager_handle_key_event(priv->focusManager, inEvent);
 	if(result==CLUTTER_EVENT_STOP) return(result);
 
-	/* If even focus manager did not handle this event
-	 * send even to searchbox.
-	 */
+	/* If even focus manager did not handle this event send this event to searchbox */
 	if(priv->searchbox &&
 		XFDASHBOARD_IS_FOCUSABLE(priv->searchbox) &&
 		xfdashboard_focus_manager_is_registered(priv->focusManager, XFDASHBOARD_FOCUSABLE(priv->searchbox)))
 	{
-		result=xfdashboard_focusable_handle_key_event(XFDASHBOARD_FOCUSABLE(priv->searchbox), inEvent);
-		if(result==CLUTTER_EVENT_STOP) return(result);
+		XfdashboardView					*searchView;
+
+		/* Ask search to handle this event if it has not the focus currently
+		 * because in this case it has already handled the event and we do
+		 * not to do this twice.
+		 */
+		if(xfdashboard_focus_manager_get_focus(priv->focusManager)!=XFDASHBOARD_FOCUSABLE(priv->searchbox))
+		{
+			result=xfdashboard_focusable_handle_key_event(XFDASHBOARD_FOCUSABLE(priv->searchbox), inEvent);
+			if(result==CLUTTER_EVENT_STOP) return(result);
+		}
+
+		/* If we get here the search box did not handle this event either.
+		 * This may be because ENTER was pressed. So check for it as it should
+		 * be handled special anyway. If so and if search view is the active view
+		 * then the first item in search view should be selected and activated.
+		 */
+		searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
+		if(searchView &&
+			xfdashboard_viewpad_get_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad))==searchView &&
+			clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE &&
+			(inEvent->key.keyval==CLUTTER_KEY_Return ||
+				inEvent->key.keyval==CLUTTER_KEY_KP_Enter ||
+				inEvent->key.keyval==CLUTTER_KEY_ISO_Enter))
+		{
+			/* Select first item in search result */
+			xfdashboard_search_view_reset_search_selection(XFDASHBOARD_SEARCH_VIEW(searchView));
+
+			/* Let search view handle this event */
+			result=xfdashboard_focusable_handle_key_event(XFDASHBOARD_FOCUSABLE(searchView), inEvent);
+			if(result==CLUTTER_EVENT_STOP) return(result);
+		}
 	}
 
 	/* If we get here there was no searchbox or it could not handle the event
