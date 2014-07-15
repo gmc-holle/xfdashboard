@@ -1124,7 +1124,7 @@ void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gc
 	GList							*providers;
 	gint64							searchTimestamp;
 #ifdef DEBUG
-	GTimer								*timer=NULL;
+	GTimer							*timer=NULL;
 #endif
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
