@@ -50,6 +50,7 @@ struct _XfdashboardApplicationsSearchProviderPrivate
 {
 	/* Instance related */
 	XfdashboardApplicationsMenuModel		*apps;
+	GHashTable								*desktopAppInfoCache;
 };
 
 /* IMPLEMENTATION: Private variables and methods */
@@ -60,8 +61,59 @@ struct _XfdashboardApplicationsSearchProviderSearchData
 {
 	XfdashboardApplicationsMenuModel		*model;
 	gchar 									*searchTerm;
-	GHashTable								*pool;
 };
+
+/* Get desktop application information from cache or load it and store it in cache */
+static GDesktopAppInfo* _xfdashboard_applications_search_provider_get_desktop_appinfo(XfdashboardApplicationsSearchProvider *self,
+																						const gchar *inDesktopID)
+{
+	XfdashboardApplicationsSearchProviderPrivate		*priv;
+	GDesktopAppInfo										*appInfo;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), NULL);
+	g_return_val_if_fail(inDesktopID && *inDesktopID, NULL);
+
+	priv=self->priv;
+
+	/* Check if desktop ID is in cache already */
+	if(g_hash_table_lookup_extended(priv->desktopAppInfoCache, inDesktopID, NULL, (gpointer*)&appInfo))
+	{
+		/* Return application information but increase reference counter */
+		return(G_DESKTOP_APP_INFO(g_object_ref(appInfo)));
+	}
+
+	/* If we get here the application information for this desktop ID is not in cache.
+	 * So load it and store it in cache.
+	 */
+	appInfo=g_desktop_app_info_new_from_filename(inDesktopID);
+	if(!appInfo) return(NULL);
+
+	g_hash_table_insert(priv->desktopAppInfoCache, g_strdup(inDesktopID), appInfo);
+
+	/* Return application information but increase reference counter */
+	return(G_DESKTOP_APP_INFO(g_object_ref(appInfo)));
+}
+
+/* Clear desktop application informationen cache if menu model has been (re)loaded */
+static void _xfdashboard_applications_search_provider_on_apps_model_loaded(XfdashboardApplicationsSearchProvider *self,
+																			gpointer inUserData)
+{
+	XfdashboardApplicationsSearchProviderPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self));
+
+	priv=self->priv;
+
+	/* Destroy hash table containin desktop application information if available */
+	if(priv->desktopAppInfoCache)
+	{
+		g_hash_table_destroy(priv->desktopAppInfoCache);
+		priv->desktopAppInfoCache=NULL;
+	}
+
+	/* Create empty hash table for caching desktop application information */
+	priv->desktopAppInfoCache=g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
+}
 
 /* Drag of an menu item begins */
 static void _xfdashboard_applications_search_provider_on_drag_begin(ClutterDragAction *inAction,
@@ -122,18 +174,20 @@ static void _xfdashboard_applications_search_provider_on_drag_end(ClutterDragAct
 }
 
 /* Check if model data at iterator matches search terms */
-static gboolean _xfdashboard_applications_search_provider_is_match(ClutterModelIter *inIter,
+static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardApplicationsSearchProvider *self,
+																	ClutterModelIter *inIter,
 																	gchar **inSearchTerms,
 																	XfdashboardSearchResultSet *inLimitSet,
 																	GHashTable *ioPool)
 {
-	guint								iterRow, poolRow;
-	gboolean							isMatch;
-	GarconMenuElement					*menuElement;
-	const gchar							*title, *description, *command;
-	gchar								*lowerTitle, *lowerDescription;
-	gint								matchesFound, matchesExpected;
+	guint					iterRow, poolRow;
+	gboolean				isMatch;
+	GarconMenuElement		*menuElement;
+	const gchar				*title, *description, *command;
+	gchar					*lowerTitle, *lowerDescription;
+	gint					matchesFound, matchesExpected;
 
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), FALSE);
 	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
 	g_return_val_if_fail(!inLimitSet || XFDASHBOARD_IS_SEARCH_RESULT_SET(inLimitSet), FALSE);
 	g_return_val_if_fail(ioPool, FALSE);
@@ -270,7 +324,7 @@ static gboolean _xfdashboard_applications_search_provider_is_match(ClutterModelI
 		pathDesktopID=g_file_get_path(fileDesktopID);
 
 		/* Test if desktop file could be loaded and parsed. If not do not add. */
-		appInfo=g_desktop_app_info_new_from_filename(pathDesktopID);
+		appInfo=_xfdashboard_applications_search_provider_get_desktop_appinfo(self, pathDesktopID);
 		if(appInfo)
 		{
 			if(g_hash_table_lookup_extended(ioPool, pathDesktopID, NULL, NULL)!=TRUE)
@@ -301,27 +355,31 @@ static gint _xfdashboard_applications_search_provider_sort_result_set(GVariant *
 																		GVariant *inRight,
 																		gpointer inUserData)
 {
-	const gchar			*leftID;
-	const gchar			*rightID;
-	GDesktopAppInfo		*leftAppInfo;
-	GDesktopAppInfo		*rightAppInfo;
-	const gchar			*leftName;
-	const gchar			*rightName;
-	gint				result;
+	XfdashboardApplicationsSearchProvider				*self;
+	const gchar											*leftID;
+	const gchar											*rightID;
+	GDesktopAppInfo										*leftAppInfo;
+	GDesktopAppInfo										*rightAppInfo;
+	const gchar											*leftName;
+	const gchar											*rightName;
+	gint												result;
 
 	g_return_val_if_fail(inLeft, 0);
 	g_return_val_if_fail(inRight, 0);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(inUserData), 0);
+
+	self=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER(inUserData);
 
 	/* Get desktop IDs of both items */
 	leftID=g_variant_get_string(inLeft, NULL);
 	rightID=g_variant_get_string(inRight, NULL);
 
 	/* Get desktop application information of both items */
-	leftAppInfo=g_desktop_app_info_new_from_filename(leftID);
+	leftAppInfo=_xfdashboard_applications_search_provider_get_desktop_appinfo(self, leftID);
 	if(leftAppInfo) leftName=g_app_info_get_display_name(G_APP_INFO(leftAppInfo));
 		else leftName=NULL;
 
-	rightAppInfo=g_desktop_app_info_new_from_filename(rightID);
+	rightAppInfo=_xfdashboard_applications_search_provider_get_desktop_appinfo(self, rightID);
 	if(rightAppInfo) rightName=g_app_info_get_display_name(G_APP_INFO(rightAppInfo));
 		else rightName=NULL;
 
@@ -376,7 +434,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 		while(!clutter_model_iter_is_last(iterator))
 		{
 			/* Check for match */
-			_xfdashboard_applications_search_provider_is_match(iterator, inSearchTerms, inPreviousResultSet, pool);
+			_xfdashboard_applications_search_provider_is_match(self, iterator, inSearchTerms, inPreviousResultSet, pool);
 
 			/* Continue with next row in model */
 			iterator=clutter_model_iter_next(iterator);
@@ -389,7 +447,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 								resultSet);
 		xfdashboard_search_result_set_sort(resultSet,
 											_xfdashboard_applications_search_provider_sort_result_set,
-											NULL);
+											self);
 
 		/* Release allocated resources */
 		g_hash_table_destroy(pool);
@@ -479,6 +537,12 @@ static void _xfdashboard_applications_search_provider_dispose(GObject *inObject)
 		priv->apps=NULL;
 	}
 
+	if(priv->desktopAppInfoCache)
+	{
+		g_hash_table_destroy(priv->desktopAppInfoCache);
+		priv->desktopAppInfoCache=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_applications_search_provider_parent_class)->dispose(inObject);
 }
@@ -515,6 +579,9 @@ static void xfdashboard_applications_search_provider_init(XfdashboardApplication
 	self->priv=priv=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_GET_PRIVATE(self);
 
 	/* Set up default values */
+	priv->desktopAppInfoCache=NULL;
+
 	priv->apps=XFDASHBOARD_APPLICATIONS_MENU_MODEL(xfdashboard_applications_menu_model_new());
 	clutter_model_set_sorting_column(CLUTTER_MODEL(priv->apps), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE);
+	g_signal_connect_swapped(priv->apps, "loaded", G_CALLBACK(_xfdashboard_applications_search_provider_on_apps_model_loaded), self);
 }
