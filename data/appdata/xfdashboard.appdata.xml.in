@@ -43,6 +43,11 @@
 	</provides>
 
 	<releases>
+		<release version="0.2.1" timestamp="1405537974">
+			<description>
+				<_p>This release fixes problems with icon mode in theming and allows to launch the first item by pressing ENTER in search view when a search was started by just typing.</_p>
+			</description>
+		</release>
 		<release version="0.2.0" timestamp="1402160953">
 			<description>
 				<_p>Initial release.</_p>

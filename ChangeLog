@@ -1,3 +1,95 @@
+commit 6b15d55916012a83b4ecc0055eea5744e60a4e91
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Jul 16 21:08:32 2014 +0200
+
+    Move focus if current focussed actor is going to be hidden
+    
+    If a registered focusable actor is going to be hidden or unrealized move focus to next focusable actor.
+
+commit efa106197145c799d366c6473cd248298e990bc6
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Jul 16 19:53:11 2014 +0200
+
+    Move focus to viewpad (and to search view finally) if a search has started
+    
+    This addresses issue #30. It was requested to select and focus the first item in search view when a search started to visualize the first item in search item which can be selected by pressing ENTER even if search box has not the focus - the "just-type-to-search" feature ;)
+
+commit cc0cdb6f5112a2544bc03946a891bb647d739b0b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Jul 15 15:28:11 2014 +0200
+
+    Improve search speed a little bit
+    
+    Improve search speed by caching loaded .desktop files. Before this commit each time the result list is retrieved, each item' .desktop file was loaded, parsed and additional information retrieved. Then this result list was sorted what caused the .desktop files being loaded, parsed etc. or each item. To avoid this each .desktop loaded will be cached so it will be only loaded once. At my slowest machine this reduced the mean search time for the term 'a' from 350ms to 240ms.
+
+commit 436a6e006ba5665ae1d155afcb5219e8aacc5e2d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Jul 15 21:23:49 2014 +0200
+
+    Fix coding style
+
+commit 88c0db8c10f3a4e4ca79f44234456797282b41e2
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Jul 2 07:00:48 2014 +0200
+
+    Post-release version bump to 0.2.1
+
+commit 03cead6c52d35e6ec7987865390077288dfd4da4
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jun 28 09:35:36 2014 +0200
+
+    Remove unused variables
+    
+    Remove unused variables from XfdashboardDynamicTableLayout to avoid compiler warnings
+
+commit ce8d291c5cb94b2f30bb765c6ab67da54755bdd4
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jun 27 14:02:38 2014 +0200
+
+    Also use new XfdashboardDynamicTableLayout in search view
+
+commit b6a780d2c700ff32cde2e589006c6cf53080b1d8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jun 27 14:00:24 2014 +0200
+
+    Fixed wrong cast to ClutterFlowLayout but XfdashboardDynamicTableLayout is used
+
+commit f3e5ecd4d7b96efc8c619ce004cfa1b84c45120b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jun 27 13:53:58 2014 +0200
+
+    Allow some ClutterActor properties to be stylable
+    
+    Allow the properties '{x,y}-expand' and '{x,y}-align' to be themable. This addresses issue #28 to avoid that a cell in XfdashboardDynamicTableLayout is always filled completely by child (and its background). To avoid this set 'x-expand' and/or 'y-expand' to 'false' - maybe also set '{x,y}-align' accordingly to position child in available allocation space (e.g. set to 'center').
+
+commit f97c495969e00cd24a518ed60178f5668b222d16
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jun 27 13:41:11 2014 +0200
+
+    Optimize allocation function in XfdashboardDynamicTableLayout
+
+commit e1577076466618f886a1e519087cc96494e21695
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Fri Jun 27 13:08:19 2014 +0200
+
+    Clean up code of XfdashboardDynamicTableLayout
+    
+    Make nice-code(tm) of XfdashboardDynamicTableLayout ;)
+
+commit ae2dc7adbe281cde67f10249cc8917786f14d69e
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Jun 24 10:32:21 2014 +0200
+
+    Add new layout manager XfdashboardDynamicTableLayout to fix issue #28
+    
+    XfdashboardDynamicTableLayout is a layout manager which layouts children in a dynamic table grid. Rows and columns are inserted and deleted automatically depending on the number of visible child actors. Usually it will prefer more columns over rows.
+
+commit f3d0d331a32ffbdb891a83b52dae8059294df775
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Jun 7 19:30:20 2014 +0200
+
+    Fixed installation of AppData
+
 commit 4d6b07b4bff861a3086e4eddce4ce3cd03e8629a
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Sat Jun 7 19:10:19 2014 +0200
