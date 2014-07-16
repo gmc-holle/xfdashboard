@@ -36,6 +36,7 @@
 #include "enums.h"
 #include "utils.h"
 #include "focusable.h"
+#include "focus-manager.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_viewpad_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -224,6 +225,8 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 {
 	XfdashboardViewpadPrivate	*priv;
 	gfloat						x, y;
+	XfdashboardFocusManager		*focusManager;
+	gboolean					hasFocus;
 
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
 	g_return_if_fail(inView==NULL || XFDASHBOARD_IS_VIEW(inView));
@@ -249,9 +252,20 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 		return;
 	}
 
+	/* Determine if this viewpad has the focus because we have to move focus in this case */
+	focusManager=xfdashboard_focus_manager_get_default();
+	hasFocus=xfdashboard_focus_manager_has_focus(focusManager, XFDASHBOARD_FOCUSABLE(self));
+
 	/* Deactivate current view */
 	if(priv->activeView)
 	{
+		/* Unset focus at current active view if this viewpad has the focus */
+		if(hasFocus)
+		{
+			xfdashboard_focusable_unset_focus(XFDASHBOARD_FOCUSABLE(priv->activeView));
+			g_debug("Viewpad has focus so unset focus from view '%s'", xfdashboard_view_get_name(priv->activeView));
+		}
+
 		/* Hide current view and emit signal before and after deactivation */
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_DEACTIVATING], 0, priv->activeView);
 		g_signal_emit_by_name(priv->activeView, "deactivating");
@@ -296,7 +310,33 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 
 		g_signal_emit_by_name(priv->activeView, "activated");
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_ACTIVATED], 0, priv->activeView);
+
+		/* Set focus to new active view if this viewpad has the focus */
+		if(hasFocus)
+		{
+			xfdashboard_focusable_set_focus(XFDASHBOARD_FOCUSABLE(priv->activeView));
+			g_debug("Viewpad has focus so set focus to view '%s'", xfdashboard_view_get_name(priv->activeView));
+		}
 	}
+
+	/* If no view is active at this time move focus to next focusable actor
+	 * if this viewpad has the focus.
+	 */
+	if(hasFocus && !priv->activeView)
+	{
+		XfdashboardFocusable	*newFocusable;
+
+		newFocusable=xfdashboard_focus_manager_get_next_focusable(focusManager, XFDASHBOARD_FOCUSABLE(self));
+		if(newFocusable)
+		{
+			xfdashboard_focus_manager_set_focus(focusManager, newFocusable);
+			g_debug("Viewpad has focus but no view is active so move focus to next focusable actor of type '%s'",
+					G_OBJECT_TYPE_NAME(newFocusable));
+		}
+	}
+
+	/* Release allocated resources */
+	if(focusManager) g_object_unref(focusManager);
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_ACTIVE_VIEW]);

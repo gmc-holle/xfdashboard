@@ -224,8 +224,6 @@ static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inE
 		XFDASHBOARD_IS_FOCUSABLE(priv->searchbox) &&
 		xfdashboard_focus_manager_is_registered(priv->focusManager, XFDASHBOARD_FOCUSABLE(priv->searchbox)))
 	{
-		XfdashboardView					*searchView;
-
 		/* Ask search to handle this event if it has not the focus currently
 		 * because in this case it has already handled the event and we do
 		 * not to do this twice.
@@ -233,27 +231,6 @@ static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inE
 		if(xfdashboard_focus_manager_get_focus(priv->focusManager)!=XFDASHBOARD_FOCUSABLE(priv->searchbox))
 		{
 			result=xfdashboard_focusable_handle_key_event(XFDASHBOARD_FOCUSABLE(priv->searchbox), inEvent);
-			if(result==CLUTTER_EVENT_STOP) return(result);
-		}
-
-		/* If we get here the search box did not handle this event either.
-		 * This may be because ENTER was pressed. So check for it as it should
-		 * be handled special anyway. If so and if search view is the active view
-		 * then the first item in search view should be selected and activated.
-		 */
-		searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
-		if(searchView &&
-			xfdashboard_viewpad_get_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad))==searchView &&
-			clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE &&
-			(inEvent->key.keyval==CLUTTER_KEY_Return ||
-				inEvent->key.keyval==CLUTTER_KEY_KP_Enter ||
-				inEvent->key.keyval==CLUTTER_KEY_ISO_Enter))
-		{
-			/* Select first item in search result */
-			xfdashboard_search_view_reset_search_selection(XFDASHBOARD_SEARCH_VIEW(searchView));
-
-			/* Let search view handle this event */
-			result=xfdashboard_focusable_handle_key_event(XFDASHBOARD_FOCUSABLE(searchView), inEvent);
 			if(result==CLUTTER_EVENT_STOP) return(result);
 		}
 	}
@@ -485,8 +462,14 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		/* Remember current active view to restore it when search ended */
 		priv->viewBeforeSearch=XFDASHBOARD_VIEW(g_object_ref(xfdashboard_viewpad_get_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad))));
 
-		/* Enable search view */
+		/* Enable search view and set focus to viewpad which will show the
+		 * search view so this search view will get the focus finally
+		 */
 		xfdashboard_view_set_enabled(searchView, TRUE);
+		if(priv->viewpad && priv->focusManager)
+		{
+			xfdashboard_focus_manager_set_focus(priv->focusManager, XFDASHBOARD_FOCUSABLE(priv->viewpad));
+		}
 
 		/* Activate "clear" button on text box */
 		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->searchbox), "search-active");
