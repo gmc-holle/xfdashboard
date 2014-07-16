@@ -86,6 +86,44 @@ static void _xfdashboard_focus_manager_on_focusable_destroy(XfdashboardFocusMana
 	xfdashboard_focus_manager_unregister(self, focusable);
 }
 
+/* A registered focusable actor is going to be hidden or unrealized */
+static void _xfdashboard_focus_manager_on_focusable_hide(XfdashboardFocusManager *self,
+															gpointer inUserData)
+{
+	XfdashboardFocusManagerPrivate	*priv;
+	XfdashboardFocusable			*focusable;
+	XfdashboardFocusable			*nextFocusable;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self));
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inUserData));
+
+	priv=self->priv;
+	focusable=XFDASHBOARD_FOCUSABLE(inUserData);
+
+	/* Only move focus if hidden or unrealized focusable actor is the one
+	 * which has the focus currently.
+	 */
+	if(priv->currentFocus!=focusable) return;
+
+	if(CLUTTER_ACTOR_IS_MAPPED(CLUTTER_ACTOR(focusable)) &&
+		CLUTTER_ACTOR_IS_REALIZED(CLUTTER_ACTOR(focusable)) &&
+		CLUTTER_ACTOR_IS_VISIBLE(CLUTTER_ACTOR(focusable)))
+	{
+		return;
+	}
+
+	/* Move focus to next focusable actor if this actor which has the current focus
+	 * is going to be unrealized or hidden.
+	 */
+	nextFocusable=xfdashboard_focus_manager_get_next_focusable(self, priv->currentFocus);
+	if(nextFocusable && nextFocusable!=priv->currentFocus) xfdashboard_focus_manager_set_focus(self, nextFocusable);
+		else
+		{
+			xfdashboard_focusable_unset_focus(priv->currentFocus);
+			priv->currentFocus=NULL;
+		}
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -106,6 +144,9 @@ static void _xfdashboard_focus_manager_dispose_unregister_focusable(gpointer inD
 	 */
 	g_signal_handlers_disconnect_by_func(focusable,
 											G_CALLBACK(_xfdashboard_focus_manager_on_focusable_destroy),
+											self);
+	g_signal_handlers_disconnect_by_func(focusable,
+											G_CALLBACK(_xfdashboard_focus_manager_on_focusable_hide),
 											self);
 
 	g_signal_emit(self, XfdashboardFocusManagerSignals[SIGNAL_UNREGISTERED], 0, focusable);
@@ -247,12 +288,20 @@ void xfdashboard_focus_manager_register(XfdashboardFocusManager *self, Xfdashboa
 		/* Add focusable actor to list of registered focusable actors */
 		priv->registeredFocusables=g_list_append(priv->registeredFocusables, inFocusable);
 
-		/* Connect to "destroy" signal to get notified if actor is
-		 * going to be destroy to remove it from list of focusable actors.
+		/* Connect to signals to get notified if actor is going to be destroy,
+		 * unrealized or hidden to remove it from list of focusable actors.
 		 */
 		g_signal_connect_swapped(inFocusable,
 									"destroy",
 									G_CALLBACK(_xfdashboard_focus_manager_on_focusable_destroy),
+									self);
+		g_signal_connect_swapped(inFocusable,
+									"realize",
+									G_CALLBACK(_xfdashboard_focus_manager_on_focusable_hide),
+									self);
+		g_signal_connect_swapped(inFocusable,
+									"hide",
+									G_CALLBACK(_xfdashboard_focus_manager_on_focusable_hide),
 									self);
 
 		/* Emit signal */
@@ -302,11 +351,12 @@ void xfdashboard_focus_manager_unregister(XfdashboardFocusManager *self, Xfdashb
 		/* Remove focusable actor from list of registered focusable actors */
 		priv->registeredFocusables=g_list_remove(priv->registeredFocusables, inFocusable);
 
-		/* Disconnect from signal "destroy" as we are not interested in this
-		 * actor anymore.
-		 */
+		/* Disconnect from signals because we are not interested in this actor anymore */
 		g_signal_handlers_disconnect_by_func(inFocusable,
 												G_CALLBACK(_xfdashboard_focus_manager_on_focusable_destroy),
+												self);
+		g_signal_handlers_disconnect_by_func(inFocusable,
+												G_CALLBACK(_xfdashboard_focus_manager_on_focusable_hide),
 												self);
 
 		/* Emit signal */
