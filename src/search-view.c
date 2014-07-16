@@ -482,8 +482,12 @@ static void _xfdashboard_search_view_update_provider_actor_new(gpointer inData,
 static void _xfdashboard_search_view_update_provider_container(XfdashboardSearchView *self,
 																XfdashboardSearchViewProviderData *inProviderData)
 {
+	XfdashboardSearchViewPrivate	*priv;
+
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 	g_return_if_fail(inProviderData);
+
+	priv=self->priv;
 
 	/* If result set for provider is given then check if we need to create a container
 	 * or if we have to update one ...
@@ -520,6 +524,29 @@ static void _xfdashboard_search_view_update_provider_container(XfdashboardSearch
 			g_list_foreach(inProviderData->mappings,
 							(GFunc)_xfdashboard_search_view_update_provider_actor_destroy,
 							inProviderData->lastResultSet);
+		}
+
+		/* Select first item if nothing is selected */
+		if(!priv->selectionProvider ||
+			!xfdashboard_search_result_container_get_current_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(inProviderData->container)))
+		{
+			ClutterActor				*item;
+
+			/* Set this provider as the selected one */
+			priv->selectionProvider=inProviderData;
+
+			/* Set focus to search result container of selected provider */
+			xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+															TRUE);
+
+			/* Get current selectionr and style it */
+			item=xfdashboard_search_result_container_set_next_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																		XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END);
+			if(item &&
+				XFDASHBOARD_IS_STYLABLE(item))
+			{
+				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(item), "selected");
+			}
 		}
 	}
 		/* ... but if no result set for provider is given then destroy existing container */
@@ -613,8 +640,8 @@ static gboolean _xfdashboard_search_view_focusable_can_focus(XfdashboardFocusabl
 	XfdashboardFocusableInterface	*selfIface;
 	XfdashboardFocusableInterface	*parentIface;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable), FALSE);
 
 	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
 

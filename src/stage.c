@@ -219,15 +219,20 @@ static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inE
 	result=xfdashboard_focus_manager_handle_key_event(priv->focusManager, inEvent);
 	if(result==CLUTTER_EVENT_STOP) return(result);
 
-	/* If even focus manager did not handle this event
-	 * send even to searchbox.
-	 */
+	/* If even focus manager did not handle this event send this event to searchbox */
 	if(priv->searchbox &&
 		XFDASHBOARD_IS_FOCUSABLE(priv->searchbox) &&
 		xfdashboard_focus_manager_is_registered(priv->focusManager, XFDASHBOARD_FOCUSABLE(priv->searchbox)))
 	{
-		result=xfdashboard_focusable_handle_key_event(XFDASHBOARD_FOCUSABLE(priv->searchbox), inEvent);
-		if(result==CLUTTER_EVENT_STOP) return(result);
+		/* Ask searchbox to handle this event if it has not the focus currently
+		 * because in this case it has already handled the event and we do
+		 * not to do this twice.
+		 */
+		if(xfdashboard_focus_manager_get_focus(priv->focusManager)!=XFDASHBOARD_FOCUSABLE(priv->searchbox))
+		{
+			result=xfdashboard_focusable_handle_key_event(XFDASHBOARD_FOCUSABLE(priv->searchbox), inEvent);
+			if(result==CLUTTER_EVENT_STOP) return(result);
+		}
 	}
 
 	/* If we get here there was no searchbox or it could not handle the event
@@ -457,8 +462,14 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 		/* Remember current active view to restore it when search ended */
 		priv->viewBeforeSearch=XFDASHBOARD_VIEW(g_object_ref(xfdashboard_viewpad_get_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad))));
 
-		/* Enable search view */
+		/* Enable search view and set focus to viewpad which will show the
+		 * search view so this search view will get the focus finally
+		 */
 		xfdashboard_view_set_enabled(searchView, TRUE);
+		if(priv->viewpad && priv->focusManager)
+		{
+			xfdashboard_focus_manager_set_focus(priv->focusManager, XFDASHBOARD_FOCUSABLE(priv->viewpad));
+		}
 
 		/* Activate "clear" button on text box */
 		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->searchbox), "search-active");

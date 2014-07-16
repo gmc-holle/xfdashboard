@@ -348,6 +348,20 @@ gboolean xfdashboard_focus_manager_is_registered(XfdashboardFocusManager *self, 
 	return(FALSE);
 }
 
+/* Determine if a specific actor has the focus */
+gboolean xfdashboard_focus_manager_has_focus(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable)
+{
+	XfdashboardFocusManagerPrivate	*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+
+	priv=self->priv;
+
+	/* Return TRUE if given actor has the focus otherwise return FALSE */
+	return(priv->currentFocus==inFocusable ? TRUE : FALSE);
+}
+
 /* Get focusable actor which has the focus currently */
 XfdashboardFocusable* xfdashboard_focus_manager_get_focus(XfdashboardFocusManager *self)
 {
