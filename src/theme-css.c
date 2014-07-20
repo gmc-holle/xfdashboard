@@ -33,6 +33,7 @@
 #include <glib.h>
 #include <gio/gio.h>
 #include <gio/gfiledescriptorbased.h>
+#include <clutter/clutter.h>
 
 #include "stylable.h"
 
@@ -51,6 +52,8 @@ struct _XfdashboardThemeCSSPrivate
 	GList		*selectors;
 	GList		*styles;
 	GSList		*names;
+
+	GHashTable	*registeredFunctions;
 };
 
 /* IMPLEMENTATION: Private variables and methods */
@@ -84,6 +87,56 @@ struct _XfdashboardThemeCSSTableCopyData
 	GHashTable						*table;
 	const gchar						*name;
 };
+
+#define XFDASHBOARD_THEME_CSS_FUNCTION_CALLBACK(f)	((XfdashboardThemeCSSFunctionCallback)(f))
+typedef gboolean (*XfdashboardThemeCSSFunctionCallback)(XfdashboardThemeCSS *self,
+														const gchar *inName,
+														GList *inArguments,
+														GValue *outResult,
+														GError **outError);
+
+/* Forward declarations */
+static void _xfdashboard_theme_css_set_error(XfdashboardThemeCSS *self,
+												GError **outError,
+												XfdashboardThemeCSSErrorEnum inCode,
+												const gchar *inFormat,
+												...) G_GNUC_PRINTF (4, 5);
+
+static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardThemeCSS *self,
+																	GScanner *inScanner,
+																	GScanner *inScopeScanner,
+																	GList *inScopeSelectors);
+
+static gchar* _xfdashboard_theme_css_resolve_at_identifier_by_string(XfdashboardThemeCSS *self,
+																		const gchar *inValue,
+																		GScanner *inScopeScanner,
+																		GList *inScopeSelectors);
+
+/* Helper function to set up GError object in this parser */
+static void _xfdashboard_theme_css_set_error(XfdashboardThemeCSS *self,
+												GError **outError,
+												XfdashboardThemeCSSErrorEnum inCode,
+												const gchar *inFormat,
+												...)
+{
+	GError		*tempError;
+	gchar		*message;
+	va_list		args;
+
+	/* Get error message */
+	va_start(args, inFormat);
+	message=g_strdup_vprintf(inFormat, args);
+	va_end(args);
+
+	/* Create error object */
+	tempError=g_error_new_literal(XFDASHBOARD_THEME_CSS_ERROR, inCode, message);
+
+	/* Set error */
+	g_propagate_error(outError, tempError);
+
+	/* Release allocated resources */
+	g_free(message);
+}
 
 /* Create css value instance */
 static XfdashboardThemeCSSValue* _xfdashboard_theme_css_value_new(void)
@@ -187,21 +240,593 @@ static XfdashboardThemeCSSSelector* _xfdashboard_theme_css_selector_new(const gc
 	return(selector);
 }
 
+/* Get function argument and transform it to requested type.
+ * Returned value must first be cleared with g_value_unset and
+ * then freed with g_free.
+ */
+static GValue* _xfdashboard_theme_css_get_argument(XfdashboardThemeCSS *self,
+													GList *inArguments,
+													guint inArgumentIndex,
+													GType inRequestedType,
+													GError **outError)
+{
+	GValue			argValue=G_VALUE_INIT;
+	GValue			*resultValue;
+	guint			numberArguments;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
+	g_return_val_if_fail(inArguments, NULL);
+	g_return_val_if_fail(!outError || *outError==NULL, NULL);
+
+	/* Check if argument index is in range */
+	numberArguments=g_list_length(inArguments);
+	if(inArgumentIndex>=numberArguments)
+	{
+		_xfdashboard_theme_css_set_error(self,
+											outError,
+											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
+											_("Cannot get argument %d because only %d arguments are available"),
+											inArgumentIndex,
+											numberArguments);
+		return(NULL);
+	}
+
+	/* Create empty result value of requested type */
+	resultValue=g_new0(GValue, 1);
+	if(!resultValue)
+	{
+		_xfdashboard_theme_css_set_error(self,
+											outError,
+											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
+											_("Cannot allocate memory for argument %d"),
+											inArgumentIndex);
+		return(NULL);
+	}
+
+	resultValue=g_value_init(resultValue, inRequestedType);
+
+	/* Get argument value which is a string */
+	g_value_init(&argValue, G_TYPE_STRING);
+	g_value_set_string(&argValue, (gchar*)g_list_nth_data(inArguments, inArgumentIndex));
+
+	/* Transform argument value to result value of requested type */
+	if(!g_value_transform(&argValue, resultValue))
+	{
+		/* Set error */
+		_xfdashboard_theme_css_set_error(self,
+											outError,
+											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
+											_("Cannot transform argument %d from type '%s' to type '%s'"),
+											inArgumentIndex,
+											g_type_name(G_VALUE_TYPE(&argValue)),
+											g_type_name(G_VALUE_TYPE(resultValue)));
+
+		/* Unset result value so that NULL will returned at the end */
+		g_value_unset(resultValue);
+		g_free(resultValue);
+		resultValue=NULL;
+	}
+
+	/* Release allocated resources */
+	g_value_unset(&argValue);
+
+	/* Return argument value of requested type */
+	return(resultValue);
+}
+
+/* Helper function to convert a string containing either a number or a percentage
+ * to color component value which must be between 0 and 255.
+ */
+static gboolean _xfdashboard_theme_css_parse_string_to_color_component(XfdashboardThemeCSS *self,
+																		const gchar *inString,
+																		guint8 *outValue,
+																		GError **outError)
+{
+	gdouble			componentValue;
+	gchar			*end;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), FALSE);
+
+	/* Check if string is given */
+	if(!inString || *inString==0)
+	{
+		_xfdashboard_theme_css_set_error(self,
+											outError,
+											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
+											_("Missing string to convert to color component value."));
+		return(FALSE);
+	}
+
+	/* Parse string to value between 0.0 and 255.0 or percentage between 0.0 and 100.0
+	 * which will be transformed to a value between 0.0 and 255.0
+	 */
+	componentValue=g_ascii_strtod(inString, &end);
+	if(*end)
+	{
+		if(*end=='%')
+		{
+			componentValue=(componentValue/100.0f)*256.0f;
+			end++;
+		}
+
+		while(*end)
+		{
+			if(!g_ascii_isspace(*end))
+			{
+				gchar		*message;
+
+				/* Set error message */
+				message=g_strdup_printf(_("Cannot convert string '%s' to color component value."), inString);
+				_xfdashboard_theme_css_set_error(self,
+													outError,
+													XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
+													"%s",
+													message);
+				g_free(message);
+
+				/* Return with error status */
+				return(FALSE);
+			}
+		}
+	}
+
+	/* Check if component value is in range (between 0.0 and 255.0) */
+	if(componentValue<0.0 || componentValue>=256.0)
+	{
+		gchar		*message;
+
+		/* Set error message */
+		message=g_strdup_printf(_("Color component value %.2f out of range"), componentValue);
+		_xfdashboard_theme_css_set_error(self,
+											outError,
+											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
+											"%s",
+											message);
+		g_free(message);
+
+		/* Return with error status */
+		return(FALSE);
+	}
+
+	/* If we get here we could compute color component value so set up result */
+	if(outValue) *outValue=(guint8)componentValue;
+	return(TRUE);
+}
+
+/* CSS function: lighter(color) and darken(color)
+ * Takes one argument which is a color and lightens or darkens it.
+ */
+static gboolean _xfdashboard_theme_css_function_lighter_darker(XfdashboardThemeCSS *self,
+																const gchar *inName,
+																GList *inArguments,
+																GValue *outResult,
+																GError **outError)
+{
+	GError			*error;
+	GValue			*value;
+	ClutterColor	*color;
+	ClutterColor	result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), FALSE);
+	g_return_val_if_fail(inName && *inName, FALSE);
+	g_return_val_if_fail(inArguments, FALSE);
+	g_return_val_if_fail(outResult, FALSE);
+	g_return_val_if_fail(!outError || *outError==NULL, FALSE);
+
+	error=NULL;
+
+	/* Get color to lighten or to darken */
+	value=_xfdashboard_theme_css_get_argument(self, inArguments, 0, CLUTTER_TYPE_COLOR, &error);
+	if(!value)
+	{
+		g_propagate_error(outError, error);
+		return(FALSE);
+	}
+
+	color=clutter_color_copy(clutter_value_get_color(value));
+	g_value_unset(value);
+	g_free(value);
+
+	/* Lighten or darken color */
+	if(g_strcmp0(inName, "lighter")==0) clutter_color_lighten(color, &result);
+		else clutter_color_darken(color, &result);
+
+	/* Set up result */
+	g_value_init(outResult, CLUTTER_TYPE_COLOR);
+	clutter_value_set_color(outResult, &result);
+
+	return(TRUE);
+}
+
+/* CSS function: alpha(color, factor)
+ * Takes two arguments. First one is a color and the second one is the factor to increase
+ * or descrease alpha value of color with.
+ */
+static gboolean _xfdashboard_theme_css_function_alpha(XfdashboardThemeCSS *self,
+														const gchar *inName,
+														GList *inArguments,
+														GValue *outResult,
+														GError **outError)
+{
+	GError			*error;
+	GValue			*value;
+	ClutterColor	*color;
+	gdouble			factor;
+	gdouble			alpha;
+	ClutterColor	result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), FALSE);
+	g_return_val_if_fail(inName && *inName, FALSE);
+	g_return_val_if_fail(inArguments, FALSE);
+	g_return_val_if_fail(outResult, FALSE);
+	g_return_val_if_fail(!outError || *outError==NULL, FALSE);
+
+	error=NULL;
+
+	/* Get color to adjust alpha value */
+	value=_xfdashboard_theme_css_get_argument(self, inArguments, 0, CLUTTER_TYPE_COLOR, &error);
+	if(!value)
+	{
+		g_propagate_error(outError, error);
+		return(FALSE);
+	}
+
+	color=clutter_color_copy(clutter_value_get_color(value));
+	g_value_unset(value);
+	g_free(value);
+
+	/* Get alpha change factor */
+	value=_xfdashboard_theme_css_get_argument(self, inArguments, 1, G_TYPE_DOUBLE, &error);
+	if(!value)
+	{
+		/* Release allocated resources */
+		clutter_color_free(color);
+
+		/* Propagate error message and return failure result */
+		g_propagate_error(outError, error);
+		return(FALSE);
+	}
+
+	factor=g_value_get_double(value);
+	g_value_unset(value);
+	g_free(value);
+
+	/* Change alpha value of color by factor */
+	alpha=(gdouble)color->alpha * factor;
+	if(alpha<0.0) alpha=0.0;
+		else if(alpha>255.0) alpha=255.0;
+
+	clutter_color_init(&result,
+						color->red,
+						color->green,
+						color->blue,
+						(guint8)alpha);
+
+	/* Set up result */
+	g_value_init(outResult, CLUTTER_TYPE_COLOR);
+	clutter_value_set_color(outResult, &result);
+
+	return(TRUE);
+}
+
+/* CSS function: shade(color, factor)
+ * Takes two arguments. First one is a color and the second one is the shade factor.
+ */
+static gboolean _xfdashboard_theme_css_function_shade(XfdashboardThemeCSS *self,
+														const gchar *inName,
+														GList *inArguments,
+														GValue *outResult,
+														GError **outError)
+{
+	GError			*error;
+	GValue			*value;
+	ClutterColor	*color;
+	gdouble			factor;
+	ClutterColor	result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), FALSE);
+	g_return_val_if_fail(inName && *inName, FALSE);
+	g_return_val_if_fail(inArguments, FALSE);
+	g_return_val_if_fail(outResult, FALSE);
+	g_return_val_if_fail(!outError || *outError==NULL, FALSE);
+
+	error=NULL;
+
+	/* Get color to shade */
+	value=_xfdashboard_theme_css_get_argument(self, inArguments, 0, CLUTTER_TYPE_COLOR, &error);
+	if(!value)
+	{
+		g_propagate_error(outError, error);
+		return(FALSE);
+	}
+
+	color=clutter_color_copy(clutter_value_get_color(value));
+	g_value_unset(value);
+	g_free(value);
+
+	/* Get shade factor */
+	value=_xfdashboard_theme_css_get_argument(self, inArguments, 1, G_TYPE_DOUBLE, &error);
+	if(!value)
+	{
+		/* Release allocated resources */
+		clutter_color_free(color);
+
+		/* Propagate error message and return failure result */
+		g_propagate_error(outError, error);
+		return(FALSE);
+	}
+
+	factor=g_value_get_double(value);
+	g_value_unset(value);
+	g_free(value);
+
+	/* Shade color by factor */
+	clutter_color_shade(color, factor, &result);
+
+	/* Set up result */
+	g_value_init(outResult, CLUTTER_TYPE_COLOR);
+	clutter_value_set_color(outResult, &result);
+
+	return(TRUE);
+}
+
+/* CSS function: mix(color1, color2, factor)
+ * Takes three arguments. First two are colors and the third one is a factor
+ * between 0.0 and 1.0 defining how much the resulting color moved from color1
+ * to color2. The factor is more or less a progress fraction of the transformation
+ * of color1 to color2.
+ */
+static gboolean _xfdashboard_theme_css_function_mix(XfdashboardThemeCSS *self,
+													const gchar *inName,
+													GList *inArguments,
+													GValue *outResult,
+													GError **outError)
+{
+	GError			*error;
+	GValue			*value;
+	ClutterColor	*color1;
+	ClutterColor	*color2;
+	gdouble			factor;
+	ClutterColor	result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), FALSE);
+	g_return_val_if_fail(inName && *inName, FALSE);
+	g_return_val_if_fail(inArguments, FALSE);
+	g_return_val_if_fail(outResult, FALSE);
+	g_return_val_if_fail(!outError || *outError==NULL, FALSE);
+
+	error=NULL;
+
+	/* Get first color (initial) */
+	value=_xfdashboard_theme_css_get_argument(self, inArguments, 0, CLUTTER_TYPE_COLOR, &error);
+	if(!value)
+	{
+		g_propagate_error(outError, error);
+		return(FALSE);
+	}
+
+	color1=clutter_color_copy(clutter_value_get_color(value));
+	g_value_unset(value);
+	g_free(value);
+
+	/* Get second color (final) */
+	value=_xfdashboard_theme_css_get_argument(self, inArguments, 1, CLUTTER_TYPE_COLOR, &error);
+	if(!value)
+	{
+		/* Release allocated resources */
+		clutter_color_free(color1);
+
+		/* Propagate error message and return failure result */
+		g_propagate_error(outError, error);
+		return(FALSE);
+	}
+
+	color2=clutter_color_copy(clutter_value_get_color(value));
+	g_value_unset(value);
+	g_free(value);
+
+	/* Get factor (progress fraction) */
+	value=_xfdashboard_theme_css_get_argument(self, inArguments, 2, G_TYPE_DOUBLE, &error);
+	if(!value)
+	{
+		/* Release allocated resources */
+		clutter_color_free(color2);
+		clutter_color_free(color1);
+
+		/* Propagate error message and return failure result */
+		g_propagate_error(outError, error);
+		return(FALSE);
+	}
+
+	factor=g_value_get_double(value);
+	g_value_unset(value);
+	g_free(value);
+
+	if(factor<0.0 || factor>1.0)
+	{
+		gchar		*message;
+
+		/* Release allocated resources */
+		clutter_color_free(color2);
+		clutter_color_free(color1);
+
+		/* Set error message */
+		message=g_strdup_printf(_("Factor %.2f is out of range"), factor);
+		_xfdashboard_theme_css_set_error(self,
+											outError,
+											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
+											"%s",
+											message);
+		g_free(message);
+
+		/* Return with error status */
+		return(FALSE);
+	}
+
+	/* Compute mixed color by factor */
+	clutter_color_interpolate(color1, color2, factor, &result);
+
+	/* Set up result */
+	g_value_init(outResult, CLUTTER_TYPE_COLOR);
+	clutter_value_set_color(outResult, &result);
+
+	return(TRUE);
+}
+
+/* CSS function: rgb(r, g, b) and rgba(r, g, b, a)
+ * Take variable number of arguments which must all be string. Iterates through
+ * string argument and returns first one resolving in a valid icon (file or stock icon).
+ */
+static gboolean _xfdashboard_theme_css_function_rgb_rgba(XfdashboardThemeCSS *self,
+															const gchar *inName,
+															GList *inArguments,
+															GValue *outResult,
+															GError **outError)
+{
+	GError			*error;
+	GValue			*colorValue;
+	gboolean		isRGBA;
+	gint			i;
+	guint8			color[4];
+	ClutterColor	result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), FALSE);
+	g_return_val_if_fail(inName && *inName, FALSE);
+	g_return_val_if_fail(inArguments, FALSE);
+	g_return_val_if_fail(outResult, FALSE);
+	g_return_val_if_fail(!outError || *outError==NULL, FALSE);
+
+	error=NULL;
+
+	/* Check if RGB or RGBA should be computed */
+	isRGBA=(g_strcmp0(inName, "rgba")==0 ? TRUE : FALSE);
+
+	/* Get arguments and compute color component values but stop on
+	 * first argument failing.
+	 */
+	for(i=0; i<3; i++)
+	{
+		/* Get argument */
+		colorValue=_xfdashboard_theme_css_get_argument(self, inArguments, i, G_TYPE_STRING, &error);
+		if(!colorValue)
+		{
+			g_propagate_error(outError, error);
+			return(FALSE);
+		}
+
+		/* Compute color component value */
+		if(!_xfdashboard_theme_css_parse_string_to_color_component(self,
+																	g_value_get_string(colorValue),
+																	&color[i],
+																	&error))
+		{
+			g_propagate_error(outError, error);
+
+			/* Release allocated resources */
+			g_value_unset(colorValue);
+			g_free(colorValue);
+
+			return(FALSE);
+		}
+
+		/* Release allocated resources */
+		g_value_unset(colorValue);
+		g_free(colorValue);
+	}
+
+	if(isRGBA)
+	{
+		/* Get argument */
+		colorValue=_xfdashboard_theme_css_get_argument(self, inArguments, 3, G_TYPE_STRING, &error);
+		if(!colorValue)
+		{
+			g_propagate_error(outError, error);
+			return(FALSE);
+		}
+
+		/* Compute color component value */
+		if(!_xfdashboard_theme_css_parse_string_to_color_component(self,
+																	g_value_get_string(colorValue),
+																	&color[3],
+																	&error))
+		{
+			g_propagate_error(outError, error);
+
+			/* Release allocated resources */
+			g_value_unset(colorValue);
+			g_free(colorValue);
+
+			return(FALSE);
+		}
+
+		/* Release allocated resources */
+		g_value_unset(colorValue);
+		g_free(colorValue);
+	}
+		else color[3]=0xff;
+
+	/* Set up result */
+	clutter_color_init(&result, color[0], color[1], color[2], color[3]);
+
+	g_value_init(outResult, CLUTTER_TYPE_COLOR);
+	clutter_value_set_color(outResult, &result);
+
+	return(TRUE);
+}
+
+/* Register CSS function */
+static void _xfdashboard_theme_css_register_function(XfdashboardThemeCSS *self,
+														const gchar *inName,
+														XfdashboardThemeCSSFunctionCallback inCallback)
+{
+	XfdashboardThemeCSSPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_THEME_CSS(self));
+	g_return_if_fail(inName);
+	g_return_if_fail(inCallback);
+
+	priv=self->priv;
+
+	/* Create hash-table for mapping function names to function callback
+	 * if this hash-table does not exist yet.
+	 */
+	if(!priv->registeredFunctions)
+	{
+		priv->registeredFunctions=g_hash_table_new_full(g_str_hash,
+														g_str_equal,
+														g_free,
+														NULL);
+	}
+
+	/* Check if a function with this name is already registered */
+	if(g_hash_table_lookup_extended(priv->registeredFunctions, inName, NULL, NULL))
+	{
+		g_warning(_("CSS function '%s' is already registered."), inName);
+		return;
+	}
+
+	/* Register function by adding name (as key) and callback (as value) to
+	 * hash-table of registered functions.
+	 */
+	g_hash_table_insert(priv->registeredFunctions, g_strdup(inName), inCallback);
+}
+
 /* Resolve '@' identifier.
  * Prints error message and returns NULL if unresolvable.
  */
-static const gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardThemeCSS *self,
-																			GScanner *ioScanner,
-																			GList *inScopeSelectors,
-																			GScanner *inScopeScanner)
+static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *self,
+															GScanner *ioScanner,
+															GScanner *inScopeScanner,
+															GList *inScopeSelectors)
 {
-	XfdashboardThemeCSSPrivate		*priv;
-	GTokenType						token;
-	gchar							*identifier;
-	GList							*iter;
-	XfdashboardThemeCSSSelector		*selector;
-	gpointer						value;
-	gchar							*errorMessage;
+	XfdashboardThemeCSSPrivate				*priv;
+	GTokenType								token;
+	gchar									*identifier;
+	GList									*iter;
+	XfdashboardThemeCSSSelector				*selector;
+	gpointer								value;
+	gchar									*errorMessage;
+	XfdashboardThemeCSSFunctionCallback		functionCallback;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
 	g_return_val_if_fail(ioScanner, NULL);
@@ -224,6 +849,330 @@ static const gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(Xfdash
 
 	identifier=g_strdup(ioScanner->value.v_identifier);
 
+	/* Check if identifier is a function then parse function argument and
+	 * call function.
+	 */
+	if(g_hash_table_lookup_extended(priv->registeredFunctions, identifier, NULL, (gpointer*)&functionCallback))
+	{
+		gboolean				error;
+		GList					*arguments;
+		gchar					*arg;
+		GScannerConfig			*scannerConfig;
+		GScannerConfig			*oldScannerConfig;
+		gchar					*result;
+
+		error=FALSE;
+		arguments=NULL;
+		result=NULL;
+		arg=NULL;
+
+		/* Set up scanner config for parsing function arguments */
+		oldScannerConfig=ioScanner->config;
+
+		scannerConfig=(GScannerConfig*)g_memdup(ioScanner->config, sizeof(GScannerConfig));
+		scannerConfig->cset_skip_characters=" \t\n";
+		scannerConfig->char_2_token=TRUE;
+		scannerConfig->scan_string_sq=TRUE;
+		scannerConfig->scan_string_dq=TRUE;
+		ioScanner->config=scannerConfig;
+
+		/* Function arguments must begin with '('. Check for it and parse function arguments ... */
+		g_debug("Fetching arguments to for calling function '%s'", identifier);
+
+		token=g_scanner_get_next_token(ioScanner);
+		if(token==G_TOKEN_LEFT_PAREN)
+		{
+			token=g_scanner_get_next_token(ioScanner);
+			while(!error && token!=G_TOKEN_RIGHT_PAREN && token!=G_TOKEN_EOF)
+			{
+				switch((gint)token)
+				{
+					case '@':
+						token=g_scanner_peek_next_token(ioScanner);
+						if(token==G_TOKEN_IDENTIFIER)
+						{
+							gchar		*orginalValue;
+							gchar		*resolvedValue;
+
+							/* Remember identifier to resolve */
+							orginalValue=g_strdup(ioScanner->value.v_identifier);
+
+							/* Restore old scanner config */
+							ioScanner->config=oldScannerConfig;
+
+							/* Resolve '@'-identifier */
+							resolvedValue=_xfdashboard_theme_css_parse_at_identifier(self,
+																						ioScanner,
+																						inScopeScanner,
+																						inScopeSelectors);
+
+							/* Resolve resolved value to get final value */
+							if(resolvedValue)
+							{
+								gchar	*finalResolvedValue;
+
+								/* Resolve resolved value */
+								finalResolvedValue=_xfdashboard_theme_css_resolve_at_identifier_by_string(self,
+																											resolvedValue,
+																											inScopeScanner,
+																											inScopeSelectors);
+
+								/* Release old value and set new one */
+								g_free(resolvedValue);
+								resolvedValue=finalResolvedValue;
+							}
+
+							if(resolvedValue)
+							{
+								arg=_xfdashboard_theme_css_append_string(arg, resolvedValue);
+								g_free(resolvedValue);
+							}
+								else
+								{
+									error=TRUE;
+									g_debug("Could not resolve '%s' for argument #%d of function '%s'",
+												orginalValue,
+												g_list_length(arguments),
+												identifier);
+								}
+
+							/* Set new scanner config again to parse remaining arguments */
+							ioScanner->config=scannerConfig;
+
+							/* Forget identifier */
+							g_free(orginalValue);
+						}
+							else
+							{
+								error=TRUE;
+								g_scanner_unexp_token(inScopeScanner,
+														G_TOKEN_IDENTIFIER,
+														NULL,
+														NULL,
+														NULL,
+														_("An identifier must follow '@'"),
+														FALSE);
+							}
+						break;
+
+					case G_TOKEN_COMMA:
+						if(arg)
+						{
+							/* Add function argument to list of arguments */
+							arguments=g_list_append(arguments, arg);
+							g_debug("Added argument #%d: '%s'",
+										g_list_length(arguments),
+										arg);
+
+							/* Prepare for next argument */
+							arg=NULL;
+						}
+							else
+							{
+								error=TRUE;
+								g_scanner_unexp_token(inScopeScanner,
+														G_TOKEN_ERROR,
+														NULL,
+														NULL,
+														NULL,
+														_("Missing function argument"),
+														FALSE);
+							}
+						break;
+
+					case G_TOKEN_IDENTIFIER:
+						arg=_xfdashboard_theme_css_append_string(arg, ioScanner->value.v_identifier);
+						break;
+
+					case G_TOKEN_STRING:
+						arg=_xfdashboard_theme_css_append_string(arg, ioScanner->value.v_string);
+						break;
+
+					case G_TOKEN_LEFT_PAREN:
+					case G_TOKEN_LEFT_CURLY:
+					case G_TOKEN_RIGHT_CURLY:
+					case G_TOKEN_LEFT_BRACE:
+					case G_TOKEN_RIGHT_BRACE:
+						{
+							gchar		*message;
+
+							error=TRUE;
+
+							/* Set error message */
+							message=g_strdup_printf(_("Invalid character '%c' in function argument"), (gchar)token);
+							g_scanner_unexp_token(inScopeScanner,
+													G_TOKEN_ERROR,
+													NULL,
+													NULL,
+													NULL,
+													message,
+													FALSE);
+							g_free(message);
+						}
+						break;
+
+					default:
+						if(token<128 && g_ascii_isprint((gchar)token))
+						{
+							arg=_xfdashboard_theme_css_append_char(arg, (gchar)token);
+						}
+							else
+							{
+								error=TRUE;
+								g_scanner_unexp_token(inScopeScanner,
+														G_TOKEN_ERROR,
+														NULL,
+														NULL,
+														NULL,
+														_("Invalid character in function argument"),
+														FALSE);
+							}
+						break;
+				}
+
+				/* Continue with next token */
+				token=g_scanner_get_next_token(ioScanner);
+			}
+
+			/* Add final function argument to list of arguments if available
+			 * because we will not see a comma as function argument seperator
+			 * which will cause the argument to be added. So check now for a
+			 * remaining and final argument and add it.
+			 */
+			if(arg)
+			{
+				/* Add function argument to list of arguments */
+				arguments=g_list_append(arguments, arg);
+				g_debug("Added final argument #%d: '%s'",
+							g_list_length(arguments),
+							arg);
+
+				/* Does not make sense but just in case - prepare for next argument ;) */
+				arg=NULL;
+			}
+
+			/* A function must end at ')'. If it does not it is an error. */
+			if(!error && token!=G_TOKEN_RIGHT_PAREN)
+			{
+				error=TRUE;
+				g_scanner_unexp_token(inScopeScanner,
+										G_TOKEN_RIGHT_PAREN,
+										NULL,
+										NULL,
+										NULL,
+										_("Missing ')' after function"),
+										FALSE);
+			}
+		}
+			/* ... otherwise it an error because the function arguments did not begin
+			 * with '(' and could not be parsed.
+			 */
+			else
+			{
+				error=TRUE;
+				g_scanner_unexp_token(inScopeScanner,
+										G_TOKEN_LEFT_PAREN,
+										NULL,
+										NULL,
+										NULL,
+										_("Missing '(' after function"),
+										FALSE);
+			}
+
+		/* Restore old scanner config */
+		ioScanner->config=oldScannerConfig;
+		g_free(scannerConfig);
+
+		/* Do function call if no error occured so far */
+		if(!error)
+		{
+			GValue				functionValue=G_VALUE_INIT;
+			GError				*functionError;
+			gboolean			functionSuccess;
+
+			/* Initialize for function call */
+			functionError=NULL;
+
+			g_debug("Calling registered function %s with %d arguments", identifier, g_list_length(arguments));
+			functionSuccess=(functionCallback)(self, identifier, arguments, &functionValue, &functionError);
+			if(functionSuccess)
+			{
+				GValue			stringValue=G_VALUE_INIT;
+
+				/* Transform function value into a string */
+				g_value_init(&stringValue, G_TYPE_STRING);
+
+				if(g_value_transform(&functionValue, &stringValue))
+				{
+					result=g_value_dup_string(&stringValue);
+				}
+					else
+					{
+						error=TRUE;
+
+						/* Set error message */
+						errorMessage=g_strdup_printf(_("Could not transform result of function '%s' to a string"),
+														identifier);
+						g_scanner_unexp_token(inScopeScanner,
+												G_TOKEN_ERROR,
+												NULL,
+												NULL,
+												NULL,
+												errorMessage,
+												FALSE);
+						g_free(errorMessage);
+					}
+
+				/* Release allocated resources */
+				g_value_unset(&stringValue);
+				g_value_unset(&functionValue);
+
+				g_debug("Calling function %s with %d arguments succeeded with result: %s", identifier, g_list_length(arguments), result);
+			}
+				else
+				{
+					gchar		*message;
+
+					g_debug("Calling function %s with %d arguments failed: %s",
+								identifier,
+								g_list_length(arguments),
+								(functionError && functionError->message) ? functionError->message : _("Unknown error"));
+
+					/* Set error message */
+					if(functionError && functionError->message)
+					{
+						message=g_strdup_printf(_("Function '%s' failed with error: %s"),
+													identifier,
+													functionError->message);
+					}
+						else
+						{
+							message=g_strdup_printf(_("Function '%s' failed!"),
+														identifier);
+						}
+
+					g_scanner_unexp_token(inScopeScanner,
+											G_TOKEN_ERROR,
+											NULL,
+											NULL,
+											NULL,
+											message,
+											FALSE);
+
+					/* Release allocated resources */
+					if(functionError) g_error_free(functionError);
+					if(message) g_free(message);
+				}
+		}
+
+		/* Release allocated resources */
+		if(arguments) g_list_free_full(arguments, (GDestroyNotify)g_free);
+		g_free(identifier);
+
+		/* Return value found */
+		return(result);
+	}
+
 	/* Identifier is a constant so lookup constant by iterating through all
 	 * '@constants' selectors backwards and use first value found. We iterate
 	 * through these selectors backwards (first in selectors of current file/scope
@@ -242,7 +1191,7 @@ static const gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(Xfdash
 				g_free(identifier);
 
 				/* Return value found */
-				return(value);
+				return(g_strdup(value));
 			}
 		}
 	}
@@ -260,7 +1209,7 @@ static const gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(Xfdash
 				g_free(identifier);
 
 				/* Return value found */
-				return(value);
+				return(g_strdup(value));
 			}
 		}
 	}
@@ -283,107 +1232,143 @@ static const gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(Xfdash
 	return(NULL);
 }
 
-static gchar* _xfdashboard_theme_css_resolve_at_identifier(XfdashboardThemeCSS *self,
-															GScanner *inScopeScanner,
-															GList *inScopeSelectors,
-															gchar *inValue)
+static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardThemeCSS *self,
+																	GScanner *inScanner,
+																	GScanner *inScopeScanner,
+																	GList *inScopeSelectors)
 {
 	GTokenType		token;
 	gchar			*value;
-	gchar			*resolvedValue;
 	gboolean		haveResolvedAtIdentifier;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
+	g_return_val_if_fail(inScanner, NULL);
 	g_return_val_if_fail(inScopeScanner, NULL);
-	g_return_val_if_fail(inValue, NULL);
 
-	/* Resolve '@' identifier recursively */
-	value=g_strdup(inValue);
+	/* Parse value and resolve '@' identifier */
+	haveResolvedAtIdentifier=FALSE;
+	value=NULL;
 
-	do
+	token=g_scanner_get_next_token(inScanner);
+	while(token!=G_TOKEN_EOF)
 	{
-		GScanner	*scanner;
-
-		/* Create scanner to resolve value of '@' identifier */
-		scanner=g_scanner_new(NULL);
-
-		/* Set up scanner config
-		 * - Identifiers are allowed to contain '-' (minus sign) as non-first characters
-		 * - Disallow scanning float values as we need '.' for identifiers
-		 * - Set up single comment line not to include '#' as this character is need for identifiers
-		 * - Disable parsing HEX values
-		 * - Identifiers cannot be single quoted
-		 * - Identifiers cannot be double quoted
-		 */
-		scanner->config->cset_identifier_first=G_CSET_a_2_z "#_-0123456789" G_CSET_A_2_Z G_CSET_LATINS G_CSET_LATINC;
-		scanner->config->cset_identifier_nth=scanner->config->cset_identifier_first;
-		scanner->config->scan_identifier_1char=1;
-		scanner->config->char_2_token=FALSE;
-		scanner->config->cset_skip_characters="";
-		scanner->config->scan_string_sq=TRUE;
-		scanner->config->scan_string_dq=TRUE;
-		scanner->config->scan_float=FALSE;
-
-		/* Parse value and resolve '@' identifier */
-		haveResolvedAtIdentifier=FALSE;
-		resolvedValue=NULL;
-
-		g_scanner_input_text(scanner, value, strlen(value));
-
-		token=g_scanner_get_next_token(scanner);
-		while(token!=G_TOKEN_EOF)
+		switch(token)
 		{
-			switch(token)
-			{
-				case G_TOKEN_IDENTIFIER:
-					resolvedValue=_xfdashboard_theme_css_append_string(resolvedValue, scanner->value.v_identifier);
-					break;
+			case G_TOKEN_IDENTIFIER:
+				value=_xfdashboard_theme_css_append_string(value, inScanner->value.v_identifier);
+				break;
 
-				case G_TOKEN_STRING:
-					resolvedValue=_xfdashboard_theme_css_append_string(resolvedValue, scanner->value.v_string);
-					break;
+			case G_TOKEN_STRING:
+				value=_xfdashboard_theme_css_append_string(value, inScanner->value.v_string);
+				break;
 
-				case G_TOKEN_CHAR:
-					/* Check for character '@' identifing an identifier which needs to get resolved ... */
-					if(scanner->value.v_char=='@')
+			case G_TOKEN_CHAR:
+				/* Check for character '@' identifing an identifier which needs to get resolved ... */
+				if(inScanner->value.v_char=='@')
+				{
+					gchar		*constantValue;
+
+					/* Resolve value and append resolved value but stop parsing and return NULL
+					 * if unresolvable.
+					 */
+					constantValue=_xfdashboard_theme_css_parse_at_identifier(self, inScanner, inScopeScanner, inScopeSelectors);
+					if(!constantValue)
 					{
-						const gchar		*constantValue;
-
-						/* Resolve value but stop parsing and return NULL if unresolvable. */
-						constantValue=_xfdashboard_theme_css_resolve_at_identifier_internal(self, scanner, inScopeSelectors, inScopeScanner);
-						if(!constantValue)
-						{
-							g_free(value);
-							return(NULL);
-						}
-
-						/* Append resolved value */
-						resolvedValue=_xfdashboard_theme_css_append_string(resolvedValue, constantValue);
-
-						/* Set flag that we have resolved an '@' identifier to get the new value resolved */
-						haveResolvedAtIdentifier=TRUE;
+						g_free(value);
+						return(NULL);
 					}
-						/* ... otherwise just add character to value */
-						else resolvedValue=_xfdashboard_theme_css_append_char(resolvedValue, scanner->value.v_char);
-					break;
 
-				default:
-					/* This code should never be reached! */
-					g_assert_not_reached();
-					break;
-			}
+					value=_xfdashboard_theme_css_append_string(value, constantValue);
+					g_free(constantValue);
 
-			/* Continue with next token */
-			token=g_scanner_get_next_token(scanner);
+					/* Set flag that we have resolved an '@' identifier to get the new value resolved */
+					haveResolvedAtIdentifier=TRUE;
+				}
+					/* ... otherwise just add character to value */
+					else value=_xfdashboard_theme_css_append_char(value, inScanner->value.v_char);
+				break;
+
+			default:
+				/* This code should never be reached! */
+				g_assert_not_reached();
+				break;
 		}
 
-		/* Replace old value with resolved value */
+		/* Continue with next token */
+		token=g_scanner_get_next_token(inScanner);
+	}
+
+	/* If any '@' identifier was found and resolved, we need to re-parse resolved value
+	 * for further '@' identifiers.
+	 */
+	if(haveResolvedAtIdentifier)
+	{
+		gchar		*resolvedValue;
+
+		/* Call ourselve recursive (via _xfdashboard_theme_css_resolve_at_identifier_by_string)
+		 * to resolve any '@' identifier which might be in value resolved this time.
+		 */
+		g_debug("Resolving css value '%s'", value);
+		resolvedValue=_xfdashboard_theme_css_resolve_at_identifier_by_string(self,
+																				value,
+																				inScopeScanner,
+																				inScopeSelectors);
+		g_debug("Resolved css value '%s' to '%s' recursively", value, resolvedValue);
+
+		/* Release old value and new one */
 		g_free(value);
 		value=resolvedValue;
 	}
-	while(haveResolvedAtIdentifier);
 
 	/* Return resolved value */
+	return(value);
+}
+
+static gchar* _xfdashboard_theme_css_resolve_at_identifier_by_string(XfdashboardThemeCSS *self,
+																		const gchar *inText,
+																		GScanner *inScopeScanner,
+																		GList *inScopeSelectors)
+{
+	GScanner	*scanner;
+	gchar		*value;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
+	g_return_val_if_fail(inScopeScanner, NULL);
+	g_return_val_if_fail(inText, NULL);
+
+	/* Create scanner to resolve value of '@' identifier */
+	scanner=g_scanner_new(NULL);
+
+	/* Set up scanner config
+	 * - Identifiers are allowed to contain '-' (minus sign) as non-first characters
+	 * - Disallow scanning float values as we need '.' for identifiers
+	 * - Set up single comment line not to include '#' as this character is need for identifiers
+	 * - Disable parsing HEX values
+	 * - Identifiers cannot be single quoted
+	 * - Identifiers cannot be double quoted
+	 */
+	scanner->config->cset_identifier_first=G_CSET_a_2_z "#_-0123456789" G_CSET_A_2_Z G_CSET_LATINS G_CSET_LATINC;
+	scanner->config->cset_identifier_nth=scanner->config->cset_identifier_first;
+	scanner->config->scan_identifier_1char=1;
+	scanner->config->char_2_token=FALSE;
+	scanner->config->cset_skip_characters="";
+	scanner->config->scan_string_sq=TRUE;
+	scanner->config->scan_string_dq=TRUE;
+	scanner->config->scan_float=FALSE;
+
+	/* Set string to parse and resolve */
+	g_scanner_input_text(scanner, inText, strlen(inText));
+
+	/* Resolve '@' identifier */
+	value=_xfdashboard_theme_css_resolve_at_identifier_internal(self,
+																scanner,
+																inScopeScanner,
+																inScopeSelectors);
+
+	/* Destroy scanner */
+	g_scanner_destroy(scanner);
+
+	/* Return resolved '@' identifier which may be NULL in case of error */
 	return(value);
 }
 
@@ -479,7 +1464,14 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 				break;
 
 			case G_TOKEN_STRING:
+				/* If we should not re-scan the value to resolve it then we need to enclose the string
+				 * we get from scanner with single quotation marks. It must be single quotation marks
+				 * because the value is already escaped and they are needed to get G_TOKEN_STRING tokens
+				 * from subsequent scanner in further resolving attempts.
+				 */
+				if(!inDoResolveAt) *outValue=_xfdashboard_theme_css_append_char(*outValue, '\'');
 				*outValue=_xfdashboard_theme_css_append_string(*outValue, inScanner->value.v_string);
+				if(!inDoResolveAt) *outValue=_xfdashboard_theme_css_append_char(*outValue, '\'');
 				break;
 
 			default:
@@ -531,7 +1523,12 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 		gchar		*resolvedValue;
 
 		/* Resolve value */
-		resolvedValue=_xfdashboard_theme_css_resolve_at_identifier(self, inScanner, inScopeSelectors, *outValue);
+		g_debug("Resolving css value '%s'", *outValue);
+		resolvedValue=_xfdashboard_theme_css_resolve_at_identifier_by_string(self,
+																				*outValue,
+																				inScanner,
+																				inScopeSelectors);
+		g_debug("Resolved css value '%s' to '%s'", *outValue, resolvedValue);
 
 		/* Release old value and set new one */
 		g_free(*outValue);
@@ -1087,11 +2084,11 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 		else
 		{
 			/* Set error */
-			g_set_error(outError,
-						XFDASHBOARD_THEME_CSS_ERROR,
-						XFDASHBOARD_THEME_CSS_ERROR_UNSUPPORTED_STREAM,
-						_("The input stream of type %s is not supported"),
-						G_OBJECT_TYPE_NAME(inStream));
+			_xfdashboard_theme_css_set_error(self,
+												outError,
+												XFDASHBOARD_THEME_CSS_ERROR_UNSUPPORTED_STREAM,
+												_("The input stream of type %s is not supported"),
+												G_OBJECT_TYPE_NAME(inStream));
 
 			/* Destroy scanner */
 			g_scanner_destroy(scanner);
@@ -1125,10 +2122,10 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 								_("Parser did not reach end of stream"),
 								TRUE);
 
-		g_set_error(outError,
-					XFDASHBOARD_THEME_CSS_ERROR,
-					XFDASHBOARD_THEME_CSS_ERROR_PARSER_ERROR,
-					_("Parser did not reach end of stream"));
+		_xfdashboard_theme_css_set_error(self,
+											outError,
+											XFDASHBOARD_THEME_CSS_ERROR_PARSER_ERROR,
+											_("Parser did not reach end of stream"));
 
 		success=FALSE;
 
@@ -1465,6 +2462,12 @@ static void _xfdashboard_theme_css_dispose(GObject *inObject)
 		priv->names=NULL;
 	}
 
+	if(priv->registeredFunctions)
+	{
+		g_hash_table_destroy(priv->registeredFunctions);
+		priv->registeredFunctions=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_theme_css_parent_class)->dispose(inObject);
 }
@@ -1497,6 +2500,23 @@ void xfdashboard_theme_css_init(XfdashboardThemeCSS *self)
 	priv->selectors=NULL;
 	priv->styles=NULL;
 	priv->names=NULL;
+	priv->registeredFunctions=NULL;
+
+	/* Register CSS functions */
+#define REGISTER_CSS_FUNC(name, callback) \
+	_xfdashboard_theme_css_register_function(self, \
+												name, \
+												XFDASHBOARD_THEME_CSS_FUNCTION_CALLBACK(callback));
+
+	REGISTER_CSS_FUNC("rgb", _xfdashboard_theme_css_function_rgb_rgba);
+	REGISTER_CSS_FUNC("rgba", _xfdashboard_theme_css_function_rgb_rgba);
+	REGISTER_CSS_FUNC("mix", _xfdashboard_theme_css_function_mix);
+	REGISTER_CSS_FUNC("lighter", _xfdashboard_theme_css_function_lighter_darker);
+	REGISTER_CSS_FUNC("darker", _xfdashboard_theme_css_function_lighter_darker);
+	REGISTER_CSS_FUNC("shade", _xfdashboard_theme_css_function_shade);
+	REGISTER_CSS_FUNC("alpha", _xfdashboard_theme_css_function_alpha);
+
+#undef REGISTER_CSS_FUNC
 }
 
 /* Implementation: Errors */
@@ -1535,14 +2555,11 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 	file=g_file_new_for_path(inPath);
 	if(!file)
 	{
-		if(outError)
-		{
-			g_set_error(outError,
-							XFDASHBOARD_THEME_CSS_ERROR,
-							XFDASHBOARD_THEME_CSS_ERROR_INVALID_ARGUMENT,
-							_("Could not get file for path '%s'"),
-							inPath);
-		}
+		_xfdashboard_theme_css_set_error(self,
+											outError,
+											XFDASHBOARD_THEME_CSS_ERROR_UNSUPPORTED_STREAM,
+											_("Could not get file for path '%s'"),
+											inPath);
 
 		return(FALSE);
 	}
