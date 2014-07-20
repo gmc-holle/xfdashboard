@@ -15,6 +15,7 @@ src/click-action.c
 src/collapse-box.c
 src/drag-action.c
 src/drop-action.c
+src/dynamic-table-layout.c
 src/enums.c
 src/fill-box-layout.c
 src/focusable.c
