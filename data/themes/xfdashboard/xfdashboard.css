@@ -1,7 +1,7 @@
 @constants
 {
-	background: @rgba(87, 146, 226, 96) /*#5792e260*/;
-	overlay-background: @alpha(@background, 255) /*#5792e2ff*/ ;
+	background: @rgba(87, 146, 226, 0.38) /*#5792e260*/;
+	overlay-background: @alpha(@background, 1.0) /*#5792e2ff*/ ;
 	overlay-outline: #4681d1ff;
 }
 

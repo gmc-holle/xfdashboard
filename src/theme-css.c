@@ -736,32 +736,40 @@ static gboolean _xfdashboard_theme_css_function_rgb_rgba(XfdashboardThemeCSS *se
 
 	if(isRGBA)
 	{
-		/* Get argument */
-		colorValue=_xfdashboard_theme_css_get_argument(self, inArguments, 3, G_TYPE_STRING, &error);
+		gfloat		alpha;
+
+		/* Get factor (progress fraction) */
+		colorValue=_xfdashboard_theme_css_get_argument(self, inArguments, 3, G_TYPE_DOUBLE, &error);
 		if(!colorValue)
 		{
+			/* Propagate error message and return failure result */
 			g_propagate_error(outError, error);
 			return(FALSE);
 		}
 
-		/* Compute color component value */
-		if(!_xfdashboard_theme_css_parse_string_to_color_component(self,
-																	g_value_get_string(colorValue),
-																	&color[3],
-																	&error))
-		{
-			g_propagate_error(outError, error);
-
-			/* Release allocated resources */
-			g_value_unset(colorValue);
-			g_free(colorValue);
-
-			return(FALSE);
-		}
-
-		/* Release allocated resources */
+		alpha=g_value_get_double(colorValue);
 		g_value_unset(colorValue);
 		g_free(colorValue);
+
+		if(alpha<0.0 || alpha>1.0)
+		{
+			gchar		*message;
+
+			/* Set error message */
+			message=g_strdup_printf(_("Alpha factor %.2f is out of range"), alpha);
+			_xfdashboard_theme_css_set_error(self,
+												outError,
+												XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
+												"%s",
+												message);
+			g_free(message);
+
+			/* Return with error status */
+			return(FALSE);
+		}
+
+		/* Set alpha factor */
+		color[3]=(guint8)(alpha*255.0f);
 	}
 		else color[3]=0xff;
 
