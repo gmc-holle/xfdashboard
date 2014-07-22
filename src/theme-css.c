@@ -684,7 +684,7 @@ static gboolean _xfdashboard_theme_css_function_rgb_rgba(XfdashboardThemeCSS *se
 															GError **outError)
 {
 	GError			*error;
-	GValue			*colorValue;
+	GValue			*value;
 	gboolean		isRGBA;
 	gint			i;
 	guint8			color[4];
@@ -707,8 +707,8 @@ static gboolean _xfdashboard_theme_css_function_rgb_rgba(XfdashboardThemeCSS *se
 	for(i=0; i<3; i++)
 	{
 		/* Get argument */
-		colorValue=_xfdashboard_theme_css_get_argument(self, inArguments, i, G_TYPE_STRING, &error);
-		if(!colorValue)
+		value=_xfdashboard_theme_css_get_argument(self, inArguments, i, G_TYPE_STRING, &error);
+		if(!value)
 		{
 			g_propagate_error(outError, error);
 			return(FALSE);
@@ -716,40 +716,40 @@ static gboolean _xfdashboard_theme_css_function_rgb_rgba(XfdashboardThemeCSS *se
 
 		/* Compute color component value */
 		if(!_xfdashboard_theme_css_parse_string_to_color_component(self,
-																	g_value_get_string(colorValue),
+																	g_value_get_string(value),
 																	&color[i],
 																	&error))
 		{
 			g_propagate_error(outError, error);
 
 			/* Release allocated resources */
-			g_value_unset(colorValue);
-			g_free(colorValue);
+			g_value_unset(value);
+			g_free(value);
 
 			return(FALSE);
 		}
 
 		/* Release allocated resources */
-		g_value_unset(colorValue);
-		g_free(colorValue);
+		g_value_unset(value);
+		g_free(value);
 	}
 
 	if(isRGBA)
 	{
 		gfloat		alpha;
 
-		/* Get factor (progress fraction) */
-		colorValue=_xfdashboard_theme_css_get_argument(self, inArguments, 3, G_TYPE_DOUBLE, &error);
-		if(!colorValue)
+		/* Get alpha factor */
+		value=_xfdashboard_theme_css_get_argument(self, inArguments, 3, G_TYPE_DOUBLE, &error);
+		if(!value)
 		{
 			/* Propagate error message and return failure result */
 			g_propagate_error(outError, error);
 			return(FALSE);
 		}
 
-		alpha=g_value_get_double(colorValue);
-		g_value_unset(colorValue);
-		g_free(colorValue);
+		alpha=g_value_get_double(value);
+		g_value_unset(value);
+		g_free(value);
 
 		if(alpha<0.0 || alpha>1.0)
 		{
