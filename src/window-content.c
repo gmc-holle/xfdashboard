@@ -564,6 +564,11 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 	Display								*display;
 	GdkPixbuf							*windowIcon;
 	XWindowAttributes					windowAttrs;
+#if COGL_VERSION_CHECK(1, 18, 0)
+	ClutterBackend						*backend;
+	CoglContext							*context;
+	CoglError							*error;
+#endif
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
 	g_return_if_fail(inWindow!=NULL && XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -585,6 +590,40 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 	 * a live updated texture for window in the next steps
 	 */
 	windowIcon=xfdashboard_window_tracker_window_get_icon(priv->window);
+#if COGL_VERSION_CHECK(1, 18, 0)
+	error=NULL;
+
+	backend=clutter_get_default_backend();
+	context=clutter_backend_get_cogl_context(backend);
+	priv->texture=cogl_texture_2d_new_from_data(context,
+												gdk_pixbuf_get_width(windowIcon),
+												gdk_pixbuf_get_height(windowIcon),
+												gdk_pixbuf_get_has_alpha(windowIcon) ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888,
+												gdk_pixbuf_get_rowstride(windowIcon),
+												gdk_pixbuf_get_pixels(windowIcon),
+												&error);
+
+	if(!priv->texture || error)
+	{
+		/* Show warning */
+		g_warning(_("Could not create fallback texture for window '%s': %s"),
+					xfdashboard_window_tracker_window_get_title(priv->window),
+					(error && error->message) ? error->message : _("Unknown error"));
+
+		/* Release allocated resources */
+		if(priv->texture)
+		{
+			cogl_object_unref(priv->texture);
+			priv->texture=NULL;
+		}
+
+		if(error)
+		{
+			cogl_error_free(error);
+			error=NULL;
+		}
+	}
+#else
 	priv->texture=cogl_texture_new_from_data(gdk_pixbuf_get_width(windowIcon),
 												gdk_pixbuf_get_height(windowIcon),
 												COGL_TEXTURE_NONE,
@@ -592,6 +631,8 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 												COGL_PIXEL_FORMAT_ANY,
 												gdk_pixbuf_get_rowstride(windowIcon),
 												gdk_pixbuf_get_pixels(windowIcon));
+#endif
+
 	priv->isFallback=TRUE;
 
 	/* Get X window and its attributes */
