@@ -234,7 +234,7 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 		return(FALSE);
 	}
 
-	priv->styling=xfdashboard_theme_css_new();
+	priv->styling=xfdashboard_theme_css_new(inThemePath);
 	counter=0;
 	resource=resources;
 	while(*resource)

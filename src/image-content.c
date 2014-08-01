@@ -847,13 +847,18 @@ static void _xfdashboard_image_content_setup_for_icon(XfdashboardImageContent *s
 	XfdashboardImageContentPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_IMAGE_CONTENT(self));
-	g_return_if_fail(inIconName && *inIconName);
+	g_return_if_fail(inIconName);
 	g_return_if_fail(inSize>0);
 
 	priv=self->priv;
 
 	/* Image must not be setup already */
 	g_return_if_fail(priv->type==XFDASHBOARD_IMAGE_TYPE_NONE);
+
+	/* An empty icon name (but not NULL) is a special case as it refers
+	 * to failback icon directly.
+	 */
+	if(!*inIconName) inIconName=XFDASHBOARD_IMAGE_CONTENT_FALLBACK_ICON_NAME;
 
 	/* Determine type of image to load icon from absolute path or theme or file */
 	if(g_path_is_absolute(inIconName)) priv->type=XFDASHBOARD_IMAGE_TYPE_FILE;

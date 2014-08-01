@@ -86,7 +86,7 @@ struct _XfdashboardThemeCSSValue
 /* Public API */
 GType xfdashboard_theme_css_get_type(void) G_GNUC_CONST;
 
-XfdashboardThemeCSS* xfdashboard_theme_css_new(void);
+XfdashboardThemeCSS* xfdashboard_theme_css_new(gchar *inThemePath);
 
 gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 											const gchar *inPath,

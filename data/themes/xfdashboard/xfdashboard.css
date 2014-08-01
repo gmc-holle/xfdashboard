@@ -3,6 +3,11 @@
 	background: @rgba(87, 146, 226, 0.38) /*#5792e260*/;
 	overlay-background: @alpha(@background, 1.0) /*#5792e2ff*/ ;
 	overlay-outline: #4681d1ff;
+	close-icon: @try_icons("window-close-symbolic", "window-close", "gtk-close");
+	search-icon: @try_icons("edit-find-symbolic", "edit-find", "gtk-find");
+	home-icon: @try_icons("go-home", "gtk-home");
+	trash-icon: @try_icons("user-trash", "gtk-delete");
+	clear-icon: @try_icons("edit-clear-symbolic", "edit-clear", "gtk-clear");
 }
 
 /* Stage */
@@ -76,14 +81,14 @@ XfdashboardQuicklaunch
 XfdashboardQuicklaunch #applications-button
 {
 	background-fill-color: #5792e2a0;
-	icon-name: gtk-home;
+	icon-name: @home-icon;
 	background-type: none;
 	button-style: icon;
 }
 
 XfdashboardQuicklaunch #applications-button.search-active
 {
-	icon-name: gtk-find;
+	icon-name: @search-icon;
 }
 
 XfdashboardQuicklaunch #applications-button:toggled
@@ -93,7 +98,7 @@ XfdashboardQuicklaunch #applications-button:toggled
 
 XfdashboardQuicklaunch #trash-button
 {
-	icon-name: gtk-delete;
+	icon-name: @trash-icon;
 	button-style: icon;
 	background-fill-color: #5792e2a0;
 	background-type: none;
@@ -127,7 +132,7 @@ XfdashboardLiveWindow .title
 
 XfdashboardLiveWindow .close-button
 {
-	icon-name: gtk-close;
+	icon-name: @close-icon;
 	button-style: icon;
 	background-type: fill rounded-corners;
 	corner-radius: 4.0;
@@ -259,13 +264,13 @@ XfdashboardCollapseBox
 	corners: all;
 	corner-radius: 4.0;
 	padding: 4.0;
-	primary-icon-name: gtk-find;
+	primary-icon-name: @search-icon;
 	hint-text-color: #c0c0c080;
 }
 
 #searchbox.search-active
 {
-	secondary-icon-name: gtk-clear;
+	secondary-icon-name: @clear-icon;
 }
 
 /* View selector */

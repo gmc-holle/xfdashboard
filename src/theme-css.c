@@ -34,6 +34,7 @@
 #include <gio/gio.h>
 #include <gio/gfiledescriptorbased.h>
 #include <clutter/clutter.h>
+#include <gtk/gtk.h>
 
 #include "stylable.h"
 
@@ -49,12 +50,26 @@ G_DEFINE_TYPE(XfdashboardThemeCSS,
 struct _XfdashboardThemeCSSPrivate
 {
 	/* Instance related */
+	gchar		*themePath;
+
 	GList		*selectors;
 	GList		*styles;
 	GSList		*names;
 
 	GHashTable	*registeredFunctions;
 };
+
+/* Properties */
+enum
+{
+	PROP_0,
+
+	PROP_THEME_PATH,
+
+	PROP_LAST
+};
+
+static GParamSpec* XfdashboardThemeCSSProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 typedef struct _XfdashboardThemeCSSSelector			XfdashboardThemeCSSSelector;
@@ -390,6 +405,86 @@ static gboolean _xfdashboard_theme_css_parse_string_to_color_component(Xfdashboa
 
 	/* If we get here we could compute color component value so set up result */
 	if(outValue) *outValue=(guint8)componentValue;
+	return(TRUE);
+}
+
+/* CSS function: try_icons(icon_name[, ...])
+ * Takes a variable number of arguments. Each argument is a string containing
+ * the icon name to lookup. The first one which could be found successfully
+ * will be returned. If no one could be found an empty string will be returned.
+ */
+static gboolean _xfdashboard_theme_css_function_try_icons(XfdashboardThemeCSS *self,
+															const gchar *inName,
+															GList *inArguments,
+															GValue *outResult,
+															GError **outError)
+{
+	XfdashboardThemeCSSPrivate	*priv;
+	GtkIconTheme				*iconTheme;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), FALSE);
+	g_return_val_if_fail(inName && *inName, FALSE);
+	g_return_val_if_fail(inArguments, FALSE);
+	g_return_val_if_fail(outResult, FALSE);
+	g_return_val_if_fail(!outError || *outError==NULL, FALSE);
+
+	priv=self->priv;
+	iconTheme=gtk_icon_theme_get_default();
+
+	/* Initialize result with empty string. It will be overriden with found
+	 * icon name if successful.
+	 */
+	g_value_init(outResult, G_TYPE_STRING);
+	g_value_set_string(outResult, "");
+
+	/* Iterate through arguments, try to find the icon and return first one found */
+	while(inArguments)
+	{
+		const gchar				*iconName;
+		gchar					*iconFilename;
+
+		/* Get icon name */
+		iconName=(const gchar*)inArguments->data;
+
+		/* If icon name is an absolute path to a file then check if it exists */
+		if(g_path_is_absolute(iconName) &&
+			g_file_test(iconName, G_FILE_TEST_EXISTS))
+		{
+			/* Set up result */
+			g_value_set_string(outResult, iconName);
+
+			return(TRUE);
+		}
+
+		/* Check if it is a relative path to a file and check if it exists */
+		iconFilename=g_build_filename(priv->themePath, iconName, NULL);
+		if(g_file_test(iconFilename, G_FILE_TEST_EXISTS))
+		{
+			/* Release allocated resources */
+			g_free(iconFilename);
+
+			/* Set up result */
+			g_value_set_string(outResult, iconName);
+
+			return(TRUE);
+		}
+		g_free(iconFilename);
+
+		/* Icon name is neither an absolute nor relative path to a file
+		 * so check if it is a stock icon.
+		 */
+		if(gtk_icon_theme_has_icon(iconTheme, iconName))
+		{
+			/* Set up result */
+			g_value_set_string(outResult, iconName);
+
+			return(TRUE);
+		}
+
+		/* The icon name could not be found try next one */
+		inArguments=g_list_next(inArguments);
+	}
+
 	return(TRUE);
 }
 
@@ -2449,6 +2544,12 @@ static void _xfdashboard_theme_css_dispose(GObject *inObject)
 	XfdashboardThemeCSSPrivate		*priv=self->priv;
 
 	/* Release allocated resources */
+	if(priv->themePath)
+	{
+		g_free(priv->themePath);
+		priv->themePath=NULL;
+	}
+
 	if(priv->selectors)
 	{
 		g_list_foreach(priv->selectors, (GFunc)_xfdashboard_theme_css_selector_free, NULL);
@@ -2480,6 +2581,33 @@ static void _xfdashboard_theme_css_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_theme_css_parent_class)->dispose(inObject);
 }
 
+/* Set properties */
+static void _xfdashboard_theme_css_set_property(GObject *inObject,
+												guint inPropID,
+												const GValue *inValue,
+												GParamSpec *inSpec)
+{
+	XfdashboardThemeCSS			*self=XFDASHBOARD_THEME_CSS(inObject);
+	XfdashboardThemeCSSPrivate	*priv=self->priv;
+
+	switch(inPropID)
+	{
+		case PROP_THEME_PATH:
+			if(priv->themePath)
+			{
+				g_free(priv->themePath);
+				priv->themePath=NULL;
+			}
+
+			priv->themePath=g_value_dup_string(inValue);
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
@@ -2490,9 +2618,20 @@ void xfdashboard_theme_css_class_init(XfdashboardThemeCSSClass *klass)
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_theme_css_dispose;
+	gobjectClass->set_property=_xfdashboard_theme_css_set_property;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardThemeCSSPrivate));
+
+	/* Define properties */
+	XfdashboardThemeCSSProperties[PROP_THEME_PATH]=
+		g_param_spec_string("theme-path",
+							_("Theme path"),
+							_("Path of theme loading from"),
+							NULL,
+							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
+
+	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardThemeCSSProperties);
 }
 
 /* Object initialization
@@ -2505,6 +2644,7 @@ void xfdashboard_theme_css_init(XfdashboardThemeCSS *self)
 	priv=self->priv=XFDASHBOARD_THEME_CSS_GET_PRIVATE(self);
 
 	/* Set default values */
+	priv->themePath=NULL;
 	priv->selectors=NULL;
 	priv->styles=NULL;
 	priv->names=NULL;
@@ -2523,6 +2663,7 @@ void xfdashboard_theme_css_init(XfdashboardThemeCSS *self)
 	REGISTER_CSS_FUNC("darker", _xfdashboard_theme_css_function_lighter_darker);
 	REGISTER_CSS_FUNC("shade", _xfdashboard_theme_css_function_shade);
 	REGISTER_CSS_FUNC("alpha", _xfdashboard_theme_css_function_alpha);
+	REGISTER_CSS_FUNC("try_icons", _xfdashboard_theme_css_function_try_icons)
 
 #undef REGISTER_CSS_FUNC
 }
@@ -2537,9 +2678,11 @@ GQuark xfdashboard_theme_css_error_quark(void)
 /* Implementation: Public API */
 
 /* Create new instance */
-XfdashboardThemeCSS* xfdashboard_theme_css_new(void)
+XfdashboardThemeCSS* xfdashboard_theme_css_new(gchar *inThemePath)
 {
-	return(XFDASHBOARD_THEME_CSS(g_object_new(XFDASHBOARD_TYPE_THEME_CSS, NULL)));
+	return(XFDASHBOARD_THEME_CSS(g_object_new(XFDASHBOARD_TYPE_THEME_CSS,
+												"theme-path", inThemePath,
+												NULL)));
 }
 
 /* Load a CSS file into theme */
