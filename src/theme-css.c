@@ -2678,7 +2678,7 @@ GQuark xfdashboard_theme_css_error_quark(void)
 /* Implementation: Public API */
 
 /* Create new instance */
-XfdashboardThemeCSS* xfdashboard_theme_css_new(gchar *inThemePath)
+XfdashboardThemeCSS* xfdashboard_theme_css_new(const gchar *inThemePath)
 {
 	return(XFDASHBOARD_THEME_CSS(g_object_new(XFDASHBOARD_TYPE_THEME_CSS,
 												"theme-path", inThemePath,
