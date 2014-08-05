@@ -435,7 +435,7 @@ static gboolean _xfdashboard_theme_css_function_try_icons(XfdashboardThemeCSS *s
 	 * icon name if successful.
 	 */
 	g_value_init(outResult, G_TYPE_STRING);
-	g_value_set_string(outResult, "");
+	g_value_set_string(outResult, "\'\'");
 
 	/* Iterate through arguments, try to find the icon and return first one found */
 	while(inArguments)
