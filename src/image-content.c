@@ -661,10 +661,13 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 			 * the callback function we take an extra reference on this
 			 * instance. It will be release in callback function.
 			 */
-			gdk_pixbuf_new_from_stream_async(stream,
-												NULL,
-												(GAsyncReadyCallback)_xfdashboard_image_content_loading_async_callback,
-												g_object_ref(self));
+			gdk_pixbuf_new_from_stream_at_scale_async(stream,
+														priv->iconSize,
+														priv->iconSize,
+														TRUE,
+														NULL,
+														(GAsyncReadyCallback)_xfdashboard_image_content_loading_async_callback,
+														g_object_ref(self));
 
 			/* Release allocated resources */
 			g_object_unref(stream);

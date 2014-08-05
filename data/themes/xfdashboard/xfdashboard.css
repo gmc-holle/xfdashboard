@@ -6,7 +6,7 @@
 	missing-icon: @try_icons("image-missing", "gtk-missing-image");
 	close-icon: @try_icons("window-close-symbolic", "window-close", "gtk-close", @missing-icon);
 	search-icon: @try_icons("edit-find-symbolic", "edit-find", "gtk-find", @missing-icon);
-	home-icon: @try_icons("go-home", "gtk-home", @missing-icon);
+	home-icon: @try_icons("go-home-symbolic", "gtk-home", @missing-icon);
 	trash-icon: @try_icons("user-trash", "gtk-delete", @missing-icon);
 	clear-icon: @try_icons("edit-clear-symbolic", "edit-clear", "gtk-clear", @missing-icon);
 }
