@@ -106,6 +106,8 @@ XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_workspace_by_n
 																						gint inNumber);
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindowTracker *self);
 
+XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(XfdashboardWindowTracker *self);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_WINDOW_TRACKER__ */

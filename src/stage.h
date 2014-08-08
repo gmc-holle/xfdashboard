@@ -27,6 +27,7 @@
 #include <clutter/clutter.h>
 
 #include "window-tracker.h"
+#include "types.h"
 
 G_BEGIN_DECLS
 
@@ -69,6 +70,12 @@ struct _XfdashboardStageClass
 GType xfdashboard_stage_get_type(void); /* G_GNUC_CONST; */
 
 ClutterActor* xfdashboard_stage_new(void);
+
+XfdashboardStageBackgroundImageType xfdashboard_stage_get_background_image_type(XfdashboardStage *self);
+void xfdashboard_stage_set_background_image_type(XfdashboardStage *self, XfdashboardStageBackgroundImageType inType);
+
+ClutterColor* xfdashboard_stage_get_background_color(XfdashboardStage *self);
+void xfdashboard_stage_set_background_color(XfdashboardStage *self, const ClutterColor *inColor);
 
 void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *inIconName, const gchar *inText);
 

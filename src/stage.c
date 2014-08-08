@@ -49,6 +49,9 @@
 #include "stylable.h"
 #include "utils.h"
 #include "focus-manager.h"
+#include "enums.h"
+#include "window-tracker.h"
+#include "window-content.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_stage_layoutable_iface_init(XfdashboardLayoutableInterface *iface);
@@ -67,29 +70,36 @@ G_DEFINE_TYPE_WITH_CODE(XfdashboardStage,
 struct _XfdashboardStagePrivate
 {
 	/* Properties related */
-	gchar							*styleClasses;
-	gchar							*stylePseudoClasses;
+	gchar								*styleClasses;
+	gchar								*stylePseudoClasses;
+
+	ClutterColor						*backgroundColor;
 
 	/* Actors */
-	ClutterActor					*quicklaunch;
-	ClutterActor					*searchbox;
-	ClutterActor					*workspaces;
-	ClutterActor					*viewpad;
-	ClutterActor					*viewSelector;
-	ClutterActor					*notification;
-	ClutterActor					*tooltip;
+	ClutterActor						*backgroundImageLayer;
+	ClutterActor						*backgroundColorLayer;
+
+	ClutterActor						*quicklaunch;
+	ClutterActor						*searchbox;
+	ClutterActor						*workspaces;
+	ClutterActor						*viewpad;
+	ClutterActor						*viewSelector;
+	ClutterActor						*notification;
+	ClutterActor						*tooltip;
 
 	/* Instance related */
-	XfdashboardWindowTracker		*windowTracker;
-	XfdashboardWindowTrackerWindow	*stageWindow;
+	XfdashboardStageBackgroundImageType	backgroundType;
 
-	gboolean						searchActive;
-	gint							lastSearchTextLength;
-	XfdashboardView					*viewBeforeSearch;
+	XfdashboardWindowTracker			*windowTracker;
+	XfdashboardWindowTrackerWindow		*stageWindow;
 
-	guint							notificationTimeoutID;
+	gboolean							searchActive;
+	gint								lastSearchTextLength;
+	XfdashboardView						*viewBeforeSearch;
 
-	XfdashboardFocusManager			*focusManager;
+	guint								notificationTimeoutID;
+
+	XfdashboardFocusManager				*focusManager;
 };
 
 /* Properties */
@@ -97,12 +107,17 @@ enum
 {
 	PROP_0,
 
+	PROP_BACKGROUND_IMAGE_TYPE,
+	PROP_BACKGROUND_COLOR,
+
 	/* From interface: XfdashboardStylable */
 	PROP_STYLE_CLASSES,
 	PROP_STYLE_PSEUDO_CLASSES,
 
 	PROP_LAST
 };
+
+static GParamSpec* XfdashboardStageProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -628,6 +643,37 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	_xfdashboard_stage_set_focus(self);
 }
 
+/* A window was created
+ * Check if window opened is desktop background window
+ */
+#define WNCK_I_KNOW_THIS_IS_UNSTABLE
+#include <libwnck/libwnck.h>
+static void _xfdashboard_stage_on_desktop_window_opened(XfdashboardStage *self,
+														XfdashboardWindowTrackerWindow *inWindow,
+														gpointer inUserData)
+{
+	XfdashboardStagePrivate				*priv;
+	XfdashboardWindowTrackerWindow		*desktopWindow;
+	ClutterContent						*windowContent;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+
+	priv=self->priv;
+
+	/* Get desktop background window and check if it is the new window opened */
+	desktopWindow=xfdashboard_window_tracker_get_root_window(priv->windowTracker);
+	if(desktopWindow)
+	{
+		windowContent=xfdashboard_window_content_new_for_window(desktopWindow);
+		clutter_actor_set_content(priv->backgroundImageLayer, windowContent);
+		clutter_actor_show(priv->backgroundImageLayer);
+
+		g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_desktop_window_opened), self);
+		g_debug("Found desktop window with signal 'window-opened', so disconnecting signal handler");
+	}
+}
+
 /* The application will be suspended */
 static void _xfdashboard_stage_on_application_suspend(XfdashboardStage *self, gpointer inUserData)
 {
@@ -956,6 +1002,7 @@ static void _xfdashboard_stage_stylable_get_stylable_properties(XfdashboardStyla
 
 	/* Add stylable properties to hashtable */
 	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "background-color");
+	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "background-image-type");
 }
 
 /* Get/set style classes of stage */
@@ -1028,6 +1075,12 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 		priv->windowTracker=NULL;
 	}
 
+	if(priv->backgroundColor)
+	{
+		clutter_color_free(priv->backgroundColor);
+		priv->backgroundColor=NULL;
+	}
+
 	if(priv->styleClasses)
 	{
 		g_free(priv->styleClasses);
@@ -1088,6 +1141,18 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 		priv->viewBeforeSearch=NULL;
 	}
 
+	if(priv->backgroundImageLayer)
+	{
+		clutter_actor_destroy(priv->backgroundImageLayer);
+		priv->backgroundImageLayer=NULL;
+	}
+
+	if(priv->backgroundColorLayer)
+	{
+		clutter_actor_destroy(priv->backgroundColorLayer);
+		priv->backgroundColorLayer=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_stage_parent_class)->dispose(inObject);
 }
@@ -1102,6 +1167,14 @@ static void _xfdashboard_stage_set_property(GObject *inObject,
 
 	switch(inPropID)
 	{
+		case PROP_BACKGROUND_IMAGE_TYPE:
+			xfdashboard_stage_set_background_image_type(self, g_value_get_enum(inValue));
+			break;
+
+		case PROP_BACKGROUND_COLOR:
+			xfdashboard_stage_set_background_color(self, clutter_value_get_color(inValue));
+			break;
+
 		case PROP_STYLE_CLASSES:
 			_xfdashboard_stage_stylable_set_classes(XFDASHBOARD_STYLABLE(self),
 													g_value_get_string(inValue));
@@ -1128,6 +1201,14 @@ static void _xfdashboard_stage_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
+		case PROP_BACKGROUND_IMAGE_TYPE:
+			g_value_set_enum(outValue, priv->backgroundType);
+			break;
+
+		case PROP_BACKGROUND_COLOR:
+			clutter_value_set_color(outValue, priv->backgroundColor);
+			break;
+
 		case PROP_STYLE_CLASSES:
 			g_value_set_string(outValue, priv->styleClasses);
 			break;
@@ -1148,8 +1229,10 @@ static void _xfdashboard_stage_get_property(GObject *inObject,
  */
 static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 {
-	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
-	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
+	ClutterActorClass				*actorClass=CLUTTER_ACTOR_CLASS(klass);
+	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardStylableInterface	*stylableIface;
+	GParamSpec						*paramSpec;
 
 	/* Override functions */
 	klass->show_tooltip=_xfdashboard_stage_show_tooltip;
@@ -1161,12 +1244,36 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 	gobjectClass->set_property=_xfdashboard_stage_set_property;
 	gobjectClass->get_property=_xfdashboard_stage_get_property;
 
+	stylableIface=g_type_default_interface_ref(XFDASHBOARD_TYPE_STYLABLE);
+
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardStagePrivate));
 
 	/* Define properties */
-	g_object_class_override_property(gobjectClass, PROP_STYLE_CLASSES, "style-classes");
-	g_object_class_override_property(gobjectClass, PROP_STYLE_PSEUDO_CLASSES, "style-pseudo-classes");
+	XfdashboardStageProperties[PROP_BACKGROUND_IMAGE_TYPE]=
+		g_param_spec_enum("background-image-type",
+							_("Background image type"),
+							_("Background image type"),
+							XFDASHBOARD_TYPE_STAGE_BACKGROUND_IMAGE_TYPE,
+							XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardStageProperties[PROP_BACKGROUND_COLOR]=
+		clutter_param_spec_color("background-color",
+									_("Background color"),
+									_("Color of stage's background"),
+									NULL,
+									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	paramSpec=g_object_interface_find_property(stylableIface, "style-classes");
+	XfdashboardStageProperties[PROP_STYLE_CLASSES]=
+		g_param_spec_override("style-classes", paramSpec);
+
+	paramSpec=g_object_interface_find_property(stylableIface, "style-pseudo-classes");
+	XfdashboardStageProperties[PROP_STYLE_PSEUDO_CLASSES]=
+		g_param_spec_override("style-pseudo-classes", paramSpec);
+
+	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardStageProperties);
 
 	/* Define signals */
 	XfdashboardStageSignals[SIGNAL_SEARCH_STARTED]=
@@ -1214,6 +1321,9 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 						G_TYPE_NONE,
 						1,
 						CLUTTER_TYPE_ACTION);
+
+	/* Release allocated resources */
+	g_type_default_interface_unref(stylableIface);
 }
 
 /* Object initialization
@@ -1223,6 +1333,9 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 {
 	XfdashboardStagePrivate		*priv;
 	XfdashboardApplication		*application;
+	ClutterConstraint			*widthConstraint;
+	ClutterConstraint			*heightConstraint;
+	ClutterColor				transparent;
 #if defined(CLUTTER_CHECK_VERSION) && CLUTTER_CHECK_VERSION(1, 16, 0)
 	GdkScreen					*screen;
 	gint						primaryMonitor;
@@ -1237,7 +1350,6 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->stageWindow=NULL;
 	priv->styleClasses=NULL;
 	priv->stylePseudoClasses=NULL;
-
 	priv->quicklaunch=NULL;
 	priv->searchbox=NULL;
 	priv->workspaces=NULL;
@@ -1249,8 +1361,32 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->viewBeforeSearch=NULL;
 	priv->searchActive=FALSE;
 	priv->notificationTimeoutID=0;
+	priv->backgroundType=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE;
+	priv->backgroundColor=NULL;
+	priv->backgroundColorLayer=NULL;
+	priv->backgroundImageLayer=NULL;
+
+	/* Create background actors but order of adding background children is important */
+	widthConstraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_WIDTH, 0.0f);
+	heightConstraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_HEIGHT, 0.0f);
+	priv->backgroundImageLayer=clutter_actor_new();
+	clutter_actor_hide(priv->backgroundImageLayer);
+	clutter_actor_add_constraint(priv->backgroundImageLayer, widthConstraint);
+	clutter_actor_add_constraint(priv->backgroundImageLayer, heightConstraint);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->backgroundImageLayer);
+
+	widthConstraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_WIDTH, 0.0f);
+	heightConstraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_HEIGHT, 0.0f);
+	priv->backgroundColorLayer=clutter_actor_new();
+	clutter_actor_hide(priv->backgroundColorLayer);
+	clutter_actor_add_constraint(priv->backgroundColorLayer, widthConstraint);
+	clutter_actor_add_constraint(priv->backgroundColorLayer, heightConstraint);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->backgroundColorLayer);
 
 	/* Set up stage and style it */
+	clutter_color_init(&transparent, 0, 0, 0, 0);
+	clutter_actor_set_background_color(CLUTTER_ACTOR(self), &transparent);
+
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(self), TRUE);
 	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), FALSE);
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
@@ -1278,6 +1414,122 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 ClutterActor* xfdashboard_stage_new(void)
 {
 	return(CLUTTER_ACTOR(g_object_new(XFDASHBOARD_TYPE_STAGE, NULL)));
+}
+
+/* Get/set background type */
+XfdashboardStageBackgroundImageType xfdashboard_stage_get_background_image_type(XfdashboardStage *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(self), XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE);
+
+	return(self->priv->backgroundType);
+}
+
+void xfdashboard_stage_set_background_image_type(XfdashboardStage *self, XfdashboardStageBackgroundImageType inType)
+{
+	XfdashboardStagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(inType<=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_DESKTOP);
+
+	priv=self->priv;
+
+
+	/* Set value if changed */
+	if(priv->backgroundType!=inType)
+	{
+		/* Set value */
+		priv->backgroundType=inType;
+
+		/* Set up background actor depending on type */
+		if(priv->backgroundImageLayer)
+		{
+			switch(priv->backgroundType)
+			{
+				case XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_DESKTOP:
+					{
+						XfdashboardWindowTrackerWindow	*backgroundWindow;
+
+						backgroundWindow=xfdashboard_window_tracker_get_root_window(priv->windowTracker);
+						if(backgroundWindow)
+						{
+							ClutterContent				*backgroundContent;
+
+							backgroundContent=xfdashboard_window_content_new_for_window(backgroundWindow);
+							clutter_actor_show(priv->backgroundImageLayer);
+							clutter_actor_set_content(priv->backgroundImageLayer, backgroundContent);
+							g_debug("Dekstop window was found and set up as background image for stage");
+						}
+							else
+							{
+								g_signal_connect_swapped(priv->windowTracker,
+															"window-opened",
+															G_CALLBACK(_xfdashboard_stage_on_desktop_window_opened),
+															self);
+								g_debug("Dekstop window was not found. Setting up signal to get notified when desktop background image was signalled");
+							}
+					}
+					break;
+
+				default:
+					clutter_actor_hide(priv->backgroundImageLayer);
+					clutter_actor_set_content(priv->backgroundImageLayer, NULL);
+					break;
+			}
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardStageProperties[PROP_BACKGROUND_IMAGE_TYPE]);
+	}
+}
+
+/* Get/set background color */
+ClutterColor* xfdashboard_stage_get_background_color(XfdashboardStage *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(self), NULL);
+
+	return(self->priv->backgroundColor);
+}
+
+void xfdashboard_stage_set_background_color(XfdashboardStage *self, const ClutterColor *inColor)
+{
+	XfdashboardStagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+
+	priv=self->priv;
+
+
+	/* Set value if changed */
+	if((priv->backgroundColor && !inColor) ||
+		(!priv->backgroundColor && inColor) ||
+		(inColor && clutter_color_equal(inColor, priv->backgroundColor)==FALSE))
+	{
+		/* Set value */
+		if(priv->backgroundColor)
+		{
+			clutter_color_free(priv->backgroundColor);
+			priv->backgroundColor=NULL;
+		}
+
+		if(inColor) priv->backgroundColor=clutter_color_copy(inColor);
+
+		/* If a color is provided set background color and show background actor
+		 * otherwise hide background actor
+		 */
+		if(priv->backgroundColorLayer)
+		{
+			if(priv->backgroundColor)
+			{
+				clutter_actor_set_background_color(priv->backgroundColorLayer,
+													priv->backgroundColor);
+				clutter_actor_show(priv->backgroundColorLayer);
+			}
+				else clutter_actor_hide(priv->backgroundColorLayer);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardStageProperties[PROP_BACKGROUND_COLOR]);
+	}
 }
 
 /* Show a notification on stage */

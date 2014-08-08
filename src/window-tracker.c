@@ -856,3 +856,43 @@ XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspa
 
 	return(self->priv->activeWorkspace);
 }
+
+/* Get root (desktop) window */
+XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(XfdashboardWindowTracker *self)
+{
+	XfdashboardWindowTrackerPrivate		*priv;
+	gulong								backgroundWindowID;
+	WnckWindow							*backgroundWindow;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
+
+	priv=self->priv;
+
+	/* Return root window (the desktop) */
+	backgroundWindowID=wnck_screen_get_background_pixmap(priv->screen);
+	if(!backgroundWindowID)
+	{
+		GList							*windows;
+		WnckWindow						*window;
+		WnckWindowType					windowType;
+
+		backgroundWindow=NULL;
+		for(windows=wnck_screen_get_windows(priv->screen); !backgroundWindowID && windows; windows=g_list_next(windows))
+		{
+			window=(WnckWindow*)windows->data;
+			windowType=wnck_window_get_window_type(window);
+			if(windowType==WNCK_WINDOW_DESKTOP) backgroundWindowID=wnck_window_get_xid(window);
+		}
+	}
+
+	if(!backgroundWindowID)
+	{
+		g_debug("Desktop window was not found - maybe it was not created or signalled yet");
+		return(NULL);
+	}
+
+	backgroundWindow=wnck_window_get(backgroundWindowID);
+	g_return_val_if_fail(backgroundWindow, NULL);
+
+	return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(backgroundWindow));
+}

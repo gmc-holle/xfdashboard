@@ -119,6 +119,13 @@ typedef enum /*< prefix=XFDASHBOARD_FIT_MODE >*/
 	XFDASHBOARD_FIT_MODE_BOTH
 } XfdashboardFitMode;
 
+/* Stage background types */
+typedef enum /*< prefix=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE >*/
+{
+	XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE=0,
+	XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_DESKTOP
+} XfdashboardStageBackgroundImageType;
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_TYPES__ */
