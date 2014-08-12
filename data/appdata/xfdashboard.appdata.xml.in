@@ -43,9 +43,26 @@
 	</provides>
 
 	<releases>
+		<release version="0.2.2" timestamp="1407869332">
+			<description>
+				<_p>This release fixes a problem when loading scalable images by icon name.
+				</_p>
+			</description>
+		</release>
+		<release version="0.3.0" timestamp="1406052137">
+			<description>
+				<_p>This unstable development release fixes problems with icon mode in theming and
+				allows to launch the first item by pressing ENTER in search view when a search was
+				started by just typing. It also includes an improved CSS parsing allowing the usage
+				of constant values and functions in theme's CSS file.
+				</_p>
+			</description>
+		</release>
 		<release version="0.2.1" timestamp="1405537974">
 			<description>
-				<_p>This release fixes problems with icon mode in theming and allows to launch the first item by pressing ENTER in search view when a search was started by just typing.</_p>
+				<_p>This release fixes problems with icon mode in theming and allows to launch the
+				first item by pressing ENTER in search view when a search was started by just typing.
+				</_p>
 			</description>
 		</release>
 		<release version="0.2.0" timestamp="1402160953">

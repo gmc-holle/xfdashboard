@@ -1,3 +1,42 @@
+commit 137f87ff5e13ff232954914c4ca558716e559bfa
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 12 20:43:23 2014 +0200
+
+    Fix CSS file cherry-picked from master branch
+    
+    CSS in branch 0.2 does not understand @constants and @-functions so remove these lines.
+
+commit 09fd9885e0d285f2538514ef89272e87a3a0bfc9
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 5 21:04:55 2014 +0200
+
+    Fix loading scalable images by icon name
+    
+    Load images by icon name with scaling at requested size. If file to load is a bitmap it should already be at right size but if is scalable image (svg) is was loaded as a too small bitmap and then scaled resulting in an ugly image but now should look good and "right-scaled".
+    
+    Conflicts:
+    	data/themes/xfdashboard/xfdashboard.css
+
+commit f63b5d3c88fd575100d6ca11eb633631ae2de744
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 12 20:35:24 2014 +0200
+
+    Split key handling function into "specialized" functions
+    
+    Split key handling function in XfdashboardFocusable into "specialized" functions for 'key-press' and 'key-release' events. This make handling repeative 'key-press' event easier and cleaner (code), e.g. for moving selection when key is pressed and hold pressed. 'key-release' is only called once when pressed key is released.
+
+commit 2822bc2e884db695c9dab3c21a6ef04e617f7b34
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Jul 16 21:17:39 2014 +0200
+
+    Post-release version bump to 0.2.2
+
+commit 41fcb79f3df09171df7f5ff4bbf6855d916d0904
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Jul 16 21:16:15 2014 +0200
+
+    Bump version to 0.2.1
+
 commit 6b15d55916012a83b4ecc0055eea5744e60a4e91
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Wed Jul 16 21:08:32 2014 +0200
