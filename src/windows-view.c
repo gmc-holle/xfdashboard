@@ -689,9 +689,9 @@ static void _xfdashboard_windows_view_focusable_unset_focus(XfdashboardFocusable
 	}
 }
 
-/* Virtual function "handle_key_event" was called */
-static gboolean _xfdashboard_windows_view_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
-																		const ClutterEvent *inEvent)
+/* Virtual function "handle_keypress_event" was called */
+static gboolean _xfdashboard_windows_view_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
+																			const ClutterEvent *inEvent)
 {
 	XfdashboardWindowsView					*self;
 	XfdashboardWindowsViewPrivate			*priv;
@@ -702,142 +702,155 @@ static gboolean _xfdashboard_windows_view_focusable_handle_key_event(Xfdashboard
 	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
 	priv=self->priv;
 
-	/* Handle key events when key was released */
-	if(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
+	/* Move selection if an arrow key was pressed */
+	if(inEvent->key.keyval==CLUTTER_KEY_Left ||
+		inEvent->key.keyval==CLUTTER_KEY_Right ||
+		inEvent->key.keyval==CLUTTER_KEY_Up ||
+		inEvent->key.keyval==CLUTTER_KEY_Down)
 	{
-		/* Activate selected window on ENTER or close window on DELETE/BACKSPACE */
-		switch(inEvent->key.keyval)
+		gint							index;
+		gint							newIndex;
+		gint							numberChildren;
+		gint							rows;
+		gint							columns;
+		gint							selectionRow;
+		gint							selectionColumn;
+		ClutterActorIter				iter;
+		ClutterActor					*child;
+
+		/* If there is nothing selected, select first actor and return */
+		if(!priv->selectedItem)
 		{
-			case CLUTTER_KEY_Return:
-			case CLUTTER_KEY_KP_Enter:
-			case CLUTTER_KEY_ISO_Enter:
-				if(priv->selectedItem)
-				{
-					_xfdashboard_windows_view_on_window_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
-				}
-				return(CLUTTER_EVENT_STOP);
-
-			case CLUTTER_KEY_BackSpace:
-			case CLUTTER_KEY_Delete:
-			case CLUTTER_KEY_KP_Delete:
-				if(priv->selectedItem)
-				{
-					_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
-				}
-				return(CLUTTER_EVENT_STOP);
-		}
-
-		/* Move selection if an arrow key was pressed */
-		if(inEvent->key.keyval==CLUTTER_KEY_Left ||
-			inEvent->key.keyval==CLUTTER_KEY_Right ||
-			inEvent->key.keyval==CLUTTER_KEY_Up ||
-			inEvent->key.keyval==CLUTTER_KEY_Down)
-		{
-			gint							index;
-			gint							newIndex;
-			gint							numberChildren;
-			gint							rows;
-			gint							columns;
-			gint							selectionRow;
-			gint							selectionColumn;
-			ClutterActorIter				iter;
-			ClutterActor					*child;
-
-			/* If there is nothing selected, select first actor and return */
-			if(!priv->selectedItem)
-			{
-				priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
-
-				if(priv->selectedItem)
-				{
-					xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-				}
-
-				return(CLUTTER_EVENT_STOP);
-			}
-
-			/* Get number of rows and columns and also get number of children
-			 * of layout manager.
-			 */
-			numberChildren=xfdashboard_scaled_table_layout_get_number_children(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
-			rows=xfdashboard_scaled_table_layout_get_rows(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
-			columns=xfdashboard_scaled_table_layout_get_columns(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
-
-			/* Get index of current selection */
-			newIndex=index=0;
-			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-			while(clutter_actor_iter_next(&iter, &child) &&
-					child!=priv->selectedItem)
-			{
-				index++;
-				newIndex++;
-			}
-
-			selectionRow=(index / columns);
-			selectionColumn=(index % columns);
-
-			/* Determine index of new selection depending on arrow key pressed */
-			if(columns>1 && inEvent->key.keyval==CLUTTER_KEY_Left)
-			{
-				newIndex--;
-				if(newIndex<(selectionRow*columns))
-				{
-					newIndex=(selectionRow*columns)+columns-1;
-					if(newIndex>=numberChildren) newIndex=numberChildren-1;
-				}
-			}
-
-			if(columns>1 && inEvent->key.keyval==CLUTTER_KEY_Right)
-			{
-				newIndex++;
-				if(newIndex>=((selectionRow+1)*columns) ||
-					newIndex>=numberChildren)
-				{
-					newIndex=(selectionRow*columns);
-				}
-			}
-
-			if(rows>1 && inEvent->key.keyval==CLUTTER_KEY_Up)
-			{
-				newIndex-=columns;
-				if(newIndex<0)
-				{
-					newIndex=((rows-1)*columns)+selectionColumn;
-					if(newIndex>=numberChildren) newIndex-=columns;
-				}
-			}
-
-			if(rows>1 && inEvent->key.keyval==CLUTTER_KEY_Down)
-			{
-				newIndex+=columns;
-				if(newIndex>=numberChildren) newIndex=selectionColumn;
-			}
-
-			/* Only change selection and update the affected actors if index of
-			 * new and old selection differ.
-			 */
-			if(newIndex==index) return(CLUTTER_EVENT_STOP);
-
-			/* Unstyle current selection */
-			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-
-			/* Get new selection and style it */
-			index=newIndex;
-			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-			while(clutter_actor_iter_next(&iter, &priv->selectedItem) &&
-					index>0)
-			{
-				index--;
-			}
+			priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
 
 			if(priv->selectedItem)
 			{
 				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
 			}
 
-			/* Event handled */
 			return(CLUTTER_EVENT_STOP);
 		}
+
+		/* Get number of rows and columns and also get number of children
+		 * of layout manager.
+		 */
+		numberChildren=xfdashboard_scaled_table_layout_get_number_children(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
+		rows=xfdashboard_scaled_table_layout_get_rows(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
+		columns=xfdashboard_scaled_table_layout_get_columns(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
+
+		/* Get index of current selection */
+		newIndex=index=0;
+		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+		while(clutter_actor_iter_next(&iter, &child) &&
+				child!=priv->selectedItem)
+		{
+			index++;
+			newIndex++;
+		}
+
+		selectionRow=(index / columns);
+		selectionColumn=(index % columns);
+
+		/* Determine index of new selection depending on arrow key pressed */
+		if(columns>1 && inEvent->key.keyval==CLUTTER_KEY_Left)
+		{
+			newIndex--;
+			if(newIndex<(selectionRow*columns))
+			{
+				newIndex=(selectionRow*columns)+columns-1;
+				if(newIndex>=numberChildren) newIndex=numberChildren-1;
+			}
+		}
+
+		if(columns>1 && inEvent->key.keyval==CLUTTER_KEY_Right)
+		{
+			newIndex++;
+			if(newIndex>=((selectionRow+1)*columns) ||
+				newIndex>=numberChildren)
+			{
+				newIndex=(selectionRow*columns);
+			}
+		}
+
+		if(rows>1 && inEvent->key.keyval==CLUTTER_KEY_Up)
+		{
+			newIndex-=columns;
+			if(newIndex<0)
+			{
+				newIndex=((rows-1)*columns)+selectionColumn;
+				if(newIndex>=numberChildren) newIndex-=columns;
+			}
+		}
+
+		if(rows>1 && inEvent->key.keyval==CLUTTER_KEY_Down)
+		{
+			newIndex+=columns;
+			if(newIndex>=numberChildren) newIndex=selectionColumn;
+		}
+
+		/* Only change selection and update the affected actors if index of
+		 * new and old selection differ.
+		 */
+		if(newIndex==index) return(CLUTTER_EVENT_STOP);
+
+		/* Unstyle current selection */
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+
+		/* Get new selection and style it */
+		index=newIndex;
+		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+		while(clutter_actor_iter_next(&iter, &priv->selectedItem) &&
+				index>0)
+		{
+			index--;
+		}
+
+		if(priv->selectedItem)
+		{
+			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+		}
+
+		/* Event handled */
+		return(CLUTTER_EVENT_STOP);
+	}
+
+	/* We did not handle this event */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Virtual function "handle_key_event" was called */
+static gboolean _xfdashboard_windows_view_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
+																			const ClutterEvent *inEvent)
+{
+	XfdashboardWindowsView					*self;
+	XfdashboardWindowsViewPrivate			*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
+	priv=self->priv;
+
+	/* Activate selected window on ENTER or close window on DELETE/BACKSPACE */
+	switch(inEvent->key.keyval)
+	{
+		case CLUTTER_KEY_Return:
+		case CLUTTER_KEY_KP_Enter:
+		case CLUTTER_KEY_ISO_Enter:
+			if(priv->selectedItem)
+			{
+				_xfdashboard_windows_view_on_window_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
+			}
+			return(CLUTTER_EVENT_STOP);
+
+		case CLUTTER_KEY_BackSpace:
+		case CLUTTER_KEY_Delete:
+		case CLUTTER_KEY_KP_Delete:
+			if(priv->selectedItem)
+			{
+				_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
+			}
+			return(CLUTTER_EVENT_STOP);
 	}
 
 	/* We did not handle this event */
@@ -852,7 +865,8 @@ void _xfdashboard_windows_view_focusable_iface_init(XfdashboardFocusableInterfac
 	iface->can_focus=_xfdashboard_windows_view_focusable_can_focus;
 	iface->set_focus=_xfdashboard_windows_view_focusable_set_focus;
 	iface->unset_focus=_xfdashboard_windows_view_focusable_unset_focus;
-	iface->handle_key_event=_xfdashboard_windows_view_focusable_handle_key_event;
+	iface->handle_keypress_event=_xfdashboard_windows_view_focusable_handle_keypress_event;
+	iface->handle_keyrelease_event=_xfdashboard_windows_view_focusable_handle_keyrelease_event;
 }
 
 /* IMPLEMENTATION: GObject */

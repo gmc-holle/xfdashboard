@@ -490,30 +490,6 @@ static gboolean _xfdashboard_text_box_focusable_can_focus(XfdashboardFocusable *
 	return(FALSE);
 }
 
-/* Virtual function "handle_key_event" was called */
-static gboolean _xfdashboard_text_box_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
-																	const ClutterEvent *inEvent)
-{
-	XfdashboardTextBox			*self;
-	XfdashboardTextBoxPrivate	*priv;
-	gboolean					result;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(inFocusable), CLUTTER_EVENT_PROPAGATE);
-
-	self=XFDASHBOARD_TEXT_BOX(inFocusable);
-	priv=self->priv;
-	result=CLUTTER_EVENT_PROPAGATE;
-
-	/* Push event to real text box if available */
-	if(priv->actorTextBox)
-	{
-		result=clutter_actor_event(priv->actorTextBox, inEvent, FALSE);
-	}
-
-	/* Return event handling result */
-	return(result);
-}
-
 /* Set focus to actor */
 static void _xfdashboard_text_box_focusable_set_focus(XfdashboardFocusable *inFocusable)
 {
@@ -584,6 +560,54 @@ static void _xfdashboard_text_box_focusable_unset_focus(XfdashboardFocusable *in
 	clutter_stage_set_key_focus(stage, NULL);
 }
 
+/* Virtual function "handle_keypress_event" was called */
+static gboolean _xfdashboard_text_box_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
+																		const ClutterEvent *inEvent)
+{
+	XfdashboardTextBox			*self;
+	XfdashboardTextBoxPrivate	*priv;
+	gboolean					result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_TEXT_BOX(inFocusable);
+	priv=self->priv;
+	result=CLUTTER_EVENT_PROPAGATE;
+
+	/* Push event to real text box if available */
+	if(priv->actorTextBox)
+	{
+		result=clutter_actor_event(priv->actorTextBox, inEvent, FALSE);
+	}
+
+	/* Return event handling result */
+	return(result);
+}
+
+/* Virtual function "handle_keyrelease_event" was called */
+static gboolean _xfdashboard_text_box_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
+																		const ClutterEvent *inEvent)
+{
+	XfdashboardTextBox			*self;
+	XfdashboardTextBoxPrivate	*priv;
+	gboolean					result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_TEXT_BOX(inFocusable);
+	priv=self->priv;
+	result=CLUTTER_EVENT_PROPAGATE;
+
+	/* Push event to real text box if available */
+	if(priv->actorTextBox)
+	{
+		result=clutter_actor_event(priv->actorTextBox, inEvent, FALSE);
+	}
+
+	/* Return event handling result */
+	return(result);
+}
+
 /* Interface initialization
  * Set up default functions
  */
@@ -592,7 +616,8 @@ void _xfdashboard_text_box_focusable_iface_init(XfdashboardFocusableInterface *i
 	iface->can_focus=_xfdashboard_text_box_focusable_can_focus;
 	iface->set_focus=_xfdashboard_text_box_focusable_set_focus;
 	iface->unset_focus=_xfdashboard_text_box_focusable_unset_focus;
-	iface->handle_key_event=_xfdashboard_text_box_focusable_handle_key_event;
+	iface->handle_keypress_event=_xfdashboard_text_box_focusable_handle_keypress_event;
+	iface->handle_keyrelease_event=_xfdashboard_text_box_focusable_handle_keyrelease_event;
 }
 
 /* IMPLEMENTATION: GObject */

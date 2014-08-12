@@ -801,9 +801,9 @@ static void _xfdashboard_workspace_selector_allocate(ClutterActor *inActor,
 
 /* IMPLEMENTATION: Interface XfdashboardFocusable */
 
-/* Virtual function "handle_key_event" was called */
-static gboolean _xfdashboard_workspace_selector_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
-																			const ClutterEvent *inEvent)
+/* Virtual function "handle_keypress_event" was called */
+static gboolean _xfdashboard_workspace_selector_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
+																				const ClutterEvent *inEvent)
 {
 	XfdashboardWorkspaceSelector			*self;
 	XfdashboardWorkspaceSelectorPrivate		*priv;
@@ -817,58 +817,76 @@ static gboolean _xfdashboard_workspace_selector_focusable_handle_key_event(Xfdas
 	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
 	priv=self->priv;
 
-	/* Handle key events when key was released */
-	if(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
+	/* Get current and last workspace */
+	currentWorkspace=xfdashboard_window_tracker_workspace_get_number(priv->activeWorkspace);
+	maxWorkspace=xfdashboard_window_tracker_get_workspaces_count(priv->windowTracker);
+
+	/* Change workspace if an arrow key was pressed which makes sense
+	 * for orientation set
+	 */
+	if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Up) ||
+		(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Left))
 	{
-		/* Get current and last workspace */
+		/* Activate previous workspace */
+		currentWorkspace--;
+		if(currentWorkspace<0) currentWorkspace=maxWorkspace-1;
+
+		workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
+		xfdashboard_window_tracker_workspace_activate(workspace);
+
+		/* Event handled */
+		return(CLUTTER_EVENT_STOP);
+	}
+		else if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Down) ||
+				(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Right))
+		{
+			/* Activate next workspace */
+			currentWorkspace++;
+			if(currentWorkspace>=maxWorkspace) currentWorkspace=0;
+
+			workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
+			xfdashboard_window_tracker_workspace_activate(workspace);
+
+			/* Event handled */
+			return(CLUTTER_EVENT_STOP);
+		}
+
+	/* We did not handle this event */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Virtual function "handle_keyrelease_event" was called */
+static gboolean _xfdashboard_workspace_selector_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
+																					const ClutterEvent *inEvent)
+{
+	XfdashboardWorkspaceSelector			*self;
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	gint									currentWorkspace;
+	XfdashboardWindowTrackerWorkspace		*workspace;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
+	priv=self->priv;
+
+	/* Activate workspace on ENTER */
+	if(inEvent->key.keyval==CLUTTER_KEY_Return ||
+		inEvent->key.keyval==CLUTTER_KEY_KP_Enter ||
+		inEvent->key.keyval==CLUTTER_KEY_ISO_Enter)
+	{
+		/* Get current workspace */
 		currentWorkspace=xfdashboard_window_tracker_workspace_get_number(priv->activeWorkspace);
-		maxWorkspace=xfdashboard_window_tracker_get_workspaces_count(priv->windowTracker);
 
-		/* Change workspace if an arrow key was pressed which makes sense
-		 * for orientation set
-		 */
-		if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Up) ||
-			(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Left))
-		{
-			/* Activate previous workspace */
-			currentWorkspace--;
-			if(currentWorkspace<0) currentWorkspace=maxWorkspace-1;
+		/* Active workspace */
+		workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
+		xfdashboard_window_tracker_workspace_activate(workspace);
 
-			workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
-			xfdashboard_window_tracker_workspace_activate(workspace);
+		/* Quit application */
+		xfdashboard_application_quit();
 
-			/* Event handled */
-			return(CLUTTER_EVENT_STOP);
-		}
-			else if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Down) ||
-					(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Right))
-			{
-				/* Activate next workspace */
-				currentWorkspace++;
-				if(currentWorkspace>=maxWorkspace) currentWorkspace=0;
-
-				workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
-				xfdashboard_window_tracker_workspace_activate(workspace);
-
-				/* Event handled */
-				return(CLUTTER_EVENT_STOP);
-			}
-
-		/* Activate workspace on ENTER */
-		if(inEvent->key.keyval==CLUTTER_KEY_Return ||
-			inEvent->key.keyval==CLUTTER_KEY_KP_Enter ||
-			inEvent->key.keyval==CLUTTER_KEY_ISO_Enter)
-		{
-			/* Active workspace */
-			workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
-			xfdashboard_window_tracker_workspace_activate(workspace);
-
-			/* Quit application */
-			xfdashboard_application_quit();
-
-			/* Event handled */
-			return(CLUTTER_EVENT_STOP);
-		}
+		/* Event handled */
+		return(CLUTTER_EVENT_STOP);
 	}
 
 	/* We did not handle this event */
@@ -880,7 +898,8 @@ static gboolean _xfdashboard_workspace_selector_focusable_handle_key_event(Xfdas
  */
 void _xfdashboard_workspace_selector_focusable_iface_init(XfdashboardFocusableInterface *iface)
 {
-	iface->handle_key_event=_xfdashboard_workspace_selector_focusable_handle_key_event;
+	iface->handle_keypress_event=_xfdashboard_workspace_selector_focusable_handle_keypress_event;
+	iface->handle_keyrelease_event=_xfdashboard_workspace_selector_focusable_handle_keyrelease_event;
 }
 
 /* IMPLEMENTATION: GObject */

@@ -999,9 +999,9 @@ static void _xfdashboard_viewpad_focusable_unset_focus(XfdashboardFocusable *inF
 	}
 }
 
-/* Virtual function "handle_key_event" was called */
-static gboolean _xfdashboard_viewpad_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
-																const ClutterEvent *inEvent)
+/* Virtual function "handle_keypress_event" was called */
+static gboolean _xfdashboard_viewpad_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
+																		const ClutterEvent *inEvent)
 {
 	XfdashboardViewpad			*self;
 	XfdashboardViewpadPrivate	*priv;
@@ -1026,7 +1026,41 @@ static gboolean _xfdashboard_viewpad_focusable_handle_key_event(XfdashboardFocus
 	if(priv->activeView &&
 		XFDASHBOARD_IS_FOCUSABLE(priv->activeView))
 	{
-		handledEvent=xfdashboard_focusable_handle_key_event(XFDASHBOARD_FOCUSABLE(priv->activeView), inEvent);
+		handledEvent=xfdashboard_focusable_handle_keypress_event(XFDASHBOARD_FOCUSABLE(priv->activeView), inEvent);
+	}
+
+	/* Return focusable state */
+	return(handledEvent);
+}
+
+/* Virtual function "handle_keyrelease_event" was called */
+static gboolean _xfdashboard_viewpad_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
+																		const ClutterEvent *inEvent)
+{
+	XfdashboardViewpad			*self;
+	XfdashboardViewpadPrivate	*priv;
+	gboolean					handledEvent;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_VIEWPAD(inFocusable);
+	priv=self->priv;
+
+	/* Set handled key eventto CLUTTER_EVENT_PROPAGATE. It might be set to
+	 * CLUTTER_EVENT_STOP if current active view is focusable and it handled
+	 * the key event by its virtual function.
+	 */
+	handledEvent=CLUTTER_EVENT_PROPAGATE;
+
+	/* Viewpad is just a proxy for the current active view.
+	 * So check if current active view is focusable and call its
+	 * virtual function.
+	 */
+	if(priv->activeView &&
+		XFDASHBOARD_IS_FOCUSABLE(priv->activeView))
+	{
+		handledEvent=xfdashboard_focusable_handle_keyrelease_event(XFDASHBOARD_FOCUSABLE(priv->activeView), inEvent);
 	}
 
 	/* Return focusable state */
@@ -1041,7 +1075,8 @@ void _xfdashboard_viewpad_focusable_iface_init(XfdashboardFocusableInterface *if
 	iface->can_focus=_xfdashboard_viewpad_focusable_can_focus;
 	iface->set_focus=_xfdashboard_viewpad_focusable_set_focus;
 	iface->unset_focus=_xfdashboard_viewpad_focusable_unset_focus;
-	iface->handle_key_event=_xfdashboard_viewpad_focusable_handle_key_event;
+	iface->handle_keypress_event=_xfdashboard_viewpad_focusable_handle_keypress_event;
+	iface->handle_keyrelease_event=_xfdashboard_viewpad_focusable_handle_keyrelease_event;
 }
 
 /* IMPLEMENTATION: GObject */

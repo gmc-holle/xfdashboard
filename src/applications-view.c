@@ -667,8 +667,8 @@ static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_lis
 	return(CLUTTER_EVENT_STOP);
 }
 
-static gboolean _xfdashboard_applications_view_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
-																			const ClutterEvent *inEvent)
+static gboolean _xfdashboard_applications_view_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
+																				const ClutterEvent *inEvent)
 {
 	XfdashboardApplicationsView				*self;
 	XfdashboardApplicationsViewPrivate		*priv;
@@ -680,40 +680,52 @@ static gboolean _xfdashboard_applications_view_focusable_handle_key_event(Xfdash
 	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
 	priv=self->priv;
 
-	/* Handle key events when key was released */
-	if(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
+	/* Move selection if an arrow key was pressed */
+	if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
 	{
-		/* Start selected application on ENTER */
-		switch(inEvent->key.keyval)
+		handledEvent=_xfdashboard_applications_view_focusable_handle_key_event_at_list_mode(self, inEvent);
+	}
+		else
 		{
-			case CLUTTER_KEY_Return:
-			case CLUTTER_KEY_KP_Enter:
-			case CLUTTER_KEY_ISO_Enter:
-				if(priv->selectedItem)
-				{
-					if(XFDASHBOARD_IS_APPLICATION_BUTTON(priv->selectedItem))
-					{
-						_xfdashboard_applications_view_on_item_clicked(self, XFDASHBOARD_APPLICATION_BUTTON(priv->selectedItem));
-					}
-						else if(XFDASHBOARD_IS_BUTTON(priv->selectedItem))
-						{
-							_xfdashboard_applications_view_on_parent_menu_clicked(self, XFDASHBOARD_BUTTON(priv->selectedItem));
-						}
-				}
-				return(CLUTTER_EVENT_STOP);
+			handledEvent=_xfdashboard_applications_view_focusable_handle_key_event_at_icon_mode(self, inEvent);
 		}
 
-		/* Move selection if an arrow key was pressed */
-		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
-		{
-			handledEvent=_xfdashboard_applications_view_focusable_handle_key_event_at_list_mode(self, inEvent);
-		}
-			else
+	if(handledEvent==CLUTTER_EVENT_STOP) return(handledEvent);
+
+	/* We did not handle this event */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+static gboolean _xfdashboard_applications_view_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
+																					const ClutterEvent *inEvent)
+{
+	XfdashboardApplicationsView				*self;
+	XfdashboardApplicationsViewPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
+	priv=self->priv;
+
+	/* Start selected application on ENTER */
+	switch(inEvent->key.keyval)
+	{
+		case CLUTTER_KEY_Return:
+		case CLUTTER_KEY_KP_Enter:
+		case CLUTTER_KEY_ISO_Enter:
+			if(priv->selectedItem)
 			{
-				handledEvent=_xfdashboard_applications_view_focusable_handle_key_event_at_icon_mode(self, inEvent);
+				if(XFDASHBOARD_IS_APPLICATION_BUTTON(priv->selectedItem))
+				{
+					_xfdashboard_applications_view_on_item_clicked(self, XFDASHBOARD_APPLICATION_BUTTON(priv->selectedItem));
+				}
+					else if(XFDASHBOARD_IS_BUTTON(priv->selectedItem))
+					{
+						_xfdashboard_applications_view_on_parent_menu_clicked(self, XFDASHBOARD_BUTTON(priv->selectedItem));
+					}
 			}
-
-		if(handledEvent==CLUTTER_EVENT_STOP) return(handledEvent);
+			return(CLUTTER_EVENT_STOP);
 	}
 
 	/* We did not handle this event */
@@ -728,7 +740,8 @@ void _xfdashboard_applications_view_focusable_iface_init(XfdashboardFocusableInt
 	iface->can_focus=_xfdashboard_applications_view_focusable_can_focus;
 	iface->set_focus=_xfdashboard_applications_view_focusable_set_focus;
 	iface->unset_focus=_xfdashboard_applications_view_focusable_unset_focus;
-	iface->handle_key_event=_xfdashboard_applications_view_focusable_handle_key_event;
+	iface->handle_keypress_event=_xfdashboard_applications_view_focusable_handle_keypress_event;
+	iface->handle_keyrelease_event=_xfdashboard_applications_view_focusable_handle_keyrelease_event;
 }
 
 /* IMPLEMENTATION: GObject */

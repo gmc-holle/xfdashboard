@@ -754,8 +754,8 @@ static void _xfdashboard_search_view_focusable_unset_focus(XfdashboardFocusable 
 }
 
 /* Virtual function "handle_key_event" was called */
-static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
-																	const ClutterEvent *inEvent)
+static gboolean _xfdashboard_search_view_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
+																			const ClutterEvent *inEvent)
 {
 	XfdashboardSearchView			*self;
 	XfdashboardSearchViewPrivate	*priv;
@@ -770,37 +770,11 @@ static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardF
 
 	/* Handle key events at container of selected provider */
 	if(priv->selectionProvider &&
-		priv->selectionProvider->container &&
-		clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
+		priv->selectionProvider->container)
 	{
-		ClutterActor				*currentSelection;
 		ClutterActor				*newSelection;
 		gboolean					doGetPrevious;
 		gint						selectionDirection;
-
-		/* Emit click on current selection when ENTER was pressed */
-		switch(inEvent->key.keyval)
-		{
-			case CLUTTER_KEY_Return:
-			case CLUTTER_KEY_KP_Enter:
-			case CLUTTER_KEY_ISO_Enter:
-				/* Get current selection to lookup mapping */
-				currentSelection=xfdashboard_search_result_container_get_current_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container));
-				if(currentSelection)
-				{
-					XfdashboardSearchViewProviderItemsMapping	*mapping;
-
-					/* Get mapping of current selection to determine actor where to emit click action */
-					mapping=_xfdashboard_search_view_provider_data_get_mapping_by_actor(priv->selectionProvider, currentSelection);
-					if(mapping)
-					{
-						_xfdashboard_search_view_on_provider_item_actor_clicked(XFDASHBOARD_CLICK_ACTION(mapping->clickAction),
-																				mapping->actor,
-																				mapping);
-					}
-				}
-				return(CLUTTER_EVENT_STOP);
-		}
 
 		/* Move selection if an corresponding key was pressed */
 		switch(inEvent->key.keyval)
@@ -835,9 +809,6 @@ static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardF
 
 		if(handledEvent==CLUTTER_EVENT_STOP)
 		{
-			/* Get current selection to determine if selection has changed */
-			currentSelection=xfdashboard_search_result_container_get_current_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container));
-
 			/* Get new selection */
 			if(doGetPrevious)
 			{
@@ -916,6 +887,56 @@ static gboolean _xfdashboard_search_view_focusable_handle_key_event(XfdashboardF
 	return(handledEvent);
 }
 
+/* Virtual function "handle_keyrelease_event" was called */
+static gboolean _xfdashboard_search_view_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
+																			const ClutterEvent *inEvent)
+{
+	XfdashboardSearchView			*self;
+	XfdashboardSearchViewPrivate	*priv;
+	gboolean						handledEvent;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
+	priv=self->priv;
+	handledEvent=CLUTTER_EVENT_PROPAGATE;
+
+	/* Handle key events at container of selected provider */
+	if(priv->selectionProvider &&
+		priv->selectionProvider->container)
+	{
+		ClutterActor				*currentSelection;
+
+		/* Emit click on current selection when ENTER was pressed */
+		switch(inEvent->key.keyval)
+		{
+			case CLUTTER_KEY_Return:
+			case CLUTTER_KEY_KP_Enter:
+			case CLUTTER_KEY_ISO_Enter:
+				/* Get current selection to lookup mapping */
+				currentSelection=xfdashboard_search_result_container_get_current_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container));
+				if(currentSelection)
+				{
+					XfdashboardSearchViewProviderItemsMapping	*mapping;
+
+					/* Get mapping of current selection to determine actor where to emit click action */
+					mapping=_xfdashboard_search_view_provider_data_get_mapping_by_actor(priv->selectionProvider, currentSelection);
+					if(mapping)
+					{
+						_xfdashboard_search_view_on_provider_item_actor_clicked(XFDASHBOARD_CLICK_ACTION(mapping->clickAction),
+																				mapping->actor,
+																				mapping);
+					}
+				}
+				return(CLUTTER_EVENT_STOP);
+		}
+	}
+
+	/* Return result of key handling */
+	return(handledEvent);
+}
+
 /* Interface initialization
  * Set up default functions
  */
@@ -924,7 +945,8 @@ void _xfdashboard_search_view_focusable_iface_init(XfdashboardFocusableInterface
 	iface->can_focus=_xfdashboard_search_view_focusable_can_focus;
 	iface->set_focus=_xfdashboard_search_view_focusable_set_focus;
 	iface->unset_focus=_xfdashboard_search_view_focusable_unset_focus;
-	iface->handle_key_event=_xfdashboard_search_view_focusable_handle_key_event;
+	iface->handle_keypress_event=_xfdashboard_search_view_focusable_handle_keypress_event;
+	iface->handle_keyrelease_event=_xfdashboard_search_view_focusable_handle_keyrelease_event;
 }
 
 
