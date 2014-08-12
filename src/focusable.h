@@ -49,7 +49,8 @@ struct _XfdashboardFocusableInterface
 	void (*set_focus)(XfdashboardFocusable *self);
 	void (*unset_focus)(XfdashboardFocusable *self);
 
-	gboolean (*handle_key_event)(XfdashboardFocusable *self, const ClutterEvent *inEvent);
+	gboolean (*handle_keypress_event)(XfdashboardFocusable *self, const ClutterEvent *inEvent);
+	gboolean (*handle_keyrelease_event)(XfdashboardFocusable *self, const ClutterEvent *inEvent);
 };
 
 /* Public API */
@@ -60,6 +61,8 @@ void xfdashboard_focusable_set_focus(XfdashboardFocusable *self);
 void xfdashboard_focusable_unset_focus(XfdashboardFocusable *self);
 
 gboolean xfdashboard_focusable_handle_key_event(XfdashboardFocusable *self, const ClutterEvent *inEvent);
+gboolean xfdashboard_focusable_handle_keypress_event(XfdashboardFocusable *self, const ClutterEvent *inEvent);
+gboolean xfdashboard_focusable_handle_keyrelease_event(XfdashboardFocusable *self, const ClutterEvent *inEvent);
 
 G_END_DECLS
 

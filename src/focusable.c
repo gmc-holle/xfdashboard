@@ -61,8 +61,18 @@ static void _xfdashboard_focusable_real_unset_focus(XfdashboardFocusable *self)
 	/* By default (if not overidden) do nothing */
 }
 
-/* Default implementation of virtual function "handle_key_event" */
-static gboolean _xfdashboard_focusable_real_handle_key_event(XfdashboardFocusable *self, const ClutterEvent *inEvent)
+/* Default implementation of virtual function "handle_keypress_event" */
+static gboolean _xfdashboard_focusable_real_handle_keypress_event(XfdashboardFocusable *self, const ClutterEvent *inEvent)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(self), CLUTTER_EVENT_PROPAGATE);
+
+	/* By default synthesize event to focusable actor */
+	return(clutter_actor_event(CLUTTER_ACTOR(self), inEvent, FALSE));
+}
+
+/* Default implementation of virtual function "handle_keyrelease_event" */
+static gboolean _xfdashboard_focusable_real_handle_keyrelease_event(XfdashboardFocusable *self, const ClutterEvent *inEvent)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(self), CLUTTER_EVENT_PROPAGATE);
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(self), CLUTTER_EVENT_PROPAGATE);
@@ -86,7 +96,8 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 	 */
 	iface->can_focus=_xfdashboard_focusable_real_can_focus;
 	iface->unset_focus=_xfdashboard_focusable_real_unset_focus;
-	iface->handle_key_event=_xfdashboard_focusable_real_handle_key_event;
+	iface->handle_keypress_event=_xfdashboard_focusable_real_handle_keypress_event;
+	iface->handle_keyrelease_event=_xfdashboard_focusable_real_handle_keyrelease_event;
 }
 
 /* Implementation: Public API */
@@ -151,22 +162,71 @@ void xfdashboard_focusable_unset_focus(XfdashboardFocusable *self)
 	XFDASHBOARD_FOCUSABLE_WARN_NOT_IMPLEMENTED(self, "unset_focus");
 }
 
-/* Call virtual function "handle_key_event" */
+/* Call key handling function depending on key event type */
 gboolean xfdashboard_focusable_handle_key_event(XfdashboardFocusable *self, const ClutterEvent *inEvent)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(clutter_event_type(inEvent)==CLUTTER_KEY_PRESS ||
+							clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE, CLUTTER_EVENT_PROPAGATE);
+
+	switch(clutter_event_type(inEvent))
+	{
+		case CLUTTER_KEY_PRESS:
+			return(xfdashboard_focusable_handle_keypress_event(self, inEvent));
+
+		case CLUTTER_KEY_RELEASE:
+			return(xfdashboard_focusable_handle_keyrelease_event(self, inEvent));
+
+		default:
+			/* We should never get here */
+			g_assert_not_reached();
+			break;
+	}
+
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Call virtual function "handle_keypress_event" */
+gboolean xfdashboard_focusable_handle_keypress_event(XfdashboardFocusable *self, const ClutterEvent *inEvent)
 {
 	XfdashboardFocusableInterface		*iface;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(clutter_event_type(inEvent)==CLUTTER_KEY_PRESS, CLUTTER_EVENT_PROPAGATE);
 
 	iface=XFDASHBOARD_FOCUSABLE_GET_IFACE(self);
 
 	/* Call virtual function */
-	if(iface->handle_key_event)
+	if(iface->handle_keypress_event)
 	{
-		return(iface->handle_key_event(self, inEvent));
+		return(iface->handle_keypress_event(self, inEvent));
 	}
 
 	/* If we get here the virtual function was not overridden */
-	XFDASHBOARD_FOCUSABLE_WARN_NOT_IMPLEMENTED(self, "handle_key_event");
-	return(FALSE);
+	XFDASHBOARD_FOCUSABLE_WARN_NOT_IMPLEMENTED(self, "handle_keypress_event");
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Call virtual function "handle_keypress_event" */
+gboolean xfdashboard_focusable_handle_keyrelease_event(XfdashboardFocusable *self, const ClutterEvent *inEvent)
+{
+	XfdashboardFocusableInterface		*iface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE, CLUTTER_EVENT_PROPAGATE);
+
+	iface=XFDASHBOARD_FOCUSABLE_GET_IFACE(self);
+
+	/* Call virtual function */
+	if(iface->handle_keyrelease_event)
+	{
+		return(iface->handle_keyrelease_event(self, inEvent));
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_FOCUSABLE_WARN_NOT_IMPLEMENTED(self, "handle_keyrelease_event");
+	return(CLUTTER_EVENT_PROPAGATE);
 }

@@ -1455,9 +1455,9 @@ static void _xfdashboard_quicklaunch_focusable_unset_focus(XfdashboardFocusable 
 	}
 }
 
-/* Virtual function "handle_key_event" was called */
-static gboolean _xfdashboard_quicklaunch_focusable_handle_key_event(XfdashboardFocusable *inFocusable,
-																	const ClutterEvent *inEvent)
+/* Virtual function "handle_keypress_event" was called */
+static gboolean _xfdashboard_quicklaunch_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
+																			const ClutterEvent *inEvent)
 {
 	XfdashboardQuicklaunch					*self;
 	XfdashboardQuicklaunchPrivate			*priv;
@@ -1469,17 +1469,35 @@ static gboolean _xfdashboard_quicklaunch_focusable_handle_key_event(XfdashboardF
 	self=XFDASHBOARD_QUICKLAUNCH(inFocusable);
 	priv=self->priv;
 
-	/* Handle key events when key was released */
-	if(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
+	/* Move selection if an arrow key was pressed which makes sense
+	 * for orientation set
+	 */
+	if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Up) ||
+		(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Left))
 	{
-		/* Move selection if an arrow key was pressed which makes sense
-		 * for orientation set
-		 */
-		if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Up) ||
-			(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Left))
+		/* Find previous item to select and set style to it but also unstyle previous one */
+		newItem=xfdashboard_quicklaunch_get_previous_selectable(self, priv->selectedItem);
+		if(newItem && newItem!=priv->selectedItem)
 		{
-			/* Find previous item to select and set style to it but also unstyle previous one */
-			newItem=xfdashboard_quicklaunch_get_previous_selectable(self, priv->selectedItem);
+			/* Unset current selected item if any */
+			if(priv->selectedItem)
+			{
+				xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+			}
+
+			/* Set new current selected item */
+			priv->selectedItem=newItem;
+			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+		}
+
+		/* Event handled */
+		return(CLUTTER_EVENT_STOP);
+	}
+		else if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Down) ||
+				(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Right))
+		{
+			/* Find next item to select and set style to it but also unstyle previous one */
+			newItem=xfdashboard_quicklaunch_get_next_selectable(self, priv->selectedItem);
 			if(newItem && newItem!=priv->selectedItem)
 			{
 				/* Unset current selected item if any */
@@ -1496,42 +1514,37 @@ static gboolean _xfdashboard_quicklaunch_focusable_handle_key_event(XfdashboardF
 			/* Event handled */
 			return(CLUTTER_EVENT_STOP);
 		}
-			else if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Down) ||
-					(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Right))
-			{
-				/* Find next item to select and set style to it but also unstyle previous one */
-				newItem=xfdashboard_quicklaunch_get_next_selectable(self, priv->selectedItem);
-				if(newItem && newItem!=priv->selectedItem)
-				{
-					/* Unset current selected item if any */
-					if(priv->selectedItem)
-					{
-						xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-					}
 
-					/* Set new current selected item */
-					priv->selectedItem=newItem;
-					xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-				}
+	/* We did not handle this event */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
 
-				/* Event handled */
-				return(CLUTTER_EVENT_STOP);
-			}
+/* Virtual function "handle_keyrelease_event" was called */
+static gboolean _xfdashboard_quicklaunch_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
+																			const ClutterEvent *inEvent)
+{
+	XfdashboardQuicklaunch					*self;
+	XfdashboardQuicklaunchPrivate			*priv;
 
-		/* Activate workspace on ENTER */
-		if(inEvent->key.keyval==CLUTTER_KEY_Return ||
-			inEvent->key.keyval==CLUTTER_KEY_KP_Enter ||
-			inEvent->key.keyval==CLUTTER_KEY_ISO_Enter)
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inFocusable), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_QUICKLAUNCH(inFocusable);
+	priv=self->priv;
+
+	/* Activate selected icon on ENTER */
+	if(inEvent->key.keyval==CLUTTER_KEY_Return ||
+		inEvent->key.keyval==CLUTTER_KEY_KP_Enter ||
+		inEvent->key.keyval==CLUTTER_KEY_ISO_Enter)
+	{
+		/* Emit "clicked" signal at selected item */
+		if(priv->selectedItem)
 		{
-			/* Emit "clicked" signal at selected item */
-			if(priv->selectedItem)
-			{
-				g_signal_emit_by_name(priv->selectedItem, "clicked");
-			}
-
-			/* Event handled */
-			return(CLUTTER_EVENT_STOP);
+			g_signal_emit_by_name(priv->selectedItem, "clicked");
 		}
+
+		/* Event handled */
+		return(CLUTTER_EVENT_STOP);
 	}
 
 	/* We did not handle this event */
@@ -1545,7 +1558,8 @@ void _xfdashboard_quicklaunch_focusable_iface_init(XfdashboardFocusableInterface
 {
 	iface->set_focus=_xfdashboard_quicklaunch_focusable_set_focus;
 	iface->unset_focus=_xfdashboard_quicklaunch_focusable_unset_focus;
-	iface->handle_key_event=_xfdashboard_quicklaunch_focusable_handle_key_event;
+	iface->handle_keypress_event=_xfdashboard_quicklaunch_focusable_handle_keypress_event;
+	iface->handle_keyrelease_event=_xfdashboard_quicklaunch_focusable_handle_keyrelease_event;
 }
 
 /* IMPLEMENTATION: GObject */
