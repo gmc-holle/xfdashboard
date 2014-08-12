@@ -43,6 +43,12 @@
 	</provides>
 
 	<releases>
+		<release version="0.2.2" timestamp="1407869332">
+			<description>
+				<_p>This release fixes a problem when loading scalable images by icon name.
+				</_p>
+			</description>
+		</release>
 		<release version="0.3.0" timestamp="1406052137">
 			<description>
 				<_p>This unstable development release fixes problems with icon mode in theming and
