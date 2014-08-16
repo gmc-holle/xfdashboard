@@ -831,7 +831,7 @@ static gboolean _xfdashboard_windows_view_focusable_handle_keyrelease_event(Xfda
 	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
 	priv=self->priv;
 
-	/* Activate selected window on ENTER or close window on DELETE/BACKSPACE */
+	/* Activate selected window on ENTER or close window on DELETE/SHIFT+BACKSPACE */
 	switch(inEvent->key.keyval)
 	{
 		case CLUTTER_KEY_Return:
@@ -844,6 +844,13 @@ static gboolean _xfdashboard_windows_view_focusable_handle_keyrelease_event(Xfda
 			return(CLUTTER_EVENT_STOP);
 
 		case CLUTTER_KEY_BackSpace:
+			if(clutter_event_has_shift_modifier(inEvent) &&
+				priv->selectedItem)
+			{
+				_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
+			}
+			return(CLUTTER_EVENT_STOP);
+
 		case CLUTTER_KEY_Delete:
 		case CLUTTER_KEY_KP_Delete:
 			if(priv->selectedItem)
