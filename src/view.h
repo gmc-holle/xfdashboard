@@ -99,6 +99,8 @@ void xfdashboard_view_set_enabled(XfdashboardView *self, gboolean inIsEnabled);
 void xfdashboard_view_scroll_to(XfdashboardView *self, gfloat inX, gfloat inY);
 void xfdashboard_view_ensure_visible(XfdashboardView *self, ClutterActor *inActor);
 
+gboolean xfdashboard_view_has_focus(XfdashboardView *self);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_VIEW__ */

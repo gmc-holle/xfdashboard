@@ -581,21 +581,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 		handled=CLUTTER_EVENT_PROPAGATE;
 
 		/* Try handler function depending on key event type */
-		switch(clutter_event_type(inEvent))
-		{
-			case CLUTTER_KEY_PRESS:
-				handled=xfdashboard_focusable_handle_keypress_event(priv->currentFocus, inEvent);
-				break;
-
-			case CLUTTER_KEY_RELEASE:
-				handled=xfdashboard_focusable_handle_keyrelease_event(priv->currentFocus, inEvent);
-				break;
-
-			default:
-				/* We should never get here */
-				g_assert_not_reached();
-				break;
-		}
+		handled=xfdashboard_focusable_handle_key_event(priv->currentFocus, inEvent);
 
 		/* Return handling result */
 		return(handled);

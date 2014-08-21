@@ -455,15 +455,6 @@ XfdashboardWindowsView
 	corner-radius: 4.0;
 }
 
-#workspace-selector XfdashboardLiveWorkspace:selected
-{
-	background-type: outline rounded-corners;
-	outline-color: #ffffffff;
-	outline-width: 2.0;
-	corners: all;
-	corner-radius: 4.0;
-}
-
 #quicklaunch #applications-button:selected,
 #quicklaunch #applications-button.search-active:selected,
 #quicklaunch #applications-button:toggled:selected

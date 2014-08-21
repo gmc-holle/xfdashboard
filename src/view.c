@@ -33,6 +33,8 @@
 #include "marshal.h"
 #include "image-content.h"
 #include "utils.h"
+#include "focus-manager.h"
+#include "viewpad.h"
 
 /* Define this class in GObject system */
 G_DEFINE_ABSTRACT_TYPE(XfdashboardView,
@@ -610,4 +612,53 @@ void xfdashboard_view_ensure_visible(XfdashboardView *self, ClutterActor *inActo
 	{
 		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_ENSURE_VISIBLE], 0, inActor);
 	}
+}
+
+/* Determine if view has the focus */
+gboolean xfdashboard_view_has_focus(XfdashboardView *self)
+{
+	XfdashboardViewPrivate		*priv;
+	XfdashboardFocusManager		*focusManager;
+	ClutterActor				*viewpad;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), FALSE);
+
+	priv=self->priv;
+
+	/* The view can only have the focus if the viewpad which contains this view
+	 * has the focus and this view is enabled and active.
+	 */
+	focusManager=xfdashboard_focus_manager_get_default();
+
+	viewpad=clutter_actor_get_parent(CLUTTER_ACTOR(self));
+	while(viewpad && !XFDASHBOARD_IS_VIEWPAD(viewpad))
+	{
+		viewpad=clutter_actor_get_parent(viewpad);
+	}
+
+	if(!viewpad ||
+		!XFDASHBOARD_IS_FOCUSABLE(viewpad) ||
+		!xfdashboard_focus_manager_has_focus(focusManager, XFDASHBOARD_FOCUSABLE(viewpad)))
+	{
+		g_object_unref(focusManager);
+		return(FALSE);
+	}
+
+	if(!priv->isEnabled)
+	{
+		g_object_unref(focusManager);
+		return(FALSE);
+	}
+
+	if(xfdashboard_viewpad_get_active_view(XFDASHBOARD_VIEWPAD(viewpad))!=self)
+	{
+		g_object_unref(focusManager);
+		return(FALSE);
+	}
+
+	/* Release allocated resources */
+	g_object_unref(focusManager);
+
+	/* All tests passed so this view has the focus */
+	return(TRUE);
 }

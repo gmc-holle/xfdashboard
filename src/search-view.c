@@ -631,140 +631,18 @@ static void _xfdashboard_search_view_on_search_provider_unregistered(Xfdashboard
 	}
 }
 
-/* IMPLEMENTATION: Interface XfdashboardFocusable */
-
-/* Determine if actor can get the focus */
-static gboolean _xfdashboard_search_view_focusable_can_focus(XfdashboardFocusable *inFocusable)
-{
-	XfdashboardSearchView			*self;
-	XfdashboardFocusableInterface	*selfIface;
-	XfdashboardFocusableInterface	*parentIface;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable), FALSE);
-
-	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
-
-	/* Call parent class interface function */
-	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
-	parentIface=g_type_interface_peek_parent(selfIface);
-
-	if(parentIface && parentIface->can_focus)
-	{
-		if(!parentIface->can_focus(inFocusable)) return(FALSE);
-	}
-
-	/* If this view is not enabled it is not focusable */
-	if(!xfdashboard_view_get_enabled(XFDASHBOARD_VIEW(self))) return(FALSE);
-
-	/* If we get here this actor can be focused */
-	return(TRUE);
-}
-
-/* Set focus to actor */
-static void _xfdashboard_search_view_focusable_set_focus(XfdashboardFocusable *inFocusable)
-{
-	XfdashboardSearchView			*self;
-	XfdashboardSearchViewPrivate	*priv;
-	XfdashboardFocusableInterface	*selfIface;
-	XfdashboardFocusableInterface	*parentIface;
-
-	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable));
-
-	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
-	priv=self->priv;
-
-	/* Call parent class interface function */
-	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
-	parentIface=g_type_interface_peek_parent(selfIface);
-
-	if(parentIface && parentIface->set_focus)
-	{
-		parentIface->set_focus(inFocusable);
-	}
-
-	/* Reset selected item to first one */
-	if(!priv->selectionProvider)
-	{
-		priv->selectionProvider=(XfdashboardSearchViewProviderData*)g_list_nth_data(priv->providers, 0);
-	}
-
-	if(priv->selectionProvider &&
-		priv->selectionProvider->container)
-	{
-		ClutterActor				*item;
-
-		/* Set focus to search result container of selected provider */
-		xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
-														TRUE);
-
-		/* Get current selectionr and style it */
-		item=xfdashboard_search_result_container_set_next_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
-																	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END);
-		if(item &&
-			XFDASHBOARD_IS_STYLABLE(item))
-		{
-			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(item), "selected");
-		}
-	}
-}
-
-/* Unset focus from actor */
-static void _xfdashboard_search_view_focusable_unset_focus(XfdashboardFocusable *inFocusable)
-{
-	XfdashboardSearchView			*self;
-	XfdashboardSearchViewPrivate	*priv;
-	XfdashboardFocusableInterface	*selfIface;
-	XfdashboardFocusableInterface	*parentIface;
-
-	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable));
-
-	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
-	priv=self->priv;
-
-	/* Call parent class interface function */
-	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
-	parentIface=g_type_interface_peek_parent(selfIface);
-
-	if(parentIface && parentIface->set_focus)
-	{
-		parentIface->unset_focus(inFocusable);
-	}
-
-	/* Unstyle selected item */
-	if(priv->selectionProvider &&
-		priv->selectionProvider->container)
-	{
-		ClutterActor				*item;
-
-		/* Get current selectionr and unstyle it */
-		item=xfdashboard_search_result_container_get_current_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container));
-		if(item &&
-			XFDASHBOARD_IS_STYLABLE(item))
-		{
-			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(item), "selected");
-		}
-
-		/* Unset focus from search result container of selected provider */
-		xfdashboard_search_result_container_set_focus(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
-														FALSE);
-	}
-}
-
-/* Virtual function "handle_key_event" was called */
-static gboolean _xfdashboard_search_view_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
-																			const ClutterEvent *inEvent)
+/* A key was pressed */
+static gboolean _xfdashboard_search_view_on_key_press_event(ClutterActor *inActor,
+															ClutterEvent *inEvent,
+															gpointer inUserData)
 {
 	XfdashboardSearchView			*self;
 	XfdashboardSearchViewPrivate	*priv;
 	gboolean						handledEvent;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inActor), CLUTTER_EVENT_PROPAGATE);
 
-	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
+	self=XFDASHBOARD_SEARCH_VIEW(inActor);
 	priv=self->priv;
 	handledEvent=CLUTTER_EVENT_PROPAGATE;
 
@@ -895,18 +773,18 @@ static gboolean _xfdashboard_search_view_focusable_handle_keypress_event(Xfdashb
 	return(handledEvent);
 }
 
-/* Virtual function "handle_keyrelease_event" was called */
-static gboolean _xfdashboard_search_view_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
-																			const ClutterEvent *inEvent)
+/* A key was released */
+static gboolean _xfdashboard_search_view_on_key_release_event(ClutterActor *inActor,
+																ClutterEvent *inEvent,
+																gpointer inUserData)
 {
 	XfdashboardSearchView			*self;
 	XfdashboardSearchViewPrivate	*priv;
 	gboolean						handledEvent;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inActor), CLUTTER_EVENT_PROPAGATE);
 
-	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
+	self=XFDASHBOARD_SEARCH_VIEW(inActor);
 	priv=self->priv;
 	handledEvent=CLUTTER_EVENT_PROPAGATE;
 
@@ -945,16 +823,43 @@ static gboolean _xfdashboard_search_view_focusable_handle_keyrelease_event(Xfdas
 	return(handledEvent);
 }
 
+/* IMPLEMENTATION: Interface XfdashboardFocusable */
+
+/* Determine if actor can get the focus */
+static gboolean _xfdashboard_search_view_focusable_can_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardSearchView			*self;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable), FALSE);
+
+	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->can_focus)
+	{
+		if(!parentIface->can_focus(inFocusable)) return(FALSE);
+	}
+
+	/* If this view is not enabled it is not focusable */
+	if(!xfdashboard_view_get_enabled(XFDASHBOARD_VIEW(self))) return(FALSE);
+
+	/* If we get here this actor can be focused */
+	return(TRUE);
+}
+
+
 /* Interface initialization
  * Set up default functions
  */
 void _xfdashboard_search_view_focusable_iface_init(XfdashboardFocusableInterface *iface)
 {
 	iface->can_focus=_xfdashboard_search_view_focusable_can_focus;
-	iface->set_focus=_xfdashboard_search_view_focusable_set_focus;
-	iface->unset_focus=_xfdashboard_search_view_focusable_unset_focus;
-	iface->handle_keypress_event=_xfdashboard_search_view_focusable_handle_keypress_event;
-	iface->handle_keyrelease_event=_xfdashboard_search_view_focusable_handle_keyrelease_event;
 }
 
 
@@ -1071,6 +976,10 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), layout);
 
 	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_HORIZONTAL);
+
+	/* Connect signals */
+	g_signal_connect(self, "key-press-event", G_CALLBACK(_xfdashboard_search_view_on_key_press_event), NULL);
+	g_signal_connect(self, "key-release-event", G_CALLBACK(_xfdashboard_search_view_on_key_release_event), NULL);
 
 	/* Create instance of each registered view type and add it to this actor
 	 * and connect signals

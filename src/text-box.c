@@ -172,6 +172,57 @@ static void _xfdashboard_text_box_on_secondary_icon_clicked(XfdashboardTextBox *
 	g_signal_emit(self, XfdashboardTextBoxSignals[SIGNAL_SECONDARY_ICON_CLICKED], 0);
 }
 
+/* A key was pressed */
+static gboolean _xfdashboard_text_box_on_key_press_event(ClutterActor *inActor,
+															ClutterEvent *inEvent,
+															gpointer inUserData)
+{
+	XfdashboardTextBox			*self;
+	XfdashboardTextBoxPrivate	*priv;
+	gboolean					result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(inActor), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_TEXT_BOX(inActor);
+	priv=self->priv;
+	result=CLUTTER_EVENT_PROPAGATE;
+
+	/* Push event to real text box if available */
+	if(priv->actorTextBox)
+	{
+		result=clutter_actor_event(priv->actorTextBox, inEvent, FALSE);
+	}
+
+	/* Return event handling result */
+	return(result);
+}
+
+/* A key was released */
+static gboolean _xfdashboard_text_box_on_key_release_event(ClutterActor *inActor,
+															ClutterEvent *inEvent,
+															gpointer inUserData)
+{
+	XfdashboardTextBox			*self;
+	XfdashboardTextBoxPrivate	*priv;
+	gboolean					result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(inActor), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_TEXT_BOX(inActor);
+	priv=self->priv;
+	result=CLUTTER_EVENT_PROPAGATE;
+
+	/* Push event to real text box if available */
+	if(priv->actorTextBox)
+	{
+		result=clutter_actor_event(priv->actorTextBox, inEvent, FALSE);
+	}
+
+	/* Return event handling result */
+	return(result);
+}
+
+
 /* IMPLEMENTATION: ClutterActor */
 
 /* Actor got key focus */
@@ -461,7 +512,7 @@ static void _xfdashboard_text_box_destroy(ClutterActor *self)
 
 /* IMPLEMENTATION: Interface XfdashboardFocusable */
 
-/* Virtual function "can_focus" was called */
+/* Determine if actor can get the focus */
 static gboolean _xfdashboard_text_box_focusable_can_focus(XfdashboardFocusable *inFocusable)
 {
 	XfdashboardTextBox				*self;
@@ -490,134 +541,12 @@ static gboolean _xfdashboard_text_box_focusable_can_focus(XfdashboardFocusable *
 	return(FALSE);
 }
 
-/* Set focus to actor */
-static void _xfdashboard_text_box_focusable_set_focus(XfdashboardFocusable *inFocusable)
-{
-	XfdashboardTextBox				*self;
-	XfdashboardTextBoxPrivate		*priv;
-	XfdashboardFocusableInterface	*selfIface;
-	XfdashboardFocusableInterface	*parentIface;
-	ClutterStage					*stage;
-
-	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
-	g_return_if_fail(XFDASHBOARD_IS_TEXT_BOX(inFocusable));
-
-	self=XFDASHBOARD_TEXT_BOX(inFocusable);
-	priv=self->priv;
-
-	/* Call parent class interface function */
-	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
-	parentIface=g_type_interface_peek_parent(selfIface);
-
-	if(parentIface && parentIface->set_focus)
-	{
-		parentIface->set_focus(inFocusable);
-	}
-
-	/* Get stage of actor to tell it where the keyboard focus to set to */
-	stage=CLUTTER_STAGE(clutter_actor_get_stage(CLUTTER_ACTOR(self)));
-	if(!stage)
-	{
-		g_warning(_("Focusable actor %s is not on a stage"),
-					G_OBJECT_TYPE_NAME(self));
-		return;
-	}
-
-	clutter_stage_set_key_focus(stage, CLUTTER_ACTOR(priv->actorTextBox));
-}
-
-/* Unset focus from actor */
-static void _xfdashboard_text_box_focusable_unset_focus(XfdashboardFocusable *inFocusable)
-{
-	ClutterActor					*self;
-	XfdashboardFocusableInterface	*selfIface;
-	XfdashboardFocusableInterface	*parentIface;
-	ClutterStage					*stage;
-
-	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inFocusable));
-
-	self=CLUTTER_ACTOR(inFocusable);
-
-	/* Call parent class interface function */
-	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
-	parentIface=g_type_interface_peek_parent(selfIface);
-
-	if(parentIface && parentIface->unset_focus)
-	{
-		parentIface->unset_focus(inFocusable);
-	}
-
-	/* Get stage of actor to tell it where the keyboard focus to set to */
-	stage=CLUTTER_STAGE(clutter_actor_get_stage(self));
-	if(!stage)
-	{
-		g_warning(_("Focusable actor %s is not on a stage"),
-					G_OBJECT_TYPE_NAME(self));
-		return;
-	}
-
-	clutter_stage_set_key_focus(stage, NULL);
-}
-
-/* Virtual function "handle_keypress_event" was called */
-static gboolean _xfdashboard_text_box_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
-																		const ClutterEvent *inEvent)
-{
-	XfdashboardTextBox			*self;
-	XfdashboardTextBoxPrivate	*priv;
-	gboolean					result;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(inFocusable), CLUTTER_EVENT_PROPAGATE);
-
-	self=XFDASHBOARD_TEXT_BOX(inFocusable);
-	priv=self->priv;
-	result=CLUTTER_EVENT_PROPAGATE;
-
-	/* Push event to real text box if available */
-	if(priv->actorTextBox)
-	{
-		result=clutter_actor_event(priv->actorTextBox, inEvent, FALSE);
-	}
-
-	/* Return event handling result */
-	return(result);
-}
-
-/* Virtual function "handle_keyrelease_event" was called */
-static gboolean _xfdashboard_text_box_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
-																		const ClutterEvent *inEvent)
-{
-	XfdashboardTextBox			*self;
-	XfdashboardTextBoxPrivate	*priv;
-	gboolean					result;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_TEXT_BOX(inFocusable), CLUTTER_EVENT_PROPAGATE);
-
-	self=XFDASHBOARD_TEXT_BOX(inFocusable);
-	priv=self->priv;
-	result=CLUTTER_EVENT_PROPAGATE;
-
-	/* Push event to real text box if available */
-	if(priv->actorTextBox)
-	{
-		result=clutter_actor_event(priv->actorTextBox, inEvent, FALSE);
-	}
-
-	/* Return event handling result */
-	return(result);
-}
-
 /* Interface initialization
  * Set up default functions
  */
 void _xfdashboard_text_box_focusable_iface_init(XfdashboardFocusableInterface *iface)
 {
 	iface->can_focus=_xfdashboard_text_box_focusable_can_focus;
-	iface->set_focus=_xfdashboard_text_box_focusable_set_focus;
-	iface->unset_focus=_xfdashboard_text_box_focusable_unset_focus;
-	iface->handle_keypress_event=_xfdashboard_text_box_focusable_handle_keypress_event;
-	iface->handle_keyrelease_event=_xfdashboard_text_box_focusable_handle_keyrelease_event;
 }
 
 /* IMPLEMENTATION: GObject */
@@ -1027,6 +956,9 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 	priv->hintTextSet=FALSE;
 
 	/* Create actors */
+	g_signal_connect(self, "key-press-event", G_CALLBACK(_xfdashboard_text_box_on_key_press_event), NULL);
+	g_signal_connect(self, "key-release-event", G_CALLBACK(_xfdashboard_text_box_on_key_release_event), NULL);
+
 	priv->actorPrimaryIcon=xfdashboard_button_new();
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorPrimaryIcon), "primary-icon");
 	clutter_actor_set_reactive(priv->actorPrimaryIcon, TRUE);

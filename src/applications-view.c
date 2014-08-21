@@ -41,6 +41,7 @@
 #include "focusable.h"
 #include "focus-manager.h"
 #include "dynamic-table-layout.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_applications_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -68,7 +69,6 @@ struct _XfdashboardApplicationsViewPrivate
 	XfdashboardApplicationsMenuModel	*apps;
 	GarconMenuElement					*currentRootMenuElement;
 
-	gboolean							hasFocus;
 	ClutterActor						*selectedItem;
 };
 
@@ -231,7 +231,7 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 	priv=XFDASHBOARD_APPLICATIONS_VIEW(self)->priv;
 
 	/* Destroy all children */
-	priv->selectedItem=NULL;
+	xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), NULL);
 	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
 	clutter_layout_manager_layout_changed(priv->layout);
 
@@ -269,10 +269,9 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_parent_menu_clicked), self);
 
 		/* Select "parent menu" automatically */
-		if(priv->hasFocus)
+		if(xfdashboard_view_has_focus(XFDASHBOARD_VIEW(self)))
 		{
-			priv->selectedItem=CLUTTER_ACTOR(actor);
-			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+			xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), CLUTTER_ACTOR(actor));
 		}
 	}
 
@@ -316,10 +315,10 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 			/* If no item was selected (i.e. no "parent menu" item) select this one
 			 * which is usually the first menu item.
 			 */
-			if(priv->hasFocus && !priv->selectedItem)
+			if(xfdashboard_view_has_focus(XFDASHBOARD_VIEW(self)) &&
+				!xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self)))
 			{
-				priv->selectedItem=CLUTTER_ACTOR(actor);
-				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+				xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), CLUTTER_ACTOR(actor));
 			}
 
 			/* Release allocated resources */
@@ -394,342 +393,331 @@ static gboolean _xfdashboard_applications_view_focusable_can_focus(XfdashboardFo
 	return(TRUE);
 }
 
-/* Set focus to actor */
-static void _xfdashboard_applications_view_focusable_set_focus(XfdashboardFocusable *inFocusable)
+/* Determine if this actor supports selection */
+static gboolean _xfdashboard_applications_view_focusable_supports_selection(XfdashboardFocusable *inFocusable)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), FALSE);
+
+	/* This actor supports selection */
+	return(TRUE);
+}
+
+
+/* Get current selection */
+static ClutterActor* _xfdashboard_applications_view_focusable_get_selection(XfdashboardFocusable *inFocusable)
 {
 	XfdashboardApplicationsView				*self;
 	XfdashboardApplicationsViewPrivate		*priv;
-	XfdashboardFocusableInterface			*selfIface;
-	XfdashboardFocusableInterface			*parentIface;
 
-	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable));
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
 
 	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
 	priv=self->priv;
 
-	/* Call parent class interface function */
-	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
-	parentIface=g_type_interface_peek_parent(selfIface);
-
-	if(parentIface && parentIface->set_focus)
-	{
-		parentIface->set_focus(inFocusable);
-	}
-
-	/* Reset selected item to first one */
-	if(!priv->selectedItem)
-	{
-		priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
-	}
-
-	if(priv->selectedItem)
-	{
-		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-	}
-
-	/* This view gained focus */
-	priv->hasFocus=TRUE;
+	/* Return current selection */
+	return(priv->selectedItem);
 }
 
-/* Unset focus from actor */
-static void _xfdashboard_applications_view_focusable_unset_focus(XfdashboardFocusable *inFocusable)
+/* Set new selection */
+static gboolean _xfdashboard_applications_view_focusable_set_selection(XfdashboardFocusable *inFocusable,
+																		ClutterActor *inSelection)
 {
 	XfdashboardApplicationsView				*self;
 	XfdashboardApplicationsViewPrivate		*priv;
-	XfdashboardFocusableInterface			*selfIface;
-	XfdashboardFocusableInterface			*parentIface;
 
-	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable));
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), FALSE);
+	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), FALSE);
 
 	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
 	priv=self->priv;
 
-	/* Call parent class interface function */
-	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
-	parentIface=g_type_interface_peek_parent(selfIface);
-
-	if(parentIface && parentIface->set_focus)
+	/* Check that selection is a child of this actor */
+	if(inSelection && !xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
 	{
-		parentIface->unset_focus(inFocusable);
+		ClutterActor						*parent;
+
+		parent=clutter_actor_get_parent(inSelection);
+		g_warning(_("%s is a child of %s and cannot be selected at %s"),
+					G_OBJECT_TYPE_NAME(inSelection),
+					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
+					G_OBJECT_TYPE_NAME(self));
 	}
 
-	/* Unstyle selected item */
-	if(priv->selectedItem)
-	{
-		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-	}
+	/* Set new selection */
+	priv->selectedItem=inSelection;
 
-	/* This view lost focus */
-	priv->hasFocus=FALSE;
+	/* New selection was set successfully */
+	return(TRUE);
 }
 
-/* Virtual function "handle_key_event" was called */
-static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_icon_mode(XfdashboardApplicationsView *self,
-																						const ClutterEvent *inEvent)
-{
-	XfdashboardApplicationsViewPrivate	*priv;
-	gint								numberChildren, rows, columns;
-	gint								selectionIndex, newSelectionIndex;
-	gfloat								lastX, lastY;
-	ClutterActorIter					iter;
-	ClutterActor						*child;
-	ClutterActorBox						childBox;
-	ClutterActor						*newSelection;
-	gint								i;
-	gboolean							gotColumns;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), CLUTTER_EVENT_PROPAGATE);
-
-	priv=self->priv;
-
-	/* Determine number of rows and columns and total number of children */
-	numberChildren=rows=columns=0;
-	selectionIndex=-1;
-	lastX=lastY=0.0f;
-	gotColumns=FALSE;
-	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-	while(clutter_actor_iter_next(&iter, &child))
-	{
-		/* Only count visible children */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
-
-		/* If x coordinate of this child is smaller than the one of last child
-		 * or if y coordinate is larger then a new row begins and we know
-		 * the number of columns.
-		 */
-		clutter_actor_get_allocation_box(child, &childBox);
-		if(!gotColumns &&
-			(childBox.x1<lastX || childBox.y1>lastY))
-		{
-			columns=numberChildren;
-			gotColumns=TRUE;
-		}
-		lastX=childBox.x1;
-		lastY=childBox.y1;
-
-		/* If current child is the selected one remember its index */
-		if(child==priv->selectedItem) selectionIndex=numberChildren;
-
-		/* Count total number of children */
-		numberChildren++;
-	}
-
-	if(gotColumns)
-	{
-		rows=1+(numberChildren/columns);
-	}
-		else if(numberChildren>0)
-		{
-			rows=1;
-			columns=numberChildren;
-		}
-
-	/* Determine index of new item to select */
-	if(selectionIndex<0)
-	{
-		g_warning(_("Current selected item not found. Selecting first item."));
-		selectionIndex=0;
-	}
-
-	switch(inEvent->key.keyval)
-	{
-		case CLUTTER_KEY_Up:
-			newSelectionIndex=selectionIndex-columns;
-			if(newSelectionIndex<0)
-			{
-				newSelectionIndex+=(rows*columns);
-				while(newSelectionIndex>=numberChildren && newSelectionIndex>selectionIndex)
-				{
-					newSelectionIndex-=columns;
-				}
-			}
-			break;
-
-		case CLUTTER_KEY_Down:
-			newSelectionIndex=selectionIndex+columns;
-			if(newSelectionIndex>=numberChildren)
-			{
-				newSelectionIndex=(selectionIndex % columns);
-				if(newSelectionIndex>=numberChildren) newSelectionIndex=selectionIndex;
-			}
-			break;
-
-		case CLUTTER_KEY_Left:
-			newSelectionIndex=selectionIndex-1;
-			if(newSelectionIndex<0 ||
-				(newSelectionIndex/columns)!=(selectionIndex/columns))
-			{
-				newSelectionIndex=((selectionIndex/columns)*columns)+columns-1;
-			}
-			break;
-
-		case CLUTTER_KEY_Right:
-			newSelectionIndex=selectionIndex+1;
-			if(newSelectionIndex>=numberChildren ||
-				(newSelectionIndex/columns)!=(selectionIndex/columns))
-			{
-				newSelectionIndex=(selectionIndex/columns)*columns;
-			}
-			break;
-
-		default:
-			newSelectionIndex=selectionIndex;
-			break;
-	}
-
-	/* If selection did not changed do nothing */
-	if(newSelectionIndex==selectionIndex) return(CLUTTER_EVENT_STOP);
-
-	/* Find new item to select */
-	i=0;
-	newSelection=NULL;
-	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-	while(clutter_actor_iter_next(&iter, &child) &&
-			!newSelection)
-	{
-		/* Only count visible children */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
-
-		/* Check for child to lookup */
-		if(i==newSelectionIndex)
-		{
-			newSelection=child;
-			break;
-		}
-
-		/* Continue with next child */
-		i++;
-	}
-
-	/* If selection did not changed do nothing */
-	if(!newSelection || newSelection==priv->selectedItem) return(CLUTTER_EVENT_STOP);
-
-	/* Unstyle current selection */
-	xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-
-	/* Remember and style new selection */
-	priv->selectedItem=newSelection;
-	xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-
-	/* Ensure new selection is visible */
-	xfdashboard_view_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
-
-	/* Event handled */
-	return(CLUTTER_EVENT_STOP);
-}
-
-static gboolean _xfdashboard_applications_view_focusable_handle_key_event_at_list_mode(XfdashboardApplicationsView *self,
-																						const ClutterEvent *inEvent)
+/* Find requested selection target depending of current selection */
+static ClutterActor* xfdashboard_applications_view_get_selection_from_icon_mode(XfdashboardApplicationsView *self,
+																				ClutterActor *inSelection,
+																				XfdashboardSelectionTarget inDirection)
 {
 	XfdashboardApplicationsViewPrivate		*priv;
 	ClutterActor							*newSelection;
+	gint									numberChildren;
+	gint									rows;
+	gint									columns;
+	gint									currentSelectionIndex;
+	gint									currentSelectionRow;
+	gint									currentSelectionColumn;
+	gint									newSelectionIndex;
+	ClutterActorIter						iter;
+	ClutterActor							*child;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), NULL);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
 
 	priv=self->priv;
-	newSelection=NULL;
+	newSelection=inSelection;
+
+	/* Get number of rows and columns and also get number of children
+	 * of layout manager.
+	 */
+	numberChildren=xfdashboard_dynamic_table_layout_get_number_children(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(priv->layout));
+	rows=xfdashboard_dynamic_table_layout_get_rows(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(priv->layout));
+	columns=xfdashboard_dynamic_table_layout_get_columns(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(priv->layout));
+
+	/* Get index of current selection */
+	currentSelectionIndex=0;
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child) &&
+			child!=inSelection)
+	{
+		currentSelectionIndex++;
+	}
+
+	currentSelectionRow=(currentSelectionIndex / columns);
+	currentSelectionColumn=(currentSelectionIndex % columns);
+
+	/* Find target selection */
+	switch(inDirection)
+	{
+		case XFDASHBOARD_SELECTION_TARGET_LEFT:
+			currentSelectionColumn--;
+			if(currentSelectionColumn<0)
+			{
+				currentSelectionRow++;
+				newSelectionIndex=(currentSelectionRow*columns)-1;
+			}
+				else newSelectionIndex=currentSelectionIndex-1;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_RIGHT:
+			currentSelectionColumn++;
+			if(currentSelectionColumn==columns ||
+				currentSelectionIndex==numberChildren)
+			{
+				newSelectionIndex=(currentSelectionRow*columns);
+			}
+				else newSelectionIndex=currentSelectionIndex+1;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_UP:
+			currentSelectionRow--;
+			if(currentSelectionRow<0) currentSelectionRow=rows-1;
+			newSelectionIndex=(currentSelectionRow*columns)+currentSelectionColumn;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_DOWN:
+			currentSelectionRow++;
+			if(currentSelectionRow>=rows) currentSelectionRow=0;
+			newSelectionIndex=(currentSelectionRow*columns)+currentSelectionColumn;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		default:
+			break;
+	}
+
+	g_debug("Selecting %s at %s for current selection %s in direction %u",
+			newSelection ? G_OBJECT_TYPE_NAME(newSelection) : "<nil>",
+			G_OBJECT_TYPE_NAME(self),
+			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+			inDirection);
+
+	return(newSelection);
+}
+
+static ClutterActor* xfdashboard_applications_view_get_selection_from_list_mode(XfdashboardApplicationsView *self,
+																				ClutterActor *inSelection,
+																				XfdashboardSelectionTarget inDirection)
+{
+	ClutterActor							*newSelection;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), NULL);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
+
+	newSelection=inSelection;
 
 	/* Get new selected item */
-	if(inEvent->key.keyval==CLUTTER_KEY_Up)
+	if(inDirection==XFDASHBOARD_SELECTION_TARGET_UP)
 	{
 		/* Get previous item to select */
-		if(priv->selectedItem) newSelection=clutter_actor_get_previous_sibling(priv->selectedItem);
+		newSelection=clutter_actor_get_previous_sibling(inSelection);
 
 		/* If there is no previous item, e.g. at begin of list, select last item in list */
 		if(!newSelection) newSelection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
 	}
 
-	if(inEvent->key.keyval==CLUTTER_KEY_Down)
+	if(inDirection==XFDASHBOARD_SELECTION_TARGET_DOWN)
 	{
 		/* Get next item to select */
-		if(priv->selectedItem) newSelection=clutter_actor_get_next_sibling(priv->selectedItem);
+		newSelection=clutter_actor_get_next_sibling(inSelection);
 
 		/* If there is no next item, e.g. at end of list, select first item in list */
 		if(!newSelection) newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
 	}
 
-	/* If selection did not changed do nothing */
-	if(!newSelection || newSelection==priv->selectedItem) return(CLUTTER_EVENT_STOP);
-
-	/* Unstyle current selection */
-	xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-
-	/* Remember and style new selection */
-	priv->selectedItem=newSelection;
-	xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-
-	/* Ensure new selection is visible */
-	xfdashboard_view_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
-
-	/* Event handled */
-	return(CLUTTER_EVENT_STOP);
+	/* Return new selection */
+	return(newSelection);
 }
 
-static gboolean _xfdashboard_applications_view_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
-																				const ClutterEvent *inEvent)
+static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(XfdashboardFocusable *inFocusable,
+																			ClutterActor *inSelection,
+																			XfdashboardSelectionTarget inDirection)
 {
 	XfdashboardApplicationsView				*self;
 	XfdashboardApplicationsViewPrivate		*priv;
-	gboolean								handledEvent;
+	ClutterActor							*selection;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), NULL);
+	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), NULL);
+	g_return_val_if_fail(inDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
+	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
 
 	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
 	priv=self->priv;
+	selection=inSelection;
 
-	/* Move selection if an arrow key was pressed */
-	if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
+	/* If there is nothing selected, select first actor and return */
+	if(!inSelection)
 	{
-		handledEvent=_xfdashboard_applications_view_focusable_handle_key_event_at_list_mode(self, inEvent);
+		selection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+		g_debug("No selection at %s, so select first child %s for direction %u",
+				G_OBJECT_TYPE_NAME(self),
+				selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+				inDirection);
+
+		return(selection);
 	}
-		else
+
+	/* Check that selection is a child of this actor otherwise return NULL */
+	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	{
+		ClutterActor						*parent;
+
+		parent=clutter_actor_get_parent(inSelection);
+		g_warning(_("Cannot lookup selection target at %s because %s is a child of %s"),
+					G_OBJECT_TYPE_NAME(self),
+					G_OBJECT_TYPE_NAME(inSelection),
+					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>");
+
+		return(NULL);
+	}
+
+	/* Find target selection */
+	switch(inDirection)
+	{
+		case XFDASHBOARD_SELECTION_TARGET_LEFT:
+		case XFDASHBOARD_SELECTION_TARGET_RIGHT:
+		case XFDASHBOARD_SELECTION_TARGET_UP:
+		case XFDASHBOARD_SELECTION_TARGET_DOWN:
+			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
+			{
+				selection=xfdashboard_applications_view_get_selection_from_list_mode(self, inSelection, inDirection);
+			}
+				else
+				{
+					selection=xfdashboard_applications_view_get_selection_from_icon_mode(self, inSelection, inDirection);
+				}
+
+			/* Ensure new selection is visible */
+			if(selection) xfdashboard_view_ensure_visible(XFDASHBOARD_VIEW(self), selection);
+
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_FIRST:
+			selection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_LAST:
+			selection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_NEXT:
+			selection=clutter_actor_get_next_sibling(inSelection);
+			if(!selection) selection=clutter_actor_get_previous_sibling(inSelection);
+			break;
+
+		default:
+			g_assert_not_reached();
+			break;
+	}
+
+	g_debug("Selecting %s at %s for current selection %s in direction %u",
+			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+			G_OBJECT_TYPE_NAME(self),
+			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+			inDirection);
+
+	return(selection);
+}
+
+/* Activate selection */
+static gboolean _xfdashboard_applications_view_focusable_activate_selection(XfdashboardFocusable *inFocusable,
+																			ClutterActor *inSelection)
+{
+	XfdashboardApplicationsView				*self;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), FALSE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), FALSE);
+
+	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
+
+	/* Check that selection is a child of this actor */
+	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	{
+		ClutterActor						*parent;
+
+		parent=clutter_actor_get_parent(inSelection);
+		g_warning(_("%s is a child of %s and cannot be activated at %s"),
+					G_OBJECT_TYPE_NAME(inSelection),
+					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
+					G_OBJECT_TYPE_NAME(self));
+
+		return(FALSE);
+	}
+
+	/* Activate selection */
+	if(XFDASHBOARD_IS_APPLICATION_BUTTON(inSelection))
+	{
+		_xfdashboard_applications_view_on_item_clicked(self, XFDASHBOARD_APPLICATION_BUTTON(inSelection));
+	}
+		else if(XFDASHBOARD_IS_BUTTON(inSelection))
 		{
-			handledEvent=_xfdashboard_applications_view_focusable_handle_key_event_at_icon_mode(self, inEvent);
+			_xfdashboard_applications_view_on_parent_menu_clicked(self, XFDASHBOARD_BUTTON(inSelection));
 		}
 
-	if(handledEvent==CLUTTER_EVENT_STOP) return(handledEvent);
-
-	/* We did not handle this event */
-	return(CLUTTER_EVENT_PROPAGATE);
-}
-
-static gboolean _xfdashboard_applications_view_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
-																					const ClutterEvent *inEvent)
-{
-	XfdashboardApplicationsView				*self;
-	XfdashboardApplicationsViewPrivate		*priv;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
-
-	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
-	priv=self->priv;
-
-	/* Start selected application on ENTER */
-	switch(inEvent->key.keyval)
-	{
-		case CLUTTER_KEY_Return:
-		case CLUTTER_KEY_KP_Enter:
-		case CLUTTER_KEY_ISO_Enter:
-			if(priv->selectedItem)
-			{
-				if(XFDASHBOARD_IS_APPLICATION_BUTTON(priv->selectedItem))
-				{
-					_xfdashboard_applications_view_on_item_clicked(self, XFDASHBOARD_APPLICATION_BUTTON(priv->selectedItem));
-				}
-					else if(XFDASHBOARD_IS_BUTTON(priv->selectedItem))
-					{
-						_xfdashboard_applications_view_on_parent_menu_clicked(self, XFDASHBOARD_BUTTON(priv->selectedItem));
-					}
-			}
-			return(CLUTTER_EVENT_STOP);
-	}
-
-	/* We did not handle this event */
-	return(CLUTTER_EVENT_PROPAGATE);
+	return(TRUE);
 }
 
 /* Interface initialization
@@ -738,10 +726,12 @@ static gboolean _xfdashboard_applications_view_focusable_handle_keyrelease_event
 void _xfdashboard_applications_view_focusable_iface_init(XfdashboardFocusableInterface *iface)
 {
 	iface->can_focus=_xfdashboard_applications_view_focusable_can_focus;
-	iface->set_focus=_xfdashboard_applications_view_focusable_set_focus;
-	iface->unset_focus=_xfdashboard_applications_view_focusable_unset_focus;
-	iface->handle_keypress_event=_xfdashboard_applications_view_focusable_handle_keypress_event;
-	iface->handle_keyrelease_event=_xfdashboard_applications_view_focusable_handle_keyrelease_event;
+
+	iface->supports_selection=_xfdashboard_applications_view_focusable_supports_selection;
+	iface->get_selection=_xfdashboard_applications_view_focusable_get_selection;
+	iface->set_selection=_xfdashboard_applications_view_focusable_set_selection;
+	iface->find_selection=_xfdashboard_windows_view_focusable_find_selection;
+	iface->activate_selection=_xfdashboard_applications_view_focusable_activate_selection;
 }
 
 /* IMPLEMENTATION: GObject */
@@ -943,7 +933,6 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	priv->parentMenuIcon=NULL;
 	priv->formatTitleOnly=g_strdup("%s");
 	priv->formatTitleDescription=g_strdup("%s\n%s");
-	priv->hasFocus=FALSE;
 	priv->selectedItem=NULL;
 
 	/* Set up view */

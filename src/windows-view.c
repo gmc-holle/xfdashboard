@@ -594,6 +594,44 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_WORKSPACE]);
 }
 
+/* A key was released */
+static gboolean _xfdashboard_windows_view_on_key_release_event(ClutterActor *inActor,
+																ClutterEvent *inEvent,
+																gpointer inUserData)
+{
+	XfdashboardWindowsView					*self;
+	XfdashboardWindowsViewPrivate			*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inActor), CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inActor);
+	priv=self->priv;
+
+	/* Activate selected window on ENTER or close window on DELETE / SHIFT+BACKSPACE */
+	switch(inEvent->key.keyval)
+	{
+		case CLUTTER_KEY_BackSpace:
+			if(clutter_event_has_shift_modifier(inEvent) &&
+				priv->selectedItem)
+			{
+				_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
+			}
+			return(CLUTTER_EVENT_STOP);
+
+		case CLUTTER_KEY_Delete:
+		case CLUTTER_KEY_KP_Delete:
+			if(priv->selectedItem)
+			{
+				_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
+			}
+			return(CLUTTER_EVENT_STOP);
+	}
+
+	/* We did not handle this event */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+
 /* IMPLEMENTATION: Interface XfdashboardFocusable */
 
 /* Determine if actor can get the focus */
@@ -624,244 +662,253 @@ static gboolean _xfdashboard_windows_view_focusable_can_focus(XfdashboardFocusab
 	return(TRUE);
 }
 
-/* Set focus to actor */
-static void _xfdashboard_windows_view_focusable_set_focus(XfdashboardFocusable *inFocusable)
+/* Determine if this actor supports selection */
+static gboolean _xfdashboard_windows_view_focusable_supports_selection(XfdashboardFocusable *inFocusable)
 {
-	XfdashboardWindowsView			*self;
-	XfdashboardWindowsViewPrivate	*priv;
-	XfdashboardFocusableInterface	*selfIface;
-	XfdashboardFocusableInterface	*parentIface;
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), FALSE);
 
-	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable));
-
-	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
-	priv=self->priv;
-
-	/* Call parent class interface function */
-	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
-	parentIface=g_type_interface_peek_parent(selfIface);
-
-	if(parentIface && parentIface->set_focus)
-	{
-		parentIface->set_focus(inFocusable);
-	}
-
-	/* Reset selected item to first one */
-	if(!priv->selectedItem)
-	{
-		priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
-	}
-
-	if(priv->selectedItem)
-	{
-		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-	}
+	/* This actor supports selection */
+	return(TRUE);
 }
 
-/* Unset focus from actor */
-static void _xfdashboard_windows_view_focusable_unset_focus(XfdashboardFocusable *inFocusable)
-{
-	XfdashboardWindowsView			*self;
-	XfdashboardWindowsViewPrivate	*priv;
-	XfdashboardFocusableInterface	*selfIface;
-	XfdashboardFocusableInterface	*parentIface;
-
-	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable));
-
-	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
-	priv=self->priv;
-
-	/* Call parent class interface function */
-	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
-	parentIface=g_type_interface_peek_parent(selfIface);
-
-	if(parentIface && parentIface->set_focus)
-	{
-		parentIface->unset_focus(inFocusable);
-	}
-
-	/* Unstyle selected item */
-	if(priv->selectedItem)
-	{
-		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-	}
-}
-
-/* Virtual function "handle_keypress_event" was called */
-static gboolean _xfdashboard_windows_view_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
-																			const ClutterEvent *inEvent)
+/* Get current selection */
+static ClutterActor* _xfdashboard_windows_view_focusable_get_selection(XfdashboardFocusable *inFocusable)
 {
 	XfdashboardWindowsView					*self;
 	XfdashboardWindowsViewPrivate			*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), NULL);
 
 	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
 	priv=self->priv;
 
-	/* Move selection if an arrow key was pressed */
-	if(inEvent->key.keyval==CLUTTER_KEY_Left ||
-		inEvent->key.keyval==CLUTTER_KEY_Right ||
-		inEvent->key.keyval==CLUTTER_KEY_Up ||
-		inEvent->key.keyval==CLUTTER_KEY_Down)
-	{
-		gint							index;
-		gint							newIndex;
-		gint							numberChildren;
-		gint							rows;
-		gint							columns;
-		gint							selectionRow;
-		gint							selectionColumn;
-		ClutterActorIter				iter;
-		ClutterActor					*child;
-
-		/* If there is nothing selected, select first actor and return */
-		if(!priv->selectedItem)
-		{
-			priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
-
-			if(priv->selectedItem)
-			{
-				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-			}
-
-			return(CLUTTER_EVENT_STOP);
-		}
-
-		/* Get number of rows and columns and also get number of children
-		 * of layout manager.
-		 */
-		numberChildren=xfdashboard_scaled_table_layout_get_number_children(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
-		rows=xfdashboard_scaled_table_layout_get_rows(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
-		columns=xfdashboard_scaled_table_layout_get_columns(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
-
-		/* Get index of current selection */
-		newIndex=index=0;
-		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-		while(clutter_actor_iter_next(&iter, &child) &&
-				child!=priv->selectedItem)
-		{
-			index++;
-			newIndex++;
-		}
-
-		selectionRow=(index / columns);
-		selectionColumn=(index % columns);
-
-		/* Determine index of new selection depending on arrow key pressed */
-		if(columns>1 && inEvent->key.keyval==CLUTTER_KEY_Left)
-		{
-			newIndex--;
-			if(newIndex<(selectionRow*columns))
-			{
-				newIndex=(selectionRow*columns)+columns-1;
-				if(newIndex>=numberChildren) newIndex=numberChildren-1;
-			}
-		}
-
-		if(columns>1 && inEvent->key.keyval==CLUTTER_KEY_Right)
-		{
-			newIndex++;
-			if(newIndex>=((selectionRow+1)*columns) ||
-				newIndex>=numberChildren)
-			{
-				newIndex=(selectionRow*columns);
-			}
-		}
-
-		if(rows>1 && inEvent->key.keyval==CLUTTER_KEY_Up)
-		{
-			newIndex-=columns;
-			if(newIndex<0)
-			{
-				newIndex=((rows-1)*columns)+selectionColumn;
-				if(newIndex>=numberChildren) newIndex-=columns;
-			}
-		}
-
-		if(rows>1 && inEvent->key.keyval==CLUTTER_KEY_Down)
-		{
-			newIndex+=columns;
-			if(newIndex>=numberChildren) newIndex=selectionColumn;
-		}
-
-		/* Only change selection and update the affected actors if index of
-		 * new and old selection differ.
-		 */
-		if(newIndex==index) return(CLUTTER_EVENT_STOP);
-
-		/* Unstyle current selection */
-		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-
-		/* Get new selection and style it */
-		index=newIndex;
-		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-		while(clutter_actor_iter_next(&iter, &priv->selectedItem) &&
-				index>0)
-		{
-			index--;
-		}
-
-		if(priv->selectedItem)
-		{
-			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-		}
-
-		/* Event handled */
-		return(CLUTTER_EVENT_STOP);
-	}
-
-	/* We did not handle this event */
-	return(CLUTTER_EVENT_PROPAGATE);
+	/* Return current selection */
+	return(priv->selectedItem);
 }
 
-/* Virtual function "handle_key_event" was called */
-static gboolean _xfdashboard_windows_view_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
-																			const ClutterEvent *inEvent)
+/* Set new selection */
+static gboolean _xfdashboard_windows_view_focusable_set_selection(XfdashboardFocusable *inFocusable,
+																	ClutterActor *inSelection)
 {
 	XfdashboardWindowsView					*self;
 	XfdashboardWindowsViewPrivate			*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), FALSE);
+	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), FALSE);
 
 	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
 	priv=self->priv;
 
-	/* Activate selected window on ENTER or close window on DELETE / SHIFT+BACKSPACE */
-	switch(inEvent->key.keyval)
+	/* Check that selection is a child of this actor */
+	if(inSelection && !xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
 	{
-		case CLUTTER_KEY_Return:
-		case CLUTTER_KEY_KP_Enter:
-		case CLUTTER_KEY_ISO_Enter:
-			if(priv->selectedItem)
-			{
-				_xfdashboard_windows_view_on_window_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
-			}
-			return(CLUTTER_EVENT_STOP);
+		ClutterActor						*parent;
 
-		case CLUTTER_KEY_BackSpace:
-			if(clutter_event_has_shift_modifier(inEvent) &&
-				priv->selectedItem)
-			{
-				_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
-			}
-			return(CLUTTER_EVENT_STOP);
-
-		case CLUTTER_KEY_Delete:
-		case CLUTTER_KEY_KP_Delete:
-			if(priv->selectedItem)
-			{
-				_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
-			}
-			return(CLUTTER_EVENT_STOP);
+		parent=clutter_actor_get_parent(inSelection);
+		g_warning(_("%s is a child of %s and cannot be selected at %s"),
+					G_OBJECT_TYPE_NAME(inSelection),
+					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
+					G_OBJECT_TYPE_NAME(self));
 	}
 
-	/* We did not handle this event */
-	return(CLUTTER_EVENT_PROPAGATE);
+	/* Set new selection */
+	priv->selectedItem=inSelection;
+
+	/* New selection was set successfully */
+	return(TRUE);
+}
+
+/* Find requested selection target depending of current selection */
+static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(XfdashboardFocusable *inFocusable,
+																			ClutterActor *inSelection,
+																			XfdashboardSelectionTarget inDirection)
+{
+	XfdashboardWindowsView					*self;
+	XfdashboardWindowsViewPrivate			*priv;
+	ClutterActor							*selection;
+	gint									numberChildren;
+	gint									rows;
+	gint									columns;
+	gint									currentSelectionIndex;
+	gint									currentSelectionRow;
+	gint									currentSelectionColumn;
+	gint									newSelectionIndex;
+	ClutterActorIter						iter;
+	ClutterActor							*child;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), NULL);
+	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), NULL);
+	g_return_val_if_fail(inDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
+	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
+	priv=self->priv;
+	selection=NULL;
+
+	/* If there is nothing selected, select first actor and return */
+	if(!inSelection)
+	{
+		selection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+		g_debug("No selection at %s, so select first child %s for direction %u",
+				G_OBJECT_TYPE_NAME(self),
+				selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+				inDirection);
+
+		return(selection);
+	}
+
+	/* Check that selection is a child of this actor otherwise return NULL */
+	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	{
+		ClutterActor						*parent;
+
+		parent=clutter_actor_get_parent(inSelection);
+		g_warning(_("Cannot lookup selection target at %s because %s is a child of %s"),
+					G_OBJECT_TYPE_NAME(self),
+					G_OBJECT_TYPE_NAME(inSelection),
+					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>");
+
+		return(NULL);
+	}
+
+	/* Get number of rows and columns and also get number of children
+	 * of layout manager.
+	 */
+	numberChildren=xfdashboard_scaled_table_layout_get_number_children(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
+	rows=xfdashboard_scaled_table_layout_get_rows(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
+	columns=xfdashboard_scaled_table_layout_get_columns(XFDASHBOARD_SCALED_TABLE_LAYOUT(priv->layout));
+
+	/* Get index of current selection */
+	currentSelectionIndex=0;
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child) &&
+			child!=inSelection)
+	{
+		currentSelectionIndex++;
+	}
+
+	currentSelectionRow=(currentSelectionIndex / columns);
+	currentSelectionColumn=(currentSelectionIndex % columns);
+
+	/* Find target selection */
+	switch(inDirection)
+	{
+		case XFDASHBOARD_SELECTION_TARGET_LEFT:
+			currentSelectionColumn--;
+			if(currentSelectionColumn<0)
+			{
+				currentSelectionRow++;
+				newSelectionIndex=(currentSelectionRow*columns)-1;
+			}
+				else newSelectionIndex=currentSelectionIndex-1;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			selection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_RIGHT:
+			currentSelectionColumn++;
+			if(currentSelectionColumn==columns ||
+				currentSelectionIndex==numberChildren)
+			{
+				newSelectionIndex=(currentSelectionRow*columns);
+			}
+				else newSelectionIndex=currentSelectionIndex+1;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			selection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_UP:
+			currentSelectionRow--;
+			if(currentSelectionRow<0) currentSelectionRow=rows-1;
+			newSelectionIndex=(currentSelectionRow*columns)+currentSelectionColumn;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			selection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_DOWN:
+			currentSelectionRow++;
+			if(currentSelectionRow>=rows) currentSelectionRow=0;
+			newSelectionIndex=(currentSelectionRow*columns)+currentSelectionColumn;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			selection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_FIRST:
+			selection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_LAST:
+			selection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_NEXT:
+			selection=clutter_actor_get_next_sibling(inSelection);
+			if(!selection) selection=clutter_actor_get_previous_sibling(inSelection);
+			break;
+
+		default:
+			g_assert_not_reached();
+			break;
+	}
+
+	g_debug("Selecting %s at %s for current selection %s in direction %u",
+			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+			G_OBJECT_TYPE_NAME(self),
+			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+			inDirection);
+
+	return(selection);
+}
+
+/* Activate selection */
+static gboolean _xfdashboard_windows_view_focusable_activate_selection(XfdashboardFocusable *inFocusable,
+																		ClutterActor *inSelection)
+{
+	XfdashboardWindowsView					*self;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), FALSE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), FALSE);
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
+
+	/* Check that selection is a child of this actor */
+	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	{
+		ClutterActor						*parent;
+
+		parent=clutter_actor_get_parent(inSelection);
+		g_warning(_("%s is a child of %s and cannot be activated at %s"),
+					G_OBJECT_TYPE_NAME(inSelection),
+					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
+					G_OBJECT_TYPE_NAME(self));
+
+		return(FALSE);
+	}
+
+	/* Check that child is a live window */
+	if(!XFDASHBOARD_IS_LIVE_WINDOW(inSelection))
+	{
+		g_warning(_("Cannot activate selection of type %s at %s because expecting type %s"),
+					G_OBJECT_TYPE_NAME(inSelection),
+					G_OBJECT_TYPE_NAME(self),
+					g_type_name(XFDASHBOARD_TYPE_LIVE_WINDOW));
+
+		return(FALSE);
+	}
+
+	/* Activate selection means clicking on window */
+	_xfdashboard_windows_view_on_window_clicked(self, XFDASHBOARD_LIVE_WINDOW(inSelection));
+
+	return(TRUE);
 }
 
 /* Interface initialization
@@ -870,10 +917,12 @@ static gboolean _xfdashboard_windows_view_focusable_handle_keyrelease_event(Xfda
 void _xfdashboard_windows_view_focusable_iface_init(XfdashboardFocusableInterface *iface)
 {
 	iface->can_focus=_xfdashboard_windows_view_focusable_can_focus;
-	iface->set_focus=_xfdashboard_windows_view_focusable_set_focus;
-	iface->unset_focus=_xfdashboard_windows_view_focusable_unset_focus;
-	iface->handle_keypress_event=_xfdashboard_windows_view_focusable_handle_keypress_event;
-	iface->handle_keyrelease_event=_xfdashboard_windows_view_focusable_handle_keyrelease_event;
+
+	iface->supports_selection=_xfdashboard_windows_view_focusable_supports_selection;
+	iface->get_selection=_xfdashboard_windows_view_focusable_get_selection;
+	iface->set_selection=_xfdashboard_windows_view_focusable_set_selection;
+	iface->find_selection=_xfdashboard_windows_view_focusable_find_selection;
+	iface->activate_selection=_xfdashboard_windows_view_focusable_activate_selection;
 }
 
 /* IMPLEMENTATION: GObject */
@@ -1043,6 +1092,8 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	g_signal_connect_swapped(action, "drop", G_CALLBACK(_xfdashboard_windows_view_on_drop_drop), self);
 
 	/* Connect signals */
+	g_signal_connect(self, "key-release-event", G_CALLBACK(_xfdashboard_windows_view_on_key_release_event), NULL);
+
 	g_signal_connect_swapped(priv->windowTracker,
 								"active-workspace-changed",
 								G_CALLBACK(_xfdashboard_windows_view_on_active_workspace_changed),

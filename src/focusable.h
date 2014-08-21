@@ -1,6 +1,7 @@
 /*
  * focusable: An interface which can be inherited by actors to get
- *            by focus manager for keyboard navigation
+ *            managed by focus manager for keyboard navigation and
+ *            selection handling
  * 
  * Copyright 2012-2014 Stephan Haller <nomad@froevel.de>
  * 
@@ -27,6 +28,8 @@
 
 #include <clutter/clutter.h>
 
+#include "types.h"
+
 G_BEGIN_DECLS
 
 #define XFDASHBOARD_TYPE_FOCUSABLE				(xfdashboard_focusable_get_type())
@@ -49,8 +52,11 @@ struct _XfdashboardFocusableInterface
 	void (*set_focus)(XfdashboardFocusable *self);
 	void (*unset_focus)(XfdashboardFocusable *self);
 
-	gboolean (*handle_keypress_event)(XfdashboardFocusable *self, const ClutterEvent *inEvent);
-	gboolean (*handle_keyrelease_event)(XfdashboardFocusable *self, const ClutterEvent *inEvent);
+	gboolean (*supports_selection)(XfdashboardFocusable *self);
+	ClutterActor* (*get_selection)(XfdashboardFocusable *self);
+	gboolean (*set_selection)(XfdashboardFocusable *self, ClutterActor *inSelection);
+	ClutterActor* (*find_selection)(XfdashboardFocusable *self, ClutterActor *inSelection, XfdashboardSelectionTarget inDirection);
+	gboolean (*activate_selection)(XfdashboardFocusable *self, ClutterActor *inSelection);
 };
 
 /* Public API */
@@ -61,8 +67,12 @@ void xfdashboard_focusable_set_focus(XfdashboardFocusable *self);
 void xfdashboard_focusable_unset_focus(XfdashboardFocusable *self);
 
 gboolean xfdashboard_focusable_handle_key_event(XfdashboardFocusable *self, const ClutterEvent *inEvent);
-gboolean xfdashboard_focusable_handle_keypress_event(XfdashboardFocusable *self, const ClutterEvent *inEvent);
-gboolean xfdashboard_focusable_handle_keyrelease_event(XfdashboardFocusable *self, const ClutterEvent *inEvent);
+
+gboolean xfdashboard_focusable_supports_selection(XfdashboardFocusable *self);
+ClutterActor* xfdashboard_focusable_get_selection(XfdashboardFocusable *self);
+gboolean xfdashboard_focusable_set_selection(XfdashboardFocusable *self, ClutterActor *inSelection);
+ClutterActor* xfdashboard_focusable_find_selection(XfdashboardFocusable *self, ClutterActor *inSelection, XfdashboardSelectionTarget inDirection);
+gboolean xfdashboard_focusable_activate_selection(XfdashboardFocusable *self, ClutterActor *inSelection);
 
 G_END_DECLS
 

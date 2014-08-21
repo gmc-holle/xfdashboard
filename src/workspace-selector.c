@@ -801,96 +801,245 @@ static void _xfdashboard_workspace_selector_allocate(ClutterActor *inActor,
 
 /* IMPLEMENTATION: Interface XfdashboardFocusable */
 
-/* Virtual function "handle_keypress_event" was called */
-static gboolean _xfdashboard_workspace_selector_focusable_handle_keypress_event(XfdashboardFocusable *inFocusable,
-																				const ClutterEvent *inEvent)
+/* Determine if this actor supports selection */
+static gboolean _xfdashboard_workspace_selector_focusable_supports_selection(XfdashboardFocusable *inFocusable)
 {
-	XfdashboardWorkspaceSelector			*self;
-	XfdashboardWorkspaceSelectorPrivate		*priv;
-	gint									currentWorkspace;
-	gint									maxWorkspace;
-	XfdashboardWindowTrackerWorkspace		*workspace;
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inFocusable), FALSE);
 
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inFocusable), CLUTTER_EVENT_PROPAGATE);
-
-	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
-	priv=self->priv;
-
-	/* Get current and last workspace */
-	currentWorkspace=xfdashboard_window_tracker_workspace_get_number(priv->activeWorkspace);
-	maxWorkspace=xfdashboard_window_tracker_get_workspaces_count(priv->windowTracker);
-
-	/* Change workspace if an arrow key was pressed which makes sense
-	 * for orientation set
-	 */
-	if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Up) ||
-		(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Left))
-	{
-		/* Activate previous workspace */
-		currentWorkspace--;
-		if(currentWorkspace<0) currentWorkspace=maxWorkspace-1;
-
-		workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
-		xfdashboard_window_tracker_workspace_activate(workspace);
-
-		/* Event handled */
-		return(CLUTTER_EVENT_STOP);
-	}
-		else if((priv->orientation==CLUTTER_ORIENTATION_VERTICAL && inEvent->key.keyval==CLUTTER_KEY_Down) ||
-				(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && inEvent->key.keyval==CLUTTER_KEY_Right))
-		{
-			/* Activate next workspace */
-			currentWorkspace++;
-			if(currentWorkspace>=maxWorkspace) currentWorkspace=0;
-
-			workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
-			xfdashboard_window_tracker_workspace_activate(workspace);
-
-			/* Event handled */
-			return(CLUTTER_EVENT_STOP);
-		}
-
-	/* We did not handle this event */
-	return(CLUTTER_EVENT_PROPAGATE);
+	/* This actor supports selection */
+	return(TRUE);
 }
 
-/* Virtual function "handle_keyrelease_event" was called */
-static gboolean _xfdashboard_workspace_selector_focusable_handle_keyrelease_event(XfdashboardFocusable *inFocusable,
-																					const ClutterEvent *inEvent)
+/* Get current selection */
+static ClutterActor* _xfdashboard_workspace_selector_focusable_get_selection(XfdashboardFocusable *inFocusable)
 {
 	XfdashboardWorkspaceSelector			*self;
 	XfdashboardWorkspaceSelectorPrivate		*priv;
-	gint									currentWorkspace;
-	XfdashboardWindowTrackerWorkspace		*workspace;
+	XfdashboardLiveWorkspace				*actor;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inFocusable), NULL);
 
 	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
 	priv=self->priv;
 
-	/* Activate workspace on ENTER */
-	if(inEvent->key.keyval==CLUTTER_KEY_Return ||
-		inEvent->key.keyval==CLUTTER_KEY_KP_Enter ||
-		inEvent->key.keyval==CLUTTER_KEY_ISO_Enter)
-	{
-		/* Get current workspace */
-		currentWorkspace=xfdashboard_window_tracker_workspace_get_number(priv->activeWorkspace);
+	/* Find actor for current active workspace which is also the current selection */
+	actor=_xfdashboard_workspace_selector_find_actor_for_workspace(self, priv->activeWorkspace);
+	if(!actor) return(NULL);
 
-		/* Active workspace */
-		workspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, currentWorkspace);
+	/* Return current selection */
+	return(CLUTTER_ACTOR(actor));
+}
+
+/* Set new selection */
+static gboolean _xfdashboard_workspace_selector_focusable_set_selection(XfdashboardFocusable *inFocusable,
+																		ClutterActor *inSelection)
+{
+	XfdashboardWorkspaceSelector			*self;
+	XfdashboardLiveWorkspace				*actor;
+	XfdashboardWindowTrackerWorkspace		*workspace;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(inSelection), FALSE);
+
+	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
+	actor=XFDASHBOARD_LIVE_WORKSPACE(inSelection);
+	workspace=NULL;
+
+	/* Check that selection is a child of this actor */
+	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	{
+		ClutterActor						*parent;
+
+		parent=clutter_actor_get_parent(inSelection);
+		g_warning(_("%s is a child of %s and cannot be selected at %s"),
+					G_OBJECT_TYPE_NAME(inSelection),
+					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
+					G_OBJECT_TYPE_NAME(self));
+	}
+
+	/* Get workspace of new selection and set new selection*/
+	workspace=xfdashboard_live_workspace_get_workspace(actor);
+	if(workspace)
+	{
+		/* Setting new selection means also to set selected workspace active */
+		xfdashboard_window_tracker_workspace_activate(workspace);
+
+		/* New selection was set successfully */
+		return(TRUE);
+	}
+
+	/* Setting new selection was unsuccessful if we get here */
+	g_warning(_("Could not determine workspace of %s to set selection at %s"),
+				G_OBJECT_TYPE_NAME(actor),
+				G_OBJECT_TYPE_NAME(self));
+
+	return(FALSE);
+}
+
+/* Find requested selection target depending of current selection */
+static ClutterActor* _xfdashboard_workspace_selector_focusable_find_selection(XfdashboardFocusable *inFocusable,
+																				ClutterActor *inSelection,
+																				XfdashboardSelectionTarget inDirection)
+{
+	XfdashboardWorkspaceSelector			*self;
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	XfdashboardLiveWorkspace				*selection;
+	ClutterActor							*newSelection;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inFocusable), NULL);
+	g_return_val_if_fail(!inSelection || XFDASHBOARD_IS_LIVE_WORKSPACE(inSelection), NULL);
+
+	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
+	priv=self->priv;
+	newSelection=NULL;
+
+	/* Find actor for current active workspace which is also the current selection */
+	selection=_xfdashboard_workspace_selector_find_actor_for_workspace(self, priv->activeWorkspace);
+	if(!selection) return(NULL);
+
+	/* If there is nothing selected return currently determined actor which is
+	 * the current active workspace.
+	 */
+	if(!inSelection)
+	{
+		g_debug("No selection at %s, so select first child %s for direction %u",
+				G_OBJECT_TYPE_NAME(self),
+				selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+				inDirection);
+
+		return(CLUTTER_ACTOR(selection));
+	}
+
+	/* Check that selection is a child of this actor otherwise return NULL */
+	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	{
+		ClutterActor						*parent;
+
+		parent=clutter_actor_get_parent(inSelection);
+		g_warning(_("Cannot lookup selection target at %s because %s is a child of %s"),
+					G_OBJECT_TYPE_NAME(self),
+					G_OBJECT_TYPE_NAME(inSelection),
+					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>");
+
+		return(NULL);
+	}
+
+	/* Find target selection */
+	switch(inDirection)
+	{
+		case XFDASHBOARD_SELECTION_TARGET_LEFT:
+			if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
+			{
+				newSelection=clutter_actor_get_previous_sibling(CLUTTER_ACTOR(selection));
+			}
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_UP:
+			if(priv->orientation==CLUTTER_ORIENTATION_VERTICAL)
+			{
+				newSelection=clutter_actor_get_previous_sibling(CLUTTER_ACTOR(selection));
+			}
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_RIGHT:
+			if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
+			{
+				newSelection=clutter_actor_get_next_sibling(CLUTTER_ACTOR(selection));
+			}
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_DOWN:
+			if(priv->orientation==CLUTTER_ORIENTATION_VERTICAL)
+			{
+				newSelection=clutter_actor_get_next_sibling(CLUTTER_ACTOR(selection));
+			}
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_FIRST:
+			newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_LAST:
+			newSelection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_NEXT:
+			newSelection=clutter_actor_get_next_sibling(CLUTTER_ACTOR(selection));
+			if(!newSelection) newSelection=clutter_actor_get_previous_sibling(CLUTTER_ACTOR(selection));
+			break;
+
+		default:
+			g_assert_not_reached();
+			break;
+	}
+
+	/* If new selection could be found override current selection with it */
+	if(newSelection && XFDASHBOARD_IS_LIVE_WORKSPACE(newSelection))
+	{
+		selection=XFDASHBOARD_LIVE_WORKSPACE(newSelection);
+	}
+
+	/* Return new selection found */
+	g_debug("Selecting %s at %s for current selection %s in direction %u",
+			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+			G_OBJECT_TYPE_NAME(self),
+			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+			inDirection);
+
+	return(CLUTTER_ACTOR(selection));
+}
+
+/* Activate selection */
+static gboolean _xfdashboard_workspace_selector_focusable_activate_selection(XfdashboardFocusable *inFocusable,
+																				ClutterActor *inSelection)
+{
+	XfdashboardWorkspaceSelector			*self;
+	XfdashboardLiveWorkspace				*actor;
+	XfdashboardWindowTrackerWorkspace		*workspace;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(inSelection), FALSE);
+
+	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
+	actor=XFDASHBOARD_LIVE_WORKSPACE(inSelection);
+	workspace=NULL;
+
+	/* Check that selection is a child of this actor */
+	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	{
+		ClutterActor						*parent;
+
+		parent=clutter_actor_get_parent(inSelection);
+		g_warning(_("%s is a child of %s and cannot be selected at %s"),
+					G_OBJECT_TYPE_NAME(inSelection),
+					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
+					G_OBJECT_TYPE_NAME(self));
+	}
+
+	/* Get workspace of new selection and set new selection*/
+	workspace=xfdashboard_live_workspace_get_workspace(actor);
+	if(workspace)
+	{
+		/* Activate workspace */
 		xfdashboard_window_tracker_workspace_activate(workspace);
 
 		/* Quit application */
 		xfdashboard_application_quit();
 
-		/* Event handled */
-		return(CLUTTER_EVENT_STOP);
+		/* Activation was successful */
+		return(TRUE);
 	}
 
-	/* We did not handle this event */
-	return(CLUTTER_EVENT_PROPAGATE);
+	/* Activation was unsuccessful if we get here */
+	g_warning(_("Could not determine workspace of %s to set selection at %s"),
+				G_OBJECT_TYPE_NAME(actor),
+				G_OBJECT_TYPE_NAME(self));
+	return(FALSE);
 }
 
 /* Interface initialization
@@ -898,8 +1047,11 @@ static gboolean _xfdashboard_workspace_selector_focusable_handle_keyrelease_even
  */
 void _xfdashboard_workspace_selector_focusable_iface_init(XfdashboardFocusableInterface *iface)
 {
-	iface->handle_keypress_event=_xfdashboard_workspace_selector_focusable_handle_keypress_event;
-	iface->handle_keyrelease_event=_xfdashboard_workspace_selector_focusable_handle_keyrelease_event;
+	iface->supports_selection=_xfdashboard_workspace_selector_focusable_supports_selection;
+	iface->get_selection=_xfdashboard_workspace_selector_focusable_get_selection;
+	iface->set_selection=_xfdashboard_workspace_selector_focusable_set_selection;
+	iface->find_selection=_xfdashboard_workspace_selector_focusable_find_selection;
+	iface->activate_selection=_xfdashboard_workspace_selector_focusable_activate_selection;
 }
 
 /* IMPLEMENTATION: GObject */

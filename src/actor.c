@@ -214,42 +214,12 @@ static gboolean _xfdashboard_actor_focusable_can_focus(XfdashboardFocusable *inF
 	return(FALSE);
 }
 
-/* Set focus to actor */
-static void _xfdashboard_actor_focusable_set_focus(XfdashboardFocusable *self)
-{
-	XfdashboardActor	*actor;
-
-	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(self));
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
-
-	actor=XFDASHBOARD_ACTOR(self);
-
-	/* Set focus and style for focus */
-	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "focus");
-}
-
-/* Unset focus from actor */
-static void _xfdashboard_actor_focusable_unset_focus(XfdashboardFocusable *self)
-{
-	XfdashboardActor	*actor;
-
-	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(self));
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
-
-	actor=XFDASHBOARD_ACTOR(self);
-
-	/* Set focus and style for focus */
-	xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(actor), "focus");
-}
-
 /* Interface initialization
  * Set up default functions
  */
 static void _xfdashboard_actor_focusable_iface_init(XfdashboardFocusableInterface *iface)
 {
 	iface->can_focus=_xfdashboard_actor_focusable_can_focus;
-	iface->set_focus=_xfdashboard_actor_focusable_set_focus;
-	iface->unset_focus=_xfdashboard_actor_focusable_unset_focus;
 }
 
 /* IMPLEMENTATION: Interface XfdashboardStylable */
