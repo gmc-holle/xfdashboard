@@ -74,11 +74,13 @@ XfdashboardStylable* xfdashboard_stylable_get_parent(XfdashboardStylable *self);
 
 const gchar* xfdashboard_stylable_get_classes(XfdashboardStylable *self);
 void xfdashboard_stylable_set_classes(XfdashboardStylable *self, const gchar *inClasses);
+gboolean xfdashboard_stylable_has_class(XfdashboardStylable *self, const gchar *inClass);
 void xfdashboard_stylable_add_class(XfdashboardStylable *self, const gchar *inClass);
 void xfdashboard_stylable_remove_class(XfdashboardStylable *self, const gchar *inClass);
 
 const gchar* xfdashboard_stylable_get_pseudo_classes(XfdashboardStylable *self);
 void xfdashboard_stylable_set_pseudo_classes(XfdashboardStylable *self, const gchar *inClasses);
+gboolean xfdashboard_stylable_has_pseudo_class(XfdashboardStylable *self, const gchar *inClass);
 void xfdashboard_stylable_add_pseudo_class(XfdashboardStylable *self, const gchar *inClass);
 void xfdashboard_stylable_remove_pseudo_class(XfdashboardStylable *self, const gchar *inClass);
 

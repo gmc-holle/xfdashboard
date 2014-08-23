@@ -708,13 +708,6 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 
 	priv=self->priv;
 
-	/* Unset selected item if any was selected by focusing this actor */
-	if(priv->selectedItem)
-	{
-		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
-		priv->selectedItem=NULL;
-	}
-
 	/* Remove all application buttons */
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
 	while(clutter_actor_iter_next(&iter, &child))

@@ -35,6 +35,7 @@
 #include "utils.h"
 #include "stylable.h"
 #include "marshal.h"
+#include "focus-manager.h"
 
 /* Define this interface in GObject system */
 G_DEFINE_INTERFACE(XfdashboardFocusable,
@@ -85,6 +86,129 @@ static gboolean _xfdashboard_focusable_real_activate_selection(XfdashboardFocusa
 
 	/* By default (if not overidden) this actor cannot activate any selection */
 	return(FALSE);
+}
+
+/* Check if this focusable actor has the focus */
+static gboolean _xfdashboard_focusable_has_focus(XfdashboardFocusable *self)
+{
+	XfdashboardFocusManager		*focusManager;
+	gboolean					hasFocus;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(self), FALSE);
+
+	hasFocus=FALSE;
+
+	/* Ask focus manager which actor has the current focus and
+	 * check if it is this focusable actor.
+	 */
+	focusManager=xfdashboard_focus_manager_get_default();
+	hasFocus=xfdashboard_focus_manager_has_focus(focusManager, self);
+	g_object_unref(focusManager);
+
+	/* If focus manager says this focusable has not the focus then
+	 * it might a proxy who has the focus (as seen by focus manager)
+	 * but in real this focusable actor is the destination of the
+	 * proxy so check for style class "focus" being set.
+	 */
+	if(!hasFocus &&
+		XFDASHBOARD_IS_STYLABLE(self) &&
+		xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(self), "focus"))
+	{
+		hasFocus=TRUE;
+	}
+
+	return(hasFocus);
+}
+
+/* The current selection of a focusable actor (if focussed or not) is not available anymore
+ * (e.g. hidden or destroyed). So move selection at focusable actor to next available and
+ * selectable item.
+ */
+static void _xfdashboard_focusable_on_selection_unavailable(XfdashboardFocusable *self,
+															gpointer inUserData)
+{
+	XfdashboardFocusableInterface		*iface;
+	ClutterActor						*oldSelection;
+	ClutterActor						*newSelection;
+	gboolean							success;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(self));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inUserData));
+
+	iface=XFDASHBOARD_FOCUSABLE_GET_IFACE(self);
+	oldSelection=CLUTTER_ACTOR(inUserData);
+
+	/* Get next selection */
+	newSelection=xfdashboard_focusable_find_selection(self, oldSelection, XFDASHBOARD_SELECTION_TARGET_NEXT);
+
+	/* Call virtual function to set selection which have to be available
+	 * because this signal handler was set in xfdashboard_focusable_set_selection()
+	 * when this virtual function was available and successfully called.
+	 * If setting new selection was unsuccessful we set selection to nothing (NULL);
+	 */
+	success=iface->set_selection(self, newSelection);
+	if(!success)
+	{
+		success=iface->set_selection(self, newSelection);
+		if(!success)
+		{
+			g_critical(_("Old selection %s at %s is unavailable but setting new selection either to %s or nothing failed!"),
+						G_OBJECT_TYPE_NAME(oldSelection),
+						G_OBJECT_TYPE_NAME(self),
+						newSelection ? G_OBJECT_TYPE_NAME(newSelection) : "<nil>");
+		}
+
+		/* Now reset new selection to NULL regardless if setting selection at
+		 * focusable actor was successful or not. A critical warning was displayed
+		 * if is was unsuccessful because setting nothing (NULL) must succeed usually.
+		 */
+		newSelection=NULL;
+	}
+
+	/* Regardless if setting selection was successful, remove signal handlers
+	 * and styles from old selection.
+	 */
+	if(oldSelection)
+	{
+		/* Remove signal handlers at old selection*/
+		g_signal_handlers_disconnect_by_func(oldSelection,
+												G_CALLBACK(_xfdashboard_focusable_on_selection_unavailable),
+												self);
+
+		/* Remove style from old selection */
+		if(XFDASHBOARD_IS_STYLABLE(oldSelection))
+		{
+			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(oldSelection), "selected");
+		}
+	}
+
+	/* If setting selection was successful, set up signal handlers and styles at new selection */
+	if(success && newSelection)
+	{
+		/* Set up signal handlers to get notified if new selection
+		 * is going to be unavailable (e.g. hidden or destroyed)
+		 */
+		g_signal_connect_swapped(newSelection,
+									"destroy",
+									G_CALLBACK(_xfdashboard_focusable_on_selection_unavailable),
+									self);
+		g_signal_connect_swapped(newSelection,
+									"hide",
+									G_CALLBACK(_xfdashboard_focusable_on_selection_unavailable),
+									self);
+
+		/* Check if this focusable actor has the focus because if it has
+		 * the have to style new selection.
+		 */
+		if(_xfdashboard_focusable_has_focus(self) &&
+			XFDASHBOARD_IS_STYLABLE(newSelection))
+		{
+			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(newSelection), "selected");
+		}
+	}
+
+	/* Emit signal because at least old selection has changed */
+	g_signal_emit(self, XfdashboardFocusableSignals[SIGNAL_SELECTION_CHANGED], 0, oldSelection, newSelection);
 }
 
 /* Key was pressed */
@@ -257,8 +381,7 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 							NULL,
 							_xfdashboard_marshal_VOID__OBJECT_OBJECT_OBJECT,
 							G_TYPE_NONE,
-							3,
-							XFDASHBOARD_TYPE_FOCUSABLE,
+							2,
 							CLUTTER_TYPE_ACTOR,
 							CLUTTER_TYPE_ACTOR);
 
@@ -491,7 +614,7 @@ gboolean xfdashboard_focusable_set_selection(XfdashboardFocusable *self, Clutter
 	/* Call virtual function */
 	if(iface->set_selection)
 	{
-		/* Call virtual function */
+		/* Call virtual function to set selection */
 		success=iface->set_selection(self, inSelection);
 
 		/* If new selection could be set successfully, remove signal handlers
@@ -502,8 +625,12 @@ gboolean xfdashboard_focusable_set_selection(XfdashboardFocusable *self, Clutter
 			/* Remove signal handlers and styles from old selection */
 			if(oldSelection)
 			{
-				// TODO: Remove signal handlers
+				/* Remove signal handlers at old selection*/
+				g_signal_handlers_disconnect_by_func(oldSelection,
+														G_CALLBACK(_xfdashboard_focusable_on_selection_unavailable),
+														self);
 
+				/* Remove style from old selection */
 				if(XFDASHBOARD_IS_STYLABLE(oldSelection))
 				{
 					xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(oldSelection), "selected");
@@ -513,13 +640,28 @@ gboolean xfdashboard_focusable_set_selection(XfdashboardFocusable *self, Clutter
 			/* Set up signal handlers and styles at new selection */
 			if(inSelection)
 			{
-				// TODO: Set up signal handlers
+				/* Set up signal handlers to get notified if new selection
+				 * is going to be unavailable (e.g. hidden or destroyed)
+				 */
+				g_signal_connect_swapped(inSelection,
+											"destroy",
+											G_CALLBACK(_xfdashboard_focusable_on_selection_unavailable),
+											self);
+				g_signal_connect_swapped(inSelection,
+											"hide",
+											G_CALLBACK(_xfdashboard_focusable_on_selection_unavailable),
+											self);
 
-				if(XFDASHBOARD_IS_STYLABLE(inSelection))
+				/* Style new selection if this focusable actor has the focus */
+				if(_xfdashboard_focusable_has_focus(self) &&
+					XFDASHBOARD_IS_STYLABLE(inSelection))
 				{
 					xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(inSelection), "selected");
 				}
 			}
+
+			/* Emit signal */
+			g_signal_emit(self, XfdashboardFocusableSignals[SIGNAL_SELECTION_CHANGED], 0, oldSelection, inSelection);
 		}
 
 		/* Return result of calling virtual function */

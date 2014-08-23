@@ -233,43 +233,15 @@ static void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *s
 														XfdashboardWindowTrackerWindow *inWindow,
 														gpointer inUserData)
 {
-	XfdashboardWindowsViewPrivate		*priv;
 	XfdashboardLiveWindow				*liveWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
-	priv=self->priv;
-
 	/* Find live window for window just being closed and destroy it */
 	liveWindow=_xfdashboard_windows_view_find_by_window(self, inWindow);
 	if(G_LIKELY(liveWindow))
 	{
-		/* Move selection to next window as this one (the selected one)
-		 * will be destroyed.
-		 */
-		if(priv->selectedItem &&
-			(gpointer)liveWindow==(gpointer)priv->selectedItem)
-		{
-			/* Get next selectable window */
-			priv->selectedItem=clutter_actor_get_next_sibling(priv->selectedItem);
-
-			/* If no selectable window follows this one, select first one */
-			if(!priv->selectedItem)
-			{
-				priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
-			}
-
-			/* If either next selectable window or first one was found,
-			 * style it.
-			 */
-			if(priv->selectedItem)
-			{
-				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem),
-														"selected");
-			}
-		}
-
 		/* Destroy actor */
 		clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
 	}
@@ -332,13 +304,11 @@ static void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWi
 																	gboolean inIsVisible,
 																	gpointer inUserData)
 {
-	XfdashboardWindowsViewPrivate		*priv;
 	XfdashboardLiveWindow				*liveWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
-	priv=self->priv;
 	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
 	/* If window is shown, show it in window list - otherwise hide it.
@@ -348,36 +318,6 @@ static void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWi
 	if(inIsVisible) clutter_actor_show(CLUTTER_ACTOR(liveWindow));
 		else
 		{
-			/* Move selection to next window as this one (the selected one)
-			 * will be hidden and it does not make sense to keep a hidden
-			 * window selected ;)
-			 */
-			if(priv->selectedItem &&
-				(gpointer)liveWindow==(gpointer)priv->selectedItem)
-			{
-				/* Unstyle still selected window */
-				xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem),
-															"selected");
-
-				/* Get next selectable window */
-				priv->selectedItem=clutter_actor_get_next_sibling(priv->selectedItem);
-
-				/* If no selectable window follows this one, select first one */
-				if(!priv->selectedItem)
-				{
-					priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
-				}
-
-				/* If either next selectable window or first one was found,
-				 * style it.
-				 */
-				if(priv->selectedItem)
-				{
-					xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem),
-															"selected");
-				}
-			}
-
 			/* Hide actor */
 			clutter_actor_hide(CLUTTER_ACTOR(liveWindow));
 		}
@@ -402,31 +342,6 @@ static void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWin
 	if(!xfdashboard_window_tracker_window_is_pinned(window) &&
 		xfdashboard_window_tracker_window_get_workspace(window)!=priv->workspace)
 	{
-		/* Move selection to next window as this one (the selected one)
-		 * will be destroyed.
-		 */
-		if(priv->selectedItem &&
-			(gpointer)liveWindow==(gpointer)priv->selectedItem)
-		{
-			/* Get next selectable window */
-			priv->selectedItem=clutter_actor_get_next_sibling(priv->selectedItem);
-
-			/* If no selectable window follows this one, select first one */
-			if(!priv->selectedItem)
-			{
-				priv->selectedItem=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
-			}
-
-			/* If either next selectable window or first one was found,
-			 * style it.
-			 */
-			if(priv->selectedItem)
-			{
-				xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem),
-														"selected");
-			}
-		}
-
 		/* Destroy actor */
 		clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
 	}

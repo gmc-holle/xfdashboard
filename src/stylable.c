@@ -423,6 +423,29 @@ void xfdashboard_stylable_set_classes(XfdashboardStylable *self, const gchar *in
 	XFDASHBOARD_STYLABLE_WARN_NOT_IMPLEMENTED(self, "set_classes");
 }
 
+/* Determine if a specific class is being set at object */
+gboolean xfdashboard_stylable_has_class(XfdashboardStylable *self, const gchar *inClass)
+{
+	const gchar		*classes;
+	gboolean		result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(self), FALSE);
+	g_return_val_if_fail(inClass && inClass[0], FALSE);
+
+	result=FALSE;
+
+	/* Get classes set at object and check if it has the expected one */
+	classes=xfdashboard_stylable_get_classes(self);
+	if(classes &&
+		_xfdashboard_stylable_list_contains(inClass, -1, classes, '.'))
+	{
+		result=TRUE;
+	}
+
+	/* Return result */
+	return(result);
+}
+
 /* Adds a class to existing classes of an object */
 void xfdashboard_stylable_add_class(XfdashboardStylable *self, const gchar *inClass)
 {
@@ -538,6 +561,30 @@ void xfdashboard_stylable_set_pseudo_classes(XfdashboardStylable *self, const gc
 	/* If we get here the virtual function was not overridden */
 	XFDASHBOARD_STYLABLE_WARN_NOT_IMPLEMENTED(self, "set_pseudo_classes");
 }
+
+/* Determine if a specific pseudo-class is being set at object */
+gboolean xfdashboard_stylable_has_pseudo_class(XfdashboardStylable *self, const gchar *inClass)
+{
+	const gchar		*classes;
+	gboolean		result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(self), FALSE);
+	g_return_val_if_fail(inClass && inClass[0], FALSE);
+
+	result=FALSE;
+
+	/* Get classes set at object and check if it has the expected one */
+	classes=xfdashboard_stylable_get_pseudo_classes(self);
+	if(classes &&
+		_xfdashboard_stylable_list_contains(inClass, -1, classes, ':'))
+	{
+		result=TRUE;
+	}
+
+	/* Return result */
+	return(result);
+}
+
 
 /* Adds a pseudo-class to existing pseudo-classes of an object */
 void xfdashboard_stylable_add_pseudo_class(XfdashboardStylable *self, const gchar *inClass)
