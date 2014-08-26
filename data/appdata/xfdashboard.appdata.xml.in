@@ -43,6 +43,22 @@
 	</provides>
 
 	<releases>
+		<release version="0.3.1" timestamp="1409068837">
+			<description>
+				<_p>This unstable development fixes a problem closing windows accidently by
+				pressing the key 'backspace' to refine search more often than characters entered.
+				It also includes new image-loading functions to CSS. It also introduces a new
+				generic selection framework for focusable actors.
+				</_p>
+			</description>
+		</release>
+		<release version="0.2.3" timestamp="1409068569">
+			<description>
+				<_p>This release fixes a problem closing windows accidently by pressing
+				the key 'backspace' to refine search more often than characters entered.
+				</_p>
+			</description>
+		</release>
 		<release version="0.2.2" timestamp="1407869332">
 			<description>
 				<_p>This release fixes a problem when loading scalable images by icon name.
