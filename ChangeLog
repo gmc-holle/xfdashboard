@@ -1,3 +1,31 @@
+commit ea67b84ce02f88bed9140b5b1ddd5673e9a62d0b
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Wed Jul 23 10:34:53 2014 +0200
+
+    cogl_texture_new_from_data() is deprecated since Cogl 1.18 so move to new function cogl_texture_2d_new_from_data()
+
+commit 3306488d337775c0800a057354340b4a25e1a07d
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Sat Aug 16 08:24:54 2014 +0200
+
+    Avoid closing windows accidently with key <Backspace>
+    
+    A window can accidently be closed when starting a search by typing and correcting more letters than entered with key <Backspace>. Because then the view switchs from search view back to windows view, sets the focus to a window in the win$
+    
+    This commit addresses issue #32.
+
+commit 35029e2ff76a2b966e049d18b2d1b30882fbb3e1
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 12 20:52:11 2014 +0200
+
+    Post-release version bump to 0.2.3
+
+commit 73d6c7f3a6b6c73d81aa712840f5ed5b3586eef8
+Author: Stephan Haller <nomad@froevel.de>
+Date:   Tue Aug 12 20:51:07 2014 +0200
+
+    Bump version to 0.2.2
+
 commit 137f87ff5e13ff232954914c4ca558716e559bfa
 Author: Stephan Haller <nomad@froevel.de>
 Date:   Tue Aug 12 20:43:23 2014 +0200
