@@ -659,6 +659,55 @@ static void _xfdashboard_actor_parent_set(ClutterActor *inActor, ClutterActor *i
 	_xfdashboard_actor_invalidate_recursive(CLUTTER_ACTOR(self));
 }
 
+/* Actor is shown */
+static void _xfdashboard_actor_show(ClutterActor *inActor)
+{
+	XfdashboardActor		*self;
+	ClutterActorClass		*parentClass;
+
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inActor));
+
+	self=XFDASHBOARD_ACTOR(inActor);
+
+	/* Call parent's virtual function */
+	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
+	if(parentClass->show)
+	{
+		parentClass->show(inActor);
+	}
+
+	/* If actor is visible now check if pointer is inside this actor
+	 * then add pseudo-class ":hover" to it
+	 */
+	if(clutter_actor_has_pointer(inActor))
+	{
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(self), "hover");
+	}
+}
+
+/* Actor is hidden */
+static void _xfdashboard_actor_hide(ClutterActor *inActor)
+{
+	XfdashboardActor		*self;
+	ClutterActorClass		*parentClass;
+
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inActor));
+
+	self=XFDASHBOARD_ACTOR(inActor);
+
+	/* Call parent's virtual function */
+	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
+	if(parentClass->hide)
+	{
+		parentClass->hide(inActor);
+	}
+
+	/* Actor is hidden now so remove pseudo-class ":hover" because pointer cannot
+	 * be in an actor hidden.
+	 */
+	xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(self), "hover");
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -768,6 +817,8 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 	clutterActorClass->parent_set=_xfdashboard_actor_parent_set;
 	clutterActorClass->enter_event=_xfdashboard_actor_enter_event;
 	clutterActorClass->leave_event=_xfdashboard_actor_leave_event;
+	clutterActorClass->show=_xfdashboard_actor_show;
+	clutterActorClass->hide=_xfdashboard_actor_hide;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardActorPrivate));
