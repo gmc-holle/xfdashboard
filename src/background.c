@@ -792,7 +792,7 @@ XfdashboardBorders xfdashboard_background_get_outline_borders(XfdashboardBackgro
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), XFDASHBOARD_CORNERS_NONE);
 
-	return(self->priv->outlineCorners);
+	return(self->priv->outlineBorders);
 }
 
 void xfdashboard_background_set_outline_borders(XfdashboardBackground *self, XfdashboardBorders inBorders)
