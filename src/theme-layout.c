@@ -323,25 +323,25 @@ static const gchar* _xfdashboard_theme_layout_get_tag_by_id(guint inTagType)
 	switch(inTagType)
 	{
 		case TAG_DOCUMENT:
-			return(_("document"));
+			return("document");
 
 		case TAG_INTERFACE:
-			return(_("interface"));
+			return("interface");
 
 		case TAG_OBJECT:
-			return(_("object"));
+			return("object");
 
 		case TAG_CHILD:
-			return(_("child"));
+			return("child");
 
 		case TAG_PROPERTY:
-			return(_("property"));
+			return("property");
 
 		case TAG_CONSTRAINT:
-			return(_("constraint"));
+			return("constraint");
 
 		case TAG_LAYOUT:
-			return(_("layout"));
+			return("layout");
 
 		default:
 			break;
