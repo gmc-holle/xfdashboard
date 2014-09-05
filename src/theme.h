@@ -29,6 +29,7 @@
 
 #include "theme-css.h"
 #include "theme-layout.h"
+#include "theme-effects.h"
 
 G_BEGIN_DECLS
 
@@ -93,6 +94,7 @@ gboolean xfdashboard_theme_load(XfdashboardTheme *self,
 
 XfdashboardThemeCSS* xfdashboard_theme_get_css(XfdashboardTheme *self);
 XfdashboardThemeLayout* xfdashboard_theme_get_layout(XfdashboardTheme *self);
+XfdashboardThemeEffects* xfdashboard_theme_get_effects(XfdashboardTheme *self);
 
 G_END_DECLS
 

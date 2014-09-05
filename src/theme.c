@@ -53,6 +53,7 @@ struct _XfdashboardThemePrivate
 	/* Instance related */
 	XfdashboardThemeCSS			*styling;
 	XfdashboardThemeLayout		*layout;
+	XfdashboardThemeEffects		*effects;
 };
 
 /* Properties */
@@ -124,6 +125,12 @@ static void _xfdashboard_theme_clean(XfdashboardTheme *self)
 	{
 		g_object_unref(priv->layout);
 		priv->layout=NULL;
+	}
+
+	if(priv->effects)
+	{
+		g_object_unref(priv->effects);
+		priv->effects=NULL;
 	}
 }
 
@@ -320,6 +327,66 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 		counter++;
 	}
 	g_strfreev(resources);
+
+	/* Create XML parser and load effect resources which are optional */
+	if(g_key_file_has_key(themeKeyFile,
+							XFDASHBOARD_THEME_GROUP,
+							"Effects",
+							NULL))
+	{
+		resources=g_key_file_get_string_list(themeKeyFile,
+												XFDASHBOARD_THEME_GROUP,
+												"Effects",
+												NULL,
+												&error);
+		if(!resources)
+		{
+			/* Set error */
+			g_propagate_error(outError, error);
+
+			/* Release allocated resources */
+			_xfdashboard_theme_clean(self);
+
+			if(themeKeyFile) g_key_file_free(themeKeyFile);
+
+			/* Return FALSE to indicate error */
+			return(FALSE);
+		}
+
+		priv->effects=xfdashboard_theme_effects_new();
+		resource=resources;
+		while(*resource)
+		{
+			/* Get path and file for style resource */
+			resourceFile=g_build_filename(inThemePath, *resource, NULL);
+
+			/* Try to load style resource */
+			if(!xfdashboard_theme_effects_add_file(priv->effects, resourceFile, &error))
+			{
+				/* Set error */
+				g_propagate_error(outError, error);
+
+				/* Release allocated resources */
+				_xfdashboard_theme_clean(self);
+
+				if(resources) g_strfreev(resources);
+				if(resourceFile) g_free(resourceFile);
+				if(themeKeyFile) g_key_file_free(themeKeyFile);
+
+				/* Return FALSE to indicate error */
+				return(FALSE);
+			}
+
+			/* Release allocated resources */
+			if(resourceFile) g_free(resourceFile);
+
+			/* Continue with next entry */
+			resource++;
+			counter++;
+		}
+		g_strfreev(resources);
+	}
+
 
 	/* Release allocated resources */
 	if(themeKeyFile) g_key_file_free(themeKeyFile);
@@ -544,6 +611,7 @@ void xfdashboard_theme_init(XfdashboardTheme *self)
 	priv->themeComment=NULL;
 	priv->styling=NULL;
 	priv->layout=NULL;
+	priv->effects=NULL;
 }
 
 /* Implementation: Errors */
@@ -694,4 +762,12 @@ XfdashboardThemeLayout* xfdashboard_theme_get_layout(XfdashboardTheme *self)
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);
 
 	return(self->priv->layout);
+}
+
+/* Get theme effects */
+XfdashboardThemeEffects* xfdashboard_theme_get_effects(XfdashboardTheme *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);
+
+	return(self->priv->effects);
 }

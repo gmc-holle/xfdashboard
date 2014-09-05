@@ -51,6 +51,7 @@ xfdashboard_headers = \
 	text-box.h \
 	theme.h \
 	theme-css.h \
+	theme-effects.h \
 	theme-layout.h \
 	toggle-button.h \
 	tooltip-action.h \
@@ -105,6 +106,7 @@ xfdashboard_SOURCES = \
 	text-box.c \
 	theme.c \
 	theme-css.c \
+	theme-effects.c \
 	theme-layout.c \
 	toggle-button.c \
 	tooltip-action.c \
