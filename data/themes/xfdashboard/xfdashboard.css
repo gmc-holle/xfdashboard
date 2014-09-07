@@ -59,6 +59,7 @@ XfdashboardWindowContent
 #quicklaunch XfdashboardButton
 {
 	icon-size: 64;
+	effects: black-white;
 }
 
 #quicklaunch XfdashboardButton:hover
@@ -67,6 +68,7 @@ XfdashboardWindowContent
 	background-fill-color: #93c1ffff;
 	corners: all;
 	corner-radius: 4.0;
+	effects: ;
 }
 
 #quicklaunch:drop-target

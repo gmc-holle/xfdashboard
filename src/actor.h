@@ -66,6 +66,9 @@ ClutterActor* xfdashboard_actor_new(void);
 gboolean xfdashboard_actor_get_can_focus(XfdashboardActor *self);
 void xfdashboard_actor_set_can_focus(XfdashboardActor *self, gboolean inCanFous);
 
+const gchar* xfdashboard_actor_get_effects(XfdashboardActor *self);
+void xfdashboard_actor_set_effects(XfdashboardActor *self, const gchar *inEffects);
+
 void xfdashboard_actor_install_stylable_property(XfdashboardActorClass *klass, GParamSpec *inParamSpec);
 void xfdashboard_actor_install_stylable_property_by_name(XfdashboardActorClass *klass, const gchar *inParamName);
 GHashTable* xfdashboard_actor_get_stylable_properties(XfdashboardActorClass *klass);

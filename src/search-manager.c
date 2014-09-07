@@ -240,97 +240,14 @@ GList* xfdashboard_search_manager_get_registered(XfdashboardSearchManager *self)
  */
 gchar** xfdashboard_search_manager_get_search_terms_from_string(const gchar *inString, const gchar *inDelimiters)
 {
-	GSList			*tokens, *delimiters, *l;
-	const gchar		*s, *tokenBegin;
-	gunichar		c;
-	guint			numberTokens;
-	gchar			**result;
+	const gchar			*delimiters;
 
-	g_return_val_if_fail(inString!=NULL, NULL);
+	g_return_val_if_fail(inString, NULL);
 
-	tokens=NULL;
-	delimiters=NULL;
-	numberTokens=0;
+	/* If no delimiters are specified use default ones */
+	if(inDelimiters && *inDelimiters) delimiters=inDelimiters;
+		else delimiters=DEFAULT_SEARCH_TERMS_DELIMITERS;
 
-	/* Build list of delimiters */
-	if(inDelimiters) s=inDelimiters;
-		else s=DEFAULT_SEARCH_TERMS_DELIMITERS;
-
-	while(*s)
-	{
-		/* Get and check UTF-8 delimiter */
-		c=g_utf8_get_char_validated(s, -1);
-		s=g_utf8_next_char(s);
-		if(c==0 || c==(gunichar)-1 || c==(gunichar)-2) continue;
-
-		/* Add UTF-8 delimiter */
-		delimiters=g_slist_prepend(delimiters, GINT_TO_POINTER(c));
-	}
-
-	/* Find beginning of each token */
-	s=inString;
-	tokenBegin=NULL;
-	while(*s)
-	{
-		gboolean	isDelimiter;
-
-		/* Get and check UTF-8 character */
-		c=g_utf8_get_char_validated(s, -1);
-		if(c==0 || c==(gunichar)-1 || c==(gunichar)-2)
-		{
-			s=g_utf8_next_char(s);
-			continue;
-		}
-
-		/* Check if character is a delimiter */
-		isDelimiter=FALSE;
-		for(l=delimiters; !isDelimiter && l; l=g_slist_next(l))
-		{
-			if(c==(gunichar)GPOINTER_TO_INT(l->data)) isDelimiter=TRUE;
-		}
-
-		/* If character is a delimiter retrieve token, trim white-spaces
-		 * and add to result list
-		 */
-		if(isDelimiter && tokenBegin)
-		{
-			tokens=g_slist_prepend(tokens, g_strndup(tokenBegin, s-tokenBegin));
-			numberTokens++;
-			tokenBegin=NULL;
-		}
-
-		/* If character is not delimiter remember current position in string
-		 * as begin of next token if we have not remember one already
-		 */
-		if(!isDelimiter && !tokenBegin) tokenBegin=s;
-
-		/* Move to next character in string */
-		s=g_utf8_next_char(s);
-	}
-
-	/* Now we are out of loop to split string into token. But if we have
-	 * still remembered a position of a beginning token it was NULL-terminated
-	 * and not delimiter-terminated. Add it also to result list.
-	 */
-	if(tokenBegin)
-	{
-		tokens=g_slist_prepend(tokens, g_strdup(tokenBegin));
-		numberTokens++;
-	}
-
-	/* Build result list as a NULL-terminated list of strings */
-	result=g_new(gchar*, numberTokens+1);
-	result[numberTokens]=NULL;
-	for(l=tokens; l; l=g_slist_next(l))
-	{
-		numberTokens--;
-		result[numberTokens]=l->data;
-	}
-
-	/* Release allocated resources */
-	g_slist_free(delimiters);
-	g_slist_free(tokens);
-
-	/* Return result list */
-	return(result);
+	/* Split string */
+	return(xfdashboard_split_string(inString, delimiters));
 }
