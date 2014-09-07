@@ -57,7 +57,15 @@ enum
 	TAG_PROPERTY
 };
 
-typedef struct _XfdashboardThemeEffectsParsedObject		XfdashboardThemeEffectsParsedObject;
+typedef struct _XfdashboardThemeEffectsPropertiesCollectData	XfdashboardThemeEffectsPropertiesCollectData;
+struct _XfdashboardThemeEffectsPropertiesCollectData
+{
+	guint			index;
+	guint			maxProperties;
+	GParameter		*properties;
+};
+
+typedef struct _XfdashboardThemeEffectsParsedObject				XfdashboardThemeEffectsParsedObject;
 struct _XfdashboardThemeEffectsParsedObject
 {
 	gint								refCount;
@@ -73,7 +81,7 @@ struct _XfdashboardThemeEffectsParsedObject
 														 */
 };
 
-typedef struct _XfdashboardThemeEffectsParserData		XfdashboardThemeEffectsParserData;
+typedef struct _XfdashboardThemeEffectsParserData				XfdashboardThemeEffectsParserData;
 struct _XfdashboardThemeEffectsParserData
 {
 	XfdashboardThemeEffects				*self;
@@ -400,6 +408,92 @@ static void _xfdashboard_theme_effects_add_effects_reference(gpointer inData, gp
 
 	/* Increase reference of specified effect and add to list of known ones */
 	priv->effects=g_slist_prepend(priv->effects, _xfdashboard_theme_effects_object_data_ref(data));
+}
+
+/* Create object and set up all properties */
+static void _xfdashboard_theme_effects_create_object_collect_properties(gpointer inKey,
+																		gpointer inValue,
+																		gpointer inUserData)
+{
+	const gchar										*name;
+	const gchar										*value;
+	XfdashboardThemeEffectsPropertiesCollectData	*data;
+
+	g_return_if_fail(inKey);
+	g_return_if_fail(inValue);
+	g_return_if_fail(inUserData);
+
+	name=(const gchar*)inKey;
+	value=(const gchar*)inValue;
+	data=(XfdashboardThemeEffectsPropertiesCollectData*)inUserData;
+
+	/* Add property parameter to array */
+	data->properties[data->index].name=name;
+
+	g_value_init(&data->properties[data->index].value, G_TYPE_STRING);
+	g_value_set_string(&data->properties[data->index].value, value);
+
+	/* Increase pointer to next parameter in array */
+	data->index++;
+}
+
+static ClutterEffect* _xfdashboard_theme_effects_create_object(XfdashboardThemeEffectsParsedObject *inObjectData)
+{
+	XfdashboardThemeEffectsPropertiesCollectData		collectData;
+	GObject												*object;
+
+	/* Collect all properties as array */
+	collectData.index=0;
+	collectData.properties=NULL;
+
+	collectData.maxProperties=g_hash_table_size(inObjectData->properties);
+	if(collectData.maxProperties>0)
+	{
+		collectData.properties=g_new0(GParameter, collectData.maxProperties);
+		g_hash_table_foreach(inObjectData->properties, _xfdashboard_theme_effects_create_object_collect_properties, &collectData);
+	}
+
+	/* Create instance of object type and before handling error or success
+	 * of creation release allocated resources for properties as they are
+	 * not needed anymore.
+	 */
+	object=G_OBJECT(g_object_newv(inObjectData->classType, collectData.maxProperties, collectData.properties));
+
+	for(collectData.index=0; collectData.index<collectData.maxProperties; collectData.index++)
+	{
+		collectData.properties[collectData.index].name=NULL;
+		g_value_unset(&collectData.properties[collectData.index].value);
+	}
+	g_free(collectData.properties);
+
+	if(!object)
+	{
+		g_debug("Failed to create object of type %s with %d properties to set",
+					g_type_name(inObjectData->classType),
+					collectData.maxProperties);
+
+		/* Return NULL indicating error */
+		return(NULL);
+	}
+
+	/* Check if created object is really an effect */
+	if(!CLUTTER_IS_EFFECT(object))
+	{
+		g_warning(_("Object of type %s is not derived from %s"),
+					g_type_name(inObjectData->classType),
+					g_type_name(CLUTTER_TYPE_EFFECT));
+
+		/* Destroy newly created object */
+		g_object_unref(object);
+
+		return(NULL);
+	}
+
+	/* Set name of effect to ID */
+	clutter_actor_meta_set_name(CLUTTER_ACTOR_META(object), inObjectData->id);
+
+	/* Return created object */
+	return(CLUTTER_EFFECT(object));
 }
 
 /* General callbacks which can be used for any tag */
@@ -1007,6 +1101,8 @@ static gboolean _xfdashboard_theme_effects_parse_xml(XfdashboardThemeEffects *se
 #endif
 
 	g_slist_foreach(data->effects, (GFunc)_xfdashboard_theme_effects_object_data_unref, NULL);
+	if(data->lastPropertyName) g_free(data->lastPropertyName);
+	g_free(data);
 
 	return(success);
 }
@@ -1115,6 +1211,33 @@ gboolean xfdashboard_theme_effects_add_file(XfdashboardThemeEffects *self,
 ClutterEffect* xfdashboard_theme_effects_create_effect(XfdashboardThemeEffects *self,
 														const gchar *inID)
 {
-	/* TODO: Not yet implemented */
+	XfdashboardThemeEffectsPrivate			*priv;
+	GSList									*entry;
+	XfdashboardThemeEffectsParsedObject		*objectData;
+	ClutterEffect							*effect;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_EFFECTS(self), FALSE);
+	g_return_val_if_fail(inID && *inID, FALSE);
+
+	priv=self->priv;
+
+	/* Lookup object data of effect by its ID which should be created */
+	entry=priv->effects;
+	while(entry)
+	{
+		objectData=(XfdashboardThemeEffectsParsedObject*)entry->data;
+
+		/* If ID matches requested one create object */
+		if(g_strcmp0(objectData->id, inID)==0)
+		{
+			/* Create object */
+			effect=_xfdashboard_theme_effects_create_object(objectData);
+			return(effect);
+		}
+	}
+
+	/* If we get here we did not find an object with requested ID */
+	g_warning(_("Could not find effect with ID '%s'"), inID);
+
 	return(NULL);
 }
