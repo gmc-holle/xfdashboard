@@ -43,6 +43,12 @@
 	</provides>
 
 	<releases>
+		<release version="0.3.2" timestamp="1410150601">
+			<description>
+				<_p>This unstable development introduces effects.
+				</_p>
+			</description>
+		</release>
 		<release version="0.3.1" timestamp="1409068837">
 			<description>
 				<_p>This unstable development fixes a problem closing windows accidently by

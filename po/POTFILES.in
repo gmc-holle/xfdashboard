@@ -40,6 +40,7 @@ src/stylable.c
 src/text-box.c
 src/theme.c
 src/theme-css.c
+src/theme-effects.c
 src/theme-layout.c
 src/toggle-button.c
 src/tooltip-action.c
