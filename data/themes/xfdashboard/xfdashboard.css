@@ -111,6 +111,7 @@ XfdashboardQuicklaunch #trash-button
 XfdashboardQuicklaunch #trash-button:drop-target
 {
 	background-type: fill;
+	background-fill-color: red;
 }
 
 .drag-source-XfdashboardQuicklaunch:drag-handle
