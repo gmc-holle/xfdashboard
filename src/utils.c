@@ -503,3 +503,53 @@ gchar** xfdashboard_split_string(const gchar *inString, const gchar *inDelimiter
 	/* Return result list */
 	return(result);
 }
+
+/* Check if ID matches requirements that it has to begin either with one or
+ * multiple '_' (underscore) following by a character of ASCII character set
+ * or it has to begin with a character of ASCII character set directly. Each
+ * following character in string can either be a digit, a character of
+ * ASCII character set or any of the following symbols: '_' (underscore) or
+ * '-' (minus).
+ */
+gboolean xfdashboard_is_valid_id(const gchar *inString)
+{
+	const gchar			*iter;
+
+	g_return_val_if_fail(inString && *inString, FALSE);
+
+	/* Check that all characters in string matches the allowed symbols,
+	 * digits and characters. Find first one _NOT_ matching this requirement.
+	 */
+	iter=inString;
+	while(*iter)
+	{
+		if(!g_ascii_isalnum(*iter) &&
+			*iter!='_' &&
+			*iter!='-')
+		{
+			return(FALSE);
+		}
+
+		/* Check next character in string */
+		iter++;
+	}
+
+	/* Check if string begins either with '_' (underscore) or with a
+	 * character of ASCII character set.
+	 */
+	if(*inString!='_' &&
+		!g_ascii_isalpha(*inString))
+	{
+		return(FALSE);
+	}
+
+	/* If string begins with '_' (underscore) check that the first character
+	 * which is not an underscore is a character of ASCII character set.
+	 */
+	iter=inString;
+	while(*iter=='_') iter++;
+	if(!g_ascii_isalpha(*iter)) return(FALSE);
+
+	/* If we get here the ID matches the requirements so return TRUE. */
+	return(TRUE);
+}

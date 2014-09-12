@@ -58,6 +58,8 @@ GAppInfo* xfdashboard_garcon_menu_item_get_app_info(GarconMenuItem *inMenuItem);
 
 gchar** xfdashboard_split_string(const gchar *inString, const gchar *inDelimiters);
 
+gboolean xfdashboard_is_valid_id(const gchar *inString);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_UTILS__ */

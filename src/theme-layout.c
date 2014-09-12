@@ -32,6 +32,7 @@
 #include <gio/gio.h>
 
 #include "layoutable.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardThemeLayout,
@@ -1054,6 +1055,20 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 															outError,
 															XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
 															_("Empty ID at tag '%s'"),
+															inElementName);
+				_xfdashboard_theme_layout_tag_data_unref(tagData);
+				_xfdashboard_theme_layout_object_data_unref(objectData);
+				return;
+			}
+
+			if(!xfdashboard_is_valid_id(tagData->tag.object.id))
+			{
+				_xfdashboard_theme_layout_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
+															_("Invalid ID '%s' at tag '%s'"),
+															tagData->tag.object.id,
 															inElementName);
 				_xfdashboard_theme_layout_tag_data_unref(tagData);
 				_xfdashboard_theme_layout_object_data_unref(objectData);
