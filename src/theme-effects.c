@@ -1259,6 +1259,9 @@ ClutterEffect* xfdashboard_theme_effects_create_effect(XfdashboardThemeEffects *
 			effect=_xfdashboard_theme_effects_create_object(objectData);
 			return(effect);
 		}
+
+		/* Continue with next effect */
+		entry=g_slist_next(entry);
 	}
 
 	/* If we get here we did not find an object with requested ID */
