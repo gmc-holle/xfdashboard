@@ -27,6 +27,7 @@ xfdashboard_headers = \
 	button.h \
 	click-action.h \
 	collapse-box.h \
+	css-selector.h \
 	drag-action.h \
 	drop-action.h \
 	dynamic-table-layout.h \
@@ -81,6 +82,7 @@ xfdashboard_SOURCES = \
 	button.c \
 	click-action.c \
 	collapse-box.c \
+	css-selector.c \
 	dynamic-table-layout.c \
 	drag-action.c \
 	drop-action.c \
