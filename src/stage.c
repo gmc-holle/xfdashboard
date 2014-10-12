@@ -646,8 +646,6 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 /* A window was created
  * Check if window opened is desktop background window
  */
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE
-#include <libwnck/libwnck.h>
 static void _xfdashboard_stage_on_desktop_window_opened(XfdashboardStage *self,
 														XfdashboardWindowTrackerWindow *inWindow,
 														gpointer inUserData)
