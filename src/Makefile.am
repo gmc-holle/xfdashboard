@@ -1,4 +1,4 @@
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-DG_LOG_DOMAIN=\"xfdashboard\" \
 	-DPACKAGE_DATADIR=\"$(datadir)\" \
