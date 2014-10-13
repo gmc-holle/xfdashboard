@@ -159,17 +159,22 @@ static gboolean _xfdashboard_css_selector_list_contains(const gchar *inNeedle,
 	return(FALSE);
 }
 
-/* Check and score this selector against another selector.
+/* Check and score this selector against stylable node.
  * A score below 0 means that they did not match.
  */
-static gint _xfdashboard_css_selector_score_rule(XfdashboardCssSelectorRule *inSelfRule,
-													XfdashboardCssSelectorRule *inOtherRule)
+static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelectorRule *inRule,
+															XfdashboardStylable *inStylable)
 {
-	gint							score;
-	gint							a, b, c;
+	gint					score;
+	gint					a, b, c;
+	const gchar				*type="*";
+	const gchar				*classes;
+	const gchar				*pseudoClasses;
+	const gchar				*id;
+	XfdashboardStylable		*parent;
 
-	g_return_val_if_fail(inSelfRule, -1);
-	g_return_val_if_fail(inOtherRule, -1);
+	g_return_val_if_fail(inRule, -1);
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(inStylable), -1);
 
 	/* For information about how the scoring is done, see documentation
 	 * "Cascading Style Sheets, level 1" of W3C, section "3.2 Cascading order"
@@ -202,64 +207,63 @@ static gint _xfdashboard_css_selector_score_rule(XfdashboardCssSelectorRule *inS
 	 */
 	a=b=c=0;
 
+	/* Get properties for given stylable */
+	id=xfdashboard_stylable_get_name(XFDASHBOARD_STYLABLE(inStylable));
+	classes=xfdashboard_stylable_get_classes(XFDASHBOARD_STYLABLE(inStylable));
+	pseudoClasses=xfdashboard_stylable_get_pseudo_classes(XFDASHBOARD_STYLABLE(inStylable));
+
 	/* Check and score type of selectors but ignore NULL or universal selectors */
-	if(inSelfRule->type && inSelfRule->type[0]!='*')
+	if(inRule->type && inRule->type[0]!='*')
 	{
-		GType						selfTypeID;
-		GType						otherTypeID;
+		GType						ruleTypeID;
+		GType						nodeTypeID;
 
 		/* Get type of this rule */
-		selfTypeID=g_type_from_name(inSelfRule->type);
-		if(!selfTypeID) return(-1);
+		ruleTypeID=g_type_from_name(inRule->type);
+		if(!ruleTypeID) return(-1);
 
-		/* Get type of other rule to check against and score it
-		 * but ignore NULL or universal selectors
+		/* Get type of other rule to check against and score it */
+		nodeTypeID=g_type_from_name(inStylable);
+		if(!nodeTypeID) return(-1);
+
+		/* Check if type of this rule matches type of other rule */
+		if(!g_type_is_a(ruleTypeID, nodeTypeID)) return(-1);
+
+		/* Determine depth difference between both types
+		 * which is the score of this test with a maximum of 99
 		 */
-		if(inOtherRule->type && inOtherRule->type[0]!='*')
-		{
-			/* Get type of other rule */
-			otherTypeID=g_type_from_name(inOtherRule->type);
-			if(!otherTypeID) return(-1);
-
-			/* Check if type of this rule matches type of other rule */
-			if(!g_type_is_a(selfTypeID, otherTypeID)) return(-1);
-
-			/* Determine depth difference between both types
-			 * which is the score of this test with maximum of 99
-			 */
-			c=g_type_depth(selfTypeID)-g_type_depth(otherTypeID);
-			c=MAX(ABS(c), 99);
-		}
+		c=g_type_depth(selfTypeID)-g_type_depth(otherTypeID);
+		c=MAX(ABS(c), 99);
 	}
 
 	/* Check and score ID */
-	if(inSelfRule->id)
+	if(inRule->id)
 	{
 		/* If node has no ID return immediately */
-		if(g_strcmp0(inSelfRule->id, inOtherRule->id)) return(-1);
+		if(!id || strcmp(inRule->id, id)) return(-1);
 
 		/* Score ID */
 		a+=10;
 	}
 
-	/* Check and score class */
-	if(inSelfRule->classes)
+	/* Check and score classes */
+	if(inRule->classes)
 	{
-		gchar						*needle;
-		gint						numberMatches;
+		gchar				*needle;
+		gint				numberMatches;
 
-		/* If node has no class return immediately */
-		if(!inOtherRule->classes) return(-1);
+		/* If node has no pseudo class return immediately */
+		if(!classes) return(-1);
 
-		/* Check that each class from the selector appears in the
-		 * classes from the node, i.e. the selector class list
+		/* Check that each class from the selector's rule appears in the
+		 * list of classes from the node, i.e. the selector's rule class list
 		 * is a subset of the node's class list
 		 */
 		numberMatches=0;
-		for(needle=inSelfRule->classes; needle; needle=strchr(needle, '.'))
+		for(needle=inRule->classes; needle; needle=strchr(needle, '.'))
 		{
-			gint					needleLength;
-			gchar					*nextNeedle;
+			gint			needleLength;
+			gchar			*nextNeedle;
 
 			/* Move pointer of needle beyond class seperator '.' */
 			if(needle[0]=='.') needle++;
@@ -269,11 +273,11 @@ static gint _xfdashboard_css_selector_score_rule(XfdashboardCssSelectorRule *inS
 			if(nextNeedle) needleLength=nextNeedle-needle;
 				else needleLength=strlen(needle);
 
-			/* If class from the selector does not appear in the
-			 * list of classes from the node, then this is not a
+			/* If pseudo-class from the selector does not appear in the
+			 * list of pseudo-classes from the node, then this is not a
 			 * match
 			 */
-			if(!_xfdashboard_css_selector_list_contains(needle, needleLength, inOtherRule->classes, '.')) return(-1);
+			if(!_xfdashboard_css_selector_list_contains(needle, needleLength, classes, '.')) return(-1);
 			numberMatches++;
 		}
 
@@ -282,23 +286,23 @@ static gint _xfdashboard_css_selector_score_rule(XfdashboardCssSelectorRule *inS
 	}
 
 	/* Check and score pseudo classes */
-	if(inSelfRule->pseudoClasses)
+	if(inRule->pseudoClass)
 	{
-		gchar						*needle;
-		gint						numberMatches;
+		gchar				*needle;
+		gint				numberMatches;
 
 		/* If node has no pseudo class return immediately */
-		if(!inOtherRule->pseudoClasses) return(-1);
+		if(!pseudoClasses) return(-1);
 
 		/* Check that each pseudo-class from the selector appears in the
 		 * pseudo-classes from the node, i.e. the selector pseudo-class list
 		 * is a subset of the node's pseudo-class list
 		 */
 		numberMatches=0;
-		for(needle=inSelfRule->pseudoClasses; needle; needle=strchr(needle, ':'))
+		for(needle=inRule->pseudoClass; needle; needle=strchr(needle, ':'))
 		{
-			gint					needleLength;
-			gchar					*nextNeedle;
+			gint			needleLength;
+			gchar			*nextNeedle;
 
 			/* Move pointer of needle beyond pseudo-class seperator ':' */
 			if(needle[0]==':') needle++;
@@ -312,7 +316,7 @@ static gint _xfdashboard_css_selector_score_rule(XfdashboardCssSelectorRule *inS
 			 * list of pseudo-classes from the node, then this is not a
 			 * match
 			 */
-			if(!_xfdashboard_css_selector_list_contains(needle, needleLength, inOtherRule->pseudoClasses, ':')) return(-1);
+			if(!_xfdashboard_css_selector_list_contains(needle, needleLength, pseudoClasses, ':')) return(-1);
 			numberMatches++;
 		}
 
@@ -321,15 +325,18 @@ static gint _xfdashboard_css_selector_score_rule(XfdashboardCssSelectorRule *inS
 	}
 
 	/* Check and score parent */
-	if(inSelfRule->parent)
+	parent=xfdashboard_stylable_get_parent(inStylable);
+	if(parent && !XFDASHBOARD_IS_STYLABLE(parent)) parent=NULL;
+
+	if(inRule->parent)
 	{
-		gint						parentScore;
+		gint					parentScore;
 
 		/* If node has no parent, no parent can match ;) so return immediately */
-		if(!inOtherRule->parent) return(-1);
+		if(!parent) return(-1);
 
 		/* Check if there are matching parents. If not return immediately. */
-		parentScore=_xfdashboard_css_selector_score_rule(inSelfRule->parent, inOtherRule->parent);
+		parentScore=_xfdashboard_themes_css_score_node_matching_selector(inRule->parent, parent);
 		if(parentScore<0) return(-1);
 
 		/* Score matching parents */
@@ -337,22 +344,22 @@ static gint _xfdashboard_css_selector_score_rule(XfdashboardCssSelectorRule *inS
 	}
 
 	/* Check and score ancestor */
-	if(inSelfRule->ancestor)
+	if(inRule->ancestor)
 	{
-		gint						ancestorScore;
-		XfdashboardCssSelectorRule	*ancestor;
+		gint					ancestorScore;
+		XfdashboardStylable		*stylableParent, *ancestor;
 
 		/* If node has no parents, no ancestor can match so return immediately */
-		if(!inOtherRule->parent) return(-1);
+		if(!parent) return(-1);
 
 		/* Iterate through ancestors and check and score them */
-		ancestor=inOtherRule->parent;
+		ancestor=parent;
 		while(ancestor)
 		{
-			/* Get score for ancestor and if at least one matches (with a score above 0),
+			/* Get number of matches for ancestor and if at least one matches,
 			 * stop search and score
 			 */
-			ancestorScore=_xfdashboard_css_selector_score_rule(inSelfRule->ancestor, ancestor);
+			ancestorScore=_xfdashboard_themes_css_score_node_matching_selector(inRule->ancestor, ancestor);
 			if(ancestorScore>=0)
 			{
 				c+=ancestorScore;
@@ -360,8 +367,11 @@ static gint _xfdashboard_css_selector_score_rule(XfdashboardCssSelectorRule *inS
 			}
 
 			/* Get next ancestor to check */
-			ancestor=ancestor->parent;
-			if(!ancestor) return(-1);
+			stylableParent=xfdashboard_stylable_get_parent(ancestor);
+			if(stylableParent && !XFDASHBOARD_IS_STYLABLE(stylableParent)) stylableParent=NULL;
+
+			ancestor=stylableParent;
+			if(!ancestor || !XFDASHBOARD_IS_STYLABLE(ancestor)) return(-1);
 		}
 	}
 
@@ -878,16 +888,16 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioSc
 	return(XFDASHBOARD_CSS_SELECTOR(selector));
 }
 
-/* Check and score this selector against another selector.
+/* Check and score this selector against a stylable node.
  * A score below 0 means that they did not match.
  */
-gint xfdashboard_css_selector_score(XfdashboardCssSelector *self, XfdashboardCssSelector *inOther)
+gint xfdashboard_css_selector_score_matching_stylable_node(XfdashboardCssSelector *self, XfdashboardStylable *inStylable)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_CSS_SELECTOR(self), -1);
-	g_return_val_if_fail(XFDASHBOARD_IS_CSS_SELECTOR(inOther), -1);
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(inStylable), -1);
 
 	/* Check and score rules */
-	return(_xfdashboard_css_selector_score_rule(self->priv->rule, inOther->priv->rule));
+	return(_xfdashboard_css_selector_score_matching_node(self->priv->rule, inStylable));
 }
 
 /* Get rule parsed */

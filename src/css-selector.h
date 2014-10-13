@@ -27,6 +27,8 @@
 #include <glib-object.h>
 #include <glib.h>
 
+#include "stylable.h"
+
 G_BEGIN_DECLS
 
 #define XFDASHBOARD_TYPE_CSS_SELECTOR				(xfdashboard_css_selector_get_type())
@@ -67,7 +69,7 @@ GType xfdashboard_css_selector_get_type(void) G_GNUC_CONST;
 XfdashboardCssSelector* xfdashboard_css_selector_new_from_string(const gchar *inSelector, gint inPriority);
 XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioScanner, gint inPriority);
 
-gint xfdashboard_css_selector_score(XfdashboardCssSelector *self, XfdashboardCssSelector *inOther);
+gint xfdashboard_css_selector_score_matching_stylable_node(XfdashboardCssSelector *self, XfdashboardStylable *inStylable);
 
 XfdashboardCssSelectorRule* xfdashboard_css_selector_get_rule(XfdashboardCssSelector *self);
 
