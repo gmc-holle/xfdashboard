@@ -69,6 +69,8 @@ GType xfdashboard_css_selector_get_type(void) G_GNUC_CONST;
 XfdashboardCssSelector* xfdashboard_css_selector_new_from_string(const gchar *inSelector, gint inPriority);
 XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioScanner, gint inPriority);
 
+gchar* xfdashboard_css_selector_to_string(XfdashboardCssSelector *self);
+
 gint xfdashboard_css_selector_score_matching_stylable_node(XfdashboardCssSelector *self, XfdashboardStylable *inStylable);
 
 XfdashboardCssSelectorRule* xfdashboard_css_selector_get_rule(XfdashboardCssSelector *self);

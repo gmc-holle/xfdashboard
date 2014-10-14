@@ -118,6 +118,64 @@ static void _xfdashboard_css_selector_rule_free(XfdashboardCssSelectorRule *inRu
 	g_slice_free(XfdashboardCssSelectorRule, inRule);
 }
 
+/* Get string for selector */
+static gchar* _xfdashboard_css_selector_rule_to_string(XfdashboardCssSelectorRule *inRule)
+{
+	gchar							*parentSelector;
+	gchar							*selector;
+
+	g_return_val_if_fail(inRule, NULL);
+
+	selector=NULL;
+	parentSelector=NULL;
+
+	/* If a parent selector is available get a string representation of it first */
+	if(inRule->parentRule)
+	{
+		gchar						*temp;
+
+		switch(inRule->parentRuleMode)
+		{
+			case XFDASHBOARD_CSS_SELECTOR_RULE_MODE_ANCESTOR:
+			case XFDASHBOARD_CSS_SELECTOR_RULE_MODE_PARENT:
+				temp=_xfdashboard_css_selector_rule_to_string(inRule->parentRule);
+				if(!temp)
+				{
+					g_critical(_("Could not create string for parent css selector"));
+					return(NULL);
+				}
+				break;
+
+			default:
+				g_critical(_("Invalid mode for parent rule in CSS selector"));
+				return(NULL);
+		}
+
+		parentSelector=g_strdup_printf("%s%s ",
+										temp,
+										(inRule->parentRuleMode==XFDASHBOARD_CSS_SELECTOR_RULE_MODE_PARENT) ? " >" : "");
+
+		g_free(temp);
+	}
+
+	/* Build string for selector */
+	selector=g_strdup_printf("%s%s%s%s%s%s%s%s",
+								(parentSelector) ? parentSelector : "",
+								(inRule->type) ? inRule->type : "",
+								(inRule->id) ? "#" : "",
+								(inRule->id) ? inRule->id : "",
+								(inRule->classes) ? "." : "",
+								(inRule->classes) ? inRule->classes : "",
+								(inRule->pseudoClasses) ? ":" : "",
+								(inRule->pseudoClasses) ? inRule->pseudoClasses : "");
+
+	/* Release allocated resources not needed anymore */
+	if(parentSelector) g_free(parentSelector);
+
+	/* Return newly created string for selector */
+	return(selector);
+}
+
 /* Check if haystack contains needle.
  * The haystack is a string representing a list which entries is seperated
  * by a seperator character. This function looks up the haystack if it
@@ -440,13 +498,14 @@ static GTokenType _xfdashboard_css_selector_parse_css_simple_selector(Xfdashboar
 	}
 
 	/* Here we look for '#', '.' or ':' and return if we find anything else */
-	token=g_scanner_get_next_token(inScanner);
+	token=g_scanner_peek_next_token(inScanner);
 	while(token!=G_TOKEN_NONE)
 	{
 		switch((guint)token)
 		{
 			/* Parse ID */
 			case '#':
+				g_scanner_get_next_token(inScanner);
 				token=g_scanner_get_next_token(inScanner);
 				if(token!=G_TOKEN_IDENTIFIER)
 				{
@@ -465,6 +524,7 @@ static GTokenType _xfdashboard_css_selector_parse_css_simple_selector(Xfdashboar
 
 			/* Parse class */
 			case '.':
+				g_scanner_get_next_token(inScanner);
 				token=g_scanner_get_next_token(inScanner);
 				if(token!=G_TOKEN_IDENTIFIER)
 				{
@@ -500,6 +560,7 @@ static GTokenType _xfdashboard_css_selector_parse_css_simple_selector(Xfdashboar
 
 			/* Parse pseudo-class */
 			case ':':
+				g_scanner_get_next_token(inScanner);
 				token=g_scanner_get_next_token(inScanner);
 				if(token!=G_TOKEN_IDENTIFIER)
 				{
@@ -538,7 +599,7 @@ static GTokenType _xfdashboard_css_selector_parse_css_simple_selector(Xfdashboar
 		}
 
 		/* Get next token */
-		token=g_scanner_get_next_token(inScanner);
+		token=g_scanner_peek_next_token(inScanner);
 	}
 
 	/* Successfully parsed */
@@ -624,6 +685,7 @@ static GTokenType _xfdashboard_css_selector_parse_css_rule(XfdashboardCssSelecto
 				rule->parentRule=parentRule;
 				rule->parentRuleMode=XFDASHBOARD_CSS_SELECTOR_RULE_MODE_PARENT;
 
+
 				/* Parse selector */
 				token=_xfdashboard_css_selector_parse_css_simple_selector(self, inScanner, rule);
 				if(token!=G_TOKEN_NONE) return(token);
@@ -640,8 +702,11 @@ static GTokenType _xfdashboard_css_selector_parse_css_rule(XfdashboardCssSelecto
 		token=g_scanner_peek_next_token(inScanner);
 	}
 
+	/* Eat "eof" token */
+	if(token==G_TOKEN_EOF) token=g_scanner_get_next_token(inScanner);
+
 	/* Successfully parsed */
-	return(G_TOKEN_NONE);
+	return(G_TOKEN_EOF);
 }
 
 static gboolean _xfdashboard_css_selector_parse(XfdashboardCssSelector *self, GScanner *ioScanner)
@@ -893,6 +958,29 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioSc
 
 	/* Return created selector which may be NULL in case of error */
 	return(XFDASHBOARD_CSS_SELECTOR(selector));
+}
+
+/* Get string for selector.
+ * Free string returned with g_free().
+ */
+gchar* xfdashboard_css_selector_to_string(XfdashboardCssSelector *self)
+{
+	XfdashboardCssSelectorPrivate	*priv;
+	gchar							*selector;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_CSS_SELECTOR(self), NULL);
+
+	priv=self->priv;
+	selector=NULL;
+
+	/* Get string for selector */
+	if(priv->rule)
+	{
+		selector=_xfdashboard_css_selector_rule_to_string(priv->rule);
+	}
+
+	/* Return newly created string for selector */
+	return(selector);
 }
 
 /* Check and score this selector against a stylable node.
