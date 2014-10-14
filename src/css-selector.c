@@ -60,14 +60,21 @@ enum
 static GParamSpec* XfdashboardCssSelectorProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+typedef enum /*< skip,prefix=XFDASHBOARD_CSS_SELECTOR_RULE_MODE >*/
+{
+	XFDASHBOARD_CSS_SELECTOR_RULE_MODE_NONE=0,
+	XFDASHBOARD_CSS_SELECTOR_RULE_MODE_PARENT,
+	XFDASHBOARD_CSS_SELECTOR_RULE_MODE_ANCESTOR
+} XfdashboardCssSelectorRuleMode;
+
 struct _XfdashboardCssSelectorRule
 {
 	gchar							*type;
 	gchar							*id;
 	gchar							*classes;
 	gchar							*pseudoClasses;
-	XfdashboardCssSelectorRule		*parent;
-	XfdashboardCssSelectorRule		*ancestor;
+	XfdashboardCssSelectorRule		*parentRule;
+	XfdashboardCssSelectorRuleMode	parentRuleMode;
 
 	gchar							*source;
 	gint							priority;
@@ -105,7 +112,7 @@ static void _xfdashboard_css_selector_rule_free(XfdashboardCssSelectorRule *inRu
 	if(inRule->source) g_free(inRule->source);
 
 	/* Destroy parent selector */
-	if(inRule->parent) _xfdashboard_css_selector_rule_free(inRule->parent);
+	if(inRule->parentRule) _xfdashboard_css_selector_rule_free(inRule->parentRule);
 
 	/* Free selector itself */
 	g_slice_free(XfdashboardCssSelectorRule, inRule);
@@ -170,7 +177,6 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 	const gchar				*classes;
 	const gchar				*pseudoClasses;
 	const gchar				*id;
-	XfdashboardStylable		*parent;
 
 	g_return_val_if_fail(inRule, -1);
 	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(inStylable), -1);
@@ -324,18 +330,18 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 	}
 
 	/* Check and score parent */
-	parent=xfdashboard_stylable_get_parent(inStylable);
-	if(parent && !XFDASHBOARD_IS_STYLABLE(parent)) parent=NULL;
-
-	if(inRule->parent)
+	if(inRule->parentRule &&
+		inRule->parentRuleMode==XFDASHBOARD_CSS_SELECTOR_RULE_MODE_PARENT)
 	{
 		gint					parentScore;
+		XfdashboardStylable		*parent;
 
 		/* If node has no parent, no parent can match ;) so return immediately */
-		if(!parent) return(-1);
+		parent=xfdashboard_stylable_get_parent(inStylable);
+		if(!parent || !XFDASHBOARD_IS_STYLABLE(parent)) return(-1);
 
 		/* Check if there are matching parents. If not return immediately. */
-		parentScore=_xfdashboard_css_selector_score_matching_node(inRule->parent, parent);
+		parentScore=_xfdashboard_css_selector_score_matching_node(inRule->parentRule, parent);
 		if(parentScore<0) return(-1);
 
 		/* Score matching parents */
@@ -343,22 +349,23 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 	}
 
 	/* Check and score ancestor */
-	if(inRule->ancestor)
+	if(inRule->parentRule &&
+		inRule->parentRuleMode==XFDASHBOARD_CSS_SELECTOR_RULE_MODE_ANCESTOR)
 	{
 		gint					ancestorScore;
 		XfdashboardStylable		*stylableParent, *ancestor;
 
 		/* If node has no parents, no ancestor can match so return immediately */
-		if(!parent) return(-1);
+		ancestor=xfdashboard_stylable_get_parent(inStylable);
+		if(!ancestor || !XFDASHBOARD_IS_STYLABLE(ancestor)) return(-1);
 
 		/* Iterate through ancestors and check and score them */
-		ancestor=parent;
 		while(ancestor)
 		{
 			/* Get number of matches for ancestor and if at least one matches,
 			 * stop search and score
 			 */
-			ancestorScore=_xfdashboard_css_selector_score_matching_node(inRule->ancestor, ancestor);
+			ancestorScore=_xfdashboard_css_selector_score_matching_node(inRule->parentRule, ancestor);
 			if(ancestorScore>=0)
 			{
 				c+=ancestorScore;
@@ -568,19 +575,21 @@ static GTokenType _xfdashboard_css_selector_parse_css_rule(XfdashboardCssSelecto
 				if(rule) parentRule=rule;
 					else parentRule=NULL;
 
-				/* Check if there was a previous selector and if so, the new one
-				 * should use the previous selector to match an ancestor
-				 */
+				/* Create new selector */
 				rule=_xfdashboard_css_selector_rule_new(inScanner->input_name,
 														priv->priority,
 														g_scanner_cur_line(inScanner),
 														g_scanner_cur_position(inScanner));
 				priv->rule=rule;
 
-				/* If parent available remove it from list of selectors and
-				 * link it to the new selector
+				/* Check if there was a previous selector and if so, the new one
+				 * should use the previous selector to match an ancestor
 				 */
-				if(parentRule) rule->ancestor=parentRule;
+				if(parentRule)
+				{
+					rule->parentRule=parentRule;
+					rule->parentRuleMode=XFDASHBOARD_CSS_SELECTOR_RULE_MODE_ANCESTOR;
+				}
 
 				/* Parse selector */
 				token=_xfdashboard_css_selector_parse_css_simple_selector(self, inScanner, rule);
@@ -590,7 +599,7 @@ static GTokenType _xfdashboard_css_selector_parse_css_rule(XfdashboardCssSelecto
 			case '>':
 				g_scanner_get_next_token(inScanner);
 
-				/* Set last selector as parent */
+				/* Set last selector as parent selector */
 				if(!rule)
 				{
 					g_scanner_unexp_token(inScanner,
@@ -611,10 +620,9 @@ static GTokenType _xfdashboard_css_selector_parse_css_rule(XfdashboardCssSelecto
 														g_scanner_cur_position(inScanner));
 				priv->rule=rule;
 
-				/* Remove parent from list of selectors and
-				 * link it to the new selector
-				 */
-				rule->parent=parentRule;
+				/* Link parent to the new selector as parent selector */
+				rule->parentRule=parentRule;
+				rule->parentRuleMode=XFDASHBOARD_CSS_SELECTOR_RULE_MODE_PARENT;
 
 				/* Parse selector */
 				token=_xfdashboard_css_selector_parse_css_simple_selector(self, inScanner, rule);
@@ -940,14 +948,16 @@ XfdashboardCssSelectorRule* xfdashboard_css_selector_rule_get_parent(Xfdashboard
 {
 	g_return_val_if_fail(inRule, NULL);
 
-	return(inRule->parent);
+	if(inRule->parentRuleMode!=XFDASHBOARD_CSS_SELECTOR_RULE_MODE_PARENT) return(NULL);
+	return(inRule->parentRule);
 }
 
 XfdashboardCssSelectorRule* xfdashboard_css_selector_rule_get_ancestor(XfdashboardCssSelectorRule *inRule)
 {
 	g_return_val_if_fail(inRule, NULL);
 
-	return(inRule->ancestor);
+	if(inRule->parentRuleMode!=XFDASHBOARD_CSS_SELECTOR_RULE_MODE_ANCESTOR) return(NULL);
+	return(inRule->parentRule);
 }
 
 const gchar* xfdashboard_css_selector_rule_get_source(XfdashboardCssSelectorRule *inRule)
