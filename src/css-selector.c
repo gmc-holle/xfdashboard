@@ -167,7 +167,6 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 {
 	gint					score;
 	gint					a, b, c;
-	const gchar				*type="*";
 	const gchar				*classes;
 	const gchar				*pseudoClasses;
 	const gchar				*id;
@@ -223,7 +222,7 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 		if(!ruleTypeID) return(-1);
 
 		/* Get type of other rule to check against and score it */
-		nodeTypeID=g_type_from_name(inStylable);
+		nodeTypeID=G_OBJECT_TYPE(inStylable);
 		if(!nodeTypeID) return(-1);
 
 		/* Check if type of this rule matches type of other rule */
@@ -232,7 +231,7 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 		/* Determine depth difference between both types
 		 * which is the score of this test with a maximum of 99
 		 */
-		c=g_type_depth(selfTypeID)-g_type_depth(otherTypeID);
+		c=g_type_depth(ruleTypeID)-g_type_depth(nodeTypeID);
 		c=MAX(ABS(c), 99);
 	}
 
@@ -286,7 +285,7 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 	}
 
 	/* Check and score pseudo classes */
-	if(inRule->pseudoClass)
+	if(inRule->pseudoClasses)
 	{
 		gchar				*needle;
 		gint				numberMatches;
@@ -299,7 +298,7 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 		 * is a subset of the node's pseudo-class list
 		 */
 		numberMatches=0;
-		for(needle=inRule->pseudoClass; needle; needle=strchr(needle, ':'))
+		for(needle=inRule->pseudoClasses; needle; needle=strchr(needle, ':'))
 		{
 			gint			needleLength;
 			gchar			*nextNeedle;
@@ -336,7 +335,7 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 		if(!parent) return(-1);
 
 		/* Check if there are matching parents. If not return immediately. */
-		parentScore=_xfdashboard_themes_css_score_node_matching_selector(inRule->parent, parent);
+		parentScore=_xfdashboard_css_selector_score_matching_node(inRule->parent, parent);
 		if(parentScore<0) return(-1);
 
 		/* Score matching parents */
@@ -359,7 +358,7 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 			/* Get number of matches for ancestor and if at least one matches,
 			 * stop search and score
 			 */
-			ancestorScore=_xfdashboard_themes_css_score_node_matching_selector(inRule->ancestor, ancestor);
+			ancestorScore=_xfdashboard_css_selector_score_matching_node(inRule->ancestor, ancestor);
 			if(ancestorScore>=0)
 			{
 				c+=ancestorScore;
