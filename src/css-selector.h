@@ -66,8 +66,10 @@ typedef struct _XfdashboardCssSelectorRule			XfdashboardCssSelectorRule;
 /* Public API */
 GType xfdashboard_css_selector_get_type(void) G_GNUC_CONST;
 
-XfdashboardCssSelector* xfdashboard_css_selector_new_from_string(const gchar *inSelector, gint inPriority);
-XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioScanner, gint inPriority);
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_string(const gchar *inSelector);
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_string_with_priority(const gchar *inSelector, gint inPriority);
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioScanner);
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner_with_priority(GScanner *ioScanner, gint inPriority);
 
 gchar* xfdashboard_css_selector_to_string(XfdashboardCssSelector *self);
 

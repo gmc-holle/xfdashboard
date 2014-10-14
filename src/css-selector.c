@@ -872,7 +872,12 @@ static void xfdashboard_css_selector_init(XfdashboardCssSelector *self)
 /* IMPLEMENTATION: Public API */
 
 /* Create new instance of CSS selector by string */
-XfdashboardCssSelector* xfdashboard_css_selector_new_from_string(const gchar *inSelector, gint inPriority)
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_string(const gchar *inSelector)
+{
+	return(xfdashboard_css_selector_new_from_string_with_priority(inSelector, G_MININT));
+}
+
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_string_with_priority(const gchar *inSelector, gint inPriority)
 {
 	GObject				*selector;
 	GScanner			*scanner;
@@ -932,7 +937,12 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_string(const gchar *in
  * a comma-separated list of CSS selectos) and to unref the returned selector
  * if scanner points to an invalid token.
  */
-XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioScanner, gint inPriority)
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioScanner)
+{
+	return(xfdashboard_css_selector_new_from_scanner_with_priority(ioScanner, G_MININT));
+}
+
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner_with_priority(GScanner *ioScanner, gint inPriority)
 {
 	GObject				*selector;
 
