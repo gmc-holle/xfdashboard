@@ -434,7 +434,7 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 		}
 #else
 		/* We should never get here as existance of composite extension was checked before */
-		g_critical("Cannot resume window '%s' as composite extension is not available",
+		g_critical(_("Cannot resume window '%s' as composite extension is not available"),
 					xfdashboard_window_tracker_window_get_title(priv->window));
 		break;
 #endif

@@ -691,7 +691,7 @@ static void _xfdashboard_applications_menu_model_resort(ClutterModel *inModel,
 				break;
 
 			default:
-				g_critical("Sorting column %d without user-defined function is not possible", sortColumn);
+				g_critical(_("Sorting column %d without user-defined function is not possible"), sortColumn);
 				g_assert_not_reached();
 				break;
 		}

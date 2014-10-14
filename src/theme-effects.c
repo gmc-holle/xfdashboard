@@ -349,7 +349,7 @@ static void _xfdashboard_theme_effects_object_data_free(XfdashboardThemeEffectsP
 #ifdef DEBUG
 	if(inData->refCount>1)
 	{
-		g_critical("Freeing effect object parser data at %p with a reference counter of %d greater than one",
+		g_critical(_("Freeing effect object parser data at %p with a reference counter of %d greater than one"),
 					inData,
 					inData->refCount);
 	}
