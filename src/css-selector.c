@@ -430,9 +430,14 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 				break;
 			}
 
-			/* Get next ancestor to check */
+			/* Get next ancestor to check but skip actors not implementing
+			 * the XfdashboardStylable interface
+			 */
 			stylableParent=xfdashboard_stylable_get_parent(ancestor);
-			if(stylableParent && !XFDASHBOARD_IS_STYLABLE(stylableParent)) stylableParent=NULL;
+			while(stylableParent && !XFDASHBOARD_IS_STYLABLE(stylableParent))
+			{
+				stylableParent=xfdashboard_stylable_get_parent(ancestor);
+			}
 
 			ancestor=stylableParent;
 			if(!ancestor || !XFDASHBOARD_IS_STYLABLE(ancestor)) return(-1);
