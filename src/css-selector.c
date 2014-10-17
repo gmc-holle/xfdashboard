@@ -415,6 +415,11 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 
 		/* If node has no parents, no ancestor can match so return immediately */
 		ancestor=xfdashboard_stylable_get_parent(inStylable);
+		while(ancestor && !XFDASHBOARD_IS_STYLABLE(ancestor))
+		{
+			ancestor=xfdashboard_stylable_get_parent(ancestor);
+		}
+
 		if(!ancestor || !XFDASHBOARD_IS_STYLABLE(ancestor)) return(-1);
 
 		/* Iterate through ancestors and check and score them */
