@@ -411,14 +411,16 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 		inRule->parentRuleMode==XFDASHBOARD_CSS_SELECTOR_RULE_MODE_ANCESTOR)
 	{
 		gint					ancestorScore;
-		XfdashboardStylable		*stylableParent, *ancestor;
+		XfdashboardStylable		*ancestor;
+
+		ancestor=inStylable;
 
 		/* If node has no parents, no ancestor can match so return immediately */
-		ancestor=xfdashboard_stylable_get_parent(inStylable);
-		while(ancestor && !XFDASHBOARD_IS_STYLABLE(ancestor))
+		do
 		{
 			ancestor=xfdashboard_stylable_get_parent(ancestor);
 		}
+		while(ancestor && !XFDASHBOARD_IS_STYLABLE(ancestor));
 
 		if(!ancestor || !XFDASHBOARD_IS_STYLABLE(ancestor)) return(-1);
 
@@ -438,13 +440,12 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 			/* Get next ancestor to check but skip actors not implementing
 			 * the XfdashboardStylable interface
 			 */
-			stylableParent=xfdashboard_stylable_get_parent(ancestor);
-			while(stylableParent && !XFDASHBOARD_IS_STYLABLE(stylableParent))
+			do
 			{
-				stylableParent=xfdashboard_stylable_get_parent(stylableParent);
+				ancestor=xfdashboard_stylable_get_parent(ancestor);
 			}
+			while(ancestor && !XFDASHBOARD_IS_STYLABLE(ancestor));
 
-			ancestor=stylableParent;
 			if(!ancestor || !XFDASHBOARD_IS_STYLABLE(ancestor)) return(-1);
 		}
 	}
