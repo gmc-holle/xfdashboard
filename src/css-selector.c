@@ -436,7 +436,7 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 			stylableParent=xfdashboard_stylable_get_parent(ancestor);
 			while(stylableParent && !XFDASHBOARD_IS_STYLABLE(stylableParent))
 			{
-				stylableParent=xfdashboard_stylable_get_parent(ancestor);
+				stylableParent=xfdashboard_stylable_get_parent(stylableParent);
 			}
 
 			ancestor=stylableParent;
