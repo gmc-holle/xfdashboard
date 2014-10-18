@@ -154,100 +154,99 @@ static void _xfdashboard_window_content_on_workaround_state_changed(XfdashboardW
 			 */
 			if(!xfdashboard_window_tracker_window_is_minized(priv->window))
 			{
-#if 1==1
-		if(priv->texture &&
-			priv->workaroundMode!=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_NONE &&
-			priv->isMapped==TRUE)
-		{
-			/* Copy current texture as it might get inaccessible. If we copy it now
-			 * when can draw the last image known. If we can copy it successfully
-			 * replace current texture with the copied one.
-			 */
-			CoglPixelFormat			textureFormat;
-			guint					textureWidth;
-			guint					textureHeight;
-			gint					textureSize;
-			guint8					*textureData;
+				if(priv->texture &&
+					priv->workaroundMode!=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_NONE &&
+					priv->isMapped==TRUE)
+				{
+					/* Copy current texture as it might get inaccessible. If we copy it now
+					 * when can draw the last image known. If we can copy it successfully
+					 * replace current texture with the copied one.
+					 */
+					CoglPixelFormat			textureFormat;
+					guint					textureWidth;
+					guint					textureHeight;
+					gint					textureSize;
+					guint8					*textureData;
 
-			textureFormat=cogl_texture_get_format(priv->texture);
-			textureSize=cogl_texture_get_data(priv->texture, textureFormat, 0, NULL);
-			textureWidth=cogl_texture_get_width(priv->texture);
-			textureHeight=cogl_texture_get_height(priv->texture);
-			textureData=g_malloc(textureSize);
-			if(textureData)
-			{
-				CoglTexture			*copyTexture;
-				gint				copyTextureSize;
+					textureFormat=cogl_texture_get_format(priv->texture);
+					textureSize=cogl_texture_get_data(priv->texture, textureFormat, 0, NULL);
+					textureWidth=cogl_texture_get_width(priv->texture);
+					textureHeight=cogl_texture_get_height(priv->texture);
+					textureData=g_malloc(textureSize);
+					if(textureData)
+					{
+						CoglTexture			*copyTexture;
+						gint				copyTextureSize;
 #if COGL_VERSION_CHECK(1, 18, 0)
-				ClutterBackend		*backend;
-				CoglContext			*context;
-				CoglError			*error;
+					ClutterBackend		*backend;
+						CoglContext			*context;
+						CoglError			*error;
 #endif
 
-				/* Get texture data to copy */
-				copyTextureSize=cogl_texture_get_data(priv->texture, textureFormat, 0, textureData);
-				if(copyTextureSize)
-				{
+						/* Get texture data to copy */
+						copyTextureSize=cogl_texture_get_data(priv->texture, textureFormat, 0, textureData);
+						if(copyTextureSize)
+						{
 #if COGL_VERSION_CHECK(1, 18, 0)
-					error=NULL;
-
-					backend=clutter_get_default_backend();
-					context=clutter_backend_get_cogl_context(backend);
-					copyTexture=cogl_texture_2d_new_from_data(context,
-																textureWidth,
-																textureHeight,
-																textureFormat,
-																0,
-																textureData,
-																&error);
-
-					if(!copyTexture || error)
-					{
-						/* Show warning */
-						g_warning(_("Could not create copy of texture for mininized window '%s': %s"),
-									xfdashboard_window_tracker_window_get_title(priv->window),
-									(error && error->message) ? error->message : _("Unknown error"));
-
-						/* Release allocated resources */
-						if(copyTexture)
-						{
-							cogl_object_unref(copyTexture);
-							copyTexture=NULL;
-						}
-
-						if(error)
-						{
-							cogl_error_free(error);
 							error=NULL;
-						}
-					}
+
+							backend=clutter_get_default_backend();
+							context=clutter_backend_get_cogl_context(backend);
+							copyTexture=cogl_texture_2d_new_from_data(context,
+																		textureWidth,
+																		textureHeight,
+																		textureFormat,
+																		0,
+																		textureData,
+																		&error);
+
+							if(!copyTexture || error)
+							{
+								/* Show warning */
+								g_warning(_("Could not create copy of texture for mininized window '%s': %s"),
+											xfdashboard_window_tracker_window_get_title(priv->window),
+											(error && error->message) ? error->message : _("Unknown error"));
+
+								/* Release allocated resources */
+								if(copyTexture)
+								{
+									cogl_object_unref(copyTexture);
+									copyTexture=NULL;
+								}
+
+								if(error)
+								{
+									cogl_error_free(error);
+									error=NULL;
+								}
+							}
 #else
-					copyTexture=cogl_texture_new_from_data(textureWidth,
-															textureHeight,
-															?,
-															format,
-															format,
-															0,
-															textureData);
+							copyTexture=cogl_texture_new_from_data(textureWidth,
+																	textureHeight,
+																	?,
+																	format,
+																	format,
+																	0,
+																	textureData);
 #endif
 
-					if(copyTexture)
-					{
-						cogl_object_unref(priv->texture);
-						priv->texture=copyTexture;
+							if(copyTexture)
+							{
+								cogl_object_unref(priv->texture);
+								priv->texture=copyTexture;
+							}
+								else g_message("Creation of copy failed!");
+						}
+							else g_debug("Could not determine size of texture for minimized window '%s'",
+											xfdashboard_window_tracker_window_get_title(priv->window));
 					}
-						else g_message("Creation of copy failed!");
+						else
+						{
+							g_debug("Copying texture from unminized window '%s' failed!",
+										xfdashboard_window_tracker_window_get_title(priv->window));
+						}
 				}
-					else g_debug("Could not determine size of texture for minimized window '%s'",
-									xfdashboard_window_tracker_window_get_title(priv->window));
-			}
-				else
-				{
-					g_debug("Copying texture from unminized window '%s' failed!",
-								xfdashboard_window_tracker_window_get_title(priv->window));
-				}
-		}
-#endif
+
 				xfdashboard_window_tracker_window_hide(priv->window);
 				priv->workaroundMode=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_REMINIMIZING;
 			}
