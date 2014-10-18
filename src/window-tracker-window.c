@@ -122,6 +122,24 @@ GType xfdashboard_window_tracker_window_get_type(void)
 	return(WNCK_TYPE_WINDOW);
 }
 
+/* Determine if window is minimized */
+gboolean xfdashboard_window_tracker_window_is_minized(XfdashboardWindowTrackerWindow *inWindow)
+{
+	WnckWindowState		state;
+	gboolean			isMinimized;
+
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
+
+	isMinimized=FALSE;
+
+	/* Check if state of window has minimized flag set */
+	state=wnck_window_get_state(WNCK_WINDOW(inWindow));
+	if(state & WNCK_WINDOW_STATE_MINIMIZED) isMinimized=TRUE;
+
+	/* Return minimized state of window */
+	return(isMinimized);
+}
+
 /* Determine if window is visible */
 gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *inWindow)
 {

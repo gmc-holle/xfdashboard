@@ -43,6 +43,16 @@
 #include "application.h"
 #include "marshal.h"
 #include "stylable.h"
+#include "window-tracker.h"
+
+/* Definitions */
+typedef enum
+{
+	XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_NONE=0,
+	XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_UNMINIMIZING,
+	XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_REMINIMIZING,
+	XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_DONE
+} XfdashboardWindowContentWorkaroundMode;
 
 /* Define this class in GObject system */
 static void _xdashboard_window_content_clutter_content_iface_init(ClutterContentIface *iface);
@@ -61,27 +71,31 @@ G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowContent,
 struct _XfdashboardWindowContentPrivate
 {
 	/* Properties related */
-	XfdashboardWindowTrackerWindow		*window;
-	ClutterColor						*outlineColor;
-	gfloat								outlineWidth;
-	gboolean							isSuspended;
-	gboolean							includeWindowFrame;
+	XfdashboardWindowTrackerWindow			*window;
+	ClutterColor							*outlineColor;
+	gfloat									outlineWidth;
+	gboolean								isSuspended;
+	gboolean								includeWindowFrame;
 
-	gchar								*styleClasses;
-	gchar								*stylePseudoClasses;
+	gchar									*styleClasses;
+	gchar									*stylePseudoClasses;
 
 	/* Instance related */
-	gboolean							isFallback;
-	CoglTexture							*texture;
-	Window								xWindowID;
-	Pixmap								pixmap;
+	gboolean								isFallback;
+	CoglTexture								*texture;
+	Window									xWindowID;
+	Pixmap									pixmap;
 #ifdef HAVE_XDAMAGE
-	Damage								damage;
+	Damage									damage;
 #endif
 
-	guint								suspendSignalID;
-	gboolean							isMapped;
-	gboolean							isAppSuspended;
+	guint									suspendSignalID;
+	gboolean								isMapped;
+	gboolean								isAppSuspended;
+
+	XfdashboardWindowTracker				*windowTracker;
+	XfdashboardWindowContentWorkaroundMode	workaroundMode;
+	guint									workaroundStateSignalID;
 };
 
 /* Properties */
@@ -119,6 +133,194 @@ static guint		_xfdashboard_window_content_cache_shutdownSignalID=0;
 /* Forward declarations */
 static void _xfdashboard_window_content_suspend(XfdashboardWindowContent *self);
 static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self);
+
+/* Check if we should workaround unmapped window for requested window and set up workaround */
+static void _xfdashboard_window_content_on_workaround_state_changed(XfdashboardWindowContent *self,
+																	gpointer inUserData)
+{
+	XfdashboardWindowContentPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
+
+	priv=self->priv;
+
+	/* Handle state change of window */
+	switch(priv->workaroundMode)
+	{
+		case XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_UNMINIMIZING:
+			/* Check if window is unminized now, then update content texture and
+			 * minimize window again.
+			 */
+			if(!xfdashboard_window_tracker_window_is_minized(priv->window))
+			{
+#if 1==1
+		if(priv->texture &&
+			priv->workaroundMode!=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_NONE &&
+			priv->isMapped==TRUE)
+		{
+			/* Copy current texture as it might get inaccessible. If we copy it now
+			 * when can draw the last image known. If we can copy it successfully
+			 * replace current texture with the copied one.
+			 */
+			CoglPixelFormat			textureFormat;
+			guint					textureWidth;
+			guint					textureHeight;
+			gint					textureSize;
+			guint8					*textureData;
+
+			textureFormat=cogl_texture_get_format(priv->texture);
+			textureSize=cogl_texture_get_data(priv->texture, textureFormat, 0, NULL);
+			textureWidth=cogl_texture_get_width(priv->texture);
+			textureHeight=cogl_texture_get_height(priv->texture);
+			textureData=g_malloc(textureSize);
+			if(textureData)
+			{
+				CoglTexture			*copyTexture;
+				gint				copyTextureSize;
+#if COGL_VERSION_CHECK(1, 18, 0)
+				ClutterBackend		*backend;
+				CoglContext			*context;
+				CoglError			*error;
+#endif
+
+				/* Get texture data to copy */
+				copyTextureSize=cogl_texture_get_data(priv->texture, textureFormat, 0, textureData);
+				if(copyTextureSize)
+				{
+#if COGL_VERSION_CHECK(1, 18, 0)
+					error=NULL;
+
+					backend=clutter_get_default_backend();
+					context=clutter_backend_get_cogl_context(backend);
+					copyTexture=cogl_texture_2d_new_from_data(context,
+																textureWidth,
+																textureHeight,
+																textureFormat,
+																0,
+																textureData,
+																&error);
+
+					if(!copyTexture || error)
+					{
+						/* Show warning */
+						g_warning(_("Could not create copy of texture for mininized window '%s': %s"),
+									xfdashboard_window_tracker_window_get_title(priv->window),
+									(error && error->message) ? error->message : _("Unknown error"));
+
+						/* Release allocated resources */
+						if(copyTexture)
+						{
+							cogl_object_unref(copyTexture);
+							copyTexture=NULL;
+						}
+
+						if(error)
+						{
+							cogl_error_free(error);
+							error=NULL;
+						}
+					}
+#else
+					copyTexture=cogl_texture_new_from_data(textureWidth,
+															textureHeight,
+															?,
+															format,
+															format,
+															0,
+															textureData);
+#endif
+
+					if(copyTexture)
+					{
+						cogl_object_unref(priv->texture);
+						priv->texture=copyTexture;
+					}
+						else g_message("Creation of copy failed!");
+				}
+					else g_debug("Could not determine size of texture for minimized window '%s'",
+									xfdashboard_window_tracker_window_get_title(priv->window));
+			}
+				else
+				{
+					g_debug("Copying texture from unminized window '%s' failed!",
+								xfdashboard_window_tracker_window_get_title(priv->window));
+				}
+		}
+#endif
+				xfdashboard_window_tracker_window_hide(priv->window);
+				priv->workaroundMode=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_REMINIMIZING;
+			}
+			break;
+
+		case XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_REMINIMIZING:
+			/* Check if window is now minized again, so stop workaround and
+			 * disconnecting signals.
+			 */
+			if(xfdashboard_window_tracker_window_is_minized(priv->window))
+			{
+				priv->workaroundMode=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_DONE;
+				if(priv->workaroundStateSignalID)
+				{
+					g_signal_handler_disconnect(priv->windowTracker, priv->workaroundStateSignalID);
+					priv->workaroundStateSignalID=0;
+				}
+			}
+			break;
+
+		default:
+			/* We should never get here but if we do it is more or less
+			 * a critical error. Ensure that window is minimized (again)
+			 * and stop xfdashboard.
+			 */
+			xfdashboard_window_tracker_window_hide(priv->window);
+			g_assert_not_reached();
+			break;
+	}
+}
+
+static void _xfdashboard_window_content_setup_workaround(XfdashboardWindowContent *self, XfdashboardWindowTrackerWindow *inWindow)
+{
+	XfdashboardWindowContentPrivate		*priv;
+	gboolean							doWorkaround;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+	g_return_if_fail(inWindow!=NULL && XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+
+	priv=self->priv;
+
+	/* Check if should workaround unmapped windows at all */
+	doWorkaround=TRUE;
+	if(!doWorkaround) return;
+
+	/* Only workaround unmapped windows */
+	if(!xfdashboard_window_tracker_window_is_minized(inWindow)) return;
+
+	/* Check if workaround is already set up */
+	if(priv->workaroundMode!=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_NONE) return;
+
+	/* Set flag that workaround is (going to be) set up */
+	priv->workaroundMode=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_UNMINIMIZING;
+
+	/* The workaround is as follows:
+	 *
+	 * 1.) Set up signal handlers to get notified about changes of window
+	 * 2.) Unminimize window
+	 * 3.) If window is visible it will be activated by design, so reactivate
+	 *     last active window
+	 * 4.) Minimize window again
+	 * 5.) Stop watching for changes of window by disconnecting signal handlers
+	 */
+	priv->workaroundStateSignalID=g_signal_connect_swapped(priv->windowTracker,
+															"window-state-changed",
+															G_CALLBACK(_xfdashboard_window_content_on_workaround_state_changed),
+															self);
+	// TODO: priv->workaroundActiveWindowSignalID=g_signal_connect_swapped(priv->windowTracker,
+																	// TODO: "window-state-changed",
+																	// TODO: G_CALLBACK(_xfdashboard_window_content_on_workaround_state_changed),
+																	// TODO: self);
+	xfdashboard_window_tracker_window_show(inWindow);
+}
 
 /* Check extension and set up basics */
 static void _xfdashboard_window_content_check_extension(void)
@@ -246,7 +448,8 @@ static ClutterX11FilterReturn _xfdashboard_window_content_on_x_event(XEvent *inX
 	if(_xfdashboard_window_content_have_damage_extension &&
 		_xfdashboard_window_content_damage_event_base &&
 		inXEvent->type==(_xfdashboard_window_content_damage_event_base + XDamageNotify) &&
-		((XDamageNotifyEvent*)inXEvent)->damage==priv->damage)
+		((XDamageNotifyEvent*)inXEvent)->damage==priv->damage &&
+		priv->workaroundMode==XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_NONE)
 	{
 		/* Update texture for live window content */
 		clutter_content_invalidate(CLUTTER_CONTENT(self));
@@ -441,7 +644,7 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 
 		/* Create cogl X11 texture for live updates */
 		context=clutter_backend_get_cogl_context(clutter_get_default_backend());
-		windowTexture=COGL_TEXTURE(cogl_texture_pixmap_x11_new(context, priv->pixmap, TRUE, &error));
+		windowTexture=COGL_TEXTURE(cogl_texture_pixmap_x11_new(context, priv->pixmap, FALSE, &error));
 		if(!windowTexture || error)
 		{
 			/* Creating texture may fail if window is _NOT_ on active workspace
@@ -676,6 +879,9 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 
 	/* Thaw notifications and send them now */
 	g_object_thaw_notify(G_OBJECT(self));
+
+	/* Set up workaround mechanism for unmapped windows if wanted and needed */
+	_xfdashboard_window_content_setup_workaround(self, inWindow);
 }
 
 /* Destroy cache hashtable */
@@ -951,6 +1157,18 @@ static void _xfdashboard_window_content_dispose(GObject *inObject)
 	/* Dispose allocated resources */
 	_xfdashboard_window_content_release_resources(self);
 
+	if(priv->workaroundStateSignalID)
+	{
+		g_signal_handler_disconnect(priv->windowTracker, priv->workaroundStateSignalID);
+		priv->workaroundStateSignalID=0;
+
+		/* This signal was still connected to the window tracker so the window may be unminized
+		 * and need to ensure it is minimized again. We need to do this now, before we release
+		 * our handle to the window (priv->window).
+		 */
+		xfdashboard_window_tracker_window_hide(priv->window);
+	}
+
 	if(priv->window)
 	{
 		/* Remove from cache */
@@ -982,6 +1200,13 @@ static void _xfdashboard_window_content_dispose(GObject *inObject)
 	{
 		g_free(priv->stylePseudoClasses);
 		priv->stylePseudoClasses=NULL;
+	}
+
+	if(priv->windowTracker)
+	{
+		g_signal_handlers_disconnect_by_data(priv->windowTracker, self);
+		g_object_unref(priv->windowTracker);
+		priv->windowTracker=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -1170,6 +1395,8 @@ void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 	priv->includeWindowFrame=FALSE;
 	priv->styleClasses=NULL;
 	priv->stylePseudoClasses=NULL;
+	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->workaroundMode=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_NONE;
 
 	/* Check extensions (will only be done once) */
 	_xfdashboard_window_content_check_extension();
