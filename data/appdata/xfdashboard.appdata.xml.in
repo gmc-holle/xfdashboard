@@ -43,6 +43,13 @@
 	</provides>
 
 	<releases>
+		<release version="0.3.3" timestamp="1413740495">
+			<description>
+				<_p>This unstable development introduces a workaround to get window content
+				of minimized windows to display them in windows view.
+				</_p>
+			</description>
+		</release>
 		<release version="0.3.2" timestamp="1410150601">
 			<description>
 				<_p>This unstable development introduces effects.
