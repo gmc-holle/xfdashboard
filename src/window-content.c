@@ -206,7 +206,7 @@ static void _xfdashboard_window_content_on_workaround_state_changed(XfdashboardW
 							if(!copyTexture || error)
 							{
 								/* Show warning */
-								g_warning(_("Could not create copy of texture for mininized window '%s': %s"),
+								g_warning(_("Could not create copy of texture of mininized window '%s': %s"),
 											xfdashboard_window_tracker_window_get_title(priv->window),
 											(error && error->message) ? error->message : _("Unknown error"));
 
@@ -226,11 +226,17 @@ static void _xfdashboard_window_content_on_workaround_state_changed(XfdashboardW
 #else
 							copyTexture=cogl_texture_new_from_data(textureWidth,
 																	textureHeight,
-																	?,
-																	format,
-																	format,
+																	COGL_TEXTURE_NONE,
+																	textureFormat,
+																	textureFormat,
 																	0,
 																	textureData);
+							if(!copyTexture)
+							{
+								/* Show warning */
+								g_warning(_("Could not create copy of texture of mininized window '%s'"),
+											xfdashboard_window_tracker_window_get_title(priv->window));
+							}
 #endif
 
 							if(copyTexture)
@@ -238,14 +244,13 @@ static void _xfdashboard_window_content_on_workaround_state_changed(XfdashboardW
 								cogl_object_unref(priv->texture);
 								priv->texture=copyTexture;
 							}
-								else g_message("Creation of copy failed!");
 						}
-							else g_debug("Could not determine size of texture for minimized window '%s'",
+							else g_warning(_("Could not determine size of texture of minimized window '%s'"),
 											xfdashboard_window_tracker_window_get_title(priv->window));
 					}
 						else
 						{
-							g_debug("Copying texture from unminized window '%s' failed!",
+							g_warning(_("Could not allocate memory for copy of texture of mininized window '%s'"),
 										xfdashboard_window_tracker_window_get_title(priv->window));
 						}
 				}
@@ -319,10 +324,6 @@ static void _xfdashboard_window_content_setup_workaround(XfdashboardWindowConten
 															"window-state-changed",
 															G_CALLBACK(_xfdashboard_window_content_on_workaround_state_changed),
 															self);
-	// TODO: priv->workaroundActiveWindowSignalID=g_signal_connect_swapped(priv->windowTracker,
-																	// TODO: "window-state-changed",
-																	// TODO: G_CALLBACK(_xfdashboard_window_content_on_workaround_state_changed),
-																	// TODO: self);
 	xfdashboard_window_tracker_window_show(inWindow);
 }
 
