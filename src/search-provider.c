@@ -44,7 +44,7 @@ G_DEFINE_ABSTRACT_TYPE(XfdashboardSearchProvider,
 				vfunc);
 
 #define XFDASHBOARD_SEARCH_PROVIDER_NOTE_NOT_IMPLEMENTED(self, vfunc) \
-	g_debug(_("Search provider of type %s does not implement required virtual function XfdashboardSearchProvider::%s"), \
+	g_debug("Search provider of type %s does not implement virtual function XfdashboardSearchProvider::%s", \
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
