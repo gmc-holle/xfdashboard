@@ -122,6 +122,9 @@ static GParamSpec* XfdashboardWindowContentProperties[PROP_LAST]={ 0, };
 #define COMPOSITE_VERSION_MIN_MAJOR		0
 #define COMPOSITE_VERSION_MIN_MINOR		2
 
+#define WORKAROUND_UNMAPPED_WINDOW_XFCONF_PROP		"/enable-unmapped-window-workaround"
+#define DEFAULT_WORKAROUND_UNMAPPED_WINDOW			FALSE
+
 static gboolean		_xfdashboard_window_content_have_checked_extensions=FALSE;
 static gboolean		_xfdashboard_window_content_have_composite_extension=FALSE;
 static gboolean		_xfdashboard_window_content_have_damage_extension=FALSE;
@@ -178,7 +181,7 @@ static void _xfdashboard_window_content_on_workaround_state_changed(XfdashboardW
 						CoglTexture			*copyTexture;
 						gint				copyTextureSize;
 #if COGL_VERSION_CHECK(1, 18, 0)
-					ClutterBackend		*backend;
+						ClutterBackend		*backend;
 						CoglContext			*context;
 						CoglError			*error;
 #endif
@@ -289,7 +292,9 @@ static void _xfdashboard_window_content_setup_workaround(XfdashboardWindowConten
 	priv=self->priv;
 
 	/* Check if should workaround unmapped windows at all */
-	doWorkaround=TRUE;
+	doWorkaround=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(),
+											WORKAROUND_UNMAPPED_WINDOW_XFCONF_PROP,
+											DEFAULT_WORKAROUND_UNMAPPED_WINDOW);
 	if(!doWorkaround) return;
 
 	/* Only workaround unmapped windows */
@@ -1168,6 +1173,13 @@ static void _xfdashboard_window_content_dispose(GObject *inObject)
 		xfdashboard_window_tracker_window_hide(priv->window);
 	}
 
+	if(priv->windowTracker)
+	{
+		g_signal_handlers_disconnect_by_data(priv->windowTracker, self);
+		g_object_unref(priv->windowTracker);
+		priv->windowTracker=NULL;
+	}
+
 	if(priv->window)
 	{
 		/* Remove from cache */
@@ -1199,13 +1211,6 @@ static void _xfdashboard_window_content_dispose(GObject *inObject)
 	{
 		g_free(priv->stylePseudoClasses);
 		priv->stylePseudoClasses=NULL;
-	}
-
-	if(priv->windowTracker)
-	{
-		g_signal_handlers_disconnect_by_data(priv->windowTracker, self);
-		g_object_unref(priv->windowTracker);
-		priv->windowTracker=NULL;
 	}
 
 	/* Call parent's class dispose method */
