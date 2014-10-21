@@ -63,13 +63,27 @@ struct _XfdashboardCssSelectorClass
 
 typedef struct _XfdashboardCssSelectorRule			XfdashboardCssSelectorRule;
 
+/* Public declarations */
+#define XFDASHBOARD_CSS_SELECTOR_PARSE_FINISH_OK			TRUE
+#define XFDASHBOARD_CSS_SELECTOR_PARSE_FINISH_BAD_STATE		FALSE
+
+typedef gboolean (*XfdashboardCssSelectorParseFinishCallback)(XfdashboardCssSelector *inSelector,
+																GScanner *inScanner,
+																GTokenType inPeekNextToken,
+																gpointer inUserData);
+
 /* Public API */
 GType xfdashboard_css_selector_get_type(void) G_GNUC_CONST;
 
 XfdashboardCssSelector* xfdashboard_css_selector_new_from_string(const gchar *inSelector);
 XfdashboardCssSelector* xfdashboard_css_selector_new_from_string_with_priority(const gchar *inSelector, gint inPriority);
-XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioScanner);
-XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner_with_priority(GScanner *ioScanner, gint inPriority);
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioScanner,
+																	XfdashboardCssSelectorParseFinishCallback inFinishCallback,
+																	gpointer inUserData);
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner_with_priority(GScanner *ioScanner,
+																				gint inPriority,
+																				XfdashboardCssSelectorParseFinishCallback inFinishCallback,
+																				gpointer inUserData);
 
 gchar* xfdashboard_css_selector_to_string(XfdashboardCssSelector *self);
 

@@ -948,12 +948,17 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_string_with_priority(c
  * a comma-separated list of CSS selectos) and to unref the returned selector
  * if scanner points to an invalid token.
  */
-XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioScanner)
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner(GScanner *ioScanner,
+																	XfdashboardCssSelectorParseFinishCallback inFinishCallback,
+																	gpointer inUserData)
 {
-	return(xfdashboard_css_selector_new_from_scanner_with_priority(ioScanner, G_MININT));
+	return(xfdashboard_css_selector_new_from_scanner_with_priority(ioScanner, G_MININT, inFinishCallback, inUserData));
 }
 
-XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner_with_priority(GScanner *ioScanner, gint inPriority)
+XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner_with_priority(GScanner *ioScanner,
+																				gint inPriority,
+																				XfdashboardCssSelectorParseFinishCallback inFinishCallback,
+																				gpointer inUserData)
 {
 	GObject				*selector;
 
@@ -974,7 +979,30 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner_with_priority(
 	if(!_xfdashboard_css_selector_parse(XFDASHBOARD_CSS_SELECTOR(selector), ioScanner))
 	{
 		g_object_unref(selector);
-		selector=NULL;
+		return(NULL);
+	}
+
+	/* If a callback is given to call after parsing finished so call it now
+	 * to determine if scanner is still in good state. If it is in bad state
+	 * then return NULL.
+	 */
+	if(inFinishCallback)
+	{
+		gboolean		goodState;
+
+		goodState=(inFinishCallback)(XFDASHBOARD_CSS_SELECTOR(selector), ioScanner, g_scanner_peek_next_token(ioScanner), inUserData);
+		if(!goodState)
+		{
+			g_scanner_unexp_token(ioScanner,
+									G_TOKEN_ERROR,
+									NULL,
+									NULL,
+									NULL,
+									_("Unexpected state of CSS scanner."),
+									TRUE);
+			g_object_unref(selector);
+			return(NULL);
+		}
 	}
 
 	/* Return created selector which may be NULL in case of error */
