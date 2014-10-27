@@ -290,7 +290,7 @@ static gint _xfdashboard_css_selector_score_matching_node(XfdashboardCssSelector
 		if(!nodeTypeID) return(-1);
 
 		/* Check if type of this rule matches type of other rule */
-		if(!g_type_is_a(ruleTypeID, nodeTypeID)) return(-1);
+		if(!g_type_is_a(nodeTypeID, ruleTypeID)) return(-1);
 
 		/* Determine depth difference between both types
 		 * which is the score of this test with a maximum of 99
