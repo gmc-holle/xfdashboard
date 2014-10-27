@@ -769,6 +769,7 @@ static Window _xfdashboard_window_content_get_window_frame_xid(Display *inDispla
 static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *self, XfdashboardWindowTrackerWindow *inWindow)
 {
 	XfdashboardWindowContentPrivate		*priv;
+	XfdashboardApplication				*application;
 	Display								*display;
 	GdkPixbuf							*windowIcon;
 	XWindowAttributes					windowAttrs;
@@ -878,6 +879,15 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 	/* Acquire new window and handle live updates */
 	_xfdashboard_window_content_resume(self);
 	priv->isMapped=!priv->isSuspended;
+
+	/* But suspend window immediately again if application is suspended
+	 * (xfdashboard runs in daemon mode and is not active currently)
+	 */
+	application=xfdashboard_application_get_default();
+	if(xfdashboard_application_is_suspended(application))
+	{
+		_xfdashboard_window_content_suspend(self);
+	}
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_WINDOW_CONTENT]);
