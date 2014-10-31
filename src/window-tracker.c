@@ -892,7 +892,11 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(Xfdas
 	}
 
 	backgroundWindow=wnck_window_get(backgroundWindowID);
-	g_return_val_if_fail(backgroundWindow, NULL);
+	if(!backgroundWindow)
+	{
+		g_debug("Could not get window instance for desktop window ID");
+		return(NULL);
+	}
 
 	return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(backgroundWindow));
 }
