@@ -1621,7 +1621,7 @@ void xfdashboard_window_content_class_init(XfdashboardWindowContentClass *klass)
 	XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_GRAVITY]=
 		g_param_spec_enum("unmapped-window-icon-gravity",
 							_("Unmapped window icon gravity"),
-							_("The acnhor point of unmapped window icon"),
+							_("The anchor point of unmapped window icon"),
 							CLUTTER_TYPE_GRAVITY,
 							CLUTTER_GRAVITY_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
