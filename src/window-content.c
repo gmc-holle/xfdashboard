@@ -77,6 +77,14 @@ struct _XfdashboardWindowContentPrivate
 	gboolean								isSuspended;
 	gboolean								includeWindowFrame;
 
+	gboolean								unmappedWindowIconXFill;
+	gboolean								unmappedWindowIconYFill;
+	gfloat									unmappedWindowIconXAlign;
+	gfloat									unmappedWindowIconYAlign;
+	gfloat									unmappedWindowIconXScale;
+	gfloat									unmappedWindowIconYScale;
+	ClutterGravity							unmappedWindowIconGravity;
+
 	gchar									*styleClasses;
 	gchar									*stylePseudoClasses;
 
@@ -104,10 +112,21 @@ enum
 	PROP_0,
 
 	PROP_WINDOW_CONTENT,
+
 	PROP_SUSPENDED,
+
 	PROP_OUTLINE_COLOR,
 	PROP_OUTLINE_WIDTH,
+
 	PROP_INCLUDE_WINDOW_FRAME,
+
+	PROP_UNMAPPED_WINDOW_ICON_X_FILL,
+	PROP_UNMAPPED_WINDOW_ICON_Y_FILL,
+	PROP_UNMAPPED_WINDOW_ICON_X_ALIGN,
+	PROP_UNMAPPED_WINDOW_ICON_Y_ALIGN,
+	PROP_UNMAPPED_WINDOW_ICON_X_SCALE,
+	PROP_UNMAPPED_WINDOW_ICON_Y_SCALE,
+	PROP_UNMAPPED_WINDOW_ICON_GRAVITY,
 
 	/* From interface: XfdashboardStylable */
 	PROP_STYLE_CLASSES,
@@ -945,15 +964,16 @@ static void _xfdashboard_window_content_create_cache(void)
 
 /* Paint texture */
 static void _xdashboard_window_content_clutter_content_iface_paint_content(ClutterContent *inContent,
-																	ClutterActor *inActor,
-																	ClutterPaintNode *inRootNode)
+																			ClutterActor *inActor,
+																			ClutterPaintNode *inRootNode)
 {
 	XfdashboardWindowContent			*self=XFDASHBOARD_WINDOW_CONTENT(inContent);
 	XfdashboardWindowContentPrivate		*priv=self->priv;
 	ClutterScalingFilter				minFilter, magFilter;
-	ClutterContentRepeat				repeatContent;
 	ClutterPaintNode					*node;
-	ClutterActorBox						actorBox;
+	ClutterActorBox						textureAllocationBox;
+	ClutterActorBox						textureCoordBox;
+	ClutterActorBox						outlineBox;
 	ClutterColor						color;
 	guint8								opacity;
 	ClutterColor						outlineColor;
@@ -963,10 +983,11 @@ static void _xdashboard_window_content_clutter_content_iface_paint_content(Clutt
 	if(priv->texture==NULL) return;
 
 	/* Get needed data for painting */
-	clutter_actor_get_content_box(inActor, &actorBox);
+	clutter_actor_box_init(&textureCoordBox, 0.0f, 0.0f, 1.0f, 1.0f);
+	clutter_actor_get_content_box(inActor, &textureAllocationBox);
+	clutter_actor_get_content_box(inActor, &outlineBox);
 	clutter_actor_get_content_scaling_filters(inActor, &minFilter, &magFilter);
 	opacity=clutter_actor_get_paint_opacity(inActor);
-	repeatContent=clutter_actor_get_content_repeat(inActor);
 
 	color.red=opacity;
 	color.green=opacity;
@@ -987,40 +1008,159 @@ static void _xdashboard_window_content_clutter_content_iface_paint_content(Clutt
 		/* Draw background */
 		node=clutter_color_node_new(&backgroundColor);
 		clutter_paint_node_set_name(node, "fallback-background");
-		clutter_paint_node_add_rectangle(node, &actorBox);
+		clutter_paint_node_add_rectangle(node, &outlineBox);
 		clutter_paint_node_add_child(inRootNode, node);
 		clutter_paint_node_unref(node);
+	}
+
+	/* Determine actor box allocation to draw texture into when unmapped window
+	 * icon (fallback) will be drawn. We can skip calculation if unmapped window
+	 * icon should be expanded in both (x and y) direction.
+	 */
+	if(priv->isFallback &&
+		(!priv->unmappedWindowIconXFill || !priv->unmappedWindowIconYFill))
+	{
+		gfloat							allocationWidth;
+		gfloat							allocationHeight;
+
+		/* Get width and height of allocation */
+		allocationWidth=(outlineBox.x2-outlineBox.x1);
+		allocationHeight=(outlineBox.y2-outlineBox.y1);
+
+		/* Determine left and right boundary of unmapped window icon
+		 * if unmapped window icon should not expand in X axis.
+		 */
+		if(!priv->unmappedWindowIconXFill)
+		{
+			gfloat						offset;
+			gfloat						textureWidth;
+			gfloat						oversize;
+
+			/* Get scaled width of unmapped window icon */
+			textureWidth=cogl_texture_get_width(priv->texture);
+			textureWidth*=priv->unmappedWindowIconXScale;
+
+			/* Get boundary in X axis depending on gravity and scaled width */
+			offset=(priv->unmappedWindowIconXAlign*allocationWidth);
+			switch(priv->unmappedWindowIconGravity)
+			{
+				/* Align to left boundary.
+				 * This is also the default if gravity is none or undefined.
+				 */
+				default:
+				case CLUTTER_GRAVITY_NONE:
+				case CLUTTER_GRAVITY_WEST:
+				case CLUTTER_GRAVITY_NORTH_WEST:
+				case CLUTTER_GRAVITY_SOUTH_WEST:
+					break;
+
+				/* Align to center of X axis */
+				case CLUTTER_GRAVITY_CENTER:
+				case CLUTTER_GRAVITY_NORTH:
+				case CLUTTER_GRAVITY_SOUTH:
+					offset-=(textureWidth/2.0f);
+					break;
+
+				/* Align to right boundary */
+				case CLUTTER_GRAVITY_EAST:
+				case CLUTTER_GRAVITY_NORTH_EAST:
+				case CLUTTER_GRAVITY_SOUTH_EAST:
+					offset-=textureWidth;
+					break;
+			}
+
+			/* Set boundary in X axis */
+			textureAllocationBox.x1=outlineBox.x1+offset;
+			textureAllocationBox.x2=textureAllocationBox.x1+textureWidth;
+
+			/* Clip texture in X axis if it does not fit into allocation */
+			if(textureAllocationBox.x1<outlineBox.x1)
+			{
+				oversize=outlineBox.x1-textureAllocationBox.x1;
+				textureCoordBox.x1=oversize/textureWidth;
+				textureAllocationBox.x1=outlineBox.x1;
+			}
+
+			if(textureAllocationBox.x2>outlineBox.x2)
+			{
+				oversize=textureAllocationBox.x2-outlineBox.x2;
+				textureCoordBox.x2=1.0f-(oversize/textureWidth);
+				textureAllocationBox.x2=outlineBox.x2;
+			}
+		}
+
+		/* Determine left and right boundary of unmapped window icon
+		 * if unmapped window icon should not expand in X axis.
+		 */
+		if(!priv->unmappedWindowIconYFill)
+		{
+			gfloat						offset;
+			gfloat						textureHeight;
+			gfloat						oversize;
+
+			/* Get scaled width of unmapped window icon */
+			textureHeight=cogl_texture_get_height(priv->texture);
+			textureHeight*=priv->unmappedWindowIconYScale;
+
+			/* Get boundary in X axis depending on gravity and scaled width */
+			offset=(priv->unmappedWindowIconYAlign*allocationHeight);
+			switch(priv->unmappedWindowIconGravity)
+			{
+				/* Align to upper boundary.
+				 * This is also the default if gravity is none or undefined.
+				 */
+				default:
+				case CLUTTER_GRAVITY_NONE:
+				case CLUTTER_GRAVITY_NORTH:
+				case CLUTTER_GRAVITY_NORTH_WEST:
+				case CLUTTER_GRAVITY_NORTH_EAST:
+					break;
+
+				/* Align to center of Y axis */
+				case CLUTTER_GRAVITY_CENTER:
+				case CLUTTER_GRAVITY_WEST:
+				case CLUTTER_GRAVITY_EAST:
+					offset-=(textureHeight/2.0f);
+					break;
+
+				/* Align to lower boundary */
+				case CLUTTER_GRAVITY_SOUTH:
+				case CLUTTER_GRAVITY_SOUTH_WEST:
+				case CLUTTER_GRAVITY_SOUTH_EAST:
+					offset-=textureHeight;
+					break;
+			}
+
+			/* Set boundary in Y axis */
+			textureAllocationBox.y1=outlineBox.y1+offset;
+			textureAllocationBox.y2=textureAllocationBox.y1+textureHeight;
+
+			/* Clip texture in Y axis if it does not fit into allocation */
+			if(textureAllocationBox.y1<outlineBox.y1)
+			{
+				oversize=outlineBox.y1-textureAllocationBox.y1;
+				textureCoordBox.y1=oversize/textureHeight;
+				textureAllocationBox.y1=outlineBox.y1;
+			}
+
+			if(textureAllocationBox.y2>outlineBox.y2)
+			{
+				oversize=textureAllocationBox.y2-outlineBox.y2;
+				textureCoordBox.y2=1.0f-(oversize/textureHeight);
+				textureAllocationBox.y2=outlineBox.y2;
+			}
+		}
 	}
 
 	/* Set up paint nodes for texture */
 	node=clutter_texture_node_new(priv->texture, &color, minFilter, magFilter);
 	clutter_paint_node_set_name(node, G_OBJECT_TYPE_NAME(self));
-
-	if(repeatContent==CLUTTER_REPEAT_NONE)
-	{
-		clutter_paint_node_add_rectangle(node, &actorBox);
-	}
-		else
-		{
-			gfloat				textureWidth=1.0f;
-			gfloat				textureHeight=1.0f;
-
-			if((repeatContent & CLUTTER_REPEAT_X_AXIS)!=FALSE)
-			{
-				textureWidth=(actorBox.x2-actorBox.x1)/cogl_texture_get_width(priv->texture);
-			}
-
-			if((repeatContent & CLUTTER_REPEAT_Y_AXIS)!=FALSE)
-			{
-				textureHeight=(actorBox.y2-actorBox.y1)/cogl_texture_get_height(priv->texture);
-			}
-
-			clutter_paint_node_add_texture_rectangle(node,
-														&actorBox,
-														0.0f, 0.0f,
-														textureWidth, textureHeight);
-		}
-
+	clutter_paint_node_add_texture_rectangle(node,
+												&textureAllocationBox,
+												textureCoordBox.x1,
+												textureCoordBox.y1,
+												textureCoordBox.x2,
+												textureCoordBox.y2);
 	clutter_paint_node_add_child(inRootNode, node);
 	clutter_paint_node_unref(node);
 
@@ -1044,28 +1184,28 @@ static void _xdashboard_window_content_clutter_content_iface_paint_content(Clutt
 
 	node=clutter_color_node_new(&outlineColor);
 	clutter_paint_node_set_name(node, "outline-top");
-	clutter_actor_box_init_rect(&outlinePath, actorBox.x1, 0.0f, actorBox.x2-actorBox.x1, priv->outlineWidth);
+	clutter_actor_box_init_rect(&outlinePath, outlineBox.x1, 0.0f, outlineBox.x2-outlineBox.x1, priv->outlineWidth);
 	clutter_paint_node_add_rectangle(node, &outlinePath);
 	clutter_paint_node_add_child(inRootNode, node);
 	clutter_paint_node_unref(node);
 
 	node=clutter_color_node_new(&outlineColor);
 	clutter_paint_node_set_name(node, "outline-bottom");
-	clutter_actor_box_init_rect(&outlinePath, actorBox.x1, actorBox.y2-priv->outlineWidth, actorBox.x2-actorBox.x1, priv->outlineWidth);
+	clutter_actor_box_init_rect(&outlinePath, outlineBox.x1, outlineBox.y2-priv->outlineWidth, outlineBox.x2-outlineBox.x1, priv->outlineWidth);
 	clutter_paint_node_add_rectangle(node, &outlinePath);
 	clutter_paint_node_add_child(inRootNode, node);
 	clutter_paint_node_unref(node);
 
 	node=clutter_color_node_new(&outlineColor);
 	clutter_paint_node_set_name(node, "outline-left");
-	clutter_actor_box_init_rect(&outlinePath, actorBox.x1, actorBox.y1, priv->outlineWidth, actorBox.y2-actorBox.y1);
+	clutter_actor_box_init_rect(&outlinePath, outlineBox.x1, outlineBox.y1, priv->outlineWidth, outlineBox.y2-outlineBox.y1);
 	clutter_paint_node_add_rectangle(node, &outlinePath);
 	clutter_paint_node_add_child(inRootNode, node);
 	clutter_paint_node_unref(node);
 
 	node=clutter_color_node_new(&outlineColor);
 	clutter_paint_node_set_name(node, "outline-right");
-	clutter_actor_box_init_rect(&outlinePath, actorBox.x2-priv->outlineWidth, actorBox.y1, priv->outlineWidth, actorBox.y2-actorBox.y1);
+	clutter_actor_box_init_rect(&outlinePath, outlineBox.x2-priv->outlineWidth, outlineBox.y1, priv->outlineWidth, outlineBox.y2-outlineBox.y1);
 	clutter_paint_node_add_rectangle(node, &outlinePath);
 	clutter_paint_node_add_child(inRootNode, node);
 	clutter_paint_node_unref(node);
@@ -1123,6 +1263,13 @@ static void _xfdashboard_window_content_stylable_get_stylable_properties(Xfdashb
 
 	/* Add stylable properties to hashtable */
 	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "include-window-frame");
+	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-x-fill");
+	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-y-fill");
+	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-x-align");
+	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-y-align");
+	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-x-scale");
+	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-y-scale");
+	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-gravity");
 }
 
 /* Get/set style classes of stage */
@@ -1254,6 +1401,34 @@ static void _xfdashboard_window_content_set_property(GObject *inObject,
 			xfdashboard_window_content_set_include_window_frame(self, g_value_get_boolean(inValue));
 			break;
 
+		case PROP_UNMAPPED_WINDOW_ICON_X_FILL:
+			xfdashboard_window_content_set_unmapped_window_icon_x_fill(self, g_value_get_boolean(inValue));
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_Y_FILL:
+			xfdashboard_window_content_set_unmapped_window_icon_y_fill(self, g_value_get_boolean(inValue));
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_X_ALIGN:
+			xfdashboard_window_content_set_unmapped_window_icon_x_align(self, g_value_get_float(inValue));
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_Y_ALIGN:
+			xfdashboard_window_content_set_unmapped_window_icon_y_align(self, g_value_get_float(inValue));
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_X_SCALE:
+			xfdashboard_window_content_set_unmapped_window_icon_x_scale(self, g_value_get_float(inValue));
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_Y_SCALE:
+			xfdashboard_window_content_set_unmapped_window_icon_y_scale(self, g_value_get_float(inValue));
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_GRAVITY:
+			xfdashboard_window_content_set_unmapped_window_icon_gravity(self, g_value_get_enum(inValue));
+			break;
+
 		case PROP_STYLE_CLASSES:
 			_xfdashboard_window_content_stylable_set_classes(XFDASHBOARD_STYLABLE(self), g_value_get_string(inValue));
 			break;
@@ -1296,6 +1471,34 @@ static void _xfdashboard_window_content_get_property(GObject *inObject,
 
 		case PROP_INCLUDE_WINDOW_FRAME:
 			g_value_set_boolean(outValue, priv->includeWindowFrame);
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_X_FILL:
+			g_value_set_boolean(outValue, priv->unmappedWindowIconXFill);
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_Y_FILL:
+			g_value_set_boolean(outValue, priv->unmappedWindowIconYFill);
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_X_ALIGN:
+			g_value_set_float(outValue, priv->unmappedWindowIconXAlign);
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_Y_ALIGN:
+			g_value_set_float(outValue, priv->unmappedWindowIconYAlign);
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_X_SCALE:
+			g_value_set_float(outValue, priv->unmappedWindowIconXScale);
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_Y_SCALE:
+			g_value_set_float(outValue, priv->unmappedWindowIconYScale);
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_GRAVITY:
+			g_value_set_enum(outValue, priv->unmappedWindowIconGravity);
 			break;
 
 		case PROP_STYLE_CLASSES:
@@ -1369,6 +1572,60 @@ void xfdashboard_window_content_class_init(XfdashboardWindowContentClass *klass)
 							FALSE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_X_FILL]=
+		g_param_spec_boolean("unmapped-window-icon-x-fill",
+							_("Unmapped window icon X fill"),
+							_("Whether the unmapped window icon should fill up horizontal space"),
+							TRUE,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_Y_FILL]=
+		g_param_spec_boolean("unmapped-window-icon-y-fill",
+							_("Unmapped window icon y fill"),
+							_("Whether the unmapped window icon should fill up vertical space"),
+							TRUE,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_X_ALIGN]=
+		g_param_spec_float("unmapped-window-icon-x-align",
+							_("Unmapped window icon X align"),
+							_("The alignment of the unmapped window icon on the X axis within the allocation in normalized coordinate between 0 and 1"),
+							0.0f, 1.0f,
+							0.0f,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_Y_ALIGN]=
+		g_param_spec_float("unmapped-window-icon-y-align",
+							_("Unmapped window icon Y align"),
+							_("The alignment of the unmapped window icon on the Y axis within the allocation in normalized coordinate between 0 and 1"),
+							0.0f, 1.0f,
+							0.0f,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_X_SCALE]=
+		g_param_spec_float("unmapped-window-icon-x-scale",
+							_("Unmapped window icon X scale"),
+							_("Scale factor of unmapped window icon on the X axis"),
+							0.0f, G_MAXFLOAT,
+							1.0f,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_Y_SCALE]=
+		g_param_spec_float("unmapped-window-icon-y-scale",
+							_("Unmapped window icon Y scale"),
+							_("Scale factor of unmapped window icon on the Y axis"),
+							0.0f, G_MAXFLOAT,
+							1.0f,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_GRAVITY]=
+		g_param_spec_enum("unmapped-window-icon-gravity",
+							_("Unmapped window icon gravity"),
+							_("The acnhor point of unmapped window icon"),
+							CLUTTER_TYPE_GRAVITY,
+							CLUTTER_GRAVITY_NONE,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	paramSpec=g_object_interface_find_property(stylableIface, "style-classes");
 	XfdashboardWindowContentProperties[PROP_STYLE_CLASSES]=
 		g_param_spec_override("style-classes", paramSpec);
@@ -1412,6 +1669,13 @@ void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 	priv->stylePseudoClasses=NULL;
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->workaroundMode=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_NONE;
+	priv->unmappedWindowIconXFill=FALSE;
+	priv->unmappedWindowIconYFill=FALSE;
+	priv->unmappedWindowIconXAlign=0.0f;
+	priv->unmappedWindowIconYAlign=0.0f;
+	priv->unmappedWindowIconXScale=1.0f;
+	priv->unmappedWindowIconYScale=1.0f;
+	priv->unmappedWindowIconGravity=CLUTTER_GRAVITY_NONE;
 
 	/* Check extensions (will only be done once) */
 	_xfdashboard_window_content_check_extension();
@@ -1599,5 +1863,221 @@ void xfdashboard_window_content_set_include_window_frame(XfdashboardWindowConten
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_INCLUDE_WINDOW_FRAME]);
+	}
+}
+
+/* Get/set x fill of unmapped window icon */
+gboolean xfdashboard_window_content_get_unmapped_window_icon_x_fill(XfdashboardWindowContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self), FALSE);
+
+	return(self->priv->unmappedWindowIconXFill);
+}
+
+void xfdashboard_window_content_set_unmapped_window_icon_x_fill(XfdashboardWindowContent *self, const gboolean inFill)
+{
+	XfdashboardWindowContentPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->unmappedWindowIconXFill!=inFill)
+	{
+		/* Set value */
+		priv->unmappedWindowIconXFill=inFill;
+
+		/* Invalidate ourselve to get us redrawn */
+		clutter_content_invalidate(CLUTTER_CONTENT(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_X_FILL]);
+	}
+}
+
+/* Get/set y fill of unmapped window icon */
+gboolean xfdashboard_window_content_get_unmapped_window_icon_y_fill(XfdashboardWindowContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self), FALSE);
+
+	return(self->priv->unmappedWindowIconYFill);
+}
+
+void xfdashboard_window_content_set_unmapped_window_icon_y_fill(XfdashboardWindowContent *self, const gboolean inFill)
+{
+	XfdashboardWindowContentPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->unmappedWindowIconYFill!=inFill)
+	{
+		/* Set value */
+		priv->unmappedWindowIconYFill=inFill;
+
+		/* Invalidate ourselve to get us redrawn */
+		clutter_content_invalidate(CLUTTER_CONTENT(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_Y_FILL]);
+	}
+}
+
+/* Get/set x align of unmapped window icon */
+gfloat xfdashboard_window_content_get_unmapped_window_icon_x_align(XfdashboardWindowContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self), 0.0f);
+
+	return(self->priv->unmappedWindowIconXAlign);
+}
+
+void xfdashboard_window_content_set_unmapped_window_icon_x_align(XfdashboardWindowContent *self, const gfloat inAlign)
+{
+	XfdashboardWindowContentPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+	g_return_if_fail(inAlign>=0.0f && inAlign<=1.0f);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->unmappedWindowIconXAlign!=inAlign)
+	{
+		/* Set value */
+		priv->unmappedWindowIconXAlign=inAlign;
+
+		/* Invalidate ourselve to get us redrawn */
+		clutter_content_invalidate(CLUTTER_CONTENT(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_X_ALIGN]);
+	}
+}
+
+/* Get/set y align of unmapped window icon */
+gfloat xfdashboard_window_content_get_unmapped_window_icon_y_align(XfdashboardWindowContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self), 0.0f);
+
+	return(self->priv->unmappedWindowIconYAlign);
+}
+
+void xfdashboard_window_content_set_unmapped_window_icon_y_align(XfdashboardWindowContent *self, const gfloat inAlign)
+{
+	XfdashboardWindowContentPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+	g_return_if_fail(inAlign>=0.0f && inAlign<=1.0f);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->unmappedWindowIconYAlign!=inAlign)
+	{
+		/* Set value */
+		priv->unmappedWindowIconYAlign=inAlign;
+
+		/* Invalidate ourselve to get us redrawn */
+		clutter_content_invalidate(CLUTTER_CONTENT(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_Y_ALIGN]);
+	}
+}
+
+/* Get/set x scale of unmapped window icon */
+gfloat xfdashboard_window_content_get_unmapped_window_icon_x_scale(XfdashboardWindowContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self), 0.0f);
+
+	return(self->priv->unmappedWindowIconXScale);
+}
+
+void xfdashboard_window_content_set_unmapped_window_icon_x_scale(XfdashboardWindowContent *self, const gfloat inScale)
+{
+	XfdashboardWindowContentPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+	g_return_if_fail(inScale>=0.0f);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->unmappedWindowIconXScale!=inScale)
+	{
+		/* Set value */
+		priv->unmappedWindowIconXScale=inScale;
+
+		/* Invalidate ourselve to get us redrawn */
+		clutter_content_invalidate(CLUTTER_CONTENT(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_X_SCALE]);
+	}
+}
+
+/* Get/set y scale of unmapped window icon */
+gfloat xfdashboard_window_content_get_unmapped_window_icon_y_scale(XfdashboardWindowContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self), 0.0f);
+
+	return(self->priv->unmappedWindowIconYScale);
+}
+
+void xfdashboard_window_content_set_unmapped_window_icon_y_scale(XfdashboardWindowContent *self, const gfloat inScale)
+{
+	XfdashboardWindowContentPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+	g_return_if_fail(inScale>=0.0f);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->unmappedWindowIconYScale!=inScale)
+	{
+		/* Set value */
+		priv->unmappedWindowIconYScale=inScale;
+
+		/* Invalidate ourselve to get us redrawn */
+		clutter_content_invalidate(CLUTTER_CONTENT(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_Y_SCALE]);
+	}
+}
+
+/* Get/set gravity (anchor point) of unmapped window icon */
+ClutterGravity xfdashboard_window_content_get_unmapped_window_icon_gravity(XfdashboardWindowContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self), CLUTTER_GRAVITY_NONE);
+
+	return(self->priv->unmappedWindowIconGravity);
+}
+
+void xfdashboard_window_content_set_unmapped_window_icon_gravity(XfdashboardWindowContent *self, const ClutterGravity inGravity)
+{
+	XfdashboardWindowContentPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+	g_return_if_fail(inGravity>=CLUTTER_GRAVITY_NONE);
+	g_return_if_fail(inGravity<=CLUTTER_GRAVITY_CENTER);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->unmappedWindowIconGravity!=inGravity)
+	{
+		/* Set value */
+		priv->unmappedWindowIconGravity=inGravity;
+
+		/* Invalidate ourselve to get us redrawn */
+		clutter_content_invalidate(CLUTTER_CONTENT(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_GRAVITY]);
 	}
 }

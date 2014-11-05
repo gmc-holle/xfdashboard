@@ -78,6 +78,27 @@ void xfdashboard_window_content_set_outline_width(XfdashboardWindowContent *self
 gboolean xfdashboard_window_content_get_include_window_frame(XfdashboardWindowContent *self);
 void xfdashboard_window_content_set_include_window_frame(XfdashboardWindowContent *self, const gboolean inIncludeFrame);
 
+gboolean xfdashboard_window_content_get_unmapped_window_icon_x_fill(XfdashboardWindowContent *self);
+void xfdashboard_window_content_set_unmapped_window_icon_x_fill(XfdashboardWindowContent *self, const gboolean inFill);
+
+gboolean xfdashboard_window_content_get_unmapped_window_icon_y_fill(XfdashboardWindowContent *self);
+void xfdashboard_window_content_set_unmapped_window_icon_y_fill(XfdashboardWindowContent *self, const gboolean inFill);
+
+gfloat xfdashboard_window_content_get_unmapped_window_icon_x_align(XfdashboardWindowContent *self);
+void xfdashboard_window_content_set_unmapped_window_icon_x_align(XfdashboardWindowContent *self, const gfloat inAlign);
+
+gfloat xfdashboard_window_content_get_unmapped_window_icon_y_align(XfdashboardWindowContent *self);
+void xfdashboard_window_content_set_unmapped_window_icon_y_align(XfdashboardWindowContent *self, const gfloat inAlign);
+
+gfloat xfdashboard_window_content_get_unmapped_window_icon_x_scale(XfdashboardWindowContent *self);
+void xfdashboard_window_content_set_unmapped_window_icon_x_scale(XfdashboardWindowContent *self, const gfloat inScale);
+
+gfloat xfdashboard_window_content_get_unmapped_window_icon_y_scale(XfdashboardWindowContent *self);
+void xfdashboard_window_content_set_unmapped_window_icon_y_scale(XfdashboardWindowContent *self, const gfloat inScale);
+
+ClutterGravity xfdashboard_window_content_get_unmapped_window_icon_gravity(XfdashboardWindowContent *self);
+void xfdashboard_window_content_set_unmapped_window_icon_gravity(XfdashboardWindowContent *self, const ClutterGravity inGravity);
+
 G_END_DECLS
 
 #endif	/* __XFOVERVIEW_WINDOW_CONTENT__ */
