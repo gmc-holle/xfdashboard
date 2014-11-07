@@ -56,6 +56,7 @@ struct _XfdashboardActorPrivate
 
 	/* Instance related */
 	GHashTable		*lastThemeStyleSet;
+	gboolean		forceStyleRevalidation;
 };
 
 /* Properties */
@@ -450,8 +451,8 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 	klass=XFDASHBOARD_ACTOR_GET_CLASS(self);
 	didChange=FALSE;
 
-	/* Only recompute style for mapped actors */
-	if(!CLUTTER_ACTOR_IS_MAPPED(self)) return;
+	/* Only recompute style for mapped actors or if revalidation was forced */
+	if(!priv->forceStyleRevalidation && !CLUTTER_ACTOR_IS_MAPPED(self)) return;
 
 	/* Get theme CSS */
 	theme=xfdashboard_application_get_theme();
@@ -637,6 +638,9 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 
 	/* Force a redraw if any change was made at this actor */
 	if(didChange) clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
+
+	/* Reset force style revalidation flag because it's done now */
+	priv->forceStyleRevalidation=FALSE;
 
 	/* All stylable properties are set now. So thaw 'property-changed'
 	 * notification now and fire all notifications at once.
@@ -1191,4 +1195,14 @@ GHashTable* xfdashboard_actor_get_stylable_properties_full(XfdashboardActorClass
 	_xfdashboard_actor_hashtable_get_all_stylable_param_specs(stylableProps, G_OBJECT_CLASS(klass), TRUE);
 
 	return(stylableProps);
+}
+
+/* Force restyling actor by theme next time stylable invalidation
+ * function of this actor is called
+ */
+void xfdashboard_actor_invalidate(XfdashboardActor *self)
+{
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
+
+	self->priv->forceStyleRevalidation=TRUE;
 }

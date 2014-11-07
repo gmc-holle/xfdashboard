@@ -430,6 +430,7 @@ static void xfdashboard_view_init(XfdashboardView *self)
 
 	/* Set up actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
+	xfdashboard_actor_invalidate(XFDASHBOARD_ACTOR(self));
 }
 
 /* IMPLEMENTATION: Public API */

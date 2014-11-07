@@ -74,6 +74,8 @@ void xfdashboard_actor_install_stylable_property_by_name(XfdashboardActorClass *
 GHashTable* xfdashboard_actor_get_stylable_properties(XfdashboardActorClass *klass);
 GHashTable* xfdashboard_actor_get_stylable_properties_full(XfdashboardActorClass *klass);
 
+void xfdashboard_actor_invalidate(XfdashboardActor *self);
+
 G_END_DECLS
 
 #endif
