@@ -181,7 +181,17 @@ static gboolean _xfdashboard_application_load_theme(XfdashboardApplication *self
 	error=NULL;
 	theme=NULL;
 
-	/* Determine theme file to load and check if file exists */
+	/* Determine theme file to load and check if file exists.
+	 * Set up default theme in Xfcond if property in channel does not exist
+	 * because it indicates first start.
+	 */
+	if(!xfconf_channel_has_property(priv->xfconfChannel, THEME_NAME_XFCONF_PROP))
+	{
+		xfconf_channel_set_string(priv->xfconfChannel,
+											THEME_NAME_XFCONF_PROP,
+											DEFAULT_THEME_NAME);
+	}
+
 	themeName=xfconf_channel_get_string(priv->xfconfChannel,
 											THEME_NAME_XFCONF_PROP,
 											DEFAULT_THEME_NAME);
@@ -190,6 +200,7 @@ static gboolean _xfdashboard_application_load_theme(XfdashboardApplication *self
 		g_critical(_("Could not get theme name to load!"));
 		return(FALSE);
 	}
+
 
 	/* Create new theme instance and load theme */
 	theme=xfdashboard_theme_new();
