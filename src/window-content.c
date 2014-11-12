@@ -39,6 +39,7 @@
 #ifdef HAVE_XDAMAGE
 #include <X11/extensions/Xdamage.h>
 #endif
+#include <gdk/gdkx.h>
 
 #include "application.h"
 #include "marshal.h"
@@ -751,21 +752,48 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 }
 
 /* Find X window for window frame of given X window content */
-static Window _xfdashboard_window_content_get_window_frame_xid(Display *inDisplay, Window inWindow)
+static Window _xfdashboard_window_content_get_window_frame_xid(Display *inDisplay, XfdashboardWindowTrackerWindow *inWindow)
 {
-	Window		iterXWindowID;
-	Window		rootXWindowID;
-	Window		foundXWindowID;
+	Window				xWindowID;
+	Window				iterXWindowID;
+	Window				rootXWindowID;
+	Window				foundXWindowID;
+	GdkDisplay			*gdkDisplay;
+	GdkWindow			*gdkWindow;
+	GdkWMDecoration		gdkWindowDecoration;
 
 	g_return_val_if_fail(inDisplay, 0);
-	g_return_val_if_fail(inWindow!=0, 0);
+	g_return_val_if_fail(inWindow, 0);
+
+	/* Get X window */
+	xWindowID=xfdashboard_window_tracker_window_get_xid(inWindow);
+	g_return_val_if_fail(xWindowID!=0, 0);
+
+	/* Check if window is client side decorated and if it has no decorations
+	 * so skip finding window frame and behave like we did not found it.
+	 */
+	gdkDisplay=gdk_display_get_default();
+	gdkWindow=gdk_x11_window_foreign_new_for_display(gdkDisplay, xWindowID);
+	if(gdk_window_get_decorations(gdkWindow, &gdkWindowDecoration) &&
+		gdkWindowDecoration==0)
+	{
+		g_debug("Window '%s' has CSD enabled and no decorations so skip finding window frame.",
+				xfdashboard_window_tracker_window_get_title(inWindow));
+
+		/* Release allocated resources */
+		g_object_unref(gdkWindow);
+
+		/* Skip finding window frame but return "not-found" result */
+		return(0);
+	}
+	g_object_unref(gdkWindow);
 
 	/* Iterate through X window tree list upwards until root window reached.
 	 * The last X window before root window is the one we are looking for.
 	 */
 	rootXWindowID=0;
 	foundXWindowID=0;
-	for(iterXWindowID=inWindow; iterXWindowID && iterXWindowID!=rootXWindowID; )
+	for(iterXWindowID=xWindowID; iterXWindowID && iterXWindowID!=rootXWindowID; )
 	{
 		Window	*children;
 		guint	numberChildren;
@@ -866,7 +894,7 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 	/* Get X window and its attributes */
 	if(priv->includeWindowFrame)
 	{
-		priv->xWindowID=_xfdashboard_window_content_get_window_frame_xid(display, xfdashboard_window_tracker_window_get_xid(priv->window));
+		priv->xWindowID=_xfdashboard_window_content_get_window_frame_xid(display, priv->window);
 	}
 
 	if(!priv->xWindowID)
