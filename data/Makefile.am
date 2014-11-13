@@ -12,7 +12,12 @@ autostart_in_files = xfdashboard-autostart.desktop.in
 autostart_DATA = $(autostart_in_files:.desktop.in=.desktop)
 
 # Substitute bindir so it works when built in a non-system prefix
-%.desktop.in:%.desktop.in.in
+xfdashboard.desktop.in:xfdashboard.desktop.in.in
+	$(AM_V_GEN) sed -e "s|@bindir[@]|$(bindir)|" \
+	    -e "s|@VERSION[@]|$(VERSION)|" \
+	    $< > $@ || rm $@
+
+xfdashboard-autostart.desktop.in:xfdashboard-autostart.desktop.in.in
 	$(AM_V_GEN) sed -e "s|@bindir[@]|$(bindir)|" \
 	    -e "s|@VERSION[@]|$(VERSION)|" \
 	    $< > $@ || rm $@
