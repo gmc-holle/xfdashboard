@@ -58,6 +58,8 @@ struct _XfdashboardThemeCSSPrivate
 	GSList		*names;
 
 	GHashTable	*registeredFunctions;
+
+	gint		offsetLine;
 };
 
 /* Properties */
@@ -1704,6 +1706,7 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 	GScannerConfig				*oldScannerConfig;
 	gchar						*filename;
 	GError						*error;
+	gint						oldLineOffset;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), G_TOKEN_ERROR);
 	g_return_val_if_fail(inScanner, G_TOKEN_ERROR);
@@ -1881,6 +1884,7 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 		}
 	}
 
+	oldLineOffset=priv->offsetLine;
 	if(!xfdashboard_theme_css_add_file(self, filename, GPOINTER_TO_INT(inScanner->user_data), &error))
 	{
 		gchar					*errorMessage;
@@ -1908,11 +1912,17 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 		if(errorMessage) g_free(errorMessage);
 		if(filename) g_free(filename);
 
+		/* Correct line offset */
+		priv->offsetLine-=oldLineOffset;
+
 		/* Return error result */
 		return(G_TOKEN_ERROR);
 	}
 
 	g_debug("Imported CSS file '%s'", filename);
+
+	/* Correct line offset */
+	priv->offsetLine-=oldLineOffset;
 
 	/* Restore old parser options */
 	inScanner->config=oldScannerConfig;
@@ -1956,6 +1966,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 															GScanner *inScanner,
 															GList **ioSelectors)
 {
+	XfdashboardThemeCSSPrivate		*priv;
 	GTokenType						token;
 	XfdashboardThemeCSSSelector		*selector;
 	gboolean						hasAtSelector;
@@ -1963,6 +1974,8 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), G_TOKEN_ERROR);
 	g_return_val_if_fail(inScanner, G_TOKEN_ERROR);
 	g_return_val_if_fail(ioSelectors, G_TOKEN_ERROR);
+
+	priv=self->priv;
 
 	/* Parse comma-seperated selectors until a left curly bracket is found */
 	selector=NULL;
@@ -2011,7 +2024,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 				/* Create new selector and add it to list of read-in selectors */
 				selector=_xfdashboard_theme_css_selector_new(inScanner->input_name,
 																GPOINTER_TO_INT(inScanner->user_data),
-																g_scanner_cur_line(inScanner),
+																g_scanner_cur_line(inScanner)+priv->offsetLine,
 																g_scanner_cur_position(inScanner));
 				*ioSelectors=g_list_prepend(*ioSelectors, selector);
 
@@ -2049,7 +2062,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 					/* Create selector for constant @-identifier */
 					selector=_xfdashboard_theme_css_selector_new(inScanner->input_name,
 																	GPOINTER_TO_INT(inScanner->user_data),
-																	g_scanner_cur_line(inScanner),
+																	g_scanner_cur_line(inScanner)+priv->offsetLine,
 																	g_scanner_cur_position(inScanner));
 					selector->type=XFDASHBOARD_THEME_CSS_SELECTOR_TYPE_CONSTANT;
 
@@ -2225,6 +2238,7 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 													GList **outStyles,
 													GError **outError)
 {
+	XfdashboardThemeCSSPrivate		*priv;
 	GScanner						*scanner;
 	GTokenType						token;
 	gboolean						success;
@@ -2237,6 +2251,7 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 	g_return_val_if_fail(outSelectors && *outSelectors==NULL, FALSE);
 	g_return_val_if_fail(outStyles && *outStyles==NULL, FALSE);
 
+	priv=self->priv;
 	success=TRUE;
 	selectors=NULL;
 	styles=NULL;
@@ -2324,6 +2339,9 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 		g_list_free(styles);
 		styles=NULL;
 	}
+
+	/* Add lines parsed in scanner to line offset */
+	priv->offsetLine+=g_scanner_cur_line(scanner);
 
 	/* Return selectors and styles */
 	if(outSelectors) *outSelectors=selectors;
@@ -2490,6 +2508,7 @@ void xfdashboard_theme_css_init(XfdashboardThemeCSS *self)
 	priv->styles=NULL;
 	priv->names=NULL;
 	priv->registeredFunctions=NULL;
+	priv->offsetLine=0;
 
 	/* Register CSS functions */
 #define REGISTER_CSS_FUNC(name, callback) \

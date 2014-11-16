@@ -95,7 +95,7 @@ static XfdashboardCssSelectorRule* _xfdashboard_css_selector_rule_new(const gcha
 	rule->priority=inPriority;
 	rule->line=inLine;
 	rule->position=inPosition;
-  
+
 	return(rule);
 }
 
@@ -801,9 +801,9 @@ static void _xfdashboard_css_selector_dispose(GObject *inObject)
 
 /* Set/get properties */
 static void _xfdashboard_css_selector_set_property(GObject *inObject,
-												guint inPropID,
-												const GValue *inValue,
-												GParamSpec *inSpec)
+													guint inPropID,
+													const GValue *inValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardCssSelector		*self=XFDASHBOARD_CSS_SELECTOR(inObject);
 
@@ -820,9 +820,9 @@ static void _xfdashboard_css_selector_set_property(GObject *inObject,
 }
 
 static void _xfdashboard_css_selector_get_property(GObject *inObject,
-												guint inPropID,
-												GValue *outValue,
-												GParamSpec *inSpec)
+													guint inPropID,
+													GValue *outValue,
+													GParamSpec *inSpec)
 {
 	XfdashboardCssSelector		*self=XFDASHBOARD_CSS_SELECTOR(inObject);
 
