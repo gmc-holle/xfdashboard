@@ -80,6 +80,9 @@ struct _XfdashboardCssSelectorRule
 	gint							priority;
 	guint							line;
 	guint							position;
+
+	guint							origLine;
+	guint							origPosition;
 };
 
 /* Create rule */
@@ -93,8 +96,8 @@ static XfdashboardCssSelectorRule* _xfdashboard_css_selector_rule_new(const gcha
 	rule=g_slice_new0(XfdashboardCssSelectorRule);
 	rule->source=g_strdup(inSource);
 	rule->priority=inPriority;
-	rule->line=inLine;
-	rule->position=inPosition;
+	rule->origLine=rule->line=inLine;
+	rule->origPosition=rule->position=inPosition;
 
 	return(rule);
 }
@@ -1042,6 +1045,28 @@ gint xfdashboard_css_selector_score_matching_stylable_node(XfdashboardCssSelecto
 
 	/* Check and score rules */
 	return(_xfdashboard_css_selector_score_matching_node(self->priv->rule, inStylable));
+}
+
+/* Adjust source line and position of this selector to an offset */
+void xfdashboard_css_selector_adjust_to_offset(XfdashboardCssSelector *self, gint inLine, gint inPosition)
+{
+	XfdashboardCssSelectorPrivate	*priv;
+	gint							newLine;
+	gint							newPosition;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_CSS_SELECTOR(self), NULL);
+
+	priv=self->priv;
+
+	/* Adjust to offset */
+	if(priv->rule)
+	{
+		newLine=inLine+priv->rule->origLine;
+		priv->rule->line=MAX(0, newLine);
+
+		newPosition=inPosition+priv->rule->origPosition;
+		priv->rule->position=MAX(0, newPosition);
+	}
 }
 
 /* Get rule parsed */

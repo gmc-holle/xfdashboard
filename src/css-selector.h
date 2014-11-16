@@ -89,6 +89,8 @@ gchar* xfdashboard_css_selector_to_string(XfdashboardCssSelector *self);
 
 gint xfdashboard_css_selector_score_matching_stylable_node(XfdashboardCssSelector *self, XfdashboardStylable *inStylable);
 
+void xfdashboard_css_selector_adjust_to_offset(XfdashboardCssSelector *self, gint inLine, gint inPosition);
+
 XfdashboardCssSelectorRule* xfdashboard_css_selector_get_rule(XfdashboardCssSelector *self);
 
 const gchar* xfdashboard_css_selector_rule_get_type(XfdashboardCssSelectorRule *inRule);

@@ -235,10 +235,7 @@ static void _xfdashboard_theme_css_selector_free(XfdashboardThemeCSSSelector *in
 }
 
 /* Create selector */
-static XfdashboardThemeCSSSelector* _xfdashboard_theme_css_selector_new(const gchar *inName,
-																			gint inPriority,
-																			guint inLine,
-																			guint inPosition)
+static XfdashboardThemeCSSSelector* _xfdashboard_theme_css_selector_new(const gchar *inName)
 {
 	XfdashboardThemeCSSSelector		*selector;
 
@@ -2023,10 +2020,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 				}
 
 				/* Create new selector and add it to list of read-in selectors */
-				selector=_xfdashboard_theme_css_selector_new(inScanner->input_name,
-																GPOINTER_TO_INT(inScanner->user_data),
-																g_scanner_cur_line(inScanner)+priv->offsetLine,
-																g_scanner_cur_position(inScanner));
+				selector=_xfdashboard_theme_css_selector_new(inScanner->input_name);
 				*ioSelectors=g_list_prepend(*ioSelectors, selector);
 
 				/* Parse selector */
@@ -2035,6 +2029,8 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 																							(XfdashboardCssSelectorParseFinishCallback)_xfdashboard_theme_css_parse_css_ruleset_finish,
 																							self);
 				if(!selector->selector) return(G_TOKEN_ERROR);
+
+				xfdashboard_css_selector_adjust_to_offset(selector->selector, priv->offsetLine, 0);
 
 				/* If we get here selector could be parse so set type */
 				selector->type=XFDASHBOARD_THEME_CSS_SELECTOR_TYPE_SELECTOR;
@@ -2061,10 +2057,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 				if(g_strcmp0(inScanner->value.v_identifier, "constants")==0)
 				{
 					/* Create selector for constant @-identifier */
-					selector=_xfdashboard_theme_css_selector_new(inScanner->input_name,
-																	GPOINTER_TO_INT(inScanner->user_data),
-																	g_scanner_cur_line(inScanner)+priv->offsetLine,
-																	g_scanner_cur_position(inScanner));
+					selector=_xfdashboard_theme_css_selector_new(inScanner->input_name);
 					selector->type=XFDASHBOARD_THEME_CSS_SELECTOR_TYPE_CONSTANT;
 
 					/* Add it to list of read-in selectors */
@@ -2342,7 +2335,7 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 	}
 
 	/* Add lines parsed in scanner to line offset */
-	priv->offsetLine+=g_scanner_cur_line(scanner);
+	priv->offsetLine+=g_scanner_cur_line(scanner)+1;
 
 	/* Return selectors and styles */
 	if(outSelectors) *outSelectors=selectors;
