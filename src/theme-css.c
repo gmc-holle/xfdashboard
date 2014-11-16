@@ -1885,6 +1885,7 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 	}
 
 	oldLineOffset=priv->offsetLine;
+	priv->offsetLine+=g_scanner_cur_line(inScanner);
 	if(!xfdashboard_theme_css_add_file(self, filename, GPOINTER_TO_INT(inScanner->user_data), &error))
 	{
 		gchar					*errorMessage;
