@@ -1694,6 +1694,238 @@ static GTokenType _xfdashboard_theme_css_parse_css_styles(XfdashboardThemeCSS *s
 	return(G_TOKEN_NONE);
 }
 
+static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *self,
+														GScanner *inScanner,
+														GList **ioSelectors)
+{
+	XfdashboardThemeCSSPrivate	*priv;
+	GTokenType					token;
+	GScannerConfig				*scannerConfig;
+	GScannerConfig				*oldScannerConfig;
+	gchar						*filename;
+	GError						*error;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), G_TOKEN_ERROR);
+	g_return_val_if_fail(inScanner, G_TOKEN_ERROR);
+	g_return_val_if_fail(ioSelectors, G_TOKEN_ERROR);
+
+	priv=self->priv;
+	filename=NULL;
+	error=NULL;
+
+	/* Set parser option to parse property value and parse them */
+	scannerConfig=(GScannerConfig*)g_memdup(inScanner->config, sizeof(GScannerConfig));
+	scannerConfig->scan_identifier_1char=1;
+	scannerConfig->char_2_token=FALSE;
+	scannerConfig->scan_string_sq=TRUE;
+	scannerConfig->scan_string_dq=TRUE;
+
+	oldScannerConfig=inScanner->config;
+	inScanner->config=scannerConfig;
+
+	/* Syntax is: @import(filename)
+	 * Expect '(' as next character in stream.
+	 */
+	token=g_scanner_get_next_token(inScanner);
+	if(token!=G_TOKEN_CHAR ||
+		inScanner->value.v_char!='(')
+	{
+		/* Restore old parser options */
+		inScanner->config=oldScannerConfig;
+		g_free(scannerConfig);
+
+		/* Show parser error message */
+		g_scanner_unexp_token(inScanner,
+								G_TOKEN_LEFT_PAREN,
+								NULL,
+								NULL,
+								NULL,
+								_("Missing '(' after @import keyword."),
+								TRUE);
+		return(G_TOKEN_LEFT_PAREN);
+	}
+
+	/* Expect only identifiers, characters and strings and concetenate
+	 * them to a filename. But stop at closing ')' character.
+	 */
+	token=g_scanner_get_next_token(inScanner);
+	while((token==G_TOKEN_CHAR && inScanner->value.v_char!=')') ||
+			token==G_TOKEN_IDENTIFIER ||
+			token==G_TOKEN_STRING)
+	{
+		switch(token)
+		{
+			case G_TOKEN_CHAR:
+				filename=_xfdashboard_theme_css_append_char(filename, inScanner->value.v_char);
+				break;
+
+			case G_TOKEN_STRING:
+				filename=_xfdashboard_theme_css_append_string(filename, inScanner->value.v_string);
+				break;
+
+			case G_TOKEN_IDENTIFIER:
+				filename=_xfdashboard_theme_css_append_string(filename, inScanner->value.v_identifier);
+				break;
+
+			default:
+				/* Restore old parser options */
+				inScanner->config=oldScannerConfig;
+				g_free(scannerConfig);
+
+				/* Release allocated resources */
+				if(filename) g_free(filename);
+
+				/* Show parser error message */
+				g_scanner_unexp_token(inScanner,
+										G_TOKEN_ERROR,
+										NULL,
+										NULL,
+										NULL,
+										_("Unexpected token in filename to import"),
+										TRUE);
+				return(token);
+		}
+
+		token=g_scanner_get_next_token(inScanner);
+	}
+
+	if(!filename)
+	{
+		/* Restore old parser options */
+		inScanner->config=oldScannerConfig;
+		g_free(scannerConfig);
+
+		/* Show parser error message */
+		g_scanner_unexp_token(inScanner,
+								G_TOKEN_ERROR,
+								NULL,
+								NULL,
+								NULL,
+								_("Missing filename to import"),
+								TRUE);
+		return(G_TOKEN_ERROR);
+	}
+
+	/* Expect closing ')' as next character in stream */
+	if(token!=G_TOKEN_CHAR ||
+		inScanner->value.v_char!=')')
+	{
+		/* Restore old parser options */
+		inScanner->config=oldScannerConfig;
+		g_free(scannerConfig);
+
+		/* Release allocated resources */
+		if(filename) g_free(filename);
+
+		/* Show parser error message */
+		g_scanner_unexp_token(inScanner,
+								G_TOKEN_RIGHT_PAREN,
+								NULL,
+								NULL,
+								NULL,
+								_("Missing closing ')' at @import keyword."),
+								TRUE);
+		return(G_TOKEN_RIGHT_PAREN);
+	}
+
+	/* Import and parse CSS file */
+	if(!g_path_is_absolute(filename))
+	{
+		gchar					*tempFilename;
+		gchar					*cssPath;
+		gboolean				foundFile;
+
+		foundFile=FALSE;
+
+		/* Path to file is relative so check if a file, relative to
+		 * path of CSS file currently parsed, exists.
+		 */
+		if(inScanner->input_fd>0 &&
+			inScanner->input_name)
+		{
+			cssPath=g_path_get_dirname(inScanner->input_name);
+
+			tempFilename=g_build_filename(cssPath, filename, NULL);
+			if(g_file_test(tempFilename, G_FILE_TEST_EXISTS))
+			{
+				g_debug("Resolved relative path '%s' to import to '%s' which is relative to current css file '%s'.",
+							filename,
+							tempFilename,
+							inScanner->input_name);
+
+				g_free(filename);
+				filename=g_strdup(tempFilename);
+				foundFile=TRUE;
+			}
+
+			g_free(cssPath);
+			g_free(tempFilename);
+		}
+
+		/* If current CSS being parsed is not a file or the relative path
+		 * to current CSS file to import does not exist, assume it is a
+		 * relative path to theme.
+		 */
+		if(!foundFile)
+		{
+			tempFilename=g_build_filename(priv->themePath, filename, NULL);
+
+			g_debug("Resolved relative path '%s' to import to '%s' which is relative to theme path '%s'.",
+						filename,
+						tempFilename,
+						priv->themePath);
+
+			g_free(filename);
+			filename=g_strdup(tempFilename);
+			g_free(tempFilename);
+		}
+	}
+
+	if(!xfdashboard_theme_css_add_file(self, filename, GPOINTER_TO_INT(inScanner->user_data), &error))
+	{
+		gchar					*errorMessage;
+
+		/* Build error message */
+		errorMessage=g_strdup_printf(_("Failed to import CSS file '%s': %s"),
+										filename,
+										error && error->message ? error->message : _("Unknown error"));
+
+		/* Show parser error message */
+		g_scanner_unexp_token(inScanner,
+								G_TOKEN_ERROR,
+								NULL,
+								NULL,
+								NULL,
+								errorMessage,
+								TRUE);
+
+		/* Restore old parser options */
+		inScanner->config=oldScannerConfig;
+		g_free(scannerConfig);
+
+		/* Release allocated resources */
+		if(error) g_error_free(error);
+		if(errorMessage) g_free(errorMessage);
+		if(filename) g_free(filename);
+
+		/* Return error result */
+		return(G_TOKEN_ERROR);
+	}
+
+	g_debug("Imported CSS file '%s'", filename);
+
+	/* Restore old parser options */
+	inScanner->config=oldScannerConfig;
+	g_free(scannerConfig);
+
+	/* Release allocated resources */
+	if(error) g_error_free(error);
+	if(filename) g_free(filename);
+
+	/* Import was successful so return success value */
+	return(G_TOKEN_NONE);
+}
+
 static gboolean _xfdashboard_theme_css_parse_css_ruleset_finish(XfdashboardCssSelector *inSelector,
 																GScanner *inScanner,
 																GTokenType inPeekNextToken,
@@ -1811,44 +2043,80 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 					return(token);
 				}
 
-				/* Check if '@'-identifier matches any expected one */
-				if(g_strcmp0(inScanner->value.v_identifier, "constants"))
+				/* Handle '@constants'-identifier */
+				if(g_strcmp0(inScanner->value.v_identifier, "constants")==0)
 				{
-					gchar		*message;
+					/* Create selector for constant @-identifier */
+					selector=_xfdashboard_theme_css_selector_new(inScanner->input_name,
+																	GPOINTER_TO_INT(inScanner->user_data),
+																	g_scanner_cur_line(inScanner),
+																	g_scanner_cur_position(inScanner));
+					selector->type=XFDASHBOARD_THEME_CSS_SELECTOR_TYPE_CONSTANT;
 
-					/* Build warning message */
-					message=g_strdup_printf(_("Skipping block of unknown identifier '@%s'"),
-											inScanner->value.v_identifier);
+					/* Add it to list of read-in selectors */
+					*ioSelectors=g_list_prepend(*ioSelectors, selector);
 
-					/* Set warning */
+					/* Set flag that an '@'-selector was parsed */
+					hasAtSelector=TRUE;
+				}
+					/* Handle '@import'-identifier */
+					else if(g_strcmp0(inScanner->value.v_identifier, "import")==0)
+					{
+						token=_xfdashboard_theme_css_command_import(self,
+																	inScanner,
+																	ioSelectors);
+						if(token!=G_TOKEN_NONE) return(token);
+					}
+					/* If we get here the '@'-identifier is unknown and could not be handled, skip it */
+					else
+					{
+						gchar		*message;
+
+						/* Build warning message */
+						message=g_strdup_printf(_("Skipping block of unknown identifier '@%s'"),
+												inScanner->value.v_identifier);
+
+						/* Set warning */
+						g_scanner_unexp_token(inScanner,
+												G_TOKEN_IDENTIFIER,
+												_("'@' identifier"),
+												NULL,
+												NULL,
+												message,
+												FALSE);
+
+						/* Release allocated resources */
+						g_free(message);
+
+						/* As this is just a warning return G_TOKEN_NONE to continue
+						 * parsing CSS. Otherwise parses would stop with error.
+						 */
+						return(G_TOKEN_NONE);
+					}
+
+				break;
+
+			case G_TOKEN_EOF:
+				/* If any selector was parsed then a css block must follow.
+				 * Reaching end of file now is an error ...
+				 */
+				if(g_list_length(*ioSelectors)!=0 || selector)
+				{
+					g_scanner_get_next_token(inScanner);
 					g_scanner_unexp_token(inScanner,
-											G_TOKEN_IDENTIFIER,
-											_("'@' identifier"),
+											G_TOKEN_ERROR,
 											NULL,
 											NULL,
-											message,
-											FALSE);
-
-					/* Release allocated resources */
-					g_free(message);
-
-					/* As this is just a warning return G_TOKEN_NONE to continue
-					 * parsing CSS. Otherwise parses would stop with error.
-					 */
-					return(G_TOKEN_NONE);
+											NULL,
+											_("Unhandled selector"),
+											TRUE);
+					return(G_TOKEN_LEFT_CURLY);
 				}
 
-				/* Create selector for @-identifier */
-				hasAtSelector=TRUE;
-				selector=_xfdashboard_theme_css_selector_new(inScanner->input_name,
-																GPOINTER_TO_INT(inScanner->user_data),
-																g_scanner_cur_line(inScanner),
-																g_scanner_cur_position(inScanner));
-				selector->type=XFDASHBOARD_THEME_CSS_SELECTOR_TYPE_CONSTANT;
-
-				/* Add it to list of read-in selectors */
-				*ioSelectors=g_list_prepend(*ioSelectors, selector);
-				break;
+				/* ... otherwise it is ok so return G_TOKEN_EOF for
+				 * success result and to stop further parses.
+				 */
+				return(G_TOKEN_EOF);
 
 			default:
 				g_scanner_get_next_token(inScanner);
@@ -1953,9 +2221,10 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 													GInputStream *inStream,
 													const gchar *inName,
 													gint inPriority,
+													GList **outSelectors,
+													GList **outStyles,
 													GError **outError)
 {
-	XfdashboardThemeCSSPrivate		*priv;
 	GScanner						*scanner;
 	GTokenType						token;
 	gboolean						success;
@@ -1965,8 +2234,9 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), FALSE);
 	g_return_val_if_fail(G_IS_INPUT_STREAM(inStream), FALSE);
 	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
+	g_return_val_if_fail(outSelectors && *outSelectors==NULL, FALSE);
+	g_return_val_if_fail(outStyles && *outStyles==NULL, FALSE);
 
-	priv=self->priv;
 	success=TRUE;
 	selectors=NULL;
 	styles=NULL;
@@ -2055,18 +2325,9 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 		styles=NULL;
 	}
 
-	/* Store selectors and styles */
-	if(selectors)
-	{
-		priv->selectors=g_list_concat(priv->selectors, selectors);
-		g_debug("Successfully parsed '%s' and added %d selectors - total %d selectors", inName, g_list_length(selectors), g_list_length(priv->selectors));
-	}
-
-	if(styles)
-	{
-		priv->styles=g_list_concat(priv->styles, styles);
-		g_debug("Successfully parsed '%s' and added %d styles - total %d style", inName, g_list_length(styles), g_list_length(priv->styles));
-	}
+	/* Return selectors and styles */
+	if(outSelectors) *outSelectors=selectors;
+	if(outStyles) *outStyles=styles;
 
 	/* Destroy scanner */
 	g_scanner_destroy(scanner);
@@ -2275,12 +2536,16 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 	GFile							*file;
 	GFileInputStream				*stream;
 	GError							*error;
+	GList							*selectors;
+	GList							*styles;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), FALSE);
 	g_return_val_if_fail(inPath!=NULL && *inPath!=0, FALSE);
 	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
 
 	priv=self->priv;
+	selectors=NULL;
+	styles=NULL;
 
 	/* Load and parse CSS file */
 	file=g_file_new_for_path(inPath);
@@ -2303,7 +2568,13 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 		return(FALSE);
 	}
 
-	_xfdashboard_theme_css_parse_css(self, G_INPUT_STREAM(stream), inPath, inPriority, &error);
+	_xfdashboard_theme_css_parse_css(self,
+										G_INPUT_STREAM(stream),
+										inPath,
+										inPriority,
+										&selectors,
+										&styles,
+										&error);
 	if(error)
 	{
 		g_propagate_error(outError, error);
@@ -2311,9 +2582,29 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 	}
 
 	/* If we get here adding, loading and parsing CSS file was successful
-	 * so add filename to list of loaded name and return TRUE
+	 * so add filename to list of loaded sources, add selectors and styles
+	 * to list of selectors and styles in this theme and return TRUE
 	 */
 	priv->names=g_slist_prepend(priv->names, strdup(inPath));
+
+	if(selectors)
+	{
+		priv->selectors=g_list_concat(priv->selectors, selectors);
+		g_debug("Successfully parsed '%s' and added %d selectors - total %d selectors",
+					inPath,
+					g_list_length(selectors),
+					g_list_length(priv->selectors));
+	}
+
+	if(styles)
+	{
+		priv->styles=g_list_concat(priv->styles, styles);
+		g_debug("Successfully parsed '%s' and added %d styles - total %d styles",
+					inPath,
+					g_list_length(styles),
+					g_list_length(priv->styles));
+	}
+
 	return(TRUE);
 }
 
