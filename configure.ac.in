@@ -203,6 +203,7 @@ data/icons/128x128/Makefile
 data/icons/256x256/Makefile
 data/themes/Makefile
 data/themes/xfdashboard/Makefile
+data/themes/dark/Makefile
 po/Makefile.in
 src/Makefile
 ])
