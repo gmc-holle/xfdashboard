@@ -1054,7 +1054,7 @@ void xfdashboard_css_selector_adjust_to_offset(XfdashboardCssSelector *self, gin
 	gint							newLine;
 	gint							newPosition;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_CSS_SELECTOR(self), NULL);
+	g_return_if_fail(XFDASHBOARD_IS_CSS_SELECTOR(self));
 
 	priv=self->priv;
 
