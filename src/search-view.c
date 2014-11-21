@@ -1161,7 +1161,7 @@ void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gc
 			else providerLastResultSet=NULL;
 
 		providerNewResultSet=xfdashboard_search_provider_get_result_set(providerData->provider,
-																		splittedSearchTerms,
+																		(const gchar**)splittedSearchTerms,
 																		providerLastResultSet);
 
 		/* Remember new result set */

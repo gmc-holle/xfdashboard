@@ -81,7 +81,7 @@ const gchar* xfdashboard_search_provider_get_name(XfdashboardSearchProvider *sel
 const gchar* xfdashboard_search_provider_get_icon(XfdashboardSearchProvider *self);
 
 XfdashboardSearchResultSet* xfdashboard_search_provider_get_result_set(XfdashboardSearchProvider *self,
-																		gchar **inSearchTerms,
+																		const gchar **inSearchTerms,
 																		XfdashboardSearchResultSet *inPreviousResultSet);
 
 ClutterActor* xfdashboard_search_provider_create_result_actor(XfdashboardSearchProvider *self,

@@ -113,7 +113,7 @@ const gchar* xfdashboard_search_provider_get_icon(XfdashboardSearchProvider *sel
  * in order in which they should be displayed.
  */
 XfdashboardSearchResultSet* xfdashboard_search_provider_get_result_set(XfdashboardSearchProvider *self,
-																		gchar **inSearchTerms,
+																		const gchar **inSearchTerms,
 																		XfdashboardSearchResultSet *inPreviousResultSet)
 {
 	XfdashboardSearchProviderClass	*klass;
