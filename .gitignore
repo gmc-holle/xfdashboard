@@ -12,7 +12,7 @@ src/xfdashboard
 xfoverview.geany
 data/appdata/xfdashboard.appdata.xml
 data/themes/xfdashboard/xfdashboard.theme
-data/themes/dark/xfdashboard.theme
+data/themes/xfdashboard-dark/xfdashboard.theme
 data/xfdashboard.desktop
 data/xfdashboard.desktop.in
 data/xfdashboard-autostart.desktop

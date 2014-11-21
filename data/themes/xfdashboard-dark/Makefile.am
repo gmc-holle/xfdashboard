@@ -1,11 +1,11 @@
-themedir = $(datadir)/themes/dark/xfdashboard-1.0
+themedir = $(datadir)/themes/xfdashboard-dark/xfdashboard-1.0
 
 theme_in_files = \
 	xfdashboard.theme.in
 
 theme_DATA = \
 	$(theme_in_files:.theme.in=.theme) \
-	dark.css \	
+	xfdashboard-dark.css \	
 	xfdashboard.css \
 	xfdashboard.xml \
 	effects.xml

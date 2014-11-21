@@ -1,3 +1,3 @@
 SUBDIRS =								\
 	xfdashboard \
-	dark
+	xfdashboard-dark
