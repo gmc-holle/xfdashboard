@@ -405,8 +405,20 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 		menu=_xfdashboard_applications_menu_model_find_similar_menu(self, inMenu, inFillData);
 		if(!menu)
 		{
-			const gchar									*title=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(inMenu));
-			const gchar									*description=garcon_menu_element_get_comment(GARCON_MENU_ELEMENT(inMenu));
+			gchar									*title;
+			gchar									*description;
+			const gchar								*temp;
+
+			/* To increase performance when sorting of filtering this model by title or description
+			 * in a case-insensitive way store title and description in lower case.
+			 */
+			temp=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(inMenu));
+			if(temp) title=g_utf8_strdown(temp, -1);
+				else title=NULL;
+
+			temp=garcon_menu_element_get_comment(GARCON_MENU_ELEMENT(inMenu));
+			if(temp) description=g_utf8_strdown(temp, -1);
+				else description=NULL;
 
 			/* Insert row into model because there is no duplicate
 			 * and no similar menu
@@ -429,6 +441,10 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 
 			/* Find section of newly created menu to */
 			section=_xfdashboard_applications_menu_model_find_section(self, menu, inFillData);
+
+			/* Release allocated resources */
+			g_free(title);
+			g_free(description);
 		}
 	}
 
@@ -456,8 +472,20 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 		if(GARCON_IS_MENU_ITEM(menuElement) &&
 			menu!=priv->rootMenu)
 		{
-			const gchar								*title=garcon_menu_element_get_name(menuElement);
-			const gchar								*description=garcon_menu_element_get_comment(menuElement);
+			gchar									*title;
+			gchar									*description;
+			const gchar								*temp;
+
+			/* To increase performance when sorting of filtering this model by title or description
+			 * in a case-insensitive way store title and description in lower case.
+			 */
+			temp=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(menuElement));
+			if(temp) title=g_utf8_strdown(temp, -1);
+				else title=NULL;
+
+			temp=garcon_menu_element_get_comment(GARCON_MENU_ELEMENT(menuElement));
+			if(temp) description=g_utf8_strdown(temp, -1);
+				else description=NULL;
 
 			/* Add menu item to model */
 			inFillData->sequenceID++;
@@ -469,6 +497,10 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE, title,
 									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_DESCRIPTION, description,
 									-1);
+
+			/* Release allocated resources */
+			g_free(title);
+			g_free(description);
 		}
 	}
 	g_list_free(elements);

@@ -183,8 +183,8 @@ static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardAp
 	guint					iterRow, poolRow;
 	gboolean				isMatch;
 	GarconMenuElement		*menuElement;
-	const gchar				*title, *description, *command;
-	gchar					*lowerTitle, *lowerDescription;
+	gchar					*title, *description;
+	const gchar				*command;
 	gint					matchesFound, matchesExpected;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), FALSE);
@@ -199,6 +199,8 @@ static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardAp
 	clutter_model_iter_get(inIter,
 							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID, &iterRow,
 							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
+							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE, &title,
+							XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_DESCRIPTION, &description,
 							-1);
 	if(!menuElement) return(FALSE);
 
@@ -206,6 +208,8 @@ static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardAp
 	if(!GARCON_IS_MENU_ITEM(menuElement))
 	{
 		g_object_unref(menuElement);
+		g_free(title);
+		g_free(description);
 		return(FALSE);
 	}
 
@@ -235,6 +239,8 @@ static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardAp
 		if(index==-1)
 		{
 			g_object_unref(menuElement);
+			g_free(title);
+			g_free(description);
 			return(FALSE);
 		}
 	}
@@ -243,6 +249,8 @@ static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardAp
 	if(!inSearchTerms)
 	{
 		g_object_unref(menuElement);
+		g_free(title);
+		g_free(description);
 		return(FALSE);
 	}
 
@@ -250,19 +258,13 @@ static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardAp
 	if(matchesExpected==0)
 	{
 		g_object_unref(menuElement);
+		g_free(title);
+		g_free(description);
 		return(FALSE);
 	}
 
 	/* Check if title, description or command matches all search terms */
-	title=garcon_menu_element_get_name(menuElement);
-	description=garcon_menu_element_get_comment(menuElement);
 	command=garcon_menu_item_get_command(GARCON_MENU_ITEM(menuElement));
-
-	if(title) lowerTitle=g_utf8_strdown(title, -1);
-		else lowerTitle=NULL;
-
-	if(description) lowerDescription=g_utf8_strdown(description, -1);
-		else lowerDescription=NULL;
 
 	matchesFound=0;
 	while(*inSearchTerms)
@@ -275,15 +277,15 @@ static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardAp
 
 		/* Check for current search term */
 		if(!termMatch &&
-			lowerTitle &&
-			g_strstr_len(lowerTitle, -1, *inSearchTerms))
+			title &&
+			g_strstr_len(title, -1, *inSearchTerms))
 		{
 			termMatch=TRUE;
 		}
 
 		if(!termMatch &&
-			lowerDescription &&
-			g_strstr_len(lowerDescription, -1, *inSearchTerms))
+			description &&
+			g_strstr_len(description, -1, *inSearchTerms))
 		{
 			termMatch=TRUE;
 		}
@@ -306,9 +308,6 @@ static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardAp
 	}
 
 	if(matchesFound>=matchesExpected) isMatch=TRUE;
-
-	if(lowerTitle) g_free(lowerTitle);
-	if(lowerDescription) g_free(lowerDescription);
 
 	/* If menu element is a match check if it is a duplicate. It is a duplicate
 	 * if uri to desktop file is already in hashtable provided or if the row where the
@@ -344,13 +343,16 @@ static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardAp
 		g_object_unref(fileDesktopID);
 	}
 
-	/* If we get here return TRUE to show model data item or FALSE to hide */
+	/* Release allocated resources */
 	g_object_unref(menuElement);
+	g_free(title);
+	g_free(description);
 
+	/* If we get here return TRUE to show model data item or FALSE to hide */
 	return(isMatch);
 }
 
-/* Callback called for each item in hash-table to set up result set */
+/* Callback to sort each item in result set */
 static gint _xfdashboard_applications_search_provider_sort_result_set(GVariant *inLeft,
 																		GVariant *inRight,
 																		gpointer inUserData)
@@ -362,6 +364,8 @@ static gint _xfdashboard_applications_search_provider_sort_result_set(GVariant *
 	GDesktopAppInfo										*rightAppInfo;
 	const gchar											*leftName;
 	const gchar											*rightName;
+	gchar												*lowerLeftName;
+	gchar												*lowerRightName;
 	gint												result;
 
 	g_return_val_if_fail(inLeft, 0);
@@ -384,15 +388,25 @@ static gint _xfdashboard_applications_search_provider_sort_result_set(GVariant *
 		else rightName=NULL;
 
 	/* Get result of comparing both desktop application information objects */
-	result=g_strcmp0(leftName, rightName);
+	if(leftName) lowerLeftName=g_utf8_strdown(leftName, -1);
+		else lowerLeftName=NULL;
+
+	if(rightName) lowerRightName=g_utf8_strdown(rightName, -1);
+		else lowerRightName=NULL;
+
+	result=g_strcmp0(lowerLeftName, lowerRightName);
 
 	/* Release allocated resources */
 	if(rightAppInfo) g_object_unref(rightAppInfo);
 	if(leftAppInfo) g_object_unref(leftAppInfo);
+	if(lowerLeftName) g_free(lowerLeftName);
+	if(lowerRightName) g_free(lowerRightName);
 
+	/* Return result */
 	return(result);
 }
 
+/* Callback called for each item in hash-table to set up result set */
 static void _xfdashboard_applications_search_provider_build_result_set_from_hashtable(gpointer inKey,
 																						gpointer inValue,
 																						gpointer inUserData)
@@ -407,21 +421,62 @@ static void _xfdashboard_applications_search_provider_build_result_set_from_hash
 	xfdashboard_search_result_set_add_item(resultSet, resultItem);
 }
 
+/* IMPLEMENTATION: XfdashboardSearchProvider */
+
+/* Overriden virtual function: get_name */
+static const gchar* _xfdashboard_applications_search_provider_get_name(XfdashboardSearchProvider *inProvider)
+{
+	return(_("Applications"));
+}
+
+/* Overriden virtual function: get_icon */
+static const gchar* _xfdashboard_applications_search_provider_get_icon(XfdashboardSearchProvider *inProvider)
+{
+	return(GTK_STOCK_HOME);
+}
+
 /* Overriden virtual function: get_result_set */
 static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get_result_set(XfdashboardSearchProvider *inProvider,
-																							gchar **inSearchTerms,
+																							const gchar **inSearchTerms,
 																							XfdashboardSearchResultSet *inPreviousResultSet)
 {
 	XfdashboardApplicationsSearchProvider				*self;
 	XfdashboardApplicationsSearchProviderPrivate		*priv;
 	XfdashboardSearchResultSet							*resultSet;
 	ClutterModelIter									*iterator;
+	guint												numberTerms;
+	gchar												**terms, **termsIter;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(inProvider), NULL);
 
 	self=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER(inProvider);
 	priv=self->priv;
 	resultSet=NULL;
+
+	/* To perform case-insensitive searches through model convert all search terms
+	 * to lower-case before starting search.
+	 */
+	numberTerms=g_strv_length((gchar**)inSearchTerms);
+	if(numberTerms==0)
+	{
+		/* If we get here no search term is given, return no result set */
+		return(NULL);
+	}
+
+	terms=g_slice_alloc0(numberTerms*sizeof(gchar*));
+	if(!terms)
+	{
+		g_critical(_("Could not allocate memory to copy search criterias for case-insensitive search"));
+		return(NULL);
+	}
+
+	termsIter=terms;
+	while(*inSearchTerms)
+	{
+		*termsIter=g_utf8_strdown(*inSearchTerms, -1);
+		termsIter++;
+		inSearchTerms++;
+	}
 
 	/* Perform search */
 	iterator=clutter_model_get_first_iter(CLUTTER_MODEL(priv->apps));
@@ -434,7 +489,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 		while(!clutter_model_iter_is_last(iterator))
 		{
 			/* Check for match */
-			_xfdashboard_applications_search_provider_is_match(self, iterator, inSearchTerms, inPreviousResultSet, pool);
+			_xfdashboard_applications_search_provider_is_match(self, iterator, terms, inPreviousResultSet, pool);
 
 			/* Continue with next row in model */
 			iterator=clutter_model_iter_next(iterator);
@@ -454,22 +509,20 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 		g_object_unref(iterator);
 	}
 
+	/* Release allocated resources */
+	if(terms)
+	{
+		termsIter=terms;
+		while(*termsIter)
+		{
+			g_free(*termsIter);
+			termsIter++;
+		}
+		g_slice_free1(numberTerms*sizeof(gchar*), terms);
+	}
+
 	/* Return result set */
 	return(resultSet);
-}
-
-/* IMPLEMENTATION: XfdashboardSearchProvider */
-
-/* Overriden virtual function: get_name */
-static const gchar* _xfdashboard_applications_search_provider_get_name(XfdashboardSearchProvider *inProvider)
-{
-	return(_("Applications"));
-}
-
-/* Overriden virtual function: get_icon */
-static const gchar* _xfdashboard_applications_search_provider_get_icon(XfdashboardSearchProvider *inProvider)
-{
-	return(GTK_STOCK_HOME);
 }
 
 /* Overriden virtual function: create_result_actor */

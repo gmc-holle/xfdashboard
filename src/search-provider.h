@@ -59,7 +59,7 @@ struct _XfdashboardSearchProviderClass
 	const gchar* (*get_icon)(XfdashboardSearchProvider *self);
 
 	XfdashboardSearchResultSet* (*get_result_set)(XfdashboardSearchProvider *self,
-													gchar **inSearchTerms,
+													const gchar **inSearchTerms,
 													XfdashboardSearchResultSet *inPreviousResultSet);
 
 	ClutterActor* (*create_result_actor)(XfdashboardSearchProvider *self,
