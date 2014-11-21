@@ -1,0 +1,117 @@
+@import(xfdashboard.css)
+/* Small icons for minimized windows */
+
+XfdashboardWindowContent
+{
+	include-window-frame: true;
+	unmapped-window-icon-x-fill: false;
+	unmapped-window-icon-y-fill: false;
+	unmapped-window-icon-x-align: 0.5;
+	unmapped-window-icon-y-align: 0.5;
+	unmapped-window-icon-x-scale: 2.0;
+	unmapped-window-icon-y-scale: 2.0;
+	unmapped-window-icon-gravity: center;
+}
+
+/* icons */
+
+XfdashboardQuicklaunch #applications-button
+{
+	icon-name: "view-list-symbolic";
+}
+
+XfdashboardQuicklaunch #applications-button:toggled
+{
+	icon-name: "view-paged-symbolic";
+}
+
+XfdashboardWindowsView
+{
+	view-icon: "view-paged-symbolic";
+}
+
+XfdashboardApplicationsView
+{
+	view-icon: "view-list-symbolic";
+}
+
+XfdashboardSearchView
+{
+	view-icon: "folder-saved-search-symbolic";
+}
+
+/* colors */
+
+#notification, #tooltip
+{
+	background-fill-color: #1a1a1a;
+	outline-color: #2a2a2a;
+}
+
+#quicklaunch, #quicklaunch:drop-target
+{
+	background-fill-color: #202020;
+	outline-color: #333;
+}
+
+#quicklaunch XfdashboardButton:hover
+{
+	background-fill-color: #404040;
+}
+
+XfdashboardQuicklaunch #applications-button
+{
+	background-fill-color: #202020;
+}
+
+XfdashboardQuicklaunch #trash-button:drop-target
+{
+	background-fill-color: #E76D15;
+}
+
+#workspace-selector
+{
+	background-fill-color: #202020;
+	outline-color: #333;
+}
+
+XfdashboardLiveWorkspace:active
+{
+	outline-color: #557AAC;
+}
+
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-item:hover,
+XfdashboardApplicationsView XfdashboardButton:hover
+{
+	background-fill-color: #202020;
+}
+
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selected,
+XfdashboardApplicationsView XfdashboardButton:selected
+{
+	background-fill-color: #202020;
+	outline-color: #333333;
+}
+
+#view-selector XfdashboardToggleButton:toggled
+{
+	background-fill-color: #333333;
+}
+
+#searchbox.focus
+{
+	outline-color: #333333ff;
+	background-fill-color: #202020;
+}
+
+XfdashboardScrollbar
+{
+	slider-color: #66666660;
+}
+
+/* effects */
+
+#quicklaunch XfdashboardButton
+{
+	effects: ;
+}
