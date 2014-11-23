@@ -204,6 +204,7 @@ data/icons/256x256/Makefile
 data/themes/Makefile
 data/themes/xfdashboard/Makefile
 data/themes/xfdashboard-dark/Makefile
+data/themes/xfdashboard-moranga/Makefile
 po/Makefile.in
 src/Makefile
 ])
