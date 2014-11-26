@@ -12,6 +12,8 @@ src/xfdashboard
 xfoverview.geany
 data/appdata/xfdashboard.appdata.xml
 data/themes/xfdashboard/xfdashboard.theme
+data/themes/xfdashboard-auber/xfdashboard.theme
+data/themes/xfdashboard-blue/xfdashboard.theme
 data/themes/xfdashboard-dark/xfdashboard.theme
 data/themes/xfdashboard-moranga/xfdashboard.theme
 data/xfdashboard.desktop

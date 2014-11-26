@@ -1,0 +1,6 @@
+[Xfdashboard Theme]
+_Name=xfdashboard-blue
+_Comment=Dark theme for xfdashboard
+Style=xfdashboard-blue.css
+Layout=xfdashboard.xml
+Effects=effects.xml
