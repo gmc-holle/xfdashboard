@@ -206,6 +206,7 @@ data/themes/xfdashboard/Makefile
 data/themes/xfdashboard-auber/Makefile
 data/themes/xfdashboard-blue/Makefile
 data/themes/xfdashboard-dark/Makefile
+data/themes/xfdashboard-mint/Makefile
 data/themes/xfdashboard-moranga/Makefile
 po/Makefile.in
 src/Makefile

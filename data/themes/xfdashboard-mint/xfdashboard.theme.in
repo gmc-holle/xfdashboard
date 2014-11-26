@@ -1,0 +1,6 @@
+[Xfdashboard Theme]
+_Name=xfdashboard-moranga
+_Comment=Fresh-green flavored theme for xfdashboard
+Style=xfdashboard-mint.css
+Layout=xfdashboard.xml
+Effects=effects.xml
