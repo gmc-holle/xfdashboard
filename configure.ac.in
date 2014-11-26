@@ -208,6 +208,7 @@ data/themes/xfdashboard-blue/Makefile
 data/themes/xfdashboard-dark/Makefile
 data/themes/xfdashboard-mint/Makefile
 data/themes/xfdashboard-moranga/Makefile
+data/themes/xfdashboard-wine/Makefile
 po/Makefile.in
 src/Makefile
 ])

@@ -1,7 +1,8 @@
-SUBDIRS =								\
+SUBDIRS = \
 	xfdashboard \
 	xfdashboard-auber \
 	xfdashboard-blue \
 	xfdashboard-dark \
 	xfdashboard-mint \
-	xfdashboard-moranga
+	xfdashboard-moranga \
+	xfdashboard-wine
