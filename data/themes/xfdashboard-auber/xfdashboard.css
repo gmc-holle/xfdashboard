@@ -1,0 +1,503 @@
+@constants
+{
+	background: @rgba(87, 146, 226, 0.38) /*#5792e260*/;
+	overlay-background: @alpha(@background, 1.0) /*#5792e2ff*/ ;
+	overlay-outline: #4681d1ff;
+	missing-icon: @try_icons("image-missing", "gtk-missing-image");
+	close-icon: @try_icons("window-close-symbolic", "window-close", "gtk-close", @missing-icon);
+	search-icon: @try_icons("edit-find-symbolic", "edit-find", "gtk-find", @missing-icon);
+	home-icon: @try_icons("go-home-symbolic", "gtk-home", @missing-icon);
+	trash-icon: @try_icons("user-trash", "gtk-delete", @missing-icon);
+	clear-icon: @try_icons("edit-clear-symbolic", "edit-clear", "gtk-clear", @missing-icon);
+}
+
+/* Stage */
+XfdashboardStage
+{
+	background-color: #000000d0;
+	background-image-type: desktop;
+}
+
+/* Window content */
+XfdashboardWindowContent
+{
+	include-window-frame: true;
+}
+
+/* Notifications */
+#notification
+{
+	background-type: fill outline;
+	background-fill-color: @overlay-background;
+	outline-color: @overlay-outline;
+	outline-width: 1.0;
+	text-color: #ffffffff;
+}
+
+/* Tooltip */
+#tooltip
+{
+	background-type: fill outline;
+	background-fill-color: @overlay-background;
+	outline-color: @overlay-outline;
+	outline-width: 1.0;
+	text-color: #ffffffe0;
+}
+
+/* Quicklaunch */
+#quicklaunch
+{
+	spacing: 4.0;
+	background-type: fill outline rounded-corners;
+	background-fill-color: @background;
+	outline-color: #5792e2ff;
+	outline-width: 0.5;
+	outline-borders: top right bottom;
+	corners: right;
+}
+
+#quicklaunch XfdashboardButton
+{
+	icon-size: 64;
+	effects: black-white;
+}
+
+#quicklaunch XfdashboardButton:hover
+{
+	background-type: fill rounded-corners;
+	background-fill-color: #93c1ffff;
+	corners: all;
+	corner-radius: 4.0;
+	effects: ;
+}
+
+#quicklaunch:drop-target
+{
+	background-fill-color: #93c1ff80;
+	outline-width: 1.5;
+}
+
+XfdashboardQuicklaunch
+{
+	normal-icon-size: 64.0;
+}
+
+XfdashboardQuicklaunch #applications-button
+{
+	background-fill-color: #5792e2a0;
+	icon-name: @home-icon;
+	background-type: none;
+	button-style: icon;
+}
+
+XfdashboardQuicklaunch #applications-button.search-active
+{
+	icon-name: @search-icon;
+}
+
+XfdashboardQuicklaunch #applications-button:toggled
+{
+	background-type: fill;
+}
+
+XfdashboardQuicklaunch #trash-button
+{
+	icon-name: @trash-icon;
+	button-style: icon;
+	background-fill-color: #5792e2a0;
+	background-type: none;
+}
+
+XfdashboardQuicklaunch #trash-button:drop-target
+{
+	background-type: fill;
+	background-fill-color: red;
+}
+
+.drag-source-XfdashboardQuicklaunch:drag-handle
+{
+	icon-size: 64.0;
+	button-style: icon;
+	sync-icon-size: false;
+}
+
+/* Live windows */
+XfdashboardLiveWindow
+{
+	title-padding: 4.0;
+	close-padding: 4.0;
+}
+
+XfdashboardLiveWindow .title
+{
+	button-style: both;
+	background-type: fill rounded-corners;
+	corner-radius: 4.0;
+}
+
+XfdashboardLiveWindow .close-button
+{
+	icon-name: @close-icon;
+	button-style: icon;
+	background-type: fill rounded-corners;
+	corner-radius: 4.0;
+}
+
+.drag-actor-XfdashboardLiveWindow:drag-handle
+{
+	background-type: outline fill rounded-corners;
+	background-fill-color: #5792e2a0;
+	outline-color: #5792e2ff;
+	outline-width: 1.0;
+	corner-radius: 2.0;
+}
+
+/* Live workspaces */
+XfdashboardLiveWorkspace
+{
+	background-type: outline fill;
+	background-fill-color: #000000ff;
+	outline-color: #404040ff;
+	outline-width: 1.0;
+}
+
+XfdashboardLiveWorkspace:active
+{
+	background-type: outline fill;
+	background-fill-color: #000000ff;
+	outline-color: #ffff00ff;
+	outline-width: 2.0;
+}
+
+/* Scrollbars */
+XfdashboardScrollbar
+{
+	spacing: 2.0;
+	page-size-factor: 0.5;
+	slider-width: 8.0;
+	slider-radius: 4.0;
+	slider-color: #5792e260;
+}
+
+XfdashboardScrollbar:hover
+{
+	slider-color: #5792e2a0;
+}
+
+XfdashboardScrollbar:pressed
+{
+	slider-color: #5792e2ff;
+}
+
+
+/* Text boxes */
+XfdashboardTextBox
+{
+	padding: 4.0;
+	spacing: 4.0;
+	text-color: #ffffffff;
+	hint-text-color: #c0c0c0ff;
+}
+
+XfdashboardTextBox .primary-icon,
+XfdashboardTextBox .secondary-icon
+{
+	padding: 0.0;
+	button-style: icon;
+	icon-sync-size: false;
+}
+
+/* Buttons */
+XfdashboardButton
+{
+	icon-size: 16;
+	text-justify: left;
+	color: #ffffffff;
+}
+
+/* Application buttons */
+XfdashboardApplicationButton
+{
+	format-title-only: "<b>%s</b>";
+	format-title-description: "<b><big>%s</big></b>\n\n%s";
+}
+
+XfdashboardApplicationButton.view-mode-icon
+{
+	show-description: false;
+}
+
+XfdashboardApplicationButton.view-mode-list
+{
+	show-description: true;
+}
+
+/* Workspace selector (incl. collapse box) */
+#workspace-selector
+{
+	spacing: 8.0;
+	background-type: fill outline rounded-corners;
+	background-fill-color: @background;
+	outline-color: #5792e2ff;
+	outline-width: 0.5;
+	outline-borders: top left bottom;
+	corners: left;
+	orientation: vertical;
+	max-fraction: 0.20;
+	using-fraction: true;
+	orientation: vertical;
+}
+
+#workspace-selector-collapse-box
+{
+	collapsed-size: 64.0;
+	collapse-orientation: left;
+}
+
+XfdashboardCollapseBox
+{
+	collapse-orientation: left;
+}
+
+/* Search text box */
+#searchbox
+{
+	background-type: fill outline rounded-corners;
+	background-fill-color: #ffffff18;
+	outline-color: #404040ff;
+	outline-width: 0.5;
+	corners: all;
+	corner-radius: 4.0;
+	padding: 4.0;
+	primary-icon-name: @search-icon;
+	hint-text-color: #c0c0c080;
+}
+
+#searchbox.search-active
+{
+	secondary-icon-name: @clear-icon;
+}
+
+/* View selector */
+#view-selector
+{
+	spacing: 4.0;
+}
+
+#view-selector XfdashboardToggleButton
+{
+	background-type: none;
+	button-style: icon;
+	sync-icon-size: true;
+}
+
+#view-selector XfdashboardToggleButton:toggled
+{
+	background-type: fill;
+	background-fill-color: #5792e2ff;
+}
+
+/* Viewpad */
+#viewpad
+{
+	spacing: 4.0;
+	horizontal-scrollbar-policy: automatic;
+	vertical-scrollbar-policy: automatic;
+}
+
+/* Search view */
+XfdashboardSearchView XfdashboardSearchResultContainer
+{
+	title-format: "<b><big>%s</big></b>";
+	view-mode: list;
+	spacing: 4.0;
+	padding: 4.0;
+}
+
+XfdashboardSearchView XfdashboardSearchResultContainer .title
+{
+	background-type: outline;
+	outline-color: #e0e0e0;
+	outline-borders: bottom;
+}
+
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardApplicationButton.result-item
+{
+	format-title-only: "<b>%s</b>";
+	format-title-description: "<b><big>%s</big></b>\n\n%s";
+}
+
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-item.view-mode-icon
+{
+	icon-size: 64.0;
+	single-line: false;
+	sync-icon-size: false;
+	icon-orientation: top;
+	text-justify: center;
+}
+
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-item.view-mode-list
+{
+	button-style: both;
+	icon-size: 64.0;
+	single-line: false;
+	sync-icon-size: false;
+	icon-orientation: left;
+	text-justify: left;
+}
+
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-item:hover
+{
+	background-type: fill rounded-corners;
+	background-fill-color: @background;
+	corners: all;
+	corner-radius: 4.0;
+}
+
+.drag-source-XfdashboardSearchView:drag-handle
+{
+	icon-size: 64.0;
+	button-style: icon;
+	sync-icon-size: false;
+}
+
+/* Applications view */
+XfdashboardApplicationsView
+{
+	view-mode: list;
+	spacing: 4.0;
+}
+
+XfdashboardApplicationsView,
+XfdashboardApplicationsView XfdashboardApplicationButton
+{
+	parent-menu-icon: gtk-go-up;
+	format-title-only: "<b>%s</b>";
+	format-title-description: "<b><big>%s</big></b>\n\n%s";
+}
+
+XfdashboardApplicationsView XfdashboardButton.view-mode-icon
+{
+	button-style: both;
+	icon-size: 64.0;
+	single-line: false;
+	sync-icon-size: false;
+	icon-orientation: top;
+	text-justify: center;   
+}
+
+XfdashboardApplicationsView XfdashboardButton.view-mode-list
+{
+	button-style: both;
+	icon-size: 64.0;
+	single-line: false;
+	sync-icon-size: false;
+	icon-orientation: left;
+	text-justify: left;
+}
+
+XfdashboardApplicationsView XfdashboardButton:hover
+{
+	background-type: fill rounded-corners;
+	background-fill-color: @background;
+	corners: all;
+	corner-radius: 4.0;
+}
+
+.drag-source-XfdashboardApplicationsView:drag-handle
+{
+	icon-size: 64.0;
+	button-style: icon;
+	sync-icon-size: false;
+}
+
+/* Windows view */
+XfdashboardWindowsView
+{
+	spacing: 8.0;
+	prevent-upscaling: true;
+	view-icon: windows-view.png;
+}
+
+/* Focus */
+#searchbox.focus,
+#view-selector.focus
+{
+	outline-color: #3d71ffff;
+	outline-width: 2.0;
+}
+
+#searchbox.focus
+{
+	background-fill-color: #93c1ff50;
+	hint-text-color: #e0e0e0ff;
+}
+
+#view-selector.focus
+{
+	background-type: outline;
+}
+
+#quicklaunch.focus,
+#workspace-selector.focus
+{
+	outline-width: 2.0;
+}
+
+#workspace-selector.focus
+{
+	background-fill-color: #93c1ff80;
+}
+
+#quicklaunch XfdashboardButton:selected
+{
+	background-type: fill outline rounded-corners;
+	background-fill-color: #93c1ffff;
+	outline-color: #ffffffff;
+	corners: all;
+	corner-radius: 4.0;
+}
+
+#quicklaunch #applications-button:selected,
+#quicklaunch #applications-button.search-active:selected,
+#quicklaunch #applications-button:toggled:selected
+{
+	background-type: fill outline rounded-corners;
+	background-fill-color: #93c1ffff;
+	outline-color: #ffffffff;
+}
+
+XfdashboardWindowsView XfdashboardLiveWindow:selected
+{
+	background-type: outline;
+	outline-color: #3d71ffff;
+	outline-width: 2.0;
+}
+
+XfdashboardLiveWindow:selected XfdashboardButton.title
+{
+	background-type: outline fill rounded-corners;
+	background-fill-color: #5792e2f0;
+	outline-color: #508ad5ff;
+	outline-width: 1.0;
+}
+
+XfdashboardApplicationsView XfdashboardButton:selected
+{
+	background-type: fill outline rounded-corners;
+	background-fill-color: @background;
+	outline-color: #5792e2ff;
+	outline-width: 2.0;
+	corners: all;
+	corner-radius: 4.0;
+}
+
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selected
+{
+	background-type: fill outline rounded-corners;
+	background-fill-color: @background;
+	outline-color: #5792e2ff;
+	outline-width: 2.0;
+	corners: all;
+	corner-radius: 4.0;
+}

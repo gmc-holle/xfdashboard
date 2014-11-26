@@ -1,0 +1,163 @@
+@import(xfdashboard.css)
+/* Small icons for minimized windows */
+
+XfdashboardWindowContent
+{
+	include-window-frame: true;
+	unmapped-window-icon-x-fill: false;
+	unmapped-window-icon-y-fill: false;
+	unmapped-window-icon-x-align: 0.5;
+	unmapped-window-icon-y-align: 0.5;
+	unmapped-window-icon-x-scale: 2.0;
+	unmapped-window-icon-y-scale: 2.0;
+	unmapped-window-icon-gravity: center;
+}
+
+/* icons */
+
+XfdashboardQuicklaunch #applications-button
+{
+	icon-name: "view-list-symbolic";
+}
+
+XfdashboardQuicklaunch #applications-button:toggled
+{
+	icon-name: "view-paged-symbolic";
+}
+
+XfdashboardWindowsView
+{
+	view-icon: "view-paged-symbolic";
+}
+
+XfdashboardApplicationsView
+{
+	view-icon: "view-list-symbolic";
+}
+
+XfdashboardSearchView
+{
+	view-icon: "folder-saved-search-symbolic";
+}
+
+/* colors */
+
+#notification, #tooltip
+{
+	background-fill-color: #1a1a1a;
+	outline-color: #1a1a1a;
+}
+
+#quicklaunch, #quicklaunch:drop-target
+{
+	background-fill-color: #202020;
+	outline-color: #202020;
+}
+
+#quicklaunch XfdashboardButton:hover
+{
+	background-fill-color: #5E2750;
+}
+
+XfdashboardQuicklaunch #applications-button
+{
+	background-fill-color: #202020;
+}
+
+XfdashboardQuicklaunch #trash-button:drop-target
+{
+	background-fill-color: #5E2750;
+}
+
+.drag-actor-XfdashboardLiveWindow:drag-handle
+{
+	background-fill-color: #5E2750a0;
+	outline-color: #5E2750ff;
+}
+
+#workspace-selector
+{
+	background-fill-color: #202020;
+	outline-color: #202020;
+}
+
+XfdashboardLiveWorkspace
+{
+	outline-color: #1a1a1aff;
+}
+
+XfdashboardLiveWorkspace:active
+{
+	outline-color: #5E2750;
+}
+
+XfdashboardScrollbar
+{
+	slider-color: #66666660;
+}
+
+XfdashboardScrollbar:hover
+{
+	slider-color: #5E2750a0;
+}
+
+XfdashboardScrollbar:pressed
+{
+	slider-color: #5E2750ff;
+}
+
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-item:hover,
+XfdashboardApplicationsView XfdashboardButton:hover
+{
+	background-fill-color: #202020a0;
+}
+
+XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selected,
+XfdashboardApplicationsView XfdashboardButton:selected
+{
+	background-fill-color: #202020;
+	outline-color: #202020;
+}
+
+#view-selector XfdashboardToggleButton:toggled
+{
+	background-fill-color: #5E2750;
+}
+
+#searchbox.focus
+{
+	outline-color: #202020;
+	background-fill-color: #202020;
+}
+
+XfdashboardLiveWindow
+{
+	background-type: outline;
+	outline-width: 2.0;
+	outline-color: #404040;
+}
+
+XfdashboardWindowsView XfdashboardLiveWindow:selected,
+XfdashboardWindowsView XfdashboardLiveWindow:hover
+{
+	outline-color: #5E2750ff;
+}
+
+XfdashboardLiveWindow:selected XfdashboardButton.title
+{
+	background-fill-color: #5E2750f0;
+	outline-color: #5E2750ff;
+}
+
+XfdashboardLiveWindow:hover XfdashboardButton.title
+{
+	background-fill-color: #5E2750f0;
+	outline-color: #5E2750ff;
+}
+
+/* effects */
+
+#quicklaunch XfdashboardButton
+{
+	effects: ;
+}

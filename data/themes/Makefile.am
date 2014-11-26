@@ -1,4 +1,5 @@
 SUBDIRS =								\
 	xfdashboard \
 	xfdashboard-dark \
-	xfdashboard-moranga
+	xfdashboard-moranga \
+	xfdashboard-auber
