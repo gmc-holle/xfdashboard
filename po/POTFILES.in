@@ -3,6 +3,12 @@ data/xfdashboard.desktop.in.in
 data/xfdashboard-autostart.desktop.in.in
 data/appdata/xfdashboard.appdata.xml.in
 data/themes/xfdashboard/xfdashboard.theme.in
+data/themes/xfdashboard-auber/xfdashboard.theme.in
+data/themes/xfdashboard-blue/xfdashboard.theme.in
+data/themes/xfdashboard-dark/xfdashboard.theme.in
+data/themes/xfdashboard-mint/xfdashboard.theme.in
+data/themes/xfdashboard-moranga/xfdashboard.theme.in
+data/themes/xfdashboard-wine/xfdashboard.theme.in
 src/actor.c
 src/application-button.c
 src/application.c

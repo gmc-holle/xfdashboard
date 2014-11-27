@@ -43,6 +43,14 @@
 	</provides>
 
 	<releases>
+		<release version="0.3.4" timestamp="1417066424">
+			<description>
+				<_p>This unstable development introduces additional themes, fixes handling
+				of client-side decorated windows (CSD) and adds a new CSS command @import()
+				to include external CSS resources in themes.
+				</_p>
+			</description>
+		</release>
 		<release version="0.3.3" timestamp="1413740495">
 			<description>
 				<_p>This unstable development introduces a workaround to get window content
