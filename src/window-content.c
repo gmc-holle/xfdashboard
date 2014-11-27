@@ -1250,8 +1250,10 @@ static gboolean _xdashboard_window_content_clutter_content_iface_get_preferred_s
 	/* No texture - no size to retrieve */
 	if(priv->texture==NULL) return(FALSE);
 
-	/* Get sizes */
-	if(priv->isFallback)
+	/* If window is suspended or if we use the fallback image
+	 * get real window size ...
+	 */
+	if(priv->isFallback || priv->isSuspended)
 	{
 		/* Is a fallback texture so get real window size */
 		gint							windowW, windowH;
@@ -1262,7 +1264,7 @@ static gboolean _xdashboard_window_content_clutter_content_iface_get_preferred_s
 	}
 		else
 		{
-			/* Get size of window texture */
+			/* ... otherwise get size of texture */
 			w=cogl_texture_get_width(priv->texture);
 			h=cogl_texture_get_height(priv->texture);
 		}
