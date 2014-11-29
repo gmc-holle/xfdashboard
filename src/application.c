@@ -478,6 +478,23 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	return(XFDASHBOARD_APPLICATION_ERROR_NONE);
 }
 
+#if GLIB_CHECK_VERSION(2, 40, 0)
+/* Override local command-line handling in Glib 2.40 or higher to
+ * get old behaviour of command-line handling as in Glib prior to
+ * version 2.40 and as it is used in this application.
+ */
+static gboolean _xfdashboard_application_local_command_line(GApplication *inApplication,
+															gchar ***ioArguments,
+															int *outExitStatus)
+{
+	/* Return FALSE to indicate that command-line was not completely handled
+	 * and need further processing.
+	 */
+	return(FALSE);
+}
+#endif
+
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -579,6 +596,9 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	/* Override functions */
 	appClass->activate=_xfdashboard_application_activate;
 	appClass->command_line=_xfdashboard_application_command_line;
+#if GLIB_CHECK_VERSION(2, 40, 0)
+	appClass->local_command_line=_xfdashboard_application_local_command_line;
+#endif
 
 	gobjectClass->dispose=_xfdashboard_application_dispose;
 	gobjectClass->set_property=_xfdashboard_application_set_property;

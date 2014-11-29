@@ -53,3 +53,4 @@ po/*.gmo
 po/Makefile.in.in
 po/stamp-it
 po/.intltool-merge-cache
+po/xfdashboard.pot
