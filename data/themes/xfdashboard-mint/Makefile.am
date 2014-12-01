@@ -5,7 +5,7 @@ theme_in_files = \
 
 theme_DATA = \
 	$(theme_in_files:.theme.in=.theme) \
-	xfdashboard-mint.css \	
+	xfdashboard-mint.css \
 	xfdashboard.css \
 	xfdashboard.xml \
 	effects.xml
