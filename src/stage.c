@@ -1,5 +1,5 @@
 /*
- * stage: A stage for a monitor
+ * stage: Global stage of application
  * 
  * Copyright 2012-2014 Stephan Haller <nomad@froevel.de>
  * 
@@ -45,7 +45,6 @@
 #include "workspace-selector.h"
 #include "collapse-box.h"
 #include "tooltip-action.h"
-#include "layoutable.h"
 #include "stylable.h"
 #include "utils.h"
 #include "focus-manager.h"
@@ -54,14 +53,9 @@
 #include "window-content.h"
 
 /* Define this class in GObject system */
-static void _xfdashboard_stage_layoutable_iface_init(XfdashboardLayoutableInterface *iface);
-static void _xfdashboard_stage_stylable_iface_init(XfdashboardStylableInterface *iface);
-
-G_DEFINE_TYPE_WITH_CODE(XfdashboardStage,
-						xfdashboard_stage,
-						CLUTTER_TYPE_STAGE,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_LAYOUTABLE, _xfdashboard_stage_layoutable_iface_init)
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_STYLABLE, _xfdashboard_stage_stylable_iface_init))
+G_DEFINE_TYPE(XfdashboardStage,
+				xfdashboard_stage,
+				CLUTTER_TYPE_STAGE)
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_STAGE_GET_PRIVATE(obj) \
@@ -70,36 +64,35 @@ G_DEFINE_TYPE_WITH_CODE(XfdashboardStage,
 struct _XfdashboardStagePrivate
 {
 	/* Properties related */
-	gchar								*styleClasses;
-	gchar								*stylePseudoClasses;
+	XfdashboardStageBackgroundImageType		backgroundType;
 
-	ClutterColor						*backgroundColor;
+	ClutterColor							*backgroundColor;
 
 	/* Actors */
-	ClutterActor						*backgroundImageLayer;
-	ClutterActor						*backgroundColorLayer;
+	ClutterActor							*backgroundImageLayer;
+	ClutterActor							*backgroundColorLayer;
 
-	ClutterActor						*quicklaunch;
-	ClutterActor						*searchbox;
-	ClutterActor						*workspaces;
-	ClutterActor						*viewpad;
-	ClutterActor						*viewSelector;
-	ClutterActor						*notification;
-	ClutterActor						*tooltip;
+	ClutterActor							*quicklaunch;
+	ClutterActor							*searchbox;
+	ClutterActor							*workspaces;
+	ClutterActor							*viewpad;
+	ClutterActor							*viewSelector;
+	ClutterActor							*notification;
+	ClutterActor							*tooltip;
 
 	/* Instance related */
-	XfdashboardStageBackgroundImageType	backgroundType;
+	ClutterActor							*topLevelActor;
 
-	XfdashboardWindowTracker			*windowTracker;
-	XfdashboardWindowTrackerWindow		*stageWindow;
+	XfdashboardWindowTracker				*windowTracker;
+	XfdashboardWindowTrackerWindow			*stageWindow;
 
-	gboolean							searchActive;
-	gint								lastSearchTextLength;
-	XfdashboardView						*viewBeforeSearch;
+	gboolean								searchActive;
+	gint									lastSearchTextLength;
+	XfdashboardView							*viewBeforeSearch;
 
-	guint								notificationTimeoutID;
+	guint									notificationTimeoutID;
 
-	XfdashboardFocusManager				*focusManager;
+	XfdashboardFocusManager					*focusManager;
 };
 
 /* Properties */
@@ -109,10 +102,6 @@ enum
 
 	PROP_BACKGROUND_IMAGE_TYPE,
 	PROP_BACKGROUND_COLOR,
-
-	/* From interface: XfdashboardStylable */
-	PROP_STYLE_CLASSES,
-	PROP_STYLE_PSEUDO_CLASSES,
 
 	PROP_LAST
 };
@@ -141,6 +130,7 @@ static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 #define DEFAULT_RESET_SEARCH_ON_RESUME			TRUE
 #define SWITCH_VIEW_ON_RESUME_XFCONF_PROP		"/switch-to-view-on-resume"
 #define DEFAULT_SWITCH_VIEW_ON_RESUME			NULL
+#define XFDASHBOARD_THEME_LAYOUT_PRIMARY		"primary"
 
 /* Handle an event */
 static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inEvent)
@@ -801,6 +791,238 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 }
 
+/* Callback function to to set reference to NULL in stage object
+ * when an actor of special interest like searchbox, notification etc.
+ * is going to be destroyed.
+ */
+static void _xfdashboard_stage_reset_reference_on_destroy(ClutterActor *inActor,
+															gpointer inUserData)
+{
+	ClutterActor			**actorReference;
+
+	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
+	g_return_if_fail(inUserData);
+
+	actorReference=(ClutterActor**)inUserData;
+
+	/* User data points to address in stage object which holds
+	 * a pointer to address of the actor which is going to be
+	 * destroy. So we should check that the value at the address
+	 * in user data contains the address of the actor which is
+	 * going to be destroyed. If it is reset value at address in
+	 * user data to NULL otherwise leave value untouched but show
+	 * critical warning because this function should never be
+	 * called in this case.
+	 */
+	if(*actorReference!=inActor)
+	{
+		g_critical("Will not reset reference to actor of type %s at address %p because address in stage object points to %p and does not match actor's address.",
+					G_OBJECT_TYPE_NAME(inActor),
+					inActor,
+					*actorReference);
+	}
+		else *actorReference=NULL;
+}
+
+/* Theme in application has changed */
+static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *self,
+															XfdashboardTheme *inTheme,
+															gpointer inUserData)
+{
+	XfdashboardStagePrivate		*priv;
+	XfdashboardThemeLayout		*themeLayout;
+	ClutterActor				*stage;
+	ClutterActor				*child;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_THEME(inTheme));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+
+	priv=self->priv;
+
+	/* Get interface  */
+	themeLayout=xfdashboard_theme_get_layout(inTheme);
+	stage=xfdashboard_theme_layout_build_interface(themeLayout, XFDASHBOARD_THEME_LAYOUT_PRIMARY);
+	if(!stage)
+	{
+		g_critical(_("Could not build interface '%s' from theme '%s'"),
+					XFDASHBOARD_THEME_LAYOUT_PRIMARY,
+					xfdashboard_theme_get_theme_name(inTheme));
+		return;
+	}
+
+	// TODO: if(!XFDASHBOARD_IS_STAGE_INTERFACE(stage))
+	// TODO: {
+		// TODO: g_critical(_("Interface '%s' from theme '%s' must be an actor of type %s"),
+					// TODO: XFDASHBOARD_THEME_LAYOUT_PRIMARY,
+					// TODO: xfdashboard_theme_get_theme_name(inTheme),
+					// TODO: g_type_name(XFDASHBOARD_TYPE_STAGE_INTERFACE));
+		// TODO: return;
+	// TODO: }
+
+	/* Destroy all top-level actors from stage */
+	if(priv->topLevelActor)
+	{
+		clutter_actor_destroy(priv->topLevelActor);
+		priv->topLevelActor=NULL;
+	}
+
+	/* Add new top-level actor to stage and destroy top-level actor
+	 * we got from theme.
+	 */
+	clutter_actor_add_child(CLUTTER_ACTOR(self), stage);
+	priv->topLevelActor=stage;
+
+	/* Get children from built stage and connect signals */
+	priv->viewSelector=NULL;
+	child=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "view-selector");
+	if(child && XFDASHBOARD_IS_VIEW_SELECTOR(child))
+	{
+		priv->viewSelector=child;
+		g_signal_connect(child, "destroy", G_CALLBACK(_xfdashboard_stage_reset_reference_on_destroy), &priv->viewSelector);
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->viewSelector))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->viewSelector));
+		}
+	}
+
+	priv->searchbox=NULL;
+	child=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "searchbox");
+	if(child && XFDASHBOARD_IS_TEXT_BOX(child))
+	{
+		priv->searchbox=child;
+		g_signal_connect(child, "destroy", G_CALLBACK(_xfdashboard_stage_reset_reference_on_destroy), &priv->searchbox);
+
+		/* If no hint-text was defined, set default one */
+		if(!xfdashboard_text_box_is_hint_text_set(XFDASHBOARD_TEXT_BOX(priv->searchbox)))
+		{
+			xfdashboard_text_box_set_hint_text(XFDASHBOARD_TEXT_BOX(priv->searchbox),
+												_("Just type to search..."));
+		}
+
+		/* Connect signals */
+		g_signal_connect_swapped(priv->searchbox,
+									"text-changed",
+									G_CALLBACK(_xfdashboard_stage_on_searchbox_text_changed),
+									self);
+		g_signal_connect_swapped(priv->searchbox,
+									"secondary-icon-clicked",
+									G_CALLBACK(_xfdashboard_stage_on_searchbox_secondary_icon_clicked),
+									self);
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->searchbox))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->searchbox));
+		}
+	}
+
+	priv->viewpad=NULL;
+	child=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "viewpad");
+	if(child && XFDASHBOARD_IS_VIEWPAD(child))
+	{
+		priv->viewpad=child;
+		g_signal_connect(child, "destroy", G_CALLBACK(_xfdashboard_stage_reset_reference_on_destroy), &priv->viewpad);
+
+		/* Connect signals */
+		g_signal_connect_swapped(priv->viewpad, "view-activated", G_CALLBACK(_xfdashboard_stage_on_view_activated), self);
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->viewpad))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->viewpad));
+		}
+	}
+
+	priv->quicklaunch=NULL;
+	child=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "quicklaunch");
+	if(child && XFDASHBOARD_IS_QUICKLAUNCH(child))
+	{
+		XfdashboardToggleButton		*appsButton;
+
+		priv->quicklaunch=child;
+		g_signal_connect(child, "destroy", G_CALLBACK(_xfdashboard_stage_reset_reference_on_destroy), &priv->quicklaunch);
+
+		/* Connect signals */
+		appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
+		if(appsButton)
+		{
+			g_signal_connect_swapped(appsButton,
+										"toggled",
+										G_CALLBACK(_xfdashboard_stage_on_quicklaunch_apps_button_toggled),
+										self);
+		}
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->quicklaunch))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->quicklaunch));
+		}
+	}
+
+	priv->workspaces=NULL;
+	child=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "workspace-selector");
+	if(child && XFDASHBOARD_IS_WORKSPACE_SELECTOR(child))
+	{
+		priv->workspaces=child;
+		g_signal_connect(child, "destroy", G_CALLBACK(_xfdashboard_stage_reset_reference_on_destroy), &priv->workspaces);
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->workspaces))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->workspaces));
+		}
+	}
+
+	priv->notification=NULL;
+	child=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "notification");
+	if(child && XFDASHBOARD_IS_TEXT_BOX(child))
+	{
+		priv->notification=child;
+		g_signal_connect(child, "destroy", G_CALLBACK(_xfdashboard_stage_reset_reference_on_destroy), &priv->notification);
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->notification))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->notification));
+		}
+
+		/* Hide notification by default */
+		clutter_actor_hide(priv->notification);
+		clutter_actor_set_reactive(priv->notification, FALSE);
+	}
+
+	priv->tooltip=NULL;
+	child=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "tooltip");
+	if(child && XFDASHBOARD_IS_TEXT_BOX(child))
+	{
+		priv->tooltip=child;
+		g_signal_connect(child, "destroy", G_CALLBACK(_xfdashboard_stage_reset_reference_on_destroy), &priv->tooltip);
+
+		/* Register this focusable actor if it is focusable */
+		if(XFDASHBOARD_IS_FOCUSABLE(priv->tooltip))
+		{
+			xfdashboard_focus_manager_register(priv->focusManager,
+												XFDASHBOARD_FOCUSABLE(priv->tooltip));
+		}
+
+		/* Hide tooltip by default */
+		clutter_actor_hide(priv->tooltip);
+		clutter_actor_set_reactive(priv->tooltip, FALSE);
+	}
+
+	/* Set focus */
+	_xfdashboard_stage_set_focus(self);
+}
+
 /* IMPLEMENTATION: ClutterActor */
 
 /* The stage actor should be shown */
@@ -831,214 +1053,6 @@ static void _xfdashboard_stage_show(ClutterActor *inActor)
 	}
 }
 
-/* IMPLEMENTATION: Interface XfdashboardLayoutable */
-
-/* Virtual function "layout_completed" was called */
-static void _xfdashboard_stage_layoutable_layout_completed(XfdashboardLayoutable *inLayoutable)
-{
-	XfdashboardStage			*self;
-	XfdashboardStagePrivate		*priv;
-	ClutterActor				*actor;
-
-	g_return_if_fail(XFDASHBOARD_IS_LAYOUTABLE(inLayoutable));
-	g_return_if_fail(XFDASHBOARD_IS_STAGE(inLayoutable));
-
-	self=XFDASHBOARD_STAGE(inLayoutable);
-	priv=self->priv;
-
-	/* Get children from built stage and connect signals */
-	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "view-selector");
-	if(actor && XFDASHBOARD_IS_VIEW_SELECTOR(actor))
-	{
-		priv->viewSelector=actor;
-
-		/* Register this focusable actor if it is focusable */
-		if(XFDASHBOARD_IS_FOCUSABLE(priv->viewSelector))
-		{
-			xfdashboard_focus_manager_register(priv->focusManager,
-												XFDASHBOARD_FOCUSABLE(priv->viewSelector));
-		}
-	}
-
-	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "searchbox");
-	if(actor && XFDASHBOARD_IS_TEXT_BOX(actor))
-	{
-		priv->searchbox=actor;
-
-		/* If no hint-text was defined, set default one */
-		if(!xfdashboard_text_box_is_hint_text_set(XFDASHBOARD_TEXT_BOX(priv->searchbox)))
-		{
-			xfdashboard_text_box_set_hint_text(XFDASHBOARD_TEXT_BOX(priv->searchbox),
-												_("Just type to search..."));
-		}
-
-		/* Connect signals */
-		g_signal_connect_swapped(priv->searchbox,
-									"text-changed",
-									G_CALLBACK(_xfdashboard_stage_on_searchbox_text_changed),
-									self);
-		g_signal_connect_swapped(priv->searchbox,
-									"secondary-icon-clicked",
-									G_CALLBACK(_xfdashboard_stage_on_searchbox_secondary_icon_clicked),
-									self);
-
-		/* Register this focusable actor if it is focusable */
-		if(XFDASHBOARD_IS_FOCUSABLE(priv->searchbox))
-		{
-			xfdashboard_focus_manager_register(priv->focusManager,
-												XFDASHBOARD_FOCUSABLE(priv->searchbox));
-		}
-	}
-
-	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "viewpad");
-	if(actor && XFDASHBOARD_IS_VIEWPAD(actor))
-	{
-		priv->viewpad=actor;
-
-		/* Connect signals */
-		g_signal_connect_swapped(priv->viewpad, "view-activated", G_CALLBACK(_xfdashboard_stage_on_view_activated), self);
-
-		/* Register this focusable actor if it is focusable */
-		if(XFDASHBOARD_IS_FOCUSABLE(priv->viewpad))
-		{
-			xfdashboard_focus_manager_register(priv->focusManager,
-												XFDASHBOARD_FOCUSABLE(priv->viewpad));
-		}
-	}
-
-	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "quicklaunch");
-	if(actor && XFDASHBOARD_IS_QUICKLAUNCH(actor))
-	{
-		XfdashboardToggleButton		*appsButton;
-
-		priv->quicklaunch=actor;
-
-		/* Connect signals */
-		appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
-		if(appsButton)
-		{
-			g_signal_connect_swapped(appsButton,
-										"toggled",
-										G_CALLBACK(_xfdashboard_stage_on_quicklaunch_apps_button_toggled),
-										self);
-		}
-
-		/* Register this focusable actor if it is focusable */
-		if(XFDASHBOARD_IS_FOCUSABLE(priv->quicklaunch))
-		{
-			xfdashboard_focus_manager_register(priv->focusManager,
-												XFDASHBOARD_FOCUSABLE(priv->quicklaunch));
-		}
-	}
-
-	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "workspace-selector");
-	if(actor && XFDASHBOARD_IS_WORKSPACE_SELECTOR(actor))
-	{
-		priv->workspaces=actor;
-
-		/* Register this focusable actor if it is focusable */
-		if(XFDASHBOARD_IS_FOCUSABLE(priv->workspaces))
-		{
-			xfdashboard_focus_manager_register(priv->focusManager,
-												XFDASHBOARD_FOCUSABLE(priv->workspaces));
-		}
-	}
-
-	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "notification");
-	if(actor && XFDASHBOARD_IS_TEXT_BOX(actor))
-	{
-		priv->notification=actor;
-
-		/* Register this focusable actor if it is focusable */
-		if(XFDASHBOARD_IS_FOCUSABLE(priv->notification))
-		{
-			xfdashboard_focus_manager_register(priv->focusManager,
-												XFDASHBOARD_FOCUSABLE(priv->notification));
-		}
-
-		/* Hide notification by default */
-		clutter_actor_hide(priv->notification);
-		clutter_actor_set_reactive(priv->notification, FALSE);
-	}
-
-	actor=xfdashboard_find_actor_by_name(CLUTTER_ACTOR(self), "tooltip");
-	if(actor && XFDASHBOARD_IS_TEXT_BOX(actor))
-	{
-		priv->tooltip=actor;
-
-		/* Register this focusable actor if it is focusable */
-		if(XFDASHBOARD_IS_FOCUSABLE(priv->tooltip))
-		{
-			xfdashboard_focus_manager_register(priv->focusManager,
-												XFDASHBOARD_FOCUSABLE(priv->tooltip));
-		}
-
-		/* Hide tooltip by default */
-		clutter_actor_hide(priv->tooltip);
-		clutter_actor_set_reactive(priv->tooltip, FALSE);
-	}
-
-	/* Set focus */
-	_xfdashboard_stage_set_focus(self);
-}
-
-/* Interface initialization
- * Set up default functions
- */
-void _xfdashboard_stage_layoutable_iface_init(XfdashboardLayoutableInterface *iface)
-{
-	iface->layout_completed=_xfdashboard_stage_layoutable_layout_completed;
-}
-
-/* IMPLEMENTATION: Interface XfdashboardStylable */
-
-/* Get stylable properties of stage */
-static void _xfdashboard_stage_stylable_get_stylable_properties(XfdashboardStylable *self,
-																GHashTable *ioStylableProperties)
-{
-	g_return_if_fail(XFDASHBOARD_IS_STYLABLE(self));
-
-	/* Add stylable properties to hashtable */
-	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "background-color");
-	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "background-image-type");
-}
-
-/* Get/set style classes of stage */
-static const gchar* _xfdashboard_stage_stylable_get_classes(XfdashboardStylable *inStylable)
-{
-	/* Not implemented */
-	return(NULL);
-}
-
-static void _xfdashboard_stage_stylable_set_classes(XfdashboardStylable *inStylable, const gchar *inStyleClasses)
-{
-	/* Not implemented */
-}
-
-/* Get/set style pseudo-classes of stage */
-static const gchar* _xfdashboard_stage_stylable_get_pseudo_classes(XfdashboardStylable *inStylable)
-{
-	/* Not implemented */
-	return(NULL);
-}
-
-static void _xfdashboard_stage_stylable_set_pseudo_classes(XfdashboardStylable *inStylable, const gchar *inStylePseudoClasses)
-{
-	/* Not implemented */
-}
-
-/* Interface initialization
- * Set up default functions
- */
-void _xfdashboard_stage_stylable_iface_init(XfdashboardStylableInterface *iface)
-{
-	iface->get_stylable_properties=_xfdashboard_stage_stylable_get_stylable_properties;
-	iface->get_classes=_xfdashboard_stage_stylable_get_classes;
-	iface->set_classes=_xfdashboard_stage_stylable_set_classes;
-	iface->get_pseudo_classes=_xfdashboard_stage_stylable_get_pseudo_classes;
-	iface->set_pseudo_classes=_xfdashboard_stage_stylable_set_pseudo_classes;
-}
-
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -1052,6 +1066,12 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 	{
 		xfdashboard_window_tracker_window_unmake_stage_window(priv->stageWindow);
 		priv->stageWindow=NULL;
+	}
+
+	if(priv->topLevelActor)
+	{
+		clutter_actor_destroy(priv->topLevelActor);
+		priv->topLevelActor=NULL;
 	}
 
 	if(priv->focusManager)
@@ -1077,18 +1097,6 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 	{
 		clutter_color_free(priv->backgroundColor);
 		priv->backgroundColor=NULL;
-	}
-
-	if(priv->styleClasses)
-	{
-		g_free(priv->styleClasses);
-		priv->styleClasses=NULL;
-	}
-
-	if(priv->stylePseudoClasses)
-	{
-		g_free(priv->stylePseudoClasses);
-		priv->stylePseudoClasses=NULL;
 	}
 
 	if(priv->notification)
@@ -1173,16 +1181,6 @@ static void _xfdashboard_stage_set_property(GObject *inObject,
 			xfdashboard_stage_set_background_color(self, clutter_value_get_color(inValue));
 			break;
 
-		case PROP_STYLE_CLASSES:
-			_xfdashboard_stage_stylable_set_classes(XFDASHBOARD_STYLABLE(self),
-													g_value_get_string(inValue));
-			break;
-
-		case PROP_STYLE_PSEUDO_CLASSES:
-			_xfdashboard_stage_stylable_set_pseudo_classes(XFDASHBOARD_STYLABLE(self),
-															g_value_get_string(inValue));
-			break;
-
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -1207,14 +1205,6 @@ static void _xfdashboard_stage_get_property(GObject *inObject,
 			clutter_value_set_color(outValue, priv->backgroundColor);
 			break;
 
-		case PROP_STYLE_CLASSES:
-			g_value_set_string(outValue, priv->styleClasses);
-			break;
-
-		case PROP_STYLE_PSEUDO_CLASSES:
-			g_value_set_string(outValue, priv->stylePseudoClasses);
-			break;
-
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -1229,8 +1219,6 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 {
 	ClutterActorClass				*actorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
-	XfdashboardStylableInterface	*stylableIface;
-	GParamSpec						*paramSpec;
 
 	/* Override functions */
 	klass->show_tooltip=_xfdashboard_stage_show_tooltip;
@@ -1241,8 +1229,6 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 	gobjectClass->dispose=_xfdashboard_stage_dispose;
 	gobjectClass->set_property=_xfdashboard_stage_set_property;
 	gobjectClass->get_property=_xfdashboard_stage_get_property;
-
-	stylableIface=g_type_default_interface_ref(XFDASHBOARD_TYPE_STYLABLE);
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardStagePrivate));
@@ -1262,14 +1248,6 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 									_("Color of stage's background"),
 									NULL,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	paramSpec=g_object_interface_find_property(stylableIface, "style-classes");
-	XfdashboardStageProperties[PROP_STYLE_CLASSES]=
-		g_param_spec_override("style-classes", paramSpec);
-
-	paramSpec=g_object_interface_find_property(stylableIface, "style-pseudo-classes");
-	XfdashboardStageProperties[PROP_STYLE_PSEUDO_CLASSES]=
-		g_param_spec_override("style-pseudo-classes", paramSpec);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardStageProperties);
 
@@ -1319,9 +1297,6 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 						G_TYPE_NONE,
 						1,
 						CLUTTER_TYPE_ACTION);
-
-	/* Release allocated resources */
-	g_type_default_interface_unref(stylableIface);
 }
 
 /* Object initialization
@@ -1343,11 +1318,10 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv=self->priv=XFDASHBOARD_STAGE_GET_PRIVATE(self);
 
 	/* Set default values */
+	priv->topLevelActor=NULL;
 	priv->focusManager=xfdashboard_focus_manager_get_default();
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->stageWindow=NULL;
-	priv->styleClasses=NULL;
-	priv->stylePseudoClasses=NULL;
 	priv->quicklaunch=NULL;
 	priv->searchbox=NULL;
 	priv->workspaces=NULL;
@@ -1388,7 +1362,6 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	clutter_stage_set_use_alpha(CLUTTER_STAGE(self), TRUE);
 	clutter_stage_set_user_resizable(CLUTTER_STAGE(self), FALSE);
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
-	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 
 #if defined(CLUTTER_CHECK_VERSION) && CLUTTER_CHECK_VERSION(1, 16, 0)
 	/* TODO: As long as we do not support multi-monitors
@@ -1404,6 +1377,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	application=xfdashboard_application_get_default();
 	g_signal_connect_swapped(application, "suspend", G_CALLBACK(_xfdashboard_stage_on_application_suspend), self);
 	g_signal_connect_swapped(application, "resume", G_CALLBACK(_xfdashboard_stage_on_application_resume), self);
+	g_signal_connect_swapped(application, "theme-changed", G_CALLBACK(_xfdashboard_stage_on_application_theme_changed), self);
 }
 
 /* IMPLEMENTATION: Public API */

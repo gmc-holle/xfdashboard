@@ -59,6 +59,7 @@ struct _XfdashboardApplicationPrivate
 	/* Properties related */
 	gboolean					isDaemon;
 	gboolean					isSuspended;
+	gchar						*themeName;
 
 	/* Instance related */
 	gboolean					inited;
@@ -66,7 +67,9 @@ struct _XfdashboardApplicationPrivate
 	XfdashboardViewManager		*viewManager;
 	XfdashboardSearchManager	*searchManager;
 	XfdashboardFocusManager		*focusManager;
+
 	XfdashboardTheme			*theme;
+	gulong						xfconfThemeChangedSignalID;
 };
 
 /* Properties */
@@ -76,6 +79,7 @@ enum
 
 	PROP_DAEMONIZED,
 	PROP_SUSPENDED,
+	PROP_THEME_NAME,
 
 	PROP_LAST
 };
@@ -89,6 +93,7 @@ enum
 	SIGNAL_SHUTDOWN_FINAL,
 	SIGNAL_SUSPEND,
 	SIGNAL_RESUME,
+	SIGNAL_THEME_CHANGED,
 
 	SIGNAL_LAST
 };
@@ -101,7 +106,6 @@ static guint XfdashboardApplicationSignals[SIGNAL_LAST]={ 0, };
 
 #define THEME_NAME_XFCONF_PROP				"/theme"
 #define DEFAULT_THEME_NAME					"xfdashboard"
-#define XFDASHBOARD_THEME_LAYOUT_PRIMARY	"primary"
 
 /* Single instance of application */
 static XfdashboardApplication*		application=NULL;
@@ -167,67 +171,61 @@ static gboolean _xfdashboard_application_on_delete_stage(XfdashboardApplication 
 	return(CLUTTER_EVENT_STOP);
 }
 
-/* Load theme */
-static gboolean _xfdashboard_application_load_theme(XfdashboardApplication *self)
+/* Set theme name and reload theme */
+static void _xfdashboard_application_set_theme_name(XfdashboardApplication *self, const gchar *inThemeName)
 {
 	XfdashboardApplicationPrivate	*priv;
 	GError							*error;
-	gchar							*themeName;
 	XfdashboardTheme				*theme;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(self));
+	g_return_if_fail(inThemeName && *inThemeName);
 
 	priv=self->priv;
 	error=NULL;
-	theme=NULL;
 
-	/* Determine theme file to load and check if file exists.
-	 * Set up default theme in Xfcond if property in channel does not exist
-	 * because it indicates first start.
-	 */
-	if(!xfconf_channel_has_property(priv->xfconfChannel, THEME_NAME_XFCONF_PROP))
+	/* Set value if changed */
+	if(g_strcmp0(priv->themeName, inThemeName)!=0)
 	{
-		xfconf_channel_set_string(priv->xfconfChannel,
-											THEME_NAME_XFCONF_PROP,
-											DEFAULT_THEME_NAME);
+		/* Set value */
+		if(priv->themeName) g_free(priv->themeName);
+		priv->themeName=g_strdup(inThemeName);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_THEME_NAME]);
+
+		/* Create new theme instance and load theme */
+		theme=xfdashboard_theme_new();
+		if(!xfdashboard_theme_load(theme, priv->themeName, &error))
+		{
+			/* Show critical warning at console */
+			g_critical(_("Could not load theme '%s': %s"),
+						priv->themeName,
+						(error && error->message) ? error->message : _("unknown error"));
+
+			/* Show warning as notification */
+			xfdashboard_notify(NULL,
+								GTK_STOCK_DIALOG_ERROR,
+								_("Could not load theme '%s': %s"),
+								priv->themeName,
+								(error && error->message) ? error->message : _("unknown error"));
+
+			/* Release allocated resources */
+			if(error!=NULL) g_error_free(error);
+			g_object_unref(theme);
+
+			return;
+		}
+
+		/* Release current theme and store new one */
+		if(priv->theme) g_object_unref(priv->theme);
+		priv->theme=theme;
+
+		/* Emit signal that theme has changed to get all top-level actors
+		 * to apply new theme.
+		 */
+		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_THEME_CHANGED], 0, priv->theme);
 	}
-
-	themeName=xfconf_channel_get_string(priv->xfconfChannel,
-											THEME_NAME_XFCONF_PROP,
-											DEFAULT_THEME_NAME);
-	if(!themeName || strlen(themeName)==0)
-	{
-		g_critical(_("Could not get theme name to load!"));
-		return(FALSE);
-	}
-
-
-	/* Create new theme instance and load theme */
-	theme=xfdashboard_theme_new();
-	if(!xfdashboard_theme_load(theme, themeName, &error))
-	{
-		g_critical(_("Could not load theme '%s': %s"),
-					themeName,
-					(error && error->message) ? error->message : _("unknown error"));
-		if(error!=NULL) g_error_free(error);
-		g_free(themeName);
-		g_object_unref(theme);
-		return(FALSE);
-	}
-
-	/* Release current theme and store new one */
-	if(priv->theme)
-	{
-		g_object_unref(priv->theme);
-		priv->theme=NULL;
-	}
-
-	priv->theme=theme;
-
-	/* Release allocated resources */
-	g_free(themeName);
-
-	return(TRUE);
 }
 
 /* Perform full initialization of this application instance */
@@ -236,7 +234,6 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	XfdashboardApplicationPrivate	*priv;
 	GError							*error;
 	ClutterActor					*stage;
-	XfdashboardThemeLayout			*themeLayout;
 #if !GARCON_CHECK_VERSION(0,3,0)
 	const gchar						*desktop;
 #endif
@@ -277,8 +274,37 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 
 	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
 
-	/* Load theme */
-	if(!_xfdashboard_application_load_theme(self)) return(FALSE);
+	/* Set up and load theme */
+	priv->xfconfThemeChangedSignalID=xfconf_g_property_bind(priv->xfconfChannel,
+															THEME_NAME_XFCONF_PROP,
+															G_TYPE_STRING,
+															self,
+															"theme-name");
+	if(!priv->xfconfThemeChangedSignalID)
+	{
+		g_warning(_("Could not create binding between xfconf property and local resource for theme change notification."));
+	}
+
+	/* Set up default theme in Xfcond if property in channel does not exist
+	 * because it indicates first start.
+	 */
+	if(!xfconf_channel_has_property(priv->xfconfChannel, THEME_NAME_XFCONF_PROP))
+	{
+		xfconf_channel_set_string(priv->xfconfChannel,
+									THEME_NAME_XFCONF_PROP,
+									DEFAULT_THEME_NAME);
+	}
+
+	/* At this time the theme must have been loaded, either because we
+	 * set the default theme name because of missing theme property in
+	 * xfconf channel or the value of xfconf channel property has been read
+	 * and set when setting up binding (between xfconf property and local property)
+	 * what caused a call to function to set theme name in this object
+	 * and also caused a reload of theme.
+	 * So if no theme object is set in this object then loading theme has
+	 * failed and we have to return FALSE.
+	 */
+	if(!priv->theme) return(FALSE);
 
 	/* Register built-in views (order of registration is important) */
 	priv->viewManager=xfdashboard_view_manager_get_default();
@@ -297,32 +323,17 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	 */
 	priv->focusManager=xfdashboard_focus_manager_get_default();
 
-	/* Create primary stage on first monitor
+	/* Create primary stage on first monitor.
 	 * TODO: Create stage for each monitor connected
 	 *       but only primary monitor gets its stage
 	 *       setup for primary display
 	 */
-	themeLayout=xfdashboard_theme_get_layout(priv->theme);
-	stage=xfdashboard_theme_layout_build_interface(themeLayout, XFDASHBOARD_THEME_LAYOUT_PRIMARY);
-	if(!stage)
-	{
-		g_critical(_("Could not build interface '%s' from theme '%s'"),
-					XFDASHBOARD_THEME_LAYOUT_PRIMARY,
-					xfdashboard_theme_get_theme_name(priv->theme));
-		return(FALSE);
-	}
-
-	if(!XFDASHBOARD_IS_STAGE(stage))
-	{
-		g_critical(_("Interface '%s' from theme '%s' must be an actor of type %s"),
-					XFDASHBOARD_THEME_LAYOUT_PRIMARY,
-					xfdashboard_theme_get_theme_name(priv->theme),
-					g_type_name(XFDASHBOARD_TYPE_STAGE));
-		return(FALSE);
-	}
-
+	stage=xfdashboard_stage_new();
 	if(!priv->isDaemon) clutter_actor_show(stage);
 	g_signal_connect_swapped(stage, "delete-event", G_CALLBACK(_xfdashboard_application_on_delete_stage), self);
+
+	/* Emit signal 'theme-changed' to get current theme loaded at each stage created */
+	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_THEME_CHANGED], 0, priv->theme);
 
 	/* Initialization was successful so return TRUE */
 #ifdef DEBUG
@@ -507,6 +518,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SHUTDOWN_FINAL], 0);
 
 	/* Release allocated resources */
+	if(priv->xfconfThemeChangedSignalID)
+	{
+		xfconf_g_property_unbind(priv->xfconfThemeChangedSignalID);
+		priv->xfconfThemeChangedSignalID=0L;
+	}
+
 	if(priv->theme)
 	{
 		g_object_unref(priv->theme);
@@ -553,8 +570,14 @@ static void _xfdashboard_application_set_property(GObject *inObject,
 													const GValue *inValue,
 													GParamSpec *inSpec)
 {
+	XfdashboardApplication	*self=XFDASHBOARD_APPLICATION(inObject);
+
 	switch(inPropID)
 	{
+		case PROP_THEME_NAME:
+			_xfdashboard_application_set_theme_name(self, g_value_get_string(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -576,6 +599,10 @@ static void _xfdashboard_application_get_property(GObject *inObject,
 
 		case PROP_SUSPENDED:
 			g_value_set_boolean(outValue, self->priv->isSuspended);
+			break;
+
+		case PROP_THEME_NAME:
+			g_value_set_string(outValue, self->priv->themeName);
 			break;
 
 		default:
@@ -621,6 +648,13 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 								_("Flag indicating if application is suspended currently"),
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardApplicationProperties[PROP_THEME_NAME]=
+		g_param_spec_string("theme-name",
+								_("Theme name"),
+								_("Name of current theme"),
+								DEFAULT_THEME_NAME,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardApplicationProperties);
 
@@ -669,6 +703,18 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 						G_TYPE_NONE,
 						0);
 
+	XfdashboardApplicationSignals[SIGNAL_THEME_CHANGED]=
+		g_signal_new("theme-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardApplicationClass, theme_changed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_THEME);
+
 	/* Register GValue transformation function not provided by any other library */
 	xfdashboard_register_gvalue_transformation_funcs();
 }
@@ -685,12 +731,14 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	/* Set default values */
 	priv->isDaemon=FALSE;
 	priv->isSuspended=FALSE;
+	priv->themeName=NULL;
 	priv->inited=FALSE;
 	priv->xfconfChannel=NULL;
 	priv->viewManager=NULL;
 	priv->searchManager=NULL;
 	priv->focusManager=NULL;
 	priv->theme=NULL;
+	priv->xfconfThemeChangedSignalID=0L;
 }
 
 /* IMPLEMENTATION: Public API */

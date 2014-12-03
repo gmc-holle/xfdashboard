@@ -1,5 +1,5 @@
 /*
- * stage: A stage for a monitor
+ * stage: Global stage of application
  * 
  * Copyright 2012-2014 Stephan Haller <nomad@froevel.de>
  * 
@@ -26,7 +26,6 @@
 
 #include <clutter/clutter.h>
 
-#include "window-tracker.h"
 #include "types.h"
 
 G_BEGIN_DECLS
@@ -67,7 +66,7 @@ struct _XfdashboardStageClass
 };
 
 /* Public API */
-GType xfdashboard_stage_get_type(void); /* G_GNUC_CONST; */
+GType xfdashboard_stage_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_stage_new(void);
 

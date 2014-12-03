@@ -975,8 +975,9 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
  */
 static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 {
-	XfdashboardWindowsViewPrivate	*priv;
-	ClutterAction					*action;
+	XfdashboardWindowsViewPrivate		*priv;
+	ClutterAction						*action;
+	XfdashboardWindowTrackerWorkspace	*activeWorkspace;
 
 	self->priv=priv=XFDASHBOARD_WINDOWS_VIEW_GET_PRIVATE(self);
 
@@ -1023,6 +1024,13 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 								"window-closed",
 								G_CALLBACK(_xfdashboard_windows_view_on_window_closed),
 								self);
+
+	/* If active workspace is already available then set up this view */
+	activeWorkspace=xfdashboard_window_tracker_get_active_workspace(priv->windowTracker);
+	if(activeWorkspace)
+	{
+		_xfdashboard_windows_view_set_active_workspace(self, activeWorkspace);
+	}
 }
 
 /* Implementation: Public API */

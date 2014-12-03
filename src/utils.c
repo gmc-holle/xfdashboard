@@ -34,6 +34,7 @@
 #include <gio/gdesktopappinfo.h>
 
 #include "stage.h"
+#include "window-tracker.h"
 
 /* Gobject type for pointer arrays (GPtrArray) */
 GType xfdashboard_pointer_array_get_type(void)
@@ -63,6 +64,11 @@ void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const g
 
 	stage=NULL;
 
+	/* Build text to display */
+	va_start(args, inFormatText);
+	text=g_strdup_vprintf(inFormatText, args);
+	va_end(args);
+
 	/* Get stage of sending actor if available */
 	if(inSender) stage=XFDASHBOARD_STAGE(clutter_actor_get_stage(inSender));
 
@@ -70,23 +76,31 @@ void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const g
 	if(!stage)
 	{
 		stageManager=clutter_stage_manager_get_default();
-		stage=XFDASHBOARD_STAGE(clutter_stage_manager_get_default_stage(stageManager));
+		if(CLUTTER_IS_STAGE_MANAGER(stageManager))
+		{
+			stage=XFDASHBOARD_STAGE(clutter_stage_manager_get_default_stage(stageManager));
+		}
 
 		/* If we did not get default stage use first stage from manager */
-		if(!stage)
+		if(!stage && stageManager)
 		{
 			stages=clutter_stage_manager_peek_stages(stageManager);
-			stage=XFDASHBOARD_STAGE(stages->data);
+			if(stages) stage=XFDASHBOARD_STAGE(stages->data);
+		}
+
+		/* If we still do not have found a stage to show notification
+		 * stop further processing and show notification text as a critical
+		 * warning in addition to the critical warning that we could not
+		 * find any stage.
+		 */
+		if(!stage)
+		{
+			g_critical(_("Could find any stage to show notification: %s"), text);
 		}
 	}
 
-	/* Build text to display */
-	va_start(args, inFormatText);
-	text=g_strdup_vprintf(inFormatText, args);
-	va_end(args);
-
-	/* Show notification on stage */
-	xfdashboard_stage_show_notification(stage, inIconName, text);
+	/* Show notification on stage (if any found) */
+	if(stage) xfdashboard_stage_show_notification(stage, inIconName, text);
 
 	/* Release allocated resources */
 	g_free(text);

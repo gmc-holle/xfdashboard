@@ -1,5 +1,5 @@
 <interface>
-	<object class="XfdashboardStage" id="primary">
+	<object class="XfdashboardStageInterface" id="primary">
 		<child>
 			<object class="XfdashboardActor">
 				<property name="x-expand">true</property>

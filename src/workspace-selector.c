@@ -823,9 +823,13 @@ static ClutterActor* _xfdashboard_workspace_selector_focusable_get_selection(Xfd
 
 	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
 	priv=self->priv;
+	actor=NULL;
 
 	/* Find actor for current active workspace which is also the current selection */
-	actor=_xfdashboard_workspace_selector_find_actor_for_workspace(self, priv->activeWorkspace);
+	if(priv->activeWorkspace)
+	{
+		actor=_xfdashboard_workspace_selector_find_actor_for_workspace(self, priv->activeWorkspace);
+	}
 	if(!actor) return(NULL);
 
 	/* Return current selection */
@@ -896,9 +900,13 @@ static ClutterActor* _xfdashboard_workspace_selector_focusable_find_selection(Xf
 	self=XFDASHBOARD_WORKSPACE_SELECTOR(inFocusable);
 	priv=self->priv;
 	newSelection=NULL;
+	selection=NULL;
 
 	/* Find actor for current active workspace which is also the current selection */
-	selection=_xfdashboard_workspace_selector_find_actor_for_workspace(self, priv->activeWorkspace);
+	if(priv->activeWorkspace)
+	{
+		selection=_xfdashboard_workspace_selector_find_actor_for_workspace(self, priv->activeWorkspace);
+	}
 	if(!selection) return(NULL);
 
 	/* If there is nothing selected return currently determined actor which is
@@ -1224,8 +1232,10 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
  */
 static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *self)
 {
-	XfdashboardWorkspaceSelectorPrivate	*priv;
-	ClutterRequestMode				requestMode;
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	ClutterRequestMode						requestMode;
+	GList									*workspaces;
+	XfdashboardWindowTrackerWorkspace		*workspace;
 
 	priv=self->priv=XFDASHBOARD_WORKSPACE_SELECTOR_GET_PRIVATE(self);
 
@@ -1261,6 +1271,25 @@ static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *se
 								"active-workspace-changed",
 								G_CALLBACK(_xfdashboard_workspace_selector_on_active_workspace_changed),
 								self);
+
+	/* If we there are already workspace known add them to this actor */
+	workspaces=xfdashboard_window_tracker_get_workspaces(priv->windowTracker);
+	if(workspaces)
+	{
+		for(; workspaces; workspaces=g_list_next(workspaces))
+		{
+			workspace=(XfdashboardWindowTrackerWorkspace*)workspaces->data;
+
+			_xfdashboard_workspace_selector_on_workspace_added(self, workspace, NULL);
+		}
+	}
+
+	/* If active workspace is already available then set it in this actor */
+	workspace=xfdashboard_window_tracker_get_active_workspace(priv->windowTracker);
+	if(workspace)
+	{
+		_xfdashboard_workspace_selector_on_active_workspace_changed(self, NULL, NULL);
+	}
 }
 
 /* IMPLEMENTATION: Public API */

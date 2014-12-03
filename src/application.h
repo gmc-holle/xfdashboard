@@ -65,6 +65,8 @@ struct _XfdashboardApplicationClass
 
 	void (*quit)(XfdashboardApplication *self);
 	void (*shutdown_final)(XfdashboardApplication *self);
+
+	void (*theme_changed)(XfdashboardApplication *self, XfdashboardTheme *inTheme);
 };
 
 /* Public API */

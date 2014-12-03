@@ -12,7 +12,7 @@
 }
 
 /* Stage */
-XfdashboardStage
+XfdashboardStageInterface
 {
 	background-color: #000000d0;
 	background-image-type: desktop;

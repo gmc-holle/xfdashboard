@@ -31,7 +31,6 @@
 #include <glib.h>
 #include <gio/gio.h>
 
-#include "layoutable.h"
 #include "utils.h"
 
 /* Define this class in GObject system */
@@ -795,30 +794,6 @@ static GObject* _xfdashboard_theme_layout_create_object(XfdashboardThemeLayout *
 
 	/* Return created actor */
 	return(object);
-}
-
-/* Emit signal "layout-completed" on actors and its children recursively
- * implementing XfdashboardLayoutable interface.
- */
-static void _xfdashboard_theme_layout_object_emit_layout_completed(ClutterActor *inActor)
-{
-	ClutterActorIter	iter;
-	ClutterActor		*child;
-
-	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
-
-	/* If actor implements interface XfdashboardLayoutable then emit signal */
-	if(XFDASHBOARD_IS_LAYOUTABLE(inActor))
-	{
-		xfdashboard_layoutable_layout_completed(XFDASHBOARD_LAYOUTABLE(inActor));
-	}
-
-	/* For each child of actor call ourselve recursive */
-	clutter_actor_iter_init(&iter, inActor);
-	while(clutter_actor_iter_next(&iter, &child))
-	{
-		_xfdashboard_theme_layout_object_emit_layout_completed(child);
-	}
 }
 
 /* Callbacks used for <property> tag */
@@ -1850,11 +1825,6 @@ ClutterActor* xfdashboard_theme_layout_build_interface(XfdashboardThemeLayout *s
 
 		/* Resolved unresolved properties of newly created object */
 		_xfdashboard_theme_layout_create_object_resolve_unresolved(self, ids, unresolved);
-
-		/* Actor fully created emit signal "layout-completed" on actor
-		 * and its children recursively
-		 */
-		_xfdashboard_theme_layout_object_emit_layout_completed(actor);
 	}
 		else g_debug("Failed to create actor for interface '%s'", inID);
 
