@@ -77,6 +77,7 @@ XfdashboardApplication* xfdashboard_application_get_default(void);
 gboolean xfdashboard_application_is_daemonized(XfdashboardApplication *self);
 gboolean xfdashboard_application_is_suspended(XfdashboardApplication *self);
 
+gboolean xfdashboard_application_is_quitting(XfdashboardApplication *self);
 void xfdashboard_application_quit(void);
 void xfdashboard_application_quit_forced(void);
 

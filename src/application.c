@@ -63,6 +63,8 @@ struct _XfdashboardApplicationPrivate
 
 	/* Instance related */
 	gboolean					inited;
+	gboolean					isQuitting;
+
 	XfconfChannel				*xfconfChannel;
 	XfdashboardViewManager		*viewManager;
 	XfdashboardSearchManager	*searchManager;
@@ -130,6 +132,9 @@ static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean
 	 */
 	if(shouldQuit==TRUE)
 	{
+		/* Set flag that application is going to quit */
+		priv->isQuitting=TRUE;
+
 		/* Destroy stages */
 		stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
 		for(entry=stages; entry!=NULL; entry=g_slist_next(entry)) clutter_actor_destroy(CLUTTER_ACTOR(entry->data));
@@ -514,6 +519,9 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	XfdashboardApplication			*self=XFDASHBOARD_APPLICATION(inObject);
 	XfdashboardApplicationPrivate	*priv=self->priv;
 
+	/* Ensure "is-quitting" flag is set just in case someone asks */
+	priv->isQuitting=TRUE;
+
 	/* Signal "shutdown-final" of application */
 	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SHUTDOWN_FINAL], 0);
 
@@ -739,6 +747,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->focusManager=NULL;
 	priv->theme=NULL;
 	priv->xfconfThemeChangedSignalID=0L;
+	priv->isQuitting=FALSE;
 }
 
 /* IMPLEMENTATION: Public API */
@@ -771,6 +780,14 @@ gboolean xfdashboard_application_is_suspended(XfdashboardApplication *self)
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
 
 	return(self->priv->isSuspended);
+}
+
+/* Get flag if application is going to quit */
+gboolean xfdashboard_application_is_quitting(XfdashboardApplication *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
+
+	return(self->priv->isQuitting);
 }
 
 /* Quit application */

@@ -36,6 +36,7 @@
 #include "stylable.h"
 #include "marshal.h"
 #include "focus-manager.h"
+#include "application.h"
 
 /* Define this interface in GObject system */
 G_DEFINE_INTERFACE(XfdashboardFocusable,
@@ -131,38 +132,50 @@ static void _xfdashboard_focusable_on_selection_unavailable(XfdashboardFocusable
 	ClutterActor						*oldSelection;
 	ClutterActor						*newSelection;
 	gboolean							success;
+	XfdashboardApplication				*application;
 
 	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(self));
 	g_return_if_fail(CLUTTER_IS_ACTOR(inUserData));
 
 	iface=XFDASHBOARD_FOCUSABLE_GET_IFACE(self);
 	oldSelection=CLUTTER_ACTOR(inUserData);
+	newSelection=NULL;
 
-	/* Get next selection */
-	newSelection=xfdashboard_focusable_find_selection(self, oldSelection, XFDASHBOARD_SELECTION_TARGET_NEXT);
-
-	/* Call virtual function to set selection which have to be available
-	 * because this signal handler was set in xfdashboard_focusable_set_selection()
-	 * when this virtual function was available and successfully called.
+	/* If application is not quitting then call virtual function to set selection
+	 * which have to be available because this signal handler was set in
+	 * xfdashboard_focusable_set_selection() when this virtual function was available
+	 * and successfully called.
 	 * If setting new selection was unsuccessful we set selection to nothing (NULL);
 	 */
-	success=iface->set_selection(self, newSelection);
-	if(!success)
+	application=xfdashboard_application_get_default();
+	if(!xfdashboard_application_is_quitting(application))
 	{
+		/* Get next selection */
+		newSelection=xfdashboard_focusable_find_selection(self, oldSelection, XFDASHBOARD_SELECTION_TARGET_NEXT);
+
+		/* Call virtual function to set selection which have to be available
+		 * because this signal handler was set in xfdashboard_focusable_set_selection()
+		 * when this virtual function was available and successfully called.
+		 * If setting new selection was unsuccessful we set selection to nothing (NULL);
+		 */
 		success=iface->set_selection(self, newSelection);
 		if(!success)
 		{
-			g_critical(_("Old selection %s at %s is unavailable but setting new selection either to %s or nothing failed!"),
-						G_OBJECT_TYPE_NAME(oldSelection),
-						G_OBJECT_TYPE_NAME(self),
-						newSelection ? G_OBJECT_TYPE_NAME(newSelection) : "<nil>");
-		}
+			success=iface->set_selection(self, newSelection);
+			if(!success)
+			{
+				g_critical(_("Old selection %s at %s is unavailable but setting new selection either to %s or nothing failed!"),
+							G_OBJECT_TYPE_NAME(oldSelection),
+							G_OBJECT_TYPE_NAME(self),
+							newSelection ? G_OBJECT_TYPE_NAME(newSelection) : "<nil>");
+			}
 
-		/* Now reset new selection to NULL regardless if setting selection at
-		 * focusable actor was successful or not. A critical warning was displayed
-		 * if is was unsuccessful because setting nothing (NULL) must succeed usually.
-		 */
-		newSelection=NULL;
+			/* Now reset new selection to NULL regardless if setting selection at
+			 * focusable actor was successful or not. A critical warning was displayed
+			 * if is was unsuccessful because setting nothing (NULL) must succeed usually.
+			 */
+			newSelection=NULL;
+		}
 	}
 
 	/* Regardless if setting selection was successful, remove signal handlers
