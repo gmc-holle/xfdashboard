@@ -140,6 +140,7 @@ static void _xfdashboard_focusable_on_selection_unavailable(XfdashboardFocusable
 	iface=XFDASHBOARD_FOCUSABLE_GET_IFACE(self);
 	oldSelection=CLUTTER_ACTOR(inUserData);
 	newSelection=NULL;
+	success=FALSE;
 
 	/* If application is not quitting then call virtual function to set selection
 	 * which have to be available because this signal handler was set in
