@@ -1,7 +1,8 @@
-SUBDIRS =	\
+SUBDIRS = \
 	appdata \
-	themes	\
-	icons
+	data \
+	icons \
+	themes
 
 desktopdir = $(datadir)/applications
 desktop_in_files = xfdashboard.desktop.in

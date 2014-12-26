@@ -57,6 +57,14 @@ struct _XfdashboardFocusableInterface
 	gboolean (*set_selection)(XfdashboardFocusable *self, ClutterActor *inSelection);
 	ClutterActor* (*find_selection)(XfdashboardFocusable *self, ClutterActor *inSelection, XfdashboardSelectionTarget inDirection);
 	gboolean (*activate_selection)(XfdashboardFocusable *self, ClutterActor *inSelection);
+
+	gboolean (*selection_move_left)(XfdashboardFocusable *self, ClutterEvent *inEvent);
+	gboolean (*selection_move_right)(XfdashboardFocusable *self, ClutterEvent *inEvent);
+	gboolean (*selection_move_up)(XfdashboardFocusable *self, ClutterEvent *inEvent);
+	gboolean (*selection_move_down)(XfdashboardFocusable *self, ClutterEvent *inEvent);
+	gboolean (*selection_move_first)(XfdashboardFocusable *self, ClutterEvent *inEvent);
+	gboolean (*selection_move_last)(XfdashboardFocusable *self, ClutterEvent *inEvent);
+	gboolean (*selection_activate)(XfdashboardFocusable *self, ClutterEvent *inEvent);
 };
 
 /* Public API */
@@ -65,8 +73,6 @@ GType xfdashboard_focusable_get_type(void) G_GNUC_CONST;
 gboolean xfdashboard_focusable_can_focus(XfdashboardFocusable *self);
 void xfdashboard_focusable_set_focus(XfdashboardFocusable *self);
 void xfdashboard_focusable_unset_focus(XfdashboardFocusable *self);
-
-gboolean xfdashboard_focusable_handle_key_event(XfdashboardFocusable *self, const ClutterEvent *inEvent);
 
 gboolean xfdashboard_focusable_supports_selection(XfdashboardFocusable *self);
 ClutterActor* xfdashboard_focusable_get_selection(XfdashboardFocusable *self);

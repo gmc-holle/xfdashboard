@@ -1,0 +1,19 @@
+<bindings>
+	<!-- Global bindings -->
+	<key code="Left" source="XfdashboardFocusable" when="pressed">selection-move-left</key>
+	<key code="Right" source="XfdashboardFocusable" when="pressed">selection-move-right</key>
+	<key code="Up" source="XfdashboardFocusable" when="pressed">selection-move-up</key>
+	<key code="Down" source="XfdashboardFocusable" when="pressed">selection-move-down</key>
+	<key code="Home" source="XfdashboardFocusable" when="pressed">selection-move-first</key>
+	<key code="KP_Home" source="XfdashboardFocusable" when="pressed">selection-move-first</key>
+	<key code="End" source="XfdashboardFocusable" when="pressed">selection-move-last</key>
+	<key code="KP_End" source="XfdashboardFocusable" when="pressed">selection-move-last</key>
+	<key code="Return" source="XfdashboardFocusable" when="released">selection-activate</key>
+	<key code="KP_Enter" source="XfdashboardFocusable" when="released">selection-activate</key>
+	<key code="ISO_Enter" source="XfdashboardFocusable" when="released">selection-activate</key>
+
+	<!-- Windows view -->
+	<key code="<Shift>-BackSpace" source="XfdashboardWindowsView" when="released">window-selected-close</key>
+	<key code="Delete" source="XfdashboardWindowsView" when="released">window-selected-close</key>
+	<key code="KP_Delete" source="XfdashboardWindowsView" when="released">window-selected-close</key>
+</bindings>

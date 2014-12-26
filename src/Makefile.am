@@ -24,6 +24,7 @@ xfdashboard_headers = \
 	applications-search-provider.h \
 	applications-view.h \
 	background.h \
+	bindings.h \
 	button.h \
 	click-action.h \
 	collapse-box.h \
@@ -79,6 +80,7 @@ xfdashboard_SOURCES = \
 	applications-search-provider.c \
 	applications-view.c \
 	background.c \
+	bindings.c \
 	button.c \
 	click-action.c \
 	collapse-box.c \

@@ -25,6 +25,7 @@
 #define __XFDASHBOARD_WINDOWS_VIEW__
 
 #include "view.h"
+#include "focusable.h"
 
 G_BEGIN_DECLS
 
@@ -53,6 +54,10 @@ struct _XfdashboardWindowsViewClass
 	/*< private >*/
 	/* Parent class */
 	XfdashboardViewClass			parent_class;
+
+	/*< public >*/
+	/* Virtual functions */
+	gboolean (*window_selected_close)(XfdashboardFocusable *self, ClutterEvent *inEvent);
 };
 
 /* Public API */

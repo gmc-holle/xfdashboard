@@ -44,6 +44,7 @@
 #include "utils.h"
 #include "theme.h"
 #include "focus-manager.h"
+#include "bindings.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplication,
@@ -72,6 +73,8 @@ struct _XfdashboardApplicationPrivate
 
 	XfdashboardTheme			*theme;
 	gulong						xfconfThemeChangedSignalID;
+
+	XfdashboardBindings			*bindings;
 };
 
 /* Properties */
@@ -279,6 +282,22 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 
 	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
 
+	/* Set up keyboard and pointer bindings */
+	priv->bindings=xfdashboard_bindings_get_default();
+	if(!priv->bindings)
+	{
+		g_critical(_("Could not initialize bindings"));
+		return(FALSE);
+	}
+
+	if(!xfdashboard_bindings_load(priv->bindings, &error))
+	{
+		g_critical(_("Could not load bindings: %s"),
+					(error && error->message) ? error->message : _("unknown error"));
+		if(error!=NULL) g_error_free(error);
+		return(FALSE);
+	}
+	
 	/* Set up and load theme */
 	priv->xfconfThemeChangedSignalID=xfconf_g_property_bind(priv->xfconfChannel,
 															THEME_NAME_XFCONF_PROP,
@@ -559,6 +578,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 		 */
 		g_object_unref(priv->focusManager);
 		priv->focusManager=NULL;
+	}
+
+	if(priv->bindings)
+	{
+		g_object_unref(priv->bindings);
+		priv->bindings=NULL;
 	}
 
 	/* Shutdown xfconf */

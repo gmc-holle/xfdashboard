@@ -41,7 +41,7 @@
 #include "window-tracker.h"
 #include "image-content.h"
 #include "utils.h"
-#include "focusable.h"
+#include "marshal.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_windows_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -81,6 +81,16 @@ enum
 };
 
 static GParamSpec* XfdashboardWindowsViewProperties[PROP_LAST]={ 0, };
+
+/* Signals */
+enum
+{
+	ACTION_WINDOW_SELECTED_CLOSE,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardWindowsViewSignals[SIGNAL_LAST]={ 0, };
 
 /* Forward declaration */
 static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self, XfdashboardWindowTrackerWindow *inWindow);
@@ -509,43 +519,23 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_WORKSPACE]);
 }
 
-/* A key was released */
-static gboolean _xfdashboard_windows_view_on_key_release_event(ClutterActor *inActor,
-																ClutterEvent *inEvent,
-																gpointer inUserData)
+/* Action signal to close currently selected window was emitted */
+static gboolean _xfdashboard_windows_view_window_selected_close(XfdashboardFocusable *inFocusable, ClutterEvent *inEvent)
 {
 	XfdashboardWindowsView					*self;
 	XfdashboardWindowsViewPrivate			*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inActor), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
 
-	self=XFDASHBOARD_WINDOWS_VIEW(inActor);
+	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
 	priv=self->priv;
 
-	/* Activate selected window on ENTER or close window on DELETE / SHIFT+BACKSPACE */
-	switch(inEvent->key.keyval)
-	{
-		case CLUTTER_KEY_BackSpace:
-			if(clutter_event_has_shift_modifier(inEvent) &&
-				priv->selectedItem)
-			{
-				_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
-			}
-			return(CLUTTER_EVENT_STOP);
+	/* Close selected window */
+	_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
 
-		case CLUTTER_KEY_Delete:
-		case CLUTTER_KEY_KP_Delete:
-			if(priv->selectedItem)
-			{
-				_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
-			}
-			return(CLUTTER_EVENT_STOP);
-	}
-
-	/* We did not handle this event */
-	return(CLUTTER_EVENT_PROPAGATE);
+	/* We handled this event */
+	return(CLUTTER_EVENT_STOP);
 }
-
 
 /* IMPLEMENTATION: Interface XfdashboardFocusable */
 
@@ -933,6 +923,8 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	klass->window_selected_close=_xfdashboard_windows_view_window_selected_close;
+
 	gobjectClass->dispose=_xfdashboard_windows_view_dispose;
 	gobjectClass->set_property=_xfdashboard_windows_view_set_property;
 	gobjectClass->get_property=_xfdashboard_windows_view_get_property;
@@ -968,6 +960,19 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 	/* Define stylable properties */
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_SPACING]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]);
+
+	/* Define actions */
+	XfdashboardWindowsViewSignals[ACTION_WINDOW_SELECTED_CLOSE]=
+		g_signal_new("window-selected-close",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, window_selected_close),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						G_TYPE_BOOLEAN,
+						1,
+						CLUTTER_TYPE_EVENT);
 }
 
 /* Object initialization
@@ -1008,8 +1013,6 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	g_signal_connect_swapped(action, "drop", G_CALLBACK(_xfdashboard_windows_view_on_drop_drop), self);
 
 	/* Connect signals */
-	g_signal_connect(self, "key-release-event", G_CALLBACK(_xfdashboard_windows_view_on_key_release_event), NULL);
-
 	g_signal_connect_swapped(priv->windowTracker,
 								"active-workspace-changed",
 								G_CALLBACK(_xfdashboard_windows_view_on_active_workspace_changed),

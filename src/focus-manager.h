@@ -73,6 +73,7 @@ GType xfdashboard_focus_manager_get_type(void) G_GNUC_CONST;
 XfdashboardFocusManager* xfdashboard_focus_manager_get_default(void);
 
 void xfdashboard_focus_manager_register(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable);
+void xfdashboard_focus_manager_register_after(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable, XfdashboardFocusable *inAfterFocusable);
 void xfdashboard_focus_manager_unregister(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable);
 GList* xfdashboard_focus_manager_get_registered(XfdashboardFocusManager *self);
 gboolean xfdashboard_focus_manager_is_registered(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable);
@@ -86,7 +87,7 @@ XfdashboardFocusable* xfdashboard_focus_manager_get_next_focusable(XfdashboardFo
 XfdashboardFocusable* xfdashboard_focus_manager_get_previous_focusable(XfdashboardFocusManager *self,
 																		XfdashboardFocusable *inBeginFocusable);
 
-gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *self, const ClutterEvent *inEvent);
+gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *self, const ClutterEvent *inEvent, XfdashboardFocusable *inFocusable);
 
 G_END_DECLS
 

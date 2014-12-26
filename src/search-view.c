@@ -989,7 +989,7 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	{
 		GType					providerType;
 
-		providerType=(GType)LISTITEM_TO_GTYPE(entry->data);
+		providerType=(GType)GPOINTER_TO_GTYPE(entry->data);
 		_xfdashboard_search_view_on_search_provider_registered(self, providerType, priv->searchManager);
 	}
 	g_list_free(providers);

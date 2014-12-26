@@ -16,6 +16,7 @@ src/applications-menu-model.c
 src/applications-search-provider.c
 src/applications-view.c
 src/background.c
+src/bindings.c
 src/button.c
 src/click-action.c
 src/collapse-box.c
@@ -28,7 +29,6 @@ src/fill-box-layout.c
 src/focusable.c
 src/focus-manager.c
 src/image-content.c
-src/layoutable.c
 src/live-window.c
 src/live-workspace.c
 src/main.c
@@ -43,6 +43,7 @@ src/search-result-container.c
 src/search-result-set.c
 src/search-view.c
 src/stage.c
+src/stage-interface.c
 src/stylable.c
 src/text-box.c
 src/theme.c

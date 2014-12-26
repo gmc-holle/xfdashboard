@@ -221,7 +221,7 @@ static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inE
 	}
 
 	/* Ask focus manager to handle this event */
-	result=xfdashboard_focus_manager_handle_key_event(priv->focusManager, inEvent);
+	result=xfdashboard_focus_manager_handle_key_event(priv->focusManager, inEvent, NULL);
 	if(result==CLUTTER_EVENT_STOP) return(result);
 
 	/* If even focus manager did not handle this event send this event to searchbox */
@@ -235,7 +235,7 @@ static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inE
 		 */
 		if(xfdashboard_focus_manager_get_focus(priv->focusManager)!=XFDASHBOARD_FOCUSABLE(priv->searchbox))
 		{
-			result=xfdashboard_focusable_handle_key_event(XFDASHBOARD_FOCUSABLE(priv->searchbox), inEvent);
+			result=xfdashboard_focus_manager_handle_key_event(priv->focusManager, inEvent, XFDASHBOARD_FOCUSABLE(priv->searchbox));
 			if(result==CLUTTER_EVENT_STOP) return(result);
 		}
 	}

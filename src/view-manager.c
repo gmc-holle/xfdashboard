@@ -70,7 +70,7 @@ static void _xfdashboard_view_manager_dispose_unregister_view(gpointer inData, g
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(inUserData));
 
-	xfdashboard_view_manager_unregister(XFDASHBOARD_VIEW_MANAGER(inUserData), LISTITEM_TO_GTYPE(inData));
+	xfdashboard_view_manager_unregister(XFDASHBOARD_VIEW_MANAGER(inUserData), GPOINTER_TO_GTYPE(inData));
 }
 
 static void _xfdashboard_view_manager_dispose(GObject *inObject)
@@ -180,10 +180,10 @@ void xfdashboard_view_manager_register(XfdashboardViewManager *self, GType inVie
 	}
 
 	/* Register type if not already registered */
-	if(g_list_find(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType))==NULL)
+	if(g_list_find(priv->registeredViews, GTYPE_TO_POINTER(inViewType))==NULL)
 	{
 		g_debug("Registering view %s", g_type_name(inViewType));
-		priv->registeredViews=g_list_append(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType));
+		priv->registeredViews=g_list_append(priv->registeredViews, GTYPE_TO_POINTER(inViewType));
 		g_signal_emit(self, XfdashboardViewManagerSignals[SIGNAL_REGISTERED], 0, inViewType);
 	}
 }
@@ -208,10 +208,10 @@ void xfdashboard_view_manager_unregister(XfdashboardViewManager *self, GType inV
 	}
 
 	/* Unregister type if registered */
-	if(g_list_find(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType))!=NULL)
+	if(g_list_find(priv->registeredViews, GTYPE_TO_POINTER(inViewType))!=NULL)
 	{
 		g_debug("Unregistering view %s", g_type_name(inViewType));
-		priv->registeredViews=g_list_remove(priv->registeredViews, GTYPE_TO_LISTITEM(inViewType));
+		priv->registeredViews=g_list_remove(priv->registeredViews, GTYPE_TO_POINTER(inViewType));
 		g_signal_emit(self, XfdashboardViewManagerSignals[SIGNAL_UNREGISTERED], 0, inViewType);
 	}
 }
