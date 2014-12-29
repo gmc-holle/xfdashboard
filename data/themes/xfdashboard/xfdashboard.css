@@ -15,7 +15,7 @@
 XfdashboardStageInterface
 {
 	background-color: #000000d0;
-	background-image-type: desktop;
+	/* background-image-type: desktop; */
 }
 
 /* Window content */

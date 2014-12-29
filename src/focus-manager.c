@@ -32,7 +32,7 @@
 
 #include "marshal.h"
 #include "stylable.h"
-#include "bindings.h"
+#include "bindings-pool.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardFocusManager,
@@ -606,24 +606,36 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 	/* Synthesize event for specified focusable actor */
 	if(inFocusable)
 	{
-		XfdashboardBindings			*bindings;
+		XfdashboardBindingsPool		*bindings;
 		const gchar					*action;
 		gboolean					eventStatus;
 
+		/* Take reference on ourselve and the focusable actor to keep them alive when handling event */
+		g_object_ref(self);
+		g_object_ref(inFocusable);
+
+		/* Lookup action for event and emit action if a binding was found
+		 * for this event.
+		 */
 		eventStatus=CLUTTER_EVENT_PROPAGATE;
-		bindings=xfdashboard_bindings_get_default();
-		action=xfdashboard_bindings_find_for_event(bindings, CLUTTER_ACTOR(inFocusable), inEvent);
+		bindings=xfdashboard_bindings_pool_get_default();
+		action=xfdashboard_bindings_pool_find_for_event(bindings, CLUTTER_ACTOR(inFocusable), inEvent);
 		if(action)
 		{
-
 			g_debug("Emitting action signal '%s' at focusable actor %s", action, G_OBJECT_TYPE_NAME(inFocusable));
 			g_signal_emit_by_name(inFocusable, action, inEvent, &eventStatus);
 			g_debug("Action signal '%s' was %s by focusable actor %s",
 						action,
 						eventStatus==CLUTTER_EVENT_STOP ? "handled" : "not handled",
 						G_OBJECT_TYPE_NAME(inFocusable));
+
 		}
 		g_object_unref(bindings);
+
+		/* Release reference on ourselve and the focusable actor to took to keep them alive  */
+		g_object_unref(inFocusable);
+		g_object_unref(self);
+
 		if(eventStatus==CLUTTER_EVENT_STOP) return(CLUTTER_EVENT_STOP);
 	}
 

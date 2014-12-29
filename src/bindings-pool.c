@@ -25,7 +25,7 @@
 #include "config.h"
 #endif
 
-#include "bindings.h"
+#include "bindings-pool.h"
 
 #include <glib-object.h>
 #include <glib/gi18n-lib.h>
@@ -33,289 +33,89 @@
 #include <gdk/gdkkeysyms.h>
 
 #include "utils.h"
+#include "binding.h"
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardBindings,
-				xfdashboard_bindings,
+G_DEFINE_TYPE(XfdashboardBindingsPool,
+				xfdashboard_bindings_pool,
 				G_TYPE_OBJECT)
 
 /* Private structure - access only by public API if needed */
-#define XFDASHBOARD_BINDINGS_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_BINDINGS, XfdashboardBindingsPrivate))
+#define XFDASHBOARD_BINDINGS_POOL_GET_PRIVATE(obj) \
+	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_BINDINGS_POOL, XfdashboardBindingsPoolPrivate))
 
-struct _XfdashboardBindingsPrivate
+struct _XfdashboardBindingsPoolPrivate
 {
 	/* Instance related */
 	GHashTable		*bindings;
 };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define XFDASHBOARD_BINDINGS_MODIFIERS_MASK		(CLUTTER_SHIFT_MASK | \
-													CLUTTER_CONTROL_MASK | \
-													CLUTTER_MOD1_MASK | \
-													CLUTTER_MOD2_MASK | \
-													CLUTTER_MOD3_MASK | \
-													CLUTTER_MOD4_MASK | \
-													CLUTTER_MOD5_MASK | \
-													CLUTTER_SUPER_MASK | \
-													CLUTTER_HYPER_MASK | \
-													CLUTTER_META_MASK | \
-													CLUTTER_RELEASE_MASK)
-
 enum
 {
 	TAG_DOCUMENT,
-	TAG_BINDINGS,
+	TAG_BINDINGS_POOL,
 	TAG_KEY,
 	TAG_POINTER
 };
 
-typedef enum
+typedef struct _XfdashboardBindingsPoolParserData	XfdashboardBindingsPoolParserData;
+struct _XfdashboardBindingsPoolParserData
 {
-	BINDING_TYPE_KEY,
-	BINDING_TYPE_POINTER,
-	BINDING_TYPE_MAX
-} XfdashboardBindingsBindingType;
+	XfdashboardBindingsPool		*self;
 
-typedef struct _XfdashboardBindingsBinding		XfdashboardBindingsBinding;
-struct _XfdashboardBindingsBinding
-{
-	gint								refCount;
+	GHashTable					*bindings;
 
-	XfdashboardBindingsBindingType		type;
-	gchar								*className;
+	gint						lastLine;
+	gint						lastPosition;
+	gint						currentLine;
+	gint						currentPostition;
 
-	union
-	{
-		struct
-		{
-			guint						key;
-			ClutterModifierType			modifiers;
-		} key;
-
-		struct
-		{
-			guint						button;
-			ClutterModifierType			modifiers;
-		} pointer;
-	};
+	XfdashboardBinding			*lastBinding;
 };
 
-typedef struct _XfdashboardBindingsModifierMap	XfdashboardBindingsModifierMap;
-struct _XfdashboardBindingsModifierMap
+typedef struct _XfdashboardBindingsPoolModifierMap	XfdashboardBindingsPoolModifierMap;
+struct _XfdashboardBindingsPoolModifierMap
 {
 	const gchar							*name;
 	ClutterModifierType					modifier;
 };
 
-typedef struct _XfdashboardBindingsParserData	XfdashboardBindingsParserData;
-struct _XfdashboardBindingsParserData
-{
-	XfdashboardBindings					*self;
-
-	GHashTable							*bindings;
-
-	gint								lastLine;
-	gint								lastPosition;
-	gint								currentLine;
-	gint								currentPostition;
-
-	XfdashboardBindingsBinding			*lastBinding;
-};
-
 /* Forward declarations */
-static void _xfdashboard_bindings_parse_set_error(XfdashboardBindingsParserData *inParserData,
-													GMarkupParseContext *inContext,
-													GError **outError,
-													XfdashboardBindingsErrorEnum inCode,
-													const gchar *inFormat,
-													...) G_GNUC_PRINTF (5, 6);
+static void _xfdashboard_bindings_pool_parse_set_error(XfdashboardBindingsPoolParserData *inParserData,
+														GMarkupParseContext *inContext,
+														GError **outError,
+														XfdashboardBindingsPoolErrorEnum inCode,
+														const gchar *inFormat,
+														...) G_GNUC_PRINTF (5, 6);
 
 /* Single instance of bindings */
-static XfdashboardBindings*				_xfdashboard_bindings=NULL;
-static XfdashboardBindingsModifierMap	_xfdashboard_bindings_modifier_map[]=
-										{
-											{ "<Shift>", CLUTTER_SHIFT_MASK },
-											{ "<Ctrl>", CLUTTER_CONTROL_MASK },
-											{ "<Control>", CLUTTER_CONTROL_MASK},
-											{ "<Mod1>", CLUTTER_MOD1_MASK },
-											{ "<Mod2>", CLUTTER_MOD2_MASK },
-											{ "<Mod3>", CLUTTER_MOD3_MASK },
-											{ "<Mod4>", CLUTTER_MOD4_MASK },
-											{ "<Mod5>", CLUTTER_MOD5_MASK },
-											{ "<Super>", CLUTTER_SUPER_MASK },
-											{ "<Hyper>", CLUTTER_HYPER_MASK },
-											{ "<Meta>", CLUTTER_META_MASK },
-											{ NULL, 0 }
-										};
+static XfdashboardBindingsPool*				_xfdashboard_bindings_pool=NULL;
 
-/* Create a new binding */
-static XfdashboardBindingsBinding* _xfdashboard_bindings_key_binding_new(const gchar *inClass,
-																			guint inKey,
-																			ClutterModifierType inModifiers)
-{
-	XfdashboardBindingsBinding	*binding;
-
-	g_return_val_if_fail(inClass && *inClass, NULL);
-	g_return_val_if_fail(inKey || inModifiers, NULL);
-
-	/* Create new binding entry */
-	binding=g_new(XfdashboardBindingsBinding, 1);
-	if(!binding)
-	{
-		g_warning(_("Could not create key binding for class '%s' and keycode %u and modifiers %u."),
-					inClass,
-					inKey,
-					inModifiers);
-		return(NULL);
-	}
-
-	binding->type=BINDING_TYPE_KEY;
-	binding->refCount=1;
-	binding->className=g_strdup(inClass);
-	binding->key.key=inKey;
-	binding->key.modifiers=(inModifiers & XFDASHBOARD_BINDINGS_MODIFIERS_MASK);
-
-	return(binding);
-}
-
-static XfdashboardBindingsBinding* _xfdashboard_bindings_pointer_binding_new(const gchar *inClass,
-																				guint inButton,
-																				ClutterModifierType inModifiers)
-{
-	XfdashboardBindingsBinding	*binding;
-
-	g_return_val_if_fail(inClass && *inClass, NULL);
-	g_return_val_if_fail(inButton || inModifiers, NULL);
-
-	/* Create new binding entry */
-	binding=g_new(XfdashboardBindingsBinding, 1);
-	if(!binding)
-	{
-		g_warning(_("Could not create pointer binding for class '%s' and button %u and modifiers %u."),
-					inClass,
-					inButton,
-					inModifiers);
-		return(NULL);
-	}
-
-	binding->type=BINDING_TYPE_POINTER;
-	binding->refCount=1;
-	binding->className=g_strdup(inClass);
-	binding->pointer.button=inButton;
-	binding->pointer.modifiers=(inModifiers & XFDASHBOARD_BINDINGS_MODIFIERS_MASK);
-
-	return(binding);
-}
-
-/* Free a binding */
-static void _xfdashboard_bindings_binding_free(XfdashboardBindingsBinding *inBinding)
-{
-	g_return_if_fail(inBinding);
-
-	/* Free allocated resources by this key binding */
-	if(inBinding->className) g_free(inBinding->className);
-	g_free(inBinding);
-}
-
-/* Increase reference of a binding */
-static XfdashboardBindingsBinding* _xfdashboard_bindings_binding_ref(XfdashboardBindingsBinding *inBinding)
-{
-	g_return_val_if_fail(inBinding, NULL);
-
-	inBinding->refCount++;
-
-	return(inBinding);
-}
-
-/* Decrease reference of a binding and free it if it reaches zero */
-static void _xfdashboard_bindings_binding_unref(XfdashboardBindingsBinding *inBinding)
-{
-	g_return_if_fail(inBinding);
-
-	inBinding->refCount--;
-	if(inBinding->refCount==0) _xfdashboard_bindings_binding_free(inBinding);
-}
-
-/* Get hash value for binding */
-static guint _xfdashboard_bindings_binding_hash(gconstpointer inValue)
-{
-	XfdashboardBindingsBinding		*binding=(XfdashboardBindingsBinding*)inValue;
-	guint							hash;
-
-	hash=g_str_hash(binding->className);
-
-	switch(binding->type)
-	{
-		case BINDING_TYPE_KEY:
-			hash^=binding->key.key;
-			hash^=binding->key.modifiers;
-			break;
-
-		case BINDING_TYPE_POINTER:
-			hash^=binding->pointer.button;
-			hash^=binding->pointer.modifiers;
-			break;
-
-		default:
-			g_assert_not_reached();
-			break;
-	}
-
-	return(hash);
-}
-
-/* Check if two bindings are equal */
-static gboolean _xfdashboard_bindings_binding_compare(gconstpointer inLeft, gconstpointer inRight)
-{
-	XfdashboardBindingsBinding	*left=(XfdashboardBindingsBinding*)inLeft;
-	XfdashboardBindingsBinding	*right=(XfdashboardBindingsBinding*)inRight;
-
-
-	/* Check if type of bindings are equal */
-	if(left->type!=right->type) return(FALSE);
-
-	/* Check if class of bindings are equal */
-	if(g_strcmp0(left->className, right->className)) return(FALSE);
-
-	/* Check if other values of bindings are equal - depending on their type */
-	switch(left->type)
-	{
-		case BINDING_TYPE_KEY:
-			if(left->key.key!=right->key.key ||
-				left->key.modifiers!=right->key.modifiers)
-			{
-				return(FALSE);
-			}
-			break;
-
-		case BINDING_TYPE_POINTER:
-			if(left->pointer.button!=right->pointer.button ||
-				left->pointer.modifiers!=right->pointer.modifiers)
-			{
-				return(FALSE);
-			}
-			break;
-
-		default:
-			/* We should never get here but if we do return FALSE
-			 * to indicate that both binding are not equal.
-			 */
-			g_assert_not_reached();
-			return(FALSE);
-	}
-
-	/* If we get here all check succeeded so return TRUE */
-	return(TRUE);
-}
+/* Modifier map for conversion from string to integer used by parser */
+static XfdashboardBindingsPoolModifierMap	_xfdashboard_bindings_pool_modifier_map[]=
+											{
+												{ "<Shift>", CLUTTER_SHIFT_MASK },
+												{ "<Ctrl>", CLUTTER_CONTROL_MASK },
+												{ "<Control>", CLUTTER_CONTROL_MASK},
+												{ "<Mod1>", CLUTTER_MOD1_MASK },
+												{ "<Mod2>", CLUTTER_MOD2_MASK },
+												{ "<Mod3>", CLUTTER_MOD3_MASK },
+												{ "<Mod4>", CLUTTER_MOD4_MASK },
+												{ "<Mod5>", CLUTTER_MOD5_MASK },
+												{ "<Super>", CLUTTER_SUPER_MASK },
+												{ "<Hyper>", CLUTTER_HYPER_MASK },
+												{ "<Meta>", CLUTTER_META_MASK },
+												{ NULL, 0 }
+											};
 
 /* Helper function to set up GError object in this parser */
-static void _xfdashboard_bindings_parse_set_error(XfdashboardBindingsParserData *inParserData,
-													GMarkupParseContext *inContext,
-													GError **outError,
-													XfdashboardBindingsErrorEnum inCode,
-													const gchar *inFormat,
-													...)
+static void _xfdashboard_bindings_pool_parse_set_error(XfdashboardBindingsPoolParserData *inParserData,
+														GMarkupParseContext *inContext,
+														GError **outError,
+														XfdashboardBindingsPoolErrorEnum inCode,
+														const gchar *inFormat,
+														...)
 {
 	GError		*tempError;
 	gchar		*message;
@@ -327,7 +127,7 @@ static void _xfdashboard_bindings_parse_set_error(XfdashboardBindingsParserData 
 	va_end(args);
 
 	/* Create error object */
-	tempError=g_error_new_literal(XFDASHBOARD_BINDINGS_ERROR, inCode, message);
+	tempError=g_error_new_literal(XFDASHBOARD_BINDINGS_POOL_ERROR, inCode, message);
 	if(inParserData)
 	{
 		g_prefix_error(&tempError,
@@ -344,12 +144,12 @@ static void _xfdashboard_bindings_parse_set_error(XfdashboardBindingsParserData 
 }
 
 /* Determine tag name and ID */
-static gint _xfdashboard_bindings_get_tag_by_name(const gchar *inTag)
+static gint _xfdashboard_bindings_pool_get_tag_by_name(const gchar *inTag)
 {
 	g_return_val_if_fail(inTag && *inTag, -1);
 
 	/* Compare string and return type ID */
-	if(g_strcmp0(inTag, "bindings")==0) return(TAG_BINDINGS);
+	if(g_strcmp0(inTag, "bindings")==0) return(TAG_BINDINGS_POOL);
 	if(g_strcmp0(inTag, "key")==0) return(TAG_KEY);
 	if(g_strcmp0(inTag, "pointer")==0) return(TAG_POINTER);
 
@@ -357,7 +157,7 @@ static gint _xfdashboard_bindings_get_tag_by_name(const gchar *inTag)
 	return(-1);
 }
 
-static const gchar* _xfdashboard_bindings_get_tag_by_id(guint inTagType)
+static const gchar* _xfdashboard_bindings_pool_get_tag_by_id(guint inTagType)
 {
 	/* Compare ID and return string */
 	switch(inTagType)
@@ -365,7 +165,7 @@ static const gchar* _xfdashboard_bindings_get_tag_by_id(guint inTagType)
 		case TAG_DOCUMENT:
 			return("document");
 
-		case TAG_BINDINGS:
+		case TAG_BINDINGS_POOL:
 			return("bindings");
 
 		case TAG_KEY:
@@ -383,7 +183,9 @@ static const gchar* _xfdashboard_bindings_get_tag_by_id(guint inTagType)
 }
 
 /* Parse a string representing a key binding */
-static gboolean _xfdashboard_bindings_parse_keycode(const gchar *inText, guint *outKey, ClutterModifierType *outModifiers)
+static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
+															guint *outKey,
+															ClutterModifierType *outModifiers)
 {
 	guint					key;
 	ClutterModifierType		modifiers;
@@ -414,8 +216,8 @@ static gboolean _xfdashboard_bindings_parse_keycode(const gchar *inText, guint *
 	iter=parts;
 	while(*iter)
 	{
-		XfdashboardBindingsModifierMap	*mapIter;
-		gboolean						wasModifier;
+		XfdashboardBindingsPoolModifierMap	*mapIter;
+		gboolean							wasModifier;
 
 		/* Determine if text part is a modifier by checking if first character
 		 * in text part is '<' indicating the begin of a modifier.
@@ -438,7 +240,7 @@ static gboolean _xfdashboard_bindings_parse_keycode(const gchar *inText, guint *
 			}
 
 			/* Lookup modifier and stop further processing if it is not translatable */
-			for(mapIter=_xfdashboard_bindings_modifier_map; !wasModifier && mapIter->name; mapIter++)
+			for(mapIter=_xfdashboard_bindings_pool_modifier_map; !wasModifier && mapIter->name; mapIter++)
 			{
 				if(g_strcmp0(mapIter->name, *iter)==0)
 				{
@@ -521,14 +323,14 @@ static gboolean _xfdashboard_bindings_parse_keycode(const gchar *inText, guint *
 }
 
 /* General callbacks which can be used for any tag */
-static void _xfdashboard_bindings_parse_general_no_text_nodes(GMarkupParseContext *inContext,
-																const gchar *inText,
-																gsize inTextLength,
-																gpointer inUserData,
-																GError **outError)
+static void _xfdashboard_bindings_pool_parse_general_no_text_nodes(GMarkupParseContext *inContext,
+																	const gchar *inText,
+																	gsize inTextLength,
+																	gpointer inUserData,
+																	GError **outError)
 {
-	XfdashboardBindingsParserData			*data=(XfdashboardBindingsParserData*)inUserData;
-	gchar									*realText;
+	XfdashboardBindingsPoolParserData			*data=(XfdashboardBindingsPoolParserData*)inUserData;
+	gchar										*realText;
 
 	/* Check if text contains only whitespace. If we find any non-whitespace
 	 * in text then set error.
@@ -541,10 +343,10 @@ static void _xfdashboard_bindings_parse_general_no_text_nodes(GMarkupParseContex
 		parents=g_markup_parse_context_get_element_stack(inContext);
 		if(parents) parents=g_slist_next(parents);
 
-		_xfdashboard_bindings_parse_set_error(data,
+		_xfdashboard_bindings_pool_parse_set_error(data,
 												inContext,
 												outError,
-												XFDASHBOARD_BINDINGS_ERROR_MALFORMED,
+												XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
 												_("Unexpected text node '%s' at tag <%s>"),
 												realText,
 												parents ? (gchar*)parents->data : "document");
@@ -552,14 +354,14 @@ static void _xfdashboard_bindings_parse_general_no_text_nodes(GMarkupParseContex
 	g_free(realText);
 }
 
-static void _xfdashboard_bindings_parse_general_action_text_node(GMarkupParseContext *inContext,
-																	const gchar *inText,
-																	gsize inTextLength,
-																	gpointer inUserData,
-																	GError **outError)
+static void _xfdashboard_bindings_pool_parse_general_action_text_node(GMarkupParseContext *inContext,
+																		const gchar *inText,
+																		gsize inTextLength,
+																		gpointer inUserData,
+																		GError **outError)
 {
-	XfdashboardBindingsParserData		*data=(XfdashboardBindingsParserData*)inUserData;
-	gchar								*action;
+	XfdashboardBindingsPoolParserData		*data=(XfdashboardBindingsPoolParserData*)inUserData;
+	gchar									*action;
 
 	/* Check if an action was specified */
 	action=g_strstrip(g_strdup(inText));
@@ -571,16 +373,16 @@ static void _xfdashboard_bindings_parse_general_action_text_node(GMarkupParseCon
 		g_markup_parse_context_get_position(inContext, &data->currentLine, &data->currentPostition);
 
 		/* Set error */
-		_xfdashboard_bindings_parse_set_error(data,
+		_xfdashboard_bindings_pool_parse_set_error(data,
 												inContext,
 												outError,
-												XFDASHBOARD_BINDINGS_ERROR_MALFORMED,
+												XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
 												_("Missing action"));
 
 		/* Release allocated resources */
 		if(data->lastBinding)
 		{
-			_xfdashboard_bindings_binding_unref(data->lastBinding);
+			g_object_unref(data->lastBinding);
 			data->lastBinding=NULL;
 		}
 		if(action) g_free(action);
@@ -597,16 +399,16 @@ static void _xfdashboard_bindings_parse_general_action_text_node(GMarkupParseCon
 		g_markup_parse_context_get_position(inContext, &data->currentLine, &data->currentPostition);
 
 		/* Set error */
-		_xfdashboard_bindings_parse_set_error(data,
+		_xfdashboard_bindings_pool_parse_set_error(data,
 												inContext,
 												outError,
-												XFDASHBOARD_BINDINGS_ERROR_MALFORMED,
+												XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
 												_("Missing binding to set action '%s'"), action);
 
 		/* Release allocated resources */
 		if(data->lastBinding)
 		{
-			_xfdashboard_bindings_binding_unref(data->lastBinding);
+			g_object_unref(data->lastBinding);
 			data->lastBinding=NULL;
 		}
 		if(action) g_free(action);
@@ -616,28 +418,28 @@ static void _xfdashboard_bindings_parse_general_action_text_node(GMarkupParseCon
 
 
 	/* Add or replace binding in class hash-table */
-	g_hash_table_insert(data->bindings, _xfdashboard_bindings_binding_ref(data->lastBinding), g_strdup(action));
+	g_hash_table_insert(data->bindings, g_object_ref(data->lastBinding), g_strdup(action));
 
 	/* Release allocated resources */
 	g_free(action);
 
 	/* The binding's action is set now so do not remember it anymore */
-	_xfdashboard_bindings_binding_unref(data->lastBinding);
+	g_object_unref(data->lastBinding);
 	data->lastBinding=NULL;
 }
 
 /* Parser callbacks for document root node */
-static void _xfdashboard_bindings_parse_bindings_start(GMarkupParseContext *inContext,
-														const gchar *inElementName,
-														const gchar **inAttributeNames,
-														const gchar **inAttributeValues,
-														gpointer inUserData,
-														GError **outError)
+static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext *inContext,
+															const gchar *inElementName,
+															const gchar **inAttributeNames,
+															const gchar **inAttributeValues,
+															gpointer inUserData,
+															GError **outError)
 {
-	XfdashboardBindingsParserData		*data=(XfdashboardBindingsParserData*)inUserData;
-	gint								currentTag=TAG_BINDINGS;
-	gint								nextTag;
-	GError								*error=NULL;
+	XfdashboardBindingsPoolParserData		*data=(XfdashboardBindingsPoolParserData*)inUserData;
+	gint									currentTag=TAG_BINDINGS_POOL;
+	gint									nextTag;
+	GError									*error=NULL;
 
 	/* Update last position for more accurate line and position in error messages */
 	data->lastLine=data->currentLine;
@@ -645,13 +447,13 @@ static void _xfdashboard_bindings_parse_bindings_start(GMarkupParseContext *inCo
 	g_markup_parse_context_get_position(inContext, &data->currentLine, &data->currentPostition);
 
 	/* Get tag of next element */
-	nextTag=_xfdashboard_bindings_get_tag_by_name(inElementName);
+	nextTag=_xfdashboard_bindings_pool_get_tag_by_name(inElementName);
 	if(nextTag==-1)
 	{
-		_xfdashboard_bindings_parse_set_error(data,
+		_xfdashboard_bindings_pool_parse_set_error(data,
 												inContext,
 												outError,
-												XFDASHBOARD_BINDINGS_ERROR_MALFORMED,
+												XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
 												_("Unknown tag <%s>"),
 												inElementName);
 		return;
@@ -666,13 +468,14 @@ static void _xfdashboard_bindings_parse_bindings_start(GMarkupParseContext *inCo
 												{
 													NULL,
 													NULL,
-													_xfdashboard_bindings_parse_general_action_text_node,
+													_xfdashboard_bindings_pool_parse_general_action_text_node,
 													NULL,
 													NULL,
 												};
 		gchar									*keycode=NULL;
 		gchar									*source=NULL;
 		gchar									*when=NULL;
+		ClutterEventType						eventType;
 		guint									key;
 		ClutterModifierType						modifiers;
 
@@ -703,10 +506,10 @@ static void _xfdashboard_bindings_parse_bindings_start(GMarkupParseContext *inCo
 		if(!keycode)
 		{
 			/* Set error */
-			_xfdashboard_bindings_parse_set_error(data,
+			_xfdashboard_bindings_pool_parse_set_error(data,
 													inContext,
 													outError,
-													XFDASHBOARD_BINDINGS_ERROR_MALFORMED,
+													XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
 													_("Missing attribute 'code' for key"));
 
 			/* Release allocated resources */
@@ -717,13 +520,14 @@ static void _xfdashboard_bindings_parse_bindings_start(GMarkupParseContext *inCo
 			return;
 		}
 
-		if(!_xfdashboard_bindings_parse_keycode(keycode, &key, &modifiers))
+		/* Parse keycode */
+		if(!_xfdashboard_bindings_pool_parse_keycode(keycode, &key, &modifiers))
 		{
 			/* Set error */
-			_xfdashboard_bindings_parse_set_error(data,
+			_xfdashboard_bindings_pool_parse_set_error(data,
 													inContext,
 													outError,
-													XFDASHBOARD_BINDINGS_ERROR_MALFORMED,
+													XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
 													_("Could not translate key '%s'"),
 													keycode);
 
@@ -735,25 +539,35 @@ static void _xfdashboard_bindings_parse_bindings_start(GMarkupParseContext *inCo
 			return;
 		}
 
+		/* Resolve event type to key press or release event
+		 * which defaults to key press if missed.
+		 */
+		eventType=CLUTTER_KEY_PRESS;
 		if(when)
 		{
 			if(g_strcmp0(when, "pressed")==0)
 			{
+				/* Set event type */
+				eventType=CLUTTER_KEY_PRESS;
+
 				/* Unset release bit in modifiers */
 				modifiers&=!CLUTTER_RELEASE_MASK;
 			}
 				else if(g_strcmp0(when, "released")==0)
 				{
+					/* Set event type */
+					eventType=CLUTTER_KEY_RELEASE;
+
 					/* Set release bit in modifiers */
-					modifiers|=CLUTTER_RELEASE_MASK;
+					// TODO: modifiers|=CLUTTER_RELEASE_MASK;
 				}
 				else
 				{
 					/* Set error */
-					_xfdashboard_bindings_parse_set_error(data,
+					_xfdashboard_bindings_pool_parse_set_error(data,
 															inContext,
 															outError,
-															XFDASHBOARD_BINDINGS_ERROR_MALFORMED,
+															XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
 															_("Unknown value '%s' for attribute 'when'"),
 															when);
 
@@ -767,14 +581,14 @@ static void _xfdashboard_bindings_parse_bindings_start(GMarkupParseContext *inCo
 		}
 
 		/* Parse keycode */
-		data->lastBinding=_xfdashboard_bindings_key_binding_new(source, key, modifiers);
+		data->lastBinding=xfdashboard_binding_new();
 		if(!data->lastBinding)
 		{
 			/* Set error */
-			_xfdashboard_bindings_parse_set_error(data,
+			_xfdashboard_bindings_pool_parse_set_error(data,
 													inContext,
 													outError,
-													XFDASHBOARD_BINDINGS_ERROR_PARSER_INTERNAL_ERROR,
+													XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
 													_("Could not initialize binding for key-binding"));
 
 			/* Release allocated resources */
@@ -784,6 +598,11 @@ static void _xfdashboard_bindings_parse_bindings_start(GMarkupParseContext *inCo
 
 			return;
 		}
+
+		xfdashboard_binding_set_event_type(data->lastBinding, eventType);
+		xfdashboard_binding_set_class_name(data->lastBinding, source);
+		xfdashboard_binding_set_key(data->lastBinding, key);
+		xfdashboard_binding_set_modifiers(data->lastBinding, modifiers);
 
 		/* Release allocated resources */
 		if(keycode) g_free(keycode);
@@ -803,9 +622,9 @@ static void _xfdashboard_bindings_parse_bindings_start(GMarkupParseContext *inCo
 	{
 		static GMarkupParser					propertyParser=
 												{
-													_xfdashboard_bindings_parse_bindings_no_deep_node,
+													_xfdashboard_bindings_pool_parse_bindings_no_deep_node,
 													NULL,
-													_xfdashboard_bindings_parse_general_action_text_node,
+													_xfdashboard_bindings_pool_parse_general_action_text_node,
 													NULL,
 													NULL,
 												};
@@ -828,33 +647,33 @@ static void _xfdashboard_bindings_parse_bindings_start(GMarkupParseContext *inCo
 #endif
 
 	/* If we get here the given element name cannot follow this tag */
-	_xfdashboard_bindings_parse_set_error(data,
+	_xfdashboard_bindings_pool_parse_set_error(data,
 											inContext,
 											outError,
-											XFDASHBOARD_BINDINGS_ERROR_MALFORMED,
+											XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
 											_("Tag <%s> cannot contain tag <%s>"),
-											_xfdashboard_bindings_get_tag_by_id(currentTag),
+											_xfdashboard_bindings_pool_get_tag_by_id(currentTag),
 											inElementName);
 }
 
-static void _xfdashboard_bindings_parse_bindings_end(GMarkupParseContext *inContext,
-														const gchar *inElementName,
-														gpointer inUserData,
-														GError **outError)
+static void _xfdashboard_bindings_pool_parse_bindings_end(GMarkupParseContext *inContext,
+															const gchar *inElementName,
+															gpointer inUserData,
+															GError **outError)
 {
 	/* Restore previous parser context */
 	g_markup_parse_context_pop(inContext);
 }
 
 /* Parser callbacks for document root node */
-static void _xfdashboard_bindings_parse_document_start(GMarkupParseContext *inContext,
+static void _xfdashboard_bindings_pool_parse_document_start(GMarkupParseContext *inContext,
 														const gchar *inElementName,
 														const gchar **inAttributeNames,
 														const gchar **inAttributeValues,
 														gpointer inUserData,
 														GError **outError)
 {
-	XfdashboardBindingsParserData		*data=(XfdashboardBindingsParserData*)inUserData;
+	XfdashboardBindingsPoolParserData		*data=(XfdashboardBindingsPoolParserData*)inUserData;
 	gint								currentTag=TAG_DOCUMENT;
 	gint								nextTag;
 	GError								*error=NULL;
@@ -865,13 +684,13 @@ static void _xfdashboard_bindings_parse_document_start(GMarkupParseContext *inCo
 	g_markup_parse_context_get_position(inContext, &data->currentLine, &data->currentPostition);
 
 	/* Get tag of next element */
-	nextTag=_xfdashboard_bindings_get_tag_by_name(inElementName);
+	nextTag=_xfdashboard_bindings_pool_get_tag_by_name(inElementName);
 	if(nextTag==-1)
 	{
-		_xfdashboard_bindings_parse_set_error(data,
+		_xfdashboard_bindings_pool_parse_set_error(data,
 												inContext,
 												outError,
-												XFDASHBOARD_BINDINGS_ERROR_MALFORMED,
+												XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
 												_("Unknown tag <%s>"),
 												inElementName);
 		return;
@@ -880,13 +699,13 @@ static void _xfdashboard_bindings_parse_document_start(GMarkupParseContext *inCo
 	/* Check if element name is <bindings> and follows expected parent tags:
 	 * <document>
 	 */
-	if(nextTag==TAG_BINDINGS)
+	if(nextTag==TAG_BINDINGS_POOL)
 	{
 		static GMarkupParser					propertyParser=
 												{
-													_xfdashboard_bindings_parse_bindings_start,
-													_xfdashboard_bindings_parse_bindings_end,
-													_xfdashboard_bindings_parse_general_no_text_nodes,
+													_xfdashboard_bindings_pool_parse_bindings_start,
+													_xfdashboard_bindings_pool_parse_bindings_end,
+													_xfdashboard_bindings_pool_parse_general_no_text_nodes,
 													NULL,
 													NULL,
 												};
@@ -902,22 +721,22 @@ static void _xfdashboard_bindings_parse_document_start(GMarkupParseContext *inCo
 			g_propagate_error(outError, error);
 		}
 
-		/* Set up context for tag <effects> */
+		/* Set up context for tag <bindings> */
 		g_markup_parse_context_push(inContext, &propertyParser, inUserData);
 		return;
 	}
 
 	/* If we get here the given element name cannot follow this tag */
-	_xfdashboard_bindings_parse_set_error(data,
+	_xfdashboard_bindings_pool_parse_set_error(data,
 											inContext,
 											outError,
-											XFDASHBOARD_BINDINGS_ERROR_MALFORMED,
+											XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
 											_("Tag <%s> cannot contain tag <%s>"),
-											_xfdashboard_bindings_get_tag_by_id(currentTag),
+											_xfdashboard_bindings_pool_get_tag_by_id(currentTag),
 											inElementName);
 }
 
-static void _xfdashboard_bindings_parse_document_end(GMarkupParseContext *inContext,
+static void _xfdashboard_bindings_pool_parse_document_end(GMarkupParseContext *inContext,
 														const gchar *inElementName,
 														gpointer inUserData,
 														GError **outError)
@@ -927,28 +746,28 @@ static void _xfdashboard_bindings_parse_document_end(GMarkupParseContext *inCont
 }
 
 /* Load bindings from XML file */
-static gboolean _xfdashboard_bindings_load_bindings_from_file(XfdashboardBindings *self,
-																const gchar *inPath,
-																GError **outError)
+static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBindingsPool *self,
+																	const gchar *inPath,
+																	GError **outError)
 {
 	static GMarkupParser			parser=
 									{
-										_xfdashboard_bindings_parse_document_start,
-										_xfdashboard_bindings_parse_document_end,
-										_xfdashboard_bindings_parse_general_no_text_nodes,
+										_xfdashboard_bindings_pool_parse_document_start,
+										_xfdashboard_bindings_pool_parse_document_end,
+										_xfdashboard_bindings_pool_parse_general_no_text_nodes,
 										NULL,
 										NULL,
 									};
 
-	XfdashboardBindingsPrivate		*priv;
+	XfdashboardBindingsPoolPrivate		*priv;
 	gchar							*contents;
 	gsize							contentsLength;
 	GMarkupParseContext				*context;
-	XfdashboardBindingsParserData	*data;
+	XfdashboardBindingsPoolParserData	*data;
 	GError							*error;
 	gboolean						success;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_BINDINGS(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_BINDINGS_POOL(self), FALSE);
 	g_return_val_if_fail(inPath && *inPath, FALSE);
 	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
 
@@ -968,13 +787,13 @@ static gboolean _xfdashboard_bindings_load_bindings_from_file(XfdashboardBinding
 	}
 
 	/* Create and set up parser instance */
-	data=g_new0(XfdashboardBindingsParserData, 1);
+	data=g_new0(XfdashboardBindingsPoolParserData, 1);
 	if(!data)
 	{
 		/* Set error */
 		g_set_error(outError,
-					XFDASHBOARD_BINDINGS_ERROR,
-					XFDASHBOARD_BINDINGS_ERROR_PARSER_INTERNAL_ERROR,
+					XFDASHBOARD_BINDINGS_POOL_ERROR,
+					XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
 					_("Could not set up parser data for file %s"),
 					inPath);
 		return(FALSE);
@@ -985,8 +804,8 @@ static gboolean _xfdashboard_bindings_load_bindings_from_file(XfdashboardBinding
 	{
 		/* Set error */
 		g_set_error(outError,
-					XFDASHBOARD_BINDINGS_ERROR,
-					XFDASHBOARD_BINDINGS_ERROR_PARSER_INTERNAL_ERROR,
+					XFDASHBOARD_BINDINGS_POOL_ERROR,
+					XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
 					_("Could not create parser for file %s"),
 					inPath);
 
@@ -1006,16 +825,16 @@ static gboolean _xfdashboard_bindings_load_bindings_from_file(XfdashboardBinding
 	data->lastPosition=1;
 	data->currentLine=1;
 	data->currentPostition=1;
-	data->bindings=g_hash_table_new_full(_xfdashboard_bindings_binding_hash,
-											_xfdashboard_bindings_binding_compare,
-											(GDestroyNotify)_xfdashboard_bindings_binding_unref,
+	data->bindings=g_hash_table_new_full(xfdashboard_binding_hash,
+											xfdashboard_binding_compare,
+											(GDestroyNotify)g_object_unref,
 											g_free);
 	if(!data->bindings)
 	{
 		/* Set error */
 		g_set_error(outError,
-					XFDASHBOARD_BINDINGS_ERROR,
-					XFDASHBOARD_BINDINGS_ERROR_PARSER_INTERNAL_ERROR,
+					XFDASHBOARD_BINDINGS_POOL_ERROR,
+					XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
 					_("Could not set up hash-table at parser data for file %s"),
 					inPath);
 
@@ -1043,8 +862,8 @@ static gboolean _xfdashboard_bindings_load_bindings_from_file(XfdashboardBinding
 	if(data->lastBinding)
 	{
 		g_set_error(outError,
-					XFDASHBOARD_BINDINGS_ERROR,
-					XFDASHBOARD_BINDINGS_ERROR_PARSER_INTERNAL_ERROR,
+					XFDASHBOARD_BINDINGS_POOL_ERROR,
+					XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
 					_("Unexpected binding state set at parser data for file %s"),
 					inPath);
 		success=FALSE;
@@ -1079,11 +898,11 @@ static gboolean _xfdashboard_bindings_load_bindings_from_file(XfdashboardBinding
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-static void _xfdashboard_bindings_dispose(GObject *inObject)
+static void _xfdashboard_bindings_pool_dispose(GObject *inObject)
 {
 	/* Release allocated variables */
-	XfdashboardBindings				*self=XFDASHBOARD_BINDINGS(inObject);
-	XfdashboardBindingsPrivate		*priv=self->priv;
+	XfdashboardBindingsPool				*self=XFDASHBOARD_BINDINGS_POOL(inObject);
+	XfdashboardBindingsPoolPrivate		*priv=self->priv;
 
 	if(priv->bindings)
 	{
@@ -1092,32 +911,32 @@ static void _xfdashboard_bindings_dispose(GObject *inObject)
 	}
 
 	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_bindings_parent_class)->dispose(inObject);
+	G_OBJECT_CLASS(xfdashboard_bindings_pool_parent_class)->dispose(inObject);
 }
 
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
  */
-static void xfdashboard_bindings_class_init(XfdashboardBindingsClass *klass)
+static void xfdashboard_bindings_pool_class_init(XfdashboardBindingsPoolClass *klass)
 {
 	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->dispose=_xfdashboard_bindings_dispose;
+	gobjectClass->dispose=_xfdashboard_bindings_pool_dispose;
 
 	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardBindingsPrivate));
+	g_type_class_add_private(klass, sizeof(XfdashboardBindingsPoolPrivate));
 }
 
 /* Object initialization
  * Create private structure and set up default values
  */
-static void xfdashboard_bindings_init(XfdashboardBindings *self)
+static void xfdashboard_bindings_pool_init(XfdashboardBindingsPool *self)
 {
-	XfdashboardBindingsPrivate		*priv;
+	XfdashboardBindingsPoolPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_BINDINGS_GET_PRIVATE(self);
+	priv=self->priv=XFDASHBOARD_BINDINGS_POOL_GET_PRIVATE(self);
 
 	/* Set up default values */
 	priv->bindings=NULL;
@@ -1125,7 +944,7 @@ static void xfdashboard_bindings_init(XfdashboardBindings *self)
 
 /* Implementation: Errors */
 
-GQuark xfdashboard_bindings_error_quark(void)
+GQuark xfdashboard_bindings_pool_error_quark(void)
 {
 	return(g_quark_from_static_string("xfdashboard-bindings-error-quark"));
 }
@@ -1133,25 +952,25 @@ GQuark xfdashboard_bindings_error_quark(void)
 /* IMPLEMENTATION: Public API */
 
 /* Get single instance of manager */
-XfdashboardBindings* xfdashboard_bindings_get_default(void)
+XfdashboardBindingsPool* xfdashboard_bindings_pool_get_default(void)
 {
-	if(G_UNLIKELY(_xfdashboard_bindings==NULL))
+	if(G_UNLIKELY(_xfdashboard_bindings_pool==NULL))
 	{
-		_xfdashboard_bindings=g_object_new(XFDASHBOARD_TYPE_BINDINGS, NULL);
+		_xfdashboard_bindings_pool=g_object_new(XFDASHBOARD_TYPE_BINDINGS_POOL, NULL);
 	}
-		else g_object_ref(_xfdashboard_bindings);
+		else g_object_ref(_xfdashboard_bindings_pool);
 
-	return(_xfdashboard_bindings);
+	return(_xfdashboard_bindings_pool);
 }
 
 /* Load bindings from configuration file */
-gboolean xfdashboard_bindings_load(XfdashboardBindings *self, GError **outError)
+gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **outError)
 {
 	gchar							*configFile;
 	GError							*error;
 	gboolean						success;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_BINDINGS(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_BINDINGS_POOL(self), FALSE);
 	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
 
 	configFile=NULL;
@@ -1166,7 +985,7 @@ gboolean xfdashboard_bindings_load(XfdashboardBindings *self, GError **outError)
 	{
 		const gchar					*envFile;
 
-		envFile=g_getenv("XFDASHBOARD_BINDINGS_FILE");
+		envFile=g_getenv("XFDASHBOARD_BINDINGS_POOL_FILE");
 		if(envFile)
 		{
 			configFile=g_strdup(envFile);
@@ -1216,8 +1035,8 @@ gboolean xfdashboard_bindings_load(XfdashboardBindings *self, GError **outError)
 	{
 		/* Set error */
 		g_set_error(outError,
-					XFDASHBOARD_BINDINGS_ERROR,
-					XFDASHBOARD_BINDINGS_ERROR_FILE_NOT_FOUND,
+					XFDASHBOARD_BINDINGS_POOL_ERROR,
+					XFDASHBOARD_BINDINGS_POOL_ERROR_FILE_NOT_FOUND,
 					_("No bindings configuration file found."));
 
 		/* Return error result */
@@ -1225,7 +1044,7 @@ gboolean xfdashboard_bindings_load(XfdashboardBindings *self, GError **outError)
 	}
 
 	/* Load, parse and set up bindings from configuration file found */
-	if(!_xfdashboard_bindings_load_bindings_from_file(self, configFile, &error))
+	if(!_xfdashboard_bindings_pool_load_bindings_from_file(self, configFile, &error))
 	{
 		/* Propagate error if available */
 		if(error) g_propagate_error(outError, error);
@@ -1242,15 +1061,15 @@ gboolean xfdashboard_bindings_load(XfdashboardBindings *self, GError **outError)
 }
 
 /* Find action for event and actor */
-const gchar* xfdashboard_bindings_find_for_event(XfdashboardBindings *self, ClutterActor *inActor, const ClutterEvent *inEvent)
+const gchar* xfdashboard_bindings_pool_find_for_event(XfdashboardBindingsPool *self, ClutterActor *inActor, const ClutterEvent *inEvent)
 {
-	XfdashboardBindingsPrivate		*priv;
-	XfdashboardBindingsBinding		*lookupBinding;
-	const gchar						*foundAction;
-	GType							classType;
-	GSList							*interfaces;
+	XfdashboardBindingsPoolPrivate		*priv;
+	XfdashboardBinding					*lookupBinding;
+	const gchar							*foundAction;
+	GType								classType;
+	GSList								*interfaces;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_BINDINGS(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_BINDINGS_POOL(self), NULL);
 	g_return_val_if_fail(inEvent, NULL);
 
 	priv=self->priv;
@@ -1262,38 +1081,8 @@ const gchar* xfdashboard_bindings_find_for_event(XfdashboardBindings *self, Clut
 	/* If no bindings was set then we do not need to check this event */
 	if(!priv->bindings) return(NULL);
 
-	/* Check if event if either a keyboard or pointer related event */
-	switch(clutter_event_type(inEvent))
-	{
-		case CLUTTER_KEY_PRESS:
-			lookupBinding=_xfdashboard_bindings_key_binding_new(g_type_name(classType),
-																((ClutterKeyEvent*)inEvent)->keyval,
-																(((ClutterKeyEvent*)inEvent)->modifier_state & XFDASHBOARD_BINDINGS_MODIFIERS_MASK) & !CLUTTER_RELEASE_MASK);
-			break;
-
-		case CLUTTER_KEY_RELEASE:
-			lookupBinding=_xfdashboard_bindings_key_binding_new(g_type_name(classType),
-																((ClutterKeyEvent*)inEvent)->keyval,
-																(((ClutterKeyEvent*)inEvent)->modifier_state & XFDASHBOARD_BINDINGS_MODIFIERS_MASK) | CLUTTER_RELEASE_MASK);
-			break;
-
-		case CLUTTER_BUTTON_PRESS:
-			lookupBinding=_xfdashboard_bindings_pointer_binding_new(g_type_name(classType),
-																	((ClutterButtonEvent*)inEvent)->button,
-																	(((ClutterButtonEvent*)inEvent)->modifier_state & XFDASHBOARD_BINDINGS_MODIFIERS_MASK) & !CLUTTER_RELEASE_MASK);
-			break;
-
-		case CLUTTER_BUTTON_RELEASE:
-			lookupBinding=_xfdashboard_bindings_pointer_binding_new(g_type_name(classType),
-																	((ClutterButtonEvent*)inEvent)->button,
-																	(((ClutterButtonEvent*)inEvent)->modifier_state & XFDASHBOARD_BINDINGS_MODIFIERS_MASK) | CLUTTER_RELEASE_MASK);
-			break;
-
-		default:
-			lookupBinding=NULL;
-			break;
-	}
-
+	/* Get a binding instance for given event used to lookup registered bindings */
+	lookupBinding=xfdashboard_binding_new_for_event(inEvent);
 	if(!lookupBinding) return(NULL);
 
 	/* Beginning at class of actor check if we have a binding stored matching
@@ -1305,24 +1094,25 @@ const gchar* xfdashboard_bindings_find_for_event(XfdashboardBindings *self, Clut
 	 * a binding for any interface we collected on our way through parent classes
 	 * and return the matching binding if found.
 	 */
-	do
+	while(classType)
 	{
-		GType						*classInterfaces;
-		GType						*iter;
+		GType							*classInterfaces;
+		GType							*iter;
 
-		/* Class name is already set in lookup binding when checking for event
-		 * type or within this loop when looking up parent class so just check.
-		 */
+		/* Set class name in lookup binding */
+		xfdashboard_binding_set_class_name(lookupBinding, g_type_name(classType));
+
+		/* Check if we have a binding matching lookup binding */
 		if(g_hash_table_lookup_extended(priv->bindings, lookupBinding, NULL, (gpointer*)&foundAction))
 		{
 			g_debug("Found binding for class=%s, key/button=%04x, mods=%04x",
-					lookupBinding->className,
-					lookupBinding->key.key,
-					lookupBinding->key.modifiers);
+					xfdashboard_binding_get_class(lookupBinding),
+					xfdashboard_binding_get_key(lookupBinding),
+					xfdashboard_binding_get_modifiers(lookupBinding));
 
 			/* Found a binding so stop iterating through classes of actor */
 			if(interfaces) g_slist_free(interfaces);
-			if(lookupBinding) _xfdashboard_bindings_binding_unref(lookupBinding);
+			if(lookupBinding) g_object_unref(lookupBinding);
 			return(foundAction);
 		}
 
@@ -1341,44 +1131,36 @@ const gchar* xfdashboard_bindings_find_for_event(XfdashboardBindings *self, Clut
 		}
 		g_free(classInterfaces);
 
-		/* Get parent class and set it in lookup binding */
+		/* Get parent class */
 		classType=g_type_parent(classType);
-		if(classType)
-		{
-			g_free(lookupBinding->className);
-			lookupBinding->className=g_strdup(g_type_name(classType));
-		}
 	}
-	while(classType);
 
 	/* If we get here no matching binding for any class was found.
 	 * Try interfaces now.
 	 */
 	if(interfaces)
 	{
-		GSList						*iter;
-		GType						classInterface;
+		GSList							*iter;
+		GType							classInterface;
 
 		iter=interfaces;
 		do
 		{
-			/* Get type of interface ans set it in lookup binding */
+			/* Get type of interface and set it in lookup binding */
 			classInterface=GPOINTER_TO_GTYPE(iter->data);
-
-			g_free(lookupBinding->className);
-			lookupBinding->className=g_strdup(g_type_name(classInterface));
+			xfdashboard_binding_set_class_name(lookupBinding, g_type_name(classInterface));
 
 			/* Check for matching binding */
 			if(g_hash_table_lookup_extended(priv->bindings, lookupBinding, NULL, (gpointer*)&foundAction))
 			{
 				g_debug("Found binding for interface=%s for key/button=%04x, mods=%04x",
-						lookupBinding->className,
-						lookupBinding->key.key,
-						lookupBinding->key.modifiers);
+						xfdashboard_binding_get_class(lookupBinding),
+						xfdashboard_binding_get_key(lookupBinding),
+						xfdashboard_binding_get_modifiers(lookupBinding));
 
 				/* Found a binding so stop iterating through classes of actor */
 				if(interfaces) g_slist_free(interfaces);
-				if(lookupBinding) _xfdashboard_bindings_binding_unref(lookupBinding);
+				if(lookupBinding) g_object_unref(lookupBinding);
 				return(foundAction);
 			}
 		}
@@ -1387,7 +1169,7 @@ const gchar* xfdashboard_bindings_find_for_event(XfdashboardBindings *self, Clut
 
 	/* Release allocated resources */
 	if(interfaces) g_slist_free(interfaces);
-	if(lookupBinding) _xfdashboard_bindings_binding_unref(lookupBinding);
+	if(lookupBinding) g_object_unref(lookupBinding);
 
 	/* If we get here we did not find a matching binding so return NULL */
 	return(NULL);

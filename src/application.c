@@ -44,7 +44,7 @@
 #include "utils.h"
 #include "theme.h"
 #include "focus-manager.h"
-#include "bindings.h"
+#include "bindings-pool.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplication,
@@ -74,7 +74,7 @@ struct _XfdashboardApplicationPrivate
 	XfdashboardTheme			*theme;
 	gulong						xfconfThemeChangedSignalID;
 
-	XfdashboardBindings			*bindings;
+	XfdashboardBindingsPool		*bindings;
 };
 
 /* Properties */
@@ -283,14 +283,14 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
 
 	/* Set up keyboard and pointer bindings */
-	priv->bindings=xfdashboard_bindings_get_default();
+	priv->bindings=xfdashboard_bindings_pool_get_default();
 	if(!priv->bindings)
 	{
 		g_critical(_("Could not initialize bindings"));
 		return(FALSE);
 	}
 
-	if(!xfdashboard_bindings_load(priv->bindings, &error))
+	if(!xfdashboard_bindings_pool_load(priv->bindings, &error))
 	{
 		g_critical(_("Could not load bindings: %s"),
 					(error && error->message) ? error->message : _("unknown error"));
