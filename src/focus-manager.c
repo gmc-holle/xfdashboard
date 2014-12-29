@@ -466,16 +466,49 @@ void xfdashboard_focus_manager_set_focus(XfdashboardFocusManager *self, Xfdashbo
 		return;
 	}
 
-	/* Unset focus at current focused actor */
+	/* Check if new focusable actor can be focussed. If it cannot be focussed
+	 * move focus to next focusable actor. If no focusable actor can be found
+	 * do not change focus at all.
+	 */
+	if(!xfdashboard_focusable_can_focus(inFocusable))
+	{
+		XfdashboardFocusable		*newFocusable;
+
+		newFocusable=xfdashboard_focus_manager_get_next_focusable(self, inFocusable);
+		if(!newFocusable)
+		{
+			g_debug("Requested focusable actor '%s' cannot be focus but no other focusable actor was found",
+						G_OBJECT_TYPE_NAME(inFocusable));
+			return;
+		}
+
+		g_debug("Requested focusable actor '%s' cannot be focused - moving focus to '%s'",
+				G_OBJECT_TYPE_NAME(inFocusable),
+				newFocusable ? G_OBJECT_TYPE_NAME(newFocusable) : "<nothing>");
+		inFocusable=newFocusable;
+	}
+
+	/* Do nothing if current focused actor and new one are the same */
 	oldFocusable=priv->currentFocus;
+	if(oldFocusable==inFocusable)
+	{
+		g_debug("Current focused actor and new one are the same so do nothing.");
+		return;
+	}
+
+	/* Unset focus at current focused actor */
 	if(priv->currentFocus)
 	{
 		xfdashboard_focusable_unset_focus(priv->currentFocus);
+		priv->currentFocus=NULL;
 	}
 
-	/* Set focus */
+	/* Set focus to new focusable actor */
 	priv->currentFocus=inFocusable;
 	xfdashboard_focusable_set_focus(priv->currentFocus);
+	g_debug("Moved focus from '%s' to '%s'",
+				oldFocusable ? G_OBJECT_TYPE_NAME(oldFocusable) : "<nothing>",
+				G_OBJECT_TYPE_NAME(priv->currentFocus));
 
 	/* Emit signal for changed focus */
 	g_signal_emit(self, XfdashboardFocusManagerSignals[SIGNAL_CHANGED], 0, oldFocusable, priv->currentFocus);

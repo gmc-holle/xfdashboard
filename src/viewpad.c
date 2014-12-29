@@ -234,6 +234,7 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 	g_return_if_fail(inView==NULL || XFDASHBOARD_IS_VIEW(inView));
 
 	priv=self->priv;
+	hasFocus=FALSE;
 
 	/* Only set value if it changes */
 	if(inView==priv->activeView) return;
@@ -256,16 +257,16 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 
 	/* Determine if this viewpad has the focus because we have to move focus in this case */
 	focusManager=xfdashboard_focus_manager_get_default();
-	hasFocus=xfdashboard_focus_manager_has_focus(focusManager, XFDASHBOARD_FOCUSABLE(self));
 
 	/* Deactivate current view */
 	if(priv->activeView)
 	{
-		/* Unset focus at current active view if this viewpad has the focus */
+		/* Unset focus at current active view if this view has the focus */
+		hasFocus=xfdashboard_focus_manager_has_focus(focusManager, XFDASHBOARD_FOCUSABLE(priv->activeView));
 		if(hasFocus)
 		{
 			xfdashboard_focusable_unset_focus(XFDASHBOARD_FOCUSABLE(priv->activeView));
-			g_debug("Viewpad has focus so unset focus from view '%s'", xfdashboard_view_get_name(priv->activeView));
+			g_debug("Unset focus from view '%s' because it is the active view at viewpad", xfdashboard_view_get_name(priv->activeView));
 		}
 
 		/* Hide current view and emit signal before and after deactivation */
@@ -316,8 +317,8 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 		/* Set focus to new active view if this viewpad has the focus */
 		if(hasFocus)
 		{
-			xfdashboard_focusable_set_focus(XFDASHBOARD_FOCUSABLE(priv->activeView));
-			g_debug("Viewpad has focus so set focus to view '%s'", xfdashboard_view_get_name(priv->activeView));
+			xfdashboard_focus_manager_set_focus(focusManager, XFDASHBOARD_FOCUSABLE(priv->activeView));
+			g_debug("The previous active view at viewpad had focus so set focus to new active view '%s'", xfdashboard_view_get_name(priv->activeView));
 		}
 	}
 
@@ -332,8 +333,8 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 		if(newFocusable)
 		{
 			xfdashboard_focus_manager_set_focus(focusManager, newFocusable);
-			g_debug("Viewpad has focus but no view is active so move focus to next focusable actor of type '%s'",
-					G_OBJECT_TYPE_NAME(newFocusable));
+			g_message("Viewpad has focus but no view is active so move focus to next focusable actor of type '%s'",
+						G_OBJECT_TYPE_NAME(newFocusable));
 		}
 	}
 
