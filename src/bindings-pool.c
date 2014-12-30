@@ -33,7 +33,6 @@
 #include <gdk/gdkkeysyms.h>
 
 #include "utils.h"
-#include "binding.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardBindingsPool,
@@ -416,9 +415,11 @@ static void _xfdashboard_bindings_pool_parse_general_action_text_node(GMarkupPar
 		return;
 	}
 
+	/* Set action at binding */
+	xfdashboard_binding_set_action(data->lastBinding, action);
 
 	/* Add or replace binding in class hash-table */
-	g_hash_table_insert(data->bindings, g_object_ref(data->lastBinding), g_strdup(action));
+	g_hash_table_insert(data->bindings, g_object_ref(data->lastBinding), NULL);
 
 	/* Release allocated resources */
 	g_free(action);
@@ -828,7 +829,7 @@ static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBi
 	data->bindings=g_hash_table_new_full(xfdashboard_binding_hash,
 											xfdashboard_binding_compare,
 											(GDestroyNotify)g_object_unref,
-											g_free);
+											NULL);
 	if(!data->bindings)
 	{
 		/* Set error */
@@ -1061,11 +1062,11 @@ gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **
 }
 
 /* Find action for event and actor */
-const gchar* xfdashboard_bindings_pool_find_for_event(XfdashboardBindingsPool *self, ClutterActor *inActor, const ClutterEvent *inEvent)
+const XfdashboardBinding* xfdashboard_bindings_pool_find_for_event(XfdashboardBindingsPool *self, ClutterActor *inActor, const ClutterEvent *inEvent)
 {
 	XfdashboardBindingsPoolPrivate		*priv;
 	XfdashboardBinding					*lookupBinding;
-	const gchar							*foundAction;
+	const XfdashboardBinding			*foundBinding;
 	GType								classType;
 	GSList								*interfaces;
 
@@ -1075,7 +1076,7 @@ const gchar* xfdashboard_bindings_pool_find_for_event(XfdashboardBindingsPool *s
 	priv=self->priv;
 	classType=G_TYPE_FROM_INSTANCE(inActor);
 	lookupBinding=NULL;
-	foundAction=NULL;
+	foundBinding=NULL;
 	interfaces=NULL;
 
 	/* If no bindings was set then we do not need to check this event */
@@ -1103,17 +1104,17 @@ const gchar* xfdashboard_bindings_pool_find_for_event(XfdashboardBindingsPool *s
 		xfdashboard_binding_set_class_name(lookupBinding, g_type_name(classType));
 
 		/* Check if we have a binding matching lookup binding */
-		if(g_hash_table_lookup_extended(priv->bindings, lookupBinding, NULL, (gpointer*)&foundAction))
+		if(g_hash_table_lookup_extended(priv->bindings, lookupBinding, (gpointer*)&foundBinding, NULL))
 		{
 			g_debug("Found binding for class=%s, key/button=%04x, mods=%04x",
-					xfdashboard_binding_get_class(lookupBinding),
+					xfdashboard_binding_get_class_name(lookupBinding),
 					xfdashboard_binding_get_key(lookupBinding),
 					xfdashboard_binding_get_modifiers(lookupBinding));
 
 			/* Found a binding so stop iterating through classes of actor */
 			if(interfaces) g_slist_free(interfaces);
 			if(lookupBinding) g_object_unref(lookupBinding);
-			return(foundAction);
+			return(foundBinding);
 		}
 
 		/* Collect interfaces */
@@ -1151,17 +1152,17 @@ const gchar* xfdashboard_bindings_pool_find_for_event(XfdashboardBindingsPool *s
 			xfdashboard_binding_set_class_name(lookupBinding, g_type_name(classInterface));
 
 			/* Check for matching binding */
-			if(g_hash_table_lookup_extended(priv->bindings, lookupBinding, NULL, (gpointer*)&foundAction))
+			if(g_hash_table_lookup_extended(priv->bindings, lookupBinding, (gpointer*)&foundBinding, NULL))
 			{
 				g_debug("Found binding for interface=%s for key/button=%04x, mods=%04x",
-						xfdashboard_binding_get_class(lookupBinding),
+						xfdashboard_binding_get_class_name(lookupBinding),
 						xfdashboard_binding_get_key(lookupBinding),
 						xfdashboard_binding_get_modifiers(lookupBinding));
 
 				/* Found a binding so stop iterating through classes of actor */
 				if(interfaces) g_slist_free(interfaces);
 				if(lookupBinding) g_object_unref(lookupBinding);
-				return(foundAction);
+				return(foundBinding);
 			}
 		}
 		while((iter=g_slist_next(iter)));

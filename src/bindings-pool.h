@@ -26,6 +26,7 @@
 
 #include <clutter/clutter.h>
 
+#include "binding.h"
 #include "types.h"
 
 G_BEGIN_DECLS
@@ -76,7 +77,7 @@ XfdashboardBindingsPool* xfdashboard_bindings_pool_get_default(void);
 
 gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **outError);
 
-const gchar* xfdashboard_bindings_pool_find_for_event(XfdashboardBindingsPool *self, ClutterActor *inActor, const ClutterEvent *inEvent);
+const XfdashboardBinding* xfdashboard_bindings_pool_find_for_event(XfdashboardBindingsPool *self, ClutterActor *inActor, const ClutterEvent *inEvent);
 
 G_END_DECLS
 

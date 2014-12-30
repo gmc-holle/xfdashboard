@@ -76,20 +76,23 @@ XfdashboardBinding* xfdashboard_binding_new_for_event(const ClutterEvent *inEven
 guint xfdashboard_binding_hash(gconstpointer inValue);
 gboolean xfdashboard_binding_compare(gconstpointer inLeft, gconstpointer inRight);
 
-ClutterEventType xfdashboard_binding_get_event_type(XfdashboardBinding *self);
+ClutterEventType xfdashboard_binding_get_event_type(const XfdashboardBinding *self);
 void xfdashboard_binding_set_event_type(XfdashboardBinding *self, ClutterEventType inType);
 
-const gchar* xfdashboard_binding_get_class(XfdashboardBinding *self);
+const gchar* xfdashboard_binding_get_class_name(const XfdashboardBinding *self);
 void xfdashboard_binding_set_class_name(XfdashboardBinding *self, const gchar *inClassName);
 
-guint xfdashboard_binding_get_key(XfdashboardBinding *self);
+guint xfdashboard_binding_get_key(const XfdashboardBinding *self);
 void xfdashboard_binding_set_key(XfdashboardBinding *self, guint inKey);
 
-guint xfdashboard_binding_get_button(XfdashboardBinding *self);
+guint xfdashboard_binding_get_button(const XfdashboardBinding *self);
 void xfdashboard_binding_set_button(XfdashboardBinding *self, guint inButton);
 
-ClutterModifierType xfdashboard_binding_get_modifiers(XfdashboardBinding *self);
+ClutterModifierType xfdashboard_binding_get_modifiers(const XfdashboardBinding *self);
 void xfdashboard_binding_set_modifiers(XfdashboardBinding *self, ClutterModifierType inModifiers);
+
+const gchar* xfdashboard_binding_get_action(const XfdashboardBinding *self);
+void xfdashboard_binding_set_action(XfdashboardBinding *self, const gchar *inAction);
 
 G_END_DECLS
 

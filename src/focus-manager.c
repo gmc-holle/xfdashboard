@@ -640,6 +640,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 	if(inFocusable)
 	{
 		XfdashboardBindingsPool		*bindings;
+		const XfdashboardBinding	*binding;
 		const gchar					*action;
 		gboolean					eventStatus;
 
@@ -652,9 +653,10 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 		 */
 		eventStatus=CLUTTER_EVENT_PROPAGATE;
 		bindings=xfdashboard_bindings_pool_get_default();
-		action=xfdashboard_bindings_pool_find_for_event(bindings, CLUTTER_ACTOR(inFocusable), inEvent);
-		if(action)
+		binding=xfdashboard_bindings_pool_find_for_event(bindings, CLUTTER_ACTOR(inFocusable), inEvent);
+		if(binding)
 		{
+			action=xfdashboard_binding_get_action(binding);
 			g_debug("Emitting action signal '%s' at focusable actor %s", action, G_OBJECT_TYPE_NAME(inFocusable));
 			g_signal_emit_by_name(inFocusable, action, inEvent, &eventStatus);
 			g_debug("Action signal '%s' was %s by focusable actor %s",
