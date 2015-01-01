@@ -476,6 +476,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 		gchar									*keycode=NULL;
 		gchar									*source=NULL;
 		gchar									*when=NULL;
+		gchar									*target=NULL;
 		ClutterEventType						eventType;
 		guint									key;
 		ClutterModifierType						modifiers;
@@ -494,12 +495,16 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 											G_MARKUP_COLLECT_STRDUP | G_MARKUP_COLLECT_OPTIONAL,
 											"when",
 											&when,
+											G_MARKUP_COLLECT_STRDUP | G_MARKUP_COLLECT_OPTIONAL,
+											"target",
+											&target,
 											G_MARKUP_COLLECT_INVALID))
 		{
 			g_propagate_error(outError, error);
 			if(keycode) g_free(keycode);
 			if(source) g_free(source);
 			if(when) g_free(when);
+			if(target) g_free(target);
 			return;
 		}
 
@@ -517,6 +522,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 			if(keycode) g_free(keycode);
 			if(source) g_free(source);
 			if(when) g_free(when);
+			if(target) g_free(target);
 
 			return;
 		}
@@ -536,6 +542,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 			if(keycode) g_free(keycode);
 			if(source) g_free(source);
 			if(when) g_free(when);
+			if(target) g_free(target);
 
 			return;
 		}
@@ -550,17 +557,11 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 			{
 				/* Set event type */
 				eventType=CLUTTER_KEY_PRESS;
-
-				/* Unset release bit in modifiers */
-				modifiers&=!CLUTTER_RELEASE_MASK;
 			}
 				else if(g_strcmp0(when, "released")==0)
 				{
 					/* Set event type */
 					eventType=CLUTTER_KEY_RELEASE;
-
-					/* Set release bit in modifiers */
-					// TODO: modifiers|=CLUTTER_RELEASE_MASK;
 				}
 				else
 				{
@@ -576,6 +577,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 					if(keycode) g_free(keycode);
 					if(source) g_free(source);
 					if(when) g_free(when);
+					if(target) g_free(target);
 
 					return;
 				}
@@ -596,6 +598,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 			if(keycode) g_free(keycode);
 			if(source) g_free(source);
 			if(when) g_free(when);
+			if(target) g_free(target);
 
 			return;
 		}
@@ -604,11 +607,13 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 		xfdashboard_binding_set_class_name(data->lastBinding, source);
 		xfdashboard_binding_set_key(data->lastBinding, key);
 		xfdashboard_binding_set_modifiers(data->lastBinding, modifiers);
+		if(target) xfdashboard_binding_set_target(data->lastBinding, target);
 
 		/* Release allocated resources */
 		if(keycode) g_free(keycode);
 		if(source) g_free(source);
 		if(when) g_free(when);
+		if(target) g_free(target);
 
 		/* Set up context for tag <key> */
 		g_markup_parse_context_push(inContext, &keyParser, inUserData);
@@ -674,7 +679,7 @@ static void _xfdashboard_bindings_pool_parse_document_start(GMarkupParseContext 
 														gpointer inUserData,
 														GError **outError)
 {
-	XfdashboardBindingsPoolParserData		*data=(XfdashboardBindingsPoolParserData*)inUserData;
+	XfdashboardBindingsPoolParserData	*data=(XfdashboardBindingsPoolParserData*)inUserData;
 	gint								currentTag=TAG_DOCUMENT;
 	gint								nextTag;
 	GError								*error=NULL;

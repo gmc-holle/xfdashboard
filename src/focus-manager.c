@@ -58,6 +58,10 @@ enum
 
 	SIGNAL_CHANGED,
 
+	/* Actions */
+	ACTION_FOCUS_MOVE_NEXT,
+	ACTION_FOCUS_MOVE_PREVIOUS,
+
 	SIGNAL_LAST
 };
 
@@ -121,6 +125,46 @@ static void _xfdashboard_focus_manager_on_focusable_hide(XfdashboardFocusManager
 		}
 }
 
+/* Action signal to move focus to next focusable actor was emitted */
+static gboolean _xfdashboard_focus_manager_move_focus_next(XfdashboardFocusManager *self,
+															ClutterEvent *inEvent)
+{
+	XfdashboardFocusable			*currentFocusable;
+	XfdashboardFocusable			*newFocusable;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
+
+	/* Get current focus */
+	currentFocusable=xfdashboard_focus_manager_get_focus(self);
+
+	/* Get next focusable actor to focus */
+	newFocusable=xfdashboard_focus_manager_get_next_focusable(self, currentFocusable);
+	if(newFocusable) xfdashboard_focus_manager_set_focus(self, newFocusable);
+
+	return(CLUTTER_EVENT_STOP);
+}
+
+/* Action signal to move focus to previous focusable actor was emitted */
+static gboolean _xfdashboard_focus_manager_move_focus_previous(XfdashboardFocusManager *self,
+																ClutterEvent *inEvent)
+{
+	XfdashboardFocusable			*currentFocusable;
+	XfdashboardFocusable			*newFocusable;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
+
+	/* Get current focus */
+	currentFocusable=xfdashboard_focus_manager_get_focus(self);
+
+	/* Get next focusable actor to focus */
+	newFocusable=xfdashboard_focus_manager_get_previous_focusable(self, currentFocusable);
+	if(newFocusable) xfdashboard_focus_manager_set_focus(self, newFocusable);
+
+	return(CLUTTER_EVENT_STOP);
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -180,6 +224,9 @@ static void xfdashboard_focus_manager_class_init(XfdashboardFocusManagerClass *k
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_focus_manager_dispose;
 
+	klass->focus_move_next=_xfdashboard_focus_manager_move_focus_next;
+	klass->focus_move_previous=_xfdashboard_focus_manager_move_focus_previous;
+
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardFocusManagerPrivate));
 
@@ -220,6 +267,30 @@ static void xfdashboard_focus_manager_class_init(XfdashboardFocusManagerClass *k
 						2,
 						XFDASHBOARD_TYPE_FOCUSABLE,
 						XFDASHBOARD_TYPE_FOCUSABLE);
+
+	XfdashboardFocusManagerSignals[ACTION_FOCUS_MOVE_NEXT]=
+		g_signal_new("focus-move-next",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardFocusManagerClass, focus_move_next),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						G_TYPE_BOOLEAN,
+						1,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardFocusManagerSignals[ACTION_FOCUS_MOVE_PREVIOUS]=
+		g_signal_new("focus-move-previous",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardFocusManagerClass, focus_move_previous),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						G_TYPE_BOOLEAN,
+						1,
+						CLUTTER_TYPE_EVENT);
 }
 
 /* Object initialization
@@ -639,10 +710,9 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 	/* Synthesize event for specified focusable actor */
 	if(inFocusable)
 	{
-		XfdashboardBindingsPool		*bindings;
-		const XfdashboardBinding	*binding;
-		const gchar					*action;
-		gboolean					eventStatus;
+		XfdashboardBindingsPool			*bindings;
+		const XfdashboardBinding		*binding;
+		gboolean						eventStatus;
 
 		/* Take reference on ourselve and the focusable actor to keep them alive when handling event */
 		g_object_ref(self);
@@ -656,14 +726,104 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 		binding=xfdashboard_bindings_pool_find_for_event(bindings, CLUTTER_ACTOR(inFocusable), inEvent);
 		if(binding)
 		{
-			action=xfdashboard_binding_get_action(binding);
-			g_debug("Emitting action signal '%s' at focusable actor %s", action, G_OBJECT_TYPE_NAME(inFocusable));
-			g_signal_emit_by_name(inFocusable, action, inEvent, &eventStatus);
-			g_debug("Action signal '%s' was %s by focusable actor %s",
-						action,
-						eventStatus==CLUTTER_EVENT_STOP ? "handled" : "not handled",
-						G_OBJECT_TYPE_NAME(inFocusable));
+			const gchar					*target;
+			const gchar					*action;
+			GSList						*targetFocusables;
+			GSList						*iter;
 
+			/* Get action of binding */
+			action=xfdashboard_binding_get_action(binding);
+
+			/* Build up list of targets which is either the requested focusable actor,
+			 * the current focused actor or focusable actors of a specific type
+			 */
+			targetFocusables=NULL;
+			target=xfdashboard_binding_get_target(binding);
+			if(target)
+			{
+				GList					*focusablesIter;
+				GList					*focusablesStartPoint;
+				XfdashboardFocusable	*focusable;
+
+				/* Class name of targets is given so check if target of binding
+				 * points to ourselve.
+				 */
+				if(g_strcmp0(target, G_OBJECT_TYPE_NAME(self))==0)
+				{
+					targetFocusables=g_slist_append(targetFocusables, g_object_ref(self));
+				}
+
+				/* Iterate through list of focusable actors to add each one
+				 * matching the target class name to list of targets.
+				 * Begin at finding starting point of iteration.
+				 */
+				focusablesStartPoint=g_list_find(priv->registeredFocusables, priv->currentFocus);
+				if(!focusablesStartPoint) focusablesStartPoint=priv->registeredFocusables;
+
+				/* Iterate through list of registered focusable actors beginning at
+				 * given focusable actor (might be begin of this list) and add
+				 * each focusable actor to target list.
+				 */
+				for(focusablesIter=focusablesStartPoint; focusablesIter; focusablesIter=g_list_next(focusablesIter))
+				{
+					focusable=(XfdashboardFocusable*)focusablesIter->data;
+
+					/* If focusable can be focused then add it to target list */
+					if(xfdashboard_focusable_can_focus(focusable) &&
+						g_strcmp0(G_OBJECT_TYPE_NAME(focusable), target)==0)
+					{
+						targetFocusables=g_slist_append(targetFocusables, g_object_ref(focusable));
+					}
+				}
+
+				/* If we get here we have to continue search at the beginning of list
+				 * of registered focusable actors. Iterate through list of registered
+				 * focusable actors from the beginning of that list up to the given
+				 * focusable actor and return the first focusable actor which is focusable.
+				 */
+				for(focusablesIter=priv->registeredFocusables; focusablesIter!=focusablesStartPoint; focusablesIter=g_list_next(focusablesIter))
+				{
+					focusable=(XfdashboardFocusable*)focusablesIter->data;
+
+					/* If focusable can be focused then add it to target list */
+					if(xfdashboard_focusable_can_focus(focusable) &&
+						g_strcmp0(G_OBJECT_TYPE_NAME(focusable), target)==0)
+					{
+						targetFocusables=g_slist_append(targetFocusables, g_object_ref(focusable));
+					}
+				}
+			}
+				else
+				{
+					/* No target class name was specified so add requested focusable
+					 * actor to list of target.
+					 */
+					targetFocusables=g_slist_append(targetFocusables, g_object_ref(inFocusable));
+				}
+
+			g_debug("Target list for action '%s' has %d entries", action, g_slist_length(targetFocusables));
+
+			/* Emit action of binding to each actor in target list just build up */
+			for(iter=targetFocusables; iter; iter=g_slist_next(iter))
+			{
+				GObject				*targetObject;
+
+				/* Get target to emit action signal at */
+				targetObject=G_OBJECT(iter->data);
+
+				/* Emit action signal at target */
+				g_debug("Emitting action signal '%s' at focusable actor %s",
+							action,
+							G_OBJECT_TYPE_NAME(targetObject));
+				g_signal_emit_by_name(targetObject, action, inEvent, &eventStatus);
+				g_debug("Action signal '%s' was %s by focusable actor %s",
+							action,
+							eventStatus==CLUTTER_EVENT_STOP ? "handled" : "not handled",
+							G_OBJECT_TYPE_NAME(targetObject));
+			}
+
+			/* Release allocated resources */
+			g_slist_free_full(targetFocusables, g_object_unref);
 		}
 		g_object_unref(bindings);
 

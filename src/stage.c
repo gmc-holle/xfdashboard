@@ -165,36 +165,6 @@ static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inE
 		/* Handle key */
 		switch(inEvent->key.keyval)
 		{
-			/* Handle TAB and SHIFT-TAB directly to move focus */
-			case CLUTTER_KEY_Tab:
-			case CLUTTER_KEY_ISO_Left_Tab:
-			{
-				XfdashboardFocusable	*currentFocusable;
-				XfdashboardFocusable	*newFocusable;
-
-				/* Get current focus */
-				currentFocusable=xfdashboard_focus_manager_get_focus(priv->focusManager);
-
-				/* If TAB is pressed without SHIFT move focus to next focusable actor.
-				 * If TAB is pressed with SHIFT move focus to previous focusable actor.
-				 */
-				if(!isShift)
-				{
-					newFocusable=xfdashboard_focus_manager_get_next_focusable(priv->focusManager, currentFocusable);
-					if(newFocusable) xfdashboard_focus_manager_set_focus(priv->focusManager, newFocusable);
-
-					return(CLUTTER_EVENT_STOP);
-				}
-					else
-					{
-						newFocusable=xfdashboard_focus_manager_get_previous_focusable(priv->focusManager, currentFocusable);
-						if(newFocusable) xfdashboard_focus_manager_set_focus(priv->focusManager, newFocusable);
-
-						return(CLUTTER_EVENT_STOP);
-					}
-			}
-			break;
-
 			/* Handle ESC key to clear search box or quit/suspend application */
 			case CLUTTER_KEY_Escape:
 			{

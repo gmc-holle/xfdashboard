@@ -46,6 +46,7 @@ struct _XfdashboardBindingPrivate
 	guint					key;
 	guint					button;
 	ClutterModifierType		modifiers;
+	gchar					*target;
 	gchar					*action;
 };
 
@@ -59,6 +60,7 @@ enum
 	PROP_KEY,
 	PROP_BUTTON,
 	PROP_MODIFIERS,
+	PROP_TARGET,
 	PROP_ACTION,
 
 	PROP_LAST
@@ -82,6 +84,12 @@ static void _xfdashboard_binding_dispose(GObject *inObject)
 	{
 		g_free(priv->className);
 		priv->className=NULL;
+	}
+
+	if(priv->target)
+	{
+		g_free(priv->target);
+		priv->target=NULL;
 	}
 
 	if(priv->action)
@@ -124,6 +132,10 @@ static void _xfdashboard_binding_set_property(GObject *inObject,
 			xfdashboard_binding_set_modifiers(self, g_value_get_flags(inValue));
 			break;
 
+		case PROP_TARGET:
+			xfdashboard_binding_set_target(self, g_value_get_string(inValue));
+			break;
+
 		case PROP_ACTION:
 			xfdashboard_binding_set_action(self, g_value_get_string(inValue));
 			break;
@@ -162,6 +174,10 @@ static void _xfdashboard_binding_get_property(GObject *inObject,
 
 		case PROP_MODIFIERS:
 			g_value_set_flags(outValue, priv->modifiers);
+			break;
+
+		case PROP_TARGET:
+			g_value_set_string(outValue, priv->target);
 			break;
 
 		case PROP_ACTION:
@@ -230,10 +246,17 @@ static void xfdashboard_binding_class_init(XfdashboardBindingClass *klass)
 							0,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardBindingProperties[PROP_TARGET]=
+		g_param_spec_string("target",
+								_("Target"),
+								_("Class name of target of this binding"),
+								NULL,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	XfdashboardBindingProperties[PROP_ACTION]=
 		g_param_spec_string("action",
 								_("Action"),
-								_("Action assinged to this binding"),
+								_("Action assigned to this binding"),
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -255,6 +278,7 @@ static void xfdashboard_binding_init(XfdashboardBinding *self)
 	priv->key=0;
 	priv->button=0;
 	priv->modifiers=0;
+	priv->target=NULL;
 	priv->action=NULL;
 }
 
@@ -399,7 +423,7 @@ gboolean xfdashboard_binding_compare(gconstpointer inLeft, gconstpointer inRight
 	return(TRUE);
 }
 
-/* Get/set event type for binding */
+/* Get/set event type of binding */
 ClutterEventType xfdashboard_binding_get_event_type(const XfdashboardBinding *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(self), CLUTTER_NOTHING);
@@ -453,7 +477,7 @@ void xfdashboard_binding_set_event_type(XfdashboardBinding *self, ClutterEventTy
 	}
 }
 
-/* Get/set class name for binding */
+/* Get/set class name of binding */
 const gchar* xfdashboard_binding_get_class_name(const XfdashboardBinding *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(self), NULL);
@@ -487,7 +511,7 @@ void xfdashboard_binding_set_class_name(XfdashboardBinding *self, const gchar *i
 	}
 }
 
-/* Get/set key code for binding */
+/* Get/set key code of binding */
 guint xfdashboard_binding_get_key(const XfdashboardBinding *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(self), 0);
@@ -515,7 +539,7 @@ void xfdashboard_binding_set_key(XfdashboardBinding *self, guint inKey)
 	}
 }
 
-/* Get/set button for binding */
+/* Get/set button of binding */
 guint xfdashboard_binding_get_button(const XfdashboardBinding *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(self), 0);
@@ -543,12 +567,12 @@ void xfdashboard_binding_set_button(XfdashboardBinding *self, guint inButton)
 	}
 }
 
-/* Get/set modifiers for binding */
+/* Get/set modifiers of binding */
 ClutterModifierType xfdashboard_binding_get_modifiers(const XfdashboardBinding *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(self), 0);
 
-	return(self->priv->key);
+	return(self->priv->modifiers);
 }
 
 void xfdashboard_binding_set_modifiers(XfdashboardBinding *self, ClutterModifierType inModifiers)
@@ -573,7 +597,41 @@ void xfdashboard_binding_set_modifiers(XfdashboardBinding *self, ClutterModifier
 	}
 }
 
-/* Get/set action for binding */
+/* Get/set target of binding */
+const gchar* xfdashboard_binding_get_target(const XfdashboardBinding *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(self), NULL);
+
+	return(self->priv->target);
+}
+
+void xfdashboard_binding_set_target(XfdashboardBinding *self, const gchar *inTarget)
+{
+	XfdashboardBindingPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_BINDING(self));
+	g_return_if_fail(inTarget && *inTarget);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->target, inTarget)!=0)
+	{
+		/* Set value */
+		if(priv->target)
+		{
+			g_free(priv->target);
+			priv->target=NULL;
+		}
+
+		if(inTarget) priv->target=g_strdup(inTarget);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBindingProperties[PROP_TARGET]);
+	}
+}
+
+/* Get/set action of binding */
 const gchar* xfdashboard_binding_get_action(const XfdashboardBinding *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(self), NULL);

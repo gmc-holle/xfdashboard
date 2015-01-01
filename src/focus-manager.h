@@ -65,6 +65,9 @@ struct _XfdashboardFocusManagerClass
 	void (*changed)(XfdashboardFocusManager *self,
 						XfdashboardFocusable *oldActor,
 						XfdashboardFocusable *newActor);
+
+	gboolean (*focus_move_next)(XfdashboardFocusManager *self, ClutterEvent *inEvent);
+	gboolean (*focus_move_previous)(XfdashboardFocusManager *self, ClutterEvent *inEvent);
 };
 
 /* Public API */

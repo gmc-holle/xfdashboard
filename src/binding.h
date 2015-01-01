@@ -65,8 +65,7 @@ struct _XfdashboardBindingClass
 													CLUTTER_MOD5_MASK | \
 													CLUTTER_SUPER_MASK | \
 													CLUTTER_HYPER_MASK | \
-													CLUTTER_META_MASK | \
-													CLUTTER_RELEASE_MASK)
+													CLUTTER_META_MASK)
 
 GType xfdashboard_binding_get_type(void) G_GNUC_CONST;
 
@@ -90,6 +89,9 @@ void xfdashboard_binding_set_button(XfdashboardBinding *self, guint inButton);
 
 ClutterModifierType xfdashboard_binding_get_modifiers(const XfdashboardBinding *self);
 void xfdashboard_binding_set_modifiers(XfdashboardBinding *self, ClutterModifierType inModifiers);
+
+const gchar* xfdashboard_binding_get_target(const XfdashboardBinding *self);
+void xfdashboard_binding_set_target(XfdashboardBinding *self, const gchar *inTarget);
 
 const gchar* xfdashboard_binding_get_action(const XfdashboardBinding *self);
 void xfdashboard_binding_set_action(XfdashboardBinding *self, const gchar *inAction);
