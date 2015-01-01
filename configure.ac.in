@@ -1,7 +1,7 @@
 dnl
 dnl xfdashboard - Maybe a Gnome shell like dashboard for Xfce
 dnl
-dnl Copyright (c) 2012-2014 Stephan Haller <nomad@froevel.de>
+dnl Copyright (c) 2012-2015 Stephan Haller <nomad@froevel.de>
 dnl
 
 dnl ***************************
@@ -35,7 +35,7 @@ m4_define([xfdashboard_debug_default], [ifelse(xfdashboard_version_tag(), [git],
 dnl ***************************
 dnl *** Initialize autoconf ***
 dnl ***************************
-AC_COPYRIGHT([Copyright (c) 2012-2014 Stephan Haller <nomad@froevel.de>])
+AC_COPYRIGHT([Copyright (c) 2012-2015 Stephan Haller <nomad@froevel.de>])
 AC_INIT([xfdashboard], [xfdashboard_version], [https://github.com/gmc-holle/xfdashboard], [xfdashboard])
 AC_PREREQ([2.50])
 AC_REVISION([xfdashboard_version_build])
