@@ -333,8 +333,8 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 		if(newFocusable)
 		{
 			xfdashboard_focus_manager_set_focus(focusManager, newFocusable);
-			g_message("Viewpad has focus but no view is active so move focus to next focusable actor of type '%s'",
-						G_OBJECT_TYPE_NAME(newFocusable));
+			g_debug("Viewpad has focus but no view is active so move focus to next focusable actor of type '%s'",
+					G_OBJECT_TYPE_NAME(newFocusable));
 		}
 	}
 
