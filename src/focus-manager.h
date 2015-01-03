@@ -36,7 +36,7 @@ G_BEGIN_DECLS
 #define XFDASHBOARD_IS_FOCUS_MANAGER(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_FOCUS_MANAGER))
 #define XFDASHBOARD_FOCUS_MANAGER_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST((klass), XFDASHBOARD_TYPE_FOCUS_MANAGER, XfdashboardFocusManagerClass))
 #define XFDASHBOARD_IS_FOCUS_MANAGER_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE((klass), XFDASHBOARD_TYPE_FOCUS_MANAGER))
-#define XFDASHBOARD_FOCUS_MANAGER_GET_CLASS(obj)		(G_TYPE_INSTANCE_GET_CLASS((obj), XFDASHBOARD_TYPE_FOCUS_MANAGER, XfdashboardFocusManagerClass))
+#define XFDASHBOARD_FOCUS_MANAGER_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), XFDASHBOARD_TYPE_FOCUS_MANAGER, XfdashboardFocusManagerClass))
 
 typedef struct _XfdashboardFocusManager				XfdashboardFocusManager;
 typedef struct _XfdashboardFocusManagerClass		XfdashboardFocusManagerClass;
@@ -66,8 +66,14 @@ struct _XfdashboardFocusManagerClass
 						XfdashboardFocusable *oldActor,
 						XfdashboardFocusable *newActor);
 
-	gboolean (*focus_move_next)(XfdashboardFocusManager *self, ClutterEvent *inEvent);
-	gboolean (*focus_move_previous)(XfdashboardFocusManager *self, ClutterEvent *inEvent);
+	gboolean (*focus_move_next)(XfdashboardFocusManager *self,
+									XfdashboardFocusable *inSource,
+									const gchar *inAction,
+									ClutterEvent *inEvent);
+	gboolean (*focus_move_previous)(XfdashboardFocusManager *self,
+									XfdashboardFocusable *inSource,
+									const gchar *inAction,
+									ClutterEvent *inEvent);
 };
 
 /* Public API */

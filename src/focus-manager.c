@@ -212,6 +212,8 @@ static GSList* _xfdashboard_focus_manager_get_targets_for_binding(XfdashboardFoc
 
 /* Action signal to move focus to next focusable actor was emitted */
 static gboolean _xfdashboard_focus_manager_move_focus_next(XfdashboardFocusManager *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
 															ClutterEvent *inEvent)
 {
 	XfdashboardFocusable			*currentFocusable;
@@ -232,6 +234,8 @@ static gboolean _xfdashboard_focus_manager_move_focus_next(XfdashboardFocusManag
 
 /* Action signal to move focus to previous focusable actor was emitted */
 static gboolean _xfdashboard_focus_manager_move_focus_previous(XfdashboardFocusManager *self,
+																XfdashboardFocusable *inSource,
+																const gchar *inAction,
 																ClutterEvent *inEvent)
 {
 	XfdashboardFocusable			*currentFocusable;
@@ -360,9 +364,11 @@ static void xfdashboard_focus_manager_class_init(XfdashboardFocusManagerClass *k
 						G_STRUCT_OFFSET(XfdashboardFocusManagerClass, focus_move_next),
 						g_signal_accumulator_true_handled,
 						NULL,
-						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
 						G_TYPE_BOOLEAN,
-						1,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
 						CLUTTER_TYPE_EVENT);
 
 	XfdashboardFocusManagerSignals[ACTION_FOCUS_MOVE_PREVIOUS]=
@@ -372,9 +378,11 @@ static void xfdashboard_focus_manager_class_init(XfdashboardFocusManagerClass *k
 						G_STRUCT_OFFSET(XfdashboardFocusManagerClass, focus_move_previous),
 						g_signal_accumulator_true_handled,
 						NULL,
-						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
 						G_TYPE_BOOLEAN,
-						1,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
 						CLUTTER_TYPE_EVENT);
 }
 
@@ -868,7 +876,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 				{
 					GSignalQuery		signalData={ 0, };
 					GType				returnValueType=G_TYPE_BOOLEAN;
-					GType				parameterTypes[]={ CLUTTER_TYPE_EVENT };
+					GType				parameterTypes[]={ XFDASHBOARD_TYPE_FOCUSABLE, G_TYPE_STRING, CLUTTER_TYPE_EVENT };
 					guint				parameterCount;
 					guint				i;
 
@@ -904,16 +912,16 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 									parameterCount);
 					}
 
-					for(i=0; i<parameterCount; i++)
+					for(i=0; i<(parameterCount<signalData.n_params ? parameterCount : signalData.n_params); i++)
 					{
 						if(signalData.param_types[i]!=parameterTypes[i])
 						{
-						g_critical(_("Action '%s' at object type %s wants type %s at parameter %u but type %s is expected."),
-									action,
-									G_OBJECT_TYPE_NAME(targetObject),
-									g_type_name(signalData.param_types[i]),
-									i+1,
-									g_type_name(parameterTypes[i]));
+							g_critical(_("Action '%s' at object type %s wants type %s at parameter %u but type %s is expected."),
+										action,
+										G_OBJECT_TYPE_NAME(targetObject),
+										g_type_name(signalData.param_types[i]),
+										i+1,
+										g_type_name(parameterTypes[i]));
 						}
 					}
 				}
@@ -923,7 +931,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 				g_debug("Emitting action signal '%s' at focusable actor %s",
 							action,
 							G_OBJECT_TYPE_NAME(targetObject));
-				g_signal_emit_by_name(targetObject, action, inEvent, &eventStatus);
+				g_signal_emit_by_name(targetObject, action, inFocusable, action, inEvent, &eventStatus);
 				g_debug("Action signal '%s' was %s by focusable actor %s",
 							action,
 							eventStatus==CLUTTER_EVENT_STOP ? "handled" : "not handled",

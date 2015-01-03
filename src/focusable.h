@@ -58,13 +58,34 @@ struct _XfdashboardFocusableInterface
 	ClutterActor* (*find_selection)(XfdashboardFocusable *self, ClutterActor *inSelection, XfdashboardSelectionTarget inDirection);
 	gboolean (*activate_selection)(XfdashboardFocusable *self, ClutterActor *inSelection);
 
-	gboolean (*selection_move_left)(XfdashboardFocusable *self, ClutterEvent *inEvent);
-	gboolean (*selection_move_right)(XfdashboardFocusable *self, ClutterEvent *inEvent);
-	gboolean (*selection_move_up)(XfdashboardFocusable *self, ClutterEvent *inEvent);
-	gboolean (*selection_move_down)(XfdashboardFocusable *self, ClutterEvent *inEvent);
-	gboolean (*selection_move_first)(XfdashboardFocusable *self, ClutterEvent *inEvent);
-	gboolean (*selection_move_last)(XfdashboardFocusable *self, ClutterEvent *inEvent);
-	gboolean (*selection_activate)(XfdashboardFocusable *self, ClutterEvent *inEvent);
+	gboolean (*selection_move_left)(XfdashboardFocusable *self,
+										XfdashboardFocusable *inSource,
+										const gchar *inAction,
+										ClutterEvent *inEvent);
+	gboolean (*selection_move_right)(XfdashboardFocusable *self,
+										XfdashboardFocusable *inSource,
+										const gchar *inAction,
+										ClutterEvent *inEvent);
+	gboolean (*selection_move_up)(XfdashboardFocusable *self,
+										XfdashboardFocusable *inSource,
+										const gchar *inAction,
+										ClutterEvent *inEvent);
+	gboolean (*selection_move_down)(XfdashboardFocusable *self,
+										XfdashboardFocusable *inSource,
+										const gchar *inAction,
+										ClutterEvent *inEvent);
+	gboolean (*selection_move_first)(XfdashboardFocusable *self,
+										XfdashboardFocusable *inSource,
+										const gchar *inAction,
+										ClutterEvent *inEvent);
+	gboolean (*selection_move_last)(XfdashboardFocusable *self,
+										XfdashboardFocusable *inSource,
+										const gchar *inAction,
+										ClutterEvent *inEvent);
+	gboolean (*selection_activate)(XfdashboardFocusable *self,
+										XfdashboardFocusable *inSource,
+										const gchar *inAction,
+										ClutterEvent *inEvent);
 };
 
 /* Public API */

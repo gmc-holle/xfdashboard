@@ -233,6 +233,8 @@ static void _xfdashboard_focusable_on_selection_unavailable(XfdashboardFocusable
 
 /* Action signal to move selection was emitted */
 static gboolean _xfdashboard_focusable_selection_move_to_direction(XfdashboardFocusable *self,
+																	XfdashboardFocusable *inSource,
+																	const gchar *inAction,
 																	ClutterEvent *inEvent,
 																	XfdashboardSelectionTarget inDirection)
 {
@@ -264,38 +266,59 @@ static gboolean _xfdashboard_focusable_selection_move_to_direction(XfdashboardFo
 	return(CLUTTER_EVENT_STOP);
 }
 
-static gboolean _xfdashboard_focusable_selection_move_left(XfdashboardFocusable *self, ClutterEvent *inEvent)
+static gboolean _xfdashboard_focusable_selection_move_left(XfdashboardFocusable *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															ClutterEvent *inEvent)
 {
-	return(_xfdashboard_focusable_selection_move_to_direction(self, inEvent, XFDASHBOARD_SELECTION_TARGET_LEFT));
+	return(_xfdashboard_focusable_selection_move_to_direction(self, inSource, inAction, inEvent, XFDASHBOARD_SELECTION_TARGET_LEFT));
 }
 
-static gboolean _xfdashboard_focusable_selection_move_right(XfdashboardFocusable *self, ClutterEvent *inEvent)
+static gboolean _xfdashboard_focusable_selection_move_right(XfdashboardFocusable *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															ClutterEvent *inEvent)
 {
-	return(_xfdashboard_focusable_selection_move_to_direction(self, inEvent, XFDASHBOARD_SELECTION_TARGET_RIGHT));
+	return(_xfdashboard_focusable_selection_move_to_direction(self, inSource, inAction, inEvent, XFDASHBOARD_SELECTION_TARGET_RIGHT));
 }
 
-static gboolean _xfdashboard_focusable_selection_move_up(XfdashboardFocusable *self, ClutterEvent *inEvent)
+static gboolean _xfdashboard_focusable_selection_move_up(XfdashboardFocusable *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															ClutterEvent *inEvent)
 {
-	return(_xfdashboard_focusable_selection_move_to_direction(self, inEvent, XFDASHBOARD_SELECTION_TARGET_UP));
+	return(_xfdashboard_focusable_selection_move_to_direction(self, inSource, inAction, inEvent, XFDASHBOARD_SELECTION_TARGET_UP));
 }
 
-static gboolean _xfdashboard_focusable_selection_move_down(XfdashboardFocusable *self, ClutterEvent *inEvent)
+static gboolean _xfdashboard_focusable_selection_move_down(XfdashboardFocusable *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															ClutterEvent *inEvent)
 {
-	return(_xfdashboard_focusable_selection_move_to_direction(self, inEvent, XFDASHBOARD_SELECTION_TARGET_DOWN));
+	return(_xfdashboard_focusable_selection_move_to_direction(self, inSource, inAction, inEvent, XFDASHBOARD_SELECTION_TARGET_DOWN));
 }
 
-static gboolean _xfdashboard_focusable_selection_move_first(XfdashboardFocusable *self, ClutterEvent *inEvent)
+static gboolean _xfdashboard_focusable_selection_move_first(XfdashboardFocusable *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															ClutterEvent *inEvent)
 {
-	return(_xfdashboard_focusable_selection_move_to_direction(self, inEvent, XFDASHBOARD_SELECTION_TARGET_FIRST));
+	return(_xfdashboard_focusable_selection_move_to_direction(self, inSource, inAction, inEvent, XFDASHBOARD_SELECTION_TARGET_FIRST));
 }
 
-static gboolean _xfdashboard_focusable_selection_move_last(XfdashboardFocusable *self, ClutterEvent *inEvent)
+static gboolean _xfdashboard_focusable_selection_move_last(XfdashboardFocusable *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															ClutterEvent *inEvent)
 {
-	return(_xfdashboard_focusable_selection_move_to_direction(self, inEvent, XFDASHBOARD_SELECTION_TARGET_LAST));
+	return(_xfdashboard_focusable_selection_move_to_direction(self, inSource, inAction, inEvent, XFDASHBOARD_SELECTION_TARGET_LAST));
 }
 
 /* Action signal to activate current selection was emitted */
-static gboolean _xfdashboard_focusable_selection_activate(XfdashboardFocusable *self, ClutterEvent *inEvent)
+static gboolean _xfdashboard_focusable_selection_activate(XfdashboardFocusable *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															ClutterEvent *inEvent)
 {
 	ClutterActor		*currentSelection;
 
@@ -389,9 +412,11 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_move_left),
 							g_signal_accumulator_true_handled,
 							NULL,
-							_xfdashboard_marshal_BOOLEAN__OBJECT,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
 							G_TYPE_BOOLEAN,
-							1,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
 							CLUTTER_TYPE_EVENT);
 
 		XfdashboardFocusableSignals[ACTION_SELECTION_MOVE_RIGHT]=
@@ -401,9 +426,11 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_move_right),
 							g_signal_accumulator_true_handled,
 							NULL,
-							_xfdashboard_marshal_BOOLEAN__OBJECT,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
 							G_TYPE_BOOLEAN,
-							1,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
 							CLUTTER_TYPE_EVENT);
 
 		XfdashboardFocusableSignals[ACTION_SELECTION_MOVE_UP]=
@@ -413,9 +440,11 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_move_up),
 							g_signal_accumulator_true_handled,
 							NULL,
-							_xfdashboard_marshal_BOOLEAN__OBJECT,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
 							G_TYPE_BOOLEAN,
-							1,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
 							CLUTTER_TYPE_EVENT);
 
 		XfdashboardFocusableSignals[ACTION_SELECTION_MOVE_DOWN]=
@@ -425,9 +454,11 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_move_down),
 							g_signal_accumulator_true_handled,
 							NULL,
-							_xfdashboard_marshal_BOOLEAN__OBJECT,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
 							G_TYPE_BOOLEAN,
-							1,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
 							CLUTTER_TYPE_EVENT);
 
 		XfdashboardFocusableSignals[ACTION_SELECTION_MOVE_FIRST]=
@@ -437,9 +468,11 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_move_first),
 							g_signal_accumulator_true_handled,
 							NULL,
-							_xfdashboard_marshal_BOOLEAN__OBJECT,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
 							G_TYPE_BOOLEAN,
-							1,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
 							CLUTTER_TYPE_EVENT);
 
 		XfdashboardFocusableSignals[ACTION_SELECTION_MOVE_LAST]=
@@ -449,9 +482,11 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_move_last),
 							g_signal_accumulator_true_handled,
 							NULL,
-							_xfdashboard_marshal_BOOLEAN__OBJECT,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
 							G_TYPE_BOOLEAN,
-							1,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
 							CLUTTER_TYPE_EVENT);
 
 		XfdashboardFocusableSignals[ACTION_SELECTION_ACTIVATE]=
@@ -461,9 +496,11 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_activate),
 							g_signal_accumulator_true_handled,
 							NULL,
-							_xfdashboard_marshal_BOOLEAN__OBJECT,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
 							G_TYPE_BOOLEAN,
-							1,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
 							CLUTTER_TYPE_EVENT);
 
 		/* Set flag that base initialization was done for this interface */
