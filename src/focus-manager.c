@@ -125,6 +125,91 @@ static void _xfdashboard_focus_manager_on_focusable_hide(XfdashboardFocusManager
 		}
 }
 
+/* Build target list of registered focusable actors for requested binding but also check
+ * if this focus manager is a target.
+ */
+static GSList* _xfdashboard_focus_manager_get_targets_for_binding(XfdashboardFocusManager *self,
+																	const XfdashboardBinding *inBinding)
+{
+	XfdashboardFocusManagerPrivate	*priv;
+	GList							*focusablesIter;
+	GList							*focusablesStartPoint;
+	XfdashboardFocusable			*focusable;
+	GType							targetType;
+	GSList							*targets;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(inBinding), NULL);
+
+	priv=self->priv;
+	targets=NULL;
+
+	/* Get type of target */
+	targetType=g_type_from_name(xfdashboard_binding_get_target(inBinding));
+	if(!targetType)
+	{
+		g_warning(_("Cannot build target list for unknown type %s"),
+					xfdashboard_binding_get_target(inBinding));
+		return(NULL);
+	}
+
+	/* Check if class name of target at binding points to ourselve */
+	if(g_type_is_a(G_OBJECT_TYPE(self), targetType))
+	{
+		targets=g_slist_append(targets, g_object_ref(self));
+	}
+
+	/* Iterate through list of focusable actors to add each one
+	 * matching the target class name to the list of targets.
+	 * Begin with finding starting point of iteration.
+	 */
+	focusablesStartPoint=g_list_find(priv->registeredFocusables, priv->currentFocus);
+	if(!focusablesStartPoint) focusablesStartPoint=priv->registeredFocusables;
+
+	/* Iterate through list of registered focusable actors beginning at
+	 * found starting point of iteration (might be begin of list of registered actors)
+	 * and add each focusable actor matching target class name to target list.
+	 */
+	for(focusablesIter=focusablesStartPoint; focusablesIter; focusablesIter=g_list_next(focusablesIter))
+	{
+		focusable=(XfdashboardFocusable*)focusablesIter->data;
+
+		/* If focusable can be focused and matches target class name
+		 * then add it to target list.
+		 */
+		if(xfdashboard_focusable_can_focus(focusable) &&
+			g_type_is_a(G_OBJECT_TYPE(focusable), targetType))
+		{
+			targets=g_slist_append(targets, g_object_ref(focusable));
+		}
+	}
+
+	/* We have to continue search at the beginning of list of registered actors
+	 * up to the found starting point of iteration. Add each focusable actor matching
+	 * target class name to target list.
+	 */
+	for(focusablesIter=priv->registeredFocusables; focusablesIter!=focusablesStartPoint; focusablesIter=g_list_next(focusablesIter))
+	{
+		focusable=(XfdashboardFocusable*)focusablesIter->data;
+
+		/* If focusable can be focused and matches target class name
+		 * then add it to target list.
+		 */
+		if(xfdashboard_focusable_can_focus(focusable) &&
+			g_type_is_a(G_OBJECT_TYPE(focusable), targetType))
+		{
+			targets=g_slist_append(targets, g_object_ref(focusable));
+		}
+	}
+
+	/* Return list of targets found */
+	g_debug("Target list for action '%s' and target class '%s' has %d entries",
+				xfdashboard_binding_get_action(inBinding),
+				xfdashboard_binding_get_target(inBinding),
+				g_slist_length(targets));
+	return(targets);
+}
+
 /* Action signal to move focus to next focusable actor was emitted */
 static gboolean _xfdashboard_focus_manager_move_focus_next(XfdashboardFocusManager *self,
 															ClutterEvent *inEvent)
@@ -741,57 +826,8 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 			target=xfdashboard_binding_get_target(binding);
 			if(target)
 			{
-				GList					*focusablesIter;
-				GList					*focusablesStartPoint;
-				XfdashboardFocusable	*focusable;
-
-				/* Class name of targets is given so check if target of binding
-				 * points to ourselve.
-				 */
-				if(g_strcmp0(target, G_OBJECT_TYPE_NAME(self))==0)
-				{
-					targetFocusables=g_slist_append(targetFocusables, g_object_ref(self));
-				}
-
-				/* Iterate through list of focusable actors to add each one
-				 * matching the target class name to list of targets.
-				 * Begin at finding starting point of iteration.
-				 */
-				focusablesStartPoint=g_list_find(priv->registeredFocusables, priv->currentFocus);
-				if(!focusablesStartPoint) focusablesStartPoint=priv->registeredFocusables;
-
-				/* Iterate through list of registered focusable actors beginning at
-				 * given focusable actor (might be begin of this list) and add
-				 * each focusable actor to target list.
-				 */
-				for(focusablesIter=focusablesStartPoint; focusablesIter; focusablesIter=g_list_next(focusablesIter))
-				{
-					focusable=(XfdashboardFocusable*)focusablesIter->data;
-
-					/* If focusable can be focused then add it to target list */
-					if(xfdashboard_focusable_can_focus(focusable) &&
-						g_strcmp0(G_OBJECT_TYPE_NAME(focusable), target)==0)
-					{
-						targetFocusables=g_slist_append(targetFocusables, g_object_ref(focusable));
-					}
-				}
-
-				/* If we get here we have to continue search at the beginning of list
-				 * of registered focusable actors. Iterate through list of registered
-				 * focusable actors from the beginning of that list up to the given
-				 * focusable actor and return the first focusable actor which is focusable.
-				 */
-				for(focusablesIter=priv->registeredFocusables; focusablesIter!=focusablesStartPoint; focusablesIter=g_list_next(focusablesIter))
-				{
-					focusable=(XfdashboardFocusable*)focusablesIter->data;
-
-					/* If focusable can be focused then add it to target list */
-					if(xfdashboard_focusable_can_focus(focusable) &&
-						g_strcmp0(G_OBJECT_TYPE_NAME(focusable), target)==0)
-					{
-						targetFocusables=g_slist_append(targetFocusables, g_object_ref(focusable));
-					}
-				}
+				/* Target class name is specified so build up a list of targets */
+				targetFocusables=_xfdashboard_focus_manager_get_targets_for_binding(self, binding);
 			}
 				else
 				{
@@ -801,15 +837,87 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 					targetFocusables=g_slist_append(targetFocusables, g_object_ref(inFocusable));
 				}
 
-			g_debug("Target list for action '%s' has %d entries", action, g_slist_length(targetFocusables));
+			g_debug("Target list for action '%s' has %d actors",
+						action,
+						g_slist_length(targetFocusables));
 
 			/* Emit action of binding to each actor in target list just build up */
 			for(iter=targetFocusables; iter; iter=g_slist_next(iter))
 			{
 				GObject				*targetObject;
+				guint				signalID;
 
 				/* Get target to emit action signal at */
 				targetObject=G_OBJECT(iter->data);
+
+				/* Check if target provides action requested as signal */
+				signalID=g_signal_lookup(action, G_OBJECT_TYPE(targetObject));
+				if(!signalID)
+				{
+					g_warning(_("Object type %s does not provide action '%s'"),
+								G_OBJECT_TYPE_NAME(targetObject),
+								action);
+					continue;
+				}
+
+#if DEBUG
+				/* In debug mode also check if signal has right signature
+				 * to be able to handle this action properly.
+				 */
+				if(signalID)
+				{
+					GSignalQuery		signalData={ 0, };
+					GType				returnValueType=G_TYPE_BOOLEAN;
+					GType				parameterTypes[]={ CLUTTER_TYPE_EVENT };
+					guint				parameterCount;
+					guint				i;
+
+					/* Query signal for detailed data */
+					g_signal_query(signalID, &signalData);
+
+					/* Check if signal is an action signal */
+					if(!(signalData.signal_flags & G_SIGNAL_ACTION))
+					{
+						g_critical(_("Action '%s' at object type %s is not an action signal."),
+									action,
+									G_OBJECT_TYPE_NAME(targetObject));
+					}
+
+					/* Check if signal wants the right type of return value */
+					if(signalData.return_type!=returnValueType)
+					{
+						g_critical(_("Action '%s' at object type %s wants return value of type %s but expected is %s."),
+									action,
+									G_OBJECT_TYPE_NAME(targetObject),
+									g_type_name(signalData.return_type),
+									g_type_name(returnValueType));
+					}
+
+					/* Check if signals wants the right number and types of parameters */
+					parameterCount=sizeof(parameterTypes)/sizeof(GType);
+					if(signalData.n_params!=parameterCount)
+					{
+						g_critical(_("Action '%s' at object type %s wants %u parameters but expected are %u."),
+									action,
+									G_OBJECT_TYPE_NAME(targetObject),
+									signalData.n_params,
+									parameterCount);
+					}
+
+					for(i=0; i<parameterCount; i++)
+					{
+						if(signalData.param_types[i]!=parameterTypes[i])
+						{
+						g_critical(_("Action '%s' at object type %s wants type %s at parameter %u but type %s is expected."),
+									action,
+									G_OBJECT_TYPE_NAME(targetObject),
+									g_type_name(signalData.param_types[i]),
+									i+1,
+									g_type_name(parameterTypes[i]));
+						}
+					}
+				}
+#endif
 
 				/* Emit action signal at target */
 				g_debug("Emitting action signal '%s' at focusable actor %s",
