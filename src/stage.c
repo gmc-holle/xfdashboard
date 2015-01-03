@@ -157,11 +157,6 @@ static gboolean xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inE
 	/* Handle key release event */
 	if(clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE)
 	{
-		gboolean		isShift=FALSE;
-
-		/* Get modifiers we are interested in */
-		if(clutter_event_has_shift_modifier(inEvent)) isShift=TRUE;
-
 		/* Handle key */
 		switch(inEvent->key.keyval)
 		{
