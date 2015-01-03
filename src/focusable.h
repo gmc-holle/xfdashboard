@@ -58,6 +58,7 @@ struct _XfdashboardFocusableInterface
 	ClutterActor* (*find_selection)(XfdashboardFocusable *self, ClutterActor *inSelection, XfdashboardSelectionTarget inDirection);
 	gboolean (*activate_selection)(XfdashboardFocusable *self, ClutterActor *inSelection);
 
+	/* Binding actions */
 	gboolean (*selection_move_left)(XfdashboardFocusable *self,
 										XfdashboardFocusable *inSource,
 										const gchar *inAction,
