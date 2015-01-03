@@ -28,6 +28,7 @@
 
 #include "background.h"
 #include "toggle-button.h"
+#include "focusable.h"
 
 G_BEGIN_DECLS
 
@@ -61,6 +62,16 @@ struct _XfdashboardQuicklaunchClass
 	/* Virtual functions */
 	void (*favourite_added)(XfdashboardQuicklaunch *self, GAppInfo *inAppInfo);
 	void (*favourite_removed)(XfdashboardQuicklaunch *self, GAppInfo *inAppInfo);
+
+	/* Binding actions */
+	gboolean (*selection_add_favourite)(XfdashboardQuicklaunch *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
+	gboolean (*selection_remove_favourite)(XfdashboardQuicklaunch *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
 };
 
 /* Public API */

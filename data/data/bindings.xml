@@ -21,4 +21,14 @@
 	<key code="<Shift>-BackSpace" source="XfdashboardWindowsView" when="released">window-selected-close</key>
 	<key code="Delete" source="XfdashboardWindowsView" when="released">window-selected-close</key>
 	<key code="KP_Delete" source="XfdashboardWindowsView" when="released">window-selected-close</key>
+
+	<!-- Applications view -->
+	<key code="<Ctrl>-plus" source="XfdashboardApplicationsView" target="XfdashboardQuicklaunch" when="released">selection-add-favourite</key>
+	<key code="<Ctrl>-KP_Add" source="XfdashboardApplicationsView" target="XfdashboardQuicklaunch" when="released">selection-add-favourite</key>
+	<key code="<Ctrl>-minus" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
+	<key code="<Ctrl>-KP_Subtract" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
+
+	<!-- Quicklaunch -->
+	<key code="<Ctrl>-Delete" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
+	<key code="<Ctrl>-KP_Delete" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
 </bindings>
