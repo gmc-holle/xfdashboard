@@ -25,12 +25,11 @@
 	<!-- Applications view -->
 	<key code="<Ctrl>-plus" source="XfdashboardApplicationsView" target="XfdashboardQuicklaunch" when="released">selection-add-favourite</key>
 	<key code="<Ctrl>-KP_Add" source="XfdashboardApplicationsView" target="XfdashboardQuicklaunch" when="released">selection-add-favourite</key>
-	<key code="<Ctrl>-minus" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
-	<key code="<Ctrl>-KP_Subtract" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
 
 	<!-- Quicklaunch -->
-	<key code="<Ctrl>-Delete" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
-	<key code="<Ctrl>-KP_Delete" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
+	<key code="<Shift>-BackSpace" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
+	<key code="Delete" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
+	<key code="KP_Delete" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
 	<key code="<Shift>-Left" source="XfdashboardQuicklaunch" when="pressed">selection-reorder-left</key>
 	<key code="<Shift>-Right" source="XfdashboardQuicklaunch" when="pressed">selection-reorder-right</key>
 	<key code="<Shift>-Up" source="XfdashboardQuicklaunch" when="pressed">selection-reorder-up</key>
