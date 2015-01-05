@@ -129,6 +129,94 @@ enum
 /* Forward declarations */
 static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuicklaunch *self);
 
+/* Check for duplicate application buttons */
+static gboolean _xfdashboard_quicklaunch_has_appinfo(XfdashboardQuicklaunch *self, GAppInfo *inAppInfo)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+	guint							i;
+	const gchar						*desktopFilename;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), TRUE);
+	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), TRUE);
+
+	priv=self->priv;
+
+	/* If requested application information does not contain a desktop file
+	 * (means it derives from GDesktopAppInfo) then assume it exists already.
+	 */
+	if(!G_IS_DESKTOP_APP_INFO(inAppInfo))
+	{
+		g_debug("%s is derived from %s but not derived %s",
+					inAppInfo, G_OBJECT_TYPE_NAME(inAppInfo),
+					g_type_name(G_TYPE_APP_INFO),
+					g_type_name(G_TYPE_DESKTOP_APP_INFO));
+		return(TRUE);
+	}
+
+	/* Get desktop file name */
+	desktopFilename=g_desktop_app_info_get_filename(G_DESKTOP_APP_INFO(inAppInfo));
+	if(!desktopFilename)
+	{
+		g_critical(_("Could not check for duplicates for invalid %s object so assume it exists"),
+					G_OBJECT_TYPE_NAME(inAppInfo));
+		return(TRUE);
+	}
+
+	for(i=0; i<priv->favourites->len; i++)
+	{
+		GValue						*value;
+		GDesktopAppInfo				*valueAppInfo;
+		const gchar					*valueAppInfoFilename;
+
+		valueAppInfo=NULL;
+
+		/* Get favourite value and the string it contains */
+		value=(GValue*)g_ptr_array_index(priv->favourites, i);
+		if(value)
+		{
+#if DEBUG
+			if(!G_VALUE_HOLDS_STRING(value))
+			{
+				g_critical(_("Value at %p of type %s is not a %s so assume this desktop application item exists"),
+							value,
+							G_VALUE_TYPE_NAME(value),
+							g_type_name(G_TYPE_STRING));
+				return(TRUE);
+			}
+#endif
+
+			/* Get application information for string */
+			valueAppInfoFilename=g_value_get_string(value);
+			if(g_path_is_absolute(valueAppInfoFilename))
+			{
+				valueAppInfo=g_desktop_app_info_new_from_filename(valueAppInfoFilename);
+			}
+				else
+				{
+					valueAppInfo=g_desktop_app_info_new(valueAppInfoFilename);
+				}
+
+		/* Check if favourite value matches application information */
+		if(valueAppInfo &&
+			g_app_info_equal(G_APP_INFO(valueAppInfo), inAppInfo))
+		{
+
+			/* Release allocated resources */
+			if(valueAppInfo) g_object_unref(valueAppInfo);
+
+			return(TRUE);
+		}
+
+		/* Release allocated resources */
+		if(valueAppInfo) g_object_unref(valueAppInfo);
+	}
+
+	/* If we get here then this quicklaunch does not have any item
+	 * which matches the requested application information so return FALSE.
+	 */
+	return(FALSE);
+}
+
 /* An application icon (favourite) in quicklaunch was clicked */
 static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch *self, gpointer inUserData)
 {
@@ -256,7 +344,25 @@ static gboolean _xfdashboard_quicklaunch_on_drop_begin(XfdashboardQuicklaunch *s
 		XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor) &&
 		xfdashboard_application_button_get_desktop_filename(XFDASHBOARD_APPLICATION_BUTTON(draggedActor)))
 	{
-		priv->dragMode=DRAG_MODE_CREATE;
+		GAppInfo					*appInfo;
+		gboolean					isExistingItem;
+
+		isExistingItem=FALSE;
+
+		/* Get application information of item which should be added */
+		appInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
+		if(appInfo)
+		{
+			isExistingItem=_xfdashboard_quicklaunch_has_appinfo(self, appInfo);
+			if(!isExistingItem) priv->dragMode=DRAG_MODE_CREATE;
+
+			/* Release allocated resources */
+			g_object_unref(appInfo);
+		}
+			/* Even if it is unlikely but application button does provide
+			 * any application information so reset drag mode.
+			 */
+			else priv->dragMode=DRAG_MODE_NONE;
 	}
 
 	/* Create a visible copy of dragged application button and insert it
@@ -1205,7 +1311,21 @@ static gboolean _xfdashboard_quicklaunch_selection_add_favourite(XfdashboardQuic
 	 * needed to add favourite.
 	 */
 	appInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(currentSelection));
-	if(appInfo) desktopFilename=xfdashboard_application_button_get_desktop_filename(XFDASHBOARD_APPLICATION_BUTTON(currentSelection));
+	if(appInfo)
+	{
+		/* Check for duplicates */
+		if(_xfdashboard_quicklaunch_has_appinfo(self, appInfo))
+		{
+			/* Release allocated resources */
+			g_object_unref(appInfo);
+
+			return(CLUTTER_EVENT_STOP);
+		}
+
+		/* It is not a duplicate so get desktop filename */
+		desktopFilename=xfdashboard_application_button_get_desktop_filename(XFDASHBOARD_APPLICATION_BUTTON(currentSelection));
+	}
+
 	if(desktopFilename)
 	{
 		ClutterActor		*favouriteActor;
