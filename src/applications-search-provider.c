@@ -455,6 +455,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 
 	/* To perform case-insensitive searches through model convert all search terms
 	 * to lower-case before starting search.
+	 * Remember that string list must be NULL terminated.
 	 */
 	numberTerms=g_strv_length((gchar**)inSearchTerms);
 	if(numberTerms==0)
@@ -463,7 +464,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 		return(NULL);
 	}
 
-	terms=g_slice_alloc0(numberTerms*sizeof(gchar*));
+	terms=g_new(gchar*, numberTerms+1);
 	if(!terms)
 	{
 		g_critical(_("Could not allocate memory to copy search criterias for case-insensitive search"));
@@ -474,7 +475,14 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 	while(*inSearchTerms)
 	{
 		*termsIter=g_utf8_strdown(*inSearchTerms, -1);
+
+		/* Move to next entry where to store lower-case and
+		 * initialize with NULL for NULL termination of list.
+		 */
 		termsIter++;
+		*termsIter=NULL;
+
+		/* Move to next search term to convert to lower-case */
 		inSearchTerms++;
 	}
 
@@ -518,7 +526,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 			g_free(*termsIter);
 			termsIter++;
 		}
-		g_slice_free1(numberTerms*sizeof(gchar*), terms);
+		g_free(terms);
 	}
 
 	/* Return result set */
