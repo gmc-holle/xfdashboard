@@ -106,10 +106,10 @@ enum
 
 	ACTION_SELECTION_ADD_FAVOURITE,
 	ACTION_SELECTION_REMOVE_FAVOURITE,
-	ACTION_SELECTION_REORDER_LEFT,
-	ACTION_SELECTION_REORDER_RIGHT,
-	ACTION_SELECTION_REORDER_UP,
-	ACTION_SELECTION_REORDER_DOWN,
+	ACTION_FAVOURITE_REORDER_LEFT,
+	ACTION_FAVOURITE_REORDER_RIGHT,
+	ACTION_FAVOURITE_REORDER_UP,
+	ACTION_FAVOURITE_REORDER_DOWN,
 
 	SIGNAL_LAST
 };
@@ -1444,8 +1444,8 @@ static gboolean _xfdashboard_quicklaunch_selection_remove_favourite(XfdashboardQ
 }
 
 /* Action signal to move current selected item to reorder items was emitted */
-static gboolean _xfdashboard_quicklaunch_reorder_current_selection(XfdashboardQuicklaunch *self,
-																	XfdashboardOrientation inDirection)
+static gboolean _xfdashboard_quicklaunch_favourite_reorder_selection(XfdashboardQuicklaunch *self,
+																		XfdashboardOrientation inDirection)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterActor					*currentSelection;
@@ -1553,38 +1553,38 @@ static gboolean _xfdashboard_quicklaunch_reorder_current_selection(XfdashboardQu
 	return(CLUTTER_EVENT_STOP);
 }
 
-static gboolean _xfdashboard_quicklaunch_selection_reorder_left(XfdashboardQuicklaunch *self,
+static gboolean _xfdashboard_quicklaunch_favourite_reorder_left(XfdashboardQuicklaunch *self,
 																XfdashboardFocusable *inSource,
 																const gchar *inAction,
 																ClutterEvent *inEvent)
 {
-	return(_xfdashboard_quicklaunch_reorder_current_selection(self, XFDASHBOARD_ORIENTATION_LEFT));
+	return(_xfdashboard_quicklaunch_favourite_reorder_selection(self, XFDASHBOARD_ORIENTATION_LEFT));
 }
 
-static gboolean _xfdashboard_quicklaunch_selection_reorder_right(XfdashboardQuicklaunch *self,
+static gboolean _xfdashboard_quicklaunch_favourite_reorder_right(XfdashboardQuicklaunch *self,
 																	XfdashboardFocusable *inSource,
 																	const gchar *inAction,
 																	ClutterEvent *inEvent)
 {
-	return(_xfdashboard_quicklaunch_reorder_current_selection(self, XFDASHBOARD_ORIENTATION_RIGHT));
+	return(_xfdashboard_quicklaunch_favourite_reorder_selection(self, XFDASHBOARD_ORIENTATION_RIGHT));
 }
 
 /* Action signal to move current selected item to up (to reorder items) was emitted */
-static gboolean _xfdashboard_quicklaunch_selection_reorder_up(XfdashboardQuicklaunch *self,
+static gboolean _xfdashboard_quicklaunch_favourite_reorder_up(XfdashboardQuicklaunch *self,
 																XfdashboardFocusable *inSource,
 																const gchar *inAction,
 																ClutterEvent *inEvent)
 {
-	return(_xfdashboard_quicklaunch_reorder_current_selection(self, XFDASHBOARD_ORIENTATION_TOP));
+	return(_xfdashboard_quicklaunch_favourite_reorder_selection(self, XFDASHBOARD_ORIENTATION_TOP));
 }
 
 /* Action signal to move current selected item to down (to reorder items) was emitted */
-static gboolean _xfdashboard_quicklaunch_selection_reorder_down(XfdashboardQuicklaunch *self,
+static gboolean _xfdashboard_quicklaunch_favourite_reorder_down(XfdashboardQuicklaunch *self,
 																XfdashboardFocusable *inSource,
 																const gchar *inAction,
 																ClutterEvent *inEvent)
 {
-	return(_xfdashboard_quicklaunch_reorder_current_selection(self, XFDASHBOARD_ORIENTATION_BOTTOM));
+	return(_xfdashboard_quicklaunch_favourite_reorder_selection(self, XFDASHBOARD_ORIENTATION_BOTTOM));
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -2183,10 +2183,10 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 
 	klass->selection_add_favourite=_xfdashboard_quicklaunch_selection_add_favourite;
 	klass->selection_remove_favourite=_xfdashboard_quicklaunch_selection_remove_favourite;
-	klass->selection_reorder_left=_xfdashboard_quicklaunch_selection_reorder_left;
-	klass->selection_reorder_right=_xfdashboard_quicklaunch_selection_reorder_right;
-	klass->selection_reorder_up=_xfdashboard_quicklaunch_selection_reorder_up;
-	klass->selection_reorder_down=_xfdashboard_quicklaunch_selection_reorder_down;
+	klass->favourite_reorder_left=_xfdashboard_quicklaunch_favourite_reorder_left;
+	klass->favourite_reorder_right=_xfdashboard_quicklaunch_favourite_reorder_right;
+	klass->favourite_reorder_up=_xfdashboard_quicklaunch_favourite_reorder_up;
+	klass->favourite_reorder_down=_xfdashboard_quicklaunch_favourite_reorder_down;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardQuicklaunchPrivate));
@@ -2283,11 +2283,11 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 						G_TYPE_STRING,
 						CLUTTER_TYPE_EVENT);
 
-	XfdashboardQuicklaunchSignals[ACTION_SELECTION_REORDER_LEFT]=
-		g_signal_new("selection-reorder-left",
+	XfdashboardQuicklaunchSignals[ACTION_FAVOURITE_REORDER_LEFT]=
+		g_signal_new("favourite-reorder-left",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, selection_reorder_left),
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, favourite_reorder_left),
 						g_signal_accumulator_true_handled,
 						NULL,
 						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
@@ -2297,11 +2297,11 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 						G_TYPE_STRING,
 						CLUTTER_TYPE_EVENT);
 
-	XfdashboardQuicklaunchSignals[ACTION_SELECTION_REORDER_RIGHT]=
-		g_signal_new("selection-reorder-right",
+	XfdashboardQuicklaunchSignals[ACTION_FAVOURITE_REORDER_RIGHT]=
+		g_signal_new("favourite-reorder-right",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, selection_reorder_right),
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, favourite_reorder_right),
 						g_signal_accumulator_true_handled,
 						NULL,
 						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
@@ -2311,11 +2311,11 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 						G_TYPE_STRING,
 						CLUTTER_TYPE_EVENT);
 
-	XfdashboardQuicklaunchSignals[ACTION_SELECTION_REORDER_UP]=
-		g_signal_new("selection-reorder-up",
+	XfdashboardQuicklaunchSignals[ACTION_FAVOURITE_REORDER_UP]=
+		g_signal_new("favourite-reorder-up",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, selection_reorder_up),
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, favourite_reorder_up),
 						g_signal_accumulator_true_handled,
 						NULL,
 						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
@@ -2325,11 +2325,11 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 						G_TYPE_STRING,
 						CLUTTER_TYPE_EVENT);
 
-	XfdashboardQuicklaunchSignals[ACTION_SELECTION_REORDER_DOWN]=
-		g_signal_new("selection-reorder-down",
+	XfdashboardQuicklaunchSignals[ACTION_FAVOURITE_REORDER_DOWN]=
+		g_signal_new("favourite-reorder-down",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, selection_reorder_down),
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, favourite_reorder_down),
 						g_signal_accumulator_true_handled,
 						NULL,
 						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,

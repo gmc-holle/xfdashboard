@@ -85,7 +85,7 @@ static GParamSpec* XfdashboardWindowsViewProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
-	ACTION_WINDOW_SELECTED_CLOSE,
+	ACTION_WINDOW_CLOSE,
 
 	SIGNAL_LAST
 };
@@ -520,15 +520,24 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 }
 
 /* Action signal to close currently selected window was emitted */
-static gboolean _xfdashboard_windows_view_window_selected_close(XfdashboardFocusable *inFocusable, ClutterEvent *inEvent)
+static gboolean _xfdashboard_windows_view_window_close(XfdashboardWindowsView *self,
+														XfdashboardFocusable *inSource,
+														const gchar *inAction,
+														ClutterEvent *inEvent)
 {
-	XfdashboardWindowsView					*self;
 	XfdashboardWindowsViewPrivate			*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inSource), CLUTTER_EVENT_PROPAGATE);
 
-	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
 	priv=self->priv;
+
+	/* Check if a window is currenly selected */
+	if(!priv->selectedItem)
+	{
+		g_debug("No window to close is selected.");
+		return(CLUTTER_EVENT_STOP);
+	}
 
 	/* Close selected window */
 	_xfdashboard_windows_view_on_window_close_clicked(self, XFDASHBOARD_LIVE_WINDOW(priv->selectedItem));
@@ -923,11 +932,11 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	klass->window_selected_close=_xfdashboard_windows_view_window_selected_close;
-
 	gobjectClass->dispose=_xfdashboard_windows_view_dispose;
 	gobjectClass->set_property=_xfdashboard_windows_view_set_property;
 	gobjectClass->get_property=_xfdashboard_windows_view_get_property;
+
+	klass->window_close=_xfdashboard_windows_view_window_close;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardWindowsViewPrivate));
@@ -962,16 +971,18 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]);
 
 	/* Define actions */
-	XfdashboardWindowsViewSignals[ACTION_WINDOW_SELECTED_CLOSE]=
-		g_signal_new("window-selected-close",
+	XfdashboardWindowsViewSignals[ACTION_WINDOW_CLOSE]=
+		g_signal_new("window-close",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, window_selected_close),
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, window_close),
 						g_signal_accumulator_true_handled,
 						NULL,
-						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
 						G_TYPE_BOOLEAN,
-						1,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
 						CLUTTER_TYPE_EVENT);
 }
 

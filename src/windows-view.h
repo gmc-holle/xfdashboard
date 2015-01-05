@@ -57,7 +57,12 @@ struct _XfdashboardWindowsViewClass
 
 	/*< public >*/
 	/* Virtual functions */
-	gboolean (*window_selected_close)(XfdashboardFocusable *self, ClutterEvent *inEvent);
+
+	/* Binding actions */
+	gboolean (*window_close)(XfdashboardWindowsView *self,
+								XfdashboardFocusable *inSource,
+								const gchar *inAction,
+								ClutterEvent *inEvent);
 };
 
 /* Public API */
