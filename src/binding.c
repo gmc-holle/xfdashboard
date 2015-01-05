@@ -26,6 +26,7 @@
 #endif
 
 #include "binding.h"
+#include "enums.h"
 
 #include <glib/gi18n-lib.h>
 
@@ -48,6 +49,7 @@ struct _XfdashboardBindingPrivate
 	ClutterModifierType		modifiers;
 	gchar					*target;
 	gchar					*action;
+	XfdashboardBindingFlags	flags;
 };
 
 /* Properties */
@@ -62,6 +64,7 @@ enum
 	PROP_MODIFIERS,
 	PROP_TARGET,
 	PROP_ACTION,
+	PROP_FLAGS,
 
 	PROP_LAST
 };
@@ -140,6 +143,10 @@ static void _xfdashboard_binding_set_property(GObject *inObject,
 			xfdashboard_binding_set_action(self, g_value_get_string(inValue));
 			break;
 
+		case PROP_FLAGS:
+			xfdashboard_binding_set_flags(self, g_value_get_flags(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -182,6 +189,10 @@ static void _xfdashboard_binding_get_property(GObject *inObject,
 
 		case PROP_ACTION:
 			g_value_set_string(outValue, priv->action);
+			break;
+
+		case PROP_FLAGS:
+			g_value_set_flags(outValue, priv->flags);
 			break;
 
 		default:
@@ -258,6 +269,14 @@ static void xfdashboard_binding_class_init(XfdashboardBindingClass *klass)
 								_("Action"),
 								_("Action assigned to this binding"),
 								NULL,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardBindingProperties[PROP_FLAGS]=
+		g_param_spec_flags("flags",
+								_("Flags"),
+								_("Flags assigned to this binding"),
+								XFDASHBOARD_TYPE_BINDING_FLAGS,
+								0,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardBindingProperties);
@@ -662,5 +681,33 @@ void xfdashboard_binding_set_action(XfdashboardBinding *self, const gchar *inAct
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBindingProperties[PROP_ACTION]);
+	}
+}
+
+/* Get/set flags of binding */
+XfdashboardBindingFlags xfdashboard_binding_get_flags(const XfdashboardBinding *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(self), 0);
+
+	return(self->priv->flags);
+}
+
+void xfdashboard_binding_set_flags(XfdashboardBinding *self, XfdashboardBindingFlags inFlags)
+{
+	XfdashboardBindingPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_BINDING(self));
+	g_return_if_fail(inFlags<=XFDASHBOARD_BINDING_FLAGS_ALLOW_UNFOCUSABLE_TARGET);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->flags!=inFlags)
+	{
+		/* Set value */
+		priv->flags=inFlags;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBindingProperties[PROP_FLAGS]);
 	}
 }

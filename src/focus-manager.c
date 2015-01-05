@@ -137,12 +137,14 @@ static GSList* _xfdashboard_focus_manager_get_targets_for_binding(XfdashboardFoc
 	XfdashboardFocusable			*focusable;
 	GType							targetType;
 	GSList							*targets;
+	gboolean						mustBeFocusable;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(inBinding), NULL);
 
 	priv=self->priv;
 	targets=NULL;
+	mustBeFocusable=TRUE;
 
 	/* Get type of target */
 	targetType=g_type_from_name(xfdashboard_binding_get_target(inBinding));
@@ -151,6 +153,12 @@ static GSList* _xfdashboard_focus_manager_get_targets_for_binding(XfdashboardFoc
 		g_warning(_("Cannot build target list for unknown type %s"),
 					xfdashboard_binding_get_target(inBinding));
 		return(NULL);
+	}
+
+	/* Determine if unfocusable targets should be included */
+	if(xfdashboard_binding_get_flags(inBinding) & XFDASHBOARD_BINDING_FLAGS_ALLOW_UNFOCUSABLE_TARGET)
+	{
+		mustBeFocusable=FALSE;
 	}
 
 	/* Check if class name of target at binding points to ourselve */
@@ -177,7 +185,7 @@ static GSList* _xfdashboard_focus_manager_get_targets_for_binding(XfdashboardFoc
 		/* If focusable can be focused and matches target class name
 		 * then add it to target list.
 		 */
-		if(xfdashboard_focusable_can_focus(focusable) &&
+		if((!mustBeFocusable || xfdashboard_focusable_can_focus(focusable)) &&
 			g_type_is_a(G_OBJECT_TYPE(focusable), targetType))
 		{
 			targets=g_slist_append(targets, g_object_ref(focusable));
@@ -195,7 +203,7 @@ static GSList* _xfdashboard_focus_manager_get_targets_for_binding(XfdashboardFoc
 		/* If focusable can be focused and matches target class name
 		 * then add it to target list.
 		 */
-		if(xfdashboard_focusable_can_focus(focusable) &&
+		if((!mustBeFocusable || xfdashboard_focusable_can_focus(focusable)) &&
 			g_type_is_a(G_OBJECT_TYPE(focusable), targetType))
 		{
 			targets=g_slist_append(targets, g_object_ref(focusable));

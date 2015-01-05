@@ -78,6 +78,7 @@ gfloat xfdashboard_viewpad_get_spacing(XfdashboardViewpad *self);
 void xfdashboard_viewpad_set_spacing(XfdashboardViewpad *self, gfloat inSpacing);
 
 GList* xfdashboard_viewpad_get_views(XfdashboardViewpad *self);
+gboolean xfdashboard_viewpad_has_view(XfdashboardViewpad *self, XfdashboardView *inView);
 XfdashboardView* xfdashboard_viewpad_find_view_by_type(XfdashboardViewpad *self, GType inType);
 XfdashboardView* xfdashboard_viewpad_find_view_by_name(XfdashboardViewpad *self, const gchar *inInternalName);
 

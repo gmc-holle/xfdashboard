@@ -901,6 +901,12 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 		{
 			xfdashboard_focus_manager_register(priv->focusManager,
 												XFDASHBOARD_FOCUSABLE(priv->viewpad));
+
+			/* Check if viewpad can be focused to enforce all focusable views
+			 * will be registered too. We need to do it now to get all focusable
+			 * views registered before first use of any function of focus manager.
+			 */
+			xfdashboard_focusable_can_focus(XFDASHBOARD_FOCUSABLE(priv->viewpad));
 		}
 	}
 

@@ -1337,6 +1337,32 @@ GList* xfdashboard_viewpad_get_views(XfdashboardViewpad *self)
 	return(list);
 }
 
+/* Determine if viewpad contains requested view */
+gboolean xfdashboard_viewpad_has_view(XfdashboardViewpad *self, XfdashboardView *inView)
+{
+	ClutterActorIter			iter;
+	ClutterActor				*child;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(inView), FALSE);
+
+	/* Iterate through children and check if child is requested view */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		if(XFDASHBOARD_IS_VIEW(child) &&
+			XFDASHBOARD_VIEW(child)==inView)
+		{
+			return(TRUE);
+		}
+	}
+
+	/* If we get here the requested view could not be found
+	 * so return FALSE.
+	 */
+	return(FALSE);
+}
+
 /* Find view by type */
 XfdashboardView* xfdashboard_viewpad_find_view_by_type(XfdashboardViewpad *self, GType inType)
 {

@@ -28,6 +28,7 @@
 
 #include "actor.h"
 #include "types.h"
+#include "focusable.h"
 
 G_BEGIN_DECLS
 
@@ -76,6 +77,12 @@ struct _XfdashboardViewClass
 
 	void (*scroll_to)(XfdashboardView *self, gfloat inX, gfloat inY);
 	void (*ensure_visible)(XfdashboardView *self, ClutterActor *inActor);
+
+	/* Binding actions */
+	gboolean (*view_activate)(XfdashboardView *self,
+								XfdashboardFocusable *inSource,
+								const gchar *inAction,
+								ClutterEvent *inEvent);
 };
 
 /* Public API */

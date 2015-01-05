@@ -477,9 +477,11 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 		gchar									*source=NULL;
 		gchar									*when=NULL;
 		gchar									*target=NULL;
-		ClutterEventType						eventType;
-		guint									key;
-		ClutterModifierType						modifiers;
+		gchar									*allowUnfocusableTargets=NULL;
+		ClutterEventType						eventType=CLUTTER_EVENT_NONE;
+		guint									key=0;
+		ClutterModifierType						modifiers=0;
+		XfdashboardBindingFlags					flags=0;
 
 		/* Get tag's attributes */
 		if(!g_markup_collect_attributes(inElementName,
@@ -498,13 +500,21 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 											G_MARKUP_COLLECT_STRDUP | G_MARKUP_COLLECT_OPTIONAL,
 											"target",
 											&target,
+											G_MARKUP_COLLECT_STRDUP | G_MARKUP_COLLECT_OPTIONAL,
+											"allow-unfocusable-targets",
+											&allowUnfocusableTargets,
 											G_MARKUP_COLLECT_INVALID))
 		{
+			/* Propagate error */
 			g_propagate_error(outError, error);
+
+			/* Release allocated resources */
 			if(keycode) g_free(keycode);
 			if(source) g_free(source);
 			if(when) g_free(when);
 			if(target) g_free(target);
+			if(allowUnfocusableTargets) g_free(allowUnfocusableTargets);
+
 			return;
 		}
 
@@ -513,16 +523,17 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 		{
 			/* Set error */
 			_xfdashboard_bindings_pool_parse_set_error(data,
-													inContext,
-													outError,
-													XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-													_("Missing attribute 'code' for key"));
+														inContext,
+														outError,
+														XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
+														_("Missing attribute 'code' for key"));
 
 			/* Release allocated resources */
 			if(keycode) g_free(keycode);
 			if(source) g_free(source);
 			if(when) g_free(when);
 			if(target) g_free(target);
+			if(allowUnfocusableTargets) g_free(allowUnfocusableTargets);
 
 			return;
 		}
@@ -532,17 +543,18 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 		{
 			/* Set error */
 			_xfdashboard_bindings_pool_parse_set_error(data,
-													inContext,
-													outError,
-													XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-													_("Could not translate key '%s'"),
-													keycode);
+														inContext,
+														outError,
+														XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
+														_("Could not translate key '%s'"),
+														keycode);
 
 			/* Release allocated resources */
 			if(keycode) g_free(keycode);
 			if(source) g_free(source);
 			if(when) g_free(when);
 			if(target) g_free(target);
+			if(allowUnfocusableTargets) g_free(allowUnfocusableTargets);
 
 			return;
 		}
@@ -567,17 +579,18 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 				{
 					/* Set error */
 					_xfdashboard_bindings_pool_parse_set_error(data,
-															inContext,
-															outError,
-															XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-															_("Unknown value '%s' for attribute 'when'"),
-															when);
+																inContext,
+																outError,
+																XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
+																_("Unknown value '%s' for attribute 'when'"),
+																when);
 
 					/* Release allocated resources */
 					if(keycode) g_free(keycode);
 					if(source) g_free(source);
 					if(when) g_free(when);
 					if(target) g_free(target);
+					if(allowUnfocusableTargets) g_free(allowUnfocusableTargets);
 
 					return;
 				}
@@ -589,18 +602,64 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 		{
 			/* Set error */
 			_xfdashboard_bindings_pool_parse_set_error(data,
-													inContext,
-													outError,
-													XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
-													_("Could not initialize binding for key-binding"));
+														inContext,
+														outError,
+														XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
+														_("Could not initialize binding for key-binding"));
 
 			/* Release allocated resources */
 			if(keycode) g_free(keycode);
 			if(source) g_free(source);
 			if(when) g_free(when);
 			if(target) g_free(target);
+			if(allowUnfocusableTargets) g_free(allowUnfocusableTargets);
 
 			return;
+		}
+
+		/* Parse optional attribute "allow-unfocusable-target" */
+		if(allowUnfocusableTargets)
+		{
+			GValue								allowUnfocusableTargetsInitialValue=G_VALUE_INIT;
+			GValue								allowUnfocusableTargetsTransformedValue=G_VALUE_INIT;
+
+			g_value_init(&allowUnfocusableTargetsInitialValue, G_TYPE_STRING);
+			g_value_set_string(&allowUnfocusableTargetsInitialValue, allowUnfocusableTargets);
+
+			g_value_init(&allowUnfocusableTargetsTransformedValue, G_TYPE_BOOLEAN);
+
+			if(!g_value_transform(&allowUnfocusableTargetsInitialValue, &allowUnfocusableTargetsTransformedValue))
+			{
+				/* Set error */
+				_xfdashboard_bindings_pool_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
+															_("Cannot transform attribute 'allow-unfocusable-target' from type '%s' to type '%s'"),
+															g_type_name(G_VALUE_TYPE(&allowUnfocusableTargetsInitialValue)),
+															g_type_name(G_VALUE_TYPE(&allowUnfocusableTargetsTransformedValue)));
+
+				/* Release allocated resources */
+				g_value_unset(&allowUnfocusableTargetsTransformedValue);
+				g_value_unset(&allowUnfocusableTargetsInitialValue);
+
+				if(keycode) g_free(keycode);
+				if(source) g_free(source);
+				if(when) g_free(when);
+				if(target) g_free(target);
+				if(allowUnfocusableTargets) g_free(allowUnfocusableTargets);
+
+				return;
+			}
+
+			if(g_value_get_boolean(&allowUnfocusableTargetsTransformedValue))
+			{
+				flags|=XFDASHBOARD_BINDING_FLAGS_ALLOW_UNFOCUSABLE_TARGET;
+			}
+
+			/* Release allocated resources */
+			g_value_unset(&allowUnfocusableTargetsTransformedValue);
+			g_value_unset(&allowUnfocusableTargetsInitialValue);
 		}
 
 		xfdashboard_binding_set_event_type(data->lastBinding, eventType);
@@ -608,12 +667,14 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 		xfdashboard_binding_set_key(data->lastBinding, key);
 		xfdashboard_binding_set_modifiers(data->lastBinding, modifiers);
 		if(target) xfdashboard_binding_set_target(data->lastBinding, target);
+		xfdashboard_binding_set_flags(data->lastBinding, flags);
 
 		/* Release allocated resources */
 		if(keycode) g_free(keycode);
 		if(source) g_free(source);
 		if(when) g_free(when);
 		if(target) g_free(target);
+		if(allowUnfocusableTargets) g_free(allowUnfocusableTargets);
 
 		/* Set up context for tag <key> */
 		g_markup_parse_context_push(inContext, &keyParser, inUserData);

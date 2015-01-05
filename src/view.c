@@ -100,12 +100,85 @@ enum
 	SIGNAL_SCROLL_TO,
 	SIGNAL_ENSURE_VISIBLE,
 
+	ACTION_VIEW_ACTIVATE,
+
 	SIGNAL_LAST
 };
 
 static guint XfdashboardViewSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+
+/* Find viewpad which contains this view */
+static XfdashboardViewpad* _xfdashboard_view_find_viewpad(XfdashboardView *self)
+{
+	ClutterActor				*viewpad;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), NULL);
+
+	/* Iterate through parent actors and for each viewpad found
+	 * check if it contains this view.
+	 */
+	viewpad=clutter_actor_get_parent(CLUTTER_ACTOR(self));
+	while(viewpad)
+	{
+		/* Check if this parent actor is a viewpad and
+		 * if it contains this view.
+		 */
+		if(XFDASHBOARD_IS_VIEWPAD(viewpad) &&
+			xfdashboard_viewpad_has_view(XFDASHBOARD_VIEWPAD(viewpad), self))
+		{
+			/* Viewpad found so return it */
+			return(XFDASHBOARD_VIEWPAD(viewpad));
+		}
+
+		/* Continue with next parent actor */
+		viewpad=clutter_actor_get_parent(viewpad);
+	}
+
+	/* If we get here the viewpad could not be found so return NULL */
+	return(NULL);
+}
+
+/* Action signal to close currently selected window was emitted */
+static gboolean _xfdashboard_view_activate(XfdashboardView *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent)
+{
+	XfdashboardViewPrivate		*priv;
+	XfdashboardViewpad			*viewpad;
+	XfdashboardFocusManager		*focusManager;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+
+	/* Only enabled views can be activated */
+	if(!priv->isEnabled) return(CLUTTER_EVENT_STOP);
+
+	/* Find viewpad which contains this view */
+	viewpad=_xfdashboard_view_find_viewpad(self);
+	if(!viewpad) return(CLUTTER_EVENT_STOP);
+
+	/* Activate view at viewpad if this view is not the active one */
+	if(xfdashboard_viewpad_get_active_view(viewpad)!=self)
+	{
+		xfdashboard_viewpad_set_active_view(viewpad, self);
+	}
+
+	/* Set focus to view if it has not the focus */
+	focusManager=xfdashboard_focus_manager_get_default();
+	if(XFDASHBOARD_IS_FOCUSABLE(self) &&
+		!xfdashboard_focus_manager_has_focus(focusManager, XFDASHBOARD_FOCUSABLE(self)))
+	{
+		xfdashboard_focus_manager_set_focus(focusManager, XFDASHBOARD_FOCUSABLE(self));
+	}
+	g_object_unref(focusManager);
+
+	/* Action handled */
+	return(CLUTTER_EVENT_STOP);
+}
 
 /* IMPLEMENTATION: GObject */
 
@@ -228,6 +301,8 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 	gobjectClass->set_property=_xfdashboard_view_set_property;
 	gobjectClass->get_property=_xfdashboard_view_get_property;
 	gobjectClass->dispose=_xfdashboard_view_dispose;
+
+	klass->view_activate=_xfdashboard_view_activate;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardViewPrivate));
@@ -410,6 +485,21 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 						G_TYPE_NONE,
 						1,
 						CLUTTER_TYPE_ACTOR);
+
+	/* Define actions */
+	XfdashboardViewSignals[ACTION_VIEW_ACTIVATE]=
+		g_signal_new("view-activate",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardViewClass, view_activate),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
 }
 
 /* Object initialization
@@ -620,38 +710,34 @@ gboolean xfdashboard_view_has_focus(XfdashboardView *self)
 {
 	XfdashboardViewPrivate		*priv;
 	XfdashboardFocusManager		*focusManager;
-	ClutterActor				*viewpad;
+	XfdashboardViewpad			*viewpad;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), FALSE);
 
 	priv=self->priv;
 
-	/* The view can only have the focus if the viewpad which contains this view
-	 * has the focus and this view is enabled and active.
+	/* The view can only have the focus if this view is enabled, active and
+	 * has the current focus.
 	 */
-	focusManager=xfdashboard_focus_manager_get_default();
-
-	viewpad=clutter_actor_get_parent(CLUTTER_ACTOR(self));
-	while(viewpad && !XFDASHBOARD_IS_VIEWPAD(viewpad))
+	if(!priv->isEnabled)
 	{
-		viewpad=clutter_actor_get_parent(viewpad);
-	}
-
-	if(!viewpad ||
-		!XFDASHBOARD_IS_FOCUSABLE(viewpad) ||
-		!xfdashboard_focus_manager_has_focus(focusManager, XFDASHBOARD_FOCUSABLE(viewpad)))
-	{
-		g_object_unref(focusManager);
 		return(FALSE);
 	}
 
-	if(!priv->isEnabled)
+	viewpad=_xfdashboard_view_find_viewpad(self);
+	if(!viewpad)
 	{
-		g_object_unref(focusManager);
 		return(FALSE);
 	}
 
 	if(xfdashboard_viewpad_get_active_view(XFDASHBOARD_VIEWPAD(viewpad))!=self)
+	{
+		return(FALSE);
+	}
+
+	focusManager=xfdashboard_focus_manager_get_default();
+	if(!XFDASHBOARD_IS_FOCUSABLE(self) ||
+		!xfdashboard_focus_manager_has_focus(focusManager, XFDASHBOARD_FOCUSABLE(self)))
 	{
 		g_object_unref(focusManager);
 		return(FALSE);

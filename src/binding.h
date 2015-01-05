@@ -67,6 +67,12 @@ struct _XfdashboardBindingClass
 													CLUTTER_HYPER_MASK | \
 													CLUTTER_META_MASK)
 
+typedef enum /*< flags,prefix=XFDASHBOARD_BINDING_FLAGS >*/
+{
+	XFDASHBOARD_BINDING_FLAGS_NONE=0,
+	XFDASHBOARD_BINDING_FLAGS_ALLOW_UNFOCUSABLE_TARGET
+} XfdashboardBindingFlags;
+
 GType xfdashboard_binding_get_type(void) G_GNUC_CONST;
 
 XfdashboardBinding* xfdashboard_binding_new(void);
@@ -95,6 +101,9 @@ void xfdashboard_binding_set_target(XfdashboardBinding *self, const gchar *inTar
 
 const gchar* xfdashboard_binding_get_action(const XfdashboardBinding *self);
 void xfdashboard_binding_set_action(XfdashboardBinding *self, const gchar *inAction);
+
+XfdashboardBindingFlags xfdashboard_binding_get_flags(const XfdashboardBinding *self);
+void xfdashboard_binding_set_flags(XfdashboardBinding *self, XfdashboardBindingFlags inFlags);
 
 G_END_DECLS
 

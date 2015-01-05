@@ -5,6 +5,10 @@
 	<key code="<Shift>-Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-previous</key>
 	<key code="<Shift>-ISO_Left_Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-previous</key>
 
+	<key code="<Ctrl>-w" source="XfdashboardFocusable" target="XfdashboardWindowsView" when="released" allow-unfocusable-targets="true">view-activate</key>
+	<key code="<Ctrl>-a" source="XfdashboardFocusable" target="XfdashboardApplicationsView" when="released" allow-unfocusable-targets="true">view-activate</key>
+	<key code="<Ctrl>-s" source="XfdashboardFocusable" target="XfdashboardSearchView" when="released" allow-unfocusable-targets="true">view-activate</key>
+
 	<key code="Left" source="XfdashboardFocusable" when="pressed">selection-move-left</key>
 	<key code="Right" source="XfdashboardFocusable" when="pressed">selection-move-right</key>
 	<key code="Up" source="XfdashboardFocusable" when="pressed">selection-move-up</key>
