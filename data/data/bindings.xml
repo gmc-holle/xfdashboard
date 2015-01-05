@@ -31,4 +31,8 @@
 	<!-- Quicklaunch -->
 	<key code="<Ctrl>-Delete" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
 	<key code="<Ctrl>-KP_Delete" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>
+	<key code="<Shift>-Left" source="XfdashboardQuicklaunch" when="pressed">selection-reorder-left</key>
+	<key code="<Shift>-Right" source="XfdashboardQuicklaunch" when="pressed">selection-reorder-right</key>
+	<key code="<Shift>-Up" source="XfdashboardQuicklaunch" when="pressed">selection-reorder-up</key>
+	<key code="<Shift>-Down" source="XfdashboardQuicklaunch" when="pressed">selection-reorder-down</key>
 </bindings>

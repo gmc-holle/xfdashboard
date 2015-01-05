@@ -72,6 +72,23 @@ struct _XfdashboardQuicklaunchClass
 											XfdashboardFocusable *inSource,
 											const gchar *inAction,
 											ClutterEvent *inEvent);
+
+	gboolean (*selection_reorder_left)(XfdashboardQuicklaunch *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
+	gboolean (*selection_reorder_right)(XfdashboardQuicklaunch *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
+	gboolean (*selection_reorder_up)(XfdashboardQuicklaunch *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
+	gboolean (*selection_reorder_down)(XfdashboardQuicklaunch *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
 };
 
 /* Public API */

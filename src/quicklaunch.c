@@ -106,6 +106,10 @@ enum
 
 	ACTION_SELECTION_ADD_FAVOURITE,
 	ACTION_SELECTION_REMOVE_FAVOURITE,
+	ACTION_SELECTION_REORDER_LEFT,
+	ACTION_SELECTION_REORDER_RIGHT,
+	ACTION_SELECTION_REORDER_UP,
+	ACTION_SELECTION_REORDER_DOWN,
 
 	SIGNAL_LAST
 };
@@ -147,7 +151,7 @@ static gboolean _xfdashboard_quicklaunch_has_appinfo(XfdashboardQuicklaunch *sel
 	if(!G_IS_DESKTOP_APP_INFO(inAppInfo))
 	{
 		g_debug("%s is derived from %s but not derived %s",
-					inAppInfo, G_OBJECT_TYPE_NAME(inAppInfo),
+					G_OBJECT_TYPE_NAME(inAppInfo),
 					g_type_name(G_TYPE_APP_INFO),
 					g_type_name(G_TYPE_DESKTOP_APP_INFO));
 		return(TRUE);
@@ -195,6 +199,7 @@ static gboolean _xfdashboard_quicklaunch_has_appinfo(XfdashboardQuicklaunch *sel
 				{
 					valueAppInfo=g_desktop_app_info_new(valueAppInfoFilename);
 				}
+		}
 
 		/* Check if favourite value matches application information */
 		if(valueAppInfo &&
@@ -1383,14 +1388,14 @@ static gboolean _xfdashboard_quicklaunch_selection_remove_favourite(XfdashboardQ
 	currentSelection=xfdashboard_focusable_get_selection(inSource);
 	if(!currentSelection)
 	{
-		g_debug("Source actor %s has no selection and no favourite can be added.",
+		g_debug("Source actor %s has no selection so no favourite can be removed.",
 					G_OBJECT_TYPE_NAME(inSource));
 		return(CLUTTER_EVENT_STOP);
 	}
 
 	if(!XFDASHBOARD_IS_APPLICATION_BUTTON(currentSelection))
 	{
-		g_debug("Current selection at source actor %s has type %s but only selections of type %s can be added.",
+		g_debug("Current selection at source actor %s has type %s but only selections of type %s can be removed.",
 					G_OBJECT_TYPE_NAME(inSource),
 					G_OBJECT_TYPE_NAME(currentSelection),
 					g_type_name(XFDASHBOARD_TYPE_APPLICATION_BUTTON));
@@ -1436,6 +1441,150 @@ static gboolean _xfdashboard_quicklaunch_selection_remove_favourite(XfdashboardQ
 
 	/* Action handled */
 	return(CLUTTER_EVENT_STOP);
+}
+
+/* Action signal to move current selected item to reorder items was emitted */
+static gboolean _xfdashboard_quicklaunch_reorder_current_selection(XfdashboardQuicklaunch *self,
+																	XfdashboardOrientation inDirection)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+	ClutterActor					*currentSelection;
+	ClutterActor					*newSelection;
+	ClutterOrientation				orientation;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inDirection<=XFDASHBOARD_ORIENTATION_BOTTOM, CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+
+	/* Determine expected orientation of quicklaunch */
+	if(inDirection==XFDASHBOARD_ORIENTATION_LEFT ||
+		inDirection==XFDASHBOARD_ORIENTATION_RIGHT)
+	{
+		orientation=CLUTTER_ORIENTATION_HORIZONTAL;
+	}
+		else orientation=CLUTTER_ORIENTATION_VERTICAL;
+
+	/* Orientation of quicklaunch must match orientation of direction
+	 * to which we should reorder item.
+	 */
+	if(priv->orientation!=orientation)
+	{
+		g_debug("Source actor %s does not have expected orientation.",
+					G_OBJECT_TYPE_NAME(self));
+		return(CLUTTER_EVENT_STOP);
+	}
+
+	/* Check if current selection in this quicklaunch is a favourite */
+	currentSelection=xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self));
+	if(!currentSelection)
+	{
+		g_debug("Source actor %s has no selection so no favourite can be reordered.",
+					G_OBJECT_TYPE_NAME(self));
+		return(CLUTTER_EVENT_STOP);
+	}
+
+	if(!XFDASHBOARD_IS_APPLICATION_BUTTON(currentSelection))
+	{
+		g_debug("Current selection at source actor %s has type %s but only selections of type %s can be reordered.",
+					G_OBJECT_TYPE_NAME(self),
+					G_OBJECT_TYPE_NAME(currentSelection),
+					g_type_name(XFDASHBOARD_TYPE_APPLICATION_BUTTON));
+		return(CLUTTER_EVENT_STOP);
+	}
+
+	if(priv->dragPreviewIcon && currentSelection==priv->dragPreviewIcon)
+	{
+		g_debug("Current selection at source actor %s is %s which is the drag preview icon which cannot be reordered.",
+					G_OBJECT_TYPE_NAME(self),
+					G_OBJECT_TYPE_NAME(currentSelection));
+		return(CLUTTER_EVENT_STOP);
+	}
+
+	/* Find new position and check if current selection can be moved to this new position.
+	 * The current selection cannot be moved if it is already at the beginning or the end
+	 * and it cannot bypass an actor of type XfdashboardButton which is used by any
+	 * non favourite actor like "switch" button, trash button etc. Favourites use actors
+	 * of type XfdashboardApplicationButton.
+	 */
+	if(inDirection==XFDASHBOARD_ORIENTATION_LEFT ||
+		inDirection==XFDASHBOARD_ORIENTATION_TOP)
+	{
+		newSelection=clutter_actor_get_previous_sibling(currentSelection);
+	}
+		else newSelection=clutter_actor_get_next_sibling(currentSelection);
+
+	if(!newSelection)
+	{
+		g_debug("Current selection %s at source actor %s is already at end of list",
+					G_OBJECT_TYPE_NAME(currentSelection),
+					G_OBJECT_TYPE_NAME(self));
+		return(CLUTTER_EVENT_STOP);
+	}
+
+	if(!XFDASHBOARD_IS_APPLICATION_BUTTON(newSelection))
+	{
+		g_debug("Current selection %s at source actor %s cannot be moved because it is blocked by %s.",
+					G_OBJECT_TYPE_NAME(currentSelection),
+					G_OBJECT_TYPE_NAME(self),
+					G_OBJECT_TYPE_NAME(newSelection));
+		return(CLUTTER_EVENT_STOP);
+	}
+
+	/* Move current selection to new position */
+	if(inDirection==XFDASHBOARD_ORIENTATION_LEFT ||
+		inDirection==XFDASHBOARD_ORIENTATION_TOP)
+	{
+		clutter_actor_set_child_below_sibling(CLUTTER_ACTOR(self),
+												currentSelection,
+												newSelection);
+	}
+		else
+		{
+			clutter_actor_set_child_above_sibling(CLUTTER_ACTOR(self),
+													currentSelection,
+													newSelection);
+		}
+
+	/* Update favourites from icon order */
+	_xfdashboard_quicklaunch_update_property_from_icons(self);
+
+	/* Action handled */
+	return(CLUTTER_EVENT_STOP);
+}
+
+static gboolean _xfdashboard_quicklaunch_selection_reorder_left(XfdashboardQuicklaunch *self,
+																XfdashboardFocusable *inSource,
+																const gchar *inAction,
+																ClutterEvent *inEvent)
+{
+	return(_xfdashboard_quicklaunch_reorder_current_selection(self, XFDASHBOARD_ORIENTATION_LEFT));
+}
+
+static gboolean _xfdashboard_quicklaunch_selection_reorder_right(XfdashboardQuicklaunch *self,
+																	XfdashboardFocusable *inSource,
+																	const gchar *inAction,
+																	ClutterEvent *inEvent)
+{
+	return(_xfdashboard_quicklaunch_reorder_current_selection(self, XFDASHBOARD_ORIENTATION_RIGHT));
+}
+
+/* Action signal to move current selected item to up (to reorder items) was emitted */
+static gboolean _xfdashboard_quicklaunch_selection_reorder_up(XfdashboardQuicklaunch *self,
+																XfdashboardFocusable *inSource,
+																const gchar *inAction,
+																ClutterEvent *inEvent)
+{
+	return(_xfdashboard_quicklaunch_reorder_current_selection(self, XFDASHBOARD_ORIENTATION_TOP));
+}
+
+/* Action signal to move current selected item to down (to reorder items) was emitted */
+static gboolean _xfdashboard_quicklaunch_selection_reorder_down(XfdashboardQuicklaunch *self,
+																XfdashboardFocusable *inSource,
+																const gchar *inAction,
+																ClutterEvent *inEvent)
+{
+	return(_xfdashboard_quicklaunch_reorder_current_selection(self, XFDASHBOARD_ORIENTATION_BOTTOM));
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -2034,6 +2183,10 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 
 	klass->selection_add_favourite=_xfdashboard_quicklaunch_selection_add_favourite;
 	klass->selection_remove_favourite=_xfdashboard_quicklaunch_selection_remove_favourite;
+	klass->selection_reorder_left=_xfdashboard_quicklaunch_selection_reorder_left;
+	klass->selection_reorder_right=_xfdashboard_quicklaunch_selection_reorder_right;
+	klass->selection_reorder_up=_xfdashboard_quicklaunch_selection_reorder_up;
+	klass->selection_reorder_down=_xfdashboard_quicklaunch_selection_reorder_down;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardQuicklaunchPrivate));
@@ -2121,6 +2274,62 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, selection_remove_favourite),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardQuicklaunchSignals[ACTION_SELECTION_REORDER_LEFT]=
+		g_signal_new("selection-reorder-left",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, selection_reorder_left),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardQuicklaunchSignals[ACTION_SELECTION_REORDER_RIGHT]=
+		g_signal_new("selection-reorder-right",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, selection_reorder_right),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardQuicklaunchSignals[ACTION_SELECTION_REORDER_UP]=
+		g_signal_new("selection-reorder-up",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, selection_reorder_up),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardQuicklaunchSignals[ACTION_SELECTION_REORDER_DOWN]=
+		g_signal_new("selection-reorder-down",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardQuicklaunchClass, selection_reorder_down),
 						g_signal_accumulator_true_handled,
 						NULL,
 						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
