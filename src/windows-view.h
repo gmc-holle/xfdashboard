@@ -63,6 +63,55 @@ struct _XfdashboardWindowsViewClass
 								XfdashboardFocusable *inSource,
 								const gchar *inAction,
 								ClutterEvent *inEvent);
+	gboolean (*windows_show_numbers)(XfdashboardWindowsView *self,
+										XfdashboardFocusable *inSource,
+										const gchar *inAction,
+										ClutterEvent *inEvent);
+	gboolean (*windows_hide_numbers)(XfdashboardWindowsView *self,
+										XfdashboardFocusable *inSource,
+										const gchar *inAction,
+										ClutterEvent *inEvent);
+	gboolean (*windows_activate_window_one)(XfdashboardWindowsView *self,
+												XfdashboardFocusable *inSource,
+												const gchar *inAction,
+												ClutterEvent *inEvent);
+	gboolean (*windows_activate_window_two)(XfdashboardWindowsView *self,
+												XfdashboardFocusable *inSource,
+												const gchar *inAction,
+												ClutterEvent *inEvent);
+	gboolean (*windows_activate_window_three)(XfdashboardWindowsView *self,
+												XfdashboardFocusable *inSource,
+												const gchar *inAction,
+												ClutterEvent *inEvent);
+	gboolean (*windows_activate_window_four)(XfdashboardWindowsView *self,
+												XfdashboardFocusable *inSource,
+												const gchar *inAction,
+												ClutterEvent *inEvent);
+	gboolean (*windows_activate_window_five)(XfdashboardWindowsView *self,
+												XfdashboardFocusable *inSource,
+												const gchar *inAction,
+												ClutterEvent *inEvent);
+	gboolean (*windows_activate_window_six)(XfdashboardWindowsView *self,
+												XfdashboardFocusable *inSource,
+												const gchar *inAction,
+												ClutterEvent *inEvent);
+	gboolean (*windows_activate_window_seven)(XfdashboardWindowsView *self,
+												XfdashboardFocusable *inSource,
+												const gchar *inAction,
+												ClutterEvent *inEvent);
+	gboolean (*windows_activate_window_eight)(XfdashboardWindowsView *self,
+												XfdashboardFocusable *inSource,
+												const gchar *inAction,
+												ClutterEvent *inEvent);
+	gboolean (*windows_activate_window_nine)(XfdashboardWindowsView *self,
+												XfdashboardFocusable *inSource,
+												const gchar *inAction,
+												ClutterEvent *inEvent);
+	gboolean (*windows_activate_window_ten)(XfdashboardWindowsView *self,
+												XfdashboardFocusable *inSource,
+												const gchar *inAction,
+												ClutterEvent *inEvent);
+
 };
 
 /* Public API */

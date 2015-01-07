@@ -25,10 +25,11 @@
 #include "config.h"
 #endif
 
+#include <glib/gi18n-lib.h>
+#include <gdk/gdk.h>
+
 #include "binding.h"
 #include "enums.h"
-
-#include <glib/gi18n-lib.h>
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardBinding,
@@ -329,10 +330,26 @@ XfdashboardBinding* xfdashboard_binding_new_for_event(const ClutterEvent *inEven
 	switch(eventType)
 	{
 		case CLUTTER_KEY_PRESS:
-		case CLUTTER_KEY_RELEASE:
 			xfdashboard_binding_set_event_type(binding, eventType);
 			xfdashboard_binding_set_key(binding, ((ClutterKeyEvent*)inEvent)->keyval);
 			xfdashboard_binding_set_modifiers(binding, ((ClutterKeyEvent*)inEvent)->modifier_state);
+			break;
+
+		case CLUTTER_KEY_RELEASE:
+			/* We assume that a key event with a key value and a modifier state but no unicode
+			 * value is the release of a single key which is a modifier. In this case do not
+			 * set the modifier state in this binding which is created for this event.
+			 * This means: Only set modifier state in this binding if key valule, modifier state
+			 * and a unicode value is set.
+			 */
+			xfdashboard_binding_set_event_type(binding, eventType);
+			xfdashboard_binding_set_key(binding, ((ClutterKeyEvent*)inEvent)->keyval);
+			if(((ClutterKeyEvent*)inEvent)->keyval &&
+				((ClutterKeyEvent*)inEvent)->modifier_state &&
+				((ClutterKeyEvent*)inEvent)->unicode_value)
+			{
+				xfdashboard_binding_set_modifiers(binding, ((ClutterKeyEvent*)inEvent)->modifier_state);
+			}
 			break;
 
 		case CLUTTER_BUTTON_PRESS:

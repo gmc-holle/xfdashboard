@@ -305,11 +305,13 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 	g_strfreev(parts);
 
 	/* A key-binding can have no modifiers but at least a key must be assigned */
+#if 0
 	if(!key)
 	{
 		g_warning(_("Invalid key-binding '%s' as no key was assigned."), inText);
 		return(FALSE);
 	}
+#endif
 
 	/* Set result */
 	if(outKey) *outKey=key;

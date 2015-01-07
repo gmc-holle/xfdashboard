@@ -56,6 +56,8 @@ struct _XfdashboardLiveWindowPrivate
 	/* Properties related */
 	XfdashboardWindowTrackerWindow		*window;
 
+	guint								windowNumber;
+
 	gfloat								paddingClose;
 	gfloat								paddingTitle;
 
@@ -66,6 +68,7 @@ struct _XfdashboardLiveWindowPrivate
 
 	ClutterActor						*actorWindow;
 	ClutterActor						*actorClose;
+	ClutterActor						*actorWindowNumber;
 	ClutterActor						*actorTitle;
 };
 
@@ -75,6 +78,8 @@ enum
 	PROP_0,
 
 	PROP_WINDOW,
+
+	PROP_WINDOW_NUMBER,
 
 	PROP_CLOSE_BUTTON_PADDING,
 	PROP_TITLE_ACTOR_PADDING,
@@ -289,6 +294,58 @@ static void _xfdashboard_live_window_on_workspace_changed(XfdashboardLiveWindow 
 	g_signal_emit(self, XfdashboardLiveWindowSignals[SIGNAL_WORKSPACE_CHANGED], 0);
 }
 
+/* Window number will be modified */
+static void _xfdashboard_live_window_set_window_number(XfdashboardLiveWindow *self,
+														guint inWindowNumber)
+
+{
+	XfdashboardLiveWindowPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+	g_return_if_fail(inWindowNumber<=10);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->windowNumber!=inWindowNumber)
+	{
+		/* Set value */
+		priv->windowNumber=inWindowNumber;
+
+		/* If window number is non-zero hide close button and
+		 * show window number instead ...
+		 */
+		if(priv->windowNumber>0)
+		{
+			gchar					*numberText;
+
+			/* Update text in window number */
+			numberText=g_markup_printf_escaped("%u", priv->windowNumber % 10);
+			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorWindowNumber), numberText);
+			g_free(numberText);
+
+			/* Show window number and hide close button */
+			clutter_actor_show(priv->actorWindowNumber);
+			clutter_actor_hide(priv->actorClose);
+		}
+			/* ... otherwise hide window number and show close button again
+			 * if possible which depends on windows state.
+			 */
+			else
+			{
+				/* Only show close button again if window supports close action */
+				if(xfdashboard_window_tracker_window_has_close_action(priv->window))
+				{
+					clutter_actor_show(priv->actorClose);
+				}
+				clutter_actor_hide(priv->actorWindowNumber);
+			}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowProperties[PROP_WINDOW_NUMBER]);
+	}
+}
+
 /* IMPLEMENTATION: ClutterActor */
 
 /* Get preferred width/height */
@@ -335,6 +392,19 @@ static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorClose))
 	{
 		clutter_actor_get_preferred_height(priv->actorClose,
+											inForWidth,
+											&childMinHeight,
+											&childNaturalHeight);
+		childMinHeight+=(2*priv->paddingClose);
+		childNaturalHeight+=(2*priv->paddingClose);
+		if(childMinHeight>minHeight) minHeight=childMinHeight;
+		if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
+	}
+
+	/* Determine size of window number button actor if visible */
+	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindowNumber))
+	{
+		clutter_actor_get_preferred_height(priv->actorWindowNumber,
 											inForWidth,
 											&childMinHeight,
 											&childNaturalHeight);
@@ -401,6 +471,19 @@ static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 		if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
 	}
 
+	/* Determine size of window number button actor if visible */
+	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindowNumber))
+	{
+		clutter_actor_get_preferred_width(priv->actorWindowNumber,
+											inForHeight,
+											&childMinWidth,
+											&childNaturalWidth);
+		childMinWidth+=(2*priv->paddingClose);
+		childNaturalWidth+=(2*priv->paddingClose);
+		if(childMinWidth>minWidth) minWidth=childMinWidth;
+		if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
+	}
+
 	/* Store sizes computed */
 	if(outMinWidth) *outMinWidth=minWidth;
 	if(outNaturalWidth) *outNaturalWidth=naturalWidth;
@@ -415,9 +498,12 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 	ClutterActorBox					*boxActorWindow=NULL;
 	ClutterActorBox					*boxActorTitle=NULL;
 	ClutterActorBox					*boxActorClose=NULL;
+	ClutterActorBox					*boxActorWindowNumber=NULL;
+	ClutterActorBox					*referedBoxActor;
 	gfloat							maxWidth;
 	gfloat							titleWidth, titleHeight;
 	gfloat							closeWidth, closeHeight;
+	gfloat							windowNumberWidth, windowNumberHeight;
 	gfloat							left, top, right, bottom;
 
 	/* Chain up to store the allocation of the actor */
@@ -444,9 +530,30 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 	boxActorClose=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
 	clutter_actor_allocate(priv->actorClose, boxActorClose, inFlags);
 
+	/* Set allocation on window number actor (expand to size of close button if needed) */
+	clutter_actor_get_preferred_size(priv->actorWindowNumber,
+										NULL, NULL,
+										&windowNumberWidth, &windowNumberHeight);
+
+	right=clutter_actor_box_get_x(boxActorWindow)+clutter_actor_box_get_width(boxActorWindow)-priv->paddingClose;
+	left=MAX(right-windowNumberWidth, priv->paddingClose);
+	top=clutter_actor_box_get_y(boxActorWindow)+priv->paddingClose;
+	bottom=top+windowNumberHeight;
+
+	left=MIN(left, clutter_actor_box_get_x(boxActorClose));
+	right=MAX(left, right);
+	bottom=MAX(top, bottom);
+	bottom=MAX(bottom, clutter_actor_box_get_y(boxActorClose)+clutter_actor_box_get_height(boxActorClose));
+
+	boxActorWindowNumber=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
+	clutter_actor_allocate(priv->actorWindowNumber, boxActorWindowNumber, inFlags);
+
 	/* Set allocation on title actor
 	 * But prevent that title overlaps close button
 	 */
+	if(priv->windowNumber>0) referedBoxActor=boxActorWindowNumber;
+		else referedBoxActor=boxActorClose;
+
 	clutter_actor_get_preferred_size(priv->actorTitle,
 										NULL, NULL,
 										&titleWidth, &titleHeight);
@@ -459,16 +566,16 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 	bottom=clutter_actor_box_get_y(boxActorWindow)+clutter_actor_box_get_height(boxActorWindow)-(2*priv->paddingTitle);
 	top=bottom-titleHeight;
 	if(left>right) left=right-1.0f;
-	if(top<(clutter_actor_box_get_y(boxActorClose)+clutter_actor_box_get_height(boxActorClose)))
+	if(top<(clutter_actor_box_get_y(referedBoxActor)+clutter_actor_box_get_height(referedBoxActor)))
 	{
-		if(right>=clutter_actor_box_get_x(boxActorClose))
+		if(right>=clutter_actor_box_get_x(referedBoxActor))
 		{
-			right=clutter_actor_box_get_x(boxActorClose)-MIN(priv->paddingTitle, priv->paddingClose);
+			right=clutter_actor_box_get_x(referedBoxActor)-MIN(priv->paddingTitle, priv->paddingClose);
 		}
 
-		if(top<clutter_actor_box_get_y(boxActorClose))
+		if(top<clutter_actor_box_get_y(referedBoxActor))
 		{
-			top=clutter_actor_box_get_y(boxActorClose);
+			top=clutter_actor_box_get_y(referedBoxActor);
 			bottom=top+titleHeight;
 		}
 	}
@@ -524,6 +631,12 @@ static void _xfdashboard_live_window_dispose(GObject *inObject)
 		priv->actorClose=NULL;
 	}
 
+	if(priv->actorWindowNumber)
+	{
+		clutter_actor_destroy(priv->actorWindowNumber);
+		priv->actorWindowNumber=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_live_window_parent_class)->dispose(inObject);
 }
@@ -540,6 +653,10 @@ static void _xfdashboard_live_window_set_property(GObject *inObject,
 	{
 		case PROP_WINDOW:
 			xfdashboard_live_window_set_window(self, g_value_get_object(inValue));
+			break;
+
+		case PROP_WINDOW_NUMBER:
+			_xfdashboard_live_window_set_window_number(self, g_value_get_uint(inValue));
 			break;
 
 		case PROP_CLOSE_BUTTON_PADDING:
@@ -567,6 +684,10 @@ static void _xfdashboard_live_window_get_property(GObject *inObject,
 	{
 		case PROP_WINDOW:
 			g_value_set_object(outValue, self->priv->window);
+			break;
+
+		case PROP_WINDOW_NUMBER:
+			g_value_set_uint(outValue, self->priv->windowNumber);
 			break;
 
 		case PROP_CLOSE_BUTTON_PADDING:
@@ -612,6 +733,14 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 								_("The window to show"),
 								XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardLiveWindowProperties[PROP_WINDOW_NUMBER]=
+		g_param_spec_uint("window-number",
+							_("Window number"),
+							_("The assigned window number. If set to non-zero the close button will be hidden and the window number will be shown instead. If set to zero the close button will be shown again."),
+							0, 10,
+							0,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON_PADDING]=
 		g_param_spec_float("close-padding",
@@ -708,6 +837,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 
 	/* Set default values */
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->windowNumber=0;
 	priv->window=NULL;
 	priv->paddingTitle=0.0f;
 	priv->paddingClose=0.0f;
@@ -728,6 +858,12 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_set_reactive(priv->actorClose, FALSE);
 	clutter_actor_show(priv->actorClose);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorClose);
+
+	priv->actorWindowNumber=xfdashboard_button_new();
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorWindowNumber), "window-number");
+	clutter_actor_set_reactive(priv->actorWindowNumber, FALSE);
+	clutter_actor_hide(priv->actorWindowNumber);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorWindowNumber);
 
 	/* Connect signals */
 	action=xfdashboard_click_action_new();
@@ -863,6 +999,7 @@ void xfdashboard_live_window_set_close_button_padding(XfdashboardLiveWindow *sel
 		/* Set value */
 		priv->paddingClose=inPadding;
 		xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorClose), priv->paddingClose);
+		xfdashboard_background_set_corner_radius(XFDASHBOARD_BACKGROUND(priv->actorWindowNumber), priv->paddingClose);
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 
 		/* Notify about property change */

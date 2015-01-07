@@ -25,6 +25,28 @@
 	<key code="<Shift>-BackSpace" source="XfdashboardWindowsView" when="released">window-close</key>
 	<key code="Delete" source="XfdashboardWindowsView" when="released">window-close</key>
 	<key code="KP_Delete" source="XfdashboardWindowsView" when="released">window-close</key>
+	<key code="Control_L" source="XfdashboardWindowsView" when="pressed">windows-show-numbers</key>
+	<key code="Control_L" source="XfdashboardWindowsView" when="released">windows-hide-numbers</key>
+	<key code="<Ctrl>-1" source="XfdashboardWindowsView" when="released">windows-activate-window-one</key>
+	<key code="<Ctrl>-KP_1" source="XfdashboardWindowsView" when="released">windows-activate-window-one</key>
+	<key code="<Ctrl>-2" source="XfdashboardWindowsView" when="released">windows-activate-window-two</key>
+	<key code="<Ctrl>-KP_2" source="XfdashboardWindowsView" when="released">windows-activate-window-two</key>
+	<key code="<Ctrl>-3" source="XfdashboardWindowsView" when="released">windows-activate-window-three</key>
+	<key code="<Ctrl>-KP_3" source="XfdashboardWindowsView" when="released">windows-activate-window-three</key>
+	<key code="<Ctrl>-4" source="XfdashboardWindowsView" when="released">windows-activate-window-four</key>
+	<key code="<Ctrl>-KP_4" source="XfdashboardWindowsView" when="released">windows-activate-window-four</key>
+	<key code="<Ctrl>-5" source="XfdashboardWindowsView" when="released">windows-activate-window-five</key>
+	<key code="<Ctrl>-KP_5" source="XfdashboardWindowsView" when="released">windows-activate-window-five</key>
+	<key code="<Ctrl>-6" source="XfdashboardWindowsView" when="released">windows-activate-window-six</key>
+	<key code="<Ctrl>-KP_6" source="XfdashboardWindowsView" when="released">windows-activate-window-six</key>
+	<key code="<Ctrl>-7" source="XfdashboardWindowsView" when="released">windows-activate-window-seven</key>
+	<key code="<Ctrl>-KP_7" source="XfdashboardWindowsView" when="released">windows-activate-window-seven</key>
+	<key code="<Ctrl>-8" source="XfdashboardWindowsView" when="released">windows-activate-window-eight</key>
+	<key code="<Ctrl>-KP_8" source="XfdashboardWindowsView" when="released">windows-activate-window-eight</key>
+	<key code="<Ctrl>-9" source="XfdashboardWindowsView" when="released">windows-activate-window-nine</key>
+	<key code="<Ctrl>-KP_9" source="XfdashboardWindowsView" when="released">windows-activate-window-nine</key>
+	<key code="<Ctrl>-0" source="XfdashboardWindowsView" when="released">windows-activate-window-ten</key>
+	<key code="<Ctrl>-KP_0" source="XfdashboardWindowsView" when="released">windows-activate-window-ten</key>
 
 	<!-- Applications view -->
 	<key code="<Ctrl>-plus" source="XfdashboardApplicationsView" target="XfdashboardQuicklaunch" when="released">selection-add-favourite</key>

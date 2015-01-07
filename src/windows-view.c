@@ -66,6 +66,8 @@ struct _XfdashboardWindowsViewPrivate
 	XfdashboardWindowTracker			*windowTracker;
 	ClutterLayoutManager				*layout;
 	ClutterActor						*selectedItem;
+
+	gboolean							isWindowsNumberShown;
 };
 
 /* Properties */
@@ -86,6 +88,18 @@ static GParamSpec* XfdashboardWindowsViewProperties[PROP_LAST]={ 0, };
 enum
 {
 	ACTION_WINDOW_CLOSE,
+	ACTION_WINDOWS_SHOW_NUMBERS,
+	ACTION_WINDOWS_HIDE_NUMBERS,
+	ACTION_WINDOWS_ACTIVATE_WINDOW_ONE,
+	ACTION_WINDOWS_ACTIVATE_WINDOW_TWO,
+	ACTION_WINDOWS_ACTIVATE_WINDOW_THREE,
+	ACTION_WINDOWS_ACTIVATE_WINDOW_FOUR,
+	ACTION_WINDOWS_ACTIVATE_WINDOW_FIVE,
+	ACTION_WINDOWS_ACTIVATE_WINDOW_SIX,
+	ACTION_WINDOWS_ACTIVATE_WINDOW_SEVEN,
+	ACTION_WINDOWS_ACTIVATE_WINDOW_EIGHT,
+	ACTION_WINDOWS_ACTIVATE_WINDOW_NINE,
+	ACTION_WINDOWS_ACTIVATE_WINDOW_TEN,
 
 	SIGNAL_LAST
 };
@@ -147,6 +161,44 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_window(Xfdashboa
 
 	/* If we get here we did not find the window and we return NULL */
 	return(NULL);
+}
+
+/* Update window number in close button of each window actor */
+static void _xfdashboard_windows_view_update_window_number_in_actors(XfdashboardWindowsView *self)
+{
+	XfdashboardWindowsViewPrivate		*priv;
+	ClutterActor						*child;
+	ClutterActorIter					iter;
+	gint								index;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+
+	priv=self->priv;
+
+	/* Iterate through list of current actors and for the first ten actors
+	 * change the close button to window number and the rest will still be
+	 * close buttons.
+	 */
+	index=1;
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Only live window actors can be handled */
+		if(!XFDASHBOARD_IS_LIVE_WINDOW(child)) continue;
+
+		/* If this is one of the first ten window actors change close button
+		 * to window number and set number.
+		 */
+		if(priv->isWindowsNumberShown && index<=10)
+		{
+			g_object_set(child, "window-number", index, NULL);
+			index++;
+		}
+			else
+			{
+				g_object_set(child, "window-number", 0, NULL);
+			}
+	}
 }
 
 /* Drag of an actor to this view as drop target begins */
@@ -235,7 +287,11 @@ static void _xfdashboard_windows_view_on_window_opened(XfdashboardWindowsView *s
 
 	/* Create actor */
 	liveWindow=_xfdashboard_windows_view_create_actor(self, inWindow);
-	if(liveWindow) clutter_actor_insert_child_below(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow), NULL);
+	if(liveWindow)
+	{
+		clutter_actor_insert_child_below(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow), NULL);
+		_xfdashboard_windows_view_update_window_number_in_actors(self);
+	}
 }
 
 /* A window was closed */
@@ -507,7 +563,11 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 			{
 				/* Create actor */
 				liveWindow=_xfdashboard_windows_view_create_actor(XFDASHBOARD_WINDOWS_VIEW(self), window);
-				if(liveWindow) clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow));
+				if(liveWindow)
+				{
+					clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow));
+					_xfdashboard_windows_view_update_window_number_in_actors(self);
+				}
 			}
 
 			/* Next window */
@@ -546,6 +606,186 @@ static gboolean _xfdashboard_windows_view_window_close(XfdashboardWindowsView *s
 	return(CLUTTER_EVENT_STOP);
 }
 
+/* Action signal to show window numbers was emitted */
+static gboolean _xfdashboard_windows_view_windows_show_numbers(XfdashboardWindowsView *self,
+																XfdashboardFocusable *inSource,
+																const gchar *inAction,
+																ClutterEvent *inEvent)
+{
+	XfdashboardWindowsViewPrivate			*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inSource), CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+
+	/* If window numbers are already shown do nothing */
+	if(priv->isWindowsNumberShown) return(CLUTTER_EVENT_PROPAGATE);
+
+	/* Set flag that window numbers are shown already
+	 * to prevent do it twice concurrently.
+	 */
+	priv->isWindowsNumberShown=TRUE;
+
+	/* Show window numbers */
+	_xfdashboard_windows_view_update_window_number_in_actors(self);
+
+	/* Action handled but do not prevent further processing */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Action signal to hide window numbers was emitted */
+static gboolean _xfdashboard_windows_view_windows_hide_numbers(XfdashboardWindowsView *self,
+																XfdashboardFocusable *inSource,
+																const gchar *inAction,
+																ClutterEvent *inEvent)
+{
+	XfdashboardWindowsViewPrivate			*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inSource), CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+
+	/* If no window numbers are shown do nothing */
+	if(!priv->isWindowsNumberShown) return(CLUTTER_EVENT_PROPAGATE);
+
+	/* Set flag that window numbers are hidden already
+	 * to prevent do it twice concurrently.
+	 */
+	priv->isWindowsNumberShown=FALSE;
+
+	/* Hide window numbers */
+	_xfdashboard_windows_view_update_window_number_in_actors(self);
+
+	/* Action handled but do not prevent further processing */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Action signal to hide window numbers was emitted */
+static gboolean _xfdashboard_windows_view_windows_activate_window_by_number(XfdashboardWindowsView *self,
+																				guint inWindowNumber)
+{
+	ClutterActor						*child;
+	ClutterActorIter					iter;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), CLUTTER_EVENT_PROPAGATE);
+
+	/* Iterate through list of current actors and at each live window actor
+	 * check if its window number matches the requested one. If it does
+	 * activate this window.
+	 */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		guint							windowNumber;
+
+		/* Only live window actors can be handled */
+		if(!XFDASHBOARD_IS_LIVE_WINDOW(child)) continue;
+
+		/* Get window number set at live window actor */
+		windowNumber=0;
+		g_object_get(child, "window-number", &windowNumber, NULL);
+
+		/* If window number at live window actor matches requested one
+		 * activate this window.
+		 */
+		if(windowNumber==inWindowNumber)
+		{
+			/* Activate window */
+			_xfdashboard_windows_view_on_window_clicked(self, XFDASHBOARD_LIVE_WINDOW(child));
+
+			/* Action was handled */
+			return(CLUTTER_EVENT_STOP);
+		}
+	}
+
+	/* If we get here the requested window was not found
+	 * so this action could not be handled by this actor.
+	 */
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+static gboolean _xfdashboard_windows_view_windows_activate_window_one(XfdashboardWindowsView *self,
+																		XfdashboardFocusable *inSource,
+																		const gchar *inAction,
+																		ClutterEvent *inEvent)
+{
+	return(_xfdashboard_windows_view_windows_activate_window_by_number(self, 1));
+}
+
+static gboolean _xfdashboard_windows_view_windows_activate_window_two(XfdashboardWindowsView *self,
+																		XfdashboardFocusable *inSource,
+																		const gchar *inAction,
+																		ClutterEvent *inEvent)
+{
+	return(_xfdashboard_windows_view_windows_activate_window_by_number(self, 2));
+}
+
+static gboolean _xfdashboard_windows_view_windows_activate_window_three(XfdashboardWindowsView *self,
+																		XfdashboardFocusable *inSource,
+																		const gchar *inAction,
+																		ClutterEvent *inEvent)
+{
+	return(_xfdashboard_windows_view_windows_activate_window_by_number(self, 3));
+}
+
+static gboolean _xfdashboard_windows_view_windows_activate_window_four(XfdashboardWindowsView *self,
+																		XfdashboardFocusable *inSource,
+																		const gchar *inAction,
+																		ClutterEvent *inEvent)
+{
+	return(_xfdashboard_windows_view_windows_activate_window_by_number(self, 4));
+}
+
+static gboolean _xfdashboard_windows_view_windows_activate_window_five(XfdashboardWindowsView *self,
+																		XfdashboardFocusable *inSource,
+																		const gchar *inAction,
+																		ClutterEvent *inEvent)
+{
+	return(_xfdashboard_windows_view_windows_activate_window_by_number(self, 5));
+}
+
+static gboolean _xfdashboard_windows_view_windows_activate_window_six(XfdashboardWindowsView *self,
+																		XfdashboardFocusable *inSource,
+																		const gchar *inAction,
+																		ClutterEvent *inEvent)
+{
+	return(_xfdashboard_windows_view_windows_activate_window_by_number(self, 6));
+}
+
+static gboolean _xfdashboard_windows_view_windows_activate_window_seven(XfdashboardWindowsView *self,
+																		XfdashboardFocusable *inSource,
+																		const gchar *inAction,
+																		ClutterEvent *inEvent)
+{
+	return(_xfdashboard_windows_view_windows_activate_window_by_number(self, 7));
+}
+
+static gboolean _xfdashboard_windows_view_windows_activate_window_eight(XfdashboardWindowsView *self,
+																		XfdashboardFocusable *inSource,
+																		const gchar *inAction,
+																		ClutterEvent *inEvent)
+{
+	return(_xfdashboard_windows_view_windows_activate_window_by_number(self, 8));
+}
+
+static gboolean _xfdashboard_windows_view_windows_activate_window_nine(XfdashboardWindowsView *self,
+																		XfdashboardFocusable *inSource,
+																		const gchar *inAction,
+																		ClutterEvent *inEvent)
+{
+	return(_xfdashboard_windows_view_windows_activate_window_by_number(self, 9));
+}
+
+static gboolean _xfdashboard_windows_view_windows_activate_window_ten(XfdashboardWindowsView *self,
+																		XfdashboardFocusable *inSource,
+																		const gchar *inAction,
+																		ClutterEvent *inEvent)
+{
+	return(_xfdashboard_windows_view_windows_activate_window_by_number(self, 10));
+}
+
 /* IMPLEMENTATION: Interface XfdashboardFocusable */
 
 /* Determine if actor can get the focus */
@@ -574,6 +814,31 @@ static gboolean _xfdashboard_windows_view_focusable_can_focus(XfdashboardFocusab
 
 	/* If we get here this actor can be focused */
 	return(TRUE);
+}
+
+/* Actor lost focus */
+static void _xfdashboard_windows_view_focusable_unset_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardWindowsView			*self;
+	XfdashboardFocusableInterface	*selfIface;
+	XfdashboardFocusableInterface	*parentIface;
+
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inFocusable));
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->unset_focus)
+	{
+		parentIface->unset_focus(inFocusable);
+	}
+
+	/* Actor lost focus so ensure window numbers are hiding again */
+	_xfdashboard_windows_view_windows_hide_numbers(self, XFDASHBOARD_FOCUSABLE(self), NULL, NULL);
 }
 
 /* Determine if this actor supports selection */
@@ -831,6 +1096,7 @@ static gboolean _xfdashboard_windows_view_focusable_activate_selection(Xfdashboa
 void _xfdashboard_windows_view_focusable_iface_init(XfdashboardFocusableInterface *iface)
 {
 	iface->can_focus=_xfdashboard_windows_view_focusable_can_focus;
+	iface->unset_focus=_xfdashboard_windows_view_focusable_unset_focus;
 
 	iface->supports_selection=_xfdashboard_windows_view_focusable_supports_selection;
 	iface->get_selection=_xfdashboard_windows_view_focusable_get_selection;
@@ -937,6 +1203,18 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 	gobjectClass->get_property=_xfdashboard_windows_view_get_property;
 
 	klass->window_close=_xfdashboard_windows_view_window_close;
+	klass->windows_show_numbers=_xfdashboard_windows_view_windows_show_numbers;
+	klass->windows_hide_numbers=_xfdashboard_windows_view_windows_hide_numbers;
+	klass->windows_activate_window_one=_xfdashboard_windows_view_windows_activate_window_one;
+	klass->windows_activate_window_two=_xfdashboard_windows_view_windows_activate_window_two;
+	klass->windows_activate_window_three=_xfdashboard_windows_view_windows_activate_window_three;
+	klass->windows_activate_window_four=_xfdashboard_windows_view_windows_activate_window_four;
+	klass->windows_activate_window_five=_xfdashboard_windows_view_windows_activate_window_five;
+	klass->windows_activate_window_six=_xfdashboard_windows_view_windows_activate_window_six;
+	klass->windows_activate_window_seven=_xfdashboard_windows_view_windows_activate_window_seven;
+	klass->windows_activate_window_eight=_xfdashboard_windows_view_windows_activate_window_eight;
+	klass->windows_activate_window_nine=_xfdashboard_windows_view_windows_activate_window_nine;
+	klass->windows_activate_window_ten=_xfdashboard_windows_view_windows_activate_window_ten;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardWindowsViewPrivate));
@@ -984,6 +1262,174 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 						XFDASHBOARD_TYPE_FOCUSABLE,
 						G_TYPE_STRING,
 						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_SHOW_NUMBERS]=
+		g_signal_new("windows-show-numbers",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_show_numbers),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_HIDE_NUMBERS]=
+		g_signal_new("windows-hide-numbers",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_hide_numbers),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_ACTIVATE_WINDOW_ONE]=
+		g_signal_new("windows-activate-window-one",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_activate_window_one),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_ACTIVATE_WINDOW_TWO]=
+		g_signal_new("windows-activate-window-two",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_activate_window_two),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_ACTIVATE_WINDOW_THREE]=
+		g_signal_new("windows-activate-window-three",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_activate_window_three),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_ACTIVATE_WINDOW_FOUR]=
+		g_signal_new("windows-activate-window-four",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_activate_window_four),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_ACTIVATE_WINDOW_FIVE]=
+		g_signal_new("windows-activate-window-five",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_activate_window_five),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_ACTIVATE_WINDOW_SIX]=
+		g_signal_new("windows-activate-window-six",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_activate_window_six),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_ACTIVATE_WINDOW_SEVEN]=
+		g_signal_new("windows-activate-window-seven",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_activate_window_seven),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_ACTIVATE_WINDOW_EIGHT]=
+		g_signal_new("windows-activate-window-eight",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_activate_window_eight),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_ACTIVATE_WINDOW_NINE]=
+		g_signal_new("windows-activate-window-nine",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_activate_window_nine),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardWindowsViewSignals[ACTION_WINDOWS_ACTIVATE_WINDOW_TEN]=
+		g_signal_new("windows-activate-window-ten",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardWindowsViewClass, windows_activate_window_ten),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
 }
 
 /* Object initialization
@@ -1003,6 +1449,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	priv->spacing=0.0f;
 	priv->preventUpscaling=FALSE;
 	priv->selectedItem=NULL;
+	priv->isWindowsNumberShown=FALSE;
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "windows");

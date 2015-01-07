@@ -143,6 +143,16 @@ XfdashboardLiveWindow .close-button
 	corner-radius: 4.0;
 }
 
+XfdashboardLiveWindow .window-number
+{
+	button-style: text;
+	text-justify: center;
+	font: bold;
+	color: white;
+	background-type: fill rounded-corners;
+	corner-radius: 4.0;
+}
+
 .drag-actor-XfdashboardLiveWindow:drag-handle
 {
 	background-type: outline fill rounded-corners;
