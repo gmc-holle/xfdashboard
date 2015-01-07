@@ -831,6 +831,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 			const gchar					*action;
 			GSList						*targetFocusables;
 			GSList						*iter;
+			GSignalQuery				signalData={ 0, };
 
 			/* Get action of binding */
 			action=xfdashboard_binding_get_action(binding);
@@ -876,28 +877,28 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 					continue;
 				}
 
+				/* Query signal for detailed data */
+				g_signal_query(signalID, &signalData);
+
+				/* Check if signal is an action signal */
+				if(!(signalData.signal_flags & G_SIGNAL_ACTION))
+				{
+					g_warning(_("Action '%s' at object type %s is not an action signal."),
+								action,
+								G_OBJECT_TYPE_NAME(targetObject));
+					continue;
+				}
+
 #if DEBUG
 				/* In debug mode also check if signal has right signature
 				 * to be able to handle this action properly.
 				 */
 				if(signalID)
 				{
-					GSignalQuery		signalData={ 0, };
 					GType				returnValueType=G_TYPE_BOOLEAN;
 					GType				parameterTypes[]={ XFDASHBOARD_TYPE_FOCUSABLE, G_TYPE_STRING, CLUTTER_TYPE_EVENT };
 					guint				parameterCount;
 					guint				i;
-
-					/* Query signal for detailed data */
-					g_signal_query(signalID, &signalData);
-
-					/* Check if signal is an action signal */
-					if(!(signalData.signal_flags & G_SIGNAL_ACTION))
-					{
-						g_critical(_("Action '%s' at object type %s is not an action signal."),
-									action,
-									G_OBJECT_TYPE_NAME(targetObject));
-					}
 
 					/* Check if signal wants the right type of return value */
 					if(signalData.return_type!=returnValueType)
