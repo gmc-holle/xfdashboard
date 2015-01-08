@@ -466,8 +466,8 @@ static gboolean _xfdashboard_workspace_selector_on_scroll_event(ClutterActor *in
 	gint									maxWorkspace;
 	XfdashboardWindowTrackerWorkspace		*workspace;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inActor), FALSE);
-	g_return_val_if_fail(inEvent, FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inActor), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
 
 	self=XFDASHBOARD_WORKSPACE_SELECTOR(inActor);
 	priv=self->priv;
@@ -487,7 +487,9 @@ static gboolean _xfdashboard_workspace_selector_on_scroll_event(ClutterActor *in
 
 		/* Unhandled directions */
 		default:
-			g_debug("Cannot handle scroll direction %d in %s", clutter_event_get_scroll_direction(inEvent), G_OBJECT_TYPE_NAME(self));
+			g_debug("Cannot handle scroll direction %d in %s",
+						clutter_event_get_scroll_direction(inEvent),
+						G_OBJECT_TYPE_NAME(self));
 			return(CLUTTER_EVENT_PROPAGATE);
 	}
 

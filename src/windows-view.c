@@ -61,8 +61,10 @@ struct _XfdashboardWindowsViewPrivate
 	XfdashboardWindowTrackerWorkspace	*workspace;
 	gfloat								spacing;
 	gboolean							preventUpscaling;
+	gboolean							isScrollEventChangingWorkspace;
 
 	/* Instance related */
+	XfconfChannel						*xfconfChannel;
 	XfdashboardWindowTracker			*windowTracker;
 	ClutterLayoutManager				*layout;
 	ClutterActor						*selectedItem;
@@ -78,6 +80,7 @@ enum
 	PROP_WORKSPACE,
 	PROP_SPACING,
 	PROP_PREVENT_UPSCALING,
+	PROP_SCROLL_EVENT_CHANGES_WORKSPACE,
 
 	PROP_LAST
 };
@@ -111,8 +114,10 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_VIEW_ICON			GTK_STOCK_FULLSCREEN
-#define DEFAULT_DRAG_HANDLE_SIZE	32.0f
+#define SCROLL_EVENT_CHANGES_WORKSPACE_XFCONF_PROP		"/components/windows-view/scroll-event-changes-workspace"
+
+#define DEFAULT_VIEW_ICON								GTK_STOCK_FULLSCREEN
+#define DEFAULT_DRAG_HANDLE_SIZE						32.0f
 
 /* Check if window should be shown */
 static gboolean _xfdashboard_windows_view_is_visible_window(XfdashboardWindowsView *self,
@@ -577,6 +582,97 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_WORKSPACE]);
+}
+
+/* A scroll event occured in workspace selector (e.g. by mouse-wheel) */
+static gboolean _xfdashboard_windows_view_on_scroll_event(ClutterActor *inActor,
+															ClutterEvent *inEvent,
+															gpointer inUserData)
+{
+	XfdashboardWindowsView					*self;
+	XfdashboardWindowsViewPrivate			*priv;
+	gint									direction;
+	gint									workspace;
+	gint									maxWorkspace;
+	XfdashboardWindowTrackerWorkspace		*activeWorkspace;
+	XfdashboardWindowTrackerWorkspace		*newWorkspace;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inActor), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inActor);
+	priv=self->priv;
+
+	/* Get direction of scroll event */
+	switch(clutter_event_get_scroll_direction(inEvent))
+	{
+		case CLUTTER_SCROLL_UP:
+		case CLUTTER_SCROLL_LEFT:
+			direction=-1;
+			break;
+
+		case CLUTTER_SCROLL_DOWN:
+		case CLUTTER_SCROLL_RIGHT:
+			direction=1;
+			break;
+
+		/* Unhandled directions */
+		default:
+			g_debug("Cannot handle scroll direction %d in %s",
+						clutter_event_get_scroll_direction(inEvent),
+						G_OBJECT_TYPE_NAME(self));
+			return(CLUTTER_EVENT_PROPAGATE);
+	}
+
+	/* Get next workspace in scroll direction */
+	activeWorkspace=xfdashboard_window_tracker_get_active_workspace(priv->windowTracker);
+	maxWorkspace=xfdashboard_window_tracker_get_workspaces_count(priv->windowTracker);
+
+	workspace=xfdashboard_window_tracker_workspace_get_number(activeWorkspace)+direction;
+	if(workspace<0 || workspace>=maxWorkspace) return(CLUTTER_EVENT_STOP);
+
+	/* Activate new workspace */
+	newWorkspace=xfdashboard_window_tracker_get_workspace_by_number(priv->windowTracker, workspace);
+	xfdashboard_window_tracker_workspace_activate(newWorkspace);
+
+	return(CLUTTER_EVENT_STOP);
+}
+
+/* Set flag if scroll events (e.g. mouse-wheel up or down) should change active workspace
+ * and set up scroll event listener or remove an existing one.
+ */
+static void _xfdashboard_windows_view_set_scroll_event_changes_workspace(XfdashboardWindowsView *self, gboolean inMouseWheelChangingWorkspace)
+{
+	XfdashboardWindowsViewPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->isScrollEventChangingWorkspace!=inMouseWheelChangingWorkspace)
+	{
+		/* Remove scroll event listener if current value is TRUE
+		 * because it will be set to FALSE soon to indicate that
+		 * we should not listening to scroll events anymore
+		 */
+		if(priv->isScrollEventChangingWorkspace)
+		{
+			g_signal_handlers_disconnect_by_func(self, G_CALLBACK(_xfdashboard_windows_view_on_scroll_event), self);
+		}
+
+		/* Set value */
+		priv->isScrollEventChangingWorkspace=inMouseWheelChangingWorkspace;
+
+		/* Add scroll event listener if value was set to TRUE */
+		if(priv->isScrollEventChangingWorkspace)
+		{
+			g_signal_connect(self, "scroll-event", G_CALLBACK(_xfdashboard_windows_view_on_scroll_event), NULL);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]);
+	}
 }
 
 /* Action signal to close currently selected window was emitted */
@@ -1114,6 +1210,10 @@ static void _xfdashboard_windows_view_dispose(GObject *inObject)
 	XfdashboardWindowsViewPrivate	*priv=XFDASHBOARD_WINDOWS_VIEW(self)->priv;
 
 	/* Release allocated resources */
+	g_signal_handlers_disconnect_by_func(self, G_CALLBACK(_xfdashboard_windows_view_on_scroll_event), self);
+
+	priv->xfconfChannel=NULL;
+
 	_xfdashboard_windows_view_set_active_workspace(self, NULL);
 
 	if(priv->layout)
@@ -1154,6 +1254,10 @@ static void _xfdashboard_windows_view_set_property(GObject *inObject,
 			xfdashboard_windows_view_set_prevent_upscaling(self, g_value_get_boolean(inValue));
 			break;
 
+		case PROP_SCROLL_EVENT_CHANGES_WORKSPACE:
+			_xfdashboard_windows_view_set_scroll_event_changes_workspace(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -1180,6 +1284,10 @@ static void _xfdashboard_windows_view_get_property(GObject *inObject,
 
 		case PROP_PREVENT_UPSCALING:
 			g_value_set_boolean(outValue, self->priv->preventUpscaling);
+			break;
+
+		case PROP_SCROLL_EVENT_CHANGES_WORKSPACE:
+			g_value_set_boolean(outValue, self->priv->isScrollEventChangingWorkspace);
 			break;
 
 		default:
@@ -1238,7 +1346,14 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 	XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]=
 		g_param_spec_boolean("prevent-upscaling",
 								_("Prevent upscaling"),
-								_("Whether tthis view should prevent upsclaing any window beyond its real size"),
+								_("Whether this view should prevent upsclaing any window beyond its real size"),
+								FALSE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardWindowsViewProperties[PROP_SCROLL_EVENT_CHANGES_WORKSPACE]=
+		g_param_spec_boolean("scroll-event-changes-workspace",
+								_("Scroll event changes workspace"),
+								_("Whether this view should change active workspace on scroll events"),
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -1450,6 +1565,8 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	priv->preventUpscaling=FALSE;
 	priv->selectedItem=NULL;
 	priv->isWindowsNumberShown=FALSE;
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
+	priv->isScrollEventChangingWorkspace=FALSE;
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "windows");
@@ -1469,6 +1586,13 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	clutter_actor_add_action(CLUTTER_ACTOR(self), action);
 	g_signal_connect_swapped(action, "begin", G_CALLBACK(_xfdashboard_windows_view_on_drop_begin), self);
 	g_signal_connect_swapped(action, "drop", G_CALLBACK(_xfdashboard_windows_view_on_drop_drop), self);
+
+	/* Bind to xfconf to react on changes */
+	xfconf_g_property_bind(priv->xfconfChannel,
+							SCROLL_EVENT_CHANGES_WORKSPACE_XFCONF_PROP,
+							G_TYPE_BOOLEAN,
+							self,
+							"scroll-event-changes-workspace");
 
 	/* Connect signals */
 	g_signal_connect_swapped(priv->windowTracker,
