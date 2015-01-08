@@ -54,8 +54,7 @@ enum
 {
 	TAG_DOCUMENT,
 	TAG_BINDINGS_POOL,
-	TAG_KEY,
-	TAG_POINTER
+	TAG_KEY
 };
 
 typedef struct _XfdashboardBindingsPoolParserData	XfdashboardBindingsPoolParserData;
@@ -150,7 +149,6 @@ static gint _xfdashboard_bindings_pool_get_tag_by_name(const gchar *inTag)
 	/* Compare string and return type ID */
 	if(g_strcmp0(inTag, "bindings")==0) return(TAG_BINDINGS_POOL);
 	if(g_strcmp0(inTag, "key")==0) return(TAG_KEY);
-	if(g_strcmp0(inTag, "pointer")==0) return(TAG_POINTER);
 
 	/* If we get here we do not know tag name and return invalid ID */
 	return(-1);
@@ -169,9 +167,6 @@ static const gchar* _xfdashboard_bindings_pool_get_tag_by_id(guint inTagType)
 
 		case TAG_KEY:
 			return("key");
-
-		case TAG_POINTER:
-			return("pointer");
 
 		default:
 			break;
@@ -304,14 +299,11 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 	/* Free allocated resources */
 	g_strfreev(parts);
 
-	/* A key-binding can have no modifiers but at least a key must be assigned */
-#if 0
-	if(!key)
+	if(!key && !modifiers)
 	{
-		g_warning(_("Invalid key-binding '%s' as no key was assigned."), inText);
+		g_warning(_("Invalid key-binding '%s' as either a key nor a modifier was assigned."), inText);
 		return(FALSE);
 	}
-#endif
 
 	/* Set result */
 	if(outKey) *outKey=key;
@@ -682,38 +674,6 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 		g_markup_parse_context_push(inContext, &keyParser, inUserData);
 		return;
 	}
-
-#if 0
-	/* Check if element name is <pointer> and follows expected parent tags:
-	 * <document>
-	 */
-	if(nextTag==TAG_POINTER)
-	{
-		static GMarkupParser					propertyParser=
-												{
-													_xfdashboard_bindings_pool_parse_bindings_no_deep_node,
-													NULL,
-													_xfdashboard_bindings_pool_parse_general_action_text_node,
-													NULL,
-													NULL,
-												};
-
-		/* Get tag's attributes */
-		if(!g_markup_collect_attributes(inElementName,
-											inAttributeNames,
-											inAttributeValues,
-											&error,
-											G_MARKUP_COLLECT_INVALID,
-											NULL))
-		{
-			g_propagate_error(outError, error);
-		}
-
-		/* Set up context for tag <pointer> */
-		g_markup_parse_context_push(inContext, &propertyParser, inUserData);
-		return;
-	}
-#endif
 
 	/* If we get here the given element name cannot follow this tag */
 	_xfdashboard_bindings_pool_parse_set_error(data,
@@ -1174,7 +1134,7 @@ const XfdashboardBinding* xfdashboard_bindings_pool_find_for_event(XfdashboardBi
 		/* Check if we have a binding matching lookup binding */
 		if(g_hash_table_lookup_extended(priv->bindings, lookupBinding, (gpointer*)&foundBinding, NULL))
 		{
-			g_debug("Found binding for class=%s, key/button=%04x, mods=%04x",
+			g_debug("Found binding for class=%s, key=%04x, mods=%04x",
 					xfdashboard_binding_get_class_name(lookupBinding),
 					xfdashboard_binding_get_key(lookupBinding),
 					xfdashboard_binding_get_modifiers(lookupBinding));
@@ -1222,7 +1182,7 @@ const XfdashboardBinding* xfdashboard_bindings_pool_find_for_event(XfdashboardBi
 			/* Check for matching binding */
 			if(g_hash_table_lookup_extended(priv->bindings, lookupBinding, (gpointer*)&foundBinding, NULL))
 			{
-				g_debug("Found binding for interface=%s for key/button=%04x, mods=%04x",
+				g_debug("Found binding for interface=%s for key=%04x, mods=%04x",
 						xfdashboard_binding_get_class_name(lookupBinding),
 						xfdashboard_binding_get_key(lookupBinding),
 						xfdashboard_binding_get_modifiers(lookupBinding));

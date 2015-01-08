@@ -46,7 +46,6 @@ struct _XfdashboardBindingPrivate
 	ClutterEventType		eventType;
 	gchar					*className;
 	guint					key;
-	guint					button;
 	ClutterModifierType		modifiers;
 	gchar					*target;
 	gchar					*action;
@@ -61,7 +60,6 @@ enum
 	PROP_EVENT_TYPE,
 	PROP_CLASS_NAME,
 	PROP_KEY,
-	PROP_BUTTON,
 	PROP_MODIFIERS,
 	PROP_TARGET,
 	PROP_ACTION,
@@ -128,10 +126,6 @@ static void _xfdashboard_binding_set_property(GObject *inObject,
 			xfdashboard_binding_set_key(self, g_value_get_uint(inValue));
 			break;
 
-		case PROP_BUTTON:
-			xfdashboard_binding_set_button(self, g_value_get_uint(inValue));
-			break;
-
 		case PROP_MODIFIERS:
 			xfdashboard_binding_set_modifiers(self, g_value_get_flags(inValue));
 			break;
@@ -174,10 +168,6 @@ static void _xfdashboard_binding_get_property(GObject *inObject,
 
 		case PROP_KEY:
 			g_value_set_uint(outValue, priv->key);
-			break;
-
-		case PROP_BUTTON:
-			g_value_set_uint(outValue, priv->button);
 			break;
 
 		case PROP_MODIFIERS:
@@ -242,14 +232,6 @@ static void xfdashboard_binding_class_init(XfdashboardBindingClass *klass)
 							0,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
-	XfdashboardBindingProperties[PROP_BUTTON]=
-		g_param_spec_uint("button",
-							_("Button"),
-							_("Button of a pointer event this binding is bound to"),
-							0, G_MAXUINT,
-							0,
-							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
 	XfdashboardBindingProperties[PROP_MODIFIERS]=
 		g_param_spec_flags("modifiers",
 							_("Modifiers"),
@@ -296,7 +278,6 @@ static void xfdashboard_binding_init(XfdashboardBinding *self)
 	priv->eventType=CLUTTER_NOTHING;
 	priv->className=NULL;
 	priv->key=0;
-	priv->button=0;
 	priv->modifiers=0;
 	priv->target=NULL;
 	priv->action=NULL;
@@ -352,13 +333,6 @@ XfdashboardBinding* xfdashboard_binding_new_for_event(const ClutterEvent *inEven
 			}
 			break;
 
-		case CLUTTER_BUTTON_PRESS:
-		case CLUTTER_BUTTON_RELEASE:
-			xfdashboard_binding_set_event_type(binding, eventType);
-			xfdashboard_binding_set_button(binding, ((ClutterButtonEvent*)inEvent)->button);
-			xfdashboard_binding_set_modifiers(binding, ((ClutterButtonEvent*)inEvent)->modifier_state);
-			break;
-
 		default:
 			g_debug("Cannot create binding instance for unsupported or invalid event type %d", eventType);
 
@@ -391,12 +365,6 @@ guint xfdashboard_binding_hash(gconstpointer inValue)
 		case CLUTTER_KEY_PRESS:
 		case CLUTTER_KEY_RELEASE:
 			hash^=priv->key;
-			hash^=priv->modifiers;
-			break;
-
-		case CLUTTER_BUTTON_PRESS:
-		case CLUTTER_BUTTON_RELEASE:
-			hash^=priv->button;
 			hash^=priv->modifiers;
 			break;
 
@@ -438,15 +406,6 @@ gboolean xfdashboard_binding_compare(gconstpointer inLeft, gconstpointer inRight
 			}
 			break;
 
-		case CLUTTER_BUTTON_PRESS:
-		case CLUTTER_BUTTON_RELEASE:
-			if(leftPriv->button!=rightPriv->button ||
-				leftPriv->modifiers!=rightPriv->modifiers)
-			{
-				return(FALSE);
-			}
-			break;
-
 		default:
 			/* We should never get here but if we do return FALSE
 			 * to indicate that both binding are not equal.
@@ -477,9 +436,7 @@ void xfdashboard_binding_set_event_type(XfdashboardBinding *self, ClutterEventTy
 
 	/* Only key or pointer events can be handled by binding */
 	if(inType!=CLUTTER_KEY_PRESS &&
-		inType!=CLUTTER_KEY_RELEASE &&
-		inType!=CLUTTER_BUTTON_PRESS &&
-		inType!=CLUTTER_BUTTON_RELEASE)
+		inType!=CLUTTER_KEY_RELEASE)
 	{
 		GEnumClass				*eventEnumClass;
 		GEnumValue				*eventEnumValue;
@@ -572,34 +529,6 @@ void xfdashboard_binding_set_key(XfdashboardBinding *self, guint inKey)
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBindingProperties[PROP_KEY]);
-	}
-}
-
-/* Get/set button of binding */
-guint xfdashboard_binding_get_button(const XfdashboardBinding *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(self), 0);
-
-	return(self->priv->key);
-}
-
-void xfdashboard_binding_set_button(XfdashboardBinding *self, guint inButton)
-{
-	XfdashboardBindingPrivate	*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_BINDING(self));
-	g_return_if_fail(inButton>0);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->button!=inButton)
-	{
-		/* Set value */
-		priv->button=inButton;
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBindingProperties[PROP_BUTTON]);
 	}
 }
 

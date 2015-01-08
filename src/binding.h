@@ -90,9 +90,6 @@ void xfdashboard_binding_set_class_name(XfdashboardBinding *self, const gchar *i
 guint xfdashboard_binding_get_key(const XfdashboardBinding *self);
 void xfdashboard_binding_set_key(XfdashboardBinding *self, guint inKey);
 
-guint xfdashboard_binding_get_button(const XfdashboardBinding *self);
-void xfdashboard_binding_set_button(XfdashboardBinding *self, guint inButton);
-
 ClutterModifierType xfdashboard_binding_get_modifiers(const XfdashboardBinding *self);
 void xfdashboard_binding_set_modifiers(XfdashboardBinding *self, ClutterModifierType inModifiers);
 
