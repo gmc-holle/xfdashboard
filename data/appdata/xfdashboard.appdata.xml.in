@@ -43,6 +43,13 @@
 	</provides>
 
 	<releases>
+		<release version="0.3.5" timestamp="1420890300">
+			<description>
+				<_p>This unstable development introduces configurable key-bindings, allows
+				changing themes at runtime and includes lots of smaller bug-fixes.
+				</_p>
+			</description>
+		</release>
 		<release version="0.3.4" timestamp="1417066424">
 			<description>
 				<_p>This unstable development introduces additional themes, fixes handling
