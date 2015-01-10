@@ -96,6 +96,7 @@ static XfdashboardBindingsPoolModifierMap	_xfdashboard_bindings_pool_modifier_ma
 												{ "<Shift>", CLUTTER_SHIFT_MASK },
 												{ "<Ctrl>", CLUTTER_CONTROL_MASK },
 												{ "<Control>", CLUTTER_CONTROL_MASK},
+												{ "<Alt>", CLUTTER_MOD1_MASK },
 												{ "<Mod1>", CLUTTER_MOD1_MASK },
 												{ "<Mod2>", CLUTTER_MOD2_MASK },
 												{ "<Mod3>", CLUTTER_MOD3_MASK },
@@ -194,7 +195,7 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 	g_debug("Trying to translating key-binding '%s' to keycode and modifiers", inText);
 
 	/* Split text into parts. Valid delimiters are '+', '-', white-spaces. */
-	parts=xfdashboard_split_string(inText, "+- \t\r\n");
+	parts=xfdashboard_split_string(inText, "+- \t");
 	if(!parts)
 	{
 		g_warning(_("Could not parse empty key-binding '%s'."), inText);

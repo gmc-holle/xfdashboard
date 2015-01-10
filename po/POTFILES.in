@@ -16,7 +16,8 @@ src/applications-menu-model.c
 src/applications-search-provider.c
 src/applications-view.c
 src/background.c
-src/bindings.c
+src/binding.c
+src/bindings-pool.c
 src/button.c
 src/click-action.c
 src/collapse-box.c
