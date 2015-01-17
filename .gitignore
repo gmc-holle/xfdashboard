@@ -6,10 +6,10 @@
 .deps
 .libs
 xfoverview.geany
-src/enums.[ch]
-src/marshal.[ch]
-src/stamp-marshal.h
-src/xfdashboard
+xfdashboard/enums.[ch]
+xfdashboard/marshal.[ch]
+xfdashboard/stamp-marshal.h
+xfdashboard/xfdashboard
 settings/xfdashboard-settings
 data/appdata/xfdashboard.appdata.xml
 data/themes/xfdashboard/xfdashboard.theme

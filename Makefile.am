@@ -16,7 +16,7 @@ SUBDIRS = \
 	data \
 	po \
 	settings \
-	src
+	xfdashboard
 
 distclean-local:
 	rm -rf *.cache

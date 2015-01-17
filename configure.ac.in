@@ -216,7 +216,7 @@ data/themes/xfdashboard-moranga/Makefile
 data/themes/xfdashboard-wine/Makefile
 po/Makefile.in
 settings/Makefile
-src/Makefile
+xfdashboard/Makefile
 ])
 
 dnl ***************************
