@@ -43,6 +43,13 @@
 	</provides>
 
 	<releases>
+		<release version="0.3.7" timestamp="1421530687">
+			<description>
+				<_p>This unstable development fixes a bug which rendered the new
+				settings application completely unusable.
+				</_p>
+			</description>
+		</release>
 		<release version="0.3.6" timestamp="1421519406">
 			<description>
 				<_p>This unstable development introduces a settings application.
