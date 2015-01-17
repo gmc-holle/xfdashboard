@@ -5,4 +5,4 @@ Style=xfdashboard-blue.css
 Layout=xfdashboard.xml
 Effects=effects.xml
 Author=lacios
-Version=0.3.6git.788f9dc
+Version=@PACKAGE_VERSION@

@@ -4,4 +4,5 @@ EXTRA_DIST = \
 Datadir = $(datadir)/xfdashboard
 
 Data_DATA = \
-	bindings.xml
+	bindings.xml \
+	preferences.ui

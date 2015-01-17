@@ -5,23 +5,33 @@
 *.la
 .deps
 .libs
+xfoverview.geany
 src/enums.[ch]
 src/marshal.[ch]
 src/stamp-marshal.h
 src/xfdashboard
-xfoverview.geany
+settings/xfdashboard-settings
 data/appdata/xfdashboard.appdata.xml
 data/themes/xfdashboard/xfdashboard.theme
+data/themes/xfdashboard/xfdashboard.theme.in
 data/themes/xfdashboard-auber/xfdashboard.theme
+data/themes/xfdashboard-auber/xfdashboard.theme.in
 data/themes/xfdashboard-blue/xfdashboard.theme
+data/themes/xfdashboard-blue/xfdashboard.theme.in
 data/themes/xfdashboard-dark/xfdashboard.theme
+data/themes/xfdashboard-dark/xfdashboard.theme.in
 data/themes/xfdashboard-mint/xfdashboard.theme
+data/themes/xfdashboard-mint/xfdashboard.theme.in
 data/themes/xfdashboard-moranga/xfdashboard.theme
+data/themes/xfdashboard-moranga/xfdashboard.theme.in
 data/themes/xfdashboard-wine/xfdashboard.theme
+data/themes/xfdashboard-wine/xfdashboard.theme.in
 data/xfdashboard.desktop
 data/xfdashboard.desktop.in
 data/xfdashboard-autostart.desktop
 data/xfdashboard-autostart.desktop.in
+data/xfdashboard-settings.desktop
+data/xfdashboard-settings.desktop.in
 ChangeLog
 
 # Ignore autotools files
