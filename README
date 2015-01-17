@@ -15,6 +15,7 @@ gio-unix-2.0 >= 2.30.3
 xfconf >= 4.10.0
 dbus-glib >= 0.98
 garcon >= 0.2.0
+gtk+ >= 3.2
 
 ... and the dependencies of these libraries of course ;)
 
