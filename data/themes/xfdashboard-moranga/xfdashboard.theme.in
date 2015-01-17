@@ -1,9 +1,0 @@
-[Xfdashboard Theme]
-_Name=xfdashboard-moranga
-_Comment=Moranga theme for xfdashboard
-Style=xfdashboard-moranga.css
-Layout=xfdashboard.xml
-Effects=effects.xml
-Author=lacios
-Version=0.3.6git.788f9dc
-Screenshot=screenshot-xfdashboard-moranga.png

@@ -1,9 +1,0 @@
-[Xfdashboard Theme]
-_Name=xfdashboard-dark
-_Comment=Dark theme for xfdashboard
-Style=xfdashboard-dark.css
-Layout=xfdashboard.xml
-Effects=effects.xml
-Author=lacios
-Version=0.3.6git.788f9dc
-Screenshot=screenshot-xfdashboard-dark.png

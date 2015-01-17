@@ -1,9 +1,0 @@
-[Xfdashboard Theme]
-_Name=xfdashboard
-_Comment=Default theme for xfdashboard
-Style=xfdashboard.css
-Layout=xfdashboard.xml
-Effects=effects.xml
-Author=Stephan Haller
-Version=0.3.6git.788f9dc
-Screenshot=screenshot-xfdashboard.png
