@@ -43,6 +43,12 @@
 	</provides>
 
 	<releases>
+		<release version="0.3.6" timestamp="1421519406">
+			<description>
+				<_p>This unstable development introduces a settings application.
+				</_p>
+			</description>
+		</release>
 		<release version="0.3.5" timestamp="1420890300">
 			<description>
 				<_p>This unstable development introduces configurable key-bindings, allows
