@@ -1,14 +1,18 @@
 [encoding: UTF-8]
 data/xfdashboard.desktop.in.in
 data/xfdashboard-autostart.desktop.in.in
+data/xfdashboard-settings.desktop.in.in
 data/appdata/xfdashboard.appdata.xml.in
-data/themes/xfdashboard/xfdashboard.theme.in
-data/themes/xfdashboard-auber/xfdashboard.theme.in
-data/themes/xfdashboard-blue/xfdashboard.theme.in
-data/themes/xfdashboard-dark/xfdashboard.theme.in
-data/themes/xfdashboard-mint/xfdashboard.theme.in
-data/themes/xfdashboard-moranga/xfdashboard.theme.in
-data/themes/xfdashboard-wine/xfdashboard.theme.in
+data/data/preferences.ui
+data/themes/xfdashboard/xfdashboard.theme.in.in
+data/themes/xfdashboard-auber/xfdashboard.theme.in.in
+data/themes/xfdashboard-blue/xfdashboard.theme.in.in
+data/themes/xfdashboard-dark/xfdashboard.theme.in.in
+data/themes/xfdashboard-mint/xfdashboard.theme.in.in
+data/themes/xfdashboard-moranga/xfdashboard.theme.in.in
+data/themes/xfdashboard-wine/xfdashboard.theme.in.in
+settings/main.c
+settings/settings.c
 src/actor.c
 src/application-button.c
 src/application.c
