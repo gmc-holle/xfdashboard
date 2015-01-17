@@ -8,6 +8,7 @@ theme_DATA = \
 	xfdashboard.css \
 	xfdashboard.xml \
 	effects.xml \
+	windows-view.png \
 	screenshot-xfdashboard.png
 
 # Substitute bindir so it works when built in a non-system prefix
