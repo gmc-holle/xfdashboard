@@ -316,23 +316,39 @@ static void _xfdashboard_settings_widget_changed_theme(XfdashboardSettings *self
 	/* Set screenshot */
 	if(themeScreenshot)
 	{
-		GFile						*file;
-		GFile						*parentPath;
-		gchar						*themePath;
 		gchar						*screenshotFile;
 		GdkPixbuf					*screenshotImage;
 
-		file=NULL;
-		parentPath=NULL;
-		themePath=NULL;
 		screenshotFile=NULL;
 		screenshotImage=NULL;
 
-		/* Get screenshot file */
-		file=g_file_new_for_path(themeFilename);
-		if(file) parentPath=g_file_get_parent(file);
-		if(parentPath) themePath=g_file_get_path(parentPath);
-		if(themePath) screenshotFile=g_build_filename(themePath, themeScreenshot, NULL);
+		/* Get screenshot file but resolve relative path if needed */
+		if(!g_path_is_absolute(themeScreenshot))
+		{
+			GFile					*file;
+			GFile					*parentPath;
+			gchar					*themePath;
+
+			file=NULL;
+			parentPath=NULL;
+			themePath=NULL;
+
+			/* Resolve relative path relative to theme path */
+			file=g_file_new_for_path(themeFilename);
+			if(file) parentPath=g_file_get_parent(file);
+			if(parentPath) themePath=g_file_get_path(parentPath);
+			if(themePath) screenshotFile=g_build_filename(themePath, themeScreenshot, NULL);
+
+			/* Release allocated resources */
+			if(themePath) g_free(themePath);
+			if(parentPath) g_object_unref(parentPath);
+			if(file) g_object_unref(file);
+		}
+			else
+			{
+				/* Path is absolute so just create a copy */
+				screenshotFile=g_strdup(themeScreenshot);
+			}
 
 		/* If screenshot file exists set up and show image
 		 * otherwise hide image.
@@ -394,9 +410,6 @@ static void _xfdashboard_settings_widget_changed_theme(XfdashboardSettings *self
 		/* Release allocated resources */
 		if(screenshotImage) g_object_unref(screenshotImage);
 		if(screenshotFile) g_free(screenshotFile);
-		if(themePath) g_free(themePath);
-		if(parentPath) g_object_unref(parentPath);
-		if(file) g_object_unref(file);
 	}
 		else
 		{
