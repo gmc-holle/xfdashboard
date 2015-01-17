@@ -831,7 +831,6 @@ static void _xfdashboard_settings_populate_themes_list(XfdashboardSettings *self
 			if(themeVersion) g_free(themeVersion);
 			if(themeScreenshots) g_strfreev(themeScreenshots);
 			if(themeKeyFile) g_key_file_free(themeKeyFile);
-			if(themeKeyFile) g_key_file_free(themeKeyFile);
 			if(themeIndexFile) g_free(themeIndexFile);
 		}
 
