@@ -59,6 +59,10 @@ enum
 	ACTION_SELECTION_MOVE_DOWN,
 	ACTION_SELECTION_MOVE_FIRST,
 	ACTION_SELECTION_MOVE_LAST,
+	ACTION_SELECTION_MOVE_PAGE_LEFT,
+	ACTION_SELECTION_MOVE_PAGE_RIGHT,
+	ACTION_SELECTION_MOVE_PAGE_UP,
+	ACTION_SELECTION_MOVE_PAGE_DOWN,
 	ACTION_SELECTION_ACTIVATE,
 
 	SIGNAL_LAST
@@ -314,6 +318,38 @@ static gboolean _xfdashboard_focusable_selection_move_last(XfdashboardFocusable 
 	return(_xfdashboard_focusable_selection_move_to_direction(self, inSource, inAction, inEvent, XFDASHBOARD_SELECTION_TARGET_LAST));
 }
 
+static gboolean _xfdashboard_focusable_selection_move_page_left(XfdashboardFocusable *self,
+																XfdashboardFocusable *inSource,
+																const gchar *inAction,
+																ClutterEvent *inEvent)
+{
+	return(_xfdashboard_focusable_selection_move_to_direction(self, inSource, inAction, inEvent, XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT));
+}
+
+static gboolean _xfdashboard_focusable_selection_move_page_right(XfdashboardFocusable *self,
+																	XfdashboardFocusable *inSource,
+																	const gchar *inAction,
+																	ClutterEvent *inEvent)
+{
+	return(_xfdashboard_focusable_selection_move_to_direction(self, inSource, inAction, inEvent, XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT));
+}
+
+static gboolean _xfdashboard_focusable_selection_move_page_up(XfdashboardFocusable *self,
+																XfdashboardFocusable *inSource,
+																const gchar *inAction,
+																ClutterEvent *inEvent)
+{
+	return(_xfdashboard_focusable_selection_move_to_direction(self, inSource, inAction, inEvent, XFDASHBOARD_SELECTION_TARGET_PAGE_UP));
+}
+
+static gboolean _xfdashboard_focusable_selection_move_page_down(XfdashboardFocusable *self,
+																XfdashboardFocusable *inSource,
+																const gchar *inAction,
+																ClutterEvent *inEvent)
+{
+	return(_xfdashboard_focusable_selection_move_to_direction(self, inSource, inAction, inEvent, XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN));
+}
+
 /* Action signal to activate current selection was emitted */
 static gboolean _xfdashboard_focusable_selection_activate(XfdashboardFocusable *self,
 															XfdashboardFocusable *inSource,
@@ -361,6 +397,10 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 	iface->selection_move_down=_xfdashboard_focusable_selection_move_down;
 	iface->selection_move_first=_xfdashboard_focusable_selection_move_first;
 	iface->selection_move_last=_xfdashboard_focusable_selection_move_last;
+	iface->selection_move_page_left=_xfdashboard_focusable_selection_move_page_left;
+	iface->selection_move_page_right=_xfdashboard_focusable_selection_move_page_right;
+	iface->selection_move_page_up=_xfdashboard_focusable_selection_move_page_up;
+	iface->selection_move_page_down=_xfdashboard_focusable_selection_move_page_down;
 	iface->selection_activate=_xfdashboard_focusable_selection_activate;
 
 	/* Define signals and actions */
@@ -480,6 +520,62 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 							XFDASHBOARD_TYPE_FOCUSABLE,
 							G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_move_last),
+							g_signal_accumulator_true_handled,
+							NULL,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+							G_TYPE_BOOLEAN,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
+							CLUTTER_TYPE_EVENT);
+
+		XfdashboardFocusableSignals[ACTION_SELECTION_MOVE_PAGE_LEFT]=
+			g_signal_new("selection-move-page-left",
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_move_page_left),
+							g_signal_accumulator_true_handled,
+							NULL,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+							G_TYPE_BOOLEAN,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
+							CLUTTER_TYPE_EVENT);
+
+		XfdashboardFocusableSignals[ACTION_SELECTION_MOVE_PAGE_RIGHT]=
+			g_signal_new("selection-move-page-right",
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_move_page_right),
+							g_signal_accumulator_true_handled,
+							NULL,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+							G_TYPE_BOOLEAN,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
+							CLUTTER_TYPE_EVENT);
+
+		XfdashboardFocusableSignals[ACTION_SELECTION_MOVE_PAGE_UP]=
+			g_signal_new("selection-move-page-up",
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_move_page_up),
+							g_signal_accumulator_true_handled,
+							NULL,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+							G_TYPE_BOOLEAN,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
+							CLUTTER_TYPE_EVENT);
+
+		XfdashboardFocusableSignals[ACTION_SELECTION_MOVE_PAGE_DOWN]=
+			g_signal_new("selection-move-page-down",
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_move_page_down),
 							g_signal_accumulator_true_handled,
 							NULL,
 							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,

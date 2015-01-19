@@ -17,6 +17,15 @@
 	<key code="KP_Home" source="XfdashboardFocusable" when="pressed">selection-move-first</key>
 	<key code="End" source="XfdashboardFocusable" when="pressed">selection-move-last</key>
 	<key code="KP_End" source="XfdashboardFocusable" when="pressed">selection-move-last</key>
+	<key code="<Ctrl>-Page_Up" source="XfdashboardFocusable" when="pressed">selection-move-page-left</key>
+	<key code="<Ctrl>-KP_Page_Up" source="XfdashboardFocusable" when="pressed">selection-move-page-left</key>
+	<key code="<Ctrl>-Page_Down" source="XfdashboardFocusable" when="pressed">selection-move-page-right</key>
+	<key code="<Ctrl>-KP_Page_Down" source="XfdashboardFocusable" when="pressed">selection-move-page-right</key>
+	<key code="Page_Up" source="XfdashboardFocusable" when="pressed">selection-move-page-up</key>
+	<key code="KP_Page_Up" source="XfdashboardFocusable" when="pressed">selection-move-page-up</key>
+	<key code="Page_Down" source="XfdashboardFocusable" when="pressed">selection-move-page-down</key>
+	<key code="KP_Page_Down" source="XfdashboardFocusable" when="pressed">selection-move-page-down</key>
+
 	<key code="Return" source="XfdashboardFocusable" when="released">selection-activate</key>
 	<key code="KP_Enter" source="XfdashboardFocusable" when="released">selection-activate</key>
 	<key code="ISO_Enter" source="XfdashboardFocusable" when="released">selection-activate</key>

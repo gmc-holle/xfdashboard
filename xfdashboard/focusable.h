@@ -60,33 +60,49 @@ struct _XfdashboardFocusableInterface
 
 	/* Binding actions */
 	gboolean (*selection_move_left)(XfdashboardFocusable *self,
-										XfdashboardFocusable *inSource,
-										const gchar *inAction,
-										ClutterEvent *inEvent);
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
 	gboolean (*selection_move_right)(XfdashboardFocusable *self,
-										XfdashboardFocusable *inSource,
-										const gchar *inAction,
-										ClutterEvent *inEvent);
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
 	gboolean (*selection_move_up)(XfdashboardFocusable *self,
-										XfdashboardFocusable *inSource,
-										const gchar *inAction,
-										ClutterEvent *inEvent);
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
 	gboolean (*selection_move_down)(XfdashboardFocusable *self,
-										XfdashboardFocusable *inSource,
-										const gchar *inAction,
-										ClutterEvent *inEvent);
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
 	gboolean (*selection_move_first)(XfdashboardFocusable *self,
-										XfdashboardFocusable *inSource,
-										const gchar *inAction,
-										ClutterEvent *inEvent);
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
 	gboolean (*selection_move_last)(XfdashboardFocusable *self,
-										XfdashboardFocusable *inSource,
-										const gchar *inAction,
-										ClutterEvent *inEvent);
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
+	gboolean (*selection_move_page_left)(XfdashboardFocusable *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
+	gboolean (*selection_move_page_right)(XfdashboardFocusable *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
+	gboolean (*selection_move_page_up)(XfdashboardFocusable *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
+	gboolean (*selection_move_page_down)(XfdashboardFocusable *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
 	gboolean (*selection_activate)(XfdashboardFocusable *self,
-										XfdashboardFocusable *inSource,
-										const gchar *inAction,
-										ClutterEvent *inEvent);
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
 };
 
 /* Public API */

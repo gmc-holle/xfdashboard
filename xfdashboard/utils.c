@@ -567,3 +567,33 @@ gboolean xfdashboard_is_valid_id(const gchar *inString)
 	/* If we get here the ID matches the requirements so return TRUE. */
 	return(TRUE);
 }
+
+/* Get textual representation for an enumeration value */
+gchar* xfdashboard_get_enum_value_name(GType inEnumClass, gint inValue)
+{
+	GEnumClass		*enumClass;
+	GEnumValue		*enumValue;
+	gchar			*valueName;
+
+	enumClass=NULL;
+	enumValue=NULL;
+	valueName=NULL;
+
+	/* Reference enum class to keep it alive for transformation */
+	enumClass=g_type_class_ref(inEnumClass);
+
+	/* Get enum value */
+	if(enumClass) enumValue=g_enum_get_value(enumClass, inValue);
+
+	/* Get a copy of value's name if it could be found */
+	if(enumValue)
+	{
+		valueName=g_strdup(enumValue->value_name);
+	}
+
+	/* Release allocated resources */
+	if(enumClass) g_type_class_unref(enumClass);
+
+	/* Return name */
+	return(valueName);
+}
