@@ -12,6 +12,7 @@ xfdashboard/stamp-marshal.h
 xfdashboard/xfdashboard
 settings/xfdashboard-settings
 data/appdata/xfdashboard.appdata.xml
+data/data/preferences.ui~
 data/themes/xfdashboard/xfdashboard.theme
 data/themes/xfdashboard/xfdashboard.theme.in
 data/themes/xfdashboard-auber/xfdashboard.theme
