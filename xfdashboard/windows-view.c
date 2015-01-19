@@ -42,6 +42,7 @@
 #include "image-content.h"
 #include "utils.h"
 #include "marshal.h"
+#include "enums.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_windows_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -1004,6 +1005,7 @@ static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(Xfdashbo
 	XfdashboardWindowsView					*self;
 	XfdashboardWindowsViewPrivate			*priv;
 	ClutterActor							*selection;
+	ClutterActor							*newSelection;
 	gint									numberChildren;
 	gint									rows;
 	gint									columns;
@@ -1022,18 +1024,19 @@ static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(Xfdashbo
 
 	self=XFDASHBOARD_WINDOWS_VIEW(inFocusable);
 	priv=self->priv;
-	selection=NULL;
+	selection=inSelection;
+	newSelection=NULL;
 
 	/* If there is nothing selected, select first actor and return */
 	if(!inSelection)
 	{
-		selection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+		newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
 		g_debug("No selection at %s, so select first child %s for direction %u",
 				G_OBJECT_TYPE_NAME(self),
-				selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+				newSelection ? G_OBJECT_TYPE_NAME(newSelection) : "<nil>",
 				inDirection);
 
-		return(selection);
+		return(newSelection);
 	}
 
 	/* Check that selection is a child of this actor otherwise return NULL */
@@ -1082,7 +1085,7 @@ static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(Xfdashbo
 				else newSelectionIndex=currentSelectionIndex-1;
 
 			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
-			selection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_RIGHT:
@@ -1095,7 +1098,7 @@ static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(Xfdashbo
 				else newSelectionIndex=currentSelectionIndex+1;
 
 			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
-			selection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_UP:
@@ -1104,7 +1107,7 @@ static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(Xfdashbo
 			newSelectionIndex=(currentSelectionRow*columns)+currentSelectionColumn;
 
 			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
-			selection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_DOWN:
@@ -1113,27 +1116,63 @@ static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(Xfdashbo
 			newSelectionIndex=(currentSelectionRow*columns)+currentSelectionColumn;
 
 			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
-			selection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_FIRST:
-			selection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+			newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_LAST:
-			selection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+			newSelection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_NEXT:
-			selection=clutter_actor_get_next_sibling(inSelection);
+			newSelection=clutter_actor_get_next_sibling(inSelection);
 			if(!selection) selection=clutter_actor_get_previous_sibling(inSelection);
 			break;
 
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT:
+			newSelectionIndex=(currentSelectionRow*columns);
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT:
+			newSelectionIndex=((currentSelectionRow+1)*columns)-1;
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_UP:
+			newSelectionIndex=currentSelectionColumn;
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN:
+			newSelectionIndex=((rows-1)*columns)+currentSelectionColumn;
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
 		default:
-			g_assert_not_reached();
+			{
+				gchar					*valueName;
+
+				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
+				g_critical(_("Focusable object %s does not handle selection direction of type %s."),
+							G_OBJECT_TYPE_NAME(self),
+							valueName);
+				g_free(valueName);
+			}
 			break;
 	}
 
+	/* If new selection could be found override current selection with it */
+	if(newSelection) selection=newSelection;
+
+	/* Return new selection found */
 	g_debug("Selecting %s at %s for current selection %s in direction %u",
 			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
 			G_OBJECT_TYPE_NAME(self),
