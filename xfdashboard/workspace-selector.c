@@ -970,11 +970,25 @@ static ClutterActor* _xfdashboard_workspace_selector_focusable_find_selection(Xf
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_FIRST:
-			newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_UP:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT:
+			if(inDirection==XFDASHBOARD_SELECTION_TARGET_FIRST ||
+				(inDirection==XFDASHBOARD_SELECTION_TARGET_PAGE_UP && priv->orientation==CLUTTER_ORIENTATION_VERTICAL) ||
+				(inDirection==XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT && priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL))
+			{
+				newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+			}
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_LAST:
-			newSelection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT:
+			if(inDirection==XFDASHBOARD_SELECTION_TARGET_LAST ||
+				(inDirection==XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN && priv->orientation==CLUTTER_ORIENTATION_VERTICAL) ||
+				(inDirection==XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT && priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL))
+			{
+				newSelection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+			}
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_NEXT:
@@ -983,7 +997,15 @@ static ClutterActor* _xfdashboard_workspace_selector_focusable_find_selection(Xf
 			break;
 
 		default:
-			g_assert_not_reached();
+			{
+				gchar					*valueName;
+
+				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
+				g_critical(_("Focusable object %s does not handle selection direction of type %s."),
+							G_OBJECT_TYPE_NAME(self),
+							valueName);
+				g_free(valueName);
+			}
 			break;
 	}
 
