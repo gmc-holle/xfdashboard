@@ -98,6 +98,9 @@ Configure xfdashboard</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="tooltip_markup" translatable="yes">If enabled the search view will be resetted when xfdashboard is resumed. That means the active view is switched back to last view active before last search was started and search box will be emptied.
+
+&lt;b&gt;NOTE:&lt;/b&gt; This setting only takes effect if xfdashboard is running in daemon mode. </property>
                     <property name="margin_left">8</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
@@ -116,6 +119,9 @@ Configure xfdashboard</property>
                       <object class="GtkLabel" id="label6">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="tooltip_markup" translatable="yes">When xfdashboard resumes the selected view will be activated.
+
+&lt;b&gt;NOTE:&lt;/b&gt; This setting only takes effect if xfdashboard is running in daemon mode.</property>
                         <property name="margin_left">8</property>
                         <property name="margin_right">4</property>
                         <property name="label" translatable="yes">Switch to view when resumed:</property>
@@ -130,6 +136,9 @@ Configure xfdashboard</property>
                       <object class="GtkComboBox" id="switch-view-on-resume">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="tooltip_markup" translatable="yes">When xfdashboard resumes the selected view will be activated.
+
+&lt;b&gt;NOTE:&lt;/b&gt; This setting only takes effect if xfdashboard is running in daemon mode.</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -152,6 +161,9 @@ Configure xfdashboard</property>
                       <object class="GtkLabel" id="label7">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="tooltip_markup" translatable="yes">Sets the minimum time a notification is being shown.
+
+The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least.</property>
                         <property name="margin_left">8</property>
                         <property name="margin_right">4</property>
                         <property name="label" translatable="yes">Minimum notification timeout:</property>
@@ -166,6 +178,9 @@ Configure xfdashboard</property>
                       <object class="GtkScale" id="notification-timeout">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="tooltip_markup" translatable="yes">Sets the minimum time a notification is being shown.
+
+The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least.</property>
                         <property name="round_digits">1</property>
                       </object>
                       <packing>
@@ -187,6 +202,9 @@ Configure xfdashboard</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="tooltip_markup" translatable="yes">When enabled a workaround for minimized windows will be tried to get still images of these windows by restoring them shortly and minimizing them again.
+
+&lt;b&gt;NOTE:&lt;/b&gt; Be aware that this is a &lt;u&gt;workaround&lt;/u&gt; and your minimized windows could stay unminimized, change workspace etc.</property>
                     <property name="margin_left">8</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
@@ -218,6 +236,7 @@ Configure xfdashboard</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="tooltip_markup" translatable="yes">When enabled any scroll event, like mouse-wheel up and down, at the windows view will change the active workspace. This behaviour is the same as in workspace selector.</property>
                     <property name="margin_left">8</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
