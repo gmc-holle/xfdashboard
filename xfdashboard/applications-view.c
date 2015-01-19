@@ -589,9 +589,9 @@ static ClutterActor* xfdashboard_applications_view_get_selection_from_list_mode(
 	return(newSelection);
 }
 
-static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(XfdashboardFocusable *inFocusable,
-																			ClutterActor *inSelection,
-																			XfdashboardSelectionTarget inDirection)
+static ClutterActor* _xfdashboard_applications_view_focusable_find_selection(XfdashboardFocusable *inFocusable,
+																				ClutterActor *inSelection,
+																				XfdashboardSelectionTarget inDirection)
 {
 	XfdashboardApplicationsView				*self;
 	XfdashboardApplicationsViewPrivate		*priv;
@@ -730,7 +730,7 @@ void _xfdashboard_applications_view_focusable_iface_init(XfdashboardFocusableInt
 	iface->supports_selection=_xfdashboard_applications_view_focusable_supports_selection;
 	iface->get_selection=_xfdashboard_applications_view_focusable_get_selection;
 	iface->set_selection=_xfdashboard_applications_view_focusable_set_selection;
-	iface->find_selection=_xfdashboard_windows_view_focusable_find_selection;
+	iface->find_selection=_xfdashboard_applications_view_focusable_find_selection;
 	iface->activate_selection=_xfdashboard_applications_view_focusable_activate_selection;
 }
 
