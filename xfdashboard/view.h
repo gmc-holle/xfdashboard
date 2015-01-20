@@ -76,7 +76,8 @@ struct _XfdashboardViewClass
 	void (*icon_changed)(XfdashboardView *self, ClutterImage *inIcon);
 
 	void (*scroll_to)(XfdashboardView *self, gfloat inX, gfloat inY);
-	void (*ensure_visible)(XfdashboardView *self, ClutterActor *inActor);
+	gboolean (*child_needs_scroll)(XfdashboardView *self, ClutterActor *inActor);
+	void (*child_ensure_visible)(XfdashboardView *self, ClutterActor *inActor);
 
 	/* Binding actions */
 	gboolean (*view_activate)(XfdashboardView *self,
@@ -104,7 +105,8 @@ gboolean xfdashboard_view_get_enabled(XfdashboardView *self);
 void xfdashboard_view_set_enabled(XfdashboardView *self, gboolean inIsEnabled);
 
 void xfdashboard_view_scroll_to(XfdashboardView *self, gfloat inX, gfloat inY);
-void xfdashboard_view_ensure_visible(XfdashboardView *self, ClutterActor *inActor);
+gboolean xfdashboard_view_child_needs_scroll(XfdashboardView *self, ClutterActor *inActor);
+void xfdashboard_view_child_ensure_visible(XfdashboardView *self, ClutterActor *inActor);
 
 gboolean xfdashboard_view_has_focus(XfdashboardView *self);
 

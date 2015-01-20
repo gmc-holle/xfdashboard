@@ -762,7 +762,7 @@ static gboolean _xfdashboard_search_view_on_key_press_event(ClutterActor *inActo
 			}
 
 			/* Ensure new selection is visible */
-			xfdashboard_view_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
+			xfdashboard_view_child_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
 
 			/* Event was handled */
 			return(CLUTTER_EVENT_STOP);
@@ -1231,5 +1231,5 @@ void xfdashboard_search_view_reset_search_selection(XfdashboardSearchView *self)
 																		XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END);
 
 	/* Ensure new selection is visible */
-	xfdashboard_view_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
+	xfdashboard_view_child_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
 }

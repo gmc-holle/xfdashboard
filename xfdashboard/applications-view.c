@@ -559,34 +559,115 @@ static ClutterActor* xfdashboard_applications_view_get_selection_from_list_mode(
 																				ClutterActor *inSelection,
 																				XfdashboardSelectionTarget inDirection)
 {
+	ClutterActor							*selection;
 	ClutterActor							*newSelection;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), NULL);
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
 
-	newSelection=inSelection;
+	selection=inSelection;
+	newSelection=NULL;
 
-	/* Get new selected item */
-	if(inDirection==XFDASHBOARD_SELECTION_TARGET_UP)
+	/* Find target selection */
+	switch(inDirection)
 	{
-		/* Get previous item to select */
-		newSelection=clutter_actor_get_previous_sibling(inSelection);
+		case XFDASHBOARD_SELECTION_TARGET_LEFT:
+		case XFDASHBOARD_SELECTION_TARGET_RIGHT:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT:
+			/* Do nothing here in list mode */
+			break;
 
-		/* If there is no previous item, e.g. at begin of list, select last item in list */
-		if(!newSelection) newSelection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+		case XFDASHBOARD_SELECTION_TARGET_UP:
+			newSelection=clutter_actor_get_previous_sibling(inSelection);
+			if(!newSelection) newSelection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_DOWN:
+			newSelection=clutter_actor_get_next_sibling(inSelection);
+			if(!newSelection) newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_UP:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN:
+			{
+				ClutterActor				*child;
+				gfloat						topY;
+				gfloat						bottomY;
+				gfloat						pageSize;
+				gfloat						currentY;
+				gfloat						limitY;
+				gfloat						childY1, childY2;
+				ClutterActorIter			iter;
+
+				/* Beginning from current selection go up and first child which needs scrolling */
+				child=clutter_actor_get_previous_sibling(inSelection);
+				while(child && !xfdashboard_view_child_needs_scroll(XFDASHBOARD_VIEW(self), child))
+				{
+					child=clutter_actor_get_previous_sibling(child);
+				}
+				if(!child) child=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+				topY=clutter_actor_get_y(child);
+
+				/* Beginning from current selection go down and first child which needs scrolling */
+				child=clutter_actor_get_next_sibling(inSelection);
+				while(child && !xfdashboard_view_child_needs_scroll(XFDASHBOARD_VIEW(self), child))
+				{
+					child=clutter_actor_get_next_sibling(child);
+				}
+				if(!child) child=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+				bottomY=clutter_actor_get_y(child);
+
+				/* Get distance between top and bottom actor we found because that's the page size */
+				pageSize=bottomY-topY;
+
+				/* Find child in distance of page size from current selection */
+				currentY=clutter_actor_get_y(inSelection);
+
+				if(inDirection==XFDASHBOARD_SELECTION_TARGET_PAGE_UP) limitY=currentY-pageSize;
+					else limitY=currentY+pageSize;
+
+				clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+				while(!newSelection && clutter_actor_iter_next(&iter, &child))
+				{
+					childY1=clutter_actor_get_y(child);
+					childY2=childY1+clutter_actor_get_height(child);
+					if(childY1>limitY || childY2>limitY) newSelection=child;
+				}
+
+				/* If no child could be found select last one */
+				if(!newSelection)
+				{
+					if(inDirection==XFDASHBOARD_SELECTION_TARGET_PAGE_UP)
+					{
+						newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
+					}
+						else
+						{
+							newSelection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
+						}
+				}
+			}
+			break;
+
+		default:
+			{
+				gchar					*valueName;
+
+				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
+				g_critical(_("Focusable object %s does not handle selection direction of type %s in list mode."),
+							G_OBJECT_TYPE_NAME(self),
+							valueName);
+				g_free(valueName);
+			}
+			break;
 	}
 
-	if(inDirection==XFDASHBOARD_SELECTION_TARGET_DOWN)
-	{
-		/* Get next item to select */
-		newSelection=clutter_actor_get_next_sibling(inSelection);
-
-		/* If there is no next item, e.g. at end of list, select first item in list */
-		if(!newSelection) newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
-	}
+	/* If new selection could be found override current selection with it */
+	if(newSelection) selection=newSelection;
 
 	/* Return new selection */
-	return(newSelection);
+	return(selection);
 }
 
 static ClutterActor* _xfdashboard_applications_view_focusable_find_selection(XfdashboardFocusable *inFocusable,
@@ -642,6 +723,10 @@ static ClutterActor* _xfdashboard_applications_view_focusable_find_selection(Xfd
 		case XFDASHBOARD_SELECTION_TARGET_RIGHT:
 		case XFDASHBOARD_SELECTION_TARGET_UP:
 		case XFDASHBOARD_SELECTION_TARGET_DOWN:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_UP:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN:
 			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
 			{
 				newSelection=xfdashboard_applications_view_get_selection_from_list_mode(self, inSelection, inDirection);
@@ -652,7 +737,7 @@ static ClutterActor* _xfdashboard_applications_view_focusable_find_selection(Xfd
 				}
 
 			/* Ensure new selection is visible */
-			if(newSelection) xfdashboard_view_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
+			if(newSelection) xfdashboard_view_child_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
 
 			break;
 

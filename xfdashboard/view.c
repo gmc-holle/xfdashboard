@@ -98,7 +98,8 @@ enum
 	SIGNAL_ICON_CHANGED,
 
 	SIGNAL_SCROLL_TO,
-	SIGNAL_ENSURE_VISIBLE,
+	SIGNAL_CHILD_NEEDS_SCROLL,
+	SIGNAL_CHILD_ENSURE_VISIBLE,
 
 	ACTION_VIEW_ACTIVATE,
 
@@ -474,11 +475,23 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 						G_TYPE_FLOAT,
 						G_TYPE_FLOAT);
 
-	XfdashboardViewSignals[SIGNAL_ENSURE_VISIBLE]=
-		g_signal_new("ensure-visible",
+	XfdashboardViewSignals[SIGNAL_CHILD_NEEDS_SCROLL]=
+		g_signal_new("child-needs-scroll",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-						G_STRUCT_OFFSET(XfdashboardViewClass, ensure_visible),
+						G_STRUCT_OFFSET(XfdashboardViewClass, child_needs_scroll),
+						NULL,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						G_TYPE_BOOLEAN,
+						1,
+						CLUTTER_TYPE_ACTOR);
+
+	XfdashboardViewSignals[SIGNAL_CHILD_ENSURE_VISIBLE]=
+		g_signal_new("child-ensure-visible",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardViewClass, child_ensure_visible),
 						NULL,
 						NULL,
 						g_cclosure_marshal_VOID__OBJECT,
@@ -692,8 +705,27 @@ void xfdashboard_view_scroll_to(XfdashboardView *self, gfloat inX, gfloat inY)
 	g_signal_emit(self, XfdashboardViewSignals[SIGNAL_SCROLL_TO], 0, inX, inY);
 }
 
+/* Determine if scrolling is needed to get requested actor visible */
+gboolean xfdashboard_view_child_needs_scroll(XfdashboardView *self, ClutterActor *inActor)
+{
+	gboolean			result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), FALSE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), FALSE);
+
+	result=FALSE;
+
+	/* Only emit signal if given actor is a child of this view */
+	if(xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inActor))
+	{
+		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_CHILD_NEEDS_SCROLL], 0, inActor, &result);
+	}
+
+	return(result);
+}
+
 /* Ensure that a child of this view is visible by scrolling if needed */
-void xfdashboard_view_ensure_visible(XfdashboardView *self, ClutterActor *inActor)
+void xfdashboard_view_child_ensure_visible(XfdashboardView *self, ClutterActor *inActor)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
 	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
@@ -701,7 +733,7 @@ void xfdashboard_view_ensure_visible(XfdashboardView *self, ClutterActor *inActo
 	/* Only emit signal if given actor is a child of this view */
 	if(xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inActor))
 	{
-		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_ENSURE_VISIBLE], 0, inActor);
+		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_CHILD_ENSURE_VISIBLE], 0, inActor);
 	}
 }
 
