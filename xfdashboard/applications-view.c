@@ -459,6 +459,7 @@ static ClutterActor* xfdashboard_applications_view_get_selection_from_icon_mode(
 																				XfdashboardSelectionTarget inDirection)
 {
 	XfdashboardApplicationsViewPrivate		*priv;
+	ClutterActor							*selection;
 	ClutterActor							*newSelection;
 	gint									numberChildren;
 	gint									rows;
@@ -474,7 +475,8 @@ static ClutterActor* xfdashboard_applications_view_get_selection_from_icon_mode(
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
 
 	priv=self->priv;
-	newSelection=inSelection;
+	selection=inSelection;
+	newSelection=NULL;
 
 	/* Get number of rows and columns and also get number of children
 	 * of layout manager.
@@ -542,17 +544,53 @@ static ClutterActor* xfdashboard_applications_view_get_selection_from_icon_mode(
 			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
 			break;
 
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT:
+			newSelectionIndex=(currentSelectionRow*columns);
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT:
+			newSelectionIndex=((currentSelectionRow+1)*columns)-1;
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_UP:
+			newSelectionIndex=currentSelectionColumn;
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN:
+			newSelectionIndex=((rows-1)*columns)+currentSelectionColumn;
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(CLUTTER_ACTOR(self), newSelectionIndex);
+			break;
+
 		default:
+			{
+				gchar					*valueName;
+
+				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
+				g_critical(_("Focusable object %s does not handle selection direction of type %s in icon mode."),
+							G_OBJECT_TYPE_NAME(self),
+							valueName);
+				g_free(valueName);
+			}
 			break;
 	}
 
+	/* If new selection could be found override current selection with it */
+	if(newSelection) selection=newSelection;
+
+	/* Return new selection */
 	g_debug("Selecting %s at %s for current selection %s in direction %u",
-			newSelection ? G_OBJECT_TYPE_NAME(newSelection) : "<nil>",
+			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
 			G_OBJECT_TYPE_NAME(self),
 			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
 			inDirection);
-
-	return(newSelection);
+	return(selection);
 }
 
 static ClutterActor* xfdashboard_applications_view_get_selection_from_list_mode(XfdashboardApplicationsView *self,
@@ -667,6 +705,11 @@ static ClutterActor* xfdashboard_applications_view_get_selection_from_list_mode(
 	if(newSelection) selection=newSelection;
 
 	/* Return new selection */
+	g_debug("Selecting %s at %s for current selection %s in direction %u",
+			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+			G_OBJECT_TYPE_NAME(self),
+			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+			inDirection);
 	return(selection);
 }
 
