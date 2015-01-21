@@ -82,6 +82,9 @@ GType xfdashboard_search_result_container_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_search_result_container_new(XfdashboardSearchProvider *inProvider);
 
+const gchar* xfdashboard_search_result_container_get_icon(XfdashboardSearchResultContainer *self);
+void xfdashboard_search_result_container_set_icon(XfdashboardSearchResultContainer *self, const gchar *inIcon);
+
 const gchar* xfdashboard_search_result_container_get_title_format(XfdashboardSearchResultContainer *self);
 void xfdashboard_search_result_container_set_title_format(XfdashboardSearchResultContainer *self, const gchar *inFormat);
 

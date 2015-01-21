@@ -50,6 +50,8 @@ struct _XfdashboardSearchResultContainerPrivate
 {
 	/* Properties related */
 	XfdashboardSearchProvider	*provider;
+
+	gchar						*icon;
 	gchar						*titleFormat;
 	XfdashboardViewMode			viewMode;
 	gfloat						spacing;
@@ -71,6 +73,7 @@ enum
 
 	PROP_PROVIDER,
 
+	PROP_ICON,
 	PROP_TITLE_FORMAT,
 	PROP_VIEW_MODE,
 	PROP_SPACING,
@@ -362,7 +365,31 @@ static void _xfdashboard_search_result_container_on_primary_icon_clicked(Xfdashb
 	g_signal_emit(self, XfdashboardSearchResultContainerSignals[SIGNAL_ICON_CLICKED], 0);
 }
 
-/* Update title text box */
+/* Update icon at text box */
+static void _xfdashboard_search_result_container_update_icon(XfdashboardSearchResultContainer *self)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+	const gchar									*icon;
+	const gchar									*providerIcon;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+
+	priv=self->priv;
+
+	/* Set icon set via stylable property or use the icon the search provider defines.
+	 * If both are not set then icon is NULL which cause the icon in text box to be hidden.
+	 */
+	icon=priv->icon;
+	if(!icon)
+	{
+		providerIcon=xfdashboard_search_provider_get_icon(priv->provider);
+		if(providerIcon) icon=providerIcon;
+	}
+
+	xfdashboard_text_box_set_primary_icon(XFDASHBOARD_TEXT_BOX(priv->titleTextBox), icon);
+}
+
+/* Update title at text box */
 static void _xfdashboard_search_result_container_update_title(XfdashboardSearchResultContainer *self)
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
@@ -391,7 +418,7 @@ static void _xfdashboard_search_result_container_set_provider(XfdashboardSearchR
 																XfdashboardSearchProvider *inProvider)
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
-	const gchar									*providerIcon;
+	gchar										*styleClass;
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_PROVIDER(inProvider));
@@ -404,19 +431,16 @@ static void _xfdashboard_search_result_container_set_provider(XfdashboardSearchR
 	/* Set provider reference */
 	priv->provider=XFDASHBOARD_SEARCH_PROVIDER(g_object_ref(inProvider));
 
+	/* Set class name with name of search provider for styling */
+	styleClass=g_strdup_printf("search-provider-%s", G_OBJECT_TYPE_NAME(priv->provider));
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), styleClass);
+	g_free(styleClass);
+
+	/* Update icon */
+	_xfdashboard_search_result_container_update_icon(self);
+
 	/* Update title */
 	_xfdashboard_search_result_container_update_title(self);
-
-	/* If provider has an icon then update primary icon and connect signal */
-	providerIcon=xfdashboard_search_provider_get_icon(priv->provider);
-	if(providerIcon)
-	{
-		xfdashboard_text_box_set_primary_icon(XFDASHBOARD_TEXT_BOX(priv->titleTextBox), providerIcon);
-		g_signal_connect_swapped(priv->titleTextBox,
-									"primary-icon-clicked",
-									G_CALLBACK(_xfdashboard_search_result_container_on_primary_icon_clicked),
-									self);
-	}
 }
 
 /* IMPLEMENTATION: GObject */
@@ -434,6 +458,12 @@ static void _xfdashboard_search_result_container_dispose(GObject *inObject)
 	{
 		g_object_unref(priv->provider);
 		priv->provider=NULL;
+	}
+
+	if(priv->icon)
+	{
+		g_free(priv->icon);
+		priv->icon=NULL;
 	}
 
 	if(priv->titleFormat)
@@ -458,6 +488,10 @@ static void _xfdashboard_search_result_container_set_property(GObject *inObject,
 	{
 		case PROP_PROVIDER:
 			_xfdashboard_search_result_container_set_provider(self, XFDASHBOARD_SEARCH_PROVIDER(g_value_get_object(inValue)));
+			break;
+
+		case PROP_ICON:
+			xfdashboard_search_result_container_set_icon(self, g_value_get_string(inValue));
 			break;
 
 		case PROP_TITLE_FORMAT:
@@ -492,6 +526,10 @@ static void _xfdashboard_search_result_container_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
+		case PROP_ICON:
+			g_value_set_string(outValue, priv->icon);
+			break;
+
 		case PROP_TITLE_FORMAT:
 			g_value_set_string(outValue, priv->titleFormat);
 			break;
@@ -539,6 +577,13 @@ static void xfdashboard_search_result_container_class_init(XfdashboardSearchResu
 							XFDASHBOARD_TYPE_SEARCH_PROVIDER,
 							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
+	XfdashboardSearchResultContainerProperties[PROP_ICON]=
+		g_param_spec_string("icon",
+							_("Icon"),
+							_("A themed icon name or file name of icon this container will display. If not set the icon the search provider defines will be used."),
+							NULL,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	XfdashboardSearchResultContainerProperties[PROP_TITLE_FORMAT]=
 		g_param_spec_string("title-format",
 							_("Title format"),
@@ -573,6 +618,7 @@ static void xfdashboard_search_result_container_class_init(XfdashboardSearchResu
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSearchResultContainerProperties);
 
 	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_ICON]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_TITLE_FORMAT]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_VIEW_MODE]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_SPACING]);
@@ -602,6 +648,7 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 	priv=self->priv=XFDASHBOARD_SEARCH_RESULT_CONTAINER_GET_PRIVATE(self);
 
 	/* Set up default values */
+	priv->icon=NULL;
 	priv->titleFormat=NULL;
 	priv->viewMode=-1;
 	priv->spacing=0.0f;
@@ -631,6 +678,12 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 	clutter_actor_set_x_expand(CLUTTER_ACTOR(self), TRUE);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->titleTextBox);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->itemsContainer);
+
+	/* Connect signals */
+	g_signal_connect_swapped(priv->titleTextBox,
+								"primary-icon-clicked",
+								G_CALLBACK(_xfdashboard_search_result_container_on_primary_icon_clicked),
+								self);
 }
 
 /* IMPLEMENTATION: Public API */
@@ -641,6 +694,42 @@ ClutterActor* xfdashboard_search_result_container_new(XfdashboardSearchProvider 
 	return(g_object_new(XFDASHBOARD_TYPE_SEARCH_RESULT_CONTAINER,
 							"provider", inProvider,
 							NULL));
+}
+
+/* Get/set icon */
+const gchar* xfdashboard_search_result_container_get_icon(XfdashboardSearchResultContainer *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), NULL);
+
+	return(self->priv->icon);
+}
+
+void xfdashboard_search_result_container_set_icon(XfdashboardSearchResultContainer *self, const gchar *inIcon)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->icon, inIcon)!=0)
+	{
+		/* Set value */
+		if(priv->icon)
+		{
+			g_free(priv->icon);
+			priv->icon=NULL;
+		}
+
+		if(inIcon) priv->icon=g_strdup(inIcon);
+
+		/* Update icon */
+		_xfdashboard_search_result_container_update_icon(self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchResultContainerProperties[PROP_ICON]);
+	}
 }
 
 /* Get/set format of header */
