@@ -2,7 +2,6 @@
 <!-- Generated with glade 3.18.3 -->
 <interface domain="xfdashboard">
   <requires lib="gtk+" version="3.2"/>
-  <!-- interface-local-resource-path /home/stephan/Projects/dashboard_playground/settings-dialogs/data/icons -->
   <object class="GtkAdjustment" id="notification-timeout-adjustment">
     <property name="lower">1</property>
     <property name="upper">30</property>
