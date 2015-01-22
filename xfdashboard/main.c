@@ -33,6 +33,153 @@
 #include "application.h"
 #include "types.h"
 
+typedef struct _RestartData		RestartData;
+struct _RestartData
+{
+	GMainLoop				*mainLoop;
+	XfdashboardApplication	*application;
+	gboolean				appHasQuitted;
+};
+
+#define DEFAULT_RESTART_WAIT_TIMEOUT	5000	/* Timeout in milliseconds */
+
+
+/* Timeout to wait for application to disappear has been reached */
+static gboolean _on_quit_timeout(gpointer inUserData)
+{
+	RestartData			*restartData;
+
+	g_return_val_if_fail(inUserData, G_SOURCE_REMOVE);
+
+	restartData=(RestartData*)inUserData;
+
+	/* Enforce flag that application has been disappeared to be unset */
+	restartData->appHasQuitted=FALSE;
+
+	 /* Return from main loop */
+	g_main_loop_quit(restartData->mainLoop);
+	g_debug("Timeout for waiting the application has been reached!");
+
+	/* Remove this source from main loop and prevent getting it called again */
+	return(G_SOURCE_REMOVE);
+}
+
+/* Idle callback for quitting application has been called */
+static gboolean _on_quit_idle(gpointer inUserData)
+{
+	/* Quit application */
+	xfdashboard_application_quit_forced();
+
+	/* Remove this source from main loop and prevent getting it called again */
+	return(G_SOURCE_REMOVE);
+}
+
+/* Requested name appeared at DBUS */
+static void _on_dbus_watcher_name_appeared(GDBusConnection *inConnection,
+											const gchar *inName,
+											const gchar *inOwner,
+											gpointer inUserData)
+{
+	RestartData			*restartData;
+	GSource				*quitIdleSource;
+
+	g_return_if_fail(inUserData);
+
+	restartData=(RestartData*)inUserData;
+
+	/* Add an idle source to main loop to quit running application _after_
+	 * the main loop is running and the DBUS watcher was set up.
+	 */
+	quitIdleSource=g_idle_source_new();
+	g_source_set_callback(quitIdleSource, _on_quit_idle, NULL, NULL);
+	g_source_attach(quitIdleSource, g_main_loop_get_context(restartData->mainLoop));
+	g_source_unref(quitIdleSource);
+
+	g_debug("Name %s appeared at DBUS and is owned by %s", inName, inOwner);
+}
+
+/* Requested name vanished from DBUS */
+static void _on_dbus_watcher_name_vanished(GDBusConnection *inConnection,
+											const gchar *inName,
+											gpointer inUserData)
+{
+	RestartData			*restartData;
+
+	g_return_if_fail(inUserData);
+
+	restartData=(RestartData*)inUserData;
+
+	/* Set flag that application disappeared */
+	restartData->appHasQuitted=TRUE;
+
+	/* Now the application is gone and we can safely restart application.
+	 * So return from main loop now.
+	 */
+	g_main_loop_quit(restartData->mainLoop);
+
+	g_debug("Name %s does not exist at DBUS or vanished", inName);
+}
+
+/* Quit running application and restart application */
+static gboolean _restart(XfdashboardApplication *inApplication)
+{
+	GMainLoop			*mainLoop;
+	guint				dbusWatcherID;
+	GSource				*timeoutSource;
+	RestartData			restartData;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication), FALSE);
+
+	/* Create main loop for watching DBUS for application to disappear */
+	mainLoop=g_main_loop_new(NULL, FALSE);
+
+	/* Set up user data for callbacks */
+	restartData.mainLoop=mainLoop;
+	restartData.application=inApplication;
+	restartData.appHasQuitted=FALSE;
+
+	/* Set up DBUS watcher to get noticed when application disappears
+	 * which means it is safe to start a new instance. But if it takes
+	 * too long assume that either application did not quit and is still
+	 * running or we did get notified although we set up DBUS watcher
+	 * before quitting application.
+	 */
+	dbusWatcherID=g_bus_watch_name(G_BUS_TYPE_SESSION,
+									g_application_get_application_id(G_APPLICATION(inApplication)),
+									G_BUS_NAME_WATCHER_FLAGS_NONE,
+									_on_dbus_watcher_name_appeared,
+									_on_dbus_watcher_name_vanished,
+									&restartData,
+									NULL);
+
+	/* Add an idle source to main loop to quit running application _after_
+	 * the main loop is running and the DBUS watcher was set up.
+	 */
+	timeoutSource=g_timeout_source_new(DEFAULT_RESTART_WAIT_TIMEOUT);
+	g_source_set_callback(timeoutSource, _on_quit_timeout, &restartData, NULL);
+	g_source_attach(timeoutSource, g_main_loop_get_context(mainLoop));
+	g_source_unref(timeoutSource);
+
+	/* Run main loop */
+	g_debug("Starting main loop for waiting the application to quit");
+	g_main_loop_run(mainLoop);
+	g_debug("Returned from main loop for waiting the application to quit");
+
+	/* Show warning if timeout had been reached */
+	if(!restartData.appHasQuitted)
+	{
+		g_warning(_("Cannot restart application: Failed to quit running instance"));
+	}
+
+	/* Destroy DBUS watcher */
+	g_bus_unwatch_name(dbusWatcherID);
+
+	/* Return TRUE if application was quitted successfully
+	 * otherwise FALSE.
+	 */
+	return(restartData.appHasQuitted);
+}
+
 /* Main entry point */
 int main(int argc, char **argv)
 {
@@ -47,6 +194,11 @@ int main(int argc, char **argv)
 
 	/* Check for running instance (keep only one instance) */
 	app=xfdashboard_application_get_default();
+	if(!app)
+	{
+		g_warning(_("Failed to create application instance"));
+		return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
+	}
 
 	g_application_register(G_APPLICATION(app), NULL, &error);
 	if(error!=NULL)
@@ -71,14 +223,35 @@ int main(int argc, char **argv)
 				/* Do nothing at remote instance */
 				break;
 
+			case XFDASHBOARD_APPLICATION_ERROR_RESTART:
+				/* Try quitting running instance and wait until
+				 * application is stopped. If this fails reset
+				 * application status from restart to failed to
+				 * prevent starting another instance.
+				 */
+				if(!_restart(app)) status=XFDASHBOARD_APPLICATION_ERROR_FAILED;
+				break;
+
 			default:
 				g_error(_("Initializing application failed with status code %d"), status);
 				break;
 		}
 
-		/* Exit this instance of application */
+		/* Destroy this instance of application and exit if no restart
+		 * was requested.
+		 */
+		if(status!=XFDASHBOARD_APPLICATION_ERROR_RESTART)
+		{
+			g_object_unref(app);
+			return(status);
+		}
+
+		/* If we get here a restart was requested so destroy current
+		 * instance of application and create a new one.
+		 */
 		g_object_unref(app);
-		return(status);
+
+		app=xfdashboard_application_get_default();
 	}
 
 	/* Tell clutter to try to initialize an RGBA visual */

@@ -75,6 +75,11 @@ struct _XfdashboardApplicationPrivate
 	gulong						xfconfThemeChangedSignalID;
 
 	XfdashboardBindingsPool		*bindings;
+
+#if !GLIB_CHECK_VERSION(2, 32, 0)
+	GSimpleActionGroup			*actions;
+#endif
+
 };
 
 /* Properties */
@@ -129,6 +134,13 @@ static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean
 
 	/* Check if we should really quit this instance */
 	if(inForceQuit==TRUE || priv->isDaemon==FALSE) shouldQuit=TRUE;
+
+	/* Do nothing if application is already quitting. This can happen if
+	 * application is running in daemon mode (primary instance) and another
+	 * instance was called with "quit" or "restart" parameter which would
+	 * cause this function to be called twice.
+	 */
+	if(priv->isQuitting) return;
 
 	/* If application is not in daemon mode or if forced is set to TRUE
 	 * destroy all stage windows ...
@@ -404,11 +416,13 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	GError							*error;
 	gboolean						optionDaemonize;
 	gboolean						optionQuit;
+	gboolean						optionRestart;
 	gboolean						optionToggle;
 	GOptionEntry					XfdashboardApplicationOptions[]=
 									{
 										{ "daemonize", 'd', 0, G_OPTION_ARG_NONE, &optionDaemonize, N_("Fork to background"), NULL },
-										{ "quit", 'q', 0, G_OPTION_ARG_NONE, &optionQuit, N_("Quit existing instance"), NULL },
+										{ "quit", 'q', 0, G_OPTION_ARG_NONE, &optionQuit, N_("Quit running instance"), NULL },
+										{ "restart", 'r', 0, G_OPTION_ARG_NONE, &optionRestart, N_("Restart running instance"), NULL },
 										{ "toggle", 't', 0, G_OPTION_ARG_NONE, &optionToggle, N_("Toggles suspend/resume state if running instance was started in daemon mode otherwise it quits running non-daemon instance"), NULL },
 										{ NULL }
 									};
@@ -422,6 +436,7 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	/* Set up options */
 	optionDaemonize=FALSE;
 	optionQuit=FALSE;
+	optionRestart=FALSE;
 	optionToggle=FALSE;
 
 	context=g_option_context_new(N_("- A Gnome Shell like dashboard for Xfce4"));
@@ -449,6 +464,16 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 		g_print(N_("%s\n"), (error && error->message) ? error->message : _("unknown error"));
 		if(error) g_error_free(error);
 		return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
+	}
+
+	/* Handle options: restart
+	 * - Only handle option if application was inited already
+	 */
+	if(priv->inited && optionRestart)
+	{
+		/* Return state to restart this applicationa */
+		g_debug("Received request to restart application!");
+		return(XFDASHBOARD_APPLICATION_ERROR_RESTART);
 	}
 
 	/* Handle options: quit */
@@ -545,6 +570,16 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SHUTDOWN_FINAL], 0);
 
 	/* Release allocated resources */
+#if !GLIB_CHECK_VERSION(2, 32, 0)
+	if(priv->actions)
+	{
+		g_application_set_action_group(G_APPLICATION(self), NULL);
+
+		g_object_unref(priv->actions);
+		priv->actions=NULL;
+	}
+#endif
+
 	if(priv->xfconfThemeChangedSignalID)
 	{
 		xfconf_g_property_unbind(priv->xfconfThemeChangedSignalID);
@@ -758,6 +793,7 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 static void xfdashboard_application_init(XfdashboardApplication *self)
 {
 	XfdashboardApplicationPrivate	*priv;
+	GSimpleAction					*action;
 
 	priv=self->priv=XFDASHBOARD_APPLICATION_GET_PRIVATE(self);
 
@@ -773,6 +809,27 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->theme=NULL;
 	priv->xfconfThemeChangedSignalID=0L;
 	priv->isQuitting=FALSE;
+#if !GLIB_CHECK_VERSION(2, 32, 0)
+	priv->actions=NULL;
+#endif
+
+	/* Add callable DBUS actions for this application */
+#if !GLIB_CHECK_VERSION(2, 32, 0)
+	priv->actions=g_simple_action_group_new();
+#endif
+
+	action=g_simple_action_new("Quit", NULL);
+	g_signal_connect(action, "activate", G_CALLBACK(xfdashboard_application_quit_forced), NULL);
+#if GLIB_CHECK_VERSION(2, 32, 0)
+	g_action_map_add_action(G_ACTION_MAP(self), G_ACTION(action));
+#else
+	g_simple_action_group_insert(priv->actions, action);
+#endif
+	g_object_unref(action);
+
+#if !GLIB_CHECK_VERSION(2, 32, 0)
+	g_application_set_action_group(G_APPLICATION(self), G_ACTION_GROUP(priv->actions));
+#endif
 }
 
 /* IMPLEMENTATION: Public API */
@@ -828,6 +885,17 @@ void xfdashboard_application_quit_forced(void)
 {
 	if(G_LIKELY(application!=NULL))
 	{
+		/* Quit also any other running instance */
+		if(g_application_get_is_remote(G_APPLICATION(application))==TRUE)
+		{
+#if !GLIB_CHECK_VERSION(2,32,0)
+			g_action_group_activate_action(G_ACTION_GROUP(application->priv->actions, "Quit", NULL);
+#else
+			g_action_group_activate_action(G_ACTION_GROUP(application), "Quit", NULL);
+#endif
+	}
+
+		/* Quit this instance */
 		_xfdashboard_application_quit(application, TRUE);
 	}
 		else clutter_main_quit();
