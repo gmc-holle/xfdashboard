@@ -209,19 +209,16 @@ static void _xfdashboard_application_on_hotkey_activate(XfdashboardApplication *
 
 	priv=self->priv;
 
-	/* Check if hotkey is enabled in settings and return immediately if not */
+	/* Check if hotkey is enabled in settings and application is running in daemon
+	 * mode, otherwise return immediately.
+	 */
 	isEnabled=xfconf_channel_get_bool(priv->xfconfChannel,
 										ENABLE_HOTKEY_XFCONF_PROP,
 										DEFAULT_ENABLE_HOTKEY);
-	if(!isEnabled) return;
+	if(!isEnabled || !priv->isDaemon) return;
 
-	/* If application is running in daemon mode, toggle between suspend/resume ... */
-	if(priv->isDaemon)
-	{
-		if(priv->isSuspended) _xfdashboard_application_activate(G_APPLICATION(self));
-			else _xfdashboard_application_quit(self, FALSE);
-	}
-		/* ... otherwise if not running in daemon mode, just quit */
+	/* Toggle between suspend and resume of application */
+	if(priv->isSuspended) _xfdashboard_application_activate(G_APPLICATION(self));
 		else _xfdashboard_application_quit(self, FALSE);
 }
 
