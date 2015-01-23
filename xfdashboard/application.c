@@ -119,8 +119,8 @@ static guint XfdashboardApplicationSignals[SIGNAL_LAST]={ 0, };
 
 #define THEME_NAME_XFCONF_PROP				"/theme"
 #define DEFAULT_THEME_NAME					"xfdashboard"
-#define HOTKEY_ENABLED_XFCONF_PROP			"/hotkey-enabled"
-#define DEFAULT_HOTKEY_ENABLED				FALSE
+#define ENABLE_HOTKEY_XFCONF_PROP			"/enable-hotkey"
+#define DEFAULT_ENABLE_HOTKEY				FALSE
 
 /* Single instance of application */
 static XfdashboardApplication*		application=NULL;
@@ -211,8 +211,8 @@ static void _xfdashboard_application_on_hotkey_activate(XfdashboardApplication *
 
 	/* Check if hotkey is enabled in settings and return immediately if not */
 	isEnabled=xfconf_channel_get_bool(priv->xfconfChannel,
-										HOTKEY_ENABLED_XFCONF_PROP,
-										DEFAULT_HOTKEY_ENABLED);
+										ENABLE_HOTKEY_XFCONF_PROP,
+										DEFAULT_ENABLE_HOTKEY);
 	if(!isEnabled) return;
 
 	/* If application is running in daemon mode, toggle between suspend/resume ... */

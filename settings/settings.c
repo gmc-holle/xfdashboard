@@ -51,6 +51,7 @@ struct _XfdashboardSettingsPrivate
 	GtkWidget		*widgetSwitchViewOnResume;
 	GtkWidget		*widgetNotificationTimeout;
 	GtkWidget		*widgetEnableUnmappedWindowWorkaround;
+	GtkWidget		*widgetEnableHotkey;
 	GtkWidget		*widgetScrollEventChangedWorkspace;
 	GtkWidget		*widgetThemes;
 	GtkWidget		*widgetThemeScreenshot;
@@ -74,6 +75,7 @@ struct _XfdashboardSettingsPrivate
 #define DEFAULT_RESET_SEARCH_ON_RESUME			TRUE
 #define DEFAULT_SWITCH_VIEW_ON_RESUME			NULL
 #define DEFAULT_THEME							"xfdashboard"
+#define DEFAULT_ENABLE_HOTKEY					FALSE
 #define MAX_SCREENSHOT_WIDTH					400
 
 typedef struct _XfdashboardSettingsResumableViews	XfdashboardSettingsResumableViews;
@@ -1030,6 +1032,14 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 							"/enable-unmapped-window-workaround",
 							G_TYPE_BOOLEAN,
 							priv->widgetEnableUnmappedWindowWorkaround,
+							"active");
+
+	priv->widgetEnableHotkey=GTK_WIDGET(gtk_builder_get_object(priv->builder, "enable-hotkey"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(priv->widgetEnableHotkey), DEFAULT_ENABLE_HOTKEY);
+	xfconf_g_property_bind(priv->xfconfChannel,
+							"/enable-hotkey",
+							G_TYPE_BOOLEAN,
+							priv->widgetEnableHotkey,
 							"active");
 
 	priv->widgetScrollEventChangedWorkspace=GTK_WIDGET(gtk_builder_get_object(priv->builder, "scroll-event-changes-workspace"));
