@@ -36,6 +36,7 @@ xfdashboard_headers = \
 	fill-box-layout.h \
 	focusable.h \
 	focus-manager.h \
+	hotkey.h \
 	image-content.h \
 	live-window.h \
 	live-workspace.h \
@@ -93,6 +94,7 @@ xfdashboard_SOURCES = \
 	fill-box-layout.c \
 	focusable.c \
 	focus-manager.c \
+	hotkey.c \
 	image-content.c \
 	live-window.c \
 	live-workspace.c \

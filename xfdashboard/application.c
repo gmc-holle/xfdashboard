@@ -45,6 +45,7 @@
 #include "theme.h"
 #include "focus-manager.h"
 #include "bindings-pool.h"
+#include "hotkey.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplication,
@@ -75,6 +76,8 @@ struct _XfdashboardApplicationPrivate
 	gulong						xfconfThemeChangedSignalID;
 
 	XfdashboardBindingsPool		*bindings;
+
+	XfdashboardHotkey			*hotkeyTracker;
 
 #if !GLIB_CHECK_VERSION(2, 32, 0)
 	GSimpleActionGroup			*actions;
@@ -116,9 +119,14 @@ static guint XfdashboardApplicationSignals[SIGNAL_LAST]={ 0, };
 
 #define THEME_NAME_XFCONF_PROP				"/theme"
 #define DEFAULT_THEME_NAME					"xfdashboard"
+#define HOTKEY_ENABLED_XFCONF_PROP			"/hotkey-enabled"
+#define DEFAULT_HOTKEY_ENABLED				FALSE
 
 /* Single instance of application */
 static XfdashboardApplication*		application=NULL;
+
+/* Forward declarations */
+static void _xfdashboard_application_activate(GApplication *inApplication);
 
 /* Quit application depending on daemon mode and force parameter */
 static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean inForceQuit)
@@ -189,6 +197,32 @@ static gboolean _xfdashboard_application_on_delete_stage(XfdashboardApplication 
 
 	/* Prevent the default handler being called */
 	return(CLUTTER_EVENT_STOP);
+}
+
+/* Hotkey was activated */
+static void _xfdashboard_application_on_hotkey_activate(XfdashboardApplication *self, gpointer inUserData)
+{
+	XfdashboardApplicationPrivate	*priv;
+	gboolean						isEnabled;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(self));
+
+	priv=self->priv;
+
+	/* Check if hotkey is enabled in settings and return immediately if not */
+	isEnabled=xfconf_channel_get_bool(priv->xfconfChannel,
+										HOTKEY_ENABLED_XFCONF_PROP,
+										DEFAULT_HOTKEY_ENABLED);
+	if(!isEnabled) return;
+
+	/* If application is running in daemon mode, toggle between suspend/resume ... */
+	if(priv->isDaemon)
+	{
+		if(priv->isSuspended) _xfdashboard_application_activate(G_APPLICATION(self));
+			else _xfdashboard_application_quit(self, FALSE);
+	}
+		/* ... otherwise if not running in daemon mode, just quit */
+		else _xfdashboard_application_quit(self, FALSE);
 }
 
 /* Set theme name and reload theme */
@@ -309,7 +343,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 		if(error!=NULL) g_error_free(error);
 		return(FALSE);
 	}
-	
+
 	/* Set up and load theme */
 	priv->xfconfThemeChangedSignalID=xfconf_g_property_bind(priv->xfconfChannel,
 															THEME_NAME_XFCONF_PROP,
@@ -358,6 +392,12 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	 * application is running.
 	 */
 	priv->focusManager=xfdashboard_focus_manager_get_default();
+
+	/* Create single-instance of hotkey tracker to keep it alive hiwle
+	 * application is running.
+	 */
+	priv->hotkeyTracker=xfdashboard_hotkey_get_default();
+	g_signal_connect_swapped(priv->hotkeyTracker, "activate", G_CALLBACK(_xfdashboard_application_on_hotkey_activate), self);
 
 	/* Create primary stage on first monitor.
 	 * TODO: Create stage for each monitor connected
@@ -621,6 +661,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 		priv->bindings=NULL;
 	}
 
+	if(priv->hotkeyTracker)
+	{
+		g_object_unref(priv->hotkeyTracker);
+		priv->hotkeyTracker=NULL;
+	}
+
 	/* Shutdown xfconf */
 	priv->xfconfChannel=NULL;
 	xfconf_shutdown();
@@ -809,6 +855,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->theme=NULL;
 	priv->xfconfThemeChangedSignalID=0L;
 	priv->isQuitting=FALSE;
+	priv->hotkeyTracker=NULL;
 #if !GLIB_CHECK_VERSION(2, 32, 0)
 	priv->actions=NULL;
 #endif
