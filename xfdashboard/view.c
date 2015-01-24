@@ -35,6 +35,7 @@
 #include "utils.h"
 #include "focus-manager.h"
 #include "viewpad.h"
+#include "enums.h"
 
 /* Define this class in GObject system */
 G_DEFINE_ABSTRACT_TYPE(XfdashboardView,
@@ -334,6 +335,7 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 		g_param_spec_enum("fit-mode",
 							_("Fit mode"),
 							_("Defines if view should be fit into viewpad and its orientation"),
+							XFDASHBOARD_TYPE_FIT_MODE,
 							XFDASHBOARD_FIT_MODE_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
