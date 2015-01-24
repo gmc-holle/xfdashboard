@@ -1260,6 +1260,9 @@ GtkWidget* xfdashboard_settings_create_plug(XfdashboardSettings *self, Window in
 	XfdashboardSettingsPrivate	*priv;
 	GtkWidget					*plug;
 	GObject						*dialogChild;
+#if GTK_CHECK_VERSION(3, 14 ,0)
+	GtkWidget					*dialogParent;
+#endif
 
 	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS(self), NULL);
 	g_return_val_if_fail(inSocketID, NULL);
@@ -1283,7 +1286,17 @@ GtkWidget* xfdashboard_settings_create_plug(XfdashboardSettings *self, Window in
 
 	/* Create plug widget and reparent dialog object to it */
 	plug=gtk_plug_new(inSocketID);
+#if GTK_CHECK_VERSION(3, 14 ,0)
+	g_object_ref(G_OBJECT(dialogChild));
+
+	dialogParent=gtk_widget_get_parent(GTK_WIDGET(dialogChild));
+	gtk_container_remove(GTK_CONTAINER(dialogParent), GTK_WIDGET(dialogChild));
+	gtk_container_add(GTK_CONTAINER(plug), GTK_WIDGET(dialogChild));
+
+	g_object_unref(G_OBJECT(dialogChild));
+#else
 	gtk_widget_reparent(GTK_WIDGET(dialogChild), plug);
+#endif
 	gtk_widget_show(GTK_WIDGET(dialogChild));
 
 	/* Return widget */
