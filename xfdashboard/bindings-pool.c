@@ -473,7 +473,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 		gchar									*when=NULL;
 		gchar									*target=NULL;
 		gchar									*allowUnfocusableTargets=NULL;
-		ClutterEventType						eventType=CLUTTER_EVENT_NONE;
+		ClutterEventType						eventType=CLUTTER_NOTHING;
 		guint									key=0;
 		ClutterModifierType						modifiers=0;
 		XfdashboardBindingFlags					flags=0;

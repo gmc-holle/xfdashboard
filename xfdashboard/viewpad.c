@@ -495,7 +495,7 @@ static void _xfdashboard_viewpad_on_view_scroll_to(XfdashboardViewpad *self,
 		}
 }
 
-/* Get amount to scroll in requested direction if scrolling is possible */
+/* Determine if scrolling is needed to get requested actor visible in viewpad */
 static gboolean _xfdashboard_viewpad_on_view_child_needs_scroll(XfdashboardViewpad *self,
 																ClutterActor *inActor,
 																gpointer inUserData)
@@ -508,9 +508,9 @@ static gboolean _xfdashboard_viewpad_on_view_child_needs_scroll(XfdashboardViewp
 	gfloat						x, y, w, h;
 	gboolean					needScrolling;
 
-	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
-	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
-	g_return_if_fail(XFDASHBOARD_IS_VIEW(inUserData));
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), FALSE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(inUserData), FALSE);
 
 	priv=self->priv;
 	view=XFDASHBOARD_VIEW(inUserData);
