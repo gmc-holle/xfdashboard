@@ -31,6 +31,8 @@
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
 
+#include "window-tracker.h"
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardHotkey,
 				xfdashboard_hotkey,
@@ -43,14 +45,16 @@ G_DEFINE_TYPE(XfdashboardHotkey,
 struct _XfdashboardHotkeyPrivate
 {
 	/* Instance related */
-	Display			*display;
-	Window			currentFocus;
-	int				currentFocusRevert;
+	XfdashboardWindowTracker	*windowTracker;
 
-	guint			firstKeyCode;
-	guint			lastKeyCode;
-	gint			pressedKeys;
-	gboolean		keySequenceValid;
+	Display						*display;
+	Window						currentFocus;
+	int							currentFocusRevert;
+
+	guint						firstKeyCode;
+	guint						lastKeyCode;
+	gint						pressedKeys;
+	gboolean					keySequenceValid;
 };
 
 /* Signals */
@@ -68,8 +72,28 @@ static guint XfdashboardHotkeySignals[SIGNAL_LAST]={ 0, };
 
 static XfdashboardHotkey					*_xfdashboard_hotkey_singleton=NULL;
 
+/* Release event notifications at current focus */
+static void _xfdashboard_hotkey_release_focus(XfdashboardHotkey *self)
+{
+	XfdashboardHotkeyPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_HOTKEY(self));
+
+	priv=self->priv;
+
+	/* Revert event notifications at current focus */
+	if(priv->currentFocus!=None)
+	{
+		g_debug("Reset event notification at old focus %lu", priv->currentFocus);
+		XSelectInput(priv->display, priv->currentFocus, 0);
+
+		priv->currentFocus=None;
+		priv->currentFocusRevert=0;
+	}
+}
+
 /* Focus has changed so re-setup hotkey tracker */
-static void _xfdashboard_hotkey_on_focus_changed(XfdashboardHotkey *self, gboolean inReleaseOnly)
+static void _xfdashboard_hotkey_on_focus_changed(XfdashboardHotkey *self)
 {
 	XfdashboardHotkeyPrivate	*priv;
 	Window						newFocus;
@@ -79,21 +103,19 @@ static void _xfdashboard_hotkey_on_focus_changed(XfdashboardHotkey *self, gboole
 
 	priv=self->priv;
 
-	/* Revert event notifications as current focus has changed */
-	if(priv->currentFocus!=None)
-	{
-		g_debug("Reset event notification at old focus %lu", priv->currentFocus);
-		XSelectInput(priv->display, priv->currentFocus, 0);
+	/* Get new focus */
+	XGetInputFocus(priv->display, &newFocus, &newFocusRevert);
 
-		priv->currentFocus=None;
-		priv->currentFocusRevert=0;
+	/* If new focus and current focus are the same and a release
+	 * was _NOT requested then do nothing.
+	 */
+	if(newFocus==priv->currentFocus)
+	{
+		return;
 	}
 
-	/* If only a release requested stop here */
-	if(inReleaseOnly) return;
-
-	/* Get new current focus */
-	XGetInputFocus(priv->display, &newFocus, &newFocusRevert);
+	/* Revert event notifications at current focus */
+	_xfdashboard_hotkey_release_focus(self);
 
 	/* Set up event notifications if new focus is not the root window */
 	if(newFocus==PointerRoot)
@@ -109,6 +131,27 @@ static void _xfdashboard_hotkey_on_focus_changed(XfdashboardHotkey *self, gboole
 
 	XSelectInput(priv->display, priv->currentFocus, XFDASHBOARD_HOTKEY_FILTER_MASK);
 	g_debug("Set up event notification at new focus %lu", priv->currentFocus);
+}
+
+/* Active window changed so focus must be changed also and hotkey tracker must be re-setup */
+static void _xfdashboard_hotkey_on_active_window_changed(XfdashboardHotkey *self,
+															XfdashboardWindowTrackerWindow *inOldWindow,
+															XfdashboardWindowTrackerWindow *inNewWindow,
+															gpointer inUserData)
+{
+	XfdashboardHotkeyPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_HOTKEY(self));
+
+	priv=self->priv;
+
+	/* Active window and also focus have changed so reset counters */
+	priv->pressedKeys=0;
+	priv->keySequenceValid=FALSE;
+
+	/* Re-setup hotkey tracker */
+	g_debug("Active window changed - Reset and set up event notification");
+	_xfdashboard_hotkey_on_focus_changed(self);
 }
 
 /* Check if X key event is for hotkey */
@@ -175,7 +218,7 @@ static ClutterX11FilterReturn _xfdashboard_hotkey_on_x_event(XEvent *inXEvent, C
 			/* Focus changed so restore old event settings and
 			 * setup event handler for new window.
 			 */
-			_xfdashboard_hotkey_on_focus_changed(self, FALSE);
+			_xfdashboard_hotkey_on_focus_changed(self);
 
 			/* Reset counters */
 			priv->pressedKeys=0;
@@ -374,7 +417,14 @@ static void _xfdashboard_hotkey_dispose(GObject *inObject)
 	XfdashboardHotkeyPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
-	_xfdashboard_hotkey_on_focus_changed(self, TRUE);
+	_xfdashboard_hotkey_release_focus(self);
+
+	if(priv->windowTracker)
+	{
+		g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_hotkey_on_active_window_changed), self);
+		g_object_unref(priv->windowTracker);
+		priv->windowTracker=NULL;
+	}
 
 	if(priv->display)
 	{
@@ -432,8 +482,15 @@ static void xfdashboard_hotkey_init(XfdashboardHotkey *self)
 	priv->pressedKeys=0;
 	priv->keySequenceValid=FALSE;
 
+	/* Get instance of window tracker and connect signals */
+	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	g_signal_connect_swapped(priv->windowTracker,
+								"active-window-changed",
+								G_CALLBACK(_xfdashboard_hotkey_on_active_window_changed),
+								self);
+
 	/* Add and set up event filter for this instance */
-	_xfdashboard_hotkey_on_focus_changed(self, FALSE);
+	_xfdashboard_hotkey_on_focus_changed(self);
 	clutter_x11_add_filter(_xfdashboard_hotkey_on_x_event, self);
 
 	/* Connect signals for stage creation and deletion events */
