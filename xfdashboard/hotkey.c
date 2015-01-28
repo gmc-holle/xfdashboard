@@ -30,8 +30,8 @@
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
-
-#include "window-tracker.h"
+#include <X11/extensions/record.h>
+#include <X11/XKBlib.h>
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardHotkey,
@@ -45,16 +45,16 @@ G_DEFINE_TYPE(XfdashboardHotkey,
 struct _XfdashboardHotkeyPrivate
 {
 	/* Instance related */
-	XfdashboardWindowTracker	*windowTracker;
+	Display						*controlConnection;
+	Display						*dataConnection;
+	XRecordRange				*recordRange;
+	XRecordClientSpec			recordClients;
+	XRecordContext				recordContext;
+	guint						idleSourceID;
 
-	Display						*display;
-	Window						currentFocus;
-	int							currentFocusRevert;
-
-	guint						firstKeyCode;
-	guint						lastKeyCode;
-	gint						pressedKeys;
-	gboolean					keySequenceValid;
+	KeyCode						firstKey;
+	KeyCode						lastKey;
+	gboolean					validSequence;
 };
 
 /* Signals */
@@ -68,130 +68,25 @@ enum
 static guint XfdashboardHotkeySignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define XFDASHBOARD_HOTKEY_FILTER_MASK		(KeyPressMask | KeyReleaseMask | FocusChangeMask)
-
 static XfdashboardHotkey					*_xfdashboard_hotkey_singleton=NULL;
 
-/* Release event notifications at current focus */
-static void _xfdashboard_hotkey_release_focus(XfdashboardHotkey *self)
+/* Check if keycode is hotkey */
+static gboolean _xfdashboard_hotkey_is_hotkey(XfdashboardHotkey *self, KeyCode inKeyCode)
 {
 	XfdashboardHotkeyPrivate	*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_HOTKEY(self));
-
-	priv=self->priv;
-
-	/* Revert event notifications at current focus */
-	if(priv->currentFocus!=None)
-	{
-		g_debug("Reset event notification at old focus %lu", priv->currentFocus);
-		XSelectInput(priv->display, priv->currentFocus, 0);
-
-		priv->currentFocus=None;
-		priv->currentFocusRevert=0;
-	}
-}
-
-/* Focus has changed so re-setup hotkey tracker */
-static void _xfdashboard_hotkey_on_focus_changed(XfdashboardHotkey *self)
-{
-	XfdashboardHotkeyPrivate	*priv;
-	Window						newFocus;
-	int							newFocusRevert;
-
-	g_return_if_fail(XFDASHBOARD_IS_HOTKEY(self));
-
-	priv=self->priv;
-
-	/* Get new focus */
-	XGetInputFocus(priv->display, &newFocus, &newFocusRevert);
-
-	/* If new focus and current focus are the same and a release
-	 * was _NOT requested then do nothing.
-	 */
-	if(newFocus==priv->currentFocus)
-	{
-		return;
-	}
-
-	/* Revert event notifications at current focus */
-	_xfdashboard_hotkey_release_focus(self);
-
-	/* Set up event notifications if new focus is not the root window */
-	if(newFocus==PointerRoot)
-	{
-		newFocus=clutter_x11_get_root_window();
-		g_debug("Move focus from pointer root at %lu to root window %lu",
-					PointerRoot,
-					newFocus);
-	}
-
-	priv->currentFocus=newFocus;
-	priv->currentFocusRevert=newFocusRevert;
-
-	XSelectInput(priv->display, priv->currentFocus, XFDASHBOARD_HOTKEY_FILTER_MASK);
-	g_debug("Set up event notification at new focus %lu", priv->currentFocus);
-}
-
-/* Active window changed so focus must be changed also and hotkey tracker must be re-setup */
-static void _xfdashboard_hotkey_on_active_window_changed(XfdashboardHotkey *self,
-															XfdashboardWindowTrackerWindow *inOldWindow,
-															XfdashboardWindowTrackerWindow *inNewWindow,
-															gpointer inUserData)
-{
-	XfdashboardHotkeyPrivate	*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_HOTKEY(self));
-
-	priv=self->priv;
-
-	/* Active window and also focus have changed so reset counters */
-	priv->pressedKeys=0;
-	priv->keySequenceValid=FALSE;
-
-	/* Re-setup hotkey tracker */
-	g_debug("Active window changed - Reset and set up event notification");
-	_xfdashboard_hotkey_on_focus_changed(self);
-}
-
-/* Check if X key event is for hotkey */
-static gboolean _xfdashboard_hotkey_is_hotkey(XfdashboardHotkey *self, XKeyEvent *inXEvent, ClutterEvent *inClutterEvent)
-{
-	KeySym						keySymCode;
+	KeySym						keySym;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_HOTKEY(self), FALSE);
-	g_return_val_if_fail((inXEvent && !inClutterEvent) || (!inXEvent && inClutterEvent), FALSE);
 
-	keySymCode=0;
+	priv=self->priv;
 
-	/* Check for key-press or key-release event and translate key-code to key-sym-code
-	 * if neccessary. Any other event than key events results in invalid key-sym-code 0.
-	 */
-	if(inXEvent &&
-		(inXEvent->type==KeyPress || inXEvent->type==KeyRelease))
-	{
-		gchar					keySymString[2];
-		gint					result G_GNUC_UNUSED;
-
-		result=XLookupString(inXEvent, keySymString, 1, &keySymCode, NULL);
-		g_debug("Converted key-code %u to key-sym %lu from X key event",
-				((XKeyEvent*)inXEvent)->keycode,
-				keySymCode);
-	}
-
-	if(inClutterEvent &&
-		(clutter_event_type(inClutterEvent)==CLUTTER_KEY_PRESS ||
-			clutter_event_type(inClutterEvent)==CLUTTER_KEY_RELEASE))
-	{
-		keySymCode=((ClutterKeyEvent*)inClutterEvent)->keyval;
-		g_debug("Using key-sym %lu for key-code %u from Clutter key event.",
-					keySymCode,
-					((ClutterKeyEvent*)inClutterEvent)->hardware_keycode);
-	}
+	/* Translate key-code to key-sym-code */
+	keySym=XkbKeycodeToKeysym(priv->controlConnection, inKeyCode, 0, 0);
+	g_debug("Converted key-code %u to key-sym %lu", inKeyCode, keySym);
 
 	/* Return TRUE here if key-sym-code is the hotkey */
-	if(keySymCode==CLUTTER_KEY_Super_L ||
-		keySymCode==CLUTTER_KEY_Super_R)
+	if(keySym==CLUTTER_KEY_Super_L ||
+		keySym==CLUTTER_KEY_Super_R)
 	{
 		return(TRUE);
 	}
@@ -200,212 +95,282 @@ static gboolean _xfdashboard_hotkey_is_hotkey(XfdashboardHotkey *self, XKeyEvent
 	return(FALSE);
 }
 
-/* Filter X events to keep track of key events for hotkey */
-static ClutterX11FilterReturn _xfdashboard_hotkey_on_x_event(XEvent *inXEvent, ClutterEvent *inEvent, gpointer inUserData)
+/* Process collected recorded data by record extenstion when idle */
+static gboolean _xfdashboard_hotkey_on_idle(gpointer inUserData)
 {
 	XfdashboardHotkey			*self;
 	XfdashboardHotkeyPrivate	*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_HOTKEY(inUserData), CLUTTER_X11_FILTER_CONTINUE);
+	g_return_val_if_fail(XFDASHBOARD_IS_HOTKEY(inUserData), G_SOURCE_CONTINUE);
 
 	self=XFDASHBOARD_HOTKEY(inUserData);
 	priv=self->priv;
 
-	/* Handle X event */
-	switch(inXEvent->type)
+	/* Process collected recorded data */
+	if(priv->dataConnection)
 	{
-		case FocusOut:
-			/* Focus changed so restore old event settings and
-			 * setup event handler for new window.
-			 */
-			_xfdashboard_hotkey_on_focus_changed(self);
+		XRecordProcessReplies(priv->dataConnection);
+	}
 
-			/* Reset counters */
-			priv->pressedKeys=0;
-			priv->keySequenceValid=FALSE;
-			break;
+	/* Keep this source */
+	return(G_SOURCE_CONTINUE);
+}
 
-		case KeyPress:
-			/* If this is the first key pressed in key sequence then remember
-			 * the key and set up counters.
-			 */
-			if(priv->pressedKeys==0)
-			{
-				priv->firstKeyCode=((XKeyEvent*)inXEvent)->keycode;
-				priv->lastKeyCode=priv->firstKeyCode;
-				priv->pressedKeys=1;
-				priv->keySequenceValid=_xfdashboard_hotkey_is_hotkey(self, (XKeyEvent*)inXEvent, NULL);
-			}
-				/* If this is another key event in the key sequence check if key
-				 * is the same as the last key we handled. This can happen if a key
-				 * is pressed but not release causing a key repeat. In this case
-				 * we should not increase the counters.
+/* Record extension got data and called callback */
+static void _xfdashboard_hotkey_on_record_data(XPointer inClosure, XRecordInterceptData *inRecordedData)
+{
+	XfdashboardHotkey			*self;
+	XfdashboardHotkeyPrivate	*priv;
+	int							eventType;
+	KeyCode						eventKeyCode;
+
+	/* We need to free recorded data when returning so do not use
+	 * the g_return*_if_fail() macros as usual.
+	 */
+	if(!XFDASHBOARD_IS_HOTKEY(inClosure))
+	{
+		XRecordFreeData(inRecordedData);
+		return;
+	}
+
+	self=XFDASHBOARD_HOTKEY(inClosure);
+	priv=self->priv;
+
+	/* Check for record data */
+	if(inRecordedData->category!=XRecordFromServer)
+	{
+		XRecordFreeData(inRecordedData);
+		return;
+	}
+
+	/* Handle recorded event */
+	if(inRecordedData->data)
+	{
+		eventType=inRecordedData->data[0];
+		eventKeyCode=inRecordedData->data[1];
+		switch(eventType)
+		{
+			case KeyPress:
+				/* If this is the first key pressed in sequence then remember
+				 * the key as first key in sequence to recognize end of
+				 * sequence when this key is released. Also remember this key
+				 * as last key pressed to recognize key-repeat events.
+				 * Set flag if sequence is valid by checking if pressed key
+				 * is a hotkey.
 				 */
-				else if(((XKeyEvent*)inXEvent)->keycode!=priv->firstKeyCode)
+				if(!priv->firstKey)
 				{
-					/* Check if key sequence is still valid */
-					if(priv->keySequenceValid &&
-						!_xfdashboard_hotkey_is_hotkey(self, (XKeyEvent*)inXEvent, NULL))
-					{
-						priv->keySequenceValid=FALSE;
-					}
-
-					/* Remember last key pressed (to handle key repeat events) and
-					 * increase counters.
-					 */
-					priv->lastKeyCode=((XKeyEvent*)inXEvent)->keycode;
-					priv->pressedKeys++;
+					priv->firstKey=eventKeyCode;
+					priv->lastKey=eventKeyCode;
+					priv->validSequence=_xfdashboard_hotkey_is_hotkey(self, eventKeyCode);
+					g_message("First key with key-code %u in %s sequence pressed",
+								eventKeyCode,
+								priv->validSequence ? "valid" : "invalid");
 				}
-			break;
+					/* If this pressed key is not the first key then check if it
+					 * is the same as the last key pressed. This can happen if a key
+					 * is pressed but not released causing a key repeat. In this case
+					 * we should not do anything.
+					 */
+					else if(eventKeyCode!=priv->lastKey)
+					{
+						/* Check if key sequence is still valid */
+						if(priv->validSequence &&
+							!_xfdashboard_hotkey_is_hotkey(self, eventKeyCode))
+						{
+							priv->validSequence=FALSE;
+						}
 
-		case KeyRelease:
-			/* Decrease counters and forget last key pressed because this is a key release */
-			priv->pressedKeys--;
-			priv->lastKeyCode=0;
+						/* Remember last key pressed to handle key repeat events */
+						priv->lastKey=eventKeyCode;
+						g_message("Next key with key-code %u in %s sequence pressed",
+									eventKeyCode,
+									priv->validSequence ? "valid" : "invalid");
+					}
+				break;
 
-			/* If this is the last key in the key sequence which is being released
-			 * check if key sequence is still valid and then emit signal.
-			 */
-			if(priv->pressedKeys==0)
-			{
-				/* Check that the last key released in the key sequence was also the
+			case KeyRelease:
+				/* Forget last key pressed because this is a key release */
+				priv->lastKey=0;
+
+				/* Check that this released key in the key sequence was also the
 				 * first key pressed in the key sequence. Then check if key sequence
 				 * is valid and emit signal.
 				 */
-				if(priv->firstKeyCode==((XKeyEvent*)inXEvent)->keycode &&
-					priv->keySequenceValid)
+				if(eventKeyCode==priv->firstKey)
 				{
-					/* Emit signal */
-					g_debug("Last key was released and hotkey key sequence is valid - emitting signal");
-					g_signal_emit(self, XfdashboardHotkeySignals[SIGNAL_ACTIVATE], 0);
+					/* Check if key sequence is valid and emit signal */
+					if(priv->validSequence)
+					{
+						g_message("Emitting signal because first key in valid sequence was released");
+						g_signal_emit(self, XfdashboardHotkeySignals[SIGNAL_ACTIVATE], 0);
+					}
+						else g_message("Key sequence ended but no signal will be emitted because of invalid sequence");
+
+					/* Forget first key and reset valid flag of key sequence
+					 * so another sequence can start.
+					 */
+					priv->firstKey=0;
+					priv->validSequence=FALSE;
 				}
-			}
+				break;
 
-			/* Should not happen but if we track a negative number of pressed keys
-			 * then reset pressed keys counter to 0 but also ensure that hotkey was
-			 * never pressed and key sequence is invalid.
-			 */
-			if(priv->pressedKeys<0)
-			{
-				priv->pressedKeys=0;
-				priv->firstKeyCode=0;
-				priv->keySequenceValid=FALSE;
-			}
-			break;
-
-		default:
-			break;
+			default:
+				/* Should never get here but do nothing - just in case */
+				g_message("Got an unexpected event in recorded data in hotkey");
+				break;
+		}
 	}
 
-	return(CLUTTER_X11_FILTER_CONTINUE);
+	/* Free recorded data */
+	XRecordFreeData(inRecordedData);
 }
 
-/* An event at stage was received */
-static gboolean _xfdashboard_hotkey_on_stage_event(XfdashboardHotkey *self,
-													ClutterEvent *inEvent,
-													gpointer inUserData)
+/* Disable and release record extension */
+static void _xfdashboard_hotkey_release(XfdashboardHotkey *self)
 {
 	XfdashboardHotkeyPrivate	*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_HOTKEY(self), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(CLUTTER_IS_STAGE(inUserData), CLUTTER_EVENT_PROPAGATE);
+	g_return_if_fail(XFDASHBOARD_IS_HOTKEY(self));
 
 	priv=self->priv;
 
-	/* Only handle "key-press" and "key-release" events */
-	switch(clutter_event_type(inEvent))
+	/* Release allocated resources */
+	priv->recordClients=None;
+
+	if(priv->recordContext!=None)
 	{
-		case CLUTTER_KEY_PRESS:
-			/* If this is the first key pressed in key sequence then remember
-			 * the key and set up counters.
-			 */
-			if(priv->pressedKeys==0)
-			{
-				priv->firstKeyCode=((ClutterKeyEvent*)inEvent)->hardware_keycode;
-				priv->lastKeyCode=priv->firstKeyCode;
-				priv->pressedKeys=1;
-				priv->keySequenceValid=_xfdashboard_hotkey_is_hotkey(self, NULL, inEvent);
-			}
-				/* If this is another key event in the key sequence check if key
-				 * is the same as the last key we handled. This can happen if a key
-				 * is pressed but not release causing a key repeat. In this case
-				 * we should not increase the counters.
-				 */
-				else if(((ClutterKeyEvent*)inEvent)->hardware_keycode!=priv->firstKeyCode)
-				{
-					if(priv->keySequenceValid &&
-						!_xfdashboard_hotkey_is_hotkey(self, NULL, inEvent))
-					{
-						priv->keySequenceValid=FALSE;
-					}
-
-					priv->lastKeyCode=((ClutterKeyEvent*)inEvent)->hardware_keycode;
-					priv->pressedKeys++;
-				}
-			break;
-
-		case CLUTTER_KEY_RELEASE:
-			/* Decrease counters and forget last key pressed because this is a key release */
-			priv->pressedKeys--;
-			priv->lastKeyCode=0;
-
-			/* If this is the last key in the key sequence which is being released
-			 * check if key sequence is still valid and then emit signal.
-			 */
-			if(priv->pressedKeys==0)
-			{
-				/* Check that the last key released in the key sequence was also the
-				 * first key pressed in the key sequence. Then check if key sequence
-				 * is valid and emit signal.
-				 */
-				if(priv->firstKeyCode==((ClutterKeyEvent*)inEvent)->hardware_keycode &&
-					priv->keySequenceValid)
-				{
-					/* Emit signal*/
-					g_debug("Last key was released and hotkey key sequence is valid - emitting signal");
-					g_signal_emit(self, XfdashboardHotkeySignals[SIGNAL_ACTIVATE], 0);
-				}
-			}
-
-			/* Should not happen but if we track a negative number of pressed keys
-			 * then reset pressed keys counter to 0 but also ensure that hotkey was
-			 * never pressed and key sequence is invalid.
-			 */
-			if(priv->pressedKeys<0)
-			{
-				priv->pressedKeys=0;
-				priv->firstKeyCode=0;
-				priv->keySequenceValid=FALSE;
-			}
-			break;
-
-		default:
-			break;
+		g_debug("Releasing record context of hotkey");
+		XRecordDisableContext(priv->controlConnection, priv->recordContext);
+		XRecordFreeContext(priv->controlConnection, priv->recordContext);
+		priv->recordContext=None;
 	}
 
-	/* Do not prevent other actors to handle this event even if we did it */
-	return(CLUTTER_EVENT_PROPAGATE);
+	if(priv->recordRange)
+	{
+		g_debug("Releasing record range used in record context");
+		XFree(priv->recordRange);
+		priv->recordRange=NULL;
+	}
+
+	if(priv->dataConnection)
+	{
+		g_debug("Closing data connection of hotkey");
+		XCloseDisplay(priv->dataConnection);
+		priv->dataConnection=NULL;
+	}
+
+	if(priv->controlConnection)
+	{
+		g_debug("Releasing control connection of hotkey");
+		XCloseDisplay(priv->controlConnection);
+		priv->controlConnection=NULL;
+	}
+
+	if(priv->idleSourceID)
+	{
+		g_debug("Removing idle source");
+		g_source_remove(priv->idleSourceID);
+		priv->idleSourceID=0;
+	}
+
+	priv->firstKey=0;
+	priv->lastKey=0;
+	priv->validSequence=FALSE;
+
+	g_debug("Disabling record context for hotkey was successful");
 }
 
-/* A stage was added */
-static void _xfdashboard_hotkey_on_stage_added(XfdashboardHotkey *self, ClutterStage *inStage, gpointer inUserData)
+/* Enable and set up record extension */
+static gboolean _xfdashboard_hotkey_setup(XfdashboardHotkey *self)
 {
-	g_return_if_fail(XFDASHBOARD_IS_HOTKEY(self));
-	g_return_if_fail(CLUTTER_IS_STAGE(inStage));
+	XfdashboardHotkeyPrivate	*priv;
+	int							recordVersionMajor;
+	int							recordVersionMinor;
 
-	/* Connect signals to new stage for tracking key events */
-	g_signal_connect_swapped(inStage, "event", G_CALLBACK(_xfdashboard_hotkey_on_stage_event), self);
-}
+	g_return_val_if_fail(XFDASHBOARD_IS_HOTKEY(self), FALSE);
 
-/* A stage was removed */
-static void _xfdashboard_hotkey_on_stage_removed(XfdashboardHotkey *self, ClutterStage *inStage, gpointer inUserData)
-{
-	g_return_if_fail(XFDASHBOARD_IS_HOTKEY(self));
-	g_return_if_fail(CLUTTER_IS_STAGE(inStage));
+	priv=self->priv;
 
-	/* Disconnect signals from removed stage */
-	g_signal_handlers_disconnect_by_func(inStage, G_CALLBACK(_xfdashboard_hotkey_on_stage_event), self);
+	/* Check if anything is released and cleaned otherwise we cannot
+	 * set up record.
+	 */
+	if(priv->controlConnection ||
+		priv->dataConnection ||
+		priv->recordRange ||
+		priv->recordClients!=None ||
+		priv->recordContext!=None ||
+		priv->idleSourceID)
+	{
+		g_critical(_("Cannot enable hotkey: Unclean state"));
+		return(FALSE);
+	}
+
+	/* Reset internal tracking states */
+	priv->firstKey=0;
+	priv->lastKey=0;
+	priv->validSequence=FALSE;
+
+	/* Open connections */
+	g_debug("Opening control and data connections for hotkey");
+	priv->controlConnection=XOpenDisplay(NULL);
+	priv->dataConnection=XOpenDisplay(NULL);
+	XSynchronize(priv->controlConnection, True);
+
+	/* Check if record extenstion is available */
+	g_debug("Query version of XRECORD extension ");
+	if(!XRecordQueryVersion(priv->controlConnection, &recordVersionMajor, &recordVersionMinor))
+	{
+		g_warning(_("Cannot enable hotkey: X Record Extension is not supported"));
+		_xfdashboard_hotkey_release(self);
+		return(FALSE);
+	}
+	g_debug("X Record Extension version is %d.%d", recordVersionMajor, recordVersionMinor);
+
+	/* Allocate and set up record range */
+	g_debug("Allocate and set up record range for use in record context");
+	priv->recordRange=XRecordAllocRange();
+	if(!priv->recordRange)
+	{
+		g_warning(_("Cannot enable hotkey: Could not allocate record range"));
+		_xfdashboard_hotkey_release(self);
+		return(FALSE);
+	}
+
+	priv->recordRange->device_events.first=KeyPress;
+	priv->recordRange->device_events.last=KeyRelease;
+
+	/* Set up clients to record */
+	priv->recordClients=XRecordAllClients;
+
+	/* Set up record context */
+	g_debug("Creating record context for hotkey");
+	priv->recordContext=XRecordCreateContext(priv->controlConnection, 0, &priv->recordClients, 1, &priv->recordRange, 1);
+	if(!priv->recordContext)
+	{
+		g_warning(_("Cannot enable hotkey: Could not create a record context"));
+		_xfdashboard_hotkey_release(self);
+		return(FALSE);
+	}
+
+	/* Start "recording" */
+	g_debug("Enabling record context asynchronously for hotkey");
+	if(!XRecordEnableContextAsync(priv->dataConnection, priv->recordContext, _xfdashboard_hotkey_on_record_data, (XPointer)self))
+	{
+		g_warning(_("Cannot enable hotkey: Could not enable record context"));
+		_xfdashboard_hotkey_release(self);
+		return(FALSE);
+	}
+
+	/* Set up idle source to process collected record data every time
+	 * the application is idle.
+	 */
+	g_debug("Adding idle source");
+	priv->idleSourceID=clutter_threads_add_idle(_xfdashboard_hotkey_on_idle, self);
+
+	/* If we get here set up and enabling record context was successful. */
+	g_debug("Set up and enabling record context for hotkey was successful");
+	return(TRUE);
 }
 
 /* IMPLEMENTATION: GObject */
@@ -414,22 +379,9 @@ static void _xfdashboard_hotkey_on_stage_removed(XfdashboardHotkey *self, Clutte
 static void _xfdashboard_hotkey_dispose(GObject *inObject)
 {
 	XfdashboardHotkey			*self=XFDASHBOARD_HOTKEY(inObject);
-	XfdashboardHotkeyPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
-	_xfdashboard_hotkey_release_focus(self);
-
-	if(priv->windowTracker)
-	{
-		g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_hotkey_on_active_window_changed), self);
-		g_object_unref(priv->windowTracker);
-		priv->windowTracker=NULL;
-	}
-
-	if(priv->display)
-	{
-		priv->display=NULL;
-	}
+	_xfdashboard_hotkey_release(self);
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_hotkey_parent_class)->dispose(inObject);
@@ -468,42 +420,22 @@ static void xfdashboard_hotkey_class_init(XfdashboardHotkeyClass *klass)
 static void xfdashboard_hotkey_init(XfdashboardHotkey *self)
 {
 	XfdashboardHotkeyPrivate	*priv;
-	ClutterStageManager			*stageManager;
-	GSList						*stages, *iter;
 
 	priv=self->priv=XFDASHBOARD_HOTKEY_GET_PRIVATE(self);
 
 	/* Set up default values */
-	priv->display=clutter_x11_get_default_display();
-	priv->currentFocus=None;
-	priv->currentFocusRevert=0;
-	priv->firstKeyCode=0;
-	priv->lastKeyCode=0;
-	priv->pressedKeys=0;
-	priv->keySequenceValid=FALSE;
+	priv->controlConnection=NULL;
+	priv->dataConnection=NULL;
+	priv->recordRange=NULL;
+	priv->recordClients=None;
+	priv->recordContext=None;
+	priv->idleSourceID=0;
+	priv->firstKey=0;
+	priv->lastKey=0;
+	priv->validSequence=FALSE;
 
-	/* Get instance of window tracker and connect signals */
-	priv->windowTracker=xfdashboard_window_tracker_get_default();
-	g_signal_connect_swapped(priv->windowTracker,
-								"active-window-changed",
-								G_CALLBACK(_xfdashboard_hotkey_on_active_window_changed),
-								self);
-
-	/* Add and set up event filter for this instance */
-	_xfdashboard_hotkey_on_focus_changed(self);
-	clutter_x11_add_filter(_xfdashboard_hotkey_on_x_event, self);
-
-	/* Connect signals for stage creation and deletion events */
-	stageManager=clutter_stage_manager_get_default();
-	g_signal_connect_swapped(stageManager, "stage-added", G_CALLBACK(_xfdashboard_hotkey_on_stage_added), self);
-	g_signal_connect_swapped(stageManager, "stage-removed", G_CALLBACK(_xfdashboard_hotkey_on_stage_removed), self);
-
-	stages=clutter_stage_manager_list_stages(stageManager);
-	for(iter=stages; iter; iter=g_slist_next(iter))
-	{
-		_xfdashboard_hotkey_on_stage_added(self, CLUTTER_STAGE(iter->data), stageManager);
-	}
-	g_slist_free(stages);
+	/* Enable record */
+	_xfdashboard_hotkey_setup(self);
 }
 
 /* IMPLEMENTATION: Public API */

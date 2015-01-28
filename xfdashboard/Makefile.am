@@ -157,6 +157,14 @@ xfdashboard_LDADD = \
 	$(DBUS_GLIB_LIBS) \
 	-lm
 
+if XFDASHBOARD_BUILD_WITH_XTST
+xfdashboard_CFLAGS += \
+	$(XTST_CFLAGS)
+
+xfdashboard_LDADD += \
+	$(XTST_LIBS)
+endif
+
 if MAINTAINER_MODE
 
 CLEANFILES = \
