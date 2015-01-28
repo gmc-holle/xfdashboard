@@ -132,6 +132,7 @@ xfdashboard_CFLAGS = \
 	$(LIBWNCK_CFLAGS) \
 	$(CLUTTER_CFLAGS) \
 	$(CLUTTER_COGL_CFLAGS) \
+	$(GLIB_CFLAGS) \
 	$(GIO_CFLAGS) \
 	$(GIO_UNIX_CFLAGS) \
 	$(GARCON_CFLAGS) \
@@ -148,6 +149,7 @@ xfdashboard_LDADD = \
 	$(LIBWNCK_LIBS) \
 	$(CLUTTER_LIBS) \
 	$(CLUTTER_COGL_LIBS) \
+	$(GLIB_LIBS) \
 	$(GIO_LIBS) \
 	$(GIO_UNIX_LIBS) \
 	$(GARCON_LIBS) \

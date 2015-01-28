@@ -9,9 +9,9 @@ Requirements
 
 libwnck >= 2.30
 clutter >= 1.12
-glib >= 2.30.3
-gio >= 2.30.3
-gio-unix-2.0 >= 2.30.3
+glib >= 2.32
+gio >= 2.32
+gio-unix-2.0 >= 2.32
 xfconf >= 4.10.0
 dbus-glib >= 0.98
 garcon >= 0.2.0

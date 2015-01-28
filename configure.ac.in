@@ -19,7 +19,8 @@ dnl *** Minimum package version needed ***
 dnl **************************************
 m4_define([wnck_minimum_version], [2.30])
 m4_define([clutter_minimum_version], [1.12.0])
-m4_define([gio_minimum_version], [2.30.2])
+m4_define([glib_minimum_version], [2.32])
+m4_define([gio_minimum_version], [2.32])
 m4_define([garcon_minimum_version], [0.2.0])
 m4_define([xfconf_minimum_version], [4.10.0])
 m4_define([dbus_glib_minimum_version], [0.98])
@@ -158,6 +159,7 @@ XDT_CHECK_PACKAGE([LIBWNCK], [libwnck-1.0], [wnck_minimum_version])
 XDT_CHECK_PACKAGE([CLUTTER], [clutter-1.0], [clutter_minimum_version])
 XDT_CHECK_PACKAGE([CLUTTER_COGL], [clutter-cogl-1.0], [clutter_minimum_version])
 XDT_CHECK_PACKAGE([GTK], [gtk+-3.0], [gtk_minimum_version])
+XDT_CHECK_PACKAGE([GLIB], [glib-2.0], [glib_minimum_version])
 XDT_CHECK_PACKAGE([GIO], [gio-2.0], [gio_minimum_version])
 XDT_CHECK_PACKAGE([GIO_UNIX], [gio-unix-2.0], [gio_minimum_version])
 XDT_CHECK_PACKAGE([GARCON], [garcon-1], [garcon_minimum_version])
@@ -239,6 +241,7 @@ echo "  libwnck:    $LIBWNCK_VERSION"
 echo "  clutter:    $CLUTTER_VERSION"
 echo "  cogl:       $CLUTTER_COGL_VERSION"
 echo "  gtk+:       $GTK_VERSION"
+echo "  glib:       $GLIB_VERSION"
 echo "  gio:        $GIO_VERSION"
 echo "  gio-unix:   $GIO_UNIX_VERSION"
 echo "  garcon:     $GARCON_VERSION"
