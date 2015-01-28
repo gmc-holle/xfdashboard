@@ -155,6 +155,22 @@ xfdashboard_LDADD = \
 	$(DBUS_GLIB_LIBS) \
 	-lm
 
+if XFDASHBOARD_BUILD_WITH_XCOMPOSITE
+xfdashboard_CFLAGS += \
+	$(XCOMPOSITE_CFLAGS)
+
+xfdashboard_LDADD += \
+	$(XCOMPOSITE_LIBS)
+endif
+
+if XFDASHBOARD_BUILD_WITH_XDAMAGE
+xfdashboard_CFLAGS += \
+	$(XDAMAGE_CFLAGS)
+
+xfdashboard_LDADD += \
+	$(XDAMAGE_LIBS)
+endif
+
 if MAINTAINER_MODE
 
 CLEANFILES = \
