@@ -33,7 +33,6 @@ xfdashboard/enums.c
 xfdashboard/fill-box-layout.c
 xfdashboard/focusable.c
 xfdashboard/focus-manager.c
-xfdashboard/hotkey.c
 xfdashboard/image-content.c
 xfdashboard/live-window.c
 xfdashboard/live-workspace.c

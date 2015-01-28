@@ -1034,14 +1034,6 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 							priv->widgetEnableUnmappedWindowWorkaround,
 							"active");
 
-	priv->widgetEnableHotkey=GTK_WIDGET(gtk_builder_get_object(priv->builder, "enable-hotkey"));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(priv->widgetEnableHotkey), DEFAULT_ENABLE_HOTKEY);
-	xfconf_g_property_bind(priv->xfconfChannel,
-							"/enable-hotkey",
-							G_TYPE_BOOLEAN,
-							priv->widgetEnableHotkey,
-							"active");
-
 	priv->widgetScrollEventChangedWorkspace=GTK_WIDGET(gtk_builder_get_object(priv->builder, "scroll-event-changes-workspace"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(priv->widgetScrollEventChangedWorkspace), FALSE);
 	xfconf_g_property_bind(priv->xfconfChannel,

@@ -36,7 +36,6 @@ xfdashboard_headers = \
 	fill-box-layout.h \
 	focusable.h \
 	focus-manager.h \
-	hotkey.h \
 	image-content.h \
 	live-window.h \
 	live-workspace.h \
@@ -94,7 +93,6 @@ xfdashboard_SOURCES = \
 	fill-box-layout.c \
 	focusable.c \
 	focus-manager.c \
-	hotkey.c \
 	image-content.c \
 	live-window.c \
 	live-workspace.c \
@@ -156,14 +154,6 @@ xfdashboard_LDADD = \
 	$(LIBXFCONF_LIBS) \
 	$(DBUS_GLIB_LIBS) \
 	-lm
-
-if XFDASHBOARD_BUILD_WITH_XTST
-xfdashboard_CFLAGS += \
-	$(XTST_CFLAGS)
-
-xfdashboard_LDADD += \
-	$(XTST_LIBS)
-endif
 
 if MAINTAINER_MODE
 
