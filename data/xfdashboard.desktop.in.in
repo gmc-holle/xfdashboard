@@ -5,6 +5,6 @@ _Comment=Maybe a Gnome shell like dashboard for Xfce
 TryExec=@bindir@/xfdashboard
 Exec=@bindir@/xfdashboard
 Icon=xfdashboard
-Categories=System;
+Categories=System;Applet;
 NotShowIn=GNOME;KDE;Unity;
 Terminal=false
