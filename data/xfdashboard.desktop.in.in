@@ -2,6 +2,7 @@
 Type=Application
 _Name=Xfdashboard
 _Comment=Maybe a Gnome shell like dashboard for Xfce
+GenericName=Xfdashboard
 TryExec=@bindir@/xfdashboard
 Exec=@bindir@/xfdashboard
 Icon=xfdashboard

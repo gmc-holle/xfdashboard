@@ -3,6 +3,7 @@ Version=1.0
 Type=Application
 _Name=Xfdashboard settings
 _Comment=Configure xfdashboard
+GenericName=Xfdashboard settings
 TryExec=@bindir@/xfdashboard-settings
 Exec=@bindir@/xfdashboard-settings
 Icon=xfdashboard
