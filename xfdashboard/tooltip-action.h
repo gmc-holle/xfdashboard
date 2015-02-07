@@ -56,6 +56,7 @@ struct _XfdashboardTooltipActionClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*activating)(XfdashboardTooltipAction *self);
 };
 
 /* Public API */

@@ -68,6 +68,16 @@ enum
 
 GParamSpec* XfdashboardTooltipActionProperties[PROP_LAST]={ 0, };
 
+/* Signals */
+enum
+{
+	SIGNAL_ACTIVATING,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardTooltipActionSignals[SIGNAL_LAST]={ 0, };
+
 /* IMPLEMENTATION: Private variables and methods */
 static ClutterActor		*_xfdashboard_tooltip_last_event_actor=NULL;
 
@@ -99,6 +109,10 @@ static gboolean _xfdashboard_tooltip_action_on_timeout(gpointer inUserData)
 	stage=clutter_actor_get_stage(actor);
 	if(stage && XFDASHBOARD_IS_STAGE(stage))
 	{
+		/* Emit 'activating' signal for last chance to update tooltip text */
+		g_signal_emit(self, XfdashboardTooltipActionSignals[SIGNAL_ACTIVATING], 0);
+
+		/* Show tooltip */
 		g_signal_emit_by_name(stage, "show-tooltip", self, NULL);
 	}
 
@@ -341,6 +355,18 @@ static void xfdashboard_tooltip_action_class_init(XfdashboardTooltipActionClass 
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardTooltipActionProperties);
+
+	/* Define signals */
+	XfdashboardTooltipActionSignals[SIGNAL_ACTIVATING]=
+		g_signal_new("activating",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_NO_HOOKS,
+						G_STRUCT_OFFSET(XfdashboardTooltipActionClass, activating),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
 }
 
 /* Object initialization
