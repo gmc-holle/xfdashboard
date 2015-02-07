@@ -1,0 +1,2334 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Саша Петровић <salepetronije@gmail.com>, 2014, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: master\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-30 11:35+0100\n"
+"PO-Revision-Date: 2015-02-07 12:36+0100\n"
+"Last-Translator: Саша Петровић <salepetronije@gmail.com>\n"
+"Language-Team: српски <xfce4@xfce4.org>\n"
+"Language: sr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../data/xfdashboard.desktop.in.in.h:1
+#: ../data/xfdashboard-autostart.desktop.in.in.h:1
+msgid "Xfdashboard"
+msgstr "Полетник Иксфце-а"
+
+#: ../data/xfdashboard.desktop.in.in.h:2
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:1
+msgid "Maybe a Gnome shell like dashboard for Xfce"
+msgstr "Полетник за ИксФЦЕ који подсећа на Гномову шкољку"
+
+#: ../data/xfdashboard-autostart.desktop.in.in.h:2
+msgid "Start xfdashboard as daemon in background"
+msgstr "Покрени иксфполетника као домара у позадини"
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:2
+msgid ""
+"Xfdashboard provides a GNOME shell dashboard like interface for use with "
+"Xfce desktop."
+msgstr ""
+"Иксфполетник је сучеље попут Гномове шкољке за употребу на радној површи "
+"ИксФЦЕ-а."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:3
+msgid ""
+"It can be configured to run to any keyboard shortcut and when executed "
+"provides an overview of applications currently open enabling the user to "
+"switch between different applications. The search feature works like Xfce's "
+"app finder which makes it convenient to search for and start applications."
+msgstr ""
+"Може се подесити да се покреће на било коју пречицу дугмади, и када се "
+"изврши даје преглед тренутно отворених програма, омогућујући кориснику да "
+"прелази са једног програма на други. Претрага ради попут претраживача "
+"програма за ИксФЦЕ што чини полетника згодним за претрагу и покретање "
+"програма."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:4
+msgid "Browsing applications"
+msgstr "Преглед програма"
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:5
+msgid "Searching applications"
+msgstr "Претрага програма"
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+msgid ""
+"This unstable development introduces additional themes, fixes handling of "
+"client-side decorated windows (CSD) and adds a new CSS command @import() to "
+"include external CSS resources in themes."
+msgstr ""
+"Ово нестабилно развојно издање представља додатне теме, исправља руковање "
+"украсима прозора клијента (ЦСД) и додаје нову наредбу ЦСС-а @import() да би "
+"укључила спољне изворе ЦСС-а у темама."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+msgid ""
+"This unstable development introduces a workaround to get window content of "
+"minimized windows to display them in windows view."
+msgstr ""
+"Непостојано развојно издање укључује покушај да се приказује и садржај "
+"умањених прозора."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+msgid "This unstable development introduces effects."
+msgstr ""
+"Ово је непостојано развојно издање које први пут садржи дејства површи."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+msgid ""
+"This unstable development fixes a problem closing windows accidently by "
+"pressing the key 'backspace' to refine search more often than characters "
+"entered. It also includes new image-loading functions to CSS. It also "
+"introduces a new generic selection framework for focusable actors."
+msgstr ""
+"Ово је нестабилно издање у коме је решено случајно затварање прозора на "
+"притисак дугмета „бриши уназад“, ради обогаћивања уноса претраге на више од "
+"унесених знакова. Такође, укључује нове радње учитавања слика у ЦСС. Доноси "
+"нови родни оквир жижним чиниоцима."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+msgid ""
+"This release fixes a problem closing windows accidently by pressing the key "
+"'backspace' to refine search more often than characters entered."
+msgstr ""
+"У овом издању у коме је решено случајно затварање прозора на притисак "
+"дугмета „бриши уназад“"
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
+msgid "This release fixes a problem when loading scalable images by icon name."
+msgstr ""
+"Ово издање решава погрешно учитавање слика променљиве величине према именима "
+"иконице."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+msgid ""
+"This unstable development release fixes problems with icon mode in theming "
+"and allows to launch the first item by pressing ENTER in search view when a "
+"search was started by just typing. It also includes an improved CSS parsing "
+"allowing the usage of constant values and functions in theme's CSS file."
+msgstr ""
+"Ово нестабилно развојно издање решава грешке у раду са иконицама при "
+"темирању и омогућава покретање прве ставке пристиском на „Унеси“ при "
+"прегледу претраге, када претрага започиње куцањем. Укључује и побољшано "
+"рашчлањивање ЦСС-а, што омогућава употребу сталних вредности и радњи у "
+"датотеци теме ЦСС-а."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+msgid ""
+"This release fixes problems with icon mode in theming and allows to launch "
+"the first item by pressing ENTER in search view when a search was started by "
+"just typing."
+msgstr ""
+"Ово издање решава грешке у раду са иконицама при темирању и омогућава "
+"покретање прве ставке пристиском на „Унеси“ при прегледу претраге, када "
+"претрага започиње куцањем."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+msgid "Initial release."
+msgstr "Прво издање"
+
+#: ../data/themes/xfdashboard/xfdashboard.theme.in.h:1
+msgid "default"
+msgstr "подразумевано"
+
+#: ../data/themes/xfdashboard/xfdashboard.theme.in.h:2
+msgid "Default theme for xfdashboard"
+msgstr "Подразумевана тема полетника"
+
+#: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.h:1
+msgid "xfdashboard-auber"
+msgstr "Полетник Аубер"
+
+#: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.h:2
+msgid "Aubergine theme for xfdashboard"
+msgstr "Тема полетника Aubergine"
+
+#: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.h:1
+msgid "xfdashboard-blue"
+msgstr "Полетник плави"
+
+#: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.h:2
+#: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.h:2
+msgid "Dark theme for xfdashboard"
+msgstr "Тамна тема полетника"
+
+#: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.h:1
+msgid "xfdashboard-dark"
+msgstr "Полетник тамни"
+
+#: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.h:1
+#: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.h:1
+msgid "xfdashboard-moranga"
+msgstr "Полетник Моранга"
+
+#: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.h:2
+msgid "Fresh-green flavored theme for xfdashboard"
+msgstr "Свежа зелена тема полетника"
+
+#: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.h:2
+msgid "Moranga theme for xfdashboard"
+msgstr "Тема полетника моранга"
+
+#: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.h:1
+msgid "xfdashboard-wine"
+msgstr "Полетник у вину"
+
+#: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.h:2
+msgid "Red wine theme for xfdashboard"
+msgstr "Тема полетника у боји црвеног вина"
+
+#: ../src/actor.c:566 ../src/stylable.c:203
+#, c-format
+msgid ""
+"Could not transform CSS string value for property '%s' to type %s of class %s"
+msgstr ""
+"Нисам успео да претворим вредност нисака ЦСС-а својства „%s“ у врсту %s "
+"разреда %s"
+
+#: ../src/actor.c:923
+msgid "Can focus"
+msgstr "Нисам успео да применим жижу"
+
+#: ../src/actor.c:924
+msgid "This flag indicates if this actor can be focused"
+msgstr "Заставица приказује да предмет не може да се стави у жижу"
+
+#: ../src/actor.c:931
+msgid "Effects"
+msgstr "Дејства"
+
+#: ../src/actor.c:932
+msgid "List of space-separated strings with IDs of effects set at this actor"
+msgstr ""
+"Списак ниски раздвојених размаком са ИД-јем низа дејстава за овог чиниоца"
+
+#: ../src/application-button.c:172
+msgid "No information available for application!"
+msgstr "Нема доступних података о овом програму."
+
+#: ../src/application-button.c:177 ../src/application-button.c:240
+#, c-format
+msgid "Cannot update application icon of unknown type (%d)"
+msgstr "Нисам успео да освежим иконицу програма непознате врсте (%d)"
+
+#: ../src/application-button.c:362
+msgid "Menu element"
+msgstr "Јединица изборника"
+
+#: ../src/application-button.c:363
+msgid "The menu element whose title and description to display"
+msgstr "Јединица изборника чији ће се наслов и опис приказивати"
+
+#: ../src/application-button.c:369
+msgid "Desktop file name"
+msgstr "Име датотеке површи"
+
+#: ../src/application-button.c:370
+msgid "File name of desktop file whose title and description to display"
+msgstr "Име датотеке радне површи чији наслов и опис треба да се прикажу"
+
+#: ../src/application-button.c:376
+msgid "Show description"
+msgstr "Прикажи опис"
+
+#: ../src/application-button.c:377
+msgid "Show also description next to tile"
+msgstr "Такође приказуј опис поред наслова"
+
+#: ../src/application-button.c:383 ../src/applications-view.c:896
+msgid "Format title only"
+msgstr "Обликуј само наслов"
+
+#: ../src/application-button.c:384 ../src/applications-view.c:897
+msgid "Format string used when only title is display"
+msgstr "Обликуј ниске коришћене за приказ само наслова"
+
+#: ../src/application-button.c:390 ../src/applications-view.c:903
+msgid "Format title and description"
+msgstr "Обликуј наслов и опис"
+
+#: ../src/application-button.c:391 ../src/applications-view.c:904
+msgid ""
+"Format string used when title and description is display. First argument is "
+"title and second one is description."
+msgstr ""
+"Обликуј ниске коришћене при приказу наслова и описа. Прва одредница је "
+"наслов, а следећа је опис."
+
+#: ../src/application-button.c:559
+#, c-format
+msgid "Could not get application info for '%s'"
+msgstr "Нисам успео да добавим податке о програму за „%s“"
+
+#: ../src/application-button.c:684
+msgid "No application information for an unconfigured application button."
+msgstr "Нема података о програму за неподешено дугме програма."
+
+#: ../src/application-button.c:725
+#, c-format
+msgid ""
+"Cannot get display name of application icon because of unknown type (%d)"
+msgstr ""
+"Нисам успео да прикажем име иконице програма јер је непознате врсте (%d)"
+
+#: ../src/application-button.c:763
+#, c-format
+msgid "Cannot get icon name of application icon because of unknown type (%d)"
+msgstr ""
+"Нисам успео да добавим име иконице програма јер је непознате врсте (%d)"
+
+#: ../src/application-button.c:792 ../src/application-button.c:795
+#: ../src/application-button.c:809 ../src/application-button.c:812
+#, c-format
+msgid "Launching application '%s' failed: %s"
+msgstr "Нисам успео да покренем програм „%s“: %s"
+
+#: ../src/application-button.c:794 ../src/application-button.c:797
+msgid "No information available for application"
+msgstr "Нема доступних података о програму"
+
+#: ../src/application-button.c:811 ../src/application-button.c:814
+#: ../src/application.c:211 ../src/application.c:273 ../src/application.c:414
+msgid "unknown error"
+msgstr "непозната грешка"
+
+#: ../src/application-button.c:821
+#, c-format
+msgid "Application '%s' launched"
+msgstr "Програм „%s“ је покренут"
+
+#: ../src/application.c:200
+msgid "Could not get theme name to load!"
+msgstr "Нисам успео да добавим име теме за учитавање!"
+
+#: ../src/application.c:209
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr "Нисам успео да учитам тему „%s“ : %s"
+
+#: ../src/application.c:272
+#, c-format
+msgid "Could not initialize xfconf: %s"
+msgstr "Нисам успео да покренем xfconf: %s"
+
+#: ../src/application.c:309
+#, c-format
+msgid "Could not build interface '%s' from theme '%s'"
+msgstr "Нисам успео да изградим сучеље „%s“ за тему „%s“"
+
+#: ../src/application.c:317
+#, c-format
+msgid "Interface '%s' from theme '%s' must be an actor of type %s"
+msgstr "Сучеље „%s“ теме „%s“ мора да буде чинилац врсте %s"
+
+#: ../src/application.c:329
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr "Добро дошли у %s (%s)!"
+
+#: ../src/application.c:331
+#, c-format
+msgid "Welcome to %s!"
+msgstr "Добродошли у %s!"
+
+#: ../src/application.c:375
+msgid "Fork to background"
+msgstr "Рачвај у позадину"
+
+#: ../src/application.c:376
+msgid "Quit existing instance"
+msgstr "Затвори постојећи примерак"
+
+#: ../src/application.c:377
+msgid ""
+"Toggles suspend/resume state if running instance was started in daemon mode "
+"otherwise it quits running non-daemon instance"
+msgstr ""
+"Прекидач стања обуставе и наставка ако се покрене примерак у начину рада "
+"домара, иначе искључује примерак који не ради као домар"
+
+#: ../src/application.c:392
+msgid "- A Gnome Shell like dashboard for Xfce4"
+msgstr "- Полетник за Иксфце који подсећа на Гномову шкољку"
+
+#: ../src/application.c:414
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
+
+#: ../src/application.c:593
+msgid "is-daemonized"
+msgstr "ради као домар"
+
+#: ../src/application.c:594
+msgid "Flag indicating if application is daemonized"
+msgstr "Белег који показује да ли програм ради као домар"
+
+#: ../src/application.c:600
+msgid "Is suspended"
+msgstr "Је обустављен"
+
+#: ../src/application.c:601
+msgid "Flag indicating if application is suspended currently"
+msgstr "Белег који показује да ли је програм исправно обустављен"
+
+#: ../src/applications-menu-model.c:541
+#, c-format
+msgid "Could not load applications menu: %s"
+msgstr "Нисам успео да учитам  изборник програма:  %s"
+
+#: ../src/applications-menu-model.c:541 ../src/image-content.c:266
+#: ../src/image-content.c:282 ../src/image-content.c:392
+#: ../src/image-content.c:425 ../src/image-content.c:619
+#: ../src/image-content.c:645 ../src/image-content.c:741
+#: ../src/image-content.c:767 ../src/image-content.c:1238
+#: ../src/theme-css.c:1232 ../src/theme-css.c:1893 ../src/window-content.c:231
+#: ../src/window-content.c:680 ../src/window-content.c:867
+msgid "Unknown error"
+msgstr "Непозната грешка"
+
+#: ../src/applications-menu-model.c:726
+#, c-format
+msgid "Sorting column %d without user-defined function is not possible"
+msgstr "Разврставање ступца %d без радње коју одређује корисник није могуће"
+
+#: ../src/applications-menu-model.c:800
+msgid "ID"
+msgstr "ЛБ"
+
+#. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID
+#: ../src/applications-menu-model.c:801
+msgid "Menu item"
+msgstr "Ставка изборника"
+
+#. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT
+#: ../src/applications-menu-model.c:802
+msgid "Parent menu"
+msgstr "Родитељски изборник"
+
+#. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU
+#: ../src/applications-menu-model.c:803
+msgid "Section"
+msgstr "Одељак"
+
+#. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION
+#: ../src/applications-menu-model.c:804
+msgid "Title"
+msgstr "Наслов"
+
+#. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE
+#: ../src/applications-menu-model.c:805
+msgid "Description"
+msgstr "Опис"
+
+#. Add "applications" button
+#: ../src/applications-search-provider.c:429 ../src/applications-view.c:940
+#: ../src/quicklaunch.c:1823
+msgid "Applications"
+msgstr "Програми"
+
+#: ../src/applications-search-provider.c:469
+msgid ""
+"Could not allocate memory to copy search criterias for case-insensitive "
+"search"
+msgstr ""
+"Нисам успео да доделим меморију умножавању мерила претраге претрази "
+"осетљивој на величину слова"
+
+#: ../src/applications-view.c:255 ../src/applications-view.c:256
+msgid "Back"
+msgstr "Назад"
+
+#: ../src/applications-view.c:255
+msgid "Go back to previous menu"
+msgstr "Идите на претходни изборник"
+
+#: ../src/applications-view.c:443 ../src/quicklaunch.c:1432
+#: ../src/windows-view.c:626 ../src/workspace-selector.c:857
+#: ../src/workspace-selector.c:1018
+#, c-format
+msgid "%s is a child of %s and cannot be selected at %s"
+msgstr "%s је наследник %s и не може да се изабере на %s"
+
+#: ../src/applications-view.c:628 ../src/quicklaunch.c:1484
+#: ../src/windows-view.c:685 ../src/workspace-selector.c:923
+#, c-format
+msgid "Cannot lookup selection target at %s because %s is a child of %s"
+msgstr "Нисам успео да дођем до изабраног циља %s јер је  %s наследник  %s"
+
+#: ../src/applications-view.c:702 ../src/quicklaunch.c:1592
+#: ../src/windows-view.c:804
+#, c-format
+msgid "%s is a child of %s and cannot be activated at %s"
+msgstr " %s је наследник  %s и не може да се покрене на %s"
+
+#: ../src/applications-view.c:873 ../src/search-result-container.c:551
+msgid "View mode"
+msgstr "Начин приказа"
+
+#: ../src/applications-view.c:874
+msgid "The view mode used in this view"
+msgstr "Начин прегледа у оваквом приказу"
+
+#: ../src/applications-view.c:881 ../src/button.c:1283
+#: ../src/quicklaunch.c:1736 ../src/scrollbar.c:754
+#: ../src/search-result-container.c:559 ../src/text-box.c:789
+#: ../src/viewpad.c:1364 ../src/view-selector.c:374 ../src/windows-view.c:953
+#: ../src/workspace-selector.c:1176
+msgid "Spacing"
+msgstr "Размак"
+
+#: ../src/applications-view.c:882 ../src/windows-view.c:954
+msgid "Spacing between each element in view"
+msgstr "Размак између погледа на појединачне чиниоце"
+
+#: ../src/applications-view.c:889
+msgid "Parent menu icon"
+msgstr "Родитељска иконица изборника"
+
+#: ../src/applications-view.c:890
+msgid "Name of icon to use for 'go-back-to-parent-menu' entries"
+msgstr "Име иконице за коришћење за „иди назад у родитељски избор“ уносе"
+
+#: ../src/background.c:417 ../src/background.c:418
+msgid "Background type"
+msgstr "Врста позадине"
+
+#: ../src/background.c:425 ../src/outline-effect.c:451
+msgid "Corners"
+msgstr "Ивице"
+
+#: ../src/background.c:426
+msgid "Determines which corners are rounded for background and outline"
+msgstr "Одређује који углови позадине и оквира су заобљени"
+
+#: ../src/background.c:433 ../src/background.c:456 ../src/outline-effect.c:459
+msgid "Corner radius"
+msgstr "Полупречник угла"
+
+#: ../src/background.c:434
+msgid "Radius of rounded corners for background and outline"
+msgstr "Полупречник заобљенисти позадине и оквира"
+
+#: ../src/background.c:441
+msgid "Background fill color"
+msgstr "Одаберите боју попуне позадине"
+
+#: ../src/background.c:442
+msgid "Color to fill background with"
+msgstr "Жељена боја попуне позадине."
+
+#: ../src/background.c:448
+msgid "Fill corners"
+msgstr "Попуни ивице"
+
+#: ../src/background.c:449
+msgid "Determines which corners are rounded at background"
+msgstr "Одређује који углови на позадини су заобљени"
+
+#: ../src/background.c:457
+msgid "Radius of rounded corners of background"
+msgstr "Полупречник заобљених углова позадине"
+
+#: ../src/background.c:464 ../src/window-content.c:1583
+msgid "Outline color"
+msgstr "Боја обриса"
+
+#: ../src/background.c:465 ../src/outline-effect.c:429
+msgid "Color to draw outline with"
+msgstr "Боја за исцртавање оквира"
+
+#: ../src/background.c:471 ../src/window-content.c:1590
+msgid "Outline width"
+msgstr "Дебљина линије оквира"
+
+#: ../src/background.c:472 ../src/outline-effect.c:436
+msgid "Width of line used to draw outline"
+msgstr "Ширина линије која исцртава позадину"
+
+#: ../src/background.c:479
+msgid "Outline borders"
+msgstr "Ивице оквира"
+
+#: ../src/background.c:480
+msgid "Determines which sides of border of outline should be drawn"
+msgstr "Одређује које стране ивица оквира треба да се исцртавају"
+
+#: ../src/background.c:487
+msgid "Outline corners"
+msgstr "Ивице оквира"
+
+#: ../src/background.c:488
+msgid "Determines which corners are rounded at outline"
+msgstr "Одређује који углови оквира су заобљени"
+
+#: ../src/background.c:495
+msgid "Outline corner radius"
+msgstr "Полупречник ивице оквира"
+
+#: ../src/background.c:496
+msgid "Radius of rounded corners of outline"
+msgstr "Полупречник заобљених углова оквира"
+
+#: ../src/background.c:503
+msgid "Image"
+msgstr "Слика"
+
+#: ../src/background.c:504
+msgid "Image to draw as background"
+msgstr "Слика која ће се користити за позадину"
+
+#: ../src/button.c:1275 ../src/search-result-container.c:567
+#: ../src/text-box.c:781
+msgid "Padding"
+msgstr "Попуна"
+
+#: ../src/button.c:1276 ../src/text-box.c:782
+msgid "Padding between background and elements"
+msgstr "Попуна између позадине и ставки"
+
+#: ../src/button.c:1284 ../src/text-box.c:790
+msgid "Spacing between text and icon"
+msgstr "Размак текста и иконице"
+
+#: ../src/button.c:1291
+msgid "Button style"
+msgstr "Изглед дугмади"
+
+#: ../src/button.c:1292
+msgid "Style of button showing text and/or icon"
+msgstr "Начин приказа дугмета које приказује натпис и/или иконицу"
+
+#: ../src/button.c:1299
+msgid "Icon name"
+msgstr "Назив иконице"
+
+#: ../src/button.c:1300
+msgid "Themed icon name or file name of icon"
+msgstr "Име темиране иконице или датотеке иконице"
+
+#: ../src/button.c:1306
+msgid "Icon image"
+msgstr "Слика иконице"
+
+#: ../src/button.c:1307
+msgid "Image of icon"
+msgstr "Слика иконице"
+
+#: ../src/button.c:1313
+msgid "Synchronize icon size"
+msgstr "Усклади величину иконице"
+
+#: ../src/button.c:1314
+msgid "Synchronize icon size with text size"
+msgstr "Усклади величину иконице са текстом"
+
+#: ../src/button.c:1320
+msgid "Icon size"
+msgstr "Величина икона"
+
+#: ../src/button.c:1321
+msgid ""
+"Size of icon if size of icon is not synchronized. -1 is valid for icon "
+"images and sets icon image's default size."
+msgstr ""
+"Величина иконице ако величине иконице није усклађена. -1 је исправно за "
+"иконице слика и поставља слику иконице на подразумевану величину."
+
+#: ../src/button.c:1328
+msgid "Icon orientation"
+msgstr "Усмерење иконице"
+
+#: ../src/button.c:1329
+msgid "Orientation of icon to label"
+msgstr "Усмерење иконице према ознаци"
+
+#: ../src/button.c:1336
+msgid "Label text"
+msgstr "Текст натписа"
+
+#: ../src/button.c:1337
+msgid "Text of label"
+msgstr "Текст натписа"
+
+#: ../src/button.c:1343
+msgid "Font"
+msgstr "Словни лик"
+
+#: ../src/button.c:1344
+msgid "Font of label"
+msgstr "Словни лик ознаке"
+
+#: ../src/button.c:1350 ../src/outline-effect.c:428
+msgid "Color"
+msgstr "Боја"
+
+#: ../src/button.c:1351
+msgid "Color of label"
+msgstr "Боја ознаке"
+
+#: ../src/button.c:1357
+msgid "Ellipsize mode"
+msgstr "Начин приказа елипсоиде"
+
+#: ../src/button.c:1358
+msgid "Mode of ellipsize if text in label is too long"
+msgstr "Начин приказа елипсоиде ако је текст на ознаци предугачак"
+
+#: ../src/button.c:1365
+msgid "Single line"
+msgstr "Једна линија"
+
+#: ../src/button.c:1366
+msgid "Flag to determine if text can only be in one or multiple lines"
+msgstr ""
+"Заставица које одређује да ли текст треба да буде у једној или више линија"
+
+#: ../src/button.c:1372
+msgid "Text justify"
+msgstr "Поравнај текста"
+
+#: ../src/button.c:1373
+msgid "Justification (line alignment) of label"
+msgstr "Поравнање (линија) ознаке"
+
+#: ../src/click-action.c:585
+msgid "Pressed"
+msgstr "Притиснуто"
+
+#: ../src/click-action.c:586
+msgid "Whether the clickable should be in pressed state"
+msgstr "Да ли је кликљиво начину рада притискања"
+
+#: ../src/click-action.c:592
+msgid "Held"
+msgstr "Задржан"
+
+#: ../src/click-action.c:593
+msgid "Whether the clickable has a grab"
+msgstr "Да ли кликљив може да има захват"
+
+#: ../src/click-action.c:599
+msgid "Long Press Duration"
+msgstr "Трајање дугог притиска"
+
+#: ../src/click-action.c:600
+msgid "The minimum duration of a long press to recognize the gesture"
+msgstr "Најмање трајање дугог притиска за препознавање потеза"
+
+#: ../src/click-action.c:608
+msgid "Long Press Threshold"
+msgstr "Праг дугог притиска"
+
+#: ../src/click-action.c:609
+msgid "The maximum threshold before a long press is cancelled"
+msgstr "Највећи праг пре отказивања дугог притиска"
+
+#: ../src/collapse-box.c:266
+#, c-format
+msgid "More than one actor added to %s - result are unexpected"
+msgstr "Више од једног чиниоца је додато на %s - исход је неочекиван"
+
+#: ../src/collapse-box.c:566
+msgid "Collapsed"
+msgstr "Сакупљено"
+
+#: ../src/collapse-box.c:567
+msgid "If TRUE this actor is collapsed otherwise it is expanded to real size"
+msgstr ""
+"Ако је означено ТАЧНО, овај чинилац је скупљен, иначе је проширен на стварну "
+"величину"
+
+#: ../src/collapse-box.c:573
+msgid "Collapsed size"
+msgstr "Величина при скупљању"
+
+#: ../src/collapse-box.c:574
+msgid "The size of actor when collapsed"
+msgstr "Величина скупљеног чиниоца"
+
+#: ../src/collapse-box.c:581
+msgid "Collapse orientation"
+msgstr "Усмерење скупљеног"
+
+#: ../src/collapse-box.c:582
+msgid "Orientation of area being visible in collapsed state"
+msgstr "Усмерење видљиве области у скупљеном стању"
+
+#: ../src/css-selector.c:147
+msgid "Could not create string for parent css selector"
+msgstr "Нисам успео да образујем ниску за родитеља цсс одабирача"
+
+#: ../src/css-selector.c:153
+msgid "Invalid mode for parent rule in CSS selector"
+msgstr "Неисправан начин родитељског правила у цсс одабирачу"
+
+#: ../src/css-selector.c:531
+msgid "Invalid name identifier"
+msgstr "Неисправан одредник имена"
+
+#: ../src/css-selector.c:550
+msgid "Invalid class identifier"
+msgstr "Неисправан одредник врсте"
+
+#: ../src/css-selector.c:586
+msgid "Invalid pseudo-class identifier"
+msgstr "Неисправан одредник псеудоврсте"
+
+#: ../src/css-selector.c:685
+msgid "No parent when parsing '>'"
+msgstr "Нема родитеља при рашчлањивању „>“"
+
+#: ../src/css-selector.c:766
+msgid "Failed to parse css selector."
+msgstr "Нисам успео да рашчланим ознаку ЦСС-а."
+
+#: ../src/css-selector.c:772
+msgid "Failed to parse css selector because stream is empty."
+msgstr "Нисам успео да рашчланим цсс одабирача јер је ток празан."
+
+#: ../src/css-selector.c:863
+msgid "Priority"
+msgstr "Предност"
+
+#: ../src/css-selector.c:864
+msgid "The priority of this CSS selector"
+msgstr "Предност овог одабирача ЦСС-а."
+
+#: ../src/css-selector.c:907 ../src/css-selector.c:977
+msgid "Could not create seleector."
+msgstr "Нисам успео да направим бирача."
+
+#: ../src/css-selector.c:934 ../src/theme-css.c:2317 ../src/theme-css.c:2323
+msgid "Parser did not reach end of stream"
+msgstr "Расчлањивач није досегао крај тока"
+
+#: ../src/css-selector.c:1004
+msgid "Unexpected state of CSS scanner."
+msgstr "Неочекивано стање цсс прегледника."
+
+#: ../src/drag-action.c:933
+msgid "Source"
+msgstr "Извор"
+
+#: ../src/drag-action.c:934
+msgid "The source actor where drag began"
+msgstr "Изворни чинилац одакле вучење почиње"
+
+#: ../src/drop-action.c:80
+#, c-format
+msgid "Target %s is already registered"
+msgstr "Циљ %s је већ заведен"
+
+#: ../src/dynamic-table-layout.c:490 ../src/scaled-table-layout.c:462
+msgid "Row spacing"
+msgstr "Размак редова"
+
+#: ../src/dynamic-table-layout.c:491 ../src/scaled-table-layout.c:463
+msgid "The spacing between rows in table"
+msgstr "Размак између редова у табели"
+
+#: ../src/dynamic-table-layout.c:499 ../src/scaled-table-layout.c:471
+msgid "Column spacing"
+msgstr "Размак стубаца"
+
+#: ../src/dynamic-table-layout.c:500 ../src/scaled-table-layout.c:472
+msgid "The spacing between columns in table"
+msgstr "Размак између стубаца у табели"
+
+#: ../src/dynamic-table-layout.c:508 ../src/scaled-table-layout.c:494
+msgid "Number children"
+msgstr "Број потомака"
+
+#: ../src/dynamic-table-layout.c:509 ../src/scaled-table-layout.c:495
+msgid "Current number of child actors in this layout"
+msgstr "Тренутни број потомака чиниоца овог распореда"
+
+#: ../src/dynamic-table-layout.c:517 ../src/scaled-table-layout.c:503
+msgid "Rows"
+msgstr "Редови"
+
+#: ../src/dynamic-table-layout.c:518 ../src/scaled-table-layout.c:504
+msgid "Current number of rows in this layout"
+msgstr "Тренутни број редова у овом распореду"
+
+#: ../src/dynamic-table-layout.c:526 ../src/scaled-table-layout.c:512
+msgid "Columns"
+msgstr "Ступци"
+
+#: ../src/dynamic-table-layout.c:527 ../src/scaled-table-layout.c:513
+msgid "Current number of columns in this layout"
+msgstr "Тренутни број стубаца у овом распореду"
+
+#: ../src/fill-box-layout.c:575 ../src/quicklaunch.c:1744
+#: ../src/scrollbar.c:714 ../src/view-selector.c:382
+#: ../src/workspace-selector.c:1184
+msgid "Orientation"
+msgstr "Усмерење"
+
+#: ../src/fill-box-layout.c:576 ../src/quicklaunch.c:1745
+#: ../src/workspace-selector.c:1185
+msgid "The orientation to layout children"
+msgstr "Усмерење за смештај потомака"
+
+#: ../src/fill-box-layout.c:583
+msgid "spacing"
+msgstr "размаци"
+
+#: ../src/fill-box-layout.c:584 ../src/quicklaunch.c:1737
+#: ../src/workspace-selector.c:1177
+msgid "The spacing between children"
+msgstr "Размаци између потомака"
+
+#: ../src/fill-box-layout.c:592
+msgid "Homogeneous"
+msgstr "Уједначено"
+
+#: ../src/fill-box-layout.c:593
+msgid ""
+"Whether the layout should be homogeneous, i.e. all childs get the same size"
+msgstr ""
+"Да ли распоред треба да буде уједначен, тј. да сви потомци имају исту "
+"величину"
+
+#: ../src/fill-box-layout.c:599
+msgid "Keep aspect"
+msgstr "Задржи размере"
+
+#: ../src/fill-box-layout.c:600
+msgid "Whether all children should keep their aspect"
+msgstr "Да ли потомци треба да одрже своје размере"
+
+#. IMPLEMENTATION: Private variables and methods
+#: ../src/focusable.c:60
+#, c-format
+msgid ""
+"Object of type %s does not implement required virtual function "
+"XfdashboardFocusable::%s"
+msgstr ""
+"Предмет врсте %s не примењује захтевану нестварну улогу "
+"XfdashboardFocusable::%s"
+
+#: ../src/focusable.c:155
+#, c-format
+msgid ""
+"Old selection %s at %s is unavailable but setting new selection either to %s "
+"or nothing failed!"
+msgstr ""
+"Стари избор %s на %s није доступан, а ни постављање новог избора на %s или "
+"ништа није успело!"
+
+#: ../src/focus-manager.c:265 ../src/focus-manager.c:273
+#, c-format
+msgid "Object %s does not inherit %s and cannot be registered"
+msgstr "Предмет %s не наслеђује %s и не може да се заведе"
+
+#: ../src/focus-manager.c:439
+msgid "Trying to focus an unregistered focusable actor"
+msgstr "Покушај да се узме у жижу незаведени чинилац жиже"
+
+#: ../src/image-content.c:139
+#, c-format
+msgid "Destroying image cache still containing %d images."
+msgstr "Уништење оставе сличица које и даље садрже %d сличица."
+
+#: ../src/image-content.c:198
+#, c-format
+msgid "Image has already key '%s' set and will be replaced with '%s'"
+msgstr "Сличица већ има постављен кључ „%s“  и биће замењен са „%s“"
+
+#: ../src/image-content.c:209
+#, c-format
+msgid "An image with key '%s' is already cache and will be replaced."
+msgstr "Сличица са кључем „%s“ је већ у остави и биће замењена."
+
+#: ../src/image-content.c:264
+#, c-format
+msgid "Failed to load image data into content for key '%s': %s"
+msgstr "Нисам успео да учитам датотеку сличице у садржај за кључ „%s“: %s"
+
+#: ../src/image-content.c:280
+#, c-format
+msgid "Failed to load image for key '%s': %s"
+msgstr "Нисам успео да учитам слику кључа „%s“: %s"
+
+#: ../src/image-content.c:359
+#, c-format
+msgid "Icon file '%s' does not exist - trying fallback icon"
+msgstr ""
+"Датотека иконице „%s“ не постоји - покушавам да учитам заменску иконицу"
+
+#: ../src/image-content.c:368
+#, c-format
+msgid "Could not load fallback icon for file '%s'"
+msgstr "Нисам успео да учитам заменску иконицу за датотеку „%s“"
+
+#: ../src/image-content.c:390 ../src/image-content.c:617
+#, c-format
+msgid "Failed to load image data into content for icon '%s': %s"
+msgstr "Нисам успео да учитам податке сличице у садржај иконице „%s“: %s"
+
+#: ../src/image-content.c:422
+#, c-format
+msgid "Could not create stream for file '%s' of icon '%s': %s"
+msgstr "Нисам успео да направим ток датотеке „%s“ иконице „%s“: %s"
+
+#: ../src/image-content.c:570
+#, c-format
+msgid "Could not lookup icon name '%s' for icon '%s'"
+msgstr "Нисам успео да пронађем темирано име иконице „%s“ за иконицу „%s“"
+
+#: ../src/image-content.c:586
+#, c-format
+msgid "Could not lookup themed icon '%s'"
+msgstr "Нисам успео да пронађем темирану иконицу „%s“"
+
+#: ../src/image-content.c:597
+#, c-format
+msgid "Could not lookup fallback icon for icon '%s'"
+msgstr "Нисам успео да пронађем заменску иконицу за иконицу „%s“"
+
+#: ../src/image-content.c:642
+#, c-format
+msgid "Could not create stream for icon file %s of icon '%s': %s"
+msgstr "Нисам успео да образујем ток датотеке иконице %s иконице „%s“: %s"
+
+#: ../src/image-content.c:708
+#, c-format
+msgid "Could not lookup gicon '%s'"
+msgstr "Нисам успео да пронађем гномову иконицу „%s“"
+
+#: ../src/image-content.c:719
+#, c-format
+msgid "Could not lookup fallback icon for gicon '%s'"
+msgstr "Нисам успео да пронађем заменску иконицу за гномову иконицу „%s“"
+
+#: ../src/image-content.c:739
+#, c-format
+msgid "Failed to load image data into content for gicon '%s': %s"
+msgstr ""
+"Нисам успео д учитам податке иконице у садржај гномове иконице „%s“: %s"
+
+#: ../src/image-content.c:764
+#, c-format
+msgid "Could not create stream for file %s of gicon '%s': %s"
+msgstr "Нисам успео да образујем ток датотеке %s гномове иконице „%s“: %s"
+
+#: ../src/image-content.c:824 ../src/image-content.c:960
+#, c-format
+msgid "Cannot load image '%s' without type"
+msgstr "Нисам успео да учитам слику „%s“ без врсте"
+
+#: ../src/image-content.c:840 ../src/image-content.c:976
+#, c-format
+msgid "Cannot load image '%s' of unknown type %d"
+msgstr "Нисам успео да учитам иконицу „%s“ непознате врсте %d"
+
+#: ../src/image-content.c:1065
+msgid "Key"
+msgstr "Дугме"
+
+#: ../src/image-content.c:1066
+msgid "The hash key for caching this image"
+msgstr "Кључ за смештање слике у оставу"
+
+#: ../src/image-content.c:1153
+#, c-format
+msgid "Could not create key for icon name '%s' at size %u"
+msgstr "Нисам успео да образујем кључ за иконицу под именом „%s“ величине %u"
+
+#: ../src/image-content.c:1190
+#, c-format
+msgid "Could not create key for gicon '%s' at size %u"
+msgstr "Нисам успео да образујем кључ за гномову иконицу „%s“ величине %u"
+
+#. If we get here the virtual function was not overridden
+#: ../src/layoutable.c:78
+#, c-format
+msgid ""
+"Object of type %s does not implement virtual function of "
+"XfdashboardLayoutableInterface::%s"
+msgstr ""
+"Предмет врсте %s не примењује опонашајуће својство "
+"XfdashboardLayoutableInterface::%s"
+
+#: ../src/live-window.c:611 ../src/window-content.c:1569
+msgid "Window"
+msgstr "Прозор"
+
+#: ../src/live-window.c:612
+msgid "The window to show"
+msgstr "Прозор за приказ"
+
+#: ../src/live-window.c:618
+msgid "Close button padding"
+msgstr "Поравнање дугмета затвори"
+
+#: ../src/live-window.c:619
+msgid "Padding of close button to window actor in pixels"
+msgstr "Поравнање дугмета затвори у односу на чиниоца прозора у тачкама"
+
+#: ../src/live-window.c:626
+msgid "Title actor padding"
+msgstr "Поравнање чиниоца насова"
+
+#: ../src/live-window.c:627
+msgid "Padding of title actor to window actor in pixels"
+msgstr "Поравнање чиниоца наслова према прозору у тачкама"
+
+#: ../src/live-workspace.c:556
+msgid "Workspace"
+msgstr "Радни простор"
+
+#: ../src/live-workspace.c:557
+msgid "The workspace to show"
+msgstr "Расни простор за приказ"
+
+#: ../src/main.c:54
+#, c-format
+msgid "Unable to register application: %s"
+msgstr "Нисам успео да заведем програм: %s"
+
+#: ../src/main.c:75
+#, c-format
+msgid "Initializing application failed with status code %d"
+msgstr "Покретање програма није успело са шифром стања %d"
+
+#: ../src/main.c:91
+msgid "Initializing clutter failed!"
+msgstr "Покретање клатера није успело"
+
+#: ../src/outline-effect.c:435
+msgid "Width"
+msgstr "Ширина"
+
+#: ../src/outline-effect.c:443
+msgid "Borders"
+msgstr "Оквири"
+
+#: ../src/outline-effect.c:444
+msgid "Determines which sides of the border to draw"
+msgstr "Одређује које стране ивица да се исцртавају"
+
+#: ../src/outline-effect.c:452
+msgid "Determines which corners are rounded"
+msgstr "Одређује који углови су заобљени"
+
+#: ../src/outline-effect.c:460
+msgid "Radius of rounded corners"
+msgstr "Полупречник заобљених ивица"
+
+#: ../src/quicklaunch.c:318
+#, c-format
+msgid "Favourite '%s' added"
+msgstr "„%s“ је додато у омиљене"
+
+#: ../src/quicklaunch.c:564
+#, c-format
+msgid "Favourite '%s' removed"
+msgstr "„%s“ је уклоњено из омиљених"
+
+#: ../src/quicklaunch.c:1721
+msgid "Favourites"
+msgstr "Омиљено"
+
+#: ../src/quicklaunch.c:1722
+msgid "An array of strings pointing to desktop files shown as icons"
+msgstr ""
+"Распон ниски које указују на датотеке радне површи приказаних као иконице"
+
+#: ../src/quicklaunch.c:1728
+msgid "Normal icon size"
+msgstr "Уобичајена величина иконице"
+
+#: ../src/quicklaunch.c:1729
+msgid "Unscale size of icon"
+msgstr "Промени величину иконице"
+
+#. Next add trash button to box but initially hidden and register as drop target
+#: ../src/quicklaunch.c:1830
+msgid "Remove"
+msgstr "Уклони"
+
+#: ../src/scaled-table-layout.c:480
+msgid "Relative scale"
+msgstr "Лествица размере"
+
+#: ../src/scaled-table-layout.c:481
+msgid "Whether all children should be scaled relatively to largest child"
+msgstr "Да ли сви потомци требају да буду сразмерни највећем потомку"
+
+#: ../src/scaled-table-layout.c:487 ../src/windows-view.c:961
+msgid "Prevent upscaling"
+msgstr "Спречи увећање"
+
+#: ../src/scaled-table-layout.c:488
+msgid ""
+"Whether this layout manager should prevent upsclaing any child beyond its "
+"real size"
+msgstr ""
+"Да ли овај управник распореда треба да спречи увећање свих потомака преко "
+"своје стварне величине"
+
+#: ../src/scrollbar.c:715
+msgid "Defines if scrollbar is horizontal or vertical"
+msgstr "Описује да ли је трака клизача положена или усправна"
+
+#: ../src/scrollbar.c:722
+msgid "Value"
+msgstr "Вредност"
+
+#: ../src/scrollbar.c:723
+msgid "Current value of scroll bar within range"
+msgstr "Тренутна вредност траке клизача у опсегу"
+
+#: ../src/scrollbar.c:730
+msgid "Value range"
+msgstr "Опсег вредности"
+
+#: ../src/scrollbar.c:731
+msgid "The range the slider of scroll bar covers"
+msgstr "Опсег клизача на корицама траке клизача"
+
+#: ../src/scrollbar.c:738
+msgid "Range"
+msgstr "Опсег"
+
+#: ../src/scrollbar.c:739
+msgid "Range to scroll within"
+msgstr "Опсег клизача"
+
+#: ../src/scrollbar.c:746
+msgid "Page size factor"
+msgstr "Множилац величине стране"
+
+#: ../src/scrollbar.c:747
+msgid ""
+"The factor of value range to increase or decrease value by on pointer scroll "
+"events."
+msgstr ""
+"Множилац опсега вредности увећања или умањења вредности по догађајима "
+"клизања показивача."
+
+#: ../src/scrollbar.c:755
+msgid "The spacing between scrollbar and background"
+msgstr "Размак између траке клизача и позадине"
+
+#: ../src/scrollbar.c:762
+msgid "Slider width"
+msgstr "Ширина клизача"
+
+#: ../src/scrollbar.c:763
+msgid "The width of slider"
+msgstr "Ширина клизача"
+
+#: ../src/scrollbar.c:770
+msgid "Slider radius"
+msgstr "Полупречник клизача"
+
+#: ../src/scrollbar.c:771
+msgid "The radius of slider's rounded corners"
+msgstr "Полупречник заобљености углова клизача"
+
+#: ../src/scrollbar.c:778
+msgid "Slider color"
+msgstr "Боја клизача"
+
+#: ../src/scrollbar.c:779
+msgid "Color of slider"
+msgstr "Боја клизача"
+
+#: ../src/scrollbar.c:906
+#, c-format
+msgid "Adjusting value %.2f in scrollbar to fit range %.2f"
+msgstr "Подешавање вредности %.2f у траци клизача ради попуне опсега %.2f"
+
+#: ../src/scrollbar.c:965
+#, c-format
+msgid "Adjusting value %.2f in scrollbar to fit new range %.2f"
+msgstr ""
+"Подешавање вредности %.2f у траци клизача ради попуне новог опсега %.2f"
+
+#: ../src/search-manager.c:180
+#, c-format
+msgid "Search provider %s is not a %s and cannot be registered"
+msgstr "Погон претраге %s није %s и није могуће да се заведе"
+
+#: ../src/search-manager.c:208
+#, c-format
+msgid "Search provider %s is not a %s and cannot be unregistered"
+msgstr "Погон претраге %s није %s и не може да се испише"
+
+#. IMPLEMENTATION: Private variables and methods
+#: ../src/search-provider.c:42
+#, c-format
+msgid ""
+"Search provider of type %s does not implement required virtual function "
+"XfdashboardSearchProvider::%s"
+msgstr ""
+"Погон претраге врсте %s нема захтевану нестварну улогу "
+"XfdashboardSearchProvider::%s"
+
+#: ../src/search-result-container.c:249
+msgid "Current selected item not found. Selecting first item."
+msgstr "Нисам нашао тренутно изабрану ставку. Бирам прву ставку."
+
+#: ../src/search-result-container.c:537
+msgid "Provider"
+msgstr "Погон претраге"
+
+#: ../src/search-result-container.c:538
+msgid "The search provider this result container is for"
+msgstr "Погон претраге чији је ово излаз"
+
+#: ../src/search-result-container.c:544
+msgid "Title format"
+msgstr "Облик наслова"
+
+#: ../src/search-result-container.c:545
+msgid "Format string for title which will contain the name of search provider"
+msgstr "Облик ниске наслова који ће садржати име погона претраге"
+
+#: ../src/search-result-container.c:552
+msgid "View mode of container for result items"
+msgstr "Начин приказа садржаоца за иконице које су излаз претраге"
+
+#: ../src/search-result-container.c:560
+msgid "Spacing between each result item"
+msgstr "Размак између сваке ставке излаза"
+
+#: ../src/search-result-container.c:568
+msgid "Padding between title and item results container"
+msgstr "Поравнање између наслова и ставки садржалаца излаза претраге"
+
+#: ../src/search-view.c:414 ../src/search-view.c:424 ../src/search-view.c:434
+#, c-format
+msgid "Failed to add actor for result item [%s] of provider %s: %s"
+msgstr "Нисам успео да додам ставку чиниоца [%s] погона претраге %s: %s"
+
+#: ../src/search-view.c:417
+msgid "Failed to created actor"
+msgstr "Нисам успео да направим чиниоца"
+
+#: ../src/search-view.c:427
+msgid "Failed to create item-actor mapping"
+msgstr "Нисам успео да направим мапирање ставке чиниоца"
+
+#: ../src/search-view.c:437
+msgid "Failed to store item-actor mapping"
+msgstr "Нисам успео да сачувам мапирање чиниоца ставке"
+
+#: ../src/search-view.c:967
+msgid "Search"
+msgstr "Тражи"
+
+#: ../src/stage.c:456
+msgid "Cannot perform search because search view was not found in viewpad."
+msgstr ""
+"Нисам успео да изведен претрагу јер нисам нашао приказ претраге у овом "
+"начину прегледа"
+
+#: ../src/stage.c:734
+msgid "Cannot find search viewin viewpad to reset view."
+msgstr ""
+
+#: ../src/stage.c:742
+#, c-format
+msgid "Cannot switch to unknown view '%s'"
+msgstr "Нисам успео да променим приказ на непознати „%s“"
+
+#: ../src/stage.c:872
+msgid "Just type to search..."
+msgstr "Само куцајте ради претраге..."
+
+#: ../src/stage.c:1253 ../src/stage.c:1254
+msgid "Background image type"
+msgstr "Врста позадинске слике"
+
+#: ../src/stage.c:1261
+msgid "Background color"
+msgstr "Боја позадине"
+
+#: ../src/stage.c:1262
+msgid "Color of stage's background"
+msgstr "Боја позадине ступња"
+
+#. IMPLEMENTATION: Private variables and methods
+#: ../src/stylable.c:42
+#, c-format
+msgid ""
+"Object of type %s does not implement required virtual function "
+"XfdashboardStylable::%s"
+msgstr ""
+"Предмет врсте %s нема уграђену захтевану могућност XfdashboardStylable::%s"
+
+#: ../src/stylable.c:267
+msgid "Style classes"
+msgstr "Врсте начина рада"
+
+#: ../src/stylable.c:268
+msgid "String representing list of classes separated by '.'"
+msgstr "Ниске које представљају списак врста одвојен помоћу „.“"
+
+#: ../src/stylable.c:274
+msgid "Style pseudo-classes"
+msgstr "Начин лажних врста"
+
+#: ../src/stylable.c:275
+msgid ""
+"String representing list of pseudo-classes, e.g. current state, separated by "
+"':'"
+msgstr ""
+"Ниске које представљају списак лажних врста, тј. тренутног стања, одвојен "
+"помоћу „:“"
+
+#: ../src/stylable.c:334
+#, c-format
+msgid "Could not find property '%s' for class %s"
+msgstr "Нисам успео да пронађем својство „%s“ за врсту %s"
+
+#: ../src/text-box.c:797
+msgid "Editable"
+msgstr "Измењива"
+
+#: ../src/text-box.c:798
+msgid "Flag to set if text is editable"
+msgstr "Заставица уредивог текста"
+
+#: ../src/text-box.c:804
+msgid "Primary icon name"
+msgstr "Назив главне иконице"
+
+#: ../src/text-box.c:805
+msgid "Themed icon name or file name of primary icon shown left of text box"
+msgstr ""
+"Име темиране иконице или датотеке главне иконе која се приказује лево од "
+"кућице за унос текста"
+
+#: ../src/text-box.c:811
+msgid "Secondary icon name"
+msgstr "Назив помоћне иконице"
+
+#: ../src/text-box.c:812
+msgid "Themed icon name or file name of secondary icon shown right of text box"
+msgstr ""
+"Име темиране иконице или датотеке друге иконице која се приказује десно од "
+"кућице за унос текста"
+
+#: ../src/text-box.c:818
+msgid "Text"
+msgstr "Текст"
+
+#: ../src/text-box.c:819
+msgid "Text of editable text box"
+msgstr "Текст у кућици за унос текста"
+
+#: ../src/text-box.c:825
+msgid "Text font"
+msgstr "Словни лик текста"
+
+#: ../src/text-box.c:826
+msgid "Font of editable text box"
+msgstr "Словни лик кућице за унос текста"
+
+#: ../src/text-box.c:832
+msgid "Text color"
+msgstr "Боја текста"
+
+#: ../src/text-box.c:833
+msgid "Color of text in editable text box"
+msgstr "Основна боја текста у кућици за унос текста"
+
+#: ../src/text-box.c:840
+msgid "Selection text color"
+msgstr "Избор боје текста"
+
+#: ../src/text-box.c:841
+msgid "Color of text of selected text"
+msgstr "Боја изабраног текста"
+
+#: ../src/text-box.c:847
+msgid "Selection background color"
+msgstr "Избор позадинске боје"
+
+#: ../src/text-box.c:848
+msgid "Color of background of selected text"
+msgstr "Боја позадине изабраног текста"
+
+#: ../src/text-box.c:854
+msgid "Hint text"
+msgstr "Наговештај текста"
+
+#: ../src/text-box.c:855
+msgid "Hint text shown if editable text box is empty"
+msgstr "Наговештај текста приказаног ако је поље за унос текста празно"
+
+#: ../src/text-box.c:861
+msgid "Hint text font"
+msgstr "Наговештај словног лика текста"
+
+#: ../src/text-box.c:862
+msgid "Font of hint text shown if editable text box is empty"
+msgstr "Словолик приказа текста ако је поље за унос празно"
+
+#: ../src/text-box.c:868
+msgid "Hint text color"
+msgstr "Боја наговештаја текста"
+
+#: ../src/text-box.c:869
+msgid "Color of hint text shown if editable text box is empty"
+msgstr "Боја приказа наговештаја текста ако је поље уноса празно"
+
+#: ../src/text-box.c:875
+msgid "Hint text set"
+msgstr "Наговештај текста је постављен"
+
+#: ../src/text-box.c:876
+msgid "Flag indicating if a hint text was set"
+msgstr "Заставица који показује да је наговештај текста постављен"
+
+#: ../src/theme.c:569 ../src/theme-css.c:2482
+msgid "Theme path"
+msgstr "Путања теме"
+
+#: ../src/theme.c:570
+msgid "Path where theme was found and loaded from"
+msgstr "Путања одакле се учитава тема"
+
+#: ../src/theme.c:576
+msgid "Theme name"
+msgstr "Име теме"
+
+#: ../src/theme.c:577
+msgid ""
+"Short name of theme which was used to lookup theme and folder name where "
+"theme is stored in"
+msgstr ""
+"Кратко име теме која се користи за претрагу теме и име фасцикле где је тема "
+"смештена"
+
+#: ../src/theme.c:583
+msgid "Theme display name"
+msgstr "Име теме за приказ"
+
+#: ../src/theme.c:584
+msgid "The name of theme"
+msgstr "Име теме"
+
+#: ../src/theme.c:590
+msgid "Theme comment"
+msgstr "Напомена теме"
+
+#: ../src/theme.c:591
+msgid "The comment of theme used as description"
+msgstr "Напомена која описује тему"
+
+#: ../src/theme.c:689
+#, c-format
+msgid "Theme '%s' requested but '%s' was already loaded"
+msgstr "Захтевана је тема „%s“, али је „%s“ већ учитана"
+
+#: ../src/theme.c:706
+#, c-format
+msgid "Theme '%s' not found"
+msgstr "Нисам пронашао тему „%s“"
+
+#: ../src/theme-css.c:273
+#, c-format
+msgid "Cannot get argument %d because only %d arguments are available"
+msgstr ""
+"Нисам успео да добијем одредницу %d јер је једино одредница %d доступна"
+
+#: ../src/theme-css.c:286
+#, c-format
+msgid "Cannot allocate memory for argument %d"
+msgstr "Нисам успео да доделим меморију одредници %d"
+
+#: ../src/theme-css.c:304
+#, c-format
+msgid "Cannot transform argument %d from type '%s' to type '%s'"
+msgstr "Нисам успео да претворим одредницу %d од врсте „%s“ врсти „%s“"
+
+#: ../src/theme-css.c:341
+msgid "Missing string to convert to color component value."
+msgstr "Недостаје ниска за претварање у вредност састојка боје"
+
+#. Set error message
+#: ../src/theme-css.c:364
+#, c-format
+msgid "Cannot convert string '%s' to color component value."
+msgstr "Нисам успео да претворим ниску „%s“ у вредност састојка боје."
+
+#. Set error message
+#: ../src/theme-css.c:384
+#, c-format
+msgid "Color component value %.2f out of range"
+msgstr "Вредност састојка боје %.2f је ван опсега"
+
+#. Set error message
+#: ../src/theme-css.c:739
+#, c-format
+msgid "Factor %.2f is out of range"
+msgstr "Чинилац %.2f је ван опсега"
+
+#. Set error message
+#: ../src/theme-css.c:844
+#, c-format
+msgid "Alpha factor %.2f is out of range"
+msgstr "Чинилац прозирности %.2f је ван опсега"
+
+#: ../src/theme-css.c:897
+#, c-format
+msgid "CSS function '%s' is already registered."
+msgstr "Функција ЦСС-а „%s“ је већ уписана."
+
+#: ../src/theme-css.c:938 ../src/theme-css.c:1046 ../src/theme-css.c:2051
+msgid "An identifier must follow '@'"
+msgstr "Указивач мора да следи „@“"
+
+#: ../src/theme-css.c:1071
+msgid "Missing function argument"
+msgstr "Недостаје одредница функције"
+
+#. Set error message
+#: ../src/theme-css.c:1095
+#, c-format
+msgid "Invalid character '%c' in function argument"
+msgstr "Неисправан знак „%c“ у одредници функције"
+
+#: ../src/theme-css.c:1120
+msgid "Invalid character in function argument"
+msgstr "Неисправан знак у одредници функције"
+
+#: ../src/theme-css.c:1156
+msgid "Missing ')' after function"
+msgstr "Недостаје „)“ након функције"
+
+#: ../src/theme-css.c:1171
+msgid "Missing '(' after function"
+msgstr "Недостаје „(“ након функције"
+
+#. Set error message
+#: ../src/theme-css.c:1207
+#, c-format
+msgid "Could not transform result of function '%s' to a string"
+msgstr "Нисам успео да претворим излаз функције „%s“ у ниску"
+
+#: ../src/theme-css.c:1237
+#, c-format
+msgid "Function '%s' failed with error: %s"
+msgstr "Функција „%s“ није успела уз грешку %s"
+
+#: ../src/theme-css.c:1243
+#, c-format
+msgid "Function '%s' failed!"
+msgstr "Функција „%s“ није успела!"
+
+#. Identifier was unresolvable so print error message
+#: ../src/theme-css.c:1311
+#, c-format
+msgid "Unresolvable identifier '@%s'"
+msgstr "Неразрешиви одредник „@%s“"
+
+#: ../src/theme-css.c:1505
+msgid "Invalid property name"
+msgstr "Неисправно име својства"
+
+#: ../src/theme-css.c:1525
+msgid "Property names and values must be separated by colon"
+msgstr "Имена својстава и вредности морају да буду раздвојена двотачком"
+
+#: ../src/theme-css.c:1581
+msgid "Invalid property value"
+msgstr "Неисправна вредност својства"
+
+#: ../src/theme-css.c:1606
+msgid "Property values must end with semi-colon"
+msgstr "Вредности својстава морају да се завршавају тачком и запетом"
+
+#: ../src/theme-css.c:1743
+msgid "Missing '(' after @import keyword."
+msgstr "Недостаје „(“ након кључне речи @import."
+
+#: ../src/theme-css.c:1784
+msgid "Unexpected token in filename to import"
+msgstr "Неочекивана значка у имену датотеке за унос"
+
+#: ../src/theme-css.c:1804
+msgid "Missing filename to import"
+msgstr "Недостаје име увозне датотеке"
+
+#: ../src/theme-css.c:1826
+msgid "Missing closing ')' at @import keyword."
+msgstr "Недостаје „)“ након кључне речи @import."
+
+#. Build error message
+#: ../src/theme-css.c:1891
+#, c-format
+msgid "Failed to import CSS file '%s': %s"
+msgstr "Нисам успео да увезем датотеку ЦСС-а „%s“: %s"
+
+#: ../src/theme-css.c:1996
+msgid ""
+"Mixing selectors and '@' identifiers or defining more than one '@' "
+"identifier at once is not allowed"
+msgstr ""
+"Мешање одабирача и „@“ одредника или одређивање више од једног одредника „@“ "
+"одједном није дозвољено"
+
+#: ../src/theme-css.c:2017
+msgid ""
+"A selector must have been defined before other one can follow comma-"
+"separated."
+msgstr ""
+"Одабирач мора бити одређен да би наставак могао да буде одвојен запетом."
+
+#. Build warning message
+#: ../src/theme-css.c:2083
+#, c-format
+msgid "Skipping block of unknown identifier '@%s'"
+msgstr "Прескачем блок непознатог одредника „@%s“"
+
+#: ../src/theme-css.c:2089
+msgid "'@' identifier"
+msgstr "Одредник „@%s“"
+
+#: ../src/theme-css.c:2118 ../src/theme-css.c:2135
+msgid "Unhandled selector"
+msgstr "Неупотребљени одабирач"
+
+#: ../src/theme-css.c:2285
+#, c-format
+msgid "The input stream of type %s is not supported"
+msgstr "Улазни ток врсте %s није подржан"
+
+#: ../src/theme-css.c:2483
+msgid "Path of theme loading from"
+msgstr "Путања теме за учитавање"
+
+#: ../src/theme-css.c:2570
+#, c-format
+msgid "Could not get file for path '%s'"
+msgstr "Нисам успео да добавим датотеку на путањи „%s“"
+
+#: ../src/theme-effects.c:172 ../src/theme-layout.c:242
+#, c-format
+msgid "Error on line %d char %d: "
+msgstr "Грешка на линији %d знаку %d: "
+
+#: ../src/theme-effects.c:334 ../src/theme-layout.c:463
+#, c-format
+msgid "Cannot allocate memory for object data of tag <%s>"
+msgstr "Нисам успео да доделим меморију подацима предмета ознаке <%s>"
+
+#: ../src/theme-effects.c:352
+#, c-format
+msgid ""
+"Freeing effect object parser data at %p with a reference counter of %d "
+"greater than one"
+msgstr ""
+
+#: ../src/theme-effects.c:482
+#, c-format
+msgid "Object of type %s is not derived from %s"
+msgstr "Предмет врсте %s није изведен од %s"
+
+#: ../src/theme-effects.c:524 ../src/theme-layout.c:919
+#, c-format
+msgid "Unexpected text node '%s' at tag <%s>"
+msgstr "Неочекиван чвор писања „%s“ на ознаци <%s>"
+
+#: ../src/theme-effects.c:556 ../src/theme-effects.c:642
+#: ../src/theme-effects.c:809 ../src/theme-effects.c:978
+#: ../src/theme-layout.c:960
+#, c-format
+msgid "Unknown tag <%s>"
+msgstr "Непозната ознака <%s>"
+
+#: ../src/theme-effects.c:566 ../src/theme-effects.c:718
+#: ../src/theme-effects.c:938 ../src/theme-effects.c:1018
+#: ../src/theme-layout.c:889 ../src/theme-layout.c:1245
+#, c-format
+msgid "Tag <%s> cannot contain tag <%s>"
+msgstr "Ознака <%s> не може да садржи ознаку <%s>"
+
+#: ../src/theme-effects.c:589
+msgid "Missing property name to set value for"
+msgstr "Недостају својства имена за постављање вредности за"
+
+#: ../src/theme-effects.c:601
+#, c-format
+msgid "Missing object data to set value of property '%s'"
+msgstr "Недостају подаци предмета за постављање вредности својства „%s“"
+
+#: ../src/theme-effects.c:655 ../src/theme-effects.c:742
+#, c-format
+msgid "Missing parser data for <%s> tag"
+msgstr "Недостају подаци рашчлањивача ознаци <%s>"
+
+#: ../src/theme-effects.c:697
+#, c-format
+msgid "Multiple definition of property '%s' at object with ID '%s'"
+msgstr "Вишеструки опис својства „%s“ на предмету са ЛБ-ом „%s“"
+
+#: ../src/theme-effects.c:759
+#, c-format
+msgid ""
+"Invalid state of parser after parsing property '%s' at object with id '%s' "
+"of type %s"
+msgstr ""
+"Неисправно стање рашчлањивача после рашчлањивања својства „%s“ на предмету "
+"са лб-ом „%s“ врсте %s"
+
+#: ../src/theme-effects.c:863 ../src/theme-layout.c:1057
+#, c-format
+msgid "Empty ID at tag '%s'"
+msgstr "Празан је ЛБ на ознаци „%s“"
+
+#: ../src/theme-effects.c:875 ../src/theme-layout.c:1070
+#, c-format
+msgid "Invalid ID '%s' at tag '%s'"
+msgstr "Неисправан је ЛБ „%s“ на ознаци „%s“"
+
+#: ../src/theme-effects.c:888
+#, c-format
+msgid "Multiple definition of effect with id '%s'"
+msgstr "Вишеструки описи за дејство са лб-ом „%s“"
+
+#: ../src/theme-effects.c:901 ../src/theme-layout.c:1086
+#, c-format
+msgid "Unknown object class %s for tag '%s'"
+msgstr "Непозната је врста предмета %s ознаке „%s“"
+
+#: ../src/theme-effects.c:915 ../src/theme-layout.c:1106
+#, c-format
+msgid ""
+"Invalid class %s in object for parent tag <%s> - expecting class derived "
+"from %s"
+msgstr ""
+"Неисправна је врста %s у предмету на родитељској ознаци <%s> - очекивана је "
+"врста изведена из  %s"
+
+#: ../src/theme-effects.c:1070 ../src/theme-layout.c:1589
+#, c-format
+msgid "Could not set up parser data for file %s"
+msgstr "Нисам успео да поставим рашчлањивач података за датотеку %s"
+
+#: ../src/theme-effects.c:1082 ../src/theme-layout.c:1601
+#, c-format
+msgid "Could not create parser for file %s"
+msgstr "Нисам успео да направим рашчлањивач за датотеку %s"
+
+#. If we get here we did not find an object with requested ID
+#: ../src/theme-effects.c:1268
+#, c-format
+msgid "Could not find effect with ID '%s'"
+msgstr "Нисам успео да пронађем дејство са ЛБ-ем „%s“"
+
+#: ../src/theme-layout.c:373
+msgid "Cannot allocate memory for unknown tag"
+msgstr "Нисам успео да доделим меморију непознатој ознаци"
+
+#: ../src/theme-layout.c:385
+#, c-format
+msgid "Cannot allocate memory for tag '%s'"
+msgstr "Нисам успео да доделим меморију ознаци „%s“"
+
+#: ../src/theme-layout.c:841
+msgid "Unexpected empty tag stack when parsing property text node"
+msgstr "Неочекивани празни скуп ознака при рашлањивању чвора својстава текста"
+
+#: ../src/theme-layout.c:852
+#, c-format
+msgid "Value for property '%s' is already set"
+msgstr "Вредност за својство „%s“ је већ постављена"
+
+#: ../src/theme-layout.c:1141
+#, c-format
+msgid "Tag <%s> can only be set at <%s> creating objects derived from class %s"
+msgstr ""
+"Ознака <%s> може да буде постављена само на <%s> при стварању предмета "
+"изведених из врсте %s"
+
+#: ../src/theme-layout.c:1226
+#, c-format
+msgid "Attribute 'ref' cannot be empty at tag <%s>"
+msgstr "Особина 'ref' не може да буде празна ознака <%s>"
+
+#: ../src/theme-layout.c:1267
+#, c-format
+msgid "Internal error when handling end of tag <%s>"
+msgstr "Десила се унутрашња грешка при обради завршетка ознаке <%s>"
+
+#: ../src/theme-layout.c:1296
+#, c-format
+msgid "Document can have only one <%s>"
+msgstr "Документ може да има само један <%s>"
+
+#: ../src/theme-layout.c:1334
+#, c-format
+msgid "Object can have only one <%s>"
+msgstr "Предмет може да има само једно <%s>"
+
+#: ../src/theme-layout.c:1505
+#, c-format
+msgid "ID '%s' was specified more than once (%d times)"
+msgstr "ЛБ „%s“ је одређен више од једном (%d пута)"
+
+#: ../src/theme-layout.c:1536
+#, c-format
+msgid "Referenced ID '%s' could not be resolved"
+msgstr "Нисам успео да разрешим односни ЛБ „%s“"
+
+#: ../src/theme-layout.c:1637
+#, c-format
+msgid "File %s does not contain an interface"
+msgstr "Датотека %s не садржи сучеље"
+
+#: ../src/theme-layout.c:1647
+#, c-format
+msgid "Interface at file %s has no ID"
+msgstr "Сучеље датотеке %s нема ЛБ"
+
+#: ../src/toggle-button.c:162
+msgid "Toggle state"
+msgstr "Прекидач стања"
+
+#: ../src/toggle-button.c:163
+msgid "State of toggle"
+msgstr "Стање прекидача"
+
+#: ../src/toggle-button.c:169
+msgid "Auto toggle"
+msgstr "Самостални прекидач"
+
+#: ../src/toggle-button.c:170
+msgid "If set the toggle state will be toggled on each click"
+msgstr "Ако је постављено, прекидач стања ће бити окидан на сваки клик"
+
+#: ../src/tooltip-action.c:338
+msgid "Tooltip text"
+msgstr "Текст облачића"
+
+#: ../src/tooltip-action.c:339
+msgid "The text to display in a tooltip"
+msgstr "Запис за приказ у облачићу"
+
+#: ../src/utils.c:361
+#, c-format
+msgid ""
+"Could not create desktop application information for menu item '%s' from %s: "
+"%s"
+msgstr ""
+"Нисам успео да образујем податке о програму радне површи ставке изборника "
+"„%s“ из %s: %s"
+
+#: ../src/utils.c:397
+#, c-format
+msgid "Could not create application information for menu item '%s': %s"
+msgstr "Нисам успео да образујем податке о програму ставке изборника „%s“: %s"
+
+#: ../src/view.c:238
+msgid "View internal name"
+msgstr "Име унутрашњег прегледа"
+
+#: ../src/view.c:239
+msgid "Internal and untranslated name of view used in application"
+msgstr "Унутрашње непреведено има прегледа које користи програм"
+
+#: ../src/view.c:245
+msgid "View name"
+msgstr "Име прегледа"
+
+#: ../src/view.c:246
+msgid "Name of view used to display"
+msgstr "Име погледа који се користи за приказ"
+
+#: ../src/view.c:252
+msgid "View icon"
+msgstr "Иконица прегледа"
+
+#: ../src/view.c:253
+msgid ""
+"Icon of view used to display. Icon name can be a themed icon name or file "
+"name"
+msgstr ""
+"Иконица прегледа за приказ. Име иконице може бити из теме или из датотеке"
+
+#: ../src/view.c:259
+msgid "Fit mode"
+msgstr "Начин уклапања величине"
+
+#: ../src/view.c:260
+msgid "Defines if view should be fit into viewpad and its orientation"
+msgstr ""
+"Одређује да ли преглед треба да се уклопи у поље прегледа и његово усмерење"
+
+#: ../src/view.c:266
+msgid "Enabled"
+msgstr "Омогућено"
+
+#: ../src/view.c:267
+msgid "This flag indicates if is view is enabled and activable"
+msgstr "Ова заставица указује да је поглед омогућен и да се може покретати"
+
+#: ../src/view-manager.c:176
+#, c-format
+msgid "View %s is not a %s and cannot be registered"
+msgstr "Поглед %s није %s и не може да се заведе"
+
+#: ../src/view-manager.c:204
+#, c-format
+msgid "View %s is not a %s and cannot be unregistered"
+msgstr "Поглед %s није %s и не може да се уклони из завода"
+
+#: ../src/viewpad.c:126
+msgid "Cannot update viewport of view because no one is active"
+msgstr "Нисам успео да освежим поље прегледа погледа јер нема покренутих"
+
+#: ../src/viewpad.c:242
+#, c-format
+msgid "View %s is not a child of %s and cannot be activated"
+msgstr "Поглед %s не може бити потомак %s и не може да се покрене"
+
+#: ../src/viewpad.c:250
+#, c-format
+msgid "Cannot activate disabled view %s at %s"
+msgstr "Нисам успео да покренем онемогућен поглед %s на %s"
+
+#: ../src/viewpad.c:596
+#, c-format
+msgid "Failed to create view instance of %s"
+msgstr "Нисам успео да направим примерак погледа %s"
+
+#: ../src/viewpad.c:602
+#, c-format
+msgid "Instance %s is not a %s and cannot be added to %s"
+msgstr "Примерак %s није %s и не може да се дода %s-у"
+
+#: ../src/viewpad.c:1365 ../src/view-selector.c:375
+msgid "The spacing between views and scrollbars"
+msgstr "Размак између погледа и траке клизача"
+
+#: ../src/viewpad.c:1372
+msgid "Active view"
+msgstr "Тренутни поглед"
+
+#: ../src/viewpad.c:1373
+msgid "The current active view in viewpad"
+msgstr "Тренутни приказ у пољу прегледа"
+
+#: ../src/viewpad.c:1379
+msgid "Horizontal scrollbar visibility"
+msgstr "Водоравна видљивост траке клизача"
+
+#: ../src/viewpad.c:1380
+msgid "This flag indicates if horizontal scrollbar is visible"
+msgstr "Ова заставица указује да ли је водоравна клизна трака видљива"
+
+#: ../src/viewpad.c:1386
+msgid "Horizontal scrollbar policy"
+msgstr "Смернице водоравне траке клизача"
+
+#: ../src/viewpad.c:1387
+msgid "The policy for horizontal scrollbar controlling when it is displayed"
+msgstr "Смернице водоравне траке клизача за понашање када се она приказује"
+
+#: ../src/viewpad.c:1394
+msgid "Vertical scrollbar visibility"
+msgstr "Усправна видљивост главне траке клизача"
+
+#: ../src/viewpad.c:1395
+msgid "This flag indicates if vertical scrollbar is visible"
+msgstr "Ова заставица указује да ли је усправна клизна трака видљива"
+
+#: ../src/viewpad.c:1401
+msgid "Vertical scrollbar policy"
+msgstr "Смернице усправне клизне траке"
+
+#: ../src/viewpad.c:1402
+msgid "The policy for vertical scrollbar controlling when it is displayed"
+msgstr ""
+"Смернице усправне траке клизача за понашање када је клизна трака видљива"
+
+#: ../src/view-selector.c:367
+msgid "Viewpad"
+msgstr "Поље прегледа"
+
+#: ../src/view-selector.c:368
+msgid "The viewpad this selector belongs to"
+msgstr "Поље прегледа којој овај избирач припада"
+
+#: ../src/view-selector.c:383
+msgid "Orientation of view selector"
+msgstr "Усмерење избирача погледа"
+
+#. Show warning
+#: ../src/window-content.c:229
+#, c-format
+msgid "Could not create copy of texture of mininized window '%s': %s"
+msgstr "Нисам успео да образујем умножак плетива умањеног прозора „%s“: %s"
+
+#. Show warning
+#: ../src/window-content.c:257
+#, c-format
+msgid "Could not create copy of texture of mininized window '%s'"
+msgstr "Нисам успео да образујем умножак плетива умањеног прозора „%s“"
+
+#: ../src/window-content.c:268
+#, c-format
+msgid "Could not determine size of texture of minimized window '%s'"
+msgstr "Нисам успео да одредим величина плетива умањеног прозора „%s“"
+
+#: ../src/window-content.c:273
+#, c-format
+msgid "Could not allocate memory for copy of texture of mininized window '%s'"
+msgstr "Нисам успео да доделим меморију умношка плетива умањеног прозора „%s“"
+
+#: ../src/window-content.c:384
+#, c-format
+msgid ""
+"Need at least version %d.%d of composite extension but found %d.%d - using "
+"only fallback images"
+msgstr ""
+"Потрбно је најмање издање %d.%d проширења слагања, али је пронађено %d.%d - "
+"користим заменске слике"
+
+#: ../src/window-content.c:388
+msgid "Query for X composite extension failed - using only fallback imagess"
+msgstr "Упит проширења слагања Икса није успео - користим заменске слике"
+
+#: ../src/window-content.c:390
+msgid "X does not support composite extension - using only fallback images"
+msgstr "Икс не подржава проширење слагања - користим само заменске слике"
+
+#: ../src/window-content.c:400
+#, c-format
+msgid ""
+"Query for X damage extension resulted in error code %d - using only still "
+"images of windows"
+msgstr ""
+"Упит проширења оштећења Икса је довео дао грешке под шифром %d - користим "
+"само слике прозора"
+
+#: ../src/window-content.c:659
+#, c-format
+msgid "Could not get pixmap for window '%s"
+msgstr "Нисам успео да добавим мапу тачака прозора %s"
+
+#. We should never get here as existance of composite extension was checked before
+#: ../src/window-content.c:665
+#, c-format
+msgid "Cannot resume window '%s' as composite extension is not available"
+msgstr ""
+"Нисам успео да наставим са приказом прозора „%s“ јер је проширење слагања "
+"недоступно"
+
+#: ../src/window-content.c:706
+#, c-format
+msgid "Could not create damage for window '%s' - using still image of window"
+msgstr "Нисам успео да образујем штету прозора „%s“ - користим слику прозора"
+
+#. Show warning
+#: ../src/window-content.c:865
+#, c-format
+msgid "Could not create fallback texture for window '%s': %s"
+msgstr "Нисам успео да образујем заменско плетиво прозора „%s“: %s"
+
+#: ../src/window-content.c:907
+#, c-format
+msgid "Could not get attributes of window '%s'"
+msgstr "Нисам успео да добавим особине прозора „%s“"
+
+#: ../src/window-content.c:965
+#, c-format
+msgid "Destroying window content cache still containing %d windows."
+msgstr "Прихватна остава садржаја уништених прозора и даље садржи %d прозора."
+
+#: ../src/window-content.c:1570
+msgid "The window to handle and display"
+msgstr "Прозор за управљање и приказ"
+
+#: ../src/window-content.c:1576
+msgid "Suspended"
+msgstr "Обустаљен"
+
+#: ../src/window-content.c:1577
+msgid "Is this window suspended"
+msgstr "Да ли је овај прозор овустављен"
+
+#: ../src/window-content.c:1584
+msgid "Color to draw outline of mapped windows with"
+msgstr "Боја исцртавања обриса на мапираном прозору"
+
+#: ../src/window-content.c:1591
+msgid "Width of line used to draw outline of mapped windows"
+msgstr "Ширина линије за исцртавање обриса мапираног прозора"
+
+#: ../src/window-content.c:1598
+msgid "Include window frame"
+msgstr "Укључи оквир прозора"
+
+#: ../src/window-content.c:1599
+msgid ""
+"Whether the window frame should be included or only the window content "
+"should be shown"
+msgstr ""
+"Да ли оквир прозора треба да буде укључен или да се приказује само садржај "
+"прозора"
+
+#: ../src/window-content.c:1605
+msgid "Unmapped window icon X fill"
+msgstr "Попуна иконицом икс осе немапираног прозора"
+
+#: ../src/window-content.c:1606
+msgid "Whether the unmapped window icon should fill up horizontal space"
+msgstr "Да ли иконица немапираног прозора треба да попуни простор водоравно"
+
+#: ../src/window-content.c:1612
+msgid "Unmapped window icon y fill"
+msgstr "Попуна иконицом ипсилон осе немапираног прозора"
+
+#: ../src/window-content.c:1613
+msgid "Whether the unmapped window icon should fill up vertical space"
+msgstr "Да ли иконица немапираног прозора треба да попуни усправан простор"
+
+#: ../src/window-content.c:1619
+msgid "Unmapped window icon X align"
+msgstr "Поравнање иконице немапираног прозора по икс оси"
+
+#: ../src/window-content.c:1620
+msgid ""
+"The alignment of the unmapped window icon on the X axis within the "
+"allocation in normalized coordinate between 0 and 1"
+msgstr ""
+"Поравнање иконице немапираног прозора по икс оси уз доделу на прилагођену "
+"координату између 0 и 1"
+
+#: ../src/window-content.c:1627
+msgid "Unmapped window icon Y align"
+msgstr "Иконица неуцртаног прозора са ипсилон поравнањем"
+
+#: ../src/window-content.c:1628
+msgid ""
+"The alignment of the unmapped window icon on the Y axis within the "
+"allocation in normalized coordinate between 0 and 1"
+msgstr ""
+"Поравнање иконице неуцртаног прозора на ипсилон оси унутар расподеле "
+"координата између 0 и 1"
+
+#: ../src/window-content.c:1635
+msgid "Unmapped window icon X scale"
+msgstr "Размера немапиране иконице прозора по Y оси"
+
+#: ../src/window-content.c:1636
+msgid "Scale factor of unmapped window icon on the X axis"
+msgstr "Множилац размере немапиране иконице прозора по X оси"
+
+#: ../src/window-content.c:1643
+msgid "Unmapped window icon Y scale"
+msgstr "Размера немапиране иконице прозора по Y оси"
+
+#: ../src/window-content.c:1644
+msgid "Scale factor of unmapped window icon on the Y axis"
+msgstr "Множилац размере иконице немапираног прозора по Y оси"
+
+#: ../src/window-content.c:1651
+msgid "Unmapped window icon gravity"
+msgstr "Тежа иконице немапираног прозора"
+
+#: ../src/window-content.c:1652
+msgid "The anchor point of unmapped window icon"
+msgstr "Тачка сидришта немапиране иконице прозора"
+
+#: ../src/windows-view.c:815
+#, c-format
+msgid "Cannot activate selection of type %s at %s because expecting type %s"
+msgstr ""
+"Нисам успео да покренем врсту избора %s на %s јер је очекивана врста %s"
+
+#: ../src/windows-view.c:946
+msgid "Current workspace"
+msgstr "Тренутни радни простор"
+
+#: ../src/windows-view.c:947
+msgid "The current workspace whose windows are shown"
+msgstr "Тренутни радни простор са ког су приказани прозори"
+
+#: ../src/windows-view.c:962
+msgid ""
+"Whether tthis view should prevent upsclaing any window beyond its real size"
+msgstr ""
+"Да ли овај преглед треба да спречи повећање размере свих прозора преко "
+"стварне њихове величине"
+
+#: ../src/windows-view.c:992
+msgid "Windows"
+msgstr "Прозори"
+
+#: ../src/window-tracker.c:468
+msgid "Active window"
+msgstr "Радни прозор"
+
+#: ../src/window-tracker.c:469
+msgid "The current active window"
+msgstr "Тренутни радни прозор"
+
+#: ../src/window-tracker.c:475
+msgid "Active workspace"
+msgstr "Тренутни радни простор"
+
+#: ../src/window-tracker.c:476
+msgid "The current active workspace"
+msgstr "Тренутни радни простор"
+
+#. Setting new selection was unsuccessful if we get here
+#. Activation was unsuccessful if we get here
+#: ../src/workspace-selector.c:875 ../src/workspace-selector.c:1039
+#, c-format
+msgid "Could not determine workspace of %s to set selection at %s"
+msgstr ""
+"Нисам успео да одредим радни простор за %s ради постављања избора на %s"
+
+#: ../src/workspace-selector.c:1192
+msgid "Maximum size"
+msgstr "Највећа величина"
+
+#: ../src/workspace-selector.c:1193
+msgid "The maximum size of this actor for opposite direction of orientation"
+msgstr "Највећа величина овог чиниоца за супротан правац усмерења"
+
+#: ../src/workspace-selector.c:1200
+msgid "Maximum fraction"
+msgstr "Највећи разломак"
+
+#: ../src/workspace-selector.c:1201
+msgid ""
+"The maximum size of this actor for opposite direction of orientation defined "
+"by fraction between 0.0 and 1.0"
+msgstr ""
+"Највиша величина овог чиниоца за супротан смер усмерења који је одређен "
+"разломком између 0.0 и 1.0"
+
+#: ../src/workspace-selector.c:1208
+msgid "Using fraction"
+msgstr "Користим разломак"
+
+#: ../src/workspace-selector.c:1209
+msgid ""
+"Flag indicating if maximum size is static or defined by fraction between 0.0 "
+"and 1.0"
+msgstr ""
+"Заставица која указује да ли је највиша величина мирујућа или је одређена "
+"разломком између 0.0 и 1.0"
