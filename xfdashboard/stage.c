@@ -816,14 +816,16 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 		return;
 	}
 
-	// TODO: if(!XFDASHBOARD_IS_STAGE_INTERFACE(stage))
-	// TODO: {
-		// TODO: g_critical(_("Interface '%s' from theme '%s' must be an actor of type %s"),
-					// TODO: XFDASHBOARD_THEME_LAYOUT_PRIMARY,
-					// TODO: xfdashboard_theme_get_theme_name(inTheme),
-					// TODO: g_type_name(XFDASHBOARD_TYPE_STAGE_INTERFACE));
-		// TODO: return;
-	// TODO: }
+	/* TODO:
+	if(!XFDASHBOARD_IS_STAGE_INTERFACE(stage))
+	{
+		g_critical(_("Interface '%s' from theme '%s' must be an actor of type %s"),
+					XFDASHBOARD_THEME_LAYOUT_PRIMARY,
+					xfdashboard_theme_get_theme_name(inTheme),
+					g_type_name(XFDASHBOARD_TYPE_STAGE_INTERFACE));
+		return;
+	}
+	*/
 
 	/* Destroy all top-level actors from stage */
 	if(priv->topLevelActor)

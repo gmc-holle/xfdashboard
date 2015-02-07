@@ -69,7 +69,7 @@ enum
 
 	PROP_ACTIVE_WINDOW,
 	PROP_ACTIVE_WORKSPACE,
-	// TODO: PROP_PRIMARY_MONITOR,
+	/* TODO: PROP_PRIMARY_MONITOR, */
 
 	PROP_LAST
 };
@@ -97,9 +97,11 @@ enum
 	SIGNAL_WORKSPACE_REMOVED,
 	SIGNAL_WORKSPACE_NAME_CHANGED,
 
-	// TODO: SIGNAL_PRIMARY_MONITOR_CHANGED,
-	// TODO: SIGNAL_MONITOR_ADDED,
-	// TODO: SIGNAL_MONITOR_REMOVED,
+	/* TODO:
+	SIGNAL_PRIMARY_MONITOR_CHANGED,
+	SIGNAL_MONITOR_ADDED,
+	SIGNAL_MONITOR_REMOVED,
+	*/
 
 	SIGNAL_LAST
 };
@@ -399,8 +401,10 @@ static void _xfdashboard_window_tracker_dispose(GObject *inObject)
 	g_debug("Disposing window tracker");
 	if(priv->screen)
 	{
-		// TODO: Disconnect from all windows
-		// TODO: Disconnect from all workspaces
+		/* TODO:
+		 * - Disconnect from all windows
+		 * - Disconnect from all workspaces
+		 */
 		g_signal_handlers_disconnect_by_data(priv->screen, self);
 		priv->screen=NULL;
 	}
@@ -477,12 +481,14 @@ void xfdashboard_window_tracker_class_init(XfdashboardWindowTrackerClass *klass)
 							WNCK_TYPE_WORKSPACE,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
-	// TODO: XfdashboardWindowTrackerProperties[PROP_PRIMARY_MONITOR]=
-		// TODO: g_param_spec_object("primary-monitor",
-							// TODO: _("Primary monitor"),
-							// TODO: _("The current primary monitor"),
-							// TODO: XFDASHBOARD_TYPE_MONITOR,
-							// TODO: G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+	/* TODO:
+	XfdashboardWindowTrackerProperties[PROP_PRIMARY_MONITOR]=
+		g_param_spec_object("primary-monitor",
+							_("Primary monitor"),
+							_("The current primary monitor"),
+							XFDASHBOARD_TYPE_MONITOR,
+							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+	*/
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowTrackerProperties);
 
