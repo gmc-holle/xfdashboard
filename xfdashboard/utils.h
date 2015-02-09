@@ -54,8 +54,6 @@ void xfdashboard_register_gvalue_transformation_funcs(void);
 gboolean xfdashboard_actor_contains_child_deep(ClutterActor *inActor, ClutterActor *inChild);
 ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar *inName);
 
-GAppInfo* xfdashboard_garcon_menu_item_get_app_info(GarconMenuItem *inMenuItem);
-
 gchar** xfdashboard_split_string(const gchar *inString, const gchar *inDelimiters);
 
 gboolean xfdashboard_is_valid_id(const gchar *inString);
