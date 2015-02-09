@@ -26,9 +26,9 @@
 #define __XFDASHBOARD_APPLICATION_BUTTON__
 
 #include <garcon/garcon.h>
-#include <gio/gdesktopappinfo.h>
 
 #include "button.h"
+#include "desktop-app-info.h"
 
 G_BEGIN_DECLS
 
@@ -68,12 +68,10 @@ GType xfdashboard_application_button_get_type(void) G_GNUC_CONST;
 ClutterActor* xfdashboard_application_button_new(void);
 ClutterActor* xfdashboard_application_button_new_from_desktop_file(const gchar *inDesktopFilename);
 ClutterActor* xfdashboard_application_button_new_from_menu(GarconMenuElement *inMenuElement);
+ClutterActor* xfdashboard_application_button_new_from_app_info(GAppInfo *inAppInfo);
 
-GarconMenuElement* xfdashboard_application_button_get_menu_element(XfdashboardApplicationButton *self);
-void xfdashboard_application_button_set_menu_element(XfdashboardApplicationButton *self, GarconMenuElement *inMenuElement);
-
-const gchar* xfdashboard_application_button_get_desktop_filename(XfdashboardApplicationButton *self);
-void xfdashboard_application_button_set_desktop_filename(XfdashboardApplicationButton *self, const gchar *inDesktopFilename);
+GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButton *self);
+void xfdashboard_application_button_set_app_info(XfdashboardApplicationButton *self, GAppInfo *inAppInfo);
 
 gboolean xfdashboard_application_button_get_show_description(XfdashboardApplicationButton *self);
 void xfdashboard_application_button_set_show_description(XfdashboardApplicationButton *self, gboolean inShowDescription);
@@ -84,7 +82,6 @@ void xfdashboard_application_button_set_format_title_only(XfdashboardApplication
 const gchar* xfdashboard_application_button_get_format_title_description(XfdashboardApplicationButton *self);
 void xfdashboard_application_button_set_format_title_description(XfdashboardApplicationButton *self, const gchar *inFormat);
 
-GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButton *self);
 const gchar* xfdashboard_application_button_get_display_name(XfdashboardApplicationButton *self);
 const gchar* xfdashboard_application_button_get_icon_name(XfdashboardApplicationButton *self);
 

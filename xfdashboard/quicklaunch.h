@@ -24,8 +24,6 @@
 #ifndef __XFDASHBOARD_QUICKLAUNCH__
 #define __XFDASHBOARD_QUICKLAUNCH__
 
-#include <gio/gdesktopappinfo.h>
-
 #include "background.h"
 #include "toggle-button.h"
 #include "focusable.h"

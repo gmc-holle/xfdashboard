@@ -42,6 +42,7 @@
 #include "focus-manager.h"
 #include "dynamic-table-layout.h"
 #include "utils.h"
+#include "desktop-app-info.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_applications_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -102,7 +103,7 @@ static void _xfdashboard_applications_view_on_drag_begin(ClutterDragAction *inAc
 															ClutterModifierType inModifiers,
 															gpointer inUserData)
 {
-	const gchar							*desktopName;
+	GAppInfo							*appInfo;
 	ClutterActor						*dragHandle;
 	ClutterStage						*stage;
 
@@ -117,9 +118,9 @@ static void _xfdashboard_applications_view_on_drag_begin(ClutterDragAction *inAc
 	stage=CLUTTER_STAGE(clutter_actor_get_stage(inActor));
 
 	/* Create a application icon for drag handle */
-	desktopName=xfdashboard_application_button_get_desktop_filename(XFDASHBOARD_APPLICATION_BUTTON(inActor));
+	appInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(inActor));
 
-	dragHandle=xfdashboard_application_button_new_from_desktop_file(desktopName);
+	dragHandle=xfdashboard_application_button_new_from_app_info(appInfo);
 	clutter_actor_set_position(dragHandle, inStageX, inStageY);
 	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
 
@@ -159,6 +160,43 @@ static void _xfdashboard_applications_view_on_drag_end(ClutterDragAction *inActi
 }
 
 /* Filter of applications data model has changed */
+static void _xfdashboard_applications_view_on_menu_clicked(XfdashboardButton *inButton, gpointer inUserData)
+{
+	XfdashboardApplicationsView			*self;
+	XfdashboardApplicationsViewPrivate	*priv;
+	ClutterActor						*parent;
+	GarconMenu							*menu;
+
+	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inButton));
+	g_return_if_fail(GARCON_IS_MENU(inUserData));
+
+	menu=GARCON_MENU(inUserData);
+
+	/* Find this view's object */
+	parent=clutter_actor_get_parent(CLUTTER_ACTOR(inButton));
+	while(parent && !XFDASHBOARD_IS_APPLICATIONS_VIEW(parent))
+	{
+		parent=clutter_actor_get_parent(parent);
+	}
+
+	if(!parent)
+	{
+		g_warning(_("Could not find view of type %s for menu '%s'"),
+					g_type_name(XFDASHBOARD_TYPE_APPLICATIONS_VIEW),
+					garcon_menu_element_get_name(GARCON_MENU_ELEMENT(menu)));
+		return;
+	}
+
+	/* Get this view's object */
+	self=XFDASHBOARD_APPLICATIONS_VIEW(parent);
+	priv=self->priv;
+
+	/* Change menu */
+	priv->currentRootMenuElement=GARCON_MENU_ELEMENT(menu);
+	xfdashboard_applications_menu_model_filter_by_section(priv->apps, menu);
+	xfdashboard_view_scroll_to(XFDASHBOARD_VIEW(self), -1, 0);
+}
+
 static void _xfdashboard_applications_view_on_parent_menu_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
 {
 	XfdashboardApplicationsViewPrivate	*priv;
@@ -182,39 +220,20 @@ static void _xfdashboard_applications_view_on_parent_menu_clicked(XfdashboardApp
 
 static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
 {
-	XfdashboardApplicationsViewPrivate	*priv;
 	XfdashboardApplicationButton		*button;
-	GarconMenuElement					*element;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
 
-	priv=self->priv;
 	button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
 
-	/* Get associated menu element of button */
-	element=xfdashboard_application_button_get_menu_element(button);
-
-	/* If clicked item is a menu set it as new parent one */
-	if(GARCON_IS_MENU(element))
+	/* A menu item was clicked so execute command and quit application */
+	if(xfdashboard_application_button_execute(button, NULL))
 	{
-		priv->currentRootMenuElement=element;
-		xfdashboard_applications_menu_model_filter_by_section(priv->apps, GARCON_MENU(element));
-		xfdashboard_view_scroll_to(XFDASHBOARD_VIEW(self), -1, 0);
+		/* Launching application seems to be successfuly so quit application */
+		xfdashboard_application_quit();
+		return;
 	}
-		/* If clicked item is a menu item execute command of menu item clicked
-		 * and quit application
-		 */
-		else if(GARCON_IS_MENU_ITEM(element))
-		{
-			/* Launch application */
-			if(xfdashboard_application_button_execute(button, NULL))
-			{
-				/* Launching application seems to be successfuly so quit application */
-				xfdashboard_application_quit();
-				return;
-			}
-		}
 }
 
 static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsView *self, gpointer inUserData)
@@ -225,6 +244,7 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 	GarconMenuElement					*menuElement=NULL;
 	GarconMenu							*parentMenu=NULL;
 	ClutterAction						*dragAction;
+	GAppInfo							*appInfo;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
 
@@ -291,7 +311,41 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 			/* Create actor for menu element. Support drag'n'drop at actor if
 			 * menu element is a menu item.
 			 */
-			actor=xfdashboard_application_button_new_from_menu(menuElement);
+			if(GARCON_IS_MENU_ITEM(menuElement))
+			{
+				appInfo=xfdashboard_desktop_app_info_new_from_menu_item(GARCON_MENU_ITEM(menuElement));
+				actor=xfdashboard_application_button_new_from_app_info(appInfo);
+				g_object_unref(appInfo);
+
+				g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_item_clicked), self);
+			}
+				else
+				{
+					gchar		*actorText;
+					const gchar	*iconName;
+
+					actor=xfdashboard_button_new();
+
+					iconName=garcon_menu_element_get_icon_name(menuElement);
+					if(iconName) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(actor), iconName);
+
+					if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
+					{
+						actorText=g_markup_printf_escaped(priv->formatTitleDescription,
+															garcon_menu_element_get_name(menuElement),
+															garcon_menu_element_get_comment(menuElement));
+					}
+						else
+						{
+							actorText=g_markup_printf_escaped(priv->formatTitleOnly,
+																garcon_menu_element_get_name(menuElement));
+						}
+					xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), actorText);
+					g_free(actorText);
+
+					g_signal_connect(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_menu_clicked), menuElement);
+				}
+
 			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-list");
 				else xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-icon");
 
@@ -300,8 +354,6 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 			clutter_actor_set_y_expand(CLUTTER_ACTOR(actor), TRUE);
 			clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(actor));
 			clutter_actor_show(actor);
-
-			g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_item_clicked), self);
 
 			if(GARCON_IS_MENU_ITEM(menuElement))
 			{

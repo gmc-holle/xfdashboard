@@ -29,6 +29,7 @@
 #include <glib/gi18n-lib.h>
 
 #include "applications-menu-model.h"
+#include "application-database.h"
 
 /* Define these classes in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsMenuModel,
@@ -42,7 +43,10 @@ G_DEFINE_TYPE(XfdashboardApplicationsMenuModel,
 struct _XfdashboardApplicationsMenuModelPrivate
 {
 	/* Instance related */
-	GarconMenu		*rootMenu;
+	GarconMenu						*rootMenu;
+
+	XfdashboardApplicationDatabase	*appDB;
+	guint							reloadRequiredSignalID;
 };
 
 /* Signals */
@@ -70,14 +74,10 @@ static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicati
 static void _xfdashboard_applications_menu_model_on_reload_required(XfdashboardApplicationsMenuModel *self,
 																	gpointer inUserData)
 {
-	GarconMenu		*menu;
-
-	g_return_if_fail(GARCON_IS_MENU(inUserData));
-
-	menu=GARCON_MENU(inUserData);
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_DATABASE(inUserData));
 
 	/* Reload menu by filling it again. This also emits all necessary signals. */
-	g_debug("Menu '%s' changed and needs to be reloaded.", garcon_menu_element_get_name(GARCON_MENU_ELEMENT(menu)));
+	g_debug("Applications menu has changed and needs to be reloaded.");
 	_xfdashboard_applications_menu_model_fill_model(self);
 }
 
@@ -100,17 +100,10 @@ static void _xfdashboard_applications_menu_model_clear(XfdashboardApplicationsMe
 	{
 		/* Get data from model for clean up */
 		menuElement=NULL;
-
 		iterator=clutter_model_get_iter_at_row(CLUTTER_MODEL(self), 0);
 		clutter_model_iter_get(iterator,
 								XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
 								-1);
-
-		/* Remove signal handler from menu element */
-		if(menuElement)
-		{
-			g_signal_handlers_disconnect_by_func(menuElement, G_CALLBACK(_xfdashboard_applications_menu_model_on_reload_required), self);
-		}
 
 		/* Remove row */
 		clutter_model_remove(CLUTTER_MODEL(self), 0);
@@ -505,9 +498,6 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 	}
 	g_list_free(elements);
 
-	/* Connect signal 'reload-required' to recognize changes in menus */
-	g_signal_connect_swapped(inMenu, "reload-required", G_CALLBACK(_xfdashboard_applications_menu_model_on_reload_required), self);
-
 	/* Release allocated resources */
 	g_object_unref(inMenu);
 }
@@ -515,14 +505,12 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicationsMenuModel *self)
 {
 	XfdashboardApplicationsMenuModelPrivate		*priv;
-	GError										*error;
 	GarconMenuItemCache							*cache;
 	XfdashboardApplicationsMenuModelFillData	fillData;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(self));
 
 	priv=self->priv;
-	error=NULL;
 
 	/* Clear model data */
 	_xfdashboard_applications_menu_model_clear(self);
@@ -535,18 +523,7 @@ static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicati
 	g_object_unref(cache);
 
 	/* Load root menu */
-	priv->rootMenu=garcon_menu_new_applications();
-	if(garcon_menu_load(priv->rootMenu, NULL, &error)==FALSE)
-	{
-		g_warning(_("Could not load applications menu: %s"), error ? error->message : _("Unknown error"));
-		if(error) g_error_free(error);
-		g_object_unref(priv->rootMenu);
-		priv->rootMenu=NULL;
-
-		/* Emit "loaded" signal even if it fails */
-		g_signal_emit(self, XfdashboardApplicationsMenuModelSignals[SIGNAL_LOADED], 0);
-		return;
-	}
+	priv->rootMenu=xfdashboard_application_database_get_application_menu(priv->appDB);
 
 	/* Iterate through menus recursively to add them to model */
 	fillData.sequenceID=0;
@@ -748,6 +725,18 @@ static void _xfdashboard_applications_menu_model_dispose(GObject *inObject)
 		priv->rootMenu=NULL;
 	}
 
+	if(priv->appDB)
+	{
+		if(priv->reloadRequiredSignalID)
+		{
+			g_signal_handler_disconnect(priv->appDB, priv->reloadRequiredSignalID);
+			priv->reloadRequiredSignalID=0;
+		}
+
+		g_object_unref(priv->appDB);
+		priv->appDB=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_applications_menu_model_parent_class)->dispose(inObject);
 }
@@ -809,11 +798,19 @@ static void xfdashboard_applications_menu_model_init(XfdashboardApplicationsMenu
 
 	/* Set up default values */
 	priv->rootMenu=NULL;
+	priv->appDB=NULL;
+	priv->reloadRequiredSignalID=0;
 
 	/* Set up model */
 	clutter_model_set_types(CLUTTER_MODEL(self), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_LAST, columnTypes);
 	clutter_model_set_names(CLUTTER_MODEL(self), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_LAST, columnNames);
 
+	/* Get application database and connect signals */
+	priv->appDB=xfdashboard_application_database_get_default();
+	priv->reloadRequiredSignalID=g_signal_connect_swapped(priv->appDB,
+															"menu-reload-required",
+															G_CALLBACK(_xfdashboard_applications_menu_model_on_reload_required),
+															self);
 	/* Defer filling model */
 	clutter_threads_add_idle(_xfdashboard_applications_menu_model_init_idle, self);
 }

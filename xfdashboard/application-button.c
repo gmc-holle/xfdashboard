@@ -30,6 +30,7 @@
 
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
+#include <gio/gdesktopappinfo.h>
 
 #include "enums.h"
 #include "utils.h"
@@ -39,14 +40,6 @@ G_DEFINE_TYPE(XfdashboardApplicationButton,
 				xfdashboard_application_button,
 				XFDASHBOARD_TYPE_BUTTON)
 
-/* Type of application button */
-typedef enum /*< skip,prefix=XFDASHBOARD_APPLICATION_BUTTON_TYPE >*/
-{
-	XFDASHBOARD_APPLICATION_BUTTON_TYPE_NONE=0,
-	XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM,
-	XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE
-} XfdashboardApplicationButtonType;
-
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_APPLICATION_BUTTON_GET_PRIVATE(obj) \
 	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_APPLICATION_BUTTON, XfdashboardApplicationButtonPrivate))
@@ -54,16 +47,14 @@ typedef enum /*< skip,prefix=XFDASHBOARD_APPLICATION_BUTTON_TYPE >*/
 struct _XfdashboardApplicationButtonPrivate
 {
 	/* Properties related */
-	GarconMenuElement					*menuElement;
-	gchar								*desktopFilename;
+	GAppInfo							*appInfo;
 
 	gboolean							showDescription;
 	gchar								*formatTitleOnly;
 	gchar								*formatTitleDescription;
 
 	/* Instance related */
-	XfdashboardApplicationButtonType	type;
-	GAppInfo							*appInfo;
+	guint								appInfoChangedID;
 };
 
 /* Properties */
@@ -71,8 +62,7 @@ enum
 {
 	PROP_0,
 
-	PROP_MENU_ELEMENT,
-	PROP_DESKTOP_FILENAME,
+	PROP_APP_INFO,
 
 	PROP_SHOW_DESCRIPTION,
 
@@ -86,44 +76,6 @@ static GParamSpec* XfdashboardApplicationButtonProperties[PROP_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
-
-/* Reset and release allocated resources of application button */
-static void _xfdashboard_application_button_clear(XfdashboardApplicationButton *self)
-{
-	XfdashboardApplicationButtonPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
-
-	priv=self->priv;
-
-	/* Release allocated resources */
-	if(priv->menuElement)
-	{
-		g_object_unref(priv->menuElement);
-		priv->menuElement=NULL;
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_MENU_ELEMENT]);
-	}
-
-	if(priv->appInfo)
-	{
-		g_object_unref(priv->appInfo);
-		priv->appInfo=NULL;
-	}
-
-	if(priv->desktopFilename)
-	{
-		g_free(priv->desktopFilename);
-		priv->desktopFilename=NULL;
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]);
-	}
-
-	/* Reset application button */
-	priv->type=XFDASHBOARD_APPLICATION_BUTTON_TYPE_NONE;
-}
 
 /* Update text of button actor */
 static void _xfdashboard_application_button_update_text(XfdashboardApplicationButton *self)
@@ -141,41 +93,10 @@ static void _xfdashboard_application_button_update_text(XfdashboardApplicationBu
 	text=NULL;
 
 	/* Get title and description where available */
-	switch(priv->type)
+	if(priv->appInfo)
 	{
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_NONE:
-			/* Do nothing */
-			break;
-
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
-			if(priv->appInfo)
-			{
-				title=g_app_info_get_name(priv->appInfo);
-				description=g_app_info_get_description(priv->appInfo);
-			}
-				else
-				{
-					title=garcon_menu_element_get_name(priv->menuElement);
-					description=garcon_menu_element_get_comment(priv->menuElement);
-				}
-			break;
-
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
-			if(priv->appInfo)
-			{
-				title=g_app_info_get_name(priv->appInfo);
-				description=g_app_info_get_description(priv->appInfo);
-			}
-				else
-				{
-					title=priv->desktopFilename;
-					description=_("No information available for application!");
-				}
-			break;
-
-		default:
-			g_critical(_("Cannot update application icon of unknown type (%d)"), priv->type);
-			break;
+		title=g_app_info_get_name(priv->appInfo);
+		description=g_app_info_get_description(priv->appInfo);
 	}
 
 	/* Create text depending on show-secondary property and set up button */
@@ -189,7 +110,9 @@ static void _xfdashboard_application_button_update_text(XfdashboardApplicationBu
 			if(priv->formatTitleDescription) text=g_markup_printf_escaped(priv->formatTitleDescription, title ? title : "", description ? description : "");
 				else text=g_strdup_printf("%s\n%s", title ? title : "", description ? description : "");
 		}
+
 	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), text);
+
 	if(text) g_free(text);
 }
 
@@ -204,45 +127,35 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 	priv=self->priv;
 	iconName=NULL;
 
-	/* Get icon where available */
-	switch(priv->type)
+	/* Get icon */
+	if(priv->appInfo)
 	{
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_NONE:
-			/* Do nothing */
-			break;
+		GIcon								*gicon;
 
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
-			if(priv->appInfo)
-			{
-				GIcon						*gicon;
-
-				gicon=g_app_info_get_icon(priv->appInfo);
-				if(gicon) iconName=g_icon_to_string(gicon);
-			}
-
-			if(!iconName) iconName=garcon_menu_element_get_icon_name(priv->menuElement);
-			if(!iconName) iconName=GTK_STOCK_MISSING_IMAGE;
-			break;
-
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
-			if(priv->appInfo)
-			{
-				GIcon						*gicon;
-
-				gicon=g_app_info_get_icon(priv->appInfo);
-				if(gicon) iconName=g_icon_to_string(gicon);
-			}
-
-			if(!iconName) iconName=GTK_STOCK_MISSING_IMAGE;
-			break;
-
-		default:
-			g_critical(_("Cannot update application icon of unknown type (%d)"), priv->type);
-			break;
+		gicon=g_app_info_get_icon(G_APP_INFO(priv->appInfo));
+		if(gicon)
+		{
+			iconName=g_icon_to_string(gicon);
+			g_object_unref(gicon);
+		}
 	}
+
+	if(!iconName) iconName=GTK_STOCK_MISSING_IMAGE;
 
 	/* Set up button and release allocated resources */
 	if(iconName) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(self), iconName);
+}
+
+/* The app info has changed */
+static void _xfdashboard_application_button_on_app_info_changed(XfdashboardApplicationButton *self,
+																	gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
+
+g_message("%s: application-button=%p changed", __func__, self);
+
+	_xfdashboard_application_button_update_text(self);
+	_xfdashboard_application_button_update_icon(self);
 }
 
 /* The icon-size in button has changed */
@@ -250,6 +163,8 @@ static void _xfdashboard_application_button_on_icon_size_changed(XfdashboardAppl
 																	GParamSpec *inSpec,
 																	gpointer inUserData)
 {
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
+
 	_xfdashboard_application_button_update_icon(self);
 }
 
@@ -258,10 +173,33 @@ static void _xfdashboard_application_button_on_icon_size_changed(XfdashboardAppl
 /* Dispose this object */
 static void _xfdashboard_application_button_dispose(GObject *inObject)
 {
-	XfdashboardApplicationButton		*self=XFDASHBOARD_APPLICATION_BUTTON(inObject);
+	XfdashboardApplicationButton			*self=XFDASHBOARD_APPLICATION_BUTTON(inObject);
+	XfdashboardApplicationButtonPrivate		*priv=self->priv;
 
 	/* Release our allocated variables */
-	_xfdashboard_application_button_clear(self);
+	if(priv->appInfo)
+	{
+		if(priv->appInfoChangedID)
+		{
+			g_signal_handler_disconnect(priv->appInfo, priv->appInfoChangedID);
+			priv->appInfoChangedID=0;
+		}
+
+		g_object_unref(priv->appInfo);
+		priv->appInfo=NULL;
+	}
+
+	if(priv->formatTitleOnly)
+	{
+		g_free(priv->formatTitleOnly);
+		priv->formatTitleOnly=NULL;
+	}
+
+	if(priv->formatTitleDescription)
+	{
+		g_free(priv->formatTitleDescription);
+		priv->formatTitleDescription=NULL;
+	}
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_application_button_parent_class)->dispose(inObject);
@@ -277,12 +215,8 @@ static void _xfdashboard_application_button_set_property(GObject *inObject,
 
 	switch(inPropID)
 	{
-		case PROP_MENU_ELEMENT:
-			xfdashboard_application_button_set_menu_element(self, GARCON_MENU_ELEMENT(g_value_get_object(inValue)));
-			break;
-
-		case PROP_DESKTOP_FILENAME:
-			xfdashboard_application_button_set_desktop_filename(self, g_value_get_string(inValue));
+		case PROP_APP_INFO:
+			xfdashboard_application_button_set_app_info(self, G_APP_INFO(g_value_get_object(inValue)));
 			break;
 
 		case PROP_SHOW_DESCRIPTION:
@@ -313,12 +247,8 @@ static void _xfdashboard_application_button_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
-		case PROP_MENU_ELEMENT:
-			g_value_set_object(outValue, priv->menuElement);
-			break;
-
-		case PROP_DESKTOP_FILENAME:
-			g_value_set_string(outValue, priv->desktopFilename);
+		case PROP_APP_INFO:
+			g_value_set_object(outValue, priv->appInfo);
 			break;
 
 		case PROP_SHOW_DESCRIPTION:
@@ -357,18 +287,11 @@ static void xfdashboard_application_button_class_init(XfdashboardApplicationButt
 	g_type_class_add_private(klass, sizeof(XfdashboardApplicationButtonPrivate));
 
 	/* Define properties */
-	XfdashboardApplicationButtonProperties[PROP_MENU_ELEMENT]=
-		g_param_spec_object("menu-element",
-								_("Menu element"),
-								_("The menu element whose title and description to display"),
-								GARCON_TYPE_MENU_ELEMENT,
-								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]=
-		g_param_spec_string("desktop-filename",
-								_("Desktop file name"),
-								_("File name of desktop file whose title and description to display"),
-								NULL,
+	XfdashboardApplicationButtonProperties[PROP_APP_INFO]=
+		g_param_spec_object("app-info",
+								_("Application information"),
+								_("The application information whose title and description to display"),
+								G_TYPE_APP_INFO,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationButtonProperties[PROP_SHOW_DESCRIPTION]=
@@ -413,10 +336,7 @@ static void xfdashboard_application_button_init(XfdashboardApplicationButton *se
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set up default values */
-	priv->type=XFDASHBOARD_APPLICATION_BUTTON_TYPE_NONE;
-	priv->menuElement=NULL;
 	priv->appInfo=NULL;
-	priv->desktopFilename=NULL;
 	priv->showDescription=FALSE;
 	priv->formatTitleOnly=NULL;
 	priv->formatTitleDescription=NULL;
@@ -440,63 +360,82 @@ ClutterActor* xfdashboard_application_button_new_from_desktop_file(const gchar *
 {
 	g_return_val_if_fail(inDesktopFilename, NULL);
 
-	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
+	g_warning("[BAD] %s called to create application button for desktop file '%s'", __func__, inDesktopFilename);
+
+/*	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
 							"button-style", XFDASHBOARD_STYLE_BOTH,
 							"single-line", FALSE,
 							"desktop-filename", inDesktopFilename,
-							NULL));
+							NULL));*/
+	return(NULL);
 }
 
 ClutterActor* xfdashboard_application_button_new_from_menu(GarconMenuElement *inMenuElement)
 {
 	g_return_val_if_fail(GARCON_IS_MENU_ELEMENT(inMenuElement), NULL);
 
-	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
+	g_warning("[BAD] %s called to create application button for menu element '%s'", __func__, garcon_menu_element_get_name(inMenuElement));
+
+/*	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
 							"button-style", XFDASHBOARD_STYLE_BOTH,
 							"single-line", FALSE,
 							"menu-element", inMenuElement,
+							NULL));*/
+	return(NULL);
+}
+
+ClutterActor* xfdashboard_application_button_new_from_app_info(GAppInfo *inAppInfo)
+{
+	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), NULL);
+
+	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
+							"button-style", XFDASHBOARD_STYLE_BOTH,
+							"single-line", FALSE,
+							"app-info", inAppInfo,
 							NULL));
 }
 
-/* Get/set menu element of application button */
-GarconMenuElement* xfdashboard_application_button_get_menu_element(XfdashboardApplicationButton *self)
+/* Get/set application information for this application button */
+GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButton *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), NULL);
 
-	return(self->priv->menuElement);
+	return(self->priv->appInfo);
 }
 
-void xfdashboard_application_button_set_menu_element(XfdashboardApplicationButton *self, GarconMenuElement *inMenuElement)
+void xfdashboard_application_button_set_app_info(XfdashboardApplicationButton *self, GAppInfo *inAppInfo)
 {
 	XfdashboardApplicationButtonPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
-	g_return_if_fail(GARCON_IS_MENU_ELEMENT(inMenuElement));
+	g_return_if_fail(G_IS_APP_INFO(inAppInfo));
 
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->type!=XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM ||
-		garcon_menu_element_equal(inMenuElement, priv->menuElement)==FALSE)
+	if(!priv->appInfo ||
+		!g_app_info_equal(G_APP_INFO(priv->appInfo), G_APP_INFO(inAppInfo)))
 	{
-		/* Freeze notifications and collect them */
-		g_object_freeze_notify(G_OBJECT(self));
-
-		/* Clear application button */
-		_xfdashboard_application_button_clear(self);
-
 		/* Set value */
-		priv->type=XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM;
-		priv->menuElement=g_object_ref(GARCON_MENU_ELEMENT(inMenuElement));
-
-		/* Get desktop ID if available */
-		if(GARCON_IS_MENU_ITEM(inMenuElement))
+		if(priv->appInfo)
 		{
-			priv->appInfo=xfdashboard_garcon_menu_item_get_app_info(GARCON_MENU_ITEM(inMenuElement));
-			if(priv->appInfo) priv->desktopFilename=g_strdup(g_app_info_get_id(priv->appInfo));
+			if(priv->appInfoChangedID)
+			{
+				g_signal_handler_disconnect(priv->appInfo, priv->appInfoChangedID);
+				priv->appInfoChangedID=0;
+			}
 
-			/* Notify about property change */
-			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]);
+			g_object_unref(priv->appInfo);
+			priv->appInfo=NULL;
+		}
+
+		priv->appInfo=g_object_ref(inAppInfo);
+		if(XFDASHBOARD_IS_DESKTOP_APP_INFO(priv->appInfo))
+		{
+			priv->appInfoChangedID=g_signal_connect_swapped(priv->appInfo,
+															"changed",
+															G_CALLBACK(_xfdashboard_application_button_on_app_info_changed),
+															self);
 		}
 
 		/* Update actor */
@@ -504,71 +443,7 @@ void xfdashboard_application_button_set_menu_element(XfdashboardApplicationButto
 		_xfdashboard_application_button_update_icon(self);
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_MENU_ELEMENT]);
-
-		/* Thaw notifications and send them now */
-		g_object_thaw_notify(G_OBJECT(self));
-	}
-}
-
-/* Get/set desktop filename of application button */
-const gchar* xfdashboard_application_button_get_desktop_filename(XfdashboardApplicationButton *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), NULL);
-
-	return(self->priv->desktopFilename);
-}
-
-void xfdashboard_application_button_set_desktop_filename(XfdashboardApplicationButton *self, const gchar *inDesktopFilename)
-{
-	XfdashboardApplicationButtonPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
-	g_return_if_fail(inDesktopFilename!=NULL);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->type!=XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE ||
-		g_strcmp0(inDesktopFilename, priv->desktopFilename)!=0)
-	{
-		/* Freeze notifications and collect them */
-		g_object_freeze_notify(G_OBJECT(self));
-
-		/* Clear application button */
-		_xfdashboard_application_button_clear(self);
-
-		/* Set value */
-		priv->type=XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE;
-		priv->desktopFilename=g_strdup(inDesktopFilename);
-
-		/* Get new application information of basename of desktop file given */
-		if(priv->desktopFilename)
-		{
-			if(g_path_is_absolute(priv->desktopFilename))
-			{
-				priv->appInfo=G_APP_INFO(g_desktop_app_info_new_from_filename(priv->desktopFilename));
-			}
-				else
-				{
-					priv->appInfo=G_APP_INFO(g_desktop_app_info_new(priv->desktopFilename));
-				}
-
-			if(!priv->appInfo)
-			{
-				g_warning(_("Could not get application info for '%s'"), priv->desktopFilename);
-			}
-		}
-
-		/* Update actor */
-		_xfdashboard_application_button_update_text(self);
-		_xfdashboard_application_button_update_icon(self);
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_DESKTOP_FILENAME]);
-
-		/* Thaw notifications and send them now */
-		g_object_thaw_notify(G_OBJECT(self));
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_APP_INFO]);
 	}
 }
 
@@ -666,38 +541,6 @@ void xfdashboard_application_button_set_format_title_description(XfdashboardAppl
 	}
 }
 
-/* Get application information */
-GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButton *self)
-{
-	XfdashboardApplicationButtonPrivate		*priv;
-	GAppInfo								*appInfo;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), FALSE);
-
-	priv=self->priv;
-	appInfo=NULL;
-
-	/* Get GAppInfo depending on type */
-	switch(priv->type)
-	{
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_NONE:
-			g_warning(_("No application information for an unconfigured application button."));
-			break;
-
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
-			if(priv->appInfo) appInfo=G_APP_INFO(g_object_ref(priv->appInfo));
-			break;
-
-		default:
-			g_assert_not_reached();
-			break;
-	}
-
-	/* Return GAppInfo */
-	return(appInfo);
-}
-
 /* Get display name of application button */
 const gchar* xfdashboard_application_button_get_display_name(XfdashboardApplicationButton *self)
 {
@@ -709,21 +552,10 @@ const gchar* xfdashboard_application_button_get_display_name(XfdashboardApplicat
 	priv=self->priv;
 	title=NULL;
 
-	/* Get title where available */
-	switch(priv->type)
+	/* Get title */
+	if(priv->appInfo)
 	{
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_NONE:
-			/* Do nothing */
-			break;
-
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
-			title=g_app_info_get_name(priv->appInfo);
-			break;
-
-		default:
-			g_critical(_("Cannot get display name of application icon because of unknown type (%d)"), priv->type);
-			break;
+		title=g_app_info_get_name(priv->appInfo);
 	}
 
 	/* Return display name */
@@ -742,26 +574,12 @@ const gchar* xfdashboard_application_button_get_icon_name(XfdashboardApplication
 	iconName=NULL;
 
 	/* Get icon where available */
-	switch(priv->type)
+	if(priv->appInfo)
 	{
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_NONE:
-			/* Do nothing */
-			break;
+		GIcon						*gicon;
 
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_MENU_ITEM:
-		case XFDASHBOARD_APPLICATION_BUTTON_TYPE_DESKTOP_FILE:
-			if(priv->appInfo)
-			{
-				GIcon						*gicon;
-
-				gicon=g_app_info_get_icon(priv->appInfo);
-				if(gicon) iconName=g_icon_to_string(gicon);
-			}
-			break;
-
-		default:
-			g_critical(_("Cannot get icon name of application icon because of unknown type (%d)"), priv->type);
-			break;
+		gicon=g_app_info_get_icon(priv->appInfo);
+		if(gicon) iconName=g_icon_to_string(gicon);
 	}
 
 	/* Return display name */
@@ -772,28 +590,26 @@ const gchar* xfdashboard_application_button_get_icon_name(XfdashboardApplication
 gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self, GAppLaunchContext *inContext)
 {
 	XfdashboardApplicationButtonPrivate		*priv;
-	GAppInfo								*appInfo;
 	GError									*error;
 	gboolean								started;
 	GAppLaunchContext						*context;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), FALSE);
-	g_return_val_if_fail(inContext==NULL || G_IS_APP_LAUNCH_CONTEXT(inContext), FALSE);
+	g_return_val_if_fail(!inContext || G_IS_APP_LAUNCH_CONTEXT(inContext), FALSE);
 
 	priv=self->priv;
 	started=FALSE;
 
 	/* Launch application */
-	appInfo=xfdashboard_application_button_get_app_info(self);
-	if(!appInfo)
+	if(!priv->appInfo)
 	{
 		xfdashboard_notify(CLUTTER_ACTOR(self),
 							GTK_STOCK_DIALOG_ERROR,
 							_("Launching application '%s' failed: %s"),
-							priv->desktopFilename,
+							xfdashboard_application_button_get_display_name(self),
 							_("No information available for application"));
 		g_warning(_("Launching application '%s' failed: %s"),
-					priv->desktopFilename,
+					xfdashboard_application_button_get_display_name(self),
 					_("No information available for application"));
 		return(FALSE);
 	}
@@ -802,7 +618,7 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 		else context=xfdashboard_create_app_context(NULL);
 
 	error=NULL;
-	if(!g_app_info_launch(appInfo, NULL, context, &error))
+	if(!g_app_info_launch(priv->appInfo, NULL, context, &error))
 	{
 		xfdashboard_notify(CLUTTER_ACTOR(self),
 							xfdashboard_application_button_get_icon_name(self),
@@ -824,7 +640,6 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 		}
 
 	/* Clean up allocated resources */
-	g_object_unref(appInfo);
 	g_object_unref(context);
 
 	/* Return status */
