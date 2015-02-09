@@ -20,6 +20,7 @@ xfdashboard_headers = \
 	actor.h \
 	application.h \
 	application-button.h \
+	application-database.h \
 	applications-menu-model.h \
 	applications-search-provider.h \
 	applications-view.h \
@@ -30,6 +31,7 @@ xfdashboard_headers = \
 	click-action.h \
 	collapse-box.h \
 	css-selector.h \
+	desktop-app-info.h \
 	drag-action.h \
 	drop-action.h \
 	dynamic-table-layout.h \
@@ -77,6 +79,7 @@ xfdashboard_SOURCES = \
 	actor.c \
 	application.c \
 	application-button.c \
+	application-database.c \
 	applications-menu-model.c \
 	applications-search-provider.c \
 	applications-view.c \
@@ -87,9 +90,10 @@ xfdashboard_SOURCES = \
 	click-action.c \
 	collapse-box.c \
 	css-selector.c \
-	dynamic-table-layout.c \
+	desktop-app-info.c \
 	drag-action.c \
 	drop-action.c \
+	dynamic-table-layout.c \
 	fill-box-layout.c \
 	focusable.c \
 	focus-manager.c \
