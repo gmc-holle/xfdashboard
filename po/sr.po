@@ -1,23 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Саша Петровић <salepetronije@gmail.com>, 2014, 2015.
-#
+# 
+# Translators:
+# Саша Петровић <salepetronije@gmail.com>, 2014-2015
 msgid ""
 msgstr ""
-"Project-Id-Version: master\n"
+"Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-30 11:35+0100\n"
-"PO-Revision-Date: 2015-02-07 12:36+0100\n"
+"POT-Creation-Date: 2015-01-12 14:10+0100\n"
+"PO-Revision-Date: 2015-02-07 18:01+0000\n"
 "Last-Translator: Саша Петровић <salepetronije@gmail.com>\n"
-"Language-Team: српски <xfce4@xfce4.org>\n"
-"Language: sr\n"
+"Language-Team: Serbian (http://www.transifex.com/projects/p/xfdashboard/language/sr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 1.5.4\n"
+"Language: sr\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: ../data/xfdashboard.desktop.in.in.h:1
 #: ../data/xfdashboard-autostart.desktop.in.in.h:1
@@ -27,7 +26,7 @@ msgstr "Полетник Иксфце-а"
 #: ../data/xfdashboard.desktop.in.in.h:2
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
-msgstr "Полетник за ИксФЦЕ који подсећа на Гномову шкољку"
+msgstr "Полетник Иксфце-а који подсећа на Гномову шкољку"
 
 #: ../data/xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
@@ -37,9 +36,7 @@ msgstr "Покрени иксфполетника као домара у поз�
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
-msgstr ""
-"Иксфполетник је сучеље попут Гномове шкољке за употребу на радној површи "
-"ИксФЦЕ-а."
+msgstr "Иксфполетник је сучеље попут Гномове шкољке за употребу на радној површи ИксФЦЕ-а."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:3
 msgid ""
@@ -47,12 +44,7 @@ msgid ""
 "provides an overview of applications currently open enabling the user to "
 "switch between different applications. The search feature works like Xfce's "
 "app finder which makes it convenient to search for and start applications."
-msgstr ""
-"Може се подесити да се покреће на било коју пречицу дугмади, и када се "
-"изврши даје преглед тренутно отворених програма, омогућујући кориснику да "
-"прелази са једног програма на други. Претрага ради попут претраживача "
-"програма за ИксФЦЕ што чини полетника згодним за претрагу и покретање "
-"програма."
+msgstr "Може се подесити да се покреће на било коју пречицу дугмади, и када се изврши даје преглед тренутно отворених програма, омогућујући кориснику да прелази са једног програма на други. Претрага ради попут претраживача програма за ИксФЦЕ што чини полетника згодним за претрагу и покретање програма."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:4
 msgid "Browsing applications"
@@ -64,77 +56,62 @@ msgstr "Претрага програма"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid ""
-"This unstable development introduces additional themes, fixes handling of "
-"client-side decorated windows (CSD) and adds a new CSS command @import() to "
-"include external CSS resources in themes."
-msgstr ""
-"Ово нестабилно развојно издање представља додатне теме, исправља руковање "
-"украсима прозора клијента (ЦСД) и додаје нову наредбу ЦСС-а @import() да би "
-"укључила спољне изворе ЦСС-а у темама."
+"This unstable development introduces configurable key-bindings, allows "
+"changing themes at runtime and includes lots of smaller bug-fixes."
+msgstr "Ово је нестабилно развојно издање које уводи подесиве пречице, омогућава измену тема у раду и исправа много ситних буба."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:7
 msgid ""
-"This unstable development introduces a workaround to get window content of "
-"minimized windows to display them in windows view."
-msgstr ""
-"Непостојано развојно издање укључује покушај да се приказује и садржај "
-"умањених прозора."
+"This unstable development introduces additional themes, fixes handling of "
+"client-side decorated windows (CSD) and adds a new CSS command @import() to "
+"include external CSS resources in themes."
+msgstr "Ово нестабилно развојно издање представља додатне теме, исправља руковање украсима прозора клијента (ЦСД) и додаје нову наредбу ЦСС-а @import() да би укључила спољне изворе ЦСС-а у темама."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:8
-msgid "This unstable development introduces effects."
-msgstr ""
-"Ово је непостојано развојно издање које први пут садржи дејства површи."
+msgid ""
+"This unstable development introduces a workaround to get window content of "
+"minimized windows to display them in windows view."
+msgstr "Непостојано развојно издање укључује покушај да се приказује и садржај умањених прозора."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+msgid "This unstable development introduces effects."
+msgstr "Ово је непостојано развојно издање које први пут садржи дејства површи."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
 "This unstable development fixes a problem closing windows accidently by "
 "pressing the key 'backspace' to refine search more often than characters "
 "entered. It also includes new image-loading functions to CSS. It also "
 "introduces a new generic selection framework for focusable actors."
-msgstr ""
-"Ово је нестабилно издање у коме је решено случајно затварање прозора на "
-"притисак дугмета „бриши уназад“, ради обогаћивања уноса претраге на више од "
-"унесених знакова. Такође, укључује нове радње учитавања слика у ЦСС. Доноси "
-"нови родни оквир жижним чиниоцима."
+msgstr "Ово је нестабилно издање у коме је решено случајно затварање прозора на притисак дугмета „бриши уназад“, ради обогаћивања уноса претраге на више од унесених знакова. Такође, укључује нове радње учитавања слика у ЦСС. Доноси нови родни оквир жижним чиниоцима."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
 "This release fixes a problem closing windows accidently by pressing the key "
 "'backspace' to refine search more often than characters entered."
-msgstr ""
-"У овом издању у коме је решено случајно затварање прозора на притисак "
-"дугмета „бриши уназад“"
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
-msgid "This release fixes a problem when loading scalable images by icon name."
-msgstr ""
-"Ово издање решава погрешно учитавање слика променљиве величине према именима "
-"иконице."
+msgstr "У овом издању у коме је решено случајно затварање прозора на притисак дугмета „бриши уназад“"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+msgid ""
+"This release fixes a problem when loading scalable images by icon name."
+msgstr "Ово издање решава погрешно учитавање слика променљиве величине према именима иконице."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This unstable development release fixes problems with icon mode in theming "
 "and allows to launch the first item by pressing ENTER in search view when a "
 "search was started by just typing. It also includes an improved CSS parsing "
 "allowing the usage of constant values and functions in theme's CSS file."
-msgstr ""
-"Ово нестабилно развојно издање решава грешке у раду са иконицама при "
-"темирању и омогућава покретање прве ставке пристиском на „Унеси“ при "
-"прегледу претраге, када претрага започиње куцањем. Укључује и побољшано "
-"рашчлањивање ЦСС-а, што омогућава употребу сталних вредности и радњи у "
-"датотеци теме ЦСС-а."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
-msgid ""
-"This release fixes problems with icon mode in theming and allows to launch "
-"the first item by pressing ENTER in search view when a search was started by "
-"just typing."
-msgstr ""
-"Ово издање решава грешке у раду са иконицама при темирању и омогућава "
-"покретање прве ставке пристиском на „Унеси“ при прегледу претраге, када "
-"претрага започиње куцањем."
+msgstr "Ово нестабилно развојно издање решава грешке у раду са иконицама при темирању и омогућава покретање прве ставке пристиском на „Унеси“ при прегледу претраге, када претрага започиње куцањем. Укључује и побољшано рашчлањивање ЦСС-а, што омогућава употребу сталних вредности и радњи у датотеци теме ЦСС-а."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+msgid ""
+"This release fixes problems with icon mode in theming and allows to launch "
+"the first item by pressing ENTER in search view when a search was started by"
+" just typing."
+msgstr "Ово издање решава грешке у раду са иконицама при темирању и омогућава покретање прве ставке пристиском на „Унеси“ при прегледу претраге, када претрага започиње куцањем."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid "Initial release."
 msgstr "Прво издање"
 
@@ -191,10 +168,9 @@ msgstr "Тема полетника у боји црвеног вина"
 #: ../src/actor.c:566 ../src/stylable.c:203
 #, c-format
 msgid ""
-"Could not transform CSS string value for property '%s' to type %s of class %s"
-msgstr ""
-"Нисам успео да претворим вредност нисака ЦСС-а својства „%s“ у врсту %s "
-"разреда %s"
+"Could not transform CSS string value for property '%s' to type %s of class "
+"%s"
+msgstr "Нисам успео да претворим вредност нисака ЦСС-а својства „%s“ у врсту %s разреда %s"
 
 #: ../src/actor.c:923
 msgid "Can focus"
@@ -210,8 +186,7 @@ msgstr "Дејства"
 
 #: ../src/actor.c:932
 msgid "List of space-separated strings with IDs of effects set at this actor"
-msgstr ""
-"Списак ниски раздвојених размаком са ИД-јем низа дејстава за овог чиниоца"
+msgstr "Списак ниски раздвојених размаком са ИД-јем низа дејстава за овог чиниоца"
 
 #: ../src/application-button.c:172
 msgid "No information available for application!"
@@ -262,9 +237,7 @@ msgstr "Обликуј наслов и опис"
 msgid ""
 "Format string used when title and description is display. First argument is "
 "title and second one is description."
-msgstr ""
-"Обликуј ниске коришћене при приказу наслова и описа. Прва одредница је "
-"наслов, а следећа је опис."
+msgstr "Обликуј ниске коришћене при приказу наслова и описа. Прва одредница је наслов, а следећа је опис."
 
 #: ../src/application-button.c:559
 #, c-format
@@ -279,14 +252,12 @@ msgstr "Нема података о програму за неподешено 
 #, c-format
 msgid ""
 "Cannot get display name of application icon because of unknown type (%d)"
-msgstr ""
-"Нисам успео да прикажем име иконице програма јер је непознате врсте (%d)"
+msgstr "Нисам успео да прикажем име иконице програма јер је непознате врсте (%d)"
 
 #: ../src/application-button.c:763
 #, c-format
 msgid "Cannot get icon name of application icon because of unknown type (%d)"
-msgstr ""
-"Нисам успео да добавим име иконице програма јер је непознате врсте (%d)"
+msgstr "Нисам успео да добавим име иконице програма јер је непознате врсте (%d)"
 
 #: ../src/application-button.c:792 ../src/application-button.c:795
 #: ../src/application-button.c:809 ../src/application-button.c:812
@@ -299,7 +270,8 @@ msgid "No information available for application"
 msgstr "Нема доступних података о програму"
 
 #: ../src/application-button.c:811 ../src/application-button.c:814
-#: ../src/application.c:211 ../src/application.c:273 ../src/application.c:414
+#: ../src/application.c:212 ../src/application.c:219 ../src/application.c:278
+#: ../src/application.c:296 ../src/application.c:449
 msgid "unknown error"
 msgstr "непозната грешка"
 
@@ -308,80 +280,88 @@ msgstr "непозната грешка"
 msgid "Application '%s' launched"
 msgstr "Програм „%s“ је покренут"
 
-#: ../src/application.c:200
-msgid "Could not get theme name to load!"
-msgstr "Нисам успео да добавим име теме за учитавање!"
-
-#: ../src/application.c:209
+#. Show critical warning at console
+#: ../src/application.c:210 ../src/application.c:217
 #, c-format
 msgid "Could not load theme '%s': %s"
 msgstr "Нисам успео да учитам тему „%s“ : %s"
 
-#: ../src/application.c:272
+#: ../src/application.c:277
 #, c-format
 msgid "Could not initialize xfconf: %s"
 msgstr "Нисам успео да покренем xfconf: %s"
 
+#: ../src/application.c:289
+msgid "Could not initialize bindings"
+msgstr "Нисам успео да покренем пречице"
+
+#: ../src/application.c:295
+#, c-format
+msgid "Could not load bindings: %s"
+msgstr "Нисам успео да учитам пречице: %s"
+
 #: ../src/application.c:309
-#, c-format
-msgid "Could not build interface '%s' from theme '%s'"
-msgstr "Нисам успео да изградим сучеље „%s“ за тему „%s“"
+msgid ""
+"Could not create binding between xfconf property and local resource for "
+"theme change notification."
+msgstr "Нисам успео да образујем пречицу између својства иксфцеконфа и месних извора за обавештење о измени теме."
 
-#: ../src/application.c:317
-#, c-format
-msgid "Interface '%s' from theme '%s' must be an actor of type %s"
-msgstr "Сучеље „%s“ теме „%s“ мора да буде чинилац врсте %s"
-
-#: ../src/application.c:329
+#: ../src/application.c:364
 #, c-format
 msgid "Welcome to %s (%s)!"
 msgstr "Добро дошли у %s (%s)!"
 
-#: ../src/application.c:331
+#: ../src/application.c:366
 #, c-format
 msgid "Welcome to %s!"
 msgstr "Добродошли у %s!"
 
-#: ../src/application.c:375
+#: ../src/application.c:410
 msgid "Fork to background"
 msgstr "Рачвај у позадину"
 
-#: ../src/application.c:376
+#: ../src/application.c:411
 msgid "Quit existing instance"
 msgstr "Затвори постојећи примерак"
 
-#: ../src/application.c:377
+#: ../src/application.c:412
 msgid ""
 "Toggles suspend/resume state if running instance was started in daemon mode "
 "otherwise it quits running non-daemon instance"
-msgstr ""
-"Прекидач стања обуставе и наставка ако се покрене примерак у начину рада "
-"домара, иначе искључује примерак који не ради као домар"
+msgstr "Прекидач стања обуставе и наставка ако се покрене примерак у начину рада домара, иначе искључује примерак који не ради као домар"
 
-#: ../src/application.c:392
+#: ../src/application.c:427
 msgid "- A Gnome Shell like dashboard for Xfce4"
 msgstr "- Полетник за Иксфце који подсећа на Гномову шкољку"
 
-#: ../src/application.c:414
+#: ../src/application.c:449
 #, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
-#: ../src/application.c:593
+#: ../src/application.c:673
 msgid "is-daemonized"
 msgstr "ради као домар"
 
-#: ../src/application.c:594
+#: ../src/application.c:674
 msgid "Flag indicating if application is daemonized"
 msgstr "Белег који показује да ли програм ради као домар"
 
-#: ../src/application.c:600
+#: ../src/application.c:680
 msgid "Is suspended"
 msgstr "Је обустављен"
 
-#: ../src/application.c:601
+#: ../src/application.c:681
 msgid "Flag indicating if application is suspended currently"
 msgstr "Белег који показује да ли је програм исправно обустављен"
+
+#: ../src/application.c:687 ../src/theme.c:576
+msgid "Theme name"
+msgstr "Име теме"
+
+#: ../src/application.c:688
+msgid "Name of current theme"
+msgstr "Име тренутне теме"
 
 #: ../src/applications-menu-model.c:541
 #, c-format
@@ -434,17 +414,15 @@ msgstr "Опис"
 
 #. Add "applications" button
 #: ../src/applications-search-provider.c:429 ../src/applications-view.c:940
-#: ../src/quicklaunch.c:1823
+#: ../src/quicklaunch.c:2383
 msgid "Applications"
 msgstr "Програми"
 
-#: ../src/applications-search-provider.c:469
+#: ../src/applications-search-provider.c:470
 msgid ""
 "Could not allocate memory to copy search criterias for case-insensitive "
 "search"
-msgstr ""
-"Нисам успео да доделим меморију умножавању мерила претраге претрази "
-"осетљивој на величину слова"
+msgstr "Нисам успео да доделим меморију умножавању мерила претраге претрази осетљивој на величину слова"
 
 #: ../src/applications-view.c:255 ../src/applications-view.c:256
 msgid "Back"
@@ -454,21 +432,21 @@ msgstr "Назад"
 msgid "Go back to previous menu"
 msgstr "Идите на претходни изборник"
 
-#: ../src/applications-view.c:443 ../src/quicklaunch.c:1432
-#: ../src/windows-view.c:626 ../src/workspace-selector.c:857
-#: ../src/workspace-selector.c:1018
+#: ../src/applications-view.c:443 ../src/quicklaunch.c:1901
+#: ../src/windows-view.c:986 ../src/workspace-selector.c:863
+#: ../src/workspace-selector.c:1028
 #, c-format
 msgid "%s is a child of %s and cannot be selected at %s"
 msgstr "%s је наследник %s и не може да се изабере на %s"
 
-#: ../src/applications-view.c:628 ../src/quicklaunch.c:1484
-#: ../src/windows-view.c:685 ../src/workspace-selector.c:923
+#: ../src/applications-view.c:628 ../src/quicklaunch.c:1953
+#: ../src/windows-view.c:1045 ../src/workspace-selector.c:933
 #, c-format
 msgid "Cannot lookup selection target at %s because %s is a child of %s"
 msgstr "Нисам успео да дођем до изабраног циља %s јер је  %s наследник  %s"
 
-#: ../src/applications-view.c:702 ../src/quicklaunch.c:1592
-#: ../src/windows-view.c:804
+#: ../src/applications-view.c:702 ../src/quicklaunch.c:2061
+#: ../src/windows-view.c:1164
 #, c-format
 msgid "%s is a child of %s and cannot be activated at %s"
 msgstr " %s је наследник  %s и не може да се покрене на %s"
@@ -482,14 +460,14 @@ msgid "The view mode used in this view"
 msgstr "Начин прегледа у оваквом приказу"
 
 #: ../src/applications-view.c:881 ../src/button.c:1283
-#: ../src/quicklaunch.c:1736 ../src/scrollbar.c:754
+#: ../src/quicklaunch.c:2212 ../src/scrollbar.c:754
 #: ../src/search-result-container.c:559 ../src/text-box.c:789
-#: ../src/viewpad.c:1364 ../src/view-selector.c:374 ../src/windows-view.c:953
-#: ../src/workspace-selector.c:1176
+#: ../src/viewpad.c:1101 ../src/view-selector.c:374 ../src/windows-view.c:1340
+#: ../src/workspace-selector.c:1186
 msgid "Spacing"
 msgstr "Размак"
 
-#: ../src/applications-view.c:882 ../src/windows-view.c:954
+#: ../src/applications-view.c:882 ../src/windows-view.c:1341
 msgid "Spacing between each element in view"
 msgstr "Размак између погледа на појединачне чиниоце"
 
@@ -541,7 +519,7 @@ msgstr "Одређује који углови на позадини су зао
 msgid "Radius of rounded corners of background"
 msgstr "Полупречник заобљених углова позадине"
 
-#: ../src/background.c:464 ../src/window-content.c:1583
+#: ../src/background.c:464 ../src/window-content.c:1585
 msgid "Outline color"
 msgstr "Боја обриса"
 
@@ -549,7 +527,7 @@ msgstr "Боја обриса"
 msgid "Color to draw outline with"
 msgstr "Боја за исцртавање оквира"
 
-#: ../src/background.c:471 ../src/window-content.c:1590
+#: ../src/background.c:471 ../src/window-content.c:1592
 msgid "Outline width"
 msgstr "Дебљина линије оквира"
 
@@ -588,6 +566,198 @@ msgstr "Слика"
 #: ../src/background.c:504
 msgid "Image to draw as background"
 msgstr "Слика која ће се користити за позадину"
+
+#: ../src/binding.c:214
+msgid "Event type"
+msgstr "Врста догађаја"
+
+#: ../src/binding.c:215
+msgid "The event type this binding is bound to"
+msgstr "Врста догађаја на коју се односи пречица"
+
+#: ../src/binding.c:222
+msgid "Class name"
+msgstr "Име врсте"
+
+#: ../src/binding.c:223
+msgid "Class name of object this binding is bound to"
+msgstr "Име врсте предмета на коју се односи пречица"
+
+#: ../src/binding.c:229 ../src/image-content.c:1065
+msgid "Key"
+msgstr "Дугме"
+
+#: ../src/binding.c:230
+msgid "Key code of a keyboard event this binding is bound to"
+msgstr "Шифра дугмета догађаја тастатуре на коју се односи пречица"
+
+#: ../src/binding.c:237
+msgid "Modifiers"
+msgstr "Измењивачи"
+
+#: ../src/binding.c:238
+msgid "Modifiers this binding is bound to"
+msgstr "Измењивачи на које се односи пречица"
+
+#: ../src/binding.c:245
+msgid "Target"
+msgstr "Циљ"
+
+#: ../src/binding.c:246
+msgid "Class name of target of this binding"
+msgstr "Име врсте или циља ове пречице"
+
+#: ../src/binding.c:252
+msgid "Action"
+msgstr "Радња"
+
+#: ../src/binding.c:253
+msgid "Action assigned to this binding"
+msgstr "Радња додељена овој пречици"
+
+#: ../src/binding.c:259
+msgid "Flags"
+msgstr "Заставице"
+
+#: ../src/binding.c:260
+msgid "Flags assigned to this binding"
+msgstr "Заставице додељене овој пречици"
+
+#: ../src/binding.c:305
+msgid "Failed to create binding instance"
+msgstr "Нисам успео да образујем примерак пречице"
+
+#: ../src/binding.c:449
+#, c-format
+msgid "Cannot set unsupported event type %s at binding"
+msgstr "Нисам успео да поставим неподржани догађај врсте %s пречици"
+
+#: ../src/binding.c:454
+msgid "Cannot set invalid event type at binding"
+msgstr "Нисам успео да поставим неподржану врсту догађаја пречици"
+
+#: ../src/bindings-pool.c:133 ../src/theme-effects.c:172
+#: ../src/theme-layout.c:241
+#, c-format
+msgid "Error on line %d char %d: "
+msgstr "Грешка на линији %d знаку %d: "
+
+#: ../src/bindings-pool.c:201
+#, c-format
+msgid "Could not parse empty key-binding '%s'."
+msgstr "Нисам успео да рашчланим празну пречицу дугмади „%s“."
+
+#: ../src/bindings-pool.c:226
+#, c-format
+msgid ""
+"Could not parse modifier '%s' of key-binding '%s' because it is not enclosed"
+" by '<...>'"
+msgstr "Нисам успео да рашчланим „%s“ пречице „%s“ јер није ограђена знаковима „<...>“"
+
+#: ../src/bindings-pool.c:249
+#, c-format
+msgid "Could not parse unknown modifier '%s' of key-binding '%s'"
+msgstr "Нисам успео да рашчланим непознати измењивач „%s“ пречице дугмади „%s“"
+
+#: ../src/bindings-pool.c:271
+#, c-format
+msgid ""
+"Could not parse '%s' of key-binding '%s' because it is already a key "
+"assigned."
+msgstr "Нисам успео да рашчланим „%s“ пречице „%s“ јер јој је дугме већ додељено."
+
+#: ../src/bindings-pool.c:286
+#, c-format
+msgid "Could not parse '%s' of key-binding '%s'"
+msgstr "Нисам успео да рашчланим „%s“ пречице „%s“"
+
+#: ../src/bindings-pool.c:305
+#, c-format
+msgid "Invalid key-binding '%s' as either a key nor a modifier was assigned."
+msgstr "Пречица „%s“ је неисправна јер су јој додељени дугме или измењивач."
+
+#: ../src/bindings-pool.c:344 ../src/theme-effects.c:524
+#: ../src/theme-layout.c:894
+#, c-format
+msgid "Unexpected text node '%s' at tag <%s>"
+msgstr "Неочекиван чвор писања „%s“ на ознаци <%s>"
+
+#: ../src/bindings-pool.c:374
+msgid "Missing action"
+msgstr "Недостаје радња"
+
+#: ../src/bindings-pool.c:400
+#, c-format
+msgid "Missing binding to set action '%s'"
+msgstr "Недостаје пречица за постављање радње „%s“"
+
+#: ../src/bindings-pool.c:453 ../src/bindings-pool.c:724
+#: ../src/theme-effects.c:556 ../src/theme-effects.c:642
+#: ../src/theme-effects.c:809 ../src/theme-effects.c:978
+#: ../src/theme-layout.c:935
+#, c-format
+msgid "Unknown tag <%s>"
+msgstr "Непозната ознака <%s>"
+
+#: ../src/bindings-pool.c:524
+msgid "Missing attribute 'code' for key"
+msgstr "Дугмету недостаје особина „code“"
+
+#: ../src/bindings-pool.c:544
+#, c-format
+msgid "Could not translate key '%s'"
+msgstr "Нисам успео да преведем кључ „%s“"
+
+#: ../src/bindings-pool.c:580
+#, c-format
+msgid "Unknown value '%s' for attribute 'when'"
+msgstr "Вредност „%s“ за особину „when“ је непозната"
+
+#: ../src/bindings-pool.c:603
+msgid "Could not initialize binding for key-binding"
+msgstr "Нисам успео да покренем пречицу за пречицу дугмета"
+
+#: ../src/bindings-pool.c:633
+#, c-format
+msgid ""
+"Cannot transform attribute 'allow-unfocusable-target' from type '%s' to type"
+" '%s'"
+msgstr "Нисам успео да претворим особину „allow-unfocusable-target“ врсте „%s“ врсти „%s“"
+
+#: ../src/bindings-pool.c:684 ../src/bindings-pool.c:764
+#: ../src/theme-effects.c:566 ../src/theme-effects.c:718
+#: ../src/theme-effects.c:938 ../src/theme-effects.c:1018
+#: ../src/theme-layout.c:864 ../src/theme-layout.c:1220
+#, c-format
+msgid "Tag <%s> cannot contain tag <%s>"
+msgstr "Ознака <%s> не може да садржи ознаку <%s>"
+
+#: ../src/bindings-pool.c:827 ../src/theme-effects.c:1070
+#: ../src/theme-layout.c:1564
+#, c-format
+msgid "Could not set up parser data for file %s"
+msgstr "Нисам успео да поставим рашчлањивач података за датотеку %s"
+
+#: ../src/bindings-pool.c:839 ../src/theme-effects.c:1082
+#: ../src/theme-layout.c:1576
+#, c-format
+msgid "Could not create parser for file %s"
+msgstr "Нисам успео да направим рашчлањивач за датотеку %s"
+
+#: ../src/bindings-pool.c:868
+#, c-format
+msgid "Could not set up hash-table at parser data for file %s"
+msgstr "Нисам успео да поставим табелу збирне суме рашчлањивачу података за датотеку %s"
+
+#: ../src/bindings-pool.c:897
+#, c-format
+msgid "Unexpected binding state set at parser data for file %s"
+msgstr "Стање пречице није очекивано постављено за рашчлањивач података датотеке %s"
+
+#: ../src/bindings-pool.c:1070
+#, c-format
+msgid "No bindings configuration file found."
+msgstr "Нисам пронашао датотеку подешавања пречица."
 
 #: ../src/button.c:1275 ../src/search-result-container.c:567
 #: ../src/text-box.c:781
@@ -642,9 +812,7 @@ msgstr "Величина икона"
 msgid ""
 "Size of icon if size of icon is not synchronized. -1 is valid for icon "
 "images and sets icon image's default size."
-msgstr ""
-"Величина иконице ако величине иконице није усклађена. -1 је исправно за "
-"иконице слика и поставља слику иконице на подразумевану величину."
+msgstr "Величина иконице ако величине иконице није усклађена. -1 је исправно за иконице слика и поставља слику иконице на подразумевану величину."
 
 #: ../src/button.c:1328
 msgid "Icon orientation"
@@ -692,8 +860,7 @@ msgstr "Једна линија"
 
 #: ../src/button.c:1366
 msgid "Flag to determine if text can only be in one or multiple lines"
-msgstr ""
-"Заставица које одређује да ли текст треба да буде у једној или више линија"
+msgstr "Заставица које одређује да ли текст треба да буде у једној или више линија"
 
 #: ../src/button.c:1372
 msgid "Text justify"
@@ -746,9 +913,7 @@ msgstr "Сакупљено"
 
 #: ../src/collapse-box.c:567
 msgid "If TRUE this actor is collapsed otherwise it is expanded to real size"
-msgstr ""
-"Ако је означено ТАЧНО, овај чинилац је скупљен, иначе је проширен на стварну "
-"величину"
+msgstr "Ако је означено ТАЧНО, овај чинилац је скупљен, иначе је проширен на стварну величину"
 
 #: ../src/collapse-box.c:573
 msgid "Collapsed size"
@@ -871,14 +1036,14 @@ msgstr "Ступци"
 msgid "Current number of columns in this layout"
 msgstr "Тренутни број стубаца у овом распореду"
 
-#: ../src/fill-box-layout.c:575 ../src/quicklaunch.c:1744
+#: ../src/fill-box-layout.c:575 ../src/quicklaunch.c:2220
 #: ../src/scrollbar.c:714 ../src/view-selector.c:382
-#: ../src/workspace-selector.c:1184
+#: ../src/workspace-selector.c:1194
 msgid "Orientation"
 msgstr "Усмерење"
 
-#: ../src/fill-box-layout.c:576 ../src/quicklaunch.c:1745
-#: ../src/workspace-selector.c:1185
+#: ../src/fill-box-layout.c:576 ../src/quicklaunch.c:2221
+#: ../src/workspace-selector.c:1195
 msgid "The orientation to layout children"
 msgstr "Усмерење за смештај потомака"
 
@@ -886,8 +1051,8 @@ msgstr "Усмерење за смештај потомака"
 msgid "spacing"
 msgstr "размаци"
 
-#: ../src/fill-box-layout.c:584 ../src/quicklaunch.c:1737
-#: ../src/workspace-selector.c:1177
+#: ../src/fill-box-layout.c:584 ../src/quicklaunch.c:2213
+#: ../src/workspace-selector.c:1187
 msgid "The spacing between children"
 msgstr "Размаци између потомака"
 
@@ -898,9 +1063,7 @@ msgstr "Уједначено"
 #: ../src/fill-box-layout.c:593
 msgid ""
 "Whether the layout should be homogeneous, i.e. all childs get the same size"
-msgstr ""
-"Да ли распоред треба да буде уједначен, тј. да сви потомци имају исту "
-"величину"
+msgstr "Да ли распоред треба да буде уједначен, тј. да сви потомци имају исту величину"
 
 #: ../src/fill-box-layout.c:599
 msgid "Keep aspect"
@@ -911,32 +1074,69 @@ msgid "Whether all children should keep their aspect"
 msgstr "Да ли потомци треба да одрже своје размере"
 
 #. IMPLEMENTATION: Private variables and methods
-#: ../src/focusable.c:60
+#: ../src/focusable.c:71
 #, c-format
 msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardFocusable::%s"
-msgstr ""
-"Предмет врсте %s не примењује захтевану нестварну улогу "
-"XfdashboardFocusable::%s"
+msgstr "Предмет врсте %s не примењује захтевану нестварну улогу XfdashboardFocusable::%s"
 
-#: ../src/focusable.c:155
+#: ../src/focusable.c:174
 #, c-format
 msgid ""
-"Old selection %s at %s is unavailable but setting new selection either to %s "
-"or nothing failed!"
-msgstr ""
-"Стари избор %s на %s није доступан, а ни постављање новог избора на %s или "
-"ништа није успело!"
+"Old selection %s at %s is unavailable but setting new selection either to %s"
+" or nothing failed!"
+msgstr "Стари избор %s на %s није доступан, а ни постављање новог избора на %s или ништа није успело!"
 
-#: ../src/focus-manager.c:265 ../src/focus-manager.c:273
+#: ../src/focus-manager.c:153
+#, c-format
+msgid "Cannot build target list for unknown type %s"
+msgstr "Нисам успео да направим списак циљева непознате врсте %s"
+
+#: ../src/focus-manager.c:446 ../src/focus-manager.c:454
 #, c-format
 msgid "Object %s does not inherit %s and cannot be registered"
 msgstr "Предмет %s не наслеђује %s и не може да се заведе"
 
-#: ../src/focus-manager.c:439
+#: ../src/focus-manager.c:478
+#, c-format
+msgid ""
+"Could not find registered focusable object %s to register object %s - "
+"appending to end of list."
+msgstr "Нисам успео да пронађем заведени нежижни предмет %s заведеном предмету %s - додајем на крају списка."
+
+#: ../src/focus-manager.c:637
 msgid "Trying to focus an unregistered focusable actor"
 msgstr "Покушај да се узме у жижу незаведени чинилац жиже"
+
+#: ../src/focus-manager.c:874
+#, c-format
+msgid "Object type %s does not provide action '%s'"
+msgstr "Предмет врсте %s не обезбеђује радњу „%s“"
+
+#: ../src/focus-manager.c:886
+#, c-format
+msgid "Action '%s' at object type %s is not an action signal."
+msgstr "Радња „%s“ предмету врсте %s није знак за радњу."
+
+#: ../src/focus-manager.c:906
+#, c-format
+msgid ""
+"Action '%s' at object type %s wants return value of type %s but expected is "
+"%s."
+msgstr "Радња „%s“ предмету %s жели да врати вредност врсте %s, али се очекује %s."
+
+#: ../src/focus-manager.c:917
+#, c-format
+msgid "Action '%s' at object type %s wants %u parameters but expected are %u."
+msgstr "Радња „%s“ на предмету врсте %s захтева одредницу %u, али се очекује %u."
+
+#: ../src/focus-manager.c:928
+#, c-format
+msgid ""
+"Action '%s' at object type %s wants type %s at parameter %u but type %s is "
+"expected."
+msgstr "Радња „%s“ предмету врсте %s захтева врсту %s на одредници %u, али се очекује врта %s."
 
 #: ../src/image-content.c:139
 #, c-format
@@ -966,8 +1166,7 @@ msgstr "Нисам успео да учитам слику кључа „%s“: 
 #: ../src/image-content.c:359
 #, c-format
 msgid "Icon file '%s' does not exist - trying fallback icon"
-msgstr ""
-"Датотека иконице „%s“ не постоји - покушавам да учитам заменску иконицу"
+msgstr "Датотека иконице „%s“ не постоји - покушавам да учитам заменску иконицу"
 
 #: ../src/image-content.c:368
 #, c-format
@@ -1017,8 +1216,7 @@ msgstr "Нисам успео да пронађем заменску икони�
 #: ../src/image-content.c:739
 #, c-format
 msgid "Failed to load image data into content for gicon '%s': %s"
-msgstr ""
-"Нисам успео д учитам податке иконице у садржај гномове иконице „%s“: %s"
+msgstr "Нисам успео д учитам податке иконице у садржај гномове иконице „%s“: %s"
 
 #: ../src/image-content.c:764
 #, c-format
@@ -1035,10 +1233,6 @@ msgstr "Нисам успео да учитам слику „%s“ без вр�
 msgid "Cannot load image '%s' of unknown type %d"
 msgstr "Нисам успео да учитам иконицу „%s“ непознате врсте %d"
 
-#: ../src/image-content.c:1065
-msgid "Key"
-msgstr "Дугме"
-
 #: ../src/image-content.c:1066
 msgid "The hash key for caching this image"
 msgstr "Кључ за смештање слике у оставу"
@@ -1053,37 +1247,38 @@ msgstr "Нисам успео да образујем кључ за икониц
 msgid "Could not create key for gicon '%s' at size %u"
 msgstr "Нисам успео да образујем кључ за гномову иконицу „%s“ величине %u"
 
-#. If we get here the virtual function was not overridden
-#: ../src/layoutable.c:78
-#, c-format
-msgid ""
-"Object of type %s does not implement virtual function of "
-"XfdashboardLayoutableInterface::%s"
-msgstr ""
-"Предмет врсте %s не примењује опонашајуће својство "
-"XfdashboardLayoutableInterface::%s"
-
-#: ../src/live-window.c:611 ../src/window-content.c:1569
+#: ../src/live-window.c:732 ../src/window-content.c:1571
 msgid "Window"
 msgstr "Прозор"
 
-#: ../src/live-window.c:612
+#: ../src/live-window.c:733
 msgid "The window to show"
 msgstr "Прозор за приказ"
 
-#: ../src/live-window.c:618
+#: ../src/live-window.c:739
+msgid "Window number"
+msgstr "Број прозора"
+
+#: ../src/live-window.c:740
+msgid ""
+"The assigned window number. If set to non-zero the close button will be "
+"hidden and the window number will be shown instead. If set to zero the close"
+" button will be shown again."
+msgstr "Додељени број прозора. Ако је различит од нуле, дугме за затварање ће бити скривено и број прозора ће бити приказан уместо дугмета. Ако је нула, дугме за затварање ће се приказивати поново."
+
+#: ../src/live-window.c:747
 msgid "Close button padding"
 msgstr "Поравнање дугмета затвори"
 
-#: ../src/live-window.c:619
+#: ../src/live-window.c:748
 msgid "Padding of close button to window actor in pixels"
 msgstr "Поравнање дугмета затвори у односу на чиниоца прозора у тачкама"
 
-#: ../src/live-window.c:626
+#: ../src/live-window.c:755
 msgid "Title actor padding"
 msgstr "Поравнање чиниоца насова"
 
-#: ../src/live-window.c:627
+#: ../src/live-window.c:756
 msgid "Padding of title actor to window actor in pixels"
 msgstr "Поравнање чиниоца наслова према прозору у тачкама"
 
@@ -1129,35 +1324,48 @@ msgstr "Одређује који углови су заобљени"
 msgid "Radius of rounded corners"
 msgstr "Полупречник заобљених ивица"
 
-#: ../src/quicklaunch.c:318
+#: ../src/quicklaunch.c:164
+#, c-format
+msgid ""
+"Could not check for duplicates for invalid %s object so assume it exists"
+msgstr "Нисам успео да проверим да ли има близнака са неисправним предметом %s, па претпоставите да постоји"
+
+#: ../src/quicklaunch.c:184
+#, c-format
+msgid ""
+"Value at %p of type %s is not a %s so assume this desktop application item "
+"exists"
+msgstr "Вредност %p врсте %s није %s, па претпоставите да ова ставка програма површипостоји"
+
+#: ../src/quicklaunch.c:433 ../src/quicklaunch.c:1352
 #, c-format
 msgid "Favourite '%s' added"
 msgstr "„%s“ је додато у омиљене"
 
-#: ../src/quicklaunch.c:564
+#: ../src/quicklaunch.c:679 ../src/quicklaunch.c:1419
 #, c-format
 msgid "Favourite '%s' removed"
 msgstr "„%s“ је уклоњено из омиљених"
 
-#: ../src/quicklaunch.c:1721
+#: ../src/quicklaunch.c:2197
 msgid "Favourites"
 msgstr "Омиљено"
 
-#: ../src/quicklaunch.c:1722
+#: ../src/quicklaunch.c:2198
 msgid "An array of strings pointing to desktop files shown as icons"
-msgstr ""
-"Распон ниски које указују на датотеке радне површи приказаних као иконице"
+msgstr "Распон ниски које указују на датотеке радне површи приказаних као иконице"
 
-#: ../src/quicklaunch.c:1728
+#: ../src/quicklaunch.c:2204
 msgid "Normal icon size"
 msgstr "Уобичајена величина иконице"
 
-#: ../src/quicklaunch.c:1729
+#: ../src/quicklaunch.c:2205
 msgid "Unscale size of icon"
 msgstr "Промени величину иконице"
 
-#. Next add trash button to box but initially hidden and register as drop target
-#: ../src/quicklaunch.c:1830
+#. Next add trash button to box but initially hidden and register as drop
+#. target
+#: ../src/quicklaunch.c:2390
 msgid "Remove"
 msgstr "Уклони"
 
@@ -1169,7 +1377,7 @@ msgstr "Лествица размере"
 msgid "Whether all children should be scaled relatively to largest child"
 msgstr "Да ли сви потомци требају да буду сразмерни највећем потомку"
 
-#: ../src/scaled-table-layout.c:487 ../src/windows-view.c:961
+#: ../src/scaled-table-layout.c:487 ../src/windows-view.c:1348
 msgid "Prevent upscaling"
 msgstr "Спречи увећање"
 
@@ -1177,9 +1385,7 @@ msgstr "Спречи увећање"
 msgid ""
 "Whether this layout manager should prevent upsclaing any child beyond its "
 "real size"
-msgstr ""
-"Да ли овај управник распореда треба да спречи увећање свих потомака преко "
-"своје стварне величине"
+msgstr "Да ли овај управник распореда треба да спречи увећање свих потомака преко своје стварне величине"
 
 #: ../src/scrollbar.c:715
 msgid "Defines if scrollbar is horizontal or vertical"
@@ -1215,11 +1421,9 @@ msgstr "Множилац величине стране"
 
 #: ../src/scrollbar.c:747
 msgid ""
-"The factor of value range to increase or decrease value by on pointer scroll "
-"events."
-msgstr ""
-"Множилац опсега вредности увећања или умањења вредности по догађајима "
-"клизања показивача."
+"The factor of value range to increase or decrease value by on pointer scroll"
+" events."
+msgstr "Множилац опсега вредности увећања или умањења вредности по догађајима клизања показивача."
 
 #: ../src/scrollbar.c:755
 msgid "The spacing between scrollbar and background"
@@ -1257,8 +1461,7 @@ msgstr "Подешавање вредности %.2f у траци клизач�
 #: ../src/scrollbar.c:965
 #, c-format
 msgid "Adjusting value %.2f in scrollbar to fit new range %.2f"
-msgstr ""
-"Подешавање вредности %.2f у траци клизача ради попуне новог опсега %.2f"
+msgstr "Подешавање вредности %.2f у траци клизача ради попуне новог опсега %.2f"
 
 #: ../src/search-manager.c:180
 #, c-format
@@ -1276,9 +1479,7 @@ msgstr "Погон претраге %s није %s и не може да се и
 msgid ""
 "Search provider of type %s does not implement required virtual function "
 "XfdashboardSearchProvider::%s"
-msgstr ""
-"Погон претраге врсте %s нема захтевану нестварну улогу "
-"XfdashboardSearchProvider::%s"
+msgstr "Погон претраге врсте %s нема захтевану нестварну улогу XfdashboardSearchProvider::%s"
 
 #: ../src/search-result-container.c:249
 msgid "Current selected item not found. Selecting first item."
@@ -1333,34 +1534,38 @@ msgstr "Нисам успео да сачувам мапирање чиниоц�
 msgid "Search"
 msgstr "Тражи"
 
-#: ../src/stage.c:456
+#: ../src/stage.c:411
 msgid "Cannot perform search because search view was not found in viewpad."
-msgstr ""
-"Нисам успео да изведен претрагу јер нисам нашао приказ претраге у овом "
-"начину прегледа"
+msgstr "Нисам успео да изведен претрагу јер нисам нашао приказ претраге у овом начину прегледа"
 
-#: ../src/stage.c:734
+#: ../src/stage.c:689
 msgid "Cannot find search viewin viewpad to reset view."
 msgstr ""
 
-#: ../src/stage.c:742
+#: ../src/stage.c:697
 #, c-format
 msgid "Cannot switch to unknown view '%s'"
 msgstr "Нисам успео да променим приказ на непознати „%s“"
 
-#: ../src/stage.c:872
+#: ../src/stage.c:813
+#, c-format
+msgid "Could not build interface '%s' from theme '%s'"
+msgstr "Нисам успео да изградим сучеље „%s“ за тему „%s“"
+
+#: ../src/stage.c:868
 msgid "Just type to search..."
 msgstr "Само куцајте ради претраге..."
 
-#: ../src/stage.c:1253 ../src/stage.c:1254
+#: ../src/stage.c:1210 ../src/stage.c:1211 ../src/stage-interface.c:243
+#: ../src/stage-interface.c:244
 msgid "Background image type"
 msgstr "Врста позадинске слике"
 
-#: ../src/stage.c:1261
+#: ../src/stage.c:1218 ../src/stage-interface.c:251
 msgid "Background color"
 msgstr "Боја позадине"
 
-#: ../src/stage.c:1262
+#: ../src/stage.c:1219 ../src/stage-interface.c:252
 msgid "Color of stage's background"
 msgstr "Боја позадине ступња"
 
@@ -1370,8 +1575,7 @@ msgstr "Боја позадине ступња"
 msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardStylable::%s"
-msgstr ""
-"Предмет врсте %s нема уграђену захтевану могућност XfdashboardStylable::%s"
+msgstr "Предмет врсте %s нема уграђену захтевану могућност XfdashboardStylable::%s"
 
 #: ../src/stylable.c:267
 msgid "Style classes"
@@ -1387,11 +1591,9 @@ msgstr "Начин лажних врста"
 
 #: ../src/stylable.c:275
 msgid ""
-"String representing list of pseudo-classes, e.g. current state, separated by "
-"':'"
-msgstr ""
-"Ниске које представљају списак лажних врста, тј. тренутног стања, одвојен "
-"помоћу „:“"
+"String representing list of pseudo-classes, e.g. current state, separated by"
+" ':'"
+msgstr "Ниске које представљају списак лажних врста, тј. тренутног стања, одвојен помоћу „:“"
 
 #: ../src/stylable.c:334
 #, c-format
@@ -1412,19 +1614,16 @@ msgstr "Назив главне иконице"
 
 #: ../src/text-box.c:805
 msgid "Themed icon name or file name of primary icon shown left of text box"
-msgstr ""
-"Име темиране иконице или датотеке главне иконе која се приказује лево од "
-"кућице за унос текста"
+msgstr "Име темиране иконице или датотеке главне иконе која се приказује лево од кућице за унос текста"
 
 #: ../src/text-box.c:811
 msgid "Secondary icon name"
 msgstr "Назив помоћне иконице"
 
 #: ../src/text-box.c:812
-msgid "Themed icon name or file name of secondary icon shown right of text box"
-msgstr ""
-"Име темиране иконице или датотеке друге иконице која се приказује десно од "
-"кућице за унос текста"
+msgid ""
+"Themed icon name or file name of secondary icon shown right of text box"
+msgstr "Име темиране иконице или датотеке друге иконице која се приказује десно од кућице за унос текста"
 
 #: ../src/text-box.c:818
 msgid "Text"
@@ -1506,17 +1705,11 @@ msgstr "Путања теме"
 msgid "Path where theme was found and loaded from"
 msgstr "Путања одакле се учитава тема"
 
-#: ../src/theme.c:576
-msgid "Theme name"
-msgstr "Име теме"
-
 #: ../src/theme.c:577
 msgid ""
 "Short name of theme which was used to lookup theme and folder name where "
 "theme is stored in"
-msgstr ""
-"Кратко име теме која се користи за претрагу теме и име фасцикле где је тема "
-"смештена"
+msgstr "Кратко име теме која се користи за претрагу теме и име фасцикле где је тема смештена"
 
 #: ../src/theme.c:583
 msgid "Theme display name"
@@ -1547,8 +1740,7 @@ msgstr "Нисам пронашао тему „%s“"
 #: ../src/theme-css.c:273
 #, c-format
 msgid "Cannot get argument %d because only %d arguments are available"
-msgstr ""
-"Нисам успео да добијем одредницу %d јер је једино одредница %d доступна"
+msgstr "Нисам успео да добијем одредницу %d јер је једино одредница %d доступна"
 
 #: ../src/theme-css.c:286
 #, c-format
@@ -1683,16 +1875,13 @@ msgstr "Нисам успео да увезем датотеку ЦСС-а „%s
 msgid ""
 "Mixing selectors and '@' identifiers or defining more than one '@' "
 "identifier at once is not allowed"
-msgstr ""
-"Мешање одабирача и „@“ одредника или одређивање више од једног одредника „@“ "
-"одједном није дозвољено"
+msgstr "Мешање одабирача и „@“ одредника или одређивање више од једног одредника „@“ одједном није дозвољено"
 
 #: ../src/theme-css.c:2017
 msgid ""
 "A selector must have been defined before other one can follow comma-"
 "separated."
-msgstr ""
-"Одабирач мора бити одређен да би наставак могао да буде одвојен запетом."
+msgstr "Одабирач мора бити одређен да би наставак могао да буде одвојен запетом."
 
 #. Build warning message
 #: ../src/theme-css.c:2083
@@ -1722,12 +1911,7 @@ msgstr "Путања теме за учитавање"
 msgid "Could not get file for path '%s'"
 msgstr "Нисам успео да добавим датотеку на путањи „%s“"
 
-#: ../src/theme-effects.c:172 ../src/theme-layout.c:242
-#, c-format
-msgid "Error on line %d char %d: "
-msgstr "Грешка на линији %d знаку %d: "
-
-#: ../src/theme-effects.c:334 ../src/theme-layout.c:463
+#: ../src/theme-effects.c:334 ../src/theme-layout.c:462
 #, c-format
 msgid "Cannot allocate memory for object data of tag <%s>"
 msgstr "Нисам успео да доделим меморију подацима предмета ознаке <%s>"
@@ -1737,31 +1921,12 @@ msgstr "Нисам успео да доделим меморију подаци�
 msgid ""
 "Freeing effect object parser data at %p with a reference counter of %d "
 "greater than one"
-msgstr ""
+msgstr "Ослобађање података рашчлањивача предмета дејства на %p са односним бројачем %d је веће од један"
 
 #: ../src/theme-effects.c:482
 #, c-format
 msgid "Object of type %s is not derived from %s"
 msgstr "Предмет врсте %s није изведен од %s"
-
-#: ../src/theme-effects.c:524 ../src/theme-layout.c:919
-#, c-format
-msgid "Unexpected text node '%s' at tag <%s>"
-msgstr "Неочекиван чвор писања „%s“ на ознаци <%s>"
-
-#: ../src/theme-effects.c:556 ../src/theme-effects.c:642
-#: ../src/theme-effects.c:809 ../src/theme-effects.c:978
-#: ../src/theme-layout.c:960
-#, c-format
-msgid "Unknown tag <%s>"
-msgstr "Непозната ознака <%s>"
-
-#: ../src/theme-effects.c:566 ../src/theme-effects.c:718
-#: ../src/theme-effects.c:938 ../src/theme-effects.c:1018
-#: ../src/theme-layout.c:889 ../src/theme-layout.c:1245
-#, c-format
-msgid "Tag <%s> cannot contain tag <%s>"
-msgstr "Ознака <%s> не може да садржи ознаку <%s>"
 
 #: ../src/theme-effects.c:589
 msgid "Missing property name to set value for"
@@ -1787,16 +1952,14 @@ msgstr "Вишеструки опис својства „%s“ на предм�
 msgid ""
 "Invalid state of parser after parsing property '%s' at object with id '%s' "
 "of type %s"
-msgstr ""
-"Неисправно стање рашчлањивача после рашчлањивања својства „%s“ на предмету "
-"са лб-ом „%s“ врсте %s"
+msgstr "Неисправно стање рашчлањивача после рашчлањивања својства „%s“ на предмету са лб-ом „%s“ врсте %s"
 
-#: ../src/theme-effects.c:863 ../src/theme-layout.c:1057
+#: ../src/theme-effects.c:863 ../src/theme-layout.c:1032
 #, c-format
 msgid "Empty ID at tag '%s'"
 msgstr "Празан је ЛБ на ознаци „%s“"
 
-#: ../src/theme-effects.c:875 ../src/theme-layout.c:1070
+#: ../src/theme-effects.c:875 ../src/theme-layout.c:1045
 #, c-format
 msgid "Invalid ID '%s' at tag '%s'"
 msgstr "Неисправан је ЛБ „%s“ на ознаци „%s“"
@@ -1806,29 +1969,17 @@ msgstr "Неисправан је ЛБ „%s“ на ознаци „%s“"
 msgid "Multiple definition of effect with id '%s'"
 msgstr "Вишеструки описи за дејство са лб-ом „%s“"
 
-#: ../src/theme-effects.c:901 ../src/theme-layout.c:1086
+#: ../src/theme-effects.c:901 ../src/theme-layout.c:1061
 #, c-format
 msgid "Unknown object class %s for tag '%s'"
 msgstr "Непозната је врста предмета %s ознаке „%s“"
 
-#: ../src/theme-effects.c:915 ../src/theme-layout.c:1106
+#: ../src/theme-effects.c:915 ../src/theme-layout.c:1081
 #, c-format
 msgid ""
 "Invalid class %s in object for parent tag <%s> - expecting class derived "
 "from %s"
-msgstr ""
-"Неисправна је врста %s у предмету на родитељској ознаци <%s> - очекивана је "
-"врста изведена из  %s"
-
-#: ../src/theme-effects.c:1070 ../src/theme-layout.c:1589
-#, c-format
-msgid "Could not set up parser data for file %s"
-msgstr "Нисам успео да поставим рашчлањивач података за датотеку %s"
-
-#: ../src/theme-effects.c:1082 ../src/theme-layout.c:1601
-#, c-format
-msgid "Could not create parser for file %s"
-msgstr "Нисам успео да направим рашчлањивач за датотеку %s"
+msgstr "Неисправна је врста %s у предмету на родитељској ознаци <%s> - очекивана је врста изведена из  %s"
 
 #. If we get here we did not find an object with requested ID
 #: ../src/theme-effects.c:1268
@@ -1836,67 +1987,66 @@ msgstr "Нисам успео да направим рашчлањивач за 
 msgid "Could not find effect with ID '%s'"
 msgstr "Нисам успео да пронађем дејство са ЛБ-ем „%s“"
 
-#: ../src/theme-layout.c:373
+#: ../src/theme-layout.c:372
 msgid "Cannot allocate memory for unknown tag"
 msgstr "Нисам успео да доделим меморију непознатој ознаци"
 
-#: ../src/theme-layout.c:385
+#: ../src/theme-layout.c:384
 #, c-format
 msgid "Cannot allocate memory for tag '%s'"
 msgstr "Нисам успео да доделим меморију ознаци „%s“"
 
-#: ../src/theme-layout.c:841
+#: ../src/theme-layout.c:816
 msgid "Unexpected empty tag stack when parsing property text node"
 msgstr "Неочекивани празни скуп ознака при рашлањивању чвора својстава текста"
 
-#: ../src/theme-layout.c:852
+#: ../src/theme-layout.c:827
 #, c-format
 msgid "Value for property '%s' is already set"
 msgstr "Вредност за својство „%s“ је већ постављена"
 
-#: ../src/theme-layout.c:1141
+#: ../src/theme-layout.c:1116
 #, c-format
-msgid "Tag <%s> can only be set at <%s> creating objects derived from class %s"
-msgstr ""
-"Ознака <%s> може да буде постављена само на <%s> при стварању предмета "
-"изведених из врсте %s"
+msgid ""
+"Tag <%s> can only be set at <%s> creating objects derived from class %s"
+msgstr "Ознака <%s> може да буде постављена само на <%s> при стварању предмета изведених из врсте %s"
 
-#: ../src/theme-layout.c:1226
+#: ../src/theme-layout.c:1201
 #, c-format
 msgid "Attribute 'ref' cannot be empty at tag <%s>"
 msgstr "Особина 'ref' не може да буде празна ознака <%s>"
 
-#: ../src/theme-layout.c:1267
+#: ../src/theme-layout.c:1242
 #, c-format
 msgid "Internal error when handling end of tag <%s>"
 msgstr "Десила се унутрашња грешка при обради завршетка ознаке <%s>"
 
-#: ../src/theme-layout.c:1296
+#: ../src/theme-layout.c:1271
 #, c-format
 msgid "Document can have only one <%s>"
 msgstr "Документ може да има само један <%s>"
 
-#: ../src/theme-layout.c:1334
+#: ../src/theme-layout.c:1309
 #, c-format
 msgid "Object can have only one <%s>"
 msgstr "Предмет може да има само једно <%s>"
 
-#: ../src/theme-layout.c:1505
+#: ../src/theme-layout.c:1480
 #, c-format
 msgid "ID '%s' was specified more than once (%d times)"
 msgstr "ЛБ „%s“ је одређен више од једном (%d пута)"
 
-#: ../src/theme-layout.c:1536
+#: ../src/theme-layout.c:1511
 #, c-format
 msgid "Referenced ID '%s' could not be resolved"
 msgstr "Нисам успео да разрешим односни ЛБ „%s“"
 
-#: ../src/theme-layout.c:1637
+#: ../src/theme-layout.c:1612
 #, c-format
 msgid "File %s does not contain an interface"
 msgstr "Датотека %s не садржи сучеље"
 
-#: ../src/theme-layout.c:1647
+#: ../src/theme-layout.c:1622
 #, c-format
 msgid "Interface at file %s has no ID"
 msgstr "Сучеље датотеке %s нема ЛБ"
@@ -1925,61 +2075,62 @@ msgstr "Текст облачића"
 msgid "The text to display in a tooltip"
 msgstr "Запис за приказ у облачићу"
 
-#: ../src/utils.c:361
+#: ../src/utils.c:98
+#, c-format
+msgid "Could find any stage to show notification: %s"
+msgstr "Нисам успео да пронађем ни  један ступањ за приказ обавештења: %s"
+
+#: ../src/utils.c:375
 #, c-format
 msgid ""
-"Could not create desktop application information for menu item '%s' from %s: "
-"%s"
-msgstr ""
-"Нисам успео да образујем податке о програму радне површи ставке изборника "
-"„%s“ из %s: %s"
+"Could not create desktop application information for menu item '%s' from %s:"
+" %s"
+msgstr "Нисам успео да образујем податке о програму радне површи ставке изборника „%s“ из %s: %s"
 
-#: ../src/utils.c:397
+#: ../src/utils.c:411
 #, c-format
 msgid "Could not create application information for menu item '%s': %s"
 msgstr "Нисам успео да образујем податке о програму ставке изборника „%s“: %s"
 
-#: ../src/view.c:238
+#: ../src/view.c:313
 msgid "View internal name"
 msgstr "Име унутрашњег прегледа"
 
-#: ../src/view.c:239
+#: ../src/view.c:314
 msgid "Internal and untranslated name of view used in application"
 msgstr "Унутрашње непреведено има прегледа које користи програм"
 
-#: ../src/view.c:245
+#: ../src/view.c:320
 msgid "View name"
 msgstr "Име прегледа"
 
-#: ../src/view.c:246
+#: ../src/view.c:321
 msgid "Name of view used to display"
 msgstr "Име погледа који се користи за приказ"
 
-#: ../src/view.c:252
+#: ../src/view.c:327
 msgid "View icon"
 msgstr "Иконица прегледа"
 
-#: ../src/view.c:253
+#: ../src/view.c:328
 msgid ""
 "Icon of view used to display. Icon name can be a themed icon name or file "
 "name"
-msgstr ""
-"Иконица прегледа за приказ. Име иконице може бити из теме или из датотеке"
+msgstr "Иконица прегледа за приказ. Име иконице може бити из теме или из датотеке"
 
-#: ../src/view.c:259
+#: ../src/view.c:334
 msgid "Fit mode"
 msgstr "Начин уклапања величине"
 
-#: ../src/view.c:260
+#: ../src/view.c:335
 msgid "Defines if view should be fit into viewpad and its orientation"
-msgstr ""
-"Одређује да ли преглед треба да се уклопи у поље прегледа и његово усмерење"
+msgstr "Одређује да ли преглед треба да се уклопи у поље прегледа и његово усмерење"
 
-#: ../src/view.c:266
+#: ../src/view.c:341
 msgid "Enabled"
 msgstr "Омогућено"
 
-#: ../src/view.c:267
+#: ../src/view.c:342
 msgid "This flag indicates if is view is enabled and activable"
 msgstr "Ова заставица указује да је поглед омогућен и да се може покретати"
 
@@ -1993,74 +2144,73 @@ msgstr "Поглед %s није %s и не може да се заведе"
 msgid "View %s is not a %s and cannot be unregistered"
 msgstr "Поглед %s није %s и не може да се уклони из завода"
 
-#: ../src/viewpad.c:126
+#: ../src/viewpad.c:128
 msgid "Cannot update viewport of view because no one is active"
 msgstr "Нисам успео да освежим поље прегледа погледа јер нема покренутих"
 
-#: ../src/viewpad.c:242
+#: ../src/viewpad.c:245
 #, c-format
 msgid "View %s is not a child of %s and cannot be activated"
 msgstr "Поглед %s не може бити потомак %s и не може да се покрене"
 
-#: ../src/viewpad.c:250
+#: ../src/viewpad.c:253
 #, c-format
 msgid "Cannot activate disabled view %s at %s"
 msgstr "Нисам успео да покренем онемогућен поглед %s на %s"
 
-#: ../src/viewpad.c:596
+#: ../src/viewpad.c:599
 #, c-format
 msgid "Failed to create view instance of %s"
 msgstr "Нисам успео да направим примерак погледа %s"
 
-#: ../src/viewpad.c:602
+#: ../src/viewpad.c:605
 #, c-format
 msgid "Instance %s is not a %s and cannot be added to %s"
 msgstr "Примерак %s није %s и не може да се дода %s-у"
 
-#: ../src/viewpad.c:1365 ../src/view-selector.c:375
+#: ../src/viewpad.c:1102 ../src/view-selector.c:375
 msgid "The spacing between views and scrollbars"
 msgstr "Размак између погледа и траке клизача"
 
-#: ../src/viewpad.c:1372
+#: ../src/viewpad.c:1109
 msgid "Active view"
 msgstr "Тренутни поглед"
 
-#: ../src/viewpad.c:1373
+#: ../src/viewpad.c:1110
 msgid "The current active view in viewpad"
 msgstr "Тренутни приказ у пољу прегледа"
 
-#: ../src/viewpad.c:1379
+#: ../src/viewpad.c:1116
 msgid "Horizontal scrollbar visibility"
 msgstr "Водоравна видљивост траке клизача"
 
-#: ../src/viewpad.c:1380
+#: ../src/viewpad.c:1117
 msgid "This flag indicates if horizontal scrollbar is visible"
 msgstr "Ова заставица указује да ли је водоравна клизна трака видљива"
 
-#: ../src/viewpad.c:1386
+#: ../src/viewpad.c:1123
 msgid "Horizontal scrollbar policy"
 msgstr "Смернице водоравне траке клизача"
 
-#: ../src/viewpad.c:1387
+#: ../src/viewpad.c:1124
 msgid "The policy for horizontal scrollbar controlling when it is displayed"
 msgstr "Смернице водоравне траке клизача за понашање када се она приказује"
 
-#: ../src/viewpad.c:1394
+#: ../src/viewpad.c:1131
 msgid "Vertical scrollbar visibility"
 msgstr "Усправна видљивост главне траке клизача"
 
-#: ../src/viewpad.c:1395
+#: ../src/viewpad.c:1132
 msgid "This flag indicates if vertical scrollbar is visible"
 msgstr "Ова заставица указује да ли је усправна клизна трака видљива"
 
-#: ../src/viewpad.c:1401
+#: ../src/viewpad.c:1138
 msgid "Vertical scrollbar policy"
 msgstr "Смернице усправне клизне траке"
 
-#: ../src/viewpad.c:1402
+#: ../src/viewpad.c:1139
 msgid "The policy for vertical scrollbar controlling when it is displayed"
-msgstr ""
-"Смернице усправне траке клизача за понашање када је клизна трака видљива"
+msgstr "Смернице усправне траке клизача за понашање када је клизна трака видљива"
 
 #: ../src/view-selector.c:367
 msgid "Viewpad"
@@ -2101,9 +2251,7 @@ msgstr "Нисам успео да доделим меморију умношк�
 msgid ""
 "Need at least version %d.%d of composite extension but found %d.%d - using "
 "only fallback images"
-msgstr ""
-"Потрбно је најмање издање %d.%d проширења слагања, али је пронађено %d.%d - "
-"користим заменске слике"
+msgstr "Потрбно је најмање издање %d.%d проширења слагања, али је пронађено %d.%d - користим заменске слике"
 
 #: ../src/window-content.c:388
 msgid "Query for X composite extension failed - using only fallback imagess"
@@ -2118,22 +2266,19 @@ msgstr "Икс не подржава проширење слагања - кор�
 msgid ""
 "Query for X damage extension resulted in error code %d - using only still "
 "images of windows"
-msgstr ""
-"Упит проширења оштећења Икса је довео дао грешке под шифром %d - користим "
-"само слике прозора"
+msgstr "Упит проширења оштећења Икса је довео дао грешке под шифром %d - користим само слике прозора"
 
 #: ../src/window-content.c:659
 #, c-format
 msgid "Could not get pixmap for window '%s"
 msgstr "Нисам успео да добавим мапу тачака прозора %s"
 
-#. We should never get here as existance of composite extension was checked before
+#. We should never get here as existance of composite extension was checked
+#. before
 #: ../src/window-content.c:665
 #, c-format
 msgid "Cannot resume window '%s' as composite extension is not available"
-msgstr ""
-"Нисам успео да наставим са приказом прозора „%s“ јер је проширење слагања "
-"недоступно"
+msgstr "Нисам успео да наставим са приказом прозора „%s“ јер је проширење слагања недоступно"
 
 #: ../src/window-content.c:706
 #, c-format
@@ -2156,124 +2301,123 @@ msgstr "Нисам успео да добавим особине прозора 
 msgid "Destroying window content cache still containing %d windows."
 msgstr "Прихватна остава садржаја уништених прозора и даље садржи %d прозора."
 
-#: ../src/window-content.c:1570
+#: ../src/window-content.c:1572
 msgid "The window to handle and display"
 msgstr "Прозор за управљање и приказ"
 
-#: ../src/window-content.c:1576
+#: ../src/window-content.c:1578
 msgid "Suspended"
 msgstr "Обустаљен"
 
-#: ../src/window-content.c:1577
+#: ../src/window-content.c:1579
 msgid "Is this window suspended"
 msgstr "Да ли је овај прозор овустављен"
 
-#: ../src/window-content.c:1584
+#: ../src/window-content.c:1586
 msgid "Color to draw outline of mapped windows with"
 msgstr "Боја исцртавања обриса на мапираном прозору"
 
-#: ../src/window-content.c:1591
+#: ../src/window-content.c:1593
 msgid "Width of line used to draw outline of mapped windows"
 msgstr "Ширина линије за исцртавање обриса мапираног прозора"
 
-#: ../src/window-content.c:1598
+#: ../src/window-content.c:1600
 msgid "Include window frame"
 msgstr "Укључи оквир прозора"
 
-#: ../src/window-content.c:1599
+#: ../src/window-content.c:1601
 msgid ""
 "Whether the window frame should be included or only the window content "
 "should be shown"
-msgstr ""
-"Да ли оквир прозора треба да буде укључен или да се приказује само садржај "
-"прозора"
+msgstr "Да ли оквир прозора треба да буде укључен или да се приказује само садржај прозора"
 
-#: ../src/window-content.c:1605
+#: ../src/window-content.c:1607
 msgid "Unmapped window icon X fill"
 msgstr "Попуна иконицом икс осе немапираног прозора"
 
-#: ../src/window-content.c:1606
+#: ../src/window-content.c:1608
 msgid "Whether the unmapped window icon should fill up horizontal space"
 msgstr "Да ли иконица немапираног прозора треба да попуни простор водоравно"
 
-#: ../src/window-content.c:1612
+#: ../src/window-content.c:1614
 msgid "Unmapped window icon y fill"
 msgstr "Попуна иконицом ипсилон осе немапираног прозора"
 
-#: ../src/window-content.c:1613
+#: ../src/window-content.c:1615
 msgid "Whether the unmapped window icon should fill up vertical space"
 msgstr "Да ли иконица немапираног прозора треба да попуни усправан простор"
 
-#: ../src/window-content.c:1619
+#: ../src/window-content.c:1621
 msgid "Unmapped window icon X align"
 msgstr "Поравнање иконице немапираног прозора по икс оси"
 
-#: ../src/window-content.c:1620
+#: ../src/window-content.c:1622
 msgid ""
 "The alignment of the unmapped window icon on the X axis within the "
 "allocation in normalized coordinate between 0 and 1"
-msgstr ""
-"Поравнање иконице немапираног прозора по икс оси уз доделу на прилагођену "
-"координату између 0 и 1"
+msgstr "Поравнање иконице немапираног прозора по икс оси уз доделу на прилагођену координату између 0 и 1"
 
-#: ../src/window-content.c:1627
+#: ../src/window-content.c:1629
 msgid "Unmapped window icon Y align"
 msgstr "Иконица неуцртаног прозора са ипсилон поравнањем"
 
-#: ../src/window-content.c:1628
+#: ../src/window-content.c:1630
 msgid ""
 "The alignment of the unmapped window icon on the Y axis within the "
 "allocation in normalized coordinate between 0 and 1"
-msgstr ""
-"Поравнање иконице неуцртаног прозора на ипсилон оси унутар расподеле "
-"координата између 0 и 1"
+msgstr "Поравнање иконице неуцртаног прозора на ипсилон оси унутар расподеле координата између 0 и 1"
 
-#: ../src/window-content.c:1635
+#: ../src/window-content.c:1637
 msgid "Unmapped window icon X scale"
 msgstr "Размера немапиране иконице прозора по Y оси"
 
-#: ../src/window-content.c:1636
+#: ../src/window-content.c:1638
 msgid "Scale factor of unmapped window icon on the X axis"
 msgstr "Множилац размере немапиране иконице прозора по X оси"
 
-#: ../src/window-content.c:1643
+#: ../src/window-content.c:1645
 msgid "Unmapped window icon Y scale"
 msgstr "Размера немапиране иконице прозора по Y оси"
 
-#: ../src/window-content.c:1644
+#: ../src/window-content.c:1646
 msgid "Scale factor of unmapped window icon on the Y axis"
 msgstr "Множилац размере иконице немапираног прозора по Y оси"
 
-#: ../src/window-content.c:1651
+#: ../src/window-content.c:1653
 msgid "Unmapped window icon gravity"
 msgstr "Тежа иконице немапираног прозора"
 
-#: ../src/window-content.c:1652
+#: ../src/window-content.c:1654
 msgid "The anchor point of unmapped window icon"
 msgstr "Тачка сидришта немапиране иконице прозора"
 
-#: ../src/windows-view.c:815
+#: ../src/windows-view.c:1175
 #, c-format
 msgid "Cannot activate selection of type %s at %s because expecting type %s"
-msgstr ""
-"Нисам успео да покренем врсту избора %s на %s јер је очекивана врста %s"
+msgstr "Нисам успео да покренем врсту избора %s на %s јер је очекивана врста %s"
 
-#: ../src/windows-view.c:946
+#: ../src/windows-view.c:1333
 msgid "Current workspace"
 msgstr "Тренутни радни простор"
 
-#: ../src/windows-view.c:947
+#: ../src/windows-view.c:1334
 msgid "The current workspace whose windows are shown"
 msgstr "Тренутни радни простор са ког су приказани прозори"
 
-#: ../src/windows-view.c:962
+#: ../src/windows-view.c:1349
 msgid ""
-"Whether tthis view should prevent upsclaing any window beyond its real size"
-msgstr ""
-"Да ли овај преглед треба да спречи повећање размере свих прозора преко "
-"стварне њихове величине"
+"Whether this view should prevent upsclaing any window beyond its real size"
+msgstr "Да ли овај преглед треба да спречи повећање размере било ког прозора преко стварне његове величине"
 
-#: ../src/windows-view.c:992
+#: ../src/windows-view.c:1355
+msgid "Scroll event changes workspace"
+msgstr "Догађај клизања мења радни простор"
+
+#: ../src/windows-view.c:1356
+msgid "Whether this view should change active workspace on scroll events"
+msgstr "Да ли овај преглед треба да промени тренутни рани простор на догађаје клизања"
+
+#: ../src/windows-view.c:1573
 msgid "Windows"
 msgstr "Прозори"
 
@@ -2295,40 +2439,35 @@ msgstr "Тренутни радни простор"
 
 #. Setting new selection was unsuccessful if we get here
 #. Activation was unsuccessful if we get here
-#: ../src/workspace-selector.c:875 ../src/workspace-selector.c:1039
+#: ../src/workspace-selector.c:881 ../src/workspace-selector.c:1049
 #, c-format
 msgid "Could not determine workspace of %s to set selection at %s"
-msgstr ""
-"Нисам успео да одредим радни простор за %s ради постављања избора на %s"
+msgstr "Нисам успео да одредим радни простор за %s ради постављања избора на %s"
 
-#: ../src/workspace-selector.c:1192
+#: ../src/workspace-selector.c:1202
 msgid "Maximum size"
 msgstr "Највећа величина"
 
-#: ../src/workspace-selector.c:1193
+#: ../src/workspace-selector.c:1203
 msgid "The maximum size of this actor for opposite direction of orientation"
 msgstr "Највећа величина овог чиниоца за супротан правац усмерења"
 
-#: ../src/workspace-selector.c:1200
+#: ../src/workspace-selector.c:1210
 msgid "Maximum fraction"
 msgstr "Највећи разломак"
 
-#: ../src/workspace-selector.c:1201
+#: ../src/workspace-selector.c:1211
 msgid ""
-"The maximum size of this actor for opposite direction of orientation defined "
-"by fraction between 0.0 and 1.0"
-msgstr ""
-"Највиша величина овог чиниоца за супротан смер усмерења који је одређен "
-"разломком између 0.0 и 1.0"
+"The maximum size of this actor for opposite direction of orientation defined"
+" by fraction between 0.0 and 1.0"
+msgstr "Највиша величина овог чиниоца за супротан смер усмерења који је одређен разломком између 0.0 и 1.0"
 
-#: ../src/workspace-selector.c:1208
+#: ../src/workspace-selector.c:1218
 msgid "Using fraction"
 msgstr "Користим разломак"
 
-#: ../src/workspace-selector.c:1209
+#: ../src/workspace-selector.c:1219
 msgid ""
-"Flag indicating if maximum size is static or defined by fraction between 0.0 "
-"and 1.0"
-msgstr ""
-"Заставица која указује да ли је највиша величина мирујућа или је одређена "
-"разломком између 0.0 и 1.0"
+"Flag indicating if maximum size is static or defined by fraction between 0.0"
+" and 1.0"
+msgstr "Заставица која указује да ли је највиша величина мирујућа или је одређена разломком између 0.0 и 1.0"
