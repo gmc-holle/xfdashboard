@@ -45,6 +45,7 @@
 #include "theme.h"
 #include "focus-manager.h"
 #include "bindings-pool.h"
+#include "application-database.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplication,
@@ -58,28 +59,29 @@ G_DEFINE_TYPE(XfdashboardApplication,
 struct _XfdashboardApplicationPrivate
 {
 	/* Properties related */
-	gboolean					isDaemon;
-	gboolean					isSuspended;
-	gchar						*themeName;
+	gboolean						isDaemon;
+	gboolean						isSuspended;
+	gchar							*themeName;
 
 	/* Instance related */
-	gboolean					inited;
-	gboolean					isQuitting;
+	gboolean						inited;
+	gboolean						isQuitting;
 
-	XfconfChannel				*xfconfChannel;
-	XfdashboardViewManager		*viewManager;
-	XfdashboardSearchManager	*searchManager;
-	XfdashboardFocusManager		*focusManager;
+	XfconfChannel					*xfconfChannel;
+	XfdashboardViewManager			*viewManager;
+	XfdashboardSearchManager		*searchManager;
+	XfdashboardFocusManager			*focusManager;
 
-	XfdashboardTheme			*theme;
-	gulong						xfconfThemeChangedSignalID;
+	XfdashboardTheme				*theme;
+	gulong							xfconfThemeChangedSignalID;
 
-	XfdashboardBindingsPool		*bindings;
+	XfdashboardBindingsPool			*bindings;
 
 #if !GLIB_CHECK_VERSION(2, 32, 0)
-	GSimpleActionGroup			*actions;
+	GSimpleActionGroup				*actions;
 #endif
 
+	XfdashboardApplicationDatabase	*appDatabase;
 };
 
 /* Properties */
@@ -308,6 +310,22 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	if(!xfdashboard_bindings_pool_load(priv->bindings, &error))
 	{
 		g_critical(_("Could not load bindings: %s"),
+					(error && error->message) ? error->message : _("unknown error"));
+		if(error!=NULL) g_error_free(error);
+		return(FALSE);
+	}
+
+	/* Set up application database */
+	priv->appDatabase=xfdashboard_application_database_get_default();
+	if(!priv->appDatabase)
+	{
+		g_critical(_("Could not initialize application database"));
+		return(FALSE);
+	}
+
+	if(!xfdashboard_application_database_load(priv->appDatabase, &error))
+	{
+		g_critical(_("Could not load application database: %s"),
 					(error && error->message) ? error->message : _("unknown error"));
 		if(error!=NULL) g_error_free(error);
 		return(FALSE);
@@ -624,6 +642,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 		priv->bindings=NULL;
 	}
 
+	if(priv->appDatabase)
+	{
+		g_object_unref(priv->appDatabase);
+		priv->appDatabase=NULL;
+	}
+
 	/* Shutdown xfconf */
 	priv->xfconfChannel=NULL;
 	xfconf_shutdown();
@@ -708,7 +732,7 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	/* Define properties */
 	XfdashboardApplicationProperties[PROP_DAEMONIZED]=
 		g_param_spec_boolean("is-daemonized",
-								_("is-daemonized"),
+								_("Is daemonized"),
 								_("Flag indicating if application is daemonized"),
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
