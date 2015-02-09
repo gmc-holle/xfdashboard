@@ -59,6 +59,7 @@ configure.ac
 m4/*
 
 # Ignore language files
+.tx
 po/POTFILES
 po/*.gmo
 po/Makefile.in.in

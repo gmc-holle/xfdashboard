@@ -1,0 +1,2472 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: xfdashboard\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-01-12 14:10+0100\n"
+"PO-Revision-Date: 2015-01-12 13:13+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Italian (Italy) (http://www.transifex.com/projects/p/xfdashboard/language/it_IT/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: it_IT\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../data/xfdashboard.desktop.in.in.h:1
+#: ../data/xfdashboard-autostart.desktop.in.in.h:1
+msgid "Xfdashboard"
+msgstr ""
+
+#: ../data/xfdashboard.desktop.in.in.h:2
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:1
+msgid "Maybe a Gnome shell like dashboard for Xfce"
+msgstr ""
+
+#: ../data/xfdashboard-autostart.desktop.in.in.h:2
+msgid "Start xfdashboard as daemon in background"
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:2
+msgid ""
+"Xfdashboard provides a GNOME shell dashboard like interface for use with "
+"Xfce desktop."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:3
+msgid ""
+"It can be configured to run to any keyboard shortcut and when executed "
+"provides an overview of applications currently open enabling the user to "
+"switch between different applications. The search feature works like Xfce's "
+"app finder which makes it convenient to search for and start applications."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:4
+msgid "Browsing applications"
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:5
+msgid "Searching applications"
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+msgid ""
+"This unstable development introduces configurable key-bindings, allows "
+"changing themes at runtime and includes lots of smaller bug-fixes."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+msgid ""
+"This unstable development introduces additional themes, fixes handling of "
+"client-side decorated windows (CSD) and adds a new CSS command @import() to "
+"include external CSS resources in themes."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+msgid ""
+"This unstable development introduces a workaround to get window content of "
+"minimized windows to display them in windows view."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+msgid "This unstable development introduces effects."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+msgid ""
+"This unstable development fixes a problem closing windows accidently by "
+"pressing the key 'backspace' to refine search more often than characters "
+"entered. It also includes new image-loading functions to CSS. It also "
+"introduces a new generic selection framework for focusable actors."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
+msgid ""
+"This release fixes a problem closing windows accidently by pressing the key "
+"'backspace' to refine search more often than characters entered."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+msgid ""
+"This release fixes a problem when loading scalable images by icon name."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+msgid ""
+"This unstable development release fixes problems with icon mode in theming "
+"and allows to launch the first item by pressing ENTER in search view when a "
+"search was started by just typing. It also includes an improved CSS parsing "
+"allowing the usage of constant values and functions in theme's CSS file."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+msgid ""
+"This release fixes problems with icon mode in theming and allows to launch "
+"the first item by pressing ENTER in search view when a search was started by"
+" just typing."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+msgid "Initial release."
+msgstr ""
+
+#: ../data/themes/xfdashboard/xfdashboard.theme.in.h:1
+msgid "default"
+msgstr ""
+
+#: ../data/themes/xfdashboard/xfdashboard.theme.in.h:2
+msgid "Default theme for xfdashboard"
+msgstr ""
+
+#: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.h:1
+msgid "xfdashboard-auber"
+msgstr ""
+
+#: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.h:2
+msgid "Aubergine theme for xfdashboard"
+msgstr ""
+
+#: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.h:1
+msgid "xfdashboard-blue"
+msgstr ""
+
+#: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.h:2
+#: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.h:2
+msgid "Dark theme for xfdashboard"
+msgstr ""
+
+#: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.h:1
+msgid "xfdashboard-dark"
+msgstr ""
+
+#: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.h:1
+#: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.h:1
+msgid "xfdashboard-moranga"
+msgstr ""
+
+#: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.h:2
+msgid "Fresh-green flavored theme for xfdashboard"
+msgstr ""
+
+#: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.h:2
+msgid "Moranga theme for xfdashboard"
+msgstr ""
+
+#: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.h:1
+msgid "xfdashboard-wine"
+msgstr ""
+
+#: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.h:2
+msgid "Red wine theme for xfdashboard"
+msgstr ""
+
+#: ../src/actor.c:566 ../src/stylable.c:203
+#, c-format
+msgid ""
+"Could not transform CSS string value for property '%s' to type %s of class "
+"%s"
+msgstr ""
+
+#: ../src/actor.c:923
+msgid "Can focus"
+msgstr ""
+
+#: ../src/actor.c:924
+msgid "This flag indicates if this actor can be focused"
+msgstr ""
+
+#: ../src/actor.c:931
+msgid "Effects"
+msgstr ""
+
+#: ../src/actor.c:932
+msgid "List of space-separated strings with IDs of effects set at this actor"
+msgstr ""
+
+#: ../src/application-button.c:172
+msgid "No information available for application!"
+msgstr ""
+
+#: ../src/application-button.c:177 ../src/application-button.c:240
+#, c-format
+msgid "Cannot update application icon of unknown type (%d)"
+msgstr ""
+
+#: ../src/application-button.c:362
+msgid "Menu element"
+msgstr ""
+
+#: ../src/application-button.c:363
+msgid "The menu element whose title and description to display"
+msgstr ""
+
+#: ../src/application-button.c:369
+msgid "Desktop file name"
+msgstr ""
+
+#: ../src/application-button.c:370
+msgid "File name of desktop file whose title and description to display"
+msgstr ""
+
+#: ../src/application-button.c:376
+msgid "Show description"
+msgstr ""
+
+#: ../src/application-button.c:377
+msgid "Show also description next to tile"
+msgstr ""
+
+#: ../src/application-button.c:383 ../src/applications-view.c:896
+msgid "Format title only"
+msgstr ""
+
+#: ../src/application-button.c:384 ../src/applications-view.c:897
+msgid "Format string used when only title is display"
+msgstr ""
+
+#: ../src/application-button.c:390 ../src/applications-view.c:903
+msgid "Format title and description"
+msgstr ""
+
+#: ../src/application-button.c:391 ../src/applications-view.c:904
+msgid ""
+"Format string used when title and description is display. First argument is "
+"title and second one is description."
+msgstr ""
+
+#: ../src/application-button.c:559
+#, c-format
+msgid "Could not get application info for '%s'"
+msgstr ""
+
+#: ../src/application-button.c:684
+msgid "No application information for an unconfigured application button."
+msgstr ""
+
+#: ../src/application-button.c:725
+#, c-format
+msgid ""
+"Cannot get display name of application icon because of unknown type (%d)"
+msgstr ""
+
+#: ../src/application-button.c:763
+#, c-format
+msgid "Cannot get icon name of application icon because of unknown type (%d)"
+msgstr ""
+
+#: ../src/application-button.c:792 ../src/application-button.c:795
+#: ../src/application-button.c:809 ../src/application-button.c:812
+#, c-format
+msgid "Launching application '%s' failed: %s"
+msgstr ""
+
+#: ../src/application-button.c:794 ../src/application-button.c:797
+msgid "No information available for application"
+msgstr ""
+
+#: ../src/application-button.c:811 ../src/application-button.c:814
+#: ../src/application.c:212 ../src/application.c:219 ../src/application.c:278
+#: ../src/application.c:296 ../src/application.c:449
+msgid "unknown error"
+msgstr ""
+
+#: ../src/application-button.c:821
+#, c-format
+msgid "Application '%s' launched"
+msgstr ""
+
+#. Show critical warning at console
+#: ../src/application.c:210 ../src/application.c:217
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr ""
+
+#: ../src/application.c:277
+#, c-format
+msgid "Could not initialize xfconf: %s"
+msgstr ""
+
+#: ../src/application.c:289
+msgid "Could not initialize bindings"
+msgstr ""
+
+#: ../src/application.c:295
+#, c-format
+msgid "Could not load bindings: %s"
+msgstr ""
+
+#: ../src/application.c:309
+msgid ""
+"Could not create binding between xfconf property and local resource for "
+"theme change notification."
+msgstr ""
+
+#: ../src/application.c:364
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr ""
+
+#: ../src/application.c:366
+#, c-format
+msgid "Welcome to %s!"
+msgstr ""
+
+#: ../src/application.c:410
+msgid "Fork to background"
+msgstr ""
+
+#: ../src/application.c:411
+msgid "Quit existing instance"
+msgstr ""
+
+#: ../src/application.c:412
+msgid ""
+"Toggles suspend/resume state if running instance was started in daemon mode "
+"otherwise it quits running non-daemon instance"
+msgstr ""
+
+#: ../src/application.c:427
+msgid "- A Gnome Shell like dashboard for Xfce4"
+msgstr ""
+
+#: ../src/application.c:449
+#, c-format
+msgid "%s\n"
+msgstr ""
+
+#: ../src/application.c:673
+msgid "is-daemonized"
+msgstr ""
+
+#: ../src/application.c:674
+msgid "Flag indicating if application is daemonized"
+msgstr ""
+
+#: ../src/application.c:680
+msgid "Is suspended"
+msgstr ""
+
+#: ../src/application.c:681
+msgid "Flag indicating if application is suspended currently"
+msgstr ""
+
+#: ../src/application.c:687 ../src/theme.c:576
+msgid "Theme name"
+msgstr ""
+
+#: ../src/application.c:688
+msgid "Name of current theme"
+msgstr ""
+
+#: ../src/applications-menu-model.c:541
+#, c-format
+msgid "Could not load applications menu: %s"
+msgstr ""
+
+#: ../src/applications-menu-model.c:541 ../src/image-content.c:266
+#: ../src/image-content.c:282 ../src/image-content.c:392
+#: ../src/image-content.c:425 ../src/image-content.c:619
+#: ../src/image-content.c:645 ../src/image-content.c:741
+#: ../src/image-content.c:767 ../src/image-content.c:1238
+#: ../src/theme-css.c:1232 ../src/theme-css.c:1893 ../src/window-content.c:231
+#: ../src/window-content.c:680 ../src/window-content.c:867
+msgid "Unknown error"
+msgstr ""
+
+#: ../src/applications-menu-model.c:726
+#, c-format
+msgid "Sorting column %d without user-defined function is not possible"
+msgstr ""
+
+#: ../src/applications-menu-model.c:800
+msgid "ID"
+msgstr ""
+
+#. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID
+#: ../src/applications-menu-model.c:801
+msgid "Menu item"
+msgstr ""
+
+#. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT
+#: ../src/applications-menu-model.c:802
+msgid "Parent menu"
+msgstr ""
+
+#. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU
+#: ../src/applications-menu-model.c:803
+msgid "Section"
+msgstr ""
+
+#. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION
+#: ../src/applications-menu-model.c:804
+msgid "Title"
+msgstr ""
+
+#. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE
+#: ../src/applications-menu-model.c:805
+msgid "Description"
+msgstr ""
+
+#. Add "applications" button
+#: ../src/applications-search-provider.c:429 ../src/applications-view.c:940
+#: ../src/quicklaunch.c:2383
+msgid "Applications"
+msgstr ""
+
+#: ../src/applications-search-provider.c:470
+msgid ""
+"Could not allocate memory to copy search criterias for case-insensitive "
+"search"
+msgstr ""
+
+#: ../src/applications-view.c:255 ../src/applications-view.c:256
+msgid "Back"
+msgstr ""
+
+#: ../src/applications-view.c:255
+msgid "Go back to previous menu"
+msgstr ""
+
+#: ../src/applications-view.c:443 ../src/quicklaunch.c:1901
+#: ../src/windows-view.c:986 ../src/workspace-selector.c:863
+#: ../src/workspace-selector.c:1028
+#, c-format
+msgid "%s is a child of %s and cannot be selected at %s"
+msgstr ""
+
+#: ../src/applications-view.c:628 ../src/quicklaunch.c:1953
+#: ../src/windows-view.c:1045 ../src/workspace-selector.c:933
+#, c-format
+msgid "Cannot lookup selection target at %s because %s is a child of %s"
+msgstr ""
+
+#: ../src/applications-view.c:702 ../src/quicklaunch.c:2061
+#: ../src/windows-view.c:1164
+#, c-format
+msgid "%s is a child of %s and cannot be activated at %s"
+msgstr ""
+
+#: ../src/applications-view.c:873 ../src/search-result-container.c:551
+msgid "View mode"
+msgstr ""
+
+#: ../src/applications-view.c:874
+msgid "The view mode used in this view"
+msgstr ""
+
+#: ../src/applications-view.c:881 ../src/button.c:1283
+#: ../src/quicklaunch.c:2212 ../src/scrollbar.c:754
+#: ../src/search-result-container.c:559 ../src/text-box.c:789
+#: ../src/viewpad.c:1101 ../src/view-selector.c:374 ../src/windows-view.c:1340
+#: ../src/workspace-selector.c:1186
+msgid "Spacing"
+msgstr ""
+
+#: ../src/applications-view.c:882 ../src/windows-view.c:1341
+msgid "Spacing between each element in view"
+msgstr ""
+
+#: ../src/applications-view.c:889
+msgid "Parent menu icon"
+msgstr ""
+
+#: ../src/applications-view.c:890
+msgid "Name of icon to use for 'go-back-to-parent-menu' entries"
+msgstr ""
+
+#: ../src/background.c:417 ../src/background.c:418
+msgid "Background type"
+msgstr ""
+
+#: ../src/background.c:425 ../src/outline-effect.c:451
+msgid "Corners"
+msgstr ""
+
+#: ../src/background.c:426
+msgid "Determines which corners are rounded for background and outline"
+msgstr ""
+
+#: ../src/background.c:433 ../src/background.c:456 ../src/outline-effect.c:459
+msgid "Corner radius"
+msgstr ""
+
+#: ../src/background.c:434
+msgid "Radius of rounded corners for background and outline"
+msgstr ""
+
+#: ../src/background.c:441
+msgid "Background fill color"
+msgstr ""
+
+#: ../src/background.c:442
+msgid "Color to fill background with"
+msgstr ""
+
+#: ../src/background.c:448
+msgid "Fill corners"
+msgstr ""
+
+#: ../src/background.c:449
+msgid "Determines which corners are rounded at background"
+msgstr ""
+
+#: ../src/background.c:457
+msgid "Radius of rounded corners of background"
+msgstr ""
+
+#: ../src/background.c:464 ../src/window-content.c:1585
+msgid "Outline color"
+msgstr ""
+
+#: ../src/background.c:465 ../src/outline-effect.c:429
+msgid "Color to draw outline with"
+msgstr ""
+
+#: ../src/background.c:471 ../src/window-content.c:1592
+msgid "Outline width"
+msgstr ""
+
+#: ../src/background.c:472 ../src/outline-effect.c:436
+msgid "Width of line used to draw outline"
+msgstr ""
+
+#: ../src/background.c:479
+msgid "Outline borders"
+msgstr ""
+
+#: ../src/background.c:480
+msgid "Determines which sides of border of outline should be drawn"
+msgstr ""
+
+#: ../src/background.c:487
+msgid "Outline corners"
+msgstr ""
+
+#: ../src/background.c:488
+msgid "Determines which corners are rounded at outline"
+msgstr ""
+
+#: ../src/background.c:495
+msgid "Outline corner radius"
+msgstr ""
+
+#: ../src/background.c:496
+msgid "Radius of rounded corners of outline"
+msgstr ""
+
+#: ../src/background.c:503
+msgid "Image"
+msgstr ""
+
+#: ../src/background.c:504
+msgid "Image to draw as background"
+msgstr ""
+
+#: ../src/binding.c:214
+msgid "Event type"
+msgstr ""
+
+#: ../src/binding.c:215
+msgid "The event type this binding is bound to"
+msgstr ""
+
+#: ../src/binding.c:222
+msgid "Class name"
+msgstr ""
+
+#: ../src/binding.c:223
+msgid "Class name of object this binding is bound to"
+msgstr ""
+
+#: ../src/binding.c:229 ../src/image-content.c:1065
+msgid "Key"
+msgstr ""
+
+#: ../src/binding.c:230
+msgid "Key code of a keyboard event this binding is bound to"
+msgstr ""
+
+#: ../src/binding.c:237
+msgid "Modifiers"
+msgstr ""
+
+#: ../src/binding.c:238
+msgid "Modifiers this binding is bound to"
+msgstr ""
+
+#: ../src/binding.c:245
+msgid "Target"
+msgstr ""
+
+#: ../src/binding.c:246
+msgid "Class name of target of this binding"
+msgstr ""
+
+#: ../src/binding.c:252
+msgid "Action"
+msgstr ""
+
+#: ../src/binding.c:253
+msgid "Action assigned to this binding"
+msgstr ""
+
+#: ../src/binding.c:259
+msgid "Flags"
+msgstr ""
+
+#: ../src/binding.c:260
+msgid "Flags assigned to this binding"
+msgstr ""
+
+#: ../src/binding.c:305
+msgid "Failed to create binding instance"
+msgstr ""
+
+#: ../src/binding.c:449
+#, c-format
+msgid "Cannot set unsupported event type %s at binding"
+msgstr ""
+
+#: ../src/binding.c:454
+msgid "Cannot set invalid event type at binding"
+msgstr ""
+
+#: ../src/bindings-pool.c:133 ../src/theme-effects.c:172
+#: ../src/theme-layout.c:241
+#, c-format
+msgid "Error on line %d char %d: "
+msgstr ""
+
+#: ../src/bindings-pool.c:201
+#, c-format
+msgid "Could not parse empty key-binding '%s'."
+msgstr ""
+
+#: ../src/bindings-pool.c:226
+#, c-format
+msgid ""
+"Could not parse modifier '%s' of key-binding '%s' because it is not enclosed"
+" by '<...>'"
+msgstr ""
+
+#: ../src/bindings-pool.c:249
+#, c-format
+msgid "Could not parse unknown modifier '%s' of key-binding '%s'"
+msgstr ""
+
+#: ../src/bindings-pool.c:271
+#, c-format
+msgid ""
+"Could not parse '%s' of key-binding '%s' because it is already a key "
+"assigned."
+msgstr ""
+
+#: ../src/bindings-pool.c:286
+#, c-format
+msgid "Could not parse '%s' of key-binding '%s'"
+msgstr ""
+
+#: ../src/bindings-pool.c:305
+#, c-format
+msgid "Invalid key-binding '%s' as either a key nor a modifier was assigned."
+msgstr ""
+
+#: ../src/bindings-pool.c:344 ../src/theme-effects.c:524
+#: ../src/theme-layout.c:894
+#, c-format
+msgid "Unexpected text node '%s' at tag <%s>"
+msgstr ""
+
+#: ../src/bindings-pool.c:374
+msgid "Missing action"
+msgstr ""
+
+#: ../src/bindings-pool.c:400
+#, c-format
+msgid "Missing binding to set action '%s'"
+msgstr ""
+
+#: ../src/bindings-pool.c:453 ../src/bindings-pool.c:724
+#: ../src/theme-effects.c:556 ../src/theme-effects.c:642
+#: ../src/theme-effects.c:809 ../src/theme-effects.c:978
+#: ../src/theme-layout.c:935
+#, c-format
+msgid "Unknown tag <%s>"
+msgstr ""
+
+#: ../src/bindings-pool.c:524
+msgid "Missing attribute 'code' for key"
+msgstr ""
+
+#: ../src/bindings-pool.c:544
+#, c-format
+msgid "Could not translate key '%s'"
+msgstr ""
+
+#: ../src/bindings-pool.c:580
+#, c-format
+msgid "Unknown value '%s' for attribute 'when'"
+msgstr ""
+
+#: ../src/bindings-pool.c:603
+msgid "Could not initialize binding for key-binding"
+msgstr ""
+
+#: ../src/bindings-pool.c:633
+#, c-format
+msgid ""
+"Cannot transform attribute 'allow-unfocusable-target' from type '%s' to type"
+" '%s'"
+msgstr ""
+
+#: ../src/bindings-pool.c:684 ../src/bindings-pool.c:764
+#: ../src/theme-effects.c:566 ../src/theme-effects.c:718
+#: ../src/theme-effects.c:938 ../src/theme-effects.c:1018
+#: ../src/theme-layout.c:864 ../src/theme-layout.c:1220
+#, c-format
+msgid "Tag <%s> cannot contain tag <%s>"
+msgstr ""
+
+#: ../src/bindings-pool.c:827 ../src/theme-effects.c:1070
+#: ../src/theme-layout.c:1564
+#, c-format
+msgid "Could not set up parser data for file %s"
+msgstr ""
+
+#: ../src/bindings-pool.c:839 ../src/theme-effects.c:1082
+#: ../src/theme-layout.c:1576
+#, c-format
+msgid "Could not create parser for file %s"
+msgstr ""
+
+#: ../src/bindings-pool.c:868
+#, c-format
+msgid "Could not set up hash-table at parser data for file %s"
+msgstr ""
+
+#: ../src/bindings-pool.c:897
+#, c-format
+msgid "Unexpected binding state set at parser data for file %s"
+msgstr ""
+
+#: ../src/bindings-pool.c:1070
+#, c-format
+msgid "No bindings configuration file found."
+msgstr ""
+
+#: ../src/button.c:1275 ../src/search-result-container.c:567
+#: ../src/text-box.c:781
+msgid "Padding"
+msgstr ""
+
+#: ../src/button.c:1276 ../src/text-box.c:782
+msgid "Padding between background and elements"
+msgstr ""
+
+#: ../src/button.c:1284 ../src/text-box.c:790
+msgid "Spacing between text and icon"
+msgstr ""
+
+#: ../src/button.c:1291
+msgid "Button style"
+msgstr ""
+
+#: ../src/button.c:1292
+msgid "Style of button showing text and/or icon"
+msgstr ""
+
+#: ../src/button.c:1299
+msgid "Icon name"
+msgstr ""
+
+#: ../src/button.c:1300
+msgid "Themed icon name or file name of icon"
+msgstr ""
+
+#: ../src/button.c:1306
+msgid "Icon image"
+msgstr ""
+
+#: ../src/button.c:1307
+msgid "Image of icon"
+msgstr ""
+
+#: ../src/button.c:1313
+msgid "Synchronize icon size"
+msgstr ""
+
+#: ../src/button.c:1314
+msgid "Synchronize icon size with text size"
+msgstr ""
+
+#: ../src/button.c:1320
+msgid "Icon size"
+msgstr ""
+
+#: ../src/button.c:1321
+msgid ""
+"Size of icon if size of icon is not synchronized. -1 is valid for icon "
+"images and sets icon image's default size."
+msgstr ""
+
+#: ../src/button.c:1328
+msgid "Icon orientation"
+msgstr ""
+
+#: ../src/button.c:1329
+msgid "Orientation of icon to label"
+msgstr ""
+
+#: ../src/button.c:1336
+msgid "Label text"
+msgstr ""
+
+#: ../src/button.c:1337
+msgid "Text of label"
+msgstr ""
+
+#: ../src/button.c:1343
+msgid "Font"
+msgstr ""
+
+#: ../src/button.c:1344
+msgid "Font of label"
+msgstr ""
+
+#: ../src/button.c:1350 ../src/outline-effect.c:428
+msgid "Color"
+msgstr ""
+
+#: ../src/button.c:1351
+msgid "Color of label"
+msgstr ""
+
+#: ../src/button.c:1357
+msgid "Ellipsize mode"
+msgstr ""
+
+#: ../src/button.c:1358
+msgid "Mode of ellipsize if text in label is too long"
+msgstr ""
+
+#: ../src/button.c:1365
+msgid "Single line"
+msgstr ""
+
+#: ../src/button.c:1366
+msgid "Flag to determine if text can only be in one or multiple lines"
+msgstr ""
+
+#: ../src/button.c:1372
+msgid "Text justify"
+msgstr ""
+
+#: ../src/button.c:1373
+msgid "Justification (line alignment) of label"
+msgstr ""
+
+#: ../src/click-action.c:585
+msgid "Pressed"
+msgstr ""
+
+#: ../src/click-action.c:586
+msgid "Whether the clickable should be in pressed state"
+msgstr ""
+
+#: ../src/click-action.c:592
+msgid "Held"
+msgstr ""
+
+#: ../src/click-action.c:593
+msgid "Whether the clickable has a grab"
+msgstr ""
+
+#: ../src/click-action.c:599
+msgid "Long Press Duration"
+msgstr ""
+
+#: ../src/click-action.c:600
+msgid "The minimum duration of a long press to recognize the gesture"
+msgstr ""
+
+#: ../src/click-action.c:608
+msgid "Long Press Threshold"
+msgstr ""
+
+#: ../src/click-action.c:609
+msgid "The maximum threshold before a long press is cancelled"
+msgstr ""
+
+#: ../src/collapse-box.c:266
+#, c-format
+msgid "More than one actor added to %s - result are unexpected"
+msgstr ""
+
+#: ../src/collapse-box.c:566
+msgid "Collapsed"
+msgstr ""
+
+#: ../src/collapse-box.c:567
+msgid "If TRUE this actor is collapsed otherwise it is expanded to real size"
+msgstr ""
+
+#: ../src/collapse-box.c:573
+msgid "Collapsed size"
+msgstr ""
+
+#: ../src/collapse-box.c:574
+msgid "The size of actor when collapsed"
+msgstr ""
+
+#: ../src/collapse-box.c:581
+msgid "Collapse orientation"
+msgstr ""
+
+#: ../src/collapse-box.c:582
+msgid "Orientation of area being visible in collapsed state"
+msgstr ""
+
+#: ../src/css-selector.c:147
+msgid "Could not create string for parent css selector"
+msgstr ""
+
+#: ../src/css-selector.c:153
+msgid "Invalid mode for parent rule in CSS selector"
+msgstr ""
+
+#: ../src/css-selector.c:531
+msgid "Invalid name identifier"
+msgstr ""
+
+#: ../src/css-selector.c:550
+msgid "Invalid class identifier"
+msgstr ""
+
+#: ../src/css-selector.c:586
+msgid "Invalid pseudo-class identifier"
+msgstr ""
+
+#: ../src/css-selector.c:685
+msgid "No parent when parsing '>'"
+msgstr ""
+
+#: ../src/css-selector.c:766
+msgid "Failed to parse css selector."
+msgstr ""
+
+#: ../src/css-selector.c:772
+msgid "Failed to parse css selector because stream is empty."
+msgstr ""
+
+#: ../src/css-selector.c:863
+msgid "Priority"
+msgstr ""
+
+#: ../src/css-selector.c:864
+msgid "The priority of this CSS selector"
+msgstr ""
+
+#: ../src/css-selector.c:907 ../src/css-selector.c:977
+msgid "Could not create seleector."
+msgstr ""
+
+#: ../src/css-selector.c:934 ../src/theme-css.c:2317 ../src/theme-css.c:2323
+msgid "Parser did not reach end of stream"
+msgstr ""
+
+#: ../src/css-selector.c:1004
+msgid "Unexpected state of CSS scanner."
+msgstr ""
+
+#: ../src/drag-action.c:933
+msgid "Source"
+msgstr ""
+
+#: ../src/drag-action.c:934
+msgid "The source actor where drag began"
+msgstr ""
+
+#: ../src/drop-action.c:80
+#, c-format
+msgid "Target %s is already registered"
+msgstr ""
+
+#: ../src/dynamic-table-layout.c:490 ../src/scaled-table-layout.c:462
+msgid "Row spacing"
+msgstr ""
+
+#: ../src/dynamic-table-layout.c:491 ../src/scaled-table-layout.c:463
+msgid "The spacing between rows in table"
+msgstr ""
+
+#: ../src/dynamic-table-layout.c:499 ../src/scaled-table-layout.c:471
+msgid "Column spacing"
+msgstr ""
+
+#: ../src/dynamic-table-layout.c:500 ../src/scaled-table-layout.c:472
+msgid "The spacing between columns in table"
+msgstr ""
+
+#: ../src/dynamic-table-layout.c:508 ../src/scaled-table-layout.c:494
+msgid "Number children"
+msgstr ""
+
+#: ../src/dynamic-table-layout.c:509 ../src/scaled-table-layout.c:495
+msgid "Current number of child actors in this layout"
+msgstr ""
+
+#: ../src/dynamic-table-layout.c:517 ../src/scaled-table-layout.c:503
+msgid "Rows"
+msgstr ""
+
+#: ../src/dynamic-table-layout.c:518 ../src/scaled-table-layout.c:504
+msgid "Current number of rows in this layout"
+msgstr ""
+
+#: ../src/dynamic-table-layout.c:526 ../src/scaled-table-layout.c:512
+msgid "Columns"
+msgstr ""
+
+#: ../src/dynamic-table-layout.c:527 ../src/scaled-table-layout.c:513
+msgid "Current number of columns in this layout"
+msgstr ""
+
+#: ../src/fill-box-layout.c:575 ../src/quicklaunch.c:2220
+#: ../src/scrollbar.c:714 ../src/view-selector.c:382
+#: ../src/workspace-selector.c:1194
+msgid "Orientation"
+msgstr ""
+
+#: ../src/fill-box-layout.c:576 ../src/quicklaunch.c:2221
+#: ../src/workspace-selector.c:1195
+msgid "The orientation to layout children"
+msgstr ""
+
+#: ../src/fill-box-layout.c:583
+msgid "spacing"
+msgstr ""
+
+#: ../src/fill-box-layout.c:584 ../src/quicklaunch.c:2213
+#: ../src/workspace-selector.c:1187
+msgid "The spacing between children"
+msgstr ""
+
+#: ../src/fill-box-layout.c:592
+msgid "Homogeneous"
+msgstr ""
+
+#: ../src/fill-box-layout.c:593
+msgid ""
+"Whether the layout should be homogeneous, i.e. all childs get the same size"
+msgstr ""
+
+#: ../src/fill-box-layout.c:599
+msgid "Keep aspect"
+msgstr ""
+
+#: ../src/fill-box-layout.c:600
+msgid "Whether all children should keep their aspect"
+msgstr ""
+
+#. IMPLEMENTATION: Private variables and methods
+#: ../src/focusable.c:71
+#, c-format
+msgid ""
+"Object of type %s does not implement required virtual function "
+"XfdashboardFocusable::%s"
+msgstr ""
+
+#: ../src/focusable.c:174
+#, c-format
+msgid ""
+"Old selection %s at %s is unavailable but setting new selection either to %s"
+" or nothing failed!"
+msgstr ""
+
+#: ../src/focus-manager.c:153
+#, c-format
+msgid "Cannot build target list for unknown type %s"
+msgstr ""
+
+#: ../src/focus-manager.c:446 ../src/focus-manager.c:454
+#, c-format
+msgid "Object %s does not inherit %s and cannot be registered"
+msgstr ""
+
+#: ../src/focus-manager.c:478
+#, c-format
+msgid ""
+"Could not find registered focusable object %s to register object %s - "
+"appending to end of list."
+msgstr ""
+
+#: ../src/focus-manager.c:637
+msgid "Trying to focus an unregistered focusable actor"
+msgstr ""
+
+#: ../src/focus-manager.c:874
+#, c-format
+msgid "Object type %s does not provide action '%s'"
+msgstr ""
+
+#: ../src/focus-manager.c:886
+#, c-format
+msgid "Action '%s' at object type %s is not an action signal."
+msgstr ""
+
+#: ../src/focus-manager.c:906
+#, c-format
+msgid ""
+"Action '%s' at object type %s wants return value of type %s but expected is "
+"%s."
+msgstr ""
+
+#: ../src/focus-manager.c:917
+#, c-format
+msgid "Action '%s' at object type %s wants %u parameters but expected are %u."
+msgstr ""
+
+#: ../src/focus-manager.c:928
+#, c-format
+msgid ""
+"Action '%s' at object type %s wants type %s at parameter %u but type %s is "
+"expected."
+msgstr ""
+
+#: ../src/image-content.c:139
+#, c-format
+msgid "Destroying image cache still containing %d images."
+msgstr ""
+
+#: ../src/image-content.c:198
+#, c-format
+msgid "Image has already key '%s' set and will be replaced with '%s'"
+msgstr ""
+
+#: ../src/image-content.c:209
+#, c-format
+msgid "An image with key '%s' is already cache and will be replaced."
+msgstr ""
+
+#: ../src/image-content.c:264
+#, c-format
+msgid "Failed to load image data into content for key '%s': %s"
+msgstr ""
+
+#: ../src/image-content.c:280
+#, c-format
+msgid "Failed to load image for key '%s': %s"
+msgstr ""
+
+#: ../src/image-content.c:359
+#, c-format
+msgid "Icon file '%s' does not exist - trying fallback icon"
+msgstr ""
+
+#: ../src/image-content.c:368
+#, c-format
+msgid "Could not load fallback icon for file '%s'"
+msgstr ""
+
+#: ../src/image-content.c:390 ../src/image-content.c:617
+#, c-format
+msgid "Failed to load image data into content for icon '%s': %s"
+msgstr ""
+
+#: ../src/image-content.c:422
+#, c-format
+msgid "Could not create stream for file '%s' of icon '%s': %s"
+msgstr ""
+
+#: ../src/image-content.c:570
+#, c-format
+msgid "Could not lookup icon name '%s' for icon '%s'"
+msgstr ""
+
+#: ../src/image-content.c:586
+#, c-format
+msgid "Could not lookup themed icon '%s'"
+msgstr ""
+
+#: ../src/image-content.c:597
+#, c-format
+msgid "Could not lookup fallback icon for icon '%s'"
+msgstr ""
+
+#: ../src/image-content.c:642
+#, c-format
+msgid "Could not create stream for icon file %s of icon '%s': %s"
+msgstr ""
+
+#: ../src/image-content.c:708
+#, c-format
+msgid "Could not lookup gicon '%s'"
+msgstr ""
+
+#: ../src/image-content.c:719
+#, c-format
+msgid "Could not lookup fallback icon for gicon '%s'"
+msgstr ""
+
+#: ../src/image-content.c:739
+#, c-format
+msgid "Failed to load image data into content for gicon '%s': %s"
+msgstr ""
+
+#: ../src/image-content.c:764
+#, c-format
+msgid "Could not create stream for file %s of gicon '%s': %s"
+msgstr ""
+
+#: ../src/image-content.c:824 ../src/image-content.c:960
+#, c-format
+msgid "Cannot load image '%s' without type"
+msgstr ""
+
+#: ../src/image-content.c:840 ../src/image-content.c:976
+#, c-format
+msgid "Cannot load image '%s' of unknown type %d"
+msgstr ""
+
+#: ../src/image-content.c:1066
+msgid "The hash key for caching this image"
+msgstr ""
+
+#: ../src/image-content.c:1153
+#, c-format
+msgid "Could not create key for icon name '%s' at size %u"
+msgstr ""
+
+#: ../src/image-content.c:1190
+#, c-format
+msgid "Could not create key for gicon '%s' at size %u"
+msgstr ""
+
+#: ../src/live-window.c:732 ../src/window-content.c:1571
+msgid "Window"
+msgstr ""
+
+#: ../src/live-window.c:733
+msgid "The window to show"
+msgstr ""
+
+#: ../src/live-window.c:739
+msgid "Window number"
+msgstr ""
+
+#: ../src/live-window.c:740
+msgid ""
+"The assigned window number. If set to non-zero the close button will be "
+"hidden and the window number will be shown instead. If set to zero the close"
+" button will be shown again."
+msgstr ""
+
+#: ../src/live-window.c:747
+msgid "Close button padding"
+msgstr ""
+
+#: ../src/live-window.c:748
+msgid "Padding of close button to window actor in pixels"
+msgstr ""
+
+#: ../src/live-window.c:755
+msgid "Title actor padding"
+msgstr ""
+
+#: ../src/live-window.c:756
+msgid "Padding of title actor to window actor in pixels"
+msgstr ""
+
+#: ../src/live-workspace.c:556
+msgid "Workspace"
+msgstr ""
+
+#: ../src/live-workspace.c:557
+msgid "The workspace to show"
+msgstr ""
+
+#: ../src/main.c:54
+#, c-format
+msgid "Unable to register application: %s"
+msgstr ""
+
+#: ../src/main.c:75
+#, c-format
+msgid "Initializing application failed with status code %d"
+msgstr ""
+
+#: ../src/main.c:91
+msgid "Initializing clutter failed!"
+msgstr ""
+
+#: ../src/outline-effect.c:435
+msgid "Width"
+msgstr ""
+
+#: ../src/outline-effect.c:443
+msgid "Borders"
+msgstr ""
+
+#: ../src/outline-effect.c:444
+msgid "Determines which sides of the border to draw"
+msgstr ""
+
+#: ../src/outline-effect.c:452
+msgid "Determines which corners are rounded"
+msgstr ""
+
+#: ../src/outline-effect.c:460
+msgid "Radius of rounded corners"
+msgstr ""
+
+#: ../src/quicklaunch.c:164
+#, c-format
+msgid ""
+"Could not check for duplicates for invalid %s object so assume it exists"
+msgstr ""
+
+#: ../src/quicklaunch.c:184
+#, c-format
+msgid ""
+"Value at %p of type %s is not a %s so assume this desktop application item "
+"exists"
+msgstr ""
+
+#: ../src/quicklaunch.c:433 ../src/quicklaunch.c:1352
+#, c-format
+msgid "Favourite '%s' added"
+msgstr ""
+
+#: ../src/quicklaunch.c:679 ../src/quicklaunch.c:1419
+#, c-format
+msgid "Favourite '%s' removed"
+msgstr ""
+
+#: ../src/quicklaunch.c:2197
+msgid "Favourites"
+msgstr ""
+
+#: ../src/quicklaunch.c:2198
+msgid "An array of strings pointing to desktop files shown as icons"
+msgstr ""
+
+#: ../src/quicklaunch.c:2204
+msgid "Normal icon size"
+msgstr ""
+
+#: ../src/quicklaunch.c:2205
+msgid "Unscale size of icon"
+msgstr ""
+
+#. Next add trash button to box but initially hidden and register as drop
+#. target
+#: ../src/quicklaunch.c:2390
+msgid "Remove"
+msgstr ""
+
+#: ../src/scaled-table-layout.c:480
+msgid "Relative scale"
+msgstr ""
+
+#: ../src/scaled-table-layout.c:481
+msgid "Whether all children should be scaled relatively to largest child"
+msgstr ""
+
+#: ../src/scaled-table-layout.c:487 ../src/windows-view.c:1348
+msgid "Prevent upscaling"
+msgstr ""
+
+#: ../src/scaled-table-layout.c:488
+msgid ""
+"Whether this layout manager should prevent upsclaing any child beyond its "
+"real size"
+msgstr ""
+
+#: ../src/scrollbar.c:715
+msgid "Defines if scrollbar is horizontal or vertical"
+msgstr ""
+
+#: ../src/scrollbar.c:722
+msgid "Value"
+msgstr ""
+
+#: ../src/scrollbar.c:723
+msgid "Current value of scroll bar within range"
+msgstr ""
+
+#: ../src/scrollbar.c:730
+msgid "Value range"
+msgstr ""
+
+#: ../src/scrollbar.c:731
+msgid "The range the slider of scroll bar covers"
+msgstr ""
+
+#: ../src/scrollbar.c:738
+msgid "Range"
+msgstr ""
+
+#: ../src/scrollbar.c:739
+msgid "Range to scroll within"
+msgstr ""
+
+#: ../src/scrollbar.c:746
+msgid "Page size factor"
+msgstr ""
+
+#: ../src/scrollbar.c:747
+msgid ""
+"The factor of value range to increase or decrease value by on pointer scroll"
+" events."
+msgstr ""
+
+#: ../src/scrollbar.c:755
+msgid "The spacing between scrollbar and background"
+msgstr ""
+
+#: ../src/scrollbar.c:762
+msgid "Slider width"
+msgstr ""
+
+#: ../src/scrollbar.c:763
+msgid "The width of slider"
+msgstr ""
+
+#: ../src/scrollbar.c:770
+msgid "Slider radius"
+msgstr ""
+
+#: ../src/scrollbar.c:771
+msgid "The radius of slider's rounded corners"
+msgstr ""
+
+#: ../src/scrollbar.c:778
+msgid "Slider color"
+msgstr ""
+
+#: ../src/scrollbar.c:779
+msgid "Color of slider"
+msgstr ""
+
+#: ../src/scrollbar.c:906
+#, c-format
+msgid "Adjusting value %.2f in scrollbar to fit range %.2f"
+msgstr ""
+
+#: ../src/scrollbar.c:965
+#, c-format
+msgid "Adjusting value %.2f in scrollbar to fit new range %.2f"
+msgstr ""
+
+#: ../src/search-manager.c:180
+#, c-format
+msgid "Search provider %s is not a %s and cannot be registered"
+msgstr ""
+
+#: ../src/search-manager.c:208
+#, c-format
+msgid "Search provider %s is not a %s and cannot be unregistered"
+msgstr ""
+
+#. IMPLEMENTATION: Private variables and methods
+#: ../src/search-provider.c:42
+#, c-format
+msgid ""
+"Search provider of type %s does not implement required virtual function "
+"XfdashboardSearchProvider::%s"
+msgstr ""
+
+#: ../src/search-result-container.c:249
+msgid "Current selected item not found. Selecting first item."
+msgstr ""
+
+#: ../src/search-result-container.c:537
+msgid "Provider"
+msgstr ""
+
+#: ../src/search-result-container.c:538
+msgid "The search provider this result container is for"
+msgstr ""
+
+#: ../src/search-result-container.c:544
+msgid "Title format"
+msgstr ""
+
+#: ../src/search-result-container.c:545
+msgid "Format string for title which will contain the name of search provider"
+msgstr ""
+
+#: ../src/search-result-container.c:552
+msgid "View mode of container for result items"
+msgstr ""
+
+#: ../src/search-result-container.c:560
+msgid "Spacing between each result item"
+msgstr ""
+
+#: ../src/search-result-container.c:568
+msgid "Padding between title and item results container"
+msgstr ""
+
+#: ../src/search-view.c:414 ../src/search-view.c:424 ../src/search-view.c:434
+#, c-format
+msgid "Failed to add actor for result item [%s] of provider %s: %s"
+msgstr ""
+
+#: ../src/search-view.c:417
+msgid "Failed to created actor"
+msgstr ""
+
+#: ../src/search-view.c:427
+msgid "Failed to create item-actor mapping"
+msgstr ""
+
+#: ../src/search-view.c:437
+msgid "Failed to store item-actor mapping"
+msgstr ""
+
+#: ../src/search-view.c:967
+msgid "Search"
+msgstr ""
+
+#: ../src/stage.c:411
+msgid "Cannot perform search because search view was not found in viewpad."
+msgstr ""
+
+#: ../src/stage.c:689
+msgid "Cannot find search viewin viewpad to reset view."
+msgstr ""
+
+#: ../src/stage.c:697
+#, c-format
+msgid "Cannot switch to unknown view '%s'"
+msgstr ""
+
+#: ../src/stage.c:813
+#, c-format
+msgid "Could not build interface '%s' from theme '%s'"
+msgstr ""
+
+#: ../src/stage.c:868
+msgid "Just type to search..."
+msgstr ""
+
+#: ../src/stage.c:1210 ../src/stage.c:1211 ../src/stage-interface.c:243
+#: ../src/stage-interface.c:244
+msgid "Background image type"
+msgstr ""
+
+#: ../src/stage.c:1218 ../src/stage-interface.c:251
+msgid "Background color"
+msgstr ""
+
+#: ../src/stage.c:1219 ../src/stage-interface.c:252
+msgid "Color of stage's background"
+msgstr ""
+
+#. IMPLEMENTATION: Private variables and methods
+#: ../src/stylable.c:42
+#, c-format
+msgid ""
+"Object of type %s does not implement required virtual function "
+"XfdashboardStylable::%s"
+msgstr ""
+
+#: ../src/stylable.c:267
+msgid "Style classes"
+msgstr ""
+
+#: ../src/stylable.c:268
+msgid "String representing list of classes separated by '.'"
+msgstr ""
+
+#: ../src/stylable.c:274
+msgid "Style pseudo-classes"
+msgstr ""
+
+#: ../src/stylable.c:275
+msgid ""
+"String representing list of pseudo-classes, e.g. current state, separated by"
+" ':'"
+msgstr ""
+
+#: ../src/stylable.c:334
+#, c-format
+msgid "Could not find property '%s' for class %s"
+msgstr ""
+
+#: ../src/text-box.c:797
+msgid "Editable"
+msgstr ""
+
+#: ../src/text-box.c:798
+msgid "Flag to set if text is editable"
+msgstr ""
+
+#: ../src/text-box.c:804
+msgid "Primary icon name"
+msgstr ""
+
+#: ../src/text-box.c:805
+msgid "Themed icon name or file name of primary icon shown left of text box"
+msgstr ""
+
+#: ../src/text-box.c:811
+msgid "Secondary icon name"
+msgstr ""
+
+#: ../src/text-box.c:812
+msgid ""
+"Themed icon name or file name of secondary icon shown right of text box"
+msgstr ""
+
+#: ../src/text-box.c:818
+msgid "Text"
+msgstr ""
+
+#: ../src/text-box.c:819
+msgid "Text of editable text box"
+msgstr ""
+
+#: ../src/text-box.c:825
+msgid "Text font"
+msgstr ""
+
+#: ../src/text-box.c:826
+msgid "Font of editable text box"
+msgstr ""
+
+#: ../src/text-box.c:832
+msgid "Text color"
+msgstr ""
+
+#: ../src/text-box.c:833
+msgid "Color of text in editable text box"
+msgstr ""
+
+#: ../src/text-box.c:840
+msgid "Selection text color"
+msgstr ""
+
+#: ../src/text-box.c:841
+msgid "Color of text of selected text"
+msgstr ""
+
+#: ../src/text-box.c:847
+msgid "Selection background color"
+msgstr ""
+
+#: ../src/text-box.c:848
+msgid "Color of background of selected text"
+msgstr ""
+
+#: ../src/text-box.c:854
+msgid "Hint text"
+msgstr ""
+
+#: ../src/text-box.c:855
+msgid "Hint text shown if editable text box is empty"
+msgstr ""
+
+#: ../src/text-box.c:861
+msgid "Hint text font"
+msgstr ""
+
+#: ../src/text-box.c:862
+msgid "Font of hint text shown if editable text box is empty"
+msgstr ""
+
+#: ../src/text-box.c:868
+msgid "Hint text color"
+msgstr ""
+
+#: ../src/text-box.c:869
+msgid "Color of hint text shown if editable text box is empty"
+msgstr ""
+
+#: ../src/text-box.c:875
+msgid "Hint text set"
+msgstr ""
+
+#: ../src/text-box.c:876
+msgid "Flag indicating if a hint text was set"
+msgstr ""
+
+#: ../src/theme.c:569 ../src/theme-css.c:2482
+msgid "Theme path"
+msgstr ""
+
+#: ../src/theme.c:570
+msgid "Path where theme was found and loaded from"
+msgstr ""
+
+#: ../src/theme.c:577
+msgid ""
+"Short name of theme which was used to lookup theme and folder name where "
+"theme is stored in"
+msgstr ""
+
+#: ../src/theme.c:583
+msgid "Theme display name"
+msgstr ""
+
+#: ../src/theme.c:584
+msgid "The name of theme"
+msgstr ""
+
+#: ../src/theme.c:590
+msgid "Theme comment"
+msgstr ""
+
+#: ../src/theme.c:591
+msgid "The comment of theme used as description"
+msgstr ""
+
+#: ../src/theme.c:689
+#, c-format
+msgid "Theme '%s' requested but '%s' was already loaded"
+msgstr ""
+
+#: ../src/theme.c:706
+#, c-format
+msgid "Theme '%s' not found"
+msgstr ""
+
+#: ../src/theme-css.c:273
+#, c-format
+msgid "Cannot get argument %d because only %d arguments are available"
+msgstr ""
+
+#: ../src/theme-css.c:286
+#, c-format
+msgid "Cannot allocate memory for argument %d"
+msgstr ""
+
+#: ../src/theme-css.c:304
+#, c-format
+msgid "Cannot transform argument %d from type '%s' to type '%s'"
+msgstr ""
+
+#: ../src/theme-css.c:341
+msgid "Missing string to convert to color component value."
+msgstr ""
+
+#. Set error message
+#: ../src/theme-css.c:364
+#, c-format
+msgid "Cannot convert string '%s' to color component value."
+msgstr ""
+
+#. Set error message
+#: ../src/theme-css.c:384
+#, c-format
+msgid "Color component value %.2f out of range"
+msgstr ""
+
+#. Set error message
+#: ../src/theme-css.c:739
+#, c-format
+msgid "Factor %.2f is out of range"
+msgstr ""
+
+#. Set error message
+#: ../src/theme-css.c:844
+#, c-format
+msgid "Alpha factor %.2f is out of range"
+msgstr ""
+
+#: ../src/theme-css.c:897
+#, c-format
+msgid "CSS function '%s' is already registered."
+msgstr ""
+
+#: ../src/theme-css.c:938 ../src/theme-css.c:1046 ../src/theme-css.c:2051
+msgid "An identifier must follow '@'"
+msgstr ""
+
+#: ../src/theme-css.c:1071
+msgid "Missing function argument"
+msgstr ""
+
+#. Set error message
+#: ../src/theme-css.c:1095
+#, c-format
+msgid "Invalid character '%c' in function argument"
+msgstr ""
+
+#: ../src/theme-css.c:1120
+msgid "Invalid character in function argument"
+msgstr ""
+
+#: ../src/theme-css.c:1156
+msgid "Missing ')' after function"
+msgstr ""
+
+#: ../src/theme-css.c:1171
+msgid "Missing '(' after function"
+msgstr ""
+
+#. Set error message
+#: ../src/theme-css.c:1207
+#, c-format
+msgid "Could not transform result of function '%s' to a string"
+msgstr ""
+
+#: ../src/theme-css.c:1237
+#, c-format
+msgid "Function '%s' failed with error: %s"
+msgstr ""
+
+#: ../src/theme-css.c:1243
+#, c-format
+msgid "Function '%s' failed!"
+msgstr ""
+
+#. Identifier was unresolvable so print error message
+#: ../src/theme-css.c:1311
+#, c-format
+msgid "Unresolvable identifier '@%s'"
+msgstr ""
+
+#: ../src/theme-css.c:1505
+msgid "Invalid property name"
+msgstr ""
+
+#: ../src/theme-css.c:1525
+msgid "Property names and values must be separated by colon"
+msgstr ""
+
+#: ../src/theme-css.c:1581
+msgid "Invalid property value"
+msgstr ""
+
+#: ../src/theme-css.c:1606
+msgid "Property values must end with semi-colon"
+msgstr ""
+
+#: ../src/theme-css.c:1743
+msgid "Missing '(' after @import keyword."
+msgstr ""
+
+#: ../src/theme-css.c:1784
+msgid "Unexpected token in filename to import"
+msgstr ""
+
+#: ../src/theme-css.c:1804
+msgid "Missing filename to import"
+msgstr ""
+
+#: ../src/theme-css.c:1826
+msgid "Missing closing ')' at @import keyword."
+msgstr ""
+
+#. Build error message
+#: ../src/theme-css.c:1891
+#, c-format
+msgid "Failed to import CSS file '%s': %s"
+msgstr ""
+
+#: ../src/theme-css.c:1996
+msgid ""
+"Mixing selectors and '@' identifiers or defining more than one '@' "
+"identifier at once is not allowed"
+msgstr ""
+
+#: ../src/theme-css.c:2017
+msgid ""
+"A selector must have been defined before other one can follow comma-"
+"separated."
+msgstr ""
+
+#. Build warning message
+#: ../src/theme-css.c:2083
+#, c-format
+msgid "Skipping block of unknown identifier '@%s'"
+msgstr ""
+
+#: ../src/theme-css.c:2089
+msgid "'@' identifier"
+msgstr ""
+
+#: ../src/theme-css.c:2118 ../src/theme-css.c:2135
+msgid "Unhandled selector"
+msgstr ""
+
+#: ../src/theme-css.c:2285
+#, c-format
+msgid "The input stream of type %s is not supported"
+msgstr ""
+
+#: ../src/theme-css.c:2483
+msgid "Path of theme loading from"
+msgstr ""
+
+#: ../src/theme-css.c:2570
+#, c-format
+msgid "Could not get file for path '%s'"
+msgstr ""
+
+#: ../src/theme-effects.c:334 ../src/theme-layout.c:462
+#, c-format
+msgid "Cannot allocate memory for object data of tag <%s>"
+msgstr ""
+
+#: ../src/theme-effects.c:352
+#, c-format
+msgid ""
+"Freeing effect object parser data at %p with a reference counter of %d "
+"greater than one"
+msgstr ""
+
+#: ../src/theme-effects.c:482
+#, c-format
+msgid "Object of type %s is not derived from %s"
+msgstr ""
+
+#: ../src/theme-effects.c:589
+msgid "Missing property name to set value for"
+msgstr ""
+
+#: ../src/theme-effects.c:601
+#, c-format
+msgid "Missing object data to set value of property '%s'"
+msgstr ""
+
+#: ../src/theme-effects.c:655 ../src/theme-effects.c:742
+#, c-format
+msgid "Missing parser data for <%s> tag"
+msgstr ""
+
+#: ../src/theme-effects.c:697
+#, c-format
+msgid "Multiple definition of property '%s' at object with ID '%s'"
+msgstr ""
+
+#: ../src/theme-effects.c:759
+#, c-format
+msgid ""
+"Invalid state of parser after parsing property '%s' at object with id '%s' "
+"of type %s"
+msgstr ""
+
+#: ../src/theme-effects.c:863 ../src/theme-layout.c:1032
+#, c-format
+msgid "Empty ID at tag '%s'"
+msgstr ""
+
+#: ../src/theme-effects.c:875 ../src/theme-layout.c:1045
+#, c-format
+msgid "Invalid ID '%s' at tag '%s'"
+msgstr ""
+
+#: ../src/theme-effects.c:888
+#, c-format
+msgid "Multiple definition of effect with id '%s'"
+msgstr ""
+
+#: ../src/theme-effects.c:901 ../src/theme-layout.c:1061
+#, c-format
+msgid "Unknown object class %s for tag '%s'"
+msgstr ""
+
+#: ../src/theme-effects.c:915 ../src/theme-layout.c:1081
+#, c-format
+msgid ""
+"Invalid class %s in object for parent tag <%s> - expecting class derived "
+"from %s"
+msgstr ""
+
+#. If we get here we did not find an object with requested ID
+#: ../src/theme-effects.c:1268
+#, c-format
+msgid "Could not find effect with ID '%s'"
+msgstr ""
+
+#: ../src/theme-layout.c:372
+msgid "Cannot allocate memory for unknown tag"
+msgstr ""
+
+#: ../src/theme-layout.c:384
+#, c-format
+msgid "Cannot allocate memory for tag '%s'"
+msgstr ""
+
+#: ../src/theme-layout.c:816
+msgid "Unexpected empty tag stack when parsing property text node"
+msgstr ""
+
+#: ../src/theme-layout.c:827
+#, c-format
+msgid "Value for property '%s' is already set"
+msgstr ""
+
+#: ../src/theme-layout.c:1116
+#, c-format
+msgid ""
+"Tag <%s> can only be set at <%s> creating objects derived from class %s"
+msgstr ""
+
+#: ../src/theme-layout.c:1201
+#, c-format
+msgid "Attribute 'ref' cannot be empty at tag <%s>"
+msgstr ""
+
+#: ../src/theme-layout.c:1242
+#, c-format
+msgid "Internal error when handling end of tag <%s>"
+msgstr ""
+
+#: ../src/theme-layout.c:1271
+#, c-format
+msgid "Document can have only one <%s>"
+msgstr ""
+
+#: ../src/theme-layout.c:1309
+#, c-format
+msgid "Object can have only one <%s>"
+msgstr ""
+
+#: ../src/theme-layout.c:1480
+#, c-format
+msgid "ID '%s' was specified more than once (%d times)"
+msgstr ""
+
+#: ../src/theme-layout.c:1511
+#, c-format
+msgid "Referenced ID '%s' could not be resolved"
+msgstr ""
+
+#: ../src/theme-layout.c:1612
+#, c-format
+msgid "File %s does not contain an interface"
+msgstr ""
+
+#: ../src/theme-layout.c:1622
+#, c-format
+msgid "Interface at file %s has no ID"
+msgstr ""
+
+#: ../src/toggle-button.c:162
+msgid "Toggle state"
+msgstr ""
+
+#: ../src/toggle-button.c:163
+msgid "State of toggle"
+msgstr ""
+
+#: ../src/toggle-button.c:169
+msgid "Auto toggle"
+msgstr ""
+
+#: ../src/toggle-button.c:170
+msgid "If set the toggle state will be toggled on each click"
+msgstr ""
+
+#: ../src/tooltip-action.c:338
+msgid "Tooltip text"
+msgstr ""
+
+#: ../src/tooltip-action.c:339
+msgid "The text to display in a tooltip"
+msgstr ""
+
+#: ../src/utils.c:98
+#, c-format
+msgid "Could find any stage to show notification: %s"
+msgstr ""
+
+#: ../src/utils.c:375
+#, c-format
+msgid ""
+"Could not create desktop application information for menu item '%s' from %s:"
+" %s"
+msgstr ""
+
+#: ../src/utils.c:411
+#, c-format
+msgid "Could not create application information for menu item '%s': %s"
+msgstr ""
+
+#: ../src/view.c:313
+msgid "View internal name"
+msgstr ""
+
+#: ../src/view.c:314
+msgid "Internal and untranslated name of view used in application"
+msgstr ""
+
+#: ../src/view.c:320
+msgid "View name"
+msgstr ""
+
+#: ../src/view.c:321
+msgid "Name of view used to display"
+msgstr ""
+
+#: ../src/view.c:327
+msgid "View icon"
+msgstr ""
+
+#: ../src/view.c:328
+msgid ""
+"Icon of view used to display. Icon name can be a themed icon name or file "
+"name"
+msgstr ""
+
+#: ../src/view.c:334
+msgid "Fit mode"
+msgstr ""
+
+#: ../src/view.c:335
+msgid "Defines if view should be fit into viewpad and its orientation"
+msgstr ""
+
+#: ../src/view.c:341
+msgid "Enabled"
+msgstr ""
+
+#: ../src/view.c:342
+msgid "This flag indicates if is view is enabled and activable"
+msgstr ""
+
+#: ../src/view-manager.c:176
+#, c-format
+msgid "View %s is not a %s and cannot be registered"
+msgstr ""
+
+#: ../src/view-manager.c:204
+#, c-format
+msgid "View %s is not a %s and cannot be unregistered"
+msgstr ""
+
+#: ../src/viewpad.c:128
+msgid "Cannot update viewport of view because no one is active"
+msgstr ""
+
+#: ../src/viewpad.c:245
+#, c-format
+msgid "View %s is not a child of %s and cannot be activated"
+msgstr ""
+
+#: ../src/viewpad.c:253
+#, c-format
+msgid "Cannot activate disabled view %s at %s"
+msgstr ""
+
+#: ../src/viewpad.c:599
+#, c-format
+msgid "Failed to create view instance of %s"
+msgstr ""
+
+#: ../src/viewpad.c:605
+#, c-format
+msgid "Instance %s is not a %s and cannot be added to %s"
+msgstr ""
+
+#: ../src/viewpad.c:1102 ../src/view-selector.c:375
+msgid "The spacing between views and scrollbars"
+msgstr ""
+
+#: ../src/viewpad.c:1109
+msgid "Active view"
+msgstr ""
+
+#: ../src/viewpad.c:1110
+msgid "The current active view in viewpad"
+msgstr ""
+
+#: ../src/viewpad.c:1116
+msgid "Horizontal scrollbar visibility"
+msgstr ""
+
+#: ../src/viewpad.c:1117
+msgid "This flag indicates if horizontal scrollbar is visible"
+msgstr ""
+
+#: ../src/viewpad.c:1123
+msgid "Horizontal scrollbar policy"
+msgstr ""
+
+#: ../src/viewpad.c:1124
+msgid "The policy for horizontal scrollbar controlling when it is displayed"
+msgstr ""
+
+#: ../src/viewpad.c:1131
+msgid "Vertical scrollbar visibility"
+msgstr ""
+
+#: ../src/viewpad.c:1132
+msgid "This flag indicates if vertical scrollbar is visible"
+msgstr ""
+
+#: ../src/viewpad.c:1138
+msgid "Vertical scrollbar policy"
+msgstr ""
+
+#: ../src/viewpad.c:1139
+msgid "The policy for vertical scrollbar controlling when it is displayed"
+msgstr ""
+
+#: ../src/view-selector.c:367
+msgid "Viewpad"
+msgstr ""
+
+#: ../src/view-selector.c:368
+msgid "The viewpad this selector belongs to"
+msgstr ""
+
+#: ../src/view-selector.c:383
+msgid "Orientation of view selector"
+msgstr ""
+
+#. Show warning
+#: ../src/window-content.c:229
+#, c-format
+msgid "Could not create copy of texture of mininized window '%s': %s"
+msgstr ""
+
+#. Show warning
+#: ../src/window-content.c:257
+#, c-format
+msgid "Could not create copy of texture of mininized window '%s'"
+msgstr ""
+
+#: ../src/window-content.c:268
+#, c-format
+msgid "Could not determine size of texture of minimized window '%s'"
+msgstr ""
+
+#: ../src/window-content.c:273
+#, c-format
+msgid "Could not allocate memory for copy of texture of mininized window '%s'"
+msgstr ""
+
+#: ../src/window-content.c:384
+#, c-format
+msgid ""
+"Need at least version %d.%d of composite extension but found %d.%d - using "
+"only fallback images"
+msgstr ""
+
+#: ../src/window-content.c:388
+msgid "Query for X composite extension failed - using only fallback imagess"
+msgstr ""
+
+#: ../src/window-content.c:390
+msgid "X does not support composite extension - using only fallback images"
+msgstr ""
+
+#: ../src/window-content.c:400
+#, c-format
+msgid ""
+"Query for X damage extension resulted in error code %d - using only still "
+"images of windows"
+msgstr ""
+
+#: ../src/window-content.c:659
+#, c-format
+msgid "Could not get pixmap for window '%s"
+msgstr ""
+
+#. We should never get here as existance of composite extension was checked
+#. before
+#: ../src/window-content.c:665
+#, c-format
+msgid "Cannot resume window '%s' as composite extension is not available"
+msgstr ""
+
+#: ../src/window-content.c:706
+#, c-format
+msgid "Could not create damage for window '%s' - using still image of window"
+msgstr ""
+
+#. Show warning
+#: ../src/window-content.c:865
+#, c-format
+msgid "Could not create fallback texture for window '%s': %s"
+msgstr ""
+
+#: ../src/window-content.c:907
+#, c-format
+msgid "Could not get attributes of window '%s'"
+msgstr ""
+
+#: ../src/window-content.c:965
+#, c-format
+msgid "Destroying window content cache still containing %d windows."
+msgstr ""
+
+#: ../src/window-content.c:1572
+msgid "The window to handle and display"
+msgstr ""
+
+#: ../src/window-content.c:1578
+msgid "Suspended"
+msgstr ""
+
+#: ../src/window-content.c:1579
+msgid "Is this window suspended"
+msgstr ""
+
+#: ../src/window-content.c:1586
+msgid "Color to draw outline of mapped windows with"
+msgstr ""
+
+#: ../src/window-content.c:1593
+msgid "Width of line used to draw outline of mapped windows"
+msgstr ""
+
+#: ../src/window-content.c:1600
+msgid "Include window frame"
+msgstr ""
+
+#: ../src/window-content.c:1601
+msgid ""
+"Whether the window frame should be included or only the window content "
+"should be shown"
+msgstr ""
+
+#: ../src/window-content.c:1607
+msgid "Unmapped window icon X fill"
+msgstr ""
+
+#: ../src/window-content.c:1608
+msgid "Whether the unmapped window icon should fill up horizontal space"
+msgstr ""
+
+#: ../src/window-content.c:1614
+msgid "Unmapped window icon y fill"
+msgstr ""
+
+#: ../src/window-content.c:1615
+msgid "Whether the unmapped window icon should fill up vertical space"
+msgstr ""
+
+#: ../src/window-content.c:1621
+msgid "Unmapped window icon X align"
+msgstr ""
+
+#: ../src/window-content.c:1622
+msgid ""
+"The alignment of the unmapped window icon on the X axis within the "
+"allocation in normalized coordinate between 0 and 1"
+msgstr ""
+
+#: ../src/window-content.c:1629
+msgid "Unmapped window icon Y align"
+msgstr ""
+
+#: ../src/window-content.c:1630
+msgid ""
+"The alignment of the unmapped window icon on the Y axis within the "
+"allocation in normalized coordinate between 0 and 1"
+msgstr ""
+
+#: ../src/window-content.c:1637
+msgid "Unmapped window icon X scale"
+msgstr ""
+
+#: ../src/window-content.c:1638
+msgid "Scale factor of unmapped window icon on the X axis"
+msgstr ""
+
+#: ../src/window-content.c:1645
+msgid "Unmapped window icon Y scale"
+msgstr ""
+
+#: ../src/window-content.c:1646
+msgid "Scale factor of unmapped window icon on the Y axis"
+msgstr ""
+
+#: ../src/window-content.c:1653
+msgid "Unmapped window icon gravity"
+msgstr ""
+
+#: ../src/window-content.c:1654
+msgid "The anchor point of unmapped window icon"
+msgstr ""
+
+#: ../src/windows-view.c:1175
+#, c-format
+msgid "Cannot activate selection of type %s at %s because expecting type %s"
+msgstr ""
+
+#: ../src/windows-view.c:1333
+msgid "Current workspace"
+msgstr ""
+
+#: ../src/windows-view.c:1334
+msgid "The current workspace whose windows are shown"
+msgstr ""
+
+#: ../src/windows-view.c:1349
+msgid ""
+"Whether this view should prevent upsclaing any window beyond its real size"
+msgstr ""
+
+#: ../src/windows-view.c:1355
+msgid "Scroll event changes workspace"
+msgstr ""
+
+#: ../src/windows-view.c:1356
+msgid "Whether this view should change active workspace on scroll events"
+msgstr ""
+
+#: ../src/windows-view.c:1573
+msgid "Windows"
+msgstr ""
+
+#: ../src/window-tracker.c:468
+msgid "Active window"
+msgstr ""
+
+#: ../src/window-tracker.c:469
+msgid "The current active window"
+msgstr ""
+
+#: ../src/window-tracker.c:475
+msgid "Active workspace"
+msgstr ""
+
+#: ../src/window-tracker.c:476
+msgid "The current active workspace"
+msgstr ""
+
+#. Setting new selection was unsuccessful if we get here
+#. Activation was unsuccessful if we get here
+#: ../src/workspace-selector.c:881 ../src/workspace-selector.c:1049
+#, c-format
+msgid "Could not determine workspace of %s to set selection at %s"
+msgstr ""
+
+#: ../src/workspace-selector.c:1202
+msgid "Maximum size"
+msgstr ""
+
+#: ../src/workspace-selector.c:1203
+msgid "The maximum size of this actor for opposite direction of orientation"
+msgstr ""
+
+#: ../src/workspace-selector.c:1210
+msgid "Maximum fraction"
+msgstr ""
+
+#: ../src/workspace-selector.c:1211
+msgid ""
+"The maximum size of this actor for opposite direction of orientation defined"
+" by fraction between 0.0 and 1.0"
+msgstr ""
+
+#: ../src/workspace-selector.c:1218
+msgid "Using fraction"
+msgstr ""
+
+#: ../src/workspace-selector.c:1219
+msgid ""
+"Flag indicating if maximum size is static or defined by fraction between 0.0"
+" and 1.0"
+msgstr ""
