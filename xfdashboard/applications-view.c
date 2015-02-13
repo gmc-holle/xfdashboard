@@ -455,15 +455,14 @@ static gboolean _xfdashboard_applications_view_focusable_supports_selection(Xfda
 	return(TRUE);
 }
 
-
 /* Get current selection */
 static ClutterActor* _xfdashboard_applications_view_focusable_get_selection(XfdashboardFocusable *inFocusable)
 {
 	XfdashboardApplicationsView				*self;
 	XfdashboardApplicationsViewPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), NULL);
 
 	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
 	priv=self->priv;
