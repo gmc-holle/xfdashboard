@@ -488,12 +488,8 @@ static gboolean _xfdashboard_applications_view_focusable_set_selection(Xfdashboa
 	/* Check that selection is a child of this actor */
 	if(inSelection && !xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
 	{
-		ClutterActor						*parent;
-
-		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("%s is not a child of %s and cannot be selected at %s"),
+		g_warning(_("%s is not a child of %s and cannot be selected"),
 					G_OBJECT_TYPE_NAME(inSelection),
-					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
 					G_OBJECT_TYPE_NAME(self));
 
 		return(FALSE);
