@@ -495,6 +495,8 @@ static gboolean _xfdashboard_applications_view_focusable_set_selection(Xfdashboa
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
 					G_OBJECT_TYPE_NAME(self));
+
+		return(FALSE);
 	}
 
 	/* Set new selection */
