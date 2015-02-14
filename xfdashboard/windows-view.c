@@ -988,6 +988,8 @@ static gboolean _xfdashboard_windows_view_focusable_set_selection(XfdashboardFoc
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
 					G_OBJECT_TYPE_NAME(self));
+
+		return(FALSE);
 	}
 
 	/* Set new selection */
