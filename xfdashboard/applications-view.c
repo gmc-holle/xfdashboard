@@ -498,6 +498,9 @@ static gboolean _xfdashboard_applications_view_focusable_set_selection(Xfdashboa
 	/* Set new selection */
 	priv->selectedItem=inSelection;
 
+	/* Ensure new selection is visible */
+	if(inSelection) xfdashboard_view_child_ensure_visible(XFDASHBOARD_VIEW(self), inSelection);
+
 	/* New selection was set successfully */
 	return(TRUE);
 }
@@ -827,10 +830,6 @@ static ClutterActor* _xfdashboard_applications_view_focusable_find_selection(Xfd
 				{
 					newSelection=xfdashboard_applications_view_get_selection_from_icon_mode(self, inSelection, inDirection);
 				}
-
-			/* Ensure new selection is visible */
-			if(newSelection) xfdashboard_view_child_ensure_visible(XFDASHBOARD_VIEW(self), newSelection);
-
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_FIRST:
@@ -899,14 +898,7 @@ static gboolean _xfdashboard_applications_view_focusable_activate_selection(Xfda
 	}
 
 	/* Activate selection */
-	if(XFDASHBOARD_IS_APPLICATION_BUTTON(inSelection))
-	{
-		_xfdashboard_applications_view_on_item_clicked(self, XFDASHBOARD_APPLICATION_BUTTON(inSelection));
-	}
-		else if(XFDASHBOARD_IS_BUTTON(inSelection))
-		{
-			_xfdashboard_applications_view_on_parent_menu_clicked(self, XFDASHBOARD_BUTTON(inSelection));
-		}
+	g_signal_emit_by_name(inSelection, "clicked");
 
 	return(TRUE);
 }
