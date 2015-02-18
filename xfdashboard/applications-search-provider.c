@@ -389,7 +389,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 		 * if a previous result set is provided.
 		 */
 		if(!inPreviousResultSet ||
-			xfdashboard_search_result_set_get_index(inPreviousResultSet, resultItem)>=0)
+			xfdashboard_search_result_set_has_item(inPreviousResultSet, resultItem))
 		{
 			/* Check for a match against search terms */
 			if(_xfdashboard_applications_search_provider_is_match(self, terms, appInfo))
@@ -403,9 +403,10 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 	}
 
 	/* Sort result set */
-	xfdashboard_search_result_set_sort(resultSet,
-										_xfdashboard_applications_search_provider_sort_result_set,
-										self);
+	xfdashboard_search_result_set_set_sort_func_full(resultSet,
+														_xfdashboard_applications_search_provider_sort_result_set,
+														g_object_ref(self),
+														g_object_unref);
 
 	/* Release allocated resources */
 	if(terms)

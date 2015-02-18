@@ -36,6 +36,7 @@
 #include "text-box.h"
 #include "stylable.h"
 #include "dynamic-table-layout.h"
+#include "utils.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardSearchResultContainer,
@@ -179,183 +180,6 @@ static void _xfdashboard_search_result_container_update_selection(XfdashboardSea
 	}
 }
 
-/* Find next selectable item depending on step size and direction for icon view mode */
-static void _xfdashboard_search_result_container_set_selection_icon_mode(XfdashboardSearchResultContainer *self,
-																			XfdashboardSearchResultContainerSelectionStepSize inStepSize,
-																			XfdashboardSearchResultContainerSelectionDirection inDirection)
-{
-	XfdashboardSearchResultContainerPrivate		*priv;
-	gint										numberChildren, rows, columns;
-	gint										selectionIndex, newSelectionIndex;
-	gfloat										lastX, lastY;
-	ClutterActorIter							iter;
-	ClutterActor								*child;
-	ClutterActorBox								childBox;
-	ClutterActor								*newSelection;
-	gint										i;
-	gboolean									gotColumns;
-
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
-	g_return_if_fail(self->priv->selectedItem);
-	g_return_if_fail(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD || inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD);
-
-	priv=self->priv;
-
-	/* Check if items container exists because it is the one we iterating */
-	g_return_if_fail(priv->itemsContainer);
-
-	/* Determine number of rows and columns and total number of children */
-	numberChildren=rows=columns=0;
-	selectionIndex=-1;
-	lastX=lastY=0.0f;
-	gotColumns=FALSE;
-	clutter_actor_iter_init(&iter, priv->itemsContainer);
-	while(clutter_actor_iter_next(&iter, &child))
-	{
-		/* Only count visible children */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
-
-		/* If x coordinate of this child is smaller than the one of last child
-		 * or if y coordinate is larger then a new row begins and we know
-		 * the number of columns.
-		 */
-		clutter_actor_get_allocation_box(child, &childBox);
-		if(!gotColumns &&
-			(childBox.x1<lastX || childBox.y1>lastY))
-		{
-			columns=numberChildren;
-			gotColumns=TRUE;
-		}
-		lastX=childBox.x1;
-		lastY=childBox.y1;
-
-		/* If current child is the selected one remember its index */
-		if(child==priv->selectedItem) selectionIndex=numberChildren;
-
-		/* Count total number of children */
-		numberChildren++;
-	}
-
-	if(gotColumns)
-	{
-		rows=1+(numberChildren/columns);
-	}
-		else if(numberChildren>0)
-		{
-			rows=1;
-			columns=numberChildren;
-		}
-
-	/* Determine index of new selectable item */
-	if(selectionIndex<0)
-	{
-		g_warning(_("Current selected item not found. Selecting first item."));
-		selectionIndex=0;
-	}
-
-	if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_ROW &&
-		inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD)
-	{
-		newSelectionIndex=selectionIndex-columns;
-	}
-		else if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_ROW &&
-				inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD)
-		{
-			newSelectionIndex=selectionIndex+columns;
-		}
-		else if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_COLUMN &&
-				inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD)
-		{
-			newSelectionIndex=selectionIndex-1;
-			if(newSelectionIndex<0 ||
-				(newSelectionIndex/columns)!=(selectionIndex/columns))
-			{
-				newSelectionIndex=((selectionIndex/columns)*columns)+columns-1;
-			}
-		}
-		else if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_COLUMN &&
-				inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD)
-		{
-			newSelectionIndex=selectionIndex+1;
-			if(newSelectionIndex>=numberChildren ||
-				(newSelectionIndex/columns)!=(selectionIndex/columns))
-			{
-				newSelectionIndex=(selectionIndex/columns)*columns;
-			}
-		}
-		else
-		{
-			newSelectionIndex=selectionIndex;
-		}
-
-	/* If selection would not change then do nothing */
-	if(newSelectionIndex==selectionIndex) return;
-
-	/* If new selection is invalid then set selection to NULL */
-	if(newSelectionIndex<0 ||
-		newSelectionIndex>=numberChildren)
-	{
-		_xfdashboard_search_result_container_update_selection(self, NULL);
-		return;
-	}
-
-	/* Find new item being selectable */
-	i=0;
-	newSelection=NULL;
-	clutter_actor_iter_init(&iter, priv->itemsContainer);
-	while(clutter_actor_iter_next(&iter, &child) &&
-			!newSelection)
-	{
-		/* Only count visible children */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
-
-		/* Check for child to lookup */
-		if(i==newSelectionIndex)
-		{
-			newSelection=child;
-			break;
-		}
-
-		/* Continue with next child */
-		i++;
-	}
-
-	/* Set new selection if it changed */
-	if(newSelection && newSelection!=priv->selectedItem)
-	{
-		_xfdashboard_search_result_container_update_selection(self, newSelection);
-	}
-}
-
-/* Find next selectable item depending on step size and direction for list view mode */
-static void _xfdashboard_search_result_container_set_selection_list_mode(XfdashboardSearchResultContainer *self,
-																			XfdashboardSearchResultContainerSelectionStepSize inStepSize,
-																			XfdashboardSearchResultContainerSelectionDirection inDirection)
-{
-	XfdashboardSearchResultContainerPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
-	g_return_if_fail(self->priv->selectedItem);
-	g_return_if_fail(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD || inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD);
-
-	priv=self->priv;
-
-	/* Check if items container exists because it is the one we iterating */
-	g_return_if_fail(priv->itemsContainer);
-
-	if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_ROW)
-	{
-		if(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD)
-		{
-			_xfdashboard_search_result_container_update_selection(self, clutter_actor_get_next_sibling(priv->selectedItem));
-		}
-			else if(inDirection==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD)
-			{
-				_xfdashboard_search_result_container_update_selection(self, clutter_actor_get_previous_sibling(priv->selectedItem));
-			}
-	}
-}
-
 /* Primary icon (provider icon) in title was clicked */
 static void _xfdashboard_search_result_container_on_primary_icon_clicked(XfdashboardSearchResultContainer *self, gpointer inUserData)
 {
@@ -441,6 +265,271 @@ static void _xfdashboard_search_result_container_set_provider(XfdashboardSearchR
 
 	/* Update title */
 	_xfdashboard_search_result_container_update_title(self);
+}
+
+/* Find requested selection target depending of current selection in icon mode */
+static ClutterActor* _xfdashboard_search_result_container_find_selection_from_icon_mode(XfdashboardSearchResultContainer *self,
+																						ClutterActor *inSelection,
+																						XfdashboardSelectionTarget inDirection,
+																						XfdashboardView *inView)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+	ClutterActor								*selection;
+	ClutterActor								*newSelection;
+	gint										numberChildren;
+	gint										rows;
+	gint										columns;
+	gint										currentSelectionIndex;
+	gint										currentSelectionRow;
+	gint										currentSelectionColumn;
+	gint										newSelectionIndex;
+	ClutterActorIter							iter;
+	ClutterActor								*child;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), NULL);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
+
+	priv=self->priv;
+	selection=inSelection;
+	newSelection=NULL;
+
+	/* Get number of rows and columns and also get number of children
+	 * of layout manager.
+	 */
+	numberChildren=xfdashboard_dynamic_table_layout_get_number_children(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(priv->layout));
+	rows=xfdashboard_dynamic_table_layout_get_rows(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(priv->layout));
+	columns=xfdashboard_dynamic_table_layout_get_columns(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(priv->layout));
+
+	/* Get index of current selection */
+	currentSelectionIndex=0;
+	clutter_actor_iter_init(&iter, priv->itemsContainer);
+	while(clutter_actor_iter_next(&iter, &child) &&
+			child!=inSelection)
+	{
+		currentSelectionIndex++;
+	}
+
+	currentSelectionRow=(currentSelectionIndex / columns);
+	currentSelectionColumn=(currentSelectionIndex % columns);
+
+	/* Find target selection */
+	switch(inDirection)
+	{
+		case XFDASHBOARD_SELECTION_TARGET_LEFT:
+			currentSelectionColumn--;
+			if(currentSelectionColumn<0)
+			{
+				currentSelectionRow++;
+				newSelectionIndex=(currentSelectionRow*columns)-1;
+			}
+				else newSelectionIndex=currentSelectionIndex-1;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(priv->itemsContainer, newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_RIGHT:
+			currentSelectionColumn++;
+			if(currentSelectionColumn==columns ||
+				currentSelectionIndex==numberChildren)
+			{
+				newSelectionIndex=(currentSelectionRow*columns);
+			}
+				else newSelectionIndex=currentSelectionIndex+1;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(priv->itemsContainer, newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_UP:
+			currentSelectionRow--;
+			if(currentSelectionRow<0) currentSelectionRow=rows-1;
+			newSelectionIndex=(currentSelectionRow*columns)+currentSelectionColumn;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(priv->itemsContainer, newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_DOWN:
+			currentSelectionRow++;
+			if(currentSelectionRow>=rows) currentSelectionRow=0;
+			newSelectionIndex=(currentSelectionRow*columns)+currentSelectionColumn;
+
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(priv->itemsContainer, newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT:
+			newSelectionIndex=(currentSelectionRow*columns);
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(priv->itemsContainer, newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT:
+			newSelectionIndex=((currentSelectionRow+1)*columns)-1;
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(priv->itemsContainer, newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_UP:
+			newSelectionIndex=currentSelectionColumn;
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(priv->itemsContainer, newSelectionIndex);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN:
+			newSelectionIndex=((rows-1)*columns)+currentSelectionColumn;
+			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
+			newSelection=clutter_actor_get_child_at_index(priv->itemsContainer, newSelectionIndex);
+			break;
+
+		default:
+			{
+				gchar							*valueName;
+
+				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
+				g_critical(_("Focusable object %s does not handle selection direction of type %s in icon mode."),
+							G_OBJECT_TYPE_NAME(self),
+							valueName);
+				g_free(valueName);
+			}
+			break;
+	}
+
+	/* If new selection could be found override current selection with it */
+	if(newSelection) selection=newSelection;
+
+	/* Return new selection */
+	g_debug("Selecting %s at %s for current selection %s in direction %u",
+			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+			G_OBJECT_TYPE_NAME(self),
+			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+			inDirection);
+	return(selection);
+}
+
+/* Find requested selection target depending of current selection in list mode */
+static ClutterActor* _xfdashboard_search_result_container_find_selection_from_list_mode(XfdashboardSearchResultContainer *self,
+																						ClutterActor *inSelection,
+																						XfdashboardSelectionTarget inDirection,
+																						XfdashboardView *inView)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+	ClutterActor								*selection;
+	ClutterActor								*newSelection;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), NULL);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
+
+	priv=self->priv;
+	selection=inSelection;
+	newSelection=NULL;
+
+	/* Find target selection */
+	switch(inDirection)
+	{
+		case XFDASHBOARD_SELECTION_TARGET_LEFT:
+		case XFDASHBOARD_SELECTION_TARGET_RIGHT:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT:
+			/* Do nothing here in list mode */
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_UP:
+			newSelection=clutter_actor_get_previous_sibling(inSelection);
+			if(!newSelection) newSelection=clutter_actor_get_last_child(priv->itemsContainer);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_DOWN:
+			newSelection=clutter_actor_get_next_sibling(inSelection);
+			if(!newSelection) newSelection=clutter_actor_get_first_child(priv->itemsContainer);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_UP:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN:
+			{
+				ClutterActor				*child;
+				gfloat						topY;
+				gfloat						bottomY;
+				gfloat						pageSize;
+				gfloat						currentY;
+				gfloat						limitY;
+				gfloat						childY1, childY2;
+				ClutterActorIter			iter;
+
+				/* Beginning from current selection go up and first child which needs scrolling */
+				child=clutter_actor_get_previous_sibling(inSelection);
+				while(child && !xfdashboard_view_child_needs_scroll(inView, child))
+				{
+					child=clutter_actor_get_previous_sibling(child);
+				}
+				if(!child) child=clutter_actor_get_first_child(priv->itemsContainer);
+				topY=clutter_actor_get_y(child);
+
+				/* Beginning from current selection go down and first child which needs scrolling */
+				child=clutter_actor_get_next_sibling(inSelection);
+				while(child && !xfdashboard_view_child_needs_scroll(inView, child))
+				{
+					child=clutter_actor_get_next_sibling(child);
+				}
+				if(!child) child=clutter_actor_get_last_child(priv->itemsContainer);
+				bottomY=clutter_actor_get_y(child);
+
+				/* Get distance between top and bottom actor we found because that's the page size */
+				pageSize=bottomY-topY;
+
+				/* Find child in distance of page size from current selection */
+				currentY=clutter_actor_get_y(inSelection);
+
+				if(inDirection==XFDASHBOARD_SELECTION_TARGET_PAGE_UP) limitY=currentY-pageSize;
+					else limitY=currentY+pageSize;
+
+				clutter_actor_iter_init(&iter, priv->itemsContainer);
+				while(!newSelection && clutter_actor_iter_next(&iter, &child))
+				{
+					childY1=clutter_actor_get_y(child);
+					childY2=childY1+clutter_actor_get_height(child);
+					if(childY1>limitY || childY2>limitY) newSelection=child;
+				}
+
+				/* If no child could be found select last one */
+				if(!newSelection)
+				{
+					if(inDirection==XFDASHBOARD_SELECTION_TARGET_PAGE_UP)
+					{
+						newSelection=clutter_actor_get_first_child(priv->itemsContainer);
+					}
+						else
+						{
+							newSelection=clutter_actor_get_last_child(priv->itemsContainer);
+						}
+				}
+			}
+			break;
+
+		default:
+			{
+				gchar						*valueName;
+
+				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
+				g_critical(_("Focusable object %s does not handle selection direction of type %s in list mode."),
+							G_OBJECT_TYPE_NAME(self),
+							valueName);
+				g_free(valueName);
+			}
+			break;
+	}
+
+	/* If new selection could be found override current selection with it */
+	if(newSelection) selection=newSelection;
+
+	/* Return new selection */
+	g_debug("Selecting %s at %s for current selection %s in direction %u",
+			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+			G_OBJECT_TYPE_NAME(self),
+			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+			inDirection);
+	return(selection);
 }
 
 /* IMPLEMENTATION: GObject */
@@ -664,7 +753,7 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->titleTextBox), "title");
 
 	priv->itemsContainer=xfdashboard_actor_new();
-	clutter_actor_set_x_expand(CLUTTER_ACTOR(priv->itemsContainer), TRUE);
+	clutter_actor_set_x_expand(priv->itemsContainer, TRUE);
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->itemsContainer), "items-container");
 	xfdashboard_search_result_container_set_view_mode(self, DEFAULT_VIEW_MODE);
 
@@ -802,7 +891,7 @@ void xfdashboard_search_result_container_set_view_mode(XfdashboardSearchResultCo
 				priv->layout=clutter_box_layout_new();
 				clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(priv->layout), CLUTTER_ORIENTATION_VERTICAL);
 				clutter_box_layout_set_spacing(CLUTTER_BOX_LAYOUT(priv->layout), priv->spacing);
-				clutter_actor_set_layout_manager(CLUTTER_ACTOR(priv->itemsContainer), priv->layout);
+				clutter_actor_set_layout_manager(priv->itemsContainer, priv->layout);
 
 				removeClass="view-mode-icon";
 				addClass="view-mode-list";
@@ -811,7 +900,7 @@ void xfdashboard_search_result_container_set_view_mode(XfdashboardSearchResultCo
 			case XFDASHBOARD_VIEW_MODE_ICON:
 				priv->layout=xfdashboard_dynamic_table_layout_new();
 				xfdashboard_dynamic_table_layout_set_spacing(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(priv->layout), priv->spacing);
-				clutter_actor_set_layout_manager(CLUTTER_ACTOR(priv->itemsContainer), priv->layout);
+				clutter_actor_set_layout_manager(priv->itemsContainer, priv->layout);
 
 				removeClass="view-mode-list";
 				addClass="view-mode-icon";
@@ -956,83 +1045,141 @@ void xfdashboard_search_result_container_set_focus(XfdashboardSearchResultContai
 }
 
 /* Get current selection */
-ClutterActor* xfdashboard_search_result_container_get_current_selection(XfdashboardSearchResultContainer *self)
+ClutterActor* xfdashboard_search_result_container_get_selection(XfdashboardSearchResultContainer *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), NULL);
 
 	return(self->priv->selectedItem);
 }
 
-/* Get previous item in items container which can be selected */
-ClutterActor* xfdashboard_search_result_container_set_previous_selection(XfdashboardSearchResultContainer *self,
-																			XfdashboardSearchResultContainerSelectionStepSize inStepSize)
+/* Set current selection */
+gboolean xfdashboard_search_result_container_set_selection(XfdashboardSearchResultContainer *self,
+																	ClutterActor *inSelection)
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), FALSE);
+	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), FALSE);
 
 	priv=self->priv;
 
-	/* Get previous selectable item to current one depending on view mode and direction.
-	 * only if there is an item selected currently and if not the first item was requested.
-	 */
-	if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END)
+	/* Check that selection is a child of this actor */
+	if(inSelection && !xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
 	{
-		_xfdashboard_search_result_container_update_selection(self, clutter_actor_get_last_child(priv->itemsContainer));
-	}
-		else if(priv->selectedItem)
-		{
-			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
-			{
-				_xfdashboard_search_result_container_set_selection_list_mode(self,
-																				inStepSize,
-																				XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD);
-			}
-				else if(priv->viewMode==XFDASHBOARD_VIEW_MODE_ICON)
-				{
-					_xfdashboard_search_result_container_set_selection_icon_mode(self,
-																					inStepSize,
-																					XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD);
-				}
-		}
+		g_warning(_("%s is not a child of %s and cannot be selected"),
+					G_OBJECT_TYPE_NAME(inSelection),
+					G_OBJECT_TYPE_NAME(self));
 
-	/* Return newly set selectable item */
-	return(priv->selectedItem);
+		return(FALSE);
+	}
+
+	/* Set selection */
+	priv->selectedItem=inSelection;
+
+	/* We could successfully set selection so return success result */
+	return(TRUE);
 }
 
-/* Get next item in items container which can be selected */
-ClutterActor* xfdashboard_search_result_container_set_next_selection(XfdashboardSearchResultContainer *self,
-																		XfdashboardSearchResultContainerSelectionStepSize inStepSize)
+/* Find requested selection target depending of current selection */
+ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSearchResultContainer *self,
+																	ClutterActor *inSelection,
+																	XfdashboardSelectionTarget inDirection,
+																	XfdashboardView *inView)
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
+	ClutterActor								*selection;
+	ClutterActor								*newSelection;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), NULL);
+	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), NULL);
+	g_return_val_if_fail(inDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
+	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
 
 	priv=self->priv;
+	selection=inSelection;
+	newSelection=NULL;
 
-	/* Get next selectable item to current one depending on view mode and direction
-	 * only if there is an item selected currently and if not the last item was requested.
-	 */
-	if(inStepSize==XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END)
+	/* If there is nothing selected, select first actor and return */
+	if(!inSelection)
 	{
-		_xfdashboard_search_result_container_update_selection(self, clutter_actor_get_first_child(priv->itemsContainer));
+		newSelection=clutter_actor_get_first_child(priv->itemsContainer);
+		g_debug("No selection for %s, so select first child of result container for provider %s",
+				G_OBJECT_TYPE_NAME(self),
+				priv->provider ? G_OBJECT_TYPE_NAME(priv->provider) : "<unknown provider>");
+
+		return(newSelection);
 	}
-		else if(priv->selectedItem)
-		{
+
+	/* Check that selection is a child of this actor otherwise return NULL */
+	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	{
+		ClutterActor						*parent;
+
+		parent=clutter_actor_get_parent(inSelection);
+		g_warning(_("Cannot lookup selection target at %s because %s is a child of %s but not of this container"),
+					G_OBJECT_TYPE_NAME(self),
+					G_OBJECT_TYPE_NAME(inSelection),
+					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>");
+
+		return(NULL);
+	}
+
+	/* Find target selection */
+	switch(inDirection)
+	{
+		case XFDASHBOARD_SELECTION_TARGET_LEFT:
+		case XFDASHBOARD_SELECTION_TARGET_RIGHT:
+		case XFDASHBOARD_SELECTION_TARGET_UP:
+		case XFDASHBOARD_SELECTION_TARGET_DOWN:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_UP:
+		case XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN:
 			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
 			{
-				_xfdashboard_search_result_container_set_selection_list_mode(self,
-																				inStepSize,
-																				XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD);
+				newSelection=_xfdashboard_search_result_container_find_selection_from_list_mode(self, inSelection, inDirection, inView);
 			}
-				else if(priv->viewMode==XFDASHBOARD_VIEW_MODE_ICON)
+				else
 				{
-					_xfdashboard_search_result_container_set_selection_icon_mode(self,
-																					inStepSize,
-																					XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD);
+					newSelection=_xfdashboard_search_result_container_find_selection_from_icon_mode(self, inSelection, inDirection, inView);
 				}
-		}
+			break;
 
-	/* Return newly set selectable item */
-	return(priv->selectedItem);
+		case XFDASHBOARD_SELECTION_TARGET_FIRST:
+			newSelection=clutter_actor_get_first_child(priv->itemsContainer);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_LAST:
+			newSelection=clutter_actor_get_last_child(priv->itemsContainer);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_NEXT:
+			newSelection=clutter_actor_get_next_sibling(inSelection);
+			if(!newSelection) newSelection=clutter_actor_get_previous_sibling(inSelection);
+			break;
+
+		default:
+			{
+				gchar					*valueName;
+
+				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
+				g_critical(_("Focusable object %s does not handle selection direction of type %s."),
+							G_OBJECT_TYPE_NAME(self),
+							valueName);
+				g_free(valueName);
+			}
+			break;
+	}
+
+	/* If new selection could be found override current selection with it */
+	if(newSelection) selection=newSelection;
+
+	/* Return new selection found */
+	g_debug("Selecting %s at %s for current selection %s in direction %u",
+			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+			G_OBJECT_TYPE_NAME(self),
+			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+			inDirection);
+
+	return(selection);
 }

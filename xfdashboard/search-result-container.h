@@ -30,6 +30,7 @@
 #include "actor.h"
 #include "search-provider.h"
 #include "types.h"
+#include "view.h"
 
 G_BEGIN_DECLS
 
@@ -103,11 +104,14 @@ void xfdashboard_search_result_container_add_result_actor(XfdashboardSearchResul
 
 void xfdashboard_search_result_container_set_focus(XfdashboardSearchResultContainer *self, gboolean inSetFocus);
 
-ClutterActor* xfdashboard_search_result_container_get_current_selection(XfdashboardSearchResultContainer *self);
-ClutterActor* xfdashboard_search_result_container_set_previous_selection(XfdashboardSearchResultContainer *self,
-																			XfdashboardSearchResultContainerSelectionStepSize inDirection);
-ClutterActor* xfdashboard_search_result_container_set_next_selection(XfdashboardSearchResultContainer *self,
-																		XfdashboardSearchResultContainerSelectionStepSize inDirection);
+ClutterActor* xfdashboard_search_result_container_get_selection(XfdashboardSearchResultContainer *self);
+gboolean xfdashboard_search_result_container_set_selection(XfdashboardSearchResultContainer *self,
+																	ClutterActor *inSelection);
+ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSearchResultContainer *self,
+																	ClutterActor *inSelection,
+																	XfdashboardSelectionTarget inDirection,
+																	XfdashboardView *inView);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_SEARCH_RESULT_CONTAINER__ */

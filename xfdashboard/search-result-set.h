@@ -66,18 +66,20 @@ XfdashboardSearchResultSet* xfdashboard_search_result_set_new(void);
 guint xfdashboard_search_result_set_get_size(XfdashboardSearchResultSet *self);
 
 void xfdashboard_search_result_set_add_item(XfdashboardSearchResultSet *self, GVariant *inItem);
-GVariant* xfdashboard_search_result_set_get_item(XfdashboardSearchResultSet *self, gint inIndex);
+gboolean xfdashboard_search_result_set_has_item(XfdashboardSearchResultSet *self, GVariant *inItem);
+GList* xfdashboard_search_result_set_get_all(XfdashboardSearchResultSet *self);
 
-gint xfdashboard_search_result_set_get_index(XfdashboardSearchResultSet *self, GVariant *inItem);
-
-void xfdashboard_search_result_set_foreach(XfdashboardSearchResultSet *self,
-											GFunc inCallbackFunc,
-											gpointer inUserData);
+GList* xfdashboard_search_result_set_intersect(XfdashboardSearchResultSet *self, XfdashboardSearchResultSet *inOtherSet);
+GList* xfdashboard_search_result_set_complement(XfdashboardSearchResultSet *self, XfdashboardSearchResultSet *inOtherSet);
 
 typedef gint (*XfdashboardSearchResultSetCompareFunc)(GVariant *inLeft, GVariant *inRight, gpointer inUserData);
-void xfdashboard_search_result_set_sort(XfdashboardSearchResultSet *self,
-											XfdashboardSearchResultSetCompareFunc inCallbackFunc,
-											gpointer inUserData);
+void xfdashboard_search_result_set_set_sort_func(XfdashboardSearchResultSet *self,
+													XfdashboardSearchResultSetCompareFunc inCallbackFunc,
+													gpointer inUserData);
+void xfdashboard_search_result_set_set_sort_func_full(XfdashboardSearchResultSet *self,
+														XfdashboardSearchResultSetCompareFunc inCallbackFunc,
+														gpointer inUserData,
+														GDestroyNotify inUserDataDestroyFunc);
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_SEARCH_RESULT_SET__ */

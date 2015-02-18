@@ -41,32 +41,31 @@ G_DEFINE_TYPE(XfdashboardSearchResultSet,
 struct _XfdashboardSearchResultSetPrivate
 {
 	/* Instance related */
-	GPtrArray			*identifiers;
+	GHashTable								*set;
+
+	XfdashboardSearchResultSetCompareFunc	sortCallback;
+	gpointer								sortUserData;
+	GDestroyNotify							sortUserDataDestroyFunc;
 };
 
 /* IMPLEMENTATION: Private variables and methods */
-typedef struct _XfdashboardSearchResultSetSortData	XfdashboardSearchResultSetSortData;
-struct _XfdashboardSearchResultSetSortData
-{
-	XfdashboardSearchResultSetCompareFunc	callback;
-	gpointer								userData;
-};
 
 /* Internal callback function for calling callback functions for sorting */
 static gint _xfdashboard_search_result_set_sort_internal(gconstpointer inLeft,
 															gconstpointer inRight,
 															gpointer inUserData)
 {
+	XfdashboardSearchResultSet				*self=XFDASHBOARD_SEARCH_RESULT_SET(inUserData);
+	XfdashboardSearchResultSetPrivate		*priv=self->priv;
 	GVariant								*left;
 	GVariant								*right;
-	XfdashboardSearchResultSetSortData		*sortData;
 
-	left=*((GVariant**)inLeft);
-	right=*((GVariant**)inRight);
-	sortData=(XfdashboardSearchResultSetSortData*)inUserData;
+	/* Get items to compare */
+	left=(GVariant*)inLeft;
+	right=(GVariant*)inRight;
 
-	/* Call callback function now */
-	return((sortData->callback)(left, right, sortData->userData));
+	/* Call sorting callback function now */
+	return((priv->sortCallback)(left, right, priv->sortUserData));
 }
 
 /* IMPLEMENTATION: GObject */
@@ -78,10 +77,27 @@ static void _xfdashboard_search_result_set_dispose(GObject *inObject)
 	XfdashboardSearchResultSetPrivate	*priv=self->priv;
 
 	/* Release allocated resouces */
-	if(priv->identifiers)
+	if(priv->sortUserData)
 	{
-		g_ptr_array_free(priv->identifiers, TRUE);
-		priv->identifiers=NULL;
+		/* Release old sort user data with destroy function if set previously
+		 * and reset destroy function.
+		 */
+		if(priv->sortUserDataDestroyFunc)
+		{
+			priv->sortUserDataDestroyFunc(priv->sortUserData);
+			priv->sortUserDataDestroyFunc=NULL;
+		}
+
+		/* Reset sort user data */
+		priv->sortUserData=NULL;
+	}
+
+	priv->sortCallback=NULL;
+
+	if(priv->set)
+	{
+		g_hash_table_unref(priv->set);
+		priv->set=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -113,7 +129,10 @@ static void xfdashboard_search_result_set_init(XfdashboardSearchResultSet *self)
 	priv=self->priv=XFDASHBOARD_SEARCH_RESULT_SET_GET_PRIVATE(self);
 
 	/* Set default values */
-	priv->identifiers=g_ptr_array_new_with_free_func((GDestroyNotify)g_variant_unref);
+	priv->set=g_hash_table_new_full(g_variant_hash,
+									g_variant_equal,
+									(GDestroyNotify)g_variant_unref,
+									NULL);
 }
 
 /* IMPLEMENTATION: Public API */
@@ -129,96 +148,193 @@ guint xfdashboard_search_result_set_get_size(XfdashboardSearchResultSet *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self), 0);
 
-	return(self->priv->identifiers->len);
+	return(g_hash_table_size(self->priv->set));
 }
 
 /* Add a result item to result set */
 void xfdashboard_search_result_set_add_item(XfdashboardSearchResultSet *self, GVariant *inItem)
 {
 	XfdashboardSearchResultSetPrivate		*priv;
-	guint									index;
-	GVariant								*item;
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self));
 	g_return_if_fail(inItem);
 
 	priv=self->priv;
 
-	/* Check for duplicates */
-	for(index=0; index<priv->identifiers->len; index++)
-	{
-		item=(GVariant*)g_ptr_array_index(priv->identifiers, index);
-		if(g_variant_compare(item, inItem)==0) return;
-	}
-
-	/* Add item to list */
-	g_ptr_array_add(priv->identifiers, g_variant_ref_sink(inItem));
+	/* Add or replace item in hash table */
+	g_hash_table_insert(priv->set, g_variant_ref_sink(inItem), GINT_TO_POINTER(1));
 }
 
-/* Get item from result set */
-GVariant* xfdashboard_search_result_set_get_item(XfdashboardSearchResultSet *self, gint inIndex)
+/* Check if a result item exists already in result set */
+gboolean xfdashboard_search_result_set_has_item(XfdashboardSearchResultSet *self, GVariant *inItem)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self), NULL);
-	g_return_val_if_fail(inIndex>=0 && (guint)inIndex<self->priv->identifiers->len, NULL);
+	XfdashboardSearchResultSetPrivate		*priv;
 
-	return((GVariant*)g_ptr_array_index(self->priv->identifiers, inIndex));
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self));
+	g_return_if_fail(inItem);
+
+	priv=self->priv;
+
+	/* Return result indicating existence of item in this result set */
+	return(g_hash_table_lookup_extended(priv->set, inItem, NULL, NULL));
 }
 
-/* Find index of an item matching requested one by comparison for equality.
- * Returns -1 if not found.
+/* Get list of all items in this result sets.
+ * Returned list should be freed with g_list_free_full(result, g_variant_unref)
  */
-gint xfdashboard_search_result_set_get_index(XfdashboardSearchResultSet *self, GVariant *inItem)
+GList* xfdashboard_search_result_set_get_all(XfdashboardSearchResultSet *self)
 {
 	XfdashboardSearchResultSetPrivate		*priv;
-	guint									index;
-	GVariant								*item;
+	GHashTableIter							iter;
+	GList									*list;
+	GVariant								*key;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self), -1);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self), NULL);
 
 	priv=self->priv;
 
-	/* Iterate through list of identifiers and check for equality */
-	for(index=0; index<priv->identifiers->len; index++)
+	/* Iterate through hash table of this result set, take a reference of
+	 * key of this result set's hash table item and add list to result list.
+	 */
+	list=NULL;
+	g_hash_table_iter_init(&iter, priv->set);
+	while(g_hash_table_iter_next(&iter, (gpointer*)&key, NULL))
 	{
-		item=(GVariant*)g_ptr_array_index(priv->identifiers, index);
-		if(g_variant_equal(item, inItem)) return(index);
+		list=g_list_prepend(list, g_variant_ref(key));
 	}
 
-	/* If we get here we did not find the requested item in result set */
-	return(-1);
+	/* If a sorting function was set then sort result list */
+	if(list && priv->sortCallback)
+	{
+		list=g_list_sort_with_data(list, _xfdashboard_search_result_set_sort_internal, self);
+	}
+
+	/* Return result */
+	return(list);
+}
+/* Get list of all items existing in both result sets.
+ * Returned list should be freed with g_list_free_full(result, g_variant_unref)
+ */
+GList* xfdashboard_search_result_set_intersect(XfdashboardSearchResultSet *self, XfdashboardSearchResultSet *inOtherSet)
+{
+	XfdashboardSearchResultSetPrivate		*priv;
+	GHashTableIter							iter;
+	GList									*list;
+	GVariant								*key;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(inOtherSet), NULL);
+
+	priv=self->priv;
+
+	/* Iterate through hash table of this result set and lookup its keys
+	 * at other result set's hash table. If it exists take a reference of
+	 * key of this result set's hash table item and add list to result list.
+	 */
+	list=NULL;
+	g_hash_table_iter_init(&iter, priv->set);
+	while(g_hash_table_iter_next(&iter, (gpointer*)&key, NULL))
+	{
+		/* Lookup key in other result set's hash table */
+		if(g_hash_table_lookup_extended(inOtherSet->priv->set, key, NULL, NULL))
+		{
+			list=g_list_prepend(list, g_variant_ref(key));
+		}
+	}
+
+	/* If a sorting function was set then sort result list */
+	if(list && priv->sortCallback)
+	{
+		list=g_list_sort_with_data(list, _xfdashboard_search_result_set_sort_internal, self);
+	}
+
+	/* Return result */
+	return(list);
 }
 
-/* Calls a callback function for each item in result set */
-void xfdashboard_search_result_set_foreach(XfdashboardSearchResultSet *self,
-											GFunc inCallbackFunc,
-											gpointer inUserData)
+/* Get list of all items existing in other result set but not in this result set.
+ * Returned list should be freed with g_list_free_full(result, g_variant_unref)
+ */
+GList* xfdashboard_search_result_set_complement(XfdashboardSearchResultSet *self, XfdashboardSearchResultSet *inOtherSet)
+{
+	XfdashboardSearchResultSetPrivate		*priv;
+	GHashTableIter							iter;
+	GList									*list;
+	GVariant								*key;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(inOtherSet), NULL);
+
+	priv=self->priv;
+
+	/* Iterate through hash table of other result set and lookup its keys
+	 * at this result set's hash table. If it does not exists take a reference
+	 * of key of this result set's hash table item and add list to result list.
+	 */
+	list=NULL;
+	g_hash_table_iter_init(&iter, inOtherSet->priv->set);
+	while(g_hash_table_iter_next(&iter, (gpointer*)&key, NULL))
+	{
+		/* Lookup key in other result set's hash table and in case it does not
+		 * exist then add a reference of the key to result.
+		 */
+		if(!g_hash_table_lookup_extended(priv->set, key, NULL, NULL))
+		{
+			list=g_list_prepend(list, g_variant_ref(key));
+		}
+	}
+
+	/* If a sorting function was set then sort result list */
+	if(list && priv->sortCallback)
+	{
+		list=g_list_sort_with_data(list, _xfdashboard_search_result_set_sort_internal, self);
+	}
+
+	/* Return result */
+	return(list);
+}
+
+/* Sets a callback function for sorting all items in result set */
+void xfdashboard_search_result_set_set_sort_func(XfdashboardSearchResultSet *self,
+													XfdashboardSearchResultSetCompareFunc inCallbackFunc,
+													gpointer inUserData)
+{
+	xfdashboard_search_result_set_set_sort_func_full(self, inCallbackFunc, inUserData, NULL);
+}
+
+void xfdashboard_search_result_set_set_sort_func_full(XfdashboardSearchResultSet *self,
+														XfdashboardSearchResultSetCompareFunc inCallbackFunc,
+														gpointer inUserData,
+														GDestroyNotify inUserDataDestroyFunc)
 {
 	XfdashboardSearchResultSetPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self));
-	g_return_if_fail(inCallbackFunc);
 
 	priv=self->priv;
 
-	/* Call callback for each item in result set */
-	g_ptr_array_foreach(priv->identifiers, inCallbackFunc, inUserData);
-}
+	/* Release old sort callback data */
+	if(priv->sortUserData)
+	{
+		/* Release old sort user data with destroy function if set previously
+		 * and reset destroy function.
+		 */
+		if(priv->sortUserDataDestroyFunc)
+		{
+			priv->sortUserDataDestroyFunc(priv->sortUserData);
+			priv->sortUserDataDestroyFunc=NULL;
+		}
 
-/* Calls a callback function for sorting all items in result set */
-void xfdashboard_search_result_set_sort(XfdashboardSearchResultSet *self,
-											XfdashboardSearchResultSetCompareFunc inCallbackFunc,
-											gpointer inUserData)
-{
-	XfdashboardSearchResultSetPrivate		*priv;
-	XfdashboardSearchResultSetSortData		sortData;
+		/* Reset sort user data */
+		priv->sortUserData=NULL;
+	}
+	priv->sortCallback=NULL;
 
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self));
-	g_return_if_fail(inCallbackFunc);
-
-	priv=self->priv;
-
-	/* Call callback for each item in result set */
-	sortData.callback=inCallbackFunc;
-	sortData.userData=inUserData;
-	g_ptr_array_sort_with_data(priv->identifiers, _xfdashboard_search_result_set_sort_internal, &sortData);
+	/* Set sort callback */
+	if(inCallbackFunc)
+	{
+		priv->sortCallback=inCallbackFunc;
+		priv->sortUserData=inUserData;
+		priv->sortUserDataDestroyFunc=inUserDataDestroyFunc;
+	}
 }
