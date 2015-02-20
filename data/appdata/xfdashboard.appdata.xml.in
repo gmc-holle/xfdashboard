@@ -43,6 +43,21 @@
 	</provides>
 
 	<releases>
+		<release version="0.3.9" timestamp="1424455951">
+			<description>
+				<_p>This unstable development introduces an application database
+				and monitoring of installed and uninstalled applications. It also
+				includes bug-fixes and other smaller improvements. 
+				</_p>
+			</description>
+		</release>
+		<release version="0.3.8" timestamp="1422108114">
+			<description>
+				<_p>This unstable development introduces a hotkey tracker to allow
+				starting xfdashboard with a single press of &lt;Super&gt; key.
+				</_p>
+			</description>
+		</release>
 		<release version="0.3.7" timestamp="1421530687">
 			<description>
 				<_p>This unstable development fixes a bug which rendered the new
