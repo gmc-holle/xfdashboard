@@ -16,6 +16,7 @@ settings/settings.c
 xfdashboard/actor.c
 xfdashboard/application-button.c
 xfdashboard/application.c
+xfdashboard/application-database.c
 xfdashboard/applications-menu-model.c
 xfdashboard/applications-search-provider.c
 xfdashboard/applications-view.c
@@ -26,6 +27,7 @@ xfdashboard/button.c
 xfdashboard/click-action.c
 xfdashboard/collapse-box.c
 xfdashboard/css-selector.c
+xfdashboard/desktop-app-info.c
 xfdashboard/drag-action.c
 xfdashboard/drop-action.c
 xfdashboard/dynamic-table-layout.c
