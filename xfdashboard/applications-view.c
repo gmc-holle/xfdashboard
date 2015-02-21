@@ -43,6 +43,7 @@
 #include "dynamic-table-layout.h"
 #include "utils.h"
 #include "desktop-app-info.h"
+#include "application-database.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_applications_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -71,6 +72,8 @@ struct _XfdashboardApplicationsViewPrivate
 	GarconMenuElement					*currentRootMenuElement;
 
 	ClutterActor						*selectedItem;
+
+	gboolean							showAllAppsMenu;
 };
 
 /* Properties */
@@ -91,6 +94,7 @@ enum
 static GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+#define ALL_APPLICATIONS_MENU_ICON		"applications-other"
 
 /* Forward declarations */
 static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData);
@@ -236,6 +240,185 @@ static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicatio
 	}
 }
 
+/* Parent menu of "All applications" was clicked */
+static void _xfdashboard_applications_view_on_all_applications_menu_parent_menu_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
+{
+	XfdashboardApplicationsViewPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+
+	priv=self->priv;
+
+	/* Go to root menu */
+	priv->currentRootMenuElement=NULL;
+	xfdashboard_applications_menu_model_filter_by_section(priv->apps, NULL);
+	xfdashboard_view_scroll_to(XFDASHBOARD_VIEW(self), -1, 0);
+}
+
+/* Show sub-menu with all installed applications */
+static gint _xfdashboard_applications_view_on_all_applications_sort_app_info(XfdashboardDesktopAppInfo *inLeft, XfdashboardDesktopAppInfo *inRight)
+{
+	GAppInfo		*leftAppInfo;
+	GAppInfo		*rightAppInfo;
+	GFile			*leftFile;
+	GFile			*rightFile;
+	gchar			*leftValue;
+	gchar			*rightValue;
+	gint			result;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(inLeft), 1);
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(inRight), -1);
+
+	/* Check if both desktop app info are valid */
+	if(!xfdashboard_desktop_app_info_is_valid(inLeft)) return(1);
+	if(!xfdashboard_desktop_app_info_is_valid(inRight)) return(-1);
+
+	/* If both desktop app info share the same file they are equal */
+	leftFile=xfdashboard_desktop_app_info_get_file(inLeft);
+	rightFile=xfdashboard_desktop_app_info_get_file(inRight);
+	if(g_file_equal(leftFile, rightFile)) return(0);
+
+	/* Both desktop app info have different files so check if they differ in
+	 * name, display name, description or command.
+	 */
+	leftAppInfo=G_APP_INFO(inLeft);
+	rightAppInfo=G_APP_INFO(inRight);
+
+	leftValue=g_utf8_strdown(g_app_info_get_name(leftAppInfo), -1);
+	rightValue=g_utf8_strdown(g_app_info_get_name(rightAppInfo), -1);
+	result=g_strcmp0(leftValue, rightValue);
+	g_free(rightValue);
+	g_free(leftValue);
+	if(result!=0) return(result);
+
+	leftValue=g_utf8_strdown(g_app_info_get_display_name(leftAppInfo), -1);
+	rightValue=g_utf8_strdown(g_app_info_get_display_name(rightAppInfo), -1);
+	result=g_strcmp0(leftValue, rightValue);
+	g_free(rightValue);
+	g_free(leftValue);
+	if(result!=0) return(result);
+
+	leftValue=g_utf8_strdown(g_app_info_get_description(leftAppInfo), -1);
+	rightValue=g_utf8_strdown(g_app_info_get_description(rightAppInfo), -1);
+	result=g_strcmp0(leftValue, rightValue);
+	g_free(rightValue);
+	g_free(leftValue);
+	if(result!=0) return(result);
+
+	leftValue=g_utf8_strdown(g_app_info_get_executable(leftAppInfo), -1);
+	rightValue=g_utf8_strdown(g_app_info_get_executable(rightAppInfo), -1);
+	result=g_strcmp0(leftValue, rightValue);
+	g_free(rightValue);
+	g_free(leftValue);
+	if(result!=0) return(result);
+
+	leftValue=g_utf8_strdown(g_app_info_get_commandline(leftAppInfo), -1);
+	rightValue=g_utf8_strdown(g_app_info_get_commandline(rightAppInfo), -1);
+	result=g_strcmp0(leftValue, rightValue);
+	g_free(rightValue);
+	g_free(leftValue);
+	if(result!=0) return(result);
+
+	/* If we get here both desktop app infos are equal because all checks passed */
+	return(0);
+}
+
+static void _xfdashboard_applications_view_on_all_applications_menu_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
+{
+	XfdashboardApplicationsViewPrivate	*priv;
+	ClutterActor						*actor;
+	GList								*allApps;
+	GList								*iter;
+	GAppInfo							*appInfo;
+	XfdashboardApplicationDatabase		*appDB;
+	ClutterAction						*dragAction;
+	gchar								*actorText;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+
+	priv=self->priv;
+
+	/* Destroy all children */
+	xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), NULL);
+	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
+	clutter_layout_manager_layout_changed(priv->layout);
+
+	/* Create parent menu item */
+	actor=xfdashboard_button_new();
+
+	if(priv->parentMenuIcon) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(actor), priv->parentMenuIcon);
+
+	if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) actorText=g_markup_printf_escaped(priv->formatTitleDescription, _("Back"), _("Go back to previous menu"));
+		else actorText=g_markup_printf_escaped(priv->formatTitleOnly, _("Back"));
+	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), actorText);
+	g_free(actorText);
+
+	if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-list");
+		else xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-icon");
+
+	/* Add to view and layout */
+	clutter_actor_set_x_expand(CLUTTER_ACTOR(actor), TRUE);
+	clutter_actor_set_y_expand(CLUTTER_ACTOR(actor), TRUE);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(actor));
+	clutter_actor_show(actor);
+
+	g_signal_connect_swapped(actor,
+								"clicked",
+								G_CALLBACK(_xfdashboard_applications_view_on_all_applications_menu_parent_menu_clicked),
+								self);
+
+	/* Select "parent menu" automatically */
+	if(xfdashboard_view_has_focus(XFDASHBOARD_VIEW(self)))
+	{
+		xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), CLUTTER_ACTOR(actor));
+	}
+
+	/* Create menu items for all installed applications */
+	appDB=xfdashboard_application_database_get_default();
+
+	allApps=xfdashboard_application_database_get_all_applications(appDB);
+	allApps=g_list_sort(allApps, (GCompareFunc)_xfdashboard_applications_view_on_all_applications_sort_app_info);
+
+	for(iter=allApps; iter; iter=g_list_next(iter))
+	{
+		/* Get app info of application currently iterated */
+		appInfo=G_APP_INFO(iter->data);
+
+		/* Create actor for app info */
+		actor=xfdashboard_application_button_new_from_app_info(appInfo);
+
+		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-list");
+			else xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-icon");
+
+		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_item_clicked), self);
+
+		/* Add to view and layout */
+		clutter_actor_set_x_expand(CLUTTER_ACTOR(actor), TRUE);
+		clutter_actor_set_y_expand(CLUTTER_ACTOR(actor), TRUE);
+		clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(actor));
+		clutter_actor_show(actor);
+
+		/* Add drag action to actor */
+		dragAction=xfdashboard_drag_action_new_with_source(CLUTTER_ACTOR(self));
+		clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(dragAction), -1, -1);
+		clutter_actor_add_action(actor, dragAction);
+		g_signal_connect(dragAction, "drag-begin", G_CALLBACK(_xfdashboard_applications_view_on_drag_begin), self);
+		g_signal_connect(dragAction, "drag-end", G_CALLBACK(_xfdashboard_applications_view_on_drag_end), self);
+
+		/* If no item was selected (i.e. no "parent menu" item) select this one
+		 * which is usually the first menu item.
+		 */
+		if(xfdashboard_view_has_focus(XFDASHBOARD_VIEW(self)) &&
+			!xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self)))
+		{
+			xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), CLUTTER_ACTOR(actor));
+		}
+	}
+
+	g_list_free_full(allApps, g_object_unref);
+	g_object_unref(appDB);
+}
+
 static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsView *self, gpointer inUserData)
 {
 	XfdashboardApplicationsViewPrivate	*priv;
@@ -287,6 +470,37 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 		clutter_actor_show(actor);
 
 		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_parent_menu_clicked), self);
+
+		/* Select "parent menu" automatically */
+		if(xfdashboard_view_has_focus(XFDASHBOARD_VIEW(self)))
+		{
+			xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), CLUTTER_ACTOR(actor));
+		}
+	}
+
+	if(!priv->currentRootMenuElement && priv->showAllAppsMenu)
+	{
+		gchar					*actorText;
+
+		/* Create and adjust of "parent menu" button to application buttons */
+		actor=xfdashboard_button_new();
+		xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(actor), ALL_APPLICATIONS_MENU_ICON);
+
+		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) actorText=g_markup_printf_escaped(priv->formatTitleDescription, _("All applications"), _("List of all installed applications"));
+			else actorText=g_markup_printf_escaped(priv->formatTitleOnly, _("All applications"));
+		xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), actorText);
+		g_free(actorText);
+
+		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-list");
+			else xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-icon");
+
+		/* Add to view and layout */
+		clutter_actor_set_x_expand(CLUTTER_ACTOR(actor), TRUE);
+		clutter_actor_set_y_expand(CLUTTER_ACTOR(actor), TRUE);
+		clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(actor));
+		clutter_actor_show(actor);
+
+		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_all_applications_menu_clicked), self);
 
 		/* Select "parent menu" automatically */
 		if(xfdashboard_view_has_focus(XFDASHBOARD_VIEW(self)))
@@ -1117,6 +1331,7 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	priv->formatTitleOnly=g_strdup("%s");
 	priv->formatTitleDescription=g_strdup("%s\n%s");
 	priv->selectedItem=NULL;
+	priv->showAllAppsMenu=FALSE;
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "applications");
