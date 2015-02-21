@@ -73,6 +73,9 @@ void xfdashboard_applications_view_set_format_title_only(XfdashboardApplications
 const gchar* xfdashboard_applications_view_get_format_title_description(XfdashboardApplicationsView *self);
 void xfdashboard_applications_view_set_format_title_description(XfdashboardApplicationsView *self, const gchar *inFormat);
 
+gboolean xfdashboard_applications_view_get_show_all_apps(XfdashboardApplicationsView *self);
+void xfdashboard_applications_view_set_show_all_apps(XfdashboardApplicationsView *self, gboolean inShowAllApps);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_APPLICATIONS_VIEW__ */

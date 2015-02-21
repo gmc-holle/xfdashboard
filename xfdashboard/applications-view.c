@@ -73,7 +73,9 @@ struct _XfdashboardApplicationsViewPrivate
 
 	ClutterActor						*selectedItem;
 
+	XfconfChannel						*xfconfChannel;
 	gboolean							showAllAppsMenu;
+	guint								showAllAppsMenuBindingID;
 };
 
 /* Properties */
@@ -88,6 +90,8 @@ enum
 	PROP_FORMAT_TITLE_ONLY,
 	PROP_FORMAT_TITLE_DESCRIPTION,
 
+	PROP_SHOW_ALL_APPS,
+
 	PROP_LAST
 };
 
@@ -95,6 +99,7 @@ static GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define ALL_APPLICATIONS_MENU_ICON		"applications-other"
+#define SHOW_ALL_APPS_XFCONF_PROP		"/components/applications-view/show-all-apps"
 
 /* Forward declarations */
 static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData);
@@ -446,7 +451,7 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 	}
 
 	/* If menu element to filter by is not the root menu element, add an "up ..." entry */
-	if(parentMenu!=NULL)
+	if(parentMenu)
 	{
 		gchar					*actorText;
 
@@ -478,7 +483,8 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 		}
 	}
 
-	if(!priv->currentRootMenuElement && priv->showAllAppsMenu)
+	if(priv->showAllAppsMenu &&
+		(!priv->currentRootMenuElement || !parentMenu))
 	{
 		gchar					*actorText;
 
@@ -1140,7 +1146,15 @@ static void _xfdashboard_applications_view_dispose(GObject *inObject)
 	XfdashboardApplicationsViewPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
+	if(priv->xfconfChannel) priv->xfconfChannel=NULL;
+
 	if(priv->layout) priv->layout=NULL;
+
+	if(priv->showAllAppsMenuBindingID)
+	{
+		xfconf_g_property_unbind(priv->showAllAppsMenuBindingID);
+		priv->showAllAppsMenuBindingID=0;
+	}
 
 	if(priv->apps)
 	{
@@ -1202,6 +1216,10 @@ static void _xfdashboard_applications_view_set_property(GObject *inObject,
 			xfdashboard_applications_view_set_format_title_description(self, g_value_get_string(inValue));
 			break;
 
+		case PROP_SHOW_ALL_APPS:
+			xfdashboard_applications_view_set_show_all_apps(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -1239,6 +1257,10 @@ static void _xfdashboard_applications_view_get_property(GObject *inObject,
 
 		case PROP_FORMAT_TITLE_DESCRIPTION:
 			g_value_set_string(outValue, priv->formatTitleDescription);
+			break;
+
+		case PROP_SHOW_ALL_APPS:
+			g_value_set_boolean(outValue, priv->showAllAppsMenu);
 			break;
 
 		default:
@@ -1302,6 +1324,13 @@ static void xfdashboard_applications_view_class_init(XfdashboardApplicationsView
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardApplicationsViewProperties[PROP_SHOW_ALL_APPS]=
+		g_param_spec_boolean("show-all-apps",
+								_("Show all applications"),
+								_("Whether to show a menu for all installed applications at root menu"),
+								FALSE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardApplicationsViewProperties);
 
 	/* Define stylable properties */
@@ -1332,6 +1361,8 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	priv->formatTitleDescription=g_strdup("%s\n%s");
 	priv->selectedItem=NULL;
 	priv->showAllAppsMenu=FALSE;
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
+	priv->showAllAppsMenuBindingID=0;
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "applications");
@@ -1352,6 +1383,13 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	/* Connect signal to application */
 	application=xfdashboard_application_get_default();
 	g_signal_connect_swapped(application, "resume", G_CALLBACK(_xfdashboard_applications_view_on_application_resume), self);
+
+	/* Bind to xfconf to react on changes */
+	priv->showAllAppsMenuBindingID=xfconf_g_property_bind(priv->xfconfChannel,
+															SHOW_ALL_APPS_XFCONF_PROP,
+															G_TYPE_BOOLEAN,
+															self,
+															"show-all-apps");
 }
 
 /* Get/set view mode of view */
@@ -1553,5 +1591,39 @@ void xfdashboard_applications_view_set_format_title_description(XfdashboardAppli
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationsViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]);
+	}
+}
+
+/* Get/set flag whether to show an "all applications" menu at root menu */
+gboolean xfdashboard_applications_view_get_show_all_apps(XfdashboardApplicationsView *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), NULL);
+
+	return(self->priv->showAllAppsMenu);
+}
+
+void xfdashboard_applications_view_set_show_all_apps(XfdashboardApplicationsView *self, gboolean inShowAllApps)
+{
+	XfdashboardApplicationsViewPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->showAllAppsMenu!=inShowAllApps)
+	{
+		/* Set value */
+		priv->showAllAppsMenu=inShowAllApps;
+
+		/* Update view if currently at root menu */
+		if(!priv->currentRootMenuElement ||
+			!garcon_menu_get_parent(GARCON_MENU(priv->currentRootMenuElement)))
+		{
+			_xfdashboard_applications_view_on_filter_changed(self, NULL);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationsViewProperties[PROP_SHOW_ALL_APPS]);
 	}
 }
