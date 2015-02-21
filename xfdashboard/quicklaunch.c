@@ -73,6 +73,7 @@ struct _XfdashboardQuicklaunchPrivate
 
 	/* Instance related */
 	XfconfChannel					*xfconfChannel;
+	guint							xfconfFavouritesBindingID;
 
 	gfloat							scaleCurrent;
 
@@ -2142,7 +2143,13 @@ static void _xfdashboard_quicklaunch_dispose(GObject *inObject)
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inObject)->priv;
 
 	/* Release our allocated variables */
-	priv->xfconfChannel=NULL;
+	if(priv->xfconfChannel) priv->xfconfChannel=NULL;
+
+	if(priv->xfconfFavouritesBindingID)
+	{
+		xfconf_g_property_unbind(priv->xfconfFavouritesBindingID);
+		priv->xfconfFavouritesBindingID=0;
+	}
 
 	if(priv->appDB)
 	{
@@ -2460,7 +2467,11 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	g_signal_connect_swapped(dropAction, "drag-leave", G_CALLBACK(_xfdashboard_quicklaunch_on_trash_drop_leave), self);
 
 	/* Bind to xfconf to react on changes */
-	xfconf_g_property_bind(priv->xfconfChannel, FAVOURITES_XFCONF_PROP, XFDASHBOARD_TYPE_POINTER_ARRAY, self, "favourites");
+	priv->xfconfFavouritesBindingID=xfconf_g_property_bind(priv->xfconfChannel,
+															FAVOURITES_XFCONF_PROP,
+															XFDASHBOARD_TYPE_POINTER_ARRAY,
+															self,
+															"favourites");
 
 	/* Set up default favourite items if property in channel does not exist
 	 * because it indicates first start.
