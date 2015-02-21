@@ -65,10 +65,12 @@ struct _XfdashboardWindowsViewPrivate
 	gboolean							isScrollEventChangingWorkspace;
 
 	/* Instance related */
-	XfconfChannel						*xfconfChannel;
 	XfdashboardWindowTracker			*windowTracker;
 	ClutterLayoutManager				*layout;
 	ClutterActor						*selectedItem;
+
+	XfconfChannel						*xfconfChannel;
+	guint								xfconfScrollEventChangingWorkspaceBindingID;
 
 	gboolean							isWindowsNumberShown;
 };
@@ -1249,7 +1251,13 @@ static void _xfdashboard_windows_view_dispose(GObject *inObject)
 	/* Release allocated resources */
 	g_signal_handlers_disconnect_by_func(self, G_CALLBACK(_xfdashboard_windows_view_on_scroll_event), self);
 
-	priv->xfconfChannel=NULL;
+	if(priv->xfconfChannel) priv->xfconfChannel=NULL;
+
+	if(priv->xfconfScrollEventChangingWorkspaceBindingID)
+	{
+		xfconf_g_property_unbind(priv->xfconfScrollEventChangingWorkspaceBindingID);
+		priv->xfconfScrollEventChangingWorkspaceBindingID=0;
+	}
 
 	_xfdashboard_windows_view_set_active_workspace(self, NULL);
 
@@ -1625,11 +1633,11 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	g_signal_connect_swapped(action, "drop", G_CALLBACK(_xfdashboard_windows_view_on_drop_drop), self);
 
 	/* Bind to xfconf to react on changes */
-	xfconf_g_property_bind(priv->xfconfChannel,
-							SCROLL_EVENT_CHANGES_WORKSPACE_XFCONF_PROP,
-							G_TYPE_BOOLEAN,
-							self,
-							"scroll-event-changes-workspace");
+	priv->xfconfScrollEventChangingWorkspaceBindingID=xfconf_g_property_bind(priv->xfconfChannel,
+																				SCROLL_EVENT_CHANGES_WORKSPACE_XFCONF_PROP,
+																				G_TYPE_BOOLEAN,
+																				self,
+																				"scroll-event-changes-workspace");
 
 	/* Connect signals */
 	g_signal_connect_swapped(priv->windowTracker,
