@@ -75,7 +75,7 @@ struct _XfdashboardApplicationsViewPrivate
 
 	XfconfChannel						*xfconfChannel;
 	gboolean							showAllAppsMenu;
-	guint								showAllAppsMenuBindingID;
+	guint								xfconfShowAllAppsMenuBindingID;
 };
 
 /* Properties */
@@ -1150,10 +1150,10 @@ static void _xfdashboard_applications_view_dispose(GObject *inObject)
 
 	if(priv->layout) priv->layout=NULL;
 
-	if(priv->showAllAppsMenuBindingID)
+	if(priv->xfconfShowAllAppsMenuBindingID)
 	{
-		xfconf_g_property_unbind(priv->showAllAppsMenuBindingID);
-		priv->showAllAppsMenuBindingID=0;
+		xfconf_g_property_unbind(priv->xfconfShowAllAppsMenuBindingID);
+		priv->xfconfShowAllAppsMenuBindingID=0;
 	}
 
 	if(priv->apps)
@@ -1362,7 +1362,7 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	priv->selectedItem=NULL;
 	priv->showAllAppsMenu=FALSE;
 	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
-	priv->showAllAppsMenuBindingID=0;
+	priv->xfconfShowAllAppsMenuBindingID=0;
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "applications");
@@ -1385,11 +1385,11 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	g_signal_connect_swapped(application, "resume", G_CALLBACK(_xfdashboard_applications_view_on_application_resume), self);
 
 	/* Bind to xfconf to react on changes */
-	priv->showAllAppsMenuBindingID=xfconf_g_property_bind(priv->xfconfChannel,
-															SHOW_ALL_APPS_XFCONF_PROP,
-															G_TYPE_BOOLEAN,
-															self,
-															"show-all-apps");
+	priv->xfconfShowAllAppsMenuBindingID=xfconf_g_property_bind(priv->xfconfChannel,
+																SHOW_ALL_APPS_XFCONF_PROP,
+																G_TYPE_BOOLEAN,
+																self,
+																"show-all-apps");
 }
 
 /* Get/set view mode of view */
