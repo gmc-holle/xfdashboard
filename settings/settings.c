@@ -51,7 +51,6 @@ struct _XfdashboardSettingsPrivate
 	GtkWidget		*widgetSwitchViewOnResume;
 	GtkWidget		*widgetNotificationTimeout;
 	GtkWidget		*widgetEnableUnmappedWindowWorkaround;
-	GtkWidget		*widgetEnableHotkey;
 	GtkWidget		*widgetShowAllApps;
 	GtkWidget		*widgetScrollEventChangedWorkspace;
 	GtkWidget		*widgetThemes;
