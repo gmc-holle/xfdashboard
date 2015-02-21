@@ -52,6 +52,7 @@ struct _XfdashboardSettingsPrivate
 	GtkWidget		*widgetNotificationTimeout;
 	GtkWidget		*widgetEnableUnmappedWindowWorkaround;
 	GtkWidget		*widgetEnableHotkey;
+	GtkWidget		*widgetShowAllApps;
 	GtkWidget		*widgetScrollEventChangedWorkspace;
 	GtkWidget		*widgetThemes;
 	GtkWidget		*widgetThemeScreenshot;
@@ -1032,6 +1033,14 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 							"/enable-unmapped-window-workaround",
 							G_TYPE_BOOLEAN,
 							priv->widgetEnableUnmappedWindowWorkaround,
+							"active");
+
+	priv->widgetShowAllApps=GTK_WIDGET(gtk_builder_get_object(priv->builder, "show-all-apps"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(priv->widgetShowAllApps), FALSE);
+	xfconf_g_property_bind(priv->xfconfChannel,
+							"/components/applications-view/show-all-apps",
+							G_TYPE_BOOLEAN,
+							priv->widgetShowAllApps,
 							"active");
 
 	priv->widgetScrollEventChangedWorkspace=GTK_WIDGET(gtk_builder_get_object(priv->builder, "scroll-event-changes-workspace"));
