@@ -334,7 +334,7 @@ static void _xfdashboard_applications_view_on_all_applications_menu_clicked(Xfda
 	ClutterActor						*actor;
 	GList								*allApps;
 	GList								*iter;
-	GAppInfo							*appInfo;
+	XfdashboardDesktopAppInfo			*appInfo;
 	XfdashboardApplicationDatabase		*appDB;
 	ClutterAction						*dragAction;
 	gchar								*actorText;
@@ -387,10 +387,17 @@ static void _xfdashboard_applications_view_on_all_applications_menu_clicked(Xfda
 	for(iter=allApps; iter; iter=g_list_next(iter))
 	{
 		/* Get app info of application currently iterated */
-		appInfo=G_APP_INFO(iter->data);
+		appInfo=XFDASHBOARD_DESKTOP_APP_INFO(iter->data);
+
+		/* If desktop app info should be hidden then continue with next one */
+		if(xfdashboard_desktop_app_info_get_hidden(appInfo) ||
+			xfdashboard_desktop_app_info_get_nodisplay(appInfo))
+		{
+			continue;
+		}
 
 		/* Create actor for app info */
-		actor=xfdashboard_application_button_new_from_app_info(appInfo);
+		actor=xfdashboard_application_button_new_from_app_info(G_APP_INFO(appInfo));
 
 		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-list");
 			else xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "view-mode-icon");

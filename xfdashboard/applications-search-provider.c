@@ -171,12 +171,12 @@ static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardAp
 																	gchar **inSearchTerms,
 																	GAppInfo *inAppInfo)
 {
-	gboolean				isMatch;
-	gchar					*title;
-	gchar					*description;
-	const gchar				*command;
-	const gchar				*value;
-	gint					matchesFound, matchesExpected;
+	gboolean						isMatch;
+	gchar							*title;
+	gchar							*description;
+	const gchar						*command;
+	const gchar						*value;
+	gint							matchesFound, matchesExpected;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), FALSE);
 	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), FALSE);
@@ -333,7 +333,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 	guint												numberTerms;
 	gchar												**terms, **termsIter;
 	GVariant											*resultItem;
-	GAppInfo											*appInfo;
+	XfdashboardDesktopAppInfo							*appInfo;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(inProvider), NULL);
 
@@ -380,10 +380,17 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 	for(iter=priv->allApps; iter; iter=g_list_next(iter))
 	{
 		/* Get app info to check for match */
-		appInfo=G_APP_INFO(iter->data);
+		appInfo=XFDASHBOARD_DESKTOP_APP_INFO(iter->data);
+
+		/* If desktop app info should be hidden then continue with next one */
+		if(xfdashboard_desktop_app_info_get_hidden(appInfo) ||
+			xfdashboard_desktop_app_info_get_nodisplay(appInfo))
+		{
+			continue;
+		}
 
 		/* Get result item */
-		resultItem=g_variant_new_string(g_app_info_get_id(appInfo));
+		resultItem=g_variant_new_string(g_app_info_get_id(G_APP_INFO(appInfo)));
 
 		/* Check if current app info is in previous result set and should be checked
 		 * if a previous result set is provided.
@@ -392,7 +399,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 			xfdashboard_search_result_set_has_item(inPreviousResultSet, resultItem))
 		{
 			/* Check for a match against search terms */
-			if(_xfdashboard_applications_search_provider_is_match(self, terms, appInfo))
+			if(_xfdashboard_applications_search_provider_is_match(self, terms, G_APP_INFO(appInfo)))
 			{
 				xfdashboard_search_result_set_add_item(resultSet, g_variant_ref(resultItem));
 			}
