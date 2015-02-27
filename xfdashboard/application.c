@@ -77,10 +77,6 @@ struct _XfdashboardApplicationPrivate
 
 	XfdashboardBindingsPool			*bindings;
 
-#if !GLIB_CHECK_VERSION(2, 32, 0)
-	GSimpleActionGroup				*actions;
-#endif
-
 	XfdashboardApplicationDatabase	*appDatabase;
 };
 
@@ -591,16 +587,6 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SHUTDOWN_FINAL], 0);
 
 	/* Release allocated resources */
-#if !GLIB_CHECK_VERSION(2, 32, 0)
-	if(priv->actions)
-	{
-		g_application_set_action_group(G_APPLICATION(self), NULL);
-
-		g_object_unref(priv->actions);
-		priv->actions=NULL;
-	}
-#endif
-
 	if(priv->xfconfThemeChangedSignalID)
 	{
 		xfconf_g_property_unbind(priv->xfconfThemeChangedSignalID);
@@ -836,27 +822,12 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->theme=NULL;
 	priv->xfconfThemeChangedSignalID=0L;
 	priv->isQuitting=FALSE;
-#if !GLIB_CHECK_VERSION(2, 32, 0)
-	priv->actions=NULL;
-#endif
 
 	/* Add callable DBUS actions for this application */
-#if !GLIB_CHECK_VERSION(2, 32, 0)
-	priv->actions=g_simple_action_group_new();
-#endif
-
 	action=g_simple_action_new("Quit", NULL);
 	g_signal_connect(action, "activate", G_CALLBACK(xfdashboard_application_quit_forced), NULL);
-#if GLIB_CHECK_VERSION(2, 32, 0)
 	g_action_map_add_action(G_ACTION_MAP(self), G_ACTION(action));
-#else
-	g_simple_action_group_insert(priv->actions, action);
-#endif
 	g_object_unref(action);
-
-#if !GLIB_CHECK_VERSION(2, 32, 0)
-	g_application_set_action_group(G_APPLICATION(self), G_ACTION_GROUP(priv->actions));
-#endif
 }
 
 /* IMPLEMENTATION: Public API */
@@ -915,12 +886,8 @@ void xfdashboard_application_quit_forced(void)
 		/* Quit also any other running instance */
 		if(g_application_get_is_remote(G_APPLICATION(application))==TRUE)
 		{
-#if !GLIB_CHECK_VERSION(2,32,0)
-			g_action_group_activate_action(G_ACTION_GROUP(application->priv->actions, "Quit", NULL);
-#else
 			g_action_group_activate_action(G_ACTION_GROUP(application), "Quit", NULL);
-#endif
-	}
+		}
 
 		/* Quit this instance */
 		_xfdashboard_application_quit(application, TRUE);
