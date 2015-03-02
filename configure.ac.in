@@ -96,6 +96,12 @@ AC_CHECK_HEADERS([stdlib.h unistd.h locale.h stdio.h errno.h time.h string.h \
                   libintl.h])
 AC_CHECK_FUNCS([bind_textdomain_codeset])
 
+dnl **********************
+dnl *** Check for libm ***
+dnl **********************
+AC_CHECK_LIBM
+AC_SUBST(LIBM)
+
 dnl ******************************
 dnl *** Check for i18n support ***
 dnl ******************************

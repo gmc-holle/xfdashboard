@@ -31,4 +31,4 @@ xfdashboard_settings_LDADD = \
 	$(GTK_LIBS) \
 	$(LIBXFCONF_LIBS) \
 	$(LIBXFCE4UTIL_LIBS) \
-	-lm
+	$(LIBM)

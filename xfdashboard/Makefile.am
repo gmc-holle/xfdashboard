@@ -159,7 +159,7 @@ xfdashboard_LDADD = \
 	$(GARCON_LIBS) \
 	$(LIBXFCONF_LIBS) \
 	$(DBUS_GLIB_LIBS) \
-	-lm
+	$(LIBM)
 
 if XFDASHBOARD_BUILD_WITH_XCOMPOSITE
 xfdashboard_CFLAGS += \
