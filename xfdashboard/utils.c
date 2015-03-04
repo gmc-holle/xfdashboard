@@ -133,7 +133,7 @@ GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorksp
 	 * explicitly to launch the application on current workspace even if user changes
 	 * workspace in the time between launching application and showing first window.
 	 */
-	context=gdk_app_launch_context_new();
+	context=gdk_display_get_app_launch_context(gdk_display_get_default());
 	if(event) gdk_app_launch_context_set_timestamp(context, clutter_event_get_time(event));
 	gdk_app_launch_context_set_desktop(context, xfdashboard_window_tracker_workspace_get_number(inWorkspace));
 
