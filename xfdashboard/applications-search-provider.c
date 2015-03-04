@@ -318,7 +318,7 @@ static const gchar* _xfdashboard_applications_search_provider_get_name(Xfdashboa
 /* Overriden virtual function: get_icon */
 static const gchar* _xfdashboard_applications_search_provider_get_icon(XfdashboardSearchProvider *inProvider)
 {
-	return(GTK_STOCK_HOME);
+	return("gtk-missing-image");
 }
 
 /* Overriden virtual function: get_result_set */

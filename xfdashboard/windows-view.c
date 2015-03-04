@@ -119,7 +119,7 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 /* IMPLEMENTATION: Private variables and methods */
 #define SCROLL_EVENT_CHANGES_WORKSPACE_XFCONF_PROP		"/components/windows-view/scroll-event-changes-workspace"
 
-#define DEFAULT_VIEW_ICON								GTK_STOCK_FULLSCREEN
+#define DEFAULT_VIEW_ICON								"gtk-fullscreen"
 #define DEFAULT_DRAG_HANDLE_SIZE						32.0f
 
 /* Check if window should be shown */

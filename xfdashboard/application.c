@@ -226,7 +226,7 @@ static void _xfdashboard_application_set_theme_name(XfdashboardApplication *self
 
 			/* Show warning as notification */
 			xfdashboard_notify(NULL,
-								GTK_STOCK_DIALOG_ERROR,
+								"gtk-dialog-error",
 								_("Could not load theme '%s': %s"),
 								priv->themeName,
 								(error && error->message) ? error->message : _("unknown error"));
