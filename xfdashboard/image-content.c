@@ -402,7 +402,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 		}
 
 		/* Release allocated resources */
-		gtk_icon_info_free(iconInfo);
+		g_object_unref(iconInfo);
 	}
 		/* ... otherwise set up to load icon async */
 		else filename=lookupFilename;
@@ -677,7 +677,7 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 		}
 
 	/* Release allocated resources */
-	gtk_icon_info_free(iconInfo);
+	g_object_unref(iconInfo);
 }
 
 /* Load image from GIcon */
@@ -798,7 +798,7 @@ static void _xfdashboard_image_content_load_from_gicon(XfdashboardImageContent *
 		}
 
 	/* Release allocated resources */
-	gtk_icon_info_free(iconInfo);
+	g_object_unref(iconInfo);
 }
 
 /* Icon theme has changed */
