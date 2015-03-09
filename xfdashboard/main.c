@@ -192,6 +192,13 @@ int main(int argc, char **argv)
 	g_type_init();
 #endif
 
+#if CLUTTER_CHECK_VERSION(1, 16, 0)
+	/* Enforce X11 backend in Clutter. This function must be called before any
+	 * other Clutter API function.
+	 */
+	clutter_set_windowing_backend("x11");
+#endif
+
 	/* Check for running instance (keep only one instance) */
 	app=xfdashboard_application_get_default();
 	if(!app)
