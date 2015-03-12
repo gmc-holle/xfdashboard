@@ -280,6 +280,9 @@ int main(int argc, char **argv)
 		return(status);
 	}
 
+	/* Notify that application has started and main loop will be entered */
+	gdk_notify_startup_complete();
+
 	/* Start main loop */
 	clutter_main();
 
