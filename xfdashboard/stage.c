@@ -621,6 +621,7 @@ static void _xfdashboard_stage_on_desktop_window_opened(XfdashboardStage *self,
 		windowContent=xfdashboard_window_content_new_for_window(desktopWindow);
 		clutter_actor_set_content(priv->backgroundImageLayer, windowContent);
 		clutter_actor_show(priv->backgroundImageLayer);
+		g_object_unref(windowContent);
 
 		g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_desktop_window_opened), self);
 		g_debug("Found desktop window with signal 'window-opened', so disconnecting signal handler");
@@ -1402,6 +1403,8 @@ void xfdashboard_stage_set_background_image_type(XfdashboardStage *self, Xfdashb
 							backgroundContent=xfdashboard_window_content_new_for_window(backgroundWindow);
 							clutter_actor_show(priv->backgroundImageLayer);
 							clutter_actor_set_content(priv->backgroundImageLayer, backgroundContent);
+							g_object_unref(backgroundContent);
+
 							g_debug("Dekstop window was found and set up as background image for stage");
 						}
 							else
