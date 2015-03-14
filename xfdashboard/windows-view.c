@@ -134,9 +134,10 @@ static gboolean _xfdashboard_windows_view_is_visible_window(XfdashboardWindowsVi
 	priv=self->priv;
 
 	/* Determine if windows should be shown depending on its state */
-	if(xfdashboard_window_tracker_window_is_skip_pager(inWindow) ||
+	if(!priv->workspace ||
+		xfdashboard_window_tracker_window_is_skip_pager(inWindow) ||
 		xfdashboard_window_tracker_window_is_skip_tasklist(inWindow) ||
-		(priv->workspace && !xfdashboard_window_tracker_window_is_visible_on_workspace(inWindow, priv->workspace)) ||
+		!xfdashboard_window_tracker_window_is_visible_on_workspace(inWindow, priv->workspace) ||
 		xfdashboard_window_tracker_window_is_stage(inWindow))
 	{
 		return(FALSE);
