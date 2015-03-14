@@ -806,7 +806,15 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 	priv=self->priv;
 
 	/* If no focusable actor was specified then use current focused actor */
-	if(!inFocusable) inFocusable=priv->currentFocus;
+	if(!inFocusable)
+	{
+		inFocusable=priv->currentFocus;
+
+		/* If still no focusable actor is available we cannot handle event
+		 * so let the others try it by propagating event.
+		 */
+		if(!inFocusable) return(CLUTTER_EVENT_PROPAGATE);
+	}
 
 	/* Synthesize event for specified focusable actor */
 	if(inFocusable)
