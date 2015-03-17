@@ -949,8 +949,8 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 /* Destroy cache hashtable */
 static void _xfdashboard_window_content_destroy_cache(void)
 {
-	XfdashboardApplication		*application;
-	gint						cacheSize;
+	XfdashboardApplication					*application;
+	gint									cacheSize;
 
 	/* Only an existing cache can be destroyed */
 	if(!_xfdashboard_window_content_cache) return;
@@ -963,27 +963,22 @@ static void _xfdashboard_window_content_destroy_cache(void)
 	/* Destroy cache hashtable */
 	cacheSize=g_hash_table_size(_xfdashboard_window_content_cache);
 	if(cacheSize>0) g_warning(_("Destroying window content cache still containing %d windows."), cacheSize);
-
-#if 1
+#ifdef DEBUG
+	if(cacheSize>0)
 	{
-		if(cacheSize>0)
-		{
-			GHashTableIter iter;
-			gpointer key, value;
-			XfdashboardWindowContent *content;
-			XfdashboardWindowTrackerWindow *window;
+		GHashTableIter						iter;
+		gpointer							key, value;
+		XfdashboardWindowContent			*content;
+		XfdashboardWindowTrackerWindow		*window;
 
-			g_hash_table_iter_init(&iter, _xfdashboard_window_content_cache);
-			while(g_hash_table_iter_next (&iter, &key, &value)) 
-			{
-				content=XFDASHBOARD_WINDOW_CONTENT(value);
-				window=xfdashboard_window_content_get_window(content);
-				g_message("%s: in-cache=%p -> window=%p(%s)",
-							__func__,
-							content,
-							window,
-							xfdashboard_window_tracker_window_get_title(window));
-			}
+		g_hash_table_iter_init(&iter, _xfdashboard_window_content_cache);
+		while(g_hash_table_iter_next (&iter, &key, &value))
+		{
+			content=XFDASHBOARD_WINDOW_CONTENT(value);
+			window=xfdashboard_window_content_get_window(content);
+			g_print("Window content in cache: Item %s@%p for window '%s'",
+						G_OBJECT_TYPE_NAME(content), content,
+						xfdashboard_window_tracker_window_get_title(window));
 		}
 	}
 #endif
