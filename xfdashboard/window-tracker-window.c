@@ -37,6 +37,11 @@
 
 #include <glib/gi18n-lib.h>
 #include <clutter/x11/clutter-x11.h>
+#include <gtk/gtkx.h>
+#include <gdk/gdkx.h>
+#ifdef HAVE_XINERAMA
+#include <X11/extensions/Xinerama.h>
+#endif
 
 #include "window-tracker.h"
 #include "marshal.h"
@@ -47,6 +52,179 @@
  */
 
 /* IMPLEMENTATION: Private variables and methods */
+
+/* Size of screen has changed so resize stage window */
+static void _xfdashboard_window_tracker_window_on_screen_size_changed(XfdashboardWindowTracker *inWindowTracker,
+																		gint inWidth,
+																		gint inHeight,
+																		gpointer inUserData)
+{
+#ifdef HAVE_XINERAMA
+	WnckWindow				*stageWindow;
+	GdkDisplay				*display;
+	GdkScreen				*screen;
+	XineramaScreenInfo		*monitors;
+	int						monitorsCount;
+	gint					top, bottom, left, right;
+	gint					topIndex, bottomIndex, leftIndex, rightIndex;
+	gint					i;
+	Atom					atomFullscreenMonitors;
+	XEvent					xEvent;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(inWindowTracker));
+	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
+
+	stageWindow=WNCK_WINDOW(inUserData);
+
+	g_debug("Set fullscreen across all monitors using Xinerama");
+
+	/* If window manager does not support fullscreen across all monitors
+	 * return here.
+	 */
+	if(!wnck_screen_net_wm_supports(wnck_window_get_screen(stageWindow), "_NET_WM_FULLSCREEN_MONITORS"))
+	{
+		g_warning(_("Keep window fullscreen on primary monitor because window manager does not support _NET_WM_FULLSCREEN_MONITORS."));
+		return;
+	}
+
+	/* Get display */
+	display=gdk_display_get_default();
+
+	/* Get screen */
+	screen=gdk_screen_get_default();
+
+	/* Check if Xinerama is active on display. If not try to move and resize
+	 * stage window to primary monitor.
+	 */
+	if(!XineramaIsActive(GDK_DISPLAY_XDISPLAY(display)))
+	{
+		gint				primaryMonitor;
+		GdkRectangle		geometry;
+
+		/* Get position and size of primary monitor and try to move and resize
+		 * stage window to its position and size. Even if it fails it should
+		 * resize the stage to the size of current monitor this window is
+		 * fullscreened to. Tested with xfwm4.
+		 */
+		primaryMonitor=gdk_screen_get_primary_monitor(screen);
+		gdk_screen_get_monitor_geometry(screen, primaryMonitor, &geometry);
+		wnck_window_set_geometry(stageWindow,
+									WNCK_WINDOW_GRAVITY_STATIC,
+									WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y | WNCK_WINDOW_CHANGE_WIDTH | WNCK_WINDOW_CHANGE_HEIGHT,
+									geometry.x, geometry.y, geometry.width, geometry.height);
+		return;
+	}
+
+	/* Get monitors from Xinerama */
+	monitors=XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(display), &monitorsCount);
+	if(monitorsCount<=0 || !monitors)
+	{
+		if(monitors) XFree(monitors);
+		return;
+	}
+
+	/* Get monitor indices for each corner of screen */
+	top=gdk_screen_get_height(screen);
+	left=gdk_screen_get_width(screen);
+	bottom=0;
+	right=0;
+	topIndex=bottomIndex=leftIndex=rightIndex=0;
+	for(i=0; i<monitorsCount; i++)
+	{
+		g_debug("Checking edges at monitor %d with upper-left at %d,%d and lower-right at %d,%d [size: %dx%d]",
+					i,
+					monitors[i].x_org,
+					monitors[i].y_org,
+					monitors[i].x_org+monitors[i].width, monitors[i].y_org+monitors[i].height,
+					monitors[i].width, monitors[i].height);
+
+		if(left>monitors[i].x_org)
+		{
+			left=monitors[i].x_org;
+			leftIndex=i;
+		}
+
+		if(right<(monitors[i].x_org+monitors[i].width))
+		{
+			right=(monitors[i].x_org+monitors[i].width);
+			rightIndex=i;
+		}
+
+		if(top>monitors[i].y_org)
+		{
+			top=monitors[i].y_org;
+			topIndex=i;
+		}
+
+		if(bottom<(monitors[i].y_org+monitors[i].height))
+		{
+			bottom=(monitors[i].y_org+monitors[i].height);
+			bottomIndex=i;
+		}
+	}
+	g_debug("Found edge monitors: left=%d (monitor %d), right=%d (monitor %d), top=%d (monitor %d), bottom=%d (motniro %d)",
+				left, leftIndex,
+				right, rightIndex,
+				top, topIndex,
+				bottom, bottomIndex);
+
+	/* Get X atom for fullscreen-across-all-monitors */
+	atomFullscreenMonitors=XInternAtom(GDK_DISPLAY_XDISPLAY(display),
+										"_NET_WM_FULLSCREEN_MONITORS",
+										False);
+
+	/* Send event to X to set window to fullscreen over all monitors */
+	memset(&xEvent, 0, sizeof(xEvent));
+	xEvent.type=ClientMessage;
+	xEvent.xclient.window=wnck_window_get_xid(stageWindow);
+	xEvent.xclient.message_type=atomFullscreenMonitors;
+	xEvent.xclient.format=32;
+	xEvent.xclient.data.l[0]=topIndex;
+	xEvent.xclient.data.l[1]=bottomIndex;
+	xEvent.xclient.data.l[2]=leftIndex;
+	xEvent.xclient.data.l[3]=rightIndex;
+	xEvent.xclient.data.l[4]=0;
+	XSendEvent(GDK_DISPLAY_XDISPLAY(display),
+				DefaultRootWindow(GDK_DISPLAY_XDISPLAY(display)),
+				False,
+				SubstructureRedirectMask | SubstructureNotifyMask,
+				&xEvent);
+
+	/* Release allocated resources */
+	if(monitors) XFree(monitors);
+#else
+	WnckWindow				*stageWindow;
+	GdkScreen				*screen;
+	gint					primaryMonitor;
+	GdkRectangle			geometry;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(inWindowTracker));
+	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
+
+	stageWindow=WNCK_WINDOW(inUserData);
+
+	g_debug("No support for multiple monitor: Setting fullscreen on primary monitor");
+
+	/* Get screen */
+	screen=gdk_screen_get_default();
+
+	/* Get position and size of primary monitor and try to move and resize
+	 * stage window to its position and size. Even if it fails it should
+	 * resize the stage to the size of current monitor this window is
+	 * fullscreened to. Tested with xfwm4.
+	 */
+	primaryMonitor=gdk_screen_get_primary_monitor(screen);
+	gdk_screen_get_monitor_geometry(screen, primaryMonitor, &geometry);
+	wnck_window_set_geometry(stageWindow,
+								WNCK_WINDOW_GRAVITY_STATIC,
+								WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y | WNCK_WINDOW_CHANGE_WIDTH | WNCK_WINDOW_CHANGE_HEIGHT,
+								geometry.x, geometry.y, geometry.width, geometry.height);
+
+	g_debug("Moving stage window to %d,%d and resize to %dx%d",
+				geometry.x, geometry.y,
+				geometry.width, geometry.height);
+#endif
+}
 
 /* State of stage window changed */
 static void _xfdashboard_window_tracker_window_on_stage_state_changed(WnckWindow *inWindow,
@@ -171,6 +349,17 @@ gboolean xfdashboard_window_tracker_window_is_visible_on_workspace(XfdashboardWi
 			wnck_window_is_on_workspace(WNCK_WINDOW(inWindow), WNCK_WORKSPACE(inWorkspace)));
 }
 
+gboolean xfdashboard_window_tracker_window_is_visible_on_monitor(XfdashboardWindowTrackerWindow *inWindow,
+																	XfdashboardWindowTrackerMonitor *inMonitor)
+{
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inMonitor), FALSE);
+
+	/* Check if window is visible generally and if it is on requested monitor */
+	return(xfdashboard_window_tracker_window_is_visible(inWindow) &&
+			xfdashboard_window_tracker_window_is_on_monitor(inWindow, inMonitor));
+}
+
 /* Set visibility of window (show/hide) */
 void xfdashboard_window_tracker_window_show(XfdashboardWindowTrackerWindow *inWindow)
 {
@@ -212,6 +401,82 @@ void xfdashboard_window_tracker_window_move_to_workspace(XfdashboardWindowTracke
 	g_return_if_fail(WNCK_IS_WORKSPACE(inWorkspace));
 
 	wnck_window_move_to_workspace(WNCK_WINDOW(inWindow), WNCK_WORKSPACE(inWorkspace));
+}
+
+/* Get monitor where window is on */
+XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_window_get_monitor(XfdashboardWindowTrackerWindow *inWindow)
+{
+	XfdashboardWindowTracker			*windowTracker;
+	GList								*monitors;
+	XfdashboardWindowTrackerMonitor		*monitor;
+	XfdashboardWindowTrackerMonitor		*foundMonitor;
+
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
+
+	/* Get window tracker to retrieve list of monitors */
+	windowTracker=xfdashboard_window_tracker_get_default();
+
+	/* Get list of monitors */
+	monitors=xfdashboard_window_tracker_get_monitors(windowTracker);
+
+	/* Iterate through list of monitors and return monitor where window fits in */
+	foundMonitor=NULL;
+	for(; monitors && !foundMonitor; monitors=g_list_next(monitors))
+	{
+		monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR(monitors->data);
+		if(xfdashboard_window_tracker_window_is_on_monitor(inWindow, monitor))
+		{
+			foundMonitor=monitor;
+		}
+	}
+
+	/* Release allocated resources */
+	g_object_unref(windowTracker);
+
+	/* Return found monitor */
+	return(foundMonitor);
+}
+
+/* Determine if window is on requested monitor */
+gboolean xfdashboard_window_tracker_window_is_on_monitor(XfdashboardWindowTrackerWindow *inWindow,
+															XfdashboardWindowTrackerMonitor *inMonitor)
+{
+	XfdashboardWindowTracker	*windowTracker;
+	gint						windowX, windowY, windowWidth, windowHeight;
+	gint						monitorX, monitorY, monitorWidth, monitorHeight;
+	gint						screenWidth, screenHeight;
+	gint						windowMiddleX, windowMiddleY;
+
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inMonitor), FALSE);
+
+	/* Get window geometry */
+	xfdashboard_window_tracker_window_get_position_size(inWindow, &windowX, &windowY, &windowWidth, &windowHeight);
+
+	/* Get monitor geometry */
+	xfdashboard_window_tracker_monitor_get_geometry(inMonitor, &monitorX, &monitorY, &monitorWidth, &monitorHeight);
+
+	/* Get screen size */
+	windowTracker=xfdashboard_window_tracker_get_default();
+	screenWidth=xfdashboard_window_tracker_get_screen_width(windowTracker);
+	screenHeight=xfdashboard_window_tracker_get_screen_height(windowTracker);
+	g_object_unref(windowTracker);
+
+	/* Check if mid-point of window (adjusted to screen size) is within monitor */
+	windowMiddleX=windowX+(windowWidth/2);
+	if(windowMiddleX>screenWidth) windowMiddleX=screenWidth-1;
+
+	windowMiddleY=windowY+(windowHeight/2);
+	if(windowMiddleY>screenHeight) windowMiddleY=screenHeight-1;
+
+	if(windowMiddleX>=monitorX && windowMiddleX<(monitorX+monitorWidth) &&
+		windowMiddleY>=monitorY && windowMiddleY<(monitorY+monitorHeight))
+	{
+		return(TRUE);
+	}
+
+	/* If we get here mid-point of window is out of range of requested monitor */
+	return(FALSE);
 }
 
 /* Get name (title) of window */
@@ -407,9 +672,10 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_stage_wind
 /* Set up window for use as stage window */
 void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTrackerWindow *inWindow)
 {
-	WnckScreen	*screen;
-	guint		signalID;
-	gulong		handlerID;
+	XfdashboardWindowTracker	*windowTracker;
+	WnckScreen					*screen;
+	guint						signalID;
+	gulong						handlerID;
 
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
@@ -453,14 +719,35 @@ void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTracke
 		g_signal_connect(screen, "active-window-changed", G_CALLBACK(_xfdashboard_window_tracker_window_on_stage_active_window_changed), inWindow);
 		g_debug("Connecting signal to 'active-window-changed' at screen %p of window %p", screen, inWindow);
 	}
+
+	windowTracker=xfdashboard_window_tracker_get_default();
+	signalID=g_signal_lookup("screen-size-changed", XFDASHBOARD_TYPE_WINDOW_TRACKER);
+	handlerID=g_signal_handler_find(windowTracker,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									signalID,
+									0,
+									NULL,
+									G_CALLBACK(_xfdashboard_window_tracker_window_on_screen_size_changed),
+									NULL);
+	if(!handlerID)
+	{
+		g_signal_connect(windowTracker, "screen-size-changed", G_CALLBACK(_xfdashboard_window_tracker_window_on_screen_size_changed), inWindow);
+		g_debug("Connecting signal to 'screen-size-changed' at window %p", inWindow);
+	}
+	_xfdashboard_window_tracker_window_on_screen_size_changed(windowTracker,
+																xfdashboard_window_tracker_get_screen_width(windowTracker),
+																xfdashboard_window_tracker_get_screen_height(windowTracker),
+																inWindow);
+	g_object_unref(windowTracker);
 }
 
 /* Unset up stage window (only remove connected signals) */
 void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrackerWindow *inWindow)
 {
-	WnckScreen	*screen;
-	guint		signalID;
-	gulong		handlerID;
+	XfdashboardWindowTracker	*windowTracker;
+	WnckScreen					*screen;
+	guint						signalID;
+	gulong						handlerID;
 
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
@@ -495,6 +782,22 @@ void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrac
 		g_signal_handler_disconnect(screen, handlerID);
 		g_debug("Disconnecting handler %lu for signal 'active-window-changed' at screen %p of window %p", handlerID, screen, inWindow);
 	}
+
+	windowTracker=xfdashboard_window_tracker_get_default();
+	signalID=g_signal_lookup("screen-size-changed", XFDASHBOARD_TYPE_WINDOW_TRACKER);
+	handlerID=g_signal_handler_find(windowTracker,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									signalID,
+									0,
+									NULL,
+									G_CALLBACK(_xfdashboard_window_tracker_window_on_screen_size_changed),
+									NULL);
+	if(handlerID)
+	{
+		g_signal_handler_disconnect(windowTracker, handlerID);
+		g_debug("Disconnecting handler %lu for signal 'screen-size-changed' at window %p", handlerID, inWindow);
+	}
+	g_object_unref(windowTracker);
 }
 
 /* Get X window ID of window */

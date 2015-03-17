@@ -2,7 +2,7 @@
 _Name=xfdashboard-moranga
 _Comment=Moranga theme for xfdashboard
 Style=xfdashboard-moranga.css
-Layout=xfdashboard.xml
+Layout=xfdashboard.xml;xfdashboard-secondary.xml
 Effects=effects.xml
 Author=lacios
 Version=@PACKAGE_VERSION@

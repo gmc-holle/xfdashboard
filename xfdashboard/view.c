@@ -182,6 +182,36 @@ static gboolean _xfdashboard_view_activate(XfdashboardView *self,
 	return(CLUTTER_EVENT_STOP);
 }
 
+/* This view was enabled */
+static void _xfdashboard_view_enabled(XfdashboardView *self)
+{
+	XfdashboardViewpad			*viewpad;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+
+	/* If view is not a child of a viewpad show view actor directly */
+	viewpad=_xfdashboard_view_find_viewpad(self);
+	if(!viewpad)
+	{
+		clutter_actor_show(CLUTTER_ACTOR(self));
+	}
+}
+
+/* This view was disabled */
+static void _xfdashboard_view_disabled(XfdashboardView *self)
+{
+	XfdashboardViewpad			*viewpad;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+
+	/* If view is not a child of a viewpad hide view actor directly */
+	viewpad=_xfdashboard_view_find_viewpad(self);
+	if(!viewpad)
+	{
+		clutter_actor_hide(CLUTTER_ACTOR(self));
+	}
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -305,6 +335,8 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 	gobjectClass->dispose=_xfdashboard_view_dispose;
 
 	klass->view_activate=_xfdashboard_view_activate;
+	klass->enabled=_xfdashboard_view_enabled;
+	klass->disabled=_xfdashboard_view_disabled;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardViewPrivate));
@@ -344,7 +376,7 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 								_("Enabled"),
 								_("This flag indicates if is view is enabled and activable"),
 								TRUE,
-								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewProperties);
 

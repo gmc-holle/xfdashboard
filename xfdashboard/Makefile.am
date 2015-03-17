@@ -68,6 +68,7 @@ xfdashboard_headers = \
 	viewpad.h \
 	window-content.h \
 	window-tracker.h \
+	window-tracker-monitor.h \
 	window-tracker-window.h \
 	window-tracker-workspace.h \
 	windows-view.h \
@@ -127,6 +128,7 @@ xfdashboard_SOURCES = \
 	viewpad.c \
 	window-content.c \
 	window-tracker.c \
+	window-tracker-monitor.c \
 	window-tracker-window.c \
 	window-tracker-workspace.c \
 	windows-view.c \
@@ -159,7 +161,7 @@ xfdashboard_LDADD = \
 	$(GARCON_LIBS) \
 	$(LIBXFCONF_LIBS) \
 	$(DBUS_GLIB_LIBS) \
-	$(LIBM)
+	-lm
 
 if XFDASHBOARD_BUILD_WITH_XCOMPOSITE
 xfdashboard_CFLAGS += \
@@ -175,6 +177,14 @@ xfdashboard_CFLAGS += \
 
 xfdashboard_LDADD += \
 	$(XDAMAGE_LIBS)
+endif
+
+if XFDASHBOARD_BUILD_WITH_XINERAMA
+xfdashboard_CFLAGS += \
+	$(XINERAMA_CFLAGS)
+
+xfdashboard_LDADD += \
+	$(XINERAMA_LIBS)
 endif
 
 if MAINTAINER_MODE

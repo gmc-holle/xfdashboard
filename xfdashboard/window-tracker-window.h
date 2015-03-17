@@ -34,6 +34,7 @@
 #include <gdk/gdk.h>
 
 #include "window-tracker-workspace.h"
+#include "window-tracker-monitor.h"
 
 G_BEGIN_DECLS
 
@@ -54,6 +55,8 @@ gboolean xfdashboard_window_tracker_window_is_minized(XfdashboardWindowTrackerWi
 gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_visible_on_workspace(XfdashboardWindowTrackerWindow *inWindow,
 																	XfdashboardWindowTrackerWorkspace *inWorkspace);
+gboolean xfdashboard_window_tracker_window_is_visible_on_monitor(XfdashboardWindowTrackerWindow *inWindow,
+																	XfdashboardWindowTrackerMonitor *inMonitor);
 void xfdashboard_window_tracker_window_show(XfdashboardWindowTrackerWindow *inWindow);
 void xfdashboard_window_tracker_window_hide(XfdashboardWindowTrackerWindow *inWindow);
 
@@ -62,6 +65,10 @@ gboolean xfdashboard_window_tracker_window_is_on_workspace(XfdashboardWindowTrac
 															XfdashboardWindowTrackerWorkspace *inWorkspace);
 void xfdashboard_window_tracker_window_move_to_workspace(XfdashboardWindowTrackerWindow *inWindow,
 															XfdashboardWindowTrackerWorkspace *inWorkspace);
+
+XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_window_get_monitor(XfdashboardWindowTrackerWindow *inWindow);
+gboolean xfdashboard_window_tracker_window_is_on_monitor(XfdashboardWindowTrackerWindow *inWindow,
+															XfdashboardWindowTrackerMonitor *inMonitor);
 
 const gchar* xfdashboard_window_tracker_window_get_title(XfdashboardWindowTrackerWindow *inWindow);
 

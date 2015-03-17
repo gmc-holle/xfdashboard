@@ -43,6 +43,8 @@
 #include "utils.h"
 #include "marshal.h"
 #include "enums.h"
+#include "stage-interface.h"
+
 
 /* Define this class in GObject system */
 static void _xfdashboard_windows_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -73,6 +75,11 @@ struct _XfdashboardWindowsViewPrivate
 	guint								xfconfScrollEventChangingWorkspaceBindingID;
 
 	gboolean							isWindowsNumberShown;
+
+	gboolean							filterMonitorWindows;
+	XfdashboardStageInterface			*currentStage;
+	XfdashboardWindowTrackerMonitor		*currentMonitor;
+	guint								currentStageMonitorBindingID;
 };
 
 /* Properties */
@@ -84,6 +91,7 @@ enum
 	PROP_SPACING,
 	PROP_PREVENT_UPSCALING,
 	PROP_SCROLL_EVENT_CHANGES_WORKSPACE,
+	PROP_FILTER_MONITOR_WINDOWS,
 
 	PROP_LAST
 };
@@ -113,6 +121,7 @@ enum
 static guint XfdashboardWindowsViewSignals[SIGNAL_LAST]={ 0, };
 
 /* Forward declaration */
+static void _xfdashboard_windows_view_recreate_window_actors(XfdashboardWindowsView *self);
 static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(XfdashboardWindowsView *self, XfdashboardWindowTrackerWindow *inWindow);
 static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
 
@@ -121,6 +130,81 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 
 #define DEFAULT_VIEW_ICON								"gtk-fullscreen"
 #define DEFAULT_DRAG_HANDLE_SIZE						32.0f
+
+/* Stage interface has changed monitor */
+static void _xfdashboard_windows_view_update_on_stage_monitor_changed(XfdashboardWindowsView *self,
+																		GParamSpec *inSpec,
+																		gpointer inUserData)
+{
+	XfdashboardWindowsViewPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+
+	priv=self->priv;
+
+	/* Get new reference to new monitor of stage */
+	priv->currentMonitor=xfdashboard_stage_interface_get_monitor(priv->currentStage);
+
+	/* Recreate all window actors */
+	_xfdashboard_windows_view_recreate_window_actors(self);
+}
+
+/* Update reference to stage interface and monitor where this view is on */
+static gboolean _xfdashboard_windows_view_update_stage_and_monitor(XfdashboardWindowsView *self)
+{
+	XfdashboardWindowsViewPrivate		*priv;
+	ClutterActor						*parent;
+	XfdashboardStageInterface			*newStage;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), FALSE);
+
+	priv=self->priv;
+	newStage=NULL;
+
+	/* Iterate through parent actors until stage interface is reached */
+	parent=clutter_actor_get_parent(CLUTTER_ACTOR(self));
+	while(parent && !XFDASHBOARD_IS_STAGE_INTERFACE(parent))
+	{
+		parent=clutter_actor_get_parent(parent);
+	}
+
+	if(parent) newStage=XFDASHBOARD_STAGE_INTERFACE(parent);
+
+	/* If stage did not change return immediately */
+	if(newStage==priv->currentStage) return(FALSE);
+
+	/* Release old references to stage and monitor */
+	priv->currentMonitor=NULL;
+
+	if(priv->currentStage)
+	{
+		if(priv->currentStageMonitorBindingID)
+		{
+			g_signal_handler_disconnect(priv->currentStage, priv->currentStageMonitorBindingID);
+			priv->currentStageMonitorBindingID=0;
+		}
+
+		priv->currentStage=NULL;
+	}
+
+	/* Get new references to new stage and monitor and connect signal to get notified
+	 * if stage changes monitor.
+	 */
+	if(newStage)
+	{
+		priv->currentStage=newStage;
+		priv->currentStageMonitorBindingID=g_signal_connect_swapped(priv->currentStage,
+																	"notify::monitor",
+																	G_CALLBACK(_xfdashboard_windows_view_update_on_stage_monitor_changed),
+																	self);
+
+		/* Get new reference to current monitor of new stage */
+		priv->currentMonitor=xfdashboard_stage_interface_get_monitor(priv->currentStage);
+	}
+
+	/* Stage and monitor changed and references were renewed and setup */
+	return(TRUE);
+}
 
 /* Check if window should be shown */
 static gboolean _xfdashboard_windows_view_is_visible_window(XfdashboardWindowsView *self,
@@ -133,12 +217,31 @@ static gboolean _xfdashboard_windows_view_is_visible_window(XfdashboardWindowsVi
 
 	priv=self->priv;
 
-	/* Determine if windows should be shown depending on its state */
+	/* Determine if windows should be shown depending on its state, size and position */
+	if(xfdashboard_window_tracker_window_is_skip_pager(inWindow))
+	{
+		return(FALSE);
+	}
+
+	if(xfdashboard_window_tracker_window_is_skip_tasklist(inWindow))
+	{
+		return(FALSE);
+	}
+
+	if(xfdashboard_window_tracker_window_is_stage(inWindow))
+	{
+		return(FALSE);
+	}
+
 	if(!priv->workspace ||
-		xfdashboard_window_tracker_window_is_skip_pager(inWindow) ||
-		xfdashboard_window_tracker_window_is_skip_tasklist(inWindow) ||
-		!xfdashboard_window_tracker_window_is_visible_on_workspace(inWindow, priv->workspace) ||
-		xfdashboard_window_tracker_window_is_stage(inWindow))
+		!xfdashboard_window_tracker_window_is_visible_on_workspace(inWindow, priv->workspace))
+	{
+		return(FALSE);
+	}
+
+	if(priv->filterMonitorWindows &&
+		xfdashboard_window_tracker_supports_multiple_monitors(priv->windowTracker) &&
+		(!priv->currentMonitor || !xfdashboard_window_tracker_window_is_on_monitor(inWindow, priv->currentMonitor)))
 	{
 		return(FALSE);
 	}
@@ -207,6 +310,53 @@ static void _xfdashboard_windows_view_update_window_number_in_actors(Xfdashboard
 			{
 				g_object_set(child, "window-number", 0, NULL);
 			}
+	}
+}
+
+/* Recreate all window actors in this view */
+static void _xfdashboard_windows_view_recreate_window_actors(XfdashboardWindowsView *self)
+{
+	XfdashboardWindowsViewPrivate			*priv;
+	GList									*windowsList;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+
+	priv=self->priv;
+
+	/* Destroy all actors */
+	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
+	priv->selectedItem=NULL;
+
+	/* Create live window actors for new workspace */
+	if(priv->workspace!=NULL)
+	{
+		/* Get list of all windows open */
+		windowsList=xfdashboard_window_tracker_get_windows(priv->windowTracker);
+
+		/* Iterate through list of window (from last to first), check if window
+		 * is visible and create actor for it if it is.
+		 */
+		windowsList=g_list_last(windowsList);
+		while(windowsList)
+		{
+			XfdashboardWindowTrackerWindow	*window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windowsList->data);
+			XfdashboardLiveWindow			*liveWindow;
+
+			/* Check if window is visible on this workspace */
+			if(_xfdashboard_windows_view_is_visible_window(self, window))
+			{
+				/* Create actor */
+				liveWindow=_xfdashboard_windows_view_create_actor(XFDASHBOARD_WINDOWS_VIEW(self), window);
+				if(liveWindow)
+				{
+					clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow));
+					_xfdashboard_windows_view_update_window_number_in_actors(self);
+				}
+			}
+
+			/* Next window */
+			windowsList=g_list_previous(windowsList);
+		}
 	}
 }
 
@@ -291,16 +441,28 @@ static void _xfdashboard_windows_view_on_window_opened(XfdashboardWindowsView *s
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
-	/* Check if window is visible on this workspace */
-	if(!_xfdashboard_windows_view_is_visible_window(self, inWindow)) return;
-
-	/* Create actor */
-	liveWindow=_xfdashboard_windows_view_create_actor(self, inWindow);
-	if(liveWindow)
+	/* Check if parent stage interface changed. If not just add window actor.
+	 * Otherwise recreate all window actors for changed stage interface and
+	 * monitor.
+	 */
+	if(!_xfdashboard_windows_view_update_stage_and_monitor(self))
 	{
-		clutter_actor_insert_child_below(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow), NULL);
-		_xfdashboard_windows_view_update_window_number_in_actors(self);
+		/* Check if window is visible on this workspace */
+		if(!_xfdashboard_windows_view_is_visible_window(self, inWindow)) return;
+
+		/* Create actor */
+		liveWindow=_xfdashboard_windows_view_create_actor(self, inWindow);
+		if(liveWindow)
+		{
+			clutter_actor_insert_child_below(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow), NULL);
+			_xfdashboard_windows_view_update_window_number_in_actors(self);
+		}
 	}
+		else
+		{
+			/* Recreate all window actors because parent stage interface changed */
+			_xfdashboard_windows_view_recreate_window_actors(self);
+		}
 }
 
 /* A window was closed */
@@ -313,13 +475,25 @@ static void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *s
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
-	/* Find live window for window just being closed and destroy it */
-	liveWindow=_xfdashboard_windows_view_find_by_window(self, inWindow);
-	if(G_LIKELY(liveWindow))
+	/* Check if parent stage interface changed. If not just destroy window actor.
+	 * Otherwise recreate all window actors for changed stage interface and
+	 * monitor.
+	 */
+	if(!_xfdashboard_windows_view_update_stage_and_monitor(self))
 	{
-		/* Destroy actor */
-		clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
+		/* Find live window for window just being closed and destroy it */
+		liveWindow=_xfdashboard_windows_view_find_by_window(self, inWindow);
+		if(G_LIKELY(liveWindow))
+		{
+			/* Destroy actor */
+			clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
+		}
 	}
+		else
+		{
+			/* Recreate all window actors because parent stage interface changed */
+			_xfdashboard_windows_view_recreate_window_actors(self);
+		}
 }
 
 /* A live window was clicked */
@@ -535,57 +709,39 @@ static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsVie
 															XfdashboardWindowTrackerWorkspace *inWorkspace)
 {
 	XfdashboardWindowsViewPrivate			*priv;
-	GList									*windowsList;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(inWorkspace==NULL || XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace));
 
 	priv=XFDASHBOARD_WINDOWS_VIEW(self)->priv;
 
-	/* Do not anything if workspace is the same as before */
-	if(inWorkspace==priv->workspace) return;
-
-	/* Set new workspace */
-	priv->workspace=inWorkspace;
-
-	/* Destroy all actors */
-	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
-	priv->selectedItem=NULL;
-
-	/* Create live window actors for new workspace */
-	if(priv->workspace!=NULL)
+	/* Check if parent stage interface or workspace changed. If both have not
+	 * changed do nothing and return immediately.
+	 */
+	if(!_xfdashboard_windows_view_update_stage_and_monitor(self) &&
+		inWorkspace==priv->workspace)
 	{
-		/* Get list of all windows open */
-		windowsList=xfdashboard_window_tracker_get_windows(priv->windowTracker);
-
-		/* Iterate through list of window (from last to first), check if window
-		 * is visible and create actor for it if it is.
-		 */
-		windowsList=g_list_last(windowsList);
-		while(windowsList)
-		{
-			XfdashboardWindowTrackerWindow	*window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windowsList->data);
-			XfdashboardLiveWindow			*liveWindow;
-
-			/* Check if window is visible on this workspace */
-			if(_xfdashboard_windows_view_is_visible_window(self, window))
-			{
-				/* Create actor */
-				liveWindow=_xfdashboard_windows_view_create_actor(XFDASHBOARD_WINDOWS_VIEW(self), window);
-				if(liveWindow)
-				{
-					clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow));
-					_xfdashboard_windows_view_update_window_number_in_actors(self);
-				}
-			}
-
-			/* Next window */
-			windowsList=g_list_previous(windowsList);
-		}
+		return;
 	}
 
-	/* Notify about property change */
-	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_WORKSPACE]);
+	/* Freeze notification */
+	g_object_freeze_notify(G_OBJECT(self));
+
+	/* Set new workspace if changed */
+	if(priv->workspace!=inWorkspace)
+	{
+		/* Set new workspace */
+		priv->workspace=inWorkspace;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_WORKSPACE]);
+	}
+
+	/* Recreate all window actors */
+	_xfdashboard_windows_view_recreate_window_actors(self);
+
+	/* Thaw notification */
+	g_object_thaw_notify(G_OBJECT(self));
 }
 
 /* A scroll event occured in workspace selector (e.g. by mouse-wheel) */
@@ -676,6 +832,31 @@ static void _xfdashboard_windows_view_set_scroll_event_changes_workspace(Xfdashb
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]);
+	}
+}
+
+/* Set flag if this view should show all windows of current workspace or only the windows
+ * which are at current workspace and on the monitor where this view is placed at.
+ */
+static void _xfdashboard_windows_view_set_filter_monitor_windows(XfdashboardWindowsView *self, gboolean inFilterMonitorWindows)
+{
+	XfdashboardWindowsViewPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->filterMonitorWindows!=inFilterMonitorWindows)
+	{
+		/* Set value */
+		priv->filterMonitorWindows=inFilterMonitorWindows;
+
+		/* Recreate all window actors */
+		_xfdashboard_windows_view_recreate_window_actors(self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_FILTER_MONITOR_WINDOWS]);
 	}
 }
 
@@ -1252,7 +1433,10 @@ static void _xfdashboard_windows_view_dispose(GObject *inObject)
 	/* Release allocated resources */
 	g_signal_handlers_disconnect_by_func(self, G_CALLBACK(_xfdashboard_windows_view_on_scroll_event), self);
 
-	if(priv->xfconfChannel) priv->xfconfChannel=NULL;
+	if(priv->xfconfChannel)
+	{
+		priv->xfconfChannel=NULL;
+	}
 
 	if(priv->xfconfScrollEventChangingWorkspaceBindingID)
 	{
@@ -1260,11 +1444,30 @@ static void _xfdashboard_windows_view_dispose(GObject *inObject)
 		priv->xfconfScrollEventChangingWorkspaceBindingID=0;
 	}
 
-	_xfdashboard_windows_view_set_active_workspace(self, NULL);
+	if(priv->workspace)
+	{
+		_xfdashboard_windows_view_set_active_workspace(self, NULL);
+	}
 
 	if(priv->layout)
 	{
 		priv->layout=NULL;
+	}
+
+	if(priv->currentMonitor)
+	{
+		priv->currentMonitor=NULL;
+	}
+
+	if(priv->currentStage)
+	{
+		if(priv->currentStageMonitorBindingID)
+		{
+			g_signal_handler_disconnect(priv->currentStage, priv->currentStageMonitorBindingID);
+			priv->currentStageMonitorBindingID=0;
+		}
+
+		priv->currentStage=NULL;
 	}
 
 	if(priv->windowTracker)
@@ -1304,6 +1507,10 @@ static void _xfdashboard_windows_view_set_property(GObject *inObject,
 			_xfdashboard_windows_view_set_scroll_event_changes_workspace(self, g_value_get_boolean(inValue));
 			break;
 
+		case PROP_FILTER_MONITOR_WINDOWS:
+			_xfdashboard_windows_view_set_filter_monitor_windows(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -1334,6 +1541,10 @@ static void _xfdashboard_windows_view_get_property(GObject *inObject,
 
 		case PROP_SCROLL_EVENT_CHANGES_WORKSPACE:
 			g_value_set_boolean(outValue, self->priv->isScrollEventChangingWorkspace);
+			break;
+
+		case PROP_FILTER_MONITOR_WINDOWS:
+			g_value_set_boolean(outValue, self->priv->filterMonitorWindows);
 			break;
 
 		default:
@@ -1403,11 +1614,19 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardWindowsViewProperties[PROP_FILTER_MONITOR_WINDOWS]=
+		g_param_spec_boolean("filter-monitor-windows",
+								_("Filter monitor windows"),
+								_("Whether this view should only show windows of monitor where it placed at"),
+								FALSE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowsViewProperties);
 
 	/* Define stylable properties */
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_SPACING]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_FILTER_MONITOR_WINDOWS]);
 
 	/* Define actions */
 	XfdashboardWindowsViewSignals[ACTION_WINDOW_CLOSE]=
@@ -1613,6 +1832,10 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	priv->isWindowsNumberShown=FALSE;
 	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
 	priv->isScrollEventChangingWorkspace=FALSE;
+	priv->filterMonitorWindows=FALSE;
+	priv->currentStage=NULL;
+	priv->currentMonitor=NULL;
+	priv->currentStageMonitorBindingID=0;
 
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "windows");

@@ -60,6 +60,8 @@ gboolean xfdashboard_is_valid_id(const gchar *inString);
 
 gchar* xfdashboard_get_enum_value_name(GType inEnumClass, gint inValue);
 
+void xfdashboard_dump_actor(ClutterActor *inActor);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_UTILS__ */

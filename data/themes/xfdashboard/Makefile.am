@@ -7,6 +7,7 @@ theme_DATA = \
 	$(theme_in_files:.theme.in=.theme) \
 	xfdashboard.css \
 	xfdashboard.xml \
+	xfdashboard-secondary.xml \
 	effects.xml \
 	windows-view.png \
 	screenshot-xfdashboard.png

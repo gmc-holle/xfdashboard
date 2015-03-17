@@ -4,22 +4,8 @@
 			<object class="XfdashboardActor">
 				<property name="x-expand">true</property>
 				<property name="y-expand">true</property>
-
-				<constraint>
-					<object class="ClutterBindConstraint">
-						<property name="coordinate">x</property>
-						<property name="offset">0</property>
-						<property name="source" ref="primary"></property>
-					</object>
-				</constraint>
-
-				<constraint>
-					<object class="ClutterBindConstraint">
-						<property name="coordinate">y</property>
-						<property name="offset">8</property>
-						<property name="source" ref="primary"></property>
-					</object>
-				</constraint>
+				<property name="x">0</property>
+				<property name="y">8</property>
 
 				<constraint>
 					<object class="ClutterBindConstraint">

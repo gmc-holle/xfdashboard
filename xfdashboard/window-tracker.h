@@ -34,6 +34,7 @@
 
 #include "window-tracker-window.h"
 #include "window-tracker-workspace.h"
+#include "window-tracker-monitor.h"
 
 G_BEGIN_DECLS
 
@@ -87,6 +88,14 @@ struct _XfdashboardWindowTrackerClass
 	void (*workspace_added)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
 	void (*workspace_removed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
 	void (*workspace_name_changed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
+
+	void (*primary_monitor_changed)(XfdashboardWindowTracker *self,
+									XfdashboardWindowTrackerMonitor *inOldMonitor,
+									XfdashboardWindowTrackerMonitor *inNewMonitor);
+	void (*monitor_added)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerMonitor *inMonitor);
+	void (*monitor_removed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerMonitor *inMonitor);
+	void (*monitor_geometry_changed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerMonitor *inMonitor);
+	void (*screen_size_changed)(XfdashboardWindowTracker *self, gint inWidth, gint inHeight);
 };
 
 /* Public API */
@@ -105,6 +114,16 @@ GList* xfdashboard_window_tracker_get_workspaces(XfdashboardWindowTracker *self)
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_workspace_by_number(XfdashboardWindowTracker *self,
 																						gint inNumber);
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindowTracker *self);
+
+gboolean xfdashboard_window_tracker_supports_multiple_monitors(XfdashboardWindowTracker *self);
+gint xfdashboard_window_tracker_get_monitors_count(XfdashboardWindowTracker *self);
+GList* xfdashboard_window_tracker_get_monitors(XfdashboardWindowTracker *self);
+XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_number(XfdashboardWindowTracker *self,
+																					gint inNumber);
+XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_primary_monitor(XfdashboardWindowTracker *self);
+
+gint xfdashboard_window_tracker_get_screen_width(XfdashboardWindowTracker *self);
+gint xfdashboard_window_tracker_get_screen_height(XfdashboardWindowTracker *self);
 
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(XfdashboardWindowTracker *self);
 

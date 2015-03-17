@@ -8,6 +8,7 @@ theme_DATA = \
 	xfdashboard-auber.css \
 	xfdashboard.css \
 	xfdashboard.xml \
+	xfdashboard-secondary.xml \
 	effects.xml \
 	screenshot-xfdashboard-auber.png
 

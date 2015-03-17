@@ -158,6 +158,29 @@ if test "x$enabled_x11_extension_damage" = xyes; then
 fi
 AC_SUBST(HAVE_XDAMAGE)
 
+dnl *****************************************
+dnl *** Check for X11 extension: Xinerama ***
+dnl *****************************************
+HAVE_XINERAMA=""
+AC_ARG_ENABLE([xinerama],
+	[AS_HELP_STRING([--disable-xinerama],
+		[disable use of X11 extension Xinerama @<:@default=enabled@:>@])],
+	[enabled_x11_extension_xinerama="$enableval"],
+	[enabled_x11_extension_xinerama=yes]
+)
+
+AC_MSG_CHECKING([whether to build with X11 extension Xinerama])
+AM_CONDITIONAL([XFDASHBOARD_BUILD_WITH_XINERAMA], [test x"$enabled_x11_extension_xinerama" = x"yes"])
+AC_MSG_RESULT([$enabled_x11_extension_xinerama])
+
+if test "x$enabled_x11_extension_xinerama" = xyes; then
+	if $PKG_CONFIG --print-errors --exists xinerama 2>&1; then
+		PKG_CHECK_MODULES(XINERAMA, xinerama)
+		AC_DEFINE([HAVE_XINERAMA], [1], [Define if Xinerama extension is available])
+	fi
+fi
+AC_SUBST(HAVE_XINERAMA)
+
 dnl ***********************************
 dnl *** Check for required packages ***
 dnl ***********************************
@@ -261,4 +284,5 @@ echo
 echo "Features enabled:"
 echo "  XComposite:  $enabled_x11_extension_composite"
 echo "  XDamage:     $enabled_x11_extension_damage"
+echo "  Xinerama:    $enabled_x11_extension_xinerama"
 echo

@@ -40,6 +40,9 @@
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
 #include <gdk/gdkx.h>
+#ifdef HAVE_XINERAMA
+#include <X11/extensions/Xinerama.h>
+#endif
 
 #include "marshal.h"
 
@@ -55,11 +58,16 @@ G_DEFINE_TYPE(XfdashboardWindowTracker,
 struct _XfdashboardWindowTrackerPrivate
 {
 	/* Properties related */
-	WnckWindow				*activeWindow;
-	WnckWorkspace			*activeWorkspace;
+	WnckWindow							*activeWindow;
+	WnckWorkspace						*activeWorkspace;
+	XfdashboardWindowTrackerMonitor		*primaryMonitor;
 
 	/* Instance related */
-	WnckScreen				*screen;
+	WnckScreen							*screen;
+
+	gboolean							supportsMultipleMonitors;
+	GdkScreen							*gdkScreen;
+	GList								*monitors;
 };
 
 /* Properties */
@@ -69,7 +77,7 @@ enum
 
 	PROP_ACTIVE_WINDOW,
 	PROP_ACTIVE_WORKSPACE,
-	/* TODO: PROP_PRIMARY_MONITOR, */
+	PROP_PRIMARY_MONITOR,
 
 	PROP_LAST
 };
@@ -97,11 +105,11 @@ enum
 	SIGNAL_WORKSPACE_REMOVED,
 	SIGNAL_WORKSPACE_NAME_CHANGED,
 
-	/* TODO:
 	SIGNAL_PRIMARY_MONITOR_CHANGED,
 	SIGNAL_MONITOR_ADDED,
 	SIGNAL_MONITOR_REMOVED,
-	*/
+	SIGNAL_MONITOR_GEOMETRY_CHANGED,
+	SIGNAL_SCREEN_SIZE_CHANGED,
 
 	SIGNAL_LAST
 };
@@ -110,6 +118,7 @@ static guint XfdashboardWindowTrackerSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 static XfdashboardWindowTracker *_xfdashboard_window_tracker_singleton=NULL;
+
 
 /* Position and/or size of window has changed */
 static void _xfdashboard_window_tracker_on_window_geometry_changed(XfdashboardWindowTracker *self, gpointer inUserData)
@@ -389,16 +398,269 @@ static void _xfdashboard_window_tracker_on_workspace_created(XfdashboardWindowTr
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WORKSPACE_ADDED], 0, inWorkspace);
 }
 
+/* Primary monitor has changed */
+static void _xfdashboard_window_tracker_on_primary_monitor_changed(XfdashboardWindowTracker *self,
+																	gpointer inUserData)
+{
+	XfdashboardWindowTrackerPrivate			*priv;
+	XfdashboardWindowTrackerMonitor			*monitor;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inUserData));
+
+	priv=self->priv;
+	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR(inUserData);
+
+	/* If monitor emitting this signal is the (new) primary one
+	 * then update primary monitor value of this instance.
+	 */
+	if(xfdashboard_window_tracker_monitor_is_primary(monitor) &&
+		priv->primaryMonitor!=monitor)
+	{
+		XfdashboardWindowTrackerMonitor		*oldMonitor;
+
+		/* Remember old monitor for signal emission */
+		oldMonitor=priv->primaryMonitor;
+
+		/* Set value */
+		priv->primaryMonitor=monitor;
+
+		/* Emit signal */
+		g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_PRIMARY_MONITOR_CHANGED], 0, oldMonitor, priv->primaryMonitor);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowTrackerProperties[PROP_PRIMARY_MONITOR]);
+
+		g_debug("Primary monitor changed from %d to %d",
+					oldMonitor ? xfdashboard_window_tracker_monitor_get_number(oldMonitor) : -1,
+					xfdashboard_window_tracker_monitor_get_number(monitor));
+	}
+}
+
+/* A monitor has changed its position and/or size */
+static void _xfdashboard_window_tracker_on_monitor_geometry_changed(XfdashboardWindowTracker *self,
+																	gpointer inUserData)
+{
+	XfdashboardWindowTrackerMonitor			*monitor;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inUserData));
+
+	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR(inUserData);
+
+	/* A monitor changed its position and/or size so re-emit the signal */
+	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_MONITOR_GEOMETRY_CHANGED], 0, monitor);
+}
+
+/* Create a monitor object */
+static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_monitor_new(XfdashboardWindowTracker *self, guint inMonitorIndex)
+{
+	XfdashboardWindowTrackerPrivate		*priv;
+	XfdashboardWindowTrackerMonitor		*monitor;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
+	g_return_val_if_fail(inMonitorIndex>=g_list_length(self->priv->monitors), NULL);
+
+	priv=self->priv;
+
+	/* Create monitor object */
+	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR(g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR,
+															"monitor-index", inMonitorIndex,
+															NULL));
+	priv->monitors=g_list_append(priv->monitors, monitor);
+
+	/* Connect signals */
+	g_signal_connect_swapped(monitor,
+								"primary-changed",
+								G_CALLBACK(_xfdashboard_window_tracker_on_primary_monitor_changed),
+								self);
+	g_signal_connect_swapped(monitor,
+								"geometry-changed",
+								G_CALLBACK(_xfdashboard_window_tracker_on_monitor_geometry_changed),
+								self);
+
+	/* Emit signal */
+	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_MONITOR_ADDED], 0, monitor);
+	g_debug("Monitor %d added", inMonitorIndex);
+
+	/* If we newly added monitor is the primary one then emit signal. We could not
+	 * have done it yet because the signals were connect to new monitor object
+	 * after its creation.
+	 */
+	if(xfdashboard_window_tracker_monitor_is_primary(monitor))
+	{
+		_xfdashboard_window_tracker_on_primary_monitor_changed(self, monitor);
+	}
+
+	/* Return newly created monitor */
+	return(monitor);
+}
+
+/* Free a monitor object */
+static void _xfdashboard_window_tracker_monitor_free(XfdashboardWindowTracker *self, XfdashboardWindowTrackerMonitor *inMonitor)
+{
+	XfdashboardWindowTrackerPrivate		*priv;
+	GList								*iter;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inMonitor));
+
+	priv=self->priv;
+
+	/* Find monitor to free */
+	iter=g_list_find(priv->monitors,  inMonitor);
+	if(!iter)
+	{
+		g_critical(_("Cannot release unknown monitor %d"),
+					xfdashboard_window_tracker_monitor_get_number(inMonitor));
+		return;
+	}
+
+	/* Disconnect signals */
+	g_signal_handlers_disconnect_by_data(inMonitor, self);
+
+	/* Emit signal */
+	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_MONITOR_REMOVED], 0, inMonitor);
+	g_debug("Monitor %d removed", xfdashboard_window_tracker_monitor_get_number(inMonitor));
+
+	/* Remove monitor object from list */
+	priv->monitors=g_list_delete_link(priv->monitors, iter);
+
+	/* Unref monitor object. Usually this is the last reference released
+	 * and the object will be destroyed.
+	 */
+	g_object_unref(inMonitor);
+}
+
+#ifdef HAVE_XINERAMA
+/* Number of monitors, primary monitor or size of any monitor changed */
+static void _xfdashboard_window_tracker_on_monitors_changed(XfdashboardWindowTracker *self,
+																gpointer inUserData)
+{
+	XfdashboardWindowTrackerPrivate			*priv;
+	GdkScreen								*screen;
+	gint									currentMonitorCount;
+	gint									newMonitorCount;
+	gint									i;
+	XfdashboardWindowTrackerMonitor			*monitor;
+	GList									*iter;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
+	g_return_if_fail(GDK_IS_SCREEN(inUserData));
+
+	priv=self->priv;
+	screen=GDK_SCREEN(inUserData);
+
+	/* Get current monitor states */
+	currentMonitorCount=g_list_length(priv->monitors);
+
+	/* Get new monitor state */
+	newMonitorCount=gdk_screen_get_n_monitors(screen);
+	if(newMonitorCount!=currentMonitorCount)
+	{
+		g_debug("Number of monitors changed from %d to %d", currentMonitorCount, newMonitorCount);
+	}
+
+	/* There is no need to check if size of any monitor has changed because
+	 * XfdashboardWindowTrackerMonitor instances should also be connected to
+	 * this signal and will raise a signal if their size changed. This instance
+	 * is connected to this "monitor-has-changed-signal' and will re-emit them.
+	 * The same is with primary monitor.
+	 */
+
+	/* If number of monitors has increased create newly added monitors */
+	if(newMonitorCount>currentMonitorCount)
+	{
+		for(i=currentMonitorCount; i<newMonitorCount; i++)
+		{
+			/* Create monitor object */
+			_xfdashboard_window_tracker_monitor_new(self, i);
+		}
+	}
+
+	/* If number of monitors has decreased remove all monitors beyond
+	 * the new number of monitors.
+	 */
+	if(newMonitorCount<currentMonitorCount)
+	{
+		for(i=currentMonitorCount; i>newMonitorCount; i--)
+		{
+			/* Get monitor object */
+			iter=g_list_last(priv->monitors);
+			if(!iter) continue;
+
+			monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR(iter->data);
+
+			/* Free monitor object */
+			_xfdashboard_window_tracker_monitor_free(self, monitor);
+		}
+	}
+}
+#endif
+
+/* Total size of screen changed */
+static void _xfdashboard_window_tracker_on_screen_size_changed(XfdashboardWindowTracker *self,
+																gpointer inUserData)
+{
+	GdkScreen		*screen;
+	gint			w, h;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
+	g_return_if_fail(GDK_IS_SCREEN(inUserData));
+
+	screen=GDK_SCREEN(inUserData);
+
+	/* Get new total size of screen */
+	w=gdk_screen_get_width(screen);
+	h=gdk_screen_get_height(screen);
+
+	/* Emit signal to tell that screen size has changed */
+	g_debug("Screen size changed to %dx%d", w, h);
+	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_SCREEN_SIZE_CHANGED], 0, w, h);
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
+static void _xfdashboard_window_tracker_dispose_free_monitor(gpointer inData, gpointer inUserData)
+{
+	XfdashboardWindowTracker				*self;
+	XfdashboardWindowTrackerMonitor			*monitor;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(inUserData));
+
+	self=XFDASHBOARD_WINDOW_TRACKER(inUserData);
+	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR(inData);
+
+	/* Unreference monitor */
+	_xfdashboard_window_tracker_monitor_free(self, monitor);
+}
+
 static void _xfdashboard_window_tracker_dispose(GObject *inObject)
 {
-	XfdashboardWindowTracker			*self=XFDASHBOARD_WINDOW_TRACKER(inObject);
-	XfdashboardWindowTrackerPrivate		*priv=self->priv;
+	XfdashboardWindowTracker				*self=XFDASHBOARD_WINDOW_TRACKER(inObject);
+	XfdashboardWindowTrackerPrivate			*priv=self->priv;
 
 	/* Dispose allocated resources */
-	g_debug("Disposing window tracker");
+	if(priv->primaryMonitor)
+	{
+		priv->primaryMonitor=NULL;
+	}
+
+	if(priv->monitors)
+	{
+		g_list_foreach(priv->monitors, _xfdashboard_window_tracker_dispose_free_monitor, self);
+		g_list_free(priv->monitors);
+		priv->monitors=NULL;
+	}
+
+	if(priv->gdkScreen)
+	{
+		g_signal_handlers_disconnect_by_data(priv->gdkScreen, self);
+		priv->gdkScreen=NULL;
+	}
+
 	if(priv->screen)
 	{
 		/* TODO:
@@ -444,6 +706,10 @@ static void _xfdashboard_window_tracker_get_property(GObject *inObject,
 			g_value_set_object(outValue, self->priv->activeWorkspace);
 			break;
 
+		case PROP_PRIMARY_MONITOR:
+			g_value_set_object(outValue, self->priv->primaryMonitor);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -481,14 +747,12 @@ void xfdashboard_window_tracker_class_init(XfdashboardWindowTrackerClass *klass)
 							WNCK_TYPE_WORKSPACE,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
-	/* TODO:
 	XfdashboardWindowTrackerProperties[PROP_PRIMARY_MONITOR]=
 		g_param_spec_object("primary-monitor",
 							_("Primary monitor"),
 							_("The current primary monitor"),
-							XFDASHBOARD_TYPE_MONITOR,
+							XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-	*/
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowTrackerProperties);
 
@@ -662,6 +926,68 @@ void xfdashboard_window_tracker_class_init(XfdashboardWindowTrackerClass *klass)
 						G_TYPE_NONE,
 						1,
 						WNCK_TYPE_WORKSPACE);
+
+	XfdashboardWindowTrackerSignals[SIGNAL_PRIMARY_MONITOR_CHANGED]=
+		g_signal_new("primary-monitor-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardWindowTrackerClass, primary_monitor_changed),
+						NULL,
+						NULL,
+						_xfdashboard_marshal_VOID__OBJECT_OBJECT,
+						G_TYPE_NONE,
+						2,
+						XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR,
+						XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR);
+
+	XfdashboardWindowTrackerSignals[SIGNAL_MONITOR_ADDED]=
+		g_signal_new("monitor-added",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardWindowTrackerClass, monitor_added),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR);
+
+	XfdashboardWindowTrackerSignals[SIGNAL_MONITOR_REMOVED]=
+		g_signal_new("monitor-removed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardWindowTrackerClass, monitor_removed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR);
+
+	XfdashboardWindowTrackerSignals[SIGNAL_MONITOR_GEOMETRY_CHANGED]=
+		g_signal_new("monitor-geometry-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardWindowTrackerClass, monitor_geometry_changed),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR);
+
+	XfdashboardWindowTrackerSignals[SIGNAL_SCREEN_SIZE_CHANGED]=
+		g_signal_new("screen-size-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardWindowTrackerClass, screen_size_changed),
+						NULL,
+						NULL,
+						_xfdashboard_marshal_VOID__INT_INT,
+						G_TYPE_NONE,
+						2,
+						G_TYPE_INT,
+						G_TYPE_INT);
 }
 
 /* Object initialization
@@ -669,7 +995,7 @@ void xfdashboard_window_tracker_class_init(XfdashboardWindowTrackerClass *klass)
  */
 void xfdashboard_window_tracker_init(XfdashboardWindowTracker *self)
 {
-	XfdashboardWindowTrackerPrivate	*priv;
+	XfdashboardWindowTrackerPrivate			*priv;
 
 	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_GET_PRIVATE(self);
 
@@ -677,22 +1003,89 @@ void xfdashboard_window_tracker_init(XfdashboardWindowTracker *self)
 
 	/* Set default values */
 	priv->screen=wnck_screen_get_default();
+	priv->gdkScreen=gdk_screen_get_default();
 	priv->activeWindow=NULL;
 	priv->activeWorkspace=NULL;
+	priv->primaryMonitor=NULL;
+	priv->monitors=NULL;
+	priv->supportsMultipleMonitors=FALSE;
 
 	/* The very first call to libwnck should be setting the client type */
 	wnck_set_client_type(WNCK_CLIENT_TYPE_PAGER);
 
 	/* Connect signals to screen */
-	g_signal_connect_swapped(priv->screen, "window-stacking-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_stacking_changed), self);
+	g_signal_connect_swapped(priv->screen,
+								"window-stacking-changed",
+								G_CALLBACK(_xfdashboard_window_tracker_on_window_stacking_changed),
+								self);
 
-	g_signal_connect_swapped(priv->screen, "window-closed", G_CALLBACK(_xfdashboard_window_tracker_on_window_closed), self);
-	g_signal_connect_swapped(priv->screen, "window-opened", G_CALLBACK(_xfdashboard_window_tracker_on_window_opened), self);
-	g_signal_connect_swapped(priv->screen, "active-window-changed", G_CALLBACK(_xfdashboard_window_tracker_on_active_window_changed), self);
+	g_signal_connect_swapped(priv->screen,
+								"window-closed",
+								G_CALLBACK(_xfdashboard_window_tracker_on_window_closed),
+								self);
+	g_signal_connect_swapped(priv->screen,
+								"window-opened",
+								G_CALLBACK(_xfdashboard_window_tracker_on_window_opened),
+								self);
+	g_signal_connect_swapped(priv->screen,
+								"active-window-changed",
+								G_CALLBACK(_xfdashboard_window_tracker_on_active_window_changed),
+								self);
 
-	g_signal_connect_swapped(priv->screen, "workspace-destroyed", G_CALLBACK(_xfdashboard_window_tracker_on_workspace_destroyed), self);
-	g_signal_connect_swapped(priv->screen, "workspace-created", G_CALLBACK(_xfdashboard_window_tracker_on_workspace_created), self);
-	g_signal_connect_swapped(priv->screen, "active-workspace-changed", G_CALLBACK(_xfdashboard_window_tracker_on_active_workspace_changed), self);
+	g_signal_connect_swapped(priv->screen,
+								"workspace-destroyed",
+								G_CALLBACK(_xfdashboard_window_tracker_on_workspace_destroyed),
+								self);
+	g_signal_connect_swapped(priv->screen,
+								"workspace-created",
+								G_CALLBACK(_xfdashboard_window_tracker_on_workspace_created),
+								self);
+	g_signal_connect_swapped(priv->screen,
+								"active-workspace-changed",
+								G_CALLBACK(_xfdashboard_window_tracker_on_active_workspace_changed),
+								self);
+
+	g_signal_connect_swapped(priv->gdkScreen,
+								"size-changed",
+								G_CALLBACK(_xfdashboard_window_tracker_on_screen_size_changed),
+								self);
+
+#ifdef HAVE_XINERAMA
+	/* Check if multiple monitors are supported */
+	if(XineramaIsActive(GDK_SCREEN_XDISPLAY(priv->gdkScreen)))
+	{
+		XfdashboardWindowTrackerMonitor		*monitor;
+		gint								i;
+
+		/* Set flag that multiple monitors are supported */
+		priv->supportsMultipleMonitors=TRUE;
+
+		/* This signal must be called at least after the default signal handler - best at last.
+		 * The reason is that all other signal handler should been processed because this handler
+		 * could destroy monitor instances even the one of the primary monitor if it was not
+		 * handled before. So give the other signal handlers a chance ;)
+		 */
+		g_signal_connect_data(priv->gdkScreen,
+								"monitors-changed",
+								G_CALLBACK(_xfdashboard_window_tracker_on_monitors_changed),
+								self,
+								NULL,
+								G_CONNECT_AFTER | G_CONNECT_SWAPPED);
+
+		/* Get monitors */
+		for(i=0; i<gdk_screen_get_n_monitors(priv->gdkScreen); i++)
+		{
+			/* Create monitor object */
+			monitor=_xfdashboard_window_tracker_monitor_new(self, i);
+
+			/* Remember primary monitor */
+			if(xfdashboard_window_tracker_monitor_is_primary(monitor))
+			{
+				priv->primaryMonitor=monitor;
+			}
+		}
+	}
+#endif
 }
 
 /* IMPLEMENTATION: Public API */
@@ -861,6 +1254,68 @@ XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspa
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
 
 	return(self->priv->activeWorkspace);
+}
+
+/* Determine if multiple monitors are supported */
+gboolean xfdashboard_window_tracker_supports_multiple_monitors(XfdashboardWindowTracker *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), FALSE);
+
+	return(self->priv->supportsMultipleMonitors);
+}
+
+/* Get number of monitors */
+gint xfdashboard_window_tracker_get_monitors_count(XfdashboardWindowTracker *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), 0);
+
+	/* Return number of monitors */
+	return(g_list_length(self->priv->monitors));
+}
+
+/* Get list of monitors */
+GList* xfdashboard_window_tracker_get_monitors(XfdashboardWindowTracker *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
+
+	/* Return list of workspaces */
+	return(self->priv->monitors);
+}
+
+/* Get monitor by number */
+XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_number(XfdashboardWindowTracker *self,
+																					gint inNumber)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
+	g_return_val_if_fail(inNumber>=0, NULL);
+	g_return_val_if_fail(((guint)inNumber)<g_list_length(self->priv->monitors), NULL);
+
+	/* Return monitor at index */
+	return(g_list_nth_data(self->priv->monitors, inNumber));
+}
+
+/* Get primary monitor */
+XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_primary_monitor(XfdashboardWindowTracker *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
+
+	return(self->priv->primaryMonitor);
+}
+
+/* Get width of screen */
+gint xfdashboard_window_tracker_get_screen_width(XfdashboardWindowTracker *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), 0);
+
+	return(gdk_screen_get_width(self->priv->gdkScreen));
+}
+
+/* Get width of screen */
+gint xfdashboard_window_tracker_get_screen_height(XfdashboardWindowTracker *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), 0);
+
+	return(gdk_screen_get_height(self->priv->gdkScreen));
 }
 
 /* Get root (desktop) window */

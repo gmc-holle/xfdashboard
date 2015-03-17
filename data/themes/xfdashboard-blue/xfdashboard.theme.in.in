@@ -2,7 +2,7 @@
 _Name=xfdashboard-blue
 _Comment=Blue theme for xfdashboard
 Style=xfdashboard-blue.css
-Layout=xfdashboard.xml
+Layout=xfdashboard.xml;xfdashboard-secondary.xml
 Effects=effects.xml
 Author=lacios
 Version=@PACKAGE_VERSION@

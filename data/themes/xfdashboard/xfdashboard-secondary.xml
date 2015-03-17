@@ -1,0 +1,26 @@
+<interface>
+	<object class="XfdashboardStageInterface" id="secondary">
+		<child>
+			<object class="XfdashboardWindowsView">
+				<property name="x">8</property>
+				<property name="y">8</property>
+
+				<constraint>
+					<object class="ClutterBindConstraint">
+						<property name="coordinate">width</property>
+						<property name="offset">-16</property>
+						<property name="source" ref="secondary"></property>
+					</object>
+				</constraint>
+
+				<constraint>
+					<object class="ClutterBindConstraint">
+						<property name="coordinate">height</property>
+						<property name="offset">-16</property>
+						<property name="source" ref="secondary"></property>
+					</object>
+				</constraint>
+			</object>
+		</child>
+	</object>
+</interface>

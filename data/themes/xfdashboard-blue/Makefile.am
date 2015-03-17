@@ -8,6 +8,7 @@ theme_DATA = \
 	xfdashboard-blue.css \
 	xfdashboard.css \
 	xfdashboard.xml \
+	xfdashboard-secondary.xml \
 	effects.xml
 
 # Substitute bindir so it works when built in a non-system prefix

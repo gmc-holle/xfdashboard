@@ -28,6 +28,7 @@
 
 #include "stage.h"
 #include "types.h"
+#include "window-tracker-monitor.h"
 
 G_BEGIN_DECLS
 
@@ -62,6 +63,9 @@ struct _XfdashboardStageInterfaceClass
 GType xfdashboard_stage_interface_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_stage_interface_new(void);
+
+XfdashboardWindowTrackerMonitor* xfdashboard_stage_interface_get_monitor(XfdashboardStageInterface *self);
+void xfdashboard_stage_interface_set_monitor(XfdashboardStageInterface *self, XfdashboardWindowTrackerMonitor *inMonitor);
 
 XfdashboardStageBackgroundImageType xfdashboard_stage_interface_get_background_image_type(XfdashboardStageInterface *self);
 void xfdashboard_stage_interface_set_background_image_type(XfdashboardStageInterface *self, XfdashboardStageBackgroundImageType inType);

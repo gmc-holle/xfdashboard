@@ -8,6 +8,7 @@ theme_DATA = \
 	xfdashboard-mint.css \
 	xfdashboard.css \
 	xfdashboard.xml \
+	xfdashboard-secondary.xml \
 	effects.xml \
 	screenshot-xfdashboard-mint.png
 

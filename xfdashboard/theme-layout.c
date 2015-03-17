@@ -537,7 +537,9 @@ static void _xfdashboard_theme_layout_create_object_resolve_unresolved(Xfdashboa
 
 	g_return_if_fail(XFDASHBOARD_IS_THEME_LAYOUT(self));
 	g_return_if_fail(inIDs);
-	g_return_if_fail(inUnresolvedIDs);
+
+	/* Return if no list of unresolved IDs is provided */
+	if(!inUnresolvedIDs) return;
 
 	/* Iterate through list of unresolved IDs and their mapping to properties
 	 * and get referenced object and set the pointer to this object at the

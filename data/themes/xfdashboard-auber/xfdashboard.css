@@ -427,6 +427,7 @@ XfdashboardWindowsView
 	spacing: 8.0;
 	prevent-upscaling: true;
 	view-icon: windows-view.png;
+	filter-monitor-windows: true;
 }
 
 /* Focus */
