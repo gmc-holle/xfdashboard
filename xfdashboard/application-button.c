@@ -152,8 +152,6 @@ static void _xfdashboard_application_button_on_app_info_changed(XfdashboardAppli
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 
-g_message("%s: application-button=%p changed", __func__, self);
-
 	_xfdashboard_application_button_update_text(self);
 	_xfdashboard_application_button_update_icon(self);
 }
