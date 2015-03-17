@@ -20,6 +20,13 @@ gtk+ >= 3.2
 ... and the dependencies of these libraries of course ;)
 
 
+The following libraries are optional:
+
+xcomposite >= 0.2 (for live windows)
+xdamage (for live windows)
+xinerama (for multi-monitor support)
+
+
 Homepage
 ========
 
