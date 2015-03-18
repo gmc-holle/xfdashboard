@@ -43,6 +43,13 @@
 	</provides>
 
 	<releases>
+		<release version="0.3.90" timestamp="1426700895">
+			<description>
+				<_p>This unstable development introduces support for multiple
+				monitors and also bug-fixes and other smaller improvements.
+				</_p>
+			</description>
+		</release>
 		<release version="0.3.9" timestamp="1424455951">
 			<description>
 				<_p>This unstable development introduces an application database

@@ -67,6 +67,7 @@ xfdashboard/view-selector.c
 xfdashboard/window-content.c
 xfdashboard/windows-view.c
 xfdashboard/window-tracker.c
+xfdashboard/window-tracker-monitor.c
 xfdashboard/window-tracker-window.c
 xfdashboard/window-tracker-workspace.c
 xfdashboard/workspace-selector.c
