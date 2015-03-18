@@ -1,7 +1,8 @@
 @constants
 {
-	background: @rgba(87, 146, 226, 0.38) /*#5792e260*/;
-	overlay-background: @alpha(@background, 1.0) /*#5792e2ff*/ ;
+	background-base-color: @rgb(87, 146, 226); /*#5792e2*/
+	background: @alpha(@background-base-color, 0.38) /*#5792e260*/;
+	overlay-background: @alpha(@background-base-color, 1.0) /*#5792e2ff*/ ;
 	overlay-outline: #4681d1ff;
 	missing-icon: @try_icons("image-missing", "gtk-missing-image");
 	close-icon: @try_icons("window-close-symbolic", "window-close", "gtk-close", @missing-icon);
