@@ -361,9 +361,6 @@ static void xfdashboard_stage_interface_init(XfdashboardStageInterface *self)
 	priv->backgroundColor=NULL;
 	priv->bindingBackgroundImageType=NULL;
 	priv->bindingBackgroundColor=NULL;
-
-	/* Set up actor */
-	clutter_actor_set_offscreen_redirect(CLUTTER_ACTOR(self), CLUTTER_OFFSCREEN_REDIRECT_ALWAYS);
 }
 
 /* IMPLEMENTATION: Public API */
