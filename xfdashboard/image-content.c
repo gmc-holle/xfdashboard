@@ -594,7 +594,7 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 	/* If we still got no icon info then we cannot load icon at all */
 	if(!iconInfo)
 	{
-		g_error(_("Could not lookup fallback icon for icon '%s'"), priv->iconName);
+		g_warning(_("Could not lookup fallback icon '%s' for icon '%s'"), XFDASHBOARD_IMAGE_CONTENT_FALLBACK_ICON_NAME, priv->iconName);
 		return;
 	}
 
