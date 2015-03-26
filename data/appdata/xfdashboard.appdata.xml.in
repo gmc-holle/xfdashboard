@@ -20,21 +20,22 @@
 
 	<screenshots>
 		<screenshot type="default">
-			<image>http://xfdashboard.froevel.de/images/starting-up.png</image>
+			<image>http://goodies.xfce.org/_media/projects/applications/xfdashboard/starting-up.png</image>
 		</screenshot>
 		<screenshot>
 			<_caption>Browsing applications</_caption>
-			<image>http://xfdashboard.froevel.de/images/applications-view.png</image>
+			<image>http://goodies.xfce.org/_media/projects/applications/xfdashboard/applications-view.png</image>
 		</screenshot>
 		<screenshot>
 			<_caption>Searching applications</_caption>
-			<image>http://xfdashboard.froevel.de/images/search-view.png</image>
+			<image>http://goodies.xfce.org/_media/projects/applications/xfdashboard/search-view.png</image>
 		</screenshot>
 	</screenshots>
 
-	<url type="homepage">http://xfdashboard.froevel.de/</url>
+	<url type="homepage">http://goodies.xfce.org/projects/applications/xfdashboard/start/</url>
+	<url type="bugtracker">https://bugzilla.xfce.org</url>
 	<url type="bugtracker">https://github.com/gmc-holle/xfdashboard/issues</url>
-	<url type="help">http://xfdashboard.froevel.de/doc.html</url>
+	<url type="help">http://goodies.xfce.org/projects/applications/xfdashboard/manual</url>
 
 	<updatecontact>nomad@froevel.de</updatecontact>
 
