@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 										};
 
 #ifdef ENABLE_NLS
-	/* Set text domain */
+	/* Set up localization */
 	xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 #endif
 
