@@ -27,6 +27,7 @@ xfdashboard_headers = \
 	background.h \
 	binding.h \
 	bindings-pool.h \
+	box-layout.h \
 	button.h \
 	click-action.h \
 	collapse-box.h \
@@ -87,6 +88,7 @@ xfdashboard_SOURCES = \
 	background.c \
 	binding.c \
 	bindings-pool.c \
+	box-layout.c \
 	button.c \
 	click-action.c \
 	collapse-box.c \
