@@ -30,14 +30,14 @@
 
 G_BEGIN_DECLS
 
-#define XFDASHBOARD_TYPE_FILL_BOX_LAYOUT				(xfdashboard_fill_box_layout_get_type())
-#define XFDASHBOARD_FILL_BOX_LAYOUT(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_FILL_BOX_LAYOUT, XfdashboardFillBoxLayout))
+#define XFDASHBOARD_TYPE_FILL_BOX_LAYOUT			(xfdashboard_fill_box_layout_get_type())
+#define XFDASHBOARD_FILL_BOX_LAYOUT(obj)			(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_FILL_BOX_LAYOUT, XfdashboardFillBoxLayout))
 #define XFDASHBOARD_IS_FILL_BOX_LAYOUT(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_FILL_BOX_LAYOUT))
-#define XFDASHBOARD_FILL_BOX_LAYOUT_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST((klass), XFDASHBOARD_TYPE_FILL_BOX_LAYOUT, XfdashboardFillBoxLayoutClass))
+#define XFDASHBOARD_FILL_BOX_LAYOUT_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST((klass), XFDASHBOARD_TYPE_FILL_BOX_LAYOUT, XfdashboardFillBoxLayoutClass))
 #define XFDASHBOARD_IS_FILL_BOX_LAYOUT_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE((klass), XFDASHBOARD_TYPE_FILL_BOX_LAYOUT))
 #define XFDASHBOARD_FILL_BOX_LAYOUT_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), XFDASHBOARD_TYPE_FILL_BOX_LAYOUT, XfdashboardFillBoxLayoutClass))
 
-typedef struct _XfdashboardFillBoxLayout				XfdashboardFillBoxLayout;
+typedef struct _XfdashboardFillBoxLayout			XfdashboardFillBoxLayout;
 typedef struct _XfdashboardFillBoxLayoutPrivate		XfdashboardFillBoxLayoutPrivate;
 typedef struct _XfdashboardFillBoxLayoutClass		XfdashboardFillBoxLayoutClass;
 
