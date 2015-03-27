@@ -24,7 +24,7 @@
 				</constraint>
 
 				<layout>
-					<object class="ClutterBoxLayout">
+					<object class="XfdashboardBoxLayout">
 						<property name="orientation">horizontal</property>
 						<property name="spacing">8.0</property>
 						<property name="homogeneous">false</property>
