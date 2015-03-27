@@ -29,6 +29,7 @@
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
 #include <gtk/gtk.h>
+#include <libxfce4util/libxfce4util.h>
 
 #include "application.h"
 #include "types.h"
@@ -186,6 +187,11 @@ int main(int argc, char **argv)
 	XfdashboardApplication		*app=NULL;
 	GError						*error=NULL;
 	gint						status;
+
+#ifdef ENABLE_NLS
+	/* Set up localization */
+	xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
+#endif
 
 #if !GLIB_CHECK_VERSION(2, 36, 0)
 	/* Initialize GObject type system */
