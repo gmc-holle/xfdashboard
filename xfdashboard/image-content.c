@@ -33,6 +33,12 @@
 
 #include "application.h"
 
+#if GTK_CHECK_VERSION(3, 14 ,0)
+#undef USE_GTK_BUILTIN_ICONS
+#else
+#define USE_GTK_BUILTIN_ICONS 1
+#endif
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardImageContent,
 				xfdashboard_image_content,
@@ -361,7 +367,11 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 		iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
 											XFDASHBOARD_IMAGE_CONTENT_FALLBACK_ICON_NAME,
 											priv->iconSize,
+#ifdef USE_GTK_BUILTIN_ICONS
 											GTK_ICON_LOOKUP_USE_BUILTIN);
+#else
+											0);
+#endif
 
 		if(!iconInfo)
 		{
@@ -373,6 +383,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 
 		/* Check if have to use built-in GdkPixbuf for icon ... */
 		filename=gtk_icon_info_get_filename(iconInfo);
+#ifdef USE_GTK_BUILTIN_ICONS
 		if(!filename)
 		{
 			GdkPixbuf					*iconPixbuf;
@@ -400,6 +411,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 
 			g_object_unref(iconPixbuf);
 		}
+#endif
 
 		/* Release allocated resources */
 		g_object_unref(iconInfo);
@@ -515,7 +527,11 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 	iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
 										priv->iconName,
 										priv->iconSize,
+#ifdef USE_GTK_BUILTIN_ICONS
 										GTK_ICON_LOOKUP_USE_BUILTIN);
+#else
+										0);
+#endif
 
 	/* If we got no icon info but a filename (icon name with suffix like
 	 * .png etc.) was given, retry without file extension/suffix.
@@ -566,7 +582,12 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 				iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
 													iconName,
 													priv->iconSize,
+#ifdef USE_GTK_BUILTIN_ICONS
 													GTK_ICON_LOOKUP_USE_BUILTIN);
+#else
+													0);
+#endif
+
 				if(!iconInfo) g_warning(_("Could not lookup icon name '%s' for icon '%s'"), iconName, priv->iconName);
 					else g_debug("Extension '%s' is supported and loaded icon name '%s' for icon '%s'", extension, iconName, priv->iconName);
 
@@ -600,6 +621,7 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 
 	/* Check if have to use built-in GdkPixbuf for icon ... */
 	filename=gtk_icon_info_get_filename(iconInfo);
+#ifdef USE_GTK_BUILTIN_ICONS
 	if(!filename)
 	{
 		GdkPixbuf						*iconPixbuf;
@@ -629,6 +651,7 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 	}
 		/* ... otherwise set up to load icon async */
 		else
+#endif
 		{
 			GFile						*file;
 			GInputStream				*stream;
@@ -700,7 +723,11 @@ static void _xfdashboard_image_content_load_from_gicon(XfdashboardImageContent *
 	iconInfo=gtk_icon_theme_lookup_by_gicon(priv->iconTheme,
 											priv->gicon,
 											priv->iconSize,
+#ifdef USE_GTK_BUILTIN_ICONS
 											GTK_ICON_LOOKUP_USE_BUILTIN);
+#else
+											0);
+#endif
 
 	/* If we got no icon info we try to fallback icon next */
 	if(!iconInfo)
@@ -722,6 +749,7 @@ static void _xfdashboard_image_content_load_from_gicon(XfdashboardImageContent *
 
 	/* Check if have to use built-in GdkPixbuf for icon ... */
 	filename=gtk_icon_info_get_filename(iconInfo);
+#ifdef USE_GTK_BUILTIN_ICONS
 	if(!filename)
 	{
 		GdkPixbuf						*iconPixbuf;
@@ -751,6 +779,7 @@ static void _xfdashboard_image_content_load_from_gicon(XfdashboardImageContent *
 	}
 		/* ... otherwise set up to load icon async */
 		else
+#endif
 		{
 			GFile						*file;
 			GInputStream				*stream;
