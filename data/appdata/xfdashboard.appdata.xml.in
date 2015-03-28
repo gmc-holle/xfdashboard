@@ -44,6 +44,15 @@
 	</provides>
 
 	<releases>
+		<release version="0.3.91" timestamp="1427561560">
+			<description>
+				<_p>This unstable development introduces a new box layout
+				fixing layout of children when using right-to-left language.
+				Also support for localization was fixed and other smaller
+				bug-fixes and improvements.
+				</_p>
+			</description>
+		</release>
 		<release version="0.3.90" timestamp="1426700895">
 			<description>
 				<_p>This unstable development introduces support for multiple

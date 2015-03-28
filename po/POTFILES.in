@@ -23,6 +23,7 @@ xfdashboard/applications-view.c
 xfdashboard/background.c
 xfdashboard/binding.c
 xfdashboard/bindings-pool.c
+xfdashboard/box-layout.c
 xfdashboard/button.c
 xfdashboard/click-action.c
 xfdashboard/collapse-box.c
