@@ -681,7 +681,7 @@ static ClutterActor* _xfdashboard_search_view_update_provider_actor_new(Xfdashbo
 	GList				*actions;
 	GList				*actionsIter;
 
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
 	g_return_val_if_fail(inProviderData, NULL);
 	g_return_val_if_fail(inItem, NULL);
 

@@ -170,8 +170,8 @@ gboolean xfdashboard_search_result_set_has_item(XfdashboardSearchResultSet *self
 {
 	XfdashboardSearchResultSetPrivate		*priv;
 
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self));
-	g_return_if_fail(inItem);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self), FALSE);
+	g_return_val_if_fail(inItem, FALSE);
 
 	priv=self->priv;
 
