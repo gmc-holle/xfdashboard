@@ -590,7 +590,7 @@ static void xfdashboard_fill_box_layout_class_init(XfdashboardFillBoxLayoutClass
 	XfdashboardFillBoxLayoutProperties[PROP_HOMOGENEOUS]=
 		g_param_spec_boolean("homogeneous",
 								_("Homogeneous"),
-								_("Whether the layout should be homogeneous, i.e. all childs get the same size"),
+								_("Whether the layout should be homogeneous, i.e. all children get the same size"),
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
