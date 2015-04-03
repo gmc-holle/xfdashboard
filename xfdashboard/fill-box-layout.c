@@ -580,7 +580,7 @@ static void xfdashboard_fill_box_layout_class_init(XfdashboardFillBoxLayoutClass
 
 	XfdashboardFillBoxLayoutProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-								_("Spacing"),
+								_("spacing"),
 								_("The spacing between children"),
 								0.0f,
 								G_MAXFLOAT,
