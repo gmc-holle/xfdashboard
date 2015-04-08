@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-21 10:06+0100\n"
-"PO-Revision-Date: 2015-02-26 09:21+0000\n"
+"POT-Creation-Date: 2015-04-01 10:21+0200\n"
+"PO-Revision-Date: 2015-04-01 08:58+0000\n"
 "Last-Translator: Саша Петровић <salepetronije@gmail.com>\n"
 "Language-Team: Serbian (http://www.transifex.com/projects/p/xfdashboard/language/sr/)\n"
 "MIME-Version: 1.0\n"
@@ -65,51 +65,64 @@ msgstr "Претрага програма"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid ""
+"This unstable development introduces a new box layout fixing layout of "
+"children when using right-to-left language. Also support for localization "
+"was fixed and other smaller bug-fixes and improvements."
+msgstr "Ово нестабилно развојно издање представља нови кутијасти распоред који исправља распоред порода при коришћењу писама које се читају са десна на лево. Такође, садржи исправљену подршку за преводе и још неке ситне бубе и побољшања."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+msgid ""
+"This unstable development introduces support for multiple monitors and also "
+"bug-fixes and other smaller improvements."
+msgstr "Ово нестабилно развојно издање представља подршку за више екрана и исправке грешака, као и још ситних побољшања."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+msgid ""
 "This unstable development introduces an application database and monitoring "
 "of installed and uninstalled applications. It also includes bug-fixes and "
 "other smaller improvements."
 msgstr "Ово нестабилно развојно издање добија могућност складиштења и надгледања података о уграђеним и уклоњеним програмима. Такође, има и исправке грешака, као и друга побољшања."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
 "This unstable development introduces a hotkey tracker to allow starting "
 "xfdashboard with a single press of &lt;Super&gt; key."
 msgstr "Ово нестабилно развојно издање доноси пратиоца пречица ради покретања полетника једним притиском дугмета &lt;Супер&gt;"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
 "This unstable development fixes a bug which rendered the new settings "
 "application completely unusable."
 msgstr "Ово нестабилно развојно издање исправља бубу која приказује нови програм поставки потпуно неупотребљиво."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid "This unstable development introduces a settings application."
 msgstr "Ово нестабилно развојно издање доноси програм поставки полетника."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid ""
 "This unstable development introduces configurable key-bindings, allows "
 "changing themes at runtime and includes lots of smaller bug-fixes."
 msgstr "Ово је нестабилно развојно издање које уводи подесиве пречице, омогућава измену тема у раду и исправа много ситних буба."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This unstable development introduces additional themes, fixes handling of "
 "client-side decorated windows (CSD) and adds a new CSS command @import() to "
 "include external CSS resources in themes."
 msgstr "Ово нестабилно развојно издање представља додатне теме, исправља руковање украсима прозора клијента (ЦСД) и додаје нову наредбу ЦСС-а @import() да би укључила спољне изворе ЦСС-а у темама."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid ""
 "This unstable development introduces a workaround to get window content of "
 "minimized windows to display them in windows view."
 msgstr "Непостојано развојно издање укључује покушај да се приказује и садржај умањених прозора."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid "This unstable development introduces effects."
 msgstr "Ово је непостојано развојно издање које први пут садржи дејства површи."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This unstable development fixes a problem closing windows accidently by "
 "pressing the key 'backspace' to refine search more often than characters "
@@ -117,18 +130,18 @@ msgid ""
 "introduces a new generic selection framework for focusable actors."
 msgstr "Ово је нестабилно издање у коме је решено случајно затварање прозора на притисак дугмета „бриши уназад“, ради обогаћивања уноса претраге на више од унесених знакова. Такође, укључује нове радње учитавања слика у ЦСС. Доноси нови родни оквир жижним чиниоцима."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:17
 msgid ""
 "This release fixes a problem closing windows accidently by pressing the key "
 "'backspace' to refine search more often than characters entered."
 msgstr "У овом издању у коме је решено случајно затварање прозора на притисак дугмета „бриши уназад“"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:18
 msgid ""
 "This release fixes a problem when loading scalable images by icon name."
 msgstr "Ово издање решава погрешно учитавање слика променљиве величине према именима иконице."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:17
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:19
 msgid ""
 "This unstable development release fixes problems with icon mode in theming "
 "and allows to launch the first item by pressing ENTER in search view when a "
@@ -136,14 +149,14 @@ msgid ""
 "allowing the usage of constant values and functions in theme's CSS file."
 msgstr "Ово нестабилно развојно издање решава грешке у раду са иконицама при темирању и омогућава покретање прве ставке пристиском на „Унеси“ при прегледу претраге, када претрага започиње куцањем. Укључује и побољшано рашчлањивање ЦСС-а, што омогућава употребу сталних вредности и радњи у датотеци теме ЦСС-а."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:18
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:20
 msgid ""
 "This release fixes problems with icon mode in theming and allows to launch "
 "the first item by pressing ENTER in search view when a search was started by"
 " just typing."
 msgstr "Ово издање решава грешке у раду са иконицама при темирању и омогућава покретање прве ставке пристиском на „Унеси“ при прегледу претраге, када претрага започиње куцањем."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:19
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:21
 msgid "Initial release."
 msgstr "Прво издање"
 
@@ -233,11 +246,11 @@ msgstr "%s: %s\nПокушајте %s --help да би видели потпун
 #: ../settings/settings.c:754 ../settings/settings.c:910
 #: ../xfdashboard/application-database.c:132
 #: ../xfdashboard/application-database.c:301
-#: ../xfdashboard/desktop-app-info.c:1468 ../xfdashboard/image-content.c:266
-#: ../xfdashboard/image-content.c:282 ../xfdashboard/image-content.c:392
-#: ../xfdashboard/image-content.c:425 ../xfdashboard/image-content.c:619
-#: ../xfdashboard/image-content.c:645 ../xfdashboard/image-content.c:741
-#: ../xfdashboard/image-content.c:767 ../xfdashboard/image-content.c:1238
+#: ../xfdashboard/desktop-app-info.c:1432 ../xfdashboard/image-content.c:272
+#: ../xfdashboard/image-content.c:288 ../xfdashboard/image-content.c:403
+#: ../xfdashboard/image-content.c:437 ../xfdashboard/image-content.c:641
+#: ../xfdashboard/image-content.c:668 ../xfdashboard/image-content.c:769
+#: ../xfdashboard/image-content.c:796 ../xfdashboard/image-content.c:1267
 #: ../xfdashboard/theme-css.c:1232 ../xfdashboard/theme-css.c:1893
 #: ../xfdashboard/window-content.c:231 ../xfdashboard/window-content.c:680
 #: ../xfdashboard/window-content.c:867
@@ -279,11 +292,11 @@ msgstr "Нисам успео да пронађен датотеку корис�
 msgid "Could not load UI resources from '%s': %s"
 msgstr "Нисам успео да учитам изворе корисничког сучеља из „%s“: %s"
 
-#: ../settings/settings.c:1082
+#: ../settings/settings.c:1090
 msgid "Theme"
 msgstr "Тема"
 
-#: ../settings/settings.c:1241 ../settings/settings.c:1275
+#: ../settings/settings.c:1249 ../settings/settings.c:1283
 msgid "Could not get dialog from UI file."
 msgstr "Нисам успео да добавим прозорче из датотеке корисничког сучеља."
 
@@ -310,163 +323,163 @@ msgstr "Дејства"
 msgid "List of space-separated strings with IDs of effects set at this actor"
 msgstr "Списак ниски раздвојених размаком са ИД-јем низа дејстава за овог чиниоца"
 
-#: ../xfdashboard/application-button.c:292
+#: ../xfdashboard/application-button.c:290
 msgid "Application information"
 msgstr "Подаци програма"
 
-#: ../xfdashboard/application-button.c:293
+#: ../xfdashboard/application-button.c:291
 msgid "The application information whose title and description to display"
 msgstr "Подаци програма чији наслов и опис треба да се прикаже"
 
-#: ../xfdashboard/application-button.c:299
+#: ../xfdashboard/application-button.c:297
 msgid "Show description"
 msgstr "Прикажи опис"
 
-#: ../xfdashboard/application-button.c:300
+#: ../xfdashboard/application-button.c:298
 msgid "Show also description next to tile"
 msgstr "Такође приказуј опис поред наслова"
 
-#: ../xfdashboard/application-button.c:306
-#: ../xfdashboard/applications-view.c:1237
+#: ../xfdashboard/application-button.c:304
+#: ../xfdashboard/applications-view.c:1322
 msgid "Format title only"
 msgstr "Обликуј само наслов"
 
-#: ../xfdashboard/application-button.c:307
-#: ../xfdashboard/applications-view.c:1238
+#: ../xfdashboard/application-button.c:305
+#: ../xfdashboard/applications-view.c:1323
 msgid "Format string used when only title is display"
 msgstr "Обликуј ниске коришћене за приказ само наслова"
 
-#: ../xfdashboard/application-button.c:313
-#: ../xfdashboard/applications-view.c:1244
+#: ../xfdashboard/application-button.c:311
+#: ../xfdashboard/applications-view.c:1329
 msgid "Format title and description"
 msgstr "Обликуј наслов и опис"
 
-#: ../xfdashboard/application-button.c:314
-#: ../xfdashboard/applications-view.c:1245
+#: ../xfdashboard/application-button.c:312
+#: ../xfdashboard/applications-view.c:1330
 msgid ""
 "Format string used when title and description is display. First argument is "
 "title and second one is description."
 msgstr "Обликуј ниске коришћене при приказу наслова и описа. Прва одредница је наслов, а следећа је опис."
 
-#: ../xfdashboard/application-button.c:608
-#: ../xfdashboard/application-button.c:611
-#: ../xfdashboard/application-button.c:625
-#: ../xfdashboard/application-button.c:628
+#: ../xfdashboard/application-button.c:606
+#: ../xfdashboard/application-button.c:609
+#: ../xfdashboard/application-button.c:623
+#: ../xfdashboard/application-button.c:626
 #, c-format
 msgid "Launching application '%s' failed: %s"
 msgstr "Нисам успео да покренем програм „%s“: %s"
 
-#: ../xfdashboard/application-button.c:610
-#: ../xfdashboard/application-button.c:613
+#: ../xfdashboard/application-button.c:608
+#: ../xfdashboard/application-button.c:611
 msgid "No information available for application"
 msgstr "Нема доступних података о програму"
 
-#: ../xfdashboard/application-button.c:627
-#: ../xfdashboard/application-button.c:630 ../xfdashboard/application.c:229
-#: ../xfdashboard/application.c:236 ../xfdashboard/application.c:295
-#: ../xfdashboard/application.c:313 ../xfdashboard/application.c:329
-#: ../xfdashboard/application.c:485
+#: ../xfdashboard/application-button.c:625
+#: ../xfdashboard/application-button.c:628 ../xfdashboard/application.c:225
+#: ../xfdashboard/application.c:232 ../xfdashboard/application.c:291
+#: ../xfdashboard/application.c:309 ../xfdashboard/application.c:325
+#: ../xfdashboard/application.c:481
 msgid "unknown error"
 msgstr "непозната грешка"
 
-#: ../xfdashboard/application-button.c:637
+#: ../xfdashboard/application-button.c:635
 #, c-format
 msgid "Application '%s' launched"
 msgstr "Програм „%s“ је покренут"
 
 #. Show critical warning at console
-#: ../xfdashboard/application.c:227 ../xfdashboard/application.c:234
+#: ../xfdashboard/application.c:223 ../xfdashboard/application.c:230
 #, c-format
 msgid "Could not load theme '%s': %s"
 msgstr "Нисам успео да учитам тему „%s“ : %s"
 
-#: ../xfdashboard/application.c:294
+#: ../xfdashboard/application.c:290
 #, c-format
 msgid "Could not initialize xfconf: %s"
 msgstr "Нисам успео да покренем xfconf: %s"
 
-#: ../xfdashboard/application.c:306
+#: ../xfdashboard/application.c:302
 msgid "Could not initialize bindings"
 msgstr "Нисам успео да покренем пречице"
 
-#: ../xfdashboard/application.c:312
+#: ../xfdashboard/application.c:308
 #, c-format
 msgid "Could not load bindings: %s"
 msgstr "Нисам успео да учитам пречице: %s"
 
-#: ../xfdashboard/application.c:322
+#: ../xfdashboard/application.c:318
 msgid "Could not initialize application database"
 msgstr "Нисам успео да покренем складиште података програма"
 
-#: ../xfdashboard/application.c:328
+#: ../xfdashboard/application.c:324
 #, c-format
 msgid "Could not load application database: %s"
 msgstr "Нисам успео да учитам складиште података: %s"
 
-#: ../xfdashboard/application.c:342
+#: ../xfdashboard/application.c:338
 msgid ""
 "Could not create binding between xfconf property and local resource for "
 "theme change notification."
 msgstr "Нисам успео да образујем пречицу између својства иксфцеконфа и месних извора за обавештење о измени теме."
 
-#: ../xfdashboard/application.c:397
+#: ../xfdashboard/application.c:393
 #, c-format
 msgid "Welcome to %s (%s)!"
 msgstr "Добро дошли у %s (%s)!"
 
-#: ../xfdashboard/application.c:399
+#: ../xfdashboard/application.c:395
 #, c-format
 msgid "Welcome to %s!"
 msgstr "Добродошли у %s!"
 
-#: ../xfdashboard/application.c:444
+#: ../xfdashboard/application.c:440
 msgid "Fork to background"
 msgstr "Рачвај у позадину"
 
-#: ../xfdashboard/application.c:445
+#: ../xfdashboard/application.c:441
 msgid "Quit running instance"
 msgstr "Искључи покренути примерак"
 
-#: ../xfdashboard/application.c:446
+#: ../xfdashboard/application.c:442
 msgid "Restart running instance"
 msgstr "Поново покрени примерак који је у погону"
 
-#: ../xfdashboard/application.c:447
+#: ../xfdashboard/application.c:443
 msgid ""
 "Toggles suspend/resume state if running instance was started in daemon mode "
 "otherwise it quits running non-daemon instance"
 msgstr "Прекидач стања обуставе и наставка ако се покрене примерак у начину рада домара, иначе искључује примерак који не ради као домар"
 
-#: ../xfdashboard/application.c:463
+#: ../xfdashboard/application.c:459
 msgid "- A Gnome Shell like dashboard for Xfce4"
 msgstr "- Полетник за Иксфце који подсећа на Гномову шкољку"
 
-#: ../xfdashboard/application.c:485
+#: ../xfdashboard/application.c:481
 #, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
-#: ../xfdashboard/application.c:735
+#: ../xfdashboard/application.c:721
 msgid "Is daemonized"
 msgstr "Ради као домар"
 
-#: ../xfdashboard/application.c:736
+#: ../xfdashboard/application.c:722
 msgid "Flag indicating if application is daemonized"
 msgstr "Белег који показује да ли програм ради као домар"
 
-#: ../xfdashboard/application.c:742
+#: ../xfdashboard/application.c:728
 msgid "Is suspended"
 msgstr "Је обустављен"
 
-#: ../xfdashboard/application.c:743
+#: ../xfdashboard/application.c:729
 msgid "Flag indicating if application is suspended currently"
 msgstr "Белег који показује да ли је програм исправно обустављен"
 
-#: ../xfdashboard/application.c:749 ../xfdashboard/theme.c:576
+#: ../xfdashboard/application.c:735 ../xfdashboard/theme.c:576
 msgid "Theme name"
 msgstr "Име теме"
 
-#: ../xfdashboard/application.c:750
+#: ../xfdashboard/application.c:736
 msgid "Name of current theme"
 msgstr "Име тренутне теме"
 
@@ -550,7 +563,7 @@ msgstr "Опис"
 
 #. Add "applications" button
 #: ../xfdashboard/applications-search-provider.c:315
-#: ../xfdashboard/applications-view.c:1281 ../xfdashboard/quicklaunch.c:2440
+#: ../xfdashboard/applications-view.c:1376 ../xfdashboard/quicklaunch.c:2447
 msgid "Applications"
 msgstr "Програми"
 
@@ -560,45 +573,45 @@ msgid ""
 "search"
 msgstr "Нисам успео да доделим меморију умножавању мерила претраге претрази осетљивој на величину слова"
 
-#: ../xfdashboard/applications-search-provider.c:448
+#: ../xfdashboard/applications-search-provider.c:455
 #, c-format
 msgid "Cannot create actor for desktop ID '%s' in result set of %s"
 msgstr "Нисам успео да образујем чиниоца за ЛБ радне површи „%s“ у низу излаза %s"
 
-#: ../xfdashboard/applications-view.c:190
+#: ../xfdashboard/applications-view.c:193
 #, c-format
 msgid "Could not find view of type %s for menu '%s'"
 msgstr "Нисам успео да пронађем проглед врсте %s за изборник „%s“"
 
-#: ../xfdashboard/applications-view.c:290
-#: ../xfdashboard/applications-view.c:291
-#: ../xfdashboard/applications-view.c:399
-#: ../xfdashboard/applications-view.c:400
+#: ../xfdashboard/applications-view.c:356
+#: ../xfdashboard/applications-view.c:357
+#: ../xfdashboard/applications-view.c:470
+#: ../xfdashboard/applications-view.c:471
 msgid "Back"
 msgstr "Назад"
 
-#: ../xfdashboard/applications-view.c:290
-#: ../xfdashboard/applications-view.c:399
+#: ../xfdashboard/applications-view.c:356
+#: ../xfdashboard/applications-view.c:470
 msgid "Go back to previous menu"
 msgstr "Идите на претходни изборник"
 
-#: ../xfdashboard/applications-view.c:432
-#: ../xfdashboard/applications-view.c:433
+#: ../xfdashboard/applications-view.c:502
+#: ../xfdashboard/applications-view.c:503
 msgid "All applications"
 msgstr "Сви програми"
 
-#: ../xfdashboard/applications-view.c:432
+#: ../xfdashboard/applications-view.c:502
 msgid "List of all installed applications"
 msgstr "Списак уграђених програма"
 
-#: ../xfdashboard/applications-view.c:649
+#: ../xfdashboard/applications-view.c:718
 #: ../xfdashboard/search-result-container.c:1069
-#: ../xfdashboard/windows-view.c:984
+#: ../xfdashboard/windows-view.c:1168
 #, c-format
 msgid "%s is not a child of %s and cannot be selected"
 msgstr "%s није потомак %s и не може да се одабере"
 
-#: ../xfdashboard/applications-view.c:786
+#: ../xfdashboard/applications-view.c:855
 #: ../xfdashboard/search-result-container.c:391
 #, c-format
 msgid ""
@@ -606,7 +619,7 @@ msgid ""
 "mode."
 msgstr "Жижни предмет %s не може да управља избором правца врсте %s у начину рада иконица."
 
-#: ../xfdashboard/applications-view.c:906
+#: ../xfdashboard/applications-view.c:975
 #: ../xfdashboard/search-result-container.c:515
 #, c-format
 msgid ""
@@ -614,53 +627,61 @@ msgid ""
 "mode."
 msgstr "Жижни предмет %s не може да управља избором правца врсте %s у начину рада списка."
 
-#: ../xfdashboard/applications-view.c:964 ../xfdashboard/quicklaunch.c:1981
-#: ../xfdashboard/windows-view.c:1046 ../xfdashboard/workspace-selector.c:933
+#: ../xfdashboard/applications-view.c:1033 ../xfdashboard/quicklaunch.c:1982
+#: ../xfdashboard/windows-view.c:1230 ../xfdashboard/workspace-selector.c:933
 #, c-format
 msgid "Cannot lookup selection target at %s because %s is a child of %s"
 msgstr "Нисам успео да дођем до изабраног циља %s јер је  %s наследник  %s"
 
-#: ../xfdashboard/applications-view.c:1011 ../xfdashboard/quicklaunch.c:2072
+#: ../xfdashboard/applications-view.c:1080 ../xfdashboard/quicklaunch.c:2073
 #: ../xfdashboard/search-result-container.c:1166
-#: ../xfdashboard/windows-view.c:1162 ../xfdashboard/workspace-selector.c:1004
+#: ../xfdashboard/windows-view.c:1346 ../xfdashboard/workspace-selector.c:1004
 #, c-format
 msgid "Focusable object %s does not handle selection direction of type %s."
 msgstr "Жижни предмет %s не управља избором правца врсте %s."
 
-#: ../xfdashboard/applications-view.c:1050 ../xfdashboard/quicklaunch.c:2111
-#: ../xfdashboard/windows-view.c:1201
+#: ../xfdashboard/applications-view.c:1119 ../xfdashboard/quicklaunch.c:2112
+#: ../xfdashboard/windows-view.c:1385
 #, c-format
 msgid "%s is a child of %s and cannot be activated at %s"
 msgstr " %s је наследник  %s и не може да се покрене на %s"
 
-#: ../xfdashboard/applications-view.c:1214
+#: ../xfdashboard/applications-view.c:1299
 #: ../xfdashboard/search-result-container.c:685
 msgid "View mode"
 msgstr "Начин приказа"
 
-#: ../xfdashboard/applications-view.c:1215
+#: ../xfdashboard/applications-view.c:1300
 msgid "The view mode used in this view"
 msgstr "Начин прегледа у оваквом приказу"
 
-#: ../xfdashboard/applications-view.c:1222 ../xfdashboard/button.c:1283
-#: ../xfdashboard/quicklaunch.c:2268 ../xfdashboard/scrollbar.c:754
+#: ../xfdashboard/applications-view.c:1307 ../xfdashboard/button.c:1283
+#: ../xfdashboard/quicklaunch.c:2275 ../xfdashboard/scrollbar.c:754
 #: ../xfdashboard/search-result-container.c:693 ../xfdashboard/text-box.c:789
 #: ../xfdashboard/viewpad.c:1168 ../xfdashboard/view-selector.c:374
-#: ../xfdashboard/windows-view.c:1377 ../xfdashboard/workspace-selector.c:1208
+#: ../xfdashboard/windows-view.c:1597 ../xfdashboard/workspace-selector.c:1208
 msgid "Spacing"
 msgstr "Размак"
 
-#: ../xfdashboard/applications-view.c:1223 ../xfdashboard/windows-view.c:1378
+#: ../xfdashboard/applications-view.c:1308 ../xfdashboard/windows-view.c:1598
 msgid "Spacing between each element in view"
 msgstr "Размак између погледа на појединачне чиниоце"
 
-#: ../xfdashboard/applications-view.c:1230
+#: ../xfdashboard/applications-view.c:1315
 msgid "Parent menu icon"
 msgstr "Родитељска иконица изборника"
 
-#: ../xfdashboard/applications-view.c:1231
+#: ../xfdashboard/applications-view.c:1316
 msgid "Name of icon to use for 'go-back-to-parent-menu' entries"
 msgstr "Име иконице за коришћење за „иди назад у родитељски избор“ уносе"
+
+#: ../xfdashboard/applications-view.c:1336
+msgid "Show all applications"
+msgstr "Приказуј све програме"
+
+#: ../xfdashboard/applications-view.c:1337
+msgid "Whether to show a menu for all installed applications at root menu"
+msgstr "Да ли да се приказује изборник свих уграђених програма као корени изборник"
 
 #: ../xfdashboard/background.c:417 ../xfdashboard/background.c:418
 msgid "Background type"
@@ -703,7 +724,7 @@ msgstr "Одређује који углови на позадини су зао
 msgid "Radius of rounded corners of background"
 msgstr "Полупречник заобљених углова позадине"
 
-#: ../xfdashboard/background.c:464 ../xfdashboard/window-content.c:1585
+#: ../xfdashboard/background.c:464 ../xfdashboard/window-content.c:1604
 msgid "Outline color"
 msgstr "Боја обриса"
 
@@ -711,7 +732,7 @@ msgstr "Боја обриса"
 msgid "Color to draw outline with"
 msgstr "Боја за исцртавање оквира"
 
-#: ../xfdashboard/background.c:471 ../xfdashboard/window-content.c:1592
+#: ../xfdashboard/background.c:471 ../xfdashboard/window-content.c:1611
 msgid "Outline width"
 msgstr "Дебљина линије оквира"
 
@@ -767,7 +788,7 @@ msgstr "Име врсте"
 msgid "Class name of object this binding is bound to"
 msgstr "Име врсте предмета на коју се односи пречица"
 
-#: ../xfdashboard/binding.c:229 ../xfdashboard/image-content.c:1065
+#: ../xfdashboard/binding.c:229 ../xfdashboard/image-content.c:1094
 msgid "Key"
 msgstr "Дугме"
 
@@ -861,7 +882,7 @@ msgid "Invalid key-binding '%s' as either a key nor a modifier was assigned."
 msgstr "Пречица „%s“ је неисправна јер су јој додељени дугме или измењивач."
 
 #: ../xfdashboard/bindings-pool.c:344 ../xfdashboard/theme-effects.c:524
-#: ../xfdashboard/theme-layout.c:894
+#: ../xfdashboard/theme-layout.c:896
 #, c-format
 msgid "Unexpected text node '%s' at tag <%s>"
 msgstr "Неочекиван чвор писања „%s“ на ознаци <%s>"
@@ -878,7 +899,7 @@ msgstr "Недостаје пречица за постављање радње �
 #: ../xfdashboard/bindings-pool.c:453 ../xfdashboard/bindings-pool.c:724
 #: ../xfdashboard/theme-effects.c:556 ../xfdashboard/theme-effects.c:642
 #: ../xfdashboard/theme-effects.c:809 ../xfdashboard/theme-effects.c:978
-#: ../xfdashboard/theme-layout.c:935
+#: ../xfdashboard/theme-layout.c:937
 #, c-format
 msgid "Unknown tag <%s>"
 msgstr "Непозната ознака <%s>"
@@ -911,19 +932,19 @@ msgstr "Нисам успео да претворим особину „allow-un
 #: ../xfdashboard/bindings-pool.c:684 ../xfdashboard/bindings-pool.c:764
 #: ../xfdashboard/theme-effects.c:566 ../xfdashboard/theme-effects.c:718
 #: ../xfdashboard/theme-effects.c:938 ../xfdashboard/theme-effects.c:1018
-#: ../xfdashboard/theme-layout.c:864 ../xfdashboard/theme-layout.c:1220
+#: ../xfdashboard/theme-layout.c:866 ../xfdashboard/theme-layout.c:1222
 #, c-format
 msgid "Tag <%s> cannot contain tag <%s>"
 msgstr "Ознака <%s> не може да садржи ознаку <%s>"
 
 #: ../xfdashboard/bindings-pool.c:827 ../xfdashboard/theme-effects.c:1070
-#: ../xfdashboard/theme-layout.c:1564
+#: ../xfdashboard/theme-layout.c:1566
 #, c-format
 msgid "Could not set up parser data for file %s"
 msgstr "Нисам успео да поставим рашчлањивач података за датотеку %s"
 
 #: ../xfdashboard/bindings-pool.c:839 ../xfdashboard/theme-effects.c:1082
-#: ../xfdashboard/theme-layout.c:1576
+#: ../xfdashboard/theme-layout.c:1578
 #, c-format
 msgid "Could not create parser for file %s"
 msgstr "Нисам успео да направим рашчлањивач за датотеку %s"
@@ -1209,7 +1230,7 @@ msgstr "Датотека радне површи"
 msgid "Desktop ID '%s' not found"
 msgstr "Нисам успео да пронађем ЛБ површи „%s“"
 
-#: ../xfdashboard/desktop-app-info.c:1466
+#: ../xfdashboard/desktop-app-info.c:1430
 #, c-format
 msgid "Could not reload desktop application information for '%s': %s"
 msgstr "Нисам успео да учитам поново податак програма површи за „%s“: %s"
@@ -1277,13 +1298,13 @@ msgstr "Ступци"
 msgid "Current number of columns in this layout"
 msgstr "Тренутни број стубаца у овом распореду"
 
-#: ../xfdashboard/fill-box-layout.c:575 ../xfdashboard/quicklaunch.c:2276
+#: ../xfdashboard/fill-box-layout.c:575 ../xfdashboard/quicklaunch.c:2283
 #: ../xfdashboard/scrollbar.c:714 ../xfdashboard/view-selector.c:382
 #: ../xfdashboard/workspace-selector.c:1216
 msgid "Orientation"
 msgstr "Усмерење"
 
-#: ../xfdashboard/fill-box-layout.c:576 ../xfdashboard/quicklaunch.c:2277
+#: ../xfdashboard/fill-box-layout.c:576 ../xfdashboard/quicklaunch.c:2284
 #: ../xfdashboard/workspace-selector.c:1217
 msgid "The orientation to layout children"
 msgstr "Усмерење за смештај потомака"
@@ -1292,7 +1313,7 @@ msgstr "Усмерење за смештај потомака"
 msgid "spacing"
 msgstr "размаци"
 
-#: ../xfdashboard/fill-box-layout.c:584 ../xfdashboard/quicklaunch.c:2269
+#: ../xfdashboard/fill-box-layout.c:584 ../xfdashboard/quicklaunch.c:2276
 #: ../xfdashboard/workspace-selector.c:1209
 msgid "The spacing between children"
 msgstr "Размаци између потомака"
@@ -1303,8 +1324,9 @@ msgstr "Уједначено"
 
 #: ../xfdashboard/fill-box-layout.c:593
 msgid ""
-"Whether the layout should be homogeneous, i.e. all childs get the same size"
-msgstr "Да ли распоред треба да буде уједначен, тј. да сви потомци имају исту величину"
+"Whether the layout should be homogeneous, i.e. all children get the same "
+"size"
+msgstr "Да ли распоред треба да буде истородан, тј. сав пород добија исту величину"
 
 #: ../xfdashboard/fill-box-layout.c:599
 msgid "Keep aspect"
@@ -1350,145 +1372,145 @@ msgstr "Нисам успео да пронађем заведени нежиж�
 msgid "Trying to focus an unregistered focusable actor"
 msgstr "Покушај да се узме у жижу незаведени чинилац жиже"
 
-#: ../xfdashboard/focus-manager.c:874
+#: ../xfdashboard/focus-manager.c:882
 #, c-format
 msgid "Object type %s does not provide action '%s'"
 msgstr "Предмет врсте %s не обезбеђује радњу „%s“"
 
-#: ../xfdashboard/focus-manager.c:886
+#: ../xfdashboard/focus-manager.c:894
 #, c-format
 msgid "Action '%s' at object type %s is not an action signal."
 msgstr "Радња „%s“ предмету врсте %s није знак за радњу."
 
-#: ../xfdashboard/focus-manager.c:906
+#: ../xfdashboard/focus-manager.c:914
 #, c-format
 msgid ""
 "Action '%s' at object type %s wants return value of type %s but expected is "
 "%s."
 msgstr "Радња „%s“ предмету %s жели да врати вредност врсте %s, али се очекује %s."
 
-#: ../xfdashboard/focus-manager.c:917
+#: ../xfdashboard/focus-manager.c:925
 #, c-format
 msgid "Action '%s' at object type %s wants %u parameters but expected are %u."
 msgstr "Радња „%s“ на предмету врсте %s захтева одредницу %u, али се очекује %u."
 
-#: ../xfdashboard/focus-manager.c:928
+#: ../xfdashboard/focus-manager.c:936
 #, c-format
 msgid ""
 "Action '%s' at object type %s wants type %s at parameter %u but type %s is "
 "expected."
 msgstr "Радња „%s“ предмету врсте %s захтева врсту %s на одредници %u, али се очекује врта %s."
 
-#: ../xfdashboard/image-content.c:139
+#: ../xfdashboard/image-content.c:145
 #, c-format
 msgid "Destroying image cache still containing %d images."
 msgstr "Уништење оставе сличица које и даље садрже %d сличица."
 
-#: ../xfdashboard/image-content.c:198
+#: ../xfdashboard/image-content.c:204
 #, c-format
 msgid "Image has already key '%s' set and will be replaced with '%s'"
 msgstr "Сличица већ има постављен кључ „%s“  и биће замењен са „%s“"
 
-#: ../xfdashboard/image-content.c:209
+#: ../xfdashboard/image-content.c:215
 #, c-format
 msgid "An image with key '%s' is already cache and will be replaced."
 msgstr "Сличица са кључем „%s“ је већ у остави и биће замењена."
 
-#: ../xfdashboard/image-content.c:264
+#: ../xfdashboard/image-content.c:270
 #, c-format
 msgid "Failed to load image data into content for key '%s': %s"
 msgstr "Нисам успео да учитам датотеку сличице у садржај за кључ „%s“: %s"
 
-#: ../xfdashboard/image-content.c:280
+#: ../xfdashboard/image-content.c:286
 #, c-format
 msgid "Failed to load image for key '%s': %s"
 msgstr "Нисам успео да учитам слику кључа „%s“: %s"
 
-#: ../xfdashboard/image-content.c:359
+#: ../xfdashboard/image-content.c:365
 #, c-format
 msgid "Icon file '%s' does not exist - trying fallback icon"
 msgstr "Датотека иконице „%s“ не постоји - покушавам да учитам заменску иконицу"
 
-#: ../xfdashboard/image-content.c:368
+#: ../xfdashboard/image-content.c:378
 #, c-format
 msgid "Could not load fallback icon for file '%s'"
 msgstr "Нисам успео да учитам заменску иконицу за датотеку „%s“"
 
-#: ../xfdashboard/image-content.c:390 ../xfdashboard/image-content.c:617
+#: ../xfdashboard/image-content.c:401 ../xfdashboard/image-content.c:639
 #, c-format
 msgid "Failed to load image data into content for icon '%s': %s"
 msgstr "Нисам успео да учитам податке сличице у садржај иконице „%s“: %s"
 
-#: ../xfdashboard/image-content.c:422
+#: ../xfdashboard/image-content.c:434
 #, c-format
 msgid "Could not create stream for file '%s' of icon '%s': %s"
 msgstr "Нисам успео да направим ток датотеке „%s“ иконице „%s“: %s"
 
-#: ../xfdashboard/image-content.c:570
+#: ../xfdashboard/image-content.c:591
 #, c-format
 msgid "Could not lookup icon name '%s' for icon '%s'"
 msgstr "Нисам успео да пронађем темирано име иконице „%s“ за иконицу „%s“"
 
-#: ../xfdashboard/image-content.c:586
+#: ../xfdashboard/image-content.c:607
 #, c-format
 msgid "Could not lookup themed icon '%s'"
 msgstr "Нисам успео да пронађем темирану иконицу „%s“"
 
-#: ../xfdashboard/image-content.c:597
+#: ../xfdashboard/image-content.c:618
 #, c-format
-msgid "Could not lookup fallback icon for icon '%s'"
-msgstr "Нисам успео да пронађем заменску иконицу за иконицу „%s“"
+msgid "Could not lookup fallback icon '%s' for icon '%s'"
+msgstr "Нисам успео да пронађем заменску иконицу „%s“ за иконицу „%s“"
 
-#: ../xfdashboard/image-content.c:642
+#: ../xfdashboard/image-content.c:665
 #, c-format
 msgid "Could not create stream for icon file %s of icon '%s': %s"
 msgstr "Нисам успео да образујем ток датотеке иконице %s иконице „%s“: %s"
 
-#: ../xfdashboard/image-content.c:708
+#: ../xfdashboard/image-content.c:735
 #, c-format
 msgid "Could not lookup gicon '%s'"
 msgstr "Нисам успео да пронађем гномову иконицу „%s“"
 
-#: ../xfdashboard/image-content.c:719
+#: ../xfdashboard/image-content.c:746
 #, c-format
 msgid "Could not lookup fallback icon for gicon '%s'"
 msgstr "Нисам успео да пронађем заменску иконицу за гномову иконицу „%s“"
 
-#: ../xfdashboard/image-content.c:739
+#: ../xfdashboard/image-content.c:767
 #, c-format
 msgid "Failed to load image data into content for gicon '%s': %s"
 msgstr "Нисам успео д учитам податке иконице у садржај гномове иконице „%s“: %s"
 
-#: ../xfdashboard/image-content.c:764
+#: ../xfdashboard/image-content.c:793
 #, c-format
 msgid "Could not create stream for file %s of gicon '%s': %s"
 msgstr "Нисам успео да образујем ток датотеке %s гномове иконице „%s“: %s"
 
-#: ../xfdashboard/image-content.c:824 ../xfdashboard/image-content.c:960
+#: ../xfdashboard/image-content.c:853 ../xfdashboard/image-content.c:989
 #, c-format
 msgid "Cannot load image '%s' without type"
 msgstr "Нисам успео да учитам слику „%s“ без врсте"
 
-#: ../xfdashboard/image-content.c:840 ../xfdashboard/image-content.c:976
+#: ../xfdashboard/image-content.c:869 ../xfdashboard/image-content.c:1005
 #, c-format
 msgid "Cannot load image '%s' of unknown type %d"
 msgstr "Нисам успео да учитам иконицу „%s“ непознате врсте %d"
 
-#: ../xfdashboard/image-content.c:1066
+#: ../xfdashboard/image-content.c:1095
 msgid "The hash key for caching this image"
 msgstr "Кључ за смештање слике у оставу"
 
-#: ../xfdashboard/image-content.c:1153
+#: ../xfdashboard/image-content.c:1182
 #, c-format
 msgid "Could not create key for icon name '%s' at size %u"
 msgstr "Нисам успео да образујем кључ за иконицу под именом „%s“ величине %u"
 
-#: ../xfdashboard/image-content.c:1190
+#: ../xfdashboard/image-content.c:1219
 #, c-format
 msgid "Could not create key for gicon '%s' at size %u"
 msgstr "Нисам успео да образујем кључ за гномову иконицу „%s“ величине %u"
 
-#: ../xfdashboard/live-window.c:732 ../xfdashboard/window-content.c:1571
+#: ../xfdashboard/live-window.c:732 ../xfdashboard/window-content.c:1590
 msgid "Window"
 msgstr "Прозор"
 
@@ -1531,25 +1553,25 @@ msgstr "Радни простор"
 msgid "The workspace to show"
 msgstr "Расни простор за приказ"
 
-#: ../xfdashboard/main.c:171
+#: ../xfdashboard/main.c:172
 msgid "Cannot restart application: Failed to quit running instance"
 msgstr "Нисам успео да поново покренем програм: Нисам успео да искључим покренути примерак"
 
-#: ../xfdashboard/main.c:199
+#: ../xfdashboard/main.c:212
 msgid "Failed to create application instance"
 msgstr "Нисам успео да образујем примерак програма"
 
-#: ../xfdashboard/main.c:206
+#: ../xfdashboard/main.c:219
 #, c-format
 msgid "Unable to register application: %s"
 msgstr "Нисам успео да заведем програм: %s"
 
-#: ../xfdashboard/main.c:236
+#: ../xfdashboard/main.c:249
 #, c-format
 msgid "Initializing application failed with status code %d"
 msgstr "Покретање програма није успело са шифром стања %d"
 
-#: ../xfdashboard/main.c:264
+#: ../xfdashboard/main.c:277
 msgid "Initializing clutter failed!"
 msgstr "Покретање клатера није успело"
 
@@ -1573,54 +1595,54 @@ msgstr "Одређује који углови су заобљени"
 msgid "Radius of rounded corners"
 msgstr "Полупречник заобљених ивица"
 
-#: ../xfdashboard/quicklaunch.c:170
+#: ../xfdashboard/quicklaunch.c:171
 #, c-format
 msgid ""
 "Could not check for duplicates for invalid %s object so assume it exists"
 msgstr "Нисам успео да проверим да ли има близнака са неисправним предметом %s, па претпоставите да постоји"
 
-#: ../xfdashboard/quicklaunch.c:191
+#: ../xfdashboard/quicklaunch.c:192
 #, c-format
 msgid ""
 "Value at %p of type %s is not a %s so assume this desktop application item "
 "exists"
 msgstr "Вредност %p врсте %s није %s, па претпоставите да ова ставка програма површипостоји"
 
-#: ../xfdashboard/quicklaunch.c:438 ../xfdashboard/quicklaunch.c:1383
+#: ../xfdashboard/quicklaunch.c:439 ../xfdashboard/quicklaunch.c:1384
 #, c-format
 msgid "Favourite '%s' added"
 msgstr "„%s“ је додато у омиљене"
 
-#: ../xfdashboard/quicklaunch.c:683 ../xfdashboard/quicklaunch.c:1447
+#: ../xfdashboard/quicklaunch.c:684 ../xfdashboard/quicklaunch.c:1448
 #, c-format
 msgid "Favourite '%s' removed"
 msgstr "„%s“ је уклоњено из омиљених"
 
-#: ../xfdashboard/quicklaunch.c:1929 ../xfdashboard/workspace-selector.c:863
+#: ../xfdashboard/quicklaunch.c:1930 ../xfdashboard/workspace-selector.c:863
 #: ../xfdashboard/workspace-selector.c:1050
 #, c-format
 msgid "%s is a child of %s and cannot be selected at %s"
 msgstr "%s је наследник %s и не може да се изабере на %s"
 
-#: ../xfdashboard/quicklaunch.c:2253
+#: ../xfdashboard/quicklaunch.c:2260
 msgid "Favourites"
 msgstr "Омиљено"
 
-#: ../xfdashboard/quicklaunch.c:2254
+#: ../xfdashboard/quicklaunch.c:2261
 msgid "An array of strings pointing to desktop files shown as icons"
 msgstr "Распон ниски које указују на датотеке радне површи приказаних као иконице"
 
-#: ../xfdashboard/quicklaunch.c:2260
+#: ../xfdashboard/quicklaunch.c:2267
 msgid "Normal icon size"
 msgstr "Уобичајена величина иконице"
 
-#: ../xfdashboard/quicklaunch.c:2261
+#: ../xfdashboard/quicklaunch.c:2268
 msgid "Unscale size of icon"
 msgstr "Промени величину иконице"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
-#: ../xfdashboard/quicklaunch.c:2447
+#: ../xfdashboard/quicklaunch.c:2454
 msgid "Remove"
 msgstr "Уклони"
 
@@ -1632,7 +1654,7 @@ msgstr "Лествица размере"
 msgid "Whether all children should be scaled relatively to largest child"
 msgstr "Да ли сви потомци требају да буду сразмерни највећем потомку"
 
-#: ../xfdashboard/scaled-table-layout.c:487 ../xfdashboard/windows-view.c:1385
+#: ../xfdashboard/scaled-table-layout.c:487 ../xfdashboard/windows-view.c:1605
 msgid "Prevent upscaling"
 msgstr "Спречи увећање"
 
@@ -1823,40 +1845,58 @@ msgstr "%s није потомак било ког добављача са %s и
 msgid "Search"
 msgstr "Тражи"
 
-#: ../xfdashboard/stage.c:411
+#: ../xfdashboard/stage.c:413
 msgid "Cannot perform search because search view was not found in viewpad."
 msgstr "Нисам успео да изведен претрагу јер нисам нашао приказ претраге у овом начину прегледа"
 
-#: ../xfdashboard/stage.c:689
+#: ../xfdashboard/stage.c:677
 msgid "Cannot find search viewin viewpad to reset view."
 msgstr ""
 
-#: ../xfdashboard/stage.c:697
+#: ../xfdashboard/stage.c:685
 #, c-format
 msgid "Cannot switch to unknown view '%s'"
 msgstr "Нисам успео да променим приказ на непознати „%s“"
 
-#: ../xfdashboard/stage.c:813
+#: ../xfdashboard/stage.c:819 ../xfdashboard/stage.c:871
 #, c-format
 msgid "Could not build interface '%s' from theme '%s'"
 msgstr "Нисам успео да изградим сучеље „%s“ за тему „%s“"
 
-#: ../xfdashboard/stage.c:870
+#: ../xfdashboard/stage.c:827 ../xfdashboard/stage.c:847
+#: ../xfdashboard/stage.c:879 ../xfdashboard/stage.c:1177
+#, c-format
+msgid "Interface '%s' from theme '%s' must be an actor of type %s"
+msgstr "Сучеље „%s“ из теме „%s“ мора да буде чинилац врсте %s"
+
+#: ../xfdashboard/stage.c:928
+msgid "Invalid multiple stages for primary monitor"
+msgstr "Вишеструки приказ главног екрана је неисправан"
+
+#: ../xfdashboard/stage.c:957
 msgid "Just type to search..."
 msgstr "Само куцајте ради претраге..."
 
-#: ../xfdashboard/stage.c:1212 ../xfdashboard/stage.c:1213
-#: ../xfdashboard/stage-interface.c:243 ../xfdashboard/stage-interface.c:244
+#: ../xfdashboard/stage.c:1463 ../xfdashboard/stage.c:1464
+#: ../xfdashboard/stage-interface.c:328 ../xfdashboard/stage-interface.c:329
 msgid "Background image type"
 msgstr "Врста позадинске слике"
 
-#: ../xfdashboard/stage.c:1220 ../xfdashboard/stage-interface.c:251
+#: ../xfdashboard/stage.c:1471 ../xfdashboard/stage-interface.c:336
 msgid "Background color"
 msgstr "Боја позадине"
 
-#: ../xfdashboard/stage.c:1221 ../xfdashboard/stage-interface.c:252
+#: ../xfdashboard/stage.c:1472 ../xfdashboard/stage-interface.c:337
 msgid "Color of stage's background"
-msgstr "Боја позадине ступња"
+msgstr "Боја позадине "
+
+#: ../xfdashboard/stage-interface.c:321
+msgid "Monitor"
+msgstr "Екран"
+
+#: ../xfdashboard/stage-interface.c:322
+msgid "The monitor where this stage interface is connected to"
+msgstr "Екран са којим је ово сучеље повезано"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../xfdashboard/stylable.c:42
@@ -2244,12 +2284,12 @@ msgid ""
 "of type %s"
 msgstr "Неисправно стање рашчлањивача после рашчлањивања својства „%s“ на предмету са лб-ом „%s“ врсте %s"
 
-#: ../xfdashboard/theme-effects.c:863 ../xfdashboard/theme-layout.c:1032
+#: ../xfdashboard/theme-effects.c:863 ../xfdashboard/theme-layout.c:1034
 #, c-format
 msgid "Empty ID at tag '%s'"
 msgstr "Празан је ЛБ на ознаци „%s“"
 
-#: ../xfdashboard/theme-effects.c:875 ../xfdashboard/theme-layout.c:1045
+#: ../xfdashboard/theme-effects.c:875 ../xfdashboard/theme-layout.c:1047
 #, c-format
 msgid "Invalid ID '%s' at tag '%s'"
 msgstr "Неисправан је ЛБ „%s“ на ознаци „%s“"
@@ -2259,12 +2299,12 @@ msgstr "Неисправан је ЛБ „%s“ на ознаци „%s“"
 msgid "Multiple definition of effect with id '%s'"
 msgstr "Вишеструки описи за дејство са лб-ом „%s“"
 
-#: ../xfdashboard/theme-effects.c:901 ../xfdashboard/theme-layout.c:1061
+#: ../xfdashboard/theme-effects.c:901 ../xfdashboard/theme-layout.c:1063
 #, c-format
 msgid "Unknown object class %s for tag '%s'"
 msgstr "Непозната је врста предмета %s ознаке „%s“"
 
-#: ../xfdashboard/theme-effects.c:915 ../xfdashboard/theme-layout.c:1081
+#: ../xfdashboard/theme-effects.c:915 ../xfdashboard/theme-layout.c:1083
 #, c-format
 msgid ""
 "Invalid class %s in object for parent tag <%s> - expecting class derived "
@@ -2286,57 +2326,57 @@ msgstr "Нисам успео да доделим меморију непозн�
 msgid "Cannot allocate memory for tag '%s'"
 msgstr "Нисам успео да доделим меморију ознаци „%s“"
 
-#: ../xfdashboard/theme-layout.c:816
+#: ../xfdashboard/theme-layout.c:818
 msgid "Unexpected empty tag stack when parsing property text node"
 msgstr "Неочекивани празни скуп ознака при рашлањивању чвора својстава текста"
 
-#: ../xfdashboard/theme-layout.c:827
+#: ../xfdashboard/theme-layout.c:829
 #, c-format
 msgid "Value for property '%s' is already set"
 msgstr "Вредност за својство „%s“ је већ постављена"
 
-#: ../xfdashboard/theme-layout.c:1116
+#: ../xfdashboard/theme-layout.c:1118
 #, c-format
 msgid ""
 "Tag <%s> can only be set at <%s> creating objects derived from class %s"
 msgstr "Ознака <%s> може да буде постављена само на <%s> при стварању предмета изведених из врсте %s"
 
-#: ../xfdashboard/theme-layout.c:1201
+#: ../xfdashboard/theme-layout.c:1203
 #, c-format
 msgid "Attribute 'ref' cannot be empty at tag <%s>"
 msgstr "Особина 'ref' не може да буде празна ознака <%s>"
 
-#: ../xfdashboard/theme-layout.c:1242
+#: ../xfdashboard/theme-layout.c:1244
 #, c-format
 msgid "Internal error when handling end of tag <%s>"
 msgstr "Десила се унутрашња грешка при обради завршетка ознаке <%s>"
 
-#: ../xfdashboard/theme-layout.c:1271
+#: ../xfdashboard/theme-layout.c:1273
 #, c-format
 msgid "Document can have only one <%s>"
 msgstr "Документ може да има само један <%s>"
 
-#: ../xfdashboard/theme-layout.c:1309
+#: ../xfdashboard/theme-layout.c:1311
 #, c-format
 msgid "Object can have only one <%s>"
 msgstr "Предмет може да има само једно <%s>"
 
-#: ../xfdashboard/theme-layout.c:1480
+#: ../xfdashboard/theme-layout.c:1482
 #, c-format
 msgid "ID '%s' was specified more than once (%d times)"
 msgstr "ЛБ „%s“ је одређен више од једном (%d пута)"
 
-#: ../xfdashboard/theme-layout.c:1511
+#: ../xfdashboard/theme-layout.c:1513
 #, c-format
 msgid "Referenced ID '%s' could not be resolved"
 msgstr "Нисам успео да разрешим односни ЛБ „%s“"
 
-#: ../xfdashboard/theme-layout.c:1612
+#: ../xfdashboard/theme-layout.c:1614
 #, c-format
 msgid "File %s does not contain an interface"
 msgstr "Датотека %s не садржи сучеље"
 
-#: ../xfdashboard/theme-layout.c:1622
+#: ../xfdashboard/theme-layout.c:1624
 #, c-format
 msgid "Interface at file %s has no ID"
 msgstr "Сучеље датотеке %s нема ЛБ"
@@ -2370,45 +2410,45 @@ msgstr "Запис за приказ у облачићу"
 msgid "Could find any stage to show notification: %s"
 msgstr "Нисам успео да пронађем ни  један ступањ за приказ обавештења: %s"
 
-#: ../xfdashboard/view.c:315
+#: ../xfdashboard/view.c:347
 msgid "View internal name"
 msgstr "Име унутрашњег прегледа"
 
-#: ../xfdashboard/view.c:316
+#: ../xfdashboard/view.c:348
 msgid "Internal and untranslated name of view used in application"
 msgstr "Унутрашње непреведено има прегледа које користи програм"
 
-#: ../xfdashboard/view.c:322
+#: ../xfdashboard/view.c:354
 msgid "View name"
 msgstr "Име прегледа"
 
-#: ../xfdashboard/view.c:323
+#: ../xfdashboard/view.c:355
 msgid "Name of view used to display"
 msgstr "Име погледа који се користи за приказ"
 
-#: ../xfdashboard/view.c:329
+#: ../xfdashboard/view.c:361
 msgid "View icon"
 msgstr "Иконица прегледа"
 
-#: ../xfdashboard/view.c:330
+#: ../xfdashboard/view.c:362
 msgid ""
 "Icon of view used to display. Icon name can be a themed icon name or file "
 "name"
 msgstr "Иконица прегледа за приказ. Име иконице може бити из теме или из датотеке"
 
-#: ../xfdashboard/view.c:336
+#: ../xfdashboard/view.c:368
 msgid "Fit mode"
 msgstr "Начин уклапања величине"
 
-#: ../xfdashboard/view.c:337
+#: ../xfdashboard/view.c:369
 msgid "Defines if view should be fit into viewpad and its orientation"
 msgstr "Одређује да ли преглед треба да се уклопи у поље прегледа и његово усмерење"
 
-#: ../xfdashboard/view.c:344
+#: ../xfdashboard/view.c:376
 msgid "Enabled"
 msgstr "Омогућено"
 
-#: ../xfdashboard/view.c:345
+#: ../xfdashboard/view.c:377
 msgid "This flag indicates if is view is enabled and activable"
 msgstr "Ова заставица указује да је поглед омогућен и да се може покретати"
 
@@ -2579,141 +2619,185 @@ msgstr "Нисам успео да добавим особине прозора 
 msgid "Destroying window content cache still containing %d windows."
 msgstr "Прихватна остава садржаја уништених прозора и даље садржи %d прозора."
 
-#: ../xfdashboard/window-content.c:1572
+#: ../xfdashboard/window-content.c:1591
 msgid "The window to handle and display"
 msgstr "Прозор за управљање и приказ"
 
-#: ../xfdashboard/window-content.c:1578
+#: ../xfdashboard/window-content.c:1597
 msgid "Suspended"
 msgstr "Обустаљен"
 
-#: ../xfdashboard/window-content.c:1579
+#: ../xfdashboard/window-content.c:1598
 msgid "Is this window suspended"
 msgstr "Да ли је овај прозор овустављен"
 
-#: ../xfdashboard/window-content.c:1586
+#: ../xfdashboard/window-content.c:1605
 msgid "Color to draw outline of mapped windows with"
 msgstr "Боја исцртавања обриса на мапираном прозору"
 
-#: ../xfdashboard/window-content.c:1593
+#: ../xfdashboard/window-content.c:1612
 msgid "Width of line used to draw outline of mapped windows"
 msgstr "Ширина линије за исцртавање обриса мапираног прозора"
 
-#: ../xfdashboard/window-content.c:1600
+#: ../xfdashboard/window-content.c:1619
 msgid "Include window frame"
 msgstr "Укључи оквир прозора"
 
-#: ../xfdashboard/window-content.c:1601
+#: ../xfdashboard/window-content.c:1620
 msgid ""
 "Whether the window frame should be included or only the window content "
 "should be shown"
 msgstr "Да ли оквир прозора треба да буде укључен или да се приказује само садржај прозора"
 
-#: ../xfdashboard/window-content.c:1607
+#: ../xfdashboard/window-content.c:1626
 msgid "Unmapped window icon X fill"
 msgstr "Попуна иконицом икс осе немапираног прозора"
 
-#: ../xfdashboard/window-content.c:1608
+#: ../xfdashboard/window-content.c:1627
 msgid "Whether the unmapped window icon should fill up horizontal space"
 msgstr "Да ли иконица немапираног прозора треба да попуни простор водоравно"
 
-#: ../xfdashboard/window-content.c:1614
+#: ../xfdashboard/window-content.c:1633
 msgid "Unmapped window icon y fill"
 msgstr "Попуна иконицом ипсилон осе немапираног прозора"
 
-#: ../xfdashboard/window-content.c:1615
+#: ../xfdashboard/window-content.c:1634
 msgid "Whether the unmapped window icon should fill up vertical space"
 msgstr "Да ли иконица немапираног прозора треба да попуни усправан простор"
 
-#: ../xfdashboard/window-content.c:1621
+#: ../xfdashboard/window-content.c:1640
 msgid "Unmapped window icon X align"
 msgstr "Поравнање иконице немапираног прозора по икс оси"
 
-#: ../xfdashboard/window-content.c:1622
+#: ../xfdashboard/window-content.c:1641
 msgid ""
 "The alignment of the unmapped window icon on the X axis within the "
 "allocation in normalized coordinate between 0 and 1"
 msgstr "Поравнање иконице немапираног прозора по икс оси уз доделу на прилагођену координату између 0 и 1"
 
-#: ../xfdashboard/window-content.c:1629
+#: ../xfdashboard/window-content.c:1648
 msgid "Unmapped window icon Y align"
 msgstr "Иконица неуцртаног прозора са ипсилон поравнањем"
 
-#: ../xfdashboard/window-content.c:1630
+#: ../xfdashboard/window-content.c:1649
 msgid ""
 "The alignment of the unmapped window icon on the Y axis within the "
 "allocation in normalized coordinate between 0 and 1"
 msgstr "Поравнање иконице неуцртаног прозора на ипсилон оси унутар расподеле координата између 0 и 1"
 
-#: ../xfdashboard/window-content.c:1637
+#: ../xfdashboard/window-content.c:1656
 msgid "Unmapped window icon X scale"
 msgstr "Размера немапиране иконице прозора по Y оси"
 
-#: ../xfdashboard/window-content.c:1638
+#: ../xfdashboard/window-content.c:1657
 msgid "Scale factor of unmapped window icon on the X axis"
 msgstr "Множилац размере немапиране иконице прозора по X оси"
 
-#: ../xfdashboard/window-content.c:1645
+#: ../xfdashboard/window-content.c:1664
 msgid "Unmapped window icon Y scale"
 msgstr "Размера немапиране иконице прозора по Y оси"
 
-#: ../xfdashboard/window-content.c:1646
+#: ../xfdashboard/window-content.c:1665
 msgid "Scale factor of unmapped window icon on the Y axis"
 msgstr "Множилац размере иконице немапираног прозора по Y оси"
 
-#: ../xfdashboard/window-content.c:1653
+#: ../xfdashboard/window-content.c:1672
 msgid "Unmapped window icon gravity"
 msgstr "Тежа иконице немапираног прозора"
 
-#: ../xfdashboard/window-content.c:1654
+#: ../xfdashboard/window-content.c:1673
 msgid "The anchor point of unmapped window icon"
 msgstr "Тачка сидришта немапиране иконице прозора"
 
-#: ../xfdashboard/windows-view.c:1212
+#: ../xfdashboard/windows-view.c:1396
 #, c-format
 msgid "Cannot activate selection of type %s at %s because expecting type %s"
 msgstr "Нисам успео да покренем врсту избора %s на %s јер је очекивана врста %s"
 
-#: ../xfdashboard/windows-view.c:1370
+#: ../xfdashboard/windows-view.c:1590
 msgid "Current workspace"
 msgstr "Тренутни радни простор"
 
-#: ../xfdashboard/windows-view.c:1371
+#: ../xfdashboard/windows-view.c:1591
 msgid "The current workspace whose windows are shown"
 msgstr "Тренутни радни простор са ког су приказани прозори"
 
-#: ../xfdashboard/windows-view.c:1386
+#: ../xfdashboard/windows-view.c:1606
 msgid ""
 "Whether this view should prevent upsclaing any window beyond its real size"
 msgstr "Да ли овај преглед треба да спречи повећање размере било ког прозора преко стварне његове величине"
 
-#: ../xfdashboard/windows-view.c:1392
+#: ../xfdashboard/windows-view.c:1612
 msgid "Scroll event changes workspace"
 msgstr "Догађај клизања мења радни простор"
 
-#: ../xfdashboard/windows-view.c:1393
+#: ../xfdashboard/windows-view.c:1613
 msgid "Whether this view should change active workspace on scroll events"
 msgstr "Да ли овај преглед треба да промени тренутни рани простор на догађаје клизања"
 
-#: ../xfdashboard/windows-view.c:1610
+#: ../xfdashboard/windows-view.c:1619
+msgid "Filter monitor windows"
+msgstr "Пропуштај прозоре екрана по услову"
+
+#: ../xfdashboard/windows-view.c:1620
+msgid ""
+"Whether this view should only show windows of monitor where it placed at"
+msgstr "Да ли овај поглед треба да приказује сам прозоре екрана ту где су смештени"
+
+#: ../xfdashboard/windows-view.c:1842
 msgid "Windows"
 msgstr "Прозори"
 
-#: ../xfdashboard/window-tracker.c:472
+#: ../xfdashboard/window-tracker.c:514
+#, c-format
+msgid "Cannot release unknown monitor %d"
+msgstr "Нисам успео д отпустим непознати екран %d"
+
+#: ../xfdashboard/window-tracker.c:738
 msgid "Active window"
 msgstr "Радни прозор"
 
-#: ../xfdashboard/window-tracker.c:473
+#: ../xfdashboard/window-tracker.c:739
 msgid "The current active window"
 msgstr "Тренутни радни прозор"
 
-#: ../xfdashboard/window-tracker.c:479
+#: ../xfdashboard/window-tracker.c:745
 msgid "Active workspace"
 msgstr "Тренутни радни простор"
 
-#: ../xfdashboard/window-tracker.c:480
+#: ../xfdashboard/window-tracker.c:746
 msgid "The current active workspace"
 msgstr "Тренутни радни простор"
+
+#: ../xfdashboard/window-tracker.c:752
+msgid "Primary monitor"
+msgstr "Главни екран"
+
+#: ../xfdashboard/window-tracker.c:753
+msgid "The current primary monitor"
+msgstr "Тренутни главни екран"
+
+#: ../xfdashboard/window-tracker-monitor.c:282
+msgid "Monitor index"
+msgstr "Ознака екрана"
+
+#: ../xfdashboard/window-tracker-monitor.c:283
+msgid "The index of this monitor"
+msgstr "Ознака овог екрана"
+
+#: ../xfdashboard/window-tracker-monitor.c:290
+msgid "Is primary"
+msgstr "Је главни"
+
+#: ../xfdashboard/window-tracker-monitor.c:291
+msgid "Whether this monitor is the primary one"
+msgstr "Да ли је ово главни екран"
+
+#: ../xfdashboard/window-tracker-window.c:86
+msgid ""
+"Keep window fullscreen on primary monitor because window manager does not "
+"support _NET_WM_FULLSCREEN_MONITORS."
+msgstr "Држи прозор преко целог екрана на главном екрану јер управник прозора не подржава _NET_WM_FULLSCREEN_MONITORS."
 
 #. Setting new selection was unsuccessful if we get here
 #. Activation was unsuccessful if we get here
