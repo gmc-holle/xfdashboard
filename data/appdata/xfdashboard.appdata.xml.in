@@ -44,6 +44,15 @@
 	</provides>
 
 	<releases>
+		<release version="0.4.0" timestamp="1428778076">
+			<description>
+				<_p>This stable version introduces lots of new features. like
+				multi-monitor support, configurable key bindings and a settings
+				dialog. It also contains a lot of other larger and smaller
+				improvements.
+				</_p>
+			</description>
+		</release>
 		<release version="0.3.91" timestamp="1427561560">
 			<description>
 				<_p>This unstable development introduces a new box layout
