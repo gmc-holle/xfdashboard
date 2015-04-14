@@ -3,7 +3,7 @@ data/xfdashboard.desktop.in.in
 data/xfdashboard-autostart.desktop.in.in
 data/xfdashboard-settings.desktop.in.in
 data/appdata/xfdashboard.appdata.xml.in
-data/data/preferences.ui
+[type: gettext/glade]data/data/preferences.ui
 data/themes/xfdashboard/xfdashboard.theme.in.in
 data/themes/xfdashboard-auber/xfdashboard.theme.in.in
 data/themes/xfdashboard-blue/xfdashboard.theme.in.in
