@@ -1149,7 +1149,7 @@ static void _xdashboard_window_content_clutter_content_iface_paint_content(Clutt
 			textureHeight=cogl_texture_get_height(priv->texture);
 			textureHeight*=priv->unmappedWindowIconYScale;
 
-			/* Get boundary in X axis depending on gravity and scaled width */
+			/* Get boundary in Y axis depending on gravity and scaled width */
 			offset=(priv->unmappedWindowIconYAlign*allocationHeight);
 			switch(priv->unmappedWindowIconGravity)
 			{
