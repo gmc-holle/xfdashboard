@@ -78,6 +78,7 @@ const gchar* xfdashboard_window_tracker_window_get_icon_name(XfdashboardWindowTr
 gboolean xfdashboard_window_tracker_window_is_skip_pager(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_skip_tasklist(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_pinned(XfdashboardWindowTrackerWindow *inWindow);
+gboolean xfdashboard_window_tracker_window_is_urgent(XfdashboardWindowTrackerWindow *inWindow);
 
 gboolean xfdashboard_window_tracker_window_has_close_action(XfdashboardWindowTrackerWindow *inWindow);
 

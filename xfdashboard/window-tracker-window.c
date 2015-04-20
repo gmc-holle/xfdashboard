@@ -528,6 +528,15 @@ gboolean xfdashboard_window_tracker_window_is_pinned(XfdashboardWindowTrackerWin
 	return(wnck_window_is_pinned(WNCK_WINDOW(inWindow)));
 }
 
+gboolean xfdashboard_window_tracker_window_is_urgent(XfdashboardWindowTrackerWindow *inWindow)
+{
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
+
+	if(wnck_window_get_state(WNCK_WINDOW(inWindow)) & WNCK_WINDOW_STATE_URGENT) return(TRUE);
+
+	return(FALSE);
+}
+
 /* Get possible actions of window */
 gboolean xfdashboard_window_tracker_window_has_close_action(XfdashboardWindowTrackerWindow *inWindow)
 {

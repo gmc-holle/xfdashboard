@@ -154,6 +154,11 @@ XfdashboardLiveWindow .window-number
 	corner-radius: 4.0;
 }
 
+XfdashboardLiveWindow.window-state-urgent
+{
+	effects: window-urgency;
+}
+
 .drag-actor-XfdashboardLiveWindow:drag-handle
 {
 	background-type: outline fill rounded-corners;

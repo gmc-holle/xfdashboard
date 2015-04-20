@@ -484,6 +484,7 @@ static ClutterX11FilterReturn _xfdashboard_window_content_on_x_event(XEvent *inX
 	return(CLUTTER_X11_FILTER_CONTINUE);
 }
 
+
 /* Release all resources used by this instance */
 static void _xfdashboard_window_content_release_resources(XfdashboardWindowContent *self)
 {
@@ -1718,6 +1719,7 @@ void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 	priv->stylePseudoClasses=NULL;
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->workaroundMode=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_NONE;
+	priv->workaroundStateSignalID=0;
 	priv->unmappedWindowIconXFill=FALSE;
 	priv->unmappedWindowIconYFill=FALSE;
 	priv->unmappedWindowIconXAlign=0.0f;
