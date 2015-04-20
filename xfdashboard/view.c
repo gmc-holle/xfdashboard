@@ -54,7 +54,7 @@ struct _XfdashboardViewPrivate
 	gchar					*viewName;
 
 	gchar					*viewIcon;
-	ClutterImage			*viewIconImage;
+	ClutterContent			*viewIconImage;
 
 	XfdashboardFitMode		fitMode;
 
@@ -659,7 +659,7 @@ void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon)
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_VIEW_ICON]);
-		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_ICON_CHANGED], 0, priv->viewIconImage);
+		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_ICON_CHANGED], 0, CLUTTER_IMAGE(priv->viewIconImage));
 	}
 }
 

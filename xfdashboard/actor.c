@@ -203,6 +203,7 @@ static void _xfdashboard_actor_update_effects(XfdashboardActor *self, const gcha
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
 
 	priv=self->priv;
+	effectIDs=NULL;
 	effectsList=NULL;
 
 	/* Get theme effect instance which is needed to create effect objects.
@@ -215,7 +216,7 @@ static void _xfdashboard_actor_update_effects(XfdashboardActor *self, const gcha
 	g_object_ref(themeEffects);
 
 	/* Get array of effect ID to create */
-	effectIDs=xfdashboard_split_string(inEffects, " \t\r\n");
+	if(inEffects) effectIDs=xfdashboard_split_string(inEffects, " \t\r\n");
 
 	/* Remove all effects from actor */
 	clutter_actor_clear_effects(CLUTTER_ACTOR(self));
@@ -224,7 +225,7 @@ static void _xfdashboard_actor_update_effects(XfdashboardActor *self, const gcha
 	 * build result string with new list of effect IDs
 	 */
 	iter=effectIDs;
-	while(*iter)
+	while(iter && *iter)
 	{
 		ClutterEffect			*effect;
 

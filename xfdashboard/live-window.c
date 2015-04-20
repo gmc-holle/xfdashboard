@@ -212,7 +212,7 @@ static void _xfdashboard_live_window_on_icon_changed(XfdashboardLiveWindow *self
 														gpointer inUserData)
 {
 	XfdashboardLiveWindowPrivate	*priv;
-	ClutterImage					*icon;
+	ClutterContent					*icon;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -224,7 +224,7 @@ static void _xfdashboard_live_window_on_icon_changed(XfdashboardLiveWindow *self
 
 	/* Set new icon in title actor */
 	icon=xfdashboard_image_content_new_for_pixbuf(xfdashboard_window_tracker_window_get_icon(inWindow));
-	xfdashboard_button_set_icon_image(XFDASHBOARD_BUTTON(priv->actorTitle), icon);
+	xfdashboard_button_set_icon_image(XFDASHBOARD_BUTTON(priv->actorTitle), CLUTTER_IMAGE(icon));
 	g_object_unref(icon);
 }
 

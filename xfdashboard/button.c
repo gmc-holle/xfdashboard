@@ -656,11 +656,11 @@ static void _xfdashboard_button_on_mapped_changed(XfdashboardButton *self,
 		priv->iconNameLoaded==FALSE &&
 		priv->iconName)
 	{
-		ClutterImage	*image;
+		ClutterContent			*image;
 
 		/* Set icon image */
 		image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
-		clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
+		clutter_actor_set_content(priv->actorIcon, image);
 		g_object_unref(image);
 
 		priv->iconNameLoaded=TRUE;
@@ -1604,7 +1604,7 @@ const gchar* xfdashboard_button_get_icon(XfdashboardButton *self)
 void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconName)
 {
 	XfdashboardButtonPrivate	*priv;
-	ClutterImage				*image;
+	ClutterContent				*image;
 
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 	g_return_if_fail(inIconName);
@@ -1630,7 +1630,7 @@ void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconNam
 		{
 			/* Actor is mapped so we cannot defer loading and setting image */
 			image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
-			clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
+			clutter_actor_set_content(priv->actorIcon, image);
 			g_object_unref(image);
 
 			priv->iconNameLoaded=TRUE;
@@ -1708,10 +1708,10 @@ void xfdashboard_button_set_icon_size(XfdashboardButton *self, gint inSize)
 
 		if(priv->iconName)
 		{
-			ClutterImage		*image;
+			ClutterContent		*image;
 
 			image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
-			clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(image));
+			clutter_actor_set_content(priv->actorIcon, image);
 			g_object_unref(image);
 		}
 

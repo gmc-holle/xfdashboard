@@ -60,19 +60,18 @@ typedef enum /*< skip,prefix=XFDASHBOARD_IMAGE_TYPE >*/
 struct _XfdashboardImageContentPrivate
 {
 	/* Properties related */
-	gchar					*key;
+	gchar							*key;
 
 	/* Instance related */
-	XfdashboardImageType	type;
-	gboolean				isLoaded;
-	gboolean				successfulLoaded;
-	GtkIconTheme			*iconTheme;
-	gchar					*iconName;
-	GIcon					*gicon;
-	gint					iconSize;
+	XfdashboardImageType			type;
+	XfdashboardImageContentLoadingState	loadState;
+	GtkIconTheme					*iconTheme;
+	gchar							*iconName;
+	GIcon							*gicon;
+	gint							iconSize;
 
-	guint					contentAttachedSignalID;
-	guint					iconThemeChangedSignalID;
+	guint							contentAttachedSignalID;
+	guint							iconThemeChangedSignalID;
 };
 
 /* Properties */
@@ -252,7 +251,7 @@ static void _xfdashboard_image_content_loading_async_callback(GObject *inSource,
 	GdkPixbuf							*pixbuf;
 	GError								*error=NULL;
 
-	priv->successfulLoaded=TRUE;
+	priv->loadState=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_SUCCESSFULLY;
 
 	/* Get pixbuf loaded */
 	pixbuf=gdk_pixbuf_new_from_stream_finish(inResult, &error);
@@ -278,7 +277,7 @@ static void _xfdashboard_image_content_loading_async_callback(GObject *inSource,
 
 			/* Set failed state and empty image */
 			_xfdashboard_image_content_set_empty_image(self);
-			priv->successfulLoaded=FALSE;
+			priv->loadState=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_FAILED;
 		}
 	}
 		else
@@ -294,14 +293,14 @@ static void _xfdashboard_image_content_loading_async_callback(GObject *inSource,
 
 			/* Set failed state and empty image */
 			_xfdashboard_image_content_set_empty_image(self);
-			priv->successfulLoaded=FALSE;
+			priv->loadState=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_FAILED;
 		}
 
 	/* Release allocated resources */
 	if(pixbuf) g_object_unref(pixbuf);
 
 	/* Emit "loaded" signal if loading was successful ... */
-	if(priv->successfulLoaded)
+	if(priv->loadState==XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_SUCCESSFULLY)
 	{
 		g_signal_emit(self, XfdashboardImageContentSignals[SIGNAL_LOADED], 0);
 		g_debug("Successfully loaded image for key '%s' asynchronously", priv->key ? priv->key : "<nil>");
@@ -841,7 +840,8 @@ static void _xfdashboard_image_content_on_icon_theme_changed(XfdashboardImageCon
 	priv=self->priv;
 
 	/* If icon has not been loaded yet then there is no need to do it now */
-	if(!priv->isLoaded) return;
+	if(priv->loadState!=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_SUCCESSFULLY &&
+		priv->loadState!=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_FAILED) return;
 
 	/* Set empty image - just for the case loading failed at any point */
 	_xfdashboard_image_content_set_empty_image(self);
@@ -953,13 +953,17 @@ static void _xfdashboard_image_content_on_attached(ClutterContent *inContent,
 	self=XFDASHBOARD_IMAGE_CONTENT(inContent);
 	priv=self->priv;
 
+	/* If image is being loaded then do nothing */
+	if(priv->loadState==XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADING) return;
+
 	/* Check if image was already loaded then emit signal
 	 * appropiate for last load status.
 	 */
-	if(priv->isLoaded)
+	if(priv->loadState==XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_SUCCESSFULLY ||
+		priv->loadState==XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_FAILED)
 	{
 		/* Emit "loaded" signal if loading was successful ... */
-		if(priv->successfulLoaded)
+		if(priv->loadState==XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_SUCCESSFULLY)
 		{
 			g_signal_emit(self, XfdashboardImageContentSignals[SIGNAL_LOADED], 0);
 		}
@@ -972,8 +976,8 @@ static void _xfdashboard_image_content_on_attached(ClutterContent *inContent,
 		return;
 	}
 
-	/* Mark image loaded regardless if loading will succeed or fail */
-	priv->isLoaded=TRUE;
+	/* Mark image being loaded */
+	priv->loadState=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADING;
 
 	/* Also disconnect signal handler as it should not be called anymore */
 	g_signal_handler_disconnect(self, priv->contentAttachedSignalID);
@@ -1137,8 +1141,7 @@ void xfdashboard_image_content_init(XfdashboardImageContent *self)
 	priv->iconName=NULL;
 	priv->gicon=NULL;
 	priv->iconSize=0;
-	priv->isLoaded=FALSE;
-	priv->successfulLoaded=FALSE;
+	priv->loadState=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_NONE;
 	priv->iconTheme=gtk_icon_theme_get_default();
 
 	/* Connect to "attached" signal of ClutterContent to get notified
@@ -1167,7 +1170,7 @@ void xfdashboard_image_content_init(XfdashboardImageContent *self)
  * In all cases a valid ClutterImage object is returned must be unreffed with
  * g_object_unref().
  */
-ClutterImage* xfdashboard_image_content_new_for_icon_name(const gchar *inIconName, gint inSize)
+ClutterContent* xfdashboard_image_content_new_for_icon_name(const gchar *inIconName, gint inSize)
 {
 	ClutterImage		*image;
 	gchar				*key;
@@ -1195,7 +1198,7 @@ ClutterImage* xfdashboard_image_content_new_for_icon_name(const gchar *inIconNam
 	g_free(key);
 
 	/* Return ClutterImage */
-	return(image);
+	return(CLUTTER_CONTENT(image));
 }
 
 /* Create new instance or use cached one for GIcon object.
@@ -1204,7 +1207,7 @@ ClutterImage* xfdashboard_image_content_new_for_icon_name(const gchar *inIconNam
  * In all cases a valid ClutterImage object is returned must be unreffed with
  * g_object_unref().
  */
-ClutterImage* xfdashboard_image_content_new_for_gicon(GIcon *inIcon, gint inSize)
+ClutterContent* xfdashboard_image_content_new_for_gicon(GIcon *inIcon, gint inSize)
 {
 	ClutterImage		*image;
 	gchar				*key;
@@ -1232,7 +1235,7 @@ ClutterImage* xfdashboard_image_content_new_for_gicon(GIcon *inIcon, gint inSize
 	g_free(key);
 
 	/* Return ClutterImage */
-	return(image);
+	return(CLUTTER_CONTENT(image));
 }
 
 /* Create a new instance for GdkPixbuf object.
@@ -1242,7 +1245,7 @@ ClutterImage* xfdashboard_image_content_new_for_gicon(GIcon *inIcon, gint inSize
  * The return ClutterImage object (if not NULL) must be unreffed with
  * g_object_unref().
  */
-ClutterImage* xfdashboard_image_content_new_for_pixbuf(GdkPixbuf *inPixbuf)
+ClutterContent* xfdashboard_image_content_new_for_pixbuf(GdkPixbuf *inPixbuf)
 {
 	ClutterContent		*image;
 	GError				*error;
@@ -1277,7 +1280,7 @@ ClutterImage* xfdashboard_image_content_new_for_pixbuf(GdkPixbuf *inPixbuf)
 	}
 
 	/* Return ClutterImage */
-	return(CLUTTER_IMAGE(image));
+	return(CLUTTER_CONTENT(image));
 }
 
 /* Get size of image as specified when creating this object instance */
@@ -1301,4 +1304,31 @@ void xfdashboard_image_content_get_real_size(XfdashboardImageContent *self, gint
 	/* Store sizes computed */
 	if(outWidth) *outWidth=floor(w);
 	if(outHeight) *outHeight=floor(h);
+}
+
+/* Get loading state of image */
+XfdashboardImageContentLoadingState xfdashboard_image_content_get_state(XfdashboardImageContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_IMAGE_CONTENT(self), XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_NONE);
+
+	return(self->priv->loadState);
+}
+
+/* Force loading image if not available */
+void xfdashboard_image_content_force_load(XfdashboardImageContent *self)
+{
+	XfdashboardImageContentPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_IMAGE_CONTENT(self));
+
+	priv=self->priv;
+
+	/* If loading state is none then image was not loaded yet and is also
+	 * not being loaded currently. So enforce loading now.
+	 */
+	if(priv->loadState==XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_NONE)
+	{
+		g_message("Need to enforce loading '%s'", priv->iconName);
+		_xfdashboard_image_content_on_attached(CLUTTER_CONTENT(self), NULL, NULL);
+	}
 }

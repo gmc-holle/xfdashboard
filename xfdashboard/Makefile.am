@@ -36,6 +36,7 @@ xfdashboard_headers = \
 	drag-action.h \
 	drop-action.h \
 	dynamic-table-layout.h \
+	emblem-effect.h \
 	fill-box-layout.h \
 	focusable.h \
 	focus-manager.h \
@@ -97,6 +98,7 @@ xfdashboard_SOURCES = \
 	drag-action.c \
 	drop-action.c \
 	dynamic-table-layout.c \
+	emblem-effect.c \
 	fill-box-layout.c \
 	focusable.c \
 	focus-manager.c \

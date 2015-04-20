@@ -607,7 +607,7 @@ static void _xfdashboard_windows_view_on_drag_begin(ClutterDragAction *inAction,
 	ClutterActor					*dragHandle;
 	ClutterStage					*stage;
 	GdkPixbuf						*windowIcon;
-	ClutterImage					*image;
+	ClutterContent					*image;
 	XfdashboardLiveWindow			*liveWindow;
 
 	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
@@ -629,7 +629,7 @@ static void _xfdashboard_windows_view_on_drag_begin(ClutterDragAction *inAction,
 	dragHandle=xfdashboard_background_new();
 	clutter_actor_set_position(dragHandle, inStageX, inStageY);
 	clutter_actor_set_size(dragHandle, DEFAULT_DRAG_HANDLE_SIZE, DEFAULT_DRAG_HANDLE_SIZE);
-	xfdashboard_background_set_image(XFDASHBOARD_BACKGROUND(dragHandle), image);
+	xfdashboard_background_set_image(XFDASHBOARD_BACKGROUND(dragHandle), CLUTTER_IMAGE(image));
 	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
 
 	clutter_drag_action_set_drag_handle(inAction, dragHandle);
