@@ -19,6 +19,12 @@ XfdashboardStageInterface
 	background-image-type: desktop;
 }
 
+/* Image content */
+XfdashboardImageContent
+{
+	missing-icon-name: "image-missing";
+}
+
 /* Window content */
 XfdashboardWindowContent
 {

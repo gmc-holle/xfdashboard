@@ -32,6 +32,7 @@
 #include <math.h>
 
 #include "application.h"
+#include "stylable.h"
 
 #if GTK_CHECK_VERSION(3, 14 ,0)
 #undef USE_GTK_BUILTIN_ICONS
@@ -40,9 +41,12 @@
 #endif
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardImageContent,
-				xfdashboard_image_content,
-				CLUTTER_TYPE_IMAGE)
+static void _xfdashboard_image_content_stylable_iface_init(XfdashboardStylableInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardImageContent,
+						xfdashboard_image_content,
+						CLUTTER_TYPE_IMAGE,
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_STYLABLE, _xfdashboard_image_content_stylable_iface_init))
 
 /* Local definitions */
 typedef enum /*< skip,prefix=XFDASHBOARD_IMAGE_TYPE >*/
@@ -60,18 +64,19 @@ typedef enum /*< skip,prefix=XFDASHBOARD_IMAGE_TYPE >*/
 struct _XfdashboardImageContentPrivate
 {
 	/* Properties related */
-	gchar							*key;
+	gchar								*key;
+	gchar								*missingIconName;
 
 	/* Instance related */
-	XfdashboardImageType			type;
+	XfdashboardImageType				type;
 	XfdashboardImageContentLoadingState	loadState;
-	GtkIconTheme					*iconTheme;
-	gchar							*iconName;
-	GIcon							*gicon;
-	gint							iconSize;
+	GtkIconTheme						*iconTheme;
+	gchar								*iconName;
+	GIcon								*gicon;
+	gint								iconSize;
 
-	guint							contentAttachedSignalID;
-	guint							iconThemeChangedSignalID;
+	guint								contentAttachedSignalID;
+	guint								iconThemeChangedSignalID;
 };
 
 /* Properties */
@@ -80,6 +85,11 @@ enum
 	PROP_0,
 
 	PROP_KEY,
+	PROP_MISSING_ICON_NAME,
+
+	/* From interface: XfdashboardStylable */
+	PROP_STYLE_CLASSES,
+	PROP_STYLE_PSEUDO_CLASSES,
 
 	PROP_LAST
 };
@@ -101,7 +111,7 @@ static guint XfdashboardImageContentSignals[SIGNAL_LAST]={ 0, };
 static GHashTable*	_xfdashboard_image_content_cache=NULL;
 static guint		_xfdashboard_image_content_cache_shutdownSignalID=0;
 
-#define XFDASHBOARD_IMAGE_CONTENT_FALLBACK_ICON_NAME		"gtk-missing-image"
+#define XFDASHBOARD_IMAGE_CONTENT_DEFAULT_FALLBACK_ICON_NAME		"image-missing"
 
 /* Get image from cache if available */
 static ClutterImage* _xfdashboard_image_content_get_cached_image(const gchar *inKey)
@@ -364,7 +374,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 		g_warning(_("Icon file '%s' does not exist - trying fallback icon"), priv->iconName);
 
 		iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
-											XFDASHBOARD_IMAGE_CONTENT_FALLBACK_ICON_NAME,
+											priv->missingIconName,
 											priv->iconSize,
 #ifdef USE_GTK_BUILTIN_ICONS
 											GTK_ICON_LOOKUP_USE_BUILTIN);
@@ -606,7 +616,7 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 		g_warning(_("Could not lookup themed icon '%s'"), priv->iconName);
 
 		iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
-											XFDASHBOARD_IMAGE_CONTENT_FALLBACK_ICON_NAME,
+											priv->missingIconName,
 											priv->iconSize,
 											GTK_ICON_LOOKUP_USE_BUILTIN);
 	}
@@ -614,7 +624,7 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 	/* If we still got no icon info then we cannot load icon at all */
 	if(!iconInfo)
 	{
-		g_warning(_("Could not lookup fallback icon '%s' for icon '%s'"), XFDASHBOARD_IMAGE_CONTENT_FALLBACK_ICON_NAME, priv->iconName);
+		g_warning(_("Could not lookup fallback icon '%s' for icon '%s'"), priv->missingIconName, priv->iconName);
 		return;
 	}
 
@@ -734,7 +744,7 @@ static void _xfdashboard_image_content_load_from_gicon(XfdashboardImageContent *
 		g_warning(_("Could not lookup gicon '%s'"), g_icon_to_string(priv->gicon));
 
 		iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
-											XFDASHBOARD_IMAGE_CONTENT_FALLBACK_ICON_NAME,
+											priv->missingIconName,
 											priv->iconSize,
 											GTK_ICON_LOOKUP_USE_BUILTIN);
 	}
@@ -980,8 +990,11 @@ static void _xfdashboard_image_content_on_attached(ClutterContent *inContent,
 	priv->loadState=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADING;
 
 	/* Also disconnect signal handler as it should not be called anymore */
-	g_signal_handler_disconnect(self, priv->contentAttachedSignalID);
-	priv->contentAttachedSignalID=0;
+	if(priv->contentAttachedSignalID)
+	{
+		g_signal_handler_disconnect(self, priv->contentAttachedSignalID);
+		priv->contentAttachedSignalID=0;
+	}
 
 	/* Set empty image - just for the case loading failed at any point */
 	_xfdashboard_image_content_set_empty_image(self);
@@ -1009,6 +1022,54 @@ static void _xfdashboard_image_content_on_attached(ClutterContent *inContent,
 			g_warning(_("Cannot load image '%s' of unknown type %d"), priv->key, priv->type);
 			break;
 	}
+}
+
+/* IMPLEMENTATION: Interface XfdashboardStylable */
+
+/* Get stylable properties of stage */
+static void _xfdashboard_image_content_stylable_get_stylable_properties(XfdashboardStylable *inStylable,
+																			GHashTable *ioStylableProperties)
+{
+	g_return_if_fail(XFDASHBOARD_IS_STYLABLE(inStylable));
+
+	/* Add stylable properties to hashtable */
+	xfdashboard_stylable_add_stylable_property(inStylable, ioStylableProperties, "missing-icon-name");
+}
+
+/* Get/set style classes of stage */
+static const gchar* _xfdashboard_image_content_stylable_get_classes(XfdashboardStylable *inStylable)
+{
+	/* Not implemented */
+	return(NULL);
+}
+
+static void _xfdashboard_image_content_stylable_set_classes(XfdashboardStylable *inStylable, const gchar *inStyleClasses)
+{
+	/* Not implemented */
+}
+
+/* Get/set style pseudo-classes of stage */
+static const gchar* _xfdashboard_image_content_stylable_get_pseudo_classes(XfdashboardStylable *inStylable)
+{
+	/* Not implemented */
+	return(NULL);
+}
+
+static void _xfdashboard_image_content_stylable_set_pseudo_classes(XfdashboardStylable *inStylable, const gchar *inStylePseudoClasses)
+{
+	/* Not implemented */
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_image_content_stylable_iface_init(XfdashboardStylableInterface *iface)
+{
+	iface->get_stylable_properties=_xfdashboard_image_content_stylable_get_stylable_properties;
+	iface->get_classes=_xfdashboard_image_content_stylable_get_classes;
+	iface->set_classes=_xfdashboard_image_content_stylable_set_classes;
+	iface->get_pseudo_classes=_xfdashboard_image_content_stylable_get_pseudo_classes;
+	iface->set_pseudo_classes=_xfdashboard_image_content_stylable_set_pseudo_classes;
 }
 
 /* IMPLEMENTATION: GObject */
@@ -1057,7 +1118,7 @@ static void _xfdashboard_image_content_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_image_content_parent_class)->dispose(inObject);
 }
 
-/* Set properties */
+/* Set/get properties */
 static void _xfdashboard_image_content_set_property(GObject *inObject,
 													guint inPropID,
 													const GValue *inValue,
@@ -1069,6 +1130,30 @@ static void _xfdashboard_image_content_set_property(GObject *inObject,
 	{
 		case PROP_KEY:
 			_xfdashboard_image_content_store_in_cache(self, g_value_get_string(inValue));
+			break;
+
+		case PROP_MISSING_ICON_NAME:
+			xfdashboard_image_content_set_missing_icon_name(self, g_value_get_string(inValue));
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
+static void _xfdashboard_image_content_get_property(GObject *inObject,
+													guint inPropID,
+													GValue *outValue,
+													GParamSpec *inSpec)
+{
+	XfdashboardImageContent			*self=XFDASHBOARD_IMAGE_CONTENT(inObject);
+	XfdashboardImageContentPrivate	*priv=self->priv;
+
+	switch(inPropID)
+	{
+		case PROP_MISSING_ICON_NAME:
+			g_value_set_string(outValue, priv->missingIconName);
 			break;
 
 		default:
@@ -1083,11 +1168,16 @@ static void _xfdashboard_image_content_set_property(GObject *inObject,
  */
 void xfdashboard_image_content_class_init(XfdashboardImageContentClass *klass)
 {
-	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
+	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardStylableInterface	*stylableIface;
+	GParamSpec						*paramSpec;
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_image_content_dispose;
 	gobjectClass->set_property=_xfdashboard_image_content_set_property;
+	gobjectClass->get_property=_xfdashboard_image_content_get_property;
+
+	stylableIface=g_type_default_interface_ref(XFDASHBOARD_TYPE_STYLABLE);
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardImageContentPrivate));
@@ -1099,6 +1189,21 @@ void xfdashboard_image_content_class_init(XfdashboardImageContentClass *klass)
 							_("The hash key for caching this image"),
 							N_(""),
 							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
+
+	XfdashboardImageContentProperties[PROP_MISSING_ICON_NAME]=
+		g_param_spec_string("missing-icon-name",
+							_("Missing icon name"),
+							_("The icon's name to use when requested image cannot be loaded"),
+							XFDASHBOARD_IMAGE_CONTENT_DEFAULT_FALLBACK_ICON_NAME,
+							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS);
+
+	paramSpec=g_object_interface_find_property(stylableIface, "style-classes");
+	XfdashboardImageContentProperties[PROP_STYLE_CLASSES]=
+		g_param_spec_override("style-classes", paramSpec);
+
+	paramSpec=g_object_interface_find_property(stylableIface, "style-pseudo-classes");
+	XfdashboardImageContentProperties[PROP_STYLE_PSEUDO_CLASSES]=
+		g_param_spec_override("style-pseudo-classes", paramSpec);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardImageContentProperties);
 
@@ -1124,6 +1229,9 @@ void xfdashboard_image_content_class_init(XfdashboardImageContentClass *klass)
 						g_cclosure_marshal_VOID__VOID,
 						G_TYPE_NONE,
 						0);
+
+	/* Release allocated resources */
+	g_type_default_interface_unref(stylableIface);
 }
 
 /* Object initialization
@@ -1143,6 +1251,10 @@ void xfdashboard_image_content_init(XfdashboardImageContent *self)
 	priv->iconSize=0;
 	priv->loadState=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_NONE;
 	priv->iconTheme=gtk_icon_theme_get_default();
+	priv->missingIconName=g_strdup(XFDASHBOARD_IMAGE_CONTENT_DEFAULT_FALLBACK_ICON_NAME);
+
+	/* Style content */
+	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 
 	/* Connect to "attached" signal of ClutterContent to get notified
 	 * when this image is used. We will load image when this image is
@@ -1283,6 +1395,57 @@ ClutterContent* xfdashboard_image_content_new_for_pixbuf(GdkPixbuf *inPixbuf)
 	return(CLUTTER_CONTENT(image));
 }
 
+/* Get/set icon name to use when requested icon cannot be loaded */
+const gchar* xfdashboard_image_content_get_missing_icon_name(XfdashboardImageContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_IMAGE_CONTENT(self), NULL);
+
+	return(self->priv->missingIconName);
+}
+
+void xfdashboard_image_content_set_missing_icon_name(XfdashboardImageContent *self, const gchar *inMissingIconName)
+{
+	XfdashboardImageContentPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_IMAGE_CONTENT(self));
+	g_return_if_fail(inMissingIconName && *inMissingIconName);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->missingIconName, inMissingIconName)!=0)
+	{
+		/* Set value */
+		if(priv->missingIconName)
+		{
+			g_free(priv->missingIconName);
+			priv->missingIconName=NULL;
+		}
+
+		if(inMissingIconName) priv->missingIconName=g_strdup(inMissingIconName);
+
+		/* If this image content is a failed one then reload it */
+		if(priv->loadState==XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_FAILED)
+		{
+			/* Set state of image to "not-loaded" */
+			priv->loadState=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_NONE;
+
+			/* Call signal handler for first-time attached image content which
+			 * will set up an empty image first and then tries to load the image.
+			 * It is likely to fail again but then it will show the new missing
+			 * icon instead of the old one.
+			 */
+			_xfdashboard_image_content_on_attached(CLUTTER_CONTENT(self), NULL, NULL);
+		}
+
+		/* Invalidate ourselve to get us redrawn */
+		clutter_content_invalidate(CLUTTER_CONTENT(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardImageContentProperties[PROP_MISSING_ICON_NAME]);
+	}
+}
+
 /* Get size of image as specified when creating this object instance */
 gint xfdashboard_image_content_get_size(XfdashboardImageContent *self)
 {
@@ -1328,7 +1491,7 @@ void xfdashboard_image_content_force_load(XfdashboardImageContent *self)
 	 */
 	if(priv->loadState==XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_NONE)
 	{
-		g_message("Need to enforce loading '%s'", priv->iconName);
+		g_debug("Need to enforce loading '%s'", priv->iconName);
 		_xfdashboard_image_content_on_attached(CLUTTER_CONTENT(self), NULL, NULL);
 	}
 }
