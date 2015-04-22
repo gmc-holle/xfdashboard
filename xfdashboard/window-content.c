@@ -45,6 +45,7 @@
 #include "marshal.h"
 #include "stylable.h"
 #include "window-tracker.h"
+#include "enums.h"
 
 /* Definitions */
 typedef enum
@@ -84,7 +85,7 @@ struct _XfdashboardWindowContentPrivate
 	gfloat									unmappedWindowIconYAlign;
 	gfloat									unmappedWindowIconXScale;
 	gfloat									unmappedWindowIconYScale;
-	ClutterGravity							unmappedWindowIconGravity;
+	XfdashboardAnchorPoint					unmappedWindowIconAnchorPoint;
 
 	gchar									*styleClasses;
 	gchar									*stylePseudoClasses;
@@ -127,6 +128,9 @@ enum
 	PROP_UNMAPPED_WINDOW_ICON_Y_ALIGN,
 	PROP_UNMAPPED_WINDOW_ICON_X_SCALE,
 	PROP_UNMAPPED_WINDOW_ICON_Y_SCALE,
+	PROP_UNMAPPED_WINDOW_ICON_ANCHOR_POINT,
+
+	/* DEPRECATED */
 	PROP_UNMAPPED_WINDOW_ICON_GRAVITY,
 
 	/* From interface: XfdashboardStylable */
@@ -1089,29 +1093,29 @@ static void _xdashboard_window_content_clutter_content_iface_paint_content(Clutt
 
 			/* Get boundary in X axis depending on gravity and scaled width */
 			offset=(priv->unmappedWindowIconXAlign*allocationWidth);
-			switch(priv->unmappedWindowIconGravity)
+			switch(priv->unmappedWindowIconAnchorPoint)
 			{
 				/* Align to left boundary.
 				 * This is also the default if gravity is none or undefined.
 				 */
 				default:
-				case CLUTTER_GRAVITY_NONE:
-				case CLUTTER_GRAVITY_WEST:
-				case CLUTTER_GRAVITY_NORTH_WEST:
-				case CLUTTER_GRAVITY_SOUTH_WEST:
+				case XFDASHBOARD_ANCHOR_POINT_NONE:
+				case XFDASHBOARD_ANCHOR_POINT_WEST:
+				case XFDASHBOARD_ANCHOR_POINT_NORTH_WEST:
+				case XFDASHBOARD_ANCHOR_POINT_SOUTH_WEST:
 					break;
 
 				/* Align to center of X axis */
-				case CLUTTER_GRAVITY_CENTER:
-				case CLUTTER_GRAVITY_NORTH:
-				case CLUTTER_GRAVITY_SOUTH:
+				case XFDASHBOARD_ANCHOR_POINT_CENTER:
+				case XFDASHBOARD_ANCHOR_POINT_NORTH:
+				case XFDASHBOARD_ANCHOR_POINT_SOUTH:
 					offset-=(textureWidth/2.0f);
 					break;
 
 				/* Align to right boundary */
-				case CLUTTER_GRAVITY_EAST:
-				case CLUTTER_GRAVITY_NORTH_EAST:
-				case CLUTTER_GRAVITY_SOUTH_EAST:
+				case XFDASHBOARD_ANCHOR_POINT_EAST:
+				case XFDASHBOARD_ANCHOR_POINT_NORTH_EAST:
+				case XFDASHBOARD_ANCHOR_POINT_SOUTH_EAST:
 					offset-=textureWidth;
 					break;
 			}
@@ -1151,29 +1155,29 @@ static void _xdashboard_window_content_clutter_content_iface_paint_content(Clutt
 
 			/* Get boundary in Y axis depending on gravity and scaled width */
 			offset=(priv->unmappedWindowIconYAlign*allocationHeight);
-			switch(priv->unmappedWindowIconGravity)
+			switch(priv->unmappedWindowIconAnchorPoint)
 			{
 				/* Align to upper boundary.
 				 * This is also the default if gravity is none or undefined.
 				 */
 				default:
-				case CLUTTER_GRAVITY_NONE:
-				case CLUTTER_GRAVITY_NORTH:
-				case CLUTTER_GRAVITY_NORTH_WEST:
-				case CLUTTER_GRAVITY_NORTH_EAST:
+				case XFDASHBOARD_ANCHOR_POINT_NONE:
+				case XFDASHBOARD_ANCHOR_POINT_NORTH:
+				case XFDASHBOARD_ANCHOR_POINT_NORTH_WEST:
+				case XFDASHBOARD_ANCHOR_POINT_NORTH_EAST:
 					break;
 
 				/* Align to center of Y axis */
-				case CLUTTER_GRAVITY_CENTER:
-				case CLUTTER_GRAVITY_WEST:
-				case CLUTTER_GRAVITY_EAST:
+				case XFDASHBOARD_ANCHOR_POINT_CENTER:
+				case XFDASHBOARD_ANCHOR_POINT_WEST:
+				case XFDASHBOARD_ANCHOR_POINT_EAST:
 					offset-=(textureHeight/2.0f);
 					break;
 
 				/* Align to lower boundary */
-				case CLUTTER_GRAVITY_SOUTH:
-				case CLUTTER_GRAVITY_SOUTH_WEST:
-				case CLUTTER_GRAVITY_SOUTH_EAST:
+				case XFDASHBOARD_ANCHOR_POINT_SOUTH:
+				case XFDASHBOARD_ANCHOR_POINT_SOUTH_WEST:
+				case XFDASHBOARD_ANCHOR_POINT_SOUTH_EAST:
 					offset-=textureHeight;
 					break;
 			}
@@ -1318,6 +1322,9 @@ static void _xfdashboard_window_content_stylable_get_stylable_properties(Xfdashb
 	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-y-align");
 	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-x-scale");
 	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-y-scale");
+	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-anchor-point");
+
+	/* DEPRECATED */
 	xfdashboard_stylable_add_stylable_property(self, ioStylableProperties, "unmapped-window-icon-gravity");
 }
 
@@ -1474,8 +1481,13 @@ static void _xfdashboard_window_content_set_property(GObject *inObject,
 			xfdashboard_window_content_set_unmapped_window_icon_y_scale(self, g_value_get_float(inValue));
 			break;
 
+		/* DEPRECATED */
 		case PROP_UNMAPPED_WINDOW_ICON_GRAVITY:
 			xfdashboard_window_content_set_unmapped_window_icon_gravity(self, g_value_get_enum(inValue));
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_ANCHOR_POINT:
+			xfdashboard_window_content_set_unmapped_window_icon_anchor_point(self, g_value_get_enum(inValue));
 			break;
 
 		case PROP_STYLE_CLASSES:
@@ -1546,8 +1558,13 @@ static void _xfdashboard_window_content_get_property(GObject *inObject,
 			g_value_set_float(outValue, priv->unmappedWindowIconYScale);
 			break;
 
+		/* DEPRECATED */
 		case PROP_UNMAPPED_WINDOW_ICON_GRAVITY:
-			g_value_set_enum(outValue, priv->unmappedWindowIconGravity);
+			g_value_set_enum(outValue, xfdashboard_window_content_get_unmapped_window_icon_gravity(self));
+			break;
+
+		case PROP_UNMAPPED_WINDOW_ICON_ANCHOR_POINT:
+			g_value_set_enum(outValue, priv->unmappedWindowIconAnchorPoint);
 			break;
 
 		case PROP_STYLE_CLASSES:
@@ -1667,12 +1684,23 @@ void xfdashboard_window_content_class_init(XfdashboardWindowContentClass *klass)
 							1.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/* DEPRECATED: Property 'unmapped-window-icon-gravity' is deprecated.
+	 *             Use property 'unmapped-window-icon-anchor-point' instead.
+	 */
 	XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_GRAVITY]=
 		g_param_spec_enum("unmapped-window-icon-gravity",
 							_("Unmapped window icon gravity"),
-							_("The anchor point of unmapped window icon"),
+							_("The gravity (anchor point) of unmapped window icon - Deprecated. Use property 'anchor-point' instead."),
 							CLUTTER_TYPE_GRAVITY,
 							CLUTTER_GRAVITY_NONE,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_ANCHOR_POINT]=
+		g_param_spec_enum("unmapped-window-icon-anchor-point",
+							_("Unmapped window icon anchor point"),
+							_("The anchor point of unmapped window icon"),
+							XFDASHBOARD_TYPE_ANCHOR_POINT,
+							XFDASHBOARD_ANCHOR_POINT_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	paramSpec=g_object_interface_find_property(stylableIface, "style-classes");
@@ -1724,7 +1752,7 @@ void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 	priv->unmappedWindowIconYAlign=0.0f;
 	priv->unmappedWindowIconXScale=1.0f;
 	priv->unmappedWindowIconYScale=1.0f;
-	priv->unmappedWindowIconGravity=CLUTTER_GRAVITY_NONE;
+	priv->unmappedWindowIconAnchorPoint=XFDASHBOARD_ANCHOR_POINT_NONE;
 
 	/* Check extensions (will only be done once) */
 	_xfdashboard_window_content_check_extension();
@@ -2099,34 +2127,150 @@ void xfdashboard_window_content_set_unmapped_window_icon_y_scale(XfdashboardWind
 	}
 }
 
-/* Get/set gravity (anchor point) of unmapped window icon */
+/* DEPRECATED: Get/set gravity (anchor point) of unmapped window icon */
 ClutterGravity xfdashboard_window_content_get_unmapped_window_icon_gravity(XfdashboardWindowContent *self)
 {
+	XfdashboardWindowContentPrivate		*priv;
+	ClutterGravity						gravity;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self), CLUTTER_GRAVITY_NONE);
 
-	return(self->priv->unmappedWindowIconGravity);
+	priv=self->priv;
+	gravity=CLUTTER_GRAVITY_NONE;
+
+	switch(priv->unmappedWindowIconAnchorPoint)
+	{
+		case XFDASHBOARD_ANCHOR_POINT_NONE:
+			gravity=CLUTTER_GRAVITY_NONE;
+			break;
+
+		case XFDASHBOARD_ANCHOR_POINT_NORTH:
+			gravity=CLUTTER_GRAVITY_NORTH;
+			break;
+
+		case XFDASHBOARD_ANCHOR_POINT_NORTH_WEST:
+			gravity=CLUTTER_GRAVITY_NORTH_WEST;
+			break;
+
+		case XFDASHBOARD_ANCHOR_POINT_NORTH_EAST:
+			gravity=CLUTTER_GRAVITY_NORTH_EAST;
+			break;
+
+		case XFDASHBOARD_ANCHOR_POINT_SOUTH:
+			gravity=CLUTTER_GRAVITY_SOUTH;
+			break;
+
+		case XFDASHBOARD_ANCHOR_POINT_SOUTH_WEST:
+			gravity=CLUTTER_GRAVITY_SOUTH_WEST;
+			break;
+
+		case XFDASHBOARD_ANCHOR_POINT_SOUTH_EAST:
+			gravity=CLUTTER_GRAVITY_SOUTH_EAST;
+			break;
+
+		case XFDASHBOARD_ANCHOR_POINT_WEST:
+			gravity=CLUTTER_GRAVITY_WEST;
+			break;
+
+		case XFDASHBOARD_ANCHOR_POINT_EAST:
+			gravity=CLUTTER_GRAVITY_EAST;
+			break;
+
+		case XFDASHBOARD_ANCHOR_POINT_CENTER:
+			gravity=CLUTTER_GRAVITY_CENTER;
+			break;
+	}
+
+	return(gravity);
 }
 
 void xfdashboard_window_content_set_unmapped_window_icon_gravity(XfdashboardWindowContent *self, const ClutterGravity inGravity)
 {
-	XfdashboardWindowContentPrivate		*priv;
+	XfdashboardAnchorPoint				anchorPoint;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
 	g_return_if_fail(inGravity>=CLUTTER_GRAVITY_NONE);
 	g_return_if_fail(inGravity<=CLUTTER_GRAVITY_CENTER);
 
+	anchorPoint=XFDASHBOARD_ANCHOR_POINT_NONE;
+
+	g_warning("Setting deprecated property 'unmapped-window-icon-gravity' at %s", G_OBJECT_TYPE_NAME(self));
+
+	/* Convert gravity to anchor point */
+	switch(inGravity)
+	{
+		case CLUTTER_GRAVITY_NONE:
+			anchorPoint=XFDASHBOARD_ANCHOR_POINT_NONE;
+			break;
+
+		case CLUTTER_GRAVITY_NORTH:
+			anchorPoint=XFDASHBOARD_ANCHOR_POINT_NORTH;
+			break;
+
+		case CLUTTER_GRAVITY_NORTH_WEST:
+			anchorPoint=XFDASHBOARD_ANCHOR_POINT_NORTH_WEST;
+			break;
+
+		case CLUTTER_GRAVITY_NORTH_EAST:
+			anchorPoint=XFDASHBOARD_ANCHOR_POINT_NORTH_EAST;
+			break;
+
+		case CLUTTER_GRAVITY_SOUTH:
+			anchorPoint=XFDASHBOARD_ANCHOR_POINT_SOUTH;
+			break;
+
+		case CLUTTER_GRAVITY_SOUTH_WEST:
+			anchorPoint=XFDASHBOARD_ANCHOR_POINT_SOUTH_WEST;
+			break;
+
+		case CLUTTER_GRAVITY_SOUTH_EAST:
+			anchorPoint=XFDASHBOARD_ANCHOR_POINT_SOUTH_EAST;
+			break;
+
+		case CLUTTER_GRAVITY_WEST:
+			anchorPoint=XFDASHBOARD_ANCHOR_POINT_WEST;
+			break;
+
+		case CLUTTER_GRAVITY_EAST:
+			anchorPoint=XFDASHBOARD_ANCHOR_POINT_EAST;
+			break;
+
+		case CLUTTER_GRAVITY_CENTER:
+			anchorPoint=XFDASHBOARD_ANCHOR_POINT_CENTER;
+			break;
+	}
+
+	xfdashboard_window_content_set_unmapped_window_icon_anchor_point(self, anchorPoint);
+}
+
+/* Get/set anchor point of unmapped window icon */
+XfdashboardAnchorPoint xfdashboard_window_content_get_unmapped_window_icon_anchor_point(XfdashboardWindowContent *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self), XFDASHBOARD_ANCHOR_POINT_NONE);
+
+	return(self->priv->unmappedWindowIconAnchorPoint);
+}
+
+void xfdashboard_window_content_set_unmapped_window_icon_anchor_point(XfdashboardWindowContent *self, const XfdashboardAnchorPoint inAnchorPoint)
+{
+	XfdashboardWindowContentPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+	g_return_if_fail(inAnchorPoint>=XFDASHBOARD_ANCHOR_POINT_NONE);
+	g_return_if_fail(inAnchorPoint<=XFDASHBOARD_ANCHOR_POINT_CENTER);
+
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->unmappedWindowIconGravity!=inGravity)
+	if(priv->unmappedWindowIconAnchorPoint!=inAnchorPoint)
 	{
 		/* Set value */
-		priv->unmappedWindowIconGravity=inGravity;
+		priv->unmappedWindowIconAnchorPoint=inAnchorPoint;
 
 		/* Invalidate ourselve to get us redrawn */
 		clutter_content_invalidate(CLUTTER_CONTENT(self));
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_GRAVITY]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_UNMAPPED_WINDOW_ICON_ANCHOR_POINT]);
 	}
 }
