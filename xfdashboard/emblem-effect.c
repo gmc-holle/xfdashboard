@@ -51,6 +51,7 @@ struct _XfdashboardEmblemEffectPrivate
 	/* Properties related */
 	gchar						*iconName;
 	gint						iconSize;
+	gfloat						padding;
 	gfloat						xAlign;
 	gfloat						yAlign;
 	XfdashboardAnchorPoint		anchorPoint;
@@ -70,6 +71,7 @@ enum
 
 	PROP_ICON_NAME,
 	PROP_ICON_SIZE,
+	PROP_PADDING,
 	PROP_X_ALIGN,
 	PROP_Y_ALIGN,
 	PROP_ANCHOR_POINT,
@@ -180,8 +182,23 @@ static void _xfdashboard_emblem_effect_paint(ClutterEffect *inEffect, ClutterEff
 			}
 	}
 
-	/* Get actor size */
+	/* Get actor size and apply padding. If actor width or height will drop
+	 * to zero or below then the emblem could not be drawn and we return here.
+	 */
 	clutter_actor_get_content_box(target, &actorBox);
+	actorBox.x1+=priv->padding;
+	actorBox.x2-=priv->padding;
+	actorBox.y1+=priv->padding;
+	actorBox.y2-=priv->padding;
+
+	if(actorBox.x2<=actorBox.x1 ||
+		actorBox.y2<=actorBox.y1)
+	{
+		g_debug("Will not draw emblem '%s' because width or height of actor is zero or below after padding was applied.",
+				priv->iconName);
+		return;
+	}
+
 	actorWidth=actorBox.x2-actorBox.x1;
 	actorHeight=actorBox.y2-actorBox.y1;
 
@@ -367,6 +384,10 @@ static void _xfdashboard_emblem_effect_set_property(GObject *inObject,
 			xfdashboard_emblem_effect_set_icon_size(self, g_value_get_int(inValue));
 			break;
 
+		case PROP_PADDING:
+			xfdashboard_emblem_effect_set_padding(self, g_value_get_float(inValue));
+			break;
+
 		case PROP_X_ALIGN:
 			xfdashboard_emblem_effect_set_x_align(self, g_value_get_float(inValue));
 			break;
@@ -401,6 +422,10 @@ static void _xfdashboard_emblem_effect_get_property(GObject *inObject,
 
 		case PROP_ICON_SIZE:
 			g_value_set_int(outValue, priv->iconSize);
+			break;
+
+		case PROP_PADDING:
+			g_value_set_float(outValue, priv->padding);
 			break;
 
 		case PROP_X_ALIGN:
@@ -456,6 +481,14 @@ static void xfdashboard_emblem_effect_class_init(XfdashboardEmblemEffectClass *k
 							16,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardEmblemEffectProperties[PROP_PADDING]=
+		g_param_spec_float("padding",
+							_("Padding"),
+							_("Padding around emblem"),
+							0.0f, G_MAXFLOAT,
+							0.0f,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	XfdashboardEmblemEffectProperties[PROP_X_ALIGN]=
 		g_param_spec_float("x-align",
 							_("X align"),
@@ -494,7 +527,8 @@ static void xfdashboard_emblem_effect_init(XfdashboardEmblemEffect *self)
 
 	/* Set up default values */
 	priv->iconName=NULL;
-	priv->iconSize=16.0f;
+	priv->iconSize=16;
+	priv->padding=0.0f;
 	priv->xAlign=0.0f;
 	priv->yAlign=0.0f;
 	priv->anchorPoint=XFDASHBOARD_ANCHOR_POINT_NONE;
@@ -602,6 +636,37 @@ void xfdashboard_emblem_effect_set_icon_size(XfdashboardEmblemEffect *self, cons
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardEmblemEffectProperties[PROP_ICON_SIZE]);
+	}
+}
+
+/* Get/set x align of emblem */
+gfloat xfdashboard_emblem_effect_get_padding(XfdashboardEmblemEffect *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_EMBLEM_EFFECT(self), 0.0f);
+
+	return(self->priv->padding);
+}
+
+void xfdashboard_emblem_effect_set_padding(XfdashboardEmblemEffect *self, const gfloat inPadding)
+{
+	XfdashboardEmblemEffectPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_EMBLEM_EFFECT(self));
+	g_return_if_fail(inPadding>=0.0f);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->padding!=inPadding)
+	{
+		/* Set value */
+		priv->padding=inPadding;
+
+		/* Invalidate effect to get it redrawn */
+		clutter_effect_queue_repaint(CLUTTER_EFFECT(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardEmblemEffectProperties[PROP_PADDING]);
 	}
 }
 

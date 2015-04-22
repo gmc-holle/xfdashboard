@@ -68,6 +68,9 @@ void xfdashboard_emblem_effect_set_icon_name(XfdashboardEmblemEffect *self, cons
 gint xfdashboard_emblem_effect_get_icon_size(XfdashboardEmblemEffect *self);
 void xfdashboard_emblem_effect_set_icon_size(XfdashboardEmblemEffect *self, const gint inSize);
 
+gfloat xfdashboard_emblem_effect_get_padding(XfdashboardEmblemEffect *self);
+void xfdashboard_emblem_effect_set_padding(XfdashboardEmblemEffect *self, const gfloat inPadding);
+
 gfloat xfdashboard_emblem_effect_get_x_align(XfdashboardEmblemEffect *self);
 void xfdashboard_emblem_effect_set_x_align(XfdashboardEmblemEffect *self, const gfloat inAlign);
 
