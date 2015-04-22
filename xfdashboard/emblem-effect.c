@@ -53,7 +53,7 @@ struct _XfdashboardEmblemEffectPrivate
 	gint						iconSize;
 	gfloat						xAlign;
 	gfloat						yAlign;
-	ClutterGravity				gravity;
+	XfdashboardAnchorPoint		anchorPoint;
 
 	/* Instance related */
 	ClutterContent				*icon;
@@ -72,7 +72,7 @@ enum
 	PROP_ICON_SIZE,
 	PROP_X_ALIGN,
 	PROP_Y_ALIGN,
-	PROP_GRAVITY,
+	PROP_ANCHOR_POINT,
 
 	PROP_LAST
 };
@@ -189,31 +189,31 @@ static void _xfdashboard_emblem_effect_paint(ClutterEffect *inEffect, ClutterEff
 	clutter_content_get_preferred_size(CLUTTER_CONTENT(priv->icon), &textureWidth, &textureHeight);
 	clutter_actor_box_init(&textureCoordBox, 0.0f, 0.0f, 1.0f, 1.0f);
 
-	/* Get boundary in X axis depending on gravity and scaled width */
+	/* Get boundary in X axis depending on anchorPoint and scaled width */
 	offset=(priv->xAlign*actorWidth);
-	switch(priv->gravity)
+	switch(priv->anchorPoint)
 	{
 		/* Align to left boundary.
-		 * This is also the default if gravity is none or undefined.
+		 * This is also the default if anchor point is none or undefined.
 		 */
 		default:
-		case CLUTTER_GRAVITY_NONE:
-		case CLUTTER_GRAVITY_WEST:
-		case CLUTTER_GRAVITY_NORTH_WEST:
-		case CLUTTER_GRAVITY_SOUTH_WEST:
+		case XFDASHBOARD_ANCHOR_POINT_NONE:
+		case XFDASHBOARD_ANCHOR_POINT_WEST:
+		case XFDASHBOARD_ANCHOR_POINT_NORTH_WEST:
+		case XFDASHBOARD_ANCHOR_POINT_SOUTH_WEST:
 			break;
 
 		/* Align to center of X axis */
-		case CLUTTER_GRAVITY_CENTER:
-		case CLUTTER_GRAVITY_NORTH:
-		case CLUTTER_GRAVITY_SOUTH:
+		case XFDASHBOARD_ANCHOR_POINT_CENTER:
+		case XFDASHBOARD_ANCHOR_POINT_NORTH:
+		case XFDASHBOARD_ANCHOR_POINT_SOUTH:
 			offset-=(textureWidth/2.0f);
 			break;
 
 		/* Align to right boundary */
-		case CLUTTER_GRAVITY_EAST:
-		case CLUTTER_GRAVITY_NORTH_EAST:
-		case CLUTTER_GRAVITY_SOUTH_EAST:
+		case XFDASHBOARD_ANCHOR_POINT_EAST:
+		case XFDASHBOARD_ANCHOR_POINT_NORTH_EAST:
+		case XFDASHBOARD_ANCHOR_POINT_SOUTH_EAST:
 			offset-=textureWidth;
 			break;
 	}
@@ -237,31 +237,31 @@ static void _xfdashboard_emblem_effect_paint(ClutterEffect *inEffect, ClutterEff
 		rectangleBox.x2=actorBox.x2;
 	}
 
-	/* Get boundary in Y axis depending on gravity and scaled width */
+	/* Get boundary in Y axis depending on anchorPoint and scaled width */
 	offset=(priv->yAlign*actorHeight);
-	switch(priv->gravity)
+	switch(priv->anchorPoint)
 	{
 		/* Align to upper boundary.
-		 * This is also the default if gravity is none or undefined.
+		 * This is also the default if anchor point is none or undefined.
 		 */
 		default:
-		case CLUTTER_GRAVITY_NONE:
-		case CLUTTER_GRAVITY_NORTH:
-		case CLUTTER_GRAVITY_NORTH_WEST:
-		case CLUTTER_GRAVITY_NORTH_EAST:
+		case XFDASHBOARD_ANCHOR_POINT_NONE:
+		case XFDASHBOARD_ANCHOR_POINT_NORTH:
+		case XFDASHBOARD_ANCHOR_POINT_NORTH_WEST:
+		case XFDASHBOARD_ANCHOR_POINT_NORTH_EAST:
 			break;
 
 		/* Align to center of Y axis */
-		case CLUTTER_GRAVITY_CENTER:
-		case CLUTTER_GRAVITY_WEST:
-		case CLUTTER_GRAVITY_EAST:
+		case XFDASHBOARD_ANCHOR_POINT_CENTER:
+		case XFDASHBOARD_ANCHOR_POINT_WEST:
+		case XFDASHBOARD_ANCHOR_POINT_EAST:
 			offset-=(textureHeight/2.0f);
 			break;
 
 		/* Align to lower boundary */
-		case CLUTTER_GRAVITY_SOUTH:
-		case CLUTTER_GRAVITY_SOUTH_WEST:
-		case CLUTTER_GRAVITY_SOUTH_EAST:
+		case XFDASHBOARD_ANCHOR_POINT_SOUTH:
+		case XFDASHBOARD_ANCHOR_POINT_SOUTH_WEST:
+		case XFDASHBOARD_ANCHOR_POINT_SOUTH_EAST:
 			offset-=textureHeight;
 			break;
 	}
@@ -375,8 +375,8 @@ static void _xfdashboard_emblem_effect_set_property(GObject *inObject,
 			xfdashboard_emblem_effect_set_y_align(self, g_value_get_float(inValue));
 			break;
 
-		case PROP_GRAVITY:
-			xfdashboard_emblem_effect_set_gravity(self, g_value_get_enum(inValue));
+		case PROP_ANCHOR_POINT:
+			xfdashboard_emblem_effect_set_anchor_point(self, g_value_get_enum(inValue));
 			break;
 
 		default:
@@ -411,8 +411,8 @@ static void _xfdashboard_emblem_effect_get_property(GObject *inObject,
 			g_value_set_float(outValue, priv->yAlign);
 			break;
 
-		case PROP_GRAVITY:
-			g_value_set_enum(outValue, priv->gravity);
+		case PROP_ANCHOR_POINT:
+			g_value_set_enum(outValue, priv->anchorPoint);
 			break;
 
 		default:
@@ -472,12 +472,12 @@ static void xfdashboard_emblem_effect_class_init(XfdashboardEmblemEffectClass *k
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
-	XfdashboardEmblemEffectProperties[PROP_GRAVITY]=
-		g_param_spec_enum("gravity",
-							_("Gravity"),
+	XfdashboardEmblemEffectProperties[PROP_ANCHOR_POINT]=
+		g_param_spec_enum("anchor-point",
+							_("Anchor point"),
 							_("The anchor point of emblem"),
-							CLUTTER_TYPE_GRAVITY,
-							CLUTTER_GRAVITY_NONE,
+							XFDASHBOARD_TYPE_ANCHOR_POINT,
+							XFDASHBOARD_ANCHOR_POINT_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardEmblemEffectProperties);
@@ -497,7 +497,7 @@ static void xfdashboard_emblem_effect_init(XfdashboardEmblemEffect *self)
 	priv->iconSize=16.0f;
 	priv->xAlign=0.0f;
 	priv->yAlign=0.0f;
-	priv->gravity=CLUTTER_GRAVITY_NONE;
+	priv->anchorPoint=XFDASHBOARD_ANCHOR_POINT_NONE;
 	priv->icon=NULL;
 	priv->loadSuccessSignalID=0;
 	priv->loadFailedSignalID=0;
@@ -667,34 +667,34 @@ void xfdashboard_emblem_effect_set_y_align(XfdashboardEmblemEffect *self, const 
 	}
 }
 
-/* Get/set gravity (anchor point) of emblem */
-ClutterGravity xfdashboard_emblem_effect_get_gravity(XfdashboardEmblemEffect *self)
+/* Get/set anchor point of emblem */
+XfdashboardAnchorPoint xfdashboard_emblem_effect_get_anchor_point(XfdashboardEmblemEffect *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_EMBLEM_EFFECT(self), CLUTTER_GRAVITY_NONE);
+	g_return_val_if_fail(XFDASHBOARD_IS_EMBLEM_EFFECT(self), XFDASHBOARD_ANCHOR_POINT_NORTH_WEST);
 
-	return(self->priv->gravity);
+	return(self->priv->anchorPoint);
 }
 
-void xfdashboard_emblem_effect_set_gravity(XfdashboardEmblemEffect *self, const ClutterGravity inGravity)
+void xfdashboard_emblem_effect_set_anchor_point(XfdashboardEmblemEffect *self, const XfdashboardAnchorPoint inAnchorPoint)
 {
 	XfdashboardEmblemEffectPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_EMBLEM_EFFECT(self));
-	g_return_if_fail(inGravity>=CLUTTER_GRAVITY_NONE);
-	g_return_if_fail(inGravity<=CLUTTER_GRAVITY_CENTER);
+	g_return_if_fail(inAnchorPoint>=XFDASHBOARD_ANCHOR_POINT_NONE);
+	g_return_if_fail(inAnchorPoint<=XFDASHBOARD_ANCHOR_POINT_CENTER);
 
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->gravity!=inGravity)
+	if(priv->anchorPoint!=inAnchorPoint)
 	{
 		/* Set value */
-		priv->gravity=inGravity;
+		priv->anchorPoint=inAnchorPoint;
 
 		/* Invalidate effect to get it redrawn */
 		clutter_effect_queue_repaint(CLUTTER_EFFECT(self));
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardEmblemEffectProperties[PROP_GRAVITY]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardEmblemEffectProperties[PROP_ANCHOR_POINT]);
 	}
 }

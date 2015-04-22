@@ -74,8 +74,8 @@ void xfdashboard_emblem_effect_set_x_align(XfdashboardEmblemEffect *self, const 
 gfloat xfdashboard_emblem_effect_get_y_align(XfdashboardEmblemEffect *self);
 void xfdashboard_emblem_effect_set_y_align(XfdashboardEmblemEffect *self, const gfloat inAlign);
 
-ClutterGravity xfdashboard_emblem_effect_get_gravity(XfdashboardEmblemEffect *self);
-void xfdashboard_emblem_effect_set_gravity(XfdashboardEmblemEffect *self, const ClutterGravity inGravity);
+XfdashboardAnchorPoint xfdashboard_emblem_effect_get_anchor_point(XfdashboardEmblemEffect *self);
+void xfdashboard_emblem_effect_set_anchor_point(XfdashboardEmblemEffect *self, const XfdashboardAnchorPoint inAnchorPoint);
 
 G_END_DECLS
 
