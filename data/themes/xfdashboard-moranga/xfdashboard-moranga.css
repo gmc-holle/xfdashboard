@@ -10,7 +10,7 @@ XfdashboardWindowContent
 	unmapped-window-icon-y-align: 0.5;
 	unmapped-window-icon-x-scale: 2.0;
 	unmapped-window-icon-y-scale: 2.0;
-	unmapped-window-icon-gravity: center;
+	unmapped-window-icon-anchor-point: center;
 }
 
 /* icons */
