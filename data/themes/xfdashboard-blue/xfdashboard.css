@@ -19,6 +19,12 @@ XfdashboardStageInterface
 	background-image-type: desktop;
 }
 
+/* Image content */
+XfdashboardImageContent
+{
+	missing-icon-name: "image-missing";
+}
+
 /* Window content */
 XfdashboardWindowContent
 {
@@ -152,6 +158,11 @@ XfdashboardLiveWindow .window-number
 	color: white;
 	background-type: fill rounded-corners;
 	corner-radius: 4.0;
+}
+
+XfdashboardLiveWindow.window-state-urgent
+{
+	effects: window-urgency;
 }
 
 .drag-actor-XfdashboardLiveWindow:drag-handle
