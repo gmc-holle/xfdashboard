@@ -1508,41 +1508,48 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(Xfdas
 {
 	XfdashboardWindowTrackerPrivate		*priv;
 	gulong								backgroundWindowID;
-	WnckWindow							*backgroundWindow;
+	GList								*windows;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
 
 	priv=self->priv;
 
-	/* Return root window (the desktop) */
+	/* Find and return root window (the desktop) by known ID */
 	backgroundWindowID=wnck_screen_get_background_pixmap(priv->screen);
-	if(!backgroundWindowID)
+	if(backgroundWindowID)
 	{
-		GList							*windows;
-		WnckWindow						*window;
-		WnckWindowType					windowType;
+		WnckWindow						*backgroundWindow;
 
-		backgroundWindow=NULL;
-		for(windows=wnck_screen_get_windows(priv->screen); !backgroundWindowID && windows; windows=g_list_next(windows))
+		backgroundWindow=wnck_window_get(backgroundWindowID);
+		if(backgroundWindow)
 		{
-			window=(WnckWindow*)windows->data;
-			windowType=wnck_window_get_window_type(window);
-			if(windowType==WNCK_WINDOW_DESKTOP) backgroundWindowID=wnck_window_get_xid(window);
+			g_debug("Found desktop window by known background pixmap ID");
+			return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(backgroundWindow));
 		}
 	}
 
-	if(!backgroundWindowID)
+	/* Either there was no known ID for the root window or the root window
+	 * could not be found (happened a lot when running in daemon mode).
+	 * So iterate through list of all known windows and lookup window of
+	 * type 'desktop'.
+	 */
+	for(windows=wnck_screen_get_windows(priv->screen); windows; windows=g_list_next(windows))
 	{
-		g_debug("Desktop window was not found - maybe it was not created or signalled yet");
-		return(NULL);
+		WnckWindow					*window;
+		WnckWindowType				windowType;
+
+		window=(WnckWindow*)windows->data;
+		windowType=wnck_window_get_window_type(window);
+		if(windowType==WNCK_WINDOW_DESKTOP)
+		{
+			g_debug("Desktop window ID found while iterating through window list");
+				return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
+		}
 	}
 
-	backgroundWindow=wnck_window_get(backgroundWindowID);
-	if(!backgroundWindow)
-	{
-		g_debug("Could not get window instance for desktop window ID");
-		return(NULL);
-	}
-
-	return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(backgroundWindow));
+	/* If we get here either desktop window does not exist or is not known
+	 * in window list. So return NULL here.
+	 */
+	g_debug("Desktop window could not be found");
+	return(NULL);
 }

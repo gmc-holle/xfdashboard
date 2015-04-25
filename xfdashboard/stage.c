@@ -1735,7 +1735,7 @@ void xfdashboard_stage_set_background_image_type(XfdashboardStage *self, Xfdashb
 							clutter_actor_set_content(priv->backgroundImageLayer, backgroundContent);
 							g_object_unref(backgroundContent);
 
-							g_debug("Dekstop window was found and set up as background image for stage");
+							g_debug("Desktop window was found and set up as background image for stage");
 						}
 							else
 							{
@@ -1743,7 +1743,7 @@ void xfdashboard_stage_set_background_image_type(XfdashboardStage *self, Xfdashb
 															"window-opened",
 															G_CALLBACK(_xfdashboard_stage_on_desktop_window_opened),
 															self);
-								g_debug("Dekstop window was not found. Setting up signal to get notified when desktop background image was signalled");
+								g_debug("Desktop window was not found. Setting up signal to get notified when desktop window might be opened.");
 							}
 					}
 					break;
