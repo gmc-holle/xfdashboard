@@ -776,19 +776,27 @@ static Window _xfdashboard_window_content_get_window_frame_xid(Display *inDispla
 	 */
 	gdkDisplay=gdk_display_get_default();
 	gdkWindow=gdk_x11_window_foreign_new_for_display(gdkDisplay, xWindowID);
-	if(gdk_window_get_decorations(gdkWindow, &gdkWindowDecoration) &&
-		gdkWindowDecoration==0)
+	if(gdkWindow)
 	{
-		g_debug("Window '%s' has CSD enabled and no decorations so skip finding window frame.",
-				xfdashboard_window_tracker_window_get_title(inWindow));
+		if(gdk_window_get_decorations(gdkWindow, &gdkWindowDecoration) &&
+			gdkWindowDecoration==0)
+		{
+			g_debug("Window '%s' has CSD enabled and no decorations so skip finding window frame.",
+					xfdashboard_window_tracker_window_get_title(inWindow));
 
-		/* Release allocated resources */
+			/* Release allocated resources */
+			g_object_unref(gdkWindow);
+
+			/* Skip finding window frame but return "not-found" result */
+			return(0);
+		}
 		g_object_unref(gdkWindow);
-
-		/* Skip finding window frame but return "not-found" result */
-		return(0);
 	}
-	g_object_unref(gdkWindow);
+		else
+		{
+			g_debug("Could not get window decoration fro window '%s'",
+						xfdashboard_window_tracker_window_get_title(inWindow));
+		}
 
 	/* Iterate through X window tree list upwards until root window reached.
 	 * The last X window before root window is the one we are looking for.
