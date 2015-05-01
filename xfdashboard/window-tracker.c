@@ -99,6 +99,7 @@ enum
 	SIGNAL_WINDOW_ICON_CHANGED,
 	SIGNAL_WINDOW_NAME_CHANGED,
 	SIGNAL_WINDOW_WORKSPACE_CHANGED,
+	SIGNAL_WINDOW_MONITOR_CHANGED,
 
 	SIGNAL_ACTIVE_WORKSPACE_CHANGED,
 	SIGNAL_WORKSPACE_ADDED,
@@ -117,22 +118,103 @@ enum
 static guint XfdashboardWindowTrackerSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+#define LAST_X_DATA_KEY			"last-x"
+#define LAST_Y_DATA_KEY			"last-y"
+#define LAST_WIDTH_DATA_KEY		"last-width"
+#define LAST_HEIGHT_DATA_KEY	"last-height"
+
 static XfdashboardWindowTracker *_xfdashboard_window_tracker_singleton=NULL;
 
 
 /* Position and/or size of window has changed */
 static void _xfdashboard_window_tracker_on_window_geometry_changed(XfdashboardWindowTracker *self, gpointer inUserData)
 {
-	WnckWindow			*window;
+	XfdashboardWindowTrackerPrivate			*priv;
+	WnckWindow								*window;
+	gint									x, y, width, height;
+	gint									lastX, lastY, lastWidth, lastHeight;
+	XfdashboardWindowTrackerMonitor			*currentMonitor;
+	XfdashboardWindowTrackerMonitor			*lastMonitor;
+	GList									*iter;
+	gint									screenWidth, screenHeight;
+	gint									windowMiddleX, windowMiddleY;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
 
+	priv=self->priv;
 	window=WNCK_WINDOW(inUserData);
+
+	/* Get last and current position and size of window to determine
+	 * if window has moved or resized and do not emit this signal if
+	 * neither happened, although it is very unlike that the window
+	 * has not moved or resized if this signal was called.
+	 */
+	lastX=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), LAST_X_DATA_KEY));
+	lastY=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), LAST_Y_DATA_KEY));
+	lastWidth=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), LAST_WIDTH_DATA_KEY));
+	lastHeight=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), LAST_HEIGHT_DATA_KEY));
+
+	xfdashboard_window_tracker_window_get_position_size(window, &x, &y, &width, &height);
+
+	if(G_UNLIKELY(lastX==x && lastY==y && lastWidth==width && lastHeight==height))
+	{
+		g_debug("Window '%s' has not moved or resized", wnck_window_get_name(window));
+		return;
+	}
 
 	/* Emit signal */
 	g_debug("Window '%s' changed position and/or size", wnck_window_get_name(window));
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_GEOMETRY_CHANGED], 0, window);
+
+	/* Get monitor at old position of window and the monitor at current position.
+	 * If they differ emit signal for window changed monitor.
+	 */
+	screenWidth=xfdashboard_window_tracker_get_screen_width(self);
+	screenHeight=xfdashboard_window_tracker_get_screen_height(self);
+
+	windowMiddleX=lastX+(lastWidth/2);
+	if(windowMiddleX>screenWidth) windowMiddleX=screenWidth-1;
+
+	windowMiddleY=lastY+(lastHeight/2);
+	if(windowMiddleY>screenHeight) windowMiddleY=screenHeight-1;
+
+	lastMonitor=NULL;
+	for(iter=priv->monitors; iter && !lastMonitor; iter=g_list_next(iter))
+	{
+		gint								monitorX, monitorY, monitorWidth, monitorHeight;
+		XfdashboardWindowTrackerMonitor		*monitor;
+
+		/* Get monitor */
+		monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR(iter->data);
+
+		/* Get monitor geometry */
+		xfdashboard_window_tracker_monitor_get_geometry(monitor, &monitorX, &monitorY, &monitorWidth, &monitorHeight);
+
+		/* Check if mid-point of window (adjusted to screen size) is within monitor */
+		if(windowMiddleX>=monitorX && windowMiddleX<(monitorX+monitorWidth) &&
+			windowMiddleY>=monitorY && windowMiddleY<(monitorY+monitorHeight))
+		{
+			lastMonitor=monitor;
+		}
+	}
+
+	currentMonitor=xfdashboard_window_tracker_window_get_monitor(window);
+	if(currentMonitor!=lastMonitor)
+	{
+		/* Emit signal */
+		g_debug("Window '%s' moved from monitor %d to %d",
+					wnck_window_get_name(window),
+					xfdashboard_window_tracker_monitor_get_number(lastMonitor),
+					xfdashboard_window_tracker_monitor_get_number(currentMonitor));
+		g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_MONITOR_CHANGED], 0, window, lastMonitor, currentMonitor);
+	}
+
+	/* Remember new position and size as last known ones */
+	g_object_set_data(G_OBJECT(window), LAST_X_DATA_KEY, GINT_TO_POINTER(x));
+	g_object_set_data(G_OBJECT(window), LAST_Y_DATA_KEY, GINT_TO_POINTER(y));
+	g_object_set_data(G_OBJECT(window), LAST_WIDTH_DATA_KEY, GINT_TO_POINTER(width));
+	g_object_set_data(G_OBJECT(window), LAST_HEIGHT_DATA_KEY, GINT_TO_POINTER(height));
 }
 
 /* Action items of window has changed */
@@ -281,9 +363,18 @@ static void _xfdashboard_window_tracker_on_window_opened(XfdashboardWindowTracke
 															WnckWindow *inWindow,
 															gpointer inUserData)
 {
+	gint		x, y, width, height;
+
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 	g_return_if_fail(WNCK_IS_SCREEN(inUserData));
+
+	/* Remember current position and size as last known ones */
+	xfdashboard_window_tracker_window_get_position_size(inWindow, &x, &y, &width, &height);
+	g_object_set_data(G_OBJECT(inWindow), LAST_X_DATA_KEY, GINT_TO_POINTER(x));
+	g_object_set_data(G_OBJECT(inWindow), LAST_Y_DATA_KEY, GINT_TO_POINTER(y));
+	g_object_set_data(G_OBJECT(inWindow), LAST_WIDTH_DATA_KEY, GINT_TO_POINTER(width));
+	g_object_set_data(G_OBJECT(inWindow), LAST_HEIGHT_DATA_KEY, GINT_TO_POINTER(height));
 
 	/* Connect signals on newly opened window */
 	g_signal_connect_swapped(inWindow, "geometry-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_geometry_changed), self);
@@ -877,6 +968,20 @@ void xfdashboard_window_tracker_class_init(XfdashboardWindowTrackerClass *klass)
 						2,
 						WNCK_TYPE_WINDOW,
 						WNCK_TYPE_WORKSPACE);
+
+	XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_MONITOR_CHANGED]=
+		g_signal_new("window-monitor-changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardWindowTrackerClass, window_monitor_changed),
+						NULL,
+						NULL,
+						_xfdashboard_marshal_VOID__OBJECT_OBJECT_OBJECT,
+						G_TYPE_NONE,
+						3,
+						WNCK_TYPE_WINDOW,
+						XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR,
+						XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR);
 
 	XfdashboardWindowTrackerSignals[SIGNAL_ACTIVE_WORKSPACE_CHANGED]=
 		g_signal_new("active-workspace-changed",

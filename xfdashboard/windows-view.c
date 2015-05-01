@@ -450,12 +450,16 @@ static void _xfdashboard_windows_view_on_window_opened(XfdashboardWindowsView *s
 		/* Check if window is visible on this workspace */
 		if(!_xfdashboard_windows_view_is_visible_window(self, inWindow)) return;
 
-		/* Create actor */
-		liveWindow=_xfdashboard_windows_view_create_actor(self, inWindow);
-		if(liveWindow)
+		/* Create actor if it does not exist already */
+		liveWindow=_xfdashboard_windows_view_find_by_window(self, inWindow);
+		if(G_LIKELY(!liveWindow))
 		{
-			clutter_actor_insert_child_below(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow), NULL);
-			_xfdashboard_windows_view_update_window_number_in_actors(self);
+			liveWindow=_xfdashboard_windows_view_create_actor(self, inWindow);
+			if(liveWindow)
+			{
+				clutter_actor_insert_child_below(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow), NULL);
+				_xfdashboard_windows_view_update_window_number_in_actors(self);
+			}
 		}
 	}
 		else
@@ -487,6 +491,67 @@ static void _xfdashboard_windows_view_on_window_closed(XfdashboardWindowsView *s
 		{
 			/* Destroy actor */
 			clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
+		}
+	}
+		else
+		{
+			/* Recreate all window actors because parent stage interface changed */
+			_xfdashboard_windows_view_recreate_window_actors(self);
+		}
+}
+
+/* A window has changed monitor */
+static void _xfdashboard_windows_view_on_window_monitor_changed(XfdashboardWindowsView *self,
+																XfdashboardWindowTrackerWindow *inWindow,
+																XfdashboardWindowTrackerMonitor *inOldMonitor,
+																XfdashboardWindowTrackerMonitor *inNewMonitor,
+																gpointer inUserData)
+{
+	XfdashboardWindowsViewPrivate		*priv;
+	XfdashboardLiveWindow				*liveWindow;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inOldMonitor));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inNewMonitor));
+
+	priv=self->priv;
+
+	/* Check if parent stage interface changed. If not check if window has
+	 * moved away from this view and destroy it or it has moved to this view
+	 * and create it. Otherwise recreate all window actors for changed stage
+	 * interface and monitor.
+	 */
+	if(!_xfdashboard_windows_view_update_stage_and_monitor(self))
+	{
+		/* Check if window moved away from this view*/
+		if(priv->currentMonitor==inOldMonitor &&
+			!_xfdashboard_windows_view_is_visible_window(self, inWindow))
+		{
+			/* Find live window for window to destroy it */
+			liveWindow=_xfdashboard_windows_view_find_by_window(self, inWindow);
+			if(G_LIKELY(liveWindow))
+			{
+				/* Destroy actor */
+				clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
+			}
+		}
+
+		/* Check if window moved to this view */
+		if(priv->currentMonitor==inNewMonitor &&
+			_xfdashboard_windows_view_is_visible_window(self, inWindow))
+		{
+			/* Create actor if it does not exist already */
+			liveWindow=_xfdashboard_windows_view_find_by_window(self, inWindow);
+			if(G_LIKELY(!liveWindow))
+			{
+				liveWindow=_xfdashboard_windows_view_create_actor(self, inWindow);
+				if(liveWindow)
+				{
+					clutter_actor_insert_child_below(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow), NULL);
+					_xfdashboard_windows_view_update_window_number_in_actors(self);
+				}
+			}
 		}
 	}
 		else
@@ -1877,6 +1942,11 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	g_signal_connect_swapped(priv->windowTracker,
 								"window-closed",
 								G_CALLBACK(_xfdashboard_windows_view_on_window_closed),
+								self);
+
+	g_signal_connect_swapped(priv->windowTracker,
+								"window-monitor-changed",
+								G_CALLBACK(_xfdashboard_windows_view_on_window_monitor_changed),
 								self);
 
 	/* If active workspace is already available then set up this view */

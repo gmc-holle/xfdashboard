@@ -81,6 +81,10 @@ struct _XfdashboardWindowTrackerClass
 	void (*window_workspace_changed)(XfdashboardWindowTracker *self,
 										XfdashboardWindowTrackerWindow *inWindow,
 										XfdashboardWindowTrackerWorkspace *inWorkspace);
+	void (*window_monitor_changed)(XfdashboardWindowTracker *self,
+										XfdashboardWindowTrackerWindow *inWindow,
+										XfdashboardWindowTrackerMonitor *inOldMonitor,
+										XfdashboardWindowTrackerMonitor *inNewMonitor);
 
 	void (*active_workspace_changed)(XfdashboardWindowTracker *self,
 										XfdashboardWindowTrackerWorkspace *inOldWorkspace,
