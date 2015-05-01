@@ -45,6 +45,7 @@
 #endif
 
 #include "marshal.h"
+#include "application.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardWindowTracker,
@@ -63,6 +64,10 @@ struct _XfdashboardWindowTrackerPrivate
 	XfdashboardWindowTrackerMonitor		*primaryMonitor;
 
 	/* Instance related */
+	XfdashboardApplication				*application;
+	gboolean							isAppSuspended;
+	guint								suspendSignalID;
+
 	WnckScreen							*screen;
 
 	gboolean							supportsMultipleMonitors;
@@ -144,6 +149,7 @@ static void _xfdashboard_window_tracker_on_window_geometry_changed(XfdashboardWi
 
 	priv=self->priv;
 	window=WNCK_WINDOW(inUserData);
+
 
 	/* Get last and current position and size of window to determine
 	 * if window has moved or resized and do not emit this signal if
@@ -363,11 +369,14 @@ static void _xfdashboard_window_tracker_on_window_opened(XfdashboardWindowTracke
 															WnckWindow *inWindow,
 															gpointer inUserData)
 {
-	gint		x, y, width, height;
+	XfdashboardWindowTrackerPrivate		*priv;
+	gint								x, y, width, height;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 	g_return_if_fail(WNCK_IS_SCREEN(inUserData));
+
+	priv=self->priv;
 
 	/* Remember current position and size as last known ones */
 	xfdashboard_window_tracker_window_get_position_size(inWindow, &x, &y, &width, &height);
@@ -377,12 +386,17 @@ static void _xfdashboard_window_tracker_on_window_opened(XfdashboardWindowTracke
 	g_object_set_data(G_OBJECT(inWindow), LAST_HEIGHT_DATA_KEY, GINT_TO_POINTER(height));
 
 	/* Connect signals on newly opened window */
-	g_signal_connect_swapped(inWindow, "geometry-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_geometry_changed), self);
 	g_signal_connect_swapped(inWindow, "actions-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_actions_changed), self);
 	g_signal_connect_swapped(inWindow, "state-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_state_changed), self);
 	g_signal_connect_swapped(inWindow, "icon-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_icon_changed), self);
 	g_signal_connect_swapped(inWindow, "name-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_name_changed), self);
 	g_signal_connect_swapped(inWindow, "workspace-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_workspace_changed), self);
+
+	/* Connect to 'geometry-changed' at window only if application is not suspended */
+	if(!priv->isAppSuspended)
+	{
+		g_signal_connect_swapped(inWindow, "geometry-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_geometry_changed), self);
+	}
 
 	/* Emit signal */
 	g_debug("Window '%s' created", wnck_window_get_name(inWindow));
@@ -710,6 +724,57 @@ static void _xfdashboard_window_tracker_on_screen_size_changed(XfdashboardWindow
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_SCREEN_SIZE_CHANGED], 0, w, h);
 }
 
+/* Suspension state of application changed */
+static void _xfdashboard_window_tracker_on_application_suspended_changed(XfdashboardWindowTracker *self,
+																			GParamSpec *inSpec,
+																			gpointer inUserData)
+{
+	XfdashboardWindowTrackerPrivate		*priv;
+	XfdashboardApplication				*app;
+	GList								*iter;
+	XfdashboardWindowTrackerWindow		*window;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+
+	priv=self->priv;
+	app=XFDASHBOARD_APPLICATION(inUserData);
+
+	/* Get application suspend state */
+	priv->isAppSuspended=xfdashboard_application_is_suspended(app);
+
+	/* Iterate through all windows and connect handler to signal 'geometry-changed'
+	 * if application was resumed or disconnect signal handler if it was suspended.
+	 */
+	for(iter=xfdashboard_window_tracker_get_windows(self); iter; iter=g_list_next(iter))
+	{
+		/* Get window */
+		window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(iter->data);
+		if(!window) continue;
+
+		/* If application was suspended disconnect signal handlers ... */
+		if(priv->isAppSuspended)
+		{
+			g_signal_handlers_block_by_func(window, _xfdashboard_window_tracker_on_window_geometry_changed, self);
+		}
+			/* ... otherwise if application was resumed connect signals handlers
+			 * and emit 'geometry-changed' signal to reflect latest changes of
+			 * position and size of window.
+			 */
+			else
+			{
+				/* Connect signal handler */
+				g_signal_connect_swapped(window,
+											"geometry-changed",
+											G_CALLBACK(_xfdashboard_window_tracker_on_window_geometry_changed),
+											self);
+
+				/* Call signal handler to reflect latest changes */
+				_xfdashboard_window_tracker_on_window_geometry_changed(self, window);
+			}
+	}
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -734,6 +799,12 @@ static void _xfdashboard_window_tracker_dispose(GObject *inObject)
 	XfdashboardWindowTrackerPrivate			*priv=self->priv;
 
 	/* Dispose allocated resources */
+	if(priv->suspendSignalID)
+	{
+		g_signal_handler_disconnect(xfdashboard_application_get_default(), priv->suspendSignalID);
+		priv->suspendSignalID=0;
+	}
+
 	if(priv->primaryMonitor)
 	{
 		priv->primaryMonitor=NULL;
@@ -1101,6 +1172,7 @@ void xfdashboard_window_tracker_class_init(XfdashboardWindowTrackerClass *klass)
 void xfdashboard_window_tracker_init(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerPrivate			*priv;
+	XfdashboardApplication					*app;
 
 	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_GET_PRIVATE(self);
 
@@ -1191,6 +1263,14 @@ void xfdashboard_window_tracker_init(XfdashboardWindowTracker *self)
 		}
 	}
 #endif
+
+	/* Handle suspension signals from application */
+	app=xfdashboard_application_get_default();
+	priv->suspendSignalID=g_signal_connect_swapped(app,
+													"notify::is-suspended",
+													G_CALLBACK(_xfdashboard_window_tracker_on_application_suspended_changed),
+													self);
+	priv->isAppSuspended=xfdashboard_application_is_suspended(app);
 }
 
 /* IMPLEMENTATION: Public API */
