@@ -72,6 +72,9 @@ ClutterActor* xfdashboard_live_workspace_new_for_workspace(XfdashboardWindowTrac
 XfdashboardWindowTrackerWorkspace* xfdashboard_live_workspace_get_workspace(XfdashboardLiveWorkspace *self);
 void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
 
+gboolean xfdashboard_live_workspace_get_show_window_content(XfdashboardLiveWorkspace *self);
+void xfdashboard_live_workspace_set_show_window_content(XfdashboardLiveWorkspace *self, gboolean inShowWindowContent);
+
 G_END_DECLS
 
 #endif	/* __XFOVERVIEW_LIVE_WORKSPACE__ */

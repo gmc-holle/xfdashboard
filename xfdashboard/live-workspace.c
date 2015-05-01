@@ -38,6 +38,8 @@
 #include "window-tracker.h"
 #include "click-action.h"
 #include "window-content.h"
+#include "image-content.h"
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWorkspace,
@@ -52,6 +54,7 @@ struct _XfdashboardLiveWorkspacePrivate
 {
 	/* Properties related */
 	XfdashboardWindowTrackerWorkspace	*workspace;
+	gboolean							showWindowContent;
 
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
@@ -63,6 +66,7 @@ enum
 	PROP_0,
 
 	PROP_WORKSPACE,
+	PROP_SHOW_WINDOW_CONTENT,
 
 	PROP_LAST
 };
@@ -80,6 +84,7 @@ enum
 static guint XfdashboardLiveWorkspaceSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+#define WINDOW_DATA_KEY		"window"
 
 /* Check if window should be shown */
 static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWorkspace *self,
@@ -109,10 +114,9 @@ static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWor
 static ClutterActor* _xfdashboard_live_workspace_find_by_window(XfdashboardLiveWorkspace *self,
 																XfdashboardWindowTrackerWindow *inWindow)
 {
-	ClutterActor						*child;
-	ClutterActorIter					iter;
-	ClutterContent						*content;
-	XfdashboardWindowTrackerWindow		*window;
+	ClutterActor		*child;
+	ClutterActorIter	iter;
+	gpointer			window;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
@@ -121,10 +125,11 @@ static ClutterActor* _xfdashboard_live_workspace_find_by_window(XfdashboardLiveW
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
-		content=clutter_actor_get_content(child);
-		if(!content || !XFDASHBOARD_IS_WINDOW_CONTENT(content)) continue;
+		/* Check if it is really a window actor by retrieving associated window */
+		window=g_object_get_data(G_OBJECT(child), WINDOW_DATA_KEY);
+		if(!window || !XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(window)) continue;
 
-		window=xfdashboard_window_content_get_window(XFDASHBOARD_WINDOW_CONTENT(content));
+		/* Check if this is the actor showing requested window */
 		if(window==inWindow) return(child);
 	}
 
@@ -136,12 +141,12 @@ static ClutterActor* _xfdashboard_live_workspace_find_by_window(XfdashboardLiveW
 static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(XfdashboardLiveWorkspace *self,
 																				XfdashboardWindowTrackerWindow *inWindow)
 {
-	XfdashboardLiveWorkspacePrivate	*priv;
-	ClutterActor					*actor;
-	ClutterContent					*content;
-	GList							*windows;
-	ClutterActor					*lastWindowActor;
-	XfdashboardWindowTrackerWindow	*window;
+	XfdashboardLiveWorkspacePrivate		*priv;
+	ClutterActor						*actor;
+	ClutterContent						*content;
+	GList								*windows;
+	ClutterActor						*lastWindowActor;
+	XfdashboardWindowTrackerWindow		*window;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
@@ -184,7 +189,15 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 		{
 			/* Create actor */
 			actor=clutter_actor_new();
-			content=xfdashboard_window_content_new_for_window(inWindow);
+			g_object_set_data(G_OBJECT(actor), WINDOW_DATA_KEY, inWindow);
+			if(priv->showWindowContent)
+			{
+				content=xfdashboard_window_content_new_for_window(inWindow);
+			}
+				else
+				{
+					content=xfdashboard_image_content_new_for_pixbuf(xfdashboard_window_tracker_window_get_icon(inWindow));
+				}
 			clutter_actor_set_content(actor, content);
 			g_object_unref(content);
 
@@ -209,7 +222,7 @@ static void _xfdashboard_live_workspace_on_window_closed(XfdashboardLiveWorkspac
 															XfdashboardWindowTrackerWindow *inWindow,
 															gpointer inUserData)
 {
-	ClutterActor						*windowActor;
+	ClutterActor		*windowActor;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -413,7 +426,6 @@ static void _xfdashboard_live_workspace_allocate(ClutterActor *self,
 	XfdashboardLiveWorkspacePrivate		*priv=XFDASHBOARD_LIVE_WORKSPACE(self)->priv;
 	gfloat								availableWidth, availableHeight;
 	gfloat								workspaceWidth, workspaceHeight;
-	ClutterContent						*content;
 	XfdashboardWindowTrackerWindow		*window;
 	gint								x, y, w, h;
 	ClutterActor						*child;
@@ -444,11 +456,8 @@ static void _xfdashboard_live_workspace_allocate(ClutterActor *self,
 		if(!CLUTTER_IS_ACTOR(child)) continue;
 
 		/* Get associated window */
-		content=clutter_actor_get_content(child);
-		if(!content || !XFDASHBOARD_IS_WINDOW_CONTENT(content)) continue;
-
-		window=xfdashboard_window_content_get_window(XFDASHBOARD_WINDOW_CONTENT(content));
-		if(!window) continue;
+		window=g_object_get_data(G_OBJECT(child), WINDOW_DATA_KEY);
+		if(!window || !XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(window)) continue;
 
 		/* Get real size of child */
 		xfdashboard_window_tracker_window_get_position_size(window, &x, &y, &w, &h);
@@ -473,6 +482,8 @@ static void _xfdashboard_live_workspace_dispose(GObject *inObject)
 	XfdashboardLiveWorkspacePrivate		*priv=self->priv;
 
 	/* Dispose allocated resources */
+	g_object_set_data(inObject, WINDOW_DATA_KEY, NULL);
+
 	if(priv->windowTracker)
 	{
 		g_signal_handlers_disconnect_by_data(priv->windowTracker, self);
@@ -504,6 +515,10 @@ static void _xfdashboard_live_workspace_set_property(GObject *inObject,
 			xfdashboard_live_workspace_set_workspace(self, g_value_get_object(inValue));
 			break;
 
+		case PROP_SHOW_WINDOW_CONTENT:
+			xfdashboard_live_workspace_set_show_window_content(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -523,6 +538,10 @@ static void _xfdashboard_live_workspace_get_property(GObject *inObject,
 			g_value_set_object(outValue, self->priv->workspace);
 			break;
 
+		case PROP_SHOW_WINDOW_CONTENT:
+			g_value_set_boolean(outValue, self->priv->showWindowContent);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -535,13 +554,14 @@ static void _xfdashboard_live_workspace_get_property(GObject *inObject,
  */
 static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass *klass)
 {
-	ClutterActorClass	*actorClass=CLUTTER_ACTOR_CLASS(klass);
-	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
+	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	actorClass->get_preferred_width=_xfdashboard_live_workspace_get_preferred_width;
-	actorClass->get_preferred_height=_xfdashboard_live_workspace_get_preferred_height;
-	actorClass->allocate=_xfdashboard_live_workspace_allocate;
+	clutterActorClass->get_preferred_width=_xfdashboard_live_workspace_get_preferred_width;
+	clutterActorClass->get_preferred_height=_xfdashboard_live_workspace_get_preferred_height;
+	clutterActorClass->allocate=_xfdashboard_live_workspace_allocate;
 
 	gobjectClass->dispose=_xfdashboard_live_workspace_dispose;
 	gobjectClass->set_property=_xfdashboard_live_workspace_set_property;
@@ -558,7 +578,17 @@ static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass 
 								XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardLiveWorkspaceProperties[PROP_SHOW_WINDOW_CONTENT]=
+		g_param_spec_boolean("show-window-content",
+								_("show-window-content"),
+								_("If TRUE the window content should be shown otherwise the window's icon will be shown"),
+								TRUE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWorkspaceProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWorkspaceProperties[PROP_SHOW_WINDOW_CONTENT]);
 
 	/* Define signals */
 	XfdashboardLiveWorkspaceSignals[SIGNAL_CLICKED]=
@@ -586,6 +616,7 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	/* Set default values */
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->workspace=NULL;
+	priv->showWindowContent=TRUE;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -666,8 +697,8 @@ void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, Xf
 		if(!CLUTTER_IS_ACTOR(child)) continue;
 
 		/* Check if it is really a window actor by retrieving associated window */
-		content=clutter_actor_get_content(child);
-		if(!content || !XFDASHBOARD_IS_WINDOW_CONTENT(content)) continue;
+		window=g_object_get_data(G_OBJECT(child), WINDOW_DATA_KEY);
+		if(!window || !XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(window)) continue;
 
 		/* Destroy window actor */
 		clutter_actor_destroy(child);
@@ -695,4 +726,62 @@ void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, Xf
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_WORKSPACE]);
+}
+
+/* Get/set if the window content should be shown or the window's icon */
+gboolean xfdashboard_live_workspace_get_show_window_content(XfdashboardLiveWorkspace *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), TRUE);
+
+	return(self->priv->showWindowContent);
+}
+
+void xfdashboard_live_workspace_set_show_window_content(XfdashboardLiveWorkspace *self, gboolean inShowWindowContent)
+{
+	XfdashboardLiveWorkspacePrivate		*priv;
+	ClutterContent						*content;
+	XfdashboardWindowTrackerWindow		*window;
+	ClutterActor						*child;
+	ClutterActorIter					iter;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->showWindowContent!=inShowWindowContent)
+	{
+		/* Set value */
+		priv->showWindowContent=inShowWindowContent;
+
+		/* Recreate window actors in workspace */
+		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+		while(clutter_actor_iter_next(&iter, &child))
+		{
+			/* Get window actor */
+			if(!CLUTTER_IS_ACTOR(child)) continue;
+
+			/* Check if it is really a window actor by retrieving associated window */
+			window=g_object_get_data(G_OBJECT(child), WINDOW_DATA_KEY);
+			if(!window || !XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(window)) continue;
+
+			/* Replace content depending on this new value if neccessary */
+			content=clutter_actor_get_content(child);
+			if(priv->showWindowContent && !XFDASHBOARD_IS_WINDOW_CONTENT(content))
+			{
+				content=xfdashboard_window_content_new_for_window(window);
+				clutter_actor_set_content(child, content);
+				g_object_unref(content);
+			}
+				else if(!priv->showWindowContent && !XFDASHBOARD_IS_IMAGE_CONTENT(content))
+				{
+					content=xfdashboard_image_content_new_for_pixbuf(xfdashboard_window_tracker_window_get_icon(window));
+					clutter_actor_set_content(child, content);
+					g_object_unref(content);
+				}
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_SHOW_WINDOW_CONTENT]);
+	}
 }
