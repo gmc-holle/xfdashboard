@@ -639,26 +639,61 @@ static void _xfdashboard_windows_view_on_window_visibility_changed(XfdashboardWi
 
 /* A window changed workspace or was pinned to all workspaces */
 static void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWindowsView *self,
+																	XfdashboardWindowTrackerWindow *inWindow,
+																	XfdashboardWindowTrackerWorkspace *inWorkspace,
 																	gpointer inUserData)
 {
 	XfdashboardWindowsViewPrivate		*priv;
 	XfdashboardLiveWindow				*liveWindow;
-	XfdashboardWindowTrackerWindow		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+	g_return_if_fail(!inWorkspace || XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace));
 
 	priv=self->priv;
-	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
-	/* If window is neither on this workspace nor pinned then destroy it */
-	window=xfdashboard_live_window_get_window(liveWindow);
-	if(!xfdashboard_window_tracker_window_is_pinned(window) &&
-		xfdashboard_window_tracker_window_get_workspace(window)!=priv->workspace)
+	/* Check if parent stage interface changed. If not check if window has
+	 * moved away from this view and destroy it or it has moved to this view
+	 * and create it. Otherwise recreate all window actors for changed stage
+	 * interface and monitor.
+	 */
+	if(!_xfdashboard_windows_view_update_stage_and_monitor(self))
 	{
-		/* Destroy actor */
-		clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
+		/* Check if window moved away from this view*/
+		if(priv->workspace!=inWorkspace &&
+			!_xfdashboard_windows_view_is_visible_window(self, inWindow))
+		{
+			/* Find live window for window to destroy it */
+			liveWindow=_xfdashboard_windows_view_find_by_window(self, inWindow);
+			if(G_LIKELY(liveWindow))
+			{
+				/* Destroy actor */
+				clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
+			}
+		}
+
+		/* Check if window moved to this view */
+		if(priv->workspace==inWorkspace &&
+			_xfdashboard_windows_view_is_visible_window(self, inWindow))
+		{
+			/* Create actor if it does not exist already */
+			liveWindow=_xfdashboard_windows_view_find_by_window(self, inWindow);
+			if(G_LIKELY(!liveWindow))
+			{
+				liveWindow=_xfdashboard_windows_view_create_actor(self, inWindow);
+				if(liveWindow)
+				{
+					clutter_actor_insert_child_below(CLUTTER_ACTOR(self), CLUTTER_ACTOR(liveWindow), NULL);
+					_xfdashboard_windows_view_update_window_number_in_actors(self);
+				}
+			}
+		}
 	}
+		else
+		{
+			/* Recreate all window actors because parent stage interface changed */
+			_xfdashboard_windows_view_recreate_window_actors(self);
+		}
 }
 
 /* Drag of a live window begins */
@@ -757,7 +792,6 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 	g_signal_connect_swapped(actor, "close", G_CALLBACK(_xfdashboard_windows_view_on_window_close_clicked), self);
 	g_signal_connect_swapped(actor, "geometry-changed", G_CALLBACK(_xfdashboard_windows_view_on_window_geometry_changed), self);
 	g_signal_connect_swapped(actor, "visibility-changed", G_CALLBACK(_xfdashboard_windows_view_on_window_visibility_changed), self);
-	g_signal_connect_swapped(actor, "workspace-changed", G_CALLBACK(_xfdashboard_windows_view_on_window_workspace_changed), self);
 	xfdashboard_live_window_set_window(XFDASHBOARD_LIVE_WINDOW(actor), inWindow);
 
 	dragAction=xfdashboard_drag_action_new_with_source(CLUTTER_ACTOR(self));
@@ -1932,6 +1966,11 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	g_signal_connect_swapped(priv->windowTracker,
 								"active-workspace-changed",
 								G_CALLBACK(_xfdashboard_windows_view_on_active_workspace_changed),
+								self);
+
+	g_signal_connect_swapped(priv->windowTracker,
+								"window-workspace-changed",
+								G_CALLBACK(_xfdashboard_windows_view_on_window_workspace_changed),
 								self);
 
 	g_signal_connect_swapped(priv->windowTracker,
