@@ -75,6 +75,9 @@ void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, Xf
 gboolean xfdashboard_live_workspace_get_show_window_content(XfdashboardLiveWorkspace *self);
 void xfdashboard_live_workspace_set_show_window_content(XfdashboardLiveWorkspace *self, gboolean inShowWindowContent);
 
+XfdashboardStageBackgroundImageType xfdashboard_live_workspace_get_background_image_type(XfdashboardLiveWorkspace *self);
+void xfdashboard_live_workspace_set_background_image_type(XfdashboardLiveWorkspace *self, XfdashboardStageBackgroundImageType inType);
+
 G_END_DECLS
 
 #endif	/* __XFOVERVIEW_LIVE_WORKSPACE__ */

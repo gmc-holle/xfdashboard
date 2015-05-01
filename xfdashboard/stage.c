@@ -1706,7 +1706,6 @@ void xfdashboard_stage_set_background_color(XfdashboardStage *self, const Clutte
 
 	priv=self->priv;
 
-
 	/* Set value if changed */
 	if((priv->backgroundColor && !inColor) ||
 		(!priv->backgroundColor && inColor) ||

@@ -39,7 +39,7 @@
 #include "click-action.h"
 #include "window-content.h"
 #include "image-content.h"
-
+#include "enums.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWorkspace,
@@ -53,11 +53,13 @@ G_DEFINE_TYPE(XfdashboardLiveWorkspace,
 struct _XfdashboardLiveWorkspacePrivate
 {
 	/* Properties related */
-	XfdashboardWindowTrackerWorkspace	*workspace;
-	gboolean							showWindowContent;
+	XfdashboardWindowTrackerWorkspace		*workspace;
+	gboolean								showWindowContent;
+	XfdashboardStageBackgroundImageType		backgroundType;
 
 	/* Instance related */
-	XfdashboardWindowTracker			*windowTracker;
+	XfdashboardWindowTracker				*windowTracker;
+	ClutterActor							*backgroundImageLayer;
 };
 
 /* Properties */
@@ -67,6 +69,7 @@ enum
 
 	PROP_WORKSPACE,
 	PROP_SHOW_WINDOW_CONTENT,
+	PROP_BACKGROUND_IMAGE_TYPE,
 
 	PROP_LAST
 };
@@ -363,6 +366,39 @@ static void _xfdashboard_live_workspace_on_window_workspace_changed(XfdashboardL
 		}
 }
 
+/* A window was created
+ * Check if window opened is desktop background window
+ */
+static void _xfdashboard_live_workspace_on_desktop_window_opened(XfdashboardLiveWorkspace *self,
+																	XfdashboardWindowTrackerWindow *inWindow,
+																	gpointer inUserData)
+{
+	XfdashboardLiveWorkspacePrivate		*priv;
+	XfdashboardWindowTrackerWindow		*desktopWindow;
+	ClutterContent						*windowContent;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+
+	priv=self->priv;
+
+	/* Get desktop background window and check if it is the new window opened */
+	desktopWindow=xfdashboard_window_tracker_get_root_window(priv->windowTracker);
+	if(desktopWindow)
+	{
+		windowContent=xfdashboard_window_content_new_for_window(desktopWindow);
+		clutter_actor_set_content(priv->backgroundImageLayer, windowContent);
+		clutter_actor_show(priv->backgroundImageLayer);
+		g_object_unref(windowContent);
+
+		g_signal_handlers_disconnect_by_func(priv->windowTracker,
+												G_CALLBACK(_xfdashboard_live_workspace_on_desktop_window_opened),
+												self);
+		g_debug("Found desktop window for workspace '%s' with signal 'window-opened', so disconnecting signal handler",
+				xfdashboard_window_tracker_workspace_get_name(priv->workspace));
+	}
+}
+
 /* IMPLEMENTATION: ClutterActor */
 
 /* Get preferred width/height */
@@ -435,14 +471,22 @@ static void _xfdashboard_live_workspace_allocate(ClutterActor *self,
 	/* Chain up to store the allocation of the actor */
 	CLUTTER_ACTOR_CLASS(xfdashboard_live_workspace_parent_class)->allocate(self, inBox, inFlags);
 
+	/* Get size of this allocation */
+	clutter_actor_box_get_size(inBox, &availableWidth, &availableHeight);
+
+	/* Resize background image layer to allocation even if it is hidden */
+	childAllocation.x1=0.0f;
+	childAllocation.y1=0.0f;
+	childAllocation.x2=availableWidth;
+	childAllocation.y2=availableHeight;
+	clutter_actor_allocate(priv->backgroundImageLayer, &childAllocation, inFlags);
+
 	/* If we handle no workspace to not set allocation of children */
 	if(!priv->workspace) return;
 
-	/* Get size of workspace and this allocation as it is needed
-	 * to calculate translated position and size
+	/* Get size of workspace as it is needed to calculate translated
+	 * position and size
 	 */
-	clutter_actor_box_get_size(inBox, &availableWidth, &availableHeight);
-
 	workspaceWidth=(gfloat)xfdashboard_window_tracker_workspace_get_width(priv->workspace);
 	workspaceHeight=(gfloat)xfdashboard_window_tracker_workspace_get_height(priv->workspace);
 
@@ -484,6 +528,12 @@ static void _xfdashboard_live_workspace_dispose(GObject *inObject)
 	/* Dispose allocated resources */
 	g_object_set_data(inObject, WINDOW_DATA_KEY, NULL);
 
+	if(priv->backgroundImageLayer)
+	{
+		clutter_actor_destroy(priv->backgroundImageLayer);
+		priv->backgroundImageLayer=NULL;
+	}
+
 	if(priv->windowTracker)
 	{
 		g_signal_handlers_disconnect_by_data(priv->windowTracker, self);
@@ -519,6 +569,10 @@ static void _xfdashboard_live_workspace_set_property(GObject *inObject,
 			xfdashboard_live_workspace_set_show_window_content(self, g_value_get_boolean(inValue));
 			break;
 
+		case PROP_BACKGROUND_IMAGE_TYPE:
+			xfdashboard_live_workspace_set_background_image_type(self, g_value_get_enum(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -540,6 +594,10 @@ static void _xfdashboard_live_workspace_get_property(GObject *inObject,
 
 		case PROP_SHOW_WINDOW_CONTENT:
 			g_value_set_boolean(outValue, self->priv->showWindowContent);
+			break;
+
+		case PROP_BACKGROUND_IMAGE_TYPE:
+			g_value_set_enum(outValue, self->priv->backgroundType);
 			break;
 
 		default:
@@ -585,10 +643,19 @@ static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass 
 								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardLiveWorkspaceProperties[PROP_BACKGROUND_IMAGE_TYPE]=
+		g_param_spec_enum("background-image-type",
+							_("Background image type"),
+							_("Background image type"),
+							XFDASHBOARD_TYPE_STAGE_BACKGROUND_IMAGE_TYPE,
+							XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWorkspaceProperties);
 
 	/* Define stylable properties */
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWorkspaceProperties[PROP_SHOW_WINDOW_CONTENT]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWorkspaceProperties[PROP_BACKGROUND_IMAGE_TYPE]);
 
 	/* Define signals */
 	XfdashboardLiveWorkspaceSignals[SIGNAL_CLICKED]=
@@ -617,6 +684,7 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->workspace=NULL;
 	priv->showWindowContent=TRUE;
+	priv->backgroundType=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -626,12 +694,36 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	clutter_actor_add_action(CLUTTER_ACTOR(self), action);
 	g_signal_connect_swapped(action, "clicked", G_CALLBACK(_xfdashboard_live_workspace_on_clicked), self);
 
-	g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_live_workspace_on_window_opened), self);
-	g_signal_connect_swapped(priv->windowTracker, "window-closed", G_CALLBACK(_xfdashboard_live_workspace_on_window_closed), self);
-	g_signal_connect_swapped(priv->windowTracker, "window-geometry-changed", G_CALLBACK(_xfdashboard_live_workspace_on_window_geometry_changed), self);
-	g_signal_connect_swapped(priv->windowTracker, "window-state-changed", G_CALLBACK(_xfdashboard_live_workspace_on_window_state_changed), self);
-	g_signal_connect_swapped(priv->windowTracker, "window-workspace-changed", G_CALLBACK(_xfdashboard_live_workspace_on_window_workspace_changed), self);
-	g_signal_connect_swapped(priv->windowTracker, "window-stacking-changed", G_CALLBACK(_xfdashboard_live_workspace_on_window_stacking_changed), self);
+	/* Create background actors but order of adding background children is important */
+	priv->backgroundImageLayer=clutter_actor_new();
+	clutter_actor_hide(priv->backgroundImageLayer);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->backgroundImageLayer);
+
+	/* Connect signals to window tracker */
+	g_signal_connect_swapped(priv->windowTracker,
+								"window-opened",
+								G_CALLBACK(_xfdashboard_live_workspace_on_window_opened),
+								self);
+	g_signal_connect_swapped(priv->windowTracker,
+								"window-closed",
+								G_CALLBACK(_xfdashboard_live_workspace_on_window_closed),
+								self);
+	g_signal_connect_swapped(priv->windowTracker,
+								"window-geometry-changed",
+								G_CALLBACK(_xfdashboard_live_workspace_on_window_geometry_changed),
+								self);
+	g_signal_connect_swapped(priv->windowTracker,
+								"window-state-changed",
+								G_CALLBACK(_xfdashboard_live_workspace_on_window_state_changed),
+								self);
+	g_signal_connect_swapped(priv->windowTracker,
+								"window-workspace-changed",
+								G_CALLBACK(_xfdashboard_live_workspace_on_window_workspace_changed),
+								self);
+	g_signal_connect_swapped(priv->windowTracker,
+								"window-stacking-changed",
+								G_CALLBACK(_xfdashboard_live_workspace_on_window_stacking_changed),
+								self);
 }
 
 /* IMPLEMENTATION: Public API */
@@ -783,5 +875,74 @@ void xfdashboard_live_workspace_set_show_window_content(XfdashboardLiveWorkspace
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_SHOW_WINDOW_CONTENT]);
+	}
+}
+
+/* Get/set background type */
+XfdashboardStageBackgroundImageType xfdashboard_live_workspace_get_background_image_type(XfdashboardLiveWorkspace *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE);
+
+	return(self->priv->backgroundType);
+}
+
+void xfdashboard_live_workspace_set_background_image_type(XfdashboardLiveWorkspace *self, XfdashboardStageBackgroundImageType inType)
+{
+	XfdashboardLiveWorkspacePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+	g_return_if_fail(inType<=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_DESKTOP);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->backgroundType!=inType)
+	{
+		/* Set value */
+		priv->backgroundType=inType;
+
+		/* Set up background actor depending on type */
+		if(priv->backgroundImageLayer)
+		{
+			switch(priv->backgroundType)
+			{
+				case XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_DESKTOP:
+					{
+						XfdashboardWindowTrackerWindow	*backgroundWindow;
+
+						backgroundWindow=xfdashboard_window_tracker_get_root_window(priv->windowTracker);
+						if(backgroundWindow)
+						{
+							ClutterContent				*backgroundContent;
+
+							backgroundContent=xfdashboard_window_content_new_for_window(backgroundWindow);
+							clutter_actor_show(priv->backgroundImageLayer);
+							clutter_actor_set_content(priv->backgroundImageLayer, backgroundContent);
+							g_object_unref(backgroundContent);
+
+							g_debug("Desktop window was found and set up as background image for workspace '%s'",
+									xfdashboard_window_tracker_workspace_get_name(priv->workspace));
+						}
+							else
+							{
+								g_signal_connect_swapped(priv->windowTracker,
+															"window-opened",
+															G_CALLBACK(_xfdashboard_live_workspace_on_desktop_window_opened),
+															self);
+								g_debug("Desktop window was not found. Setting up signal to get notified when desktop window might be opened for workspace '%s'",
+											xfdashboard_window_tracker_workspace_get_name(priv->workspace));
+							}
+					}
+					break;
+
+				default:
+					clutter_actor_hide(priv->backgroundImageLayer);
+					clutter_actor_set_content(priv->backgroundImageLayer, NULL);
+					break;
+			}
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_BACKGROUND_IMAGE_TYPE]);
 	}
 }
