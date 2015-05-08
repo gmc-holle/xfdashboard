@@ -391,11 +391,12 @@ static void _xfdashboard_window_tracker_on_window_opened(XfdashboardWindowTracke
 	g_signal_connect_swapped(inWindow, "icon-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_icon_changed), self);
 	g_signal_connect_swapped(inWindow, "name-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_name_changed), self);
 	g_signal_connect_swapped(inWindow, "workspace-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_workspace_changed), self);
+	g_signal_connect_swapped(inWindow, "geometry-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_geometry_changed), self);
 
-	/* Connect to 'geometry-changed' at window only if application is not suspended */
-	if(!priv->isAppSuspended)
+	/* Block signal handler for 'geometry-changed' at window if application is suspended */
+	if(priv->isAppSuspended)
 	{
-		g_signal_connect_swapped(inWindow, "geometry-changed", G_CALLBACK(_xfdashboard_window_tracker_on_window_geometry_changed), self);
+		g_signal_handlers_block_by_func(inWindow, _xfdashboard_window_tracker_on_window_geometry_changed, self);
 	}
 
 	/* Emit signal */
@@ -757,17 +758,14 @@ static void _xfdashboard_window_tracker_on_application_suspended_changed(Xfdashb
 		{
 			g_signal_handlers_block_by_func(window, _xfdashboard_window_tracker_on_window_geometry_changed, self);
 		}
-			/* ... otherwise if application was resumed connect signals handlers
+			/* ... otherwise if application was resumed reconnect signals handlers
 			 * and emit 'geometry-changed' signal to reflect latest changes of
 			 * position and size of window.
 			 */
 			else
 			{
-				/* Connect signal handler */
-				g_signal_connect_swapped(window,
-											"geometry-changed",
-											G_CALLBACK(_xfdashboard_window_tracker_on_window_geometry_changed),
-											self);
+				/* Reconnect signal handler */
+				g_signal_handlers_unblock_by_func(window, _xfdashboard_window_tracker_on_window_geometry_changed, self);
 
 				/* Call signal handler to reflect latest changes */
 				_xfdashboard_window_tracker_on_window_geometry_changed(self, window);
