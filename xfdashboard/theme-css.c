@@ -2581,6 +2581,10 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 	if(error)
 	{
 		g_propagate_error(outError, error);
+
+		/* Release allocated resources */
+		g_object_unref(file);
+
 		return(FALSE);
 	}
 
@@ -2594,6 +2598,10 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 	if(error)
 	{
 		g_propagate_error(outError, error);
+
+		/* Release allocated resources */
+		g_object_unref(file);
+
 		return(FALSE);
 	}
 
@@ -2620,6 +2628,9 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 					g_list_length(styles),
 					g_list_length(priv->styles));
 	}
+
+	/* Release allocated resources */
+	g_object_unref(file);
 
 	return(TRUE);
 }
