@@ -1048,7 +1048,7 @@ static gboolean _xfdashboard_application_database_load_application_menu(Xfdashbo
 
 	/* Load menu */
 	appsMenu=garcon_menu_new_applications();
-	if(garcon_menu_load(appsMenu, NULL, &error)==FALSE)
+	if(!garcon_menu_load(appsMenu, NULL, &error))
 	{
 		/* Propagate error */
 		g_propagate_error(outError, error);
@@ -1063,10 +1063,14 @@ static gboolean _xfdashboard_application_database_load_application_menu(Xfdashbo
 	/* Release old menus and set new one */
 	if(priv->appsMenu)
 	{
-		if(priv->appsMenuReloadRequiredID) g_signal_handler_disconnect(priv->appsMenu, priv->appsMenuReloadRequiredID);
+		if(priv->appsMenuReloadRequiredID)
+		{
+			g_signal_handler_disconnect(priv->appsMenu, priv->appsMenuReloadRequiredID);
+			priv->appsMenuReloadRequiredID=0;
+		}
+
 		g_object_unref(priv->appsMenu);
 		priv->appsMenu=NULL;
-		priv->appsMenuReloadRequiredID=0;
 	}
 
 	priv->appsMenu=appsMenu;
@@ -1106,10 +1110,14 @@ static void _xfdashboard_application_database_clean(XfdashboardApplicationDataba
 
 	if(priv->appsMenu)
 	{
-		if(priv->appsMenuReloadRequiredID) g_signal_handler_disconnect(priv->appsMenu, priv->appsMenuReloadRequiredID);
+		if(priv->appsMenuReloadRequiredID)
+		{
+			g_signal_handler_disconnect(priv->appsMenu, priv->appsMenuReloadRequiredID);
+			priv->appsMenuReloadRequiredID=0;
+		}
+
 		g_object_unref(priv->appsMenu);
 		priv->appsMenu=NULL;
-		priv->appsMenuReloadRequiredID=0;
 	}
 
 	if(priv->applications)
