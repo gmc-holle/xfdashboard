@@ -1114,6 +1114,12 @@ static void _xfdashboard_image_content_dispose(GObject *inObject)
 		priv->gicon=NULL;
 	}
 
+	if(priv->missingIconName)
+	{
+		g_free(priv->missingIconName);
+		priv->missingIconName=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_image_content_parent_class)->dispose(inObject);
 }
