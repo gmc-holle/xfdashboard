@@ -534,7 +534,7 @@ static void _xfdashboard_applications_menu_model_fill_model(XfdashboardApplicati
 	g_signal_emit(self, XfdashboardApplicationsMenuModelSignals[SIGNAL_LOADED], 0);
 
 	/* Release allocated resources at fill data structure */
-	if(fillData.populatedMenu) g_slist_free(fillData.populatedMenus);
+	if(fillData.populatedMenus) g_slist_free(fillData.populatedMenus);
 }
 
 /* Idle callback to fill model */
