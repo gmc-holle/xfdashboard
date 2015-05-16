@@ -1418,6 +1418,12 @@ static void _xfdashboard_window_content_dispose(GObject *inObject)
 		priv->suspendSignalID=0;
 	}
 
+	if(priv->outlineColor)
+	{
+		clutter_color_free(priv->outlineColor);
+		priv->outlineColor=NULL;
+	}
+
 	if(priv->styleClasses)
 	{
 		g_free(priv->styleClasses);
