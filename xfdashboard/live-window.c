@@ -617,6 +617,7 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 	clutter_actor_allocate(priv->actorTitle, boxActorTitle, inFlags);
 
 	/* Release allocated resources */
+	if(boxActorWindowNumber) clutter_actor_box_free(boxActorWindowNumber);
 	if(boxActorWindow) clutter_actor_box_free(boxActorWindow);
 	if(boxActorTitle) clutter_actor_box_free(boxActorTitle);
 	if(boxActorClose) clutter_actor_box_free(boxActorClose);
