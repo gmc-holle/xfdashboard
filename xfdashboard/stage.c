@@ -819,6 +819,11 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 					g_critical(_("Could not build interface '%s' from theme '%s'"),
 								XFDASHBOARD_THEME_LAYOUT_PRIMARY,
 								xfdashboard_theme_get_theme_name(inTheme));
+
+					/* Release allocated resources */
+					g_list_foreach(interfaces, (GFunc)g_object_unref, NULL);
+					g_list_free(interfaces);
+
 					return;
 				}
 
@@ -828,6 +833,11 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 								XFDASHBOARD_THEME_LAYOUT_PRIMARY,
 								xfdashboard_theme_get_theme_name(inTheme),
 								g_type_name(XFDASHBOARD_TYPE_STAGE_INTERFACE));
+
+					/* Release allocated resources */
+					g_list_foreach(interfaces, (GFunc)g_object_unref, NULL);
+					g_list_free(interfaces);
+
 					return;
 				}
 			}
@@ -848,6 +858,11 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 									XFDASHBOARD_THEME_LAYOUT_SECONDARY,
 									xfdashboard_theme_get_theme_name(inTheme),
 									g_type_name(XFDASHBOARD_TYPE_STAGE_INTERFACE));
+
+						/* Release allocated resources */
+						g_list_foreach(interfaces, (GFunc)g_object_unref, NULL);
+						g_list_free(interfaces);
+
 						return;
 					}
 				}
@@ -1080,6 +1095,9 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 			}
 		}
 	}
+
+	/* Release allocated resources */
+	g_list_free(interfaces);
 
 	/* Set focus */
 	_xfdashboard_stage_set_focus(self);
