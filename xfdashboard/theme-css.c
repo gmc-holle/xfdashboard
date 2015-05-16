@@ -591,6 +591,9 @@ static gboolean _xfdashboard_theme_css_function_alpha(XfdashboardThemeCSS *self,
 	g_value_init(outResult, CLUTTER_TYPE_COLOR);
 	clutter_value_set_color(outResult, &result);
 
+	/* Release allocated resources */
+	clutter_color_free(color);
+
 	return(TRUE);
 }
 
