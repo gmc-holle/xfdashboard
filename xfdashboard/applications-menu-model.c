@@ -230,6 +230,18 @@ static gboolean _xfdashboard_applications_menu_model_filter_by_section(ClutterMo
 	return(doShow);
 }
 
+static gboolean _xfdashboard_applications_menu_model_filter_empty(ClutterModel *inModel,
+																	ClutterModelIter *inIter,
+																	gpointer inUserData)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(inModel), FALSE);
+	g_return_val_if_fail(CLUTTER_IS_MODEL_ITER(inIter), FALSE);
+	g_return_val_if_fail(GARCON_IS_MENU(inUserData), FALSE);
+
+	/* This functions always returns FALSE because each entry is considered empty and hidden */
+	return(FALSE);
+}
+
 /* Fill model */
 static GarconMenu* _xfdashboard_applications_menu_model_find_similar_menu(XfdashboardApplicationsMenuModel *self,
 																			GarconMenu *inMenu,
@@ -853,8 +865,16 @@ void xfdashboard_applications_menu_model_filter_by_section(XfdashboardApplicatio
 	priv=self->priv;
 
 	/* If requested section is NULL filter root menu */
-	if(inSection==NULL) inSection=priv->rootMenu;
+	if(!inSection) inSection=priv->rootMenu;
 
 	/* Filter model data */
-	clutter_model_set_filter(CLUTTER_MODEL(self), _xfdashboard_applications_menu_model_filter_by_section, g_object_ref(inSection), (GDestroyNotify)g_object_unref);
+	if(inSection)
+	{
+		clutter_model_set_filter(CLUTTER_MODEL(self), _xfdashboard_applications_menu_model_filter_by_section, g_object_ref(inSection), (GDestroyNotify)g_object_unref);
+	}
+		else
+		{
+			g_debug("Filtering empty (root) section");
+			clutter_model_set_filter(CLUTTER_MODEL(self), _xfdashboard_applications_menu_model_filter_empty, NULL, NULL);
+		}
 }
