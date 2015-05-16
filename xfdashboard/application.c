@@ -599,6 +599,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 		priv->theme=NULL;
 	}
 
+	if(priv->themeName)
+	{
+		g_free(priv->themeName);
+		priv->themeName=NULL;
+	}
+
 	if(priv->viewManager)
 	{
 		/* Unregisters all remaining registered views - no need to unregister them here */
