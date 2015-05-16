@@ -120,7 +120,7 @@ static void _xfdashboard_application_button_update_text(XfdashboardApplicationBu
 static void _xfdashboard_application_button_update_icon(XfdashboardApplicationButton *self)
 {
 	XfdashboardApplicationButtonPrivate		*priv;
-	const gchar								*iconName;
+	gchar									*iconName;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 
@@ -140,10 +140,13 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 		}
 	}
 
-	if(!iconName) iconName="gtk-missing-image";
+	if(!iconName) iconName=g_strdup("gtk-missing-image");
 
 	/* Set up button and release allocated resources */
 	if(iconName) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(self), iconName);
+
+	/* Release allocated resources */
+	if(iconName) g_free(iconName);
 }
 
 /* The app info has changed */
