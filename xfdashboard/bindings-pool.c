@@ -780,22 +780,22 @@ static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBi
 																	const gchar *inPath,
 																	GError **outError)
 {
-	static GMarkupParser			parser=
-									{
-										_xfdashboard_bindings_pool_parse_document_start,
-										_xfdashboard_bindings_pool_parse_document_end,
-										_xfdashboard_bindings_pool_parse_general_no_text_nodes,
-										NULL,
-										NULL,
-									};
+	static GMarkupParser				parser=
+										{
+											_xfdashboard_bindings_pool_parse_document_start,
+											_xfdashboard_bindings_pool_parse_document_end,
+											_xfdashboard_bindings_pool_parse_general_no_text_nodes,
+											NULL,
+											NULL,
+										};
 
 	XfdashboardBindingsPoolPrivate		*priv;
-	gchar							*contents;
-	gsize							contentsLength;
-	GMarkupParseContext				*context;
+	gchar								*contents;
+	gsize								contentsLength;
+	GMarkupParseContext					*context;
 	XfdashboardBindingsPoolParserData	*data;
-	GError							*error;
-	gboolean						success;
+	GError								*error;
+	gboolean							success;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_BINDINGS_POOL(self), FALSE);
 	g_return_val_if_fail(inPath && *inPath, FALSE);
@@ -869,6 +869,7 @@ static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBi
 					inPath);
 
 		/* Release allocated resources */
+		g_markup_parse_context_free(context);
 		g_free(contents);
 		g_free(data);
 
@@ -920,6 +921,8 @@ static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBi
 	g_free(data);
 
 	g_free(contents);
+
+	g_markup_parse_context_free(context);
 
 	/* Return success or error result */
 	return(success);
