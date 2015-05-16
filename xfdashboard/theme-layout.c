@@ -1685,6 +1685,7 @@ static void _xfdashboard_theme_layout_dispose(GObject *inObject)
 	if(priv->interfaces)
 	{
 		g_slist_foreach(priv->interfaces, _xfdashboard_theme_layout_object_data_free_foreach_callback, NULL);
+		g_slist_free(priv->interfaces);
 		priv->interfaces=NULL;
 	}
 
