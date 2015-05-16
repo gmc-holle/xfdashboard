@@ -257,6 +257,7 @@ static void _xfdashboard_actor_update_effects(XfdashboardActor *self, const gcha
 	priv->effects=g_strdup(effectsList);
 
 	/* Release allocated resources */
+	if(effectIDs) g_strfreev(effectIDs);
 	g_object_unref(themeEffects);
 }
 
