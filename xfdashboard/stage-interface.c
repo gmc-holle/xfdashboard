@@ -233,6 +233,12 @@ static void _xfdashboard_stage_interface_dispose(GObject *inObject)
 		priv->monitor=NULL;
 	}
 
+	if(priv->backgroundColor)
+	{
+		clutter_color_free(priv->backgroundColor);
+		priv->backgroundColor=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_stage_interface_parent_class)->dispose(inObject);
 }
