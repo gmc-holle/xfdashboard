@@ -2143,18 +2143,27 @@ static void _xfdashboard_quicklaunch_dispose(GObject *inObject)
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inObject)->priv;
 
 	/* Release our allocated variables */
-	if(priv->xfconfChannel) priv->xfconfChannel=NULL;
-
 	if(priv->xfconfFavouritesBindingID)
 	{
 		xfconf_g_property_unbind(priv->xfconfFavouritesBindingID);
 		priv->xfconfFavouritesBindingID=0;
 	}
 
+	if(priv->xfconfChannel)
+	{
+		priv->xfconfChannel=NULL;
+	}
+
 	if(priv->appDB)
 	{
 		g_object_unref(priv->appDB);
 		priv->appDB=NULL;
+	}
+
+	if(priv->favourites)
+	{
+		xfconf_array_free(priv->favourites);
+		priv->favourites=NULL;
 	}
 
 	/* Call parent's class dispose method */
