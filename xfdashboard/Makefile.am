@@ -43,7 +43,6 @@ xfdashboard_headers = \
 	image-content.h \
 	live-window.h \
 	live-workspace.h \
-	live-workspace-window.h \
 	outline-effect.h \
 	quicklaunch.h \
 	scaled-table-layout.h \
@@ -106,7 +105,6 @@ xfdashboard_SOURCES = \
 	image-content.c \
 	live-window.c \
 	live-workspace.c \
-	live-workspace-window.c \
 	main.c \
 	outline-effect.c \
 	quicklaunch.c \
