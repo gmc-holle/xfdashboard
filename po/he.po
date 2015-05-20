@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-01 10:21+0200\n"
-"PO-Revision-Date: 2015-04-01 08:22+0000\n"
+"POT-Creation-Date: 2015-04-14 12:51+0200\n"
+"PO-Revision-Date: 2015-04-15 07:44+0000\n"
 "Last-Translator: Stephan Haller <nomad@froevel.de>\n"
 "Language-Team: Hebrew (http://www.transifex.com/projects/p/xfdashboard/language/he/)\n"
 "MIME-Version: 1.0\n"
@@ -63,64 +63,71 @@ msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid ""
+"This stable version introduces lots of new features. like multi-monitor "
+"support, configurable key bindings and a settings dialog. It also contains a"
+" lot of other larger and smaller improvements."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+msgid ""
 "This unstable development introduces a new box layout fixing layout of "
 "children when using right-to-left language. Also support for localization "
 "was fixed and other smaller bug-fixes and improvements."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
 msgid ""
 "This unstable development introduces support for multiple monitors and also "
 "bug-fixes and other smaller improvements."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
 "This unstable development introduces an application database and monitoring "
 "of installed and uninstalled applications. It also includes bug-fixes and "
 "other smaller improvements."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
 "This unstable development introduces a hotkey tracker to allow starting "
 "xfdashboard with a single press of &lt;Super&gt; key."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
 "This unstable development fixes a bug which rendered the new settings "
 "application completely unusable."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid "This unstable development introduces a settings application."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This unstable development introduces configurable key-bindings, allows "
 "changing themes at runtime and includes lots of smaller bug-fixes."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid ""
 "This unstable development introduces additional themes, fixes handling of "
 "client-side decorated windows (CSD) and adds a new CSS command @import() to "
 "include external CSS resources in themes."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid ""
 "This unstable development introduces a workaround to get window content of "
 "minimized windows to display them in windows view."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid "This unstable development introduces effects."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:17
 msgid ""
 "This unstable development fixes a problem closing windows accidently by "
 "pressing the key 'backspace' to refine search more often than characters "
@@ -128,18 +135,18 @@ msgid ""
 "introduces a new generic selection framework for focusable actors."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:17
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:18
 msgid ""
 "This release fixes a problem closing windows accidently by pressing the key "
 "'backspace' to refine search more often than characters entered."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:18
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:19
 msgid ""
 "This release fixes a problem when loading scalable images by icon name."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:19
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:20
 msgid ""
 "This unstable development release fixes problems with icon mode in theming "
 "and allows to launch the first item by pressing ENTER in search view when a "
@@ -147,15 +154,122 @@ msgid ""
 "allowing the usage of constant values and functions in theme's CSS file."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:20
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:21
 msgid ""
 "This release fixes problems with icon mode in theming and allows to launch "
 "the first item by pressing ENTER in search view when a search was started by"
 " just typing."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:21
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:22
 msgid "Initial release."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:1
+msgid ""
+"<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
+"Configure xfdashboard"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:3
+msgid "<b>General settings:</b>"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:4
+msgid "Reset search view when resumed"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:5
+msgid ""
+"If enabled the search view will be resetted when xfdashboard is resumed. That means the active view is switched back to last view active before last search was started and search box will be emptied.\n"
+"\n"
+"<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
+msgstr ""
+
+#: ../data/data/preferences.ui.h:8
+msgid ""
+"When xfdashboard resumes the selected view will be activated.\n"
+"\n"
+"<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:11
+msgid "Switch to view when resumed:"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:12
+msgid ""
+"Sets the minimum time a notification is being shown.\n"
+"\n"
+"The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:15
+msgid "Minimum notification timeout:"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:16
+msgid "Enable workaround for minimized windows"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:17
+msgid ""
+"When enabled a workaround for minimized windows will be tried to get still images of these windows by restoring them shortly and minimizing them again.\n"
+"\n"
+"<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:20
+msgid "<b>Applications view:</b>"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:21
+msgid "Show menu for all installed applications"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:22
+msgid ""
+"When enabled an \"all applications\" menu containing all installed "
+"applications will be shown at applications view"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:23
+msgid "<b>Windows view:</b>"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:24
+msgid "Mouse wheel changes workspace"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:25
+msgid ""
+"When enabled any scroll event, like mouse-wheel up and down, at the windows "
+"view will change the active workspace. This behaviour is the same as in "
+"workspace selector."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:26
+msgid "General"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:27
+msgid "<b>Name:</b>"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:28
+msgid "<b>Author:</b>"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:29
+msgid "<b>Version:</b>"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:30
+msgid "<b>Description:</b>"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:31
+msgid "Themes"
 msgstr ""
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
