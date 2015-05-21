@@ -53,6 +53,7 @@ struct _XfdashboardSettingsPrivate
 	GtkWidget		*widgetEnableUnmappedWindowWorkaround;
 	GtkWidget		*widgetShowAllApps;
 	GtkWidget		*widgetScrollEventChangedWorkspace;
+	GtkWidget		*widgetDelaySearchTimeout;
 	GtkWidget		*widgetThemes;
 	GtkWidget		*widgetThemeScreenshot;
 	GtkWidget		*widgetThemeNameLabel;
@@ -71,6 +72,7 @@ struct _XfdashboardSettingsPrivate
 #define XFDASHBOARD_THEME_SUBPATH				"xfdashboard-1.0"
 #define XFDASHBOARD_THEME_FILE					"xfdashboard.theme"
 #define XFDASHBOARD_THEME_GROUP					"Xfdashboard Theme"
+#define DEFAULT_DELAY_SEARCH_TIMEOUT			250
 #define DEFAULT_NOTIFICATION_TIMEOUT			3000
 #define DEFAULT_RESET_SEARCH_ON_RESUME			TRUE
 #define DEFAULT_SWITCH_VIEW_ON_RESUME			NULL
@@ -223,6 +225,66 @@ static gchar* _xfdashboard_settings_on_format_notification_timeout_value(GtkScal
 
 	return(text);
 }
+
+/* Setting '/components/search-view/delay-search-timeout' changed either at widget or at xfconf property */
+static void _xfdashboard_settings_widget_changed_delay_search_timeout(XfdashboardSettings *self, GtkRange *inRange)
+{
+	XfdashboardSettingsPrivate		*priv;
+	guint							value;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(GTK_IS_RANGE(inRange));
+
+	priv=self->priv;
+
+	/* Get value from widget */
+	value=floor(gtk_range_get_value(inRange));
+
+	/* Set value at xfconf property */
+	xfconf_channel_set_uint(priv->xfconfChannel, "/components/search-view/delay-search-timeout", value);
+}
+
+static void _xfdashboard_settings_xfconf_changed_delay_search_timeout(XfdashboardSettings *self,
+																		const gchar *inProperty,
+																		const GValue *inValue,
+																		XfconfChannel *inChannel)
+{
+	XfdashboardSettingsPrivate		*priv;
+	guint							newValue;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(inValue);
+	g_return_if_fail(XFCONF_IS_CHANNEL(inChannel));
+
+	priv=self->priv;
+
+	/* Get new value to set at widget */
+	if(G_UNLIKELY(G_VALUE_TYPE(inValue)!=G_TYPE_UINT)) newValue=DEFAULT_DELAY_SEARCH_TIMEOUT;
+		else newValue=g_value_get_uint(inValue);
+
+	/* Set new value at widget */
+	gtk_range_set_value(GTK_RANGE(priv->widgetDelaySearchTimeout), (gdouble)newValue);
+}
+
+/* Format value to show in delay search timeout slider */
+static gchar* _xfdashboard_settings_on_format_delay_search_timeout_value(GtkScale *inWidget,
+																			gdouble inValue,
+																			gpointer inUserData)
+{
+	gchar		*text;
+
+	if(inValue>0.0)
+	{
+		text=g_strdup_printf("%u %s", (guint)inValue, _("ms"));
+	}
+		else
+		{
+			text=g_strdup(_("Immediately"));
+		}
+
+	return(text);
+}
+
 
 /* Setting '/theme' changed either at widget or at xfconf property */
 static void _xfdashboard_settings_widget_changed_theme(XfdashboardSettings *self, GtkTreeSelection *inSelection)
@@ -1050,6 +1112,37 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 							priv->widgetScrollEventChangedWorkspace,
 							"active");
 
+	priv->widgetDelaySearchTimeout=GTK_WIDGET(gtk_builder_get_object(priv->builder, "delay-search-timeout"));
+	if(priv->widgetDelaySearchTimeout)
+	{
+		GtkAdjustment						*adjustment;
+		gdouble								defaultValue;
+
+		/* Get default value */
+		defaultValue=xfconf_channel_get_uint(priv->xfconfChannel, "/components/search-view/delay-search-timeout", DEFAULT_DELAY_SEARCH_TIMEOUT);
+
+		/* Set up scaling settings of widget */
+		adjustment=GTK_ADJUSTMENT(gtk_builder_get_object(priv->builder, "delay-search-timeout-adjustment"));
+		gtk_range_set_adjustment(GTK_RANGE(priv->widgetDelaySearchTimeout), adjustment);
+
+		/* Set up default value */
+		gtk_range_set_value(GTK_RANGE(priv->widgetDelaySearchTimeout), defaultValue);
+
+		/* Connect signals */
+		g_signal_connect(priv->widgetDelaySearchTimeout,
+							"format-value",
+							G_CALLBACK(_xfdashboard_settings_on_format_delay_search_timeout_value),
+							NULL);
+		g_signal_connect_swapped(priv->widgetDelaySearchTimeout,
+									"value-changed",
+									G_CALLBACK(_xfdashboard_settings_widget_changed_delay_search_timeout),
+									self);
+		g_signal_connect_swapped(priv->xfconfChannel,
+									"property-changed::/components/search-view/delay-search-timeout",
+									G_CALLBACK(_xfdashboard_settings_xfconf_changed_delay_search_timeout),
+									self);
+	}
+
 	priv->widgetCloseButton=GTK_WIDGET(gtk_builder_get_object(priv->builder, "close-button"));
 	g_signal_connect_swapped(priv->widgetCloseButton,
 								"clicked",
@@ -1144,6 +1237,7 @@ static void _xfdashboard_settings_dispose(GObject *inObject)
 	priv->widgetNotificationTimeout=NULL;
 	priv->widgetEnableUnmappedWindowWorkaround=NULL;
 	priv->widgetScrollEventChangedWorkspace=NULL;
+	priv->widgetDelaySearchTimeout=NULL;
 	priv->widgetThemes=NULL;
 	priv->widgetThemeScreenshot=NULL;
 	priv->widgetThemeNameLabel=NULL;
@@ -1157,7 +1251,6 @@ static void _xfdashboard_settings_dispose(GObject *inObject)
 
 	if(priv->xfconfChannel)
 	{
-		// TODO: xfconf_g_property_unbind_all(priv->xfconfChannel);
 		priv->xfconfChannel=NULL;
 	}
 
@@ -1205,6 +1298,7 @@ static void xfdashboard_settings_init(XfdashboardSettings *self)
 	priv->widgetNotificationTimeout=NULL;
 	priv->widgetEnableUnmappedWindowWorkaround=NULL;
 	priv->widgetScrollEventChangedWorkspace=NULL;
+	priv->widgetDelaySearchTimeout=NULL;
 	priv->widgetThemes=NULL;
 	priv->widgetThemeScreenshot=NULL;
 	priv->widgetThemeNameLabel=NULL;
