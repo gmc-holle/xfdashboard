@@ -597,7 +597,7 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 		priv->type=inType;
 
 		/* Force redraw of background canvas */
-		clutter_content_invalidate(priv->fillCanvas);
+		if(priv->fillCanvas) clutter_content_invalidate(priv->fillCanvas);
 
 		/* Enable or disable drawing outline */
 		if(inType & XFDASHBOARD_BACKGROUND_TYPE_OUTLINE) enableOutline=TRUE;
