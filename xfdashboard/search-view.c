@@ -953,19 +953,21 @@ static gboolean _xfdashboard_search_view_can_do_incremental_search(XfdashboardSe
 }
 
 /* Perform search */
-static void _xfdashboard_search_view_perform_search(XfdashboardSearchView *self, XfdashboardSearchViewSearchTerms *inSearchTerms)
+static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self, XfdashboardSearchViewSearchTerms *inSearchTerms)
 {
 	XfdashboardSearchViewPrivate				*priv;
 	GList										*providers;
 	GList										*iter;
+	guint										numberResults;
 #ifdef DEBUG
 	GTimer										*timer=NULL;
 #endif
 
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
-	g_return_if_fail(inSearchTerms);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), 0);
+	g_return_val_if_fail(inSearchTerms, 0);
 
 	priv=self->priv;
+	numberResults=0;
 
 #ifdef DEBUG
 	/* Start timer for debug search performance */
@@ -1006,6 +1008,8 @@ static void _xfdashboard_search_view_perform_search(XfdashboardSearchView *self,
 					G_OBJECT_TYPE_NAME(providerData->provider),
 					xfdashboard_search_result_set_get_size(providerNewResultSet));
 
+		/* Count number of results */
+		numberResults+=xfdashboard_search_result_set_get_size(providerNewResultSet);
 
 		/* Update view of search provider for new result set */
 		_xfdashboard_search_view_update_provider_container(self, providerData, providerNewResultSet);
@@ -1064,6 +1068,9 @@ static void _xfdashboard_search_view_perform_search(XfdashboardSearchView *self,
 
 	/* Emit signal that search was updated */
 	g_signal_emit(self, XfdashboardSearchViewSignals[SIGNAL_SEARCH_UPDATED], 0);
+
+	/* Return number of results */
+	return(numberResults);
 }
 
 /* Delay timeout was reached so perform initial search now */
@@ -1071,6 +1078,7 @@ static gboolean _xfdashboard_search_view_on_perform_search_delayed_timeout(gpoin
 {
 	XfdashboardSearchView						*self;
 	XfdashboardSearchViewPrivate				*priv;
+	guint										numberResults;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inUserData), G_SOURCE_REMOVE);
 
@@ -1078,7 +1086,14 @@ static gboolean _xfdashboard_search_view_on_perform_search_delayed_timeout(gpoin
 	priv=self->priv;
 
 	/* Perform search */
-	_xfdashboard_search_view_perform_search(self, priv->delaySearchTerms);
+	numberResults=_xfdashboard_search_view_perform_search(self, priv->delaySearchTerms);
+	if(numberResults==0)
+	{
+		xfdashboard_notify(CLUTTER_ACTOR(self),
+							xfdashboard_view_get_icon(XFDASHBOARD_VIEW(self)),
+							_("No results found for '%s'"),
+							priv->delaySearchTerms->termString);
+	}
 
 	/* Release allocated resources */
 	if(priv->delaySearchTerms)
