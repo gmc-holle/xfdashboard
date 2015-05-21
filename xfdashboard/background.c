@@ -600,10 +600,13 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 		if(priv->fillCanvas) clutter_content_invalidate(priv->fillCanvas);
 
 		/* Enable or disable drawing outline */
-		if(inType & XFDASHBOARD_BACKGROUND_TYPE_OUTLINE) enableOutline=TRUE;
-			else enableOutline=FALSE;
+		if(priv->outline)
+		{
+			if(inType & XFDASHBOARD_BACKGROUND_TYPE_OUTLINE) enableOutline=TRUE;
+				else enableOutline=FALSE;
 
-		clutter_actor_meta_set_enabled(CLUTTER_ACTOR_META(priv->outline), enableOutline);
+			clutter_actor_meta_set_enabled(CLUTTER_ACTOR_META(priv->outline), enableOutline);
+		}
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_TYPE]);
