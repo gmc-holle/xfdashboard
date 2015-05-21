@@ -38,6 +38,7 @@
 #include "drag-action.h"
 #include "focus-manager.h"
 #include "enums.h"
+#include "application.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_search_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -63,6 +64,11 @@ struct _XfdashboardSearchViewPrivate
 
 	XfdashboardSearchViewSearchTerms	*lastTerms;
 
+	XfconfChannel						*xfconfChannel;
+	gboolean							delaySearch;
+	XfdashboardSearchViewSearchTerms	*delaySearchTerms;
+	gint								delaySearchTimeoutID;
+
 	XfdashboardSearchViewProviderData	*selectionProvider;
 	guint								repaintID;
 
@@ -81,6 +87,9 @@ enum
 static guint XfdashboardSearchViewSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+#define DELAY_SEARCH_TIMEOUT_XFCONF_PROP		"/components/search-view/delay-search-timeout"
+#define DEFAULT_DELAY_SEARCH_TIMEOUT			250
+
 struct _XfdashboardSearchViewProviderData
 {
 	gint								refCount;
@@ -943,6 +952,150 @@ static gboolean _xfdashboard_search_view_can_do_incremental_search(XfdashboardSe
 	return(FALSE);
 }
 
+/* Perform search */
+static void _xfdashboard_search_view_perform_search(XfdashboardSearchView *self, XfdashboardSearchViewSearchTerms *inSearchTerms)
+{
+	XfdashboardSearchViewPrivate				*priv;
+	GList										*providers;
+	GList										*iter;
+#ifdef DEBUG
+	GTimer										*timer=NULL;
+#endif
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
+	g_return_if_fail(inSearchTerms);
+
+	priv=self->priv;
+
+#ifdef DEBUG
+	/* Start timer for debug search performance */
+	timer=g_timer_new();
+#endif
+
+	/* Perform a search at all registered search providers */
+	providers=g_list_copy(priv->providers);
+	g_list_foreach(providers, (GFunc)_xfdashboard_search_view_provider_data_ref, NULL);
+	for(iter=providers; iter; iter=g_list_next(iter))
+	{
+		XfdashboardSearchViewProviderData		*providerData;
+		gboolean								canDoIncrementalSearch;
+		XfdashboardSearchResultSet				*providerNewResultSet;
+		XfdashboardSearchResultSet				*providerLastResultSet;
+
+		/* Get data for provider to perform search at */
+		providerData=((XfdashboardSearchViewProviderData*)(iter->data));
+
+		/* Check if we can do an incremental search based on previous
+		 * results or if we have to do a full search.
+		 */
+		canDoIncrementalSearch=FALSE;
+		providerLastResultSet=NULL;
+		if(providerData->lastTerms &&
+			_xfdashboard_search_view_can_do_incremental_search(providerData->lastTerms, inSearchTerms))
+		{
+			canDoIncrementalSearch=TRUE;
+			providerLastResultSet=g_object_ref(providerData->lastResultSet);
+		}
+
+		/* Perform search */
+		providerNewResultSet=xfdashboard_search_provider_get_result_set(providerData->provider,
+																		(const gchar**)inSearchTerms->termList,
+																		providerLastResultSet);
+		g_debug("Performed %s search at search provider %s and got %u result items",
+					canDoIncrementalSearch==TRUE ? "incremental" : "full",
+					G_OBJECT_TYPE_NAME(providerData->provider),
+					xfdashboard_search_result_set_get_size(providerNewResultSet));
+
+
+		/* Update view of search provider for new result set */
+		_xfdashboard_search_view_update_provider_container(self, providerData, providerNewResultSet);
+
+		/* Remember new search term as last one at search provider */
+		if(providerData->lastTerms) _xfdashboard_search_view_search_terms_unref(providerData->lastTerms);
+		providerData->lastTerms=_xfdashboard_search_view_search_terms_ref(inSearchTerms);
+
+		/* Release allocated resources */
+		if(providerLastResultSet) g_object_unref(providerLastResultSet);
+		if(providerNewResultSet) g_object_unref(providerNewResultSet);
+	}
+	g_list_free_full(providers, (GDestroyNotify)_xfdashboard_search_view_provider_data_unref);
+
+	/* Remember new search terms as last one */
+	if(priv->lastTerms) _xfdashboard_search_view_search_terms_unref(priv->lastTerms);
+	priv->lastTerms=_xfdashboard_search_view_search_terms_ref(inSearchTerms);
+
+#ifdef DEBUG
+	/* Get time for this search for debug performance */
+	g_debug("Updating search for '%s' took %f seconds", inSearchTerms->termString, g_timer_elapsed(timer, NULL));
+	g_timer_destroy(timer);
+#endif
+
+	/* If this view has the focus then check if this view has a selection set currently.
+	 * If not select the first selectable actor otherwise just ensure the current
+	 * selection is visible.
+	 */
+	if(xfdashboard_focus_manager_has_focus(priv->focusManager, XFDASHBOARD_FOCUSABLE(self)))
+	{
+		ClutterActor							*selection;
+
+		/* Check if this view has a selection set */
+		selection=xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self));
+		if(!selection)
+		{
+			/* Select first selectable item */
+			selection=xfdashboard_focusable_find_selection(XFDASHBOARD_FOCUSABLE(self),
+															NULL,
+															XFDASHBOARD_SELECTION_TARGET_FIRST);
+			xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), selection);
+		}
+
+		/* Ensure selection is visible. But we have to have for a repaint because
+		 * allocation of this view has not changed yet.
+		 */
+		if(selection &&
+			priv->repaintID==0)
+		{
+			priv->repaintID=clutter_threads_add_repaint_func_full(CLUTTER_REPAINT_FLAGS_QUEUE_REDRAW_ON_ADD | CLUTTER_REPAINT_FLAGS_POST_PAINT,
+																	_xfdashboard_search_view_on_repaint_after_update_callback,
+																	self,
+																	NULL);
+		}
+	}
+
+	/* Emit signal that search was updated */
+	g_signal_emit(self, XfdashboardSearchViewSignals[SIGNAL_SEARCH_UPDATED], 0);
+}
+
+/* Delay timeout was reached so perform initial search now */
+static gboolean _xfdashboard_search_view_on_perform_search_delayed_timeout(gpointer inUserData)
+{
+	XfdashboardSearchView						*self;
+	XfdashboardSearchViewPrivate				*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inUserData), G_SOURCE_REMOVE);
+
+	self=XFDASHBOARD_SEARCH_VIEW(inUserData);
+	priv=self->priv;
+
+	/* Perform search */
+	_xfdashboard_search_view_perform_search(self, priv->delaySearchTerms);
+
+	/* Release allocated resources */
+	if(priv->delaySearchTerms)
+	{
+		_xfdashboard_search_view_search_terms_unref(priv->delaySearchTerms);
+		priv->delaySearchTerms=NULL;
+	}
+
+	/* Do not delay next searches */
+	priv->delaySearch=FALSE;
+
+	/* This source will be removed so unset source ID */
+	priv->delaySearchTimeoutID=0;
+
+	return(G_SOURCE_REMOVE);
+}
+
 /* IMPLEMENTATION: Interface XfdashboardFocusable */
 
 /* Determine if actor can get the focus */
@@ -1439,10 +1592,24 @@ static void _xfdashboard_search_view_dispose(GObject *inObject)
 	XfdashboardSearchViewPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
+	if(priv->xfconfChannel) priv->xfconfChannel=NULL;
+
 	if(priv->repaintID)
 	{
 		g_source_remove(priv->repaintID);
 		priv->repaintID=0;
+	}
+
+	if(priv->delaySearchTimeoutID)
+	{
+		g_source_remove(priv->delaySearchTimeoutID);
+		priv->delaySearchTimeoutID=0;
+	}
+
+	if(priv->delaySearchTerms)
+	{
+		_xfdashboard_search_view_search_terms_unref(priv->delaySearchTerms);
+		priv->delaySearchTerms=NULL;
 	}
 
 	if(priv->searchManager)
@@ -1533,9 +1700,13 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	priv->searchManager=xfdashboard_search_manager_get_default();
 	priv->providers=NULL;
 	priv->lastTerms=NULL;
+	priv->delaySearch=TRUE;
+	priv->delaySearchTerms=NULL;
+	priv->delaySearchTimeoutID=0;
 	priv->selectionProvider=NULL;
 	priv->focusManager=xfdashboard_focus_manager_get_default();
 	priv->repaintID=0;
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
 
 	/* Set up view (Note: Search view is disabled by default!) */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "search");
@@ -1588,6 +1759,13 @@ void xfdashboard_search_view_reset_search(XfdashboardSearchView *self)
 
 	priv=self->priv;
 
+	/* Remove timeout source if set */
+	if(priv->delaySearchTimeoutID)
+	{
+		g_source_remove(priv->delaySearchTimeoutID);
+		priv->delaySearchTimeoutID=0;
+	}
+
 	/* Reset all search providers by destroying actors, destroying containers,
 	 * clearing mappings and release all other allocated resources used.
 	 */
@@ -1637,6 +1815,9 @@ void xfdashboard_search_view_reset_search(XfdashboardSearchView *self)
 		priv->lastTerms=NULL;
 	}
 
+	/* Set flag to delay next search again */
+	priv->delaySearch=TRUE;
+
 	/* Emit signal that search was resetted */
 	g_signal_emit(self, XfdashboardSearchViewSignals[SIGNAL_SEARCH_RESET], 0);
 }
@@ -1646,11 +1827,7 @@ void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gc
 {
 	XfdashboardSearchViewPrivate				*priv;
 	XfdashboardSearchViewSearchTerms			*searchTerms;
-	GList										*providers;
-	GList										*iter;
-#ifdef DEBUG
-	GTimer										*timer=NULL;
-#endif
+	guint										delaySearchTimeout;
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
 
@@ -1681,103 +1858,33 @@ void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gc
 		return;
 	}
 
-#ifdef DEBUG
-	/* Start timer for debug search performance */
-	timer=g_timer_new();
-#endif
-
-	/* Perform a search at all registered search providers */
-	providers=g_list_copy(priv->providers);
-	g_list_foreach(providers, (GFunc)_xfdashboard_search_view_provider_data_ref, NULL);
-	for(iter=providers; iter; iter=g_list_next(iter))
+	/* Check if search should be delayed ... */
+	delaySearchTimeout=xfconf_channel_get_uint(priv->xfconfChannel,
+												DELAY_SEARCH_TIMEOUT_XFCONF_PROP,
+												DEFAULT_DELAY_SEARCH_TIMEOUT);
+	if(delaySearchTimeout>0 && priv->delaySearch)
 	{
-		XfdashboardSearchViewProviderData		*providerData;
-		gboolean								canDoIncrementalSearch;
-		XfdashboardSearchResultSet				*providerNewResultSet;
-		XfdashboardSearchResultSet				*providerLastResultSet;
-
-		/* Get data for provider to perform search at */
-		providerData=((XfdashboardSearchViewProviderData*)(iter->data));
-
-		/* Check if we can do an incremental search based on previous
-		 * results or if we have to do a full search.
-		 */
-		canDoIncrementalSearch=FALSE;
-		providerLastResultSet=NULL;
-		if(providerData->lastTerms &&
-			_xfdashboard_search_view_can_do_incremental_search(providerData->lastTerms, searchTerms))
+		/* Remember search terms for delayed search */
+		if(priv->delaySearchTerms)
 		{
-			canDoIncrementalSearch=TRUE;
-			providerLastResultSet=g_object_ref(providerData->lastResultSet);
+			_xfdashboard_search_view_search_terms_unref(priv->delaySearchTerms);
+			priv->delaySearchTerms=NULL;
 		}
+		priv->delaySearchTerms=_xfdashboard_search_view_search_terms_ref(searchTerms);
 
-		/* Perform search */
-		providerNewResultSet=xfdashboard_search_provider_get_result_set(providerData->provider,
-																		(const gchar**)searchTerms->termList,
-																		providerLastResultSet);
-		g_debug("Performed %s search at search provider %s and got %u result items",
-					canDoIncrementalSearch==TRUE ? "incremental" : "full",
-					G_OBJECT_TYPE_NAME(providerData->provider),
-					xfdashboard_search_result_set_get_size(providerNewResultSet));
-
-
-		/* Update view of search provider for new result set */
-		_xfdashboard_search_view_update_provider_container(self, providerData, providerNewResultSet);
-
-		/* Remember new search term as last one at search provider */
-		if(providerData->lastTerms) _xfdashboard_search_view_search_terms_unref(providerData->lastTerms);
-		providerData->lastTerms=_xfdashboard_search_view_search_terms_ref(searchTerms);
-
-		/* Release allocated resources */
-		if(providerLastResultSet) g_object_unref(providerLastResultSet);
-		if(providerNewResultSet) g_object_unref(providerNewResultSet);
-	}
-	g_list_free_full(providers, (GDestroyNotify)_xfdashboard_search_view_provider_data_unref);
-
-	/* Remember new search terms as last one */
-	if(priv->lastTerms) _xfdashboard_search_view_search_terms_unref(priv->lastTerms);
-	priv->lastTerms=_xfdashboard_search_view_search_terms_ref(searchTerms);
-
-#ifdef DEBUG
-	/* Get time for this search for debug performance */
-	g_debug("Updating search for '%s' took %f seconds", inSearchString, g_timer_elapsed(timer, NULL));
-	g_timer_destroy(timer);
-#endif
-
-	/* If this view has the focus then check if this view has a selection set currently.
-	 * If not select the first selectable actor otherwise just ensure the current
-	 * selection is visible.
-	 */
-	if(xfdashboard_focus_manager_has_focus(priv->focusManager, XFDASHBOARD_FOCUSABLE(self)))
-	{
-		ClutterActor							*selection;
-
-		/* Check if this view has a selection set */
-		selection=xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self));
-		if(!selection)
+		/* Create timeout source to delay search if no one exists */
+		if(!priv->delaySearchTimeoutID)
 		{
-			/* Select first selectable item */
-			selection=xfdashboard_focusable_find_selection(XFDASHBOARD_FOCUSABLE(self),
-															NULL,
-															XFDASHBOARD_SELECTION_TARGET_FIRST);
-			xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), selection);
-		}
-
-		/* Ensure selection is visible. But we have to have for a repaint because
-		 * allocation of this view has not changed yet.
-		 */
-		if(selection &&
-			priv->repaintID==0)
-		{
-			priv->repaintID=clutter_threads_add_repaint_func_full(CLUTTER_REPAINT_FLAGS_QUEUE_REDRAW_ON_ADD | CLUTTER_REPAINT_FLAGS_POST_PAINT,
-																	_xfdashboard_search_view_on_repaint_after_update_callback,
-																	self,
-																	NULL);
+			priv->delaySearchTimeoutID=g_timeout_add(delaySearchTimeout,
+														_xfdashboard_search_view_on_perform_search_delayed_timeout,
+														self);
 		}
 	}
-
-	/* Emit signal that search was updated */
-	g_signal_emit(self, XfdashboardSearchViewSignals[SIGNAL_SEARCH_UPDATED], 0);
+		/* ... otherwise perform search immediately */
+		else
+		{
+			_xfdashboard_search_view_perform_search(self, searchTerms);
+		}
 
 	/* Release allocated resources */
 	if(searchTerms) _xfdashboard_search_view_search_terms_unref(searchTerms);
