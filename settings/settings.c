@@ -72,7 +72,7 @@ struct _XfdashboardSettingsPrivate
 #define XFDASHBOARD_THEME_SUBPATH				"xfdashboard-1.0"
 #define XFDASHBOARD_THEME_FILE					"xfdashboard.theme"
 #define XFDASHBOARD_THEME_GROUP					"Xfdashboard Theme"
-#define DEFAULT_DELAY_SEARCH_TIMEOUT			250
+#define DEFAULT_DELAY_SEARCH_TIMEOUT			0
 #define DEFAULT_NOTIFICATION_TIMEOUT			3000
 #define DEFAULT_RESET_SEARCH_ON_RESUME			TRUE
 #define DEFAULT_SWITCH_VIEW_ON_RESUME			NULL

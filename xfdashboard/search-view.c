@@ -88,7 +88,7 @@ static guint XfdashboardSearchViewSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DELAY_SEARCH_TIMEOUT_XFCONF_PROP		"/components/search-view/delay-search-timeout"
-#define DEFAULT_DELAY_SEARCH_TIMEOUT			250
+#define DEFAULT_DELAY_SEARCH_TIMEOUT			0
 
 struct _XfdashboardSearchViewProviderData
 {
