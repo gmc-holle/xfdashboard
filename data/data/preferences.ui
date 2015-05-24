@@ -320,9 +320,7 @@ The duration is calculated by the length of the text to show in notification. Th
                       <object class="GtkScale" id="delay-search-timeout">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip_markup" translatable="yes">Sets the minimum time a notification is being shown.
-
-The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least.</property>
+                        <property name="tooltip_markup" translatable="yes">Sets the interval the search should be delayed by after the first character was entered.</property>
                         <property name="round_digits">1</property>
                       </object>
                       <packing>
