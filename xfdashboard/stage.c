@@ -1247,6 +1247,7 @@ static void _xfdashboard_stage_on_monitor_removed(XfdashboardStage *self,
 	}
 }
 
+#if !CLUTTER_CHECK_VERSION(0, 17, 2)
 /* Screen size has changed */
 static void _xfdashboard_stage_on_screen_size_changed(XfdashboardStage *self,
 														gint inWidth,
@@ -1275,6 +1276,7 @@ static void _xfdashboard_stage_on_screen_size_changed(XfdashboardStage *self,
 		clutter_actor_set_size(CLUTTER_ACTOR(self), inWidth, inHeight);
 	}
 }
+#endif
 
 /* IMPLEMENTATION: ClutterActor */
 
@@ -1562,7 +1564,6 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	ClutterConstraint			*widthConstraint;
 	ClutterConstraint			*heightConstraint;
 	ClutterColor				transparent;
-	gint						screenWidth, screenHeight;
 
 	priv=self->priv=XFDASHBOARD_STAGE_GET_PRIVATE(self);
 
@@ -1625,10 +1626,6 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 								"primary-monitor-changed",
 								G_CALLBACK(_xfdashboard_stage_on_primary_monitor_changed),
 								self);
-	g_signal_connect_swapped(priv->windowTracker,
-								"screen-size-changed",
-								G_CALLBACK(_xfdashboard_stage_on_screen_size_changed),
-								self);
 
 	/* Connect signal to application */
 	application=xfdashboard_application_get_default();
@@ -1647,10 +1644,25 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 								G_CALLBACK(_xfdashboard_stage_on_application_theme_changed),
 								self);
 
-	/* Resize stage to match screen size */
-	screenWidth=xfdashboard_window_tracker_get_screen_width(priv->windowTracker);
-	screenHeight=xfdashboard_window_tracker_get_screen_height(priv->windowTracker);
-	_xfdashboard_stage_on_screen_size_changed(self, screenWidth, screenHeight, priv->windowTracker);
+#if !CLUTTER_CHECK_VERSION(0, 17, 2)
+	{
+		gint					screenWidth, screenHeight;
+
+		/* Resize stage to match screen size and listen for futher screen size changes
+		 * to resize stage again.
+		 * This should only be needed when compiled against Clutter prior to 0.17.2
+		 * because this version or newer ones seem to handle window resizes correctly.
+		 */
+		screenWidth=xfdashboard_window_tracker_get_screen_width(priv->windowTracker);
+		screenHeight=xfdashboard_window_tracker_get_screen_height(priv->windowTracker);
+		_xfdashboard_stage_on_screen_size_changed(self, screenWidth, screenHeight, priv->windowTracker);
+
+		g_signal_connect_swapped(priv->windowTracker,
+									"screen-size-changed",
+									G_CALLBACK(_xfdashboard_stage_on_screen_size_changed),
+									self);
+	}
+#endif
 }
 
 /* IMPLEMENTATION: Public API */
