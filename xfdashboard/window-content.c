@@ -2202,7 +2202,7 @@ void xfdashboard_window_content_set_unmapped_window_icon_gravity(XfdashboardWind
 
 	anchorPoint=XFDASHBOARD_ANCHOR_POINT_NONE;
 
-	g_warning("Setting deprecated property 'unmapped-window-icon-gravity' at %s", G_OBJECT_TYPE_NAME(self));
+	g_message("Setting deprecated property 'unmapped-window-icon-gravity' at %s, use 'unmapped-window-icon-anchor-point' instead", G_OBJECT_TYPE_NAME(self));
 
 	/* Convert gravity to anchor point */
 	switch(inGravity)
