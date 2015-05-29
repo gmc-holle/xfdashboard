@@ -44,6 +44,14 @@
 	</provides>
 
 	<releases>
+		<release version="0.4.1" timestamp="1432920422">
+			<description>
+				<_p>This release hopefully fixes problems with the stage as it
+				size might not reflect the screen size preventing dragging windows
+				over the whole screen. It also includes lots of smaller bug-fixes.
+				</_p>
+			</description>
+		</release>
 		<release version="0.4.0" timestamp="1428778076">
 			<description>
 				<_p>This stable version introduces lots of new features. like
