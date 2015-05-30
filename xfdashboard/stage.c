@@ -1662,7 +1662,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 
 	/* Resize stage to match screen size and listen for futher screen size changes
 	 * to resize stage again.
-	 * This should only be needed when compiled against Clutter prior to 0.17.2
+	 * This should only be needed when compiled against Clutter prior to 1.17.2
 	 * because this version or newer ones seem to handle window resizes correctly.
 	 */
 	if(clutter_major_version<1 ||
