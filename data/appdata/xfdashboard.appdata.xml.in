@@ -44,6 +44,13 @@
 	</provides>
 
 	<releases>
+		<release version="0.4.2" timestamp="1433008431">
+			<description>
+				<_p>This release hopefully fixes problems with the stage resizes
+				finally. Also the method to determine the desktop window was changed.
+				</_p>
+			</description>
+		</release>
 		<release version="0.4.1" timestamp="1432920422">
 			<description>
 				<_p>This release hopefully fixes problems with the stage as it
