@@ -1680,7 +1680,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 									G_CALLBACK(_xfdashboard_stage_on_screen_size_changed),
 									self);
 
-		g_message("Tracking screen resizes to resize stage");
+		g_debug("Tracking screen resizes to resize stage");
 	}
 }
 
