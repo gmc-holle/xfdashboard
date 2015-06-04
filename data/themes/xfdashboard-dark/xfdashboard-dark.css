@@ -75,7 +75,7 @@ XfdashboardQuicklaunch #trash-button:drop-target
 	outline-color: #434343ff;
 }
 
-#workspace-selector
+XfdashboardWorkspaceSelector
 {
 	background-fill-color: #202020;
 	outline-color: #202020;

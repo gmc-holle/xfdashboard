@@ -254,30 +254,26 @@ XfdashboardApplicationButton.view-mode-list
 }
 
 /* Workspace selector (incl. collapse box) */
-#workspace-selector
+XfdashboardWorkspaceSelector
 {
 	spacing: 8.0;
 	background-type: fill outline rounded-corners;
 	background-fill-color: @background;
 	outline-color: #5792e2ff;
 	outline-width: 0.5;
-	outline-borders: top left bottom;
-	corners: left;
 	orientation: vertical;
 	max-fraction: 0.20;
 	using-fraction: true;
 	orientation: vertical;
+	show-current-monitor-only: true;
 }
 
 #workspace-selector-collapse-box
 {
 	collapsed-size: 64.0;
 	collapse-orientation: left;
-}
-
-XfdashboardCollapseBox
-{
-	collapse-orientation: left;
+	outline-borders: top left bottom;
+	corners: left;
 }
 
 /* Search text box */
