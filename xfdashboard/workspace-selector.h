@@ -78,6 +78,9 @@ void xfdashboard_workspace_selector_set_maximum_fraction(XfdashboardWorkspaceSel
 
 gboolean xfdashboard_workspace_selector_is_using_fraction(XfdashboardWorkspaceSelector *self);
 
+gboolean xfdashboard_workspace_selector_get_show_current_monitor_only(XfdashboardWorkspaceSelector *self);
+void xfdashboard_workspace_selector_set_show_current_monitor_only(XfdashboardWorkspaceSelector *self, gboolean inShowCurrentMonitorOnly);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_WORKSPACE_SELECTOR__ */

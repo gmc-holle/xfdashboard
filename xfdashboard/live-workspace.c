@@ -54,6 +54,7 @@ struct _XfdashboardLiveWorkspacePrivate
 {
 	/* Properties related */
 	XfdashboardWindowTrackerWorkspace		*workspace;
+	XfdashboardWindowTrackerMonitor			*monitor;
 	gboolean								showWindowContent;
 	XfdashboardStageBackgroundImageType		backgroundType;
 
@@ -68,6 +69,7 @@ enum
 	PROP_0,
 
 	PROP_WORKSPACE,
+	PROP_MONITOR,
 	PROP_SHOW_WINDOW_CONTENT,
 	PROP_BACKGROUND_IMAGE_TYPE,
 
@@ -366,6 +368,17 @@ static void _xfdashboard_live_workspace_on_window_workspace_changed(XfdashboardL
 		}
 }
 
+/* A monitor's position and/or size has changed */
+static void _xfdashboard_live_workspace_on_monitor_geometry_changed(XfdashboardLiveWorkspace *self,
+																	gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inUserData));
+
+	/* Actor's allocation may change because of new geometry so relayout */
+	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+}
+
 /* A window was created
  * Check if window opened is desktop background window
  */
@@ -416,8 +429,16 @@ static void _xfdashboard_live_workspace_get_preferred_height(ClutterActor *self,
 	/* Determine size of workspace if available (should usually be the largest actor) */
 	if(priv->workspace)
 	{
-		childWidth=(gfloat)xfdashboard_window_tracker_workspace_get_width(priv->workspace);
-		childHeight=(gfloat)xfdashboard_window_tracker_workspace_get_height(priv->workspace);
+		if(priv->monitor)
+		{
+			childWidth=(gfloat)xfdashboard_window_tracker_monitor_get_width(priv->monitor);
+			childHeight=(gfloat)xfdashboard_window_tracker_monitor_get_height(priv->monitor);
+		}
+			else
+			{
+				childWidth=(gfloat)xfdashboard_window_tracker_workspace_get_width(priv->workspace);
+				childHeight=(gfloat)xfdashboard_window_tracker_workspace_get_height(priv->workspace);
+			}
 
 		if(inForWidth<0.0f) naturalHeight=childHeight;
 			else naturalHeight=(childHeight/childWidth)*inForWidth;
@@ -442,8 +463,16 @@ static void _xfdashboard_live_workspace_get_preferred_width(ClutterActor *self,
 	/* Determine size of workspace if available (should usually be the largest actor) */
 	if(priv->workspace)
 	{
-		childWidth=(gfloat)xfdashboard_window_tracker_workspace_get_width(priv->workspace);
-		childHeight=(gfloat)xfdashboard_window_tracker_workspace_get_height(priv->workspace);
+		if(priv->monitor)
+		{
+			childWidth=(gfloat)xfdashboard_window_tracker_monitor_get_width(priv->monitor);
+			childHeight=(gfloat)xfdashboard_window_tracker_monitor_get_height(priv->monitor);
+		}
+			else
+			{
+				childWidth=(gfloat)xfdashboard_window_tracker_workspace_get_width(priv->workspace);
+				childHeight=(gfloat)xfdashboard_window_tracker_workspace_get_height(priv->workspace);
+			}
 
 		if(inForHeight<0.0f) naturalWidth=childWidth;
 			else naturalWidth=(childWidth/childHeight)*inForHeight;
@@ -455,40 +484,101 @@ static void _xfdashboard_live_workspace_get_preferred_width(ClutterActor *self,
 }
 
 /* Allocate position and size of actor and its children */
+static void _xfdashboard_live_workspace_transform_allocation(ClutterActorBox *ioBox,
+																const ClutterActorBox *inTotalArea,
+																const ClutterActorBox *inVisibleArea,
+																const ClutterActorBox *inAllocation)
+{
+	ClutterActorBox		result;
+	gfloat				totalWidth, totalHeight;
+	gfloat				visibleWidth, visibleHeight;
+	gfloat				allocationWidth, allocationHeight;
+
+	/* Get sizes */
+	totalWidth=clutter_actor_box_get_width(inTotalArea);
+	totalHeight=clutter_actor_box_get_height(inTotalArea);
+
+	visibleWidth=clutter_actor_box_get_width(inVisibleArea);
+	visibleHeight=clutter_actor_box_get_height(inVisibleArea);
+
+	allocationWidth=clutter_actor_box_get_width(inAllocation);
+	allocationHeight=clutter_actor_box_get_height(inAllocation);
+
+	/* Transform positions */
+	result.x1=((ioBox->x1/totalWidth)*allocationWidth)*(totalWidth/visibleWidth);
+	result.x2=((ioBox->x2/totalWidth)*allocationWidth)*(totalWidth/visibleWidth);
+
+	result.y1=((ioBox->y1/totalHeight)*allocationHeight)*(totalHeight/visibleHeight);
+	result.y2=((ioBox->y2/totalHeight)*allocationHeight)*(totalHeight/visibleHeight);
+
+	/* Set result */
+	ioBox->x1=result.x1;
+	ioBox->y1=result.y1;
+	ioBox->x2=result.x2;
+	ioBox->y2=result.y2;
+}
+
 static void _xfdashboard_live_workspace_allocate(ClutterActor *self,
 												const ClutterActorBox *inBox,
 												ClutterAllocationFlags inFlags)
 {
 	XfdashboardLiveWorkspacePrivate		*priv=XFDASHBOARD_LIVE_WORKSPACE(self)->priv;
-	gfloat								availableWidth, availableHeight;
-	gfloat								workspaceWidth, workspaceHeight;
 	XfdashboardWindowTrackerWindow		*window;
 	gint								x, y, w, h;
 	ClutterActor						*child;
 	ClutterActorIter					iter;
 	ClutterActorBox						childAllocation={ 0, };
+	ClutterActorBox						visibleArea={ 0, };
+	ClutterActorBox						workspaceArea={ 0, };
 
 	/* Chain up to store the allocation of the actor */
 	CLUTTER_ACTOR_CLASS(xfdashboard_live_workspace_parent_class)->allocate(self, inBox, inFlags);
 
-	/* Get size of this allocation */
-	clutter_actor_box_get_size(inBox, &availableWidth, &availableHeight);
+	/* Get size of workspace as it is needed to calculate translated position
+	 * and size but fallback to size of screen if no workspace is set.
+	 */
+	if(priv->workspace)
+	{
+		workspaceArea.x1=0.0f;
+		workspaceArea.y1=0.0f;
+		workspaceArea.x2=xfdashboard_window_tracker_workspace_get_width(priv->workspace);
+		workspaceArea.y2=xfdashboard_window_tracker_workspace_get_height(priv->workspace);
+	}
+		else
+		{
+			workspaceArea.x1=0.0f;
+			workspaceArea.y1=0.0f;
+			workspaceArea.x2=xfdashboard_window_tracker_get_screen_width(priv->windowTracker);
+			workspaceArea.y2=xfdashboard_window_tracker_get_screen_height(priv->windowTracker);
+		}
+
+	/* Get visible area of workspace */
+	if(priv->monitor)
+	{
+		xfdashboard_window_tracker_monitor_get_geometry(priv->monitor, &x, &y, &w, &h);
+		visibleArea.x1=x;
+		visibleArea.x2=x+w;
+		visibleArea.y1=y;
+		visibleArea.y2=y+h;
+	}
+		else
+		{
+			visibleArea.x1=0;
+			visibleArea.y1=0;
+			visibleArea.x2=clutter_actor_box_get_width(&workspaceArea);
+			visibleArea.y2=clutter_actor_box_get_height(&workspaceArea);
+		}
 
 	/* Resize background image layer to allocation even if it is hidden */
-	childAllocation.x1=0.0f;
-	childAllocation.y1=0.0f;
-	childAllocation.x2=availableWidth;
-	childAllocation.y2=availableHeight;
+	childAllocation.x1=-visibleArea.x1;
+	childAllocation.y1=-visibleArea.y1;
+	childAllocation.x2=childAllocation.x1+clutter_actor_box_get_width(&workspaceArea);
+	childAllocation.y2=childAllocation.y1+clutter_actor_box_get_height(&workspaceArea);
+	_xfdashboard_live_workspace_transform_allocation(&childAllocation, &workspaceArea, &visibleArea, inBox);
 	clutter_actor_allocate(priv->backgroundImageLayer, &childAllocation, inFlags);
 
 	/* If we handle no workspace to not set allocation of children */
 	if(!priv->workspace) return;
-
-	/* Get size of workspace as it is needed to calculate translated
-	 * position and size
-	 */
-	workspaceWidth=(gfloat)xfdashboard_window_tracker_workspace_get_width(priv->workspace);
-	workspaceHeight=(gfloat)xfdashboard_window_tracker_workspace_get_height(priv->workspace);
 
 	/* Iterate through window actors, calculate translated allocation of
 	 * position and size to available size of this actor
@@ -507,14 +597,29 @@ static void _xfdashboard_live_workspace_allocate(ClutterActor *self,
 		xfdashboard_window_tracker_window_get_position_size(window, &x, &y, &w, &h);
 
 		/* Calculate translated position and size of child */
-		childAllocation.x1=ceil((x/workspaceWidth)*availableWidth);
-		childAllocation.y1=ceil((y/workspaceHeight)*availableHeight);
-		childAllocation.x2=childAllocation.x1+ceil((w/workspaceWidth)*availableWidth);
-		childAllocation.y2=childAllocation.y1+ceil((h/workspaceHeight)*availableHeight);
+		childAllocation.x1=x-visibleArea.x1;
+		childAllocation.x2=childAllocation.x1+w;
+		childAllocation.y1=y-visibleArea.y1;
+		childAllocation.y2=childAllocation.y1+h;
+		_xfdashboard_live_workspace_transform_allocation(&childAllocation, &workspaceArea, &visibleArea, inBox);
 
 		/* Set allocation of child */
 		clutter_actor_allocate(child, &childAllocation, inFlags);
 	}
+
+	/* Set clip if a specific monitor should be shown only otherwise remove clip */
+	if(priv->monitor)
+	{
+		clutter_actor_set_clip(self,
+								0.0f,
+								0.0f,
+								clutter_actor_box_get_width(inBox),
+								clutter_actor_box_get_height(inBox));
+	}
+		else
+		{
+			clutter_actor_remove_clip(self);
+		}
 }
 
 /* IMPLEMENTATION: GObject */
@@ -541,6 +646,12 @@ static void _xfdashboard_live_workspace_dispose(GObject *inObject)
 		priv->windowTracker=NULL;
 	}
 
+	if(priv->monitor)
+	{
+		g_signal_handlers_disconnect_by_data(priv->monitor, self);
+		priv->monitor=NULL;
+	}
+
 	if(priv->workspace)
 	{
 		g_signal_handlers_disconnect_by_data(priv->workspace, self);
@@ -563,6 +674,10 @@ static void _xfdashboard_live_workspace_set_property(GObject *inObject,
 	{
 		case PROP_WORKSPACE:
 			xfdashboard_live_workspace_set_workspace(self, g_value_get_object(inValue));
+			break;
+
+		case PROP_MONITOR:
+			xfdashboard_live_workspace_set_monitor(self, g_value_get_object(inValue));
 			break;
 
 		case PROP_SHOW_WINDOW_CONTENT:
@@ -590,6 +705,10 @@ static void _xfdashboard_live_workspace_get_property(GObject *inObject,
 	{
 		case PROP_WORKSPACE:
 			g_value_set_object(outValue, self->priv->workspace);
+			break;
+
+		case PROP_MONITOR:
+			g_value_set_object(outValue, self->priv->monitor);
 			break;
 
 		case PROP_SHOW_WINDOW_CONTENT:
@@ -634,6 +753,13 @@ static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass 
 								_("Workspace"),
 								_("The workspace to show"),
 								XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardLiveWorkspaceProperties[PROP_MONITOR]=
+		g_param_spec_object("monitor",
+								_("Monitor"),
+								_("The monitor whose window to show only"),
+								XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLiveWorkspaceProperties[PROP_SHOW_WINDOW_CONTENT]=
@@ -685,6 +811,7 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	priv->workspace=NULL;
 	priv->showWindowContent=TRUE;
 	priv->backgroundType=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE;
+	priv->monitor=NULL;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -818,6 +945,50 @@ void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, Xf
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_WORKSPACE]);
+}
+
+/* Get/set monitor whose window to show only */
+XfdashboardWindowTrackerMonitor* xfdashboard_live_workspace_get_monitor(XfdashboardLiveWorkspace *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), NULL);
+
+	return(self->priv->monitor);
+}
+
+void xfdashboard_live_workspace_set_monitor(XfdashboardLiveWorkspace *self, XfdashboardWindowTrackerMonitor *inMonitor)
+{
+	XfdashboardLiveWorkspacePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+	g_return_if_fail(!inMonitor || XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inMonitor));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->monitor!=inMonitor)
+	{
+		/* Set value */
+		if(priv->monitor)
+		{
+			g_signal_handlers_disconnect_by_data(priv->monitor, self);
+			priv->monitor=NULL;
+		}
+
+		if(inMonitor)
+		{
+			priv->monitor=inMonitor;
+			g_signal_connect_swapped(priv->monitor,
+										"geometry-changed",
+										G_CALLBACK(_xfdashboard_live_workspace_on_monitor_geometry_changed),
+										self);
+		}
+
+		/* Force a relayout of this actor to update appearance */
+		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_MONITOR]);
+	}
 }
 
 /* Get/set if the window content should be shown or the window's icon */

@@ -63,6 +63,7 @@ struct _XfdashboardWorkspaceSelectorPrivate
 	gfloat								maxSize;
 	gfloat								maxFraction;
 	gboolean							usingFraction;
+	gboolean							showCurrentMonitorOnly;
 
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
@@ -82,6 +83,8 @@ enum
 	PROP_MAX_FRACTION,
 	PROP_USING_FRACTION,
 
+	PROP_SHOW_CURRENT_MONITOR_ONLY,
+
 	PROP_LAST
 };
 
@@ -93,11 +96,30 @@ static GParamSpec* XfdashboardWorkspaceSelectorProperties[PROP_LAST]={ 0, };
 #define DEFAULT_USING_FRACTION		TRUE
 #define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_VERTICAL
 
+/* Find stage interface whose child this actor is */
+static XfdashboardStageInterface* _xfdashboard_workspace_selector_get_stage_interface(XfdashboardWorkspaceSelector *self)
+{
+	ClutterActor							*stageInterface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), NULL);
+
+	/* Find parent stage interface */
+	stageInterface=clutter_actor_get_parent(CLUTTER_ACTOR(self));
+	while(stageInterface && !XFDASHBOARD_IS_STAGE_INTERFACE(stageInterface))
+	{
+		stageInterface=clutter_actor_get_parent(stageInterface);
+	}
+	if(stageInterface) return(XFDASHBOARD_STAGE_INTERFACE(stageInterface));
+
+	/* If we get here we did not find parent stage interface */
+	return(NULL);
+}
+
 /* Get maximum (horizontal or vertical) size either by static size or fraction */
 static gfloat _xfdashboard_workspace_selector_get_max_size_internal(XfdashboardWorkspaceSelector *self)
 {
 	XfdashboardWorkspaceSelectorPrivate		*priv;
-	ClutterActor							*stageInterface;
+	XfdashboardStageInterface				*stageInterface;
 	gfloat									w, h;
 	gfloat									size, fraction;
 
@@ -109,11 +131,7 @@ static gfloat _xfdashboard_workspace_selector_get_max_size_internal(XfdashboardW
 	 * to determine maximum size by fraction or to update maximum size or
 	 * fraction and send notifications.
 	 */
-	stageInterface=clutter_actor_get_parent(CLUTTER_ACTOR(self));
-	while(stageInterface && !XFDASHBOARD_IS_STAGE_INTERFACE(stageInterface))
-	{
-		stageInterface=clutter_actor_get_parent(stageInterface);
-	}
+	stageInterface=_xfdashboard_workspace_selector_get_stage_interface(self);
 	if(!stageInterface) return(0.0f);
 
 	clutter_actor_get_size(CLUTTER_ACTOR(stageInterface), &w, &h);
@@ -406,18 +424,36 @@ static void _xfdashboard_workspace_selector_on_workspace_added(XfdashboardWorksp
 																XfdashboardWindowTrackerWorkspace *inWorkspace,
 																gpointer inUserData)
 {
-	ClutterActor		*actor;
-	gint				index;
-	ClutterAction		*action;
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	ClutterActor							*actor;
+	gint									index;
+	ClutterAction							*action;
 
 	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace));
+
+	priv=self->priv;
 
 	/* Get index of workspace for insertion */
 	index=xfdashboard_window_tracker_workspace_get_number(inWorkspace);
 
 	/* Create new live workspace actor and insert at index */
 	actor=xfdashboard_live_workspace_new_for_workspace(inWorkspace);
+	if(priv->showCurrentMonitorOnly)
+	{
+		XfdashboardStageInterface			*stageInterface;
+		XfdashboardWindowTrackerMonitor		*monitor;
+
+		/* Get parent stage interface */
+		stageInterface=_xfdashboard_workspace_selector_get_stage_interface(self);
+
+		/* Get monitor of stage interface if available */
+		monitor=NULL;
+		if(stageInterface) monitor=xfdashboard_stage_interface_get_monitor(stageInterface);
+
+		/* Set monitor at newly created live workspace actor */
+		xfdashboard_live_workspace_set_monitor(XFDASHBOARD_LIVE_WORKSPACE(actor), monitor);
+	}
 	g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_workspace_selector_on_workspace_clicked), self);
 	clutter_actor_insert_child_at_index(CLUTTER_ACTOR(self), actor, index);
 
@@ -1144,6 +1180,10 @@ static void _xfdashboard_workspace_selector_set_property(GObject *inObject,
 			xfdashboard_workspace_selector_set_maximum_fraction(self, g_value_get_float(inValue));
 			break;
 
+		case PROP_SHOW_CURRENT_MONITOR_ONLY:
+			xfdashboard_workspace_selector_set_show_current_monitor_only(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -1178,6 +1218,10 @@ static void _xfdashboard_workspace_selector_get_property(GObject *inObject,
 
 		case PROP_USING_FRACTION:
 			g_value_set_boolean(outValue, priv->usingFraction);
+			break;
+
+		case PROP_SHOW_CURRENT_MONITOR_ONLY:
+			g_value_set_boolean(outValue, priv->showCurrentMonitorOnly);
 			break;
 
 		default:
@@ -1248,6 +1292,13 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 								DEFAULT_USING_FRACTION,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardWorkspaceSelectorProperties[PROP_SHOW_CURRENT_MONITOR_ONLY]=
+		g_param_spec_boolean("show-current-monitor-only",
+								_("Show current monitor only"),
+								_("Show only windows of the monitor where this actor is placed"),
+								FALSE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWorkspaceSelectorProperties);
 
 	/* Define stylable properties */
@@ -1255,6 +1306,7 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_ORIENTATION]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_MAX_SIZE]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_MAX_FRACTION]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_SHOW_CURRENT_MONITOR_ONLY]);
 }
 
 /* Object initialization
@@ -1277,6 +1329,7 @@ static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *se
 	priv->maxSize=DEFAULT_MAX_SIZE;
 	priv->maxFraction=DEFAULT_MAX_FRACTION;
 	priv->usingFraction=DEFAULT_USING_FRACTION;
+	priv->showCurrentMonitorOnly=FALSE;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -1511,4 +1564,54 @@ gboolean xfdashboard_workspace_selector_is_using_fraction(XfdashboardWorkspaceSe
 	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), FALSE);
 
 	return(self->priv->usingFraction);
+}
+
+/* Get/set orientation */
+gboolean xfdashboard_workspace_selector_get_show_current_monitor_only(XfdashboardWorkspaceSelector *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), FALSE);
+
+	return(self->priv->showCurrentMonitorOnly);
+}
+
+void xfdashboard_workspace_selector_set_show_current_monitor_only(XfdashboardWorkspaceSelector *self, gboolean inShowCurrentMonitorOnly)
+{
+	XfdashboardWorkspaceSelectorPrivate		*priv;
+	ClutterActorIter						iter;
+	ClutterActor							*child;
+	XfdashboardStageInterface				*stageInterface;
+	XfdashboardWindowTrackerMonitor			*monitor;
+
+	g_return_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->showCurrentMonitorOnly!=inShowCurrentMonitorOnly)
+	{
+		/* Set value */
+		priv->showCurrentMonitorOnly=inShowCurrentMonitorOnly;
+
+		/* Get parent stage interface */
+		stageInterface=_xfdashboard_workspace_selector_get_stage_interface(self);
+
+		/* Get monitor of stage interface if available and if only windows
+		 * of current monitor should be shown.
+		 */
+		monitor=NULL;
+		if(stageInterface && priv->showCurrentMonitorOnly) monitor=xfdashboard_stage_interface_get_monitor(stageInterface);
+
+		/* Iterate through workspace actors and update monitor */
+		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+		while(clutter_actor_iter_next(&iter, &child))
+		{
+			if(XFDASHBOARD_IS_LIVE_WORKSPACE(child))
+			{
+				xfdashboard_live_workspace_set_monitor(XFDASHBOARD_LIVE_WORKSPACE(child), monitor);
+			}
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWorkspaceSelectorProperties[PROP_SHOW_CURRENT_MONITOR_ONLY]);
+	}
 }
