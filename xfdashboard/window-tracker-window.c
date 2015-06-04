@@ -177,6 +177,7 @@ static void _xfdashboard_window_tracker_window_on_screen_size_changed(Xfdashboar
 	memset(&xEvent, 0, sizeof(xEvent));
 	xEvent.type=ClientMessage;
 	xEvent.xclient.window=wnck_window_get_xid(stageWindow);
+	xEvent.xclient.display=GDK_DISPLAY_XDISPLAY(display);
 	xEvent.xclient.message_type=atomFullscreenMonitors;
 	xEvent.xclient.format=32;
 	xEvent.xclient.data.l[0]=topIndex;
