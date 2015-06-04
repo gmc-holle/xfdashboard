@@ -743,7 +743,7 @@ ClutterActor* xfdashboard_live_workspace_new_for_workspace(XfdashboardWindowTrac
 										NULL)));
 }
 
-/* Get/set window to show */
+/* Get/set workspace to show */
 XfdashboardWindowTrackerWorkspace* xfdashboard_live_workspace_get_workspace(XfdashboardLiveWorkspace *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), NULL);
