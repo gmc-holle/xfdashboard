@@ -41,6 +41,7 @@
 #include "utils.h"
 #include "stylable.h"
 #include "focusable.h"
+#include "stage-interface.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_workspace_selector_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -96,7 +97,7 @@ static GParamSpec* XfdashboardWorkspaceSelectorProperties[PROP_LAST]={ 0, };
 static gfloat _xfdashboard_workspace_selector_get_max_size_internal(XfdashboardWorkspaceSelector *self)
 {
 	XfdashboardWorkspaceSelectorPrivate		*priv;
-	ClutterActor							*stage;
+	ClutterActor							*stageInterface;
 	gfloat									w, h;
 	gfloat									size, fraction;
 
@@ -104,13 +105,18 @@ static gfloat _xfdashboard_workspace_selector_get_max_size_internal(XfdashboardW
 
 	priv=self->priv;
 
-	/* Get stage's size to either determine maximum size by fraction or
-	 * to update maximum size or fraction and send notifications
+	/* Get size of monitor of stage interface where this actor is shown at
+	 * to determine maximum size by fraction or to update maximum size or
+	 * fraction and send notifications.
 	 */
-	stage=clutter_actor_get_stage(CLUTTER_ACTOR(self));
-	if(!stage) return(0.0f);
+	stageInterface=clutter_actor_get_parent(CLUTTER_ACTOR(self));
+	while(stageInterface && !XFDASHBOARD_IS_STAGE_INTERFACE(stageInterface))
+	{
+		stageInterface=clutter_actor_get_parent(stageInterface);
+	}
+	if(!stageInterface) return(0.0f);
 
-	clutter_actor_get_size(CLUTTER_ACTOR(stage), &w, &h);
+	clutter_actor_get_size(CLUTTER_ACTOR(stageInterface), &w, &h);
 
 	/* If fraction should be used to determine maximum size get width or height
 	 * of stage depending on orientation and calculate size by fraction
