@@ -56,6 +56,9 @@ struct _XfdashboardScaledTableLayoutPrivate
 	gint		rows;
 	gint		columns;
 	gint		numberChildren;
+
+	gboolean	reentrantDetermineWidth;
+	gboolean	reentrantDetermineHeight;
 };
 
 /* Properties */
@@ -172,9 +175,19 @@ static void _xfdashboard_scaled_table_layout_get_preferred_width(ClutterLayoutMa
 	/* Update number of rows and columns needed for layout */
 	_xfdashboard_scaled_table_layout_update_rows_and_columns(XFDASHBOARD_SCALED_TABLE_LAYOUT(self), inContainer);
 
-	/* Get size of parent if this child is parented */
+	/* Get size of parent if this child is parented and if it is not reentrant */
 	parent=clutter_actor_get_parent(CLUTTER_ACTOR(inContainer));
-	if(parent) clutter_actor_get_size(CLUTTER_ACTOR(parent), &maxNaturalWidth, NULL);
+	if(parent && !priv->reentrantDetermineWidth)
+	{
+		/* Prevent getting size of parent (reentrance) */
+		priv->reentrantDetermineWidth=TRUE;
+
+		/* Get size of parent */
+		clutter_actor_get_size(CLUTTER_ACTOR(parent), &maxNaturalWidth, NULL);
+
+		/* Allow getting size of parent again */
+		priv->reentrantDetermineWidth=FALSE;
+	}
 
 	/* Calculate width */
 	if(priv->columns>0)
@@ -210,9 +223,19 @@ static void _xfdashboard_scaled_table_layout_get_preferred_height(ClutterLayoutM
 	/* Update number of rows and columns needed for layout */
 	_xfdashboard_scaled_table_layout_update_rows_and_columns(XFDASHBOARD_SCALED_TABLE_LAYOUT(self), inContainer);
 
-	/* Get size of parent if this child is parented */
+	/* Get size of parent if this child is parented and if it is not reentrant */
 	parent=clutter_actor_get_parent(CLUTTER_ACTOR(inContainer));
-	if(parent) clutter_actor_get_size(CLUTTER_ACTOR(parent), NULL, &maxNaturalHeight);
+	if(parent && !priv->reentrantDetermineHeight)
+	{
+		/* Prevent getting size of parent (reentrance) */
+		priv->reentrantDetermineHeight=TRUE;
+
+		/* Get size of parent */
+		clutter_actor_get_size(CLUTTER_ACTOR(parent), NULL, &maxNaturalHeight);
+
+		/* Allow getting size of parent again */
+		priv->reentrantDetermineHeight=FALSE;
+	}
 
 	/* Calculate height */
 	if(priv->rows>0)
@@ -537,6 +560,9 @@ static void xfdashboard_scaled_table_layout_init(XfdashboardScaledTableLayout *s
 	priv->rows=0;
 	priv->columns=0;
 	priv->numberChildren=0;
+
+	priv->reentrantDetermineWidth=FALSE;
+	priv->reentrantDetermineHeight=FALSE;
 }
 
 /* IMPLEMENTATION: Public API */
