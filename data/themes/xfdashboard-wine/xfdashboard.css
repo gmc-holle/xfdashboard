@@ -265,7 +265,6 @@ XfdashboardWorkspaceSelector
 	max-fraction: 0.20;
 	using-fraction: true;
 	orientation: vertical;
-	show-current-monitor-only: true;
 }
 
 #workspace-selector-collapse-box

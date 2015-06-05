@@ -1306,7 +1306,6 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_ORIENTATION]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_MAX_SIZE]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_MAX_FRACTION]);
-	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWorkspaceSelectorProperties[PROP_SHOW_CURRENT_MONITOR_ONLY]);
 }
 
 /* Object initialization

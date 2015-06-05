@@ -37,6 +37,7 @@
 						<property name="y-expand">true</property>
 						<property name="outline-borders">top right bottom</property>
 						<property name="corners">right</property>
+						<property name="show-current-monitor-only">true</property>
 					</object>
 				</child>
 
