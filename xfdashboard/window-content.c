@@ -21,6 +21,8 @@
  * 
  */
 
+#define EXPERIMENTAL_WINDOW_RESUME_ON_IDLE
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -153,6 +155,12 @@ static int			_xfdashboard_window_content_damage_event_base=0;
 
 static GHashTable*	_xfdashboard_window_content_cache=NULL;
 static guint		_xfdashboard_window_content_cache_shutdownSignalID=0;
+
+#ifdef EXPERIMENTAL_WINDOW_RESUME_ON_IDLE
+static GList*		_xfdashboard_window_content_resumeIdleQueue=NULL;
+static guint		_xfdashboard_window_content_resumeIdleID=0;
+static guint		_xfdashboard_window_content_resume_shutdownSignalID=0;
+#endif
 
 /* Forward declarations */
 static void _xfdashboard_window_content_suspend(XfdashboardWindowContent *self);
@@ -485,7 +493,6 @@ static ClutterX11FilterReturn _xfdashboard_window_content_on_x_event(XEvent *inX
 	return(CLUTTER_X11_FILTER_CONTINUE);
 }
 
-
 /* Release all resources used by this instance */
 static void _xfdashboard_window_content_release_resources(XfdashboardWindowContent *self)
 {
@@ -496,6 +503,38 @@ static void _xfdashboard_window_content_release_resources(XfdashboardWindowConte
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
 
 	priv=self->priv;
+
+#ifdef EXPERIMENTAL_WINDOW_RESUME_ON_IDLE
+	/* This live update will be suspended so remove it from queue */
+	if(_xfdashboard_window_content_resumeIdleQueue)
+	{
+		GList							*queueEntry;
+
+		/* Lookup window content in queue and remove it from queue. If queue is empty
+		 * after removal, remove idle source also.
+		 */
+		queueEntry=g_list_find(_xfdashboard_window_content_resumeIdleQueue, self);
+		if(queueEntry)
+		{
+			/* Remove window content from queue */
+			_xfdashboard_window_content_resumeIdleQueue=g_list_delete_link(_xfdashboard_window_content_resumeIdleQueue, queueEntry);
+			g_message("Removed queue entry %p for window '%s' because of releasing resources",
+						queueEntry,
+						xfdashboard_window_tracker_window_get_title(priv->window));
+
+			/* If queue is empty remove idle source as well */
+			if(!_xfdashboard_window_content_resumeIdleQueue &&
+				_xfdashboard_window_content_resumeIdleID)
+			{
+				g_message("Removing idle source with ID %u because queue is empty",
+							_xfdashboard_window_content_resumeIdleID);
+
+				g_source_remove(_xfdashboard_window_content_resumeIdleID);
+				_xfdashboard_window_content_resumeIdleID=0;
+			}
+		}
+	}
+#endif
 
 	/* Get display as it used more than once ;) */
 	display=clutter_x11_get_default_display();
@@ -571,6 +610,38 @@ static void _xfdashboard_window_content_suspend(XfdashboardWindowContent *self)
 
 	priv=self->priv;
 
+#ifdef EXPERIMENTAL_WINDOW_RESUME_ON_IDLE
+	/* This live update will be suspended so remove it from queue */
+	if(_xfdashboard_window_content_resumeIdleQueue)
+	{
+		GList							*queueEntry;
+
+		/* Lookup window content in queue and remove it from queue. If queue is empty
+		 * after removal, remove idle source also.
+		 */
+		queueEntry=g_list_find(_xfdashboard_window_content_resumeIdleQueue, self);
+		if(queueEntry)
+		{
+			/* Remove window content from queue */
+			_xfdashboard_window_content_resumeIdleQueue=g_list_delete_link(_xfdashboard_window_content_resumeIdleQueue, queueEntry);
+			g_message("Removed queue entry %p for suspended window '%s'",
+						queueEntry,
+						xfdashboard_window_tracker_window_get_title(priv->window));
+
+			/* If queue is empty remove idle source as well */
+			if(!_xfdashboard_window_content_resumeIdleQueue &&
+				_xfdashboard_window_content_resumeIdleID)
+			{
+				g_message("Removing idle source with ID %u because queue is empty",
+							_xfdashboard_window_content_resumeIdleID);
+
+				g_source_remove(_xfdashboard_window_content_resumeIdleID);
+				_xfdashboard_window_content_resumeIdleID=0;
+			}
+		}
+	}
+#endif
+
 	/* Get display as it used more than once ;) */
 	display=clutter_x11_get_default_display();
 
@@ -624,10 +695,291 @@ static void _xfdashboard_window_content_suspend(XfdashboardWindowContent *self)
 }
 
 /* Resume to handle live window updates */
+#ifdef EXPERIMENTAL_WINDOW_RESUME_ON_IDLE
+static void _xfdashboard_window_content_destroy_resume_queue(void)
+{
+	XfdashboardApplication					*application;
+	gint									queueSize;
+
+	/* Disconnect application "shutdown" signal handler */
+	if(_xfdashboard_window_content_resume_shutdownSignalID)
+	{
+		g_message("Disconnecting shutdown signal handler %u because of resume queue destruction",
+					_xfdashboard_window_content_resume_shutdownSignalID);
+
+		application=xfdashboard_application_get_default();
+		g_signal_handler_disconnect(application, _xfdashboard_window_content_resume_shutdownSignalID);
+		_xfdashboard_window_content_resume_shutdownSignalID=0;
+	}
+
+	/* Remove idle source if available */
+	if(_xfdashboard_window_content_resumeIdleID)
+	{
+		g_message("Removing resume window content idle source with ID %u",
+					_xfdashboard_window_content_resumeIdleID);
+
+		g_source_remove(_xfdashboard_window_content_resumeIdleID);
+		_xfdashboard_window_content_resumeIdleID=0;
+	}
+
+	/* Destroy resume-on-idle queue if available*/
+	if(_xfdashboard_window_content_resumeIdleQueue)
+	{
+		queueSize=g_list_length(_xfdashboard_window_content_resumeIdleQueue);
+		if(queueSize>0) g_warning(_("Destroying window content resume queue containing %d windows."), queueSize);
+#ifdef DEBUG
+		if(queueSize>0)
+		{
+			GList							*iter;
+			XfdashboardWindowContent		*content;
+			XfdashboardWindowTrackerWindow	*window;
+
+			for(iter=_xfdashboard_window_content_resumeIdleQueue; iter; iter=g_list_next(iter))
+			{
+				content=XFDASHBOARD_WINDOW_CONTENT(iter->data);
+				window=xfdashboard_window_content_get_window(content);
+				g_print("Window content in resume queue: Item %s@%p for window '%s'",
+							G_OBJECT_TYPE_NAME(content), content,
+							xfdashboard_window_tracker_window_get_title(window));
+			}
+		}
+#endif
+
+		g_message("Destroying window content resume queue");
+		g_list_free(_xfdashboard_window_content_resumeIdleQueue);
+		_xfdashboard_window_content_resumeIdleQueue=NULL;
+	}
+}
+
+static gboolean _xfdashboard_window_content_resume_on_idle(gpointer inUserData)
+{
+	XfdashboardWindowContent			*self;
+	XfdashboardWindowContentPrivate		*priv;
+	GList								*queueEntry;
+	Display								*display;
+	CoglContext							*context;
+	GError								*error;
+	gint								trapError;
+	CoglTexture							*windowTexture;
+	gboolean							doContinueSource;
+
+	error=NULL;
+	windowTexture=NULL;
+
+	/* Get window content object from first entry in queue and remove it from queue */
+	queueEntry=g_list_first(_xfdashboard_window_content_resumeIdleQueue);
+	if(!queueEntry)
+	{
+		g_warning(_("Resume handler called for empty queue."));
+
+		/* Queue must be empty but ensure it will */
+		if(_xfdashboard_window_content_resumeIdleQueue)
+		{
+			g_message("Ensuring that window content resume queue is empty");
+			g_list_free(_xfdashboard_window_content_resumeIdleQueue);
+			_xfdashboard_window_content_resumeIdleQueue=NULL;
+		}
+
+		/* Queue must be empty so remove idle source */
+		_xfdashboard_window_content_resumeIdleID=0;
+		return(G_SOURCE_REMOVE);
+	}
+
+	self=XFDASHBOARD_WINDOW_CONTENT(queueEntry->data);
+	priv=self->priv;
+	g_message("Entering idle source with ID %u for window resume of '%s'@%p",
+				_xfdashboard_window_content_resumeIdleID,
+				xfdashboard_window_tracker_window_get_title(priv->window),
+				self);
+
+	g_message("Removing queued entry %p for window resume of '%s'@%p",
+				queueEntry,
+				xfdashboard_window_tracker_window_get_title(priv->window),
+				self);
+	_xfdashboard_window_content_resumeIdleQueue=g_list_delete_link(_xfdashboard_window_content_resumeIdleQueue, queueEntry);
+	if(_xfdashboard_window_content_resumeIdleQueue)
+	{
+		doContinueSource=G_SOURCE_CONTINUE;
+	}
+		else
+		{
+			g_message("Resume idle source with ID %u will be remove because queue is empty",
+						_xfdashboard_window_content_resumeIdleID);
+
+			doContinueSource=G_SOURCE_REMOVE;
+			_xfdashboard_window_content_resumeIdleID=0;
+		}
+
+	/* We need at least the X composite extension to display images of windows
+	 * if still images or live updated ones
+	 */
+	if(!_xfdashboard_window_content_have_composite_extension)
+	{
+		return(doContinueSource);
+	}
+
+	/* Get display as it used more than once ;) */
+	display=clutter_x11_get_default_display();
+
+	/* Set up resources */
+	clutter_x11_trap_x_errors();
+	while(1)
+	{
+#ifdef HAVE_XCOMPOSITE
+		/* Get pixmap to render texture for */
+		priv->pixmap=XCompositeNameWindowPixmap(display, priv->xWindowID);
+		XSync(display, False);
+		if(priv->pixmap==None)
+		{
+			g_warning(_("Could not get pixmap for window '%s"), xfdashboard_window_tracker_window_get_title(priv->window));
+			_xfdashboard_window_content_suspend(self);
+			break;
+		}
+#else
+		/* We should never get here as existance of composite extension was checked before */
+		g_critical(_("Cannot resume window '%s' as composite extension is not available"),
+					xfdashboard_window_tracker_window_get_title(priv->window));
+		break;
+#endif
+
+		/* Create cogl X11 texture for live updates */
+		context=clutter_backend_get_cogl_context(clutter_get_default_backend());
+		windowTexture=COGL_TEXTURE(cogl_texture_pixmap_x11_new(context, priv->pixmap, FALSE, &error));
+		if(!windowTexture || error)
+		{
+			/* Creating texture may fail if window is _NOT_ on active workspace
+			 * so display error message just as debug message (this time)
+			 */
+			g_debug("Could not create texture for window '%s': %s",
+						xfdashboard_window_tracker_window_get_title(priv->window),
+						error ? error->message : _("Unknown error"));
+			if(error)
+			{
+				g_error_free(error);
+				error=NULL;
+			}
+
+			if(windowTexture)
+			{
+				cogl_object_unref(windowTexture);
+				windowTexture=NULL;
+			}
+
+			_xfdashboard_window_content_suspend(self);
+
+			break;
+		}
+
+		/* Set up damage to get notified about changed in pixmap */
+#ifdef HAVE_XDAMAGE
+		if(_xfdashboard_window_content_have_damage_extension)
+		{
+			priv->damage=XDamageCreate(display, priv->pixmap, XDamageReportBoundingBox);
+			XSync(display, False);
+			if(priv->damage==None)
+			{
+				g_warning(_("Could not create damage for window '%s' - using still image of window"), xfdashboard_window_tracker_window_get_title(priv->window));
+			}
+		}
+#endif
+
+		/* Release old texture (should be the fallback texture) and set new texture */
+		if(priv->texture)
+		{
+			cogl_object_unref(priv->texture);
+			priv->texture=windowTexture;
+		}
+
+		/* Set damage to new window texture */
+#ifdef HAVE_XDAMAGE
+		if(_xfdashboard_window_content_have_damage_extension &&
+			priv->damage!=None)
+		{
+			cogl_texture_pixmap_x11_set_damage_object(COGL_TEXTURE_PIXMAP_X11(priv->texture), priv->damage, COGL_TEXTURE_PIXMAP_X11_DAMAGE_BOUNDING_BOX);
+		}
+#endif
+
+		/* Now we use the window as texture and not the fallback texture anymore */
+		priv->isFallback=FALSE;
+
+		/* Window is not suspended anymore */
+		if(priv->isSuspended!=FALSE)
+		{
+			priv->isSuspended=FALSE;
+
+			/* Notify about property change */
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_SUSPENDED]);
+		}
+
+		/* Invalidate content to get it redrawn as soon as possible */
+		clutter_content_invalidate(CLUTTER_CONTENT(self));
+
+		/* End reached so break to get out of while loop */
+		break;
+	}
+
+	/* Check if everything went well */
+	trapError=clutter_x11_untrap_x_errors();
+	if(trapError!=0)
+	{
+		g_debug("X error %d occured while resuming window '%s", trapError, xfdashboard_window_tracker_window_get_title(priv->window));
+		return(doContinueSource);
+	}
+
+	g_debug("Resuming live texture updates for window '%s'", xfdashboard_window_tracker_window_get_title(priv->window));
+	return(doContinueSource);
+}
+
 static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 {
 	XfdashboardWindowContentPrivate		*priv;
-	Display								*display G_GNUC_UNUSED;
+	XfdashboardApplication				*application;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT(self));
+	g_return_if_fail(self->priv->window);
+
+	priv=self->priv;
+
+	/* Only add callback to resume window content if no one was added */
+	if(!g_list_find(_xfdashboard_window_content_resumeIdleQueue, self))
+	{
+		/* Queue window content for resume */
+		_xfdashboard_window_content_resumeIdleQueue=g_list_append(_xfdashboard_window_content_resumeIdleQueue, self);
+		g_message("Queued window resume of '%s'@%p", xfdashboard_window_tracker_window_get_title(priv->window), self);
+
+		/* Create idle source for resuming queued window contents but with
+		 * high priority to get window content created as soon as possible.
+		 */
+		if(!_xfdashboard_window_content_resumeIdleID)
+		{
+			_xfdashboard_window_content_resumeIdleID=clutter_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
+																					_xfdashboard_window_content_resume_on_idle,
+																					NULL,
+																					NULL);
+			g_message("Created idle source with ID %u because of new resume queue created for window resume of '%s'@%p",
+						_xfdashboard_window_content_resumeIdleID,
+						xfdashboard_window_tracker_window_get_title(priv->window),
+						self);
+		}
+	}
+
+	/* Connect to "shutdown" signal of application to clean up resume queue */
+	if(!_xfdashboard_window_content_resume_shutdownSignalID)
+	{
+		application=xfdashboard_application_get_default();
+		_xfdashboard_window_content_resume_shutdownSignalID=g_signal_connect(application,
+																				"shutdown-final",
+																				G_CALLBACK(_xfdashboard_window_content_destroy_resume_queue),
+																				NULL);
+		g_message("Connected to shutdown signal with handler ID %u for resume queue destruction",
+					_xfdashboard_window_content_resume_shutdownSignalID);
+	}
+}
+#else
+static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
+{
+	XfdashboardWindowContentPrivate		*priv;
+	Display								*display;
 	CoglContext							*context;
 	GError								*error;
 	gint								trapError;
@@ -752,6 +1104,7 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 
 	g_debug("Resuming live texture updates for window '%s'", xfdashboard_window_tracker_window_get_title(priv->window));
 }
+#endif
 
 /* Find X window for window frame of given X window content */
 static Window _xfdashboard_window_content_get_window_frame_xid(Display *inDisplay, XfdashboardWindowTrackerWindow *inWindow)
@@ -1010,11 +1363,12 @@ static void _xfdashboard_window_content_create_cache(void)
 	_xfdashboard_window_content_cache=g_hash_table_new(g_direct_hash, g_direct_equal);
 	g_debug("Created window content cache hashtable");
 
-	/* Connect to "shutdown" signal of application to
-	 * clean up hashtable
-	 */
+	/* Connect to "shutdown" signal of application to clean up hashtable */
 	application=xfdashboard_application_get_default();
-	_xfdashboard_window_content_cache_shutdownSignalID=g_signal_connect(application, "shutdown-final", G_CALLBACK(_xfdashboard_window_content_destroy_cache), NULL);
+	_xfdashboard_window_content_cache_shutdownSignalID=g_signal_connect(application,
+																		"shutdown-final",
+																		G_CALLBACK(_xfdashboard_window_content_destroy_cache),
+																		NULL);
 }
 
 /* IMPLEMENTATION: ClutterContent */
