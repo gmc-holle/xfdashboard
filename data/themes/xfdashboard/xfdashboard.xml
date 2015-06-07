@@ -97,6 +97,7 @@
 							<object class="XfdashboardWorkspaceSelector" id="workspace-selector">
 								<property name="can-focus">true</property>
 								<property name="y-expand">true</property>
+								<property name="show-current-monitor-only">true</property>
 							</object>
 						</child>
 					</object>
