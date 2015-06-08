@@ -117,6 +117,7 @@ enum
 	SIGNAL_SEARCH_ENDED,
 
 	SIGNAL_SHOW_TOOLTIP,
+	SIGNAL_HIDE_TOOLTIP,
 
 	SIGNAL_LAST
 };
@@ -245,28 +246,6 @@ static void _xfdashboard_stage_set_focus(XfdashboardStage *self)
 	}
 }
 
-/* The pointer has been moved after a tooltip was shown */
-static gboolean _xfdashboard_stage_on_captured_event_after_tooltip(XfdashboardStage *self,
-																	ClutterEvent *inEvent,
-																	gpointer inUserData)
-{
-	XfdashboardStagePrivate		*priv;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(self), CLUTTER_EVENT_PROPAGATE);
-
-	priv=self->priv;
-
-	/* Disconnect signal */
-	g_signal_handlers_disconnect_by_func(self,
-											G_CALLBACK(_xfdashboard_stage_on_captured_event_after_tooltip),
-											NULL);
-
-	/* Hide tooltip */
-	clutter_actor_hide(priv->tooltip);
-
-	return(CLUTTER_EVENT_PROPAGATE);
-}
-
 /* Stage got signal to show a tooltip */
 static void _xfdashboard_stage_show_tooltip(XfdashboardStage *self, ClutterAction *inAction)
 {
@@ -286,13 +265,7 @@ static void _xfdashboard_stage_show_tooltip(XfdashboardStage *self, ClutterActio
 	priv=self->priv;
 	tooltipAction=XFDASHBOARD_TOOLTIP_ACTION(inAction);
 
-	/* Disconnect any signal handler for hiding tooltip because
-	 * we are going to resetup tooltip. Hide tooltip while setup
-	 * to avoid flicker.
-	 */
-	g_signal_handlers_disconnect_by_func(self,
-											G_CALLBACK(_xfdashboard_stage_on_captured_event_after_tooltip),
-											NULL);
+	/* Hide tooltip while setup to avoid flicker */
 	clutter_actor_hide(priv->tooltip);
 
 	/* Get tooltip text and update text in tooltip actor */
@@ -316,12 +289,19 @@ static void _xfdashboard_stage_show_tooltip(XfdashboardStage *self, ClutterActio
 
 	/* Show tooltip */
 	clutter_actor_show(priv->tooltip);
+}
 
-	/* Connect signal to hide tooltip on next movement of pointer */
-	g_signal_connect(self,
-						"captured-event",
-						G_CALLBACK(_xfdashboard_stage_on_captured_event_after_tooltip),
-						NULL);
+/* Stage got signal to hide tooltip */
+static void _xfdashboard_stage_hide_tooltip(XfdashboardStage *self, ClutterAction *inAction)
+{
+	XfdashboardStagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+
+	priv=self->priv;
+
+	/* Hide tooltip */
+	clutter_actor_hide(priv->tooltip);
 }
 
 /* Notification timeout has been reached */
@@ -639,11 +619,8 @@ static void _xfdashboard_stage_on_application_suspend(XfdashboardStage *self, gp
 		xfdashboard_window_tracker_window_hide(priv->stageWindow);
 	}
 
-	/* Hide tooltip and clean up */
+	/* Hide tooltip */
 	if(priv->tooltip) clutter_actor_hide(priv->tooltip);
-	g_signal_handlers_disconnect_by_func(self,
-											G_CALLBACK(_xfdashboard_stage_on_captured_event_after_tooltip),
-											NULL);
 }
 
 /* The application will be resumed */
@@ -1495,6 +1472,7 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 
 	/* Override functions */
 	klass->show_tooltip=_xfdashboard_stage_show_tooltip;
+	klass->hide_tooltip=_xfdashboard_stage_hide_tooltip;
 
 	actorClass->show=_xfdashboard_stage_show;
 	actorClass->event=_xfdashboard_stage_event;
@@ -1564,6 +1542,18 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 						G_STRUCT_OFFSET(XfdashboardStageClass, show_tooltip),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						CLUTTER_TYPE_ACTION);
+
+	XfdashboardStageSignals[SIGNAL_HIDE_TOOLTIP]=
+		g_signal_new("hide-tooltip",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardStageClass, hide_tooltip),
 						NULL,
 						NULL,
 						g_cclosure_marshal_VOID__OBJECT,

@@ -54,6 +54,8 @@ struct _XfdashboardTooltipActionPrivate
 	guint			motionID;
 	guint			leaveID;
 	guint			timeoutSourceID;
+
+	gboolean		isVisible;
 };
 
 /* Properties */
@@ -114,6 +116,7 @@ static gboolean _xfdashboard_tooltip_action_on_timeout(gpointer inUserData)
 
 		/* Show tooltip */
 		g_signal_emit_by_name(stage, "show-tooltip", self, NULL);
+		priv->isVisible=TRUE;
 	}
 
 	/* Remove source */
@@ -135,6 +138,9 @@ static gboolean _xfdashboard_tooltip_action_on_motion_event(XfdashboardTooltipAc
 	priv=self->priv;
 	actor=CLUTTER_ACTOR(inUserData);
 	tooltipTimeout=0;
+
+	/* Do nothing if tooltip is already visible */
+	if(priv->isVisible) return(CLUTTER_EVENT_PROPAGATE);
 
 	/* Remove any timeout source we have added for this actor */
 	if(priv->timeoutSourceID!=0)
@@ -166,6 +172,7 @@ static gboolean _xfdashboard_tooltip_action_on_leave_event(XfdashboardTooltipAct
 {
 	XfdashboardTooltipActionPrivate		*priv;
 	ClutterActor						*actor;
+	ClutterActor						*stage;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_TOOLTIP_ACTION(self), CLUTTER_EVENT_PROPAGATE);
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inUserData), CLUTTER_EVENT_PROPAGATE);
@@ -184,6 +191,14 @@ static gboolean _xfdashboard_tooltip_action_on_leave_event(XfdashboardTooltipAct
 	if(_xfdashboard_tooltip_last_event_actor==actor)
 	{
 		_xfdashboard_tooltip_last_event_actor=NULL;
+	}
+
+	/* Hide tooltip now */
+	stage=clutter_actor_get_stage(actor);
+	if(stage && XFDASHBOARD_IS_STAGE(stage))
+	{
+		g_signal_emit_by_name(stage, "hide-tooltip", self, NULL);
+		priv->isVisible=FALSE;
 	}
 
 	return(CLUTTER_EVENT_PROPAGATE);

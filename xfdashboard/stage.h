@@ -63,6 +63,7 @@ struct _XfdashboardStageClass
 	void (*search_ended)(XfdashboardStage *self);
 
 	void (*show_tooltip)(XfdashboardStage *self, ClutterAction *inAction);
+	void (*hide_tooltip)(XfdashboardStage *self, ClutterAction *inAction);
 };
 
 /* Public API */
