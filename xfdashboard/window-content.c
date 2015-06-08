@@ -320,7 +320,7 @@ static gboolean _xfdashboard_window_content_resume_on_idle_is_enabled(void)
 		const gchar		*envValue;
 
 		envValue=g_getenv("XFDASHBOARD_WINDOW_CONTENT_RESUME_ON_IDLE");
-		if(g_strcmp0(envValue, "0")!=0) useExperimentalCode=TRUE;
+		if(envValue && g_strcmp0(envValue, "0")!=0) useExperimentalCode=TRUE;
 
 		firstTimeCalled=FALSE;
 	}
