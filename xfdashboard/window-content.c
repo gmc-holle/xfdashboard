@@ -106,6 +106,8 @@ struct _XfdashboardWindowContentPrivate
 	XfdashboardWindowTracker				*windowTracker;
 	XfdashboardWindowContentWorkaroundMode	workaroundMode;
 	guint									workaroundStateSignalID;
+
+	gboolean								suspendAfterResumeOnIdle;
 };
 
 /* Properties */
@@ -152,11 +154,11 @@ static gboolean		_xfdashboard_window_content_have_damage_extension=FALSE;
 static int			_xfdashboard_window_content_damage_event_base=0;
 
 static GHashTable*	_xfdashboard_window_content_cache=NULL;
-static guint		_xfdashboard_window_content_cache_shutdownSignalID=0;
+static guint		_xfdashboard_window_content_cache_shutdown_signal_id=0;
 
-static GList*		_xfdashboard_window_content_resumeIdleQueue=NULL;
-static guint		_xfdashboard_window_content_resumeIdleID=0;
-static guint		_xfdashboard_window_content_resume_shutdownSignalID=0;
+static GList*		_xfdashboard_window_content_resume_idle_queue=NULL;
+static guint		_xfdashboard_window_content_resume_idle_id=0;
+static guint		_xfdashboard_window_content_resume_shutdown_signal_id=0;
 
 /* Forward declarations */
 static void _xfdashboard_window_content_suspend(XfdashboardWindowContent *self);
@@ -170,30 +172,30 @@ static void _xfdashboard_window_content_destroy_resume_queue(void)
 	gint									queueSize;
 
 	/* Disconnect application "shutdown" signal handler */
-	if(_xfdashboard_window_content_resume_shutdownSignalID)
+	if(_xfdashboard_window_content_resume_shutdown_signal_id)
 	{
 		g_message("Disconnecting shutdown signal handler %u because of resume queue destruction",
-					_xfdashboard_window_content_resume_shutdownSignalID);
+					_xfdashboard_window_content_resume_shutdown_signal_id);
 
 		application=xfdashboard_application_get_default();
-		g_signal_handler_disconnect(application, _xfdashboard_window_content_resume_shutdownSignalID);
-		_xfdashboard_window_content_resume_shutdownSignalID=0;
+		g_signal_handler_disconnect(application, _xfdashboard_window_content_resume_shutdown_signal_id);
+		_xfdashboard_window_content_resume_shutdown_signal_id=0;
 	}
 
 	/* Remove idle source if available */
-	if(_xfdashboard_window_content_resumeIdleID)
+	if(_xfdashboard_window_content_resume_idle_id)
 	{
 		g_message("Removing resume window content idle source with ID %u",
-					_xfdashboard_window_content_resumeIdleID);
+					_xfdashboard_window_content_resume_idle_id);
 
-		g_source_remove(_xfdashboard_window_content_resumeIdleID);
-		_xfdashboard_window_content_resumeIdleID=0;
+		g_source_remove(_xfdashboard_window_content_resume_idle_id);
+		_xfdashboard_window_content_resume_idle_id=0;
 	}
 
 	/* Destroy resume-on-idle queue if available*/
-	if(_xfdashboard_window_content_resumeIdleQueue)
+	if(_xfdashboard_window_content_resume_idle_queue)
 	{
-		queueSize=g_list_length(_xfdashboard_window_content_resumeIdleQueue);
+		queueSize=g_list_length(_xfdashboard_window_content_resume_idle_queue);
 		if(queueSize>0) g_warning(_("Destroying window content resume queue containing %d windows."), queueSize);
 #ifdef DEBUG
 		if(queueSize>0)
@@ -202,7 +204,7 @@ static void _xfdashboard_window_content_destroy_resume_queue(void)
 			XfdashboardWindowContent		*content;
 			XfdashboardWindowTrackerWindow	*window;
 
-			for(iter=_xfdashboard_window_content_resumeIdleQueue; iter; iter=g_list_next(iter))
+			for(iter=_xfdashboard_window_content_resume_idle_queue; iter; iter=g_list_next(iter))
 			{
 				content=XFDASHBOARD_WINDOW_CONTENT(iter->data);
 				window=xfdashboard_window_content_get_window(content);
@@ -214,8 +216,8 @@ static void _xfdashboard_window_content_destroy_resume_queue(void)
 #endif
 
 		g_message("Destroying window content resume queue");
-		g_list_free(_xfdashboard_window_content_resumeIdleQueue);
-		_xfdashboard_window_content_resumeIdleQueue=NULL;
+		g_list_free(_xfdashboard_window_content_resume_idle_queue);
+		_xfdashboard_window_content_resume_idle_queue=NULL;
 	}
 }
 
@@ -229,18 +231,18 @@ static void _xfdashboard_window_content_resume_on_idle_remove(XfdashboardWindowC
 	priv=self->priv;
 
 	/* Remove window content from queue */
-	if(_xfdashboard_window_content_resumeIdleQueue)
+	if(_xfdashboard_window_content_resume_idle_queue)
 	{
 		GList							*queueEntry;
 
 		/* Lookup window content in queue and remove it from queue. If queue is empty
 		 * after removal, remove idle source also.
 		 */
-		queueEntry=g_list_find(_xfdashboard_window_content_resumeIdleQueue, self);
+		queueEntry=g_list_find(_xfdashboard_window_content_resume_idle_queue, self);
 		if(queueEntry)
 		{
 			/* Remove window content from queue */
-			_xfdashboard_window_content_resumeIdleQueue=g_list_delete_link(_xfdashboard_window_content_resumeIdleQueue, queueEntry);
+			_xfdashboard_window_content_resume_idle_queue=g_list_delete_link(_xfdashboard_window_content_resume_idle_queue, queueEntry);
 			g_message("Removed queue entry %p for window '%s' because of releasing resources",
 						queueEntry,
 						xfdashboard_window_tracker_window_get_title(priv->window));
@@ -248,14 +250,14 @@ static void _xfdashboard_window_content_resume_on_idle_remove(XfdashboardWindowC
 	}
 
 	/* If queue is empty remove idle source as well */
-	if(!_xfdashboard_window_content_resumeIdleQueue &&
-		_xfdashboard_window_content_resumeIdleID)
+	if(!_xfdashboard_window_content_resume_idle_queue &&
+		_xfdashboard_window_content_resume_idle_id)
 	{
 		g_message("Removing idle source with ID %u because queue is empty",
-					_xfdashboard_window_content_resumeIdleID);
+					_xfdashboard_window_content_resume_idle_id);
 
-		g_source_remove(_xfdashboard_window_content_resumeIdleID);
-		_xfdashboard_window_content_resumeIdleID=0;
+		g_source_remove(_xfdashboard_window_content_resume_idle_id);
+		_xfdashboard_window_content_resume_idle_id=0;
 	}
 }
 
@@ -269,41 +271,41 @@ static void _xfdashboard_window_content_resume_on_idle_add(XfdashboardWindowCont
 	priv=self->priv;
 
 	/* Only add callback to resume window content if no one was added */
-	if(!g_list_find(_xfdashboard_window_content_resumeIdleQueue, self))
+	if(!g_list_find(_xfdashboard_window_content_resume_idle_queue, self))
 	{
 		/* Queue window content for resume */
-		_xfdashboard_window_content_resumeIdleQueue=g_list_append(_xfdashboard_window_content_resumeIdleQueue, self);
+		_xfdashboard_window_content_resume_idle_queue=g_list_append(_xfdashboard_window_content_resume_idle_queue, self);
 		g_message("Queued window resume of '%s'@%p", xfdashboard_window_tracker_window_get_title(priv->window), self);
 	}
 
 	/* Create idle source for resuming queued window contents but with
 	 * high priority to get window content created as soon as possible.
 	 */
-	if(_xfdashboard_window_content_resumeIdleQueue &&
-		!_xfdashboard_window_content_resumeIdleID)
+	if(_xfdashboard_window_content_resume_idle_queue &&
+		!_xfdashboard_window_content_resume_idle_id)
 	{
-		_xfdashboard_window_content_resumeIdleID=clutter_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
+		_xfdashboard_window_content_resume_idle_id=clutter_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
 																				_xfdashboard_window_content_resume_on_idle,
 																				NULL,
 																				NULL);
 		g_message("Created idle source with ID %u because of new resume queue created for window resume of '%s'@%p",
-					_xfdashboard_window_content_resumeIdleID,
+					_xfdashboard_window_content_resume_idle_id,
 					xfdashboard_window_tracker_window_get_title(priv->window),
 					self);
 	}
 
 	/* Connect to "shutdown" signal of application to clean up resume queue */
-	if(!_xfdashboard_window_content_resume_shutdownSignalID)
+	if(!_xfdashboard_window_content_resume_shutdown_signal_id)
 	{
 		XfdashboardApplication			*application;
 
 		application=xfdashboard_application_get_default();
-		_xfdashboard_window_content_resume_shutdownSignalID=g_signal_connect(application,
+		_xfdashboard_window_content_resume_shutdown_signal_id=g_signal_connect(application,
 																				"shutdown-final",
 																				G_CALLBACK(_xfdashboard_window_content_destroy_resume_queue),
 																				NULL);
 		g_message("Connected to shutdown signal with handler ID %u for resume queue destruction",
-					_xfdashboard_window_content_resume_shutdownSignalID);
+					_xfdashboard_window_content_resume_shutdown_signal_id);
 	}
 }
 
@@ -812,28 +814,28 @@ static gboolean _xfdashboard_window_content_resume_on_idle(gpointer inUserData)
 	windowTexture=NULL;
 
 	/* Get window content object from first entry in queue and remove it from queue */
-	queueEntry=g_list_first(_xfdashboard_window_content_resumeIdleQueue);
+	queueEntry=g_list_first(_xfdashboard_window_content_resume_idle_queue);
 	if(!queueEntry)
 	{
 		g_warning(_("Resume handler called for empty queue."));
 
 		/* Queue must be empty but ensure it will */
-		if(_xfdashboard_window_content_resumeIdleQueue)
+		if(_xfdashboard_window_content_resume_idle_queue)
 		{
 			g_message("Ensuring that window content resume queue is empty");
-			g_list_free(_xfdashboard_window_content_resumeIdleQueue);
-			_xfdashboard_window_content_resumeIdleQueue=NULL;
+			g_list_free(_xfdashboard_window_content_resume_idle_queue);
+			_xfdashboard_window_content_resume_idle_queue=NULL;
 		}
 
 		/* Queue must be empty so remove idle source */
-		_xfdashboard_window_content_resumeIdleID=0;
+		_xfdashboard_window_content_resume_idle_id=0;
 		return(G_SOURCE_REMOVE);
 	}
 
 	self=XFDASHBOARD_WINDOW_CONTENT(queueEntry->data);
 	priv=self->priv;
 	g_message("Entering idle source with ID %u for window resume of '%s'@%p",
-				_xfdashboard_window_content_resumeIdleID,
+				_xfdashboard_window_content_resume_idle_id,
 				xfdashboard_window_tracker_window_get_title(priv->window),
 				self);
 
@@ -841,19 +843,20 @@ static gboolean _xfdashboard_window_content_resume_on_idle(gpointer inUserData)
 				queueEntry,
 				xfdashboard_window_tracker_window_get_title(priv->window),
 				self);
-	_xfdashboard_window_content_resumeIdleQueue=g_list_delete_link(_xfdashboard_window_content_resumeIdleQueue, queueEntry);
-	if(_xfdashboard_window_content_resumeIdleQueue)
+	_xfdashboard_window_content_resume_idle_queue=g_list_delete_link(_xfdashboard_window_content_resume_idle_queue, queueEntry);
+	if(_xfdashboard_window_content_resume_idle_queue)
 	{
 		doContinueSource=G_SOURCE_CONTINUE;
 	}
 		else
 		{
 			g_message("Resume idle source with ID %u will be remove because queue is empty",
-						_xfdashboard_window_content_resumeIdleID);
+						_xfdashboard_window_content_resume_idle_id);
 
 			doContinueSource=G_SOURCE_REMOVE;
-			_xfdashboard_window_content_resumeIdleID=0;
+			_xfdashboard_window_content_resume_idle_id=0;
 		}
+
 
 	/* We need at least the X composite extension to display images of windows
 	 * if still images or live updated ones
@@ -877,7 +880,9 @@ static gboolean _xfdashboard_window_content_resume_on_idle(gpointer inUserData)
 		if(priv->pixmap==None)
 		{
 			g_warning(_("Could not get pixmap for window '%s"), xfdashboard_window_tracker_window_get_title(priv->window));
-			_xfdashboard_window_content_suspend(self);
+
+			/* Set flag to suspend window content after resuming because of error */
+			priv->suspendAfterResumeOnIdle=TRUE;
 			break;
 		}
 #else
@@ -910,7 +915,8 @@ static gboolean _xfdashboard_window_content_resume_on_idle(gpointer inUserData)
 				windowTexture=NULL;
 			}
 
-			_xfdashboard_window_content_suspend(self);
+			/* Set flag to suspend window content after resuming because of error */
+			priv->suspendAfterResumeOnIdle=TRUE;
 
 			break;
 		}
@@ -959,15 +965,27 @@ static gboolean _xfdashboard_window_content_resume_on_idle(gpointer inUserData)
 		/* Invalidate content to get it redrawn as soon as possible */
 		clutter_content_invalidate(CLUTTER_CONTENT(self));
 
+		/* We were able to set up window content so this window is definitely mapped */
+		priv->isMapped=TRUE;
+
 		/* End reached so break to get out of while loop */
 		break;
+	}
+
+	/* Check if window content should be suspended again after resume was done,
+	 * e.g. initial window content creation in suspended daemon mode.
+	 */
+	if(priv->suspendAfterResumeOnIdle)
+	{
+		_xfdashboard_window_content_suspend(self);
+		priv->suspendAfterResumeOnIdle=FALSE;
 	}
 
 	/* Check if everything went well */
 	trapError=clutter_x11_untrap_x_errors();
 	if(trapError!=0)
 	{
-		g_debug("X error %d occured while resuming window '%s", trapError, xfdashboard_window_tracker_window_get_title(priv->window));
+		g_message("X error %d occured while resuming window '%s", trapError, xfdashboard_window_tracker_window_get_title(priv->window));
 		return(doContinueSource);
 	}
 
@@ -996,7 +1014,9 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 	 */
 	if(_xfdashboard_window_content_resume_on_idle_is_enabled())
 	{
-		g_message("Using experimental code to resume on idle");
+		g_message("Using experimental code to resume on idle for window '%s'",
+					xfdashboard_window_tracker_window_get_title(priv->window));
+
 		_xfdashboard_window_content_resume_on_idle_add(self);
 		return;
 	}
@@ -1098,6 +1118,12 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 			/* Notify about property change */
 			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowContentProperties[PROP_SUSPENDED]);
 		}
+
+		/* Invalidate content to get it redrawn as soon as possible */
+		clutter_content_invalidate(CLUTTER_CONTENT(self));
+
+		/* We were able to set up window content so this window is definitely mapped */
+		priv->isMapped=TRUE;
 
 		/* End reached so break to get out of while loop */
 		break;
@@ -1304,7 +1330,14 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 	application=xfdashboard_application_get_default();
 	if(xfdashboard_application_is_suspended(application))
 	{
-		_xfdashboard_window_content_suspend(self);
+		if(_xfdashboard_window_content_resume_on_idle_is_enabled())
+		{
+			priv->suspendAfterResumeOnIdle=TRUE;
+		}
+			else
+			{
+				_xfdashboard_window_content_suspend(self);
+			}
 	}
 
 	/* Notify about property change */
@@ -1328,8 +1361,8 @@ static void _xfdashboard_window_content_destroy_cache(void)
 
 	/* Disconnect application "shutdown" signal handler */
 	application=xfdashboard_application_get_default();
-	g_signal_handler_disconnect(application, _xfdashboard_window_content_cache_shutdownSignalID);
-	_xfdashboard_window_content_cache_shutdownSignalID=0;
+	g_signal_handler_disconnect(application, _xfdashboard_window_content_cache_shutdown_signal_id);
+	_xfdashboard_window_content_cache_shutdown_signal_id=0;
 
 	/* Destroy cache hashtable */
 	cacheSize=g_hash_table_size(_xfdashboard_window_content_cache);
@@ -1373,7 +1406,7 @@ static void _xfdashboard_window_content_create_cache(void)
 
 	/* Connect to "shutdown" signal of application to clean up hashtable */
 	application=xfdashboard_application_get_default();
-	_xfdashboard_window_content_cache_shutdownSignalID=g_signal_connect(application,
+	_xfdashboard_window_content_cache_shutdown_signal_id=g_signal_connect(application,
 																		"shutdown-final",
 																		G_CALLBACK(_xfdashboard_window_content_destroy_cache),
 																		NULL);
@@ -2104,6 +2137,7 @@ void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 	priv->unmappedWindowIconXScale=1.0f;
 	priv->unmappedWindowIconYScale=1.0f;
 	priv->unmappedWindowIconAnchorPoint=XFDASHBOARD_ANCHOR_POINT_NONE;
+	priv->suspendAfterResumeOnIdle=FALSE;
 
 	/* Check extensions (will only be done once) */
 	_xfdashboard_window_content_check_extension();
