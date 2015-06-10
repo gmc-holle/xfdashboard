@@ -51,10 +51,14 @@ struct _XfdashboardTooltipActionPrivate
 	/* Instance related */
 	ClutterPoint	lastPosition;
 
-	guint			motionID;
-	guint			leaveID;
+	guint			enterSignalID;
+	guint			motionSignalID;
+	guint			leaveSignalID;
+
+	guint			captureSignalID;
+	ClutterActor	*captureSignalActor;
+
 	guint			timeoutSourceID;
-	guint			captureEventID;
 
 	gboolean		isVisible;
 };
@@ -92,6 +96,7 @@ static gboolean _xfdashboard_tooltip_action_on_leave_event(XfdashboardTooltipAct
 	XfdashboardTooltipActionPrivate		*priv;
 	ClutterActor						*actor;
 	ClutterActor						*stage;
+	ClutterActor						*actorMeta;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_TOOLTIP_ACTION(self), CLUTTER_EVENT_PROPAGATE);
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inUserData), CLUTTER_EVENT_PROPAGATE);
@@ -99,7 +104,29 @@ static gboolean _xfdashboard_tooltip_action_on_leave_event(XfdashboardTooltipAct
 	priv=self->priv;
 	actor=CLUTTER_ACTOR(inUserData);
 
-	/* Remove any timeout source we have added for this actor */
+	/* Get current actor this action belongs to */
+	actorMeta=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
+
+	/* Release all sources and signal handler (except for enter event) */
+	if(priv->motionSignalID!=0)
+	{
+		if(actorMeta) g_signal_handler_disconnect(actorMeta, priv->motionSignalID);
+		priv->motionSignalID=0;
+	}
+
+	if(priv->leaveSignalID!=0)
+	{
+		if(actorMeta) g_signal_handler_disconnect(actorMeta, priv->leaveSignalID);
+		priv->leaveSignalID=0;
+	}
+
+	if(priv->captureSignalID)
+	{
+		if(priv->captureSignalActor) g_signal_handler_disconnect(priv->captureSignalActor, priv->captureSignalID);
+		priv->captureSignalActor=NULL;
+		priv->captureSignalID=0;
+	}
+
 	if(priv->timeoutSourceID!=0)
 	{
 		g_source_remove(priv->timeoutSourceID);
@@ -116,13 +143,6 @@ static gboolean _xfdashboard_tooltip_action_on_leave_event(XfdashboardTooltipAct
 	stage=clutter_actor_get_stage(actor);
 	if(stage && XFDASHBOARD_IS_STAGE(stage))
 	{
-		/* Remove any 'capture-event' signal handler at stage*/
-		if(priv->captureEventID)
-		{
-			g_signal_handler_disconnect(stage, priv->captureEventID);
-			priv->captureEventID=0;
-		}
-
 		g_signal_emit_by_name(stage, "hide-tooltip", self, NULL);
 		priv->isVisible=FALSE;
 	}
@@ -196,12 +216,6 @@ static gboolean _xfdashboard_tooltip_action_on_timeout(gpointer inUserData)
 		/* Show tooltip */
 		g_signal_emit_by_name(stage, "show-tooltip", self, NULL);
 		priv->isVisible=TRUE;
-
-		/* Capture next events to check if tooltip should be hidden again */
-		priv->captureEventID=g_signal_connect_swapped(stage,
-														"captured-event",
-														G_CALLBACK(_xfdashboard_tooltip_action_on_captured_event_after_tooltip),
-														self);
 	}
 
 	/* Remove source */
@@ -216,6 +230,7 @@ static gboolean _xfdashboard_tooltip_action_on_motion_event(XfdashboardTooltipAc
 	XfdashboardTooltipActionPrivate		*priv;
 	ClutterActor						*actor;
 	guint								tooltipTimeout;
+	ClutterActor						*stage;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_TOOLTIP_ACTION(self), CLUTTER_EVENT_PROPAGATE);
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inUserData), CLUTTER_EVENT_PROPAGATE);
@@ -247,6 +262,63 @@ static gboolean _xfdashboard_tooltip_action_on_motion_event(XfdashboardTooltipAc
 														(GSourceFunc)_xfdashboard_tooltip_action_on_timeout,
 														self);
 
+	/* Capture next events to check if tooltip should be hidden again */
+	stage=clutter_actor_get_stage(actor);
+	if(stage && XFDASHBOARD_IS_STAGE(stage))
+	{
+		g_warn_if_fail((priv->captureSignalID==0 && priv->captureSignalActor==NULL) || (priv->captureSignalID!=0 && priv->captureSignalActor==stage));
+		if((priv->captureSignalID==0 && priv->captureSignalActor==NULL) ||
+			(priv->captureSignalID && priv->captureSignalActor!=stage))
+		{
+			if(priv->captureSignalActor) g_signal_handler_disconnect(priv->captureSignalActor, priv->captureSignalID);
+			priv->captureSignalActor=NULL;
+			priv->captureSignalID=0;
+
+			priv->captureSignalActor=stage;
+			priv->captureSignalID=g_signal_connect_swapped(stage,
+															"captured-event",
+															G_CALLBACK(_xfdashboard_tooltip_action_on_captured_event_after_tooltip),
+															self);
+		}
+	}
+
+	return(CLUTTER_EVENT_PROPAGATE);
+}
+
+/* Pointer entered an actor with tooltip */
+static gboolean _xfdashboard_tooltip_action_on_enter_event(XfdashboardTooltipAction *self,
+															ClutterEvent *inEvent,
+															gpointer inUserData)
+{
+	XfdashboardTooltipActionPrivate		*priv;
+	ClutterActor						*actor;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_TOOLTIP_ACTION(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inUserData), CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+	actor=CLUTTER_ACTOR(inUserData);
+
+	/* Remove any timeout source we have added for this actor */
+	if(priv->timeoutSourceID!=0)
+	{
+		g_source_remove(priv->timeoutSourceID);
+		priv->timeoutSourceID=0;
+	}
+
+	/* Connect signals */
+	g_warn_if_fail(priv->motionSignalID==0);
+	priv->motionSignalID=g_signal_connect_swapped(actor,
+													"motion-event",
+													G_CALLBACK(_xfdashboard_tooltip_action_on_motion_event),
+													self);
+
+	g_warn_if_fail(priv->leaveSignalID==0);
+	priv->leaveSignalID=g_signal_connect_swapped(actor,
+													"leave-event",
+													G_CALLBACK(_xfdashboard_tooltip_action_on_leave_event),
+													self);
+
 	return(CLUTTER_EVENT_PROPAGATE);
 }
 
@@ -264,28 +336,39 @@ static void _xfdashboard_tooltip_action_set_actor(ClutterActorMeta *inActorMeta,
 	self=XFDASHBOARD_TOOLTIP_ACTION(inActorMeta);
 	priv=self->priv;
 
-	/* Get current referenced actor */
-	oldActor=clutter_actor_meta_get_actor(inActorMeta);
+	/* Get current actor this action belongs to */
+	oldActor=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
 
-	/* Disconnect signals and remove sources */
-	if(priv->captureEventID)
+	/* Do nothing if new actor to set is the current one */
+	if(oldActor==inActor) return;
+
+	/* Release signals */
+	if(priv->enterSignalID!=0)
 	{
-		if(oldActor!=NULL) g_signal_handler_disconnect(oldActor, priv->captureEventID);
-		priv->captureEventID=0;
+		if(oldActor!=NULL) g_signal_handler_disconnect(oldActor, priv->enterSignalID);
+		priv->enterSignalID=0;
 	}
 
-	if(priv->motionID!=0)
+	if(priv->motionSignalID!=0)
 	{
-		if(oldActor!=NULL) g_signal_handler_disconnect(oldActor, priv->motionID);
-		priv->motionID=0;
+		if(oldActor!=NULL) g_signal_handler_disconnect(oldActor, priv->motionSignalID);
+		priv->motionSignalID=0;
 	}
 
-	if(priv->leaveID!=0)
+	if(priv->leaveSignalID!=0)
 	{
-		if(oldActor!=NULL) g_signal_handler_disconnect(oldActor, priv->leaveID);
-		priv->leaveID=0;
+		if(oldActor!=NULL) g_signal_handler_disconnect(oldActor, priv->leaveSignalID);
+		priv->leaveSignalID=0;
 	}
 
+	if(priv->captureSignalID)
+	{
+		if(priv->captureSignalActor) g_signal_handler_disconnect(priv->captureSignalActor, priv->captureSignalID);
+		priv->captureSignalActor=NULL;
+		priv->captureSignalID=0;
+	}
+
+	/* Release sources */
 	if(priv->timeoutSourceID!=0)
 	{
 		g_source_remove(priv->timeoutSourceID);
@@ -295,14 +378,9 @@ static void _xfdashboard_tooltip_action_set_actor(ClutterActorMeta *inActorMeta,
 	/* Connect signals */
 	if(inActor!=NULL)
 	{
-		priv->motionID=g_signal_connect_swapped(inActor,
-													"motion-event",
-													G_CALLBACK(_xfdashboard_tooltip_action_on_motion_event),
-													self);
-
-		priv->leaveID=g_signal_connect_swapped(inActor,
-													"leave-event",
-													G_CALLBACK(_xfdashboard_tooltip_action_on_leave_event),
+		priv->enterSignalID=g_signal_connect_swapped(inActor,
+													"enter-event",
+													G_CALLBACK(_xfdashboard_tooltip_action_on_enter_event),
 													self);
 	}
 
@@ -322,26 +400,32 @@ static void _xfdashboard_tooltip_action_dispose(GObject *inObject)
 	XfdashboardTooltipActionPrivate		*priv=self->priv;
 	ClutterActor						*actor;
 
-	/* Get actor this action belongs to */
-	actor=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(inObject));
+	/* Get current actor this action belongs to */
+	actor=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
 
 	/* Release allocated resources */
-	if(priv->captureEventID)
+	if(priv->enterSignalID!=0)
 	{
-		if(actor!=NULL) g_signal_handler_disconnect(actor, priv->captureEventID);
-		priv->captureEventID=0;
+		if(actor!=NULL) g_signal_handler_disconnect(actor, priv->enterSignalID);
+		priv->enterSignalID=0;
 	}
 
-	if(priv->motionID!=0)
+	if(priv->motionSignalID!=0)
 	{
-		if(actor!=NULL) g_signal_handler_disconnect(actor, priv->motionID);
-		priv->motionID=0;
+		if(actor!=NULL) g_signal_handler_disconnect(actor, priv->motionSignalID);
+		priv->motionSignalID=0;
 	}
 
-	if(priv->leaveID!=0)
+	if(priv->leaveSignalID!=0)
 	{
-		if(actor!=NULL) g_signal_handler_disconnect(actor, priv->leaveID);
-		priv->leaveID=0;
+		if(actor!=NULL) g_signal_handler_disconnect(actor, priv->leaveSignalID);
+		priv->leaveSignalID=0;
+	}
+
+	if(priv->captureSignalID)
+	{
+		if(actor!=NULL) g_signal_handler_disconnect(actor, priv->captureSignalID);
+		priv->captureSignalID=0;
 	}
 
 	if(priv->timeoutSourceID!=0)
@@ -453,10 +537,11 @@ static void xfdashboard_tooltip_action_init(XfdashboardTooltipAction *self)
 
 	/* Set up default values */
 	priv->tooltipText=NULL;
-	priv->motionID=0;
-	priv->leaveID=0;
+	priv->enterSignalID=0;
+	priv->motionSignalID=0;
+	priv->leaveSignalID=0;
+	priv->captureSignalID=0;
 	priv->timeoutSourceID=0;
-	priv->captureEventID=0;
 }
 
 /* IMPLEMENTATION: Public API */
