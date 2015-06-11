@@ -32,6 +32,7 @@ xfdashboard/desktop-app-info.c
 xfdashboard/drag-action.c
 xfdashboard/drop-action.c
 xfdashboard/dynamic-table-layout.c
+xfdashboard/emblem-effect.c
 xfdashboard/enums.c
 xfdashboard/fill-box-layout.c
 xfdashboard/focusable.c
