@@ -145,20 +145,42 @@ static GParamSpec* XfdashboardWindowContentProperties[PROP_LAST]={ 0, };
 #define COMPOSITE_VERSION_MIN_MAJOR		0
 #define COMPOSITE_VERSION_MIN_MINOR		2
 
-#define WORKAROUND_UNMAPPED_WINDOW_XFCONF_PROP		"/enable-unmapped-window-workaround"
-#define DEFAULT_WORKAROUND_UNMAPPED_WINDOW			FALSE
+#define WORKAROUND_UNMAPPED_WINDOW_XFCONF_PROP			"/enable-unmapped-window-workaround"
+#define DEFAULT_WORKAROUND_UNMAPPED_WINDOW				FALSE
 
-static gboolean		_xfdashboard_window_content_have_checked_extensions=FALSE;
-static gboolean		_xfdashboard_window_content_have_composite_extension=FALSE;
-static gboolean		_xfdashboard_window_content_have_damage_extension=FALSE;
-static int			_xfdashboard_window_content_damage_event_base=0;
+#define WINDOW_CONTENT_CREATION_PRIORITY_XFCONF_PROP	"/window-content-creation-priority"
+#define DEFAULT_WINDOW_CONTENT_CREATION_PRIORITY		"immediate"
 
-static GHashTable*	_xfdashboard_window_content_cache=NULL;
-static guint		_xfdashboard_window_content_cache_shutdown_signal_id=0;
+struct _XfdashboardWindowContentPriorityMap
+{
+	const gchar		*name;
+	gint			priority;
+};
+typedef struct _XfdashboardWindowContentPriorityMap		XfdashboardWindowContentPriorityMap;
 
-static GList*		_xfdashboard_window_content_resume_idle_queue=NULL;
-static guint		_xfdashboard_window_content_resume_idle_id=0;
-static guint		_xfdashboard_window_content_resume_shutdown_signal_id=0;
+static gboolean								_xfdashboard_window_content_have_checked_extensions=FALSE;
+static gboolean								_xfdashboard_window_content_have_composite_extension=FALSE;
+static gboolean								_xfdashboard_window_content_have_damage_extension=FALSE;
+static int									_xfdashboard_window_content_damage_event_base=0;
+
+static GHashTable*							_xfdashboard_window_content_cache=NULL;
+static guint								_xfdashboard_window_content_cache_shutdown_signal_id=0;
+
+static GList*								_xfdashboard_window_content_resume_idle_queue=NULL;
+static guint								_xfdashboard_window_content_resume_idle_id=0;
+static guint								_xfdashboard_window_content_resume_shutdown_signal_id=0;
+
+static guint								_xfdashboard_window_content_xfconf_priority_notify_id=0;
+static gint									_xfdashboard_window_content_window_creation_priority=-1;
+static XfdashboardWindowContentPriorityMap	_xfdashboard_window_content_window_creation_priority_map[]=
+												{
+													{ "immediate", -1 }, /* First entry is default value */
+													{ "high", G_PRIORITY_HIGH_IDLE },
+													{ "normal", G_PRIORITY_DEFAULT_IDLE },
+													{ "low", G_PRIORITY_LOW },
+													{ NULL, 0 },
+												};
+static guint								_xfdashboard_window_content_window_creation_shutdown_signal_id=0;
 
 /* Forward declarations */
 static void _xfdashboard_window_content_suspend(XfdashboardWindowContent *self);
@@ -174,7 +196,7 @@ static void _xfdashboard_window_content_destroy_resume_queue(void)
 	/* Disconnect application "shutdown" signal handler */
 	if(_xfdashboard_window_content_resume_shutdown_signal_id)
 	{
-		g_message("Disconnecting shutdown signal handler %u because of resume queue destruction",
+		g_debug("Disconnecting shutdown signal handler %u because of resume queue destruction",
 					_xfdashboard_window_content_resume_shutdown_signal_id);
 
 		application=xfdashboard_application_get_default();
@@ -185,7 +207,7 @@ static void _xfdashboard_window_content_destroy_resume_queue(void)
 	/* Remove idle source if available */
 	if(_xfdashboard_window_content_resume_idle_id)
 	{
-		g_message("Removing resume window content idle source with ID %u",
+		g_debug("Removing resume window content idle source with ID %u",
 					_xfdashboard_window_content_resume_idle_id);
 
 		g_source_remove(_xfdashboard_window_content_resume_idle_id);
@@ -215,7 +237,7 @@ static void _xfdashboard_window_content_destroy_resume_queue(void)
 		}
 #endif
 
-		g_message("Destroying window content resume queue");
+		g_debug("Destroying window content resume queue");
 		g_list_free(_xfdashboard_window_content_resume_idle_queue);
 		_xfdashboard_window_content_resume_idle_queue=NULL;
 	}
@@ -243,7 +265,7 @@ static void _xfdashboard_window_content_resume_on_idle_remove(XfdashboardWindowC
 		{
 			/* Remove window content from queue */
 			_xfdashboard_window_content_resume_idle_queue=g_list_delete_link(_xfdashboard_window_content_resume_idle_queue, queueEntry);
-			g_message("Removed queue entry %p for window '%s' because of releasing resources",
+			g_debug("Removed queue entry %p for window '%s' because of releasing resources",
 						queueEntry,
 						xfdashboard_window_tracker_window_get_title(priv->window));
 		}
@@ -253,7 +275,7 @@ static void _xfdashboard_window_content_resume_on_idle_remove(XfdashboardWindowC
 	if(!_xfdashboard_window_content_resume_idle_queue &&
 		_xfdashboard_window_content_resume_idle_id)
 	{
-		g_message("Removing idle source with ID %u because queue is empty",
+		g_debug("Removing idle source with ID %u because queue is empty",
 					_xfdashboard_window_content_resume_idle_id);
 
 		g_source_remove(_xfdashboard_window_content_resume_idle_id);
@@ -270,12 +292,14 @@ static void _xfdashboard_window_content_resume_on_idle_add(XfdashboardWindowCont
 
 	priv=self->priv;
 
+	g_debug("Using resume on idle for window '%s'", xfdashboard_window_tracker_window_get_title(priv->window));
+
 	/* Only add callback to resume window content if no one was added */
 	if(!g_list_find(_xfdashboard_window_content_resume_idle_queue, self))
 	{
 		/* Queue window content for resume */
 		_xfdashboard_window_content_resume_idle_queue=g_list_append(_xfdashboard_window_content_resume_idle_queue, self);
-		g_message("Queued window resume of '%s'@%p", xfdashboard_window_tracker_window_get_title(priv->window), self);
+		g_debug("Queued window resume of '%s'@%p", xfdashboard_window_tracker_window_get_title(priv->window), self);
 	}
 
 	/* Create idle source for resuming queued window contents but with
@@ -284,12 +308,13 @@ static void _xfdashboard_window_content_resume_on_idle_add(XfdashboardWindowCont
 	if(_xfdashboard_window_content_resume_idle_queue &&
 		!_xfdashboard_window_content_resume_idle_id)
 	{
-		_xfdashboard_window_content_resume_idle_id=clutter_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
+		_xfdashboard_window_content_resume_idle_id=clutter_threads_add_idle_full(_xfdashboard_window_content_window_creation_priority,
 																				_xfdashboard_window_content_resume_on_idle,
 																				NULL,
 																				NULL);
-		g_message("Created idle source with ID %u because of new resume queue created for window resume of '%s'@%p",
+		g_debug("Created idle source with ID %u with priority of %d because of new resume queue created for window resume of '%s'@%p",
 					_xfdashboard_window_content_resume_idle_id,
+					_xfdashboard_window_content_window_creation_priority,
 					xfdashboard_window_tracker_window_get_title(priv->window),
 					self);
 	}
@@ -304,29 +329,84 @@ static void _xfdashboard_window_content_resume_on_idle_add(XfdashboardWindowCont
 																				"shutdown-final",
 																				G_CALLBACK(_xfdashboard_window_content_destroy_resume_queue),
 																				NULL);
-		g_message("Connected to shutdown signal with handler ID %u for resume queue destruction",
+		g_debug("Connected to shutdown signal with handler ID %u for resume queue destruction",
 					_xfdashboard_window_content_resume_shutdown_signal_id);
 	}
 }
 
-/* Check if experimental code for window resume on idle should be used */
-static gboolean _xfdashboard_window_content_resume_on_idle_is_enabled(void)
+/* Value for window creation priority in xfconf has changed */
+static void _xfdashboard_window_content_on_window_creation_priority_value_changed(XfconfChannel *inChannel,
+																					const gchar *inProperty,
+																					const GValue *inValue,
+																					gpointer inUserData)
 {
-	static gboolean		firstTimeCalled=TRUE;
-	static gboolean		useExperimentalCode=FALSE;
+	gint									newPriority;
+	const gchar								*priorityValue;
+	XfdashboardWindowContentPriorityMap		*found;
 
-	if(firstTimeCalled)
+	g_return_if_fail(g_strcmp0(inProperty, WINDOW_CONTENT_CREATION_PRIORITY_XFCONF_PROP)==0);
+	g_return_if_fail(inValue && G_VALUE_HOLDS_STRING(inValue));
+
+	newPriority=-1;
+
+	/* Determine priority from new value */
+	priorityValue=g_value_get_string(inValue);
+	found=_xfdashboard_window_content_window_creation_priority_map;
+	while(found->name && g_strcmp0(priorityValue, found->name)!=0) found++;
+
+	/* Set default value if no match was found in priority map was found */
+	if(!found || !found->name)
 	{
-		const gchar		*envValue;
+		/* Default value is the first one in mapping */
+		found=_xfdashboard_window_content_window_creation_priority_map;
 
-		envValue=g_getenv("XFDASHBOARD_WINDOW_CONTENT_RESUME_ON_IDLE");
-		if(envValue && g_strcmp0(envValue, "0")!=0) useExperimentalCode=TRUE;
-
-		firstTimeCalled=FALSE;
+		g_warning(_("Unknown value '%s' for property '%s' - defaulting to '%s' with priority of %d"),
+					priorityValue,
+					inProperty,
+					found->name,
+					found->priority);
 	}
 
-	return(useExperimentalCode);
+	/* Set priority */
+	if(found)
+	{
+		_xfdashboard_window_content_window_creation_priority=found->priority;
+		g_debug("Setting window creation priority to '%s' with priority of %d",
+				found->name,
+				found->priority);
+	}
 }
+
+/* Disconnect signal handler for xfconf value change notification on window priority */
+static void _xfdashboard_window_content_on_window_creation_priority_shutdown(void)
+{
+	XfdashboardApplication					*application;
+
+	/* Disconnect application "shutdown" signal handler */
+	if(_xfdashboard_window_content_window_creation_shutdown_signal_id)
+	{
+		g_debug("Disconnecting shutdown signal handler %u for window creation priority value change notifications",
+					_xfdashboard_window_content_window_creation_shutdown_signal_id);
+
+		application=xfdashboard_application_get_default();
+		g_signal_handler_disconnect(application, _xfdashboard_window_content_window_creation_shutdown_signal_id);
+		_xfdashboard_window_content_window_creation_shutdown_signal_id=0;
+	}
+
+	/* Disconnect property changed signal handler */
+	if(_xfdashboard_window_content_xfconf_priority_notify_id)
+	{
+		XfconfChannel					*xfconfChannel;
+
+		g_debug("Disconnecting property changed signal handler %u for window creation priority value change notifications",
+					_xfdashboard_window_content_xfconf_priority_notify_id);
+
+		xfconfChannel=xfdashboard_application_get_xfconf_channel();
+		g_signal_handler_disconnect(xfconfChannel, _xfdashboard_window_content_xfconf_priority_notify_id);
+		_xfdashboard_window_content_xfconf_priority_notify_id=0;
+	}
+}
+
 /* Check if we should workaround unmapped window for requested window and set up workaround */
 static void _xfdashboard_window_content_on_workaround_state_changed(XfdashboardWindowContent *self,
 																	gpointer inUserData)
@@ -822,7 +902,7 @@ static gboolean _xfdashboard_window_content_resume_on_idle(gpointer inUserData)
 		/* Queue must be empty but ensure it will */
 		if(_xfdashboard_window_content_resume_idle_queue)
 		{
-			g_message("Ensuring that window content resume queue is empty");
+			g_debug("Ensuring that window content resume queue is empty");
 			g_list_free(_xfdashboard_window_content_resume_idle_queue);
 			_xfdashboard_window_content_resume_idle_queue=NULL;
 		}
@@ -834,12 +914,12 @@ static gboolean _xfdashboard_window_content_resume_on_idle(gpointer inUserData)
 
 	self=XFDASHBOARD_WINDOW_CONTENT(queueEntry->data);
 	priv=self->priv;
-	g_message("Entering idle source with ID %u for window resume of '%s'@%p",
+	g_debug("Entering idle source with ID %u for window resume of '%s'@%p",
 				_xfdashboard_window_content_resume_idle_id,
 				xfdashboard_window_tracker_window_get_title(priv->window),
 				self);
 
-	g_message("Removing queued entry %p for window resume of '%s'@%p",
+	g_debug("Removing queued entry %p for window resume of '%s'@%p",
 				queueEntry,
 				xfdashboard_window_tracker_window_get_title(priv->window),
 				self);
@@ -850,7 +930,7 @@ static gboolean _xfdashboard_window_content_resume_on_idle(gpointer inUserData)
 	}
 		else
 		{
-			g_message("Resume idle source with ID %u will be remove because queue is empty",
+			g_debug("Resume idle source with ID %u will be remove because queue is empty",
 						_xfdashboard_window_content_resume_idle_id);
 
 			doContinueSource=G_SOURCE_REMOVE;
@@ -985,7 +1065,7 @@ static gboolean _xfdashboard_window_content_resume_on_idle(gpointer inUserData)
 	trapError=clutter_x11_untrap_x_errors();
 	if(trapError!=0)
 	{
-		g_message("X error %d occured while resuming window '%s", trapError, xfdashboard_window_tracker_window_get_title(priv->window));
+		g_debug("X error %d occured while resuming window '%s", trapError, xfdashboard_window_tracker_window_get_title(priv->window));
 		return(doContinueSource);
 	}
 
@@ -1012,11 +1092,8 @@ static void _xfdashboard_window_content_resume(XfdashboardWindowContent *self)
 	/* Check if to use new experimental code to resume window content
 	 * in an idle source.
 	 */
-	if(_xfdashboard_window_content_resume_on_idle_is_enabled())
+	if(_xfdashboard_window_content_window_creation_priority>0)
 	{
-		g_message("Using experimental code to resume on idle for window '%s'",
-					xfdashboard_window_tracker_window_get_title(priv->window));
-
 		_xfdashboard_window_content_resume_on_idle_add(self);
 		return;
 	}
@@ -1330,7 +1407,7 @@ static void _xfdashboard_window_content_set_window(XfdashboardWindowContent *sel
 	application=xfdashboard_application_get_default();
 	if(xfdashboard_application_is_suspended(application))
 	{
-		if(_xfdashboard_window_content_resume_on_idle_is_enabled())
+		if(_xfdashboard_window_content_window_creation_priority>0)
 		{
 			priv->suspendAfterResumeOnIdle=TRUE;
 		}
@@ -2155,6 +2232,34 @@ void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 													G_CALLBACK(_xfdashboard_window_content_on_application_suspended_changed),
 													self);
 	priv->isAppSuspended=xfdashboard_application_is_suspended(app);
+
+	/* Register global signal handler for xfconf value change notification
+	 * if not done already.
+	 */
+	if(!_xfdashboard_window_content_xfconf_priority_notify_id)
+	{
+		XfconfChannel					*xfconfChannel;
+		gchar							*detailedSignal;
+
+		/* Connect to property changed signal in xfconf */
+		xfconfChannel=xfdashboard_application_get_xfconf_channel();
+		detailedSignal=g_strconcat("property-changed::", WINDOW_CONTENT_CREATION_PRIORITY_XFCONF_PROP, NULL);
+		_xfdashboard_window_content_xfconf_priority_notify_id=g_signal_connect(xfconfChannel,
+																				detailedSignal,
+																				G_CALLBACK(_xfdashboard_window_content_on_window_creation_priority_value_changed),
+																				NULL);
+		if(detailedSignal) g_free(detailedSignal);
+		g_debug("Connected to property changed signal with handler ID %u for xfconf value change notifications",
+					_xfdashboard_window_content_xfconf_priority_notify_id);
+
+		/* Connect to application shutdown signal for xfconf value change notification */
+		_xfdashboard_window_content_window_creation_shutdown_signal_id=g_signal_connect(app,
+																				"shutdown-final",
+																				G_CALLBACK(_xfdashboard_window_content_on_window_creation_priority_shutdown),
+																				NULL);
+		g_debug("Connected to shutdown signal with handler ID %u for xfconf value change notifications",
+					_xfdashboard_window_content_window_creation_shutdown_signal_id);
+	}
 }
 
 /* Implementation: Public API */
