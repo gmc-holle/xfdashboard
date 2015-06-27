@@ -220,6 +220,46 @@ The duration is calculated by the length of the text to show in notification. Th
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkBox" id="box9">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkLabel" id="label11">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_markup" translatable="yes">This value defines how fast the window content should be created. While the value 'immediate' tells xfdashboard to create the window content at the time it is requested, all other values will set up a queue and value defines how fast the queue will be processed.
+
+&lt;b&gt;NOTE:&lt;/b&gt; Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system.</property>
+                        <property name="label" translatable="yes">Priority of window content creation</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBox" id="window-creation-priority">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_markup" translatable="yes">This value defines how fast the window content should be created. While the value 'immediate' tells xfdashboard to create the window content at the time it is requested, all other values will set up a queue and value defines how fast the queue will be processed.
+
+&lt;b&gt;NOTE:&lt;/b&gt; Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system.</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">5</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkLabel" id="label8">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -231,7 +271,7 @@ The duration is calculated by the length of the text to show in notification. Th
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">5</property>
+                    <property name="position">6</property>
                   </packing>
                 </child>
                 <child>
@@ -247,7 +287,7 @@ The duration is calculated by the length of the text to show in notification. Th
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">6</property>
+                    <property name="position">7</property>
                   </packing>
                 </child>
                 <child>
@@ -262,7 +302,7 @@ The duration is calculated by the length of the text to show in notification. Th
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">7</property>
+                    <property name="position">8</property>
                   </packing>
                 </child>
                 <child>
@@ -279,7 +319,7 @@ The duration is calculated by the length of the text to show in notification. Th
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">8</property>
+                    <property name="position">9</property>
                   </packing>
                 </child>
                 <child>
@@ -294,7 +334,7 @@ The duration is calculated by the length of the text to show in notification. Th
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">9</property>
+                    <property name="position">10</property>
                   </packing>
                 </child>
                 <child>
@@ -305,9 +345,7 @@ The duration is calculated by the length of the text to show in notification. Th
                       <object class="GtkLabel" id="label10">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="tooltip_markup" translatable="yes">Sets the minimum time a notification is being shown.
-
-The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least.</property>
+                        <property name="tooltip_markup" translatable="yes">Sets the interval the search should be delayed by after the first character was entered.</property>
                         <property name="label" translatable="yes">Delay initial search interval:</property>
                       </object>
                       <packing>
@@ -333,7 +371,7 @@ The duration is calculated by the length of the text to show in notification. Th
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">10</property>
+                    <property name="position">11</property>
                   </packing>
                 </child>
               </object>

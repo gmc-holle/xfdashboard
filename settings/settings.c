@@ -51,6 +51,7 @@ struct _XfdashboardSettingsPrivate
 	GtkWidget		*widgetSwitchViewOnResume;
 	GtkWidget		*widgetNotificationTimeout;
 	GtkWidget		*widgetEnableUnmappedWindowWorkaround;
+	GtkWidget		*widgetWindowCreationPriority;
 	GtkWidget		*widgetShowAllApps;
 	GtkWidget		*widgetScrollEventChangedWorkspace;
 	GtkWidget		*widgetDelaySearchTimeout;
@@ -67,20 +68,21 @@ struct _XfdashboardSettingsPrivate
 };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define XFDASHBOARD_XFCONF_CHANNEL				"xfdashboard"
-#define PREFERENCES_UI_FILE						"preferences.ui"
-#define XFDASHBOARD_THEME_SUBPATH				"xfdashboard-1.0"
-#define XFDASHBOARD_THEME_FILE					"xfdashboard.theme"
-#define XFDASHBOARD_THEME_GROUP					"Xfdashboard Theme"
-#define DEFAULT_DELAY_SEARCH_TIMEOUT			0
-#define DEFAULT_NOTIFICATION_TIMEOUT			3000
-#define DEFAULT_RESET_SEARCH_ON_RESUME			TRUE
-#define DEFAULT_SWITCH_VIEW_ON_RESUME			NULL
-#define DEFAULT_THEME							"xfdashboard"
-#define DEFAULT_ENABLE_HOTKEY					FALSE
-#define MAX_SCREENSHOT_WIDTH					400
+#define XFDASHBOARD_XFCONF_CHANNEL					"xfdashboard"
+#define PREFERENCES_UI_FILE							"preferences.ui"
+#define XFDASHBOARD_THEME_SUBPATH					"xfdashboard-1.0"
+#define XFDASHBOARD_THEME_FILE						"xfdashboard.theme"
+#define XFDASHBOARD_THEME_GROUP						"Xfdashboard Theme"
+#define DEFAULT_DELAY_SEARCH_TIMEOUT				0
+#define DEFAULT_NOTIFICATION_TIMEOUT				3000
+#define DEFAULT_RESET_SEARCH_ON_RESUME				TRUE
+#define DEFAULT_SWITCH_VIEW_ON_RESUME				NULL
+#define DEFAULT_THEME								"xfdashboard"
+#define DEFAULT_ENABLE_HOTKEY						FALSE
+#define DEFAULT_WINDOW_CONTENT_CREATION_PRIORITY	"immediate"
+#define MAX_SCREENSHOT_WIDTH						400
 
-typedef struct _XfdashboardSettingsResumableViews	XfdashboardSettingsResumableViews;
+typedef struct _XfdashboardSettingsResumableViews			XfdashboardSettingsResumableViews;
 struct _XfdashboardSettingsResumableViews
 {
 	const gchar		*displayName;
@@ -93,6 +95,22 @@ static XfdashboardSettingsResumableViews	resumableViews[]=
 	{ N_("Windows view"), "windows" },
 	{ N_("Applications view"), "applications" },
 	{ NULL, NULL }
+};
+
+typedef struct _XfdashboardSettingsWindowContentPriority	XfdashboardSettingsWindowContentPriority;
+struct _XfdashboardSettingsWindowContentPriority
+{
+	const gchar		*displayName;
+	const gchar		*priorityName;
+};
+
+static XfdashboardSettingsWindowContentPriority	windowCreationPriorities[]=
+{
+	{ N_("Immediately"), "immediate", },
+	{ N_("High"), "high"},
+	{ N_("Normal"), "normal" },
+	{ N_("Low"), "low" },
+	{ NULL, NULL },
 };
 
 enum
@@ -166,6 +184,71 @@ static void _xfdashboard_settings_xfconf_changed_switch_view_on_resume(Xfdashboa
 			{
 				g_free(value);
 				gtk_combo_box_set_active_iter(GTK_COMBO_BOX(priv->widgetSwitchViewOnResume), &iter);
+				break;
+			}
+			g_free(value);
+		}
+		while(gtk_tree_model_iter_next(model, &iter));
+	}
+}
+
+/* Setting '/window-content-creation-priority' changed either at widget or at xfconf property */
+static void _xfdashboard_settings_widget_changed_window_creation_priority(XfdashboardSettings *self, GtkComboBox *inComboBox)
+{
+	XfdashboardSettingsPrivate		*priv;
+	GtkTreeModel					*model;
+	GtkTreeIter						iter;
+	gchar							*value;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(GTK_IS_COMBO_BOX(inComboBox));
+
+	priv=self->priv;
+
+	/* Get selected entry from combo box */
+	model=gtk_combo_box_get_model(inComboBox);
+	gtk_combo_box_get_active_iter(inComboBox, &iter);
+	gtk_tree_model_get(model, &iter, 1, &value, -1);
+
+	/* Set value at xfconf property */
+	xfconf_channel_set_string(priv->xfconfChannel, "/window-content-creation-priority", value);
+
+	/* Release allocated resources */
+	if(value) g_free(value);
+}
+
+static void _xfdashboard_settings_xfconf_changed_window_creation_priority(XfdashboardSettings *self,
+																			const gchar *inProperty,
+																			const GValue *inValue,
+																			XfconfChannel *inChannel)
+{
+	XfdashboardSettingsPrivate		*priv;
+	GtkTreeModel					*model;
+	GtkTreeIter						iter;
+	gchar							*value;
+	const gchar						*newValue;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(inValue);
+	g_return_if_fail(XFCONF_IS_CHANNEL(inChannel));
+
+	priv=self->priv;
+
+	/* Get new value to lookup and set at combo box */
+	if(G_UNLIKELY(G_VALUE_TYPE(inValue)!=G_TYPE_STRING)) newValue=DEFAULT_WINDOW_CONTENT_CREATION_PRIORITY;
+		else newValue=g_value_get_string(inValue);
+
+	/* Iterate through combo box value and set new value if match is found */
+	model=gtk_combo_box_get_model(GTK_COMBO_BOX(priv->widgetWindowCreationPriority));
+	if(gtk_tree_model_get_iter_first(model, &iter))
+	{
+		do
+		{
+			gtk_tree_model_get(model, &iter, 1, &value, -1);
+			if(G_UNLIKELY(g_str_equal(value, newValue)))
+			{
+				g_free(value);
+				gtk_combo_box_set_active_iter(GTK_COMBO_BOX(priv->widgetWindowCreationPriority), &iter);
 				break;
 			}
 			g_free(value);
@@ -1149,6 +1232,65 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 								G_CALLBACK(_xfdashboard_settings_on_close_clicked),
 								self);
 
+	priv->widgetWindowCreationPriority=GTK_WIDGET(gtk_builder_get_object(priv->builder, "window-creation-priority"));
+	if(priv->widgetWindowCreationPriority)
+	{
+		GtkCellRenderer								*renderer;
+		GtkListStore								*listStore;
+		GtkTreeIter									listStoreIter;
+		GtkTreeIter									*defaultListStoreIter;
+		XfdashboardSettingsWindowContentPriority	*iter;
+		gchar										*defaultValue;
+
+		/* Get default value from settings */
+		defaultValue=xfconf_channel_get_string(priv->xfconfChannel, "/window-content-creation-priority", DEFAULT_WINDOW_CONTENT_CREATION_PRIORITY);
+		if(!defaultValue) defaultValue=g_strdup(windowCreationPriorities[0].priorityName);
+
+		/* Clear combo box */
+		gtk_cell_layout_clear(GTK_CELL_LAYOUT(priv->widgetWindowCreationPriority));
+
+		/* Set up renderer for combo box */
+		renderer=gtk_cell_renderer_text_new();
+		gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(priv->widgetWindowCreationPriority), renderer, TRUE);
+		gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(priv->widgetWindowCreationPriority), renderer, "text", 0);
+
+		/* Set up list to show at combo box */
+		defaultListStoreIter=NULL;
+		listStore=gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+		for(iter=windowCreationPriorities; iter->displayName; ++iter)
+		{
+			gtk_list_store_append(listStore, &listStoreIter);
+			gtk_list_store_set(listStore, &listStoreIter, 0, _(iter->displayName), 1, iter->priorityName, -1);
+			if(!g_strcmp0(iter->priorityName, defaultValue))
+			{
+				defaultListStoreIter=gtk_tree_iter_copy(&listStoreIter);
+			}
+		}
+		gtk_combo_box_set_model(GTK_COMBO_BOX(priv->widgetWindowCreationPriority), GTK_TREE_MODEL(listStore));
+		g_object_unref(G_OBJECT(listStore));
+
+		/* Set up default value */
+		if(defaultListStoreIter)
+		{
+			gtk_combo_box_set_active_iter(GTK_COMBO_BOX(priv->widgetWindowCreationPriority), defaultListStoreIter);
+			gtk_tree_iter_free(defaultListStoreIter);
+			defaultListStoreIter=NULL;
+		}
+
+		/* Connect signals */
+		g_signal_connect_swapped(priv->widgetWindowCreationPriority,
+									"changed",
+									G_CALLBACK(_xfdashboard_settings_widget_changed_window_creation_priority),
+									self);
+		g_signal_connect_swapped(priv->xfconfChannel,
+									"property-changed::/window-content-creation-priority",
+									G_CALLBACK(_xfdashboard_settings_xfconf_changed_window_creation_priority),
+									self);
+
+		/* Release allocated resources */
+		if(defaultValue) g_free(defaultValue);
+	}
+
 	/* Tab: Themes */
 	priv->widgetThemeScreenshot=GTK_WIDGET(gtk_builder_get_object(priv->builder, "theme-screenshot"));
 	priv->widgetThemeNameLabel=GTK_WIDGET(gtk_builder_get_object(priv->builder, "theme-name-label"));
@@ -1297,6 +1439,7 @@ static void xfdashboard_settings_init(XfdashboardSettings *self)
 	priv->widgetSwitchViewOnResume=NULL;
 	priv->widgetNotificationTimeout=NULL;
 	priv->widgetEnableUnmappedWindowWorkaround=NULL;
+	priv->widgetWindowCreationPriority=NULL;
 	priv->widgetScrollEventChangedWorkspace=NULL;
 	priv->widgetDelaySearchTimeout=NULL;
 	priv->widgetThemes=NULL;
