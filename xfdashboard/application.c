@@ -376,11 +376,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	 */
 	priv->focusManager=xfdashboard_focus_manager_get_default();
 
-	/* Create primary stage on first monitor.
-	 * TODO: Create stage for each monitor connected
-	 *       but only primary monitor gets its stage
-	 *       setup for primary display
-	 */
+	/* Create stage containing all monitors */
 	stage=xfdashboard_stage_new();
 	if(!priv->isDaemon) clutter_actor_show(stage);
 	g_signal_connect_swapped(stage, "delete-event", G_CALLBACK(_xfdashboard_application_on_delete_stage), self);
