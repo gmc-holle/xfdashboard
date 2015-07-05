@@ -21,6 +21,7 @@ xfdashboard_headers = \
 	application.h \
 	application-button.h \
 	application-database.h \
+	application-tracker.h \
 	applications-menu-model.h \
 	applications-search-provider.h \
 	applications-view.h \
@@ -83,6 +84,7 @@ xfdashboard_SOURCES = \
 	application.c \
 	application-button.c \
 	application-database.c \
+	application-tracker.c \
 	applications-menu-model.c \
 	applications-search-provider.c \
 	applications-view.c \

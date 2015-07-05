@@ -810,6 +810,63 @@ void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrac
 	g_object_unref(windowTracker);
 }
 
+/* Get process ID owning the requested window */
+gint xfdashboard_window_tracker_window_get_pid(XfdashboardWindowTrackerWindow *inWindow)
+{
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), -1);
+
+	return(wnck_window_get_pid(WNCK_WINDOW(inWindow)));
+}
+
+/* Get all possible instance name for window, e.g. class name, instance name.
+ * Caller is responsible to free result with g_strfreev() if not NULL.
+ */
+gchar** xfdashboard_window_tracker_window_get_instance_names(XfdashboardWindowTrackerWindow *inWindow)
+{
+	GSList			*names;
+	GSList			*iter;
+	const gchar		*value;
+	guint			numberEntries;
+	gchar			**result;
+
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
+
+	names=NULL;
+	result=NULL;
+
+	/* Add class name of window to list */
+	value=wnck_window_get_class_group_name(WNCK_WINDOW(inWindow));
+	if(value) names=g_slist_prepend(names, g_strdup(value));
+
+	/* Add instance name of window to list */
+	value=wnck_window_get_class_instance_name(WNCK_WINDOW(inWindow));
+	if(value) names=g_slist_prepend(names, g_strdup(value));
+
+	/* Add role of window to list */
+	value=wnck_window_get_role(WNCK_WINDOW(inWindow));
+	if(value) names=g_slist_prepend(names, g_strdup(value));
+
+	/* If nothing was added to list of name, stop here and return */
+	if(!names) return(NULL);
+
+	/* Build result list as a NULL-terminated list of strings */
+	numberEntries=g_slist_length(names);
+
+	result=g_new(gchar*, numberEntries+1);
+	result[numberEntries]=NULL;
+	for(iter=names; iter; iter=g_slist_next(iter))
+	{
+		numberEntries--;
+		result[numberEntries]=iter->data;
+	}
+
+	/* Release allocated resources */
+	g_slist_free(names);
+
+	/* Return result list */
+	return(result);
+}
+
 /* Get X window ID of window */
 gulong xfdashboard_window_tracker_window_get_xid(XfdashboardWindowTrackerWindow *inWindow)
 {

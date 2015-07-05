@@ -105,6 +105,9 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_stage_wind
 void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTrackerWindow *inWindow);
 void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrackerWindow *inWindow);
 
+gint xfdashboard_window_tracker_window_get_pid(XfdashboardWindowTrackerWindow *inWindow);
+gchar** xfdashboard_window_tracker_window_get_instance_names(XfdashboardWindowTrackerWindow *inWindow);
+
 gulong xfdashboard_window_tracker_window_get_xid(XfdashboardWindowTrackerWindow *inWindow);
 
 G_END_DECLS
