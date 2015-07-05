@@ -881,12 +881,10 @@ XfdashboardWindowTrackerWorkspace* xfdashboard_live_workspace_get_workspace(Xfda
 void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, XfdashboardWindowTrackerWorkspace *inWorkspace)
 {
 	XfdashboardLiveWorkspacePrivate		*priv;
-	ClutterContent						*content;
 	XfdashboardWindowTrackerWindow		*window;
 	ClutterActor						*child;
 	ClutterActorIter					iter;
 	GList								*windows;
-	ClutterActor						*actor;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace));
