@@ -7,4 +7,12 @@
 		<property name="icon-name">emblem-important</property>
 		<property name="icon-size">32</property>
 	</object>
+
+	<object id="running-application" class="XfdashboardEmblemEffect">
+		<property name="icon-name">emblem-default</property>
+		<property name="icon-size">32</property>
+		<property name="anchor-point">south-east</property>
+		<property name="x-align">1.0</property>
+		<property name="y-align">1.0</property>
+	</object>
 </effects>

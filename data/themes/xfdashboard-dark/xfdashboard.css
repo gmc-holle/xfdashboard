@@ -78,6 +78,11 @@ XfdashboardWindowContent
 	effects: ;
 }
 
+#quicklaunch XfdashboardApplicationButton.running
+{
+	effects: running-application;
+}
+
 #quicklaunch:drop-target
 {
 	background-fill-color: #93c1ff80;
@@ -251,6 +256,11 @@ XfdashboardApplicationButton.view-mode-icon
 XfdashboardApplicationButton.view-mode-list
 {
 	show-description: true;
+}
+
+XfdashboardApplicationButton.running
+{
+	effects: running-application;
 }
 
 /* Workspace selector (incl. collapse box) */
