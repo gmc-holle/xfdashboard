@@ -46,6 +46,7 @@
 #include "focus-manager.h"
 #include "bindings-pool.h"
 #include "application-database.h"
+#include "application-tracker.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplication,
@@ -78,6 +79,7 @@ struct _XfdashboardApplicationPrivate
 	XfdashboardBindingsPool			*bindings;
 
 	XfdashboardApplicationDatabase	*appDatabase;
+	XfdashboardApplicationTracker	*appTracker;
 };
 
 /* Properties */
@@ -324,6 +326,14 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 		g_critical(_("Could not load application database: %s"),
 					(error && error->message) ? error->message : _("unknown error"));
 		if(error!=NULL) g_error_free(error);
+		return(FALSE);
+	}
+
+	/* Set up application tracker */
+	priv->appTracker=xfdashboard_application_tracker_get_default();
+	if(!priv->appTracker)
+	{
+		g_critical(_("Could not initialize application tracker"));
 		return(FALSE);
 	}
 
@@ -634,6 +644,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	{
 		g_object_unref(priv->appDatabase);
 		priv->appDatabase=NULL;
+	}
+
+	if(priv->appTracker)
+	{
+		g_object_unref(priv->appTracker);
+		priv->appTracker=NULL;
 	}
 
 	/* Shutdown xfconf */
