@@ -66,8 +66,6 @@ struct _XfdashboardApplicationButtonClass
 GType xfdashboard_application_button_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_application_button_new(void);
-ClutterActor* xfdashboard_application_button_new_from_desktop_file(const gchar *inDesktopFilename);
-ClutterActor* xfdashboard_application_button_new_from_menu(GarconMenuElement *inMenuElement);
 ClutterActor* xfdashboard_application_button_new_from_app_info(GAppInfo *inAppInfo);
 
 GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButton *self);

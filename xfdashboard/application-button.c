@@ -34,6 +34,8 @@
 
 #include "enums.h"
 #include "utils.h"
+#include "application-tracker.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationButton,
@@ -55,6 +57,9 @@ struct _XfdashboardApplicationButtonPrivate
 
 	/* Instance related */
 	guint								appInfoChangedID;
+
+	XfdashboardApplicationTracker		*appTracker;
+	guint								runningStateChangedID;
 };
 
 /* Properties */
@@ -149,6 +154,30 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 	if(iconName) g_free(iconName);
 }
 
+/* Update running state of button actor */
+static void _xfdashboard_application_button_update_running_state(XfdashboardApplicationButton *self)
+{
+	XfdashboardApplicationButtonPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
+
+	priv=self->priv;
+
+	/* Get current running state of application and set class "running" if it running.
+	 * At all other cases remove this class.
+	 */
+	if(priv->appTracker &&
+		priv->appInfo &&
+		xfdashboard_application_tracker_is_running_by_app_info(priv->appTracker, priv->appInfo))
+	{
+		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), "running");
+	}
+		else
+		{
+			xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(self), "running");
+		}
+}
+
 /* The app info has changed */
 static void _xfdashboard_application_button_on_app_info_changed(XfdashboardApplicationButton *self,
 																	gpointer inUserData)
@@ -167,6 +196,17 @@ static void _xfdashboard_application_button_on_icon_size_changed(XfdashboardAppl
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 
 	_xfdashboard_application_button_update_icon(self);
+}
+
+/* The running state of application has changed */
+static void _xfdashboard_application_button_on_running_state_changed(XfdashboardApplicationButton *self,
+																		const gchar *inDesktopID,
+																		gboolean inRunning,
+																		gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
+
+	_xfdashboard_application_button_update_running_state(self);
 }
 
 /* IMPLEMENTATION: GObject */
@@ -188,6 +228,18 @@ static void _xfdashboard_application_button_dispose(GObject *inObject)
 
 		g_object_unref(priv->appInfo);
 		priv->appInfo=NULL;
+	}
+
+	if(priv->appTracker)
+	{
+		if(priv->runningStateChangedID)
+		{
+			g_signal_handler_disconnect(priv->appTracker, priv->runningStateChangedID);
+			priv->runningStateChangedID=0;
+		}
+
+		g_object_unref(priv->appTracker);
+		priv->appTracker=NULL;
 	}
 
 	if(priv->formatTitleOnly)
@@ -341,9 +393,14 @@ static void xfdashboard_application_button_init(XfdashboardApplicationButton *se
 	priv->showDescription=FALSE;
 	priv->formatTitleOnly=NULL;
 	priv->formatTitleDescription=NULL;
+	priv->appTracker=xfdashboard_application_tracker_get_default();
+	priv->runningStateChangedID=0;
 
 	/* Connect signals */
-	g_signal_connect(self, "notify::icon-size", G_CALLBACK(_xfdashboard_application_button_on_icon_size_changed), NULL);
+	g_signal_connect(self,
+						"notify::icon-size",
+						G_CALLBACK(_xfdashboard_application_button_on_icon_size_changed),
+						NULL);
 }
 
 /* IMPLEMENTATION: Public API */
@@ -355,34 +412,6 @@ ClutterActor* xfdashboard_application_button_new(void)
 							"button-style", XFDASHBOARD_STYLE_BOTH,
 							"single-line", FALSE,
 							NULL));
-}
-
-ClutterActor* xfdashboard_application_button_new_from_desktop_file(const gchar *inDesktopFilename)
-{
-	g_return_val_if_fail(inDesktopFilename, NULL);
-
-	g_warning("[BAD] %s called to create application button for desktop file '%s'", __func__, inDesktopFilename);
-
-/*	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
-							"button-style", XFDASHBOARD_STYLE_BOTH,
-							"single-line", FALSE,
-							"desktop-filename", inDesktopFilename,
-							NULL));*/
-	return(NULL);
-}
-
-ClutterActor* xfdashboard_application_button_new_from_menu(GarconMenuElement *inMenuElement)
-{
-	g_return_val_if_fail(GARCON_IS_MENU_ELEMENT(inMenuElement), NULL);
-
-	g_warning("[BAD] %s called to create application button for menu element '%s'", __func__, garcon_menu_element_get_name(inMenuElement));
-
-/*	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
-							"button-style", XFDASHBOARD_STYLE_BOTH,
-							"single-line", FALSE,
-							"menu-element", inMenuElement,
-							NULL));*/
-	return(NULL);
 }
 
 ClutterActor* xfdashboard_application_button_new_from_app_info(GAppInfo *inAppInfo)
@@ -439,9 +468,34 @@ void xfdashboard_application_button_set_app_info(XfdashboardApplicationButton *s
 															self);
 		}
 
+		/* Disconnect any signal handler for running state changes of old application
+		 * and connect to new one.
+		 */
+		if(priv->appTracker &&
+			priv->runningStateChangedID)
+		{
+			g_signal_handler_disconnect(priv->appTracker, priv->runningStateChangedID);
+			priv->runningStateChangedID=0;
+		}
+
+		if(priv->appTracker &&
+			priv->appInfo)
+		{
+			gchar							*signalName;
+
+			/* Build signal name to connect to for running state changes */
+			signalName=g_strdup_printf("state-changed::%s", g_app_info_get_id(priv->appInfo));
+			priv->runningStateChangedID=g_signal_connect_swapped(priv->appTracker,
+																	signalName,
+																	G_CALLBACK(_xfdashboard_application_button_on_running_state_changed),
+																	self);
+			g_free(signalName);
+		}
+
 		/* Update actor */
 		_xfdashboard_application_button_update_text(self);
 		_xfdashboard_application_button_update_icon(self);
+		_xfdashboard_application_button_update_running_state(self);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationButtonProperties[PROP_APP_INFO]);
