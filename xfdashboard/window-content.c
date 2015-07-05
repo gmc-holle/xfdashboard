@@ -340,14 +340,11 @@ static void _xfdashboard_window_content_on_window_creation_priority_value_change
 																					const GValue *inValue,
 																					gpointer inUserData)
 {
-	gint									newPriority;
 	const gchar								*priorityValue;
 	XfdashboardWindowContentPriorityMap		*found;
 
 	g_return_if_fail(g_strcmp0(inProperty, WINDOW_CONTENT_CREATION_PRIORITY_XFCONF_PROP)==0);
 	g_return_if_fail(inValue && G_VALUE_HOLDS_STRING(inValue));
-
-	newPriority=-1;
 
 	/* Determine priority from new value */
 	priorityValue=g_value_get_string(inValue);
