@@ -634,6 +634,9 @@ static void _xfdashboard_application_tracker_on_window_opened(XfdashboardApplica
 		priv->runningApps=g_list_prepend(priv->runningApps, item);
 
 		/* Emit signal as this application is known to be running now */
+		g_message("%s: Emitting signal 'state-changed' to running for desktop ID '%s'",
+					__func__,
+					item->desktopID);
 		g_signal_emit(self, XfdashboardApplicationTrackerSignals[SIGNAL_STATE_CHANGED], g_quark_from_string(item->desktopID), item->desktopID, TRUE);
 	}
 		/* ... otherwise add window to existing one */
@@ -687,19 +690,32 @@ static void _xfdashboard_application_tracker_on_window_closed(XfdashboardApplica
 	if(!item->windows ||
 		g_list_length(item->windows)==0)
 	{
+		gchar								*desktopID;
+
 		g_message("%s: Closing window '%s' for desktop ID '%s' closed last window so remove application from list of running ones",
 					__func__,
 					xfdashboard_window_tracker_window_get_title(inWindow),
 					item->desktopID);
 
-		/* Emit signal as this application is not running anymore */
-		g_signal_emit(self, XfdashboardApplicationTrackerSignals[SIGNAL_STATE_CHANGED], g_quark_from_string(item->desktopID), item->desktopID, FALSE);
+		/* Create a copy of desktop ID for signal emission because the
+		 * application tracker item will be removed and freed before.
+		 */
+		desktopID=g_strdup(item->desktopID);
 
-		/* Remove application tracker item from list of running applications */
+		/* Remove application tracker item from list of running applications
+		 * and free it.
+		 */
 		priv->runningApps=g_list_remove(priv->runningApps, item);
+		_xfdashboard_application_tracker_item_free(item);
+
+		/* Emit signal as this application is not running anymore */
+		g_message("%s: Emitting signal 'state-changed' to stopped for desktop ID '%s'",
+					__func__,
+					desktopID);
+		g_signal_emit(self, XfdashboardApplicationTrackerSignals[SIGNAL_STATE_CHANGED], g_quark_from_string(desktopID), desktopID, FALSE);
 
 		/* Release allocated resources */
-		_xfdashboard_application_tracker_item_free(item);
+		g_free(desktopID);
 	}
 }
 
