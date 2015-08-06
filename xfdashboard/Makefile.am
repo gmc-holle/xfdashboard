@@ -5,6 +5,9 @@ AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
 	$(PLATFORM_CPPFLAGS)
 
+noinst_LTLIBRARIES = \
+	libxfdashboard.la
+
 bin_PROGRAMS = \
 	xfdashboard
 
@@ -77,7 +80,7 @@ xfdashboard_headers = \
 	windows-view.h \
 	workspace-selector.h
 
-xfdashboard_SOURCES = \
+libxfdashboard_la_SOURCES = \
 	$(xfdashboard_built_sources) \
 	$(xfdashboard_headers) \
 	actor.c \
@@ -107,7 +110,6 @@ xfdashboard_SOURCES = \
 	image-content.c \
 	live-window.c \
 	live-workspace.c \
-	main.c \
 	outline-effect.c \
 	quicklaunch.c \
 	scaled-table-layout.c \
@@ -140,7 +142,7 @@ xfdashboard_SOURCES = \
 	windows-view.c \
 	workspace-selector.c
 
-xfdashboard_CFLAGS = \
+libxfdashboard_la_CFLAGS = \
 	$(LIBWNCK_CFLAGS) \
 	$(CLUTTER_CFLAGS) \
 	$(CLUTTER_COGL_CFLAGS) \
@@ -153,12 +155,7 @@ xfdashboard_CFLAGS = \
 	$(DBUS_GLIB_CFLAGS) \
 	$(PLATFORM_CFLAGS)
 
-xfdashboard_LDFLAGS = \
-	-export-dynamic \
-	-no-undefined \
-	$(PLATFORM_LDFLAGS)
-
-xfdashboard_LDADD = \
+libxfdashboard_la_LIBADD = \
 	$(LIBWNCK_LIBS) \
 	$(CLUTTER_LIBS) \
 	$(CLUTTER_COGL_LIBS) \
@@ -169,31 +166,46 @@ xfdashboard_LDADD = \
 	$(LIBXFCONF_LIBS) \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(DBUS_GLIB_LIBS) \
-	-lm
+	$(LIBM)
 
 if XFDASHBOARD_BUILD_WITH_XCOMPOSITE
-xfdashboard_CFLAGS += \
+libxfdashboard_la_CFLAGS += \
 	$(XCOMPOSITE_CFLAGS)
 
-xfdashboard_LDADD += \
+libxfdashboard_la_LIBADD += \
 	$(XCOMPOSITE_LIBS)
 endif
 
 if XFDASHBOARD_BUILD_WITH_XDAMAGE
-xfdashboard_CFLAGS += \
+libxfdashboard_la_CFLAGS += \
 	$(XDAMAGE_CFLAGS)
 
-xfdashboard_LDADD += \
+libxfdashboard_la_LIBADD += \
 	$(XDAMAGE_LIBS)
 endif
 
 if XFDASHBOARD_BUILD_WITH_XINERAMA
-xfdashboard_CFLAGS += \
+libxfdashboard_la_CFLAGS += \
 	$(XINERAMA_CFLAGS)
 
-xfdashboard_LDADD += \
+libxfdashboard_la_LIBADD += \
 	$(XINERAMA_LIBS)
 endif
+
+xfdashboard_SOURCES = \
+	main.c
+
+xfdashboard_CFLAGS = \
+	$(libxfdashboard_la_CFLAGS)
+
+xfdashboard_LDADD = \
+	libxfdashboard.la
+
+xfdashboard_LDFLAGS = \
+	$(PLATFORM_LDFLAGS) \
+	-export-dynamic \
+	-no-undefined \
+	-Wl,--whole-archive,.libs/libxfdashboard.a,--no-whole-archive
 
 if MAINTAINER_MODE
 
