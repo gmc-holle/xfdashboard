@@ -152,7 +152,7 @@ typedef enum /*< prefix=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE >*/
 
 /**
  * XfdashboardSelectionTarget:
- * @XFDASHBOARD_SELECTION_TARGET_NONE: (used internally)
+ * @XFDASHBOARD_SELECTION_TARGET_NONE: *used internally*
  * @XFDASHBOARD_SELECTION_TARGET_LEFT: Move to next selectable actor at left side.
  * @XFDASHBOARD_SELECTION_TARGET_RIGHT: Move to next selectable actor at right side.
  * @XFDASHBOARD_SELECTION_TARGET_UP: Move to next selectable actor at top side.
