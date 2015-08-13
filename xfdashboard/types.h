@@ -21,6 +21,15 @@
  * 
  */
 
+/**
+ * SECTION:types
+ * @title: Enums and types
+ * @short_description: Common enums and types
+ * @include: xfdashboard/types.h
+ *
+ * Various miscellaneous utilility functions.
+ */
+
 #ifndef __XFDASHBOARD_TYPES__
 #define __XFDASHBOARD_TYPES__
 
@@ -28,7 +37,15 @@
 
 G_BEGIN_DECLS
 
-/* Application start-up error codes */
+/**
+ * XfdashboardApplicationErrorCode:
+ * @XFDASHBOARD_APPLICATION_ERROR_NONE: Application started successfully without any problems
+ * @XFDASHBOARD_APPLICATION_ERROR_FAILED: Application failed to start
+ * @XFDASHBOARD_APPLICATION_ERROR_RESTART: Application needs to be restarted to start-up successfully
+ * @XFDASHBOARD_APPLICATION_ERROR_QUIT: Application was quitted and shuts down
+ *
+ * The start-up status codes returned by XfdashboardApplication.
+ */
 typedef enum /*< skip,prefix=XFDASHBOARD_APPLICATION_ERROR >*/
 {
 	XFDASHBOARD_APPLICATION_ERROR_NONE=0,
@@ -37,14 +54,27 @@ typedef enum /*< skip,prefix=XFDASHBOARD_APPLICATION_ERROR >*/
 	XFDASHBOARD_APPLICATION_ERROR_QUIT
 } XfdashboardApplicationErrorCode;
 
-/* List mode for views */
+/**
+ * XfdashboardViewMode:
+ * @XFDASHBOARD_VIEW_MODE_LIST: Show items in view as list
+ * @XFDASHBOARD_VIEW_MODE_ICON: Show items in view as icons
+ *
+ * Determines how to display items of a view.
+ */
 typedef enum /*< prefix=XFDASHBOARD_VIEW_MODE >*/
 {
 	XFDASHBOARD_VIEW_MODE_LIST=0,
 	XFDASHBOARD_VIEW_MODE_ICON
 } XfdashboardViewMode;
 
-/* Visibility policy (e.g. for scroll bars in views) */
+/**
+ * XfdashboardPolicy:
+ * @XFDASHBOARD_POLICY_NEVER: The actor is always visible.
+ * @XFDASHBOARD_POLICY_AUTOMATIC: The actor will appear and disappear as necessary. For example, when a view does not fit into viewpad the scrollbar will be visible.
+ * @XFDASHBOARD_POLICY_ALWAYS: The actor will never appear.
+ *
+ * Determines when an actor will be visible, e.g. scrollbars in views.
+ */
 typedef enum /*< prefix=XFDASHBOARD_POLICY >*/
 {
 	XFDASHBOARD_POLICY_NEVER=0,
@@ -52,7 +82,14 @@ typedef enum /*< prefix=XFDASHBOARD_POLICY >*/
 	XFDASHBOARD_POLICY_ALWAYS
 } XfdashboardPolicy;
 
-/* Style (e.g. used in buttons) */
+/**
+ * XfdashboardStyle:
+ * @XFDASHBOARD_STYLE_TEXT: The actor will show only text labels.
+ * @XFDASHBOARD_STYLE_ICON: The actor will show only icons.
+ * @XFDASHBOARD_STYLE_BOTH: The actor will show both, text labels and icons.
+ *
+ * Determines the style of an actor, e.g. text labels and icons at buttons.
+ */
 typedef enum /*< prefix=XFDASHBOARD_STYLE >*/
 {
 	XFDASHBOARD_STYLE_TEXT=0,
@@ -60,7 +97,15 @@ typedef enum /*< prefix=XFDASHBOARD_STYLE >*/
 	XFDASHBOARD_STYLE_BOTH
 } XfdashboardStyle;
 
-/* Orientation (e.g. used in buttons) */
+/**
+ * XfdashboardOrientation:
+ * @XFDASHBOARD_ORIENTATION_LEFT: The actor is justified to left boundary.
+ * @XFDASHBOARD_ORIENTATION_RIGHT: The actor is justified to right boundary.
+ * @XFDASHBOARD_ORIENTATION_TOP: The actor is justified to top boundary.
+ * @XFDASHBOARD_ORIENTATION_BOTTOM: The actor is justified to bottom boundary.
+ *
+ * Determines the side to which an actor is justified to. It can mostly be switched on-the-fly.
+ */
 typedef enum /*< prefix=XFDASHBOARD_ORIENTATION >*/
 {
 	XFDASHBOARD_ORIENTATION_LEFT=0,
@@ -69,7 +114,16 @@ typedef enum /*< prefix=XFDASHBOARD_ORIENTATION >*/
 	XFDASHBOARD_ORIENTATION_BOTTOM
 } XfdashboardOrientation;
 
-/* Background types */
+/**
+ * XfdashboardBackgroundType:
+ * 
+ * @XFDASHBOARD_BACKGROUND_TYPE_NONE: The actor will be displayed unmodified.
+ * @XFDASHBOARD_BACKGROUND_TYPE_FILL: The actor background will be filled with a color.
+ * @XFDASHBOARD_BACKGROUND_TYPE_OUTLINE: The actor will get an outline.
+ * @XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS: The edges of actor will be rounded.
+ *
+ * Determines how the background of an actor will be displayed and if it get an styled outline.
+ */
 typedef enum /*< flags,prefix=XFDASHBOARD_BACKGROUND_TYPE >*/
 {
 	XFDASHBOARD_BACKGROUND_TYPE_NONE=0,
@@ -79,7 +133,22 @@ typedef enum /*< flags,prefix=XFDASHBOARD_BACKGROUND_TYPE >*/
 	XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS=1 << 3,
 } XfdashboardBackgroundType;
 
-/* Corners (e.g. used in background for rounded rectangles) */
+/**
+ * XfdashboardCorners:
+ * 
+ * @XFDASHBOARD_CORNERS_NONE: No corner is affected.
+ * @XFDASHBOARD_CORNERS_TOP_LEFT: Affects top-left corner of actor.
+ * @XFDASHBOARD_CORNERS_TOP_RIGHT: Affects top-right corner of actor.
+ * @XFDASHBOARD_CORNERS_BOTTOM_LEFT: Affects bottom-left corner of actor.
+ * @XFDASHBOARD_CORNERS_BOTTOM_RIGHT: Affects bottom-right corner of actor.
+ * @XFDASHBOARD_CORNERS_TOP: Affects corners at top side of actor - top-left and top-right.
+ * @XFDASHBOARD_CORNERS_BOTTOM: Affects corners at bottom side of actor - bottom-left and bottom-right.
+ * @XFDASHBOARD_CORNERS_LEFT: Affects corners at left side of actor - top-left and bottom-left.
+ * @XFDASHBOARD_CORNERS_RIGHT: Affects corners at right side of actor - top-right and bottom-right.
+ * @XFDASHBOARD_CORNERS_ALL: Affects all corners of actor.
+ *
+ * Specifies which corner of an actor is affected, e.g. used in background for rounded rectangles.
+ */
 typedef enum /*< flags,prefix=XFDASHBOARD_CORNERS >*/
 {
 	XFDASHBOARD_CORNERS_NONE=0,
@@ -97,7 +166,18 @@ typedef enum /*< flags,prefix=XFDASHBOARD_CORNERS >*/
 	XFDASHBOARD_CORNERS_ALL=(XFDASHBOARD_CORNERS_TOP_LEFT | XFDASHBOARD_CORNERS_TOP_RIGHT | XFDASHBOARD_CORNERS_BOTTOM_LEFT | XFDASHBOARD_CORNERS_BOTTOM_RIGHT)
 } XfdashboardCorners;
 
-/* Borders (e.g. used in outlines) */
+/**
+ * XfdashboardBorders:
+ *
+ * @XFDASHBOARD_BORDERS_NONE: No side is affected.
+ * @XFDASHBOARD_BORDERS_LEFT: Affects left side of actor.
+ * @XFDASHBOARD_BORDERS_TOP: Affects top side of actor.
+ * @XFDASHBOARD_BORDERS_RIGHT: Affects right side of actor.
+ * @XFDASHBOARD_BORDERS_BOTTOM: Affects bottom side of actor.
+ * @XFDASHBOARD_BORDERS_ALL: Affects all sides of actor.
+ *
+ * Determines which side of an actor is affected, e.g. used in outlines.
+ */
 typedef enum /*< flags,prefix=XFDASHBOARD_BORDERS >*/
 {
 	XFDASHBOARD_BORDERS_NONE=0,
@@ -110,7 +190,16 @@ typedef enum /*< flags,prefix=XFDASHBOARD_BORDERS >*/
 	XFDASHBOARD_BORDERS_ALL=(XFDASHBOARD_BORDERS_LEFT | XFDASHBOARD_BORDERS_TOP | XFDASHBOARD_BORDERS_RIGHT | XFDASHBOARD_BORDERS_BOTTOM)
 } XfdashboardBorders;
 
-/* Fit modes */
+/**
+ * XfdashboardFitMode:
+ *
+ * @XFDASHBOARD_FIT_MODE_NONE: Do not try to fit view into viewpad.
+ * @XFDASHBOARD_FIT_MODE_HORIZONTAL: Try to fit view into viewpad horizontally.
+ * @XFDASHBOARD_FIT_MODE_VERTICAL: Try to fit view into viewpad vertically.
+ * @XFDASHBOARD_FIT_MODE_BOTH: Try to fit view into viewpad horizontally and vertically.
+ *
+ * Determines how a view should fit into a viewpad.
+ */
 typedef enum /*< prefix=XFDASHBOARD_FIT_MODE >*/
 {
 	XFDASHBOARD_FIT_MODE_NONE=0,
@@ -119,14 +208,38 @@ typedef enum /*< prefix=XFDASHBOARD_FIT_MODE >*/
 	XFDASHBOARD_FIT_MODE_BOTH
 } XfdashboardFitMode;
 
-/* Stage background types */
+/**
+ * XfdashboardStageBackgroundImageType:
+ *
+ * @XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE: Do not show anything at background of stage actor.
+ * @XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_DESKTOP: Show current desktop image at background of stage actor.
+ *
+ * Determine what to show at background of a stage actor.
+ */
 typedef enum /*< prefix=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE >*/
 {
 	XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE=0,
 	XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_DESKTOP
 } XfdashboardStageBackgroundImageType;
 
-/* Selection target types */
+/**
+ * XfdashboardSelectionTarget:
+ *
+ * @XFDASHBOARD_SELECTION_TARGET_NONE: (used internally)
+ * @XFDASHBOARD_SELECTION_TARGET_LEFT: Move to next selectable actor at left side.
+ * @XFDASHBOARD_SELECTION_TARGET_RIGHT: Move to next selectable actor at right side.
+ * @XFDASHBOARD_SELECTION_TARGET_UP: Move to next selectable actor at top side.
+ * @XFDASHBOARD_SELECTION_TARGET_DOWN: Move to next selectable actor at bottom side.
+ * @XFDASHBOARD_SELECTION_TARGET_FIRST: Move to first selectable actor.
+ * @XFDASHBOARD_SELECTION_TARGET_LAST: Move to last selectable actor.
+ * @XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT: Move to next selectable actor at left side page-width.
+ * @XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT: Move to next selectable actor at right side page-width.
+ * @XFDASHBOARD_SELECTION_TARGET_PAGE_UP: Move to next selectable actor at top side page-width.
+ * @XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN: Move to next selectable actor at bottom side page-width.
+ * @XFDASHBOARD_SELECTION_TARGET_NEXT: Move to next selectable actor to current one.
+ *
+ * Determines the movement of selection within an actor which supports selections.
+ */
 typedef enum /*< prefix=XFDASHBOARD_SELECTION_TARGET >*/
 {
 	XFDASHBOARD_SELECTION_TARGET_NONE=0, /* Used internally */
@@ -148,6 +261,22 @@ typedef enum /*< prefix=XFDASHBOARD_SELECTION_TARGET >*/
 } XfdashboardSelectionTarget;
 
 /* Anchor points */
+/**
+ * XfdashboardAnchorPoint:
+ *
+ * @XFDASHBOARD_ANCHOR_POINT_NONE:
+ * @XFDASHBOARD_ANCHOR_POINT_NORTH_WEST: The anchor is at the top-left of the object. 
+ * @XFDASHBOARD_ANCHOR_POINT_NORTH: The anchor is at the top of the object, centered horizontally. 
+ * @XFDASHBOARD_ANCHOR_POINT_NORTH_EAST: The anchor is at the top-right of the object. 
+ * @XFDASHBOARD_ANCHOR_POINT_EAST: The anchor is on the right of the object, centered vertically. 
+ * @XFDASHBOARD_ANCHOR_POINT_SOUTH_EAST:  The anchor is at the bottom-right of the object. 
+ * @XFDASHBOARD_ANCHOR_POINT_SOUTH: The anchor is at the bottom of the object, centered horizontally. 
+ * @XFDASHBOARD_ANCHOR_POINT_SOUTH_WEST:  The anchor is at the bottom-left of the object. 
+ * @XFDASHBOARD_ANCHOR_POINT_WEST: The anchor is on the left of the object, centered vertically. 
+ * @XFDASHBOARD_ANCHOR_POINT_CENTER: The anchor is in the center of the object. 
+ * 
+ * Specifys the position of an object relative to a particular anchor point.
+ */
 typedef enum /*< prefix=XFDASHBOARD_ANCHOR_POINT >*/
 {
 	XFDASHBOARD_ANCHOR_POINT_NONE=0,
