@@ -364,9 +364,9 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewProperties[PROP_VIEW_FIT_MODE]=
-		g_param_spec_enum("fit-mode",
-							_("Fit mode"),
-							_("Defines if view should be fit into viewpad and its orientation"),
+		g_param_spec_enum("view-fit-mode",
+							_("View fit mode"),
+							_("Defines if view should be fit into viewpad and in which directions it should fit into it"),
 							XFDASHBOARD_TYPE_VIEW_FIT_MODE,
 							XFDASHBOARD_VIEW_FIT_MODE_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
