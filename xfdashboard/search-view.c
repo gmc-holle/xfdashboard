@@ -1736,7 +1736,7 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_VERTICAL);
 	clutter_actor_set_layout_manager(CLUTTER_ACTOR(self), layout);
 
-	xfdashboard_view_set_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_FIT_MODE_HORIZONTAL);
+	xfdashboard_view_set_view_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_VIEW_FIT_MODE_HORIZONTAL);
 
 	/* Create instance of each registered view type and add it to this actor
 	 * and connect signals

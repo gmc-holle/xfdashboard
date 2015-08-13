@@ -56,7 +56,7 @@ struct _XfdashboardViewPrivate
 	gchar					*viewIcon;
 	ClutterContent			*viewIconImage;
 
-	XfdashboardFitMode		fitMode;
+	XfdashboardViewFitMode		fitMode;
 
 	gboolean				isEnabled;
 
@@ -73,7 +73,7 @@ enum
 	PROP_VIEW_NAME,
 	PROP_VIEW_ICON,
 
-	PROP_FIT_MODE,
+	PROP_VIEW_FIT_MODE,
 
 	PROP_ENABLED,
 
@@ -271,8 +271,8 @@ static void _xfdashboard_view_set_property(GObject *inObject,
 			xfdashboard_view_set_icon(self, g_value_get_string(inValue));
 			break;
 
-		case PROP_FIT_MODE:
-			xfdashboard_view_set_fit_mode(self, (XfdashboardFitMode)g_value_get_enum(inValue));
+		case PROP_VIEW_FIT_MODE:
+			xfdashboard_view_set_view_fit_mode(self, (XfdashboardViewFitMode)g_value_get_enum(inValue));
 			break;
 
 		case PROP_ENABLED:
@@ -306,7 +306,7 @@ static void _xfdashboard_view_get_property(GObject *inObject,
 			g_value_set_string(outValue, self->priv->viewIcon);
 			break;
 
-		case PROP_FIT_MODE:
+		case PROP_VIEW_FIT_MODE:
 			g_value_set_enum(outValue, self->priv->fitMode);
 			break;
 
@@ -363,12 +363,12 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
-	XfdashboardViewProperties[PROP_FIT_MODE]=
+	XfdashboardViewProperties[PROP_VIEW_FIT_MODE]=
 		g_param_spec_enum("fit-mode",
 							_("Fit mode"),
 							_("Defines if view should be fit into viewpad and its orientation"),
-							XFDASHBOARD_TYPE_FIT_MODE,
-							XFDASHBOARD_FIT_MODE_NONE,
+							XFDASHBOARD_TYPE_VIEW_FIT_MODE,
+							XFDASHBOARD_VIEW_FIT_MODE_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewProperties[PROP_ENABLED]=
@@ -562,7 +562,7 @@ static void xfdashboard_view_init(XfdashboardView *self)
 	priv->viewName=NULL;
 	priv->viewIcon=NULL;
 	priv->viewIconImage=NULL;
-	priv->fitMode=XFDASHBOARD_FIT_MODE_NONE;
+	priv->fitMode=XFDASHBOARD_VIEW_FIT_MODE_NONE;
 	priv->isEnabled=TRUE;
 
 	/* Set up actor */
@@ -664,14 +664,14 @@ void xfdashboard_view_set_icon(XfdashboardView *self, const gchar *inIcon)
 }
 
 /* Get/set fit mode of view */
-XfdashboardFitMode xfdashboard_view_get_fit_mode(XfdashboardView *self)
+XfdashboardViewFitMode xfdashboard_view_get_view_fit_mode(XfdashboardView *self)
 {
-  g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), XFDASHBOARD_FIT_MODE_NONE);
+  g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), XFDASHBOARD_VIEW_FIT_MODE_NONE);
 
   return(self->priv->fitMode);
 }
 
-void xfdashboard_view_set_fit_mode(XfdashboardView *self, XfdashboardFitMode inFitMode)
+void xfdashboard_view_set_view_fit_mode(XfdashboardView *self, XfdashboardViewFitMode inFitMode)
 {
 	XfdashboardViewPrivate	*priv;
 	XfdashboardViewClass	*klass;
@@ -688,10 +688,10 @@ void xfdashboard_view_set_fit_mode(XfdashboardView *self, XfdashboardFitMode inF
 		priv->fitMode=inFitMode;
 
 		/* Call virtual function for setting fit mode */
-		if(klass->set_fit_mode) klass->set_fit_mode(self, inFitMode);
+		if(klass->set_view_fit_mode) klass->set_view_fit_mode(self, inFitMode);
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_FIT_MODE]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_VIEW_FIT_MODE]);
 	}
 }
 

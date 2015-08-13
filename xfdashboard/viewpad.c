@@ -869,8 +869,8 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self,
 	{
 		hScrollbarVisible=TRUE;
 	}
-	if(xfdashboard_view_get_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_FIT_MODE_HORIZONTAL ||
-		xfdashboard_view_get_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_FIT_MODE_BOTH)
+	if(xfdashboard_view_get_view_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_VIEW_FIT_MODE_HORIZONTAL ||
+		xfdashboard_view_get_view_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_VIEW_FIT_MODE_BOTH)
 	{
 		hScrollbarVisible=FALSE;
 	}
@@ -882,8 +882,8 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self,
 	{
 		vScrollbarVisible=TRUE;
 	}
-	if(xfdashboard_view_get_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_FIT_MODE_VERTICAL ||
-		xfdashboard_view_get_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_FIT_MODE_BOTH)
+	if(xfdashboard_view_get_view_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_VIEW_FIT_MODE_VERTICAL ||
+		xfdashboard_view_get_view_fit_mode(XFDASHBOARD_VIEW(priv->activeView))==XFDASHBOARD_VIEW_FIT_MODE_BOTH)
 	{
 		vScrollbarVisible=FALSE;
 	}
@@ -928,19 +928,19 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self,
 			clutter_actor_get_clip(CLUTTER_ACTOR(priv->activeView), &x, &y, NULL, NULL);
 		}
 
-		switch(xfdashboard_view_get_fit_mode(XFDASHBOARD_VIEW(priv->activeView)))
+		switch(xfdashboard_view_get_view_fit_mode(XFDASHBOARD_VIEW(priv->activeView)))
 		{
-			case XFDASHBOARD_FIT_MODE_BOTH:
+			case XFDASHBOARD_VIEW_FIT_MODE_BOTH:
 				w=viewWidth;
 				h=viewHeight;
 				break;
 
-			case XFDASHBOARD_FIT_MODE_HORIZONTAL:
+			case XFDASHBOARD_VIEW_FIT_MODE_HORIZONTAL:
 				w=viewWidth;
 				clutter_actor_get_preferred_height(CLUTTER_ACTOR(priv->activeView), w, NULL, &h);
 				break;
 
-			case XFDASHBOARD_FIT_MODE_VERTICAL:
+			case XFDASHBOARD_VIEW_FIT_MODE_VERTICAL:
 				h=viewHeight;
 				clutter_actor_get_preferred_width(CLUTTER_ACTOR(priv->activeView), h, NULL, &w);
 				break;
