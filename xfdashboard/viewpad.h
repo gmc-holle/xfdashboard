@@ -88,11 +88,11 @@ void xfdashboard_viewpad_set_active_view(XfdashboardViewpad *self, XfdashboardVi
 gboolean xfdashboard_viewpad_get_horizontal_scrollbar_visible(XfdashboardViewpad *self);
 gboolean xfdashboard_viewpad_get_vertical_scrollbar_visible(XfdashboardViewpad *self);
 
-XfdashboardPolicy xfdashboard_viewpad_get_horizontal_scrollbar_policy(XfdashboardViewpad *self);
-void xfdashboard_viewpad_set_horizontal_scrollbar_policy(XfdashboardViewpad *self, XfdashboardPolicy inPolicy);
+XfdashboardVisibilityPolicy xfdashboard_viewpad_get_horizontal_scrollbar_policy(XfdashboardViewpad *self);
+void xfdashboard_viewpad_set_horizontal_scrollbar_policy(XfdashboardViewpad *self, XfdashboardVisibilityPolicy inPolicy);
 
-XfdashboardPolicy xfdashboard_viewpad_get_vertical_scrollbar_policy(XfdashboardViewpad *self);
-void xfdashboard_viewpad_set_vertical_scrollbar_policy(XfdashboardViewpad *self, XfdashboardPolicy inPolicy);
+XfdashboardVisibilityPolicy xfdashboard_viewpad_get_vertical_scrollbar_policy(XfdashboardViewpad *self);
+void xfdashboard_viewpad_set_vertical_scrollbar_policy(XfdashboardViewpad *self, XfdashboardVisibilityPolicy inPolicy);
 
 G_END_DECLS
 

@@ -51,19 +51,19 @@ typedef enum /*< prefix=XFDASHBOARD_VIEW_MODE >*/
 } XfdashboardViewMode;
 
 /**
- * XfdashboardPolicy:
- * @XFDASHBOARD_POLICY_NEVER: The actor is always visible.
- * @XFDASHBOARD_POLICY_AUTOMATIC: The actor will appear and disappear as necessary. For example, when a view does not fit into viewpad the scrollbar will be visible.
- * @XFDASHBOARD_POLICY_ALWAYS: The actor will never appear.
+ * XfdashboardVisibilityPolicy:
+ * @XFDASHBOARD_VISIBILITY_POLICY_NEVER: The actor is always visible.
+ * @XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC: The actor will appear and disappear as necessary. For example, when a view does not fit into viewpad the scrollbar will be visible.
+ * @XFDASHBOARD_VISIBILITY_POLICY_ALWAYS: The actor will never appear.
  *
  * Determines when an actor will be visible, e.g. scrollbars in views.
  */
-typedef enum /*< prefix=XFDASHBOARD_POLICY >*/
+typedef enum /*< prefix=XFDASHBOARD_VISIBILITY_POLICY >*/
 {
-	XFDASHBOARD_POLICY_NEVER=0,
-	XFDASHBOARD_POLICY_AUTOMATIC,
-	XFDASHBOARD_POLICY_ALWAYS
-} XfdashboardPolicy;
+	XFDASHBOARD_VISIBILITY_POLICY_NEVER=0,
+	XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC,
+	XFDASHBOARD_VISIBILITY_POLICY_ALWAYS
+} XfdashboardVisibilityPolicy;
 
 /**
  * XfdashboardOrientation:

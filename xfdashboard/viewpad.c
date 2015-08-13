@@ -55,9 +55,9 @@ struct _XfdashboardViewpadPrivate
 	/* Properties related */
 	gfloat					spacing;
 	XfdashboardView			*activeView;
-	XfdashboardPolicy		hScrollbarPolicy;
+	XfdashboardVisibilityPolicy		hScrollbarPolicy;
 	gboolean				hScrollbarVisible;
-	XfdashboardPolicy		vScrollbarPolicy;
+	XfdashboardVisibilityPolicy		vScrollbarPolicy;
 	gboolean				vScrollbarVisible;
 
 	/* Instance related */
@@ -212,8 +212,8 @@ static void _xfdashboard_viewpad_update_scrollbars(XfdashboardViewpad *self)
 	 * if scroll bars needed to shown (or hidden what is unlikely)
 	 */
 	if(CLUTTER_ACTOR_IS_VISIBLE(self) &&
-		(priv->hScrollbarPolicy==XFDASHBOARD_POLICY_AUTOMATIC ||
-			priv->vScrollbarPolicy==XFDASHBOARD_POLICY_AUTOMATIC))
+		(priv->hScrollbarPolicy==XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC ||
+			priv->vScrollbarPolicy==XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC))
 	{
 		ClutterActorBox			box;
 
@@ -863,8 +863,8 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self,
 
 	/* Determine visibility of scroll bars */
 	hScrollbarVisible=FALSE;
-	if(priv->hScrollbarPolicy==XFDASHBOARD_POLICY_ALWAYS ||
-		(priv->hScrollbarPolicy==XFDASHBOARD_POLICY_AUTOMATIC &&
+	if(priv->hScrollbarPolicy==XFDASHBOARD_VISIBILITY_POLICY_ALWAYS ||
+		(priv->hScrollbarPolicy==XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC &&
 			xfdashboard_scrollbar_get_range(XFDASHBOARD_SCROLLBAR(priv->hScrollbar))>viewWidth))
 	{
 		hScrollbarVisible=TRUE;
@@ -876,8 +876,8 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self,
 	}
 
 	vScrollbarVisible=FALSE;
-	if(priv->vScrollbarPolicy==XFDASHBOARD_POLICY_ALWAYS ||
-		(priv->vScrollbarPolicy==XFDASHBOARD_POLICY_AUTOMATIC &&
+	if(priv->vScrollbarPolicy==XFDASHBOARD_VISIBILITY_POLICY_ALWAYS ||
+		(priv->vScrollbarPolicy==XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC &&
 			xfdashboard_scrollbar_get_range(XFDASHBOARD_SCROLLBAR(priv->vScrollbar))>viewHeight))
 	{
 		vScrollbarVisible=TRUE;
@@ -1087,11 +1087,11 @@ static void _xfdashboard_viewpad_set_property(GObject *inObject,
 			break;
 
 		case PROP_HSCROLLBAR_POLICY:
-			xfdashboard_viewpad_set_horizontal_scrollbar_policy(self, (XfdashboardPolicy)g_value_get_enum(inValue));
+			xfdashboard_viewpad_set_horizontal_scrollbar_policy(self, (XfdashboardVisibilityPolicy)g_value_get_enum(inValue));
 			break;
 
 		case PROP_VSCROLLBAR_POLICY:
-			xfdashboard_viewpad_set_vertical_scrollbar_policy(self, (XfdashboardPolicy)g_value_get_enum(inValue));
+			xfdashboard_viewpad_set_vertical_scrollbar_policy(self, (XfdashboardVisibilityPolicy)g_value_get_enum(inValue));
 			break;
 
 		default:
@@ -1189,8 +1189,8 @@ static void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 		g_param_spec_enum("horizontal-scrollbar-policy",
 							_("Horizontal scrollbar policy"),
 							_("The policy for horizontal scrollbar controlling when it is displayed"),
-							XFDASHBOARD_TYPE_POLICY,
-							XFDASHBOARD_POLICY_AUTOMATIC,
+							XFDASHBOARD_TYPE_VISIBILITY_POLICY,
+							XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewpadProperties[PROP_VSCROLLBAR_VISIBLE]=
@@ -1204,8 +1204,8 @@ static void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 		g_param_spec_enum("vertical-scrollbar-policy",
 							_("Vertical scrollbar policy"),
 							_("The policy for vertical scrollbar controlling when it is displayed"),
-							XFDASHBOARD_TYPE_POLICY,
-							XFDASHBOARD_POLICY_AUTOMATIC,
+							XFDASHBOARD_TYPE_VISIBILITY_POLICY,
+							XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardViewpadProperties);
@@ -1304,9 +1304,9 @@ static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	priv->activeView=NULL;
 	priv->spacing=0.0f;
 	priv->hScrollbarVisible=FALSE;
-	priv->hScrollbarPolicy=XFDASHBOARD_POLICY_AUTOMATIC;
+	priv->hScrollbarPolicy=XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC;
 	priv->vScrollbarVisible=FALSE;
-	priv->vScrollbarPolicy=XFDASHBOARD_POLICY_AUTOMATIC;
+	priv->vScrollbarPolicy=XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC;
 	priv->scrollbarUpdateID=0;
 	priv->doRegisterFocusableViews=FALSE;
 
@@ -1521,14 +1521,14 @@ gboolean xfdashboard_viewpad_get_vertical_scrollbar_visible(XfdashboardViewpad *
 }
 
 /* Get/set scroll bar policy */
-XfdashboardPolicy xfdashboard_viewpad_get_horizontal_scrollbar_policy(XfdashboardViewpad *self)
+XfdashboardVisibilityPolicy xfdashboard_viewpad_get_horizontal_scrollbar_policy(XfdashboardViewpad *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), XFDASHBOARD_POLICY_AUTOMATIC);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC);
 
 	return(self->priv->hScrollbarPolicy);
 }
 
-void xfdashboard_viewpad_set_horizontal_scrollbar_policy(XfdashboardViewpad *self, XfdashboardPolicy inPolicy)
+void xfdashboard_viewpad_set_horizontal_scrollbar_policy(XfdashboardViewpad *self, XfdashboardVisibilityPolicy inPolicy)
 {
 	XfdashboardViewpadPrivate	*priv;
 
@@ -1547,14 +1547,14 @@ void xfdashboard_viewpad_set_horizontal_scrollbar_policy(XfdashboardViewpad *sel
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_HSCROLLBAR_POLICY]);
 }
 
-XfdashboardPolicy xfdashboard_viewpad_get_vertical_scrollbar_policy(XfdashboardViewpad *self)
+XfdashboardVisibilityPolicy xfdashboard_viewpad_get_vertical_scrollbar_policy(XfdashboardViewpad *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), XFDASHBOARD_POLICY_AUTOMATIC);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC);
 
 	return(self->priv->vScrollbarPolicy);
 }
 
-void xfdashboard_viewpad_set_vertical_scrollbar_policy(XfdashboardViewpad *self, XfdashboardPolicy inPolicy)
+void xfdashboard_viewpad_set_vertical_scrollbar_policy(XfdashboardViewpad *self, XfdashboardVisibilityPolicy inPolicy)
 {
 	XfdashboardViewpadPrivate	*priv;
 
