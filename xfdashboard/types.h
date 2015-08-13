@@ -83,25 +83,6 @@ typedef enum /*< prefix=XFDASHBOARD_ORIENTATION >*/
 } XfdashboardOrientation;
 
 /**
- * XfdashboardBackgroundType:
- * 
- * @XFDASHBOARD_BACKGROUND_TYPE_NONE: The actor will be displayed unmodified.
- * @XFDASHBOARD_BACKGROUND_TYPE_FILL: The actor background will be filled with a color.
- * @XFDASHBOARD_BACKGROUND_TYPE_OUTLINE: The actor will get an outline.
- * @XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS: The edges of actor will be rounded.
- *
- * Determines how the background of an actor will be displayed and if it get an styled outline.
- */
-typedef enum /*< flags,prefix=XFDASHBOARD_BACKGROUND_TYPE >*/
-{
-	XFDASHBOARD_BACKGROUND_TYPE_NONE=0,
-
-	XFDASHBOARD_BACKGROUND_TYPE_FILL=1 << 1,
-	XFDASHBOARD_BACKGROUND_TYPE_OUTLINE=1 << 2,
-	XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS=1 << 3,
-} XfdashboardBackgroundType;
-
-/**
  * XfdashboardCorners:
  * 
  * @XFDASHBOARD_CORNERS_NONE: No corner is affected.

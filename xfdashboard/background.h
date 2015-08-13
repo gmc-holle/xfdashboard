@@ -32,6 +32,28 @@
 
 G_BEGIN_DECLS
 
+/* Public definitions */
+/**
+ * XfdashboardBackgroundType:
+ * 
+ * @XFDASHBOARD_BACKGROUND_TYPE_NONE: The actor will be displayed unmodified.
+ * @XFDASHBOARD_BACKGROUND_TYPE_FILL: The actor background will be filled with a color.
+ * @XFDASHBOARD_BACKGROUND_TYPE_OUTLINE: The actor will get an outline.
+ * @XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS: The edges of actor will be rounded.
+ *
+ * Determines how the background of an actor will be displayed and if it get an styled outline.
+ */
+typedef enum /*< flags,prefix=XFDASHBOARD_BACKGROUND_TYPE >*/
+{
+	XFDASHBOARD_BACKGROUND_TYPE_NONE=0,
+
+	XFDASHBOARD_BACKGROUND_TYPE_FILL=1 << 1,
+	XFDASHBOARD_BACKGROUND_TYPE_OUTLINE=1 << 2,
+	XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS=1 << 3,
+} XfdashboardBackgroundType;
+
+
+/* Object declaration */
 #define XFDASHBOARD_TYPE_BACKGROUND					(xfdashboard_background_get_type())
 #define XFDASHBOARD_BACKGROUND(obj)					(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_BACKGROUND, XfdashboardBackground))
 #define XFDASHBOARD_IS_BACKGROUND(obj)				(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_BACKGROUND))
