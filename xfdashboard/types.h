@@ -191,24 +191,6 @@ typedef enum /*< flags,prefix=XFDASHBOARD_BORDERS >*/
 } XfdashboardBorders;
 
 /**
- * XfdashboardFitMode:
- *
- * @XFDASHBOARD_FIT_MODE_NONE: Do not try to fit view into viewpad.
- * @XFDASHBOARD_FIT_MODE_HORIZONTAL: Try to fit view into viewpad horizontally.
- * @XFDASHBOARD_FIT_MODE_VERTICAL: Try to fit view into viewpad vertically.
- * @XFDASHBOARD_FIT_MODE_BOTH: Try to fit view into viewpad horizontally and vertically.
- *
- * Determines how a view should fit into a viewpad.
- */
-typedef enum /*< prefix=XFDASHBOARD_FIT_MODE >*/
-{
-	XFDASHBOARD_FIT_MODE_NONE=0,
-	XFDASHBOARD_FIT_MODE_HORIZONTAL,
-	XFDASHBOARD_FIT_MODE_VERTICAL,
-	XFDASHBOARD_FIT_MODE_BOTH
-} XfdashboardFitMode;
-
-/**
  * XfdashboardStageBackgroundImageType:
  *
  * @XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE: Do not show anything at background of stage actor.

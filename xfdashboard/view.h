@@ -32,6 +32,27 @@
 
 G_BEGIN_DECLS
 
+/* Public definitions */
+/**
+ * XfdashboardFitMode:
+ *
+ * @XFDASHBOARD_FIT_MODE_NONE: Do not try to fit view into viewpad.
+ * @XFDASHBOARD_FIT_MODE_HORIZONTAL: Try to fit view into viewpad horizontally.
+ * @XFDASHBOARD_FIT_MODE_VERTICAL: Try to fit view into viewpad vertically.
+ * @XFDASHBOARD_FIT_MODE_BOTH: Try to fit view into viewpad horizontally and vertically.
+ *
+ * Determines how a view should fit into a viewpad.
+ */
+typedef enum /*< prefix=XFDASHBOARD_FIT_MODE >*/
+{
+	XFDASHBOARD_FIT_MODE_NONE=0,
+	XFDASHBOARD_FIT_MODE_HORIZONTAL,
+	XFDASHBOARD_FIT_MODE_VERTICAL,
+	XFDASHBOARD_FIT_MODE_BOTH
+} XfdashboardFitMode;
+
+
+/* Object declaration */
 #define XFDASHBOARD_TYPE_VIEW				(xfdashboard_view_get_type())
 #define XFDASHBOARD_VIEW(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_VIEW, XfdashboardView))
 #define XFDASHBOARD_IS_VIEW(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_VIEW))
