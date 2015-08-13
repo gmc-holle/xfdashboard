@@ -35,7 +35,6 @@ G_BEGIN_DECLS
 /* Public definitions */
 /**
  * XfdashboardBackgroundType:
- * 
  * @XFDASHBOARD_BACKGROUND_TYPE_NONE: The actor will be displayed unmodified.
  * @XFDASHBOARD_BACKGROUND_TYPE_FILL: The actor background will be filled with a color.
  * @XFDASHBOARD_BACKGROUND_TYPE_OUTLINE: The actor will get an outline.

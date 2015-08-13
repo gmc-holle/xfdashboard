@@ -35,7 +35,6 @@ G_BEGIN_DECLS
 /* Public definitions */
 /**
  * XfdashboardViewFitMode:
- *
  * @XFDASHBOARD_VIEW_FIT_MODE_NONE: Do not try to fit view into viewpad.
  * @XFDASHBOARD_VIEW_FIT_MODE_HORIZONTAL: Try to fit view into viewpad horizontally.
  * @XFDASHBOARD_VIEW_FIT_MODE_VERTICAL: Try to fit view into viewpad vertically.

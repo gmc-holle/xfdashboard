@@ -84,7 +84,6 @@ typedef enum /*< prefix=XFDASHBOARD_ORIENTATION >*/
 
 /**
  * XfdashboardCorners:
- * 
  * @XFDASHBOARD_CORNERS_NONE: No corner is affected.
  * @XFDASHBOARD_CORNERS_TOP_LEFT: Affects top-left corner of actor.
  * @XFDASHBOARD_CORNERS_TOP_RIGHT: Affects top-right corner of actor.
@@ -117,7 +116,6 @@ typedef enum /*< flags,prefix=XFDASHBOARD_CORNERS >*/
 
 /**
  * XfdashboardBorders:
- *
  * @XFDASHBOARD_BORDERS_NONE: No side is affected.
  * @XFDASHBOARD_BORDERS_LEFT: Affects left side of actor.
  * @XFDASHBOARD_BORDERS_TOP: Affects top side of actor.
@@ -141,7 +139,6 @@ typedef enum /*< flags,prefix=XFDASHBOARD_BORDERS >*/
 
 /**
  * XfdashboardStageBackgroundImageType:
- *
  * @XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE: Do not show anything at background of stage actor.
  * @XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_DESKTOP: Show current desktop image at background of stage actor.
  *
@@ -155,7 +152,6 @@ typedef enum /*< prefix=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE >*/
 
 /**
  * XfdashboardSelectionTarget:
- *
  * @XFDASHBOARD_SELECTION_TARGET_NONE: (used internally)
  * @XFDASHBOARD_SELECTION_TARGET_LEFT: Move to next selectable actor at left side.
  * @XFDASHBOARD_SELECTION_TARGET_RIGHT: Move to next selectable actor at right side.
@@ -194,8 +190,7 @@ typedef enum /*< prefix=XFDASHBOARD_SELECTION_TARGET >*/
 /* Anchor points */
 /**
  * XfdashboardAnchorPoint:
- *
- * @XFDASHBOARD_ANCHOR_POINT_NONE:
+ * @XFDASHBOARD_ANCHOR_POINT_NONE: Use default anchor of actor, usually top-left.
  * @XFDASHBOARD_ANCHOR_POINT_NORTH_WEST: The anchor is at the top-left of the object. 
  * @XFDASHBOARD_ANCHOR_POINT_NORTH: The anchor is at the top of the object, centered horizontally. 
  * @XFDASHBOARD_ANCHOR_POINT_NORTH_EAST: The anchor is at the top-right of the object. 
