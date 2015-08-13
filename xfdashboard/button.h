@@ -41,7 +41,7 @@ G_BEGIN_DECLS
  *
  * Determines the style of an actor, e.g. text labels and icons at buttons.
  */
-typedef enum /*< prefix=XFDASHBOARD_STYLE >*/
+typedef enum /*< prefix=XFDASHBOARD_BUTTON_STYLE >*/
 {
 	XFDASHBOARD_BUTTON_STYLE_TEXT=0,
 	XFDASHBOARD_BUTTON_STYLE_ICON,
