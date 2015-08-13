@@ -32,6 +32,24 @@
 
 G_BEGIN_DECLS
 
+/* Public definitions */
+/**
+ * XfdashboardButtonStyle:
+ * @XFDASHBOARD_BUTTON_STYLE_TEXT: The actor will show only text labels.
+ * @XFDASHBOARD_BUTTON_STYLE_ICON: The actor will show only icons.
+ * @XFDASHBOARD_BUTTON_STYLE_BOTH: The actor will show both, text labels and icons.
+ *
+ * Determines the style of an actor, e.g. text labels and icons at buttons.
+ */
+typedef enum /*< prefix=XFDASHBOARD_STYLE >*/
+{
+	XFDASHBOARD_BUTTON_STYLE_TEXT=0,
+	XFDASHBOARD_BUTTON_STYLE_ICON,
+	XFDASHBOARD_BUTTON_STYLE_BOTH
+} XfdashboardButtonStyle;
+
+
+/* Object declaration */
 #define XFDASHBOARD_TYPE_BUTTON					(xfdashboard_button_get_type())
 #define XFDASHBOARD_BUTTON(obj)					(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_BUTTON, XfdashboardButton))
 #define XFDASHBOARD_IS_BUTTON(obj)				(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_BUTTON))
@@ -78,8 +96,8 @@ void xfdashboard_button_set_padding(XfdashboardButton *self, const gfloat inPadd
 gfloat xfdashboard_button_get_spacing(XfdashboardButton *self);
 void xfdashboard_button_set_spacing(XfdashboardButton *self, const gfloat inSpacing);
 
-XfdashboardStyle xfdashboard_button_get_style(XfdashboardButton *self);
-void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardStyle inStyle);
+XfdashboardButtonStyle xfdashboard_button_get_style(XfdashboardButton *self);
+void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardButtonStyle inStyle);
 
 /* Icon functions */
 const gchar* xfdashboard_button_get_icon(XfdashboardButton *self);

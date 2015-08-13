@@ -50,7 +50,7 @@ struct _XfdashboardButtonPrivate
 	/* Properties related */
 	gfloat					padding;
 	gfloat					spacing;
-	XfdashboardStyle		style;
+	XfdashboardButtonStyle	style;
 
 	gchar					*iconName;
 	ClutterImage			*iconImage;
@@ -679,15 +679,15 @@ static void _xfdashboard_button_show_all(ClutterActor *self)
 {
 	XfdashboardButtonPrivate	*priv=XFDASHBOARD_BUTTON(self)->priv;
 
-	if(priv->style==XFDASHBOARD_STYLE_ICON ||
-		priv->style==XFDASHBOARD_STYLE_BOTH)
+	if(priv->style==XFDASHBOARD_BUTTON_STYLE_ICON ||
+		priv->style==XFDASHBOARD_BUTTON_STYLE_BOTH)
 	{
 		clutter_actor_show(CLUTTER_ACTOR(priv->actorIcon));
 	}
 		else clutter_actor_hide(CLUTTER_ACTOR(priv->actorIcon));
 
-	if(priv->style==XFDASHBOARD_STYLE_TEXT ||
-		priv->style==XFDASHBOARD_STYLE_BOTH)
+	if(priv->style==XFDASHBOARD_BUTTON_STYLE_TEXT ||
+		priv->style==XFDASHBOARD_BUTTON_STYLE_BOTH)
 	{
 		clutter_actor_show(CLUTTER_ACTOR(priv->actorLabel));
 	}
@@ -1290,8 +1290,8 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 		g_param_spec_enum("button-style",
 							_("Button style"),
 							_("Style of button showing text and/or icon"),
-							XFDASHBOARD_TYPE_STYLE,
-							XFDASHBOARD_STYLE_TEXT,
+							XFDASHBOARD_TYPE_BUTTON_STYLE,
+							XFDASHBOARD_BUTTON_STYLE_TEXT,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardButtonProperties[PROP_ICON_NAME]=
@@ -1459,7 +1459,7 @@ ClutterActor* xfdashboard_button_new(void)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
 						"text", N_(""),
-						"button-style", XFDASHBOARD_STYLE_TEXT,
+						"button-style", XFDASHBOARD_BUTTON_STYLE_TEXT,
 						NULL));
 }
 
@@ -1467,7 +1467,7 @@ ClutterActor* xfdashboard_button_new_with_text(const gchar *inText)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
 						"text", inText,
-						"button-style", XFDASHBOARD_STYLE_TEXT,
+						"button-style", XFDASHBOARD_BUTTON_STYLE_TEXT,
 						NULL));
 }
 
@@ -1475,7 +1475,7 @@ ClutterActor* xfdashboard_button_new_with_icon(const gchar *inIconName)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
 						"icon-name", inIconName,
-						"button-style", XFDASHBOARD_STYLE_ICON,
+						"button-style", XFDASHBOARD_BUTTON_STYLE_ICON,
 						NULL));
 }
 
@@ -1484,7 +1484,7 @@ ClutterActor* xfdashboard_button_new_full(const gchar *inIconName, const gchar *
 	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
 						"text", inText,
 						"icon-name", inIconName,
-						"button-style", XFDASHBOARD_STYLE_BOTH,
+						"button-style", XFDASHBOARD_BUTTON_STYLE_BOTH,
 						NULL));
 }
 
@@ -1550,14 +1550,14 @@ void xfdashboard_button_set_spacing(XfdashboardButton *self, const gfloat inSpac
 }
 
 /* Get/set style of button */
-XfdashboardStyle xfdashboard_button_get_style(XfdashboardButton *self)
+XfdashboardButtonStyle xfdashboard_button_get_style(XfdashboardButton *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), XFDASHBOARD_STYLE_TEXT);
+	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), XFDASHBOARD_BUTTON_STYLE_TEXT);
 
 	return(self->priv->style);
 }
 
-void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardStyle inStyle)
+void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardButtonStyle inStyle)
 {
 	XfdashboardButtonPrivate	*priv;
 
@@ -1572,15 +1572,15 @@ void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardStyl
 		priv->style=inStyle;
 
 		/* Show actors depending on style */
-		if(priv->style==XFDASHBOARD_STYLE_TEXT ||
-			priv->style==XFDASHBOARD_STYLE_BOTH)
+		if(priv->style==XFDASHBOARD_BUTTON_STYLE_TEXT ||
+			priv->style==XFDASHBOARD_BUTTON_STYLE_BOTH)
 		{
 			clutter_actor_show(CLUTTER_ACTOR(priv->actorLabel));
 		}
 			else clutter_actor_hide(CLUTTER_ACTOR(priv->actorLabel));
 
-		if(priv->style==XFDASHBOARD_STYLE_ICON ||
-			priv->style==XFDASHBOARD_STYLE_BOTH)
+		if(priv->style==XFDASHBOARD_BUTTON_STYLE_ICON ||
+			priv->style==XFDASHBOARD_BUTTON_STYLE_BOTH)
 		{
 			clutter_actor_show(CLUTTER_ACTOR(priv->actorIcon));
 		}

@@ -290,7 +290,7 @@ static void _xfdashboard_quicklaunch_on_favourite_drag_begin(ClutterDragAction *
 	clutter_actor_set_position(dragHandle, inStageX, inStageY);
 	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(dragHandle), priv->normalIconSize);
 	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(dragHandle), FALSE);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(dragHandle), XFDASHBOARD_STYLE_ICON);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(dragHandle), XFDASHBOARD_BUTTON_STYLE_ICON);
 	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
 
 	clutter_drag_action_set_drag_handle(inAction, dragHandle);
@@ -391,7 +391,7 @@ static gboolean _xfdashboard_quicklaunch_on_drop_begin(XfdashboardQuicklaunch *s
 		priv->dragPreviewIcon=xfdashboard_application_button_new_from_app_info(appInfo);
 		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->dragPreviewIcon), priv->normalIconSize);
 		xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->dragPreviewIcon), FALSE);
-		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->dragPreviewIcon), XFDASHBOARD_STYLE_ICON);
+		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->dragPreviewIcon), XFDASHBOARD_BUTTON_STYLE_ICON);
 		if(priv->dragMode==DRAG_MODE_CREATE) clutter_actor_hide(priv->dragPreviewIcon);
 		clutter_actor_add_child(CLUTTER_ACTOR(self), priv->dragPreviewIcon);
 
@@ -901,7 +901,7 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 		actor=xfdashboard_application_button_new_from_app_info(appInfo);
 		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), priv->normalIconSize);
 		xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
-		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_STYLE_ICON);
+		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_BUTTON_STYLE_ICON);
 		clutter_actor_show(actor);
 		clutter_actor_add_child(CLUTTER_ACTOR(self), actor);
 		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_clicked), self);

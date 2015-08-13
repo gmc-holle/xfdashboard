@@ -66,21 +66,6 @@ typedef enum /*< prefix=XFDASHBOARD_POLICY >*/
 } XfdashboardPolicy;
 
 /**
- * XfdashboardStyle:
- * @XFDASHBOARD_STYLE_TEXT: The actor will show only text labels.
- * @XFDASHBOARD_STYLE_ICON: The actor will show only icons.
- * @XFDASHBOARD_STYLE_BOTH: The actor will show both, text labels and icons.
- *
- * Determines the style of an actor, e.g. text labels and icons at buttons.
- */
-typedef enum /*< prefix=XFDASHBOARD_STYLE >*/
-{
-	XFDASHBOARD_STYLE_TEXT=0,
-	XFDASHBOARD_STYLE_ICON,
-	XFDASHBOARD_STYLE_BOTH
-} XfdashboardStyle;
-
-/**
  * XfdashboardOrientation:
  * @XFDASHBOARD_ORIENTATION_LEFT: The actor is justified to left boundary.
  * @XFDASHBOARD_ORIENTATION_RIGHT: The actor is justified to right boundary.

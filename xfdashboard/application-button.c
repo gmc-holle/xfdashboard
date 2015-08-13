@@ -409,7 +409,7 @@ static void xfdashboard_application_button_init(XfdashboardApplicationButton *se
 ClutterActor* xfdashboard_application_button_new(void)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
-							"button-style", XFDASHBOARD_STYLE_BOTH,
+							"button-style", XFDASHBOARD_BUTTON_STYLE_BOTH,
 							"single-line", FALSE,
 							NULL));
 }
@@ -419,7 +419,7 @@ ClutterActor* xfdashboard_application_button_new_from_app_info(GAppInfo *inAppIn
 	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), NULL);
 
 	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
-							"button-style", XFDASHBOARD_STYLE_BOTH,
+							"button-style", XFDASHBOARD_BUTTON_STYLE_BOTH,
 							"single-line", FALSE,
 							"app-info", inAppInfo,
 							NULL));
