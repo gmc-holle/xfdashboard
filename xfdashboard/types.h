@@ -38,23 +38,6 @@
 G_BEGIN_DECLS
 
 /**
- * XfdashboardApplicationErrorCode:
- * @XFDASHBOARD_APPLICATION_ERROR_NONE: Application started successfully without any problems
- * @XFDASHBOARD_APPLICATION_ERROR_FAILED: Application failed to start
- * @XFDASHBOARD_APPLICATION_ERROR_RESTART: Application needs to be restarted to start-up successfully
- * @XFDASHBOARD_APPLICATION_ERROR_QUIT: Application was quitted and shuts down
- *
- * The start-up status codes returned by XfdashboardApplication.
- */
-typedef enum /*< skip,prefix=XFDASHBOARD_APPLICATION_ERROR >*/
-{
-	XFDASHBOARD_APPLICATION_ERROR_NONE=0,
-	XFDASHBOARD_APPLICATION_ERROR_FAILED,
-	XFDASHBOARD_APPLICATION_ERROR_RESTART,
-	XFDASHBOARD_APPLICATION_ERROR_QUIT
-} XfdashboardApplicationErrorCode;
-
-/**
  * XfdashboardViewMode:
  * @XFDASHBOARD_VIEW_MODE_LIST: Show items in view as list
  * @XFDASHBOARD_VIEW_MODE_ICON: Show items in view as icons

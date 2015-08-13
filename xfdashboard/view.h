@@ -107,6 +107,7 @@ struct _XfdashboardViewClass
 								ClutterEvent *inEvent);
 };
 
+
 /* Public API */
 GType xfdashboard_view_get_type(void) G_GNUC_CONST;
 

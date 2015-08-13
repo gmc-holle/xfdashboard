@@ -32,6 +32,26 @@
 
 G_BEGIN_DECLS
 
+/* Public definitions */
+/**
+ * XfdashboardApplicationErrorCode:
+ * @XFDASHBOARD_APPLICATION_ERROR_NONE: Application started successfully without any problems
+ * @XFDASHBOARD_APPLICATION_ERROR_FAILED: Application failed to start
+ * @XFDASHBOARD_APPLICATION_ERROR_RESTART: Application needs to be restarted to start-up successfully
+ * @XFDASHBOARD_APPLICATION_ERROR_QUIT: Application was quitted and shuts down
+ *
+ * The start-up status codes returned by XfdashboardApplication.
+ */
+typedef enum /*< skip,prefix=XFDASHBOARD_APPLICATION_ERROR >*/
+{
+	XFDASHBOARD_APPLICATION_ERROR_NONE=0,
+	XFDASHBOARD_APPLICATION_ERROR_FAILED,
+	XFDASHBOARD_APPLICATION_ERROR_RESTART,
+	XFDASHBOARD_APPLICATION_ERROR_QUIT
+} XfdashboardApplicationErrorCode;
+
+
+/* Object declaration */
 #define XFDASHBOARD_TYPE_APPLICATION				(xfdashboard_application_get_type())
 #define XFDASHBOARD_APPLICATION(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_APPLICATION, XfdashboardApplication))
 #define XFDASHBOARD_IS_APPLICATION(obj)				(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_APPLICATION))
@@ -68,6 +88,7 @@ struct _XfdashboardApplicationClass
 
 	void (*theme_changed)(XfdashboardApplication *self, XfdashboardTheme *inTheme);
 };
+
 
 /* Public API */
 GType xfdashboard_application_get_type(void) G_GNUC_CONST;
