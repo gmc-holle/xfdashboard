@@ -23,6 +23,19 @@
  * 
  */
 
+/**
+ * SECTION:box-layout
+ * @short_description: A layout manager arranging children on a single line
+ * @include: xfdashboard/box-layout.h
+ *
+ * A #ClutterBoxLayout derived layout manager arranging children on a single line
+ * which disregards text direction.
+ *
+ * It behave like #ClutterBoxLayout but it enforces a left-to-right layout of
+ * all children when set to horizontal orientation. This is the difference of
+ * this layout manager to #ClutterBoxLayout.
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -127,6 +140,13 @@ static void xfdashboard_box_layout_init(XfdashboardBoxLayout *self)
 /* IMPLEMENTATION: Public API */
 
 /* Create new instance */
+/**
+ * xfdashboard_box_layout_new:
+ *
+ * Creates a new #XfdashboardBoxLayout layout manager
+ *
+ * Return value: The newly created #XfdashboardBoxLayout
+ */
 ClutterLayoutManager* xfdashboard_box_layout_new(void)
 {
 	return(CLUTTER_LAYOUT_MANAGER(g_object_new(XFDASHBOARD_TYPE_BOX_LAYOUT, NULL)));
