@@ -34,6 +34,7 @@
 #include <gio/gdesktopappinfo.h>
 
 #include "stage.h"
+#include "stage-interface.h"
 #include "window-tracker.h"
 
 /**
@@ -79,11 +80,10 @@ void xfdashboard_notify(ClutterActor *inSender,
 							const gchar *inIconName,
 							const gchar *inFormat, ...)
 {
-	XfdashboardStage				*stage;
-	ClutterStageManager				*stageManager;
-	const GSList					*stages;
-	va_list							args;
-	gchar							*text;
+	XfdashboardStage					*stage;
+	ClutterStageManager					*stageManager;
+	va_list								args;
+	gchar								*text;
 
 	g_return_if_fail(inSender==NULL || CLUTTER_IS_ACTOR(inSender));
 
@@ -100,17 +100,46 @@ void xfdashboard_notify(ClutterActor *inSender,
 	/* No sending actor specified or no stage found so get default stage */
 	if(!stage)
 	{
-		stageManager=clutter_stage_manager_get_default();
-		if(CLUTTER_IS_STAGE_MANAGER(stageManager))
-		{
-			stage=XFDASHBOARD_STAGE(clutter_stage_manager_get_default_stage(stageManager));
-		}
+		const GSList					*stages;
+		const GSList					*iter;
+		XfdashboardStageInterface		*stageInterface;
+		XfdashboardWindowTrackerMonitor	*stageMonitor;
 
-		/* If we did not get default stage use first stage from manager */
-		if(!stage && stageManager)
+		/* Get stage manager to iterate through stages to find the one
+		 * for primary monitor or at least the first stage.
+		 */
+		stageManager=clutter_stage_manager_get_default();
+
+		/* Find stage for primary monitor and if we cannot find it
+		 * use first stage.
+		 */
+		if(stageManager &&
+			CLUTTER_IS_STAGE_MANAGER(stageManager))
 		{
+			/* Get list of all stages */
 			stages=clutter_stage_manager_peek_stages(stageManager);
-			if(stages) stage=XFDASHBOARD_STAGE(stages->data);
+
+			/* Iterate through list of all stage and lookup the one for
+			 * primary monitor.
+			 */
+			for(iter=stages; iter && !stage; iter=iter->next)
+			{
+				stageInterface=XFDASHBOARD_STAGE_INTERFACE(iter->data);
+				if(stageInterface)
+				{
+					stageMonitor=xfdashboard_stage_interface_get_monitor(stageInterface);
+					if(xfdashboard_window_tracker_monitor_is_primary(stageMonitor))
+					{
+						stage=XFDASHBOARD_STAGE(stageInterface);
+					}
+				}
+			}
+
+			/* If we did not get stage for primary monitor use first stage */
+			if(!stage)
+			{
+				stage=XFDASHBOARD_STAGE(stages->data);
+			}
 		}
 
 		/* If we still do not have found a stage to show notification
