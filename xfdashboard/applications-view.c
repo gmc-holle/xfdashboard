@@ -713,7 +713,8 @@ static gboolean _xfdashboard_applications_view_focusable_set_selection(Xfdashboa
 	priv=self->priv;
 
 	/* Check that selection is a child of this actor */
-	if(inSelection && !xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	if(inSelection &&
+		!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
 	{
 		g_warning(_("%s is not a child of %s and cannot be selected"),
 					G_OBJECT_TYPE_NAME(inSelection),
@@ -1025,7 +1026,7 @@ static ClutterActor* _xfdashboard_applications_view_focusable_find_selection(Xfd
 	}
 
 	/* Check that selection is a child of this actor otherwise return NULL */
-	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	if(!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
 	{
 		ClutterActor						*parent;
 
@@ -1111,7 +1112,7 @@ static gboolean _xfdashboard_applications_view_focusable_activate_selection(Xfda
 	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
 
 	/* Check that selection is a child of this actor */
-	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	if(!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
 	{
 		ClutterActor						*parent;
 

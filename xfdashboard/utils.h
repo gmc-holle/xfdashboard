@@ -83,7 +83,6 @@ GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorksp
 
 void xfdashboard_register_gvalue_transformation_funcs(void);
 
-gboolean xfdashboard_actor_contains_child_deep(ClutterActor *inActor, ClutterActor *inChild);
 ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar *inName);
 
 gchar** xfdashboard_split_string(const gchar *inString, const gchar *inDelimiters);

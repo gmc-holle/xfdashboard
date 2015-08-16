@@ -750,7 +750,7 @@ gboolean xfdashboard_view_child_needs_scroll(XfdashboardView *self, ClutterActor
 	result=FALSE;
 
 	/* Only emit signal if given actor is a child of this view */
-	if(xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inActor))
+	if(clutter_actor_contains(CLUTTER_ACTOR(self), inActor))
 	{
 		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_CHILD_NEEDS_SCROLL], 0, inActor, &result);
 	}
@@ -765,7 +765,7 @@ void xfdashboard_view_child_ensure_visible(XfdashboardView *self, ClutterActor *
 	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
 
 	/* Only emit signal if given actor is a child of this view */
-	if(xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inActor))
+	if(clutter_actor_contains(CLUTTER_ACTOR(self), inActor))
 	{
 		g_signal_emit(self, XfdashboardViewSignals[SIGNAL_CHILD_ENSURE_VISIBLE], 0, inActor);
 	}

@@ -1922,7 +1922,8 @@ static gboolean _xfdashboard_quicklaunch_focusable_set_selection(XfdashboardFocu
 	priv=self->priv;
 
 	/* Check that selection is a child of this actor */
-	if(inSelection && !xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	if(inSelection &&
+		!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
 	{
 		ClutterActor						*parent;
 
@@ -1974,7 +1975,7 @@ static ClutterActor* _xfdashboard_quicklaunch_focusable_find_selection(Xfdashboa
 	}
 
 	/* Check that selection is a child of this actor otherwise return NULL */
-	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	if(!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
 	{
 		ClutterActor						*parent;
 
@@ -2104,7 +2105,7 @@ static gboolean _xfdashboard_quicklaunch_focusable_activate_selection(Xfdashboar
 	self=XFDASHBOARD_QUICKLAUNCH(inFocusable);
 
 	/* Check that selection is a child of this actor */
-	if(!xfdashboard_actor_contains_child_deep(CLUTTER_ACTOR(self), inSelection))
+	if(!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
 	{
 		ClutterActor						*parent;
 
