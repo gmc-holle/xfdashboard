@@ -24,28 +24,60 @@
 #ifndef __XFDASHBOARD_UTILS__
 #define __XFDASHBOARD_UTILS__
 
-#define DEBUG_OBJECT_NAME(x) ((x)!=NULL ? G_OBJECT_TYPE_NAME((x)) : "<nil>")
-#define DEBUG_BOX(msg, box) g_message("%s: %s: x1=%.2f, y1=%.2f, x2=%.2f, y2=%.2f [%.2fx%.2f]", __func__, msg, (box).x1, (box).y1, (box).x2, (box).y2, (box).x2-(box).x1, (box).y2-(box).y1)
-#define DEBUG_NOTIFY(self, property, format, ...) g_message("%s: Property '%s' of %p (%s) changed to "format, __func__, property, (self), (self) ? G_OBJECT_TYPE_NAME((self)) : "<nil>", ## __VA_ARGS__)
-
 #include <clutter/clutter.h>
 #include <gio/gio.h>
-#include <garcon/garcon.h>
 
 #include "window-tracker-workspace.h"
 
 G_BEGIN_DECLS
 
+/* Debug macros */
+#define _DEBUG_OBJECT_NAME(x) \
+	((x)!=NULL ? G_OBJECT_TYPE_NAME((x)) : "<nil>")
+
+#define _DEBUG_BOX(msg, box) \
+	g_message("%s: %s: x1=%.2f, y1=%.2f, x2=%.2f, y2=%.2f [%.2fx%.2f]", \
+				__func__, \
+				msg, \
+				(box).x1, (box).y1, (box).x2, (box).y2, \
+				(box).x2-(box).x1, (box).y2-(box).y1)
+
+#define _DEBUG_NOTIFY(self, property, format, ...) \
+	g_message("%s: Property '%s' of %p (%s) changed to "format, \
+				__func__, \
+				property, \
+				(self), (self) ? G_OBJECT_TYPE_NAME((self)) : "<nil>", \
+				## __VA_ARGS__)
+
 /* Gobject type of pointer array (GPtrArray) */
 #define XFDASHBOARD_TYPE_POINTER_ARRAY		(xfdashboard_pointer_array_get_type())
 
 /* Public API */
-#define GTYPE_TO_POINTER(gtype)		(GSIZE_TO_POINTER(gtype))
-#define GPOINTER_TO_GTYPE(item)		((GType)GPOINTER_TO_SIZE(item))
+
+/**
+ * GTYPE_TO_POINTER:
+ * @gtype: A #GType to stuff into the pointer
+ *
+ * Stuffs the #GType specified at @gtype into a pointer type.
+ */
+#define GTYPE_TO_POINTER(gtype) \
+	(GSIZE_TO_POINTER(gtype))
+
+/**
+ * GPOINTER_TO_GTYPE:
+ * @pointer: A pointer to extract a #GType from
+ *
+ * Extracts a #GType from a pointer. The #GType must have been stored in the pointer with GTYPE_TO_POINTER().
+ */
+#define GPOINTER_TO_GTYPE(pointer) \
+	((GType)GPOINTER_TO_SIZE(pointer))
 
 GType xfdashboard_pointer_array_get_type(void);
 
-void xfdashboard_notify(ClutterActor *inSender, const gchar *inIconName, const gchar *inFormatText, ...) G_GNUC_PRINTF(3, 4);
+void xfdashboard_notify(ClutterActor *inSender,
+							const gchar *inIconName,
+							const gchar *inFormat, ...)
+							G_GNUC_PRINTF(3, 4);
 
 GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorkspace *inWorkspace);
 
