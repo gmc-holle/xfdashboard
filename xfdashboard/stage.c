@@ -90,6 +90,7 @@ struct _XfdashboardStagePrivate
 	gboolean								searchActive;
 	gint									lastSearchTextLength;
 	XfdashboardView							*viewBeforeSearch;
+	gchar									*switchToView;
 
 	guint									notificationTimeoutID;
 
@@ -103,6 +104,8 @@ enum
 
 	PROP_BACKGROUND_IMAGE_TYPE,
 	PROP_BACKGROUND_COLOR,
+
+	PROP_SWITCH_TO_VIEW,
 
 	PROP_LAST
 };
@@ -655,11 +658,32 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 
 		/* Find view to switch to if requested */
 		resumeView=NULL;
-		if(resumeViewInternalName)
+		if(resumeViewInternalName || priv->switchToView)
 		{
-			/* Lookup view by its internal name */
-			resumeView=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewInternalName);
-			if(!resumeView) g_warning(_("Cannot switch to unknown view '%s'"), resumeViewInternalName);
+			/* First lookup view we should switch to by its internal name */
+			if(priv->switchToView)
+			{
+				resumeView=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->switchToView);
+				if(!resumeView) g_warning(_("Will not switch to unknown view '%s'"), priv->switchToView);
+
+				/* Regardless if we could find view by its internal name or not
+				 * reset variable because the switch should happen once only.
+				 */
+				g_free(priv->switchToView);
+				priv->switchToView=NULL;
+
+				/* Notify about property change */
+				g_object_notify_by_pspec(G_OBJECT(self), XfdashboardStageProperties[PROP_SWITCH_TO_VIEW]);
+			}
+
+			/* If we have not to switch to a specific view or if this view cannot be found
+			 * then lookup the configured view in settings by its internal name
+			 */
+			if(!resumeView)
+			{
+				resumeView=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewInternalName);
+				if(!resumeView) g_warning(_("Cannot switch to unknown view '%s'"), resumeViewInternalName);
+			}
 
 			/* If view to switch to is the search view behave like we did not find the view
 			 * because it does not make sense to switch to a view which might be hidden,
@@ -713,7 +737,9 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 		/* ... otherwise set it up by calling clutter_actor_show() etc. */
 		else
 		{
-			/* Show stage and force window creation */
+			/* Show stage and force window creation. It will also handle
+			 * the switch to a specific view.
+			 */
 			clutter_actor_show(CLUTTER_ACTOR(self));
 		}
 
@@ -1280,11 +1306,33 @@ static void _xfdashboard_stage_show(ClutterActor *inActor)
 {
 	XfdashboardStage			*self;
 	XfdashboardStagePrivate		*priv;
+	XfdashboardView				*switchView;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(inActor));
 
 	self=XFDASHBOARD_STAGE(inActor);
 	priv=self->priv;
+
+	/* Lookup view we should switch to by its internal name if any */
+	if(priv->switchToView)
+	{
+		/* Look up view and switch to it if found */
+		switchView=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->switchToView);
+		if(!switchView)
+		{
+			xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), switchView);
+		}
+			else g_warning(_("Will not switch to unknown view '%s'"), priv->switchToView);
+
+		/* Regardless if we could find view by its internal name or not
+		 * reset variable because the switch should happen once only.
+		 */
+		g_free(priv->switchToView);
+		priv->switchToView=NULL;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardStageProperties[PROP_SWITCH_TO_VIEW]);
+	}
 
 	/* Set stage to fullscreen just in case it forgot about it */
 	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
@@ -1409,6 +1457,12 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 		priv->backgroundColorLayer=NULL;
 	}
 
+	if(priv->switchToView)
+	{
+		g_free(priv->switchToView);
+		priv->switchToView=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_stage_parent_class)->dispose(inObject);
 }
@@ -1429,6 +1483,10 @@ static void _xfdashboard_stage_set_property(GObject *inObject,
 
 		case PROP_BACKGROUND_COLOR:
 			xfdashboard_stage_set_background_color(self, clutter_value_get_color(inValue));
+			break;
+
+		case PROP_SWITCH_TO_VIEW:
+			xfdashboard_stage_set_switch_to_view(self, g_value_get_string(inValue));
 			break;
 
 		default:
@@ -1453,6 +1511,10 @@ static void _xfdashboard_stage_get_property(GObject *inObject,
 
 		case PROP_BACKGROUND_COLOR:
 			clutter_value_set_color(outValue, priv->backgroundColor);
+			break;
+
+		case PROP_SWITCH_TO_VIEW:
+			g_value_set_string(outValue, priv->switchToView);
 			break;
 
 		default:
@@ -1499,6 +1561,13 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 									_("Color of stage's background"),
 									NULL,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardStageProperties[PROP_SWITCH_TO_VIEW]=
+		g_param_spec_string("switch-to-view",
+							_("Switch to view"),
+							_("Switch to this named view as soon as stage gets visible"),
+							NULL,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardStageProperties);
 
@@ -1595,6 +1664,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->backgroundColor=NULL;
 	priv->backgroundColorLayer=NULL;
 	priv->backgroundImageLayer=NULL;
+	priv->switchToView=NULL;
 
 	/* Create background actors but order of adding background children is important */
 	widthConstraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_WIDTH, 0.0f);
@@ -1795,6 +1865,38 @@ void xfdashboard_stage_set_background_color(XfdashboardStage *self, const Clutte
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardStageProperties[PROP_BACKGROUND_COLOR]);
+	}
+}
+
+/* Set name of view to switch to at next resume */
+const gchar* xfdashboard_stage_get_switch_to_view(XfdashboardStage *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(self), NULL);
+
+	return(self->priv->switchToView);
+}
+
+void xfdashboard_stage_set_switch_to_view(XfdashboardStage *self, const gchar *inViewInternalName)
+{
+	XfdashboardStagePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->switchToView, inViewInternalName)!=0)
+	{
+		if(priv->switchToView)
+		{
+			g_free(priv->switchToView);
+			priv->switchToView=NULL;
+		}
+
+		if(inViewInternalName) priv->switchToView=g_strdup(inViewInternalName);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardStageProperties[PROP_SWITCH_TO_VIEW]);
 	}
 }
 

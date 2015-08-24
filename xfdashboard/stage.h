@@ -77,6 +77,9 @@ void xfdashboard_stage_set_background_image_type(XfdashboardStage *self, Xfdashb
 ClutterColor* xfdashboard_stage_get_background_color(XfdashboardStage *self);
 void xfdashboard_stage_set_background_color(XfdashboardStage *self, const ClutterColor *inColor);
 
+const gchar* xfdashboard_stage_get_switch_to_view(XfdashboardStage *self);
+void xfdashboard_stage_set_switch_to_view(XfdashboardStage *self, const gchar *inViewInternalName);
+
 void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *inIconName, const gchar *inText);
 
 G_END_DECLS
