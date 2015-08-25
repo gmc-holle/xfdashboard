@@ -1318,7 +1318,7 @@ static void _xfdashboard_stage_show(ClutterActor *inActor)
 	{
 		/* Look up view and switch to it if found */
 		switchView=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->switchToView);
-		if(!switchView)
+		if(switchView)
 		{
 			xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), switchView);
 		}

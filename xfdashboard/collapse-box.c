@@ -195,17 +195,27 @@ static void _xfdashboard_collapse_box_on_focus_changed(XfdashboardCollapseBox *s
 	gboolean						newActorIsChild;
 
 	g_return_if_fail(XFDASHBOARD_IS_COLLAPSE_BOX(self));
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inOldActor) || !inOldActor);
+	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(inNewActor) || !inNewActor);
 
 	priv=self->priv;
+	oldActorIsChild=FALSE;
+	newActorIsChild=FALSE;
 
 	/* Determine if old and new focusable actor are children of
 	 * this collapse box.
 	 */
-	oldActorIsChild=clutter_actor_contains(CLUTTER_ACTOR(self),
-											CLUTTER_ACTOR(inOldActor));
+	if(inOldActor)
+	{
+		oldActorIsChild=clutter_actor_contains(CLUTTER_ACTOR(self),
+												CLUTTER_ACTOR(inOldActor));
+	}
 
-	newActorIsChild=clutter_actor_contains(CLUTTER_ACTOR(self),
-											CLUTTER_ACTOR(inNewActor));
+	if(inNewActor)
+	{
+		newActorIsChild=clutter_actor_contains(CLUTTER_ACTOR(self),
+												CLUTTER_ACTOR(inNewActor));
+	}
 
 	/* Do nothing if both actors are children of this collapse box */
 	if(oldActorIsChild==newActorIsChild) return;
