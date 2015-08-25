@@ -127,7 +127,7 @@ enum
 	COLUMN_THEME_LAST
 };
 
-/* Setting '/switch-view-on-resume' changed either at widget or at xfconf property */
+/* Setting '/switch-to-view-on-resume' changed either at widget or at xfconf property */
 static void _xfdashboard_settings_widget_changed_switch_view_on_resume(XfdashboardSettings *self, GtkComboBox *inComboBox)
 {
 	XfdashboardSettingsPrivate		*priv;
@@ -146,7 +146,7 @@ static void _xfdashboard_settings_widget_changed_switch_view_on_resume(Xfdashboa
 	gtk_tree_model_get(model, &iter, 1, &value, -1);
 
 	/* Set value at xfconf property */
-	xfconf_channel_set_string(priv->xfconfChannel, "/switch-view-on-resume", value);
+	xfconf_channel_set_string(priv->xfconfChannel, "/switch-to-view-on-resume", value);
 
 	/* Release allocated resources */
 	if(value) g_free(value);
@@ -1081,7 +1081,7 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 							priv->widgetResetSearchOnResume,
 							"active");
 
-	priv->widgetSwitchViewOnResume=GTK_WIDGET(gtk_builder_get_object(priv->builder, "switch-view-on-resume"));
+	priv->widgetSwitchViewOnResume=GTK_WIDGET(gtk_builder_get_object(priv->builder, "switch-to-view-on-resume"));
 	if(priv->widgetSwitchViewOnResume)
 	{
 		GtkCellRenderer						*renderer;
@@ -1092,7 +1092,7 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 		gchar								*defaultValue;
 
 		/* Get default value from settings */
-		defaultValue=xfconf_channel_get_string(priv->xfconfChannel, "/switch-view-on-resume", DEFAULT_SWITCH_VIEW_ON_RESUME);
+		defaultValue=xfconf_channel_get_string(priv->xfconfChannel, "/switch-to-view-on-resume", DEFAULT_SWITCH_VIEW_ON_RESUME);
 		if(!defaultValue) defaultValue=g_strdup("");
 
 		/* Clear combo box */
@@ -1132,7 +1132,7 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 									G_CALLBACK(_xfdashboard_settings_widget_changed_switch_view_on_resume),
 									self);
 		g_signal_connect_swapped(priv->xfconfChannel,
-									"property-changed::/switch-view-on-resume",
+									"property-changed::/switch-to-view-on-resume",
 									G_CALLBACK(_xfdashboard_settings_xfconf_changed_switch_view_on_resume),
 									self);
 
