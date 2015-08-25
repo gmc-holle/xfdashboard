@@ -101,8 +101,9 @@ void xfdashboard_notify(ClutterActor *inSender,
 	if(!stage)
 	{
 		const GSList					*stages;
-		const GSList					*iter;
-		XfdashboardStageInterface		*stageInterface;
+		const GSList					*stagesIter;
+		ClutterActorIter				interfaceIter;
+		ClutterActor					*child;
 		XfdashboardWindowTrackerMonitor	*stageMonitor;
 
 		/* Get stage manager to iterate through stages to find the one
@@ -122,15 +123,22 @@ void xfdashboard_notify(ClutterActor *inSender,
 			/* Iterate through list of all stage and lookup the one for
 			 * primary monitor.
 			 */
-			for(iter=stages; iter && !stage; iter=iter->next)
+			for(stagesIter=stages; stagesIter && !stage; stagesIter=stagesIter->next)
 			{
-				stageInterface=XFDASHBOARD_STAGE_INTERFACE(iter->data);
-				if(stageInterface)
+				/* Skip this stage if it is not a XfdashboardStage */
+				if(!XFDASHBOARD_IS_STAGE(stagesIter->data)) continue;
+
+				/* Iterate through stage's children and lookup stage interfaces */
+				clutter_actor_iter_init(&interfaceIter, CLUTTER_ACTOR(stagesIter->data));
+				while(clutter_actor_iter_next(&interfaceIter, &child))
 				{
-					stageMonitor=xfdashboard_stage_interface_get_monitor(stageInterface);
-					if(xfdashboard_window_tracker_monitor_is_primary(stageMonitor))
+					if(XFDASHBOARD_IS_STAGE_INTERFACE(child))
 					{
-						stage=XFDASHBOARD_STAGE(stageInterface);
+						stageMonitor=xfdashboard_stage_interface_get_monitor(XFDASHBOARD_STAGE_INTERFACE(child));
+						if(xfdashboard_window_tracker_monitor_is_primary(stageMonitor))
+						{
+							stage=XFDASHBOARD_STAGE(clutter_actor_get_stage(child));
+						}
 					}
 				}
 			}
@@ -138,7 +146,7 @@ void xfdashboard_notify(ClutterActor *inSender,
 			/* If we did not get stage for primary monitor use first stage */
 			if(!stage)
 			{
-				stage=XFDASHBOARD_STAGE(stages->data);
+				stage=XFDASHBOARD_STAGE(stagesIter->data);
 			}
 		}
 
