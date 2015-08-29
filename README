@@ -17,6 +17,7 @@ dbus-glib >= 0.98
 garcon >= 0.2.0
 gtk+ >= 3.2
 libxfce4util >= 4.10.0
+libxfce4ui >= 4.10.0
 
 ... and the dependencies of these libraries of course ;)
 

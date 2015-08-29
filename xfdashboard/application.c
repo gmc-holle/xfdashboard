@@ -32,6 +32,7 @@
 #include <clutter/x11/clutter-x11.h>
 #include <gtk/gtk.h>
 #include <garcon/garcon.h>
+#include <libxfce4ui/libxfce4ui.h>
 
 #include "stage.h"
 #include "types.h"
@@ -80,6 +81,8 @@ struct _XfdashboardApplicationPrivate
 
 	XfdashboardApplicationDatabase	*appDatabase;
 	XfdashboardApplicationTracker	*appTracker;
+
+	XfceSMClient					*sessionManagementClient;
 };
 
 /* Properties */
@@ -153,6 +156,15 @@ static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean
 		/* Set flag that application is going to quit */
 		priv->isQuitting=TRUE;
 
+		/* If application is told to quit, set the restart style to something
+		 * where it won't restart itself.
+		 */
+		if(priv->sessionManagementClient &&
+			XFCE_IS_SM_CLIENT(priv->sessionManagementClient))
+		{
+			xfce_sm_client_set_restart_style(priv->sessionManagementClient, XFCE_SM_CLIENT_RESTART_NORMAL);
+		}
+
 		/* Destroy stages */
 		stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
 		for(entry=stages; entry!=NULL; entry=g_slist_next(entry)) clutter_actor_destroy(CLUTTER_ACTOR(entry->data));
@@ -178,6 +190,18 @@ static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean
 				g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_SUSPENDED]);
 			}
 		}
+}
+
+/* The session is going to quit */
+static void _xfdashboard_application_on_session_quit(XfdashboardApplication *self,
+														gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(self));
+	g_return_if_fail(XFCE_IS_SM_CLIENT(inUserData));
+
+	/* Force application to quit */
+	g_debug("Received 'quit' from session management client - initiating shutdown");
+	_xfdashboard_application_quit(self, TRUE);
 }
 
 /* A stage window should be destroyed */
@@ -287,12 +311,25 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	garcon_set_environment_xdg(GARCON_ENVIRONMENT_XFCE);
 #endif
 
+	/* Setup the session management */
+	priv->sessionManagementClient=xfce_sm_client_get();
+	xfce_sm_client_set_priority(priv->sessionManagementClient, XFCE_SM_CLIENT_PRIORITY_DEFAULT);
+	xfce_sm_client_set_restart_style(priv->sessionManagementClient, XFCE_SM_CLIENT_RESTART_IMMEDIATELY);
+	g_signal_connect_swapped(priv->sessionManagementClient, "quit", G_CALLBACK(_xfdashboard_application_on_session_quit), self);
+
+	if(!xfce_sm_client_connect(priv->sessionManagementClient, &error))
+	{
+		g_warning("Failed to connect to session manager: %s",
+					(error && error->message) ? error->message : _("unknown error"));
+		g_clear_error(&error);
+	}
+
 	/* Initialize xfconf */
 	if(!xfconf_init(&error))
 	{
 		g_critical(_("Could not initialize xfconf: %s"),
 					(error && error->message) ? error->message : _("unknown error"));
-		if(error!=NULL) g_error_free(error);
+		if(error) g_error_free(error);
 		return(FALSE);
 	}
 
@@ -500,13 +537,15 @@ static int _xfdashboard_application_command_line(GApplication *inApplication, GA
 	optionToggle=FALSE;
 	optionSwitchToView=NULL;
 
+	/* Parse command-line arguments */
+	argv=g_application_command_line_get_arguments(inCommandLine, &argc);
+
+	/* Setup command-line options */
 	context=g_option_context_new(N_("- A Gnome Shell like dashboard for Xfce4"));
 	g_option_context_add_group(context, gtk_get_option_group(TRUE));
 	g_option_context_add_group(context, clutter_get_option_group_without_init());
+	g_option_context_add_group(context, xfce_sm_client_get_option_group(argc, argv));
 	g_option_context_add_main_entries(context, XfdashboardApplicationOptions, GETTEXT_PACKAGE);
-
-	/* Parse command-line arguments */
-	argv=g_application_command_line_get_arguments(inCommandLine, &argc);
 
 #ifdef DEBUG
 	/* I always forget the name of the environment variable to get the debug
@@ -736,6 +775,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 		priv->appTracker=NULL;
 	}
 
+	/* Shutdown session management */
+	if(priv->sessionManagementClient)
+	{
+		priv->sessionManagementClient=NULL;
+	}
+
 	/* Shutdown xfconf */
 	priv->xfconfChannel=NULL;
 	xfconf_shutdown();
@@ -924,6 +969,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->theme=NULL;
 	priv->xfconfThemeChangedSignalID=0L;
 	priv->isQuitting=FALSE;
+	priv->sessionManagementClient=NULL;
 
 	/* Add callable DBUS actions for this application */
 	action=g_simple_action_new("Quit", NULL);
