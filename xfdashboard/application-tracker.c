@@ -285,8 +285,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 	windowPID=xfdashboard_window_tracker_window_get_pid(inWindow);
 	if(windowPID<=0)
 	{
-		g_message("%s: Could not get PID running window '%s' to parse environment variables",
-				__func__,
+		g_debug("Could not get PID for window '%s' of a running application to parse environment variables",
 				xfdashboard_window_tracker_window_get_title(inWindow));
 
 		return(NULL);
@@ -303,8 +302,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 	procEnvFile=g_strdup_printf("/proc/%d/environ", windowPID);
 	if(!g_file_get_contents(procEnvFile, &envContent, &envLength, &error))
 	{
-		g_message("%s: Could read in enviroment varibles for PID %d of window '%s' at %s: %s",
-					__func__,
+		g_debug("Could read in enviroment varibles for PID %d of window '%s' at %s: %s",
 					windowPID,
 					xfdashboard_window_tracker_window_get_title(inWindow),
 					procEnvFile,
@@ -319,8 +317,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 		return(NULL);
 	}
 
-	g_message("%s: Enviroment set at %s is %lu bytes long for window '%s'",
-				__func__,
+	g_debug("Enviroment set at %s is %lu bytes long for window '%s'",
 				procEnvFile,
 				envLength,
 				xfdashboard_window_tracker_window_get_title(inWindow));
@@ -352,8 +349,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 			 */
 			if(gioLaunchedDesktopFile)
 			{
-				g_message("%s: Could parse in enviroment varibles for PID %d of window '%s' at %s because GIO_LAUNCHED_DESKTOP_FILE exists more than once",
-							__func__,
+				g_debug("Could parse in enviroment varibles for PID %d of window '%s' at %s because GIO_LAUNCHED_DESKTOP_FILE exists more than once",
 							windowPID,
 							xfdashboard_window_tracker_window_get_title(inWindow),
 							procEnvFile);
@@ -377,8 +373,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 				 */
 				if(gioLaunchedPID)
 				{
-					g_message("%s: Could parse in enviroment varibles for PID %d of window '%s' at %s because GIO_LAUNCHED_DESKTOP_FILE_PID exists more than once",
-								__func__,
+					g_debug("Could parse in enviroment varibles for PID %d of window '%s' at %s because GIO_LAUNCHED_DESKTOP_FILE_PID exists more than once",
 								windowPID,
 								xfdashboard_window_tracker_window_get_title(inWindow),
 								procEnvFile);
@@ -445,8 +440,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 			}
 				else
 				{
-					g_message("%s: PID %d of environment variable does not match window PID %d for '%s'",
-								__func__,
+					g_debug("PID %d of environment variable does not match window PID %d for '%s'",
 								checkPID,
 								windowPID,
 								xfdashboard_window_tracker_window_get_title(inWindow));
@@ -459,8 +453,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 	if(envContent) g_free(envContent);
 
 	/* Return found application info */
-	g_message("%s: Resolved enviroment variables of window '%s' to desktop ID '%s'",
-				__func__,
+	g_debug("Resolved enviroment variables of window '%s' to desktop ID '%s'",
 				xfdashboard_window_tracker_window_get_title(inWindow),
 				foundAppInfo ? g_app_info_get_id(foundAppInfo) : "<nil>");
 
@@ -553,8 +546,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_window_nam
 		if(foundAppInfo &&
 			!g_app_info_equal(foundAppInfo, appInfo))
 		{
-			g_message("%s: Resolved window names of '%s' are ambiguous - discarding desktop IDs '%s' and '%s'",
-						__func__,
+			g_debug("Resolved window names of '%s' are ambiguous - discarding desktop IDs '%s' and '%s'",
 						xfdashboard_window_tracker_window_get_title(inWindow),
 						g_app_info_get_id(foundAppInfo),
 						g_app_info_get_id(appInfo));
@@ -581,8 +573,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_window_nam
 	if(names) g_strfreev(names);
 
 	/* Return found application info */
-	g_message("%s: Resolved window names of '%s' to desktop ID '%s'",
-				__func__,
+	g_debug("Resolved window names of '%s' to desktop ID '%s'",
 				xfdashboard_window_tracker_window_get_title(inWindow),
 				foundAppInfo ? g_app_info_get_id(foundAppInfo) : "<nil>");
 
@@ -611,15 +602,13 @@ static void _xfdashboard_application_tracker_on_window_opened(XfdashboardApplica
 	/* If we could not resolve window to a desktop application info, then stop here */
 	if(!appInfo)
 	{
-		g_message("%s: Could not resolve window '%s' to any desktop ID",
-					__func__,
+		g_debug("Could not resolve window '%s' to any desktop ID",
 					xfdashboard_window_tracker_window_get_title(inWindow));
 
 		return;
 	}
 
-	g_message("%s: Window '%s' belongs to desktop ID '%s'",
-				__func__,
+	g_debug("Window '%s' belongs to desktop ID '%s'",
 				xfdashboard_window_tracker_window_get_title(inWindow),
 				g_app_info_get_id(appInfo));
 
@@ -634,9 +623,7 @@ static void _xfdashboard_application_tracker_on_window_opened(XfdashboardApplica
 		priv->runningApps=g_list_prepend(priv->runningApps, item);
 
 		/* Emit signal as this application is known to be running now */
-		g_message("%s: Emitting signal 'state-changed' to running for desktop ID '%s'",
-					__func__,
-					item->desktopID);
+		g_debug("Emitting signal 'state-changed' to running for desktop ID '%s'", item->desktopID);
 		g_signal_emit(self, XfdashboardApplicationTrackerSignals[SIGNAL_STATE_CHANGED], g_quark_from_string(item->desktopID), item->desktopID, TRUE);
 	}
 		/* ... otherwise add window to existing one */
@@ -669,15 +656,13 @@ static void _xfdashboard_application_tracker_on_window_closed(XfdashboardApplica
 	item= _xfdashboard_application_tracker_find_item_by_window(self, inWindow);
 	if(!item)
 	{
-		g_message("%s: Could not find running application for window '%s'",
-					__func__,
+		g_debug("Could not find running application for window '%s'",
 					xfdashboard_window_tracker_window_get_title(inWindow));
 
 		return;
 	}
 
-	g_message("%s: Closing window '%s' for desktop ID '%s'",
-				__func__,
+	g_debug("Closing window '%s' for desktop ID '%s'",
 				xfdashboard_window_tracker_window_get_title(inWindow),
 				item->desktopID);
 
@@ -692,8 +677,7 @@ static void _xfdashboard_application_tracker_on_window_closed(XfdashboardApplica
 	{
 		gchar								*desktopID;
 
-		g_message("%s: Closing window '%s' for desktop ID '%s' closed last window so remove application from list of running ones",
-					__func__,
+		g_debug("Closing window '%s' for desktop ID '%s' closed last window so remove application from list of running ones",
 					xfdashboard_window_tracker_window_get_title(inWindow),
 					item->desktopID);
 
@@ -709,9 +693,7 @@ static void _xfdashboard_application_tracker_on_window_closed(XfdashboardApplica
 		_xfdashboard_application_tracker_item_free(item);
 
 		/* Emit signal as this application is not running anymore */
-		g_message("%s: Emitting signal 'state-changed' to stopped for desktop ID '%s'",
-					__func__,
-					desktopID);
+		g_debug("Emitting signal 'state-changed' to stopped for desktop ID '%s'", desktopID);
 		g_signal_emit(self, XfdashboardApplicationTrackerSignals[SIGNAL_STATE_CHANGED], g_quark_from_string(desktopID), desktopID, FALSE);
 
 		/* Release allocated resources */
