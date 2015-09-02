@@ -333,7 +333,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 {
 	XfdashboardImageContentPrivate		*priv;
 	gchar								*lookupFilename;
-	const gchar							*filename;
+	gchar								*filename;
 
 	g_return_if_fail(XFDASHBOARD_IS_IMAGE_CONTENT(self));
 
@@ -371,7 +371,9 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 	{
 		GtkIconInfo						*iconInfo;
 
-		g_warning(_("Icon file '%s' does not exist - trying fallback icon"), priv->iconName);
+		g_warning(_("Icon file '%s' does not exist - trying fallback icon '%s'"),
+					priv->iconName,
+					priv->missingIconName);
 
 		iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
 											priv->missingIconName,
@@ -391,7 +393,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 		}
 
 		/* Check if have to use built-in GdkPixbuf for icon ... */
-		filename=gtk_icon_info_get_filename(iconInfo);
+		filename=g_strdup(gtk_icon_info_get_filename(iconInfo));
 #ifdef USE_GTK_BUILTIN_ICONS
 		if(!filename)
 		{
@@ -426,7 +428,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 		g_object_unref(iconInfo);
 	}
 		/* ... otherwise set up to load icon async */
-		else filename=lookupFilename;
+		else filename=g_strdup(lookupFilename);
 
 	/* Load image asynchronously if filename is given */
 	if(filename)
@@ -454,6 +456,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 			/* Release allocated resources */
 			g_object_unref(file);
 			g_free(lookupFilename);
+			g_free(filename);
 
 			return;
 		}
@@ -474,6 +477,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 		/* Release allocated resources */
 		g_object_unref(stream);
 		g_object_unref(file);
+		g_free(filename);
 
 		g_debug("Loading icon '%s' from file %s", priv->iconName, filename);
 	}
@@ -613,7 +617,9 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 	/* If we got no icon info we try to fallback icon next */
 	if(!iconInfo)
 	{
-		g_warning(_("Could not lookup themed icon '%s'"), priv->iconName);
+		g_warning(_("Could not lookup themed icon '%s' - trying fallback icon '%s'"),
+					priv->iconName,
+					priv->missingIconName);
 
 		iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
 											priv->missingIconName,
