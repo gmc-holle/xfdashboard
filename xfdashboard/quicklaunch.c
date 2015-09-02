@@ -44,6 +44,7 @@
 #include "marshal.h"
 #include "desktop-app-info.h"
 #include "application-database.h"
+#include "application-tracker.h"
 
 /* Define this class in GObject system */
 static void _xfdashboard_quicklaunch_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -86,6 +87,7 @@ struct _XfdashboardQuicklaunchPrivate
 	ClutterActor					*selectedItem;
 
 	XfdashboardApplicationDatabase	*appDB;
+	XfdashboardApplicationTracker	*appTracker;
 };
 
 /* Properties */
@@ -138,8 +140,67 @@ enum
 /* Forward declarations */
 static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuicklaunch *self);
 
+/* Get actor for desktop application information */
+static ClutterActor* _xfdashboard_quicklaunch_get_actor_for_appinfo(XfdashboardQuicklaunch *self,
+																	GAppInfo *inAppInfo)
+{
+	ClutterActorIter				iter;
+	ClutterActor					*child;
+	GAppInfo						*desktopAppInfo;
+	GFile							*desktopFile;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), TRUE);
+	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), TRUE);
+
+	/* If requested application information does not contain a desktop file
+	 * (means it must derive from XfdashboardDesktopAppInfo) then assume
+	 * no actor exists for it.
+	 */
+	if(!XFDASHBOARD_IS_DESKTOP_APP_INFO(inAppInfo))
+	{
+		g_debug("%s is derived from %s but not derived %s",
+					G_OBJECT_TYPE_NAME(inAppInfo),
+					g_type_name(G_TYPE_APP_INFO),
+					g_type_name(XFDASHBOARD_TYPE_DESKTOP_APP_INFO));
+		return(NULL);
+	}
+
+	/* Check if application information is valid and provides a desktop file */
+	desktopFile=xfdashboard_desktop_app_info_get_file(XFDASHBOARD_DESKTOP_APP_INFO(inAppInfo));
+	if(!desktopFile)
+	{
+		g_critical(_("Could not check for duplicates for invalid %s object so assume no actor exists"),
+					G_OBJECT_TYPE_NAME(inAppInfo));
+		return(NULL);
+	}
+
+	/* Iterate through actors and check each application button if it
+	 * provides the requested desktop file of application information.
+	 */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Only check application buttons */
+ 		if(!XFDASHBOARD_IS_APPLICATION_BUTTON(child)) continue;
+
+		/* Check if application button provides requested desktop file */
+		desktopAppInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(child));
+		if(desktopAppInfo &&
+			g_app_info_equal(desktopAppInfo, inAppInfo))
+		{
+			/* Found actor so return it */
+			return(child);
+		}
+	}
+
+	/* If we get here then this quicklaunch does not have any item
+	 * which matches the requested application information so return NULL.
+	 */
+	return(NULL);
+}
+
 /* Check for duplicate application buttons */
-static gboolean _xfdashboard_quicklaunch_has_appinfo(XfdashboardQuicklaunch *self, GAppInfo *inAppInfo)
+static gboolean _xfdashboard_quicklaunch_has_favourite_appinfo(XfdashboardQuicklaunch *self, GAppInfo *inAppInfo)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
 	guint							i;
@@ -366,7 +427,7 @@ static gboolean _xfdashboard_quicklaunch_on_drop_begin(XfdashboardQuicklaunch *s
 		appInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
 		if(appInfo)
 		{
-			isExistingItem=_xfdashboard_quicklaunch_has_appinfo(self, appInfo);
+			isExistingItem=_xfdashboard_quicklaunch_has_favourite_appinfo(self, appInfo);
 			if(!isExistingItem) priv->dragMode=DRAG_MODE_CREATE;
 		}
 	}
@@ -1362,7 +1423,7 @@ static gboolean _xfdashboard_quicklaunch_selection_add_favourite(XfdashboardQuic
 		ClutterActor		*favouriteActor;
 
 		/* Check for duplicates */
-		if(_xfdashboard_quicklaunch_has_appinfo(self, appInfo))
+		if(_xfdashboard_quicklaunch_has_favourite_appinfo(self, appInfo))
 		{
 			/* Release allocated resources */
 			g_object_unref(appInfo);
@@ -1618,6 +1679,80 @@ static gboolean _xfdashboard_quicklaunch_favourite_reorder_down(XfdashboardQuick
 																ClutterEvent *inEvent)
 {
 	return(_xfdashboard_quicklaunch_favourite_reorder_selection(self, XFDASHBOARD_ORIENTATION_BOTTOM));
+}
+
+/* An application was started or quitted */
+static void _xfdashboard_quicklaunch_on_app_tracker_state_changed(XfdashboardQuicklaunch *self,
+																	const gchar *inDesktopID,
+																	gboolean inIsRunning,
+																	gpointer inUserData)
+{
+	XfdashboardQuicklaunchPrivate	*priv;
+	GAppInfo						*appInfo;
+	ClutterActor					*actor;
+
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_TRACKER(inUserData));
+
+	priv=self->priv;
+
+	/* Get application information for desktop id */
+	appInfo=xfdashboard_application_database_lookup_desktop_id(priv->appDB, inDesktopID);
+	if(!appInfo)
+	{
+		g_debug("Unknown desktop ID '%s' changed state to '%s'",
+				inDesktopID,
+				inIsRunning ? "running" : "stopped");
+		return;
+	}
+
+	/* If application is now running and no actor exists for it,
+	 * then create an application button but mark it as dynamically added.
+	 */
+	if(inIsRunning)
+	{
+		/* Find actor for application which changed running state */
+		actor=_xfdashboard_quicklaunch_get_actor_for_appinfo(self, appInfo);
+
+		/* Create application button, mark it as dynamically added and
+		 * add it to quicklaunch.
+		 */
+		if(!actor)
+		{
+			actor=xfdashboard_application_button_new_from_app_info(appInfo);
+			xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), priv->normalIconSize);
+			xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
+			xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_BUTTON_STYLE_ICON);
+			xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "is-dynamic-app");
+			clutter_actor_show(actor);
+			clutter_actor_add_child(CLUTTER_ACTOR(self), actor);
+			g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_clicked), self);
+
+			g_debug("Created dynamic actor %p for newly running desktop ID '%s'",
+					actor,
+					inDesktopID);
+		}
+	}
+
+	/* If application is now stopped and an actor exists for it and it is
+	 * marked as dynamically added, then destroy it.
+	 */
+	if(!inIsRunning)
+	{
+		/* Find actor for application which changed running state */
+		actor=_xfdashboard_quicklaunch_get_actor_for_appinfo(self, appInfo);
+
+		/* If actor exists and is marked as dynamically added, destroy it */
+		if(actor &&
+			xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(actor), "is-dynamic-app"))
+		{
+			g_debug("Destroying dynamic actor %p for stopped desktop ID '%s'",
+					actor,
+					inDesktopID);
+
+			clutter_actor_destroy(actor);
+		}
+	}
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -2159,6 +2294,12 @@ static void _xfdashboard_quicklaunch_dispose(GObject *inObject)
 		priv->xfconfChannel=NULL;
 	}
 
+	if(priv->appTracker)
+	{
+		g_object_unref(priv->appTracker);
+		priv->appTracker=NULL;
+	}
+
 	if(priv->appDB)
 	{
 		g_object_unref(priv->appDB);
@@ -2494,6 +2635,12 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	{
 		_xfdashboard_quicklaunch_setup_default_favourites(self);
 	}
+
+	/* Connect to application tracker to recognize other running application
+	 * which are not known favourites.
+	 */
+	priv->appTracker=xfdashboard_application_tracker_get_default();
+	g_signal_connect_swapped(priv->appTracker, "state-changed", G_CALLBACK(_xfdashboard_quicklaunch_on_app_tracker_state_changed), self);
 }
 
 /* IMPLEMENTATION: Public API */
