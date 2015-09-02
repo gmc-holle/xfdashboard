@@ -144,7 +144,6 @@ static gboolean _xfdashboard_quicklaunch_has_appinfo(XfdashboardQuicklaunch *sel
 	XfdashboardQuicklaunchPrivate	*priv;
 	guint							i;
 	GFile							*desktopFile;
-	gchar							*desktopFilename;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), TRUE);
 	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), TRUE);
@@ -164,7 +163,7 @@ static gboolean _xfdashboard_quicklaunch_has_appinfo(XfdashboardQuicklaunch *sel
 		return(TRUE);
 	}
 
-	/* Get desktop file name */
+	/* Check if application information is valid and provides a desktop file */
 	desktopFile=xfdashboard_desktop_app_info_get_file(XFDASHBOARD_DESKTOP_APP_INFO(inAppInfo));
 	if(!desktopFile)
 	{
@@ -172,8 +171,10 @@ static gboolean _xfdashboard_quicklaunch_has_appinfo(XfdashboardQuicklaunch *sel
 					G_OBJECT_TYPE_NAME(inAppInfo));
 		return(TRUE);
 	}
-	desktopFilename=g_file_get_path(desktopFile);
 
+	/* Iterate through favourites and check if already a favourite for
+	 * requested desktop file.
+	 */
 	for(i=0; i<priv->favourites->len; i++)
 	{
 		GValue						*value;
@@ -193,7 +194,6 @@ static gboolean _xfdashboard_quicklaunch_has_appinfo(XfdashboardQuicklaunch *sel
 							value,
 							G_VALUE_TYPE_NAME(value),
 							g_type_name(G_TYPE_STRING));
-				if(desktopFilename) g_free(desktopFilename);
 				return(TRUE);
 			}
 #endif
@@ -217,7 +217,6 @@ static gboolean _xfdashboard_quicklaunch_has_appinfo(XfdashboardQuicklaunch *sel
 
 			/* Release allocated resources */
 			if(valueAppInfo) g_object_unref(valueAppInfo);
-			if(desktopFilename) g_free(desktopFilename);
 
 			return(TRUE);
 		}
@@ -225,9 +224,6 @@ static gboolean _xfdashboard_quicklaunch_has_appinfo(XfdashboardQuicklaunch *sel
 		/* Release allocated resources */
 		if(valueAppInfo) g_object_unref(valueAppInfo);
 	}
-
-	/* Release allocated resources */
-	if(desktopFilename) g_free(desktopFilename);
 
 	/* If we get here then this quicklaunch does not have any item
 	 * which matches the requested application information so return FALSE.
