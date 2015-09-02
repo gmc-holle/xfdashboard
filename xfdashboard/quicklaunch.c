@@ -86,6 +86,8 @@ struct _XfdashboardQuicklaunchPrivate
 
 	ClutterActor					*selectedItem;
 
+	ClutterActor					*separatorFavouritesToDynamic;
+
 	XfdashboardApplicationDatabase	*appDB;
 	XfdashboardApplicationTracker	*appTracker;
 };
@@ -965,7 +967,7 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_BUTTON_STYLE_ICON);
 		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "is-favourite-app");
 		clutter_actor_show(actor);
-		clutter_actor_add_child(CLUTTER_ACTOR(self), actor);
+		clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, priv->separatorFavouritesToDynamic);
 		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_clicked), self);
 
 		/* Set up drag'n'drop */
@@ -1385,12 +1387,15 @@ static gboolean _xfdashboard_quicklaunch_selection_add_favourite(XfdashboardQuic
 																	const gchar *inAction,
 																	ClutterEvent *inEvent)
 {
+	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterActor					*currentSelection;
 	GAppInfo						*appInfo;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), CLUTTER_EVENT_PROPAGATE);
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inSource), CLUTTER_EVENT_PROPAGATE);
 	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
 
 	/* Get current selection of focusable actor and check if it is an actor
 	 * derived from XfdashboardApplicationButton.
@@ -1436,7 +1441,7 @@ static gboolean _xfdashboard_quicklaunch_selection_add_favourite(XfdashboardQuic
 		favouriteActor=xfdashboard_application_button_new_from_app_info(appInfo);
 		clutter_actor_hide(favouriteActor);
 		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(favouriteActor), "is-favourite-app");
-		clutter_actor_add_child(CLUTTER_ACTOR(self), favouriteActor);
+		clutter_actor_insert_child_below(CLUTTER_ACTOR(self), favouriteActor, priv->separatorFavouritesToDynamic);
 
 		/* Update favourites from icon order */
 		_xfdashboard_quicklaunch_update_property_from_icons(self);
@@ -2310,6 +2315,12 @@ static void _xfdashboard_quicklaunch_dispose(GObject *inObject)
 		priv->favourites=NULL;
 	}
 
+	if(priv->separatorFavouritesToDynamic)
+	{
+		clutter_actor_destroy(priv->separatorFavouritesToDynamic);
+		priv->separatorFavouritesToDynamic=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_quicklaunch_parent_class)->dispose(inObject);
 }
@@ -2618,6 +2629,15 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	g_signal_connect_swapped(dropAction, "end", G_CALLBACK(_xfdashboard_quicklaunch_on_trash_drop_end), self);
 	g_signal_connect_swapped(dropAction, "drag-enter", G_CALLBACK(_xfdashboard_quicklaunch_on_trash_drop_enter), self);
 	g_signal_connect_swapped(dropAction, "drag-leave", G_CALLBACK(_xfdashboard_quicklaunch_on_trash_drop_leave), self);
+
+	/* Add a hidden actor used as separator between application buttons for
+	 * favourites and dynamically added one (for running non-favourite applications).
+	 * It used to add application buttons for favourites before dynamically
+	 * added ones.
+	 */
+	priv->separatorFavouritesToDynamic=clutter_actor_new();
+	clutter_actor_hide(priv->separatorFavouritesToDynamic);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->separatorFavouritesToDynamic);
 
 	/* Bind to xfconf to react on changes */
 	priv->xfconfFavouritesBindingID=xfconf_g_property_bind(priv->xfconfChannel,
