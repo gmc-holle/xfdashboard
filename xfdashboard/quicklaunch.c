@@ -818,7 +818,9 @@ static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuick
 		if(desktopAppInfo)
 		{
 			desktopFile=g_strdup(g_app_info_get_id(desktopAppInfo));
-			if(!desktopFile && XFDASHBOARD_IS_DESKTOP_APP_INFO(desktopAppInfo))
+			if(!desktopFile &&
+				XFDASHBOARD_IS_DESKTOP_APP_INFO(desktopAppInfo) &&
+				xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(button), "is-favourite-app"))
 			{
 				GFile				*file;
 
@@ -877,7 +879,11 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
-		if(XFDASHBOARD_IS_APPLICATION_BUTTON(child)) clutter_actor_iter_destroy(&iter);
+		if(XFDASHBOARD_IS_APPLICATION_BUTTON(child) &&
+			xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(child), "is-favourite-app"))
+		{
+			clutter_actor_iter_destroy(&iter);
+		}
 	}
 
 	/* Now re-add all application icons for current favourites */
@@ -898,6 +904,7 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), priv->normalIconSize);
 		xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
 		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_BUTTON_STYLE_ICON);
+		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "is-favourite-app");
 		clutter_actor_show(actor);
 		clutter_actor_add_child(CLUTTER_ACTOR(self), actor);
 		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_clicked), self);
@@ -1369,6 +1376,7 @@ static gboolean _xfdashboard_quicklaunch_selection_add_favourite(XfdashboardQuic
 		 */
 		favouriteActor=xfdashboard_application_button_new_from_app_info(appInfo);
 		clutter_actor_hide(favouriteActor);
+		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(favouriteActor), "is-favourite-app");
 		clutter_actor_add_child(CLUTTER_ACTOR(self), favouriteActor);
 
 		/* Update favourites from icon order */
