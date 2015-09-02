@@ -1434,14 +1434,36 @@ static gboolean _xfdashboard_quicklaunch_selection_add_favourite(XfdashboardQuic
 			return(CLUTTER_EVENT_STOP);
 		}
 
-		/* Add current selection to favourites but hidden as it will become visible
-		 * and properly set up when function _xfdashboard_quicklaunch_update_property_from_icons
-		 * is called.
+		/* If an actor for current selection to add to favourites already exists,
+		 * move it above the separator (between favourites and non-favourites) and
+		 * correct CSS class ...
 		 */
-		favouriteActor=xfdashboard_application_button_new_from_app_info(appInfo);
-		clutter_actor_hide(favouriteActor);
-		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(favouriteActor), "is-favourite-app");
-		clutter_actor_insert_child_below(CLUTTER_ACTOR(self), favouriteActor, priv->separatorFavouritesToDynamic);
+		favouriteActor=_xfdashboard_quicklaunch_get_actor_for_appinfo(self, appInfo);
+		if(favouriteActor)
+		{
+			/* Move existing actor before separator */
+			g_object_ref(favouriteActor);
+
+			clutter_actor_remove_child(CLUTTER_ACTOR(self), favouriteActor);
+			clutter_actor_insert_child_below(CLUTTER_ACTOR(self), favouriteActor, priv->separatorFavouritesToDynamic);
+
+			g_object_unref(favouriteActor);
+
+			/* Set proper CSS class */
+			xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(favouriteActor), "is-dynamic-app");
+			xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(favouriteActor), "is-favourite-app");
+		}
+			/* ... otherwise add current selection to favourites but hidden as it will
+			 * become visible and properly set up when function _xfdashboard_quicklaunch_update_property_from_icons
+			 * is called.
+			 */
+			else
+			{
+				favouriteActor=xfdashboard_application_button_new_from_app_info(appInfo);
+				clutter_actor_hide(favouriteActor);
+				xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(favouriteActor), "is-favourite-app");
+				clutter_actor_insert_child_below(CLUTTER_ACTOR(self), favouriteActor, priv->separatorFavouritesToDynamic);
+			}
 
 		/* Update favourites from icon order */
 		_xfdashboard_quicklaunch_update_property_from_icons(self);
