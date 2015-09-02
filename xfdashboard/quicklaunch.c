@@ -843,7 +843,6 @@ static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuick
 	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterActor					*child;
 	ClutterActorIter				iter;
-	XfdashboardApplicationButton	*button;
 	GAppInfo						*desktopAppInfo;
 	gchar							*desktopFile;
 	GValue							*desktopValue;
@@ -869,19 +868,18 @@ static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuick
 	{
 		desktopFile=NULL;
 
-		/* Only add desktop file if it is an application button and
-		 * provides a desktop ID or desktop file name
+		/* Only add desktop file if it is an application button for
+		 * a favourite and provides a desktop ID or desktop file name
 		 */
  		if(!XFDASHBOARD_IS_APPLICATION_BUTTON(child)) continue;
+		if(!xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(child), "is-favourite-app")) continue;
 
-		button=XFDASHBOARD_APPLICATION_BUTTON(child);
-		desktopAppInfo=xfdashboard_application_button_get_app_info(button);
-		if(desktopAppInfo)
+		desktopAppInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(child));
+		if(desktopAppInfo &&
+			XFDASHBOARD_IS_DESKTOP_APP_INFO(desktopAppInfo))
 		{
 			desktopFile=g_strdup(g_app_info_get_id(desktopAppInfo));
-			if(!desktopFile &&
-				XFDASHBOARD_IS_DESKTOP_APP_INFO(desktopAppInfo) &&
-				xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(button), "is-favourite-app"))
+			if(!desktopFile)
 			{
 				GFile				*file;
 
