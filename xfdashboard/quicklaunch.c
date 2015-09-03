@@ -822,11 +822,31 @@ static void _xfdashboard_quicklaunch_on_trash_drop_drop(XfdashboardQuicklaunch *
 						_("Favourite '%s' removed"),
 						xfdashboard_application_button_get_display_name(XFDASHBOARD_APPLICATION_BUTTON(draggedActor)));
 
-	/* Emit signal */
+	/* Emit signal and re-add removed favourite as dynamically added
+	 * application button for non-favourites apps when it is still running.
+	 */
 	appInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
 	if(appInfo)
 	{
+		/* Emit signal */
 		g_signal_emit(self, XfdashboardQuicklaunchSignals[SIGNAL_FAVOURITE_REMOVED], 0, appInfo);
+
+		/* Re-add removed favourite as dynamically added application button
+		 * for non-favourites apps when it is still running.
+		 */
+		if(xfdashboard_application_tracker_is_running_by_app_info(priv->appTracker, appInfo))
+		{
+			ClutterActor			*actor;
+
+			actor=xfdashboard_application_button_new_from_app_info(appInfo);
+			xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), priv->normalIconSize);
+			xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
+			xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_BUTTON_STYLE_ICON);
+			xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "is-dynamic-app");
+			clutter_actor_show(actor);
+			clutter_actor_add_child(CLUTTER_ACTOR(self), actor);
+			g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_clicked), self);
+		}
 	}
 
 	/* Destroy dragged favourite icon before updating property */
