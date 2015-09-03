@@ -146,6 +146,7 @@ static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuick
 static ClutterActor* _xfdashboard_quicklaunch_get_actor_for_appinfo(XfdashboardQuicklaunch *self,
 																	GAppInfo *inAppInfo)
 {
+	XfdashboardQuicklaunchPrivate	*priv;
 	ClutterActorIter				iter;
 	ClutterActor					*child;
 	GAppInfo						*desktopAppInfo;
@@ -153,6 +154,8 @@ static ClutterActor* _xfdashboard_quicklaunch_get_actor_for_appinfo(XfdashboardQ
 
 	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), TRUE);
 	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), TRUE);
+
+	priv=self->priv;
 
 	/* If requested application information does not contain a desktop file
 	 * (means it must derive from XfdashboardDesktopAppInfo) then assume
@@ -184,6 +187,9 @@ static ClutterActor* _xfdashboard_quicklaunch_get_actor_for_appinfo(XfdashboardQ
 	{
 		/* Only check application buttons */
  		if(!XFDASHBOARD_IS_APPLICATION_BUTTON(child)) continue;
+
+		/* Do not check preview icon for drag if available */
+		if(priv->dragPreviewIcon && child==priv->dragPreviewIcon) continue;
 
 		/* Check if application button provides requested desktop file */
 		desktopAppInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(child));
