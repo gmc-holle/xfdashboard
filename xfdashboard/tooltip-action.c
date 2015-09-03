@@ -86,7 +86,9 @@ enum
 static guint XfdashboardTooltipActionSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-static ClutterActor		*_xfdashboard_tooltip_last_event_actor=NULL;
+#define DEFAULT_TOOLTIP_TIMEOUT 	500		/* Keep this tooltip timeout in sync with GTK+ */
+
+static ClutterActor					*_xfdashboard_tooltip_last_event_actor=NULL;
 
 /* Pointer left actor with tooltip */
 static gboolean _xfdashboard_tooltip_action_on_leave_event(XfdashboardTooltipAction *self,
@@ -254,9 +256,23 @@ static gboolean _xfdashboard_tooltip_action_on_motion_event(XfdashboardTooltipAc
 	_xfdashboard_tooltip_last_event_actor=actor;
 
 	/* Set up new timeout source */
+#if GTK_CHECK_VERSION(3, 14 ,0)
+	/* Since GTK+ version 3.10 the setting "gtk-tooltip-timeout" is
+	 * not supported anymore and ignored by GTK+ derived application.
+	 * So we should also. We set the timeout statically to the default
+	 * duration which GTK+ is also using.
+	 * This also prevents warning about forthcoming deprecation of this
+	 * setting printed to console.
+	 */
+	tooltipTimeout=DEFAULT_TOOLTIP_TIMEOUT;
+#else
+	/* Get configured duration when a tooltip should be shown from
+	 * GTK+ settings.
+	 */
 	g_object_get(gtk_settings_get_default(),
 					"gtk-tooltip-timeout", &tooltipTimeout,
 					NULL);
+#endif
 
 	priv->timeoutSourceID=clutter_threads_add_timeout(tooltipTimeout,
 														(GSourceFunc)_xfdashboard_tooltip_action_on_timeout,
