@@ -543,6 +543,11 @@ static void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardQuicklaunch *self,
 			/* Emit signal for newly added favourite */
 			g_signal_emit(self, XfdashboardQuicklaunchSignals[SIGNAL_FAVOURITE_ADDED], 0, appInfo);
 		}
+
+		/* Set CSS class for favourite to get it included when property is updated
+		 * in function _xfdashboard_quicklaunch_update_property_from_icons.
+		 */
+		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->dragPreviewIcon), "is-favourite-app");
 	}
 
 	/* If drag mode is reorder move originally dragged application icon
