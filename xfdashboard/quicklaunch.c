@@ -463,6 +463,28 @@ static gboolean _xfdashboard_quicklaunch_on_drop_begin(XfdashboardQuicklaunch *s
 		}
 	}
 
+	/* Hide all dynamically added application button for non-favourite apps */
+	if(priv->dragMode!=DRAG_MODE_NONE)
+	{
+		ClutterActorIter			iter;
+		ClutterActor				*child;
+
+		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+		while(clutter_actor_iter_next(&iter, &child))
+		{
+			/* Only check application buttons */
+			if(!XFDASHBOARD_IS_APPLICATION_BUTTON(child)) continue;
+
+			/* If actor is an application button for non-favourite apps,
+			 * hide it now.
+			 */
+			if(xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(child), "is-dynamic-app"))
+			{
+				clutter_actor_hide(child);
+			}
+		}
+	}
+
 	/* If drag mode is set return TRUE because we can handle dragged actor
 	 * otherwise return FALSE
 	 */
@@ -536,6 +558,8 @@ static void _xfdashboard_quicklaunch_on_drop_end(XfdashboardQuicklaunch *self,
 {
 	XfdashboardQuicklaunchPrivate		*priv;
 	ClutterActor						*draggedActor;
+	ClutterActorIter					iter;
+	ClutterActor						*child;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
@@ -545,6 +569,22 @@ static void _xfdashboard_quicklaunch_on_drop_end(XfdashboardQuicklaunch *self,
 
 	/* Get dragged actor */
 	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
+
+	/* Show hidden application buttons for non-favourite apps again */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Only check application buttons */
+		if(!XFDASHBOARD_IS_APPLICATION_BUTTON(child)) continue;
+
+		/* If actor is an application button for non-favourite apps,
+		 * show it now.
+		 */
+		if(xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(child), "is-dynamic-app"))
+		{
+			clutter_actor_show(child);
+		}
+	}
 
 	/* Destroy preview icon and show originally dragged favourite icon.
 	 * Doing it this way will restore the order of favourite icons.
