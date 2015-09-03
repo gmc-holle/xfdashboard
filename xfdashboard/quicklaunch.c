@@ -500,6 +500,8 @@ static void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardQuicklaunch *self,
 {
 	XfdashboardQuicklaunchPrivate		*priv;
 	ClutterActor						*draggedActor;
+	ClutterActorIter					iter;
+	ClutterActor						*child;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(XFDASHBOARD_IS_DRAG_ACTION(inDragAction));
@@ -510,10 +512,13 @@ static void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardQuicklaunch *self,
 	/* Get dragged actor */
 	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
 
-	/* Emit signal when a favourite icon was added */
+	/* Remove dynamically added non-favourite application buttons and
+	 * emit signal when a favourite icon was added.
+	 */
 	if(priv->dragMode==DRAG_MODE_CREATE)
 	{
 		GAppInfo						*appInfo;
+		ClutterActor					*actor;
 
 		xfdashboard_notify(CLUTTER_ACTOR(self),
 							xfdashboard_application_button_get_icon_name(XFDASHBOARD_APPLICATION_BUTTON(draggedActor)),
@@ -523,6 +528,13 @@ static void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardQuicklaunch *self,
 		appInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
 		if(appInfo)
 		{
+			/* Remove any application button marked as dynamically added for non-favourite
+			 * apps for the newly added favourite if available.
+			 */
+			actor=_xfdashboard_quicklaunch_get_actor_for_appinfo(self, appInfo);
+			if(actor) clutter_actor_destroy(actor);
+
+			/* Emit signal for newly added favourite */
 			g_signal_emit(self, XfdashboardQuicklaunchSignals[SIGNAL_FAVOURITE_ADDED], 0, appInfo);
 		}
 	}
@@ -541,6 +553,22 @@ static void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardQuicklaunch *self,
 		{
 			clutter_actor_destroy(priv->dragPreviewIcon);
 			priv->dragPreviewIcon=NULL;
+		}
+	}
+
+	/* Show (remaining) hidden application buttons for non-favourite apps again */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Only check application buttons */
+		if(!XFDASHBOARD_IS_APPLICATION_BUTTON(child)) continue;
+
+		/* If actor is an application button for non-favourite apps,
+		 * show it now.
+		 */
+		if(xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(child), "is-dynamic-app"))
+		{
+			clutter_actor_show(child);
 		}
 	}
 
