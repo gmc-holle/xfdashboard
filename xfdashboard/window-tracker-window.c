@@ -162,7 +162,7 @@ static void _xfdashboard_window_tracker_window_on_screen_size_changed(Xfdashboar
 			bottomIndex=i;
 		}
 	}
-	g_debug("Found edge monitors: left=%d (monitor %d), right=%d (monitor %d), top=%d (monitor %d), bottom=%d (motniro %d)",
+	g_debug("Found edge monitors: left=%d (monitor %d), right=%d (monitor %d), top=%d (monitor %d), bottom=%d (monitor %d)",
 				left, leftIndex,
 				right, rightIndex,
 				top, topIndex,
