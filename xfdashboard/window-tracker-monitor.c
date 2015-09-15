@@ -101,8 +101,8 @@ static void _xfdashboard_window_tracker_monitor_update_primary(XfdashboardWindow
 	{
 		g_debug("Monitor %d changes primary state from %s to %s",
 					priv->monitorIndex,
-					isPrimary ? "yes" : "no",
-					priv->isPrimary ? "yes" : "no");
+					priv->isPrimary ? "yes" : "no",
+					isPrimary ? "yes" : "no");
 
 		/* Set value */
 		priv->isPrimary=isPrimary;
