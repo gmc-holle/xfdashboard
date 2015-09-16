@@ -1034,18 +1034,41 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 	/* If builder is already set up return immediately */
 	if(priv->builder) return(TRUE);
 
-	/* Find UI file */
-	builderFile=g_build_filename(PACKAGE_DATADIR, "xfdashboard", PREFERENCES_UI_FILE, NULL);
-	g_debug("Trying UI file: %s", builderFile);
-	if(!g_file_test(builderFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+	/* Search UI file in given environment variable if set.
+	 * This makes development easier to test modifications at UI file.
+	 */
+	if(!builderFile)
 	{
-		g_critical(_("Could not find UI file '%s'."), builderFile);
+		const gchar		*envPath;
 
-		/* Release allocated resources */
-		g_free(builderFile);
+		envPath=g_getenv("XFDASHBOARD_UI_PATH");
+		if(envPath)
+		{
+			builderFile=g_build_filename(envPath, PREFERENCES_UI_FILE, NULL);
+			g_debug("Trying UI file: %s", builderFile);
+			if(!g_file_test(builderFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+			{
+				g_free(builderFile);
+				builderFile=NULL;
+			}
+		}
+	}
 
-		/* Return fail result */
-		return(FALSE);
+	/* Find UI file at install path */
+	if(!builderFile)
+	{
+		builderFile=g_build_filename(PACKAGE_DATADIR, "xfdashboard", PREFERENCES_UI_FILE, NULL);
+		g_debug("Trying UI file: %s", builderFile);
+		if(!g_file_test(builderFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+		{
+			g_critical(_("Could not find UI file '%s'."), builderFile);
+
+			/* Release allocated resources */
+			g_free(builderFile);
+
+			/* Return fail result */
+			return(FALSE);
+		}
 	}
 
 	/* Create builder */
