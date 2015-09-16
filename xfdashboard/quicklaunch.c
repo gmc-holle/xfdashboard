@@ -309,9 +309,9 @@ static gboolean _xfdashboard_quicklaunch_has_favourite_appinfo(XfdashboardQuickl
 /* An application icon (favourite) in quicklaunch was clicked */
 static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch *self, gpointer inUserData)
 {
-	XfdashboardQuicklaunchPrivate		*priv;
-	XfdashboardApplicationButton		*button;
-	gboolean							launchNewInstance;
+	XfdashboardQuicklaunchPrivate			*priv;
+	XfdashboardApplicationButton			*button;
+	gboolean								launchNewInstance;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
@@ -328,9 +328,10 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 												DEFAULT_LAUNCH_NEW_INSTANCE);
 	if(!launchNewInstance)
 	{
-		GAppInfo						*appInfo;
-		const GList						*windows;
-		XfdashboardWindowTrackerWindow	*lastActiveWindow;
+		GAppInfo							*appInfo;
+		const GList							*windows;
+		XfdashboardWindowTrackerWindow		*lastActiveWindow;
+		XfdashboardWindowTrackerWorkspace	*lastActiveWorkspace;
 
 		/* Get application information of application button */
 		appInfo=xfdashboard_application_button_get_app_info(button);
@@ -356,9 +357,16 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 			/* Get last active window for application which is the first one in list */
 			lastActiveWindow=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windows->data);
 
-			/* Activate last active window of application if available */
+			/* If last active window for application if available, wwitch to workspace
+			 * where it is placed at and activate it.
+			 */
 			if(lastActiveWindow)
 			{
+				/* Switch to workspace where window is placed at */
+				lastActiveWorkspace=xfdashboard_window_tracker_window_get_workspace(lastActiveWindow);
+				xfdashboard_window_tracker_workspace_activate(lastActiveWorkspace);
+
+				/* Activate window */
 				xfdashboard_window_tracker_window_activate(lastActiveWindow);
 
 				/* Activating last active window of application seems to be successfully
