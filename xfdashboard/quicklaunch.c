@@ -127,7 +127,10 @@ enum
 static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define FAVOURITES_XFCONF_PROP		"/favourites"
+#define FAVOURITES_XFCONF_PROP				"/favourites"
+
+#define LAUNCH_NEW_INSTANCE_XFCONF_PROP		"/always-launch-new-instance"
+#define DEFAULT_LAUNCH_NEW_INSTANCE			TRUE
 
 #define DEFAULT_SCALE_MIN			0.1
 #define DEFAULT_SCALE_MAX			1.0
@@ -315,12 +318,15 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 
 	priv=self->priv;
 	button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
-	launchNewInstance=TRUE;
 
 	/* If user wants to activate the last active windows for a running instance
 	 * of application whose button was clicked, then check if a window exists
 	 * and activate it. Otherwise launch a new instance.
 	 */
+	launchNewInstance=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(),
+												LAUNCH_NEW_INSTANCE_XFCONF_PROP,
+												DEFAULT_LAUNCH_NEW_INSTANCE);
+
 	if(!launchNewInstance)
 	{
 		GAppInfo						*appInfo;
