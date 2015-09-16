@@ -86,9 +86,9 @@ Configure xfdashboard</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_top">8</property>
-                    <property name="xalign">0</property>
                     <property name="label" translatable="yes">&lt;b&gt;General settings:&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
+                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -260,18 +260,36 @@ The duration is calculated by the length of the text to show in notification. Th
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label8">
+                  <object class="GtkCheckButton" id="always-launch-new-instance">
+                    <property name="label" translatable="yes">Always start a new instance for application</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_top">16</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="tooltip_markup" translatable="yes">When enabled and an icon in quicklaunch is clicked it will always start a new instance of the application.
+
+When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started.</property>
                     <property name="xalign">0</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Applications view:&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
+                    <property name="draw_indicator">True</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label8">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_top">16</property>
+                    <property name="label" translatable="yes">&lt;b&gt;Applications view:&lt;/b&gt;</property>
+                    <property name="use_markup">True</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">7</property>
                   </packing>
                 </child>
                 <child>
@@ -287,7 +305,7 @@ The duration is calculated by the length of the text to show in notification. Th
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">7</property>
+                    <property name="position">8</property>
                   </packing>
                 </child>
                 <child>
@@ -295,14 +313,14 @@ The duration is calculated by the length of the text to show in notification. Th
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_top">16</property>
-                    <property name="xalign">0</property>
                     <property name="label" translatable="yes">&lt;b&gt;Windows view:&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
+                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">8</property>
+                    <property name="position">9</property>
                   </packing>
                 </child>
                 <child>
@@ -319,7 +337,7 @@ The duration is calculated by the length of the text to show in notification. Th
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">9</property>
+                    <property name="position">10</property>
                   </packing>
                 </child>
                 <child>
@@ -327,14 +345,14 @@ The duration is calculated by the length of the text to show in notification. Th
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_top">16</property>
-                    <property name="xalign">0</property>
                     <property name="label" translatable="yes">&lt;b&gt;Search view:&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
+                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">10</property>
+                    <property name="position">11</property>
                   </packing>
                 </child>
                 <child>
@@ -371,7 +389,7 @@ The duration is calculated by the length of the text to show in notification. Th
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">11</property>
+                    <property name="position">12</property>
                   </packing>
                 </child>
               </object>
@@ -437,10 +455,10 @@ The duration is calculated by the length of the text to show in notification. Th
                         <child>
                           <object class="GtkLabel" id="theme-name-label">
                             <property name="can_focus">False</property>
-                            <property name="xalign">1</property>
-                            <property name="yalign">0</property>
                             <property name="label" translatable="yes">&lt;b&gt;Name:&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
+                            <property name="xalign">1</property>
+                            <property name="yalign">0</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -461,10 +479,10 @@ The duration is calculated by the length of the text to show in notification. Th
                         <child>
                           <object class="GtkLabel" id="theme-author-label">
                             <property name="can_focus">False</property>
-                            <property name="xalign">1</property>
-                            <property name="yalign">0</property>
                             <property name="label" translatable="yes">&lt;b&gt;Author:&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
+                            <property name="xalign">1</property>
+                            <property name="yalign">0</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -476,9 +494,9 @@ The duration is calculated by the length of the text to show in notification. Th
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="margin_left">4</property>
+                            <property name="single_line_mode">True</property>
                             <property name="xalign">0</property>
                             <property name="yalign">0</property>
-                            <property name="single_line_mode">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -488,10 +506,10 @@ The duration is calculated by the length of the text to show in notification. Th
                         <child>
                           <object class="GtkLabel" id="theme-version-label">
                             <property name="can_focus">False</property>
-                            <property name="xalign">1</property>
-                            <property name="yalign">0</property>
                             <property name="label" translatable="yes">&lt;b&gt;Version:&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
+                            <property name="xalign">1</property>
+                            <property name="yalign">0</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -502,9 +520,9 @@ The duration is calculated by the length of the text to show in notification. Th
                           <object class="GtkLabel" id="theme-version">
                             <property name="can_focus">False</property>
                             <property name="margin_left">4</property>
+                            <property name="single_line_mode">True</property>
                             <property name="xalign">0</property>
                             <property name="yalign">0</property>
-                            <property name="single_line_mode">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -514,10 +532,10 @@ The duration is calculated by the length of the text to show in notification. Th
                         <child>
                           <object class="GtkLabel" id="theme-description-label">
                             <property name="can_focus">False</property>
-                            <property name="xalign">1</property>
-                            <property name="yalign">0</property>
                             <property name="label" translatable="yes">&lt;b&gt;Description:&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
+                            <property name="xalign">1</property>
+                            <property name="yalign">0</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -528,9 +546,9 @@ The duration is calculated by the length of the text to show in notification. Th
                           <object class="GtkLabel" id="theme-description">
                             <property name="can_focus">False</property>
                             <property name="margin_left">4</property>
+                            <property name="wrap">True</property>
                             <property name="xalign">0</property>
                             <property name="yalign">0</property>
-                            <property name="wrap">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>

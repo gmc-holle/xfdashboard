@@ -52,6 +52,7 @@ struct _XfdashboardSettingsPrivate
 	GtkWidget		*widgetNotificationTimeout;
 	GtkWidget		*widgetEnableUnmappedWindowWorkaround;
 	GtkWidget		*widgetWindowCreationPriority;
+	GtkWidget		*widgetAlwaysLaunchNewInstance;
 	GtkWidget		*widgetShowAllApps;
 	GtkWidget		*widgetScrollEventChangedWorkspace;
 	GtkWidget		*widgetDelaySearchTimeout;
@@ -80,6 +81,7 @@ struct _XfdashboardSettingsPrivate
 #define DEFAULT_THEME								"xfdashboard"
 #define DEFAULT_ENABLE_HOTKEY						FALSE
 #define DEFAULT_WINDOW_CONTENT_CREATION_PRIORITY	"immediate"
+#define DEFAULT_LAUNCH_NEW_INSTANCE					TRUE
 #define MAX_SCREENSHOT_WIDTH						400
 
 typedef struct _XfdashboardSettingsResumableViews			XfdashboardSettingsResumableViews;
@@ -1081,6 +1083,7 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 							priv->widgetResetSearchOnResume,
 							"active");
 
+
 	priv->widgetSwitchViewOnResume=GTK_WIDGET(gtk_builder_get_object(priv->builder, "switch-to-view-on-resume"));
 	if(priv->widgetSwitchViewOnResume)
 	{
@@ -1177,6 +1180,14 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 							"/enable-unmapped-window-workaround",
 							G_TYPE_BOOLEAN,
 							priv->widgetEnableUnmappedWindowWorkaround,
+							"active");
+
+	priv->widgetAlwaysLaunchNewInstance=GTK_WIDGET(gtk_builder_get_object(priv->builder, "always-launch-new-instance"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(priv->widgetAlwaysLaunchNewInstance), DEFAULT_LAUNCH_NEW_INSTANCE);
+	xfconf_g_property_bind(priv->xfconfChannel,
+							"/always-launch-new-instance",
+							G_TYPE_BOOLEAN,
+							priv->widgetAlwaysLaunchNewInstance,
 							"active");
 
 	priv->widgetShowAllApps=GTK_WIDGET(gtk_builder_get_object(priv->builder, "show-all-apps"));
@@ -1378,6 +1389,8 @@ static void _xfdashboard_settings_dispose(GObject *inObject)
 	priv->widgetSwitchViewOnResume=NULL;
 	priv->widgetNotificationTimeout=NULL;
 	priv->widgetEnableUnmappedWindowWorkaround=NULL;
+	priv->widgetWindowCreationPriority=NULL;
+	priv->widgetAlwaysLaunchNewInstance=NULL;
 	priv->widgetScrollEventChangedWorkspace=NULL;
 	priv->widgetDelaySearchTimeout=NULL;
 	priv->widgetThemes=NULL;
@@ -1440,6 +1453,7 @@ static void xfdashboard_settings_init(XfdashboardSettings *self)
 	priv->widgetNotificationTimeout=NULL;
 	priv->widgetEnableUnmappedWindowWorkaround=NULL;
 	priv->widgetWindowCreationPriority=NULL;
+	priv->widgetAlwaysLaunchNewInstance=NULL;
 	priv->widgetScrollEventChangedWorkspace=NULL;
 	priv->widgetDelaySearchTimeout=NULL;
 	priv->widgetThemes=NULL;
