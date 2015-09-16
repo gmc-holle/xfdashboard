@@ -326,7 +326,6 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 	launchNewInstance=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(),
 												LAUNCH_NEW_INSTANCE_XFCONF_PROP,
 												DEFAULT_LAUNCH_NEW_INSTANCE);
-
 	if(!launchNewInstance)
 	{
 		GAppInfo						*appInfo;
