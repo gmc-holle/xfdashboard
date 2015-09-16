@@ -133,7 +133,8 @@ static gboolean _xfdashboard_application_tracker_item_add_window(XfdashboardAppl
 	}
 
 	/* If we get here the window was not found in list of windows of application
-	 * tracker item, so add it to this list.
+	 * tracker item, so add it to beginning of this list as it should be the
+	 * last active windows for this application.
 	 */
 	inItem->windows=g_list_prepend(inItem->windows, inWindow);
 
@@ -701,6 +702,44 @@ static void _xfdashboard_application_tracker_on_window_closed(XfdashboardApplica
 	}
 }
 
+/* The active window has changed */
+static void _xfdashboard_application_tracker_on_active_window_changed(XfdashboardApplicationTracker *self,
+																		XfdashboardWindowTrackerWindow *inOldActiveWindow,
+																		XfdashboardWindowTrackerWindow *inNewActiveWindow,
+																		gpointer inUserData)
+{
+	XfdashboardApplicationTrackerItem		*item;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_TRACKER(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inNewActiveWindow));
+
+	/* Find application tracker item in list of known running applications
+	 * matching the new active window.
+	 */
+	item= _xfdashboard_application_tracker_find_item_by_window(self, inNewActiveWindow);
+	if(!item)
+	{
+		g_debug("Could not find running application for new active window '%s'",
+					xfdashboard_window_tracker_window_get_title(inNewActiveWindow));
+
+		return;
+	}
+
+	g_debug("New active window is '%s' and belongs to desktop ID '%s'",
+				xfdashboard_window_tracker_window_get_title(inNewActiveWindow),
+				item->desktopID);
+
+	/* Move new active window of found application tracker item to begin of
+	 * list of windows by removing window from list and prepending it to list
+	 * again. This will sort the list of window in order of last activation.
+	 * That means the first window in list was the last active one for this
+	 * application.
+	 */
+	item->windows=g_list_remove(item->windows, inNewActiveWindow);
+	item->windows=g_list_prepend(item->windows, inNewActiveWindow);
+}
+
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -796,6 +835,10 @@ static void xfdashboard_application_tracker_init(XfdashboardApplicationTracker *
 	g_signal_connect_swapped(priv->windowTracker,
 								"window-closed",
 								G_CALLBACK(_xfdashboard_application_tracker_on_window_closed),
+								self);
+	g_signal_connect_swapped(priv->windowTracker,
+								"active-window-changed",
+								G_CALLBACK(_xfdashboard_application_tracker_on_active_window_changed),
 								self);
 }
 
