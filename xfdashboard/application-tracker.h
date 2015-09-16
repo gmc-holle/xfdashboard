@@ -69,6 +69,12 @@ gboolean xfdashboard_application_tracker_is_running_by_desktop_id(XfdashboardApp
 																	const gchar *inDesktopID);
 gboolean xfdashboard_application_tracker_is_running_by_app_info(XfdashboardApplicationTracker *self,
 																GAppInfo *inAppInfo);
+
+const GList* xfdashboard_application_tracker_get_window_list_by_desktop_id(XfdashboardApplicationTracker *self,
+																			const gchar *inDesktopID);
+const GList*  xfdashboard_application_tracker_get_window_list_by_app_info(XfdashboardApplicationTracker *self,
+																			GAppInfo *inAppInfo);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_APPLICATION_TRACKER__ */

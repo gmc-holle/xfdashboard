@@ -874,3 +874,38 @@ gboolean xfdashboard_application_tracker_is_running_by_app_info(XfdashboardAppli
 
 	return(_xfdashboard_application_tracker_find_item_by_app_info(self, inAppInfo) ? TRUE : FALSE);
 }
+
+/* Get window list (sorted by last activation time) for an application.
+ * The returned GList is owned by application and should not be modified or freed.
+ */
+const GList* xfdashboard_application_tracker_get_window_list_by_desktop_id(XfdashboardApplicationTracker *self,
+																			const gchar *inDesktopID)
+{
+	XfdashboardApplicationTrackerItem	*item;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_TRACKER(self), NULL);
+	g_return_val_if_fail(inDesktopID && *inDesktopID, NULL);
+
+	/* Get application tracker item for requested desktop ID */
+	item=_xfdashboard_application_tracker_find_item_by_desktop_id(self, inDesktopID);
+	if(!item) return(NULL);
+
+	/* Return list of windows for found application tracker item */
+	return(item->windows);
+}
+
+const GList*  xfdashboard_application_tracker_get_window_list_by_app_info(XfdashboardApplicationTracker *self,
+																			GAppInfo *inAppInfo)
+{
+	XfdashboardApplicationTrackerItem	*item;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_TRACKER(self), NULL);
+	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), NULL);
+
+	/* Get application tracker item for requested desktop ID */
+	item=_xfdashboard_application_tracker_find_item_by_app_info(self, inAppInfo);
+	if(!item) return(NULL);
+
+	/* Return list of windows for found application tracker item */
+	return(item->windows);
+}
