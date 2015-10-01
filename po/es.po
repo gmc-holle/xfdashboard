@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Miguel Hernández <michelangelo93@gmail.com>, 2015
 # Pablo Roberto Francisco Lezaeta Reyes <prflr88@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-08 06:36+0200\n"
-"PO-Revision-Date: 2015-09-08 04:37+0000\n"
-"Last-Translator: Stephan Haller <nomad@froevel.de>\n"
+"PO-Revision-Date: 2015-09-17 18:57+0000\n"
+"Last-Translator: Miguel Hernández <michelangelo93@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/xfdashboard/xfdashboard/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,7 +22,7 @@ msgstr ""
 #: ../data/xfdashboard.desktop.in.in.h:1
 #: ../data/xfdashboard-autostart.desktop.in.in.h:1
 msgid "Xfdashboard"
-msgstr "Tablero XF"
+msgstr "Xfdashboard"
 
 #: ../data/xfdashboard.desktop.in.in.h:2
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:1
@@ -30,21 +31,21 @@ msgstr "Tal vez un intérprete de órdenes a modo de panel para Xfce"
 
 #: ../data/xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
-msgstr "Iniciar el TableroXf como servicio en segundo plano"
+msgstr "Iniciar Xfdashboard como servicio en segundo plano"
 
 #: ../data/xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
-msgstr ""
+msgstr "Ajustes de Xfdashboard"
 
 #: ../data/xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
-msgstr ""
+msgstr "Configurar Xfdashboard"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
-msgstr "El TableroXf provee un Intérprete de panel como el de GNOME para usarse en el entorno de escritorio Xfce."
+msgstr "Xfdashboard provee un Intérprete de panel como el de GNOME para usarse en el entorno de escritorio Xfce."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:3
 msgid ""
@@ -203,11 +204,11 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:3
 msgid "<b>General settings:</b>"
-msgstr ""
+msgstr "<b>Ajustes generales:</b>"
 
 #: ../data/data/preferences.ui.h:4
 msgid "Reset search view when resumed"
-msgstr ""
+msgstr "Restablecer la vista de búsqueda cuando se reanude"
 
 #: ../data/data/preferences.ui.h:5
 msgid ""
@@ -225,7 +226,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:11
 msgid "Switch to view when resumed:"
-msgstr ""
+msgstr "Cambiar a vista cuando se reanude:"
 
 #: ../data/data/preferences.ui.h:12
 msgid ""
@@ -236,11 +237,11 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:15
 msgid "Minimum notification timeout:"
-msgstr ""
+msgstr "Tiempo mínimo de espera de la notificación:"
 
 #: ../data/data/preferences.ui.h:16
 msgid "Enable workaround for minimized windows"
-msgstr ""
+msgstr "Activar solución para minimizar ventanas"
 
 #: ../data/data/preferences.ui.h:17
 msgid ""
@@ -262,143 +263,143 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:24
 msgid "<b>Applications view:</b>"
-msgstr ""
+msgstr "<b>Vista de aplicaciones:</b>"
 
 #: ../data/data/preferences.ui.h:25
 msgid "Show menu for all installed applications"
-msgstr ""
+msgstr "Mostrar menú para todas las aplicaciones instaladas"
 
 #: ../data/data/preferences.ui.h:26
 msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
-msgstr ""
+msgstr "Cuando se activa un menú \"todas las aplicaciones\" con todas las instaladas aplicaciones se mostrarán como una vista de aplicaciones."
 
 #: ../data/data/preferences.ui.h:27
 msgid "<b>Windows view:</b>"
-msgstr ""
+msgstr "<b>Vista de ventanas:</b>"
 
 #: ../data/data/preferences.ui.h:28
 msgid "Mouse wheel changes workspace"
-msgstr ""
+msgstr "La rueda del ratón cambia de espacio de trabajo"
 
 #: ../data/data/preferences.ui.h:29
 msgid ""
 "When enabled any scroll event, like mouse-wheel up and down, at the windows "
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
-msgstr ""
+msgstr "Cuando se activa cualquier desplazamiento, como subir y bajar la rueda del ratón, la vista de ventanas cambiarán al del espacio de trabajo actual. Este comportamiento es el mismo que seleccionar un espacio de trabajo."
 
 #: ../data/data/preferences.ui.h:30
 msgid "<b>Search view:</b>"
-msgstr ""
+msgstr "<b>Vista de búsqueda:</b>"
 
 #: ../data/data/preferences.ui.h:31
 msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
-msgstr ""
+msgstr "Establece el intervalo de búsqueda que debe retrasarse después de que se haya introducido el primer carácter."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Delay initial search interval:"
-msgstr ""
+msgstr "Retrasar el intervalo de búsqueda inicial:"
 
 #: ../data/data/preferences.ui.h:33
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: ../data/data/preferences.ui.h:34
 msgid "<b>Name:</b>"
-msgstr ""
+msgstr "<b>Nombre:</b>"
 
 #: ../data/data/preferences.ui.h:35
 msgid "<b>Author:</b>"
-msgstr ""
+msgstr "<b>Autor:</b>"
 
 #: ../data/data/preferences.ui.h:36
 msgid "<b>Version:</b>"
-msgstr ""
+msgstr "<b>Version:</b>"
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Description:</b>"
-msgstr ""
+msgstr "<b>Descripción:</b>"
 
 #: ../data/data/preferences.ui.h:38
 msgid "Themes"
-msgstr ""
+msgstr "Temas"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard"
-msgstr ""
+msgstr "xfdashboard"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:2
 msgid "Default theme for xfdashboard"
-msgstr "Tema predeterminado para el Tablero Xf"
+msgstr "Tema predeterminado para Xfdashboard"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-auber"
-msgstr "Tablero Xf auber"
+msgstr "xfdashboard-auber"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
 msgid "Aubergine theme for xfdashboard"
-msgstr "Tema Aubergín para el Tablero Xf"
+msgstr "Tema de color berenjena para xfdashboard"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-blue"
-msgstr "Tablero Xf azul"
+msgstr "xfdashboard-blue"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:2
 msgid "Blue theme for xfdashboard"
-msgstr ""
+msgstr "Tema de color azul para xfdashboard"
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-dark"
-msgstr "Tablero Xf oscuro"
+msgstr "xfdashboard-dark"
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:2
 msgid "Dark theme for xfdashboard"
-msgstr "Tema oscuro para el Tablero Xf"
+msgstr "Tema de color oscuro para el xfdashboard"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-mint"
-msgstr ""
+msgstr "xfdashboard-mint"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
 msgid "Fresh-green flavored theme for xfdashboard"
-msgstr "Tema color verde para el Tablero Xf"
+msgstr "Tema con sabor a verde fresco para xfdashboard"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-moranga"
-msgstr "Tablero Xf moranga"
+msgstr "xfdashboard-moranga"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:2
 msgid "Moranga theme for xfdashboard"
-msgstr "Tema Moranga para el Tablero Xf"
+msgstr "Tema de color calabaza para xfdashboard"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-wine"
-msgstr "Tablero Xf vino"
+msgstr "xfdashboard-wine"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
 msgid "Red wine theme for xfdashboard"
-msgstr "Tema de color rojo vino para el Tablero Xf"
+msgstr "Tema de color vino para el xfdashboard"
 
 #: ../settings/main.c:45
 msgid "Settings manager socket"
-msgstr ""
+msgstr "Gestor de ajustes de socket"
 
 #: ../settings/main.c:45
 msgid "SOCKET ID"
-msgstr ""
+msgstr "ID SOCKET"
 
 #: ../settings/main.c:46
 msgid "Version information"
-msgstr ""
+msgstr "Información de la versión"
 
 #. Initialize GTK+
 #: ../settings/main.c:56
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../settings/main.c:60
 #, c-format
@@ -422,77 +423,77 @@ msgstr ""
 #: ../xfdashboard/window-content.c:478 ../xfdashboard/window-content.c:982
 #: ../xfdashboard/window-content.c:1137 ../xfdashboard/window-content.c:1338
 msgid "Unknown error"
-msgstr ""
+msgstr "Error desconocido"
 
 #: ../settings/main.c:83
 #, c-format
 msgid "Failed to initialize xfconf: %s"
-msgstr ""
+msgstr "Falló al iniciar xconf: %s"
 
 #: ../settings/main.c:95
 msgid "Could not create the settings dialog."
-msgstr ""
+msgstr "No se puedo crear el diálogo de ajustes."
 
 #: ../settings/settings.c:94
 msgid "Do nothing"
-msgstr ""
+msgstr "No hacer nada"
 
 #: ../settings/settings.c:95
 msgid "Windows view"
-msgstr ""
+msgstr "Vista de ventanas"
 
 #: ../settings/settings.c:96
 msgid "Applications view"
-msgstr ""
+msgstr "Vista de aplicaciones"
 
 #: ../settings/settings.c:109 ../settings/settings.c:365
 msgid "Immediately"
-msgstr ""
+msgstr "Inmediatamente"
 
 #: ../settings/settings.c:110
 msgid "High"
-msgstr ""
+msgstr "Alto"
 
 #: ../settings/settings.c:111
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: ../settings/settings.c:112
 msgid "Low"
-msgstr ""
+msgstr "Bajo"
 
 #: ../settings/settings.c:307
 msgid "seconds"
-msgstr ""
+msgstr "segundos"
 
 #: ../settings/settings.c:361
 msgid "ms"
-msgstr ""
+msgstr "ms"
 
 #: ../settings/settings.c:1040
 #, c-format
 msgid "Could not find UI file '%s'."
-msgstr ""
+msgstr "No se pudo encontrar el archivo de UI '%s'."
 
 #: ../settings/settings.c:1053
 #, c-format
 msgid "Could not load UI resources from '%s': %s"
-msgstr ""
+msgstr "No se pudieron cargar los recursos de la UI desde '%s': %s"
 
 #: ../settings/settings.c:1325
 msgid "Theme"
-msgstr ""
+msgstr "Tema"
 
 #: ../settings/settings.c:1486 ../settings/settings.c:1520
 msgid "Could not get dialog from UI file."
-msgstr ""
+msgstr "No se pudo obtener el diálogo desde el archivo de UI."
 
 #: ../xfdashboard/actor.c:569 ../xfdashboard/stylable.c:203
 #, c-format
 msgid ""
 "Could not transform CSS string value for property '%s' to type %s of class "
 "%s"
-msgstr ""
+msgstr "No se pudo transformar el valor de la cadena de CSS para la propiedad '%s' al tipo %s de clase %s"
 
 #: ../xfdashboard/actor.c:926
 msgid "Can focus"
@@ -512,7 +513,7 @@ msgstr ""
 
 #: ../xfdashboard/application-button.c:345
 msgid "Application information"
-msgstr ""
+msgstr "Información de la aplicación"
 
 #: ../xfdashboard/application-button.c:346
 msgid "The application information whose title and description to display"
@@ -520,33 +521,33 @@ msgstr ""
 
 #: ../xfdashboard/application-button.c:352
 msgid "Show description"
-msgstr ""
+msgstr "Mostrar descripción"
 
 #: ../xfdashboard/application-button.c:353
 msgid "Show also description next to tile"
-msgstr ""
+msgstr "Mostrar también la descripción al lado del icono"
 
 #: ../xfdashboard/application-button.c:359
 #: ../xfdashboard/applications-view.c:1323
 msgid "Format title only"
-msgstr ""
+msgstr "Formato de título solamente"
 
 #: ../xfdashboard/application-button.c:360
 #: ../xfdashboard/applications-view.c:1324
 msgid "Format string used when only title is display"
-msgstr ""
+msgstr "Formato de cadena usado cuando solo se muestre el título"
 
 #: ../xfdashboard/application-button.c:366
 #: ../xfdashboard/applications-view.c:1330
 msgid "Format title and description"
-msgstr ""
+msgstr "Formato de título y descripción"
 
 #: ../xfdashboard/application-button.c:367
 #: ../xfdashboard/applications-view.c:1331
 msgid ""
 "Format string used when title and description is display. First argument is "
 "title and second one is description."
-msgstr ""
+msgstr "Formato de cadena usado cuando el título y la descripción se muestre. El primer argumento es el título y el segundo la descripción."
 
 #: ../xfdashboard/application-button.c:663
 #: ../xfdashboard/application-button.c:666
@@ -554,12 +555,12 @@ msgstr ""
 #: ../xfdashboard/application-button.c:683
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr ""
+msgstr "La ejecución de la aplicación '%s' falló: %s"
 
 #: ../xfdashboard/application-button.c:665
 #: ../xfdashboard/application-button.c:668
 msgid "No information available for application"
-msgstr ""
+msgstr "No hay información disponible para la aplicación"
 
 #: ../xfdashboard/application-button.c:682
 #: ../xfdashboard/application-button.c:685 ../xfdashboard/application.c:251
@@ -578,16 +579,16 @@ msgstr "Aplicación «%s» ejecutada"
 #: ../xfdashboard/application.c:249 ../xfdashboard/application.c:256
 #, c-format
 msgid "Could not load theme '%s': %s"
-msgstr ""
+msgstr "No se pudo cargar el tema '%s': %s"
 
 #: ../xfdashboard/application.c:330
 #, c-format
 msgid "Could not initialize xfconf: %s"
-msgstr ""
+msgstr "No se pudo iniciar xfconf: %s"
 
 #: ../xfdashboard/application.c:342
 msgid "Could not initialize bindings"
-msgstr ""
+msgstr "No se pudo init"
 
 #: ../xfdashboard/application.c:348
 #, c-format
@@ -596,16 +597,16 @@ msgstr ""
 
 #: ../xfdashboard/application.c:358
 msgid "Could not initialize application database"
-msgstr ""
+msgstr "No se pudo iniciar la base de datos de la aplicación"
 
 #: ../xfdashboard/application.c:364
 #, c-format
 msgid "Could not load application database: %s"
-msgstr ""
+msgstr "No se pudo cargar la base de datos de la aplicación: %s"
 
 #: ../xfdashboard/application.c:374
 msgid "Could not initialize application tracker"
-msgstr ""
+msgstr "No se puedo iniciar el rastreador de la aplicación"
 
 #: ../xfdashboard/application.c:386
 msgid ""
@@ -625,15 +626,15 @@ msgstr "¡Bienvenido a %s!"
 
 #: ../xfdashboard/application.c:518
 msgid "Fork to background"
-msgstr ""
+msgstr "Mantener en segundo plano"
 
 #: ../xfdashboard/application.c:519
 msgid "Quit running instance"
-msgstr ""
+msgstr "Cerrar la instancia en ejecución"
 
 #: ../xfdashboard/application.c:520
 msgid "Restart running instance"
-msgstr ""
+msgstr "Reiniciar la instancia en ejecución"
 
 #: ../xfdashboard/application.c:521
 msgid ""
@@ -654,7 +655,7 @@ msgstr "%s\n"
 
 #: ../xfdashboard/application.c:868
 msgid "Is daemonized"
-msgstr ""
+msgstr "Está demonizado"
 
 #: ../xfdashboard/application.c:869
 msgid "Flag indicating if application is daemonized"
@@ -662,7 +663,7 @@ msgstr ""
 
 #: ../xfdashboard/application.c:875
 msgid "Is suspended"
-msgstr ""
+msgstr "Está suspendido"
 
 #: ../xfdashboard/application.c:876
 msgid "Flag indicating if application is suspended currently"
@@ -674,12 +675,12 @@ msgstr "Nombre del tema"
 
 #: ../xfdashboard/application.c:883
 msgid "Name of current theme"
-msgstr ""
+msgstr "Nombre del tema actual"
 
 #: ../xfdashboard/application-database.c:131
 #, c-format
 msgid "Could not reload application menu: %s"
-msgstr ""
+msgstr "No se pudo recargar el menú de aplicaciones: %s"
 
 #: ../xfdashboard/application-database.c:264
 msgid "Received event from unknown file monitor"
@@ -712,7 +713,7 @@ msgstr ""
 
 #: ../xfdashboard/application-database.c:1221
 msgid "Is loaded"
-msgstr ""
+msgstr "Está cargado"
 
 #: ../xfdashboard/application-database.c:1222
 msgid ""
@@ -727,38 +728,38 @@ msgstr ""
 
 #: ../xfdashboard/applications-menu-model.c:804
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID
 #: ../xfdashboard/applications-menu-model.c:805
 msgid "Menu item"
-msgstr ""
+msgstr "Ítem de menú"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT
 #: ../xfdashboard/applications-menu-model.c:806
 msgid "Parent menu"
-msgstr ""
+msgstr "Menú padre"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU
 #: ../xfdashboard/applications-menu-model.c:807
 msgid "Section"
-msgstr ""
+msgstr "Sección"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION
 #: ../xfdashboard/applications-menu-model.c:808
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE
 #: ../xfdashboard/applications-menu-model.c:809
 msgid "Description"
-msgstr ""
+msgstr "Descripción"
 
 #. Add "applications" button
 #: ../xfdashboard/applications-search-provider.c:315
 #: ../xfdashboard/applications-view.c:1377 ../xfdashboard/quicklaunch.c:2789
 msgid "Applications"
-msgstr ""
+msgstr "Aplicaciones"
 
 #: ../xfdashboard/applications-search-provider.c:357
 msgid ""
@@ -781,21 +782,21 @@ msgstr ""
 #: ../xfdashboard/applications-view.c:470
 #: ../xfdashboard/applications-view.c:471
 msgid "Back"
-msgstr ""
+msgstr "Atrás"
 
 #: ../xfdashboard/applications-view.c:356
 #: ../xfdashboard/applications-view.c:470
 msgid "Go back to previous menu"
-msgstr ""
+msgstr "Volver al menú anterior"
 
 #: ../xfdashboard/applications-view.c:502
 #: ../xfdashboard/applications-view.c:503
 msgid "All applications"
-msgstr ""
+msgstr "Todas las aplicaciones"
 
 #: ../xfdashboard/applications-view.c:502
 msgid "List of all installed applications"
-msgstr ""
+msgstr "Listar todas las aplicaciones instaladas"
 
 #: ../xfdashboard/applications-view.c:719
 #: ../xfdashboard/search-result-container.c:1070
@@ -842,7 +843,7 @@ msgstr ""
 #: ../xfdashboard/applications-view.c:1300
 #: ../xfdashboard/search-result-container.c:685
 msgid "View mode"
-msgstr ""
+msgstr "Modo de vista"
 
 #: ../xfdashboard/applications-view.c:1301
 msgid "The view mode used in this view"
@@ -854,7 +855,7 @@ msgstr ""
 #: ../xfdashboard/viewpad.c:1168 ../xfdashboard/view-selector.c:374
 #: ../xfdashboard/windows-view.c:1697 ../xfdashboard/workspace-selector.c:1258
 msgid "Spacing"
-msgstr ""
+msgstr "Espaciado"
 
 #: ../xfdashboard/applications-view.c:1309 ../xfdashboard/windows-view.c:1698
 msgid "Spacing between each element in view"
@@ -870,7 +871,7 @@ msgstr ""
 
 #: ../xfdashboard/applications-view.c:1337
 msgid "Show all applications"
-msgstr ""
+msgstr "Mostrar todas las aplicaciones"
 
 #: ../xfdashboard/applications-view.c:1338
 msgid "Whether to show a menu for all installed applications at root menu"
@@ -878,11 +879,11 @@ msgstr ""
 
 #: ../xfdashboard/background.c:417 ../xfdashboard/background.c:418
 msgid "Background type"
-msgstr ""
+msgstr "Tipo de fondo"
 
 #: ../xfdashboard/background.c:425 ../xfdashboard/outline-effect.c:451
 msgid "Corners"
-msgstr ""
+msgstr "Esquinas"
 
 #: ../xfdashboard/background.c:426
 msgid "Determines which corners are rounded for background and outline"
@@ -891,7 +892,7 @@ msgstr ""
 #: ../xfdashboard/background.c:433 ../xfdashboard/background.c:456
 #: ../xfdashboard/outline-effect.c:459
 msgid "Corner radius"
-msgstr ""
+msgstr "Radio del borde"
 
 #: ../xfdashboard/background.c:434
 msgid "Radius of rounded corners for background and outline"
@@ -959,7 +960,7 @@ msgstr ""
 
 #: ../xfdashboard/background.c:503
 msgid "Image"
-msgstr ""
+msgstr "Imagen"
 
 #: ../xfdashboard/background.c:504
 msgid "Image to draw as background"
@@ -3041,58 +3042,58 @@ msgstr ""
 
 #: ../xfdashboard/windows-view.c:1942
 msgid "Windows"
-msgstr ""
+msgstr "Ventanas"
 
 #: ../xfdashboard/window-tracker.c:620
 #, c-format
 msgid "Cannot release unknown monitor %d"
-msgstr ""
+msgstr "No se puede lanzar el monitor desconocido %d"
 
 #: ../xfdashboard/window-tracker.c:898
 msgid "Active window"
-msgstr ""
+msgstr "Ventana activa"
 
 #: ../xfdashboard/window-tracker.c:899
 msgid "The current active window"
-msgstr ""
+msgstr "La actual ventana activa"
 
 #: ../xfdashboard/window-tracker.c:905
 msgid "Active workspace"
-msgstr ""
+msgstr "Espacio de trabajo activo"
 
 #: ../xfdashboard/window-tracker.c:906
 msgid "The current active workspace"
-msgstr ""
+msgstr "El actual espacio de trabajo"
 
 #: ../xfdashboard/window-tracker.c:912
 msgid "Primary monitor"
-msgstr ""
+msgstr "Monitor principal"
 
 #: ../xfdashboard/window-tracker.c:913
 msgid "The current primary monitor"
-msgstr ""
+msgstr "El actual monitor principal"
 
 #: ../xfdashboard/window-tracker-monitor.c:282
 msgid "Monitor index"
-msgstr ""
+msgstr "Índice del monitor"
 
 #: ../xfdashboard/window-tracker-monitor.c:283
 msgid "The index of this monitor"
-msgstr ""
+msgstr "El índice de este monitor"
 
 #: ../xfdashboard/window-tracker-monitor.c:290
 msgid "Is primary"
-msgstr ""
+msgstr "Es primario"
 
 #: ../xfdashboard/window-tracker-monitor.c:291
 msgid "Whether this monitor is the primary one"
-msgstr ""
+msgstr "Si este monitor es el principal"
 
 #: ../xfdashboard/window-tracker-window.c:86
 msgid ""
 "Keep window fullscreen on primary monitor because window manager does not "
 "support _NET_WM_FULLSCREEN_MONITORS."
-msgstr ""
+msgstr "Mantener ventana a pantalla completa en el monitor principal porque el gestor de ventanas no lo soporta _NET_WM_FULLSCREEN_MONITORS."
 
 #. Setting new selection was unsuccessful if we get here
 #. Activation was unsuccessful if we get here
@@ -3100,29 +3101,29 @@ msgstr ""
 #: ../xfdashboard/workspace-selector.c:1113
 #, c-format
 msgid "Could not determine workspace of %s to set selection at %s"
-msgstr ""
+msgstr "No se puede determinar el espacio de trabajo de %s para establecer la selección como %s"
 
 #: ../xfdashboard/workspace-selector.c:1274
 msgid "Maximum size"
-msgstr ""
+msgstr "Tamaño máximo"
 
 #: ../xfdashboard/workspace-selector.c:1275
 msgid "The maximum size of this actor for opposite direction of orientation"
-msgstr ""
+msgstr "El tamaño máximo de este actor para la dirección opuesta de la orientación"
 
 #: ../xfdashboard/workspace-selector.c:1282
 msgid "Maximum fraction"
-msgstr ""
+msgstr "Porcentaje máximo"
 
 #: ../xfdashboard/workspace-selector.c:1283
 msgid ""
 "The maximum size of this actor for opposite direction of orientation defined"
 " by fraction between 0.0 and 1.0"
-msgstr ""
+msgstr "El tamaño máximo de este actor para la dirección opuesta de la orientación es definida por el porcentaje entre 0.0 y 1.0"
 
 #: ../xfdashboard/workspace-selector.c:1290
 msgid "Using fraction"
-msgstr ""
+msgstr "Uso de porcentaje"
 
 #: ../xfdashboard/workspace-selector.c:1291
 msgid ""
@@ -3132,8 +3133,8 @@ msgstr ""
 
 #: ../xfdashboard/workspace-selector.c:1297
 msgid "Show current monitor only"
-msgstr ""
+msgstr "Mostrar solamente el monitor actual"
 
 #: ../xfdashboard/workspace-selector.c:1298
 msgid "Show only windows of the monitor where this actor is placed"
-msgstr ""
+msgstr "Mostrar solo ventanas del monitor donde el actor este colocado."
