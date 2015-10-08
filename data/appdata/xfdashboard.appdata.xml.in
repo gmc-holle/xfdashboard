@@ -44,6 +44,15 @@
 	</provides>
 
 	<releases>
+		<release version="0.5.2" timestamp="1444326527">
+			<description>
+				<_p>This unstable development introduces a new configurable options to
+				allows start a new instance of an application or to activate the current
+				window. It also improves the detection of running application as well
+				as bug-fixes and other smaller improvements.
+				</_p>
+			</description>
+		</release>
 		<release version="0.5.1" timestamp="1441652092">
 			<description>
 				<_p>This unstable development introduces a new configurable options to

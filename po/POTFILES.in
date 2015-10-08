@@ -17,6 +17,7 @@ xfdashboard/actor.c
 xfdashboard/application-button.c
 xfdashboard/application.c
 xfdashboard/application-database.c
+xfdashboard/application-tracker.c
 xfdashboard/applications-menu-model.c
 xfdashboard/applications-search-provider.c
 xfdashboard/applications-view.c
