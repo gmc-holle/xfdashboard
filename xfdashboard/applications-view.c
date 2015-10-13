@@ -1375,7 +1375,7 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	/* Set up view */
 	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "applications");
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Applications"));
-	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), "gtk-home");
+	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), "start-here");
 
 	/* Set up actor */
 	xfdashboard_actor_set_can_focus(XFDASHBOARD_ACTOR(self), TRUE);

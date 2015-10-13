@@ -397,7 +397,7 @@ XfdashboardApplicationsView
 XfdashboardApplicationsView,
 XfdashboardApplicationsView XfdashboardApplicationButton
 {
-	parent-menu-icon: gtk-go-up;
+	parent-menu-icon: go-up;
 	format-title-only: "<b>%s</b>";
 	format-title-description: "<b><big>%s</big></b>\n\n%s";
 }

@@ -145,7 +145,7 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 		}
 	}
 
-	if(!iconName) iconName=g_strdup("gtk-missing-image");
+	if(!iconName) iconName=g_strdup("image-missing");
 
 	/* Set up button and release allocated resources */
 	if(iconName) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(self), iconName);
@@ -659,7 +659,7 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 	if(!priv->appInfo)
 	{
 		xfdashboard_notify(CLUTTER_ACTOR(self),
-							"gtk-dialog-error",
+							"dialog-error",
 							_("Launching application '%s' failed: %s"),
 							xfdashboard_application_button_get_display_name(self),
 							_("No information available for application"));
