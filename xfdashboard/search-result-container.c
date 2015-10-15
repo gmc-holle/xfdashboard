@@ -260,6 +260,11 @@ static void _xfdashboard_search_result_container_set_provider(XfdashboardSearchR
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), styleClass);
 	g_free(styleClass);
 
+	/* Set class name with ID of search provider for styling */
+	styleClass=g_strdup_printf("search-provider-id-%s", xfdashboard_search_provider_get_id(priv->provider));
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), styleClass);
+	g_free(styleClass);
+
 	/* Update icon */
 	_xfdashboard_search_result_container_update_icon(self);
 
