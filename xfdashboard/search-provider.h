@@ -45,6 +45,9 @@ struct _XfdashboardSearchProvider
 {
 	/* Parent instance */
 	GObject								parent_instance;
+
+	/* Private structure */
+	XfdashboardSearchProviderPrivate	*priv;
 };
 
 struct _XfdashboardSearchProviderClass
@@ -76,6 +79,9 @@ struct _XfdashboardSearchProviderClass
 
 /* Public API */
 GType xfdashboard_search_provider_get_type(void) G_GNUC_CONST;
+
+const gchar* xfdashboard_search_provider_get_id(XfdashboardSearchProvider *self);
+gboolean xfdashboard_search_provider_has_id(XfdashboardSearchProvider *self, const gchar *inID);
 
 const gchar* xfdashboard_search_provider_get_name(XfdashboardSearchProvider *self);
 const gchar* xfdashboard_search_provider_get_icon(XfdashboardSearchProvider *self);

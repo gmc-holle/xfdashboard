@@ -229,16 +229,20 @@ static void _xfdashboard_search_view_search_terms_unref(XfdashboardSearchViewSea
 
 /* Create data for provider */
 static XfdashboardSearchViewProviderData* _xfdashboard_search_view_provider_data_new(XfdashboardSearchView *self,
-																						GType inProviderType)
+																						const gchar *inProviderID)
 {
+	XfdashboardSearchViewPrivate		*priv;
 	XfdashboardSearchViewProviderData	*data;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
-	g_return_val_if_fail(inProviderType!=XFDASHBOARD_TYPE_SEARCH_PROVIDER && g_type_is_a(inProviderType, XFDASHBOARD_TYPE_SEARCH_PROVIDER), NULL);
+	g_return_val_if_fail(*inProviderID && *inProviderID, NULL);
+
+	priv=self->priv;
 
 	/* Create data for provider */
 	data=g_new0(XfdashboardSearchViewProviderData, 1);
 	data->refCount=1;
+	data->provider=XFDASHBOARD_SEARCH_PROVIDER(xfdashboard_search_manager_create_provider(priv->searchManager, inProviderID));
 	data->view=self;
 	data->lastTerms=NULL;
 	data->lastResultSet=NULL;
@@ -247,7 +251,6 @@ static XfdashboardSearchViewProviderData* _xfdashboard_search_view_provider_data
 										g_variant_equal,
 										(GDestroyNotify)g_variant_unref,
 										(GDestroyNotify)g_object_unref);
-	data->provider=XFDASHBOARD_SEARCH_PROVIDER(g_object_new(inProviderType, NULL));
 
 	return(data);
 }
@@ -312,13 +315,14 @@ static void _xfdashboard_search_view_provider_data_unref(XfdashboardSearchViewPr
 
 /* Find data for requested provider type */
 static XfdashboardSearchViewProviderData* _xfdashboard_search_view_get_provider_data(XfdashboardSearchView *self,
-																						GType inProviderType)
+																						const gchar *inProviderID)
 {
 	XfdashboardSearchViewPrivate		*priv;
 	XfdashboardSearchViewProviderData	*data;
 	GList								*iter;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
+	g_return_val_if_fail(inProviderID && *inProviderID, NULL);
 
 	priv=self->priv;
 
@@ -328,7 +332,7 @@ static XfdashboardSearchViewProviderData* _xfdashboard_search_view_get_provider_
 		data=(XfdashboardSearchViewProviderData*)iter->data;
 
 		if(data->provider &&
-			G_OBJECT_TYPE(data->provider)==inProviderType)
+			xfdashboard_search_provider_has_id(data->provider, inProviderID)==0)
 		{
 			return(_xfdashboard_search_view_provider_data_ref(data));
 		}
@@ -388,24 +392,25 @@ static XfdashboardSearchViewProviderData* _xfdashboard_search_view_get_provider_
 
 /* A search provider was registered */
 static void _xfdashboard_search_view_on_search_provider_registered(XfdashboardSearchView *self,
-																	GType inProviderType,
+																	const gchar *inProviderID,
 																	gpointer inUserData)
 {
 	XfdashboardSearchViewPrivate		*priv;
 	XfdashboardSearchViewProviderData	*data;
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
+	g_return_if_fail(*inProviderID && *inProviderID);
 
 	priv=self->priv;
 
 	/* Register search provider if not already registered */
-	data=_xfdashboard_search_view_get_provider_data(self, inProviderType);
+	data=_xfdashboard_search_view_get_provider_data(self, inProviderID);
 	if(!data)
 	{
 		/* Create data for new search provider registered
 		 * and add to list of active search providers.
 		 */
-		data=_xfdashboard_search_view_provider_data_new(self, inProviderType);
+		data=_xfdashboard_search_view_provider_data_new(self, inProviderID);
 		priv->providers=g_list_prepend(priv->providers, data);
 
 		g_debug("Created search provider %s of type %s in %s",
@@ -418,7 +423,7 @@ static void _xfdashboard_search_view_on_search_provider_registered(XfdashboardSe
 
 /* A search provider was unregistered */
 static void _xfdashboard_search_view_on_search_provider_unregistered(XfdashboardSearchView *self,
-																		GType inProviderType,
+																		const gchar *inProviderID,
 																		gpointer inUserData)
 {
 	XfdashboardSearchViewPrivate		*priv;
@@ -426,11 +431,12 @@ static void _xfdashboard_search_view_on_search_provider_unregistered(Xfdashboard
 	GList								*iter;
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self));
+	g_return_if_fail(*inProviderID && *inProviderID);
 
 	priv=self->priv;
 
 	/* Unregister search provider if it was registered before */
-	data=_xfdashboard_search_view_get_provider_data(self, inProviderType);
+	data=_xfdashboard_search_view_get_provider_data(self, inProviderID);
 	if(data)
 	{
 		g_debug("Unregistering search provider %s of type %s in %s",
@@ -1706,7 +1712,7 @@ static void xfdashboard_search_view_class_init(XfdashboardSearchViewClass *klass
 static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 {
 	XfdashboardSearchViewPrivate	*priv;
-	GList							*providers, *entry;
+	GList							*providers, *providerEntry;
 	ClutterLayoutManager			*layout;
 
 	self->priv=priv=XFDASHBOARD_SEARCH_VIEW_GET_PRIVATE(self);
@@ -1740,15 +1746,15 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	/* Create instance of each registered view type and add it to this actor
 	 * and connect signals
 	 */
-	providers=entry=xfdashboard_search_manager_get_registered(priv->searchManager);
-	for(; entry; entry=g_list_next(entry))
+	providers=providerEntry=xfdashboard_search_manager_get_registered(priv->searchManager);
+	for(; providerEntry; providerEntry=g_list_next(providerEntry))
 	{
-		GType					providerType;
+		const gchar				*providerID;
 
-		providerType=(GType)GPOINTER_TO_GTYPE(entry->data);
-		_xfdashboard_search_view_on_search_provider_registered(self, providerType, priv->searchManager);
+		providerID=(const gchar*)providerEntry->data;
+		_xfdashboard_search_view_on_search_provider_registered(self, providerID, priv->searchManager);
 	}
-	g_list_free(providers);
+	g_list_free_full(providers, g_free);
 
 	g_signal_connect_swapped(priv->searchManager,
 								"registered",

@@ -37,6 +37,28 @@ G_DEFINE_ABSTRACT_TYPE(XfdashboardSearchProvider,
 						xfdashboard_search_provider,
 						G_TYPE_OBJECT)
 
+/* Private structure - access only by public API if needed */
+#define XFDASHBOARD_SEARCH_PROVIDER_GET_PRIVATE(obj) \
+	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SEARCH_PROVIDER, XfdashboardSearchProviderPrivate))
+
+struct _XfdashboardSearchProviderPrivate
+{
+	/* Properties related */
+	gchar					*providerID;
+};
+
+/* Properties */
+enum
+{
+	PROP_0,
+
+	PROP_PROVIDER_ID,
+
+	PROP_LAST
+};
+
+static GParamSpec* XfdashboardSearchProviderProperties[PROP_LAST]={ 0, };
+
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_SEARCH_PROVIDER_WARN_NOT_IMPLEMENTED(self, vfunc) \
 	g_warning(_("Search provider of type %s does not implement required virtual function XfdashboardSearchProvider::%s"), \
@@ -48,7 +70,84 @@ G_DEFINE_ABSTRACT_TYPE(XfdashboardSearchProvider,
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
+/* Set search provider ID */
+static void _xfdashboard_search_provider_set_id(XfdashboardSearchProvider *self, const gchar *inID)
+{
+	XfdashboardSearchProviderPrivate	*priv=self->priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_PROVIDER(self));
+	g_return_if_fail(inID && *inID);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->providerID, inID)!=0)
+	{
+		if(priv->providerID) g_free(priv->providerID);
+		priv->providerID=g_strdup(inID);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchProviderProperties[PROP_PROVIDER_ID]);
+	}
+}
+
 /* IMPLEMENTATION: GObject */
+
+/* Dispose this object */
+static void _xfdashboard_search_provider_dispose(GObject *inObject)
+{
+	XfdashboardSearchProvider			*self=XFDASHBOARD_SEARCH_PROVIDER(inObject);
+	XfdashboardSearchProviderPrivate	*priv=self->priv;
+
+	/* Release allocated resources */
+	if(priv->providerID)
+	{
+		g_free(priv->providerID);
+		priv->providerID=NULL;
+	}
+
+	/* Call parent's class dispose method */
+	G_OBJECT_CLASS(xfdashboard_search_provider_parent_class)->dispose(inObject);
+}
+
+/* Set/get properties */
+static void _xfdashboard_search_provider_set_property(GObject *inObject,
+														guint inPropID,
+														const GValue *inValue,
+														GParamSpec *inSpec)
+{
+	XfdashboardSearchProvider			*self=XFDASHBOARD_SEARCH_PROVIDER(inObject);
+
+	switch(inPropID)
+	{
+		case PROP_PROVIDER_ID:
+			_xfdashboard_search_provider_set_id(self, g_value_get_string(inValue));
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
+static void _xfdashboard_search_provider_get_property(GObject *inObject,
+														guint inPropID,
+														GValue *outValue,
+														GParamSpec *inSpec)
+{
+	XfdashboardSearchProvider			*self=XFDASHBOARD_SEARCH_PROVIDER(inObject);
+
+	switch(inPropID)
+	{
+		case PROP_PROVIDER_ID:
+			g_value_set_string(outValue, self->priv->providerID);
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
 
 /* Class initialization
  * Override functions in parent classes and define properties
@@ -56,6 +155,25 @@ G_DEFINE_ABSTRACT_TYPE(XfdashboardSearchProvider,
  */
 static void xfdashboard_search_provider_class_init(XfdashboardSearchProviderClass *klass)
 {
+	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
+
+	/* Override functions */
+	gobjectClass->set_property=_xfdashboard_search_provider_set_property;
+	gobjectClass->get_property=_xfdashboard_search_provider_get_property;
+	gobjectClass->dispose=_xfdashboard_search_provider_dispose;
+
+	/* Set up private structure */
+	g_type_class_add_private(klass, sizeof(XfdashboardSearchProviderPrivate));
+
+	/* Define properties */
+	XfdashboardSearchProviderProperties[PROP_PROVIDER_ID]=
+		g_param_spec_string("provider-id",
+							_("Provider ID"),
+							_("The internal ID used to register this type of search provider"),
+							NULL,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
+
+	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSearchProviderProperties);
 }
 
 /* Object initialization
@@ -63,9 +181,40 @@ static void xfdashboard_search_provider_class_init(XfdashboardSearchProviderClas
  */
 static void xfdashboard_search_provider_init(XfdashboardSearchProvider *self)
 {
+	XfdashboardSearchProviderPrivate	*priv;
+
+	priv=self->priv=XFDASHBOARD_SEARCH_PROVIDER_GET_PRIVATE(self);
+
+	/* Set up default values */
+	priv->providerID=NULL;
 }
 
 /* IMPLEMENTATION: Public API */
+
+/* Get view ID */
+const gchar* xfdashboard_search_provider_get_id(XfdashboardSearchProvider *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_PROVIDER(self), NULL);
+
+	return(self->priv->providerID);
+}
+
+/* Check if view has requested ID */
+gboolean xfdashboard_search_provider_has_id(XfdashboardSearchProvider *self, const gchar *inID)
+{
+	XfdashboardSearchProviderPrivate	*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_PROVIDER(self), FALSE);
+	g_return_val_if_fail(inID && *inID, FALSE);
+
+	priv=self->priv;
+
+	/* Check if requested ID matches the ID of this search provider */
+	if(g_strcmp0(priv->providerID, inID)!=0) return(FALSE);
+
+	/* If we get here the requested ID matches search provider's ID */
+	return(TRUE);
+}
 
 /* Get name of search provider */
 const gchar* xfdashboard_search_provider_get_name(XfdashboardSearchProvider *self)

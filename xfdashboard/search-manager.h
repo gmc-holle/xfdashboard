@@ -60,8 +60,8 @@ struct _XfdashboardSearchManagerClass
 
 	/*< public >*/
 	/* Virtual functions */
-	void (*registered)(XfdashboardSearchManager *self, XfdashboardSearchProvider *inProvider);
-	void (*unregistered)(XfdashboardSearchManager *self, XfdashboardSearchProvider *inProvider);
+	void (*registered)(XfdashboardSearchManager *self, const gchar *inID);
+	void (*unregistered)(XfdashboardSearchManager *self, const gchar *inID);
 };
 
 /* Public API */
@@ -69,9 +69,11 @@ GType xfdashboard_search_manager_get_type(void) G_GNUC_CONST;
 
 XfdashboardSearchManager* xfdashboard_search_manager_get_default(void);
 
-void xfdashboard_search_manager_register(XfdashboardSearchManager *self, GType inProviderType);
-void xfdashboard_search_manager_unregister(XfdashboardSearchManager *self, GType inProviderType);
+gboolean xfdashboard_search_manager_register(XfdashboardSearchManager *self, const gchar *inID, GType inProviderType);
+gboolean xfdashboard_search_manager_unregister(XfdashboardSearchManager *self, const gchar *inID);
 GList* xfdashboard_search_manager_get_registered(XfdashboardSearchManager *self);
+
+GObject* xfdashboard_search_manager_create_provider(XfdashboardSearchManager *self, const gchar *inID);
 
 gchar** xfdashboard_search_manager_get_search_terms_from_string(const gchar *inString, const gchar *inDelimiters);
 

@@ -417,7 +417,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	/* Register built-in search providers */
 	priv->searchManager=xfdashboard_search_manager_get_default();
 
-	xfdashboard_search_manager_register(priv->searchManager, XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER);
+	xfdashboard_search_manager_register(priv->searchManager, "applications", XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER);
 
 	/* Create single-instance of focus manager to keep it alive while
 	 * application is running.
