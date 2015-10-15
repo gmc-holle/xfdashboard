@@ -663,7 +663,7 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 			/* First lookup view we should switch to by its internal name */
 			if(priv->switchToView)
 			{
-				resumeView=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->switchToView);
+				resumeView=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->switchToView);
 				if(!resumeView) g_warning(_("Will not switch to unknown view '%s'"), priv->switchToView);
 
 				/* Regardless if we could find view by its internal name or not
@@ -681,7 +681,7 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 			 */
 			if(!resumeView)
 			{
-				resumeView=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewInternalName);
+				resumeView=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewInternalName);
 				if(!resumeView) g_warning(_("Cannot switch to unknown view '%s'"), resumeViewInternalName);
 			}
 
@@ -1315,7 +1315,7 @@ static void _xfdashboard_stage_show(ClutterActor *inActor)
 	if(priv->switchToView)
 	{
 		/* Look up view and switch to it if found */
-		switchView=xfdashboard_viewpad_find_view_by_name(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->switchToView);
+		switchView=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->switchToView);
 		if(switchView)
 		{
 			xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), switchView);

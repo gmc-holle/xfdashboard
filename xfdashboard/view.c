@@ -49,14 +49,14 @@ G_DEFINE_ABSTRACT_TYPE(XfdashboardView,
 struct _XfdashboardViewPrivate
 {
 	/* Properties related */
-	gchar					*viewInternalName;
+	gchar					*viewID;
 
 	gchar					*viewName;
 
 	gchar					*viewIcon;
 	ClutterContent			*viewIconImage;
 
-	XfdashboardViewFitMode		fitMode;
+	XfdashboardViewFitMode	fitMode;
 
 	gboolean				isEnabled;
 
@@ -69,7 +69,7 @@ enum
 {
 	PROP_0,
 
-	PROP_VIEW_INTERNAL_NAME,
+	PROP_VIEW_ID,
 	PROP_VIEW_NAME,
 	PROP_VIEW_ICON,
 
@@ -212,6 +212,27 @@ static void _xfdashboard_view_disabled(XfdashboardView *self)
 	}
 }
 
+/* Set view ID */
+static void _xfdashboard_view_set_id(XfdashboardView *self, const gchar *inID)
+{
+	XfdashboardViewPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
+	g_return_if_fail(inID && *inID);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->viewID, inID)!=0)
+	{
+		if(priv->viewID) g_free(priv->viewID);
+		priv->viewID=g_strdup(inID);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_VIEW_ID]);
+	}
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -221,10 +242,10 @@ static void _xfdashboard_view_dispose(GObject *inObject)
 	XfdashboardViewPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
-	if(priv->viewInternalName)
+	if(priv->viewID)
 	{
-		g_free(priv->viewInternalName);
-		priv->viewInternalName=NULL;
+		g_free(priv->viewID);
+		priv->viewID=NULL;
 	}
 
 	if(priv->viewName)
@@ -259,8 +280,8 @@ static void _xfdashboard_view_set_property(GObject *inObject,
 	
 	switch(inPropID)
 	{
-		case PROP_VIEW_INTERNAL_NAME:
-			xfdashboard_view_set_internal_name(self, g_value_get_string(inValue));
+		case PROP_VIEW_ID:
+			_xfdashboard_view_set_id(self, g_value_get_string(inValue));
 			break;
 
 		case PROP_VIEW_NAME:
@@ -294,8 +315,8 @@ static void _xfdashboard_view_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
-		case PROP_VIEW_INTERNAL_NAME:
-			g_value_set_string(outValue, self->priv->viewInternalName);
+		case PROP_VIEW_ID:
+			g_value_set_string(outValue, self->priv->viewID);
 			break;
 
 		case PROP_VIEW_NAME:
@@ -342,12 +363,12 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 	g_type_class_add_private(klass, sizeof(XfdashboardViewPrivate));
 
 	/* Define properties */
-	XfdashboardViewProperties[PROP_VIEW_INTERNAL_NAME]=
-		g_param_spec_string("view-internal-name",
-							_("View internal name"),
-							_("Internal and untranslated name of view used in application"),
+	XfdashboardViewProperties[PROP_VIEW_ID]=
+		g_param_spec_string("view-id",
+							_("View ID"),
+							_("The internal ID used to register this type of view"),
 							NULL,
-							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	XfdashboardViewProperties[PROP_VIEW_NAME]=
 		g_param_spec_string("view-name",
@@ -572,32 +593,29 @@ static void xfdashboard_view_init(XfdashboardView *self)
 
 /* IMPLEMENTATION: Public API */
 
-/* Get/set internal name of view */
-const gchar* xfdashboard_view_get_internal_name(XfdashboardView *self)
+/* Get view ID */
+const gchar* xfdashboard_view_get_id(XfdashboardView *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), NULL);
 
-	return(self->priv->viewInternalName);
+	return(self->priv->viewID);
 }
 
-void xfdashboard_view_set_internal_name(XfdashboardView *self, const gchar *inInternalName)
+/* Check if view has requested ID */
+gboolean xfdashboard_view_has_id(XfdashboardView *self, const gchar *inID)
 {
 	XfdashboardViewPrivate	*priv;
 
-	g_return_if_fail(XFDASHBOARD_IS_VIEW(self));
-	g_return_if_fail(inInternalName!=NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(self), FALSE);
+	g_return_val_if_fail(inID && *inID, FALSE);
 
 	priv=self->priv;
 
-	/* Set value if changed */
-	if(g_strcmp0(priv->viewInternalName, inInternalName)!=0)
-	{
-		if(priv->viewInternalName) g_free(priv->viewInternalName);
-		priv->viewInternalName=g_strdup(inInternalName);
+	/* Check if requested ID matches the ID of this view */
+	if(g_strcmp0(priv->viewID, inID)!=0) return(FALSE);
 
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewProperties[PROP_VIEW_INTERNAL_NAME]);
-	}
+	/* If we get here the requested ID matches view's ID */
+	return(TRUE);
 }
 
 /* Get/set name of view */

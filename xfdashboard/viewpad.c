@@ -647,29 +647,33 @@ static void _xfdashboard_viewpad_on_view_child_ensure_visible(XfdashboardViewpad
 }
 
 /* Create view of given type and add to this actor */
-static void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, GType inViewType)
+static void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, const gchar *inID)
 {
 	XfdashboardViewpadPrivate	*priv;
 	GObject						*view;
 
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_if_fail(inID && *inID);
 
 	priv=self->priv;
 
 	/* Create instance and check if it is a view */
-	g_debug("Creating view %s for viewpad", g_type_name(inViewType));
+	g_debug("Creating view %s for viewpad", inID);
 
-	view=g_object_new(inViewType, NULL);
+	view=xfdashboard_view_manager_create_view(priv->viewManager, inID);
 	if(view==NULL)
 	{
-		g_critical(_("Failed to create view instance of %s"), g_type_name(inViewType));
+		g_critical(_("Failed to create view %s for viewpad"), inID);
 		return;
 	}
 
 	if(XFDASHBOARD_IS_VIEW(view)!=TRUE)
 	{
-		g_critical(_("Instance %s is not a %s and cannot be added to %s"),
-					g_type_name(inViewType), g_type_name(XFDASHBOARD_TYPE_VIEW), G_OBJECT_TYPE_NAME(self));
+		g_critical(_("View %s of type %s is not a %s and cannot be added to %s"),
+					inID,
+					G_OBJECT_TYPE_NAME(view),
+					g_type_name(XFDASHBOARD_TYPE_VIEW),
+					G_OBJECT_TYPE_NAME(self));
 		return;
 	}
 
@@ -707,17 +711,18 @@ static void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, GType inView
 
 /* Called when a new view type was registered */
 static void _xfdashboard_viewpad_on_view_registered(XfdashboardViewpad *self,
-													GType inViewType,
+													const gchar *inID,
 													gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_if_fail(inID && *inID);
 
-	_xfdashboard_viewpad_add_view(self, inViewType);
+	_xfdashboard_viewpad_add_view(self, inID);
 }
 
 /* Called when a view type was unregistered */
 static void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
-														GType inViewType,
+														const gchar *inID,
 														gpointer inUserData)
 {
 	XfdashboardViewpadPrivate	*priv;
@@ -726,6 +731,7 @@ static void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
 	ClutterActor				*firstActivatableView;
 
 	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
+	g_return_if_fail(inID && *inID);
 
 	priv=self->priv;
 	firstActivatableView=NULL;
@@ -740,7 +746,7 @@ static void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
 		/* If child is not of type being unregistered it will get
 		 * the first activatable view after we destroyed all views found.
 		 */
-		if(G_OBJECT_TYPE(child)!=inViewType)
+		if(xfdashboard_view_has_id(XFDASHBOARD_VIEW(child), inID)==FALSE)
 		{
 			if(xfdashboard_view_get_enabled(XFDASHBOARD_VIEW(child))) firstActivatableView=child;
 		}
@@ -1329,12 +1335,12 @@ static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	views=viewEntry=xfdashboard_view_manager_get_registered(priv->viewManager);
 	for(; viewEntry; viewEntry=g_list_next(viewEntry))
 	{
-		GType					viewType;
+		const gchar				*viewID;
 
-		viewType=(GType)GPOINTER_TO_GTYPE(viewEntry->data);
-		_xfdashboard_viewpad_add_view(self, viewType);
+		viewID=(const gchar*)viewEntry->data;
+		_xfdashboard_viewpad_add_view(self, viewID);
 	}
-	g_list_free(views);
+	g_list_free_full(views, g_free);
 
 	g_signal_connect_swapped(priv->viewManager, "registered", G_CALLBACK(_xfdashboard_viewpad_on_view_registered), self);
 	g_signal_connect_swapped(priv->viewManager, "unregistered", G_CALLBACK(_xfdashboard_viewpad_on_view_unregistered), self);
@@ -1457,14 +1463,15 @@ XfdashboardView* xfdashboard_viewpad_find_view_by_type(XfdashboardViewpad *self,
 	return(view);
 }
 
-/* Find view by internal name */
-XfdashboardView* xfdashboard_viewpad_find_view_by_name(XfdashboardViewpad *self, const gchar *inInternalName)
+/* Find view by ID */
+XfdashboardView* xfdashboard_viewpad_find_view_by_id(XfdashboardViewpad *self, const gchar *inID)
 {
 	ClutterActorIter			iter;
 	ClutterActor				*child;
 	XfdashboardView				*view;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), NULL);
+	g_return_val_if_fail(inID && *inID, NULL);
 
 	view=NULL;
 
@@ -1474,7 +1481,7 @@ XfdashboardView* xfdashboard_viewpad_find_view_by_name(XfdashboardViewpad *self,
 	{
 		/* Check if child is a view and its internal name matches requested name */
 		if(XFDASHBOARD_IS_VIEW(child)==TRUE &&
-			g_strcmp0(xfdashboard_view_get_internal_name(XFDASHBOARD_VIEW(child)), inInternalName)==0)
+			xfdashboard_view_has_id(XFDASHBOARD_VIEW(child), inID)==0)
 		{
 			view=XFDASHBOARD_VIEW(child);
 		}

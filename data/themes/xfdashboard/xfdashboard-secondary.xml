@@ -51,6 +51,7 @@
 
 				<child>
 					<object class="XfdashboardWindowsView">
+						<property name="view-id">windows</property>
 						<property name="x-expand">true</property>
 						<property name="y-expand">true</property>
 					</object>

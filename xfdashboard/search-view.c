@@ -1724,7 +1724,6 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
 
 	/* Set up view (Note: Search view is disabled by default!) */
-	xfdashboard_view_set_internal_name(XFDASHBOARD_VIEW(self), "search");
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Search"));
 	xfdashboard_view_set_icon(XFDASHBOARD_VIEW(self), "edit-find");
 	xfdashboard_view_set_enabled(XFDASHBOARD_VIEW(self), FALSE);

@@ -56,8 +56,8 @@ struct _XfdashboardViewManagerClass
 
 	/*< public >*/
 	/* Virtual functions */
-	void (*registered)(XfdashboardViewManager *self, GType inViewType);
-	void (*unregistered)(XfdashboardViewManager *self, GType inViewType);
+	void (*registered)(XfdashboardViewManager *self, const gchar *inID);
+	void (*unregistered)(XfdashboardViewManager *self, const gchar *inID);
 };
 
 /* Public API */
@@ -65,9 +65,11 @@ GType xfdashboard_view_manager_get_type(void) G_GNUC_CONST;
 
 XfdashboardViewManager* xfdashboard_view_manager_get_default(void);
 
-void xfdashboard_view_manager_register(XfdashboardViewManager *self, GType inViewType);
-void xfdashboard_view_manager_unregister(XfdashboardViewManager *self, GType inViewType);
+gboolean xfdashboard_view_manager_register(XfdashboardViewManager *self, const gchar *inID, GType inViewType);
+gboolean xfdashboard_view_manager_unregister(XfdashboardViewManager *self, const gchar *inID);
 GList* xfdashboard_view_manager_get_registered(XfdashboardViewManager *self);
+
+GObject* xfdashboard_view_manager_create_view(XfdashboardViewManager *self, const gchar *inID);
 
 G_END_DECLS
 

@@ -410,9 +410,9 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	/* Register built-in views (order of registration is important) */
 	priv->viewManager=xfdashboard_view_manager_get_default();
 
-	xfdashboard_view_manager_register(priv->viewManager, XFDASHBOARD_TYPE_WINDOWS_VIEW);
-	xfdashboard_view_manager_register(priv->viewManager, XFDASHBOARD_TYPE_APPLICATIONS_VIEW);
-	xfdashboard_view_manager_register(priv->viewManager, XFDASHBOARD_TYPE_SEARCH_VIEW);
+	xfdashboard_view_manager_register(priv->viewManager, "windows", XFDASHBOARD_TYPE_WINDOWS_VIEW);
+	xfdashboard_view_manager_register(priv->viewManager, "applications", XFDASHBOARD_TYPE_APPLICATIONS_VIEW);
+	xfdashboard_view_manager_register(priv->viewManager, "search", XFDASHBOARD_TYPE_SEARCH_VIEW);
 
 	/* Register built-in search providers */
 	priv->searchManager=xfdashboard_search_manager_get_default();
