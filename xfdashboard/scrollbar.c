@@ -894,6 +894,7 @@ gfloat xfdashboard_scrollbar_get_value(XfdashboardScrollbar *self)
 void xfdashboard_scrollbar_set_value(XfdashboardScrollbar *self, gfloat inValue)
 {
 	XfdashboardScrollbarPrivate		*priv;
+	gboolean						enforceNewValue;
 
 	g_return_if_fail(XFDASHBOARD_IS_SCROLLBAR(self));
 	g_return_if_fail(inValue>=0.0f);
@@ -901,14 +902,19 @@ void xfdashboard_scrollbar_set_value(XfdashboardScrollbar *self, gfloat inValue)
 	priv=self->priv;
 
 	/* Check if value is within range */
+	enforceNewValue=FALSE;
 	if(inValue+priv->valueRange>priv->range)
 	{
-		g_warning(_("Adjusting value %.2f in scrollbar to fit range %.2f"), inValue, priv->range);
+		gfloat						oldValue;
+
+		oldValue=inValue;
 		inValue=MAX(0.0f, priv->range-priv->valueRange);
+		g_debug("Adjusting value %.2f to %.2f in scrollbar to fit into range [0-%.2f]", oldValue, inValue, priv->range);
+		enforceNewValue=TRUE;
 	}
 
 	/* Only set value if it changes */
-	if(inValue==priv->value) return;
+	if(inValue==priv->value && enforceNewValue==FALSE) return;
 
 	/* Set new value */
 	priv->value=inValue;
@@ -962,8 +968,12 @@ void xfdashboard_scrollbar_set_range(XfdashboardScrollbar *self, gfloat inRange)
 	/* Check if value is still within new range otherwise adjust value */
 	if(priv->value>priv->range)
 	{
-		g_warning(_("Adjusting value %.2f in scrollbar to fit new range %.2f"), priv->value, priv->range);
+		gfloat						oldValue;
+
+		g_debug("Adjusting value %.2f in scrollbar to fit into new range %.2f", priv->value, priv->range);
+		oldValue=priv->value;
 		xfdashboard_scrollbar_set_value(self, priv->range);
+		g_debug("Adjusted value %.2f to %.2f in scrollbar to fit into new range %.2f", oldValue, priv->value, priv->range);
 	}
 
 	/* Thaw notification */
