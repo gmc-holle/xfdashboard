@@ -21,6 +21,22 @@
  * 
  */
 
+/**
+ * SECTION:view-selector
+ * @short_description: An actor to choose between views
+ * @include: xfdashboard/view-selector.h
+ *
+ * This actor displays a #XfdashboardToggleButton for each view added to a
+ * #XfdashboardViewpad. It behave like a radio button group where you can choose
+ * one among many others. That means when one of them is selected, all other
+ * will be deselected. Only one #XfdashboardToggleButton can be active at one time.
+ *
+ * A #XfdashboardViewSelector is usually created in the layout definition
+ * of a theme but it can also be created with xfdashboard_view_selector_new()
+ * followed by a call to xfdashboard_view_selector_set_viewpad() or with
+ * xfdashboard_view_selector_new_for_viewpad() for short.
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -362,6 +378,12 @@ static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *k
 	g_type_class_add_private(klass, sizeof(XfdashboardViewSelectorPrivate));
 
 	/* Define properties */
+
+	/**
+	 * XfdashboardViewSelector:viewpad:
+	 *
+	 * Sets the #XfdashboardViewpad whose views to show
+	 */
 	XfdashboardViewSelectorProperties[PROP_VIEWPAD]=
 		g_param_spec_object("viewpad",
 								_("Viewpad"),
@@ -369,6 +391,11 @@ static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *k
 								XFDASHBOARD_TYPE_VIEWPAD,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardViewSelector:spacing:
+	 *
+	 * Sets the spacing in pixels between each actor representing a view selection
+	 */
 	XfdashboardViewSelectorProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
 							_("Spacing"),
@@ -377,6 +404,11 @@ static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *k
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardViewSelector:orientation:
+	 *
+	 * Sets the orientation of the #XfdashboardViewSelector
+	 */
 	XfdashboardViewSelectorProperties[PROP_ORIENTATION]=
 		g_param_spec_enum("orientation",
 							_("Orientation"),
@@ -392,6 +424,14 @@ static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *k
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardViewSelectorProperties[PROP_ORIENTATION]);
 
 	/* Define signals */
+ 	/**
+	 * XfdashboardViewSelector::state-changed:
+	 * @self: The object which received the signal
+	 * @inButton: The #XfdashboardToggleButton which changed its state
+	 *
+	 * Should be connected if you wish to perform an action whenever the
+	 * #XfdashboardViewSelector has changed the state of @inButton.
+	 */
 	XfdashboardViewSelectorSignals[SIGNAL_STATE_CHANGED]=
 		g_signal_new("state-changed",
 						G_TYPE_FROM_CLASS(klass),
@@ -430,11 +470,40 @@ static void xfdashboard_view_selector_init(XfdashboardViewSelector *self)
 /* IMPLEMENTATION: Public API */
 
 /* Create new instance */
+/**
+ * xfdashboard_view_selector_new:
+ *
+ * Creates a new #XfdashboardViewSelector actor
+ *
+ * Return value: The newly created #XfdashboardViewSelector
+ */
 ClutterActor* xfdashboard_view_selector_new(void)
 {
 	return(CLUTTER_ACTOR(g_object_new(XFDASHBOARD_TYPE_VIEW_SELECTOR, NULL)));
 }
 
+/**
+ * xfdashboard_view_selector_new_for_viewpad:
+ * @inViewpad: The #XfdashboardViewpad whose views to in this actor
+ *
+ * Creates a new #XfdashboardViewSelector actor, using @inViewpad as viewpad
+ * whose views to show as #XfdashboardToggleButton<!-- -->s.
+ *
+ * This function is more or less equivalent to calling xfdashboard_view_selector_new()
+ * and xfdashboard_view_selector_set_viewpad().
+ *
+ * |[<!-- language="C" -->
+ *   ClutterActor       *viewSelector;
+ *   XfdashboardViewpad *viewpad;
+ *
+ *   viewpad=XFDASHBOARD_VIEWPAD(...Get viewpad somehow...);
+ *
+ *   viewSelector=xfdashboard_view_selector_new();
+ *   xfdashboard_view_selector_set_viewpad(XFDASHBOARD_VIEW_SELECTOR(viewSelector), viewpad);
+ * ]|
+
+ * Return value: The newly created #XfdashboardViewSelector
+ */
 ClutterActor* xfdashboard_view_selector_new_for_viewpad(XfdashboardViewpad *inViewpad)
 {
 	return(CLUTTER_ACTOR(g_object_new(XFDASHBOARD_TYPE_VIEW_SELECTOR,
@@ -443,6 +512,14 @@ ClutterActor* xfdashboard_view_selector_new_for_viewpad(XfdashboardViewpad *inVi
 }
 
 /* Get/set viewpad */
+/**
+ * xfdashboard_view_selector_get_viewpad:
+ * @self: A #XfdashboardViewSelector
+ *
+ * Retrieves the #XfdashboardViewpad whose views are displayed at @self.
+ *
+ * Return value: The #XfdashboardViewpad whose views is displayed
+ */
 XfdashboardViewpad* xfdashboard_view_selector_get_viewpad(XfdashboardViewSelector *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self), NULL);
@@ -450,6 +527,14 @@ XfdashboardViewpad* xfdashboard_view_selector_get_viewpad(XfdashboardViewSelecto
 	return(self->priv->viewpad);
 }
 
+/**
+ * xfdashboard_view_selector_set_viewpad:
+ * @self: A #XfdashboardViewSelector
+ * @inViewpad: The #XfdashboardViewpad whose views to show at this actor
+ *
+ * Sets the #XfdashboardViewpad whose views to show as a choice of views
+ * at @self.
+ */
 void xfdashboard_view_selector_set_viewpad(XfdashboardViewSelector *self, XfdashboardViewpad *inViewpad)
 {
 	XfdashboardViewSelectorPrivate		*priv;
@@ -495,6 +580,15 @@ void xfdashboard_view_selector_set_viewpad(XfdashboardViewSelector *self, Xfdash
 }
 
 /* Get/set spacing */
+/**
+ * xfdashboard_view_selector_get_spacing:
+ * @self: A #XfdashboardViewSelector
+ *
+ * Retrieves the spacing between the actors of @self representing a choice of
+ * all views.
+ *
+ * Return value: The spacing
+ */
 gfloat xfdashboard_view_selector_get_spacing(XfdashboardViewSelector *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self), 0.0f);
@@ -502,6 +596,13 @@ gfloat xfdashboard_view_selector_get_spacing(XfdashboardViewSelector *self)
 	return(self->priv->spacing);
 }
 
+/**
+ * xfdashboard_view_selector_set_spacing:
+ * @self: A #XfdashboardViewSelector
+ * @inSpacing: The spacing between the actors of @self representing a view.
+ *
+ * Sets the spacing between the actors representing a view selection.
+ */
 void xfdashboard_view_selector_set_spacing(XfdashboardViewSelector *self, gfloat inSpacing)
 {
 	XfdashboardViewSelectorPrivate	*priv;
@@ -524,6 +625,15 @@ void xfdashboard_view_selector_set_spacing(XfdashboardViewSelector *self, gfloat
 }
 
 /* Get/set orientation */
+/**
+ * xfdashboard_view_selector_get_orientation:
+ * @self: A #XfdashboardViewSelector
+ *
+ * Retrieves the orientation of the @self.
+ *
+ * Return value: The orientation of the actor
+ */
+
 ClutterOrientation xfdashboard_view_selector_get_orientation(XfdashboardViewSelector *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_SELECTOR(self), CLUTTER_ORIENTATION_HORIZONTAL);
@@ -531,6 +641,13 @@ ClutterOrientation xfdashboard_view_selector_get_orientation(XfdashboardViewSele
 	return(self->priv->orientation);
 }
 
+/**
+ * xfdashboard_view_selector_set_orientation:
+ * @self: A #XfdashboardViewSelector
+ * @inOrientation: The orientation of #XfdashboardViewSelector
+ *
+ * Sets the orientation at @self.
+ */
 void xfdashboard_view_selector_set_orientation(XfdashboardViewSelector *self, ClutterOrientation inOrientation)
 {
 	XfdashboardViewSelectorPrivate	*priv;
