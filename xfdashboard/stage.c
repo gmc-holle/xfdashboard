@@ -521,10 +521,17 @@ static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, Xfdashb
 		priv->viewBeforeSearch=XFDASHBOARD_VIEW(g_object_ref(inView));
 	}
 
-	/* Update toggle state of apps button */
+	/* Toggle application button in quicklaunch */
 	appsButton=xfdashboard_quicklaunch_get_apps_button(XFDASHBOARD_QUICKLAUNCH(priv->quicklaunch));
 	if(appsButton)
 	{
+		/* Block our signal handler at stage which is called when apps button's
+		 * state changes because it will enforce a specific view depending on its 
+		 * state which may not be the view which is going to be activated.
+		 */
+		g_signal_handlers_block_by_func(appsButton, _xfdashboard_stage_on_quicklaunch_apps_button_toggled, self);
+
+		/* Update toggle state of apps button */
 		if(G_OBJECT_TYPE(inView)==XFDASHBOARD_TYPE_SEARCH_VIEW ||
 			G_OBJECT_TYPE(inView)==XFDASHBOARD_TYPE_APPLICATIONS_VIEW)
 		{
@@ -534,6 +541,9 @@ static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, Xfdashb
 			{
 				xfdashboard_toggle_button_set_toggle_state(appsButton, FALSE);
 			}
+
+		/* Unblock any handler we blocked before */
+		g_signal_handlers_unblock_by_func(appsButton, _xfdashboard_stage_on_quicklaunch_apps_button_toggled, self);
 	}
 }
 
