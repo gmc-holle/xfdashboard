@@ -484,7 +484,7 @@ ClutterActor* xfdashboard_view_selector_new(void)
 
 /**
  * xfdashboard_view_selector_new_for_viewpad:
- * @inViewpad: The #XfdashboardViewpad whose views to in this actor
+ * @inViewpad: The #XfdashboardViewpad whose views to show in this actor
  *
  * Creates a new #XfdashboardViewSelector actor, using @inViewpad as viewpad
  * whose views to show as #XfdashboardToggleButton<!-- -->s.
@@ -516,9 +516,9 @@ ClutterActor* xfdashboard_view_selector_new_for_viewpad(XfdashboardViewpad *inVi
  * xfdashboard_view_selector_get_viewpad:
  * @self: A #XfdashboardViewSelector
  *
- * Retrieves the #XfdashboardViewpad whose views are displayed at @self.
+ * Retrieves the #XfdashboardViewpad whose views are shown at @self.
  *
- * Return value: The #XfdashboardViewpad whose views is displayed
+ * Return value: The #XfdashboardViewpad whose views are shown
  */
 XfdashboardViewpad* xfdashboard_view_selector_get_viewpad(XfdashboardViewSelector *self)
 {
