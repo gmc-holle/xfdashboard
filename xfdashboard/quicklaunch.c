@@ -158,8 +158,8 @@ static ClutterActor* _xfdashboard_quicklaunch_get_actor_for_appinfo(XfdashboardQ
 	GAppInfo						*desktopAppInfo;
 	GFile							*desktopFile;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), TRUE);
-	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), TRUE);
+	g_return_val_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self), NULL);
+	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), NULL);
 
 	priv=self->priv;
 
