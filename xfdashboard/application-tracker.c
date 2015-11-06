@@ -757,12 +757,21 @@ static void _xfdashboard_application_tracker_on_active_window_changed(Xfdashboar
 	XfdashboardApplicationTrackerItem		*item;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_TRACKER(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inNewActiveWindow));
+	g_return_if_fail(!inNewActiveWindow || XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inNewActiveWindow));
+
+	/* New active window might be NULL (why ever?) so return immediately
+	 * in this case.
+	 */
+	if(!inNewActiveWindow)
+	{
+		g_debug("No new active window to check for running application.");
+		return;
+	}
 
 	/* Find application tracker item in list of known running applications
 	 * matching the new active window.
 	 */
-	item= _xfdashboard_application_tracker_find_item_by_window(self, inNewActiveWindow);
+	item=_xfdashboard_application_tracker_find_item_by_window(self, inNewActiveWindow);
 	if(!item)
 	{
 		g_debug("Could not find running application for new active window '%s'",
