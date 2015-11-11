@@ -332,11 +332,12 @@ gboolean xfdashboard_search_manager_unregister(XfdashboardSearchManager *self, c
 			data->ID,
 			g_type_name(data->gtype));
 
-	priv->registeredProviders=g_list_remove(priv->registeredProviders, iter);
+	priv->registeredProviders=g_list_remove_link(priv->registeredProviders, iter);
 	g_signal_emit(self, XfdashboardSearchManagerSignals[SIGNAL_UNREGISTERED], 0, data->ID);
 
-	/* Free data entry */
+	/* Free data entry and list element at iterator */
 	_xfdashboard_search_manager_entry_free(data);
+	g_list_free(iter);
 
 	/* Search provider was unregistered successfully so return TRUE here */
 	return(TRUE);

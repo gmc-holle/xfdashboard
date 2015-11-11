@@ -327,11 +327,12 @@ gboolean xfdashboard_view_manager_unregister(XfdashboardViewManager *self, const
 			data->ID,
 			g_type_name(data->gtype));
 
-	priv->registeredViews=g_list_remove(priv->registeredViews, iter);
+	priv->registeredViews=g_list_remove_link(priv->registeredViews, iter);
 	g_signal_emit(self, XfdashboardViewManagerSignals[SIGNAL_UNREGISTERED], 0, data->ID);
 
-	/* Free data entry */
+	/* Free data entry and list element at iterator */
 	_xfdashboard_view_manager_entry_free(data);
+	g_list_free(iter);
 
 	/* View was unregistered successfully so return TRUE here */
 	return(TRUE);
