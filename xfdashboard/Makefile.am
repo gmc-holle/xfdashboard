@@ -3,6 +3,7 @@ AM_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"xfdashboard\" \
 	-DPACKAGE_DATADIR=\"$(datadir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
+	-DPACKAGE_LIBDIR=\"$(libdir)\" \
 	$(PLATFORM_CPPFLAGS)
 
 noinst_LTLIBRARIES = \
@@ -48,6 +49,8 @@ xfdashboard_headers = \
 	live-window.h \
 	live-workspace.h \
 	outline-effect.h \
+	plugin.h \
+	plugin-manager.h \
 	quicklaunch.h \
 	scaled-table-layout.h \
 	scrollbar.h \
@@ -111,6 +114,8 @@ libxfdashboard_la_SOURCES = \
 	live-window.c \
 	live-workspace.c \
 	outline-effect.c \
+	plugin.c \
+	plugin-manager.c \
 	quicklaunch.c \
 	scaled-table-layout.c \
 	scrollbar.c \

@@ -48,6 +48,7 @@
 #include "bindings-pool.h"
 #include "application-database.h"
 #include "application-tracker.h"
+#include "plugin-manager.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplication,
@@ -83,6 +84,8 @@ struct _XfdashboardApplicationPrivate
 	XfdashboardApplicationTracker	*appTracker;
 
 	XfceSMClient					*sessionManagementClient;
+
+	XfdashboardPluginManager		*pluginManager;
 };
 
 /* Properties */
@@ -419,6 +422,22 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 
 	xfdashboard_search_manager_register(priv->searchManager, "applications", XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER);
 
+	/* Create single-instance of plugin manager to keep it alive while
+	 * application is running.
+	 */
+	priv->pluginManager=xfdashboard_plugin_manager_get_default();
+	if(!priv->pluginManager)
+	{
+		g_critical(_("Could not initialize plugin manager"));
+		return(FALSE);
+	}
+
+	if(!xfdashboard_plugin_manager_setup(priv->pluginManager))
+	{
+		g_critical(_("Could not setup plugin manager"));
+		return(FALSE);
+	}
+
 	/* Create single-instance of focus manager to keep it alive while
 	 * application is running.
 	 */
@@ -716,6 +735,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SHUTDOWN_FINAL], 0);
 
 	/* Release allocated resources */
+	if(priv->pluginManager)
+	{
+		g_object_unref(priv->pluginManager);
+		priv->pluginManager=NULL;
+	}
+
 	if(priv->xfconfThemeChangedSignalID)
 	{
 		xfconf_g_property_unbind(priv->xfconfThemeChangedSignalID);
@@ -970,6 +995,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->xfconfThemeChangedSignalID=0L;
 	priv->isQuitting=FALSE;
 	priv->sessionManagementClient=NULL;
+	priv->pluginManager=NULL;
 
 	/* Add callable DBUS actions for this application */
 	action=g_simple_action_new("Quit", NULL);
@@ -985,10 +1011,30 @@ XfdashboardApplication* xfdashboard_application_get_default(void)
 {
 	if(G_UNLIKELY(application==NULL))
 	{
+		gchar			*appID;
+		const gchar		*forceNewInstance=NULL;
+
+#ifdef DEBUG
+		/* If a new instance of xfdashboard is forced, e.g. for debugging purposes,
+		 * then create a unique application ID.
+		 */
+		forceNewInstance=g_getenv("XFDASHBOARD_FORCE_NEW_INSTANCE");
+#endif
+
+		if(forceNewInstance)
+		{
+			appID=g_strdup_printf("%s-%u", XFDASHBOARD_APP_ID, getpid());
+			g_message("Forcing new application instance with ID '%s'", appID);
+		}
+			else appID=g_strdup(XFDASHBOARD_APP_ID);
+
 		application=g_object_new(XFDASHBOARD_TYPE_APPLICATION,
-									"application-id", XFDASHBOARD_APP_ID,
+									"application-id", appID,
 									"flags", G_APPLICATION_HANDLES_COMMAND_LINE,
 									NULL);
+
+		/* Release allocated resources */
+		if(appID) g_free(appID);
 	}
 
 	return(application);

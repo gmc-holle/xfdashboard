@@ -14,6 +14,7 @@ DISTCLEANFILES = \
 
 SUBDIRS = \
 	data \
+	plugins \
 	po \
 	settings \
 	xfdashboard
