@@ -1011,6 +1011,23 @@ XfdashboardApplication* xfdashboard_application_get_default(void)
 {
 	if(G_UNLIKELY(application==NULL))
 	{
+		gchar			*appID;
+		const gchar		*forceNewInstance=NULL;
+
+#ifdef DEBUG
+		/* If a new instance of xfdashboard is forced, e.g. for debugging purposes,
+		 * then create a unique application ID.
+		 */
+		forceNewInstance=g_getenv("XFDASHBOARD_FORCE_NEW_INSTANCE");
+#endif
+
+		if(forceNewInstance)
+		{
+			appID=g_strdup_printf("%s-%u", XFDASHBOARD_APP_ID, getpid());
+			g_message("Forcing new application instance with ID '%s'", appID);
+		}
+			else appID=g_strdup(XFDASHBOARD_APP_ID);
+
 		application=g_object_new(XFDASHBOARD_TYPE_APPLICATION,
 									"application-id", XFDASHBOARD_APP_ID,
 									"flags", G_APPLICATION_HANDLES_COMMAND_LINE,
