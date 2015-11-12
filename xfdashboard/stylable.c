@@ -278,7 +278,7 @@ void xfdashboard_stylable_default_init(XfdashboardStylableInterface *iface)
 	g_object_interface_install_property(iface, property);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Call virtual function "get_stylable_properties" */
 GHashTable* xfdashboard_stylable_get_stylable_properties(XfdashboardStylable *self)

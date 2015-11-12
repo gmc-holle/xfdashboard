@@ -2259,7 +2259,7 @@ void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 	}
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 ClutterContent* xfdashboard_window_content_new_for_window(XfdashboardWindowTrackerWindow *inWindow)

@@ -975,7 +975,7 @@ static void xfdashboard_bindings_pool_init(XfdashboardBindingsPool *self)
 	priv->bindings=NULL;
 }
 
-/* Implementation: Errors */
+/* IMPLEMENTATION: Errors */
 
 GQuark xfdashboard_bindings_pool_error_quark(void)
 {

@@ -2525,14 +2525,14 @@ void xfdashboard_theme_css_init(XfdashboardThemeCSS *self)
 #undef REGISTER_CSS_FUNC
 }
 
-/* Implementation: Errors */
+/* IMPLEMENTATION: Errors */
 
 GQuark xfdashboard_theme_css_error_quark(void)
 {
 	return(g_quark_from_static_string("xfdashboard-theme-css-error-quark"));
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 XfdashboardThemeCSS* xfdashboard_theme_css_new(const gchar *inThemePath)

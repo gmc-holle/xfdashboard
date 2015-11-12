@@ -604,7 +604,7 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 	}
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Call virtual function "can_focus" */
 gboolean xfdashboard_focusable_can_focus(XfdashboardFocusable *self)

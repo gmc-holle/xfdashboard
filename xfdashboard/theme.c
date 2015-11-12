@@ -614,14 +614,14 @@ void xfdashboard_theme_init(XfdashboardTheme *self)
 	priv->effects=NULL;
 }
 
-/* Implementation: Errors */
+/* IMPLEMENTATION: Errors */
 
 GQuark xfdashboard_theme_error_quark(void)
 {
 	return(g_quark_from_static_string("xfdashboard-theme-error-quark"));
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 XfdashboardTheme* xfdashboard_theme_new(void)

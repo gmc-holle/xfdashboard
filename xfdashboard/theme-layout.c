@@ -1721,14 +1721,14 @@ void xfdashboard_theme_layout_init(XfdashboardThemeLayout *self)
 	priv->interfaces=NULL;
 }
 
-/* Implementation: Errors */
+/* IMPLEMENTATION: Errors */
 
 GQuark xfdashboard_theme_layout_error_quark(void)
 {
 	return(g_quark_from_static_string("xfdashboard-theme-layout-error-quark"));
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 XfdashboardThemeLayout* xfdashboard_theme_layout_new(void)

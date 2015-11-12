@@ -1183,14 +1183,14 @@ void xfdashboard_theme_effects_init(XfdashboardThemeEffects *self)
 	priv->effects=NULL;
 }
 
-/* Implementation: Errors */
+/* IMPLEMENTATION: Errors */
 
 GQuark xfdashboard_theme_effects_error_quark(void)
 {
 	return(g_quark_from_static_string("xfdashboard-theme-effects-error-quark"));
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new instance */
 XfdashboardThemeEffects* xfdashboard_theme_effects_new(void)

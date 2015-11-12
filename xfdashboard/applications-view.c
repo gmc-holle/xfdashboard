@@ -1499,7 +1499,7 @@ void xfdashboard_applications_view_set_spacing(XfdashboardApplicationsView *self
 	}
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Get/set icon name for 'go-back-to-parent-menu' entries */
 const gchar* xfdashboard_applications_view_get_parent_menu_icon(XfdashboardApplicationsView *self)

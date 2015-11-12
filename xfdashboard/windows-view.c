@@ -1996,7 +1996,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	}
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Get/set spacing between elements */
 gfloat xfdashboard_windows_view_get_spacing(XfdashboardWindowsView *self)

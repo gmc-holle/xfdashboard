@@ -969,7 +969,7 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 	g_signal_connect(self, "notify::name", G_CALLBACK(_xfdashboard_actor_on_name_changed), NULL);
 }
 
-/* Implementation: GType */
+/* IMPLEMENTATION: GType */
 
 /* Base class finalization */
 void xfdashboard_actor_base_class_finalize(XfdashboardActorClass *klass)
@@ -1050,7 +1050,7 @@ GType xfdashboard_actor_get_type(void)
 	return(actorType);
 }
 
-/* Implementation: Public API */
+/* IMPLEMENTATION: Public API */
 
 /* Create new actor */
 ClutterActor* xfdashboard_actor_new(void)
