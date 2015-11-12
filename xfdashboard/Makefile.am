@@ -50,7 +50,7 @@ xfdashboard_headers = \
 	live-workspace.h \
 	outline-effect.h \
 	plugin.h \
-	plugin-manager.h \
+	plugins-manager.h \
 	quicklaunch.h \
 	scaled-table-layout.h \
 	scrollbar.h \
@@ -115,7 +115,7 @@ libxfdashboard_la_SOURCES = \
 	live-workspace.c \
 	outline-effect.c \
 	plugin.c \
-	plugin-manager.c \
+	plugins-manager.c \
 	quicklaunch.c \
 	scaled-table-layout.c \
 	scrollbar.c \

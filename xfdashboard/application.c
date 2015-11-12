@@ -48,7 +48,7 @@
 #include "bindings-pool.h"
 #include "application-database.h"
 #include "application-tracker.h"
-#include "plugin-manager.h"
+#include "plugins-manager.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplication,
@@ -85,7 +85,7 @@ struct _XfdashboardApplicationPrivate
 
 	XfceSMClient					*sessionManagementClient;
 
-	XfdashboardPluginManager		*pluginManager;
+	XfdashboardPluginsManager		*pluginManager;
 };
 
 /* Properties */
@@ -425,14 +425,14 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	/* Create single-instance of plugin manager to keep it alive while
 	 * application is running.
 	 */
-	priv->pluginManager=xfdashboard_plugin_manager_get_default();
+	priv->pluginManager=xfdashboard_plugins_manager_get_default();
 	if(!priv->pluginManager)
 	{
 		g_critical(_("Could not initialize plugin manager"));
 		return(FALSE);
 	}
 
-	if(!xfdashboard_plugin_manager_setup(priv->pluginManager))
+	if(!xfdashboard_plugins_manager_setup(priv->pluginManager))
 	{
 		g_critical(_("Could not setup plugin manager"));
 		return(FALSE);

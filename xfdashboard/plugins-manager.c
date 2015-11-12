@@ -1,5 +1,5 @@
 /*
- * plugin-manager: Single-instance managing plugins
+ * plugins-manager: Single-instance managing plugins
  * 
  * Copyright 2012-2015 Stephan Haller <nomad@froevel.de>
  * 
@@ -25,7 +25,7 @@
 #include "config.h"
 #endif
 
-#include "plugin-manager.h"
+#include "plugins-manager.h"
 
 #include <glib/gi18n-lib.h>
 
@@ -34,15 +34,15 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardPluginManager,
-				xfdashboard_plugin_manager,
+G_DEFINE_TYPE(XfdashboardPluginsManager,
+				xfdashboard_plugins_manager,
 				G_TYPE_OBJECT)
 
 /* Private structure - access only by public API if needed */
-#define XFDASHBOARD_PLUGIN_MANAGER_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_PLUGIN_MANAGER, XfdashboardPluginManagerPrivate))
+#define XFDASHBOARD_PLUGINS_MANAGER_GET_PRIVATE(obj) \
+	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_PLUGINS_MANAGER, XfdashboardPluginsManagerPrivate))
 
-struct _XfdashboardPluginManagerPrivate
+struct _XfdashboardPluginsManagerPrivate
 {
 	/* Instance related */
 	gboolean		isInited;
@@ -55,18 +55,18 @@ struct _XfdashboardPluginManagerPrivate
 #define ENABLED_PLUGINS_XFCONF_PROP			"/enabled-plugins"
 
 /* Single instance of plugin manager */
-static XfdashboardPluginManager*			_xfdashboard_plugin_manager=NULL;
+static XfdashboardPluginsManager*			_xfdashboard_plugins_manager=NULL;
 
 /* Add path to search path but avoid duplicates */
-static gboolean _xfdashboard_plugin_manager_add_search_path(XfdashboardPluginManager *self,
+static gboolean _xfdashboard_plugins_manager_add_search_path(XfdashboardPluginsManager *self,
 																const gchar *inPath)
 {
-	XfdashboardPluginManagerPrivate		*priv;
+	XfdashboardPluginsManagerPrivate	*priv;
 	gchar								*normalizedPath;
 	GList								*iter;
 	gchar								*iterPath;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN_MANAGER(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self), FALSE);
 	g_return_val_if_fail(inPath && *inPath, FALSE);
 
 	priv=self->priv;
@@ -115,15 +115,15 @@ static gboolean _xfdashboard_plugin_manager_add_search_path(XfdashboardPluginMan
 }
 
 /* Find path to plugin */
-static gchar* _xfdashboard_plugin_manager_find_plugin_path(XfdashboardPluginManager *self,
+static gchar* _xfdashboard_plugins_manager_find_plugin_path(XfdashboardPluginsManager *self,
 															const gchar *inPluginName)
 {
-	XfdashboardPluginManagerPrivate		*priv;
+	XfdashboardPluginsManagerPrivate	*priv;
 	gchar								*path;
 	GList								*iter;
 	gchar								*iterPath;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN_MANAGER(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self), NULL);
 	g_return_val_if_fail(inPluginName && *inPluginName, NULL);
 
 	priv=self->priv;
@@ -160,7 +160,7 @@ static gchar* _xfdashboard_plugin_manager_find_plugin_path(XfdashboardPluginMana
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-static void _xfdashboard_plugin_manager_dispose_remove_plugin(gpointer inData)
+static void _xfdashboard_plugins_manager_dispose_remove_plugin(gpointer inData)
 {
 	XfdashboardPlugin					*plugin;
 
@@ -175,15 +175,15 @@ static void _xfdashboard_plugin_manager_dispose_remove_plugin(gpointer inData)
 	g_type_module_unuse(G_TYPE_MODULE(plugin));
 }
 
-static void _xfdashboard_plugin_manager_dispose(GObject *inObject)
+static void _xfdashboard_plugins_manager_dispose(GObject *inObject)
 {
-	XfdashboardPluginManager			*self=XFDASHBOARD_PLUGIN_MANAGER(inObject);
-	XfdashboardPluginManagerPrivate		*priv=self->priv;
+	XfdashboardPluginsManager			*self=XFDASHBOARD_PLUGINS_MANAGER(inObject);
+	XfdashboardPluginsManagerPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
 	if(priv->plugins)
 	{
-		g_list_free_full(priv->plugins, (GDestroyNotify)_xfdashboard_plugin_manager_dispose_remove_plugin);
+		g_list_free_full(priv->plugins, (GDestroyNotify)_xfdashboard_plugins_manager_dispose_remove_plugin);
 		priv->plugins=NULL;
 	}
 
@@ -194,35 +194,35 @@ static void _xfdashboard_plugin_manager_dispose(GObject *inObject)
 	}
 
 	/* Unset singleton */
-	if(G_LIKELY(G_OBJECT(_xfdashboard_plugin_manager)==inObject)) _xfdashboard_plugin_manager=NULL;
+	if(G_LIKELY(G_OBJECT(_xfdashboard_plugins_manager)==inObject)) _xfdashboard_plugins_manager=NULL;
 
 	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_plugin_manager_parent_class)->dispose(inObject);
+	G_OBJECT_CLASS(xfdashboard_plugins_manager_parent_class)->dispose(inObject);
 }
 
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
  */
-static void xfdashboard_plugin_manager_class_init(XfdashboardPluginManagerClass *klass)
+static void xfdashboard_plugins_manager_class_init(XfdashboardPluginsManagerClass *klass)
 {
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->dispose=_xfdashboard_plugin_manager_dispose;
+	gobjectClass->dispose=_xfdashboard_plugins_manager_dispose;
 
 	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardPluginManagerPrivate));
+	g_type_class_add_private(klass, sizeof(XfdashboardPluginsManagerPrivate));
 }
 
 /* Object initialization
  * Create private structure and set up default values
  */
-static void xfdashboard_plugin_manager_init(XfdashboardPluginManager *self)
+static void xfdashboard_plugins_manager_init(XfdashboardPluginsManager *self)
 {
-	XfdashboardPluginManagerPrivate		*priv;
+	XfdashboardPluginsManagerPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_PLUGIN_MANAGER_GET_PRIVATE(self);
+	priv=self->priv=XFDASHBOARD_PLUGINS_MANAGER_GET_PRIVATE(self);
 
 	/* Set default values */
 	priv->isInited=FALSE;
@@ -233,28 +233,28 @@ static void xfdashboard_plugin_manager_init(XfdashboardPluginManager *self)
 /* IMPLEMENTATION: Public API */
 
 /* Get single instance of manager */
-XfdashboardPluginManager* xfdashboard_plugin_manager_get_default(void)
+XfdashboardPluginsManager* xfdashboard_plugins_manager_get_default(void)
 {
-	if(G_UNLIKELY(_xfdashboard_plugin_manager==NULL))
+	if(G_UNLIKELY(_xfdashboard_plugins_manager==NULL))
 	{
-		_xfdashboard_plugin_manager=g_object_new(XFDASHBOARD_TYPE_PLUGIN_MANAGER, NULL);
+		_xfdashboard_plugins_manager=g_object_new(XFDASHBOARD_TYPE_PLUGINS_MANAGER, NULL);
 	}
-		else g_object_ref(_xfdashboard_plugin_manager);
+		else g_object_ref(_xfdashboard_plugins_manager);
 
-	return(_xfdashboard_plugin_manager);
+	return(_xfdashboard_plugins_manager);
 }
 
 /* Initialize plugin manager */
-gboolean xfdashboard_plugin_manager_setup(XfdashboardPluginManager *self)
+gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self)
 {
-	XfdashboardPluginManagerPrivate		*priv;
+	XfdashboardPluginsManagerPrivate	*priv;
 	gchar								*path;
 	const gchar							*envPath;
 	gchar								**enabledPlugins;
 	gchar								**iter;
 	GError								*error;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN_MANAGER(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self), FALSE);
 
 	priv=self->priv;
 	error=NULL;
@@ -268,15 +268,15 @@ gboolean xfdashboard_plugin_manager_setup(XfdashboardPluginManager *self)
 	envPath=g_getenv("XFDASHBOARD_PLUGINS_PATH");
 	if(envPath)
 	{
-		_xfdashboard_plugin_manager_add_search_path(self, envPath);
+		_xfdashboard_plugins_manager_add_search_path(self, envPath);
 	}
 
 	path=g_build_filename(g_get_user_data_dir(), "xfdashboard", "plugins", NULL);
-	_xfdashboard_plugin_manager_add_search_path(self, path);
+	_xfdashboard_plugins_manager_add_search_path(self, path);
 	g_free(path);
 
 	path=g_build_filename(PACKAGE_LIBDIR, "xfdashboard", "plugins", NULL);
-	_xfdashboard_plugin_manager_add_search_path(self, path);
+	_xfdashboard_plugins_manager_add_search_path(self, path);
 	g_free(path);
 
 	/* Get list of enabled plugins and try to load them */
@@ -294,7 +294,7 @@ gboolean xfdashboard_plugin_manager_setup(XfdashboardPluginManager *self)
 		g_debug("Try to load plugin '%s'", pluginName);
 
 		/* Find path to plugin */
-		path=_xfdashboard_plugin_manager_find_plugin_path(self, pluginName);
+		path=_xfdashboard_plugins_manager_find_plugin_path(self, pluginName);
 		if(!path)
 		{
 			/* Show error message */
