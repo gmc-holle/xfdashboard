@@ -44,6 +44,13 @@
 	</provides>
 
 	<releases>
+		<release version="0.5.3" timestamp="1447437275">
+			<description>
+				<_p>This unstable development introduces a basic and simple plugin system
+				as well as a sample plugin adding a new view showing a clock.
+				</_p>
+			</description>
+		</release>
 		<release version="0.5.2" timestamp="1444326527">
 			<description>
 				<_p>This unstable development introduces a new configurable options to
