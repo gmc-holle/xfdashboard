@@ -286,7 +286,6 @@ void xfdashboard_clock_view_class_finalize(XfdashboardClockViewClass *klass)
 void xfdashboard_clock_view_init(XfdashboardClockView *self)
 {
 	XfdashboardClockViewPrivate		*priv;
-	// TODO: ClutterLayoutManager			*layout;
 
 	self->priv=priv=XFDASHBOARD_CLOCK_VIEW_GET_PRIVATE(self);
 
