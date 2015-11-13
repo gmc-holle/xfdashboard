@@ -11,6 +11,8 @@ data/themes/xfdashboard-dark/xfdashboard.theme.in.in
 data/themes/xfdashboard-mint/xfdashboard.theme.in.in
 data/themes/xfdashboard-moranga/xfdashboard.theme.in.in
 data/themes/xfdashboard-wine/xfdashboard.theme.in.in
+plugins/clock-view/clock-view.c
+plugins/clock-view/plugin.c
 settings/main.c
 settings/settings.c
 xfdashboard/actor.c
@@ -44,6 +46,8 @@ xfdashboard/live-workspace.c
 xfdashboard/main.c
 xfdashboard/marshal.c
 xfdashboard/outline-effect.c
+xfdashboard/plugin.c
+xfdashboard/plugins-manager.c
 xfdashboard/quicklaunch.c
 xfdashboard/scaled-table-layout.c
 xfdashboard/scrollbar.c
