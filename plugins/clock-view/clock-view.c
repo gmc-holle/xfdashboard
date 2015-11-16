@@ -154,7 +154,7 @@ static gboolean _xfdashboard_clock_view_on_timeout(gpointer inUserData)
 	XfdashboardClockView			*self;
 	XfdashboardClockViewPrivate		*priv;
 
-	g_return_if_fail(XFDASHBOARD_IS_CLOCK_VIEW(inUserData));
+	g_return_val_if_fail(XFDASHBOARD_IS_CLOCK_VIEW(inUserData), FALSE);
 
 	self=XFDASHBOARD_CLOCK_VIEW(inUserData);
 	priv=self->priv;
