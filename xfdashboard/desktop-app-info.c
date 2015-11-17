@@ -1413,7 +1413,7 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 	XfdashboardDesktopAppInfoPrivate	*priv;
 	gboolean							success;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
 
 	priv=self->priv;
 	success=FALSE;

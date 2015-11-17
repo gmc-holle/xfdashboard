@@ -526,6 +526,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_window_nam
 			GAppInfo						*globAppInfo;
 
 			/* Build glob pattern */
+			globAppInfo=NULL;
 			globName=g_strconcat("*-", iterNameLowerCase, NULL);
 			globPattern=g_pattern_spec_new(globName);
 
@@ -556,7 +557,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_window_nam
 				appInfo=G_APP_INFO(g_object_ref(G_OBJECT(foundSubdirApps->data)));
 
 				g_debug("Found exactly one application named '%s' for window '%s' using pattern '%s'",
-						g_app_info_get_id(globAppInfo),
+						g_app_info_get_id(appInfo),
 						xfdashboard_window_tracker_window_get_title(inWindow),
 						globName);
 			}

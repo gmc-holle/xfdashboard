@@ -1604,7 +1604,7 @@ void xfdashboard_applications_view_set_format_title_description(XfdashboardAppli
 /* Get/set flag whether to show an "all applications" menu at root menu */
 gboolean xfdashboard_applications_view_get_show_all_apps(XfdashboardApplicationsView *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self), FALSE);
 
 	return(self->priv->showAllAppsMenu);
 }

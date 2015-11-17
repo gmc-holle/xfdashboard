@@ -1044,7 +1044,6 @@ static gboolean _xfdashboard_theme_effects_parse_xml(XfdashboardThemeEffects *se
 											NULL,
 										};
 
-	XfdashboardThemeEffectsPrivate		*priv;
 	XfdashboardThemeEffectsParserData	*data;
 	GMarkupParseContext					*context;
 	GError								*error;
@@ -1055,7 +1054,6 @@ static gboolean _xfdashboard_theme_effects_parse_xml(XfdashboardThemeEffects *se
 	g_return_val_if_fail(inContents && *inContents, FALSE);
 	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
 
-	priv=self->priv;
 	error=NULL;
 	success=TRUE;
 
@@ -1120,7 +1118,7 @@ static gboolean _xfdashboard_theme_effects_parse_xml(XfdashboardThemeEffects *se
 	if(!success)
 	{
 		g_slist_foreach(data->effects, (GFunc)_xfdashboard_theme_effects_print_parsed_objects, "Effects (this file):");
-		g_slist_foreach(priv->effects, (GFunc)_xfdashboard_theme_effects_print_parsed_objects, "Effects (parsed before):");
+		g_slist_foreach(self->priv->effects, (GFunc)_xfdashboard_theme_effects_print_parsed_objects, "Effects (parsed before):");
 		g_debug("PARSER ERROR: %s", (outError && *outError) ? (*outError)->message : "unknown error");
 	}
 #endif
