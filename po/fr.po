@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-08 06:36+0200\n"
-"PO-Revision-Date: 2015-09-08 04:37+0000\n"
-"Last-Translator: Stephan Haller <nomad@froevel.de>\n"
+"PO-Revision-Date: 2015-11-17 12:26+0000\n"
+"Last-Translator: jc1 <jc1.quebecos@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/xfdashboard/xfdashboard/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -259,7 +259,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:23
 msgid "Priority of window content creation"
-msgstr ""
+msgstr "Priorité de la création du contenu de la fenêtre"
 
 #: ../data/data/preferences.ui.h:24
 msgid "<b>Applications view:</b>"
@@ -452,15 +452,15 @@ msgstr "Immédiatement"
 
 #: ../settings/settings.c:110
 msgid "High"
-msgstr ""
+msgstr "Haut"
 
 #: ../settings/settings.c:111
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: ../settings/settings.c:112
 msgid "Low"
-msgstr ""
+msgstr "Bas"
 
 #: ../settings/settings.c:307
 msgid "seconds"
@@ -606,7 +606,7 @@ msgstr "Impossible de charger la base de données application : %s"
 
 #: ../xfdashboard/application.c:374
 msgid "Could not initialize application tracker"
-msgstr ""
+msgstr "Impossible d'initialiser le traqueur d'application"
 
 #: ../xfdashboard/application.c:386
 msgid ""
@@ -1494,39 +1494,39 @@ msgstr "Nombre actuel de colonnes dans cette mise en page"
 
 #: ../xfdashboard/emblem-effect.c:479
 msgid "Size of icon"
-msgstr ""
+msgstr "Taille de l'icône"
 
 #: ../xfdashboard/emblem-effect.c:487
 msgid "Padding around emblem"
-msgstr ""
+msgstr "Rembourrage autour emblème"
 
 #: ../xfdashboard/emblem-effect.c:494
 msgid "X align"
-msgstr ""
+msgstr "Aligner en X"
 
 #: ../xfdashboard/emblem-effect.c:495
 msgid ""
 "The alignment of emblem on the X axis within the allocation in normalized "
 "coordinate between 0 and 1"
-msgstr ""
+msgstr "L'alignement de l'emblème sur l'axe X dans l'attribution dans des coordonnées normalisées entre 0 et 1"
 
 #: ../xfdashboard/emblem-effect.c:502
 msgid "Y align"
-msgstr ""
+msgstr "Aligner en Y"
 
 #: ../xfdashboard/emblem-effect.c:503
 msgid ""
 "The alignment of emblem on the Y axis within the allocation in normalized "
 "coordinate between 0 and 1"
-msgstr ""
+msgstr "L'alignement de l'emblème sur l'axe Y dans l'attribution dans des coordonnées normalisées entre 0 et 1"
 
 #: ../xfdashboard/emblem-effect.c:510
 msgid "Anchor point"
-msgstr ""
+msgstr "Point de l'ancre"
 
 #: ../xfdashboard/emblem-effect.c:511
 msgid "The anchor point of emblem"
-msgstr ""
+msgstr "Le point de l'ancre de l'emblème"
 
 #: ../xfdashboard/fill-box-layout.c:575 ../xfdashboard/quicklaunch.c:2625
 #: ../xfdashboard/scrollbar.c:714 ../xfdashboard/view-selector.c:382
@@ -1659,7 +1659,7 @@ msgstr "Échec pour charger l'image pour la touche « %s » : %s"
 #: ../xfdashboard/image-content.c:374
 #, c-format
 msgid "Icon file '%s' does not exist - trying fallback icon '%s'"
-msgstr ""
+msgstr "Le fichier d'icône « %s » n'existe pas - essayer l'icône de repli « %s »"
 
 #: ../xfdashboard/image-content.c:389
 #, c-format
@@ -1684,7 +1684,7 @@ msgstr "Impossible de chercher le nom de l'icône « %s » pour l'icône « %s �
 #: ../xfdashboard/image-content.c:620
 #, c-format
 msgid "Could not lookup themed icon '%s' - trying fallback icon '%s'"
-msgstr ""
+msgstr "Impossible de chercher l'icône du thème « %s » - essayer l'icône de repli « %s »"
 
 #: ../xfdashboard/image-content.c:633
 #, c-format
@@ -1862,7 +1862,7 @@ msgstr "Rayon des angles arrondis"
 msgid ""
 "Could not check for duplicates for invalid %s object so assume no actor "
 "exists"
-msgstr ""
+msgstr "Impossible de vérifier les doublons pour  %s objet invalide afin d'assumer qu'aucun acteur existe"
 
 #: ../xfdashboard/quicklaunch.c:241
 #, c-format
@@ -2130,7 +2130,7 @@ msgstr "Vous ne trouvez pas chercher viewin ViewPad pour réinitialiser vue."
 #: ../xfdashboard/stage.c:667 ../xfdashboard/stage.c:1325
 #, c-format
 msgid "Will not switch to unknown view '%s'"
-msgstr ""
+msgstr "Vous ne pourrez pas passer à la vue inconnue « %s »"
 
 #: ../xfdashboard/stage.c:685
 #, c-format
@@ -2166,11 +2166,11 @@ msgstr "Couleur du fond de scène"
 
 #: ../xfdashboard/stage.c:1567
 msgid "Switch to view"
-msgstr ""
+msgstr "Changer pour la vue"
 
 #: ../xfdashboard/stage.c:1568
 msgid "Switch to this named view as soon as stage gets visible"
-msgstr ""
+msgstr "Changer pour la vue nommée dès que l'étape devient visible"
 
 #: ../xfdashboard/stage-interface.c:328
 msgid "The monitor where this stage interface is connected to"
@@ -2716,13 +2716,13 @@ msgstr "Icône de vue permet d'afficher. Nom de l'icône peut être un nom d'ic�
 
 #: ../xfdashboard/view.c:368
 msgid "View fit mode"
-msgstr ""
+msgstr "Vu mode convenable"
 
 #: ../xfdashboard/view.c:369
 msgid ""
 "Defines if view should be fit into viewpad and in which directions it should"
 " fit into it"
-msgstr ""
+msgstr "Définit si vue doit être insérer dans ViewPad et dans quelles directions il devrait être intégré en elle"
 
 #: ../xfdashboard/view.c:376
 msgid "Enabled"
@@ -2832,7 +2832,7 @@ msgstr "Détruire le contenu de la fenêtre de file d'attente contenant encore %
 msgid ""
 "Unknown value '%s' for property '%s' - defaulting to '%s' with priority of "
 "%d"
-msgstr ""
+msgstr "Valeur inconnue « %s » pour la propriété « %s » - défaut de « %s » avec une priorité %d"
 
 #. Show warning
 #: ../xfdashboard/window-content.c:476
