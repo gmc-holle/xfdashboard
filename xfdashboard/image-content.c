@@ -474,12 +474,12 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 													(GAsyncReadyCallback)_xfdashboard_image_content_loading_async_callback,
 													g_object_ref(self));
 
+		g_debug("Loading icon '%s' from file %s", priv->iconName, filename);
+
 		/* Release allocated resources */
 		g_object_unref(stream);
 		g_object_unref(file);
 		g_free(filename);
-
-		g_debug("Loading icon '%s' from file %s", priv->iconName, filename);
 	}
 
 	/* Release allocated resources */
