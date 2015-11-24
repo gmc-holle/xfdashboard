@@ -31,6 +31,7 @@
 #include "application-database.h"
 #include "desktop-app-info.h"
 
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationDatabase,
 				xfdashboard_application_database,
@@ -740,6 +741,10 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 													g_file_info_get_name(info));
 			if(!childPath)
 			{
+				g_debug("Unable to build path to search for desktop files for path='%s' and file='%s'",
+						path,
+						g_file_info_get_name(info));
+
 				/* Set error */
 				g_set_error(outError,
 								G_IO_ERROR,
@@ -765,6 +770,11 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 																						&error);
 			if(!childSuccess)
 			{
+				g_debug("Unable to iterate desktop files at %s%s%s",
+						path,
+						G_DIR_SEPARATOR_S,
+						g_file_info_get_name(info));
+
 				/* Propagate error */
 				g_propagate_error(outError, error);
 
@@ -871,6 +881,12 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 
 	if(error)
 	{
+		g_debug("Failed to iterate path '%s' with info=%s@%p and error=@%p",
+				path,
+				info ? G_OBJECT_TYPE_NAME(info) : "<nil>",
+				info,
+				error);
+
 		/* Propagate error */
 		g_propagate_error(outError, error);
 
@@ -888,6 +904,9 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 	monitorData=_xfdashboard_application_database_monitor_data_new(inCurrentPath);
 	if(!monitorData)
 	{
+		g_debug("Failed to create data object for file monitor for path '%s'",
+				path);
+
 		/* Set error */
 		g_set_error(outError,
 						G_IO_ERROR,
@@ -906,6 +925,9 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 	monitorData->monitor=g_file_monitor(inCurrentPath, G_FILE_MONITOR_NONE, NULL, &error);
 	if(!monitorData->monitor)
 	{
+		g_debug("Failed to initialize file monitor for path '%s'",
+				path);
+
 		/* Propagate error */
 		g_propagate_error(outError, error);
 
