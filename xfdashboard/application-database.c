@@ -904,8 +904,7 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 	monitorData=_xfdashboard_application_database_monitor_data_new(inCurrentPath);
 	if(!monitorData)
 	{
-		g_debug("Failed to create data object for file monitor for path '%s'",
-				path);
+		g_debug("Failed to create data object for file monitor for path '%s'", path);
 
 		/* Set error */
 		g_set_error(outError,
@@ -923,10 +922,9 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 	}
 
 	monitorData->monitor=g_file_monitor(inCurrentPath, G_FILE_MONITOR_NONE, NULL, &error);
-	if(!monitorData->monitor)
+	if(!monitorData->monitor && error)
 	{
-		g_debug("Failed to initialize file monitor for path '%s'",
-				path);
+		g_debug("Failed to initialize file monitor for path '%s'", path);
 
 		/* Propagate error */
 		g_propagate_error(outError, error);
@@ -940,7 +938,17 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 		return(FALSE);
 	}
 
-	*ioFileMonitors=g_list_prepend(*ioFileMonitors, monitorData);
+	if(monitorData->monitor)
+	{
+		*ioFileMonitors=g_list_prepend(*ioFileMonitors, monitorData);
+
+		g_debug("Added file monitor for path '%s'", path);
+	}
+		else
+		{
+			g_warning(_("Could not create file monitor for path '%s' so no changes will be detected"),
+						path);
+		}
 
 	g_debug("Finished scanning directory '%s' for search path '%s'",
 				path,
