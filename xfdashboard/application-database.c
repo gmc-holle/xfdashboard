@@ -1021,7 +1021,6 @@ static gboolean _xfdashboard_application_database_load_applications(XfdashboardA
 			if(fileMonitors) g_list_free_full(fileMonitors, g_object_unref);
 			if(apps) g_hash_table_unref(apps);
 			if(directory) g_object_unref(directory);
-			if(error) g_error_free(error);
 
 			return(FALSE);
 		}
