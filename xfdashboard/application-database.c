@@ -881,12 +881,6 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 
 	if(error)
 	{
-		g_debug("Failed to iterate path '%s' with info=%s@%p and error=@%p",
-				path,
-				info ? G_OBJECT_TYPE_NAME(info) : "<nil>",
-				info,
-				error);
-
 		/* Propagate error */
 		g_propagate_error(outError, error);
 
@@ -924,6 +918,13 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 	monitorData->monitor=g_file_monitor(inCurrentPath, G_FILE_MONITOR_NONE, NULL, &error);
 	if(!monitorData->monitor && error)
 	{
+#if defined(__unix__)
+		/* Workaround for FreeBSD with Glib bug (file/directory monitors cannot be created */
+		g_warning("[workaround for FreeBSD] Cannot initialize file monitor for path '%s' - will not detect changes", path);
+
+		/* Clear error as this error will not fail at FreeBSD */
+		g_clear_error(&error);
+#else
 		g_debug("Failed to initialize file monitor for path '%s'", path);
 
 		/* Propagate error */
@@ -931,23 +932,28 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 
 		/* Release allocated resources */
 		if(monitorData) _xfdashboard_application_database_monitor_data_free(monitorData);
+
 		if(path) g_free(path);
 		if(topLevelPath) g_free(topLevelPath);
 		if(enumerator) g_object_unref(enumerator);
 
 		return(FALSE);
+#endif
 	}
 
-	if(monitorData->monitor)
+	/* If file monitor could be created, add it to list of file monitors ... */
+	if(monitorData && monitorData->monitor)
 	{
 		*ioFileMonitors=g_list_prepend(*ioFileMonitors, monitorData);
 
 		g_debug("Added file monitor for path '%s'", path);
 	}
+		/* ... otherwise free file monitor data */
 		else
 		{
-			g_warning(_("Could not create file monitor for path '%s' so no changes will be detected"),
-						path);
+			if(monitorData) _xfdashboard_application_database_monitor_data_free(monitorData);
+
+			g_debug("Destroying file monitor for path '%s'", path);
 		}
 
 	g_debug("Finished scanning directory '%s' for search path '%s'",
