@@ -920,7 +920,7 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 	{
 #if defined(__unix__)
 		/* Workaround for FreeBSD with Glib bug (file/directory monitors cannot be created) */
-		g_warning(_("[workaround for FreeBSD] Cannot initialize file monitor for path '%s' but will not fail: %s",
+		g_warning(_("[workaround for FreeBSD] Cannot initialize file monitor for path '%s' but will not fail: %s"),
 					path,
 					error ? error->message : _("Unknown error"));
 
