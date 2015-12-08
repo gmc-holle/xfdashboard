@@ -96,25 +96,6 @@ static GParamSpec* XfdashboardWorkspaceSelectorProperties[PROP_LAST]={ 0, };
 #define DEFAULT_USING_FRACTION		TRUE
 #define DEFAULT_ORIENTATION			CLUTTER_ORIENTATION_VERTICAL
 
-/* Find stage interface whose child this actor is */
-static XfdashboardStageInterface* _xfdashboard_workspace_selector_get_stage_interface(XfdashboardWorkspaceSelector *self)
-{
-	ClutterActor							*stageInterface;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(self), NULL);
-
-	/* Find parent stage interface */
-	stageInterface=clutter_actor_get_parent(CLUTTER_ACTOR(self));
-	while(stageInterface && !XFDASHBOARD_IS_STAGE_INTERFACE(stageInterface))
-	{
-		stageInterface=clutter_actor_get_parent(stageInterface);
-	}
-	if(stageInterface) return(XFDASHBOARD_STAGE_INTERFACE(stageInterface));
-
-	/* If we get here we did not find parent stage interface */
-	return(NULL);
-}
-
 /* Get maximum (horizontal or vertical) size either by static size or fraction */
 static gfloat _xfdashboard_workspace_selector_get_max_size_internal(XfdashboardWorkspaceSelector *self)
 {
@@ -131,7 +112,7 @@ static gfloat _xfdashboard_workspace_selector_get_max_size_internal(XfdashboardW
 	 * to determine maximum size by fraction or to update maximum size or
 	 * fraction and send notifications.
 	 */
-	stageInterface=_xfdashboard_workspace_selector_get_stage_interface(self);
+	stageInterface=xfdashboard_get_stage_of_actor(CLUTTER_ACTOR(self));
 	if(!stageInterface) return(0.0f);
 
 	clutter_actor_get_size(CLUTTER_ACTOR(stageInterface), &w, &h);
@@ -445,7 +426,7 @@ static void _xfdashboard_workspace_selector_on_workspace_added(XfdashboardWorksp
 		XfdashboardWindowTrackerMonitor		*monitor;
 
 		/* Get parent stage interface */
-		stageInterface=_xfdashboard_workspace_selector_get_stage_interface(self);
+		stageInterface=xfdashboard_get_stage_of_actor(CLUTTER_ACTOR(self));
 
 		/* Get monitor of stage interface if available */
 		monitor=NULL;
@@ -1592,7 +1573,7 @@ void xfdashboard_workspace_selector_set_show_current_monitor_only(XfdashboardWor
 		priv->showCurrentMonitorOnly=inShowCurrentMonitorOnly;
 
 		/* Get parent stage interface */
-		stageInterface=_xfdashboard_workspace_selector_get_stage_interface(self);
+		stageInterface=xfdashboard_get_stage_of_actor(CLUTTER_ACTOR(self));
 
 		/* Get monitor of stage interface if available and if only windows
 		 * of current monitor should be shown.

@@ -404,6 +404,81 @@ ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar 
 }
 
 /**
+ * xfdashboard_get_stage_of_actor:
+ * @inActor: The #ClutterActor for which to find the stage
+ *
+ * Gets the #XfdashboardStageInterface of the monitor where
+ * @inActor belongs to.
+ *
+ * Return value: (transfer none): The #XfdashboardStageInterface
+ *               found or %NULL if none was found.
+ */
+XfdashboardStageInterface* xfdashboard_get_stage_of_actor(ClutterActor *inActor)
+{
+	ClutterActor		*parent;
+
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), NULL);
+
+	/* Iterate through parents and return first XfdashboardStageInterface
+	 * found. That's the stage of the monitor where the requested actor
+	 * belongs to.
+	 */
+	parent=clutter_actor_get_parent(inActor);
+	while(parent)
+	{
+		/* Check if current iterated parent is a XfdashboardStageInterface.
+		 * If it is return it.
+		 */
+		if(XFDASHBOARD_IS_STAGE_INTERFACE(parent)) return(XFDASHBOARD_STAGE_INTERFACE(parent));
+
+		/* Continue with next parent */
+		parent=clutter_actor_get_parent(parent);
+	}
+
+	/* If we get here we did not find the stage the actor belongs to,
+	 * so return NULL.
+	 */
+	return(NULL);
+}
+
+/**
+ * xfdashboard_get_global_stage_of_actor:
+ * @inActor: The #ClutterActor for which to find the global stage
+ *
+ * Gets the main #XfdashboardStage where @inActor belongs to.
+ *
+ * Return value: (transfer none): The #XfdashboardStage found
+ *               or %NULL if none was found.
+ */
+XfdashboardStage* xfdashboard_get_global_stage_of_actor(ClutterActor *inActor)
+{
+	ClutterActor		*parent;
+
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), NULL);
+
+	/* Iterate through parents and return first XfdashboardStage
+	 * found. That's the main global and all monitors spanning
+	 * stage where the requested actor belongs to.
+	 */
+	parent=clutter_actor_get_parent(inActor);
+	while(parent)
+	{
+		/* Check if current iterated parent is a XfdashboardStage.
+		 * If it is return it.
+		 */
+		if(XFDASHBOARD_IS_STAGE(parent)) return(XFDASHBOARD_STAGE(parent));
+
+		/* Continue with next parent */
+		parent=clutter_actor_get_parent(parent);
+	}
+
+	/* If we get here we did not find the global stage the actor
+	 * belongs to, so return NULL.
+	 */
+	return(NULL);
+}
+
+/**
  * xfdashboard_split_string:
  * @inString: The string to split
  * @inDelimiters: A string containg the delimiters

@@ -153,22 +153,14 @@ static void _xfdashboard_windows_view_update_on_stage_monitor_changed(Xfdashboar
 static gboolean _xfdashboard_windows_view_update_stage_and_monitor(XfdashboardWindowsView *self)
 {
 	XfdashboardWindowsViewPrivate		*priv;
-	ClutterActor						*parent;
 	XfdashboardStageInterface			*newStage;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), FALSE);
 
 	priv=self->priv;
-	newStage=NULL;
 
 	/* Iterate through parent actors until stage interface is reached */
-	parent=clutter_actor_get_parent(CLUTTER_ACTOR(self));
-	while(parent && !XFDASHBOARD_IS_STAGE_INTERFACE(parent))
-	{
-		parent=clutter_actor_get_parent(parent);
-	}
-
-	if(parent) newStage=XFDASHBOARD_STAGE_INTERFACE(parent);
+	newStage=xfdashboard_get_stage_of_actor(CLUTTER_ACTOR(self));
 
 	/* If stage did not change return immediately */
 	if(newStage==priv->currentStage) return(FALSE);

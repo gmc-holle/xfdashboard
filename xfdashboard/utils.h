@@ -28,6 +28,8 @@
 #include <gio/gio.h>
 
 #include "window-tracker-workspace.h"
+#include "stage-interface.h"
+#include "stage.h"
 
 G_BEGIN_DECLS
 
@@ -84,6 +86,9 @@ GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorksp
 void xfdashboard_register_gvalue_transformation_funcs(void);
 
 ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar *inName);
+
+XfdashboardStageInterface* xfdashboard_get_stage_of_actor(ClutterActor *inActor);
+XfdashboardStage* xfdashboard_get_global_stage_of_actor(ClutterActor *inActor);
 
 gchar** xfdashboard_split_string(const gchar *inString, const gchar *inDelimiters);
 
