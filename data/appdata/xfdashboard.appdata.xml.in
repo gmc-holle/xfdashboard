@@ -43,6 +43,11 @@
 		<binary>xfdashboard</binary>
 	</provides>
 
+	<kudos>
+		<kudo>HiDpiIcon</kudo>
+		<kudo>ModernToolkit</kudo>
+	</kudos>
+
 	<releases>
 		<release version="0.4.2" timestamp="1433008431">
 			<description>
