@@ -73,6 +73,8 @@ struct _XfdashboardWindowsViewPrivate
 
 	XfconfChannel						*xfconfChannel;
 	guint								xfconfScrollEventChangingWorkspaceBindingID;
+	XfdashboardStageInterface			*scrollEventChangingWorkspaceStage;
+	guint								scrollEventChangingWorkspaceStageSignalID;
 
 	gboolean							isWindowsNumberShown;
 
@@ -854,6 +856,12 @@ static gboolean _xfdashboard_windows_view_on_scroll_event(ClutterActor *inActor,
 	self=XFDASHBOARD_WINDOWS_VIEW(inActor);
 	priv=self->priv;
 
+	/* Do not handle event if scroll event of mouse-wheel should not
+	 * change workspace. In this case propagate event to get it handled
+	 * by next actor in chain.
+	 */
+	if(!priv->isScrollEventChangingWorkspace) return(CLUTTER_EVENT_PROPAGATE);
+
 	/* Get direction of scroll event */
 	switch(clutter_event_get_scroll_direction(inEvent))
 	{
@@ -903,26 +911,11 @@ static void _xfdashboard_windows_view_set_scroll_event_changes_workspace(Xfdashb
 	/* Set value if changed */
 	if(priv->isScrollEventChangingWorkspace!=inMouseWheelChangingWorkspace)
 	{
-		/* Remove scroll event listener if current value is TRUE
-		 * because it will be set to FALSE soon to indicate that
-		 * we should not listening to scroll events anymore
-		 */
-		if(priv->isScrollEventChangingWorkspace)
-		{
-			g_signal_handlers_disconnect_by_func(self, G_CALLBACK(_xfdashboard_windows_view_on_scroll_event), self);
-		}
-
 		/* Set value */
 		priv->isScrollEventChangingWorkspace=inMouseWheelChangingWorkspace;
 
-		/* Add scroll event listener if value was set to TRUE */
-		if(priv->isScrollEventChangingWorkspace)
-		{
-			g_signal_connect(self, "scroll-event", G_CALLBACK(_xfdashboard_windows_view_on_scroll_event), NULL);
-		}
-
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_SCROLL_EVENT_CHANGES_WORKSPACE]);
 	}
 }
 
@@ -1514,6 +1507,78 @@ void _xfdashboard_windows_view_focusable_iface_init(XfdashboardFocusableInterfac
 	iface->activate_selection=_xfdashboard_windows_view_focusable_activate_selection;
 }
 
+/* IMPLEMENTATION: ClutterActor */
+
+/* Actor will be mapped */
+static void _xfdashboard_windows_view_map(ClutterActor *inActor)
+{
+	XfdashboardWindowsView			*self;
+	XfdashboardWindowsViewPrivate	*priv;
+	ClutterActorClass				*clutterActorClass;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inActor));
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inActor);
+	priv=self->priv;
+
+	/* Call parent's virtual function */
+	clutterActorClass=CLUTTER_ACTOR_CLASS(xfdashboard_windows_view_parent_class);
+	if(clutterActorClass->map) clutterActorClass->map(inActor);
+
+	/* Disconnect signal handler if available */
+	if(priv->scrollEventChangingWorkspaceStage)
+	{
+		if(priv->scrollEventChangingWorkspaceStageSignalID)
+		{
+			g_signal_handler_disconnect(priv->scrollEventChangingWorkspaceStage, priv->scrollEventChangingWorkspaceStageSignalID);
+			priv->scrollEventChangingWorkspaceStageSignalID=0;
+		}
+
+		priv->scrollEventChangingWorkspaceStage=NULL;
+	}
+
+	/* Get stage interface where this actor belongs to and connect
+	 * signal handler if found.
+	 */
+	priv->scrollEventChangingWorkspaceStage=xfdashboard_get_stage_of_actor(CLUTTER_ACTOR(self));
+	if(priv->scrollEventChangingWorkspaceStage)
+	{
+		priv->scrollEventChangingWorkspaceStageSignalID=g_signal_connect_swapped(priv->scrollEventChangingWorkspaceStage,
+																					"scroll-event",
+																					G_CALLBACK(_xfdashboard_windows_view_on_scroll_event),
+																					self);
+	}
+}
+
+/* Actor will be unmapped */
+static void _xfdashboard_windows_view_unmap(ClutterActor *inActor)
+{
+	XfdashboardWindowsView			*self;
+	XfdashboardWindowsViewPrivate	*priv;
+	ClutterActorClass				*clutterActorClass;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inActor));
+
+	self=XFDASHBOARD_WINDOWS_VIEW(inActor);
+	priv=self->priv;
+
+	/* Call parent's virtual function */
+	clutterActorClass=CLUTTER_ACTOR_CLASS(xfdashboard_windows_view_parent_class);
+	if(clutterActorClass->unmap) clutterActorClass->unmap(inActor);
+
+	/* Disconnect signal handler if available */
+	if(priv->scrollEventChangingWorkspaceStage)
+	{
+		if(priv->scrollEventChangingWorkspaceStageSignalID)
+		{
+			g_signal_handler_disconnect(priv->scrollEventChangingWorkspaceStage, priv->scrollEventChangingWorkspaceStageSignalID);
+			priv->scrollEventChangingWorkspaceStageSignalID=0;
+		}
+
+		priv->scrollEventChangingWorkspaceStage=NULL;
+	}
+}
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -1523,7 +1588,16 @@ static void _xfdashboard_windows_view_dispose(GObject *inObject)
 	XfdashboardWindowsViewPrivate	*priv=XFDASHBOARD_WINDOWS_VIEW(self)->priv;
 
 	/* Release allocated resources */
-	g_signal_handlers_disconnect_by_func(self, G_CALLBACK(_xfdashboard_windows_view_on_scroll_event), self);
+	if(priv->scrollEventChangingWorkspaceStage)
+	{
+		if(priv->scrollEventChangingWorkspaceStageSignalID)
+		{
+			g_signal_handler_disconnect(priv->scrollEventChangingWorkspaceStage, priv->scrollEventChangingWorkspaceStageSignalID);
+			priv->scrollEventChangingWorkspaceStageSignalID=0;
+		}
+
+		priv->scrollEventChangingWorkspaceStage=NULL;
+	}
 
 	if(priv->xfconfChannel)
 	{
@@ -1652,12 +1726,16 @@ static void _xfdashboard_windows_view_get_property(GObject *inObject,
 static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *klass)
 {
 	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_windows_view_dispose;
 	gobjectClass->set_property=_xfdashboard_windows_view_set_property;
 	gobjectClass->get_property=_xfdashboard_windows_view_get_property;
+
+	clutterActorClass->map=_xfdashboard_windows_view_map;
+	clutterActorClass->unmap=_xfdashboard_windows_view_unmap;
 
 	klass->window_close=_xfdashboard_windows_view_window_close;
 	klass->windows_show_numbers=_xfdashboard_windows_view_windows_show_numbers;
@@ -1924,6 +2002,8 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	priv->isWindowsNumberShown=FALSE;
 	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
 	priv->isScrollEventChangingWorkspace=FALSE;
+	priv->scrollEventChangingWorkspaceStage=NULL;
+	priv->scrollEventChangingWorkspaceStageSignalID=0;
 	priv->filterMonitorWindows=FALSE;
 	priv->currentStage=NULL;
 	priv->currentMonitor=NULL;

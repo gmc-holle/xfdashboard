@@ -367,6 +367,9 @@ static void xfdashboard_stage_interface_init(XfdashboardStageInterface *self)
 	priv->backgroundColor=NULL;
 	priv->bindingBackgroundImageType=NULL;
 	priv->bindingBackgroundColor=NULL;
+
+	/* Let this actor receive events */
+	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 }
 
 /* IMPLEMENTATION: Public API */

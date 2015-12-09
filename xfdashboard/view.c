@@ -442,7 +442,7 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 		g_signal_new("deactivated",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardViewClass, activated),
+						G_STRUCT_OFFSET(XfdashboardViewClass, deactivated),
 						NULL,
 						NULL,
 						g_cclosure_marshal_VOID__VOID,
