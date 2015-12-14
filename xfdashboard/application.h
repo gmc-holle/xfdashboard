@@ -29,6 +29,7 @@
 #include <xfconf/xfconf.h>
 
 #include "theme.h"
+#include "focusable.h"
 
 G_BEGIN_DECLS
 
@@ -87,6 +88,12 @@ struct _XfdashboardApplicationClass
 	void (*shutdown_final)(XfdashboardApplication *self);
 
 	void (*theme_changed)(XfdashboardApplication *self, XfdashboardTheme *inTheme);
+
+	/* Binding actions */
+	gboolean (*exit)(XfdashboardApplication *self,
+						XfdashboardFocusable *inSource,
+						const gchar *inAction,
+						ClutterEvent *inEvent);
 };
 
 

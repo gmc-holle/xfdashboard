@@ -49,6 +49,7 @@
 #include "application-database.h"
 #include "application-tracker.h"
 #include "plugins-manager.h"
+#include "marshal.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplication,
@@ -110,6 +111,9 @@ enum
 	SIGNAL_SUSPEND,
 	SIGNAL_RESUME,
 	SIGNAL_THEME_CHANGED,
+
+	/* Actions */
+	ACTION_EXIT,
 
 	SIGNAL_LAST
 };
@@ -195,6 +199,21 @@ static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean
 		}
 }
 
+/* Action "exit" was called at application */
+static gboolean _xfdashboard_application_action_exit(XfdashboardApplication *self,
+														XfdashboardFocusable *inSource,
+														const gchar *inAction,
+														ClutterEvent *inEvent)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), CLUTTER_EVENT_PROPAGATE);
+
+	/* Quit application */
+	_xfdashboard_application_quit(self, FALSE);
+
+	/* Prevent the default handler being called */
+	return(CLUTTER_EVENT_STOP);
+}
+
 /* The session is going to quit */
 static void _xfdashboard_application_on_session_quit(XfdashboardApplication *self,
 														gpointer inUserData)
@@ -212,7 +231,7 @@ static gboolean _xfdashboard_application_on_delete_stage(XfdashboardApplication 
 															ClutterEvent *inEvent,
 															gpointer inUserData)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), CLUTTER_EVENT_PROPAGATE);
 
 	/* Quit application */
 	_xfdashboard_application_quit(self, FALSE);
@@ -874,6 +893,8 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	klass->exit=_xfdashboard_application_action_exit;
+
 	appClass->activate=_xfdashboard_application_activate;
 	appClass->command_line=_xfdashboard_application_command_line;
 #if GLIB_CHECK_VERSION(2, 40, 0)
@@ -967,6 +988,20 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 						G_TYPE_NONE,
 						1,
 						XFDASHBOARD_TYPE_THEME);
+
+	XfdashboardApplicationSignals[ACTION_EXIT]=
+		g_signal_new("exit",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardApplicationClass, exit),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
 
 	/* Register GValue transformation function not provided by any other library */
 	xfdashboard_register_gvalue_transformation_funcs();
