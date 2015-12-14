@@ -88,6 +88,8 @@ void xfdashboard_focus_manager_unregister(XfdashboardFocusManager *self, Xfdashb
 GList* xfdashboard_focus_manager_get_registered(XfdashboardFocusManager *self);
 gboolean xfdashboard_focus_manager_is_registered(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable);
 
+GSList* xfdashboard_focus_manager_get_targets(XfdashboardFocusManager *self, const gchar *inTarget);
+
 gboolean xfdashboard_focus_manager_has_focus(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable);
 XfdashboardFocusable* xfdashboard_focus_manager_get_focus(XfdashboardFocusManager *self);
 void xfdashboard_focus_manager_set_focus(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable);

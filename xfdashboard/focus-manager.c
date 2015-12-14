@@ -33,6 +33,7 @@
 #include "marshal.h"
 #include "stylable.h"
 #include "bindings-pool.h"
+#include "application.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardFocusManager,
@@ -131,29 +132,19 @@ static void _xfdashboard_focus_manager_on_focusable_hide(XfdashboardFocusManager
 static GSList* _xfdashboard_focus_manager_get_targets_for_binding(XfdashboardFocusManager *self,
 																	const XfdashboardBinding *inBinding)
 {
-	XfdashboardFocusManagerPrivate	*priv;
-	GList							*focusablesIter;
-	GList							*focusablesStartPoint;
-	XfdashboardFocusable			*focusable;
-	GType							targetType;
 	GSList							*targets;
 	gboolean						mustBeFocusable;
+	GSList							*iter;
+	XfdashboardFocusable			*focusable;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_BINDING(inBinding), NULL);
 
-	priv=self->priv;
 	targets=NULL;
 	mustBeFocusable=TRUE;
 
-	/* Get type of target */
-	targetType=g_type_from_name(xfdashboard_binding_get_target(inBinding));
-	if(!targetType)
-	{
-		g_warning(_("Cannot build target list for unknown type %s"),
-					xfdashboard_binding_get_target(inBinding));
-		return(NULL);
-	}
+	/* Get list of possible targets */
+	targets=xfdashboard_focus_manager_get_targets(self, xfdashboard_binding_get_target(inBinding));
 
 	/* Determine if unfocusable targets should be included */
 	if(xfdashboard_binding_get_flags(inBinding) & XFDASHBOARD_BINDING_FLAGS_ALLOW_UNFOCUSABLE_TARGET)
@@ -161,52 +152,22 @@ static GSList* _xfdashboard_focus_manager_get_targets_for_binding(XfdashboardFoc
 		mustBeFocusable=FALSE;
 	}
 
-	/* Check if class name of target at binding points to ourselve */
-	if(g_type_is_a(G_OBJECT_TYPE(self), targetType))
+	/* Remove unfocusable targets from list if they should not be included */
+	if(mustBeFocusable)
 	{
-		targets=g_slist_append(targets, g_object_ref(self));
-	}
-
-	/* Iterate through list of focusable actors to add each one
-	 * matching the target class name to the list of targets.
-	 * Begin with finding starting point of iteration.
-	 */
-	focusablesStartPoint=g_list_find(priv->registeredFocusables, priv->currentFocus);
-	if(!focusablesStartPoint) focusablesStartPoint=priv->registeredFocusables;
-
-	/* Iterate through list of registered focusable actors beginning at
-	 * found starting point of iteration (might be begin of list of registered actors)
-	 * and add each focusable actor matching target class name to target list.
-	 */
-	for(focusablesIter=focusablesStartPoint; focusablesIter; focusablesIter=g_list_next(focusablesIter))
-	{
-		focusable=(XfdashboardFocusable*)focusablesIter->data;
-
-		/* If focusable can be focused and matches target class name
-		 * then add it to target list.
-		 */
-		if((!mustBeFocusable || xfdashboard_focusable_can_focus(focusable)) &&
-			g_type_is_a(G_OBJECT_TYPE(focusable), targetType))
+		for(iter=targets; iter; iter=g_slist_next(iter))
 		{
-			targets=g_slist_append(targets, g_object_ref(focusable));
-		}
-	}
+			/* Get focusable actor */
+			if(!XFDASHBOARD_IS_FOCUSABLE(iter->data)) continue;
+			focusable=XFDASHBOARD_FOCUSABLE(iter->data);
 
-	/* We have to continue search at the beginning of list of registered actors
-	 * up to the found starting point of iteration. Add each focusable actor matching
-	 * target class name to target list.
-	 */
-	for(focusablesIter=priv->registeredFocusables; focusablesIter!=focusablesStartPoint; focusablesIter=g_list_next(focusablesIter))
-	{
-		focusable=(XfdashboardFocusable*)focusablesIter->data;
-
-		/* If focusable can be focused and matches target class name
-		 * then add it to target list.
-		 */
-		if((!mustBeFocusable || xfdashboard_focusable_can_focus(focusable)) &&
-			g_type_is_a(G_OBJECT_TYPE(focusable), targetType))
-		{
-			targets=g_slist_append(targets, g_object_ref(focusable));
+			/* Check if focusable actor can be focused as it may be disabled */
+			if(!xfdashboard_focusable_can_focus(focusable))
+			{
+				/* Remove target from list as it cannot be focused */
+				g_object_unref(focusable);
+				targets=g_slist_delete_link(targets, iter);
+			}
 		}
 	}
 
@@ -590,6 +551,93 @@ gboolean xfdashboard_focus_manager_is_registered(XfdashboardFocusManager *self, 
 
 	/* If here get here the given focusable actor is not registered */
 	return(FALSE);
+}
+
+/* Build target list of registered focusable actors for requested target class
+ * but also check if this focus manager is a target.
+ */
+GSList* xfdashboard_focus_manager_get_targets(XfdashboardFocusManager *self, const gchar *inTarget)
+{
+	XfdashboardFocusManagerPrivate	*priv;
+	GList							*focusablesIter;
+	GList							*focusablesStartPoint;
+	XfdashboardFocusable			*focusable;
+	GType							targetType;
+	GSList							*targets;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), NULL);
+	g_return_val_if_fail(inTarget && *inTarget, NULL);
+
+	priv=self->priv;
+	targets=NULL;
+
+	/* Get type of target */
+	targetType=g_type_from_name(inTarget);
+	if(!targetType)
+	{
+		g_warning(_("Cannot build target list for unknown type %s"), inTarget);
+		return(NULL);
+	}
+
+	/* Check if class name of requested target points to ourselve */
+	if(g_type_is_a(G_OBJECT_TYPE(self), targetType))
+	{
+		targets=g_slist_append(targets, g_object_ref(self));
+	}
+
+	/* Check if class name of requested target points to application */
+	if(g_type_is_a(XFDASHBOARD_TYPE_APPLICATION, targetType))
+	{
+		targets=g_slist_append(targets, g_object_ref(xfdashboard_application_get_default()));
+	}
+
+	/* Iterate through list of registered actors and add each one
+	 * matching the target class name to the list of targets.
+	 * Begin with finding starting point of iteration.
+	 */
+	focusablesStartPoint=g_list_find(priv->registeredFocusables, priv->currentFocus);
+	if(!focusablesStartPoint) focusablesStartPoint=priv->registeredFocusables;
+
+	/* Iterate through list of registered actors beginning at found starting
+	 * point of iteration (might be begin of list of registered actors)
+	 * and add each actor matching target class name to target list.
+	 */
+	for(focusablesIter=focusablesStartPoint; focusablesIter; focusablesIter=g_list_next(focusablesIter))
+	{
+		focusable=(XfdashboardFocusable*)focusablesIter->data;
+
+		/* If focusable can be focused and matches target class name
+		 * then add it to target list.
+		 */
+		if(g_type_is_a(G_OBJECT_TYPE(focusable), targetType))
+		{
+			targets=g_slist_append(targets, g_object_ref(focusable));
+		}
+	}
+
+	/* We have to continue search at the beginning of list of registered actors
+	 * up to the found starting point of iteration. Add each actor matching
+	 * target class name to target list.
+	 */
+	for(focusablesIter=priv->registeredFocusables; focusablesIter!=focusablesStartPoint; focusablesIter=g_list_next(focusablesIter))
+	{
+		focusable=(XfdashboardFocusable*)focusablesIter->data;
+
+		/* If focusable can be focused and matches target class name
+		 * then add it to target list.
+		 */
+		if(g_type_is_a(G_OBJECT_TYPE(focusable), targetType))
+		{
+			targets=g_slist_append(targets, g_object_ref(focusable));
+		}
+	}
+
+	/* Return list of targets found */
+	g_debug("Target list for target class '%s' has %d entries",
+				inTarget,
+				g_slist_length(targets));
+
+	return(targets);
 }
 
 /* Determine if a specific actor has the focus */
