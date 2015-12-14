@@ -21,6 +21,7 @@ xfdashboard_built_sources = \
 	marshal.c
 
 xfdashboard_headers = \
+	action-button.h \
 	actor.h \
 	application.h \
 	application-button.h \
@@ -86,6 +87,7 @@ xfdashboard_headers = \
 libxfdashboard_la_SOURCES = \
 	$(xfdashboard_built_sources) \
 	$(xfdashboard_headers) \
+	action-button.c \
 	actor.c \
 	application.c \
 	application-button.c \
