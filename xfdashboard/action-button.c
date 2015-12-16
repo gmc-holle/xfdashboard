@@ -29,12 +29,16 @@
 
 #include <glib/gi18n-lib.h>
 
+#include "focusable.h"
 #include "focus-manager.h"
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardActionButton,
-				xfdashboard_action_button,
-				XFDASHBOARD_TYPE_BUTTON)
+static void _xfdashboard_action_button_focusable_iface_init(XfdashboardFocusableInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardActionButton,
+						xfdashboard_action_button,
+						XFDASHBOARD_TYPE_BUTTON,
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_action_button_focusable_iface_init))
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_ACTION_BUTTON_GET_PRIVATE(obj) \
@@ -92,7 +96,6 @@ static void _xfdashboard_action_button_clicked(XfdashboardButton *inButton)
 		GObject							*targetObject;
 		guint							signalID;
 		GSignalQuery					signalData={ 0, };
-		XfdashboardFocusable			*currentFocus;
 		const ClutterEvent				*event;
 		gboolean						eventStatus;
 
@@ -171,10 +174,14 @@ static void _xfdashboard_action_button_clicked(XfdashboardButton *inButton)
 					priv->action,
 					G_OBJECT_TYPE_NAME(targetObject));
 
-		currentFocus=xfdashboard_focus_manager_get_focus(priv->focusManager);
 		event=clutter_get_current_event();
 		eventStatus=CLUTTER_EVENT_PROPAGATE;
-		g_signal_emit_by_name(targetObject, priv->action, currentFocus, priv->action, event, &eventStatus);
+		g_signal_emit_by_name(targetObject,
+								priv->action,
+								XFDASHBOARD_FOCUSABLE(self),
+								priv->action,
+								event,
+								&eventStatus);
 
 		g_debug("Action signal '%s' was %s by actor %s",
 					priv->action,
@@ -184,6 +191,127 @@ static void _xfdashboard_action_button_clicked(XfdashboardButton *inButton)
 
 	/* Release allocated resources */
 	if(targets) g_slist_free_full(targets, g_object_unref);
+}
+
+/* IMPLEMENTATION: Interface XfdashboardFocusable */
+
+/* Determine if actor can get the focus */
+static gboolean _xfdashboard_action_button_focusable_can_focus(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardFocusableInterface		*selfIface;
+	XfdashboardFocusableInterface		*parentIface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTION_BUTTON(inFocusable), FALSE);
+
+	/* Call parent class interface function */
+	selfIface=XFDASHBOARD_FOCUSABLE_GET_IFACE(inFocusable);
+	parentIface=g_type_interface_peek_parent(selfIface);
+
+	if(parentIface && parentIface->can_focus)
+	{
+		if(!parentIface->can_focus(inFocusable)) return(FALSE);
+	}
+
+	/* If we get here this actor can be focused */
+	return(TRUE);
+}
+
+/* Determine if this actor supports selection */
+static gboolean _xfdashboard_action_button_focusable_supports_selection(XfdashboardFocusable *inFocusable)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTION_BUTTON(inFocusable), FALSE);
+
+	/* This actor supports selection */
+	return(TRUE);
+}
+
+/* Get current selection */
+static ClutterActor* _xfdashboard_action_button_focusable_get_selection(XfdashboardFocusable *inFocusable)
+{
+	XfdashboardActionButton		*self;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTION_BUTTON(inFocusable), NULL);
+
+	self=XFDASHBOARD_ACTION_BUTTON(inFocusable);
+
+	/* Return the actor itself as current selection */
+	return(CLUTTER_ACTOR(self));
+}
+
+/* Set new selection */
+static gboolean _xfdashboard_action_button_focusable_set_selection(XfdashboardFocusable *inFocusable,
+																	ClutterActor *inSelection)
+{
+	XfdashboardActionButton				*self;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTION_BUTTON(inFocusable), FALSE);
+	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), FALSE);
+
+	self=XFDASHBOARD_ACTION_BUTTON(inFocusable);
+
+	/* Setting new selection always fails if it is not this actor itself */
+	if(inSelection!=CLUTTER_ACTOR(self)) return(FALSE);
+
+	/* Otherwise setting selection was successful because nothing has changed */
+	return(TRUE);
+}
+
+/* Find requested selection target depending of current selection */
+static ClutterActor* _xfdashboard_action_button_focusable_find_selection(XfdashboardFocusable *inFocusable,
+																			ClutterActor *inSelection,
+																			XfdashboardSelectionTarget inDirection)
+{
+	XfdashboardActionButton				*self;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTION_BUTTON(inFocusable), NULL);
+	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), NULL);
+	g_return_val_if_fail(inDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
+	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+
+	self=XFDASHBOARD_ACTION_BUTTON(inFocusable);
+
+	/* Regardless of "current" selection and direction requested for new selection
+	 * we return this actor as new current selection resulting in no change of
+	 * selection. It is and will be the actor itself.
+	 */
+	return(CLUTTER_ACTOR(self));
+}
+
+/* Activate selection */
+static gboolean _xfdashboard_action_button_focusable_activate_selection(XfdashboardFocusable *inFocusable,
+																		ClutterActor *inSelection)
+{
+	XfdashboardActionButton				*self;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTION_BUTTON(inFocusable), FALSE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), FALSE);
+
+	self=XFDASHBOARD_ACTION_BUTTON(inFocusable);
+
+	/* Activate selection */
+	_xfdashboard_action_button_clicked(XFDASHBOARD_BUTTON(self));
+
+	return(TRUE);
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_action_button_focusable_iface_init(XfdashboardFocusableInterface *iface)
+{
+	iface->can_focus=_xfdashboard_action_button_focusable_can_focus;
+
+	iface->supports_selection=_xfdashboard_action_button_focusable_supports_selection;
+	iface->get_selection=_xfdashboard_action_button_focusable_get_selection;
+	iface->set_selection=_xfdashboard_action_button_focusable_set_selection;
+	iface->find_selection=_xfdashboard_action_button_focusable_find_selection;
+	iface->activate_selection=_xfdashboard_action_button_focusable_activate_selection;
 }
 
 /* IMPLEMENTATION: GObject */
