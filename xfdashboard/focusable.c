@@ -750,9 +750,8 @@ ClutterActor* xfdashboard_focusable_get_selection(XfdashboardFocusable *self)
 
 	iface=XFDASHBOARD_FOCUSABLE_GET_IFACE(self);
 
-	/* If this focusable actor does not support selection we should ask for
-	 * the current selection and avoid the warning being printed if this
-	 * virtual function was not overridden.
+	/* If this focusable actor does not support selection return NULL
+	 * to indicate that no selection is available.
 	 */
 	if(!xfdashboard_focusable_supports_selection(self)) return(NULL);
 
@@ -779,9 +778,8 @@ gboolean xfdashboard_focusable_set_selection(XfdashboardFocusable *self, Clutter
 
 	iface=XFDASHBOARD_FOCUSABLE_GET_IFACE(self);
 
-	/* If this focusable actor does not support selection we should ask for
-	 * the current selection and avoid the warning being printed if this
-	 * virtual function was not overridden.
+	/* If this focusable actor does not support selection return FALSE
+	 * to indicate failure in setting selection.
 	 */
 	if(!xfdashboard_focusable_supports_selection(self)) return(FALSE);
 
@@ -865,9 +863,8 @@ ClutterActor* xfdashboard_focusable_find_selection(XfdashboardFocusable *self, C
 
 	iface=XFDASHBOARD_FOCUSABLE_GET_IFACE(self);
 
-	/* If this focusable actor does not support selection we should ask for
-	 * the current selection and avoid the warning being printed if this
-	 * virtual function was not overridden.
+	/* If this focusable actor does not support selection return NULL
+	 * to indicate that no selection cannot be found.
 	 */
 	if(!xfdashboard_focusable_supports_selection(self)) return(NULL);
 
@@ -892,9 +889,8 @@ gboolean xfdashboard_focusable_activate_selection(XfdashboardFocusable *self, Cl
 
 	iface=XFDASHBOARD_FOCUSABLE_GET_IFACE(self);
 
-	/* If this focusable actor does not support selection we should ask for
-	 * the current selection and avoid the warning being printed if this
-	 * virtual function was not overridden.
+	/* If this focusable actor does not support selection return FALSE
+	 * to indicate failure in activating selection as no one is available.
 	 */
 	if(!xfdashboard_focusable_supports_selection(self)) return(FALSE);
 
