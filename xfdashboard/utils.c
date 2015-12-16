@@ -144,9 +144,9 @@ void xfdashboard_notify(ClutterActor *inSender,
 			}
 
 			/* If we did not get stage for primary monitor use first stage */
-			if(!stage)
+			if(!stage && stages)
 			{
-				stage=XFDASHBOARD_STAGE(stagesIter->data);
+				stage=XFDASHBOARD_STAGE(stages->data);
 			}
 		}
 
