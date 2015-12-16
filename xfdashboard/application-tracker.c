@@ -258,37 +258,28 @@ static XfdashboardApplicationTrackerItem* _xfdashboard_application_tracker_find_
 	return(NULL);
 }
 
-/* Get desktop ID from process' environment which owns window.
- * Callee is responsible to free result with g_object_unref().
+#if defined(__linux__)
+/* Get process' environment set from requested PID when running at Linux
+ * by reading in file in proc filesystem.
  */
-static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environment(XfdashboardApplicationTracker *self,
-																					XfdashboardWindowTrackerWindow *inWindow)
+static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gint inPID)
 {
-	XfdashboardApplicationTrackerPrivate	*priv;
-	GAppInfo								*foundAppInfo;
-	gint									windowPID;
-	gchar									*procEnvFile;
-	gchar									*envContent;
-	gsize									envLength;
-	GError									*error;
-	gchar									*iter;
-	const gchar								*gioLaunchedPID;
-	const gchar								*gioLaunchedDesktopFile;
+	GHashTable		*environments;
+	gchar			*procEnvFile;
+	gchar			*envContent;
+	gsize			envLength;
+	GError			*error;
+	gchar			*iter;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_TRACKER(self), NULL);
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
+	g_return_val_if_fail(inPID>0, NULL);
 
-	priv=self->priv;
-	foundAppInfo=NULL;
 	error=NULL;
 
-	/* Get process ID running this window */
-	windowPID=xfdashboard_window_tracker_window_get_pid(inWindow);
-	if(windowPID<=0)
+	/* Create environment hash-table which will be returned on success */
+	environments=g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+	if(!environments)
 	{
-		g_debug("Could not get PID for window '%s' of a running application to parse environment variables",
-				xfdashboard_window_tracker_window_get_title(inWindow));
-
+		g_warning(_("Could not create environment lookup table for PID %d"), inPID);
 		return(NULL);
 	}
 
@@ -300,12 +291,11 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 	envContent=NULL;
 	envLength=0;
 
-	procEnvFile=g_strdup_printf("/proc/%d/environ", windowPID);
+	procEnvFile=g_strdup_printf("/proc/%d/environ", inPID);
 	if(!g_file_get_contents(procEnvFile, &envContent, &envLength, &error))
 	{
-		g_debug("Could read in enviroment varibles for PID %d of window '%s' at %s: %s",
-					windowPID,
-					xfdashboard_window_tracker_window_get_title(inWindow),
+		g_debug("Could not read enviroment varibles for PID %d at %s: %s",
+					inPID,
 					procEnvFile,
 					error ? error->message : _("Unknown error"));
 
@@ -313,26 +303,25 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 		if(error) g_error_free(error);
 		if(procEnvFile) g_free(procEnvFile);
 		if(envContent) g_free(envContent);
+		if(environments) g_hash_table_destroy(environments);
 
 		/* Return NULL result */
 		return(NULL);
 	}
 
-	g_debug("Enviroment set at %s is %lu bytes long for window '%s'",
+	g_debug("Enviroment set for PID %d at %s is %lu bytes long",
+				inPID,
 				procEnvFile,
-				envLength,
-				xfdashboard_window_tracker_window_get_title(inWindow));
+				envLength);
 
-	/* Iterate through enviroment variables and lookup GIO_LAUNCHED_DESKTOP_FILE
-	 * and GIO_LAUNCHED_DESKTOP_FILE_PID.
+	/* Iterate through enviroment variables and insert copy of environment
+	 * variable's name as key and the copy of its value as value into hash-table.
 	 */
-	gioLaunchedPID=NULL;
-	gioLaunchedDesktopFile=NULL;
-
 	iter=envContent;
 	while(envLength>0)
 	{
-		gsize								len;
+		const gchar		*name;
+		const gchar		*value;
 
 		/* Skip NULL-termination */
 		if(!*iter)
@@ -342,110 +331,69 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 			continue;
 		}
 
-		/* Check current iterated enviroment variable matches a requested one */
-		if(g_str_has_prefix(iter, "GIO_LAUNCHED_DESKTOP_FILE="))
+		/* Split string up to next NULL termination into environment
+		 * name and value.
+		 * Current position of iterator is begin of environment variable's
+		 * name. Next step is to iterate further until the first '=' is found
+		 * which is the seperator for name and value of environment. This
+		 * character is replace with NULL to mark end of name so it can be
+		 * simply copied with g_strdup() later. After this is done iterate
+		 * through string up to NULL termination or end of file but the
+		 * first character iterated marks begin of value.
+		 */
+		name=iter;
+
+		while(*iter && *iter!='=' && envLength>0)
 		{
-			/* Each enviroment variable should be listed only once
-			 * otherwise is an error.
-			 */
-			if(gioLaunchedDesktopFile)
-			{
-				g_debug("Could parse in enviroment varibles for PID %d of window '%s' at %s because GIO_LAUNCHED_DESKTOP_FILE exists more than once",
-							windowPID,
-							xfdashboard_window_tracker_window_get_title(inWindow),
-							procEnvFile);
-
-				/* Release allocated resources */
-				if(foundAppInfo) g_object_unref(foundAppInfo);
-				if(procEnvFile) g_free(procEnvFile);
-				if(envContent) g_free(envContent);
-
-				/* Return NULL result */
-				return(NULL);
-			}
-
-			/* Remember value of environment variable */
-			gioLaunchedDesktopFile=iter;
+			iter++;
+			envLength--;
 		}
-			else if(g_str_has_prefix(iter, "GIO_LAUNCHED_DESKTOP_FILE_PID="))
-			{
-				/* Each enviroment variable should be listed only once
-				 * otherwise is an error.
-				 */
-				if(gioLaunchedPID)
-				{
-					g_debug("Could parse in enviroment varibles for PID %d of window '%s' at %s because GIO_LAUNCHED_DESKTOP_FILE_PID exists more than once",
-								windowPID,
-								xfdashboard_window_tracker_window_get_title(inWindow),
-								procEnvFile);
-
-					/* Release allocated resources */
-					if(foundAppInfo) g_object_unref(foundAppInfo);
-					if(procEnvFile) g_free(procEnvFile);
-					if(envContent) g_free(envContent);
-
-					/* Return NULL result */
-					return(NULL);
-				}
-
-				/* Remember value of environment variable */
-				gioLaunchedPID=iter;
-			}
-
-		/* If all requested environment variable has been found stop iterating */
-		if(gioLaunchedPID && gioLaunchedDesktopFile) break;
-
-		/* Continue with next environment variable */
-		len=strlen(iter);
-		iter+=len;
-		envLength-=len;
-	}
-
-	/* If all requested environment variable has been found then check if
-	 * GIO_LAUNCHED_DESKTOP_FILE_PID matches window owner's process ID.
-	 */
-	if(gioLaunchedPID && gioLaunchedDesktopFile)
-	{
-		/* Move pointer of environment variables to value */
-		while(*gioLaunchedPID && *gioLaunchedPID!='=') gioLaunchedPID++;
-		while(*gioLaunchedDesktopFile && *gioLaunchedDesktopFile!='=') gioLaunchedDesktopFile++;
-
-		/* Check if pointers points to value assignment character */
-		if(*gioLaunchedPID=='=' &&
-			*gioLaunchedDesktopFile=='=')
+		if(*iter!='=')
 		{
-			gint							checkPID;
+			g_warning(_("Malformed enviroment '%s' in environment set for PID %d at %s"),
+						name,
+						inPID,
+						procEnvFile);
 
-			/* Move pointer one byte further where value begins really */
-			gioLaunchedPID++;
-			gioLaunchedDesktopFile++;
+			/* Release allocated resources */
+			if(procEnvFile) g_free(procEnvFile);
+			if(envContent) g_free(envContent);
+			if(environments) g_hash_table_destroy(environments);
 
-			/* Check if PID of enviroment variable matches window owner's
-			 * process ID.
-			 */
-			checkPID=atoi(gioLaunchedPID);
-			if(checkPID==windowPID)
-			{
-				/* Lookup application from full path */
-				foundAppInfo=xfdashboard_application_database_lookup_desktop_id(priv->appDatabase, gioLaunchedDesktopFile);
-				if(!foundAppInfo)
-				{
-					/* Lookup application from basename of path */
-					gioLaunchedDesktopFile=g_strrstr(gioLaunchedDesktopFile, G_DIR_SEPARATOR_S);
-					if(gioLaunchedDesktopFile)
-					{
-						gioLaunchedDesktopFile++;
-						foundAppInfo=xfdashboard_application_database_lookup_desktop_id(priv->appDatabase, gioLaunchedDesktopFile);
-					}
-				}
-			}
-				else
-				{
-					g_debug("PID %d of environment variable does not match window PID %d for '%s'",
-								checkPID,
-								windowPID,
-								xfdashboard_window_tracker_window_get_title(inWindow));
-				}
+			/* Return NULL result */
+			return(NULL);
+		}
+		*iter=0;
+
+		value=NULL;
+		do
+		{
+			iter++;
+			envLength--;
+			if(!value) value=iter;
+		}
+		while(*iter && envLength>0);
+
+		/* Insert environment name and value into hash-table but fail on
+		 * duplicate key as a environment variable's name should not be
+		 * found twice.
+		 */
+		if(!g_hash_table_insert(environments, g_strdup(name), g_strdup(value)))
+		{
+			g_warning(_("Unexpected duplicate name '%s' in environment set for PID %d at %s: %s = %s"),
+						name,
+						inPID,
+						procEnvFile,
+						name,
+						value);
+
+			/* Release allocated resources */
+			if(procEnvFile) g_free(procEnvFile);
+			if(envContent) g_free(envContent);
+			if(environments) g_hash_table_destroy(environments);
+
+			/* Return NULL result */
+			return(NULL);
 		}
 	}
 
@@ -453,7 +401,137 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 	if(procEnvFile) g_free(procEnvFile);
 	if(envContent) g_free(envContent);
 
-	/* Return found application info */
+	/* Return hash-table with environment variables found */
+	return(environments);
+}
+#else
+/* Fallback funtion to get process' environment set from requested PID
+ * when running at an unsupported system. It just simply returns NULL.
+ */
+static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gint inPID)
+{
+	static gboolean		wasWarningPrinted=FALSE;
+
+	if(!wasWarningPrinted)
+	{
+		g_warning("Determination of application by checking environment variables is not supported at this system.");
+		wasWarningPrinted=TRUE;
+	}
+
+	/* Return NULL to not check environment by callee */
+	return(NULL);
+}
+#endif
+
+/* Get desktop ID from process' environment which owns window.
+ * Callee is responsible to free result with g_object_unref().
+ */
+static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environment(XfdashboardApplicationTracker *self,
+																					XfdashboardWindowTrackerWindow *inWindow)
+{
+	XfdashboardApplicationTrackerPrivate	*priv;
+	GAppInfo								*foundAppInfo;
+	gint									windowPID;
+	GHashTable								*environments;
+	gchar									*value;
+	gint									checkPID;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_TRACKER(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
+
+	priv=self->priv;
+	foundAppInfo=NULL;
+
+	/* Get process ID running this window */
+	windowPID=xfdashboard_window_tracker_window_get_pid(inWindow);
+	if(windowPID<=0)
+	{
+		g_debug("Could not get PID for window '%s' of a running application to parse environment variables",
+				xfdashboard_window_tracker_window_get_title(inWindow));
+
+		/* Return NULL result */
+		return(NULL);
+	}
+
+	/* Get hash-table with environment variables found for window's PID */
+	environments=_xfdashboard_application_tracker_get_environment_from_pid(windowPID);
+	if(!environments)
+	{
+		g_debug("Could not get environments for PID %d of windows '%s'",
+				windowPID,
+				xfdashboard_window_tracker_window_get_title(inWindow));
+
+		/* Return NULL result */
+		return(NULL);
+	}
+
+	/* Check that environment variable GIO_LAUNCHED_DESKTOP_FILE_PID exists.
+	 * Also check that the PID in value matches the requested window's PID
+	 * as the process may inherit the environments of its parent process
+	 * but then this one is not the initial process for this application.
+	 */
+	if(!g_hash_table_lookup_extended(environments, "GIO_LAUNCHED_DESKTOP_FILE_PID", NULL, (gpointer)&value))
+	{
+		g_debug("Missing 'GIO_LAUNCHED_DESKTOP_FILE_PID' in environment variables for PID %d of windows '%s'",
+					windowPID,
+					xfdashboard_window_tracker_window_get_title(inWindow));
+
+		/* Release allocated resources */
+		if(environments) g_hash_table_destroy(environments);
+
+		/* Return NULL result */
+		return(NULL);
+	}
+
+	checkPID=atoi(value);
+	if(checkPID!=windowPID)
+	{
+		g_debug("PID %d of environment variables does not match requested window PID %d for '%s'",
+					checkPID,
+					windowPID,
+					xfdashboard_window_tracker_window_get_title(inWindow));
+
+		/* Release allocated resources */
+		if(environments) g_hash_table_destroy(environments);
+
+		/* Return NULL result */
+		return(NULL);
+	}
+
+	/* Check that environment variable GIO_LAUNCHED_DESKTOP_FILE exists and
+	 * lookup application from full path as set in environment's value.
+	 */
+	if(!g_hash_table_lookup_extended(environments, "GIO_LAUNCHED_DESKTOP_FILE", NULL, (gpointer)&value))
+	{
+		g_debug("Missing 'GIO_LAUNCHED_DESKTOP_FILE' in environment variables for PID %d of windows '%s'",
+					windowPID,
+					xfdashboard_window_tracker_window_get_title(inWindow));
+
+		/* Release allocated resources */
+		if(environments) g_hash_table_destroy(environments);
+
+		/* Return NULL result */
+		return(NULL);
+	}
+
+	foundAppInfo=xfdashboard_application_database_lookup_desktop_id(priv->appDatabase, value);
+	if(!foundAppInfo)
+	{
+		/* Lookup application from basename of path */
+		value=g_strrstr(value, G_DIR_SEPARATOR_S);
+		if(value)
+		{
+			value++;
+			foundAppInfo=xfdashboard_application_database_lookup_desktop_id(priv->appDatabase, value);
+		}
+	}
+
+	/* Release allocated resources */
+	if(environments) g_hash_table_destroy(environments);
+
+	/* Return found application info which may be NULL if not found in
+	 * application database.
+	 */
 	g_debug("Resolved enviroment variables of window '%s' to desktop ID '%s'",
 				xfdashboard_window_tracker_window_get_title(inWindow),
 				foundAppInfo ? g_app_info_get_id(foundAppInfo) : "<nil>");
