@@ -131,4 +131,12 @@
 			</object>
 		</child>
 	</object>
+
+	<focusables>
+		<focus ref="searchbox" />
+		<focus ref="viewpad" />
+		<focus ref="workspace-selector" />
+		<focus ref="quicklaunch" />
+		<focus ref="view-selector" />
+	</focusables>
 </interface>
