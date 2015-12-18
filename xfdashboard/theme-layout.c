@@ -57,7 +57,9 @@ enum
 	TAG_CHILD,
 	TAG_PROPERTY,
 	TAG_CONSTRAINT,
-	TAG_LAYOUT
+	TAG_LAYOUT,
+	TAG_FOCUSABLES,
+	TAG_FOCUS
 };
 
 typedef struct _XfdashboardThemeLayoutTagData			XfdashboardThemeLayoutTagData;
@@ -82,6 +84,11 @@ struct _XfdashboardThemeLayoutTagData
 			gboolean					translatable;
 			gchar						*refID;
 		} property;
+
+		struct
+		{
+			gchar						*refID;
+		} focus;
 	} tag;
 };
 
@@ -96,6 +103,7 @@ struct _XfdashboardThemeLayoutParsedObject
 	GSList								*constraints;	/* 0, 1 or more entries of XfdashboardThemeLayoutParsedObject */
 	XfdashboardThemeLayoutParsedObject	*layout;		/* 0 or 1 entry of XfdashboardThemeLayoutParsedObject */
 	GSList								*children;		/* 0, 1 or more entries of XfdashboardThemeLayoutParsedObject */
+	GSList								*focusables;	/* 0, 1 or more entries of XfdashboardThemeLayoutTagData (only used at <interface>) */
 };
 
 typedef struct _XfdashboardThemeLayoutParserData		XfdashboardThemeLayoutParserData;
@@ -106,6 +114,7 @@ struct _XfdashboardThemeLayoutParserData
 	XfdashboardThemeLayoutParsedObject	*interface;
 	GQueue								*stackObjects;
 	GQueue								*stackTags;
+	GSList								*focusables;	/* 0, 1 or more entries of XfdashboardThemeLayoutTagData */
 
 	gint								lastLine;
 	gint								lastPosition;
@@ -312,6 +321,8 @@ static gint _xfdashboard_theme_layout_get_tag_by_name(const gchar *inTag)
 	if(g_strcmp0(inTag, "property")==0) return(TAG_PROPERTY);
 	if(g_strcmp0(inTag, "constraint")==0) return(TAG_CONSTRAINT);
 	if(g_strcmp0(inTag, "layout")==0) return(TAG_LAYOUT);
+	if(g_strcmp0(inTag, "focusables")==0) return(TAG_FOCUSABLES);
+	if(g_strcmp0(inTag, "focus")==0) return(TAG_FOCUS);
 
 	/* If we get here we do not know tag name and return invalid ID */
 	return(-1);
@@ -342,6 +353,12 @@ static const gchar* _xfdashboard_theme_layout_get_tag_by_id(guint inTagType)
 
 		case TAG_LAYOUT:
 			return("layout");
+
+		case TAG_FOCUSABLES:
+			return("focusables");
+
+		case TAG_FOCUS:
+			return("focus");
 
 		default:
 			break;
@@ -407,6 +424,10 @@ static void _xfdashboard_theme_layout_tag_data_free(XfdashboardThemeLayoutTagDat
 			if(inData->tag.property.name) g_free(inData->tag.property.name);
 			if(inData->tag.property.value) g_free(inData->tag.property.value);
 			if(inData->tag.property.refID) g_free(inData->tag.property.refID);
+			break;
+
+		case TAG_FOCUS:
+			if(inData->tag.focus.refID) g_free(inData->tag.focus.refID);
 			break;
 	}
 
@@ -479,6 +500,7 @@ static void _xfdashboard_theme_layout_object_data_free(XfdashboardThemeLayoutPar
 	if(inData->constraints) g_slist_free_full(inData->constraints, (GDestroyNotify)_xfdashboard_theme_layout_object_data_unref);
 	if(inData->layout) _xfdashboard_theme_layout_object_data_unref(inData->layout);
 	if(inData->children) g_slist_free_full(inData->children, (GDestroyNotify)_xfdashboard_theme_layout_object_data_unref);
+	if(inData->focusables) g_slist_free_full(inData->focusables, (GDestroyNotify)_xfdashboard_theme_layout_tag_data_unref);
 	g_free(inData);
 }
 
@@ -531,9 +553,9 @@ static void _xfdashboard_theme_layout_create_object_resolve_unresolved(Xfdashboa
 																		GHashTable *inIDs,
 																		GSList *inUnresolvedIDs)
 {
-	GObject										*refObject;
-	GSList										*entry;
+	GSList										*iter;
 	XfdashboardThemeLayoutUnresolvedBuildID		*unresolvedID;
+	GObject										*refObject;
 
 	g_return_if_fail(XFDASHBOARD_IS_THEME_LAYOUT(self));
 	g_return_if_fail(inIDs);
@@ -545,23 +567,51 @@ static void _xfdashboard_theme_layout_create_object_resolve_unresolved(Xfdashboa
 	 * and get referenced object and set the pointer to this object at the
 	 * mapped property of target object.
 	 */
-	for(entry=inUnresolvedIDs; entry; entry=g_slist_next(entry))
+	for(iter=inUnresolvedIDs; iter; iter=g_slist_next(iter))
 	{
-		unresolvedID=(XfdashboardThemeLayoutUnresolvedBuildID*)entry->data;
+		unresolvedID=(XfdashboardThemeLayoutUnresolvedBuildID*)iter->data;
+		g_assert(unresolvedID);
 
-		/* Get referenced object */
-		refObject=g_hash_table_lookup(inIDs, unresolvedID->property->tag.property.refID);
+		/* Get ID of object to resolve but only from supported tag types */
+		switch(unresolvedID->property->tagType)
+		{
+			case TAG_PROPERTY:
+				/* Get referenced object */
+				refObject=g_hash_table_lookup(inIDs, unresolvedID->property->tag.property.refID);
 
-		/* Set pointer to referenced object in property of target object */
-		g_object_set(unresolvedID->targetObject,
-						unresolvedID->property->tag.property.name,
-						refObject,
-						NULL);
-		g_debug("Set previously unresolved object %s with ID '%s' at target object %s at property '%s'",
-					refObject ? G_OBJECT_TYPE_NAME(refObject) : "<unknown object>",
-					unresolvedID->property->tag.property.refID,
-					unresolvedID->targetObject ? G_OBJECT_TYPE_NAME(unresolvedID->targetObject) : "<unknown object>",
-					unresolvedID->property->tag.property.name);
+				/* Set pointer to referenced object in property of target object */
+				g_object_set(unresolvedID->targetObject,
+								unresolvedID->property->tag.property.name,
+								refObject,
+								NULL);
+				g_debug("Set previously unresolved object %s with ID '%s' at target object %s at property '%s'",
+							refObject ? G_OBJECT_TYPE_NAME(refObject) : "<unknown object>",
+							unresolvedID->property->tag.property.refID,
+							unresolvedID->targetObject ? G_OBJECT_TYPE_NAME(unresolvedID->targetObject) : "<unknown object>",
+							unresolvedID->property->tag.property.name);
+				break;
+
+			case TAG_FOCUS:
+				/* Get referenced object */
+				refObject=g_hash_table_lookup(inIDs, unresolvedID->property->tag.focus.refID);
+
+				/* Set pointer to referenced object in property of target object */
+				g_object_set(unresolvedID->targetObject,
+								"add-focus",
+								refObject,
+								NULL);
+				g_debug("Set previously unresolved object %s with ID '%s' at target object %s at property '%s'",
+							refObject ? G_OBJECT_TYPE_NAME(refObject) : "<unknown object>",
+							unresolvedID->property->tag.focus.refID,
+							unresolvedID->targetObject ? G_OBJECT_TYPE_NAME(unresolvedID->targetObject) : "<unknown object>",
+							"add-focus");
+				break;
+
+			default:
+				g_critical(_("Unsupported tag type '%s' to resolve ID"),
+							_xfdashboard_theme_layout_get_tag_by_id(unresolvedID->property->tagType));
+				break;;
+		}
 	}
 }
 
@@ -575,7 +625,7 @@ static GObject* _xfdashboard_theme_layout_create_object(XfdashboardThemeLayout *
 														GSList **ioUnresolvedIDs)
 {
 	GObject									*object;
-	GSList									*entry;
+	GSList									*iter;
 	GParameter								*properties;
 	gint									maxProperties, usedProperties, i;
 
@@ -591,11 +641,11 @@ static GObject* _xfdashboard_theme_layout_create_object(XfdashboardThemeLayout *
 	maxProperties=g_slist_length(inObjectData->properties);
 	if(maxProperties>0) properties=g_new0(GParameter, maxProperties);
 
-	for(entry=inObjectData->properties; entry; entry=g_slist_next(entry))
+	for(iter=inObjectData->properties; iter; iter=g_slist_next(iter))
 	{
 		XfdashboardThemeLayoutTagData		*property;
 
-		property=(XfdashboardThemeLayoutTagData*)entry->data;
+		property=(XfdashboardThemeLayoutTagData*)iter->data;
 
 		/* Check if property refers to an other object, if not add it */
 		if(!property->tag.property.refID)
@@ -658,12 +708,12 @@ static GObject* _xfdashboard_theme_layout_create_object(XfdashboardThemeLayout *
 	}
 
 	/* Create children */
-	for(entry=inObjectData->children; entry; entry=g_slist_next(entry))
+	for(iter=inObjectData->children; iter; iter=g_slist_next(iter))
 	{
 		XfdashboardThemeLayoutParsedObject	*childObjectData;
 		GObject								*child;
 
-		childObjectData=(XfdashboardThemeLayoutParsedObject*)entry->data;
+		childObjectData=(XfdashboardThemeLayoutParsedObject*)iter->data;
 
 		/* Create child actor */
 		child=_xfdashboard_theme_layout_create_object(self, childObjectData, ioIDs, ioUnresolvedIDs);
@@ -736,12 +786,12 @@ static GObject* _xfdashboard_theme_layout_create_object(XfdashboardThemeLayout *
 	}
 
 	/* Create constraints */
-	for(entry=inObjectData->constraints; entry; entry=g_slist_next(entry))
+	for(iter=inObjectData->constraints; iter; iter=g_slist_next(iter))
 	{
 		XfdashboardThemeLayoutParsedObject	*constraintObjectData;
 		GObject								*constraint;
 
-		constraintObjectData=(XfdashboardThemeLayoutParsedObject*)entry->data;
+		constraintObjectData=(XfdashboardThemeLayoutParsedObject*)iter->data;
 
 		/* Create constraint */
 		constraint=_xfdashboard_theme_layout_create_object(self, constraintObjectData, ioIDs, ioUnresolvedIDs);
@@ -775,23 +825,44 @@ static GObject* _xfdashboard_theme_layout_create_object(XfdashboardThemeLayout *
 	}
 
 	/* Set up properties which do reference other objects */
-	for(entry=inObjectData->properties; entry; entry=g_slist_next(entry))
+	for(iter=inObjectData->properties; iter; iter=g_slist_next(iter))
 	{
 		XfdashboardThemeLayoutTagData					*property;
 
-		property=(XfdashboardThemeLayoutTagData*)entry->data;
+		/* Get property data */
+		property=(XfdashboardThemeLayoutTagData*)iter->data;
 
 		/* Check if property refers to an other object, if it does add it */
 		if(property->tag.property.refID)
 		{
 			XfdashboardThemeLayoutUnresolvedBuildID		*unresolved;
 
+			/* Create unresolved entry */
 			unresolved=g_new0(XfdashboardThemeLayoutUnresolvedBuildID, 1);
 			unresolved->targetObject=g_object_ref(object);
 			unresolved->property=_xfdashboard_theme_layout_tag_data_ref(property);
 
+			/* Add to list of unresolved IDs */
 			*ioUnresolvedIDs=g_slist_prepend(*ioUnresolvedIDs, unresolved);
 		}
+	}
+
+	/* Set up focusables which do reference other objects */
+	for(iter=inObjectData->focusables; iter; iter=g_slist_next(iter))
+	{
+		XfdashboardThemeLayoutTagData					*focus;
+		XfdashboardThemeLayoutUnresolvedBuildID			*unresolved;
+
+		/* Get focus data */
+		focus=(XfdashboardThemeLayoutTagData*)iter->data;
+
+		/* Create unresolved entry */
+		unresolved=g_new0(XfdashboardThemeLayoutUnresolvedBuildID, 1);
+		unresolved->targetObject=g_object_ref(object);
+		unresolved->property=_xfdashboard_theme_layout_tag_data_ref(focus);
+
+		/* Add to list of unresolved IDs */
+		*ioUnresolvedIDs=g_slist_prepend(*ioUnresolvedIDs, unresolved);
 	}
 
 	/* Return created actor */
@@ -1151,7 +1222,8 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 	/* Check if element name is <property> and follows expected parent tags:
 	 * <object>
 	 */
-	if(nextTag==TAG_PROPERTY && currentTag==TAG_OBJECT)
+	if(nextTag==TAG_PROPERTY &&
+		currentTag==TAG_OBJECT)
 	{
 		XfdashboardThemeLayoutTagData		*tagData;
 		static GMarkupParser				propertyParser=
@@ -1211,6 +1283,76 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 
 		/* Properties can have text nodes but no children so set up context */
 		g_markup_parse_context_push(inContext, &propertyParser, inUserData);
+		return;
+	}
+
+	/* Check if element name is <focusables> and follows expected parent tags:
+	 * <interface>
+	 */
+	if(nextTag==TAG_FOCUSABLES &&
+		currentTag==TAG_INTERFACE)
+	{
+		XfdashboardThemeLayoutTagData		*tagData;
+
+		/* Create tag data */
+		tagData=_xfdashboard_theme_layout_tag_data_new(inContext, nextTag, &error);
+		if(!tagData)
+		{
+			g_propagate_error(outError, error);
+			return;
+		}
+
+		/* Get tag's attributes */
+		if(!g_markup_collect_attributes(inElementName,
+											inAttributeNames,
+											inAttributeValues,
+											&error,
+											G_MARKUP_COLLECT_INVALID,
+											NULL))
+		{
+			g_propagate_error(outError, error);
+			_xfdashboard_theme_layout_tag_data_unref(tagData);
+			return;
+		}
+
+		/* Push tag onto stack */
+		g_queue_push_tail(data->stackTags, tagData);
+		return;
+	}
+
+	/* Check if element name is <focus> and follows expected parent tags:
+	 * <focusables>
+	 */
+	if(nextTag==TAG_FOCUS &&
+		currentTag==TAG_FOCUSABLES)
+	{
+		XfdashboardThemeLayoutTagData		*tagData;
+
+		/* Create tag data */
+		tagData=_xfdashboard_theme_layout_tag_data_new(inContext, nextTag, &error);
+		if(!tagData)
+		{
+			g_propagate_error(outError, error);
+			return;
+		}
+
+		/* Get tag's attributes */
+		if(!g_markup_collect_attributes(inElementName,
+											inAttributeNames,
+											inAttributeValues,
+											&error,
+											G_MARKUP_COLLECT_STRDUP,
+											"ref",
+											&tagData->tag.focus.refID,
+											G_MARKUP_COLLECT_INVALID))
+		{
+			g_propagate_error(outError, error);
+			_xfdashboard_theme_layout_tag_data_unref(tagData);
+			return;
+		}
+
+		/* Push tag onto stack */
+		g_queue_push_tail(data->stackTags, tagData);
 		return;
 	}
 
@@ -1338,6 +1480,40 @@ static void _xfdashboard_theme_layout_parse_general_end(GMarkupParseContext *inC
 
 		/* Restore previous parser context */
 		g_markup_parse_context_pop(inContext);
+	}
+
+	/* Handle end of element <focus> */
+	if(subTagData->tagType==TAG_FOCUS)
+	{
+		/* Add focusable actor to parser data */
+		data->focusables=g_slist_append(data->focusables, _xfdashboard_theme_layout_tag_data_ref(subTagData));
+		g_debug("Adding focusable actor referenced by ID '%s' to parser data",
+					subTagData->tag.focus.refID);
+	}
+
+	/* Handle end of element <interface> */
+	if(subTagData->tagType==TAG_INTERFACE)
+	{
+		GSList									*iter;
+		XfdashboardThemeLayoutTagData			*iterTagData;
+
+		g_assert(data->interface);
+		g_assert(!data->interface->focusables);
+
+		g_debug("Copying %d focusable actor IDs to interface '%s'",
+					g_slist_length(data->focusables),
+					data->interface->id);
+
+		/* Copy list of focusable actors from parser data to interface object data */
+		for(iter=data->focusables; iter; iter=g_slist_next(iter))
+		{
+			iterTagData=(XfdashboardThemeLayoutTagData*)iter->data;
+
+			g_assert(iterTagData);
+
+			data->interface->focusables=g_slist_prepend(data->interface->focusables, _xfdashboard_theme_layout_tag_data_ref(iterTagData));
+		}
+		data->interface->focusables=g_slist_reverse(data->interface->focusables);
 	}
 
 	/* Unreference last tag's data */
@@ -1659,6 +1835,8 @@ static gboolean _xfdashboard_theme_layout_parse_xml(XfdashboardThemeLayout *self
 	}
 	g_queue_free(data->stackTags);
 
+	if(data->focusables) g_slist_free_full(data->focusables, (GDestroyNotify)_xfdashboard_theme_layout_tag_data_unref);
+
 	g_free(data);
 
 	/* Return success result */
@@ -1779,7 +1957,7 @@ ClutterActor* xfdashboard_theme_layout_build_interface(XfdashboardThemeLayout *s
 														const gchar *inID)
 {
 	XfdashboardThemeLayoutPrivate				*priv;
-	GSList										*entry;
+	GSList										*iter;
 	XfdashboardThemeLayoutParsedObject			*interfaceData;
 	ClutterActor								*actor;
 	GHashTable									*ids;
@@ -1790,21 +1968,21 @@ ClutterActor* xfdashboard_theme_layout_build_interface(XfdashboardThemeLayout *s
 
 	priv=self->priv;
 	interfaceData=NULL;
-	unresolved=NULL;
 
 	/* Find parsed object data for requested interface by its ID */
-	entry=priv->interfaces;
-	while(entry && !interfaceData)
+	iter=priv->interfaces;
+	while(iter && !interfaceData)
 	{
 		XfdashboardThemeLayoutParsedObject		*objectData;
 
-		objectData=(XfdashboardThemeLayoutParsedObject*)entry->data;
+		/* Get interface object data currently iterated */
+		objectData=(XfdashboardThemeLayoutParsedObject*)iter->data;
 
 		/* Check if this object data is for the requested interface */
 		if(g_strcmp0(objectData->id, inID)==0) interfaceData=objectData;
 
 		/* Continue with next entry */
-		entry=g_slist_next(entry);
+		iter=g_slist_next(iter);
 	}
 
 	/* If we get here and we did not found the requested interface
@@ -1816,11 +1994,18 @@ ClutterActor* xfdashboard_theme_layout_build_interface(XfdashboardThemeLayout *s
 		return(NULL);
 	}
 
-	/* Create actor */
+	/* Keep interface object data alive while building interface
+	 * by taking an extra reference.
+	 */
 	_xfdashboard_theme_layout_object_data_ref(interfaceData);
 
+	/* Create hash-table to resolve IDs of objects created and
+	 * initialize empty list of IDs to resolve.
+	 */
 	ids=g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
-	
+	unresolved=NULL;
+
+	/* Create actor */
 	actor=CLUTTER_ACTOR(_xfdashboard_theme_layout_create_object(self, interfaceData, ids, &unresolved));
 	if(actor)
 	{
@@ -1831,9 +2016,11 @@ ClutterActor* xfdashboard_theme_layout_build_interface(XfdashboardThemeLayout *s
 	}
 		else g_debug("Failed to create actor for interface '%s'", inID);
 
+	/* Release allocated resources */
 	if(ids) g_hash_table_destroy(ids);
 	if(unresolved) g_slist_free_full(unresolved, _xfdashboard_theme_layout_create_object_free_unresolved);
 
+	/* Release extra reference taken at interface object data */
 	_xfdashboard_theme_layout_object_data_unref(interfaceData);
 
 	/* Return created actor */
