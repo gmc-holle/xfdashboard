@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-08 06:36+0200\n"
-"PO-Revision-Date: 2015-11-10 20:47+0000\n"
+"PO-Revision-Date: 2015-12-08 22:06+0000\n"
 "Last-Translator: Moo\n"
 "Language-Team: Lithuanian (http://www.transifex.com/xfdashboard/xfdashboard/language/lt/)\n"
 "MIME-Version: 1.0\n"
@@ -26,7 +26,7 @@ msgstr "Xfdashboard"
 #: ../data/xfdashboard.desktop.in.in.h:2
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
-msgstr ""
+msgstr "Galbūt, į Gnome apvalkalą panašus skydelis, skirtas Xfce"
 
 #: ../data/xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
@@ -44,7 +44,7 @@ msgstr "Konfigūruoti xfdashboard"
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
-msgstr ""
+msgstr "Xfdashboard pateikia į Gnome apvalkalo skydelį panašią sąsają, skirtą naudoti Xfce darbalaukyje."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:3
 msgid ""
@@ -232,33 +232,33 @@ msgid ""
 "Sets the minimum time a notification is being shown.\n"
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
-msgstr ""
+msgstr "Nustato mažiausią laiką per kurį yra rodomas pranešimas.\n\nTrukmė yra apskaičiuojama pagal pranešime rodomo teksto ilgį. Šis nustatymas leidžia jums nurodyti bent kiek laiko turėtų būti rodomas pranešimas."
 
 #: ../data/data/preferences.ui.h:15
 msgid "Minimum notification timeout:"
-msgstr ""
+msgstr "Mažiausias pranešimui skiriamas laikas:"
 
 #: ../data/data/preferences.ui.h:16
 msgid "Enable workaround for minimized windows"
-msgstr ""
+msgstr "Įjungti suskleistų langų problemos apėjimą"
 
 #: ../data/data/preferences.ui.h:17
 msgid ""
 "When enabled a workaround for minimized windows will be tried to get still images of these windows by restoring them shortly and minimizing them again.\n"
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
-msgstr ""
+msgstr "Kai įjungta, bus bandoma apeiti suskleistų langų problemą ir gauti pastovius šių langų atvaizdus, trumpai juos išdidinant ir vėl suskleidžiant.\n\n<b>PASTABA:</b> Turėkite omenyje, kad tai yra <u>problemos apėjimas</u> ir jūsų suskleisti langai gali likti išdidinti arba pakeisti darbo sritį ir t. t."
 
 #: ../data/data/preferences.ui.h:20
 msgid ""
 "This value defines how fast the window content should be created. While the value 'immediate' tells xfdashboard to create the window content at the time it is requested, all other values will set up a queue and value defines how fast the queue will be processed.\n"
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
-msgstr ""
+msgstr "Ši reikšmė apibrėžia kaip greitai turėtų būti kuriamas langų turinys. Reikšmė \"nedelsiant\" pasako xfdashboard sukurti lango turinį užklausos metu, visos kitos reikšmės nustatys eilę, o reikšmė apibrėš kaip greitai eilė bus vykdoma.\n\n<b>PASTABA:</b> Keiskite šią reikšmė iš \"nedelsiant\" į kitą reikšmę tik tuo atveju, jei jūsų vaizdo plokštė, tvarkyklė ar sistema yra pernelyg lėta, kad kurtų langų turinius nedelsiant. Jums reikia išbandyti kiekvieną reikšmę, kad rastumėte tą, kuri tiks jūsų sistemai."
 
 #: ../data/data/preferences.ui.h:23
 msgid "Priority of window content creation"
-msgstr ""
+msgstr "Langų turinio kūrimo pirmenybė"
 
 #: ../data/data/preferences.ui.h:24
 msgid "<b>Applications view:</b>"
@@ -287,7 +287,7 @@ msgid ""
 "When enabled any scroll event, like mouse-wheel up and down, at the windows "
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
-msgstr ""
+msgstr "Kai įjungta, bet koks slinkimo įvykis, toks kaip pelės ratuko pasukimas aukštyn ar žemyn, langų rodinyje keis aktyvią darbo sritį. Ši elgsena yra tokia pati kaip ir darbo sričių pasirinkimo."
 
 #: ../data/data/preferences.ui.h:30
 msgid "<b>Search view:</b>"
@@ -297,11 +297,11 @@ msgstr "<b>Paieškos rodinys:</b>"
 msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
-msgstr ""
+msgstr "Nustato intervalą, kuriam turėtų būti atidėta paiešką po to, kai yra įvedamas pirmasis simbolis."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Delay initial search interval:"
-msgstr ""
+msgstr "Pradinės paieškos delsos intervalas:"
 
 #: ../data/data/preferences.ui.h:33
 msgid "General"
@@ -625,7 +625,7 @@ msgstr ""
 
 #: ../xfdashboard/application.c:518
 msgid "Fork to background"
-msgstr ""
+msgstr "Atšakoti į foną"
 
 #: ../xfdashboard/application.c:519
 msgid "Quit running instance"
@@ -639,12 +639,12 @@ msgstr "Iš naujo paleisti vykdomą egzempliorių"
 msgid ""
 "Toggles suspend/resume state if running instance was started in daemon mode "
 "otherwise it quits running non-daemon instance"
-msgstr ""
+msgstr "Jei vykdomas egzempliorius buvo paleistas tarnybos veiksenoje, perjungia pristabdymo/pratęsimo būseną, kitu atveju baigia vykdomo ne tarnybos egzemplioriaus darbą"
 
 #. Setup command-line options
 #: ../xfdashboard/application.c:544
 msgid "- A Gnome Shell like dashboard for Xfce4"
-msgstr ""
+msgstr "- Į Gnome apvalkalą panašus skydelis, skirtas Xfce4"
 
 #. Show error
 #: ../xfdashboard/application.c:565
@@ -1784,11 +1784,11 @@ msgstr ""
 
 #: ../xfdashboard/live-workspace.c:753
 msgid "Workspace"
-msgstr ""
+msgstr "Darbo sritis"
 
 #: ../xfdashboard/live-workspace.c:754
 msgid "The workspace to show"
-msgstr ""
+msgstr "Darbo sritis, kurią rodyti"
 
 #: ../xfdashboard/live-workspace.c:760 ../xfdashboard/stage-interface.c:327
 msgid "Monitor"
@@ -1806,7 +1806,7 @@ msgstr ""
 msgid ""
 "If TRUE the window content should be shown otherwise the window's icon will "
 "be shown"
-msgstr ""
+msgstr "Jei TEISINGA, turėtų būti rodomas langų turinys, kitu atveju, bus rodomos langų piktogramos"
 
 #: ../xfdashboard/live-workspace.c:774 ../xfdashboard/live-workspace.c:775
 #: ../xfdashboard/stage.c:1552 ../xfdashboard/stage.c:1553
@@ -1816,11 +1816,11 @@ msgstr "Fono paveikslo tipas"
 
 #: ../xfdashboard/main.c:172
 msgid "Cannot restart application: Failed to quit running instance"
-msgstr ""
+msgstr "Nepavyksta iš naujo paleisti programos: Nepavyko baigti vykdomo egzemplioriaus darbą"
 
 #: ../xfdashboard/main.c:212
 msgid "Failed to create application instance"
-msgstr ""
+msgstr "Nepavyko sukurti programos egzempliorių"
 
 #: ../xfdashboard/main.c:219
 #, c-format
@@ -3011,11 +3011,11 @@ msgstr ""
 
 #: ../xfdashboard/windows-view.c:1690
 msgid "Current workspace"
-msgstr ""
+msgstr "Esama darbo sritis"
 
 #: ../xfdashboard/windows-view.c:1691
 msgid "The current workspace whose windows are shown"
-msgstr ""
+msgstr "Esama darbo sritis, kurios langai yra rodomi"
 
 #: ../xfdashboard/windows-view.c:1706
 msgid ""
@@ -3058,11 +3058,11 @@ msgstr ""
 
 #: ../xfdashboard/window-tracker.c:905
 msgid "Active workspace"
-msgstr ""
+msgstr "Aktyvi darbo sritis"
 
 #: ../xfdashboard/window-tracker.c:906
 msgid "The current active workspace"
-msgstr ""
+msgstr "Esama aktyvi darbo sritis"
 
 #: ../xfdashboard/window-tracker.c:912
 msgid "Primary monitor"
