@@ -49,8 +49,6 @@ struct _XfdashboardThemeLayoutPrivate
 };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define XFDASHBOARD_THEME_LAYOUT_FOCUS_TABLE_DATA		"xfdashboard-theme-layout-interface-focus-table"
-
 enum
 {
 	TAG_DOCUMENT,
@@ -599,11 +597,11 @@ static void _xfdashboard_theme_layout_create_object_resolve_unresolved(Xfdashboa
 				refObject=g_hash_table_lookup(inIDs, unresolvedID->property->tag.focus.refID);
 
 				/* Get current focus table from object */
-				focusTable=g_object_get_data(unresolvedID->targetObject, XFDASHBOARD_THEME_LAYOUT_FOCUS_TABLE_DATA);
+				focusTable=g_object_get_qdata(unresolvedID->targetObject, XFDASHBOARD_THEME_LAYOUT_FOCUS_TABLE_DATA);
 				if(!focusTable)
 				{
 					focusTable=g_ptr_array_new();
-					g_object_set_data_full(unresolvedID->targetObject,
+					g_object_set_qdata_full(unresolvedID->targetObject,
 											XFDASHBOARD_THEME_LAYOUT_FOCUS_TABLE_DATA,
 											focusTable,
 											(GDestroyNotify)g_ptr_array_unref);
@@ -873,8 +871,11 @@ static GObject* _xfdashboard_theme_layout_create_object(XfdashboardThemeLayout *
 			unresolved->targetObject=g_object_ref(object);
 			unresolved->property=_xfdashboard_theme_layout_tag_data_ref(focus);
 
-			/* Add to list of unresolved IDs */
-			*ioUnresolvedIDs=g_slist_prepend(*ioUnresolvedIDs, unresolved);
+			/* Add to list of unresolved IDs.
+			 * It is important to add it at the end of list to keep order
+			 * of focusable actors.
+			 */
+			*ioUnresolvedIDs=g_slist_append(*ioUnresolvedIDs, unresolved);
 		}
 	}
 
@@ -2050,4 +2051,12 @@ ClutterActor* xfdashboard_theme_layout_build_interface(XfdashboardThemeLayout *s
 
 	/* Return created actor */
 	return(actor);
+}
+
+/* Quark for accessing focus table data (a GPtrArray) at an actor
+ * with g_object_get_qdata() created by xfdashboard_theme_layout_build_interface().
+ */
+GQuark xfdashboard_theme_layout_focus_table_quark(void)
+{
+	return(g_quark_from_static_string("xfdashboard-theme-layout-focus-table-quark"));
 }

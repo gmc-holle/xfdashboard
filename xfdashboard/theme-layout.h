@@ -81,6 +81,10 @@ gboolean xfdashboard_theme_layout_add_file(XfdashboardThemeLayout *self,
 ClutterActor* xfdashboard_theme_layout_build_interface(XfdashboardThemeLayout *self,
 														const gchar *inID);
 
+
+#define XFDASHBOARD_THEME_LAYOUT_FOCUS_TABLE_DATA	(xfdashboard_theme_layout_focus_table_quark())
+GQuark xfdashboard_theme_layout_focus_table_quark(void);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_THEME_LAYOUT__ */

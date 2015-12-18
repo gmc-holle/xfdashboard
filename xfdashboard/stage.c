@@ -138,8 +138,6 @@ static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 #define XFDASHBOARD_THEME_LAYOUT_PRIMARY				"primary"
 #define XFDASHBOARD_THEME_LAYOUT_SECONDARY				"secondary"
 
-#define XFDASHBOARD_THEME_LAYOUT_FOCUS_TABLE_DATA		"xfdashboard-theme-layout-interface-focus-table"
-
 /* Handle an event */
 static gboolean _xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *inEvent)
 {
@@ -944,7 +942,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 		if(!interface) continue;
 
 		/* Get focus table of interface */
-		interfaceFocusTable=g_object_get_data(G_OBJECT(interface), XFDASHBOARD_THEME_LAYOUT_FOCUS_TABLE_DATA);
+		interfaceFocusTable=g_object_get_qdata(G_OBJECT(interface), XFDASHBOARD_THEME_LAYOUT_FOCUS_TABLE_DATA);
 
 		/* Add interface to stage */
 		clutter_actor_add_child(CLUTTER_ACTOR(self), interface);
