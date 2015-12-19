@@ -49,6 +49,13 @@
 	</kudos>
 
 	<releases>
+		<release version="0.5.4" timestamp="1450515013">
+			<description>
+				<_p>This unstable development introduces a new optional configuration to
+				themes about defining which elements can be focused and in which order.
+				</_p>
+			</description>
+		</release>
 		<release version="0.5.3" timestamp="1447437275">
 			<description>
 				<_p>This unstable development introduces a basic and simple plugin system
