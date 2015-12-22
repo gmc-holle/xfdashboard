@@ -348,6 +348,24 @@ static void xfdashboard_window_tracker_monitor_init(XfdashboardWindowTrackerMoni
 
 /* IMPLEMENTATION: Public API */
 
+/* Check if both monitors are the same */
+gboolean xfdashboard_window_tracker_monitor_is_equal(XfdashboardWindowTrackerMonitor *inLeft,
+														XfdashboardWindowTrackerMonitor *inRight)
+{
+	gint			leftIndex, rightIndex;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inLeft), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inRight), FALSE);
+
+	/* Check if both are the same workspace or refer to same one */
+	leftIndex=xfdashboard_window_tracker_monitor_get_number(inLeft);
+	rightIndex=xfdashboard_window_tracker_monitor_get_number(inRight);
+	if(inLeft==inRight || leftIndex==rightIndex) return(TRUE);
+
+	/* If we get here then they cannot be considered equal */
+	return(FALSE);
+}
+
 /* Get monitor index */
 gint xfdashboard_window_tracker_monitor_get_number(XfdashboardWindowTrackerMonitor *self)
 {

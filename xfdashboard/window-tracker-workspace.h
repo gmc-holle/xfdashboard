@@ -47,6 +47,9 @@ typedef struct _WnckWorkspaceClass								XfdashboardWindowTrackerWorkspaceClass
 /* Public API */
 GType xfdashboard_window_tracker_workspace_get_type(void) G_GNUC_CONST;
 
+gboolean xfdashboard_window_tracker_workspace_is_equal(XfdashboardWindowTrackerWorkspace *inLeft,
+														XfdashboardWindowTrackerWorkspace *inRight);
+
 gint xfdashboard_window_tracker_workspace_get_number(XfdashboardWindowTrackerWorkspace *inWorkspace);
 const gchar* xfdashboard_window_tracker_workspace_get_name(XfdashboardWindowTrackerWorkspace *inWorkspace);
 

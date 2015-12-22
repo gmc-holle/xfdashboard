@@ -354,6 +354,97 @@ static void _xfdashboard_windows_view_recreate_window_actors(XfdashboardWindowsV
 	}
 }
 
+/* Move window to monitor of this window view */
+static void _xfdashboard_windows_view_move_live_to_view(XfdashboardWindowsView *self,
+														XfdashboardLiveWindow *inWindowActor)
+{
+	XfdashboardWindowsViewPrivate			*priv;
+	XfdashboardWindowTrackerWindow			*window;
+	XfdashboardWindowTrackerWorkspace		*sourceWorkspace;
+	XfdashboardWindowTrackerWorkspace		*targetWorkspace;
+	XfdashboardWindowTrackerMonitor			*sourceMonitor;
+	XfdashboardWindowTrackerMonitor			*targetMonitor;
+	gint									oldWindowX, oldWindowY, oldWindowWidth, oldWindowHeight;
+	gint									newWindowX, newWindowY;
+	gint									oldMonitorX, oldMonitorY, oldMonitorWidth, oldMonitorHeight;
+	gint									newMonitorX, newMonitorY, newMonitorWidth, newMonitorHeight;
+	gfloat									relativeX, relativeY;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inWindowActor));
+
+	priv=self->priv;
+
+	/* Get window from window actor */
+	window=xfdashboard_live_window_get_window(inWindowActor);
+
+	/* Get source and target workspace */
+	sourceWorkspace=xfdashboard_window_tracker_window_get_workspace(window);
+	targetWorkspace=priv->workspace;
+
+	/* Get source and target monitor */
+	sourceMonitor=xfdashboard_window_tracker_window_get_monitor(window);
+	targetMonitor=priv->currentMonitor;
+
+	g_debug("Moving window '%s' from %s-monitor %d to %s-monitor %d and from workspace '%s' (%d) to '%s' (%d)",
+				xfdashboard_window_tracker_window_get_title(window),
+				xfdashboard_window_tracker_monitor_is_primary(sourceMonitor) ? "primary" : "secondary",
+				xfdashboard_window_tracker_monitor_get_number(sourceMonitor),
+				xfdashboard_window_tracker_monitor_is_primary(targetMonitor) ? "primary" : "secondary",
+				xfdashboard_window_tracker_monitor_get_number(targetMonitor),
+				xfdashboard_window_tracker_workspace_get_name(sourceWorkspace),
+				xfdashboard_window_tracker_workspace_get_number(sourceWorkspace),
+				xfdashboard_window_tracker_workspace_get_name(targetWorkspace),
+				xfdashboard_window_tracker_workspace_get_number(targetWorkspace));
+
+	/* Get position and size of window to move */
+	xfdashboard_window_tracker_window_get_position_size(window,
+														&oldWindowX,
+														&oldWindowY,
+														&oldWindowWidth,
+														&oldWindowHeight);
+
+	/* Calculate source x and y coordinate relative to monitor size in percent */
+	xfdashboard_window_tracker_monitor_get_geometry(sourceMonitor,
+													&oldMonitorX,
+													&oldMonitorY,
+													&oldMonitorWidth,
+													&oldMonitorHeight);
+	relativeX=((gfloat)(oldWindowX-oldMonitorX)) / ((gfloat)oldMonitorWidth);
+	relativeY=((gfloat)(oldWindowY-oldMonitorY)) / ((gfloat)oldMonitorHeight);
+
+	/* Calculate target x and y coordinate from relative size in percent to monitor size */
+	xfdashboard_window_tracker_monitor_get_geometry(targetMonitor,
+													&newMonitorX,
+													&newMonitorY,
+													&newMonitorWidth,
+													&newMonitorHeight);
+	newWindowX=newMonitorX+((gint)(relativeX*newMonitorWidth));
+	newWindowY=newMonitorY+((gint)(relativeY*newMonitorHeight));
+
+	/* Move window to workspace if they are not the same */
+	if(!xfdashboard_window_tracker_workspace_is_equal(sourceWorkspace, targetWorkspace))
+	{
+		xfdashboard_window_tracker_window_move_to_workspace(window, targetWorkspace);
+		g_debug("Moved window '%s' from workspace '%s' (%d) to '%s' (%d)",
+					xfdashboard_window_tracker_window_get_title(window),
+					xfdashboard_window_tracker_workspace_get_name(sourceWorkspace),
+					xfdashboard_window_tracker_workspace_get_number(sourceWorkspace),
+					xfdashboard_window_tracker_workspace_get_name(targetWorkspace),
+					xfdashboard_window_tracker_workspace_get_number(targetWorkspace));
+	}
+
+	/* Move window to new position */
+	xfdashboard_window_tracker_window_move(window, newWindowX, newWindowY);
+	g_debug("Moved window '%s' from [%d,%d] at monitor [%d,%d x %d,%d] to [%d,%d] at monitor [%d,%d x %d,%d] (relative x=%.2f, y=%.2f)",
+				xfdashboard_window_tracker_window_get_title(window),
+				oldWindowX, oldWindowY,
+				oldMonitorX, oldMonitorY, oldMonitorWidth, oldMonitorHeight,
+				newWindowX, newWindowY,
+				newMonitorX, newMonitorY, newMonitorWidth, newMonitorHeight,
+				relativeX, relativeY);
+}
+
 /* Drag of an actor to this view as drop target begins */
 static gboolean _xfdashboard_windows_view_on_drop_begin(XfdashboardWindowsView *self,
 														XfdashboardDragAction *inDragAction,
@@ -380,6 +471,12 @@ static gboolean _xfdashboard_windows_view_on_drop_begin(XfdashboardWindowsView *
 		canHandle=TRUE;
 	}
 
+	if(XFDASHBOARD_IS_WINDOWS_VIEW(dragSource) &&
+		XFDASHBOARD_IS_LIVE_WINDOW(draggedActor))
+	{
+		canHandle=TRUE;
+	}
+
 	/* Return TRUE if we can handle dragged actor in this drop target
 	 * otherwise FALSE
 	 */
@@ -394,6 +491,7 @@ static void _xfdashboard_windows_view_on_drop_drop(XfdashboardWindowsView *self,
 													gpointer inUserData)
 {
 	XfdashboardWindowsViewPrivate		*priv;
+	ClutterActor						*dragSource;
 	ClutterActor						*draggedActor;
 	GAppLaunchContext					*context;
 
@@ -403,14 +501,61 @@ static void _xfdashboard_windows_view_on_drop_drop(XfdashboardWindowsView *self,
 
 	priv=self->priv;
 
-	/* Get dragged actor */
+	/* Get source where dragging started and actor being dragged */
+	dragSource=xfdashboard_drag_action_get_source(inDragAction);
 	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor));
 
-	/* Launch application being dragged here */
-	context=xfdashboard_create_app_context(priv->workspace);
-	xfdashboard_application_button_execute(XFDASHBOARD_APPLICATION_BUTTON(draggedActor), context);
-	g_object_unref(context);
+	/* Handle drop of an application button from quicklaunch */
+	if(XFDASHBOARD_IS_QUICKLAUNCH(dragSource) &&
+		XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor))
+	{
+		/* Launch application being dragged here */
+		context=xfdashboard_create_app_context(priv->workspace);
+		xfdashboard_application_button_execute(XFDASHBOARD_APPLICATION_BUTTON(draggedActor), context);
+		g_object_unref(context);
+
+		/* Drop action handled so return here */
+		return;
+	}
+
+	/* Handle drop of an window from another windows view */
+	if(XFDASHBOARD_IS_WINDOWS_VIEW(dragSource) &&
+		XFDASHBOARD_IS_LIVE_WINDOW(draggedActor))
+	{
+		XfdashboardWindowsView			*sourceWindowsView;
+		XfdashboardLiveWindow			*liveWindow;
+
+		/* Get source windows view */
+		sourceWindowsView=XFDASHBOARD_WINDOWS_VIEW(dragSource);
+
+		/* Do nothing if source windows view is the same as target windows view
+		 * that means this one.
+		 */
+		if(sourceWindowsView==self)
+		{
+			g_message("Will not handle drop of %s at %s because source and target are the same.",
+						G_OBJECT_TYPE_NAME(draggedActor),
+						G_OBJECT_TYPE_NAME(dragSource));
+			return;
+		}
+
+		/* Get dragged window */
+		liveWindow=XFDASHBOARD_LIVE_WINDOW(draggedActor);
+
+		/* Move window to monitor of this window view */
+		_xfdashboard_windows_view_move_live_to_view(self, liveWindow);
+
+		/* Drop action handled so return here */
+		return;
+	}
+
+	/* If we get here we did not handle drop action properly
+	 * and this should never happen.
+	 */
+	g_critical(_("Did not handle drop action for dragged actor %s of source %s at target %s"),
+				G_OBJECT_TYPE_NAME(draggedActor),
+				G_OBJECT_TYPE_NAME(dragSource),
+				G_OBJECT_TYPE_NAME(self));
 }
 
 /* Active workspace was changed */

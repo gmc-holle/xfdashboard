@@ -54,6 +54,24 @@ GType xfdashboard_window_tracker_workspace_get_type(void)
 	return(WNCK_TYPE_WORKSPACE);
 }
 
+/* Check if both workspaces are the same */
+gboolean xfdashboard_window_tracker_workspace_is_equal(XfdashboardWindowTrackerWorkspace *inLeft,
+														XfdashboardWindowTrackerWorkspace *inRight)
+{
+	gint			leftIndex, rightIndex;
+
+	g_return_val_if_fail(WNCK_IS_WORKSPACE(inLeft), FALSE);
+	g_return_val_if_fail(WNCK_IS_WORKSPACE(inRight), FALSE);
+
+	/* Check if both are the same workspace or refer to same one */
+	leftIndex=xfdashboard_window_tracker_workspace_get_number(inLeft);
+	rightIndex=xfdashboard_window_tracker_workspace_get_number(inRight);
+	if(inLeft==inRight || leftIndex==rightIndex) return(TRUE);
+
+	/* If we get here then they cannot be considered equal */
+	return(FALSE);
+}
+
 /* Get number of workspace */
 gint xfdashboard_window_tracker_workspace_get_number(XfdashboardWindowTrackerWorkspace *inWorkspace)
 {

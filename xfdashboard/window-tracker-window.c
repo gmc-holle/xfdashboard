@@ -301,6 +301,21 @@ GType xfdashboard_window_tracker_window_get_type(void)
 	return(WNCK_TYPE_WINDOW);
 }
 
+/* Check if both windows are the same */
+gboolean xfdashboard_window_tracker_window_is_equal(XfdashboardWindowTrackerWindow *inLeft,
+													XfdashboardWindowTrackerWindow *inRight)
+{
+	g_return_val_if_fail(WNCK_IS_WINDOW(inLeft), FALSE);
+	g_return_val_if_fail(WNCK_IS_WINDOW(inRight), FALSE);
+
+	/* Check if both are the same window*/
+	if(inLeft==inRight) return(TRUE);
+
+	/* If we get here then they cannot be considered equal */
+	return(FALSE);
+}
+
+
 /* Determine if window is minimized */
 gboolean xfdashboard_window_tracker_window_is_minized(XfdashboardWindowTrackerWindow *inWindow)
 {

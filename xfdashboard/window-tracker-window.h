@@ -51,7 +51,11 @@ typedef struct _WnckWindowClass								XfdashboardWindowTrackerWindowClass;
 /* Public API */
 GType xfdashboard_window_tracker_window_get_type(void) G_GNUC_CONST;
 
+gboolean xfdashboard_window_tracker_window_is_equal(XfdashboardWindowTrackerWindow *inLeft,
+													XfdashboardWindowTrackerWindow *inRight);
+
 gboolean xfdashboard_window_tracker_window_is_minized(XfdashboardWindowTrackerWindow *inWindow);
+gboolean xfdashboard_window_tracker_window_is_maxized(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_visible_on_workspace(XfdashboardWindowTrackerWindow *inWindow,
 																	XfdashboardWindowTrackerWorkspace *inWorkspace);
