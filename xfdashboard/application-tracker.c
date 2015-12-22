@@ -378,7 +378,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 		 * duplicate key as a environment variable's name should not be
 		 * found twice.
 		 */
-		if(!g_hash_table_insert(environments, g_strdup(name), g_strdup(value)))
+		if(g_hash_table_lookup(environments, name))
 		{
 			g_warning(_("Unexpected duplicate name '%s' in environment set for PID %d at %s: %s = %s"),
 						name,
@@ -395,6 +395,8 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 			/* Return NULL result */
 			return(NULL);
 		}
+
+		g_hash_table_insert(environments, g_strdup(name), g_strdup(value));
 	}
 
 	/* Release allocated resources */
