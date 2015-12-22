@@ -628,15 +628,43 @@ void xfdashboard_window_tracker_window_move_resize(XfdashboardWindowTrackerWindo
 													gint inHeight)
 {
 	WnckWindowMoveResizeMask	flags;
+	gint						contentWidth, contentHeight;
+	gint						borderWidth, borderHeight;
+
+	gint						contentX, contentY;
+	gint						borderX, borderY;
 
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 
+	/* Get window border size to respect it when moving window */
+	wnck_window_get_client_window_geometry(WNCK_WINDOW(inWindow), &contentX, &contentY, &contentWidth, &contentHeight);
+	wnck_window_get_geometry(WNCK_WINDOW(inWindow), &borderX, &borderY, &borderWidth, &borderHeight);
+
 	/* Get modification flags */
 	flags=0;
-	if(inX>=0) flags|=WNCK_WINDOW_CHANGE_X;
-	if(inY>=0) flags|=WNCK_WINDOW_CHANGE_Y;
-	if(inWidth>=0) flags|=WNCK_WINDOW_CHANGE_WIDTH;
-	if(inHeight>=0) flags|=WNCK_WINDOW_CHANGE_HEIGHT;
+	if(inX>=0)
+	{
+		flags|=WNCK_WINDOW_CHANGE_X;
+		inX-=(contentX-borderX);
+	}
+
+	if(inY>=0)
+	{
+		flags|=WNCK_WINDOW_CHANGE_Y;
+		inY-=(contentY-borderY);
+	}
+
+	if(inWidth>=0)
+	{
+		flags|=WNCK_WINDOW_CHANGE_WIDTH;
+		inWidth+=(borderWidth-contentWidth);
+	}
+
+	if(inHeight>=0)
+	{
+		flags|=WNCK_WINDOW_CHANGE_HEIGHT;
+		inHeight+=(borderHeight-contentHeight);
+	}
 
 	/* Set geometry */
 	wnck_window_set_geometry(WNCK_WINDOW(inWindow),
