@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-08 06:36+0200\n"
-"PO-Revision-Date: 2015-12-08 22:06+0000\n"
+"PO-Revision-Date: 2015-12-31 23:36+0000\n"
 "Last-Translator: Moo\n"
 "Language-Team: Lithuanian (http://www.transifex.com/xfdashboard/xfdashboard/language/lt/)\n"
 "MIME-Version: 1.0\n"
@@ -504,7 +504,7 @@ msgstr ""
 
 #: ../xfdashboard/actor.c:934
 msgid "Effects"
-msgstr ""
+msgstr "Efektai"
 
 #: ../xfdashboard/actor.c:935
 msgid "List of space-separated strings with IDs of effects set at this actor"
@@ -662,11 +662,11 @@ msgstr ""
 
 #: ../xfdashboard/application.c:875
 msgid "Is suspended"
-msgstr ""
+msgstr "Yra pristabdyta"
 
 #: ../xfdashboard/application.c:876
 msgid "Flag indicating if application is suspended currently"
-msgstr ""
+msgstr "Vėliavėlė, nurodanti ar programa šiuo metu yra pristabdyta"
 
 #: ../xfdashboard/application.c:882 ../xfdashboard/theme.c:576
 msgid "Theme name"
@@ -712,13 +712,13 @@ msgstr ""
 
 #: ../xfdashboard/application-database.c:1221
 msgid "Is loaded"
-msgstr ""
+msgstr "Yra įkelta"
 
 #: ../xfdashboard/application-database.c:1222
 msgid ""
 "Flag indicating if application database has been initialized and loaded "
 "successfully"
-msgstr ""
+msgstr "Vėliavėlė, nurodanti ar programos duomenų bazė buvo sėkmingai inicijuota ir įkelta"
 
 #: ../xfdashboard/applications-menu-model.c:718
 #, c-format
@@ -899,11 +899,11 @@ msgstr ""
 
 #: ../xfdashboard/background.c:441
 msgid "Background fill color"
-msgstr ""
+msgstr "Fono užpildo spalva"
 
 #: ../xfdashboard/background.c:442
 msgid "Color to fill background with"
-msgstr ""
+msgstr "Spalva, kuria užpildyti foną"
 
 #: ../xfdashboard/background.c:448
 msgid "Fill corners"
@@ -1222,11 +1222,11 @@ msgstr ""
 
 #: ../xfdashboard/button.c:1336
 msgid "Label text"
-msgstr ""
+msgstr "Etiketės tekstas"
 
 #: ../xfdashboard/button.c:1337
 msgid "Text of label"
-msgstr ""
+msgstr "Etiketės tekstas"
 
 #: ../xfdashboard/button.c:1343
 msgid "Font"
@@ -1412,11 +1412,11 @@ msgstr ""
 
 #: ../xfdashboard/desktop-app-info.c:1216
 msgid "File"
-msgstr ""
+msgstr "Failas"
 
 #: ../xfdashboard/desktop-app-info.c:1217
 msgid "The desktop file"
-msgstr ""
+msgstr "Darbalaukio failas"
 
 #: ../xfdashboard/desktop-app-info.c:1272
 #, c-format
@@ -1830,7 +1830,7 @@ msgstr ""
 #: ../xfdashboard/main.c:249
 #, c-format
 msgid "Initializing application failed with status code %d"
-msgstr ""
+msgstr "Programos inicijavimas nepavyko su būsenos kodu %d"
 
 #: ../xfdashboard/main.c:277
 msgid "Initializing clutter failed!"
@@ -2450,7 +2450,7 @@ msgstr ""
 
 #: ../xfdashboard/theme-css.c:1584
 msgid "Invalid property value"
-msgstr ""
+msgstr "Neteisinga savybės reikšmė"
 
 #: ../xfdashboard/theme-css.c:1609
 msgid "Property values must end with semi-colon"
