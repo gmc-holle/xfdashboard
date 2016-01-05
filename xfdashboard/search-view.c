@@ -1002,7 +1002,7 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 			_xfdashboard_search_view_can_do_incremental_search(providerData->lastTerms, inSearchTerms))
 		{
 			canDoIncrementalSearch=TRUE;
-			providerLastResultSet=g_object_ref(providerData->lastResultSet);
+			if(providerData->lastResultSet) providerLastResultSet=g_object_ref(providerData->lastResultSet);
 		}
 
 		/* Perform search */
@@ -1012,10 +1012,10 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 		g_debug("Performed %s search at search provider %s and got %u result items",
 					canDoIncrementalSearch==TRUE ? "incremental" : "full",
 					G_OBJECT_TYPE_NAME(providerData->provider),
-					xfdashboard_search_result_set_get_size(providerNewResultSet));
+					providerNewResultSet ? xfdashboard_search_result_set_get_size(providerNewResultSet) : 0);
 
 		/* Count number of results */
-		numberResults+=xfdashboard_search_result_set_get_size(providerNewResultSet);
+		if(providerNewResultSet) numberResults+=xfdashboard_search_result_set_get_size(providerNewResultSet);
 
 		/* Update view of search provider for new result set */
 		_xfdashboard_search_view_update_provider_container(self, providerData, providerNewResultSet);
