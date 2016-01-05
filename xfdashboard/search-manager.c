@@ -389,6 +389,11 @@ GObject* xfdashboard_search_manager_create_provider(XfdashboardSearchManager *se
 
 	/* Create search provider */
 	provider=g_object_new(data->gtype, "provider-id", data->ID, NULL);
+	if(provider &&
+		XFDASHBOARD_SEARCH_PROVIDER_GET_CLASS(provider)->initialize)
+	{
+		XFDASHBOARD_SEARCH_PROVIDER_GET_CLASS(provider)->initialize(provider);
+	}
 
 	/* Return newly created search provider */
 	return(provider);

@@ -58,6 +58,8 @@ struct _XfdashboardSearchProviderClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*initialize)(XfdashboardSearchProvider *self);
+
 	const gchar* (*get_name)(XfdashboardSearchProvider *self);
 	const gchar* (*get_icon)(XfdashboardSearchProvider *self);
 
