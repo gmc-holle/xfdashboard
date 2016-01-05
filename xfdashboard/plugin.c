@@ -456,7 +456,7 @@ static void _xfdashboard_plugin_unload(GTypeModule *inModule)
 	if(priv->module)
 	{
 		/* Close module */
-		if(g_module_close(priv->module))
+		if(!g_module_close(priv->module))
 		{
 			g_warning(_("Plugin '%s' could not be unloaded successfully: %s"),
 						priv->id ? priv->id : _("Unknown"),
