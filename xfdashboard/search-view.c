@@ -332,7 +332,7 @@ static XfdashboardSearchViewProviderData* _xfdashboard_search_view_get_provider_
 		data=(XfdashboardSearchViewProviderData*)iter->data;
 
 		if(data->provider &&
-			xfdashboard_search_provider_has_id(data->provider, inProviderID)==0)
+			xfdashboard_search_provider_has_id(data->provider, inProviderID))
 		{
 			return(_xfdashboard_search_view_provider_data_ref(data));
 		}
