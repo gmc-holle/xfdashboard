@@ -170,6 +170,7 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 		_xfdashboard_theme_clean(self);
 
 		if(themeFile) g_free(themeFile);
+		if(themeKeyFile) g_key_file_free(themeKeyFile);
 
 		/* Return FALSE to indicate error */
 		return(FALSE);
