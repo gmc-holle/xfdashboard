@@ -392,7 +392,7 @@ GObject* xfdashboard_search_manager_create_provider(XfdashboardSearchManager *se
 	if(provider &&
 		XFDASHBOARD_SEARCH_PROVIDER_GET_CLASS(provider)->initialize)
 	{
-		XFDASHBOARD_SEARCH_PROVIDER_GET_CLASS(provider)->initialize(provider);
+		XFDASHBOARD_SEARCH_PROVIDER_GET_CLASS(provider)->initialize(XFDASHBOARD_SEARCH_PROVIDER(provider));
 	}
 
 	/* Return newly created search provider */
