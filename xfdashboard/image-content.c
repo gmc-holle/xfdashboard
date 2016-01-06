@@ -1340,7 +1340,7 @@ ClutterContent* xfdashboard_image_content_new_for_gicon(GIcon *inIcon, gint inSi
 	g_return_val_if_fail(inSize>0, NULL);
 
 	/* Check if we have a cache image for icon otherwise create image instance */
-	key=g_strdup_printf("%s,%d", g_icon_to_string(inIcon), inSize);
+	key=g_strdup_printf("gicon:%s-%u,%d", G_OBJECT_TYPE_NAME(inIcon), g_icon_hash(inIcon), inSize);
 	if(!key)
 	{
 		g_warning(_("Could not create key for gicon '%s' at size %u"), g_icon_to_string(inIcon), inSize);
