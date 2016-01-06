@@ -475,7 +475,7 @@ static ClutterActor* _xfdashboard_applications_search_provider_create_result_act
 	return(actor);
 }
 
-/* Overriden virtual function: activate_result */
+/* Activate result item */
 static void _xfdashboard_applications_search_provider_activate_result(XfdashboardSearchProvider* inProvider,
 																		GVariant *inResultItem,
 																		ClutterActor *inActor,
