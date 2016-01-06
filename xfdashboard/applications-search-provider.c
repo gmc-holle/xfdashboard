@@ -309,19 +309,19 @@ static gint _xfdashboard_applications_search_provider_sort_result_set(GVariant *
 
 /* IMPLEMENTATION: XfdashboardSearchProvider */
 
-/* Overriden virtual function: get_name */
+/* Get display name for this search provider */
 static const gchar* _xfdashboard_applications_search_provider_get_name(XfdashboardSearchProvider *inProvider)
 {
 	return(_("Applications"));
 }
 
-/* Overriden virtual function: get_icon */
+/* Get icon-name for this search provider */
 static const gchar* _xfdashboard_applications_search_provider_get_icon(XfdashboardSearchProvider *inProvider)
 {
 	return("go-home");
 }
 
-/* Overriden virtual function: get_result_set */
+/* Get result set for requested search terms */
 static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get_result_set(XfdashboardSearchProvider *inProvider,
 																							const gchar **inSearchTerms,
 																							XfdashboardSearchResultSet *inPreviousResultSet)
@@ -431,7 +431,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 	return(resultSet);
 }
 
-/* Overriden virtual function: create_result_actor */
+/* Create actor for a result item of the result set returned from a search request */
 static ClutterActor* _xfdashboard_applications_search_provider_create_result_actor(XfdashboardSearchProvider *inProvider,
 																					GVariant *inResultItem)
 {
