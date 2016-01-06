@@ -86,8 +86,10 @@ GType xfdashboard_button_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_button_new(void);
 ClutterActor* xfdashboard_button_new_with_text(const gchar *inText);
-ClutterActor* xfdashboard_button_new_with_icon(const gchar *inIconName);
-ClutterActor* xfdashboard_button_new_full(const gchar *inIconName, const gchar *inText);
+ClutterActor* xfdashboard_button_new_with_icon_name(const gchar *inIconName);
+ClutterActor* xfdashboard_button_new_with_gicon(GIcon *inIcon);
+ClutterActor* xfdashboard_button_new_full_with_icon_name(const gchar *inIconName, const gchar *inText);
+ClutterActor* xfdashboard_button_new_full_with_gicon(GIcon *inIcon, const gchar *inText);
 
 /* General functions */
 gfloat xfdashboard_button_get_padding(XfdashboardButton *self);
@@ -100,8 +102,11 @@ XfdashboardButtonStyle xfdashboard_button_get_style(XfdashboardButton *self);
 void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardButtonStyle inStyle);
 
 /* Icon functions */
-const gchar* xfdashboard_button_get_icon(XfdashboardButton *self);
-void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconName);
+const gchar* xfdashboard_button_get_icon_name(XfdashboardButton *self);
+void xfdashboard_button_set_icon_name(XfdashboardButton *self, const gchar *inIconName);
+
+GIcon* xfdashboard_button_get_gicon(XfdashboardButton *self);
+void xfdashboard_button_set_gicon(XfdashboardButton *self, GIcon *inIcon);
 
 ClutterImage* xfdashboard_button_get_icon_image(XfdashboardButton *self);
 void xfdashboard_button_set_icon_image(XfdashboardButton *self, ClutterImage *inIconImage);

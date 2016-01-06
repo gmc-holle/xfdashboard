@@ -36,6 +36,15 @@
 #include "click-action.h"
 #include "image-content.h"
 
+/* Forward declarations */
+typedef enum 
+{
+	XFDASHBOARD_BUTTON_ICON_TYPE_ICON_NONE,
+	XFDASHBOARD_BUTTON_ICON_TYPE_ICON_NAME,
+	XFDASHBOARD_BUTTON_ICON_TYPE_ICON_IMAGE,
+	XFDASHBOARD_BUTTON_ICON_TYPE_ICON_GICON
+} XfdashboardButtonIconType;
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardButton,
 				xfdashboard_button,
@@ -48,28 +57,30 @@ G_DEFINE_TYPE(XfdashboardButton,
 struct _XfdashboardButtonPrivate
 {
 	/* Properties related */
-	gfloat					padding;
-	gfloat					spacing;
-	XfdashboardButtonStyle	style;
+	gfloat						padding;
+	gfloat						spacing;
+	XfdashboardButtonStyle		style;
 
-	gchar					*iconName;
-	ClutterImage			*iconImage;
-	gboolean				iconSyncSize;
-	gint					iconSize;
-	XfdashboardOrientation	iconOrientation;
+	gchar						*iconName;
+	ClutterImage				*iconImage;
+	GIcon						*iconGIcon;
+	gboolean					iconSyncSize;
+	gint						iconSize;
+	XfdashboardOrientation		iconOrientation;
 
-	gchar					*font;
-	ClutterColor			*labelColor;
-	PangoEllipsizeMode		labelEllipsize;
-	gboolean				isSingleLineMode;
-	PangoAlignment			textJustification;
+	gchar						*font;
+	ClutterColor				*labelColor;
+	PangoEllipsizeMode			labelEllipsize;
+	gboolean					isSingleLineMode;
+	PangoAlignment				textJustification;
 
 	/* Instance related */
-	ClutterActor			*actorIcon;
-	ClutterText				*actorLabel;
-	ClutterAction			*clickAction;
+	ClutterActor				*actorIcon;
+	ClutterText					*actorLabel;
+	ClutterAction				*clickAction;
 
-	gboolean				iconNameLoaded;
+	gboolean					iconLoaded;
+	XfdashboardButtonIconType	iconType;
 };
 
 /* Properties */
@@ -83,6 +94,7 @@ enum
 
 	PROP_ICON_NAME,
 	PROP_ICON_IMAGE,
+	PROP_ICON_GICON,
 	PROP_ICON_SYNC_SIZE,
 	PROP_ICON_SIZE,
 	PROP_ICON_ORIENTATION,
@@ -653,22 +665,41 @@ static void _xfdashboard_button_on_mapped_changed(XfdashboardButton *self,
 	 * loaded yet then set icon image now
 	 */
 	if(CLUTTER_ACTOR_IS_MAPPED(self) &&
-		priv->iconNameLoaded==FALSE &&
-		priv->iconName)
+		priv->iconLoaded==FALSE)
 	{
-		ClutterContent			*image;
+		if(priv->iconType==XFDASHBOARD_BUTTON_ICON_TYPE_ICON_NAME)
+		{
+			ClutterContent			*image;
 
-		/* Set icon image */
-		image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
-		clutter_actor_set_content(priv->actorIcon, image);
-		g_object_unref(image);
+			/* Set icon image */
+			image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
+			clutter_actor_set_content(priv->actorIcon, image);
+			g_object_unref(image);
 
-		priv->iconNameLoaded=TRUE;
+			priv->iconLoaded=TRUE;
 
-		/* Calculate icon size as image content is now available */
-		_xfdashboard_button_update_icon_image_size(self);
+			/* Calculate icon size as image content is now available */
+			_xfdashboard_button_update_icon_image_size(self);
 
-		g_debug("Loaded and set deferred image '%s' at size %d for %s@%p ", priv->iconName, priv->iconSize, G_OBJECT_TYPE_NAME(self), self);
+			g_debug("Loaded and set deferred image '%s' at size %d for %s@%p ", priv->iconName, priv->iconSize, G_OBJECT_TYPE_NAME(self), self);
+		}
+
+		if(priv->iconType==XFDASHBOARD_BUTTON_ICON_TYPE_ICON_GICON)
+		{
+			ClutterContent			*image;
+
+			/* Set icon image */
+			image=xfdashboard_image_content_new_for_gicon(priv->iconGIcon, priv->iconSize);
+			clutter_actor_set_content(priv->actorIcon, image);
+			g_object_unref(image);
+
+			priv->iconLoaded=TRUE;
+
+			/* Calculate icon size as image content is now available */
+			_xfdashboard_button_update_icon_image_size(self);
+
+			g_debug("Loaded and set deferred image '%s' at size %d for %s@%p ", priv->iconName, priv->iconSize, G_OBJECT_TYPE_NAME(self), self);
+		}
 	}
 }
 
@@ -1123,7 +1154,11 @@ static void _xfdashboard_button_set_property(GObject *inObject,
 			break;
 
 		case PROP_ICON_NAME:
-			xfdashboard_button_set_icon(self, g_value_get_string(inValue));
+			xfdashboard_button_set_icon_name(self, g_value_get_string(inValue));
+			break;
+
+		case PROP_ICON_GICON:
+			xfdashboard_button_set_gicon(self, G_ICON(g_value_get_object(inValue)));
 			break;
 
 		case PROP_ICON_IMAGE:
@@ -1196,6 +1231,10 @@ static void _xfdashboard_button_get_property(GObject *inObject,
 
 		case PROP_ICON_NAME:
 			g_value_set_string(outValue, priv->iconName);
+			break;
+
+		case PROP_ICON_GICON:
+			g_value_set_object(outValue, priv->iconGIcon);
 			break;
 
 		case PROP_ICON_IMAGE:
@@ -1299,6 +1338,13 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 							_("Icon name"),
 							_("Themed icon name or file name of icon"),
 							N_(""),
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardButtonProperties[PROP_ICON_GICON]=
+		g_param_spec_object("icon-gicon",
+							_("Icon GIcon"),
+							_("The GIcon of icon"),
+							G_TYPE_ICON,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardButtonProperties[PROP_ICON_IMAGE]=
@@ -1431,6 +1477,7 @@ static void xfdashboard_button_init(XfdashboardButton *self)
 	priv->labelColor=NULL;
 	priv->labelEllipsize=-1;
 	priv->isSingleLineMode=TRUE;
+	priv->iconType=XFDASHBOARD_BUTTON_ICON_TYPE_ICON_NONE;
 
 	/* Create actors */
 	priv->actorIcon=clutter_actor_new();
@@ -1471,7 +1518,7 @@ ClutterActor* xfdashboard_button_new_with_text(const gchar *inText)
 						NULL));
 }
 
-ClutterActor* xfdashboard_button_new_with_icon(const gchar *inIconName)
+ClutterActor* xfdashboard_button_new_with_icon_name(const gchar *inIconName)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
 						"icon-name", inIconName,
@@ -1479,11 +1526,28 @@ ClutterActor* xfdashboard_button_new_with_icon(const gchar *inIconName)
 						NULL));
 }
 
-ClutterActor* xfdashboard_button_new_full(const gchar *inIconName, const gchar *inText)
+ClutterActor* xfdashboard_button_new_with_gicon(GIcon *inIcon)
+{
+	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
+						"icon-gicon", inIcon,
+						"button-style", XFDASHBOARD_BUTTON_STYLE_ICON,
+						NULL));
+}
+
+ClutterActor* xfdashboard_button_new_full_with_icon_name(const gchar *inIconName, const gchar *inText)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
 						"text", inText,
 						"icon-name", inIconName,
+						"button-style", XFDASHBOARD_BUTTON_STYLE_BOTH,
+						NULL));
+}
+
+ClutterActor* xfdashboard_button_new_full_with_gicon(GIcon *inIcon, const gchar *inText)
+{
+	return(g_object_new(XFDASHBOARD_TYPE_BUTTON,
+						"text", inText,
+						"icon-gicon", inIcon,
 						"button-style", XFDASHBOARD_BUTTON_STYLE_BOTH,
 						NULL));
 }
@@ -1594,14 +1658,14 @@ void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardButt
 }
 
 /* Get/set icon */
-const gchar* xfdashboard_button_get_icon(XfdashboardButton *self)
+const gchar* xfdashboard_button_get_icon_name(XfdashboardButton *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), NULL);
 
 	return(self->priv->iconName);
 }
 
-void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconName)
+void xfdashboard_button_set_icon_name(XfdashboardButton *self, const gchar *inIconName)
 {
 	XfdashboardButtonPrivate	*priv;
 	ClutterContent				*image;
@@ -1612,19 +1676,30 @@ void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconNam
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->iconImage || g_strcmp0(priv->iconName, inIconName)!=0)
+	if(priv->iconType!=XFDASHBOARD_BUTTON_ICON_TYPE_ICON_NAME ||
+		g_strcmp0(priv->iconName, inIconName)!=0)
 	{
 		/* Set value */
-		if(priv->iconName) g_free(priv->iconName);
-		priv->iconName=g_strdup(inIconName);
-		priv->iconNameLoaded=FALSE;
+		if(priv->iconName)
+		{
+			g_free(priv->iconName);
+			priv->iconName=NULL;
+		}
+
+		if(priv->iconGIcon)
+		{
+			g_object_unref(priv->iconGIcon);
+			priv->iconGIcon=NULL;
+		}
 
 		if(priv->iconImage)
 		{
-			clutter_actor_set_content(priv->actorIcon, NULL);
 			g_object_unref(priv->iconImage);
 			priv->iconImage=NULL;
 		}
+
+		priv->iconName=g_strdup(inIconName);
+		priv->iconLoaded=FALSE;
 
 		if(CLUTTER_ACTOR_IS_MAPPED(self))
 		{
@@ -1633,13 +1708,79 @@ void xfdashboard_button_set_icon(XfdashboardButton *self, const gchar *inIconNam
 			clutter_actor_set_content(priv->actorIcon, image);
 			g_object_unref(image);
 
-			priv->iconNameLoaded=TRUE;
+			priv->iconLoaded=TRUE;
 		}
+			else clutter_actor_set_content(priv->actorIcon, NULL);
 
 		_xfdashboard_button_update_icon_image_size(self);
 
+		priv->iconType=XFDASHBOARD_BUTTON_ICON_TYPE_ICON_NAME;
+
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_ICON_NAME]);
+	}
+}
+
+GIcon* xfdashboard_button_get_gicon(XfdashboardButton *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_BUTTON(self), NULL);
+
+	return(self->priv->iconGIcon);
+}
+
+void xfdashboard_button_set_gicon(XfdashboardButton *self, GIcon *inIcon)
+{
+	XfdashboardButtonPrivate	*priv;
+	ClutterContent				*image;
+
+	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
+	g_return_if_fail(G_IS_ICON(inIcon));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->iconType!=XFDASHBOARD_BUTTON_ICON_TYPE_ICON_GICON ||
+		!g_icon_equal(priv->iconGIcon, inIcon))
+	{
+		/* Set value */
+		if(priv->iconName)
+		{
+			g_free(priv->iconName);
+			priv->iconName=NULL;
+		}
+
+		if(priv->iconGIcon)
+		{
+			g_object_unref(priv->iconGIcon);
+			priv->iconGIcon=NULL;
+		}
+
+		if(priv->iconImage)
+		{
+			g_object_unref(priv->iconImage);
+			priv->iconImage=NULL;
+		}
+
+		priv->iconGIcon=G_ICON(g_object_ref(inIcon));
+		priv->iconLoaded=FALSE;
+
+		if(CLUTTER_ACTOR_IS_MAPPED(self))
+		{
+			/* Actor is mapped so we cannot defer loading and setting image */
+			image=xfdashboard_image_content_new_for_gicon(priv->iconGIcon, priv->iconSize);
+			clutter_actor_set_content(priv->actorIcon, image);
+			g_object_unref(image);
+
+			priv->iconLoaded=TRUE;
+		}
+			else clutter_actor_set_content(priv->actorIcon, NULL);
+
+		_xfdashboard_button_update_icon_image_size(self);
+
+		priv->iconType=XFDASHBOARD_BUTTON_ICON_TYPE_ICON_GICON;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_ICON_GICON]);
 	}
 }
 
@@ -1660,23 +1801,35 @@ void xfdashboard_button_set_icon_image(XfdashboardButton *self, ClutterImage *in
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->iconName || inIconImage!=priv->iconImage)
+	if(priv->iconType!=XFDASHBOARD_BUTTON_ICON_TYPE_ICON_IMAGE ||
+		inIconImage!=priv->iconImage)
 	{
 		/* Set value */
-		if(priv->iconName) g_free(priv->iconName);
-		priv->iconName=NULL;
-		priv->iconNameLoaded=FALSE;
+		if(priv->iconName)
+		{
+			g_free(priv->iconName);
+			priv->iconName=NULL;
+		}
+
+		if(priv->iconGIcon)
+		{
+			g_object_unref(priv->iconGIcon);
+			priv->iconGIcon=NULL;
+		}
 
 		if(priv->iconImage)
 		{
-			clutter_actor_set_content(CLUTTER_ACTOR(priv->actorIcon), NULL);
 			g_object_unref(priv->iconImage);
+			priv->iconImage=NULL;
 		}
 
 		priv->iconImage=g_object_ref(inIconImage);
+		priv->iconLoaded=TRUE;
 		clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(priv->iconImage));
 
 		_xfdashboard_button_update_icon_image_size(self);
+
+		priv->iconType=XFDASHBOARD_BUTTON_ICON_TYPE_ICON_IMAGE;
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardButtonProperties[PROP_ICON_IMAGE]);
@@ -1706,11 +1859,20 @@ void xfdashboard_button_set_icon_size(XfdashboardButton *self, gint inSize)
 		/* Set value */
 		priv->iconSize=inSize;
 
-		if(priv->iconName)
+		if(priv->iconType==XFDASHBOARD_BUTTON_ICON_TYPE_ICON_NAME)
 		{
 			ClutterContent		*image;
 
 			image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
+			clutter_actor_set_content(priv->actorIcon, image);
+			g_object_unref(image);
+		}
+
+		if(priv->iconType==XFDASHBOARD_BUTTON_ICON_TYPE_ICON_GICON)
+		{
+			ClutterContent		*image;
+
+			image=xfdashboard_image_content_new_for_gicon(priv->iconGIcon, priv->iconSize);
 			clutter_actor_set_content(priv->actorIcon, image);
 			g_object_unref(image);
 		}

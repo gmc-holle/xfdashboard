@@ -125,33 +125,24 @@ static void _xfdashboard_application_button_update_text(XfdashboardApplicationBu
 static void _xfdashboard_application_button_update_icon(XfdashboardApplicationButton *self)
 {
 	XfdashboardApplicationButtonPrivate		*priv;
-	gchar									*iconName;
+	GIcon									*gicon;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self));
 
 	priv=self->priv;
-	iconName=NULL;
+	gicon=NULL;
 
-	/* Get icon */
+	/* Get icon and set up button icon*/
 	if(priv->appInfo)
 	{
-		GIcon								*gicon;
-
 		gicon=g_app_info_get_icon(G_APP_INFO(priv->appInfo));
-		if(gicon)
-		{
-			iconName=g_icon_to_string(gicon);
-			g_object_unref(gicon);
-		}
 	}
 
-	if(!iconName) iconName=g_strdup("image-missing");
-
-	/* Set up button and release allocated resources */
-	if(iconName) xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(self), iconName);
+	if(gicon) xfdashboard_button_set_gicon(XFDASHBOARD_BUTTON(self), gicon);
+		else xfdashboard_button_set_icon_name(XFDASHBOARD_BUTTON(self), "image-missing");
 
 	/* Release allocated resources */
-	if(iconName) g_free(iconName);
+	if(gicon) g_object_unref(gicon);
 }
 
 /* Update running state of button actor */

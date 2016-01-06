@@ -170,7 +170,7 @@ static void _xfdashboard_view_selector_on_view_icon_changed(XfdashboardView *inV
 	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(inUserData));
 
 	button=XFDASHBOARD_BUTTON(inUserData);
-	xfdashboard_button_set_icon(button, xfdashboard_view_get_icon(inView));
+	xfdashboard_button_set_icon_name(button, xfdashboard_view_get_icon(inView));
 }
 
 /* Called when the name of a view has changed */

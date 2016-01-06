@@ -1572,7 +1572,7 @@ void xfdashboard_text_box_set_primary_icon(XfdashboardTextBox *self, const gchar
 		{
 			/* Load and set new icon */
 			priv->primaryIconName=g_strdup(inIconName);
-			xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(priv->actorPrimaryIcon), priv->primaryIconName);
+			xfdashboard_button_set_icon_name(XFDASHBOARD_BUTTON(priv->actorPrimaryIcon), priv->primaryIconName);
 
 			/* Show icon */
 			priv->showPrimaryIcon=TRUE;
@@ -1623,7 +1623,7 @@ void xfdashboard_text_box_set_secondary_icon(XfdashboardTextBox *self, const gch
 		{
 			/* Load and set new icon */
 			priv->secondaryIconName=g_strdup(inIconName);
-			xfdashboard_button_set_icon(XFDASHBOARD_BUTTON(priv->actorSecondaryIcon), priv->secondaryIconName);
+			xfdashboard_button_set_icon_name(XFDASHBOARD_BUTTON(priv->actorSecondaryIcon), priv->secondaryIconName);
 
 			/* Show icon */
 			priv->showSecondaryIcon=TRUE;
