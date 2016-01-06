@@ -1291,7 +1291,7 @@ void xfdashboard_image_content_init(XfdashboardImageContent *self)
 /* Create new instance or use cached one for themed icon name or absolute icon filename.
  * If icon does not exists a themed fallback icon will be used.
  * If even the themed fallback icon cannot be found we set an empty image.
- * In all cases a valid ClutterImage object is returned must be unreffed with
+ * In all cases a valid ClutterImage object is returned and must be unreffed with
  * g_object_unref().
  */
 ClutterContent* xfdashboard_image_content_new_for_icon_name(const gchar *inIconName, gint inSize)
@@ -1328,7 +1328,7 @@ ClutterContent* xfdashboard_image_content_new_for_icon_name(const gchar *inIconN
 /* Create new instance or use cached one for GIcon object.
  * If icon does not exists a themed fallback icon will be used.
  * If even the themed fallback icon cannot be found we set an empty image.
- * In all cases a valid ClutterImage object is returned must be unreffed with
+ * In all cases a valid ClutterImage object is returned and must be unreffed with
  * g_object_unref().
  */
 ClutterContent* xfdashboard_image_content_new_for_gicon(GIcon *inIcon, gint inSize)
