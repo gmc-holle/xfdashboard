@@ -476,25 +476,20 @@ static ClutterActor* _xfdashboard_applications_search_provider_create_result_act
 }
 
 /* Activate result item */
-static void _xfdashboard_applications_search_provider_activate_result(XfdashboardSearchProvider* inProvider,
-																		GVariant *inResultItem,
-																		ClutterActor *inActor,
-																		const gchar **inSearchTerms)
+static gboolean _xfdashboard_applications_search_provider_activate_result(XfdashboardSearchProvider* inProvider,
+																			GVariant *inResultItem,
+																			ClutterActor *inActor,
+																			const gchar **inSearchTerms)
 {
 	XfdashboardApplicationButton		*button;
 
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(inProvider));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inActor));
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(inProvider), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inActor), FALSE);
 
 	button=XFDASHBOARD_APPLICATION_BUTTON(inActor);
 
 	/* Launch application */
-	if(xfdashboard_application_button_execute(button, NULL))
-	{
-		/* Launching application seems to be successfuly so quit application */
-		xfdashboard_application_quit();
-		return;
-	}
+	return(xfdashboard_application_button_execute(button, NULL));
 }
 
 /* IMPLEMENTATION: GObject */

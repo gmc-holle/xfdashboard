@@ -467,6 +467,7 @@ static void _xfdashboard_search_view_on_provider_item_actor_clicked(XfdashboardC
 	GVariant							*key;
 	ClutterActor						*value;
 	const gchar							**searchTerms;
+	gboolean							success;
 
 	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
 	g_return_if_fail(inUserData);
@@ -491,10 +492,15 @@ static void _xfdashboard_search_view_on_provider_item_actor_clicked(XfdashboardC
 			if(priv->lastTerms) searchTerms=(const gchar**)priv->lastTerms->termList;
 
 			/* Tell provider that a result item was clicked */
-			xfdashboard_search_provider_activate_result(providerData->provider,
-															key,
-															inActor,
-															searchTerms);
+			success=xfdashboard_search_provider_activate_result(providerData->provider,
+																key,
+																inActor,
+																searchTerms);
+			if(success)
+			{
+				/* Activating result item seems to be successfuly so quit application */
+				xfdashboard_application_quit();
+			}
 
 			/* All done so return here */
 			return;
@@ -510,6 +516,7 @@ static void _xfdashboard_search_view_on_provider_icon_clicked(XfdashboardSearchR
 	XfdashboardSearchViewPrivate		*priv;
 	XfdashboardSearchViewProviderData	*providerData;
 	const gchar							**searchTerms;
+	gboolean							success;
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(inContainer));
 	g_return_if_fail(inUserData);
@@ -525,7 +532,12 @@ static void _xfdashboard_search_view_on_provider_icon_clicked(XfdashboardSearchR
 	if(priv->lastTerms) searchTerms=(const gchar**)priv->lastTerms->termList;
 
 	/* Tell provider to launch search */
-	xfdashboard_search_provider_launch_search(providerData->provider, searchTerms);
+	success=xfdashboard_search_provider_launch_search(providerData->provider, searchTerms);
+	if(success)
+	{
+		/* Activating result item seems to be successfuly so quit application */
+		xfdashboard_application_quit();
+	}
 }
 
 /* A container of a provider is going to be destroyed */

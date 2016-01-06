@@ -309,8 +309,8 @@ ClutterActor* xfdashboard_search_provider_create_result_actor(XfdashboardSearchP
 /* Launch search in external service or application the search provider relies on
  * with provided list of search terms.
  */
-void xfdashboard_search_provider_launch_search(XfdashboardSearchProvider *self,
-												const gchar **inSearchTerms)
+gboolean xfdashboard_search_provider_launch_search(XfdashboardSearchProvider *self,
+													const gchar **inSearchTerms)
 {
 	XfdashboardSearchProviderClass	*klass;
 
@@ -322,19 +322,19 @@ void xfdashboard_search_provider_launch_search(XfdashboardSearchProvider *self,
 	/* Launch search by search provider */
 	if(klass->launch_search)
 	{
-		klass->launch_search(self, inSearchTerms);
-		return;
+		return(klass->launch_search(self, inSearchTerms));
 	}
 
 	/* If we get here the virtual function was not overridden */
 	XFDASHBOARD_SEARCH_PROVIDER_NOTE_NOT_IMPLEMENTED(self, "launch_search");
+	return(FALSE);
 }
 
 /* A result item actor was clicked so ask search provider to handle it */
-void xfdashboard_search_provider_activate_result(XfdashboardSearchProvider* self,
-													GVariant *inResultItem,
-													ClutterActor *inActor,
-													const gchar **inSearchTerms)
+gboolean xfdashboard_search_provider_activate_result(XfdashboardSearchProvider* self,
+														GVariant *inResultItem,
+														ClutterActor *inActor,
+														const gchar **inSearchTerms)
 {
 	XfdashboardSearchProviderClass	*klass;
 
@@ -348,10 +348,10 @@ void xfdashboard_search_provider_activate_result(XfdashboardSearchProvider* self
 	/* Handle click action at result item actor by search provider */
 	if(klass->activate_result)
 	{
-		klass->activate_result(self, inResultItem, inActor, inSearchTerms);
-		return;
+		return(klass->activate_result(self, inResultItem, inActor, inSearchTerms));
 	}
 
 	/* If we get here the virtual function was not overridden */
 	XFDASHBOARD_SEARCH_PROVIDER_NOTE_NOT_IMPLEMENTED(self, "activate_result");
+	return(FALSE);
 }
