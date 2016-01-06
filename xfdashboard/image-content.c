@@ -1303,7 +1303,7 @@ ClutterContent* xfdashboard_image_content_new_for_icon_name(const gchar *inIconN
 	g_return_val_if_fail(inSize>0, NULL);
 
 	/* Check if we have a cache image for icon otherwise create image instance */
-	key=g_strdup_printf("%s,%d", inIconName, inSize);
+	key=g_strdup_printf("icon-name:%s,%d", inIconName, inSize);
 	if(!key)
 	{
 		g_warning(_("Could not create key for icon name '%s' at size %u"), inIconName, inSize);
