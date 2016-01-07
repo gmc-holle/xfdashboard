@@ -559,7 +559,7 @@ static void _xfdashboard_search_view_on_provider_container_destroyed(ClutterActo
 	/* Move selection to first selectable actor at next available container
 	 * if this provider whose container to destroy is the currently selected one.
 	 * This avoids reselecting the next available actor in container when
-	 * we container's children will get destroyed (one of the actors is the
+	 * the container's children will get destroyed (one of the actors is the
 	 * current selection and from then on reselection will happen.)
 	 */
 	if(priv->selectionProvider==providerData)
