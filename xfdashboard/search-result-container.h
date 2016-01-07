@@ -66,19 +66,6 @@ struct _XfdashboardSearchResultContainerClass
 };
 
 /* Public API */
-typedef enum /*< skip,prefix=XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE >*/
-{
-	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_BEGIN_END,	/* Set to first or last item */
-	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_COLUMN,		/* Arrow left or arrow right key */
-	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_STEP_SIZE_ROW			/* Arrow up or arrow down key */
-} XfdashboardSearchResultContainerSelectionStepSize;
-
-typedef enum /*< skip,prefix=XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTIO >*/
-{
-	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_FORWARD,
-	XFDASHBOARD_SEARCH_RESULT_CONTAINER_SELECTION_DIRECTION_BACKWARD
-} XfdashboardSearchResultContainerSelectionDirection;
-
 GType xfdashboard_search_result_container_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_search_result_container_new(XfdashboardSearchProvider *inProvider);
