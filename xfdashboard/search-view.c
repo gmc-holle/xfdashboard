@@ -1029,12 +1029,12 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 		/* Count number of results */
 		if(providerNewResultSet) numberResults+=xfdashboard_search_result_set_get_size(providerNewResultSet);
 
-		/* Update view of search provider for new result set */
-		_xfdashboard_search_view_update_provider_container(self, providerData, providerNewResultSet);
-
 		/* Remember new search term as last one at search provider */
 		if(providerData->lastTerms) _xfdashboard_search_view_search_terms_unref(providerData->lastTerms);
 		providerData->lastTerms=_xfdashboard_search_view_search_terms_ref(inSearchTerms);
+
+		/* Update view of search provider for new result set */
+		_xfdashboard_search_view_update_provider_container(self, providerData, providerNewResultSet);
 
 		/* Release allocated resources */
 		if(providerLastResultSet) g_object_unref(providerLastResultSet);
