@@ -898,8 +898,6 @@ static gboolean _xfdashboard_search_view_focusable_can_focus(XfdashboardFocusabl
 	/* If this view is not enabled it is not focusable */
 	if(!xfdashboard_view_get_enabled(XFDASHBOARD_VIEW(self))) return(FALSE);
 
-	// TODO: We can only focus this view if at least one provider has an existing container
-
 	/* If we get here this actor can be focused */
 	return(TRUE);
 }
