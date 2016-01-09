@@ -63,6 +63,7 @@ struct _XfdashboardSearchResultContainerClass
 	/*< public >*/
 	/* Virtual functions */
 	void (*icon_clicked)(XfdashboardSearchResultContainer *self);
+	void (*item_clicked)(XfdashboardSearchResultContainer *self, GVariant *inItem, ClutterActor *inActor);
 };
 
 /* Public API */
@@ -85,10 +86,6 @@ void xfdashboard_search_result_container_set_spacing(XfdashboardSearchResultCont
 gfloat xfdashboard_search_result_container_get_padding(XfdashboardSearchResultContainer *self);
 void xfdashboard_search_result_container_set_padding(XfdashboardSearchResultContainer *self, const gfloat inPadding);
 
-void xfdashboard_search_result_container_add_result_actor(XfdashboardSearchResultContainer *self,
-															ClutterActor *inResultActor,
-															ClutterActor *inInsertAfter);
-
 void xfdashboard_search_result_container_set_focus(XfdashboardSearchResultContainer *self, gboolean inSetFocus);
 
 ClutterActor* xfdashboard_search_result_container_get_selection(XfdashboardSearchResultContainer *self);
@@ -98,6 +95,10 @@ ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSear
 																	ClutterActor *inSelection,
 																	XfdashboardSelectionTarget inDirection,
 																	XfdashboardView *inView);
+void xfdashboard_search_result_container_activate_selection(XfdashboardSearchResultContainer *self,
+																	ClutterActor *inSelection);
+
+void xfdashboard_search_result_container_update(XfdashboardSearchResultContainer *self, XfdashboardSearchResultSet *inResults);
 
 G_END_DECLS
 

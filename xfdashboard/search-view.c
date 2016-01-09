@@ -34,8 +34,6 @@
 #include "focusable.h"
 #include "utils.h"
 #include "search-result-container.h"
-#include "click-action.h"
-#include "drag-action.h"
 #include "focus-manager.h"
 #include "enums.h"
 #include "application.h"
@@ -101,7 +99,6 @@ struct _XfdashboardSearchViewProviderData
 	XfdashboardSearchResultSet			*lastResultSet;
 
 	ClutterActor						*container;
-	GHashTable							*mapping;
 };
 
 struct _XfdashboardSearchViewSearchTerms
@@ -135,40 +132,6 @@ static gboolean _xfdashboard_search_view_on_repaint_after_update_callback(gpoint
 	/* Do not call this callback again */
 	priv->repaintID=0;
 	return(G_SOURCE_REMOVE);
-}
-
-/* Helper to clean up a search provider's container by disconnecting all signals to
- * its result items' actors and clean mapping hash table between actors and
- * result items.
- */
-static void _xfdashboard_search_view_clean_provider_container(XfdashboardSearchViewProviderData *inProviderData)
-{
-	g_return_if_fail(inProviderData);
-
-	/* Iterate through mapping, if available, and for each key disconnect signal
-	 * from the value (which is a ClutterActor) and take a also an additional
-	 * reference at actor because removing it from mapping hash table will unreference
-	 * it again.
-	 */
-	if(inProviderData->mapping)
-	{
-		GHashTableIter		hashIter;
-		GVariant			*key;
-		ClutterActor		*value;
-
-		g_hash_table_iter_init(&hashIter, inProviderData->mapping);
-		while(g_hash_table_iter_next(&hashIter, (gpointer*)&key, (gpointer*)&value))
-		{
-			/* First disconnect signal handlers from actor before modifying mapping hash table */
-			g_signal_handlers_disconnect_by_data(value, inProviderData);
-
-			/* Take a reference on value (it is the destroyed actor) because removing
-			 * key from mapping causes unrefencing key and value.
-			 */
-			g_object_ref(value);
-			g_hash_table_iter_remove(&hashIter);
-		}
-	}
 }
 
 /* Create search term data for a search string */
@@ -247,10 +210,6 @@ static XfdashboardSearchViewProviderData* _xfdashboard_search_view_provider_data
 	data->lastTerms=NULL;
 	data->lastResultSet=NULL;
 	data->container=NULL;
-	data->mapping=g_hash_table_new_full(g_variant_hash,
-										g_variant_equal,
-										(GDestroyNotify)g_variant_unref,
-										(GDestroyNotify)g_object_unref);
 
 	return(data);
 }
@@ -272,9 +231,6 @@ static void _xfdashboard_search_view_provider_data_free(XfdashboardSearchViewPro
 	}
 #endif
 
-	/* Clean provider's container and move focus if necessary */
-	_xfdashboard_search_view_clean_provider_container(inData);
-
 	/* Destroy container */
 	if(inData->container)
 	{
@@ -287,7 +243,6 @@ static void _xfdashboard_search_view_provider_data_free(XfdashboardSearchViewPro
 	}
 
 	/* Release allocated resources */
-	if(inData->mapping) g_hash_table_unref(inData->mapping);
 	if(inData->lastResultSet) g_object_unref(inData->lastResultSet);
 	if(inData->lastTerms) _xfdashboard_search_view_search_terms_unref(inData->lastTerms);
 	if(inData->provider) g_object_unref(inData->provider);
@@ -456,55 +411,41 @@ static void _xfdashboard_search_view_on_search_provider_unregistered(Xfdashboard
 }
 
 /* A result item actor was clicked */
-static void _xfdashboard_search_view_on_provider_item_actor_clicked(XfdashboardClickAction *inAction,
-																	ClutterActor *inActor,
-																	gpointer inUserData)
+static void _xfdashboard_search_view_on_result_item_clicked(XfdashboardSearchResultContainer *inContainer,
+															GVariant *inItem,
+															ClutterActor *inActor,
+															gpointer inUserData)
 {
 	XfdashboardSearchView				*self;
 	XfdashboardSearchViewPrivate		*priv;
 	XfdashboardSearchViewProviderData	*providerData;
-	GHashTableIter						iter;
-	GVariant							*key;
-	ClutterActor						*value;
 	const gchar							**searchTerms;
 	gboolean							success;
 
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(inContainer));
+	g_return_if_fail(inItem);
 	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
 	g_return_if_fail(inUserData);
 
 	providerData=(XfdashboardSearchViewProviderData*)inUserData;
 
-	/* Iterate through mapping and at first key whose value matching actor
-	 * tell provider to activate item.
-	 */
-	g_hash_table_iter_init(&iter, providerData->mapping);
-	while(g_hash_table_iter_next(&iter, (gpointer*)&key, (gpointer*)&value))
+	/* Get search view and private data of view */
+	self=providerData->view;
+	priv=self->priv;
+
+	/* Get search terms to pass them to search provider */
+	searchTerms=NULL;
+	if(priv->lastTerms) searchTerms=(const gchar**)priv->lastTerms->termList;
+
+	/* Tell provider to launch search */
+	success=xfdashboard_search_provider_activate_result(providerData->provider,
+														inItem,
+														inActor,
+														searchTerms);
+	if(success)
 	{
-		/* If value of key iterated matches actor activate item */
-		if(value==inActor)
-		{
-			/* Get search view and private data of view */
-			self=providerData->view;
-			priv=self->priv;
-
-			/* Get search terms to pass them to search provider */
-			searchTerms=NULL;
-			if(priv->lastTerms) searchTerms=(const gchar**)priv->lastTerms->termList;
-
-			/* Tell provider that a result item was clicked */
-			success=xfdashboard_search_provider_activate_result(providerData->provider,
-																key,
-																inActor,
-																searchTerms);
-			if(success)
-			{
-				/* Activating result item seems to be successfuly so quit application */
-				xfdashboard_application_quit();
-			}
-
-			/* All done so return here */
-			return;
-		}
+		/* Activating result item seems to be successfuly so quit application */
+		xfdashboard_application_quit();
 	}
 }
 
@@ -655,130 +596,13 @@ static void _xfdashboard_search_view_on_provider_container_destroyed(ClutterActo
 		xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), newSelection);
 	}
 
-	/* Clean provider's container and move focus if necessary */
-	_xfdashboard_search_view_clean_provider_container(providerData);
-
 	/* Container will be destroyed so unset pointer to it at provider */
 	providerData->container=NULL;
-}
-
-/* A result item actor is going to be destroyed */
-static void _xfdashboard_search_view_on_provider_item_actor_destroy(ClutterActor *inActor, gpointer inUserData)
-{
-	XfdashboardSearchViewProviderData	*providerData;
-	GHashTableIter						iter;
-	GVariant							*key;
-	ClutterActor						*value;
-
-	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
-	g_return_if_fail(inUserData);
-
-	providerData=(XfdashboardSearchViewProviderData*)inUserData;
-
-	/* First disconnect signal handlers from actor before modifying mapping hash table */
-	g_signal_handlers_disconnect_by_data(inActor, providerData);
-
-	/* Iterate through mapping and remove each key whose value matches actor
-	 * going to be destroyed and remove it from mapping hash table.
-	 */
-	g_hash_table_iter_init(&iter, providerData->mapping);
-	while(g_hash_table_iter_next(&iter, (gpointer*)&key, (gpointer*)&value))
-	{
-		/* If value of key iterated matches destroyed actor remove it from mapping */
-		if(value==inActor)
-		{
-			/* Take a reference on value (it is the destroyed actor) because removing
-			 * key from mapping causes unrefencing key and value.
-			 */
-			g_object_ref(inActor);
-			g_hash_table_iter_remove(&iter);
-		}
-	}
 }
 
 /* Updates container of provider with new result set from a last search.
  * Also creates or destroys the container for search provider if needed.
  */
-static ClutterActor* _xfdashboard_search_view_update_provider_actor_new(XfdashboardSearchView *self,
-																			XfdashboardSearchViewProviderData *inProviderData,
-																			GVariant *inItem)
-{
-	ClutterActor		*actor;
-	ClutterAction		*action;
-	GList				*actions;
-	GList				*actionsIter;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
-	g_return_val_if_fail(inProviderData, NULL);
-	g_return_val_if_fail(inItem, NULL);
-
-	/* Create actor for item */
-	actor=xfdashboard_search_provider_create_result_actor(inProviderData->provider, inItem);
-	if(!actor)
-	{
-		gchar			*itemText;
-
-		itemText=g_variant_print(inItem, TRUE);
-		g_warning(_("Failed to add actor for result item %s of provider %s: Could not create actor"),
-					itemText,
-					G_OBJECT_TYPE_NAME(inProviderData->provider));
-		g_free(itemText);
-
-		return(NULL);
-	}
-
-	if(!CLUTTER_IS_ACTOR(actor))
-	{
-		gchar			*itemText;
-
-		itemText=g_variant_print(inItem, TRUE);
-		g_critical(_("Failed to add actor for result item %s of provider %s: Actor of type %s is not derived from class %s"),
-					itemText,
-					G_OBJECT_TYPE_NAME(inProviderData->provider),
-					G_IS_OBJECT(actor) ? G_OBJECT_TYPE_NAME(actor) : "<unknown>",
-					g_type_name(CLUTTER_TYPE_ACTOR));
-		g_free(itemText);
-
-		/* Release allocated resources */
-		clutter_actor_destroy(actor);
-
-		return(NULL);
-	}
-
-	/* Connect to 'destroy' signal of actor to remove it from mapping hash table
-	 * if actor was destroyed (accidently)
-	 */
-	g_signal_connect(actor,
-						"destroy",
-						G_CALLBACK(_xfdashboard_search_view_on_provider_item_actor_destroy),
-						inProviderData);
-
-	/* Add click action to actor and connect signal */
-	action=xfdashboard_click_action_new();
-	clutter_actor_add_action(actor, action);
-	g_signal_connect(action,
-						"clicked",
-						G_CALLBACK(_xfdashboard_search_view_on_provider_item_actor_clicked),
-						inProviderData);
-
-	/* Iterate through all actions of actor and if it has an action of type
-	 * XfdashboardDragAction and has no source set then set this view as source
-	 */
-	actions=clutter_actor_get_actions(actor);
-	for(actionsIter=actions; actionsIter; actionsIter=g_list_next(actionsIter))
-	{
-		if(XFDASHBOARD_IS_DRAG_ACTION(actionsIter->data) &&
-			!xfdashboard_drag_action_get_source(XFDASHBOARD_DRAG_ACTION(actionsIter->data)))
-		{
-			g_object_set(actionsIter->data, "source", self, NULL);
-		}
-	}
-	if(actions) g_list_free(actions);
-
-	/* Return newly created and set up actor */
-	return(actor);
-}
-
 static void _xfdashboard_search_view_update_provider_container(XfdashboardSearchView *self,
 																XfdashboardSearchViewProviderData *inProviderData,
 																XfdashboardSearchResultSet *inNewResultSet)
@@ -793,24 +617,25 @@ static void _xfdashboard_search_view_update_provider_container(XfdashboardSearch
 	if(inNewResultSet &&
 		xfdashboard_search_result_set_get_size(inNewResultSet)>0)
 	{
-		GList					*allList;
-		GList					*removeList;
-		GList					*iter;
-		ClutterActor			*actor;
-		ClutterActor			*lastActor;
-
-		/* Create container for provider if it does not exist yet */
+		/* Create container for search provider if it does not exist yet */
 		if(!inProviderData->container)
 		{
-			actor=xfdashboard_search_result_container_new(inProviderData->provider);
-			if(!actor) return;
+			/* Create container for search provider */
+			inProviderData->container=xfdashboard_search_result_container_new(inProviderData->provider);
+			if(!inProviderData->container) return;
 
-			inProviderData->container=actor;
+			/* Add new container to search view */
 			clutter_actor_add_child(CLUTTER_ACTOR(self), inProviderData->container);
 
+			/* Connect signals */
 			g_signal_connect(inProviderData->container,
 								"icon-clicked",
 								G_CALLBACK(_xfdashboard_search_view_on_provider_icon_clicked),
+								inProviderData);
+
+			g_signal_connect(inProviderData->container,
+								"item-clicked",
+								G_CALLBACK(_xfdashboard_search_view_on_result_item_clicked),
 								inProviderData);
 
 			g_signal_connect(inProviderData->container,
@@ -819,93 +644,11 @@ static void _xfdashboard_search_view_update_provider_container(XfdashboardSearch
 								inProviderData);
 		}
 
-		/* Get list of all items in result set for and a list of items whose actors
-		 * to remove from container.
-		 */
-		allList=xfdashboard_search_result_set_get_all(inNewResultSet);
-
-		removeList=NULL;
-		if(inProviderData->lastResultSet)
-		{
-			removeList=xfdashboard_search_result_set_complement(inNewResultSet, inProviderData->lastResultSet);
-		}
-
-		/* Create actor for each item in list which is new to mapping */
-		lastActor=NULL;
-		for(iter=allList; iter; iter=g_list_next(iter))
-		{
-			GVariant			*item;
-
-			/* Get item to add */
-			item=(GVariant*)iter->data;
-
-			/* If item does not exist in mapping then create actor and add it to mapping */
-			if(!g_hash_table_lookup_extended(inProviderData->mapping, item, NULL, (gpointer*)&actor))
-			{
-				actor=_xfdashboard_search_view_update_provider_actor_new(self, inProviderData, item);
-				if(actor)
-				{
-					/* Add newly created actor to container of provider */
-					xfdashboard_search_result_container_add_result_actor(XFDASHBOARD_SEARCH_RESULT_CONTAINER(inProviderData->container),
-																			actor,
-																			lastActor);
-					g_hash_table_insert(inProviderData->mapping, g_variant_ref(item), g_object_ref(actor));
-				}
-			}
-
-			/* Remember either existing actor from hash table lookup or
-			 * the newly created actor as the last one seen.
-			 */
-			if(actor) lastActor=actor;
-		}
-
-		/* Remove actors for each item in list of removing items */
-		for(iter=removeList; iter; iter=g_list_next(iter))
-		{
-			GVariant			*item;
-
-			/* Get item to add */
-			item=(GVariant*)iter->data;
-
-			/* Get actor to remove */
-			if(g_hash_table_lookup_extended(inProviderData->mapping, item, NULL, (gpointer*)&actor))
-			{
-				if(!CLUTTER_IS_ACTOR(actor))
-				{
-					gchar		*itemText;
-
-					itemText=g_variant_print(item, TRUE);
-					g_critical(_("Failed to remove actor for result item %s of provider %s: Actor of type %s is not derived from class %s"),
-								itemText,
-								G_OBJECT_TYPE_NAME(inProviderData->provider),
-								G_IS_OBJECT(actor) ? G_OBJECT_TYPE_NAME(actor) : "<unknown>",
-								g_type_name(CLUTTER_TYPE_ACTOR));
-					g_free(itemText);
-
-					continue;
-				}
-
-				/* First disconnect signal handlers from actor before modifying mapping hash table */
-				g_signal_handlers_disconnect_by_data(actor, inProviderData);
-
-				/* Remove actor from mapping hash table before destroying it */
-				g_hash_table_remove(inProviderData->mapping, item);
-
-				/* Destroy actor and remove from hash table */
-				clutter_actor_destroy(actor);
-			}
-		}
-
-		/* Release allocated resources */
-		if(removeList) g_list_free_full(removeList, (GDestroyNotify)g_variant_unref);
-		if(allList) g_list_free_full(allList, (GDestroyNotify)g_variant_unref);
+		xfdashboard_search_result_container_update(XFDASHBOARD_SEARCH_RESULT_CONTAINER(inProviderData->container), inNewResultSet);
 	}
 		/* ... but if no result set for provider is given then destroy existing container */
 		else
 		{
-			/* Clean provider's container and move focus if necessary */
-			_xfdashboard_search_view_clean_provider_container(inProviderData);
-
 			/* Destroy container */
 			if(inProviderData->container)
 			{
@@ -1595,7 +1338,8 @@ static gboolean _xfdashboard_search_view_focusable_activate_selection(Xfdashboar
 	}
 
 	/* Activate selection */
-	_xfdashboard_search_view_on_provider_item_actor_clicked(NULL, inSelection, providerData);
+	xfdashboard_search_result_container_activate_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
+															inSelection);
 
 	/* Release allocated resources */
 	_xfdashboard_search_view_provider_data_unref(providerData);
@@ -1809,9 +1553,6 @@ void xfdashboard_search_view_reset_search(XfdashboardSearchView *self)
 
 		/* Get data for provider to reset */
 		providerData=((XfdashboardSearchViewProviderData*)(iter->data));
-
-		/* Clean provider's container and move focus if necessary */
-		_xfdashboard_search_view_clean_provider_container(providerData);
 
 		/* Destroy container */
 		if(providerData->container)
