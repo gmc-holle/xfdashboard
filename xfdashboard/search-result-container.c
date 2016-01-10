@@ -521,7 +521,7 @@ static void _xfdashboard_search_result_container_set_provider(XfdashboardSearchR
 }
 
 /* Update result items in container */
-void _xfdashboard_search_result_container_update_result_items(XfdashboardSearchResultContainer *self, XfdashboardSearchResultSet *inResultSet, gboolean inShowAllItems)
+static void _xfdashboard_search_result_container_update_result_items(XfdashboardSearchResultContainer *self, XfdashboardSearchResultSet *inResultSet, gboolean inShowAllItems)
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
 	GList										*allList;
@@ -618,6 +618,11 @@ void _xfdashboard_search_result_container_update_result_items(XfdashboardSearchR
 			priv->maxResultsItemsCount=priv->initialResultsCount;
 			priv->maxResultsItemsCountSet=TRUE;
 		}
+
+		/* If maximum number of actors to show in items container is zero
+		 * then all result items should be shown.
+		 */
+		if(priv->maxResultsItemsCount<=0) inShowAllItems=TRUE;
 
 		/* Get current number of result actors and determine maximum number of
 		 * actors to add to container.
