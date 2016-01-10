@@ -86,6 +86,12 @@ void xfdashboard_search_result_container_set_spacing(XfdashboardSearchResultCont
 gfloat xfdashboard_search_result_container_get_padding(XfdashboardSearchResultContainer *self);
 void xfdashboard_search_result_container_set_padding(XfdashboardSearchResultContainer *self, const gfloat inPadding);
 
+gint xfdashboard_search_result_container_get_initial_result_size(XfdashboardSearchResultContainer *self);
+void xfdashboard_search_result_container_set_initial_result_size(XfdashboardSearchResultContainer *self, const gint inSize);
+
+gint xfdashboard_search_result_container_get_more_result_size(XfdashboardSearchResultContainer *self);
+void xfdashboard_search_result_container_set_more_result_size(XfdashboardSearchResultContainer *self, const gint inSize);
+
 void xfdashboard_search_result_container_set_focus(XfdashboardSearchResultContainer *self, gboolean inSetFocus);
 
 ClutterActor* xfdashboard_search_result_container_get_selection(XfdashboardSearchResultContainer *self);

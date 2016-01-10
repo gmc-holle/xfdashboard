@@ -34,6 +34,7 @@
 
 #include "enums.h"
 #include "text-box.h"
+#include "button.h"
 #include "stylable.h"
 #include "dynamic-table-layout.h"
 #include "utils.h"
@@ -61,6 +62,9 @@ struct _XfdashboardSearchResultContainerPrivate
 	gfloat						spacing;
 	gfloat						padding;
 
+	gint						initialResultsCount;
+	gint						moreResultsCount;
+
 	/* Instance related */
 	ClutterLayoutManager		*layout;
 	ClutterActor				*titleTextBox;
@@ -71,6 +75,11 @@ struct _XfdashboardSearchResultContainerPrivate
 
 	GHashTable					*mapping;
 	XfdashboardSearchResultSet	*lastResultSet;
+
+	gboolean					maxResultsItemsCountSet;
+	gint						maxResultsItemsCount;
+	ClutterActor				*moreResultsLabelActor;
+	ClutterActor				*allResultsLabelActor;
 };
 
 /* Properties */
@@ -85,6 +94,9 @@ enum
 	PROP_VIEW_MODE,
 	PROP_SPACING,
 	PROP_PADDING,
+
+	PROP_INITIAL_RESULTS_SIZE,
+	PROP_MORE_RESULTS_SIZE,
 
 	PROP_LAST
 };
@@ -103,11 +115,17 @@ enum
 static guint XfdashboardSearchResultContainerSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DEFAULT_VIEW_MODE		XFDASHBOARD_VIEW_MODE_LIST
+#define DEFAULT_VIEW_MODE				XFDASHBOARD_VIEW_MODE_LIST
+#define DEFAULT_INITIAL_RESULT_SIZE		5
+#define DEFAULT_MORE_RESULT_SIZE		5
 
 /* Forward declarations */
 static void _xfdashboard_search_result_container_update_selection(XfdashboardSearchResultContainer *self,
 																	ClutterActor *inNewSelectedItem);
+
+static void _xfdashboard_search_result_container_update_result_items(XfdashboardSearchResultContainer *self,
+																		XfdashboardSearchResultSet *inResultSet,
+																		gboolean inShowAllItems);
 
 /* The current selected item will be destroyed so move selection */
 static void _xfdashboard_search_result_container_on_destroy_selection(XfdashboardSearchResultContainer *self,
@@ -194,6 +212,44 @@ static void _xfdashboard_search_result_container_on_primary_icon_clicked(Xfdashb
 
 	/* Emit signal for icon clicked */
 	g_signal_emit(self, XfdashboardSearchResultContainerSignals[SIGNAL_ICON_CLICKED], 0);
+}
+
+/* "More results" label was clicked */
+static void _xfdashboard_search_result_container_on_more_results_label_clicked(XfdashboardSearchResultContainer *self, gpointer inUserData)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+
+	priv=self->priv;
+
+	/* If this is the first time the maximum number of actors is determined
+	 * then set it to initial number.
+	 */
+	if(!priv->maxResultsItemsCountSet)
+	{
+		priv->maxResultsItemsCount=priv->initialResultsCount;
+		priv->maxResultsItemsCountSet=TRUE;
+	}
+
+	/* Increase maximum number of actor by number of more actors */
+	priv->maxResultsItemsCount+=priv->moreResultsCount;
+
+	/* Update container */
+	_xfdashboard_search_result_container_update_result_items(self, priv->lastResultSet, FALSE);
+}
+
+/* "All results" label was clicked */
+static void _xfdashboard_search_result_container_on_all_results_label_clicked(XfdashboardSearchResultContainer *self, gpointer inUserData)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+
+	priv=self->priv;
+
+	/* Update container */
+	_xfdashboard_search_result_container_update_result_items(self, priv->lastResultSet, TRUE);
 }
 
 /* Update icon at text box */
@@ -462,6 +518,215 @@ static void _xfdashboard_search_result_container_set_provider(XfdashboardSearchR
 
 	/* Update title */
 	_xfdashboard_search_result_container_update_title(self);
+}
+
+/* Update result items in container */
+void _xfdashboard_search_result_container_update_result_items(XfdashboardSearchResultContainer *self, XfdashboardSearchResultSet *inResultSet, gboolean inShowAllItems)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+	GList										*allList;
+	GList										*iter;
+	GVariant									*resultItem;
+	ClutterActor								*actor;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(inResultSet));
+
+	priv=self->priv;
+
+	/* Check if search provider is set */
+	g_return_if_fail(priv->provider);
+
+	/* Take extra reference on given result set to keep it alive as it may be
+	 * exactly the same result set as the one before and if we update the reference
+	 * to this result set as last one seen we have to unref the last result set
+	 * which is the same is the given one. That could destroy the result set.
+	 * To prevent this we take an extra reference here and release it at the end
+	 * of this function.
+	 */
+	g_object_ref(inResultSet);
+
+	/* Determine list of items whose actors to remove from container by checking
+	 * which result item was in last known result set but is not in given one
+	 * anymore and remove the actor for each item in this list.
+	 */
+	if(priv->lastResultSet)
+	{
+		GList									*removeList;
+
+		/* Get list of items to remove */
+		removeList=xfdashboard_search_result_set_complement(inResultSet, priv->lastResultSet);
+
+		/* Iterate through list of items to remove and for each one remove actor
+		 * and its entry in mapping hash table.
+		 */
+		for(iter=removeList; iter; iter=g_list_next(iter))
+		{
+			/* Get result item to remove */
+			resultItem=(GVariant*)iter->data;
+
+			/* Get actor to remove */
+			if(g_hash_table_lookup_extended(priv->mapping, resultItem, NULL, (gpointer*)&actor))
+			{
+				/* Check if item has really an actor */
+				if(!CLUTTER_IS_ACTOR(actor))
+				{
+					gchar		*resultItemText;
+
+					resultItemText=g_variant_print(resultItem, TRUE);
+					g_critical(_("Failed to remove actor for result item %s of provider %s: Actor of type %s is not derived from class %s"),
+								resultItemText,
+								G_OBJECT_TYPE_NAME(priv->provider),
+								G_IS_OBJECT(actor) ? G_OBJECT_TYPE_NAME(actor) : "<unknown>",
+								g_type_name(CLUTTER_TYPE_ACTOR));
+					g_free(resultItemText);
+
+					continue;
+				}
+
+				/* First disconnect signal handlers from actor before modifying mapping hash table */
+				g_signal_handlers_disconnect_by_data(actor, self);
+
+				/* Remove actor from mapping hash table before destroying it */
+				g_hash_table_remove(priv->mapping, resultItem);
+
+				/* Destroy actor and remove from hash table */
+				clutter_actor_destroy(actor);
+			}
+		}
+
+		/* Release allocated resources */
+		if(removeList) g_list_free_full(removeList, (GDestroyNotify)g_variant_unref);
+	}
+
+	/* Create actor for each item in list which is new to mapping */
+	allList=xfdashboard_search_result_set_get_all(inResultSet);
+	if(allList)
+	{
+		ClutterActor							*lastActor;
+		gint									actorsCount;
+		gint									allItemsCount;
+
+		/* Get number of all result items */
+		allItemsCount=g_list_length(allList);
+
+		/* If this is the first time the maximum number of actors is determined
+		 * then set it to initial number.
+		 */
+		if(!priv->maxResultsItemsCountSet)
+		{
+			priv->maxResultsItemsCount=priv->initialResultsCount;
+			priv->maxResultsItemsCountSet=TRUE;
+		}
+
+		/* Get current number of result actors and determine maximum number of
+		 * actors to add to container.
+		 */
+		actorsCount=clutter_actor_get_n_children(priv->itemsContainer);
+
+		/* Iterate through list of result items and add actor for each result item
+		 * which has no actor currently but do not exceed maximum number of actors
+		 * we just determined above.
+		 */
+		lastActor=NULL;
+		for(iter=allList; iter && (inShowAllItems || actorsCount<=priv->maxResultsItemsCount); iter=g_list_next(iter))
+		{
+			/* Get result item to add */
+			resultItem=(GVariant*)iter->data;
+
+			/* If result item does not exist in mapping then create actor and
+			 * add it to mapping.
+			 */
+			if(!g_hash_table_lookup_extended(priv->mapping, resultItem, NULL, (gpointer*)&actor))
+			{
+				/* Increase actor counter and if it exceeds maximum number of
+				 * allowed actor continue with next result item in result set
+				 * which will not happen as maximum has exceeded.
+				 *
+				 */
+				actorsCount++;
+				if(!inShowAllItems && actorsCount>priv->maxResultsItemsCount) continue;
+
+				/* Create actor for result item and add to this container */
+				actor=_xfdashboard_search_result_container_result_item_actor_new(self, resultItem);
+				if(actor)
+				{
+					/* Add newly created actor to container of provider */
+					if(!lastActor) clutter_actor_insert_child_below(priv->itemsContainer, actor, NULL);
+						else clutter_actor_insert_child_above(priv->itemsContainer, actor, lastActor);
+
+					/* Add actor to mapping hash table for result item */
+					g_hash_table_insert(priv->mapping, g_variant_ref(resultItem), g_object_ref(actor));
+				}
+			}
+
+			/* Remember either existing actor from hash table lookup or
+			 * the newly created actor as the last one seen.
+			 */
+			if(actor) lastActor=actor;
+		}
+
+		/* If we tried to create at least one more actore than maximum allowed
+		 * then set text at "more"-label otherwise set empty text to "hide" it
+		 */
+		if(actorsCount>priv->maxResultsItemsCount)
+		{
+			gchar								*labelText;
+			gint								moreCount;
+
+			/* Get text to set at "more"-label */
+			moreCount=MIN(allItemsCount-priv->maxResultsItemsCount, priv->moreResultsCount);
+			labelText=g_strdup_printf(_("Show %d more results..."), moreCount);
+
+			/* Set text at "more"-label */
+			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->moreResultsLabelActor), labelText);
+
+			/* Release allocated resources */
+			if(labelText) g_free(labelText);
+		}
+			else
+			{
+				/* Set empty text at "more"-label */
+				xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->moreResultsLabelActor), NULL);
+			}
+
+		/* If we have more result items in result set than result items actors shown
+		 * then set text at "all"-label otherwise set empty text to "hide" it
+		 */
+		if(!inShowAllItems && actorsCount<allItemsCount)
+		{
+			gchar								*labelText;
+
+			/* Get text to set at "all"-label */
+			labelText=g_strdup_printf(_("Show all %d results..."), allItemsCount);
+
+			/* Set text at "all"-label */
+			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->allResultsLabelActor), labelText);
+
+			/* Release allocated resources */
+			if(labelText) g_free(labelText);
+		}
+			else
+			{
+				/* Set empty text at "all"-label */
+				xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->allResultsLabelActor), NULL);
+			}
+
+		/* Release allocated resources */
+		if(allList) g_list_free_full(allList, (GDestroyNotify)g_variant_unref);
+	}
+
+	/* Remember new result set for search provider */
+	if(priv->lastResultSet)
+	{
+		g_object_unref(priv->lastResultSet);
+		priv->lastResultSet=NULL;
+	}
+
+	priv->lastResultSet=XFDASHBOARD_SEARCH_RESULT_SET(g_object_ref(inResultSet));
+
+	/* Release extra reference we took at begin of this function */
+	g_object_unref(inResultSet);
 }
 
 /* Find requested selection target depending of current selection in icon mode */
@@ -825,6 +1090,14 @@ static void _xfdashboard_search_result_container_set_property(GObject *inObject,
 			xfdashboard_search_result_container_set_padding(self, g_value_get_float(inValue));
 			break;
 
+		case PROP_INITIAL_RESULTS_SIZE:
+			xfdashboard_search_result_container_set_initial_result_size(self, g_value_get_int(inValue));
+			break;
+
+		case PROP_MORE_RESULTS_SIZE:
+			xfdashboard_search_result_container_set_more_result_size(self, g_value_get_int(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -859,6 +1132,14 @@ static void _xfdashboard_search_result_container_get_property(GObject *inObject,
 
 		case PROP_PADDING:
 			g_value_set_float(outValue, priv->padding);
+			break;
+
+		case PROP_INITIAL_RESULTS_SIZE:
+			g_value_set_int(outValue, priv->initialResultsCount);
+			break;
+
+		case PROP_MORE_RESULTS_SIZE:
+			g_value_set_int(outValue, priv->moreResultsCount);
 			break;
 
 		default:
@@ -930,6 +1211,22 @@ static void xfdashboard_search_result_container_class_init(XfdashboardSearchResu
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardSearchResultContainerProperties[PROP_INITIAL_RESULTS_SIZE]=
+		g_param_spec_int("initial-results-size",
+							_("Initial results size"),
+							_("The maximum number of results shown initially. 0 means all results"),
+							0, G_MAXINT,
+							DEFAULT_INITIAL_RESULT_SIZE,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardSearchResultContainerProperties[PROP_MORE_RESULTS_SIZE]=
+		g_param_spec_int("more-results-size",
+							_("More results size"),
+							_("The number of results to increase current limit by"),
+							0, G_MAXINT,
+							DEFAULT_MORE_RESULT_SIZE,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSearchResultContainerProperties);
 
 	/* Define stylable properties */
@@ -938,6 +1235,8 @@ static void xfdashboard_search_result_container_class_init(XfdashboardSearchResu
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_VIEW_MODE]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_SPACING]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_PADDING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_INITIAL_RESULTS_SIZE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardSearchResultContainerProperties[PROP_MORE_RESULTS_SIZE]);
 
 	/* Define signals */
 	XfdashboardSearchResultContainerSignals[SIGNAL_ICON_CLICKED]=
@@ -972,6 +1271,7 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
 	ClutterLayoutManager						*layout;
+	ClutterActor								*buttonContainer;
 
 	priv=self->priv=XFDASHBOARD_SEARCH_RESULT_CONTAINER_GET_PRIVATE(self);
 
@@ -988,6 +1288,10 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 										(GDestroyNotify)g_variant_unref,
 										(GDestroyNotify)g_object_unref);
 	priv->lastResultSet=NULL;
+	priv->initialResultsCount=DEFAULT_INITIAL_RESULT_SIZE;
+	priv->moreResultsCount=DEFAULT_MORE_RESULT_SIZE;
+	priv->maxResultsItemsCountSet=FALSE;
+	priv->maxResultsItemsCount=0;
 
 	/* Set up children */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), FALSE);
@@ -1001,6 +1305,27 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->itemsContainer), "items-container");
 	xfdashboard_search_result_container_set_view_mode(self, DEFAULT_VIEW_MODE);
 
+	priv->moreResultsLabelActor=xfdashboard_button_new();
+	clutter_actor_set_x_expand(priv->moreResultsLabelActor, TRUE);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->moreResultsLabelActor), XFDASHBOARD_BUTTON_STYLE_TEXT);
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->moreResultsLabelActor), "more-results");
+
+	priv->allResultsLabelActor=xfdashboard_button_new();
+	clutter_actor_set_x_expand(priv->allResultsLabelActor, TRUE);
+	clutter_actor_set_x_align(priv->allResultsLabelActor, CLUTTER_ACTOR_ALIGN_END);
+	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->allResultsLabelActor), XFDASHBOARD_BUTTON_STYLE_TEXT);
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->allResultsLabelActor), "all-results");
+
+	layout=clutter_box_layout_new();
+	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_HORIZONTAL);
+	clutter_box_layout_set_homogeneous(CLUTTER_BOX_LAYOUT(layout), TRUE);
+
+	buttonContainer=clutter_actor_new();
+	clutter_actor_set_layout_manager(buttonContainer, layout);
+	clutter_actor_set_x_expand(buttonContainer, TRUE);
+	clutter_actor_add_child(buttonContainer, priv->moreResultsLabelActor);
+	clutter_actor_add_child(buttonContainer, priv->allResultsLabelActor);
+
 	/* Set up actor */
 	xfdashboard_actor_set_can_focus(XFDASHBOARD_ACTOR(self), TRUE);
 
@@ -1011,11 +1336,22 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 	clutter_actor_set_x_expand(CLUTTER_ACTOR(self), TRUE);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->titleTextBox);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->itemsContainer);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), buttonContainer);
 
 	/* Connect signals */
 	g_signal_connect_swapped(priv->titleTextBox,
 								"primary-icon-clicked",
 								G_CALLBACK(_xfdashboard_search_result_container_on_primary_icon_clicked),
+								self);
+
+	g_signal_connect_swapped(priv->moreResultsLabelActor,
+								"clicked",
+								G_CALLBACK(_xfdashboard_search_result_container_on_more_results_label_clicked),
+								self);
+
+	g_signal_connect_swapped(priv->allResultsLabelActor,
+								"clicked",
+								G_CALLBACK(_xfdashboard_search_result_container_on_all_results_label_clicked),
 								self);
 }
 
@@ -1250,6 +1586,78 @@ void xfdashboard_search_result_container_set_padding(XfdashboardSearchResultCont
 	}
 }
 
+/* Get/set number of result items to show initially */
+gint xfdashboard_search_result_container_get_initial_result_size(XfdashboardSearchResultContainer *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), 0);
+
+	return(self->priv->initialResultsCount);
+}
+
+void xfdashboard_search_result_container_set_initial_result_size(XfdashboardSearchResultContainer *self, const gint inSize)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+	g_return_if_fail(inSize>=0);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->initialResultsCount!=inSize)
+	{
+		/* Set value */
+		priv->initialResultsCount=inSize;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchResultContainerProperties[PROP_INITIAL_RESULTS_SIZE]);
+	}
+}
+
+/* Get/set number to increase number of actors of result items to show */
+gint xfdashboard_search_result_container_get_more_result_size(XfdashboardSearchResultContainer *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), 0);
+
+	return(self->priv->moreResultsCount);
+}
+
+void xfdashboard_search_result_container_set_more_result_size(XfdashboardSearchResultContainer *self, const gint inSize)
+{
+	XfdashboardSearchResultContainerPrivate		*priv;
+	gint										allResultsCount;
+	gint										currentResultsCount;
+	gint										moreCount;
+	gchar										*labelText;
+
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+	g_return_if_fail(inSize>=0);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->moreResultsCount!=inSize)
+	{
+		/* Set value */
+		priv->moreResultsCount=inSize;
+
+		/* Update text of "more"-label */
+		allResultsCount=0;
+		if(priv->lastResultSet) allResultsCount=(gint)xfdashboard_search_result_set_get_size(priv->lastResultSet);
+
+		currentResultsCount=clutter_actor_get_n_children(priv->itemsContainer);
+
+		moreCount=MIN(allResultsCount-currentResultsCount, priv->moreResultsCount);
+
+		labelText=g_strdup_printf(_("Show %d more results..."), moreCount);
+		xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->moreResultsLabelActor), labelText);
+		if(labelText) g_free(labelText);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSearchResultContainerProperties[PROP_MORE_RESULTS_SIZE]);
+	}
+}
+
 /* Set to or unset focus from container */
 void xfdashboard_search_result_container_set_focus(XfdashboardSearchResultContainer *self, gboolean inSetFocus)
 {
@@ -1421,119 +1829,11 @@ void xfdashboard_search_result_container_activate_selection(XfdashboardSearchRes
 	_xfdashboard_search_result_container_activate_result_item_by_actor(self, inSelection);
 }
 
-/* Update result items in container */
+/* Update result items in container with given result set */
 void xfdashboard_search_result_container_update(XfdashboardSearchResultContainer *self, XfdashboardSearchResultSet *inResultSet)
 {
-	XfdashboardSearchResultContainerPrivate		*priv;
-	GList										*allList;
-	GList										*iter;
-	GVariant									*resultItem;
-	ClutterActor								*actor;
-
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(inResultSet));
 
-	priv=self->priv;
-
-	/* Check if search provider is set */
-	g_return_if_fail(priv->provider);
-
-	/* Determine list of items whose actors to remove from container by checking
-	 * which result item was in last known result set but is not in given one
-	 * anymore and remove the actor for each item in this list.
-	 */
-	if(priv->lastResultSet)
-	{
-		GList									*removeList;
-
-		/* Get list of items to remove */
-		removeList=xfdashboard_search_result_set_complement(inResultSet, priv->lastResultSet);
-
-		/* Iterate through list of items to remove and for each one remove actor
-		 * and its entry in mapping hash table.
-		 */
-		for(iter=removeList; iter; iter=g_list_next(iter))
-		{
-			/* Get result item to remove */
-			resultItem=(GVariant*)iter->data;
-
-			/* Get actor to remove */
-			if(g_hash_table_lookup_extended(priv->mapping, resultItem, NULL, (gpointer*)&actor))
-			{
-				/* Check if item has really an actor */
-				if(!CLUTTER_IS_ACTOR(actor))
-				{
-					gchar		*resultItemText;
-
-					resultItemText=g_variant_print(resultItem, TRUE);
-					g_critical(_("Failed to remove actor for result item %s of provider %s: Actor of type %s is not derived from class %s"),
-								resultItemText,
-								G_OBJECT_TYPE_NAME(priv->provider),
-								G_IS_OBJECT(actor) ? G_OBJECT_TYPE_NAME(actor) : "<unknown>",
-								g_type_name(CLUTTER_TYPE_ACTOR));
-					g_free(resultItemText);
-
-					continue;
-				}
-
-				/* First disconnect signal handlers from actor before modifying mapping hash table */
-				g_signal_handlers_disconnect_by_data(actor, self);
-
-				/* Remove actor from mapping hash table before destroying it */
-				g_hash_table_remove(priv->mapping, resultItem);
-
-				/* Destroy actor and remove from hash table */
-				clutter_actor_destroy(actor);
-			}
-		}
-
-		/* Release allocated resources */
-		if(removeList) g_list_free_full(removeList, (GDestroyNotify)g_variant_unref);
-	}
-
-	/* Create actor for each item in list which is new to mapping */
-	allList=xfdashboard_search_result_set_get_all(inResultSet);
-	if(allList)
-	{
-		ClutterActor							*lastActor;
-
-		lastActor=NULL;
-		for(iter=allList; iter; iter=g_list_next(iter))
-		{
-			/* Get item to add */
-			resultItem=(GVariant*)iter->data;
-
-			/* If item does not exist in mapping then create actor and add it to mapping */
-			if(!g_hash_table_lookup_extended(priv->mapping, resultItem, NULL, (gpointer*)&actor))
-			{
-				actor=_xfdashboard_search_result_container_result_item_actor_new(self, resultItem);
-				if(actor)
-				{
-					/* Add newly created actor to container of provider */
-					if(!lastActor) clutter_actor_insert_child_below(priv->itemsContainer, actor, NULL);
-						else clutter_actor_insert_child_above(priv->itemsContainer, actor, lastActor);
-
-					/* Add actor to mapping hash table for result item */
-					g_hash_table_insert(priv->mapping, g_variant_ref(resultItem), g_object_ref(actor));
-				}
-			}
-
-			/* Remember either existing actor from hash table lookup or
-			 * the newly created actor as the last one seen.
-			 */
-			if(actor) lastActor=actor;
-		}
-
-		/* Release allocated resources */
-		if(allList) g_list_free_full(allList, (GDestroyNotify)g_variant_unref);
-	}
-
-	/* Remember new result set for search provider */
-	if(priv->lastResultSet)
-	{
-		g_object_unref(priv->lastResultSet);
-		priv->lastResultSet=NULL;
-	}
-
-	priv->lastResultSet=XFDASHBOARD_SEARCH_RESULT_SET(g_object_ref(inResultSet));
+	_xfdashboard_search_result_container_update_result_items(self, inResultSet, FALSE);
 }
