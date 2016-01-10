@@ -404,7 +404,7 @@ static ClutterActor* _xfdashboard_search_result_container_result_item_actor_new(
 	priv=self->priv;
 
 	/* Check if search provider is set */
-	g_return_if_fail(priv->provider);
+	g_return_val_if_fail(priv->provider, NULL);
 
 	/* Create actor for item */
 	actor=xfdashboard_search_provider_create_result_actor(priv->provider, inResultItem);
@@ -1812,8 +1812,8 @@ ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSear
 void xfdashboard_search_result_container_activate_selection(XfdashboardSearchResultContainer *self,
 																	ClutterActor *inSelection)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), FALSE);
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), FALSE);
+	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inSelection));
 
 	/* Check that selection is a child of this actor */
 	if(!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))

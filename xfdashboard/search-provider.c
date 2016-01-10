@@ -314,8 +314,8 @@ gboolean xfdashboard_search_provider_launch_search(XfdashboardSearchProvider *se
 {
 	XfdashboardSearchProviderClass	*klass;
 
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_PROVIDER(self));
-	g_return_if_fail(inSearchTerms);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_PROVIDER(self), FALSE);
+	g_return_val_if_fail(inSearchTerms, FALSE);
 
 	klass=XFDASHBOARD_SEARCH_PROVIDER_GET_CLASS(self);
 
@@ -338,10 +338,10 @@ gboolean xfdashboard_search_provider_activate_result(XfdashboardSearchProvider* 
 {
 	XfdashboardSearchProviderClass	*klass;
 
-	g_return_if_fail(XFDASHBOARD_IS_SEARCH_PROVIDER(self));
-	g_return_if_fail(inResultItem);
-	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
-	g_return_if_fail(inSearchTerms);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_PROVIDER(self), FALSE);
+	g_return_val_if_fail(inResultItem, FALSE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), FALSE);
+	g_return_val_if_fail(inSearchTerms, FALSE);
 
 	klass=XFDASHBOARD_SEARCH_PROVIDER_GET_CLASS(self);
 
