@@ -525,6 +525,7 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
 	GList										*allList;
+	GList										*removeList;
 	GList										*iter;
 	GVariant									*resultItem;
 	ClutterActor								*actor;
@@ -548,56 +549,10 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 
 	/* Determine list of items whose actors to remove from container by checking
 	 * which result item was in last known result set but is not in given one
-	 * anymore and remove the actor for each item in this list.
+	 * anymore.
 	 */
-	if(priv->lastResultSet)
-	{
-		GList									*removeList;
-
-		/* Get list of items to remove */
-		removeList=xfdashboard_search_result_set_complement(inResultSet, priv->lastResultSet);
-
-		/* Iterate through list of items to remove and for each one remove actor
-		 * and its entry in mapping hash table.
-		 */
-		for(iter=removeList; iter; iter=g_list_next(iter))
-		{
-			/* Get result item to remove */
-			resultItem=(GVariant*)iter->data;
-
-			/* Get actor to remove */
-			if(g_hash_table_lookup_extended(priv->mapping, resultItem, NULL, (gpointer*)&actor))
-			{
-				/* Check if item has really an actor */
-				if(!CLUTTER_IS_ACTOR(actor))
-				{
-					gchar		*resultItemText;
-
-					resultItemText=g_variant_print(resultItem, TRUE);
-					g_critical(_("Failed to remove actor for result item %s of provider %s: Actor of type %s is not derived from class %s"),
-								resultItemText,
-								G_OBJECT_TYPE_NAME(priv->provider),
-								G_IS_OBJECT(actor) ? G_OBJECT_TYPE_NAME(actor) : "<unknown>",
-								g_type_name(CLUTTER_TYPE_ACTOR));
-					g_free(resultItemText);
-
-					continue;
-				}
-
-				/* First disconnect signal handlers from actor before modifying mapping hash table */
-				g_signal_handlers_disconnect_by_data(actor, self);
-
-				/* Remove actor from mapping hash table before destroying it */
-				g_hash_table_remove(priv->mapping, resultItem);
-
-				/* Destroy actor and remove from hash table */
-				clutter_actor_destroy(actor);
-			}
-		}
-
-		/* Release allocated resources */
-		if(removeList) g_list_free_full(removeList, (GDestroyNotify)g_variant_unref);
-	}
+	removeList=NULL;
+	if(priv->lastResultSet) removeList=xfdashboard_search_result_set_complement(inResultSet, priv->lastResultSet);
 
 	/* Create actor for each item in list which is new to mapping */
 	allList=xfdashboard_search_result_set_get_all(inResultSet);
@@ -624,10 +579,24 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 		 */
 		if(priv->maxResultsItemsCount<=0) inShowAllItems=TRUE;
 
-		/* Get current number of result actors and determine maximum number of
-		 * actors to add to container.
+		/* Get current number of result actors but decrease it by the number
+		 * of actors which will be removed.
 		 */
 		actorsCount=clutter_actor_get_n_children(priv->itemsContainer);
+		if(removeList)
+		{
+			for(iter=removeList; iter && actorsCount>0; iter=g_list_next(iter))
+			{
+				/* Get result item to remove */
+				resultItem=(GVariant*)iter->data;
+
+				/* Get actor to remove */
+				if(g_hash_table_lookup_extended(priv->mapping, resultItem, NULL, (gpointer*)&actor))
+				{
+					if(actor) actorsCount--;
+				}
+			}
+		}
 
 		/* Iterate through list of result items and add actor for each result item
 		 * which has no actor currently but do not exceed maximum number of actors
@@ -716,9 +685,48 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 				/* Set empty text at "all"-label */
 				xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->allResultsLabelActor), NULL);
 			}
+	}
 
-		/* Release allocated resources */
-		if(allList) g_list_free_full(allList, (GDestroyNotify)g_variant_unref);
+	/* Remove the actor for each item in remove list */
+	if(removeList)
+	{
+		/* Iterate through list of items to remove and for each one remove actor
+		 * and its entry in mapping hash table.
+		 */
+		for(iter=removeList; iter; iter=g_list_next(iter))
+		{
+			/* Get result item to remove */
+			resultItem=(GVariant*)iter->data;
+
+			/* Get actor to remove */
+			if(g_hash_table_lookup_extended(priv->mapping, resultItem, NULL, (gpointer*)&actor))
+			{
+				/* Check if item has really an actor */
+				if(!CLUTTER_IS_ACTOR(actor))
+				{
+					gchar		*resultItemText;
+
+					resultItemText=g_variant_print(resultItem, TRUE);
+					g_critical(_("Failed to remove actor for result item %s of provider %s: Actor of type %s is not derived from class %s"),
+								resultItemText,
+								G_OBJECT_TYPE_NAME(priv->provider),
+								G_IS_OBJECT(actor) ? G_OBJECT_TYPE_NAME(actor) : "<unknown>",
+								g_type_name(CLUTTER_TYPE_ACTOR));
+					g_free(resultItemText);
+
+					continue;
+				}
+
+				/* First disconnect signal handlers from actor before modifying mapping hash table */
+				g_signal_handlers_disconnect_by_data(actor, self);
+
+				/* Remove actor from mapping hash table before destroying it */
+				g_hash_table_remove(priv->mapping, resultItem);
+
+				/* Destroy actor and remove from hash table */
+				clutter_actor_destroy(actor);
+			}
+		}
 	}
 
 	/* Remember new result set for search provider */
@@ -729,6 +737,10 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 	}
 
 	priv->lastResultSet=XFDASHBOARD_SEARCH_RESULT_SET(g_object_ref(inResultSet));
+
+	/* Release allocated resources */
+	if(removeList) g_list_free_full(removeList, (GDestroyNotify)g_variant_unref);
+	if(allList) g_list_free_full(allList, (GDestroyNotify)g_variant_unref);
 
 	/* Release extra reference we took at begin of this function */
 	g_object_unref(inResultSet);
@@ -1684,12 +1696,8 @@ ClutterActor* xfdashboard_search_result_container_get_selection(XfdashboardSearc
 gboolean xfdashboard_search_result_container_set_selection(XfdashboardSearchResultContainer *self,
 																	ClutterActor *inSelection)
 {
-	XfdashboardSearchResultContainerPrivate		*priv;
-
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), FALSE);
 	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), FALSE);
-
-	priv=self->priv;
 
 	/* Check that selection is a child of this actor */
 	if(inSelection &&
@@ -1703,7 +1711,7 @@ gboolean xfdashboard_search_result_container_set_selection(XfdashboardSearchResu
 	}
 
 	/* Set selection */
-	priv->selectedItem=inSelection;
+	_xfdashboard_search_result_container_update_selection(self, inSelection);
 
 	/* We could successfully set selection so return success result */
 	return(TRUE);
