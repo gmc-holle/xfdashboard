@@ -223,9 +223,12 @@ static void _xfdashboard_background_allocate(ClutterActor *self,
 	CLUTTER_ACTOR_CLASS(xfdashboard_background_parent_class)->allocate(self, inBox, inFlags);
 
 	/* Set size of canvas */
-	clutter_canvas_set_size(CLUTTER_CANVAS(priv->fillCanvas),
-								clutter_actor_box_get_width(inBox),
-								clutter_actor_box_get_height(inBox));
+	if(priv->fillCanvas)
+	{
+		clutter_canvas_set_size(CLUTTER_CANVAS(priv->fillCanvas),
+									clutter_actor_box_get_width(inBox),
+									clutter_actor_box_get_height(inBox));
+	}
 }
 
 /* IMPLEMENTATION: GObject */
