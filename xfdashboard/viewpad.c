@@ -53,24 +53,26 @@ G_DEFINE_TYPE_WITH_CODE(XfdashboardViewpad,
 struct _XfdashboardViewpadPrivate
 {
 	/* Properties related */
-	gfloat					spacing;
-	XfdashboardView			*activeView;
+	gfloat							spacing;
+	XfdashboardView					*activeView;
 	XfdashboardVisibilityPolicy		hScrollbarPolicy;
-	gboolean				hScrollbarVisible;
+	gboolean						hScrollbarVisible;
 	XfdashboardVisibilityPolicy		vScrollbarPolicy;
-	gboolean				vScrollbarVisible;
+	gboolean						vScrollbarVisible;
 
 	/* Instance related */
-	XfdashboardViewManager	*viewManager;
+	XfdashboardViewManager			*viewManager;
 
-	ClutterLayoutManager	*layout;
-	ClutterActor			*container;
-	ClutterActor			*hScrollbar;
-	ClutterActor			*vScrollbar;
+	ClutterLayoutManager			*layout;
+	ClutterActor					*container;
+	ClutterActor					*hScrollbar;
+	ClutterActor					*vScrollbar;
 
-	guint					scrollbarUpdateID;
+	guint							scrollbarUpdateID;
 
-	gboolean				doRegisterFocusableViews;
+	gboolean						doRegisterFocusableViews;
+
+	ClutterActorBox					*lastAllocation;
 };
 
 /* Properties */
@@ -509,6 +511,7 @@ static gboolean _xfdashboard_viewpad_view_needs_scrolling_for_child(XfdashboardV
 	ClutterVertex				transformedUpperLeft;
 	ClutterVertex				transformedLowerRight;
 	gfloat						x, y, w, h;
+	gboolean					viewFitsIntoViewpad;
 	gboolean					needScrolling;
 	gfloat						scrollX, scrollY;
 
@@ -517,8 +520,20 @@ static gboolean _xfdashboard_viewpad_view_needs_scrolling_for_child(XfdashboardV
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inViewChild), FALSE);
 
 	priv=self->priv;
+	viewFitsIntoViewpad=FALSE;
 	needScrolling=FALSE;
 	scrollX=scrollY=0.0f;
+
+	/* Check if view would fit into this viewpad completely */
+	if(priv->lastAllocation)
+	{
+		clutter_actor_get_size(CLUTTER_ACTOR(inView), &w, &h);
+		if(w<=clutter_actor_box_get_width(priv->lastAllocation) &&
+			h<=clutter_actor_box_get_height(priv->lastAllocation))
+		{
+			viewFitsIntoViewpad=TRUE;
+		}
+	}
 
 	/* Get position and size of view but respect scrolled position */
 	if(inView==priv->activeView)
@@ -541,8 +556,17 @@ static gboolean _xfdashboard_viewpad_view_needs_scrolling_for_child(XfdashboardV
 		}
 
 	/* Check that upper left point of actor is visible otherwise set flag for scrolling */
-	origin.x=origin.y=origin.z=0.0f;
-	clutter_actor_apply_relative_transform_to_point(inViewChild, CLUTTER_ACTOR(inView), &origin, &transformedUpperLeft);
+	if(!viewFitsIntoViewpad)
+	{
+		origin.x=origin.y=origin.z=0.0f;
+		clutter_actor_apply_relative_transform_to_point(inViewChild, CLUTTER_ACTOR(inView), &origin, &transformedUpperLeft);
+	}
+		else
+		{
+			origin.x=origin.y=origin.z=0.0f;
+			clutter_actor_apply_relative_transform_to_point(CLUTTER_ACTOR(inView), CLUTTER_ACTOR(self), &origin, &transformedUpperLeft);
+		}
+
 	if(transformedUpperLeft.x<x ||
 		transformedUpperLeft.x>(x+w) ||
 		transformedUpperLeft.y<y ||
@@ -552,8 +576,20 @@ static gboolean _xfdashboard_viewpad_view_needs_scrolling_for_child(XfdashboardV
 	}
 
 	/* Check that lower right point of actor is visible otherwise set flag for scrolling */
-	clutter_actor_get_size(inViewChild, &origin.x, &origin.y);
-	clutter_actor_apply_relative_transform_to_point(inViewChild, CLUTTER_ACTOR(inView), &origin, &transformedLowerRight);
+	if(!viewFitsIntoViewpad)
+	{
+		origin.z=0.0f;
+		clutter_actor_get_size(inViewChild, &origin.x, &origin.y);
+		clutter_actor_apply_relative_transform_to_point(inViewChild, CLUTTER_ACTOR(inView), &origin, &transformedLowerRight);
+	}
+		else
+		{
+			origin.x=clutter_actor_box_get_width(priv->lastAllocation);
+			origin.y=clutter_actor_box_get_height(priv->lastAllocation);
+			origin.z=0.0f;
+			clutter_actor_apply_relative_transform_to_point(CLUTTER_ACTOR(inView), CLUTTER_ACTOR(self), &origin, &transformedLowerRight);
+		}
+
 	if(transformedLowerRight.x<x ||
 		transformedLowerRight.x>(x+w) ||
 		transformedLowerRight.y<y ||
@@ -965,6 +1001,15 @@ static void _xfdashboard_viewpad_allocate(ClutterActor *self,
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewpadProperties[PROP_VSCROLLBAR_VISIBLE]);
 	}
+
+	/* Remember this allocation as last one set */
+	if(priv->lastAllocation)
+	{
+		clutter_actor_box_free(priv->lastAllocation);
+		priv->lastAllocation=NULL;
+	}
+
+	priv->lastAllocation=clutter_actor_box_copy(inBox);
 }
 
 /* IMPLEMENTATION: Interface XfdashboardFocusable */
@@ -1056,6 +1101,13 @@ static void _xfdashboard_viewpad_dispose(GObject *inObject)
 		g_signal_handlers_disconnect_by_data(priv->viewManager, self);
 		g_object_unref(priv->viewManager);
 		priv->viewManager=NULL;
+	}
+
+	/* Release allocated resources */
+	if(priv->lastAllocation)
+	{
+		clutter_actor_box_free(priv->lastAllocation);
+		priv->lastAllocation=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -1299,6 +1351,7 @@ static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	priv->vScrollbarPolicy=XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC;
 	priv->scrollbarUpdateID=0;
 	priv->doRegisterFocusableViews=FALSE;
+	priv->lastAllocation=NULL;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
