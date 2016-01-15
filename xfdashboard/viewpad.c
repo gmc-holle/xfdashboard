@@ -512,9 +512,9 @@ static gboolean _xfdashboard_viewpad_view_needs_scrolling_for_child(XfdashboardV
 	gboolean					needScrolling;
 	gfloat						scrollX, scrollY;
 
-	g_return_if_fail(XFDASHBOARD_IS_VIEWPAD(self));
-	g_return_if_fail(XFDASHBOARD_IS_VIEW(inView));
-	g_return_if_fail(CLUTTER_IS_ACTOR(inViewChild));
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(inView), FALSE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inViewChild), FALSE);
 
 	priv=self->priv;
 	needScrolling=FALSE;
