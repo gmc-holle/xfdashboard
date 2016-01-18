@@ -244,7 +244,7 @@ static void _xfdashboard_live_window_on_name_changed(XfdashboardLiveWindow *self
 	/* Check if signal is for this window */
 	if(inWindow!=priv->window) return;
 
-	/* Set new icon in title actor */
+	/* Set new name in title actor */
 	windowName=g_markup_printf_escaped("%s", xfdashboard_window_tracker_window_get_title(inWindow));
 	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorTitle), windowName);
 	g_free(windowName);

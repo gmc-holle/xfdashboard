@@ -40,6 +40,7 @@
 #include "window-content.h"
 #include "image-content.h"
 #include "enums.h"
+#include "stylable.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWorkspace,
@@ -57,10 +58,13 @@ struct _XfdashboardLiveWorkspacePrivate
 	XfdashboardWindowTrackerMonitor			*monitor;
 	gboolean								showWindowContent;
 	XfdashboardStageBackgroundImageType		backgroundType;
+	gboolean								showWorkspaceName;
+	gfloat									workspaceNamePadding;
 
 	/* Instance related */
 	XfdashboardWindowTracker				*windowTracker;
 	ClutterActor							*backgroundImageLayer;
+	ClutterActor							*actorTitle;
 };
 
 /* Properties */
@@ -72,6 +76,8 @@ enum
 	PROP_MONITOR,
 	PROP_SHOW_WINDOW_CONTENT,
 	PROP_BACKGROUND_IMAGE_TYPE,
+	PROP_SHOW_WORKSPACE_NAME,
+	PROP_WORKSPACE_NAME_PADDING,
 
 	PROP_LAST
 };
@@ -187,7 +193,8 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 		/* Move existing window actor to new stacking position */
 		g_object_ref(actor);
 		clutter_actor_remove_child(CLUTTER_ACTOR(self), actor);
-		clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
+		if(lastWindowActor) clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
+			else clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, priv->actorTitle);
 		g_object_unref(actor);
 	}
 		else
@@ -207,7 +214,8 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 			g_object_unref(content);
 
 			/* Add new actor at right stacking position */
-			clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
+			if(lastWindowActor) clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
+				else clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, priv->actorTitle);
 		}
 
 	return(actor);
@@ -295,7 +303,7 @@ static void _xfdashboard_live_workspace_on_window_stacking_changed(XfdashboardLi
 		/* If we get here the window actor was found so move to bottom */
 		g_object_ref(actor);
 		clutter_actor_remove_child(CLUTTER_ACTOR(self), actor);
-		clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, NULL);
+		clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, priv->actorTitle);
 		g_object_unref(actor);
 	}
 }
@@ -377,6 +385,28 @@ static void _xfdashboard_live_workspace_on_monitor_geometry_changed(XfdashboardL
 
 	/* Actor's allocation may change because of new geometry so relayout */
 	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+}
+
+/* A workspace's name has changed */
+static void _xfdashboard_live_workspace_on_workspace_name_changed(XfdashboardLiveWorkspace *self,
+																	XfdashboardWindowTrackerWorkspace *inWorkspace,
+																	gpointer inUserData)
+{
+	XfdashboardLiveWorkspacePrivate		*priv;
+	gchar								*workspaceName;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace));
+
+	priv=self->priv;
+
+	/* Check if signal is for this workspace */
+	if(inWorkspace!=priv->workspace) return;
+
+	/* Set new name in title actor */
+	workspaceName=g_markup_printf_escaped("%s", xfdashboard_window_tracker_workspace_get_name(inWorkspace));
+	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorTitle), workspaceName);
+	g_free(workspaceName);
 }
 
 /* A window was created
@@ -577,6 +607,36 @@ static void _xfdashboard_live_workspace_allocate(ClutterActor *self,
 	_xfdashboard_live_workspace_transform_allocation(&childAllocation, &workspaceArea, &visibleArea, inBox);
 	clutter_actor_allocate(priv->backgroundImageLayer, &childAllocation, inFlags);
 
+	/* Set allocation of title actor */
+	if(priv->actorTitle)
+	{
+		gfloat							left, right, top, bottom;
+		gfloat							titleWidth, titleHeight;
+		gfloat							maxWidth;
+
+		clutter_actor_get_preferred_size(priv->actorTitle,
+											NULL, NULL,
+											&titleWidth, &titleHeight);
+
+		maxWidth=clutter_actor_box_get_width(inBox)-(2*priv->workspaceNamePadding);
+		if(titleWidth>maxWidth) titleWidth=maxWidth;
+
+		left=(clutter_actor_box_get_width(inBox)-titleWidth)/2.0f;
+		right=left+titleWidth;
+		bottom=clutter_actor_box_get_height(inBox)-priv->workspaceNamePadding;
+		top=bottom-titleHeight;
+		if(left>right) left=right-1.0f;
+
+		right=MAX(left, right);
+		bottom=MAX(top, bottom);
+
+		childAllocation.x1=floor(left);
+		childAllocation.y1=floor(top);
+		childAllocation.x2=floor(right);
+		childAllocation.y2=floor(bottom);
+		clutter_actor_allocate(priv->actorTitle, &childAllocation, inFlags);
+	}
+
 	/* If we handle no workspace to not set allocation of children */
 	if(!priv->workspace) return;
 
@@ -633,6 +693,12 @@ static void _xfdashboard_live_workspace_dispose(GObject *inObject)
 	/* Dispose allocated resources */
 	g_object_set_data(inObject, WINDOW_DATA_KEY, NULL);
 
+	if(priv->actorTitle)
+	{
+		clutter_actor_destroy(priv->actorTitle);
+		priv->actorTitle=NULL;
+	}
+
 	if(priv->backgroundImageLayer)
 	{
 		clutter_actor_destroy(priv->backgroundImageLayer);
@@ -688,6 +754,14 @@ static void _xfdashboard_live_workspace_set_property(GObject *inObject,
 			xfdashboard_live_workspace_set_background_image_type(self, g_value_get_enum(inValue));
 			break;
 
+		case PROP_SHOW_WORKSPACE_NAME:
+			xfdashboard_live_workspace_set_show_workspace_name(self, g_value_get_boolean(inValue));
+			break;
+
+		case PROP_WORKSPACE_NAME_PADDING:
+			xfdashboard_live_workspace_set_workspace_name_padding(self, g_value_get_float(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -717,6 +791,14 @@ static void _xfdashboard_live_workspace_get_property(GObject *inObject,
 
 		case PROP_BACKGROUND_IMAGE_TYPE:
 			g_value_set_enum(outValue, self->priv->backgroundType);
+			break;
+
+		case PROP_SHOW_WORKSPACE_NAME:
+			g_value_set_boolean(outValue, self->priv->showWorkspaceName);
+			break;
+
+		case PROP_WORKSPACE_NAME_PADDING:
+			g_value_set_float(outValue, self->priv->workspaceNamePadding);
 			break;
 
 		default:
@@ -764,7 +846,7 @@ static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass 
 
 	XfdashboardLiveWorkspaceProperties[PROP_SHOW_WINDOW_CONTENT]=
 		g_param_spec_boolean("show-window-content",
-								_("show-window-content"),
+								_("Show window content"),
 								_("If TRUE the window content should be shown otherwise the window's icon will be shown"),
 								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
@@ -777,11 +859,28 @@ static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass 
 							XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardLiveWorkspaceProperties[PROP_SHOW_WORKSPACE_NAME]=
+		g_param_spec_boolean("show-workspace-name",
+								_("Show workspace name"),
+								_("If TRUE the name of workspace should be shown"),
+								FALSE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardLiveWorkspaceProperties[PROP_WORKSPACE_NAME_PADDING]=
+		g_param_spec_float("workspace-name-padding",
+							_("Workspace name padding"),
+							_("Padding of workspace name actor in pixels"),
+							0.0f, G_MAXFLOAT,
+							0.0f,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWorkspaceProperties);
 
 	/* Define stylable properties */
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWorkspaceProperties[PROP_SHOW_WINDOW_CONTENT]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWorkspaceProperties[PROP_BACKGROUND_IMAGE_TYPE]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWorkspaceProperties[PROP_SHOW_WORKSPACE_NAME]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWorkspaceProperties[PROP_WORKSPACE_NAME_PADDING]);
 
 	/* Define signals */
 	XfdashboardLiveWorkspaceSignals[SIGNAL_CLICKED]=
@@ -812,6 +911,8 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	priv->showWindowContent=TRUE;
 	priv->backgroundType=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE;
 	priv->monitor=NULL;
+	priv->showWorkspaceName=FALSE;
+	priv->workspaceNamePadding=0.0f;
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -825,6 +926,13 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	priv->backgroundImageLayer=clutter_actor_new();
 	clutter_actor_hide(priv->backgroundImageLayer);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->backgroundImageLayer);
+
+	/* Create title actor */
+	priv->actorTitle=xfdashboard_button_new();
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorTitle), "title");
+	clutter_actor_set_reactive(priv->actorTitle, FALSE);
+	clutter_actor_hide(priv->actorTitle);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorTitle);
 
 	/* Connect signals to window tracker */
 	g_signal_connect_swapped(priv->windowTracker,
@@ -850,6 +958,10 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	g_signal_connect_swapped(priv->windowTracker,
 								"window-stacking-changed",
 								G_CALLBACK(_xfdashboard_live_workspace_on_window_stacking_changed),
+								self);
+	g_signal_connect_swapped(priv->windowTracker,
+								"workspace-name-changed",
+								G_CALLBACK(_xfdashboard_live_workspace_on_workspace_name_changed),
 								self);
 }
 
@@ -935,6 +1047,9 @@ void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, Xf
 		/* Create actor for window */
 		_xfdashboard_live_workspace_create_and_add_window_actor(self, window);
 	}
+
+	/* Set name of workspace at title actor */
+	_xfdashboard_live_workspace_on_workspace_name_changed(self, inWorkspace, NULL);
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_WORKSPACE]);
@@ -1108,5 +1223,67 @@ void xfdashboard_live_workspace_set_background_image_type(XfdashboardLiveWorkspa
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_BACKGROUND_IMAGE_TYPE]);
+	}
+}
+
+/* Get/set if workspace's name should be shown */
+gboolean xfdashboard_live_workspace_get_show_workspace_name(XfdashboardLiveWorkspace *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), TRUE);
+
+	return(self->priv->showWorkspaceName);
+}
+
+void xfdashboard_live_workspace_set_show_workspace_name(XfdashboardLiveWorkspace *self, gboolean inIsVisible)
+{
+	XfdashboardLiveWorkspacePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->showWorkspaceName!=inIsVisible)
+	{
+		/* Set value */
+		priv->showWorkspaceName=inIsVisible;
+
+		/* Depending on value show or hide workspace name actor */
+		if(priv->showWorkspaceName) clutter_actor_show(priv->actorTitle);
+			else clutter_actor_hide(priv->actorTitle);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_SHOW_WORKSPACE_NAME]);
+	}
+}
+
+/* Get/set padding of close button actor */
+gfloat xfdashboard_live_workspace_get_workspace_name_padding(XfdashboardLiveWorkspace *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), 0.0f);
+
+	return(self->priv->workspaceNamePadding);
+}
+
+void xfdashboard_live_workspace_set_workspace_name_padding(XfdashboardLiveWorkspace *self, gfloat inPadding)
+{
+	XfdashboardLiveWorkspacePrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+	g_return_if_fail(inPadding>=0.0f);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->workspaceNamePadding!=inPadding)
+	{
+		/* Set value */
+		priv->workspaceNamePadding=inPadding;
+
+		/* Enfore a reallocation of this actor */
+		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_WORKSPACE_NAME_PADDING]);
 	}
 }

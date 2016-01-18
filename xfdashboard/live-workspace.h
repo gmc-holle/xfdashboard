@@ -82,6 +82,12 @@ void xfdashboard_live_workspace_set_show_window_content(XfdashboardLiveWorkspace
 XfdashboardStageBackgroundImageType xfdashboard_live_workspace_get_background_image_type(XfdashboardLiveWorkspace *self);
 void xfdashboard_live_workspace_set_background_image_type(XfdashboardLiveWorkspace *self, XfdashboardStageBackgroundImageType inType);
 
+gboolean xfdashboard_live_workspace_get_show_workspace_name(XfdashboardLiveWorkspace *self);
+void xfdashboard_live_workspace_set_show_workspace_name(XfdashboardLiveWorkspace *self, gboolean inIsVisible);
+
+gfloat xfdashboard_live_workspace_get_workspace_name_padding(XfdashboardLiveWorkspace *self);
+void xfdashboard_live_workspace_set_workspace_name_padding(XfdashboardLiveWorkspace *self, gfloat inPadding);
+
 G_END_DECLS
 
 #endif	/* __XFOVERVIEW_LIVE_WORKSPACE__ */

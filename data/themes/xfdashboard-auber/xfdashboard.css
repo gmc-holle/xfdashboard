@@ -186,6 +186,8 @@ XfdashboardLiveWorkspace
 	background-image-type: desktop;
 	outline-color: #404040ff;
 	outline-width: 1.0;
+	show-workspace-name: false;
+	workspace-name-padding: 4.0;
 }
 
 XfdashboardLiveWorkspace:active
@@ -193,6 +195,13 @@ XfdashboardLiveWorkspace:active
 	background-type: outline;
 	outline-color: #ffff00ff;
 	outline-width: 2.0;
+}
+
+XfdashboardLiveWorkspace .title
+{
+	button-style: text;
+	background-type: fill rounded-corners;
+	corner-radius: 4.0;
 }
 
 /* Scrollbars */
