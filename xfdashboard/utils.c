@@ -36,6 +36,8 @@
 #include "stage.h"
 #include "stage-interface.h"
 #include "window-tracker.h"
+#include "view.h"
+#include "search-provider.h"
 
 /**
  * SECTION:utils
@@ -652,7 +654,7 @@ gboolean xfdashboard_is_valid_id(const gchar *inString)
  * Returns textual representation for numeric value @inValue of
  * enumeration class @inEnumClass.
  *
- * Return value: A string containig the textual representation or
+ * Return value: A string containing the textual representation or
  *               %NULL if @inValue is not a value of enumeration
  *               @inEnumClass. Use g_free() to free returned string.
  */
@@ -729,4 +731,175 @@ static void _xfdashboard_dump_actor_internal(ClutterActor *inActor, gint inLevel
 void xfdashboard_dump_actor(ClutterActor *inActor)
 {
 	_xfdashboard_dump_actor_internal(inActor, 0);
+}
+
+/* Build full path for object and filename at requested base path */
+static gchar* _xfdashboard_get_path_for_object(const gchar *inBasePath,
+												gpointer inObject,
+												const gchar *inFilename)
+{
+	gchar			*fullpath;
+	const gchar		*category;
+	const gchar		*folder;
+
+	g_return_val_if_fail(inBasePath && *inBasePath, NULL);
+	g_return_val_if_fail(inObject && G_IS_OBJECT(inObject), NULL);
+	g_return_val_if_fail(inFilename && *inFilename, NULL);
+
+	/* Determine category and folder name for object */
+	if(XFDASHBOARD_IS_SEARCH_PROVIDER(inObject))
+	{
+		category="search-provider";
+		folder=xfdashboard_search_provider_get_id(XFDASHBOARD_SEARCH_PROVIDER(inObject));
+	}
+		else if(XFDASHBOARD_IS_VIEW(inObject))
+		{
+			category="view";
+			folder=xfdashboard_view_get_id(XFDASHBOARD_VIEW(inObject));
+		}
+		else
+		{
+			category="others";
+			folder=G_OBJECT_TYPE_NAME(inObject);
+		}
+
+	g_return_val_if_fail(category && *category, NULL);
+	g_return_val_if_fail(folder && *folder, NULL);
+
+	/* Now we have all information to build path */
+	fullpath=g_build_filename(inBasePath,
+								"xfdashboard",
+								category,
+								folder,
+								inFilename,
+								NULL);
+
+	return(fullpath);
+
+}
+
+/**
+ * xfdashboard_get_config_path:
+ * @inObject: A #GObject derived object instace
+ * @inFilename: The configuration file name
+ *
+ * Returns the full path to configuration file @inFilename for the object
+ * @inObject.
+ *
+ * All configuration files share the same base path returned by g_get_user_config_dir()
+ * which respects the <ulink url="http://www.freedesktop.org/Standards/basedir-spec">
+ * XDG Base Directory Specification</ulink>.
+ *
+ * If @inObject is derived from #XfdashboardView then "view" and the registered
+ * ID of the view is appended to base path.
+ *
+ * If @inObject is derived from #XfdashboardSearchProvider then "search-provider"
+ * and the registered ID of the search provider is appended to base path.
+ *
+ * All other types will append "others" followed by the textual representation
+ * of the type of @inObject.
+ *
+ * In all cases the file name @inFilename is appended to the path at last.
+ *
+ * E.g. the path to configuration file "myfile" for the search provider
+ * #XfdashboardApplicationsSearchProvider which was registered with ID "applications"
+ * will be $XDG_CONFIG_HOME/xfdashboard/view/applications/myfile.
+ *
+ * <note>You cannot call this function within the object initialization function
+ * if @inObject is a #XfdashboardView or a #XfdashboarSearchProvider because their ID
+ * is not available at this time. If you want to get this path as soon as possible you
+ * should connect a signal handler to "notify::view-id" for #XfdashboardView or
+ * "notify::provider-id" for #XfdashboarSearchProvider and fetch the paths in this
+ * signal handler.</note>
+ *
+ * Return value: A string containing the full path to the configuration file or
+ *               %NULL in case of error. Use g_free() to free returned string.
+ */
+gchar* xfdashboard_get_config_path(gpointer inObject, const gchar *inFilename)
+{
+	return(_xfdashboard_get_path_for_object(g_get_user_config_dir(), inObject, inFilename));
+}
+
+/**
+ * xfdashboard_get_cache_path:
+ * @inObject: A #GObject derived object instace
+ * @inFilename: The cache file name
+ *
+ * Returns the full path to cache file @inFilename for the object
+ * @inObject.
+ *
+ * All cache files share the same base path returned by g_get_user_cache_dir()
+ * which respects the <ulink url="http://www.freedesktop.org/Standards/basedir-spec">
+ * XDG Base Directory Specification</ulink>.
+ *
+ * If @inObject is derived from #XfdashboardView then "view" and the registered
+ * ID of the view is appended to base path.
+ *
+ * If @inObject is derived from #XfdashboardSearchProvider then "search-provider"
+ * and the registered ID of the search provider is appended to base path.
+ *
+ * All other types will append "others" followed by the textual representation
+ * of the type of @inObject.
+ *
+ * In all cases the file name @inFilename is appended to the path at last.
+ *
+ * E.g. the path to cache file "mycachefile" for the search provider
+ * #XfdashboardApplicationsSearchProvider which was registered with ID "applications"
+ * will be $XDG_CACHE_HOME/xfdashboard/view/applications/mycachefile.
+ *
+ * <note>You cannot call this function within the object initialization function
+ * if @inObject is a #XfdashboardView or a #XfdashboarSearchProvider because their ID
+ * is not available at this time. If you want to get this path as soon as possible you
+ * should connect a signal handler to "notify::view-id" for #XfdashboardView or
+ * "notify::provider-id" for #XfdashboarSearchProvider and fetch the paths in this
+ * signal handler.</note>
+ *
+ * Return value: A string containing the full path to the cache file or
+ *               %NULL in case of error. Use g_free() to free returned string.
+ */
+gchar* xfdashboard_get_cache_path(gpointer inObject, const gchar *inFilename)
+{
+	return(_xfdashboard_get_path_for_object(g_get_user_cache_dir(), inObject, inFilename));
+}
+
+/**
+ * xfdashboard_get_data_path:
+ * @inObject: A #GObject derived object instace
+ * @inFilename: The cache file name
+ *
+ * Returns the full path to data file @inFilename for the object
+ * @inObject.
+ *
+ * All data files share the same base path returned by g_get_user_data_dir()
+ * which respects the <ulink url="http://www.freedesktop.org/Standards/basedir-spec">
+ * XDG Base Directory Specification</ulink>.
+ *
+ * If @inObject is derived from #XfdashboardView then "view" and the registered
+ * ID of the view is appended to base path.
+ *
+ * If @inObject is derived from #XfdashboardSearchProvider then "search-provider"
+ * and the registered ID of the search provider is appended to base path.
+ *
+ * All other types will append "others" followed by the textual representation
+ * of the type of @inObject.
+ *
+ * In all cases the file name @inFilename is appended to the path at last.
+ *
+ * E.g. the path to cache file "mydatafile" for the search provider
+ * #XfdashboardApplicationsSearchProvider which was registered with ID "applications"
+ * will be $XDG_DATA_HOME/xfdashboard/view/applications/mydatafile.
+ *
+ * <note>You cannot call this function within the object initialization function
+ * if @inObject is a #XfdashboardView or a #XfdashboarSearchProvider because their ID
+ * is not available at this time. If you want to get this path as soon as possible you
+ * should connect a signal handler to "notify::view-id" for #XfdashboardView or
+ * "notify::provider-id" for #XfdashboarSearchProvider and fetch the paths in this
+ * signal handler.</note>
+ *
+ * Return value: A string containing the full path to the data file or
+ *               %NULL in case of error. Use g_free() to free returned string.
+ */
+gchar* xfdashboard_get_data_path(gpointer inObject, const gchar *inFilename)
+{
+	return(_xfdashboard_get_path_for_object(g_get_user_data_dir(), inObject, inFilename));
 }

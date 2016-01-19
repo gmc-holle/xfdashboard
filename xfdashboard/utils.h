@@ -98,6 +98,10 @@ gchar* xfdashboard_get_enum_value_name(GType inEnumClass, gint inValue);
 
 void xfdashboard_dump_actor(ClutterActor *inActor);
 
+gchar* xfdashboard_get_config_path(gpointer inObject, const gchar *inFilename);
+gchar* xfdashboard_get_cache_path(gpointer inObject, const gchar *inFilename);
+gchar* xfdashboard_get_data_path(gpointer inObject, const gchar *inFilename);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_UTILS__ */
