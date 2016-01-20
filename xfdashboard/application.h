@@ -89,6 +89,8 @@ struct _XfdashboardApplicationClass
 
 	void (*theme_changed)(XfdashboardApplication *self, XfdashboardTheme *inTheme);
 
+	void (*application_launched)(XfdashboardApplication *self, GAppInfo *inAppInfo);
+
 	/* Binding actions */
 	gboolean (*exit)(XfdashboardApplication *self,
 						XfdashboardFocusable *inSource,

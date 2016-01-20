@@ -111,6 +111,7 @@ enum
 	SIGNAL_SUSPEND,
 	SIGNAL_RESUME,
 	SIGNAL_THEME_CHANGED,
+	SIGNAL_APPLICATION_LAUNCHED,
 
 	/* Actions */
 	ACTION_EXIT,
@@ -988,6 +989,18 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 						G_TYPE_NONE,
 						1,
 						XFDASHBOARD_TYPE_THEME);
+
+	XfdashboardApplicationSignals[SIGNAL_APPLICATION_LAUNCHED]=
+		g_signal_new("application-launched",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardApplicationClass, application_launched),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						G_TYPE_APP_INFO);
 
 	XfdashboardApplicationSignals[ACTION_EXIT]=
 		g_signal_new("exit",
