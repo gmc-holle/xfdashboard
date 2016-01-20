@@ -36,6 +36,7 @@
 #include "utils.h"
 #include "application-tracker.h"
 #include "stylable.h"
+#include "application.h"
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationButton,
@@ -666,6 +667,7 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 	error=NULL;
 	if(!g_app_info_launch(priv->appInfo, NULL, context, &error))
 	{
+		/* Show notification about failed application launch */
 		xfdashboard_notify(CLUTTER_ACTOR(self),
 							xfdashboard_application_button_get_icon_name(self),
 							_("Launching application '%s' failed: %s"),
@@ -678,10 +680,16 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 	}
 		else
 		{
+			/* Show notification about successful application launch */
 			xfdashboard_notify(CLUTTER_ACTOR(self),
 								xfdashboard_application_button_get_icon_name(self),
 								_("Application '%s' launched"),
 								xfdashboard_application_button_get_display_name(self));
+
+			/* Emit signal for successful application launch */
+			g_signal_emit_by_name(xfdashboard_application_get_default(), "application-launched", priv->appInfo);
+
+			/* Set status that application has been started successfully */
 			started=TRUE;
 		}
 
