@@ -58,12 +58,6 @@ struct _XfdashboardApplicationsSearchProviderPrivate
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_DELIMITERS			"\t\n\r "
 
-typedef struct _XfdashboardApplicationsSearchProviderSearchData		XfdashboardApplicationsSearchProviderSearchData;
-struct _XfdashboardApplicationsSearchProviderSearchData
-{
-	gchar 									*searchTerm;
-};
-
 /* An application was added to database */
 static void _xfdashboard_applications_search_provider_on_application_added(XfdashboardApplicationsSearchProvider *self,
 																			GAppInfo *inAppInfo,
