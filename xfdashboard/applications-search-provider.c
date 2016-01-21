@@ -60,17 +60,17 @@ struct _XfdashboardApplicationsSearchProviderPrivate
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_DELIMITERS														"\t\n\r "
 
-#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_APPDATA_STATE_FILE				"app-datas-state"
+#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE				"statistics"
 #define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_APPDATA_LAUNCH_COUNT_GROUP		"Launch Counts"
 
-G_LOCK_DEFINE_STATIC(_xfdashboard_applications_search_provider_app_datas_lock);
-static GHashTable*		_xfdashboard_applications_search_provider_app_datas=NULL;
-static gchar*			_xfdashboard_applications_search_provider_app_datas_filename=NULL;
-static guint			_xfdashboard_applications_search_provider_app_datas_shutdownSignalID=0;
-static guint			_xfdashboard_applications_search_provider_app_datas_applicationLaunchedSignalID=0;
+G_LOCK_DEFINE_STATIC(_xfdashboard_applications_search_provider_statistics_lock);
+static GHashTable*		_xfdashboard_applications_search_provider_statistics=NULL;
+static gchar*			_xfdashboard_applications_search_provider_statistics_filename=NULL;
+static guint			_xfdashboard_applications_search_provider_statistics_shutdownSignalID=0;
+static guint			_xfdashboard_applications_search_provider_statistics_applicationLaunchedSignalID=0;
 
-typedef struct _XfdashboardApplicationsSearchProviderAppData		XfdashboardApplicationsSearchProviderAppData;
-struct _XfdashboardApplicationsSearchProviderAppData
+typedef struct _XfdashboardApplicationsSearchProviderStatistics		XfdashboardApplicationsSearchProviderStatistics;
+struct _XfdashboardApplicationsSearchProviderStatistics
 {
 	gint								refCount;
 
@@ -78,12 +78,12 @@ struct _XfdashboardApplicationsSearchProviderAppData
 };
 
 /* Create, destroy, ref and unref tag data for a tag */
-static XfdashboardApplicationsSearchProviderAppData* _xfdashboard_applications_search_provider_app_data_new(void)
+static XfdashboardApplicationsSearchProviderStatistics* _xfdashboard_applications_search_provider_statistics_new(void)
 {
-	XfdashboardApplicationsSearchProviderAppData	*data;
+	XfdashboardApplicationsSearchProviderStatistics	*data;
 
 	/* Create data for app-data */
-	data=g_new0(XfdashboardApplicationsSearchProviderAppData, 1);
+	data=g_new0(XfdashboardApplicationsSearchProviderStatistics, 1);
 	if(!data) return(NULL);
 
 	/* Set up app-data */
@@ -92,7 +92,7 @@ static XfdashboardApplicationsSearchProviderAppData* _xfdashboard_applications_s
 	return(data);
 }
 
-static void _xfdashboard_applications_search_provider_app_data_free(XfdashboardApplicationsSearchProviderAppData *inData)
+static void _xfdashboard_applications_search_provider_statistics_free(XfdashboardApplicationsSearchProviderStatistics *inData)
 {
 	g_return_if_fail(inData);
 
@@ -100,7 +100,7 @@ static void _xfdashboard_applications_search_provider_app_data_free(XfdashboardA
 	g_free(inData);
 }
 
-static XfdashboardApplicationsSearchProviderAppData* _xfdashboard_applications_search_provider_app_data_ref(XfdashboardApplicationsSearchProviderAppData *inData)
+static XfdashboardApplicationsSearchProviderStatistics* _xfdashboard_applications_search_provider_statistics_ref(XfdashboardApplicationsSearchProviderStatistics *inData)
 {
 	g_return_val_if_fail(inData, NULL);
 
@@ -108,12 +108,31 @@ static XfdashboardApplicationsSearchProviderAppData* _xfdashboard_applications_s
 	return(inData);
 }
 
-static void _xfdashboard_applications_search_provider_app_data_unref(XfdashboardApplicationsSearchProviderAppData *inData)
+static void _xfdashboard_applications_search_provider_statistics_unref(XfdashboardApplicationsSearchProviderStatistics *inData)
 {
 	g_return_if_fail(inData);
 
 	inData->refCount--;
-	if(inData->refCount==0) _xfdashboard_applications_search_provider_app_data_free(inData);
+	if(inData->refCount==0) _xfdashboard_applications_search_provider_statistics_free(inData);
+}
+
+static XfdashboardApplicationsSearchProviderStatistics* _xfdashboard_applications_search_provider_statistics_get(const gchar *inAppID)
+{
+	XfdashboardApplicationsSearchProviderStatistics		*stats;
+
+	g_return_val_if_fail(_xfdashboard_applications_search_provider_statistics, NULL);
+	g_return_val_if_fail(inAppID && *inAppID, NULL);
+
+	/* Lookup statistics data by application ID. If this application could not be found,
+	 * then return NULL pointer.
+	 */
+	if(!g_hash_table_lookup_extended(_xfdashboard_applications_search_provider_statistics, inAppID, NULL, (gpointer*)&stats))
+	{
+		stats=NULL;
+	}
+
+	/* Return statistics data or NULL */
+	return(stats);
 }
 
 /* An application was launched successfully */
@@ -121,80 +140,77 @@ static void _xfdashboard_applications_search_provider_on_application_launched(Xf
 																				GAppInfo *inAppInfo,
 																				gpointer inUserData)
 {
-	const gchar										*appID;
-	XfdashboardApplicationsSearchProviderAppData	*appData;
+	const gchar											*appID;
+	XfdashboardApplicationsSearchProviderStatistics		*stats;
 
 	g_return_if_fail(G_IS_APP_INFO(inAppInfo));
 
 	/* Lock for thread-safety */
-	G_LOCK(_xfdashboard_applications_search_provider_app_datas_lock);
+	G_LOCK(_xfdashboard_applications_search_provider_statistics_lock);
 
 	/* Get application ID which is used to lookup and store app-datas */
 	appID=g_app_info_get_id(inAppInfo);
 
-	/* Create new app-data if application is new, otherwise take an extra
-	 * reference on app-data to keep it alive as it will be removed and
-	 * re-added when updating and the removal may decrease the reference
-	 * counter to zero which destroys the app-data.
+	/* Create new statistics data if application is new, otherwise take an extra
+	 * reference on statistics data to keep it alive as it will be removed and
+	 * re-added when updating and the removal may decrease the reference counter
+	 * to zero which destroys the statistics data.
 	 */
-	if(!g_hash_table_lookup_extended(_xfdashboard_applications_search_provider_app_datas, appID, NULL, (gpointer*)&appData))
-	{
-		appData=_xfdashboard_applications_search_provider_app_data_new();
-	}
-		else
-		{
-			_xfdashboard_applications_search_provider_app_data_ref(appData);
-		}
+	stats=_xfdashboard_applications_search_provider_statistics_get(appID);
+	if(!stats) stats=_xfdashboard_applications_search_provider_statistics_new();
+		else _xfdashboard_applications_search_provider_statistics_ref(stats);
 
 	/* Increase launch counter */
-	appData->launchCounter++;
+	stats->launchCounter++;
 
 	/* Store updated app-data */
-	g_hash_table_insert(_xfdashboard_applications_search_provider_app_datas, g_strdup(appID), _xfdashboard_applications_search_provider_app_data_ref(appData));
+	g_hash_table_insert(_xfdashboard_applications_search_provider_statistics,
+						g_strdup(appID),
+						_xfdashboard_applications_search_provider_statistics_ref(stats));
 
-	/* Release extra reference we took to keep this app-data alive */
-	_xfdashboard_applications_search_provider_app_data_unref(appData);
+	/* Release extra reference we took to keep this statistics data alive */
+	_xfdashboard_applications_search_provider_statistics_unref(stats);
 
 	/* Unlock for thread-safety */
-	G_UNLOCK(_xfdashboard_applications_search_provider_app_datas_lock);
+	G_UNLOCK(_xfdashboard_applications_search_provider_statistics_lock);
 }
 
 /* Destroy app-datas for this search provider */
 static void _xfdashboard_applications_search_provider_destroy_app_datas(void)
 {
-	XfdashboardApplication								*application;
+	XfdashboardApplication									*application;
 
 	/* Only existing app-datas can be destroyed */
-	if(!_xfdashboard_applications_search_provider_app_datas) return;
+	if(!_xfdashboard_applications_search_provider_statistics) return;
 
 	/* Lock for thread-safety */
-	G_LOCK(_xfdashboard_applications_search_provider_app_datas_lock);
+	G_LOCK(_xfdashboard_applications_search_provider_statistics_lock);
 
 	/* Get application instance */
 	application=xfdashboard_application_get_default();
 
 	/* Disconnect application "shutdown" signal handler */
-	g_signal_handler_disconnect(application, _xfdashboard_applications_search_provider_app_datas_shutdownSignalID);
-	_xfdashboard_applications_search_provider_app_datas_shutdownSignalID=0;
+	g_signal_handler_disconnect(application, _xfdashboard_applications_search_provider_statistics_shutdownSignalID);
+	_xfdashboard_applications_search_provider_statistics_shutdownSignalID=0;
 
 	/* Disconnect application "application-launched" signal handler */
-	g_signal_handler_disconnect(application, _xfdashboard_applications_search_provider_app_datas_applicationLaunchedSignalID);
-	_xfdashboard_applications_search_provider_app_datas_applicationLaunchedSignalID=0;
+	g_signal_handler_disconnect(application, _xfdashboard_applications_search_provider_statistics_applicationLaunchedSignalID);
+	_xfdashboard_applications_search_provider_statistics_applicationLaunchedSignalID=0;
 
 	/* Save app-datas to state file */
-	if(_xfdashboard_applications_search_provider_app_datas_filename)
+	if(_xfdashboard_applications_search_provider_statistics_filename)
 	{
-		GKeyFile										*keyFile;
-		gchar											*keyFileData;
-		gsize											keyFileLength;
-		GHashTableIter									iter;
-		gchar											*appID;
-		XfdashboardApplicationsSearchProviderAppData	*appData;
-		GError											*error;
-		gchar											*fileFolder;
+		GKeyFile											*keyFile;
+		gchar												*keyFileData;
+		gsize												keyFileLength;
+		GHashTableIter										iter;
+		gchar												*appID;
+		XfdashboardApplicationsSearchProviderStatistics		*stats;
+		GError												*error;
+		gchar												*fileFolder;
 
 		/* Create parent folders for key file if not available */
-		fileFolder=g_path_get_dirname(_xfdashboard_applications_search_provider_app_datas_filename);
+		fileFolder=g_path_get_dirname(_xfdashboard_applications_search_provider_statistics_filename);
 
 		if(g_mkdir_with_parents(fileFolder, 0700)<0)
 		{
@@ -204,31 +220,31 @@ static void _xfdashboard_applications_search_provider_destroy_app_datas(void)
 			errno_save=errno;
 
 			/* Show error message */
-			g_critical(_("Could not create folders to store app-datas of applications search provider to %s: %s"),
-						_xfdashboard_applications_search_provider_app_datas_filename,
+			g_critical(_("Could not create folders to store statistics of applications search provider to %s: %s"),
+						_xfdashboard_applications_search_provider_statistics_filename,
 						g_strerror(errno_save));
 		}
 
 		/* Create and set up key file for app-datas */
 		keyFile=g_key_file_new();
 
-		g_hash_table_iter_init(&iter, _xfdashboard_applications_search_provider_app_datas);
-		while(g_hash_table_iter_next(&iter, (gpointer*)&appID, (gpointer*)&appData))
+		g_hash_table_iter_init(&iter, _xfdashboard_applications_search_provider_statistics);
+		while(g_hash_table_iter_next(&iter, (gpointer*)&appID, (gpointer*)&stats))
 		{
 			g_key_file_set_uint64(keyFile,
 									XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_APPDATA_LAUNCH_COUNT_GROUP,
 									appID,
-									appData->launchCounter);
+									stats->launchCounter);
 		}
 
 		/* Store key file for app-datas */
 		error=NULL;
 
 		keyFileData=g_key_file_to_data(keyFile, &keyFileLength, NULL);
-		if(!g_file_set_contents(_xfdashboard_applications_search_provider_app_datas_filename, keyFileData, keyFileLength, &error))
+		if(!g_file_set_contents(_xfdashboard_applications_search_provider_statistics_filename, keyFileData, keyFileLength, &error))
 		{
-			g_critical(_("Failed to save app-datas of applications search provider to %s: %s"),
-						_xfdashboard_applications_search_provider_app_datas_filename,
+			g_critical(_("Failed to save statistics of applications search provider to %s: %s"),
+						_xfdashboard_applications_search_provider_statistics_filename,
 						error ? error->message : _("Unknown error"));
 			if(error) g_error_free(error);
 		}
@@ -240,65 +256,65 @@ static void _xfdashboard_applications_search_provider_destroy_app_datas(void)
 	}
 
 	/* Destroy app-datas */
-	g_debug("Destroying app-datas of applications search provider");
-	g_hash_table_destroy(_xfdashboard_applications_search_provider_app_datas);
-	_xfdashboard_applications_search_provider_app_datas=NULL;
+	g_debug("Destroying statistics of applications search provider");
+	g_hash_table_destroy(_xfdashboard_applications_search_provider_statistics);
+	_xfdashboard_applications_search_provider_statistics=NULL;
 
 	/* Destroy filename for app-datas */
-	if(_xfdashboard_applications_search_provider_app_datas_filename)
+	if(_xfdashboard_applications_search_provider_statistics_filename)
 	{
-		g_free(_xfdashboard_applications_search_provider_app_datas_filename);
-		_xfdashboard_applications_search_provider_app_datas_filename=NULL;
+		g_free(_xfdashboard_applications_search_provider_statistics_filename);
+		_xfdashboard_applications_search_provider_statistics_filename=NULL;
 	}
 
 	/* Unlock for thread-safety */
-	G_UNLOCK(_xfdashboard_applications_search_provider_app_datas_lock);
+	G_UNLOCK(_xfdashboard_applications_search_provider_statistics_lock);
 }
 
 /* Create and load app-datas for this search provider if not done already */
 static void _xfdashboard_applications_search_provider_create_app_datas(XfdashboardApplicationsSearchProvider *self)
 {
-	XfdashboardApplication									*application;
+	XfdashboardApplication										*application;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self));
 
 	/* App-datas were already set up */
-	if(_xfdashboard_applications_search_provider_app_datas) return;
+	if(_xfdashboard_applications_search_provider_statistics) return;
 
-	g_assert(!_xfdashboard_applications_search_provider_app_datas_shutdownSignalID);
-	g_assert(!_xfdashboard_applications_search_provider_app_datas_applicationLaunchedSignalID);
+	g_assert(!_xfdashboard_applications_search_provider_statistics_shutdownSignalID);
+	g_assert(!_xfdashboard_applications_search_provider_statistics_applicationLaunchedSignalID);
 
 	/* Lock for thread-safety */
-	G_LOCK(_xfdashboard_applications_search_provider_app_datas_lock);
+	G_LOCK(_xfdashboard_applications_search_provider_statistics_lock);
 
 	/* Load app-datas from state file */
-	_xfdashboard_applications_search_provider_app_datas_filename=xfdashboard_get_data_path(self, XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_APPDATA_STATE_FILE);
-	if(!_xfdashboard_applications_search_provider_app_datas_filename)
+	_xfdashboard_applications_search_provider_statistics_filename=xfdashboard_get_data_path(self, XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE);
+	if(!_xfdashboard_applications_search_provider_statistics_filename)
 	{
 		/* Show error message */
-		g_critical(_("Could not get file name for app-datas of applications search provider"));
+		g_critical(_("Could not get file name for statistics of applications search provider"));
 
 		/* Unlock for thread-safety */
-		G_UNLOCK(_xfdashboard_applications_search_provider_app_datas_lock);
+		G_UNLOCK(_xfdashboard_applications_search_provider_statistics_lock);
 
 		return;
 	}
 
 	/* Create hash-table for app-datas */
-	_xfdashboard_applications_search_provider_app_datas=
+	_xfdashboard_applications_search_provider_statistics=
 		g_hash_table_new_full(g_str_hash,
 								g_str_equal,
 								g_free,
-								(GDestroyNotify)_xfdashboard_applications_search_provider_app_data_unref);
-	g_debug("Created app-datas of applications search provider");
+								(GDestroyNotify)_xfdashboard_applications_search_provider_statistics_unref);
+	g_debug("Created statistics of applications search provider");
 
 	/* Load app-datas and store into hash-table */
-	if(g_file_test(_xfdashboard_applications_search_provider_app_datas_filename, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+	if(g_file_test(_xfdashboard_applications_search_provider_statistics_filename, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
 	{
-		GKeyFile											*keyFile;
-		GError												*error;
-		gchar												*startGroup;
-		gchar												**keys;
+		GKeyFile												*keyFile;
+		GError													*error;
+		gchar													*startGroup;
+		gchar													**keys;
 
 		error=NULL;
 		startGroup=NULL;
@@ -306,11 +322,11 @@ static void _xfdashboard_applications_search_provider_create_app_datas(Xfdashboa
 
 		/* Load app-datas state file */
 		keyFile=g_key_file_new();
-		if(!g_key_file_load_from_file(keyFile, _xfdashboard_applications_search_provider_app_datas_filename, G_KEY_FILE_NONE, &error))
+		if(!g_key_file_load_from_file(keyFile, _xfdashboard_applications_search_provider_statistics_filename, G_KEY_FILE_NONE, &error))
 		{
 			/* Show error message and release error */
-			g_critical(_("Could not load app-datas state file of applications search provider at %s: %s"),
-						_xfdashboard_applications_search_provider_app_datas_filename,
+			g_critical(_("Could not load statistics of applications search provider at %s: %s"),
+						_xfdashboard_applications_search_provider_statistics_filename,
 						error ? error->message : _("Unknown error"));
 			if(error)
 			{
@@ -329,8 +345,8 @@ static void _xfdashboard_applications_search_provider_create_app_datas(Xfdashboa
 			startGroup=g_key_file_get_start_group(keyFile);
 			if(!startGroup)
 			{
-				g_critical(_("Could get list of app-datas from state file of applications search provider at %s"),
-							_xfdashboard_applications_search_provider_app_datas_filename);
+				g_critical(_("Could get list of applications from statistics of applications search provider at %s"),
+							_xfdashboard_applications_search_provider_statistics_filename);
 
 				/* Release key file to stop further processing */
 				g_key_file_free(keyFile);
@@ -343,8 +359,8 @@ static void _xfdashboard_applications_search_provider_create_app_datas(Xfdashboa
 			keys=g_key_file_get_keys(keyFile, startGroup, NULL, &error);
 			if(!keys)
 			{
-				g_critical(_("Could get list of app-datas from state file of applications search provider at %s"),
-							_xfdashboard_applications_search_provider_app_datas_filename);
+				g_critical(_("Could get list of applications from statistics of applications search provider at %s"),
+							_xfdashboard_applications_search_provider_statistics_filename);
 
 				/* Release key file to stop further processing */
 				g_key_file_free(keyFile);
@@ -355,9 +371,9 @@ static void _xfdashboard_applications_search_provider_create_app_datas(Xfdashboa
 		/* Read app-datas from state file */
 		if(keyFile)
 		{
-			gchar											**iter;
-			gchar											*appID;
-			XfdashboardApplicationsSearchProviderAppData	*appData;
+			gchar												**iter;
+			gchar												*appID;
+			XfdashboardApplicationsSearchProviderStatistics		*stats;
 
 			for(iter=keys; *iter; iter++)
 			{
@@ -365,22 +381,22 @@ static void _xfdashboard_applications_search_provider_create_app_datas(Xfdashboa
 				appID=*iter;
 
 				/* Set up application data for application ID */
-				appData=_xfdashboard_applications_search_provider_app_data_new();
-				appData->launchCounter=g_key_file_get_uint64(keyFile,
-																XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_APPDATA_LAUNCH_COUNT_GROUP,
-																appID,
-																NULL);
+				stats=_xfdashboard_applications_search_provider_statistics_new();
+				stats->launchCounter=g_key_file_get_uint64(keyFile,
+															XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_APPDATA_LAUNCH_COUNT_GROUP,
+															appID,
+															NULL);
 
 				/* Store application data into hash-table */
-				g_hash_table_insert(_xfdashboard_applications_search_provider_app_datas, g_strdup(appID), _xfdashboard_applications_search_provider_app_data_ref(appData));
+				g_hash_table_insert(_xfdashboard_applications_search_provider_statistics, g_strdup(appID), _xfdashboard_applications_search_provider_statistics_ref(stats));
 
 				/* Release application data */
-				_xfdashboard_applications_search_provider_app_data_unref(appData);
+				_xfdashboard_applications_search_provider_statistics_unref(stats);
 			}
 
-			g_debug("Loaded %d app-data entries from '%s' at applications search provider",
-						g_hash_table_size(_xfdashboard_applications_search_provider_app_datas),
-						_xfdashboard_applications_search_provider_app_datas_filename);
+			g_debug("Loaded %d statistics entries from '%s' at applications search provider",
+						g_hash_table_size(_xfdashboard_applications_search_provider_statistics),
+						_xfdashboard_applications_search_provider_statistics_filename);
 		}
 
 		/* Release allocated resources */
@@ -393,21 +409,21 @@ static void _xfdashboard_applications_search_provider_create_app_datas(Xfdashboa
 	application=xfdashboard_application_get_default();
 
 	/* Connect to "shutdown" signal of application to clean up app-datas */
-	_xfdashboard_applications_search_provider_app_datas_shutdownSignalID=
+	_xfdashboard_applications_search_provider_statistics_shutdownSignalID=
 		g_signal_connect(application,
 							"shutdown-final",
 							G_CALLBACK(_xfdashboard_applications_search_provider_destroy_app_datas),
 							NULL);
 
 	/* Connect to "application-launched" signal of application to track app launches */
-	_xfdashboard_applications_search_provider_app_datas_applicationLaunchedSignalID=
+	_xfdashboard_applications_search_provider_statistics_applicationLaunchedSignalID=
 		g_signal_connect(application,
 							"application-launched",
 							G_CALLBACK(_xfdashboard_applications_search_provider_on_application_launched),
 							NULL);
 
 	/* Unlock for thread-safety */
-	G_UNLOCK(_xfdashboard_applications_search_provider_app_datas_lock);
+	G_UNLOCK(_xfdashboard_applications_search_provider_statistics_lock);
 }
 
 /* An application was added to database */
