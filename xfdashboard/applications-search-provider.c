@@ -243,7 +243,7 @@ static gboolean _xfdashboard_applications_search_provider_save_statistics(GError
 		appID=(const gchar*)iter->data;
 
 		/* Get statistics data (it must exist because we got a list of all keys) */
-		stats=g_hash_table_lookup(_xfdashboard_applications_search_provider_statistics, appID);
+		stats=_xfdashboard_applications_search_provider_statistics_get(appID);
 		g_assert(stats!=NULL);
 
 		/* Store application desktop ID in "entries" overview group and increase counter */
