@@ -60,7 +60,7 @@ struct _XfdashboardApplicationsSearchProviderPrivate
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_DELIMITERS														"\t\n\r "
 
-#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE				"statistics"
+#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE				"applications-search-provider-statistics.ini"
 #define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_ENTRIES_GROUP		"Entries"
 #define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_ENTRIES_COUNT		"Count"
 #define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_LAUNCH_COUNT_GROUP	"Launch Counts"
@@ -322,7 +322,11 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 	/* Get path to statistics file to load statistics from */
 	if(!_xfdashboard_applications_search_provider_statistics_filename)
 	{
-		_xfdashboard_applications_search_provider_statistics_filename=xfdashboard_get_data_path(self, XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE);
+		_xfdashboard_applications_search_provider_statistics_filename=
+			g_build_filename(g_get_user_data_dir(),
+								"xfdashboard",
+								XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE,
+								NULL);
 
 		if(!_xfdashboard_applications_search_provider_statistics_filename)
 		{
@@ -330,7 +334,7 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 			g_set_error(outError,
 							G_IO_ERROR,
 							G_IO_ERROR_NOT_FOUND,
-							_("Could not get path to statistics file of applications search provider"));
+							_("Could not build path to statistics file of applications search provider"));
 
 			return(FALSE);
 		}
