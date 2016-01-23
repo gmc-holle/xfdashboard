@@ -64,6 +64,10 @@ struct _XfdashboardPluginPrivate
 	gchar						*author;
 	gchar						*copyright;
 	gchar						*license;
+
+	gchar						*configPath;
+	gchar						*cachePath;
+	gchar						*dataPath;
 };
 
 /* Properties */
@@ -79,6 +83,10 @@ enum
 	PROP_AUTHOR,
 	PROP_COPYRIGHT,
 	PROP_LICENSE,
+
+	PROP_CONFIG_PATH,
+	PROP_CACHE_PATH,
+	PROP_DATA_PATH,
 
 	PROP_LAST
 };
@@ -158,6 +166,54 @@ static void _xfdashboard_plugin_set_filename(XfdashboardPlugin *self, const gcha
 	}
 }
 
+/* Update special paths for this plugin */
+static gboolean _xfdashboard_plugin_update_special_paths(XfdashboardPlugin *self)
+{
+	XfdashboardPluginPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), FALSE);
+
+	priv=self->priv;
+
+	/* Check that ID of plugin is set */
+	if(!priv->id)
+	{
+		g_critical(_("Cannot get path for plugin at %s"), priv->filename);
+		return(FALSE);
+	}
+
+	/* Freeze notification */
+	g_object_freeze_notify(G_OBJECT(self));
+
+	/* Update paths of this plugin */
+	if(priv->configPath)
+	{
+		g_free(priv->configPath);
+		priv->configPath=NULL;
+	}
+	priv->configPath=g_build_filename(g_get_user_config_dir(), "xfdashboard", priv->id, NULL);
+
+	if(priv->cachePath)
+	{
+		g_free(priv->cachePath);
+		priv->cachePath=NULL;
+	}
+	priv->cachePath=g_build_filename(g_get_user_cache_dir(), "xfdashboard", priv->id, NULL);
+
+	if(priv->dataPath)
+	{
+		g_free(priv->dataPath);
+		priv->dataPath=NULL;
+	}
+	priv->dataPath=g_build_filename(g_get_user_data_dir(), "xfdashboard", priv->id, NULL);
+
+	/* Thaw notification */
+	g_object_thaw_notify(G_OBJECT(self));
+
+	/* Updating paths was successful */
+	return(TRUE);
+}
+
 /* Set ID for plugin */
 static void _xfdashboard_plugin_set_id(XfdashboardPlugin *self, const gchar *inID)
 {
@@ -179,6 +235,9 @@ static void _xfdashboard_plugin_set_id(XfdashboardPlugin *self, const gchar *inI
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPluginProperties[PROP_ID]);
+
+		/* When ID changes then also paths of this plugin change */
+		_xfdashboard_plugin_update_special_paths(self);
 	}
 }
 
@@ -321,7 +380,6 @@ static void _xfdashboard_plugin_set_license(XfdashboardPlugin *self, const gchar
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPluginProperties[PROP_LICENSE]);
 	}
 }
-
 
 /* IMPLEMENTATION: GTypeModule */
 
@@ -532,6 +590,24 @@ static void _xfdashboard_plugin_dispose(GObject *inObject)
 		priv->license=NULL;
 	}
 
+	if(priv->configPath)
+	{
+		g_free(priv->configPath);
+		priv->configPath=NULL;
+	}
+
+	if(priv->cachePath)
+	{
+		g_free(priv->cachePath);
+		priv->cachePath=NULL;
+	}
+
+	if(priv->dataPath)
+	{
+		g_free(priv->dataPath);
+		priv->dataPath=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_plugin_parent_class)->dispose(inObject);
 }
@@ -618,6 +694,18 @@ static void _xfdashboard_plugin_get_property(GObject *inObject,
 			g_value_set_string(outValue, priv->license);
 			break;
 
+		case PROP_CONFIG_PATH:
+			g_value_set_string(outValue, priv->configPath);
+			break;
+
+		case PROP_CACHE_PATH:
+			g_value_set_string(outValue, priv->cachePath);
+			break;
+
+		case PROP_DATA_PATH:
+			g_value_set_string(outValue, priv->dataPath);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -694,6 +782,27 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardPluginProperties[PROP_CONFIG_PATH]=
+		g_param_spec_string("config-path",
+							_("Config path"),
+							_("The base path to configuration files of this plugin"),
+							NULL,
+							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardPluginProperties[PROP_CACHE_PATH]=
+		g_param_spec_string("cache-path",
+							_("Cache path"),
+							_("The base path to cache files of this plugin"),
+							NULL,
+							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardPluginProperties[PROP_DATA_PATH]=
+		g_param_spec_string("data-path",
+							_("Data path"),
+							_("The base path to data files of this plugin"),
+							NULL,
+							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardPluginProperties);
 }
 
@@ -718,6 +827,10 @@ static void xfdashboard_plugin_init(XfdashboardPlugin *self)
 	priv->author=NULL;
 	priv->copyright=NULL;
 	priv->license=NULL;
+
+	priv->configPath=NULL;
+	priv->cachePath=NULL;
+	priv->dataPath=NULL;
 }
 
 
@@ -885,4 +998,28 @@ void xfdashboard_plugin_disable(XfdashboardPlugin *self)
 	/* If we get here the virtual function was not overridden */
 	XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, "disable");
 	return;
+}
+
+/* Get base path to configuration files of this plugin */
+const gchar* xfdashboard_plugin_get_config_path(XfdashboardPlugin *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
+
+	return(self->priv->configPath);
+}
+
+/* Get base path to cache files of this plugin */
+const gchar* xfdashboard_plugin_get_cache_path(XfdashboardPlugin *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
+
+	return(self->priv->cachePath);
+}
+
+/* Get base path to data files of this plugin */
+const gchar* xfdashboard_plugin_get_data_path(XfdashboardPlugin *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
+
+	return(self->priv->dataPath);
 }

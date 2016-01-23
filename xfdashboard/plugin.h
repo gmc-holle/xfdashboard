@@ -104,6 +104,10 @@ void xfdashboard_plugin_set_info(XfdashboardPlugin *self,
 void xfdashboard_plugin_enable(XfdashboardPlugin *self);
 void xfdashboard_plugin_disable(XfdashboardPlugin *self);
 
+const gchar* xfdashboard_plugin_get_config_path(XfdashboardPlugin *self);
+const gchar* xfdashboard_plugin_get_cache_path(XfdashboardPlugin *self);
+const gchar* xfdashboard_plugin_get_data_path(XfdashboardPlugin *self);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_PLUGIN__ */
