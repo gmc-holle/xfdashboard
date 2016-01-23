@@ -37,6 +37,8 @@
 	<url type="bugtracker">https://github.com/gmc-holle/xfdashboard/issues</url>
 	<url type="help">http://goodies.xfce.org/projects/applications/xfdashboard/manual</url>
 
+	<project_group>XFCE</project_group>
+
 	<updatecontact>nomad@froevel.de</updatecontact>
 
 	<provides>
