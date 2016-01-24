@@ -70,6 +70,7 @@ static GHashTable*		_xfdashboard_applications_search_provider_statistics=NULL;
 static gchar*			_xfdashboard_applications_search_provider_statistics_filename=NULL;
 static guint			_xfdashboard_applications_search_provider_statistics_shutdownSignalID=0;
 static guint			_xfdashboard_applications_search_provider_statistics_applicationLaunchedSignalID=0;
+static guint			_xfdashboard_applications_search_provider_statistics_launches_max=0;
 
 typedef struct _XfdashboardApplicationsSearchProviderStatistics		XfdashboardApplicationsSearchProviderStatistics;
 struct _XfdashboardApplicationsSearchProviderStatistics
@@ -162,8 +163,14 @@ static void _xfdashboard_applications_search_provider_on_application_launched(Xf
 	if(!stats) stats=_xfdashboard_applications_search_provider_statistics_new();
 		else _xfdashboard_applications_search_provider_statistics_ref(stats);
 
-	/* Increase launch counter */
+	/* Increase launch counter and remember it has highest launch counter if it
+	 * is now higher than the one we remembered.
+	 */
 	stats->launchCounter++;
+	if(stats->launchCounter>_xfdashboard_applications_search_provider_statistics_launches_max)
+	{
+		_xfdashboard_applications_search_provider_statistics_launches_max=stats->launchCounter;
+	}
 
 	/* Store updated statistics */
 	g_hash_table_insert(_xfdashboard_applications_search_provider_statistics,
@@ -451,6 +458,11 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 							error->message);
 				g_clear_error(&error);
 			}
+
+			if(stats->launchCounter>_xfdashboard_applications_search_provider_statistics_launches_max)
+			{
+				_xfdashboard_applications_search_provider_statistics_launches_max=stats->launchCounter;
+			}
 		}
 
 		/* Store statistics data for application in hash-table */
@@ -524,6 +536,9 @@ static void _xfdashboard_applications_search_provider_destroy_statistics(void)
 		_xfdashboard_applications_search_provider_statistics_filename=NULL;
 	}
 
+	/* Reset other variables */
+	_xfdashboard_applications_search_provider_statistics_launches_max=0;
+
 	/* Unlock for thread-safety */
 	G_UNLOCK(_xfdashboard_applications_search_provider_statistics_lock);
 }
@@ -546,6 +561,9 @@ static void _xfdashboard_applications_search_provider_create_statistics(Xfdashbo
 
 	/* Lock for thread-safety */
 	G_LOCK(_xfdashboard_applications_search_provider_statistics_lock);
+
+	/* Initialize non-critical variables */
+	_xfdashboard_applications_search_provider_statistics_launches_max=0;
 
 	/* Create hash-table for statistics */
 	_xfdashboard_applications_search_provider_statistics=
@@ -711,30 +729,49 @@ static void _xfdashboard_applications_search_provider_on_drag_end(ClutterDragAct
 	}
 }
 
-/* Check if given app info matches search terms */
-static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardApplicationsSearchProvider *self,
-																	gchar **inSearchTerms,
-																	GAppInfo *inAppInfo)
+/* Check if given app info matches search terms and return relevance as fraction
+ * between 0.0 (no match at all) and 1.0 (complete match).
+ */
+static gfloat _xfdashboard_applications_search_provider_match(XfdashboardApplicationsSearchProvider *self,
+																gchar **inSearchTerms,
+																GAppInfo *inAppInfo)
 {
-	gboolean						isMatch;
-	gchar							*title;
-	gchar							*description;
-	const gchar						*command;
-	const gchar						*value;
-	gint							matchesFound, matchesExpected;
+	gchar												*title;
+	gchar												*description;
+	const gchar											*command;
+	const gchar											*value;
+	gint												matchesFound, matchesExpected;
+	gfloat												pointsTotal;
+	gfloat												relevance;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), FALSE);
-	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), 0.0f);
+	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), 0.0f);
 
-	isMatch=FALSE;
+	pointsTotal=0.0f;
+	relevance=0.0f;
 
 	/* Empty search term matches no menu item */
-	if(!inSearchTerms) return(FALSE);
+	if(!inSearchTerms) return(0.0f);
 
 	matchesExpected=g_strv_length(inSearchTerms);
-	if(matchesExpected==0) return(FALSE);
+	if(matchesExpected==0) return(0.0f);
 
-	/* Check if title, description or command matches all search terms */
+	/* Calculate the highest relevance points possible which is the highest
+	 * launch count among all applications, display name matches all search terms,
+	 * description matches all search terms and also the command matches all
+	 * search terms.
+	 *
+	 * But a matching display names weights more than a matching description and
+	 * also a matching command weights more than a matching description. The weights
+	 * are 0.4 for matching display names, 0.4 for matching commands and 0.2 for
+	 * matching descriptions.
+	 *
+	 * While iterating through all search terms we add the weights "points" for
+	 * each matching item and when we iterated through all search terms we divide
+	 * the total weight "points" by the number of search terms to get the average
+	 * which is also the result relevance when *not* taking the launch count of
+	 * application into account.
+	 */
 	value=g_app_info_get_display_name(inAppInfo);
 	if(value) title=g_utf8_strdown(value, -1);
 		else title=NULL;
@@ -750,50 +787,87 @@ static gboolean _xfdashboard_applications_search_provider_is_match(XfdashboardAp
 	{
 		gboolean						termMatch;
 		gchar							*commandPos;
+		gfloat							pointsTerm;
 
-		/* Reset "found" indicator */
+		/* Reset "found" indicator and relevance of current search term */
 		termMatch=FALSE;
+		pointsTerm=0.0f;
 
 		/* Check for current search term */
-		if(!termMatch &&
-			title &&
+		if(title &&
 			g_strstr_len(title, -1, *inSearchTerms))
 		{
+			pointsTerm+=0.4;
 			termMatch=TRUE;
 		}
 
-		if(!termMatch &&
-			description &&
+		if(description &&
 			g_strstr_len(description, -1, *inSearchTerms))
 		{
+			pointsTerm+=0.2;
 			termMatch=TRUE;
 		}
 
-		if(!termMatch && command)
+		if(command)
 		{
 			commandPos=g_strstr_len(command, -1, *inSearchTerms);
 			if(commandPos &&
 				(commandPos==command || *(commandPos-1)==G_DIR_SEPARATOR))
 			{
+				pointsTerm+=0.4;
 				termMatch=TRUE;
 			}
 		}
 
 		/* Increase match counter if we found a match */
-		if(termMatch) matchesFound++;
+		if(termMatch)
+		{
+			matchesFound++;
+			pointsTotal+=pointsTerm;
+		}
 
 		/* Continue with next search term */
 		inSearchTerms++;
 	}
 
-	if(matchesFound>=matchesExpected) isMatch=TRUE;
+	/* If we got a match in either title, description or command for each search term
+	 * then calculate relevance and also check if we should take the number of
+	 * launches of this application into account.
+	 */
+	if(matchesFound>=matchesExpected)
+	{
+		gboolean										doIncludeLaunchCounts;
+		gfloat											highestPointsPossible;
+		XfdashboardApplicationsSearchProviderStatistics	*stats;
+
+		/* Calculate highest points possible which is the 1.0 points for each search term */
+		highestPointsPossible=matchesExpected*1.0f;
+
+		/* If launch counts should be taken into account add the highest number of
+		 * any application to the highest points possible and also add the number of
+		 * launches of this application to the total points we got so far.
+		 */
+		doIncludeLaunchCounts=TRUE;
+		if(doIncludeLaunchCounts)
+		{
+			stats=_xfdashboard_applications_search_provider_statistics_get(g_app_info_get_id(inAppInfo));
+			if(stats)
+			{
+				highestPointsPossible+=(_xfdashboard_applications_search_provider_statistics_launches_max*1.0f);
+				pointsTotal+=(stats->launchCounter*1.0f);
+			}
+		}
+
+		/* Calculate relevance */
+		relevance=pointsTotal/highestPointsPossible;
+	}
 
 	/* Release allocated resources */
 	if(description) g_free(description);
 	if(title) g_free(title);
 
-	/* If we get here return TRUE to show model data item or FALSE to hide */
-	return(isMatch);
+	/* Return relevance of this application for requested search terms */
+	return(relevance);
 }
 
 /* Callback to sort each item in result set */
@@ -951,7 +1025,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 			xfdashboard_search_result_set_has_item(inPreviousResultSet, resultItem))
 		{
 			/* Check for a match against search terms */
-			if(_xfdashboard_applications_search_provider_is_match(self, terms, G_APP_INFO(appInfo)))
+			if(_xfdashboard_applications_search_provider_match(self, terms, G_APP_INFO(appInfo))>0.0f)
 			{
 				xfdashboard_search_result_set_add_item(resultSet, g_variant_ref(resultItem));
 			}
