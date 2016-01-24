@@ -50,6 +50,14 @@
 		<kudo>ModernToolkit</kudo>
 	</kudos>
 
+	<keywords>
+		<keyword>window management</keyword>
+		<keyword>application management</keyword>
+		<keyword>organize</keyword>
+		<keyword>search tool</keyword>
+		<keyword>search</keyword>
+	</keywords>
+
 	<releases>
 		<release version="0.4.2" timestamp="1433008431">
 			<description>
