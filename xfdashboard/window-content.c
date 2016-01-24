@@ -230,7 +230,7 @@ static void _xfdashboard_window_content_destroy_resume_queue(void)
 			{
 				content=XFDASHBOARD_WINDOW_CONTENT(iter->data);
 				window=xfdashboard_window_content_get_window(content);
-				g_print("Window content in resume queue: Item %s@%p for window '%s'",
+				g_print("Window content in resume queue: Item %s@%p for window '%s'\n",
 							G_OBJECT_TYPE_NAME(content), content,
 							xfdashboard_window_tracker_window_get_title(window));
 			}
