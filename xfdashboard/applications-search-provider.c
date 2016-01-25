@@ -859,12 +859,10 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 		doIncludeLaunchCounts=TRUE;
 		if(doIncludeLaunchCounts)
 		{
+			maxPoints+=(_xfdashboard_applications_search_provider_statistics.maxLaunches*1.0f);
+
 			stats=_xfdashboard_applications_search_provider_statistics_get(g_app_info_get_id(inAppInfo));
-			if(stats)
-			{
-				maxPoints+=(_xfdashboard_applications_search_provider_statistics.maxLaunches*1.0f);
-				pointsSearch+=(stats->launchCounter*1.0f);
-			}
+			if(stats) pointsSearch+=(stats->launchCounter*1.0f);
 		}
 
 		/* Calculate score */
