@@ -80,6 +80,11 @@ void xfdashboard_search_result_set_set_sort_func_full(XfdashboardSearchResultSet
 														XfdashboardSearchResultSetCompareFunc inCallbackFunc,
 														gpointer inUserData,
 														GDestroyNotify inUserDataDestroyFunc);
+
+/* Result set item related functions */
+gfloat xfdashboard_search_result_set_get_item_score(XfdashboardSearchResultSet *self, GVariant *inItem);
+gboolean xfdashboard_search_result_set_set_item_score(XfdashboardSearchResultSet *self, GVariant *inItem, gfloat inScore);
+
 G_END_DECLS
 
 #endif	/* __XFDASHBOARD_SEARCH_RESULT_SET__ */

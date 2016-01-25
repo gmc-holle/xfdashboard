@@ -49,6 +49,76 @@ struct _XfdashboardSearchResultSetPrivate
 };
 
 /* IMPLEMENTATION: Private variables and methods */
+typedef struct _XfdashboardSearchResultSetItemData		XfdashboardSearchResultSetItemData;
+struct _XfdashboardSearchResultSetItemData
+{
+	gint									refCount;
+
+	/* Item related */
+	gfloat									score;
+};
+
+/* Create, destroy, ref and unref item data for an item */
+static XfdashboardSearchResultSetItemData* _xfdashboard_search_result_set_item_data_new(void)
+{
+	XfdashboardSearchResultSetItemData	*data;
+
+	/* Create statistics data */
+	data=g_new0(XfdashboardSearchResultSetItemData, 1);
+	if(!data) return(NULL);
+
+	/* Set up statistics data */
+	data->refCount=1;
+
+	return(data);
+}
+
+static void _xfdashboard_search_result_set_item_data_free(XfdashboardSearchResultSetItemData *inData)
+{
+	g_return_if_fail(inData);
+
+	/* Release common allocated resources */
+	g_free(inData);
+}
+
+static XfdashboardSearchResultSetItemData* _xfdashboard_search_result_set_item_data_ref(XfdashboardSearchResultSetItemData *inData)
+{
+	g_return_val_if_fail(inData, NULL);
+
+	inData->refCount++;
+	return(inData);
+}
+
+static void _xfdashboard_search_result_set_item_data_unref(XfdashboardSearchResultSetItemData *inData)
+{
+	g_return_if_fail(inData);
+
+	inData->refCount--;
+	if(inData->refCount==0) _xfdashboard_search_result_set_item_data_free(inData);
+}
+
+static XfdashboardSearchResultSetItemData* _xfdashboard_search_result_set_item_data_get(XfdashboardSearchResultSet *self, GVariant *inItem)
+{
+	XfdashboardSearchResultSetPrivate		*priv;
+	XfdashboardSearchResultSetItemData		*itemData;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self), NULL);
+	g_return_val_if_fail(inItem, NULL);
+
+	priv=self->priv;
+	itemData=NULL;
+
+	/* Lookup item in result and take reference on item data if found
+	 * before returning it,
+	 */
+	if(g_hash_table_lookup_extended(priv->set, inItem, NULL, (gpointer*)&itemData))
+	{
+		_xfdashboard_search_result_set_item_data_ref(itemData);
+	}
+
+	/* Return item data found for item in result set if any */
+	return(itemData);
+}
 
 /* Internal callback function for calling callback functions for sorting */
 static gint _xfdashboard_search_result_set_sort_internal(gconstpointer inLeft,
@@ -132,7 +202,7 @@ static void xfdashboard_search_result_set_init(XfdashboardSearchResultSet *self)
 	priv->set=g_hash_table_new_full(g_variant_hash,
 									g_variant_equal,
 									(GDestroyNotify)g_variant_unref,
-									NULL);
+									(GDestroyNotify)_xfdashboard_search_result_set_item_data_unref);
 }
 
 /* IMPLEMENTATION: Public API */
@@ -155,6 +225,7 @@ guint xfdashboard_search_result_set_get_size(XfdashboardSearchResultSet *self)
 void xfdashboard_search_result_set_add_item(XfdashboardSearchResultSet *self, GVariant *inItem)
 {
 	XfdashboardSearchResultSetPrivate		*priv;
+	XfdashboardSearchResultSetItemData		*itemData;
 
 	g_return_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self));
 	g_return_if_fail(inItem);
@@ -162,7 +233,14 @@ void xfdashboard_search_result_set_add_item(XfdashboardSearchResultSet *self, GV
 	priv=self->priv;
 
 	/* Add or replace item in hash table */
-	g_hash_table_insert(priv->set, g_variant_ref_sink(inItem), GINT_TO_POINTER(1));
+	if(!g_hash_table_lookup_extended(priv->set, inItem, NULL, (gpointer*)&itemData))
+	{
+		/* Create data for item to add */
+		itemData=_xfdashboard_search_result_set_item_data_new();
+
+		/* Add new item to result set */
+		g_hash_table_insert(priv->set, g_variant_ref_sink(inItem), itemData);
+	}
 }
 
 /* Check if a result item exists already in result set */
@@ -212,6 +290,7 @@ GList* xfdashboard_search_result_set_get_all(XfdashboardSearchResultSet *self)
 	/* Return result */
 	return(list);
 }
+
 /* Get list of all items existing in both result sets.
  * Returned list should be freed with g_list_free_full(result, g_variant_unref)
  */
@@ -337,4 +416,58 @@ void xfdashboard_search_result_set_set_sort_func_full(XfdashboardSearchResultSet
 		priv->sortUserData=inUserData;
 		priv->sortUserDataDestroyFunc=inUserDataDestroyFunc;
 	}
+}
+
+/* Get/set score for a result item in result set */
+gfloat xfdashboard_search_result_set_get_item_score(XfdashboardSearchResultSet *self, GVariant *inItem)
+{
+	gfloat									score;
+	XfdashboardSearchResultSetItemData		*itemData;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self), 0.0f);
+	g_return_val_if_fail(inItem, 0.0f);
+
+	score=0.0f;
+
+	/* Check if requested item exists and get its score from item data */
+	itemData=_xfdashboard_search_result_set_item_data_get(self, inItem);
+	if(itemData)
+	{
+		score=itemData->score;
+
+		/* Release allocated resources */
+		_xfdashboard_search_result_set_item_data_unref(itemData);
+	}
+
+	/* Return score of item */
+	return(score);
+}
+
+gboolean xfdashboard_search_result_set_set_item_score(XfdashboardSearchResultSet *self, GVariant *inItem, gfloat inScore)
+{
+	XfdashboardSearchResultSetItemData		*itemData;
+	gboolean								success;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_SET(self), FALSE);
+	g_return_val_if_fail(inItem, FALSE);
+	g_return_val_if_fail(inScore>=0.0f && inScore<=1.0f, FALSE);
+
+	success=FALSE;
+
+	/* Check if requested item exists and set score at its item data */
+	itemData=_xfdashboard_search_result_set_item_data_get(self, inItem);
+	if(itemData)
+	{
+		/* Set score */
+		itemData->score=inScore;
+
+		/* Release allocated resources */
+		_xfdashboard_search_result_set_item_data_unref(itemData);
+
+		/* Set flag that item exists in result set and data could be set */
+		success=TRUE;
+	}
+
+	/* Return success state for item */
+	return(success);
 }

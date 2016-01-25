@@ -969,6 +969,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 	gchar												**terms, **termsIter;
 	GVariant											*resultItem;
 	XfdashboardDesktopAppInfo							*appInfo;
+	gfloat												score;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(inProvider), NULL);
 
@@ -1034,9 +1035,11 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 			xfdashboard_search_result_set_has_item(inPreviousResultSet, resultItem))
 		{
 			/* Check for a match against search terms */
-			if(_xfdashboard_applications_search_provider_score(self, terms, G_APP_INFO(appInfo))>0.0f)
+			score=_xfdashboard_applications_search_provider_score(self, terms, G_APP_INFO(appInfo));
+			if(score>0.0f)
 			{
 				xfdashboard_search_result_set_add_item(resultSet, g_variant_ref(resultItem));
+				xfdashboard_search_result_set_set_item_score(resultSet, resultItem, score);
 			}
 		}
 
