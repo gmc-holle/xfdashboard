@@ -37,6 +37,8 @@
 #include "application.h"
 #include "drag-action.h"
 #include "utils.h"
+#include "enums.h"
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsSearchProvider,
@@ -49,15 +51,36 @@ G_DEFINE_TYPE(XfdashboardApplicationsSearchProvider,
 
 struct _XfdashboardApplicationsSearchProviderPrivate
 {
-	/* Instance related */
-	XfdashboardApplicationDatabase		*appDB;
-	guint								applicationAddedID;
-	guint								applicationRemovedID;
+	/* Properties related */
+	XfdashboardApplicationsSearchProviderMatchMode	nextMatchMode;
 
-	GList								*allApps;
+	/* Instance related */
+	XfdashboardApplicationDatabase					*appDB;
+	guint											applicationAddedID;
+	guint											applicationRemovedID;
+
+	GList											*allApps;
+
+	XfconfChannel									*xfconfChannel;
+	guint											xfconfMatchModeBindingID;
+	XfdashboardApplicationsSearchProviderMatchMode	currentMatchMode;
 };
 
+/* Properties */
+enum
+{
+	PROP_0,
+
+	PROP_MATCH_MODE,
+
+	PROP_LAST
+};
+
+static GParamSpec* XfdashboardApplicationsSearchProviderProperties[PROP_LAST]={ 0, };
+
 /* IMPLEMENTATION: Private variables and methods */
+#define MATCH_MODE_XFCONF_PROP													"/components/applications-search-provider/match-mode"
+
 #define DEFAULT_DELIMITERS														"\t\n\r "
 
 #define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE				"applications-search-provider-statistics.ini"
@@ -745,6 +768,7 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 																gchar **inSearchTerms,
 																GAppInfo *inAppInfo)
 {
+	XfdashboardApplicationsSearchProviderPrivate		*priv;
 	gchar												*title;
 	gchar												*description;
 	const gchar											*command;
@@ -756,6 +780,7 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), 0.0f);
 	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), 0.0f);
 
+	priv=self->priv;
 	pointsSearch=0.0f;
 	score=0.0f;
 
@@ -845,28 +870,39 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 	 */
 	if(matchesFound>=matchesExpected)
 	{
-		gboolean										doIncludeLaunchCounts;
+		gfloat											currentPoints;
 		gfloat											maxPoints;
 		XfdashboardApplicationsSearchProviderStatistics	*stats;
 
-		/* Calculate highest points possible which is the 1.0 points for each search term */
-		maxPoints=matchesExpected*1.0f;
+		currentPoints=0.0f;
+		maxPoints=0.0f;
 
-		/* If launch counts should be taken into account add the highest number of
-		 * any application to the highest points possible and also add the number of
-		 * launches of this application to the total points we got so far.
+		/* Set maximum points to the number of expected number of matches
+		 * if we should take title, description and command into calculation.
 		 */
-		doIncludeLaunchCounts=TRUE;
-		if(doIncludeLaunchCounts)
+		if(priv->currentMatchMode & XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_APPLICATION_INFO)
+		{
+			currentPoints+=pointsSearch;
+			maxPoints+=matchesExpected*1.0f;
+		}
+
+		/* If launch counts should be taken into calculation add the highest number
+		 * of any application to the highest points possible and also add the number
+		 * of launches of this application to the total points we got so far.
+		 */
+		if(priv->currentMatchMode & XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_APPLICATION_LAUNCHES)
 		{
 			maxPoints+=(_xfdashboard_applications_search_provider_statistics.maxLaunches*1.0f);
 
 			stats=_xfdashboard_applications_search_provider_statistics_get(g_app_info_get_id(inAppInfo));
-			if(stats) pointsSearch+=(stats->launchCounter*1.0f);
+			if(stats) currentPoints+=(stats->launchCounter*1.0f);
 		}
 
-		/* Calculate score */
-		score=pointsSearch/maxPoints;
+		/* Calculate score but if maximum points is still zero we should do a simple
+		 * match by setting score to 1.
+		 */
+		if(maxPoints>0.0f) score=currentPoints/maxPoints;
+			else score=1.0f;
 	}
 
 	/* Release allocated resources */
@@ -973,6 +1009,9 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 
 	self=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER(inProvider);
 	priv=self->priv;
+
+	/* Set new match mode */
+	priv->currentMatchMode=priv->nextMatchMode;
 
 	/* To perform case-insensitive searches through model convert all search terms
 	 * to lower-case before starting search.
@@ -1161,8 +1200,59 @@ static void _xfdashboard_applications_search_provider_dispose(GObject *inObject)
 		priv->allApps=NULL;
 	}
 
+	if(priv->xfconfMatchModeBindingID)
+	{
+		xfconf_g_property_unbind(priv->xfconfMatchModeBindingID);
+		priv->xfconfMatchModeBindingID=0;
+	}
+
+	if(priv->xfconfChannel)
+	{
+		priv->xfconfChannel=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_applications_search_provider_parent_class)->dispose(inObject);
+}
+
+/* Set/get properties */
+static void _xfdashboard_applications_search_provider_set_property(GObject *inObject,
+																	guint inPropID,
+																	const GValue *inValue,
+																	GParamSpec *inSpec)
+{
+	XfdashboardApplicationsSearchProvider			*self=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER(inObject);
+
+	switch(inPropID)
+	{
+		case PROP_MATCH_MODE:
+			xfdashboard_applications_search_provider_set_match_mode(self, g_value_get_flags(inValue));
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
+static void _xfdashboard_applications_search_provider_get_property(GObject *inObject,
+																	guint inPropID,
+																	GValue *outValue,
+																	GParamSpec *inSpec)
+{
+	XfdashboardApplicationsSearchProvider			*self=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER(inObject);
+	XfdashboardApplicationsSearchProviderPrivate	*priv=self->priv;
+
+	switch(inPropID)
+	{
+		case PROP_MATCH_MODE:
+			g_value_set_flags(outValue, priv->nextMatchMode);
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
 }
 
 /* Class initialization
@@ -1176,6 +1266,8 @@ static void xfdashboard_applications_search_provider_class_init(XfdashboardAppli
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_applications_search_provider_dispose;
+	gobjectClass->set_property=_xfdashboard_applications_search_provider_set_property;
+	gobjectClass->get_property=_xfdashboard_applications_search_provider_get_property;
 
 	providerClass->initialize=_xfdashboard_applications_search_provider_initialize;
 	providerClass->get_name=_xfdashboard_applications_search_provider_get_name;
@@ -1186,6 +1278,17 @@ static void xfdashboard_applications_search_provider_class_init(XfdashboardAppli
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardApplicationsSearchProviderPrivate));
+
+	/* Define properties */
+	XfdashboardApplicationsSearchProviderProperties[PROP_MATCH_MODE]=
+		g_param_spec_flags("match-mode",
+							_("Match mode"),
+							_("Defines how to sort matching applications"),
+							XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE,
+							XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_NONE,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardApplicationsSearchProviderProperties);
 }
 
 /* Object initialization
@@ -1196,6 +1299,11 @@ static void xfdashboard_applications_search_provider_init(XfdashboardApplication
 	XfdashboardApplicationsSearchProviderPrivate	*priv;
 
 	self->priv=priv=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_GET_PRIVATE(self);
+
+	/* Set up default values */
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
+	priv->currentMatchMode=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_NONE;
+	priv->nextMatchMode=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_NONE;
 
 	/* Get application database */
 	priv->appDB=xfdashboard_application_database_get_default();
@@ -1210,4 +1318,41 @@ static void xfdashboard_applications_search_provider_init(XfdashboardApplication
 
 	/* Get list of all installed applications */
 	priv->allApps=xfdashboard_application_database_get_all_applications(priv->appDB);
+
+	/* Bind to xfconf to react on changes */
+	priv->xfconfMatchModeBindingID=
+		xfconf_g_property_bind(priv->xfconfChannel,
+								MATCH_MODE_XFCONF_PROP,
+								G_TYPE_UINT,
+								self,
+								"match-mode");
+}
+
+/* IMPLEMENTATION: Public API */
+
+/* Get/set type of background */
+XfdashboardApplicationsSearchProviderMatchMode xfdashboard_applications_search_provider_get_match_mode(XfdashboardApplicationsSearchProvider *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_NONE);
+
+	return(self->priv->nextMatchMode);
+}
+
+void xfdashboard_applications_search_provider_set_match_mode(XfdashboardApplicationsSearchProvider *self, const XfdashboardApplicationsSearchProviderMatchMode inMatchMode)
+{
+	XfdashboardApplicationsSearchProviderPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->nextMatchMode!=inMatchMode)
+	{
+		/* Set value */
+		priv->nextMatchMode=inMatchMode;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationsSearchProviderProperties[PROP_MATCH_MODE]);
+	}
 }
