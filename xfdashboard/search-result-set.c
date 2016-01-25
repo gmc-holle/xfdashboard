@@ -128,13 +128,37 @@ static gint _xfdashboard_search_result_set_sort_internal(gconstpointer inLeft,
 	XfdashboardSearchResultSet				*self=XFDASHBOARD_SEARCH_RESULT_SET(inUserData);
 	XfdashboardSearchResultSetPrivate		*priv=self->priv;
 	GVariant								*left;
+	XfdashboardSearchResultSetItemData		*leftData;
 	GVariant								*right;
+	XfdashboardSearchResultSetItemData		*rightData;
+	gint									result;
+
+	result=0;
 
 	/* Get items to compare */
 	left=(GVariant*)inLeft;
 	right=(GVariant*)inRight;
 
-	/* Call sorting callback function now */
+	/* Get score for each item to compare for sorting if for both items available */
+	leftData=_xfdashboard_search_result_set_item_data_get(self, left);
+	rightData=_xfdashboard_search_result_set_item_data_get(self, right);
+	if(leftData && rightData)
+	{
+		/* Set result to corresponding value and other than null if the
+		 * scores are not equal.
+		 */
+		if(leftData->score < rightData->score) result=1;
+		if(leftData->score > rightData->score) result=-1;
+	}
+	if(leftData) _xfdashboard_search_result_set_item_data_unref(leftData);
+	if(rightData) _xfdashboard_search_result_set_item_data_unref(rightData);
+
+	/* If both items do not have the same score the result is set to value
+	 * other than zero. So return it now.
+	 */
+	if(result!=0) return(result);
+
+	/* Call sorting callback function now if both have the same score */
 	return((priv->sortCallback)(left, right, priv->sortUserData));
 }
 
