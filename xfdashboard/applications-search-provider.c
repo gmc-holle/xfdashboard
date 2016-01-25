@@ -89,7 +89,7 @@ struct _XfdashboardApplicationsSearchProviderStatistics
 	guint								launchCounter;
 };
 
-/* Create, destroy, ref and unref tag data for a tag */
+/* Create, destroy, ref and unref statistics data */
 static XfdashboardApplicationsSearchProviderStatistics* _xfdashboard_applications_search_provider_statistics_new(void)
 {
 	XfdashboardApplicationsSearchProviderStatistics	*data;
