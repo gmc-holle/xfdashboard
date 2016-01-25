@@ -37,7 +37,7 @@
 #include "image-content.h"
 
 /* Forward declarations */
-typedef enum 
+typedef enum /*< skip,prefix=XFDASHBOARD_BUTTON_ICON_TYPE >*/
 {
 	XFDASHBOARD_BUTTON_ICON_TYPE_ICON_NONE,
 	XFDASHBOARD_BUTTON_ICON_TYPE_ICON_NAME,
