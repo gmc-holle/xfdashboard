@@ -738,10 +738,10 @@ static void _xfdashboard_applications_search_provider_on_drag_end(ClutterDragAct
 	}
 }
 
-/* Check if given app info matches search terms and return relevance as fraction
- * between 0.0 (no match at all) and 1.0 (complete match).
+/* Check if given app info matches search terms and return score as fraction
+ * between 0.0 (no match at all) and 1.0 (complete match) - so called "relevance".
  */
-static gfloat _xfdashboard_applications_search_provider_match(XfdashboardApplicationsSearchProvider *self,
+static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplicationsSearchProvider *self,
 																gchar **inSearchTerms,
 																GAppInfo *inAppInfo)
 {
@@ -750,14 +750,14 @@ static gfloat _xfdashboard_applications_search_provider_match(XfdashboardApplica
 	const gchar											*command;
 	const gchar											*value;
 	gint												matchesFound, matchesExpected;
-	gfloat												pointsTotal;
-	gfloat												relevance;
+	gfloat												pointsSearch;
+	gfloat												score;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), 0.0f);
 	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), 0.0f);
 
-	pointsTotal=0.0f;
-	relevance=0.0f;
+	pointsSearch=0.0f;
+	score=0.0f;
 
 	/* Empty search term matches no menu item */
 	if(!inSearchTerms) return(0.0f);
@@ -765,7 +765,7 @@ static gfloat _xfdashboard_applications_search_provider_match(XfdashboardApplica
 	matchesExpected=g_strv_length(inSearchTerms);
 	if(matchesExpected==0) return(0.0f);
 
-	/* Calculate the highest relevance points possible which is the highest
+	/* Calculate the highest score points possible which is the highest
 	 * launch count among all applications, display name matches all search terms,
 	 * description matches all search terms and also the command matches all
 	 * search terms.
@@ -778,7 +778,7 @@ static gfloat _xfdashboard_applications_search_provider_match(XfdashboardApplica
 	 * While iterating through all search terms we add the weights "points" for
 	 * each matching item and when we iterated through all search terms we divide
 	 * the total weight "points" by the number of search terms to get the average
-	 * which is also the result relevance when *not* taking the launch count of
+	 * which is also the result score when *not* taking the launch count of
 	 * application into account.
 	 */
 	value=g_app_info_get_display_name(inAppInfo);
@@ -798,7 +798,7 @@ static gfloat _xfdashboard_applications_search_provider_match(XfdashboardApplica
 		gchar							*commandPos;
 		gfloat							pointsTerm;
 
-		/* Reset "found" indicator and relevance of current search term */
+		/* Reset "found" indicator and score of current search term */
 		termMatch=FALSE;
 		pointsTerm=0.0f;
 
@@ -832,7 +832,7 @@ static gfloat _xfdashboard_applications_search_provider_match(XfdashboardApplica
 		if(termMatch)
 		{
 			matchesFound++;
-			pointsTotal+=pointsTerm;
+			pointsSearch+=pointsTerm;
 		}
 
 		/* Continue with next search term */
@@ -840,17 +840,17 @@ static gfloat _xfdashboard_applications_search_provider_match(XfdashboardApplica
 	}
 
 	/* If we got a match in either title, description or command for each search term
-	 * then calculate relevance and also check if we should take the number of
+	 * then calculate score and also check if we should take the number of
 	 * launches of this application into account.
 	 */
 	if(matchesFound>=matchesExpected)
 	{
 		gboolean										doIncludeLaunchCounts;
-		gfloat											highestPointsPossible;
+		gfloat											maxPoints;
 		XfdashboardApplicationsSearchProviderStatistics	*stats;
 
 		/* Calculate highest points possible which is the 1.0 points for each search term */
-		highestPointsPossible=matchesExpected*1.0f;
+		maxPoints=matchesExpected*1.0f;
 
 		/* If launch counts should be taken into account add the highest number of
 		 * any application to the highest points possible and also add the number of
@@ -862,21 +862,21 @@ static gfloat _xfdashboard_applications_search_provider_match(XfdashboardApplica
 			stats=_xfdashboard_applications_search_provider_statistics_get(g_app_info_get_id(inAppInfo));
 			if(stats)
 			{
-				highestPointsPossible+=(_xfdashboard_applications_search_provider_statistics.maxLaunches*1.0f);
-				pointsTotal+=(stats->launchCounter*1.0f);
+				maxPoints+=(_xfdashboard_applications_search_provider_statistics.maxLaunches*1.0f);
+				pointsSearch+=(stats->launchCounter*1.0f);
 			}
 		}
 
-		/* Calculate relevance */
-		relevance=pointsTotal/highestPointsPossible;
+		/* Calculate score */
+		score=pointsSearch/maxPoints;
 	}
 
 	/* Release allocated resources */
 	if(description) g_free(description);
 	if(title) g_free(title);
 
-	/* Return relevance of this application for requested search terms */
-	return(relevance);
+	/* Return score of this application for requested search terms */
+	return(score);
 }
 
 /* Callback to sort each item in result set */
