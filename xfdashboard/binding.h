@@ -70,7 +70,7 @@ struct _XfdashboardBindingClass
 typedef enum /*< flags,prefix=XFDASHBOARD_BINDING_FLAGS >*/
 {
 	XFDASHBOARD_BINDING_FLAGS_NONE=0,
-	XFDASHBOARD_BINDING_FLAGS_ALLOW_UNFOCUSABLE_TARGET
+	XFDASHBOARD_BINDING_FLAGS_ALLOW_UNFOCUSABLE_TARGET=1 << 0,
 } XfdashboardBindingFlags;
 
 GType xfdashboard_binding_get_type(void) G_GNUC_CONST;
