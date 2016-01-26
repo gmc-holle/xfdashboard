@@ -1077,7 +1077,7 @@ XfdashboardApplication* xfdashboard_application_get_default(void)
 			else appID=g_strdup(XFDASHBOARD_APP_ID);
 
 		application=g_object_new(XFDASHBOARD_TYPE_APPLICATION,
-									"application-id", XFDASHBOARD_APP_ID,
+									"application-id", appID,
 									"flags", G_APPLICATION_HANDLES_COMMAND_LINE,
 									NULL);
 
