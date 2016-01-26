@@ -52,7 +52,7 @@ G_DEFINE_TYPE(XfdashboardApplicationsSearchProvider,
 struct _XfdashboardApplicationsSearchProviderPrivate
 {
 	/* Properties related */
-	XfdashboardApplicationsSearchProviderMatchMode	nextMatchMode;
+	XfdashboardApplicationsSearchProviderSortMode	nextSortMode;
 
 	/* Instance related */
 	XfdashboardApplicationDatabase					*appDB;
@@ -62,8 +62,8 @@ struct _XfdashboardApplicationsSearchProviderPrivate
 	GList											*allApps;
 
 	XfconfChannel									*xfconfChannel;
-	guint											xfconfMatchModeBindingID;
-	XfdashboardApplicationsSearchProviderMatchMode	currentMatchMode;
+	guint											xfconfSortModeBindingID;
+	XfdashboardApplicationsSearchProviderSortMode	currentSortMode;
 };
 
 /* Properties */
@@ -71,7 +71,7 @@ enum
 {
 	PROP_0,
 
-	PROP_MATCH_MODE,
+	PROP_SORT_MODE,
 
 	PROP_LAST
 };
@@ -79,14 +79,14 @@ enum
 static GParamSpec* XfdashboardApplicationsSearchProviderProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define MATCH_MODE_XFCONF_PROP													"/components/applications-search-provider/match-mode"
+#define SORT_MODE_XFCONF_PROP													"/components/applications-search-provider/sort-mode"
 
 #define DEFAULT_DELIMITERS														"\t\n\r "
 
 #define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE				"applications-search-provider-statistics.ini"
 #define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_ENTRIES_GROUP		"Entries"
 #define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_ENTRIES_COUNT		"Count"
-#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_LAUNCH_COUNT_GROUP	"Launch Counts"
+#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_USED_COUNTER_GROUP	"Used Counters"
 
 typedef struct _XfdashboardApplicationsSearchProviderGlobal			XfdashboardApplicationsSearchProviderGlobal;
 struct _XfdashboardApplicationsSearchProviderGlobal
@@ -98,7 +98,7 @@ struct _XfdashboardApplicationsSearchProviderGlobal
 	guint								shutdownSignalID;
 	guint								applicationLaunchedSignalID;
 
-	guint								maxLaunches;
+	guint								maxUsedCounter;
 };
 
 G_LOCK_DEFINE_STATIC(_xfdashboard_applications_search_provider_statistics_lock);
@@ -109,7 +109,7 @@ struct _XfdashboardApplicationsSearchProviderStatistics
 {
 	gint								refCount;
 
-	guint								launchCounter;
+	guint								usedCounter;
 };
 
 /* Create, destroy, ref and unref statistics data */
@@ -198,10 +198,10 @@ static void _xfdashboard_applications_search_provider_on_application_launched(Xf
 	/* Increase launch counter and remember it has highest launch counter if it
 	 * is now higher than the one we remembered.
 	 */
-	stats->launchCounter++;
-	if(stats->launchCounter>_xfdashboard_applications_search_provider_statistics.maxLaunches)
+	stats->usedCounter++;
+	if(stats->usedCounter>_xfdashboard_applications_search_provider_statistics.maxUsedCounter)
 	{
-		_xfdashboard_applications_search_provider_statistics.maxLaunches=stats->launchCounter;
+		_xfdashboard_applications_search_provider_statistics.maxUsedCounter=stats->usedCounter;
 	}
 
 	/* Store updated statistics */
@@ -298,12 +298,12 @@ static gboolean _xfdashboard_applications_search_provider_save_statistics(GError
 		/* Store statistics in key file in their groups but try to avoid to store
 		 * default values to keep key file small.
 		 */
-		if(stats->launchCounter>0)
+		if(stats->usedCounter>0)
 		{
 			g_key_file_set_integer(keyFile,
-									XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_LAUNCH_COUNT_GROUP,
+									XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_USED_COUNTER_GROUP,
 									appID,
-									stats->launchCounter);
+									stats->usedCounter);
 		}
 	}
 
@@ -476,24 +476,24 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 		}
 
 		/* Try to load stored values for application from key file */
-		if(g_key_file_has_key(keyFile, XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_LAUNCH_COUNT_GROUP, appID, NULL))
+		if(g_key_file_has_key(keyFile, XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_USED_COUNTER_GROUP, appID, NULL))
 		{
-			stats->launchCounter=g_key_file_get_integer(keyFile,
-														XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_LAUNCH_COUNT_GROUP,
+			stats->usedCounter=g_key_file_get_integer(keyFile,
+														XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_USED_COUNTER_GROUP,
 														appID,
 														&error);
 			if(error)
 			{
 				g_critical(_("Could not get value from group [%s] for application %s from statistics file of applications search provider: %s"),
-							XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_LAUNCH_COUNT_GROUP,
+							XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_USED_COUNTER_GROUP,
 							appID,
 							error->message);
 				g_clear_error(&error);
 			}
 
-			if(stats->launchCounter>_xfdashboard_applications_search_provider_statistics.maxLaunches)
+			if(stats->usedCounter>_xfdashboard_applications_search_provider_statistics.maxUsedCounter)
 			{
-				_xfdashboard_applications_search_provider_statistics.maxLaunches=stats->launchCounter;
+				_xfdashboard_applications_search_provider_statistics.maxUsedCounter=stats->usedCounter;
 			}
 		}
 
@@ -569,7 +569,7 @@ static void _xfdashboard_applications_search_provider_destroy_statistics(void)
 	}
 
 	/* Reset other variables */
-	_xfdashboard_applications_search_provider_statistics.maxLaunches=0;
+	_xfdashboard_applications_search_provider_statistics.maxUsedCounter=0;
 
 	/* Unlock for thread-safety */
 	G_UNLOCK(_xfdashboard_applications_search_provider_statistics_lock);
@@ -595,7 +595,7 @@ static void _xfdashboard_applications_search_provider_create_statistics(Xfdashbo
 	G_LOCK(_xfdashboard_applications_search_provider_statistics_lock);
 
 	/* Initialize non-critical variables */
-	_xfdashboard_applications_search_provider_statistics.maxLaunches=0;
+	_xfdashboard_applications_search_provider_statistics.maxUsedCounter=0;
 
 	/* Create hash-table for statistics */
 	_xfdashboard_applications_search_provider_statistics.stats=
@@ -762,7 +762,8 @@ static void _xfdashboard_applications_search_provider_on_drag_end(ClutterDragAct
 }
 
 /* Check if given app info matches search terms and return score as fraction
- * between 0.0 (no match at all) and 1.0 (complete match) - so called "relevance".
+ * between 0.0and 1.0 - so called "relevance". A negative score means that
+ * the given app info does not match at all.
  */
 static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplicationsSearchProvider *self,
 																gchar **inSearchTerms,
@@ -777,12 +778,11 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 	gfloat												pointsSearch;
 	gfloat												score;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), 0.0f);
-	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), 0.0f);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), -1.0f);
+	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), -1.0f);
 
 	priv=self->priv;
-	pointsSearch=0.0f;
-	score=0.0f;
+	score=-1.0f;
 
 	/* Empty search term matches no menu item */
 	if(!inSearchTerms) return(0.0f);
@@ -817,6 +817,7 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 	command=g_app_info_get_executable(inAppInfo);
 
 	matchesFound=0;
+	pointsSearch=0.0f;
 	while(*inSearchTerms)
 	{
 		gboolean						termMatch;
@@ -880,22 +881,22 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 		/* Set maximum points to the number of expected number of matches
 		 * if we should take title, description and command into calculation.
 		 */
-		if(priv->currentMatchMode & XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_APPLICATION_INFO)
+		if(priv->currentSortMode & XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NAMES)
 		{
 			currentPoints+=pointsSearch;
 			maxPoints+=matchesExpected*1.0f;
 		}
 
-		/* If launch counts should be taken into calculation add the highest number
+		/* If used counter should be taken into calculation add the highest number
 		 * of any application to the highest points possible and also add the number
 		 * of launches of this application to the total points we got so far.
 		 */
-		if(priv->currentMatchMode & XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_APPLICATION_LAUNCHES)
+		if(priv->currentSortMode & XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_MOST_USED)
 		{
-			maxPoints+=(_xfdashboard_applications_search_provider_statistics.maxLaunches*1.0f);
+			maxPoints+=(_xfdashboard_applications_search_provider_statistics.maxUsedCounter*1.0f);
 
 			stats=_xfdashboard_applications_search_provider_statistics_get(g_app_info_get_id(inAppInfo));
-			if(stats) currentPoints+=(stats->launchCounter*1.0f);
+			if(stats) currentPoints+=(stats->usedCounter*1.0f);
 		}
 
 		/* Calculate score but if maximum points is still zero we should do a simple
@@ -1011,7 +1012,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 	priv=self->priv;
 
 	/* Set new match mode */
-	priv->currentMatchMode=priv->nextMatchMode;
+	priv->currentSortMode=priv->nextSortMode;
 
 	/* To perform case-insensitive searches through model convert all search terms
 	 * to lower-case before starting search.
@@ -1073,7 +1074,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 		{
 			/* Check for a match against search terms */
 			score=_xfdashboard_applications_search_provider_score(self, terms, G_APP_INFO(appInfo));
-			if(score>0.0f)
+			if(score>=0.0f)
 			{
 				xfdashboard_search_result_set_add_item(resultSet, g_variant_ref(resultItem));
 				xfdashboard_search_result_set_set_item_score(resultSet, resultItem, score);
@@ -1200,10 +1201,10 @@ static void _xfdashboard_applications_search_provider_dispose(GObject *inObject)
 		priv->allApps=NULL;
 	}
 
-	if(priv->xfconfMatchModeBindingID)
+	if(priv->xfconfSortModeBindingID)
 	{
-		xfconf_g_property_unbind(priv->xfconfMatchModeBindingID);
-		priv->xfconfMatchModeBindingID=0;
+		xfconf_g_property_unbind(priv->xfconfSortModeBindingID);
+		priv->xfconfSortModeBindingID=0;
 	}
 
 	if(priv->xfconfChannel)
@@ -1225,8 +1226,8 @@ static void _xfdashboard_applications_search_provider_set_property(GObject *inOb
 
 	switch(inPropID)
 	{
-		case PROP_MATCH_MODE:
-			xfdashboard_applications_search_provider_set_match_mode(self, g_value_get_flags(inValue));
+		case PROP_SORT_MODE:
+			xfdashboard_applications_search_provider_set_sort_mode(self, g_value_get_flags(inValue));
 			break;
 
 		default:
@@ -1245,8 +1246,8 @@ static void _xfdashboard_applications_search_provider_get_property(GObject *inOb
 
 	switch(inPropID)
 	{
-		case PROP_MATCH_MODE:
-			g_value_set_flags(outValue, priv->nextMatchMode);
+		case PROP_SORT_MODE:
+			g_value_set_flags(outValue, priv->nextSortMode);
 			break;
 
 		default:
@@ -1280,12 +1281,12 @@ static void xfdashboard_applications_search_provider_class_init(XfdashboardAppli
 	g_type_class_add_private(klass, sizeof(XfdashboardApplicationsSearchProviderPrivate));
 
 	/* Define properties */
-	XfdashboardApplicationsSearchProviderProperties[PROP_MATCH_MODE]=
-		g_param_spec_flags("match-mode",
-							_("Match mode"),
+	XfdashboardApplicationsSearchProviderProperties[PROP_SORT_MODE]=
+		g_param_spec_flags("sort-mode",
+							_("Sort mode"),
 							_("Defines how to sort matching applications"),
-							XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE,
-							XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_NONE,
+							XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE,
+							XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardApplicationsSearchProviderProperties);
@@ -1302,8 +1303,8 @@ static void xfdashboard_applications_search_provider_init(XfdashboardApplication
 
 	/* Set up default values */
 	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
-	priv->currentMatchMode=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_NONE;
-	priv->nextMatchMode=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_NONE;
+	priv->currentSortMode=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE;
+	priv->nextSortMode=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE;
 
 	/* Get application database */
 	priv->appDB=xfdashboard_application_database_get_default();
@@ -1320,25 +1321,25 @@ static void xfdashboard_applications_search_provider_init(XfdashboardApplication
 	priv->allApps=xfdashboard_application_database_get_all_applications(priv->appDB);
 
 	/* Bind to xfconf to react on changes */
-	priv->xfconfMatchModeBindingID=
+	priv->xfconfSortModeBindingID=
 		xfconf_g_property_bind(priv->xfconfChannel,
-								MATCH_MODE_XFCONF_PROP,
+								SORT_MODE_XFCONF_PROP,
 								G_TYPE_UINT,
 								self,
-								"match-mode");
+								"sort-mode");
 }
 
 /* IMPLEMENTATION: Public API */
 
-/* Get/set type of background */
-XfdashboardApplicationsSearchProviderMatchMode xfdashboard_applications_search_provider_get_match_mode(XfdashboardApplicationsSearchProvider *self)
+/* Get/set sorting mode */
+XfdashboardApplicationsSearchProviderSortMode xfdashboard_applications_search_provider_get_sort_mode(XfdashboardApplicationsSearchProvider *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_NONE);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE);
 
-	return(self->priv->nextMatchMode);
+	return(self->priv->nextSortMode);
 }
 
-void xfdashboard_applications_search_provider_set_match_mode(XfdashboardApplicationsSearchProvider *self, const XfdashboardApplicationsSearchProviderMatchMode inMatchMode)
+void xfdashboard_applications_search_provider_set_sort_mode(XfdashboardApplicationsSearchProvider *self, const XfdashboardApplicationsSearchProviderSortMode inMode)
 {
 	XfdashboardApplicationsSearchProviderPrivate	*priv;
 
@@ -1347,12 +1348,12 @@ void xfdashboard_applications_search_provider_set_match_mode(XfdashboardApplicat
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->nextMatchMode!=inMatchMode)
+	if(priv->nextSortMode!=inMode)
 	{
 		/* Set value */
-		priv->nextMatchMode=inMatchMode;
+		priv->nextSortMode=inMode;
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationsSearchProviderProperties[PROP_MATCH_MODE]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationsSearchProviderProperties[PROP_SORT_MODE]);
 	}
 }

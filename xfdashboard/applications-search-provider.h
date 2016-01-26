@@ -30,13 +30,13 @@
 G_BEGIN_DECLS
 
 /* Public definitions */
-typedef enum /*< flags,prefix=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE >*/
+typedef enum /*< flags,prefix=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE >*/
 {
-	XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_NONE=0,
+	XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE=0,
 
-	XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_APPLICATION_INFO=1 << 0,
-	XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_MATCH_MODE_APPLICATION_LAUNCHES=1 << 1,
-} XfdashboardApplicationsSearchProviderMatchMode;
+	XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NAMES=1 << 0,
+	XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_MOST_USED=1 << 1,
+} XfdashboardApplicationsSearchProviderSortMode;
 
 
 /* Object declaration */
@@ -74,8 +74,8 @@ struct _XfdashboardApplicationsSearchProviderClass
 /* Public API */
 GType xfdashboard_applications_search_provider_get_type(void) G_GNUC_CONST;
 
-XfdashboardApplicationsSearchProviderMatchMode xfdashboard_applications_search_provider_get_match_mode(XfdashboardApplicationsSearchProvider *self);
-void xfdashboard_applications_search_provider_set_match_mode(XfdashboardApplicationsSearchProvider *self, const XfdashboardApplicationsSearchProviderMatchMode inMatchMode);
+XfdashboardApplicationsSearchProviderSortMode xfdashboard_applications_search_provider_get_sort_mode(XfdashboardApplicationsSearchProvider *self);
+void xfdashboard_applications_search_provider_set_sort_mode(XfdashboardApplicationsSearchProvider *self, const XfdashboardApplicationsSearchProviderSortMode inMode);
 
 G_END_DECLS
 
