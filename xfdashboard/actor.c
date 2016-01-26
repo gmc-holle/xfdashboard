@@ -190,6 +190,33 @@ static void _xfdashboard_actor_on_name_changed(GObject *inObject,
 	_xfdashboard_actor_invalidate_recursive(CLUTTER_ACTOR(self));
 }
 
+/* Actor's reactive state changed */
+static void _xfdashboard_actor_on_reactive_changed(GObject *inObject,
+													GParamSpec *inSpec,
+													gpointer inUserData)
+{
+	XfdashboardActor			*self;
+
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inObject));
+
+	self=XFDASHBOARD_ACTOR(inObject);
+
+	/* Set pseudo-class ':insensitive' if actor is now not reactive
+	 * and remove this pseudo-class if actor is now reactive.
+	 */
+	if(clutter_actor_get_reactive(CLUTTER_ACTOR(self)))
+	{
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(self), "insensitive");
+	}
+		else
+		{
+			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(self), "insensitive");
+		}
+
+	/* Invalide styling to get it recomputed */
+	_xfdashboard_actor_invalidate_recursive(CLUTTER_ACTOR(self));
+}
+
 /* Update effects of actor with string of list of effect IDs */
 static void _xfdashboard_actor_update_effects(XfdashboardActor *self, const gchar *inEffects)
 {
@@ -967,6 +994,7 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 	/* Connect signals */
 	g_signal_connect(self, "notify::mapped", G_CALLBACK(_xfdashboard_actor_on_mapped_changed), NULL);
 	g_signal_connect(self, "notify::name", G_CALLBACK(_xfdashboard_actor_on_name_changed), NULL);
+	g_signal_connect(self, "notify::reactive", G_CALLBACK(_xfdashboard_actor_on_reactive_changed), NULL);
 }
 
 /* IMPLEMENTATION: GType */
