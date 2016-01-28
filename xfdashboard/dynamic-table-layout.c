@@ -139,12 +139,12 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 		else if(inWidth>0.0f)
 		{
 			columns=MIN(ceil(inWidth/largestWidth), priv->numberChildren);
-			do
+			childWidth=(columns*largestWidth)+((columns-1)*priv->columnSpacing);
+			while(columns>1 && childWidth>inWidth)
 			{
 				childWidth=(columns*largestWidth)+((columns-1)*priv->columnSpacing);
 				columns--;
 			}
-			while(columns>1 && childWidth>inWidth);
 
 			largestWidth=floor(inWidth-((columns-1)*priv->columnSpacing))/columns;
 			rows=ceil((double)priv->numberChildren / (double)columns);
@@ -152,12 +152,12 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 		else if(inHeight>0.0f)
 		{
 			rows=MIN(ceil(inHeight/largestHeight), priv->numberChildren);
-			do
+			childHeight=(rows*largestHeight)+((rows-1)*priv->rowSpacing);
+			while(rows>1 && childHeight>inHeight)
 			{
 				childHeight=(rows*largestHeight)+((rows-1)*priv->rowSpacing);
 				rows--;
 			}
-			while(rows>1 && childHeight>inHeight);
 
 			largestHeight=floor(inHeight-((rows-1)*priv->rowSpacing))/rows;
 			columns=ceil((double)priv->numberChildren / (double)rows);
@@ -277,7 +277,10 @@ static void _xfdashboard_dynamic_table_layout_get_preferred_width(ClutterLayoutM
 	if(priv->columns>0)
 	{
 		maxMinWidth=(priv->columns-1)*priv->columnSpacing;
-		if(maxNaturalWidth==0.0f) maxNaturalWidth=g_array_index(priv->columnCoords, gfloat, priv->columns);
+		if(maxNaturalWidth==0.0f)
+		{
+			maxNaturalWidth=g_array_index(priv->columnCoords, gfloat, priv->columns);
+		}
 	}
 
 	/* Set return values */
@@ -351,6 +354,13 @@ static void _xfdashboard_dynamic_table_layout_allocate(ClutterLayoutManager *sel
 															inContainer,
 															width,
 															height);
+
+	/* Set container allocation */
+	childAllocation.x1=0;
+	childAllocation.y1=0;
+	childAllocation.x2=g_array_index(priv->columnCoords, gfloat, priv->columns)-priv->columnSpacing;
+	childAllocation.y2=g_array_index(priv->rowCoords, gfloat, priv->rows)-priv->rowSpacing;
+	clutter_actor_allocate(CLUTTER_ACTOR(inContainer), &childAllocation, inFlags);
 
 	/* Determine allocation for each visible child */
 	i=0;
