@@ -514,6 +514,7 @@ static gboolean _xfdashboard_viewpad_view_needs_scrolling_for_child(XfdashboardV
 	gboolean					viewFitsIntoViewpad;
 	gboolean					needScrolling;
 	gfloat						scrollX, scrollY;
+	gfloat						viewpadWidth, viewpadHeight;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEWPAD(self), FALSE);
 	g_return_val_if_fail(XFDASHBOARD_IS_VIEW(inView), FALSE);
@@ -527,20 +528,24 @@ static gboolean _xfdashboard_viewpad_view_needs_scrolling_for_child(XfdashboardV
 	/* Check if view would fit into this viewpad completely */
 	if(priv->lastAllocation)
 	{
+		viewpadWidth=clutter_actor_box_get_width(priv->lastAllocation);
+		viewpadHeight=clutter_actor_box_get_height(priv->lastAllocation);
+
 		clutter_actor_get_size(CLUTTER_ACTOR(inView), &w, &h);
-		if(w<=clutter_actor_box_get_width(priv->lastAllocation) &&
-			h<=clutter_actor_box_get_height(priv->lastAllocation))
-		{
-			viewFitsIntoViewpad=TRUE;
-		}
+		if(w<=viewpadWidth && h<=viewpadHeight) viewFitsIntoViewpad=TRUE;
 	}
+		else
+		{
+			clutter_actor_get_size(CLUTTER_ACTOR(self), &viewpadWidth, &viewpadHeight);
+		}
 
 	/* Get position and size of view but respect scrolled position */
 	if(inView==priv->activeView)
 	{
 		x=xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar));
 		y=xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar));
-		clutter_actor_get_size(CLUTTER_ACTOR(self), &w, &h);
+		w=viewpadWidth;
+		h=viewpadHeight;
 	}
 		else
 		{
