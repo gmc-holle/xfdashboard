@@ -259,6 +259,7 @@ data/themes/xfdashboard-moranga/Makefile
 data/themes/xfdashboard-wine/Makefile
 plugins/Makefile
 plugins/clock-view/Makefile
+plugins/gnome-shell-search-provider/Makefile
 po/Makefile.in
 settings/Makefile
 xfdashboard/Makefile

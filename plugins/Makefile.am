@@ -1,2 +1,3 @@
 SUBDIRS = \
-	clock-view
+	clock-view \
+	gnome-shell-search-provider
