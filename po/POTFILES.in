@@ -13,8 +13,11 @@ data/themes/xfdashboard-moranga/xfdashboard.theme.in.in
 data/themes/xfdashboard-wine/xfdashboard.theme.in.in
 plugins/clock-view/clock-view.c
 plugins/clock-view/plugin.c
+plugins/gnome-shell-search-provider/gnome-shell-search-provider.c
+plugins/gnome-shell-search-provider/plugin.c
 settings/main.c
 settings/settings.c
+xfdashboard/action-button.c
 xfdashboard/actor.c
 xfdashboard/application-button.c
 xfdashboard/application.c
