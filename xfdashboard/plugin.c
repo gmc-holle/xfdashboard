@@ -119,8 +119,6 @@ static guint XfdashboardPluginSignals[SIGNAL_LAST]={ 0, };
 				action);
 
 #define XFDASHBOARD_PLUGIN_FUNCTION_NAME_INITIALIZE		"plugin_init"
-// TODO: #define XFDASHBOARD_PLUGIN_FUNCTION_NAME_ENABLE			"plugin_enable"
-// TODO: #define XFDASHBOARD_PLUGIN_FUNCTION_NAME_DISABLE		"plugin_disable"
 
 /* Get display name for XFDASHBOARD_PLUGIN_STATE_* enum values */
 static const gchar* _xfdashboard_plugin_get_plugin_state_value_name(XfdashboardPluginState inState)
