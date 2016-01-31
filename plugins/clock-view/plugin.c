@@ -37,8 +37,36 @@
 
 /* Forward declarations */
 G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self);
-G_MODULE_EXPORT void plugin_enable(XfdashboardPlugin *self);
-G_MODULE_EXPORT void plugin_disable(XfdashboardPlugin *self);
+
+/* Plugin enable function */
+static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
+{
+	XfdashboardViewManager	*viewManager;
+
+	/* Register view */
+	viewManager=xfdashboard_view_manager_get_default();
+
+	xfdashboard_view_manager_register(viewManager, "clock", XFDASHBOARD_TYPE_CLOCK_VIEW);
+
+	g_object_unref(viewManager);
+
+	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+}
+
+/* Plugin disable function */
+static gboolean plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
+{
+	XfdashboardViewManager	*viewManager;
+
+	/* Unregister view */
+	viewManager=xfdashboard_view_manager_get_default();
+
+	xfdashboard_view_manager_unregister(viewManager, "clock");
+
+	g_object_unref(viewManager);
+
+	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+}
 
 /* Plugin initialization function */
 G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
@@ -56,30 +84,8 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
 
 	/* Register GObject types of this plugin */
 	XFDASHBOARD_REGISTER_PLUGIN_TYPE(self, xfdashboard_clock_view);
-}
 
-/* Plugin enable function */
-G_MODULE_EXPORT void plugin_enable(XfdashboardPlugin *self)
-{
-	XfdashboardViewManager	*viewManager;
-
-	/* Register view */
-	viewManager=xfdashboard_view_manager_get_default();
-
-	xfdashboard_view_manager_register(viewManager, "clock", XFDASHBOARD_TYPE_CLOCK_VIEW);
-
-	g_object_unref(viewManager);
-}
-
-/* Plugin disable function */
-G_MODULE_EXPORT void plugin_disable(XfdashboardPlugin *self)
-{
-	XfdashboardViewManager	*viewManager;
-
-	/* Unregister view */
-	viewManager=xfdashboard_view_manager_get_default();
-
-	xfdashboard_view_manager_unregister(viewManager, "clock");
-
-	g_object_unref(viewManager);
+	/* Connect plugin action handlers */
+	g_signal_connect(self, "enable", G_CALLBACK(plugin_enable), NULL);
+	g_signal_connect(self, "disable", G_CALLBACK(plugin_disable), NULL);
 }

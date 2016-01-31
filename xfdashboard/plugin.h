@@ -44,6 +44,10 @@ G_BEGIN_DECLS
 	inFunctionNamePrefix##_register_plugin_type(XFDASHBOARD_PLUGIN(self));
 
 
+/* Definitions */
+#define XFDASHBOARD_PLUGIN_ACTION_HANDLED	(TRUE)
+
+
 /* Object declaration */
 #define XFDASHBOARD_TYPE_PLUGIN				(xfdashboard_plugin_get_type())
 #define XFDASHBOARD_PLUGIN(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_PLUGIN, XfdashboardPlugin))
@@ -70,6 +74,13 @@ struct _XfdashboardPluginClass
 	/*< private >*/
 	/* Parent class */
 	GTypeModuleClass				parent_class;
+
+	/*< public >*/
+	/* Virtual functions */
+	gboolean (*enable)(XfdashboardPlugin *self);
+	gboolean (*disable)(XfdashboardPlugin *self);
+
+	gboolean (*configure)(XfdashboardPlugin *self);
 };
 
 /* Error */

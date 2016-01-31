@@ -41,29 +41,9 @@ static GList		*xfdashboard_gnome_shell_search_provider_registered_providers=NULL
 
 /* Forward declarations */
 G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self);
-G_MODULE_EXPORT void plugin_enable(XfdashboardPlugin *self);
-G_MODULE_EXPORT void plugin_disable(XfdashboardPlugin *self);
-
-/* Plugin initialization function */
-G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
-{
-	/* Set up localization */
-	xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
-
-	/* Set plugin info */
-	xfdashboard_plugin_set_info(self,
-								"id", "gnome-shell-search-provider",
-								"name", _("Gnome-Shell search provider"),
-								"description", _("Uses Gnome-Shell search providers as source for searches"),
-								"author", "Stephan Haller <nomad@froevel.de>",
-								NULL);
-
-	/* Register GObject types of this plugin */
-	XFDASHBOARD_REGISTER_PLUGIN_TYPE(self, xfdashboard_gnome_shell_search_provider);
-}
 
 /* Plugin enable function */
-G_MODULE_EXPORT void plugin_enable(XfdashboardPlugin *self)
+static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 {
 	XfdashboardSearchManager	*searchManager;
 	GFile						*gnomeShellSearchProvidersPath;
@@ -107,7 +87,7 @@ G_MODULE_EXPORT void plugin_enable(XfdashboardPlugin *self)
 		if(searchManager) g_object_unref(searchManager);
 		if(gnomeShellSearchProvidersPath) g_object_unref(gnomeShellSearchProvidersPath);
 
-		return;
+		return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
 	}
 
 	/* Iterate through files in search providers path and for each
@@ -171,7 +151,7 @@ G_MODULE_EXPORT void plugin_enable(XfdashboardPlugin *self)
 		if(searchManager) g_object_unref(searchManager);
 		if(gnomeShellSearchProvidersPath) g_object_unref(gnomeShellSearchProvidersPath);
 
-		return;
+		return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
 	}
 
 	/* Create monitor to get notified about new, changed and removed search providers */
@@ -186,10 +166,13 @@ G_MODULE_EXPORT void plugin_enable(XfdashboardPlugin *self)
 	if(enumerator) g_object_unref(enumerator);
 	if(searchManager) g_object_unref(searchManager);
 	if(gnomeShellSearchProvidersPath) g_object_unref(gnomeShellSearchProvidersPath);
+
+	/* All done */
+	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
 }
 
 /* Plugin disable function */
-G_MODULE_EXPORT void plugin_disable(XfdashboardPlugin *self)
+static gboolean plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 {
 	XfdashboardSearchManager	*searchManager;
 	GList						*iter;
@@ -236,4 +219,29 @@ G_MODULE_EXPORT void plugin_disable(XfdashboardPlugin *self)
 		g_list_free_full(xfdashboard_gnome_shell_search_provider_registered_providers, g_free);
 		xfdashboard_gnome_shell_search_provider_registered_providers=NULL;
 	}
+
+	/* All done */
+	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+}
+
+/* Plugin initialization function */
+G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
+{
+	/* Set up localization */
+	xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
+
+	/* Set plugin info */
+	xfdashboard_plugin_set_info(self,
+								"id", "gnome-shell-search-provider",
+								"name", _("Gnome-Shell search provider"),
+								"description", _("Uses Gnome-Shell search providers as source for searches"),
+								"author", "Stephan Haller <nomad@froevel.de>",
+								NULL);
+
+	/* Register GObject types of this plugin */
+	XFDASHBOARD_REGISTER_PLUGIN_TYPE(self, xfdashboard_gnome_shell_search_provider);
+
+	/* Connect plugin action handlers */
+	g_signal_connect(self, "enable", G_CALLBACK(plugin_enable), NULL);
+	g_signal_connect(self, "disable", G_CALLBACK(plugin_disable), NULL);
 }

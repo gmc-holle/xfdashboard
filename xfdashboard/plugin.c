@@ -30,6 +30,8 @@
 
 #include <glib/gi18n-lib.h>
 
+#include "marshal.h"
+
 
 /* Forward declaration */
 typedef enum /*< skip,prefix=XFDASHBOARD_PLUGIN_STATE >*/
@@ -66,15 +68,10 @@ struct _XfdashboardPluginPrivate
 	/* Instance related */
 	gchar						*filename;
 	GModule						*module;
+	void 						(*initialize)(XfdashboardPlugin *self);
 	XfdashboardPluginState		state;
 	gchar						*lastLoadingError;
 
-	void (*initialize)(XfdashboardPlugin *self);
-
-	void (*enable)(XfdashboardPlugin *self);
-	void (*disable)(XfdashboardPlugin *self);
-
-	void (*configure)(XfdashboardPlugin *self);
 };
 
 /* Properties */
@@ -100,17 +97,30 @@ enum
 
 static GParamSpec* XfdashboardPluginProperties[PROP_LAST]={ 0, };
 
+/* Signals */
+enum
+{
+	/* Actions */
+	ACTION_ENABLE,
+	ACTION_DISABLE,
+	ACTION_CONFIGURE,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardPluginSignals[SIGNAL_LAST]={ 0, };
+
 
 /* IMPLEMENTATION: Private variables and methods */
-#define XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, vfunc, action) \
-	g_critical(_("Plugin at path '%s' does not implement required virtual function %s to %s"), \
+#define XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, action) \
+	g_critical(_("Plugin at path '%s' does not implement required signal handler %s::%s"), \
 				self->priv->filename ? self->priv->filename : _("unknown filename"), \
-				vfunc, \
+				G_OBJECT_TYPE_NAME(self), \
 				action);
 
 #define XFDASHBOARD_PLUGIN_FUNCTION_NAME_INITIALIZE		"plugin_init"
-#define XFDASHBOARD_PLUGIN_FUNCTION_NAME_ENABLE			"plugin_enable"
-#define XFDASHBOARD_PLUGIN_FUNCTION_NAME_DISABLE		"plugin_disable"
+// TODO: #define XFDASHBOARD_PLUGIN_FUNCTION_NAME_ENABLE			"plugin_enable"
+// TODO: #define XFDASHBOARD_PLUGIN_FUNCTION_NAME_DISABLE		"plugin_disable"
 
 /* Get display name for XFDASHBOARD_PLUGIN_STATE_* enum values */
 static const gchar* _xfdashboard_plugin_get_plugin_state_value_name(XfdashboardPluginState inState)
@@ -389,6 +399,42 @@ static void _xfdashboard_plugin_set_license(XfdashboardPlugin *self, const gchar
 	}
 }
 
+/* Default implementation of signal handler "enable" */
+static gboolean _xfdashboard_plugin_enable(XfdashboardPlugin *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+
+	/* We should never reach this code because each plugin must connect a signal handler
+	 * for this action and return TRUE to indicate that this action was handled.
+	 */
+	XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, "enable");
+	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+}
+
+/* Default implementation of signal handler "disable" */
+static gboolean _xfdashboard_plugin_disable(XfdashboardPlugin *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+
+	/* We should never reach this code because each plugin must connect a signal handler
+	 * for this action and return TRUE to indicate that this action was handled.
+	 */
+	XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, "disable");
+	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+}
+
+/* Default implementation of signal handler "configure" */
+static gboolean _xfdashboard_plugin_configure(XfdashboardPlugin *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+
+	/* We should never reach this code because each plugin must connect a signal handler
+	 * for this action and return TRUE to indicate that this action was handled.
+	 */
+	XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, "configure");
+	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+}
+
 /* IMPLEMENTATION: GTypeModule */
 
 /* Load and initialize plugin */
@@ -450,9 +496,7 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 	/* Check that plugin provides all necessary functions and get the address
 	 * to these functions.
 	 */
-	if(!g_module_symbol(priv->module, XFDASHBOARD_PLUGIN_FUNCTION_NAME_INITIALIZE, (gpointer*)&priv->initialize) ||
-		!g_module_symbol(priv->module, XFDASHBOARD_PLUGIN_FUNCTION_NAME_ENABLE, (gpointer*)&priv->enable) ||
-		!g_module_symbol(priv->module, XFDASHBOARD_PLUGIN_FUNCTION_NAME_DISABLE, (gpointer*)&priv->disable))
+	if(!g_module_symbol(priv->module, XFDASHBOARD_PLUGIN_FUNCTION_NAME_INITIALIZE, (gpointer*)&priv->initialize))
 	{
 		priv->lastLoadingError=g_strdup(g_module_error());
 		return(FALSE);
@@ -466,9 +510,8 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 		else
 		{
 			/* If we get here the virtual function was not overridden */
-			priv->lastLoadingError=g_strdup(_("Plugin does not implement required virtual function XfdashboardPlugin::initialize"));
-
-			XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, XFDASHBOARD_PLUGIN_FUNCTION_NAME_INITIALIZE, "initialize");
+			priv->lastLoadingError=g_strdup_printf(_("Plugin does not implement required function %s"), XFDASHBOARD_PLUGIN_FUNCTION_NAME_INITIALIZE);
+			g_critical("Loading plugin at '%s' failed: %s", priv->filename, priv->lastLoadingError);
 			return(FALSE);
 		}
 
@@ -528,8 +571,6 @@ static void _xfdashboard_plugin_unload(GTypeModule *inModule)
 
 		/* Unset module and function pointers from plugin module */
 		priv->initialize=NULL;
-		priv->enable=NULL;
-		priv->disable=NULL;
 
 		priv->module=NULL;
 	}
@@ -614,9 +655,6 @@ static void _xfdashboard_plugin_dispose(GObject *inObject)
 
 	/* Sanity checks that module was unloaded - at least by us */
 	g_assert(priv->initialize==NULL);
-	g_assert(priv->enable==NULL);
-	g_assert(priv->disable==NULL);
-	g_assert(priv->configure==NULL);
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_plugin_parent_class)->dispose(inObject);
@@ -732,6 +770,10 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	klass->enable=_xfdashboard_plugin_enable;
+	klass->disable=_xfdashboard_plugin_disable;
+	klass->configure=_xfdashboard_plugin_configure;
+
 	moduleClass->load=_xfdashboard_plugin_load;
 	moduleClass->unload=_xfdashboard_plugin_unload;
 
@@ -814,6 +856,43 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardPluginProperties);
+
+	/* Define signals */
+	XfdashboardPluginSignals[ACTION_ENABLE]=
+		g_signal_new("enable",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardPluginClass, enable),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						G_TYPE_BOOLEAN,
+						1,
+						XFDASHBOARD_TYPE_PLUGIN);
+
+	XfdashboardPluginSignals[ACTION_DISABLE]=
+		g_signal_new("disable",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardPluginClass, disable),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						G_TYPE_BOOLEAN,
+						1,
+						XFDASHBOARD_TYPE_PLUGIN);
+
+	XfdashboardPluginSignals[ACTION_CONFIGURE]=
+		g_signal_new("configure",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardPluginClass, configure),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						G_TYPE_BOOLEAN,
+						1,
+						XFDASHBOARD_TYPE_PLUGIN);
 }
 
 /* Object initialization
@@ -828,13 +907,9 @@ static void xfdashboard_plugin_init(XfdashboardPlugin *self)
 	/* Set up default values */
 	priv->filename=NULL;
 	priv->module=NULL;
+	priv->initialize=NULL;
 	priv->state=XFDASHBOARD_PLUGIN_STATE_NONE;
 	priv->lastLoadingError=NULL;
-
-	priv->initialize=NULL;
-	priv->enable=NULL;
-	priv->disable=NULL;
-	priv->configure=NULL;
 
 	priv->id=NULL;
 	priv->name=NULL;
@@ -937,10 +1012,12 @@ void xfdashboard_plugin_set_info(XfdashboardPlugin *self,
 void xfdashboard_plugin_enable(XfdashboardPlugin *self)
 {
 	XfdashboardPluginPrivate		*priv;
+	gboolean						result;
 
 	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(self));
 
 	priv=self->priv;
+	result=FALSE;
 
 	/* Do nothing and return immediately if plugin is enabled already */
 	if(priv->state==XFDASHBOARD_PLUGIN_STATE_ENABLED)
@@ -959,28 +1036,19 @@ void xfdashboard_plugin_enable(XfdashboardPlugin *self)
 		return;
 	}
 
-	/* Call enable function of plugin */
-	if(priv->enable)
-	{
-		/* Enable plugin */
-		priv->enable(self);
-		g_debug("Plugin '%s' enabled", priv->id);
+	/* Emit signal action 'enable' to enable plugin */
+	g_signal_emit(self, XfdashboardPluginSignals[ACTION_ENABLE], 0, self, &result);
+	g_debug("Plugin '%s' enabled", priv->id);
 
-		/* Set disabled state, i.e. revert to initialized state */
-		priv->state=XFDASHBOARD_PLUGIN_STATE_ENABLED;
-
-		return;
-	}
-
-	/* If we get here the virtual function was not overridden */
-	XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, XFDASHBOARD_PLUGIN_FUNCTION_NAME_ENABLE, "enable");
-	return;
+	/* Set enabled state */
+	priv->state=XFDASHBOARD_PLUGIN_STATE_ENABLED;
 }
 
 /* Disable plugin */
 void xfdashboard_plugin_disable(XfdashboardPlugin *self)
 {
 	XfdashboardPluginPrivate		*priv;
+	gboolean						result;
 
 	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(self));
 
@@ -993,22 +1061,12 @@ void xfdashboard_plugin_disable(XfdashboardPlugin *self)
 		return;
 	}
 
-	/* Call overriden disable function of plugin */
-	if(priv->disable)
-	{
-		/* Disable plugin */
-		priv->disable(self);
-		g_debug("Plugin '%s' disabled", priv->id);
+	/* Emit signal action 'disable' to disable plugin */
+	g_signal_emit(self, XfdashboardPluginSignals[ACTION_DISABLE], 0, self, &result);
+	g_debug("Plugin '%s' disabled", priv->id);
 
-		/* Set disabled state, i.e. revert to initialized state */
-		priv->state=XFDASHBOARD_PLUGIN_STATE_INITIALIZED;
-
-		return;
-	}
-
-	/* If we get here the virtual function was not overridden */
-	XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, XFDASHBOARD_PLUGIN_FUNCTION_NAME_DISABLE, "disable");
-	return;
+	/* Set disabled state, i.e. revert to initialized state */
+	priv->state=XFDASHBOARD_PLUGIN_STATE_INITIALIZED;
 }
 
 /* Get base path to configuration files of this plugin */
