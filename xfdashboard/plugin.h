@@ -70,15 +70,6 @@ struct _XfdashboardPluginClass
 	/*< private >*/
 	/* Parent class */
 	GTypeModuleClass				parent_class;
-
-	/*< public >*/
-	/* Virtual functions */
-	void (*initialize)(XfdashboardPlugin *self);
-
-	void (*enable)(XfdashboardPlugin *self);
-	void (*disable)(XfdashboardPlugin *self);
-
-	void (*configure)(XfdashboardPlugin *self);
 };
 
 /* Error */
