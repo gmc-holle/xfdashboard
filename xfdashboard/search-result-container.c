@@ -750,7 +750,8 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 static ClutterActor* _xfdashboard_search_result_container_find_selection_from_icon_mode(XfdashboardSearchResultContainer *self,
 																						ClutterActor *inSelection,
 																						XfdashboardSelectionTarget inDirection,
-																						XfdashboardView *inView)
+																						XfdashboardView *inView,
+																						gboolean inAllowWrap)
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
 	ClutterActor								*selection;
@@ -764,6 +765,7 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_ic
 	gint										newSelectionIndex;
 	ClutterActorIter							iter;
 	ClutterActor								*child;
+	gboolean									needsWrap;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), NULL);
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
@@ -771,6 +773,7 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_ic
 	priv=self->priv;
 	selection=inSelection;
 	newSelection=NULL;
+	needsWrap=FALSE;
 
 	/* Get number of rows and columns and also get number of children
 	 * of layout manager.
@@ -800,6 +803,8 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_ic
 			{
 				currentSelectionRow++;
 				newSelectionIndex=(currentSelectionRow*columns)-1;
+
+				needsWrap=TRUE;
 			}
 				else newSelectionIndex=currentSelectionIndex-1;
 
@@ -813,6 +818,7 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_ic
 				currentSelectionIndex==numberChildren)
 			{
 				newSelectionIndex=(currentSelectionRow*columns);
+				needsWrap=TRUE;
 			}
 				else newSelectionIndex=currentSelectionIndex+1;
 
@@ -822,7 +828,11 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_ic
 
 		case XFDASHBOARD_SELECTION_TARGET_UP:
 			currentSelectionRow--;
-			if(currentSelectionRow<0) currentSelectionRow=rows-1;
+			if(currentSelectionRow<0)
+			{
+				currentSelectionRow=rows-1;
+				needsWrap=TRUE;
+			}
 			newSelectionIndex=(currentSelectionRow*columns)+currentSelectionColumn;
 
 			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
@@ -831,7 +841,11 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_ic
 
 		case XFDASHBOARD_SELECTION_TARGET_DOWN:
 			currentSelectionRow++;
-			if(currentSelectionRow>=rows) currentSelectionRow=0;
+			if(currentSelectionRow>=rows)
+			{
+				currentSelectionRow=0;
+				needsWrap=TRUE;
+			}
 			newSelectionIndex=(currentSelectionRow*columns)+currentSelectionColumn;
 
 			newSelectionIndex=MIN(newSelectionIndex, numberChildren-1);
@@ -875,15 +889,24 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_ic
 			break;
 	}
 
-	/* If new selection could be found override current selection with it */
+	/* If new selection could be found override current selection with it.
+	 * But also check if new selection needs to wrap (crossing boundaries
+	 * like going to the beginning because it's gone beyond end) and if
+	 * wrapping is allowed.
+	 */
 	if(newSelection) selection=newSelection;
 
+	if(selection && needsWrap && !inAllowWrap) selection=NULL;
+
 	/* Return new selection */
-	g_debug("Selecting %s at %s for current selection %s in direction %u",
+	g_debug("Selecting %s in icon mode at %s for current selection %s in direction %u with wrapping %s and wrapping %s",
 			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
 			G_OBJECT_TYPE_NAME(self),
 			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
-			inDirection);
+			inDirection,
+			inAllowWrap ? "allowed" : "denied",
+			needsWrap ? "needed" : "not needed");
+
 	return(selection);
 }
 
@@ -891,11 +914,13 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_ic
 static ClutterActor* _xfdashboard_search_result_container_find_selection_from_list_mode(XfdashboardSearchResultContainer *self,
 																						ClutterActor *inSelection,
 																						XfdashboardSelectionTarget inDirection,
-																						XfdashboardView *inView)
+																						XfdashboardView *inView,
+																						gboolean inAllowWrap)
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
 	ClutterActor								*selection;
 	ClutterActor								*newSelection;
+	gboolean									needsWrap;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(self), NULL);
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
@@ -903,6 +928,7 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_li
 	priv=self->priv;
 	selection=inSelection;
 	newSelection=NULL;
+	needsWrap=FALSE;
 
 	/* Find target selection */
 	switch(inDirection)
@@ -916,12 +942,20 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_li
 
 		case XFDASHBOARD_SELECTION_TARGET_UP:
 			newSelection=clutter_actor_get_previous_sibling(inSelection);
-			if(!newSelection) newSelection=clutter_actor_get_last_child(priv->itemsContainer);
+			if(!newSelection)
+			{
+				newSelection=clutter_actor_get_last_child(priv->itemsContainer);
+				needsWrap=TRUE;
+			}
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_DOWN:
 			newSelection=clutter_actor_get_next_sibling(inSelection);
-			if(!newSelection) newSelection=clutter_actor_get_first_child(priv->itemsContainer);
+			if(!newSelection)
+			{
+				newSelection=clutter_actor_get_first_child(priv->itemsContainer);
+				needsWrap=TRUE;
+			}
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_PAGE_UP:
@@ -971,9 +1005,15 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_li
 					if(childY1>limitY || childY2>limitY) newSelection=child;
 				}
 
+				/* If new selection is the same is current selection
+				 * then we did not find a new selection.
+				 */
+				if(newSelection==inSelection) newSelection=NULL;
+
 				/* If no child could be found select last one */
 				if(!newSelection)
 				{
+					needsWrap=TRUE;
 					if(inDirection==XFDASHBOARD_SELECTION_TARGET_PAGE_UP)
 					{
 						newSelection=clutter_actor_get_first_child(priv->itemsContainer);
@@ -999,15 +1039,24 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_li
 			break;
 	}
 
-	/* If new selection could be found override current selection with it */
+	/* If new selection could be found override current selection with it.
+	 * But also check if new selection needs to wrap (crossing boundaries
+	 * like going to the beginning because it's gone beyond end) and if
+	 * wrapping is allowed.
+	 */
 	if(newSelection) selection=newSelection;
 
+	if(selection && needsWrap && !inAllowWrap) selection=NULL;
+
 	/* Return new selection */
-	g_debug("Selecting %s at %s for current selection %s in direction %u",
+	g_debug("Selecting %s in list mode at %s for current selection %s in direction %u with wrapping %s and wrapping %s",
 			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
 			G_OBJECT_TYPE_NAME(self),
 			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
-			inDirection);
+			inDirection,
+			inAllowWrap ? "allowed" : "denied",
+			needsWrap ? "needed" : "not needed");
+
 	return(selection);
 }
 
@@ -1721,7 +1770,8 @@ gboolean xfdashboard_search_result_container_set_selection(XfdashboardSearchResu
 ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSearchResultContainer *self,
 																	ClutterActor *inSelection,
 																	XfdashboardSelectionTarget inDirection,
-																	XfdashboardView *inView)
+																	XfdashboardView *inView,
+																	gboolean inAllowWrap)
 {
 	XfdashboardSearchResultContainerPrivate		*priv;
 	ClutterActor								*selection;
@@ -1733,10 +1783,24 @@ ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSear
 	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
 
 	priv=self->priv;
-	selection=inSelection;
+	selection=NULL;
 	newSelection=NULL;
 
-	/* If there is nothing selected, select first actor and return */
+	/* If first selection is requested, select first actor and return */
+	if(inDirection==XFDASHBOARD_SELECTION_TARGET_FIRST)
+	{
+		newSelection=clutter_actor_get_first_child(priv->itemsContainer);
+		return(newSelection);
+	}
+
+	/* If last selection is requested, select last actor and return */
+	if(inDirection==XFDASHBOARD_SELECTION_TARGET_LAST)
+	{
+		newSelection=clutter_actor_get_last_child(priv->itemsContainer);
+		return(newSelection);
+	}
+
+	/* If there is nothing selected, select the first actor and return */
 	if(!inSelection)
 	{
 		newSelection=clutter_actor_get_first_child(priv->itemsContainer);
@@ -1774,25 +1838,25 @@ ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSear
 		case XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN:
 			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
 			{
-				newSelection=_xfdashboard_search_result_container_find_selection_from_list_mode(self, inSelection, inDirection, inView);
+				newSelection=_xfdashboard_search_result_container_find_selection_from_list_mode(self, inSelection, inDirection, inView, inAllowWrap);
 			}
 				else
 				{
-					newSelection=_xfdashboard_search_result_container_find_selection_from_icon_mode(self, inSelection, inDirection, inView);
+					newSelection=_xfdashboard_search_result_container_find_selection_from_icon_mode(self, inSelection, inDirection, inView, inAllowWrap);
 				}
-			break;
-
-		case XFDASHBOARD_SELECTION_TARGET_FIRST:
-			newSelection=clutter_actor_get_first_child(priv->itemsContainer);
-			break;
-
-		case XFDASHBOARD_SELECTION_TARGET_LAST:
-			newSelection=clutter_actor_get_last_child(priv->itemsContainer);
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_NEXT:
 			newSelection=clutter_actor_get_next_sibling(inSelection);
-			if(!newSelection) newSelection=clutter_actor_get_previous_sibling(inSelection);
+			if(!newSelection && inAllowWrap) newSelection=clutter_actor_get_previous_sibling(inSelection);
+			break;
+
+		case XFDASHBOARD_SELECTION_TARGET_FIRST:
+		case XFDASHBOARD_SELECTION_TARGET_LAST:
+			/* These directions should be handled at beginning of this function
+			 * and therefore should never be reached!
+			 */
+			g_assert_not_reached();
 			break;
 
 		default:
@@ -1812,11 +1876,12 @@ ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSear
 	if(newSelection) selection=newSelection;
 
 	/* Return new selection found */
-	g_debug("Selecting %s at %s for current selection %s in direction %u",
+	g_debug("Selecting %s at %s for current selection %s in direction %u with wrapping %s",
 			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
 			G_OBJECT_TYPE_NAME(self),
 			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
-			inDirection);
+			inDirection,
+			inAllowWrap ? "allowed" : "denied");
 
 	return(selection);
 }

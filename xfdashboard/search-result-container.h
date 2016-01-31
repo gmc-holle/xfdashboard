@@ -100,7 +100,8 @@ gboolean xfdashboard_search_result_container_set_selection(XfdashboardSearchResu
 ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSearchResultContainer *self,
 																	ClutterActor *inSelection,
 																	XfdashboardSelectionTarget inDirection,
-																	XfdashboardView *inView);
+																	XfdashboardView *inView,
+																	gboolean inAllowWrap);
 void xfdashboard_search_result_container_activate_selection(XfdashboardSearchResultContainer *self,
 																	ClutterActor *inSelection);
 

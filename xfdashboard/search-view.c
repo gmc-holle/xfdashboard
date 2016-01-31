@@ -547,7 +547,8 @@ static void _xfdashboard_search_view_on_provider_container_destroyed(ClutterActo
 				selectableActor=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(iterProviderData->container),
 																					NULL,
 																					XFDASHBOARD_SELECTION_TARGET_FIRST,
-																					XFDASHBOARD_VIEW(self));
+																					XFDASHBOARD_VIEW(self),
+																					FALSE);
 				if(selectableActor)
 				{
 					newSelection=selectableActor;
@@ -572,7 +573,8 @@ static void _xfdashboard_search_view_on_provider_container_destroyed(ClutterActo
 				selectableActor=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(iterProviderData->container),
 																					NULL,
 																					XFDASHBOARD_SELECTION_TARGET_FIRST,
-																					XFDASHBOARD_VIEW(self));
+																					XFDASHBOARD_VIEW(self),
+																					FALSE);
 				if(selectableActor)
 				{
 					newSelection=selectableActor;
@@ -1020,6 +1022,180 @@ static gboolean _xfdashboard_search_view_focusable_set_selection(XfdashboardFocu
 }
 
 /* Find requested selection target depending of current selection */
+static ClutterActor* _xfdashboard_search_view_focusable_find_selection_internal_backwards(XfdashboardSearchView *self,
+																							XfdashboardSearchResultContainer *inContainer,
+																							ClutterActor *inSelection,
+																							XfdashboardSelectionTarget inDirection,
+																							GList *inCurrentProviderIter,
+																							XfdashboardSelectionTarget inNextContainerDirection)
+{
+	ClutterActor							*newSelection;
+	GList									*iter;
+	XfdashboardSearchViewProviderData		*providerData;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(inContainer), NULL);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
+	g_return_val_if_fail(inDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
+	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+	g_return_val_if_fail(inCurrentProviderIter, NULL);
+	g_return_val_if_fail(inNextContainerDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
+	g_return_val_if_fail(inNextContainerDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+
+	/* Ask current provider to find selection for requested direction */
+	newSelection=xfdashboard_search_result_container_find_selection(inContainer,
+																	inSelection,
+																	inDirection,
+																	XFDASHBOARD_VIEW(self),
+																	FALSE);
+
+	/* If current provider does not return a matching selection for requested,
+	 * iterate backwards through providers beginning at current provider and
+	 * return the last actor of first provider having an existing container
+	 * while iterating.
+	 */
+	if(!newSelection)
+	{
+		for(iter=g_list_previous(inCurrentProviderIter); iter && !newSelection; iter=g_list_previous(iter))
+		{
+			providerData=(XfdashboardSearchViewProviderData*)iter->data;
+
+			if(providerData &&
+				providerData->container)
+			{
+				newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
+																				NULL,
+																				inNextContainerDirection,
+																				XFDASHBOARD_VIEW(self),
+																				FALSE);
+			}
+		}
+	}
+
+	/* If we still have no new selection found, do the same as above but
+	 * iterate from end of list of providers backwards to current provider.
+	 */
+	if(!newSelection)
+	{
+		for(iter=g_list_last(inCurrentProviderIter); iter && iter!=inCurrentProviderIter && !newSelection; iter=g_list_previous(iter))
+		{
+			providerData=(XfdashboardSearchViewProviderData*)iter->data;
+
+			if(providerData &&
+				providerData->container)
+			{
+				newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
+																				NULL,
+																				inNextContainerDirection,
+																				XFDASHBOARD_VIEW(self),
+																				FALSE);
+			}
+		}
+	}
+
+	/* If we still have no selection the last resort is to find a selection
+	 * at current provider but this time allow wrapping.
+	 */
+	if(!newSelection)
+	{
+		newSelection=xfdashboard_search_result_container_find_selection(inContainer,
+																		inSelection,
+																		inDirection,
+																		XFDASHBOARD_VIEW(self),
+																		TRUE);
+	}
+
+	/* Return selection found which may be NULL */
+	return(newSelection);
+}
+
+static ClutterActor* _xfdashboard_search_view_focusable_find_selection_internal_forwards(XfdashboardSearchView *self,
+																							XfdashboardSearchResultContainer *inContainer,
+																							ClutterActor *inSelection,
+																							XfdashboardSelectionTarget inDirection,
+																							GList *inCurrentProviderIter,
+																							XfdashboardSelectionTarget inNextContainerDirection)
+{
+	ClutterActor							*newSelection;
+	GList									*iter;
+	XfdashboardSearchViewProviderData		*providerData;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(inContainer), NULL);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
+	g_return_val_if_fail(inDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
+	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+	g_return_val_if_fail(inCurrentProviderIter, NULL);
+	g_return_val_if_fail(inNextContainerDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
+	g_return_val_if_fail(inNextContainerDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+
+	/* Ask current provider to find selection for requested direction */
+	newSelection=xfdashboard_search_result_container_find_selection(inContainer,
+																	inSelection,
+																	inDirection,
+																	XFDASHBOARD_VIEW(self),
+																	FALSE);
+
+	/* If current provider does not return a matching selection for requested,
+	 * iterate forwards through providers beginning at current provider and
+	 * return the last actor of first provider having an existing container
+	 * while iterating.
+	 */
+	if(!newSelection)
+	{
+		for(iter=g_list_next(inCurrentProviderIter); iter && !newSelection; iter=g_list_next(iter))
+		{
+			providerData=(XfdashboardSearchViewProviderData*)iter->data;
+
+			if(providerData &&
+				providerData->container)
+			{
+				newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
+																				NULL,
+																				inNextContainerDirection,
+																				XFDASHBOARD_VIEW(self),
+																				FALSE);
+			}
+		}
+	}
+
+	/* If we still have no new selection found, do the same as above but
+	 * iterate from start of list of providers forwards to current provider.
+	 */
+	if(!newSelection)
+	{
+		for(iter=g_list_first(inCurrentProviderIter); iter && iter!=inCurrentProviderIter && !newSelection; iter=g_list_next(iter))
+		{
+			providerData=(XfdashboardSearchViewProviderData*)iter->data;
+
+			if(providerData &&
+				providerData->container)
+			{
+				newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
+																				NULL,
+																				inNextContainerDirection,
+																				XFDASHBOARD_VIEW(self),
+																				FALSE);
+			}
+		}
+	}
+
+	/* If we still have no selection the last resort is to find a selection
+	 * at current provider but this time allow wrapping.
+	 */
+	if(!newSelection)
+	{
+		newSelection=xfdashboard_search_result_container_find_selection(inContainer,
+																		inSelection,
+																		inDirection,
+																		XFDASHBOARD_VIEW(self),
+																		TRUE);
+	}
+
+	/* Return selection found which may be NULL */
+	return(newSelection);
+}
+
 static ClutterActor* _xfdashboard_search_view_focusable_find_selection(XfdashboardFocusable *inFocusable,
 																				ClutterActor *inSelection,
 																				XfdashboardSelectionTarget inDirection)
@@ -1061,7 +1237,8 @@ static ClutterActor* _xfdashboard_search_view_focusable_find_selection(Xfdashboa
 				newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
 																				NULL,
 																				XFDASHBOARD_SELECTION_TARGET_FIRST,
-																				XFDASHBOARD_VIEW(self));
+																				XFDASHBOARD_VIEW(self),
+																				FALSE);
 				if(newSelection) newSelectionProvider=providerData;
 			}
 		}
@@ -1091,7 +1268,8 @@ static ClutterActor* _xfdashboard_search_view_focusable_find_selection(Xfdashboa
 				newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
 																				inSelection,
 																				XFDASHBOARD_SELECTION_TARGET_FIRST,
-																				XFDASHBOARD_VIEW(self));
+																				XFDASHBOARD_VIEW(self),
+																				FALSE);
 				if(newSelection) newSelectionProvider=providerData;
 			}
 		}
@@ -1121,7 +1299,8 @@ static ClutterActor* _xfdashboard_search_view_focusable_find_selection(Xfdashboa
 				newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
 																				inSelection,
 																				XFDASHBOARD_SELECTION_TARGET_LAST,
-																				XFDASHBOARD_VIEW(self));
+																				XFDASHBOARD_VIEW(self),
+																				FALSE);
 				if(newSelection) newSelectionProvider=providerData;
 			}
 		}
@@ -1166,117 +1345,33 @@ static ClutterActor* _xfdashboard_search_view_focusable_find_selection(Xfdashboa
 		case XFDASHBOARD_SELECTION_TARGET_UP:
 		case XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT:
 		case XFDASHBOARD_SELECTION_TARGET_PAGE_UP:
-			/* Ask current provider to find selection for requested direction */
-			newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
-																			inSelection,
-																			inDirection,
-																			XFDASHBOARD_VIEW(self));
-
-			/* If current provider does not return a matching selection for requested,
-			 * iterate backwards through providers beginning at current provider and
-			 * return the last actor of first provider having an existing container
-			 * while iterating.
-			 */
-			if(!newSelection)
-			{
-				for(iter=g_list_previous(currentProviderIter); iter && !newSelection; iter=g_list_previous(iter))
-				{
-					providerData=(XfdashboardSearchViewProviderData*)iter->data;
-
-					if(providerData &&
-						providerData->container)
-					{
-						newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
-																						NULL,
-																						XFDASHBOARD_SELECTION_TARGET_LAST,
-																						XFDASHBOARD_VIEW(self));
-					}
-				}
-			}
+			newSelection=_xfdashboard_search_view_focusable_find_selection_internal_backwards(self,
+																								XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																								inSelection,
+																								inDirection,
+																								currentProviderIter,
+																								XFDASHBOARD_SELECTION_TARGET_LAST);
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_RIGHT:
 		case XFDASHBOARD_SELECTION_TARGET_DOWN:
 		case XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT:
 		case XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN:
-			/* Ask current provider to find selection for requested direction */
-			newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
-																			inSelection,
-																			inDirection,
-																			XFDASHBOARD_VIEW(self));
-
-			/* If current provider does not return a matching selection for requested,
-			 * iterate forwards through providers beginning at current provider and
-			 * return the first actor of first provider having an existing container
-			 * while iterating.
-			 */
-			if(!newSelection)
-			{
-				for(iter=g_list_next(currentProviderIter); iter && !newSelection; iter=g_list_next(iter))
-				{
-					providerData=(XfdashboardSearchViewProviderData*)iter->data;
-
-					if(providerData &&
-						providerData->container)
-					{
-						newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
-																						NULL,
-																						XFDASHBOARD_SELECTION_TARGET_FIRST,
-																						XFDASHBOARD_VIEW(self));
-					}
-				}
-			}
+			newSelection=_xfdashboard_search_view_focusable_find_selection_internal_forwards(self,
+																								XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																								inSelection,
+																								inDirection,
+																								currentProviderIter,
+																								XFDASHBOARD_SELECTION_TARGET_FIRST);
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_NEXT:
-			/* Ask current provider to find selection for requested direction */
-			newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
-																			inSelection,
-																			inDirection,
-																			XFDASHBOARD_VIEW(self));
-
-			/* If current provider does not return a matching selection for requested,
-			 * iterate forwards through providers beginning at current provider and
-			 * return the first actor of first provider having an existing container
-			 * while iterating.
-			 */
-			if(!newSelection)
-			{
-				for(iter=g_list_next(currentProviderIter); iter && !newSelection; iter=g_list_next(iter))
-				{
-					providerData=(XfdashboardSearchViewProviderData*)iter->data;
-
-					if(providerData &&
-						providerData->container)
-					{
-						newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
-																						NULL,
-																						XFDASHBOARD_SELECTION_TARGET_FIRST,
-																						XFDASHBOARD_VIEW(self));
-					}
-				}
-			}
-
-			/* If still no matching selection was found then iterate backwards through
-			 * providers beginning at current provider and return the last actor of first
-			 * provider having an existing container while iterating.
-			 */
-			if(!newSelection)
-			{
-				for(iter=g_list_previous(currentProviderIter); iter && !newSelection; iter=g_list_previous(iter))
-				{
-					providerData=(XfdashboardSearchViewProviderData*)iter->data;
-
-					if(providerData &&
-						providerData->container)
-					{
-						newSelection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
-																						NULL,
-																						XFDASHBOARD_SELECTION_TARGET_LAST,
-																						XFDASHBOARD_VIEW(self));
-					}
-				}
-			}
+			newSelection=_xfdashboard_search_view_focusable_find_selection_internal_forwards(self,
+																								XFDASHBOARD_SEARCH_RESULT_CONTAINER(priv->selectionProvider->container),
+																								inSelection,
+																								inDirection,
+																								currentProviderIter,
+																								XFDASHBOARD_SELECTION_TARGET_FIRST);
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_FIRST:
