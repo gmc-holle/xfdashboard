@@ -179,7 +179,7 @@ static gboolean _xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *in
 					/* ... otherwise quit application */
 					else
 					{
-						xfdashboard_application_quit();
+						xfdashboard_application_suspend_or_quit(NULL);
 						return(CLUTTER_EVENT_STOP);
 					}
 			}
@@ -655,10 +655,10 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 		XfdashboardView					*resumeView;
 
 		/* Get configured options */
-		doResetSearch=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(),
+		doResetSearch=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
 												RESET_SEARCH_ON_RESUME_XFCONF_PROP,
 												DEFAULT_RESET_SEARCH_ON_RESUME);
-		resumeViewInternalName=xfconf_channel_get_string(xfdashboard_application_get_xfconf_channel(),
+		resumeViewInternalName=xfconf_channel_get_string(xfdashboard_application_get_xfconf_channel(NULL),
 															SWITCH_VIEW_ON_RESUME_XFCONF_PROP,
 															DEFAULT_SWITCH_VIEW_ON_RESUME);
 
@@ -1223,7 +1223,7 @@ static void _xfdashboard_stage_on_monitor_added(XfdashboardStage *self,
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(inUserData));
 
 	/* Get theme and theme layout */
-	theme=xfdashboard_application_get_theme();
+	theme=xfdashboard_application_get_theme(NULL);
 	themeLayout=xfdashboard_theme_get_layout(theme);
 
 	/* Create interface for non-primary monitors. If no interface is defined in theme
@@ -1971,7 +1971,7 @@ void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *in
 	 * of the notification text to show but never drops below the minimum timeout configured.
 	 * The interval is calculated by one second for 30 characters.
 	 */
-	interval=xfconf_channel_get_uint(xfdashboard_application_get_xfconf_channel(),
+	interval=xfconf_channel_get_uint(xfdashboard_application_get_xfconf_channel(NULL),
 										NOTIFICATION_TIMEOUT_XFCONF_PROP,
 										DEFAULT_NOTIFICATION_TIMEOUT);
 	interval=MAX((gint)((strlen(inText)/30.0f)*1000.0f), interval);

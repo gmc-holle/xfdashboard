@@ -717,7 +717,7 @@ static void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *
 	xfdashboard_window_tracker_window_activate(window);
 
 	/* Quit application */
-	xfdashboard_application_quit();
+	xfdashboard_application_suspend_or_quit(NULL);
 }
 
 /* The close button of a live window was clicked */
@@ -2145,7 +2145,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	priv->preventUpscaling=FALSE;
 	priv->selectedItem=NULL;
 	priv->isWindowsNumberShown=FALSE;
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
 	priv->isScrollEventChangingWorkspace=FALSE;
 	priv->scrollEventChangingWorkspaceStage=NULL;
 	priv->scrollEventChangingWorkspaceStageSignalID=0;

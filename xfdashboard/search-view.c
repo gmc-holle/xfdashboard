@@ -445,7 +445,7 @@ static void _xfdashboard_search_view_on_result_item_clicked(XfdashboardSearchRes
 	if(success)
 	{
 		/* Activating result item seems to be successfuly so quit application */
-		xfdashboard_application_quit();
+		xfdashboard_application_suspend_or_quit(NULL);
 	}
 }
 
@@ -477,7 +477,7 @@ static void _xfdashboard_search_view_on_provider_icon_clicked(XfdashboardSearchR
 	if(success)
 	{
 		/* Activating result item seems to be successfuly so quit application */
-		xfdashboard_application_quit();
+		xfdashboard_application_suspend_or_quit(NULL);
 	}
 }
 
@@ -1576,7 +1576,7 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	priv->selectionProvider=NULL;
 	priv->focusManager=xfdashboard_focus_manager_get_default();
 	priv->repaintID=0;
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
 
 	/* Set up view (Note: Search view is disabled by default!) */
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Search"));

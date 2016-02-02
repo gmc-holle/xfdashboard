@@ -159,7 +159,7 @@ static void _xfdashboard_stylable_real_invalidate(XfdashboardStylable *self)
 	if(!stylableProperties) return;
 
 	/* Get theme CSS */
-	theme=xfdashboard_application_get_theme();
+	theme=xfdashboard_application_get_theme(NULL);
 	themeCSS=xfdashboard_theme_get_css(theme);
 
 	/* Get styled properties from theme CSS */

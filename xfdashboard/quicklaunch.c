@@ -323,7 +323,7 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 	 * of application whose button was clicked, then check if a window exists
 	 * and activate it. Otherwise launch a new instance.
 	 */
-	launchNewInstance=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(),
+	launchNewInstance=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
 												LAUNCH_NEW_INSTANCE_XFCONF_PROP,
 												DEFAULT_LAUNCH_NEW_INSTANCE);
 	if(!launchNewInstance)
@@ -372,7 +372,7 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 				/* Activating last active window of application seems to be successfully
 				 * so quit application.
 				 */
-				xfdashboard_application_quit();
+				xfdashboard_application_suspend_or_quit(NULL);
 
 				return;
 			}
@@ -403,7 +403,7 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 	if(xfdashboard_application_button_execute(button, NULL))
 	{
 		/* Launching application seems to be successfully so quit application */
-		xfdashboard_application_quit();
+		xfdashboard_application_suspend_or_quit(NULL);
 
 		return;
 	}
@@ -2853,7 +2853,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	priv->scaleMin=DEFAULT_SCALE_MIN;
 	priv->scaleMax=DEFAULT_SCALE_MAX;
 	priv->scaleStep=DEFAULT_SCALE_STEP;
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
 	priv->dragMode=DRAG_MODE_NONE;
 	priv->dragPreviewIcon=NULL;
 	priv->selectedItem=NULL;

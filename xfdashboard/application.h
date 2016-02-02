@@ -108,12 +108,13 @@ gboolean xfdashboard_application_is_daemonized(XfdashboardApplication *self);
 gboolean xfdashboard_application_is_suspended(XfdashboardApplication *self);
 
 gboolean xfdashboard_application_is_quitting(XfdashboardApplication *self);
-void xfdashboard_application_quit(void);
-void xfdashboard_application_quit_forced(void);
+void xfdashboard_application_resume(XfdashboardApplication *self);
+void xfdashboard_application_suspend_or_quit(XfdashboardApplication *self);
+void xfdashboard_application_quit_forced(XfdashboardApplication *self);
 
-XfconfChannel* xfdashboard_application_get_xfconf_channel(void);
+XfconfChannel* xfdashboard_application_get_xfconf_channel(XfdashboardApplication *self);
 
-XfdashboardTheme* xfdashboard_application_get_theme(void);
+XfdashboardTheme* xfdashboard_application_get_theme(XfdashboardApplication *self);
 
 G_END_DECLS
 

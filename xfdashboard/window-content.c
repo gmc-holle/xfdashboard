@@ -398,7 +398,7 @@ static void _xfdashboard_window_content_on_window_creation_priority_shutdown(voi
 		g_debug("Disconnecting property changed signal handler %u for window creation priority value change notifications",
 					_xfdashboard_window_content_xfconf_priority_notify_id);
 
-		xfconfChannel=xfdashboard_application_get_xfconf_channel();
+		xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
 		g_signal_handler_disconnect(xfconfChannel, _xfdashboard_window_content_xfconf_priority_notify_id);
 		_xfdashboard_window_content_xfconf_priority_notify_id=0;
 	}
@@ -564,7 +564,7 @@ static void _xfdashboard_window_content_setup_workaround(XfdashboardWindowConten
 	priv=self->priv;
 
 	/* Check if should workaround unmapped windows at all */
-	doWorkaround=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(),
+	doWorkaround=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
 											WORKAROUND_UNMAPPED_WINDOW_XFCONF_PROP,
 											DEFAULT_WORKAROUND_UNMAPPED_WINDOW);
 	if(!doWorkaround) return;
@@ -2239,7 +2239,7 @@ void xfdashboard_window_content_init(XfdashboardWindowContent *self)
 		gchar							*detailedSignal;
 
 		/* Connect to property changed signal in xfconf */
-		xfconfChannel=xfdashboard_application_get_xfconf_channel();
+		xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
 		detailedSignal=g_strconcat("property-changed::", WINDOW_CONTENT_CREATION_PRIORITY_XFCONF_PROP, NULL);
 		_xfdashboard_window_content_xfconf_priority_notify_id=g_signal_connect(xfconfChannel,
 																				detailedSignal,

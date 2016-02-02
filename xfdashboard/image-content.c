@@ -352,7 +352,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 		const gchar						*themePath;
 
 		/* Get theme path */
-		theme=xfdashboard_application_get_theme();
+		theme=xfdashboard_application_get_theme(NULL);
 		g_object_ref(theme);
 
 		themePath=xfdashboard_theme_get_path(theme);
@@ -911,7 +911,7 @@ static void _xfdashboard_image_content_setup_for_icon(XfdashboardImageContent *s
 			gchar						*iconFilename;
 
 			/* Build absolute path from theme path and given relative path to icon */
-			theme=xfdashboard_application_get_theme();
+			theme=xfdashboard_application_get_theme(NULL);
 			g_object_ref(theme);
 
 			iconFilename=g_build_filename(xfdashboard_theme_get_path(theme),

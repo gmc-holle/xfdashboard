@@ -1302,7 +1302,7 @@ static void xfdashboard_applications_search_provider_init(XfdashboardApplication
 	self->priv=priv=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_GET_PRIVATE(self);
 
 	/* Set up default values */
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
 	priv->currentSortMode=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE;
 	priv->nextSortMode=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE;
 

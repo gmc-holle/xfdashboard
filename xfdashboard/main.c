@@ -69,7 +69,7 @@ static gboolean _on_quit_timeout(gpointer inUserData)
 static gboolean _on_quit_idle(gpointer inUserData)
 {
 	/* Quit application */
-	xfdashboard_application_quit_forced();
+	xfdashboard_application_quit_forced(NULL);
 
 	/* Remove this source from main loop and prevent getting it called again */
 	return(G_SOURCE_REMOVE);

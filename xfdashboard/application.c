@@ -129,7 +129,7 @@ static guint XfdashboardApplicationSignals[SIGNAL_LAST]={ 0, };
 #define DEFAULT_THEME_NAME					"xfdashboard"
 
 /* Single instance of application */
-static XfdashboardApplication*		application=NULL;
+static XfdashboardApplication*		_xfdashboard_application=NULL;
 
 /* Forward declarations */
 static void _xfdashboard_application_activate(GApplication *inApplication);
@@ -831,7 +831,7 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	xfconf_shutdown();
 
 	/* Unset singleton */
-	if(G_LIKELY(G_OBJECT(application)==inObject)) application=NULL;
+	if(G_LIKELY(G_OBJECT(_xfdashboard_application)==inObject)) _xfdashboard_application=NULL;
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_application_parent_class)->dispose(inObject);
@@ -1057,7 +1057,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 /* Get single instance of application */
 XfdashboardApplication* xfdashboard_application_get_default(void)
 {
-	if(G_UNLIKELY(application==NULL))
+	if(G_UNLIKELY(!_xfdashboard_application))
 	{
 		gchar			*appID;
 		const gchar		*forceNewInstance=NULL;
@@ -1076,16 +1076,16 @@ XfdashboardApplication* xfdashboard_application_get_default(void)
 		}
 			else appID=g_strdup(XFDASHBOARD_APP_ID);
 
-		application=g_object_new(XFDASHBOARD_TYPE_APPLICATION,
-									"application-id", appID,
-									"flags", G_APPLICATION_HANDLES_COMMAND_LINE,
-									NULL);
+		_xfdashboard_application=g_object_new(XFDASHBOARD_TYPE_APPLICATION,
+												"application-id", appID,
+												"flags", G_APPLICATION_HANDLES_COMMAND_LINE,
+												NULL);
 
 		/* Release allocated resources */
 		if(appID) g_free(appID);
 	}
 
-	return(application);
+	return(_xfdashboard_application);
 }
 
 /* Get flag if application is running in daemonized mode */
@@ -1112,47 +1112,84 @@ gboolean xfdashboard_application_is_quitting(XfdashboardApplication *self)
 	return(self->priv->isQuitting);
 }
 
-/* Quit application */
-void xfdashboard_application_quit(void)
+/* Resume application */
+void xfdashboard_application_resume(XfdashboardApplication *self)
 {
-	if(G_LIKELY(application!=NULL))
+	g_return_if_fail(self==NULL || XFDASHBOARD_IS_APPLICATION(self));
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_application;
+
+	/* Resume application */
+	if(G_LIKELY(self))
 	{
-		_xfdashboard_application_quit(application, FALSE);
+		_xfdashboard_application_activate(G_APPLICATION(self));
 	}
 }
 
-void xfdashboard_application_quit_forced(void)
+/* Quit application */
+void xfdashboard_application_suspend_or_quit(XfdashboardApplication *self)
 {
-	if(G_LIKELY(application!=NULL))
+	g_return_if_fail(self==NULL || XFDASHBOARD_IS_APPLICATION(self));
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_application;
+
+	/* Quit application */
+	if(G_LIKELY(self))
+	{
+		_xfdashboard_application_quit(self, FALSE);
+	}
+}
+
+void xfdashboard_application_quit_forced(XfdashboardApplication *self)
+{
+	g_return_if_fail(self==NULL || XFDASHBOARD_IS_APPLICATION(self));
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_application;
+
+	/* Force application to quit */
+	if(G_LIKELY(self))
 	{
 		/* Quit also any other running instance */
-		if(g_application_get_is_remote(G_APPLICATION(application))==TRUE)
+		if(g_application_get_is_remote(G_APPLICATION(self))==TRUE)
 		{
-			g_action_group_activate_action(G_ACTION_GROUP(application), "Quit", NULL);
+			g_action_group_activate_action(G_ACTION_GROUP(self), "Quit", NULL);
 		}
 
 		/* Quit this instance */
-		_xfdashboard_application_quit(application, TRUE);
+		_xfdashboard_application_quit(self, TRUE);
 	}
 		else clutter_main_quit();
 }
 
 /* Get xfconf channel for this application */
-XfconfChannel* xfdashboard_application_get_xfconf_channel(void)
+XfconfChannel* xfdashboard_application_get_xfconf_channel(XfdashboardApplication *self)
 {
 	XfconfChannel			*channel=NULL;
 
-	if(G_LIKELY(application!=NULL)) channel=application->priv->xfconfChannel;
+	g_return_if_fail(self==NULL || XFDASHBOARD_IS_APPLICATION(self));
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_application;
+
+	/* Get xfconf channel */
+	if(G_LIKELY(self)) channel=self->priv->xfconfChannel;
 
 	return(channel);
 }
 
 /* Get current theme used */
-XfdashboardTheme* xfdashboard_application_get_theme(void)
+XfdashboardTheme* xfdashboard_application_get_theme(XfdashboardApplication *self)
 {
 	XfdashboardTheme		*theme=NULL;
 
-	if(G_LIKELY(application!=NULL)) theme=application->priv->theme;
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_application;
+
+	/* Get theme */
+	if(G_LIKELY(self)) theme=self->priv->theme;
 
 	return(theme);
 }

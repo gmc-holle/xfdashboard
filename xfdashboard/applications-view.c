@@ -283,7 +283,7 @@ static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicatio
 	if(xfdashboard_application_button_execute(button, NULL))
 	{
 		/* Launching application seems to be successfuly so quit application */
-		xfdashboard_application_quit();
+		xfdashboard_application_suspend_or_quit(NULL);
 		return;
 	}
 }
@@ -1392,7 +1392,7 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	priv->formatTitleDescription=g_strdup("%s\n%s");
 	priv->selectedItem=NULL;
 	priv->showAllAppsMenu=FALSE;
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel();
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
 	priv->xfconfShowAllAppsMenuBindingID=0;
 
 	/* Set up view */

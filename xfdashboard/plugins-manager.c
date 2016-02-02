@@ -280,7 +280,7 @@ gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self)
 	g_free(path);
 
 	/* Get list of enabled plugins and try to load them */
-	enabledPlugins=xfconf_channel_get_string_list(xfdashboard_application_get_xfconf_channel(),
+	enabledPlugins=xfconf_channel_get_string_list(xfdashboard_application_get_xfconf_channel(NULL),
 													ENABLED_PLUGINS_XFCONF_PROP);
 
 	/* Try to load all enabled plugin and collect each error occurred. */

@@ -382,7 +382,7 @@ static void _xfdashboard_workspace_selector_on_workspace_clicked(XfdashboardWork
 	xfdashboard_window_tracker_workspace_activate(xfdashboard_live_workspace_get_workspace(liveWorkspace));
 
 	/* Quit application */
-	xfdashboard_application_quit();
+	xfdashboard_application_suspend_or_quit(NULL);
 }
 
 /* A workspace was destroyed */
@@ -1084,7 +1084,7 @@ static gboolean _xfdashboard_workspace_selector_focusable_activate_selection(Xfd
 		xfdashboard_window_tracker_workspace_activate(workspace);
 
 		/* Quit application */
-		xfdashboard_application_quit();
+		xfdashboard_application_suspend_or_quit(NULL);
 
 		/* Activation was successful */
 		return(TRUE);
