@@ -1161,7 +1161,6 @@ void xfdashboard_application_quit_forced(XfdashboardApplication *self)
 		/* Quit this instance */
 		_xfdashboard_application_quit(self, TRUE);
 	}
-		else clutter_main_quit();
 }
 
 /* Get xfconf channel for this application */
