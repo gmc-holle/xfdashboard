@@ -46,7 +46,7 @@ static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 	/* Register view */
 	viewManager=xfdashboard_view_manager_get_default();
 
-	xfdashboard_view_manager_register(viewManager, "clock", XFDASHBOARD_TYPE_CLOCK_VIEW);
+	xfdashboard_view_manager_register(viewManager, "de.froevel.xfdashboard.clock", XFDASHBOARD_TYPE_CLOCK_VIEW);
 
 	g_object_unref(viewManager);
 
