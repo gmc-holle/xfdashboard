@@ -119,8 +119,8 @@ static void _xfdashboard_applications_view_setup_actor_for_view_mode(Xfdashboard
 	{
 		clutter_actor_set_x_expand(inActor, TRUE);
 		clutter_actor_set_y_expand(inActor, TRUE);
-		clutter_actor_set_x_align(inActor, CLUTTER_ACTOR_ALIGN_START);
-		clutter_actor_set_y_align(inActor, CLUTTER_ACTOR_ALIGN_START);
+		clutter_actor_set_x_align(inActor, CLUTTER_ACTOR_ALIGN_FILL);
+		clutter_actor_set_y_align(inActor, CLUTTER_ACTOR_ALIGN_FILL);
 
 		if(XFDASHBOARD_IS_STYLABLE(inActor)) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(inActor), "view-mode-list");
 	}
