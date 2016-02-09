@@ -366,7 +366,7 @@ static void _xfdashboard_search_view_on_search_provider_registered(XfdashboardSe
 		 * and add to list of active search providers.
 		 */
 		data=_xfdashboard_search_view_provider_data_new(self, inProviderID);
-		priv->providers=g_list_prepend(priv->providers, data);
+		priv->providers=g_list_append(priv->providers, data);
 
 		g_debug("Created search provider %s of type %s in %s",
 					xfdashboard_search_provider_get_name(data->provider),
