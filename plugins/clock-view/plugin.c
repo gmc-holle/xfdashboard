@@ -34,6 +34,8 @@
 
 
 /* IMPLEMENTATION: XfdashboardPlugin */
+#define PLUGIN_ID	"de.froevel.xfdashboard.clock"
+
 
 /* Forward declarations */
 G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self);
@@ -46,7 +48,7 @@ static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 	/* Register view */
 	viewManager=xfdashboard_view_manager_get_default();
 
-	xfdashboard_view_manager_register(viewManager, "de.froevel.xfdashboard.clock", XFDASHBOARD_TYPE_CLOCK_VIEW);
+	xfdashboard_view_manager_register(viewManager, PLUGIN_ID, XFDASHBOARD_TYPE_CLOCK_VIEW);
 
 	g_object_unref(viewManager);
 
@@ -61,7 +63,7 @@ static gboolean plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 	/* Unregister view */
 	viewManager=xfdashboard_view_manager_get_default();
 
-	xfdashboard_view_manager_unregister(viewManager, "clock");
+	xfdashboard_view_manager_unregister(viewManager, PLUGIN_ID);
 
 	g_object_unref(viewManager);
 
@@ -76,7 +78,7 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
 
 	/* Set plugin info */
 	xfdashboard_plugin_set_info(self,
-								"id", "clock-view",
+								"id", PLUGIN_ID,
 								"name", _("Clock"),
 								"description", _("Adds new a view showing a clock"),
 								"author", "Stephan Haller <nomad@froevel.de>",
