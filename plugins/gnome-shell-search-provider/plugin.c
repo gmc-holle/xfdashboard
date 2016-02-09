@@ -113,7 +113,7 @@ static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 				/* Build unique provider name for Gnome-Shell search provider
 				 * using this plugin.
 				 */
-				providerName=g_strdup_printf("%s%s", XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_PREFIX, gnomeShellSearchProviderName);
+				providerName=g_strdup_printf("%s.%s", XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_PREFIX, gnomeShellSearchProviderName);
 				g_debug("Register gnome shell search provider '%s' from file %s", providerName, filename);
 
 				/* Register search provider */
@@ -232,7 +232,7 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
 
 	/* Set plugin info */
 	xfdashboard_plugin_set_info(self,
-								"id", "gnome-shell-search-provider",
+								"id", XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_PREFIX,
 								"name", _("Gnome-Shell search provider"),
 								"description", _("Uses Gnome-Shell search providers as source for searches"),
 								"author", "Stephan Haller <nomad@froevel.de>",
