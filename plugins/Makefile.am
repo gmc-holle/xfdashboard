@@ -1,3 +1,4 @@
 SUBDIRS = \
 	clock-view \
-	gnome-shell-search-provider
+	gnome-shell-search-provider \
+	hot-corner
