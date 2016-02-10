@@ -344,12 +344,17 @@ gboolean xfdashboard_window_tracker_window_is_maximized(XfdashboardWindowTracker
 
 	isMaximized=FALSE;
 
-	/* Check if state of window has all maximized flags set */
+	/* Check if state of window has all maximized flags set but it must not
+	 * have the minimized flag set.
+	 */
 	state=wnck_window_get_state(WNCK_WINDOW(inWindow));
-	if((state & WNCK_WINDOW_STATE_MAXIMIZED_HORIZONTALLY) &&
-		(state & WNCK_WINDOW_STATE_MAXIMIZED_VERTICALLY))
+	if(!(state & WNCK_WINDOW_STATE_MINIMIZED))
 	{
-		isMaximized=TRUE;
+		if((state & WNCK_WINDOW_STATE_MAXIMIZED_HORIZONTALLY) &&
+			(state & WNCK_WINDOW_STATE_MAXIMIZED_VERTICALLY))
+		{
+			isMaximized=TRUE;
+		}
 	}
 
 	/* Return maximized state of window */
