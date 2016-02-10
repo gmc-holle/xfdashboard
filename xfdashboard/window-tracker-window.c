@@ -361,6 +361,24 @@ gboolean xfdashboard_window_tracker_window_is_maximized(XfdashboardWindowTracker
 	return(isMaximized);
 }
 
+/* Determine if window is fullscreen */
+gboolean xfdashboard_window_tracker_window_is_fullscreen(XfdashboardWindowTrackerWindow *inWindow)
+{
+	WnckWindowState		state;
+	gboolean			isFullscreen;
+
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
+
+	isFullscreen=FALSE;
+
+	/* Check if state of window has fullscreen flag set */
+	state=wnck_window_get_state(WNCK_WINDOW(inWindow));
+	if(state & WNCK_WINDOW_STATE_FULLSCREEN) isFullscreen=TRUE;
+
+	/* Return fullscreen state of window */
+	return(isFullscreen);
+}
+
 /* Determine if window is visible */
 gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *inWindow)
 {

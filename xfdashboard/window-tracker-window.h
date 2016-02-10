@@ -56,6 +56,7 @@ gboolean xfdashboard_window_tracker_window_is_equal(XfdashboardWindowTrackerWind
 
 gboolean xfdashboard_window_tracker_window_is_minimized(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_maximized(XfdashboardWindowTrackerWindow *inWindow);
+gboolean xfdashboard_window_tracker_window_is_fullscreen(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_visible_on_workspace(XfdashboardWindowTrackerWindow *inWindow,
 																	XfdashboardWindowTrackerWorkspace *inWorkspace);
