@@ -285,7 +285,7 @@ static void _xfdashboard_live_window_on_state_changed(XfdashboardLiveWindow *sel
 		}
 
 	/* Add or remove class depending on 'minimized' window state */
-	if(xfdashboard_window_tracker_window_is_minized(inWindow))
+	if(xfdashboard_window_tracker_window_is_minimized(inWindow))
 	{
 		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), "window-state-minimized");
 	}

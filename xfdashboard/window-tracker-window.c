@@ -317,7 +317,7 @@ gboolean xfdashboard_window_tracker_window_is_equal(XfdashboardWindowTrackerWind
 
 
 /* Determine if window is minimized */
-gboolean xfdashboard_window_tracker_window_is_minized(XfdashboardWindowTrackerWindow *inWindow)
+gboolean xfdashboard_window_tracker_window_is_minimized(XfdashboardWindowTrackerWindow *inWindow)
 {
 	WnckWindowState		state;
 	gboolean			isMinimized;
@@ -335,7 +335,7 @@ gboolean xfdashboard_window_tracker_window_is_minized(XfdashboardWindowTrackerWi
 }
 
 /* Determine if window is maximized */
-gboolean xfdashboard_window_tracker_window_is_maxized(XfdashboardWindowTrackerWindow *inWindow)
+gboolean xfdashboard_window_tracker_window_is_maximized(XfdashboardWindowTrackerWindow *inWindow)
 {
 	WnckWindowState		state;
 	gboolean			isMaximized;

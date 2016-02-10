@@ -422,7 +422,7 @@ static void _xfdashboard_window_content_on_workaround_state_changed(XfdashboardW
 			/* Check if window is unminized now, then update content texture and
 			 * minimize window again.
 			 */
-			if(!xfdashboard_window_tracker_window_is_minized(priv->window))
+			if(!xfdashboard_window_tracker_window_is_minimized(priv->window))
 			{
 				if(priv->texture &&
 					priv->workaroundMode!=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_NONE &&
@@ -531,7 +531,7 @@ static void _xfdashboard_window_content_on_workaround_state_changed(XfdashboardW
 			/* Check if window is now minized again, so stop workaround and
 			 * disconnecting signals.
 			 */
-			if(xfdashboard_window_tracker_window_is_minized(priv->window))
+			if(xfdashboard_window_tracker_window_is_minimized(priv->window))
 			{
 				priv->workaroundMode=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_DONE;
 				if(priv->workaroundStateSignalID)
@@ -570,7 +570,7 @@ static void _xfdashboard_window_content_setup_workaround(XfdashboardWindowConten
 	if(!doWorkaround) return;
 
 	/* Only workaround unmapped windows */
-	if(!xfdashboard_window_tracker_window_is_minized(inWindow)) return;
+	if(!xfdashboard_window_tracker_window_is_minimized(inWindow)) return;
 
 	/* Check if workaround is already set up */
 	if(priv->workaroundMode!=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE_NONE) return;
