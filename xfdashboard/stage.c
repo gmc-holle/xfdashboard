@@ -689,7 +689,7 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 			/* If we have not to switch to a specific view or if this view cannot be found
 			 * then lookup the configured view in settings by its internal name
 			 */
-			if(!resumeView)
+			if(!resumeView && resumeViewInternalName)
 			{
 				resumeView=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewInternalName);
 				if(!resumeView) g_warning(_("Cannot switch to unknown view '%s'"), resumeViewInternalName);
