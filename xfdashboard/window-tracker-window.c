@@ -334,6 +334,28 @@ gboolean xfdashboard_window_tracker_window_is_minized(XfdashboardWindowTrackerWi
 	return(isMinimized);
 }
 
+/* Determine if window is maximized */
+gboolean xfdashboard_window_tracker_window_is_maxized(XfdashboardWindowTrackerWindow *inWindow)
+{
+	WnckWindowState		state;
+	gboolean			isMaximized;
+
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
+
+	isMaximized=FALSE;
+
+	/* Check if state of window has all maximized flags set */
+	state=wnck_window_get_state(WNCK_WINDOW(inWindow));
+	if((state & WNCK_WINDOW_STATE_MAXIMIZED_HORIZONTALLY) &&
+		(state & WNCK_WINDOW_STATE_MAXIMIZED_VERTICALLY))
+	{
+		isMaximized=TRUE;
+	}
+
+	/* Return maximized state of window */
+	return(isMaximized);
+}
+
 /* Determine if window is visible */
 gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *inWindow)
 {
