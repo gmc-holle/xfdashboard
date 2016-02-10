@@ -294,6 +294,16 @@ static void _xfdashboard_live_window_on_state_changed(XfdashboardLiveWindow *sel
 			xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(self), "window-state-minimized");
 		}
 
+	/* Add or remove class depending on 'maximized' window state */
+	if(xfdashboard_window_tracker_window_is_maximized(inWindow))
+	{
+		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), "window-state-maximized");
+	}
+		else
+		{
+			xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(self), "window-state-maximized");
+		}
+
 	/* Add or remove class depending on 'urgent' window state */
 	if(xfdashboard_window_tracker_window_is_urgent(inWindow))
 	{
