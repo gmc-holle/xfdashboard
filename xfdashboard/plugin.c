@@ -863,10 +863,9 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 						G_STRUCT_OFFSET(XfdashboardPluginClass, enable),
 						g_signal_accumulator_true_handled,
 						NULL,
-						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						_xfdashboard_marshal_BOOLEAN__VOID,
 						G_TYPE_BOOLEAN,
-						1,
-						XFDASHBOARD_TYPE_PLUGIN);
+						0);
 
 	XfdashboardPluginSignals[ACTION_DISABLE]=
 		g_signal_new("disable",
@@ -875,10 +874,9 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 						G_STRUCT_OFFSET(XfdashboardPluginClass, disable),
 						g_signal_accumulator_true_handled,
 						NULL,
-						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						_xfdashboard_marshal_BOOLEAN__VOID,
 						G_TYPE_BOOLEAN,
-						1,
-						XFDASHBOARD_TYPE_PLUGIN);
+						0);
 
 	XfdashboardPluginSignals[ACTION_CONFIGURE]=
 		g_signal_new("configure",
@@ -887,10 +885,9 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 						G_STRUCT_OFFSET(XfdashboardPluginClass, configure),
 						g_signal_accumulator_true_handled,
 						NULL,
-						_xfdashboard_marshal_BOOLEAN__OBJECT,
+						_xfdashboard_marshal_BOOLEAN__VOID,
 						G_TYPE_BOOLEAN,
-						1,
-						XFDASHBOARD_TYPE_PLUGIN);
+						0);
 }
 
 /* Object initialization
@@ -1035,7 +1032,7 @@ void xfdashboard_plugin_enable(XfdashboardPlugin *self)
 	}
 
 	/* Emit signal action 'enable' to enable plugin */
-	g_signal_emit(self, XfdashboardPluginSignals[ACTION_ENABLE], 0, self, &result);
+	g_signal_emit(self, XfdashboardPluginSignals[ACTION_ENABLE], 0, &result);
 	g_debug("Plugin '%s' enabled", priv->id);
 
 	/* Set enabled state */
@@ -1060,7 +1057,7 @@ void xfdashboard_plugin_disable(XfdashboardPlugin *self)
 	}
 
 	/* Emit signal action 'disable' to disable plugin */
-	g_signal_emit(self, XfdashboardPluginSignals[ACTION_DISABLE], 0, self, &result);
+	g_signal_emit(self, XfdashboardPluginSignals[ACTION_DISABLE], 0, &result);
 	g_debug("Plugin '%s' disabled", priv->id);
 
 	/* Set disabled state, i.e. revert to initialized state */
