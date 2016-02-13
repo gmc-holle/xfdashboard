@@ -365,6 +365,24 @@ GList* xfdashboard_view_manager_get_registered(XfdashboardViewManager *self)
 	return(copy);
 }
 
+/* Check if a view for requested ID is registered */
+gboolean xfdashboard_view_manager_has_registered_id(XfdashboardViewManager *self, const gchar *inID)
+{
+	GList							*iter;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_VIEW_MANAGER(self), FALSE);
+	g_return_val_if_fail(inID && *inID, FALSE);
+
+	/* Check if view is registered by getting pointer to list element
+	 * in list of registered views.
+	 */
+	iter=_xfdashboard_view_manager_entry_find_list_entry_by_id(self, inID);
+	if(iter) return(TRUE);
+
+	/* If we get here we did not find a view for requested ID */
+	return(FALSE);
+}
+
 /* Create view for requested ID */
 GObject* xfdashboard_view_manager_create_view(XfdashboardViewManager *self, const gchar *inID)
 {

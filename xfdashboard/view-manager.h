@@ -68,6 +68,7 @@ XfdashboardViewManager* xfdashboard_view_manager_get_default(void);
 gboolean xfdashboard_view_manager_register(XfdashboardViewManager *self, const gchar *inID, GType inViewType);
 gboolean xfdashboard_view_manager_unregister(XfdashboardViewManager *self, const gchar *inID);
 GList* xfdashboard_view_manager_get_registered(XfdashboardViewManager *self);
+gboolean xfdashboard_view_manager_has_registered_id(XfdashboardViewManager *self, const gchar *inID);
 
 GObject* xfdashboard_view_manager_create_view(XfdashboardViewManager *self, const gchar *inID);
 
