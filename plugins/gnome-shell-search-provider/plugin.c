@@ -146,7 +146,8 @@ static void _xfdashboard_gnome_shell_search_provider_plugin_on_file_monitor_chan
 		g_str_has_suffix(filePath, ".ini"))
 	{
 		providerName=_xfdashboard_gnome_shell_search_provider_plugin_get_provider_name_from_file(inFile, NULL);
-		if(providerName)
+		if(providerName &&
+			xfdashboard_search_manager_has_registered_id(searchManager, providerName))
 		{
 			/* Unregister search provider */
 			success=xfdashboard_search_manager_unregister(searchManager, providerName);

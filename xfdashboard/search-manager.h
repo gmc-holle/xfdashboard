@@ -72,6 +72,7 @@ XfdashboardSearchManager* xfdashboard_search_manager_get_default(void);
 gboolean xfdashboard_search_manager_register(XfdashboardSearchManager *self, const gchar *inID, GType inProviderType);
 gboolean xfdashboard_search_manager_unregister(XfdashboardSearchManager *self, const gchar *inID);
 GList* xfdashboard_search_manager_get_registered(XfdashboardSearchManager *self);
+gboolean xfdashboard_search_manager_has_registered_id(XfdashboardSearchManager *self, const gchar *inID);
 
 GObject* xfdashboard_search_manager_create_provider(XfdashboardSearchManager *self, const gchar *inID);
 

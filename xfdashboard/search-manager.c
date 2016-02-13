@@ -370,7 +370,25 @@ GList* xfdashboard_search_manager_get_registered(XfdashboardSearchManager *self)
 	return(copy);
 }
 
-/* Create view for requested ID */
+/* Check if a search provider for requested ID is registered */
+gboolean xfdashboard_search_manager_has_registered_id(XfdashboardSearchManager *self, const gchar *inID)
+{
+	GList							*iter;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_MANAGER(self), FALSE);
+	g_return_val_if_fail(inID && *inID, FALSE);
+
+	/* Check if search provider is registered by getting pointer to list element
+	 * in list of registered providers.
+	 */
+	iter=_xfdashboard_search_manager_entry_find_list_entry_by_id(self, inID);
+	if(iter) return(TRUE);
+
+	/* If we get here we did not find a search provider for requested ID */
+	return(FALSE);
+}
+
+/* Create search provider for requested ID */
 GObject* xfdashboard_search_manager_create_provider(XfdashboardSearchManager *self, const gchar *inID)
 {
 	XfdashboardSearchManagerData	*data;
