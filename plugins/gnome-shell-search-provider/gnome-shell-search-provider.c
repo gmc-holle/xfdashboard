@@ -33,6 +33,7 @@
 #include "application-database.h"
 #include "button.h"
 
+
 /* Define this class in GObject system */
 G_DEFINE_DYNAMIC_TYPE(XfdashboardGnomeShellSearchProvider,
 						xfdashboard_gnome_shell_search_provider,
@@ -49,8 +50,8 @@ struct _XfdashboardGnomeShellSearchProviderPrivate
 {
 	/* Instance related */
 	gchar			*gnomeShellID;
-	gchar			*filename;
-	gchar			*fileFullPath;
+	GFile			*file;
+	GFileMonitor	*fileMonitor;
 
 	gchar			*desktopID;
 	gchar			*dbusBusName;
@@ -67,15 +68,255 @@ struct _XfdashboardGnomeShellSearchProviderPrivate
 
 /* IMPLEMENTATION: XfdashboardSearchProvider */
 
+/* Update information about Gnome-Shell search provider from file */
+static gboolean _xfdashboard_gnome_shell_search_provider_update_from_file(XfdashboardGnomeShellSearchProvider *self,
+																			GError **outError)
+{
+	XfdashboardGnomeShellSearchProviderPrivate		*priv;
+	gchar											*filePath;
+	GKeyFile										*providerKeyFile;
+	XfdashboardApplicationDatabase					*appDB;
+	GAppInfo										*appInfo;
+	gchar											*desktopID;
+	gchar											*dbusBusName;
+	gchar											*dbusObjectPath;
+	gint											searchProviderVersion;
+	gchar											*providerName;
+	gchar											*providerIcon;
+	GError											*error;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_GNOME_SHELL_SEARCH_PROVIDER(self), FALSE);
+	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
+
+	priv=self->priv;
+	error=NULL;
+
+	/* Get path to Gnome-Shell search provider's data file */
+	filePath=g_file_get_path(priv->file);
+
+	/* Get data about search provider */
+	providerKeyFile=g_key_file_new();
+	if(!g_key_file_load_from_file(providerKeyFile,
+									filePath,
+									G_KEY_FILE_NONE,
+									&error))
+	{
+		/* Propagate error */
+		g_propagate_error(outError, error);
+
+		/* Release allocated resources */
+		if(providerKeyFile) g_key_file_free(providerKeyFile);
+		if(filePath) g_free(filePath);
+
+		return(FALSE);
+	}
+
+	/* Get desktop ID from search provider's data file */
+	desktopID=g_key_file_get_string(providerKeyFile,
+									XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_KEYFILE_GROUP,
+									"DesktopId",
+									&error);
+	if(!desktopID)
+	{
+		/* Propagate error */
+		g_propagate_error(outError, error);
+
+		/* Release allocated resources */
+		if(providerKeyFile) g_key_file_free(providerKeyFile);
+		if(filePath) g_free(filePath);
+
+		return(FALSE);
+	}
+
+	/* Get bus name from search provider's data file */
+	dbusBusName=g_key_file_get_string(providerKeyFile,
+										XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_KEYFILE_GROUP,
+										"BusName",
+										&error);
+	if(!dbusBusName)
+	{
+		/* Propagate error */
+		g_propagate_error(outError, error);
+
+		/* Release allocated resources */
+		if(desktopID) g_free(desktopID);
+		if(providerKeyFile) g_key_file_free(providerKeyFile);
+		if(filePath) g_free(filePath);
+
+		return(FALSE);
+	}
+
+	/* Get object path from search provider's data file */
+	dbusObjectPath=g_key_file_get_string(providerKeyFile,
+											XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_KEYFILE_GROUP,
+											"ObjectPath",
+											&error);
+	if(!dbusObjectPath)
+	{
+		/* Propagate error */
+		g_propagate_error(outError, error);
+
+		/* Release allocated resources */
+		if(dbusBusName) g_free(dbusBusName);
+		if(desktopID) g_free(desktopID);
+		if(providerKeyFile) g_key_file_free(providerKeyFile);
+		if(filePath) g_free(filePath);
+
+		return(FALSE);
+	}
+
+	/* Get version from search provider's data file */
+	searchProviderVersion=g_key_file_get_integer(providerKeyFile,
+													XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_KEYFILE_GROUP,
+													"Version",
+													&error);
+	if(!searchProviderVersion)
+	{
+		/* Propagate error */
+		g_propagate_error(outError, error);
+
+		/* Release allocated resources */
+		if(dbusObjectPath) g_free(dbusObjectPath);
+		if(dbusBusName) g_free(dbusBusName);
+		if(desktopID) g_free(desktopID);
+		if(providerKeyFile) g_key_file_free(providerKeyFile);
+		if(filePath) g_free(filePath);
+
+		return(FALSE);
+	}
+
+	/* Get display name and icon from desktop file returned from application
+	 * database by lookup of desktop ID.
+	 */
+	providerName=NULL;
+	providerIcon=NULL;
+
+	appDB=xfdashboard_application_database_get_default();
+
+	appInfo=xfdashboard_application_database_lookup_desktop_id(appDB, desktopID);
+	if(appInfo)
+	{
+		GIcon										*appIcon;
+
+		/* Get name */
+		providerName=g_strdup(g_app_info_get_display_name(appInfo));
+
+		/* Get icon */
+		appIcon=g_app_info_get_icon(appInfo);
+		if(appIcon)
+		{
+			providerIcon=g_icon_to_string(appIcon);
+			g_object_unref(appIcon);
+		}
+	}
+		else
+		{
+			/* Show error message */
+			g_warning(_("Unknown application '%s' for Gnome-Shell search provider '%s'"),
+						desktopID,
+						priv->gnomeShellID);
+		}
+
+	/* We got all data from search provider's data file so update now.
+	 * Set default values where appropiate (display name and icon).
+	 */
+	if(priv->desktopID) g_free(priv->desktopID);
+	priv->desktopID=g_strdup(desktopID);
+
+	if(priv->dbusBusName) g_free(priv->dbusBusName);
+	priv->dbusBusName=g_strdup(dbusBusName);
+
+	if(priv->dbusObjectPath) g_free(priv->dbusObjectPath);
+	priv->dbusObjectPath=g_strdup(dbusObjectPath);
+
+	priv->searchProviderVersion=searchProviderVersion;
+
+	if(priv->providerName) g_free(priv->providerName);
+	if(providerName) priv->providerName=g_strdup(providerName);
+		else priv->providerName=g_strdup(priv->gnomeShellID);
+
+	if(priv->providerIcon) g_free(priv->providerIcon);
+	if(providerIcon) priv->providerIcon=g_strdup(providerIcon);
+		else priv->providerIcon=g_strdup("image-missing");
+
+	/* Release allocated resources */
+	if(appInfo) g_object_unref(appInfo);
+	if(appDB) g_object_unref(appDB);
+	if(providerIcon) g_free(providerIcon);
+	if(providerName) g_free(providerName);
+	if(dbusObjectPath) g_free(dbusObjectPath);
+	if(dbusBusName) g_free(dbusBusName);
+	if(desktopID) g_free(desktopID);
+	if(providerKeyFile) g_key_file_free(providerKeyFile);
+	if(filePath) g_free(filePath);
+
+	/* If we get here we could update from file successfully */
+	g_debug("Updated search provider '%s' of type %s for Gnome-Shell search provider interface version %d using DBUS name '%s' and object path '%s' displayed as '%s' with icon '%s' from desktop ID '%s'",
+				xfdashboard_search_provider_get_id(XFDASHBOARD_SEARCH_PROVIDER(self)),
+				G_OBJECT_TYPE_NAME(self),
+				priv->searchProviderVersion,
+				priv->dbusBusName,
+				priv->dbusObjectPath,
+				priv->providerName,
+				priv->providerIcon,
+				priv->desktopID);
+
+	return(TRUE);
+}
+
+/* The data file of Gnome-Shell search provider has changed */
+static void _xfdashboard_gnome_shell_search_provider_on_data_file_changed(XfdashboardGnomeShellSearchProvider *self,
+																			GFile *inFile,
+																			GFile *inOtherFile,
+																			GFileMonitorEvent inEventType,
+																			gpointer inUserData)
+{
+	XfdashboardGnomeShellSearchProviderPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_GNOME_SHELL_SEARCH_PROVIDER(self));
+	g_return_if_fail(G_IS_FILE_MONITOR(inUserData));
+
+	priv=self->priv;
+
+	/* Check if a search provider was added */
+	if(inEventType==G_FILE_MONITOR_EVENT_CHANGED &&
+		g_file_equal(inFile, priv->file))
+	{
+		GError										*error;
+
+		error=NULL;
+
+		/* Update information about Gnome-Shell search provider from modified data file */
+		if(!_xfdashboard_gnome_shell_search_provider_update_from_file(self, &error))
+		{
+			/* Show warning message */
+			g_warning(_("Cannot update information about Gnome-Shell search provider '%s': %s"),
+						priv->gnomeShellID,
+						(error && error->message) ? error->message : _("Unknown error"));
+
+			/* Release allocated resources */
+			if(error)
+			{
+				g_error_free(error);
+				error=NULL;
+			}
+		}
+			else
+			{
+				g_debug("Updated Gnome-Shell search provider '%s' of type %s with ID '%s' from modified data file successfully",
+							priv->gnomeShellID,
+							G_OBJECT_TYPE_NAME(self),
+							xfdashboard_search_provider_get_id(XFDASHBOARD_SEARCH_PROVIDER(self)));
+			}
+	}
+}
+
 /* One-time initialization of search provider */
 static void _xfdashboard_gnome_shell_search_provider_initialize(XfdashboardSearchProvider *inProvider)
 {
 	XfdashboardGnomeShellSearchProvider				*self;
 	XfdashboardGnomeShellSearchProviderPrivate		*priv;
 	GError											*error;
-	GKeyFile										*providerKeyFile;
-	XfdashboardApplicationDatabase					*appDB;
-	GAppInfo										*appInfo;
 
 	g_return_if_fail(XFDASHBOARD_IS_GNOME_SHELL_SEARCH_PROVIDER(inProvider));
 
@@ -96,171 +337,79 @@ static void _xfdashboard_gnome_shell_search_provider_initialize(XfdashboardSearc
 				G_OBJECT_TYPE_NAME(self),
 				priv->gnomeShellID);
 
-	/* Get file basename of Gnome-Shell search provider's data file */
-	if(!priv->filename) priv->filename=g_strdup_printf("%s.ini", priv->gnomeShellID);
-
-	/* Get full path of Gnome-Shell search provider's data file */
-	if(!priv->fileFullPath) priv->fileFullPath=g_build_filename(GNOME_SHELL_PROVIDERS_PATH, priv->filename, NULL);
-	g_debug("Initializing search provider '%s' of type %s from data file at %s (path=%s and basename=%s)",
-				xfdashboard_search_provider_get_id(inProvider),
-				G_OBJECT_TYPE_NAME(self),
-				priv->fileFullPath,
-				GNOME_SHELL_PROVIDERS_PATH,
-				priv->filename);
-
-	/* Get data about search provider */
-	providerKeyFile=g_key_file_new();
-	if(!g_key_file_load_from_file(providerKeyFile,
-									priv->fileFullPath,
-									G_KEY_FILE_NONE,
-									&error))
+	/* Get Gnome-Shell search provider's data file */
+	if(!priv->file)
 	{
-		/* Show error message */
-		g_warning(_("Cannot load information from '%s' for gnome-shell search provider '%s': %s"),
-					priv->fileFullPath,
-					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
+		gchar										*filename;
+		gchar										*filePath;
+
+		/* Get path to Gnome-Shell search provider's data file */
+		filename=g_strdup_printf("%s.ini", priv->gnomeShellID);
+		filePath=g_build_filename(GNOME_SHELL_PROVIDERS_PATH, filename, NULL);
+
+		/* Get Gnome-Shell search provider's data file */
+		priv->file=g_file_new_for_path(filePath);
 
 		/* Release allocated resources */
-		if(error) g_error_free(error);
-		if(providerKeyFile) g_key_file_free(providerKeyFile);
-
-		return;
+		g_free(filename);
+		g_free(filePath);
 	}
 
-	/* Get desktop ID from search provider's data file */
-	priv->desktopID=g_key_file_get_string(providerKeyFile,
-											XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_KEYFILE_GROUP,
-											"DesktopId",
-											&error);
-	if(!priv->desktopID)
-	{
-		/* Show error message */
-		g_warning(_("Incomplete information at '%s' for gnome-shell search provider '%s': %s"),
-					priv->fileFullPath,
-					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
-
-		/* Release allocated resources */
-		if(error) g_error_free(error);
-		if(providerKeyFile) g_key_file_free(providerKeyFile);
-
-		return;
-	}
-
-	/* Get bus name from search provider's data file */
-	priv->dbusBusName=g_key_file_get_string(providerKeyFile,
-											XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_KEYFILE_GROUP,
-											"BusName",
-											&error);
-	if(!priv->dbusBusName)
-	{
-		/* Show error message */
-		g_warning(_("Incomplete information at '%s' for gnome-shell search provider '%s': %s"),
-					priv->fileFullPath,
-					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
-
-		/* Release allocated resources */
-		if(error) g_error_free(error);
-		if(providerKeyFile) g_key_file_free(providerKeyFile);
-
-		return;
-	}
-
-	/* Get object path from search provider's data file */
-	priv->dbusObjectPath=g_key_file_get_string(providerKeyFile,
-												XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_KEYFILE_GROUP,
-												"ObjectPath",
-												&error);
-	if(!priv->dbusObjectPath)
-	{
-		/* Show error message */
-		g_warning(_("Incomplete information at '%s' for gnome-shell search provider '%s': %s"),
-					priv->fileFullPath,
-					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
-
-		/* Release allocated resources */
-		if(error) g_error_free(error);
-		if(providerKeyFile) g_key_file_free(providerKeyFile);
-
-		return;
-	}
-
-	/* Get version from search provider's data file */
-	priv->searchProviderVersion=g_key_file_get_integer(providerKeyFile,
-														XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_KEYFILE_GROUP,
-														"Version",
-														&error);
-	if(!priv->searchProviderVersion)
-	{
-		/* Show error message */
-		g_warning(_("Incomplete information at '%s' for gnome-shell search provider '%s': %s"),
-					priv->fileFullPath,
-					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
-
-		/* Release allocated resources */
-		if(error) g_error_free(error);
-		if(providerKeyFile) g_key_file_free(providerKeyFile);
-
-		return;
-	}
-
-	/* Get display name and icon from desktop file returned from application
-	 * database by lookup of desktop ID.
+	/* Get file monitor to detect changes at Gnome-Shell search provider's data file.
+	 * It is not fatal if file monitor could not be initialized because we just do not
+	 * get notified about any changes to the data file. But print a warning.
 	 */
-	appDB=xfdashboard_application_database_get_default();
-
-	appInfo=xfdashboard_application_database_lookup_desktop_id(appDB, priv->desktopID);
-	if(appInfo)
+	if(!priv->fileMonitor)
 	{
-		GIcon										*providerIcon;
-
-		/* Get name */
-		priv->providerName=g_strdup(g_app_info_get_display_name(appInfo));
-
-		/* Get icon */
-		providerIcon=g_app_info_get_icon(appInfo);
-		if(providerIcon)
+		priv->fileMonitor=g_file_monitor_file(priv->file, 0, NULL, &error);
+		if(priv->fileMonitor)
 		{
-			priv->providerIcon=g_icon_to_string(providerIcon);
-			g_object_unref(providerIcon);
+			g_debug("Created file monitor to watch for changes at Gnome-Shell search provider '%s'",
+					priv->gnomeShellID);
+
+			g_signal_connect_swapped(priv->fileMonitor,
+										"changed",
+										G_CALLBACK(_xfdashboard_gnome_shell_search_provider_on_data_file_changed),
+										self);
+		}
+			else
+			{
+				/* Show warning message */
+				g_warning(_("Cannot initialize file monitor to detect changes for Gnome-Shell search provider '%s': %s"),
+							priv->gnomeShellID,
+							(error && error->message) ? error->message : _("Unknown error"));
+
+				/* Release allocated resources */
+				if(error)
+				{
+					g_error_free(error);
+					error=NULL;
+				}
+			}
+	}
+
+	/* Get information about Gnome-Shell search provider from file */
+	if(!_xfdashboard_gnome_shell_search_provider_update_from_file(self, &error))
+	{
+		/* Show warning message */
+		g_warning(_("Cannot load information about Gnome-Shell search provider '%s': %s"),
+					priv->gnomeShellID,
+					(error && error->message) ? error->message : _("Unknown error"));
+
+		/* Release allocated resources */
+		if(error)
+		{
+			g_error_free(error);
+			error=NULL;
 		}
 	}
 		else
 		{
-			/* Show error message */
-			g_warning(_("Unknown application '%s' for gnome-shell search provider '%s'"),
-						priv->desktopID,
-						priv->gnomeShellID);
+			g_debug("Initialized Gnome-Shell search provider '%s' of type %s with ID '%s' successfully",
+						priv->gnomeShellID,
+						G_OBJECT_TYPE_NAME(self),
+						xfdashboard_search_provider_get_id(inProvider));
 		}
-
-	/* Set default values for display name and icon where the data could
-	 * not be retrieved from desktop file.
-	 */
-	if(!priv->providerIcon) priv->providerIcon=g_strdup("image-missing");
-	if(!priv->providerName) priv->providerName=g_strdup(priv->gnomeShellID);
-
-	/* Release allocated resources */
-	if(appInfo) g_object_unref(appInfo);
-	if(appDB) g_object_unref(appDB);
-	if(providerKeyFile) g_key_file_free(providerKeyFile);
-
-	g_debug("Initialized search provider '%s' of type %s for GnomeShell search provider interface version %d using DBUS name '%s' and object path '%s'",
-				xfdashboard_search_provider_get_id(inProvider),
-				G_OBJECT_TYPE_NAME(self),
-				priv->searchProviderVersion,
-				priv->dbusBusName,
-				priv->dbusObjectPath);
-
-	g_debug("Initialized search provider '%s' of type %s displayed as '%s' with icon '%s' from desktop ID '%s'",
-				xfdashboard_search_provider_get_id(inProvider),
-				G_OBJECT_TYPE_NAME(self),
-				priv->providerName,
-				priv->providerIcon,
-				priv->desktopID);
 }
 
 /* Get display name for this search provider */
@@ -325,7 +474,7 @@ static XfdashboardSearchResultSet* _xfdashboard_gnome_shell_search_provider_get_
 	if(!proxy)
 	{
 		/* Show error message */
-		g_warning(_("Could not create dbus connection for gnome-shell search provider '%s': %s"),
+		g_warning(_("Could not create dbus connection for Gnome-Shell search provider '%s': %s"),
 					priv->gnomeShellID,
 					(error && error->message) ? error->message : _("Unknown error"));
 
@@ -398,7 +547,7 @@ static XfdashboardSearchResultSet* _xfdashboard_gnome_shell_search_provider_get_
 	if(!proxyResult)
 	{
 		/* Show error message */
-		g_warning(_("Could get result set from dbus connection for gnome-shell search provider '%s': %s"),
+		g_warning(_("Could get result set from dbus connection for Gnome-Shell search provider '%s': %s"),
 					priv->gnomeShellID,
 					(error && error->message) ? error->message : _("Unknown error"));
 
@@ -488,7 +637,7 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 	if(!proxy)
 	{
 		/* Show error message */
-		g_warning(_("Could not create dbus connection for gnome-shell search provider '%s': %s"),
+		g_warning(_("Could not create dbus connection for Gnome-Shell search provider '%s': %s"),
 					priv->gnomeShellID,
 					(error && error->message) ? error->message : _("Unknown error"));
 
@@ -511,7 +660,7 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 	if(!proxyResult)
 	{
 		/* Show error message */
-		g_warning(_("Could get meta data for '%s' from dbus connection for gnome-shell search provider '%s': %s"),
+		g_warning(_("Could get meta data for '%s' from dbus connection for Gnome-Shell search provider '%s': %s"),
 					identifier[0],
 					priv->gnomeShellID,
 					(error && error->message) ? error->message : _("Unknown error"));
@@ -570,7 +719,7 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 				if(!icon)
 				{
 					/* Show error message */
-					g_warning(_("Could get icon for '%s' of key '%s' for gnome-shell search provider '%s': %s"),
+					g_warning(_("Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"),
 								identifier[0],
 								"icon",
 								priv->gnomeShellID,
@@ -589,7 +738,7 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 				if(!icon)
 				{
 					/* Show error message */
-					g_warning(_("Could get icon for '%s' of key '%s' for gnome-shell search provider '%s': %s"),
+					g_warning(_("Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"),
 								identifier[0],
 								"gicon",
 								priv->gnomeShellID,
@@ -691,7 +840,7 @@ static gboolean _xfdashboard_gnome_shell_search_provider_activate_result(Xfdashb
 	if(!proxy)
 	{
 		/* Show error message */
-		g_warning(_("Could not create dbus connection for gnome-shell search provider '%s': %s"),
+		g_warning(_("Could not create dbus connection for Gnome-Shell search provider '%s': %s"),
 					priv->gnomeShellID,
 					(error && error->message) ? error->message : _("Unknown error"));
 
@@ -715,7 +864,7 @@ static gboolean _xfdashboard_gnome_shell_search_provider_activate_result(Xfdashb
 	if(!proxyResult)
 	{
 		/* Show error message */
-		g_warning(_("Could activate result item '%s' over dbus connection for gnome-shell search provider '%s': %s"),
+		g_warning(_("Could activate result item '%s' over dbus connection for Gnome-Shell search provider '%s': %s"),
 					identifier,
 					priv->gnomeShellID,
 					(error && error->message) ? error->message : _("Unknown error"));
@@ -765,7 +914,7 @@ static gboolean _xfdashboard_gnome_shell_search_provider_launch_search(Xfdashboa
 	if(!proxy)
 	{
 		/* Show error message */
-		g_warning(_("Could not create dbus connection for gnome-shell search provider '%s': %s"),
+		g_warning(_("Could not create dbus connection for Gnome-Shell search provider '%s': %s"),
 					priv->gnomeShellID,
 					(error && error->message) ? error->message : _("Unknown error"));
 
@@ -788,7 +937,7 @@ static gboolean _xfdashboard_gnome_shell_search_provider_launch_search(Xfdashboa
 	if(!proxyResult)
 	{
 		/* Show error message */
-		g_warning(_("Could not launch search over dbus connection for gnome-shell search provider '%s': %s"),
+		g_warning(_("Could not launch search over dbus connection for Gnome-Shell search provider '%s': %s"),
 					priv->gnomeShellID,
 					(error && error->message) ? error->message : _("Unknown error"));
 
@@ -823,16 +972,16 @@ static void _xfdashboard_gnome_shell_search_provider_dispose(GObject *inObject)
 		priv->gnomeShellID=NULL;
 	}
 
-	if(priv->filename)
+	if(priv->file)
 	{
-		g_free(priv->filename);
-		priv->filename=NULL;
+		g_object_unref(priv->file);
+		priv->file=NULL;
 	}
 
-	if(priv->fileFullPath)
+	if(priv->fileMonitor)
 	{
-		g_free(priv->fileFullPath);
-		priv->fileFullPath=NULL;
+		g_object_unref(priv->fileMonitor);
+		priv->fileMonitor=NULL;
 	}
 
 	if(priv->desktopID)
@@ -909,8 +1058,8 @@ void xfdashboard_gnome_shell_search_provider_init(XfdashboardGnomeShellSearchPro
 
 	/* Set up default values */
 	priv->gnomeShellID=NULL;
-	priv->filename=NULL;
-	priv->fileFullPath=NULL;
+	priv->file=NULL;
+	priv->fileMonitor=NULL;
 	priv->desktopID=NULL;
 	priv->dbusBusName=NULL;
 	priv->dbusObjectPath=NULL;
