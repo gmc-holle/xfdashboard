@@ -25,17 +25,15 @@
 #include <config.h>
 #endif
 
-#include "plugin.h"
+#include "clock-view.h"
 
 #include <libxfce4util/libxfce4util.h>
 
+#include "plugin.h"
 #include "view-manager.h"
-#include "clock-view.h"
 
 
 /* IMPLEMENTATION: XfdashboardPlugin */
-#define PLUGIN_ID	"de.froevel.xfdashboard.clock"
-
 
 /* Forward declarations */
 G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self);

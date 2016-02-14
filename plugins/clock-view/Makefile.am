@@ -6,7 +6,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/xfdashboard \
 	-DG_LOG_DOMAIN=\"xfdashboard-plugin-clock_view\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
-	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"
+	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
+	-DPLUGIN_ID=\"de.froevel.xfdashboard.clock\"
 
 plugin_LTLIBRARIES = \
 	clock-view.la
@@ -20,7 +21,8 @@ clock_view_la_CFLAGS = \
 	$(PLATFORM_CFLAGS) \
 	$(LIBXFCE4UTIL_CFLAGS) \
 	$(GTK_CFLAGS) \
-	$(CLUTTER_CFLAGS)
+	$(CLUTTER_CFLAGS) \
+	$(LIBXFCONF_CFLAGS)
 
 clock_view_la_LDFLAGS = \
 	-avoid-version \
@@ -31,7 +33,8 @@ clock_view_la_LDFLAGS = \
 clock_view_la_LIBADD = \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(GTK_LIBS) \
-	$(CLUTTER_LIBS)
+	$(CLUTTER_LIBS) \
+	$(LIBXFCONF_LIBS)
 
 CLEANFILES = \
 	$(plugin_DATA)

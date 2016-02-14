@@ -58,7 +58,18 @@ struct _XfdashboardClockViewClass
 
 /* Public API */
 GType xfdashboard_clock_view_get_type(void) G_GNUC_CONST;
-void xfdashboard_clock_view_type_register(GTypeModule *inModule);
+
+const ClutterColor* xfdashboard_clock_view_get_hour_color(XfdashboardClockView *self);
+void xfdashboard_clock_view_set_hour_color(XfdashboardClockView *self, const ClutterColor *inColor);
+
+const ClutterColor* xfdashboard_clock_view_get_minute_color(XfdashboardClockView *self);
+void xfdashboard_clock_view_set_minute_color(XfdashboardClockView *self, const ClutterColor *inColor);
+
+const ClutterColor* xfdashboard_clock_view_get_second_color(XfdashboardClockView *self);
+void xfdashboard_clock_view_set_second_color(XfdashboardClockView *self, const ClutterColor *inColor);
+
+const ClutterColor* xfdashboard_clock_view_get_background_color(XfdashboardClockView *self);
+void xfdashboard_clock_view_set_background_color(XfdashboardClockView *self, const ClutterColor *inColor);
 
 XFDASHBOARD_DECLARE_PLUGIN_TYPE(xfdashboard_clock_view);
 
