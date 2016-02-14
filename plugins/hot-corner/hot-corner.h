@@ -28,6 +28,20 @@
 
 G_BEGIN_DECLS
 
+/* Public definitions */
+typedef enum /*< prefix=XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER >*/
+{
+	XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER_TOP_LEFT=0,
+	XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER_TOP_RIGHT,
+	XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER_BOTTOM_LEFT,
+	XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER_BOTTOM_RIGHT,
+} XfdashboardHotCornerActivationCorner;
+
+GType xfdashboard_hot_corner_activation_corner_get_type(void) G_GNUC_CONST;
+#define XFDASHBOARD_TYPE_HOT_CORNER_ACTIVATION_CORNER	(xfdashboard_hot_corner_activation_corner_get_type())
+
+
+/* Object declaration */
 #define XFDASHBOARD_TYPE_HOT_CORNER				(xfdashboard_hot_corner_get_type())
 #define XFDASHBOARD_HOT_CORNER(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_HOT_CORNER, XfdashboardHotCorner))
 #define XFDASHBOARD_IS_HOT_CORNER(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_HOT_CORNER))
@@ -57,11 +71,19 @@ struct _XfdashboardHotCornerClass
 
 /* Public API */
 GType xfdashboard_hot_corner_get_type(void) G_GNUC_CONST;
-void xfdashboard_hot_corner_type_register(GTypeModule *inModule);
 
 XFDASHBOARD_DECLARE_PLUGIN_TYPE(xfdashboard_hot_corner);
 
 XfdashboardHotCorner* xfdashboard_hot_corner_new(void);
+
+XfdashboardHotCornerActivationCorner xfdashboard_hot_corner_get_activation_corner(XfdashboardHotCorner *self);
+void xfdashboard_hot_corner_set_activation_corner(XfdashboardHotCorner *self, const XfdashboardHotCornerActivationCorner inCorner);
+
+gint xfdashboard_hot_corner_get_activation_radius(XfdashboardHotCorner *self);
+void xfdashboard_hot_corner_set_activation_radius(XfdashboardHotCorner *self, gint inRadius);
+
+gint64 xfdashboard_hot_corner_get_activation_duration(XfdashboardHotCorner *self);
+void xfdashboard_hot_corner_set_activation_duration(XfdashboardHotCorner *self, gint64 inDuration);
 
 G_END_DECLS
 
