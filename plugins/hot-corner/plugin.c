@@ -72,7 +72,7 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
 
 	/* Set plugin info */
 	xfdashboard_plugin_set_info(self,
-								"id", "de.froevel.xfdashboard.hot-corner",
+								"id", PLUGIN_ID,
 								"name", _("Hot corner"),
 								"description", _("Activates xfdashboard when pointer is moved to a configured corner of monitor"),
 								"author", "Stephan Haller <nomad@froevel.de>",

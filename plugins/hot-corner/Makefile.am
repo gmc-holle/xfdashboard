@@ -6,7 +6,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/xfdashboard \
 	-DG_LOG_DOMAIN=\"xfdashboard-plugin-hot_corner\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
-	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"
+	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
+	-DPLUGIN_ID=\"de.froevel.xfdashboard.hot-corner\"
 
 plugin_LTLIBRARIES = \
 	hot-corner.la
