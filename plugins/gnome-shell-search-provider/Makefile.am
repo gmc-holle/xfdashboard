@@ -7,6 +7,7 @@ AM_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"xfdashboard-plugin-gnome_shell_search_provider\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
+	-DPLUGIN_ID=\"de.froevel.xfdashboard.gnome-shell-search-provider\" \
 	-DGNOME_SHELL_PROVIDERS_PATH=\"$(prefix)/share/gnome-shell/search-providers\"
 
 plugin_LTLIBRARIES = \

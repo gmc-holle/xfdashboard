@@ -330,7 +330,7 @@ static void _xfdashboard_gnome_shell_search_provider_initialize(XfdashboardSearc
 		const gchar									*providerID;
 
 		providerID=xfdashboard_search_provider_get_id(inProvider);
-		priv->gnomeShellID=g_strdup(providerID+strlen(XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_PREFIX)+1);
+		priv->gnomeShellID=g_strdup(providerID+strlen(PLUGIN_ID)+1);
 	}
 	g_debug("Initializing search provider '%s' of type %s for Gnome-Shell search provider ID '%s'",
 				xfdashboard_search_provider_get_id(inProvider),

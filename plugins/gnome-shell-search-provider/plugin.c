@@ -76,7 +76,7 @@ static gchar* _xfdashboard_gnome_shell_search_provider_plugin_get_provider_name_
 	 * using this plugin from file name without file extension.
 	 */
 	providerName=g_strndup(filename, strlen(filename)-4);
-	pluginID=g_strdup_printf("%s.%s", XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_PREFIX, providerName);
+	pluginID=g_strdup_printf("%s.%s", PLUGIN_ID, providerName);
 	g_free(providerName);
 
 	/* Return provider name (ID) found */
@@ -437,7 +437,7 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
 
 	/* Set plugin info */
 	xfdashboard_plugin_set_info(self,
-								"id", XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_PREFIX,
+								"id", PLUGIN_ID,
 								"name", _("Gnome-Shell search provider"),
 								"description", _("Uses Gnome-Shell search providers as source for searches"),
 								"author", "Stephan Haller <nomad@froevel.de>",

@@ -58,8 +58,6 @@ struct _XfdashboardGnomeShellSearchProviderClass
 };
 
 /* Public API */
-#define XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_PREFIX			"de.froevel.xfdashboard.gnome-shell-search-provider"
-
 GType xfdashboard_gnome_shell_search_provider_get_type(void) G_GNUC_CONST;
 void xfdashboard_gnome_shell_search_provider_type_register(GTypeModule *inModule);
 
