@@ -9,12 +9,14 @@ bin_PROGRAMS = \
 	xfdashboard-settings
 
 xfdashboard_settings_headers = \
-	settings.h
+	settings.h \
+	themes.h
 
 xfdashboard_settings_SOURCES = \
 	$(xfdashboard_settings_headers) \
 	main.c \
-	settings.c
+	settings.c \
+	themes.c
 
 xfdashboard_settings_CFLAGS = \
 	$(GTK_CFLAGS) \
