@@ -92,6 +92,7 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 	gfloat										largestWidth, largestHeight;
 	gint										i;
 	gfloat										x, y;
+	ClutterRequestMode							requestMode;
 
 	g_return_if_fail(XFDASHBOARD_IS_DYNAMIC_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -129,38 +130,50 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardDynamicTableLayoutProperties[PROP_NUMBER_CHILDREN]);
 	}
 
-	/* Step two: Determine number of rows and columns */
+	/* Step two: Get request mode of container to layout. The request will be
+	 *           overriden if any of given width or height is not set (< 0)
+	 */
+	requestMode=clutter_actor_get_request_mode(CLUTTER_ACTOR(inContainer));
+
+	if(inWidth<0.0f) requestMode=CLUTTER_REQUEST_WIDTH_FOR_HEIGHT;
+		else if(inHeight<0.0f) requestMode=CLUTTER_REQUEST_HEIGHT_FOR_WIDTH;
+
+	/* Step three: Determine number of rows and columns */
 	rows=columns=0;
 	if(inWidth<0.0f && inHeight<0.0f)
 	{
 		columns=priv->numberChildren;
 		rows=1;
 	}
-		else if(inWidth>0.0f)
+		else if(requestMode==CLUTTER_REQUEST_HEIGHT_FOR_WIDTH)
 		{
-			columns=MIN(ceil(inWidth/largestWidth), priv->numberChildren);
-			childWidth=(columns*largestWidth)+((columns-1)*priv->columnSpacing);
-			while(columns>1 && childWidth>inWidth)
+			columns=MIN(ceil(inWidth/largestWidth), priv->numberChildren)+1;
+			do
 			{
-				childWidth=(columns*largestWidth)+((columns-1)*priv->columnSpacing);
 				columns--;
+				childWidth=(columns*largestWidth)+((columns-1)*priv->columnSpacing);
 			}
+			while(columns>1 && childWidth>inWidth);
 
 			largestWidth=floor(inWidth-((columns-1)*priv->columnSpacing))/columns;
 			rows=ceil((double)priv->numberChildren / (double)columns);
 		}
-		else if(inHeight>0.0f)
+		else if(requestMode==CLUTTER_REQUEST_WIDTH_FOR_HEIGHT)
 		{
-			rows=MIN(ceil(inHeight/largestHeight), priv->numberChildren);
-			childHeight=(rows*largestHeight)+((rows-1)*priv->rowSpacing);
-			while(rows>1 && childHeight>inHeight)
+			rows=MIN(ceil(inHeight/largestHeight), priv->numberChildren)+1;
+			do
 			{
-				childHeight=(rows*largestHeight)+((rows-1)*priv->rowSpacing);
 				rows--;
+				childHeight=(rows*largestHeight)+((rows-1)*priv->rowSpacing);
 			}
+			while(rows>1 && childHeight>inHeight);
 
 			largestHeight=floor(inHeight-((rows-1)*priv->rowSpacing))/rows;
 			columns=ceil((double)priv->numberChildren / (double)rows);
+		}
+		else
+		{
+			g_assert_not_reached();
 		}
 
 	if(rows!=priv->rows)
@@ -175,7 +188,7 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardDynamicTableLayoutProperties[PROP_COLUMNS]);
 	}
 
-	/* Step three: Determine column and row coordinates */
+	/* Step four: Determine column and row coordinates */
 	if(priv->columnCoords)
 	{
 		g_array_free(priv->columnCoords, TRUE);
@@ -201,7 +214,7 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 
 	g_array_append_val(priv->columnCoords, x);
 
-	/* Step four: Determine row coordinates */
+	/* Step five: Determine row coordinates */
 	if(priv->rowCoords)
 	{
 		g_array_free(priv->rowCoords, TRUE);
@@ -255,7 +268,6 @@ static void _xfdashboard_dynamic_table_layout_get_preferred_width(ClutterLayoutM
 {
 	XfdashboardDynamicTableLayoutPrivate	*priv;
 	gfloat									maxMinWidth, maxNaturalWidth;
-	ClutterActor							*parent;
 
 	g_return_if_fail(XFDASHBOARD_IS_DYNAMIC_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -269,18 +281,11 @@ static void _xfdashboard_dynamic_table_layout_get_preferred_width(ClutterLayoutM
 	/* Update data needed for layout */
 	_xfdashboard_dynamic_table_layout_update_layout_data(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(self), inContainer, -1.0f, inForHeight);
 
-	/* Get size of parent if this child is parented */
-	parent=clutter_actor_get_parent(CLUTTER_ACTOR(inContainer));
-	if(parent) clutter_actor_get_size(CLUTTER_ACTOR(parent), &maxNaturalWidth, NULL);
-
 	/* Calculate width */
 	if(priv->columns>0)
 	{
 		maxMinWidth=(priv->columns-1)*priv->columnSpacing;
-		if(maxNaturalWidth==0.0f)
-		{
-			maxNaturalWidth=g_array_index(priv->columnCoords, gfloat, priv->columns);
-		}
+		maxNaturalWidth=g_array_index(priv->columnCoords, gfloat, priv->columns);
 	}
 
 	/* Set return values */
@@ -296,7 +301,6 @@ static void _xfdashboard_dynamic_table_layout_get_preferred_height(ClutterLayout
 {
 	XfdashboardDynamicTableLayoutPrivate	*priv;
 	gfloat									maxMinHeight, maxNaturalHeight;
-	ClutterActor							*parent;
 
 	g_return_if_fail(XFDASHBOARD_IS_DYNAMIC_TABLE_LAYOUT(self));
 	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
@@ -310,15 +314,11 @@ static void _xfdashboard_dynamic_table_layout_get_preferred_height(ClutterLayout
 	/* Update data needed for layout */
 	_xfdashboard_dynamic_table_layout_update_layout_data(XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(self), inContainer, inForWidth, -1.0f);
 
-	/* Get size of parent if this child is parented */
-	parent=clutter_actor_get_parent(CLUTTER_ACTOR(inContainer));
-	if(parent) clutter_actor_get_size(CLUTTER_ACTOR(parent), NULL, &maxNaturalHeight);
-
 	/* Calculate height */
 	if(priv->rows>0)
 	{
 		maxMinHeight=(priv->rows-1)*priv->rowSpacing;
-		if(maxNaturalHeight==0.0f) maxNaturalHeight=g_array_index(priv->rowCoords, gfloat, priv->rows);
+		maxNaturalHeight=g_array_index(priv->rowCoords, gfloat, priv->rows);
 	}
 
 	/* Set return values */
