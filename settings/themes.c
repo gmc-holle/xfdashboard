@@ -74,13 +74,13 @@ static GParamSpec* XfdashboardSettingsThemesProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_XFCONF_CHANNEL					"xfdashboard"
+
 #define THEME_XFCONF_PROP							"/theme"
 #define DEFAULT_THEME								"xfdashboard"
 
 #define XFDASHBOARD_THEME_SUBPATH					"xfdashboard-1.0"
 #define XFDASHBOARD_THEME_FILE						"xfdashboard.theme"
 #define XFDASHBOARD_THEME_GROUP						"Xfdashboard Theme"
-#define DEFAULT_ENABLE_HOTKEY						FALSE
 #define MAX_SCREENSHOT_WIDTH						400
 
 enum
@@ -735,7 +735,7 @@ static void _xfdashboard_settings_themes_populate_themes_list(XfdashboardSetting
 
 /* Create and set up GtkBuilder */
 static void _xfdashboard_settings_themes_set_builder(XfdashboardSettingsThemes *self,
-															GtkBuilder *inBuilder)
+														GtkBuilder *inBuilder)
 {
 	XfdashboardSettingsThemesPrivate	*priv;
 

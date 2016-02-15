@@ -9,11 +9,13 @@ bin_PROGRAMS = \
 	xfdashboard-settings
 
 xfdashboard_settings_headers = \
+	general.h \
 	settings.h \
 	themes.h
 
 xfdashboard_settings_SOURCES = \
 	$(xfdashboard_settings_headers) \
+	general.c \
 	main.c \
 	settings.c \
 	themes.c
