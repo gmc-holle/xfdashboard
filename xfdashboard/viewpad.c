@@ -206,7 +206,6 @@ static void _xfdashboard_viewpad_update_scrollbars(XfdashboardViewpad *self)
 	if(priv->activeView) clutter_actor_get_size(CLUTTER_ACTOR(priv->activeView), &w, &h);
 		else w=h=1.0f;
 
-	xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->hScrollbar), isnan(w)==0 ? w : 0.0f);
 	xfdashboard_scrollbar_set_range(XFDASHBOARD_SCROLLBAR(priv->vScrollbar), isnan(h)==0 ? h : 0.0f);
 
 	/* If any scroll bar policy is automatic then reallocate the
@@ -420,6 +419,14 @@ static gboolean _xfdashboard_viewpad_on_allocation_changed_repaint_callback(gpoi
 
 	/* Update scrollbars */
 	_xfdashboard_viewpad_update_scrollbars(self);
+
+	/* Ensure view is visible */
+	_xfdashboard_viewpad_on_scrollbar_value_changed(self,
+													xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->hScrollbar)),
+													priv->hScrollbar);
+	_xfdashboard_viewpad_on_scrollbar_value_changed(self,
+													xfdashboard_scrollbar_get_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar)),
+													priv->vScrollbar);
 
 	/* Do not call this callback again */
 	priv->scrollbarUpdateID=0;

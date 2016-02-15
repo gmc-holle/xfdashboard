@@ -1674,6 +1674,9 @@ void xfdashboard_search_view_reset_search(XfdashboardSearchView *self)
 	}
 	g_list_free_full(providers, (GDestroyNotify)_xfdashboard_search_view_provider_data_unref);
 
+	/* Ensure view is visible for next search by moving view to top-left position */
+	// TODO: xfdashboard_view_scroll_to(XFDASHBOARD_VIEW(self), 0.0f, 0.0f);
+
 	/* Reset last search terms used in this view */
 	if(priv->lastTerms)
 	{
