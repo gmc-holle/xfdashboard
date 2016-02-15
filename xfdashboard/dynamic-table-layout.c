@@ -355,13 +355,6 @@ static void _xfdashboard_dynamic_table_layout_allocate(ClutterLayoutManager *sel
 															width,
 															height);
 
-	/* Set container allocation */
-	childAllocation.x1=0;
-	childAllocation.y1=0;
-	childAllocation.x2=g_array_index(priv->columnCoords, gfloat, priv->columns)-priv->columnSpacing;
-	childAllocation.y2=g_array_index(priv->rowCoords, gfloat, priv->rows)-priv->rowSpacing;
-	clutter_actor_allocate(CLUTTER_ACTOR(inContainer), &childAllocation, inFlags);
-
 	/* Determine allocation for each visible child */
 	i=0;
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
