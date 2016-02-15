@@ -1,5 +1,5 @@
 /*
- * view-manager: Single-instance managing views
+ * settings: Settings of application
  * 
  * Copyright 2012-2016 Stephan Haller <nomad@froevel.de>
  * 
