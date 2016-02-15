@@ -1,5 +1,5 @@
 /*
- * themes: Theme settings of application
+ * general: General settings of application
  * 
  * Copyright 2012-2016 Stephan Haller <nomad@froevel.de>
  * 
