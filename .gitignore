@@ -6,13 +6,9 @@
 .deps
 .libs
 *.geany
-libxfdashboard/enums.[ch]
-libxfdashboard/marshal.[ch]
-libxfdashboard/stamp-marshal.h
-xfdashboard/xfdashboard
-settings/xfdashboard-settings
+*~
+ChangeLog
 data/appdata/xfdashboard.appdata.xml
-data/data/preferences.ui~
 data/themes/xfdashboard/xfdashboard.theme
 data/themes/xfdashboard/xfdashboard.theme.in
 data/themes/xfdashboard-auber/xfdashboard.theme
@@ -34,6 +30,12 @@ data/xfdashboard-autostart.desktop.in
 data/xfdashboard-settings.desktop
 data/xfdashboard-settings.desktop.in
 ChangeLog
+libxfdashboard/enums.[ch]
+libxfdashboard/marshal.[ch]
+libxfdashboard/stamp-marshal.h
+libxfdashboard/libxfdashboard.pc
+settings/xfdashboard-settings
+xfdashboard/xfdashboard
 
 # Ignore autotools files
 COPYING

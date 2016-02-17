@@ -201,6 +201,12 @@ libxfdashboard_la_LIBADD += \
 	$(XINERAMA_LIBS)
 endif
 
+libxfdashboard_la_includedir = \
+	$(includedir)/xfdashboard/libxfdashboard
+
+libxfdashboard_la_include_HEADERS = \
+	$(libxfdashboard_la_headers)
+
 if MAINTAINER_MODE
 
 CLEANFILES = \
