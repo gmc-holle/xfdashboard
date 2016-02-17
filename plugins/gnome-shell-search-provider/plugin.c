@@ -25,12 +25,12 @@
 #include <config.h>
 #endif
 
-#include "plugin.h"
+#include "gnome-shell-search-provider.h"
 
 #include <libxfce4util/libxfce4util.h>
 
-#include "search-manager.h"
-#include "gnome-shell-search-provider.h"
+#include "libxfdashboard/search-manager.h"
+#include "libxfdashboard/plugin.h"
 
 
 /* IMPLEMENTATION: Private variables and methods */

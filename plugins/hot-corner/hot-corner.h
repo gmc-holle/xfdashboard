@@ -24,7 +24,7 @@
 #ifndef __XFDASHBOARD_HOT_CORNER__
 #define __XFDASHBOARD_HOT_CORNER__
 
-#include "plugin.h"
+#include "libxfdashboard/plugin.h"
 
 G_BEGIN_DECLS
 

@@ -31,10 +31,10 @@
 #include <gtk/gtk.h>
 #include <math.h>
 
-#include "utils.h"
-#include "view.h"
-#include "fill-box-layout.h"
-#include "application.h"
+#include "libxfdashboard/utils.h"
+#include "libxfdashboard/view.h"
+#include "libxfdashboard/fill-box-layout.h"
+#include "libxfdashboard/application.h"
 
 
 /* Define this class in GObject system */

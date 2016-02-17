@@ -26,12 +26,13 @@
 #include "config.h"
 #endif
 
+#include "gnome-shell-search-provider.h"
+
 #include <glib/gi18n-lib.h>
 #include <gio/gio.h>
 
-#include "gnome-shell-search-provider.h"
-#include "application-database.h"
-#include "button.h"
+#include "libxfdashboard/application-database.h"
+#include "libxfdashboard/button.h"
 
 
 /* Define this class in GObject system */

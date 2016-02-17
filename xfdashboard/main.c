@@ -31,8 +31,8 @@
 #include <gtk/gtk.h>
 #include <libxfce4util/libxfce4util.h>
 
-#include "application.h"
-#include "types.h"
+#include <libxfdashboard/application.h>
+#include <libxfdashboard/types.h>
 
 typedef struct _RestartData		RestartData;
 struct _RestartData

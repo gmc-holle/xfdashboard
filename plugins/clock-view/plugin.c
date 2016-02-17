@@ -29,8 +29,8 @@
 
 #include <libxfce4util/libxfce4util.h>
 
-#include "plugin.h"
-#include "view-manager.h"
+#include "libxfdashboard/plugin.h"
+#include "libxfdashboard/view-manager.h"
 
 
 /* IMPLEMENTATION: XfdashboardPlugin */

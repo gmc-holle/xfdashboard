@@ -5,10 +5,10 @@
 *.la
 .deps
 .libs
-xfoverview.geany
-xfdashboard/enums.[ch]
-xfdashboard/marshal.[ch]
-xfdashboard/stamp-marshal.h
+*.geany
+libxfdashboard/enums.[ch]
+libxfdashboard/marshal.[ch]
+libxfdashboard/stamp-marshal.h
 xfdashboard/xfdashboard
 settings/xfdashboard-settings
 data/appdata/xfdashboard.appdata.xml

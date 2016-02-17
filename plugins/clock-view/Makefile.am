@@ -3,7 +3,6 @@ plugindir = $(libdir)/xfdashboard/plugins
 AM_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/xfdashboard \
 	-DG_LOG_DOMAIN=\"xfdashboard-plugin-clock_view\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
@@ -18,15 +17,16 @@ clock_view_la_SOURCES = \
 	plugin.c
 
 clock_view_la_CFLAGS = \
-	$(PLATFORM_CFLAGS) \
 	$(LIBXFCE4UTIL_CFLAGS) \
 	$(GTK_CFLAGS) \
 	$(CLUTTER_CFLAGS) \
-	$(LIBXFCONF_CFLAGS)
+	$(LIBXFCONF_CFLAGS) \
+	$(PLATFORM_CFLAGS)
 
 clock_view_la_LDFLAGS = \
 	-avoid-version \
 	-export-dynamic \
+	-no-undefined \
 	-module \
 	$(PLATFORM_LDFLAGS)
 
@@ -34,7 +34,8 @@ clock_view_la_LIBADD = \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(GTK_LIBS) \
 	$(CLUTTER_LIBS) \
-	$(LIBXFCONF_LIBS)
+	$(LIBXFCONF_LIBS) \
+	$(top_builddir)/libxfdashboard/libxfdashboard.la
 
 CLEANFILES = \
 	$(plugin_DATA)

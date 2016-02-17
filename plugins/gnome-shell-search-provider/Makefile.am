@@ -3,7 +3,6 @@ plugindir = $(libdir)/xfdashboard/plugins
 AM_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/xfdashboard \
 	-DG_LOG_DOMAIN=\"xfdashboard-plugin-gnome_shell_search_provider\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
@@ -19,15 +18,16 @@ gnome_shell_search_provider_la_SOURCES = \
 	plugin.c
 
 gnome_shell_search_provider_la_CFLAGS = \
-	$(PLATFORM_CFLAGS) \
 	$(LIBXFCE4UTIL_CFLAGS) \
 	$(GTK_CFLAGS) \
 	$(CLUTTER_CFLAGS) \
-	$(GARCON_CFLAGS)
+	$(GARCON_CFLAGS) \
+	$(PLATFORM_CFLAGS)
 
 gnome_shell_search_provider_la_LDFLAGS = \
 	-avoid-version \
 	-export-dynamic \
+	-no-undefined \
 	-module \
 	$(PLATFORM_LDFLAGS)
 
@@ -35,7 +35,8 @@ gnome_shell_search_provider_la_LIBADD = \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(GTK_LIBS) \
 	$(CLUTTER_LIBS) \
-	$(GARCON_LIBS)
+	$(GARCON_LIBS) \
+	$(top_builddir)/libxfdashboard/libxfdashboard.la
 
 CLEANFILES = \
 	$(plugin_DATA)
