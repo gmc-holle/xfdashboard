@@ -177,6 +177,12 @@ libxfdashboard_la_LIBADD = \
 	$(DBUS_GLIB_LIBS) \
 	$(LIBM)
 
+libxfdashboard_la_LDFLAGS = \
+	-export-dynamic \
+	-version-info $(LIBXFDASHBOARD_VERINFO) \
+	-export-symbols-regex "^[^_].*" \
+	-no-undefined
+
 if XFDASHBOARD_BUILD_WITH_XCOMPOSITE
 libxfdashboard_la_CFLAGS += \
 	$(XCOMPOSITE_CFLAGS)

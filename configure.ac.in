@@ -77,9 +77,9 @@ LT_PREREQ([2.2.6])
 LT_INIT([disable-static])
 LT_LIB_M
 
-dnl **************************
-dnl *** Substitute version ***
-dnl **************************
+dnl **********************************
+dnl *** Substitute package version ***
+dnl **********************************
 XFDASHBOARD_VERSION=xfdashboard_version()
 XFDASHBOARD_VERSION_MAJOR=xfdashboard_version_major()
 XFDASHBOARD_VERSION_MINOR=xfdashboard_version_minor()
@@ -88,6 +88,20 @@ AC_SUBST([XFDASHBOARD_VERSION])
 AC_SUBST([XFDASHBOARD_VERSION_MAJOR])
 AC_SUBST([XFDASHBOARD_VERSION_MINOR])
 AC_SUBST([XFDASHBOARD_VERSION_MICRO])
+
+dnl **********************************
+dnl *** Substitute library version ***
+dnl **********************************
+m4_define([libxfdashboard_binary_age], [m4_eval(10000 * xfdashboard_version_major + 100 * xfdashboard_version_minor + xfdashboard_version_micro)])
+m4_define([libxfdashboard_interface_age], [xfdashboard_version_micro])
+
+m4_define([libxfdashboard_lt_current], [m4_eval(libxfdashboard_binary_age - libxfdashboard_interface_age)])
+m4_define([libxfdashboard_lt_revision], [libxfdashboard_interface_age])
+m4_define([libxfdashboard_lt_age], [m4_eval(libxfdashboard_binary_age - libxfdashboard_interface_age)])
+m4_define([libxfdashboard_verinfo], [libxfdashboard_lt_current():libxfdashboard_lt_revision():libxfdashboard_lt_age()])
+
+LIBXFDASHBOARD_VERINFO=libxfdashboard_verinfo()
+AC_SUBST([LIBXFDASHBOARD_VERINFO])
 
 dnl **********************************
 dnl *** Check for standard headers ***
@@ -272,7 +286,11 @@ dnl ***************************
 dnl *** Print configuration ***
 dnl ***************************
 echo
-echo "Build Configuration for $PACKAGE version $VERSION revision $REVISION:"
+echo "Build configuration:"
+echo "  Package:          $PACKAGE"
+echo "  Version:          $VERSION"
+echo "  Revision:         $REVISION"
+echo "  Library version:  $LIBXFDASHBOARD_VERINFO"
 echo
 echo "Library versions used:"
 echo "  libwnck:          $LIBWNCK_VERSION"
