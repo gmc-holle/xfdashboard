@@ -232,13 +232,13 @@ static void _xfdashboard_settings_plugins_enabled_plugins_changed_by_widget(Xfda
 	/* Get iterator for path */
 	if(G_UNLIKELY(!gtk_tree_model_get_iter_from_string(model, &modelIter, inPath)))
 	{
-		g_message("Could not get iterator for path %s", inPath);
+		g_warning("Could not get iterator for path %s", inPath);
 		return;
 	}
 
 	if(G_UNLIKELY(!gtk_tree_model_get_iter_first(model, &pluginsIter)))
 	{
-		g_message("Could not get iterator for iterating enabled plugins");
+		g_warning("Could not get iterator for iterating enabled plugins");
 		return;
 	}
 
@@ -584,7 +584,7 @@ static void _xfdashboard_settings_plugins_populate_plugins_list(XfdashboardSetti
 			if(!handlerID)
 			{
 				pluginIsConfigurable=TRUE;
-				g_message("Plugin '%s' is configurable", pluginID);
+				g_debug("Plugin '%s' is configurable", pluginID);
 			}
 
 			/* Add to widget's list */
