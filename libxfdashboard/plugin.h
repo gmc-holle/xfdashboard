@@ -99,6 +99,8 @@ GType xfdashboard_plugin_get_type(void) G_GNUC_CONST;
 
 XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError **outError);
 
+const gchar* xfdashboard_plugin_get_id(XfdashboardPlugin *self);
+
 void xfdashboard_plugin_set_info(XfdashboardPlugin *self,
 									const gchar *inFirstPropertyName, ...)
 									G_GNUC_NULL_TERMINATED;

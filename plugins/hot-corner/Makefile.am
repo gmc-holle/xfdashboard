@@ -1,4 +1,5 @@
 plugindir = $(libdir)/xfdashboard/plugins
+PLUGIN_ID = hot-corner
 
 AM_CPPFLAGS = \
 	-I$(top_builddir) \
@@ -6,7 +7,7 @@ AM_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"xfdashboard-plugin-hot_corner\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
-	-DPLUGIN_ID=\"de.froevel.xfdashboard.hot-corner\"
+	-DPLUGIN_ID=\"$(PLUGIN_ID)\"
 
 plugin_LTLIBRARIES = \
 	hot-corner.la
@@ -26,8 +27,10 @@ hot_corner_la_CFLAGS = \
 hot_corner_la_LDFLAGS = \
 	-avoid-version \
 	-export-dynamic \
+	-export-symbols-regex '^plugin_init$$' \
 	-no-undefined \
 	-module \
+	-shared \
 	$(PLATFORM_LDFLAGS)
 
 hot_corner_la_LIBADD = \

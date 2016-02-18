@@ -1,4 +1,5 @@
 plugindir = $(libdir)/xfdashboard/plugins
+PLUGIN_ID = gnome-shell-search-provider
 
 AM_CPPFLAGS = \
 	-I$(top_builddir) \
@@ -6,7 +7,7 @@ AM_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"xfdashboard-plugin-gnome_shell_search_provider\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
-	-DPLUGIN_ID=\"de.froevel.xfdashboard.gnome-shell-search-provider\" \
+	-DPLUGIN_ID=\"$(PLUGIN_ID)\" \
 	-DGNOME_SHELL_PROVIDERS_PATH=\"$(prefix)/share/gnome-shell/search-providers\"
 
 plugin_LTLIBRARIES = \
@@ -27,8 +28,10 @@ gnome_shell_search_provider_la_CFLAGS = \
 gnome_shell_search_provider_la_LDFLAGS = \
 	-avoid-version \
 	-export-dynamic \
+	-export-symbols-regex '^plugin_init$$' \
 	-no-undefined \
 	-module \
+	-shared \
 	$(PLATFORM_LDFLAGS)
 
 gnome_shell_search_provider_la_LIBADD = \

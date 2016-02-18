@@ -826,9 +826,9 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 	XfdashboardPluginProperties[PROP_ID]=
 		g_param_spec_string("id",
 							_("ID"),
-							_("The unique ID used to register this plugin"),
+							_("The unique ID for this plugin"),
 							NULL,
-							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	XfdashboardPluginProperties[PROP_NAME]=
 		g_param_spec_string("name",
@@ -966,13 +966,40 @@ GQuark xfdashboard_plugin_error_quark(void)
 XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError **outError)
 {
 	GObject			*plugin;
+	gchar			*pluginBasename;
+	gchar			*pluginID;
 
 	g_return_val_if_fail(inPluginFilename && *inPluginFilename, NULL);
 	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
 
+	/* Get plugin ID from filename */
+	pluginBasename=g_filename_display_basename(inPluginFilename);
+	if(!pluginBasename)
+	{
+		/* Set error */
+		g_set_error(outError,
+					XFDASHBOARD_PLUGIN_ERROR,
+					XFDASHBOARD_PLUGIN_ERROR_ERROR,
+					_("Could not get plugin ID for file %s"),
+					inPluginFilename);
+
+		/* Return NULL to indicate failure */
+		return(NULL);
+	}
+
+	if(g_str_has_suffix(pluginBasename, G_MODULE_SUFFIX))
+	{
+		pluginID=g_strndup(pluginBasename, strlen(pluginBasename)-strlen(G_MODULE_SUFFIX)-1);
+	}
+		else
+		{
+			pluginID=g_strdup(pluginBasename);
+		}
+
 	/* Create object instance */
 	plugin=g_object_new(XFDASHBOARD_TYPE_PLUGIN,
 						"filename", inPluginFilename,
+						"id", pluginID,
 						NULL);
 	if(!plugin)
 	{
@@ -981,6 +1008,10 @@ XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError 
 					XFDASHBOARD_PLUGIN_ERROR,
 					XFDASHBOARD_PLUGIN_ERROR_ERROR,
 					_("Could not create plugin instance"));
+
+		/* Release allocated resources */
+		if(pluginID) g_free(pluginID);
+		if(pluginBasename) g_free(pluginBasename);
 
 		/* Return NULL to indicate failure */
 		return(NULL);
@@ -996,6 +1027,10 @@ XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError 
 					"%s",
 					_xfdashboard_plugin_get_loading_error(XFDASHBOARD_PLUGIN(plugin)));
 
+		/* Release allocated resources */
+		if(pluginID) g_free(pluginID);
+		if(pluginBasename) g_free(pluginBasename);
+
 		/* At this point we return NULL to indicate failure although the object
 		 * instance (subclassing GTypeModule) now exists and it was tried to
 		 * use it (via g_type_module_use). As describe in GObject documentation
@@ -1006,8 +1041,20 @@ XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError 
 		return(NULL);
 	}
 
+	/* Release allocated resources */
+	if(pluginID) g_free(pluginID);
+	if(pluginBasename) g_free(pluginBasename);
+
 	/* Plugin loaded so return it */
 	return(XFDASHBOARD_PLUGIN(plugin));
+}
+
+/* Get ID of plugin */
+const gchar* xfdashboard_plugin_get_id(XfdashboardPlugin *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
+
+	return(self->priv->id);
 }
 
 /* Set plugin information */

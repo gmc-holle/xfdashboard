@@ -437,7 +437,6 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
 
 	/* Set plugin info */
 	xfdashboard_plugin_set_info(self,
-								"id", PLUGIN_ID,
 								"name", _("Gnome-Shell search provider"),
 								"description", _("Uses Gnome-Shell search providers as source for searches"),
 								"author", "Stephan Haller <nomad@froevel.de>",
