@@ -286,7 +286,9 @@ static void _xfdashboard_settings_plugins_enabled_plugins_changed_by_widget(Xfda
 			enabledPluginsList[i]=g_strdup(g_ptr_array_index(enabledPlugins, i));
 		}
 
-		success=xfconf_channel_set_string_list(priv->xfconfChannel, ENABLED_PLUGINS_XFCONF_PROP, enabledPluginsList);
+		success=xfconf_channel_set_string_list(priv->xfconfChannel,
+												ENABLED_PLUGINS_XFCONF_PROP,
+												(const gchar * const*)enabledPluginsList);
 		if(!success) g_critical(_("Could not set list of enabled plugins!"));
 
 		/* Release allocated resources */
@@ -313,7 +315,6 @@ static void _xfdashboard_settings_plugins_enabled_plugins_changed_by_xfconf(Xfda
 	GtkTreeIter								modelIter;
 
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self));
-	g_return_if_fail(inValue);
 	g_return_if_fail(XFCONF_IS_CHANNEL(inChannel));
 
 	priv=self->priv;
@@ -726,11 +727,10 @@ static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins
 		_xfdashboard_settings_plugins_populate_plugins_list(self, priv->widgetPlugins);
 
 		/* Check enabled plugins */
-		// TODO: _xfdashboard_settings_plugins_enabled_plugins_changed_by_xfconf(self,
-																		// TODO: ENABLED_PLUGINS_XFCONF_PROP,
-																		// TODO: &defaultValue,
-																		// TODO: priv->xfconfChannel);
-		// TODO: _xfdashboard_settings_plugins_enabled_plugins_changed_by_widget(self, selection);
+		_xfdashboard_settings_plugins_enabled_plugins_changed_by_xfconf(self,
+																		ENABLED_PLUGINS_XFCONF_PROP,
+																		NULL,
+																		priv->xfconfChannel);
 
 		/* Connect signals */
 		g_signal_connect_swapped(selection,
