@@ -11,6 +11,7 @@ bin_PROGRAMS = \
 
 xfdashboard_settings_headers = \
 	general.h \
+	plugins.h \
 	settings.h \
 	themes.h
 
@@ -18,6 +19,7 @@ xfdashboard_settings_SOURCES = \
 	$(xfdashboard_settings_headers) \
 	general.c \
 	main.c \
+	plugins.c \
 	settings.c \
 	themes.c
 

@@ -99,7 +99,7 @@ enum
 
 /* Setting '/theme' changed either at widget or at xfconf property */
 static void _xfdashboard_settings_themes_theme_changed_by_widget(XfdashboardSettingsThemes *self,
-																GtkTreeSelection *inSelection)
+																	GtkTreeSelection *inSelection)
 {
 	XfdashboardSettingsThemesPrivate		*priv;
 	GtkTreeModel							*model;
@@ -316,9 +316,9 @@ static void _xfdashboard_settings_themes_theme_changed_by_widget(XfdashboardSett
 }
 
 static void _xfdashboard_settings_themes_theme_changed_by_xfconf(XfdashboardSettingsThemes *self,
-																const gchar *inProperty,
-																const GValue *inValue,
-																XfconfChannel *inChannel)
+																	const gchar *inProperty,
+																	const GValue *inValue,
+																	XfconfChannel *inChannel)
 {
 	XfdashboardSettingsThemesPrivate		*priv;
 	const gchar						*newValue;
@@ -407,7 +407,7 @@ static gint _xfdashboard_settings_themes_sort_themes_list_model(GtkTreeModel *in
 
 /* Populate list of available themes */
 static void _xfdashboard_settings_themes_populate_themes_list(XfdashboardSettingsThemes *self,
-														GtkWidget *inWidget)
+																GtkWidget *inWidget)
 {
 	GHashTable						*themes;
 	GArray							*themesPaths;

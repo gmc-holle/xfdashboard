@@ -32,6 +32,7 @@
 #include <math.h>
 
 #include "general.h"
+#include "plugins.h"
 #include "themes.h"
 
 
@@ -53,6 +54,7 @@ struct _XfdashboardSettingsPrivate
 
 	XfdashboardSettingsGeneral		*general;
 	XfdashboardSettingsThemes		*themes;
+	XfdashboardSettingsPlugins		*plugins;
 
 	GtkWidget						*widgetCloseButton;
 };
@@ -168,6 +170,9 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 	/* Tab: Themes */
 	priv->themes=xfdashboard_settings_themes_new(builder);
 
+	/* Tab: Plugins */
+	priv->plugins=xfdashboard_settings_plugins_new(builder);
+
 	/* Release allocated resources */
 	g_free(builderFile);
 	g_object_unref(builder);
@@ -198,6 +203,12 @@ static void _xfdashboard_settings_dispose(GObject *inObject)
 	{
 		g_object_unref(priv->general);
 		priv->general=NULL;
+	}
+
+	if(priv->plugins)
+	{
+		g_object_unref(priv->plugins);
+		priv->plugins=NULL;
 	}
 
 	if(priv->xfconfChannel)
@@ -242,8 +253,9 @@ static void xfdashboard_settings_init(XfdashboardSettings *self)
 	/* Set default values */
 	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
 	priv->builder=NULL;
-	priv->themes=NULL;
 	priv->general=NULL;
+	priv->themes=NULL;
+	priv->plugins=NULL;
 	priv->widgetCloseButton=NULL;
 }
 

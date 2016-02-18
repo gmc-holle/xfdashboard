@@ -440,6 +440,8 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 {
 	XfdashboardPlugin			*self;
 	XfdashboardPluginPrivate	*priv;
+	guint						signalID;
+	gulong						handlerID;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(inModule), FALSE);
 	g_return_val_if_fail(G_IS_TYPE_MODULE(inModule), FALSE);
@@ -517,6 +519,37 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 	if(!priv->id)
 	{
 		priv->lastLoadingError=g_strdup(_("Plugin did not set required ID"));
+		return(FALSE);
+	}
+
+	/* Check if plugin is valid, that means that plugin can be enabled and disabled */
+	signalID=g_signal_lookup("enable", XFDASHBOARD_TYPE_PLUGIN);
+	handlerID=g_signal_handler_find(self,
+									G_SIGNAL_MATCH_ID,
+									signalID,
+									0,
+									NULL,
+									NULL,
+									NULL);
+	if(!handlerID)
+	{
+		priv->lastLoadingError=g_strdup(_("Plugin cannot be enabled"));
+		g_critical("Loading plugin at '%s' failed: %s", priv->filename, priv->lastLoadingError);
+		return(FALSE);
+	}
+
+	signalID=g_signal_lookup("disable", XFDASHBOARD_TYPE_PLUGIN);
+	handlerID=g_signal_handler_find(self,
+									G_SIGNAL_MATCH_ID,
+									signalID,
+									0,
+									NULL,
+									NULL,
+									NULL);
+	if(!handlerID)
+	{
+		priv->lastLoadingError=g_strdup(_("Plugin cannot be disabled"));
+		g_critical("Loading plugin at '%s' failed: %s", priv->filename, priv->lastLoadingError);
 		return(FALSE);
 	}
 
