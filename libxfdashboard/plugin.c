@@ -1083,6 +1083,22 @@ void xfdashboard_plugin_set_info(XfdashboardPlugin *self,
 	va_end(args);
 }
 
+/* Get enabled state of plugin */
+gboolean xfdashboard_plugin_is_enabled(XfdashboardPlugin *self)
+{
+	XfdashboardPluginPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), FALSE);
+
+	priv=self->priv;
+
+	/* Only return TRUE if state is enabled */
+	if(priv->state==XFDASHBOARD_PLUGIN_STATE_ENABLED) return(TRUE);
+
+	/* If we get here plugin is not in enabled state so return FALSE */
+	return(FALSE);
+}
+
 /* Enable plugin */
 void xfdashboard_plugin_enable(XfdashboardPlugin *self)
 {

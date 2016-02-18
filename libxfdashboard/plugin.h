@@ -105,6 +105,7 @@ void xfdashboard_plugin_set_info(XfdashboardPlugin *self,
 									const gchar *inFirstPropertyName, ...)
 									G_GNUC_NULL_TERMINATED;
 
+gboolean xfdashboard_plugin_is_enabled(XfdashboardPlugin *self);
 void xfdashboard_plugin_enable(XfdashboardPlugin *self);
 void xfdashboard_plugin_disable(XfdashboardPlugin *self);
 

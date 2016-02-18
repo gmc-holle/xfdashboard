@@ -45,9 +45,10 @@ G_DEFINE_TYPE(XfdashboardPluginsManager,
 struct _XfdashboardPluginsManagerPrivate
 {
 	/* Instance related */
-	gboolean		isInited;
-	GList			*searchPaths;
-	GList			*plugins;
+	gboolean			isInited;
+	GList				*searchPaths;
+	GList				*plugins;
+	XfconfChannel		*xfconfChannel;
 };
 
 
@@ -156,6 +157,256 @@ static gchar* _xfdashboard_plugins_manager_find_plugin_path(XfdashboardPluginsMa
 	return(NULL);
 }
 
+/* Find plugin with requested ID */
+static XfdashboardPlugin* _xfdashboard_plugins_manager_find_plugin_by_id(XfdashboardPluginsManager *self,
+																			const gchar *inPluginID)
+{
+	XfdashboardPluginsManagerPrivate	*priv;
+	XfdashboardPlugin					*plugin;
+	const gchar							*pluginID;
+	GList								*iter;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self), NULL);
+	g_return_val_if_fail(inPluginID && *inPluginID, NULL);
+
+	priv=self->priv;
+
+	/* Iterate through list of loaded plugins and return the plugin
+	 * with requested ID.
+	 */
+	for(iter=priv->plugins; iter; iter=g_list_next(iter))
+	{
+		/* Get currently iterated plugin */
+		plugin=XFDASHBOARD_PLUGIN(iter->data);
+
+		/* Get plugin ID */
+		pluginID=xfdashboard_plugin_get_id(plugin);
+
+		/* Check if plugin has requested ID then return it */
+		if(g_strcmp0(pluginID, inPluginID)==0) return(plugin);
+	}
+
+	/* If we get here the plugin with requested ID was not in the list of
+	 * loaded plugins, so return NULL.
+	 */
+	return(NULL);
+}
+
+/* Checks if a plugin with requested ID exists */
+static gboolean _xfdashboard_plugins_manager_has_plugin_id(XfdashboardPluginsManager *self,
+															const gchar *inPluginID)
+{
+	XfdashboardPlugin					*plugin;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self), NULL);
+	g_return_val_if_fail(inPluginID && *inPluginID, NULL);
+
+	/* Get plugin by requested ID. If NULL is returned the plugin does not exist */
+	plugin=_xfdashboard_plugins_manager_find_plugin_by_id(self, inPluginID);
+	if(!plugin) return(FALSE);
+
+	/* If we get here the plugin was found */
+	return(TRUE);
+}
+
+/* Try to load plugin */
+static gboolean _xfdashboard_plugins_manager_load_plugin(XfdashboardPluginsManager *self,
+															const gchar *inPluginID,
+															GError **outError)
+{
+	XfdashboardPluginsManagerPrivate	*priv;
+	gchar								*path;
+	XfdashboardPlugin					*plugin;
+	GError								*error;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self), FALSE);
+	g_return_val_if_fail(inPluginID && *inPluginID, FALSE);
+	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
+
+	priv=self->priv;
+	error=NULL;
+
+	/* Check if plugin with requested ID exists already in list of loaded plugins */
+	if(_xfdashboard_plugins_manager_has_plugin_id(self, inPluginID))
+	{
+		g_debug("Plugin ID '%s' already loaded.", inPluginID);
+
+		/* The plugin is already loaded so return success result */
+		return(TRUE);
+	}
+
+	/* Find path to plugin */
+	path=_xfdashboard_plugins_manager_find_plugin_path(self, inPluginID);
+	if(!path)
+	{
+		/* Set error */
+		g_set_error(outError,
+					XFDASHBOARD_PLUGIN_ERROR,
+					XFDASHBOARD_PLUGIN_ERROR_ERROR,
+					_("Could not find module for plugin ID '%s'"),
+					inPluginID);
+
+		/* Return error */
+		return(FALSE);
+	}
+
+	/* Create and load plugin */
+	plugin=xfdashboard_plugin_new(path, &error);
+	if(!plugin)
+	{
+		/* Propagate error */
+		g_propagate_error(outError, error);
+
+		/* Return error */
+		return(FALSE);
+	}
+
+	/* Enable plugin */
+	xfdashboard_plugin_enable(plugin);
+
+	/* Store enabled plugin in list of enabled plugins */
+	priv->plugins=g_list_prepend(priv->plugins, plugin);
+
+	/* Plugin loaded so return success result */
+	return(TRUE);
+}
+
+/* Property for list of enabled plugins in xfconf has changed */
+static void _xfdashboard_plugins_manager_on_enabled_plugins_changed(XfdashboardPluginsManager *self,
+																	const gchar *inProperty,
+																	const GValue *inValue,
+																	gpointer inUserData)
+{
+	XfdashboardPluginsManagerPrivate	*priv;
+	gchar								**enabledPlugins;
+
+	g_return_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self));
+	g_return_if_fail(XFCONF_IS_CHANNEL(inUserData));
+
+	priv=self->priv;
+
+	/* If plugin managed is not inited do not load or "unload" any plugin */
+	if(!priv->isInited) return;
+
+	/* Get new list of enabled plugins */
+	enabledPlugins=xfconf_channel_get_string_list(xfdashboard_application_get_xfconf_channel(NULL),
+													ENABLED_PLUGINS_XFCONF_PROP);
+
+	/* Iterate through list of loaded plugin and check if it also in new list
+	 * of enabled plugins. If it is not then disable this plugin.
+	 */
+	if(priv->plugins)
+	{
+		GList								*iter;
+		XfdashboardPlugin					*plugin;
+		const gchar							*pluginID;
+
+		iter=priv->plugins;
+		while(iter)
+		{
+			GList							*nextIter;
+			gchar							**listIter;
+			gchar							*listIterPluginID;
+			gboolean						found;
+
+			/* Get next item getting iterated before doing anything
+			 * because the current item may get removed and the iterator
+			 * would get invalid.
+			 */
+			nextIter=g_list_next(iter);
+
+			/* Get currently iterated plugin */
+			plugin=XFDASHBOARD_PLUGIN(iter->data);
+
+			/* Get plugin ID */
+			pluginID=xfdashboard_plugin_get_id(plugin);
+
+			/* Check if plugin ID is still in new list of enabled plugins */
+			found=FALSE;
+			for(listIter=enabledPlugins; !found && *listIter; listIter++)
+			{
+				/* Get plugin ID of new enabled plugins currently iterated */
+				listIterPluginID=*listIter;
+
+				/* Check if plugin ID matches this iterated one. If so,
+				 * set flag that plugin was found.
+				 */
+				if(g_strcmp0(pluginID, listIterPluginID)==0) found=TRUE;
+			}
+
+			/* Check that found flag is set. If it is not then disable plugin */
+			if(!found)
+			{
+				g_debug("Disable plugin '%s'", pluginID);
+
+				/* Disable plugin */
+				xfdashboard_plugin_disable(plugin);
+			}
+
+			/* Move iterator to next item */
+			iter=nextIter;
+		}
+	}
+
+	/* Iterate through new list of enabled plugin and check if it is already
+	 * or still in the list of loaded plugins. If it not in this list then
+	 * try to load this plugin. If it is then enable it again when it is in
+	 * disable state.
+	 */
+	if(enabledPlugins)
+	{
+		gchar								**iter;
+		gchar								*pluginID;
+		GError								*error;
+		XfdashboardPlugin					*plugin;
+
+		error=NULL;
+
+		/* Iterate through new list of enabled plugins and load new plugins */
+		for(iter=enabledPlugins; *iter; iter++)
+		{
+			/* Get plugin ID to check */
+			pluginID=*iter;
+
+			/* Check if a plugin with this ID exists already */
+			plugin=_xfdashboard_plugins_manager_find_plugin_by_id(self, pluginID);
+			if(!plugin)
+			{
+				/* The plugin does not exist so try to load it */
+				if(!_xfdashboard_plugins_manager_load_plugin(self, pluginID, &error))
+				{
+					/* Show error message */
+					g_warning(_("Could not load plugin '%s': %s"),
+								pluginID,
+								error ? error->message : _("Unknown error"));
+
+					/* Release allocated resources */
+					if(error)
+					{
+						g_error_free(error);
+						error=NULL;
+					}
+				}
+					else g_debug("Loaded plugin '%s'", pluginID);
+			}
+				else
+				{
+					/* The plugin exists already so check if it is disabled and
+					 * re-enable it.
+					 */
+					if(!xfdashboard_plugin_is_enabled(plugin))
+					{
+						g_debug("Re-enable plugin '%s'", pluginID);
+						xfdashboard_plugin_enable(plugin);
+					}
+				}
+		}
+	}
+
+	/* Release allocated resources */
+	if(enabledPlugins) g_strfreev(enabledPlugins);
+}
+
 
 /* IMPLEMENTATION: GObject */
 
@@ -228,6 +479,13 @@ static void xfdashboard_plugins_manager_init(XfdashboardPluginsManager *self)
 	priv->isInited=FALSE;
 	priv->searchPaths=NULL;
 	priv->plugins=NULL;
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
+
+	/* Connect signals */
+	g_signal_connect_swapped(priv->xfconfChannel,
+								"property-changed::"ENABLED_PLUGINS_XFCONF_PROP,
+								G_CALLBACK(_xfdashboard_plugins_manager_on_enabled_plugins_changed),
+								self);
 }
 
 /* IMPLEMENTATION: Public API */
@@ -286,31 +544,18 @@ gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self)
 	/* Try to load all enabled plugin and collect each error occurred. */
 	for(iter=enabledPlugins; iter && *iter; iter++)
 	{
-		gchar							*pluginName;
-		XfdashboardPlugin				*plugin;
+		gchar							*pluginID;
 
 		/* Get plugin name */
-		pluginName=*iter;
-		g_debug("Try to load plugin '%s'", pluginName);
+		pluginID=*iter;
+		g_debug("Try to load plugin '%s'", pluginID);
 
-		/* Find path to plugin */
-		path=_xfdashboard_plugins_manager_find_plugin_path(self, pluginName);
-		if(!path)
-		{
-			/* Show error message */
-			g_warning(_("Could not load plugin '%s': Path not found"), pluginName);
-
-			/* Continue with next enabled plugin in list */
-			continue;
-		}
-
-		/* Create plugin */
-		plugin=xfdashboard_plugin_new(path, &error);
-		if(!plugin)
+		/* Try to load plugin */
+		if(!_xfdashboard_plugins_manager_load_plugin(self, pluginID, &error))
 		{
 			/* Show error message */
 			g_warning(_("Could not load plugin '%s': %s"),
-						pluginName,
+						pluginID,
 						error ? error->message : _("Unknown error"));
 
 			/* Release allocated resources */
@@ -319,16 +564,8 @@ gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self)
 				g_error_free(error);
 				error=NULL;
 			}
-
-			/* Continue with next enabled plugin in list */
-			continue;
 		}
-
-		/* Enable plugin */
-		xfdashboard_plugin_enable(plugin);
-
-		/* Store enabled plugin in list of enabled plugins */
-		priv->plugins=g_list_prepend(priv->plugins, plugin);
+			else g_debug("Loaded plugin '%s'", pluginID);
 	}
 
 	/* If we get here then initialization was successful so set flag that
