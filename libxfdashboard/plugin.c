@@ -112,12 +112,6 @@ static guint XfdashboardPluginSignals[SIGNAL_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
-#define XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, action) \
-	g_critical(_("Plugin at path '%s' does not implement required signal handler %s::%s"), \
-				self->priv->filename ? self->priv->filename : _("unknown filename"), \
-				G_OBJECT_TYPE_NAME(self), \
-				action);
-
 #define XFDASHBOARD_PLUGIN_FUNCTION_NAME_INITIALIZE		"plugin_init"
 
 /* Get display name for XFDASHBOARD_PLUGIN_STATE_* enum values */
@@ -395,42 +389,6 @@ static void _xfdashboard_plugin_set_license(XfdashboardPlugin *self, const gchar
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPluginProperties[PROP_LICENSE]);
 	}
-}
-
-/* Default implementation of signal handler "enable" */
-static gboolean _xfdashboard_plugin_enable(XfdashboardPlugin *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), XFDASHBOARD_PLUGIN_ACTION_HANDLED);
-
-	/* We should never reach this code because each plugin must connect a signal handler
-	 * for this action and return TRUE to indicate that this action was handled.
-	 */
-	XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, "enable");
-	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
-}
-
-/* Default implementation of signal handler "disable" */
-static gboolean _xfdashboard_plugin_disable(XfdashboardPlugin *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), XFDASHBOARD_PLUGIN_ACTION_HANDLED);
-
-	/* We should never reach this code because each plugin must connect a signal handler
-	 * for this action and return TRUE to indicate that this action was handled.
-	 */
-	XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, "disable");
-	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
-}
-
-/* Default implementation of signal handler "configure" */
-static gboolean _xfdashboard_plugin_configure(XfdashboardPlugin *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), XFDASHBOARD_PLUGIN_ACTION_HANDLED);
-
-	/* We should never reach this code because each plugin must connect a signal handler
-	 * for this action and return TRUE to indicate that this action was handled.
-	 */
-	XFDASHBOARD_PLUGIN_CRITICAL_NOT_IMPLEMENTED(self, "configure");
-	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
 }
 
 /* IMPLEMENTATION: GTypeModule */
@@ -801,10 +759,6 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	klass->enable=_xfdashboard_plugin_enable;
-	klass->disable=_xfdashboard_plugin_disable;
-	klass->configure=_xfdashboard_plugin_configure;
-
 	moduleClass->load=_xfdashboard_plugin_load;
 	moduleClass->unload=_xfdashboard_plugin_unload;
 
@@ -894,10 +848,10 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 						G_STRUCT_OFFSET(XfdashboardPluginClass, enable),
-						g_signal_accumulator_true_handled,
 						NULL,
-						_xfdashboard_marshal_BOOLEAN__VOID,
-						G_TYPE_BOOLEAN,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
 						0);
 
 	XfdashboardPluginSignals[ACTION_DISABLE]=
@@ -905,10 +859,10 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 						G_STRUCT_OFFSET(XfdashboardPluginClass, disable),
-						g_signal_accumulator_true_handled,
 						NULL,
-						_xfdashboard_marshal_BOOLEAN__VOID,
-						G_TYPE_BOOLEAN,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
 						0);
 
 	XfdashboardPluginSignals[ACTION_CONFIGURE]=
@@ -916,10 +870,10 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 						G_STRUCT_OFFSET(XfdashboardPluginClass, configure),
-						g_signal_accumulator_true_handled,
 						NULL,
-						_xfdashboard_marshal_BOOLEAN__VOID,
-						G_TYPE_BOOLEAN,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
 						0);
 }
 

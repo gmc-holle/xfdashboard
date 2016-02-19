@@ -39,7 +39,7 @@
 G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self);
 
 /* Plugin enable function */
-static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
+static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 {
 	XfdashboardViewManager	*viewManager;
 
@@ -49,12 +49,10 @@ static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 	xfdashboard_view_manager_register(viewManager, PLUGIN_ID, XFDASHBOARD_TYPE_CLOCK_VIEW);
 
 	g_object_unref(viewManager);
-
-	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
 }
 
 /* Plugin disable function */
-static gboolean plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
+static void plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 {
 	XfdashboardViewManager	*viewManager;
 
@@ -64,8 +62,6 @@ static gboolean plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 	xfdashboard_view_manager_unregister(viewManager, PLUGIN_ID);
 
 	g_object_unref(viewManager);
-
-	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
 }
 
 /* Plugin initialization function */

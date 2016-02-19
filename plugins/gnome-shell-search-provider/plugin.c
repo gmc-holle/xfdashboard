@@ -190,7 +190,7 @@ static void _xfdashboard_gnome_shell_search_provider_plugin_on_file_monitor_chan
 }
 
 /* Plugin enable function */
-static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
+static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 {
 	XfdashboardGnomeShellSearchProviderPluginPrivate	*priv;
 	XfdashboardSearchManager							*searchManager;
@@ -200,7 +200,7 @@ static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 	GError												*error;
 	gchar												*pluginID;
 
-	g_return_val_if_fail(inUserData, XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+	g_return_if_fail(inUserData);
 
 	priv=(XfdashboardGnomeShellSearchProviderPluginPrivate*)inUserData;
 	error=NULL;
@@ -238,7 +238,7 @@ static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 		if(searchManager) g_object_unref(searchManager);
 		if(gnomeShellSearchProvidersPath) g_object_unref(gnomeShellSearchProvidersPath);
 
-		return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+		return;
 	}
 
 
@@ -313,7 +313,7 @@ static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 		if(searchManager) g_object_unref(searchManager);
 		if(gnomeShellSearchProvidersPath) g_object_unref(gnomeShellSearchProvidersPath);
 
-		return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+		return;
 	}
 
 	/* Create monitor to get notified about new, changed and removed search providers */
@@ -354,13 +354,10 @@ static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 	if(enumerator) g_object_unref(enumerator);
 	if(searchManager) g_object_unref(searchManager);
 	if(gnomeShellSearchProvidersPath) g_object_unref(gnomeShellSearchProvidersPath);
-
-	/* All done */
-	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
 }
 
 /* Plugin disable function */
-static gboolean plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
+static void plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 {
 	XfdashboardGnomeShellSearchProviderPluginPrivate	*priv;
 	XfdashboardSearchManager							*searchManager;
@@ -369,7 +366,7 @@ static gboolean plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 	gboolean											success;
 	gchar												*pluginID;
 
-	g_return_val_if_fail(inUserData, XFDASHBOARD_PLUGIN_ACTION_HANDLED);
+	g_return_if_fail(inUserData);
 
 	priv=(XfdashboardGnomeShellSearchProviderPluginPrivate*)inUserData;
 
@@ -422,9 +419,6 @@ static gboolean plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 		g_list_free_full(priv->providers, g_free);
 		priv->providers=NULL;
 	}
-
-	/* All done */
-	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
 }
 
 /* Plugin initialization function */

@@ -40,19 +40,17 @@ static XfdashboardHotCorner		*hotCorner=NULL;
 G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self);
 
 /* Plugin enable function */
-static gboolean plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
+static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 {
 	/* Create instance of hot corner */
 	if(!hotCorner)
 	{
 		hotCorner=xfdashboard_hot_corner_new();
 	}
-
-	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
 }
 
 /* Plugin disable function */
-static gboolean plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
+static void plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 {
 	/* Destroy instance of hot corner */
 	if(hotCorner)
@@ -60,8 +58,6 @@ static gboolean plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 		g_object_unref(hotCorner);
 		hotCorner=NULL;
 	}
-
-	return(XFDASHBOARD_PLUGIN_ACTION_HANDLED);
 }
 
 /* Plugin initialization function */
