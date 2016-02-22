@@ -872,8 +872,8 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 						G_STRUCT_OFFSET(XfdashboardPluginClass, configure),
 						NULL,
 						NULL,
-						g_cclosure_marshal_VOID__VOID,
-						G_TYPE_NONE,
+						_xfdashboard_marshal_OBJECT__VOID,
+						G_TYPE_OBJECT,
 						0);
 }
 

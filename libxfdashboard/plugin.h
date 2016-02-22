@@ -76,7 +76,7 @@ struct _XfdashboardPluginClass
 	void (*enable)(XfdashboardPlugin *self);
 	void (*disable)(XfdashboardPlugin *self);
 
-	void (*configure)(XfdashboardPlugin *self);
+	GObject* (*configure)(XfdashboardPlugin *self);
 };
 
 /* Error */

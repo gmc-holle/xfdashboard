@@ -29,14 +29,26 @@
 
 #include <libxfce4util/libxfce4util.h>
 
-#include "libxfdashboard/plugin.h"
-#include "libxfdashboard/view-manager.h"
+#include <libxfdashboard/plugin.h>
+#include <libxfdashboard/view-manager.h>
+
+#include <gtk/gtk.h>
 
 
 /* IMPLEMENTATION: XfdashboardPlugin */
 
 /* Forward declarations */
 G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self);
+
+/* Plugin configuration function */
+static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
+{
+	GtkWidget		*label;
+
+	label=gtk_label_new("Not yet implemented!");
+
+	return(G_OBJECT(label));
+}
 
 /* Plugin enable function */
 static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
@@ -83,4 +95,5 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
 	/* Connect plugin action handlers */
 	g_signal_connect(self, "enable", G_CALLBACK(plugin_enable), NULL);
 	g_signal_connect(self, "disable", G_CALLBACK(plugin_disable), NULL);
+	g_signal_connect(self, "configure", G_CALLBACK(plugin_configure), NULL);
 }

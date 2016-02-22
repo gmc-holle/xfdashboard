@@ -32,6 +32,7 @@
 
 #include <libxfdashboard/plugin.h>
 
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardSettingsPlugins,
 				xfdashboard_settings_plugins,
@@ -60,6 +61,8 @@ struct _XfdashboardSettingsPluginsPrivate
 	GtkWidget		*widgetPluginLicense;
 	GtkWidget		*widgetPluginDescriptionLabel;
 	GtkWidget		*widgetPluginDescription;
+	GtkWidget		*widgetPluginPreferencesDialog;
+	GtkWidget		*widgetPluginPreferencesWidgetBox;
 };
 
 /* Properties */
@@ -81,6 +84,8 @@ static GParamSpec* XfdashboardSettingsPluginsProperties[PROP_LAST]={ 0, };
 #define ENABLED_PLUGINS_XFCONF_PROP					"/enabled-plugins"
 #define DEFAULT_ENABLED_PLUGINS						NULL
 
+#define XFDASHBOARD_TREE_VIEW_COLUMN_ID				"column-id"
+
 enum
 {
 	XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_ID,
@@ -101,6 +106,232 @@ enum
 
 	XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_LAST
 };
+
+/* Close button in plugin's preferences dialog was clicked */
+static void _xfdashboard_settings_plugins_on_perferences_dialog_close_clicked(XfdashboardSettingsPlugins *self,
+																				GtkWidget *inWidget)
+{
+	GtkWidget		*dialog;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self));
+	g_return_if_fail(GTK_IS_WIDGET(inWidget));
+
+	/* Get dialog this widget belongs to */
+	dialog=inWidget;
+	while(!GTK_IS_DIALOG(dialog)) dialog=gtk_widget_get_parent(dialog);
+
+	/* Send response if dialog was found */
+	if(dialog)
+	{
+		gtk_dialog_response(GTK_DIALOG(dialog), GTK_RESPONSE_CLOSE);
+	}
+}
+
+/* Preferences icon in tree view was clicked */
+static gboolean _xfdashboard_settings_plugins_call_preferences(XfdashboardSettingsPlugins *self,
+																GdkEvent *inEvent,
+																GtkTreeView *inTreeView,
+																GtkTreePath *inPath)
+{
+	XfdashboardSettingsPluginsPrivate		*priv;
+	GtkTreeModel							*model;
+	GtkTreeIter								iter;
+	gboolean								isConfigurable;
+	XfdashboardPlugin						*plugin;
+	GtkWidget								*pluginPreferencesWidget;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+	g_return_val_if_fail(GTK_IS_TREE_VIEW(inTreeView), FALSE);
+	g_return_val_if_fail(inPath, FALSE);
+
+	priv=self->priv;
+	isConfigurable=FALSE;
+	plugin=NULL;
+	pluginPreferencesWidget=NULL;
+
+	/* We only handle released single left-clicks in this event handler */
+	if(inEvent->button.button!=1)
+	{
+		g_debug("Will not handle event: Got button %d in button event but expected 1.",
+					inEvent->button.button);
+		return(FALSE);
+	}
+
+	if(inEvent->type!=GDK_BUTTON_RELEASE)
+	{
+		g_debug("Will not handle event: Got button event %d in button event but expected %d.",
+					inEvent->type,
+					GDK_BUTTON_RELEASE);
+		return(FALSE);
+	}
+
+	/* If a preferences window is visible do nothing because only one
+	 * window of this kind can be visible and set up at a time.
+	 */
+	if(gtk_widget_is_visible(priv->widgetPluginPreferencesDialog))
+	{
+		g_debug("Will not handle event: Only one preferences window can be visible at a time.");
+		return(FALSE);
+	}
+
+	/* Get plugins' model */
+	model=gtk_tree_view_get_model(GTK_TREE_VIEW(inTreeView));
+
+	/* Get iterator for path */
+	if(G_UNLIKELY(!gtk_tree_model_get_iter(model, &iter, inPath)))
+	{
+		g_debug("Could not get iterator for selection path");
+		return(FALSE);
+	}
+
+	/* Check if it plugin is marked to be configurable */
+	gtk_tree_model_get(model, &iter,
+						XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_CONFIGURABLE, &isConfigurable,
+						XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_PLUGIN, &plugin,
+						-1);
+
+	if(!isConfigurable)
+	{
+		g_debug("Plugin '%s' is not configurable", xfdashboard_plugin_get_id(plugin));
+
+		/* Release allocated resources */
+		if(plugin) g_object_unref(plugin);
+
+		return(FALSE);
+	}
+
+	/* Emit action "configure" at plugin */
+	g_debug("Emitting signal 'configure' at plugin '%s' of type %s",
+				xfdashboard_plugin_get_id(plugin),
+				G_OBJECT_TYPE_NAME(plugin));
+
+	g_signal_emit_by_name(plugin, "configure", &pluginPreferencesWidget);
+
+	/* If plugin returned a GTK+ widget then create window and add the returned widget to it */
+	if(pluginPreferencesWidget)
+	{
+		gint								response;
+
+		/* Add returned widget from plugin to dialog */
+		gtk_widget_show_all(pluginPreferencesWidget);
+		gtk_container_add(GTK_CONTAINER(priv->widgetPluginPreferencesWidgetBox), pluginPreferencesWidget);
+
+		/* Show dialog in modal mode but do not care about dialog's response code
+		 * as "close" is the only action.
+		 */
+		response=gtk_dialog_run(GTK_DIALOG(priv->widgetPluginPreferencesDialog));
+		g_debug("Plugins preferences dialog response for plugin '%s' is %d",
+				xfdashboard_plugin_get_id(plugin),
+				response);
+
+		/* First hide dialog */
+		gtk_widget_hide(priv->widgetPluginPreferencesDialog);
+
+		/* Now destroy returned widget from plugin to get it removed from dialog */
+		gtk_widget_destroy(pluginPreferencesWidget);
+	}
+
+	/* Release allocated resources */
+	if(plugin) g_object_unref(plugin);
+
+	/* If we get here the event was handled */
+    return(TRUE);
+}
+
+/* A button was pressed in tree view */
+static gboolean _xfdashboard_settings_plugins_on_treeview_button_pressed(XfdashboardSettingsPlugins *self,
+																			GdkEvent *inEvent,
+																			gpointer inUserData)
+{
+	GtkTreeView								*treeView;
+	GtkTreePath								*path;
+	GtkTreeViewColumn						*column;
+	GtkTreeModel							*model;
+	GtkTreeIter								iter;
+	guint									columnID;
+	gboolean								isValid;
+	gboolean								eventHandled;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+	g_return_val_if_fail(GTK_IS_TREE_VIEW(inUserData), FALSE);
+
+	treeView=GTK_TREE_VIEW(inUserData);
+	path=NULL;
+	column=NULL;
+	isValid=FALSE;
+	eventHandled=FALSE;
+
+	/* Get tree path where event happened */
+	if(!gtk_tree_view_get_path_at_pos(treeView, inEvent->button.x, inEvent->button.y, &path, &column, NULL, NULL) ||
+		!path ||
+		!column)
+	{
+		g_debug("Could not get path and colum in tree view for position %.2f, %.2f",
+				inEvent->button.x,
+				inEvent->button.y);
+
+		/* Release allocated resources */
+		if(path) gtk_tree_path_free(path);
+
+		/* Event was not handled */
+		return(FALSE);
+	}
+
+	/* Get plugins' model */
+	model=gtk_tree_view_get_model(treeView);
+
+	/* Get iterator for path */
+	if(G_UNLIKELY(!gtk_tree_model_get_iter(model, &iter, path)))
+	{
+		g_debug("Could not get iterator for selection path");
+
+		/* Release allocated resources */
+		if(path) gtk_tree_path_free(path);
+
+		/* Event was not handled */
+		return(FALSE);
+	}
+
+	/* Get plugin at path and check if it is valid. If it is invalid we do not need to process
+	 * this event any futher.
+	 */
+	gtk_tree_model_get(model, &iter,
+						XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_VALID, &isValid,
+						-1);
+
+	if(!isValid)
+	{
+		g_debug("Will not process event for invalid plugin.");
+
+		/* Release allocated resources */
+		if(path) gtk_tree_path_free(path);
+
+		/* Event was not handled */
+		return(FALSE);
+	}
+
+	/* Check if column where event happened can be handled */
+	columnID=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(column), XFDASHBOARD_TREE_VIEW_COLUMN_ID));
+	switch(columnID)
+	{
+		case XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_CONFIGURABLE:
+			eventHandled=_xfdashboard_settings_plugins_call_preferences(self, inEvent, treeView, path);
+			break;
+
+		default:
+			g_debug("This event is not handled for column ID %d", columnID);
+			break;
+	}
+
+	/* Release allocated resources */
+	if(path) gtk_tree_path_free(path);
+
+	/* Return result if event was handled */
+    return(eventHandled);
+}
+
 
 /* Selection in plugins tree view changed */
 static void _xfdashboard_settings_plugins_enabled_plugins_on_plugins_selection_changed(XfdashboardSettingsPlugins *self,
@@ -573,7 +804,7 @@ static void _xfdashboard_settings_plugins_populate_plugins_list(XfdashboardSetti
 			/* Determine if plugin is configurable */
 			pluginIsConfigurable=FALSE;
 
-			signalID=g_signal_lookup("enable", XFDASHBOARD_TYPE_PLUGIN);
+			signalID=g_signal_lookup("configure", XFDASHBOARD_TYPE_PLUGIN);
 			handlerID=g_signal_handler_find(plugin,
 											G_SIGNAL_MATCH_ID,
 											signalID,
@@ -581,7 +812,7 @@ static void _xfdashboard_settings_plugins_populate_plugins_list(XfdashboardSetti
 											NULL,
 											NULL,
 											NULL);
-			if(!handlerID)
+			if(handlerID)
 			{
 				pluginIsConfigurable=TRUE;
 				g_debug("Plugin '%s' is configurable", pluginID);
@@ -659,9 +890,13 @@ static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins
 	priv->widgetPluginDescriptionLabel=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-description-label"));
 	priv->widgetPluginDescription=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-description"));
 
+	priv->widgetPluginPreferencesDialog=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-preferences-dialog"));
+	priv->widgetPluginPreferencesWidgetBox=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-preferences-widget-box"));
+
 	/* Set up theme list */
 	if(priv->widgetPlugins)
 	{
+		GtkTreeViewColumn				*column;
 		GtkTreeSelection				*selection;
 		GtkCellRenderer					*renderer;
 		GIcon							*icon;
@@ -674,26 +909,26 @@ static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins
 						"stock-size", GTK_ICON_SIZE_MENU,
 						NULL);
 		if(icon) g_object_unref(icon);
-		gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(priv->widgetPlugins),
-													-1,
-													N_(""),
-													renderer,
-													"visible", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_INVALID,
-													"sensitive", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_VALID,
-													NULL);
+		column=gtk_tree_view_column_new_with_attributes(N_(""),
+														renderer,
+														"visible", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_INVALID,
+														"sensitive", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_VALID,
+														NULL);
+		g_object_set_data(G_OBJECT(column), XFDASHBOARD_TREE_VIEW_COLUMN_ID, GINT_TO_POINTER(XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_VALID));
+		gtk_tree_view_insert_column(GTK_TREE_VIEW(priv->widgetPlugins), column, -1);
 
 		renderer=gtk_cell_renderer_toggle_new();
 		g_signal_connect_swapped(renderer,
 									"toggled",
 									G_CALLBACK(_xfdashboard_settings_plugins_enabled_plugins_changed_by_widget),
 									self);
-		gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(priv->widgetPlugins),
-													-1,
-													N_(""),
-													renderer,
-													"active", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_ENABLED,
-													"sensitive", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_VALID,
-													NULL);
+		column=gtk_tree_view_column_new_with_attributes(N_(""),
+														renderer,
+														"active", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_ENABLED,
+														"sensitive", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_VALID,
+														NULL);
+		g_object_set_data(G_OBJECT(column), XFDASHBOARD_TREE_VIEW_COLUMN_ID, GINT_TO_POINTER(XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_ENABLED));
+		gtk_tree_view_insert_column(GTK_TREE_VIEW(priv->widgetPlugins), column, -1);
 
 		renderer=gtk_cell_renderer_pixbuf_new();
 		icon=g_themed_icon_new_with_default_fallbacks("preferences-desktop-symbolic");
@@ -702,22 +937,22 @@ static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins
 						"stock-size", GTK_ICON_SIZE_MENU,
 						NULL);
 		if(icon) g_object_unref(icon);
-		gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(priv->widgetPlugins),
-													-1,
-													N_(""),
-													renderer,
-													"visible", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_CONFIGURABLE,
-													"sensitive", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_VALID,
-													NULL);
+		column=gtk_tree_view_column_new_with_attributes(N_(""),
+														renderer,
+														"visible", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_CONFIGURABLE,
+														"sensitive", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_VALID,
+														NULL);
+		g_object_set_data(G_OBJECT(column), XFDASHBOARD_TREE_VIEW_COLUMN_ID, GINT_TO_POINTER(XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_CONFIGURABLE));
+		gtk_tree_view_insert_column(GTK_TREE_VIEW(priv->widgetPlugins), column, -1);
 
 		renderer=gtk_cell_renderer_text_new();
-		gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(priv->widgetPlugins),
-													-1,
-													_("name"),
-													renderer,
-													"text", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_NAME,
-													"sensitive", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_VALID,
-													NULL);
+		column=gtk_tree_view_column_new_with_attributes(_("Name"),
+														renderer,
+														"text", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_NAME,
+														"sensitive", XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_VALID,
+														NULL);
+		g_object_set_data(G_OBJECT(column), XFDASHBOARD_TREE_VIEW_COLUMN_ID, GINT_TO_POINTER(XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_NAME));
+		gtk_tree_view_insert_column(GTK_TREE_VIEW(priv->widgetPlugins), column, -1);
 
 		/* Ensure only one selection at time is possible */
 		selection=gtk_tree_view_get_selection(GTK_TREE_VIEW(priv->widgetPlugins));
@@ -743,7 +978,27 @@ static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins
 									G_CALLBACK(_xfdashboard_settings_plugins_enabled_plugins_changed_by_xfconf),
 									self);
 
-		/* Release allocated resources */
+		g_signal_connect_swapped(priv->widgetPlugins,
+									"button-press-event",
+									G_CALLBACK(_xfdashboard_settings_plugins_on_treeview_button_pressed),
+									self);
+		g_signal_connect_swapped(priv->widgetPlugins,
+									"button-release-event",
+									G_CALLBACK(_xfdashboard_settings_plugins_on_treeview_button_pressed),
+									self);
+	}
+
+	/* Set up dialog for plugin preferences */
+	if(priv->widgetPluginPreferencesDialog)
+	{
+		GtkWidget						*widgetCloseButton;
+
+		/* Connect signals */
+		widgetCloseButton=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-preferences-dialog-close-button"));
+		g_signal_connect_swapped(widgetCloseButton,
+									"clicked",
+									G_CALLBACK(_xfdashboard_settings_plugins_on_perferences_dialog_close_clicked),
+									self);
 	}
 }
 
@@ -767,6 +1022,8 @@ static void _xfdashboard_settings_plugins_dispose(GObject *inObject)
 	priv->widgetPluginLicense=NULL;
 	priv->widgetPluginDescriptionLabel=NULL;
 	priv->widgetPluginDescription=NULL;
+	priv->widgetPluginPreferencesDialog=NULL;
+	priv->widgetPluginPreferencesWidgetBox=NULL;
 
 	if(priv->builder)
 	{
@@ -875,6 +1132,9 @@ static void xfdashboard_settings_plugins_init(XfdashboardSettingsPlugins *self)
 	priv->widgetPluginLicense=NULL;
 	priv->widgetPluginDescriptionLabel=NULL;
 	priv->widgetPluginDescription=NULL;
+
+	priv->widgetPluginPreferencesDialog=NULL;
+	priv->widgetPluginPreferencesWidgetBox=NULL;
 }
 
 /* IMPLEMENTATION: Public API */
