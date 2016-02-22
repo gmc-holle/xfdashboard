@@ -419,7 +419,7 @@ static const gchar* _xfdashboard_gnome_shell_search_provider_get_name(Xfdashboar
 	XfdashboardGnomeShellSearchProvider				*self;
 	XfdashboardGnomeShellSearchProviderPrivate		*priv;
 
-	g_return_if_fail(XFDASHBOARD_IS_GNOME_SHELL_SEARCH_PROVIDER(inProvider));
+	g_return_val_if_fail(XFDASHBOARD_IS_GNOME_SHELL_SEARCH_PROVIDER(inProvider), NULL);
 
 	self=XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER(inProvider);
 	priv=self->priv;
@@ -433,7 +433,7 @@ static const gchar* _xfdashboard_gnome_shell_search_provider_get_icon(Xfdashboar
 	XfdashboardGnomeShellSearchProvider				*self;
 	XfdashboardGnomeShellSearchProviderPrivate		*priv;
 
-	g_return_if_fail(XFDASHBOARD_IS_GNOME_SHELL_SEARCH_PROVIDER(inProvider));
+	g_return_val_if_fail(XFDASHBOARD_IS_GNOME_SHELL_SEARCH_PROVIDER(inProvider), NULL);
 
 	self=XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER(inProvider);
 	priv=self->priv;

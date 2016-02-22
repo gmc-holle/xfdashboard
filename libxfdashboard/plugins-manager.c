@@ -198,8 +198,8 @@ static gboolean _xfdashboard_plugins_manager_has_plugin_id(XfdashboardPluginsMan
 {
 	XfdashboardPlugin					*plugin;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self), NULL);
-	g_return_val_if_fail(inPluginID && *inPluginID, NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self), FALSE);
+	g_return_val_if_fail(inPluginID && *inPluginID, FALSE);
 
 	/* Get plugin by requested ID. If NULL is returned the plugin does not exist */
 	plugin=_xfdashboard_plugins_manager_find_plugin_by_id(self, inPluginID);

@@ -1168,7 +1168,7 @@ XfconfChannel* xfdashboard_application_get_xfconf_channel(XfdashboardApplication
 {
 	XfconfChannel			*channel=NULL;
 
-	g_return_if_fail(self==NULL || XFDASHBOARD_IS_APPLICATION(self));
+	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_APPLICATION(self), NULL);
 
 	/* Get default single instance if NULL is requested */
 	if(!self) self=_xfdashboard_application;
