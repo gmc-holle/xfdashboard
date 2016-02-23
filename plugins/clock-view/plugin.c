@@ -121,7 +121,7 @@ static void _plugin_on_color_button_color_chosen(GtkColorButton *inButton,
 	settingsColor.alpha=MIN(255, (gint)(widgetColor.alpha*255.0f));
 
 	/* Set converted color at settings */
-	mapping=XFDASHBOARD_CLOCK_VIEW_SETTINGS(g_object_get_data(G_OBJECT(inButton), CONFIGURATION_MAPPING));
+	mapping=(PluginWidgetSettingsMap*)g_object_get_data(G_OBJECT(inButton), CONFIGURATION_MAPPING);
 	if(mapping) g_object_set(G_OBJECT(mapping->settings), mapping->property, &settingsColor, NULL);
 }
 
