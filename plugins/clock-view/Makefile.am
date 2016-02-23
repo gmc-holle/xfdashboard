@@ -15,6 +15,8 @@ plugin_LTLIBRARIES = \
 clock_view_la_SOURCES = \
 	clock-view.c \
 	clock-view.h \
+	clock-view-settings.c \
+	clock-view-settings.h \
 	plugin.c
 
 clock_view_la_CFLAGS = \

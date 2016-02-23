@@ -24,8 +24,8 @@
 #ifndef __XFDASHBOARD_CLOCK_VIEW__
 #define __XFDASHBOARD_CLOCK_VIEW__
 
-#include "libxfdashboard/plugin.h"
-#include "libxfdashboard/view.h"
+#include <libxfdashboard/plugin.h>
+#include <libxfdashboard/view.h>
 
 G_BEGIN_DECLS
 
@@ -46,7 +46,7 @@ struct _XfdashboardClockView
 	XfdashboardView						parent_instance;
 
 	/* Private structure */
-	XfdashboardClockViewPrivate	*priv;
+	XfdashboardClockViewPrivate			*priv;
 };
 
 struct _XfdashboardClockViewClass
@@ -58,18 +58,6 @@ struct _XfdashboardClockViewClass
 
 /* Public API */
 GType xfdashboard_clock_view_get_type(void) G_GNUC_CONST;
-
-const ClutterColor* xfdashboard_clock_view_get_hour_color(XfdashboardClockView *self);
-void xfdashboard_clock_view_set_hour_color(XfdashboardClockView *self, const ClutterColor *inColor);
-
-const ClutterColor* xfdashboard_clock_view_get_minute_color(XfdashboardClockView *self);
-void xfdashboard_clock_view_set_minute_color(XfdashboardClockView *self, const ClutterColor *inColor);
-
-const ClutterColor* xfdashboard_clock_view_get_second_color(XfdashboardClockView *self);
-void xfdashboard_clock_view_set_second_color(XfdashboardClockView *self, const ClutterColor *inColor);
-
-const ClutterColor* xfdashboard_clock_view_get_background_color(XfdashboardClockView *self);
-void xfdashboard_clock_view_set_background_color(XfdashboardClockView *self, const ClutterColor *inColor);
 
 XFDASHBOARD_DECLARE_PLUGIN_TYPE(xfdashboard_clock_view);
 

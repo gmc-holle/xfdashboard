@@ -26,6 +26,7 @@
 #endif
 
 #include "clock-view.h"
+#include "clock-view-settings.h"
 
 #include <libxfce4util/libxfce4util.h>
 
@@ -91,6 +92,7 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
 
 	/* Register GObject types of this plugin */
 	XFDASHBOARD_REGISTER_PLUGIN_TYPE(self, xfdashboard_clock_view);
+	XFDASHBOARD_REGISTER_PLUGIN_TYPE(self, xfdashboard_clock_view_settings);
 
 	/* Connect plugin action handlers */
 	g_signal_connect(self, "enable", G_CALLBACK(plugin_enable), NULL);
