@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_ENUMS__
-#define __XFDASHBOARD_ENUMS__
+#ifndef __LIBXFDASHBOARD_ENUMS__
+#define __LIBXFDASHBOARD_ENUMS__
 
 #include <glib-object.h>
 
