@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_STAGE__
-#define __XFDASHBOARD_STAGE__
+#ifndef __LIBXFDASHBOARD_STAGE__
+#define __LIBXFDASHBOARD_STAGE__
 
 #include <clutter/clutter.h>
 
@@ -84,4 +84,4 @@ void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *in
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_STAGE__ */
+#endif	/* __LIBXFDASHBOARD_STAGE__ */

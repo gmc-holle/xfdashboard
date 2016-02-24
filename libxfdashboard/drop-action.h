@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_DROP_ACTION__
-#define __XFDASHBOARD_DROP_ACTION__
+#ifndef __LIBXFDASHBOARD_DROP_ACTION__
+#define __LIBXFDASHBOARD_DROP_ACTION__
 
 #include <clutter/clutter.h>
 
@@ -77,4 +77,4 @@ GSList* xfdashboard_drop_action_get_targets(void);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_DROP_ACTION__ */
+#endif	/* __LIBXFDASHBOARD_DROP_ACTION__ */

@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_TOOLTIP_ACTION__
-#define __XFDASHBOARD_TOOLTIP_ACTION__
+#ifndef __LIBXFDASHBOARD_TOOLTIP_ACTION__
+#define __LIBXFDASHBOARD_TOOLTIP_ACTION__
 
 #include <clutter/clutter.h>
 
@@ -71,4 +71,4 @@ void xfdashboard_tooltip_action_get_position(XfdashboardTooltipAction *self, gfl
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_TOOLTIP_ACTION__ */
+#endif	/* __LIBXFDASHBOARD_TOOLTIP_ACTION__ */

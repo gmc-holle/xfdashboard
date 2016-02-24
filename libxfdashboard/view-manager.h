@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_VIEW_MANAGER__
-#define __XFDASHBOARD_VIEW_MANAGER__
+#ifndef __LIBXFDASHBOARD_VIEW_MANAGER__
+#define __LIBXFDASHBOARD_VIEW_MANAGER__
 
 #include <glib-object.h>
 
@@ -74,4 +74,4 @@ GObject* xfdashboard_view_manager_create_view(XfdashboardViewManager *self, cons
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_VIEW_MANAGER__ */
+#endif	/* __LIBXFDASHBOARD_VIEW_MANAGER__ */

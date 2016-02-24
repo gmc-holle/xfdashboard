@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_SEARCH_MANAGER__
-#define __XFDASHBOARD_SEARCH_MANAGER__
+#ifndef __LIBXFDASHBOARD_SEARCH_MANAGER__
+#define __LIBXFDASHBOARD_SEARCH_MANAGER__
 
 #include <glib-object.h>
 
@@ -80,4 +80,4 @@ gchar** xfdashboard_search_manager_get_search_terms_from_string(const gchar *inS
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_SEARCH_MANAGER__ */
+#endif	/* __LIBXFDASHBOARD_SEARCH_MANAGER__ */

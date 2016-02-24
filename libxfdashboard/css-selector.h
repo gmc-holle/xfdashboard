@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_CSS_SELECTOR__
-#define __XFDASHBOARD_CSS_SELECTOR__
+#ifndef __LIBXFDASHBOARD_CSS_SELECTOR__
+#define __LIBXFDASHBOARD_CSS_SELECTOR__
 
 #include <glib-object.h>
 #include <glib.h>
@@ -106,4 +106,4 @@ guint xfdashboard_css_selector_rule_get_position(XfdashboardCssSelectorRule *inR
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_CSS_SELECTOR__ */
+#endif	/* __LIBXFDASHBOARD_CSS_SELECTOR__ */

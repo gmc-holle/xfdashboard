@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_WINDOWS_VIEW__
-#define __XFDASHBOARD_WINDOWS_VIEW__
+#ifndef __LIBXFDASHBOARD_WINDOWS_VIEW__
+#define __LIBXFDASHBOARD_WINDOWS_VIEW__
 
 #include <libxfdashboard/view.h>
 #include <libxfdashboard/focusable.h>
@@ -125,4 +125,4 @@ void xfdashboard_windows_view_set_prevent_upscaling(XfdashboardWindowsView *self
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_WINDOWS_VIEW__ */
+#endif	/* __LIBXFDASHBOARD_WINDOWS_VIEW__ */

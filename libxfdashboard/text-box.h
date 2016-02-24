@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_TEXT_BOX__
-#define __XFDASHBOARD_TEXT_BOX__
+#ifndef __LIBXFDASHBOARD_TEXT_BOX__
+#define __LIBXFDASHBOARD_TEXT_BOX__
 
 #include <libxfdashboard/background.h>
 
@@ -114,4 +114,4 @@ void xfdashboard_text_box_set_secondary_icon(XfdashboardTextBox *self, const gch
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_TEXT_BOX__ */
+#endif	/* __LIBXFDASHBOARD_TEXT_BOX__ */

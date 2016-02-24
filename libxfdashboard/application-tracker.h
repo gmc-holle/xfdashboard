@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_APPLICATION_TRACKER__
-#define __XFDASHBOARD_APPLICATION_TRACKER__
+#ifndef __LIBXFDASHBOARD_APPLICATION_TRACKER__
+#define __LIBXFDASHBOARD_APPLICATION_TRACKER__
 
 #include <glib-object.h>
 #include <gio/gio.h>
@@ -77,4 +77,4 @@ const GList*  xfdashboard_application_tracker_get_window_list_by_app_info(Xfdash
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_APPLICATION_TRACKER__ */
+#endif	/* __LIBXFDASHBOARD_APPLICATION_TRACKER__ */

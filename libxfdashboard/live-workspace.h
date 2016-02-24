@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef __XFDASHBOARD_LIVE_WORKSPACE__
-#define __XFDASHBOARD_LIVE_WORKSPACE__
+#ifndef __LIBXFDASHBOARD_LIVE_WORKSPACE__
+#define __LIBXFDASHBOARD_LIVE_WORKSPACE__
 
 #include <clutter/clutter.h>
 

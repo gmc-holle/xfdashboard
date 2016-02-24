@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_SCROLLBAR__
-#define __XFDASHBOARD_SCROLLBAR__
+#ifndef __LIBXFDASHBOARD_SCROLLBAR__
+#define __LIBXFDASHBOARD_SCROLLBAR__
 
 #include <clutter/clutter.h>
 
@@ -94,4 +94,4 @@ void xfdashboard_scrollbar_set_slider_color(XfdashboardScrollbar *self, const Cl
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_SCROLLBAR__ */
+#endif	/* __LIBXFDASHBOARD_SCROLLBAR__ */

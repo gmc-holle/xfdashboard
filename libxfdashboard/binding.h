@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_BINDING__
-#define __XFDASHBOARD_BINDING__
+#ifndef __LIBXFDASHBOARD_BINDING__
+#define __LIBXFDASHBOARD_BINDING__
 
 #include <clutter/clutter.h>
 
@@ -104,4 +104,4 @@ void xfdashboard_binding_set_flags(XfdashboardBinding *self, XfdashboardBindingF
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_BINDING__ */
+#endif	/* __LIBXFDASHBOARD_BINDING__ */

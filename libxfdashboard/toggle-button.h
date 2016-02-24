@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_TOGGLE_BUTTON__
-#define __XFDASHBOARD_TOGGLE_BUTTON__
+#ifndef __LIBXFDASHBOARD_TOGGLE_BUTTON__
+#define __LIBXFDASHBOARD_TOGGLE_BUTTON__
 
 #include <libxfdashboard/button.h>
 
@@ -75,4 +75,4 @@ void xfdashboard_toggle_button_set_auto_toggle(XfdashboardToggleButton *self, gb
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_TOGGLE_BUTTON__ */
+#endif	/* __LIBXFDASHBOARD_TOGGLE_BUTTON__ */

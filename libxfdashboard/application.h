@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_APPLICATION__
-#define __XFDASHBOARD_APPLICATION__
+#ifndef __LIBXFDASHBOARD_APPLICATION__
+#define __LIBXFDASHBOARD_APPLICATION__
 
 #include <gio/gio.h>
 #include <xfconf/xfconf.h>
@@ -118,4 +118,4 @@ XfdashboardTheme* xfdashboard_application_get_theme(XfdashboardApplication *self
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_APPLICATION__ */
+#endif	/* __LIBXFDASHBOARD_APPLICATION__ */

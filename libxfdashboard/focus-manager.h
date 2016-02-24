@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_FOCUS_MANAGER__
-#define __XFDASHBOARD_FOCUS_MANAGER__
+#ifndef __LIBXFDASHBOARD_FOCUS_MANAGER__
+#define __LIBXFDASHBOARD_FOCUS_MANAGER__
 
 #include <glib-object.h>
 
@@ -103,4 +103,4 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_FOCUS_MANAGER__ */
+#endif	/* __LIBXFDASHBOARD_FOCUS_MANAGER__ */

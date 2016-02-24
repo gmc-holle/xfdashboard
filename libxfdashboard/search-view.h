@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_SEARCH_VIEW__
-#define __XFDASHBOARD_SEARCH_VIEW__
+#ifndef __LIBXFDASHBOARD_SEARCH_VIEW__
+#define __LIBXFDASHBOARD_SEARCH_VIEW__
 
 #include <libxfdashboard/view.h>
 
@@ -70,4 +70,4 @@ void xfdashboard_search_view_reset_search_selection(XfdashboardSearchView *self)
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_SEARCH_VIEW__ */
+#endif	/* __LIBXFDASHBOARD_SEARCH_VIEW__ */

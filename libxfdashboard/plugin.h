@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_PLUGIN__
-#define __XFDASHBOARD_PLUGIN__
+#ifndef __LIBXFDASHBOARD_PLUGIN__
+#define __LIBXFDASHBOARD_PLUGIN__
 
 #include <glib-object.h>
 #include <gmodule.h>
@@ -111,4 +111,4 @@ const gchar* xfdashboard_plugin_get_data_path(XfdashboardPlugin *self);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_PLUGIN__ */
+#endif	/* __LIBXFDASHBOARD_PLUGIN__ */

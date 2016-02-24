@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_COLLAPSE_BOX__
-#define __XFDASHBOARD_COLLAPSE_BOX__
+#ifndef __LIBXFDASHBOARD_COLLAPSE_BOX__
+#define __LIBXFDASHBOARD_COLLAPSE_BOX__
 
 #include <clutter/clutter.h>
 
@@ -79,4 +79,4 @@ void xfdashboard_collapse_box_set_collapse_orientation(XfdashboardCollapseBox *s
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_COLLAPSE_BOX__ */
+#endif	/* __LIBXFDASHBOARD_COLLAPSE_BOX__ */

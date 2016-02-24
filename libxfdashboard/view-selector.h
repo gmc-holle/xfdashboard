@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_VIEW_SELECTOR__
-#define __XFDASHBOARD_VIEW_SELECTOR__
+#ifndef __LIBXFDASHBOARD_VIEW_SELECTOR__
+#define __LIBXFDASHBOARD_VIEW_SELECTOR__
 
 #include <clutter/clutter.h>
 
@@ -80,4 +80,4 @@ void xfdashboard_view_selector_set_orientation(XfdashboardViewSelector *self, Cl
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_VIEW_SELECTOR__ */
+#endif	/* __LIBXFDASHBOARD_VIEW_SELECTOR__ */

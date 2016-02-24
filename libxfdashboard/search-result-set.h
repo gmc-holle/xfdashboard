@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_SEARCH_RESULT_SET__
-#define __XFDASHBOARD_SEARCH_RESULT_SET__
+#ifndef __LIBXFDASHBOARD_SEARCH_RESULT_SET__
+#define __LIBXFDASHBOARD_SEARCH_RESULT_SET__
 
 #include <glib-object.h>
 
@@ -87,4 +87,4 @@ gboolean xfdashboard_search_result_set_set_item_score(XfdashboardSearchResultSet
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_SEARCH_RESULT_SET__ */
+#endif	/* __LIBXFDASHBOARD_SEARCH_RESULT_SET__ */

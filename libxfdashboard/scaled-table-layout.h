@@ -25,8 +25,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_SCALED_TABLE_LAYOUT__
-#define __XFDASHBOARD_SCALED_TABLE_LAYOUT__
+#ifndef __LIBXFDASHBOARD_SCALED_TABLE_LAYOUT__
+#define __LIBXFDASHBOARD_SCALED_TABLE_LAYOUT__
 
 #include <clutter/clutter.h>
 
@@ -84,4 +84,4 @@ void xfdashboard_scaled_table_layout_set_column_spacing(XfdashboardScaledTableLa
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_SCALED_TABLE_LAYOUT__ */
+#endif	/* __LIBXFDASHBOARD_SCALED_TABLE_LAYOUT__ */

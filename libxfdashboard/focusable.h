@@ -23,8 +23,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_FOCUSABLE__
-#define __XFDASHBOARD_FOCUSABLE__
+#ifndef __LIBXFDASHBOARD_FOCUSABLE__
+#define __LIBXFDASHBOARD_FOCUSABLE__
 
 #include <clutter/clutter.h>
 
@@ -120,4 +120,4 @@ gboolean xfdashboard_focusable_activate_selection(XfdashboardFocusable *self, Cl
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_FOCUSABLE__ */
+#endif	/* __LIBXFDASHBOARD_FOCUSABLE__ */

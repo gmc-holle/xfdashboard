@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_BACKGROUND__
-#define __XFDASHBOARD_BACKGROUND__
+#ifndef __LIBXFDASHBOARD_BACKGROUND__
+#define __LIBXFDASHBOARD_BACKGROUND__
 
 #include <clutter/clutter.h>
 
@@ -127,4 +127,4 @@ void xfdashboard_background_set_image(XfdashboardBackground *self, ClutterImage 
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_BACKGROUND__ */
+#endif	/* __LIBXFDASHBOARD_BACKGROUND__ */

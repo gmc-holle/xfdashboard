@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_EMBLEM_EFFECT__
-#define __XFDASHBOARD_EMBLEM_EFFECT__
+#ifndef __LIBXFDASHBOARD_EMBLEM_EFFECT__
+#define __LIBXFDASHBOARD_EMBLEM_EFFECT__
 
 #include <clutter/clutter.h>
 
@@ -82,4 +82,4 @@ void xfdashboard_emblem_effect_set_anchor_point(XfdashboardEmblemEffect *self, c
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_EMBLEM_EFFECT__ */
+#endif	/* __LIBXFDASHBOARD_EMBLEM_EFFECT__ */

@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_BINDINGS_POOL__
-#define __XFDASHBOARD_BINDINGS_POOL__
+#ifndef __LIBXFDASHBOARD_BINDINGS_POOL__
+#define __LIBXFDASHBOARD_BINDINGS_POOL__
 
 #include <clutter/clutter.h>
 
@@ -81,4 +81,4 @@ const XfdashboardBinding* xfdashboard_bindings_pool_find_for_event(XfdashboardBi
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_BINDINGS_POOL__ */
+#endif	/* __LIBXFDASHBOARD_BINDINGS_POOL__ */

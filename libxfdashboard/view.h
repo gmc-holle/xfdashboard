@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_VIEW__
-#define __XFDASHBOARD_VIEW__
+#ifndef __LIBXFDASHBOARD_VIEW__
+#define __LIBXFDASHBOARD_VIEW__
 
 #include <clutter/clutter.h>
 
@@ -133,4 +133,4 @@ gboolean xfdashboard_view_has_focus(XfdashboardView *self);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_VIEW__ */
+#endif	/* __LIBXFDASHBOARD_VIEW__ */

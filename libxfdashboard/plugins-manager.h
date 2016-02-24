@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_PLUGINS_MANAGER__
-#define __XFDASHBOARD_PLUGINS_MANAGER__
+#ifndef __LIBXFDASHBOARD_PLUGINS_MANAGER__
+#define __LIBXFDASHBOARD_PLUGINS_MANAGER__
 
 #include <glib-object.h>
 
@@ -64,4 +64,4 @@ gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_PLUGINS_MANAGER__ */
+#endif	/* __LIBXFDASHBOARD_PLUGINS_MANAGER__ */

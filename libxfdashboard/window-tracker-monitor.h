@@ -24,8 +24,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_WINDOW_TRACKER_MONITOR__
-#define __XFDASHBOARD_WINDOW_TRACKER_MONITOR__
+#ifndef __LIBXFDASHBOARD_WINDOW_TRACKER_MONITOR__
+#define __LIBXFDASHBOARD_WINDOW_TRACKER_MONITOR__
 
 #include <glib-object.h>
 
@@ -85,4 +85,4 @@ void xfdashboard_window_tracker_monitor_get_geometry(XfdashboardWindowTrackerMon
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_WINDOW_TRACKER_MONITOR__ */
+#endif	/* __LIBXFDASHBOARD_WINDOW_TRACKER_MONITOR__ */

@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef __XFDASHBOARD_WINDOW_CONTENT__
-#define __XFDASHBOARD_WINDOW_CONTENT__
+#ifndef __LIBXFDASHBOARD_WINDOW_CONTENT__
+#define __LIBXFDASHBOARD_WINDOW_CONTENT__
 
 #include <clutter/clutter.h>
 

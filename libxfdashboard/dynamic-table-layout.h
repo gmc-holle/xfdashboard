@@ -24,8 +24,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_DYNAMIC_TABLE_LAYOUT__
-#define __XFDASHBOARD_DYNAMIC_TABLE_LAYOUT__
+#ifndef __LIBXFDASHBOARD_DYNAMIC_TABLE_LAYOUT__
+#define __LIBXFDASHBOARD_DYNAMIC_TABLE_LAYOUT__
 
 #include <clutter/clutter.h>
 
@@ -77,4 +77,4 @@ void xfdashboard_dynamic_table_layout_set_column_spacing(XfdashboardDynamicTable
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_DYNAMIC_TABLE_LAYOUT__ */
+#endif	/* __LIBXFDASHBOARD_DYNAMIC_TABLE_LAYOUT__ */

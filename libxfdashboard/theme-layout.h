@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_THEME_LAYOUT__
-#define __XFDASHBOARD_THEME_LAYOUT__
+#ifndef __LIBXFDASHBOARD_THEME_LAYOUT__
+#define __LIBXFDASHBOARD_THEME_LAYOUT__
 
 #include <clutter/clutter.h>
 
@@ -87,4 +87,4 @@ GQuark xfdashboard_theme_layout_focus_table_quark(void);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_THEME_LAYOUT__ */
+#endif	/* __LIBXFDASHBOARD_THEME_LAYOUT__ */

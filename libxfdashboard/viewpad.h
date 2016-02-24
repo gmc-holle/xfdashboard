@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_VIEWPAD__
-#define __XFDASHBOARD_VIEWPAD__
+#ifndef __LIBXFDASHBOARD_VIEWPAD__
+#define __LIBXFDASHBOARD_VIEWPAD__
 
 #include <clutter/clutter.h>
 
@@ -96,4 +96,4 @@ void xfdashboard_viewpad_set_vertical_scrollbar_policy(XfdashboardViewpad *self,
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_VIEWPAD__ */
+#endif	/* __LIBXFDASHBOARD_VIEWPAD__ */

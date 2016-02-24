@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_THEME__
-#define __XFDASHBOARD_THEME__
+#ifndef __LIBXFDASHBOARD_THEME__
+#define __LIBXFDASHBOARD_THEME__
 
 #include <clutter/clutter.h>
 
@@ -98,4 +98,4 @@ XfdashboardThemeEffects* xfdashboard_theme_get_effects(XfdashboardTheme *self);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_THEME__ */
+#endif	/* __LIBXFDASHBOARD_THEME__ */

@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_DESKTOP_APP_INFO__
-#define __XFDASHBOARD_DESKTOP_APP_INFO__
+#ifndef __LIBXFDASHBOARD_DESKTOP_APP_INFO__
+#define __LIBXFDASHBOARD_DESKTOP_APP_INFO__
 
 #include <garcon/garcon.h>
 
@@ -78,4 +78,4 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_DESKTOP_APP_INFO__ */
+#endif	/* __LIBXFDASHBOARD_DESKTOP_APP_INFO__ */

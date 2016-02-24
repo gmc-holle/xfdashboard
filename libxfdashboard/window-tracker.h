@@ -27,8 +27,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_WINDOW_TRACKER__
-#define __XFDASHBOARD_WINDOW_TRACKER__
+#ifndef __LIBXFDASHBOARD_WINDOW_TRACKER__
+#define __LIBXFDASHBOARD_WINDOW_TRACKER__
 
 #include <glib-object.h>
 
@@ -133,4 +133,4 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(Xfdas
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_WINDOW_TRACKER__ */
+#endif	/* __LIBXFDASHBOARD_WINDOW_TRACKER__ */

@@ -23,8 +23,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_BOX_LAYOUT__
-#define __XFDASHBOARD_BOX_LAYOUT__
+#ifndef __LIBXFDASHBOARD_BOX_LAYOUT__
+#define __LIBXFDASHBOARD_BOX_LAYOUT__
 
 #include <clutter/clutter.h>
 
@@ -60,4 +60,4 @@ ClutterLayoutManager* xfdashboard_box_layout_new(void);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_BOX_LAYOUT__ */
+#endif	/* __LIBXFDASHBOARD_BOX_LAYOUT__ */

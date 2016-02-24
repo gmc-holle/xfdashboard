@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_BUTTON__
-#define __XFDASHBOARD_BUTTON__
+#ifndef __LIBXFDASHBOARD_BUTTON__
+#define __LIBXFDASHBOARD_BUTTON__
 
 #include <clutter/clutter.h>
 
@@ -141,4 +141,4 @@ void xfdashboard_button_set_text_justification(XfdashboardButton *self, const Pa
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_BUTTON__ */
+#endif	/* __LIBXFDASHBOARD_BUTTON__ */

@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_STYLABLE__
-#define __XFDASHBOARD_STYLABLE__
+#ifndef __LIBXFDASHBOARD_STYLABLE__
+#define __LIBXFDASHBOARD_STYLABLE__
 
 #include <glib-object.h>
 
@@ -88,4 +88,4 @@ void xfdashboard_stylable_invalidate(XfdashboardStylable *self);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_STYLABLE__ */
+#endif	/* __LIBXFDASHBOARD_STYLABLE__ */

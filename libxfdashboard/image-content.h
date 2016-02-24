@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_IMAGE_CONTENT__
-#define __XFDASHBOARD_IMAGE_CONTENT__
+#ifndef __LIBXFDASHBOARD_IMAGE_CONTENT__
+#define __LIBXFDASHBOARD_IMAGE_CONTENT__
 
 #include <clutter/clutter.h>
 #include <gdk/gdk.h>
@@ -88,4 +88,4 @@ void xfdashboard_image_content_force_load(XfdashboardImageContent *self);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_IMAGE_CONTENT__ */
+#endif	/* __LIBXFDASHBOARD_IMAGE_CONTENT__ */

@@ -30,8 +30,8 @@
  * Various miscellaneous utilility functions.
  */
 
-#ifndef __XFDASHBOARD_TYPES__
-#define __XFDASHBOARD_TYPES__
+#ifndef __LIBXFDASHBOARD_TYPES__
+#define __LIBXFDASHBOARD_TYPES__
 
 #include <glib.h>
 
@@ -219,4 +219,4 @@ typedef enum /*< prefix=XFDASHBOARD_ANCHOR_POINT >*/
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_TYPES__ */
+#endif	/* __LIBXFDASHBOARD_TYPES__ */

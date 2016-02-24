@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER__
-#define __XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER__
+#ifndef __LIBXFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER__
+#define __LIBXFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER__
 
 #include <libxfdashboard/search-provider.h>
 
@@ -79,4 +79,4 @@ void xfdashboard_applications_search_provider_set_sort_mode(XfdashboardApplicati
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER__ */
+#endif	/* __LIBXFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER__ */

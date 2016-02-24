@@ -26,8 +26,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_WINDOW_TRACKER_WINDOW__
-#define __XFDASHBOARD_WINDOW_TRACKER_WINDOW__
+#ifndef __LIBXFDASHBOARD_WINDOW_TRACKER_WINDOW__
+#define __LIBXFDASHBOARD_WINDOW_TRACKER_WINDOW__
 
 #include <clutter/clutter.h>
 #include <glib-object.h>
@@ -117,4 +117,4 @@ gulong xfdashboard_window_tracker_window_get_xid(XfdashboardWindowTrackerWindow 
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_WINDOW_TRACKER_WINDOW__ */
+#endif	/* __LIBXFDASHBOARD_WINDOW_TRACKER_WINDOW__ */

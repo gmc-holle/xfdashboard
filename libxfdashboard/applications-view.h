@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_APPLICATIONS_VIEW__
-#define __XFDASHBOARD_APPLICATIONS_VIEW__
+#ifndef __LIBXFDASHBOARD_APPLICATIONS_VIEW__
+#define __LIBXFDASHBOARD_APPLICATIONS_VIEW__
 
 #include <libxfdashboard/view.h>
 
@@ -78,4 +78,4 @@ void xfdashboard_applications_view_set_show_all_apps(XfdashboardApplicationsView
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_APPLICATIONS_VIEW__ */
+#endif	/* __LIBXFDASHBOARD_APPLICATIONS_VIEW__ */

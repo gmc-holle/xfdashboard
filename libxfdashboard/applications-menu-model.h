@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_APPLICATIONS_MENU_MODEL__
-#define __XFDASHBOARD_APPLICATIONS_MENU_MODEL__
+#ifndef __LIBXFDASHBOARD_APPLICATIONS_MENU_MODEL__
+#define __LIBXFDASHBOARD_APPLICATIONS_MENU_MODEL__
 
 #include <clutter/clutter.h>
 #include <garcon/garcon.h>
@@ -87,5 +87,5 @@ void xfdashboard_applications_menu_model_filter_by_section(XfdashboardApplicatio
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_APPLICATIONS_MENU_MODEL__ */
+#endif	/* __LIBXFDASHBOARD_APPLICATIONS_MENU_MODEL__ */
 

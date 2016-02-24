@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_APPLICATION_DATABASE__
-#define __XFDASHBOARD_APPLICATION_DATABASE__
+#ifndef __LIBXFDASHBOARD_APPLICATION_DATABASE__
+#define __LIBXFDASHBOARD_APPLICATION_DATABASE__
 
 #include <garcon/garcon.h>
 
@@ -85,4 +85,4 @@ gchar* xfdashboard_application_database_get_desktop_id_from_file(GFile *inFile);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_APPLICATION_DATABASE__ */
+#endif	/* __LIBXFDASHBOARD_APPLICATION_DATABASE__ */

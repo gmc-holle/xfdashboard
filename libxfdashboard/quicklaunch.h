@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_QUICKLAUNCH__
-#define __XFDASHBOARD_QUICKLAUNCH__
+#ifndef __LIBXFDASHBOARD_QUICKLAUNCH__
+#define __LIBXFDASHBOARD_QUICKLAUNCH__
 
 #include <libxfdashboard/background.h>
 #include <libxfdashboard/toggle-button.h>
@@ -108,4 +108,4 @@ XfdashboardToggleButton* xfdashboard_quicklaunch_get_apps_button(XfdashboardQuic
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_QUICKLAUNCH__ */
+#endif	/* __LIBXFDASHBOARD_QUICKLAUNCH__ */

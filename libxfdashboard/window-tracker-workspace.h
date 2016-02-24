@@ -27,8 +27,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_WINDOW_TRACKER_WORKSPACE__
-#define __XFDASHBOARD_WINDOW_TRACKER_WORKSPACE__
+#ifndef __LIBXFDASHBOARD_WINDOW_TRACKER_WORKSPACE__
+#define __LIBXFDASHBOARD_WINDOW_TRACKER_WORKSPACE__
 
 #include <glib-object.h>
 
@@ -63,4 +63,4 @@ void xfdashboard_window_tracker_workspace_activate(XfdashboardWindowTrackerWorks
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_WINDOW_TRACKER_WORKSPACE__ */
+#endif	/* __LIBXFDASHBOARD_WINDOW_TRACKER_WORKSPACE__ */

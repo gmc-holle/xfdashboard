@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_SEARCH_PROVIDER__
-#define __XFDASHBOARD_SEARCH_PROVIDER__
+#ifndef __LIBXFDASHBOARD_SEARCH_PROVIDER__
+#define __LIBXFDASHBOARD_SEARCH_PROVIDER__
 
 #include <clutter/clutter.h>
 
@@ -105,4 +105,4 @@ gboolean xfdashboard_search_provider_activate_result(XfdashboardSearchProvider* 
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_SEARCH_PROVIDER__ */
+#endif	/* __LIBXFDASHBOARD_SEARCH_PROVIDER__ */

@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_OUTLINE_EFFECT__
-#define __XFDASHBOARD_OUTLINE_EFFECT__
+#ifndef __LIBXFDASHBOARD_OUTLINE_EFFECT__
+#define __LIBXFDASHBOARD_OUTLINE_EFFECT__
 
 #include <clutter/clutter.h>
 
@@ -79,4 +79,4 @@ void xfdashboard_outline_effect_set_corner_radius(XfdashboardOutlineEffect *self
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_OUTLINE_EFFECT__ */
+#endif	/* __LIBXFDASHBOARD_OUTLINE_EFFECT__ */

@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_UTILS__
-#define __XFDASHBOARD_UTILS__
+#ifndef __LIBXFDASHBOARD_UTILS__
+#define __LIBXFDASHBOARD_UTILS__
 
 #include <clutter/clutter.h>
 #include <gio/gio.h>
@@ -100,4 +100,4 @@ void xfdashboard_dump_actor(ClutterActor *inActor);
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_UTILS__ */
+#endif	/* __LIBXFDASHBOARD_UTILS__ */

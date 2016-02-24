@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_APPLICATION_BUTTON__
-#define __XFDASHBOARD_APPLICATION_BUTTON__
+#ifndef __LIBXFDASHBOARD_APPLICATION_BUTTON__
+#define __LIBXFDASHBOARD_APPLICATION_BUTTON__
 
 #include <garcon/garcon.h>
 
@@ -87,4 +87,4 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_APPLICATION_BUTTON__ */
+#endif	/* __LIBXFDASHBOARD_APPLICATION_BUTTON__ */

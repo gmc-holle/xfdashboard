@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_SEARCH_RESULT_CONTAINER__
-#define __XFDASHBOARD_SEARCH_RESULT_CONTAINER__
+#ifndef __LIBXFDASHBOARD_SEARCH_RESULT_CONTAINER__
+#define __LIBXFDASHBOARD_SEARCH_RESULT_CONTAINER__
 
 #include <clutter/clutter.h>
 
@@ -109,4 +109,4 @@ void xfdashboard_search_result_container_update(XfdashboardSearchResultContainer
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_SEARCH_RESULT_CONTAINER__ */
+#endif	/* __LIBXFDASHBOARD_SEARCH_RESULT_CONTAINER__ */

@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_ACTION_BUTTON__
-#define __XFDASHBOARD_ACTION_BUTTON__
+#ifndef __LIBXFDASHBOARD_ACTION_BUTTON__
+#define __LIBXFDASHBOARD_ACTION_BUTTON__
 
 #include <libxfdashboard/button.h>
 
@@ -71,4 +71,4 @@ void xfdashboard_action_button_set_action(XfdashboardActionButton *self, const g
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_ACTION_BUTTON__ */
+#endif	/* __LIBXFDASHBOARD_ACTION_BUTTON__ */

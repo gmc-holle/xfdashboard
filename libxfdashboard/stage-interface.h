@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_STAGE_INTERFACE__
-#define __XFDASHBOARD_STAGE_INTERFACE__
+#ifndef __LIBXFDASHBOARD_STAGE_INTERFACE__
+#define __LIBXFDASHBOARD_STAGE_INTERFACE__
 
 #include <clutter/clutter.h>
 
@@ -75,4 +75,4 @@ void xfdashboard_stage_interface_set_background_color(XfdashboardStageInterface 
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_STAGE_INTERFACE__ */
+#endif	/* __LIBXFDASHBOARD_STAGE_INTERFACE__ */

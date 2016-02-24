@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_WORKSPACE_SELECTOR__
-#define __XFDASHBOARD_WORKSPACE_SELECTOR__
+#ifndef __LIBXFDASHBOARD_WORKSPACE_SELECTOR__
+#define __LIBXFDASHBOARD_WORKSPACE_SELECTOR__
 
 #include <libxfdashboard/background.h>
 
@@ -83,4 +83,4 @@ void xfdashboard_workspace_selector_set_show_current_monitor_only(XfdashboardWor
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_WORKSPACE_SELECTOR__ */
+#endif	/* __LIBXFDASHBOARD_WORKSPACE_SELECTOR__ */

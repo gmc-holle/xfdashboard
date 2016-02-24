@@ -23,8 +23,8 @@
  * 
  */
 
-#ifndef __XFDASHBOARD_THEME_CSS__
-#define __XFDASHBOARD_THEME_CSS__
+#ifndef __LIBXFDASHBOARD_THEME_CSS__
+#define __LIBXFDASHBOARD_THEME_CSS__
 
 #include <glib-object.h>
 
@@ -98,4 +98,4 @@ GHashTable* xfdashboard_theme_css_get_properties(XfdashboardThemeCSS *self,
 
 G_END_DECLS
 
-#endif	/* __XFDASHBOARD_THEME_CSS__ */
+#endif	/* __LIBXFDASHBOARD_THEME_CSS__ */

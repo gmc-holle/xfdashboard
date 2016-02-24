@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef __XFDASHBOARD_ACTOR__
-#define __XFDASHBOARD_ACTOR__
+#ifndef __LIBXFDASHBOARD_ACTOR__
+#define __LIBXFDASHBOARD_ACTOR__
 
 #include <clutter/clutter.h>
 
