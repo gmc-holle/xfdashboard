@@ -202,9 +202,11 @@ static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 
 	/* Create layout widget */
 	layout=gtk_grid_new();
+	gtk_grid_set_column_spacing(GTK_GRID(layout), 8);
 
 	/* Add widget to choose hour color */
 	widgetLabel=gtk_label_new(_("Hour color:"));
+	gtk_widget_set_halign(widgetLabel, GTK_ALIGN_END);
 	gtk_grid_attach(GTK_GRID(layout), widgetLabel, 0, 0, 1, 1);
 
 	widgetValue=gtk_color_button_new();
@@ -219,6 +221,7 @@ static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 
 	/* Add widget to choose minute color */
 	widgetLabel=gtk_label_new(_("Minute color:"));
+	gtk_widget_set_halign(widgetLabel, GTK_ALIGN_END);
 	gtk_grid_attach(GTK_GRID(layout), widgetLabel, 0, 1, 1, 1);
 
 	widgetValue=gtk_color_button_new();
@@ -233,6 +236,7 @@ static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 
 	/* Add widget to choose second color */
 	widgetLabel=gtk_label_new(_("Second color:"));
+	gtk_widget_set_halign(widgetLabel, GTK_ALIGN_END);
 	gtk_grid_attach(GTK_GRID(layout), widgetLabel, 0, 2, 1, 1);
 
 	widgetValue=gtk_color_button_new();
@@ -247,6 +251,7 @@ static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 
 	/* Add widget to choose minute color */
 	widgetLabel=gtk_label_new(_("Background color:"));
+	gtk_widget_set_halign(widgetLabel, GTK_ALIGN_END);
 	gtk_grid_attach(GTK_GRID(layout), widgetLabel, 0, 3, 1, 1);
 
 	widgetValue=gtk_color_button_new();
