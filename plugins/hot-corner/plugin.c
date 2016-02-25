@@ -25,19 +25,20 @@
 #include <config.h>
 #endif
 
-#include <libxfdashboard/libxfdashboard.h>
-
 #include <libxfce4util/libxfce4util.h>
+#include <gtk/gtk.h>
 
 #include "hot-corner.h"
+#include "hot-corner-settings.h"
+
+
+/* Forward declarations */
+G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self);
 
 
 /* IMPLEMENTATION: XfdashboardPlugin */
 
 static XfdashboardHotCorner		*hotCorner=NULL;
-
-/* Forward declarations */
-G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self);
 
 /* Plugin enable function */
 static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
@@ -75,6 +76,7 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
 
 	/* Register GObject types of this plugin */
 	XFDASHBOARD_REGISTER_PLUGIN_TYPE(self, xfdashboard_hot_corner);
+	XFDASHBOARD_REGISTER_PLUGIN_TYPE(self, xfdashboard_hot_corner_settings);
 
 	/* Connect plugin action handlers */
 	g_signal_connect(self, "enable", G_CALLBACK(plugin_enable), NULL);
