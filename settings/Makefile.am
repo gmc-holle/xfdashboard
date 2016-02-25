@@ -26,12 +26,14 @@ xfdashboard_settings_SOURCES = \
 
 xfdashboard_settings_CFLAGS = \
 	$(GTK_CFLAGS) \
+	$(CLUTTER_CFLAGS) \
 	$(LIBXFCONF_CFLAGS) \
 	$(LIBXFCE4UTIL_CFLAGS) \
 	$(PLATFORM_CFLAGS)
 
 xfdashboard_settings_LDADD = \
 	$(GTK_LIBS) \
+	$(CLUTTER_LIBS) \
 	$(LIBXFCONF_LIBS) \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(LIBM) \
