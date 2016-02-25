@@ -15,6 +15,8 @@ plugin_LTLIBRARIES = \
 hot_corner_la_SOURCES = \
 	hot-corner.c \
 	hot-corner.h \
+	hot-corner-settings.c \
+	hot-corner-settings.h \
 	plugin.c
 
 hot_corner_la_CFLAGS = \

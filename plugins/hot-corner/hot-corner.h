@@ -76,15 +76,6 @@ XFDASHBOARD_DECLARE_PLUGIN_TYPE(xfdashboard_hot_corner);
 
 XfdashboardHotCorner* xfdashboard_hot_corner_new(void);
 
-XfdashboardHotCornerActivationCorner xfdashboard_hot_corner_get_activation_corner(XfdashboardHotCorner *self);
-void xfdashboard_hot_corner_set_activation_corner(XfdashboardHotCorner *self, const XfdashboardHotCornerActivationCorner inCorner);
-
-gint xfdashboard_hot_corner_get_activation_radius(XfdashboardHotCorner *self);
-void xfdashboard_hot_corner_set_activation_radius(XfdashboardHotCorner *self, gint inRadius);
-
-gint64 xfdashboard_hot_corner_get_activation_duration(XfdashboardHotCorner *self);
-void xfdashboard_hot_corner_set_activation_duration(XfdashboardHotCorner *self, gint64 inDuration);
-
 G_END_DECLS
 
 #endif

@@ -32,6 +32,8 @@
 #include <gtk/gtk.h>
 #include <math.h>
 
+#include "hot-corner-settings.h"
+
 
 /* Define this class in GObject system */
 G_DEFINE_DYNAMIC_TYPE(XfdashboardHotCorner,
@@ -47,11 +49,6 @@ XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_hot_corner);
 
 struct _XfdashboardHotCornerPrivate
 {
-	/* Properties related */
-	XfdashboardHotCornerActivationCorner	activationCorner;
-	gint									activationRadius;
-	gint64									activationDuration;
-
 	/* Instance related */
 	XfdashboardApplication					*application;
 	XfdashboardWindowTracker				*windowTracker;
@@ -62,25 +59,8 @@ struct _XfdashboardHotCornerPrivate
 	GDateTime								*enteredTime;
 	gboolean								wasHandledRecently;
 
-	XfconfChannel							*xfconfChannel;
-	guint									xfconfActivationCornerBindingID;
-	guint									xfconfActivationRadiusBindingID;
-	guint									xfconfActivationDurationBindingID;
+	XfdashboardHotCornerSettings			*settings;
 };
-
-/* Properties */
-enum
-{
-	PROP_0,
-
-	PROP_ACTIVATION_CORNER,
-	PROP_ACTIVATION_RADIUS,
-	PROP_ACTIVATION_DURATION,
-
-	PROP_LAST
-};
-
-static GParamSpec* XfdashboardHotCornerProperties[PROP_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Enum XFDASHBOARD_TYPE_HOT_CORNER_ACTIVATION_CORNER */
@@ -131,21 +111,29 @@ struct _XfdashboardHotCornerBox
 /* Timeout callback to check for activation or suspend via hot corner */
 static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 {
-	XfdashboardHotCorner				*self;
-	XfdashboardHotCornerPrivate			*priv;
-	XfdashboardWindowTrackerWindow		*activeWindow;
-	GdkDevice							*pointerDevice;
-	gint								pointerX, pointerY;
-	XfdashboardWindowTrackerMonitor		*primaryMonitor;
-	XfdashboardHotCornerBox				monitorRect;
-	XfdashboardHotCornerBox				hotCornerRect;
-	GDateTime							*currentTime;
-	GTimeSpan							timeDiff;
+	XfdashboardHotCorner							*self;
+	XfdashboardHotCornerPrivate						*priv;
+	XfdashboardWindowTrackerWindow					*activeWindow;
+	GdkDevice										*pointerDevice;
+	gint											pointerX, pointerY;
+	XfdashboardWindowTrackerMonitor					*primaryMonitor;
+	XfdashboardHotCornerBox							monitorRect;
+	XfdashboardHotCornerBox							hotCornerRect;
+	GDateTime										*currentTime;
+	GTimeSpan										timeDiff;
+	XfdashboardHotCornerSettingsActivationCorner	activationCorner;
+	gint											activationRadius;
+	gint64											activationDuration;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_HOT_CORNER(inUserData), G_SOURCE_CONTINUE);
 
 	self=XFDASHBOARD_HOT_CORNER(inUserData);
 	priv=self->priv;
+
+	/* Get all settings now which are used within this function */
+	activationCorner=xfdashboard_hot_corner_settings_get_activation_corner(priv->settings);
+	activationRadius=xfdashboard_hot_corner_settings_get_activation_radius(priv->settings);
+	activationDuration=xfdashboard_hot_corner_settings_get_activation_duration(priv->settings);
 
 	/* Do nothing if current window is fullscreen but not this application */
 	activeWindow=xfdashboard_window_tracker_get_active_window(priv->windowTracker);
@@ -189,35 +177,35 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 		}
 
 	/* Get rectangle where pointer must be inside to activate hot corner */
-	switch(priv->activationCorner)
+	switch(activationCorner)
 	{
 		case XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER_TOP_RIGHT:
 			hotCornerRect.x2=monitorRect.x2;
-			hotCornerRect.x1=MAX(monitorRect.x2-priv->activationRadius, monitorRect.x1);
+			hotCornerRect.x1=MAX(monitorRect.x2-activationRadius, monitorRect.x1);
 			hotCornerRect.y1=monitorRect.y1;
-			hotCornerRect.y2=MIN(monitorRect.y1+priv->activationRadius, monitorRect.y2);
+			hotCornerRect.y2=MIN(monitorRect.y1+activationRadius, monitorRect.y2);
 			break;
 
 		case XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER_BOTTOM_LEFT:
 			hotCornerRect.x1=monitorRect.x1;
-			hotCornerRect.x2=MIN(monitorRect.x1+priv->activationRadius, monitorRect.x2);
+			hotCornerRect.x2=MIN(monitorRect.x1+activationRadius, monitorRect.x2);
 			hotCornerRect.y2=monitorRect.y2;
-			hotCornerRect.y1=MAX(monitorRect.y2-priv->activationRadius, monitorRect.y1);
+			hotCornerRect.y1=MAX(monitorRect.y2-activationRadius, monitorRect.y1);
 			break;
 
 		case XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER_BOTTOM_RIGHT:
 			hotCornerRect.x2=monitorRect.x2;
-			hotCornerRect.x1=MAX(monitorRect.x2-priv->activationRadius, monitorRect.x1);
+			hotCornerRect.x1=MAX(monitorRect.x2-activationRadius, monitorRect.x1);
 			hotCornerRect.y2=monitorRect.y2;
-			hotCornerRect.y1=MAX(monitorRect.y2-priv->activationRadius, monitorRect.y1);
+			hotCornerRect.y1=MAX(monitorRect.y2-activationRadius, monitorRect.y1);
 			break;
 
 		case XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER_TOP_LEFT:
 		default:
 			hotCornerRect.x1=monitorRect.x1;
-			hotCornerRect.x2=MIN(monitorRect.x1+priv->activationRadius, monitorRect.x2);
+			hotCornerRect.x2=MIN(monitorRect.x1+activationRadius, monitorRect.x2);
 			hotCornerRect.y1=monitorRect.y1;
-			hotCornerRect.y2=MIN(monitorRect.y1+priv->activationRadius, monitorRect.y2);
+			hotCornerRect.y2=MIN(monitorRect.y1+activationRadius, monitorRect.y2);
 			break;
 	}
 
@@ -266,7 +254,7 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 	timeDiff=g_date_time_difference(currentTime, priv->enteredTime);
 	g_date_time_unref(currentTime);
 
-	if(timeDiff<(priv->activationDuration*G_TIME_SPAN_MILLISECOND)) return(G_SOURCE_CONTINUE);
+	if(timeDiff<(activationDuration*G_TIME_SPAN_MILLISECOND)) return(G_SOURCE_CONTINUE);
 
 	/* Activation duration reached so activate application if suspended or suspend it
 	 * if active currently.
@@ -295,29 +283,6 @@ static void _xfdashboard_hot_corner_dispose(GObject *inObject)
 	XfdashboardHotCornerPrivate		*priv=self->priv;
 
 	/* Release allocated resources */
-	if(priv->xfconfActivationCornerBindingID)
-	{
-		xfconf_g_property_unbind(priv->xfconfActivationCornerBindingID);
-		priv->xfconfActivationCornerBindingID=0;
-	}
-
-	if(priv->xfconfActivationRadiusBindingID)
-	{
-		xfconf_g_property_unbind(priv->xfconfActivationRadiusBindingID);
-		priv->xfconfActivationRadiusBindingID=0;
-	}
-
-	if(priv->xfconfActivationDurationBindingID)
-	{
-		xfconf_g_property_unbind(priv->xfconfActivationDurationBindingID);
-		priv->xfconfActivationDurationBindingID=0;
-	}
-
-	if(priv->xfconfChannel)
-	{
-		priv->xfconfChannel=NULL;
-	}
-
 	if(priv->enteredTime)
 	{
 		g_date_time_unref(priv->enteredTime);
@@ -336,64 +301,14 @@ static void _xfdashboard_hot_corner_dispose(GObject *inObject)
 		priv->timeoutID=0;
 	}
 
+	if(priv->settings)
+	{
+		g_object_unref(priv->settings);
+		priv->settings=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_hot_corner_parent_class)->dispose(inObject);
-}
-
-/* Set/get properties */
-static void _xfdashboard_hot_corner_set_property(GObject *inObject,
-													guint inPropID,
-													const GValue *inValue,
-													GParamSpec *inSpec)
-{
-	XfdashboardHotCorner			*self=XFDASHBOARD_HOT_CORNER(inObject);
-
-	switch(inPropID)
-	{
-		case PROP_ACTIVATION_CORNER:
-			xfdashboard_hot_corner_set_activation_corner(self, g_value_get_enum(inValue));
-			break;
-
-		case PROP_ACTIVATION_RADIUS:
-			xfdashboard_hot_corner_set_activation_radius(self, g_value_get_int(inValue));
-			break;
-
-		case PROP_ACTIVATION_DURATION:
-			xfdashboard_hot_corner_set_activation_duration(self, g_value_get_uint64(inValue));
-			break;
-
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
-}
-
-static void _xfdashboard_hot_corner_get_property(GObject *inObject,
-													guint inPropID,
-													GValue *outValue,
-													GParamSpec *inSpec)
-{
-	XfdashboardHotCorner			*self=XFDASHBOARD_HOT_CORNER(inObject);
-	XfdashboardHotCornerPrivate		*priv=self->priv;
-
-	switch(inPropID)
-	{
-		case PROP_ACTIVATION_CORNER:
-			g_value_set_enum(outValue, priv->activationCorner);
-			break;
-
-		case PROP_ACTIVATION_RADIUS:
-			g_value_set_int(outValue, priv->activationRadius);
-			break;
-
-		case PROP_ACTIVATION_DURATION:
-			g_value_set_uint64(outValue, priv->activationDuration);
-			break;
-
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
 }
 
 /* Class initialization
@@ -406,38 +321,9 @@ void xfdashboard_hot_corner_class_init(XfdashboardHotCornerClass *klass)
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_hot_corner_dispose;
-	gobjectClass->set_property=_xfdashboard_hot_corner_set_property;
-	gobjectClass->get_property=_xfdashboard_hot_corner_get_property;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardHotCornerPrivate));
-
-	/* Define properties */
-	XfdashboardHotCornerProperties[PROP_ACTIVATION_CORNER]=
-		g_param_spec_enum("activation-corner",
-							_("Activation corner"),
-							_("The hot corner where to trigger the application to suspend or to resume"),
-							XFDASHBOARD_TYPE_HOT_CORNER_ACTIVATION_CORNER,
-							DEFAULT_ACTIVATION_CORNER,
-							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardHotCornerProperties[PROP_ACTIVATION_RADIUS]=
-		g_param_spec_int("activation-radius",
-							_("Activation radius"),
-							_("The radius around hot corner where the pointer must be inside"),
-							0, G_MAXINT,
-							DEFAULT_ACTIVATION_RADIUS,
-							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardHotCornerProperties[PROP_ACTIVATION_DURATION]=
-		g_param_spec_uint64("activation-duration",
-							_("Activation duration"),
-							_("The time in milliseconds the pointer must stay inside the radius at hot corner to trigger"),
-							0, G_MAXUINT64,
-							DEFAULT_ACTIVATION_DURATION,
-							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardHotCornerProperties);
 }
 
 /* Class finalization */
@@ -457,10 +343,6 @@ void xfdashboard_hot_corner_init(XfdashboardHotCorner *self)
 	self->priv=priv=XFDASHBOARD_HOT_CORNER_GET_PRIVATE(self);
 
 	/* Set up default values */
-	priv->activationCorner=DEFAULT_ACTIVATION_CORNER;
-	priv->activationRadius=DEFAULT_ACTIVATION_RADIUS;
-	priv->activationDuration=DEFAULT_ACTIVATION_DURATION;
-
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->rootWindow=NULL;
 	priv->deviceManager=NULL;
@@ -468,8 +350,9 @@ void xfdashboard_hot_corner_init(XfdashboardHotCorner *self)
 	priv->timeoutID=0;
 	priv->enteredTime=NULL;
 	priv->wasHandledRecently=FALSE;
-	priv->application=xfdashboard_application_get_default();
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(priv->application);
+
+	/* Set up settings */
+	priv->settings=xfdashboard_hot_corner_settings_new();
 
 	/* Get device manager for polling pointer position */
 	if(xfdashboard_application_is_daemonized(priv->application))
@@ -502,28 +385,6 @@ void xfdashboard_hot_corner_init(XfdashboardHotCorner *self)
 		{
 			g_warning(_("Disabling hot-corner plugin because application is not running as daemon."));
 		}
-
-	/* Bind to xfconf to react on changes */
-	priv->xfconfActivationCornerBindingID=
-		xfconf_g_property_bind(priv->xfconfChannel,
-								ACTIVATION_CORNER_XFCONF_PROP,
-								G_TYPE_STRING,
-								self,
-								"activation-corner");
-
-	priv->xfconfActivationRadiusBindingID=
-		xfconf_g_property_bind(priv->xfconfChannel,
-								ACTIVATION_RADIUS_XFCONF_PROP,
-								G_TYPE_INT,
-								self,
-								"activation-radius");
-
-	priv->xfconfActivationDurationBindingID=
-		xfconf_g_property_bind(priv->xfconfChannel,
-								ACTIVATION_DURATION_XFCONF_PROP,
-								G_TYPE_INT64,
-								self,
-								"activation-duration");
 }
 
 
@@ -538,88 +399,4 @@ XfdashboardHotCorner* xfdashboard_hot_corner_new(void)
 	if(!hotCorner) return(NULL);
 
 	return(XFDASHBOARD_HOT_CORNER(hotCorner));
-}
-
-/* Get/set hot corner */
-XfdashboardHotCornerActivationCorner xfdashboard_hot_corner_get_activation_corner(XfdashboardHotCorner *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_HOT_CORNER(self), XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER_TOP_LEFT);
-
-	return(self->priv->activationCorner);
-}
-
-void xfdashboard_hot_corner_set_activation_corner(XfdashboardHotCorner *self, XfdashboardHotCornerActivationCorner inCorner)
-{
-	XfdashboardHotCornerPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_HOT_CORNER(self));
-	g_return_if_fail(inCorner<=XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER_BOTTOM_RIGHT);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->activationCorner!=inCorner)
-	{
-		/* Set value */
-		priv->activationCorner=inCorner;
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardHotCornerProperties[PROP_ACTIVATION_CORNER]);
-	}
-}
-
-/* Get/set radius around hot corner */
-gint xfdashboard_hot_corner_get_activation_radius(XfdashboardHotCorner *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_HOT_CORNER(self), 0);
-
-	return(self->priv->activationRadius);
-}
-
-void xfdashboard_hot_corner_set_activation_radius(XfdashboardHotCorner *self, gint inRadius)
-{
-	XfdashboardHotCornerPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_HOT_CORNER(self));
-	g_return_if_fail(inRadius>0);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->activationRadius!=inRadius)
-	{
-		/* Set value */
-		priv->activationRadius=inRadius;
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardHotCornerProperties[PROP_ACTIVATION_RADIUS]);
-	}
-}
-
-/* Get/set duration when to trigger hot corner */
-gint64 xfdashboard_hot_corner_get_activation_duration(XfdashboardHotCorner *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_HOT_CORNER(self), 0);
-
-	return(self->priv->activationDuration);
-}
-
-void xfdashboard_hot_corner_set_activation_duration(XfdashboardHotCorner *self, gint64 inDuration)
-{
-	XfdashboardHotCornerPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_HOT_CORNER(self));
-	g_return_if_fail(inDuration>0);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->activationDuration!=inDuration)
-	{
-		/* Set value */
-		priv->activationDuration=inDuration;
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardHotCornerProperties[PROP_ACTIVATION_DURATION]);
-	}
 }
