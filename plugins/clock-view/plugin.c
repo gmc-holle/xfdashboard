@@ -259,6 +259,9 @@ static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 	_plugin_configure_setup_color_button(GTK_COLOR_BUTTON(widgetValue), settings, "background-color");
 	gtk_grid_attach_next_to(GTK_GRID(layout), widgetValue, widgetLabel, GTK_POS_RIGHT, 1, 1);
 
+	/* Release allocated resources */
+	if(settings) g_object_unref(settings);
+
 	/* Return layout widget containing all other widgets */
 	return(G_OBJECT(layout));
 }
