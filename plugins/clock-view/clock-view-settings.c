@@ -27,14 +27,10 @@
 
 #include "clock-view-settings.h"
 
+#include <libxfdashboard/libxfdashboard.h>
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 #include <math.h>
-
-#include <libxfdashboard/utils.h>
-#include <libxfdashboard/view.h>
-#include <libxfdashboard/fill-box-layout.h>
-#include <libxfdashboard/application.h>
 
 
 /* Define this class in GObject system */

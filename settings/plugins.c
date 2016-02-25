@@ -27,10 +27,9 @@
 
 #include "plugins.h"
 
+#include <libxfdashboard/plugin.h>
 #include <glib/gi18n-lib.h>
 #include <xfconf/xfconf.h>
-
-#include <libxfdashboard/plugin.h>
 
 
 /* Define this class in GObject system */

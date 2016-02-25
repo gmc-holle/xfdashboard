@@ -26,10 +26,6 @@
 #endif
 
 #include <libxfce4util/libxfce4util.h>
-
-#include <libxfdashboard/plugin.h>
-#include <libxfdashboard/view-manager.h>
-
 #include <gtk/gtk.h>
 
 #include "clock-view.h"

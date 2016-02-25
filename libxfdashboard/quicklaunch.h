@@ -24,6 +24,10 @@
 #ifndef __LIBXFDASHBOARD_QUICKLAUNCH__
 #define __LIBXFDASHBOARD_QUICKLAUNCH__
 
+#if !defined(__LIBXFDASHBOARD_H_INSIDE__) && !defined(LIBXFDASHBOARD_COMPILATION)
+#error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
+#endif
+
 #include <libxfdashboard/background.h>
 #include <libxfdashboard/toggle-button.h>
 #include <libxfdashboard/focusable.h>

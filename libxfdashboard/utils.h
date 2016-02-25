@@ -24,6 +24,10 @@
 #ifndef __LIBXFDASHBOARD_UTILS__
 #define __LIBXFDASHBOARD_UTILS__
 
+#if !defined(__LIBXFDASHBOARD_H_INSIDE__) && !defined(LIBXFDASHBOARD_COMPILATION)
+#error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
+#endif
+
 #include <clutter/clutter.h>
 #include <gio/gio.h>
 

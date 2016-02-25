@@ -1,5 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
+	-DLIBXFDASHBOARD_COMPILATION=1 \
 	-DG_LOG_DOMAIN=\"xfdashboard\" \
 	-DPACKAGE_DATADIR=\"$(datadir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \

@@ -25,6 +25,10 @@
 #ifndef __LIBXFDASHBOARD_APPLICATIONS_MENU_MODEL__
 #define __LIBXFDASHBOARD_APPLICATIONS_MENU_MODEL__
 
+#if !defined(__LIBXFDASHBOARD_H_INSIDE__) && !defined(LIBXFDASHBOARD_COMPILATION)
+#error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
+#endif
+
 #include <clutter/clutter.h>
 #include <garcon/garcon.h>
 

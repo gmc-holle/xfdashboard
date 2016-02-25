@@ -30,6 +30,10 @@
 #ifndef __LIBXFDASHBOARD_WINDOW_TRACKER_WORKSPACE__
 #define __LIBXFDASHBOARD_WINDOW_TRACKER_WORKSPACE__
 
+#if !defined(__LIBXFDASHBOARD_H_INSIDE__) && !defined(LIBXFDASHBOARD_COMPILATION)
+#error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
+#endif
+
 #include <glib-object.h>
 
 G_BEGIN_DECLS

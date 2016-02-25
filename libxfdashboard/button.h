@@ -25,6 +25,10 @@
 #ifndef __LIBXFDASHBOARD_BUTTON__
 #define __LIBXFDASHBOARD_BUTTON__
 
+#if !defined(__LIBXFDASHBOARD_H_INSIDE__) && !defined(LIBXFDASHBOARD_COMPILATION)
+#error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
+#endif
+
 #include <clutter/clutter.h>
 
 #include <libxfdashboard/background.h>

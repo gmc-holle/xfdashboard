@@ -24,7 +24,7 @@
 #ifndef __XFDASHBOARD_CLOCK_VIEW_SETTINGS__
 #define __XFDASHBOARD_CLOCK_VIEW_SETTINGS__
 
-#include <libxfdashboard/plugin.h>
+#include <libxfdashboard/libxfdashboard.h>
 #include <glib-object.h>
 #include <clutter/clutter.h>
 

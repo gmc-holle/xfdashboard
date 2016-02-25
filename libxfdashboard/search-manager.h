@@ -25,6 +25,10 @@
 #ifndef __LIBXFDASHBOARD_SEARCH_MANAGER__
 #define __LIBXFDASHBOARD_SEARCH_MANAGER__
 
+#if !defined(__LIBXFDASHBOARD_H_INSIDE__) && !defined(LIBXFDASHBOARD_COMPILATION)
+#error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
+#endif
+
 #include <glib-object.h>
 
 #include <libxfdashboard/search-provider.h>

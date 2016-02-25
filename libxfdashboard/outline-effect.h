@@ -24,6 +24,10 @@
 #ifndef __LIBXFDASHBOARD_OUTLINE_EFFECT__
 #define __LIBXFDASHBOARD_OUTLINE_EFFECT__
 
+#if !defined(__LIBXFDASHBOARD_H_INSIDE__) && !defined(LIBXFDASHBOARD_COMPILATION)
+#error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
+#endif
+
 #include <clutter/clutter.h>
 
 #include <libxfdashboard/types.h>

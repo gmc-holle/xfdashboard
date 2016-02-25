@@ -25,11 +25,11 @@
 #include <config.h>
 #endif
 
-#include "hot-corner.h"
+#include <libxfdashboard/libxfdashboard.h>
 
 #include <libxfce4util/libxfce4util.h>
 
-#include "libxfdashboard/plugin.h"
+#include "hot-corner.h"
 
 
 /* IMPLEMENTATION: XfdashboardPlugin */

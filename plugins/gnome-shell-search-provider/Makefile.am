@@ -22,6 +22,7 @@ gnome_shell_search_provider_la_CFLAGS = \
 	$(LIBXFCE4UTIL_CFLAGS) \
 	$(GTK_CFLAGS) \
 	$(CLUTTER_CFLAGS) \
+	$(LIBXFCONF_CFLAGS) \
 	$(GARCON_CFLAGS) \
 	$(PLATFORM_CFLAGS)
 
@@ -38,6 +39,7 @@ gnome_shell_search_provider_la_LIBADD = \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(GTK_LIBS) \
 	$(CLUTTER_LIBS) \
+	$(LIBXFCONF_LIBS) \
 	$(GARCON_LIBS) \
 	$(top_builddir)/libxfdashboard/libxfdashboard.la
 

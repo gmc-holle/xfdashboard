@@ -25,8 +25,7 @@
 #ifndef __XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER__
 #define __XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER__
 
-#include "libxfdashboard/plugin.h"
-#include "libxfdashboard/search-provider.h"
+#include <libxfdashboard/libxfdashboard.h>
 
 G_BEGIN_DECLS
 

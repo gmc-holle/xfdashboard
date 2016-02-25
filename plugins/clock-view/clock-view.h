@@ -24,8 +24,7 @@
 #ifndef __XFDASHBOARD_CLOCK_VIEW__
 #define __XFDASHBOARD_CLOCK_VIEW__
 
-#include <libxfdashboard/plugin.h>
-#include <libxfdashboard/view.h>
+#include <libxfdashboard/libxfdashboard.h>
 
 G_BEGIN_DECLS
 

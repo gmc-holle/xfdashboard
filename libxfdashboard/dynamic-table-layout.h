@@ -27,6 +27,10 @@
 #ifndef __LIBXFDASHBOARD_DYNAMIC_TABLE_LAYOUT__
 #define __LIBXFDASHBOARD_DYNAMIC_TABLE_LAYOUT__
 
+#if !defined(__LIBXFDASHBOARD_H_INSIDE__) && !defined(LIBXFDASHBOARD_COMPILATION)
+#error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
+#endif
+
 #include <clutter/clutter.h>
 
 G_BEGIN_DECLS

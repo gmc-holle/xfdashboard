@@ -1,5 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
+	-DLIBXFDASHBOARD_COMPILATION=1 \
 	-DG_LOG_DOMAIN=\"xfdashboard\" \
 	-DPACKAGE_DATADIR=\"$(datadir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
@@ -211,7 +212,8 @@ libxfdashboard_la_includedir = \
 	$(includedir)/xfdashboard/libxfdashboard
 
 libxfdashboard_la_include_HEADERS = \
-	$(libxfdashboard_la_headers)
+	$(libxfdashboard_la_headers) \
+	libxfdashboard.h
 
 if MAINTAINER_MODE
 

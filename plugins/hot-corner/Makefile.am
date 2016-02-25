@@ -22,6 +22,7 @@ hot_corner_la_CFLAGS = \
 	$(GTK_CFLAGS) \
 	$(CLUTTER_CFLAGS) \
 	$(LIBXFCONF_CFLAGS) \
+	$(GARCON_CFLAGS) \
 	$(PLATFORM_CFLAGS)
 
 hot_corner_la_LDFLAGS = \
@@ -38,6 +39,7 @@ hot_corner_la_LIBADD = \
 	$(GTK_LIBS) \
 	$(CLUTTER_LIBS) \
 	$(LIBXFCONF_LIBS) \
+	$(GARCON_CLIBS) \
 	$(top_builddir)/libxfdashboard/libxfdashboard.la
 
 CLEANFILES = \

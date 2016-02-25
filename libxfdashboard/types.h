@@ -33,6 +33,10 @@
 #ifndef __LIBXFDASHBOARD_TYPES__
 #define __LIBXFDASHBOARD_TYPES__
 
+#if !defined(__LIBXFDASHBOARD_H_INSIDE__) && !defined(LIBXFDASHBOARD_COMPILATION)
+#error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
+#endif
+
 #include <glib.h>
 
 G_BEGIN_DECLS

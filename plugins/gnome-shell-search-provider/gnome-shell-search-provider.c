@@ -31,9 +31,6 @@
 #include <glib/gi18n-lib.h>
 #include <gio/gio.h>
 
-#include "libxfdashboard/application-database.h"
-#include "libxfdashboard/button.h"
-
 
 /* Define this class in GObject system */
 G_DEFINE_DYNAMIC_TYPE(XfdashboardGnomeShellSearchProvider,
