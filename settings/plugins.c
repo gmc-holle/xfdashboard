@@ -62,6 +62,7 @@ struct _XfdashboardSettingsPluginsPrivate
 	GtkWidget		*widgetPluginDescription;
 	GtkWidget		*widgetPluginPreferencesDialog;
 	GtkWidget		*widgetPluginPreferencesWidgetBox;
+	GtkWidget		*widgetPluginPreferencesDialogTitle;
 };
 
 /* Properties */
@@ -211,9 +212,18 @@ static gboolean _xfdashboard_settings_plugins_call_preferences(XfdashboardSettin
 	if(pluginPreferencesWidget)
 	{
 		gint								response;
+		gchar								*name;
+		gchar								*title;
 
 		/* Add returned widget from plugin to dialog */
 		gtk_container_add(GTK_CONTAINER(priv->widgetPluginPreferencesWidgetBox), pluginPreferencesWidget);
+
+		/* Set title of dialog */
+		g_object_get(plugin, "name", &name, NULL);
+		title=g_strdup_printf(_("Configure plugin: %s"), name);
+		gtk_label_set_text(GTK_LABEL(priv->widgetPluginPreferencesDialogTitle), title);
+		if(title) g_free(title);
+		if(name) g_free(name);
 
 		/* Show dialog in modal mode but do not care about dialog's response code
 		 * as "close" is the only action.
@@ -890,6 +900,7 @@ static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins
 
 	priv->widgetPluginPreferencesDialog=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-preferences-dialog"));
 	priv->widgetPluginPreferencesWidgetBox=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-preferences-widget-box"));
+	priv->widgetPluginPreferencesDialogTitle=GTK_WIDGET(gtk_builder_get_object(priv->builder, "configure-plugin-title-label"));
 
 	/* Set up theme list */
 	if(priv->widgetPlugins)
@@ -1022,6 +1033,7 @@ static void _xfdashboard_settings_plugins_dispose(GObject *inObject)
 	priv->widgetPluginDescription=NULL;
 	priv->widgetPluginPreferencesDialog=NULL;
 	priv->widgetPluginPreferencesWidgetBox=NULL;
+	priv->widgetPluginPreferencesDialogTitle=NULL;
 
 	if(priv->builder)
 	{
@@ -1133,6 +1145,7 @@ static void xfdashboard_settings_plugins_init(XfdashboardSettingsPlugins *self)
 
 	priv->widgetPluginPreferencesDialog=NULL;
 	priv->widgetPluginPreferencesWidgetBox=NULL;
+	priv->widgetPluginPreferencesDialogTitle=NULL;
 }
 
 /* IMPLEMENTATION: Public API */
