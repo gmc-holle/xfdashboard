@@ -379,6 +379,9 @@ static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 	/* Release allocated resources */
 	if(settings) g_object_unref(settings);
 
+	/* Make all widgets visible */
+	gtk_widget_show_all(layout);
+
 	/* Return layout widget containing all other widgets */
 	return(G_OBJECT(layout));
 }

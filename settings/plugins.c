@@ -213,7 +213,6 @@ static gboolean _xfdashboard_settings_plugins_call_preferences(XfdashboardSettin
 		gint								response;
 
 		/* Add returned widget from plugin to dialog */
-		gtk_widget_show_all(pluginPreferencesWidget);
 		gtk_container_add(GTK_CONTAINER(priv->widgetPluginPreferencesWidgetBox), pluginPreferencesWidget);
 
 		/* Show dialog in modal mode but do not care about dialog's response code
