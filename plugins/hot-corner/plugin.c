@@ -126,13 +126,68 @@ static PluginWidgetSettingsMap* _plugin_widget_settings_map_bind(GtkWidget *inWi
 	mapping->widget=inWidget;
 
 	/* Bind to widget */
-	g_object_set_data_full(G_OBJECT(mapping->settings),
+	g_object_set_data_full(G_OBJECT(inWidget),
 							CONFIGURATION_MAPPING,
 							mapping,
 							(GDestroyNotify)_plugin_widget_settings_map_free);
 
 	/* Return mapping */
 	return(mapping);
+}
+
+/* Value for activation corner was changed at widget */
+static void _plugin_on_corner_widget_value_changed(GtkComboBox *inComboBox,
+													gpointer inUserData,
+													gpointer dummy1,
+													gpointer dummy2)
+{
+	PluginWidgetSettingsMap			*mapping;
+	GtkTreeModel					*model;
+	GtkTreeIter						iter;
+	gint							value;
+
+	g_return_if_fail(GTK_IS_COMBO_BOX(inComboBox));
+	g_return_if_fail(inUserData);
+
+	mapping=(PluginWidgetSettingsMap*)inUserData;
+
+	/* Get new value from widget */
+	model=gtk_combo_box_get_model(inComboBox);
+	gtk_combo_box_get_active_iter(inComboBox, &iter);
+	gtk_tree_model_get(model, &iter, 1, &value, -1);
+
+	/* Store new value at settings */
+	xfdashboard_hot_corner_settings_set_activation_corner(mapping->settings, value);
+}
+
+/* Value for activation corner was changed at settings */
+static void _plugin_on_corner_settings_value_changed(PluginWidgetSettingsMap *inMapping)
+{
+	XfdashboardHotCornerSettingsActivationCorner	value;
+	guint											modelValue;
+	GtkTreeModel									*model;
+	GtkTreeIter										iter;
+
+	g_return_if_fail(inMapping);
+
+	/* Get new value from settings */
+	value=xfdashboard_hot_corner_settings_get_activation_corner(inMapping->settings);
+
+	/* Iterate through combo box value and set new value if match is found */
+	model=gtk_combo_box_get_model(GTK_COMBO_BOX(inMapping->widget));
+	if(gtk_tree_model_get_iter_first(model, &iter))
+	{
+		do
+		{
+			gtk_tree_model_get(model, &iter, 1, &modelValue, -1);
+			if(G_UNLIKELY(modelValue==value))
+			{
+				gtk_combo_box_set_active_iter(GTK_COMBO_BOX(inMapping->widget), &iter);
+				break;
+			}
+		}
+		while(gtk_tree_model_iter_next(model, &iter));
+	}
 }
 
 /* Value for activation radius was changed at widget */
@@ -231,6 +286,11 @@ static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 	GtkWidget						*widgetValue;
 	XfdashboardHotCornerSettings	*settings;
 	PluginWidgetSettingsMap			*mapping;
+	GtkListStore					*listModel;
+	GtkTreeIter						modelIter;
+	GEnumClass						*enumClass;
+	guint							i;
+	GtkCellRenderer					*renderer;
 
 	/* Get settings of plugin */
 	settings=xfdashboard_hot_corner_settings_new();
@@ -245,8 +305,36 @@ static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 	gtk_widget_set_halign(widgetLabel, GTK_ALIGN_END);
 	gtk_grid_attach(GTK_GRID(layout), widgetLabel, 0, 0, 1, 1);
 
-	widgetValue=gtk_label_new("not yet implemented");
+	widgetValue=gtk_combo_box_new();
+	mapping=_plugin_widget_settings_map_bind(widgetValue,
+												settings,
+												"activation-corner",
+												G_CALLBACK(_plugin_on_corner_settings_value_changed));
+	g_signal_connect(widgetValue,
+						"changed",
+						G_CALLBACK(_plugin_on_corner_widget_value_changed),
+						mapping);
 	gtk_grid_attach_next_to(GTK_GRID(layout), widgetValue, widgetLabel, GTK_POS_RIGHT, 1, 1);
+
+	listModel=gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
+	enumClass=g_type_class_ref(XFDASHBOARD_TYPE_HOT_CORNER_ACTIVATION_CORNER);
+	for(i=0; i<enumClass->n_values; i++)
+	{
+		gtk_list_store_append(listModel, &modelIter);
+		gtk_list_store_set(listModel, &modelIter,
+							0, enumClass->values[i].value_nick,
+							1, enumClass->values[i].value,
+							-1);
+	}
+	gtk_combo_box_set_model(GTK_COMBO_BOX(widgetValue), GTK_TREE_MODEL(listModel));
+	g_type_class_unref(enumClass);
+	g_object_unref(G_OBJECT(listModel));
+
+	renderer=gtk_cell_renderer_text_new();
+	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(widgetValue), renderer, TRUE);
+	gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(widgetValue), renderer, "text", 0);
+
+	_plugin_on_corner_settings_value_changed(mapping);
 
 	/* Add widget to choose activation radius */
 	widgetLabel=gtk_label_new(_("Radius of activation corner:"));
