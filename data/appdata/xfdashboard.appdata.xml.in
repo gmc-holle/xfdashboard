@@ -59,6 +59,15 @@
 	</keywords>
 
 	<releases>
+		<release version="0.5.90" timestamp="1456659470">
+			<description>
+				<_p>This unstable development introduces a hot-corner plugin to activate
+				this application when the pointer is near a specific corner of the screen.
+				It also introduce a new settings application which allows to enable and/or
+				disable plugin as well as to configure them.
+				</_p>
+			</description>
+		</release>
 		<release version="0.5.5" timestamp="1454269066">
 			<description>
 				<_p>This unstable development introduces a new search provider plugin
