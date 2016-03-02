@@ -244,7 +244,7 @@ void xfdashboard_clock_view_settings_class_init(XfdashboardClockViewSettingsClas
 
 	XfdashboardClockViewSettingsProperties[PROP_SECOND_COLOR]=
 		clutter_param_spec_color("second-color",
-									_("Sedond color"),
+									_("Second color"),
 									_("Color to draw the second hand with"),
 									CLUTTER_COLOR_White,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
