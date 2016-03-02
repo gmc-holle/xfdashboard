@@ -307,6 +307,11 @@ static void _xfdashboard_hot_corner_dispose(GObject *inObject)
 		priv->settings=NULL;
 	}
 
+	if(priv->application)
+	{
+		priv->application=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_hot_corner_parent_class)->dispose(inObject);
 }
@@ -343,6 +348,7 @@ void xfdashboard_hot_corner_init(XfdashboardHotCorner *self)
 	self->priv=priv=XFDASHBOARD_HOT_CORNER_GET_PRIVATE(self);
 
 	/* Set up default values */
+	priv->application=xfdashboard_application_get_default();
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->rootWindow=NULL;
 	priv->deviceManager=NULL;
