@@ -723,6 +723,27 @@ static void _xfdashboard_application_tracker_on_window_opened(XfdashboardApplica
 	priv=self->priv;
 	appInfo=NULL;
 
+	/* Check if window is "visible" and we should try to find the application
+	 * it belongs to. To be "visible" means here that the window should not be
+	 * skipped in any tasklist or pager. But hidden or minimized window are
+	 * "visible" when looking up running application is meant.
+	 */
+	if(xfdashboard_window_tracker_window_is_skip_pager(inWindow))
+	{
+		g_debug("Do not resolve window '%s' as it has skip-pager set.",
+					xfdashboard_window_tracker_window_get_title(inWindow));
+
+		return;
+	}
+
+	if(xfdashboard_window_tracker_window_is_skip_tasklist(inWindow))
+	{
+		g_debug("Do not resolve window '%s' as it has skip-tasklist set.",
+					xfdashboard_window_tracker_window_get_title(inWindow));
+
+		return;
+	}
+
 	/* Try to find application for window */
 	appInfo=_xfdashboard_application_tracker_get_desktop_id_from_environment(self, inWindow);
 	if(!appInfo) appInfo=_xfdashboard_application_tracker_get_desktop_id_from_window_names(self, inWindow);
