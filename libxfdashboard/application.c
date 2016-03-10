@@ -68,7 +68,7 @@ struct _XfdashboardApplicationPrivate
 	gchar							*themeName;
 
 	/* Instance related */
-	gboolean						inited;
+	gboolean						initialized;
 	gboolean						isQuitting;
 
 	XfconfChannel					*xfconfChannel;
@@ -165,7 +165,7 @@ static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean
 		priv->isQuitting=TRUE;
 
 		/* If application is told to quit, set the restart style to something
-		 * where it won't restart itself.
+		 * when it won't restart itself.
 		 */
 		if(priv->sessionManagementClient &&
 			XFCE_IS_SM_CLIENT(priv->sessionManagementClient))
@@ -182,7 +182,13 @@ static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean
 		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_QUIT], 0);
 
 		/* Really quit application here and now */
-		if(priv->inited) clutter_main_quit();
+		if(priv->initialized)
+		{
+			/* Release extra reference on application which causes g_application_run()
+			 * to exit when returning.
+			 */
+			g_application_release(G_APPLICATION(self));
+		}
 	}
 		/* ... otherwise emit "suspend" signal */
 		else
@@ -299,7 +305,8 @@ static void _xfdashboard_application_set_theme_name(XfdashboardApplication *self
 }
 
 /* Perform full initialization of this application instance */
-static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self, XfdashboardStage **outStage)
+static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication *self,
+															XfdashboardStage **outStage)
 {
 	XfdashboardApplicationPrivate	*priv;
 	GError							*error;
@@ -512,6 +519,243 @@ static void _xfdashboard_application_switch_to_view(XfdashboardApplication *self
 	}
 }
 
+/* Handle command-line on primary instance */
+static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardApplication *self,
+																	gint inArgc,
+																	gchar **inArgv)
+{
+	XfdashboardApplicationPrivate	*priv;
+	XfdashboardStage				*stage;
+	GOptionContext					*context;
+	gboolean						result;
+	GError							*error;
+	gboolean						optionDaemonize;
+	gboolean						optionQuit;
+	gboolean						optionRestart;
+	gboolean						optionToggle;
+	gchar							*optionSwitchToView;
+	GOptionEntry					entries[]=
+									{
+										{ "daemonize", 'd', 0, G_OPTION_ARG_NONE, &optionDaemonize, N_("Fork to background"), NULL },
+										{ "quit", 'q', 0, G_OPTION_ARG_NONE, &optionQuit, N_("Quit running instance"), NULL },
+										{ "restart", 'r', 0, G_OPTION_ARG_NONE, &optionRestart, N_("Restart running instance"), NULL },
+										{ "toggle", 't', 0, G_OPTION_ARG_NONE, &optionToggle, N_("Toggles suspend/resume state if running instance was started in daemon mode otherwise it quits running non-daemon instance"), NULL },
+										{ "view", 0, 0, G_OPTION_ARG_STRING, &optionSwitchToView, N_("The view to switch to on startup or resume"), NULL },
+										{ NULL }
+									};
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), XFDASHBOARD_APPLICATION_ERROR_FAILED);
+
+	priv=self->priv;
+	error=NULL;
+	stage=NULL;
+
+	/* Set up options */
+	optionDaemonize=FALSE;
+	optionQuit=FALSE;
+	optionRestart=FALSE;
+	optionToggle=FALSE;
+	optionSwitchToView=NULL;
+
+	/* Setup command-line options */
+	context=g_option_context_new(N_("- A Gnome Shell like dashboard for Xfce4"));
+	g_option_context_add_group(context, gtk_get_option_group(TRUE));
+	g_option_context_add_group(context, clutter_get_option_group_without_init());
+	g_option_context_add_group(context, xfce_sm_client_get_option_group(inArgc, inArgv));
+	g_option_context_add_main_entries(context, entries, GETTEXT_PACKAGE);
+
+#ifdef DEBUG
+	/* I always forget the name of the environment variable to get the debug
+	 * message display which are emitted with g_debug(). So display a hint
+	 * if application was compiled with debug enabled.
+	 */
+	g_print("** To get debug messages set environment variable G_MESSAGES_DEBUG to %s\n", PACKAGE_NAME);
+	g_print("** e.g.: G_MESSAGES_DEBUG=%s %s\n", PACKAGE_NAME, inArgv[0]);
+#endif
+
+	if(!g_option_context_parse(context, &inArgc, &inArgv, &error))
+	{
+		/* Show error */
+		g_print(N_("%s\n"),
+				(error && error->message) ? error->message : _("unknown error"));
+		if(error)
+		{
+			g_error_free(error);
+			error=NULL;
+		}
+
+		/* Release allocated resources */
+		if(optionSwitchToView) g_free(optionSwitchToView);
+		if(context) g_option_context_free(context);
+
+		return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
+	}
+
+	/* If this application instance is a remote instance do not handle any
+	 * command-line argument. The arguments will be sent to the primary instance,
+	 * handled there and the exit code will be sent back to the remote instance.
+	 * We can check for remote instance with g_application_get_is_remote() because
+	 * the application was tried to get registered either by local_command_line
+	 * signal handler or by g_application_run().
+	 */
+	if(g_application_get_is_remote(G_APPLICATION(self)))
+	{
+		g_debug("Do not handle command-line parameters on remote application instance");
+
+		/* Release allocated resources */
+		if(optionSwitchToView) g_free(optionSwitchToView);
+		if(context) g_option_context_free(context);
+
+		/* No errors so far and no errors will happen as we do not handle
+		 * any command-line arguments here.
+		 */
+		return(XFDASHBOARD_APPLICATION_ERROR_NONE);
+	}
+	g_debug("Handling command-line parameters on primary application instance");
+
+	/* Handle options: restart
+	 *
+	 * First handle option 'restart' to quit this application early. Also return
+	 * immediately with status XFDASHBOARD_APPLICATION_ERROR_RESTART to tell
+	 * remote instance to perform a restart and to become the new primary instance.
+	 * This option requires that application was initialized.
+	 */
+	if(optionRestart &&
+		priv->initialized)
+	{
+		/* Quit existing instance for restart */
+		g_debug("Received request to restart application!");
+		_xfdashboard_application_quit(self, TRUE);
+
+		/* Release allocated resources */
+		if(optionSwitchToView) g_free(optionSwitchToView);
+		if(context) g_option_context_free(context);
+
+		/* Return state to restart this applicationa */
+		return(XFDASHBOARD_APPLICATION_ERROR_RESTART);
+	}
+
+	/* Handle options: quit
+	 *
+	 * Now check for the next application stopping option 'quit'. We check for it
+	 * to quit this application early and to prevent further and unnecessary check
+	 * for other options.
+	 */
+	if(optionQuit)
+	{
+		/* Quit existing instance */
+		g_debug("Received request to quit running instance!");
+		_xfdashboard_application_quit(self, TRUE);
+
+		/* Release allocated resources */
+		if(optionSwitchToView) g_free(optionSwitchToView);
+		if(context) g_option_context_free(context);
+
+		return(XFDASHBOARD_APPLICATION_ERROR_QUIT);
+	}
+
+	/* Handle options: toggle
+	 *
+	 * Now check if we should toggle the state of application. That means
+	 * if application is running daemon mode, resume it if suspended otherwise
+	 * suspend it. If application is running but not in daemon just quit the
+	 * application. If application was not inited yet, skip toggling state and
+	 * perform a normal start-up.
+	 */
+	if(optionToggle &&
+		priv->initialized)
+	{
+		/* If application is running in daemon mode, toggle between suspend/resume ... */
+		if(priv->isDaemon)
+		{
+			if(priv->isSuspended)
+			{
+				/* Switch to view if requested */
+				_xfdashboard_application_switch_to_view(self, optionSwitchToView);
+
+				/* Show application again */
+				_xfdashboard_application_activate(G_APPLICATION(self));
+			}
+				else
+				{
+					/* Hide application */
+					_xfdashboard_application_quit(self, FALSE);
+				}
+		}
+			/* ... otherwise if not running in daemon mode, just quit */
+			else
+			{
+				/* Hide application */
+				_xfdashboard_application_quit(self, FALSE);
+			}
+
+		/* Release allocated resources */
+		if(optionSwitchToView) g_free(optionSwitchToView);
+		if(context) g_option_context_free(context);
+
+		/* Stop here because option was handled and application does not get initialized */
+		return(XFDASHBOARD_APPLICATION_ERROR_NONE);
+	}
+
+	/* Handle options: daemonize
+	 *
+	 * Check if application shoud run in daemon mode. A daemonized instance runs in
+	 * background and does not present the stage initially. The application must not
+	 * be initialized yet as it can only be done on start-up.
+	 */
+	if(optionDaemonize &&
+		!priv->initialized)
+	{
+		priv->isDaemon=optionDaemonize;
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_DAEMONIZED]);
+
+		if(priv->isDaemon)
+		{
+			priv->isSuspended=TRUE;
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_SUSPENDED]);
+		}
+	}
+
+	/* Check if this instance needs to be initialized fully */
+	if(!priv->initialized)
+	{
+		/* Perform full initialization of this application instance */
+		result=_xfdashboard_application_initialize_full(self, &stage);
+		if(result==FALSE) return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
+
+		/* Switch to view if requested */
+		_xfdashboard_application_switch_to_view(self, optionSwitchToView);
+
+		/* Show application if not started daemonized */
+		if(!priv->isDaemon) clutter_actor_show(CLUTTER_ACTOR(stage));
+
+		/* Take extra reference on the application to keep application in
+		 * function g_application_run() alive when returning.
+		 */
+		g_application_hold(G_APPLICATION(self));
+	}
+
+	/* Check if this instance need to be activated. Is should only be done
+	 * if instance is initialized
+	 */
+	if(priv->initialized)
+	{
+		/* Switch to view if requested */
+		_xfdashboard_application_switch_to_view(self, optionSwitchToView);
+
+		/* Show application */
+		_xfdashboard_application_activate(G_APPLICATION(self));
+	}
+
+	/* Release allocated resources */
+	if(optionSwitchToView) g_free(optionSwitchToView);
+	if(context) g_option_context_free(context);
+
+	/* All done successfully so return status code 0 for success */
+	priv->initialized=TRUE;
+	return(XFDASHBOARD_APPLICATION_ERROR_NONE);
+}
+
 /* IMPLEMENTATION: GApplication */
 
 /* Received "activate" signal on primary instance */
@@ -540,204 +784,107 @@ static void _xfdashboard_application_activate(GApplication *inApplication)
 static int _xfdashboard_application_command_line(GApplication *inApplication, GApplicationCommandLine *inCommandLine)
 {
 	XfdashboardApplication			*self;
-	XfdashboardApplicationPrivate	*priv;
-	XfdashboardStage				*stage;
-	GOptionContext					*context;
-	gboolean						result;
 	gint							argc;
 	gchar							**argv;
-	GError							*error;
-	gboolean						optionDaemonize;
-	gboolean						optionQuit;
-	gboolean						optionRestart;
-	gboolean						optionToggle;
-	gchar							*optionSwitchToView;
-	GOptionEntry					XfdashboardApplicationOptions[]=
-									{
-										{ "daemonize", 'd', 0, G_OPTION_ARG_NONE, &optionDaemonize, N_("Fork to background"), NULL },
-										{ "quit", 'q', 0, G_OPTION_ARG_NONE, &optionQuit, N_("Quit running instance"), NULL },
-										{ "restart", 'r', 0, G_OPTION_ARG_NONE, &optionRestart, N_("Restart running instance"), NULL },
-										{ "toggle", 't', 0, G_OPTION_ARG_NONE, &optionToggle, N_("Toggles suspend/resume state if running instance was started in daemon mode otherwise it quits running non-daemon instance"), NULL },
-										{ "view", 0, 0, G_OPTION_ARG_STRING, &optionSwitchToView, N_(""), NULL },
-										{ NULL }
-									};
+	gint							exitStatus;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication), 1);
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication), XFDASHBOARD_APPLICATION_ERROR_FAILED);
 
 	self=XFDASHBOARD_APPLICATION(inApplication);
-	priv=self->priv;
-	error=NULL;
-	stage=NULL;
 
-	/* Set up options */
-	optionDaemonize=FALSE;
-	optionQuit=FALSE;
-	optionRestart=FALSE;
-	optionToggle=FALSE;
-	optionSwitchToView=NULL;
-
-	/* Parse command-line arguments */
+	/* Get number of command-line arguments and the arguments */
 	argv=g_application_command_line_get_arguments(inCommandLine, &argc);
 
-	/* Setup command-line options */
-	context=g_option_context_new(N_("- A Gnome Shell like dashboard for Xfce4"));
-	g_option_context_add_group(context, gtk_get_option_group(TRUE));
-	g_option_context_add_group(context, clutter_get_option_group_without_init());
-	g_option_context_add_group(context, xfce_sm_client_get_option_group(argc, argv));
-	g_option_context_add_main_entries(context, XfdashboardApplicationOptions, GETTEXT_PACKAGE);
-
-#ifdef DEBUG
-	/* I always forget the name of the environment variable to get the debug
-	 * message display which are emitted with g_debug(). So display a hint
-	 * if application was compiled with debug enabled.
-	 */
-	g_print("** To get debug messages set environment variable G_MESSAGES_DEBUG to %s\n", PACKAGE_NAME);
-	g_print("** e.g.: G_MESSAGES_DEBUG=%s %s\n", PACKAGE_NAME, argv[0]);
-#endif
-
-	result=g_option_context_parse(context, &argc, &argv, &error);
-	g_strfreev(argv);
-	g_option_context_free(context);
-	if(result==FALSE)
-	{
-		/* Show error */
-		g_print(N_("%s\n"), (error && error->message) ? error->message : _("unknown error"));
-		if(error) g_error_free(error);
-
-		/* Release allocated resources */
-		if(optionSwitchToView) g_free(optionSwitchToView);
-
-		return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
-	}
-
-	/* Handle options: restart
-	 * - Only handle option if application was inited already
-	 */
-	if(priv->inited && optionRestart)
-	{
-		/* Return state to restart this applicationa */
-		g_debug("Received request to restart application!");
-
-		/* Release allocated resources */
-		if(optionSwitchToView) g_free(optionSwitchToView);
-
-		return(XFDASHBOARD_APPLICATION_ERROR_RESTART);
-	}
-
-	/* Handle options: quit */
-	if(optionQuit)
-	{
-		/* Quit existing instance */
-		g_debug("Quitting running instance!");
-		_xfdashboard_application_quit(self, TRUE);
-
-		/* Release allocated resources */
-		if(optionSwitchToView) g_free(optionSwitchToView);
-
-		return(XFDASHBOARD_APPLICATION_ERROR_QUIT);
-	}
-
-	/* Handle options: toggle
-	 * - If application was not inited yet, perform normal start-up as usual
-	 *   with command-line options given
-	 * - If running in daemon mode, resume if suspended otherwise suspend
-	 * - If not running in daemon mode, quit application
-	 */
-	if(priv->inited && optionToggle)
-	{
-		/* If application is running in daemon mode, toggle between suspend/resume ... */
-		if(priv->isDaemon)
-		{
-			if(priv->isSuspended)
-			{
-				/* Switch to view if requested */
-				_xfdashboard_application_switch_to_view(self, optionSwitchToView);
-
-				/* Show application again */
-				_xfdashboard_application_activate(inApplication);
-			}
-				else
-				{
-					/* Hide application */
-					_xfdashboard_application_quit(self, FALSE);
-				}
-		}
-			/* ... otherwise if not running in daemon mode, just quit */
-			else
-			{
-				/* Hide application */
-				_xfdashboard_application_quit(self, FALSE);
-			}
-
-		/* Release allocated resources */
-		if(optionSwitchToView) g_free(optionSwitchToView);
-
-		/* Stop here because option was handled and application does not get initialized */
-		return(XFDASHBOARD_APPLICATION_ERROR_NONE);
-	}
-
-	/* Handle options: daemonize */
-	if(!priv->inited)
-	{
-		priv->isDaemon=optionDaemonize;
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_DAEMONIZED]);
-
-		if(priv->isDaemon)
-		{
-			priv->isSuspended=TRUE;
-			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_SUSPENDED]);
-		}
-	}
-
-	/* Check if this instance needs to be initialized fully */
-	if(!priv->inited)
-	{
-		/* Perform full initialization of this application instance */
-		result=_xfdashboard_application_initialize_full(self, &stage);
-		if(result==FALSE) return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
-
-		/* Switch to view if requested */
-		_xfdashboard_application_switch_to_view(self, optionSwitchToView);
-
-		/* Show application if not started daemonized */
-		if(!priv->isDaemon) clutter_actor_show(CLUTTER_ACTOR(stage));
-	}
-
-	/* Check if this instance need to be activated. Is should only be done
-	 * if instance is initialized
-	 */
-	if(priv->inited)
-	{
-		/* Switch to view if requested */
-		_xfdashboard_application_switch_to_view(self, optionSwitchToView);
-
-		/* Show application */
-		_xfdashboard_application_activate(inApplication);
-	}
+	/* Parse command-line and get exit status code */
+	exitStatus=_xfdashboard_application_handle_command_line_arguments(self, argc, argv);
 
 	/* Release allocated resources */
-	if(optionSwitchToView) g_free(optionSwitchToView);
+	if(argv) g_strfreev(argv);
 
-	/* All done successfully so return status code 0 for success */
-	priv->inited=TRUE;
-	return(XFDASHBOARD_APPLICATION_ERROR_NONE);
+	/* Return exit status code */
+	return(exitStatus);
 }
 
-#if GLIB_CHECK_VERSION(2, 40, 0)
-/* Override local command-line handling in Glib 2.40 or higher to
- * get old behaviour of command-line handling as in Glib prior to
- * version 2.40 and as it is used in this application.
+/* Check and handle command-line on local instance regardless if this one
+ * is the primary instance or a remote one. This functions checks for arguments
+ * which can be handled locally, e.g. '--help'. Otherwise they will be send to
+ * the primary instance.
  */
 static gboolean _xfdashboard_application_local_command_line(GApplication *inApplication,
 															gchar ***ioArguments,
 															int *outExitStatus)
 {
+	XfdashboardApplication			*self;
+	GError							*error;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication), TRUE);
+
+	self=XFDASHBOARD_APPLICATION(inApplication);
+	error=NULL;
+
+	/* Set exit status code initially to success result but can be changed later */
+	if(outExitStatus) *outExitStatus=XFDASHBOARD_APPLICATION_ERROR_NONE;
+
+	/* Try to register application to determine early if this instance will be
+	 * the primary application instance or a remote one.
+	 */
+	if(!g_application_register(inApplication, NULL, &error))
+	{
+		g_critical(_("Unable to register application: %s"),
+					(error && error->message) ? error->message : _("Unknown error"));
+		if(error)
+		{
+			g_error_free(error);
+			error=NULL;
+		}
+
+		/* Set error status code */
+		if(outExitStatus) *outExitStatus=XFDASHBOARD_APPLICATION_ERROR_FAILED;
+
+		/* Return TRUE to indicate that command-line does not need further processing */
+		return(TRUE);
+	}
+
+	/* If this is a remote instance we need to parse command-line now */
+	if(g_application_get_is_remote(inApplication))
+	{
+		gint						argc;
+		gchar						**argv;
+		gchar						**originArgv;
+		gint						exitStatus;
+		gint						i;
+
+		/* We have to make a extra copy of the command-line arguments, since
+		 * g_option_context_parse() in command-line argument handling function
+		 * might remove parameters from the arguments list and maybe we need
+		 * them to sent the arguments to primary instance if not handled locally
+		 * like '--help'.
+		 */
+		originArgv=*ioArguments;
+
+		argc=g_strv_length(originArgv);
+		argv=g_new0(gchar*, argc+1);
+		for(i=0; i<=argc; i++) argv[i]=g_strdup(originArgv[i]);
+
+		/* Parse command-line and store exit status code */
+		exitStatus=_xfdashboard_application_handle_command_line_arguments(self, argc, argv);
+		if(outExitStatus) *outExitStatus=exitStatus;
+
+		/* Release allocated resources */
+		if(argv) g_strfreev(argv);
+
+		/* If exit status code indicates an error then return TRUE here to indicate
+		 * that command-line does not need further processing.
+		 */
+		if(exitStatus==XFDASHBOARD_APPLICATION_ERROR_FAILED) return(TRUE);
+	}
+
 	/* Return FALSE to indicate that command-line was not completely handled
-	 * and need further processing.
+	 * and needs further processing, e.g. this is the primary instance or a remote
+	 * instance which could not handle the arguments locally.
 	 */
 	return(FALSE);
 }
-#endif
 
 
 /* IMPLEMENTATION: GObject */
@@ -898,9 +1045,7 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 
 	appClass->activate=_xfdashboard_application_activate;
 	appClass->command_line=_xfdashboard_application_command_line;
-#if GLIB_CHECK_VERSION(2, 40, 0)
 	appClass->local_command_line=_xfdashboard_application_local_command_line;
-#endif
 
 	gobjectClass->dispose=_xfdashboard_application_dispose;
 	gobjectClass->set_property=_xfdashboard_application_set_property;
@@ -1034,7 +1179,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->isDaemon=FALSE;
 	priv->isSuspended=FALSE;
 	priv->themeName=NULL;
-	priv->inited=FALSE;
+	priv->initialized=FALSE;
 	priv->xfconfChannel=NULL;
 	priv->viewManager=NULL;
 	priv->searchManager=NULL;
