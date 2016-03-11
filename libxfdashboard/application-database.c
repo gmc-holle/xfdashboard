@@ -30,6 +30,7 @@
 
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/desktop-app-info.h>
+#include <libxfdashboard/compat.h>
 
 
 /* Define this class in GObject system */

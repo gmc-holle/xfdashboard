@@ -46,6 +46,8 @@
 
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/application.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardWindowTracker,

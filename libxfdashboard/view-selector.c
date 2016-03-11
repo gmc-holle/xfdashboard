@@ -47,6 +47,8 @@
 
 #include <libxfdashboard/view.h>
 #include <libxfdashboard/tooltip-action.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardViewSelector,

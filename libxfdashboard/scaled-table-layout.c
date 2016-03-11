@@ -35,6 +35,9 @@
 #include <clutter/clutter.h>
 #include <math.h>
 
+#include <libxfdashboard/compat.h>
+
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardScaledTableLayout,
 				xfdashboard_scaled_table_layout,
@@ -108,7 +111,7 @@ static void _xfdashboard_scaled_table_layout_update_rows_and_columns(Xfdashboard
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
-		if(CLUTTER_ACTOR_IS_VISIBLE(child)) numberChildren++;
+		if(clutter_actor_is_visible(child)) numberChildren++;
 	}
 
 	if(numberChildren!=priv->numberChildren)
@@ -295,7 +298,7 @@ static void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self
 		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
 		while(clutter_actor_iter_next(&iter, &child))
 		{
-			if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+			if(!clutter_actor_is_visible(child)) continue;
 
 			clutter_actor_get_preferred_size(child, NULL, NULL, &w, &h);
 			if(w>largestWidth) largestWidth=w;
@@ -309,7 +312,7 @@ static void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+		if(!clutter_actor_is_visible(child)) continue;
 
 		/* Get natural size of actor */
 		clutter_actor_get_preferred_size(child, NULL, NULL, &childWidth, &childHeight);

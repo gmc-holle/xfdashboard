@@ -31,6 +31,7 @@
 
 #include <libxfdashboard/plugin.h>
 #include <libxfdashboard/application.h>
+#include <libxfdashboard/compat.h>
 
 
 /* Define this class in GObject system */

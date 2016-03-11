@@ -42,6 +42,8 @@
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/stage-interface.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 static void _xfdashboard_workspace_selector_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -563,7 +565,7 @@ static void _xfdashboard_workspace_selector_get_preferred_height(ClutterActor *i
 		while(clutter_actor_iter_next(&iter, &child))
 		{
 			/* Only check visible children */
-			if(CLUTTER_ACTOR_IS_VISIBLE(child)) numberChildren++;
+			if(clutter_actor_is_visible(child)) numberChildren++;
 		}
 
 		/* All workspace actors should have the same size because they
@@ -584,7 +586,7 @@ static void _xfdashboard_workspace_selector_get_preferred_height(ClutterActor *i
 		while(clutter_actor_iter_next(&iter, &child))
 		{
 			/* Only handle visible children */
-			if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+			if(!clutter_actor_is_visible(child)) continue;
 
 			/* Get child's size */
 			_xfdashboard_workspace_selector_get_preferred_height_for_child(self,
@@ -621,7 +623,7 @@ static void _xfdashboard_workspace_selector_get_preferred_height(ClutterActor *i
 			while(clutter_actor_iter_next(&iter, &child))
 			{
 				/* Only handle visible children */
-				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+				if(!clutter_actor_is_visible(child)) continue;
 
 				/* Get child's size */
 				_xfdashboard_workspace_selector_get_preferred_height_for_child(self,
@@ -681,7 +683,7 @@ static void _xfdashboard_workspace_selector_get_preferred_width(ClutterActor *in
 		while(clutter_actor_iter_next(&iter, &child))
 		{
 			/* Only handle visible children */
-			if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+			if(!clutter_actor_is_visible(child)) continue;
 
 			/* Get child's size */
 			_xfdashboard_workspace_selector_get_preferred_width_for_child(self,
@@ -717,7 +719,7 @@ static void _xfdashboard_workspace_selector_get_preferred_width(ClutterActor *in
 			while(clutter_actor_iter_next(&iter, &child))
 			{
 				/* Only check visible children */
-				if(CLUTTER_ACTOR_IS_VISIBLE(child)) numberChildren++;
+				if(clutter_actor_is_visible(child)) numberChildren++;
 			}
 
 			/* All workspace actors should have the same size because they
@@ -738,7 +740,7 @@ static void _xfdashboard_workspace_selector_get_preferred_width(ClutterActor *in
 			while(clutter_actor_iter_next(&iter, &child))
 			{
 				/* Only handle visible children */
-				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+				if(!clutter_actor_is_visible(child)) continue;
 
 				/* Get child's size */
 				_xfdashboard_workspace_selector_get_preferred_width_for_child(self,
@@ -794,7 +796,7 @@ static void _xfdashboard_workspace_selector_allocate(ClutterActor *inActor,
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Is child visible? */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+		if(!clutter_actor_is_visible(child)) continue;
 
 		/* Calculate new position and size of child */
 		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)

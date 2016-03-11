@@ -36,6 +36,8 @@
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/focus-manager.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 static void _xfdashboard_text_box_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -320,7 +322,7 @@ static void _xfdashboard_text_box_get_preferred_width(ClutterActor *self,
 	minWidth=naturalWidth=0.0f;
 
 	/* Determine size of primary icon if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorPrimaryIcon))
+	if(clutter_actor_is_visible(priv->actorPrimaryIcon))
 	{
 		clutter_actor_get_preferred_width(CLUTTER_ACTOR(priv->actorPrimaryIcon),
 											inForHeight,
@@ -332,7 +334,7 @@ static void _xfdashboard_text_box_get_preferred_width(ClutterActor *self,
 	}
 
 	/* Determine size of editable text box if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorTextBox))
+	if(clutter_actor_is_visible(priv->actorTextBox))
 	{
 		clutter_actor_get_preferred_width(CLUTTER_ACTOR(priv->actorTextBox),
 											inForHeight,
@@ -344,7 +346,7 @@ static void _xfdashboard_text_box_get_preferred_width(ClutterActor *self,
 	}
 
 	/* Determine size of hint label if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorHintLabel))
+	if(clutter_actor_is_visible(priv->actorHintLabel))
 	{
 		clutter_actor_get_preferred_width(CLUTTER_ACTOR(priv->actorHintLabel),
 											inForHeight,
@@ -356,7 +358,7 @@ static void _xfdashboard_text_box_get_preferred_width(ClutterActor *self,
 	}
 
 	/* Determine size of secondary icon if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorSecondaryIcon))
+	if(clutter_actor_is_visible(priv->actorSecondaryIcon))
 	{
 		clutter_actor_get_preferred_width(CLUTTER_ACTOR(priv->actorSecondaryIcon),
 											inForHeight,
@@ -402,7 +404,7 @@ static void _xfdashboard_text_box_allocate(ClutterActor *self,
 	bottom=clutter_actor_box_get_height(inBox)-priv->padding;
 
 	/* Set allocation of primary icon if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorPrimaryIcon))
+	if(clutter_actor_is_visible(priv->actorPrimaryIcon))
 	{
 		gfloat					childRight;
 
@@ -423,7 +425,7 @@ static void _xfdashboard_text_box_allocate(ClutterActor *self,
 	}
 
 	/* Set allocation of secondary icon if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorSecondaryIcon))
+	if(clutter_actor_is_visible(priv->actorSecondaryIcon))
 	{
 		gfloat					childLeft;
 
@@ -444,7 +446,7 @@ static void _xfdashboard_text_box_allocate(ClutterActor *self,
 	}
 
 	/* Set allocation of editable text box if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorTextBox))
+	if(clutter_actor_is_visible(priv->actorTextBox))
 	{
 		gfloat					textHeight;
 
@@ -460,7 +462,7 @@ static void _xfdashboard_text_box_allocate(ClutterActor *self,
 	}
 
 	/* Set allocation of hint label if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorHintLabel))
+	if(clutter_actor_is_visible(priv->actorHintLabel))
 	{
 		gfloat					textHeight;
 

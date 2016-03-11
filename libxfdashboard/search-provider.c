@@ -31,6 +31,8 @@
 
 #include <libxfdashboard/actor.h>
 #include <libxfdashboard/text-box.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_ABSTRACT_TYPE(XfdashboardSearchProvider,

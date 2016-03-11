@@ -31,6 +31,8 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/application.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this interface in GObject system */
 G_DEFINE_INTERFACE(XfdashboardStylable,

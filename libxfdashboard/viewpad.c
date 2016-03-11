@@ -37,6 +37,8 @@
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/focus-manager.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 static void _xfdashboard_viewpad_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -212,7 +214,7 @@ static void _xfdashboard_viewpad_update_scrollbars(XfdashboardViewpad *self)
 	 * same allocation again in an unkindly way to force a recalculation
 	 * if scroll bars needed to shown (or hidden what is unlikely)
 	 */
-	if(CLUTTER_ACTOR_IS_VISIBLE(self) &&
+	if(clutter_actor_is_visible(CLUTTER_ACTOR(self)) &&
 		(priv->hScrollbarPolicy==XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC ||
 			priv->vScrollbarPolicy==XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC))
 	{

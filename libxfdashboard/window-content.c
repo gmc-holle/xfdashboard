@@ -46,6 +46,8 @@
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/enums.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Definitions */
 typedef enum /*< skip,prefix=XFDASHBOARD_WINDOW_CONTENT_WORKAROUND_MODE >*/

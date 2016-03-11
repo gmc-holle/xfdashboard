@@ -46,6 +46,8 @@
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/application-tracker.h>
 #include <libxfdashboard/window-tracker-window.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 static void _xfdashboard_quicklaunch_focusable_iface_init(XfdashboardFocusableInterface *iface);
@@ -1363,7 +1365,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_width(XfdashboardQuicklaunc
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Only check visible children */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+		if(!clutter_actor_is_visible(child)) continue;
 
 		/* Get width of child */
 		clutter_actor_get_preferred_width(child, -1, &childMinWidth, &childNaturalWidth);
@@ -1411,7 +1413,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_width(XfdashboardQuicklaunc
 			while(clutter_actor_iter_next(&iter, &child))
 			{
 				/* Only check visible children */
-				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+				if(!clutter_actor_is_visible(child)) continue;
 
 				/* Get scaled size of child and add to total width */
 				clutter_actor_get_preferred_width(child, -1, &childMinWidth, &childNaturalWidth);
@@ -1465,7 +1467,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaun
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Only check visible children */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+		if(!clutter_actor_is_visible(child)) continue;
 
 		/* Get height of child */
 		clutter_actor_get_preferred_height(child, -1, &childMinHeight, &childNaturalHeight);
@@ -1513,7 +1515,7 @@ static gfloat _xfdashboard_quicklaunch_get_scale_for_height(XfdashboardQuicklaun
 			while(clutter_actor_iter_next(&iter, &child))
 			{
 				/* Only check visible children */
-				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+				if(!clutter_actor_is_visible(child)) continue;
 
 				/* Get scaled size of child and add to total height */
 				clutter_actor_get_preferred_height(child, -1, &childMinHeight, &childNaturalHeight);
@@ -1560,7 +1562,7 @@ static ClutterActor* xfdashboard_quicklaunch_get_previous_selectable(Xfdashboard
 		if(child==inSelected && prevItem) return(prevItem);
 
 		/* If this child is visible but not the one we lookup remember it as previous one */
-		if(CLUTTER_ACTOR_IS_VISIBLE(child)) prevItem=child;
+		if(clutter_actor_is_visible(child)) prevItem=child;
 	}
 
 	/* If we get here there is no selectable item after given one, so return last
@@ -1590,7 +1592,7 @@ static ClutterActor* xfdashboard_quicklaunch_get_next_selectable(XfdashboardQuic
 		if(child!=inSelected && doLookup==FALSE) continue;
 
 		/* Return child if visible */
-		if(doLookup && CLUTTER_ACTOR_IS_VISIBLE(child)) return(child);
+		if(doLookup && clutter_actor_is_visible(child)) return(child);
 
 		/* If we get here we either found current selected one and we should
 		 * look for next selectable item or we looked for next selectable item
@@ -1611,7 +1613,7 @@ static ClutterActor* xfdashboard_quicklaunch_get_next_selectable(XfdashboardQuic
 		if(child==inSelected) break;
 
 		/* Return this child if visible */
-		if(CLUTTER_ACTOR_IS_VISIBLE(child)) return(child);
+		if(clutter_actor_is_visible(child)) return(child);
 	}
 
 	/* If we get here there is no selectable item was found, so return NULL */
@@ -2053,7 +2055,7 @@ static void _xfdashboard_quicklaunch_get_preferred_height(ClutterActor *inActor,
 		while(clutter_actor_iter_next(&iter, &child))
 		{
 			/* Only check visible children */
-			if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+			if(!clutter_actor_is_visible(child)) continue;
 
 			/* Get sizes of child */
 			clutter_actor_get_preferred_height(child,
@@ -2097,7 +2099,7 @@ static void _xfdashboard_quicklaunch_get_preferred_height(ClutterActor *inActor,
 			while(clutter_actor_iter_next(&iter, &child))
 			{
 				/* Only check visible children */
-				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+				if(!clutter_actor_is_visible(child)) continue;
 
 				/* Get child's size */
 				clutter_actor_get_preferred_height(child,
@@ -2152,7 +2154,7 @@ static void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
 		while(clutter_actor_iter_next(&iter, &child))
 		{
 			/* Only check visible children */
-			if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+			if(!clutter_actor_is_visible(child)) continue;
 
 			/* Get child's size */
 			clutter_actor_get_preferred_width(child,
@@ -2184,7 +2186,7 @@ static void _xfdashboard_quicklaunch_get_preferred_width(ClutterActor *inActor,
 			while(clutter_actor_iter_next(&iter, &child))
 			{
 				/* Only check visible children */
-				if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+				if(!clutter_actor_is_visible(child)) continue;
 
 				/* Get sizes of child */
 				clutter_actor_get_preferred_width(child,
@@ -2253,7 +2255,7 @@ static void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Is child visible? */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+		if(!clutter_actor_is_visible(child)) continue;
 
 		/* Calculate new position and size of child. Because we will set
 		 * a scale factor to the actor we have to set the real unscaled
@@ -2435,7 +2437,7 @@ static ClutterActor* _xfdashboard_quicklaunch_focusable_find_selection(Xfdashboa
 				(inDirection==XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT && priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL))
 			{
 				newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
-				while(newSelection && !CLUTTER_ACTOR_IS_VISIBLE(newSelection))
+				while(newSelection && !clutter_actor_is_visible(newSelection))
 				{
 					newSelection=clutter_actor_get_next_sibling(newSelection);
 				}
@@ -2450,7 +2452,7 @@ static ClutterActor* _xfdashboard_quicklaunch_focusable_find_selection(Xfdashboa
 				(inDirection==XFDASHBOARD_SELECTION_TARGET_PAGE_RIGHT && priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL))
 			{
 				newSelection=clutter_actor_get_last_child(CLUTTER_ACTOR(self));
-				while(newSelection && !CLUTTER_ACTOR_IS_VISIBLE(newSelection))
+				while(newSelection && !clutter_actor_is_visible(newSelection))
 				{
 					newSelection=clutter_actor_get_previous_sibling(newSelection);
 				}
@@ -2459,7 +2461,7 @@ static ClutterActor* _xfdashboard_quicklaunch_focusable_find_selection(Xfdashboa
 
 		case XFDASHBOARD_SELECTION_TARGET_NEXT:
 			newSelection=xfdashboard_quicklaunch_get_next_selectable(self, inSelection);
-			while(newSelection && !CLUTTER_ACTOR_IS_VISIBLE(newSelection))
+			while(newSelection && !clutter_actor_is_visible(newSelection))
 			{
 				newSelection=clutter_actor_get_next_sibling(newSelection);
 			}
@@ -2467,7 +2469,7 @@ static ClutterActor* _xfdashboard_quicklaunch_focusable_find_selection(Xfdashboa
 			if(!newSelection)
 			{
 				newSelection=xfdashboard_quicklaunch_get_previous_selectable(self, inSelection);
-				while(newSelection && !CLUTTER_ACTOR_IS_VISIBLE(newSelection))
+				while(newSelection && !clutter_actor_is_visible(newSelection))
 				{
 					newSelection=clutter_actor_get_next_sibling(newSelection);
 				}

@@ -41,6 +41,8 @@
 #include <libxfdashboard/image-content.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/stylable.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWorkspace,
@@ -334,7 +336,7 @@ static void _xfdashboard_live_workspace_on_window_state_changed(XfdashboardLiveW
 	windowActor=_xfdashboard_live_workspace_find_by_window(self, inWindow);
 	if(windowActor)
 	{
-		currentVisible=!!CLUTTER_ACTOR_IS_VISIBLE(windowActor);
+		currentVisible=clutter_actor_is_visible(windowActor);
 	}
 
 	/* Check if window's visibility has changed */

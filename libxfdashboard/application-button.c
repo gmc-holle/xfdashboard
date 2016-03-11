@@ -37,6 +37,8 @@
 #include <libxfdashboard/application-tracker.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/application.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationButton,

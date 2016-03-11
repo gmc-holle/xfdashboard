@@ -33,6 +33,9 @@
 #include <clutter/clutter.h>
 #include <math.h>
 
+#include <libxfdashboard/compat.h>
+
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardFillBoxLayout,
 				xfdashboard_fill_box_layout,
@@ -104,7 +107,7 @@ static gint _xfdashboard_fill_box_layout_get_largest_sizes(XfdashboardFillBoxLay
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Only check visible children */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+		if(!clutter_actor_is_visible(child)) continue;
 
 		/* Check for largest size */
 		clutter_actor_get_preferred_size(child,
@@ -213,7 +216,7 @@ static void _xfdashboard_fill_box_layout_get_sizes_for_all(XfdashboardFillBoxLay
 		while(clutter_actor_iter_next(&iter, &child))
 		{
 			/* Only get sizes of visible children */
-			if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+			if(!clutter_actor_is_visible(child)) continue;
 
 			/* Count visible children */
 			numberChildren++;
@@ -438,7 +441,7 @@ static void _xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inLayout
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Only set sizes on visible children */
-		if(!CLUTTER_ACTOR_IS_VISIBLE(child)) continue;
+		if(!clutter_actor_is_visible(child)) continue;
 
 		/* Calculate and set new allocation of child */
 		if(priv->isHomogeneous==FALSE)

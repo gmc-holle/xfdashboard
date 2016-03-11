@@ -33,6 +33,8 @@
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/utils.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 static void _xfdashboard_collapse_box_container_iface_init(ClutterContainerIface *inInterface);
@@ -409,7 +411,7 @@ static void _xfdashboard_collapse_box_allocate(ClutterActor *inActor,
 	clutter_actor_box_get_size(inBox, &w, &h);
 
 	/* Get allocation for child */
-	if(priv->child && CLUTTER_ACTOR_IS_VISIBLE(priv->child))
+	if(priv->child && clutter_actor_is_visible(priv->child))
 	{
 		/* Set up allocation */
 		requestMode=clutter_actor_get_request_mode(CLUTTER_ACTOR(self));

@@ -41,6 +41,8 @@
 #include <libxfdashboard/click-action.h>
 #include <libxfdashboard/drag-action.h>
 #include <libxfdashboard/marshal.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardSearchResultContainer,

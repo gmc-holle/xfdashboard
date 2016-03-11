@@ -32,6 +32,8 @@
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/actor.h>
 #include <libxfdashboard/stylable.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardDropAction,
@@ -162,8 +164,8 @@ static gboolean _xfdashboard_drop_action_class_real_begin(XfdashboardDropAction 
 	 * return FALSE to indicate that we cannot handle dragged actor.
 	 */
 	return(clutter_actor_meta_get_enabled(actorMeta) &&
-			CLUTTER_ACTOR_IS_VISIBLE(priv->actor) &&
-			CLUTTER_ACTOR_IS_REACTIVE(priv->actor));
+			clutter_actor_is_visible(priv->actor) &&
+			clutter_actor_get_reactive(priv->actor));
 }
 
 /* Default signal handler for "end" */
@@ -203,8 +205,8 @@ static gboolean _xfdashboard_drop_action_class_real_can_drop(XfdashboardDropActi
 	 * possible if drop target is visible and reactive. Otherwise we have to return FALSE.
 	 */
 	return(clutter_actor_meta_get_enabled(actorMeta) &&
-			CLUTTER_ACTOR_IS_VISIBLE(priv->actor) &&
-			CLUTTER_ACTOR_IS_REACTIVE(priv->actor));
+			clutter_actor_is_visible(priv->actor) &&
+			clutter_actor_get_reactive(priv->actor));
 }
 
 /* Default signal handler for "drop" */

@@ -31,6 +31,8 @@
 
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/focus-manager.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 static void _xfdashboard_action_button_focusable_iface_init(XfdashboardFocusableInterface *iface);

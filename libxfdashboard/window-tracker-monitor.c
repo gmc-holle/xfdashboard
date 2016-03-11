@@ -33,6 +33,9 @@
 #include <glib/gi18n-lib.h>
 #include <gdk/gdkx.h>
 
+#include <libxfdashboard/compat.h>
+
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardWindowTrackerMonitor,
 				xfdashboard_window_tracker_monitor,

@@ -34,6 +34,8 @@
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/bindings-pool.h>
 #include <libxfdashboard/application.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardFocusManager,
@@ -107,9 +109,9 @@ static void _xfdashboard_focus_manager_on_focusable_hide(XfdashboardFocusManager
 	 */
 	if(priv->currentFocus!=focusable) return;
 
-	if(CLUTTER_ACTOR_IS_MAPPED(CLUTTER_ACTOR(focusable)) &&
-		CLUTTER_ACTOR_IS_REALIZED(CLUTTER_ACTOR(focusable)) &&
-		CLUTTER_ACTOR_IS_VISIBLE(CLUTTER_ACTOR(focusable)))
+	if(clutter_actor_is_mapped(CLUTTER_ACTOR(focusable)) &&
+		clutter_actor_is_realized(CLUTTER_ACTOR(focusable)) &&
+		clutter_actor_is_visible(CLUTTER_ACTOR(focusable)))
 	{
 		return;
 	}

@@ -36,6 +36,8 @@
 #include <libxfdashboard/stage.h>
 #include <libxfdashboard/stage-interface.h>
 #include <libxfdashboard/window-tracker.h>
+#include <libxfdashboard/compat.h>
+
 
 /**
  * SECTION:utils
@@ -706,8 +708,8 @@ static void _xfdashboard_dump_actor_internal(ClutterActor *inActor, gint inLevel
 					clutter_actor_get_y(child),
 					clutter_actor_get_width(child),
 					clutter_actor_get_height(child),
-					CLUTTER_ACTOR_IS_MAPPED(child) ? "yes" : "no",
-					CLUTTER_ACTOR_IS_VISIBLE(child) ? "yes" : "no",
+					clutter_actor_is_mapped(child) ? "yes" : "no",
+					clutter_actor_is_visible(child) ? "yes" : "no",
 					clutter_actor_get_n_children(child));
 		if(clutter_actor_get_n_children(child)>0) _xfdashboard_dump_actor_internal(child, inLevel+1);
 	}

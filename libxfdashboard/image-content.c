@@ -33,12 +33,15 @@
 
 #include <libxfdashboard/application.h>
 #include <libxfdashboard/stylable.h>
+#include <libxfdashboard/compat.h>
+
 
 #if GTK_CHECK_VERSION(3, 14 ,0)
 #undef USE_GTK_BUILTIN_ICONS
 #else
 #define USE_GTK_BUILTIN_ICONS 1
 #endif
+
 
 /* Define this class in GObject system */
 static void _xfdashboard_image_content_stylable_iface_init(XfdashboardStylableInterface *iface);

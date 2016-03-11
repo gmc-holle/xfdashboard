@@ -52,6 +52,8 @@
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/window-content.h>
 #include <libxfdashboard/stage-interface.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStage,

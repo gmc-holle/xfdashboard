@@ -34,6 +34,8 @@
 
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/outline-effect.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardBackground,

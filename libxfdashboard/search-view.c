@@ -37,6 +37,8 @@
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/application.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 static void _xfdashboard_search_view_focusable_iface_init(XfdashboardFocusableInterface *iface);

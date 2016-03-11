@@ -32,6 +32,8 @@
 #include <libxfdashboard/actor.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/stage.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardStageInterface,

@@ -34,6 +34,9 @@
 #include <clutter/clutter.h>
 #include <math.h>
 
+#include <libxfdashboard/compat.h>
+
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardDynamicTableLayout,
 				xfdashboard_dynamic_table_layout,
@@ -112,7 +115,7 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Handle only visible actors */
-		if(CLUTTER_ACTOR_IS_VISIBLE(child))
+		if(clutter_actor_is_visible(child))
 		{
 			/* Count visible children */
 			numberChildren++;
@@ -202,7 +205,7 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Handle only visible actors */
-		if(CLUTTER_ACTOR_IS_VISIBLE(child))
+		if(clutter_actor_is_visible(child))
 		{
 			g_array_append_val(priv->columnCoords, x);
 			x+=(largestWidth+priv->columnSpacing);
@@ -229,7 +232,7 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Handle only visible actors */
-		if(CLUTTER_ACTOR_IS_VISIBLE(child))
+		if(clutter_actor_is_visible(child))
 		{
 			/* If it is the first columns in row, calculate y-coordinate
 			 * and append it to array.
@@ -361,7 +364,7 @@ static void _xfdashboard_dynamic_table_layout_allocate(ClutterLayoutManager *sel
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Handle only visible actors */
-		if(CLUTTER_ACTOR_IS_VISIBLE(child))
+		if(clutter_actor_is_visible(child))
 		{
 			/* Get column and row for child */
 			column=floor(i % priv->columns);

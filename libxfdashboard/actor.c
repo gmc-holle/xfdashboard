@@ -33,6 +33,8 @@
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/utils.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 static gpointer				xfdashboard_actor_parent_class=NULL;
@@ -306,9 +308,9 @@ static gboolean _xfdashboard_actor_focusable_can_focus(XfdashboardFocusable *inF
 
 	/* This actor can only be focused if it is mapped, visibl	e and reactive */
 	if(priv->canFocus &&
-		CLUTTER_ACTOR_IS_MAPPED(self) &&
-		CLUTTER_ACTOR_IS_VISIBLE(self) &&
-		CLUTTER_ACTOR_IS_REACTIVE(self))
+		clutter_actor_is_mapped(CLUTTER_ACTOR(self)) &&
+		clutter_actor_is_visible(CLUTTER_ACTOR(self)) &&
+		clutter_actor_get_reactive(CLUTTER_ACTOR(self)))
 	{
 		return(TRUE);
 	}
@@ -482,7 +484,7 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 	didChange=FALSE;
 
 	/* Only recompute style for mapped actors or if revalidation was forced */
-	if(!priv->forceStyleRevalidation && !CLUTTER_ACTOR_IS_MAPPED(self)) return;
+	if(!priv->forceStyleRevalidation && !clutter_actor_is_mapped(CLUTTER_ACTOR(self))) return;
 
 	/* Get theme CSS */
 	theme=xfdashboard_application_get_theme(NULL);

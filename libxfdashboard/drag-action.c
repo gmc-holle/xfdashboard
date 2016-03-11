@@ -33,6 +33,8 @@
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/actor.h>
 #include <libxfdashboard/stylable.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardDragAction,
@@ -527,8 +529,8 @@ static void _xfdashboard_drag_action_drag_motion(ClutterDragAction *inAction,
 			ClutterActor				*dropActor=clutter_actor_meta_get_actor(actorMeta);
 
 			if(clutter_actor_meta_get_enabled(actorMeta) &&
-				CLUTTER_ACTOR_IS_VISIBLE(dropActor) &&
-				CLUTTER_ACTOR_IS_REACTIVE(dropActor))
+				clutter_actor_is_visible(dropActor) &&
+				clutter_actor_get_reactive(dropActor))
 			{
 				g_signal_emit_by_name(dropTarget, "drag-enter", self, NULL);
 				priv->lastDropTarget=dropTarget;

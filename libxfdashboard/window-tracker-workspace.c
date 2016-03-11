@@ -40,6 +40,8 @@
 
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/marshal.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Usually we found define a class in GObject system here but
  * this class is a wrapper around WnckWorkspace to create a virtual stable

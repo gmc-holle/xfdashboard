@@ -37,6 +37,8 @@
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/application.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this interface in GObject system */
 G_DEFINE_INTERFACE(XfdashboardFocusable,

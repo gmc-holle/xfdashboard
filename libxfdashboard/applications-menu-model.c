@@ -30,6 +30,8 @@
 
 #include <libxfdashboard/applications-menu-model.h>
 #include <libxfdashboard/application-database.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define these classes in GObject system */
 G_DEFINE_TYPE(XfdashboardApplicationsMenuModel,

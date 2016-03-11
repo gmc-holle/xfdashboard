@@ -30,6 +30,8 @@
 
 #include <libxfdashboard/desktop-app-info.h>
 #include <libxfdashboard/application-database.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 static void _xfdashboard_desktop_app_info_gappinfo_iface_init(GAppInfoIface *iface);

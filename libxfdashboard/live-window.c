@@ -41,6 +41,8 @@
 #include <libxfdashboard/window-content.h>
 #include <libxfdashboard/image-content.h>
 #include <libxfdashboard/stylable.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardLiveWindow,
@@ -139,7 +141,7 @@ static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, Clu
 	action=XFDASHBOARD_CLICK_ACTION(inUserData);
 
 	/* Check if click happened in "close button" */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorClose))
+	if(clutter_actor_is_visible(priv->actorClose))
 	{
 		xfdashboard_click_action_get_coords(action, &eventX, &eventY);
 		if(clutter_actor_transform_stage_point(CLUTTER_ACTOR(self), eventX, eventY, &relX, &relY))
@@ -195,7 +197,7 @@ static void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *s
 	if(inWindow!=priv->window) return;
 
 	/* Determine current and new state of actions */
-	currentCloseVisible=(CLUTTER_ACTOR_IS_VISIBLE(priv->actorClose) ? TRUE : FALSE);
+	currentCloseVisible=(clutter_actor_is_visible(priv->actorClose) ? TRUE : FALSE);
 	newCloseVisible=xfdashboard_window_tracker_window_has_close_action(priv->window);
 	
 	/* Show or hide close button actor */
@@ -403,7 +405,7 @@ static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 
 	/* Determine size of window if available and visible (should usually be the largest actor) */
 	if(priv->actorWindow &&
-		CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindow))
+		clutter_actor_is_visible(priv->actorWindow))
 	{
 		content=clutter_actor_get_content(priv->actorWindow);
 		if(content &&
@@ -416,7 +418,7 @@ static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 	}
 
 	/* Determine size of title actor if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorTitle))
+	if(clutter_actor_is_visible(priv->actorTitle))
 	{
 		clutter_actor_get_preferred_height(priv->actorTitle,
 											inForWidth,
@@ -429,7 +431,7 @@ static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 	}
 
 	/* Determine size of close button actor if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorClose))
+	if(clutter_actor_is_visible(priv->actorClose))
 	{
 		clutter_actor_get_preferred_height(priv->actorClose,
 											inForWidth,
@@ -442,7 +444,7 @@ static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 	}
 
 	/* Determine size of window number button actor if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindowNumber))
+	if(clutter_actor_is_visible(priv->actorWindowNumber))
 	{
 		clutter_actor_get_preferred_height(priv->actorWindowNumber,
 											inForWidth,
@@ -473,7 +475,7 @@ static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 
 	/* Determine size of window if available and visible (should usually be the largest actor) */
 	if(priv->actorWindow &&
-		CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindow))
+		clutter_actor_is_visible(priv->actorWindow))
 	{
 		content=clutter_actor_get_content(priv->actorWindow);
 		if(content &&
@@ -486,7 +488,7 @@ static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 	}
 
 	/* Determine size of title actor if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorTitle))
+	if(clutter_actor_is_visible(priv->actorTitle))
 	{
 		clutter_actor_get_preferred_width(priv->actorTitle,
 											inForHeight,
@@ -499,7 +501,7 @@ static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 	}
 
 	/* Determine size of close button actor if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorClose))
+	if(clutter_actor_is_visible(priv->actorClose))
 	{
 		clutter_actor_get_preferred_width(priv->actorClose,
 											inForHeight,
@@ -512,7 +514,7 @@ static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 	}
 
 	/* Determine size of window number button actor if visible */
-	if(CLUTTER_ACTOR_IS_VISIBLE(priv->actorWindowNumber))
+	if(clutter_actor_is_visible(priv->actorWindowNumber))
 	{
 		clutter_actor_get_preferred_width(priv->actorWindowNumber,
 											inForHeight,

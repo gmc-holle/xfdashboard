@@ -31,6 +31,7 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/marshal.h>
+#include <libxfdashboard/compat.h>
 
 
 /* Forward declaration */

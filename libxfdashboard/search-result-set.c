@@ -29,6 +29,9 @@
 
 #include <glib/gi18n-lib.h>
 
+#include <libxfdashboard/compat.h>
+
+
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardSearchResultSet,
 				xfdashboard_search_result_set,

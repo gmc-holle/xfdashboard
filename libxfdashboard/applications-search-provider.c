@@ -38,6 +38,7 @@
 #include <libxfdashboard/drag-action.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/enums.h>
+#include <libxfdashboard/compat.h>
 
 
 /* Define this class in GObject system */

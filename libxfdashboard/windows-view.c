@@ -44,6 +44,7 @@
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/stage-interface.h>
+#include <libxfdashboard/compat.h>
 
 
 /* Define this class in GObject system */

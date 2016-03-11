@@ -44,6 +44,8 @@
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/desktop-app-info.h>
 #include <libxfdashboard/application-database.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 static void _xfdashboard_applications_view_focusable_iface_init(XfdashboardFocusableInterface *iface);

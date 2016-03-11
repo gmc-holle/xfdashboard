@@ -33,6 +33,8 @@
 #include <gdk/gdkkeysyms.h>
 
 #include <libxfdashboard/utils.h>
+#include <libxfdashboard/compat.h>
+
 
 /* Define this class in GObject system */
 G_DEFINE_TYPE(XfdashboardBindingsPool,
