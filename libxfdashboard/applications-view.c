@@ -471,7 +471,7 @@ static void _xfdashboard_applications_view_on_all_applications_menu_clicked(Xfda
 static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsView *self, gpointer inUserData)
 {
 	XfdashboardApplicationsViewPrivate	*priv;
-	ClutterModelIter					*iterator;
+	XfdashboardModelIter				*iterator;
 	ClutterActor						*actor;
 	GarconMenuElement					*menuElement=NULL;
 	GarconMenu							*parentMenu=NULL;
@@ -552,15 +552,19 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 	}
 
 	/* Iterate through (filtered) data model and create actor for each entry */
-	iterator=clutter_model_get_first_iter(CLUTTER_MODEL(priv->apps));
-	if(iterator && CLUTTER_IS_MODEL_ITER(iterator))
+	iterator=xfdashboard_model_iter_new(XFDASHBOARD_MODEL(priv->apps));
+	if(iterator)
 	{
-		while(!clutter_model_iter_is_last(iterator))
+		while(xfdashboard_model_iter_next(iterator))
 		{
+			/* If row is filtered continue with next one immediately */
+			if(!xfdashboard_model_iter_filter(iterator)) continue;
+
 			/* Get data from model */
-			clutter_model_iter_get(iterator,
-									XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
-									-1);
+			xfdashboard_applications_menu_model_get(priv->apps,
+													iterator,
+													XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT, &menuElement,
+													-1);
 
 			if(!menuElement) continue;
 
@@ -579,22 +583,27 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 				{
 					gchar		*actorText;
 					const gchar	*iconName;
+					const gchar	*title;
+					const gchar	*description;
 
 					actor=xfdashboard_button_new();
 
 					iconName=garcon_menu_element_get_icon_name(menuElement);
 					if(iconName) xfdashboard_button_set_icon_name(XFDASHBOARD_BUTTON(actor), iconName);
 
+					title=garcon_menu_element_get_name(menuElement);
+					description=garcon_menu_element_get_comment(menuElement);
+
 					if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
 					{
 						actorText=g_markup_printf_escaped(priv->formatTitleDescription,
-															garcon_menu_element_get_name(menuElement),
-															garcon_menu_element_get_comment(menuElement));
+															title ? title : "",
+															description ? description : "");
 					}
 						else
 						{
 							actorText=g_markup_printf_escaped(priv->formatTitleOnly,
-																garcon_menu_element_get_name(menuElement));
+																title ? title : "");
 						}
 					xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), actorText);
 					g_free(actorText);
@@ -628,9 +637,6 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 			/* Release allocated resources */
 			g_object_unref(menuElement);
 			menuElement=NULL;
-
-			/* Go to next entry in model */
-			iterator=clutter_model_iter_next(iterator);
 		}
 		g_object_unref(iterator);
 	}
@@ -1406,7 +1412,6 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 
 	xfdashboard_view_set_view_fit_mode(XFDASHBOARD_VIEW(self), XFDASHBOARD_VIEW_FIT_MODE_HORIZONTAL);
 	xfdashboard_applications_view_set_view_mode(self, XFDASHBOARD_VIEW_MODE_LIST);
-	clutter_model_set_sorting_column(CLUTTER_MODEL(priv->apps), XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE);
 
 	/* Connect signals */
 	g_signal_connect_swapped(priv->apps, "filter-changed", G_CALLBACK(_xfdashboard_applications_view_on_filter_changed), self);

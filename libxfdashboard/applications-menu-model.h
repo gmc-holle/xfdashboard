@@ -29,8 +29,9 @@
 #error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
 #endif
 
-#include <clutter/clutter.h>
 #include <garcon/garcon.h>
+
+#include <libxfdashboard/model.h>
 
 G_BEGIN_DECLS
 
@@ -48,7 +49,7 @@ typedef struct _XfdashboardApplicationsMenuModelClass		XfdashboardApplicationsMe
 struct _XfdashboardApplicationsMenuModel
 {
 	/* Parent instance */
-	ClutterListModel							parent_instance;
+	XfdashboardModel							parent_instance;
 
 	/* Private structure */
 	XfdashboardApplicationsMenuModelPrivate		*priv;
@@ -58,7 +59,7 @@ struct _XfdashboardApplicationsMenuModelClass
 {
 	/*< private >*/
 	/* Parent class */
-	ClutterListModelClass						parent_class;
+	XfdashboardModelClass						parent_class;
 
 	/*< public >*/
 	/* Virtual functions */
@@ -84,10 +85,16 @@ enum
 
 GType xfdashboard_applications_menu_model_get_type(void) G_GNUC_CONST;
 
-ClutterModel* xfdashboard_applications_menu_model_new(void);
+XfdashboardModel* xfdashboard_applications_menu_model_new(void);
 
-void xfdashboard_applications_menu_model_filter_by_menu(XfdashboardApplicationsMenuModel *self, GarconMenu *inMenu);
-void xfdashboard_applications_menu_model_filter_by_section(XfdashboardApplicationsMenuModel *self, GarconMenu *inSection);
+void xfdashboard_applications_menu_model_get(XfdashboardApplicationsMenuModel *self,
+												XfdashboardModelIter *inIter,
+												...);
+
+void xfdashboard_applications_menu_model_filter_by_menu(XfdashboardApplicationsMenuModel *self,
+														GarconMenu *inMenu);
+void xfdashboard_applications_menu_model_filter_by_section(XfdashboardApplicationsMenuModel *self,
+															GarconMenu *inSection);
 
 G_END_DECLS
 

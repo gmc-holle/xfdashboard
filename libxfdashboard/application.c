@@ -123,6 +123,7 @@ enum
 
 static guint XfdashboardApplicationSignals[SIGNAL_LAST]={ 0, };
 
+
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_APP_ID					"de.froevel.nomad.xfdashboard"
 #define XFDASHBOARD_XFCONF_CHANNEL			"xfdashboard"
