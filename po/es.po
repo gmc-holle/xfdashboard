@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-31 20:13+0100\n"
-"PO-Revision-Date: 2016-01-31 19:15+0000\n"
+"POT-Creation-Date: 2016-03-02 19:11+0100\n"
+"PO-Revision-Date: 2016-03-02 18:12+0000\n"
 "Last-Translator: Stephan Haller <nomad@froevel.de>\n"
 "Language-Team: Spanish (http://www.transifex.com/xfdashboard/xfdashboard/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -65,17 +65,31 @@ msgstr "Buscar aplicaciones"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid ""
+"This unstable development introduces a hot-corner plugin to activate this "
+"application when the pointer is near a specific corner of the screen. It "
+"also introduce a new settings application which allows to enable and/or "
+"disable plugin as well as to configure them."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+msgid ""
+"This unstable development introduces a new search provider plugin which uses"
+" installed Gnome-Shell search providers as additional source."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+msgid ""
 "This unstable development introduces a new optional configuration to themes "
 "about defining which elements can be focused and in which order."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
 "This unstable development introduces a basic and simple plugin system as "
 "well as a sample plugin adding a new view showing a clock."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
 "This unstable development introduces a new configurable options to allows "
 "start a new instance of an application or to activate the current window. It"
@@ -83,7 +97,7 @@ msgid ""
 " other smaller improvements."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
 "This unstable development introduces a new configurable options to speed up "
 "loading window contents in background and it shows also running applications"
@@ -91,7 +105,7 @@ msgid ""
 "contains a lots of bug-fixes and smaller improvements."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid ""
 "This unstable development introduces new options to workspace selector and "
 "loads the window contents in background to make the application feel "
@@ -99,86 +113,86 @@ msgid ""
 "fixes and smaller improvements."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This release hopefully fixes problems with the stage resizes finally. Also "
 "the method to determine the desktop window was changed."
 msgstr "Esta versión corrige finalmente los problemas con el cambio de tamaño del escenario. También el método para determinar la ventana del escritorio que ha cambiado."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid ""
 "This release hopefully fixes problems with the stage as it size might not "
 "reflect the screen size preventing dragging windows over the whole screen. "
 "It also includes lots of smaller bug-fixes."
 msgstr "Esta versión corrige problemas como que el tamaño no pueda reflejar el tamaño de la ventana previniendo arrastrar las ventanas por toda la pantalla. También incluye muchas correcciones de errores pequeñas."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid ""
 "This stable version introduces lots of new features. like multi-monitor "
 "support, configurable key bindings and a settings dialog. It also contains a"
 " lot of other larger and smaller improvements."
 msgstr "Esta versión de desarrollo estable introduce un montón de nuevas características: soporte multi-monitor, atajos de teclado configurables y un diálogo de ajustes. También contiene muchas otras grandes y pequeñas mejoras."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This unstable development introduces a new box layout fixing layout of "
 "children when using right-to-left language. Also support for localization "
 "was fixed and other smaller bug-fixes and improvements."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:17
 msgid ""
 "This unstable development introduces support for multiple monitors and also "
 "bug-fixes and other smaller improvements."
 msgstr "Esta versión de desarrollo inestable introduce el soporte de múltiples monitores, correcciones de errores y otras pequeñas mejoras."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:18
 msgid ""
 "This unstable development introduces an application database and monitoring "
 "of installed and uninstalled applications. It also includes bug-fixes and "
 "other smaller improvements."
 msgstr "Esta versión de desarrollo inestable introduce una aplicación de base de datos y monitorización de las aplicaciones instaladas y desinstaladas. También incluye correcciones de errores y otras pequeñas mejoras."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:17
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:19
 msgid ""
 "This unstable development introduces a hotkey tracker to allow starting "
 "xfdashboard with a single press of &lt;Super&gt; key."
 msgstr "Esta versión de desarrollo inestable introduce un rastreador de atajos para permitir iniciar xfdashboard con la pulsación de la tecla &lt;Super&gt;."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:18
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:20
 msgid ""
 "This unstable development fixes a bug which rendered the new settings "
 "application completely unusable."
 msgstr "Esta versión de desarrollo inestable corrige un error que hacía que la nueva aplicación de ajustes quedará totalmente inutilizable."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:19
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:21
 msgid "This unstable development introduces a settings application."
 msgstr "Esta versión de desarrollo inestable introduce una aplicación de ajustes"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:20
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:22
 msgid ""
 "This unstable development introduces configurable key-bindings, allows "
 "changing themes at runtime and includes lots of smaller bug-fixes."
 msgstr "Este versión de desarrollo introduce atajos de teclado modificables que permite cambiar de temas en tiempo de ejecución e incluye un montón de pequeñas correcciones de errores."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:21
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:23
 msgid ""
 "This unstable development introduces additional themes, fixes handling of "
 "client-side decorated windows (CSD) and adds a new CSS command @import() to "
 "include external CSS resources in themes."
 msgstr "Este versión de desarrollo introduce temas adicionales, arreglos en el manejo de decoración de ventanas del lado del cliente (CSD) y añade una nueva orden CSS @import() para incluir recursos CSS externos en temas."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:22
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:24
 msgid ""
 "This unstable development introduces a workaround to get window content of "
 "minimized windows to display them in windows view."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:23
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:25
 msgid "This unstable development introduces effects."
 msgstr "Esta versión de desarrollo introduce efectos."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:24
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:26
 msgid ""
 "This unstable development fixes a problem closing windows accidently by "
 "pressing the key 'backspace' to refine search more often than characters "
@@ -186,18 +200,18 @@ msgid ""
 "introduces a new generic selection framework for focusable actors."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:25
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:27
 msgid ""
 "This release fixes a problem closing windows accidently by pressing the key "
 "'backspace' to refine search more often than characters entered."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:26
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:28
 msgid ""
 "This release fixes a problem when loading scalable images by icon name."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:27
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:29
 msgid ""
 "This unstable development release fixes problems with icon mode in theming "
 "and allows to launch the first item by pressing ENTER in search view when a "
@@ -205,159 +219,175 @@ msgid ""
 "allowing the usage of constant values and functions in theme's CSS file."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:28
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:30
 msgid ""
 "This release fixes problems with icon mode in theming and allows to launch "
 "the first item by pressing ENTER in search view when a search was started by"
 " just typing."
 msgstr ""
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:29
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:31
 msgid "Initial release."
 msgstr "Primera versión."
 
 #: ../data/data/preferences.ui.h:1
+msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:2
+msgid "Configure plugin"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:3
 msgid ""
 "<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
 "Configure xfdashboard"
 msgstr ""
 
-#: ../data/data/preferences.ui.h:3
+#: ../data/data/preferences.ui.h:5
 msgid "<b>General settings:</b>"
 msgstr "<b>Ajustes generales:</b>"
 
-#: ../data/data/preferences.ui.h:4
+#: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
 msgstr "Restablecer la vista de búsqueda cuando se reanude"
 
-#: ../data/data/preferences.ui.h:5
+#: ../data/data/preferences.ui.h:7
 msgid ""
 "If enabled the search view will be resetted when xfdashboard is resumed. That means the active view is switched back to last view active before last search was started and search box will be emptied.\n"
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
 
-#: ../data/data/preferences.ui.h:8
+#: ../data/data/preferences.ui.h:10
 msgid ""
 "When xfdashboard resumes the selected view will be activated.\n"
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
 msgstr ""
 
-#: ../data/data/preferences.ui.h:11
+#: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
 msgstr "Cambiar a vista cuando se reanude:"
 
-#: ../data/data/preferences.ui.h:12
+#: ../data/data/preferences.ui.h:14
 msgid ""
 "Sets the minimum time a notification is being shown.\n"
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
 msgstr ""
 
-#: ../data/data/preferences.ui.h:15
+#: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
 msgstr "Tiempo mínimo de espera de la notificación:"
 
-#: ../data/data/preferences.ui.h:16
+#: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
 msgstr "Activar solución para minimizar ventanas"
 
-#: ../data/data/preferences.ui.h:17
+#: ../data/data/preferences.ui.h:19
 msgid ""
 "When enabled a workaround for minimized windows will be tried to get still images of these windows by restoring them shortly and minimizing them again.\n"
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
 msgstr ""
 
-#: ../data/data/preferences.ui.h:20
+#: ../data/data/preferences.ui.h:22
 msgid ""
 "This value defines how fast the window content should be created. While the value 'immediate' tells xfdashboard to create the window content at the time it is requested, all other values will set up a queue and value defines how fast the queue will be processed.\n"
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
 
-#: ../data/data/preferences.ui.h:23
+#: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
 msgstr ""
 
-#: ../data/data/preferences.ui.h:24
+#: ../data/data/preferences.ui.h:26
 msgid "Always start a new instance for application"
 msgstr ""
 
-#: ../data/data/preferences.ui.h:25
+#: ../data/data/preferences.ui.h:27
 msgid ""
 "When enabled and an icon in quicklaunch is clicked it will always start a new instance of the application.\n"
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
 
-#: ../data/data/preferences.ui.h:28
+#: ../data/data/preferences.ui.h:30
 msgid "<b>Applications view:</b>"
 msgstr "<b>Vista de aplicaciones:</b>"
 
-#: ../data/data/preferences.ui.h:29
+#: ../data/data/preferences.ui.h:31
 msgid "Show menu for all installed applications"
 msgstr "Mostrar menú para todas las aplicaciones instaladas"
 
-#: ../data/data/preferences.ui.h:30
+#: ../data/data/preferences.ui.h:32
 msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
 msgstr "Cuando se activa un menú \"todas las aplicaciones\" con todas las instaladas aplicaciones se mostrarán como una vista de aplicaciones."
 
-#: ../data/data/preferences.ui.h:31
+#: ../data/data/preferences.ui.h:33
 msgid "<b>Windows view:</b>"
 msgstr "<b>Vista de ventanas:</b>"
 
-#: ../data/data/preferences.ui.h:32
+#: ../data/data/preferences.ui.h:34
 msgid "Mouse wheel changes workspace"
 msgstr "La rueda del ratón cambia de espacio de trabajo"
 
-#: ../data/data/preferences.ui.h:33
+#: ../data/data/preferences.ui.h:35
 msgid ""
 "When enabled any scroll event, like mouse-wheel up and down, at the windows "
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
 msgstr "Cuando se activa cualquier desplazamiento, como subir y bajar la rueda del ratón, la vista de ventanas cambiarán al del espacio de trabajo actual. Este comportamiento es el mismo que seleccionar un espacio de trabajo."
 
-#: ../data/data/preferences.ui.h:34
+#: ../data/data/preferences.ui.h:36
 msgid "<b>Search view:</b>"
 msgstr "<b>Vista de búsqueda:</b>"
 
-#: ../data/data/preferences.ui.h:35
+#: ../data/data/preferences.ui.h:37
 msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
 msgstr "Establece el intervalo de búsqueda que debe retrasarse después de que se haya introducido el primer carácter."
 
-#: ../data/data/preferences.ui.h:36
+#: ../data/data/preferences.ui.h:38
 msgid "Delay initial search interval:"
 msgstr "Retrasar el intervalo de búsqueda inicial:"
 
-#: ../data/data/preferences.ui.h:37
+#: ../data/data/preferences.ui.h:39
 msgid "General"
 msgstr "General"
 
-#: ../data/data/preferences.ui.h:38
+#: ../data/data/preferences.ui.h:40
 msgid "<b>Name:</b>"
 msgstr "<b>Nombre:</b>"
 
-#: ../data/data/preferences.ui.h:39
+#: ../data/data/preferences.ui.h:41
 msgid "<b>Author:</b>"
 msgstr "<b>Autor:</b>"
 
-#: ../data/data/preferences.ui.h:40
+#: ../data/data/preferences.ui.h:42
 msgid "<b>Version:</b>"
 msgstr "<b>Version:</b>"
 
-#: ../data/data/preferences.ui.h:41
+#: ../data/data/preferences.ui.h:43
 msgid "<b>Description:</b>"
 msgstr "<b>Descripción:</b>"
 
-#: ../data/data/preferences.ui.h:42
+#: ../data/data/preferences.ui.h:44
 msgid "Themes"
 msgstr "Temas"
+
+#: ../data/data/preferences.ui.h:45
+msgid "<b>License:</b>"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:46
+msgid "Plugins"
+msgstr ""
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard"
@@ -415,1682 +445,3464 @@ msgstr "xfdashboard-wine"
 msgid "Red wine theme for xfdashboard"
 msgstr "Tema de color vino para el xfdashboard"
 
-#. Set up view
-#: ../plugins/clock-view/clock-view.c:309 ../plugins/clock-view/plugin.c:80
-msgid "Clock"
-msgstr ""
-
-#: ../plugins/clock-view/plugin.c:81
-msgid "Adds new a view showing a clock"
-msgstr ""
-
-#. Show error message
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:119
-#, c-format
-msgid ""
-"Cannot load information from '%s' for gnome-shell search provider '%s': %s"
-msgstr ""
-
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:122
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:142
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:162
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:182
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:202
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:330
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:403
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:493
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:517
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:596
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:696
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:721
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:770
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:793
-#: ../plugins/gnome-shell-search-provider/plugin.c:82
-#: ../plugins/gnome-shell-search-provider/plugin.c:145 ../settings/main.c:62
-#: ../settings/main.c:84 ../settings/settings.c:536 ../settings/settings.c:822
-#: ../settings/settings.c:844 ../settings/settings.c:863
-#: ../settings/settings.c:882 ../settings/settings.c:901
-#: ../settings/settings.c:1080 ../xfdashboard/application-database.c:133
-#: ../xfdashboard/application-database.c:302
-#: ../xfdashboard/application-database.c:925
-#: ../xfdashboard/application-tracker.c:300
-#: ../xfdashboard/applications-search-provider.c:555
-#: ../xfdashboard/applications-search-provider.c:613
-#: ../xfdashboard/desktop-app-info.c:1432 ../xfdashboard/image-content.c:281
-#: ../xfdashboard/image-content.c:297 ../xfdashboard/image-content.c:414
-#: ../xfdashboard/image-content.c:448 ../xfdashboard/image-content.c:656
-#: ../xfdashboard/image-content.c:683 ../xfdashboard/image-content.c:784
-#: ../xfdashboard/image-content.c:811 ../xfdashboard/image-content.c:1444
-#: ../xfdashboard/plugins-manager.c:314 ../xfdashboard/theme-css.c:1235
-#: ../xfdashboard/theme-css.c:1896 ../xfdashboard/window-content.c:478
-#: ../xfdashboard/window-content.c:982 ../xfdashboard/window-content.c:1137
-#: ../xfdashboard/window-content.c:1338
-msgid "Unknown error"
-msgstr "Error desconocido"
-
-#. Show error message
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:139
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:159
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:179
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:199
-#, c-format
-msgid ""
-"Incomplete information at '%s' for gnome-shell search provider '%s': %s"
-msgstr ""
-
-#. Show error message
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:235
-#, c-format
-msgid "Unknown application '%s' for gnome-shell search provider '%s'"
-msgstr ""
-
-#. Show error message
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:328
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:491
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:694
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:768
-#, c-format
-msgid ""
-"Could not create dbus connection for gnome-shell search provider '%s': %s"
-msgstr ""
-
-#. Show error message
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:401
-#, c-format
-msgid ""
-"Could get result set from dbus connection for gnome-shell search provider "
-"'%s': %s"
-msgstr ""
-
-#. Show error message
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:514
-#, c-format
-msgid ""
-"Could get meta data for '%s' from dbus connection for gnome-shell search "
-"provider '%s': %s"
-msgstr ""
-
-#. Show error message
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:573
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:592
-#, c-format
-msgid ""
-"Could get icon for '%s' of key '%s' for gnome-shell search provider '%s': %s"
-msgstr ""
-
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:577
-msgid "Deserialization failed"
-msgstr ""
-
-#. Show error message
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:718
-#, c-format
-msgid ""
-"Could activate result item '%s' over dbus connection for gnome-shell search "
-"provider '%s': %s"
-msgstr ""
-
-#. Show error message
-#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:791
-#, c-format
-msgid ""
-"Could not launch search over dbus connection for gnome-shell search provider"
-" '%s': %s"
-msgstr ""
-
-#. Show error message
-#: ../plugins/gnome-shell-search-provider/plugin.c:80
-#: ../plugins/gnome-shell-search-provider/plugin.c:143
-#, c-format
-msgid "Could not scan for gnome-shell search provider at '%s': %s"
-msgstr ""
-
-#: ../plugins/gnome-shell-search-provider/plugin.c:236
-msgid "Gnome-Shell search provider"
-msgstr ""
-
-#: ../plugins/gnome-shell-search-provider/plugin.c:237
-msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr ""
-
-#: ../settings/main.c:45
-msgid "Settings manager socket"
-msgstr "Gestor de ajustes de socket"
-
-#: ../settings/main.c:45
-msgid "SOCKET ID"
-msgstr "ID SOCKET"
-
-#: ../settings/main.c:46
-msgid "Version information"
-msgstr "Información de la versión"
-
-#. Initialize GTK+
-#: ../settings/main.c:56
-msgid "."
-msgstr "."
-
-#: ../settings/main.c:60
-#, c-format
-msgid ""
-"%s: %s\n"
-"Try %s --help to see a full list of available command line options.\n"
-msgstr ""
-
-#: ../settings/main.c:83
-#, c-format
-msgid "Failed to initialize xfconf: %s"
-msgstr "Falló al iniciar xconf: %s"
-
-#: ../settings/main.c:95
-msgid "Could not create the settings dialog."
-msgstr "No se puedo crear el diálogo de ajustes."
-
-#: ../settings/settings.c:96
-msgid "Do nothing"
-msgstr "No hacer nada"
-
-#: ../settings/settings.c:97
-msgid "Windows view"
-msgstr "Vista de ventanas"
-
-#: ../settings/settings.c:98
-msgid "Applications view"
-msgstr "Vista de aplicaciones"
-
-#: ../settings/settings.c:111 ../settings/settings.c:367
-msgid "Immediately"
-msgstr "Inmediatamente"
-
-#: ../settings/settings.c:112
-msgid "High"
-msgstr "Alto"
-
-#: ../settings/settings.c:113
-msgid "Normal"
-msgstr "Normal"
-
-#: ../settings/settings.c:114
-msgid "Low"
-msgstr "Bajo"
-
-#: ../settings/settings.c:309
-msgid "seconds"
-msgstr "segundos"
-
-#: ../settings/settings.c:363
-msgid "ms"
-msgstr "ms"
-
-#: ../settings/settings.c:1064
-#, c-format
-msgid "Could not find UI file '%s'."
-msgstr "No se pudo encontrar el archivo de UI '%s'."
-
-#: ../settings/settings.c:1078
-#, c-format
-msgid "Could not load UI resources from '%s': %s"
-msgstr "No se pudieron cargar los recursos de la UI desde '%s': %s"
-
-#: ../settings/settings.c:1359
-msgid "Theme"
-msgstr "Tema"
-
-#: ../settings/settings.c:1523 ../settings/settings.c:1557
-msgid "Could not get dialog from UI file."
-msgstr "No se pudo obtener el diálogo desde el archivo de UI."
-
-#: ../xfdashboard/action-button.c:109 ../xfdashboard/focus-manager.c:930
+#: ../libxfdashboard/action-button.c:109 ../libxfdashboard/focus-manager.c:930
 #, c-format
 msgid "Object type %s does not provide action '%s'"
 msgstr ""
 
-#: ../xfdashboard/action-button.c:121 ../xfdashboard/focus-manager.c:942
+#: ../libxfdashboard/action-button.c:121 ../libxfdashboard/focus-manager.c:942
 #, c-format
 msgid "Action '%s' at object type %s is not an action signal."
 msgstr ""
 
-#: ../xfdashboard/action-button.c:140 ../xfdashboard/focus-manager.c:962
+#: ../libxfdashboard/action-button.c:140 ../libxfdashboard/focus-manager.c:962
 #, c-format
 msgid ""
 "Action '%s' at object type %s wants return value of type %s but expected is "
 "%s."
 msgstr ""
 
-#: ../xfdashboard/action-button.c:151 ../xfdashboard/focus-manager.c:973
+#: ../libxfdashboard/action-button.c:151 ../libxfdashboard/focus-manager.c:973
 #, c-format
 msgid "Action '%s' at object type %s wants %u parameters but expected are %u."
 msgstr ""
 
-#: ../xfdashboard/action-button.c:162 ../xfdashboard/focus-manager.c:984
+#: ../libxfdashboard/action-button.c:162 ../libxfdashboard/focus-manager.c:984
 #, c-format
 msgid ""
 "Action '%s' at object type %s wants type %s at parameter %u but type %s is "
 "expected."
 msgstr ""
 
-#: ../xfdashboard/action-button.c:418 ../xfdashboard/binding.c:245
+#: ../libxfdashboard/action-button.c:418 ../libxfdashboard/binding.c:245
 msgid "Target"
 msgstr ""
 
-#: ../xfdashboard/action-button.c:419
+#: ../libxfdashboard/action-button.c:419
 msgid "The target actor's class name to lookup and to perform action at"
 msgstr ""
 
-#: ../xfdashboard/action-button.c:425 ../xfdashboard/binding.c:252
+#: ../libxfdashboard/action-button.c:425 ../libxfdashboard/binding.c:252
 msgid "Action"
 msgstr ""
 
-#: ../xfdashboard/action-button.c:426
+#: ../libxfdashboard/action-button.c:426
 msgid "The action signal to perform at target"
 msgstr ""
 
-#: ../xfdashboard/actor.c:596 ../xfdashboard/stylable.c:203
+#: ../libxfdashboard/actor.c:596 ../libxfdashboard/stylable.c:203
 #, c-format
 msgid ""
 "Could not transform CSS string value for property '%s' to type %s of class "
 "%s"
 msgstr "No se pudo transformar el valor de la cadena de CSS para la propiedad '%s' al tipo %s de clase %s"
 
-#: ../xfdashboard/actor.c:953
+#: ../libxfdashboard/actor.c:953
 msgid "Can focus"
 msgstr "Puede enfocar"
 
-#: ../xfdashboard/actor.c:954
+#: ../libxfdashboard/actor.c:954
 msgid "This flag indicates if this actor can be focused"
 msgstr ""
 
-#: ../xfdashboard/actor.c:961
+#: ../libxfdashboard/actor.c:961
 msgid "Effects"
 msgstr "Efectos"
 
-#: ../xfdashboard/actor.c:962
+#: ../libxfdashboard/actor.c:962
 msgid "List of space-separated strings with IDs of effects set at this actor"
 msgstr ""
 
-#: ../xfdashboard/application-button.c:337
+#: ../libxfdashboard/application-button.c:337
 msgid "Application information"
 msgstr "Información de la aplicación"
 
-#: ../xfdashboard/application-button.c:338
+#: ../libxfdashboard/application-button.c:338
 msgid "The application information whose title and description to display"
 msgstr ""
 
-#: ../xfdashboard/application-button.c:344
+#: ../libxfdashboard/application-button.c:344
 msgid "Show description"
 msgstr "Mostrar descripción"
 
-#: ../xfdashboard/application-button.c:345
+#: ../libxfdashboard/application-button.c:345
 msgid "Show also description next to tile"
 msgstr "Mostrar también la descripción al lado del icono"
 
-#: ../xfdashboard/application-button.c:351
-#: ../xfdashboard/applications-view.c:1346
+#: ../libxfdashboard/application-button.c:351
+#: ../libxfdashboard/applications-view.c:1346
 msgid "Format title only"
 msgstr "Formato de título solamente"
 
-#: ../xfdashboard/application-button.c:352
-#: ../xfdashboard/applications-view.c:1347
+#: ../libxfdashboard/application-button.c:352
+#: ../libxfdashboard/applications-view.c:1347
 msgid "Format string used when only title is display"
 msgstr "Formato de cadena usado cuando solo se muestre el título"
 
-#: ../xfdashboard/application-button.c:358
-#: ../xfdashboard/applications-view.c:1353
+#: ../libxfdashboard/application-button.c:358
+#: ../libxfdashboard/applications-view.c:1353
 msgid "Format title and description"
 msgstr "Formato de título y descripción"
 
-#: ../xfdashboard/application-button.c:359
-#: ../xfdashboard/applications-view.c:1354
+#: ../libxfdashboard/application-button.c:359
+#: ../libxfdashboard/applications-view.c:1354
 msgid ""
 "Format string used when title and description is display. First argument is "
 "title and second one is description."
 msgstr "Formato de cadena usado cuando el título y la descripción se muestre. El primer argumento es el título y el segundo la descripción."
 
-#: ../xfdashboard/application-button.c:655
-#: ../xfdashboard/application-button.c:658
-#: ../xfdashboard/application-button.c:673
-#: ../xfdashboard/application-button.c:676 ../xfdashboard/quicklaunch.c:342
-#: ../xfdashboard/quicklaunch.c:346 ../xfdashboard/quicklaunch.c:390
-#: ../xfdashboard/quicklaunch.c:394
+#: ../libxfdashboard/application-button.c:655
+#: ../libxfdashboard/application-button.c:658
+#: ../libxfdashboard/application-button.c:673
+#: ../libxfdashboard/application-button.c:676
+#: ../libxfdashboard/quicklaunch.c:342 ../libxfdashboard/quicklaunch.c:346
+#: ../libxfdashboard/quicklaunch.c:390 ../libxfdashboard/quicklaunch.c:394
 #, c-format
 msgid "Launching application '%s' failed: %s"
 msgstr "La ejecución de la aplicación '%s' falló: %s"
 
-#: ../xfdashboard/application-button.c:657
-#: ../xfdashboard/application-button.c:660 ../xfdashboard/quicklaunch.c:344
-#: ../xfdashboard/quicklaunch.c:348
+#: ../libxfdashboard/application-button.c:657
+#: ../libxfdashboard/application-button.c:660
+#: ../libxfdashboard/quicklaunch.c:344 ../libxfdashboard/quicklaunch.c:348
 msgid "No information available for application"
 msgstr "No hay información disponible para la aplicación"
 
-#: ../xfdashboard/application-button.c:675
-#: ../xfdashboard/application-button.c:678 ../xfdashboard/application.c:274
-#: ../xfdashboard/application.c:281 ../xfdashboard/application.c:346
-#: ../xfdashboard/application.c:354 ../xfdashboard/application.c:372
-#: ../xfdashboard/application.c:388 ../xfdashboard/application.c:604
+#: ../libxfdashboard/application-button.c:675
+#: ../libxfdashboard/application-button.c:678
+#: ../libxfdashboard/application.c:274 ../libxfdashboard/application.c:281
+#: ../libxfdashboard/application.c:346 ../libxfdashboard/application.c:354
+#: ../libxfdashboard/application.c:372 ../libxfdashboard/application.c:388
+#: ../libxfdashboard/application.c:604
 msgid "unknown error"
 msgstr "error desconocido"
 
-#: ../xfdashboard/application-button.c:686
+#: ../libxfdashboard/application-button.c:686
 #, c-format
 msgid "Application '%s' launched"
 msgstr "Aplicación «%s» ejecutada"
 
 #. Show critical warning at console
-#: ../xfdashboard/application.c:272 ../xfdashboard/application.c:279
+#: ../libxfdashboard/application.c:272 ../libxfdashboard/application.c:279
 #, c-format
 msgid "Could not load theme '%s': %s"
 msgstr "No se pudo cargar el tema '%s': %s"
 
-#: ../xfdashboard/application.c:353
+#: ../libxfdashboard/application.c:353
 #, c-format
 msgid "Could not initialize xfconf: %s"
 msgstr "No se pudo iniciar xfconf: %s"
 
-#: ../xfdashboard/application.c:365
+#: ../libxfdashboard/application.c:365
 msgid "Could not initialize bindings"
 msgstr "No se pudo init"
 
-#: ../xfdashboard/application.c:371
+#: ../libxfdashboard/application.c:371
 #, c-format
 msgid "Could not load bindings: %s"
 msgstr ""
 
-#: ../xfdashboard/application.c:381
+#: ../libxfdashboard/application.c:381
 msgid "Could not initialize application database"
 msgstr "No se pudo iniciar la base de datos de la aplicación"
 
-#: ../xfdashboard/application.c:387
+#: ../libxfdashboard/application.c:387
 #, c-format
 msgid "Could not load application database: %s"
 msgstr "No se pudo cargar la base de datos de la aplicación: %s"
 
-#: ../xfdashboard/application.c:397
+#: ../libxfdashboard/application.c:397
 msgid "Could not initialize application tracker"
 msgstr "No se puedo iniciar el rastreador de la aplicación"
 
-#: ../xfdashboard/application.c:409
+#: ../libxfdashboard/application.c:409
 msgid ""
 "Could not create binding between xfconf property and local resource for "
 "theme change notification."
 msgstr ""
 
-#: ../xfdashboard/application.c:451
+#: ../libxfdashboard/application.c:451
 msgid "Could not initialize plugin manager"
 msgstr ""
 
-#: ../xfdashboard/application.c:457
+#: ../libxfdashboard/application.c:457
 msgid "Could not setup plugin manager"
 msgstr ""
 
-#: ../xfdashboard/application.c:478
+#: ../libxfdashboard/application.c:478
 #, c-format
 msgid "Welcome to %s (%s)!"
 msgstr "¡Bienvenido a %s (%s)!"
 
-#: ../xfdashboard/application.c:480
+#: ../libxfdashboard/application.c:480
 #, c-format
 msgid "Welcome to %s!"
 msgstr "¡Bienvenido a %s!"
 
-#: ../xfdashboard/application.c:557
+#: ../libxfdashboard/application.c:557
 msgid "Fork to background"
 msgstr "Mantener en segundo plano"
 
-#: ../xfdashboard/application.c:558
+#: ../libxfdashboard/application.c:558
 msgid "Quit running instance"
 msgstr "Cerrar la instancia en ejecución"
 
-#: ../xfdashboard/application.c:559
+#: ../libxfdashboard/application.c:559
 msgid "Restart running instance"
 msgstr "Reiniciar la instancia en ejecución"
 
-#: ../xfdashboard/application.c:560
+#: ../libxfdashboard/application.c:560
 msgid ""
 "Toggles suspend/resume state if running instance was started in daemon mode "
 "otherwise it quits running non-daemon instance"
 msgstr ""
 
 #. Setup command-line options
-#: ../xfdashboard/application.c:583
+#: ../libxfdashboard/application.c:583
 msgid "- A Gnome Shell like dashboard for Xfce4"
 msgstr "- Un tablero como el de Gnome Shell para Xfce4"
 
 #. Show error
-#: ../xfdashboard/application.c:604
+#: ../libxfdashboard/application.c:604
 #, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
-#: ../xfdashboard/application.c:915
+#: ../libxfdashboard/application.c:915
 msgid "Is daemonized"
 msgstr "Está demonizado"
 
-#: ../xfdashboard/application.c:916
+#: ../libxfdashboard/application.c:916
 msgid "Flag indicating if application is daemonized"
 msgstr ""
 
-#: ../xfdashboard/application.c:922
+#: ../libxfdashboard/application.c:922
 msgid "Is suspended"
 msgstr "Está suspendido"
 
-#: ../xfdashboard/application.c:923
+#: ../libxfdashboard/application.c:923
 msgid "Flag indicating if application is suspended currently"
 msgstr ""
 
-#: ../xfdashboard/application.c:929 ../xfdashboard/theme.c:577
+#: ../libxfdashboard/application.c:929 ../libxfdashboard/theme.c:577
 msgid "Theme name"
 msgstr "Nombre del tema"
 
-#: ../xfdashboard/application.c:930
+#: ../libxfdashboard/application.c:930
 msgid "Name of current theme"
 msgstr "Nombre del tema actual"
 
-#: ../xfdashboard/application-database.c:132
+#: ../libxfdashboard/application-database.c:132
 #, c-format
 msgid "Could not reload application menu: %s"
 msgstr "No se pudo recargar el menú de aplicaciones: %s"
 
-#: ../xfdashboard/application-database.c:265
+#: ../libxfdashboard/application-database.c:133
+#: ../libxfdashboard/application-database.c:302
+#: ../libxfdashboard/application-database.c:925
+#: ../libxfdashboard/application-tracker.c:300
+#: ../libxfdashboard/applications-search-provider.c:555
+#: ../libxfdashboard/applications-search-provider.c:613
+#: ../libxfdashboard/desktop-app-info.c:1432
+#: ../libxfdashboard/image-content.c:281 ../libxfdashboard/image-content.c:297
+#: ../libxfdashboard/image-content.c:414 ../libxfdashboard/image-content.c:448
+#: ../libxfdashboard/image-content.c:656 ../libxfdashboard/image-content.c:683
+#: ../libxfdashboard/image-content.c:784 ../libxfdashboard/image-content.c:811
+#: ../libxfdashboard/image-content.c:1444
+#: ../libxfdashboard/plugins-manager.c:381
+#: ../libxfdashboard/plugins-manager.c:559 ../libxfdashboard/theme-css.c:1235
+#: ../libxfdashboard/theme-css.c:1896 ../libxfdashboard/window-content.c:478
+#: ../libxfdashboard/window-content.c:982
+#: ../libxfdashboard/window-content.c:1137
+#: ../libxfdashboard/window-content.c:1338
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:293
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:378
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:395
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:477
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:550
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:640
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:664
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:743
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:843
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:868
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:917
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:940
+#: ../plugins/gnome-shell-search-provider/plugin.c:135
+#: ../plugins/gnome-shell-search-provider/plugin.c:231
+#: ../plugins/gnome-shell-search-provider/plugin.c:287
+#: ../plugins/gnome-shell-search-provider/plugin.c:305
+#: ../plugins/gnome-shell-search-provider/plugin.c:336
+#: ../settings/plugins.c:749 ../settings/plugins.c:753
+#: ../settings/themes.c:263 ../settings/themes.c:549 ../settings/themes.c:571
+#: ../settings/themes.c:590 ../settings/themes.c:609 ../settings/themes.c:628
+#: ../settings/main.c:63 ../settings/main.c:85 ../settings/settings.c:140
+msgid "Unknown error"
+msgstr "Error desconocido"
+
+#: ../libxfdashboard/application-database.c:265
 msgid "Received event from unknown file monitor"
 msgstr ""
 
-#: ../xfdashboard/application-database.c:289
+#: ../libxfdashboard/application-database.c:289
 #, c-format
 msgid "Unable to create file monitor for newly created directory '%s'"
 msgstr ""
 
-#: ../xfdashboard/application-database.c:300
+#: ../libxfdashboard/application-database.c:300
 #, c-format
 msgid "Unable to create file monitor for '%s': %s"
 msgstr ""
 
-#: ../xfdashboard/application-database.c:752
+#: ../libxfdashboard/application-database.c:752
 #, c-format
 msgid "Unable to build path to '%s%s%s' to search for desktop files"
 msgstr ""
 
-#: ../xfdashboard/application-database.c:831
+#: ../libxfdashboard/application-database.c:831
 #, c-format
 msgid "Could not determine desktop ID for '%s'"
 msgstr ""
 
-#: ../xfdashboard/application-database.c:907
+#: ../libxfdashboard/application-database.c:907
 #, c-format
 msgid "Unable to create file monitor for '%s'"
 msgstr ""
 
 #. Workaround for FreeBSD with Glib bug (file/directory monitors cannot be
 #. created)
-#: ../xfdashboard/application-database.c:923
+#: ../libxfdashboard/application-database.c:923
 #, c-format
 msgid ""
 "[workaround for FreeBSD] Cannot initialize file monitor for path '%s' but "
 "will not fail: %s"
 msgstr ""
 
-#: ../xfdashboard/application-database.c:1258
+#: ../libxfdashboard/application-database.c:1258
 msgid "Is loaded"
 msgstr "Está cargado"
 
-#: ../xfdashboard/application-database.c:1259
+#: ../libxfdashboard/application-database.c:1259
 msgid ""
 "Flag indicating if application database has been initialized and loaded "
 "successfully"
 msgstr ""
 
-#: ../xfdashboard/application-tracker.c:282
+#: ../libxfdashboard/application-tracker.c:282
 #, c-format
 msgid "Could not create environment lookup table for PID %d"
 msgstr ""
 
-#: ../xfdashboard/application-tracker.c:353
+#: ../libxfdashboard/application-tracker.c:353
 #, c-format
 msgid "Malformed enviroment '%s' in environment set for PID %d at %s"
 msgstr ""
 
-#: ../xfdashboard/application-tracker.c:383
+#: ../libxfdashboard/application-tracker.c:383
 #, c-format
 msgid ""
 "Unexpected duplicate name '%s' in environment set for PID %d at %s: %s = %s"
 msgstr ""
 
-#: ../xfdashboard/application-tracker.c:963
+#: ../libxfdashboard/application-tracker.c:984
 msgid ""
 "Application database was not initialized. Application tracking might not "
 "working."
 msgstr ""
 
-#: ../xfdashboard/applications-menu-model.c:718
+#: ../libxfdashboard/applications-menu-model.c:718
 #, c-format
 msgid "Sorting column %d without user-defined function is not possible"
 msgstr ""
 
-#: ../xfdashboard/applications-menu-model.c:804 ../xfdashboard/plugin.c:795
+#: ../libxfdashboard/applications-menu-model.c:804
+#: ../libxfdashboard/plugin.c:782
 msgid "ID"
 msgstr "ID"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID
-#: ../xfdashboard/applications-menu-model.c:805
+#: ../libxfdashboard/applications-menu-model.c:805
 msgid "Menu item"
 msgstr "Ítem de menú"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT
-#: ../xfdashboard/applications-menu-model.c:806
+#: ../libxfdashboard/applications-menu-model.c:806
 msgid "Parent menu"
 msgstr "Menú padre"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU
-#: ../xfdashboard/applications-menu-model.c:807
+#: ../libxfdashboard/applications-menu-model.c:807
 msgid "Section"
 msgstr "Sección"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION
-#: ../xfdashboard/applications-menu-model.c:808
+#: ../libxfdashboard/applications-menu-model.c:808
 msgid "Title"
 msgstr "Título"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE
-#: ../xfdashboard/applications-menu-model.c:809 ../xfdashboard/plugin.c:809
+#: ../libxfdashboard/applications-menu-model.c:809
+#: ../libxfdashboard/plugin.c:796
 msgid "Description"
 msgstr "Descripción"
 
-#: ../xfdashboard/applications-search-provider.c:251
+#: ../libxfdashboard/applications-search-provider.c:251
 #, c-format
 msgid ""
 "Could not create configuration folder for applications search provider at "
 "%s: %s"
 msgstr ""
 
-#: ../xfdashboard/applications-search-provider.c:356
+#: ../libxfdashboard/applications-search-provider.c:356
 #, c-format
 msgid "Statistics were not initialized"
 msgstr ""
 
-#: ../xfdashboard/applications-search-provider.c:376
+#: ../libxfdashboard/applications-search-provider.c:376
 #, c-format
 msgid ""
 "Could not build path to statistics file of applications search provider"
 msgstr ""
 
-#: ../xfdashboard/applications-search-provider.c:474
+#: ../libxfdashboard/applications-search-provider.c:474
 #, c-format
 msgid ""
 "Could not create statistics data for application '%s' of applications search"
 " provider"
 msgstr ""
 
-#: ../xfdashboard/applications-search-provider.c:487
+#: ../libxfdashboard/applications-search-provider.c:487
 #, c-format
 msgid ""
 "Could not get value from group [%s] for application %s from statistics file "
 "of applications search provider: %s"
 msgstr ""
 
-#: ../xfdashboard/applications-search-provider.c:553
+#: ../libxfdashboard/applications-search-provider.c:553
 #, c-format
 msgid "Failed to save statistics of applications search provider to %s: %s"
 msgstr ""
 
-#: ../xfdashboard/applications-search-provider.c:611
+#: ../libxfdashboard/applications-search-provider.c:611
 #, c-format
 msgid "Failed to load statistics of applications search provider from %s: %s"
 msgstr ""
 
 #. Set up view
 #. Add "applications" button
-#: ../xfdashboard/applications-search-provider.c:985
-#: ../xfdashboard/applications-view.c:1399 ../xfdashboard/quicklaunch.c:2877
+#: ../libxfdashboard/applications-search-provider.c:985
+#: ../libxfdashboard/applications-view.c:1399
+#: ../libxfdashboard/quicklaunch.c:2877
 msgid "Applications"
 msgstr "Aplicaciones"
 
-#: ../xfdashboard/applications-search-provider.c:1031
+#: ../libxfdashboard/applications-search-provider.c:1031
 msgid ""
 "Could not allocate memory to copy search criterias for case-insensitive "
 "search"
 msgstr ""
 
-#: ../xfdashboard/applications-search-provider.c:1131
+#: ../libxfdashboard/applications-search-provider.c:1131
 #, c-format
 msgid "Cannot create actor for desktop ID '%s' in result set of %s"
 msgstr ""
 
-#: ../xfdashboard/applications-search-provider.c:1286
+#: ../libxfdashboard/applications-search-provider.c:1286
 msgid "Sort mode"
 msgstr ""
 
-#: ../xfdashboard/applications-search-provider.c:1287
+#: ../libxfdashboard/applications-search-provider.c:1287
 msgid "Defines how to sort matching applications"
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:236
+#: ../libxfdashboard/applications-view.c:236
 #, c-format
 msgid "Could not find view of type %s for menu '%s'"
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:399
-#: ../xfdashboard/applications-view.c:400
-#: ../xfdashboard/applications-view.c:505
-#: ../xfdashboard/applications-view.c:506
+#: ../libxfdashboard/applications-view.c:399
+#: ../libxfdashboard/applications-view.c:400
+#: ../libxfdashboard/applications-view.c:505
+#: ../libxfdashboard/applications-view.c:506
 msgid "Back"
 msgstr "Atrás"
 
-#: ../xfdashboard/applications-view.c:399
-#: ../xfdashboard/applications-view.c:505
+#: ../libxfdashboard/applications-view.c:399
+#: ../libxfdashboard/applications-view.c:505
 msgid "Go back to previous menu"
 msgstr "Volver al menú anterior"
 
-#: ../xfdashboard/applications-view.c:533
-#: ../xfdashboard/applications-view.c:534
+#: ../libxfdashboard/applications-view.c:533
+#: ../libxfdashboard/applications-view.c:534
 msgid "All applications"
 msgstr "Todas las aplicaciones"
 
-#: ../xfdashboard/applications-view.c:533
+#: ../libxfdashboard/applications-view.c:533
 msgid "List of all installed applications"
 msgstr "Listar todas las aplicaciones instaladas"
 
-#: ../xfdashboard/applications-view.c:742
-#: ../xfdashboard/search-result-container.c:1755
-#: ../xfdashboard/windows-view.c:1398
+#: ../libxfdashboard/applications-view.c:742
+#: ../libxfdashboard/search-result-container.c:1755
+#: ../libxfdashboard/windows-view.c:1398
 #, c-format
 msgid "%s is not a child of %s and cannot be selected"
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:879
-#: ../xfdashboard/search-result-container.c:884
+#: ../libxfdashboard/applications-view.c:879
+#: ../libxfdashboard/search-result-container.c:884
 #, c-format
 msgid ""
 "Focusable object %s does not handle selection direction of type %s in icon "
 "mode."
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:999
-#: ../xfdashboard/search-result-container.c:1034
+#: ../libxfdashboard/applications-view.c:999
+#: ../libxfdashboard/search-result-container.c:1034
 #, c-format
 msgid ""
 "Focusable object %s does not handle selection direction of type %s in list "
 "mode."
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:1057 ../xfdashboard/quicklaunch.c:2391
-#: ../xfdashboard/windows-view.c:1460 ../xfdashboard/workspace-selector.c:956
+#: ../libxfdashboard/applications-view.c:1057
+#: ../libxfdashboard/quicklaunch.c:2391 ../libxfdashboard/windows-view.c:1460
+#: ../libxfdashboard/workspace-selector.c:956
 #, c-format
 msgid "Cannot lookup selection target at %s because %s is a child of %s"
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:1104 ../xfdashboard/quicklaunch.c:2482
-#: ../xfdashboard/search-result-container.c:1867
-#: ../xfdashboard/windows-view.c:1576 ../xfdashboard/workspace-selector.c:1027
+#: ../libxfdashboard/applications-view.c:1104
+#: ../libxfdashboard/quicklaunch.c:2482
+#: ../libxfdashboard/search-result-container.c:1867
+#: ../libxfdashboard/windows-view.c:1576
+#: ../libxfdashboard/workspace-selector.c:1027
 #, c-format
 msgid "Focusable object %s does not handle selection direction of type %s."
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:1143 ../xfdashboard/quicklaunch.c:2521
-#: ../xfdashboard/windows-view.c:1615
+#: ../libxfdashboard/applications-view.c:1143
+#: ../libxfdashboard/quicklaunch.c:2521 ../libxfdashboard/windows-view.c:1615
 #, c-format
 msgid "%s is a child of %s and cannot be activated at %s"
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:1323
-#: ../xfdashboard/search-result-container.c:1258
+#: ../libxfdashboard/applications-view.c:1323
+#: ../libxfdashboard/search-result-container.c:1258
 msgid "View mode"
 msgstr "Modo de vista"
 
-#: ../xfdashboard/applications-view.c:1324
+#: ../libxfdashboard/applications-view.c:1324
 msgid "The view mode used in this view"
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:1331 ../xfdashboard/button.c:1322
-#: ../xfdashboard/quicklaunch.c:2705 ../xfdashboard/scrollbar.c:754
-#: ../xfdashboard/search-result-container.c:1266 ../xfdashboard/text-box.c:789
-#: ../xfdashboard/viewpad.c:1215 ../xfdashboard/view-selector.c:401
-#: ../xfdashboard/windows-view.c:1912 ../xfdashboard/workspace-selector.c:1239
+#: ../libxfdashboard/applications-view.c:1331 ../libxfdashboard/button.c:1322
+#: ../libxfdashboard/quicklaunch.c:2705 ../libxfdashboard/scrollbar.c:754
+#: ../libxfdashboard/search-result-container.c:1266
+#: ../libxfdashboard/text-box.c:789 ../libxfdashboard/viewpad.c:1222
+#: ../libxfdashboard/view-selector.c:401 ../libxfdashboard/windows-view.c:1912
+#: ../libxfdashboard/workspace-selector.c:1239
 msgid "Spacing"
 msgstr "Espaciado"
 
-#: ../xfdashboard/applications-view.c:1332 ../xfdashboard/windows-view.c:1913
+#: ../libxfdashboard/applications-view.c:1332
+#: ../libxfdashboard/windows-view.c:1913
 msgid "Spacing between each element in view"
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:1339
+#: ../libxfdashboard/applications-view.c:1339
 msgid "Parent menu icon"
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:1340
+#: ../libxfdashboard/applications-view.c:1340
 msgid "Name of icon to use for 'go-back-to-parent-menu' entries"
 msgstr ""
 
-#: ../xfdashboard/applications-view.c:1360
+#: ../libxfdashboard/applications-view.c:1360
 msgid "Show all applications"
 msgstr "Mostrar todas las aplicaciones"
 
-#: ../xfdashboard/applications-view.c:1361
+#: ../libxfdashboard/applications-view.c:1361
 msgid "Whether to show a menu for all installed applications at root menu"
 msgstr ""
 
-#: ../xfdashboard/background.c:420 ../xfdashboard/background.c:421
+#: ../libxfdashboard/background.c:420 ../libxfdashboard/background.c:421
 msgid "Background type"
 msgstr "Tipo de fondo"
 
-#: ../xfdashboard/background.c:428 ../xfdashboard/outline-effect.c:451
+#: ../libxfdashboard/background.c:428 ../libxfdashboard/outline-effect.c:451
 msgid "Corners"
 msgstr "Esquinas"
 
-#: ../xfdashboard/background.c:429
+#: ../libxfdashboard/background.c:429
 msgid "Determines which corners are rounded for background and outline"
 msgstr ""
 
-#: ../xfdashboard/background.c:436 ../xfdashboard/background.c:459
-#: ../xfdashboard/outline-effect.c:459
+#: ../libxfdashboard/background.c:436 ../libxfdashboard/background.c:459
+#: ../libxfdashboard/outline-effect.c:459
 msgid "Corner radius"
 msgstr "Radio del borde"
 
-#: ../xfdashboard/background.c:437
+#: ../libxfdashboard/background.c:437
 msgid "Radius of rounded corners for background and outline"
 msgstr ""
 
-#: ../xfdashboard/background.c:444
+#: ../libxfdashboard/background.c:444
 msgid "Background fill color"
 msgstr ""
 
-#: ../xfdashboard/background.c:445
+#: ../libxfdashboard/background.c:445
 msgid "Color to fill background with"
 msgstr ""
 
-#: ../xfdashboard/background.c:451
+#: ../libxfdashboard/background.c:451
 msgid "Fill corners"
 msgstr ""
 
-#: ../xfdashboard/background.c:452
+#: ../libxfdashboard/background.c:452
 msgid "Determines which corners are rounded at background"
 msgstr ""
 
-#: ../xfdashboard/background.c:460
+#: ../libxfdashboard/background.c:460
 msgid "Radius of rounded corners of background"
 msgstr ""
 
-#: ../xfdashboard/background.c:467 ../xfdashboard/window-content.c:2089
+#: ../libxfdashboard/background.c:467 ../libxfdashboard/window-content.c:2089
 msgid "Outline color"
 msgstr ""
 
-#: ../xfdashboard/background.c:468 ../xfdashboard/outline-effect.c:429
+#: ../libxfdashboard/background.c:468 ../libxfdashboard/outline-effect.c:429
 msgid "Color to draw outline with"
 msgstr ""
 
-#: ../xfdashboard/background.c:474 ../xfdashboard/window-content.c:2096
+#: ../libxfdashboard/background.c:474 ../libxfdashboard/window-content.c:2096
 msgid "Outline width"
 msgstr ""
 
-#: ../xfdashboard/background.c:475 ../xfdashboard/outline-effect.c:436
+#: ../libxfdashboard/background.c:475 ../libxfdashboard/outline-effect.c:436
 msgid "Width of line used to draw outline"
 msgstr ""
 
-#: ../xfdashboard/background.c:482
+#: ../libxfdashboard/background.c:482
 msgid "Outline borders"
 msgstr ""
 
-#: ../xfdashboard/background.c:483
+#: ../libxfdashboard/background.c:483
 msgid "Determines which sides of border of outline should be drawn"
 msgstr ""
 
-#: ../xfdashboard/background.c:490
+#: ../libxfdashboard/background.c:490
 msgid "Outline corners"
 msgstr ""
 
-#: ../xfdashboard/background.c:491
+#: ../libxfdashboard/background.c:491
 msgid "Determines which corners are rounded at outline"
 msgstr ""
 
-#: ../xfdashboard/background.c:498
+#: ../libxfdashboard/background.c:498
 msgid "Outline corner radius"
 msgstr ""
 
-#: ../xfdashboard/background.c:499
+#: ../libxfdashboard/background.c:499
 msgid "Radius of rounded corners of outline"
 msgstr ""
 
-#: ../xfdashboard/background.c:506
+#: ../libxfdashboard/background.c:506
 msgid "Image"
 msgstr "Imagen"
 
-#: ../xfdashboard/background.c:507
+#: ../libxfdashboard/background.c:507
 msgid "Image to draw as background"
 msgstr ""
 
-#: ../xfdashboard/binding.c:214
+#: ../libxfdashboard/binding.c:214
 msgid "Event type"
 msgstr ""
 
-#: ../xfdashboard/binding.c:215
+#: ../libxfdashboard/binding.c:215
 msgid "The event type this binding is bound to"
 msgstr ""
 
-#: ../xfdashboard/binding.c:222
+#: ../libxfdashboard/binding.c:222
 msgid "Class name"
 msgstr ""
 
-#: ../xfdashboard/binding.c:223
+#: ../libxfdashboard/binding.c:223
 msgid "Class name of object this binding is bound to"
 msgstr ""
 
-#: ../xfdashboard/binding.c:229 ../xfdashboard/image-content.c:1200
+#: ../libxfdashboard/binding.c:229 ../libxfdashboard/image-content.c:1200
 msgid "Key"
 msgstr ""
 
-#: ../xfdashboard/binding.c:230
+#: ../libxfdashboard/binding.c:230
 msgid "Key code of a keyboard event this binding is bound to"
 msgstr ""
 
-#: ../xfdashboard/binding.c:237
+#: ../libxfdashboard/binding.c:237
 msgid "Modifiers"
 msgstr ""
 
-#: ../xfdashboard/binding.c:238
+#: ../libxfdashboard/binding.c:238
 msgid "Modifiers this binding is bound to"
 msgstr ""
 
-#: ../xfdashboard/binding.c:246
+#: ../libxfdashboard/binding.c:246
 msgid "Class name of target of this binding"
 msgstr ""
 
-#: ../xfdashboard/binding.c:253
+#: ../libxfdashboard/binding.c:253
 msgid "Action assigned to this binding"
 msgstr ""
 
-#: ../xfdashboard/binding.c:259
+#: ../libxfdashboard/binding.c:259
 msgid "Flags"
 msgstr ""
 
-#: ../xfdashboard/binding.c:260
+#: ../libxfdashboard/binding.c:260
 msgid "Flags assigned to this binding"
 msgstr ""
 
-#: ../xfdashboard/binding.c:305
+#: ../libxfdashboard/binding.c:305
 msgid "Failed to create binding instance"
 msgstr ""
 
-#: ../xfdashboard/binding.c:449
+#: ../libxfdashboard/binding.c:449
 #, c-format
 msgid "Cannot set unsupported event type %s at binding"
 msgstr ""
 
-#: ../xfdashboard/binding.c:454
+#: ../libxfdashboard/binding.c:454
 msgid "Cannot set invalid event type at binding"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:133 ../xfdashboard/theme-effects.c:172
-#: ../xfdashboard/theme-layout.c:250
+#: ../libxfdashboard/bindings-pool.c:133 ../libxfdashboard/theme-effects.c:172
+#: ../libxfdashboard/theme-layout.c:250
 #, c-format
 msgid "Error on line %d char %d: "
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:201
+#: ../libxfdashboard/bindings-pool.c:201
 #, c-format
 msgid "Could not parse empty key-binding '%s'."
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:226
+#: ../libxfdashboard/bindings-pool.c:226
 #, c-format
 msgid ""
 "Could not parse modifier '%s' of key-binding '%s' because it is not enclosed"
 " by '<...>'"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:249
+#: ../libxfdashboard/bindings-pool.c:249
 #, c-format
 msgid "Could not parse unknown modifier '%s' of key-binding '%s'"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:271
+#: ../libxfdashboard/bindings-pool.c:271
 #, c-format
 msgid ""
 "Could not parse '%s' of key-binding '%s' because it is already a key "
 "assigned."
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:286
+#: ../libxfdashboard/bindings-pool.c:286
 #, c-format
 msgid "Could not parse '%s' of key-binding '%s'"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:305
+#: ../libxfdashboard/bindings-pool.c:305
 #, c-format
 msgid "Invalid key-binding '%s' as either a key nor a modifier was assigned."
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:344 ../xfdashboard/theme-effects.c:524
-#: ../xfdashboard/theme-layout.c:981
+#: ../libxfdashboard/bindings-pool.c:344 ../libxfdashboard/theme-effects.c:524
+#: ../libxfdashboard/theme-layout.c:981
 #, c-format
 msgid "Unexpected text node '%s' at tag <%s>"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:374
+#: ../libxfdashboard/bindings-pool.c:374
 msgid "Missing action"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:400
+#: ../libxfdashboard/bindings-pool.c:400
 #, c-format
 msgid "Missing binding to set action '%s'"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:453 ../xfdashboard/bindings-pool.c:724
-#: ../xfdashboard/theme-effects.c:556 ../xfdashboard/theme-effects.c:642
-#: ../xfdashboard/theme-effects.c:809 ../xfdashboard/theme-effects.c:978
-#: ../xfdashboard/theme-layout.c:1022
+#: ../libxfdashboard/bindings-pool.c:453 ../libxfdashboard/bindings-pool.c:724
+#: ../libxfdashboard/theme-effects.c:556 ../libxfdashboard/theme-effects.c:642
+#: ../libxfdashboard/theme-effects.c:809 ../libxfdashboard/theme-effects.c:978
+#: ../libxfdashboard/theme-layout.c:1022
 #, c-format
 msgid "Unknown tag <%s>"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:524
+#: ../libxfdashboard/bindings-pool.c:524
 msgid "Missing attribute 'code' for key"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:544
+#: ../libxfdashboard/bindings-pool.c:544
 #, c-format
 msgid "Could not translate key '%s'"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:580
+#: ../libxfdashboard/bindings-pool.c:580
 #, c-format
 msgid "Unknown value '%s' for attribute 'when'"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:603
+#: ../libxfdashboard/bindings-pool.c:603
 msgid "Could not initialize binding for key-binding"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:633
+#: ../libxfdashboard/bindings-pool.c:633
 #, c-format
 msgid ""
 "Cannot transform attribute 'allow-unfocusable-target' from type '%s' to type"
 " '%s'"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:684 ../xfdashboard/bindings-pool.c:764
-#: ../xfdashboard/theme-effects.c:566 ../xfdashboard/theme-effects.c:718
-#: ../xfdashboard/theme-effects.c:938 ../xfdashboard/theme-effects.c:1018
-#: ../xfdashboard/theme-layout.c:951 ../xfdashboard/theme-layout.c:1397
+#: ../libxfdashboard/bindings-pool.c:684 ../libxfdashboard/bindings-pool.c:764
+#: ../libxfdashboard/theme-effects.c:566 ../libxfdashboard/theme-effects.c:718
+#: ../libxfdashboard/theme-effects.c:938
+#: ../libxfdashboard/theme-effects.c:1018 ../libxfdashboard/theme-layout.c:951
+#: ../libxfdashboard/theme-layout.c:1397
 #, c-format
 msgid "Tag <%s> cannot contain tag <%s>"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:827 ../xfdashboard/theme-effects.c:1068
-#: ../xfdashboard/theme-layout.c:1768
+#: ../libxfdashboard/bindings-pool.c:827
+#: ../libxfdashboard/theme-effects.c:1068
+#: ../libxfdashboard/theme-layout.c:1768
 #, c-format
 msgid "Could not set up parser data for file %s"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:839 ../xfdashboard/theme-effects.c:1080
-#: ../xfdashboard/theme-layout.c:1780
+#: ../libxfdashboard/bindings-pool.c:839
+#: ../libxfdashboard/theme-effects.c:1080
+#: ../libxfdashboard/theme-layout.c:1780
 #, c-format
 msgid "Could not create parser for file %s"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:868
+#: ../libxfdashboard/bindings-pool.c:868
 #, c-format
 msgid "Could not set up hash-table at parser data for file %s"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:898
+#: ../libxfdashboard/bindings-pool.c:898
 #, c-format
 msgid "Unexpected binding state set at parser data for file %s"
 msgstr ""
 
-#: ../xfdashboard/bindings-pool.c:1073
+#: ../libxfdashboard/bindings-pool.c:1073
 #, c-format
 msgid "No bindings configuration file found."
 msgstr ""
 
-#: ../xfdashboard/button.c:1314 ../xfdashboard/emblem-effect.c:486
-#: ../xfdashboard/search-result-container.c:1274 ../xfdashboard/text-box.c:781
+#: ../libxfdashboard/button.c:1314 ../libxfdashboard/emblem-effect.c:486
+#: ../libxfdashboard/search-result-container.c:1274
+#: ../libxfdashboard/text-box.c:781
 msgid "Padding"
 msgstr ""
 
-#: ../xfdashboard/button.c:1315 ../xfdashboard/text-box.c:782
+#: ../libxfdashboard/button.c:1315 ../libxfdashboard/text-box.c:782
 msgid "Padding between background and elements"
 msgstr ""
 
-#: ../xfdashboard/button.c:1323 ../xfdashboard/text-box.c:790
+#: ../libxfdashboard/button.c:1323 ../libxfdashboard/text-box.c:790
 msgid "Spacing between text and icon"
 msgstr ""
 
-#: ../xfdashboard/button.c:1330
+#: ../libxfdashboard/button.c:1330
 msgid "Button style"
 msgstr ""
 
-#: ../xfdashboard/button.c:1331
+#: ../libxfdashboard/button.c:1331
 msgid "Style of button showing text and/or icon"
 msgstr ""
 
-#: ../xfdashboard/button.c:1338 ../xfdashboard/emblem-effect.c:471
+#: ../libxfdashboard/button.c:1338 ../libxfdashboard/emblem-effect.c:471
 msgid "Icon name"
 msgstr ""
 
-#: ../xfdashboard/button.c:1339 ../xfdashboard/emblem-effect.c:472
+#: ../libxfdashboard/button.c:1339 ../libxfdashboard/emblem-effect.c:472
 msgid "Themed icon name or file name of icon"
 msgstr ""
 
-#: ../xfdashboard/button.c:1345
+#: ../libxfdashboard/button.c:1345
 msgid "Icon GIcon"
 msgstr ""
 
-#: ../xfdashboard/button.c:1346
+#: ../libxfdashboard/button.c:1346
 msgid "The GIcon of icon"
 msgstr ""
 
-#: ../xfdashboard/button.c:1352
+#: ../libxfdashboard/button.c:1352
 msgid "Icon image"
 msgstr ""
 
-#: ../xfdashboard/button.c:1353
+#: ../libxfdashboard/button.c:1353
 msgid "Image of icon"
 msgstr ""
 
-#: ../xfdashboard/button.c:1359
+#: ../libxfdashboard/button.c:1359
 msgid "Synchronize icon size"
 msgstr ""
 
-#: ../xfdashboard/button.c:1360
+#: ../libxfdashboard/button.c:1360
 msgid "Synchronize icon size with text size"
 msgstr ""
 
-#: ../xfdashboard/button.c:1366 ../xfdashboard/emblem-effect.c:478
+#: ../libxfdashboard/button.c:1366 ../libxfdashboard/emblem-effect.c:478
 msgid "Icon size"
 msgstr ""
 
-#: ../xfdashboard/button.c:1367
+#: ../libxfdashboard/button.c:1367
 msgid ""
 "Size of icon if size of icon is not synchronized. -1 is valid for icon "
 "images and sets icon image's default size."
 msgstr ""
 
-#: ../xfdashboard/button.c:1374
+#: ../libxfdashboard/button.c:1374
 msgid "Icon orientation"
 msgstr ""
 
-#: ../xfdashboard/button.c:1375
+#: ../libxfdashboard/button.c:1375
 msgid "Orientation of icon to label"
 msgstr ""
 
-#: ../xfdashboard/button.c:1382
+#: ../libxfdashboard/button.c:1382
 msgid "Label text"
 msgstr ""
 
-#: ../xfdashboard/button.c:1383
+#: ../libxfdashboard/button.c:1383
 msgid "Text of label"
 msgstr ""
 
-#: ../xfdashboard/button.c:1389
+#: ../libxfdashboard/button.c:1389
 msgid "Font"
 msgstr ""
 
-#: ../xfdashboard/button.c:1390
+#: ../libxfdashboard/button.c:1390
 msgid "Font of label"
 msgstr ""
 
-#: ../xfdashboard/button.c:1396 ../xfdashboard/outline-effect.c:428
+#: ../libxfdashboard/button.c:1396 ../libxfdashboard/outline-effect.c:428
 msgid "Color"
 msgstr ""
 
-#: ../xfdashboard/button.c:1397
+#: ../libxfdashboard/button.c:1397
 msgid "Color of label"
 msgstr ""
 
-#: ../xfdashboard/button.c:1403
+#: ../libxfdashboard/button.c:1403
 msgid "Ellipsize mode"
 msgstr ""
 
-#: ../xfdashboard/button.c:1404
+#: ../libxfdashboard/button.c:1404
 msgid "Mode of ellipsize if text in label is too long"
 msgstr ""
 
-#: ../xfdashboard/button.c:1411
+#: ../libxfdashboard/button.c:1411
 msgid "Single line"
 msgstr ""
 
-#: ../xfdashboard/button.c:1412
+#: ../libxfdashboard/button.c:1412
 msgid "Flag to determine if text can only be in one or multiple lines"
 msgstr ""
 
-#: ../xfdashboard/button.c:1418
+#: ../libxfdashboard/button.c:1418
 msgid "Text justify"
 msgstr ""
 
-#: ../xfdashboard/button.c:1419
+#: ../libxfdashboard/button.c:1419
 msgid "Justification (line alignment) of label"
 msgstr ""
 
-#: ../xfdashboard/click-action.c:585
+#: ../libxfdashboard/click-action.c:585
 msgid "Pressed"
 msgstr ""
 
-#: ../xfdashboard/click-action.c:586
+#: ../libxfdashboard/click-action.c:586
 msgid "Whether the clickable should be in pressed state"
 msgstr ""
 
-#: ../xfdashboard/click-action.c:592
+#: ../libxfdashboard/click-action.c:592
 msgid "Held"
 msgstr ""
 
-#: ../xfdashboard/click-action.c:593
+#: ../libxfdashboard/click-action.c:593
 msgid "Whether the clickable has a grab"
 msgstr ""
 
-#: ../xfdashboard/click-action.c:599
+#: ../libxfdashboard/click-action.c:599
 msgid "Long Press Duration"
 msgstr ""
 
-#: ../xfdashboard/click-action.c:600
+#: ../libxfdashboard/click-action.c:600
 msgid "The minimum duration of a long press to recognize the gesture"
 msgstr ""
 
-#: ../xfdashboard/click-action.c:608
+#: ../libxfdashboard/click-action.c:608
 msgid "Long Press Threshold"
 msgstr ""
 
-#: ../xfdashboard/click-action.c:609
+#: ../libxfdashboard/click-action.c:609
 msgid "The maximum threshold before a long press is cancelled"
 msgstr ""
 
-#: ../xfdashboard/collapse-box.c:276
+#: ../libxfdashboard/collapse-box.c:276
 #, c-format
 msgid "More than one actor added to %s - result are unexpected"
 msgstr ""
 
-#: ../xfdashboard/collapse-box.c:576
+#: ../libxfdashboard/collapse-box.c:576
 msgid "Collapsed"
 msgstr ""
 
-#: ../xfdashboard/collapse-box.c:577
+#: ../libxfdashboard/collapse-box.c:577
 msgid "If TRUE this actor is collapsed otherwise it is expanded to real size"
 msgstr ""
 
-#: ../xfdashboard/collapse-box.c:583
+#: ../libxfdashboard/collapse-box.c:583
 msgid "Collapsed size"
 msgstr ""
 
-#: ../xfdashboard/collapse-box.c:584
+#: ../libxfdashboard/collapse-box.c:584
 msgid "The size of actor when collapsed"
 msgstr ""
 
-#: ../xfdashboard/collapse-box.c:591
+#: ../libxfdashboard/collapse-box.c:591
 msgid "Collapse orientation"
 msgstr ""
 
-#: ../xfdashboard/collapse-box.c:592
+#: ../libxfdashboard/collapse-box.c:592
 msgid "Orientation of area being visible in collapsed state"
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:147
+#: ../libxfdashboard/css-selector.c:147
 msgid "Could not create string for parent css selector"
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:153
+#: ../libxfdashboard/css-selector.c:153
 msgid "Invalid mode for parent rule in CSS selector"
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:531
+#: ../libxfdashboard/css-selector.c:531
 msgid "Invalid name identifier"
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:557
+#: ../libxfdashboard/css-selector.c:557
 msgid "Invalid class identifier"
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:593
+#: ../libxfdashboard/css-selector.c:593
 msgid "Invalid pseudo-class identifier"
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:692
+#: ../libxfdashboard/css-selector.c:692
 msgid "No parent when parsing '>'"
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:773
+#: ../libxfdashboard/css-selector.c:773
 msgid "Failed to parse css selector."
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:779
+#: ../libxfdashboard/css-selector.c:779
 msgid "Failed to parse css selector because stream is empty."
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:870
+#: ../libxfdashboard/css-selector.c:870
 msgid "Priority"
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:871
+#: ../libxfdashboard/css-selector.c:871
 msgid "The priority of this CSS selector"
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:914 ../xfdashboard/css-selector.c:984
+#: ../libxfdashboard/css-selector.c:914 ../libxfdashboard/css-selector.c:984
 msgid "Could not create seleector."
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:941 ../xfdashboard/theme-css.c:2320
-#: ../xfdashboard/theme-css.c:2326
+#: ../libxfdashboard/css-selector.c:941 ../libxfdashboard/theme-css.c:2320
+#: ../libxfdashboard/theme-css.c:2326
 msgid "Parser did not reach end of stream"
 msgstr ""
 
-#: ../xfdashboard/css-selector.c:1011
+#: ../libxfdashboard/css-selector.c:1011
 msgid "Unexpected state of CSS scanner."
 msgstr ""
 
-#: ../xfdashboard/desktop-app-info.c:521
+#: ../libxfdashboard/desktop-app-info.c:521
 msgid "Unable to expand macros at command-line."
 msgstr ""
 
 #. Working directory does not exist or is not a directory
-#: ../xfdashboard/desktop-app-info.c:600
+#: ../libxfdashboard/desktop-app-info.c:600
 #, c-format
 msgid ""
 "Working directory '%s' does not exist. It won't be used when launching '%s'."
 msgstr ""
 
-#: ../xfdashboard/desktop-app-info.c:1202
+#: ../libxfdashboard/desktop-app-info.c:1202
 msgid "Valid"
 msgstr ""
 
-#: ../xfdashboard/desktop-app-info.c:1203
+#: ../libxfdashboard/desktop-app-info.c:1203
 msgid ""
 "Flag indicating whether this desktop application information is valid or not"
 msgstr ""
 
-#: ../xfdashboard/desktop-app-info.c:1209
+#: ../libxfdashboard/desktop-app-info.c:1209
 msgid "Desktop ID"
 msgstr ""
 
-#: ../xfdashboard/desktop-app-info.c:1210
+#: ../libxfdashboard/desktop-app-info.c:1210
 msgid "Name of desktop ID"
 msgstr ""
 
-#: ../xfdashboard/desktop-app-info.c:1216
+#: ../libxfdashboard/desktop-app-info.c:1216
 msgid "File"
 msgstr ""
 
-#: ../xfdashboard/desktop-app-info.c:1217
+#: ../libxfdashboard/desktop-app-info.c:1217
 msgid "The desktop file"
 msgstr ""
 
-#: ../xfdashboard/desktop-app-info.c:1272
+#: ../libxfdashboard/desktop-app-info.c:1272
 #, c-format
 msgid "Desktop ID '%s' not found"
 msgstr ""
 
-#: ../xfdashboard/desktop-app-info.c:1430
+#: ../libxfdashboard/desktop-app-info.c:1430
 #, c-format
 msgid "Could not reload desktop application information for '%s': %s"
 msgstr ""
 
-#: ../xfdashboard/drag-action.c:933
+#: ../libxfdashboard/drag-action.c:933
 msgid "Source"
 msgstr ""
 
-#: ../xfdashboard/drag-action.c:934
+#: ../libxfdashboard/drag-action.c:934
 msgid "The source actor where drag began"
 msgstr ""
 
-#: ../xfdashboard/drop-action.c:80
+#: ../libxfdashboard/drop-action.c:80
 #, c-format
 msgid "Target %s is already registered"
 msgstr ""
 
-#: ../xfdashboard/dynamic-table-layout.c:500
-#: ../xfdashboard/scaled-table-layout.c:485
+#: ../libxfdashboard/dynamic-table-layout.c:493
+#: ../libxfdashboard/scaled-table-layout.c:485
 msgid "Row spacing"
 msgstr ""
 
-#: ../xfdashboard/dynamic-table-layout.c:501
-#: ../xfdashboard/scaled-table-layout.c:486
+#: ../libxfdashboard/dynamic-table-layout.c:494
+#: ../libxfdashboard/scaled-table-layout.c:486
 msgid "The spacing between rows in table"
 msgstr ""
 
-#: ../xfdashboard/dynamic-table-layout.c:509
-#: ../xfdashboard/scaled-table-layout.c:494
+#: ../libxfdashboard/dynamic-table-layout.c:502
+#: ../libxfdashboard/scaled-table-layout.c:494
 msgid "Column spacing"
 msgstr ""
 
-#: ../xfdashboard/dynamic-table-layout.c:510
-#: ../xfdashboard/scaled-table-layout.c:495
+#: ../libxfdashboard/dynamic-table-layout.c:503
+#: ../libxfdashboard/scaled-table-layout.c:495
 msgid "The spacing between columns in table"
 msgstr ""
 
-#: ../xfdashboard/dynamic-table-layout.c:518
-#: ../xfdashboard/scaled-table-layout.c:517
+#: ../libxfdashboard/dynamic-table-layout.c:511
+#: ../libxfdashboard/scaled-table-layout.c:517
 msgid "Number children"
 msgstr ""
 
-#: ../xfdashboard/dynamic-table-layout.c:519
-#: ../xfdashboard/scaled-table-layout.c:518
+#: ../libxfdashboard/dynamic-table-layout.c:512
+#: ../libxfdashboard/scaled-table-layout.c:518
 msgid "Current number of child actors in this layout"
 msgstr ""
 
-#: ../xfdashboard/dynamic-table-layout.c:527
-#: ../xfdashboard/scaled-table-layout.c:526
+#: ../libxfdashboard/dynamic-table-layout.c:520
+#: ../libxfdashboard/scaled-table-layout.c:526
 msgid "Rows"
 msgstr ""
 
-#: ../xfdashboard/dynamic-table-layout.c:528
-#: ../xfdashboard/scaled-table-layout.c:527
+#: ../libxfdashboard/dynamic-table-layout.c:521
+#: ../libxfdashboard/scaled-table-layout.c:527
 msgid "Current number of rows in this layout"
 msgstr ""
 
-#: ../xfdashboard/dynamic-table-layout.c:536
-#: ../xfdashboard/scaled-table-layout.c:535
+#: ../libxfdashboard/dynamic-table-layout.c:529
+#: ../libxfdashboard/scaled-table-layout.c:535
 msgid "Columns"
 msgstr ""
 
-#: ../xfdashboard/dynamic-table-layout.c:537
-#: ../xfdashboard/scaled-table-layout.c:536
+#: ../libxfdashboard/dynamic-table-layout.c:530
+#: ../libxfdashboard/scaled-table-layout.c:536
 msgid "Current number of columns in this layout"
 msgstr ""
 
-#: ../xfdashboard/emblem-effect.c:479
+#: ../libxfdashboard/emblem-effect.c:479
 msgid "Size of icon"
 msgstr ""
 
-#: ../xfdashboard/emblem-effect.c:487
+#: ../libxfdashboard/emblem-effect.c:487
 msgid "Padding around emblem"
 msgstr ""
 
-#: ../xfdashboard/emblem-effect.c:494
+#: ../libxfdashboard/emblem-effect.c:494
 msgid "X align"
 msgstr ""
 
-#: ../xfdashboard/emblem-effect.c:495
+#: ../libxfdashboard/emblem-effect.c:495
 msgid ""
 "The alignment of emblem on the X axis within the allocation in normalized "
 "coordinate between 0 and 1"
 msgstr ""
 
-#: ../xfdashboard/emblem-effect.c:502
+#: ../libxfdashboard/emblem-effect.c:502
 msgid "Y align"
 msgstr ""
 
-#: ../xfdashboard/emblem-effect.c:503
+#: ../libxfdashboard/emblem-effect.c:503
 msgid ""
 "The alignment of emblem on the Y axis within the allocation in normalized "
 "coordinate between 0 and 1"
 msgstr ""
 
-#: ../xfdashboard/emblem-effect.c:510
+#: ../libxfdashboard/emblem-effect.c:510
 msgid "Anchor point"
 msgstr ""
 
-#: ../xfdashboard/emblem-effect.c:511
+#: ../libxfdashboard/emblem-effect.c:511
 msgid "The anchor point of emblem"
 msgstr ""
 
-#: ../xfdashboard/fill-box-layout.c:575 ../xfdashboard/quicklaunch.c:2713
-#: ../xfdashboard/scrollbar.c:714 ../xfdashboard/view-selector.c:414
-#: ../xfdashboard/workspace-selector.c:1247
+#: ../libxfdashboard/fill-box-layout.c:575
+#: ../libxfdashboard/quicklaunch.c:2713 ../libxfdashboard/scrollbar.c:714
+#: ../libxfdashboard/view-selector.c:414
+#: ../libxfdashboard/workspace-selector.c:1247
 msgid "Orientation"
 msgstr ""
 
-#: ../xfdashboard/fill-box-layout.c:576 ../xfdashboard/quicklaunch.c:2714
-#: ../xfdashboard/workspace-selector.c:1248
+#: ../libxfdashboard/fill-box-layout.c:576
+#: ../libxfdashboard/quicklaunch.c:2714
+#: ../libxfdashboard/workspace-selector.c:1248
 msgid "The orientation to layout children"
 msgstr ""
 
-#: ../xfdashboard/fill-box-layout.c:583
+#: ../libxfdashboard/fill-box-layout.c:583
 msgid "spacing"
 msgstr ""
 
-#: ../xfdashboard/fill-box-layout.c:584 ../xfdashboard/quicklaunch.c:2706
-#: ../xfdashboard/workspace-selector.c:1240
+#: ../libxfdashboard/fill-box-layout.c:584
+#: ../libxfdashboard/quicklaunch.c:2706
+#: ../libxfdashboard/workspace-selector.c:1240
 msgid "The spacing between children"
 msgstr ""
 
-#: ../xfdashboard/fill-box-layout.c:592
+#: ../libxfdashboard/fill-box-layout.c:592
 msgid "Homogeneous"
 msgstr ""
 
-#: ../xfdashboard/fill-box-layout.c:593
+#: ../libxfdashboard/fill-box-layout.c:593
 msgid ""
 "Whether the layout should be homogeneous, i.e. all children get the same "
 "size"
 msgstr ""
 
-#: ../xfdashboard/fill-box-layout.c:599
+#: ../libxfdashboard/fill-box-layout.c:599
 msgid "Keep aspect"
 msgstr ""
 
-#: ../xfdashboard/fill-box-layout.c:600
+#: ../libxfdashboard/fill-box-layout.c:600
 msgid "Whether all children should keep their aspect"
 msgstr ""
 
 #. IMPLEMENTATION: Private variables and methods
-#: ../xfdashboard/focusable.c:75
+#: ../libxfdashboard/focusable.c:75
 #, c-format
 msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardFocusable::%s"
 msgstr "El objeto del tipo %s no implementa la función virtual requerida XfdashboardFocusable::%s"
 
-#: ../xfdashboard/focusable.c:178
+#: ../libxfdashboard/focusable.c:178
 #, c-format
 msgid ""
 "Old selection %s at %s is unavailable but setting new selection either to %s"
 " or nothing failed!"
 msgstr ""
 
-#: ../xfdashboard/focus-manager.c:407 ../xfdashboard/focus-manager.c:415
+#: ../libxfdashboard/focus-manager.c:407 ../libxfdashboard/focus-manager.c:415
 #, c-format
 msgid "Object %s does not inherit %s and cannot be registered"
 msgstr ""
 
-#: ../xfdashboard/focus-manager.c:439
+#: ../libxfdashboard/focus-manager.c:439
 #, c-format
 msgid ""
 "Could not find registered focusable object %s to register object %s - "
 "appending to end of list."
 msgstr ""
 
-#: ../xfdashboard/focus-manager.c:578
+#: ../libxfdashboard/focus-manager.c:578
 #, c-format
 msgid "Cannot build target list for unknown type %s"
 msgstr ""
 
-#: ../xfdashboard/focus-manager.c:685
+#: ../libxfdashboard/focus-manager.c:685
 msgid "Trying to focus an unregistered focusable actor"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:154
+#: ../libxfdashboard/image-content.c:154
 #, c-format
 msgid "Destroying image cache still containing %d images."
 msgstr ""
 
-#: ../xfdashboard/image-content.c:213
+#: ../libxfdashboard/image-content.c:213
 #, c-format
 msgid "Image has already key '%s' set and will be replaced with '%s'"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:224
+#: ../libxfdashboard/image-content.c:224
 #, c-format
 msgid "An image with key '%s' is already cache and will be replaced."
 msgstr ""
 
-#: ../xfdashboard/image-content.c:279
+#: ../libxfdashboard/image-content.c:279
 #, c-format
 msgid "Failed to load image data into content for key '%s': %s"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:295
+#: ../libxfdashboard/image-content.c:295
 #, c-format
 msgid "Failed to load image for key '%s': %s"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:374
+#: ../libxfdashboard/image-content.c:374
 #, c-format
 msgid "Icon file '%s' does not exist - trying fallback icon '%s'"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:389
+#: ../libxfdashboard/image-content.c:389
 #, c-format
 msgid "Could not load fallback icon for file '%s'"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:412 ../xfdashboard/image-content.c:654
+#: ../libxfdashboard/image-content.c:412 ../libxfdashboard/image-content.c:654
 #, c-format
 msgid "Failed to load image data into content for icon '%s': %s"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:445
+#: ../libxfdashboard/image-content.c:445
 #, c-format
 msgid "Could not create stream for file '%s' of icon '%s': %s"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:604
+#: ../libxfdashboard/image-content.c:604
 #, c-format
 msgid "Could not lookup icon name '%s' for icon '%s'"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:620
+#: ../libxfdashboard/image-content.c:620
 #, c-format
 msgid "Could not lookup themed icon '%s' - trying fallback icon '%s'"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:633
+#: ../libxfdashboard/image-content.c:633
 #, c-format
 msgid "Could not lookup fallback icon '%s' for icon '%s'"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:680
+#: ../libxfdashboard/image-content.c:680
 #, c-format
 msgid "Could not create stream for icon file %s of icon '%s': %s"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:750
+#: ../libxfdashboard/image-content.c:750
 #, c-format
 msgid "Could not lookup gicon '%s'"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:761
+#: ../libxfdashboard/image-content.c:761
 #, c-format
 msgid "Could not lookup fallback icon for gicon '%s'"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:782
+#: ../libxfdashboard/image-content.c:782
 #, c-format
 msgid "Failed to load image data into content for gicon '%s': %s"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:808
+#: ../libxfdashboard/image-content.c:808
 #, c-format
 msgid "Could not create stream for file %s of gicon '%s': %s"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:869 ../xfdashboard/image-content.c:1012
+#: ../libxfdashboard/image-content.c:869
+#: ../libxfdashboard/image-content.c:1012
 #, c-format
 msgid "Cannot load image '%s' without type"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:885 ../xfdashboard/image-content.c:1028
+#: ../libxfdashboard/image-content.c:885
+#: ../libxfdashboard/image-content.c:1028
 #, c-format
 msgid "Cannot load image '%s' of unknown type %d"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:1201
+#: ../libxfdashboard/image-content.c:1201
 msgid "The hash key for caching this image"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:1207
+#: ../libxfdashboard/image-content.c:1207
 msgid "Missing icon name"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:1208
+#: ../libxfdashboard/image-content.c:1208
 msgid "The icon's name to use when requested image cannot be loaded"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:1309
+#: ../libxfdashboard/image-content.c:1309
 #, c-format
 msgid "Could not create key for icon name '%s' at size %u"
 msgstr ""
 
-#: ../xfdashboard/image-content.c:1396
+#: ../libxfdashboard/image-content.c:1396
 #, c-format
 msgid "Could not create key for gicon '%s' at size %u"
 msgstr ""
 
-#: ../xfdashboard/live-window.c:763 ../xfdashboard/window-content.c:2075
+#: ../libxfdashboard/live-window.c:773 ../libxfdashboard/window-content.c:2075
 msgid "Window"
 msgstr ""
 
-#: ../xfdashboard/live-window.c:764
+#: ../libxfdashboard/live-window.c:774
 msgid "The window to show"
 msgstr ""
 
-#: ../xfdashboard/live-window.c:770
+#: ../libxfdashboard/live-window.c:780
 msgid "Window number"
 msgstr ""
 
-#: ../xfdashboard/live-window.c:771
+#: ../libxfdashboard/live-window.c:781
 msgid ""
 "The assigned window number. If set to non-zero the close button will be "
 "hidden and the window number will be shown instead. If set to zero the close"
 " button will be shown again."
 msgstr ""
 
-#: ../xfdashboard/live-window.c:778
+#: ../libxfdashboard/live-window.c:788
 msgid "Close button padding"
 msgstr ""
 
-#: ../xfdashboard/live-window.c:779
+#: ../libxfdashboard/live-window.c:789
 msgid "Padding of close button to window actor in pixels"
 msgstr ""
 
-#: ../xfdashboard/live-window.c:786
+#: ../libxfdashboard/live-window.c:796
 msgid "Title actor padding"
 msgstr ""
 
-#: ../xfdashboard/live-window.c:787
+#: ../libxfdashboard/live-window.c:797
 msgid "Padding of title actor to window actor in pixels"
 msgstr ""
 
-#: ../xfdashboard/live-workspace.c:835
+#: ../libxfdashboard/live-workspace.c:835
 msgid "Workspace"
 msgstr ""
 
-#: ../xfdashboard/live-workspace.c:836
+#: ../libxfdashboard/live-workspace.c:836
 msgid "The workspace to show"
 msgstr ""
 
-#: ../xfdashboard/live-workspace.c:842 ../xfdashboard/stage-interface.c:327
+#: ../libxfdashboard/live-workspace.c:842
+#: ../libxfdashboard/stage-interface.c:327
 msgid "Monitor"
 msgstr ""
 
-#: ../xfdashboard/live-workspace.c:843
+#: ../libxfdashboard/live-workspace.c:843
 msgid "The monitor whose window to show only"
 msgstr ""
 
-#: ../xfdashboard/live-workspace.c:849
+#: ../libxfdashboard/live-workspace.c:849
 msgid "Show window content"
 msgstr ""
 
-#: ../xfdashboard/live-workspace.c:850
+#: ../libxfdashboard/live-workspace.c:850
 msgid ""
 "If TRUE the window content should be shown otherwise the window's icon will "
 "be shown"
 msgstr ""
 
-#: ../xfdashboard/live-workspace.c:856 ../xfdashboard/live-workspace.c:857
-#: ../xfdashboard/stage.c:1592 ../xfdashboard/stage.c:1593
-#: ../xfdashboard/stage-interface.c:334 ../xfdashboard/stage-interface.c:335
+#: ../libxfdashboard/live-workspace.c:856
+#: ../libxfdashboard/live-workspace.c:857 ../libxfdashboard/stage.c:1592
+#: ../libxfdashboard/stage.c:1593 ../libxfdashboard/stage-interface.c:334
+#: ../libxfdashboard/stage-interface.c:335
 msgid "Background image type"
 msgstr ""
 
-#: ../xfdashboard/live-workspace.c:864
+#: ../libxfdashboard/live-workspace.c:864
 msgid "Show workspace name"
 msgstr ""
 
-#: ../xfdashboard/live-workspace.c:865
+#: ../libxfdashboard/live-workspace.c:865
 msgid "If TRUE the name of workspace should be shown"
 msgstr ""
 
-#: ../xfdashboard/live-workspace.c:871
+#: ../libxfdashboard/live-workspace.c:871
 msgid "Workspace name padding"
 msgstr ""
 
-#: ../xfdashboard/live-workspace.c:872
+#: ../libxfdashboard/live-workspace.c:872
 msgid "Padding of workspace name actor in pixels"
 msgstr ""
+
+#: ../libxfdashboard/outline-effect.c:435
+msgid "Width"
+msgstr ""
+
+#: ../libxfdashboard/outline-effect.c:443
+msgid "Borders"
+msgstr ""
+
+#: ../libxfdashboard/outline-effect.c:444
+msgid "Determines which sides of the border to draw"
+msgstr ""
+
+#: ../libxfdashboard/outline-effect.c:452
+msgid "Determines which corners are rounded"
+msgstr ""
+
+#: ../libxfdashboard/outline-effect.c:460
+msgid "Radius of rounded corners"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:191
+#, c-format
+msgid "Cannot get path for plugin at %s"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:420
+msgid "Missing path to plugin"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:426
+#, c-format
+msgid "Path '%s' does not exist"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:434
+#, c-format
+msgid "Bad state '%s' - expected '%s"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:443
+msgid "Plugin was already initialized"
+msgstr ""
+
+#. If we get here the virtual function was not overridden
+#: ../libxfdashboard/plugin.c:471
+#, c-format
+msgid "Plugin does not implement required function %s"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:479
+msgid "Plugin did not set required ID"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:494
+msgid "Plugin cannot be enabled"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:509
+msgid "Plugin cannot be disabled"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:555
+#, c-format
+msgid "Plugin '%s' could not be unloaded successfully: %s"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:556 ../libxfdashboard/plugin.c:1029
+#: ../libxfdashboard/plugin.c:1078
+msgid "Unknown"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:775
+msgid "File name"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:776
+msgid "Path and file name of this plugin"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:783
+msgid "The unique ID for this plugin"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:789
+msgid "name"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:790
+msgid "Name of plugin"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:797
+msgid "A short description about this plugin"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:803
+msgid "Author"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:804
+msgid "The author of this plugin"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:810
+msgid "Copyright"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:811
+msgid ""
+"The copyright of this plugin which usually contains year of development"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:817
+msgid "License"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:818
+msgid "The license of this plugin"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:824
+msgid "Config path"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:825
+msgid "The base path to configuration files of this plugin"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:831
+msgid "Cache path"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:832
+msgid "The base path to cache files of this plugin"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:838
+msgid "Data path"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:839
+msgid "The base path to data files of this plugin"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:937
+#, c-format
+msgid "Could not get plugin ID for file %s"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:964
+#, c-format
+msgid "Could not create plugin instance"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:1028
+#, c-format
+msgid ""
+"Setting plugin information for plugin '%s' at path '%s' failed: Plugin is "
+"already initialized"
+msgstr ""
+
+#: ../libxfdashboard/plugin.c:1077
+#, c-format
+msgid "Enabling plugin '%s' failed: Bad state '%s' - expected '%s'"
+msgstr ""
+
+#: ../libxfdashboard/plugins-manager.c:246
+#, c-format
+msgid "Could not find module for plugin ID '%s'"
+msgstr ""
+
+#. Show error message
+#: ../libxfdashboard/plugins-manager.c:379
+#: ../libxfdashboard/plugins-manager.c:557
+#, c-format
+msgid "Could not load plugin '%s': %s"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:183
+#, c-format
+msgid ""
+"Could not check for duplicates for invalid %s object so assume no actor "
+"exists"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:245
+#, c-format
+msgid ""
+"Could not check for duplicates for invalid %s object so assume it exists"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:268
+#, c-format
+msgid ""
+"Value at %p of type %s is not a %s so assume this desktop application item "
+"exists"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:392 ../libxfdashboard/quicklaunch.c:396
+msgid "No windows to activate for application"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:621 ../libxfdashboard/quicklaunch.c:1700
+#, c-format
+msgid "Favourite '%s' added"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:912 ../libxfdashboard/quicklaunch.c:1764
+#, c-format
+msgid "Favourite '%s' removed"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:2339
+#: ../libxfdashboard/workspace-selector.c:886
+#: ../libxfdashboard/workspace-selector.c:1073
+#, c-format
+msgid "%s is a child of %s and cannot be selected at %s"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:2690
+msgid "Favourites"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:2691
+msgid "An array of strings pointing to desktop files shown as icons"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:2697
+msgid "Normal icon size"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:2698
+msgid "Unscale size of icon"
+msgstr ""
+
+#. Next add trash button to box but initially hidden and register as drop
+#. target
+#: ../libxfdashboard/quicklaunch.c:2884
+msgid "Remove"
+msgstr ""
+
+#: ../libxfdashboard/scaled-table-layout.c:503
+msgid "Relative scale"
+msgstr ""
+
+#: ../libxfdashboard/scaled-table-layout.c:504
+msgid "Whether all children should be scaled relatively to largest child"
+msgstr ""
+
+#: ../libxfdashboard/scaled-table-layout.c:510
+#: ../libxfdashboard/windows-view.c:1920
+msgid "Prevent upscaling"
+msgstr ""
+
+#: ../libxfdashboard/scaled-table-layout.c:511
+msgid ""
+"Whether this layout manager should prevent upsclaing any child beyond its "
+"real size"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:715
+msgid "Defines if scrollbar is horizontal or vertical"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:722
+msgid "Value"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:723
+msgid "Current value of scroll bar within range"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:730
+msgid "Value range"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:731
+msgid "The range the slider of scroll bar covers"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:738
+msgid "Range"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:739
+msgid "Range to scroll within"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:746
+msgid "Page size factor"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:747
+msgid ""
+"The factor of value range to increase or decrease value by on pointer scroll"
+" events."
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:755
+msgid "The spacing between scrollbar and background"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:762
+msgid "Slider width"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:763
+msgid "The width of slider"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:770
+msgid "Slider radius"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:771
+msgid "The radius of slider's rounded corners"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:778
+msgid "Slider color"
+msgstr ""
+
+#: ../libxfdashboard/scrollbar.c:779
+msgid "Color of slider"
+msgstr ""
+
+#: ../libxfdashboard/search-manager.c:270
+#, c-format
+msgid "Search provider %s of type %s is not a %s and cannot be registered"
+msgstr ""
+
+#: ../libxfdashboard/search-manager.c:280
+#, c-format
+msgid "Search provider %s of type %s is registered already"
+msgstr ""
+
+#: ../libxfdashboard/search-manager.c:294
+#, c-format
+msgid "Failed to register seaarch provider %s of type %s"
+msgstr ""
+
+#: ../libxfdashboard/search-manager.c:323
+#, c-format
+msgid "Search provider %s is not registered and cannot be unregistered"
+msgstr ""
+
+#: ../libxfdashboard/search-manager.c:404
+#, c-format
+msgid "Cannot create search provider %s because it is not registered"
+msgstr ""
+
+#. IMPLEMENTATION: Private variables and methods
+#: ../libxfdashboard/search-provider.c:64
+#, c-format
+msgid ""
+"Search provider of type %s does not implement required virtual function "
+"XfdashboardSearchProvider::%s"
+msgstr "La búsqueda provista por el tipo %s no implementa la función virtual requerida XfdashboardSearchProvider::%s"
+
+#: ../libxfdashboard/search-provider.c:171
+msgid "Provider ID"
+msgstr ""
+
+#: ../libxfdashboard/search-provider.c:172
+msgid "The internal ID used to register this type of search provider"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:416
+#, c-format
+msgid ""
+"Failed to add actor for result item %s of provider %s: Could not create "
+"actor"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:429
+#, c-format
+msgid ""
+"Failed to add actor for result item %s of provider %s: Actor of type %s is "
+"not derived from class %s"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:653
+#: ../libxfdashboard/search-result-container.c:1718
+#, c-format
+msgid "Show %d more results..."
+msgstr ""
+
+#. Get text to set at "all"-label
+#: ../libxfdashboard/search-result-container.c:675
+#, c-format
+msgid "Show all %d results..."
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:710
+#, c-format
+msgid ""
+"Failed to remove actor for result item %s of provider %s: Actor of type %s "
+"is not derived from class %s"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1237
+msgid "Provider"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1238
+msgid "The search provider this result container is for"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1244
+msgid "Icon"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1245
+msgid ""
+"A themed icon name or file name of icon this container will display. If not "
+"set the icon the search provider defines will be used."
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1251
+msgid "Title format"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1252
+msgid "Format string for title which will contain the name of search provider"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1259
+msgid "View mode of container for result items"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1267
+msgid "Spacing between each result item"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1275
+msgid "Padding between title and item results container"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1282
+msgid "Initial results size"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1283
+msgid "The maximum number of results shown initially. 0 means all results"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1290
+msgid "More results size"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1291
+msgid "The number of results to increase current limit by"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1820
+#, c-format
+msgid ""
+"Cannot lookup selection target at %s because %s is a child of %s but not of "
+"this container"
+msgstr ""
+
+#: ../libxfdashboard/search-result-container.c:1899
+#, c-format
+msgid "%s is not a child of %s and cannot be activated"
+msgstr ""
+
+#: ../libxfdashboard/search-view.c:857
+#, c-format
+msgid "No results found for '%s'"
+msgstr ""
+
+#: ../libxfdashboard/search-view.c:986
+#, c-format
+msgid "%s is not a child of any provider at %s and cannot be selected"
+msgstr ""
+
+#: ../libxfdashboard/search-view.c:1390
+#, c-format
+msgid ""
+"Focusable object %s and provider %s do not handle selection direction of "
+"type %s."
+msgstr ""
+
+#: ../libxfdashboard/search-view.c:1426
+#, c-format
+msgid "%s is not a child of any provider at %s and cannot be activated"
+msgstr ""
+
+#. Set up view (Note: Search view is disabled by default!)
+#: ../libxfdashboard/search-view.c:1582
+msgid "Search"
+msgstr ""
+
+#: ../libxfdashboard/stage.c:396
+msgid "Cannot perform search because search view was not found in viewpad."
+msgstr ""
+
+#: ../libxfdashboard/stage.c:667
+msgid "Cannot find search viewin viewpad to reset view."
+msgstr ""
+
+#: ../libxfdashboard/stage.c:677 ../libxfdashboard/stage.c:1365
+#, c-format
+msgid "Will not switch to unknown view '%s'"
+msgstr ""
+
+#: ../libxfdashboard/stage.c:695
+#, c-format
+msgid "Cannot switch to unknown view '%s'"
+msgstr ""
+
+#: ../libxfdashboard/stage.c:835 ../libxfdashboard/stage.c:902
+#, c-format
+msgid "Could not build interface '%s' from theme '%s'"
+msgstr ""
+
+#: ../libxfdashboard/stage.c:848 ../libxfdashboard/stage.c:873
+#: ../libxfdashboard/stage.c:910 ../libxfdashboard/stage.c:1240
+#, c-format
+msgid "Interface '%s' from theme '%s' must be an actor of type %s"
+msgstr ""
+
+#: ../libxfdashboard/stage.c:962
+msgid "Invalid multiple stages for primary monitor"
+msgstr ""
+
+#: ../libxfdashboard/stage.c:991
+msgid "Just type to search..."
+msgstr ""
+
+#: ../libxfdashboard/stage.c:1600 ../libxfdashboard/stage-interface.c:342
+#: ../plugins/clock-view/clock-view-settings.c:254
+msgid "Background color"
+msgstr ""
+
+#: ../libxfdashboard/stage.c:1601 ../libxfdashboard/stage-interface.c:343
+msgid "Color of stage's background"
+msgstr ""
+
+#: ../libxfdashboard/stage.c:1607
+msgid "Switch to view"
+msgstr ""
+
+#: ../libxfdashboard/stage.c:1608
+msgid "Switch to this named view as soon as stage gets visible"
+msgstr ""
+
+#: ../libxfdashboard/stage-interface.c:328
+msgid "The monitor where this stage interface is connected to"
+msgstr ""
+
+#. IMPLEMENTATION: Private variables and methods
+#: ../libxfdashboard/stylable.c:42
+#, c-format
+msgid ""
+"Object of type %s does not implement required virtual function "
+"XfdashboardStylable::%s"
+msgstr "El objeto del tipo %s no implementa la función virtual requerida XfdashboardStylable::%s"
+
+#: ../libxfdashboard/stylable.c:267
+msgid "Style classes"
+msgstr ""
+
+#: ../libxfdashboard/stylable.c:268
+msgid "String representing list of classes separated by '.'"
+msgstr ""
+
+#: ../libxfdashboard/stylable.c:274
+msgid "Style pseudo-classes"
+msgstr ""
+
+#: ../libxfdashboard/stylable.c:275
+msgid ""
+"String representing list of pseudo-classes, e.g. current state, separated by"
+" ':'"
+msgstr ""
+
+#: ../libxfdashboard/stylable.c:334
+#, c-format
+msgid "Could not find property '%s' for class %s"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:797
+msgid "Editable"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:798
+msgid "Flag to set if text is editable"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:804
+msgid "Primary icon name"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:805
+msgid "Themed icon name or file name of primary icon shown left of text box"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:811
+msgid "Secondary icon name"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:812
+msgid ""
+"Themed icon name or file name of secondary icon shown right of text box"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:818
+msgid "Text"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:819
+msgid "Text of editable text box"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:825
+msgid "Text font"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:826
+msgid "Font of editable text box"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:832
+msgid "Text color"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:833
+msgid "Color of text in editable text box"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:840
+msgid "Selection text color"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:841
+msgid "Color of text of selected text"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:847
+msgid "Selection background color"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:848
+msgid "Color of background of selected text"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:854
+msgid "Hint text"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:855
+msgid "Hint text shown if editable text box is empty"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:861
+msgid "Hint text font"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:862
+msgid "Font of hint text shown if editable text box is empty"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:868
+msgid "Hint text color"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:869
+msgid "Color of hint text shown if editable text box is empty"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:875
+msgid "Hint text set"
+msgstr ""
+
+#: ../libxfdashboard/text-box.c:876
+msgid "Flag indicating if a hint text was set"
+msgstr ""
+
+#: ../libxfdashboard/theme.c:570 ../libxfdashboard/theme-css.c:2485
+msgid "Theme path"
+msgstr ""
+
+#: ../libxfdashboard/theme.c:571
+msgid "Path where theme was found and loaded from"
+msgstr ""
+
+#: ../libxfdashboard/theme.c:578
+msgid ""
+"Short name of theme which was used to lookup theme and folder name where "
+"theme is stored in"
+msgstr ""
+
+#: ../libxfdashboard/theme.c:584
+msgid "Theme display name"
+msgstr ""
+
+#: ../libxfdashboard/theme.c:585
+msgid "The name of theme"
+msgstr ""
+
+#: ../libxfdashboard/theme.c:591
+msgid "Theme comment"
+msgstr ""
+
+#: ../libxfdashboard/theme.c:592
+msgid "The comment of theme used as description"
+msgstr ""
+
+#: ../libxfdashboard/theme.c:690
+#, c-format
+msgid "Theme '%s' requested but '%s' was already loaded"
+msgstr ""
+
+#: ../libxfdashboard/theme.c:707
+#, c-format
+msgid "Theme '%s' not found"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:273
+#, c-format
+msgid "Cannot get argument %d because only %d arguments are available"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:286
+#, c-format
+msgid "Cannot allocate memory for argument %d"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:304
+#, c-format
+msgid "Cannot transform argument %d from type '%s' to type '%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:341
+msgid "Missing string to convert to color component value."
+msgstr ""
+
+#. Set error message
+#: ../libxfdashboard/theme-css.c:364
+#, c-format
+msgid "Cannot convert string '%s' to color component value."
+msgstr ""
+
+#. Set error message
+#: ../libxfdashboard/theme-css.c:384
+#, c-format
+msgid "Color component value %.2f out of range"
+msgstr ""
+
+#. Set error message
+#: ../libxfdashboard/theme-css.c:742
+#, c-format
+msgid "Factor %.2f is out of range"
+msgstr ""
+
+#. Set error message
+#: ../libxfdashboard/theme-css.c:847
+#, c-format
+msgid "Alpha factor %.2f is out of range"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:900
+#, c-format
+msgid "CSS function '%s' is already registered."
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:941 ../libxfdashboard/theme-css.c:1049
+#: ../libxfdashboard/theme-css.c:2054
+msgid "An identifier must follow '@'"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1074
+msgid "Missing function argument"
+msgstr ""
+
+#. Set error message
+#: ../libxfdashboard/theme-css.c:1098
+#, c-format
+msgid "Invalid character '%c' in function argument"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1123
+msgid "Invalid character in function argument"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1159
+msgid "Missing ')' after function"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1174
+msgid "Missing '(' after function"
+msgstr ""
+
+#. Set error message
+#: ../libxfdashboard/theme-css.c:1210
+#, c-format
+msgid "Could not transform result of function '%s' to a string"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1240
+#, c-format
+msgid "Function '%s' failed with error: %s"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1246
+#, c-format
+msgid "Function '%s' failed!"
+msgstr ""
+
+#. Identifier was unresolvable so print error message
+#: ../libxfdashboard/theme-css.c:1314
+#, c-format
+msgid "Unresolvable identifier '@%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1508
+msgid "Invalid property name"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1528
+msgid "Property names and values must be separated by colon"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1584
+msgid "Invalid property value"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1609
+msgid "Property values must end with semi-colon"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1746
+msgid "Missing '(' after @import keyword."
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1787
+msgid "Unexpected token in filename to import"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1807
+msgid "Missing filename to import"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1829
+msgid "Missing closing ')' at @import keyword."
+msgstr ""
+
+#. Build error message
+#: ../libxfdashboard/theme-css.c:1894
+#, c-format
+msgid "Failed to import CSS file '%s': %s"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:1999
+msgid ""
+"Mixing selectors and '@' identifiers or defining more than one '@' "
+"identifier at once is not allowed"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:2020
+msgid ""
+"A selector must have been defined before other one can follow comma-"
+"separated."
+msgstr ""
+
+#. Build warning message
+#: ../libxfdashboard/theme-css.c:2086
+#, c-format
+msgid "Skipping block of unknown identifier '@%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:2092
+msgid "'@' identifier"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:2121 ../libxfdashboard/theme-css.c:2138
+msgid "Unhandled selector"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:2288
+#, c-format
+msgid "The input stream of type %s is not supported"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:2486
+msgid "Path of theme loading from"
+msgstr ""
+
+#: ../libxfdashboard/theme-css.c:2573
+#, c-format
+msgid "Could not get file for path '%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:334 ../libxfdashboard/theme-layout.c:483
+#, c-format
+msgid "Cannot allocate memory for object data of tag <%s>"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:352
+#, c-format
+msgid ""
+"Freeing effect object parser data at %p with a reference counter of %d "
+"greater than one"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:482
+#, c-format
+msgid "Object of type %s is not derived from %s"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:589
+msgid "Missing property name to set value for"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:601
+#, c-format
+msgid "Missing object data to set value of property '%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:655 ../libxfdashboard/theme-effects.c:742
+#, c-format
+msgid "Missing parser data for <%s> tag"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:697
+#, c-format
+msgid "Multiple definition of property '%s' at object with ID '%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:759
+#, c-format
+msgid ""
+"Invalid state of parser after parsing property '%s' at object with id '%s' "
+"of type %s"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:863 ../libxfdashboard/theme-layout.c:1119
+#, c-format
+msgid "Empty ID at tag '%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:875 ../libxfdashboard/theme-layout.c:1132
+#, c-format
+msgid "Invalid ID '%s' at tag '%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:888
+#, c-format
+msgid "Multiple definition of effect with id '%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:901 ../libxfdashboard/theme-layout.c:1148
+#, c-format
+msgid "Unknown object class %s for tag '%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-effects.c:915 ../libxfdashboard/theme-layout.c:1168
+#, c-format
+msgid ""
+"Invalid class %s in object for parent tag <%s> - expecting class derived "
+"from %s"
+msgstr ""
+
+#. If we get here we did not find an object with requested ID
+#: ../libxfdashboard/theme-effects.c:1270
+#, c-format
+msgid "Could not find effect with ID '%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:389
+msgid "Cannot allocate memory for unknown tag"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:401
+#, c-format
+msgid "Cannot allocate memory for tag '%s'"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:618
+#, c-format
+msgid "Unsupported tag type '%s' to resolve ID"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:903
+msgid "Unexpected empty tag stack when parsing property text node"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:914
+#, c-format
+msgid "Value for property '%s' is already set"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:1203
+#, c-format
+msgid ""
+"Tag <%s> can only be set at <%s> creating objects derived from class %s"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:1289
+#, c-format
+msgid "Attribute 'ref' cannot be empty at tag <%s>"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:1318
+#, c-format
+msgid "Tag <%s> can have only one <%s>"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:1419
+#, c-format
+msgid "Internal error when handling end of tag <%s>"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:1448
+#, c-format
+msgid "Document can have only one <%s>"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:1486
+#, c-format
+msgid "Object can have only one <%s>"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:1684
+#, c-format
+msgid "ID '%s' was specified more than once (%d times)"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:1715
+#, c-format
+msgid "Referenced ID '%s' could not be resolved"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:1816
+#, c-format
+msgid "File %s does not contain an interface"
+msgstr ""
+
+#: ../libxfdashboard/theme-layout.c:1826
+#, c-format
+msgid "Interface at file %s has no ID"
+msgstr ""
+
+#: ../libxfdashboard/toggle-button.c:162
+msgid "Toggle state"
+msgstr ""
+
+#: ../libxfdashboard/toggle-button.c:163
+msgid "State of toggle"
+msgstr ""
+
+#: ../libxfdashboard/toggle-button.c:169
+msgid "Auto toggle"
+msgstr ""
+
+#: ../libxfdashboard/toggle-button.c:170
+msgid "If set the toggle state will be toggled on each click"
+msgstr ""
+
+#: ../libxfdashboard/tooltip-action.c:525
+msgid "Tooltip text"
+msgstr ""
+
+#: ../libxfdashboard/tooltip-action.c:526
+msgid "The text to display in a tooltip"
+msgstr ""
+
+#: ../libxfdashboard/utils.c:160
+#, c-format
+msgid "Could find any stage to show notification: %s"
+msgstr ""
+
+#: ../libxfdashboard/view.c:368
+msgid "View ID"
+msgstr ""
+
+#: ../libxfdashboard/view.c:369
+msgid "The internal ID used to register this type of view"
+msgstr ""
+
+#: ../libxfdashboard/view.c:375
+msgid "View name"
+msgstr ""
+
+#: ../libxfdashboard/view.c:376
+msgid "Name of view used to display"
+msgstr ""
+
+#: ../libxfdashboard/view.c:382
+msgid "View icon"
+msgstr ""
+
+#: ../libxfdashboard/view.c:383
+msgid ""
+"Icon of view used to display. Icon name can be a themed icon name or file "
+"name"
+msgstr ""
+
+#: ../libxfdashboard/view.c:389
+msgid "View fit mode"
+msgstr ""
+
+#: ../libxfdashboard/view.c:390
+msgid ""
+"Defines if view should be fit into viewpad and in which directions it should"
+" fit into it"
+msgstr ""
+
+#: ../libxfdashboard/view.c:397
+msgid "Enabled"
+msgstr ""
+
+#: ../libxfdashboard/view.c:398
+msgid "This flag indicates if is view is enabled and activable"
+msgstr ""
+
+#: ../libxfdashboard/view-manager.c:265
+#, c-format
+msgid "View %s of type %s is not a %s and cannot be registered"
+msgstr ""
+
+#: ../libxfdashboard/view-manager.c:275
+#, c-format
+msgid "View %s of type %s is registered already"
+msgstr ""
+
+#: ../libxfdashboard/view-manager.c:289
+#, c-format
+msgid "Failed to register view %s of type %s"
+msgstr ""
+
+#: ../libxfdashboard/view-manager.c:318
+#, c-format
+msgid "View %s is not registered and cannot be unregistered"
+msgstr ""
+
+#: ../libxfdashboard/view-manager.c:399
+#, c-format
+msgid "Cannot create view %s because it is not registered"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:130
+msgid "Cannot update viewport of view because no one is active"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:246
+#, c-format
+msgid "View %s is not a child of %s and cannot be activated"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:254
+#, c-format
+msgid "Cannot activate disabled view %s at %s"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:698
+#, c-format
+msgid "Failed to create view %s for viewpad"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:704
+#, c-format
+msgid "View %s of type %s is not a %s and cannot be added to %s"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:1223 ../libxfdashboard/view-selector.c:402
+msgid "The spacing between views and scrollbars"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:1230
+msgid "Active view"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:1231
+msgid "The current active view in viewpad"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:1237
+msgid "Horizontal scrollbar visibility"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:1238
+msgid "This flag indicates if horizontal scrollbar is visible"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:1244
+msgid "Horizontal scrollbar policy"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:1245
+msgid "The policy for horizontal scrollbar controlling when it is displayed"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:1252
+msgid "Vertical scrollbar visibility"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:1253
+msgid "This flag indicates if vertical scrollbar is visible"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:1259
+msgid "Vertical scrollbar policy"
+msgstr ""
+
+#: ../libxfdashboard/viewpad.c:1260
+msgid "The policy for vertical scrollbar controlling when it is displayed"
+msgstr ""
+
+#: ../libxfdashboard/view-selector.c:389
+msgid "Viewpad"
+msgstr ""
+
+#: ../libxfdashboard/view-selector.c:390
+msgid "The viewpad this selector belongs to"
+msgstr ""
+
+#: ../libxfdashboard/view-selector.c:415
+msgid "Orientation of view selector"
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:221
+#, c-format
+msgid "Destroying window content resume queue containing %d windows."
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:360
+#, c-format
+msgid ""
+"Unknown value '%s' for property '%s' - defaulting to '%s' with priority of "
+"%d"
+msgstr ""
+
+#. Show warning
+#: ../libxfdashboard/window-content.c:476
+#, c-format
+msgid "Could not create copy of texture of mininized window '%s': %s"
+msgstr ""
+
+#. Show warning
+#: ../libxfdashboard/window-content.c:504
+#, c-format
+msgid "Could not create copy of texture of mininized window '%s'"
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:515
+#, c-format
+msgid "Could not determine size of texture of minimized window '%s'"
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:520
+#, c-format
+msgid "Could not allocate memory for copy of texture of mininized window '%s'"
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:631
+#, c-format
+msgid ""
+"Need at least version %d.%d of composite extension but found %d.%d - using "
+"only fallback images"
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:635
+msgid "Query for X composite extension failed - using only fallback imagess"
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:637
+msgid "X does not support composite extension - using only fallback images"
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:647
+#, c-format
+msgid ""
+"Query for X damage extension resulted in error code %d - using only still "
+"images of windows"
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:897
+msgid "Resume handler called for empty queue."
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:959
+#: ../libxfdashboard/window-content.c:1116
+#, c-format
+msgid "Could not get pixmap for window '%s"
+msgstr ""
+
+#. We should never get here as existance of composite extension was checked
+#. before
+#: ../libxfdashboard/window-content.c:967
+#: ../libxfdashboard/window-content.c:1122
+#, c-format
+msgid "Cannot resume window '%s' as composite extension is not available"
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:1009
+#: ../libxfdashboard/window-content.c:1163
+#, c-format
+msgid "Could not create damage for window '%s' - using still image of window"
+msgstr ""
+
+#. Show warning
+#: ../libxfdashboard/window-content.c:1336
+#, c-format
+msgid "Could not create fallback texture for window '%s': %s"
+msgstr ""
+
+#: ../libxfdashboard/window-content.c:1378
+#, c-format
+msgid "Could not get attributes of window '%s'"
+msgstr "No se pudieron obtener los atributos de la ventana '%s'"
+
+#: ../libxfdashboard/window-content.c:1443
+#, c-format
+msgid "Destroying window content cache still containing %d windows."
+msgstr "La destrucción del contenido caché de ventana todavía contiene %d ventanas."
+
+#: ../libxfdashboard/window-content.c:2076
+msgid "The window to handle and display"
+msgstr "La ventana para manejar y mostrar"
+
+#: ../libxfdashboard/window-content.c:2082
+msgid "Suspended"
+msgstr "Suspendido"
+
+#: ../libxfdashboard/window-content.c:2083
+msgid "Is this window suspended"
+msgstr "Esta ventana está suspendida"
+
+#: ../libxfdashboard/window-content.c:2090
+msgid "Color to draw outline of mapped windows with"
+msgstr "Color para dibujar los contornos representados con ventanas"
+
+#: ../libxfdashboard/window-content.c:2097
+msgid "Width of line used to draw outline of mapped windows"
+msgstr "Ancho de línea usado para dibujar el contorno de las ventanas representadas"
+
+#: ../libxfdashboard/window-content.c:2104
+msgid "Include window frame"
+msgstr "Incluir marco de ventana"
+
+#: ../libxfdashboard/window-content.c:2105
+msgid ""
+"Whether the window frame should be included or only the window content "
+"should be shown"
+msgstr "Si el marco de la ventana debe ser incluido o solo el contenido de la ventana debe ser mostrado"
+
+#: ../libxfdashboard/window-content.c:2111
+msgid "Unmapped window icon X fill"
+msgstr "Icono de ventana sin asignar de relleno X"
+
+#: ../libxfdashboard/window-content.c:2112
+msgid "Whether the unmapped window icon should fill up horizontal space"
+msgstr "Si el icono de la ventana sin asignar debe rellenar el espacio horizontal"
+
+#: ../libxfdashboard/window-content.c:2118
+msgid "Unmapped window icon y fill"
+msgstr "Icono de ventana sin asignar de relleno Y"
+
+#: ../libxfdashboard/window-content.c:2119
+msgid "Whether the unmapped window icon should fill up vertical space"
+msgstr "Si el icono de la ventana sin asignar debe rellenar el espacio vertical"
+
+#: ../libxfdashboard/window-content.c:2125
+msgid "Unmapped window icon X align"
+msgstr "Icono de ventana sin asignar de alineación X"
+
+#: ../libxfdashboard/window-content.c:2126
+msgid ""
+"The alignment of the unmapped window icon on the X axis within the "
+"allocation in normalized coordinate between 0 and 1"
+msgstr "La alineación del icono de la ventana sin asignar en el eje X en la asignación de coordenadas normalizadas entre 0 y 1"
+
+#: ../libxfdashboard/window-content.c:2133
+msgid "Unmapped window icon Y align"
+msgstr "Icono de ventana sin asignar de alineación Y"
+
+#: ../libxfdashboard/window-content.c:2134
+msgid ""
+"The alignment of the unmapped window icon on the Y axis within the "
+"allocation in normalized coordinate between 0 and 1"
+msgstr "La alineación del icono de la ventana sin asignar en el eje Y en la asignación de coordenadas normalizadas entre 0 y 1"
+
+#: ../libxfdashboard/window-content.c:2141
+msgid "Unmapped window icon X scale"
+msgstr "Icono de ventana sin asignar de escala X"
+
+#: ../libxfdashboard/window-content.c:2142
+msgid "Scale factor of unmapped window icon on the X axis"
+msgstr "Factor de escala del icono de ventana sin asignar en el eje Y"
+
+#: ../libxfdashboard/window-content.c:2149
+msgid "Unmapped window icon Y scale"
+msgstr "Icono de ventana sin asignar de escala Y"
+
+#: ../libxfdashboard/window-content.c:2150
+msgid "Scale factor of unmapped window icon on the Y axis"
+msgstr "Factor de escala del icono de ventana sin asignar en el eje Y"
+
+#: ../libxfdashboard/window-content.c:2157
+msgid "Unmapped window icon anchor point"
+msgstr "Punto de anclaje del icono de ventana sin asignar"
+
+#: ../libxfdashboard/window-content.c:2158
+msgid "The anchor point of unmapped window icon"
+msgstr "El punto de anclaje del icono de ventana sin asignar"
+
+#. If we get here we did not handle drop action properly
+#. * and this should never happen.
+#: ../libxfdashboard/windows-view.c:555
+#, c-format
+msgid ""
+"Did not handle drop action for dragged actor %s of source %s at target %s"
+msgstr ""
+
+#: ../libxfdashboard/windows-view.c:1626
+#, c-format
+msgid "Cannot activate selection of type %s at %s because expecting type %s"
+msgstr "No se puede activar la selección de tipo %s en %s porque se espera un tipo %s"
+
+#: ../libxfdashboard/windows-view.c:1905
+msgid "Current workspace"
+msgstr "Espacio de trabajo actual"
+
+#: ../libxfdashboard/windows-view.c:1906
+msgid "The current workspace whose windows are shown"
+msgstr "El espacio de trabajo actual cuyas ventanas son mostradas"
+
+#: ../libxfdashboard/windows-view.c:1921
+msgid ""
+"Whether this view should prevent upsclaing any window beyond its real size"
+msgstr ""
+
+#: ../libxfdashboard/windows-view.c:1927
+msgid "Scroll event changes workspace"
+msgstr "La rueda del ratón cambia el espacio de trabajo"
+
+#: ../libxfdashboard/windows-view.c:1928
+msgid "Whether this view should change active workspace on scroll events"
+msgstr "Si esta vista debe cambiar el espacio de trabajo actual con la rueda del ratón"
+
+#: ../libxfdashboard/windows-view.c:1934
+msgid "Filter monitor windows"
+msgstr "Filtro de ventanas del monitor"
+
+#: ../libxfdashboard/windows-view.c:1935
+msgid ""
+"Whether this view should only show windows of monitor where it placed at"
+msgstr "Si esta vista debe mostrar solo las ventanas del monitor donde se está usando"
+
+#. Set up view
+#: ../libxfdashboard/windows-view.c:2158
+msgid "Windows"
+msgstr "Ventanas"
+
+#: ../libxfdashboard/window-tracker.c:620
+#, c-format
+msgid "Cannot release unknown monitor %d"
+msgstr "No se puede lanzar el monitor desconocido %d"
+
+#: ../libxfdashboard/window-tracker.c:898
+msgid "Active window"
+msgstr "Ventana activa"
+
+#: ../libxfdashboard/window-tracker.c:899
+msgid "The current active window"
+msgstr "La actual ventana activa"
+
+#: ../libxfdashboard/window-tracker.c:905
+msgid "Active workspace"
+msgstr "Espacio de trabajo activo"
+
+#: ../libxfdashboard/window-tracker.c:906
+msgid "The current active workspace"
+msgstr "El actual espacio de trabajo"
+
+#: ../libxfdashboard/window-tracker.c:912
+msgid "Primary monitor"
+msgstr "Monitor principal"
+
+#: ../libxfdashboard/window-tracker.c:913
+msgid "The current primary monitor"
+msgstr "El actual monitor principal"
+
+#: ../libxfdashboard/window-tracker-monitor.c:282
+msgid "Monitor index"
+msgstr "Índice del monitor"
+
+#: ../libxfdashboard/window-tracker-monitor.c:283
+msgid "The index of this monitor"
+msgstr "El índice de este monitor"
+
+#: ../libxfdashboard/window-tracker-monitor.c:290
+msgid "Is primary"
+msgstr "Es primario"
+
+#: ../libxfdashboard/window-tracker-monitor.c:291
+msgid "Whether this monitor is the primary one"
+msgstr "Si este monitor es el principal"
+
+#: ../libxfdashboard/window-tracker-window.c:86
+msgid ""
+"Keep window fullscreen on primary monitor because window manager does not "
+"support _NET_WM_FULLSCREEN_MONITORS."
+msgstr "Mantener ventana a pantalla completa en el monitor principal porque el gestor de ventanas no lo soporta _NET_WM_FULLSCREEN_MONITORS."
+
+#. Setting new selection was unsuccessful if we get here
+#. Activation was unsuccessful if we get here
+#: ../libxfdashboard/workspace-selector.c:904
+#: ../libxfdashboard/workspace-selector.c:1094
+#, c-format
+msgid "Could not determine workspace of %s to set selection at %s"
+msgstr "No se puede determinar el espacio de trabajo de %s para establecer la selección como %s"
+
+#: ../libxfdashboard/workspace-selector.c:1255
+msgid "Maximum size"
+msgstr "Tamaño máximo"
+
+#: ../libxfdashboard/workspace-selector.c:1256
+msgid "The maximum size of this actor for opposite direction of orientation"
+msgstr "El tamaño máximo de este actor para la dirección opuesta de la orientación"
+
+#: ../libxfdashboard/workspace-selector.c:1263
+msgid "Maximum fraction"
+msgstr "Porcentaje máximo"
+
+#: ../libxfdashboard/workspace-selector.c:1264
+msgid ""
+"The maximum size of this actor for opposite direction of orientation defined"
+" by fraction between 0.0 and 1.0"
+msgstr "El tamaño máximo de este actor para la dirección opuesta de la orientación es definida por el porcentaje entre 0.0 y 1.0"
+
+#: ../libxfdashboard/workspace-selector.c:1271
+msgid "Using fraction"
+msgstr "Uso de porcentaje"
+
+#: ../libxfdashboard/workspace-selector.c:1272
+msgid ""
+"Flag indicating if maximum size is static or defined by fraction between 0.0"
+" and 1.0"
+msgstr "Bandera que indica si el tamaño máximo es estático o es definido por el porcentaje entre 0.0 y 1.0"
+
+#: ../libxfdashboard/workspace-selector.c:1278
+msgid "Show current monitor only"
+msgstr "Mostrar solamente el monitor actual"
+
+#: ../libxfdashboard/workspace-selector.c:1279
+msgid "Show only windows of the monitor where this actor is placed"
+msgstr "Mostrar solo ventanas del monitor donde el actor este colocado."
+
+#. Set up view
+#: ../plugins/clock-view/clock-view.c:313 ../plugins/clock-view/plugin.c:311
+msgid "Clock"
+msgstr ""
+
+#: ../plugins/clock-view/clock-view-settings.c:233
+msgid "Hour color"
+msgstr ""
+
+#: ../plugins/clock-view/clock-view-settings.c:234
+msgid "Color to draw the hour hand with"
+msgstr ""
+
+#: ../plugins/clock-view/clock-view-settings.c:240
+msgid "Minute color"
+msgstr ""
+
+#: ../plugins/clock-view/clock-view-settings.c:241
+msgid "Color to draw the minute hand with"
+msgstr ""
+
+#: ../plugins/clock-view/clock-view-settings.c:247
+msgid "Second color"
+msgstr ""
+
+#: ../plugins/clock-view/clock-view-settings.c:248
+msgid "Color to draw the second hand with"
+msgstr ""
+
+#: ../plugins/clock-view/clock-view-settings.c:255
+msgid "Color to draw the circle with that holds the second hand"
+msgstr ""
+
+#: ../plugins/clock-view/plugin.c:146 ../plugins/hot-corner/plugin.c:109
+msgid "Cannot allocate memory for mapping"
+msgstr ""
+
+#. Add widget to choose hour color
+#: ../plugins/clock-view/plugin.c:208
+msgid "Hour color:"
+msgstr ""
+
+#: ../plugins/clock-view/plugin.c:218
+msgid "Choose color for hour hand"
+msgstr ""
+
+#. Add widget to choose minute color
+#: ../plugins/clock-view/plugin.c:223
+msgid "Minute color:"
+msgstr ""
+
+#: ../plugins/clock-view/plugin.c:233
+msgid "Choose color for minute hand"
+msgstr ""
+
+#. Add widget to choose second color
+#: ../plugins/clock-view/plugin.c:238
+msgid "Second color:"
+msgstr ""
+
+#: ../plugins/clock-view/plugin.c:248
+msgid "Choose color for second hand"
+msgstr ""
+
+#. Add widget to choose minute color
+#: ../plugins/clock-view/plugin.c:253
+msgid "Background color:"
+msgstr ""
+
+#: ../plugins/clock-view/plugin.c:263
+msgid "Choose color for background of second hand"
+msgstr ""
+
+#: ../plugins/clock-view/plugin.c:312
+msgid "Adds new a view showing a clock"
+msgstr ""
+
+#. Show error message
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:213
+#, c-format
+msgid "Unknown application '%s' for Gnome-Shell search provider '%s'"
+msgstr ""
+
+#. Show warning message
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:291
+#, c-format
+msgid "Cannot update information about Gnome-Shell search provider '%s': %s"
+msgstr ""
+
+#. Show warning message
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:376
+#, c-format
+msgid ""
+"Cannot initialize file monitor to detect changes for Gnome-Shell search "
+"provider '%s': %s"
+msgstr ""
+
+#. Show warning message
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:393
+#, c-format
+msgid "Cannot load information about Gnome-Shell search provider '%s': %s"
+msgstr ""
+
+#. Show error message
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:475
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:638
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:841
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:915
+#, c-format
+msgid ""
+"Could not create dbus connection for Gnome-Shell search provider '%s': %s"
+msgstr ""
+
+#. Show error message
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:548
+#, c-format
+msgid ""
+"Could get result set from dbus connection for Gnome-Shell search provider "
+"'%s': %s"
+msgstr ""
+
+#. Show error message
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:661
+#, c-format
+msgid ""
+"Could get meta data for '%s' from dbus connection for Gnome-Shell search "
+"provider '%s': %s"
+msgstr ""
+
+#. Show error message
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:720
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:739
+#, c-format
+msgid ""
+"Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"
+msgstr ""
+
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:724
+msgid "Deserialization failed"
+msgstr ""
+
+#. Show error message
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:865
+#, c-format
+msgid ""
+"Could activate result item '%s' over dbus connection for Gnome-Shell search "
+"provider '%s': %s"
+msgstr ""
+
+#. Show error message
+#: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:938
+#, c-format
+msgid ""
+"Could not launch search over dbus connection for Gnome-Shell search provider"
+" '%s': %s"
+msgstr ""
+
+#: ../plugins/gnome-shell-search-provider/plugin.c:68
+msgid "Gnome-Shell search provider filename has wrong file extension."
+msgstr ""
+
+#. Show warning
+#: ../plugins/gnome-shell-search-provider/plugin.c:133
+#: ../plugins/gnome-shell-search-provider/plugin.c:285
+#, c-format
+msgid "Could not register Gnome-Shell search provider at file '%s': %s"
+msgstr ""
+
+#. Show error message
+#: ../plugins/gnome-shell-search-provider/plugin.c:229
+#: ../plugins/gnome-shell-search-provider/plugin.c:303
+#, c-format
+msgid "Could not scan for gnome-shell search provider at '%s': %s"
+msgstr ""
+
+#. Just print a warning but do not fail. We will just not get notified
+#. * about changes at path where the providers are stored.
+#: ../plugins/gnome-shell-search-provider/plugin.c:334
+#, c-format
+msgid ""
+"Unable to create file monitor for Gnome-Shell search providers at '%s': %s"
+msgstr ""
+
+#: ../plugins/gnome-shell-search-provider/plugin.c:432
+msgid "Gnome-Shell search provider"
+msgstr ""
+
+#: ../plugins/gnome-shell-search-provider/plugin.c:433
+msgid "Uses Gnome-Shell search providers as source for searches"
+msgstr ""
+
+#: ../plugins/hot-corner/hot-corner-settings.c:236
+msgid "Activation corner"
+msgstr ""
+
+#: ../plugins/hot-corner/hot-corner-settings.c:237
+msgid ""
+"The hot corner where to trigger the application to suspend or to resume"
+msgstr ""
+
+#: ../plugins/hot-corner/hot-corner-settings.c:244
+msgid "Activation radius"
+msgstr ""
+
+#: ../plugins/hot-corner/hot-corner-settings.c:245
+msgid "The radius around hot corner where the pointer must be inside"
+msgstr ""
+
+#: ../plugins/hot-corner/hot-corner-settings.c:252
+msgid "Activation duration"
+msgstr ""
+
+#: ../plugins/hot-corner/hot-corner-settings.c:253
+msgid ""
+"The time in milliseconds the pointer must stay inside the radius at hot "
+"corner to trigger"
+msgstr ""
+
+#: ../plugins/hot-corner/hot-corner.c:151
+msgid "Could not get pointer to determine pointer position"
+msgstr ""
+
+#: ../plugins/hot-corner/hot-corner.c:375
+msgid ""
+"Disabling hot-corner plugin because the root window to determine pointer "
+"position could not be found."
+msgstr ""
+
+#: ../plugins/hot-corner/hot-corner.c:387
+msgid ""
+"Disabling hot-corner plugin because the device manager to determine pointer "
+"position could not be found."
+msgstr ""
+
+#: ../plugins/hot-corner/hot-corner.c:392
+msgid ""
+"Disabling hot-corner plugin because application is not running as daemon."
+msgstr ""
+
+#: ../plugins/hot-corner/plugin.c:268
+msgid "s"
+msgstr ""
+
+#: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:367
+msgid "ms"
+msgstr "ms"
+
+#: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:124
+#: ../settings/general.c:371
+msgid "Immediately"
+msgstr "Inmediatamente"
+
+#. Add widget to choose activation corner
+#: ../plugins/hot-corner/plugin.c:304
+msgid "Activation corner:"
+msgstr ""
+
+#. Add widget to choose activation radius
+#: ../plugins/hot-corner/plugin.c:340
+msgid "Radius of activation corner:"
+msgstr ""
+
+#. Add widget to choose activation duration
+#: ../plugins/hot-corner/plugin.c:358
+msgid "Timeout to activate:"
+msgstr ""
+
+#: ../plugins/hot-corner/plugin.c:418
+msgid "Hot corner"
+msgstr ""
+
+#: ../plugins/hot-corner/plugin.c:419
+msgid ""
+"Activates xfdashboard when pointer is moved to a configured corner of "
+"monitor"
+msgstr ""
+
+#: ../settings/general.c:116
+msgid "Do nothing"
+msgstr "No hacer nada"
+
+#: ../settings/general.c:117
+msgid "Windows view"
+msgstr "Vista de ventanas"
+
+#: ../settings/general.c:118
+msgid "Applications view"
+msgstr "Vista de aplicaciones"
+
+#: ../settings/general.c:125
+msgid "High"
+msgstr "Alto"
+
+#: ../settings/general.c:126
+msgid "Normal"
+msgstr "Normal"
+
+#: ../settings/general.c:127
+msgid "Low"
+msgstr "Bajo"
+
+#: ../settings/general.c:312
+msgid "seconds"
+msgstr "segundos"
+
+#: ../settings/general.c:707 ../settings/plugins.c:1112
+#: ../settings/themes.c:913
+msgid "Builder"
+msgstr ""
+
+#: ../settings/general.c:708 ../settings/plugins.c:1113
+#: ../settings/themes.c:914
+msgid "The initialized GtkBuilder object where to set up themes tab from"
+msgstr ""
+
+#: ../settings/plugins.c:223
+#, c-format
+msgid "Configure plugin: %s"
+msgstr ""
+
+#: ../settings/plugins.c:531
+msgid "Could not set list of enabled plugins!"
+msgstr ""
+
+#. Show error message
+#: ../settings/plugins.c:746
+#, c-format
+msgid "Could not load plugin '%s' from '%s': %s"
+msgstr ""
+
+#. Create error message to store in list
+#: ../settings/plugins.c:752
+#, c-format
+msgid ""
+"<b>Plugin could not be loaded.</b>\n"
+"\n"
+"%s"
+msgstr ""
+
+#: ../settings/plugins.c:958
+msgid "Name"
+msgstr ""
+
+#: ../settings/themes.c:784
+msgid "Theme"
+msgstr "Tema"
+
+#: ../settings/main.c:46
+msgid "Settings manager socket"
+msgstr "Gestor de ajustes de socket"
+
+#: ../settings/main.c:46
+msgid "SOCKET ID"
+msgstr "ID SOCKET"
+
+#: ../settings/main.c:47
+msgid "Version information"
+msgstr "Información de la versión"
+
+#. Initialize GTK+
+#: ../settings/main.c:57
+msgid "."
+msgstr "."
+
+#: ../settings/main.c:61
+#, c-format
+msgid ""
+"%s: %s\n"
+"Try %s --help to see a full list of available command line options.\n"
+msgstr ""
+
+#: ../settings/main.c:84
+#, c-format
+msgid "Failed to initialize xfconf: %s"
+msgstr "Falló al iniciar xconf: %s"
+
+#: ../settings/main.c:96
+msgid "Could not create the settings dialog."
+msgstr "No se puedo crear el diálogo de ajustes."
+
+#: ../settings/settings.c:124
+#, c-format
+msgid "Could not find UI file '%s'."
+msgstr "No se pudo encontrar el archivo de UI '%s'."
+
+#: ../settings/settings.c:138
+#, c-format
+msgid "Could not load UI resources from '%s': %s"
+msgstr "No se pudieron cargar los recursos de la UI desde '%s': %s"
+
+#: ../settings/settings.c:291 ../settings/settings.c:325
+msgid "Could not get dialog from UI file."
+msgstr "No se pudo obtener el diálogo desde el archivo de UI."
 
 #: ../xfdashboard/main.c:172
 msgid "Cannot restart application: Failed to quit running instance"
@@ -2113,1545 +3925,3 @@ msgstr ""
 #: ../xfdashboard/main.c:277
 msgid "Initializing clutter failed!"
 msgstr ""
-
-#: ../xfdashboard/outline-effect.c:435
-msgid "Width"
-msgstr ""
-
-#: ../xfdashboard/outline-effect.c:443
-msgid "Borders"
-msgstr ""
-
-#: ../xfdashboard/outline-effect.c:444
-msgid "Determines which sides of the border to draw"
-msgstr ""
-
-#: ../xfdashboard/outline-effect.c:452
-msgid "Determines which corners are rounded"
-msgstr ""
-
-#: ../xfdashboard/outline-effect.c:460
-msgid "Radius of rounded corners"
-msgstr ""
-
-#. IMPLEMENTATION: Private variables and methods
-#: ../xfdashboard/plugin.c:116
-#, c-format
-msgid "Plugin at path '%s' does not implement required signal handler %s::%s"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:117
-msgid "unknown filename"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:197
-#, c-format
-msgid "Cannot get path for plugin at %s"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:460
-msgid "Missing path to plugin"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:466
-#, c-format
-msgid "Path '%s' does not exist"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:474
-#, c-format
-msgid "Bad state '%s' - expected '%s"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:483
-msgid "Plugin was already initialized"
-msgstr ""
-
-#. If we get here the virtual function was not overridden
-#: ../xfdashboard/plugin.c:511
-#, c-format
-msgid "Plugin does not implement required function %s"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:519
-msgid "Plugin did not set required ID"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:564
-#, c-format
-msgid "Plugin '%s' could not be unloaded successfully: %s"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:565 ../xfdashboard/plugin.c:998
-#: ../xfdashboard/plugin.c:1031
-msgid "Unknown"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:788
-msgid "File name"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:789
-msgid "Path and file name of this plugin"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:796
-msgid "The unique ID used to register this plugin"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:802
-msgid "name"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:803
-msgid "Name of plugin"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:810
-msgid "A short description about this plugin"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:816
-msgid "Author"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:817
-msgid "The author of this plugin"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:823
-msgid "Copyright"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:824
-msgid ""
-"The copyright of this plugin which usually contains year of development"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:830
-msgid "License"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:831
-msgid "The license of this plugin"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:837
-msgid "Config path"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:838
-msgid "The base path to configuration files of this plugin"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:844
-msgid "Cache path"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:845
-msgid "The base path to cache files of this plugin"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:851
-msgid "Data path"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:852
-msgid "The base path to data files of this plugin"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:953
-#, c-format
-msgid "Could not create plugin instance"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:997
-#, c-format
-msgid ""
-"Setting plugin information for plugin '%s' at path '%s' failed: Plugin is "
-"already initialized"
-msgstr ""
-
-#: ../xfdashboard/plugin.c:1030
-#, c-format
-msgid "Enabling plugin '%s' failed: Bad state '%s' - expected '%s'"
-msgstr ""
-
-#. Show error message
-#: ../xfdashboard/plugins-manager.c:301
-#, c-format
-msgid "Could not load plugin '%s': Path not found"
-msgstr ""
-
-#. Show error message
-#: ../xfdashboard/plugins-manager.c:312
-#, c-format
-msgid "Could not load plugin '%s': %s"
-msgstr ""
-
-#: ../xfdashboard/quicklaunch.c:183
-#, c-format
-msgid ""
-"Could not check for duplicates for invalid %s object so assume no actor "
-"exists"
-msgstr ""
-
-#: ../xfdashboard/quicklaunch.c:245
-#, c-format
-msgid ""
-"Could not check for duplicates for invalid %s object so assume it exists"
-msgstr ""
-
-#: ../xfdashboard/quicklaunch.c:268
-#, c-format
-msgid ""
-"Value at %p of type %s is not a %s so assume this desktop application item "
-"exists"
-msgstr ""
-
-#: ../xfdashboard/quicklaunch.c:392 ../xfdashboard/quicklaunch.c:396
-msgid "No windows to activate for application"
-msgstr ""
-
-#: ../xfdashboard/quicklaunch.c:621 ../xfdashboard/quicklaunch.c:1700
-#, c-format
-msgid "Favourite '%s' added"
-msgstr ""
-
-#: ../xfdashboard/quicklaunch.c:912 ../xfdashboard/quicklaunch.c:1764
-#, c-format
-msgid "Favourite '%s' removed"
-msgstr ""
-
-#: ../xfdashboard/quicklaunch.c:2339 ../xfdashboard/workspace-selector.c:886
-#: ../xfdashboard/workspace-selector.c:1073
-#, c-format
-msgid "%s is a child of %s and cannot be selected at %s"
-msgstr ""
-
-#: ../xfdashboard/quicklaunch.c:2690
-msgid "Favourites"
-msgstr ""
-
-#: ../xfdashboard/quicklaunch.c:2691
-msgid "An array of strings pointing to desktop files shown as icons"
-msgstr ""
-
-#: ../xfdashboard/quicklaunch.c:2697
-msgid "Normal icon size"
-msgstr ""
-
-#: ../xfdashboard/quicklaunch.c:2698
-msgid "Unscale size of icon"
-msgstr ""
-
-#. Next add trash button to box but initially hidden and register as drop
-#. target
-#: ../xfdashboard/quicklaunch.c:2884
-msgid "Remove"
-msgstr ""
-
-#: ../xfdashboard/scaled-table-layout.c:503
-msgid "Relative scale"
-msgstr ""
-
-#: ../xfdashboard/scaled-table-layout.c:504
-msgid "Whether all children should be scaled relatively to largest child"
-msgstr ""
-
-#: ../xfdashboard/scaled-table-layout.c:510 ../xfdashboard/windows-view.c:1920
-msgid "Prevent upscaling"
-msgstr ""
-
-#: ../xfdashboard/scaled-table-layout.c:511
-msgid ""
-"Whether this layout manager should prevent upsclaing any child beyond its "
-"real size"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:715
-msgid "Defines if scrollbar is horizontal or vertical"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:722
-msgid "Value"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:723
-msgid "Current value of scroll bar within range"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:730
-msgid "Value range"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:731
-msgid "The range the slider of scroll bar covers"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:738
-msgid "Range"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:739
-msgid "Range to scroll within"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:746
-msgid "Page size factor"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:747
-msgid ""
-"The factor of value range to increase or decrease value by on pointer scroll"
-" events."
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:755
-msgid "The spacing between scrollbar and background"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:762
-msgid "Slider width"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:763
-msgid "The width of slider"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:770
-msgid "Slider radius"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:771
-msgid "The radius of slider's rounded corners"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:778
-msgid "Slider color"
-msgstr ""
-
-#: ../xfdashboard/scrollbar.c:779
-msgid "Color of slider"
-msgstr ""
-
-#: ../xfdashboard/search-manager.c:270
-#, c-format
-msgid "Search provider %s of type %s is not a %s and cannot be registered"
-msgstr ""
-
-#: ../xfdashboard/search-manager.c:280
-#, c-format
-msgid "Search provider %s of type %s is registered already"
-msgstr ""
-
-#: ../xfdashboard/search-manager.c:294
-#, c-format
-msgid "Failed to register seaarch provider %s of type %s"
-msgstr ""
-
-#: ../xfdashboard/search-manager.c:323
-#, c-format
-msgid "Search provider %s is not registered and cannot be unregistered"
-msgstr ""
-
-#: ../xfdashboard/search-manager.c:386
-#, c-format
-msgid "Cannot create search provider %s because it is not registered"
-msgstr ""
-
-#. IMPLEMENTATION: Private variables and methods
-#: ../xfdashboard/search-provider.c:64
-#, c-format
-msgid ""
-"Search provider of type %s does not implement required virtual function "
-"XfdashboardSearchProvider::%s"
-msgstr "La búsqueda provista por el tipo %s no implementa la función virtual requerida XfdashboardSearchProvider::%s"
-
-#: ../xfdashboard/search-provider.c:171
-msgid "Provider ID"
-msgstr ""
-
-#: ../xfdashboard/search-provider.c:172
-msgid "The internal ID used to register this type of search provider"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:416
-#, c-format
-msgid ""
-"Failed to add actor for result item %s of provider %s: Could not create "
-"actor"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:429
-#, c-format
-msgid ""
-"Failed to add actor for result item %s of provider %s: Actor of type %s is "
-"not derived from class %s"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:653
-#: ../xfdashboard/search-result-container.c:1718
-#, c-format
-msgid "Show %d more results..."
-msgstr ""
-
-#. Get text to set at "all"-label
-#: ../xfdashboard/search-result-container.c:675
-#, c-format
-msgid "Show all %d results..."
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:710
-#, c-format
-msgid ""
-"Failed to remove actor for result item %s of provider %s: Actor of type %s "
-"is not derived from class %s"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1237
-msgid "Provider"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1238
-msgid "The search provider this result container is for"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1244
-msgid "Icon"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1245
-msgid ""
-"A themed icon name or file name of icon this container will display. If not "
-"set the icon the search provider defines will be used."
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1251
-msgid "Title format"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1252
-msgid "Format string for title which will contain the name of search provider"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1259
-msgid "View mode of container for result items"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1267
-msgid "Spacing between each result item"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1275
-msgid "Padding between title and item results container"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1282
-msgid "Initial results size"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1283
-msgid "The maximum number of results shown initially. 0 means all results"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1290
-msgid "More results size"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1291
-msgid "The number of results to increase current limit by"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1820
-#, c-format
-msgid ""
-"Cannot lookup selection target at %s because %s is a child of %s but not of "
-"this container"
-msgstr ""
-
-#: ../xfdashboard/search-result-container.c:1899
-#, c-format
-msgid "%s is not a child of %s and cannot be activated"
-msgstr ""
-
-#: ../xfdashboard/search-view.c:857
-#, c-format
-msgid "No results found for '%s'"
-msgstr ""
-
-#: ../xfdashboard/search-view.c:986
-#, c-format
-msgid "%s is not a child of any provider at %s and cannot be selected"
-msgstr ""
-
-#: ../xfdashboard/search-view.c:1390
-#, c-format
-msgid ""
-"Focusable object %s and provider %s do not handle selection direction of "
-"type %s."
-msgstr ""
-
-#: ../xfdashboard/search-view.c:1426
-#, c-format
-msgid "%s is not a child of any provider at %s and cannot be activated"
-msgstr ""
-
-#. Set up view (Note: Search view is disabled by default!)
-#: ../xfdashboard/search-view.c:1582
-msgid "Search"
-msgstr ""
-
-#: ../xfdashboard/stage.c:396
-msgid "Cannot perform search because search view was not found in viewpad."
-msgstr ""
-
-#: ../xfdashboard/stage.c:667
-msgid "Cannot find search viewin viewpad to reset view."
-msgstr ""
-
-#: ../xfdashboard/stage.c:677 ../xfdashboard/stage.c:1365
-#, c-format
-msgid "Will not switch to unknown view '%s'"
-msgstr ""
-
-#: ../xfdashboard/stage.c:695
-#, c-format
-msgid "Cannot switch to unknown view '%s'"
-msgstr ""
-
-#: ../xfdashboard/stage.c:835 ../xfdashboard/stage.c:902
-#, c-format
-msgid "Could not build interface '%s' from theme '%s'"
-msgstr ""
-
-#: ../xfdashboard/stage.c:848 ../xfdashboard/stage.c:873
-#: ../xfdashboard/stage.c:910 ../xfdashboard/stage.c:1240
-#, c-format
-msgid "Interface '%s' from theme '%s' must be an actor of type %s"
-msgstr ""
-
-#: ../xfdashboard/stage.c:962
-msgid "Invalid multiple stages for primary monitor"
-msgstr ""
-
-#: ../xfdashboard/stage.c:991
-msgid "Just type to search..."
-msgstr ""
-
-#: ../xfdashboard/stage.c:1600 ../xfdashboard/stage-interface.c:342
-msgid "Background color"
-msgstr ""
-
-#: ../xfdashboard/stage.c:1601 ../xfdashboard/stage-interface.c:343
-msgid "Color of stage's background"
-msgstr ""
-
-#: ../xfdashboard/stage.c:1607
-msgid "Switch to view"
-msgstr ""
-
-#: ../xfdashboard/stage.c:1608
-msgid "Switch to this named view as soon as stage gets visible"
-msgstr ""
-
-#: ../xfdashboard/stage-interface.c:328
-msgid "The monitor where this stage interface is connected to"
-msgstr ""
-
-#. IMPLEMENTATION: Private variables and methods
-#: ../xfdashboard/stylable.c:42
-#, c-format
-msgid ""
-"Object of type %s does not implement required virtual function "
-"XfdashboardStylable::%s"
-msgstr "El objeto del tipo %s no implementa la función virtual requerida XfdashboardStylable::%s"
-
-#: ../xfdashboard/stylable.c:267
-msgid "Style classes"
-msgstr ""
-
-#: ../xfdashboard/stylable.c:268
-msgid "String representing list of classes separated by '.'"
-msgstr ""
-
-#: ../xfdashboard/stylable.c:274
-msgid "Style pseudo-classes"
-msgstr ""
-
-#: ../xfdashboard/stylable.c:275
-msgid ""
-"String representing list of pseudo-classes, e.g. current state, separated by"
-" ':'"
-msgstr ""
-
-#: ../xfdashboard/stylable.c:334
-#, c-format
-msgid "Could not find property '%s' for class %s"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:797
-msgid "Editable"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:798
-msgid "Flag to set if text is editable"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:804
-msgid "Primary icon name"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:805
-msgid "Themed icon name or file name of primary icon shown left of text box"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:811
-msgid "Secondary icon name"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:812
-msgid ""
-"Themed icon name or file name of secondary icon shown right of text box"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:818
-msgid "Text"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:819
-msgid "Text of editable text box"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:825
-msgid "Text font"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:826
-msgid "Font of editable text box"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:832
-msgid "Text color"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:833
-msgid "Color of text in editable text box"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:840
-msgid "Selection text color"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:841
-msgid "Color of text of selected text"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:847
-msgid "Selection background color"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:848
-msgid "Color of background of selected text"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:854
-msgid "Hint text"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:855
-msgid "Hint text shown if editable text box is empty"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:861
-msgid "Hint text font"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:862
-msgid "Font of hint text shown if editable text box is empty"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:868
-msgid "Hint text color"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:869
-msgid "Color of hint text shown if editable text box is empty"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:875
-msgid "Hint text set"
-msgstr ""
-
-#: ../xfdashboard/text-box.c:876
-msgid "Flag indicating if a hint text was set"
-msgstr ""
-
-#: ../xfdashboard/theme.c:570 ../xfdashboard/theme-css.c:2485
-msgid "Theme path"
-msgstr ""
-
-#: ../xfdashboard/theme.c:571
-msgid "Path where theme was found and loaded from"
-msgstr ""
-
-#: ../xfdashboard/theme.c:578
-msgid ""
-"Short name of theme which was used to lookup theme and folder name where "
-"theme is stored in"
-msgstr ""
-
-#: ../xfdashboard/theme.c:584
-msgid "Theme display name"
-msgstr ""
-
-#: ../xfdashboard/theme.c:585
-msgid "The name of theme"
-msgstr ""
-
-#: ../xfdashboard/theme.c:591
-msgid "Theme comment"
-msgstr ""
-
-#: ../xfdashboard/theme.c:592
-msgid "The comment of theme used as description"
-msgstr ""
-
-#: ../xfdashboard/theme.c:690
-#, c-format
-msgid "Theme '%s' requested but '%s' was already loaded"
-msgstr ""
-
-#: ../xfdashboard/theme.c:707
-#, c-format
-msgid "Theme '%s' not found"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:273
-#, c-format
-msgid "Cannot get argument %d because only %d arguments are available"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:286
-#, c-format
-msgid "Cannot allocate memory for argument %d"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:304
-#, c-format
-msgid "Cannot transform argument %d from type '%s' to type '%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:341
-msgid "Missing string to convert to color component value."
-msgstr ""
-
-#. Set error message
-#: ../xfdashboard/theme-css.c:364
-#, c-format
-msgid "Cannot convert string '%s' to color component value."
-msgstr ""
-
-#. Set error message
-#: ../xfdashboard/theme-css.c:384
-#, c-format
-msgid "Color component value %.2f out of range"
-msgstr ""
-
-#. Set error message
-#: ../xfdashboard/theme-css.c:742
-#, c-format
-msgid "Factor %.2f is out of range"
-msgstr ""
-
-#. Set error message
-#: ../xfdashboard/theme-css.c:847
-#, c-format
-msgid "Alpha factor %.2f is out of range"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:900
-#, c-format
-msgid "CSS function '%s' is already registered."
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:941 ../xfdashboard/theme-css.c:1049
-#: ../xfdashboard/theme-css.c:2054
-msgid "An identifier must follow '@'"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1074
-msgid "Missing function argument"
-msgstr ""
-
-#. Set error message
-#: ../xfdashboard/theme-css.c:1098
-#, c-format
-msgid "Invalid character '%c' in function argument"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1123
-msgid "Invalid character in function argument"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1159
-msgid "Missing ')' after function"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1174
-msgid "Missing '(' after function"
-msgstr ""
-
-#. Set error message
-#: ../xfdashboard/theme-css.c:1210
-#, c-format
-msgid "Could not transform result of function '%s' to a string"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1240
-#, c-format
-msgid "Function '%s' failed with error: %s"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1246
-#, c-format
-msgid "Function '%s' failed!"
-msgstr ""
-
-#. Identifier was unresolvable so print error message
-#: ../xfdashboard/theme-css.c:1314
-#, c-format
-msgid "Unresolvable identifier '@%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1508
-msgid "Invalid property name"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1528
-msgid "Property names and values must be separated by colon"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1584
-msgid "Invalid property value"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1609
-msgid "Property values must end with semi-colon"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1746
-msgid "Missing '(' after @import keyword."
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1787
-msgid "Unexpected token in filename to import"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1807
-msgid "Missing filename to import"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1829
-msgid "Missing closing ')' at @import keyword."
-msgstr ""
-
-#. Build error message
-#: ../xfdashboard/theme-css.c:1894
-#, c-format
-msgid "Failed to import CSS file '%s': %s"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:1999
-msgid ""
-"Mixing selectors and '@' identifiers or defining more than one '@' "
-"identifier at once is not allowed"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:2020
-msgid ""
-"A selector must have been defined before other one can follow comma-"
-"separated."
-msgstr ""
-
-#. Build warning message
-#: ../xfdashboard/theme-css.c:2086
-#, c-format
-msgid "Skipping block of unknown identifier '@%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:2092
-msgid "'@' identifier"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:2121 ../xfdashboard/theme-css.c:2138
-msgid "Unhandled selector"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:2288
-#, c-format
-msgid "The input stream of type %s is not supported"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:2486
-msgid "Path of theme loading from"
-msgstr ""
-
-#: ../xfdashboard/theme-css.c:2573
-#, c-format
-msgid "Could not get file for path '%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:334 ../xfdashboard/theme-layout.c:483
-#, c-format
-msgid "Cannot allocate memory for object data of tag <%s>"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:352
-#, c-format
-msgid ""
-"Freeing effect object parser data at %p with a reference counter of %d "
-"greater than one"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:482
-#, c-format
-msgid "Object of type %s is not derived from %s"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:589
-msgid "Missing property name to set value for"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:601
-#, c-format
-msgid "Missing object data to set value of property '%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:655 ../xfdashboard/theme-effects.c:742
-#, c-format
-msgid "Missing parser data for <%s> tag"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:697
-#, c-format
-msgid "Multiple definition of property '%s' at object with ID '%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:759
-#, c-format
-msgid ""
-"Invalid state of parser after parsing property '%s' at object with id '%s' "
-"of type %s"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:863 ../xfdashboard/theme-layout.c:1119
-#, c-format
-msgid "Empty ID at tag '%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:875 ../xfdashboard/theme-layout.c:1132
-#, c-format
-msgid "Invalid ID '%s' at tag '%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:888
-#, c-format
-msgid "Multiple definition of effect with id '%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:901 ../xfdashboard/theme-layout.c:1148
-#, c-format
-msgid "Unknown object class %s for tag '%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-effects.c:915 ../xfdashboard/theme-layout.c:1168
-#, c-format
-msgid ""
-"Invalid class %s in object for parent tag <%s> - expecting class derived "
-"from %s"
-msgstr ""
-
-#. If we get here we did not find an object with requested ID
-#: ../xfdashboard/theme-effects.c:1270
-#, c-format
-msgid "Could not find effect with ID '%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:389
-msgid "Cannot allocate memory for unknown tag"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:401
-#, c-format
-msgid "Cannot allocate memory for tag '%s'"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:618
-#, c-format
-msgid "Unsupported tag type '%s' to resolve ID"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:903
-msgid "Unexpected empty tag stack when parsing property text node"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:914
-#, c-format
-msgid "Value for property '%s' is already set"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:1203
-#, c-format
-msgid ""
-"Tag <%s> can only be set at <%s> creating objects derived from class %s"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:1289
-#, c-format
-msgid "Attribute 'ref' cannot be empty at tag <%s>"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:1318
-#, c-format
-msgid "Tag <%s> can have only one <%s>"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:1419
-#, c-format
-msgid "Internal error when handling end of tag <%s>"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:1448
-#, c-format
-msgid "Document can have only one <%s>"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:1486
-#, c-format
-msgid "Object can have only one <%s>"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:1684
-#, c-format
-msgid "ID '%s' was specified more than once (%d times)"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:1715
-#, c-format
-msgid "Referenced ID '%s' could not be resolved"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:1816
-#, c-format
-msgid "File %s does not contain an interface"
-msgstr ""
-
-#: ../xfdashboard/theme-layout.c:1826
-#, c-format
-msgid "Interface at file %s has no ID"
-msgstr ""
-
-#: ../xfdashboard/toggle-button.c:162
-msgid "Toggle state"
-msgstr ""
-
-#: ../xfdashboard/toggle-button.c:163
-msgid "State of toggle"
-msgstr ""
-
-#: ../xfdashboard/toggle-button.c:169
-msgid "Auto toggle"
-msgstr ""
-
-#: ../xfdashboard/toggle-button.c:170
-msgid "If set the toggle state will be toggled on each click"
-msgstr ""
-
-#: ../xfdashboard/tooltip-action.c:525
-msgid "Tooltip text"
-msgstr ""
-
-#: ../xfdashboard/tooltip-action.c:526
-msgid "The text to display in a tooltip"
-msgstr ""
-
-#: ../xfdashboard/utils.c:160
-#, c-format
-msgid "Could find any stage to show notification: %s"
-msgstr ""
-
-#: ../xfdashboard/view.c:368
-msgid "View ID"
-msgstr ""
-
-#: ../xfdashboard/view.c:369
-msgid "The internal ID used to register this type of view"
-msgstr ""
-
-#: ../xfdashboard/view.c:375
-msgid "View name"
-msgstr ""
-
-#: ../xfdashboard/view.c:376
-msgid "Name of view used to display"
-msgstr ""
-
-#: ../xfdashboard/view.c:382
-msgid "View icon"
-msgstr ""
-
-#: ../xfdashboard/view.c:383
-msgid ""
-"Icon of view used to display. Icon name can be a themed icon name or file "
-"name"
-msgstr ""
-
-#: ../xfdashboard/view.c:389
-msgid "View fit mode"
-msgstr ""
-
-#: ../xfdashboard/view.c:390
-msgid ""
-"Defines if view should be fit into viewpad and in which directions it should"
-" fit into it"
-msgstr ""
-
-#: ../xfdashboard/view.c:397
-msgid "Enabled"
-msgstr ""
-
-#: ../xfdashboard/view.c:398
-msgid "This flag indicates if is view is enabled and activable"
-msgstr ""
-
-#: ../xfdashboard/view-manager.c:265
-#, c-format
-msgid "View %s of type %s is not a %s and cannot be registered"
-msgstr ""
-
-#: ../xfdashboard/view-manager.c:275
-#, c-format
-msgid "View %s of type %s is registered already"
-msgstr ""
-
-#: ../xfdashboard/view-manager.c:289
-#, c-format
-msgid "Failed to register view %s of type %s"
-msgstr ""
-
-#: ../xfdashboard/view-manager.c:318
-#, c-format
-msgid "View %s is not registered and cannot be unregistered"
-msgstr ""
-
-#: ../xfdashboard/view-manager.c:381
-#, c-format
-msgid "Cannot create view %s because it is not registered"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:130
-msgid "Cannot update viewport of view because no one is active"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:247
-#, c-format
-msgid "View %s is not a child of %s and cannot be activated"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:255
-#, c-format
-msgid "Cannot activate disabled view %s at %s"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:691
-#, c-format
-msgid "Failed to create view %s for viewpad"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:697
-#, c-format
-msgid "View %s of type %s is not a %s and cannot be added to %s"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:1216 ../xfdashboard/view-selector.c:402
-msgid "The spacing between views and scrollbars"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:1223
-msgid "Active view"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:1224
-msgid "The current active view in viewpad"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:1230
-msgid "Horizontal scrollbar visibility"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:1231
-msgid "This flag indicates if horizontal scrollbar is visible"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:1237
-msgid "Horizontal scrollbar policy"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:1238
-msgid "The policy for horizontal scrollbar controlling when it is displayed"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:1245
-msgid "Vertical scrollbar visibility"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:1246
-msgid "This flag indicates if vertical scrollbar is visible"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:1252
-msgid "Vertical scrollbar policy"
-msgstr ""
-
-#: ../xfdashboard/viewpad.c:1253
-msgid "The policy for vertical scrollbar controlling when it is displayed"
-msgstr ""
-
-#: ../xfdashboard/view-selector.c:389
-msgid "Viewpad"
-msgstr ""
-
-#: ../xfdashboard/view-selector.c:390
-msgid "The viewpad this selector belongs to"
-msgstr ""
-
-#: ../xfdashboard/view-selector.c:415
-msgid "Orientation of view selector"
-msgstr ""
-
-#: ../xfdashboard/window-content.c:221
-#, c-format
-msgid "Destroying window content resume queue containing %d windows."
-msgstr ""
-
-#: ../xfdashboard/window-content.c:360
-#, c-format
-msgid ""
-"Unknown value '%s' for property '%s' - defaulting to '%s' with priority of "
-"%d"
-msgstr ""
-
-#. Show warning
-#: ../xfdashboard/window-content.c:476
-#, c-format
-msgid "Could not create copy of texture of mininized window '%s': %s"
-msgstr ""
-
-#. Show warning
-#: ../xfdashboard/window-content.c:504
-#, c-format
-msgid "Could not create copy of texture of mininized window '%s'"
-msgstr ""
-
-#: ../xfdashboard/window-content.c:515
-#, c-format
-msgid "Could not determine size of texture of minimized window '%s'"
-msgstr ""
-
-#: ../xfdashboard/window-content.c:520
-#, c-format
-msgid "Could not allocate memory for copy of texture of mininized window '%s'"
-msgstr ""
-
-#: ../xfdashboard/window-content.c:631
-#, c-format
-msgid ""
-"Need at least version %d.%d of composite extension but found %d.%d - using "
-"only fallback images"
-msgstr ""
-
-#: ../xfdashboard/window-content.c:635
-msgid "Query for X composite extension failed - using only fallback imagess"
-msgstr ""
-
-#: ../xfdashboard/window-content.c:637
-msgid "X does not support composite extension - using only fallback images"
-msgstr ""
-
-#: ../xfdashboard/window-content.c:647
-#, c-format
-msgid ""
-"Query for X damage extension resulted in error code %d - using only still "
-"images of windows"
-msgstr ""
-
-#: ../xfdashboard/window-content.c:897
-msgid "Resume handler called for empty queue."
-msgstr ""
-
-#: ../xfdashboard/window-content.c:959 ../xfdashboard/window-content.c:1116
-#, c-format
-msgid "Could not get pixmap for window '%s"
-msgstr ""
-
-#. We should never get here as existance of composite extension was checked
-#. before
-#: ../xfdashboard/window-content.c:967 ../xfdashboard/window-content.c:1122
-#, c-format
-msgid "Cannot resume window '%s' as composite extension is not available"
-msgstr ""
-
-#: ../xfdashboard/window-content.c:1009 ../xfdashboard/window-content.c:1163
-#, c-format
-msgid "Could not create damage for window '%s' - using still image of window"
-msgstr ""
-
-#. Show warning
-#: ../xfdashboard/window-content.c:1336
-#, c-format
-msgid "Could not create fallback texture for window '%s': %s"
-msgstr ""
-
-#: ../xfdashboard/window-content.c:1378
-#, c-format
-msgid "Could not get attributes of window '%s'"
-msgstr "No se pudieron obtener los atributos de la ventana '%s'"
-
-#: ../xfdashboard/window-content.c:1443
-#, c-format
-msgid "Destroying window content cache still containing %d windows."
-msgstr "La destrucción del contenido caché de ventana todavía contiene %d ventanas."
-
-#: ../xfdashboard/window-content.c:2076
-msgid "The window to handle and display"
-msgstr "La ventana para manejar y mostrar"
-
-#: ../xfdashboard/window-content.c:2082
-msgid "Suspended"
-msgstr "Suspendido"
-
-#: ../xfdashboard/window-content.c:2083
-msgid "Is this window suspended"
-msgstr "Esta ventana está suspendida"
-
-#: ../xfdashboard/window-content.c:2090
-msgid "Color to draw outline of mapped windows with"
-msgstr "Color para dibujar los contornos representados con ventanas"
-
-#: ../xfdashboard/window-content.c:2097
-msgid "Width of line used to draw outline of mapped windows"
-msgstr "Ancho de línea usado para dibujar el contorno de las ventanas representadas"
-
-#: ../xfdashboard/window-content.c:2104
-msgid "Include window frame"
-msgstr "Incluir marco de ventana"
-
-#: ../xfdashboard/window-content.c:2105
-msgid ""
-"Whether the window frame should be included or only the window content "
-"should be shown"
-msgstr "Si el marco de la ventana debe ser incluido o solo el contenido de la ventana debe ser mostrado"
-
-#: ../xfdashboard/window-content.c:2111
-msgid "Unmapped window icon X fill"
-msgstr "Icono de ventana sin asignar de relleno X"
-
-#: ../xfdashboard/window-content.c:2112
-msgid "Whether the unmapped window icon should fill up horizontal space"
-msgstr "Si el icono de la ventana sin asignar debe rellenar el espacio horizontal"
-
-#: ../xfdashboard/window-content.c:2118
-msgid "Unmapped window icon y fill"
-msgstr "Icono de ventana sin asignar de relleno Y"
-
-#: ../xfdashboard/window-content.c:2119
-msgid "Whether the unmapped window icon should fill up vertical space"
-msgstr "Si el icono de la ventana sin asignar debe rellenar el espacio vertical"
-
-#: ../xfdashboard/window-content.c:2125
-msgid "Unmapped window icon X align"
-msgstr "Icono de ventana sin asignar de alineación X"
-
-#: ../xfdashboard/window-content.c:2126
-msgid ""
-"The alignment of the unmapped window icon on the X axis within the "
-"allocation in normalized coordinate between 0 and 1"
-msgstr "La alineación del icono de la ventana sin asignar en el eje X en la asignación de coordenadas normalizadas entre 0 y 1"
-
-#: ../xfdashboard/window-content.c:2133
-msgid "Unmapped window icon Y align"
-msgstr "Icono de ventana sin asignar de alineación Y"
-
-#: ../xfdashboard/window-content.c:2134
-msgid ""
-"The alignment of the unmapped window icon on the Y axis within the "
-"allocation in normalized coordinate between 0 and 1"
-msgstr "La alineación del icono de la ventana sin asignar en el eje Y en la asignación de coordenadas normalizadas entre 0 y 1"
-
-#: ../xfdashboard/window-content.c:2141
-msgid "Unmapped window icon X scale"
-msgstr "Icono de ventana sin asignar de escala X"
-
-#: ../xfdashboard/window-content.c:2142
-msgid "Scale factor of unmapped window icon on the X axis"
-msgstr "Factor de escala del icono de ventana sin asignar en el eje Y"
-
-#: ../xfdashboard/window-content.c:2149
-msgid "Unmapped window icon Y scale"
-msgstr "Icono de ventana sin asignar de escala Y"
-
-#: ../xfdashboard/window-content.c:2150
-msgid "Scale factor of unmapped window icon on the Y axis"
-msgstr "Factor de escala del icono de ventana sin asignar en el eje Y"
-
-#: ../xfdashboard/window-content.c:2157
-msgid "Unmapped window icon anchor point"
-msgstr "Punto de anclaje del icono de ventana sin asignar"
-
-#: ../xfdashboard/window-content.c:2158
-msgid "The anchor point of unmapped window icon"
-msgstr "El punto de anclaje del icono de ventana sin asignar"
-
-#. If we get here we did not handle drop action properly
-#. * and this should never happen.
-#: ../xfdashboard/windows-view.c:555
-#, c-format
-msgid ""
-"Did not handle drop action for dragged actor %s of source %s at target %s"
-msgstr ""
-
-#: ../xfdashboard/windows-view.c:1626
-#, c-format
-msgid "Cannot activate selection of type %s at %s because expecting type %s"
-msgstr "No se puede activar la selección de tipo %s en %s porque se espera un tipo %s"
-
-#: ../xfdashboard/windows-view.c:1905
-msgid "Current workspace"
-msgstr "Espacio de trabajo actual"
-
-#: ../xfdashboard/windows-view.c:1906
-msgid "The current workspace whose windows are shown"
-msgstr "El espacio de trabajo actual cuyas ventanas son mostradas"
-
-#: ../xfdashboard/windows-view.c:1921
-msgid ""
-"Whether this view should prevent upsclaing any window beyond its real size"
-msgstr ""
-
-#: ../xfdashboard/windows-view.c:1927
-msgid "Scroll event changes workspace"
-msgstr "La rueda del ratón cambia el espacio de trabajo"
-
-#: ../xfdashboard/windows-view.c:1928
-msgid "Whether this view should change active workspace on scroll events"
-msgstr "Si esta vista debe cambiar el espacio de trabajo actual con la rueda del ratón"
-
-#: ../xfdashboard/windows-view.c:1934
-msgid "Filter monitor windows"
-msgstr "Filtro de ventanas del monitor"
-
-#: ../xfdashboard/windows-view.c:1935
-msgid ""
-"Whether this view should only show windows of monitor where it placed at"
-msgstr "Si esta vista debe mostrar solo las ventanas del monitor donde se está usando"
-
-#. Set up view
-#: ../xfdashboard/windows-view.c:2158
-msgid "Windows"
-msgstr "Ventanas"
-
-#: ../xfdashboard/window-tracker.c:620
-#, c-format
-msgid "Cannot release unknown monitor %d"
-msgstr "No se puede lanzar el monitor desconocido %d"
-
-#: ../xfdashboard/window-tracker.c:898
-msgid "Active window"
-msgstr "Ventana activa"
-
-#: ../xfdashboard/window-tracker.c:899
-msgid "The current active window"
-msgstr "La actual ventana activa"
-
-#: ../xfdashboard/window-tracker.c:905
-msgid "Active workspace"
-msgstr "Espacio de trabajo activo"
-
-#: ../xfdashboard/window-tracker.c:906
-msgid "The current active workspace"
-msgstr "El actual espacio de trabajo"
-
-#: ../xfdashboard/window-tracker.c:912
-msgid "Primary monitor"
-msgstr "Monitor principal"
-
-#: ../xfdashboard/window-tracker.c:913
-msgid "The current primary monitor"
-msgstr "El actual monitor principal"
-
-#: ../xfdashboard/window-tracker-monitor.c:282
-msgid "Monitor index"
-msgstr "Índice del monitor"
-
-#: ../xfdashboard/window-tracker-monitor.c:283
-msgid "The index of this monitor"
-msgstr "El índice de este monitor"
-
-#: ../xfdashboard/window-tracker-monitor.c:290
-msgid "Is primary"
-msgstr "Es primario"
-
-#: ../xfdashboard/window-tracker-monitor.c:291
-msgid "Whether this monitor is the primary one"
-msgstr "Si este monitor es el principal"
-
-#: ../xfdashboard/window-tracker-window.c:86
-msgid ""
-"Keep window fullscreen on primary monitor because window manager does not "
-"support _NET_WM_FULLSCREEN_MONITORS."
-msgstr "Mantener ventana a pantalla completa en el monitor principal porque el gestor de ventanas no lo soporta _NET_WM_FULLSCREEN_MONITORS."
-
-#. Setting new selection was unsuccessful if we get here
-#. Activation was unsuccessful if we get here
-#: ../xfdashboard/workspace-selector.c:904
-#: ../xfdashboard/workspace-selector.c:1094
-#, c-format
-msgid "Could not determine workspace of %s to set selection at %s"
-msgstr "No se puede determinar el espacio de trabajo de %s para establecer la selección como %s"
-
-#: ../xfdashboard/workspace-selector.c:1255
-msgid "Maximum size"
-msgstr "Tamaño máximo"
-
-#: ../xfdashboard/workspace-selector.c:1256
-msgid "The maximum size of this actor for opposite direction of orientation"
-msgstr "El tamaño máximo de este actor para la dirección opuesta de la orientación"
-
-#: ../xfdashboard/workspace-selector.c:1263
-msgid "Maximum fraction"
-msgstr "Porcentaje máximo"
-
-#: ../xfdashboard/workspace-selector.c:1264
-msgid ""
-"The maximum size of this actor for opposite direction of orientation defined"
-" by fraction between 0.0 and 1.0"
-msgstr "El tamaño máximo de este actor para la dirección opuesta de la orientación es definida por el porcentaje entre 0.0 y 1.0"
-
-#: ../xfdashboard/workspace-selector.c:1271
-msgid "Using fraction"
-msgstr "Uso de porcentaje"
-
-#: ../xfdashboard/workspace-selector.c:1272
-msgid ""
-"Flag indicating if maximum size is static or defined by fraction between 0.0"
-" and 1.0"
-msgstr "Bandera que indica si el tamaño máximo es estático o es definido por el porcentaje entre 0.0 y 1.0"
-
-#: ../xfdashboard/workspace-selector.c:1278
-msgid "Show current monitor only"
-msgstr "Mostrar solamente el monitor actual"
-
-#: ../xfdashboard/workspace-selector.c:1279
-msgid "Show only windows of the monitor where this actor is placed"
-msgstr "Mostrar solo ventanas del monitor donde el actor este colocado."
