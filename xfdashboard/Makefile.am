@@ -18,6 +18,7 @@ xfdashboard_CFLAGS = \
 	$(GLIB_CFLAGS) \
 	$(LIBXFCONF_CFLAGS) \
 	$(LIBXFCE4UTIL_CFLAGS) \
+	$(GTK_CFLAGS) \
 	$(PLATFORM_CFLAGS)
 
 xfdashboard_LDADD = \
@@ -25,6 +26,7 @@ xfdashboard_LDADD = \
 	$(GLIB_LIBS) \
 	$(LIBXFCONF_LIBS) \
 	$(LIBXFCE4UTIL_LIBS) \
+	$(GTK_LIBS) \
 	$(top_builddir)/libxfdashboard/libxfdashboard.la
 
 xfdashboard_LDFLAGS = \
