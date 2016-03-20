@@ -272,8 +272,7 @@ static ClutterActor* _xfdashboard_action_button_focusable_find_selection(Xfdashb
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_ACTION_BUTTON(inFocusable), NULL);
 	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), NULL);
-	g_return_val_if_fail(inDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
-	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+	g_return_val_if_fail(inDirection>=0 && inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
 
 	self=XFDASHBOARD_ACTION_BUTTON(inFocusable);
 

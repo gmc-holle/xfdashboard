@@ -1036,8 +1036,7 @@ static ClutterActor* _xfdashboard_applications_view_focusable_find_selection(Xfd
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(inFocusable), NULL);
 	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), NULL);
-	g_return_val_if_fail(inDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
-	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+	g_return_val_if_fail(inDirection>=0 && inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
 
 	self=XFDASHBOARD_APPLICATIONS_VIEW(inFocusable);
 	priv=self->priv;

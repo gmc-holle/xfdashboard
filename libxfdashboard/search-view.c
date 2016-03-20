@@ -1038,11 +1038,9 @@ static ClutterActor* _xfdashboard_search_view_focusable_find_selection_internal_
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(inContainer), NULL);
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
-	g_return_val_if_fail(inDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
-	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+	g_return_val_if_fail(inDirection>=0 && inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
 	g_return_val_if_fail(inCurrentProviderIter, NULL);
-	g_return_val_if_fail(inNextContainerDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
-	g_return_val_if_fail(inNextContainerDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+	g_return_val_if_fail(inNextContainerDirection>=0 && inNextContainerDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
 
 	/* Ask current provider to find selection for requested direction */
 	newSelection=xfdashboard_search_result_container_find_selection(inContainer,
@@ -1125,11 +1123,9 @@ static ClutterActor* _xfdashboard_search_view_focusable_find_selection_internal_
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_RESULT_CONTAINER(inContainer), NULL);
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), NULL);
-	g_return_val_if_fail(inDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
-	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+	g_return_val_if_fail(inDirection>=0 && inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
 	g_return_val_if_fail(inCurrentProviderIter, NULL);
-	g_return_val_if_fail(inNextContainerDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
-	g_return_val_if_fail(inNextContainerDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+	g_return_val_if_fail(inNextContainerDirection>=0 && inNextContainerDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
 
 	/* Ask current provider to find selection for requested direction */
 	newSelection=xfdashboard_search_result_container_find_selection(inContainer,
@@ -1213,8 +1209,7 @@ static ClutterActor* _xfdashboard_search_view_focusable_find_selection(Xfdashboa
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_SEARCH_VIEW(inFocusable), NULL);
 	g_return_val_if_fail(!inSelection || CLUTTER_IS_ACTOR(inSelection), NULL);
-	g_return_val_if_fail(inDirection>XFDASHBOARD_SELECTION_TARGET_NONE, NULL);
-	g_return_val_if_fail(inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
+	g_return_val_if_fail(inDirection>=0 && inDirection<=XFDASHBOARD_SELECTION_TARGET_NEXT, NULL);
 
 	self=XFDASHBOARD_SEARCH_VIEW(inFocusable);
 	priv=self->priv;
