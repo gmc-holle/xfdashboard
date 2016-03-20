@@ -724,6 +724,8 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 	GList										*providers;
 	GList										*iter;
 	guint										numberResults;
+	ClutterActor								*reselectSelection;
+	XfdashboardSearchViewProviderData			*reselectFirstOfProvider;
 #ifdef DEBUG
 	GTimer										*timer=NULL;
 #endif
@@ -738,6 +740,45 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 	/* Start timer for debug search performance */
 	timer=g_timer_new();
 #endif
+
+	/* Check if this view has a selection and this one is the first item at
+	 * provider's container so we have to reselect the first item at that
+	 * result container if selection gets lost while updating results for
+	 * this search.
+	 */
+	reselectFirstOfProvider=NULL;
+	reselectSelection=xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self));
+	if(reselectSelection)
+	{
+		XfdashboardSearchViewProviderData	*providerData;
+		ClutterActor						*firstItem;
+
+		providerData=NULL;
+		firstItem=NULL;
+
+		/* Find data of provider for requested selection and check if current
+		 * selection is the first item at provider's result container.
+		 */
+		providerData=_xfdashboard_search_view_get_provider_data_by_actor(self, reselectSelection);
+		if(providerData)
+		{
+			/* Get first item of provider's result container */
+			firstItem=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
+																			NULL,
+																			XFDASHBOARD_SELECTION_TARGET_FIRST,
+																			XFDASHBOARD_VIEW(self),
+																			FALSE);
+
+			/* Check if it the same as the current selection then remember
+			 * the provider to reselect first item if selection changes
+			 * while updating search results.
+			 */
+			if(reselectSelection==firstItem)
+			{
+				reselectFirstOfProvider=providerData;
+			}
+		}
+	}
 
 	/* Perform a search at all registered search providers */
 	providers=g_list_copy(priv->providers);
@@ -798,6 +839,37 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 	g_debug("Updating search for '%s' took %f seconds", inSearchTerms->termString, g_timer_elapsed(timer, NULL));
 	g_timer_destroy(timer);
 #endif
+
+	/* Reselect first item at provider if we remembered the provider whose first item
+	 * should be reselected and if selection has changed while updating results.
+	 */
+	if(reselectFirstOfProvider)
+	{
+		ClutterActor							*selection;
+
+		/* Get current selection as it may have changed because the selected actor
+		 * was destroyed or hidden while updating results.
+		 */
+		selection=xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self));
+
+		/* If selection has changed then re-select first item of provider */
+		if(selection!=reselectSelection)
+		{
+			/* Get new selection which is the first item of provider's result
+			 * container.
+			 */
+			selection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(reselectFirstOfProvider->container),
+																			NULL,
+																			XFDASHBOARD_SELECTION_TARGET_FIRST,
+																			XFDASHBOARD_VIEW(self),
+																			FALSE);
+
+			/* Set new selection */
+			xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), selection);
+			g_debug("Reselecting first selectable item at provider %s as old selection vanished",
+					xfdashboard_search_provider_get_name(reselectFirstOfProvider->provider));
+		}
+	}
 
 	/* If this view has the focus then check if this view has a selection set currently.
 	 * If not select the first selectable actor otherwise just ensure the current
