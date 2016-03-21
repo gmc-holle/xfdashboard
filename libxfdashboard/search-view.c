@@ -724,8 +724,9 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 	GList										*providers;
 	GList										*iter;
 	guint										numberResults;
-	ClutterActor								*reselectSelection;
-	XfdashboardSearchViewProviderData			*reselectFirstOfProvider;
+	ClutterActor								*reselectOldSelection;
+	XfdashboardSearchViewProviderData			*reselectProvider;
+	XfdashboardSelectionTarget					reselectDirection;
 #ifdef DEBUG
 	GTimer										*timer=NULL;
 #endif
@@ -746,36 +747,52 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 	 * result container if selection gets lost while updating results for
 	 * this search.
 	 */
-	reselectFirstOfProvider=NULL;
-	reselectSelection=xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self));
-	if(reselectSelection)
+	reselectProvider=NULL;
+	reselectOldSelection=xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self));
+	if(reselectOldSelection)
 	{
 		XfdashboardSearchViewProviderData	*providerData;
-		ClutterActor						*firstItem;
-
-		providerData=NULL;
-		firstItem=NULL;
 
 		/* Find data of provider for requested selection and check if current
 		 * selection is the first item at provider's result container.
 		 */
-		providerData=_xfdashboard_search_view_get_provider_data_by_actor(self, reselectSelection);
+		providerData=_xfdashboard_search_view_get_provider_data_by_actor(self, reselectOldSelection);
 		if(providerData)
 		{
+			ClutterActor					*item;
+
+			/* Get last item of provider's result container */
+			item=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
+																	NULL,
+																	XFDASHBOARD_SELECTION_TARGET_LAST,
+																	XFDASHBOARD_VIEW(self),
+																	FALSE);
+
+			/* Check if it the same as the current selection then remember
+			 * the provider to reselect last item if selection changes
+			 * while updating search results.
+			 */
+			if(reselectOldSelection==item)
+			{
+				reselectProvider=providerData;
+				reselectDirection=XFDASHBOARD_SELECTION_TARGET_LAST;
+			}
+
 			/* Get first item of provider's result container */
-			firstItem=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
-																			NULL,
-																			XFDASHBOARD_SELECTION_TARGET_FIRST,
-																			XFDASHBOARD_VIEW(self),
-																			FALSE);
+			item=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(providerData->container),
+																	NULL,
+																	XFDASHBOARD_SELECTION_TARGET_FIRST,
+																	XFDASHBOARD_VIEW(self),
+																	FALSE);
 
 			/* Check if it the same as the current selection then remember
 			 * the provider to reselect first item if selection changes
 			 * while updating search results.
 			 */
-			if(reselectSelection==firstItem)
+			if(reselectOldSelection==item)
 			{
-				reselectFirstOfProvider=providerData;
+				reselectProvider=providerData;
+				reselectDirection=XFDASHBOARD_SELECTION_TARGET_FIRST;
 			}
 		}
 	}
@@ -840,10 +857,10 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 	g_timer_destroy(timer);
 #endif
 
-	/* Reselect first item at provider if we remembered the provider whose first item
-	 * should be reselected and if selection has changed while updating results.
+	/* Reselect first or last item at provider if we remembered the provider where
+	 * the item should be reselected and if selection has changed while updating results.
 	 */
-	if(reselectFirstOfProvider)
+	if(reselectProvider)
 	{
 		ClutterActor							*selection;
 
@@ -852,22 +869,23 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 		 */
 		selection=xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self));
 
-		/* If selection has changed then re-select first item of provider */
-		if(selection!=reselectSelection)
+		/* If selection has changed then re-select first or last item of provider */
+		if(selection!=reselectOldSelection)
 		{
-			/* Get new selection which is the first item of provider's result
-			 * container.
+			/* Get new selection which is the first or last item of provider's
+			 * result container.
 			 */
-			selection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(reselectFirstOfProvider->container),
+			selection=xfdashboard_search_result_container_find_selection(XFDASHBOARD_SEARCH_RESULT_CONTAINER(reselectProvider->container),
 																			NULL,
-																			XFDASHBOARD_SELECTION_TARGET_FIRST,
+																			reselectDirection,
 																			XFDASHBOARD_VIEW(self),
 																			FALSE);
 
 			/* Set new selection */
 			xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), selection);
-			g_debug("Reselecting first selectable item at provider %s as old selection vanished",
-					xfdashboard_search_provider_get_name(reselectFirstOfProvider->provider));
+			g_debug("Reselecting selectable item in direction %d at provider %s as old selection vanished",
+					reselectDirection,
+					xfdashboard_search_provider_get_name(reselectProvider->provider));
 		}
 	}
 
