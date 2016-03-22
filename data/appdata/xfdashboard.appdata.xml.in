@@ -59,6 +59,13 @@
 	</keywords>
 
 	<releases>
+		<release version="0.5.91" timestamp="1458673002">
+			<description>
+				<_p>This unstable development fixes running this application in daemon mode
+				and unpredictable reselections in search view.
+				</_p>
+			</description>
+		</release>
 		<release version="0.5.90" timestamp="1456659470">
 			<description>
 				<_p>This unstable development introduces a hot-corner plugin to activate
