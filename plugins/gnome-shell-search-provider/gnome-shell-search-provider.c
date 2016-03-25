@@ -620,6 +620,8 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 	self=XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER(inProvider);
 	priv=self->priv;
 	actor=NULL;
+	name=NULL;
+	description=NULL;
 	icon=NULL;
 	error=NULL;
 
