@@ -853,7 +853,7 @@ static gboolean _xfdashboard_gnome_shell_search_provider_activate_result(Xfdashb
 
 	proxyResult=g_dbus_proxy_call_sync(proxy,
 										"ActivateResult",
-										g_variant_new("(s(^as)u)",
+										g_variant_new("(s^asu)",
 														identifier,
 														inSearchTerms,
 														clutter_get_current_event_time()),
@@ -927,7 +927,7 @@ static gboolean _xfdashboard_gnome_shell_search_provider_launch_search(Xfdashboa
 
 	proxyResult=g_dbus_proxy_call_sync(proxy,
 										"LaunchSearch",
-										g_variant_new("((^as)u)",
+										g_variant_new("(^asu)",
 														inSearchTerms,
 														clutter_get_current_event_time()),
 										G_DBUS_CALL_FLAGS_NONE,
