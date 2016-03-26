@@ -204,9 +204,6 @@ int main(int argc, char **argv)
 	clutter_set_windowing_backend("x11");
 #endif
 
-	/* Notify that application has started and main loop will be entered */
-	gdk_notify_startup_complete();
-
 	/* Tell clutter to try to initialize an RGBA visual */
 	clutter_x11_set_use_argb_visual(TRUE);
 
@@ -217,6 +214,9 @@ int main(int argc, char **argv)
 		g_error(_("Initializing clutter failed!"));
 		return(1);
 	}
+
+	/* Notify that application has started and main loop will be entered */
+	gdk_notify_startup_complete();
 
 	/* Start application as primary or remote instace */
 	app=xfdashboard_application_get_default();
