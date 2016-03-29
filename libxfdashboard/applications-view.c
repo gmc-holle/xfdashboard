@@ -73,7 +73,7 @@ struct _XfdashboardApplicationsViewPrivate
 	XfdashboardApplicationsMenuModel	*apps;
 	GarconMenuElement					*currentRootMenuElement;
 
-	ClutterActor						*selectedItem;
+	gpointer							selectedItem;
 
 	XfconfChannel						*xfconfChannel;
 	gboolean							showAllAppsMenu;
@@ -754,8 +754,17 @@ static gboolean _xfdashboard_applications_view_focusable_set_selection(Xfdashboa
 		return(FALSE);
 	}
 
+	/* Remove weak reference at current selection */
+	if(priv->selectedItem)
+	{
+		g_object_remove_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
+	}
+
 	/* Set new selection */
 	priv->selectedItem=inSelection;
+
+	/* Add weak reference at new selection */
+	g_object_add_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
 
 	/* Ensure new selection is visible */
 	if(inSelection) xfdashboard_view_child_ensure_visible(XFDASHBOARD_VIEW(self), inSelection);

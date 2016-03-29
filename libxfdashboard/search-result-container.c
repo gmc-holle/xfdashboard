@@ -72,7 +72,7 @@ struct _XfdashboardSearchResultContainerPrivate
 	ClutterActor				*titleTextBox;
 	ClutterActor				*itemsContainer;
 
-	ClutterActor				*selectedItem;
+	gpointer					selectedItem;
 	guint						selectedItemDestroySignalID;
 
 	GHashTable					*mapping;
@@ -171,6 +171,9 @@ static void _xfdashboard_search_result_container_update_selection(XfdashboardSea
 	/* Unset current selection and signal handler ID */
 	if(priv->selectedItem)
 	{
+		/* Remove weak reference at current selection */
+		g_object_remove_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
+
 		/* Disconnect signal handler */
 		if(priv->selectedItemDestroySignalID)
 		{
@@ -193,6 +196,9 @@ static void _xfdashboard_search_result_container_update_selection(XfdashboardSea
 	{
 		priv->selectedItem=inNewSelectedItem;
 
+		/* Add weak reference at new selection */
+		g_object_add_weak_pointer(G_OBJECT(inNewSelectedItem), &priv->selectedItem);
+
 		/* Connect signals */
 		g_signal_connect_swapped(inNewSelectedItem,
 									"destroy",
@@ -200,9 +206,9 @@ static void _xfdashboard_search_result_container_update_selection(XfdashboardSea
 									self);
 
 		/* Style new selection */
-		if(XFDASHBOARD_IS_STYLABLE(priv->selectedItem))
+		if(XFDASHBOARD_IS_STYLABLE(inNewSelectedItem))
 		{
-			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(priv->selectedItem), "selected");
+			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(inNewSelectedItem), "selected");
 		}
 	}
 }

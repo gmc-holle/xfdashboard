@@ -70,7 +70,7 @@ struct _XfdashboardWindowsViewPrivate
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
 	ClutterLayoutManager				*layout;
-	ClutterActor						*selectedItem;
+	gpointer							selectedItem;
 
 	XfconfChannel						*xfconfChannel;
 	guint								xfconfScrollEventChangingWorkspaceBindingID;
@@ -318,9 +318,15 @@ static void _xfdashboard_windows_view_recreate_window_actors(XfdashboardWindowsV
 
 	priv=self->priv;
 
+	/* Remove weak reference at current selection and unset selection */
+	if(priv->selectedItem)
+	{
+		g_object_remove_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
+	}
+	priv->selectedItem=NULL;
+
 	/* Destroy all actors */
 	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
-	priv->selectedItem=NULL;
 
 	/* Create live window actors for new workspace */
 	if(priv->workspace!=NULL)
@@ -1403,8 +1409,17 @@ static gboolean _xfdashboard_windows_view_focusable_set_selection(XfdashboardFoc
 		return(FALSE);
 	}
 
+	/* Remove weak reference at current selection */
+	if(priv->selectedItem)
+	{
+		g_object_remove_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
+	}
+
 	/* Set new selection */
 	priv->selectedItem=inSelection;
+
+	/* Add weak reference at new selection */
+	g_object_add_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
 
 	/* New selection was set successfully */
 	return(TRUE);
