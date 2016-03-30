@@ -60,6 +60,7 @@ struct _XfdashboardSettingsPluginsPrivate
 	GtkWidget		*widgetPluginLicense;
 	GtkWidget		*widgetPluginDescriptionLabel;
 	GtkWidget		*widgetPluginDescription;
+	GtkWidget		*widgetPluginConfigureButton;
 	GtkWidget		*widgetPluginPreferencesDialog;
 	GtkWidget		*widgetPluginPreferencesWidgetBox;
 	GtkWidget		*widgetPluginPreferencesDialogTitle;
@@ -141,7 +142,6 @@ static gboolean _xfdashboard_settings_plugins_call_preferences(XfdashboardSettin
 	GtkWidget								*pluginPreferencesWidget;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self), FALSE);
-	g_return_val_if_fail(inEvent, FALSE);
 	g_return_val_if_fail(GTK_IS_TREE_VIEW(inTreeView), FALSE);
 	g_return_val_if_fail(inPath, FALSE);
 
@@ -150,15 +150,17 @@ static gboolean _xfdashboard_settings_plugins_call_preferences(XfdashboardSettin
 	plugin=NULL;
 	pluginPreferencesWidget=NULL;
 
-	/* We only handle released single left-clicks in this event handler */
-	if(inEvent->button.button!=1)
+	/* We only handle released single left-clicks in this event handler
+	 * if an event was given.
+	 */
+	if(inEvent && inEvent->button.button!=1)
 	{
 		g_debug("Will not handle event: Got button %d in button event but expected 1.",
 					inEvent->button.button);
 		return(FALSE);
 	}
 
-	if(inEvent->type!=GDK_BUTTON_RELEASE)
+	if(inEvent && inEvent->type!=GDK_BUTTON_RELEASE)
 	{
 		g_debug("Will not handle event: Got button event %d in button event but expected %d.",
 					inEvent->type,
@@ -214,6 +216,7 @@ static gboolean _xfdashboard_settings_plugins_call_preferences(XfdashboardSettin
 		gint								response;
 		gchar								*name;
 		gchar								*title;
+		GtkWidget							*toplevelWindow;
 
 		/* Add returned widget from plugin to dialog */
 		gtk_container_add(GTK_CONTAINER(priv->widgetPluginPreferencesWidgetBox), pluginPreferencesWidget);
@@ -225,6 +228,14 @@ static gboolean _xfdashboard_settings_plugins_call_preferences(XfdashboardSettin
 		if(title) g_free(title);
 		if(name) g_free(name);
 
+		/* Set parent window */
+		toplevelWindow=gtk_widget_get_toplevel(priv->widgetPlugins);
+		if(gtk_widget_is_toplevel(toplevelWindow) &&
+			GTK_IS_WINDOW(toplevelWindow))
+		{
+			gtk_window_set_transient_for(GTK_WINDOW(priv->widgetPluginPreferencesDialog), GTK_WINDOW(toplevelWindow));
+		}
+
 		/* Show dialog in modal mode but do not care about dialog's response code
 		 * as "close" is the only action.
 		 */
@@ -235,6 +246,9 @@ static gboolean _xfdashboard_settings_plugins_call_preferences(XfdashboardSettin
 
 		/* First hide dialog */
 		gtk_widget_hide(priv->widgetPluginPreferencesDialog);
+
+		/* Unset parent window */
+		gtk_window_set_transient_for(GTK_WINDOW(priv->widgetPluginPreferencesDialog), NULL);
 
 		/* Now destroy returned widget from plugin to get it removed from dialog */
 		gtk_widget_destroy(pluginPreferencesWidget);
@@ -325,7 +339,10 @@ static gboolean _xfdashboard_settings_plugins_on_treeview_button_pressed(Xfdashb
 	switch(columnID)
 	{
 		case XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_CONFIGURABLE:
-			eventHandled=_xfdashboard_settings_plugins_call_preferences(self, inEvent, treeView, path);
+			eventHandled=_xfdashboard_settings_plugins_call_preferences(self,
+																		inEvent,
+																		treeView,
+																		path);
 			break;
 
 		default:
@@ -340,6 +357,41 @@ static gboolean _xfdashboard_settings_plugins_on_treeview_button_pressed(Xfdashb
     return(eventHandled);
 }
 
+/* The configure button for selected plugin was pressed */
+static void _xfdashboard_settings_plugins_on_configure_button_pressed(XfdashboardSettingsPlugins *self,
+																		GtkWidget *inButton)
+{
+	XfdashboardSettingsPluginsPrivate		*priv;
+	GtkTreeSelection						*selection;
+	GtkTreeModel							*model;
+	GtkTreeIter								iter;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self));
+	g_return_if_fail(GTK_IS_BUTTON(inButton));
+
+	priv=self->priv;
+
+	/* Check if an entry is selected and call preferences dialog of selected plugin */
+	selection=gtk_tree_view_get_selection(GTK_TREE_VIEW(priv->widgetPlugins));
+	if(!selection) return;
+
+	if(gtk_tree_selection_get_selected(selection, &model, &iter))
+	{
+		GtkTreePath							*path;
+
+		/* Get path to selection */
+		path=gtk_tree_model_get_path(model, &iter);
+
+		/* Call preferences dialog for selected plugin */
+		_xfdashboard_settings_plugins_call_preferences(self,
+														NULL,
+														GTK_TREE_VIEW(priv->widgetPlugins),
+														path);
+
+		/* Release allocated resources */
+		if(path) gtk_tree_path_free(path);
+	}
+}
 
 /* Selection in plugins tree view changed */
 static void _xfdashboard_settings_plugins_enabled_plugins_on_plugins_selection_changed(XfdashboardSettingsPlugins *self,
@@ -353,6 +405,7 @@ static void _xfdashboard_settings_plugins_enabled_plugins_on_plugins_selection_c
 	gchar									*pluginAuthors;
 	gchar									*pluginCopyright;
 	gchar									*pluginLicense;
+	gboolean								pluginCanConfigure;
 
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self));
 	g_return_if_fail(GTK_IS_TREE_SELECTION(inSelection));
@@ -363,6 +416,7 @@ static void _xfdashboard_settings_plugins_enabled_plugins_on_plugins_selection_c
 	pluginAuthors=NULL;
 	pluginCopyright=NULL;
 	pluginLicense=NULL;
+	pluginCanConfigure=FALSE;
 
 	/* Get selected entry from widget */
 	if(gtk_tree_selection_get_selected(inSelection, &model, &iter))
@@ -375,6 +429,7 @@ static void _xfdashboard_settings_plugins_enabled_plugins_on_plugins_selection_c
 							XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_AUTHORS, &pluginAuthors,
 							XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_COPYRIGHT, &pluginCopyright,
 							XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_LICENSE, &pluginLicense,
+							XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_IS_CONFIGURABLE, &pluginCanConfigure,
 							-1);
 	}
 
@@ -437,6 +492,15 @@ static void _xfdashboard_settings_plugins_enabled_plugins_on_plugins_selection_c
 		{
 			gtk_widget_hide(priv->widgetPluginLicense);
 			gtk_widget_hide(priv->widgetPluginLicenseLabel);
+		}
+
+	if(pluginCanConfigure)
+	{
+		gtk_widget_show(priv->widgetPluginConfigureButton);
+	}
+		else
+		{
+			gtk_widget_hide(priv->widgetPluginConfigureButton);
 		}
 
 	/* Release allocated resources */
@@ -897,6 +961,7 @@ static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins
 	priv->widgetPluginLicense=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-license"));
 	priv->widgetPluginDescriptionLabel=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-description-label"));
 	priv->widgetPluginDescription=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-description"));
+	priv->widgetPluginConfigureButton=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-configure-button"));
 
 	priv->widgetPluginPreferencesDialog=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-preferences-dialog"));
 	priv->widgetPluginPreferencesWidgetBox=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugin-preferences-widget-box"));
@@ -995,6 +1060,11 @@ static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins
 									"button-release-event",
 									G_CALLBACK(_xfdashboard_settings_plugins_on_treeview_button_pressed),
 									self);
+
+		g_signal_connect_swapped(priv->widgetPluginConfigureButton,
+									"clicked",
+									G_CALLBACK(_xfdashboard_settings_plugins_on_configure_button_pressed),
+									self);
 	}
 
 	/* Set up dialog for plugin preferences */
@@ -1031,6 +1101,8 @@ static void _xfdashboard_settings_plugins_dispose(GObject *inObject)
 	priv->widgetPluginLicense=NULL;
 	priv->widgetPluginDescriptionLabel=NULL;
 	priv->widgetPluginDescription=NULL;
+	priv->widgetPluginConfigureButton=NULL;
+
 	priv->widgetPluginPreferencesDialog=NULL;
 	priv->widgetPluginPreferencesWidgetBox=NULL;
 	priv->widgetPluginPreferencesDialogTitle=NULL;
@@ -1142,6 +1214,7 @@ static void xfdashboard_settings_plugins_init(XfdashboardSettingsPlugins *self)
 	priv->widgetPluginLicense=NULL;
 	priv->widgetPluginDescriptionLabel=NULL;
 	priv->widgetPluginDescription=NULL;
+	priv->widgetPluginConfigureButton=NULL;
 
 	priv->widgetPluginPreferencesDialog=NULL;
 	priv->widgetPluginPreferencesWidgetBox=NULL;
