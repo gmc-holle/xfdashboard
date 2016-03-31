@@ -59,6 +59,12 @@
 	</keywords>
 
 	<releases>
+		<release version="0.5.92" timestamp="1459448722">
+			<description>
+				<_p>This unstable development fixes crashes in search view.
+				</_p>
+			</description>
+		</release>
 		<release version="0.5.91" timestamp="1458673002">
 			<description>
 				<_p>This unstable development fixes running this application in daemon mode
