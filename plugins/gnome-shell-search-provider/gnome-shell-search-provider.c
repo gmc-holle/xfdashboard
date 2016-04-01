@@ -613,6 +613,7 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 	gchar											*name;
 	gchar											*description;
 	GIcon											*icon;
+	ClutterContent									*iconImage;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_GNOME_SHELL_SEARCH_PROVIDER(inProvider), NULL);
 	g_return_val_if_fail(inResultItem, NULL);
@@ -623,6 +624,7 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 	name=NULL;
 	description=NULL;
 	icon=NULL;
+	iconImage=NULL;
 	error=NULL;
 
 	/* Get meta data of result item */
@@ -685,6 +687,13 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 		{
 			GVariant								*iconVariant;
 			gchar									*iconString;
+			gint32									iconWidth;
+			gint32									iconHeight;
+			gint32									iconRowstride;
+			gboolean								iconHasAlpha;
+			gint32									iconBits;
+			gint32									iconChannels;
+			guchar									*iconData;
 			gchar									*resultID;
 
 			/* Get ID from meta data and check if it matches the ID requested.
@@ -756,12 +765,29 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 				g_free(iconString);
 			}
 
-			if(g_variant_lookup(metaData, "icon-data", "(iiibiiay)", &iconString))
+			if(g_variant_lookup(metaData, "icon-data", "(iiibiiay)", &iconWidth, &iconHeight, &iconRowstride, &iconHasAlpha, &iconBits, &iconChannels, &iconData))
 			{
-				g_print("%s: identifier=%s -> has 'icon-data': %s\n", __func__, identifier[0], iconString);
+				/* Create image from icon data */
+				iconImage=clutter_image_new();
+				if(!clutter_image_set_data(CLUTTER_IMAGE(iconImage), iconData, iconHasAlpha ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888, iconWidth, iconHeight, iconRowstride, &error))
+				{
+					/* Show error message */
+					g_warning(_("Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"),
+								identifier[0],
+								"icon-data",
+								priv->gnomeShellID,
+								(error && error->message) ? error->message : _("Unknown error"));
+
+					/* Release allocated resources */
+					if(error)
+					{
+						g_error_free(error);
+						error=NULL;
+					}
+				}
 
 				/* Release data extracted for icon */
-				g_free(iconString);
+				g_free(iconData);
 			}
 
 			/* Release allocated resources */
@@ -786,6 +812,11 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 			xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_BUTTON_STYLE_BOTH);
 			xfdashboard_button_set_gicon(XFDASHBOARD_BUTTON(actor), icon);
 		}
+			else if(iconImage)
+			{
+				xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_BUTTON_STYLE_BOTH);
+				xfdashboard_button_set_icon_image(XFDASHBOARD_BUTTON(actor), CLUTTER_IMAGE(iconImage));
+			}
 
 		clutter_actor_show(actor);
 
@@ -794,6 +825,7 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 	}
 
 	/* Release allocated resources */
+	if(iconImage) g_object_unref(iconImage);
 	if(icon) g_object_unref(icon);
 	if(description) g_free(description);
 	if(name) g_free(name);
