@@ -777,10 +777,11 @@ static void _xfdashboard_viewpad_on_view_unregistered(XfdashboardViewpad *self,
 		/* Check if child is a view otherwise continue iterating */
 		if(XFDASHBOARD_IS_VIEW(child)!=TRUE) continue;
 
-		/* If child is not of type being unregistered it will get
-		 * the first activatable view after we destroyed all views found.
+		/* If this child is not the one being unregistered and is not
+		 * disabled then it will get the first activatable view after
+		 * we destroyed all views found.
 		 */
-		if(xfdashboard_view_has_id(XFDASHBOARD_VIEW(child), inID)==FALSE)
+		if(!xfdashboard_view_has_id(XFDASHBOARD_VIEW(child), inID))
 		{
 			if(xfdashboard_view_get_enabled(XFDASHBOARD_VIEW(child))) firstActivatableView=child;
 		}
@@ -1532,7 +1533,7 @@ XfdashboardView* xfdashboard_viewpad_find_view_by_id(XfdashboardViewpad *self, c
 	{
 		/* Check if child is a view and its internal name matches requested name */
 		if(XFDASHBOARD_IS_VIEW(child)==TRUE &&
-			xfdashboard_view_has_id(XFDASHBOARD_VIEW(child), inID)==0)
+			xfdashboard_view_has_id(XFDASHBOARD_VIEW(child), inID))
 		{
 			view=XFDASHBOARD_VIEW(child);
 		}
