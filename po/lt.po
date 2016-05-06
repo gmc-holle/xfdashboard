@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2016-04-03 20:22+0000\n"
+"PO-Revision-Date: 2016-05-05 12:57+0000\n"
 "Last-Translator: Moo\n"
 "Language-Team: Lithuanian (http://www.transifex.com/xfdashboard/xfdashboard/language/lt/)\n"
 "MIME-Version: 1.0\n"
@@ -289,7 +289,7 @@ msgid ""
 "When enabled a workaround for minimized windows will be tried to get still images of these windows by restoring them shortly and minimizing them again.\n"
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
-msgstr "Kai įjungta, bus bandoma apeiti suskleistų langų problemą ir gauti pastovius šių langų atvaizdus, trumpai juos išdidinant ir vėl suskleidžiant.\n\n<b>PASTABA:</b> Turėkite omenyje, kad tai yra <u>problemos apėjimas</u> ir jūsų suskleisti langai gali likti išdidinti arba pakeisti darbo sritį ir t. t."
+msgstr "Kai įjungta, bus bandoma apeiti suskleistų langų problemą ir gauti pastovius šių langų atvaizdus, trumpai juos išdidinant ir vėl suskleidžiant.\n\n<b>PASTABA:</b> Turėkite omenyje, kad tai yra <u>problemos apėjimas</u> ir jūsų suskleisti langai gali likti išskleisti arba pakeisti darbo sritį ir t. t."
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
@@ -630,12 +630,12 @@ msgstr "Nepavyko nustatyti įskiepių tvarkytuvės"
 #: ../libxfdashboard/application.c:478
 #, c-format
 msgid "Welcome to %s (%s)!"
-msgstr ""
+msgstr "Sveiki atvykę į %s (%s)!"
 
 #: ../libxfdashboard/application.c:480
 #, c-format
 msgid "Welcome to %s!"
-msgstr ""
+msgstr "Sveiki atvykę į %s!"
 
 #: ../libxfdashboard/application.c:557
 msgid "Fork to background"
@@ -1176,7 +1176,7 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:250
 #, c-format
 msgid "Error on line %d char %d: "
-msgstr ""
+msgstr "Klaida %d eilutėje, %d simbolyje: "
 
 #: ../libxfdashboard/bindings-pool.c:201
 #, c-format
@@ -1346,11 +1346,11 @@ msgstr "Piktogramos paveikslas"
 
 #: ../libxfdashboard/button.c:1359
 msgid "Synchronize icon size"
-msgstr ""
+msgstr "Sinchronizuoti piktogramos dydį"
 
 #: ../libxfdashboard/button.c:1360
 msgid "Synchronize icon size with text size"
-msgstr ""
+msgstr "Sinchronizuoti piktogramos dydį su teksto dydžiu"
 
 #: ../libxfdashboard/button.c:1366 ../libxfdashboard/emblem-effect.c:478
 msgid "Icon size"
@@ -1364,11 +1364,11 @@ msgstr ""
 
 #: ../libxfdashboard/button.c:1374
 msgid "Icon orientation"
-msgstr ""
+msgstr "Piktogramos orientacija"
 
 #: ../libxfdashboard/button.c:1375
 msgid "Orientation of icon to label"
-msgstr ""
+msgstr "Piktogramos orientacija etiketės atžvilgiu"
 
 #: ../libxfdashboard/button.c:1382
 msgid "Label text"
@@ -1436,19 +1436,19 @@ msgstr ""
 
 #: ../libxfdashboard/click-action.c:599
 msgid "Long Press Duration"
-msgstr ""
+msgstr "Ilgo nuspaudimo trukmė"
 
 #: ../libxfdashboard/click-action.c:600
 msgid "The minimum duration of a long press to recognize the gesture"
-msgstr ""
+msgstr "Mažiausia ilgo nuspaudimo trukmė, kad būtų atpažintas gestas"
 
 #: ../libxfdashboard/click-action.c:608
 msgid "Long Press Threshold"
-msgstr ""
+msgstr "Ilgo nuspaudimo slenkstis"
 
 #: ../libxfdashboard/click-action.c:609
 msgid "The maximum threshold before a long press is cancelled"
-msgstr ""
+msgstr "Didžiausias slenkstis prieš tai, kai ilgas nuspaudimas bus atšauktas"
 
 #: ../libxfdashboard/collapse-box.c:276
 #, c-format
