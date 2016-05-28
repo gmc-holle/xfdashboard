@@ -80,6 +80,7 @@ struct _XfdashboardWindowsViewPrivate
 	gboolean							isWindowsNumberShown;
 
 	gboolean							filterMonitorWindows;
+	gboolean							filterWorkspaceWindows;
 	XfdashboardStageInterface			*currentStage;
 	XfdashboardWindowTrackerMonitor		*currentMonitor;
 	guint								currentStageMonitorBindingID;
@@ -95,6 +96,7 @@ enum
 	PROP_PREVENT_UPSCALING,
 	PROP_SCROLL_EVENT_CHANGES_WORKSPACE,
 	PROP_FILTER_MONITOR_WINDOWS,
+	PROP_FILTER_WORKSPACE_WINDOWS,
 
 	PROP_LAST
 };
@@ -228,8 +230,13 @@ static gboolean _xfdashboard_windows_view_is_visible_window(XfdashboardWindowsVi
 		return(FALSE);
 	}
 
-	if(!priv->workspace ||
-		!xfdashboard_window_tracker_window_is_visible_on_workspace(inWindow, priv->workspace))
+	if(!priv->workspace)
+	{
+		return(FALSE);
+	}
+
+	if(!xfdashboard_window_tracker_window_is_visible(inWindow) ||
+		(priv->filterWorkspaceWindows && !xfdashboard_window_tracker_window_is_on_workspace(inWindow, priv->workspace)))
 	{
 		return(FALSE);
 	}
@@ -1071,8 +1078,8 @@ static void _xfdashboard_windows_view_set_scroll_event_changes_workspace(Xfdashb
 	}
 }
 
-/* Set flag if this view should show all windows of current workspace or only the windows
- * which are at current workspace and on the monitor where this view is placed at.
+/* Set flag if this view should show all windows of all monitors or only the windows
+ * which are at the monitor where this view is placed at.
  */
 static void _xfdashboard_windows_view_set_filter_monitor_windows(XfdashboardWindowsView *self, gboolean inFilterMonitorWindows)
 {
@@ -1093,6 +1100,31 @@ static void _xfdashboard_windows_view_set_filter_monitor_windows(XfdashboardWind
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_FILTER_MONITOR_WINDOWS]);
+	}
+}
+
+/* Set flag if this view should show all windows of all workspaces or only the windows
+ * which are at current workspace.
+ */
+static void _xfdashboard_windows_view_set_filter_workspace_windows(XfdashboardWindowsView *self, gboolean inFilterWorkspaceWindows)
+{
+	XfdashboardWindowsViewPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->filterWorkspaceWindows!=inFilterWorkspaceWindows)
+	{
+		/* Set value */
+		priv->filterWorkspaceWindows=inFilterWorkspaceWindows;
+
+		/* Recreate all window actors */
+		_xfdashboard_windows_view_recreate_window_actors(self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowsViewProperties[PROP_FILTER_WORKSPACE_WINDOWS]);
 	}
 }
 
@@ -1837,6 +1869,10 @@ static void _xfdashboard_windows_view_set_property(GObject *inObject,
 			_xfdashboard_windows_view_set_filter_monitor_windows(self, g_value_get_boolean(inValue));
 			break;
 
+		case PROP_FILTER_WORKSPACE_WINDOWS:
+			_xfdashboard_windows_view_set_filter_workspace_windows(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -1871,6 +1907,10 @@ static void _xfdashboard_windows_view_get_property(GObject *inObject,
 
 		case PROP_FILTER_MONITOR_WINDOWS:
 			g_value_set_boolean(outValue, self->priv->filterMonitorWindows);
+			break;
+
+		case PROP_FILTER_WORKSPACE_WINDOWS:
+			g_value_set_boolean(outValue, self->priv->filterWorkspaceWindows);
 			break;
 
 		default:
@@ -1951,12 +1991,20 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardWindowsViewProperties[PROP_FILTER_WORKSPACE_WINDOWS]=
+		g_param_spec_boolean("filter-workspace-windows",
+								_("Filter workspace windows"),
+								_("Whether this view should only show windows of active workspace"),
+								TRUE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowsViewProperties);
 
 	/* Define stylable properties */
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_SPACING]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_FILTER_MONITOR_WINDOWS]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardWindowsViewProperties[PROP_FILTER_WORKSPACE_WINDOWS]);
 
 	/* Define actions */
 	XfdashboardWindowsViewSignals[ACTION_WINDOW_CLOSE]=
@@ -2165,6 +2213,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	priv->scrollEventChangingWorkspaceStage=NULL;
 	priv->scrollEventChangingWorkspaceStageSignalID=0;
 	priv->filterMonitorWindows=FALSE;
+	priv->filterWorkspaceWindows=TRUE;
 	priv->currentStage=NULL;
 	priv->currentMonitor=NULL;
 	priv->currentStageMonitorBindingID=0;
