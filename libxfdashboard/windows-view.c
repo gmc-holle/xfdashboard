@@ -718,16 +718,30 @@ static void _xfdashboard_windows_view_on_window_monitor_changed(XfdashboardWindo
 static void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *self,
 														gpointer inUserData)
 {
+	XfdashboardWindowsViewPrivate		*priv;
 	XfdashboardLiveWindow				*liveWindow;
 	XfdashboardWindowTrackerWindow		*window;
+	XfdashboardWindowTrackerWorkspace	*activeWorkspace;
+	XfdashboardWindowTrackerWorkspace	*windowWorkspace;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
 
+	priv=self->priv;
 	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
 
-	/* Activate clicked window */
-	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(xfdashboard_live_window_get_window(liveWindow));
+	/* Get window to activate */
+	window=xfdashboard_live_window_get_window(liveWindow);
+
+	/* Move to workspace if window to active is on a different one than the active one */
+	activeWorkspace=xfdashboard_window_tracker_get_active_workspace(priv->windowTracker);
+	if(!xfdashboard_window_tracker_window_is_on_workspace(window, activeWorkspace))
+	{
+		windowWorkspace=xfdashboard_window_tracker_window_get_workspace(window);
+		xfdashboard_window_tracker_workspace_activate(windowWorkspace);
+	}
+
+	/* Activate window */
 	xfdashboard_window_tracker_window_activate(window);
 
 	/* Quit application */
