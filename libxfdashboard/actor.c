@@ -59,6 +59,7 @@ struct _XfdashboardActorPrivate
 	/* Instance related */
 	GHashTable		*lastThemeStyleSet;
 	gboolean		forceStyleRevalidation;
+	gboolean		isFirstParent;
 };
 
 /* Properties */
@@ -746,18 +747,40 @@ static gboolean _xfdashboard_actor_enter_event(ClutterActor *inActor, ClutterCro
 /* Actor was (re)parented */
 static void _xfdashboard_actor_parent_set(ClutterActor *inActor, ClutterActor *inOldParent)
 {
-	XfdashboardActor		*self;
-	ClutterActorClass		*parentClass;
+	XfdashboardActor			*self;
+	XfdashboardActorPrivate		*priv;
+	ClutterActorClass			*parentClass;
 
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inActor));
 
 	self=XFDASHBOARD_ACTOR(inActor);
+	priv=self->priv;
 
 	/* Call parent's virtual function */
 	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
 	if(parentClass->parent_set)
 	{
 		parentClass->parent_set(inActor, inOldParent);
+	}
+
+	/* Check if it is a newly created actor which is parented for the first time.
+	 * Then emit 'actor-created' signal on stage.
+	 */
+	if(priv->isFirstParent &&
+		!inOldParent &&
+		clutter_actor_get_parent(inActor))
+	{
+		ClutterActor			*stage;
+
+		/* Get stage where this actor belongs to and emit signal at stage */
+		stage=clutter_actor_get_stage(inActor);
+		if(XFDASHBOARD_IS_STAGE(stage))
+		{
+			g_signal_emit_by_name(stage, "actor-created", inActor, NULL);
+		}
+
+		/* Set flag that a parent set and signal was emitted */
+		priv->isFirstParent=FALSE;
 	}
 
 	/* Invalide styling to get it recomputed because its ID (from point
@@ -992,6 +1015,7 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 	priv->styleClasses=NULL;
 	priv->stylePseudoClasses=NULL;
 	priv->lastThemeStyleSet=NULL;
+	priv->isFirstParent=TRUE;
 
 	/* Connect signals */
 	g_signal_connect(self, "notify::mapped", G_CALLBACK(_xfdashboard_actor_on_mapped_changed), NULL);

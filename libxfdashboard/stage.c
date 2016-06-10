@@ -117,6 +117,8 @@ static GParamSpec* XfdashboardStageProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
+	SIGNAL_ACTOR_CREATED,
+
 	SIGNAL_SEARCH_STARTED,
 	SIGNAL_SEARCH_CHANGED,
 	SIGNAL_SEARCH_ENDED,
@@ -1614,6 +1616,18 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardStageProperties);
 
 	/* Define signals */
+	XfdashboardStageSignals[SIGNAL_ACTOR_CREATED]=
+		g_signal_new("actor-created",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardStageClass, actor_created),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						1,
+						CLUTTER_TYPE_ACTOR);
+
 	XfdashboardStageSignals[SIGNAL_SEARCH_STARTED]=
 		g_signal_new("search-started",
 						G_TYPE_FROM_CLASS(klass),
