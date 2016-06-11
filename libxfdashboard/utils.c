@@ -405,6 +405,97 @@ ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar 
 	return(NULL);
 }
 
+static gboolean _xfdashboard_traverse_actor_internal(ClutterActor *inActor,
+														XfdashboardCssSelector *inSelector,
+														XfdashboardTraversalCallback inCallback,
+														gpointer inUserData)
+{
+	ClutterActorIter	iter;
+	ClutterActor		*child;
+	gint				score;
+	gboolean			doContinueTraversal;
+
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), XFDASHBOARD_TRAVERSAL_CONTINUE);
+	g_return_val_if_fail(XFDASHBOARD_IS_CSS_SELECTOR(inSelector), XFDASHBOARD_TRAVERSAL_CONTINUE);
+	g_return_val_if_fail(inCallback, XFDASHBOARD_TRAVERSAL_CONTINUE);
+
+	/* Check if given actor matches selector if a selector is provided
+	 * otherwise each child will match. Call callback for matching children.
+	 */
+	if(XFDASHBOARD_IS_STYLABLE(inActor))
+	{
+		score=xfdashboard_css_selector_score_matching_stylable_node(inSelector, XFDASHBOARD_STYLABLE(inActor));
+		if(score>=0)
+		{
+			doContinueTraversal=(inCallback)(inActor, inUserData);
+			if(!doContinueTraversal) return(doContinueTraversal);
+		}
+	}
+
+	/* For each child of actor call ourselve recursive */
+	clutter_actor_iter_init(&iter, inActor);
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		doContinueTraversal=_xfdashboard_traverse_actor_internal(child, inSelector, inCallback, inUserData);
+		if(!doContinueTraversal) return(doContinueTraversal);
+	}
+
+	/* If we get here return and continue traversal */
+	return(XFDASHBOARD_TRAVERSAL_CONTINUE);
+}
+
+/**
+ * xfdashboard_traverse_actor:
+ * @inActor: The root #ClutterActor where to begin traversing
+ * @inSelector: A #XfdashboardCssSelector to filter actors while traversing or
+ *   %NULL to disable filterting
+ * @inCallback: Function to call on matching children
+ * @inUserData: Data to pass to callback function
+ *
+ * Iterates through all children of @inActor recursively beginning at @inRootActor
+ * and for each child matching the selector @inSelector it calls the callback
+ * function @inCallback with the matching child and the user-data at @inUserData.
+ *
+ * If @inRootActor is %NULL it begins at the global stage.
+ *
+ * If the selector @inSelector is %NULL all children will match and the callback
+ * function @inCallback is called for all	 children.
+ *
+ */
+void xfdashboard_traverse_actor(ClutterActor *inRootActor,
+								XfdashboardCssSelector *inSelector,
+								XfdashboardTraversalCallback inCallback,
+								gpointer inUserData)
+{
+	g_return_if_fail(!inRootActor || CLUTTER_IS_ACTOR(inRootActor));
+	g_return_if_fail(!inSelector || XFDASHBOARD_IS_CSS_SELECTOR(inSelector));
+	g_return_if_fail(inCallback);
+
+	/* If root actor where begin traversal is NULL then begin at stage */
+	if(!inRootActor)
+	{
+		ClutterStageManager		*stageManager;
+		ClutterStage			*defaultStage;
+
+		stageManager=clutter_stage_manager_get_default();
+		defaultStage=clutter_stage_manager_get_default_stage(stageManager);
+		inRootActor=CLUTTER_ACTOR(defaultStage);
+	}
+
+	/* If no selector is provider create a seletor matching all actors.
+	 * Otherwise take an extra ref on provided selector to prevent
+	 * destruction when we unref it later.
+	 */
+	if(!inSelector) inSelector=xfdashboard_css_selector_new_from_string("*");
+		else g_object_ref(inSelector);
+
+	/* Do traversal */
+	_xfdashboard_traverse_actor_internal(inRootActor, inSelector, inCallback, inUserData);
+
+	/* Release reference on selector */
+	g_object_unref(inSelector);
+}
+
 /**
  * xfdashboard_get_stage_of_actor:
  * @inActor: The #ClutterActor for which to find the stage

@@ -34,6 +34,7 @@
 #include <libxfdashboard/window-tracker-workspace.h>
 #include <libxfdashboard/stage-interface.h>
 #include <libxfdashboard/stage.h>
+#include <libxfdashboard/css-selector.h>
 
 G_BEGIN_DECLS
 
@@ -90,6 +91,40 @@ GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorksp
 void xfdashboard_register_gvalue_transformation_funcs(void);
 
 ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar *inName);
+
+/**
+ * XfdashboardTraversalCallback:
+ * @inActor: The actor currently processed and has matched the selector in traversal
+ * @user_data: Data passed to the function, set with xfdashboard_traverse_actor()
+ *
+ * A callback called each time an actor matches the provided css selector
+ * in xfdashboard_traverse_actor().
+ *
+ * Returns: %FALSE if the traversal should be stopped. #XFDASHBOARD_TRAVERSAL_STOP
+ * and #XFDASHBOARD_TRAVERSAL_CONTINUE are more memorable names for the return value.
+ */
+typedef gboolean (*XfdashboardTraversalCallback)(ClutterActor *inActor, gpointer inUserData);
+
+/**
+ * XFDASHBOARD_TRAVERSAL_STOP:
+ *
+ * Use this macro as the return value of a #XfdashboardTraversalCallback to stop
+ * further traversal in xfdashboard_traverse_actor().
+ */
+#define XFDASHBOARD_TRAVERSAL_STOP			(FALSE)
+
+/**
+ * XFDASHBOARD_TRAVERSAL_CONTINUE:
+ *
+ * Use this macro as the return value of a #XfdashboardTraversalCallback to continue
+ * further traversal in xfdashboard_traverse_actor().
+ */
+#define XFDASHBOARD_TRAVERSAL_CONTINUE		(TRUE)
+
+void xfdashboard_traverse_actor(ClutterActor *inRootActor,
+								XfdashboardCssSelector *inSelector,
+								XfdashboardTraversalCallback inCallback,
+								gpointer inUserData);
 
 XfdashboardStageInterface* xfdashboard_get_stage_of_actor(ClutterActor *inActor);
 XfdashboardStage* xfdashboard_get_global_stage_of_actor(ClutterActor *inActor);
