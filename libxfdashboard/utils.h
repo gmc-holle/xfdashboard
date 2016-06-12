@@ -127,7 +127,6 @@ void xfdashboard_traverse_actor(ClutterActor *inRootActor,
 								gpointer inUserData);
 
 XfdashboardStageInterface* xfdashboard_get_stage_of_actor(ClutterActor *inActor);
-XfdashboardStage* xfdashboard_get_global_stage_of_actor(ClutterActor *inActor);
 
 gchar** xfdashboard_split_string(const gchar *inString, const gchar *inDelimiters);
 

@@ -173,12 +173,18 @@ void xfdashboard_notify(ClutterActor *inSender,
  * xfdashboard_create_app_context:
  * @inWorkspace: The workspace where to place application windows on or %NULL
  *
- * Returns a #GAppLaunchContext suitable for launching applications on the given display and workspace by GIO.
+ * Returns a #GAppLaunchContext suitable for launching applications on the
+ * given display and workspace by GIO.
  *
- * If @inWorkspace is specified it sets workspace on which applications will be launched when using this context when running under a window manager that supports multiple workspaces.
- * When the workspace is not specified it is up to the window manager to pick one, typically it will be the current workspace.
+ * If @inWorkspace is specified it sets workspace on which applications will
+ * be launched when using this context when running under a window manager
+ * that supports multiple workspaces.
  *
- * Return value: (transfer full): the newly created #GAppLaunchContext or %NULL in case of an error. Use g_object_unref() to free return value.
+ * When the workspace is not specified it is up to the window manager to pick
+ * one, typically it will be the current workspace.
+ *
+ * Return value: (transfer full): the newly created #GAppLaunchContext or %NULL
+ *   in case of an error. Use g_object_unref() to free return value.
  */
 GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorkspace *inWorkspace)
 {
@@ -378,7 +384,7 @@ void xfdashboard_register_gvalue_transformation_funcs(void)
  * the child having the name as specified at @inName.
  *
  * Return value: (transfer none): The #ClutterActor matching the name
- *               to lookup or %NULL if none was found.
+ *   to lookup or %NULL if none was found.
  */
 ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar *inName)
 {
@@ -459,7 +465,6 @@ static gboolean _xfdashboard_traverse_actor_internal(ClutterActor *inActor,
  *
  * If the selector @inSelector is %NULL all children will match and the callback
  * function @inCallback is called for all	 children.
- *
  */
 void xfdashboard_traverse_actor(ClutterActor *inRootActor,
 								XfdashboardCssSelector *inSelector,
@@ -503,7 +508,7 @@ void xfdashboard_traverse_actor(ClutterActor *inRootActor,
  * @inActor belongs to.
  *
  * Return value: (transfer none): The #XfdashboardStageInterface
- *               found or %NULL if none was found.
+ *   found or %NULL if none was found.
  */
 XfdashboardStageInterface* xfdashboard_get_stage_of_actor(ClutterActor *inActor)
 {
@@ -534,43 +539,6 @@ XfdashboardStageInterface* xfdashboard_get_stage_of_actor(ClutterActor *inActor)
 }
 
 /**
- * xfdashboard_get_global_stage_of_actor:
- * @inActor: The #ClutterActor for which to find the global stage
- *
- * Gets the main #XfdashboardStage where @inActor belongs to.
- *
- * Return value: (transfer none): The #XfdashboardStage found
- *               or %NULL if none was found.
- */
-XfdashboardStage* xfdashboard_get_global_stage_of_actor(ClutterActor *inActor)
-{
-	ClutterActor		*parent;
-
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), NULL);
-
-	/* Iterate through parents and return first XfdashboardStage
-	 * found. That's the main global and all monitors spanning
-	 * stage where the requested actor belongs to.
-	 */
-	parent=clutter_actor_get_parent(inActor);
-	while(parent)
-	{
-		/* Check if current iterated parent is a XfdashboardStage.
-		 * If it is return it.
-		 */
-		if(XFDASHBOARD_IS_STAGE(parent)) return(XFDASHBOARD_STAGE(parent));
-
-		/* Continue with next parent */
-		parent=clutter_actor_get_parent(parent);
-	}
-
-	/* If we get here we did not find the global stage the actor
-	 * belongs to, so return NULL.
-	 */
-	return(NULL);
-}
-
-/**
  * xfdashboard_split_string:
  * @inString: The string to split
  * @inDelimiters: A string containg the delimiters
@@ -580,7 +548,7 @@ XfdashboardStage* xfdashboard_get_global_stage_of_actor(ClutterActor *inActor)
  * and end of each token. Empty tokens will not be added to list.
  *
  * Return value: A newly-allocated %NULL-terminated array of strings or %NULL
- *               in case of an error. Use g_strfreev() to free it.
+ *   in case of an error. Use g_strfreev() to free it.
  */
 gchar** xfdashboard_split_string(const gchar *inString, const gchar *inDelimiters)
 {
