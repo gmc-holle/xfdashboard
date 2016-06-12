@@ -63,6 +63,36 @@ GType xfdashboard_pointer_array_get_type(void)
 	return(type__volatile);
 }
 
+/* Callback function for xfdashboard_traverse_actor() to find stage interface
+ * used in xfdashboard_notify().
+ */
+static gboolean _xfdashboard_notify_traverse_callback(ClutterActor *inActor, gpointer inUserData)
+{
+	XfdashboardStage					**outStageInterface;
+	XfdashboardWindowTrackerMonitor		*stageMonitor;
+
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), XFDASHBOARD_TRAVERSAL_CONTINUE);
+	g_return_val_if_fail(inUserData, XFDASHBOARD_TRAVERSAL_CONTINUE);
+
+	outStageInterface=(XfdashboardStage**)inUserData;
+
+	/* If actor currently traverse is a stage interface then store
+	 * the actor in user-data and stop further traversal.
+	 */
+	if(XFDASHBOARD_IS_STAGE_INTERFACE(inActor))
+	{
+		stageMonitor=xfdashboard_stage_interface_get_monitor(XFDASHBOARD_STAGE_INTERFACE(inActor));
+		if(xfdashboard_window_tracker_monitor_is_primary(stageMonitor))
+		{
+			*outStageInterface=XFDASHBOARD_STAGE(clutter_actor_get_stage(inActor));
+			return(XFDASHBOARD_TRAVERSAL_STOP);
+		}
+	}
+
+	/* If we get here a stage interface was not found so continue traversal */
+	return(XFDASHBOARD_TRAVERSAL_CONTINUE);
+}
+
 /**
  * xfdashboard_notify:
  * @inSender: The sending #ClutterActor or %NULL
@@ -83,7 +113,6 @@ void xfdashboard_notify(ClutterActor *inSender,
 							const gchar *inFormat, ...)
 {
 	XfdashboardStage					*stage;
-	ClutterStageManager					*stageManager;
 	va_list								args;
 	gchar								*text;
 
@@ -102,55 +131,12 @@ void xfdashboard_notify(ClutterActor *inSender,
 	/* No sending actor specified or no stage found so get default stage */
 	if(!stage)
 	{
-		const GSList					*stages;
-		const GSList					*stagesIter;
-		ClutterActorIter				interfaceIter;
-		ClutterActor					*child;
-		XfdashboardWindowTrackerMonitor	*stageMonitor;
+		XfdashboardCssSelector			*selector;
 
-		/* Get stage manager to iterate through stages to find the one
-		 * for primary monitor or at least the first stage.
-		 */
-		stageManager=clutter_stage_manager_get_default();
-
-		/* Find stage for primary monitor and if we cannot find it
-		 * use first stage.
-		 */
-		if(stageManager &&
-			CLUTTER_IS_STAGE_MANAGER(stageManager))
-		{
-			/* Get list of all stages */
-			stages=clutter_stage_manager_peek_stages(stageManager);
-
-			/* Iterate through list of all stage and lookup the one for
-			 * primary monitor.
-			 */
-			for(stagesIter=stages; stagesIter && !stage; stagesIter=stagesIter->next)
-			{
-				/* Skip this stage if it is not a XfdashboardStage */
-				if(!XFDASHBOARD_IS_STAGE(stagesIter->data)) continue;
-
-				/* Iterate through stage's children and lookup stage interfaces */
-				clutter_actor_iter_init(&interfaceIter, CLUTTER_ACTOR(stagesIter->data));
-				while(clutter_actor_iter_next(&interfaceIter, &child))
-				{
-					if(XFDASHBOARD_IS_STAGE_INTERFACE(child))
-					{
-						stageMonitor=xfdashboard_stage_interface_get_monitor(XFDASHBOARD_STAGE_INTERFACE(child));
-						if(xfdashboard_window_tracker_monitor_is_primary(stageMonitor))
-						{
-							stage=XFDASHBOARD_STAGE(clutter_actor_get_stage(child));
-						}
-					}
-				}
-			}
-
-			/* If we did not get stage for primary monitor use first stage */
-			if(!stage && stages)
-			{
-				stage=XFDASHBOARD_STAGE(stages->data);
-			}
-		}
+		/* Traverse through actors to find stage */
+		selector=xfdashboard_css_selector_new_from_string("XfdashboardStageInterface");
+		xfdashboard_traverse_actor(NULL, selector, _xfdashboard_notify_traverse_callback, &stage);
+		g_object_unref(selector);
 
 		/* If we still do not have found a stage to show notification
 		 * stop further processing and show notification text as a critical
@@ -411,6 +397,7 @@ ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar 
 	return(NULL);
 }
 
+/* Internal function to traverse an actor which can be call recursively */
 static gboolean _xfdashboard_traverse_actor_internal(ClutterActor *inActor,
 														XfdashboardCssSelector *inSelector,
 														XfdashboardTraversalCallback inCallback,
