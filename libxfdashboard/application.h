@@ -34,6 +34,7 @@
 
 #include <libxfdashboard/theme.h>
 #include <libxfdashboard/focusable.h>
+#include <libxfdashboard/stage.h>
 
 G_BEGIN_DECLS
 
@@ -116,9 +117,10 @@ void xfdashboard_application_resume(XfdashboardApplication *self);
 void xfdashboard_application_suspend_or_quit(XfdashboardApplication *self);
 void xfdashboard_application_quit_forced(XfdashboardApplication *self);
 
-XfconfChannel* xfdashboard_application_get_xfconf_channel(XfdashboardApplication *self);
-
+XfdashboardStage* xfdashboard_application_get_stage(XfdashboardApplication *self);
 XfdashboardTheme* xfdashboard_application_get_theme(XfdashboardApplication *self);
+
+XfconfChannel* xfdashboard_application_get_xfconf_channel(XfdashboardApplication *self);
 
 G_END_DECLS
 

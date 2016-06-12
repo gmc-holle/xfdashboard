@@ -21,6 +21,15 @@
  * 
  */
 
+/**
+ * SECTION:utils
+ * @title: Utilities
+ * @short_description: Common functions, helpers, macros and definitions
+ * @include: xfdashboard/utils.h
+ *
+ * Utility functions to ease some common tasks.
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -37,16 +46,6 @@
 #include <libxfdashboard/stage-interface.h>
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/compat.h>
-
-
-/**
- * SECTION:utils
- * @title: Utilities
- * @short_description: Common functions, helpers, macros and definitions
- * @include: xfdashboard/utils.h
- *
- * Utility functions to ease some common tasks.
- */
 
 /* Gobject type for pointer arrays (GPtrArray) */
 GType xfdashboard_pointer_array_get_type(void)
