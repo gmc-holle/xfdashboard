@@ -419,38 +419,6 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 		return(FALSE);
 	}
 
-	/* Set up and load theme */
-	priv->xfconfThemeChangedSignalID=xfconf_g_property_bind(priv->xfconfChannel,
-															THEME_NAME_XFCONF_PROP,
-															G_TYPE_STRING,
-															self,
-															"theme-name");
-	if(!priv->xfconfThemeChangedSignalID)
-	{
-		g_warning(_("Could not create binding between xfconf property and local resource for theme change notification."));
-	}
-
-	/* Set up default theme in Xfcond if property in channel does not exist
-	 * because it indicates first start.
-	 */
-	if(!xfconf_channel_has_property(priv->xfconfChannel, THEME_NAME_XFCONF_PROP))
-	{
-		xfconf_channel_set_string(priv->xfconfChannel,
-									THEME_NAME_XFCONF_PROP,
-									DEFAULT_THEME_NAME);
-	}
-
-	/* At this time the theme must have been loaded, either because we
-	 * set the default theme name because of missing theme property in
-	 * xfconf channel or the value of xfconf channel property has been read
-	 * and set when setting up binding (between xfconf property and local property)
-	 * what caused a call to function to set theme name in this object
-	 * and also caused a reload of theme.
-	 * So if no theme object is set in this object then loading theme has
-	 * failed and we have to return FALSE.
-	 */
-	if(!priv->theme) return(FALSE);
-
 	/* Register built-in views (order of registration is important) */
 	priv->viewManager=xfdashboard_view_manager_get_default();
 
@@ -483,6 +451,38 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	 * application is running.
 	 */
 	priv->focusManager=xfdashboard_focus_manager_get_default();
+
+	/* Set up and load theme */
+	priv->xfconfThemeChangedSignalID=xfconf_g_property_bind(priv->xfconfChannel,
+															THEME_NAME_XFCONF_PROP,
+															G_TYPE_STRING,
+															self,
+															"theme-name");
+	if(!priv->xfconfThemeChangedSignalID)
+	{
+		g_warning(_("Could not create binding between xfconf property and local resource for theme change notification."));
+	}
+
+	/* Set up default theme in Xfcond if property in channel does not exist
+	 * because it indicates first start.
+	 */
+	if(!xfconf_channel_has_property(priv->xfconfChannel, THEME_NAME_XFCONF_PROP))
+	{
+		xfconf_channel_set_string(priv->xfconfChannel,
+									THEME_NAME_XFCONF_PROP,
+									DEFAULT_THEME_NAME);
+	}
+
+	/* At this time the theme must have been loaded, either because we
+	 * set the default theme name because of missing theme property in
+	 * xfconf channel or the value of xfconf channel property has been read
+	 * and set when setting up binding (between xfconf property and local property)
+	 * what caused a call to function to set theme name in this object
+	 * and also caused a reload of theme.
+	 * So if no theme object is set in this object then loading theme has
+	 * failed and we have to return FALSE.
+	 */
+	if(!priv->theme) return(FALSE);
 
 	/* Create stage containing all monitors */
 	priv->stage=XFDASHBOARD_STAGE(xfdashboard_stage_new());
