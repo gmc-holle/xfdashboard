@@ -34,6 +34,22 @@
 
 G_BEGIN_DECLS
 
+/* Public definitions */
+/**
+ * XfdashboardPluginFlag:
+ * @XFDASHBOARD_PLUGIN_FLAG_NONE: Plugin does not request anything special.
+ * @XFDASHBOARD_PLUGIN_FLAG_EARLY_INITIALIZATION: Plugin requests to get enabled before the stage is initialized
+ *
+ * Flags defining behaviour of this XfdashboardPlugin.
+ */
+typedef enum /*< flags,prefix=XFDASHBOARD_PLUGIN_FLAG >*/
+{
+	XFDASHBOARD_PLUGIN_FLAG_NONE=0,
+
+	XFDASHBOARD_PLUGIN_FLAG_EARLY_INITIALIZATION=1 << 0,
+} XfdashboardPluginFlag;
+
+
 /* Helper macros to declare, define and register GObject types in plugins */
 #define XFDASHBOARD_DECLARE_PLUGIN_TYPE(inFunctionNamePrefix) \
 	void inFunctionNamePrefix##_register_plugin_type(XfdashboardPlugin *inPlugin);
@@ -100,6 +116,7 @@ GType xfdashboard_plugin_get_type(void) G_GNUC_CONST;
 XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError **outError);
 
 const gchar* xfdashboard_plugin_get_id(XfdashboardPlugin *self);
+XfdashboardPluginFlag xfdashboard_plugin_get_flags(XfdashboardPlugin *self);
 
 void xfdashboard_plugin_set_info(XfdashboardPlugin *self,
 									const gchar *inFirstPropertyName, ...)

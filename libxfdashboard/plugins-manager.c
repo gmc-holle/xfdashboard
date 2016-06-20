@@ -46,10 +46,14 @@ G_DEFINE_TYPE(XfdashboardPluginsManager,
 struct _XfdashboardPluginsManagerPrivate
 {
 	/* Instance related */
-	gboolean			isInited;
-	GList				*searchPaths;
-	GList				*plugins;
-	XfconfChannel		*xfconfChannel;
+	gboolean				isInited;
+	GList					*searchPaths;
+	GList					*plugins;
+
+	XfconfChannel			*xfconfChannel;
+
+	XfdashboardApplication	*application;
+	guint					applicationInitializedSignalID;
 };
 
 
@@ -262,8 +266,12 @@ static gboolean _xfdashboard_plugins_manager_load_plugin(XfdashboardPluginsManag
 		return(FALSE);
 	}
 
-	/* Enable plugin */
-	xfdashboard_plugin_enable(plugin);
+	/* Enable plugin if early initialization is requested by plugin */
+	if(xfdashboard_plugin_get_flags(plugin) & XFDASHBOARD_PLUGIN_FLAG_EARLY_INITIALIZATION)
+	{
+		g_debug("Enabling plugin '%s' on load because early initialization was requested", inPluginID);
+		xfdashboard_plugin_enable(plugin);
+	}
 
 	/* Store enabled plugin in list of enabled plugins */
 	priv->plugins=g_list_prepend(priv->plugins, plugin);
@@ -408,6 +416,51 @@ static void _xfdashboard_plugins_manager_on_enabled_plugins_changed(XfdashboardP
 	if(enabledPlugins) g_strfreev(enabledPlugins);
 }
 
+/* Application was fully initialized so enabled all loaded plugin except the
+ * ones which are already enabled, e.g. plugins which requested early initialization.
+ */
+static void _xfdashboard_plugins_manager_on_application_initialized(XfdashboardPluginsManager *self,
+																	gpointer inUserData)
+{
+	XfdashboardPluginsManagerPrivate	*priv;
+	GList								*iter;
+	XfdashboardPlugin					*plugin;
+
+	g_return_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+
+	priv=self->priv;
+
+	/* Iterate through all loaded plugins and enable all plugins which are
+	 * not enabled yet.
+	 */
+	g_debug("Plugin manager will now enable all remaining plugins because application is fully initialized now");
+	for(iter=priv->plugins; iter; iter=g_list_next(iter))
+	{
+		/* Get plugin */
+		plugin=XFDASHBOARD_PLUGIN(iter->data);
+
+		/* If plugin is not enabled do it now */
+		if(!xfdashboard_plugin_is_enabled(plugin))
+		{
+			/* Enable plugin */
+			g_debug("Enabling plugin '%s'", xfdashboard_plugin_get_id(plugin));
+			xfdashboard_plugin_enable(plugin);
+		}
+	}
+
+	/* Disconnect signal handler as this signal is emitted only once */
+	if(priv->application)
+	{
+		if(priv->applicationInitializedSignalID)
+		{
+			g_signal_handler_disconnect(priv->application, priv->applicationInitializedSignalID);
+			priv->applicationInitializedSignalID=0;
+		}
+
+		priv->application=NULL;
+	}
+}
 
 /* IMPLEMENTATION: GObject */
 
@@ -433,6 +486,17 @@ static void _xfdashboard_plugins_manager_dispose(GObject *inObject)
 	XfdashboardPluginsManagerPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
+	if(priv->application)
+	{
+		if(priv->applicationInitializedSignalID)
+		{
+			g_signal_handler_disconnect(priv->application, priv->applicationInitializedSignalID);
+			priv->applicationInitializedSignalID=0;
+		}
+
+		priv->application=NULL;
+	}
+
 	if(priv->plugins)
 	{
 		g_list_free_full(priv->plugins, (GDestroyNotify)_xfdashboard_plugins_manager_dispose_remove_plugin);
@@ -481,12 +545,24 @@ static void xfdashboard_plugins_manager_init(XfdashboardPluginsManager *self)
 	priv->searchPaths=NULL;
 	priv->plugins=NULL;
 	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
+	priv->application=xfdashboard_application_get_default();
 
-	/* Connect signals */
+	/* Connect signal to get notified about changed of enabled-plugins
+	 * property in Xfconf.
+	 */
 	g_signal_connect_swapped(priv->xfconfChannel,
 								"property-changed::"ENABLED_PLUGINS_XFCONF_PROP,
 								G_CALLBACK(_xfdashboard_plugins_manager_on_enabled_plugins_changed),
 								self);
+
+	/* Connect signal to get notified when application is fully initialized
+	 * to enable loaded plugins.
+	 */
+	priv->applicationInitializedSignalID=
+		g_signal_connect_swapped(priv->application,
+									"initialized",
+									G_CALLBACK(_xfdashboard_plugins_manager_on_application_initialized),
+									self);
 }
 
 /* IMPLEMENTATION: Public API */

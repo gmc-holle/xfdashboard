@@ -308,6 +308,7 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
 
 	/* Set plugin info */
 	xfdashboard_plugin_set_info(self,
+								"flags", XFDASHBOARD_PLUGIN_FLAG_EARLY_INITIALIZATION,
 								"name", _("Clock"),
 								"description", _("Adds new a view showing a clock"),
 								"author", "Stephan Haller <nomad@froevel.de>",
