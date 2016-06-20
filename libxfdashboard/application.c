@@ -120,6 +120,7 @@ static GParamSpec* XfdashboardApplicationProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
+	SIGNAL_INITIALIZED,
 	SIGNAL_QUIT,
 	SIGNAL_SHUTDOWN_FINAL,
 	SIGNAL_SUSPEND,
@@ -490,12 +491,15 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	/* Emit signal 'theme-changed' to get current theme loaded at each stage created */
 	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_THEME_CHANGED], 0, priv->theme);
 
-	/* Initialization was successful so return TRUE */
+	/* Initialization was successful so send signal and return TRUE */
+	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_INITIALIZED], 0);
+
 #ifdef DEBUG
 	xfdashboard_notify(NULL, NULL, _("Welcome to %s (%s)!"), PACKAGE_NAME, PACKAGE_VERSION);
 #else
 	xfdashboard_notify(NULL, NULL, _("Welcome to %s!"), PACKAGE_NAME);
 #endif
+
 	return(TRUE);
 }
 
@@ -1120,6 +1124,28 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardApplicationProperties);
 
 	/* Define signals */
+	/**
+	 * XfdashboardApplication::initialized:
+	 * @self: The application's primary instance was fully initialized
+	 *
+	 * The ::initialized signal is emitted when the primary instance of
+	 * application was fully initialized.
+	 *
+	 * The main purpose of this signal is to give other objects and plugin
+	 * a chance to initialize properly after application is fully initialized
+	 * and all other components are really available and also initialized.
+	 */
+	XfdashboardApplicationSignals[SIGNAL_INITIALIZED]=
+		g_signal_new("initialized",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardApplicationClass, initialized),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
 	/**
 	 * XfdashboardApplication::quit:
 	 * @self: The application going to quit

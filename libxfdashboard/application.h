@@ -86,6 +86,8 @@ struct _XfdashboardApplicationClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*initialized)(XfdashboardApplication *self);
+
 	void (*suspend)(XfdashboardApplication *self);
 	void (*resume)(XfdashboardApplication *self);
 
