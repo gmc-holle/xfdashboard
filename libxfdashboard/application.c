@@ -431,6 +431,11 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 
 	xfdashboard_search_manager_register(priv->searchManager, "builtin.applications", XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER);
 
+	/* Create single-instance of focus manager to keep it alive while
+	 * application is running.
+	 */
+	priv->focusManager=xfdashboard_focus_manager_get_default();
+
 	/* Create single-instance of plugin manager to keep it alive while
 	 * application is running.
 	 */
@@ -446,11 +451,6 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 		g_critical(_("Could not setup plugin manager"));
 		return(FALSE);
 	}
-
-	/* Create single-instance of focus manager to keep it alive while
-	 * application is running.
-	 */
-	priv->focusManager=xfdashboard_focus_manager_get_default();
 
 	/* Set up and load theme */
 	priv->xfconfThemeChangedSignalID=xfconf_g_property_bind(priv->xfconfChannel,
