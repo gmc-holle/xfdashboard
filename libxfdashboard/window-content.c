@@ -1456,7 +1456,7 @@ static void _xfdashboard_window_content_destroy_cache(void)
 		{
 			content=XFDASHBOARD_WINDOW_CONTENT(value);
 			window=xfdashboard_window_content_get_window(content);
-			g_print("Window content in cache: Item %s@%p for window '%s'",
+			g_print("Window content in cache: Item %s@%p for window '%s'\n",
 						G_OBJECT_TYPE_NAME(content), content,
 						xfdashboard_window_tracker_window_get_title(window));
 		}
