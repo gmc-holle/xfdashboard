@@ -70,9 +70,7 @@ struct _XfdashboardClickActionClass
 	/*< public >*/
 	/* Virtual functions */
 	void (*clicked)(XfdashboardClickAction *self, ClutterActor *inActor);
-	void (*button_clicked)(XfdashboardClickAction *self, ClutterActor *inActor, guint inButton);
 	gboolean (*long_press)(XfdashboardClickAction *self, ClutterActor *inActor, ClutterLongPressState inState);
-	gboolean (*long_button_press)(XfdashboardClickAction *self, ClutterActor *inActor, ClutterLongPressState inState, guint inButton);
 };
 
 /* Public API */
