@@ -69,8 +69,15 @@ typedef struct _XfdashboardApplication				XfdashboardApplication;
 typedef struct _XfdashboardApplicationClass			XfdashboardApplicationClass;
 typedef struct _XfdashboardApplicationPrivate		XfdashboardApplicationPrivate;
 
+/**
+ * XfdashboardApplication:
+ *
+ * The #XfdashboardApplication structure contains only private data and
+ * should be accessed using the provided API
+ */
 struct _XfdashboardApplication
 {
+	/*< private >*/
 	/* Parent instance */
 	GApplication					parent_instance;
 
@@ -78,6 +85,18 @@ struct _XfdashboardApplication
 	XfdashboardApplicationPrivate	*priv;
 };
 
+/**
+ * XfdashboardApplicationClass:
+ * @initialized: class handler for the #XfdashboardApplicationClass::initialized signal
+ * @suspend: class handler for the #XfdashboardApplicationClass::suspend signal
+ * @resume: class handler for the #XfdashboardApplicationClass::resume signal
+ * @quit: class handler for the #XfdashboardApplicationClass::quit signal
+ * @shutdown_final: class handler for the #XfdashboardApplicationClass::shutdown_final signal
+ * @theme_changed: class handler for the #XfdashboardApplicationClass::theme_changed signal
+ * @application_launched: class handler for the #XfdashboardApplicationClass::application_launched signal
+ *
+ * The #XfdashboardApplicationClass structure contains only private data
+ */
 struct _XfdashboardApplicationClass
 {
 	/*< private >*/

@@ -44,12 +44,24 @@ G_BEGIN_DECLS
 typedef struct _XfdashboardBoxLayout			XfdashboardBoxLayout;
 typedef struct _XfdashboardBoxLayoutClass		XfdashboardBoxLayoutClass;
 
+/**
+ * XfdashboardBoxLayout:
+ *
+ * The #XfdashboardBoxLayout structure contains only private data and
+ * should be accessed using the provided API
+ */
 struct _XfdashboardBoxLayout
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterBoxLayout 				parent_instance;
 };
 
+/**
+ * XfdashboardBoxLayoutClass:
+ *
+ * The #XfdashboardBoxLayoutClass structure contains only private data
+ */
 struct _XfdashboardBoxLayoutClass
 {
 	/*< private >*/

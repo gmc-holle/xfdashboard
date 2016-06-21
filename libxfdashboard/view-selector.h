@@ -47,6 +47,12 @@ typedef struct _XfdashboardViewSelector				XfdashboardViewSelector;
 typedef struct _XfdashboardViewSelectorPrivate		XfdashboardViewSelectorPrivate;
 typedef struct _XfdashboardViewSelectorClass		XfdashboardViewSelectorClass;
 
+/**
+ * XfdashboardViewSelector:
+ *
+ * The #XfdashboardViewSelector structure contains only private data and
+ * should be accessed using the provided API
+ */
 struct _XfdashboardViewSelector
 {
 	/* Parent instance */
@@ -56,6 +62,12 @@ struct _XfdashboardViewSelector
 	XfdashboardViewSelectorPrivate	*priv;
 };
 
+/**
+ * XfdashboardViewSelectorClass:
+ * @state_changed: class handler for the #XfdashboardViewSelectorClass::state_changed signal
+ *
+ * The #XfdashboardViewSelectorClass structure contains only private data
+ */
 struct _XfdashboardViewSelectorClass
 {
 	/*< private >*/
