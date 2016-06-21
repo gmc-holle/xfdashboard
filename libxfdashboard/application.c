@@ -188,15 +188,15 @@ static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean
 			xfce_sm_client_set_restart_style(priv->sessionManagementClient, XFCE_SM_CLIENT_RESTART_NORMAL);
 		}
 
+		/* Emit "quit" signal */
+		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_QUIT], 0);
+
 		/* Destroy stage */
 		if(priv->stage)
 		{
 			clutter_actor_destroy(CLUTTER_ACTOR(priv->stage));
 			priv->stage=NULL;
 		}
-
-		/* Emit "quit" signal */
-		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_QUIT], 0);
 
 		/* Really quit application here and now */
 		if(priv->initialized)
@@ -1150,7 +1150,8 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	 * XfdashboardApplication::quit:
 	 * @self: The application going to quit
 	 *
-	 * The ::quit signal is emitted when the application is going to quit.
+	 * The ::quit signal is emitted when the application is going to quit. This
+	 * signal is definitely emitted before the stage is destroyed.
 	 *
 	 * The main purpose of this signal is to give other objects and plugin
 	 * a chance to clean-up properly.
@@ -1171,7 +1172,9 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	 * @self: The application being destroyed
 	 *
 	 * The ::shutdown-final signal is emitted when the application object
-	 * is currently destroyed and can be considered as quitted.
+	 * is currently destroyed and can be considered as quitted. The stage is
+	 * detroyed when this signal is emitted and only the non-visible managers
+	 * are still accessible at this time.
 	 */
 	XfdashboardApplicationSignals[SIGNAL_SHUTDOWN_FINAL]=
 		g_signal_new("shutdown-final",
