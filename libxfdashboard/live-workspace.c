@@ -226,10 +226,15 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 /* This actor was clicked */
 static void _xfdashboard_live_workspace_on_clicked(XfdashboardLiveWorkspace *self, ClutterActor *inActor, gpointer inUserData)
 {
+	XfdashboardClickAction			*action;
+
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
+	g_return_if_fail(XFDASHBOARD_IS_CLICK_ACTION(inUserData));
+
+	action=XFDASHBOARD_CLICK_ACTION(inUserData);
 
 	/* Only emit signal if click was perform with left button */
-	if(xfdashboard_click_action_get_button(inAction)==1)
+	if(xfdashboard_click_action_get_button(action)==1)
 	{
 		/* Emit "clicked" signal */
 		g_signal_emit(self, XfdashboardLiveWorkspaceSignals[SIGNAL_CLICKED], 0);
