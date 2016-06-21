@@ -31,6 +31,80 @@
  * 
  */
 
+/**
+ * SECTION:click-action
+ * @short_Description: Action for clickable actors
+ * @include: xfdashboard/click-action.h
+ *
+ * #XfdashboardClickAction is a sub-class of #ClutterAction that implements
+ * the logic for clickable actors, by using the low level events of
+ * #ClutterActor, such as #ClutterActor::button-press-event and
+ * #ClutterActor::button-release-event, to synthesize the high level
+ * #ClutterClickAction::clicked signal.
+ *
+ * This action is a bad workaround for ClutterClickAction which prevents
+ * drag actions to work properly (at least since clutter version 1.12).
+ * #XfdashboardClickAction is a complete copy of the original ClutterClickAction
+ * except for one line to get the click actions work with other added actions
+ * like drag'n'drop actions.
+ *
+ * To use #XfdashboardClickAction you just need to apply it to a #ClutterActor
+ * using clutter_actor_add_action() and connect to the
+ * #XfdashboardClickAction::clicked signal:
+ *
+ * |[
+ *   ClutterAction *action = xfdashboard_click_action_new ();
+ *
+ *   clutter_actor_add_action (actor, action);
+ *
+ *   g_signal_connect (action, "clicked", G_CALLBACK (on_clicked), NULL);
+ * ]|
+ *
+ * #XfdashboardClickAction also supports long press gestures: a long press
+ * is activated if the pointer remains pressed within a certain threshold
+ * (as defined by the #XfdashboardClickAction:long-press-threshold property)
+ * for a minimum amount of time (as the defined by the
+ * #XfdashboardClickAction:long-press-duration property).
+ * The #XfdashboardClickAction::long-press signal is emitted multiple times,
+ * using different #ClutterLongPressState values; to handle long presses
+ * you should connect to the #XfdashboardClickAction::long-press signal and
+ * handle the different states:
+ *
+ * |[
+ *   static gboolean
+ *   on_long_press (XfdashboardClickAction *self,
+ *                  ClutterActor           *inActor,
+ *                  ClutterLongPressState   inState)
+ *   {
+ *     switch (inState)
+ *     {
+ *       case CLUTTER_LONG_PRESS_QUERY:
+ *         /&ast; return TRUE if the actor should support long press
+ *          &ast; gestures, and FALSE otherwise; this state will be
+ *          &ast; emitted on button presses
+ *          &ast;/
+ *         return(TRUE);
+ *
+ *       case CLUTTER_LONG_PRESS_ACTIVATE:
+ *         /&ast; this state is emitted if the minimum duration has
+ *          &ast; been reached without the gesture being cancelled.
+ *          &ast; the return value is not used
+ *          &ast;/
+ *         return(TRUE);
+ *
+ *       case CLUTTER_LONG_PRESS_CANCEL:
+ *         /&ast; this state is emitted if the long press was cancelled;
+ *          &ast; for instance, the pointer went outside the actor or the
+ *          &ast; allowed threshold, or the button was released before
+ *          &ast; the minimum duration was reached. the return value is
+ *          &ast; not used
+ *          &ast;/
+ *         return(FALSE);
+ *     }
+ *   }
+ * ]|
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -582,6 +656,11 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 	g_type_class_add_private(klass, sizeof (XfdashboardClickActionPrivate));
 
 	/* Define properties */
+	/**
+	 * XfdashboardClickAction:pressed:
+	 *
+	 * Whether the clickable actor should be in "pressed" state
+	 */
 	XfdashboardClickActionProperties[PROP_PRESSED]=
 		g_param_spec_boolean("pressed",
 								_("Pressed"),
@@ -589,6 +668,11 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardClickAction:held:
+	 *
+	 * Whether the clickable actor has the pointer grabbed
+	 */
 	XfdashboardClickActionProperties[PROP_HELD]=
 		g_param_spec_boolean("held",
 								_("Held"),
@@ -596,6 +680,15 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardClickAction:long-press-duration:
+	 *
+	 * The minimum duration of a press for it to be recognized as a long press
+	 * gesture, in milliseconds.
+	 *
+	 * A value of -1 will make the #XfdashboardClickAction use the value of the
+	 * #ClutterSettings:long-press-duration property.
+	 */
 	XfdashboardClickActionProperties[PROP_LONG_PRESS_DURATION]=
 		g_param_spec_int("long-press-duration",
 							_("Long Press Duration"),
@@ -605,6 +698,15 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 							-1,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardClickAction:long-press-threshold:
+	 *
+	 * The maximum allowed distance that can be covered (on both axes) before
+	 * a long press gesture is cancelled, in pixels.
+	 *
+	 * A value of -1 will make the #XfdashboardClickAction use the value of the
+	 * #ClutterSettings:dnd-drag-threshold property.
+	 */
 	XfdashboardClickActionProperties[PROP_LONG_PRESS_THRESHOLD]=
 		g_param_spec_int("long-press-threshold",
 							_("Long Press Threshold"),
@@ -617,6 +719,15 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardClickActionProperties);
 
 	/* Define signals */
+	/**
+	 * XfdashboardClickAction::clicked:
+	 * @self: The #XfdashboardClickAction that emitted the signal
+	 * @inActor: The #ClutterActor attached to @self
+	 *
+	 * The ::clicked signal is emitted when the #ClutterActor to which
+	 * a #XfdashboardClickAction has been applied should respond to a
+	 * pointer button press and release events
+	 */
 	XfdashboardClickActionSignals[SIGNAL_CLICKED]=
 		g_signal_new("clicked",
 						G_TYPE_FROM_CLASS(klass),
@@ -628,6 +739,31 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 						1,
 						CLUTTER_TYPE_ACTOR);
 
+	/**
+	 * XfdashboardClickAction::long-press:
+	 * @self: The #XfdashboardClickAction that emitted the signal
+	 * @inActor: The #ClutterActor attached to @self
+	 * @inState: The long press state
+	 *
+	 * The ::long-press signal is emitted during the long press gesture
+	 * handling.
+	 *
+	 * This signal can be emitted multiple times with different states.
+	 *
+	 * The %CLUTTER_LONG_PRESS_QUERY state will be emitted on button presses,
+	 * and its return value will determine whether the long press handling
+	 * should be initiated. If the signal handlers will return %TRUE, the
+	 * %CLUTTER_LONG_PRESS_QUERY state will be followed either by a signal
+	 * emission with the %CLUTTER_LONG_PRESS_ACTIVATE state if the long press
+	 * constraints were respected, or by a signal emission with the
+	 * %CLUTTER_LONG_PRESS_CANCEL state if the long press was cancelled.
+	 *
+	 * It is possible to forcibly cancel a long press detection using
+	 * xfdashboard_click_action_release().
+	 *
+	 * Return value: Only the %CLUTTER_LONG_PRESS_QUERY state uses the
+	 *   returned value of the handler; other states will ignore it
+	 */
 	XfdashboardClickActionSignals[SIGNAL_LONG_PRESS]=
 		g_signal_new("long-press",
 						G_TYPE_FROM_CLASS(klass),
@@ -657,13 +793,26 @@ static void xfdashboard_click_action_init(XfdashboardClickAction *self)
 
 /* IMPLEMENTATION: Public API */
 
-/* Create new action */
+/**
+ * xfdashboard_click_action_new:
+ *
+ * Creates a new #XfdashboardClickAction instance
+ *
+ * Return value: The newly created #XfdashboardClickAction
+ */
 ClutterAction* xfdashboard_click_action_new(void)
 {
 	return(CLUTTER_ACTION(g_object_new(XFDASHBOARD_TYPE_CLICK_ACTION, NULL)));
 }
 
-/* Get pressed button */
+/**
+ * xfdashboard_click_action_get_button:
+ * @self: A #XfdashboardClickAction
+ *
+ * Retrieves the button that was pressed.
+ *
+ * Return value: The button value
+ */
 guint xfdashboard_click_action_get_button(XfdashboardClickAction *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_CLICK_ACTION(self), 0);
@@ -671,7 +820,14 @@ guint xfdashboard_click_action_get_button(XfdashboardClickAction *self)
 	return(self->priv->pressButton);
 }
 
-/* Get modifier state of the click action */
+/**
+ * xfdashboard_click_action_get_state:
+ * @self: A #XfdashboardClickAction
+ *
+ * Retrieves the modifier state of the click action.
+ *
+ * Return value: The modifier state parameter or 0
+ */
 ClutterModifierType xfdashboard_click_action_get_state(XfdashboardClickAction *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_CLICK_ACTION(self), 0);
@@ -679,7 +835,14 @@ ClutterModifierType xfdashboard_click_action_get_state(XfdashboardClickAction *s
 	return(self->priv->modifierState);
 }
 
-/* Get screen coordinates of the button press */
+/**
+ * xfdashboard_click_action_get_coords:
+ * @self: A #XfdashboardClickAction
+ * @outPressX: (out): Return location for the X coordinate or %NULL
+ * @outPressY: (out): Return location for the Y coordinate or %NULL
+ *
+ * Retrieves the screen coordinates of the button press.
+ */
 void xfdashboard_click_action_get_coords(XfdashboardClickAction *self, gfloat *outPressX, gfloat *outPressY)
 {
 	g_return_if_fail(XFDASHBOARD_IS_CLICK_ACTION(self));
@@ -688,7 +851,19 @@ void xfdashboard_click_action_get_coords(XfdashboardClickAction *self, gfloat *o
 	if(outPressY!=NULL) *outPressY=self->priv->pressY;
 }
 
-/* Emulate a release of the pointer button */
+/**
+ * xfdashboard_click_action_release:
+ * @self: A #XfdashboardClickAction
+ *
+ * Emulates a release of the pointer button, which ungrabs the pointer
+ * and unsets the #XfdashboardClickAction:pressed state.
+ *
+ * This function will also cancel the long press gesture if one was
+ * initiated.
+ *
+ * This function is useful to break a grab, for instance after a certain
+ * amount of time has passed.
+ */
 void xfdashboard_click_action_release(XfdashboardClickAction *self)
 {
 	XfdashboardClickActionPrivate	*priv;

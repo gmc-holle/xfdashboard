@@ -42,6 +42,36 @@
 
 G_BEGIN_DECLS
 
+/* Public definitions */
+/**
+ * XFDASHBOARD_CLICK_ACTION_LEFT_BUTTON:
+ *
+ * A helper macro to determine left button clicks using
+ * the function xfdashboard_click_action_get_button().
+ * The value for this macro is an unsinged integer.
+ **/
+#define XFDASHBOARD_CLICK_ACTION_LEFT_BUTTON 		((guint)1)
+
+/**
+ * XFDASHBOARD_CLICK_ACTION_MIDDLE_BUTTON:
+ *
+ * A helper macro to determine middle button clicks using
+ * the function xfdashboard_click_action_get_button().
+ * The value for this macro is an unsinged integer.
+ **/
+#define XFDASHBOARD_CLICK_ACTION_MIDDLE_BUTTON 		((guint)2)
+
+/**
+ * XFDASHBOARD_CLICK_ACTION_RIGHT_BUTTON:
+ *
+ * A helper macro to determine right button clicks using
+ * the function xfdashboard_click_action_get_button().
+ * The value for this macro is an unsinged integer.
+ **/
+#define XFDASHBOARD_CLICK_ACTION_RIGHT_BUTTON 		((guint)3)
+
+
+/* Object declaration */
 #define XFDASHBOARD_TYPE_CLICK_ACTION				(xfdashboard_click_action_get_type ())
 #define XFDASHBOARD_CLICK_ACTION(obj)				(G_TYPE_CHECK_INSTANCE_CAST ((obj), XFDASHBOARD_TYPE_CLICK_ACTION, XfdashboardClickAction))
 #define XFDASHBOARD_IS_CLICK_ACTION(obj)			(G_TYPE_CHECK_INSTANCE_TYPE ((obj), XFDASHBOARD_TYPE_CLICK_ACTION))
@@ -53,14 +83,28 @@ typedef struct _XfdashboardClickAction				XfdashboardClickAction;
 typedef struct _XfdashboardClickActionPrivate		XfdashboardClickActionPrivate;
 typedef struct _XfdashboardClickActionClass			XfdashboardClickActionClass;
 
+/**
+ * XfdashboardClickAction:
+ *
+ * The #XfdashboardClickAction structure contains only private data and
+ * should be accessed using the provided API
+ */
 struct _XfdashboardClickAction
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterAction					parent_instance;
 
 	XfdashboardClickActionPrivate	*priv;
 };
 
+/**
+ * XfdashboardClickActionClass:
+ * @clicked: class handler for the #XfdashboardClickActionClass::clicked signal
+ * @long_press: class handler for the #XfdashboardClickActionClass::long-press signal
+ *
+ * The #XfdashboardClickActionClass structure contains only private data
+ */
 struct _XfdashboardClickActionClass
 {
 	/*< private >*/

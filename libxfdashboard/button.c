@@ -1075,7 +1075,7 @@ static void _xfdashboard_button_clicked(XfdashboardClickAction *inAction,
 	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
 
 	/* Only emit signal if click was perform with left button */
-	if(xfdashboard_click_action_get_button(inAction)==1)
+	if(xfdashboard_click_action_get_button(inAction)==XFDASHBOARD_CLICK_ACTION_LEFT_BUTTON)
 	{
 		/* Emit 'clicked' signal */
 		g_signal_emit(self, XfdashboardButtonSignals[SIGNAL_CLICKED], 0);

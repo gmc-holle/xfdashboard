@@ -141,7 +141,7 @@ static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self, Clu
 	action=XFDASHBOARD_CLICK_ACTION(inUserData);
 
 	/* Only emit any of these signals if click was perform with left button */
-	if(xfdashboard_click_action_get_button(action)!=1) return;
+	if(xfdashboard_click_action_get_button(action)!=XFDASHBOARD_CLICK_ACTION_LEFT_BUTTON) return;
 
 	/* Check if click happened in "close button" */
 	if(clutter_actor_is_visible(priv->actorClose))

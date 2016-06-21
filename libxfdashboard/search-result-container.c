@@ -393,7 +393,7 @@ static void _xfdashboard_search_result_container_on_result_item_actor_clicked(Xf
 	self=XFDASHBOARD_SEARCH_RESULT_CONTAINER(inUserData);
 
 	/* Only emit signal if click was perform with left button */
-	if(xfdashboard_click_action_get_button(inAction)==1)
+	if(xfdashboard_click_action_get_button(inAction)==XFDASHBOARD_CLICK_ACTION_LEFT_BUTTON)
 	{
 		/* Activate result item by actor clicked */
 		_xfdashboard_search_result_container_activate_result_item_by_actor(self, inActor);
