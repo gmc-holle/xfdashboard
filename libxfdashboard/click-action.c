@@ -99,7 +99,9 @@ GParamSpec* XfdashboardClickActionProperties[PROP_LAST]={ 0, };
 enum
 {
 	SIGNAL_CLICKED,
+	SIGNAL_BUTTON_CLICKED,
 	SIGNAL_LONG_PRESS,
+	SIGNAL_LONG_BUTTON_PRESS,
 
 	SIGNAL_LAST
 };
@@ -177,9 +179,17 @@ static gboolean _xfdashboard_click_action_emit_long_press(gpointer inUserData)
 	/* Reset variables */
 	priv->longPressID=0;
 
-	/* Emit signal */
+	/* Get target actor of long-press used in emitting signal */
 	actor=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(inUserData));
-	g_signal_emit(self, XfdashboardClickActionSignals[SIGNAL_LONG_PRESS], 0, actor, CLUTTER_LONG_PRESS_ACTIVATE, &result);
+
+	/* Emit 'long-press' signal only when left-button was pressed for perform click */
+	if(priv->pressButton==1)
+	{
+		g_signal_emit(self, XfdashboardClickActionSignals[SIGNAL_LONG_PRESS], 0, actor, CLUTTER_LONG_PRESS_ACTIVATE, &result);
+	}
+
+	/* Always emit 'long-button-press' signal */
+	g_signal_emit(self, XfdashboardClickActionSignals[SIGNAL_LONG_BUTTON_PRESS], 0, actor, CLUTTER_LONG_PRESS_ACTIVATE, priv->pressButton, &result);
 
 	/* Disconnect signal handlers */
 	if(priv->captureID!=0)
@@ -218,15 +228,20 @@ static void _xfdashboard_click_action_query_long_press(XfdashboardClickAction *s
 	}
 		else timeout=priv->longPressDuration;
 
-	/* Emit signal to determine if long-press should be supported */
+	/* Emit signal to determine if long-press should be supported.
+	 * First we try to normal use-case of long press of left button. If this is
+	 * not supported (returning FALSE) then re-try with the specific button pressed.
+	 */
 	actor=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
 	g_signal_emit(self, XfdashboardClickActionSignals[SIGNAL_LONG_PRESS], 0, actor, CLUTTER_LONG_PRESS_QUERY, &result);
+	if(!result) g_signal_emit(self, XfdashboardClickActionSignals[SIGNAL_LONG_BUTTON_PRESS], 0, actor, CLUTTER_LONG_PRESS_QUERY, priv->pressButton, &result);
 
 	if(result)
 	{
-		priv->longPressID=clutter_threads_add_timeout(timeout,
-														_xfdashboard_click_action_emit_long_press,
-														self);
+		priv->longPressID=
+			clutter_threads_add_timeout(timeout,
+										_xfdashboard_click_action_emit_long_press,
+										self);
 	}
 }
 
@@ -249,9 +264,17 @@ static void _xfdashboard_click_action_cancel_long_press(XfdashboardClickAction *
 		g_source_remove(priv->longPressID);
 		priv->longPressID=0;
 
-		/* Emit signal */
+		/* Get target actor of long-press used in emitting signal */
 		actor=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
-		g_signal_emit(self, XfdashboardClickActionSignals[SIGNAL_LONG_PRESS], 0, actor, CLUTTER_LONG_PRESS_CANCEL, &result);
+
+		/* Emit 'long-press' signal only when left-button was pressed for perform click */
+		if(priv->pressButton==1)
+		{
+			g_signal_emit(self, XfdashboardClickActionSignals[SIGNAL_LONG_PRESS], 0, actor, CLUTTER_LONG_PRESS_CANCEL, &result);
+		}
+
+		/* Always emit 'long-button-press' signal */
+		g_signal_emit(self, XfdashboardClickActionSignals[SIGNAL_LONG_BUTTON_PRESS], 0, actor, CLUTTER_LONG_PRESS_CANCEL, priv->pressButton, &result);
 	}
 }
 
@@ -329,7 +352,15 @@ static gboolean _xfdashboard_click_action_on_captured_event(XfdashboardClickActi
 			if(modifierState!=priv->modifierState) priv->modifierState=0;
 
 			_xfdashboard_click_action_set_pressed(self, FALSE);
-			g_signal_emit(self, XfdashboardClickActionSignals[SIGNAL_CLICKED], 0, actor);
+
+			/* Emit 'clicked' signal only when left-button was pressed for perform click */
+			if(priv->pressButton==1)
+			{
+				g_signal_emit(self, XfdashboardClickActionSignals[SIGNAL_CLICKED], 0, actor);
+			}
+
+			/* Always emit 'button-clicked' signal */
+			g_signal_emit(self, XfdashboardClickActionSignals[SIGNAL_BUTTON_CLICKED], 0, actor, priv->pressButton);
 			break;
 
 		case CLUTTER_MOTION:
@@ -628,6 +659,18 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 						1,
 						CLUTTER_TYPE_ACTOR);
 
+	XfdashboardClickActionSignals[SIGNAL_BUTTON_CLICKED]=
+		g_signal_new("button-clicked",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardClickActionClass, button_clicked),
+						NULL, NULL,
+						_xfdashboard_marshal_VOID__OBJECT_UINT,
+						G_TYPE_NONE,
+						2,
+						CLUTTER_TYPE_ACTOR,
+						G_TYPE_UINT);
+
 	XfdashboardClickActionSignals[SIGNAL_LONG_PRESS]=
 		g_signal_new("long-press",
 						G_TYPE_FROM_CLASS(klass),
@@ -639,6 +682,19 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 						2,
 						CLUTTER_TYPE_ACTOR,
 						CLUTTER_TYPE_LONG_PRESS_STATE);
+
+	XfdashboardClickActionSignals[SIGNAL_LONG_BUTTON_PRESS]=
+		g_signal_new("long-button-press",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardClickActionClass, long_button_press),
+						NULL, NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_ENUM_UINT,
+						G_TYPE_BOOLEAN,
+						3,
+						CLUTTER_TYPE_ACTOR,
+						CLUTTER_TYPE_LONG_PRESS_STATE,
+						G_TYPE_UINT);
 }
 
 /* Object initialization
