@@ -1067,11 +1067,19 @@ static void _xfdashboard_button_allocate(ClutterActor *inActor,
 }
 
 /* proxy ClickAction signals */
-static void _xfdashboard_button_clicked(ClutterClickAction *inAction,
+static void _xfdashboard_button_clicked(XfdashboardClickAction *inAction,
 										ClutterActor *self,
 										gpointer inUserData)
 {
-	g_signal_emit(self, XfdashboardButtonSignals[SIGNAL_CLICKED], 0);
+	g_return_if_fail(XFDASHBOARD_IS_CLICK_ACTION(inAction));
+	g_return_if_fail(XFDASHBOARD_IS_BUTTON(self));
+
+	/* Only emit signal if click was perform with left button */
+	if(xfdashboard_click_action_get_button(inAction)==1)
+	{
+		/* Emit 'clicked' signal */
+		g_signal_emit(self, XfdashboardButtonSignals[SIGNAL_CLICKED], 0);
+	}
 }
 
 /* Destroy this actor */

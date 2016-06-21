@@ -228,8 +228,12 @@ static void _xfdashboard_live_workspace_on_clicked(XfdashboardLiveWorkspace *sel
 {
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
 
-	/* Emit "clicked" signal */
-	g_signal_emit(self, XfdashboardLiveWorkspaceSignals[SIGNAL_CLICKED], 0);
+	/* Only emit signal if click was perform with left button */
+	if(xfdashboard_click_action_get_button(inAction)==1)
+	{
+		/* Emit "clicked" signal */
+		g_signal_emit(self, XfdashboardLiveWorkspaceSignals[SIGNAL_CLICKED], 0);
+	}
 }
 
 /* A window was closed */

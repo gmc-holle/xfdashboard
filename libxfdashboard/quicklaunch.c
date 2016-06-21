@@ -321,6 +321,9 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 	priv=self->priv;
 	button=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
 
+	/* Only emit any of these signals if click was perform with left button */
+	if(xfdashboard_click_action_get_button(inAction)!=1) return;
+
 	/* If user wants to activate the last active windows for a running instance
 	 * of application whose button was clicked, then check if a window exists
 	 * and activate it. Otherwise launch a new instance.
