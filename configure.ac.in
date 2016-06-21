@@ -277,6 +277,7 @@ plugins/Makefile
 plugins/clock-view/Makefile
 plugins/gnome-shell-search-provider/Makefile
 plugins/hot-corner/Makefile
+plugins/middle-click-window-close/Makefile
 po/Makefile.in
 settings/Makefile
 xfdashboard/Makefile
