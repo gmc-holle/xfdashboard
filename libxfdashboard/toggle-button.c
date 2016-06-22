@@ -455,3 +455,23 @@ void xfdashboard_toggle_button_set_auto_toggle(XfdashboardToggleButton *self, gb
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardToggleButtonProperties[PROP_AUTO_TOGGLE]);
 	}
 }
+
+/**
+ * xfdashboard_toggle_button_toggle:
+ * @self: A #XfdashboardToggleButton
+ *
+ * Toggles the state of @self. That means that the toggle button will change its
+ * state to pressed ("on" state) if it is currently raised ("off" state) or vice
+ * versa.
+ */
+void xfdashboard_toggle_button_toggle(XfdashboardToggleButton *self)
+{
+	XfdashboardToggleButtonPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(self));
+
+	priv=self->priv;
+
+	/* Set opposite state of current one */
+	xfdashboard_toggle_button_set_toggle_state(self, !priv->toggleState);
+}

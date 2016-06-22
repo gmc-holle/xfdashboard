@@ -92,6 +92,8 @@ void xfdashboard_toggle_button_set_toggle_state(XfdashboardToggleButton *self, g
 gboolean xfdashboard_toggle_button_get_auto_toggle(XfdashboardToggleButton *self);
 void xfdashboard_toggle_button_set_auto_toggle(XfdashboardToggleButton *self, gboolean inAuto);
 
+void xfdashboard_toggle_button_toggle(XfdashboardToggleButton *self);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_TOGGLE_BUTTON__ */
