@@ -1269,6 +1269,7 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 
 	/**
 	 * XfdashboardApplication::exit:
+	 * @self: The application
 	 * @inFocusable: The source #XfdashboardFocusable which send this signal
 	 * @inAction: A string containing the action (that is this signal name)
 	 * @inEvent: The #ClutterEvent associated to this signal and action
