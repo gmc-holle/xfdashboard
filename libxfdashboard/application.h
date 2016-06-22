@@ -94,6 +94,7 @@ struct _XfdashboardApplication
  * @shutdown_final: Class handler for the #XfdashboardApplicationClass::shutdown_final signal
  * @theme_changed: Class handler for the #XfdashboardApplicationClass::theme_changed signal
  * @application_launched: Class handler for the #XfdashboardApplicationClass::application_launched signal
+ * @exit: Class handler for the #XfdashboardApplicationClass::exit signal
  *
  * The #XfdashboardApplicationClass structure contains only private data
  */
