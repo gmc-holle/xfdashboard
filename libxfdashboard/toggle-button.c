@@ -285,7 +285,7 @@ ClutterActor* xfdashboard_toggle_button_new_with_text(const gchar *inText)
 }
 
 /**
- * xfdashboard_toggle_button_new_with_icon:
+ * xfdashboard_toggle_button_new_with_icon_name:
  * @inIconName: A string containing the stock icon name or file name for the icon
  *   to be place in the toogle button
  *
@@ -293,7 +293,7 @@ ClutterActor* xfdashboard_toggle_button_new_with_text(const gchar *inText)
  *
  * Return value: The newly created #XfdashboardToggleButton
  */
-ClutterActor* xfdashboard_toggle_button_new_with_icon(const gchar *inIconName)
+ClutterActor* xfdashboard_toggle_button_new_with_icon_name(const gchar *inIconName)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"icon-name", inIconName,
@@ -302,7 +302,23 @@ ClutterActor* xfdashboard_toggle_button_new_with_icon(const gchar *inIconName)
 }
 
 /**
- * xfdashboard_toggle_button_new_full:
+ * xfdashboard_toggle_button_new_with_gicon:
+ * @inIcon: A #GIcon containing the icon image
+ *
+ * Creates a new #XfdashboardToggleButton actor with an icon.
+ *
+ * Return value: The newly created #XfdashboardToggleButton
+ */
+ClutterActor* xfdashboard_toggle_button_new_with_gicon(GIcon *inIcon)
+{
+	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
+						"icon-gicon", inIcon,
+						"button-style", XFDASHBOARD_BUTTON_STYLE_ICON,
+						NULL));
+}
+
+/**
+ * xfdashboard_toggle_button_new_full_with_icon_name:
  * @inIconName: A string containing the stock icon name or file name for the icon
  *   to be place in the toogle button
  * @inText: A string containing the text to be placed in the toggle button
@@ -311,12 +327,31 @@ ClutterActor* xfdashboard_toggle_button_new_with_icon(const gchar *inIconName)
  *
  * Return value: The newly created #XfdashboardToggleButton
  */
-ClutterActor* xfdashboard_toggle_button_new_full(const gchar *inIconName,
-													const gchar *inText)
+ClutterActor* xfdashboard_toggle_button_new_full_with_icon_name(const gchar *inIconName,
+																const gchar *inText)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"text", inText,
 						"icon-name", inIconName,
+						"button-style", XFDASHBOARD_BUTTON_STYLE_BOTH,
+						NULL));
+}
+
+/**
+ * xfdashboard_toggle_button_new_full_with_gicon:
+ * @inIcon: A #GIcon containing the icon image
+ * @inText: A string containing the text to be placed in the toggle button
+ *
+ * Creates a new #XfdashboardToggleButton actor with a text label and an icon.
+ *
+ * Return value: The newly created #XfdashboardToggleButton
+ */
+ClutterActor* xfdashboard_toggle_button_new_full_with_gicon(GIcon *inIcon,
+															const gchar *inText)
+{
+	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
+						"text", inText,
+						"icon-gicon", inIcon,
 						"button-style", XFDASHBOARD_BUTTON_STYLE_BOTH,
 						NULL));
 }

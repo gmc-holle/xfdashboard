@@ -208,7 +208,7 @@ static void _xfdashboard_view_selector_on_view_added(XfdashboardViewSelector *se
 	viewName=g_markup_printf_escaped("%s", xfdashboard_view_get_name(inView));
 	viewIcon=xfdashboard_view_get_icon(inView);
 
-	button=xfdashboard_toggle_button_new_full(viewIcon, viewName);
+	button=xfdashboard_toggle_button_new_full_with_icon_name(viewIcon, viewName);
 	xfdashboard_toggle_button_set_auto_toggle(XFDASHBOARD_TOGGLE_BUTTON(button), FALSE);
 	g_object_set_data(G_OBJECT(button), "view", inView);
 	g_signal_connect_swapped(button, "clicked", G_CALLBACK(_xfdashboard_view_selector_on_view_button_clicked), self);

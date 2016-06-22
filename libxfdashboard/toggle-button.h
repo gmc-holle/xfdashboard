@@ -81,8 +81,10 @@ GType xfdashboard_toggle_button_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_toggle_button_new(void);
 ClutterActor* xfdashboard_toggle_button_new_with_text(const gchar *inText);
-ClutterActor* xfdashboard_toggle_button_new_with_icon(const gchar *inIconName);
-ClutterActor* xfdashboard_toggle_button_new_full(const gchar *inIconName, const gchar *inText);
+ClutterActor* xfdashboard_toggle_button_new_with_icon_name(const gchar *inIconName);
+ClutterActor* xfdashboard_toggle_button_new_with_gicon(GIcon *inIcon);
+ClutterActor* xfdashboard_toggle_button_new_full_with_icon_name(const gchar *inIconName, const gchar *inText);
+ClutterActor* xfdashboard_toggle_button_new_full_with_gicon(GIcon *inIcon, const gchar *inText);
 
 gboolean xfdashboard_toggle_button_get_toggle_state(XfdashboardToggleButton *self);
 void xfdashboard_toggle_button_set_toggle_state(XfdashboardToggleButton *self, gboolean inToggleState);
