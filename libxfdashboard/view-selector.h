@@ -64,7 +64,7 @@ struct _XfdashboardViewSelector
 
 /**
  * XfdashboardViewSelectorClass:
- * @state_changed: class handler for the #XfdashboardViewSelectorClass::state_changed signal
+ * @state_changed: Class handler for the #XfdashboardViewSelectorClass::state_changed signal
  *
  * The #XfdashboardViewSelectorClass structure contains only private data
  */

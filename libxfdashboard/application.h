@@ -87,13 +87,13 @@ struct _XfdashboardApplication
 
 /**
  * XfdashboardApplicationClass:
- * @initialized: class handler for the #XfdashboardApplicationClass::initialized signal
- * @suspend: class handler for the #XfdashboardApplicationClass::suspend signal
- * @resume: class handler for the #XfdashboardApplicationClass::resume signal
- * @quit: class handler for the #XfdashboardApplicationClass::quit signal
- * @shutdown_final: class handler for the #XfdashboardApplicationClass::shutdown_final signal
- * @theme_changed: class handler for the #XfdashboardApplicationClass::theme_changed signal
- * @application_launched: class handler for the #XfdashboardApplicationClass::application_launched signal
+ * @initialized: Class handler for the #XfdashboardApplicationClass::initialized signal
+ * @suspend: Class handler for the #XfdashboardApplicationClass::suspend signal
+ * @resume: Class handler for the #XfdashboardApplicationClass::resume signal
+ * @quit: Class handler for the #XfdashboardApplicationClass::quit signal
+ * @shutdown_final: Class handler for the #XfdashboardApplicationClass::shutdown_final signal
+ * @theme_changed: Class handler for the #XfdashboardApplicationClass::theme_changed signal
+ * @application_launched: Class handler for the #XfdashboardApplicationClass::application_launched signal
  *
  * The #XfdashboardApplicationClass structure contains only private data
  */

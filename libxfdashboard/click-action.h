@@ -100,8 +100,8 @@ struct _XfdashboardClickAction
 
 /**
  * XfdashboardClickActionClass:
- * @clicked: class handler for the #XfdashboardClickActionClass::clicked signal
- * @long_press: class handler for the #XfdashboardClickActionClass::long-press signal
+ * @clicked: Class handler for the #XfdashboardClickActionClass::clicked signal
+ * @long_press: Class handler for the #XfdashboardClickActionClass::long-press signal
  *
  * The #XfdashboardClickActionClass structure contains only private data
  */

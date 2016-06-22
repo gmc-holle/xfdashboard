@@ -43,8 +43,15 @@ typedef struct _XfdashboardToggleButton				XfdashboardToggleButton;
 typedef struct _XfdashboardToggleButtonClass		XfdashboardToggleButtonClass;
 typedef struct _XfdashboardToggleButtonPrivate		XfdashboardToggleButtonPrivate;
 
+/**
+ * XfdashboardToggleButton:
+ *
+ * The #XfdashboardToggleButton structure contains only private data and
+ * should be accessed using the provided API
+ */
 struct _XfdashboardToggleButton
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardButton				parent_instance;
 
@@ -52,6 +59,12 @@ struct _XfdashboardToggleButton
 	XfdashboardToggleButtonPrivate	*priv;
 };
 
+/**
+ * XfdashboardToggleButtonClass:
+ * @toggled: Class handler for the #XfdashboardToggleButtonClass::toggled signal
+ *
+ * The #XfdashboardToggleButtonClass structure contains only private data
+ */
 struct _XfdashboardToggleButtonClass
 {
 	/*< private >*/

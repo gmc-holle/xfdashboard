@@ -21,6 +21,30 @@
  * 
  */
 
+/**
+ * SECTION:toggle-button
+ * @short_description: A button which can toggle its state between on and off
+ * @include: xfdashboard/toggle-button.h
+ *
+ * #XfdashboardToggleButton is a #XfdashboardButton which will remain in "pressed"
+ * state when clicked. This is the "on" state. When it is clicked again it will
+ * change its state back to normal state. This is the "off" state.
+ *
+ * A toggle button is created by calling either xfdashboard_toggle_button_new(),
+ * xfdashboard_toggle_button_new_with_text(), xfdashboard_toggle_button_new_with_icon()
+ * or xfdashboard_toggle_button_new_full(). This function will create a toggle
+ * button with state "off".
+ *
+ * The state of a #XfdashboardToggleButton can be set specifically using
+ * xfdashboard_toggle_button_set_toggle_state() and retrieved using
+ * xfdashboard_toggle_button_get_toggle_state().
+ *
+ * On creation the #XfdashboardToggleButton will be configured to change its state
+ * automatically when clicked. This behaviour can be changed using
+ * xfdashboard_toggle_button_set_auto_toggle() and retrieved using
+ * xfdashboard_toggle_button_get_auto_toggle().
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -159,6 +183,13 @@ static void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *k
 	g_type_class_add_private(klass, sizeof(XfdashboardToggleButtonPrivate));
 
 	/* Define properties */
+	/**
+	 * XfdashboardToggleButton:toggle-state:
+	 *
+	 * A flag indicating if the state of toggle button. It is set to %TRUE if it
+	 * is in "on" state that means it is pressed state and %FALSE if it is in
+	 * "off" state that means it is not pressed.
+	 */
 	XfdashboardToggleButtonProperties[PROP_TOGGLE_STATE]=
 		g_param_spec_boolean("toggle-state",
 								_("Toggle state"),
@@ -166,6 +197,12 @@ static void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *k
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardToggleButton:auto-toggle:
+	 *
+	 * A flag indicating if the state of toggle button should be changed between
+	 * "on" and "off" state automatically if it was clicked.
+	 */
 	XfdashboardToggleButtonProperties[PROP_AUTO_TOGGLE]=
 		g_param_spec_boolean("auto-toggle",
 								_("Auto toggle"),
@@ -176,6 +213,15 @@ static void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *k
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardToggleButtonProperties);
 
 	/* Define signals */
+	/**
+	 * XfdashboardToggleButton::toggled:
+	 * @self: The #XfdashboardToggleButton which changed its state
+	 *
+	 * Should be connected if you wish to perform an action whenever the
+	 * #XfdashboardToggleButton's state has changed. 
+	 *
+	 * The state has to be retrieved using xfdashboard_toggle_button_get_toggle_state().
+	 */
 	XfdashboardToggleButtonSignals[SIGNAL_TOGGLED]=
 		g_signal_new("toggled",
 						G_TYPE_FROM_CLASS(klass),
@@ -207,7 +253,13 @@ static void xfdashboard_toggle_button_init(XfdashboardToggleButton *self)
 
 /* IMPLEMENTATION: Public API */
 
-/* Create new actor */
+/**
+ * xfdashboard_toggle_button_new:
+ *
+ * Creates a new #XfdashboardToggleButton actor
+ *
+ * Return value: The newly created #XfdashboardToggleButton
+ */
 ClutterActor* xfdashboard_toggle_button_new(void)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
@@ -216,6 +268,14 @@ ClutterActor* xfdashboard_toggle_button_new(void)
 						NULL));
 }
 
+/**
+ * xfdashboard_toggle_button_new_with_text:
+ * @inText: A string containing the text to be placed in the toggle button
+ *
+ * Creates a new #XfdashboardToggleButton actor with a text label.
+ *
+ * Return value: The newly created #XfdashboardToggleButton
+ */
 ClutterActor* xfdashboard_toggle_button_new_with_text(const gchar *inText)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
@@ -224,6 +284,15 @@ ClutterActor* xfdashboard_toggle_button_new_with_text(const gchar *inText)
 						NULL));
 }
 
+/**
+ * xfdashboard_toggle_button_new_with_icon:
+ * @inIconName: A string containing the stock icon name or file name for the icon
+ *   to be place in the toogle button
+ *
+ * Creates a new #XfdashboardToggleButton actor with an icon.
+ *
+ * Return value: The newly created #XfdashboardToggleButton
+ */
 ClutterActor* xfdashboard_toggle_button_new_with_icon(const gchar *inIconName)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
@@ -232,7 +301,18 @@ ClutterActor* xfdashboard_toggle_button_new_with_icon(const gchar *inIconName)
 						NULL));
 }
 
-ClutterActor* xfdashboard_toggle_button_new_full(const gchar *inIconName, const gchar *inText)
+/**
+ * xfdashboard_toggle_button_new_full:
+ * @inIconName: A string containing the stock icon name or file name for the icon
+ *   to be place in the toogle button
+ * @inText: A string containing the text to be placed in the toggle button
+ *
+ * Creates a new #XfdashboardToggleButton actor with a text label and an icon.
+ *
+ * Return value: The newly created #XfdashboardToggleButton
+ */
+ClutterActor* xfdashboard_toggle_button_new_full(const gchar *inIconName,
+													const gchar *inText)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"text", inText,
@@ -241,7 +321,15 @@ ClutterActor* xfdashboard_toggle_button_new_full(const gchar *inIconName, const 
 						NULL));
 }
 
-/* Get/set toggle state */
+/**
+ * xfdashboard_toggle_button_get_toggle_state:
+ * @self: A #XfdashboardToggleButton
+ *
+ * Retrieves the current state of @self.
+ *
+ * Return value: Returns %TRUE if the toggle button is pressed in ("on" state) and
+ *   %FALSE if it is raised ("off" state). 
+ */
 gboolean xfdashboard_toggle_button_get_toggle_state(XfdashboardToggleButton *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(self), 0);
@@ -249,6 +337,15 @@ gboolean xfdashboard_toggle_button_get_toggle_state(XfdashboardToggleButton *sel
 	return(self->priv->toggleState);
 }
 
+/**
+ * xfdashboard_toggle_button_set_toggle_state:
+ * @self: A #XfdashboardToggleButton
+ * @inToggleState: The state to set at @self
+ *
+ * Sets the state of @self. If @inToggleState is set to %TRUE then the toggle button
+ * will set to and remain in pressed state ("on" state). If set to %FALSE then the
+ * toggle button will raised ("off" state).
+ */
 void xfdashboard_toggle_button_set_toggle_state(XfdashboardToggleButton *self, gboolean inToggleState)
 {
 	XfdashboardToggleButtonPrivate	*priv;
@@ -277,7 +374,16 @@ void xfdashboard_toggle_button_set_toggle_state(XfdashboardToggleButton *self, g
 	}
 }
 
-/* Get/set auto-toggle (on click) */
+/**
+ * xfdashboard_toggle_button_get_auto_toggle:
+ * @self: A #XfdashboardToggleButton
+ *
+ * Retrieves the automatic toggle mode of @self. If automatic toggle mode is %TRUE
+ * then it is active and the toggle button changes its state automatically when
+ * clicked.
+ *
+ * Return value: Returns %TRUE if automatic toggle mode is active, otherwise %FALSE.
+ */
 gboolean xfdashboard_toggle_button_get_auto_toggle(XfdashboardToggleButton *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_TOGGLE_BUTTON(self), 0);
@@ -285,6 +391,17 @@ gboolean xfdashboard_toggle_button_get_auto_toggle(XfdashboardToggleButton *self
 	return(self->priv->autoToggleOnClick);
 }
 
+/**
+ * xfdashboard_toggle_button_set_auto_toggle:
+ * @self: A #XfdashboardToggleButton
+ * @inAuto: The state to set at @self
+ *
+ * Sets the automatic toggle mode of @self. If @inAuto is set to %TRUE then the toggle
+ * button will change its state automatically between pressed ("on") and raised ("off")
+ * state when it is clicked. The "clicked" signal will be emitted before the toggle
+ * changes its state. If @inAuto is set to %FALSE a signal handler for "clicked" signal
+ * should be connected to handle the toggle state on your own.
+ */
 void xfdashboard_toggle_button_set_auto_toggle(XfdashboardToggleButton *self, gboolean inAuto)
 {
 	XfdashboardToggleButtonPrivate	*priv;

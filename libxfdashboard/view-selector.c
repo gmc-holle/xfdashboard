@@ -471,7 +471,6 @@ static void xfdashboard_view_selector_init(XfdashboardViewSelector *self)
 
 /* IMPLEMENTATION: Public API */
 
-/* Create new instance */
 /**
  * xfdashboard_view_selector_new:
  *
@@ -513,7 +512,6 @@ ClutterActor* xfdashboard_view_selector_new_for_viewpad(XfdashboardViewpad *inVi
 										NULL)));
 }
 
-/* Get/set viewpad */
 /**
  * xfdashboard_view_selector_get_viewpad:
  * @self: A #XfdashboardViewSelector
@@ -581,7 +579,6 @@ void xfdashboard_view_selector_set_viewpad(XfdashboardViewSelector *self, Xfdash
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewSelectorProperties[PROP_VIEWPAD]);
 }
 
-/* Get/set spacing */
 /**
  * xfdashboard_view_selector_get_spacing:
  * @self: A #XfdashboardViewSelector
