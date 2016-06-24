@@ -95,7 +95,7 @@ ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar 
 /**
  * XfdashboardTraversalCallback:
  * @inActor: The actor currently processed and has matched the selector in traversal
- * @user_data: Data passed to the function, set with xfdashboard_traverse_actor()
+ * @inUserData: Data passed to the function, set with xfdashboard_traverse_actor()
  *
  * A callback called each time an actor matches the provided css selector
  * in xfdashboard_traverse_actor().
