@@ -439,15 +439,16 @@ static gboolean _xfdashboard_traverse_actor_internal(ClutterActor *inActor,
 
 /**
  * xfdashboard_traverse_actor:
- * @inActor: The root #ClutterActor where to begin traversing
+ * @inRootActor: The root #ClutterActor where to begin traversing
  * @inSelector: A #XfdashboardCssSelector to filter actors while traversing or
  *   %NULL to disable filterting
  * @inCallback: Function to call on matching children
  * @inUserData: Data to pass to callback function
  *
- * Iterates through all children of @inActor recursively beginning at @inRootActor
- * and for each child matching the selector @inSelector it calls the callback
- * function @inCallback with the matching child and the user-data at @inUserData.
+ * Iterates through all children of @inRootActor recursively beginning at
+ * @inRootActor and for each child matching the selector @inSelector it calls the
+ * callback function @inCallback with the matching child and the user-data at
+ * @inUserData.
  *
  * If @inRootActor is %NULL it begins at the global stage.
  *
