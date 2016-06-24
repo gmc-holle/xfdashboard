@@ -453,7 +453,7 @@ static gboolean _xfdashboard_traverse_actor_internal(ClutterActor *inActor,
  * If @inRootActor is %NULL it begins at the global stage.
  *
  * If the selector @inSelector is %NULL all children will match and the callback
- * function @inCallback is called for all	 children.
+ * function @inCallback is called for all children.
  */
 void xfdashboard_traverse_actor(ClutterActor *inRootActor,
 								XfdashboardCssSelector *inSelector,
