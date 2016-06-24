@@ -30,9 +30,8 @@
  * state when clicked. This is the "on" state. When it is clicked again it will
  * change its state back to normal state. This is the "off" state.
  *
- * A toggle button is created by calling either xfdashboard_toggle_button_new(),
- * xfdashboard_toggle_button_new_with_text(), xfdashboard_toggle_button_new_with_icon()
- * or xfdashboard_toggle_button_new_full(). This function will create a toggle
+ * A toggle button is created by calling either xfdashboard_toggle_button_new() or
+ * any other xfdashboard_toggle_button_new_*(). These functions will create a toggle
  * button with state "off".
  *
  * The state of a #XfdashboardToggleButton can be set specifically using
