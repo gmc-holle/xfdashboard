@@ -502,7 +502,7 @@ ClutterActor* xfdashboard_view_selector_new(void)
  *   viewSelector=xfdashboard_view_selector_new();
  *   xfdashboard_view_selector_set_viewpad(XFDASHBOARD_VIEW_SELECTOR(viewSelector), viewpad);
  * ]|
-
+ *
  * Return value: The newly created #XfdashboardViewSelector
  */
 ClutterActor* xfdashboard_view_selector_new_for_viewpad(XfdashboardViewpad *inViewpad)
@@ -623,7 +623,6 @@ void xfdashboard_view_selector_set_spacing(XfdashboardViewSelector *self, gfloat
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardViewSelectorProperties[PROP_SPACING]);
 }
 
-/* Get/set orientation */
 /**
  * xfdashboard_view_selector_get_orientation:
  * @self: A #XfdashboardViewSelector
