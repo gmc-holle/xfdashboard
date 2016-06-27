@@ -21,6 +21,21 @@
  * 
  */
 
+/**
+ * SECTION:plugins-manager
+ * @short_description: The plugin manager class
+ * @include: xfdashboard/plugins-manager.h
+ *
+ * #XfdashboardPluginsManager is a single instance object. It is managing all
+ * plugins by loading and enabling or disabling them.
+ *
+ * The plugin manager will look up each plugin at the following paths and order:
+ *
+ * - Path specified in evironment variable XFDASHBOARD_PLUGINS_PATH
+ * - $XDG_DATA_HOME/xfdashboard/plugins
+ * - (install prefix)/lib/xfdashboard/plugins
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -567,7 +582,14 @@ static void xfdashboard_plugins_manager_init(XfdashboardPluginsManager *self)
 
 /* IMPLEMENTATION: Public API */
 
-/* Get single instance of manager */
+/**
+ * xfdashboard_plugins_manager_get_default:
+ *
+ * Retrieves the singleton instance of #XfdashboardPluginsManager.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardPluginsManager.
+ *   Use g_object_unref() when done.
+ */
 XfdashboardPluginsManager* xfdashboard_plugins_manager_get_default(void)
 {
 	if(G_UNLIKELY(_xfdashboard_plugins_manager==NULL))
@@ -579,7 +601,21 @@ XfdashboardPluginsManager* xfdashboard_plugins_manager_get_default(void)
 	return(_xfdashboard_plugins_manager);
 }
 
-/* Initialize plugin manager */
+/**
+ * xfdashboard_plugins_manager_setup:
+ * @self: A #XfdashboardPluginsManager
+ *
+ * Initializes the plugin manager at @self by loading all enabled plugins. This
+ * function can only be called once and is initialized by the application at
+ * start-up. So you usually do not have to call this function or it does anything
+ * as the plugin manager is already setup.
+ *
+ * The plugin manager will continue initializing successfully even if a plugin
+ * could not be loaded. In this case just a warning is printed.
+ *
+ * Return value: Returns %TRUE if plugin manager was initialized successfully
+ *   or was already initialized. Otherwise %FALSE will be returned.
+ */
 gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self)
 {
 	XfdashboardPluginsManagerPrivate	*priv;
