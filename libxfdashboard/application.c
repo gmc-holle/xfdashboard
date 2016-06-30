@@ -284,30 +284,25 @@ static void _xfdashboard_application_set_theme_name(XfdashboardApplication *self
 	/* Set value if changed */
 	if(g_strcmp0(priv->themeName, inThemeName)!=0)
 	{
-		/* Set value */
-		if(priv->themeName) g_free(priv->themeName);
-		priv->themeName=g_strdup(inThemeName);
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_THEME_NAME]);
+		/* Create new theme instance */
+		theme=xfdashboard_theme_new();
 
 		/* Emit signal that theme is going to be loaded and changed */
-		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_THEME_CHANGING], 0, priv->theme);
+		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_THEME_CHANGING], 0, theme);
 
-		/* Create new theme instance and load theme */
-		theme=xfdashboard_theme_new();
-		if(!xfdashboard_theme_load(theme, priv->themeName, &error))
+		/* Load theme */
+		if(!xfdashboard_theme_load(theme, inThemeName, &error))
 		{
 			/* Show critical warning at console */
 			g_critical(_("Could not load theme '%s': %s"),
-						priv->themeName,
+						inThemeName,
 						(error && error->message) ? error->message : _("unknown error"));
 
 			/* Show warning as notification */
 			xfdashboard_notify(NULL,
 								"dialog-error",
 								_("Could not load theme '%s': %s"),
-								priv->themeName,
+								inThemeName,
 								(error && error->message) ? error->message : _("unknown error"));
 
 			/* Release allocated resources */
@@ -316,6 +311,13 @@ static void _xfdashboard_application_set_theme_name(XfdashboardApplication *self
 
 			return;
 		}
+
+		/* Set value */
+		if(priv->themeName) g_free(priv->themeName);
+		priv->themeName=g_strdup(inThemeName);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_THEME_NAME]);
 
 		/* Release current theme and store new one */
 		if(priv->theme) g_object_unref(priv->theme);
