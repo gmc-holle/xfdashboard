@@ -114,6 +114,7 @@ struct _XfdashboardApplicationClass
 	void (*quit)(XfdashboardApplication *self);
 	void (*shutdown_final)(XfdashboardApplication *self);
 
+	void (*theme_changing)(XfdashboardApplication *self, XfdashboardTheme *inTheme);
 	void (*theme_changed)(XfdashboardApplication *self, XfdashboardTheme *inTheme);
 
 	void (*application_launched)(XfdashboardApplication *self, GAppInfo *inAppInfo);

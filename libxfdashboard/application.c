@@ -123,9 +123,13 @@ enum
 	SIGNAL_INITIALIZED,
 	SIGNAL_QUIT,
 	SIGNAL_SHUTDOWN_FINAL,
+
 	SIGNAL_SUSPEND,
 	SIGNAL_RESUME,
+
+	SIGNAL_THEME_CHANGING,
 	SIGNAL_THEME_CHANGED,
+
 	SIGNAL_APPLICATION_LAUNCHED,
 
 	/* Actions */
@@ -286,6 +290,9 @@ static void _xfdashboard_application_set_theme_name(XfdashboardApplication *self
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_THEME_NAME]);
+
+		/* Emit signal that theme is going to be loaded and changed */
+		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_THEME_CHANGING], 0, priv->theme);
 
 		/* Create new theme instance and load theme */
 		theme=xfdashboard_theme_new();
@@ -1226,6 +1233,29 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 						g_cclosure_marshal_VOID__VOID,
 						G_TYPE_NONE,
 						0);
+
+	/**
+	 * XfdashboardApplication::theme-changing:
+	 * @self: The application whose theme is going to change
+	 * @inTheme: The new #XfdashboardTheme used
+	 *
+	 * The ::theme-changing signal is emitted when the theme of application
+	 * is going to be loaded and changed. When this signal is received no file
+	 * was loaded so far but will be. For example, at this moment it is possible
+	 * to load a CSS file by a plugin before the CSS files of the new theme will
+	 * be loaded to give the theme a chance to override the default CSS of plugin.
+	 */
+	XfdashboardApplicationSignals[SIGNAL_THEME_CHANGING]=
+		g_signal_new("theme-changing",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardApplicationClass, theme_changing),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_THEME);
 
 	/**
 	 * XfdashboardApplication::theme-changed:
