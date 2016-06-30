@@ -74,17 +74,14 @@ GQuark xfdashboard_theme_error_quark(void);
 
 typedef enum /*< prefix=XFDASHBOARD_THEME_ERROR >*/
 {
-	XFDASHBOARD_THEME_ERROR_GENERAL_ERROR,
-	XFDASHBOARD_THEME_ERROR_ALREADY_LOADED,
 	XFDASHBOARD_THEME_ERROR_THEME_NOT_FOUND,
-	XFDASHBOARD_THEME_ERROR_INVALID_THEME_FILE,
-	XFDASHBOARD_THEME_ERROR_RESOURCE_NOT_FOUND
+	XFDASHBOARD_THEME_ERROR_ALREADY_LOADED
 } XfdashboardThemeErrorEnum;
 
 /* Public API */
 GType xfdashboard_theme_get_type(void) G_GNUC_CONST;
 
-XfdashboardTheme* xfdashboard_theme_new(void);
+XfdashboardTheme* xfdashboard_theme_new(const gchar *inThemeName);
 
 const gchar* xfdashboard_theme_get_path(XfdashboardTheme *self);
 
@@ -93,7 +90,6 @@ const gchar* xfdashboard_theme_get_display_name(XfdashboardTheme *self);
 const gchar* xfdashboard_theme_get_comment(XfdashboardTheme *self);
 
 gboolean xfdashboard_theme_load(XfdashboardTheme *self,
-								const gchar *inThemeName,
 								GError **outError);
 
 XfdashboardThemeCSS* xfdashboard_theme_get_css(XfdashboardTheme *self);

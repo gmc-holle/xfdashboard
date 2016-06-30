@@ -285,13 +285,13 @@ static void _xfdashboard_application_set_theme_name(XfdashboardApplication *self
 	if(g_strcmp0(priv->themeName, inThemeName)!=0)
 	{
 		/* Create new theme instance */
-		theme=xfdashboard_theme_new();
+		theme=xfdashboard_theme_new(inThemeName);
 
 		/* Emit signal that theme is going to be loaded and changed */
 		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_THEME_CHANGING], 0, theme);
 
 		/* Load theme */
-		if(!xfdashboard_theme_load(theme, inThemeName, &error))
+		if(!xfdashboard_theme_load(theme, &error))
 		{
 			/* Show critical warning at console */
 			g_critical(_("Could not load theme '%s': %s"),
