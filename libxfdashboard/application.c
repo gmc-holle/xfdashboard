@@ -127,7 +127,8 @@ enum
 	SIGNAL_SUSPEND,
 	SIGNAL_RESUME,
 
-	SIGNAL_THEME_CHANGING,
+	SIGNAL_THEME_LOADING,
+	SIGNAL_THEME_LOADED,
 	SIGNAL_THEME_CHANGED,
 
 	SIGNAL_APPLICATION_LAUNCHED,
@@ -287,8 +288,8 @@ static void _xfdashboard_application_set_theme_name(XfdashboardApplication *self
 		/* Create new theme instance */
 		theme=xfdashboard_theme_new(inThemeName);
 
-		/* Emit signal that theme is going to be loaded and changed */
-		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_THEME_CHANGING], 0, theme);
+		/* Emit signal that theme is going to be loaded */
+		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_THEME_LOADING], 0, theme);
 
 		/* Load theme */
 		if(!xfdashboard_theme_load(theme, &error))
@@ -311,6 +312,9 @@ static void _xfdashboard_application_set_theme_name(XfdashboardApplication *self
 
 			return;
 		}
+
+		/* Emit signal that theme was loaded successfully and will soon be applied */
+		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_THEME_LOADED], 0, theme);
 
 		/* Set value */
 		if(priv->themeName) g_free(priv->themeName);
@@ -1237,21 +1241,43 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 						0);
 
 	/**
-	 * XfdashboardApplication::theme-changing:
+	 * XfdashboardApplication::theme-loading:
 	 * @self: The application whose theme is going to change
 	 * @inTheme: The new #XfdashboardTheme used
 	 *
-	 * The ::theme-changing signal is emitted when the theme of application
-	 * is going to be loaded and changed. When this signal is received no file
-	 * was loaded so far but will be. For example, at this moment it is possible
-	 * to load a CSS file by a plugin before the CSS files of the new theme will
-	 * be loaded to give the theme a chance to override the default CSS of plugin.
+	 * The ::theme-loading signal is emitted when the theme of application is
+	 * going to be loaded. When this signal is received no file was loaded so far
+	 * but will be. For example, at this moment it is possible to load a CSS file
+	 * by a plugin before the CSS files of the new theme will be loaded to give
+	 * the theme a chance to override the default CSS of plugin.
 	 */
-	XfdashboardApplicationSignals[SIGNAL_THEME_CHANGING]=
-		g_signal_new("theme-changing",
+	XfdashboardApplicationSignals[SIGNAL_THEME_LOADING]=
+		g_signal_new("theme-loading",
 						G_TYPE_FROM_CLASS(klass),
 						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardApplicationClass, theme_changing),
+						G_STRUCT_OFFSET(XfdashboardApplicationClass, theme_loading),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__OBJECT,
+						G_TYPE_NONE,
+						1,
+						XFDASHBOARD_TYPE_THEME);
+
+	/**
+	 * XfdashboardApplication::theme-loaded:
+	 * @self: The application whose theme is going to change
+	 * @inTheme: The new #XfdashboardTheme used
+	 *
+	 * The ::theme-loaded signal is emitted when the new theme of application was
+	 * loaded and will soon be applied. When this signal is received it is the
+	 * last chance for other components and plugins to load additionally resources
+	 * like CSS, e.g. to override CSS of theme.
+	 */
+	XfdashboardApplicationSignals[SIGNAL_THEME_LOADED]=
+		g_signal_new("theme-loaded",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST,
+						G_STRUCT_OFFSET(XfdashboardApplicationClass, theme_loaded),
 						NULL,
 						NULL,
 						g_cclosure_marshal_VOID__OBJECT,
@@ -1264,8 +1290,8 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	 * @self: The application whose theme has changed
 	 * @inTheme: The new #XfdashboardTheme used
 	 *
-	 * The ::theme-changed signal is emitted when the theme of application
-	 * has been loaded successfully and changed.
+	 * The ::theme-changed signal is emitted when a new theme of application
+	 * has been loaded and applied.
 	 */
 	XfdashboardApplicationSignals[SIGNAL_THEME_CHANGED]=
 		g_signal_new("theme-changed",
