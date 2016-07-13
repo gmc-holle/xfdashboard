@@ -48,6 +48,7 @@ typedef struct _XfdashboardWindowTrackerMonitorPrivate			XfdashboardWindowTracke
 
 struct _XfdashboardWindowTrackerMonitor
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject										parent_instance;
 

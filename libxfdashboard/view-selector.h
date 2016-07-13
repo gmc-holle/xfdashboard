@@ -55,6 +55,7 @@ typedef struct _XfdashboardViewSelectorClass		XfdashboardViewSelectorClass;
  */
 struct _XfdashboardViewSelector
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardActor				parent_instance;
 

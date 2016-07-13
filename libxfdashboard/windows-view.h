@@ -46,6 +46,7 @@ typedef struct _XfdashboardWindowsViewClass			XfdashboardWindowsViewClass;
 
 struct _XfdashboardWindowsView
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardView					parent_instance;
 

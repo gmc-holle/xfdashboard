@@ -50,6 +50,7 @@ typedef struct _XfdashboardThemePrivate			XfdashboardThemePrivate;
 
 struct _XfdashboardTheme
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject						parent_instance;
 

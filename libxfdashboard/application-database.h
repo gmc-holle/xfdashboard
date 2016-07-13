@@ -46,6 +46,7 @@ typedef struct _XfdashboardApplicationDatabasePrivate		XfdashboardApplicationDat
 
 struct _XfdashboardApplicationDatabase
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject									parent_instance;
 

@@ -46,6 +46,7 @@ typedef struct _XfdashboardModelIterPrivate		XfdashboardModelIterPrivate;
 
 struct _XfdashboardModelIter
 {
+	/*< private >*/
 	/* Parent instance */
 	GObjectClass					parent_instance;
 

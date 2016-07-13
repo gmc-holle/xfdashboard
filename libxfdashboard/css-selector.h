@@ -48,6 +48,7 @@ typedef struct _XfdashboardCssSelectorClass			XfdashboardCssSelectorClass;
 
 struct _XfdashboardCssSelector
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject							parent_instance;
 

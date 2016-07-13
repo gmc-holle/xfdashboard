@@ -57,6 +57,7 @@ typedef struct _XfdashboardApplicationsSearchProviderClass			XfdashboardApplicat
 
 struct _XfdashboardApplicationsSearchProvider
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardSearchProvider						parent_instance;
 

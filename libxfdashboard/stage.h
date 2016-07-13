@@ -47,6 +47,7 @@ typedef struct _XfdashboardStagePrivate		XfdashboardStagePrivate;
 
 struct _XfdashboardStage
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterStage							parent_instance;
 

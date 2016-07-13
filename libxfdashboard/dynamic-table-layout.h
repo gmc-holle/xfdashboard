@@ -48,6 +48,7 @@ typedef struct _XfdashboardDynamicTableLayoutClass			XfdashboardDynamicTableLayo
 
 struct _XfdashboardDynamicTableLayout
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterLayoutManager 					parent_instance;
 

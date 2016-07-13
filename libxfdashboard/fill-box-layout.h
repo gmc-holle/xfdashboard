@@ -47,6 +47,7 @@ typedef struct _XfdashboardFillBoxLayoutClass		XfdashboardFillBoxLayoutClass;
 
 struct _XfdashboardFillBoxLayout
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterLayoutManager 			parent_instance;
 

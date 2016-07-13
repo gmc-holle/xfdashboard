@@ -49,6 +49,7 @@ typedef struct _XfdashboardCollapseBoxClass			XfdashboardCollapseBoxClass;
 
 struct _XfdashboardCollapseBox
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardActor				parent_instance;
 

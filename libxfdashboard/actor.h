@@ -45,6 +45,7 @@ typedef struct _XfdashboardActorPrivate			XfdashboardActorPrivate;
 
 struct _XfdashboardActor
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterActor				parent_instance;
 

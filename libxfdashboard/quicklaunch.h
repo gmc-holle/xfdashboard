@@ -47,6 +47,7 @@ typedef struct _XfdashboardQuicklaunchPrivate		XfdashboardQuicklaunchPrivate;
 
 struct _XfdashboardQuicklaunch
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardBackground			parent_instance;
 

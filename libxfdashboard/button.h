@@ -67,6 +67,7 @@ typedef struct _XfdashboardButtonPrivate		XfdashboardButtonPrivate;
 
 struct _XfdashboardButton
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardBackground		parent_instance;
 

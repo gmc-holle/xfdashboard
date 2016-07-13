@@ -46,6 +46,7 @@ typedef struct _XfdashboardDesktopAppInfoPrivate		XfdashboardDesktopAppInfoPriva
 
 struct _XfdashboardDesktopAppInfo
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject								parent_instance;
 

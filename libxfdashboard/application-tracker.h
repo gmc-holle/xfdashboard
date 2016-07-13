@@ -46,6 +46,7 @@ typedef struct _XfdashboardApplicationTrackerPrivate		XfdashboardApplicationTrac
 
 struct _XfdashboardApplicationTracker
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject									parent_instance;
 

@@ -48,6 +48,7 @@ typedef struct _XfdashboardWindowContentPrivate		XfdashboardWindowContentPrivate
 
 struct _XfdashboardWindowContent
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject									parent_instance;
 

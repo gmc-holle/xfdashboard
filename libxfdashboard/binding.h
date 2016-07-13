@@ -45,6 +45,7 @@ typedef struct _XfdashboardBindingPrivate		XfdashboardBindingPrivate;
 
 struct _XfdashboardBinding
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject							parent_instance;
 

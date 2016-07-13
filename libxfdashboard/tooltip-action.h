@@ -46,9 +46,11 @@ typedef struct _XfdashboardTooltipActionClass		XfdashboardTooltipActionClass;
 
 struct _XfdashboardTooltipAction
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterAction						parent_instance;
 
+	/* Private structure */
 	XfdashboardTooltipActionPrivate		*priv;
 };
 

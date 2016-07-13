@@ -45,6 +45,7 @@ typedef struct _XfdashboardApplicationsViewClass		XfdashboardApplicationsViewCla
 
 struct _XfdashboardApplicationsView
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardView						parent_instance;
 

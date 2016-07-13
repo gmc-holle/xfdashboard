@@ -48,6 +48,7 @@ typedef struct _XfdashboardApplicationsMenuModelClass		XfdashboardApplicationsMe
 
 struct _XfdashboardApplicationsMenuModel
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardModel							parent_instance;
 

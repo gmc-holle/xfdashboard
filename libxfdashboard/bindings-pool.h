@@ -48,6 +48,7 @@ typedef struct _XfdashboardBindingsPoolPrivate		XfdashboardBindingsPoolPrivate;
 
 struct _XfdashboardBindingsPool
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject							parent_instance;
 

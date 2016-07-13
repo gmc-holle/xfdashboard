@@ -45,6 +45,7 @@ typedef struct _XfdashboardThemeLayoutPrivate		XfdashboardThemeLayoutPrivate;
 
 struct _XfdashboardThemeLayout
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject								parent_instance;
 

@@ -46,6 +46,7 @@ typedef struct _XfdashboardTextBoxPrivate		XfdashboardTextBoxPrivate;
 
 struct _XfdashboardTextBox
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardBackground			parent_instance;
 

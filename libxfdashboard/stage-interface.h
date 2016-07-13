@@ -49,6 +49,7 @@ typedef struct _XfdashboardStageInterfacePrivate	XfdashboardStageInterfacePrivat
 
 struct _XfdashboardStageInterface
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardStage						parent_instance;
 

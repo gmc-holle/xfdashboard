@@ -45,6 +45,7 @@ typedef struct _XfdashboardDragActionPrivate		XfdashboardDragActionPrivate;
 
 struct _XfdashboardDragAction
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterDragAction				parent_instance;
 

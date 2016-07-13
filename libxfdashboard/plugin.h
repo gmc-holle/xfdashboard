@@ -78,6 +78,7 @@ typedef struct _XfdashboardPluginPrivate	XfdashboardPluginPrivate;
 
 struct _XfdashboardPlugin
 {
+	/*< private >*/
 	/* Parent instance */
 	GTypeModule						parent_instance;
 

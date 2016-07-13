@@ -47,6 +47,7 @@ typedef struct _XfdashboardEmblemEffectPrivate		XfdashboardEmblemEffectPrivate;
 
 struct _XfdashboardEmblemEffect
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterEffect						parent_instance;
 

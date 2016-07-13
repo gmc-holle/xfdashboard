@@ -47,6 +47,7 @@ typedef struct _XfdashboardScrollbarClass		XfdashboardScrollbarClass;
 
 struct _XfdashboardScrollbar
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardBackground			parent_instance;
 

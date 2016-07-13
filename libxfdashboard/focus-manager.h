@@ -48,6 +48,7 @@ typedef struct _XfdashboardFocusManagerPrivate		XfdashboardFocusManagerPrivate;
 
 struct _XfdashboardFocusManager
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject							parent_instance;
 

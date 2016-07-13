@@ -45,6 +45,7 @@ typedef struct _XfdashboardSearchResultSetPrivate		XfdashboardSearchResultSetPri
 
 struct _XfdashboardSearchResultSet
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject								parent_instance;
 

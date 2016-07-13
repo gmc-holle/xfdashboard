@@ -45,6 +45,7 @@ typedef struct _XfdashboardViewManagerPrivate		XfdashboardViewManagerPrivate;
 
 struct _XfdashboardViewManager
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject							parent_instance;
 

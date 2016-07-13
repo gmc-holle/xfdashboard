@@ -70,6 +70,7 @@ typedef struct _XfdashboardBackgroundPrivate		XfdashboardBackgroundPrivate;
 
 struct _XfdashboardBackground
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardActor				parent_instance;
 

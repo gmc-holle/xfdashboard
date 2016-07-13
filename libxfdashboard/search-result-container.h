@@ -51,6 +51,7 @@ typedef struct _XfdashboardSearchResultContainerPrivate			XfdashboardSearchResul
 
 struct _XfdashboardSearchResultContainer
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardActor							parent_instance;
 

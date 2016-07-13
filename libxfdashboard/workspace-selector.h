@@ -45,6 +45,7 @@ typedef struct _XfdashboardWorkspaceSelectorPrivate		XfdashboardWorkspaceSelecto
 
 struct _XfdashboardWorkspaceSelector
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardBackground				parent_instance;
 

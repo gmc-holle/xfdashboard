@@ -49,6 +49,7 @@ typedef struct _XfdashboardViewpadClass			XfdashboardViewpadClass;
 
 struct _XfdashboardViewpad
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardBackground		parent_instance;
 

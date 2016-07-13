@@ -49,6 +49,7 @@ typedef struct _XfdashboardApplicationButtonPrivate		XfdashboardApplicationButto
 
 struct _XfdashboardApplicationButton
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardButton						parent_instance;
 

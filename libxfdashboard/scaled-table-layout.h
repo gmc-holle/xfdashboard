@@ -49,6 +49,7 @@ typedef struct _XfdashboardScaledTableLayoutClass		XfdashboardScaledTableLayoutC
 
 struct _XfdashboardScaledTableLayout
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterLayoutManager 				parent_instance;
 

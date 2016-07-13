@@ -49,6 +49,7 @@ typedef struct _XfdashboardSearchManagerPrivate		XfdashboardSearchManagerPrivate
 
 struct _XfdashboardSearchManager
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject								parent_instance;
 

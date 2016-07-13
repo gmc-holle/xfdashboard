@@ -51,6 +51,7 @@ typedef struct _XfdashboardLiveWindowPrivate		XfdashboardLiveWindowPrivate;
 
 struct _XfdashboardLiveWindow
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardBackground			parent_instance;
 

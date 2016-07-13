@@ -47,6 +47,7 @@ typedef struct _XfdashboardOutlineEffectPrivate		XfdashboardOutlineEffectPrivate
 
 struct _XfdashboardOutlineEffect
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterEffect						parent_instance;
 

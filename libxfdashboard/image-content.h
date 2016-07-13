@@ -46,6 +46,7 @@ typedef struct _XfdashboardImageContentPrivate		XfdashboardImageContentPrivate;
 
 struct _XfdashboardImageContent
 {
+	/*< private >*/
 	/* Parent instance */
 	ClutterImage						parent_instance;
 

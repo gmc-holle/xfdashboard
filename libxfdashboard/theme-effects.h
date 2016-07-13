@@ -45,6 +45,7 @@ typedef struct _XfdashboardThemeEffectsPrivate		XfdashboardThemeEffectsPrivate;
 
 struct _XfdashboardThemeEffects
 {
+	/*< private >*/
 	/* Parent instance */
 	GObject								parent_instance;
 
