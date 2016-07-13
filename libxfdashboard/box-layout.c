@@ -28,12 +28,12 @@
  * @short_description: A layout manager arranging children on a single line
  * @include: xfdashboard/box-layout.h
  *
- * A #ClutterBoxLayout derived layout manager arranging children on a single line
- * which disregards text direction.
+ * The #XfdashboardBoxLayout layout manager is a #ClutterBoxLayout derived layout
+ * manager arranging children on a single line but disregards any text direction.
  *
- * It behave like #ClutterBoxLayout but it enforces a left-to-right layout of
- * all children when set to horizontal orientation. This is the difference of
- * this layout manager to #ClutterBoxLayout.
+ * It behaves like #ClutterBoxLayout but it enforces a left-to-right layout of
+ * all children when set to horizontal orientation. This is the difference of the
+ * #XfdashboardBoxLayout layout manager to the #ClutterBoxLayout layout manager.
  */
 
 #ifdef HAVE_CONFIG_H
