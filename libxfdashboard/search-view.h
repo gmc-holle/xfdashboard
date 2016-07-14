@@ -43,8 +43,15 @@ typedef struct _XfdashboardSearchView			XfdashboardSearchView;
 typedef struct _XfdashboardSearchViewPrivate	XfdashboardSearchViewPrivate;
 typedef struct _XfdashboardSearchViewClass		XfdashboardSearchViewClass;
 
+/**
+ * XfdashboardSearchView:
+ *
+ * The #XfdashboardSearchView structure contains only private data and
+ * should be accessed using the provided API
+ */
 struct _XfdashboardSearchView
 {
+	/*< private >*/
 	/* Parent instance */
 	XfdashboardView					parent_instance;
 
@@ -52,6 +59,13 @@ struct _XfdashboardSearchView
 	XfdashboardSearchViewPrivate	*priv;
 };
 
+/**
+ * XfdashboardSearchViewClass:
+ * @search_reset: Class handler for the #XfdashboardSearchViewClass::search-reset signal
+ * @search_updated: Class handler for the #XfdashboardSearchViewClass::search-updated signal
+ *
+ * The #XfdashboardSearchViewClass structure contains only private data
+ */
 struct _XfdashboardSearchViewClass
 {
 	/*< private >*/
@@ -69,8 +83,6 @@ GType xfdashboard_search_view_get_type(void) G_GNUC_CONST;
 
 void xfdashboard_search_view_reset_search(XfdashboardSearchView *self);
 void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gchar *inSearchString);
-
-void xfdashboard_search_view_reset_search_selection(XfdashboardSearchView *self);
 
 G_END_DECLS
 

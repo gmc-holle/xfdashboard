@@ -21,6 +21,27 @@
  * 
  */
 
+/**
+ * SECTION:search-view
+ * @short_description: A view showing results for a search of requested search terms
+ * @include: xfdashboard/search-view.h
+ *
+ * This view #XfdashboardSearchView is a view used to show the results of a search.
+ * It requests all registered and enabled search providers to return a result set
+ * for the search term provided with xfdashboard_search_view_update_search(). For
+ * each item in the result set this view will requests an actor at the associated
+ * search provider to display that result item.
+ *
+ * To clear the results and to stop further searches the function
+ * xfdashboard_search_view_reset_search() should be called. Usually the application
+ * will also switch back to active view before the search was started.
+ *
+ * <note><para>
+ * This view is an internal view and registered by the core of the application.
+ * You should not register an additional instance of this view at #XfdashboardViewManager.
+ * </para></note>
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -1619,6 +1640,13 @@ static void xfdashboard_search_view_class_init(XfdashboardSearchViewClass *klass
 	g_type_class_add_private(klass, sizeof(XfdashboardSearchViewPrivate));
 
 	/* Define signals */
+	/**
+	 * XfdashboardSearchView::search-reset:
+	 * @self: The #XfdashboardSearchView whose search was resetted
+	 *
+	 * The ::search-reset signal is emitted when the current search is cancelled
+	 * and resetted.
+	 */
 	XfdashboardSearchViewSignals[SIGNAL_SEARCH_RESET]=
 		g_signal_new("search-reset",
 						G_TYPE_FROM_CLASS(klass),
@@ -1630,6 +1658,13 @@ static void xfdashboard_search_view_class_init(XfdashboardSearchViewClass *klass
 						G_TYPE_NONE,
 						0);
 
+	/**
+	 * XfdashboardSearchView::search-updated:
+	 * @self: The #XfdashboardSearchView whose search was updated
+	 *
+	 * The ::search-updated signal is emitted each time the search term has changed
+	 * and all search providers have returned their result which are shown by @self.
+	 */
 	XfdashboardSearchViewSignals[SIGNAL_SEARCH_UPDATED]=
 		g_signal_new("search-updated",
 						G_TYPE_FROM_CLASS(klass),
@@ -1704,7 +1739,13 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 
 /* IMPLEMENTATION: Public API */
 
-/* Reset an ongoing search */
+/**
+ * xfdashboard_search_view_reset_search:
+ * @self: A #XfdashboardSearchView
+ *
+ * Cancels and resets the current search at @self. All results will be cleared
+ * and usually the view switches back to the one before the search was started.
+ */
 void xfdashboard_search_view_reset_search(XfdashboardSearchView *self)
 {
 	XfdashboardSearchViewPrivate	*priv;
@@ -1775,7 +1816,17 @@ void xfdashboard_search_view_reset_search(XfdashboardSearchView *self)
 	g_signal_emit(self, XfdashboardSearchViewSignals[SIGNAL_SEARCH_RESET], 0);
 }
 
-/* Start a new search or update an ongoing one */
+/**
+ * xfdashboard_search_view_update_search:
+ * @self: A #XfdashboardSearchView
+ * @inSearchString: The search term to use for new search or to update current one
+ *
+ * Starts a new search or update the current search at @self with the updated
+ * search terms in @inSearchString. All search providers will be asked to provide
+ * a initial result set for @inSearchString if a new search is started or to
+ * return an updated result set for the new search term in @inSearchString which
+ * are then shown by @self.
+ */
 void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gchar *inSearchString)
 {
 	XfdashboardSearchViewPrivate				*priv;
