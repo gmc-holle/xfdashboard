@@ -432,3 +432,29 @@ void xfdashboard_window_tracker_monitor_get_geometry(XfdashboardWindowTrackerMon
 	if(outWidth) *outWidth=priv->geometry.width;
 	if(outHeight) *outHeight=priv->geometry.height;
 }
+
+/* Check if requested position is inside monitor's geometry */
+gboolean xfdashboard_window_tracker_monitor_contains(XfdashboardWindowTrackerMonitor *self,
+														gint inX,
+														gint inY)
+{
+	XfdashboardWindowTrackerMonitorPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self), FALSE);
+
+	priv=self->priv;
+
+	/* Check if requested position is inside monitor's geometry */
+	if(inX>=priv->geometry.x &&
+		inX<(priv->geometry.x+priv->geometry.width) &&
+		inY>=priv->geometry.y &&
+		inY<(priv->geometry.y+priv->geometry.height))
+	{
+		return(TRUE);
+	}
+
+	/* If we get here the requested position is not inside this monitor's geometry,
+	 * so return FALSE.
+	 */
+	return(FALSE);
+}

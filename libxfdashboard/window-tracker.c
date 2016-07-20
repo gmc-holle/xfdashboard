@@ -1487,6 +1487,41 @@ XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_primary_monitor(
 	return(self->priv->primaryMonitor);
 }
 
+/* Get monitor at requested position */
+XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_position(XfdashboardWindowTracker *self,
+																					gint inX,
+																					gint inY)
+{
+	XfdashboardWindowTrackerPrivate		*priv;
+	GList								*iter;
+	XfdashboardWindowTrackerMonitor		*monitor;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
+
+	priv=self->priv;
+
+	/* Iterate through monitors and return the one containing the requested position */
+	for(iter=priv->monitors; iter; iter=g_list_next(iter))
+	{
+		/* Get monitor at iterator */
+		monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR(iter->data);
+		if(!monitor) continue;
+
+		/* Check if this monitor contains the requested position. If it does
+		 * then return it.
+		 */
+		if(xfdashboard_window_tracker_monitor_contains(monitor, inX, inY))
+		{
+			return(monitor);
+		}
+	}
+
+	/* If we get here none of the monitors contains the requested position,
+	 * so return NULL here.
+	 */
+	return(NULL);
+}
+
 /* Get width of screen */
 gint xfdashboard_window_tracker_get_screen_width(XfdashboardWindowTracker *self)
 {

@@ -88,6 +88,10 @@ void xfdashboard_window_tracker_monitor_get_geometry(XfdashboardWindowTrackerMon
 														gint *outWidth,
 														gint *outHeight);
 
+gboolean xfdashboard_window_tracker_monitor_contains(XfdashboardWindowTrackerMonitor *self,
+														gint inX,
+														gint inY);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_WINDOW_TRACKER_MONITOR__ */

@@ -130,6 +130,9 @@ GList* xfdashboard_window_tracker_get_monitors(XfdashboardWindowTracker *self);
 XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_number(XfdashboardWindowTracker *self,
 																					gint inNumber);
 XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_primary_monitor(XfdashboardWindowTracker *self);
+XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_position(XfdashboardWindowTracker *self,
+																					gint inX,
+																					gint inY);
 
 gint xfdashboard_window_tracker_get_screen_width(XfdashboardWindowTracker *self);
 gint xfdashboard_window_tracker_get_screen_height(XfdashboardWindowTracker *self);
