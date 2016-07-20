@@ -730,29 +730,54 @@ gchar* xfdashboard_get_enum_value_name(GType inEnumClass, gint inValue)
 }
 
 /* Dump actors */
-static void _xfdashboard_dump_actor_internal(ClutterActor *inActor, gint inLevel)
+static void _xfdashboard_dump_actor_print(ClutterActor *inActor, gint inLevel)
 {
-	ClutterActorIter	iter;
-	ClutterActor		*child;
-	gint				i;
+	XfdashboardStylable		*stylable;
+	ClutterActorBox			allocation;
+	gint					i;
 
 	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
 	g_return_if_fail(inLevel>=0);
 
+	/* Check if actor is stylable to retrieve style configuration */
+	stylable=NULL;
+	if(XFDASHBOARD_IS_STYLABLE(inActor)) stylable=XFDASHBOARD_STYLABLE(inActor);
+
+	/* Dump actor */
+	for(i=0; i<inLevel; i++) g_print("  ");
+	clutter_actor_get_allocation_box(inActor, &allocation);
+	g_print("+- %s@%p [%s%s%s%s%s%s] - geometry: %.2f,%.2f [%.2fx%.2f], mapped: %s, visible: %s, layout: %s, children: %d\n",
+				G_OBJECT_TYPE_NAME(inActor), inActor,
+				clutter_actor_get_name(inActor) ? " #" : "",
+				clutter_actor_get_name(inActor) ? clutter_actor_get_name(inActor) : "",
+				stylable && xfdashboard_stylable_get_classes(stylable) ? "." : "",
+				stylable && xfdashboard_stylable_get_classes(stylable) ? xfdashboard_stylable_get_classes(stylable) : "",
+				stylable && xfdashboard_stylable_get_pseudo_classes(stylable) ? ":" : "",
+				stylable && xfdashboard_stylable_get_pseudo_classes(stylable) ? xfdashboard_stylable_get_pseudo_classes(stylable) : "",
+				allocation.x1,
+				allocation.y1,
+				allocation.x2-allocation.x1,
+				allocation.y2-allocation.y1,
+				clutter_actor_is_mapped(inActor) ? "yes" : "no",
+				clutter_actor_is_visible(inActor) ? "yes" : "no",
+				clutter_actor_get_layout_manager(inActor) ? G_OBJECT_TYPE_NAME(clutter_actor_get_layout_manager(inActor)) : "none",
+				clutter_actor_get_n_children(inActor));
+
+}
+
+static void _xfdashboard_dump_actor_internal(ClutterActor *inActor, gint inLevel)
+{
+	ClutterActorIter		iter;
+	ClutterActor			*child;
+
+	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
+	g_return_if_fail(inLevel>0);
+
+	/* Dump children */
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inActor));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
-		for(i=0; i<inLevel; i++) g_print("  ");
-		g_print("+- %s@%p - name: %s - geometry: %.2f,%.2f [%.2fx%.2f], mapped: %s, visible: %s, children: %d\n",
-					G_OBJECT_TYPE_NAME(child), child,
-					clutter_actor_get_name(child),
-					clutter_actor_get_x(child),
-					clutter_actor_get_y(child),
-					clutter_actor_get_width(child),
-					clutter_actor_get_height(child),
-					clutter_actor_is_mapped(child) ? "yes" : "no",
-					clutter_actor_is_visible(child) ? "yes" : "no",
-					clutter_actor_get_n_children(child));
+		_xfdashboard_dump_actor_print(child, inLevel);
 		if(clutter_actor_get_n_children(child)>0) _xfdashboard_dump_actor_internal(child, inLevel+1);
 	}
 }
@@ -772,5 +797,13 @@ static void _xfdashboard_dump_actor_internal(ClutterActor *inActor, gint inLevel
  */
 void xfdashboard_dump_actor(ClutterActor *inActor)
 {
-	_xfdashboard_dump_actor_internal(inActor, 0);
+	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
+
+	/* Dump the requested top-level actor */
+	_xfdashboard_dump_actor_print(inActor, 0);
+
+	/* Dump children of top-level actor which calls itself recursive
+	 * if any child has children.
+	 */
+	_xfdashboard_dump_actor_internal(inActor, 1);
 }
