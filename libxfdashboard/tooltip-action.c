@@ -161,7 +161,7 @@ static gboolean _xfdashboard_tooltip_action_on_captured_event_after_tooltip(Xfda
 {
 	gboolean		doHide;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_TOOLTIP_ACTION(self), G_SOURCE_REMOVE);
+	g_return_val_if_fail(XFDASHBOARD_IS_TOOLTIP_ACTION(self), CLUTTER_EVENT_PROPAGATE);
 	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(inUserData), CLUTTER_EVENT_PROPAGATE);
 
 	/* Check if tooltip should be hidden depending on event type */
