@@ -1567,7 +1567,7 @@ void xfdashboard_application_quit_forced(XfdashboardApplication *self)
  *
  * If @self is %NULL the default singleton is used if it was created.
  *
- * Return value: transfer none): The #XfdashboardStage of application at @self.
+ * Return value: (transfer none): The #XfdashboardStage of application at @self.
  */
 XfdashboardStage* xfdashboard_application_get_stage(XfdashboardApplication *self)
 {
@@ -1594,7 +1594,7 @@ XfdashboardStage* xfdashboard_application_get_stage(XfdashboardApplication *self
  *
  * If @self is %NULL the default singleton is used if it was created.
  *
- * Return value: transfer none): The current #XfdashboardTheme of application at @self.
+ * Return value: (transfer none): The current #XfdashboardTheme of application at @self.
  */
 XfdashboardTheme* xfdashboard_application_get_theme(XfdashboardApplication *self)
 {
@@ -1622,7 +1622,7 @@ XfdashboardTheme* xfdashboard_application_get_theme(XfdashboardApplication *self
  *
  * If @self is %NULL the default singleton is used if it was created.
  *
- * Return value: transfer none): The current #XfconfChannel of application at @self.
+ * Return value: (transfer none): The current #XfconfChannel of application at @self.
  */
 XfconfChannel* xfdashboard_application_get_xfconf_channel(XfdashboardApplication *self)
 {
