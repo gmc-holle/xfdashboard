@@ -919,6 +919,7 @@ static ClutterActor* _xfdashboard_workspace_selector_focusable_find_selection(Xf
 	XfdashboardWorkspaceSelectorPrivate		*priv;
 	XfdashboardLiveWorkspace				*selection;
 	ClutterActor							*newSelection;
+	gchar									*valueName;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_WORKSPACE_SELECTOR(inFocusable), NULL);
@@ -941,10 +942,12 @@ static ClutterActor* _xfdashboard_workspace_selector_focusable_find_selection(Xf
 	 */
 	if(!inSelection)
 	{
-		g_debug("No selection at %s, so select first child %s for direction %u",
+		valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
+		g_debug("No selection at %s, so select first child %s for direction %s",
 				G_OBJECT_TYPE_NAME(self),
 				selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
-				inDirection);
+				valueName);
+		g_free(valueName);
 
 		return(CLUTTER_ACTOR(selection));
 	}
@@ -1023,8 +1026,6 @@ static ClutterActor* _xfdashboard_workspace_selector_focusable_find_selection(Xf
 
 		default:
 			{
-				gchar					*valueName;
-
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
 				g_critical(_("Focusable object %s does not handle selection direction of type %s."),
 							G_OBJECT_TYPE_NAME(self),
