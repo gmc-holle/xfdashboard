@@ -998,6 +998,10 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 	xfdashboard_actor_install_stylable_property_by_name(klass, "y-expand");
 	xfdashboard_actor_install_stylable_property_by_name(klass, "x-align");
 	xfdashboard_actor_install_stylable_property_by_name(klass, "y-align");
+	xfdashboard_actor_install_stylable_property_by_name(klass, "margin-top");
+	xfdashboard_actor_install_stylable_property_by_name(klass, "margin-bottom");
+	xfdashboard_actor_install_stylable_property_by_name(klass, "margin-left");
+	xfdashboard_actor_install_stylable_property_by_name(klass, "margin-right");
 }
 
 /* Object initialization
