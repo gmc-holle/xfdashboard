@@ -1120,12 +1120,12 @@ const XfdashboardBinding* xfdashboard_bindings_pool_find_for_event(XfdashboardBi
 	lookupBinding=xfdashboard_binding_new_for_event(inEvent);
 	if(!lookupBinding) return(NULL);
 
-	/* Beginning at class of actor check if we have a binding stored matching
+	/* Beginning at class of actor, check if we have a binding stored matching
 	 * the binding to lookup. If any matches return the binding found.
 	 * If it does not match and the class has interfaces collect them but
 	 * avoid duplicates. Then get parent class and repeat the checks as described
 	 * before.
-	 * If we reach top class without a matching binding check if we have
+	 * If we reach top class without a matching binding, check if we have
 	 * a binding for any interface we collected on our way through parent classes
 	 * and return the matching binding if found.
 	 */
