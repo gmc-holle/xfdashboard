@@ -841,12 +841,125 @@ XfdashboardFocusable* xfdashboard_focus_manager_get_previous_focusable(Xfdashboa
 	return(NULL);
 }
 
+/* Determine list of target actors and the action to perform for key-press or
+ * key-release event.
+ */
+gboolean xfdashboard_focus_manager_get_event_targets_and_action(XfdashboardFocusManager *self,
+																const ClutterEvent *inEvent,
+																XfdashboardFocusable *inFocusable,
+																GSList **outTargets,
+																const gchar **outAction)
+{
+	XfdashboardFocusManagerPrivate	*priv;
+	XfdashboardBindingsPool			*bindings;
+	const XfdashboardBinding		*binding;
+	const gchar						*action;
+	GSList							*targetFocusables;
+	gboolean						status;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), FALSE);
+	g_return_val_if_fail(inEvent, FALSE);
+	g_return_val_if_fail(clutter_event_type(inEvent)==CLUTTER_KEY_PRESS || clutter_event_type(inEvent)==CLUTTER_KEY_RELEASE, FALSE);
+	g_return_val_if_fail(!inFocusable || XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
+	g_return_val_if_fail(outTargets && *outTargets==NULL, FALSE);
+	g_return_val_if_fail(outAction && *outAction==NULL, FALSE);
+
+	priv=self->priv;
+	action=NULL;
+	targetFocusables=NULL;
+	status=FALSE;
+
+	/* If no focusable actor was specified then use current focused actor */
+	if(!inFocusable)
+	{
+		inFocusable=priv->currentFocus;
+
+		/* If still no focusable actor is available we cannot handle event
+		 * so let the others try it by propagating event.
+		 */
+		if(!inFocusable) return(FALSE);
+	}
+
+	/* Take reference on ourselve and the focusable actor to keep them alive when handling event */
+	g_object_ref(self);
+	g_object_ref(inFocusable);
+
+	/* Lookup action for event and emit action if a binding was found
+	 * for this event.
+	 */
+	bindings=xfdashboard_bindings_pool_get_default();
+	binding=xfdashboard_bindings_pool_find_for_event(bindings, CLUTTER_ACTOR(inFocusable), inEvent);
+	if(binding)
+	{
+		const gchar					*target;
+
+		/* Get action of binding */
+		action=xfdashboard_binding_get_action(binding);
+
+		/* Build up list of targets which is either the requested focusable actor,
+		 * the current focused actor or focusable actors of a specific type
+		 */
+		targetFocusables=NULL;
+		target=xfdashboard_binding_get_target(binding);
+		if(target)
+		{
+			/* Target class name is specified so build up a list of targets */
+			targetFocusables=_xfdashboard_focus_manager_get_targets_for_binding(self, binding);
+		}
+			else
+			{
+				/* No target class name was specified so add requested focusable
+				 * actor to list of target.
+				 */
+				targetFocusables=g_slist_append(targetFocusables, g_object_ref(inFocusable));
+			}
+
+		/* If target list is not empty then this event can be handled and status
+		 * can to set to TRUE to reflect this state. Otherwise release allocated
+		 * resources to prevent returning them to callee.
+		 */
+		if(g_slist_length(targetFocusables)>0) status=TRUE;
+			else
+			{
+				/* Release allocated resources */
+				if(targetFocusables)
+				{
+					g_slist_free_full(targetFocusables, g_object_unref);
+					targetFocusables=NULL;
+				}
+
+				if(action)
+				{
+					action=NULL;
+				}
+			}
+	}
+	g_object_unref(bindings);
+
+	/* Release reference on ourselve and the focusable actor to took to keep them alive  */
+	g_object_unref(inFocusable);
+	g_object_unref(self);
+
+	/* Store result at pointers if given otherwise release allocated resources */
+	if(outTargets) *outTargets=targetFocusables;
+		else g_slist_free_full(targetFocusables, g_object_unref);
+
+	if(outAction) *outAction=action;
+
+	/* Return status result */
+	return(status);
+}
+
 /* Handle key event (it is either key-press or key-release) by focusable actor
  * which has the focus or by specified actor.
  */
-gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *self, const ClutterEvent *inEvent, XfdashboardFocusable *inFocusable)
+gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *self,
+													const ClutterEvent *inEvent,
+													XfdashboardFocusable *inFocusable)
 {
 	XfdashboardFocusManagerPrivate	*priv;
+	GSList							*targetFocusables;
+	const gchar						*action;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), CLUTTER_EVENT_PROPAGATE);
 	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
@@ -866,153 +979,114 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 		if(!inFocusable) return(CLUTTER_EVENT_PROPAGATE);
 	}
 
-	/* Synthesize event for specified focusable actor */
-	if(inFocusable)
+	/* Get targets and action for this event and synthesize event for specified
+	 * focusable actor
+	 */
+	targetFocusables=NULL;
+	action=NULL;
+	if(xfdashboard_focus_manager_get_event_targets_and_action(self, inEvent, inFocusable, &targetFocusables, &action))
 	{
-		XfdashboardBindingsPool			*bindings;
-		const XfdashboardBinding		*binding;
-		gboolean						eventStatus;
+		gboolean				eventStatus;
+		GSList					*iter;
+		GSignalQuery			signalData={ 0, };
 
-		/* Take reference on ourselve and the focusable actor to keep them alive when handling event */
-		g_object_ref(self);
-		g_object_ref(inFocusable);
-
-		/* Lookup action for event and emit action if a binding was found
-		 * for this event.
-		 */
 		eventStatus=CLUTTER_EVENT_PROPAGATE;
-		bindings=xfdashboard_bindings_pool_get_default();
-		binding=xfdashboard_bindings_pool_find_for_event(bindings, CLUTTER_ACTOR(inFocusable), inEvent);
-		if(binding)
+
+		/* Emit action of binding to each actor in target list just build up */
+		g_debug("Target list for action '%s' has %d actors",
+					action,
+					g_slist_length(targetFocusables));
+
+		for(iter=targetFocusables; iter; iter=g_slist_next(iter))
 		{
-			const gchar					*target;
-			const gchar					*action;
-			GSList						*targetFocusables;
-			GSList						*iter;
-			GSignalQuery				signalData={ 0, };
+			GObject				*targetObject;
+			guint				signalID;
 
-			/* Get action of binding */
-			action=xfdashboard_binding_get_action(binding);
+			/* Get target to emit action signal at */
+			targetObject=G_OBJECT(iter->data);
 
-			/* Build up list of targets which is either the requested focusable actor,
-			 * the current focused actor or focusable actors of a specific type
-			 */
-			targetFocusables=NULL;
-			target=xfdashboard_binding_get_target(binding);
-			if(target)
+			/* Check if target provides action requested as signal */
+			signalID=g_signal_lookup(action, G_OBJECT_TYPE(targetObject));
+			if(!signalID)
 			{
-				/* Target class name is specified so build up a list of targets */
-				targetFocusables=_xfdashboard_focus_manager_get_targets_for_binding(self, binding);
+				g_warning(_("Object type %s does not provide action '%s'"),
+							G_OBJECT_TYPE_NAME(targetObject),
+							action);
+				continue;
 			}
-				else
-				{
-					/* No target class name was specified so add requested focusable
-					 * actor to list of target.
-					 */
-					targetFocusables=g_slist_append(targetFocusables, g_object_ref(inFocusable));
-				}
 
-			g_debug("Target list for action '%s' has %d actors",
-						action,
-						g_slist_length(targetFocusables));
+			/* Query signal for detailed data */
+			g_signal_query(signalID, &signalData);
 
-			/* Emit action of binding to each actor in target list just build up */
-			for(iter=targetFocusables; iter; iter=g_slist_next(iter))
+			/* Check if signal is an action signal */
+			if(!(signalData.signal_flags & G_SIGNAL_ACTION))
 			{
-				GObject				*targetObject;
-				guint				signalID;
-
-				/* Get target to emit action signal at */
-				targetObject=G_OBJECT(iter->data);
-
-				/* Check if target provides action requested as signal */
-				signalID=g_signal_lookup(action, G_OBJECT_TYPE(targetObject));
-				if(!signalID)
-				{
-					g_warning(_("Object type %s does not provide action '%s'"),
-								G_OBJECT_TYPE_NAME(targetObject),
-								action);
-					continue;
-				}
-
-				/* Query signal for detailed data */
-				g_signal_query(signalID, &signalData);
-
-				/* Check if signal is an action signal */
-				if(!(signalData.signal_flags & G_SIGNAL_ACTION))
-				{
-					g_warning(_("Action '%s' at object type %s is not an action signal."),
-								action,
-								G_OBJECT_TYPE_NAME(targetObject));
-					continue;
-				}
+				g_warning(_("Action '%s' at object type %s is not an action signal."),
+							action,
+							G_OBJECT_TYPE_NAME(targetObject));
+				continue;
+			}
 
 #if DEBUG
-				/* In debug mode also check if signal has right signature
-				 * to be able to handle this action properly.
-				 */
-				if(signalID)
+			/* In debug mode also check if signal has right signature
+			 * to be able to handle this action properly.
+			 */
+			if(signalID)
+			{
+				GType				returnValueType=G_TYPE_BOOLEAN;
+				GType				parameterTypes[]={ XFDASHBOARD_TYPE_FOCUSABLE, G_TYPE_STRING, CLUTTER_TYPE_EVENT };
+				guint				parameterCount;
+				guint				i;
+
+				/* Check if signal wants the right type of return value */
+				if(signalData.return_type!=returnValueType)
 				{
-					GType				returnValueType=G_TYPE_BOOLEAN;
-					GType				parameterTypes[]={ XFDASHBOARD_TYPE_FOCUSABLE, G_TYPE_STRING, CLUTTER_TYPE_EVENT };
-					guint				parameterCount;
-					guint				i;
+					g_critical(_("Action '%s' at object type %s wants return value of type %s but expected is %s."),
+								action,
+								G_OBJECT_TYPE_NAME(targetObject),
+								g_type_name(signalData.return_type),
+								g_type_name(returnValueType));
+				}
 
-					/* Check if signal wants the right type of return value */
-					if(signalData.return_type!=returnValueType)
+				/* Check if signals wants the right number and types of parameters */
+				parameterCount=sizeof(parameterTypes)/sizeof(GType);
+				if(signalData.n_params!=parameterCount)
+				{
+					g_critical(_("Action '%s' at object type %s wants %u parameters but expected are %u."),
+								action,
+								G_OBJECT_TYPE_NAME(targetObject),
+								signalData.n_params,
+								parameterCount);
+				}
+
+				for(i=0; i<(parameterCount<signalData.n_params ? parameterCount : signalData.n_params); i++)
+				{
+					if(signalData.param_types[i]!=parameterTypes[i])
 					{
-						g_critical(_("Action '%s' at object type %s wants return value of type %s but expected is %s."),
+						g_critical(_("Action '%s' at object type %s wants type %s at parameter %u but type %s is expected."),
 									action,
 									G_OBJECT_TYPE_NAME(targetObject),
-									g_type_name(signalData.return_type),
-									g_type_name(returnValueType));
-					}
-
-					/* Check if signals wants the right number and types of parameters */
-					parameterCount=sizeof(parameterTypes)/sizeof(GType);
-					if(signalData.n_params!=parameterCount)
-					{
-						g_critical(_("Action '%s' at object type %s wants %u parameters but expected are %u."),
-									action,
-									G_OBJECT_TYPE_NAME(targetObject),
-									signalData.n_params,
-									parameterCount);
-					}
-
-					for(i=0; i<(parameterCount<signalData.n_params ? parameterCount : signalData.n_params); i++)
-					{
-						if(signalData.param_types[i]!=parameterTypes[i])
-						{
-							g_critical(_("Action '%s' at object type %s wants type %s at parameter %u but type %s is expected."),
-										action,
-										G_OBJECT_TYPE_NAME(targetObject),
-										g_type_name(signalData.param_types[i]),
-										i+1,
-										g_type_name(parameterTypes[i]));
-						}
+									g_type_name(signalData.param_types[i]),
+									i+1,
+									g_type_name(parameterTypes[i]));
 					}
 				}
+			}
 #endif
 
-				/* Emit action signal at target */
-				g_debug("Emitting action signal '%s' at focusable actor %s",
-							action,
-							G_OBJECT_TYPE_NAME(targetObject));
-				g_signal_emit_by_name(targetObject, action, inFocusable, action, inEvent, &eventStatus);
-				g_debug("Action signal '%s' was %s by focusable actor %s",
-							action,
-							eventStatus==CLUTTER_EVENT_STOP ? "handled" : "not handled",
-							G_OBJECT_TYPE_NAME(targetObject));
-			}
-
-			/* Release allocated resources */
-			g_slist_free_full(targetFocusables, g_object_unref);
+			/* Emit action signal at target */
+			g_debug("Emitting action signal '%s' at focusable actor %s",
+						action,
+						G_OBJECT_TYPE_NAME(targetObject));
+			g_signal_emit_by_name(targetObject, action, inFocusable, action, inEvent, &eventStatus);
+			g_debug("Action signal '%s' was %s by focusable actor %s",
+						action,
+						eventStatus==CLUTTER_EVENT_STOP ? "handled" : "not handled",
+						G_OBJECT_TYPE_NAME(targetObject));
 		}
-		g_object_unref(bindings);
 
-		/* Release reference on ourselve and the focusable actor to took to keep them alive  */
-		g_object_unref(inFocusable);
-		g_object_unref(self);
+		/* Release allocated resources */
+		g_slist_free_full(targetFocusables, g_object_unref);
 
 		if(eventStatus==CLUTTER_EVENT_STOP) return(CLUTTER_EVENT_STOP);
 	}

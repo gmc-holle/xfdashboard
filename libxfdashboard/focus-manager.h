@@ -104,7 +104,14 @@ XfdashboardFocusable* xfdashboard_focus_manager_get_next_focusable(XfdashboardFo
 XfdashboardFocusable* xfdashboard_focus_manager_get_previous_focusable(XfdashboardFocusManager *self,
 																		XfdashboardFocusable *inBeginFocusable);
 
-gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *self, const ClutterEvent *inEvent, XfdashboardFocusable *inFocusable);
+gboolean xfdashboard_focus_manager_get_event_targets_and_action(XfdashboardFocusManager *self,
+																const ClutterEvent *inEvent,
+																XfdashboardFocusable *inFocusable,
+																GSList **outTargets,
+																const gchar **outAction);
+gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *self,
+													const ClutterEvent *inEvent,
+													XfdashboardFocusable *inFocusable);
 
 G_END_DECLS
 
