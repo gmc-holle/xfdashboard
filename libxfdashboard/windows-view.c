@@ -1606,7 +1606,7 @@ static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(Xfdashbo
 
 		case XFDASHBOARD_SELECTION_TARGET_NEXT:
 			newSelection=clutter_actor_get_next_sibling(inSelection);
-			if(!selection) selection=clutter_actor_get_previous_sibling(inSelection);
+			if(!newSelection) newSelection=clutter_actor_get_previous_sibling(inSelection);
 			break;
 
 		case XFDASHBOARD_SELECTION_TARGET_PAGE_LEFT:
