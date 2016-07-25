@@ -1,9 +1,10 @@
 <bindings>
 	<!-- Global bindings -->
 	<key code="Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-next</key>
-	<key code="ISO_Left_Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-next</key>
+	<key code="KP_Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-next</key>
 	<key code="<Shift>-Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-previous</key>
-	<key code="<Shift>-ISO_Left_Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-previous</key>
+	<key code="<Shift>-KP_Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-previous</key>
+	<key code="ISO_Left_Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-previous</key>
 
 	<key code="<Ctrl>-w" source="XfdashboardFocusable" target="XfdashboardWindowsView" when="released" allow-unfocusable-targets="true">view-activate</key>
 	<key code="<Ctrl>-a" source="XfdashboardFocusable" target="XfdashboardApplicationsView" when="released" allow-unfocusable-targets="true">view-activate</key>
