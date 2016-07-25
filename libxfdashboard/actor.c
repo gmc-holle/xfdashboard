@@ -204,16 +204,16 @@ static void _xfdashboard_actor_on_reactive_changed(GObject *inObject,
 
 	self=XFDASHBOARD_ACTOR(inObject);
 
-	/* Set pseudo-class ':insensitive' if actor is now not reactive
+	/* Add pseudo-class ':insensitive' if actor is now not reactive
 	 * and remove this pseudo-class if actor is now reactive.
 	 */
 	if(clutter_actor_get_reactive(CLUTTER_ACTOR(self)))
 	{
-		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(self), "insensitive");
+		xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(self), "insensitive");
 	}
 		else
 		{
-			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(self), "insensitive");
+			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(self), "insensitive");
 		}
 
 	/* Invalide styling to get it recomputed */
