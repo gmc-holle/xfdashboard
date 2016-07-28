@@ -329,8 +329,8 @@ static void _xfdashboard_windows_view_recreate_window_actors(XfdashboardWindowsV
 	if(priv->selectedItem)
 	{
 		g_object_remove_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
+		priv->selectedItem=NULL;
 	}
-	priv->selectedItem=NULL;
 
 	/* Destroy all actors */
 	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
@@ -1465,7 +1465,7 @@ static gboolean _xfdashboard_windows_view_focusable_set_selection(XfdashboardFoc
 	priv->selectedItem=inSelection;
 
 	/* Add weak reference at new selection */
-	g_object_add_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
+	if(priv->selectedItem) g_object_add_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
 
 	/* New selection was set successfully */
 	return(TRUE);
@@ -1796,6 +1796,12 @@ static void _xfdashboard_windows_view_dispose(GObject *inObject)
 	XfdashboardWindowsViewPrivate	*priv=XFDASHBOARD_WINDOWS_VIEW(self)->priv;
 
 	/* Release allocated resources */
+	if(priv->selectedItem)
+	{
+		g_object_remove_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
+		priv->selectedItem=NULL;
+	}
+
 	if(priv->scrollEventChangingWorkspaceStage)
 	{
 		if(priv->scrollEventChangingWorkspaceStageSignalID)

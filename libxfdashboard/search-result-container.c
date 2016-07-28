@@ -1083,6 +1083,12 @@ static void _xfdashboard_search_result_container_dispose(GObject *inObject)
 	/* Release allocated variables */
 	_xfdashboard_search_result_container_update_selection(self, NULL);
 
+	if(priv->selectedItem)
+	{
+		g_object_remove_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
+		priv->selectedItem=NULL;
+	}
+
 	if(priv->provider)
 	{
 		g_object_unref(priv->provider);

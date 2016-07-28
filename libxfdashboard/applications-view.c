@@ -762,12 +762,14 @@ static gboolean _xfdashboard_applications_view_focusable_set_selection(Xfdashboa
 
 	/* Set new selection */
 	priv->selectedItem=inSelection;
+	if(priv->selectedItem)
+	{
+		/* Add weak reference at new selection */
+		g_object_add_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
 
-	/* Add weak reference at new selection */
-	g_object_add_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
-
-	/* Ensure new selection is visible */
-	if(inSelection) xfdashboard_view_child_ensure_visible(XFDASHBOARD_VIEW(self), inSelection);
+		/* Ensure new selection is visible */
+		xfdashboard_view_child_ensure_visible(XFDASHBOARD_VIEW(self), priv->selectedItem);
+	}
 
 	/* New selection was set successfully */
 	return(TRUE);
@@ -1195,9 +1197,21 @@ static void _xfdashboard_applications_view_dispose(GObject *inObject)
 	XfdashboardApplicationsViewPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
-	if(priv->xfconfChannel) priv->xfconfChannel=NULL;
+	if(priv->selectedItem)
+	{
+		g_object_remove_weak_pointer(G_OBJECT(priv->selectedItem), &priv->selectedItem);
+		priv->selectedItem=NULL;
+	}
 
-	if(priv->layout) priv->layout=NULL;
+	if(priv->xfconfChannel)
+	{
+		priv->xfconfChannel=NULL;
+	}
+
+	if(priv->layout)
+	{
+		priv->layout=NULL;
+	}
 
 	if(priv->xfconfShowAllAppsMenuBindingID)
 	{
