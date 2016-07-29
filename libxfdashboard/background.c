@@ -118,13 +118,13 @@ static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackgroun
 
 	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
 
-	/* Do nothing if type does not include filling backgrouns */
+	/* Do nothing if type does not include filling background */
 	if(!(priv->type & XFDASHBOARD_BACKGROUND_TYPE_FILL)) return(CLUTTER_EVENT_PROPAGATE);
 
 	/* Determine if we should draw rounded corners */
 
 	/* Draw rectangle with or without rounded corners */
-	if((priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS) && 
+	if((priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS) &&
 		(priv->fillCorners & XFDASHBOARD_CORNERS_ALL) &&
 		priv->fillCornersRadius>0.0f)
 	{
