@@ -342,6 +342,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 #if !GARCON_CHECK_VERSION(0,3,0)
 	const gchar						*desktop;
 #endif
+	XfceSMClientRestartStyle		sessionManagementRestartStyle;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
 
@@ -369,9 +370,12 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 #endif
 
 	/* Setup the session management */
+	sessionManagementRestartStyle=XFCE_SM_CLIENT_RESTART_IMMEDIATELY;
+	if(g_getenv("XFDASHBOARD_FORCE_NEW_INSTANCE")) sessionManagementRestartStyle=XFCE_SM_CLIENT_RESTART_NORMAL;
+
 	priv->sessionManagementClient=xfce_sm_client_get();
 	xfce_sm_client_set_priority(priv->sessionManagementClient, XFCE_SM_CLIENT_PRIORITY_DEFAULT);
-	xfce_sm_client_set_restart_style(priv->sessionManagementClient, XFCE_SM_CLIENT_RESTART_IMMEDIATELY);
+	xfce_sm_client_set_restart_style(priv->sessionManagementClient, sessionManagementRestartStyle);
 	g_signal_connect_swapped(priv->sessionManagementClient, "quit", G_CALLBACK(_xfdashboard_application_on_session_quit), self);
 
 	if(!xfce_sm_client_connect(priv->sessionManagementClient, &error))
