@@ -993,6 +993,15 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	/* Shutdown session management */
 	if(priv->sessionManagementClient)
 	{
+		/* This instance looks like to be disposed normally and not like a crash
+		 * so set the restart style at session management to something that it
+		 * will not restart itself but shutting down.
+		 */
+		if(XFCE_IS_SM_CLIENT(priv->sessionManagementClient))
+		{
+			xfce_sm_client_set_restart_style(priv->sessionManagementClient, XFCE_SM_CLIENT_RESTART_NORMAL);
+		}
+
 		priv->sessionManagementClient=NULL;
 	}
 
