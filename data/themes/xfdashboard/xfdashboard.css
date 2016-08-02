@@ -580,3 +580,9 @@ XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selecte
 	margin-top: 2.0;
 	margin-bottom: 2.0;
 }
+
+.popup-menu.popup-menu-source-XfdashboardQuicklaunch
+{
+	show-title: true;
+	show-title-icon: true;
+}
