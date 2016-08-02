@@ -135,6 +135,7 @@ static void _xfdashboard_emblem_effect_paint(ClutterEffect *inEffect, ClutterEff
 	ClutterActorBox							textureCoordBox;
 	gfloat									offset;
 	gfloat									oversize;
+	CoglFramebuffer							*framebuffer;
 
 	g_return_if_fail(XFDASHBOARD_IS_EMBLEM_EFFECT(inEffect));
 
@@ -315,12 +316,13 @@ static void _xfdashboard_emblem_effect_paint(ClutterEffect *inEffect, ClutterEff
 		return;
 	}
 
-	cogl_push_source(priv->pipeline);
-	cogl_rectangle_with_texture_coords(rectangleBox.x1, rectangleBox.y1,
-										rectangleBox.x2, rectangleBox.y2,
-										textureCoordBox.x1, textureCoordBox.y1,
-										textureCoordBox.x2, textureCoordBox.y2);
-	cogl_pop_source();
+	framebuffer=cogl_get_draw_framebuffer();
+	cogl_framebuffer_draw_textured_rectangle(framebuffer,
+												priv->pipeline,
+												rectangleBox.x1, rectangleBox.y1,
+												rectangleBox.x2, rectangleBox.y2,
+												textureCoordBox.x1, textureCoordBox.y1,
+												textureCoordBox.x2, textureCoordBox.y2);
 }
 
 /* IMPLEMENTATION: GObject */
