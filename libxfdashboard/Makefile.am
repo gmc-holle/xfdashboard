@@ -55,6 +55,8 @@ libxfdashboard_la_headers = \
 	outline-effect.h \
 	plugin.h \
 	plugins-manager.h \
+	popup-menu.h \
+	popup-menu-item-meta.h \
 	quicklaunch.h \
 	scaled-table-layout.h \
 	scrollbar.h \
@@ -122,6 +124,8 @@ libxfdashboard_la_SOURCES = \
 	outline-effect.c \
 	plugin.c \
 	plugins-manager.c \
+	popup-menu.c \
+	popup-menu-item-meta.c \
 	quicklaunch.c \
 	scaled-table-layout.c \
 	scrollbar.c \
