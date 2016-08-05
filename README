@@ -29,6 +29,10 @@ libXdamage (for live windows)
 libXinerama (for multi-monitor support)
 
 
+On debian based distros, all requeriments are installed with:
+
+> apt-get install xfce4-dev-tools build-essentialglib2libglib2.0-devxorg-devlibwnck-3-devlibclutter-1.0-devlibgarcon-1-0-devlibxfconf-0-devlibxfce4util-devlibxfce4ui-2-devlibxcomposite-devlibxdamage-dev libxinerama-dev
+
 Homepage
 ========
 
