@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2016-05-05 12:57+0000\n"
+"PO-Revision-Date: 2016-07-09 13:46+0000\n"
 "Last-Translator: Moo\n"
 "Language-Team: Lithuanian (http://www.transifex.com/xfdashboard/xfdashboard/language/lt/)\n"
 "MIME-Version: 1.0\n"
@@ -2343,13 +2343,13 @@ msgstr ""
 #: ../libxfdashboard/search-result-container.c:1718
 #, c-format
 msgid "Show %d more results..."
-msgstr ""
+msgstr "Rodyti dar %d rezultatų..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:675
 #, c-format
 msgid "Show all %d results..."
-msgstr ""
+msgstr "Rodyti visus %d rezultatus..."
 
 #: ../libxfdashboard/search-result-container.c:710
 #, c-format
