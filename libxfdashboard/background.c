@@ -96,35 +96,22 @@ static GParamSpec* XfdashboardBackgroundProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
-/* Rectangle canvas should be redrawn */
-static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackground *self,
-																cairo_t *inContext,
-																int inWidth,
-																int inHeight,
-																gpointer inUserData)
+/* Draw border and corners */
+static void _xfdashboard_background_draw(XfdashboardBackground *self,
+											cairo_t *inContext,
+											int inWidth,
+											int inHeight)
 {
 	XfdashboardBackgroundPrivate	*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), TRUE);
-	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
+	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 
 	priv=self->priv;
 
-	/* Clear current contents of the canvas */
-	cairo_save(inContext);
-	cairo_set_operator(inContext, CAIRO_OPERATOR_CLEAR);
-	cairo_paint(inContext);
-	cairo_restore(inContext);
-
-	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
-
-	/* Do nothing if type does not include filling background */
-	if(!(priv->type & XFDASHBOARD_BACKGROUND_TYPE_FILL)) return(CLUTTER_EVENT_PROPAGATE);
-
-	/* Determine if we should draw rounded corners */
-
-	/* Draw rectangle with or without rounded corners */
-	if((priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS) &&
+	/* Determine if we should draw rounded corners and call virtual function
+	 * to draw rectangle with or without rounded corners.
+	 */
+	if((priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS) && 
 		(priv->fillCorners & XFDASHBOARD_CORNERS_ALL) &&
 		priv->fillCornersRadius>0.0f)
 	{
@@ -174,6 +161,37 @@ static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackgroun
 		{
 			cairo_rectangle(inContext, 0, 0, inWidth, inHeight);
 		}
+}
+
+/* Rectangle canvas should be redrawn */
+static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackground *self,
+															cairo_t *inContext,
+															int inWidth,
+															int inHeight,
+															gpointer inUserData)
+{
+	XfdashboardBackgroundPrivate	*priv;
+	XfdashboardBackgroundClass		*klass;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+
+	/* Clear current contents of the canvas */
+	cairo_save(inContext);
+	cairo_set_operator(inContext, CAIRO_OPERATOR_CLEAR);
+	cairo_paint(inContext);
+	cairo_restore(inContext);
+
+	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
+
+	/* Do nothing if type does not include filling background */
+	if(!(priv->type & XFDASHBOARD_BACKGROUND_TYPE_FILL)) return(CLUTTER_EVENT_PROPAGATE);
+
+	/* Call virtual function to draw rectangle with or without rounded corners */
+	klass=XFDASHBOARD_BACKGROUND_GET_CLASS(self);
+	if(klass->draw) klass->draw(self, inContext, inWidth, inHeight);
 
 	/* Set color for filling and fill canvas */
 	if(priv->fillColor) clutter_cairo_set_source_color(inContext, priv->fillColor);
@@ -406,12 +424,14 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->dispose=_xfdashboard_background_dispose;
-	gobjectClass->set_property=_xfdashboard_background_set_property;
-	gobjectClass->get_property=_xfdashboard_background_get_property;
+	klass->draw=_xfdashboard_background_draw;
 
 	clutterActorClass->paint_node=_xfdashboard_background_paint_node;
 	clutterActorClass->allocate=_xfdashboard_background_allocate;
+
+	gobjectClass->dispose=_xfdashboard_background_dispose;
+	gobjectClass->set_property=_xfdashboard_background_set_property;
+	gobjectClass->get_property=_xfdashboard_background_get_property;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardBackgroundPrivate));
