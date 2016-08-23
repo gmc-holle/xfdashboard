@@ -60,6 +60,10 @@ struct _XfdashboardOutlineEffectClass
 	/*< private >*/
 	/* Parent class */
 	ClutterEffectClass					parent_class;
+
+	/*< public >*/
+	/* Virtual functions */
+	void (*draw)(XfdashboardOutlineEffect *self, ClutterEffectPaintFlags inFlags, gfloat inWidth, gfloat inHeight);
 };
 
 /* Public API */

@@ -71,29 +71,23 @@ static GParamSpec* XfdashboardOutlineEffectProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
-/* Draw effect after actor was drawn */
-static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEffectPaintFlags inFlags)
+/* Draw outline */
+static void _xfdashboard_outline_effect_draw(XfdashboardOutlineEffect *self,
+												ClutterEffectPaintFlags inFlags,
+												gfloat inWidth,
+												gfloat inHeight)
 {
-	XfdashboardOutlineEffect			*self;
 	XfdashboardOutlineEffectPrivate		*priv;
-	ClutterActor						*target;
-	gfloat								width, height;
 	gfloat								lineWidth;
 
-	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(inEffect));
+	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
+	g_return_if_fail(inWidth>=0.0);
+	g_return_if_fail(inHeight>=0.0);
 
-	self=XFDASHBOARD_OUTLINE_EFFECT(inEffect);
 	priv=self->priv;
 
-	/* Chain to the next item in the paint sequence */
-	target=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
-	clutter_actor_continue_paint(target);
-
-	/* Get size of outline to draw */
-	clutter_actor_get_size(target, &width, &height);
-
-	/* Round line width for better looking and check if we can draw
-	 * outline with configured line width. That means it needs to be
+	/* Round line inWidth for better looking and check if we can draw
+	 * outline with configured line inWidth. That means it needs to be
 	 * greater or equal to 1.0
 	 */
 	lineWidth=floor(priv->width+0.5);
@@ -113,12 +107,12 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 		gfloat							outerRadius, innerRadius;
 
 		/* Determine radius for rounded corners of outer and inner lines */
-		outerRadius=MIN(priv->cornersRadius+(lineWidth/2.0f), width/2.0f);
-		outerRadius=MIN(outerRadius, width/2.0f);
+		outerRadius=MIN(priv->cornersRadius+(lineWidth/2.0f), inWidth/2.0f);
+		outerRadius=MIN(outerRadius, inWidth/2.0f);
 		outerRadius=MAX(outerRadius, 0.0f);
 
-		innerRadius=MIN(priv->cornersRadius-(lineWidth/2.0f), width/2.0f);
-		innerRadius=MIN(innerRadius, width/2.0f);
+		innerRadius=MIN(priv->cornersRadius-(lineWidth/2.0f), inWidth/2.0f);
+		innerRadius=MIN(innerRadius, inWidth/2.0f);
 		innerRadius=MAX(innerRadius, 0.0f);
 
 		/* Top-left corner */
@@ -147,8 +141,8 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 
 			cogl_path_new();
 			cogl_path_move_to(offset1, 0);
-			cogl_path_line_to(width-offset2, 0);
-			cogl_path_line_to(width-offset2, outerRadius-innerRadius);
+			cogl_path_line_to(inWidth-offset2, 0);
+			cogl_path_line_to(inWidth-offset2, outerRadius-innerRadius);
 			cogl_path_line_to(offset1, outerRadius-innerRadius);
 			cogl_path_line_to(offset1, 0);
 			cogl_path_fill_preserve();
@@ -161,11 +155,11 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 			priv->borders & XFDASHBOARD_BORDERS_RIGHT)
 		{
 			cogl_path_new();
-			cogl_path_move_to(width-outerRadius, 0);
-			cogl_path_arc(width-outerRadius, outerRadius, outerRadius, outerRadius, 270, 360);
-			cogl_path_line_to(width-outerRadius+innerRadius, outerRadius);
-			cogl_path_arc(width-outerRadius, outerRadius, innerRadius, innerRadius, 360, 270);
-			cogl_path_line_to(width-outerRadius, 0);
+			cogl_path_move_to(inWidth-outerRadius, 0);
+			cogl_path_arc(inWidth-outerRadius, outerRadius, outerRadius, outerRadius, 270, 360);
+			cogl_path_line_to(inWidth-outerRadius+innerRadius, outerRadius);
+			cogl_path_arc(inWidth-outerRadius, outerRadius, innerRadius, innerRadius, 360, 270);
+			cogl_path_line_to(inWidth-outerRadius, 0);
 			cogl_path_fill_preserve();
 			cogl_path_close();
 		}
@@ -180,11 +174,11 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 			if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT) offset2=outerRadius;
 
 			cogl_path_new();
-			cogl_path_move_to(width, offset1);
-			cogl_path_line_to(width, height-offset2);
-			cogl_path_line_to(width-outerRadius+innerRadius, height-offset2);
-			cogl_path_line_to(width-outerRadius+innerRadius, offset1);
-			cogl_path_line_to(width, offset1);
+			cogl_path_move_to(inWidth, offset1);
+			cogl_path_line_to(inWidth, inHeight-offset2);
+			cogl_path_line_to(inWidth-outerRadius+innerRadius, inHeight-offset2);
+			cogl_path_line_to(inWidth-outerRadius+innerRadius, offset1);
+			cogl_path_line_to(inWidth, offset1);
 			cogl_path_fill_preserve();
 			cogl_path_close();
 		}
@@ -195,11 +189,11 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 			priv->borders & XFDASHBOARD_BORDERS_BOTTOM)
 		{
 			cogl_path_new();
-			cogl_path_move_to(width, height-outerRadius);
-			cogl_path_arc(width-outerRadius, height-outerRadius, outerRadius, outerRadius, 0, 90);
-			cogl_path_line_to(width-outerRadius, height-outerRadius+innerRadius);
-			cogl_path_arc(width-outerRadius, height-outerRadius, innerRadius, innerRadius, 90, 0);
-			cogl_path_line_to(width, height-outerRadius);
+			cogl_path_move_to(inWidth, inHeight-outerRadius);
+			cogl_path_arc(inWidth-outerRadius, inHeight-outerRadius, outerRadius, outerRadius, 0, 90);
+			cogl_path_line_to(inWidth-outerRadius, inHeight-outerRadius+innerRadius);
+			cogl_path_arc(inWidth-outerRadius, inHeight-outerRadius, innerRadius, innerRadius, 90, 0);
+			cogl_path_line_to(inWidth, inHeight-outerRadius);
 			cogl_path_fill_preserve();
 			cogl_path_close();
 		}
@@ -214,11 +208,11 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 			if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT) offset2=outerRadius;
 
 			cogl_path_new();
-			cogl_path_move_to(offset1, height);
-			cogl_path_line_to(width-offset2, height);
-			cogl_path_line_to(width-offset2, height-outerRadius+innerRadius);
-			cogl_path_line_to(offset1, height-outerRadius+innerRadius);
-			cogl_path_line_to(offset1, height);
+			cogl_path_move_to(offset1, inHeight);
+			cogl_path_line_to(inWidth-offset2, inHeight);
+			cogl_path_line_to(inWidth-offset2, inHeight-outerRadius+innerRadius);
+			cogl_path_line_to(offset1, inHeight-outerRadius+innerRadius);
+			cogl_path_line_to(offset1, inHeight);
 			cogl_path_fill_preserve();
 			cogl_path_close();
 		}
@@ -229,11 +223,11 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 			priv->borders & XFDASHBOARD_BORDERS_LEFT)
 		{
 			cogl_path_new();
-			cogl_path_move_to(outerRadius, height);
-			cogl_path_arc(outerRadius, height-outerRadius, outerRadius, outerRadius, 90, 180);
-			cogl_path_line_to(outerRadius-innerRadius, height-outerRadius);
-			cogl_path_arc(outerRadius, height-outerRadius, innerRadius, innerRadius, 180, 90);
-			cogl_path_line_to(outerRadius, height);
+			cogl_path_move_to(outerRadius, inHeight);
+			cogl_path_arc(outerRadius, inHeight-outerRadius, outerRadius, outerRadius, 90, 180);
+			cogl_path_line_to(outerRadius-innerRadius, inHeight-outerRadius);
+			cogl_path_arc(outerRadius, inHeight-outerRadius, innerRadius, innerRadius, 180, 90);
+			cogl_path_line_to(outerRadius, inHeight);
 			cogl_path_fill_preserve();
 			cogl_path_close();
 		}
@@ -249,8 +243,8 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 
 			cogl_path_new();
 			cogl_path_move_to(0, offset1);
-			cogl_path_line_to(0, height-offset2);
-			cogl_path_line_to(outerRadius-innerRadius, height-offset2);
+			cogl_path_line_to(0, inHeight-offset2);
+			cogl_path_line_to(outerRadius-innerRadius, inHeight-offset2);
 			cogl_path_line_to(outerRadius-innerRadius, offset1);
 			cogl_path_line_to(0, offset1);
 			cogl_path_fill_preserve();
@@ -264,8 +258,8 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 			{
 				cogl_path_new();
 				cogl_path_move_to(0, 0);
-				cogl_path_line_to(width, 0);
-				cogl_path_line_to(width, lineWidth);
+				cogl_path_line_to(inWidth, 0);
+				cogl_path_line_to(inWidth, lineWidth);
 				cogl_path_line_to(0, lineWidth);
 				cogl_path_line_to(0, 0);
 				cogl_path_fill_preserve();
@@ -276,11 +270,11 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 			if(priv->borders & XFDASHBOARD_BORDERS_RIGHT)
 			{
 				cogl_path_new();
-				cogl_path_move_to(width, 0);
-				cogl_path_line_to(width, height);
-				cogl_path_line_to(width-lineWidth, height);
-				cogl_path_line_to(width-lineWidth, 0);
-				cogl_path_line_to(width, 0);
+				cogl_path_move_to(inWidth, 0);
+				cogl_path_line_to(inWidth, inHeight);
+				cogl_path_line_to(inWidth-lineWidth, inHeight);
+				cogl_path_line_to(inWidth-lineWidth, 0);
+				cogl_path_line_to(inWidth, 0);
 				cogl_path_fill_preserve();
 				cogl_path_close();
 			}
@@ -289,11 +283,11 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 			if(priv->borders & XFDASHBOARD_BORDERS_BOTTOM)
 			{
 				cogl_path_new();
-				cogl_path_move_to(0, height);
-				cogl_path_line_to(width, height);
-				cogl_path_line_to(width, height-lineWidth);
-				cogl_path_line_to(0, height-lineWidth);
-				cogl_path_line_to(0, height);
+				cogl_path_move_to(0, inHeight);
+				cogl_path_line_to(inWidth, inHeight);
+				cogl_path_line_to(inWidth, inHeight-lineWidth);
+				cogl_path_line_to(0, inHeight-lineWidth);
+				cogl_path_line_to(0, inHeight);
 				cogl_path_fill_preserve();
 				cogl_path_close();
 			}
@@ -303,15 +297,38 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 			{
 				cogl_path_new();
 				cogl_path_move_to(0, 0);
-				cogl_path_line_to(0, height);
-				cogl_path_line_to(lineWidth, height);
+				cogl_path_line_to(0, inHeight);
+				cogl_path_line_to(lineWidth, inHeight);
 				cogl_path_line_to(lineWidth, 0);
 				cogl_path_line_to(0, 0);
 				cogl_path_fill_preserve();
 				cogl_path_close();
 			}
 		}
+}
 
+/* Draw effect after actor was drawn */
+static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEffectPaintFlags inFlags)
+{
+	XfdashboardOutlineEffect			*self;
+	XfdashboardOutlineEffectClass		*klass;
+	ClutterActor						*target;
+	gfloat								width, height;
+
+	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(inEffect));
+
+	self=XFDASHBOARD_OUTLINE_EFFECT(inEffect);
+
+	/* Chain to the next item in the paint sequence */
+	target=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
+	clutter_actor_continue_paint(target);
+
+	/* Get size of outline to draw */
+	clutter_actor_get_size(target, &width, &height);
+
+	/* Call virtual function to draw outline */
+	klass=XFDASHBOARD_OUTLINE_EFFECT_GET_CLASS(self);
+	if(klass->draw) klass->draw(self, inFlags, width, height);
 }
 
 /* IMPLEMENTATION: GObject */
@@ -415,11 +432,13 @@ static void xfdashboard_outline_effect_class_init(XfdashboardOutlineEffectClass 
 	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	klass->draw=_xfdashboard_outline_effect_draw;
+
+	effectClass->paint=_xfdashboard_outline_effect_paint;
+
 	gobjectClass->dispose=_xfdashboard_outline_effect_dispose;
 	gobjectClass->set_property=_xfdashboard_outline_effect_set_property;
 	gobjectClass->get_property=_xfdashboard_outline_effect_get_property;
-
-	effectClass->paint=_xfdashboard_outline_effect_paint;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardOutlineEffectPrivate));
