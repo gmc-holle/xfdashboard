@@ -86,7 +86,6 @@ struct _XfdashboardBackgroundClass
 
 	/*< public >*/
 	/* Virtual functions */
-	void (*draw)(XfdashboardBackground *self, cairo_t *inContext, gint inWidth, gint inHeight);
 };
 
 /* Public API */
