@@ -127,7 +127,7 @@ static gboolean _xfdashboard_background_on_draw_outline(XfdashboardBackground *s
 	klass=XFDASHBOARD_BACKGROUND_GET_CLASS(self);
 	if(klass->draw_outline)
 	{
-		handled=(klass->draw_outline)(self, inFlags, inTarget, inWidth, inHeight);
+		handled=(klass->draw_outline)(self, inFlags, inWidth, inHeight);
 	}
 
 	/* Return handled state. If it is TRUE the further processing of this signal

@@ -88,7 +88,6 @@ struct _XfdashboardBackgroundClass
 	/* Virtual functions */
 	gboolean (*draw_outline)(XfdashboardBackground *self,
 								ClutterEffectPaintFlags inFlags,
-								ClutterActor *inTarget,
 								gfloat inWidth,
 								gfloat inHeight);
 };
