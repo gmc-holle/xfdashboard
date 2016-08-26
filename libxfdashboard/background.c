@@ -103,25 +103,22 @@ static GParamSpec* XfdashboardBackgroundProperties[PROP_LAST]={ 0, };
  * XfdashboardOutlineEffect called. FALSE has to be returned to get it called,
  * i.e. no custom function to draw outline was set.
  */
-static gboolean _xfdashboard_background_on_draw_outline(XfdashboardBackground *self,
-														ClutterEffectPaintFlags inFlags,
-														ClutterActor *inTarget,
-														gfloat inWidth,
-														gfloat inHeight,
-														gpointer inUserData)
+static gboolean _xfdashboard_background_on_draw_outline_effect(XfdashboardBackground *self,
+																ClutterEffectPaintFlags inFlags,
+																ClutterActor *inTarget,
+																gfloat inWidth,
+																gfloat inHeight,
+																gpointer inUserData)
 {
-	XfdashboardBackgroundPrivate	*priv;
 	XfdashboardBackgroundClass		*klass;
 	gboolean						handled;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), FALSE);
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inTarget), FALSE);
-	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(inUserData), FALSE);
-
-	priv=self->priv;
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inTarget), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(inUserData), CLUTTER_EVENT_PROPAGATE);
 
 	/* By default the signal was not handled */
-	handled=FALSE;
+	handled=CLUTTER_EVENT_PROPAGATE;
 
 	/* If a custom function to draw outline was set, call it and store handled result */
 	klass=XFDASHBOARD_BACKGROUND_GET_CLASS(self);
@@ -134,22 +131,20 @@ static gboolean _xfdashboard_background_on_draw_outline(XfdashboardBackground *s
 	 * will stop and that means that the default draw function of XfdashboardOutlineEffect
 	 * will never be called - it is overriden. If it is FALSE the next signal handler
 	 * (which might be the default signal handler of XfdashboardOutlineEffect and
-	 * therefore the default drawing function for oulines) is called.
+	 * therefore the default drawing function for outlines) is called.
 	 */
 	return(handled);
 }
 
-/* Rectangle canvas should be redrawn */
-static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackground *self,
-																cairo_t *inContext,
-																int inWidth,
-																int inHeight,
-																gpointer inUserData)
+/* Draw background canvas */
+static gboolean _xfdashboard_background_draw_background(XfdashboardBackground *self,
+														cairo_t *inContext,
+														gint inWidth,
+														gint inHeight)
 {
 	XfdashboardBackgroundPrivate	*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), TRUE);
-	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), CLUTTER_EVENT_PROPAGATE);
 
 	priv=self->priv;
 
@@ -159,14 +154,13 @@ static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackgroun
 	cairo_paint(inContext);
 	cairo_restore(inContext);
 
-	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
-
 	/* Do nothing if type does not include filling background */
 	if(!(priv->type & XFDASHBOARD_BACKGROUND_TYPE_FILL)) return(CLUTTER_EVENT_PROPAGATE);
 
-	/* Determine if we should draw rounded corners */
+	/* Save cairo context */
+	cairo_save(inContext);
 
-	/* Draw rectangle with or without rounded corners */
+	/* Determine if we should draw rounded corners ... */
 	if((priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS) &&
 		(priv->fillCorners & XFDASHBOARD_CORNERS_ALL) &&
 		priv->fillCornersRadius>0.0f)
@@ -213,6 +207,7 @@ static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackgroun
 		if(priv->fillCorners & XFDASHBOARD_CORNERS_TOP_LEFT) cairo_line_to(inContext, 0, radius);
 			else cairo_line_to(inContext, 0, 0);
 	}
+		/* ... or without rounded corners, i.e. simple rectangle */
 		else
 		{
 			cairo_rectangle(inContext, 0, 0, inWidth, inHeight);
@@ -224,8 +219,52 @@ static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackgroun
 
 	/* Done drawing */
 	cairo_close_path(inContext);
-	return(CLUTTER_EVENT_PROPAGATE);
+
+	/* Restore cairo context */
+	cairo_restore(inContext);
+
+	/* We did draw the background so return FALSE to stop further signal handling */
+	return(CLUTTER_EVENT_STOP);
 }
+
+/* Background canvas emitted signal to draw it so proxy this signal through this
+ * actor object instance first to allow overriding the default draw function.
+ * This function should return TRUE to stop further processing of this signal
+ * and to avoid getting the default signal handler to draw the background at
+ * XfdashboardBackground called. FALSE has to be returned to get it called,
+ * i.e. no custom function to draw background was set.
+ */
+static gboolean _xfdashboard_background_on_draw_background_canvas(XfdashboardBackground *self,
+																	cairo_t *inContext,
+																	int inWidth,
+																	int inHeight,
+																	gpointer inUserData)
+{
+	XfdashboardBackgroundClass		*klass;
+	gboolean						handled;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), CLUTTER_EVENT_PROPAGATE);
+
+	/* By default the signal was not handled */
+	handled=CLUTTER_EVENT_PROPAGATE;
+
+	/* If a custom function to draw background was set, call it and store handled result */
+	klass=XFDASHBOARD_BACKGROUND_GET_CLASS(self);
+	if(klass->draw_background)
+	{
+		handled=(klass->draw_background)(self, inContext, inWidth, inHeight);
+	}
+
+	/* Return handled state. If it is TRUE the further processing of this signal
+	 * will stop and that means that the default draw function of this object instance
+	 * will never be called - it is overriden. If it is FALSE the next signal handler
+	 * (which might be the default signal handler of this object instance and
+	 * therefore the default drawing function for background) is called.
+	 */
+	return(handled);
+}
+
 
 /* IMPLEMENTATION: ClutterActor */
 
@@ -449,12 +488,14 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->dispose=_xfdashboard_background_dispose;
-	gobjectClass->set_property=_xfdashboard_background_set_property;
-	gobjectClass->get_property=_xfdashboard_background_get_property;
+	klass->draw_background=_xfdashboard_background_draw_background;
 
 	clutterActorClass->paint_node=_xfdashboard_background_paint_node;
 	clutterActorClass->allocate=_xfdashboard_background_allocate;
+
+	gobjectClass->dispose=_xfdashboard_background_dispose;
+	gobjectClass->set_property=_xfdashboard_background_set_property;
+	gobjectClass->get_property=_xfdashboard_background_get_property;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardBackgroundPrivate));
@@ -610,12 +651,12 @@ static void xfdashboard_background_init(XfdashboardBackground *self)
 	/* Connect signals */
 	g_signal_connect_swapped(priv->fillCanvas,
 								"draw",
-								G_CALLBACK(_xfdashboard_background_on_draw_fill_canvas),
+								G_CALLBACK(_xfdashboard_background_on_draw_background_canvas),
 								self);
 
 	g_signal_connect_swapped(priv->outline,
 								"draw",
-								G_CALLBACK(_xfdashboard_background_on_draw_outline),
+								G_CALLBACK(_xfdashboard_background_on_draw_outline_effect),
 								self);
 }
 

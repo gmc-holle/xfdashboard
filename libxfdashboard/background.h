@@ -90,6 +90,11 @@ struct _XfdashboardBackgroundClass
 								ClutterEffectPaintFlags inFlags,
 								gfloat inWidth,
 								gfloat inHeight);
+
+	gboolean (*draw_background)(XfdashboardBackground *self,
+								cairo_t *inContext,
+								gint inWidth,
+								gint inHeight);
 };
 
 /* Public API */
