@@ -96,11 +96,51 @@ static GParamSpec* XfdashboardBackgroundProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
-/* Default handler to draw background canvas */
+/* Outline effect emitted signal to draw it so proxy this signal through this
+ * actor object instance first to allow overriding the default draw function.
+ * This function should return TRUE to stop further processing of this signal
+ * and to avoid getting the default signal handler to draw the oultine at
+ * XfdashboardOutlineEffect called. FALSE has to be returned to get it called,
+ * i.e. no custom function to draw outline was set.
+ */
+static gboolean _xfdashboard_background_on_draw_outline_effect(XfdashboardBackground *self,
+																ClutterEffectPaintFlags inFlags,
+																ClutterActor *inTarget,
+																gfloat inWidth,
+																gfloat inHeight,
+																gpointer inUserData)
+{
+	XfdashboardBackgroundClass		*klass;
+	gboolean						handled;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inTarget), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(inUserData), CLUTTER_EVENT_PROPAGATE);
+
+	/* By default the signal was not handled */
+	handled=CLUTTER_EVENT_PROPAGATE;
+
+	/* If a custom function to draw outline was set, call it and store handled result */
+	klass=XFDASHBOARD_BACKGROUND_GET_CLASS(self);
+	if(klass->draw_outline)
+	{
+		handled=(klass->draw_outline)(self, inFlags, inWidth, inHeight);
+	}
+
+	/* Return handled state. If it is TRUE the further processing of this signal
+	 * will stop and that means that the default draw function of XfdashboardOutlineEffect
+	 * will never be called - it is overriden. If it is FALSE the next signal handler
+	 * (which might be the default signal handler of XfdashboardOutlineEffect and
+	 * therefore the default drawing function for outlines) is called.
+	 */
+	return(handled);
+}
+
+/* Draw background canvas */
 static gboolean _xfdashboard_background_draw_background(XfdashboardBackground *self,
-															cairo_t *inContext,
-															gint inWidth,
-															gint inHeight)
+														cairo_t *inContext,
+														gint inWidth,
+														gint inHeight)
 {
 	XfdashboardBackgroundPrivate	*priv;
 
@@ -216,57 +256,11 @@ static gboolean _xfdashboard_background_on_draw_background_canvas(XfdashboardBac
 		handled=(klass->draw_background)(self, inContext, inWidth, inHeight);
 	}
 
-	/* If this signal to draw background was not handled yet call default handler */
-	if(handled==CLUTTER_EVENT_PROPAGATE)
-	{
-		handled=_xfdashboard_background_draw_background(self, inContext, inWidth, inHeight);
-	}
-
 	/* Return handled state. If it is TRUE the further processing of this signal
 	 * will stop and that means that the default draw function of this object instance
 	 * will never be called - it is overriden. If it is FALSE the next signal handler
 	 * (which might be the default signal handler of this object instance and
 	 * therefore the default drawing function for background) is called.
-	 */
-	return(handled);
-}
-
-/* Outline effect emitted signal to draw it so proxy this signal through this
- * actor object instance first to allow overriding the default draw function.
- * This function should return TRUE to stop further processing of this signal
- * and to avoid getting the default signal handler to draw the oultine at
- * XfdashboardOutlineEffect called. FALSE has to be returned to get it called,
- * i.e. no custom function to draw outline was set.
- */
-static gboolean _xfdashboard_background_on_draw_outline_effect(XfdashboardBackground *self,
-																ClutterEffectPaintFlags inFlags,
-																ClutterActor *inTarget,
-																gfloat inWidth,
-																gfloat inHeight,
-																gpointer inUserData)
-{
-	XfdashboardBackgroundClass		*klass;
-	gboolean						handled;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inTarget), CLUTTER_EVENT_PROPAGATE);
-	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(inUserData), CLUTTER_EVENT_PROPAGATE);
-
-	/* By default the signal was not handled */
-	handled=CLUTTER_EVENT_PROPAGATE;
-
-	/* If a custom function to draw outline was set, call it and store handled result */
-	klass=XFDASHBOARD_BACKGROUND_GET_CLASS(self);
-	if(klass->draw_outline)
-	{
-		handled=(klass->draw_outline)(self, inFlags, inWidth, inHeight);
-	}
-
-	/* Return handled state. If it is TRUE the further processing of this signal
-	 * will stop and that means that the default draw function of XfdashboardOutlineEffect
-	 * will never be called - it is overriden. If it is FALSE the next signal handler
-	 * (which might be the default signal handler of XfdashboardOutlineEffect and
-	 * therefore the default drawing function for outlines) is called.
 	 */
 	return(handled);
 }
@@ -494,6 +488,8 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	klass->draw_background=_xfdashboard_background_draw_background;
+
 	clutterActorClass->paint_node=_xfdashboard_background_paint_node;
 	clutterActorClass->allocate=_xfdashboard_background_allocate;
 
