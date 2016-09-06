@@ -45,6 +45,8 @@ libxfdashboard/model.c
 libxfdashboard/outline-effect.c
 libxfdashboard/plugin.c
 libxfdashboard/plugins-manager.c
+libxfdashboard/popup-menu-item-meta.c
+libxfdashboard/popup-menu.c
 libxfdashboard/quicklaunch.c
 libxfdashboard/scaled-table-layout.c
 libxfdashboard/scrollbar.c
@@ -83,6 +85,7 @@ plugins/gnome-shell-search-provider/plugin.c
 plugins/hot-corner/hot-corner-settings.c
 plugins/hot-corner/hot-corner.c
 plugins/hot-corner/plugin.c
+plugins/middle-click-window-close/plugin.c
 settings/general.c
 settings/plugins.c
 settings/themes.c
