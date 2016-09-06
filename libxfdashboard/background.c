@@ -96,49 +96,6 @@ static GParamSpec* XfdashboardBackgroundProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
-/* Outline effect emitted signal to draw it so proxy this signal through this
- * actor object instance first to allow overriding the default draw function.
- * This function should return TRUE to stop further processing of this signal
- * and to avoid getting the default signal handler to draw the oultine at
- * XfdashboardOutlineEffect called. FALSE has to be returned to get it called,
- * i.e. no custom function to draw outline was set.
- */
-static gboolean _xfdashboard_background_on_draw_outline(XfdashboardBackground *self,
-														ClutterEffectPaintFlags inFlags,
-														ClutterActor *inTarget,
-														gfloat inWidth,
-														gfloat inHeight,
-														gpointer inUserData)
-{
-	XfdashboardBackgroundPrivate	*priv;
-	XfdashboardBackgroundClass		*klass;
-	gboolean						handled;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), FALSE);
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inTarget), FALSE);
-	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(inUserData), FALSE);
-
-	priv=self->priv;
-
-	/* By default the signal was not handled */
-	handled=FALSE;
-
-	/* If a custom function to draw outline was set, call it and store handled result */
-	klass=XFDASHBOARD_BACKGROUND_GET_CLASS(self);
-	if(klass->draw_outline)
-	{
-		handled=(klass->draw_outline)(self, inFlags, inTarget, inWidth, inHeight);
-	}
-
-	/* Return handled state. If it is TRUE the further processing of this signal
-	 * will stop and that means that the default draw function of XfdashboardOutlineEffect
-	 * will never be called - it is overriden. If it is FALSE the next signal handler
-	 * (which might be the default signal handler of XfdashboardOutlineEffect and
-	 * therefore the default drawing function for oulines) is called.
-	 */
-	return(handled);
-}
-
 /* Rectangle canvas should be redrawn */
 static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackground *self,
 																cairo_t *inContext,
@@ -608,15 +565,7 @@ static void xfdashboard_background_init(XfdashboardBackground *self)
 	clutter_actor_add_effect(CLUTTER_ACTOR(self), CLUTTER_EFFECT(priv->outline));
 
 	/* Connect signals */
-	g_signal_connect_swapped(priv->fillCanvas,
-								"draw",
-								G_CALLBACK(_xfdashboard_background_on_draw_fill_canvas),
-								self);
-
-	g_signal_connect_swapped(priv->outline,
-								"draw",
-								G_CALLBACK(_xfdashboard_background_on_draw_outline),
-								self);
+	g_signal_connect_swapped(priv->fillCanvas, "draw", G_CALLBACK(_xfdashboard_background_on_draw_fill_canvas), self);
 }
 
 /* IMPLEMENTATION: Public API */
