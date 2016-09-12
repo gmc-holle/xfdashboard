@@ -1295,7 +1295,7 @@ static void _xfdashboard_quicklaunch_setup_default_favourites(XfdashboardQuickla
 	XfdashboardQuicklaunchPrivate	*priv;
 	guint							i;
 	const gchar						*defaultApplications[]=	{
-																"exo-web-browser.desktop"
+																"exo-web-browser.desktop",
 																"exo-mail-reader.desktop",
 																"exo-file-manager.desktop",
 																"exo-terminal-emulator.desktop",
