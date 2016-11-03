@@ -561,7 +561,7 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 										{ "daemonize", 'd', 0, G_OPTION_ARG_NONE, &optionDaemonize, N_("Fork to background"), NULL },
 										{ "quit", 'q', 0, G_OPTION_ARG_NONE, &optionQuit, N_("Quit running instance"), NULL },
 										{ "restart", 'r', 0, G_OPTION_ARG_NONE, &optionRestart, N_("Restart running instance"), NULL },
-										{ "toggle", 't', 0, G_OPTION_ARG_NONE, &optionToggle, N_("Toggles suspend/resume state if running instance was started in daemon mode otherwise it quits running non-daemon instance"), NULL },
+										{ "toggle", 't', 0, G_OPTION_ARG_NONE, &optionToggle, N_("Toggles visibility if running instance was started in daemon mode otherwise it quits running non-daemon instance"), NULL },
 										{ "view", 0, 0, G_OPTION_ARG_STRING, &optionSwitchToView, N_("The view to switch to on startup or resume"), NULL },
 										{ NULL }
 									};
