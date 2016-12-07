@@ -296,8 +296,8 @@ static void _xfdashboard_popup_menu_on_meta_activated(XfdashboardPopupMenu *self
 static void _xfdashboard_popup_menu_update_title_actors_visibility(XfdashboardPopupMenu *self)
 {
 	XfdashboardPopupMenuPrivate		*priv;
-	XfdashboardButtonStyle			oldStyle;
-	XfdashboardButtonStyle			newStyle;
+	XfdashboardLabelStyle			oldStyle;
+	XfdashboardLabelStyle			newStyle;
 	gboolean						oldVisible;
 	gboolean						newVisible;
 
@@ -307,22 +307,22 @@ static void _xfdashboard_popup_menu_update_title_actors_visibility(XfdashboardPo
 
 	/* Get current visibility state */
 	oldVisible=clutter_actor_is_visible(priv->title);
-	oldStyle=xfdashboard_button_get_style(XFDASHBOARD_BUTTON(priv->title));
+	oldStyle=xfdashboard_label_get_style(XFDASHBOARD_LABEL(priv->title));
 
 	/* Determine new visibility state depending on if title and/or icon of title
 	 * should be shown or not.
 	 */
 	newStyle=0;
 	newVisible=TRUE;
-	if(priv->showTitle && priv->showTitleIcon) newStyle=XFDASHBOARD_BUTTON_STYLE_BOTH;
-		else if(priv->showTitle) newStyle=XFDASHBOARD_BUTTON_STYLE_TEXT;
-		else if(priv->showTitleIcon) newStyle=XFDASHBOARD_BUTTON_STYLE_ICON;
+	if(priv->showTitle && priv->showTitleIcon) newStyle=XFDASHBOARD_LABEL_STYLE_BOTH;
+		else if(priv->showTitle) newStyle=XFDASHBOARD_LABEL_STYLE_TEXT;
+		else if(priv->showTitleIcon) newStyle=XFDASHBOARD_LABEL_STYLE_ICON;
 		else newVisible=FALSE;
 
 	/* Set new visibility style if changed and re-layout title actor */
 	if(newStyle!=oldStyle)
 	{
-		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->title), newStyle);
+		xfdashboard_label_set_style(XFDASHBOARD_LABEL(priv->title), newStyle);
 		clutter_actor_queue_relayout(priv->title);
 	}
 
@@ -1131,8 +1131,8 @@ static void xfdashboard_popup_menu_init(XfdashboardPopupMenu *self)
 
 	/* Set up title actor */
 	priv->title=xfdashboard_button_new();
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->title), XFDASHBOARD_BUTTON_STYLE_TEXT);
-	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->title), NULL);
+	xfdashboard_label_set_style(XFDASHBOARD_LABEL(priv->title), XFDASHBOARD_LABEL_STYLE_TEXT);
+	xfdashboard_label_set_text(XFDASHBOARD_LABEL(priv->title), NULL);
 	clutter_actor_set_x_expand(priv->title, TRUE);
 	clutter_actor_set_y_expand(priv->title, TRUE);
 	clutter_actor_hide(priv->title);
@@ -1388,7 +1388,7 @@ const gchar* xfdashboard_popup_menu_get_title(XfdashboardPopupMenu *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(self), NULL);
 
-	return(xfdashboard_button_get_text(XFDASHBOARD_BUTTON(self->priv->title)));
+	return(xfdashboard_label_get_text(XFDASHBOARD_LABEL(self->priv->title)));
 }
 
 /**
@@ -1409,10 +1409,10 @@ void xfdashboard_popup_menu_set_title(XfdashboardPopupMenu *self, const gchar *i
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(g_strcmp0(xfdashboard_button_get_text(XFDASHBOARD_BUTTON(priv->title)), inMarkupTitle)!=0)
+	if(g_strcmp0(xfdashboard_label_get_text(XFDASHBOARD_LABEL(priv->title)), inMarkupTitle)!=0)
 	{
 		/* Set value */
-		xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->title), inMarkupTitle);
+		xfdashboard_label_set_text(XFDASHBOARD_LABEL(priv->title), inMarkupTitle);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPopupMenuProperties[PROP_TITLE]);
@@ -1478,7 +1478,7 @@ const gchar* xfdashboard_popup_menu_get_title_icon_name(XfdashboardPopupMenu *se
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(self), NULL);
 
-	return(xfdashboard_button_get_icon_name(XFDASHBOARD_BUTTON(self->priv->title)));
+	return(xfdashboard_label_get_icon_name(XFDASHBOARD_LABEL(self->priv->title)));
 }
 
 /**
@@ -1500,10 +1500,10 @@ void xfdashboard_popup_menu_set_title_icon_name(XfdashboardPopupMenu *self, cons
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(g_strcmp0(xfdashboard_button_get_icon_name(XFDASHBOARD_BUTTON(priv->title)), inIconName)!=0)
+	if(g_strcmp0(xfdashboard_label_get_icon_name(XFDASHBOARD_LABEL(priv->title)), inIconName)!=0)
 	{
 		/* Set value */
-		xfdashboard_button_set_icon_name(XFDASHBOARD_BUTTON(priv->title), inIconName);
+		xfdashboard_label_set_icon_name(XFDASHBOARD_LABEL(priv->title), inIconName);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPopupMenuProperties[PROP_TITLE_ICON_NAME]);
@@ -1522,7 +1522,7 @@ GIcon* xfdashboard_popup_menu_get_title_gicon(XfdashboardPopupMenu *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(self), NULL);
 
-	return(xfdashboard_button_get_gicon(XFDASHBOARD_BUTTON(self->priv->title)));
+	return(xfdashboard_label_get_gicon(XFDASHBOARD_LABEL(self->priv->title)));
 }
 
 /**
@@ -1544,12 +1544,12 @@ void xfdashboard_popup_menu_set_title_gicon(XfdashboardPopupMenu *self, GIcon *i
 	priv=self->priv;
 
 	/* Set value if changed */
-	icon=xfdashboard_button_get_gicon(XFDASHBOARD_BUTTON(priv->title));
+	icon=xfdashboard_label_get_gicon(XFDASHBOARD_LABEL(priv->title));
 	if(icon!=inIcon ||
 		(icon && inIcon && !g_icon_equal(icon, inIcon)))
 	{
 		/* Set value */
-		xfdashboard_button_set_gicon(XFDASHBOARD_BUTTON(priv->title), inIcon);
+		xfdashboard_label_set_gicon(XFDASHBOARD_LABEL(priv->title), inIcon);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPopupMenuProperties[PROP_TITLE_GICON]);

@@ -119,7 +119,7 @@ static void _xfdashboard_application_button_update_text(XfdashboardApplicationBu
 				else text=g_strdup_printf("%s\n%s", title ? title : "", description ? description : "");
 		}
 
-	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(self), text);
+	xfdashboard_label_set_text(XFDASHBOARD_LABEL(self), text);
 
 	if(text) g_free(text);
 }
@@ -141,8 +141,8 @@ static void _xfdashboard_application_button_update_icon(XfdashboardApplicationBu
 		gicon=g_app_info_get_icon(G_APP_INFO(priv->appInfo));
 	}
 
-	if(gicon) xfdashboard_button_set_gicon(XFDASHBOARD_BUTTON(self), gicon);
-		else xfdashboard_button_set_icon_name(XFDASHBOARD_BUTTON(self), "image-missing");
+	if(gicon) xfdashboard_label_set_gicon(XFDASHBOARD_LABEL(self), gicon);
+		else xfdashboard_label_set_icon_name(XFDASHBOARD_LABEL(self), "image-missing");
 
 	/* Release allocated resources */
 	if(gicon) g_object_unref(gicon);
@@ -403,7 +403,7 @@ static void xfdashboard_application_button_init(XfdashboardApplicationButton *se
 ClutterActor* xfdashboard_application_button_new(void)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
-							"button-style", XFDASHBOARD_BUTTON_STYLE_BOTH,
+							"label-style", XFDASHBOARD_LABEL_STYLE_BOTH,
 							"single-line", FALSE,
 							NULL));
 }
@@ -413,7 +413,7 @@ ClutterActor* xfdashboard_application_button_new_from_app_info(GAppInfo *inAppIn
 	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), NULL);
 
 	return(g_object_new(XFDASHBOARD_TYPE_APPLICATION_BUTTON,
-							"button-style", XFDASHBOARD_BUTTON_STYLE_BOTH,
+							"label-style", XFDASHBOARD_LABEL_STYLE_BOTH,
 							"single-line", FALSE,
 							"app-info", inAppInfo,
 							NULL));

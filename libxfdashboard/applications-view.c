@@ -396,11 +396,11 @@ static void _xfdashboard_applications_view_on_all_applications_menu_clicked(Xfda
 	/* Create parent menu item */
 	actor=xfdashboard_button_new();
 
-	if(priv->parentMenuIcon) xfdashboard_button_set_icon_name(XFDASHBOARD_BUTTON(actor), priv->parentMenuIcon);
+	if(priv->parentMenuIcon) xfdashboard_label_set_icon_name(XFDASHBOARD_LABEL(actor), priv->parentMenuIcon);
 
 	if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) actorText=g_markup_printf_escaped(priv->formatTitleDescription, _("Back"), _("Go back to previous menu"));
 		else actorText=g_markup_printf_escaped(priv->formatTitleOnly, _("Back"));
-	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), actorText);
+	xfdashboard_label_set_text(XFDASHBOARD_LABEL(actor), actorText);
 	g_free(actorText);
 
 	/* Add to view and layout */
@@ -502,11 +502,11 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 		/* Create and adjust of "parent menu" button to application buttons */
 		actor=xfdashboard_button_new();
 
-		if(priv->parentMenuIcon) xfdashboard_button_set_icon_name(XFDASHBOARD_BUTTON(actor), priv->parentMenuIcon);
+		if(priv->parentMenuIcon) xfdashboard_label_set_icon_name(XFDASHBOARD_LABEL(actor), priv->parentMenuIcon);
 
 		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) actorText=g_markup_printf_escaped(priv->formatTitleDescription, _("Back"), _("Go back to previous menu"));
 			else actorText=g_markup_printf_escaped(priv->formatTitleOnly, _("Back"));
-		xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), actorText);
+		xfdashboard_label_set_text(XFDASHBOARD_LABEL(actor), actorText);
 		g_free(actorText);
 
 		/* Add to view and layout */
@@ -530,11 +530,11 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 
 		/* Create and adjust of "parent menu" button to application buttons */
 		actor=xfdashboard_button_new();
-		xfdashboard_button_set_icon_name(XFDASHBOARD_BUTTON(actor), ALL_APPLICATIONS_MENU_ICON);
+		xfdashboard_label_set_icon_name(XFDASHBOARD_LABEL(actor), ALL_APPLICATIONS_MENU_ICON);
 
 		if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST) actorText=g_markup_printf_escaped(priv->formatTitleDescription, _("All applications"), _("List of all installed applications"));
 			else actorText=g_markup_printf_escaped(priv->formatTitleOnly, _("All applications"));
-		xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), actorText);
+		xfdashboard_label_set_text(XFDASHBOARD_LABEL(actor), actorText);
 		g_free(actorText);
 
 		/* Add to view and layout */
@@ -589,7 +589,7 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 					actor=xfdashboard_button_new();
 
 					iconName=garcon_menu_element_get_icon_name(menuElement);
-					if(iconName) xfdashboard_button_set_icon_name(XFDASHBOARD_BUTTON(actor), iconName);
+					if(iconName) xfdashboard_label_set_icon_name(XFDASHBOARD_LABEL(actor), iconName);
 
 					title=garcon_menu_element_get_name(menuElement);
 					description=garcon_menu_element_get_comment(menuElement);
@@ -605,7 +605,7 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 							actorText=g_markup_printf_escaped(priv->formatTitleOnly,
 																title ? title : "");
 						}
-					xfdashboard_button_set_text(XFDASHBOARD_BUTTON(actor), actorText);
+					xfdashboard_label_set_text(XFDASHBOARD_LABEL(actor), actorText);
 					g_free(actorText);
 
 					g_signal_connect(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_menu_clicked), menuElement);

@@ -263,7 +263,7 @@ ClutterActor* xfdashboard_toggle_button_new(void)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"text", N_(""),
-						"button-style", XFDASHBOARD_BUTTON_STYLE_TEXT,
+						"label-style", XFDASHBOARD_LABEL_STYLE_TEXT,
 						NULL));
 }
 
@@ -279,7 +279,7 @@ ClutterActor* xfdashboard_toggle_button_new_with_text(const gchar *inText)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"text", inText,
-						"button-style", XFDASHBOARD_BUTTON_STYLE_TEXT,
+						"label-style", XFDASHBOARD_LABEL_STYLE_TEXT,
 						NULL));
 }
 
@@ -296,7 +296,7 @@ ClutterActor* xfdashboard_toggle_button_new_with_icon_name(const gchar *inIconNa
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"icon-name", inIconName,
-						"button-style", XFDASHBOARD_BUTTON_STYLE_ICON,
+						"label-style", XFDASHBOARD_LABEL_STYLE_ICON,
 						NULL));
 }
 
@@ -312,7 +312,7 @@ ClutterActor* xfdashboard_toggle_button_new_with_gicon(GIcon *inIcon)
 {
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"icon-gicon", inIcon,
-						"button-style", XFDASHBOARD_BUTTON_STYLE_ICON,
+						"label-style", XFDASHBOARD_LABEL_STYLE_ICON,
 						NULL));
 }
 
@@ -332,7 +332,7 @@ ClutterActor* xfdashboard_toggle_button_new_full_with_icon_name(const gchar *inI
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"text", inText,
 						"icon-name", inIconName,
-						"button-style", XFDASHBOARD_BUTTON_STYLE_BOTH,
+						"label-style", XFDASHBOARD_LABEL_STYLE_BOTH,
 						NULL));
 }
 
@@ -351,7 +351,7 @@ ClutterActor* xfdashboard_toggle_button_new_full_with_gicon(GIcon *inIcon,
 	return(g_object_new(XFDASHBOARD_TYPE_TOGGLE_BUTTON,
 						"text", inText,
 						"icon-gicon", inIcon,
-						"button-style", XFDASHBOARD_BUTTON_STYLE_BOTH,
+						"label-style", XFDASHBOARD_LABEL_STYLE_BOTH,
 						NULL));
 }
 

@@ -1,6 +1,5 @@
 /*
- * button: An actor representing a label and an icon (both optional)
- *         and can react on click actions
+ * button: A label actor which can react on click actions
  * 
  * Copyright 2012-2016 Stephan Haller <nomad@froevel.de>
  * 
@@ -31,27 +30,9 @@
 
 #include <clutter/clutter.h>
 
-#include <libxfdashboard/background.h>
-#include <libxfdashboard/types.h>
+#include <libxfdashboard/label.h>
 
 G_BEGIN_DECLS
-
-/* Public definitions */
-/**
- * XfdashboardButtonStyle:
- * @XFDASHBOARD_BUTTON_STYLE_TEXT: The actor will show only text labels.
- * @XFDASHBOARD_BUTTON_STYLE_ICON: The actor will show only icons.
- * @XFDASHBOARD_BUTTON_STYLE_BOTH: The actor will show both, text labels and icons.
- *
- * Determines the style of an actor, e.g. text labels and icons at buttons.
- */
-typedef enum /*< prefix=XFDASHBOARD_BUTTON_STYLE >*/
-{
-	XFDASHBOARD_BUTTON_STYLE_TEXT=0,
-	XFDASHBOARD_BUTTON_STYLE_ICON,
-	XFDASHBOARD_BUTTON_STYLE_BOTH
-} XfdashboardButtonStyle;
-
 
 /* Object declaration */
 #define XFDASHBOARD_TYPE_BUTTON					(xfdashboard_button_get_type())
@@ -69,7 +50,7 @@ struct _XfdashboardButton
 {
 	/*< private >*/
 	/* Parent instance */
-	XfdashboardBackground		parent_instance;
+	XfdashboardLabel			parent_instance;
 
 	/* Private structure */
 	XfdashboardButtonPrivate	*priv;
@@ -79,7 +60,7 @@ struct _XfdashboardButtonClass
 {
 	/*< private >*/
 	/* Parent class */
-	XfdashboardBackgroundClass	parent_class;
+	XfdashboardLabelClass		parent_class;
 
 	/*< public >*/
 	/* Virtual functions */
@@ -95,54 +76,6 @@ ClutterActor* xfdashboard_button_new_with_icon_name(const gchar *inIconName);
 ClutterActor* xfdashboard_button_new_with_gicon(GIcon *inIcon);
 ClutterActor* xfdashboard_button_new_full_with_icon_name(const gchar *inIconName, const gchar *inText);
 ClutterActor* xfdashboard_button_new_full_with_gicon(GIcon *inIcon, const gchar *inText);
-
-/* General functions */
-gfloat xfdashboard_button_get_padding(XfdashboardButton *self);
-void xfdashboard_button_set_padding(XfdashboardButton *self, const gfloat inPadding);
-
-gfloat xfdashboard_button_get_spacing(XfdashboardButton *self);
-void xfdashboard_button_set_spacing(XfdashboardButton *self, const gfloat inSpacing);
-
-XfdashboardButtonStyle xfdashboard_button_get_style(XfdashboardButton *self);
-void xfdashboard_button_set_style(XfdashboardButton *self, const XfdashboardButtonStyle inStyle);
-
-/* Icon functions */
-const gchar* xfdashboard_button_get_icon_name(XfdashboardButton *self);
-void xfdashboard_button_set_icon_name(XfdashboardButton *self, const gchar *inIconName);
-
-GIcon* xfdashboard_button_get_gicon(XfdashboardButton *self);
-void xfdashboard_button_set_gicon(XfdashboardButton *self, GIcon *inIcon);
-
-ClutterImage* xfdashboard_button_get_icon_image(XfdashboardButton *self);
-void xfdashboard_button_set_icon_image(XfdashboardButton *self, ClutterImage *inIconImage);
-
-gint xfdashboard_button_get_icon_size(XfdashboardButton *self);
-void xfdashboard_button_set_icon_size(XfdashboardButton *self, gint inSize);
-
-gboolean xfdashboard_button_get_sync_icon_size(XfdashboardButton *self);
-void xfdashboard_button_set_sync_icon_size(XfdashboardButton *self, gboolean inSync);
-
-XfdashboardOrientation xfdashboard_button_get_icon_orientation(XfdashboardButton *self);
-void xfdashboard_button_set_icon_orientation(XfdashboardButton *self, const XfdashboardOrientation inOrientation);
-
-/* Label functions */
-const gchar* xfdashboard_button_get_text(XfdashboardButton *self);
-void xfdashboard_button_set_text(XfdashboardButton *self, const gchar *inMarkupText);
-
-const gchar* xfdashboard_button_get_font(XfdashboardButton *self);
-void xfdashboard_button_set_font(XfdashboardButton *self, const gchar *inFont);
-
-const ClutterColor* xfdashboard_button_get_color(XfdashboardButton *self);
-void xfdashboard_button_set_color(XfdashboardButton *self, const ClutterColor *inColor);
-
-PangoEllipsizeMode xfdashboard_button_get_ellipsize_mode(XfdashboardButton *self);
-void xfdashboard_button_set_ellipsize_mode(XfdashboardButton *self, const PangoEllipsizeMode inMode);
-
-gboolean xfdashboard_button_get_single_line_mode(XfdashboardButton *self);
-void xfdashboard_button_set_single_line_mode(XfdashboardButton *self, const gboolean inSingleLine);
-
-PangoAlignment xfdashboard_button_get_text_justification(XfdashboardButton *self);
-void xfdashboard_button_set_text_justification(XfdashboardButton *self, const PangoAlignment inJustification);
 
 G_END_DECLS
 

@@ -229,7 +229,7 @@ static void _xfdashboard_live_window_on_icon_changed(XfdashboardLiveWindow *self
 
 	/* Set new icon in title actor */
 	icon=xfdashboard_image_content_new_for_pixbuf(xfdashboard_window_tracker_window_get_icon(inWindow));
-	xfdashboard_button_set_icon_image(XFDASHBOARD_BUTTON(priv->actorTitle), CLUTTER_IMAGE(icon));
+	xfdashboard_label_set_icon_image(XFDASHBOARD_LABEL(priv->actorTitle), CLUTTER_IMAGE(icon));
 	g_object_unref(icon);
 }
 
@@ -251,7 +251,7 @@ static void _xfdashboard_live_window_on_name_changed(XfdashboardLiveWindow *self
 
 	/* Set new name in title actor */
 	windowName=g_markup_printf_escaped("%s", xfdashboard_window_tracker_window_get_title(inWindow));
-	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorTitle), windowName);
+	xfdashboard_label_set_text(XFDASHBOARD_LABEL(priv->actorTitle), windowName);
 	g_free(windowName);
 }
 
@@ -366,7 +366,7 @@ static void _xfdashboard_live_window_set_window_number(XfdashboardLiveWindow *se
 
 			/* Update text in window number */
 			numberText=g_markup_printf_escaped("%u", priv->windowNumber % 10);
-			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorWindowNumber), numberText);
+			xfdashboard_label_set_text(XFDASHBOARD_LABEL(priv->actorWindowNumber), numberText);
 			g_free(numberText);
 
 			/* Show window number and hide close button */

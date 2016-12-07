@@ -416,7 +416,7 @@ static void _xfdashboard_live_workspace_on_workspace_name_changed(XfdashboardLiv
 
 	/* Set new name in title actor */
 	workspaceName=g_markup_printf_escaped("%s", xfdashboard_window_tracker_workspace_get_name(inWorkspace));
-	xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->actorTitle), workspaceName);
+	xfdashboard_label_set_text(XFDASHBOARD_LABEL(priv->actorTitle), workspaceName);
 	g_free(workspaceName);
 }
 

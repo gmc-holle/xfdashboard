@@ -665,7 +665,7 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 			labelText=g_strdup_printf(_("Show %d more results..."), moreCount);
 
 			/* Set text at "more"-label */
-			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->moreResultsLabelActor), labelText);
+			xfdashboard_label_set_text(XFDASHBOARD_LABEL(priv->moreResultsLabelActor), labelText);
 
 			/* Release allocated resources */
 			if(labelText) g_free(labelText);
@@ -673,7 +673,7 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 			else
 			{
 				/* Set empty text at "more"-label */
-				xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->moreResultsLabelActor), NULL);
+				xfdashboard_label_set_text(XFDASHBOARD_LABEL(priv->moreResultsLabelActor), NULL);
 			}
 
 		/* If we have more result items in result set than result items actors shown
@@ -687,7 +687,7 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 			labelText=g_strdup_printf(_("Show all %d results..."), allItemsCount);
 
 			/* Set text at "all"-label */
-			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->allResultsLabelActor), labelText);
+			xfdashboard_label_set_text(XFDASHBOARD_LABEL(priv->allResultsLabelActor), labelText);
 
 			/* Release allocated resources */
 			if(labelText) g_free(labelText);
@@ -695,7 +695,7 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 			else
 			{
 				/* Set empty text at "all"-label */
-				xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->allResultsLabelActor), NULL);
+				xfdashboard_label_set_text(XFDASHBOARD_LABEL(priv->allResultsLabelActor), NULL);
 			}
 	}
 
@@ -1391,13 +1391,13 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 
 	priv->moreResultsLabelActor=xfdashboard_button_new();
 	clutter_actor_set_x_expand(priv->moreResultsLabelActor, TRUE);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->moreResultsLabelActor), XFDASHBOARD_BUTTON_STYLE_TEXT);
+	xfdashboard_label_set_style(XFDASHBOARD_LABEL(priv->moreResultsLabelActor), XFDASHBOARD_LABEL_STYLE_TEXT);
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->moreResultsLabelActor), "more-results");
 
 	priv->allResultsLabelActor=xfdashboard_button_new();
 	clutter_actor_set_x_expand(priv->allResultsLabelActor, TRUE);
 	clutter_actor_set_x_align(priv->allResultsLabelActor, CLUTTER_ACTOR_ALIGN_END);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->allResultsLabelActor), XFDASHBOARD_BUTTON_STYLE_TEXT);
+	xfdashboard_label_set_style(XFDASHBOARD_LABEL(priv->allResultsLabelActor), XFDASHBOARD_LABEL_STYLE_TEXT);
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->allResultsLabelActor), "all-results");
 
 	layout=clutter_box_layout_new();
@@ -1734,7 +1734,7 @@ void xfdashboard_search_result_container_set_more_result_size(XfdashboardSearchR
 		moreCount=MIN(allResultsCount-currentResultsCount, priv->moreResultsCount);
 
 		labelText=g_strdup_printf(_("Show %d more results..."), moreCount);
-		xfdashboard_button_set_text(XFDASHBOARD_BUTTON(priv->moreResultsLabelActor), labelText);
+		xfdashboard_label_set_text(XFDASHBOARD_LABEL(priv->moreResultsLabelActor), labelText);
 		if(labelText) g_free(labelText);
 
 		/* Notify about property change */

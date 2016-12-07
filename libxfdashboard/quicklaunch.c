@@ -757,7 +757,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 
 				/* Create menu item for window */
 				menuItem=xfdashboard_button_new();
-				xfdashboard_button_set_text(XFDASHBOARD_BUTTON(menuItem), xfdashboard_window_tracker_window_get_title(window));
+				xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), xfdashboard_window_tracker_window_get_title(window));
 				clutter_actor_set_x_expand(menuItem, TRUE);
 				xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup),
 												menuItem,
@@ -778,7 +778,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 		{
 			menuItem=xfdashboard_button_new();
 			clutter_actor_set_x_expand(menuItem, TRUE);
-			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(menuItem), _("Launch"));
+			xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), _("Launch"));
 			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup),
 											menuItem,
 											_xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch,
@@ -792,7 +792,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 		{
 			menuItem=xfdashboard_button_new();
 			clutter_actor_set_x_expand(menuItem, TRUE);
-			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(menuItem), _("Remove from favourites"));
+			xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), _("Remove from favourites"));
 			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup),
 											menuItem,
 											_xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_favourite,
@@ -804,7 +804,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 		{
 			menuItem=xfdashboard_button_new();
 			clutter_actor_set_x_expand(menuItem, TRUE);
-			xfdashboard_button_set_text(XFDASHBOARD_BUTTON(menuItem), _("Add to favourites"));
+			xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), _("Add to favourites"));
 			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup),
 											menuItem,
 											_xfdashboard_quicklaunch_on_favourite_popup_menu_item_add_to_favourite,
@@ -850,9 +850,9 @@ static void _xfdashboard_quicklaunch_on_favourite_drag_begin(ClutterDragAction *
 
 	dragHandle=xfdashboard_application_button_new_from_app_info(appInfo);
 	clutter_actor_set_position(dragHandle, inStageX, inStageY);
-	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(dragHandle), priv->normalIconSize);
-	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(dragHandle), FALSE);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(dragHandle), XFDASHBOARD_BUTTON_STYLE_ICON);
+	xfdashboard_label_set_icon_size(XFDASHBOARD_LABEL(dragHandle), priv->normalIconSize);
+	xfdashboard_label_set_sync_icon_size(XFDASHBOARD_LABEL(dragHandle), FALSE);
+	xfdashboard_label_set_style(XFDASHBOARD_LABEL(dragHandle), XFDASHBOARD_LABEL_STYLE_ICON);
 	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
 
 	clutter_drag_action_set_drag_handle(inAction, dragHandle);
@@ -951,9 +951,9 @@ static gboolean _xfdashboard_quicklaunch_on_drop_begin(XfdashboardQuicklaunch *s
 		appInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(draggedActor));
 
 		priv->dragPreviewIcon=xfdashboard_application_button_new_from_app_info(appInfo);
-		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->dragPreviewIcon), priv->normalIconSize);
-		xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->dragPreviewIcon), FALSE);
-		xfdashboard_button_set_style(XFDASHBOARD_BUTTON(priv->dragPreviewIcon), XFDASHBOARD_BUTTON_STYLE_ICON);
+		xfdashboard_label_set_icon_size(XFDASHBOARD_LABEL(priv->dragPreviewIcon), priv->normalIconSize);
+		xfdashboard_label_set_sync_icon_size(XFDASHBOARD_LABEL(priv->dragPreviewIcon), FALSE);
+		xfdashboard_label_set_style(XFDASHBOARD_LABEL(priv->dragPreviewIcon), XFDASHBOARD_LABEL_STYLE_ICON);
 		if(priv->dragMode==DRAG_MODE_CREATE) clutter_actor_hide(priv->dragPreviewIcon);
 		clutter_actor_add_child(CLUTTER_ACTOR(self), priv->dragPreviewIcon);
 
@@ -1445,9 +1445,9 @@ static ClutterActor* _xfdashboard_quicklaunch_create_dynamic_actor(XfdashboardQu
 
 	/* Create and set up actor */
 	actor=xfdashboard_application_button_new_from_app_info(inAppInfo);
-	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), priv->normalIconSize);
-	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_BUTTON_STYLE_ICON);
+	xfdashboard_label_set_icon_size(XFDASHBOARD_LABEL(actor), priv->normalIconSize);
+	xfdashboard_label_set_sync_icon_size(XFDASHBOARD_LABEL(actor), FALSE);
+	xfdashboard_label_set_style(XFDASHBOARD_LABEL(actor), XFDASHBOARD_LABEL_STYLE_ICON);
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "dynamic-app");
 
 	/* Set up and add click action */
@@ -1482,9 +1482,9 @@ static ClutterActor* _xfdashboard_quicklaunch_create_favourite_actor(Xfdashboard
 
 	/* Create and set up actor */
 	actor=xfdashboard_application_button_new_from_app_info(inAppInfo);
-	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(actor), priv->normalIconSize);
-	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(actor), FALSE);
-	xfdashboard_button_set_style(XFDASHBOARD_BUTTON(actor), XFDASHBOARD_BUTTON_STYLE_ICON);
+	xfdashboard_label_set_icon_size(XFDASHBOARD_LABEL(actor), priv->normalIconSize);
+	xfdashboard_label_set_sync_icon_size(XFDASHBOARD_LABEL(actor), FALSE);
+	xfdashboard_label_set_style(XFDASHBOARD_LABEL(actor), XFDASHBOARD_LABEL_STYLE_ICON);
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(actor), "favourite-app");
 
 	/* Set up and add click action */
@@ -3285,16 +3285,16 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	/* Add "applications" button */
 	priv->appsButton=xfdashboard_toggle_button_new_with_text(_("Applications"));
 	clutter_actor_set_name(priv->appsButton, "applications-button");
-	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->appsButton), priv->normalIconSize);
-	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->appsButton), FALSE);
+	xfdashboard_label_set_icon_size(XFDASHBOARD_LABEL(priv->appsButton), priv->normalIconSize);
+	xfdashboard_label_set_sync_icon_size(XFDASHBOARD_LABEL(priv->appsButton), FALSE);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->appsButton);
 
 	/* Next add trash button to box but initially hidden and register as drop target */
 	priv->trashButton=xfdashboard_toggle_button_new_with_text( _("Remove"));
 	clutter_actor_set_name(priv->trashButton, "trash-button");
 	clutter_actor_hide(priv->trashButton);
-	xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->trashButton), priv->normalIconSize);
-	xfdashboard_button_set_sync_icon_size(XFDASHBOARD_BUTTON(priv->trashButton), FALSE);
+	xfdashboard_label_set_icon_size(XFDASHBOARD_LABEL(priv->trashButton), priv->normalIconSize);
+	xfdashboard_label_set_sync_icon_size(XFDASHBOARD_LABEL(priv->trashButton), FALSE);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->trashButton);
 
 	dropAction=xfdashboard_drop_action_new();
@@ -3377,8 +3377,8 @@ void xfdashboard_quicklaunch_set_normal_icon_size(XfdashboardQuicklaunch *self, 
 		priv->normalIconSize=inIconSize;
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
 
-		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->appsButton), priv->normalIconSize);
-		xfdashboard_button_set_icon_size(XFDASHBOARD_BUTTON(priv->trashButton), priv->normalIconSize);
+		xfdashboard_label_set_icon_size(XFDASHBOARD_LABEL(priv->appsButton), priv->normalIconSize);
+		xfdashboard_label_set_icon_size(XFDASHBOARD_LABEL(priv->trashButton), priv->normalIconSize);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardQuicklaunchProperties[PROP_NORMAL_ICON_SIZE]);
