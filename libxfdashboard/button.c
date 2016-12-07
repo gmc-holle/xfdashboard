@@ -50,6 +50,18 @@ struct _XfdashboardButtonPrivate
 	ClutterAction				*clickAction;
 };
 
+/* Properties */
+enum
+{
+	PROP_0,
+
+	PROP_STYLE,
+
+	PROP_LAST
+};
+
+static GParamSpec* XfdashboardButtonProperties[PROP_LAST]={ 0, };
+
 /* Signals */
 enum
 {
@@ -80,14 +92,76 @@ static void _xfdashboard_button_clicked(XfdashboardClickAction *inAction,
 
 /* IMPLEMENTATION: GObject */
 
+/* Set/get properties */
+static void _xfdashboard_button_set_property(GObject *inObject,
+												guint inPropID,
+												const GValue *inValue,
+												GParamSpec *inSpec)
+{
+	XfdashboardButton			*self=XFDASHBOARD_BUTTON(inObject);
+
+	switch(inPropID)
+	{
+		case PROP_STYLE:
+			xfdashboard_label_set_style(XFDASHBOARD_LABEL(self), g_value_get_enum(inValue));
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
+static void _xfdashboard_button_get_property(GObject *inObject,
+												guint inPropID,
+												GValue *outValue,
+												GParamSpec *inSpec)
+{
+	XfdashboardButton			*self=XFDASHBOARD_BUTTON(inObject);
+
+	switch(inPropID)
+	{
+		case PROP_STYLE:
+			g_value_set_enum(outValue, xfdashboard_label_get_style(XFDASHBOARD_LABEL(self)));
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
+			break;
+	}
+}
+
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
  */
 static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 {
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
+
+	/* Override functions */
+	gobjectClass->set_property=_xfdashboard_button_set_property;
+	gobjectClass->get_property=_xfdashboard_button_get_property;
+
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardButtonPrivate));
+
+	/* Define properties */
+	/**
+	 * XfdashboardPopupMenu:destroy-on-cancel:
+	 *
+	 * A flag indicating if this pop-up menu should be destroyed automatically
+	 * when it is cancelled.
+	 */
+	XfdashboardButtonProperties[PROP_STYLE]=
+		g_param_spec_override("button-style",
+								g_object_class_find_property(gobjectClass, "label-style"));
+
+	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardButtonProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardButtonProperties[PROP_STYLE]);
 
 	/* Define signals */
 	XfdashboardButtonSignals[SIGNAL_CLICKED]=
