@@ -47,6 +47,7 @@
 #include <libxfdashboard/popup-menu.h>
 
 #include <glib/gi18n-lib.h>
+#include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <math.h>
 
@@ -1867,7 +1868,11 @@ void xfdashboard_popup_menu_activate(XfdashboardPopupMenu *self)
 {
 	XfdashboardPopupMenuPrivate			*priv;
 	GdkDisplay							*display;
+#if GTK_CHECK_VERSION(3, 20, 0)
+	GdkSeat								*seat;
+#else
 	GdkDeviceManager					*deviceManager;
+#endif
 	GdkDevice							*pointerDevice;
 	gint								pointerX, pointerY;
 	XfdashboardWindowTrackerMonitor		*monitor;
@@ -1883,8 +1888,13 @@ void xfdashboard_popup_menu_activate(XfdashboardPopupMenu *self)
 
 	/* Move popup menu next to pointer similar to tooltips but keep it on current monitor */
 	display=gdk_display_get_default();
+#if GTK_CHECK_VERSION(3, 20, 0)
+	seat=gdk_display_get_default_seat(display);
+	pointerDevice=gdk_seat_get_pointer(seat);
+#else
 	deviceManager=gdk_display_get_device_manager(display);
 	pointerDevice=gdk_device_manager_get_client_pointer(deviceManager);
+#endif
 	gdk_device_get_position(pointerDevice, NULL, &pointerX, &pointerY);
 
 	monitor=xfdashboard_window_tracker_get_monitor_by_position(priv->windowTracker, pointerX, pointerY);
