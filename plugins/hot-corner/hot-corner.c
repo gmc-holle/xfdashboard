@@ -53,7 +53,11 @@ struct _XfdashboardHotCornerPrivate
 	XfdashboardApplication					*application;
 	XfdashboardWindowTracker				*windowTracker;
 	GdkWindow								*rootWindow;
+#if GTK_CHECK_VERSION(3, 20, 0)
+	GdkSeat									*seat;
+#else
 	GdkDeviceManager						*deviceManager;
+#endif
 
 	guint									timeoutID;
 	GDateTime								*enteredTime;
@@ -145,7 +149,11 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 	}
 
 	/* Get current position of pointer */
+#if GTK_CHECK_VERSION(3, 20, 0)
+	pointerDevice=gdk_seat_get_pointer(priv->seat);
+#else
 	pointerDevice=gdk_device_manager_get_client_pointer(priv->deviceManager);
+#endif
 	if(!pointerDevice)
 	{
 		g_critical(_("Could not get pointer to determine pointer position"));
@@ -351,7 +359,11 @@ void xfdashboard_hot_corner_init(XfdashboardHotCorner *self)
 	priv->application=xfdashboard_application_get_default();
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->rootWindow=NULL;
+#if GTK_CHECK_VERSION(3, 20, 0)
+	priv->seat=NULL;
+#else
 	priv->deviceManager=NULL;
+#endif
 
 	priv->timeoutID=0;
 	priv->enteredTime=NULL;
@@ -368,14 +380,22 @@ void xfdashboard_hot_corner_init(XfdashboardHotCorner *self)
 		if(priv->rootWindow)
 		{
 			display=gdk_window_get_display(priv->rootWindow);
+#if GTK_CHECK_VERSION(3, 20, 0)
+			priv->seat=gdk_display_get_default_seat(display);
+#else
 			priv->deviceManager=gdk_display_get_device_manager(display);
+#endif
 		}
 			else
 			{
 				g_critical(_("Disabling hot-corner plugin because the root window to determine pointer position could not be found."));
 			}
 
+#if GTK_CHECK_VERSION(3, 20, 0)
+		if(priv->seat)
+#else
 		if(priv->deviceManager)
+#endif
 		{
 			/* Start polling pointer position */
 			priv->timeoutID=g_timeout_add(POLL_POINTER_POSITION_INTERVAL,
