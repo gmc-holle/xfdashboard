@@ -59,6 +59,13 @@
 	</keywords>
 
 	<releases>
+		<release version="0.6.1" timestamp="1482422594">
+			<description>
+				<_p>This stable version fixes a bug setting the correct default
+				applications at first use.
+				</_p>
+			</description>
+		</release>
 		<release version="0.7.0" timestamp="1473183039">
 			<description>
 				<_p>This unstable development fixes introduces pop-up menus.
