@@ -57,7 +57,8 @@ libxfdashboard_la_headers = \
 	plugin.h \
 	plugins-manager.h \
 	popup-menu.h \
-	popup-menu-item-meta.h \
+	popup-menu-item.h \
+	popup-menu-item-button.h \
 	quicklaunch.h \
 	scaled-table-layout.h \
 	scrollbar.h \
@@ -127,7 +128,8 @@ libxfdashboard_la_SOURCES = \
 	plugin.c \
 	plugins-manager.c \
 	popup-menu.c \
-	popup-menu-item-meta.c \
+	popup-menu-item.c \
+	popup-menu-item-button.c \
 	quicklaunch.c \
 	scaled-table-layout.c \
 	scrollbar.c \

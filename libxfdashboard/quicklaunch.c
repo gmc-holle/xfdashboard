@@ -49,6 +49,7 @@
 #include <libxfdashboard/window-tracker-window.h>
 #include <libxfdashboard/click-action.h>
 #include <libxfdashboard/popup-menu.h>
+#include <libxfdashboard/popup-menu-item-button.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
 
@@ -417,14 +418,12 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 }
 
 /* User selected to activate a window at pop-up menu */
-static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_activate_window(XfdashboardPopupMenu *inPopupMenu,
-																					ClutterActor *inMenuItem,
+static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_activate_window(XfdashboardPopupMenuItem *inMenuItem,
 																					gpointer inUserData)
 {
 	XfdashboardWindowTrackerWindow		*window;
 
-	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU(inPopupMenu));
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inMenuItem));
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
 
 	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(inUserData);
@@ -438,7 +437,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_activate_windo
 
 /* User selected to open a new window or to launch that application at pop-up menu */
 static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(XfdashboardPopupMenu *inPopupMenu,
-																			ClutterActor *inMenuItem,
+																			XfdashboardPopupMenuItem *inMenuItem,
 																			gpointer inUserData)
 {
 	GAppInfo							*appInfo;
@@ -447,7 +446,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(Xfdashb
 	const gchar							*iconName;
 
 	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU(inPopupMenu));
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inMenuItem));
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
 	g_return_if_fail(G_IS_APP_INFO(inUserData));
 
 	appInfo=G_APP_INFO(inUserData);
@@ -508,7 +507,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(Xfdashb
 
 /* User selected to remove application from favourites via pop-up menu */
 static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_favourite(XfdashboardPopupMenu *inPopupMenu,
-																						ClutterActor *inMenuItem,
+																						XfdashboardPopupMenuItem *inMenuItem,
 																						gpointer inUserData)
 {
 	XfdashboardApplicationButton		*appButton;
@@ -518,7 +517,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_fa
 	XfdashboardQuicklaunchPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU(inPopupMenu));
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inMenuItem));
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
 
 	appButton=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
@@ -577,7 +576,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_fa
 
 /* User selected to add application to favourites via pop-up menu */
 static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_add_to_favourite(XfdashboardPopupMenu *inPopupMenu,
-																					ClutterActor *inMenuItem,
+																					XfdashboardPopupMenuItem *inMenuItem,
 																					gpointer inUserData)
 {
 	XfdashboardApplicationButton		*appButton;
@@ -587,7 +586,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_add_to_favouri
 	XfdashboardQuicklaunchPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU(inPopupMenu));
-	g_return_if_fail(XFDASHBOARD_IS_BUTTON(inMenuItem));
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
 
 	appButton=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
@@ -751,22 +750,24 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 				if(windowWorkspace!=activeWorkspace &&
 					!separatorAdded)
 				{
-					xfdashboard_popup_menu_add_separator(XFDASHBOARD_POPUP_MENU(popup));
+					// TODO: xfdashboard_popup_menu_add_separator(XFDASHBOARD_POPUP_MENU(popup));
 					separatorAdded=TRUE;
 				}
 
 				/* Create menu item for window */
-				menuItem=xfdashboard_button_new();
+				menuItem=xfdashboard_popup_menu_item_button_new();
 				xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), xfdashboard_window_tracker_window_get_title(window));
 				clutter_actor_set_x_expand(menuItem, TRUE);
-				xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup),
-												menuItem,
-												_xfdashboard_quicklaunch_on_favourite_popup_menu_item_activate_window,
-												window);
+				xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+
+				g_signal_connect(menuItem,
+									"activated",
+									G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_popup_menu_item_activate_window),
+									window);
 			}
 
 			/* Add a separator to split windows from other actions in pop-up menu */
-			xfdashboard_popup_menu_add_separator(XFDASHBOARD_POPUP_MENU(popup));
+			// TODO: xfdashboard_popup_menu_add_separator(XFDASHBOARD_POPUP_MENU(popup));
 
 			/* Release allocated resources */
 			g_list_free(sortedList);
@@ -776,13 +777,15 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 		/* Add menu item to launch application if it is not running */
 		if(!xfdashboard_application_tracker_is_running_by_app_info(priv->appTracker, appInfo))
 		{
-			menuItem=xfdashboard_button_new();
-			clutter_actor_set_x_expand(menuItem, TRUE);
+			menuItem=xfdashboard_popup_menu_item_button_new();
 			xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), _("Launch"));
-			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup),
-											menuItem,
-											_xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch,
-											appInfo);
+			clutter_actor_set_x_expand(menuItem, TRUE);
+			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+
+			g_signal_connect(menuItem,
+								"activated",
+								G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch),
+								appInfo);
 		}
 
 // TODO: Add actions from GAppInfo
@@ -790,25 +793,29 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 		/* Add "Remove from favourites" if application button is for a favourite application */
 		if(xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(appButton), "favourite-app"))
 		{
-			menuItem=xfdashboard_button_new();
-			clutter_actor_set_x_expand(menuItem, TRUE);
+			menuItem=xfdashboard_popup_menu_item_button_new();
 			xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), _("Remove from favourites"));
-			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup),
-											menuItem,
-											_xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_favourite,
-											appButton);
+			clutter_actor_set_x_expand(menuItem, TRUE);
+			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+
+			g_signal_connect(menuItem,
+								"activated",
+								G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_favourite),
+								appButton);
 		}
 
 		/* Add "Add to favourites" if application button is for a non-favourite application */
 		if(xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(appButton), "dynamic-app"))
 		{
-			menuItem=xfdashboard_button_new();
-			clutter_actor_set_x_expand(menuItem, TRUE);
+			menuItem=xfdashboard_popup_menu_item_button_new();
 			xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), _("Add to favourites"));
-			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup),
-											menuItem,
-											_xfdashboard_quicklaunch_on_favourite_popup_menu_item_add_to_favourite,
-											appButton);
+			clutter_actor_set_x_expand(menuItem, TRUE);
+			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+
+			g_signal_connect(menuItem,
+								"activated",
+								G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_popup_menu_item_add_to_favourite),
+								appButton);
 		}
 
 		/* Activate pop-up menu */

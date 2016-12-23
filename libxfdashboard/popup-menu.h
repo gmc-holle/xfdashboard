@@ -30,6 +30,7 @@
 #endif
 
 #include <libxfdashboard/background.h>
+#include <libxfdashboard/popup-menu-item.h>
 
 G_BEGIN_DECLS
 
@@ -76,24 +77,11 @@ struct _XfdashboardPopupMenuClass
 	void (*activated)(XfdashboardPopupMenu *self);
 	void (*cancelled)(XfdashboardPopupMenu *self);
 
-	void (*item_activated)(XfdashboardPopupMenu *self, ClutterActor *inMenuItem);
+	void (*item_activated)(XfdashboardPopupMenu *self, XfdashboardPopupMenuItem *inMenuItem);
 
-	void (*item_added)(XfdashboardPopupMenu *self, ClutterActor *inMenuItem);
-	void (*item_removed)(XfdashboardPopupMenu *self, ClutterActor *inMenuItem);
+	void (*item_added)(XfdashboardPopupMenu *self, XfdashboardPopupMenuItem *inMenuItem);
+	void (*item_removed)(XfdashboardPopupMenu *self, XfdashboardPopupMenuItem *inMenuItem);
 };
-
-/**
- * XfdashboardPopupMenuItemActivateCallback:
- * @self: The popup menu containing the activated menu item
- * @inMenuItem: The menu item actor which was activated
- * @inUserData: Data passed to the function, set with xfdashboard_popup_menu_add_entry()
- *
- * A callback called when the menu item @inMenuItem at pop-up menu @self was
- * activated.
- */
-typedef void (*XfdashboardPopupMenuItemActivateCallback)(XfdashboardPopupMenu *self,
-															ClutterActor *inMenuItem,
-															gpointer inUserData);
 
 /* Public API */
 GType xfdashboard_popup_menu_get_type(void) G_GNUC_CONST;
@@ -124,23 +112,16 @@ void xfdashboard_popup_menu_set_title_gicon(XfdashboardPopupMenu *self, GIcon *i
 
 
 gint xfdashboard_popup_menu_add_item(XfdashboardPopupMenu *self,
-										ClutterActor *inMenuItem,
-										XfdashboardPopupMenuItemActivateCallback inCallback,
-										gpointer inUserData);
+										XfdashboardPopupMenuItem *inMenuItem);
 gint xfdashboard_popup_menu_insert_item(XfdashboardPopupMenu *self,
-										ClutterActor *inMenuItem,
-										gint inIndex,
-										XfdashboardPopupMenuItemActivateCallback inCallback,
-										gpointer inUserData);
+										XfdashboardPopupMenuItem *inMenuItem,
+										gint inIndex);
 gboolean xfdashboard_popup_menu_move_item(XfdashboardPopupMenu *self,
-											ClutterActor *inMenuItem,
+											XfdashboardPopupMenuItem *inMenuItem,
 											gint inIndex);
-ClutterActor* xfdashboard_popup_menu_get_item(XfdashboardPopupMenu *self, gint inIndex);
-gint xfdashboard_popup_menu_get_item_index(XfdashboardPopupMenu *self, ClutterActor *inMenuItem);
-gboolean xfdashboard_popup_menu_remove_item(XfdashboardPopupMenu *self, ClutterActor *inMenuItem);
-
-gint xfdashboard_popup_menu_add_separator(XfdashboardPopupMenu *self);
-gint xfdashboard_popup_menu_insert_separator(XfdashboardPopupMenu *self, gint inIndex);
+XfdashboardPopupMenuItem* xfdashboard_popup_menu_get_item(XfdashboardPopupMenu *self, gint inIndex);
+gint xfdashboard_popup_menu_get_item_index(XfdashboardPopupMenu *self, XfdashboardPopupMenuItem *inMenuItem);
+gboolean xfdashboard_popup_menu_remove_item(XfdashboardPopupMenu *self, XfdashboardPopupMenuItem *inMenuItem);
 
 
 void xfdashboard_popup_menu_activate(XfdashboardPopupMenu *self);

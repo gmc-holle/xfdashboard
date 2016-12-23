@@ -571,18 +571,15 @@ XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selecte
 	background-fill-color: #93c1ffff;
 }
 
-.popup-menu-separator
-{
-	background-type: outline;
-	outline-borders: all;
-	outline-width: 1.0;
-	outline-color: white;
-	margin-top: 2.0;
-	margin-bottom: 2.0;
-}
-
 .popup-menu.popup-menu-source-XfdashboardQuicklaunch
 {
 	show-title: true;
 	show-title-icon: true;
+}
+
+.popup-menu.popup-menu-source-XfdashboardQuicklaunch XfdashboardLabel.popup-menu-item
+{
+	icon-size: 16;
+	text-justify: left;
+	color: #ffffffff;
 }

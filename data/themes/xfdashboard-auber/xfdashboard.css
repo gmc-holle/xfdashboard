@@ -537,3 +537,49 @@ XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selecte
 	corners: all;
 	corner-radius: 4.0;
 }
+
+/* Popup menus */
+.popup-menu
+{
+	background-type: fill outline rounded-corners;
+	background-fill-color: @alpha(@background-base-color, 0.7);
+	outline-color: #5792e2ff;
+	outline-width: 1.0;
+	corners: all;
+	corner-radius: 4.0;
+}
+
+.popup-menu-title
+{
+	font: bold;
+	background-type: outline;
+	outline-borders: bottom;
+	outline-width: 1.0;
+	outline-color: white;
+}
+
+.popup-menu-item
+{
+	margin-top: 2.0;
+	margin-bottom: 2.0;
+}
+
+.popup-menu-item:selected,
+.popup-menu-item:hover
+{
+	background-type: fill;
+	background-fill-color: #93c1ffff;
+}
+
+.popup-menu.popup-menu-source-XfdashboardQuicklaunch
+{
+	show-title: true;
+	show-title-icon: true;
+}
+
+.popup-menu.popup-menu-source-XfdashboardQuicklaunch XfdashboardLabel.popup-menu-item
+{
+	icon-size: 16;
+	text-justify: left;
+	color: #ffffffff;
+}

@@ -51,7 +51,6 @@
 #include <gdk/gdk.h>
 #include <math.h>
 
-#include <libxfdashboard/popup-menu-item-meta.h>
 #include <libxfdashboard/box-layout.h>
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/focus-manager.h>
@@ -145,8 +144,6 @@ static guint XfdashboardPopupMenuSignals[SIGNAL_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
-
-static GQuark					_xfdashboard_popup_menu_items_container_child_meta_quark=0;
 
 /* An event occured after a popup menu was activated so check if popup menu should
  * be cancelled because a button was pressed and release outside the popup menu.
@@ -249,41 +246,51 @@ static gboolean _xfdashboard_popup_menu_on_captured_event(XfdashboardPopupMenu *
 }
 
 /*  Check if menu item is really part of this pop-up menu */
-static gboolean _xfdashboard_popup_menu_contains_menu_item(XfdashboardPopupMenu *self, ClutterActor *inMenuItem)
+static gboolean _xfdashboard_popup_menu_contains_menu_item(XfdashboardPopupMenu *self,
+															XfdashboardPopupMenuItem *inMenuItem)
 {
-	XfdashboardPopupMenuItemMeta	*meta;
+	ClutterActor			*parent;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(self), FALSE);
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inMenuItem), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem), FALSE);
 
-	/* Get meta of requested menu item actor */
-	meta=g_object_get_qdata(G_OBJECT(inMenuItem), _xfdashboard_popup_menu_items_container_child_meta_quark);
-	if(!meta || !XFDASHBOARD_IS_POPUP_MENU_ITEM_META(meta)) return(FALSE);
-
-	/* Meta must really belong to the requested menu item actor */
-	if(xfdashboard_popup_menu_item_meta_get_menu_item(meta)!=inMenuItem)
+	/* Iterate through parents and for each XfdashboardPopupMenu found, check
+	 * if it is this pop-up menu and return TRUE if it is.
+	 */
+	parent=clutter_actor_get_parent(CLUTTER_ACTOR(inMenuItem));
+	while(parent)
 	{
-		g_critical(_("Menu item meta does not match menu item!"));
-		return(FALSE);
-	}
+		/* Check if current iterated parent is a XfdashboardPopupMenu and if it
+		 * is this pop-up menu.
+		 */
+		if(XFDASHBOARD_IS_POPUP_MENU(parent) &&
+			XFDASHBOARD_POPUP_MENU(parent)==self)
+		{
+			/* This one is this pop-up menu, so return TRUE here */
+			return(TRUE);
+		}
 
-	/* Meta must belong to this pop-up menu */
-	if(xfdashboard_popup_menu_item_meta_get_popup_menu(meta)!=self)
-	{
-		g_critical(_("Menu item meta does not match pop-up menu!"));
-		return(FALSE);
+		/* Continue with next parent */
+		parent=clutter_actor_get_parent(parent);
 	}
 
 	/* If we get here the "menu item" actor is a menu item of this pop-up menu */
-	return(TRUE);
+	return(FALSE);
 }
 
 /* Menu item was activated */
-static void _xfdashboard_popup_menu_on_meta_activated(XfdashboardPopupMenu *self,
-														gpointer inUserData)
+static void _xfdashboard_popup_menu_on_menu_item_activated(XfdashboardPopupMenu *self,
+															gpointer inUserData)
 {
+	XfdashboardPopupMenuItem		*menuItem;
+
 	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU(self));
-	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM_META(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inUserData));
+
+	menuItem=XFDASHBOARD_POPUP_MENU_ITEM(inUserData);
+
+	/* Emit "item-activated" signal */
+	g_signal_emit(self, XfdashboardPopupMenuSignals[SIGNAL_ITEM_ACTIVATED], 0, menuItem);
 
 	/* Cancel pop-up menu as menu item was activated and its callback function
 	 * was called by its meta object.
@@ -655,13 +662,14 @@ static gboolean _xfdashboard_popup_menu_focusable_activate_selection(Xfdashboard
 																		ClutterActor *inSelection)
 {
 	XfdashboardPopupMenu				*self;
-	XfdashboardPopupMenuItemMeta		*meta;
+	XfdashboardPopupMenuItem			*menuItem;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(inFocusable), FALSE);
 	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(inFocusable), FALSE);
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSelection), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inSelection), FALSE);
 
 	self=XFDASHBOARD_POPUP_MENU(inFocusable);
+	menuItem=XFDASHBOARD_POPUP_MENU_ITEM(inSelection);
 
 	/* Check that selection is a child of this actor */
 	if(!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
@@ -677,26 +685,8 @@ static gboolean _xfdashboard_popup_menu_focusable_activate_selection(Xfdashboard
 		return(FALSE);
 	}
 
-	/* Get meta of requested menu item actor */
-	meta=g_object_get_qdata(G_OBJECT(inSelection), _xfdashboard_popup_menu_items_container_child_meta_quark);
-	if(!meta || !XFDASHBOARD_IS_POPUP_MENU_ITEM_META(meta)) return(FALSE);
-
-	/* Meta must really belong to the requested menu item actor */
-	if(xfdashboard_popup_menu_item_meta_get_menu_item(meta)!=inSelection)
-	{
-		g_critical(_("Menu item meta does not match menu item!"));
-		return(FALSE);
-	}
-
-	/* Meta must belong to this pop-up menu */
-	if(xfdashboard_popup_menu_item_meta_get_popup_menu(meta)!=self)
-	{
-		g_critical(_("Menu item meta does not match pop-up menu!"));
-		return(FALSE);
-	}
-
 	/* Activate selection */
-	xfdashboard_popup_menu_item_meta_activate(XFDASHBOARD_POPUP_MENU_ITEM_META(meta));
+	xfdashboard_popup_menu_item_activate(menuItem);
 
 	/* If we get here activation of menu item was successful */
 	return(TRUE);
@@ -905,9 +895,6 @@ static void xfdashboard_popup_menu_class_init(XfdashboardPopupMenuClass *klass)
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardPopupMenuPrivate));
 
-	/* Set up quark for child meta used at menu item actors */
-	_xfdashboard_popup_menu_items_container_child_meta_quark=g_quark_from_static_string("xfdashboard-popup-menu-items-container-child-data");
-
 	/* Define properties */
 	/**
 	 * XfdashboardPopupMenu:destroy-on-cancel:
@@ -1060,7 +1047,7 @@ static void xfdashboard_popup_menu_class_init(XfdashboardPopupMenuClass *klass)
 						g_cclosure_marshal_VOID__OBJECT,
 						G_TYPE_NONE,
 						1,
-						CLUTTER_TYPE_ACTOR);
+						XFDASHBOARD_TYPE_POPUP_MENU_ITEM);
 
 	/**
 	 * XfdashboardPopupMenu::item-added:
@@ -1079,7 +1066,7 @@ static void xfdashboard_popup_menu_class_init(XfdashboardPopupMenuClass *klass)
 						g_cclosure_marshal_VOID__OBJECT,
 						G_TYPE_NONE,
 						1,
-						CLUTTER_TYPE_ACTOR);
+						XFDASHBOARD_TYPE_POPUP_MENU_ITEM);
 
 	/**
 	 * XfdashboardPopupMenu::item-removed:
@@ -1098,7 +1085,7 @@ static void xfdashboard_popup_menu_class_init(XfdashboardPopupMenuClass *klass)
 						g_cclosure_marshal_VOID__OBJECT,
 						G_TYPE_NONE,
 						1,
-						CLUTTER_TYPE_ACTOR);
+						XFDASHBOARD_TYPE_POPUP_MENU_ITEM);
 }
 
 /* Object initialization
@@ -1560,41 +1547,28 @@ void xfdashboard_popup_menu_set_title_gicon(XfdashboardPopupMenu *self, GIcon *i
 /**
  * xfdashboard_popup_menu_add_item:
  * @self: A #XfdashboardPopupMenu
- * @inMenuItem: A #ClutterActor used as menu item
- * @inCallback: The callback handler to call when this menu item was activated
- * @inUserData: The user data to pass to callback handler when this menu item
- *              was activated.
+ * @inMenuItem: A #XfdashboardPopupMenuItem to add to pop-up menu
  *
- * Adds the actor @inMenuItem to end of pop-up menu. When the pop-up menu at @self
- * is displayed and this menu item is activated then the callback handler @inCallback
- * is called and the user data @inUserData is passed to that callback handler.
- *
+ * Adds the actor @inMenuItem to end of pop-up menu.
+ * 
  * If menu item actor implements the #XfdashboardStylable interface the CSS class
  * popup-menu-item will be added.
  * 
  * Return value: Returns index where item was inserted at or -1 if it failed.
  */
 gint xfdashboard_popup_menu_add_item(XfdashboardPopupMenu *self,
-										ClutterActor *inMenuItem,
-										XfdashboardPopupMenuItemActivateCallback inCallback,
-										gpointer inUserData)
+										XfdashboardPopupMenuItem *inMenuItem)
 {
-	return(xfdashboard_popup_menu_insert_item(self, inMenuItem, -1, inCallback, inUserData));
+	return(xfdashboard_popup_menu_insert_item(self, inMenuItem, -1));
 }
 
 /**
  * xfdashboard_popup_menu_insert_item:
  * @self: A #XfdashboardPopupMenu
- * @inMenuItem: A #ClutterActor used as menu item
+ * @inMenuItem: A #XfdashboardPopupMenuItem to add to pop-up menu
  * @inIndex: The position where to insert this item at
- * @inCallback: The callback handler to call when this menu item was activated
- * @inUserData: The user data to pass to callback handler when this menu item
- *              was activated.
  *
- * Inserts the actor @inMenuItem at position @inIndex into pop-up menu. When the
- * pop-up menu at @self is displayed and this menu item is activated then the
- * callback handler @inCallback is called and the user data @inUserData is passed
- * to that callback handler.
+ * Inserts the actor @inMenuItem at position @inIndex into pop-up menu.
  *
  * If position @inIndex is greater than the number of menu items in @self or is
  * less than 0, then the menu item actor @inMenuItem is added to end to
@@ -1606,34 +1580,39 @@ gint xfdashboard_popup_menu_add_item(XfdashboardPopupMenu *self,
  * Return value: Returns index where item was inserted at or -1 if it failed.
  */
 gint xfdashboard_popup_menu_insert_item(XfdashboardPopupMenu *self,
-										ClutterActor *inMenuItem,
-										gint inIndex,
-										XfdashboardPopupMenuItemActivateCallback inCallback,
-										gpointer inUserData)
+										XfdashboardPopupMenuItem *inMenuItem,
+										gint inIndex)
 {
 	XfdashboardPopupMenuPrivate		*priv;
-	XfdashboardPopupMenuItemMeta	*meta;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(self), -1);
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inMenuItem), -1);
-	g_return_val_if_fail(clutter_actor_get_parent(inMenuItem)==NULL, -1);
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem), -1);
+	g_return_val_if_fail(clutter_actor_get_parent(CLUTTER_ACTOR(inMenuItem))==NULL, -1);
 
 	priv=self->priv;
 
 	/* Insert menu item actor to container at requested position */
-	clutter_actor_insert_child_at_index(priv->itemsContainer, inMenuItem, inIndex);
+	clutter_actor_insert_child_at_index(priv->itemsContainer, CLUTTER_ACTOR(inMenuItem), inIndex);
 
-	/* Create and add meta for menu item actor */
-	meta=xfdashboard_popup_menu_item_meta_new(self, inMenuItem, inCallback, inUserData);
-	g_object_set_qdata_full(G_OBJECT(inMenuItem),
-							_xfdashboard_popup_menu_items_container_child_meta_quark,
-							meta,
-							(GDestroyNotify)g_object_unref);
+	/* Add CSS class 'popup-menu-item' to newly added menu item */
+	if(XFDASHBOARD_IS_STYLABLE(inMenuItem))
+	{
+		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(inMenuItem), "popup-menu-item");
+	}
 
-	g_signal_connect_swapped(meta,
-								"activated",
-								G_CALLBACK(_xfdashboard_popup_menu_on_meta_activated),
-								self);
+	/* Connect signal to get notified when user made a selection to cancel pop-up
+	 * menu but ensure that it is called nearly at last because the pop-up menu
+	 * could be configured to get destroyed automatically when user selected an
+	 * item (or cancelled the menu). In this case other signal handler may not be
+	 * called if pop-up menu's signal handler is called before. By calling it at
+	 * last all other normally connected signal handlers will get be called.
+	 */
+	g_signal_connect_data(inMenuItem,
+							"activated",
+							G_CALLBACK(_xfdashboard_popup_menu_on_menu_item_activated),
+							self,
+							NULL,
+							G_CONNECT_AFTER | G_CONNECT_SWAPPED);
 
 	/* Emit signal */
 	g_signal_emit(self, XfdashboardPopupMenuSignals[SIGNAL_ITEM_ADDED], 0, inMenuItem);
@@ -1645,7 +1624,7 @@ gint xfdashboard_popup_menu_insert_item(XfdashboardPopupMenu *self,
 /**
  * xfdashboard_popup_menu_move_item:
  * @self: A #XfdashboardPopupMenu
- * @inMenuItem: A #ClutterActor menu item to move
+ * @inMenuItem: A #XfdashboardPopupMenuItem menu item to move
  * @inIndex: The position where to insert this item at
  *
  * Moves the actor @inMenuItem to position @inIndex at pop-up menu @self. If position
@@ -1655,13 +1634,13 @@ gint xfdashboard_popup_menu_insert_item(XfdashboardPopupMenu *self,
  * Return value: Returns %TRUE if moving menu item was successful, otherwise %FALSE.
  */
 gboolean xfdashboard_popup_menu_move_item(XfdashboardPopupMenu *self,
-											ClutterActor *inMenuItem,
+											XfdashboardPopupMenuItem *inMenuItem,
 											gint inIndex)
 {
 	XfdashboardPopupMenuPrivate		*priv;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(self), FALSE);
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inMenuItem), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem), FALSE);
 
 	priv=self->priv;
 
@@ -1676,8 +1655,8 @@ gboolean xfdashboard_popup_menu_move_item(XfdashboardPopupMenu *self,
 
 	/* Move menu item actor to new position */
 	g_object_ref(inMenuItem);
-	clutter_actor_remove_child(priv->itemsContainer, inMenuItem);
-	clutter_actor_insert_child_at_index(priv->itemsContainer, inMenuItem, inIndex);
+	clutter_actor_remove_child(priv->itemsContainer, CLUTTER_ACTOR(inMenuItem));
+	clutter_actor_insert_child_at_index(priv->itemsContainer, CLUTTER_ACTOR(inMenuItem), inIndex);
 	g_object_unref(inMenuItem);
 
 	/* If we get here moving menu item actor was successful */
@@ -1691,13 +1670,14 @@ gboolean xfdashboard_popup_menu_move_item(XfdashboardPopupMenu *self,
  *
  * Returns the menu item actor at position @inIndex at pop-up menu @self.
  *
- * Return value: Returns #ClutterActor of the menu item at position @inIndex or
+ * Return value: Returns #XfdashboardPopupMenuItem of the menu item at position @inIndex or
  *   %NULL in case of errors or if index is out of range that means it is greater
  *   than the number of menu items in @self or is less than 0.
  */
-ClutterActor* xfdashboard_popup_menu_get_item(XfdashboardPopupMenu *self, gint inIndex)
+XfdashboardPopupMenuItem* xfdashboard_popup_menu_get_item(XfdashboardPopupMenu *self, gint inIndex)
 {
 	XfdashboardPopupMenuPrivate		*priv;
+	ClutterActor					*menuItem;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(self), NULL);
 	g_return_val_if_fail(inIndex>=0 && inIndex<clutter_actor_get_n_children(self->priv->itemsContainer), NULL);
@@ -1705,20 +1685,21 @@ ClutterActor* xfdashboard_popup_menu_get_item(XfdashboardPopupMenu *self, gint i
 	priv=self->priv;
 
 	/* Get and return child at requested position at items container */
-	return(clutter_actor_get_child_at_index(priv->itemsContainer, inIndex));
+	menuItem=clutter_actor_get_child_at_index(priv->itemsContainer, inIndex);
+	return(XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
 }
 
 /**
  * xfdashboard_popup_menu_get_item_index:
  * @self: A #XfdashboardPopupMenu
- * @inMenuItem: The #ClutterActor menu item whose index to lookup
+ * @inMenuItem: The #XfdashboardPopupMenuItem menu item whose index to lookup
  *
  * Returns the position for menu item actor @inMenuItem of pop-up menu @self.
  *
  * Return value: Returns the position of the menu item or -1 in case of errors
  *   or if pop-up menu does not have the menu item
  */
-gint xfdashboard_popup_menu_get_item_index(XfdashboardPopupMenu *self, ClutterActor *inMenuItem)
+gint xfdashboard_popup_menu_get_item_index(XfdashboardPopupMenu *self, XfdashboardPopupMenuItem *inMenuItem)
 {
 	XfdashboardPopupMenuPrivate		*priv;
 	gint							index;
@@ -1726,7 +1707,7 @@ gint xfdashboard_popup_menu_get_item_index(XfdashboardPopupMenu *self, ClutterAc
 	ClutterActor					*child;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(self), -1);
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inMenuItem), -1);
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem), -1);
 
 	priv=self->priv;
 
@@ -1737,7 +1718,7 @@ gint xfdashboard_popup_menu_get_item_index(XfdashboardPopupMenu *self, ClutterAc
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* If this child is the one we are looking for return index now */
-		if(child==inMenuItem) return(index);
+		if(child==CLUTTER_ACTOR(inMenuItem)) return(index);
 
 		/* Increase index */
 		index++;
@@ -1750,7 +1731,7 @@ gint xfdashboard_popup_menu_get_item_index(XfdashboardPopupMenu *self, ClutterAc
 /**
  * xfdashboard_popup_menu_remove_item:
  * @self: A #XfdashboardPopupMenu
- * @inMenuItem: A #ClutterActor menu item to remove
+ * @inMenuItem: A #XfdashboardPopupMenuItem menu item to remove
  *
  * Removes the actor @inMenuItem from pop-up menu @self. When the pop-up menu holds
  * the last reference on that menu item actor then it will be destroyed otherwise
@@ -1761,12 +1742,12 @@ gint xfdashboard_popup_menu_get_item_index(XfdashboardPopupMenu *self, ClutterAc
  *
  * Return value: Returns %TRUE if moving menu item was successful, otherwise %FALSE.
  */
-gboolean xfdashboard_popup_menu_remove_item(XfdashboardPopupMenu *self, ClutterActor *inMenuItem)
+gboolean xfdashboard_popup_menu_remove_item(XfdashboardPopupMenu *self, XfdashboardPopupMenuItem *inMenuItem)
 {
 	XfdashboardPopupMenuPrivate		*priv;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(self), FALSE);
-	g_return_val_if_fail(CLUTTER_IS_ACTOR(inMenuItem), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem), FALSE);
 
 	priv=self->priv;
 
@@ -1782,13 +1763,17 @@ gboolean xfdashboard_popup_menu_remove_item(XfdashboardPopupMenu *self, ClutterA
 	/* Take extra reference on actor to remove to keep it alive while working with it */
 	g_object_ref(inMenuItem);
 
-	/* Remove menu item actor from pop-up menu */
-	clutter_actor_remove_child(priv->itemsContainer, inMenuItem);
+	/* Remove CSS class 'popup-menu-item' from menu item going to be removed */
+	if(XFDASHBOARD_IS_STYLABLE(inMenuItem))
+	{
+		xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(inMenuItem), "popup-menu-item");
+	}
 
-	/* Remove meta from menu item actor */
-	g_object_set_qdata(G_OBJECT(inMenuItem),
-						_xfdashboard_popup_menu_items_container_child_meta_quark,
-						NULL);
+	/* Remove menu item actor from pop-up menu */
+	clutter_actor_remove_child(priv->itemsContainer, CLUTTER_ACTOR(inMenuItem));
+
+	/* Disconnect signal handlers from removed menu item */
+	g_signal_handlers_disconnect_by_func(inMenuItem, G_CALLBACK(_xfdashboard_popup_menu_on_menu_item_activated), self);
 
 	/* Emit signal */
 	g_signal_emit(self, XfdashboardPopupMenuSignals[SIGNAL_ITEM_REMOVED], 0, inMenuItem);
@@ -1798,62 +1783,6 @@ gboolean xfdashboard_popup_menu_remove_item(XfdashboardPopupMenu *self, ClutterA
 
 	/* If we get here we removed the menu item actor successfully */
 	return(TRUE);
-}
-
-/**
- * xfdashboard_popup_menu_add_separator:
- * @self: A #XfdashboardPopupMenu
- *
- * Adds a separator menu item to end of pop-up menu.
- *
- * The separator menu item implements the #XfdashboardStylable interface and
- * adds the CSS class popup-menu-separator.
- * 
- * Return value: Returns index where item was inserted at or -1 if it failed.
- */
-gint xfdashboard_popup_menu_add_separator(XfdashboardPopupMenu *self)
-{
-	return(xfdashboard_popup_menu_insert_separator(self, -1));
-}
-
-/**
- * xfdashboard_popup_menu_add_separator:
- * @self: A #XfdashboardPopupMenu
- * @inIndex: The position where to insert this item at
- * 
- * Inserts a separator menu item at position @inIndex into pop-up menu.
- *
- * If position @inIndex is greater than the number of menu items in @self or is
- * less than 0, then the menu item actor is added to end of pop-up menu.
- *
- * The separator menu item implements the #XfdashboardStylable interface and
- * adds the CSS class popup-menu-separator.
- * 
- * Return value: Returns index where item was inserted at or -1 if it failed.
- */
-gint xfdashboard_popup_menu_insert_separator(XfdashboardPopupMenu *self, gint inIndex)
-{
-	XfdashboardPopupMenuPrivate		*priv;
-	ClutterActor					*separator;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(self), -1);
-
-	priv=self->priv;
-
-	/* Create separator menu item */
-	separator=xfdashboard_actor_new();
-	clutter_actor_set_x_expand(separator, TRUE);
-	clutter_actor_set_y_expand(separator, TRUE);
-	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(separator), "popup-menu-separator");
-
-	/* Insert menu item actor to container at requested position */
-	clutter_actor_insert_child_at_index(priv->itemsContainer, separator, inIndex);
-
-	/* Emit signal */
-	g_signal_emit(self, XfdashboardPopupMenuSignals[SIGNAL_ITEM_ADDED], 0, separator);
-
-	/* Get index where menu item actor was inserted at */
-	return(xfdashboard_popup_menu_get_item_index(self, separator));
 }
 
 /**
