@@ -88,7 +88,7 @@ void xfdashboard_popup_menu_item_default_init(XfdashboardPopupMenuItemInterface 
 			g_signal_new("activated",
 							G_TYPE_FROM_INTERFACE(iface),
 							G_SIGNAL_RUN_LAST,
-							NULL,
+							0,
 							NULL,
 							NULL,
 							g_cclosure_marshal_VOID__VOID,
