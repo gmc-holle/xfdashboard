@@ -1129,7 +1129,6 @@ static void xfdashboard_popup_menu_init(XfdashboardPopupMenu *self)
 	/* Set up items container which will hold all menu items */
 	layout=xfdashboard_box_layout_new();
 	clutter_box_layout_set_orientation(CLUTTER_BOX_LAYOUT(layout), CLUTTER_ORIENTATION_VERTICAL);
-	clutter_box_layout_set_homogeneous(CLUTTER_BOX_LAYOUT(layout), TRUE);
 
 	priv->itemsContainer=xfdashboard_actor_new();
 	clutter_actor_set_x_expand(priv->itemsContainer, TRUE);

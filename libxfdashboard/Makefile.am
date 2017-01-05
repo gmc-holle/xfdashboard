@@ -59,6 +59,7 @@ libxfdashboard_la_headers = \
 	popup-menu.h \
 	popup-menu-item.h \
 	popup-menu-item-button.h \
+	popup-menu-item-separator.h \
 	quicklaunch.h \
 	scaled-table-layout.h \
 	scrollbar.h \
@@ -130,6 +131,7 @@ libxfdashboard_la_SOURCES = \
 	popup-menu.c \
 	popup-menu-item.c \
 	popup-menu-item-button.c \
+	popup-menu-item-separator.c \
 	quicklaunch.c \
 	scaled-table-layout.c \
 	scrollbar.c \

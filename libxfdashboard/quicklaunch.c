@@ -50,6 +50,7 @@
 #include <libxfdashboard/click-action.h>
 #include <libxfdashboard/popup-menu.h>
 #include <libxfdashboard/popup-menu-item-button.h>
+#include <libxfdashboard/popup-menu-item-separator.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
 
@@ -750,7 +751,10 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 				if(windowWorkspace!=activeWorkspace &&
 					!separatorAdded)
 				{
-					// TODO: xfdashboard_popup_menu_add_separator(XFDASHBOARD_POPUP_MENU(popup));
+					menuItem=xfdashboard_popup_menu_item_separator_new();
+					clutter_actor_set_x_expand(menuItem, TRUE);
+					xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+
 					separatorAdded=TRUE;
 				}
 
@@ -767,7 +771,9 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 			}
 
 			/* Add a separator to split windows from other actions in pop-up menu */
-			// TODO: xfdashboard_popup_menu_add_separator(XFDASHBOARD_POPUP_MENU(popup));
+			menuItem=xfdashboard_popup_menu_item_separator_new();
+			clutter_actor_set_x_expand(menuItem, TRUE);
+			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
 
 			/* Release allocated resources */
 			g_list_free(sortedList);
