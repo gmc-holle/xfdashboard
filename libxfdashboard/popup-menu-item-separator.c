@@ -39,7 +39,7 @@ static void _xfdashboard_popup_menu_item_separator_popup_menu_item_iface_init(Xf
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardPopupMenuItemSeparator,
 						xfdashboard_popup_menu_item_separator,
-						XFDASHBOARD_TYPE_ACTOR,
+						XFDASHBOARD_TYPE_BACKGROUND,
 						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_POPUP_MENU_ITEM, _xfdashboard_popup_menu_item_separator_popup_menu_item_iface_init))
 
 /* Private structure - access only by public API if needed */

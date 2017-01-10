@@ -28,7 +28,7 @@
 #error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
 #endif
 
-#include <libxfdashboard/actor.h>
+#include <libxfdashboard/background.h>
 
 G_BEGIN_DECLS
 
@@ -53,7 +53,7 @@ struct _XfdashboardPopupMenuItemSeparator
 {
 	/*< private >*/
 	/* Parent instance */
-	XfdashboardActor								parent_instance;
+	XfdashboardBackground							parent_instance;
 
 	/* Private structure */
 	XfdashboardPopupMenuItemSeparatorPrivate		*priv;
@@ -68,7 +68,7 @@ struct _XfdashboardPopupMenuItemSeparatorClass
 {
 	/*< private >*/
 	/* Parent class */
-	XfdashboardActorClass							parent_class;
+	XfdashboardBackgroundClass						parent_class;
 
 	/*< public >*/
 	/* Virtual functions */
