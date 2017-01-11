@@ -79,6 +79,24 @@ GType xfdashboard_popup_menu_item_separator_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_popup_menu_item_separator_new(void);
 
+gfloat xfdashboard_popup_menu_item_separator_get_minimum_height(XfdashboardPopupMenuItemSeparator *self);
+void xfdashboard_popup_menu_item_separator_set_minimum_height(XfdashboardPopupMenuItemSeparator *self, const gfloat inMinimumHeight);
+
+gfloat xfdashboard_popup_menu_item_separator_get_line_horizontal_alignment(XfdashboardPopupMenuItemSeparator *self);
+void xfdashboard_popup_menu_item_separator_set_line_horizontal_alignment(XfdashboardPopupMenuItemSeparator *self, const gfloat inAlignment);
+
+gfloat xfdashboard_popup_menu_item_separator_get_line_vertical_alignment(XfdashboardPopupMenuItemSeparator *self);
+void xfdashboard_popup_menu_item_separator_set_line_vertical_alignment(XfdashboardPopupMenuItemSeparator *self, const gfloat inAlignment);
+
+gfloat xfdashboard_popup_menu_item_separator_get_line_length(XfdashboardPopupMenuItemSeparator *self);
+void xfdashboard_popup_menu_item_separator_set_line_length(XfdashboardPopupMenuItemSeparator *self, const gfloat inLength);
+
+gfloat xfdashboard_popup_menu_item_separator_get_line_width(XfdashboardPopupMenuItemSeparator *self);
+void xfdashboard_popup_menu_item_separator_set_line_width(XfdashboardPopupMenuItemSeparator *self, const gfloat inWidth);
+
+const ClutterColor* xfdashboard_popup_menu_item_separator_get_line_color(XfdashboardPopupMenuItemSeparator *self);
+void xfdashboard_popup_menu_item_separator_set_line_color(XfdashboardPopupMenuItemSeparator *self, const ClutterColor *inColor);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_POPUP_MENU_ITEM_SEPARATOR__ */
