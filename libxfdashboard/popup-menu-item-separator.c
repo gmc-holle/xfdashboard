@@ -21,6 +21,17 @@
  * 
  */
 
+/**
+ * SECTION:popup-menu-item-separator
+ * @short_description: A pop-up menu item separating menu items to group them
+ *                     visually
+ * @include: xfdashboard/popup-menu-item-separator.h
+ *
+ * The #XfdashboardPopupMenuItemSeparator is a pop-up menu item to be used in a
+ * #XfdashboardPopupMenu to group pop-up menu items within a menu. It displays a
+ * horizontal line to separate the groups of pop-up menu items.
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
