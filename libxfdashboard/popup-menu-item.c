@@ -63,7 +63,6 @@ static guint XfdashboardPopupMenuItemSignals[SIGNAL_LAST]={ 0, };
 void xfdashboard_popup_menu_item_default_init(XfdashboardPopupMenuItemInterface *iface)
 {
 	static gboolean		initialized=FALSE;
-	GParamSpec			*property;
 
 	/* Define properties, signals and actions */
 	if(!initialized)
