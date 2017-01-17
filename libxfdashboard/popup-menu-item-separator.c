@@ -150,11 +150,37 @@ static gboolean _xfdashboard_popup_menu_item_separator_on_draw_line_canvas(Xfdas
 
 /* IMPLEMENTATION: Interface XfdashboardPopupMenuItem */
 
+/* Get enable state of this pop-up menu item */
+static gboolean _xfdashboard_popup_menu_item_separator_popup_menu_item_get_enabled(XfdashboardPopupMenuItem *inMenuItem)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM_SEPARATOR(inMenuItem), FALSE);
+
+	/* Pop-up menu item separators are always disabled so return FALSE */
+	return(FALSE);
+}
+
+/* Set enable state of this pop-up menu item */
+static void _xfdashboard_popup_menu_item_separator_popup_menu_item_set_enabled(XfdashboardPopupMenuItem *inMenuItem, gboolean inEnabled)
+{
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM_SEPARATOR(inMenuItem));
+
+	/* Pop-up menu item separators are always disabled so warn if someone tries
+	 * to enabled it, otherwise ignore silently and do nothing.
+	 */
+	if(inEnabled)
+	{
+		g_warning(_("Object of type %s is always disabled and cannot be enabled."),
+					G_OBJECT_TYPE_NAME(inMenuItem));
+	}
+}
+
 /* Interface initialization
  * Set up default functions
  */
 void _xfdashboard_popup_menu_item_separator_popup_menu_item_iface_init(XfdashboardPopupMenuItemInterface *iface)
 {
+	iface->get_enabled=_xfdashboard_popup_menu_item_separator_popup_menu_item_get_enabled;
+	iface->set_enabled=_xfdashboard_popup_menu_item_separator_popup_menu_item_set_enabled;
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -326,9 +352,9 @@ static void _xfdashboard_popup_menu_item_separator_get_property(GObject *inObjec
  */
 static void xfdashboard_popup_menu_item_separator_class_init(XfdashboardPopupMenuItemSeparatorClass *klass)
 {
-	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
-	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
-	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardActorClass				*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
+	ClutterActorClass					*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
+	GObjectClass						*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_popup_menu_item_separator_dispose;

@@ -50,6 +50,7 @@ struct _XfdashboardPopupMenuItemButtonPrivate
 {
 	/* Instance related */
 	ClutterAction				*clickAction;
+	gboolean					enabled;
 };
 
 /* IMPLEMENTATION: Private variables and methods */
@@ -71,11 +72,43 @@ static void _xfdashboard_popup_menu_item_button_clicked(XfdashboardClickAction *
 
 /* IMPLEMENTATION: Interface XfdashboardPopupMenuItem */
 
+/* Get enable state of this pop-up menu item */
+static gboolean _xfdashboard_popup_menu_item_button_popup_menu_item_get_enabled(XfdashboardPopupMenuItem *inMenuItem)
+{
+	XfdashboardPopupMenuItemButton			*self;
+	XfdashboardPopupMenuItemButtonPrivate	*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM_BUTTON(inMenuItem), FALSE);
+
+	self=XFDASHBOARD_POPUP_MENU_ITEM_BUTTON(inMenuItem);
+	priv=self->priv;
+
+	/* Return enabled state */
+	return(priv->enabled);
+}
+
+/* Set enable state of this pop-up menu item */
+static void _xfdashboard_popup_menu_item_button_popup_menu_item_set_enabled(XfdashboardPopupMenuItem *inMenuItem, gboolean inEnabled)
+{
+	XfdashboardPopupMenuItemButton			*self;
+	XfdashboardPopupMenuItemButtonPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM_BUTTON(inMenuItem));
+
+	self=XFDASHBOARD_POPUP_MENU_ITEM_BUTTON(inMenuItem);
+	priv=self->priv;
+
+	/* Set enabled state */
+	priv->enabled=inEnabled;
+}
+
 /* Interface initialization
  * Set up default functions
  */
 void _xfdashboard_popup_menu_item_button_popup_menu_item_iface_init(XfdashboardPopupMenuItemInterface *iface)
 {
+	iface->get_enabled=_xfdashboard_popup_menu_item_button_popup_menu_item_get_enabled;
+	iface->set_enabled=_xfdashboard_popup_menu_item_button_popup_menu_item_set_enabled;
 }
 
 /* IMPLEMENTATION: GObject */
@@ -98,6 +131,9 @@ static void xfdashboard_popup_menu_item_button_init(XfdashboardPopupMenuItemButt
 	XfdashboardPopupMenuItemButtonPrivate	*priv;
 
 	priv=self->priv=XFDASHBOARD_BUTTON_GET_PRIVATE(self);
+
+	/* Set up default values */
+	priv->enabled=TRUE;
 
 	/* This actor reacts on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
