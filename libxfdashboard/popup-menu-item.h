@@ -42,8 +42,12 @@ typedef struct _XfdashboardPopupMenuItemInterface		XfdashboardPopupMenuItemInter
 
 /**
  * XfdashboardPopupMenuItemInterface:
+ * @parent_interface: The parent interface.
+ * @get_enabled: Retrieve state if pop-up menu item is enabled or disabled
+ * @set_enabled: Set state if pop-up menu item is enabled or disabled
  *
- * The #XfdashboardPopupMenuItemInterface structure contains only private data
+ * Provides an interface implemented by actors which will be used as pop-up menu
+ * items in a #XfdashboardPopupMenu.
  */
 struct _XfdashboardPopupMenuItemInterface
 {
@@ -53,10 +57,15 @@ struct _XfdashboardPopupMenuItemInterface
 
 	/*< public >*/
 	/* Virtual functions */
+	gboolean (*get_enabled)(XfdashboardPopupMenuItem *self);
+	void (*set_enabled)(XfdashboardPopupMenuItem *self, gboolean inEnabled);
 };
 
 /* Public API */
 GType xfdashboard_popup_menu_item_get_type(void) G_GNUC_CONST;
+
+gboolean xfdashboard_popup_menu_item_get_enabled(XfdashboardPopupMenuItem *self);
+void xfdashboard_popup_menu_item_set_enabled(XfdashboardPopupMenuItem *self, gboolean inEnabled);
 
 void xfdashboard_popup_menu_item_activate(XfdashboardPopupMenuItem *self);
 

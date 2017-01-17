@@ -54,6 +54,27 @@ static guint XfdashboardPopupMenuItemSignals[SIGNAL_LAST]={ 0, };
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
+/* Default implementation of virtual function "get_enabled" */
+static gboolean _xfdashboard_popup_menu_item_real_get_enabled(XfdashboardPopupMenuItem *self)
+{
+	gboolean			enabled;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(self), FALSE);
+
+	/* By default (if not overidden) retrieve state from property "enabled" */
+	g_object_get(self, "enabled", &enabled, NULL);
+
+	return(enabled);
+}
+
+/* Default implementation of virtual function "set_enabled" */
+static void _xfdashboard_popup_menu_item_real_set_enabled(XfdashboardPopupMenuItem *self, gboolean inEnabled)
+{
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(self));
+
+	/* By default (if not overidden) set property "enabled" to requested state */
+	g_object_set(self, "enabled", inEnabled, NULL);
+}
 
 /* IMPLEMENTATION: GObject */
 
@@ -63,19 +84,31 @@ static guint XfdashboardPopupMenuItemSignals[SIGNAL_LAST]={ 0, };
 void xfdashboard_popup_menu_item_default_init(XfdashboardPopupMenuItemInterface *iface)
 {
 	static gboolean		initialized=FALSE;
-	// TODO: GParamSpec			*property;
+	GParamSpec			*property;
 
-	/* Define properties */
-	// TODO: property=g_param_spec_boolean("enabled",
-									// TODO: _("Enabled"),
-									// TODO: _("Whether this pop-up menu item is enabled"),
-									// TODO: TRUE,
-									// TODO: G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-	// TODO: g_object_interface_install_property(iface, property);
+	/* The following virtual functions should be overriden if default
+	 * implementation does not fit.
+	 */
+	iface->get_enabled=_xfdashboard_popup_menu_item_real_get_enabled;
+	iface->set_enabled=_xfdashboard_popup_menu_item_real_set_enabled;
 
-	/* Define signals and actions */
+	/* Define properties, signals and actions */
 	if(!initialized)
 	{
+		/* Define properties */
+		/**
+		 * XfdashboardPopupMenuItem:enabled:
+		 *
+		 * A flag indicating if this pop-up menu item is enabled or disabled.
+		 * It is set to %TRUE if enabled and it is set %FALSE if disabled.
+		 */
+		property=g_param_spec_boolean("enabled",
+										_("Enabled"),
+										_("Whether this pop-up menu item is enabled"),
+										TRUE,
+										G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+		g_object_interface_install_property(iface, property);
+
 		/* Define signals */
 		/**
 		 * XfdashboardPopupMenuItem::activated:
@@ -103,6 +136,65 @@ void xfdashboard_popup_menu_item_default_init(XfdashboardPopupMenuItemInterface 
 /* IMPLEMENTATION: Public API */
 
 /**
+ * xfdashboard_popup_menu_item_get_enabled:
+ * @self: A #XfdashboardPopupMenuItem
+ *
+ * Retrieves the state of pop-up menu item at @self if it is enabled or disabled.
+ * If %TRUE is returned this item is enabled and can be selected, focused and
+ * activated. If this item is disabled, %FALSE is returned and it is not possible
+ * to interact with this item.
+ *
+ * Return value: %TRUE if pop-up menu item at @self is enabled and %FALSE if disabled
+ */
+gboolean xfdashboard_popup_menu_item_get_enabled(XfdashboardPopupMenuItem *self)
+{
+	XfdashboardPopupMenuItemInterface		*iface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(self), FALSE);
+
+	iface=XFDASHBOARD_POPUP_MENU_ITEM_GET_IFACE(self);
+
+	/* Call virtual function */
+	if(iface->get_enabled)
+	{
+		return(iface->get_enabled(self));
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_POPUP_MENU_ITEM_WARN_NOT_IMPLEMENTED(self, "get_enabled");
+	return(FALSE);
+}
+
+/**
+ * xfdashboard_popup_menu_item_set_enabled:
+ * @self: A #XfdashboardPopupMenuItem
+ * @inEnabled: A boolean flag if this pop-up menu item should be enabled or disabled
+ * 
+ * Sets the state of pop-up menu item at @self to the state at @inEnabled.
+ * If @inEnabled is %TRUE this item will be enabled and will be selectable, focusable
+ * and activatable. If @inEnabled is %FALSE this item will be disabled and it will
+ * not possible to interact with this item.
+ */
+void xfdashboard_popup_menu_item_set_enabled(XfdashboardPopupMenuItem *self, gboolean inEnabled)
+{
+	XfdashboardPopupMenuItemInterface		*iface;
+
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(self));
+
+	iface=XFDASHBOARD_POPUP_MENU_ITEM_GET_IFACE(self);
+
+	/* Call virtual function */
+	if(iface->set_enabled)
+	{
+		iface->set_enabled(self, inEnabled);
+		return;
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_POPUP_MENU_ITEM_WARN_NOT_IMPLEMENTED(self, "set_enabled");
+}
+
+/**
  * xfdashboard_popup_menu_item_activate:
  * @self: A #XfdashboardPopupMenuItem
  *
@@ -112,7 +204,8 @@ void xfdashboard_popup_menu_item_activate(XfdashboardPopupMenuItem *self)
 {
 	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(self));
 
-	// TODO: Check if popup menu item is enabled and return if disabled
+	/* Check if popup menu item is enabled and return if disabled */
+	if(!xfdashboard_popup_menu_item_get_enabled(self)) return;
 
 	/* Emit signal for activation */
 	g_signal_emit(self, XfdashboardPopupMenuItemSignals[SIGNAL_ACTIVATED], 0);
