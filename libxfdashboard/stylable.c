@@ -248,6 +248,7 @@ static void _xfdashboard_stylable_real_invalidate(XfdashboardStylable *self)
  */
 void xfdashboard_stylable_default_init(XfdashboardStylableInterface *iface)
 {
+	static gboolean		initialized=FALSE;
 	GParamSpec			*property;
 
 	/* All the following virtual functions must be overridden */
@@ -264,20 +265,27 @@ void xfdashboard_stylable_default_init(XfdashboardStylableInterface *iface)
 	iface->get_parent=_xfdashboard_stylable_real_get_parent;
 	iface->invalidate=_xfdashboard_stylable_real_invalidate;
 
-	/* Define properties */
-	property=g_param_spec_string("style-classes",
-									_("Style classes"),
-									_("String representing list of classes separated by '.'"),
-									NULL,
-									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-	g_object_interface_install_property(iface, property);
+	/* Define properties, signals and actions */
+	if(!initialized)
+	{
+		/* Define properties */
+		property=g_param_spec_string("style-classes",
+										_("Style classes"),
+										_("String representing list of classes separated by '.'"),
+										NULL,
+										G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+		g_object_interface_install_property(iface, property);
 
-	property=g_param_spec_string("style-pseudo-classes",
-									_("Style pseudo-classes"),
-									_("String representing list of pseudo-classes, e.g. current state, separated by ':'"),
-									NULL,
-									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-	g_object_interface_install_property(iface, property);
+		property=g_param_spec_string("style-pseudo-classes",
+										_("Style pseudo-classes"),
+										_("String representing list of pseudo-classes, e.g. current state, separated by ':'"),
+										NULL,
+										G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+		g_object_interface_install_property(iface, property);
+
+		/* Set flag that base initialization was done for this interface */
+		initialized=TRUE;
+	}
 }
 
 /* IMPLEMENTATION: Public API */
