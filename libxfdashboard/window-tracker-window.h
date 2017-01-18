@@ -69,6 +69,8 @@ gboolean xfdashboard_window_tracker_window_is_visible_on_monitor(XfdashboardWind
 void xfdashboard_window_tracker_window_show(XfdashboardWindowTrackerWindow *inWindow);
 void xfdashboard_window_tracker_window_hide(XfdashboardWindowTrackerWindow *inWindow);
 
+XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_parent_window(XfdashboardWindowTrackerWindow *inWindow);
+
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_window_get_workspace(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_on_workspace(XfdashboardWindowTrackerWindow *inWindow,
 															XfdashboardWindowTrackerWorkspace *inWorkspace);

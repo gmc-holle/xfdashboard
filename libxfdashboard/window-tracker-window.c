@@ -438,6 +438,14 @@ void xfdashboard_window_tracker_window_hide(XfdashboardWindowTrackerWindow *inWi
 	wnck_window_minimize(WNCK_WINDOW(inWindow));
 }
 
+/* Get parent window if this window is a child window */
+XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_parent_window(XfdashboardWindowTrackerWindow *inWindow)
+{
+	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
+
+	return(wnck_window_get_transient(WNCK_WINDOW(inWindow)));
+}
+
 /* Get workspace where window is on */
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_window_get_workspace(XfdashboardWindowTrackerWindow *inWindow)
 {
