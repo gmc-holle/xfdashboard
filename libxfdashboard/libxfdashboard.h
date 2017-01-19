@@ -52,10 +52,16 @@
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/image-content.h>
-#include <libxfdashboard/libxfdashboard.h>
+#include <libxfdashboard/label.h>
 #include <libxfdashboard/live-window.h>
+#include <libxfdashboard/live-window-simple.h>
 #include <libxfdashboard/live-workspace.h>
+#include <libxfdashboard/model.h>
 #include <libxfdashboard/outline-effect.h>
+#include <libxfdashboard/popup-menu.h>
+#include <libxfdashboard/popup-menu-item-button.h>
+#include <libxfdashboard/popup-menu-item.h>
+#include <libxfdashboard/popup-menu-item-separator.h>
 #include <libxfdashboard/plugin.h>
 #include <libxfdashboard/plugins-manager.h>
 #include <libxfdashboard/quicklaunch.h>
