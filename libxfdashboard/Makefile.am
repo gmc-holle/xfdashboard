@@ -51,6 +51,7 @@ libxfdashboard_la_headers = \
 	image-content.h \
 	label.h \
 	live-window.h \
+	live-window-simple.h \
 	live-workspace.h \
 	model.h \
 	outline-effect.h \
@@ -123,6 +124,7 @@ libxfdashboard_la_SOURCES = \
 	image-content.c \
 	label.c \
 	live-window.c \
+	live-window-simple.c \
 	live-workspace.c \
 	model.c \
 	outline-effect.c \
