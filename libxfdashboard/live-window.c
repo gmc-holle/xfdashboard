@@ -64,6 +64,7 @@ struct _XfdashboardLiveWindowPrivate
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
 
+	ClutterActor						*actorControlLayer;
 	ClutterActor						*actorClose;
 	ClutterActor						*actorWindowNumber;
 	ClutterActor						*actorTitle;
@@ -414,6 +415,7 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 												ClutterAllocationFlags inFlags)
 {
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
+	ClutterActorBox					*boxActorControlLayer=NULL;
 	ClutterActorBox					*boxActorTitle=NULL;
 	ClutterActorBox					*boxActorClose=NULL;
 	ClutterActorBox					*boxActorWindowNumber=NULL;
@@ -427,14 +429,21 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 	/* Chain up to store the allocation of the actor */
 	CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->allocate(self, inBox, inFlags);
 
+	/* Set allocation on control layer which matches the actor's allocation at
+	 * width and height but with origin position.
+	 */
+	boxActorControlLayer=clutter_actor_box_copy(inBox);
+	clutter_actor_box_set_origin(boxActorControlLayer, 0.0f, 0.0f);
+	clutter_actor_allocate(priv->actorControlLayer, boxActorControlLayer, inFlags);
+
 	/* Set allocation on close actor */
 	clutter_actor_get_preferred_size(priv->actorClose,
 										NULL, NULL,
 										&closeWidth, &closeHeight);
 
-	right=clutter_actor_box_get_width(inBox)-priv->paddingClose;
+	right=clutter_actor_box_get_x(boxActorControlLayer)+clutter_actor_box_get_width(boxActorControlLayer)-priv->paddingClose;
 	left=MAX(right-closeWidth, priv->paddingClose);
-	top=priv->paddingClose;
+	top=clutter_actor_box_get_y(boxActorControlLayer)+priv->paddingClose;
 	bottom=top+closeHeight;
 
 	right=MAX(left, right);
@@ -448,9 +457,9 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 										NULL, NULL,
 										&windowNumberWidth, &windowNumberHeight);
 
-	right=clutter_actor_box_get_width(inBox)-priv->paddingClose;
+	right=clutter_actor_box_get_x(boxActorControlLayer)+clutter_actor_box_get_width(boxActorControlLayer)-priv->paddingClose;
 	left=MAX(right-windowNumberWidth, priv->paddingClose);
-	top=priv->paddingClose;
+	top=clutter_actor_box_get_y(boxActorControlLayer)+priv->paddingClose;
 	bottom=top+windowNumberHeight;
 
 	left=MIN(left, clutter_actor_box_get_x(boxActorClose));
@@ -471,12 +480,12 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 										NULL, NULL,
 										&titleWidth, &titleHeight);
 
-	maxWidth=clutter_actor_box_get_width(inBox)-(2*priv->paddingTitle);
+	maxWidth=clutter_actor_box_get_width(boxActorControlLayer)-(2*priv->paddingTitle);
 	if(titleWidth>maxWidth) titleWidth=maxWidth;
 
-	left=(clutter_actor_box_get_width(inBox)-titleWidth)/2.0f;
+	left=clutter_actor_box_get_x(boxActorControlLayer)+((clutter_actor_box_get_width(boxActorControlLayer)-titleWidth)/2.0f);
 	right=left+titleWidth;
-	bottom=clutter_actor_box_get_height(inBox)-(2*priv->paddingTitle);
+	bottom=clutter_actor_box_get_y(boxActorControlLayer)+clutter_actor_box_get_height(boxActorControlLayer)-(2*priv->paddingTitle);
 	top=bottom-titleHeight;
 	if(left>right) left=right-1.0f;
 	if(top<(clutter_actor_box_get_y(referedBoxActor)+clutter_actor_box_get_height(referedBoxActor)))
@@ -500,6 +509,7 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 	clutter_actor_allocate(priv->actorTitle, boxActorTitle, inFlags);
 
 	/* Release allocated resources */
+	if(boxActorControlLayer) clutter_actor_box_free(boxActorControlLayer);
 	if(boxActorWindowNumber) clutter_actor_box_free(boxActorWindowNumber);
 	if(boxActorTitle) clutter_actor_box_free(boxActorTitle);
 	if(boxActorClose) clutter_actor_box_free(boxActorClose);
@@ -537,6 +547,12 @@ static void _xfdashboard_live_window_dispose(GObject *inObject)
 	{
 		clutter_actor_destroy(priv->actorWindowNumber);
 		priv->actorWindowNumber=NULL;
+	}
+
+	if(priv->actorControlLayer)
+	{
+		clutter_actor_destroy(priv->actorControlLayer);
+		priv->actorControlLayer=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -694,24 +710,29 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->paddingTitle=0.0f;
 	priv->paddingClose=0.0f;
 
-	/* Set up child actors (order is important) */
+	/* Set up container for controls and add child actors (order is important) */
+	priv->actorControlLayer=xfdashboard_actor_new();
+	clutter_actor_set_reactive(priv->actorControlLayer, FALSE);
+	clutter_actor_show(priv->actorControlLayer);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorControlLayer);
+
 	priv->actorTitle=xfdashboard_button_new();
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorTitle), "title");
 	clutter_actor_set_reactive(priv->actorTitle, FALSE);
 	clutter_actor_show(priv->actorTitle);
-	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorTitle);
+	clutter_actor_add_child(priv->actorControlLayer, priv->actorTitle);
 
 	priv->actorClose=xfdashboard_button_new();
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorClose), "close-button");
 	clutter_actor_set_reactive(priv->actorClose, FALSE);
 	clutter_actor_show(priv->actorClose);
-	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorClose);
+	clutter_actor_add_child(priv->actorControlLayer, priv->actorClose);
 
 	priv->actorWindowNumber=xfdashboard_button_new();
 	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorWindowNumber), "window-number");
 	clutter_actor_set_reactive(priv->actorWindowNumber, FALSE);
 	clutter_actor_hide(priv->actorWindowNumber);
-	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorWindowNumber);
+	clutter_actor_add_child(priv->actorControlLayer, priv->actorWindowNumber);
 
 	/* Connect signals */
 	action=xfdashboard_click_action_new();
