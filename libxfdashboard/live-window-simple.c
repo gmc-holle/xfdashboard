@@ -29,16 +29,9 @@
 #include <libxfdashboard/live-window-simple.h>
 
 #include <glib/gi18n-lib.h>
-// TODO: #include <clutter/clutter.h>
-// TODO: #include <clutter/x11/clutter-x11.h>
-// TODO: #include <gtk/gtk.h>
-// TODO: #include <math.h>
 
-// TODO: #include <libxfdashboard/button.h>
-// TODO: #include <libxfdashboard/stage.h>
 #include <libxfdashboard/click-action.h>
 #include <libxfdashboard/window-content.h>
-// TODO: #include <libxfdashboard/image-content.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/compat.h>
 
