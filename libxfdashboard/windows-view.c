@@ -256,9 +256,9 @@ static gboolean _xfdashboard_windows_view_is_visible_window(XfdashboardWindowsVi
 static XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_window(XfdashboardWindowsView *self,
 																		XfdashboardWindowTrackerWindow *inWindow)
 {
-	XfdashboardLiveWindow	*liveWindow;
-	ClutterActor			*child;
-	ClutterActorIter		iter;
+	XfdashboardLiveWindow		*liveWindow;
+	ClutterActor				*child;
+	ClutterActorIter			iter;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
@@ -270,7 +270,10 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_find_by_window(Xfdashboa
 		if(!XFDASHBOARD_IS_LIVE_WINDOW(child)) continue;
 
 		liveWindow=XFDASHBOARD_LIVE_WINDOW(child);
-		if(xfdashboard_live_window_get_window(liveWindow)==inWindow) return(liveWindow);
+		if(xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(liveWindow))==inWindow)
+		{
+			return(liveWindow);
+		}
 	}
 
 	/* If we get here we did not find the window and we return NULL */
@@ -390,7 +393,7 @@ static void _xfdashboard_windows_view_move_live_to_view(XfdashboardWindowsView *
 	priv=self->priv;
 
 	/* Get window from window actor */
-	window=xfdashboard_live_window_get_window(inWindowActor);
+	window=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(inWindowActor));
 
 	/* Get source and target workspace */
 	sourceWorkspace=xfdashboard_window_tracker_window_get_workspace(window);
@@ -719,19 +722,19 @@ static void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *
 														gpointer inUserData)
 {
 	XfdashboardWindowsViewPrivate		*priv;
-	XfdashboardLiveWindow				*liveWindow;
+	XfdashboardLiveWindowSimple			*liveWindow;
 	XfdashboardWindowTrackerWindow		*window;
 	XfdashboardWindowTrackerWorkspace	*activeWorkspace;
 	XfdashboardWindowTrackerWorkspace	*windowWorkspace;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(inUserData));
 
 	priv=self->priv;
-	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
+	liveWindow=XFDASHBOARD_LIVE_WINDOW_SIMPLE(inUserData);
 
 	/* Get window to activate */
-	window=xfdashboard_live_window_get_window(liveWindow);
+	window=xfdashboard_live_window_simple_get_window(liveWindow);
 
 	/* Move to workspace if window to active is on a different one than the active one */
 	activeWorkspace=xfdashboard_window_tracker_get_active_workspace(priv->windowTracker);
@@ -752,16 +755,16 @@ static void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *
 static void _xfdashboard_windows_view_on_window_close_clicked(XfdashboardWindowsView *self,
 																gpointer inUserData)
 {
-	XfdashboardLiveWindow				*liveWindow;
+	XfdashboardLiveWindowSimple			*liveWindow;
 	XfdashboardWindowTrackerWindow		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(inUserData));
 
-	liveWindow=XFDASHBOARD_LIVE_WINDOW(inUserData);
+	liveWindow=XFDASHBOARD_LIVE_WINDOW_SIMPLE(inUserData);
 
 	/* Close clicked window */
-	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(xfdashboard_live_window_get_window(liveWindow));
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(xfdashboard_live_window_simple_get_window(liveWindow));
 	xfdashboard_window_tracker_window_close(window);
 }
 
@@ -875,13 +878,13 @@ static void _xfdashboard_windows_view_on_drag_begin(ClutterDragAction *inAction,
 	ClutterStage					*stage;
 	GdkPixbuf						*windowIcon;
 	ClutterContent					*image;
-	XfdashboardLiveWindow			*liveWindow;
+	XfdashboardLiveWindowSimple		*liveWindow;
 
 	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(inActor));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inUserData));
 
-	liveWindow=XFDASHBOARD_LIVE_WINDOW(inActor);
+	liveWindow=XFDASHBOARD_LIVE_WINDOW_SIMPLE(inActor);
 
 	/* Prevent signal "clicked" from being emitted on dragged icon */
 	g_signal_handlers_block_by_func(inActor, _xfdashboard_windows_view_on_window_clicked, inUserData);
@@ -890,7 +893,7 @@ static void _xfdashboard_windows_view_on_drag_begin(ClutterDragAction *inAction,
 	stage=CLUTTER_STAGE(clutter_actor_get_stage(inActor));
 
 	/* Create a application icon for drag handle */
-	windowIcon=xfdashboard_window_tracker_window_get_icon(xfdashboard_live_window_get_window(liveWindow));
+	windowIcon=xfdashboard_window_tracker_window_get_icon(xfdashboard_live_window_simple_get_window(liveWindow));
 	image=xfdashboard_image_content_new_for_pixbuf(windowIcon);
 
 	dragHandle=xfdashboard_background_new();
@@ -959,7 +962,7 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 	g_signal_connect_swapped(actor, "close", G_CALLBACK(_xfdashboard_windows_view_on_window_close_clicked), self);
 	g_signal_connect_swapped(actor, "geometry-changed", G_CALLBACK(_xfdashboard_windows_view_on_window_geometry_changed), self);
 	g_signal_connect_swapped(actor, "visibility-changed", G_CALLBACK(_xfdashboard_windows_view_on_window_visibility_changed), self);
-	xfdashboard_live_window_set_window(XFDASHBOARD_LIVE_WINDOW(actor), inWindow);
+	xfdashboard_live_window_simple_set_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(actor), inWindow);
 
 	dragAction=xfdashboard_drag_action_new_with_source(CLUTTER_ACTOR(self));
 	clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(dragAction), -1, -1);

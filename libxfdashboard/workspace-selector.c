@@ -346,7 +346,7 @@ static void _xfdashboard_workspace_selector_on_drop_drop(XfdashboardLiveWorkspac
 		XfdashboardWindowTrackerWindow	*window;
 
 		/* Get window */
-		window=xfdashboard_live_window_get_window(XFDASHBOARD_LIVE_WINDOW(draggedActor));
+		window=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(draggedActor));
 		g_return_if_fail(window);
 
 		/* Move window to workspace */

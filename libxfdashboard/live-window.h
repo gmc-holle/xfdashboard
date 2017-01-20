@@ -32,8 +32,7 @@
 
 #include <clutter/clutter.h>
 
-#include <libxfdashboard/background.h>
-#include <libxfdashboard/button.h>
+#include <libxfdashboard/live-window-simple.h>
 #include <libxfdashboard/window-tracker.h>
 
 G_BEGIN_DECLS
@@ -53,25 +52,22 @@ struct _XfdashboardLiveWindow
 {
 	/*< private >*/
 	/* Parent instance */
-	XfdashboardBackground			parent_instance;
+	XfdashboardLiveWindowSimple			parent_instance;
 
 	/* Private structure */
-	XfdashboardLiveWindowPrivate	*priv;
+	XfdashboardLiveWindowPrivate		*priv;
 };
 
 struct _XfdashboardLiveWindowClass
 {
 	/*< private >*/
 	/* Parent class */
-	XfdashboardBackgroundClass		parent_class;
+	XfdashboardLiveWindowSimpleClass	parent_class;
 
 	/*< public >*/
 	/* Virtual functions */
 	void (*clicked)(XfdashboardLiveWindow *self);
 	void (*close)(XfdashboardLiveWindow *self);
-	void (*geometry_changed)(XfdashboardLiveWindow *self);
-	void (*visibility_changed)(XfdashboardLiveWindow *self, gboolean inVisible);
-	void (*workspace_changed)(XfdashboardLiveWindow *self);
 };
 
 /* Public API */
@@ -79,9 +75,6 @@ GType xfdashboard_live_window_get_type(void) G_GNUC_CONST;
 
 ClutterActor* xfdashboard_live_window_new(void);
 ClutterActor* xfdashboard_live_window_new_for_window(XfdashboardWindowTrackerWindow *inWindow);
-
-XfdashboardWindowTrackerWindow* xfdashboard_live_window_get_window(XfdashboardLiveWindow *self);
-void xfdashboard_live_window_set_window(XfdashboardLiveWindow *self, XfdashboardWindowTrackerWindow *inWindow);
 
 gfloat xfdashboard_live_window_get_title_actor_padding(XfdashboardLiveWindow *self);
 void xfdashboard_live_window_set_title_actor_padding(XfdashboardLiveWindow *self, gfloat inPadding);

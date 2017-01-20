@@ -73,8 +73,6 @@ static GParamSpec* XfdashboardLiveWindowSimpleProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
-	SIGNAL_CLICKED,
-
 	SIGNAL_GEOMETRY_CHANGED,
 	SIGNAL_VISIBILITY_CHANGED,
 	SIGNAL_WORKSPACE_CHANGED,
@@ -100,26 +98,6 @@ static gboolean _xfdashboard_live_window_simple_is_visible_window(XfdashboardLiv
 
 	/* If we get here the window should be shown */
 	return(TRUE);
-}
-
-/* This actor was clicked */
-static void _xfdashboard_live_window_simple_on_clicked(XfdashboardLiveWindowSimple *self,
-														ClutterActor *inActor,
-														gpointer inUserData)
-{
-	XfdashboardClickAction				*action;
-
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
-	g_return_if_fail(CLUTTER_IS_ACTOR(inActor));
-	g_return_if_fail(XFDASHBOARD_IS_CLICK_ACTION(inUserData));
-
-	action=XFDASHBOARD_CLICK_ACTION(inUserData);
-
-	/* Only emit any of these signals if click was perform with left button */
-	if(xfdashboard_click_action_get_button(action)!=XFDASHBOARD_CLICK_ACTION_LEFT_BUTTON) return;
-
-	/* Emit "clicked" signal */
-	g_signal_emit(self, XfdashboardLiveWindowSimpleSignals[SIGNAL_CLICKED], 0);
 }
 
 /* Position and/or size of window has changed */
@@ -415,18 +393,6 @@ static void xfdashboard_live_window_simple_class_init(XfdashboardLiveWindowSimpl
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWindowSimpleProperties);
 
 	/* Define signals */
-	XfdashboardLiveWindowSimpleSignals[SIGNAL_CLICKED]=
-		g_signal_new("clicked",
-						G_TYPE_FROM_CLASS(klass),
-						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardLiveWindowSimpleClass, clicked),
-						NULL,
-						NULL,
-						g_cclosure_marshal_VOID__VOID,
-						G_TYPE_NONE,
-						0);
-
-
 	XfdashboardLiveWindowSimpleSignals[SIGNAL_GEOMETRY_CHANGED]=
 		g_signal_new("geometry-changed",
 						G_TYPE_FROM_CLASS(klass),
@@ -468,7 +434,6 @@ static void xfdashboard_live_window_simple_class_init(XfdashboardLiveWindowSimpl
 static void xfdashboard_live_window_simple_init(XfdashboardLiveWindowSimple *self)
 {
 	XfdashboardLiveWindowSimplePrivate	*priv;
-	ClutterAction						*action;
 
 	priv=self->priv=XFDASHBOARD_LIVE_WINDOW_SIMPLE_GET_PRIVATE(self);
 
@@ -485,10 +450,6 @@ static void xfdashboard_live_window_simple_init(XfdashboardLiveWindowSimple *sel
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorWindow);
 
 	/* Connect signals */
-	action=xfdashboard_click_action_new();
-	clutter_actor_add_action(CLUTTER_ACTOR(self), action);
-	g_signal_connect_swapped(action, "clicked", G_CALLBACK(_xfdashboard_live_window_simple_on_clicked), self);
-
 	g_signal_connect_swapped(priv->windowTracker, "window-geometry-changed", G_CALLBACK(_xfdashboard_live_window_simple_on_geometry_changed), self);
 	g_signal_connect_swapped(priv->windowTracker, "window-state-changed", G_CALLBACK(_xfdashboard_live_window_simple_on_state_changed), self);
 	g_signal_connect_swapped(priv->windowTracker, "window-workspace-changed", G_CALLBACK(_xfdashboard_live_window_simple_on_workspace_changed), self);
