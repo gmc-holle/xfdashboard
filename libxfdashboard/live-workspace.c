@@ -54,7 +54,6 @@ struct _XfdashboardLiveWorkspacePrivate
 	/* Properties related */
 	XfdashboardWindowTrackerWorkspace		*workspace;
 	XfdashboardWindowTrackerMonitor			*monitor;
-	gboolean								showWindowContent;
 	XfdashboardStageBackgroundImageType		backgroundType;
 	gboolean								showWorkspaceName;
 	gfloat									workspaceNamePadding;
@@ -72,7 +71,6 @@ enum
 
 	PROP_WORKSPACE,
 	PROP_MONITOR,
-	PROP_SHOW_WINDOW_CONTENT,
 	PROP_BACKGROUND_IMAGE_TYPE,
 	PROP_SHOW_WORKSPACE_NAME,
 	PROP_WORKSPACE_NAME_PADDING,
@@ -198,7 +196,6 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 		{
 			/* Create actor */
 			actor=xfdashboard_live_window_simple_new_for_window(inWindow);
-			if(!priv->showWindowContent) xfdashboard_live_window_simple_set_display_type(actor, XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_ICON);
 
 			/* Add new actor at right stacking position */
 			if(lastWindowActor) clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
@@ -735,10 +732,6 @@ static void _xfdashboard_live_workspace_set_property(GObject *inObject,
 			xfdashboard_live_workspace_set_monitor(self, g_value_get_object(inValue));
 			break;
 
-		case PROP_SHOW_WINDOW_CONTENT:
-			xfdashboard_live_workspace_set_show_window_content(self, g_value_get_boolean(inValue));
-			break;
-
 		case PROP_BACKGROUND_IMAGE_TYPE:
 			xfdashboard_live_workspace_set_background_image_type(self, g_value_get_enum(inValue));
 			break;
@@ -772,10 +765,6 @@ static void _xfdashboard_live_workspace_get_property(GObject *inObject,
 
 		case PROP_MONITOR:
 			g_value_set_object(outValue, self->priv->monitor);
-			break;
-
-		case PROP_SHOW_WINDOW_CONTENT:
-			g_value_set_boolean(outValue, self->priv->showWindowContent);
 			break;
 
 		case PROP_BACKGROUND_IMAGE_TYPE:
@@ -833,13 +822,6 @@ static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass 
 								XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
-	XfdashboardLiveWorkspaceProperties[PROP_SHOW_WINDOW_CONTENT]=
-		g_param_spec_boolean("show-window-content",
-								_("Show window content"),
-								_("If TRUE the window content should be shown otherwise the window's icon will be shown"),
-								TRUE,
-								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
 	XfdashboardLiveWorkspaceProperties[PROP_BACKGROUND_IMAGE_TYPE]=
 		g_param_spec_enum("background-image-type",
 							_("Background image type"),
@@ -866,7 +848,6 @@ static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWorkspaceProperties);
 
 	/* Define stylable properties */
-	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWorkspaceProperties[PROP_SHOW_WINDOW_CONTENT]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWorkspaceProperties[PROP_BACKGROUND_IMAGE_TYPE]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWorkspaceProperties[PROP_SHOW_WORKSPACE_NAME]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWorkspaceProperties[PROP_WORKSPACE_NAME_PADDING]);
@@ -897,7 +878,6 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	/* Set default values */
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->workspace=NULL;
-	priv->showWindowContent=TRUE;
 	priv->backgroundType=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE;
 	priv->monitor=NULL;
 	priv->showWorkspaceName=FALSE;
@@ -1085,53 +1065,6 @@ void xfdashboard_live_workspace_set_monitor(XfdashboardLiveWorkspace *self, Xfda
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_MONITOR]);
-	}
-}
-
-/* Get/set if the window content should be shown or the window's icon */
-gboolean xfdashboard_live_workspace_get_show_window_content(XfdashboardLiveWorkspace *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), TRUE);
-
-	return(self->priv->showWindowContent);
-}
-
-void xfdashboard_live_workspace_set_show_window_content(XfdashboardLiveWorkspace *self, gboolean inShowWindowContent)
-{
-	XfdashboardLiveWorkspacePrivate		*priv;
-	ClutterActor						*child;
-	ClutterActorIter					iter;
-
-	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->showWindowContent!=inShowWindowContent)
-	{
-		/* Set value */
-		priv->showWindowContent=inShowWindowContent;
-
-		/* Recreate window actors in workspace */
-		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
-		while(clutter_actor_iter_next(&iter, &child))
-		{
-			/* Skip actor if it is not a window actor */
-			if(!XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(child)) continue;
-
-			/* Replace content depending on this new value if neccessary */
-			if(priv->showWindowContent)
-			{
-				xfdashboard_live_window_simple_set_display_type(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child), XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW);
-			}
-				else
-				{
-					xfdashboard_live_window_simple_set_display_type(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child), XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_ICON);
-				}
-		}
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWorkspaceProperties[PROP_SHOW_WINDOW_CONTENT]);
 	}
 }
 

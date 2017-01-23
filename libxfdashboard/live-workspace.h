@@ -81,9 +81,6 @@ void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, Xf
 XfdashboardWindowTrackerMonitor* xfdashboard_live_workspace_get_monitor(XfdashboardLiveWorkspace *self);
 void xfdashboard_live_workspace_set_monitor(XfdashboardLiveWorkspace *self, XfdashboardWindowTrackerMonitor *inMonitor);
 
-gboolean xfdashboard_live_workspace_get_show_window_content(XfdashboardLiveWorkspace *self);
-void xfdashboard_live_workspace_set_show_window_content(XfdashboardLiveWorkspace *self, gboolean inShowWindowContent);
-
 XfdashboardStageBackgroundImageType xfdashboard_live_workspace_get_background_image_type(XfdashboardLiveWorkspace *self);
 void xfdashboard_live_workspace_set_background_image_type(XfdashboardLiveWorkspace *self, XfdashboardStageBackgroundImageType inType);
 
