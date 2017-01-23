@@ -483,10 +483,10 @@ XfdashboardWindowTrackerWindow* xfdashboard_live_window_simple_get_window(Xfdash
 void xfdashboard_live_window_simple_set_window(XfdashboardLiveWindowSimple *self, XfdashboardWindowTrackerWindow *inWindow)
 {
 	XfdashboardLiveWindowSimplePrivate	*priv;
-	ClutterContent					*content;
+	ClutterContent						*content;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+	g_return_if_fail(!inWindow || XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
 	priv=self->priv;
 
@@ -504,17 +504,29 @@ void xfdashboard_live_window_simple_set_window(XfdashboardLiveWindowSimple *self
 	 * Window tracker objects should never be refed or unrefed, so just set new value
 	 */
 	priv->window=inWindow;
-	priv->isVisible=_xfdashboard_live_window_simple_is_visible_window(self, priv->window);
+	if(priv->window)
+	{
+		/* Get visibility state of window */
+		priv->isVisible=_xfdashboard_live_window_simple_is_visible_window(self, priv->window);
 
-	/* Setup window actor */
-	content=xfdashboard_window_content_new_for_window(priv->window);
-	clutter_actor_set_content(priv->actorWindow, content);
-	g_object_unref(content);
+		/* Setup window actor */
+		content=xfdashboard_window_content_new_for_window(priv->window);
+		clutter_actor_set_content(priv->actorWindow, content);
+		g_object_unref(content);
 
-	/* Set up this actor and child actor by calling each signal handler now */
-	_xfdashboard_live_window_simple_on_geometry_changed(self, priv->window, priv->windowTracker);
-	_xfdashboard_live_window_simple_on_state_changed(self, priv->window, priv->windowTracker);
-	_xfdashboard_live_window_simple_on_workspace_changed(self, priv->window, priv->windowTracker);
+		/* Set up this actor and child actor by calling each signal handler now */
+		_xfdashboard_live_window_simple_on_geometry_changed(self, priv->window, priv->windowTracker);
+		_xfdashboard_live_window_simple_on_state_changed(self, priv->window, priv->windowTracker);
+		_xfdashboard_live_window_simple_on_workspace_changed(self, priv->window, priv->windowTracker);
+	}
+		else
+		{
+			/* Clean window actor */
+			clutter_actor_set_content(priv->actorWindow, NULL);
+
+			/* Set window to invisible as NULL window is no window */
+			priv->isVisible=FALSE;
+		}
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowSimpleProperties[PROP_WINDOW]);

@@ -29,16 +29,12 @@
 #include <libxfdashboard/live-workspace.h>
 
 #include <glib/gi18n-lib.h>
-#include <clutter/clutter.h>
-#include <clutter/x11/clutter-x11.h>
 #include <math.h>
 
 #include <libxfdashboard/button.h>
-#include <libxfdashboard/live-window.h>
+#include <libxfdashboard/live-window-simple.h>
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/click-action.h>
-#include <libxfdashboard/window-content.h>
-#include <libxfdashboard/image-content.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/compat.h>
@@ -97,7 +93,6 @@ enum
 static guint XfdashboardLiveWorkspaceSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define WINDOW_DATA_KEY		"window"
 
 /* Check if window should be shown */
 static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWorkspace *self,
@@ -127,9 +122,9 @@ static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWor
 static ClutterActor* _xfdashboard_live_workspace_find_by_window(XfdashboardLiveWorkspace *self,
 																XfdashboardWindowTrackerWindow *inWindow)
 {
-	ClutterActor		*child;
-	ClutterActorIter	iter;
-	gpointer			window;
+	ClutterActorIter				iter;
+	ClutterActor					*child;
+	XfdashboardLiveWindowSimple		*windowActor;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
@@ -138,12 +133,13 @@ static ClutterActor* _xfdashboard_live_workspace_find_by_window(XfdashboardLiveW
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
-		/* Check if it is really a window actor by retrieving associated window */
-		window=g_object_get_data(G_OBJECT(child), WINDOW_DATA_KEY);
-		if(!window || !XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(window)) continue;
+		/* Check if it is really a window actor */
+		if(!XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(child)) continue;
+
+		windowActor=XFDASHBOARD_LIVE_WINDOW_SIMPLE(child);
 
 		/* Check if this is the actor showing requested window */
-		if(window==inWindow) return(child);
+		if(xfdashboard_live_window_simple_get_window(windowActor)==inWindow) return(child);
 	}
 
 	/* If we get here we did not find the window and we return NULL */
@@ -156,7 +152,6 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 {
 	XfdashboardLiveWorkspacePrivate		*priv;
 	ClutterActor						*actor;
-	ClutterContent						*content;
 	GList								*windows;
 	ClutterActor						*lastWindowActor;
 	XfdashboardWindowTrackerWindow		*window;
@@ -202,18 +197,8 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 		else
 		{
 			/* Create actor */
-			actor=clutter_actor_new();
-			g_object_set_data(G_OBJECT(actor), WINDOW_DATA_KEY, inWindow);
-			if(priv->showWindowContent)
-			{
-				content=xfdashboard_window_content_new_for_window(inWindow);
-			}
-				else
-				{
-					content=xfdashboard_image_content_new_for_pixbuf(xfdashboard_window_tracker_window_get_icon(inWindow));
-				}
-			clutter_actor_set_content(actor, content);
-			g_object_unref(content);
+			actor=xfdashboard_live_window_simple_new_for_window(inWindow);
+			// TODO: if(!priv->showWindowContent) xfdashboard_live_window_simple_set_type(actor, XFDASHBOARD_LIVE_WINDOW_SIMPLE_TYPE_ICON);
 
 			/* Add new actor at right stacking position */
 			if(lastWindowActor) clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
@@ -374,10 +359,8 @@ static void _xfdashboard_live_workspace_on_window_workspace_changed(XfdashboardL
 	/* Check if window was removed from workspace or added */
 	if(inWorkspace!=priv->workspace)
 	{
-		/* Find actor for window */
+		/* Find and destroy actor for window if available */
 		windowActor=_xfdashboard_live_workspace_find_by_window(self, inWindow);
-
-		/* Destroy window actor */
 		if(windowActor) clutter_actor_destroy(windowActor);
 	}
 		else
@@ -429,7 +412,6 @@ static void _xfdashboard_live_workspace_on_desktop_window_opened(XfdashboardLive
 {
 	XfdashboardLiveWorkspacePrivate		*priv;
 	XfdashboardWindowTrackerWindow		*desktopWindow;
-	ClutterContent						*windowContent;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -440,10 +422,8 @@ static void _xfdashboard_live_workspace_on_desktop_window_opened(XfdashboardLive
 	desktopWindow=xfdashboard_window_tracker_get_root_window(priv->windowTracker);
 	if(desktopWindow)
 	{
-		windowContent=xfdashboard_window_content_new_for_window(desktopWindow);
-		clutter_actor_set_content(priv->backgroundImageLayer, windowContent);
+		xfdashboard_live_window_simple_set_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(priv->backgroundImageLayer), desktopWindow);
 		clutter_actor_show(priv->backgroundImageLayer);
-		g_object_unref(windowContent);
 
 		g_signal_handlers_disconnect_by_func(priv->windowTracker,
 												G_CALLBACK(_xfdashboard_live_workspace_on_desktop_window_opened),
@@ -658,10 +638,10 @@ static void _xfdashboard_live_workspace_allocate(ClutterActor *self,
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Get window actor */
-		if(!CLUTTER_IS_ACTOR(child)) continue;
+		if(!XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(child)) continue;
 
 		/* Get associated window */
-		window=g_object_get_data(G_OBJECT(child), WINDOW_DATA_KEY);
+		window=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child));
 		if(!window || !XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(window)) continue;
 
 		/* Get real size of child */
@@ -702,8 +682,6 @@ static void _xfdashboard_live_workspace_dispose(GObject *inObject)
 	XfdashboardLiveWorkspacePrivate		*priv=self->priv;
 
 	/* Dispose allocated resources */
-	g_object_set_data(inObject, WINDOW_DATA_KEY, NULL);
-
 	if(priv->actorTitle)
 	{
 		clutter_actor_destroy(priv->actorTitle);
@@ -934,7 +912,7 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	g_signal_connect_swapped(action, "clicked", G_CALLBACK(_xfdashboard_live_workspace_on_clicked), self);
 
 	/* Create background actors but order of adding background children is important */
-	priv->backgroundImageLayer=clutter_actor_new();
+	priv->backgroundImageLayer=xfdashboard_live_window_simple_new();
 	clutter_actor_hide(priv->backgroundImageLayer);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->backgroundImageLayer);
 
@@ -1034,10 +1012,10 @@ void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, Xf
 	while(clutter_actor_iter_next(&iter, &child))
 	{
 		/* Get window actor */
-		if(!CLUTTER_IS_ACTOR(child)) continue;
+		if(!XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(child)) continue;
 
 		/* Check if it is really a window actor by retrieving associated window */
-		window=g_object_get_data(G_OBJECT(child), WINDOW_DATA_KEY);
+		window=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child));
 		if(!window || !XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(window)) continue;
 
 		/* Destroy window actor */
@@ -1121,8 +1099,6 @@ gboolean xfdashboard_live_workspace_get_show_window_content(XfdashboardLiveWorks
 void xfdashboard_live_workspace_set_show_window_content(XfdashboardLiveWorkspace *self, gboolean inShowWindowContent)
 {
 	XfdashboardLiveWorkspacePrivate		*priv;
-	ClutterContent						*content;
-	XfdashboardWindowTrackerWindow		*window;
 	ClutterActor						*child;
 	ClutterActorIter					iter;
 
@@ -1140,26 +1116,17 @@ void xfdashboard_live_workspace_set_show_window_content(XfdashboardLiveWorkspace
 		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
 		while(clutter_actor_iter_next(&iter, &child))
 		{
-			/* Get window actor */
-			if(!CLUTTER_IS_ACTOR(child)) continue;
-
-			/* Check if it is really a window actor by retrieving associated window */
-			window=g_object_get_data(G_OBJECT(child), WINDOW_DATA_KEY);
-			if(!window || !XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(window)) continue;
+			/* Skip actor if it is not a window actor */
+			if(!XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(child)) continue;
 
 			/* Replace content depending on this new value if neccessary */
-			content=clutter_actor_get_content(child);
-			if(priv->showWindowContent && !XFDASHBOARD_IS_WINDOW_CONTENT(content))
+			if(priv->showWindowContent)
 			{
-				content=xfdashboard_window_content_new_for_window(window);
-				clutter_actor_set_content(child, content);
-				g_object_unref(content);
+				// TODO: xfdashboard_live_window_simple_set_type(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child), XFDASHBOARD_LIVE_WINDOW_SIMPLE_TYPE_LIVE_PREVIEW);
 			}
-				else if(!priv->showWindowContent && !XFDASHBOARD_IS_IMAGE_CONTENT(content))
+				else
 				{
-					content=xfdashboard_image_content_new_for_pixbuf(xfdashboard_window_tracker_window_get_icon(window));
-					clutter_actor_set_content(child, content);
-					g_object_unref(content);
+					// TODO: if(!priv->showWindowContent) xfdashboard_live_window_simple_set_type(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child), XFDASHBOARD_LIVE_WINDOW_SIMPLE_TYPE_ICON);
 				}
 		}
 
@@ -1203,13 +1170,7 @@ void xfdashboard_live_workspace_set_background_image_type(XfdashboardLiveWorkspa
 						backgroundWindow=xfdashboard_window_tracker_get_root_window(priv->windowTracker);
 						if(backgroundWindow)
 						{
-							ClutterContent				*backgroundContent;
-
-							backgroundContent=xfdashboard_window_content_new_for_window(backgroundWindow);
-							clutter_actor_show(priv->backgroundImageLayer);
-							clutter_actor_set_content(priv->backgroundImageLayer, backgroundContent);
-							g_object_unref(backgroundContent);
-
+							xfdashboard_live_window_simple_set_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(priv->backgroundImageLayer), backgroundWindow);
 							g_debug("Desktop window was found and set up as background image for workspace '%s'",
 									xfdashboard_window_tracker_workspace_get_name(priv->workspace));
 						}
@@ -1226,8 +1187,8 @@ void xfdashboard_live_workspace_set_background_image_type(XfdashboardLiveWorkspa
 					break;
 
 				default:
+					xfdashboard_live_window_simple_set_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(priv->backgroundImageLayer), NULL);
 					clutter_actor_hide(priv->backgroundImageLayer);
-					clutter_actor_set_content(priv->backgroundImageLayer, NULL);
 					break;
 			}
 		}
