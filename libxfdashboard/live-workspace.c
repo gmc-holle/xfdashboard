@@ -198,7 +198,7 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 		{
 			/* Create actor */
 			actor=xfdashboard_live_window_simple_new_for_window(inWindow);
-			// TODO: if(!priv->showWindowContent) xfdashboard_live_window_simple_set_type(actor, XFDASHBOARD_LIVE_WINDOW_SIMPLE_TYPE_ICON);
+			if(!priv->showWindowContent) xfdashboard_live_window_simple_set_display_type(actor, XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_ICON);
 
 			/* Add new actor at right stacking position */
 			if(lastWindowActor) clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
@@ -1122,11 +1122,11 @@ void xfdashboard_live_workspace_set_show_window_content(XfdashboardLiveWorkspace
 			/* Replace content depending on this new value if neccessary */
 			if(priv->showWindowContent)
 			{
-				// TODO: xfdashboard_live_window_simple_set_type(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child), XFDASHBOARD_LIVE_WINDOW_SIMPLE_TYPE_LIVE_PREVIEW);
+				xfdashboard_live_window_simple_set_display_type(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child), XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW);
 			}
 				else
 				{
-					// TODO: if(!priv->showWindowContent) xfdashboard_live_window_simple_set_type(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child), XFDASHBOARD_LIVE_WINDOW_SIMPLE_TYPE_ICON);
+					xfdashboard_live_window_simple_set_display_type(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child), XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_ICON);
 				}
 		}
 

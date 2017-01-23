@@ -32,7 +32,9 @@
 
 #include <libxfdashboard/click-action.h>
 #include <libxfdashboard/window-content.h>
+#include <libxfdashboard/image-content.h>
 #include <libxfdashboard/stylable.h>
+#include <libxfdashboard/enums.h>
 #include <libxfdashboard/compat.h>
 
 
@@ -48,14 +50,15 @@ G_DEFINE_TYPE(XfdashboardLiveWindowSimple,
 struct _XfdashboardLiveWindowSimplePrivate
 {
 	/* Properties related */
-	XfdashboardWindowTrackerWindow		*window;
+	XfdashboardWindowTrackerWindow			*window;
+	XfdashboardLiveWindowSimpleDisplayType	displayType;
 
 	/* Instance related */
-	XfdashboardWindowTracker			*windowTracker;
+	XfdashboardWindowTracker				*windowTracker;
 
-	gboolean							isVisible;
+	gboolean								isVisible;
 
-	ClutterActor						*actorWindow;
+	ClutterActor							*actorWindow;
 };
 
 /* Properties */
@@ -64,6 +67,7 @@ enum
 	PROP_0,
 
 	PROP_WINDOW,
+	PROP_DISPLAY_TYPE,
 
 	PROP_LAST
 };
@@ -206,6 +210,48 @@ static void _xfdashboard_live_window_simple_on_workspace_changed(XfdashboardLive
 	g_signal_emit(self, XfdashboardLiveWindowSimpleSignals[SIGNAL_WORKSPACE_CHANGED], 0);
 }
 
+/* Set up actor's content depending on display. If no window is set the current
+ * content of this actor is destroyed and a new one is not set up. The actor will
+ * be displayed empty.
+ */
+static void _xfdashboard_live_window_simple_setup_content(XfdashboardLiveWindowSimple *self)
+{
+	XfdashboardLiveWindowSimplePrivate	*priv;
+	ClutterContent						*content;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
+
+	priv=self->priv;
+
+	/* Destroy old actor's content */
+	clutter_actor_set_content(priv->actorWindow, NULL);
+
+	/* If no window is set we cannot set up actor's content but only destroy the
+	 * old. So return here if no window is set.
+	 */
+	if(!priv->window) return;
+
+	/* Setup actor's content depending on display type */
+	switch(priv->displayType)
+	{
+		case XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW:
+			content=xfdashboard_window_content_new_for_window(priv->window);
+			clutter_actor_set_content(priv->actorWindow, content);
+			g_object_unref(content);
+			break;
+
+		case XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_ICON:
+			content=xfdashboard_image_content_new_for_pixbuf(xfdashboard_window_tracker_window_get_icon(priv->window));
+			clutter_actor_set_content(priv->actorWindow, content);
+			g_object_unref(content);
+			break;
+
+		default:
+			g_assert_not_reached();
+			break;
+	}
+}
+
 /* IMPLEMENTATION: ClutterActor */
 
 /* Get preferred width/height */
@@ -336,6 +382,10 @@ static void _xfdashboard_live_window_simple_set_property(GObject *inObject,
 			xfdashboard_live_window_simple_set_window(self, g_value_get_object(inValue));
 			break;
 
+		case PROP_DISPLAY_TYPE:
+			xfdashboard_live_window_simple_set_display_type(self, g_value_get_enum(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -355,6 +405,10 @@ static void _xfdashboard_live_window_simple_get_property(GObject *inObject,
 			g_value_set_object(outValue, self->priv->window);
 			break;
 
+		case PROP_DISPLAY_TYPE:
+			g_value_set_enum(outValue, self->priv->displayType);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -367,6 +421,7 @@ static void _xfdashboard_live_window_simple_get_property(GObject *inObject,
  */
 static void xfdashboard_live_window_simple_class_init(XfdashboardLiveWindowSimpleClass *klass)
 {
+	XfdashboardActorClass	*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
 	ClutterActorClass		*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass			*gobjectClass=G_OBJECT_CLASS(klass);
 
@@ -390,7 +445,18 @@ static void xfdashboard_live_window_simple_class_init(XfdashboardLiveWindowSimpl
 								XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardLiveWindowSimpleProperties[PROP_DISPLAY_TYPE]=
+		g_param_spec_enum("display-type",
+							_("Display type"),
+							_("How to display the window"),
+							XFDASHBOARD_TYPE_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE,
+							XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWindowSimpleProperties);
+
+	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWindowSimpleProperties[PROP_DISPLAY_TYPE]);
 
 	/* Define signals */
 	XfdashboardLiveWindowSimpleSignals[SIGNAL_GEOMETRY_CHANGED]=
@@ -443,6 +509,7 @@ static void xfdashboard_live_window_simple_init(XfdashboardLiveWindowSimple *sel
 	/* Set default values */
 	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->window=NULL;
+	priv->displayType=XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW;
 
 	/* Set up child actors (order is important) */
 	priv->actorWindow=clutter_actor_new();
@@ -483,7 +550,6 @@ XfdashboardWindowTrackerWindow* xfdashboard_live_window_simple_get_window(Xfdash
 void xfdashboard_live_window_simple_set_window(XfdashboardLiveWindowSimple *self, XfdashboardWindowTrackerWindow *inWindow)
 {
 	XfdashboardLiveWindowSimplePrivate	*priv;
-	ClutterContent						*content;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
 	g_return_if_fail(!inWindow || XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -509,10 +575,8 @@ void xfdashboard_live_window_simple_set_window(XfdashboardLiveWindowSimple *self
 		/* Get visibility state of window */
 		priv->isVisible=_xfdashboard_live_window_simple_is_visible_window(self, priv->window);
 
-		/* Setup window actor */
-		content=xfdashboard_window_content_new_for_window(priv->window);
-		clutter_actor_set_content(priv->actorWindow, content);
-		g_object_unref(content);
+		/* Setup window actor content */
+		_xfdashboard_live_window_simple_setup_content(self);
 
 		/* Set up this actor and child actor by calling each signal handler now */
 		_xfdashboard_live_window_simple_on_geometry_changed(self, priv->window, priv->windowTracker);
@@ -530,4 +594,35 @@ void xfdashboard_live_window_simple_set_window(XfdashboardLiveWindowSimple *self
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowSimpleProperties[PROP_WINDOW]);
+}
+
+/* Get/set display type of window */
+XfdashboardLiveWindowSimpleDisplayType xfdashboard_live_window_simple_get_display_type(XfdashboardLiveWindowSimple *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self), XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW);
+
+	return(self->priv->displayType);
+}
+
+void xfdashboard_live_window_simple_set_display_type(XfdashboardLiveWindowSimple *self, XfdashboardLiveWindowSimpleDisplayType inType)
+{
+	XfdashboardLiveWindowSimplePrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
+	g_return_if_fail(inType>=XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW && inType<=XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_ICON);
+
+	priv=self->priv;
+
+	/* Only set value if it changes */
+	if(priv->displayType!=inType)
+	{
+		/* Set value */
+		priv->displayType=inType;
+
+		/* Setup window actor content */
+		_xfdashboard_live_window_simple_setup_content(self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowSimpleProperties[PROP_DISPLAY_TYPE]);
+	}
 }

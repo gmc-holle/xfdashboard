@@ -32,11 +32,26 @@
 #include <clutter/clutter.h>
 
 #include <libxfdashboard/background.h>
-#include <libxfdashboard/button.h>
 #include <libxfdashboard/window-tracker.h>
 
 G_BEGIN_DECLS
 
+/* Public definitions */
+/**
+ * XfdashboardLiveWindowSimpleDisplayType:
+ * @XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW: The actor will show a live preview of window
+ * @XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_ICON: The actor will show the window's icon in size of window
+ *
+ * Determines how the window will be displayed.
+ */
+typedef enum /*< prefix=XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE >*/
+{
+	XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW=0,
+	XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_ICON,
+} XfdashboardLiveWindowSimpleDisplayType;
+
+
+/* Object declaration */
 #define XFDASHBOARD_TYPE_LIVE_WINDOW_SIMPLE				(xfdashboard_live_window_simple_get_type())
 #define XFDASHBOARD_LIVE_WINDOW_SIMPLE(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_LIVE_WINDOW_SIMPLE, XfdashboardLiveWindowSimple))
 #define XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_LIVE_WINDOW_SIMPLE))
@@ -79,6 +94,9 @@ ClutterActor* xfdashboard_live_window_simple_new_for_window(XfdashboardWindowTra
 
 XfdashboardWindowTrackerWindow* xfdashboard_live_window_simple_get_window(XfdashboardLiveWindowSimple *self);
 void xfdashboard_live_window_simple_set_window(XfdashboardLiveWindowSimple *self, XfdashboardWindowTrackerWindow *inWindow);
+
+XfdashboardLiveWindowSimpleDisplayType xfdashboard_live_window_simple_get_display_type(XfdashboardLiveWindowSimple *self);
+void xfdashboard_live_window_simple_set_display_type(XfdashboardLiveWindowSimple *self, XfdashboardLiveWindowSimpleDisplayType inType);
 
 G_END_DECLS
 
