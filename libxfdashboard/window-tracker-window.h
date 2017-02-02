@@ -62,10 +62,6 @@ gboolean xfdashboard_window_tracker_window_is_minimized(XfdashboardWindowTracker
 gboolean xfdashboard_window_tracker_window_is_maximized(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_fullscreen(XfdashboardWindowTrackerWindow *inWindow);
 gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *inWindow);
-gboolean xfdashboard_window_tracker_window_is_visible_on_workspace(XfdashboardWindowTrackerWindow *inWindow,
-																	XfdashboardWindowTrackerWorkspace *inWorkspace);
-gboolean xfdashboard_window_tracker_window_is_visible_on_monitor(XfdashboardWindowTrackerWindow *inWindow,
-																	XfdashboardWindowTrackerMonitor *inMonitor);
 void xfdashboard_window_tracker_window_show(XfdashboardWindowTrackerWindow *inWindow);
 void xfdashboard_window_tracker_window_hide(XfdashboardWindowTrackerWindow *inWindow);
 

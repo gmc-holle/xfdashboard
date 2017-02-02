@@ -106,7 +106,9 @@ static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWor
 	/* Determine if windows should be shown depending on its state */
 	if(xfdashboard_window_tracker_window_is_skip_pager(inWindow) ||
 		xfdashboard_window_tracker_window_is_skip_tasklist(inWindow) ||
-		(priv->workspace && !xfdashboard_window_tracker_window_is_visible_on_workspace(inWindow, priv->workspace)) ||
+		!xfdashboard_window_tracker_window_is_visible(inWindow) ||
+		(!priv->workspace && !xfdashboard_window_tracker_window_is_pinned(inWindow)) ||
+		(priv->workspace && !xfdashboard_window_tracker_window_is_on_workspace(inWindow, priv->workspace)) ||
 		xfdashboard_window_tracker_window_is_stage(inWindow))
 	{
 		return(FALSE);

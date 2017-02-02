@@ -401,28 +401,6 @@ gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWi
 	return(TRUE);
 }
 
-gboolean xfdashboard_window_tracker_window_is_visible_on_workspace(XfdashboardWindowTrackerWindow *inWindow,
-																	XfdashboardWindowTrackerWorkspace *inWorkspace)
-{
-	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
-	g_return_val_if_fail(WNCK_IS_WORKSPACE(inWorkspace), FALSE);
-
-	/* Check if window is visible generally and if it is on requested workspace */
-	return(xfdashboard_window_tracker_window_is_visible(inWindow) &&
-			wnck_window_is_on_workspace(WNCK_WINDOW(inWindow), WNCK_WORKSPACE(inWorkspace)));
-}
-
-gboolean xfdashboard_window_tracker_window_is_visible_on_monitor(XfdashboardWindowTrackerWindow *inWindow,
-																	XfdashboardWindowTrackerMonitor *inMonitor)
-{
-	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), FALSE);
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inMonitor), FALSE);
-
-	/* Check if window is visible generally and if it is on requested monitor */
-	return(xfdashboard_window_tracker_window_is_visible(inWindow) &&
-			xfdashboard_window_tracker_window_is_on_monitor(inWindow, inMonitor));
-}
-
 /* Set visibility of window (show/hide) */
 void xfdashboard_window_tracker_window_show(XfdashboardWindowTrackerWindow *inWindow)
 {
