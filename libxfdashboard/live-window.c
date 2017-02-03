@@ -64,6 +64,7 @@ struct _XfdashboardLiveWindowPrivate
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
 
+	ClutterActor						*actorSubwindowsLayer;
 	ClutterActor						*actorControlLayer;
 	ClutterActor						*actorClose;
 	ClutterActor						*actorWindowNumber;
@@ -97,6 +98,233 @@ enum
 static guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+
+/* Check if the requested window is a sub-window of this window */
+static gboolean _xfdashboard_live_window_is_subwindow(XfdashboardLiveWindow *self,
+														XfdashboardWindowTrackerWindow *inWindow)
+{
+	XfdashboardWindowTrackerWindow		*thisWindow;
+	XfdashboardWindowTrackerWindow		*requestedWindowParent;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), FALSE);
+
+	/* Check if window opened belong to this window (is transient for this one) */
+	thisWindow=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(self));
+	if(!thisWindow) return(FALSE);
+
+	requestedWindowParent=xfdashboard_window_tracker_window_get_parent_window(inWindow);
+	if(!requestedWindowParent) return(FALSE);
+
+	if(requestedWindowParent!=thisWindow) return(FALSE);
+
+	/* All checks succeeded so it is a sub-window and we return TRUE here */
+	return(TRUE);
+}
+
+/* Check if requested sub-window should be displayed */
+static gboolean _xfdashboard_live_window_should_display_subwindow(XfdashboardLiveWindow *self,
+																	XfdashboardWindowTrackerWindow *inWindow)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), FALSE);
+
+	/* Check if window opened belong to this window (is transient for this one) */
+	if(!_xfdashboard_live_window_is_subwindow(self, inWindow)) return(FALSE);
+
+	/* Check if window opened is visible */
+	if(!xfdashboard_window_tracker_window_is_visible(inWindow)) return(FALSE);
+
+	/* Check if window is either pinned. If it is not then check if it is on the
+	 * same workspace as its parent window. We can do this simple check because
+	 * the window opened is transient window of its parent and it looks like it
+	 * will inherit the same "pin" state.
+	 */
+	if(!xfdashboard_window_tracker_window_is_pinned(inWindow))
+	{
+		XfdashboardWindowTrackerWindow		*thisWindow;
+		XfdashboardWindowTrackerWorkspace	*workspace;
+
+		thisWindow=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(self));
+		workspace=xfdashboard_window_tracker_window_get_workspace(thisWindow);
+		if(workspace && !xfdashboard_window_tracker_window_is_on_workspace(inWindow, workspace)) return(FALSE);
+	}
+
+	/* All checks passed and we should display this sub-window, so return TRUE */
+	return(TRUE);
+
+}
+
+/* Find actor for requested sub-window */
+static ClutterActor* _xfdashboard_live_window_find_subwindow_actor(XfdashboardLiveWindow *self,
+																	XfdashboardWindowTrackerWindow *inWindow)
+{
+	XfdashboardLiveWindowPrivate		*priv;
+	ClutterActorIter					iter;
+	ClutterActor						*child;
+	XfdashboardWindowTrackerWindow		*childWindow;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
+
+	priv=self->priv;
+
+	/* Iterate through actors at sub-windows layer and return the actor handling
+	 * the requested window.
+	 */
+	if(priv->actorSubwindowsLayer)
+	{
+		clutter_actor_iter_init(&iter, priv->actorSubwindowsLayer);
+		while(clutter_actor_iter_next(&iter, &child))
+		{
+			/* Skip actor not handling live windows */
+			if(!XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(child)) continue;
+
+			/* Check if this actor handles the requested window */
+			childWindow=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child));
+			if(childWindow==inWindow) return(child);
+		}
+	}
+
+	/* If we get here, we did not find any actor handling the requested window.
+	 * So return NULL.
+	 */
+	return(NULL);
+}
+
+/* A sub-window changed workspace, so check if this sub-window should not be
+ * shown anymore and find associated actor to destroy.
+ */
+static void _xfdashboard_live_window_on_subwindow_actor_workspace_changed(XfdashboardLiveWindow *self,
+																			gpointer inUserData)
+{
+	XfdashboardWindowTrackerWindow		*window;
+	ClutterActor						*actor;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
+
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(inUserData);
+
+	/* Check if we should display this window at all. If it should still be
+	 * display, return immediately.
+	 */
+	if(_xfdashboard_live_window_should_display_subwindow(self, window)) return;
+
+	/* This window should not displayed anymore. Find associated actor and
+	 * destroy it.
+	 */
+	actor=_xfdashboard_live_window_find_subwindow_actor(self, window);
+	if(actor) clutter_actor_destroy(actor);
+}
+
+/* A sub-window changed its state, so check if this sub-window should not be
+ * shown anymore and find associated actor to destroy it
+ */
+static void _xfdashboard_live_window_on_subwindow_actor_state_changed(XfdashboardLiveWindow *self,
+																		gint inChangedMask,
+																		gint inNewState,
+																		gpointer inUserData)
+{
+	XfdashboardWindowTrackerWindow		*window;
+	ClutterActor						*actor;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
+
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(inUserData);
+
+	/* Check if we should display this window at all. If it should still be
+	 * display, return immediately.
+	 */
+	if(_xfdashboard_live_window_should_display_subwindow(self, window)) return;
+
+	/* This window should not displayed anymore. Find associated actor and
+	 * destroy it.
+	 */
+	actor=_xfdashboard_live_window_find_subwindow_actor(self, window);
+	if(actor) clutter_actor_destroy(actor);
+}
+
+/* A sub-window actor is going to be destroyed, so clean up */
+static void _xfdashboard_live_window_on_subwindow_actor_destroyed(XfdashboardLiveWindow *self,
+																	gpointer inUserData)
+{
+	ClutterActor						*actor;
+	XfdashboardWindowTrackerWindow		*window;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inUserData));
+
+	actor=CLUTTER_ACTOR(inUserData);
+
+	/* Check if the actor going to be destroyed is an actor showing live windows */
+	if(!XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(actor)) return;
+
+	/* Get associated window of the live window actor going to be destroyed */
+	window=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(actor));
+	if(!window) return;
+
+	/* Disconnect signals to prevent them get called even when this actor does
+	 * not exist anymore.
+	 */
+	g_signal_handlers_disconnect_by_func(window, _xfdashboard_live_window_on_subwindow_actor_workspace_changed, self);
+	g_signal_handlers_disconnect_by_func(window, _xfdashboard_live_window_on_subwindow_actor_state_changed, self);
+}
+
+/* A window was opened and might be a sub-window of this one and should be shown */
+static void _xfdashboard_live_window_on_subwindow_opened(XfdashboardLiveWindow *self,
+															XfdashboardWindowTrackerWindow *inWindow,
+															gpointer inUserData)
+{
+	XfdashboardLiveWindowPrivate			*priv;
+	ClutterActor							*actor;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+
+	priv=self->priv;
+
+	/* Check if we should display this window at all */
+	if(!_xfdashboard_live_window_should_display_subwindow(self, inWindow)) return;
+
+	/* Before adding an actor for this window, check if an actor already exists */
+	if(_xfdashboard_live_window_find_subwindow_actor(self, inWindow)) return;
+
+	/* Add child to this window */
+	actor=xfdashboard_live_window_simple_new_for_window(inWindow);
+	clutter_actor_set_reactive(actor, FALSE);
+	clutter_actor_show(actor);
+	clutter_actor_add_child(priv->actorSubwindowsLayer, actor);
+
+	/* Connect signals */
+	g_signal_connect_swapped(actor, "destroy", G_CALLBACK(_xfdashboard_live_window_on_subwindow_actor_destroyed), self);
+
+	g_signal_connect_swapped(inWindow, "workspace-changed", G_CALLBACK(_xfdashboard_live_window_on_subwindow_actor_workspace_changed), self);
+	g_signal_connect_swapped(inWindow, "state-changed", G_CALLBACK(_xfdashboard_live_window_on_subwindow_actor_state_changed), self);
+}
+
+/* A window has changed workspace and might be a sub-window of this one
+ * which should be shown.
+ */
+static void _xfdashboard_live_window_on_subwindow_workspace_changed(XfdashboardLiveWindow *self,
+																	XfdashboardWindowTrackerWindow *inWindow,
+																	XfdashboardWindowTrackerWorkspace *inWorkspace,
+																	gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+
+	/* Just call signal handler hanlding new windows opened because it will
+	 * perform all needed checks to determine if this window is a sub-window and
+	 * should be shown. It will also create the actor needed.
+	 * In case the window moved away from the workspace the signal handler
+	 * connect to the window directly will perform all check to determine if
+	 * this window should not be displayed anymore and destroy the associated
+	 * actor in this case. So not need to check this here.
+	 */
+	_xfdashboard_live_window_on_subwindow_opened(self, inWindow, NULL);
+}
 
 /* This actor was clicked */
 static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self,
@@ -275,6 +503,8 @@ static void _xfdashboard_live_window_on_window_changed(GObject *inObject,
 	XfdashboardLiveWindow			*self;
 	XfdashboardLiveWindowPrivate	*priv;
 	XfdashboardWindowTrackerWindow	*window;
+	GList							*windowList;
+	XfdashboardWindowTrackerWindow	*subwindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inObject));
 
@@ -288,6 +518,23 @@ static void _xfdashboard_live_window_on_window_changed(GObject *inObject,
 	_xfdashboard_live_window_on_actions_changed(self, window, priv->windowTracker);
 	_xfdashboard_live_window_on_icon_changed(self, window, priv->windowTracker);
 	_xfdashboard_live_window_on_name_changed(self, window, priv->windowTracker);
+
+	/* Destroy all sub-windows and create the ones belonging to this new window */
+	clutter_actor_destroy_all_children(priv->actorSubwindowsLayer);
+
+	windowList=xfdashboard_window_tracker_get_windows_stacked(priv->windowTracker);
+	for( ; windowList; windowList=g_list_next(windowList))
+	{
+		/* Get window at current position of iterator */
+		subwindow=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windowList->data);
+		if(!subwindow) continue;
+
+		/* Call signal handler for the event when a window is opened. It will
+		 * check if this window is a visible child of this window and it will
+		 * create the actor if needed.
+		 */
+		_xfdashboard_live_window_on_subwindow_opened(self, subwindow, priv->windowTracker);
+	}
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -301,11 +548,28 @@ static void _xfdashboard_live_window_get_preferred_height(ClutterActor *self,
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	gfloat							minHeight, naturalHeight;
 	gfloat							childMinHeight, childNaturalHeight;
+	ClutterActorIter				iter;
+	ClutterActor					*child;
 
 	minHeight=naturalHeight=0.0f;
 
 	/* Chain up to determine size of window of this actor (should usually be the largest actor) */
 	CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->get_preferred_height(self, inForWidth, &minHeight, &naturalHeight);
+
+	/* Determine size of each sub-window */
+	clutter_actor_iter_init(&iter, priv->actorSubwindowsLayer);
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		if(clutter_actor_is_visible(child))
+		{
+			clutter_actor_get_preferred_height(child,
+												inForWidth,
+												&childMinHeight,
+												&childNaturalHeight);
+			if(childMinHeight>minHeight) minHeight=childMinHeight;
+			if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
+		}
+	}
 
 	/* Determine size of title actor if visible */
 	if(clutter_actor_is_visible(priv->actorTitle))
@@ -359,11 +623,28 @@ static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 	gfloat							minWidth, naturalWidth;
 	gfloat							childMinWidth, childNaturalWidth;
+	ClutterActorIter				iter;
+	ClutterActor					*child;
 
 	minWidth=naturalWidth=0.0f;
 
 	/* Chain up to determine size of window of this actor (should usually be the largest actor) */
 	CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->get_preferred_width(self, inForHeight, &minWidth, &naturalWidth);
+
+	/* Determine size of each sub-window */
+	clutter_actor_iter_init(&iter, priv->actorSubwindowsLayer);
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		if(clutter_actor_is_visible(child))
+		{
+			clutter_actor_get_preferred_width(child,
+												inForHeight,
+												&childMinWidth,
+												 &childNaturalWidth);
+			if(childMinWidth>minWidth) minWidth=childMinWidth;
+			if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
+		}
+	}
 
 	/* Determine size of title actor if visible */
 	if(clutter_actor_is_visible(priv->actorTitle))
@@ -414,105 +695,184 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 												const ClutterActorBox *inBox,
 												ClutterAllocationFlags inFlags)
 {
-	XfdashboardLiveWindowPrivate	*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
-	ClutterActorBox					*boxActorControlLayer=NULL;
-	ClutterActorBox					*boxActorTitle=NULL;
-	ClutterActorBox					*boxActorClose=NULL;
-	ClutterActorBox					*boxActorWindowNumber=NULL;
-	ClutterActorBox					*referedBoxActor;
-	gfloat							maxWidth;
-	gfloat							titleWidth, titleHeight;
-	gfloat							closeWidth, closeHeight;
-	gfloat							windowNumberWidth, windowNumberHeight;
-	gfloat							left, top, right, bottom;
+	XfdashboardLiveWindowPrivate		*priv=XFDASHBOARD_LIVE_WINDOW(self)->priv;
 
 	/* Chain up to store the allocation of the actor */
 	CLUTTER_ACTOR_CLASS(xfdashboard_live_window_parent_class)->allocate(self, inBox, inFlags);
 
-	/* Set allocation on control layer which matches the actor's allocation at
-	 * width and height but with origin position.
-	 */
-	boxActorControlLayer=clutter_actor_box_copy(inBox);
-	clutter_actor_box_set_origin(boxActorControlLayer, 0.0f, 0.0f);
-	clutter_actor_allocate(priv->actorControlLayer, boxActorControlLayer, inFlags);
-
-	/* Set allocation on close actor */
-	clutter_actor_get_preferred_size(priv->actorClose,
-										NULL, NULL,
-										&closeWidth, &closeHeight);
-
-	right=clutter_actor_box_get_x(boxActorControlLayer)+clutter_actor_box_get_width(boxActorControlLayer)-priv->paddingClose;
-	left=MAX(right-closeWidth, priv->paddingClose);
-	top=clutter_actor_box_get_y(boxActorControlLayer)+priv->paddingClose;
-	bottom=top+closeHeight;
-
-	right=MAX(left, right);
-	bottom=MAX(top, bottom);
-
-	boxActorClose=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
-	clutter_actor_allocate(priv->actorClose, boxActorClose, inFlags);
-
-	/* Set allocation on window number actor (expand to size of close button if needed) */
-	clutter_actor_get_preferred_size(priv->actorWindowNumber,
-										NULL, NULL,
-										&windowNumberWidth, &windowNumberHeight);
-
-	right=clutter_actor_box_get_x(boxActorControlLayer)+clutter_actor_box_get_width(boxActorControlLayer)-priv->paddingClose;
-	left=MAX(right-windowNumberWidth, priv->paddingClose);
-	top=clutter_actor_box_get_y(boxActorControlLayer)+priv->paddingClose;
-	bottom=top+windowNumberHeight;
-
-	left=MIN(left, clutter_actor_box_get_x(boxActorClose));
-	right=MAX(left, right);
-	bottom=MAX(top, bottom);
-	bottom=MAX(bottom, clutter_actor_box_get_y(boxActorClose)+clutter_actor_box_get_height(boxActorClose));
-
-	boxActorWindowNumber=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
-	clutter_actor_allocate(priv->actorWindowNumber, boxActorWindowNumber, inFlags);
-
-	/* Set allocation on title actor
-	 * But prevent that title overlaps close button
-	 */
-	if(priv->windowNumber>0) referedBoxActor=boxActorWindowNumber;
-		else referedBoxActor=boxActorClose;
-
-	clutter_actor_get_preferred_size(priv->actorTitle,
-										NULL, NULL,
-										&titleWidth, &titleHeight);
-
-	maxWidth=clutter_actor_box_get_width(boxActorControlLayer)-(2*priv->paddingTitle);
-	if(titleWidth>maxWidth) titleWidth=maxWidth;
-
-	left=clutter_actor_box_get_x(boxActorControlLayer)+((clutter_actor_box_get_width(boxActorControlLayer)-titleWidth)/2.0f);
-	right=left+titleWidth;
-	bottom=clutter_actor_box_get_y(boxActorControlLayer)+clutter_actor_box_get_height(boxActorControlLayer)-(2*priv->paddingTitle);
-	top=bottom-titleHeight;
-	if(left>right) left=right-1.0f;
-	if(top<(clutter_actor_box_get_y(referedBoxActor)+clutter_actor_box_get_height(referedBoxActor)))
+	/* Set allocation of sub-windows layer if available */
+	if(priv->actorSubwindowsLayer)
 	{
-		if(right>=clutter_actor_box_get_x(referedBoxActor))
+		ClutterActorBox					boxActorLayer;
+		ClutterActorBox					boxActorChild;
+		ClutterActorIter				iter;
+		ClutterActor					*child;
+		XfdashboardWindowTrackerWindow	*window;
+		gfloat							largestWidth, largestHeight;
+		gfloat							childWidth, childHeight;
+		gfloat							scaleWidth, scaleHeight;
+		gfloat							layerWidth, layerHeight;
+		gfloat							left, right, top, bottom;
+
+		/* Calculate and set allocation at each sub-window on sub-windows layer.
+		 * They need to be scaled down and to keep their aspect ratio to fit into
+		 * allocation of sub-windows layer.
+		 */
+		largestWidth=largestHeight=0.0f;
+
+		window=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(self));
+		if(window)
 		{
-			right=clutter_actor_box_get_x(referedBoxActor)-MIN(priv->paddingTitle, priv->paddingClose);
+			gint						windowWidth, windowHeight;
+
+			xfdashboard_window_tracker_window_get_size(window, &windowWidth, &windowHeight);
+			if(windowWidth>largestWidth) largestWidth=windowWidth;
+			if(windowHeight>largestHeight) largestHeight=windowHeight;
 		}
 
-		if(top<clutter_actor_box_get_y(referedBoxActor))
+		clutter_actor_iter_init(&iter, priv->actorSubwindowsLayer);
+		while(clutter_actor_iter_next(&iter, &child))
 		{
-			top=clutter_actor_box_get_y(referedBoxActor);
-			bottom=top+titleHeight;
+			if(clutter_actor_is_visible(child))
+			{
+				clutter_actor_get_preferred_size(child, NULL, NULL, &childWidth, &childHeight);
+				if(childWidth>largestWidth) largestWidth=childWidth;
+				if(childHeight>largestHeight) largestHeight=childHeight;
+			}
+		}
+
+		/* Set allocation on sub-windows layer which covers the largest width and
+		 * largest height of all windows (including main window of this actor itself)
+		 * scaled down to fit into this actor's allocation and centered position.
+		 */
+		scaleWidth=clutter_actor_box_get_width(inBox)/largestWidth;
+		scaleHeight=clutter_actor_box_get_height(inBox)/largestHeight;
+
+		layerWidth=largestWidth*scaleWidth;
+		left=(clutter_actor_box_get_width(inBox)-layerWidth)/2.0f;
+		right=left+layerWidth;
+
+		layerHeight=largestHeight*scaleHeight;
+		top=(clutter_actor_box_get_height(inBox)-layerHeight)/2.0f;
+		bottom=top+layerHeight;
+
+		clutter_actor_box_init(&boxActorLayer, floor(left), floor(top), floor(right), floor(bottom));
+		clutter_actor_allocate(priv->actorSubwindowsLayer, &boxActorLayer, inFlags);
+
+		clutter_actor_iter_init(&iter, priv->actorSubwindowsLayer);
+		while(clutter_actor_iter_next(&iter, &child))
+		{
+			if(clutter_actor_is_visible(child))
+			{
+				/* Get natural size of sub-window */
+				clutter_actor_get_preferred_size(child, NULL, NULL, &childWidth, &childHeight);
+
+				/* Scale down to fit size of allocation of sub-windows layer */
+				childWidth=childWidth*scaleWidth;
+				childHeight=childHeight*scaleHeight;
+
+				/* Center sub-window in allocation of sub-windows layer */
+				left=(layerWidth-childWidth)/2.0f;
+				right=left+childWidth;
+
+				top=(layerHeight-childHeight)/2.0f;
+				bottom=top+childHeight;
+
+				/* Set allocation of sub-window */
+				clutter_actor_box_init(&boxActorChild, floor(left), floor(top), floor(right), floor(bottom));
+				clutter_actor_allocate(child, &boxActorChild, inFlags);
+			}
 		}
 	}
 
-	right=MAX(left, right);
-	bottom=MAX(top, bottom);
+	/* Set allocation of controls layer if available */
+	if(priv->actorControlLayer)
+	{
+		ClutterActorBox					boxActorLayer;
+		ClutterActorBox					boxActorClose;
+		ClutterActorBox					boxActorWindowNumber;
+		ClutterActorBox					boxActorTitle;
+		ClutterActorBox					*referedBoxActor;
+		gfloat							layerWidth, layerHeight;
+		gfloat							closeWidth, closeHeight;
+		gfloat							windowNumberWidth, windowNumberHeight;
+		gfloat							titleWidth, titleHeight;
+		gfloat							left, top, right, bottom;
+		gfloat							maxWidth;
 
-	boxActorTitle=clutter_actor_box_new(floor(left), floor(top), floor(right), floor(bottom));
-	clutter_actor_allocate(priv->actorTitle, boxActorTitle, inFlags);
+		/* Set allocation on control layer which matches the actor's allocation at
+		 * width and height but with origin position.
+		 */
+		clutter_actor_box_get_size(inBox, &layerWidth, &layerHeight);
+		clutter_actor_box_init(&boxActorLayer, 0.0f, 0.0f, layerWidth, layerHeight);
+		clutter_actor_allocate(priv->actorControlLayer, &boxActorLayer, inFlags);
 
-	/* Release allocated resources */
-	if(boxActorControlLayer) clutter_actor_box_free(boxActorControlLayer);
-	if(boxActorWindowNumber) clutter_actor_box_free(boxActorWindowNumber);
-	if(boxActorTitle) clutter_actor_box_free(boxActorTitle);
-	if(boxActorClose) clutter_actor_box_free(boxActorClose);
+		/* Set allocation on close actor */
+		clutter_actor_get_preferred_size(priv->actorClose, NULL, NULL, &closeWidth, &closeHeight);
+
+		right=clutter_actor_box_get_x(&boxActorLayer)+clutter_actor_box_get_width(&boxActorLayer)-priv->paddingClose;
+		left=MAX(right-closeWidth, priv->paddingClose);
+		top=clutter_actor_box_get_y(&boxActorLayer)+priv->paddingClose;
+		bottom=top+closeHeight;
+
+		right=MAX(left, right);
+		bottom=MAX(top, bottom);
+
+		clutter_actor_box_init(&boxActorClose, floor(left), floor(top), floor(right), floor(bottom));
+		clutter_actor_allocate(priv->actorClose, &boxActorClose, inFlags);
+
+		/* Set allocation on window number actor (expand to size of close button if needed) */
+		clutter_actor_get_preferred_size(priv->actorWindowNumber, NULL, NULL, &windowNumberWidth, &windowNumberHeight);
+
+		right=clutter_actor_box_get_x(&boxActorLayer)+clutter_actor_box_get_width(&boxActorLayer)-priv->paddingClose;
+		left=MAX(right-windowNumberWidth, priv->paddingClose);
+		top=clutter_actor_box_get_y(&boxActorLayer)+priv->paddingClose;
+		bottom=top+windowNumberHeight;
+
+		left=MIN(left, clutter_actor_box_get_x(&boxActorClose));
+		right=MAX(left, right);
+		bottom=MAX(top, bottom);
+		bottom=MAX(bottom, clutter_actor_box_get_y(&boxActorClose)+clutter_actor_box_get_height(&boxActorClose));
+
+		clutter_actor_box_init(&boxActorWindowNumber, floor(left), floor(top), floor(right), floor(bottom));
+		clutter_actor_allocate(priv->actorWindowNumber, &boxActorWindowNumber, inFlags);
+
+		/* Set allocation on title actor
+		 * But prevent that title overlaps close button
+		 */
+		if(priv->windowNumber>0) referedBoxActor=&boxActorWindowNumber;
+			else referedBoxActor=&boxActorClose;
+
+		clutter_actor_get_preferred_size(priv->actorTitle, NULL, NULL, &titleWidth, &titleHeight);
+
+		maxWidth=clutter_actor_box_get_width(&boxActorLayer)-(2*priv->paddingTitle);
+		if(titleWidth>maxWidth) titleWidth=maxWidth;
+
+		left=clutter_actor_box_get_x(&boxActorLayer)+((clutter_actor_box_get_width(&boxActorLayer)-titleWidth)/2.0f);
+		right=left+titleWidth;
+		bottom=clutter_actor_box_get_y(&boxActorLayer)+clutter_actor_box_get_height(&boxActorLayer)-(2*priv->paddingTitle);
+		top=bottom-titleHeight;
+		if(left>right) left=right-1.0f;
+		if(top<(clutter_actor_box_get_y(referedBoxActor)+clutter_actor_box_get_height(referedBoxActor)))
+		{
+			if(right>=clutter_actor_box_get_x(referedBoxActor))
+			{
+				right=clutter_actor_box_get_x(referedBoxActor)-MIN(priv->paddingTitle, priv->paddingClose);
+			}
+
+			if(top<clutter_actor_box_get_y(referedBoxActor))
+			{
+				top=clutter_actor_box_get_y(referedBoxActor);
+				bottom=top+titleHeight;
+			}
+		}
+
+		right=MAX(left, right);
+		bottom=MAX(top, bottom);
+
+		clutter_actor_box_init(&boxActorTitle, floor(left), floor(top), floor(right), floor(bottom));
+		clutter_actor_allocate(priv->actorTitle, &boxActorTitle, inFlags);
+	}
 }
 
 /* IMPLEMENTATION: GObject */
@@ -553,6 +913,12 @@ static void _xfdashboard_live_window_dispose(GObject *inObject)
 	{
 		clutter_actor_destroy(priv->actorControlLayer);
 		priv->actorControlLayer=NULL;
+	}
+
+	if(priv->actorSubwindowsLayer)
+	{
+		clutter_actor_destroy(priv->actorSubwindowsLayer);
+		priv->actorSubwindowsLayer=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -710,8 +1076,18 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->paddingTitle=0.0f;
 	priv->paddingClose=0.0f;
 
+	/* Set up container for sub-windows and add it before the container for controls
+	 * to keep the controls on top.
+	 */
+	priv->actorSubwindowsLayer=xfdashboard_actor_new();
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorSubwindowsLayer), "subwindows-layer");
+	clutter_actor_set_reactive(priv->actorSubwindowsLayer, FALSE);
+	clutter_actor_show(priv->actorSubwindowsLayer);
+	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorSubwindowsLayer);
+
 	/* Set up container for controls and add child actors (order is important) */
 	priv->actorControlLayer=xfdashboard_actor_new();
+	xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(priv->actorControlLayer), "controls-layer");
 	clutter_actor_set_reactive(priv->actorControlLayer, FALSE);
 	clutter_actor_show(priv->actorControlLayer);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorControlLayer);
@@ -743,6 +1119,8 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	g_signal_connect_swapped(priv->windowTracker, "window-actions-changed", G_CALLBACK(_xfdashboard_live_window_on_actions_changed), self);
 	g_signal_connect_swapped(priv->windowTracker, "window-icon-changed", G_CALLBACK(_xfdashboard_live_window_on_icon_changed), self);
 	g_signal_connect_swapped(priv->windowTracker, "window-name-changed", G_CALLBACK(_xfdashboard_live_window_on_name_changed), self);
+	g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_live_window_on_subwindow_opened), self);
+	g_signal_connect_swapped(priv->windowTracker, "window-workspace-changed", G_CALLBACK(_xfdashboard_live_window_on_subwindow_workspace_changed), self);
 }
 
 
