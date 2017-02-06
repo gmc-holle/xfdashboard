@@ -85,6 +85,9 @@ void xfdashboard_live_window_set_close_button_padding(XfdashboardLiveWindow *sel
 gboolean xfdashboard_live_window_get_show_subwindows(XfdashboardLiveWindow *self);
 void xfdashboard_live_window_set_show_subwindows(XfdashboardLiveWindow *self, gboolean inShowSubwindows);
 
+gboolean xfdashboard_live_window_get_allow_subwindows(XfdashboardLiveWindow *self);
+void xfdashboard_live_window_set_allow_subwindows(XfdashboardLiveWindow *self, gboolean inAllowSubwindows);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_LIVE_WINDOW__ */

@@ -41,6 +41,7 @@
 #include <libxfdashboard/window-content.h>
 #include <libxfdashboard/image-content.h>
 #include <libxfdashboard/stylable.h>
+#include <libxfdashboard/application.h>
 #include <libxfdashboard/compat.h>
 
 
@@ -62,6 +63,7 @@ struct _XfdashboardLiveWindowPrivate
 	gfloat								paddingTitle;
 
 	gboolean							showSubwindows;
+	gboolean							allowSubwindows;
 
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
@@ -71,6 +73,9 @@ struct _XfdashboardLiveWindowPrivate
 	ClutterActor						*actorClose;
 	ClutterActor						*actorWindowNumber;
 	ClutterActor						*actorTitle;
+
+	XfconfChannel						*xfconfChannel;
+	guint								xfconfAllowSubwindowsBindingID;
 };
 
 /* Properties */
@@ -84,6 +89,7 @@ enum
 	PROP_TITLE_ACTOR_PADDING,
 
 	PROP_SHOW_SUBWINDOWS,
+	PROP_ALLOW_SUBWINDOWS,
 
 	PROP_LAST
 };
@@ -102,6 +108,7 @@ enum
 static guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+#define ALLOW_SUBWINDOWS_XFCONF_PROP					"/components/windows-view/allow-subwindows"
 
 /* Check if the requested window is a sub-window of this window */
 static gboolean _xfdashboard_live_window_is_subwindow(XfdashboardLiveWindow *self,
@@ -519,7 +526,7 @@ static void _xfdashboard_live_window_setup_subwindows_layer(XfdashboardLiveWindo
 	 * them was disabled.
 	 */
 	clutter_actor_destroy_all_children(priv->actorSubwindowsLayer);
-	if(!priv->showSubwindows) return;
+	if(!priv->allowSubwindows || !priv->showSubwindows) return;
 
 	/* Create sub-window actors for the windows belonging to this one */
 	windowList=xfdashboard_window_tracker_get_windows_stacked(priv->windowTracker);
@@ -947,6 +954,17 @@ static void _xfdashboard_live_window_dispose(GObject *inObject)
 		priv->actorSubwindowsLayer=NULL;
 	}
 
+	if(priv->xfconfChannel)
+	{
+		priv->xfconfChannel=NULL;
+	}
+
+	if(priv->xfconfAllowSubwindowsBindingID)
+	{
+		xfconf_g_property_unbind(priv->xfconfAllowSubwindowsBindingID);
+		priv->xfconfAllowSubwindowsBindingID=0;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_live_window_parent_class)->dispose(inObject);
 }
@@ -975,6 +993,10 @@ static void _xfdashboard_live_window_set_property(GObject *inObject,
 
 		case PROP_SHOW_SUBWINDOWS:
 			xfdashboard_live_window_set_show_subwindows(self, g_value_get_boolean(inValue));
+			break;
+
+		case PROP_ALLOW_SUBWINDOWS:
+			xfdashboard_live_window_set_allow_subwindows(self, g_value_get_boolean(inValue));
 			break;
 
 		default:
@@ -1006,6 +1028,10 @@ static void _xfdashboard_live_window_get_property(GObject *inObject,
 
 		case PROP_SHOW_SUBWINDOWS:
 			g_value_set_boolean(outValue, self->priv->showSubwindows);
+			break;
+
+		case PROP_ALLOW_SUBWINDOWS:
+			g_value_set_boolean(outValue, self->priv->allowSubwindows);
 			break;
 
 		default:
@@ -1068,6 +1094,13 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardLiveWindowProperties[PROP_ALLOW_SUBWINDOWS]=
+		g_param_spec_boolean("allow-subwindows",
+								_("Allow sub-windows"),
+								_("Whether to show sub-windows if requested by theme"),
+								TRUE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWindowProperties);
 
 	/* Define stylable properties */
@@ -1118,6 +1151,8 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->paddingTitle=0.0f;
 	priv->paddingClose=0.0f;
 	priv->showSubwindows=TRUE;
+	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
+	priv->allowSubwindows=TRUE;
 
 	/* Set up container for sub-windows and add it before the container for controls
 	 * to keep the controls on top.
@@ -1152,6 +1187,13 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_set_reactive(priv->actorWindowNumber, FALSE);
 	clutter_actor_hide(priv->actorWindowNumber);
 	clutter_actor_add_child(priv->actorControlLayer, priv->actorWindowNumber);
+
+	/* Bind to xfconf to react on changes */
+	priv->xfconfAllowSubwindowsBindingID=xfconf_g_property_bind(priv->xfconfChannel,
+																ALLOW_SUBWINDOWS_XFCONF_PROP,
+																G_TYPE_BOOLEAN,
+																self,
+																"allow-subwindows");
 
 	/* Connect signals */
 	action=xfdashboard_click_action_new();
@@ -1272,5 +1314,35 @@ void xfdashboard_live_window_set_show_subwindows(XfdashboardLiveWindow *self, gb
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowProperties[PROP_SHOW_SUBWINDOWS]);
+	}
+}
+
+/* Get/set flag to allow sub-windows at all */
+gboolean xfdashboard_live_window_get_allow_subwindows(XfdashboardLiveWindow *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), FALSE);
+
+	return(self->priv->allowSubwindows);
+}
+
+void xfdashboard_live_window_set_allow_subwindows(XfdashboardLiveWindow *self, gboolean inAllowSubwindows)
+{
+	XfdashboardLiveWindowPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->allowSubwindows!=inAllowSubwindows)
+	{
+		/* Set value */
+		priv->allowSubwindows=inAllowSubwindows;
+
+		/* Set up sub-windows layer */
+		_xfdashboard_live_window_setup_subwindows_layer(self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowProperties[PROP_ALLOW_SUBWINDOWS]);
 	}
 }
