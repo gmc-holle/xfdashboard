@@ -65,7 +65,7 @@ static void _xfdashboard_middle_click_window_close_on_clicked(XfdashboardMiddleC
 																ClutterActor *inActor,
 																gpointer inUserData)
 {
-	XfdashboardLiveWindow							*liveWindow;
+	XfdashboardLiveWindowSimple						*liveWindow;
 	XfdashboardClickAction							*action;
 	guint											button;
 	XfdashboardWindowTrackerWindow					*window;
@@ -74,14 +74,14 @@ static void _xfdashboard_middle_click_window_close_on_clicked(XfdashboardMiddleC
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inActor));
 	g_return_if_fail(XFDASHBOARD_IS_CLICK_ACTION(inUserData));
 
-	liveWindow=XFDASHBOARD_LIVE_WINDOW(inActor);
+	liveWindow=XFDASHBOARD_LIVE_WINDOW_SIMPLE(inActor);
 	action=XFDASHBOARD_CLICK_ACTION(inUserData);
 
 	/* Get button used for click action */
 	button=xfdashboard_click_action_get_button(action);
 	if(button==DEFAULT_WINDOW_CLOSE_BUTTON)
 	{
-		window=xfdashboard_live_window_get_window(liveWindow);
+		window=xfdashboard_live_window_simple_get_window(liveWindow);
 		xfdashboard_window_tracker_window_close(window);
 	}
 }
