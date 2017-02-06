@@ -61,6 +61,8 @@ struct _XfdashboardLiveWindowPrivate
 	gfloat								paddingClose;
 	gfloat								paddingTitle;
 
+	gboolean							showSubwindows;
+
 	/* Instance related */
 	XfdashboardWindowTracker			*windowTracker;
 
@@ -80,6 +82,8 @@ enum
 
 	PROP_CLOSE_BUTTON_PADDING,
 	PROP_TITLE_ACTOR_PADDING,
+
+	PROP_SHOW_SUBWINDOWS,
 
 	PROP_LAST
 };
@@ -495,6 +499,44 @@ static void _xfdashboard_live_window_set_window_number(XfdashboardLiveWindow *se
 	}
 }
 
+/* Set up sub-windows layer by destryoing all children and re-adding actors for
+ * each associated sub-window.
+ */
+static void _xfdashboard_live_window_setup_subwindows_layer(XfdashboardLiveWindow *self)
+{
+	XfdashboardLiveWindowPrivate	*priv;
+	GList							*windowList;
+	XfdashboardWindowTrackerWindow	*subwindow;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+
+	priv=self->priv;
+
+	/* Do not setup sub-windows layer if there is no such layer */
+	if(!priv->actorSubwindowsLayer) return;
+
+	/* Destroy all sub-windows and do not create sub-windows actor if showing
+	 * them was disabled.
+	 */
+	clutter_actor_destroy_all_children(priv->actorSubwindowsLayer);
+	if(!priv->showSubwindows) return;
+
+	/* Create sub-window actors for the windows belonging to this one */
+	windowList=xfdashboard_window_tracker_get_windows_stacked(priv->windowTracker);
+	for( ; windowList; windowList=g_list_next(windowList))
+	{
+		/* Get window at current position of iterator */
+		subwindow=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windowList->data);
+		if(!subwindow) continue;
+
+		/* Call signal handler for the event when a window is opened. It will
+		 * check if this window is a visible child of this window and it will
+		 * create the actor if needed.
+		 */
+		_xfdashboard_live_window_on_subwindow_opened(self, subwindow, priv->windowTracker);
+	}
+}
+
 /* Window property changed so set up controls, title and icon */
 static void _xfdashboard_live_window_on_window_changed(GObject *inObject,
 														GParamSpec *inSpec,
@@ -503,8 +545,6 @@ static void _xfdashboard_live_window_on_window_changed(GObject *inObject,
 	XfdashboardLiveWindow			*self;
 	XfdashboardLiveWindowPrivate	*priv;
 	XfdashboardWindowTrackerWindow	*window;
-	GList							*windowList;
-	XfdashboardWindowTrackerWindow	*subwindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(inObject));
 
@@ -519,22 +559,8 @@ static void _xfdashboard_live_window_on_window_changed(GObject *inObject,
 	_xfdashboard_live_window_on_icon_changed(self, window, priv->windowTracker);
 	_xfdashboard_live_window_on_name_changed(self, window, priv->windowTracker);
 
-	/* Destroy all sub-windows and create the ones belonging to this new window */
-	clutter_actor_destroy_all_children(priv->actorSubwindowsLayer);
-
-	windowList=xfdashboard_window_tracker_get_windows_stacked(priv->windowTracker);
-	for( ; windowList; windowList=g_list_next(windowList))
-	{
-		/* Get window at current position of iterator */
-		subwindow=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windowList->data);
-		if(!subwindow) continue;
-
-		/* Call signal handler for the event when a window is opened. It will
-		 * check if this window is a visible child of this window and it will
-		 * create the actor if needed.
-		 */
-		_xfdashboard_live_window_on_subwindow_opened(self, subwindow, priv->windowTracker);
-	}
+	/* Set up sub-windows layer */
+	_xfdashboard_live_window_setup_subwindows_layer(self);
 }
 
 /* IMPLEMENTATION: ClutterActor */
@@ -947,6 +973,10 @@ static void _xfdashboard_live_window_set_property(GObject *inObject,
 			xfdashboard_live_window_set_title_actor_padding(self, g_value_get_float(inValue));
 			break;
 
+		case PROP_SHOW_SUBWINDOWS:
+			xfdashboard_live_window_set_show_subwindows(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -972,6 +1002,10 @@ static void _xfdashboard_live_window_get_property(GObject *inObject,
 
 		case PROP_TITLE_ACTOR_PADDING:
 			g_value_set_float(outValue, self->priv->paddingTitle);
+			break;
+
+		case PROP_SHOW_SUBWINDOWS:
+			g_value_set_boolean(outValue, self->priv->showSubwindows);
 			break;
 
 		default:
@@ -1027,11 +1061,19 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardLiveWindowProperties[PROP_SHOW_SUBWINDOWS]=
+		g_param_spec_boolean("show-subwindows",
+								_("Show sub-windows"),
+								_("Whether to show sub-windows of this main window"),
+								TRUE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWindowProperties);
 
 	/* Define stylable properties */
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON_PADDING]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWindowProperties[PROP_TITLE_ACTOR_PADDING]);
+	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardLiveWindowProperties[PROP_SHOW_SUBWINDOWS]);
 
 	/* Define signals */
 	XfdashboardLiveWindowSignals[SIGNAL_CLICKED]=
@@ -1075,6 +1117,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->windowNumber=0;
 	priv->paddingTitle=0.0f;
 	priv->paddingClose=0.0f;
+	priv->showSubwindows=TRUE;
 
 	/* Set up container for sub-windows and add it before the container for controls
 	 * to keep the controls on top.
@@ -1199,5 +1242,35 @@ void xfdashboard_live_window_set_close_button_padding(XfdashboardLiveWindow *sel
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowProperties[PROP_CLOSE_BUTTON_PADDING]);
+	}
+}
+
+/* Get/set flag to show sub-windows */
+gboolean xfdashboard_live_window_get_show_subwindows(XfdashboardLiveWindow *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), FALSE);
+
+	return(self->priv->showSubwindows);
+}
+
+void xfdashboard_live_window_set_show_subwindows(XfdashboardLiveWindow *self, gboolean inShowSubwindows)
+{
+	XfdashboardLiveWindowPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->showSubwindows!=inShowSubwindows)
+	{
+		/* Set value */
+		priv->showSubwindows=inShowSubwindows;
+
+		/* Set up sub-windows layer */
+		_xfdashboard_live_window_setup_subwindows_layer(self);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowProperties[PROP_SHOW_SUBWINDOWS]);
 	}
 }

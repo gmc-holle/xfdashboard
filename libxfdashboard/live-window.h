@@ -82,6 +82,9 @@ void xfdashboard_live_window_set_title_actor_padding(XfdashboardLiveWindow *self
 gfloat xfdashboard_live_window_get_close_button_padding(XfdashboardLiveWindow *self);
 void xfdashboard_live_window_set_close_button_padding(XfdashboardLiveWindow *self, gfloat inPadding);
 
+gboolean xfdashboard_live_window_get_show_subwindows(XfdashboardLiveWindow *self);
+void xfdashboard_live_window_set_show_subwindows(XfdashboardLiveWindow *self, gboolean inShowSubwindows);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_LIVE_WINDOW__ */
