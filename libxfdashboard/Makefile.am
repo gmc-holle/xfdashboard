@@ -19,7 +19,8 @@ libxfdashboard_la_built_sources = \
 	enums.h \
 	enums.c \
 	marshal.h \
-	marshal.c
+	marshal.c \
+	version.h
 
 libxfdashboard_la_headers = \
 	action-button.h \
@@ -269,6 +270,12 @@ marshal.c: marshal.list Makefile
 		&& rm -f xgen-xmc \
 	)
 
+version.h: version.h.in Makefile
+	$(AM_V_GEN) sed -e "s|@LIBXFDASHBOARD_MAJOR_VERSION[@]|$(XFDASHBOARD_VERSION_MAJOR)|" \
+		-e "s|@LIBXFDASHBOARD_MINOR_VERSION[@]|$(XFDASHBOARD_VERSION_MINOR)|" \
+		-e "s|@LIBXFDASHBOARD_MICRO_VERSION[@]|$(XFDASHBOARD_VERSION_MICRO)|" \
+		$< > $@ || rm $@
+
 DISTCLEANFILES = \
 	$(libxfdashboard_la_built_sources)
 
@@ -280,4 +287,5 @@ endif
 EXTRA_DIST = \
 	enums.h.template \
 	enums.c.template \
-	marshal.list
+	marshal.list \
+	version.h.in
