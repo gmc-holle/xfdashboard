@@ -108,7 +108,7 @@ enum
 static guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define ALLOW_SUBWINDOWS_XFCONF_PROP					"/components/windows-view/allow-subwindows"
+#define ALLOW_SUBWINDOWS_XFCONF_PROP					"/allow-subwindows"
 
 /* Check if the requested window is a sub-window of this window */
 static gboolean _xfdashboard_live_window_is_subwindow(XfdashboardLiveWindow *self,
