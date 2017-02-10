@@ -58,6 +58,7 @@ struct _XfdashboardSettingsGeneralPrivate
 	GtkWidget		*widgetShowAllApps;
 	GtkWidget		*widgetScrollEventChangesWorkspace;
 	GtkWidget		*widgetDelaySearchTimeout;
+	GtkWidget		*widgetAllowSubwindows;
 };
 
 /* Properties */
@@ -102,6 +103,9 @@ static GParamSpec* XfdashboardSettingsGeneralProperties[PROP_LAST]={ 0, };
 
 #define WINDOW_CONTENT_CREATION_PRIORITY_XFCONF_PROP		"/window-content-creation-priority"
 #define DEFAULT_WINDOW_CONTENT_CREATION_PRIORITY			"immediate"
+
+#define ALLOW_SUBWINDOWS_XFCONF_PROP						"/allow-subwindows"
+#define DEFAULT_ALLOW_SUBWINDOWS							TRUE
 
 
 typedef struct _XfdashboardSettingsGeneralNameValuePair		XfdashboardSettingsGeneralNameValuePair;
@@ -610,6 +614,14 @@ static void _xfdashboard_settings_general_set_builder(XfdashboardSettingsGeneral
 		/* Release allocated resources */
 		if(defaultValue) g_free(defaultValue);
 	}
+
+	priv->widgetAllowSubwindows=GTK_WIDGET(gtk_builder_get_object(priv->builder, "allow-subwindows"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(priv->widgetAllowSubwindows), DEFAULT_ALLOW_SUBWINDOWS);
+	xfconf_g_property_bind(priv->xfconfChannel,
+							ALLOW_SUBWINDOWS_XFCONF_PROP,
+							G_TYPE_BOOLEAN,
+							priv->widgetAllowSubwindows,
+							"active");
 }
 
 /* IMPLEMENTATION: GObject */

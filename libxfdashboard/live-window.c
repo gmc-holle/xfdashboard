@@ -108,7 +108,8 @@ enum
 static guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define ALLOW_SUBWINDOWS_XFCONF_PROP					"/allow-subwindows"
+#define ALLOW_SUBWINDOWS_XFCONF_PROP						"/allow-subwindows"
+#define DEFAULT_ALLOW_SUBWINDOWS							TRUE
 
 /* Check if the requested window is a sub-window of this window */
 static gboolean _xfdashboard_live_window_is_subwindow(XfdashboardLiveWindow *self,
@@ -1098,7 +1099,7 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 		g_param_spec_boolean("allow-subwindows",
 								_("Allow sub-windows"),
 								_("Whether to show sub-windows if requested by theme"),
-								TRUE,
+								DEFAULT_ALLOW_SUBWINDOWS,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWindowProperties);
@@ -1152,7 +1153,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->paddingClose=0.0f;
 	priv->showSubwindows=TRUE;
 	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
-	priv->allowSubwindows=TRUE;
+	priv->allowSubwindows=DEFAULT_ALLOW_SUBWINDOWS;
 
 	/* Set up container for sub-windows and add it before the container for controls
 	 * to keep the controls on top.
