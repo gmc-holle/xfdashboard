@@ -742,6 +742,8 @@ static void _xfdashboard_label_get_preferred_height(ClutterActor *inActor,
 
 	/* Initialize sizes */
 	minHeight=naturalHeight=0.0f;
+	minIconHeight=naturalIconHeight=0.0f;
+	minLabelHeight=naturalLabelHeight=0.0f;
 
 	/* Calculate sizes for requested one (means which can and will be stored) */
 	if(outMinHeight)
@@ -816,6 +818,8 @@ static void _xfdashboard_label_get_preferred_width(ClutterActor *inActor,
 
 	/* Initialize sizes */
 	minWidth=naturalWidth=0.0f;
+	minIconWidth=naturalIconWidth=0.0f;
+	minLabelWidth=naturalLabelWidth=0.0f;
 
 	/* Calculate sizes for requested one (means which can and will be stored) */
 	if(outMinWidth)
