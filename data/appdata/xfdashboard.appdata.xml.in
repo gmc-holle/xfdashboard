@@ -59,6 +59,13 @@
 	</keywords>
 
 	<releases>
+		<release version="0.7.1" timestamp="1488792398">
+			<description>
+				<_p>This unstable development introduces child windows shown
+				next tto the main window.
+				</_p>
+			</description>
+		</release>
 		<release version="0.6.1" timestamp="1482422594">
 			<description>
 				<_p>This stable version fixes a bug setting the correct default
@@ -68,7 +75,7 @@
 		</release>
 		<release version="0.7.0" timestamp="1473183039">
 			<description>
-				<_p>This unstable development fixes introduces pop-up menus.
+				<_p>This unstable development introduces pop-up menus.
 				</_p>
 			</description>
 		</release>
