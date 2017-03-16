@@ -1687,12 +1687,12 @@ void xfdashboard_image_content_set_missing_icon_name(XfdashboardImageContent *se
 			/* Set state of image to "not-loaded" */
 			priv->loadState=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_NONE;
 
-			/* Call signal handler for first-time attached image content which
-			 * will set up an empty image first and then tries to load the image.
-			 * It is likely to fail again but then it will show the new missing
-			 * icon instead of the old one.
+			/* Try to load image again. It will set up an empty image first and
+			 * then try to load the image.  It is likely that it will fail again
+			 * but then it will show the new missing icon instead of the old one.
 			 */
-			_xfdashboard_image_content_on_attached(CLUTTER_CONTENT(self), NULL, NULL);
+			g_debug("Reload failed  image with key '%s' because of changed missing-icon property", priv->key);
+			_xfdashboard_image_content_load(self);
 		}
 
 		/* Invalidate ourselve to get us redrawn */
@@ -1725,7 +1725,7 @@ void xfdashboard_image_content_force_load(XfdashboardImageContent *self)
 	 */
 	if(priv->loadState==XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_NONE)
 	{
-		g_debug("Need to enforce loading '%s'", priv->iconName);
+		g_debug("Need to enforce loading image with key '%s'", priv->key);
 		_xfdashboard_image_content_load(self);
 	}
 }
