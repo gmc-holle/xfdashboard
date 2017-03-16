@@ -158,6 +158,26 @@ static void _xfdashboard_image_content_destroy_cache(void)
 	/* Destroy cache hashtable */
 	cacheSize=g_hash_table_size(_xfdashboard_image_content_cache);
 	if(cacheSize>0) g_warning(_("Destroying image cache still containing %d images."), cacheSize);
+#ifdef DEBUG
+	if(cacheSize>0)
+	{
+		GHashTableIter						iter;
+		gpointer							hashKey, hashValue;
+		const gchar							*key;
+		XfdashboardImageContent				*content;
+
+		g_hash_table_iter_init(&iter, _xfdashboard_image_content_cache);
+		while(g_hash_table_iter_next (&iter, &hashKey, &hashValue))
+		{
+			key=(const gchar*)hashKey;
+			content=XFDASHBOARD_IMAGE_CONTENT(hashValue);
+			g_print("Image content in cache: Item %s@%p for key '%s' (used by %d actors)\n",
+						G_OBJECT_TYPE_NAME(content), content,
+						key,
+						g_list_length(content->priv->actors));
+		}
+	}
+#endif
 
 	g_debug("Destroying image cache hashtable");
 	g_hash_table_destroy(_xfdashboard_image_content_cache);
