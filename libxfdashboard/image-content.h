@@ -84,9 +84,6 @@ ClutterContent* xfdashboard_image_content_new_for_pixbuf(GdkPixbuf *inPixbuf);
 const gchar* xfdashboard_image_content_get_missing_icon_name(XfdashboardImageContent *self);
 void xfdashboard_image_content_set_missing_icon_name(XfdashboardImageContent *self, const gchar *inMissingIconName);
 
-gint xfdashboard_image_content_get_size(XfdashboardImageContent *self);
-void xfdashboard_image_content_get_real_size(XfdashboardImageContent *self, gint *outWidth, gint *outHeight);
-
 XfdashboardImageContentLoadingState xfdashboard_image_content_get_state(XfdashboardImageContent *self);
 
 void xfdashboard_image_content_force_load(XfdashboardImageContent *self);
