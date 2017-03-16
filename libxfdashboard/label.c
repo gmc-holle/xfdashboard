@@ -78,7 +78,6 @@ struct _XfdashboardLabelPrivate
 	ClutterActor				*actorIcon;
 	ClutterActor				*actorLabel;
 
-	gboolean					iconLoaded;
 	XfdashboardLabelIconType	iconType;
 };
 
@@ -640,58 +639,6 @@ static void _xfdashboard_label_update_icon_image_size(XfdashboardLabel *self)
 	clutter_actor_queue_redraw(CLUTTER_ACTOR(self));
 }
 
-/* Actor was mapped or unmapped */
-static void _xfdashboard_label_on_mapped_changed(XfdashboardLabel *self,
-													GParamSpec *inSpec,
-													gpointer inUserData)
-{
-	XfdashboardLabelPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_LABEL(self));
-
-	priv=self->priv;
-
-	/* If actor is mapped now and an image by icon name was set but not
-	 * loaded yet then set icon image now
-	 */
-	if(clutter_actor_is_mapped(CLUTTER_ACTOR(self)) &&
-		priv->iconLoaded==FALSE)
-	{
-		if(priv->iconType==XFDASHBOARD_LABEL_ICON_TYPE_ICON_NAME)
-		{
-			ClutterContent			*image;
-
-			/* Set icon image */
-			image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
-			clutter_actor_set_content(priv->actorIcon, image);
-			g_object_unref(image);
-
-			priv->iconLoaded=TRUE;
-
-			/* Calculate icon size as image content is now available */
-			_xfdashboard_label_update_icon_image_size(self);
-
-			g_debug("Loaded and set deferred image '%s' at size %d for %s@%p ", priv->iconName, priv->iconSize, G_OBJECT_TYPE_NAME(self), self);
-		}
-
-		if(priv->iconType==XFDASHBOARD_LABEL_ICON_TYPE_ICON_GICON)
-		{
-			ClutterContent			*image;
-
-			/* Set icon image */
-			image=xfdashboard_image_content_new_for_gicon(priv->iconGIcon, priv->iconSize);
-			clutter_actor_set_content(priv->actorIcon, image);
-			g_object_unref(image);
-
-			priv->iconLoaded=TRUE;
-
-			/* Calculate icon size as image content is now available */
-			_xfdashboard_label_update_icon_image_size(self);
-
-			g_debug("Loaded and set deferred image '%s' at size %d for %s@%p ", priv->iconName, priv->iconSize, G_OBJECT_TYPE_NAME(self), self);
-		}
-	}
-}
 
 /* IMPLEMENTATION: ClutterActor */
 
@@ -1464,9 +1411,6 @@ static void xfdashboard_label_init(XfdashboardLabel *self)
 	clutter_text_set_selectable(CLUTTER_TEXT(priv->actorLabel), FALSE);
 	clutter_text_set_line_wrap(CLUTTER_TEXT(priv->actorLabel), TRUE);
 	clutter_text_set_single_line_mode(CLUTTER_TEXT(priv->actorLabel), priv->isSingleLineMode);
-
-	/* Connect signals */
-	g_signal_connect(self, "notify::mapped", G_CALLBACK(_xfdashboard_label_on_mapped_changed), NULL);
 }
 
 /* IMPLEMENTATION: Public API */
@@ -1649,7 +1593,7 @@ void xfdashboard_label_set_icon_name(XfdashboardLabel *self, const gchar *inIcon
 	if(priv->iconType!=XFDASHBOARD_LABEL_ICON_TYPE_ICON_NAME ||
 		g_strcmp0(priv->iconName, inIconName)!=0)
 	{
-		/* Set value */
+		/* Release old values and icons */
 		if(priv->iconName)
 		{
 			g_free(priv->iconName);
@@ -1668,23 +1612,16 @@ void xfdashboard_label_set_icon_name(XfdashboardLabel *self, const gchar *inIcon
 			priv->iconImage=NULL;
 		}
 
+		/* Set value */
 		priv->iconName=g_strdup(inIconName);
-		priv->iconLoaded=FALSE;
+		priv->iconType=XFDASHBOARD_LABEL_ICON_TYPE_ICON_NAME;
 
-		if(clutter_actor_is_mapped(CLUTTER_ACTOR(self)))
-		{
-			/* Actor is mapped so we cannot defer loading and setting image */
-			image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
-			clutter_actor_set_content(priv->actorIcon, image);
-			g_object_unref(image);
-
-			priv->iconLoaded=TRUE;
-		}
-			else clutter_actor_set_content(priv->actorIcon, NULL);
+		/* Setup icon image */
+		image=xfdashboard_image_content_new_for_icon_name(priv->iconName, priv->iconSize);
+		clutter_actor_set_content(priv->actorIcon, image);
+		g_object_unref(image);
 
 		_xfdashboard_label_update_icon_image_size(self);
-
-		priv->iconType=XFDASHBOARD_LABEL_ICON_TYPE_ICON_NAME;
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLabelProperties[PROP_ICON_NAME]);
@@ -1712,7 +1649,7 @@ void xfdashboard_label_set_gicon(XfdashboardLabel *self, GIcon *inIcon)
 	if(priv->iconType!=XFDASHBOARD_LABEL_ICON_TYPE_ICON_GICON ||
 		!g_icon_equal(priv->iconGIcon, inIcon))
 	{
-		/* Set value */
+		/* Release old values and icons */
 		if(priv->iconName)
 		{
 			g_free(priv->iconName);
@@ -1731,23 +1668,16 @@ void xfdashboard_label_set_gicon(XfdashboardLabel *self, GIcon *inIcon)
 			priv->iconImage=NULL;
 		}
 
+		/* Set value */
 		priv->iconGIcon=G_ICON(g_object_ref(inIcon));
-		priv->iconLoaded=FALSE;
+		priv->iconType=XFDASHBOARD_LABEL_ICON_TYPE_ICON_GICON;
 
-		if(clutter_actor_is_mapped(CLUTTER_ACTOR(self)))
-		{
-			/* Actor is mapped so we cannot defer loading and setting image */
-			image=xfdashboard_image_content_new_for_gicon(priv->iconGIcon, priv->iconSize);
-			clutter_actor_set_content(priv->actorIcon, image);
-			g_object_unref(image);
-
-			priv->iconLoaded=TRUE;
-		}
-			else clutter_actor_set_content(priv->actorIcon, NULL);
+		/* Setup icon image */
+		image=xfdashboard_image_content_new_for_gicon(priv->iconGIcon, priv->iconSize);
+		clutter_actor_set_content(priv->actorIcon, image);
+		g_object_unref(image);
 
 		_xfdashboard_label_update_icon_image_size(self);
-
-		priv->iconType=XFDASHBOARD_LABEL_ICON_TYPE_ICON_GICON;
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLabelProperties[PROP_ICON_GICON]);
@@ -1774,7 +1704,7 @@ void xfdashboard_label_set_icon_image(XfdashboardLabel *self, ClutterImage *inIc
 	if(priv->iconType!=XFDASHBOARD_LABEL_ICON_TYPE_ICON_IMAGE ||
 		inIconImage!=priv->iconImage)
 	{
-		/* Set value */
+		/* Release old values and icons */
 		if(priv->iconName)
 		{
 			g_free(priv->iconName);
@@ -1793,13 +1723,14 @@ void xfdashboard_label_set_icon_image(XfdashboardLabel *self, ClutterImage *inIc
 			priv->iconImage=NULL;
 		}
 
+		/* Set value */
 		priv->iconImage=g_object_ref(inIconImage);
-		priv->iconLoaded=TRUE;
+		priv->iconType=XFDASHBOARD_LABEL_ICON_TYPE_ICON_IMAGE;
+
+		/* Setup icon image */
 		clutter_actor_set_content(priv->actorIcon, CLUTTER_CONTENT(priv->iconImage));
 
 		_xfdashboard_label_update_icon_image_size(self);
-
-		priv->iconType=XFDASHBOARD_LABEL_ICON_TYPE_ICON_IMAGE;
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLabelProperties[PROP_ICON_IMAGE]);
@@ -1829,6 +1760,7 @@ void xfdashboard_label_set_icon_size(XfdashboardLabel *self, gint inSize)
 		/* Set value */
 		priv->iconSize=inSize;
 
+		/* Setup icon image */
 		if(priv->iconType==XFDASHBOARD_LABEL_ICON_TYPE_ICON_NAME)
 		{
 			ClutterContent		*image;
