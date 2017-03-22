@@ -31,6 +31,7 @@
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/desktop-app-info.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -127,7 +128,9 @@ static void _xfdashboard_application_database_on_application_menu_reload_require
 	error=NULL;
 
 	/* Reload application menu. This also emits all necessary signals. */
-	g_debug("%s: Menu '%s' changed and requires a reload of application menu", __func__, garcon_menu_element_get_name(GARCON_MENU_ELEMENT(menu)));
+	XFDASHBOARD_DEBUG(self, APPLICATIONS,
+						"Menu '%s' changed and requires a reload of application menu",
+						garcon_menu_element_get_name(GARCON_MENU_ELEMENT(menu)));
 	if(!_xfdashboard_application_database_load_application_menu(self, &error))
 	{
 		g_critical(_("Could not reload application menu: %s"),
@@ -279,7 +282,9 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 
 		error=NULL;
 
-		g_debug("Directory '%s' in application search paths was created", filePath);
+		XFDASHBOARD_DEBUG(self, APPLICATIONS,
+							"Directory '%s' in application search paths was created",
+							filePath);
 
 		/* A new directory was created so create a file monitor for it,
 		 * connect signals and add to list of registered file monitors.
@@ -329,7 +334,9 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 		{
 			gchar										*desktopID;
 
-			g_debug("Desktop file '%s' in application search paths was created", filePath);
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Desktop file '%s' in application search paths was created",
+								filePath);
 
 			/* Get desktop ID to check */
 			desktopID=xfdashboard_application_database_get_desktop_id_from_file(inFile);
@@ -365,16 +372,18 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 						 */
 						g_object_set(currentDesktopAppInfo, "file", newDesktopFile, NULL);
 
-						g_debug("Replacing known desktop ID '%s' at desktop file '%s' with new desktop file '%s'",
-									desktopID,
-									filePath,
-									newDesktopFilename);
+						XFDASHBOARD_DEBUG(self, APPLICATIONS,
+											"Replacing known desktop ID '%s' at desktop file '%s' with new desktop file '%s'",
+											desktopID,
+											filePath,
+											newDesktopFilename);
 					}
 						else
 						{
-							g_debug("Ignoring new desktop file at '%s' for known desktop ID '%s'",
-										filePath,
-										desktopID);
+							XFDASHBOARD_DEBUG(self, APPLICATIONS,
+												"Ignoring new desktop file at '%s' for known desktop ID '%s'",
+												filePath,
+												desktopID);
 						}
 
 					/* Release allocated resources */
@@ -405,15 +414,17 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 							/* Emit signal that an application has been removed from hash table */
 							g_signal_emit(self, XfdashboardApplicationDatabaseSignals[SIGNAL_APPLICATION_ADDED], 0, newDesktopAppInfo);
 
-							g_debug("Adding new desktop ID '%s' for new desktop file at '%s'",
-										desktopID,
-										filePath);
+							XFDASHBOARD_DEBUG(self, APPLICATIONS,
+												"Adding new desktop ID '%s' for new desktop file at '%s'",
+												desktopID,
+												filePath);
 						}
 							else
 							{
-								g_debug("Adding new desktop ID '%s' for new desktop file '%s' failed",
-											desktopID,
-											filePath);
+								XFDASHBOARD_DEBUG(self, APPLICATIONS,
+													"Adding new desktop ID '%s' for new desktop file '%s' failed",
+													desktopID,
+													filePath);
 
 								/* Release allocated resources */
 								g_object_unref(newDesktopAppInfo);
@@ -436,7 +447,9 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 			gchar										*desktopID;
 			XfdashboardDesktopAppInfo					*appInfo;
 
-			g_debug("Desktop file '%s' was modified", filePath);
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Desktop file '%s' was modified",
+								filePath);
 
 			/* Get desktop ID to check */
 			desktopID=xfdashboard_application_database_get_desktop_id_from_file(inFile);
@@ -486,10 +499,11 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 							 */
 							g_hash_table_remove(priv->applications, desktopID);
 
-							g_debug("Removed desktop ID '%s' with origin desktop file '%s' with modified desktop file '%s' because reload failed or it is invalid",
-										desktopID,
-										filePath,
-										appInfoFilename);
+							XFDASHBOARD_DEBUG(self, APPLICATIONS,
+												"Removed desktop ID '%s' with origin desktop file '%s' with modified desktop file '%s' because reload failed or it is invalid",
+												desktopID,
+												filePath,
+												appInfoFilename);
 
 							/* Emit signal that an application has been removed */
 							g_signal_emit(self, XfdashboardApplicationDatabaseSignals[SIGNAL_APPLICATION_REMOVED], 0, appInfo);
@@ -501,10 +515,11 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 						}
 							else
 							{
-								g_debug("Reloaded desktop ID '%s' with origin desktop file '%s' with modified desktop file '%s'",
-											desktopID,
-											filePath,
-											appInfoFilename);
+								XFDASHBOARD_DEBUG(self, APPLICATIONS,
+													"Reloaded desktop ID '%s' with origin desktop file '%s' with modified desktop file '%s'",
+													desktopID,
+													filePath,
+													appInfoFilename);
 							}
 					}
 
@@ -531,15 +546,17 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 							/* Emit signal that an application has been removed from hash table */
 							g_signal_emit(self, XfdashboardApplicationDatabaseSignals[SIGNAL_APPLICATION_ADDED], 0, newDesktopAppInfo);
 
-							g_debug("Adding new desktop ID '%s' for modified desktop file at '%s'",
-										desktopID,
-										filePath);
+							XFDASHBOARD_DEBUG(self, APPLICATIONS,
+												"Adding new desktop ID '%s' for modified desktop file at '%s'",
+												desktopID,
+												filePath);
 						}
 							else
 							{
-								g_debug("Got valid desktop id '%s' but invalid desktop app info for file '%s'",
-											desktopID,
-											filePath);
+								XFDASHBOARD_DEBUG(self, APPLICATIONS,
+													"Got valid desktop id '%s' but invalid desktop app info for file '%s'",
+													desktopID,
+													filePath);
 								g_object_unref(newDesktopAppInfo);
 							}
 					}
@@ -566,7 +583,9 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 		fileMonitorData=_xfdashboard_application_database_monitor_data_find_by_file(self, inFile);
 		if(fileMonitorData)
 		{
-			g_debug("Removing file monitor for deleted directory '%s'", filePath);
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Removing file monitor for deleted directory '%s'",
+								filePath);
 
 			priv->appDirMonitors=g_list_remove_all(priv->appDirMonitors, fileMonitorData);
 			_xfdashboard_application_database_monitor_data_free(fileMonitorData);
@@ -584,7 +603,9 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 		{
 			gchar										*desktopID;
 
-			g_debug("Desktop file '%s' was removed", filePath);
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Desktop file '%s' was removed",
+								filePath);
 
 			/* Get desktop ID to check */
 			desktopID=xfdashboard_application_database_get_desktop_id_from_file(inFile);
@@ -610,10 +631,11 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 					{
 						GFile							*newDesktopFile;
 
-						g_debug("Replacing known desktop ID '%s' at desktop file '%s' with new desktop file '%s'",
-									desktopID,
-									filePath,
-									newDesktopFilename);
+						XFDASHBOARD_DEBUG(self, APPLICATIONS,
+											"Replacing known desktop ID '%s' at desktop file '%s' with new desktop file '%s'",
+											desktopID,
+											filePath,
+											newDesktopFilename);
 
 						/* There is another desktop file which could replace the
 						 * desktop ID. Set new file at desktop app info which causes
@@ -641,7 +663,9 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 							 */
 							g_hash_table_remove(priv->applications, desktopID);
 
-							g_debug("Removing desktop ID '%s'", desktopID);
+							XFDASHBOARD_DEBUG(self, APPLICATIONS,
+												"Removing desktop ID '%s'",
+												desktopID);
 
 							/* Emit signal that an application has been removed */
 							g_signal_emit(self, XfdashboardApplicationDatabaseSignals[SIGNAL_APPLICATION_REMOVED], 0, currentDesktopAppInfo);
@@ -695,9 +719,10 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 	path=g_file_get_path(inCurrentPath);
 	topLevelPath=g_file_get_path(inTopLevelPath);
 
-	g_debug("Scanning directory '%s' for search path '%s'",
-				path,
-				topLevelPath);
+	XFDASHBOARD_DEBUG(self, APPLICATIONS,
+						"Scanning directory '%s' for search path '%s'",
+						path,
+						topLevelPath);
 
 	/* Create enumerator for current path to iterate through path and
 	 * searching for desktop files.
@@ -733,18 +758,20 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 			GFile							*childPath;
 			gboolean						childSuccess;
 
-			g_debug("Suspend scanning directory '%s' at search path '%s' for sub-directory '%s'",
-						path,
-						topLevelPath,
-						g_file_info_get_name(info));
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Suspend scanning directory '%s' at search path '%s' for sub-directory '%s'",
+								path,
+								topLevelPath,
+								g_file_info_get_name(info));
 
 			childPath=g_file_resolve_relative_path(inCurrentPath,
 													g_file_info_get_name(info));
 			if(!childPath)
 			{
-				g_debug("Unable to build path to search for desktop files for path='%s' and file='%s'",
-						path,
-						g_file_info_get_name(info));
+				XFDASHBOARD_DEBUG(self, APPLICATIONS,
+									"Unable to build path to search for desktop files for path='%s' and file='%s'",
+									path,
+									g_file_info_get_name(info));
 
 				/* Set error */
 				g_set_error(outError,
@@ -771,10 +798,11 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 																						&error);
 			if(!childSuccess)
 			{
-				g_debug("Unable to iterate desktop files at %s%s%s",
-						path,
-						G_DIR_SEPARATOR_S,
-						g_file_info_get_name(info));
+				XFDASHBOARD_DEBUG(self, APPLICATIONS,
+									"Unable to iterate desktop files at %s%s%s",
+									path,
+									G_DIR_SEPARATOR_S,
+									g_file_info_get_name(info));
 
 				/* Propagate error */
 				g_propagate_error(outError, error);
@@ -791,9 +819,10 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 			/* Release allocated resources */
 			if(childPath) g_object_unref(childPath);
 
-			g_debug("Resume scanning directory '%s' at search path '%s'",
-						path,
-						topLevelPath);
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Resume scanning directory '%s' at search path '%s'",
+								path,
+								topLevelPath);
 		}
 
 		/* If current file is a regular file and if it is a desktop file
@@ -852,21 +881,23 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 				{
 					g_hash_table_insert(*ioDesktopAppInfos, g_strdup(desktopID), g_object_ref(appInfo));
 
-					g_debug("Found desktop file '%s%s%s' with desktop ID '%s' at search path '%s'",
-								path,
-								G_DIR_SEPARATOR_S,
-								childName,
-								desktopID,
-								topLevelPath);
+					XFDASHBOARD_DEBUG(self, APPLICATIONS,
+										"Found desktop file '%s%s%s' with desktop ID '%s' at search path '%s'",
+										path,
+										G_DIR_SEPARATOR_S,
+										childName,
+										desktopID,
+										topLevelPath);
 				}
 					else
 					{
-						g_debug("Not adding invalid desktop file '%s%s%s' with desktop ID '%s' at search path '%s'",
-									path,
-									G_DIR_SEPARATOR_S,
-									childName,
-									desktopID,
-									topLevelPath);
+						XFDASHBOARD_DEBUG(self, APPLICATIONS,
+											"Not adding invalid desktop file '%s%s%s' with desktop ID '%s' at search path '%s'",
+											path,
+											G_DIR_SEPARATOR_S,
+											childName,
+											desktopID,
+											topLevelPath);
 					}
 
 				g_object_unref(appInfo);
@@ -899,7 +930,9 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 	monitorData=_xfdashboard_application_database_monitor_data_new(inCurrentPath);
 	if(!monitorData)
 	{
-		g_debug("Failed to create data object for file monitor for path '%s'", path);
+		XFDASHBOARD_DEBUG(self, APPLICATIONS,
+							"Failed to create data object for file monitor for path '%s'",
+							path);
 
 		/* Set error */
 		g_set_error(outError,
@@ -928,7 +961,9 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 		/* Clear error as this error will not fail at FreeBSD */
 		g_clear_error(&error);
 #else
-		g_debug("Failed to initialize file monitor for path '%s'", path);
+		XFDASHBOARD_DEBUG(self, APPLICATIONS,
+							"Failed to initialize file monitor for path '%s'",
+							path);
 
 		/* Propagate error */
 		g_propagate_error(outError, error);
@@ -949,19 +984,24 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 	{
 		*ioFileMonitors=g_list_prepend(*ioFileMonitors, monitorData);
 
-		g_debug("Added file monitor for path '%s'", path);
+		XFDASHBOARD_DEBUG(self, APPLICATIONS,
+							"Added file monitor for path '%s'",
+							path);
 	}
 		/* ... otherwise free file monitor data */
 		else
 		{
 			if(monitorData) _xfdashboard_application_database_monitor_data_free(monitorData);
 
-			g_debug("Destroying file monitor for path '%s'", path);
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Destroying file monitor for path '%s'",
+								path);
 		}
 
-	g_debug("Finished scanning directory '%s' for search path '%s'",
-				path,
-				topLevelPath);
+	XFDASHBOARD_DEBUG(self, APPLICATIONS,
+						"Finished scanning directory '%s' for search path '%s'",
+						path,
+						topLevelPath);
 
 	/* Release allocated resources */
 	if(path) g_free(path);
@@ -1030,7 +1070,9 @@ static gboolean _xfdashboard_application_database_load_applications(XfdashboardA
 
 		if(directory) g_object_unref(directory);
 	}
-	g_debug("Loaded %u applications desktop files", g_hash_table_size(apps));
+	XFDASHBOARD_DEBUG(self, APPLICATIONS,
+						"Loaded %u applications desktop files",
+						g_hash_table_size(apps));
 
 	/* Release old list of installed applications and set new one */
 	if(priv->applications)
@@ -1096,7 +1138,9 @@ static gboolean _xfdashboard_application_database_load_application_menu(Xfdashbo
 
 		return(FALSE);
 	}
-	g_debug("Loaded application menu '%s'", garcon_menu_element_get_name(GARCON_MENU_ELEMENT(appsMenu)));
+	XFDASHBOARD_DEBUG(self, APPLICATIONS,
+						"Loaded application menu '%s'",
+						garcon_menu_element_get_name(GARCON_MENU_ELEMENT(appsMenu)));
 
 	/* Release old menus and set new one */
 	if(priv->appsMenu)
@@ -1320,7 +1364,9 @@ static void xfdashboard_application_database_init(XfdashboardApplicationDatabase
 	/* Set up search paths but eliminate duplicates */
 	path=g_build_filename(g_get_user_data_dir(), "applications", NULL);
 	priv->searchPaths=g_list_append(priv->searchPaths, path);
-	g_debug("Added search path '%s' to application database", path);
+	XFDASHBOARD_DEBUG(self, APPLICATIONS,
+						"Added search path '%s' to application database",
+						path);
 
 	systemPaths=g_get_system_data_dirs();
 	while(*systemPaths)
@@ -1341,7 +1387,9 @@ static void xfdashboard_application_database_init(XfdashboardApplicationDatabase
 		if(searchPathUnique)
 		{
 			priv->searchPaths=g_list_append(priv->searchPaths, g_strdup(searchPathUnique));
-			g_debug("Added search path '%s' to application database", searchPathUnique);
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Added search path '%s' to application database",
+								searchPathUnique);
 		}
 
 		/* Release allocated resources */

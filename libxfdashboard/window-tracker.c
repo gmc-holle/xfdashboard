@@ -47,6 +47,7 @@
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/application.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -167,12 +168,16 @@ static void _xfdashboard_window_tracker_on_window_geometry_changed(XfdashboardWi
 
 	if(G_UNLIKELY(lastX==x && lastY==y && lastWidth==width && lastHeight==height))
 	{
-		g_debug("Window '%s' has not moved or resized", wnck_window_get_name(window));
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Window '%s' has not moved or resized",
+							wnck_window_get_name(window));
 		return;
 	}
 
 	/* Emit signal */
-	g_debug("Window '%s' changed position and/or size", wnck_window_get_name(window));
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Window '%s' changed position and/or size",
+						wnck_window_get_name(window));
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_GEOMETRY_CHANGED], 0, window);
 
 	/* Get monitor at old position of window and the monitor at current position.
@@ -211,10 +216,11 @@ static void _xfdashboard_window_tracker_on_window_geometry_changed(XfdashboardWi
 	if(currentMonitor!=lastMonitor)
 	{
 		/* Emit signal */
-		g_debug("Window '%s' moved from monitor %d to %d",
-					wnck_window_get_name(window),
-					xfdashboard_window_tracker_monitor_get_number(lastMonitor),
-					xfdashboard_window_tracker_monitor_get_number(currentMonitor));
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Window '%s' moved from monitor %d to %d",
+							wnck_window_get_name(window),
+							xfdashboard_window_tracker_monitor_get_number(lastMonitor),
+							xfdashboard_window_tracker_monitor_get_number(currentMonitor));
 		g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_MONITOR_CHANGED], 0, window, lastMonitor, currentMonitor);
 	}
 
@@ -239,7 +245,11 @@ static void _xfdashboard_window_tracker_on_window_actions_changed(XfdashboardWin
 	window=WNCK_WINDOW(inUserData);
 
 	/* Emit signal */
-	g_debug("Window '%s' changed actions to %u with mask %u", wnck_window_get_name(window), inNewValue, inChangedMask);
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Window '%s' changed actions to %u with mask %u",
+						wnck_window_get_name(window),
+						inNewValue,
+						inChangedMask);
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_ACTIONS_CHANGED], 0, window);
 }
 
@@ -257,7 +267,11 @@ static void _xfdashboard_window_tracker_on_window_state_changed(XfdashboardWindo
 	window=WNCK_WINDOW(inUserData);
 
 	/* Emit signal */
-	g_debug("Window '%s' changed state to %u with mask %u", wnck_window_get_name(window), inNewValue, inChangedMask);
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Window '%s' changed state to %u with mask %u",
+						wnck_window_get_name(window),
+						inNewValue,
+						inChangedMask);
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_STATE_CHANGED], 0, window);
 }
 
@@ -272,7 +286,9 @@ static void _xfdashboard_window_tracker_on_window_icon_changed(XfdashboardWindow
 	window=WNCK_WINDOW(inUserData);
 
 	/* Emit signal */
-	g_debug("Window '%s' changed its icon", wnck_window_get_name(window));
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Window '%s' changed its icon",
+						wnck_window_get_name(window));
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_ICON_CHANGED], 0, window);
 }
 
@@ -287,7 +303,9 @@ static void _xfdashboard_window_tracker_on_window_name_changed(XfdashboardWindow
 	window=WNCK_WINDOW(inUserData);
 
 	/* Emit "signal */
-	g_debug("Window changed its name to '%s'", wnck_window_get_name(window));
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Window changed its name to '%s'",
+						wnck_window_get_name(window));
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_NAME_CHANGED], 0, window);
 }
 
@@ -306,10 +324,11 @@ static void _xfdashboard_window_tracker_on_window_workspace_changed(XfdashboardW
 	workspace=wnck_window_get_workspace(window);
 
 	/* Emit signal */
-	g_debug("Window '%s' moved to workspace %d (%s)",
-				wnck_window_get_name(window),
-				workspace ? wnck_workspace_get_number(workspace) : -1,
-				workspace ? wnck_workspace_get_name(workspace) : "<nil>");
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Window '%s' moved to workspace %d (%s)",
+						wnck_window_get_name(window),
+						workspace ? wnck_workspace_get_number(workspace) : -1,
+						workspace ? wnck_workspace_get_name(workspace) : "<nil>");
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_WORKSPACE_CHANGED], 0, window, workspace);
 }
 
@@ -334,9 +353,10 @@ static void _xfdashboard_window_tracker_on_active_window_changed(XfdashboardWind
 	priv->activeWindow=wnck_screen_get_active_window(screen);
 
 	/* Emit signal */
-	g_debug("Active window changed from '%s' to '%s'",
-				oldActiveWindow ? wnck_window_get_name(oldActiveWindow) : "<nil>",
-				priv->activeWindow ? wnck_window_get_name(priv->activeWindow) : "<nil>");
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Active window changed from '%s' to '%s'",
+						oldActiveWindow ? wnck_window_get_name(oldActiveWindow) : "<nil>",
+						priv->activeWindow ? wnck_window_get_name(priv->activeWindow) : "<nil>");
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_ACTIVE_WINDOW_CHANGED], 0, oldActiveWindow, priv->activeWindow);
 }
 
@@ -362,7 +382,9 @@ static void _xfdashboard_window_tracker_on_window_closed(XfdashboardWindowTracke
 	g_signal_handlers_disconnect_by_data(inWindow, self);
 
 	/* Emit signals */
-	g_debug("Window '%s' closed", wnck_window_get_name(inWindow));
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Window '%s' closed",
+						wnck_window_get_name(inWindow));
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_CLOSED], 0, inWindow);
 }
 
@@ -402,7 +424,9 @@ static void _xfdashboard_window_tracker_on_window_opened(XfdashboardWindowTracke
 	}
 
 	/* Emit signal */
-	g_debug("Window '%s' created", wnck_window_get_name(inWindow));
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Window '%s' created",
+						wnck_window_get_name(inWindow));
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_OPENED], 0, inWindow);
 }
 
@@ -413,7 +437,7 @@ static void _xfdashboard_window_tracker_on_window_stacking_changed(XfdashboardWi
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 
 	/* Emit signal */
-	g_debug("Window stacking has changed");
+	XFDASHBOARD_DEBUG(self, WINDOWS, "Window stacking has changed");
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_STACKING_CHANGED], 0);
 }
 
@@ -429,7 +453,10 @@ static void _xfdashboard_window_tracker_on_workspace_name_changed(XfdashboardWin
 	workspace=WNCK_WORKSPACE(inUserData);
 
 	/* Emit signal */
-	g_debug("Workspace #%d changed name to '%s'", wnck_workspace_get_number(workspace), wnck_workspace_get_name(workspace));
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Workspace #%d changed name to '%s'",
+						wnck_workspace_get_number(workspace),
+						wnck_workspace_get_name(workspace));
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WORKSPACE_NAME_CHANGED], 0, workspace);
 
 }
@@ -455,11 +482,12 @@ static void _xfdashboard_window_tracker_on_active_workspace_changed(XfdashboardW
 	priv->activeWorkspace=wnck_screen_get_active_workspace(screen);
 
 	/* Emit signal */
-	g_debug("Active workspace changed from #%d (%s) to #%d (%s)",
-				oldActiveWorkspace ? wnck_workspace_get_number(oldActiveWorkspace) : -1,
-				oldActiveWorkspace ? wnck_workspace_get_name(oldActiveWorkspace) : "<nil>",
-				priv->activeWorkspace ? wnck_workspace_get_number(priv->activeWorkspace) : -1,
-				priv->activeWorkspace ? wnck_workspace_get_name(priv->activeWorkspace) : "<nil>");
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Active workspace changed from #%d (%s) to #%d (%s)",
+						oldActiveWorkspace ? wnck_workspace_get_number(oldActiveWorkspace) : -1,
+						oldActiveWorkspace ? wnck_workspace_get_name(oldActiveWorkspace) : "<nil>",
+						priv->activeWorkspace ? wnck_workspace_get_number(priv->activeWorkspace) : -1,
+						priv->activeWorkspace ? wnck_workspace_get_name(priv->activeWorkspace) : "<nil>");
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_ACTIVE_WORKSPACE_CHANGED], 0, oldActiveWorkspace, priv->activeWorkspace);
 }
 
@@ -485,7 +513,10 @@ static void _xfdashboard_window_tracker_on_workspace_destroyed(XfdashboardWindow
 	g_signal_handlers_disconnect_by_data(inWorkspace, self);
 
 	/* Emit signal */
-	g_debug("Workspace #%d (%s) destroyed", wnck_workspace_get_number(inWorkspace), wnck_workspace_get_name(inWorkspace));
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Workspace #%d (%s) destroyed",
+						wnck_workspace_get_number(inWorkspace),
+						wnck_workspace_get_name(inWorkspace));
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WORKSPACE_REMOVED], 0, inWorkspace);
 }
 
@@ -502,7 +533,10 @@ static void _xfdashboard_window_tracker_on_workspace_created(XfdashboardWindowTr
 	g_signal_connect_swapped(inWorkspace, "name-changed", G_CALLBACK(_xfdashboard_window_tracker_on_workspace_name_changed), self);
 
 	/* Emit signal */
-	g_debug("New workspace #%d (%s) created", wnck_workspace_get_number(inWorkspace), wnck_workspace_get_name(inWorkspace));
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"New workspace #%d (%s) created",
+						wnck_workspace_get_number(inWorkspace),
+						wnck_workspace_get_name(inWorkspace));
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_WORKSPACE_ADDED], 0, inWorkspace);
 }
 
@@ -539,9 +573,10 @@ static void _xfdashboard_window_tracker_on_primary_monitor_changed(XfdashboardWi
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowTrackerProperties[PROP_PRIMARY_MONITOR]);
 
-		g_debug("Primary monitor changed from %d to %d",
-					oldMonitor ? xfdashboard_window_tracker_monitor_get_number(oldMonitor) : -1,
-					xfdashboard_window_tracker_monitor_get_number(monitor));
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Primary monitor changed from %d to %d",
+							oldMonitor ? xfdashboard_window_tracker_monitor_get_number(oldMonitor) : -1,
+							xfdashboard_window_tracker_monitor_get_number(monitor));
 	}
 }
 
@@ -589,7 +624,9 @@ static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_monitor_new(
 
 	/* Emit signal */
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_MONITOR_ADDED], 0, monitor);
-	g_debug("Monitor %d added", inMonitorIndex);
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Monitor %d added",
+						inMonitorIndex);
 
 	/* If we newly added monitor is the primary one then emit signal. We could not
 	 * have done it yet because the signals were connect to new monitor object
@@ -629,7 +666,9 @@ static void _xfdashboard_window_tracker_monitor_free(XfdashboardWindowTracker *s
 
 	/* Emit signal */
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_MONITOR_REMOVED], 0, inMonitor);
-	g_debug("Monitor %d removed", xfdashboard_window_tracker_monitor_get_number(inMonitor));
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Monitor %d removed",
+						xfdashboard_window_tracker_monitor_get_number(inMonitor));
 
 	/* Remove monitor object from list */
 	priv->monitors=g_list_delete_link(priv->monitors, iter);
@@ -666,7 +705,10 @@ static void _xfdashboard_window_tracker_on_monitors_changed(XfdashboardWindowTra
 	newMonitorCount=gdk_screen_get_n_monitors(screen);
 	if(newMonitorCount!=currentMonitorCount)
 	{
-		g_debug("Number of monitors changed from %d to %d", currentMonitorCount, newMonitorCount);
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Number of monitors changed from %d to %d",
+							currentMonitorCount,
+							newMonitorCount);
 	}
 
 	/* There is no need to check if size of any monitor has changed because
@@ -723,7 +765,10 @@ static void _xfdashboard_window_tracker_on_screen_size_changed(XfdashboardWindow
 	h=gdk_screen_get_height(screen);
 
 	/* Emit signal to tell that screen size has changed */
-	g_debug("Screen size changed to %dx%d", w, h);
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Screen size changed to %dx%d",
+						w,
+						h);
 	g_signal_emit(self, XfdashboardWindowTrackerSignals[SIGNAL_SCREEN_SIZE_CHANGED], 0, w, h);
 }
 
@@ -1176,7 +1221,7 @@ void xfdashboard_window_tracker_init(XfdashboardWindowTracker *self)
 
 	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_GET_PRIVATE(self);
 
-	g_debug("Initializing window tracker");
+	XFDASHBOARD_DEBUG(self, WINDOWS, "Initializing window tracker");
 
 	/* Set default values */
 	priv->screen=wnck_screen_get_default();
@@ -1315,21 +1360,23 @@ guint32 xfdashboard_window_tracker_get_time(void)
 	if(timestamp>0) return(timestamp);
 
 	/* Next we try to retrieve timestamp of last X11 event in clutter */
-	g_debug("No timestamp for windows - trying timestamp of last X11 event in Clutter");
+	XFDASHBOARD_DEBUG(NULL, WINDOWS, "No timestamp for windows - trying timestamp of last X11 event in Clutter");
 	timestamp=(guint32)clutter_x11_get_current_event_time();
 	if(timestamp!=0)
 	{
-		g_debug("Got timestamp %u of last X11 event in Clutter", timestamp);
+		XFDASHBOARD_DEBUG(NULL, WINDOWS,
+							"Got timestamp %u of last X11 event in Clutter",
+							timestamp);
 		return(timestamp);
 	}
 
 	/* Last resort is to get X11 server time via stage windows */
-	g_debug("No timestamp for windows - trying last resort via stage windows");
+	XFDASHBOARD_DEBUG(NULL, WINDOWS, "No timestamp for windows - trying last resort via stage windows");
 
 	display=gdk_display_get_default();
 	if(!display)
 	{
-		g_debug("No default display found in GDK to get timestamp for windows");
+		XFDASHBOARD_DEBUG(NULL, WINDOWS, "No default display found in GDK to get timestamp for windows");
 		return(0);
 	}
 
@@ -1346,7 +1393,9 @@ guint32 xfdashboard_window_tracker_get_time(void)
 			window=gdk_x11_window_lookup_for_display(display, clutter_x11_get_stage_window(stage));
 			if(!window)
 			{
-				g_debug("No GDK window found for stage %p to get timestamp for windows", stage);
+				XFDASHBOARD_DEBUG(NULL, WINDOWS,
+									"No GDK window found for stage %p to get timestamp for windows",
+									stage);
 				continue;
 			}
 
@@ -1356,8 +1405,10 @@ guint32 xfdashboard_window_tracker_get_time(void)
 			eventMask=gdk_window_get_events(window);
 			if(!(eventMask & GDK_PROPERTY_CHANGE_MASK))
 			{
-				g_debug("GDK window %p for stage %p does not support GDK_PROPERTY_CHANGE_MASK to get timestamp for windows",
-							window, stage);
+				XFDASHBOARD_DEBUG(NULL, WINDOWS,
+									"GDK window %p for stage %p does not support GDK_PROPERTY_CHANGE_MASK to get timestamp for windows",
+									window,
+									stage);
 				continue;
 			}
 
@@ -1367,7 +1418,10 @@ guint32 xfdashboard_window_tracker_get_time(void)
 	g_slist_free(stages);
 
 	/* Return timestamp of last resort */
-	g_debug("Last resort timestamp for windows %s (%u)", timestamp ? "found" : "not found", timestamp);
+	XFDASHBOARD_DEBUG(NULL, WINDOWS,
+						"Last resort timestamp for windows %s (%u)",
+						timestamp ? "found" : "not found",
+						timestamp);
 	return(timestamp);
 }
 
@@ -1558,7 +1612,7 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(Xfdas
 		backgroundWindow=wnck_window_get(backgroundWindowID);
 		if(backgroundWindow)
 		{
-			g_debug("Found desktop window by known background pixmap ID");
+			XFDASHBOARD_DEBUG(self, WINDOWS, "Found desktop window by known background pixmap ID");
 			return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(backgroundWindow));
 		}
 	}
@@ -1577,7 +1631,7 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(Xfdas
 		windowType=wnck_window_get_window_type(window);
 		if(windowType==WNCK_WINDOW_DESKTOP)
 		{
-			g_debug("Desktop window ID found while iterating through window list");
+			XFDASHBOARD_DEBUG(self, WINDOWS, "Desktop window ID found while iterating through window list");
 				return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
 		}
 	}
@@ -1585,6 +1639,6 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(Xfdas
 	/* If we get here either desktop window does not exist or is not known
 	 * in window list. So return NULL here.
 	 */
-	g_debug("Desktop window could not be found");
+	XFDASHBOARD_DEBUG(self, WINDOWS, "Desktop window could not be found");
 	return(NULL);
 }

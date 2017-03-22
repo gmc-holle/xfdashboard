@@ -47,6 +47,7 @@
 #include <libxfdashboard/plugin.h>
 #include <libxfdashboard/application.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -112,7 +113,9 @@ static gboolean _xfdashboard_plugins_manager_add_search_path(XfdashboardPluginsM
 		 */
 		if(g_strcmp0(iterPath, normalizedPath)==0)
 		{
-			g_debug("Path '%s' was already added to search paths of plugin manager", normalizedPath);
+			XFDASHBOARD_DEBUG(self, PLUGINS,
+								"Path '%s' was already added to search paths of plugin manager",
+								normalizedPath);
 
 			/* Release allocated resources */
 			if(normalizedPath) g_free(normalizedPath);
@@ -126,7 +129,9 @@ static gboolean _xfdashboard_plugins_manager_add_search_path(XfdashboardPluginsM
 	 * we can add it now.
 	 */
 	priv->searchPaths=g_list_append(priv->searchPaths, g_strdup(normalizedPath));
-	g_debug("Added path '%s' to search paths of plugin manager", normalizedPath);
+	XFDASHBOARD_DEBUG(self, PLUGINS,
+						"Added path '%s' to search paths of plugin manager",
+						normalizedPath);
 
 	/* Release allocated resources */
 	if(normalizedPath) g_free(normalizedPath);
@@ -164,7 +169,10 @@ static gchar* _xfdashboard_plugins_manager_find_plugin_path(XfdashboardPluginsMa
 		/* Check if file exists and return it if we does */
 		if(g_file_test(path, G_FILE_TEST_IS_REGULAR))
 		{
-			g_debug("Found path %s for plugin '%s'", path, inPluginName);
+			XFDASHBOARD_DEBUG(self, PLUGINS,
+								"Found path %s for plugin '%s'",
+								path,
+								inPluginName);
 			return(path);
 		}
 
@@ -173,7 +181,9 @@ static gchar* _xfdashboard_plugins_manager_find_plugin_path(XfdashboardPluginsMa
 	}
 
 	/* If we get here we did not found any suitable file, so return NULL */
-	g_debug("Plugin '%s' not found in search paths", inPluginName);
+	XFDASHBOARD_DEBUG(self, PLUGINS,
+						"Plugin '%s' not found in search paths",
+						inPluginName);
 	return(NULL);
 }
 
@@ -249,7 +259,9 @@ static gboolean _xfdashboard_plugins_manager_load_plugin(XfdashboardPluginsManag
 	/* Check if plugin with requested ID exists already in list of loaded plugins */
 	if(_xfdashboard_plugins_manager_has_plugin_id(self, inPluginID))
 	{
-		g_debug("Plugin ID '%s' already loaded.", inPluginID);
+		XFDASHBOARD_DEBUG(self, PLUGINS,
+							"Plugin ID '%s' already loaded.",
+							inPluginID);
 
 		/* The plugin is already loaded so return success result */
 		return(TRUE);
@@ -284,7 +296,9 @@ static gboolean _xfdashboard_plugins_manager_load_plugin(XfdashboardPluginsManag
 	/* Enable plugin if early initialization is requested by plugin */
 	if(xfdashboard_plugin_get_flags(plugin) & XFDASHBOARD_PLUGIN_FLAG_EARLY_INITIALIZATION)
 	{
-		g_debug("Enabling plugin '%s' on load because early initialization was requested", inPluginID);
+		XFDASHBOARD_DEBUG(self, PLUGINS,
+							"Enabling plugin '%s' on load because early initialization was requested",
+							inPluginID);
 		xfdashboard_plugin_enable(plugin);
 	}
 
@@ -361,7 +375,9 @@ static void _xfdashboard_plugins_manager_on_enabled_plugins_changed(XfdashboardP
 			/* Check that found flag is set. If it is not then disable plugin */
 			if(!found)
 			{
-				g_debug("Disable plugin '%s'", pluginID);
+				XFDASHBOARD_DEBUG(self, PLUGINS,
+									"Disable plugin '%s'",
+									pluginID);
 
 				/* Disable plugin */
 				xfdashboard_plugin_disable(plugin);
@@ -411,7 +427,12 @@ static void _xfdashboard_plugins_manager_on_enabled_plugins_changed(XfdashboardP
 						error=NULL;
 					}
 				}
-					else g_debug("Loaded plugin '%s'", pluginID);
+					else
+					{
+						XFDASHBOARD_DEBUG(self, PLUGINS,
+											"Loaded plugin '%s'",
+											pluginID);
+					}
 			}
 				else
 				{
@@ -420,7 +441,9 @@ static void _xfdashboard_plugins_manager_on_enabled_plugins_changed(XfdashboardP
 					 */
 					if(!xfdashboard_plugin_is_enabled(plugin))
 					{
-						g_debug("Re-enable plugin '%s'", pluginID);
+						XFDASHBOARD_DEBUG(self, PLUGINS,
+											"Re-enable plugin '%s'",
+											pluginID);
 						xfdashboard_plugin_enable(plugin);
 					}
 				}
@@ -449,7 +472,7 @@ static void _xfdashboard_plugins_manager_on_application_initialized(XfdashboardP
 	/* Iterate through all loaded plugins and enable all plugins which are
 	 * not enabled yet.
 	 */
-	g_debug("Plugin manager will now enable all remaining plugins because application is fully initialized now");
+	XFDASHBOARD_DEBUG(self, PLUGINS, "Plugin manager will now enable all remaining plugins because application is fully initialized now");
 	for(iter=priv->plugins; iter; iter=g_list_next(iter))
 	{
 		/* Get plugin */
@@ -459,7 +482,9 @@ static void _xfdashboard_plugins_manager_on_application_initialized(XfdashboardP
 		if(!xfdashboard_plugin_is_enabled(plugin))
 		{
 			/* Enable plugin */
-			g_debug("Enabling plugin '%s'", xfdashboard_plugin_get_id(plugin));
+			XFDASHBOARD_DEBUG(self, PLUGINS,
+								"Enabling plugin '%s'",
+								xfdashboard_plugin_get_id(plugin));
 			xfdashboard_plugin_enable(plugin);
 		}
 	}
@@ -661,7 +686,9 @@ gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self)
 
 		/* Get plugin name */
 		pluginID=*iter;
-		g_debug("Try to load plugin '%s'", pluginID);
+		XFDASHBOARD_DEBUG(self, PLUGINS,
+							"Try to load plugin '%s'",
+							pluginID);
 
 		/* Try to load plugin */
 		if(!_xfdashboard_plugins_manager_load_plugin(self, pluginID, &error))
@@ -678,7 +705,12 @@ gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self)
 				error=NULL;
 			}
 		}
-			else g_debug("Loaded plugin '%s'", pluginID);
+			else
+			{
+				XFDASHBOARD_DEBUG(self, PLUGINS,
+									"Loaded plugin '%s'",
+									pluginID);
+			}
 	}
 
 	/* If we get here then initialization was successful so set flag that

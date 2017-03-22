@@ -47,6 +47,8 @@
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/application.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
+
 
 /* Gobject type for pointer arrays (GPtrArray) */
 GType xfdashboard_pointer_array_get_type(void)
@@ -288,8 +290,10 @@ static void _xfdashboard_gvalue_transform_string_enum(const GValue *inSourceValu
 		else
 		{
 			ioDestValue->data[0].v_int=0;
-			g_debug("Cannot get value for unknown enum '%s' for type %s",
-						value, g_type_name(G_VALUE_TYPE(ioDestValue)));
+			XFDASHBOARD_DEBUG(NULL, MISC,
+								"Cannot get value for unknown enum '%s' for type %s",
+								value,
+								g_type_name(G_VALUE_TYPE(ioDestValue)));
 		}
 
 	/* Release allocated resources */
@@ -324,8 +328,10 @@ static void _xfdashboard_gvalue_transform_string_flags(const GValue *inSourceVal
 		if(flagsValue) finalValue|=flagsValue->value;
 			else
 			{
-				g_debug("Cannot get value for unknown flag '%s' for type %s",
-							*entry, g_type_name(G_VALUE_TYPE(ioDestValue)));
+				XFDASHBOARD_DEBUG(NULL, MISC,
+									"Cannot get value for unknown flag '%s' for type %s",
+									*entry,
+									g_type_name(G_VALUE_TYPE(ioDestValue)));
 			}
 
 		/* Continue with next entry */

@@ -37,6 +37,7 @@
 #include <libxfdashboard/image-content.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -197,8 +198,9 @@ static void _xfdashboard_emblem_effect_paint(ClutterEffect *inEffect, ClutterEff
 	if(actorBox.x2<=actorBox.x1 ||
 		actorBox.y2<=actorBox.y1)
 	{
-		g_debug("Will not draw emblem '%s' because width or height of actor is zero or below after padding was applied.",
-				priv->iconName);
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Will not draw emblem '%s' because width or height of actor is zero or below after padding was applied.",
+							priv->iconName);
 		return;
 	}
 
@@ -310,9 +312,10 @@ static void _xfdashboard_emblem_effect_paint(ClutterEffect *inEffect, ClutterEff
 	if(loadingState!=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_SUCCESSFULLY &&
 		loadingState!=XFDASHBOARD_IMAGE_CONTENT_LOADING_STATE_LOADED_FAILED)
 	{
-		g_debug("Emblem image '%s' is still being loaded at %s",
-				priv->iconName,
-				G_OBJECT_TYPE_NAME(inEffect));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Emblem image '%s' is still being loaded at %s",
+							priv->iconName,
+							G_OBJECT_TYPE_NAME(inEffect));
 		return;
 	}
 

@@ -34,6 +34,7 @@
 #include <gdk/gdkx.h>
 
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -102,10 +103,11 @@ static void _xfdashboard_window_tracker_monitor_update_primary(XfdashboardWindow
 	/* Set value if changed */
 	if(priv->isPrimary!=isPrimary)
 	{
-		g_debug("Monitor %d changes primary state from %s to %s",
-					priv->monitorIndex,
-					priv->isPrimary ? "yes" : "no",
-					isPrimary ? "yes" : "no");
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Monitor %d changes primary state from %s to %s",
+							priv->monitorIndex,
+							priv->isPrimary ? "yes" : "no",
+							isPrimary ? "yes" : "no");
 
 		/* Set value */
 		priv->isPrimary=isPrimary;
@@ -148,10 +150,11 @@ static void _xfdashboard_window_tracker_monitor_update_geometry(XfdashboardWindo
 
 		/* Emit signal */
 		g_signal_emit(self, XfdashboardWindowTrackerMonitorSignals[SIGNAL_GEOMETRY_CHANGED], 0);
-		g_debug("Monitor %d moved to %d,%d and resized to %dx%d",
-					priv->monitorIndex,
-					priv->geometry.x, priv->geometry.y,
-					priv->geometry.width, priv->geometry.height);
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Monitor %d moved to %d,%d and resized to %dx%d",
+							priv->monitorIndex,
+							priv->geometry.x, priv->geometry.y,
+							priv->geometry.width, priv->geometry.height);
 	}
 }
 

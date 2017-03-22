@@ -45,6 +45,7 @@
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/stage-interface.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -403,16 +404,17 @@ static void _xfdashboard_windows_view_move_live_to_view(XfdashboardWindowsView *
 	sourceMonitor=xfdashboard_window_tracker_window_get_monitor(window);
 	targetMonitor=priv->currentMonitor;
 
-	g_debug("Moving window '%s' from %s-monitor %d to %s-monitor %d and from workspace '%s' (%d) to '%s' (%d)",
-				xfdashboard_window_tracker_window_get_title(window),
-				xfdashboard_window_tracker_monitor_is_primary(sourceMonitor) ? "primary" : "secondary",
-				xfdashboard_window_tracker_monitor_get_number(sourceMonitor),
-				xfdashboard_window_tracker_monitor_is_primary(targetMonitor) ? "primary" : "secondary",
-				xfdashboard_window_tracker_monitor_get_number(targetMonitor),
-				xfdashboard_window_tracker_workspace_get_name(sourceWorkspace),
-				xfdashboard_window_tracker_workspace_get_number(sourceWorkspace),
-				xfdashboard_window_tracker_workspace_get_name(targetWorkspace),
-				xfdashboard_window_tracker_workspace_get_number(targetWorkspace));
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Moving window '%s' from %s-monitor %d to %s-monitor %d and from workspace '%s' (%d) to '%s' (%d)",
+						xfdashboard_window_tracker_window_get_title(window),
+						xfdashboard_window_tracker_monitor_is_primary(sourceMonitor) ? "primary" : "secondary",
+						xfdashboard_window_tracker_monitor_get_number(sourceMonitor),
+						xfdashboard_window_tracker_monitor_is_primary(targetMonitor) ? "primary" : "secondary",
+						xfdashboard_window_tracker_monitor_get_number(targetMonitor),
+						xfdashboard_window_tracker_workspace_get_name(sourceWorkspace),
+						xfdashboard_window_tracker_workspace_get_number(sourceWorkspace),
+						xfdashboard_window_tracker_workspace_get_name(targetWorkspace),
+						xfdashboard_window_tracker_workspace_get_number(targetWorkspace));
 
 	/* Get position and size of window to move */
 	xfdashboard_window_tracker_window_get_position_size(window,
@@ -443,23 +445,25 @@ static void _xfdashboard_windows_view_move_live_to_view(XfdashboardWindowsView *
 	if(!xfdashboard_window_tracker_workspace_is_equal(sourceWorkspace, targetWorkspace))
 	{
 		xfdashboard_window_tracker_window_move_to_workspace(window, targetWorkspace);
-		g_debug("Moved window '%s' from workspace '%s' (%d) to '%s' (%d)",
-					xfdashboard_window_tracker_window_get_title(window),
-					xfdashboard_window_tracker_workspace_get_name(sourceWorkspace),
-					xfdashboard_window_tracker_workspace_get_number(sourceWorkspace),
-					xfdashboard_window_tracker_workspace_get_name(targetWorkspace),
-					xfdashboard_window_tracker_workspace_get_number(targetWorkspace));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Moved window '%s' from workspace '%s' (%d) to '%s' (%d)",
+							xfdashboard_window_tracker_window_get_title(window),
+							xfdashboard_window_tracker_workspace_get_name(sourceWorkspace),
+							xfdashboard_window_tracker_workspace_get_number(sourceWorkspace),
+							xfdashboard_window_tracker_workspace_get_name(targetWorkspace),
+							xfdashboard_window_tracker_workspace_get_number(targetWorkspace));
 	}
 
 	/* Move window to new position */
 	xfdashboard_window_tracker_window_move(window, newWindowX, newWindowY);
-	g_debug("Moved window '%s' from [%d,%d] at monitor [%d,%d x %d,%d] to [%d,%d] at monitor [%d,%d x %d,%d] (relative x=%.2f, y=%.2f)",
-				xfdashboard_window_tracker_window_get_title(window),
-				oldWindowX, oldWindowY,
-				oldMonitorX, oldMonitorY, oldMonitorWidth, oldMonitorHeight,
-				newWindowX, newWindowY,
-				newMonitorX, newMonitorY, newMonitorWidth, newMonitorHeight,
-				relativeX, relativeY);
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Moved window '%s' from [%d,%d] at monitor [%d,%d x %d,%d] to [%d,%d] at monitor [%d,%d x %d,%d] (relative x=%.2f, y=%.2f)",
+						xfdashboard_window_tracker_window_get_title(window),
+						oldWindowX, oldWindowY,
+						oldMonitorX, oldMonitorY, oldMonitorWidth, oldMonitorHeight,
+						newWindowX, newWindowY,
+						newMonitorX, newMonitorY, newMonitorWidth, newMonitorHeight,
+						relativeX, relativeY);
 }
 
 /* Drag of an actor to this view as drop target begins */
@@ -952,7 +956,7 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 	/* Check if window opened is a stage window */
 	if(xfdashboard_window_tracker_window_is_stage(inWindow))
 	{
-		g_debug("Will not create live-window actor for stage window.");
+		XFDASHBOARD_DEBUG(self, ACTOR, "Will not create live-window actor for stage window.");
 		return(NULL);
 	}
 
@@ -1053,9 +1057,10 @@ static gboolean _xfdashboard_windows_view_on_scroll_event(ClutterActor *inActor,
 
 		/* Unhandled directions */
 		default:
-			g_debug("Cannot handle scroll direction %d in %s",
-						clutter_event_get_scroll_direction(inEvent),
-						G_OBJECT_TYPE_NAME(self));
+			XFDASHBOARD_DEBUG(self, ACTOR,
+								"Cannot handle scroll direction %d in %s",
+								clutter_event_get_scroll_direction(inEvent),
+								G_OBJECT_TYPE_NAME(self));
 			return(CLUTTER_EVENT_PROPAGATE);
 	}
 
@@ -1161,7 +1166,7 @@ static gboolean _xfdashboard_windows_view_window_close(XfdashboardWindowsView *s
 	/* Check if a window is currenly selected */
 	if(!priv->selectedItem)
 	{
-		g_debug("No window to close is selected.");
+		XFDASHBOARD_DEBUG(self, ACTOR, "No window to close is selected.");
 		return(CLUTTER_EVENT_STOP);
 	}
 
@@ -1510,10 +1515,11 @@ static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(Xfdashbo
 		newSelection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
 
 		valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-		g_debug("No selection at %s, so select first child %s for direction %s",
-				G_OBJECT_TYPE_NAME(self),
-				newSelection ? G_OBJECT_TYPE_NAME(newSelection) : "<nil>",
-				valueName);
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"No selection at %s, so select first child %s for direction %s",
+							G_OBJECT_TYPE_NAME(self),
+							newSelection ? G_OBJECT_TYPE_NAME(newSelection) : "<nil>",
+							valueName);
 		g_free(valueName);
 
 		return(newSelection);
@@ -1651,11 +1657,12 @@ static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(Xfdashbo
 	if(newSelection) selection=newSelection;
 
 	/* Return new selection found */
-	g_debug("Selecting %s at %s for current selection %s in direction %u",
-			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
-			G_OBJECT_TYPE_NAME(self),
-			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
-			inDirection);
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Selecting %s at %s for current selection %s in direction %u",
+						selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+						G_OBJECT_TYPE_NAME(self),
+						inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+						inDirection);
 
 	return(selection);
 }

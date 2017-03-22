@@ -33,6 +33,7 @@
 
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -470,9 +471,10 @@ static ClutterEffect* _xfdashboard_theme_effects_create_object(XfdashboardThemeE
 
 	if(!object)
 	{
-		g_debug("Failed to create object of type %s with %d properties to set",
-					g_type_name(inObjectData->classType),
-					collectData.maxProperties);
+		XFDASHBOARD_DEBUG(NULL, THEME,
+							"Failed to create object of type %s with %d properties to set",
+							g_type_name(inObjectData->classType),
+							collectData.maxProperties);
 
 		/* Return NULL indicating error */
 		return(NULL);
@@ -607,7 +609,11 @@ static void _xfdashboard_theme_effects_parse_property_text_node(GMarkupParseCont
 
 	/* Store value for property */
 	g_hash_table_insert(objectData->properties, g_strdup(data->lastPropertyName), g_strdup(inText));
-	g_debug("Setting property '%s' to value '%s' at object with id '%s' of type %s", data->lastPropertyName, inText, objectData->id, g_type_name(objectData->classType));
+	XFDASHBOARD_DEBUG(data->self, THEME,
+						"Setting property '%s' to value '%s' at object with id '%s' of type %s",
+						data->lastPropertyName,
+						inText,
+						objectData->id, g_type_name(objectData->classType));
 
 	/* The property's value is set now so do not remember its name anymore */
 	g_free(data->lastPropertyName);
@@ -770,10 +776,11 @@ static void _xfdashboard_theme_effects_parse_object_end(GMarkupParseContext *inC
 		}
 
 		g_hash_table_insert(objectData->properties, g_strdup(data->lastPropertyName), "");
-		g_debug("Adding property '%s' with empty value to object with id '%s' of type %s",
-					data->lastPropertyName,
-					objectData->id,
-					g_type_name(objectData->classType));
+		XFDASHBOARD_DEBUG(data->self, THEME,
+							"Adding property '%s' with empty value to object with id '%s' of type %s",
+							data->lastPropertyName,
+							objectData->id,
+							g_type_name(objectData->classType));
 		g_free(data->lastPropertyName);
 		data->lastPropertyName=NULL;
 	}
@@ -1121,7 +1128,9 @@ static gboolean _xfdashboard_theme_effects_parse_xml(XfdashboardThemeEffects *se
 	{
 		g_slist_foreach(data->effects, (GFunc)_xfdashboard_theme_effects_print_parsed_objects, "Effects (this file):");
 		g_slist_foreach(self->priv->effects, (GFunc)_xfdashboard_theme_effects_print_parsed_objects, "Effects (parsed before):");
-		g_debug("PARSER ERROR: %s", (outError && *outError) ? (*outError)->message : "unknown error");
+		XFDASHBOARD_DEBUG(self, THEME,
+							"PARSER ERROR: %s",
+							(outError && *outError) ? (*outError)->message : "unknown error");
 	}
 #endif
 

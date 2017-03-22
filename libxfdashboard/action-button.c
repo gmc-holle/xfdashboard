@@ -59,6 +59,7 @@
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -115,9 +116,9 @@ static void _xfdashboard_action_button_clicked(XfdashboardButton *inButton)
 
 	/* Get target object to perform action at */
 	targets=xfdashboard_focus_manager_get_targets(priv->focusManager, priv->target);
-	g_debug("Target list for '%s' has %d entries",
-				priv->target,
-				g_slist_length(targets));
+	XFDASHBOARD_DEBUG(self, ACTOR, "Target list for '%s' has %d entries",
+						priv->target,
+						g_slist_length(targets));
 
 	/* Emit action at each actor in target list */
 	for(iter=targets; iter; iter=g_slist_next(iter))
@@ -199,9 +200,9 @@ static void _xfdashboard_action_button_clicked(XfdashboardButton *inButton)
 		}
 
 		/* Emit action signal at target */
-		g_debug("Emitting action signal '%s' at actor %s",
-					priv->action,
-					G_OBJECT_TYPE_NAME(targetObject));
+		XFDASHBOARD_DEBUG(self, ACTOR, "Emitting action signal '%s' at actor %s",
+							priv->action,
+							G_OBJECT_TYPE_NAME(targetObject));
 
 		event=clutter_get_current_event();
 		eventStatus=CLUTTER_EVENT_PROPAGATE;
@@ -212,10 +213,10 @@ static void _xfdashboard_action_button_clicked(XfdashboardButton *inButton)
 								event,
 								&eventStatus);
 
-		g_debug("Action signal '%s' was %s by actor %s",
-					priv->action,
-					eventStatus==CLUTTER_EVENT_STOP ? "handled" : "not handled",
-					G_OBJECT_TYPE_NAME(targetObject));
+		XFDASHBOARD_DEBUG(self, ACTOR, "Action signal '%s' was %s by actor %s",
+							priv->action,
+							eventStatus==CLUTTER_EVENT_STOP ? "handled" : "not handled",
+							G_OBJECT_TYPE_NAME(targetObject));
 	}
 
 	/* Release allocated resources */

@@ -38,6 +38,7 @@
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -269,7 +270,9 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 		if(hasFocus)
 		{
 			xfdashboard_focusable_unset_focus(XFDASHBOARD_FOCUSABLE(priv->activeView));
-			g_debug("Unset focus from view '%s' because it is the active view at viewpad", xfdashboard_view_get_name(priv->activeView));
+			XFDASHBOARD_DEBUG(self, ACTOR,
+								"Unset focus from view '%s' because it is the active view at viewpad",
+								xfdashboard_view_get_name(priv->activeView));
 		}
 
 		/* Hide current view and emit signal before and after deactivation */
@@ -277,7 +280,9 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 		g_signal_emit_by_name(priv->activeView, "deactivating");
 
 		clutter_actor_hide(CLUTTER_ACTOR(priv->activeView));
-		g_debug("Deactivated view %s", G_OBJECT_TYPE_NAME(priv->activeView));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Deactivated view %s",
+							G_OBJECT_TYPE_NAME(priv->activeView));
 
 		g_signal_emit_by_name(priv->activeView, "deactivated");
 		g_signal_emit(self, XfdashboardViewpadSignals[SIGNAL_VIEW_DEACTIVATED], 0, priv->activeView);
@@ -309,7 +314,9 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 		xfdashboard_scrollbar_set_value(XFDASHBOARD_SCROLLBAR(priv->vScrollbar), y);
 		_xfdashboard_viewpad_update_view_viewport(self);
 		clutter_actor_show(CLUTTER_ACTOR(priv->activeView));
-		g_debug("Activated view %s", G_OBJECT_TYPE_NAME(priv->activeView));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Activated view %s",
+							G_OBJECT_TYPE_NAME(priv->activeView));
 
 		g_signal_handlers_unblock_by_func(priv->hScrollbar, _xfdashboard_viewpad_on_scrollbar_value_changed, self);
 		g_signal_handlers_unblock_by_func(priv->vScrollbar, _xfdashboard_viewpad_on_scrollbar_value_changed, self);
@@ -321,7 +328,9 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 		if(hasFocus)
 		{
 			xfdashboard_focus_manager_set_focus(focusManager, XFDASHBOARD_FOCUSABLE(priv->activeView));
-			g_debug("The previous active view at viewpad had focus so set focus to new active view '%s'", xfdashboard_view_get_name(priv->activeView));
+			XFDASHBOARD_DEBUG(self, ACTOR,
+								"The previous active view at viewpad had focus so set focus to new active view '%s'",
+								xfdashboard_view_get_name(priv->activeView));
 		}
 	}
 
@@ -336,8 +345,9 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 		if(newFocusable)
 		{
 			xfdashboard_focus_manager_set_focus(focusManager, newFocusable);
-			g_debug("Viewpad has focus but no view is active so move focus to next focusable actor of type '%s'",
-					G_OBJECT_TYPE_NAME(newFocusable));
+			XFDASHBOARD_DEBUG(self, ACTOR,
+								"Viewpad has focus but no view is active so move focus to next focusable actor of type '%s'",
+								G_OBJECT_TYPE_NAME(newFocusable));
 		}
 	}
 
@@ -386,10 +396,11 @@ static void _xfdashboard_viewpad_on_view_disabled(XfdashboardViewpad *self, Xfda
 		/* Now activate the first activatable view we found during iteration.
 		 * It can also be no view (NULL pointer).
 		 */
-		g_debug("Disabled view %s was the active view in %s - will activate %s",
-					G_OBJECT_TYPE_NAME(inView),
-					G_OBJECT_TYPE_NAME(self),
-					firstActivatableView ? G_OBJECT_TYPE_NAME(firstActivatableView) : "no other view");
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Disabled view %s was the active view in %s - will activate %s",
+							G_OBJECT_TYPE_NAME(inView),
+							G_OBJECT_TYPE_NAME(self),
+							firstActivatableView ? G_OBJECT_TYPE_NAME(firstActivatableView) : "no other view");
 		_xfdashboard_viewpad_activate_view(self, firstActivatableView);
 	}
 }
@@ -692,7 +703,9 @@ static void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, const gchar 
 	priv=self->priv;
 
 	/* Create instance and check if it is a view */
-	g_debug("Creating view %s for viewpad", inID);
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Creating view %s for viewpad",
+						inID);
 
 	view=xfdashboard_view_manager_create_view(priv->viewManager, inID);
 	if(view==NULL)

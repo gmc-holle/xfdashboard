@@ -32,6 +32,7 @@
 #include <libxfdashboard/view.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -281,9 +282,10 @@ gboolean xfdashboard_view_manager_register(XfdashboardViewManager *self, const g
 	}
 
 	/* Register view */
-	g_debug("Registering view %s of type %s",
-			inID,
-			g_type_name(inViewType));
+	XFDASHBOARD_DEBUG(self, MISC,
+						"Registering view %s of type %s",
+						inID,
+						g_type_name(inViewType));
 
 	data=_xfdashboard_view_manager_entry_new(inID, inViewType);
 	if(!data)
@@ -325,9 +327,10 @@ gboolean xfdashboard_view_manager_unregister(XfdashboardViewManager *self, const
 	data=(XfdashboardViewManagerData*)(iter->data);
 
 	/* Remove from list of registered views */
-	g_debug("Unregistering view %s of type %s",
-			data->ID,
-			g_type_name(data->gtype));
+	XFDASHBOARD_DEBUG(self, MISC,
+						"Unregistering view %s of type %s",
+						data->ID,
+						g_type_name(data->gtype));
 
 	priv->registeredViews=g_list_remove_link(priv->registeredViews, iter);
 	g_signal_emit(self, XfdashboardViewManagerSignals[SIGNAL_UNREGISTERED], 0, data->ID);

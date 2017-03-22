@@ -31,6 +31,7 @@
 #include <libxfdashboard/binding.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -336,7 +337,9 @@ XfdashboardBinding* xfdashboard_binding_new_for_event(const ClutterEvent *inEven
 			break;
 
 		default:
-			g_debug("Cannot create binding instance for unsupported or invalid event type %d", eventType);
+			XFDASHBOARD_DEBUG(binding, MISC,
+								"Cannot create binding instance for unsupported or invalid event type %d",
+								eventType);
 
 			/* Release allocated resources */
 			g_object_unref(binding);

@@ -31,6 +31,7 @@
 #include <libxfdashboard/desktop-app-info.h>
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -626,7 +627,10 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 	{
 		GDBusConnection							*sessionBus;
 
-		g_debug("Launching %s succeeded with PID %ld.", garcon_menu_item_get_name(priv->item), (long)launchedPID);
+		XFDASHBOARD_DEBUG(self, APPLICATIONS,
+							"Launching %s succeeded with PID %ld.",
+							garcon_menu_item_get_name(priv->item),
+							(long)launchedPID);
 
 		/* Open connection to DBUS session bus and send notification about
 		 * successful launch of application. Then flush and close DBUS
@@ -1274,7 +1278,10 @@ GAppInfo* xfdashboard_desktop_app_info_new_from_desktop_id(const gchar *inDeskto
 		g_warning(_("Desktop ID '%s' not found"), inDesktopID);
 		return(NULL);
 	}
-	g_debug("Found desktop file '%s' for desktop ID '%s'", desktopFilename, inDesktopID);
+	XFDASHBOARD_DEBUG(NULL, APPLICATIONS,
+						"Found desktop file '%s' for desktop ID '%s'",
+						desktopFilename,
+						inDesktopID);
 
 	/* Create this class instance for desktop file found */
 	file=g_file_new_for_path(desktopFilename);

@@ -46,6 +46,7 @@
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Usually we would define a class in GObject system here but
@@ -78,7 +79,7 @@ static void _xfdashboard_window_tracker_window_on_screen_size_changed(Xfdashboar
 
 	stageWindow=WNCK_WINDOW(inUserData);
 
-	g_debug("Set fullscreen across all monitors using Xinerama");
+	XFDASHBOARD_DEBUG(inWindowTracker, WINDOWS, "Set fullscreen across all monitors using Xinerama");
 
 	/* If window manager does not support fullscreen across all monitors
 	 * return here.
@@ -133,12 +134,13 @@ static void _xfdashboard_window_tracker_window_on_screen_size_changed(Xfdashboar
 	topIndex=bottomIndex=leftIndex=rightIndex=0;
 	for(i=0; i<monitorsCount; i++)
 	{
-		g_debug("Checking edges at monitor %d with upper-left at %d,%d and lower-right at %d,%d [size: %dx%d]",
-					i,
-					monitors[i].x_org,
-					monitors[i].y_org,
-					monitors[i].x_org+monitors[i].width, monitors[i].y_org+monitors[i].height,
-					monitors[i].width, monitors[i].height);
+		XFDASHBOARD_DEBUG(inWindowTracker, WINDOWS,
+							"Checking edges at monitor %d with upper-left at %d,%d and lower-right at %d,%d [size: %dx%d]",
+							i,
+							monitors[i].x_org,
+							monitors[i].y_org,
+							monitors[i].x_org+monitors[i].width, monitors[i].y_org+monitors[i].height,
+							monitors[i].width, monitors[i].height);
 
 		if(left>monitors[i].x_org)
 		{
@@ -164,11 +166,12 @@ static void _xfdashboard_window_tracker_window_on_screen_size_changed(Xfdashboar
 			bottomIndex=i;
 		}
 	}
-	g_debug("Found edge monitors: left=%d (monitor %d), right=%d (monitor %d), top=%d (monitor %d), bottom=%d (monitor %d)",
-				left, leftIndex,
-				right, rightIndex,
-				top, topIndex,
-				bottom, bottomIndex);
+	XFDASHBOARD_DEBUG(inWindowTracker, WINDOWS,
+						"Found edge monitors: left=%d (monitor %d), right=%d (monitor %d), top=%d (monitor %d), bottom=%d (monitor %d)",
+						left, leftIndex,
+						right, rightIndex,
+						top, topIndex,
+						bottom, bottomIndex);
 
 	/* Get X atom for fullscreen-across-all-monitors */
 	atomFullscreenMonitors=XInternAtom(GDK_DISPLAY_XDISPLAY(display),
@@ -206,7 +209,7 @@ static void _xfdashboard_window_tracker_window_on_screen_size_changed(Xfdashboar
 
 	stageWindow=WNCK_WINDOW(inUserData);
 
-	g_debug("No support for multiple monitor: Setting fullscreen on primary monitor");
+	XFDASHBOARD_DEBUG(inWindowTracker, WINDOWS, "No support for multiple monitor: Setting fullscreen on primary monitor");
 
 	/* Get screen */
 	screen=gdk_screen_get_default();
@@ -223,9 +226,10 @@ static void _xfdashboard_window_tracker_window_on_screen_size_changed(Xfdashboar
 								WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y | WNCK_WINDOW_CHANGE_WIDTH | WNCK_WINDOW_CHANGE_HEIGHT,
 								geometry.x, geometry.y, geometry.width, geometry.height);
 
-	g_debug("Moving stage window to %d,%d and resize to %dx%d",
-				geometry.x, geometry.y,
-				geometry.width, geometry.height);
+	XFDASHBOARD_DEBUG(inWindowTracker, WINDOWS,
+						"Moving stage window to %d,%d and resize to %dx%d",
+						geometry.x, geometry.y,
+						geometry.width, geometry.height);
 #endif
 }
 
@@ -242,7 +246,9 @@ static void _xfdashboard_window_tracker_window_on_stage_state_changed(WnckWindow
 		!(inNewValue & WNCK_WINDOW_STATE_SKIP_TASKLIST))
 	{
 		wnck_window_set_skip_tasklist(WNCK_WINDOW(inWindow), TRUE);
-		g_debug("State 'skip-tasklist' for stage window %p needs reset", inWindow);
+		XFDASHBOARD_DEBUG(inWindow, WINDOWS,
+							"State 'skip-tasklist' for stage window %p needs reset",
+							inWindow);
 	}
 
 	/* Set 'skip-pager' if changed */
@@ -250,7 +256,9 @@ static void _xfdashboard_window_tracker_window_on_stage_state_changed(WnckWindow
 		!(inNewValue & WNCK_WINDOW_STATE_SKIP_PAGER))
 	{
 		wnck_window_set_skip_pager(WNCK_WINDOW(inWindow), TRUE);
-		g_debug("State 'skip-pager' for stage window %p needs reset", inWindow);
+		XFDASHBOARD_DEBUG(inWindow, WINDOWS,
+							"State 'skip-pager' for stage window %p needs reset",
+							inWindow);
 	}
 
 	/* Set 'make-above' if changed */
@@ -258,7 +266,9 @@ static void _xfdashboard_window_tracker_window_on_stage_state_changed(WnckWindow
 		!(inNewValue & WNCK_WINDOW_STATE_ABOVE))
 	{
 		wnck_window_make_above(WNCK_WINDOW(inWindow));
-		g_debug("State 'make-above' for stage window %p needs reset", inWindow);
+		XFDASHBOARD_DEBUG(inWindow, WINDOWS,
+							"State 'make-above' for stage window %p needs reset",
+							inWindow);
 	}
 }
 
@@ -288,10 +298,11 @@ static void _xfdashboard_window_tracker_window_on_stage_active_window_changed(Wn
 	if(reselect)
 	{
 		wnck_window_activate_transient(stageWindow, xfdashboard_window_tracker_get_time());
-		g_debug("Active window changed from %p (%s) to %p (%s) but stage window %p is visible and should be active one",
-					inPreviousWindow, inPreviousWindow ? wnck_window_get_name(inPreviousWindow) : "<nil>",
-					activeWindow, activeWindow ? wnck_window_get_name(activeWindow) : "<nil>",
-					stageWindow);
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Active window changed from %p (%s) to %p (%s) but stage window %p is visible and should be active one",
+							inPreviousWindow, inPreviousWindow ? wnck_window_get_name(inPreviousWindow) : "<nil>",
+							activeWindow, activeWindow ? wnck_window_get_name(activeWindow) : "<nil>",
+							stageWindow);
 	}
 }
 
@@ -789,7 +800,9 @@ void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTracke
 	if(!handlerID)
 	{
 		g_signal_connect(inWindow, "state-changed", G_CALLBACK(_xfdashboard_window_tracker_window_on_stage_state_changed), NULL);
-		g_debug("Connecting signal to 'state-changed' at window %p", inWindow);
+		XFDASHBOARD_DEBUG(inWindow, WINDOWS,
+							"Connecting signal to 'state-changed' at window %p",
+							inWindow);
 	}
 
 	signalID=g_signal_lookup("active-window-changed", WNCK_TYPE_SCREEN);
@@ -803,7 +816,10 @@ void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTracke
 	if(!handlerID)
 	{
 		g_signal_connect(screen, "active-window-changed", G_CALLBACK(_xfdashboard_window_tracker_window_on_stage_active_window_changed), inWindow);
-		g_debug("Connecting signal to 'active-window-changed' at screen %p of window %p", screen, inWindow);
+		XFDASHBOARD_DEBUG(screen, WINDOWS,
+							"Connecting signal to 'active-window-changed' at screen %p of window %p",
+							screen,
+							inWindow);
 	}
 
 	windowTracker=xfdashboard_window_tracker_get_default();
@@ -818,7 +834,9 @@ void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTracke
 	if(!handlerID)
 	{
 		g_signal_connect(windowTracker, "screen-size-changed", G_CALLBACK(_xfdashboard_window_tracker_window_on_screen_size_changed), inWindow);
-		g_debug("Connecting signal to 'screen-size-changed' at window %p", inWindow);
+		XFDASHBOARD_DEBUG(windowTracker, WINDOWS,
+							"Connecting signal to 'screen-size-changed' at window %p",
+							inWindow);
 	}
 	_xfdashboard_window_tracker_window_on_screen_size_changed(windowTracker,
 																xfdashboard_window_tracker_get_screen_width(windowTracker),
@@ -852,7 +870,10 @@ void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrac
 	if(handlerID)
 	{
 		g_signal_handler_disconnect(inWindow, handlerID);
-		g_debug("Disconnecting handler %lu for signal 'state-changed' at window %p", handlerID, inWindow);
+		XFDASHBOARD_DEBUG(inWindow, WINDOWS,
+							"Disconnecting handler %lu for signal 'state-changed' at window %p",
+							handlerID,
+							inWindow);
 	}
 
 	signalID=g_signal_lookup("active-window-changed", WNCK_TYPE_SCREEN);
@@ -866,7 +887,11 @@ void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrac
 	if(handlerID)
 	{
 		g_signal_handler_disconnect(screen, handlerID);
-		g_debug("Disconnecting handler %lu for signal 'active-window-changed' at screen %p of window %p", handlerID, screen, inWindow);
+		XFDASHBOARD_DEBUG(screen, WINDOWS,
+							"Disconnecting handler %lu for signal 'active-window-changed' at screen %p of window %p",
+							handlerID,
+							screen,
+							inWindow);
 	}
 
 	windowTracker=xfdashboard_window_tracker_get_default();
@@ -881,7 +906,10 @@ void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrac
 	if(handlerID)
 	{
 		g_signal_handler_disconnect(windowTracker, handlerID);
-		g_debug("Disconnecting handler %lu for signal 'screen-size-changed' at window %p", handlerID, inWindow);
+		XFDASHBOARD_DEBUG(windowTracker, WINDOWS,
+							"Disconnecting handler %lu for signal 'screen-size-changed' at window %p",
+							handlerID,
+							inWindow);
 	}
 	g_object_unref(windowTracker);
 }

@@ -31,6 +31,7 @@
 
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -321,7 +322,10 @@ static gboolean _xfdashboard_scrollbar_on_scroll_event(ClutterActor *inActor,
 
 		/* Unhandled directions */
 		default:
-			g_debug("Cannot handle scroll direction %d in %s", clutter_event_get_scroll_direction(inEvent), G_OBJECT_TYPE_NAME(self));
+			XFDASHBOARD_DEBUG(self, ACTOR,
+								"Cannot handle scroll direction %d in %s",
+								clutter_event_get_scroll_direction(inEvent),
+								G_OBJECT_TYPE_NAME(self));
 			return(CLUTTER_EVENT_PROPAGATE);
 	}
 
@@ -911,7 +915,11 @@ void xfdashboard_scrollbar_set_value(XfdashboardScrollbar *self, gfloat inValue)
 
 		oldValue=inValue;
 		inValue=MAX(0.0f, priv->range-priv->valueRange);
-		g_debug("Adjusting value %.2f to %.2f in scrollbar to fit into range [0-%.2f]", oldValue, inValue, priv->range);
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Adjusting value %.2f to %.2f in scrollbar to fit into range [0-%.2f]",
+							oldValue,
+							inValue,
+							priv->range);
 		enforceNewValue=TRUE;
 	}
 
@@ -972,10 +980,17 @@ void xfdashboard_scrollbar_set_range(XfdashboardScrollbar *self, gfloat inRange)
 	{
 		gfloat						oldValue;
 
-		g_debug("Adjusting value %.2f in scrollbar to fit into new range %.2f", priv->value, priv->range);
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Adjusting value %.2f in scrollbar to fit into new range %.2f",
+							priv->value,
+							priv->range);
 		oldValue=priv->value;
 		xfdashboard_scrollbar_set_value(self, priv->range);
-		g_debug("Adjusted value %.2f to %.2f in scrollbar to fit into new range %.2f", oldValue, priv->value, priv->range);
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Adjusted value %.2f to %.2f in scrollbar to fit into new range %.2f",
+							oldValue,
+							priv->value,
+							priv->range);
 	}
 
 	/* Thaw notification */

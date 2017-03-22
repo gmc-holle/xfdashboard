@@ -43,6 +43,7 @@
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/stage-interface.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -512,9 +513,10 @@ static gboolean _xfdashboard_workspace_selector_on_scroll_event(ClutterActor *in
 
 		/* Unhandled directions */
 		default:
-			g_debug("Cannot handle scroll direction %d in %s",
-						clutter_event_get_scroll_direction(inEvent),
-						G_OBJECT_TYPE_NAME(self));
+			XFDASHBOARD_DEBUG(self, ACTOR,
+								"Cannot handle scroll direction %d in %s",
+								clutter_event_get_scroll_direction(inEvent),
+								G_OBJECT_TYPE_NAME(self));
 			return(CLUTTER_EVENT_PROPAGATE);
 	}
 
@@ -943,10 +945,11 @@ static ClutterActor* _xfdashboard_workspace_selector_focusable_find_selection(Xf
 	if(!inSelection)
 	{
 		valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-		g_debug("No selection at %s, so select first child %s for direction %s",
-				G_OBJECT_TYPE_NAME(self),
-				selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
-				valueName);
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"No selection at %s, so select first child %s for direction %s",
+							G_OBJECT_TYPE_NAME(self),
+							selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+							valueName);
 		g_free(valueName);
 
 		return(CLUTTER_ACTOR(selection));
@@ -1042,11 +1045,12 @@ static ClutterActor* _xfdashboard_workspace_selector_focusable_find_selection(Xf
 	}
 
 	/* Return new selection found */
-	g_debug("Selecting %s at %s for current selection %s in direction %u",
-			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
-			G_OBJECT_TYPE_NAME(self),
-			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
-			inDirection);
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Selecting %s at %s for current selection %s in direction %u",
+						selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+						G_OBJECT_TYPE_NAME(self),
+						inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+						inDirection);
 
 	return(CLUTTER_ACTOR(selection));
 }

@@ -34,6 +34,7 @@
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -505,7 +506,12 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 		gchar					*defaultsValStr;
 		GParamSpec				*realParamSpec;
 
-		g_debug("Got param specs for %p (%s) with class '%s' and pseudo-class '%s'", self, G_OBJECT_TYPE_NAME(self), priv->styleClasses, priv->stylePseudoClasses);
+		XFDASHBOARD_DEBUG(self, STYLE,
+							"Got param specs for %p (%s) with class '%s' and pseudo-class '%s'",
+							self,
+							G_OBJECT_TYPE_NAME(self),
+							priv->styleClasses,
+							priv->stylePseudoClasses);
 
 		g_hash_table_iter_init(&hashIter, possibleStyleSet);
 		while(g_hash_table_iter_next(&hashIter, (gpointer*)&defaultsKey, (gpointer*)&paramSpec))
@@ -516,13 +522,18 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 			g_param_value_set_default(realParamSpec, &defaultsVal);
 
 			defaultsValStr=g_strdup_value_contents(&defaultsVal);
-			g_debug("%d: param spec [%s] %s=%s\n", ++i, G_OBJECT_CLASS_NAME(klass), defaultsKey, defaultsValStr);
+			XFDASHBOARD_DEBUG(self, STYLE,
+								"%d: param spec [%s] %s=%s\n",
+								++i,
+								G_OBJECT_CLASS_NAME(klass),
+								defaultsKey,
+								defaultsValStr);
 			g_free(defaultsValStr);
 
 			g_value_unset(&defaultsVal);
 		}
 
-		g_debug("End of param specs");
+		XFDASHBOARD_DEBUG(self, STYLE, "End of param specs");
 	}
 #endif
 
@@ -534,15 +545,25 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 	{
 		gint					i=0;
 
-		g_debug("Got styles from theme for %p (%s) with class '%s' and pseudo-class '%s'", self, G_OBJECT_TYPE_NAME(self), priv->styleClasses, priv->stylePseudoClasses);
+		XFDASHBOARD_DEBUG(self, STYLE,
+							"Got styles from theme for %p (%s) with class '%s' and pseudo-class '%s'",
+							self,
+							G_OBJECT_TYPE_NAME(self),
+							priv->styleClasses,
+							priv->stylePseudoClasses);
 
 		g_hash_table_iter_init(&hashIter, themeStyleSet);
 		while(g_hash_table_iter_next(&hashIter, (gpointer*)&styleName, (gpointer*)&styleValue))
 		{
-			g_debug("%d: [%s] %s=%s\n", ++i, styleValue->source, (gchar*)styleName, styleValue->string);
+			XFDASHBOARD_DEBUG(self, STYLE,
+								"%d: [%s] %s=%s\n",
+								++i,
+								styleValue->source,
+								(gchar*)styleName,
+								styleValue->string);
 		}
 
-		g_debug("End of styles from theme");
+		XFDASHBOARD_DEBUG(self, STYLE, "End of styles from theme");
 	}
 #endif
 
@@ -589,7 +610,11 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 				gchar					*valstr;
 
 				valstr=g_strdup_value_contents(&propertyValue);
-				g_debug("Setting theme value of style property [%s] %s=%s\n", G_OBJECT_CLASS_NAME(klass), styleName, valstr);
+				XFDASHBOARD_DEBUG(self, STYLE,
+									"Setting theme value of style property [%s] %s=%s\n",
+									G_OBJECT_CLASS_NAME(klass),
+									styleName,
+									valstr);
 				g_free(valstr);
 			}
 #endif
@@ -645,7 +670,11 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 				gchar					*valstr;
 
 				valstr=g_strdup_value_contents(&propertyValue);
-				g_debug("Restoring default value of style property [%s] %s=%s\n", G_OBJECT_CLASS_NAME(klass), styleName, valstr);
+				XFDASHBOARD_DEBUG(self, STYLE,
+									"Restoring default value of style property [%s] %s=%s\n",
+									G_OBJECT_CLASS_NAME(klass),
+									styleName,
+									valstr);
 				g_free(valstr);
 			}
 #endif
@@ -1043,8 +1072,9 @@ void xfdashboard_actor_base_class_finalize(XfdashboardActorClass *klass)
 		{
 			g_param_spec_pool_remove(_xfdashboard_actor_stylable_properties_pool, paramSpec);
 
-			g_debug("Unregistered stylable property named '%s' for class '%s'",
-					g_param_spec_get_name(paramSpec), G_OBJECT_CLASS_NAME(klass));
+			XFDASHBOARD_DEBUG(NULL, STYLE,
+								"Unregistered stylable property named '%s' for class '%s'",
+								g_param_spec_get_name(paramSpec), G_OBJECT_CLASS_NAME(klass));
 
 			g_param_spec_unref(paramSpec);
 		}
@@ -1202,8 +1232,9 @@ void xfdashboard_actor_install_stylable_property(XfdashboardActorClass *klass, G
 									g_param_spec_ref(inParamSpec),
 									(GDestroyNotify)g_param_spec_unref);
 	g_param_spec_pool_insert(_xfdashboard_actor_stylable_properties_pool, stylableParamSpec, G_OBJECT_CLASS_TYPE(klass));
-	g_debug("Registered stylable property '%s' for class '%s'",
-				g_param_spec_get_name(inParamSpec), G_OBJECT_CLASS_NAME(klass));
+	XFDASHBOARD_DEBUG(NULL, STYLE,
+						"Registered stylable property '%s' for class '%s'",
+						g_param_spec_get_name(inParamSpec), G_OBJECT_CLASS_NAME(klass));
 }
 
 void xfdashboard_actor_install_stylable_property_by_name(XfdashboardActorClass *klass, const gchar *inParamName)

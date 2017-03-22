@@ -38,6 +38,7 @@
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/application.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this interface in GObject system */
@@ -668,14 +669,17 @@ void xfdashboard_focusable_set_focus(XfdashboardFocusable *self)
 			xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(selection), "selected");
 		}
 
-		g_debug("Set selection to %s for focused actor %s",
-				G_OBJECT_TYPE_NAME(self),
-				selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>");
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Set selection to %s for focused actor %s",
+							G_OBJECT_TYPE_NAME(self),
+							selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>");
 	}
 
 	/* Emit signal */
 	g_signal_emit(self, XfdashboardFocusableSignals[SIGNAL_FOCUS_GAINED], 0, self);
-	g_debug("Emitted signal 'focus-gained' for focused actor %s", G_OBJECT_TYPE_NAME(self));
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Emitted signal 'focus-gained' for focused actor %s",
+						G_OBJECT_TYPE_NAME(self));
 }
 
 /* Call virtual function "unset_focus" */
@@ -713,14 +717,17 @@ void xfdashboard_focusable_unset_focus(XfdashboardFocusable *self)
 			xfdashboard_stylable_remove_pseudo_class(XFDASHBOARD_STYLABLE(selection), "selected");
 		}
 
-		g_debug("Unstyled selection %s for focus loosing actor %s",
-				G_OBJECT_TYPE_NAME(self),
-				selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>");
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Unstyled selection %s for focus loosing actor %s",
+							G_OBJECT_TYPE_NAME(self),
+							selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>");
 	}
 
 	/* Emit signal */
 	g_signal_emit(self, XfdashboardFocusableSignals[SIGNAL_FOCUS_LOST], 0, self);
-	g_debug("Emitted signal 'focus-lost' for focused actor %s", G_OBJECT_TYPE_NAME(self));
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Emitted signal 'focus-lost' for focused actor %s",
+						G_OBJECT_TYPE_NAME(self));
 }
 
 /* Call virtual function "supports_selection" */

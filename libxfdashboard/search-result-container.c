@@ -42,6 +42,7 @@
 #include <libxfdashboard/drag-action.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -911,13 +912,14 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_ic
 	if(selection && needsWrap && !inAllowWrap) selection=NULL;
 
 	/* Return new selection */
-	g_debug("Selecting %s in icon mode at %s for current selection %s in direction %u with wrapping %s and wrapping %s",
-			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
-			G_OBJECT_TYPE_NAME(self),
-			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
-			inDirection,
-			inAllowWrap ? "allowed" : "denied",
-			needsWrap ? "needed" : "not needed");
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Selecting %s in icon mode at %s for current selection %s in direction %u with wrapping %s and wrapping %s",
+						selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+						G_OBJECT_TYPE_NAME(self),
+						inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+						inDirection,
+						inAllowWrap ? "allowed" : "denied",
+						needsWrap ? "needed" : "not needed");
 
 	return(selection);
 }
@@ -1061,13 +1063,14 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_li
 	if(selection && needsWrap && !inAllowWrap) selection=NULL;
 
 	/* Return new selection */
-	g_debug("Selecting %s in list mode at %s for current selection %s in direction %u with wrapping %s and wrapping %s",
-			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
-			G_OBJECT_TYPE_NAME(self),
-			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
-			inDirection,
-			inAllowWrap ? "allowed" : "denied",
-			needsWrap ? "needed" : "not needed");
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Selecting %s in list mode at %s for current selection %s in direction %u with wrapping %s and wrapping %s",
+						selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+						G_OBJECT_TYPE_NAME(self),
+						inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+						inDirection,
+						inAllowWrap ? "allowed" : "denied",
+						needsWrap ? "needed" : "not needed");
 
 	return(selection);
 }
@@ -1821,9 +1824,10 @@ ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSear
 	if(!inSelection)
 	{
 		newSelection=clutter_actor_get_first_child(priv->itemsContainer);
-		g_debug("No selection for %s, so select first child of result container for provider %s",
-				G_OBJECT_TYPE_NAME(self),
-				priv->provider ? G_OBJECT_TYPE_NAME(priv->provider) : "<unknown provider>");
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"No selection for %s, so select first child of result container for provider %s",
+							G_OBJECT_TYPE_NAME(self),
+							priv->provider ? G_OBJECT_TYPE_NAME(priv->provider) : "<unknown provider>");
 
 		return(newSelection);
 	}
@@ -1893,12 +1897,13 @@ ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSear
 	if(newSelection) selection=newSelection;
 
 	/* Return new selection found */
-	g_debug("Selecting %s at %s for current selection %s in direction %u with wrapping %s",
-			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
-			G_OBJECT_TYPE_NAME(self),
-			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
-			inDirection,
-			inAllowWrap ? "allowed" : "denied");
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Selecting %s at %s for current selection %s in direction %u with wrapping %s",
+						selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+						G_OBJECT_TYPE_NAME(self),
+						inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+						inDirection,
+						inAllowWrap ? "allowed" : "denied");
 
 	return(selection);
 }

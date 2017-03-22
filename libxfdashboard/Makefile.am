@@ -5,6 +5,7 @@ AM_CPPFLAGS = \
 	-DPACKAGE_DATADIR=\"$(datadir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
 	-DPACKAGE_LIBDIR=\"$(libdir)\" \
+	$(XFDASHBOARD_DEBUG_CFLAGS) \
 	$(PLATFORM_CPPFLAGS)
 
 pkgconfigdir = $(libdir)/pkgconfig
@@ -41,6 +42,7 @@ libxfdashboard_la_headers = \
 	collapse-box.h \
 	compat.h \
 	css-selector.h \
+	debug.h \
 	desktop-app-info.h \
 	drag-action.h \
 	drop-action.h \
@@ -114,6 +116,7 @@ libxfdashboard_la_SOURCES = \
 	click-action.c \
 	collapse-box.c \
 	css-selector.c \
+	debug.c \
 	desktop-app-info.c \
 	drag-action.c \
 	drop-action.c \

@@ -33,6 +33,7 @@
 #include <gio/gio.h>
 
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -360,7 +361,9 @@ static gchar* _xfdashboard_theme_lookup_path_for_theme(XfdashboardTheme *self,
 		if(envPath)
 		{
 			themeFile=g_build_filename(envPath, XFDASHBOARD_THEME_FILE, NULL);
-			g_debug("Trying theme file: %s", themeFile);
+			XFDASHBOARD_DEBUG(self, THEME,
+								"Trying theme file: %s",
+								themeFile);
 			if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
 			{
 				g_free(themeFile);
@@ -373,7 +376,9 @@ static gchar* _xfdashboard_theme_lookup_path_for_theme(XfdashboardTheme *self,
 	if(!themeFile)
 	{
 		themeFile=g_build_filename(g_get_user_data_dir(), "themes", inThemeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_FILE, NULL);
-		g_debug("Trying theme file: %s", themeFile);
+		XFDASHBOARD_DEBUG(self, THEME,
+							"Trying theme file: %s",
+							themeFile);
 		if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
 		{
 			g_free(themeFile);
@@ -390,7 +395,9 @@ static gchar* _xfdashboard_theme_lookup_path_for_theme(XfdashboardTheme *self,
 		if(homeDirectory)
 		{
 			themeFile=g_build_filename(homeDirectory, ".themes", inThemeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_FILE, NULL);
-			g_debug("Trying theme file: %s", themeFile);
+			XFDASHBOARD_DEBUG(self, THEME,
+								"Trying theme file: %s",
+								themeFile);
 			if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
 			{
 				g_free(themeFile);
@@ -403,7 +410,9 @@ static gchar* _xfdashboard_theme_lookup_path_for_theme(XfdashboardTheme *self,
 	if(!themeFile)
 	{
 		themeFile=g_build_filename(PACKAGE_DATADIR, "themes", inThemeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_FILE, NULL);
-		g_debug("Trying theme file: %s", themeFile);
+		XFDASHBOARD_DEBUG(self, THEME,
+							"Trying theme file: %s",
+							themeFile);
 		if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
 		{
 			g_free(themeFile);

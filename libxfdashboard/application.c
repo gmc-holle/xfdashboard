@@ -61,6 +61,7 @@
 #include <libxfdashboard/plugins-manager.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -251,7 +252,7 @@ static void _xfdashboard_application_on_session_quit(XfdashboardApplication *sel
 	g_return_if_fail(XFCE_IS_SM_CLIENT(inUserData));
 
 	/* Force application to quit */
-	g_debug("Received 'quit' from session management client - initiating shutdown");
+	XFDASHBOARD_DEBUG(self, MISC, "Received 'quit' from session management client - initiating shutdown");
 	_xfdashboard_application_quit(self, TRUE);
 }
 
@@ -533,12 +534,14 @@ static void _xfdashboard_application_switch_to_view(XfdashboardApplication *self
 	if(!inInternalViewName ||
 		!inInternalViewName[0])
 	{
-		g_debug("No view to switch to specified");
+		XFDASHBOARD_DEBUG(self, MISC, "No view to switch to specified");
 		return;
 	}
 
 	/* Tell stage to switch requested view */
-	g_debug("Trying to switch to view '%s'", inInternalViewName);
+	XFDASHBOARD_DEBUG(self, MISC,
+						"Trying to switch to view '%s'",
+						inInternalViewName);
 	xfdashboard_stage_set_switch_to_view(priv->stage, inInternalViewName);
 }
 
@@ -592,6 +595,10 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	 */
 	g_print("** To get debug messages set environment variable G_MESSAGES_DEBUG to %s\n", PACKAGE_NAME);
 	g_print("** e.g.: G_MESSAGES_DEBUG=%s %s\n", PACKAGE_NAME, inArgv[0]);
+#ifdef XFDASHBOARD_ENABLE_DEBUG
+	g_print("** Use environment variable XFDASHBOARD_DEBUG to enable debug messages also as G_MESSAGES_DEBUG=%s will be deprecated\n",
+				PACKAGE_NAME);
+#endif
 #endif
 
 	if(!g_option_context_parse(context, &inArgc, &inArgv, &error))
@@ -612,6 +619,51 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 		return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
 	}
 
+	/* Set up debug flags */
+#ifdef XFDASHBOARD_ENABLE_DEBUG
+	{
+		const gchar					*environment;
+		static const GDebugKey		debugKeys[]=
+									{
+										{ "misc", XFDASHBOARD_DEBUG_MISC },
+										{ "actor", XFDASHBOARD_DEBUG_ACTOR },
+										{ "style", XFDASHBOARD_DEBUG_STYLE },
+										{ "styling", XFDASHBOARD_DEBUG_STYLE },
+										{ "theme", XFDASHBOARD_DEBUG_THEME },
+										{ "apps", XFDASHBOARD_DEBUG_APPLICATIONS },
+										{ "applications", XFDASHBOARD_DEBUG_APPLICATIONS },
+										{ "images", XFDASHBOARD_DEBUG_IMAGES },
+										{ "windows", XFDASHBOARD_DEBUG_WINDOWS },
+										{ "window-tracker", XFDASHBOARD_DEBUG_WINDOWS },
+									};
+
+		/* Parse debug flags */
+		environment=g_getenv("XFDASHBOARD_DEBUG");
+		if(environment)
+		{
+			xfdashboard_debug_flags=
+				g_parse_debug_string(environment,
+										debugKeys,
+										G_N_ELEMENTS(debugKeys));
+			environment=NULL;
+		}
+
+		/* Parse object names to debug */
+		environment=g_getenv("XFDASHBOARD_DEBUG");
+		if(environment)
+		{
+			if(G_UNLIKELY(xfdashboard_debug_classes))
+			{
+				g_strfreev(xfdashboard_debug_classes);
+				xfdashboard_debug_classes=NULL;
+			}
+
+			xfdashboard_debug_classes=g_strsplit(environment, ",", -1);
+			environment=NULL;
+		}
+	}
+#endif
+
 	/* If this application instance is a remote instance do not handle any
 	 * command-line argument. The arguments will be sent to the primary instance,
 	 * handled there and the exit code will be sent back to the remote instance.
@@ -621,7 +673,7 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	 */
 	if(g_application_get_is_remote(G_APPLICATION(self)))
 	{
-		g_debug("Do not handle command-line parameters on remote application instance");
+		XFDASHBOARD_DEBUG(self, MISC, "Do not handle command-line parameters on remote application instance");
 
 		/* Release allocated resources */
 		if(optionSwitchToView) g_free(optionSwitchToView);
@@ -632,7 +684,7 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 		 */
 		return(XFDASHBOARD_APPLICATION_ERROR_NONE);
 	}
-	g_debug("Handling command-line parameters on primary application instance");
+	XFDASHBOARD_DEBUG(self, MISC, "Handling command-line parameters on primary application instance");
 
 	/* Handle options: restart
 	 *
@@ -645,7 +697,7 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 		priv->initialized)
 	{
 		/* Quit existing instance for restart */
-		g_debug("Received request to restart application!");
+		XFDASHBOARD_DEBUG(self, MISC, "Received request to restart application!");
 		_xfdashboard_application_quit(self, TRUE);
 
 		/* Release allocated resources */
@@ -665,7 +717,7 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	if(optionQuit)
 	{
 		/* Quit existing instance */
-		g_debug("Received request to quit running instance!");
+		XFDASHBOARD_DEBUG(self, MISC, "Received request to quit running instance!");
 		_xfdashboard_application_quit(self, TRUE);
 
 		/* Release allocated resources */

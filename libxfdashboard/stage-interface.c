@@ -34,6 +34,7 @@
 #include <libxfdashboard/stage.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -94,11 +95,12 @@ static void _xfdashboard_stage_interface_on_geometry_changed(XfdashboardStageInt
 	clutter_actor_set_position(CLUTTER_ACTOR(self), x, y);
 	clutter_actor_set_size(CLUTTER_ACTOR(self), w, h);
 
-	g_debug("Stage interface moved to %d,%d and resized to %dx%d because %s monitor %d changed geometry",
-				x, y,
-				w, h,
-				xfdashboard_window_tracker_monitor_is_primary(priv->monitor) ? "primary" : "non-primary",
-				xfdashboard_window_tracker_monitor_get_number(priv->monitor));
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Stage interface moved to %d,%d and resized to %dx%d because %s monitor %d changed geometry",
+						x, y,
+						w, h,
+						xfdashboard_window_tracker_monitor_is_primary(priv->monitor) ? "primary" : "non-primary",
+						xfdashboard_window_tracker_monitor_get_number(priv->monitor));
 }
 
 /* Monitor changed primary state */
@@ -118,9 +120,10 @@ static void _xfdashboard_stage_interface_on_primary_changed(XfdashboardStageInte
 	if(isPrimary) xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), "primary-monitor");
 		else xfdashboard_stylable_remove_class(XFDASHBOARD_STYLABLE(self), "primary-monitor");
 
-	g_debug("Stage interface changed primary state to %s because of monitor %d",
-				xfdashboard_window_tracker_monitor_is_primary(priv->monitor) ? "primary" : "non-primary",
-				xfdashboard_window_tracker_monitor_get_number(priv->monitor));
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Stage interface changed primary state to %s because of monitor %d",
+						xfdashboard_window_tracker_monitor_is_primary(priv->monitor) ? "primary" : "non-primary",
+						xfdashboard_window_tracker_monitor_get_number(priv->monitor));
 }
 
 /* IMPLEMENTATION: ClutterActor */

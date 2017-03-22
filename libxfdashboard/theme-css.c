@@ -39,6 +39,7 @@
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/css-selector.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -975,7 +976,9 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 		ioScanner->config=scannerConfig;
 
 		/* Function arguments must begin with '('. Check for it and parse function arguments ... */
-		g_debug("Fetching arguments to for calling function '%s'", identifier);
+		XFDASHBOARD_DEBUG(self, THEME,
+							"Fetching arguments to for calling function '%s'",
+							identifier);
 
 		token=g_scanner_get_next_token(ioScanner);
 		if(token==G_TOKEN_LEFT_PAREN)
@@ -1028,10 +1031,11 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 								else
 								{
 									error=TRUE;
-									g_debug("Could not resolve '%s' for argument #%d of function '%s'",
-												orginalValue,
-												g_list_length(arguments),
-												identifier);
+									XFDASHBOARD_DEBUG(self, THEME,
+														"Could not resolve '%s' for argument #%d of function '%s'",
+														orginalValue,
+														g_list_length(arguments),
+														identifier);
 								}
 
 							/* Set new scanner config again to parse remaining arguments */
@@ -1058,9 +1062,10 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 						{
 							/* Add function argument to list of arguments */
 							arguments=g_list_append(arguments, arg);
-							g_debug("Added argument #%d: '%s'",
-										g_list_length(arguments),
-										arg);
+							XFDASHBOARD_DEBUG(self, THEME,
+												"Added argument #%d: '%s'",
+												g_list_length(arguments),
+												arg);
 
 							/* Prepare for next argument */
 							arg=NULL;
@@ -1141,9 +1146,10 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 			{
 				/* Add function argument to list of arguments */
 				arguments=g_list_append(arguments, arg);
-				g_debug("Added final argument #%d: '%s'",
-							g_list_length(arguments),
-							arg);
+				XFDASHBOARD_DEBUG(self, THEME,
+									"Added final argument #%d: '%s'",
+									g_list_length(arguments),
+									arg);
 
 				/* Does not make sense but just in case - prepare for next argument ;) */
 				arg=NULL;
@@ -1191,7 +1197,10 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 			/* Initialize for function call */
 			functionError=NULL;
 
-			g_debug("Calling registered function %s with %d arguments", identifier, g_list_length(arguments));
+			XFDASHBOARD_DEBUG(self, THEME,
+								"Calling registered function %s with %d arguments",
+								identifier,
+								g_list_length(arguments));
 			functionSuccess=(functionCallback)(self, identifier, arguments, &functionValue, &functionError);
 			if(functionSuccess)
 			{
@@ -1225,16 +1234,21 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 				g_value_unset(&stringValue);
 				g_value_unset(&functionValue);
 
-				g_debug("Calling function %s with %d arguments succeeded with result: %s", identifier, g_list_length(arguments), result);
+				XFDASHBOARD_DEBUG(self, THEME,
+									"Calling function %s with %d arguments succeeded with result: %s",
+									identifier,
+									g_list_length(arguments),
+									result);
 			}
 				else
 				{
 					gchar		*message;
 
-					g_debug("Calling function %s with %d arguments failed: %s",
-								identifier,
-								g_list_length(arguments),
-								(functionError && functionError->message) ? functionError->message : _("Unknown error"));
+					XFDASHBOARD_DEBUG(self, THEME,
+										"Calling function %s with %d arguments failed: %s",
+										identifier,
+										g_list_length(arguments),
+										(functionError && functionError->message) ? functionError->message : _("Unknown error"));
 
 					/* Set error message */
 					if(functionError && functionError->message)
@@ -1406,12 +1420,17 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardT
 		/* Call ourselve recursive (via _xfdashboard_theme_css_resolve_at_identifier_by_string)
 		 * to resolve any '@' identifier which might be in value resolved this time.
 		 */
-		g_debug("Resolving css value '%s'", value);
+		XFDASHBOARD_DEBUG(self, THEME,
+							"Resolving css value '%s'",
+							value);
 		resolvedValue=_xfdashboard_theme_css_resolve_at_identifier_by_string(self,
 																				value,
 																				inScopeScanner,
 																				inScopeSelectors);
-		g_debug("Resolved css value '%s' to '%s' recursively", value, resolvedValue);
+		XFDASHBOARD_DEBUG(self, THEME,
+							"Resolved css value '%s' to '%s' recursively",
+							value,
+							resolvedValue);
 
 		/* Release old value and new one */
 		g_free(value);
@@ -1621,12 +1640,17 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 		gchar		*resolvedValue;
 
 		/* Resolve value */
-		g_debug("Resolving css value '%s'", *outValue);
+		XFDASHBOARD_DEBUG(self, THEME,
+							"Resolving css value '%s'",
+							*outValue);
 		resolvedValue=_xfdashboard_theme_css_resolve_at_identifier_by_string(self,
 																				*outValue,
 																				inScanner,
 																				inScopeSelectors);
-		g_debug("Resolved css value '%s' to '%s'", *outValue, resolvedValue);
+		XFDASHBOARD_DEBUG(self, THEME,
+							"Resolved css value '%s' to '%s'",
+							*outValue,
+							resolvedValue);
 
 		/* Release old value and set new one */
 		g_free(*outValue);
@@ -1853,10 +1877,11 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 			tempFilename=g_build_filename(cssPath, filename, NULL);
 			if(g_file_test(tempFilename, G_FILE_TEST_EXISTS))
 			{
-				g_debug("Resolved relative path '%s' to import to '%s' which is relative to current css file '%s'.",
-							filename,
-							tempFilename,
-							inScanner->input_name);
+				XFDASHBOARD_DEBUG(self, THEME,
+									"Resolved relative path '%s' to import to '%s' which is relative to current css file '%s'.",
+									filename,
+									tempFilename,
+									inScanner->input_name);
 
 				g_free(filename);
 				filename=g_strdup(tempFilename);
@@ -1875,10 +1900,11 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 		{
 			tempFilename=g_build_filename(priv->themePath, filename, NULL);
 
-			g_debug("Resolved relative path '%s' to import to '%s' which is relative to theme path '%s'.",
-						filename,
-						tempFilename,
-						priv->themePath);
+			XFDASHBOARD_DEBUG(self, THEME,
+								"Resolved relative path '%s' to import to '%s' which is relative to theme path '%s'.",
+								filename,
+								tempFilename,
+								priv->themePath);
 
 			g_free(filename);
 			filename=g_strdup(tempFilename);
@@ -1922,7 +1948,9 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 		return(G_TOKEN_ERROR);
 	}
 
-	g_debug("Imported CSS file '%s'", filename);
+	XFDASHBOARD_DEBUG(self, THEME,
+						"Imported CSS file '%s'",
+						filename);
 
 	/* Correct line offset */
 	priv->offsetLine-=oldLineOffset;
@@ -2616,19 +2644,21 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 	if(selectors)
 	{
 		priv->selectors=g_list_concat(priv->selectors, selectors);
-		g_debug("Successfully parsed '%s' and added %d selectors - total %d selectors",
-					inPath,
-					g_list_length(selectors),
-					g_list_length(priv->selectors));
+		XFDASHBOARD_DEBUG(self, THEME,
+							"Successfully parsed '%s' and added %d selectors - total %d selectors",
+							inPath,
+							g_list_length(selectors),
+							g_list_length(priv->selectors));
 	}
 
 	if(styles)
 	{
 		priv->styles=g_list_concat(priv->styles, styles);
-		g_debug("Successfully parsed '%s' and added %d styles - total %d styles",
-					inPath,
-					g_list_length(styles),
-					g_list_length(priv->styles));
+		XFDASHBOARD_DEBUG(self, THEME,
+							"Successfully parsed '%s' and added %d styles - total %d styles",
+							inPath,
+							g_list_length(styles),
+							g_list_length(priv->styles));
 	}
 
 	/* Release allocated resources */
@@ -2674,7 +2704,9 @@ GHashTable* xfdashboard_theme_css_get_properties(XfdashboardThemeCSS *self,
 									(styleID) ? styleID : "",
 									(stylePseudoClasses) ? ":" : "",
 									(stylePseudoClasses) ? stylePseudoClasses : "");
-	g_debug("Looking up matches for %s ", styleSelector);
+	XFDASHBOARD_DEBUG(self, STYLE,
+						"Looking up matches for %s ",
+						styleSelector);
 
 	timer=g_timer_new();
 #endif
@@ -2728,10 +2760,11 @@ GHashTable* xfdashboard_theme_css_get_properties(XfdashboardThemeCSS *self,
 	g_list_free(matches);
 
 #ifdef DEBUG
-	g_debug("Found %u properties for %s in %f seconds" ,
-				g_hash_table_size(result),
-				styleSelector,
-				g_timer_elapsed(timer, NULL));
+	XFDASHBOARD_DEBUG(self, STYLE,
+						"Found %u properties for %s in %f seconds" ,
+						g_hash_table_size(result),
+						styleSelector,
+						g_timer_elapsed(timer, NULL));
 	g_timer_destroy(timer);
 	g_free(styleSelector);
 #endif

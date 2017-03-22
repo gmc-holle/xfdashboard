@@ -53,6 +53,7 @@
 #include <libxfdashboard/popup-menu-item-separator.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -178,10 +179,11 @@ static ClutterActor* _xfdashboard_quicklaunch_get_actor_for_appinfo(XfdashboardQ
 	 */
 	if(!XFDASHBOARD_IS_DESKTOP_APP_INFO(inAppInfo))
 	{
-		g_debug("%s is derived from %s but not derived %s",
-					G_OBJECT_TYPE_NAME(inAppInfo),
-					g_type_name(G_TYPE_APP_INFO),
-					g_type_name(XFDASHBOARD_TYPE_DESKTOP_APP_INFO));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"%s is derived from %s but not derived %s",
+							G_OBJECT_TYPE_NAME(inAppInfo),
+							g_type_name(G_TYPE_APP_INFO),
+							g_type_name(XFDASHBOARD_TYPE_DESKTOP_APP_INFO));
 		return(NULL);
 	}
 
@@ -240,10 +242,11 @@ static gboolean _xfdashboard_quicklaunch_has_favourite_appinfo(XfdashboardQuickl
 	 */
 	if(!XFDASHBOARD_IS_DESKTOP_APP_INFO(inAppInfo))
 	{
-		g_debug("%s is derived from %s but not derived %s",
-					G_OBJECT_TYPE_NAME(inAppInfo),
-					g_type_name(G_TYPE_APP_INFO),
-					g_type_name(XFDASHBOARD_TYPE_DESKTOP_APP_INFO));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"%s is derived from %s but not derived %s",
+							G_OBJECT_TYPE_NAME(inAppInfo),
+							g_type_name(G_TYPE_APP_INFO),
+							g_type_name(XFDASHBOARD_TYPE_DESKTOP_APP_INFO));
 		return(TRUE);
 	}
 
@@ -1615,9 +1618,10 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 	{
 		currentSelectionAppInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(priv->selectedItem));
 
-		g_debug("Going to destroy current selection %p (%s) for desktop ID '%s'",
-					priv->selectedItem, G_OBJECT_TYPE_NAME(priv->selectedItem),
-					g_app_info_get_id(xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(priv->selectedItem))));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Going to destroy current selection %p (%s) for desktop ID '%s'",
+							priv->selectedItem, G_OBJECT_TYPE_NAME(priv->selectedItem),
+							g_app_info_get_id(xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(priv->selectedItem))));
 	}
 
 	/* Remove all application buttons */
@@ -1661,9 +1665,10 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 			{
 				xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), actor);
 
-				g_debug("Select newly created actor %p (%s) because it matches desktop ID '%s'",
-							actor, G_OBJECT_TYPE_NAME(actor),
-							g_app_info_get_id(xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(actor))));
+				XFDASHBOARD_DEBUG(self, ACTOR,
+									"Select newly created actor %p (%s) because it matches desktop ID '%s'",
+									actor, G_OBJECT_TYPE_NAME(actor),
+									g_app_info_get_id(xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(actor))));
 			}
 		}
 
@@ -2070,17 +2075,19 @@ static gboolean _xfdashboard_quicklaunch_selection_add_favourite(XfdashboardQuic
 	currentSelection=xfdashboard_focusable_get_selection(inSource);
 	if(!currentSelection)
 	{
-		g_debug("Source actor %s has no selection and no favourite can be added.",
-					G_OBJECT_TYPE_NAME(inSource));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Source actor %s has no selection and no favourite can be added.",
+							G_OBJECT_TYPE_NAME(inSource));
 		return(CLUTTER_EVENT_STOP);
 	}
 
 	if(!XFDASHBOARD_IS_APPLICATION_BUTTON(currentSelection))
 	{
-		g_debug("Current selection at source actor %s has type %s but only selections of type %s can be added.",
-					G_OBJECT_TYPE_NAME(inSource),
-					G_OBJECT_TYPE_NAME(currentSelection),
-					g_type_name(XFDASHBOARD_TYPE_APPLICATION_BUTTON));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Current selection at source actor %s has type %s but only selections of type %s can be added.",
+							G_OBJECT_TYPE_NAME(inSource),
+							G_OBJECT_TYPE_NAME(currentSelection),
+							g_type_name(XFDASHBOARD_TYPE_APPLICATION_BUTTON));
 		return(CLUTTER_EVENT_STOP);
 	}
 
@@ -2155,25 +2162,28 @@ static gboolean _xfdashboard_quicklaunch_selection_remove_favourite(XfdashboardQ
 	currentSelection=xfdashboard_focusable_get_selection(inSource);
 	if(!currentSelection)
 	{
-		g_debug("Source actor %s has no selection so no favourite can be removed.",
-					G_OBJECT_TYPE_NAME(inSource));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Source actor %s has no selection so no favourite can be removed.",
+							G_OBJECT_TYPE_NAME(inSource));
 		return(CLUTTER_EVENT_STOP);
 	}
 
 	if(!XFDASHBOARD_IS_APPLICATION_BUTTON(currentSelection))
 	{
-		g_debug("Current selection at source actor %s has type %s but only selections of type %s can be removed.",
-					G_OBJECT_TYPE_NAME(inSource),
-					G_OBJECT_TYPE_NAME(currentSelection),
-					g_type_name(XFDASHBOARD_TYPE_APPLICATION_BUTTON));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Current selection at source actor %s has type %s but only selections of type %s can be removed.",
+							G_OBJECT_TYPE_NAME(inSource),
+							G_OBJECT_TYPE_NAME(currentSelection),
+							g_type_name(XFDASHBOARD_TYPE_APPLICATION_BUTTON));
 		return(CLUTTER_EVENT_STOP);
 	}
 
 	if(priv->dragPreviewIcon && currentSelection==priv->dragPreviewIcon)
 	{
-		g_debug("Current selection at source actor %s is %s which is the drag preview icon which cannot be removed.",
-					G_OBJECT_TYPE_NAME(inSource),
-					G_OBJECT_TYPE_NAME(currentSelection));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Current selection at source actor %s is %s which is the drag preview icon which cannot be removed.",
+							G_OBJECT_TYPE_NAME(inSource),
+							G_OBJECT_TYPE_NAME(currentSelection));
 		return(CLUTTER_EVENT_STOP);
 	}
 
@@ -2250,8 +2260,9 @@ static gboolean _xfdashboard_quicklaunch_favourite_reorder_selection(Xfdashboard
 	 */
 	if(priv->orientation!=orientation)
 	{
-		g_debug("Source actor %s does not have expected orientation.",
-					G_OBJECT_TYPE_NAME(self));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Source actor %s does not have expected orientation.",
+							G_OBJECT_TYPE_NAME(self));
 		return(CLUTTER_EVENT_STOP);
 	}
 
@@ -2259,32 +2270,36 @@ static gboolean _xfdashboard_quicklaunch_favourite_reorder_selection(Xfdashboard
 	currentSelection=xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self));
 	if(!currentSelection)
 	{
-		g_debug("Source actor %s has no selection so no favourite can be reordered.",
-					G_OBJECT_TYPE_NAME(self));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Source actor %s has no selection so no favourite can be reordered.",
+							G_OBJECT_TYPE_NAME(self));
 		return(CLUTTER_EVENT_STOP);
 	}
 
 	if(!XFDASHBOARD_IS_APPLICATION_BUTTON(currentSelection))
 	{
-		g_debug("Current selection at source actor %s has type %s but only selections of type %s can be reordered.",
-					G_OBJECT_TYPE_NAME(self),
-					G_OBJECT_TYPE_NAME(currentSelection),
-					g_type_name(XFDASHBOARD_TYPE_APPLICATION_BUTTON));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Current selection at source actor %s has type %s but only selections of type %s can be reordered.",
+							G_OBJECT_TYPE_NAME(self),
+							G_OBJECT_TYPE_NAME(currentSelection),
+							g_type_name(XFDASHBOARD_TYPE_APPLICATION_BUTTON));
 		return(CLUTTER_EVENT_STOP);
 	}
 
 	if(!xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(currentSelection), "favourite-app"))
 	{
-		g_debug("Current selection at source actor %s is not a favourite and cannot be reordered.",
-					G_OBJECT_TYPE_NAME(self));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Current selection at source actor %s is not a favourite and cannot be reordered.",
+							G_OBJECT_TYPE_NAME(self));
 		return(CLUTTER_EVENT_STOP);
 	}
 
 	if(priv->dragPreviewIcon && currentSelection==priv->dragPreviewIcon)
 	{
-		g_debug("Current selection at source actor %s is %s which is the drag preview icon which cannot be reordered.",
-					G_OBJECT_TYPE_NAME(self),
-					G_OBJECT_TYPE_NAME(currentSelection));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Current selection at source actor %s is %s which is the drag preview icon which cannot be reordered.",
+							G_OBJECT_TYPE_NAME(self),
+							G_OBJECT_TYPE_NAME(currentSelection));
 		return(CLUTTER_EVENT_STOP);
 	}
 
@@ -2305,18 +2320,20 @@ static gboolean _xfdashboard_quicklaunch_favourite_reorder_selection(Xfdashboard
 
 	if(!newSelection)
 	{
-		g_debug("Current selection %s at source actor %s is already at end of list",
-					G_OBJECT_TYPE_NAME(currentSelection),
-					G_OBJECT_TYPE_NAME(self));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Current selection %s at source actor %s is already at end of list",
+							G_OBJECT_TYPE_NAME(currentSelection),
+							G_OBJECT_TYPE_NAME(self));
 		return(CLUTTER_EVENT_STOP);
 	}
 
 	if(!XFDASHBOARD_IS_APPLICATION_BUTTON(newSelection))
 	{
-		g_debug("Current selection %s at source actor %s cannot be moved because it is blocked by %s.",
-					G_OBJECT_TYPE_NAME(currentSelection),
-					G_OBJECT_TYPE_NAME(self),
-					G_OBJECT_TYPE_NAME(newSelection));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Current selection %s at source actor %s cannot be moved because it is blocked by %s.",
+							G_OBJECT_TYPE_NAME(currentSelection),
+							G_OBJECT_TYPE_NAME(self),
+							G_OBJECT_TYPE_NAME(newSelection));
 		return(CLUTTER_EVENT_STOP);
 	}
 
@@ -2395,9 +2412,10 @@ static void _xfdashboard_quicklaunch_on_app_tracker_state_changed(XfdashboardQui
 	appInfo=xfdashboard_application_database_lookup_desktop_id(priv->appDB, inDesktopID);
 	if(!appInfo)
 	{
-		g_debug("Unknown desktop ID '%s' changed state to '%s'",
-				inDesktopID,
-				inIsRunning ? "running" : "stopped");
+		XFDASHBOARD_DEBUG(self, APPLICATIONS,
+							"Unknown desktop ID '%s' changed state to '%s'",
+							inDesktopID,
+							inIsRunning ? "running" : "stopped");
 		return;
 	}
 
@@ -2418,9 +2436,10 @@ static void _xfdashboard_quicklaunch_on_app_tracker_state_changed(XfdashboardQui
 			clutter_actor_show(actor);
 			clutter_actor_add_child(CLUTTER_ACTOR(self), actor);
 
-			g_debug("Created dynamic actor %p for newly running desktop ID '%s'",
-					actor,
-					inDesktopID);
+			XFDASHBOARD_DEBUG(self, ACTOR,
+								"Created dynamic actor %p for newly running desktop ID '%s'",
+								actor,
+								inDesktopID);
 		}
 	}
 
@@ -2436,9 +2455,10 @@ static void _xfdashboard_quicklaunch_on_app_tracker_state_changed(XfdashboardQui
 		if(actor &&
 			xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(actor), "dynamic-app"))
 		{
-			g_debug("Destroying dynamic actor %p for stopped desktop ID '%s'",
-					actor,
-					inDesktopID);
+			XFDASHBOARD_DEBUG(self, ACTOR,
+								"Destroying dynamic actor %p for stopped desktop ID '%s'",
+								actor,
+								inDesktopID);
 
 			clutter_actor_destroy(actor);
 		}
@@ -2797,10 +2817,11 @@ static ClutterActor* _xfdashboard_quicklaunch_focusable_find_selection(Xfdashboa
 		selection=clutter_actor_get_first_child(CLUTTER_ACTOR(self));
 
 		valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-		g_debug("No selection at %s, so select first child %s for direction %s",
-				G_OBJECT_TYPE_NAME(self),
-				selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
-				valueName);
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"No selection at %s, so select first child %s for direction %s",
+							G_OBJECT_TYPE_NAME(self),
+							selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+							valueName);
 		g_free(valueName);
 
 		return(selection);
@@ -2913,11 +2934,12 @@ static ClutterActor* _xfdashboard_quicklaunch_focusable_find_selection(Xfdashboa
 	if(newSelection) selection=newSelection;
 
 	/* Return new selection found */
-	g_debug("Selecting %s at %s for current selection %s in direction %u",
-			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
-			G_OBJECT_TYPE_NAME(self),
-			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
-			inDirection);
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Selecting %s at %s for current selection %s in direction %u",
+						selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+						G_OBJECT_TYPE_NAME(self),
+						inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+						inDirection);
 
 	return(selection);
 }

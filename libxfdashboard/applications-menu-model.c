@@ -31,6 +31,7 @@
 #include <libxfdashboard/applications-menu-model.h>
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define these classes in GObject system */
@@ -119,7 +120,7 @@ static void _xfdashboard_applications_menu_model_on_reload_required(XfdashboardA
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_DATABASE(inUserData));
 
 	/* Reload menu by filling it again. This also emits all necessary signals. */
-	g_debug("Applications menu has changed and needs to be reloaded.");
+	XFDASHBOARD_DEBUG(self, APPLICATIONS, "Applications menu has changed and needs to be reloaded.");
 	_xfdashboard_applications_menu_model_fill_model(self);
 }
 
@@ -802,7 +803,9 @@ void xfdashboard_applications_menu_model_filter_by_section(XfdashboardApplicatio
 	/* Filter model data */
 	if(inSection)
 	{
-		g_debug("Filtering section '%s'", garcon_menu_element_get_name(GARCON_MENU_ELEMENT(inSection)));
+		XFDASHBOARD_DEBUG(self, APPLICATIONS,
+							"Filtering section '%s'",
+							garcon_menu_element_get_name(GARCON_MENU_ELEMENT(inSection)));
 		xfdashboard_model_set_filter(XFDASHBOARD_MODEL(self),
 										_xfdashboard_applications_menu_model_filter_by_section,
 										g_object_ref(inSection),
@@ -810,7 +813,7 @@ void xfdashboard_applications_menu_model_filter_by_section(XfdashboardApplicatio
 	}
 		else
 		{
-			g_debug("Filtering root section because no section requested");
+			XFDASHBOARD_DEBUG(self, APPLICATIONS, "Filtering root section because no section requested");
 			xfdashboard_model_set_filter(XFDASHBOARD_MODEL(self),
 											_xfdashboard_applications_menu_model_filter_empty,
 											NULL,

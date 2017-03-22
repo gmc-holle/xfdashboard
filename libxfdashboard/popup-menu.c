@@ -63,6 +63,7 @@
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -584,10 +585,11 @@ static ClutterActor* _xfdashboard_popup_menu_focusable_find_selection(Xfdashboar
 		selection=clutter_actor_get_first_child(CLUTTER_ACTOR(priv->itemsContainer));
 
 		valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-		g_debug("No selection at %s, so select first child %s for direction %s",
-				G_OBJECT_TYPE_NAME(self),
-				selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
-				valueName);
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"No selection at %s, so select first child %s for direction %s",
+							G_OBJECT_TYPE_NAME(self),
+							selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+							valueName);
 		g_free(valueName);
 
 		return(selection);
@@ -648,11 +650,12 @@ static ClutterActor* _xfdashboard_popup_menu_focusable_find_selection(Xfdashboar
 	if(newSelection) selection=newSelection;
 
 	/* Return new selection found */
-	g_debug("Selecting %s at %s for current selection %s in direction %u",
-			selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
-			G_OBJECT_TYPE_NAME(self),
-			inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
-			inDirection);
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Selecting %s at %s for current selection %s in direction %u",
+						selection ? G_OBJECT_TYPE_NAME(selection) : "<nil>",
+						G_OBJECT_TYPE_NAME(self),
+						inSelection ? G_OBJECT_TYPE_NAME(inSelection) : "<nil>",
+						inDirection);
 
 	return(selection);
 }
@@ -1837,10 +1840,11 @@ void xfdashboard_popup_menu_activate(XfdashboardPopupMenu *self)
 	}
 
 	xfdashboard_window_tracker_monitor_get_geometry(monitor, &monitorX, &monitorY, &monitorWidth, &monitorHeight);
-	g_debug("Pointer is on monitor %d with position at %d,%d and size of %dx%d",
-			xfdashboard_window_tracker_monitor_get_number(monitor),
-			monitorX, monitorY,
-			monitorWidth, monitorHeight);
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Pointer is on monitor %d with position at %d,%d and size of %dx%d",
+						xfdashboard_window_tracker_monitor_get_number(monitor),
+						monitorX, monitorY,
+						monitorWidth, monitorHeight);
 
 	x=pointerX;
 	y=pointerY;

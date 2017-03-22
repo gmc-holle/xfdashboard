@@ -30,6 +30,7 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -539,7 +540,13 @@ static GTokenType _xfdashboard_css_selector_parse_css_simple_selector(Xfdashboar
 				/* Return immediately if ID was already set because it should be a new child but print a debug message */
 				if(ioRule->id)
 				{
-					g_debug("Unexpected new ID '%s' at rule %p for previous ID '%s' at line %d and position %d", inScanner->value.v_identifier, ioRule, ioRule->id, g_scanner_cur_line(inScanner), g_scanner_cur_position(inScanner));
+					XFDASHBOARD_DEBUG(self, STYLE,
+										"Unexpected new ID '%s' at rule %p for previous ID '%s' at line %d and position %d",
+										inScanner->value.v_identifier,
+										ioRule,
+										ioRule->id,
+										g_scanner_cur_line(inScanner),
+										g_scanner_cur_position(inScanner));
 					return(G_TOKEN_NONE);
 				}
 

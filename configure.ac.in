@@ -225,6 +225,23 @@ dnl *** Check for debugging support ***
 dnl ***********************************
 XDT_FEATURE_DEBUG([xfdashboard_debug_default])
 
+AS_CASE([$enable_debug],
+	[full],
+	[XFDASHBOARD_DEBUG_CFLAGS="-DXFDASHBOARD_ENABLE_DEBUG"],
+
+	[yes],
+	[XFDASHBOARD_DEBUG_CFLAGS="-DXFDASHBOARD_ENABLE_DEBUG"],
+
+	[minimum],
+	[XFDASHBOARD_DEBUG_CFLAGS="-DG_DISABLE_CAST_CHECKS"],
+
+	[no],
+	[XFDASHBOARD_DEBUG_CFLAGS="-DG_DISABLE_ASSERT -DG_DISABLE_CHECKS -DG_DISABLE_CAST_CHECKS"],
+
+	[AC_MSG_ERROR([Unknown argument for --enable-debug])]
+)
+AC_SUBST(XFDASHBOARD_DEBUG_CFLAGS)
+
 dnl **************************************
 dnl *** Check for linker optimizations ***
 dnl **************************************
@@ -292,6 +309,11 @@ echo "  Package:          $PACKAGE"
 echo "  Version:          $VERSION"
 echo "  Revision:         $REVISION"
 echo "  Library version:  $LIBXFDASHBOARD_VERINFO"
+echo
+echo "Compiler options:"
+echo "  Compiler flags:   $CFLAGS $MAINTAINER_CFLAGS"
+echo "  Debug level:      $enable_debug"
+echo "  Debug flags:      $XFDASHBOARD_DEBUG_CFLAGS"
 echo
 echo "Library versions used:"
 echo "  libwnck:          $LIBWNCK_VERSION"

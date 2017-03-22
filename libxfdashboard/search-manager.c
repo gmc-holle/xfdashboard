@@ -34,6 +34,7 @@
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -286,9 +287,10 @@ gboolean xfdashboard_search_manager_register(XfdashboardSearchManager *self, con
 	}
 
 	/* Register search provider */
-	g_debug("Registering search provider %s of type %s",
-			inID,
-			g_type_name(inProviderType));
+	XFDASHBOARD_DEBUG(self, MISC,
+						"Registering search provider %s of type %s",
+						inID,
+						g_type_name(inProviderType));
 
 	data=_xfdashboard_search_manager_entry_new(inID, inProviderType);
 	if(!data)
@@ -330,9 +332,10 @@ gboolean xfdashboard_search_manager_unregister(XfdashboardSearchManager *self, c
 	data=(XfdashboardSearchManagerData*)(iter->data);
 
 	/* Remove from list of registered providers */
-	g_debug("Unregistering search provider %s of type %s",
-			data->ID,
-			g_type_name(data->gtype));
+	XFDASHBOARD_DEBUG(self, MISC,
+						"Unregistering search provider %s of type %s",
+						data->ID,
+						g_type_name(data->gtype));
 
 	priv->registeredProviders=g_list_remove_link(priv->registeredProviders, iter);
 	g_signal_emit(self, XfdashboardSearchManagerSignals[SIGNAL_UNREGISTERED], 0, data->ID);

@@ -38,6 +38,7 @@
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -427,8 +428,9 @@ static void _xfdashboard_live_workspace_on_desktop_window_opened(XfdashboardLive
 		g_signal_handlers_disconnect_by_func(priv->windowTracker,
 												G_CALLBACK(_xfdashboard_live_workspace_on_desktop_window_opened),
 												self);
-		g_debug("Found desktop window for workspace '%s' with signal 'window-opened', so disconnecting signal handler",
-				xfdashboard_window_tracker_workspace_get_name(priv->workspace));
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Found desktop window for workspace '%s' with signal 'window-opened', so disconnecting signal handler",
+							xfdashboard_window_tracker_workspace_get_name(priv->workspace));
 	}
 }
 
@@ -1106,8 +1108,9 @@ void xfdashboard_live_workspace_set_background_image_type(XfdashboardLiveWorkspa
 						if(backgroundWindow)
 						{
 							xfdashboard_live_window_simple_set_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(priv->backgroundImageLayer), backgroundWindow);
-							g_debug("Desktop window was found and set up as background image for workspace '%s'",
-									xfdashboard_window_tracker_workspace_get_name(priv->workspace));
+							XFDASHBOARD_DEBUG(self, ACTOR,
+												"Desktop window was found and set up as background image for workspace '%s'",
+												xfdashboard_window_tracker_workspace_get_name(priv->workspace));
 						}
 							else
 							{
@@ -1115,8 +1118,9 @@ void xfdashboard_live_workspace_set_background_image_type(XfdashboardLiveWorkspa
 															"window-opened",
 															G_CALLBACK(_xfdashboard_live_workspace_on_desktop_window_opened),
 															self);
-								g_debug("Desktop window was not found. Setting up signal to get notified when desktop window might be opened for workspace '%s'",
-											xfdashboard_window_tracker_workspace_get_name(priv->workspace));
+								XFDASHBOARD_DEBUG(self, ACTOR,
+													"Desktop window was not found. Setting up signal to get notified when desktop window might be opened for workspace '%s'",
+													xfdashboard_window_tracker_workspace_get_name(priv->workspace));
 							}
 					}
 					break;

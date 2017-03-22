@@ -53,6 +53,7 @@
 #include <libxfdashboard/window-content.h>
 #include <libxfdashboard/stage-interface.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -575,7 +576,7 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	xfdashboard_window_tracker_window_make_stage_window(priv->stageWindow);
 
 	/* Disconnect signal handler as this is a one-time setup of stage window */
-	g_debug("Stage window was opened and set up. Removing signal handler.");
+	XFDASHBOARD_DEBUG(self, ACTOR, "Stage window was opened and set up. Removing signal handler.");
 	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
 
 	/* Set focus */
@@ -608,7 +609,7 @@ static void _xfdashboard_stage_on_desktop_window_opened(XfdashboardStage *self,
 		g_object_unref(windowContent);
 
 		g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_desktop_window_opened), self);
-		g_debug("Found desktop window with signal 'window-opened', so disconnecting signal handler");
+		XFDASHBOARD_DEBUG(self, ACTOR, "Found desktop window with signal 'window-opened', so disconnecting signal handler");
 	}
 }
 
@@ -921,7 +922,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 			/* Add interface to list of interfaces */
 			interfaces=g_list_prepend(interfaces, interface);
 
-			g_debug("Creating primary interface only because of no support for multiple monitors");
+			XFDASHBOARD_DEBUG(self, ACTOR, "Creating primary interface only because of no support for multiple monitors");
 		}
 
 	/* Destroy all interfaces from stage.
@@ -1138,9 +1139,10 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 				/* Register actor at focus manager */
 				xfdashboard_focus_manager_register(priv->focusManager,
 													XFDASHBOARD_FOCUSABLE(focusObject));
-				g_debug("Registering actor %s of interface with ID '%s' at focus manager",
-						G_OBJECT_TYPE_NAME(focusObject),
-						clutter_actor_get_name(interface));
+				XFDASHBOARD_DEBUG(self, ACTOR,
+									"Registering actor %s of interface with ID '%s' at focus manager",
+									G_OBJECT_TYPE_NAME(focusObject),
+									clutter_actor_get_name(interface));
 			}
 		}
 	}
@@ -1208,9 +1210,10 @@ static void _xfdashboard_stage_on_primary_monitor_changed(XfdashboardStage *self
 
 	/* Set new primary monitor at primary stage interface */
 	xfdashboard_stage_interface_set_monitor(XFDASHBOARD_STAGE_INTERFACE(priv->primaryInterface), inNewMonitor);
-	g_debug("Primary monitor changed from %d to %d",
-				xfdashboard_window_tracker_monitor_get_number(oldPrimaryStageInterfaceMonitor),
-				xfdashboard_window_tracker_monitor_get_number(inNewMonitor));
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Primary monitor changed from %d to %d",
+						xfdashboard_window_tracker_monitor_get_number(oldPrimaryStageInterfaceMonitor),
+						xfdashboard_window_tracker_monitor_get_number(inNewMonitor));
 }
 
 /* A monitor was added */
@@ -1253,8 +1256,9 @@ static void _xfdashboard_stage_on_monitor_added(XfdashboardStage *self,
 
 	/* Add interface to stage */
 	clutter_actor_add_child(CLUTTER_ACTOR(self), interface);
-	g_debug("Added stage interface for new monitor %d",
-				xfdashboard_window_tracker_monitor_get_number(inMonitor));
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Added stage interface for new monitor %d",
+						xfdashboard_window_tracker_monitor_get_number(inMonitor));
 
 	/* If monitor added is the primary monitor then swap now the stage interfaces */
 	if(xfdashboard_window_tracker_monitor_is_primary(inMonitor))
@@ -1308,8 +1312,9 @@ static void _xfdashboard_stage_on_monitor_removed(XfdashboardStage *self,
 		if(xfdashboard_stage_interface_get_monitor(interface)==inMonitor)
 		{
 			clutter_actor_iter_destroy(&childIter);
-			g_debug("Removed stage interface for removed monitor %d",
-						xfdashboard_window_tracker_monitor_get_number(inMonitor));
+			XFDASHBOARD_DEBUG(self, ACTOR,
+								"Removed stage interface for removed monitor %d",
+								xfdashboard_window_tracker_monitor_get_number(inMonitor));
 		}
 	}
 }
@@ -1335,9 +1340,10 @@ static void _xfdashboard_stage_on_screen_size_changed(XfdashboardStage *self,
 	if((gint)stageWidth!=inWidth ||
 		(gint)stageHeight!=inHeight)
 	{
-		g_debug("Screen resized to %dx%d but stage has size of %dx%d - resizing stage",
-					inWidth, inHeight,
-					(gint)stageWidth, (gint)stageHeight);
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Screen resized to %dx%d but stage has size of %dx%d - resizing stage",
+							inWidth, inHeight,
+							(gint)stageWidth, (gint)stageHeight);
 
 		clutter_actor_set_size(CLUTTER_ACTOR(self), inWidth, inHeight);
 	}
@@ -1798,7 +1804,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 									G_CALLBACK(_xfdashboard_stage_on_screen_size_changed),
 									self);
 
-		g_debug("Tracking screen resizes to resize stage");
+		XFDASHBOARD_DEBUG(self, ACTOR, "Tracking screen resizes to resize stage");
 	}
 }
 
@@ -1853,7 +1859,7 @@ void xfdashboard_stage_set_background_image_type(XfdashboardStage *self, Xfdashb
 							clutter_actor_set_content(priv->backgroundImageLayer, backgroundContent);
 							g_object_unref(backgroundContent);
 
-							g_debug("Desktop window was found and set up as background image for stage");
+							XFDASHBOARD_DEBUG(self, ACTOR, "Desktop window was found and set up as background image for stage");
 						}
 							else
 							{
@@ -1861,7 +1867,7 @@ void xfdashboard_stage_set_background_image_type(XfdashboardStage *self, Xfdashb
 															"window-opened",
 															G_CALLBACK(_xfdashboard_stage_on_desktop_window_opened),
 															self);
-								g_debug("Desktop window was not found. Setting up signal to get notified when desktop window might be opened.");
+								XFDASHBOARD_DEBUG(self, ACTOR, "Desktop window was not found. Setting up signal to get notified when desktop window might be opened.");
 							}
 					}
 					break;

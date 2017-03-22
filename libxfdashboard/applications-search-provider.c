@@ -39,6 +39,7 @@
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -379,14 +380,16 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 			return(FALSE);
 		}
 	}
-	g_debug("Will load statistics of applications search provider from %s",
-			_xfdashboard_applications_search_provider_statistics.filename);
+	XFDASHBOARD_DEBUG(self, APPLICATIONS,
+						"Will load statistics of applications search provider from %s",
+						_xfdashboard_applications_search_provider_statistics.filename);
 
 	/* If statistics file does not exist then return immediately but with success */
 	if(!g_file_test(_xfdashboard_applications_search_provider_statistics.filename, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
 	{
-		g_debug("Statistics file %s does not exists. Will create empty statistics database for applications search provider",
-				_xfdashboard_applications_search_provider_statistics.filename);
+		XFDASHBOARD_DEBUG(self, APPLICATIONS,
+							"Statistics file %s does not exists. Will create empty statistics database for applications search provider",
+							_xfdashboard_applications_search_provider_statistics.filename);
 
 		return(TRUE);
 	}
@@ -419,7 +422,9 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 
 		return(FALSE);
 	}
-	g_debug("Will load statistics for %d applications", entriesCount);
+	XFDASHBOARD_DEBUG(self, APPLICATIONS,
+						"Will load statistics for %d applications",
+						entriesCount);
 
 	allAppIDs=NULL;
 	while(entriesCount>0)
@@ -450,7 +455,9 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 
 		/* Store application desktop ID in list to iterate */
 		allAppIDs=g_list_prepend(allAppIDs, appID);
-		g_debug("Will load statistics for application '%s'", appID);
+		XFDASHBOARD_DEBUG(self, APPLICATIONS,
+							"Will load statistics for application '%s'",
+							appID);
 
 		/* Continue with next application in entries group */
 		entriesCount--;
@@ -500,7 +507,9 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 
 		/* Store statistics data for application in hash-table */
 		g_hash_table_insert(_xfdashboard_applications_search_provider_statistics.stats, g_strdup(appID), _xfdashboard_applications_search_provider_statistics_ref(stats));
-		g_debug("Loaded and stored statistics for '%s' for applications search provider", appID);
+		XFDASHBOARD_DEBUG(self, APPLICATIONS,
+							"Loaded and stored statistics for '%s' for applications search provider",
+							appID);
 
 		/* Release allocated resources */
 		_xfdashboard_applications_search_provider_statistics_unref(stats);
@@ -511,8 +520,9 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 	if(keyFile) g_key_file_free(keyFile);
 
 	/* If we get here saving statistics file was successful */
-	g_debug("Loaded statistics of applications search provider from %s",
-			_xfdashboard_applications_search_provider_statistics.filename);
+	XFDASHBOARD_DEBUG(self, APPLICATIONS,
+						"Loaded statistics of applications search provider from %s",
+						_xfdashboard_applications_search_provider_statistics.filename);
 
 	return(TRUE);
 }
@@ -558,7 +568,7 @@ static void _xfdashboard_applications_search_provider_destroy_statistics(void)
 	}
 
 	/* Destroy statistics */
-	g_debug("Destroying statistics of applications search provider");
+	XFDASHBOARD_DEBUG(NULL, APPLICATIONS, "Destroying statistics of applications search provider");
 	g_hash_table_destroy(_xfdashboard_applications_search_provider_statistics.stats);
 	_xfdashboard_applications_search_provider_statistics.stats=NULL;
 
@@ -604,7 +614,7 @@ static void _xfdashboard_applications_search_provider_create_statistics(Xfdashbo
 								g_str_equal,
 								g_free,
 								(GDestroyNotify)_xfdashboard_applications_search_provider_statistics_unref);
-	g_debug("Created statistics of applications search provider");
+	XFDASHBOARD_DEBUG(self, APPLICATIONS, "Created statistics of applications search provider");
 
 	/* Load statistics from file */
 	if(!_xfdashboard_applications_search_provider_load_statistics(self, &error))
