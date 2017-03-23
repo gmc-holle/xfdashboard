@@ -565,7 +565,7 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 										{ "quit", 'q', 0, G_OPTION_ARG_NONE, &optionQuit, N_("Quit running instance"), NULL },
 										{ "restart", 'r', 0, G_OPTION_ARG_NONE, &optionRestart, N_("Restart running instance"), NULL },
 										{ "toggle", 't', 0, G_OPTION_ARG_NONE, &optionToggle, N_("Toggles visibility if running instance was started in daemon mode otherwise it quits running non-daemon instance"), NULL },
-										{ "view", 0, 0, G_OPTION_ARG_STRING, &optionSwitchToView, N_("The view to switch to on startup or resume"), NULL },
+										{ "view", 0, 0, G_OPTION_ARG_STRING, &optionSwitchToView, N_("The ID of view to switch to on startup or resume"), "ID" },
 										{ NULL }
 									};
 
@@ -582,7 +582,9 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	optionSwitchToView=NULL;
 
 	/* Setup command-line options */
-	context=g_option_context_new(N_("- A Gnome Shell like dashboard for Xfce4"));
+	context=g_option_context_new(N_(""));
+	g_option_context_set_summary(context, N_("A Gnome Shell like dashboard for Xfce4 - version " PACKAGE_VERSION));
+	g_option_context_set_translation_domain(context, GETTEXT_PACKAGE);
 	g_option_context_add_group(context, gtk_get_option_group(TRUE));
 	g_option_context_add_group(context, clutter_get_option_group_without_init());
 	g_option_context_add_group(context, xfce_sm_client_get_option_group(inArgc, inArgv));
