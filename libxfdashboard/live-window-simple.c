@@ -22,6 +22,8 @@
  * 
  */
 
+#define SIZE_CALCULATION_NEW /* Use new code path to determine preferred size */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -268,8 +270,21 @@ static void _xfdashboard_live_window_simple_get_preferred_height(ClutterActor *s
 	minHeight=naturalHeight=0.0f;
 
 	/* Determine size of window if available and visible (should usually be the largest actor) */
+#ifdef SIZE_CALCULATION_NEW
+#warning "_xfdashboard_live_window_simple_get_preferred_height: new code path selected"
 	if(priv->actorWindow &&
-		clutter_actor_is_visible(priv->actorWindow))
+		clutter_actor_is_visible(priv->actorWindow) &&
+		priv->window)
+	{
+		gint							windowHeight;
+
+		xfdashboard_window_tracker_window_get_size(priv->window, NULL, &windowHeight);
+		if(windowHeight>minHeight) minHeight=windowHeight;
+		if(windowHeight>naturalHeight) naturalHeight=windowHeight;
+	}
+#else
+	if(priv->actorWindow &&
+		clutter_actor_is_visible(priv->actorWindow)
 	{
 		content=clutter_actor_get_content(priv->actorWindow);
 		if(content &&
@@ -280,6 +295,7 @@ static void _xfdashboard_live_window_simple_get_preferred_height(ClutterActor *s
 			if(childNaturalHeight>naturalHeight) naturalHeight=childNaturalHeight;
 		}
 	}
+#endif
 
 	/* Store sizes computed */
 	if(outMinHeight) *outMinHeight=minHeight;
@@ -299,6 +315,19 @@ static void _xfdashboard_live_window_simple_get_preferred_width(ClutterActor *se
 	minWidth=naturalWidth=0.0f;
 
 	/* Determine size of window if available and visible (should usually be the largest actor) */
+#ifdef SIZE_CALCULATION_NEW
+#warning "_xfdashboard_live_window_simple_get_preferred_width: new code path selected"
+	if(priv->actorWindow &&
+		clutter_actor_is_visible(priv->actorWindow) &&
+		priv->window)
+	{
+		gint							windowWidth;
+
+		xfdashboard_window_tracker_window_get_size(priv->window, &windowWidth, NULL);
+		if(windowWidth>minWidth) minWidth=windowWidth;
+		if(windowWidth>naturalWidth) naturalWidth=windowWidth;
+	}
+#else
 	if(priv->actorWindow &&
 		clutter_actor_is_visible(priv->actorWindow))
 	{
@@ -311,6 +340,7 @@ static void _xfdashboard_live_window_simple_get_preferred_width(ClutterActor *se
 			if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
 		}
 	}
+#endif
 
 	/* Store sizes computed */
 	if(outMinWidth) *outMinWidth=minWidth;
