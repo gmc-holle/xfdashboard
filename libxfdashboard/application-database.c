@@ -1324,7 +1324,7 @@ static void xfdashboard_application_database_class_init(XfdashboardApplicationDa
 						G_STRUCT_OFFSET(XfdashboardApplicationDatabaseClass, application_added),
 						NULL,
 						NULL,
-						g_cclosure_marshal_VOID__VOID,
+						g_cclosure_marshal_VOID__OBJECT,
 						G_TYPE_NONE,
 						1,
 						G_TYPE_APP_INFO);
@@ -1336,7 +1336,7 @@ static void xfdashboard_application_database_class_init(XfdashboardApplicationDa
 						G_STRUCT_OFFSET(XfdashboardApplicationDatabaseClass, application_removed),
 						NULL,
 						NULL,
-						g_cclosure_marshal_VOID__VOID,
+						g_cclosure_marshal_VOID__OBJECT,
 						G_TYPE_NONE,
 						1,
 						G_TYPE_APP_INFO);
