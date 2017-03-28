@@ -195,7 +195,7 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 	key=0;
 	modifiers=0;
 
-	XFDASHBOARD_DEBUG(NULL, MISC,
+	XFDASHBOARD_DEBUG(_xfdashboard_bindings_pool, MISC,
 						"Trying to translating key-binding '%s' to keycode and modifiers",
 						inText);
 
@@ -315,7 +315,7 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 	if(outKey) *outKey=key;
 	if(outModifiers) *outModifiers=modifiers;
 
-	XFDASHBOARD_DEBUG(NULL, MISC,
+	XFDASHBOARD_DEBUG(_xfdashboard_bindings_pool, MISC,
 						"Translated key-binding '%s' to keycode %04x and modifiers %04x",
 						inText,
 						key,

@@ -1360,23 +1360,23 @@ guint32 xfdashboard_window_tracker_get_time(void)
 	if(timestamp>0) return(timestamp);
 
 	/* Next we try to retrieve timestamp of last X11 event in clutter */
-	XFDASHBOARD_DEBUG(NULL, WINDOWS, "No timestamp for windows - trying timestamp of last X11 event in Clutter");
+	XFDASHBOARD_DEBUG(_xfdashboard_window_tracker_singleton, WINDOWS, "No timestamp for windows - trying timestamp of last X11 event in Clutter");
 	timestamp=(guint32)clutter_x11_get_current_event_time();
 	if(timestamp!=0)
 	{
-		XFDASHBOARD_DEBUG(NULL, WINDOWS,
+		XFDASHBOARD_DEBUG(_xfdashboard_window_tracker_singleton, WINDOWS,
 							"Got timestamp %u of last X11 event in Clutter",
 							timestamp);
 		return(timestamp);
 	}
 
 	/* Last resort is to get X11 server time via stage windows */
-	XFDASHBOARD_DEBUG(NULL, WINDOWS, "No timestamp for windows - trying last resort via stage windows");
+	XFDASHBOARD_DEBUG(_xfdashboard_window_tracker_singleton, WINDOWS, "No timestamp for windows - trying last resort via stage windows");
 
 	display=gdk_display_get_default();
 	if(!display)
 	{
-		XFDASHBOARD_DEBUG(NULL, WINDOWS, "No default display found in GDK to get timestamp for windows");
+		XFDASHBOARD_DEBUG(_xfdashboard_window_tracker_singleton, WINDOWS, "No default display found in GDK to get timestamp for windows");
 		return(0);
 	}
 
@@ -1393,7 +1393,7 @@ guint32 xfdashboard_window_tracker_get_time(void)
 			window=gdk_x11_window_lookup_for_display(display, clutter_x11_get_stage_window(stage));
 			if(!window)
 			{
-				XFDASHBOARD_DEBUG(NULL, WINDOWS,
+				XFDASHBOARD_DEBUG(_xfdashboard_window_tracker_singleton, WINDOWS,
 									"No GDK window found for stage %p to get timestamp for windows",
 									stage);
 				continue;
@@ -1405,7 +1405,7 @@ guint32 xfdashboard_window_tracker_get_time(void)
 			eventMask=gdk_window_get_events(window);
 			if(!(eventMask & GDK_PROPERTY_CHANGE_MASK))
 			{
-				XFDASHBOARD_DEBUG(NULL, WINDOWS,
+				XFDASHBOARD_DEBUG(_xfdashboard_window_tracker_singleton, WINDOWS,
 									"GDK window %p for stage %p does not support GDK_PROPERTY_CHANGE_MASK to get timestamp for windows",
 									window,
 									stage);
@@ -1418,7 +1418,7 @@ guint32 xfdashboard_window_tracker_get_time(void)
 	g_slist_free(stages);
 
 	/* Return timestamp of last resort */
-	XFDASHBOARD_DEBUG(NULL, WINDOWS,
+	XFDASHBOARD_DEBUG(_xfdashboard_window_tracker_singleton, WINDOWS,
 						"Last resort timestamp for windows %s (%u)",
 						timestamp ? "found" : "not found",
 						timestamp);

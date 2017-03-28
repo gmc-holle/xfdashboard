@@ -1278,10 +1278,6 @@ GAppInfo* xfdashboard_desktop_app_info_new_from_desktop_id(const gchar *inDeskto
 		g_warning(_("Desktop ID '%s' not found"), inDesktopID);
 		return(NULL);
 	}
-	XFDASHBOARD_DEBUG(NULL, APPLICATIONS,
-						"Found desktop file '%s' for desktop ID '%s'",
-						desktopFilename,
-						inDesktopID);
 
 	/* Create this class instance for desktop file found */
 	file=g_file_new_for_path(desktopFilename);
@@ -1289,6 +1285,11 @@ GAppInfo* xfdashboard_desktop_app_info_new_from_desktop_id(const gchar *inDeskto
 														"desktop-id", inDesktopID,
 														"file", file,
 														NULL));
+	XFDASHBOARD_DEBUG(instance, APPLICATIONS,
+						"Created %s desktop file '%s' for desktop ID '%s'",
+						G_OBJECT_TYPE_NAME(instance),
+						desktopFilename,
+						inDesktopID);
 	if(file) g_object_unref(file);
 
 	/* Release allocated resources */

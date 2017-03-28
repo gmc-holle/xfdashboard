@@ -297,7 +297,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 	procEnvFile=g_strdup_printf("/proc/%d/environ", inPID);
 	if(!g_file_get_contents(procEnvFile, &envContent, &envLength, &error))
 	{
-		XFDASHBOARD_DEBUG(NULL, APPLICATIONS,
+		XFDASHBOARD_DEBUG(_xfdashboard_application_tracker, APPLICATIONS,
 							"Could not read enviroment varibles for PID %d at %s: %s",
 							inPID,
 							procEnvFile,
@@ -313,7 +313,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 		return(NULL);
 	}
 
-	XFDASHBOARD_DEBUG(NULL, APPLICATIONS,
+	XFDASHBOARD_DEBUG(_xfdashboard_application_tracker, APPLICATIONS,
 						"Enviroment set for PID %d at %s is %lu bytes long",
 						inPID,
 						procEnvFile,
