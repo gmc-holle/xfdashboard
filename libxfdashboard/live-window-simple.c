@@ -262,8 +262,6 @@ static void _xfdashboard_live_window_simple_get_preferred_height(ClutterActor *s
 {
 	XfdashboardLiveWindowSimplePrivate	*priv=XFDASHBOARD_LIVE_WINDOW_SIMPLE(self)->priv;
 	gfloat								minHeight, naturalHeight;
-	gfloat								childNaturalHeight;
-	ClutterContent						*content;
 
 	minHeight=naturalHeight=0.0f;
 
@@ -291,8 +289,6 @@ static void _xfdashboard_live_window_simple_get_preferred_width(ClutterActor *se
 {
 	XfdashboardLiveWindowSimplePrivate	*priv=XFDASHBOARD_LIVE_WINDOW_SIMPLE(self)->priv;
 	gfloat								minWidth, naturalWidth;
-	gfloat								childNaturalWidth;
-	ClutterContent						*content;
 
 	minWidth=naturalWidth=0.0f;
 
