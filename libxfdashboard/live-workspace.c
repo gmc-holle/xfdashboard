@@ -97,18 +97,20 @@ static guint XfdashboardLiveWorkspaceSignals[SIGNAL_LAST]={ 0, };
 static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWorkspace *self,
 																XfdashboardWindowTrackerWindow *inWindow)
 {
-	XfdashboardLiveWorkspacePrivate		*priv;
+	XfdashboardLiveWorkspacePrivate			*priv;
+	XfdashboardWindowTrackerWindowState		state;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), FALSE);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), FALSE);
 
 	priv=self->priv;
 
-	/* Determine if windows should be shown depending on its state */
-	if(xfdashboard_window_tracker_window_is_skip_pager(inWindow) ||
-		xfdashboard_window_tracker_window_is_skip_tasklist(inWindow) ||
+	/* Determine if windows should be shown at workspace depending on its state */
+	state=xfdashboard_window_tracker_window_get_state(inWindow);
+	if((state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER) ||
+		(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST) ||
 		!xfdashboard_window_tracker_window_is_visible(inWindow) ||
-		(!priv->workspace && !xfdashboard_window_tracker_window_is_pinned(inWindow)) ||
+		(!priv->workspace && !(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED)) ||
 		(priv->workspace && !xfdashboard_window_tracker_window_is_on_workspace(inWindow, priv->workspace)) ||
 		xfdashboard_window_tracker_window_is_stage(inWindow))
 	{
@@ -445,6 +447,7 @@ static void _xfdashboard_live_workspace_get_preferred_height(ClutterActor *self,
 	XfdashboardLiveWorkspacePrivate		*priv=XFDASHBOARD_LIVE_WORKSPACE(self)->priv;
 	gfloat								minHeight, naturalHeight;
 	gfloat								childWidth, childHeight;
+	gint								w, h;
 
 	minHeight=naturalHeight=0.0f;
 
@@ -453,13 +456,15 @@ static void _xfdashboard_live_workspace_get_preferred_height(ClutterActor *self,
 	{
 		if(priv->monitor)
 		{
-			childWidth=(gfloat)xfdashboard_window_tracker_monitor_get_width(priv->monitor);
-			childHeight=(gfloat)xfdashboard_window_tracker_monitor_get_height(priv->monitor);
+			xfdashboard_window_tracker_monitor_get_geometry(priv->monitor, NULL, NULL, &w, &h);
+			childWidth=(gfloat)w;
+			childHeight=(gfloat)h;
 		}
 			else
 			{
-				childWidth=(gfloat)xfdashboard_window_tracker_workspace_get_width(priv->workspace);
-				childHeight=(gfloat)xfdashboard_window_tracker_workspace_get_height(priv->workspace);
+				xfdashboard_window_tracker_workspace_get_size(priv->workspace, &w, &h);
+				childWidth=(gfloat)w;
+				childHeight=(gfloat)h;
 			}
 
 		if(inForWidth<0.0f) naturalHeight=childHeight;
@@ -479,6 +484,7 @@ static void _xfdashboard_live_workspace_get_preferred_width(ClutterActor *self,
 	XfdashboardLiveWorkspacePrivate		*priv=XFDASHBOARD_LIVE_WORKSPACE(self)->priv;
 	gfloat								minWidth, naturalWidth;
 	gfloat								childWidth, childHeight;
+	gint								w, h;
 
 	minWidth=naturalWidth=0.0f;
 
@@ -487,13 +493,15 @@ static void _xfdashboard_live_workspace_get_preferred_width(ClutterActor *self,
 	{
 		if(priv->monitor)
 		{
-			childWidth=(gfloat)xfdashboard_window_tracker_monitor_get_width(priv->monitor);
-			childHeight=(gfloat)xfdashboard_window_tracker_monitor_get_height(priv->monitor);
+			xfdashboard_window_tracker_monitor_get_geometry(priv->monitor, NULL, NULL, &w, &h);
+			childWidth=(gfloat)w;
+			childHeight=(gfloat)h;
 		}
 			else
 			{
-				childWidth=(gfloat)xfdashboard_window_tracker_workspace_get_width(priv->workspace);
-				childHeight=(gfloat)xfdashboard_window_tracker_workspace_get_height(priv->workspace);
+				xfdashboard_window_tracker_workspace_get_size(priv->workspace, &w, &h);
+				childWidth=(gfloat)w;
+				childHeight=(gfloat)h;
 			}
 
 		if(inForHeight<0.0f) naturalWidth=childWidth;
@@ -561,17 +569,19 @@ static void _xfdashboard_live_workspace_allocate(ClutterActor *self,
 	 */
 	if(priv->workspace)
 	{
+		xfdashboard_window_tracker_workspace_get_size(priv->workspace, &w, &h);
 		workspaceArea.x1=0.0f;
 		workspaceArea.y1=0.0f;
-		workspaceArea.x2=xfdashboard_window_tracker_workspace_get_width(priv->workspace);
-		workspaceArea.y2=xfdashboard_window_tracker_workspace_get_height(priv->workspace);
+		workspaceArea.x2=w;
+		workspaceArea.y2=h;
 	}
 		else
 		{
+			xfdashboard_window_tracker_get_screen_size(priv->windowTracker, &w, &h);
 			workspaceArea.x1=0.0f;
 			workspaceArea.y1=0.0f;
-			workspaceArea.x2=xfdashboard_window_tracker_get_screen_width(priv->windowTracker);
-			workspaceArea.y2=xfdashboard_window_tracker_get_screen_height(priv->windowTracker);
+			workspaceArea.x2=w;
+			workspaceArea.y2=h;
 		}
 
 	/* Get visible area of workspace */
@@ -646,7 +656,7 @@ static void _xfdashboard_live_workspace_allocate(ClutterActor *self,
 		if(!window || !XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(window)) continue;
 
 		/* Get real size of child */
-		xfdashboard_window_tracker_window_get_position_size(window, &x, &y, &w, &h);
+		xfdashboard_window_tracker_window_get_geometry(window, &x, &y, &w, &h);
 
 		/* Calculate translated position and size of child */
 		childAllocation.x1=x-visibleArea.x1;

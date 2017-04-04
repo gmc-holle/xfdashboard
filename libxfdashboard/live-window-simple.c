@@ -91,11 +91,14 @@ static guint XfdashboardLiveWindowSimpleSignals[SIGNAL_LAST]={ 0, };
 /* Check if window should be shown */
 static gboolean _xfdashboard_live_window_simple_is_visible_window(XfdashboardLiveWindowSimple *self, XfdashboardWindowTrackerWindow *inWindow)
 {
+	XfdashboardWindowTrackerWindowState		state;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), FALSE);
 
 	/* Determine if windows should be shown depending on its state */
-	if(xfdashboard_window_tracker_window_is_skip_pager(inWindow) ||
-		xfdashboard_window_tracker_window_is_skip_tasklist(inWindow))
+	state=xfdashboard_window_tracker_window_get_state(inWindow);
+	if((state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER) ||
+		(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST))
 	{
 		return(FALSE);
 	}
@@ -131,8 +134,9 @@ static void _xfdashboard_live_window_simple_on_state_changed(XfdashboardLiveWind
 																XfdashboardWindowTrackerWindow *inWindow,
 																gpointer inUserData)
 {
-	XfdashboardLiveWindowSimplePrivate	*priv;
-	gboolean							isVisible;
+	XfdashboardLiveWindowSimplePrivate		*priv;
+	gboolean								isVisible;
+	XfdashboardWindowTrackerWindowState		state;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -151,7 +155,8 @@ static void _xfdashboard_live_window_simple_on_state_changed(XfdashboardLiveWind
 	}
 
 	/* Add or remove class depending on 'pinned' window state */
-	if(xfdashboard_window_tracker_window_is_pinned(inWindow))
+	state=xfdashboard_window_tracker_window_get_state(inWindow);
+	if(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED)
 	{
 		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), "window-state-pinned");
 	}
@@ -161,7 +166,7 @@ static void _xfdashboard_live_window_simple_on_state_changed(XfdashboardLiveWind
 		}
 
 	/* Add or remove class depending on 'minimized' window state */
-	if(xfdashboard_window_tracker_window_is_minimized(inWindow))
+	if(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_MINIMIZED)
 	{
 		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), "window-state-minimized");
 	}
@@ -171,7 +176,7 @@ static void _xfdashboard_live_window_simple_on_state_changed(XfdashboardLiveWind
 		}
 
 	/* Add or remove class depending on 'maximized' window state */
-	if(xfdashboard_window_tracker_window_is_maximized(inWindow))
+	if(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_MAXIMIZED)
 	{
 		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), "window-state-maximized");
 	}
@@ -181,7 +186,7 @@ static void _xfdashboard_live_window_simple_on_state_changed(XfdashboardLiveWind
 		}
 
 	/* Add or remove class depending on 'urgent' window state */
-	if(xfdashboard_window_tracker_window_is_urgent(inWindow))
+	if(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_URGENT)
 	{
 		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), "window-state-urgent");
 	}
@@ -235,7 +240,7 @@ static void _xfdashboard_live_window_simple_setup_content(XfdashboardLiveWindowS
 	switch(priv->displayType)
 	{
 		case XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW:
-			content=xfdashboard_window_content_new_for_window(priv->window);
+			content=xfdashboard_window_tracker_window_get_content(priv->window);
 			clutter_actor_set_content(priv->actorWindow, content);
 			g_object_unref(content);
 			break;
@@ -272,7 +277,7 @@ static void _xfdashboard_live_window_simple_get_preferred_height(ClutterActor *s
 	{
 		gint							windowHeight;
 
-		xfdashboard_window_tracker_window_get_size(priv->window, NULL, &windowHeight);
+		xfdashboard_window_tracker_window_get_geometry(priv->window, NULL, NULL, NULL, &windowHeight);
 		if(windowHeight>minHeight) minHeight=windowHeight;
 		if(windowHeight>naturalHeight) naturalHeight=windowHeight;
 	}
@@ -299,7 +304,7 @@ static void _xfdashboard_live_window_simple_get_preferred_width(ClutterActor *se
 	{
 		gint							windowWidth;
 
-		xfdashboard_window_tracker_window_get_size(priv->window, &windowWidth, NULL);
+		xfdashboard_window_tracker_window_get_geometry(priv->window, NULL, NULL, &windowWidth, NULL);
 		if(windowWidth>minWidth) minWidth=windowWidth;
 		if(windowWidth>naturalWidth) naturalWidth=windowWidth;
 	}

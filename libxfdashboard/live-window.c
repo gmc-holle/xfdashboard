@@ -121,14 +121,12 @@ static gboolean _xfdashboard_live_window_is_subwindow(XfdashboardLiveWindow *sel
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), FALSE);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), FALSE);
 
-	/* Check if window opened belong to this window (is transient for this one) */
+	/* Check if window opened belongs to this window (is transient for this one) */
 	thisWindow=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(self));
 	if(!thisWindow) return(FALSE);
 
-	requestedWindowParent=xfdashboard_window_tracker_window_get_parent_window(inWindow);
-	if(!requestedWindowParent) return(FALSE);
-
-	if(requestedWindowParent!=thisWindow) return(FALSE);
+	requestedWindowParent=xfdashboard_window_tracker_window_get_parent(inWindow);
+	if(!requestedWindowParent || requestedWindowParent!=thisWindow) return(FALSE);
 
 	/* All checks succeeded so it is a sub-window and we return TRUE here */
 	return(TRUE);
@@ -138,6 +136,8 @@ static gboolean _xfdashboard_live_window_is_subwindow(XfdashboardLiveWindow *sel
 static gboolean _xfdashboard_live_window_should_display_subwindow(XfdashboardLiveWindow *self,
 																	XfdashboardWindowTrackerWindow *inWindow)
 {
+	XfdashboardWindowTrackerWindowState		state;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self), FALSE);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), FALSE);
 
@@ -152,7 +152,8 @@ static gboolean _xfdashboard_live_window_should_display_subwindow(XfdashboardLiv
 	 * the window opened is transient window of its parent and it looks like it
 	 * will inherit the same "pin" state.
 	 */
-	if(!xfdashboard_window_tracker_window_is_pinned(inWindow))
+	state=xfdashboard_window_tracker_window_get_state(inWindow);
+	if(!(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED))
 	{
 		XfdashboardWindowTrackerWindow		*thisWindow;
 		XfdashboardWindowTrackerWorkspace	*workspace;
@@ -383,9 +384,9 @@ static void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *s
 														XfdashboardWindowTrackerWindow *inWindow,
 														gpointer inUserData)
 {
-	XfdashboardLiveWindowPrivate	*priv;
-	gboolean						currentCloseVisible;
-	gboolean						newCloseVisible;
+	XfdashboardLiveWindowPrivate			*priv;
+	gboolean								currentCloseVisible;
+	gboolean								newCloseVisible;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -397,8 +398,8 @@ static void _xfdashboard_live_window_on_actions_changed(XfdashboardLiveWindow *s
 
 	/* Determine current and new state of actions */
 	currentCloseVisible=(clutter_actor_is_visible(priv->actorClose) ? TRUE : FALSE);
-	newCloseVisible=xfdashboard_window_tracker_window_has_close_action(inWindow);
-	
+	newCloseVisible=((xfdashboard_window_tracker_window_get_actions(inWindow) & XFDASHBOARD_WINDOW_TRACKER_WINDOW_ACTION_CLOSE) ? TRUE : FALSE);
+
 	/* Show or hide close button actor */
 	if(newCloseVisible!=currentCloseVisible)
 	{
@@ -446,7 +447,7 @@ static void _xfdashboard_live_window_on_name_changed(XfdashboardLiveWindow *self
 	if(inWindow!=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(self))) return;
 
 	/* Set new name in title actor */
-	windowName=g_markup_printf_escaped("%s", xfdashboard_window_tracker_window_get_title(inWindow));
+	windowName=g_markup_printf_escaped("%s", xfdashboard_window_tracker_window_get_name(inWindow));
 	xfdashboard_label_set_text(XFDASHBOARD_LABEL(priv->actorTitle), windowName);
 	g_free(windowName);
 }
@@ -495,7 +496,7 @@ static void _xfdashboard_live_window_set_window_number(XfdashboardLiveWindow *se
 				window=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(self));
 
 				/* Only show close button again if window supports close action */
-				if(xfdashboard_window_tracker_window_has_close_action(window))
+				if(xfdashboard_window_tracker_window_get_actions(window) & XFDASHBOARD_WINDOW_TRACKER_WINDOW_ACTION_CLOSE)
 				{
 					clutter_actor_show(priv->actorClose);
 				}
@@ -759,7 +760,7 @@ static void _xfdashboard_live_window_allocate(ClutterActor *self,
 		{
 			gint						windowWidth, windowHeight;
 
-			xfdashboard_window_tracker_window_get_size(window, &windowWidth, &windowHeight);
+			xfdashboard_window_tracker_window_get_geometry(window, NULL, NULL, &windowWidth, &windowHeight);
 			if(windowWidth>largestWidth) largestWidth=windowWidth;
 			if(windowHeight>largestHeight) largestHeight=windowHeight;
 		}

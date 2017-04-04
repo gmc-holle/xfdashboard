@@ -455,7 +455,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 	{
 		XFDASHBOARD_DEBUG(self, APPLICATIONS,
 							"Could not get PID for window '%s' of a running application to parse environment variables",
-							xfdashboard_window_tracker_window_get_title(inWindow));
+							xfdashboard_window_tracker_window_get_name(inWindow));
 
 		/* Return NULL result */
 		return(NULL);
@@ -468,7 +468,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 		XFDASHBOARD_DEBUG(self, APPLICATIONS,
 							"Could not get environments for PID %d of windows '%s'",
 							windowPID,
-							xfdashboard_window_tracker_window_get_title(inWindow));
+							xfdashboard_window_tracker_window_get_name(inWindow));
 
 		/* Return NULL result */
 		return(NULL);
@@ -484,7 +484,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 		XFDASHBOARD_DEBUG(self, APPLICATIONS,
 							"Missing 'GIO_LAUNCHED_DESKTOP_FILE_PID' in environment variables for PID %d of windows '%s'",
 							windowPID,
-							xfdashboard_window_tracker_window_get_title(inWindow));
+							xfdashboard_window_tracker_window_get_name(inWindow));
 
 		/* Release allocated resources */
 		if(environments) g_hash_table_destroy(environments);
@@ -500,7 +500,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 							"PID %d of environment variables does not match requested window PID %d for '%s'",
 							checkPID,
 							windowPID,
-							xfdashboard_window_tracker_window_get_title(inWindow));
+							xfdashboard_window_tracker_window_get_name(inWindow));
 
 		/* Release allocated resources */
 		if(environments) g_hash_table_destroy(environments);
@@ -517,7 +517,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 		XFDASHBOARD_DEBUG(self, APPLICATIONS,
 							"Missing 'GIO_LAUNCHED_DESKTOP_FILE' in environment variables for PID %d of windows '%s'",
 							windowPID,
-							xfdashboard_window_tracker_window_get_title(inWindow));
+							xfdashboard_window_tracker_window_get_name(inWindow));
 
 		/* Release allocated resources */
 		if(environments) g_hash_table_destroy(environments);
@@ -546,7 +546,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 	 */
 	XFDASHBOARD_DEBUG(self, APPLICATIONS,
 						"Resolved enviroment variables of window '%s' to desktop ID '%s'",
-						xfdashboard_window_tracker_window_get_title(inWindow),
+						xfdashboard_window_tracker_window_get_name(inWindow),
 						foundAppInfo ? g_app_info_get_id(foundAppInfo) : "<nil>");
 
 	return(foundAppInfo);
@@ -636,7 +636,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_window_nam
 					XFDASHBOARD_DEBUG(self, APPLICATIONS,
 										"Found possible application '%s' for window '%s' using pattern '%s'",
 										g_app_info_get_id(globAppInfo),
-										xfdashboard_window_tracker_window_get_title(inWindow),
+										xfdashboard_window_tracker_window_get_name(inWindow),
 										globName);
 				}
 			}
@@ -651,7 +651,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_window_nam
 				XFDASHBOARD_DEBUG(self, APPLICATIONS,
 									"Found exactly one application named '%s' for window '%s' using pattern '%s'",
 									g_app_info_get_id(appInfo),
-									xfdashboard_window_tracker_window_get_title(inWindow),
+									xfdashboard_window_tracker_window_get_name(inWindow),
 									globName);
 			}
 
@@ -683,7 +683,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_window_nam
 		{
 			XFDASHBOARD_DEBUG(self, APPLICATIONS,
 								"Resolved window names of '%s' are ambiguous - discarding desktop IDs '%s' and '%s'",
-								xfdashboard_window_tracker_window_get_title(inWindow),
+								xfdashboard_window_tracker_window_get_name(inWindow),
 								g_app_info_get_id(foundAppInfo),
 								g_app_info_get_id(appInfo));
 
@@ -717,7 +717,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_window_nam
 	/* Return found application info */
 	XFDASHBOARD_DEBUG(self, APPLICATIONS,
 						"Resolved window names of '%s' to desktop ID '%s'",
-						xfdashboard_window_tracker_window_get_title(inWindow),
+						xfdashboard_window_tracker_window_get_name(inWindow),
 						foundAppInfo ? g_app_info_get_id(foundAppInfo) : "<nil>");
 
 	return(foundAppInfo);
@@ -731,6 +731,7 @@ static void _xfdashboard_application_tracker_on_window_opened(XfdashboardApplica
 	XfdashboardApplicationTrackerPrivate	*priv;
 	GAppInfo								*appInfo;
 	XfdashboardApplicationTrackerItem		*item;
+	XfdashboardWindowTrackerWindowState		state;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_TRACKER(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
@@ -738,25 +739,28 @@ static void _xfdashboard_application_tracker_on_window_opened(XfdashboardApplica
 	priv=self->priv;
 	appInfo=NULL;
 
+	/* Get window state */
+	state=xfdashboard_window_tracker_window_get_state(inWindow);
+
 	/* Check if window is "visible" and we should try to find the application
 	 * it belongs to. To be "visible" means here that the window should not be
 	 * skipped in any tasklist or pager. But hidden or minimized window are
 	 * "visible" when looking up running application is meant.
 	 */
-	if(xfdashboard_window_tracker_window_is_skip_pager(inWindow))
+	if(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER)
 	{
 		XFDASHBOARD_DEBUG(self, APPLICATIONS,
 							"Do not resolve window '%s' as it has skip-pager set.",
-							xfdashboard_window_tracker_window_get_title(inWindow));
+							xfdashboard_window_tracker_window_get_name(inWindow));
 
 		return;
 	}
 
-	if(xfdashboard_window_tracker_window_is_skip_tasklist(inWindow))
+	if(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST)
 	{
 		XFDASHBOARD_DEBUG(self, APPLICATIONS,
 							"Do not resolve window '%s' as it has skip-tasklist set.",
-							xfdashboard_window_tracker_window_get_title(inWindow));
+							xfdashboard_window_tracker_window_get_name(inWindow));
 
 		return;
 	}
@@ -770,14 +774,14 @@ static void _xfdashboard_application_tracker_on_window_opened(XfdashboardApplica
 	{
 		XFDASHBOARD_DEBUG(self, APPLICATIONS,
 							"Could not resolve window '%s' to any desktop ID",
-							xfdashboard_window_tracker_window_get_title(inWindow));
+							xfdashboard_window_tracker_window_get_name(inWindow));
 
 		return;
 	}
 
 	XFDASHBOARD_DEBUG(self, APPLICATIONS,
 						"Window '%s' belongs to desktop ID '%s'",
-						xfdashboard_window_tracker_window_get_title(inWindow),
+						xfdashboard_window_tracker_window_get_name(inWindow),
 						g_app_info_get_id(appInfo));
 
 	/* Create application tracker if no one exists for application and window ... */
@@ -828,14 +832,14 @@ static void _xfdashboard_application_tracker_on_window_closed(XfdashboardApplica
 	{
 		XFDASHBOARD_DEBUG(self, APPLICATIONS,
 							"Could not find running application for window '%s'",
-							xfdashboard_window_tracker_window_get_title(inWindow));
+							xfdashboard_window_tracker_window_get_name(inWindow));
 
 		return;
 	}
 
 	XFDASHBOARD_DEBUG(self, APPLICATIONS,
 						"Closing window '%s' for desktop ID '%s'",
-						xfdashboard_window_tracker_window_get_title(inWindow),
+						xfdashboard_window_tracker_window_get_name(inWindow),
 						item->desktopID);
 
 	/* Remove window from found application tracker item */
@@ -851,7 +855,7 @@ static void _xfdashboard_application_tracker_on_window_closed(XfdashboardApplica
 
 		XFDASHBOARD_DEBUG(self, APPLICATIONS,
 							"Closing window '%s' for desktop ID '%s' closed last window so remove application from list of running ones",
-							xfdashboard_window_tracker_window_get_title(inWindow),
+							xfdashboard_window_tracker_window_get_name(inWindow),
 							item->desktopID);
 
 		/* Create a copy of desktop ID for signal emission because the
@@ -904,14 +908,14 @@ static void _xfdashboard_application_tracker_on_active_window_changed(Xfdashboar
 	{
 		XFDASHBOARD_DEBUG(self, APPLICATIONS,
 							"Could not find running application for new active window '%s'",
-							xfdashboard_window_tracker_window_get_title(inNewActiveWindow));
+							xfdashboard_window_tracker_window_get_name(inNewActiveWindow));
 
 		return;
 	}
 
 	XFDASHBOARD_DEBUG(self, APPLICATIONS,
 						"New active window is '%s' and belongs to desktop ID '%s'",
-						xfdashboard_window_tracker_window_get_title(inNewActiveWindow),
+						xfdashboard_window_tracker_window_get_name(inNewActiveWindow),
 						item->desktopID);
 
 	/* Move new active window of found application tracker item to begin of

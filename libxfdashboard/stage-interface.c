@@ -179,6 +179,7 @@ static void _xfdashboard_stage_interface_get_preferred_height(ClutterActor *inAc
 	XfdashboardStageInterface			*self=XFDASHBOARD_STAGE_INTERFACE(inActor);
 	XfdashboardStageInterfacePrivate	*priv=self->priv;
 	gfloat								minHeight, naturalHeight;
+	gint								h;
 	ClutterActor						 *stage;
 
 	/* Set up default values */
@@ -187,7 +188,8 @@ static void _xfdashboard_stage_interface_get_preferred_height(ClutterActor *inAc
 	/* Get monitor size if available otherwise get stage size */
 	if(priv->monitor)
 	{
-		minHeight=naturalHeight=xfdashboard_window_tracker_monitor_get_height(priv->monitor);
+		xfdashboard_window_tracker_monitor_get_geometry(priv->monitor, NULL, NULL, NULL, &h);
+		minHeight=naturalHeight=h;
 	}
 		else
 		{
@@ -208,6 +210,7 @@ static void _xfdashboard_stage_interface_get_preferred_width(ClutterActor *inAct
 	XfdashboardStageInterface			*self=XFDASHBOARD_STAGE_INTERFACE(inActor);
 	XfdashboardStageInterfacePrivate	*priv=self->priv;
 	gfloat								minWidth, naturalWidth;
+	gint								w;
 	ClutterActor						 *stage;
 
 	/* Set up default values */
@@ -216,7 +219,8 @@ static void _xfdashboard_stage_interface_get_preferred_width(ClutterActor *inAct
 	/* Get monitor size if available otherwise get stage size */
 	if(priv->monitor)
 	{
-		minWidth=naturalWidth=xfdashboard_window_tracker_monitor_get_width(priv->monitor);
+		xfdashboard_window_tracker_monitor_get_geometry(priv->monitor, NULL, NULL, &w, NULL);
+		minWidth=naturalWidth=w;
 	}
 		else
 		{

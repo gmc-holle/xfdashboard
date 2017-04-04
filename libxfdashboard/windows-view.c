@@ -208,20 +208,24 @@ static gboolean _xfdashboard_windows_view_update_stage_and_monitor(XfdashboardWi
 static gboolean _xfdashboard_windows_view_is_visible_window(XfdashboardWindowsView *self,
 																XfdashboardWindowTrackerWindow *inWindow)
 {
-	XfdashboardWindowsViewPrivate		*priv;
+	XfdashboardWindowsViewPrivate			*priv;
+	XfdashboardWindowTrackerWindowState		state;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self), FALSE);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), FALSE);
 
 	priv=self->priv;
 
+	/* Get state of window */
+	state=xfdashboard_window_tracker_window_get_state(inWindow);
+
 	/* Determine if windows should be shown depending on its state, size and position */
-	if(xfdashboard_window_tracker_window_is_skip_pager(inWindow))
+	if(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER)
 	{
 		return(FALSE);
 	}
 
-	if(xfdashboard_window_tracker_window_is_skip_tasklist(inWindow))
+	if(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST)
 	{
 		return(FALSE);
 	}
@@ -406,7 +410,7 @@ static void _xfdashboard_windows_view_move_live_to_view(XfdashboardWindowsView *
 
 	XFDASHBOARD_DEBUG(self, ACTOR,
 						"Moving window '%s' from %s-monitor %d to %s-monitor %d and from workspace '%s' (%d) to '%s' (%d)",
-						xfdashboard_window_tracker_window_get_title(window),
+						xfdashboard_window_tracker_window_get_name(window),
 						xfdashboard_window_tracker_monitor_is_primary(sourceMonitor) ? "primary" : "secondary",
 						xfdashboard_window_tracker_monitor_get_number(sourceMonitor),
 						xfdashboard_window_tracker_monitor_is_primary(targetMonitor) ? "primary" : "secondary",
@@ -417,11 +421,11 @@ static void _xfdashboard_windows_view_move_live_to_view(XfdashboardWindowsView *
 						xfdashboard_window_tracker_workspace_get_number(targetWorkspace));
 
 	/* Get position and size of window to move */
-	xfdashboard_window_tracker_window_get_position_size(window,
-														&oldWindowX,
-														&oldWindowY,
-														&oldWindowWidth,
-														&oldWindowHeight);
+	xfdashboard_window_tracker_window_get_geometry(window,
+													&oldWindowX,
+													&oldWindowY,
+													&oldWindowWidth,
+													&oldWindowHeight);
 
 	/* Calculate source x and y coordinate relative to monitor size in percent */
 	xfdashboard_window_tracker_monitor_get_geometry(sourceMonitor,
@@ -447,7 +451,7 @@ static void _xfdashboard_windows_view_move_live_to_view(XfdashboardWindowsView *
 		xfdashboard_window_tracker_window_move_to_workspace(window, targetWorkspace);
 		XFDASHBOARD_DEBUG(self, ACTOR,
 							"Moved window '%s' from workspace '%s' (%d) to '%s' (%d)",
-							xfdashboard_window_tracker_window_get_title(window),
+							xfdashboard_window_tracker_window_get_name(window),
 							xfdashboard_window_tracker_workspace_get_name(sourceWorkspace),
 							xfdashboard_window_tracker_workspace_get_number(sourceWorkspace),
 							xfdashboard_window_tracker_workspace_get_name(targetWorkspace),
@@ -458,7 +462,7 @@ static void _xfdashboard_windows_view_move_live_to_view(XfdashboardWindowsView *
 	xfdashboard_window_tracker_window_move(window, newWindowX, newWindowY);
 	XFDASHBOARD_DEBUG(self, ACTOR,
 						"Moved window '%s' from [%d,%d] at monitor [%d,%d x %d,%d] to [%d,%d] at monitor [%d,%d x %d,%d] (relative x=%.2f, y=%.2f)",
-						xfdashboard_window_tracker_window_get_title(window),
+						xfdashboard_window_tracker_window_get_name(window),
 						oldWindowX, oldWindowY,
 						oldMonitorX, oldMonitorY, oldMonitorWidth, oldMonitorHeight,
 						newWindowX, newWindowY,
@@ -554,7 +558,8 @@ static void _xfdashboard_windows_view_on_drop_drop(XfdashboardWindowsView *self,
 		 */
 		if(sourceWindowsView==self)
 		{
-			g_message("Will not handle drop of %s at %s because source and target are the same.",
+			XFDASHBOARD_DEBUG(self, ACTOR,
+						"Will not handle drop of %s at %s because source and target are the same.",
 						G_OBJECT_TYPE_NAME(draggedActor),
 						G_OBJECT_TYPE_NAME(dragSource));
 			return;

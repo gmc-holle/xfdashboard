@@ -826,8 +826,7 @@ static void _xfdashboard_window_content_x11_release_resources(XfdashboardWindowC
 		XFDASHBOARD_DEBUG(self, WINDOWS,
 							"X error %d occured while releasing resources for window '%s'",
 							trapError,
-							xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)),
-							self);
+							xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 		return;
 	}
 
@@ -950,7 +949,7 @@ static gboolean _xfdashboard_window_content_x11_resume_on_idle(gpointer inUserDa
 						xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 
 	XFDASHBOARD_DEBUG(self, WINDOWS,
-						"Removing queued entry %p for window resume of '%s'@%p",
+						"Removing queued entry %p for window resume of '%s'",
 						queueEntry,
 						xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 	_xfdashboard_window_content_x11_resume_idle_queue=g_list_delete_link(_xfdashboard_window_content_x11_resume_idle_queue, queueEntry);

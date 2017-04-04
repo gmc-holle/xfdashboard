@@ -568,7 +568,7 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	priv=self->priv;
 
 	/* Check if window opened is this stage window */
-	stageWindow=xfdashboard_window_tracker_window_get_stage_window(CLUTTER_STAGE(self));
+	stageWindow=xfdashboard_window_tracker_get_stage_window(priv->windowTracker, CLUTTER_STAGE(self));
 	if(stageWindow!=inWindow) return;
 
 	/* Set up window for use as stage window */
@@ -603,7 +603,7 @@ static void _xfdashboard_stage_on_desktop_window_opened(XfdashboardStage *self,
 	desktopWindow=xfdashboard_window_tracker_get_root_window(priv->windowTracker);
 	if(desktopWindow)
 	{
-		windowContent=xfdashboard_window_content_new_for_window(desktopWindow);
+		windowContent=xfdashboard_window_tracker_window_get_content(desktopWindow);
 		clutter_actor_set_content(priv->backgroundImageLayer, windowContent);
 		clutter_actor_show(priv->backgroundImageLayer);
 		g_object_unref(windowContent);
@@ -1795,8 +1795,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	{
 		gint					screenWidth, screenHeight;
 
-		screenWidth=xfdashboard_window_tracker_get_screen_width(priv->windowTracker);
-		screenHeight=xfdashboard_window_tracker_get_screen_height(priv->windowTracker);
+		xfdashboard_window_tracker_get_screen_size(priv->windowTracker, &screenWidth, &screenHeight);
 		_xfdashboard_stage_on_screen_size_changed(self, screenWidth, screenHeight, priv->windowTracker);
 
 		g_signal_connect_swapped(priv->windowTracker,
@@ -1854,7 +1853,7 @@ void xfdashboard_stage_set_background_image_type(XfdashboardStage *self, Xfdashb
 						{
 							ClutterContent				*backgroundContent;
 
-							backgroundContent=xfdashboard_window_content_new_for_window(backgroundWindow);
+							backgroundContent=xfdashboard_window_tracker_window_get_content(backgroundWindow);
 							clutter_actor_show(priv->backgroundImageLayer);
 							clutter_actor_set_content(priv->backgroundImageLayer, backgroundContent);
 							g_object_unref(backgroundContent);

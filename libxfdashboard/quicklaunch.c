@@ -763,7 +763,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 
 				/* Create menu item for window */
 				menuItem=xfdashboard_popup_menu_item_button_new();
-				xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), xfdashboard_window_tracker_window_get_title(window));
+				xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), xfdashboard_window_tracker_window_get_name(window));
 				clutter_actor_set_x_expand(menuItem, TRUE);
 				xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
 
