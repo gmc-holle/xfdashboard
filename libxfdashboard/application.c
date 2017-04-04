@@ -591,15 +591,9 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	g_option_context_add_main_entries(context, entries, GETTEXT_PACKAGE);
 
 #ifdef DEBUG
-	/* I always forget the name of the environment variable to get the debug
-	 * message display which are emitted with g_debug(). So display a hint
-	 * if application was compiled with debug enabled.
-	 */
-	g_print("** To get debug messages set environment variable G_MESSAGES_DEBUG to %s\n", PACKAGE_NAME);
-	g_print("** e.g.: G_MESSAGES_DEBUG=%s %s\n", PACKAGE_NAME, inArgv[0]);
 #ifdef XFDASHBOARD_ENABLE_DEBUG
-	g_print("** Use environment variable XFDASHBOARD_DEBUG to enable debug messages also as G_MESSAGES_DEBUG=%s will be deprecated\n",
-				PACKAGE_NAME);
+	g_print("** Use environment variable XFDASHBOARD_DEBUG to enable debug messages\n");
+	g_print("** To get a list of debug categories set XFDASHBOARD_DEBUG=help\n");
 #endif
 #endif
 
