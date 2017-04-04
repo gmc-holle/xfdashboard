@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS = subdir-objects
+
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-DLIBXFDASHBOARD_COMPILATION=1 \
@@ -202,6 +204,23 @@ libxfdashboard_la_LDFLAGS = \
 	-version-info $(LIBXFDASHBOARD_VERINFO) \
 	-export-symbols-regex "^[^_].*" \
 	-no-undefined
+
+x11_headers = \
+	x11/window-content-x11.h \
+	x11/window-tracker-x11.h \
+	x11/window-tracker-monitor-x11.h \
+	x11/window-tracker-window-x11.h \
+	x11/window-tracker-workspace-x11.h
+
+x11_sources = \
+	x11/window-content-x11.c \
+	x11/window-tracker-x11.c \
+	x11/window-tracker-monitor-x11.c \
+	x11/window-tracker-window-x11.c \
+	x11/window-tracker-workspace-x11.c
+
+libxfdashboard_la_headers += $(x11_headers)
+libxfdashboard_la_SOURCES += $(x11_sources)
 
 if XFDASHBOARD_BUILD_WITH_XCOMPOSITE
 libxfdashboard_la_CFLAGS += \
