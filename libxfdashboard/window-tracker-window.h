@@ -1,12 +1,7 @@
 /*
- * window-tracker-window: A window tracked by window tracker and also
- *                        a wrapper class around WnckWindow.
- *                        By wrapping libwnck objects we can use a virtual
- *                        stable API while the API in libwnck changes
- *                        within versions. We only need to use #ifdefs in
- *                        window tracker object and nowhere else in the code.
+ * window-tracker-window: A window tracked by window tracker.
  * 
- * Copyright 2012-2017 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2016 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,15 +37,117 @@
 
 G_BEGIN_DECLS
 
+/* Public definitions */
+/**
+ * XfdashboardWindowTrackerWindowState:
+ * @XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_HIDDEN: The window is not visible on its
+ *                                                  #XfdashboardWindowTrackerWorkspace,
+ *                                                  e.g. when minimized.
+ * @XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_MINIMIZED: The window is minimized.
+ * @XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_MAXIMIZED: The window is maximized.
+ * @XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_FULLSCREEN: The window is fullscreen.
+ * @XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER: The window should not be included on pagers.
+ * @XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST: The window should not be included on tasklists.
+ * @XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED: The window is on all workspaces.
+ * @XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_URGENT: The window requires a response from the user.
+ *
+ * Type used as a bitmask to describe the state of a #XfdashboardWindowTrackerWindow.
+ */
+typedef enum /*< flags,prefix=XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE >*/
+{
+	XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_HIDDEN=1 << 0,
+	XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_MINIMIZED=1 << 1,
+	XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_MAXIMIZED=1 << 2,
+	XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_FULLSCREEN=1 << 3,
+	XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER=1 << 4,
+	XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST=1 << 5,
+	XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED=1 << 6,
+	XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_URGENT=1 << 7,
+} XfdashboardWindowTrackerWindowState;
+
+/**
+ * XfdashboardWindowTrackerWindowAction:
+ * @XFDASHBOARD_WINDOW_TRACKER_WINDOW_ACTION_CLOSE: The window may be closed.
+ *
+ * Type used as a bitmask to describe the actions that can be done for a #XfdashboardWindowTrackerWindow.
+ */
+typedef enum /*< flags,prefix=XFDASHBOARD_WINDOW_TRACKER_WINDOW_ACTION >*/
+{
+	XFDASHBOARD_WINDOW_TRACKER_WINDOW_ACTION_CLOSE=1 << 0,
+} XfdashboardWindowTrackerWindowAction;
+
+
+/* Object declaration */
 #define XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW				(xfdashboard_window_tracker_window_get_type())
 #define XFDASHBOARD_WINDOW_TRACKER_WINDOW(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW, XfdashboardWindowTrackerWindow))
 #define XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW))
-#define XFDASHBOARD_WINDOW_TRACKER_WINDOW_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST((klass), XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW, XfdashboardWindowTrackerWindowClass))
-#define XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE((klass), XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW))
-#define XFDASHBOARD_WINDOW_TRACKER_WINDOW_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW, XfdashboardWindowTrackerWindowClass))
+#define XFDASHBOARD_WINDOW_TRACKER_WINDOW_GET_IFACE(obj)	(G_TYPE_INSTANCE_GET_INTERFACE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW, XfdashboardWindowTrackerWindowInterface))
 
-typedef struct _WnckWindow									XfdashboardWindowTrackerWindow;
-typedef struct _WnckWindowClass								XfdashboardWindowTrackerWindowClass;
+typedef struct _XfdashboardWindowTrackerWindow				XfdashboardWindowTrackerWindow;
+typedef struct _XfdashboardWindowTrackerWindowInterface		XfdashboardWindowTrackerWindowInterface;
+
+struct _XfdashboardWindowTrackerWindowInterface
+{
+	/*< private >*/
+	/* Parent interface */
+	GTypeInterface						parent_interface;
+
+	/*< public >*/
+	/* Virtual functions */
+	gboolean (*is_equal)(XfdashboardWindowTrackerWindow *inLeft, XfdashboardWindowTrackerWindow *inRight);
+
+	gboolean (*is_visible)(XfdashboardWindowTrackerWindow *self);
+	void (*show)(XfdashboardWindowTrackerWindow *self);
+	void (*hide)(XfdashboardWindowTrackerWindow *self);
+
+	XfdashboardWindowTrackerWindow* (*get_parent)(XfdashboardWindowTrackerWindow *self);
+
+	XfdashboardWindowTrackerWindowState (*get_state)(XfdashboardWindowTrackerWindow *self);
+	XfdashboardWindowTrackerWindowAction (*get_actions)(XfdashboardWindowTrackerWindow *self);
+
+	const gchar* (*get_name)(XfdashboardWindowTrackerWindow *self);
+
+	GdkPixbuf* (*get_icon)(XfdashboardWindowTrackerWindow *self);
+	const gchar* (*get_icon_name)(XfdashboardWindowTrackerWindow *self);
+
+	XfdashboardWindowTrackerWorkspace* (*get_workspace)(XfdashboardWindowTrackerWindow *self);
+	gboolean (*is_on_workspace)(XfdashboardWindowTrackerWindow *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
+
+	XfdashboardWindowTrackerMonitor* (*get_monitor)(XfdashboardWindowTrackerWindow *self);
+	gboolean (*is_on_monitor)(XfdashboardWindowTrackerWindow *self, XfdashboardWindowTrackerMonitor *inMonitor);
+
+	void (*get_geometry)(XfdashboardWindowTrackerWindow *self, gint *outX, gint *outY, gint *outWidth, gint *outHeight);
+	void (*set_geometry)(XfdashboardWindowTrackerWindow *self, gint inX, gint inY, gint inWidth, gint inHeight);
+	void (*move)(XfdashboardWindowTrackerWindow *self, gint inX, gint inY);
+	void (*resize)(XfdashboardWindowTrackerWindow *self, gint inWidth, gint inHeight);
+	void (*move_to_workspace)(XfdashboardWindowTrackerWindow *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
+	void (*activate)(XfdashboardWindowTrackerWindow *self);
+	void (*close)(XfdashboardWindowTrackerWindow *self);
+
+	gint (*get_pid)(XfdashboardWindowTrackerWindow *self);
+	gchar** (*get_instance_names)(XfdashboardWindowTrackerWindow *self);
+
+	ClutterContent* (*get_content)(XfdashboardWindowTrackerWindow *self);
+
+	ClutterStage* (*get_stage)(XfdashboardWindowTrackerWindow *self);
+	void (*make_stage_window)(XfdashboardWindowTrackerWindow *self);
+	void (*unmake_stage_window)(XfdashboardWindowTrackerWindow *self);
+
+	/* Signals */
+	void (*name_changed)(XfdashboardWindowTrackerWindow *self);
+	void (*state_changed)(XfdashboardWindowTrackerWindow *self,
+							XfdashboardWindowTrackerWindowState inChangedStates,
+							XfdashboardWindowTrackerWindowState inNewState);
+	void (*actions_changed)(XfdashboardWindowTrackerWindow *self,
+							XfdashboardWindowTrackerWindowAction inChangedActions,
+							XfdashboardWindowTrackerWindowAction inNewActions);
+	void (*icon_changed)(XfdashboardWindowTrackerWindow *self);
+	void (*workspace_changed)(XfdashboardWindowTrackerWindow *self,
+								XfdashboardWindowTrackerWorkspace *inOldWorkspace);
+	void (*monitor_changed)(XfdashboardWindowTrackerWindow *self,
+							XfdashboardWindowTrackerMonitor *inOldMonitor);
+	void (*geometry_changed)(XfdashboardWindowTrackerWindow *self);
+};
 
 /* Public API */
 GType xfdashboard_window_tracker_window_get_type(void) G_GNUC_CONST;
@@ -58,64 +155,64 @@ GType xfdashboard_window_tracker_window_get_type(void) G_GNUC_CONST;
 gboolean xfdashboard_window_tracker_window_is_equal(XfdashboardWindowTrackerWindow *inLeft,
 													XfdashboardWindowTrackerWindow *inRight);
 
-gboolean xfdashboard_window_tracker_window_is_minimized(XfdashboardWindowTrackerWindow *inWindow);
-gboolean xfdashboard_window_tracker_window_is_maximized(XfdashboardWindowTrackerWindow *inWindow);
-gboolean xfdashboard_window_tracker_window_is_fullscreen(XfdashboardWindowTrackerWindow *inWindow);
-gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *inWindow);
-void xfdashboard_window_tracker_window_show(XfdashboardWindowTrackerWindow *inWindow);
-void xfdashboard_window_tracker_window_hide(XfdashboardWindowTrackerWindow *inWindow);
+gboolean xfdashboard_window_tracker_window_is_visible(XfdashboardWindowTrackerWindow *self);
+gboolean xfdashboard_window_tracker_window_is_visible_on_workspace(XfdashboardWindowTrackerWindow *self,
+																	XfdashboardWindowTrackerWorkspace *inWorkspace);
+gboolean xfdashboard_window_tracker_window_is_visible_on_monitor(XfdashboardWindowTrackerWindow *self,
+																	XfdashboardWindowTrackerMonitor *inMonitor);
+void xfdashboard_window_tracker_window_show(XfdashboardWindowTrackerWindow *self);
+void xfdashboard_window_tracker_window_hide(XfdashboardWindowTrackerWindow *self);
 
-XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_parent_window(XfdashboardWindowTrackerWindow *inWindow);
+XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_parent(XfdashboardWindowTrackerWindow *self);
 
-XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_window_get_workspace(XfdashboardWindowTrackerWindow *inWindow);
-gboolean xfdashboard_window_tracker_window_is_on_workspace(XfdashboardWindowTrackerWindow *inWindow,
+XfdashboardWindowTrackerWindowState xfdashboard_window_tracker_window_get_state(XfdashboardWindowTrackerWindow *self);
+XfdashboardWindowTrackerWindowAction xfdashboard_window_tracker_window_get_actions(XfdashboardWindowTrackerWindow *self);
+
+const gchar* xfdashboard_window_tracker_window_get_name(XfdashboardWindowTrackerWindow *self);
+
+GdkPixbuf* xfdashboard_window_tracker_window_get_icon(XfdashboardWindowTrackerWindow *self);
+const gchar* xfdashboard_window_tracker_window_get_icon_name(XfdashboardWindowTrackerWindow *self);
+
+XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_window_get_workspace(XfdashboardWindowTrackerWindow *self);
+gboolean xfdashboard_window_tracker_window_is_on_workspace(XfdashboardWindowTrackerWindow *self,
 															XfdashboardWindowTrackerWorkspace *inWorkspace);
-void xfdashboard_window_tracker_window_move_to_workspace(XfdashboardWindowTrackerWindow *inWindow,
+void xfdashboard_window_tracker_window_move_to_workspace(XfdashboardWindowTrackerWindow *self,
 															XfdashboardWindowTrackerWorkspace *inWorkspace);
 
-XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_window_get_monitor(XfdashboardWindowTrackerWindow *inWindow);
-gboolean xfdashboard_window_tracker_window_is_on_monitor(XfdashboardWindowTrackerWindow *inWindow,
+XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_window_get_monitor(XfdashboardWindowTrackerWindow *self);
+gboolean xfdashboard_window_tracker_window_is_on_monitor(XfdashboardWindowTrackerWindow *self,
 															XfdashboardWindowTrackerMonitor *inMonitor);
 
-const gchar* xfdashboard_window_tracker_window_get_title(XfdashboardWindowTrackerWindow *inWindow);
+void xfdashboard_window_tracker_window_get_geometry(XfdashboardWindowTrackerWindow *self,
+															gint *outX,
+															gint *outY,
+															gint *outWidth,
+															gint *outHeight);
+void xfdashboard_window_tracker_window_set_geometry(XfdashboardWindowTrackerWindow *self,
+															gint inX,
+															gint inY,
+															gint inWidth,
+															gint inHeight);
+void xfdashboard_window_tracker_window_move(XfdashboardWindowTrackerWindow *self,
+											gint inX,
+											gint inY);
+void xfdashboard_window_tracker_window_resize(XfdashboardWindowTrackerWindow *self,
+												gint inWidth,
+												gint inHeight);
 
-GdkPixbuf* xfdashboard_window_tracker_window_get_icon(XfdashboardWindowTrackerWindow *inWindow);
-const gchar* xfdashboard_window_tracker_window_get_icon_name(XfdashboardWindowTrackerWindow *inWindow);
+void xfdashboard_window_tracker_window_activate(XfdashboardWindowTrackerWindow *self);
+void xfdashboard_window_tracker_window_close(XfdashboardWindowTrackerWindow *self);
 
-gboolean xfdashboard_window_tracker_window_is_skip_pager(XfdashboardWindowTrackerWindow *inWindow);
-gboolean xfdashboard_window_tracker_window_is_skip_tasklist(XfdashboardWindowTrackerWindow *inWindow);
-gboolean xfdashboard_window_tracker_window_is_pinned(XfdashboardWindowTrackerWindow *inWindow);
-gboolean xfdashboard_window_tracker_window_is_urgent(XfdashboardWindowTrackerWindow *inWindow);
+gboolean xfdashboard_window_tracker_window_is_stage(XfdashboardWindowTrackerWindow *self);
+ClutterStage* xfdashboard_window_tracker_window_get_stage(XfdashboardWindowTrackerWindow *self);
 
-gboolean xfdashboard_window_tracker_window_has_close_action(XfdashboardWindowTrackerWindow *inWindow);
+void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTrackerWindow *self);
+void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrackerWindow *self);
 
-void xfdashboard_window_tracker_window_activate(XfdashboardWindowTrackerWindow *inWindow);
+gint xfdashboard_window_tracker_window_get_pid(XfdashboardWindowTrackerWindow *self);
+gchar** xfdashboard_window_tracker_window_get_instance_names(XfdashboardWindowTrackerWindow *self);
 
-void xfdashboard_window_tracker_window_close(XfdashboardWindowTrackerWindow *inWindow);
-
-void xfdashboard_window_tracker_window_get_position(XfdashboardWindowTrackerWindow *inWindow, gint *outX, gint *outY);
-void xfdashboard_window_tracker_window_get_size(XfdashboardWindowTrackerWindow *inWindow, gint *outWidth, gint *outHeight);
-void xfdashboard_window_tracker_window_get_position_size(XfdashboardWindowTrackerWindow *inWindow,
-															gint *outX, gint *outY,
-															gint *outWidth, gint *outHeight);
-
-void xfdashboard_window_tracker_window_move(XfdashboardWindowTrackerWindow *inWindow, gint inX, gint inY);
-void xfdashboard_window_tracker_window_resize(XfdashboardWindowTrackerWindow *inWindow, gint inWidth, gint inHeight);
-void xfdashboard_window_tracker_window_move_resize(XfdashboardWindowTrackerWindow *inWindow,
-													gint inX, gint inY,
-													gint inWidth, gint inHeight);
-
-gboolean xfdashboard_window_tracker_window_is_stage(XfdashboardWindowTrackerWindow *inWindow);
-ClutterStage* xfdashboard_window_tracker_window_find_stage(XfdashboardWindowTrackerWindow *inWindow);
-XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_stage_window(ClutterStage *inStage);
-
-void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTrackerWindow *inWindow);
-void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrackerWindow *inWindow);
-
-gint xfdashboard_window_tracker_window_get_pid(XfdashboardWindowTrackerWindow *inWindow);
-gchar** xfdashboard_window_tracker_window_get_instance_names(XfdashboardWindowTrackerWindow *inWindow);
-
-gulong xfdashboard_window_tracker_window_get_xid(XfdashboardWindowTrackerWindow *inWindow);
+ClutterContent* xfdashboard_window_tracker_window_get_content(XfdashboardWindowTrackerWindow *self);
 
 G_END_DECLS
 

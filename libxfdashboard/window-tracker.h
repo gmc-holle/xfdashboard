@@ -1,13 +1,8 @@
 /*
  * window-tracker: Tracks windows, workspaces, monitors and
- *                 listens for changes. It also bundles libwnck into one
- *                 class.
- *                 By wrapping libwnck objects we can use a virtual
- *                 stable API while the API in libwnck changes within versions.
- *                 We only need to use #ifdefs in window tracker object
- *                 and nowhere else in the code.
+ *                 listens for changes.
  * 
- * Copyright 2012-2017 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2016 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,32 +40,41 @@ G_BEGIN_DECLS
 #define XFDASHBOARD_TYPE_WINDOW_TRACKER				(xfdashboard_window_tracker_get_type())
 #define XFDASHBOARD_WINDOW_TRACKER(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER, XfdashboardWindowTracker))
 #define XFDASHBOARD_IS_WINDOW_TRACKER(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER))
-#define XFDASHBOARD_WINDOW_TRACKER_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST((klass), XFDASHBOARD_TYPE_WINDOW_TRACKER, XfdashboardWindowTrackerClass))
-#define XFDASHBOARD_IS_WINDOW_TRACKER_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE((klass), XFDASHBOARD_TYPE_WINDOW_TRACKER))
-#define XFDASHBOARD_WINDOW_TRACKER_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER, XfdashboardWindowTrackerClass))
+#define XFDASHBOARD_WINDOW_TRACKER_GET_IFACE(obj)	(G_TYPE_INSTANCE_GET_INTERFACE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER, XfdashboardWindowTrackerInterface))
 
 typedef struct _XfdashboardWindowTracker			XfdashboardWindowTracker;
-typedef struct _XfdashboardWindowTrackerClass		XfdashboardWindowTrackerClass;
-typedef struct _XfdashboardWindowTrackerPrivate		XfdashboardWindowTrackerPrivate;
+typedef struct _XfdashboardWindowTrackerInterface	XfdashboardWindowTrackerInterface;
 
-struct _XfdashboardWindowTracker
+struct _XfdashboardWindowTrackerInterface
 {
 	/*< private >*/
-	/* Parent instance */
-	GObject								parent_instance;
-
-	/* Private structure */
-	XfdashboardWindowTrackerPrivate		*priv;
-};
-
-struct _XfdashboardWindowTrackerClass
-{
-	/*< private >*/
-	/* Parent class */
-	GObjectClass						parent_class;
+	/* Parent interface */
+	GTypeInterface						parent_interface;
 
 	/*< public >*/
 	/* Virtual functions */
+	GList* (*get_windows)(XfdashboardWindowTracker *self);
+	GList* (*get_windows_stacked)(XfdashboardWindowTracker *self);
+	XfdashboardWindowTrackerWindow* (*get_active_window)(XfdashboardWindowTracker *self);
+
+	gint (*get_workspaces_count)(XfdashboardWindowTracker *self);
+	GList* (*get_workspaces)(XfdashboardWindowTracker *self);
+	XfdashboardWindowTrackerWorkspace* (*get_active_workspace)(XfdashboardWindowTracker *self);
+	XfdashboardWindowTrackerWorkspace* (*get_workspace_by_number)(XfdashboardWindowTracker *self, gint inNumber);
+
+	gboolean (*supports_multiple_monitors)(XfdashboardWindowTracker *self);
+	gint (*get_monitors_count)(XfdashboardWindowTracker *self);
+	GList* (*get_monitors)(XfdashboardWindowTracker *self);
+	XfdashboardWindowTrackerMonitor* (*get_primary_monitor)(XfdashboardWindowTracker *self);
+	XfdashboardWindowTrackerMonitor* (*get_monitor_by_number)(XfdashboardWindowTracker *self, gint inNumber);
+	XfdashboardWindowTrackerMonitor* (*get_monitor_by_position)(XfdashboardWindowTracker *self, gint inX, gint inY);
+
+	void (*get_screen_size)(XfdashboardWindowTracker *self, gint *outWidth, gint *outHeight);
+
+	XfdashboardWindowTrackerWindow* (*get_root_window)(XfdashboardWindowTracker *self);
+	XfdashboardWindowTrackerWindow* (*get_stage_window)(XfdashboardWindowTracker *self, ClutterStage *inStage);
+
+	/* Signals */
 	void (*window_stacking_changed)(XfdashboardWindowTracker *self);
 
 	void (*active_window_changed)(XfdashboardWindowTracker *self,
@@ -104,6 +108,7 @@ struct _XfdashboardWindowTrackerClass
 	void (*monitor_added)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerMonitor *inMonitor);
 	void (*monitor_removed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerMonitor *inMonitor);
 	void (*monitor_geometry_changed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerMonitor *inMonitor);
+
 	void (*screen_size_changed)(XfdashboardWindowTracker *self, gint inWidth, gint inHeight);
 };
 
@@ -112,32 +117,33 @@ GType xfdashboard_window_tracker_get_type(void) G_GNUC_CONST;
 
 XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void);
 
-guint32 xfdashboard_window_tracker_get_time(void);
-
 GList* xfdashboard_window_tracker_get_windows(XfdashboardWindowTracker *self);
 GList* xfdashboard_window_tracker_get_windows_stacked(XfdashboardWindowTracker *self);
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_active_window(XfdashboardWindowTracker *self);
 
 gint xfdashboard_window_tracker_get_workspaces_count(XfdashboardWindowTracker *self);
 GList* xfdashboard_window_tracker_get_workspaces(XfdashboardWindowTracker *self);
+XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindowTracker *self);
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_workspace_by_number(XfdashboardWindowTracker *self,
 																						gint inNumber);
-XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindowTracker *self);
 
 gboolean xfdashboard_window_tracker_supports_multiple_monitors(XfdashboardWindowTracker *self);
 gint xfdashboard_window_tracker_get_monitors_count(XfdashboardWindowTracker *self);
 GList* xfdashboard_window_tracker_get_monitors(XfdashboardWindowTracker *self);
+XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_primary_monitor(XfdashboardWindowTracker *self);
 XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_number(XfdashboardWindowTracker *self,
 																					gint inNumber);
-XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_primary_monitor(XfdashboardWindowTracker *self);
 XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_position(XfdashboardWindowTracker *self,
-																					gint inX,
-																					gint inY);
+																						gint inX,
+																						gint inY);
 
-gint xfdashboard_window_tracker_get_screen_width(XfdashboardWindowTracker *self);
-gint xfdashboard_window_tracker_get_screen_height(XfdashboardWindowTracker *self);
+void xfdashboard_window_tracker_get_screen_size(XfdashboardWindowTracker *self,
+													gint *outWidth,
+													gint *outHeight);
 
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(XfdashboardWindowTracker *self);
+XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_stage_window(XfdashboardWindowTracker *self,
+																			ClutterStage *inStage);
 
 G_END_DECLS
 

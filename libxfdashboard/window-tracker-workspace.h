@@ -1,13 +1,7 @@
 /*
- * window-tracker-workspace: A workspace tracked by window tracker and
- *                           also a wrapper class around WnckWorkspace.
- *                           By wrapping libwnck objects we can use a 
- *                           virtual stable API while the API in libwnck
- *                           changes within versions. We only need to
- *                           use #ifdefs in window tracker object and
- *                           nowhere else in the code.
+ * window-tracker-workspace: A workspace tracked by window tracker.
  * 
- * Copyright 2012-2017 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2016 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,12 +35,32 @@ G_BEGIN_DECLS
 #define XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE				(xfdashboard_window_tracker_workspace_get_type())
 #define XFDASHBOARD_WINDOW_TRACKER_WORKSPACE(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE, XfdashboardWindowTrackerWorkspace))
 #define XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE))
-#define XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST((klass), XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE, XfdashboardWindowTrackerWorkspaceClass))
-#define XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE((klass), XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE))
-#define XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_GET_CLASS(obj)		(G_TYPE_INSTANCE_GET_CLASS((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE, XfdashboardWindowTrackerWorkspaceClass))
+#define XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_GET_IFACE(obj)		(G_TYPE_INSTANCE_GET_INTERFACE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE, XfdashboardWindowTrackerWorkspaceInterface))
 
-typedef struct _WnckWorkspace									XfdashboardWindowTrackerWorkspace;
-typedef struct _WnckWorkspaceClass								XfdashboardWindowTrackerWorkspaceClass;
+typedef struct _XfdashboardWindowTrackerWorkspace				XfdashboardWindowTrackerWorkspace;
+typedef struct _XfdashboardWindowTrackerWorkspaceInterface		XfdashboardWindowTrackerWorkspaceInterface;
+
+struct _XfdashboardWindowTrackerWorkspaceInterface
+{
+	/*< private >*/
+	/* Parent interface */
+	GTypeInterface						parent_interface;
+
+	/*< public >*/
+	/* Virtual functions */
+	gboolean (*is_equal)(XfdashboardWindowTrackerWorkspace *inLeft, XfdashboardWindowTrackerWorkspace *inRight);
+
+	gint (*get_number)(XfdashboardWindowTrackerWorkspace *self);
+	const gchar* (*get_name)(XfdashboardWindowTrackerWorkspace *self);
+
+	void (*get_size)(XfdashboardWindowTrackerWorkspace *self, gint *outWidth, gint *outHeight);
+
+	gboolean (*is_active)(XfdashboardWindowTrackerWorkspace *self);
+	void (*activate)(XfdashboardWindowTrackerWorkspace *self);
+
+	/* Signals */
+	void (*name_changed)(XfdashboardWindowTrackerWorkspace *self);
+};
 
 /* Public API */
 GType xfdashboard_window_tracker_workspace_get_type(void) G_GNUC_CONST;
@@ -54,16 +68,15 @@ GType xfdashboard_window_tracker_workspace_get_type(void) G_GNUC_CONST;
 gboolean xfdashboard_window_tracker_workspace_is_equal(XfdashboardWindowTrackerWorkspace *inLeft,
 														XfdashboardWindowTrackerWorkspace *inRight);
 
-gint xfdashboard_window_tracker_workspace_get_number(XfdashboardWindowTrackerWorkspace *inWorkspace);
-const gchar* xfdashboard_window_tracker_workspace_get_name(XfdashboardWindowTrackerWorkspace *inWorkspace);
+gint xfdashboard_window_tracker_workspace_get_number(XfdashboardWindowTrackerWorkspace *self);
+const gchar* xfdashboard_window_tracker_workspace_get_name(XfdashboardWindowTrackerWorkspace *self);
 
-gint xfdashboard_window_tracker_workspace_get_width(XfdashboardWindowTrackerWorkspace *inWorkspace);
-gint xfdashboard_window_tracker_workspace_get_height(XfdashboardWindowTrackerWorkspace *inWorkspace);
-void xfdashboard_window_tracker_workspace_get_size(XfdashboardWindowTrackerWorkspace *inWorkspace,
+void xfdashboard_window_tracker_workspace_get_size(XfdashboardWindowTrackerWorkspace *self,
 													gint *outWidth,
 													gint *outHeight);
 
-void xfdashboard_window_tracker_workspace_activate(XfdashboardWindowTrackerWorkspace *inWorkspace);
+gboolean xfdashboard_window_tracker_workspace_is_active(XfdashboardWindowTrackerWorkspace *self);
+void xfdashboard_window_tracker_workspace_activate(XfdashboardWindowTrackerWorkspace *self);
 
 G_END_DECLS
 

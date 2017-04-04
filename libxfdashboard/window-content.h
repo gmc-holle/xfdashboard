@@ -28,10 +28,7 @@
 #error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
 #endif
 
-#include <clutter/clutter.h>
-
 #include <libxfdashboard/window-tracker-window.h>
-#include <libxfdashboard/types.h>
 
 G_BEGIN_DECLS
 
@@ -68,42 +65,6 @@ struct _XfdashboardWindowContentClass
 
 /* Public API */
 GType xfdashboard_window_content_get_type(void) G_GNUC_CONST;
-
-ClutterContent* xfdashboard_window_content_new_for_window(XfdashboardWindowTrackerWindow *inWindow);
-
-XfdashboardWindowTrackerWindow* xfdashboard_window_content_get_window(XfdashboardWindowContent *self);
-
-gboolean xfdashboard_window_content_is_suspended(XfdashboardWindowContent *self);
-
-const ClutterColor* xfdashboard_window_content_get_outline_color(XfdashboardWindowContent *self);
-void xfdashboard_window_content_set_outline_color(XfdashboardWindowContent *self, const ClutterColor *inColor);
-
-gfloat xfdashboard_window_content_get_outline_width(XfdashboardWindowContent *self);
-void xfdashboard_window_content_set_outline_width(XfdashboardWindowContent *self, const gfloat inWidth);
-
-gboolean xfdashboard_window_content_get_include_window_frame(XfdashboardWindowContent *self);
-void xfdashboard_window_content_set_include_window_frame(XfdashboardWindowContent *self, const gboolean inIncludeFrame);
-
-gboolean xfdashboard_window_content_get_unmapped_window_icon_x_fill(XfdashboardWindowContent *self);
-void xfdashboard_window_content_set_unmapped_window_icon_x_fill(XfdashboardWindowContent *self, const gboolean inFill);
-
-gboolean xfdashboard_window_content_get_unmapped_window_icon_y_fill(XfdashboardWindowContent *self);
-void xfdashboard_window_content_set_unmapped_window_icon_y_fill(XfdashboardWindowContent *self, const gboolean inFill);
-
-gfloat xfdashboard_window_content_get_unmapped_window_icon_x_align(XfdashboardWindowContent *self);
-void xfdashboard_window_content_set_unmapped_window_icon_x_align(XfdashboardWindowContent *self, const gfloat inAlign);
-
-gfloat xfdashboard_window_content_get_unmapped_window_icon_y_align(XfdashboardWindowContent *self);
-void xfdashboard_window_content_set_unmapped_window_icon_y_align(XfdashboardWindowContent *self, const gfloat inAlign);
-
-gfloat xfdashboard_window_content_get_unmapped_window_icon_x_scale(XfdashboardWindowContent *self);
-void xfdashboard_window_content_set_unmapped_window_icon_x_scale(XfdashboardWindowContent *self, const gfloat inScale);
-
-gfloat xfdashboard_window_content_get_unmapped_window_icon_y_scale(XfdashboardWindowContent *self);
-void xfdashboard_window_content_set_unmapped_window_icon_y_scale(XfdashboardWindowContent *self, const gfloat inScale);
-
-XfdashboardAnchorPoint xfdashboard_window_content_get_unmapped_window_icon_anchor_point(XfdashboardWindowContent *self);
-void xfdashboard_window_content_set_unmapped_window_icon_anchor_point(XfdashboardWindowContent *self, const XfdashboardAnchorPoint inAnchorPoint);
 
 G_END_DECLS
 

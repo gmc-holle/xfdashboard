@@ -4,7 +4,7 @@
  *                         size of monitor within screen and also a flag
  *                         if this monitor is the primary one.
  * 
- * Copyright 2012-2017 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2016 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,44 +31,15 @@
 #include <libxfdashboard/window-tracker-monitor.h>
 
 #include <glib/gi18n-lib.h>
-#include <gdk/gdkx.h>
 
 #include <libxfdashboard/compat.h>
-#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardWindowTrackerMonitor,
-				xfdashboard_window_tracker_monitor,
-				G_TYPE_OBJECT)
+G_DEFINE_INTERFACE(XfdashboardWindowTrackerMonitor,
+					xfdashboard_window_tracker_monitor,
+					G_TYPE_OBJECT)
 
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_WINDOW_TRACKER_MONITOR_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR, XfdashboardWindowTrackerMonitorPrivate))
-
-struct _XfdashboardWindowTrackerMonitorPrivate
-{
-	/* Properties related */
-	gint				monitorIndex;
-	gboolean			isPrimary;
-
-	/* Instance related */
-	GdkScreen			*screen;
-	GdkRectangle		geometry;
-};
-
-/* Properties */
-enum
-{
-	PROP_0,
-
-	PROP_MONITOR_INDEX,
-	PROP_IS_PRIMARY,
-
-	PROP_LAST
-};
-
-static GParamSpec* XfdashboardWindowTrackerMonitorProperties[PROP_LAST]={ 0, };
 
 /* Signals */
 enum
@@ -83,280 +54,14 @@ static guint XfdashboardWindowTrackerMonitorSignals[SIGNAL_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
+#define XFDASHBOARD_WINDOWS_TRACKER_MONITOR_WARN_NOT_IMPLEMENTED(self, vfunc)\
+	g_warning(_("Object of type %s does not implement required virtual function XfdashboardWindowTrackerMonitor::%s"),\
+				G_OBJECT_TYPE_NAME(self), \
+				vfunc);
 
-/* Set primary monitor flag */
-static void _xfdashboard_window_tracker_monitor_update_primary(XfdashboardWindowTrackerMonitor *self)
-{
-	XfdashboardWindowTrackerMonitorPrivate		*priv;
-	gint										primaryIndex;
-	gboolean									isPrimary;
-
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self));
-
-	priv=self->priv;
-
-	/* Get primary flag */
-	primaryIndex=gdk_screen_get_primary_monitor(priv->screen);
-	if(primaryIndex==priv->monitorIndex) isPrimary=TRUE;
-		else isPrimary=FALSE;
-
-	/* Set value if changed */
-	if(priv->isPrimary!=isPrimary)
-	{
-		XFDASHBOARD_DEBUG(self, WINDOWS,
-							"Monitor %d changes primary state from %s to %s",
-							priv->monitorIndex,
-							priv->isPrimary ? "yes" : "no",
-							isPrimary ? "yes" : "no");
-
-		/* Set value */
-		priv->isPrimary=isPrimary;
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowTrackerMonitorProperties[PROP_IS_PRIMARY]);
-
-		/* Emit signal */
-		g_signal_emit(self, XfdashboardWindowTrackerMonitorSignals[SIGNAL_PRIMARY_CHANGED], 0);
-	}
-}
-
-/* Update monitor geometry */
-static void _xfdashboard_window_tracker_monitor_update_geometry(XfdashboardWindowTrackerMonitor *self)
-{
-	XfdashboardWindowTrackerMonitorPrivate		*priv;
-	GdkRectangle								geometry;
-
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self));
-
-	priv=self->priv;
-
-	/* Check if monitor is valid */
-	if(priv->monitorIndex>=gdk_screen_get_n_monitors(priv->screen)) return;
-
-	/* Get monitor geometry */
-	gdk_screen_get_monitor_geometry(priv->screen, priv->monitorIndex, &geometry);
-
-	/* Set value if changed */
-	if(geometry.x!=priv->geometry.x ||
-		geometry.y!=priv->geometry.y ||
-		geometry.width!=priv->geometry.width ||
-		geometry.height!=priv->geometry.height)
-	{
-		/* Set value */
-		priv->geometry.x=geometry.x;
-		priv->geometry.y=geometry.y;
-		priv->geometry.width=geometry.width;
-		priv->geometry.height=geometry.height;
-
-		/* Emit signal */
-		g_signal_emit(self, XfdashboardWindowTrackerMonitorSignals[SIGNAL_GEOMETRY_CHANGED], 0);
-		XFDASHBOARD_DEBUG(self, WINDOWS,
-							"Monitor %d moved to %d,%d and resized to %dx%d",
-							priv->monitorIndex,
-							priv->geometry.x, priv->geometry.y,
-							priv->geometry.width, priv->geometry.height);
-	}
-}
-
-/* Set monitor index this object belongs to and to monitor */
-static void _xfdashboard_window_tracker_monitor_set_index(XfdashboardWindowTrackerMonitor *self, gint inIndex)
-{
-	XfdashboardWindowTrackerMonitorPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self));
-	g_return_if_fail(inIndex>=0);
-	g_return_if_fail(inIndex<gdk_screen_get_n_monitors(self->priv->screen));
-
-	priv=self->priv;
-
-	/* Freeze notification */
-	g_object_freeze_notify(G_OBJECT(self));
-
-	/* Set value if changed */
-	if(priv->monitorIndex!=inIndex)
-	{
-		/* Set value */
-		priv->monitorIndex=inIndex;
-
-		/* Update primary monitor flag */
-		_xfdashboard_window_tracker_monitor_update_primary(self);
-
-		/* Update geometry of monitor */
-		_xfdashboard_window_tracker_monitor_update_geometry(self);
-	}
-
-	/* Thaw notification */
-	g_object_thaw_notify(G_OBJECT(self));
-}
-
-/* Number of monitors, primary monitor or size of any monitor changed */
-static void _xfdashboard_window_tracker_monitor_on_monitors_changed(XfdashboardWindowTrackerMonitor *self,
-																	gpointer inUserData)
-{
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self));
-	g_return_if_fail(GDK_IS_SCREEN(inUserData));
-
-	/* Update primary monitor flag */
-	_xfdashboard_window_tracker_monitor_update_primary(self);
-
-	/* Update geometry of monitor */
-	_xfdashboard_window_tracker_monitor_update_geometry(self);
-}
-
-/* IMPLEMENTATION: GObject */
-
-/* Dispose this object */
-static void _xfdashboard_window_tracker_monitor_dispose(GObject *inObject)
-{
-	XfdashboardWindowTrackerMonitor			*self=XFDASHBOARD_WINDOW_TRACKER_MONITOR(inObject);
-	XfdashboardWindowTrackerMonitorPrivate	*priv=self->priv;
-
-	/* Release allocated resources */
-	if(priv->screen)
-	{
-		g_signal_handlers_disconnect_by_data(priv->screen, self);
-		priv->screen=NULL;
-	}
-
-	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_window_tracker_monitor_parent_class)->dispose(inObject);
-}
-
-/* Set/get properties */
-static void _xfdashboard_window_tracker_monitor_set_property(GObject *inObject,
-																guint inPropID,
-																const GValue *inValue,
-																GParamSpec *inSpec)
-{
-	XfdashboardWindowTrackerMonitor			*self=XFDASHBOARD_WINDOW_TRACKER_MONITOR(inObject);
-
-	switch(inPropID)
-	{
-		case PROP_MONITOR_INDEX:
-			_xfdashboard_window_tracker_monitor_set_index(self, g_value_get_int(inValue));
-			break;
-
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
-}
-
-static void _xfdashboard_window_tracker_monitor_get_property(GObject *inObject,
-																guint inPropID,
-																GValue *outValue,
-																GParamSpec *inSpec)
-{
-	XfdashboardWindowTrackerMonitor			*self=XFDASHBOARD_WINDOW_TRACKER_MONITOR(inObject);
-	XfdashboardWindowTrackerMonitorPrivate	*priv=self->priv;
-
-	switch(inPropID)
-	{
-		case PROP_IS_PRIMARY:
-			g_value_set_boolean(outValue, priv->isPrimary);
-			break;
-
-		case PROP_MONITOR_INDEX:
-			g_value_set_uint(outValue, priv->monitorIndex);
-			break;
-
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
-			break;
-	}
-}
-
-/* Class initialization
- * Override functions in parent classes and define properties
- * and signals
- */
-static void xfdashboard_window_tracker_monitor_class_init(XfdashboardWindowTrackerMonitorClass *klass)
-{
-	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
-
-	/* Override functions */
-	gobjectClass->dispose=_xfdashboard_window_tracker_monitor_dispose;
-	gobjectClass->set_property=_xfdashboard_window_tracker_monitor_set_property;
-	gobjectClass->get_property=_xfdashboard_window_tracker_monitor_get_property;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardWindowTrackerMonitorPrivate));
-
-	/* Define properties */
-	XfdashboardWindowTrackerMonitorProperties[PROP_MONITOR_INDEX]=
-		g_param_spec_int("monitor-index",
-							_("Monitor index"),
-							_("The index of this monitor"),
-							0, G_MAXINT,
-							0,
-							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
-
-	XfdashboardWindowTrackerMonitorProperties[PROP_IS_PRIMARY]=
-		g_param_spec_boolean("is-primary",
-								_("Is primary"),
-								_("Whether this monitor is the primary one"),
-								FALSE,
-								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
-	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowTrackerMonitorProperties);
-
-	/* Define signals */
-	XfdashboardWindowTrackerMonitorSignals[SIGNAL_PRIMARY_CHANGED]=
-		g_signal_new("primary-changed",
-						G_TYPE_FROM_CLASS(klass),
-						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardWindowTrackerMonitorClass, primary_changed),
-						NULL,
-						NULL,
-						g_cclosure_marshal_VOID__VOID,
-						G_TYPE_NONE,
-						0);
-
-	XfdashboardWindowTrackerMonitorSignals[SIGNAL_GEOMETRY_CHANGED]=
-		g_signal_new("geometry-changed",
-						G_TYPE_FROM_CLASS(klass),
-						G_SIGNAL_RUN_LAST,
-						G_STRUCT_OFFSET(XfdashboardWindowTrackerMonitorClass, geometry_changed),
-						NULL,
-						NULL,
-						g_cclosure_marshal_VOID__VOID,
-						G_TYPE_NONE,
-						0);
-}
-
-/* Object initialization
- * Create private structure and set up default values
- */
-static void xfdashboard_window_tracker_monitor_init(XfdashboardWindowTrackerMonitor *self)
-{
-	XfdashboardWindowTrackerMonitorPrivate		*priv;
-
-	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_MONITOR_GET_PRIVATE(self);
-
-	/* Set default values */
-	priv->monitorIndex=0;
-	priv->isPrimary=FALSE;
-	priv->screen=gdk_screen_get_default();
-	priv->geometry.x=0;
-	priv->geometry.y=0;
-	priv->geometry.width=0;
-	priv->geometry.height=0;
-
-	/* Get initial primary monitor flag */
-	_xfdashboard_window_tracker_monitor_update_primary(self);
-
-	/* Get initial geometry of monitor */
-	_xfdashboard_window_tracker_monitor_update_geometry(self);
-
-	/* Connect signals */
-	g_signal_connect_swapped(priv->screen, "monitors-changed", G_CALLBACK(_xfdashboard_window_tracker_monitor_on_monitors_changed), self);
-}
-
-/* IMPLEMENTATION: Public API */
-
-/* Check if both monitors are the same */
-gboolean xfdashboard_window_tracker_monitor_is_equal(XfdashboardWindowTrackerMonitor *inLeft,
-														XfdashboardWindowTrackerMonitor *inRight)
+/* Default implementation of virtual function "is_equal" */
+static gboolean _xfdashboard_window_tracker_monitor_real_is_equal(XfdashboardWindowTrackerMonitor *inLeft,
+																	XfdashboardWindowTrackerMonitor *inRight)
 {
 	gint			leftIndex, rightIndex;
 
@@ -372,68 +77,165 @@ gboolean xfdashboard_window_tracker_monitor_is_equal(XfdashboardWindowTrackerMon
 	return(FALSE);
 }
 
+
+/* IMPLEMENTATION: GObject */
+
+/* Interface initialization
+ * Set up default functions
+ */
+static void xfdashboard_window_tracker_monitor_default_init(XfdashboardWindowTrackerMonitorInterface *iface)
+{
+	static gboolean		initialized=FALSE;
+	GParamSpec			*property;
+
+	/* The following virtual functions should be overriden if default
+	 * implementation does not fit.
+	 */
+	iface->is_equal=_xfdashboard_window_tracker_monitor_real_is_equal;
+
+	/* Define properties, signals and actions */
+	if(!initialized)
+	{
+		/* Define properties */
+		property=g_param_spec_int("monitor-index",
+									_("Monitor index"),
+									_("The index of this monitor"),
+									0, G_MAXINT,
+									0,
+									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
+		g_object_interface_install_property(iface, property);
+
+		property=g_param_spec_boolean("is-primary",
+										_("Is primary"),
+										_("Whether this monitor is the primary one"),
+										FALSE,
+										G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+		g_object_interface_install_property(iface, property);
+
+		/* Define signals */
+		XfdashboardWindowTrackerMonitorSignals[SIGNAL_PRIMARY_CHANGED]=
+			g_signal_new("primary-changed",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST,
+							G_STRUCT_OFFSET(XfdashboardWindowTrackerMonitorInterface, primary_changed),
+							NULL,
+							NULL,
+							g_cclosure_marshal_VOID__VOID,
+							G_TYPE_NONE,
+							0);
+
+		XfdashboardWindowTrackerMonitorSignals[SIGNAL_GEOMETRY_CHANGED]=
+			g_signal_new("geometry-changed",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST,
+							G_STRUCT_OFFSET(XfdashboardWindowTrackerMonitorInterface, geometry_changed),
+							NULL,
+							NULL,
+							g_cclosure_marshal_VOID__VOID,
+							G_TYPE_NONE,
+							0);
+
+		/* Set flag that base initialization was done for this interface */
+		initialized=TRUE;
+	}
+}
+
+
+/* IMPLEMENTATION: Public API */
+
+/* Check if both monitors are the same */
+gboolean xfdashboard_window_tracker_monitor_is_equal(XfdashboardWindowTrackerMonitor *inLeft,
+														XfdashboardWindowTrackerMonitor *inRight)
+{
+	XfdashboardWindowTrackerMonitorInterface		*iface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inLeft), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inRight), FALSE);
+
+	iface=XFDASHBOARD_WINDOW_TRACKER_MONITOR_GET_IFACE(inLeft);
+
+	/* Call virtual function */
+	if(iface->is_equal)
+	{
+		return(iface->is_equal(inLeft, inRight));
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_WINDOWS_TRACKER_MONITOR_WARN_NOT_IMPLEMENTED(inLeft, "is_equal");
+	return(FALSE);
+}
+
 /* Get monitor index */
 gint xfdashboard_window_tracker_monitor_get_number(XfdashboardWindowTrackerMonitor *self)
 {
+	XfdashboardWindowTrackerMonitorInterface		*iface;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self), 0);
 
-	return(self->priv->monitorIndex);
+	iface=XFDASHBOARD_WINDOW_TRACKER_MONITOR_GET_IFACE(self);
+
+	/* Call virtual function */
+	if(iface->get_number)
+	{
+		return(iface->get_number(self));
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_WINDOWS_TRACKER_MONITOR_WARN_NOT_IMPLEMENTED(self, "get_number");
+	return(0);
 }
 
 /* Determine if monitor is primary one */
 gboolean xfdashboard_window_tracker_monitor_is_primary(XfdashboardWindowTrackerMonitor *self)
 {
+	XfdashboardWindowTrackerMonitorInterface		*iface;
+
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self), FALSE);
 
-	return(self->priv->isPrimary);
+	iface=XFDASHBOARD_WINDOW_TRACKER_MONITOR_GET_IFACE(self);
+
+	/* Call virtual function */
+	if(iface->is_primary)
+	{
+		return(iface->is_primary(self));
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_WINDOWS_TRACKER_MONITOR_WARN_NOT_IMPLEMENTED(self, "get_number");
+	return(FALSE);
 }
 
 /* Get geometry of monitor */
-gint xfdashboard_window_tracker_monitor_get_x(XfdashboardWindowTrackerMonitor *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self), 0);
-
-	return(self->priv->geometry.x);
-}
-
-gint xfdashboard_window_tracker_monitor_get_y(XfdashboardWindowTrackerMonitor *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self), 0);
-
-	return(self->priv->geometry.y);
-}
-
-gint xfdashboard_window_tracker_monitor_get_width(XfdashboardWindowTrackerMonitor *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self), 0);
-
-	return(self->priv->geometry.width);
-}
-
-gint xfdashboard_window_tracker_monitor_get_height(XfdashboardWindowTrackerMonitor *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self), 0);
-
-	return(self->priv->geometry.height);
-}
-
 void xfdashboard_window_tracker_monitor_get_geometry(XfdashboardWindowTrackerMonitor *self,
 														gint *outX,
 														gint *outY,
 														gint *outWidth,
 														gint *outHeight)
 {
-	XfdashboardWindowTrackerMonitorPrivate		*priv;
+	XfdashboardWindowTrackerMonitorInterface		*iface;
+	gint											x, y, w, h;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self));
 
-	priv=self->priv;
+	iface=XFDASHBOARD_WINDOW_TRACKER_MONITOR_GET_IFACE(self);
 
-	/* Set position and size of monitor */
-	if(outX) *outX=priv->geometry.x;
-	if(outY) *outY=priv->geometry.y;
-	if(outWidth) *outWidth=priv->geometry.width;
-	if(outHeight) *outHeight=priv->geometry.height;
+	/* Get monitor geometry */
+	if(iface->get_geometry)
+	{
+		/* Get geometry */
+		iface->get_geometry(self, &x, &y, &w, &h);
+
+		/* Set result */
+		if(outX) *outX=x;
+		if(outX) *outY=y;
+		if(outWidth) *outWidth=w;
+		if(outHeight) *outHeight=h;
+
+		return;
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_WINDOWS_TRACKER_MONITOR_WARN_NOT_IMPLEMENTED(self, "get_geometry");
 }
 
 /* Check if requested position is inside monitor's geometry */
@@ -441,17 +243,18 @@ gboolean xfdashboard_window_tracker_monitor_contains(XfdashboardWindowTrackerMon
 														gint inX,
 														gint inY)
 {
-	XfdashboardWindowTrackerMonitorPrivate		*priv;
+	gint										x, y, width, height;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self), FALSE);
 
-	priv=self->priv;
+	/* Get monitor's geometry */
+	xfdashboard_window_tracker_monitor_get_geometry(self, &x, &y, &width, &height);
 
 	/* Check if requested position is inside monitor's geometry */
-	if(inX>=priv->geometry.x &&
-		inX<(priv->geometry.x+priv->geometry.width) &&
-		inY>=priv->geometry.y &&
-		inY<(priv->geometry.y+priv->geometry.height))
+	if(inX>=x &&
+		inX<(x+width) &&
+		inY>=y &&
+		inY<(y+height))
 	{
 		return(TRUE);
 	}

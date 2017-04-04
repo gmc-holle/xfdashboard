@@ -4,7 +4,7 @@
  *                         size of monitor within screen and also a flag
  *                         if this monitor is the primary one.
  * 
- * Copyright 2012-2017 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2016 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,32 +38,27 @@ G_BEGIN_DECLS
 #define XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR					(xfdashboard_window_tracker_monitor_get_type())
 #define XFDASHBOARD_WINDOW_TRACKER_MONITOR(obj)					(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR, XfdashboardWindowTrackerMonitor))
 #define XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(obj)				(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR))
-#define XFDASHBOARD_WINDOW_TRACKER_MONITOR_CLASS(klass)			(G_TYPE_CHECK_CLASS_CAST((klass), XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR, XfdashboardWindowTrackerMonitorClass))
-#define XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_CLASS(klass)		(G_TYPE_CHECK_CLASS_TYPE((klass), XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR))
-#define XFDASHBOARD_WINDOW_TRACKER_MONITOR_GET_CLASS(obj)		(G_TYPE_INSTANCE_GET_CLASS((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR, XfdashboardWindowTrackerMonitorClass))
+#define XFDASHBOARD_WINDOW_TRACKER_MONITOR_GET_IFACE(obj)		(G_TYPE_INSTANCE_GET_INTERFACE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR, XfdashboardWindowTrackerMonitorInterface))
 
 typedef struct _XfdashboardWindowTrackerMonitor					XfdashboardWindowTrackerMonitor;
-typedef struct _XfdashboardWindowTrackerMonitorClass			XfdashboardWindowTrackerMonitorClass;
-typedef struct _XfdashboardWindowTrackerMonitorPrivate			XfdashboardWindowTrackerMonitorPrivate;
+typedef struct _XfdashboardWindowTrackerMonitorInterface		XfdashboardWindowTrackerMonitorInterface;
 
-struct _XfdashboardWindowTrackerMonitor
-{
-	/*< private >*/
-	/* Parent instance */
-	GObject										parent_instance;
-
-	/* Private structure */
-	XfdashboardWindowTrackerMonitorPrivate		*priv;
-};
-
-struct _XfdashboardWindowTrackerMonitorClass
+struct _XfdashboardWindowTrackerMonitorInterface
 {
 	/*< private >*/
 	/* Parent class */
-	GObjectClass								parent_class;
+	GTypeInterface						parent_interface;
 
 	/*< public >*/
 	/* Virtual functions */
+	gboolean (*is_equal)(XfdashboardWindowTrackerMonitor *inLeft, XfdashboardWindowTrackerMonitor *inRight);
+
+	gboolean (*is_primary)(XfdashboardWindowTrackerMonitor *self);
+	gint (*get_number)(XfdashboardWindowTrackerMonitor *self);
+
+	void (*get_geometry)(XfdashboardWindowTrackerMonitor *self, gint *outX, gint *outY, gint *outWidth, gint *outHeight);
+
+	/* Signals */
 	void (*primary_changed)(XfdashboardWindowTrackerMonitor *self);
 	void (*geometry_changed)(XfdashboardWindowTrackerMonitor *self);
 };
@@ -78,16 +73,11 @@ gint xfdashboard_window_tracker_monitor_get_number(XfdashboardWindowTrackerMonit
 
 gboolean xfdashboard_window_tracker_monitor_is_primary(XfdashboardWindowTrackerMonitor *self);
 
-gint xfdashboard_window_tracker_monitor_get_x(XfdashboardWindowTrackerMonitor *self);
-gint xfdashboard_window_tracker_monitor_get_y(XfdashboardWindowTrackerMonitor *self);
-gint xfdashboard_window_tracker_monitor_get_width(XfdashboardWindowTrackerMonitor *self);
-gint xfdashboard_window_tracker_monitor_get_height(XfdashboardWindowTrackerMonitor *self);
 void xfdashboard_window_tracker_monitor_get_geometry(XfdashboardWindowTrackerMonitor *self,
 														gint *outX,
 														gint *outY,
 														gint *outWidth,
 														gint *outHeight);
-
 gboolean xfdashboard_window_tracker_monitor_contains(XfdashboardWindowTrackerMonitor *self,
 														gint inX,
 														gint inY);
