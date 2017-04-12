@@ -1446,12 +1446,35 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_by_string(Xfdashboard
 																		GScanner *inScopeScanner,
 																		GList *inScopeSelectors)
 {
-	GScanner	*scanner;
-	gchar		*value;
+	GScanner		*scanner;
+	gchar			*value;
+	static gint		callDepth=0;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
 	g_return_val_if_fail(inScopeScanner, NULL);
 	g_return_val_if_fail(inText, NULL);
+
+	/* Increment call depth and check if it is too deep now to avoid recursive
+	 * resolves of '@' identifier definitions.
+	 */
+	callDepth++;
+	if(callDepth>128)
+	{
+		gchar		*error;
+
+		error=g_strdup_printf(_("Possible recursion detected because call depth is too deep while resolving '%s'"),
+								inText);
+		g_scanner_unexp_token(inScopeScanner,
+								G_TOKEN_ERROR,
+								NULL,
+								NULL,
+								NULL,
+								error,
+								FALSE);
+		g_free(error);
+
+		return(NULL);
+	}
 
 	/* Create scanner to resolve value of '@' identifier */
 	scanner=g_scanner_new(NULL);
@@ -1484,6 +1507,9 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_by_string(Xfdashboard
 
 	/* Destroy scanner */
 	g_scanner_destroy(scanner);
+
+	/* Decrement call depth counter again */
+	callDepth--;
 
 	/* Return resolved '@' identifier which may be NULL in case of error */
 	return(value);
