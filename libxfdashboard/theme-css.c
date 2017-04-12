@@ -124,12 +124,14 @@ static void _xfdashboard_theme_css_set_error(XfdashboardThemeCSS *self,
 static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardThemeCSS *self,
 																	GScanner *inScanner,
 																	GScanner *inScopeScanner,
-																	GList *inScopeSelectors);
+																	GList *inScopeSelectors,
+																	const gchar *inRecursionIdentifier);
 
 static gchar* _xfdashboard_theme_css_resolve_at_identifier_by_string(XfdashboardThemeCSS *self,
 																		const gchar *inValue,
 																		GScanner *inScopeScanner,
-																		GList *inScopeSelectors);
+																		GList *inScopeSelectors,
+																		const gchar *inRecursionIdentifier);
 
 /* Helper function to set up GError object in this parser */
 static void _xfdashboard_theme_css_set_error(XfdashboardThemeCSS *self,
@@ -916,7 +918,8 @@ static void _xfdashboard_theme_css_register_function(XfdashboardThemeCSS *self,
 static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *self,
 															GScanner *ioScanner,
 															GScanner *inScopeScanner,
-															GList *inScopeSelectors)
+															GList *inScopeSelectors,
+															const gchar *inRecursionIdentifier)
 {
 	XfdashboardThemeCSSPrivate				*priv;
 	GTokenType								token;
@@ -929,6 +932,7 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
 	g_return_val_if_fail(ioScanner, NULL);
+	g_return_val_if_fail(!inRecursionIdentifier || *inRecursionIdentifier, NULL);
 
 	priv=self->priv;
 
@@ -1005,7 +1009,8 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 							resolvedValue=_xfdashboard_theme_css_parse_at_identifier(self,
 																						ioScanner,
 																						inScopeScanner,
-																						inScopeSelectors);
+																						inScopeSelectors,
+																						inRecursionIdentifier);
 
 							/* Resolve resolved value to get final value */
 							if(resolvedValue)
@@ -1016,7 +1021,8 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 								finalResolvedValue=_xfdashboard_theme_css_resolve_at_identifier_by_string(self,
 																											resolvedValue,
 																											inScopeScanner,
-																											inScopeSelectors);
+																											inScopeSelectors,
+																											inRecursionIdentifier);
 
 								/* Release old value and set new one */
 								g_free(resolvedValue);
@@ -1290,6 +1296,31 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 	 * through these selectors backwards (first in selectors of current file/scope
 	 * then all previous ones) to let last definition win.
 	 */
+	if(inRecursionIdentifier &&
+		g_strcmp0(identifier, inRecursionIdentifier)==0)
+	{
+		/* Identifier was unresolvable because of indefinite recursion,
+		 * so print error message and also a critical message.
+		 */
+		g_critical("Indefinte recursion of @-constant '%s' detected - aborting parsing", inRecursionIdentifier);
+
+		errorMessage=g_strdup_printf(_("Cannot resolve identifier '@%s' because of indefinite recursion"), identifier);
+		g_scanner_unexp_token(inScopeScanner,
+								G_TOKEN_ERROR,
+								NULL,
+								NULL,
+								NULL,
+								errorMessage,
+								FALSE);
+		g_free(errorMessage);
+
+		/* Release allocated resources */
+		g_free(identifier);
+
+		/* Identifier was unresolvable so return NULL */
+		return(NULL);
+	}
+
 	for(iter=g_list_last(inScopeSelectors); iter; iter=g_list_previous(iter))
 	{
 		selector=(XfdashboardThemeCSSSelector*)iter->data;
@@ -1347,18 +1378,20 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardThemeCSS *self,
 																	GScanner *inScanner,
 																	GScanner *inScopeScanner,
-																	GList *inScopeSelectors)
+																	GList *inScopeSelectors,
+																	const gchar *inRecursionIdentifier)
 {
 	GTokenType		token;
 	gchar			*value;
-	gboolean		haveResolvedAtIdentifier;
+	gchar			*haveResolvedAtIdentifier;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
 	g_return_val_if_fail(inScanner, NULL);
 	g_return_val_if_fail(inScopeScanner, NULL);
+	g_return_val_if_fail(!inRecursionIdentifier || *inRecursionIdentifier, NULL);
 
 	/* Parse value and resolve '@' identifier */
-	haveResolvedAtIdentifier=FALSE;
+	haveResolvedAtIdentifier=NULL;
 	value=NULL;
 
 	token=g_scanner_get_next_token(inScanner);
@@ -1381,9 +1414,15 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardT
 					gchar		*constantValue;
 
 					/* Resolve value and append resolved value but stop parsing and return NULL
-					 * if unresolvable.
+					 * if unresolvable. Also remember '@' identifier we have resolved to get the
+					 * new value resolved.
 					 */
-					constantValue=_xfdashboard_theme_css_parse_at_identifier(self, inScanner, inScopeScanner, inScopeSelectors);
+					token=g_scanner_peek_next_token(inScanner);
+					if(token!=G_TOKEN_IDENTIFIER) return(NULL);
+
+					haveResolvedAtIdentifier=g_strdup(inScanner->next_value.v_identifier);
+
+					constantValue=_xfdashboard_theme_css_parse_at_identifier(self, inScanner, inScopeScanner, inScopeSelectors, inRecursionIdentifier);
 					if(!constantValue)
 					{
 						g_free(value);
@@ -1391,10 +1430,9 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardT
 					}
 
 					value=_xfdashboard_theme_css_append_string(value, constantValue);
-					g_free(constantValue);
 
-					/* Set flag that we have resolved an '@' identifier to get the new value resolved */
-					haveResolvedAtIdentifier=TRUE;
+					/* Release allocated resources */
+					g_free(constantValue);
 				}
 					/* ... otherwise just add character to value */
 					else value=_xfdashboard_theme_css_append_char(value, inScanner->value.v_char);
@@ -1421,20 +1459,28 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardT
 		 * to resolve any '@' identifier which might be in value resolved this time.
 		 */
 		XFDASHBOARD_DEBUG(self, THEME,
-							"Resolving css value '%s'",
-							value);
+							"Resolving css value '%s' because of constant identifier '%s'",
+							value,
+							haveResolvedAtIdentifier);
+
 		resolvedValue=_xfdashboard_theme_css_resolve_at_identifier_by_string(self,
 																				value,
 																				inScopeScanner,
-																				inScopeSelectors);
+																				inScopeSelectors,
+																				haveResolvedAtIdentifier);
+
 		XFDASHBOARD_DEBUG(self, THEME,
-							"Resolved css value '%s' to '%s' recursively",
+							"Resolved css value '%s' to '%s' recursively because of constant identifier '%s'",
 							value,
-							resolvedValue);
+							resolvedValue,
+							haveResolvedAtIdentifier);
 
 		/* Release old value and new one */
 		g_free(value);
 		value=resolvedValue;
+
+		/* Release allocated resources */
+		g_free(haveResolvedAtIdentifier);
 	}
 
 	/* Return resolved value */
@@ -1444,7 +1490,8 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_internal(XfdashboardT
 static gchar* _xfdashboard_theme_css_resolve_at_identifier_by_string(XfdashboardThemeCSS *self,
 																		const gchar *inText,
 																		GScanner *inScopeScanner,
-																		GList *inScopeSelectors)
+																		GList *inScopeSelectors,
+																		const gchar *inRecursionIdentifier)
 {
 	GScanner		*scanner;
 	gchar			*value;
@@ -1453,6 +1500,7 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_by_string(Xfdashboard
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_CSS(self), NULL);
 	g_return_val_if_fail(inScopeScanner, NULL);
 	g_return_val_if_fail(inText, NULL);
+	g_return_val_if_fail(!inRecursionIdentifier || *inRecursionIdentifier, NULL);
 
 	/* Increment call depth and check if it is too deep now to avoid recursive
 	 * resolves of '@' identifier definitions.
@@ -1503,7 +1551,8 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_by_string(Xfdashboard
 	value=_xfdashboard_theme_css_resolve_at_identifier_internal(self,
 																scanner,
 																inScopeScanner,
-																inScopeSelectors);
+																inScopeSelectors,
+																inRecursionIdentifier);
 
 	/* Destroy scanner */
 	g_scanner_destroy(scanner);
@@ -1672,7 +1721,8 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 		resolvedValue=_xfdashboard_theme_css_resolve_at_identifier_by_string(self,
 																				*outValue,
 																				inScanner,
-																				inScopeSelectors);
+																				inScopeSelectors,
+																				NULL);
 		XFDASHBOARD_DEBUG(self, THEME,
 							"Resolved css value '%s' to '%s'",
 							*outValue,
