@@ -75,6 +75,7 @@ struct _XfdashboardWindowTrackerX11Private
 
 	/* Instance related */
 	GList									*windows;
+	GList									*windowsStacked;
 	GList									*workspaces;
 	GList									*monitors;
 
@@ -248,11 +249,17 @@ static void _xfdashboard_window_tracker_x11_free_window(XfdashboardWindowTracker
 	g_assert(G_OBJECT(inWindow)->ref_count==1);
 #endif
 
-	/* Find entry in window list and remove it if found */
+	/* Find entry in window lists and remove it if found */
 	iter=g_list_find(priv->windows, inWindow);
 	if(iter)
 	{
 		priv->windows=g_list_delete_link(priv->windows, iter);
+	}
+
+	iter=g_list_find(priv->windowsStacked, inWindow);
+	if(iter)
+	{
+		priv->windowsStacked=g_list_delete_link(priv->windowsStacked, iter);
 	}
 
 	/* Free window object */
@@ -279,6 +286,8 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_get_wi
 	for(iter=priv->windows; iter; iter=g_list_next(iter))
 	{
 		/* Get currently iterated window object */
+		if(!XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(iter->data)) continue;
+
 		window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(iter->data);
 		if(!window) continue;
 
@@ -294,6 +303,48 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_get_wi
 	 * object for the requested wnck window.
 	 */
 	return(NULL);
+}
+
+/* Build correctly ordered list of windows in stacked order. The list will not
+ * take a reference at the window object and must not be unreffed if list is
+ * freed.
+ */
+static void _xfdashboard_window_tracker_x11_build_stacked_windows_list(XfdashboardWindowTrackerX11 *self)
+{
+	XfdashboardWindowTrackerX11Private		*priv;
+	GList									*wnckWindowsStacked;
+	GList									*newWindowsStacked;
+	GList									*iter;
+	WnckWindow								*wnckWindow;
+	XfdashboardWindowTrackerWindowX11		*window;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
+
+	priv=self->priv;
+
+	/* Get list of stacked windows from wnck */
+	wnckWindowsStacked=wnck_screen_get_windows_stacked(priv->screen);
+
+	/* Build new list of stacked windows containing window objects */
+	newWindowsStacked=NULL;
+	for(iter=wnckWindowsStacked; iter; iter=g_list_next(iter))
+	{
+		/* Get wnck window iterated */
+		wnckWindow=WNCK_WINDOW(iter->data);
+		if(!wnckWindow) continue;
+
+		/* Lookup window object from wnck window iterated */
+		window=_xfdashboard_window_tracker_x11_get_window_for_wnck(self, wnckWindow);
+		if(window)
+		{
+			newWindowsStacked=g_list_prepend(newWindowsStacked, window);
+		}
+	}
+	newWindowsStacked=g_list_reverse(newWindowsStacked);
+
+	/* Release old stacked windows list */
+	g_list_free(priv->windowsStacked);
+	priv->windowsStacked=newWindowsStacked;
 }
 
 /* Create window object which must not exist yet */
@@ -337,6 +388,9 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_create
 
 	/* Add new window object to list of window objects */
 	priv->windows=g_list_prepend(priv->windows, window);
+
+	/* Assume window stacking changed to get correctly ordered list of windows */
+	_xfdashboard_window_tracker_x11_build_stacked_windows_list(self);
 
 	/* Return new window object */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
@@ -635,6 +689,9 @@ static void _xfdashboard_window_tracker_x11_on_window_stacking_changed(Xfdashboa
 																		gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
+
+	/* Before emitting the signal, build a correctly ordered list of windows */
+	_xfdashboard_window_tracker_x11_build_stacked_windows_list(self);
 
 	/* Emit signal */
 	XFDASHBOARD_DEBUG(self, WINDOWS, "Window stacking has changed");
@@ -1096,8 +1153,7 @@ static GList* _xfdashboard_window_tracker_x11_window_tracker_get_windows_stacked
 	priv=self->priv;
 
 	/* Return list of window in stack order */
-	// TODO: return(wnck_screen_get_windows_stacked(priv->screen));
-	return(priv->windows);
+	return(priv->windowsStacked);
 }
 
 /* Get active window */
@@ -1521,7 +1577,12 @@ static void _xfdashboard_window_tracker_x11_dispose(GObject *inObject)
 	/* Dispose allocated resources */
 	if(priv->suspendSignalID)
 	{
-		g_signal_handler_disconnect(xfdashboard_application_get_default(), priv->suspendSignalID);
+		if(priv->application)
+		{
+			g_signal_handler_disconnect(priv->application, priv->suspendSignalID);
+			priv->application=NULL;
+		}
+
 		priv->suspendSignalID=0;
 	}
 
@@ -1535,6 +1596,12 @@ static void _xfdashboard_window_tracker_x11_dispose(GObject *inObject)
 		g_list_foreach(priv->windows, _xfdashboard_window_tracker_x11_dispose_free_window, self);
 		g_list_free(priv->windows);
 		priv->windows=NULL;
+	}
+
+	if(priv->windowsStacked)
+	{
+		g_list_free(priv->windowsStacked);
+		priv->windowsStacked=NULL;
 	}
 
 	if(priv->activeWorkspace)
@@ -1664,7 +1731,6 @@ void xfdashboard_window_tracker_x11_class_init(XfdashboardWindowTrackerX11Class 
 void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 {
 	XfdashboardWindowTrackerX11Private		*priv;
-	XfdashboardApplication					*app;
 
 	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_X11_GET_PRIVATE(self);
 
@@ -1672,6 +1738,7 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 
 	/* Set default values */
 	priv->windows=NULL;
+	priv->windowsStacked=NULL;
 	priv->workspaces=NULL;
 	priv->monitors=NULL;
 	priv->screen=wnck_screen_get_default();
@@ -1759,12 +1826,12 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 #endif
 
 	/* Handle suspension signals from application */
-	app=xfdashboard_application_get_default();
-	priv->suspendSignalID=g_signal_connect_swapped(app,
+	priv->application=xfdashboard_application_get_default();
+	priv->suspendSignalID=g_signal_connect_swapped(priv->application,
 													"notify::is-suspended",
 													G_CALLBACK(_xfdashboard_window_tracker_x11_on_application_suspended_changed),
 													self);
-	priv->isAppSuspended=xfdashboard_application_is_suspended(app);
+	priv->isAppSuspended=xfdashboard_application_is_suspended(priv->application);
 }
 
 
