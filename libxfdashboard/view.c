@@ -564,7 +564,7 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 						G_STRUCT_OFFSET(XfdashboardViewClass, view_activate),
 						g_signal_accumulator_true_handled,
 						NULL,
-						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_OBJECT,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_BOXED,
 						G_TYPE_BOOLEAN,
 						3,
 						XFDASHBOARD_TYPE_FOCUSABLE,
