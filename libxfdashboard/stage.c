@@ -576,7 +576,7 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	xfdashboard_window_tracker_window_make_stage_window(priv->stageWindow);
 
 	/* Disconnect signal handler as this is a one-time setup of stage window */
-	XFDASHBOARD_DEBUG(self, ACTOR, "Stage window was opened and set up. Removing signal handler.");
+	XFDASHBOARD_DEBUG(self, ACTOR, "Stage window was opened and set up. Removing signal handler");
 	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
 
 	/* Set focus */
@@ -1981,6 +1981,15 @@ void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *in
 	{
 		g_source_remove(priv->notificationTimeoutID);
 		priv->notificationTimeoutID=0;
+	}
+
+	/* Only show notification if a notification box is known where the notification
+	 * could be shown at.
+	 */
+	if(!priv->notification)
+	{
+		XFDASHBOARD_DEBUG(self, ACTOR, "Cannot show notification because no notification box is available");
+		return;
 	}
 
 	/* Show notification on stage */
