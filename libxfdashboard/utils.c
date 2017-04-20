@@ -474,6 +474,15 @@ void xfdashboard_traverse_actor(ClutterActor *inRootActor,
 	if(!inRootActor)
 	{
 		inRootActor=CLUTTER_ACTOR(xfdashboard_application_get_stage(NULL));
+
+		/* If root actor is still NULL then no stage was found and we cannot
+		 * start the traversal.
+		 */
+		if(!inRootActor)
+		{
+			XFDASHBOARD_DEBUG(NULL, MISC, "No root actor to begin traversal at was provided and no stage available");
+			return;
+		}
 	}
 
 	/* If no selector is provider create a seletor matching all actors.
