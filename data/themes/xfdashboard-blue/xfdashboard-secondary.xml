@@ -42,7 +42,7 @@
 				</child>
 
 				<child>
-					<object class="XfdashboardWindowsView">
+					<object class="XfdashboardWindowsView" id="windows-view">
 						<property name="view-id">windows</property>
 						<property name="x-expand">true</property>
 						<property name="y-expand">true</property>
@@ -51,4 +51,8 @@
 			</object>
 		</child>
 	</object>
+
+	<focusables>
+		<focus ref="windows-view" />
+	</focusables>
 </interface>

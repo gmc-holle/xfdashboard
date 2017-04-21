@@ -308,7 +308,7 @@ static gboolean _xfdashboard_actor_focusable_can_focus(XfdashboardFocusable *inF
 	self=XFDASHBOARD_ACTOR(inFocusable);
 	priv=self->priv;
 
-	/* This actor can only be focused if it is mapped, visibl	e and reactive */
+	/* This actor can only be focused if it is mapped, visible and reactive */
 	if(priv->canFocus &&
 		clutter_actor_is_mapped(CLUTTER_ACTOR(self)) &&
 		clutter_actor_is_visible(CLUTTER_ACTOR(self)) &&

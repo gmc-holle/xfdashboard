@@ -32,6 +32,21 @@
 
 G_BEGIN_DECLS
 
+/* Public definitions */
+/**
+ * XfdashboardThemeLayoutBuildGet:
+ * @XFDASHBOARD_THEME_LAYOUT_BUILD_GET_FOCUSABLES: Get #GPtrArray of pointer to defined focusable actors. Caller must free returned #GPtrArray with g_ptr_array_unref().
+ * @XFDASHBOARD_THEME_LAYOUT_BUILD_GET_SELECTED_FOCUS: Get #ClutterActor which should gain the focus. Caller must unref returned #ClutterActor with g_object_unref().
+ *
+ * The extra data to fetch when building an object from theme layout.
+ */
+typedef enum /*< prefix=XFDASHBOARD_THEME_LAYOUT_BUILD_GET >*/
+{
+	XFDASHBOARD_THEME_LAYOUT_BUILD_GET_FOCUSABLES=0,
+	XFDASHBOARD_THEME_LAYOUT_BUILD_GET_SELECTED_FOCUS
+} XfdashboardThemeLayoutBuildGet;
+
+/* Object declaration */
 #define XFDASHBOARD_TYPE_THEME_LAYOUT				(xfdashboard_theme_layout_get_type())
 #define XFDASHBOARD_THEME_LAYOUT(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_THEME_LAYOUT, XfdashboardThemeLayout))
 #define XFDASHBOARD_IS_THEME_LAYOUT(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_THEME_LAYOUT))
@@ -43,6 +58,12 @@ typedef struct _XfdashboardThemeLayout				XfdashboardThemeLayout;
 typedef struct _XfdashboardThemeLayoutClass			XfdashboardThemeLayoutClass;
 typedef struct _XfdashboardThemeLayoutPrivate		XfdashboardThemeLayoutPrivate;
 
+/**
+ * XfdashboardThemeLayout:
+ *
+ * The #XfdashboardThemeLayout structure contains only private data and
+ * should be accessed using the provided API
+ */
 struct _XfdashboardThemeLayout
 {
 	/*< private >*/
@@ -53,6 +74,11 @@ struct _XfdashboardThemeLayout
 	XfdashboardThemeLayoutPrivate		*priv;
 };
 
+/**
+ * XfdashboardThemeLayoutClass:
+ *
+ * The #XfdashboardThemeLayoutClass structure contains only private data
+ */
 struct _XfdashboardThemeLayoutClass
 {
 	/*< private >*/
@@ -84,11 +110,8 @@ gboolean xfdashboard_theme_layout_add_file(XfdashboardThemeLayout *self,
 											GError **outError);
 
 ClutterActor* xfdashboard_theme_layout_build_interface(XfdashboardThemeLayout *self,
-														const gchar *inID);
-
-
-#define XFDASHBOARD_THEME_LAYOUT_FOCUS_TABLE_DATA	(xfdashboard_theme_layout_focus_table_quark())
-GQuark xfdashboard_theme_layout_focus_table_quark(void);
+														const gchar *inID,
+														...);
 
 G_END_DECLS
 
