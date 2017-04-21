@@ -87,6 +87,14 @@ struct _XfdashboardFocusableInterface
 											XfdashboardFocusable *inSource,
 											const gchar *inAction,
 											ClutterEvent *inEvent);
+	gboolean (*selection_move_next)(XfdashboardFocusable *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
+	gboolean (*selection_move_previous)(XfdashboardFocusable *self,
+											XfdashboardFocusable *inSource,
+											const gchar *inAction,
+											ClutterEvent *inEvent);
 	gboolean (*selection_move_page_left)(XfdashboardFocusable *self,
 											XfdashboardFocusable *inSource,
 											const gchar *inAction,
