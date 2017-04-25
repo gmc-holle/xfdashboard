@@ -72,6 +72,14 @@ struct _XfdashboardFocusManagerClass
 						XfdashboardFocusable *newActor);
 
 	/* Binding actions */
+	gboolean (*focus_move_first)(XfdashboardFocusManager *self,
+									XfdashboardFocusable *inSource,
+									const gchar *inAction,
+									ClutterEvent *inEvent);
+	gboolean (*focus_move_last)(XfdashboardFocusManager *self,
+								XfdashboardFocusable *inSource,
+								const gchar *inAction,
+								ClutterEvent *inEvent);
 	gboolean (*focus_move_next)(XfdashboardFocusManager *self,
 									XfdashboardFocusable *inSource,
 									const gchar *inAction,

@@ -63,6 +63,8 @@ enum
 	SIGNAL_CHANGED,
 
 	/* Actions */
+	ACTION_FOCUS_MOVE_FIRST,
+	ACTION_FOCUS_MOVE_LAST,
 	ACTION_FOCUS_MOVE_NEXT,
 	ACTION_FOCUS_MOVE_PREVIOUS,
 
@@ -183,6 +185,102 @@ static GSList* _xfdashboard_focus_manager_get_targets_for_binding(XfdashboardFoc
 	return(targets);
 }
 
+/* Action signal to move focus to first focusable actor was emitted */
+static gboolean _xfdashboard_focus_manager_move_focus_first(XfdashboardFocusManager *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															ClutterEvent *inEvent)
+{
+	XfdashboardFocusManagerPrivate	*priv;
+	XfdashboardFocusable			*currentFocusable;
+	XfdashboardFocusable			*newFocusable;
+	GList							*iter;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+
+	/* Get current focus */
+	currentFocusable=xfdashboard_focus_manager_get_focus(self);
+
+	/* Iterate through registered focusable actor and find the first focusable one.
+	 * We do not use xfdashboard_focus_manager_get_next_focusable(self, NULL) as
+	 * it could return a focusable actor which is beyond the current one in order.
+	 * We do not want to change the focus if it is not "before" the current one.
+	 */
+	for(iter=priv->registeredFocusables; iter; iter=g_list_next(iter))
+	{
+		newFocusable=(XfdashboardFocusable*)iter->data;
+
+		/* If iterate reached the current focused actor then there it is no first
+		 * focusable actor and we do not need to change the focus and can return.
+		 */
+		if(currentFocusable && newFocusable==currentFocusable) return(CLUTTER_EVENT_STOP);
+
+		/* If focusable can be focused then focus it and return */
+		if(xfdashboard_focusable_can_focus(newFocusable))
+		{
+			xfdashboard_focus_manager_set_focus(self, newFocusable);
+
+			return(CLUTTER_EVENT_STOP);
+		}
+	}
+
+	/* If we get here we iterated through all registered focusable actors but
+	 * could not find a matching one to set focus to.
+	 */
+	return(CLUTTER_EVENT_STOP);
+}
+
+/* Action signal to move focus to last focusable actor was emitted */
+static gboolean _xfdashboard_focus_manager_move_focus_last(XfdashboardFocusManager *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															ClutterEvent *inEvent)
+{
+	XfdashboardFocusManagerPrivate	*priv;
+	XfdashboardFocusable			*currentFocusable;
+	XfdashboardFocusable			*newFocusable;
+	GList							*iter;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+
+	/* Get current focus */
+	currentFocusable=xfdashboard_focus_manager_get_focus(self);
+
+	/* Iterate backwards through registered focusable actor and find the last focusable
+	 * one. We do not use xfdashboard_focus_manager_get_previous_focusable(self, NULL)
+	 * as it could return a focusable actor which is before the current one in order.
+	 * We do not want to change the focus if it is not "after" the current one.
+	 */
+	for(iter=g_list_last(priv->registeredFocusables); iter; iter=g_list_previous(iter))
+	{
+		newFocusable=(XfdashboardFocusable*)iter->data;
+
+		/* If iterate reached the current focused actor then there it is no last
+		 * focusable actor and we do not need to change the focus and can return.
+		 */
+		if(currentFocusable && newFocusable==currentFocusable) return(CLUTTER_EVENT_STOP);
+
+		/* If focusable can be focused then focus it and return */
+		if(xfdashboard_focusable_can_focus(newFocusable))
+		{
+			xfdashboard_focus_manager_set_focus(self, newFocusable);
+
+			return(CLUTTER_EVENT_STOP);
+		}
+	}
+
+	/* If we get here we iterated through all registered focusable actors but
+	 * could not find a matching one to set focus to.
+	 */
+	return(CLUTTER_EVENT_STOP);
+}
+
 /* Action signal to move focus to next focusable actor was emitted */
 static gboolean _xfdashboard_focus_manager_move_focus_next(XfdashboardFocusManager *self,
 															XfdashboardFocusable *inSource,
@@ -286,6 +384,8 @@ static void xfdashboard_focus_manager_class_init(XfdashboardFocusManagerClass *k
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_focus_manager_dispose;
 
+	klass->focus_move_first=_xfdashboard_focus_manager_move_focus_first;
+	klass->focus_move_last=_xfdashboard_focus_manager_move_focus_last;
 	klass->focus_move_next=_xfdashboard_focus_manager_move_focus_next;
 	klass->focus_move_previous=_xfdashboard_focus_manager_move_focus_previous;
 
@@ -329,6 +429,34 @@ static void xfdashboard_focus_manager_class_init(XfdashboardFocusManagerClass *k
 						2,
 						XFDASHBOARD_TYPE_FOCUSABLE,
 						XFDASHBOARD_TYPE_FOCUSABLE);
+
+	XfdashboardFocusManagerSignals[ACTION_FOCUS_MOVE_FIRST]=
+		g_signal_new("focus-move-first",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardFocusManagerClass, focus_move_first),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_BOXED,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
+
+	XfdashboardFocusManagerSignals[ACTION_FOCUS_MOVE_LAST]=
+		g_signal_new("focus-move-last",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardFocusManagerClass, focus_move_last),
+						g_signal_accumulator_true_handled,
+						NULL,
+						_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_BOXED,
+						G_TYPE_BOOLEAN,
+						3,
+						XFDASHBOARD_TYPE_FOCUSABLE,
+						G_TYPE_STRING,
+						CLUTTER_TYPE_EVENT);
 
 	XfdashboardFocusManagerSignals[ACTION_FOCUS_MOVE_NEXT]=
 		g_signal_new("focus-move-next",
