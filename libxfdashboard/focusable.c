@@ -70,6 +70,8 @@ enum
 	ACTION_SELECTION_MOVE_PREVIOUS,
 	ACTION_SELECTION_ACTIVATE,
 
+	ACTION_FOCUS_MOVE_TO,
+
 	SIGNAL_LAST
 };
 
@@ -430,6 +432,23 @@ static gboolean _xfdashboard_focusable_selection_activate(XfdashboardFocusable *
 	return(CLUTTER_EVENT_STOP);
 }
 
+/* Action signal to move focus to this focusable actor was emitted */
+static gboolean _xfdashboard_focusable_focus_move_to(XfdashboardFocusable *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															ClutterEvent *inEvent)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
+
+	/* Move focus to this focuables actor */
+	xfdashboard_focusable_move_focus_to(self);
+
+	/* All done so return and stop further processing of this event */
+	return(CLUTTER_EVENT_STOP);
+}
+
+
 /* IMPLEMENTATION: GObject */
 
 /* Interface initialization
@@ -460,6 +479,7 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 	iface->selection_move_page_up=_xfdashboard_focusable_selection_move_page_up;
 	iface->selection_move_page_down=_xfdashboard_focusable_selection_move_page_down;
 	iface->selection_activate=_xfdashboard_focusable_selection_activate;
+	iface->focus_move_to=_xfdashboard_focusable_focus_move_to;
 
 	/* Define signals and actions */
 	if(!initialized)
@@ -676,6 +696,20 @@ void xfdashboard_focusable_default_init(XfdashboardFocusableInterface *iface)
 							XFDASHBOARD_TYPE_FOCUSABLE,
 							G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 							G_STRUCT_OFFSET(XfdashboardFocusableInterface, selection_activate),
+							g_signal_accumulator_true_handled,
+							NULL,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_BOXED,
+							G_TYPE_BOOLEAN,
+							3,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
+							CLUTTER_TYPE_EVENT);
+
+		XfdashboardFocusableSignals[ACTION_FOCUS_MOVE_TO]=
+			g_signal_new("focus-move-to",
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+							G_STRUCT_OFFSET(XfdashboardFocusableInterface, focus_move_to),
 							g_signal_accumulator_true_handled,
 							NULL,
 							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_BOXED,
@@ -994,4 +1028,31 @@ gboolean xfdashboard_focusable_activate_selection(XfdashboardFocusable *self, Cl
 	/* If we get here the virtual function was not overridden */
 	XFDASHBOARD_FOCUSABLE_WARN_NOT_IMPLEMENTED(self, "activate_selection");
 	return(FALSE);
+}
+
+/* Move focus to this focusable actor */
+gboolean xfdashboard_focusable_move_focus_to(XfdashboardFocusable *self)
+{
+	XfdashboardFocusManager		*focusManager;
+	gboolean					success;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_FOCUSABLE(self), FALSE);
+
+	success=FALSE;
+
+	/* Check if this focusable actor can get focus */
+	if(!xfdashboard_focusable_can_focus(self)) return(FALSE);
+
+	/* Get focus manager to change focus */
+	focusManager=xfdashboard_focus_manager_get_default();
+
+	/* Try to move focus to this focusable actor and check success */
+	xfdashboard_focus_manager_set_focus(focusManager, self);
+	if(xfdashboard_focus_manager_get_focus(focusManager)==self) success=TRUE;
+
+	/* Release allocated resources */
+	g_object_unref(focusManager);
+
+	/* Return success result to move focus */
+	return(success);
 }
