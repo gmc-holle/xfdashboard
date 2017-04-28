@@ -423,7 +423,7 @@ static gboolean _xfdashboard_traverse_actor_internal(ClutterActor *inActor,
 	 */
 	if(XFDASHBOARD_IS_STYLABLE(inActor))
 	{
-		score=xfdashboard_css_selector_score_matching_stylable_node(inSelector, XFDASHBOARD_STYLABLE(inActor));
+		score=xfdashboard_css_selector_score(inSelector, XFDASHBOARD_STYLABLE(inActor));
 		if(score>=0)
 		{
 			doContinueTraversal=(inCallback)(inActor, inUserData);

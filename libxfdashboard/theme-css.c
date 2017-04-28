@@ -2796,7 +2796,7 @@ GHashTable* xfdashboard_theme_css_get_properties(XfdashboardThemeCSS *self,
 		selector=(XfdashboardThemeCSSSelector*)entry->data;
 		if(selector->type==XFDASHBOARD_THEME_CSS_SELECTOR_TYPE_SELECTOR)
 		{
-			score=xfdashboard_css_selector_score_matching_stylable_node(selector->selector, inStylable);
+			score=xfdashboard_css_selector_score(selector->selector, inStylable);
 			if(score>=0)
 			{
 				match=g_slice_new(XfdashboardThemeCSSSelectorMatch);

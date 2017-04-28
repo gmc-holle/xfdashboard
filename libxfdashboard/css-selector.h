@@ -92,7 +92,7 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner_with_priority(
 
 gchar* xfdashboard_css_selector_to_string(XfdashboardCssSelector *self);
 
-gint xfdashboard_css_selector_score_matching_stylable_node(XfdashboardCssSelector *self, XfdashboardStylable *inStylable);
+gint xfdashboard_css_selector_score(XfdashboardCssSelector *self, XfdashboardStylable *inStylable);
 
 void xfdashboard_css_selector_adjust_to_offset(XfdashboardCssSelector *self, gint inLine, gint inPosition);
 
