@@ -103,7 +103,7 @@ static void _xfdashboard_middle_click_window_close_on_actor_created(XfdashboardM
 	/* Check if we are interested in this newly created actor and set it up */
 	if(XFDASHBOARD_IS_STYLABLE(inActor))
 	{
-		score=xfdashboard_css_selector_score_matching_stylable_node(priv->liveWindowSelector, XFDASHBOARD_STYLABLE(inActor));
+		score=xfdashboard_css_selector_score(priv->liveWindowSelector, XFDASHBOARD_STYLABLE(inActor));
 		if(score>0)
 		{
 			action=xfdashboard_click_action_new();
