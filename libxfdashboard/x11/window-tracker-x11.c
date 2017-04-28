@@ -87,6 +87,11 @@ struct _XfdashboardWindowTrackerX11Private
 
 	gboolean								supportsMultipleMonitors;
 	GdkScreen								*gdkScreen;
+#if GTK_CHECK_VERSION(3, 22, 0)
+	GdkDisplay								*gdkDisplay;
+	gboolean								needScreenSizeUpdate;
+	gint									screenWidth, screenHeight;
+#endif
 };
 
 /* Properties */
@@ -122,10 +127,10 @@ static void _xfdashboard_window_tracker_x11_free_workspace(XfdashboardWindowTrac
 #if DEBUG
 	/* There must be only one reference on that workspace object */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
-				"Freeing workspace %s@%p named '%s' with ref-count=%d",
-				G_OBJECT_TYPE_NAME(inWorkspace), inWorkspace,
-				xfdashboard_window_tracker_workspace_get_name(XFDASHBOARD_WINDOW_TRACKER_WORKSPACE(inWorkspace)),
-				G_OBJECT(inWorkspace)->ref_count);
+						"Freeing workspace %s@%p named '%s' with ref-count=%d",
+						G_OBJECT_TYPE_NAME(inWorkspace), inWorkspace,
+						xfdashboard_window_tracker_workspace_get_name(XFDASHBOARD_WINDOW_TRACKER_WORKSPACE(inWorkspace)),
+						G_OBJECT(inWorkspace)->ref_count);
 	g_assert(G_OBJECT(inWorkspace)->ref_count==1);
 #endif
 
@@ -197,9 +202,9 @@ static XfdashboardWindowTrackerWorkspaceX11* _xfdashboard_window_tracker_x11_cre
 	{
 		/* Return existing workspace object */
 		XFDASHBOARD_DEBUG(self, WINDOWS,
-					"A workspace object %s@%p for wnck workspace %s@%p named '%s' exists already",
-					G_OBJECT_TYPE_NAME(workspace), workspace,
-					G_OBJECT_TYPE_NAME(inWorkspace), inWorkspace, wnck_workspace_get_name(inWorkspace));
+							"A workspace object %s@%p for wnck workspace %s@%p named '%s' exists already",
+							G_OBJECT_TYPE_NAME(workspace), workspace,
+							G_OBJECT_TYPE_NAME(inWorkspace), inWorkspace, wnck_workspace_get_name(inWorkspace));
 
 		return(workspace);
 	}
@@ -221,9 +226,9 @@ static XfdashboardWindowTrackerWorkspaceX11* _xfdashboard_window_tracker_x11_cre
 
 	/* Return new workspace object */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
-				"Created workspace object %s@%p for wnck workspace %s@%p named '%s'",
-				G_OBJECT_TYPE_NAME(workspace), workspace,
-				G_OBJECT_TYPE_NAME(inWorkspace), inWorkspace, wnck_workspace_get_name(inWorkspace));
+						"Created workspace object %s@%p for wnck workspace %s@%p named '%s'",
+						G_OBJECT_TYPE_NAME(workspace), workspace,
+						G_OBJECT_TYPE_NAME(inWorkspace), inWorkspace, wnck_workspace_get_name(inWorkspace));
 	return(workspace);
 }
 
@@ -242,10 +247,10 @@ static void _xfdashboard_window_tracker_x11_free_window(XfdashboardWindowTracker
 #if DEBUG
 	/* There must be only one reference on that window object */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
-				"Freeing window %s@%p named '%s' with ref-count=%d",
-				G_OBJECT_TYPE_NAME(inWindow), inWindow,
-				xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(inWindow)),
-				G_OBJECT(inWindow)->ref_count);
+						"Freeing window %s@%p named '%s' with ref-count=%d",
+						G_OBJECT_TYPE_NAME(inWindow), inWindow,
+						xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(inWindow)),
+						G_OBJECT(inWindow)->ref_count);
 	g_assert(G_OBJECT(inWindow)->ref_count==1);
 #endif
 
@@ -367,9 +372,9 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_create
 	{
 		/* Return existing window object */
 		XFDASHBOARD_DEBUG(self, WINDOWS,
-					"A window object %s@%p for wnck window %s@%p named '%s' exists already",
-					G_OBJECT_TYPE_NAME(window), window,
-					G_OBJECT_TYPE_NAME(inWindow), inWindow, wnck_window_get_name(inWindow));
+							"A window object %s@%p for wnck window %s@%p named '%s' exists already",
+							G_OBJECT_TYPE_NAME(window), window,
+							G_OBJECT_TYPE_NAME(inWindow), inWindow, wnck_window_get_name(inWindow));
 
 		return(window);
 	}
@@ -394,9 +399,9 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_create
 
 	/* Return new window object */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
-				"Created window object %s@%p for wnck window %s@%p named '%s'",
-				G_OBJECT_TYPE_NAME(window), window,
-				G_OBJECT_TYPE_NAME(inWindow), inWindow, wnck_window_get_name(inWindow));
+						"Created window object %s@%p for wnck window %s@%p named '%s'",
+						G_OBJECT_TYPE_NAME(window), window,
+						G_OBJECT_TYPE_NAME(inWindow), inWindow, wnck_window_get_name(inWindow));
 	return(window);
 }
 
@@ -579,9 +584,9 @@ static void _xfdashboard_window_tracker_x11_on_active_window_changed(Xfdashboard
 		if(!newActiveWindow)
 		{
 			XFDASHBOARD_DEBUG(self, WINDOWS,
-						"No window object of type %s found for new active wnck window %s@%p named '%s'",
-						g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
-						G_OBJECT_TYPE_NAME(activeWindow), activeWindow, wnck_window_get_name(activeWindow));
+								"No window object of type %s found for new active wnck window %s@%p named '%s'",
+								g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
+								G_OBJECT_TYPE_NAME(activeWindow), activeWindow, wnck_window_get_name(activeWindow));
 
 			return;
 		}
@@ -624,9 +629,9 @@ static void _xfdashboard_window_tracker_x11_on_window_closed(XfdashboardWindowTr
 	if(!window)
 	{
 		XFDASHBOARD_DEBUG(self, WINDOWS,
-					"No window object of type %s found for wnck window %s@%p named '%s'",
-					g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
-					G_OBJECT_TYPE_NAME(inWindow), inWindow, wnck_window_get_name(inWindow));
+							"No window object of type %s found for wnck window %s@%p named '%s'",
+							g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
+							G_OBJECT_TYPE_NAME(inWindow), inWindow, wnck_window_get_name(inWindow));
 
 		return;
 	}
@@ -679,8 +684,8 @@ static void _xfdashboard_window_tracker_x11_on_window_opened(XfdashboardWindowTr
 
 	/* Emit signal */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
-				"Window '%s' created",
-				wnck_window_get_name(inWindow));
+						"Window '%s' created",
+						wnck_window_get_name(inWindow));
 	g_signal_emit_by_name(self, "window-opened", window);
 }
 
@@ -794,9 +799,9 @@ static void _xfdashboard_window_tracker_x11_on_workspace_destroyed(XfdashboardWi
 	if(!workspace)
 	{
 		XFDASHBOARD_DEBUG(self, WINDOWS,
-					"No workspace object of type %s found for wnck workspace %s@%p named '%s'",
-					g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
-					G_OBJECT_TYPE_NAME(inWorkspace), inWorkspace, wnck_workspace_get_name(inWorkspace));
+							"No workspace object of type %s found for wnck workspace %s@%p named '%s'",
+							g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
+							G_OBJECT_TYPE_NAME(inWorkspace), inWorkspace, wnck_workspace_get_name(inWorkspace));
 
 		return;
 	}
@@ -987,7 +992,7 @@ static void _xfdashboard_window_tracker_x11_monitor_free(XfdashboardWindowTracke
 static void _xfdashboard_window_tracker_x11_on_monitors_changed(XfdashboardWindowTrackerX11 *self,
 																gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private			*priv;
+	XfdashboardWindowTrackerX11Private		*priv;
 	GdkScreen								*screen;
 	gint									currentMonitorCount;
 	gint									newMonitorCount;
@@ -1005,7 +1010,11 @@ static void _xfdashboard_window_tracker_x11_on_monitors_changed(XfdashboardWindo
 	currentMonitorCount=g_list_length(priv->monitors);
 
 	/* Get new monitor state */
+#if GTK_CHECK_VERSION(3, 22, 0)
+	newMonitorCount=gdk_display_get_n_monitors(gdk_screen_get_display(screen));
+#else
 	newMonitorCount=gdk_screen_get_n_monitors(screen);
+#endif
 	if(newMonitorCount!=currentMonitorCount)
 	{
 		XFDASHBOARD_DEBUG(self, WINDOWS,
@@ -1048,24 +1057,30 @@ static void _xfdashboard_window_tracker_x11_on_monitors_changed(XfdashboardWindo
 			_xfdashboard_window_tracker_x11_monitor_free(self, monitor);
 		}
 	}
+
+#if GTK_CHECK_VERSION(3, 22, 0)
+	/* Set flag to recalculate screen size which must have changed as monitors
+	 * were added or removed.
+	 */
+	priv->needScreenSizeUpdate=TRUE;
+#endif
 }
 #endif
 
 /* Total size of screen changed */
 static void _xfdashboard_window_tracker_x11_on_screen_size_changed(XfdashboardWindowTrackerX11 *self,
-																gpointer inUserData)
+																	gpointer inUserData)
 {
-	GdkScreen		*screen;
-	gint			w, h;
+	XfdashboardWindowTrackerX11Private		*priv;
+	gint									w, h;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(GDK_IS_SCREEN(inUserData));
 
-	screen=GDK_SCREEN(inUserData);
+	priv=self->priv;
 
 	/* Get new total size of screen */
-	w=gdk_screen_get_width(screen);
-	h=gdk_screen_get_height(screen);
+	priv->needScreenSizeUpdate=TRUE;
+	xfdashboard_window_tracker_get_screen_size(XFDASHBOARD_WINDOW_TRACKER(self), &w, &h);
 
 	/* Emit signal to tell that screen size has changed */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
@@ -1216,7 +1231,7 @@ static XfdashboardWindowTrackerWorkspace* _xfdashboard_window_tracker_x11_window
 
 /* Get workspace by number */
 static XfdashboardWindowTrackerWorkspace* _xfdashboard_window_tracker_x11_window_tracker_get_workspace_by_number(XfdashboardWindowTracker *inWindowTracker,
-																															gint inNumber)
+																													gint inNumber)
 {
 	XfdashboardWindowTrackerX11				*self;
 	XfdashboardWindowTrackerX11Private		*priv;
@@ -1238,9 +1253,9 @@ static XfdashboardWindowTrackerWorkspace* _xfdashboard_window_tracker_x11_window
 	if(!workspace)
 	{
 		XFDASHBOARD_DEBUG(self, WINDOWS,
-					"No workspace object of type %s found for wnck workspace %s@%p named '%s'",
-					g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
-					G_OBJECT_TYPE_NAME(wnckWorkspace), wnckWorkspace, wnck_workspace_get_name(wnckWorkspace));
+							"No workspace object of type %s found for wnck workspace %s@%p named '%s'",
+							g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
+							G_OBJECT_TYPE_NAME(wnckWorkspace), wnckWorkspace, wnck_workspace_get_name(wnckWorkspace));
 
 		return(NULL);
 	}
@@ -1309,7 +1324,7 @@ static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_x11_window_t
 
 /* Get monitor by number */
 static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_x11_window_tracker_get_monitor_by_number(XfdashboardWindowTracker *inWindowTracker,
-																														gint inNumber)
+																												gint inNumber)
 {
 	XfdashboardWindowTrackerX11				*self;
 	XfdashboardWindowTrackerX11Private		*priv;
@@ -1328,8 +1343,8 @@ static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_x11_window_t
 
 /* Get monitor at requested position */
 static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_x11_window_tracker_get_monitor_by_position(XfdashboardWindowTracker *inWindowTracker,
-																														gint inX,
-																														gint inY)
+																												gint inX,
+																												gint inY)
 {
 	XfdashboardWindowTrackerX11				*self;
 	XfdashboardWindowTrackerX11Private		*priv;
@@ -1365,21 +1380,84 @@ static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_x11_window_t
 
 /* Get size of screen */
 static void _xfdashboard_window_tracker_x11_window_tracker_get_screen_size(XfdashboardWindowTracker *inWindowTracker,
-																					gint *outWidth,
-																					gint *outHeight)
+																			gint *outWidth,
+																			gint *outHeight)
 {
 	XfdashboardWindowTrackerX11				*self;
 	XfdashboardWindowTrackerX11Private		*priv;
 	gint									width, height;
+#if GTK_CHECK_VERSION(3, 22, 0)
+	gint									i;
+	gint									numberMonitors;
+	GdkMonitor								*monitor;
+	GdkRectangle							monitorRect;
+	gint									left, top, right, bottom;
+	gboolean								forceUpdate;
+#endif
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker));
 
 	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
 	priv=self->priv;
 
+#if GTK_CHECK_VERSION(3, 22, 0)
+	/* Only recalculate screen size if flag is set */
+	if(priv->needScreenSizeUpdate)
+	{
+		XFDASHBOARD_DEBUG(self, WINDOWS, "Screen size needs to be recalculated");
+
+		/* Get width and height of screen by iterating through all connected monitors
+		 * and find the most top left and most right bottom point among all these
+		 * monitors. Then calculate size of screen by these points.
+		 */
+		forceUpdate=TRUE;
+		left=top=right=bottom=0;
+		numberMonitors=gdk_display_get_n_monitors(priv->gdkDisplay);
+		for(i=0; i<numberMonitors; i++)
+		{
+			monitor=gdk_display_get_monitor(priv->gdkDisplay, i);
+			gdk_monitor_get_geometry(monitor, &monitorRect);
+
+			if(forceUpdate || monitorRect.x<left) left=monitorRect.x;
+			if(forceUpdate || monitorRect.y<top) top=monitorRect.y;
+			if(forceUpdate || (monitorRect.x+monitorRect.width)>right) right=monitorRect.x+monitorRect.width;
+			if(forceUpdate || (monitorRect.y+monitorRect.height)>bottom) bottom=monitorRect.y+monitorRect.height;
+
+			/* The first monitor in list was processed so do not enforcing updating
+			 * coordinates from now on except they are most-specific points.
+			 */
+			forceUpdate=FALSE;
+
+			/* Debug message */
+			XFDASHBOARD_DEBUG(self, WINDOWS,
+								"Iterating monitor %d of %d [%d,%dx%d,%d] for screen size calculation",
+								i, numberMonitors,
+								monitorRect.x, monitorRect.y,
+								monitorRect.width, monitorRect.height);
+		}
+
+		/* Calculate screen size */
+		priv->screenWidth=right-left;
+		priv->screenHeight=bottom-top;
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Screen size is %dx%d over all %d monitors covering area of [%d,%dx%d,%d]",
+							priv->screenWidth, priv->screenHeight,
+							numberMonitors,
+							left, top,
+							right, bottom);
+
+		/* Reset flag to avoid recalculation of screen size again and again */
+		priv->needScreenSizeUpdate=FALSE;
+	}
+
+	/* Get width and height of screen */
+	width=priv->screenWidth;
+	height=priv->screenHeight;
+#else
 	/* Get width and height of screen */
 	width=gdk_screen_get_width(priv->gdkScreen);
 	height=gdk_screen_get_height(priv->gdkScreen);
+#endif
 
 	/* Store result */
 	if(outWidth) *outWidth=width;
@@ -1410,15 +1488,15 @@ static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tr
 		if(backgroundWindow)
 		{
 			XFDASHBOARD_DEBUG(self, WINDOWS,
-						"Found desktop window %s@%p by known background pixmap ID",
-						G_OBJECT_TYPE_NAME(backgroundWindow), backgroundWindow);
+								"Found desktop window %s@%p by known background pixmap ID",
+								G_OBJECT_TYPE_NAME(backgroundWindow), backgroundWindow);
 
 			/* Get or create window object for wnck background window */
 			window=_xfdashboard_window_tracker_x11_create_window_for_wnck(self, backgroundWindow);
 			XFDASHBOARD_DEBUG(self, WINDOWS,
-						"Resolved desktop window %s@%p to window object %s@%p",
-						G_OBJECT_TYPE_NAME(backgroundWindow), backgroundWindow,
-						G_OBJECT_TYPE_NAME(window), window);
+								"Resolved desktop window %s@%p to window object %s@%p",
+								G_OBJECT_TYPE_NAME(backgroundWindow), backgroundWindow,
+								G_OBJECT_TYPE_NAME(window), window);
 
 			/* Return window object found or created */
 			return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
@@ -1440,15 +1518,15 @@ static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tr
 		if(wnckWindowType==WNCK_WINDOW_DESKTOP)
 		{
 			XFDASHBOARD_DEBUG(self, WINDOWS,
-						"Desktop window %s@%p found while iterating through window list",
-						G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow);
+								"Desktop window %s@%p found while iterating through window list",
+								G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow);
 
 			/* Get or create window object for wnck background window */
 			window=_xfdashboard_window_tracker_x11_create_window_for_wnck(self, wnckWindow);
 			XFDASHBOARD_DEBUG(self, WINDOWS,
-						"Resolved desktop window %s@%p to window object %s@%p",
-						G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow,
-						G_OBJECT_TYPE_NAME(window), window);
+								"Resolved desktop window %s@%p to window object %s@%p",
+								G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow,
+								G_OBJECT_TYPE_NAME(window), window);
 
 			/* Return window object found or created */
 			return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
@@ -1483,9 +1561,9 @@ static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tr
 	/* Get or create window object for wnck background window */
 	window=_xfdashboard_window_tracker_x11_create_window_for_wnck(self, wnckWindow);
 	XFDASHBOARD_DEBUG(self, WINDOWS,
-				"Resolved stage window %s@%p to window object %s@%p",
-				G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow,
-				G_OBJECT_TYPE_NAME(window), window);
+						"Resolved stage window %s@%p to window object %s@%p",
+						G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow,
+						G_OBJECT_TYPE_NAME(window), window);
 
 	return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
 }
@@ -1634,6 +1712,14 @@ static void _xfdashboard_window_tracker_x11_dispose(GObject *inObject)
 		priv->gdkScreen=NULL;
 	}
 
+#if GTK_CHECK_VERSION(3, 22, 0)
+	if(priv->gdkDisplay)
+	{
+		g_signal_handlers_disconnect_by_data(priv->gdkDisplay, self);
+		priv->gdkDisplay=NULL;
+	}
+#endif
+
 	if(priv->screen)
 	{
 		g_signal_handlers_disconnect_by_data(priv->screen, self);
@@ -1742,7 +1828,15 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 	priv->workspaces=NULL;
 	priv->monitors=NULL;
 	priv->screen=wnck_screen_get_default();
+#if GTK_CHECK_VERSION(3, 22, 0)
+	priv->gdkDisplay=gdk_display_get_default();
+	priv->gdkScreen=gdk_display_get_default_screen(priv->gdkDisplay);
+	priv->needScreenSizeUpdate=TRUE;
+	priv->screenWidth=0;
+	priv->screenHeight=0;
+#else
 	priv->gdkScreen=gdk_screen_get_default();
+#endif
 	priv->activeWindow=NULL;
 	priv->activeWorkspace=NULL;
 	priv->primaryMonitor=NULL;
@@ -1793,6 +1887,7 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 	if(XineramaIsActive(GDK_SCREEN_XDISPLAY(priv->gdkScreen)))
 	{
 		XfdashboardWindowTrackerMonitorX11	*monitor;
+		gint								numberMonitors;
 		gint								i;
 
 		/* Set flag that multiple monitors are supported */
@@ -1811,7 +1906,12 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 								G_CONNECT_AFTER | G_CONNECT_SWAPPED);
 
 		/* Get monitors */
-		for(i=0; i<gdk_screen_get_n_monitors(priv->gdkScreen); i++)
+#if GTK_CHECK_VERSION(3, 22, 0)
+		numberMonitors=gdk_display_get_n_monitors(priv->gdkDisplay);
+#else
+		numberMonitors=gdk_screen_get_n_monitors(priv->gdkScreen);
+#endif
+		for(i=0; i<numberMonitors; i++)
 		{
 			/* Create monitor object */
 			monitor=_xfdashboard_window_tracker_x11_monitor_new(self, i);
