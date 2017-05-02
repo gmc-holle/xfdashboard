@@ -820,7 +820,7 @@ static void _xfdashboard_live_workspace_dispose(GObject *inObject)
 
 	if(priv->clickAction)
 	{
-		clutter_actor_add_action(CLUTTER_ACTOR(self), priv->clickAction);
+		clutter_actor_remove_action(CLUTTER_ACTOR(self), priv->clickAction);
 		priv->clickAction=NULL;
 	}
 
