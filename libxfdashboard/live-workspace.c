@@ -35,6 +35,8 @@
 #include <libxfdashboard/live-window-simple.h>
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/click-action.h>
+#include <libxfdashboard/drag-action.h>
+#include <libxfdashboard/image-content.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/compat.h>
@@ -63,6 +65,7 @@ struct _XfdashboardLiveWorkspacePrivate
 	XfdashboardWindowTracker				*windowTracker;
 	ClutterActor							*backgroundImageLayer;
 	ClutterActor							*actorTitle;
+	ClutterAction							*clickAction;
 };
 
 /* Properties */
@@ -92,6 +95,7 @@ enum
 static guint XfdashboardLiveWorkspaceSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
+#define DEFAULT_DRAG_HANDLE_SIZE						32.0f
 
 /* Check if window should be shown */
 static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWorkspace *self,
@@ -149,6 +153,88 @@ static ClutterActor* _xfdashboard_live_workspace_find_by_window(XfdashboardLiveW
 	return(NULL);
 }
 
+/* Drag of a live window begins */
+static void _xfdashboard_live_workspace_on_window_drag_begin(ClutterDragAction *inAction,
+																ClutterActor *inActor,
+																gfloat inStageX,
+																gfloat inStageY,
+																ClutterModifierType inModifiers,
+																gpointer inUserData)
+{
+	XfdashboardLiveWorkspace			*self;
+	XfdashboardLiveWorkspacePrivate		*priv;
+	ClutterActor						*dragHandle;
+	ClutterStage						*stage;
+	GdkPixbuf							*windowIcon;
+	ClutterContent						*image;
+	XfdashboardLiveWindowSimple			*liveWindow;
+
+	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(inUserData));
+
+	self=XFDASHBOARD_LIVE_WORKSPACE(inUserData);
+	priv=self->priv;
+	liveWindow=XFDASHBOARD_LIVE_WINDOW_SIMPLE(inActor);
+
+	/* Prevent signal "clicked" from being emitted on live workspace actor */
+	clutter_actor_meta_set_enabled(CLUTTER_ACTOR_META(priv->clickAction), FALSE);
+
+	/* Get stage */
+	stage=CLUTTER_STAGE(clutter_actor_get_stage(inActor));
+
+	/* Create a application icon for drag handle */
+	windowIcon=xfdashboard_window_tracker_window_get_icon(xfdashboard_live_window_simple_get_window(liveWindow));
+	image=xfdashboard_image_content_new_for_pixbuf(windowIcon);
+
+	dragHandle=xfdashboard_background_new();
+	clutter_actor_set_position(dragHandle, inStageX, inStageY);
+	clutter_actor_set_size(dragHandle, DEFAULT_DRAG_HANDLE_SIZE, DEFAULT_DRAG_HANDLE_SIZE);
+	xfdashboard_background_set_image(XFDASHBOARD_BACKGROUND(dragHandle), CLUTTER_IMAGE(image));
+	clutter_actor_add_child(CLUTTER_ACTOR(stage), dragHandle);
+
+	clutter_drag_action_set_drag_handle(inAction, dragHandle);
+
+	g_object_unref(image);
+}
+
+/* Drag of a live window ends */
+static void _xfdashboard_live_workspace_on_window_on_drag_end(ClutterDragAction *inAction,
+																ClutterActor *inActor,
+																gfloat inStageX,
+																gfloat inStageY,
+																ClutterModifierType inModifiers,
+																gpointer inUserData)
+{
+	XfdashboardLiveWorkspace			*self;
+	XfdashboardLiveWorkspacePrivate		*priv;
+	ClutterActor						*dragHandle;
+
+	g_return_if_fail(CLUTTER_IS_DRAG_ACTION(inAction));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(inUserData));
+
+	self=XFDASHBOARD_LIVE_WORKSPACE(inUserData);
+	priv=self->priv;
+
+	/* Destroy clone of application icon used as drag handle */
+	dragHandle=clutter_drag_action_get_drag_handle(inAction);
+	if(dragHandle)
+	{
+#if CLUTTER_CHECK_VERSION(1, 14, 0)
+		/* Only unset drag handle if not running Clutter in version
+		 * 1.12. This prevents a critical warning message in 1.12.
+		 * Later versions of Clutter are fixed already.
+		 */
+		clutter_drag_action_set_drag_handle(inAction, NULL);
+#endif
+		clutter_actor_destroy(dragHandle);
+	}
+
+	/* Allow signal "clicked" from being emitted again */
+	clutter_actor_meta_set_enabled(CLUTTER_ACTOR_META(priv->clickAction), TRUE);
+}
+
 /* Create actor for window but respect window stacking when adding */
 static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(XfdashboardLiveWorkspace *self,
 																				XfdashboardWindowTrackerWindow *inWindow)
@@ -158,6 +244,7 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 	GList								*windows;
 	ClutterActor						*lastWindowActor;
 	XfdashboardWindowTrackerWindow		*window;
+	ClutterAction						*action;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
@@ -201,6 +288,13 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 		{
 			/* Create actor */
 			actor=xfdashboard_live_window_simple_new_for_window(inWindow);
+
+			/* Add drag action to actor */
+			action=xfdashboard_drag_action_new_with_source(CLUTTER_ACTOR(self));
+			clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(action), -1, -1);
+			clutter_actor_add_action(actor, action);
+			g_signal_connect(action, "drag-begin", G_CALLBACK(_xfdashboard_live_workspace_on_window_drag_begin), self);
+			g_signal_connect(action, "drag-end", G_CALLBACK(_xfdashboard_live_workspace_on_window_on_drag_end), self);
 
 			/* Add new actor at right stacking position */
 			if(lastWindowActor) clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
@@ -724,6 +818,12 @@ static void _xfdashboard_live_workspace_dispose(GObject *inObject)
 		priv->workspace=NULL;
 	}
 
+	if(priv->clickAction)
+	{
+		clutter_actor_add_action(CLUTTER_ACTOR(self), priv->clickAction);
+		priv->clickAction=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_live_workspace_parent_class)->dispose(inObject);
 }
@@ -885,7 +985,6 @@ static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass 
 static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 {
 	XfdashboardLiveWorkspacePrivate		*priv;
-	ClutterAction						*action;
 
 	priv=self->priv=XFDASHBOARD_LIVE_WORKSPACE_GET_PRIVATE(self);
 
@@ -901,9 +1000,9 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Connect signals */
-	action=xfdashboard_click_action_new();
-	clutter_actor_add_action(CLUTTER_ACTOR(self), action);
-	g_signal_connect_swapped(action, "clicked", G_CALLBACK(_xfdashboard_live_workspace_on_clicked), self);
+	priv->clickAction=xfdashboard_click_action_new();
+	clutter_actor_add_action(CLUTTER_ACTOR(self), priv->clickAction);
+	g_signal_connect_swapped(priv->clickAction, "clicked", G_CALLBACK(_xfdashboard_live_workspace_on_clicked), self);
 
 	/* Create background actors but order of adding background children is important */
 	priv->backgroundImageLayer=xfdashboard_live_window_simple_new();
