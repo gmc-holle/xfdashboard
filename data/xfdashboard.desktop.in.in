@@ -7,5 +7,5 @@ TryExec=@bindir@/xfdashboard
 Exec=@bindir@/xfdashboard
 Icon=xfdashboard
 Categories=System;
-NotShowIn=GNOME;KDE;Unity;
+OnlyShowIn=XFCE;
 Terminal=false
