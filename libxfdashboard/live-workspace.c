@@ -253,12 +253,12 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 
 	/* We cannot assume that each window newly opened or moved to this workspace
 	 * will be on top of all other windows. We need to respect window stacking.
-	 * Therefore we iterate through list of windows in stacking order and find
-	 * the last window we have an actor for before we the window requested.
+	 * Therefore we iterate through list of windows in reversed stacking order
+	 * and find the last window we have an actor for before we the window requested.
 	 */
 	lastWindowActor=NULL;
 	windows=xfdashboard_window_tracker_get_windows_stacked(priv->windowTracker);
-	for( ; windows; windows=g_list_next(windows))
+	for(windows=g_list_last(windows) ; windows; windows=g_list_previous(windows))
 	{
 		/* Get window from list */
 		window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windows->data);
@@ -280,9 +280,25 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 		/* Move existing window actor to new stacking position */
 		g_object_ref(actor);
 		clutter_actor_remove_child(CLUTTER_ACTOR(self), actor);
-		if(lastWindowActor) clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
-			else clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, priv->actorTitle);
+		if(lastWindowActor)
+		{
+			clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
+			XFDASHBOARD_DEBUG(self, ACTOR,
+								"Moved existing actor for window '%s' above actor for window '%s' at live workspace '%s'",
+								xfdashboard_window_tracker_window_get_name(xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(actor))),
+								xfdashboard_window_tracker_window_get_name(xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(lastWindowActor))),
+								xfdashboard_window_tracker_workspace_get_name(priv->workspace));
+		}
+			else
+			{
+				clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, priv->actorTitle);
+				XFDASHBOARD_DEBUG(self, ACTOR,
+									"Moved existing actor for window '%s' to bottom at live workspace '%s'",
+									xfdashboard_window_tracker_window_get_name(xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(actor))),
+									xfdashboard_window_tracker_workspace_get_name(priv->workspace));
+			}
 		g_object_unref(actor);
+
 	}
 		else
 		{
@@ -297,8 +313,23 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 			g_signal_connect(action, "drag-end", G_CALLBACK(_xfdashboard_live_workspace_on_window_on_drag_end), self);
 
 			/* Add new actor at right stacking position */
-			if(lastWindowActor) clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
-				else clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, priv->actorTitle);
+			if(lastWindowActor)
+			{
+				clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
+				XFDASHBOARD_DEBUG(self, ACTOR,
+									"Created new actor for window '%s' above actor for window '%s' at live workspace '%s'",
+									xfdashboard_window_tracker_window_get_name(xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(actor))),
+									xfdashboard_window_tracker_window_get_name(xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(lastWindowActor))),
+									xfdashboard_window_tracker_workspace_get_name(priv->workspace));
+			}
+				else
+				{
+					clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, priv->actorTitle);
+					XFDASHBOARD_DEBUG(self, ACTOR,
+										"Created new actor for window '%s' to bottom at live workspace '%s'",
+										xfdashboard_window_tracker_window_get_name(xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(actor))),
+										xfdashboard_window_tracker_workspace_get_name(priv->workspace));
+				}
 		}
 
 	return(actor);
