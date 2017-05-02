@@ -307,13 +307,25 @@ static gboolean _xfdashboard_workspace_selector_on_drop_begin(XfdashboardLiveWor
 	dragSource=xfdashboard_drag_action_get_source(inDragAction);
 	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
 
-	/* Check if we can handle dragged actor from given source */
+	/* We can handle dragged actor if it is a live window and its source
+	 * is windows view.
+	 */
 	if(XFDASHBOARD_IS_WINDOWS_VIEW(dragSource) &&
 		XFDASHBOARD_IS_LIVE_WINDOW(draggedActor))
 	{
 		canHandle=TRUE;
 	}
 
+	/* We can handle dragged actor if it is a live window and its source
+	 * is a live workspace
+	 */
+	if(XFDASHBOARD_IS_LIVE_WORKSPACE(dragSource) &&
+		XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(draggedActor))
+	{
+		canHandle=TRUE;
+	}
+
+	/* We can handle dragged actor if it is an application button */
 	if(XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor))
 	{
 		canHandle=TRUE;
@@ -342,7 +354,7 @@ static void _xfdashboard_workspace_selector_on_drop_drop(XfdashboardLiveWorkspac
 	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
 
 	/* Check if dragged actor is a window so move window to workspace */
-	if(XFDASHBOARD_IS_LIVE_WINDOW(draggedActor))
+	if(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(draggedActor))
 	{
 		XfdashboardWindowTrackerWindow	*window;
 
