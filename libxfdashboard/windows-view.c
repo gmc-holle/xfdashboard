@@ -44,6 +44,7 @@
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/stage-interface.h>
+#include <libxfdashboard/live-workspace.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -489,15 +490,29 @@ static gboolean _xfdashboard_windows_view_on_drop_begin(XfdashboardWindowsView *
 	dragSource=xfdashboard_drag_action_get_source(inDragAction);
 	draggedActor=xfdashboard_drag_action_get_actor(inDragAction);
 
-	/* Check if we can handle dragged actor from given source */
+	/* We can handle dragged actor if it is an application button and its source
+	 * is quicklaunch.
+	 */
 	if(XFDASHBOARD_IS_QUICKLAUNCH(dragSource) &&
 		XFDASHBOARD_IS_APPLICATION_BUTTON(draggedActor))
 	{
 		canHandle=TRUE;
 	}
 
+	/* We can handle dragged actor if it is a live window and its source
+	 * is windows view.
+	 */
 	if(XFDASHBOARD_IS_WINDOWS_VIEW(dragSource) &&
 		XFDASHBOARD_IS_LIVE_WINDOW(draggedActor))
+	{
+		canHandle=TRUE;
+	}
+
+	/* We can handle dragged actor if it is a live window and its source
+	 * is a live workspace
+	 */
+	if(XFDASHBOARD_IS_LIVE_WORKSPACE(dragSource) &&
+		XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(draggedActor))
 	{
 		canHandle=TRUE;
 	}
@@ -548,7 +563,7 @@ static void _xfdashboard_windows_view_on_drop_drop(XfdashboardWindowsView *self,
 		XFDASHBOARD_IS_LIVE_WINDOW(draggedActor))
 	{
 		XfdashboardWindowsView			*sourceWindowsView;
-		XfdashboardLiveWindow			*liveWindow;
+		XfdashboardLiveWindow			*liveWindowActor;
 
 		/* Get source windows view */
 		sourceWindowsView=XFDASHBOARD_WINDOWS_VIEW(dragSource);
@@ -566,10 +581,46 @@ static void _xfdashboard_windows_view_on_drop_drop(XfdashboardWindowsView *self,
 		}
 
 		/* Get dragged window */
-		liveWindow=XFDASHBOARD_LIVE_WINDOW(draggedActor);
+		liveWindowActor=XFDASHBOARD_LIVE_WINDOW(draggedActor);
 
-		/* Move window to monitor of this window view */
-		_xfdashboard_windows_view_move_live_to_view(self, liveWindow);
+		/* Move dragged window to monitor of this window view */
+		_xfdashboard_windows_view_move_live_to_view(self, liveWindowActor);
+
+		/* Drop action handled so return here */
+		return;
+	}
+
+	/* Handle drop of an window from a live workspace */
+	if(XFDASHBOARD_IS_LIVE_WORKSPACE(dragSource) &&
+		XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(draggedActor))
+	{
+		XfdashboardLiveWorkspace			*sourceLiveWorkspace;
+		XfdashboardWindowTrackerWorkspace*	sourceWorkspace;
+		XfdashboardLiveWindowSimple			*liveWindowActor;
+		XfdashboardWindowTrackerWindow		*window;
+
+		/* Get source live workspace and its workspace */
+		sourceLiveWorkspace=XFDASHBOARD_LIVE_WORKSPACE(dragSource);
+		sourceWorkspace=xfdashboard_live_workspace_get_workspace(sourceLiveWorkspace);
+
+		/* Do nothing if source and destination workspaces are the same as nothing
+		 * is to do in this case.
+		 */
+		if(xfdashboard_window_tracker_workspace_is_equal(sourceWorkspace, priv->workspace))
+		{
+			XFDASHBOARD_DEBUG(self, ACTOR,
+						"Will not handle drop of %s at %s because source and target workspaces are the same.",
+						G_OBJECT_TYPE_NAME(draggedActor),
+						G_OBJECT_TYPE_NAME(dragSource));
+			return;
+		}
+
+		/* Get dragged window */
+		liveWindowActor=XFDASHBOARD_LIVE_WINDOW_SIMPLE(draggedActor);
+		window=xfdashboard_live_window_simple_get_window(liveWindowActor);
+
+		/* Move dragged window to workspace of this window view */
+		xfdashboard_window_tracker_window_move_to_workspace(window, priv->workspace);
 
 		/* Drop action handled so return here */
 		return;
