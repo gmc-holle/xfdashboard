@@ -91,6 +91,7 @@ static void _xfdashboard_window_tracker_monitor_x11_update_primary(XfdashboardWi
 #endif
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(self));
+	g_return_if_fail(self->priv->monitorIndex>=0);
 
 	priv=self->priv;
 
@@ -136,6 +137,7 @@ static void _xfdashboard_window_tracker_monitor_x11_update_geometry(XfdashboardW
 #endif
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_X11(self));
+	g_return_if_fail(self->priv->monitorIndex>=0);
 
 	priv=self->priv;
 
@@ -180,6 +182,20 @@ static void _xfdashboard_window_tracker_monitor_x11_update_geometry(XfdashboardW
 	}
 }
 
+/* Number of monitors, primary monitor or size of any monitor changed */
+static void _xfdashboard_window_tracker_monitor_x11_on_monitors_changed(XfdashboardWindowTrackerMonitorX11 *self,
+																		gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_X11(self));
+	g_return_if_fail(GDK_IS_SCREEN(inUserData));
+
+	/* Update primary monitor flag */
+	_xfdashboard_window_tracker_monitor_x11_update_primary(self);
+
+	/* Update geometry of monitor */
+	_xfdashboard_window_tracker_monitor_x11_update_geometry(self);
+}
+
 /* Set monitor index this object belongs to and to monitor */
 static void _xfdashboard_window_tracker_monitor_x11_set_index(XfdashboardWindowTrackerMonitorX11 *self,
 																gint inIndex)
@@ -215,26 +231,15 @@ static void _xfdashboard_window_tracker_monitor_x11_set_index(XfdashboardWindowT
 		/* Update geometry of monitor */
 		_xfdashboard_window_tracker_monitor_x11_update_geometry(self);
 
+		/* Connect signals now we have a valid monitor index set */
+		g_signal_connect_swapped(priv->screen, "monitors-changed", G_CALLBACK(_xfdashboard_window_tracker_monitor_x11_on_monitors_changed), self);
+
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowTrackerMonitorX11Properties[PROP_MONITOR_INDEX]);
 	}
 
 	/* Thaw notification */
 	g_object_thaw_notify(G_OBJECT(self));
-}
-
-/* Number of monitors, primary monitor or size of any monitor changed */
-static void _xfdashboard_window_tracker_monitor_x11_on_monitors_changed(XfdashboardWindowTrackerMonitorX11 *self,
-																			gpointer inUserData)
-{
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_X11(self));
-	g_return_if_fail(GDK_IS_SCREEN(inUserData));
-
-	/* Update primary monitor flag */
-	_xfdashboard_window_tracker_monitor_x11_update_primary(self);
-
-	/* Update geometry of monitor */
-	_xfdashboard_window_tracker_monitor_x11_update_geometry(self);
 }
 
 
@@ -410,20 +415,11 @@ static void xfdashboard_window_tracker_monitor_x11_init(XfdashboardWindowTracker
 	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_MONITOR_X11_GET_PRIVATE(self);
 
 	/* Set default values */
-	priv->monitorIndex=0;
+	priv->monitorIndex=-1;
 	priv->isPrimary=FALSE;
 	priv->screen=gdk_screen_get_default();
 	priv->geometry.x=0;
 	priv->geometry.y=0;
 	priv->geometry.width=0;
 	priv->geometry.height=0;
-
-	/* Get initial primary monitor flag */
-	_xfdashboard_window_tracker_monitor_x11_update_primary(self);
-
-	/* Get initial geometry of monitor */
-	_xfdashboard_window_tracker_monitor_x11_update_geometry(self);
-
-	/* Connect signals */
-	g_signal_connect_swapped(priv->screen, "monitors-changed", G_CALLBACK(_xfdashboard_window_tracker_monitor_x11_on_monitors_changed), self);
 }
