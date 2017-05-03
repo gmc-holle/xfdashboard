@@ -96,7 +96,7 @@ static void _xfdashboard_window_tracker_monitor_x11_update_primary(XfdashboardWi
 
 	/* Get primary flag */
 #if GTK_CHECK_VERSION(3, 22, 0)
-	primaryMonitor=gdk_display_get_primary_monitor(gdk_screen_get_display(priv->screen));
+	primaryMonitor=gdk_display_get_monitor(gdk_screen_get_display(priv->screen), priv->monitorIndex);
 	isPrimary=gdk_monitor_is_primary(primaryMonitor);
 #else
 	primaryMonitor=gdk_screen_get_primary_monitor(priv->screen);
