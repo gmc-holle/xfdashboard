@@ -86,6 +86,8 @@ struct _XfdashboardWindowTrackerWindowX11Private
 	gint									lastGeometryY;
 	gint									lastGeometryWidth;
 	gint									lastGeometryHeight;
+
+	ClutterContent							*content;
 };
 
 
@@ -728,6 +730,22 @@ static void _xfdashboard_window_tracker_window_x11_set_window(XfdashboardWindowT
 	/* Set value if changed */
 	if(priv->window!=inWindow)
 	{
+		/* If we have created a content for this window then remove weak reference
+		 * and reset content variable to NULL. First call to get window content
+		 * will recreate it. Already used contents will not be affected.
+		 */
+		if(priv->content)
+		{
+			XFDASHBOARD_DEBUG(self, WINDOWS,
+								"Removing cached content with ref-count %d from %s@%p for wnck-window %p because wnck-window will change to %p",
+								G_OBJECT(priv->content)->ref_count,
+								G_OBJECT_TYPE_NAME(self), self,
+								priv->window,
+								inWindow);
+			g_object_remove_weak_pointer(G_OBJECT(priv->content), (gpointer*)&priv->content);
+			priv->content=NULL;
+		}
+
 		/* Disconnect signals to old window (if available) and reset states */
 		if(priv->window)
 		{
@@ -1353,7 +1371,6 @@ static ClutterContent* _xfdashboard_window_tracker_window_x11_window_tracker_win
 {
 	XfdashboardWindowTrackerWindowX11			*self;
 	XfdashboardWindowTrackerWindowX11Private	*priv;
-	ClutterContent								*content;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inWindow), NULL);
 
@@ -1367,11 +1384,32 @@ static ClutterContent* _xfdashboard_window_tracker_window_x11_window_tracker_win
 		return(NULL);
 	}
 
-	/* Create content for window */
-	content=xfdashboard_window_content_x11_new_for_window(self);
+	/* Create content for window only if no content is already available. If it
+	 * is available just return it with taking an extra reference on it.
+	 */
+	if(!priv->content)
+	{
+		priv->content=xfdashboard_window_content_x11_new_for_window(self);
+		g_object_add_weak_pointer(G_OBJECT(priv->content), (gpointer*)&priv->content);
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Created content %s@%p for window %s@%p (wnck-window=%p)",
+							priv->content ? G_OBJECT_TYPE_NAME(priv->content) : "<unknown>", priv->content,
+							G_OBJECT_TYPE_NAME(self), self,
+							priv->window);
+	}
+		else
+		{
+			g_object_ref(priv->content);
+			XFDASHBOARD_DEBUG(self, WINDOWS,
+								"Using cached content %s@%p (ref-count=%d) for window %s@%p (wnck-window=%p)",
+								priv->content ? G_OBJECT_TYPE_NAME(priv->content) : "<unknown>", priv->content,
+								priv->content ? G_OBJECT(priv->content)->ref_count : 0,
+								G_OBJECT_TYPE_NAME(self), self,
+								priv->window);
+		}
 
 	/* Return content */
-	return(content);
+	return(priv->content);
 }
 
 /* Get associated stage of window */
@@ -1651,6 +1689,17 @@ static void _xfdashboard_window_tracker_window_x11_dispose(GObject *inObject)
 	XfdashboardWindowTrackerWindowX11Private	*priv=self->priv;
 
 	/* Dispose allocated resources */
+	if(priv->content)
+	{
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Removing cached content with ref-count %d from %s@%p for wnck-window %p",
+							G_OBJECT(priv->content)->ref_count,
+							G_OBJECT_TYPE_NAME(self), self,
+							priv->window);
+		g_object_remove_weak_pointer(G_OBJECT(priv->content), (gpointer*)&priv->content);
+		priv->content=NULL;
+	}
+
 	if(priv->window)
 	{
 		/* Remove weak reference at current window */
@@ -1758,6 +1807,7 @@ void xfdashboard_window_tracker_window_x11_init(XfdashboardWindowTrackerWindowX1
 
 	/* Set default values */
 	priv->window=NULL;
+	priv->content=NULL;
 }
 
 

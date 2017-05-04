@@ -168,9 +168,6 @@ static gboolean									_xfdashboard_window_content_x11_have_composite_extension
 static gboolean									_xfdashboard_window_content_x11_have_damage_extension=FALSE;
 static int										_xfdashboard_window_content_x11_damage_event_base=0;
 
-static GHashTable*								_xfdashboard_window_content_x11_cache=NULL;
-static guint									_xfdashboard_window_content_x11_cache_shutdown_signal_id=0;
-
 static GList*									_xfdashboard_window_content_x11_resume_idle_queue=NULL;
 static guint									_xfdashboard_window_content_x11_resume_idle_id=0;
 static guint									_xfdashboard_window_content_x11_resume_shutdown_signal_id=0;
@@ -1472,67 +1469,6 @@ static void _xfdashboard_window_content_x11_set_window(XfdashboardWindowContentX
 	_xfdashboard_window_content_x11_setup_workaround(self, inWindow);
 }
 
-/* Destroy cache hashtable */
-static void _xfdashboard_window_content_x11_destroy_cache(void)
-{
-	XfdashboardApplication					*application;
-	gint									cacheSize;
-
-	/* Only an existing cache can be destroyed */
-	if(!_xfdashboard_window_content_x11_cache) return;
-
-	/* Disconnect application "shutdown" signal handler */
-	application=xfdashboard_application_get_default();
-	g_signal_handler_disconnect(application, _xfdashboard_window_content_x11_cache_shutdown_signal_id);
-	_xfdashboard_window_content_x11_cache_shutdown_signal_id=0;
-
-	/* Destroy cache hashtable */
-	cacheSize=g_hash_table_size(_xfdashboard_window_content_x11_cache);
-	if(cacheSize>0) g_warning(_("Destroying window content cache still containing %d windows."), cacheSize);
-#ifdef DEBUG
-	if(cacheSize>0)
-	{
-		GHashTableIter						iter;
-		gpointer							key, value;
-		XfdashboardWindowContentX11			*content;
-		XfdashboardWindowTrackerWindow		*window;
-
-		g_hash_table_iter_init(&iter, _xfdashboard_window_content_x11_cache);
-		while(g_hash_table_iter_next (&iter, &key, &value))
-		{
-			content=XFDASHBOARD_WINDOW_CONTENT_X11(value);
-			window=xfdashboard_window_content_x11_get_window(content);
-			g_print("Window content in cache: Item %s@%p for window '%s'\n",
-						G_OBJECT_TYPE_NAME(content), content,
-						xfdashboard_window_tracker_window_get_name(window));
-		}
-	}
-#endif
-
-	XFDASHBOARD_DEBUG(NULL, WINDOWS, "Destroying window content cache hashtable");
-	g_hash_table_destroy(_xfdashboard_window_content_x11_cache);
-	_xfdashboard_window_content_x11_cache=NULL;
-}
-
-/* Create cache hashtable if not already set up */
-static void _xfdashboard_window_content_x11_create_cache(void)
-{
-	XfdashboardApplication		*application;
-
-	/* Cache was already set up */
-	if(_xfdashboard_window_content_x11_cache) return;
-
-	/* Create create hashtable */
-	_xfdashboard_window_content_x11_cache=g_hash_table_new(g_direct_hash, g_direct_equal);
-	XFDASHBOARD_DEBUG(NULL, WINDOWS, "Created window content cache hashtable");
-
-	/* Connect to "shutdown" signal of application to clean up hashtable */
-	application=xfdashboard_application_get_default();
-	_xfdashboard_window_content_x11_cache_shutdown_signal_id=g_signal_connect(application,
-																		"shutdown-final",
-																		G_CALLBACK(_xfdashboard_window_content_x11_destroy_cache),
-																		NULL);
-}
 
 /* IMPLEMENTATION: ClutterContent */
 
@@ -1916,13 +1852,6 @@ static void _xfdashboard_window_content_x11_dispose(GObject *inObject)
 
 	if(priv->window)
 	{
-		/* Remove from cache */
-		XFDASHBOARD_DEBUG(self, WINDOWS,
-							"Removing window content for window '%s' with ref-count %d" ,
-							xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)),
-							G_OBJECT(self)->ref_count);
-		g_hash_table_remove(_xfdashboard_window_content_x11_cache, priv->window);
-
 		/* Disconnect signals */
 		g_signal_handlers_disconnect_by_data(priv->window, self);
 
@@ -2319,37 +2248,10 @@ ClutterContent* xfdashboard_window_content_x11_new_for_window(XfdashboardWindowT
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inWindow), NULL);
 
-	/* If we a hash table (cache) set up lookup if window content is already cached
-	 * and return a new reference to it
-	 */
-	if(_xfdashboard_window_content_x11_cache &&
-		g_hash_table_contains(_xfdashboard_window_content_x11_cache, inWindow))
-	{
-		content=CLUTTER_CONTENT(g_hash_table_lookup(_xfdashboard_window_content_x11_cache, inWindow));
-		g_object_ref(content);
-		XFDASHBOARD_DEBUG(content, WINDOWS,
-							"Using cached window content for '%s' - ref-count is now %d" ,
-							xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(XFDASHBOARD_WINDOW_CONTENT_X11(content)->priv->window)),
-							G_OBJECT(content)->ref_count);
-
-		return(content);
-	}
-
 	/* Create window content */
 	content=CLUTTER_CONTENT(g_object_new(XFDASHBOARD_TYPE_WINDOW_CONTENT_X11,
 											"window", inWindow,
 											NULL));
-	g_return_val_if_fail(content, NULL);
-
-	/* Create cache if not available */
-	if(!_xfdashboard_window_content_x11_cache) _xfdashboard_window_content_x11_create_cache();
-
-	/* Store new window content into cache */
-	g_hash_table_insert(_xfdashboard_window_content_x11_cache, inWindow, content);
-	XFDASHBOARD_DEBUG(content, WINDOWS,
-						"Added window content for '%s' with ref-count %d" ,
-						xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(inWindow)),
-						G_OBJECT(content)->ref_count);
 
 	return(content);
 }
