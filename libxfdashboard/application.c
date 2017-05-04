@@ -83,6 +83,7 @@ struct _XfdashboardApplicationPrivate
 	/* Instance related */
 	gboolean						initialized;
 	gboolean						isQuitting;
+	gboolean						forcedNewInstance;
 
 	XfconfChannel					*xfconfChannel;
 	XfdashboardStage				*stage;
@@ -372,7 +373,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 
 	/* Setup the session management */
 	sessionManagementRestartStyle=XFCE_SM_CLIENT_RESTART_IMMEDIATELY;
-	if(g_getenv("XFDASHBOARD_FORCE_NEW_INSTANCE")) sessionManagementRestartStyle=XFCE_SM_CLIENT_RESTART_NORMAL;
+	if(priv->forcedNewInstance) sessionManagementRestartStyle=XFCE_SM_CLIENT_RESTART_NORMAL;
 
 	priv->sessionManagementClient=xfce_sm_client_get();
 	xfce_sm_client_set_priority(priv->sessionManagementClient, XFCE_SM_CLIENT_PRIORITY_DEFAULT);
@@ -771,18 +772,27 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	 * Check if application shoud run in daemon mode. A daemonized instance runs in
 	 * background and does not present the stage initially. The application must not
 	 * be initialized yet as it can only be done on start-up.
+	 *
+	 * Does not work if a new instance was forced.
 	 */
 	if(optionDaemonize &&
 		!priv->initialized)
 	{
-		priv->isDaemon=optionDaemonize;
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_DAEMONIZED]);
-
-		if(priv->isDaemon)
+		if(!priv->forcedNewInstance)
 		{
-			priv->isSuspended=TRUE;
-			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_SUSPENDED]);
+			priv->isDaemon=optionDaemonize;
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_DAEMONIZED]);
+
+			if(priv->isDaemon)
+			{
+				priv->isSuspended=TRUE;
+				g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_SUSPENDED]);
+			}
 		}
+			else
+			{
+				g_warning(_("Cannot daemonized because a temporary new instance of application was forced."));
+			}
 	}
 
 	/* Check if this instance needs to be initialized fully */
@@ -1441,6 +1451,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->isQuitting=FALSE;
 	priv->sessionManagementClient=NULL;
 	priv->pluginManager=NULL;
+	priv->forcedNewInstance=FALSE;
 
 	/* Add callable DBUS actions for this application */
 	action=g_simple_action_new("Quit", NULL);
@@ -1485,6 +1496,11 @@ XfdashboardApplication* xfdashboard_application_get_default(void)
 												"application-id", appID,
 												"flags", G_APPLICATION_HANDLES_COMMAND_LINE,
 												NULL);
+
+		if(forceNewInstance)
+		{
+			_xfdashboard_application->priv->forcedNewInstance=TRUE;
+		}
 
 		/* Release allocated resources */
 		if(appID) g_free(appID);
