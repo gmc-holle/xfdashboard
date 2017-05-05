@@ -140,6 +140,8 @@ static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 #define DEFAULT_RESET_SEARCH_ON_RESUME					TRUE
 #define SWITCH_VIEW_ON_RESUME_XFCONF_PROP				"/switch-to-view-on-resume"
 #define DEFAULT_SWITCH_VIEW_ON_RESUME					NULL
+#define RESELECT_THEME_FOCUS_ON_RESUME_XFCONF_PROP		"/reselect-theme-focus-on-resume"
+#define DEFAULT_RESELECT_THEME_FOCUS_ON_RESUME			FALSE
 #define XFDASHBOARD_THEME_LAYOUT_PRIMARY				"primary"
 #define XFDASHBOARD_THEME_LAYOUT_SECONDARY				"secondary"
 
@@ -752,6 +754,36 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 				xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeView);
 			}
 
+		/* Now move focus to actor if user requested to refocus preselected actor
+		 * as specified by theme.
+		 */
+		if(priv->focusActorOnShow)
+		{
+			gboolean				reselectFocusOnResume;
+
+			/* Determine if user (also) requests to reselect focus on resume */
+			reselectFocusOnResume=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
+															RESELECT_THEME_FOCUS_ON_RESUME_XFCONF_PROP,
+															DEFAULT_RESELECT_THEME_FOCUS_ON_RESUME);
+			if(reselectFocusOnResume)
+			{
+				/* Move focus to actor */
+				xfdashboard_focus_manager_set_focus(priv->focusManager, XFDASHBOARD_FOCUSABLE(priv->focusActorOnShow));
+
+				XFDASHBOARD_DEBUG(self, ACTOR,
+									"Moved focus to actor %s because it should be reselected on resume",
+									G_OBJECT_TYPE_NAME(priv->focusActorOnShow));
+			}
+				else
+				{
+					/* Forget actor to focus now the user did not requested to reselect
+					 * this focus again and again when stage window is shown ;)
+					 */
+					g_object_remove_weak_pointer(G_OBJECT(priv->focusActorOnShow), &priv->focusActorOnShow);
+					priv->focusActorOnShow=NULL;
+				}
+		}
+
 		/* Set up stage and show it */
 		xfdashboard_window_tracker_window_make_stage_window(priv->stageWindow);
 		xfdashboard_window_tracker_window_show(priv->stageWindow);
@@ -812,6 +844,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 	ClutterActor						*child;
 	GObject								*focusObject;
 	guint								i;
+	gboolean							reselectFocusOnResume;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(XFDASHBOARD_IS_THEME(inTheme));
@@ -1193,6 +1226,24 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 										"Moved focus to actor %s of interface with ID '%s'",
 										G_OBJECT_TYPE_NAME(interface->focus),
 										clutter_actor_get_name(interface->actor));
+
+					/* Determine if user (also) requests to reselect focus on resume
+					 * because then remember the actor to focus to move the focus
+					 * each time the stage window gets shown after it was hidden.
+					 */
+					reselectFocusOnResume=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
+																	RESELECT_THEME_FOCUS_ON_RESUME_XFCONF_PROP,
+																	DEFAULT_RESELECT_THEME_FOCUS_ON_RESUME);
+					if(reselectFocusOnResume)
+					{
+						priv->focusActorOnShow=XFDASHBOARD_FOCUSABLE(interface->focus);
+						g_object_add_weak_pointer(G_OBJECT(priv->focusActorOnShow), &priv->focusActorOnShow);
+
+						XFDASHBOARD_DEBUG(self, ACTOR,
+											"Will move focus to actor %s of interface with ID '%s' any time the stage gets visible",
+											G_OBJECT_TYPE_NAME(interface->focus),
+											clutter_actor_get_name(interface->actor));
+					}
 				}
 					/* ... otherwise if stage is not visible, remember the actor
 					 * to focus to move the focus to it as soon as stage is
@@ -1481,12 +1532,29 @@ static void _xfdashboard_stage_show(ClutterActor *inActor)
 	/* Now move focus to actor is one was remembered when theme was loaded */
 	if(priv->focusActorOnShow)
 	{
+		gboolean				reselectFocusOnResume;
+
+		/* Determine if user (also) requests to reselect focus on resume */
+		reselectFocusOnResume=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
+														RESELECT_THEME_FOCUS_ON_RESUME_XFCONF_PROP,
+														DEFAULT_RESELECT_THEME_FOCUS_ON_RESUME);
+
 		/* Move focus to actor */
 		xfdashboard_focus_manager_set_focus(priv->focusManager, XFDASHBOARD_FOCUSABLE(priv->focusActorOnShow));
 
-		/* Forget actor to focus now ;) */
-		g_object_remove_weak_pointer(G_OBJECT(priv->focusActorOnShow), &priv->focusActorOnShow);
-		priv->focusActorOnShow=NULL;
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Moved focus to actor %s %s",
+							G_OBJECT_TYPE_NAME(priv->focusActorOnShow),
+							!reselectFocusOnResume ? "now as it was delayed to when stage is visible" : "because it should be reselected on resume");
+
+		/* Forget actor to focus now if user did not requested to reselect
+		 * this focus again and again when stage window is shown ;)
+		 */
+		if(!reselectFocusOnResume)
+		{
+			g_object_remove_weak_pointer(G_OBJECT(priv->focusActorOnShow), &priv->focusActorOnShow);
+			priv->focusActorOnShow=NULL;
+		}
 	}
 }
 
