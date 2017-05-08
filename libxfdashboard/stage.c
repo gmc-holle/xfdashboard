@@ -678,7 +678,7 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 
 		/* Find search view */
 		searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
-		if(!searchView) g_critical(_("Cannot find search viewin viewpad to reset view."));
+		if(!searchView) g_critical(_("Cannot find search view in viewpad to reset view."));
 
 		/* Find view to switch to if requested */
 		resumeView=NULL;
