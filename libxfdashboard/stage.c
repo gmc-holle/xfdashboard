@@ -232,6 +232,63 @@ static gboolean _xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *in
 	return(CLUTTER_EVENT_STOP);
 }
 
+/* Get view to switch to by first looking upr temporary view ID set via command-line
+ * and if not found or not set then looking up view ID configured via settings.
+ */
+static XfdashboardView* _xfdashboard_stage_get_view_to_switch_to(XfdashboardStage *self)
+{
+	XfdashboardStagePrivate				*priv;
+	XfdashboardView						*view;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STAGE(self), NULL);
+
+	priv=self->priv;
+	view=NULL;
+
+	/* First lookup view at private variable 'switchToView' which has higher
+	 * priority as it is a temporary value and is usually set via command-line.
+	 */
+	if(priv->switchToView)
+	{
+		view=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->switchToView);
+		if(!view) g_warning(_("Will not switch to unknown view '%s'"), priv->switchToView);
+
+		/* Regardless if we could find view by its internal name or not
+		 * reset variable because the switch should happen once only.
+		 */
+		g_free(priv->switchToView);
+		priv->switchToView=NULL;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardStageProperties[PROP_SWITCH_TO_VIEW]);
+	}
+
+	/* If we have not to switch to a specific view or if this view cannot be found
+	 * then lookup the configured view in settings by its internal name
+	 */
+	if(!view)
+	{
+		gchar							*resumeViewID;
+
+		/* Get view ID from settings and look up view */
+		resumeViewID=xfconf_channel_get_string(xfdashboard_application_get_xfconf_channel(NULL),
+												SWITCH_VIEW_ON_RESUME_XFCONF_PROP,
+												DEFAULT_SWITCH_VIEW_ON_RESUME);
+		if(resumeViewID)
+		{
+			/* Lookup view by its ID set configured settings */
+			view=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewID);
+			if(!view) g_warning(_("Cannot switch to unknown view '%s'"), resumeViewID);
+
+			/* Release allocated resources */
+			g_free(resumeViewID);
+		}
+	}
+
+	/* Return view found */
+	return(view);
+}
+
 /* Set focus in stage */
 static void _xfdashboard_stage_set_focus(XfdashboardStage *self)
 {
@@ -663,7 +720,6 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 	/* If stage window is known just show it again ... */
 	if(priv->stageWindow)
 	{
-		gchar							*resumeViewInternalName;
 		gboolean						doResetSearch;
 		XfdashboardView					*searchView;
 		XfdashboardView					*resumeView;
@@ -672,57 +728,24 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 		doResetSearch=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
 												RESET_SEARCH_ON_RESUME_XFCONF_PROP,
 												DEFAULT_RESET_SEARCH_ON_RESUME);
-		resumeViewInternalName=xfconf_channel_get_string(xfdashboard_application_get_xfconf_channel(NULL),
-															SWITCH_VIEW_ON_RESUME_XFCONF_PROP,
-															DEFAULT_SWITCH_VIEW_ON_RESUME);
 
 		/* Find search view */
 		searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
 		if(!searchView) g_critical(_("Cannot find search view in viewpad to reset view."));
 
 		/* Find view to switch to if requested */
-		resumeView=NULL;
-		if(resumeViewInternalName || priv->switchToView)
+		resumeView=_xfdashboard_stage_get_view_to_switch_to(self);
+
+		/* If view to switch to is the search view behave like we did not find the view
+		 * because it does not make sense to switch to a view which might be hidden,
+		 * e.g. when resetting search on resume which causes the search view to be hidden
+		 * and the previous view to be shown.
+		 */
+		if(resumeView &&
+			searchView &&
+			resumeView==searchView)
 		{
-			/* First lookup view we should switch to by its internal name */
-			if(priv->switchToView)
-			{
-				resumeView=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->switchToView);
-				if(!resumeView) g_warning(_("Will not switch to unknown view '%s'"), priv->switchToView);
-
-				/* Regardless if we could find view by its internal name or not
-				 * reset variable because the switch should happen once only.
-				 */
-				g_free(priv->switchToView);
-				priv->switchToView=NULL;
-
-				/* Notify about property change */
-				g_object_notify_by_pspec(G_OBJECT(self), XfdashboardStageProperties[PROP_SWITCH_TO_VIEW]);
-			}
-
-			/* If we have not to switch to a specific view or if this view cannot be found
-			 * then lookup the configured view in settings by its internal name
-			 */
-			if(!resumeView && resumeViewInternalName)
-			{
-				resumeView=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewInternalName);
-				if(!resumeView) g_warning(_("Cannot switch to unknown view '%s'"), resumeViewInternalName);
-			}
-
-			/* If view to switch to is the search view behave like we did not find the view
-			 * because it does not make sense to switch to a view which might be hidden,
-			 * e.g. when resetting search on resume which causes the search view to be hidden
-			 * and the previous view to be shown.
-			 */
-			if(resumeView &&
-				searchView &&
-				resumeView==searchView)
-			{
-				resumeView=NULL;
-			}
-
-			/* Release allocated resources */
-			g_free(resumeViewInternalName);
+			resumeView=NULL;
 		}
 
 		/* If search is active then end search by clearing search box if requested ... */
@@ -1492,25 +1515,11 @@ static void _xfdashboard_stage_show(ClutterActor *inActor)
 	self=XFDASHBOARD_STAGE(inActor);
 	priv=self->priv;
 
-	/* Lookup view we should switch to by its internal name if any */
-	if(priv->switchToView)
+	/* Find view to switch to if requested and switch to this view */
+	switchView=_xfdashboard_stage_get_view_to_switch_to(self);
+	if(switchView)
 	{
-		/* Look up view and switch to it if found */
-		switchView=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->switchToView);
-		if(switchView)
-		{
-			xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), switchView);
-		}
-			else g_warning(_("Will not switch to unknown view '%s'"), priv->switchToView);
-
-		/* Regardless if we could find view by its internal name or not
-		 * reset variable because the switch should happen once only.
-		 */
-		g_free(priv->switchToView);
-		priv->switchToView=NULL;
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardStageProperties[PROP_SWITCH_TO_VIEW]);
+		xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), switchView);
 	}
 
 	/* Set stage to fullscreen just in case it forgot about it */
