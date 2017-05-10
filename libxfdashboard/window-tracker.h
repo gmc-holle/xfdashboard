@@ -71,6 +71,8 @@ struct _XfdashboardWindowTrackerInterface
 
 	void (*get_screen_size)(XfdashboardWindowTracker *self, gint *outWidth, gint *outHeight);
 
+	const gchar* (*get_window_manager_name)(XfdashboardWindowTracker *self);
+
 	XfdashboardWindowTrackerWindow* (*get_root_window)(XfdashboardWindowTracker *self);
 	XfdashboardWindowTrackerWindow* (*get_stage_window)(XfdashboardWindowTracker *self, ClutterStage *inStage);
 
@@ -110,6 +112,8 @@ struct _XfdashboardWindowTrackerInterface
 	void (*monitor_geometry_changed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerMonitor *inMonitor);
 
 	void (*screen_size_changed)(XfdashboardWindowTracker *self, gint inWidth, gint inHeight);
+
+	void (*window_manager_changed)(XfdashboardWindowTracker *self);
 };
 
 /* Public API */
@@ -140,6 +144,8 @@ XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_posit
 void xfdashboard_window_tracker_get_screen_size(XfdashboardWindowTracker *self,
 													gint *outWidth,
 													gint *outHeight);
+
+const gchar* xfdashboard_window_tracker_get_window_manager_name(XfdashboardWindowTracker *self);
 
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(XfdashboardWindowTracker *self);
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_stage_window(XfdashboardWindowTracker *self,

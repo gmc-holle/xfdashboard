@@ -70,6 +70,8 @@ enum
 	SIGNAL_MONITOR_GEOMETRY_CHANGED,
 	SIGNAL_SCREEN_SIZE_CHANGED,
 
+	SIGNAL_WINDOW_MANAGER_CHANGED,
+
 	SIGNAL_LAST
 };
 
@@ -365,6 +367,17 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							2,
 							G_TYPE_INT,
 							G_TYPE_INT);
+
+		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_MANAGER_CHANGED]=
+			g_signal_new("window-manager-changed",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST,
+							G_STRUCT_OFFSET(XfdashboardWindowTrackerInterface, window_manager_changed),
+							NULL,
+							NULL,
+							g_cclosure_marshal_VOID__VOID,
+							G_TYPE_NONE,
+							0);
 
 		/* Set flag that base initialization was done for this interface */
 		initialized=TRUE;
@@ -680,6 +693,26 @@ void xfdashboard_window_tracker_get_screen_size(XfdashboardWindowTracker *self, 
 
 	/* If we get here the virtual function was not overridden */
 	XFDASHBOARD_WINDOWS_TRACKER_WARN_NOT_IMPLEMENTED(self, "get_screen_width");
+}
+
+/* Get name of window manager managing windows, workspace etc. of desktop environment */
+const gchar* xfdashboard_window_tracker_get_window_manager_name(XfdashboardWindowTracker *self)
+{
+	XfdashboardWindowTrackerInterface		*iface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
+
+	iface=XFDASHBOARD_WINDOW_TRACKER_GET_IFACE(self);
+
+	/* Call virtual function */
+	if(iface->get_window_manager_name)
+	{
+		return(iface->get_window_manager_name(self));
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_WINDOWS_TRACKER_WARN_NOT_IMPLEMENTED(self, "get_window_manager_name");
+	return(NULL);
 }
 
 /* Get root (desktop) window */

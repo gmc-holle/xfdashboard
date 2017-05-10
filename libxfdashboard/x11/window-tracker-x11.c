@@ -1090,6 +1090,23 @@ static void _xfdashboard_window_tracker_x11_on_screen_size_changed(XfdashboardWi
 	g_signal_emit_by_name(self, "screen-size-changed", w, h);
 }
 
+/* Window manager has changed */
+static void _xfdashboard_window_tracker_x11_on_window_manager_changed(XfdashboardWindowTrackerX11 *self,
+																		gpointer inUserData)
+{
+	XfdashboardWindowTrackerX11Private		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
+
+	priv=self->priv;
+
+	/* Emit signal to tell that window manager has changed */
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Window manager changed to %s",
+						wnck_screen_get_window_manager_name(priv->screen));
+	g_signal_emit_by_name(self, "window-manager-changed");
+}
+
 /* Suspension state of application changed */
 static void _xfdashboard_window_tracker_x11_on_application_suspended_changed(XfdashboardWindowTrackerX11 *self,
 																				GParamSpec *inSpec,
@@ -1464,6 +1481,22 @@ static void _xfdashboard_window_tracker_x11_window_tracker_get_screen_size(Xfdas
 	if(outHeight) *outHeight=height;
 }
 
+/* Get window manager name managing desktop environment */
+static const gchar* _xfdashboard_window_tracker_x11_window_tracker_get_window_manager_name(XfdashboardWindowTracker *inWindowTracker)
+{
+	XfdashboardWindowTrackerX11				*self;
+	XfdashboardWindowTrackerX11Private		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+
+	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	priv=self->priv;
+
+	/* Get window manager name from libwnck and return */
+	return(wnck_screen_get_window_manager_name(priv->screen));
+
+}
+
 /* Get root (desktop) window */
 static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tracker_get_root_window(XfdashboardWindowTracker *inWindowTracker)
 {
@@ -1590,6 +1623,8 @@ static void _xfdashboard_window_tracker_x11_window_tracker_iface_init(Xfdashboar
 	iface->get_monitor_by_position=_xfdashboard_window_tracker_x11_window_tracker_get_monitor_by_position;
 
 	iface->get_screen_size=_xfdashboard_window_tracker_x11_window_tracker_get_screen_size;
+
+	iface->get_window_manager_name=_xfdashboard_window_tracker_x11_window_tracker_get_window_manager_name;
 
 	iface->get_root_window=_xfdashboard_window_tracker_x11_window_tracker_get_root_window;
 	iface->get_stage_window=_xfdashboard_window_tracker_x11_window_tracker_get_stage_window;
@@ -1880,6 +1915,11 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 	g_signal_connect_swapped(priv->gdkScreen,
 								"size-changed",
 								G_CALLBACK(_xfdashboard_window_tracker_x11_on_screen_size_changed),
+								self);
+
+	g_signal_connect_swapped(priv->screen,
+								"window-manager-changed",
+								G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_manager_changed),
 								self);
 
 #ifdef HAVE_XINERAMA
