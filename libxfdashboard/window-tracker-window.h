@@ -130,8 +130,8 @@ struct _XfdashboardWindowTrackerWindowInterface
 	ClutterContent* (*get_content)(XfdashboardWindowTrackerWindow *self);
 
 	ClutterStage* (*get_stage)(XfdashboardWindowTrackerWindow *self);
-	void (*make_stage_window)(XfdashboardWindowTrackerWindow *self);
-	void (*unmake_stage_window)(XfdashboardWindowTrackerWindow *self);
+	void (*show_stage)(XfdashboardWindowTrackerWindow *self);
+	void (*hide_stage)(XfdashboardWindowTrackerWindow *self);
 
 	/* Signals */
 	void (*name_changed)(XfdashboardWindowTrackerWindow *self);
@@ -205,9 +205,8 @@ void xfdashboard_window_tracker_window_close(XfdashboardWindowTrackerWindow *sel
 
 gboolean xfdashboard_window_tracker_window_is_stage(XfdashboardWindowTrackerWindow *self);
 ClutterStage* xfdashboard_window_tracker_window_get_stage(XfdashboardWindowTrackerWindow *self);
-
-void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTrackerWindow *self);
-void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrackerWindow *self);
+void xfdashboard_window_tracker_window_show_stage(XfdashboardWindowTrackerWindow *self);
+void xfdashboard_window_tracker_window_hide_stage(XfdashboardWindowTrackerWindow *self);
 
 gint xfdashboard_window_tracker_window_get_pid(XfdashboardWindowTrackerWindow *self);
 gchar** xfdashboard_window_tracker_window_get_instance_names(XfdashboardWindowTrackerWindow *self);

@@ -1451,8 +1451,8 @@ static ClutterStage* _xfdashboard_window_tracker_window_x11_window_tracker_windo
 	return(foundStage);
 }
 
-/* Set up window for use as stage window */
-static void _xfdashboard_window_tracker_window_x11_window_tracker_window_make_stage_window(XfdashboardWindowTrackerWindow *inWindow)
+/* Set up and show window for use as stage */
+static void _xfdashboard_window_tracker_window_x11_window_tracker_window_show_stage(XfdashboardWindowTrackerWindow *inWindow)
 {
 	XfdashboardWindowTrackerWindowX11			*self;
 	XfdashboardWindowTrackerWindowX11Private	*priv;
@@ -1553,10 +1553,13 @@ static void _xfdashboard_window_tracker_window_x11_window_tracker_window_make_st
 																	height,
 																	self);
 	g_object_unref(windowTracker);
+
+	/* Now the window is set up and we can show it */
+	xfdashboard_window_tracker_window_show(XFDASHBOARD_WINDOW_TRACKER_WINDOW(self));
 }
 
-/* Unset up stage window (only remove connected signals) */
-static void _xfdashboard_window_tracker_window_x11_window_tracker_window_unmake_stage_window(XfdashboardWindowTrackerWindow *inWindow)
+/* Unset up and hide stage window */
+static void _xfdashboard_window_tracker_window_x11_window_tracker_window_hide_stage(XfdashboardWindowTrackerWindow *inWindow)
 {
 	XfdashboardWindowTrackerWindowX11			*self;
 	XfdashboardWindowTrackerWindowX11Private	*priv;
@@ -1576,6 +1579,9 @@ static void _xfdashboard_window_tracker_window_x11_window_tracker_window_unmake_
 		XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_WARN_NO_WINDOW(self);
 		return;
 	}
+
+	/* First hide window before removing signals etc. */
+	xfdashboard_window_tracker_window_hide(XFDASHBOARD_WINDOW_TRACKER_WINDOW(self));
 
 	/* Get screen of window */
 	screen=wnck_window_get_screen(WNCK_WINDOW(priv->window));
@@ -1675,8 +1681,8 @@ static void _xfdashboard_window_tracker_window_x11_window_tracker_window_iface_i
 	iface->get_content=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_content;
 
 	iface->get_stage=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_stage;
-	iface->make_stage_window=_xfdashboard_window_tracker_window_x11_window_tracker_window_make_stage_window;
-	iface->unmake_stage_window=_xfdashboard_window_tracker_window_x11_window_tracker_window_unmake_stage_window;
+	iface->show_stage=_xfdashboard_window_tracker_window_x11_window_tracker_window_show_stage;
+	iface->hide_stage=_xfdashboard_window_tracker_window_x11_window_tracker_window_hide_stage;
 }
 
 

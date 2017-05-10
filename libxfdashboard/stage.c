@@ -639,7 +639,7 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 
 	/* Set up window for use as stage window */
 	priv->stageWindow=inWindow;
-	xfdashboard_window_tracker_window_make_stage_window(priv->stageWindow);
+	xfdashboard_window_tracker_window_show_stage(priv->stageWindow);
 
 	/* Disconnect signal handler as this is a one-time setup of stage window */
 	XFDASHBOARD_DEBUG(self, ACTOR, "Stage window was opened and set up. Removing signal handler");
@@ -699,8 +699,7 @@ static void _xfdashboard_stage_on_application_suspend(XfdashboardStage *self, gp
 	 */
 	if(priv->stageWindow)
 	{
-		xfdashboard_window_tracker_window_unmake_stage_window(priv->stageWindow);
-		xfdashboard_window_tracker_window_hide(priv->stageWindow);
+		xfdashboard_window_tracker_window_hide_stage(priv->stageWindow);
 	}
 
 	/* Hide tooltip */
@@ -808,8 +807,7 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 		}
 
 		/* Set up stage and show it */
-		xfdashboard_window_tracker_window_make_stage_window(priv->stageWindow);
-		xfdashboard_window_tracker_window_show(priv->stageWindow);
+		xfdashboard_window_tracker_window_show_stage(priv->stageWindow);
 	}
 		/* ... otherwise set it up by calling clutter_actor_show() etc. */
 		else
@@ -1582,7 +1580,7 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 	/* Release allocated resources */
 	if(priv->stageWindow)
 	{
-		xfdashboard_window_tracker_window_unmake_stage_window(priv->stageWindow);
+		xfdashboard_window_tracker_window_hide_stage(priv->stageWindow);
 		priv->stageWindow=NULL;
 	}
 

@@ -762,8 +762,8 @@ ClutterStage* xfdashboard_window_tracker_window_get_stage(XfdashboardWindowTrack
 	return(NULL);
 }
 
-/* Set up window for use as stage window */
-void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTrackerWindow *self)
+/* Set up and show window for use as stage window */
+void xfdashboard_window_tracker_window_show_stage(XfdashboardWindowTrackerWindow *self)
 {
 	XfdashboardWindowTrackerWindowInterface		*iface;
 
@@ -772,18 +772,18 @@ void xfdashboard_window_tracker_window_make_stage_window(XfdashboardWindowTracke
 	iface=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GET_IFACE(self);
 
 	/* Call virtual function */
-	if(iface->make_stage_window)
+	if(iface->show_stage)
 	{
-		iface->make_stage_window(self);
+		iface->show_stage(self);
 		return;
 	}
 
 	/* If we get here the virtual function was not overridden */
-	XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, "make_stage_window");
+	XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, "show_stage");
 }
 
-/* Unset up stage window (only remove connected signals) */
-void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrackerWindow *self)
+/* Unset up and hide stage window */
+void xfdashboard_window_tracker_window_hide_stage(XfdashboardWindowTrackerWindow *self)
 {
 	XfdashboardWindowTrackerWindowInterface		*iface;
 
@@ -792,14 +792,14 @@ void xfdashboard_window_tracker_window_unmake_stage_window(XfdashboardWindowTrac
 	iface=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GET_IFACE(self);
 
 	/* Call virtual function */
-	if(iface->unmake_stage_window)
+	if(iface->hide_stage)
 	{
-		iface->unmake_stage_window(self);
+		iface->hide_stage(self);
 		return;
 	}
 
 	/* If we get here the virtual function was not overridden */
-	XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, "unmake_stage_window");
+	XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, "hide_stage");
 }
 
 /* Get process ID owning the requested window */
