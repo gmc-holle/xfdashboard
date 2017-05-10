@@ -362,11 +362,9 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							G_STRUCT_OFFSET(XfdashboardWindowTrackerInterface, screen_size_changed),
 							NULL,
 							NULL,
-							_xfdashboard_marshal_VOID__INT_INT,
+							g_cclosure_marshal_VOID__VOID,
 							G_TYPE_NONE,
-							2,
-							G_TYPE_INT,
-							G_TYPE_INT);
+							0);
 
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_MANAGER_CHANGED]=
 			g_signal_new("window-manager-changed",

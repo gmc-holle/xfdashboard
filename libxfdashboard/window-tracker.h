@@ -111,7 +111,7 @@ struct _XfdashboardWindowTrackerInterface
 	void (*monitor_removed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerMonitor *inMonitor);
 	void (*monitor_geometry_changed)(XfdashboardWindowTracker *self, XfdashboardWindowTrackerMonitor *inMonitor);
 
-	void (*screen_size_changed)(XfdashboardWindowTracker *self, gint inWidth, gint inHeight);
+	void (*screen_size_changed)(XfdashboardWindowTracker *self);
 
 	void (*window_manager_changed)(XfdashboardWindowTracker *self);
 };

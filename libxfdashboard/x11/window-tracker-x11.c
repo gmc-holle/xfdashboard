@@ -1087,7 +1087,7 @@ static void _xfdashboard_window_tracker_x11_on_screen_size_changed(XfdashboardWi
 						"Screen size changed to %dx%d",
 						w,
 						h);
-	g_signal_emit_by_name(self, "screen-size-changed", w, h);
+	g_signal_emit_by_name(self, "screen-size-changed");
 }
 
 /* Window manager has changed */

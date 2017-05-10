@@ -1473,15 +1473,19 @@ static void _xfdashboard_stage_on_monitor_removed(XfdashboardStage *self,
 
 /* Screen size has changed */
 static void _xfdashboard_stage_on_screen_size_changed(XfdashboardStage *self,
-														gint inWidth,
-														gint inHeight,
 														gpointer inUserData)
 {
-	gfloat				stageWidth, stageHeight;
+	XfdashboardWindowTracker	*windowTracker;
+	gint						screenWidth, screenHeight;
+	gfloat						stageWidth, stageHeight;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(inWidth>0);
-	g_return_if_fail(inHeight>0);
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(inUserData));
+
+	windowTracker=XFDASHBOARD_WINDOW_TRACKER(inUserData);
+
+	/* Get screen size */
+	xfdashboard_window_tracker_get_screen_size(windowTracker, &screenWidth, &screenHeight);
 
 	/* Get current size of stage */
 	clutter_actor_get_size(CLUTTER_ACTOR(self), &stageWidth, &stageHeight);
@@ -1489,15 +1493,15 @@ static void _xfdashboard_stage_on_screen_size_changed(XfdashboardStage *self,
 	/* If either stage's width or height does not match screen's width or height
 	 * resize the stage.
 	 */
-	if((gint)stageWidth!=inWidth ||
-		(gint)stageHeight!=inHeight)
+	if((gint)stageWidth!=screenWidth ||
+		(gint)stageHeight!=screenHeight)
 	{
 		XFDASHBOARD_DEBUG(self, ACTOR,
 							"Screen resized to %dx%d but stage has size of %dx%d - resizing stage",
-							inWidth, inHeight,
+							screenWidth, screenHeight,
 							(gint)stageWidth, (gint)stageHeight);
 
-		clutter_actor_set_size(CLUTTER_ACTOR(self), inWidth, inHeight);
+		clutter_actor_set_size(CLUTTER_ACTOR(self), screenWidth, screenHeight);
 	}
 }
 
@@ -1960,10 +1964,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 		(clutter_major_version==1 && clutter_minor_version<17) ||
 		(clutter_major_version==1 && clutter_minor_version==17 && clutter_micro_version<2))
 	{
-		gint					screenWidth, screenHeight;
-
-		xfdashboard_window_tracker_get_screen_size(priv->windowTracker, &screenWidth, &screenHeight);
-		_xfdashboard_stage_on_screen_size_changed(self, screenWidth, screenHeight, priv->windowTracker);
+		_xfdashboard_stage_on_screen_size_changed(self, priv->windowTracker);
 
 		g_signal_connect_swapped(priv->windowTracker,
 									"screen-size-changed",
