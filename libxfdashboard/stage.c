@@ -1524,9 +1524,6 @@ static void _xfdashboard_stage_show(ClutterActor *inActor)
 		xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), switchView);
 	}
 
-	/* Set stage to fullscreen just in case it forgot about it */
-	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
-
 	/* If we do not know the stage window connect signal to find it */
 	if(!priv->stageWindow)
 	{
