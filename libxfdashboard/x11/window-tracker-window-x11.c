@@ -60,12 +60,6 @@
 #include <libxfdashboard/debug.h>
 
 
-/* Definitions */
-typedef enum /*< skip,prefix=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_WORKAROUND >*/
-{
-	XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_WORKAROUND_STAGE_ACTOR_SHOW_HIDE=1 << 0,
-} XfdashboardWindowTrackerWindowX11WorkaroundMode;
-
 /* Define this class in GObject system */
 static void _xfdashboard_window_tracker_window_x11_window_tracker_window_iface_init(XfdashboardWindowTrackerWindowInterface *iface);
 
@@ -124,57 +118,6 @@ static GParamSpec* XfdashboardWindowTrackerWindowX11Properties[PROP_LAST]={ 0, }
 	g_critical(_("Got signal from wrong wnck window wrapped at %s in called function %s"),\
 				G_OBJECT_TYPE_NAME(self),                                      \
 				__func__);
-
-struct _XfdashboardWindowTrackerWindowX11Workaround
-{
-	const gchar		*name;
-	gint			workarounds;
-};
-typedef struct _XfdashboardWindowTrackerWindowX11Workaround		XfdashboardWindowTrackerWindowX11Workaround;
-
-static XfdashboardWindowTrackerWindowX11Workaround				_xfdashboard_window_tracker_window_x11_window_manager_workarounds[]=
-																{
-																	{ "Metacity (Marco)", XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_WORKAROUND_STAGE_ACTOR_SHOW_HIDE },
-																	{ NULL, 0 },
-																};
-
-/* Check and get workaround for current running window manager */
-static gint _xfdashboard_window_tracker_window_x11_get_window_manager_workaround(XfdashboardWindowTrackerWindowX11 *self)
-{
-	XfdashboardWindowTrackerWindowX11Private		*priv;
-	const gchar										*windowManager;
-	gint											workaroundMode;
-	XfdashboardWindowTrackerWindowX11Workaround		*found;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(self), 0);
-	g_return_val_if_fail(self->priv->window, 0);
-
-	priv=self->priv;
-	workaroundMode=0;
-
-	/* Get name of window manager */
-	windowManager=wnck_screen_get_window_manager_name(wnck_window_get_screen(priv->window));
-
-	/* Iterate through list of known window manager workarounds and return the
-	 * workaround mode of the entry matching the currently running window manager.
-	 */
-	found=_xfdashboard_window_tracker_window_x11_window_manager_workarounds;
-	while(found->name && g_strcmp0(windowManager, found->name)!=0) found++;
-
-	/* Get workaround if a matching entry was found */
-	if(found &&
-		found->name)
-	{
-		workaroundMode=found->workarounds;
-		XFDASHBOARD_DEBUG(self, WINDOWS,
-							"Window manager '%s' needs workarounds of value %d",
-							windowManager,
-							workaroundMode);
-	}
-
-	/* Return workaround modes */
-	return(workaroundMode);
-}
 
 /* Get state of window */
 static void _xfdashboard_window_tracker_window_x11_update_state(XfdashboardWindowTrackerWindowX11 *self)
@@ -1611,20 +1554,8 @@ static void _xfdashboard_window_tracker_window_x11_window_tracker_window_show_st
 																	self);
 	g_object_unref(windowTracker);
 
-	/* Now the window is set up and we can show it but check for workarounds needed */
-	if(_xfdashboard_window_tracker_window_x11_get_window_manager_workaround(self) & XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_WORKAROUND_STAGE_ACTOR_SHOW_HIDE)
-	{
-		ClutterStage							*stage;
-
-		/* Workaround via native clutter_actor_show()/clutter_actor_hide() needed */
-		stage=xfdashboard_window_tracker_window_get_stage(inWindow);
-		clutter_actor_show(CLUTTER_ACTOR(stage));
-	}
-		else
-		{
-			/* No workaround needed */
-			xfdashboard_window_tracker_window_show(XFDASHBOARD_WINDOW_TRACKER_WINDOW(self));
-		}
+	/* Now the window is set up and we can show it */
+	xfdashboard_window_tracker_window_show(XFDASHBOARD_WINDOW_TRACKER_WINDOW(self));
 }
 
 /* Unset up and hide stage window */
@@ -1649,20 +1580,8 @@ static void _xfdashboard_window_tracker_window_x11_window_tracker_window_hide_st
 		return;
 	}
 
-	/* First hide window before removing signals etc., but check for workarounds needed */
-	if(_xfdashboard_window_tracker_window_x11_get_window_manager_workaround(self) & XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_WORKAROUND_STAGE_ACTOR_SHOW_HIDE)
-	{
-		ClutterStage							*stage;
-
-		/* Workaround via native clutter_actor_show()/clutter_actor_hide() needed */
-		stage=xfdashboard_window_tracker_window_get_stage(inWindow);
-		clutter_actor_hide(CLUTTER_ACTOR(stage));
-	}
-		else
-		{
-			/* No workaround needed */
-			xfdashboard_window_tracker_window_hide(XFDASHBOARD_WINDOW_TRACKER_WINDOW(self));;
-		}
+	/* First hide window before removing signals etc. */
+	xfdashboard_window_tracker_window_hide(XFDASHBOARD_WINDOW_TRACKER_WINDOW(self));
 
 	/* Get screen of window */
 	screen=wnck_window_get_screen(WNCK_WINDOW(priv->window));
