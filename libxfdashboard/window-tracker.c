@@ -122,6 +122,13 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 		g_object_interface_install_property(iface, property);
 
 		/* Define signals */
+		/**
+		 * XfdashboardWindowTracker::window-tacking-changed:
+		 * @self: The window tracker
+		 *
+		 * The ::window-tacking-changed signal is emitted whenever the stacking
+		 * order of the windows at the desktop environment has changed.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_STACKING_CHANGED]=
 			g_signal_new("window-stacking-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -133,6 +140,17 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							G_TYPE_NONE,
 							0);
 
+		/**
+		 * XfdashboardWindowTracker::active-window-changed:
+		 * @self: The window tracker
+		 * @inPreviousActiveWindow: The #XfdashboardWindowTrackerWindow which
+		 *    was the active window before this change
+		 * @inCurrentActiveWindow: The #XfdashboardWindowTrackerWindow which is
+		 *    the active window now
+		 *
+		 * The ::active-window-changed is emitted when the active window has
+		 * changed.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_ACTIVE_WINDOW_CHANGED]=
 			g_signal_new("active-window-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -146,6 +164,14 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW);
 
+		/**
+		 * XfdashboardWindowTracker::window-opened:
+		 * @self: The window tracker
+		 * @inWindow: The #XfdashboardWindowTrackerWindow opened
+		 *
+		 * The ::window-opened signal is emitted whenever a new window was opened
+		 * at the desktop environment.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_OPENED]=
 			g_signal_new("window-opened",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -158,6 +184,14 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW);
 
+		/**
+		 * XfdashboardWindowTracker::window-closed:
+		 * @self: The window tracker
+		 * @inWindow: The #XfdashboardWindowTrackerWindow closed
+		 *
+		 * The ::window-closed signal is emitted when a window was closed and is
+		 * not available anymore.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_CLOSED]=
 			g_signal_new("window-closed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -170,6 +204,14 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW);
 
+		/**
+		 * XfdashboardWindowTracker::window-geometry-changed:
+		 * @self: The window tracker
+		 * @inWindow: The #XfdashboardWindowTrackerWindow which changed its size or position
+		 *
+		 * The ::window-geometry-changed signal is emitted when the size of a
+		 * window or its position at screen of the desktop environment has changed.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_GEOMETRY_CHANGED]=
 			g_signal_new("window-geometry-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -182,6 +224,15 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW);
 
+		/**
+		 * XfdashboardWindowTracker::window-actions-changed:
+		 * @self: The window tracker
+		 * @inWindow: The #XfdashboardWindowTrackerWindow changed the availability
+		 *    of actions
+		 *
+		 * The ::window-actions-changed signal is emitted whenever the availability
+		 * of actions of a window changes.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_ACTIONS_CHANGED]=
 			g_signal_new("window-actions-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -194,6 +245,17 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW);
 
+		/**
+		 * XfdashboardWindowTracker::window-state-changed:
+		 * @self: The window tracker
+		 * @inWindow: The #XfdashboardWindowTrackerWindow changed its state
+		 *
+		 * The ::window-state-changed signal is emitted whenever a window
+		 * changes its state. This can happen when @inWindow is (un)minimized,
+		 * (un)maximized, (un)pinned, (un)set fullscreen etc. See
+		 * #XfdashboardWindowTrackerWindowState for the complete list of states
+		 * that might have changed.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_STATE_CHANGED]=
 			g_signal_new("window-state-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -206,6 +268,14 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW);
 
+		/**
+		 * XfdashboardWindowTracker::window-icon-changed:
+		 * @self: The window tracker
+		 * @inWindow: The #XfdashboardWindowTrackerWindow changed its icon
+		 *
+		 * The ::window-icon-changed signal is emitted whenever a window
+		 * changes its icon
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_ICON_CHANGED]=
 			g_signal_new("window-icon-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -218,6 +288,14 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW);
 
+		/**
+		 * XfdashboardWindowTracker::window-name-changed:
+		 * @self: The window tracker
+		 * @inWindow: The #XfdashboardWindowTrackerWindow changed its name
+		 *
+		 * The ::window-name-changed signal is emitted whenever a window
+		 * changes its name, known as window title.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_NAME_CHANGED]=
 			g_signal_new("window-name-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -230,6 +308,16 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW);
 
+		/**
+		 * XfdashboardWindowTracker::window-workspace-changed:
+		 * @self: The window tracker
+		 * @inWindow: The #XfdashboardWindowTrackerWindow moved to another workspace
+		 * @inWorkspace: The #XfdashboardWindowTrackerWorkspace where the window
+		 *    @inWindow was moved to
+		 *
+		 * The ::window-workspace-changed signal is emitted whenever a window
+		 * moves to another workspace.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_WORKSPACE_CHANGED]=
 			g_signal_new("window-workspace-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -243,6 +331,18 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE);
 
+		/**
+		 * XfdashboardWindowTracker::window-monitor-changed:
+		 * @self: The window tracker
+		 * @inWindow: The #XfdashboardWindowTrackerWindow moved to another monitor
+		 * @inPreviousMonitor: The #XfdashboardWindowTrackerMonitor where the window
+		 *    @inWindow was located at before this change
+		 * @inCurrentMonitor: The #XfdashboardWindowTrackerMonitor where the window
+		 *    @inWindow is located at now
+		 *
+		 * The ::window-monitor-changed signal is emitted whenever a window
+		 * moves to another monitor.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_MONITOR_CHANGED]=
 			g_signal_new("window-monitor-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -257,6 +357,17 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR);
 
+		/**
+		 * XfdashboardWindowTracker::active-workspace-changed:
+		 * @self: The window tracker
+		 * @inPreviousActiveWorkspace: The #XfdashboardWindowTrackerWorkspace which
+		 *    was the active workspace before this change
+		 * @inCurrentActiveWorkspace: The #XfdashboardWindowTrackerWorkspace which
+		 *    is the active workspace now
+		 *
+		 * The ::active-workspace-changed signal is emitted when the active workspace
+		 * has changed.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_ACTIVE_WORKSPACE_CHANGED]=
 			g_signal_new("active-workspace-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -270,6 +381,13 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE);
 
+		/**
+		 * XfdashboardWindowTracker::workspace-added:
+		 * @self: The window tracker
+		 * @inWorkspace: The #XfdashboardWindowTrackerWorkspace added
+		 *
+		 * The ::workspace-added signal is emitted whenever a new workspace was added.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WORKSPACE_ADDED]=
 			g_signal_new("workspace-added",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -282,6 +400,13 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE);
 
+		/**
+		 * XfdashboardWindowTracker::workspace-removed:
+		 * @self: The window tracker
+		 * @inWorkspace: The #XfdashboardWindowTrackerWorkspace removed
+		 *
+		 * The ::workspace-removed signal is emitted whenever a workspace was removed.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WORKSPACE_REMOVED]=
 			g_signal_new("workspace-removed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -294,6 +419,14 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE);
 
+		/**
+		 * XfdashboardWindowTracker::workspace-name-changed:
+		 * @self: The window tracker
+		 * @inWorkspace: The #XfdashboardWindowTrackerWorkspace changed its name
+		 *
+		 * The ::workspace-name-changed signal is emitted whenever a workspace
+		 * changes its name.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WORKSPACE_NAME_CHANGED]=
 			g_signal_new("workspace-name-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -306,6 +439,17 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE);
 
+		/**
+		 * XfdashboardWindowTracker::primary-monitor-changed:
+		 * @self: The window tracker
+		 * @inPreviousPrimaryMonitor: The #XfdashboardWindowTrackerMonitor which
+		 *    was the primary monitor before this change
+		 * @inCurrentPrimaryMonitor: The #XfdashboardWindowTrackerMonitor which
+		 *    is the new primary monitor now
+		 *
+		 * The ::primary-monitor-changed signal is emitted when another monitor
+		 * was configured to be the primary monitor.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_PRIMARY_MONITOR_CHANGED]=
 			g_signal_new("primary-monitor-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -319,6 +463,13 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR);
 
+		/**
+		 * XfdashboardWindowTracker::monitor-added:
+		 * @self: The window tracker
+		 * @inMonitor: The #XfdashboardWindowTrackerMonitor added
+		 *
+		 * The ::monitor-added signal is emitted whenever a new monitor was added.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_MONITOR_ADDED]=
 			g_signal_new("monitor-added",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -331,6 +482,13 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR);
 
+		/**
+		 * XfdashboardWindowTracker::monitor-removed:
+		 * @self: The window tracker
+		 * @inMonitor: The #XfdashboardWindowTrackerMonitor removed
+		 *
+		 * The ::monitor-removed signal is emitted whenever a monitor was removed.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_MONITOR_REMOVED]=
 			g_signal_new("monitor-removed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -343,6 +501,14 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR);
 
+		/**
+		 * XfdashboardWindowTracker::monitor-geometry-changed:
+		 * @self: The window tracker
+		 * @inMonitor: The #XfdashboardWindowTrackerMonitor which changed its size or position
+		 *
+		 * The ::monitor-geometry-changed signal is emitted when the size of a
+		 * monitor or its position at screen of the desktop environment has changed.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_MONITOR_GEOMETRY_CHANGED]=
 			g_signal_new("monitor-geometry-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -355,6 +521,14 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR);
 
+		/**
+		 * XfdashboardWindowTracker::screen-size-changed:
+		 * @self: The window tracker
+		 *
+		 * The ::screen-size-changed signal is emitted when the screen size of
+		 * the desktop environment has been changed, e.g. one monitor changed its
+		 * resolution.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_SCREEN_SIZE_CHANGED]=
 			g_signal_new("screen-size-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -366,6 +540,13 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 							G_TYPE_NONE,
 							0);
 
+		/**
+		 * XfdashboardWindowTracker::window-manager-changed:
+		 * @self: The window tracker
+		 *
+		 * The ::window-manager-changed signal is emitted when the window manager
+		 * of the desktop environment has been replaced with a new one.
+		 */
 		XfdashboardWindowTrackerSignals[SIGNAL_WINDOW_MANAGER_CHANGED]=
 			g_signal_new("window-manager-changed",
 							G_TYPE_FROM_INTERFACE(iface),
@@ -385,7 +566,14 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 
 /* IMPLEMENTATION: Public API */
 
-/* Create new instance */
+/**
+ * xfdashboard_window_tracker_get_default:
+ *
+ * Retrieves the singleton instance of #XfdashboardWindowTracker. If not needed
+ * anymore the caller must unreference the returned object instance.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardWindowTracker.
+ */
 XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void)
 {
 	if(G_UNLIKELY(_xfdashboard_window_tracker_singleton==NULL))
@@ -399,7 +587,18 @@ XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void)
 
 }
 
-/* Get list of all windows (if wanted in stack order) */
+/**
+ * xfdashboard_window_tracker_get_windows:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Retrieves the list of #XfdashboardWindowTrackerWindow tracked by @self.
+ * The list is ordered: the first element in the list is the first
+ * #XfdashboardWindowTrackerWindow, etc..
+ *
+ * Return value: (element-type XfdashboardWindowTrackerWindow) (transfer none):
+ *   The list of #XfdashboardWindowTrackerWindow. The list should not be modified
+ *   nor freed, as it is owned by Xfdashboard.
+ */
 GList* xfdashboard_window_tracker_get_windows(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -419,6 +618,18 @@ GList* xfdashboard_window_tracker_get_windows(XfdashboardWindowTracker *self)
 	return(NULL);
 }
 
+/**
+ * xfdashboard_window_tracker_get_windows_stacked:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Retrieves the list of #XfdashboardWindowTrackerWindow tracked by @self in
+ * stacked order from bottom to top. The list is ordered: the first element in
+ * the list is the most bottom #XfdashboardWindowTrackerWindow, etc..
+ *
+ * Return value: (element-type XfdashboardWindowTrackerWindow) (transfer none):
+ *   The list of #XfdashboardWindowTrackerWindow in stacked order. The list should
+ *   not be modified nor freed, as it is owned by Xfdashboard.
+ */
 GList* xfdashboard_window_tracker_get_windows_stacked(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -438,7 +649,16 @@ GList* xfdashboard_window_tracker_get_windows_stacked(XfdashboardWindowTracker *
 	return(NULL);
 }
 
-/* Get active window */
+/**
+ * xfdashboard_window_tracker_get_active_window:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Retrieves the currently active #XfdashboardWindowTrackerWindow.
+ *
+ * Return value: (transfer none): The #XfdashboardWindowTrackerWindow currently
+ *   active or %NULL if not determinable. The returned object is owned by Xfdashboard
+ *   and it should not be referenced or unreferenced.
+ */
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_active_window(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -458,7 +678,14 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_active_window(Xfd
 	return(NULL);
 }
 
-/* Get number of workspaces */
+/**
+ * xfdashboard_window_tracker_get_workspaces_count:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Retrieves the number of #XfdashboardWindowTrackerWorkspace tracked by @self.
+ *
+ * Return value: The number of #XfdashboardWindowTrackerWorkspace
+ */
 gint xfdashboard_window_tracker_get_workspaces_count(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -478,7 +705,18 @@ gint xfdashboard_window_tracker_get_workspaces_count(XfdashboardWindowTracker *s
 	return(0);
 }
 
-/* Get list of workspaces */
+/**
+ * xfdashboard_window_tracker_get_workspaces:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Retrieves the list of #XfdashboardWindowTrackerWorkspace tracked by @self.
+ * The list is ordered: the first element in the list is the first
+ * #XfdashboardWindowTrackerWorkspace, etc..
+ *
+ * Return value: (element-type XfdashboardWindowTrackerWorkspace) (transfer none):
+ *   The list of #XfdashboardWindowTrackerWorkspace. The list should not be modified
+ *   nor freed, as it is owned by Xfdashboard.
+ */
 GList* xfdashboard_window_tracker_get_workspaces(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -498,7 +736,16 @@ GList* xfdashboard_window_tracker_get_workspaces(XfdashboardWindowTracker *self)
 	return(NULL);
 }
 
-/* Get active workspace */
+/**
+ * xfdashboard_window_tracker_get_active_workspace:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Retrieves the currently active #XfdashboardWindowTrackerWorkspace.
+ *
+ * Return value: (transfer none): The #XfdashboardWindowTrackerWorkspace currently
+ *   active or %NULL if not determinable. The returned object is owned by Xfdashboard
+ *   and it should not be referenced or unreferenced.
+ */
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspace(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -518,7 +765,17 @@ XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_active_workspa
 	return(NULL);
 }
 
-/* Get workspace by number */
+/**
+ * xfdashboard_window_tracker_get_workspace_by_number:
+ * @self: A #XfdashboardWindowTracker
+ * @inNumber: The workspace index, starting from 0
+ *
+ * Retrieves the #XfdashboardWindowTrackerWorkspace at index @inNumber.
+ *
+ * Return value: (transfer none): The #XfdashboardWindowTrackerWorkspace at the
+ *   index or %NULL if no such workspace exists. The returned object is owned by
+ *   Xfdashboard and it should not be referenced or unreferenced.
+ */
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_workspace_by_number(XfdashboardWindowTracker *self,
 																						gint inNumber)
 {
@@ -541,7 +798,22 @@ XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_workspace_by_n
 	return(NULL);
 }
 
-/* Determine if multiple monitors are supported */
+/**
+ * xfdashboard_window_tracker_get_monitors_count:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Determines if window tracker at @self supports multiple monitors.
+ *
+ * If multiple monitors are supported, %TRUE will be returned and the number
+ * of monitors can be determined by calling xfdashboard_window_tracker_get_monitors_count().
+ * Also each monitor can be accessed xfdashboard_window_tracker_get_monitor_by_number()
+ * and other monitor related functions.
+ *
+ * If multiple monitors are not supported or the desktop environment cannot provide
+ * this kind of information, %FALSE will be returned.
+ *
+ * Return value: %TRUE if @self supports multiple monitors, otherwise %FALSE.
+ */
 gboolean xfdashboard_window_tracker_supports_multiple_monitors(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -561,7 +833,14 @@ gboolean xfdashboard_window_tracker_supports_multiple_monitors(XfdashboardWindow
 	return(FALSE);
 }
 
-/* Get number of monitors */
+/**
+ * xfdashboard_window_tracker_get_monitors_count:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Retrieves the number of #XfdashboardWindowTrackerMonitor tracked by @self.
+ *
+ * Return value: The number of #XfdashboardWindowTrackerMonitor
+ */
 gint xfdashboard_window_tracker_get_monitors_count(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -581,7 +860,18 @@ gint xfdashboard_window_tracker_get_monitors_count(XfdashboardWindowTracker *sel
 	return(0);
 }
 
-/* Get list of monitors */
+/**
+ * xfdashboard_window_tracker_get_monitors:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Retrieves the list of #XfdashboardWindowTrackerMonitor tracked by @self.
+ * The list is ordered: the first element in the list is the first #XfdashboardWindowTrackerMonitor,
+ * etc..
+ *
+ * Return value: (element-type XfdashboardWindowTrackerMonitor) (transfer none):
+ *   The list of #XfdashboardWindowTrackerMonitor. The list should not be modified
+ *   nor freed, as it is owned by Xfdashboard.
+ */
 GList* xfdashboard_window_tracker_get_monitors(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -601,7 +891,17 @@ GList* xfdashboard_window_tracker_get_monitors(XfdashboardWindowTracker *self)
 	return(NULL);
 }
 
-/* Get primary monitor */
+/**
+ * xfdashboard_window_tracker_get_primary_monitor:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Retrieves the primary #XfdashboardWindowTrackerMonitor the user configured
+ * at its desktop environment.
+ *
+ * Return value: (transfer none): The #XfdashboardWindowTrackerMonitor configured
+ *   as primary or %NULL if no primary monitor exists. The returned object is
+ *   owned by Xfdashboard and it should not be referenced or unreferenced.
+ */
 XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_primary_monitor(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -621,7 +921,17 @@ XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_primary_monitor(
 	return(NULL);
 }
 
-/* Get monitor by number */
+/**
+ * xfdashboard_window_tracker_get_monitor_by_number:
+ * @self: A #XfdashboardWindowTracker
+ * @inNumber: The monitor index, starting from 0
+ *
+ * Retrieves the #XfdashboardWindowTrackerMonitor at index @inNumber.
+ *
+ * Return value: (transfer none): The #XfdashboardWindowTrackerMonitor at the
+ *   index or %NULL if no such monitor exists. The returned object is owned by
+ *   Xfdashboard and it should not be referenced or unreferenced.
+ */
 XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_number(XfdashboardWindowTracker *self,
 																					gint inNumber)
 {
@@ -644,7 +954,19 @@ XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_numbe
 	return(NULL);
 }
 
-/* Get monitor at position */
+/**
+ * xfdashboard_window_tracker_get_monitor_by_position:
+ * @self: A #XfdashboardWindowTracker
+ * @inX: The X coordinate of position at screen
+ * @inY: The Y coordinate of position at screen
+ *
+ * Retrieves the monitor containing the position at @inX,@inY at screen.
+ *
+ * Return value: (transfer none): The #XfdashboardWindowTrackerMonitor for the
+ *   requested position or %NULL if no monitor could be found containing the
+ *   position. The returned object is owned by Xfdashboard and it should not be
+ *   referenced or unreferenced.
+ */
 XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_position(XfdashboardWindowTracker *self,
 																						gint inX,
 																						gint inY)
@@ -666,7 +988,15 @@ XfdashboardWindowTrackerMonitor* xfdashboard_window_tracker_get_monitor_by_posit
 	return(NULL);
 }
 
-/* Get width and height of screen */
+/**
+ * xfdashboard_window_tracker_get_screen_size:
+ * @self: A #XfdashboardWindowTracker
+ * @outWidth: (out): Return location for width of screen.
+ * @outHeight: (out): Return location for height of screen.
+ *
+ * Retrieves width and height of screen of the desktop environment. The screen
+ * contains all connected monitors so it the total size of the desktop environment.
+ */
 void xfdashboard_window_tracker_get_screen_size(XfdashboardWindowTracker *self, gint *outWidth, gint *outHeight)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -693,7 +1023,15 @@ void xfdashboard_window_tracker_get_screen_size(XfdashboardWindowTracker *self, 
 	XFDASHBOARD_WINDOWS_TRACKER_WARN_NOT_IMPLEMENTED(self, "get_screen_width");
 }
 
-/* Get name of window manager managing windows, workspace etc. of desktop environment */
+/**
+ * xfdashboard_window_tracker_get_window_manager_name:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Retrieves the name of window manager managing the desktop environment, i.e.
+ * windows, workspaces etc.
+ *
+ * Return value: A string with name of the window manager
+ */
 const gchar* xfdashboard_window_tracker_get_window_manager_name(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -713,7 +1051,17 @@ const gchar* xfdashboard_window_tracker_get_window_manager_name(XfdashboardWindo
 	return(NULL);
 }
 
-/* Get root (desktop) window */
+/**
+ * xfdashboard_window_tracker_get_root_window:
+ * @self: A #XfdashboardWindowTracker
+ *
+ * Retrieves the root window of the desktop environment. The root window is
+ * usually the desktop seen at the background of the desktop environment.
+ *
+ * Return value: (transfer none): The #XfdashboardWindowTrackerWindow representing
+ *   the root window or %NULL if not available. The returned object is owned by
+ *   Xfdashboard and it should not be referenced or unreferenced.
+ */
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(XfdashboardWindowTracker *self)
 {
 	XfdashboardWindowTrackerInterface		*iface;
@@ -733,7 +1081,17 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(Xfdas
 	return(NULL);
 }
 
-/* Get window of stage*/
+/**
+ * xfdashboard_window_tracker_get_stage_window:
+ * @self: A #XfdashboardWindowTracker
+ * @inStage: A #ClutterStage
+ *
+ * Retrieves the window created for the requested stage @inStage.
+ *
+ * Return value: (transfer none): The #XfdashboardWindowTrackerWindow representing
+ *   the window of requested stage or %NULL if not available. The returned object
+ *   is owned by Xfdashboard and it should not be referenced or unreferenced.
+ */
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_stage_window(XfdashboardWindowTracker *self,
 																			ClutterStage *inStage)
 {

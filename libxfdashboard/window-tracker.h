@@ -37,6 +37,7 @@
 
 G_BEGIN_DECLS
 
+/* Object declaration */
 #define XFDASHBOARD_TYPE_WINDOW_TRACKER				(xfdashboard_window_tracker_get_type())
 #define XFDASHBOARD_WINDOW_TRACKER(obj)				(G_TYPE_CHECK_INSTANCE_CAST((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER, XfdashboardWindowTracker))
 #define XFDASHBOARD_IS_WINDOW_TRACKER(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER))
@@ -45,6 +46,59 @@ G_BEGIN_DECLS
 typedef struct _XfdashboardWindowTracker			XfdashboardWindowTracker;
 typedef struct _XfdashboardWindowTrackerInterface	XfdashboardWindowTrackerInterface;
 
+/**
+ * XfdashboardWindowTrackerInterface:
+ * @get_windows: Get list of windows tracked
+ * @get_windows_stacked: Get list of windows tracked in stacked order
+ *    (from bottom to top)
+ * @get_active_window: Get the current active window
+ * @get_workspaces_count: Get number of workspaces
+ * @get_workspaces: Get list of workspaces tracked
+ * @get_active_workspace: Get the current active workspace
+ * @get_workspace_by_number: Get workspace by its index
+ * @supports_multiple_monitors: Whether the window trackers supports and tracks
+ *    multiple monitors or not
+ * @get_monitors_count: Get number of monitors
+ * @get_monitors: Get list of monitors tracked
+ * @get_primary_monitor: Get the current primary monitor
+ * @get_monitor_by_number: Get monitor by its index
+ * @get_monitor_by_position: Get monitor by looking up if it contains the
+ *    requested position
+ * @get_screen_size: Get total size of screen (size over all connected monitors)
+ * @get_window_manager_name: Get name of window manager at desktop environment
+ * @get_root_window: Get root window (usually the desktop at background)
+ * @get_stage_window: Get window for requested stage at @inStage
+ * @window_stacking_changed: Signal emitted when the stacking order of windows
+ *    has changed
+ * @active_window_changed: Signal emitted when the active window has changed,
+ *    e.g. focus moved to another window
+ * @window_opened: Signal emitted when a new window was opened
+ * @window_closed: Signal emitted when a window was closed
+ * @window_geometry_changed: Signal emitted when a window has changed its
+ *    position or size or both
+ * @window_actions_changed: Signal emitted when the available action of a window
+ *    has changed
+ * @window_state_changed: Signal emitted when the state of a window has changed
+ * @window_icon_changed: Signal emitted when the icon of a window has changed
+ * @window_name_changed: Signal emitted when the title of a window has changed
+ * @window_workspace_changed: Signal emitted when a window was moved to another
+ *    workspace
+ * @window_monitor_changed: Signal emitted when a window was moved to another
+ *    monitor
+ * @active_workspace_changed: Signal emitted when the active workspace has changed
+ * @workspace_added: Signal emitted when a new workspace was added
+ * @workspace_removed: Signal emitted when a workspace was removed
+ * @workspace_name_changed: Signal emitted when the title of a workspace has
+ *    changed
+ * @primary_monitor_changed: Signal emitted when the primary monitor has changed
+ * @monitor_added: Signal emitted when a new monitor was connected
+ * @monitor_removed: Signal emitted when a monitor was disconnected or turned off
+ * @monitor_geometry_changed: Signal emitted when the resolution of a monitor
+ *    has chnaged
+ * @screen_size_changed: Signal emitted when the total screen size over all
+ *    connected monitors has changed
+ * @window_manager_changed: Signal emitted when the window manager was replaced
+ */
 struct _XfdashboardWindowTrackerInterface
 {
 	/*< private >*/
@@ -115,6 +169,7 @@ struct _XfdashboardWindowTrackerInterface
 
 	void (*window_manager_changed)(XfdashboardWindowTracker *self);
 };
+
 
 /* Public API */
 GType xfdashboard_window_tracker_get_type(void) G_GNUC_CONST;
