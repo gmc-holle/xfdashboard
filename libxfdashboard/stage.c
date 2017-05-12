@@ -133,6 +133,12 @@ enum
 static guint XfdashboardStageSignals[SIGNAL_LAST]={ 0, };
 
 
+/* Forward declaration */
+static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
+													XfdashboardWindowTrackerWindow *inWindow,
+													gpointer inUserData);
+
+
 /* IMPLEMENTATION: Private variables and methods */
 #define NOTIFICATION_TIMEOUT_XFCONF_PROP				"/min-notification-timeout"
 #define DEFAULT_NOTIFICATION_TIMEOUT					3000
@@ -618,6 +624,40 @@ static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, Xfdashb
 	}
 }
 
+/* A window was closed
+ * Check if stage window was closed then unset up window properties and reinstall
+ * signal handler to find new stage window.
+ */
+static void _xfdashboard_stage_on_window_closed(XfdashboardStage *self,
+												XfdashboardWindowTrackerWindow *inWindow,
+												gpointer inUserData)
+{
+	XfdashboardStagePrivate				*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+
+	priv=self->priv;
+
+	/* Check if window closed is this stage window */
+	if(priv->stageWindow!=inWindow) return;
+
+	/* Forget stage window as it was closed */
+	priv->stageWindow=NULL;
+
+	/* Disconnect this signal handler as this stage window was closed*/
+	XFDASHBOARD_DEBUG(self, ACTOR, "Stage window was closed. Removing signal handler");
+	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_closed), self);
+
+	/* Instead reconnect signal handler to find new stage window */
+	XFDASHBOARD_DEBUG(self, ACTOR, "Reconnecting signal to find new stage window as this one as closed");
+	g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
+
+	/* Set focus */
+	_xfdashboard_stage_set_focus(self);
+}
+
+
 /* A window was created
  * Check for stage window and set up window properties
  */
@@ -641,9 +681,16 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	priv->stageWindow=inWindow;
 	xfdashboard_window_tracker_window_show_stage(priv->stageWindow);
 
-	/* Disconnect signal handler as this is a one-time setup of stage window */
+	/* Disconnect this signal handler as this is a one-time setup of stage window */
 	XFDASHBOARD_DEBUG(self, ACTOR, "Stage window was opened and set up. Removing signal handler");
 	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
+
+	/* Instead connect signal handler to get notified when this stage window was
+	 * destroyed as we need to forget this window and to reinstall this signal
+	 * handler again.
+	 */
+	XFDASHBOARD_DEBUG(self, ACTOR, "Connecting signal signal handler to get notified about destruction of stage window");
+	g_signal_connect_swapped(priv->windowTracker, "window-closed", G_CALLBACK(_xfdashboard_stage_on_window_closed), self);
 
 	/* Set focus */
 	_xfdashboard_stage_set_focus(self);
@@ -1524,10 +1571,14 @@ static void _xfdashboard_stage_show(ClutterActor *inActor)
 		xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), switchView);
 	}
 
+	/* Set stage to fullscreen as it may will be a newly created window */
+	clutter_stage_set_fullscreen(CLUTTER_STAGE(self), TRUE);
+
 	/* If we do not know the stage window connect signal to find it */
 	if(!priv->stageWindow)
 	{
 		/* Connect signals */
+		XFDASHBOARD_DEBUG(self, ACTOR, "Connecting signal to find stage window");
 		g_signal_connect_swapped(priv->windowTracker, "window-opened", G_CALLBACK(_xfdashboard_stage_on_window_opened), self);
 	}
 
