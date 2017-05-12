@@ -31,7 +31,7 @@
  * @short_description: A window used by X11 window tracker
  * @include: xfdashboard/x11/window-tracker-window-x11.h
  *
- * TODO: DESCRIPTION
+ * This is the X11 backend of #XfdashboardWindowTrackerWindow
  */
 
 #ifdef HAVE_CONFIG_H
@@ -1925,7 +1925,7 @@ WnckWindow* xfdashboard_window_tracker_window_x11_get_window(XfdashboardWindowTr
 	}
 
 	/* Return wrapped libwnck window */
-	return(self->priv->window);
+	return(priv->window);
 }
 
 /**
