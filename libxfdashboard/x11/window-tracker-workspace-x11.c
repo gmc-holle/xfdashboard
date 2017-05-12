@@ -32,7 +32,7 @@
  * @short_description: A workspace used by X11 window tracker
  * @include: xfdashboard/x11/window-tracker-workspace-x11.h
  *
- * TODO: DESCRIPTION
+ * This is the X11 backend of #XfdashboardWindowTrackerWorkspace
  */
 
 #ifdef HAVE_CONFIG_H
@@ -438,5 +438,5 @@ WnckWorkspace* xfdashboard_window_tracker_workspace_x11_get_workspace(Xfdashboar
 	}
 
 	/* Return wrapped libwnck workspace */
-	return(self->priv->workspace);
+	return(priv->workspace);
 }
