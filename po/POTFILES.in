@@ -81,6 +81,10 @@ libxfdashboard/window-tracker-workspace.c
 libxfdashboard/window-tracker.c
 libxfdashboard/windows-view.c
 libxfdashboard/workspace-selector.c
+libxfdashboard/x11/window-content-x11.c
+libxfdashboard/x11/window-tracker-window-x11.c
+libxfdashboard/x11/window-tracker-workspace-x11.c
+libxfdashboard/x11/window-tracker-x11.c
 plugins/clock-view/clock-view.c
 plugins/clock-view/clock-view-settings.c
 plugins/clock-view/plugin.c
