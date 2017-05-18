@@ -621,6 +621,8 @@ static void _xfdashboard_window_content_x11_check_extension(void)
 	int			damageError=0;
 #endif
 #ifdef HAVE_XCOMPOSITE
+	int			compositeEventBase=0;
+	int			compositeError=0;
 	int			compositeMajor, compositeMinor;
 #endif
 
@@ -636,7 +638,7 @@ static void _xfdashboard_window_content_x11_check_extension(void)
 	/* Check for composite extenstion */
 	_xfdashboard_window_content_x11_have_composite_extension=FALSE;
 #ifdef HAVE_XCOMPOSITE
-	if(clutter_x11_has_composite_extension())
+	if(XCompositeQueryExtension(display, &compositeEventBase, &compositeError))
 	{
 		compositeMajor=compositeMinor=0;
 		if(XCompositeQueryVersion(display, &compositeMajor, &compositeMinor))
@@ -661,11 +663,15 @@ static void _xfdashboard_window_content_x11_check_extension(void)
 	_xfdashboard_window_content_x11_damage_event_base=0;
 
 #ifdef HAVE_XDAMAGE
-	if(!XDamageQueryExtension(display, &_xfdashboard_window_content_x11_damage_event_base, &damageError))
+	if(XDamageQueryExtension(display, &_xfdashboard_window_content_x11_damage_event_base, &damageError))
 	{
-		g_warning(_("Query for X damage extension resulted in error code %d - using only still images of windows"), damageError);
+		_xfdashboard_window_content_x11_have_damage_extension=TRUE;
 	}
-		else _xfdashboard_window_content_x11_have_damage_extension=TRUE;
+		else
+		{
+			g_warning(_("Query for X damage extension resulted in error code %d - using only still images of windows"),
+						damageError);
+		}
 #endif
 }
 
