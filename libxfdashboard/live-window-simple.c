@@ -36,6 +36,7 @@
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -278,6 +279,25 @@ static void _xfdashboard_live_window_simple_get_preferred_height(ClutterActor *s
 		gint							windowHeight;
 
 		xfdashboard_window_tracker_window_get_geometry(priv->window, NULL, NULL, NULL, &windowHeight);
+		if(windowHeight<=0.0)
+		{
+			ClutterContent				*content;
+			gfloat						childNaturalHeight;
+
+			/* If we get here getting window size failed so fallback to old
+			 * behaviour by getting size of window content associated to actor.
+			 */
+			content=clutter_actor_get_content(priv->actorWindow);
+			if(content &&
+				XFDASHBOARD_IS_WINDOW_CONTENT(content))
+			{
+				if(clutter_content_get_preferred_size(content, NULL, &childNaturalHeight)) windowHeight=childNaturalHeight;
+				XFDASHBOARD_DEBUG(self, WINDOWS,
+									"Using fallback method to determine preferred height for window '%s'",
+									xfdashboard_window_tracker_window_get_name(priv->window));
+			}
+		}
+
 		if(windowHeight>minHeight) minHeight=windowHeight;
 		if(windowHeight>naturalHeight) naturalHeight=windowHeight;
 	}
@@ -305,6 +325,25 @@ static void _xfdashboard_live_window_simple_get_preferred_width(ClutterActor *se
 		gint							windowWidth;
 
 		xfdashboard_window_tracker_window_get_geometry(priv->window, NULL, NULL, &windowWidth, NULL);
+		if(windowWidth<=0.0)
+		{
+			ClutterContent				*content;
+			gfloat						childNaturalWidth;
+
+			/* If we get here getting window size failed so fallback to old
+			 * behaviour by getting size of window content associated to actor.
+			 */
+			content=clutter_actor_get_content(priv->actorWindow);
+			if(content &&
+				XFDASHBOARD_IS_WINDOW_CONTENT(content))
+			{
+				if(clutter_content_get_preferred_size(content, &childNaturalWidth, NULL)) windowWidth=childNaturalWidth;
+								XFDASHBOARD_DEBUG(self, WINDOWS,
+									"Using fallback method to determine preferred width for window '%s'",
+									xfdashboard_window_tracker_window_get_name(priv->window));
+			}
+		}
+
 		if(windowWidth>minWidth) minWidth=windowWidth;
 		if(windowWidth>naturalWidth) naturalWidth=windowWidth;
 	}
