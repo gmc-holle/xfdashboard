@@ -1855,7 +1855,7 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 
 	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_X11_GET_PRIVATE(self);
 
-	XFDASHBOARD_DEBUG(self, WINDOWS, "Initializing window tracker");
+	XFDASHBOARD_DEBUG(self, WINDOWS, "Initializing X11 window tracker");
 
 	/* Set default values */
 	priv->windows=NULL;

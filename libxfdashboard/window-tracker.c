@@ -32,8 +32,10 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/x11/window-tracker-x11.h>
+#include <libxfdashboard/gdk/window-tracker-gdk.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/debug.h>
 
 
 /* Define this class in GObject system */
@@ -578,8 +580,32 @@ XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void)
 {
 	if(G_UNLIKELY(_xfdashboard_window_tracker_singleton==NULL))
 	{
-		_xfdashboard_window_tracker_singleton=
-			XFDASHBOARD_WINDOW_TRACKER(g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_X11, NULL));
+		GType			windowTrackerBackendType=G_TYPE_INVALID;
+		const gchar		*windowTrackerBackend;
+
+		/* Check if a specific backend was requested */
+		windowTrackerBackend=g_getenv("XFDASHBOARD_BACKEND");
+
+		if(g_strcmp0(windowTrackerBackend, "gdk")==0)
+		{
+			windowTrackerBackendType=XFDASHBOARD_TYPE_WINDOW_TRACKER_GDK;
+		}
+
+		/* If no specific backend was requested use default one */
+		if(windowTrackerBackendType==G_TYPE_INVALID)
+		{
+			windowTrackerBackendType=XFDASHBOARD_TYPE_WINDOW_TRACKER_X11;
+			XFDASHBOARD_DEBUG(NULL, WINDOWS,
+								"Using default backend %s",
+								g_type_name(windowTrackerBackendType));
+		}
+
+		/* Create singleton */
+		_xfdashboard_window_tracker_singleton=XFDASHBOARD_WINDOW_TRACKER(g_object_new(windowTrackerBackendType, NULL));
+		XFDASHBOARD_DEBUG(_xfdashboard_window_tracker_singleton, WINDOWS,
+							"Created window tracker of type %s for %s backend",
+							_xfdashboard_window_tracker_singleton ? G_OBJECT_TYPE_NAME(_xfdashboard_window_tracker_singleton) : "<<unknown>>",
+							windowTrackerBackend ? windowTrackerBackend : "default");
 	}
 		else g_object_ref(_xfdashboard_window_tracker_singleton);
 

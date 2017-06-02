@@ -1858,7 +1858,7 @@ void xfdashboard_window_tracker_gdk_init(XfdashboardWindowTrackerGDK *self)
 
 	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_GDK_GET_PRIVATE(self);
 
-	XFDASHBOARD_DEBUG(self, WINDOWS, "Initializing window tracker");
+	XFDASHBOARD_DEBUG(self, WINDOWS, "Initializing GDK window tracker");
 
 	/* Set default values */
 	priv->windows=NULL;
