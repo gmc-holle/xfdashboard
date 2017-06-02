@@ -246,6 +246,23 @@ libxfdashboard_la_LIBADD += \
 	$(XINERAMA_LIBS)
 endif
 
+gdk_headers = \
+	gdk/window-content-gdk.h \
+	gdk/window-tracker-gdk.h \
+	gdk/window-tracker-monitor-gdk.h \
+	gdk/window-tracker-window-gdk.h \
+	gdk/window-tracker-workspace-gdk.h
+
+gdk_sources = \
+	gdk/window-content-gdk.c \
+	gdk/window-tracker-gdk.c \
+	gdk/window-tracker-monitor-gdk.c \
+	gdk/window-tracker-window-gdk.c \
+	gdk/window-tracker-workspace-gdk.c
+
+libxfdashboard_la_headers += $(gdk_headers)
+libxfdashboard_la_SOURCES += $(gdk_sources)
+
 libxfdashboard_la_includedir = \
 	$(includedir)/xfdashboard/libxfdashboard
 
