@@ -432,8 +432,7 @@ static void _xfdashboard_applications_view_on_all_applications_menu_clicked(Xfda
 		appInfo=XFDASHBOARD_DESKTOP_APP_INFO(iter->data);
 
 		/* If desktop app info should be hidden then continue with next one */
-		if(xfdashboard_desktop_app_info_get_hidden(appInfo) ||
-			xfdashboard_desktop_app_info_get_nodisplay(appInfo))
+		if(!g_app_info_should_show(G_APP_INFO(appInfo)))
 		{
 			continue;
 		}

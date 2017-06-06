@@ -75,9 +75,6 @@ GAppInfo* xfdashboard_desktop_app_info_new_from_menu_item(GarconMenuItem *inMenu
 
 gboolean xfdashboard_desktop_app_info_is_valid(XfdashboardDesktopAppInfo *self);
 
-gboolean xfdashboard_desktop_app_info_get_hidden(XfdashboardDesktopAppInfo *self);
-gboolean xfdashboard_desktop_app_info_get_nodisplay(XfdashboardDesktopAppInfo *self);
-
 GFile* xfdashboard_desktop_app_info_get_file(XfdashboardDesktopAppInfo *self);
 gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self);
 

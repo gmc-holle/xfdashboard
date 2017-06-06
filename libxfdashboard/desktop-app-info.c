@@ -1369,46 +1369,6 @@ gboolean xfdashboard_desktop_app_info_is_valid(XfdashboardDesktopAppInfo *self)
 	return(self->priv->isValid);
 }
 
-/* Determine if desktop app info is hidden */
-gboolean xfdashboard_desktop_app_info_get_hidden(XfdashboardDesktopAppInfo *self)
-{
-	XfdashboardDesktopAppInfoPrivate	*priv;
-	gboolean							isHidden;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), TRUE);
-
-	priv=self->priv;
-	isHidden=TRUE;
-
-	/* If a menu item exists get hidden state from it  */
-	if(priv->item)
-	{
-		isHidden=garcon_menu_item_get_hidden(priv->item);
-	}
-
-	return(isHidden);
-}
-
-/* Get "NoDisplay" value of desktop app info */
-gboolean xfdashboard_desktop_app_info_get_nodisplay(XfdashboardDesktopAppInfo *self)
-{
-	XfdashboardDesktopAppInfoPrivate	*priv;
-	gboolean							noDisplay;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), TRUE);
-
-	priv=self->priv;
-	noDisplay=TRUE;
-
-	/* If a menu item exists get "NoDisplay" value from it */
-	if(priv->item)
-	{
-		noDisplay=garcon_menu_item_get_no_display(priv->item);
-	}
-
-	return(noDisplay);
-}
-
 /* Get file of desktop app info */
 GFile* xfdashboard_desktop_app_info_get_file(XfdashboardDesktopAppInfo *self)
 {
