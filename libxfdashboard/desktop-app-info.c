@@ -1030,8 +1030,8 @@ static gboolean _xfdashboard_desktop_app_info_gappinfo_should_show(GAppInfo *inA
 	/* If desktop app info has no item return FALSE here */
 	if(!priv->item) return(FALSE);
 
-	/* Check if menu item should be shown in current environment */
-	return(garcon_menu_item_get_show_in_environment(priv->item));
+	/* Check if menu item is visible and therefore can be shown */
+	return(garcon_menu_element_get_visible(GARCON_MENU_ELEMENT(priv->item)));
 }
 
 /* Get command-line of GAppInfo with which the application will be started */
