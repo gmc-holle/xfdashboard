@@ -186,6 +186,9 @@ int main(int argc, char **argv)
 {
 	XfdashboardApplication		*app=NULL;
 	gint						status;
+#if CLUTTER_CHECK_VERSION(1, 16, 0)
+	const gchar					*backend;
+#endif
 
 #ifdef ENABLE_NLS
 	/* Set up localization */
@@ -198,10 +201,16 @@ int main(int argc, char **argv)
 #endif
 
 #if CLUTTER_CHECK_VERSION(1, 16, 0)
-	/* Enforce X11 backend in Clutter. This function must be called before any
-	 * other Clutter API function.
+	/* Enforce X11 backend in Clutter if no specific backend was requesetd.
+	 * This function must be called before any other Clutter API function.
 	 */
-	clutter_set_windowing_backend("x11");
+	backend=g_getenv("XFDASHBOARD_BACKEND");
+	if(!backend ||
+		g_strcmp0(backend, "x11")==0)
+	{
+		clutter_set_windowing_backend("x11");
+		g_debug("Enforcing X11 backend");
+	}
 #endif
 
 	/* Tell clutter to try to initialize an RGBA visual */

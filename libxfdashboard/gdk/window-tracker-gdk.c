@@ -31,13 +31,14 @@
 #include "config.h"
 #endif
 
-#include <libxfdashboard/x11/window-tracker-x11.h>
+#include <libxfdashboard/gdk/window-tracker-gdk.h>
 
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE
 #include <libwnck/libwnck.h>
 
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
+#include <clutter/gdk/clutter-gdk.h>
 #include <clutter/x11/clutter-x11.h>
 #include <gdk/gdkx.h>
 #ifdef HAVE_XINERAMA
@@ -45,9 +46,9 @@
 #endif
 
 #include <libxfdashboard/window-tracker.h>
-#include <libxfdashboard/x11/window-tracker-monitor-x11.h>
-#include <libxfdashboard/x11/window-tracker-window-x11.h>
-#include <libxfdashboard/x11/window-tracker-workspace-x11.h>
+#include <libxfdashboard/gdk/window-tracker-monitor-gdk.h>
+#include <libxfdashboard/gdk/window-tracker-window-gdk.h>
+#include <libxfdashboard/gdk/window-tracker-workspace-gdk.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/application.h>
 #include <libxfdashboard/compat.h>
@@ -55,23 +56,23 @@
 
 
 /* Define this class in GObject system */
-static void _xfdashboard_window_tracker_x11_window_tracker_iface_init(XfdashboardWindowTrackerInterface *iface);
+static void _xfdashboard_window_tracker_gdk_window_tracker_iface_init(XfdashboardWindowTrackerInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowTrackerX11,
-						xfdashboard_window_tracker_x11,
+G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowTrackerGDK,
+						xfdashboard_window_tracker_gdk,
 						G_TYPE_OBJECT,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_WINDOW_TRACKER, _xfdashboard_window_tracker_x11_window_tracker_iface_init))
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_WINDOW_TRACKER, _xfdashboard_window_tracker_gdk_window_tracker_iface_init))
 
 /* Private structure - access only by public API if needed */
-#define XFDASHBOARD_WINDOW_TRACKER_X11_GET_PRIVATE(obj)                        \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_X11, XfdashboardWindowTrackerX11Private))
+#define XFDASHBOARD_WINDOW_TRACKER_GDK_GET_PRIVATE(obj)                        \
+	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_GDK, XfdashboardWindowTrackerGDKPrivate))
 
-struct _XfdashboardWindowTrackerX11Private
+struct _XfdashboardWindowTrackerGDKPrivate
 {
 	/* Properties related */
-	XfdashboardWindowTrackerWindowX11		*activeWindow;
-	XfdashboardWindowTrackerWorkspaceX11	*activeWorkspace;
-	XfdashboardWindowTrackerMonitorX11		*primaryMonitor;
+	XfdashboardWindowTrackerWindowGDK		*activeWindow;
+	XfdashboardWindowTrackerWorkspaceGDK	*activeWorkspace;
+	XfdashboardWindowTrackerMonitorGDK		*primaryMonitor;
 
 	/* Instance related */
 	GList									*windows;
@@ -107,20 +108,20 @@ enum
 	PROP_LAST
 };
 
-static GParamSpec* XfdashboardWindowTrackerX11Properties[PROP_LAST]={ 0, };
+static GParamSpec* XfdashboardWindowTrackerGDKProperties[PROP_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Free workspace object */
-static void _xfdashboard_window_tracker_x11_free_workspace(XfdashboardWindowTrackerX11 *self,
-															XfdashboardWindowTrackerWorkspaceX11 *inWorkspace)
+static void _xfdashboard_window_tracker_gdk_free_workspace(XfdashboardWindowTrackerGDK *self,
+															XfdashboardWindowTrackerWorkspaceGDK *inWorkspace)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	GList									*iter;
 
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE_X11(inWorkspace));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE_GDK(inWorkspace));
 
 	priv=self->priv;
 
@@ -146,14 +147,14 @@ static void _xfdashboard_window_tracker_x11_free_workspace(XfdashboardWindowTrac
 }
 
 /* Get workspace object for requested wnck workspace */
-static XfdashboardWindowTrackerWorkspaceX11* _xfdashboard_window_tracker_x11_get_workspace_for_wnck(XfdashboardWindowTrackerX11 *self,
+static XfdashboardWindowTrackerWorkspaceGDK* _xfdashboard_window_tracker_gdk_get_workspace_for_wnck(XfdashboardWindowTrackerGDK *self,
 																									WnckWorkspace *inWorkspace)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	GList									*iter;
-	XfdashboardWindowTrackerWorkspaceX11	*workspace;
+	XfdashboardWindowTrackerWorkspaceGDK	*workspace;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(self), NULL);
 	g_return_val_if_fail(WNCK_IS_WORKSPACE(inWorkspace), NULL);
 
 	priv=self->priv;
@@ -165,11 +166,11 @@ static XfdashboardWindowTrackerWorkspaceX11* _xfdashboard_window_tracker_x11_get
 	for(iter=priv->workspaces; iter; iter=g_list_next(iter))
 	{
 		/* Get currently iterated workspace object */
-		workspace=XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_X11(iter->data);
+		workspace=XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_GDK(iter->data);
 		if(!workspace) continue;
 
 		/* Check if this workspace object wraps the requested wnck workspace */
-		if(xfdashboard_window_tracker_workspace_x11_get_workspace(workspace)==inWorkspace)
+		if(xfdashboard_window_tracker_workspace_gdk_get_workspace(workspace)==inWorkspace)
 		{
 			/* Return existing workspace object */
 			return(workspace);
@@ -183,13 +184,13 @@ static XfdashboardWindowTrackerWorkspaceX11* _xfdashboard_window_tracker_x11_get
 }
 
 /* Create workspace object which must not exist yet */
-static XfdashboardWindowTrackerWorkspaceX11* _xfdashboard_window_tracker_x11_create_workspace_for_wnck(XfdashboardWindowTrackerX11 *self,
+static XfdashboardWindowTrackerWorkspaceGDK* _xfdashboard_window_tracker_gdk_create_workspace_for_wnck(XfdashboardWindowTrackerGDK *self,
 																										WnckWorkspace *inWorkspace)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
-	XfdashboardWindowTrackerWorkspaceX11	*workspace;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
+	XfdashboardWindowTrackerWorkspaceGDK	*workspace;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(self), NULL);
 	g_return_val_if_fail(WNCK_IS_WORKSPACE(inWorkspace), NULL);
 
 	priv=self->priv;
@@ -197,7 +198,7 @@ static XfdashboardWindowTrackerWorkspaceX11* _xfdashboard_window_tracker_x11_cre
 	/* Iterate through list of workspace object and check if an object for the
 	 * request wnck workspace exist. If one is found then the existing workspace object.
 	 */
-	workspace=_xfdashboard_window_tracker_x11_get_workspace_for_wnck(self, inWorkspace);
+	workspace=_xfdashboard_window_tracker_gdk_get_workspace_for_wnck(self, inWorkspace);
 	if(workspace)
 	{
 		/* Return existing workspace object */
@@ -210,13 +211,13 @@ static XfdashboardWindowTrackerWorkspaceX11* _xfdashboard_window_tracker_x11_cre
 	}
 
 	/* Create workspace object */
-	workspace=XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_X11(g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE_X11,
+	workspace=XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_GDK(g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE_GDK,
 														"workspace", inWorkspace,
 														NULL));
 	if(!workspace)
 	{
 		g_critical(_("Could not create workspace object of type %s for workspace '%s'"),
-					g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE_X11),
+					g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE_GDK),
 					wnck_workspace_get_name(inWorkspace));
 		return(NULL);
 	}
@@ -233,14 +234,14 @@ static XfdashboardWindowTrackerWorkspaceX11* _xfdashboard_window_tracker_x11_cre
 }
 
 /* Free window object */
-static void _xfdashboard_window_tracker_x11_free_window(XfdashboardWindowTrackerX11 *self,
-														XfdashboardWindowTrackerWindowX11 *inWindow)
+static void _xfdashboard_window_tracker_gdk_free_window(XfdashboardWindowTrackerGDK *self,
+														XfdashboardWindowTrackerWindowGDK *inWindow)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	GList									*iter;
 
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_GDK(inWindow));
 
 	priv=self->priv;
 
@@ -272,14 +273,14 @@ static void _xfdashboard_window_tracker_x11_free_window(XfdashboardWindowTracker
 }
 
 /* Get window object for requested wnck window */
-static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_get_window_for_wnck(XfdashboardWindowTrackerX11 *self,
+static XfdashboardWindowTrackerWindowGDK* _xfdashboard_window_tracker_gdk_get_window_for_wnck(XfdashboardWindowTrackerGDK *self,
 																								WnckWindow *inWindow)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	GList									*iter;
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerWindowGDK		*window;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(self), NULL);
 	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
 
 	priv=self->priv;
@@ -291,13 +292,13 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_get_wi
 	for(iter=priv->windows; iter; iter=g_list_next(iter))
 	{
 		/* Get currently iterated window object */
-		if(!XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(iter->data)) continue;
+		if(!XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_GDK(iter->data)) continue;
 
-		window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(iter->data);
+		window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GDK(iter->data);
 		if(!window) continue;
 
 		/* Check if this window object wraps the requested wnck window */
-		if(xfdashboard_window_tracker_window_x11_get_window(window)==inWindow)
+		if(xfdashboard_window_tracker_window_gdk_get_window(window)==inWindow)
 		{
 			/* Return existing window object */
 			return(window);
@@ -314,14 +315,14 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_get_wi
  * take a reference at the window object and must not be unreffed if list is
  * freed.
  */
-static void _xfdashboard_window_tracker_x11_build_stacked_windows_list(XfdashboardWindowTrackerX11 *self)
+static void _xfdashboard_window_tracker_gdk_build_stacked_windows_list(XfdashboardWindowTrackerGDK *self)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	GList									*wnckWindowsStacked;
 	GList									*newWindowsStacked;
 	GList									*iter;
 	WnckWindow								*wnckWindow;
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerWindowGDK		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 
@@ -339,7 +340,7 @@ static void _xfdashboard_window_tracker_x11_build_stacked_windows_list(Xfdashboa
 		if(!wnckWindow) continue;
 
 		/* Lookup window object from wnck window iterated */
-		window=_xfdashboard_window_tracker_x11_get_window_for_wnck(self, wnckWindow);
+		window=_xfdashboard_window_tracker_gdk_get_window_for_wnck(self, wnckWindow);
 		if(window)
 		{
 			newWindowsStacked=g_list_prepend(newWindowsStacked, window);
@@ -353,13 +354,13 @@ static void _xfdashboard_window_tracker_x11_build_stacked_windows_list(Xfdashboa
 }
 
 /* Create window object which must not exist yet */
-static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_create_window_for_wnck(XfdashboardWindowTrackerX11 *self,
+static XfdashboardWindowTrackerWindowGDK* _xfdashboard_window_tracker_gdk_create_window_for_wnck(XfdashboardWindowTrackerGDK *self,
 																									WnckWindow *inWindow)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
+	XfdashboardWindowTrackerWindowGDK		*window;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(self), NULL);
 	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
 
 	priv=self->priv;
@@ -367,7 +368,7 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_create
 	/* Iterate through list of window object and check if an object for the
 	 * request wnck window exist. If one is found then the existing window object.
 	 */
-	window=_xfdashboard_window_tracker_x11_get_window_for_wnck(self, inWindow);
+	window=_xfdashboard_window_tracker_gdk_get_window_for_wnck(self, inWindow);
 	if(window)
 	{
 		/* Return existing window object */
@@ -380,13 +381,13 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_create
 	}
 
 	/* Create window object */
-	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11,
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GDK(g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_GDK,
 																"window", inWindow,
 																NULL));
 	if(!window)
 	{
 		g_critical(_("Could not create window object of type %s for window '%s'"),
-					g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
+					g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_GDK),
 					wnck_window_get_name(inWindow));
 		return(NULL);
 	}
@@ -395,7 +396,7 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_create
 	priv->windows=g_list_prepend(priv->windows, window);
 
 	/* Assume window stacking changed to get correctly ordered list of windows */
-	_xfdashboard_window_tracker_x11_build_stacked_windows_list(self);
+	_xfdashboard_window_tracker_gdk_build_stacked_windows_list(self);
 
 	/* Return new window object */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
@@ -406,15 +407,15 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_create
 }
 
 /* Position and/or size of window has changed */
-static void _xfdashboard_window_tracker_x11_on_window_geometry_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_window_geometry_changed(XfdashboardWindowTrackerGDK *self,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerWindowGDK		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_GDK(inUserData));
 
-	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inUserData);
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GDK(inUserData);
 
 	/* Emit signal */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
@@ -424,17 +425,17 @@ static void _xfdashboard_window_tracker_x11_on_window_geometry_changed(Xfdashboa
 }
 
 /* Action items of window has changed */
-static void _xfdashboard_window_tracker_x11_on_window_actions_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_window_actions_changed(XfdashboardWindowTrackerGDK *self,
 																		XfdashboardWindowTrackerWindowAction inChangedMask,
 																		XfdashboardWindowTrackerWindowAction inNewValue,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerWindowX11	*window;
+	XfdashboardWindowTrackerWindowGDK	*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_GDK(inUserData));
 
-	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inUserData);
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GDK(inUserData);
 
 	/* Emit signal */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
@@ -445,17 +446,17 @@ static void _xfdashboard_window_tracker_x11_on_window_actions_changed(Xfdashboar
 }
 
 /* State of window has changed */
-static void _xfdashboard_window_tracker_x11_on_window_state_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_window_state_changed(XfdashboardWindowTrackerGDK *self,
 																	XfdashboardWindowTrackerWindowState inChangedMask,
 																	XfdashboardWindowTrackerWindowState inNewValue,
 																	gpointer inUserData)
 {
-	XfdashboardWindowTrackerWindowX11	*window;
+	XfdashboardWindowTrackerWindowGDK	*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_GDK(inUserData));
 
-	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inUserData);
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GDK(inUserData);
 
 	/* Emit signal */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
@@ -466,15 +467,15 @@ static void _xfdashboard_window_tracker_x11_on_window_state_changed(XfdashboardW
 }
 
 /* Icon of window has changed */
-static void _xfdashboard_window_tracker_x11_on_window_icon_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_window_icon_changed(XfdashboardWindowTrackerGDK *self,
 																	gpointer inUserData)
 {
-	XfdashboardWindowTrackerWindowX11	*window;
+	XfdashboardWindowTrackerWindowGDK	*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_GDK(inUserData));
 
-	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inUserData);
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GDK(inUserData);
 
 	/* Emit signal */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
@@ -484,15 +485,15 @@ static void _xfdashboard_window_tracker_x11_on_window_icon_changed(XfdashboardWi
 }
 
 /* Name of window has changed */
-static void _xfdashboard_window_tracker_x11_on_window_name_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_window_name_changed(XfdashboardWindowTrackerGDK *self,
 																	gpointer inUserData)
 {
-	XfdashboardWindowTrackerWindowX11	*window;
+	XfdashboardWindowTrackerWindowGDK	*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_GDK(inUserData));
 
-	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inUserData);
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GDK(inUserData);
 
 	/* Emit signal */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
@@ -502,18 +503,18 @@ static void _xfdashboard_window_tracker_x11_on_window_name_changed(XfdashboardWi
 }
 
 /* A window has moved to another monitor */
-static void _xfdashboard_window_tracker_x11_on_window_monitor_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_window_monitor_changed(XfdashboardWindowTrackerGDK *self,
 																		XfdashboardWindowTrackerMonitor *inOldMonitor,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerWindowGDK		*window;
 	XfdashboardWindowTrackerMonitor			*newMonitor;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(!inOldMonitor || XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_X11(inOldMonitor));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
+	g_return_if_fail(!inOldMonitor || XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_GDK(inOldMonitor));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_GDK(inUserData));
 
-	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inUserData);
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GDK(inUserData);
 
 	/* Get monitor window resides on. */
 	newMonitor=xfdashboard_window_tracker_window_get_monitor(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
@@ -530,18 +531,18 @@ static void _xfdashboard_window_tracker_x11_on_window_monitor_changed(Xfdashboar
 }
 
 /* A window has moved to another workspace */
-static void _xfdashboard_window_tracker_x11_on_window_workspace_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_window_workspace_changed(XfdashboardWindowTrackerGDK *self,
 																		XfdashboardWindowTrackerWorkspace *inOldWorkspace,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerWindowGDK		*window;
 	XfdashboardWindowTrackerWorkspace		*newWorkspace;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(!inOldWorkspace || XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE_X11(inOldWorkspace));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
+	g_return_if_fail(!inOldWorkspace || XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE_GDK(inOldWorkspace));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_GDK(inUserData));
 
-	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inUserData);
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GDK(inUserData);
 
 	/* Get workspace window resides on. */
 	newWorkspace=xfdashboard_window_tracker_window_get_workspace(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
@@ -556,14 +557,14 @@ static void _xfdashboard_window_tracker_x11_on_window_workspace_changed(Xfdashbo
 }
 
 /* A window was activated */
-static void _xfdashboard_window_tracker_x11_on_active_window_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_active_window_changed(XfdashboardWindowTrackerGDK *self,
 																		WnckWindow *inPreviousWindow,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	WnckScreen								*screen;
-	XfdashboardWindowTrackerWindowX11		*oldActiveWindow;
-	XfdashboardWindowTrackerWindowX11		*newActiveWindow;
+	XfdashboardWindowTrackerWindowGDK		*oldActiveWindow;
+	XfdashboardWindowTrackerWindowGDK		*newActiveWindow;
 	WnckWindow								*activeWindow;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
@@ -580,12 +581,12 @@ static void _xfdashboard_window_tracker_x11_on_active_window_changed(Xfdashboard
 	activeWindow=wnck_screen_get_active_window(screen);
 	if(activeWindow)
 	{
-		newActiveWindow=_xfdashboard_window_tracker_x11_get_window_for_wnck(self, activeWindow);
+		newActiveWindow=_xfdashboard_window_tracker_gdk_get_window_for_wnck(self, activeWindow);
 		if(!newActiveWindow)
 		{
 			XFDASHBOARD_DEBUG(self, WINDOWS,
 								"No window object of type %s found for new active wnck window %s@%p named '%s'",
-								g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
+								g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_GDK),
 								G_OBJECT_TYPE_NAME(activeWindow), activeWindow, wnck_window_get_name(activeWindow));
 
 			return;
@@ -603,12 +604,12 @@ static void _xfdashboard_window_tracker_x11_on_active_window_changed(Xfdashboard
 }
 
 /* A window was closed */
-static void _xfdashboard_window_tracker_x11_on_window_closed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_window_closed(XfdashboardWindowTrackerGDK *self,
 																WnckWindow *inWindow,
 																gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
+	XfdashboardWindowTrackerWindowGDK		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
@@ -619,18 +620,18 @@ static void _xfdashboard_window_tracker_x11_on_window_closed(XfdashboardWindowTr
 	/* Should not happen but if closed window is the last active known one, then
 	 * reset to NULL
 	 */
-	if(xfdashboard_window_tracker_window_x11_get_window(priv->activeWindow)==inWindow)
+	if(xfdashboard_window_tracker_window_gdk_get_window(priv->activeWindow)==inWindow)
 	{
 		priv->activeWindow=NULL;
 	}
 
 	/* Get window object for closed wnck window */
-	window=_xfdashboard_window_tracker_x11_get_window_for_wnck(self, inWindow);
+	window=_xfdashboard_window_tracker_gdk_get_window_for_wnck(self, inWindow);
 	if(!window)
 	{
 		XFDASHBOARD_DEBUG(self, WINDOWS,
 							"No window object of type %s found for wnck window %s@%p named '%s'",
-							g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
+							g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_GDK),
 							G_OBJECT_TYPE_NAME(inWindow), inWindow, wnck_window_get_name(inWindow));
 
 		return;
@@ -646,16 +647,16 @@ static void _xfdashboard_window_tracker_x11_on_window_closed(XfdashboardWindowTr
 	g_signal_emit_by_name(self, "window-closed", window);
 
 	/* Remove window from window list */
-	_xfdashboard_window_tracker_x11_free_window(self, window);
+	_xfdashboard_window_tracker_gdk_free_window(self, window);
 }
 
 /* A new window was opened */
-static void _xfdashboard_window_tracker_x11_on_window_opened(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_window_opened(XfdashboardWindowTrackerGDK *self,
 																WnckWindow *inWindow,
 																gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
+	XfdashboardWindowTrackerWindowGDK		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
@@ -664,22 +665,22 @@ static void _xfdashboard_window_tracker_x11_on_window_opened(XfdashboardWindowTr
 	priv=self->priv;
 
 	/* Create window object */
-	window=_xfdashboard_window_tracker_x11_create_window_for_wnck(self, inWindow);
+	window=_xfdashboard_window_tracker_gdk_create_window_for_wnck(self, inWindow);
 	if(!window) return;
 
 	/* Connect signals on newly opened window */
-	g_signal_connect_swapped(window, "actions-changed", G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_actions_changed), self);
-	g_signal_connect_swapped(window, "state-changed", G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_state_changed), self);
-	g_signal_connect_swapped(window, "icon-changed", G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_icon_changed), self);
-	g_signal_connect_swapped(window, "name-changed", G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_name_changed), self);
-	g_signal_connect_swapped(window, "monitor-changed", G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_monitor_changed), self);
-	g_signal_connect_swapped(window, "workspace-changed", G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_workspace_changed), self);
-	g_signal_connect_swapped(window, "geometry-changed", G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_geometry_changed), self);
+	g_signal_connect_swapped(window, "actions-changed", G_CALLBACK(_xfdashboard_window_tracker_gdk_on_window_actions_changed), self);
+	g_signal_connect_swapped(window, "state-changed", G_CALLBACK(_xfdashboard_window_tracker_gdk_on_window_state_changed), self);
+	g_signal_connect_swapped(window, "icon-changed", G_CALLBACK(_xfdashboard_window_tracker_gdk_on_window_icon_changed), self);
+	g_signal_connect_swapped(window, "name-changed", G_CALLBACK(_xfdashboard_window_tracker_gdk_on_window_name_changed), self);
+	g_signal_connect_swapped(window, "monitor-changed", G_CALLBACK(_xfdashboard_window_tracker_gdk_on_window_monitor_changed), self);
+	g_signal_connect_swapped(window, "workspace-changed", G_CALLBACK(_xfdashboard_window_tracker_gdk_on_window_workspace_changed), self);
+	g_signal_connect_swapped(window, "geometry-changed", G_CALLBACK(_xfdashboard_window_tracker_gdk_on_window_geometry_changed), self);
 
 	/* Block signal handler for 'geometry-changed' at window if application is suspended */
 	if(priv->isAppSuspended)
 	{
-		g_signal_handlers_block_by_func(window, _xfdashboard_window_tracker_x11_on_window_geometry_changed, self);
+		g_signal_handlers_block_by_func(window, _xfdashboard_window_tracker_gdk_on_window_geometry_changed, self);
 	}
 
 	/* Emit signal */
@@ -690,13 +691,13 @@ static void _xfdashboard_window_tracker_x11_on_window_opened(XfdashboardWindowTr
 }
 
 /* Window stacking has changed */
-static void _xfdashboard_window_tracker_x11_on_window_stacking_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_window_stacking_changed(XfdashboardWindowTrackerGDK *self,
 																		gpointer inUserData)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 
 	/* Before emitting the signal, build a correctly ordered list of windows */
-	_xfdashboard_window_tracker_x11_build_stacked_windows_list(self);
+	_xfdashboard_window_tracker_gdk_build_stacked_windows_list(self);
 
 	/* Emit signal */
 	XFDASHBOARD_DEBUG(self, WINDOWS, "Window stacking has changed");
@@ -704,15 +705,15 @@ static void _xfdashboard_window_tracker_x11_on_window_stacking_changed(Xfdashboa
 }
 
 /* A workspace changed its name */
-static void _xfdashboard_window_tracker_x11_on_workspace_name_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_workspace_name_changed(XfdashboardWindowTrackerGDK *self,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerWorkspaceX11	*workspace;
+	XfdashboardWindowTrackerWorkspaceGDK	*workspace;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE_X11(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE_GDK(inUserData));
 
-	workspace=XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_X11(inUserData);
+	workspace=XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_GDK(inUserData);
 
 	/* Emit signal */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
@@ -724,14 +725,14 @@ static void _xfdashboard_window_tracker_x11_on_workspace_name_changed(Xfdashboar
 }
 
 /* A workspace was activated */
-static void _xfdashboard_window_tracker_x11_on_active_workspace_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_active_workspace_changed(XfdashboardWindowTrackerGDK *self,
 																		WnckWorkspace *inPreviousWorkspace,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	WnckScreen								*screen;
-	XfdashboardWindowTrackerWorkspaceX11	*oldActiveWorkspace;
-	XfdashboardWindowTrackerWorkspaceX11	*newActiveWorkspace;
+	XfdashboardWindowTrackerWorkspaceGDK	*oldActiveWorkspace;
+	XfdashboardWindowTrackerWorkspaceGDK	*newActiveWorkspace;
 	WnckWorkspace							*activeWorkspace;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
@@ -748,12 +749,12 @@ static void _xfdashboard_window_tracker_x11_on_active_workspace_changed(Xfdashbo
 	activeWorkspace=wnck_screen_get_active_workspace(screen);
 	if(activeWorkspace)
 	{
-		newActiveWorkspace=_xfdashboard_window_tracker_x11_get_workspace_for_wnck(self, activeWorkspace);
+		newActiveWorkspace=_xfdashboard_window_tracker_gdk_get_workspace_for_wnck(self, activeWorkspace);
 		if(!newActiveWorkspace)
 		{
 			XFDASHBOARD_DEBUG(self, WINDOWS,
 						"No workspace object of type %s found for new active wnck workspace %s@%p named '%s'",
-						g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE_X11),
+						g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE_GDK),
 						G_OBJECT_TYPE_NAME(activeWorkspace), activeWorkspace, wnck_workspace_get_name(activeWorkspace));
 
 			return;
@@ -773,12 +774,12 @@ static void _xfdashboard_window_tracker_x11_on_active_workspace_changed(Xfdashbo
 }
 
 /* A workspace was destroyed */
-static void _xfdashboard_window_tracker_x11_on_workspace_destroyed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_workspace_destroyed(XfdashboardWindowTrackerGDK *self,
 																	WnckWorkspace *inWorkspace,
 																	gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
-	XfdashboardWindowTrackerWorkspaceX11	*workspace;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
+	XfdashboardWindowTrackerWorkspaceGDK	*workspace;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(WNCK_IS_WORKSPACE(inWorkspace));
@@ -789,18 +790,18 @@ static void _xfdashboard_window_tracker_x11_on_workspace_destroyed(XfdashboardWi
 	/* Should not happen but if destroyed workspace is the last active known one,
 	 * then reset to NULL
 	 */
-	if(xfdashboard_window_tracker_workspace_x11_get_workspace(priv->activeWorkspace)==inWorkspace)
+	if(xfdashboard_window_tracker_workspace_gdk_get_workspace(priv->activeWorkspace)==inWorkspace)
 	{
 		priv->activeWorkspace=NULL;
 	}
 
 	/* Get workspace object for wnck workspace */
-	workspace=_xfdashboard_window_tracker_x11_get_workspace_for_wnck(self, inWorkspace);
+	workspace=_xfdashboard_window_tracker_gdk_get_workspace_for_wnck(self, inWorkspace);
 	if(!workspace)
 	{
 		XFDASHBOARD_DEBUG(self, WINDOWS,
 							"No workspace object of type %s found for wnck workspace %s@%p named '%s'",
-							g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
+							g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_GDK),
 							G_OBJECT_TYPE_NAME(inWorkspace), inWorkspace, wnck_workspace_get_name(inWorkspace));
 
 		return;
@@ -817,26 +818,26 @@ static void _xfdashboard_window_tracker_x11_on_workspace_destroyed(XfdashboardWi
 	g_signal_emit_by_name(self, "workspace-removed", workspace);
 
 	/* Remove workspace from workspace list */
-	_xfdashboard_window_tracker_x11_free_workspace(self, workspace);
+	_xfdashboard_window_tracker_gdk_free_workspace(self, workspace);
 }
 
 /* A new workspace was created */
-static void _xfdashboard_window_tracker_x11_on_workspace_created(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_workspace_created(XfdashboardWindowTrackerGDK *self,
 																	WnckWorkspace *inWorkspace,
 																	gpointer inUserData)
 {
-	XfdashboardWindowTrackerWorkspaceX11		*workspace;
+	XfdashboardWindowTrackerWorkspaceGDK		*workspace;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(WNCK_IS_WORKSPACE(inWorkspace));
 	g_return_if_fail(WNCK_IS_SCREEN(inUserData));
 
 	/* Create workspace object */
-	workspace=_xfdashboard_window_tracker_x11_create_workspace_for_wnck(self, inWorkspace);
+	workspace=_xfdashboard_window_tracker_gdk_create_workspace_for_wnck(self, inWorkspace);
 	if(!workspace) return;
 
 	/* Connect signals on newly created workspace */
-	g_signal_connect_swapped(workspace, "name-changed", G_CALLBACK(_xfdashboard_window_tracker_x11_on_workspace_name_changed), self);
+	g_signal_connect_swapped(workspace, "name-changed", G_CALLBACK(_xfdashboard_window_tracker_gdk_on_workspace_name_changed), self);
 
 	/* Emit signal */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
@@ -847,17 +848,17 @@ static void _xfdashboard_window_tracker_x11_on_workspace_created(XfdashboardWind
 }
 
 /* Primary monitor has changed */
-static void _xfdashboard_window_tracker_x11_on_primary_monitor_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_primary_monitor_changed(XfdashboardWindowTrackerGDK *self,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
-	XfdashboardWindowTrackerMonitorX11		*monitor;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
+	XfdashboardWindowTrackerMonitorGDK		*monitor;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_X11(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_GDK(inUserData));
 
 	priv=self->priv;
-	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_X11(inUserData);
+	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_GDK(inUserData);
 
 	/* If monitor emitting this signal is the (new) primary one
 	 * then update primary monitor value of this instance.
@@ -865,7 +866,7 @@ static void _xfdashboard_window_tracker_x11_on_primary_monitor_changed(Xfdashboa
 	if(xfdashboard_window_tracker_monitor_is_primary(XFDASHBOARD_WINDOW_TRACKER_MONITOR(monitor)) &&
 		priv->primaryMonitor!=monitor)
 	{
-		XfdashboardWindowTrackerMonitorX11	*oldMonitor;
+		XfdashboardWindowTrackerMonitorGDK	*oldMonitor;
 
 		/* Remember old monitor for signal emission */
 		oldMonitor=priv->primaryMonitor;
@@ -877,7 +878,7 @@ static void _xfdashboard_window_tracker_x11_on_primary_monitor_changed(Xfdashboa
 		g_signal_emit_by_name(self, "primary-monitor-changed", oldMonitor, priv->primaryMonitor);
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowTrackerX11Properties[PROP_PRIMARY_MONITOR]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardWindowTrackerGDKProperties[PROP_PRIMARY_MONITOR]);
 
 		XFDASHBOARD_DEBUG(self, WINDOWS,
 							"Primary monitor changed from %d to %d",
@@ -887,26 +888,26 @@ static void _xfdashboard_window_tracker_x11_on_primary_monitor_changed(Xfdashboa
 }
 
 /* A monitor has changed its position and/or size */
-static void _xfdashboard_window_tracker_x11_on_monitor_geometry_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_monitor_geometry_changed(XfdashboardWindowTrackerGDK *self,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerMonitorX11			*monitor;
+	XfdashboardWindowTrackerMonitorGDK			*monitor;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_X11(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_GDK(inUserData));
 
-	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_X11(inUserData);
+	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_GDK(inUserData);
 
 	/* A monitor changed its position and/or size so re-emit the signal */
 	g_signal_emit_by_name(self, "monitor-geometry-changed", monitor);
 }
 
 /* Create a monitor object */
-static XfdashboardWindowTrackerMonitorX11* _xfdashboard_window_tracker_x11_monitor_new(XfdashboardWindowTrackerX11 *self,
+static XfdashboardWindowTrackerMonitorGDK* _xfdashboard_window_tracker_gdk_monitor_new(XfdashboardWindowTrackerGDK *self,
 																						guint inMonitorIndex)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
-	XfdashboardWindowTrackerMonitorX11		*monitor;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
+	XfdashboardWindowTrackerMonitorGDK		*monitor;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
 	g_return_val_if_fail(inMonitorIndex>=g_list_length(self->priv->monitors), NULL);
@@ -914,7 +915,7 @@ static XfdashboardWindowTrackerMonitorX11* _xfdashboard_window_tracker_x11_monit
 	priv=self->priv;
 
 	/* Create monitor object */
-	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_X11(g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR_X11,
+	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_GDK(g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR_GDK,
 															"monitor-index", inMonitorIndex,
 															NULL));
 	priv->monitors=g_list_append(priv->monitors, monitor);
@@ -922,11 +923,11 @@ static XfdashboardWindowTrackerMonitorX11* _xfdashboard_window_tracker_x11_monit
 	/* Connect signals */
 	g_signal_connect_swapped(monitor,
 								"primary-changed",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_primary_monitor_changed),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_primary_monitor_changed),
 								self);
 	g_signal_connect_swapped(monitor,
 								"geometry-changed",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_monitor_geometry_changed),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_monitor_geometry_changed),
 								self);
 
 	/* Emit signal */
@@ -941,7 +942,7 @@ static XfdashboardWindowTrackerMonitorX11* _xfdashboard_window_tracker_x11_monit
 	 */
 	if(xfdashboard_window_tracker_monitor_is_primary(XFDASHBOARD_WINDOW_TRACKER_MONITOR(monitor)))
 	{
-		_xfdashboard_window_tracker_x11_on_primary_monitor_changed(self, monitor);
+		_xfdashboard_window_tracker_gdk_on_primary_monitor_changed(self, monitor);
 	}
 
 	/* Return newly created monitor */
@@ -949,14 +950,14 @@ static XfdashboardWindowTrackerMonitorX11* _xfdashboard_window_tracker_x11_monit
 }
 
 /* Free a monitor object */
-static void _xfdashboard_window_tracker_x11_monitor_free(XfdashboardWindowTrackerX11 *self,
-															XfdashboardWindowTrackerMonitorX11 *inMonitor)
+static void _xfdashboard_window_tracker_gdk_monitor_free(XfdashboardWindowTrackerGDK *self,
+															XfdashboardWindowTrackerMonitorGDK *inMonitor)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	GList									*iter;
 
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_X11(inMonitor));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_GDK(inMonitor));
 
 	priv=self->priv;
 
@@ -989,15 +990,15 @@ static void _xfdashboard_window_tracker_x11_monitor_free(XfdashboardWindowTracke
 
 #ifdef HAVE_XINERAMA
 /* Number of monitors, primary monitor or size of any monitor changed */
-static void _xfdashboard_window_tracker_x11_on_monitors_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_monitors_changed(XfdashboardWindowTrackerGDK *self,
 																gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	GdkScreen								*screen;
 	gint									currentMonitorCount;
 	gint									newMonitorCount;
 	gint									i;
-	XfdashboardWindowTrackerMonitorX11		*monitor;
+	XfdashboardWindowTrackerMonitorGDK		*monitor;
 	GList									*iter;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
@@ -1036,7 +1037,7 @@ static void _xfdashboard_window_tracker_x11_on_monitors_changed(XfdashboardWindo
 		for(i=currentMonitorCount; i<newMonitorCount; i++)
 		{
 			/* Create monitor object */
-			_xfdashboard_window_tracker_x11_monitor_new(self, i);
+			_xfdashboard_window_tracker_gdk_monitor_new(self, i);
 		}
 	}
 
@@ -1051,10 +1052,10 @@ static void _xfdashboard_window_tracker_x11_on_monitors_changed(XfdashboardWindo
 			iter=g_list_last(priv->monitors);
 			if(!iter) continue;
 
-			monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_X11(iter->data);
+			monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_GDK(iter->data);
 
 			/* Free monitor object */
-			_xfdashboard_window_tracker_x11_monitor_free(self, monitor);
+			_xfdashboard_window_tracker_gdk_monitor_free(self, monitor);
 		}
 	}
 
@@ -1068,10 +1069,10 @@ static void _xfdashboard_window_tracker_x11_on_monitors_changed(XfdashboardWindo
 #endif
 
 /* Total size of screen changed */
-static void _xfdashboard_window_tracker_x11_on_screen_size_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_screen_size_changed(XfdashboardWindowTrackerGDK *self,
 																	gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	gint									w, h;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
@@ -1091,10 +1092,10 @@ static void _xfdashboard_window_tracker_x11_on_screen_size_changed(XfdashboardWi
 }
 
 /* Window manager has changed */
-static void _xfdashboard_window_tracker_x11_on_window_manager_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_window_manager_changed(XfdashboardWindowTrackerGDK *self,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 
@@ -1108,11 +1109,11 @@ static void _xfdashboard_window_tracker_x11_on_window_manager_changed(Xfdashboar
 }
 
 /* Suspension state of application changed */
-static void _xfdashboard_window_tracker_x11_on_application_suspended_changed(XfdashboardWindowTrackerX11 *self,
+static void _xfdashboard_window_tracker_gdk_on_application_suspended_changed(XfdashboardWindowTrackerGDK *self,
 																				GParamSpec *inSpec,
 																				gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	XfdashboardApplication					*app;
 	GList									*iter;
 	XfdashboardWindowTrackerWindow			*window;
@@ -1138,7 +1139,7 @@ static void _xfdashboard_window_tracker_x11_on_application_suspended_changed(Xfd
 		/* If application was suspended disconnect signal handlers ... */
 		if(priv->isAppSuspended)
 		{
-			g_signal_handlers_block_by_func(window, _xfdashboard_window_tracker_x11_on_window_geometry_changed, self);
+			g_signal_handlers_block_by_func(window, _xfdashboard_window_tracker_gdk_on_window_geometry_changed, self);
 		}
 			/* ... otherwise if application was resumed reconnect signals handlers
 			 * and emit 'geometry-changed' signal to reflect latest changes of
@@ -1147,10 +1148,10 @@ static void _xfdashboard_window_tracker_x11_on_application_suspended_changed(Xfd
 			else
 			{
 				/* Reconnect signal handler */
-				g_signal_handlers_unblock_by_func(window, _xfdashboard_window_tracker_x11_on_window_geometry_changed, self);
+				g_signal_handlers_unblock_by_func(window, _xfdashboard_window_tracker_gdk_on_window_geometry_changed, self);
 
 				/* Call signal handler to reflect latest changes */
-				_xfdashboard_window_tracker_x11_on_window_geometry_changed(self, window);
+				_xfdashboard_window_tracker_gdk_on_window_geometry_changed(self, window);
 			}
 	}
 }
@@ -1159,14 +1160,14 @@ static void _xfdashboard_window_tracker_x11_on_application_suspended_changed(Xfd
 /* IMPLEMENTATION: Interface XfdashboardWindowTracker */
 
 /* Get list of all windows (if wanted in stack order) */
-static GList* _xfdashboard_window_tracker_x11_window_tracker_get_windows(XfdashboardWindowTracker *inWindowTracker)
+static GList* _xfdashboard_window_tracker_gdk_window_tracker_get_windows(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	/* Return list of window objects created */
@@ -1174,14 +1175,14 @@ static GList* _xfdashboard_window_tracker_x11_window_tracker_get_windows(Xfdashb
 }
 
 /* Get list of all windows in stack order */
-static GList* _xfdashboard_window_tracker_x11_window_tracker_get_windows_stacked(XfdashboardWindowTracker *inWindowTracker)
+static GList* _xfdashboard_window_tracker_gdk_window_tracker_get_windows_stacked(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	/* Return list of window in stack order */
@@ -1189,28 +1190,28 @@ static GList* _xfdashboard_window_tracker_x11_window_tracker_get_windows_stacked
 }
 
 /* Get active window */
-static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tracker_get_active_window(XfdashboardWindowTracker *inWindowTracker)
+static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_gdk_window_tracker_get_active_window(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->activeWindow));
 }
 
 /* Get number of workspaces */
-static gint _xfdashboard_window_tracker_x11_window_tracker_get_workspaces_count(XfdashboardWindowTracker *inWindowTracker)
+static gint _xfdashboard_window_tracker_gdk_window_tracker_get_workspaces_count(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), 0);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), 0);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	/* Return number of workspaces */
@@ -1218,14 +1219,14 @@ static gint _xfdashboard_window_tracker_x11_window_tracker_get_workspaces_count(
 }
 
 /* Get list of workspaces */
-static GList* _xfdashboard_window_tracker_x11_window_tracker_get_workspaces(XfdashboardWindowTracker *inWindowTracker)
+static GList* _xfdashboard_window_tracker_gdk_window_tracker_get_workspaces(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	/* Return list of workspaces */
@@ -1233,31 +1234,31 @@ static GList* _xfdashboard_window_tracker_x11_window_tracker_get_workspaces(Xfda
 }
 
 /* Get active workspace */
-static XfdashboardWindowTrackerWorkspace* _xfdashboard_window_tracker_x11_window_tracker_get_active_workspace(XfdashboardWindowTracker *inWindowTracker)
+static XfdashboardWindowTrackerWorkspace* _xfdashboard_window_tracker_gdk_window_tracker_get_active_workspace(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	return(XFDASHBOARD_WINDOW_TRACKER_WORKSPACE(priv->activeWorkspace));
 }
 
 /* Get workspace by number */
-static XfdashboardWindowTrackerWorkspace* _xfdashboard_window_tracker_x11_window_tracker_get_workspace_by_number(XfdashboardWindowTracker *inWindowTracker,
+static XfdashboardWindowTrackerWorkspace* _xfdashboard_window_tracker_gdk_window_tracker_get_workspace_by_number(XfdashboardWindowTracker *inWindowTracker,
 																													gint inNumber)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	WnckWorkspace							*wnckWorkspace;
-	XfdashboardWindowTrackerWorkspaceX11	*workspace;
+	XfdashboardWindowTrackerWorkspaceGDK	*workspace;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	g_return_val_if_fail(inNumber>=0 && inNumber<wnck_screen_get_workspace_count(priv->screen), NULL);
@@ -1266,12 +1267,12 @@ static XfdashboardWindowTrackerWorkspace* _xfdashboard_window_tracker_x11_window
 	wnckWorkspace=wnck_screen_get_workspace(priv->screen, inNumber);
 
 	/* Get workspace object for wnck workspace */
-	workspace=_xfdashboard_window_tracker_x11_get_workspace_for_wnck(self, wnckWorkspace);
+	workspace=_xfdashboard_window_tracker_gdk_get_workspace_for_wnck(self, wnckWorkspace);
 	if(!workspace)
 	{
 		XFDASHBOARD_DEBUG(self, WINDOWS,
 							"No workspace object of type %s found for wnck workspace %s@%p named '%s'",
-							g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
+							g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_GDK),
 							G_OBJECT_TYPE_NAME(wnckWorkspace), wnckWorkspace, wnck_workspace_get_name(wnckWorkspace));
 
 		return(NULL);
@@ -1282,28 +1283,28 @@ static XfdashboardWindowTrackerWorkspace* _xfdashboard_window_tracker_x11_window
 }
 
 /* Determine if multiple monitors are supported */
-static gboolean _xfdashboard_window_tracker_x11_window_tracker_supports_multiple_monitors(XfdashboardWindowTracker *inWindowTracker)
+static gboolean _xfdashboard_window_tracker_gdk_window_tracker_supports_multiple_monitors(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), FALSE);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	return(priv->supportsMultipleMonitors);
 }
 
 /* Get number of monitors */
-static gint _xfdashboard_window_tracker_x11_window_tracker_get_monitors_count(XfdashboardWindowTracker *inWindowTracker)
+static gint _xfdashboard_window_tracker_gdk_window_tracker_get_monitors_count(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), 0);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), 0);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	/* Return number of monitors */
@@ -1311,14 +1312,14 @@ static gint _xfdashboard_window_tracker_x11_window_tracker_get_monitors_count(Xf
 }
 
 /* Get list of monitors */
-static GList* _xfdashboard_window_tracker_x11_window_tracker_get_monitors(XfdashboardWindowTracker *inWindowTracker)
+static GList* _xfdashboard_window_tracker_gdk_window_tracker_get_monitors(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	/* Return list of workspaces */
@@ -1326,29 +1327,29 @@ static GList* _xfdashboard_window_tracker_x11_window_tracker_get_monitors(Xfdash
 }
 
 /* Get primary monitor */
-static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_x11_window_tracker_get_primary_monitor(XfdashboardWindowTracker *inWindowTracker)
+static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_gdk_window_tracker_get_primary_monitor(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	return(XFDASHBOARD_WINDOW_TRACKER_MONITOR(priv->primaryMonitor));
 }
 
 /* Get monitor by number */
-static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_x11_window_tracker_get_monitor_by_number(XfdashboardWindowTracker *inWindowTracker,
+static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_gdk_window_tracker_get_monitor_by_number(XfdashboardWindowTracker *inWindowTracker,
 																												gint inNumber)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	g_return_val_if_fail(inNumber>=0, NULL);
@@ -1359,25 +1360,25 @@ static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_x11_window_t
 }
 
 /* Get monitor at requested position */
-static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_x11_window_tracker_get_monitor_by_position(XfdashboardWindowTracker *inWindowTracker,
+static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_gdk_window_tracker_get_monitor_by_position(XfdashboardWindowTracker *inWindowTracker,
 																												gint inX,
 																												gint inY)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	GList									*iter;
-	XfdashboardWindowTrackerMonitorX11		*monitor;
+	XfdashboardWindowTrackerMonitorGDK		*monitor;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	/* Iterate through monitors and return the one containing the requested position */
 	for(iter=priv->monitors; iter; iter=g_list_next(iter))
 	{
 		/* Get monitor at iterator */
-		monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_X11(iter->data);
+		monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_GDK(iter->data);
 		if(!monitor) continue;
 
 		/* Check if this monitor contains the requested position. If it does
@@ -1396,12 +1397,12 @@ static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_x11_window_t
 }
 
 /* Get size of screen */
-static void _xfdashboard_window_tracker_x11_window_tracker_get_screen_size(XfdashboardWindowTracker *inWindowTracker,
+static void _xfdashboard_window_tracker_gdk_window_tracker_get_screen_size(XfdashboardWindowTracker *inWindowTracker,
 																			gint *outWidth,
 																			gint *outHeight)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	gint									width, height;
 #if GTK_CHECK_VERSION(3, 22, 0)
 	gint									i;
@@ -1412,9 +1413,9 @@ static void _xfdashboard_window_tracker_x11_window_tracker_get_screen_size(Xfdas
 	gboolean								forceUpdate;
 #endif
 
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker));
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 #if GTK_CHECK_VERSION(3, 22, 0)
@@ -1482,14 +1483,14 @@ static void _xfdashboard_window_tracker_x11_window_tracker_get_screen_size(Xfdas
 }
 
 /* Get window manager name managing desktop environment */
-static const gchar* _xfdashboard_window_tracker_x11_window_tracker_get_window_manager_name(XfdashboardWindowTracker *inWindowTracker)
+static const gchar* _xfdashboard_window_tracker_gdk_window_tracker_get_window_manager_name(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	/* Get window manager name from libwnck and return */
@@ -1498,17 +1499,17 @@ static const gchar* _xfdashboard_window_tracker_x11_window_tracker_get_window_ma
 }
 
 /* Get root (desktop) window */
-static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tracker_get_root_window(XfdashboardWindowTracker *inWindowTracker)
+static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_gdk_window_tracker_get_root_window(XfdashboardWindowTracker *inWindowTracker)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 	gulong									backgroundWindowID;
 	GList									*windows;
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerWindowGDK		*window;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 	priv=self->priv;
 
 	/* Find and return root window (the desktop) by known ID */
@@ -1525,7 +1526,7 @@ static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tr
 								G_OBJECT_TYPE_NAME(backgroundWindow), backgroundWindow);
 
 			/* Get or create window object for wnck background window */
-			window=_xfdashboard_window_tracker_x11_create_window_for_wnck(self, backgroundWindow);
+			window=_xfdashboard_window_tracker_gdk_create_window_for_wnck(self, backgroundWindow);
 			XFDASHBOARD_DEBUG(self, WINDOWS,
 								"Resolved desktop window %s@%p to window object %s@%p",
 								G_OBJECT_TYPE_NAME(backgroundWindow), backgroundWindow,
@@ -1555,7 +1556,7 @@ static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tr
 								G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow);
 
 			/* Get or create window object for wnck background window */
-			window=_xfdashboard_window_tracker_x11_create_window_for_wnck(self, wnckWindow);
+			window=_xfdashboard_window_tracker_gdk_create_window_for_wnck(self, wnckWindow);
 			XFDASHBOARD_DEBUG(self, WINDOWS,
 								"Resolved desktop window %s@%p to window object %s@%p",
 								G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow,
@@ -1574,25 +1575,27 @@ static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tr
 }
 
 /* Get window of stage */
-static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tracker_get_stage_window(XfdashboardWindowTracker *inWindowTracker,
+static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_gdk_window_tracker_get_stage_window(XfdashboardWindowTracker *inWindowTracker,
 																										ClutterStage *inStage)
 {
-	XfdashboardWindowTrackerX11				*self;
+	XfdashboardWindowTrackerGDK				*self;
+	GdkWindow								*stageGdkWindow;
 	Window									stageXWindow;
 	WnckWindow								*wnckWindow;
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerWindowGDK		*window;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
 	g_return_val_if_fail(CLUTTER_IS_STAGE(inStage), NULL);
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
 
-	/* Get stage X window and translate to needed window type */
-	stageXWindow=clutter_x11_get_stage_window(inStage);
+	/* Get stage window and translate to needed window type */
+	stageGdkWindow=clutter_gdk_get_stage_window(inStage);
+	stageXWindow=gdk_x11_window_get_xid(stageGdkWindow);
 	wnckWindow=wnck_window_get(stageXWindow);
 
 	/* Get or create window object for wnck background window */
-	window=_xfdashboard_window_tracker_x11_create_window_for_wnck(self, wnckWindow);
+	window=_xfdashboard_window_tracker_gdk_create_window_for_wnck(self, wnckWindow);
 	XFDASHBOARD_DEBUG(self, WINDOWS,
 						"Resolved stage window %s@%p to window object %s@%p",
 						G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow,
@@ -1604,88 +1607,88 @@ static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tr
 /* Interface initialization
  * Set up default functions
  */
-static void _xfdashboard_window_tracker_x11_window_tracker_iface_init(XfdashboardWindowTrackerInterface *iface)
+static void _xfdashboard_window_tracker_gdk_window_tracker_iface_init(XfdashboardWindowTrackerInterface *iface)
 {
-	iface->get_windows=_xfdashboard_window_tracker_x11_window_tracker_get_windows;
-	iface->get_windows_stacked=_xfdashboard_window_tracker_x11_window_tracker_get_windows_stacked;
-	iface->get_active_window=_xfdashboard_window_tracker_x11_window_tracker_get_active_window;
+	iface->get_windows=_xfdashboard_window_tracker_gdk_window_tracker_get_windows;
+	iface->get_windows_stacked=_xfdashboard_window_tracker_gdk_window_tracker_get_windows_stacked;
+	iface->get_active_window=_xfdashboard_window_tracker_gdk_window_tracker_get_active_window;
 
-	iface->get_workspaces_count=_xfdashboard_window_tracker_x11_window_tracker_get_workspaces_count;
-	iface->get_workspaces=_xfdashboard_window_tracker_x11_window_tracker_get_workspaces;
-	iface->get_active_workspace=_xfdashboard_window_tracker_x11_window_tracker_get_active_workspace;
-	iface->get_workspace_by_number=_xfdashboard_window_tracker_x11_window_tracker_get_workspace_by_number;
+	iface->get_workspaces_count=_xfdashboard_window_tracker_gdk_window_tracker_get_workspaces_count;
+	iface->get_workspaces=_xfdashboard_window_tracker_gdk_window_tracker_get_workspaces;
+	iface->get_active_workspace=_xfdashboard_window_tracker_gdk_window_tracker_get_active_workspace;
+	iface->get_workspace_by_number=_xfdashboard_window_tracker_gdk_window_tracker_get_workspace_by_number;
 
-	iface->supports_multiple_monitors=_xfdashboard_window_tracker_x11_window_tracker_supports_multiple_monitors;
-	iface->get_monitors_count=_xfdashboard_window_tracker_x11_window_tracker_get_monitors_count;
-	iface->get_monitors=_xfdashboard_window_tracker_x11_window_tracker_get_monitors;
-	iface->get_primary_monitor=_xfdashboard_window_tracker_x11_window_tracker_get_primary_monitor;
-	iface->get_monitor_by_number=_xfdashboard_window_tracker_x11_window_tracker_get_monitor_by_number;
-	iface->get_monitor_by_position=_xfdashboard_window_tracker_x11_window_tracker_get_monitor_by_position;
+	iface->supports_multiple_monitors=_xfdashboard_window_tracker_gdk_window_tracker_supports_multiple_monitors;
+	iface->get_monitors_count=_xfdashboard_window_tracker_gdk_window_tracker_get_monitors_count;
+	iface->get_monitors=_xfdashboard_window_tracker_gdk_window_tracker_get_monitors;
+	iface->get_primary_monitor=_xfdashboard_window_tracker_gdk_window_tracker_get_primary_monitor;
+	iface->get_monitor_by_number=_xfdashboard_window_tracker_gdk_window_tracker_get_monitor_by_number;
+	iface->get_monitor_by_position=_xfdashboard_window_tracker_gdk_window_tracker_get_monitor_by_position;
 
-	iface->get_screen_size=_xfdashboard_window_tracker_x11_window_tracker_get_screen_size;
+	iface->get_screen_size=_xfdashboard_window_tracker_gdk_window_tracker_get_screen_size;
 
-	iface->get_window_manager_name=_xfdashboard_window_tracker_x11_window_tracker_get_window_manager_name;
+	iface->get_window_manager_name=_xfdashboard_window_tracker_gdk_window_tracker_get_window_manager_name;
 
-	iface->get_root_window=_xfdashboard_window_tracker_x11_window_tracker_get_root_window;
-	iface->get_stage_window=_xfdashboard_window_tracker_x11_window_tracker_get_stage_window;
+	iface->get_root_window=_xfdashboard_window_tracker_gdk_window_tracker_get_root_window;
+	iface->get_stage_window=_xfdashboard_window_tracker_gdk_window_tracker_get_stage_window;
 }
 
 
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-static void _xfdashboard_window_tracker_x11_dispose_free_window(gpointer inData,
+static void _xfdashboard_window_tracker_gdk_dispose_free_window(gpointer inData,
 																gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerWindowGDK		*window;
 
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inData));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_GDK(inData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inUserData));
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inUserData);
-	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inData);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inUserData);
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GDK(inData);
 
 	/* Unreference window */
-	_xfdashboard_window_tracker_x11_free_window(self, window);
+	_xfdashboard_window_tracker_gdk_free_window(self, window);
 }
 
-static void _xfdashboard_window_tracker_x11_dispose_free_workspace(gpointer inData,
+static void _xfdashboard_window_tracker_gdk_dispose_free_workspace(gpointer inData,
 																	gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerWorkspaceX11	*workspace;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerWorkspaceGDK	*workspace;
 
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE_X11(inData));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE_GDK(inData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inUserData));
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inUserData);
-	workspace=XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_X11(inData);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inUserData);
+	workspace=XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_GDK(inData);
 
 	/* Unreference workspace */
-	_xfdashboard_window_tracker_x11_free_workspace(self, workspace);
+	_xfdashboard_window_tracker_gdk_free_workspace(self, workspace);
 }
 
-static void _xfdashboard_window_tracker_x11_dispose_free_monitor(gpointer inData,
+static void _xfdashboard_window_tracker_gdk_dispose_free_monitor(gpointer inData,
 																	gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11				*self;
-	XfdashboardWindowTrackerMonitorX11		*monitor;
+	XfdashboardWindowTrackerGDK				*self;
+	XfdashboardWindowTrackerMonitorGDK		*monitor;
 
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_X11(inData));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_GDK(inData));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inUserData));
 
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inUserData);
-	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_X11(inData);
+	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inUserData);
+	monitor=XFDASHBOARD_WINDOW_TRACKER_MONITOR_GDK(inData);
 
 	/* Unreference monitor */
-	_xfdashboard_window_tracker_x11_monitor_free(self, monitor);
+	_xfdashboard_window_tracker_gdk_monitor_free(self, monitor);
 }
 
-static void _xfdashboard_window_tracker_x11_dispose(GObject *inObject)
+static void _xfdashboard_window_tracker_gdk_dispose(GObject *inObject)
 {
-	XfdashboardWindowTrackerX11				*self=XFDASHBOARD_WINDOW_TRACKER_X11(inObject);
-	XfdashboardWindowTrackerX11Private		*priv=self->priv;
+	XfdashboardWindowTrackerGDK				*self=XFDASHBOARD_WINDOW_TRACKER_GDK(inObject);
+	XfdashboardWindowTrackerGDKPrivate		*priv=self->priv;
 
 	/* Dispose allocated resources */
 	if(priv->suspendSignalID)
@@ -1706,7 +1709,7 @@ static void _xfdashboard_window_tracker_x11_dispose(GObject *inObject)
 
 	if(priv->windows)
 	{
-		g_list_foreach(priv->windows, _xfdashboard_window_tracker_x11_dispose_free_window, self);
+		g_list_foreach(priv->windows, _xfdashboard_window_tracker_gdk_dispose_free_window, self);
 		g_list_free(priv->windows);
 		priv->windows=NULL;
 	}
@@ -1724,7 +1727,7 @@ static void _xfdashboard_window_tracker_x11_dispose(GObject *inObject)
 
 	if(priv->workspaces)
 	{
-		g_list_foreach(priv->workspaces, _xfdashboard_window_tracker_x11_dispose_free_workspace, self);
+		g_list_foreach(priv->workspaces, _xfdashboard_window_tracker_gdk_dispose_free_workspace, self);
 		g_list_free(priv->workspaces);
 		priv->workspaces=NULL;
 	}
@@ -1736,7 +1739,7 @@ static void _xfdashboard_window_tracker_x11_dispose(GObject *inObject)
 
 	if(priv->monitors)
 	{
-		g_list_foreach(priv->monitors, _xfdashboard_window_tracker_x11_dispose_free_monitor, self);
+		g_list_foreach(priv->monitors, _xfdashboard_window_tracker_gdk_dispose_free_monitor, self);
 		g_list_free(priv->monitors);
 		priv->monitors=NULL;
 	}
@@ -1762,11 +1765,11 @@ static void _xfdashboard_window_tracker_x11_dispose(GObject *inObject)
 	}
 
 	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_window_tracker_x11_parent_class)->dispose(inObject);
+	G_OBJECT_CLASS(xfdashboard_window_tracker_gdk_parent_class)->dispose(inObject);
 }
 
 /* Set/get properties */
-static void _xfdashboard_window_tracker_x11_set_property(GObject *inObject,
+static void _xfdashboard_window_tracker_gdk_set_property(GObject *inObject,
 															guint inPropID,
 															const GValue *inValue,
 															GParamSpec *inSpec)
@@ -1779,12 +1782,12 @@ static void _xfdashboard_window_tracker_x11_set_property(GObject *inObject,
 	}
 }
 
-static void _xfdashboard_window_tracker_x11_get_property(GObject *inObject,
+static void _xfdashboard_window_tracker_gdk_get_property(GObject *inObject,
 															guint inPropID,
 															GValue *outValue,
 															GParamSpec *inSpec)
 {
-	XfdashboardWindowTrackerX11			*self=XFDASHBOARD_WINDOW_TRACKER_X11(inObject);
+	XfdashboardWindowTrackerGDK			*self=XFDASHBOARD_WINDOW_TRACKER_GDK(inObject);
 
 	switch(inPropID)
 	{
@@ -1810,7 +1813,7 @@ static void _xfdashboard_window_tracker_x11_get_property(GObject *inObject,
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_window_tracker_x11_class_init(XfdashboardWindowTrackerX11Class *klass)
+void xfdashboard_window_tracker_gdk_class_init(XfdashboardWindowTrackerGDKClass *klass)
 {
 	GObjectClass						*gobjectClass=G_OBJECT_CLASS(klass);
 	XfdashboardWindowTracker			*trackerIface;
@@ -1820,27 +1823,27 @@ void xfdashboard_window_tracker_x11_class_init(XfdashboardWindowTrackerX11Class 
 	trackerIface=g_type_default_interface_ref(XFDASHBOARD_TYPE_WINDOW_TRACKER);
 
 	/* Override functions */
-	gobjectClass->dispose=_xfdashboard_window_tracker_x11_dispose;
-	gobjectClass->set_property=_xfdashboard_window_tracker_x11_set_property;
-	gobjectClass->get_property=_xfdashboard_window_tracker_x11_get_property;
+	gobjectClass->dispose=_xfdashboard_window_tracker_gdk_dispose;
+	gobjectClass->set_property=_xfdashboard_window_tracker_gdk_set_property;
+	gobjectClass->get_property=_xfdashboard_window_tracker_gdk_get_property;
 
 	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardWindowTrackerX11Private));
+	g_type_class_add_private(klass, sizeof(XfdashboardWindowTrackerGDKPrivate));
 
 	/* Define properties */
 	paramSpec=g_object_interface_find_property(trackerIface, "active-window");
-	XfdashboardWindowTrackerX11Properties[PROP_ACTIVE_WINDOW]=
+	XfdashboardWindowTrackerGDKProperties[PROP_ACTIVE_WINDOW]=
 		g_param_spec_override("active-window", paramSpec);
 
 	paramSpec=g_object_interface_find_property(trackerIface, "active-workspace");
-	XfdashboardWindowTrackerX11Properties[PROP_ACTIVE_WORKSPACE]=
+	XfdashboardWindowTrackerGDKProperties[PROP_ACTIVE_WORKSPACE]=
 		g_param_spec_override("active-workspace", paramSpec);
 
 	paramSpec=g_object_interface_find_property(trackerIface, "primary-monitor");
-	XfdashboardWindowTrackerX11Properties[PROP_PRIMARY_MONITOR]=
+	XfdashboardWindowTrackerGDKProperties[PROP_PRIMARY_MONITOR]=
 		g_param_spec_override("primary-monitor", paramSpec);
 
-	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowTrackerX11Properties);
+	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardWindowTrackerGDKProperties);
 
 	/* Release allocated resources */
 	g_type_default_interface_unref(trackerIface);
@@ -1849,13 +1852,13 @@ void xfdashboard_window_tracker_x11_class_init(XfdashboardWindowTrackerX11Class 
 /* Object initialization
  * Create private structure and set up default values
  */
-void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
+void xfdashboard_window_tracker_gdk_init(XfdashboardWindowTrackerGDK *self)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
+	XfdashboardWindowTrackerGDKPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_X11_GET_PRIVATE(self);
+	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_GDK_GET_PRIVATE(self);
 
-	XFDASHBOARD_DEBUG(self, WINDOWS, "Initializing X11 window tracker");
+	XFDASHBOARD_DEBUG(self, WINDOWS, "Initializing GDK window tracker");
 
 	/* Set default values */
 	priv->windows=NULL;
@@ -1883,50 +1886,50 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 	/* Connect signals to screen */
 	g_signal_connect_swapped(priv->screen,
 								"window-stacking-changed",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_stacking_changed),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_window_stacking_changed),
 								self);
 
 	g_signal_connect_swapped(priv->screen,
 								"window-closed",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_closed),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_window_closed),
 								self);
 	g_signal_connect_swapped(priv->screen,
 								"window-opened",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_opened),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_window_opened),
 								self);
 	g_signal_connect_swapped(priv->screen,
 								"active-window-changed",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_active_window_changed),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_active_window_changed),
 								self);
 
 	g_signal_connect_swapped(priv->screen,
 								"workspace-destroyed",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_workspace_destroyed),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_workspace_destroyed),
 								self);
 	g_signal_connect_swapped(priv->screen,
 								"workspace-created",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_workspace_created),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_workspace_created),
 								self);
 	g_signal_connect_swapped(priv->screen,
 								"active-workspace-changed",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_active_workspace_changed),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_active_workspace_changed),
 								self);
 
 	g_signal_connect_swapped(priv->gdkScreen,
 								"size-changed",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_screen_size_changed),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_screen_size_changed),
 								self);
 
 	g_signal_connect_swapped(priv->screen,
 								"window-manager-changed",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_manager_changed),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_window_manager_changed),
 								self);
 
 #ifdef HAVE_XINERAMA
 	/* Check if multiple monitors are supported */
 	if(XineramaIsActive(GDK_SCREEN_XDISPLAY(priv->gdkScreen)))
 	{
-		XfdashboardWindowTrackerMonitorX11	*monitor;
+		XfdashboardWindowTrackerMonitorGDK	*monitor;
 		gint								numberMonitors;
 		gint								i;
 
@@ -1940,7 +1943,7 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 		 */
 		g_signal_connect_data(priv->gdkScreen,
 								"monitors-changed",
-								G_CALLBACK(_xfdashboard_window_tracker_x11_on_monitors_changed),
+								G_CALLBACK(_xfdashboard_window_tracker_gdk_on_monitors_changed),
 								self,
 								NULL,
 								G_CONNECT_AFTER | G_CONNECT_SWAPPED);
@@ -1954,7 +1957,7 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 		for(i=0; i<numberMonitors; i++)
 		{
 			/* Create monitor object */
-			monitor=_xfdashboard_window_tracker_x11_monitor_new(self, i);
+			monitor=_xfdashboard_window_tracker_gdk_monitor_new(self, i);
 
 			/* Remember primary monitor */
 			if(xfdashboard_window_tracker_monitor_is_primary(XFDASHBOARD_WINDOW_TRACKER_MONITOR(monitor)))
@@ -1969,7 +1972,7 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 	priv->application=xfdashboard_application_get_default();
 	priv->suspendSignalID=g_signal_connect_swapped(priv->application,
 													"notify::is-suspended",
-													G_CALLBACK(_xfdashboard_window_tracker_x11_on_application_suspended_changed),
+													G_CALLBACK(_xfdashboard_window_tracker_gdk_on_application_suspended_changed),
 													self);
 	priv->isAppSuspended=xfdashboard_application_is_suspended(priv->application);
 }
@@ -1978,7 +1981,7 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 /* IMPLEMENTATION: Public API */
 
 /* Get last timestamp for use in libwnck */
-guint32 xfdashboard_window_tracker_x11_get_time(void)
+guint32 xfdashboard_window_tracker_gdk_get_time(void)
 {
 	const ClutterEvent		*currentClutterEvent;
 	guint32					timestamp;
@@ -2033,7 +2036,7 @@ guint32 xfdashboard_window_tracker_x11_get_time(void)
 		if(stage)
 		{
 			/* Get GDK window of stage */
-			window=gdk_x11_window_lookup_for_display(display, clutter_x11_get_stage_window(stage));
+			window=clutter_gdk_get_stage_window(stage);
 			if(!window)
 			{
 				XFDASHBOARD_DEBUG(NULL, WINDOWS,
@@ -2069,29 +2072,29 @@ guint32 xfdashboard_window_tracker_x11_get_time(void)
 }
 
 /* Find and return XfdashboardWindowTrackerWindow object for mapped wnck window */
-XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_x11_get_window_for_wnck(XfdashboardWindowTrackerX11 *self,
+XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_gdk_get_window_for_wnck(XfdashboardWindowTrackerGDK *self,
 																					WnckWindow *inWindow)
 {
-	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerWindowGDK		*window;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(self), NULL);
 	g_return_val_if_fail(WNCK_IS_WINDOW(inWindow), NULL);
 
 	/* Lookup window object for requested wnck window and return it */
-	window=_xfdashboard_window_tracker_x11_get_window_for_wnck(self, inWindow);
+	window=_xfdashboard_window_tracker_gdk_get_window_for_wnck(self, inWindow);
 	return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
 }
 
 /* Find and return XfdashboardWindowTrackerWorkspace object for mapped wnck workspace */
-XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_x11_get_workspace_for_wnck(XfdashboardWindowTrackerX11 *self,
+XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_gdk_get_workspace_for_wnck(XfdashboardWindowTrackerGDK *self,
 																							WnckWorkspace *inWorkspace)
 {
-	XfdashboardWindowTrackerWorkspaceX11	*workspace;
+	XfdashboardWindowTrackerWorkspaceGDK	*workspace;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(self), NULL);
 	g_return_val_if_fail(WNCK_IS_WORKSPACE(inWorkspace), NULL);
 
 	/* Lookup workspace object for requested wnck workspace and return it */
-	workspace=_xfdashboard_window_tracker_x11_get_workspace_for_wnck(self, inWorkspace);
+	workspace=_xfdashboard_window_tracker_gdk_get_workspace_for_wnck(self, inWorkspace);
 	return(XFDASHBOARD_WINDOW_TRACKER_WORKSPACE(workspace));
 }
