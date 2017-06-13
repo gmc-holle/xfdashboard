@@ -386,6 +386,69 @@ static XfdashboardWindowTracker* _xfdashboard_window_tracker_backend_x11_window_
 	return(XFDASHBOARD_WINDOW_TRACKER(priv->windowTracker));
 }
 
+/* Get associated stage of window */
+static ClutterStage* _xfdashboard_window_tracker_backend_x11_window_tracker_backend_get_stage_from_window(XfdashboardWindowTrackerBackend *inBackend,
+																											XfdashboardWindowTrackerWindow *inStageWindow)
+{
+	XfdashboardWindowTrackerBackendX11			*self;
+	XfdashboardWindowTrackerWindowX11			*stageWindow;
+	WnckWindow									*stageWnckWindow;
+	Window										stageXWindow;
+	ClutterStage								*foundStage;
+	GSList										*stages;
+	GSList										*iter;
+	Window										iterXWindow;
+	ClutterStage								*stage;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_BACKEND_X11(inBackend), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inStageWindow), NULL);
+
+	self=XFDASHBOARD_WINDOW_TRACKER_BACKEND_X11(inBackend);
+	stageWindow=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inStageWindow);
+
+	/* Get wnck and X window of stage window */
+	stageWnckWindow=xfdashboard_window_tracker_window_x11_get_window(stageWindow);
+	if(!stageWnckWindow)
+	{
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Could not get wnck window for window %s@%p",
+							G_OBJECT_TYPE_NAME(stageWindow),
+							stageWindow);
+		g_critical(_("Could not get real stage window to find stage"));
+		return(NULL);
+	}
+
+	stageXWindow=wnck_window_get_xid(stageWnckWindow);
+	if(stageXWindow==None)
+	{
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Could not get X server window from wnck window %s@%p for window %s@%p",
+							G_OBJECT_TYPE_NAME(stageWnckWindow),
+							stageWnckWindow,
+							G_OBJECT_TYPE_NAME(stageWindow),
+							stageWindow);
+		g_critical(_("Could not get real stage window to find stage"));
+		return(NULL);
+	}
+
+	/* Iterate through stages and check if stage window matches requested one */
+	foundStage=NULL;
+	stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
+	for(iter=stages; !foundStage && iter; iter=g_slist_next(iter))
+	{
+		stage=CLUTTER_STAGE(iter->data);
+		if(stage)
+		{
+			iterXWindow=clutter_x11_get_stage_window(stage);
+			if(iterXWindow==stageXWindow) foundStage=stage;
+		}
+	}
+	g_slist_free(stages);
+
+	/* Return stage found */
+	return(foundStage);
+}
+
 /* Set up and show window for use as stage */
 static void _xfdashboard_window_tracker_backend_x11_window_tracker_backend_show_stage_window(XfdashboardWindowTrackerBackend *inBackend,
 																								XfdashboardWindowTrackerWindow *inStageWindow)
@@ -595,6 +658,7 @@ static void _xfdashboard_window_tracker_backend_x11_window_tracker_backend_iface
 
 	iface->get_window_tracker=_xfdashboard_window_tracker_backend_x11_window_tracker_backend_get_window_tracker;
 
+	iface->get_stage_from_window=_xfdashboard_window_tracker_backend_x11_window_tracker_backend_get_stage_from_window;
 	iface->show_stage_window=_xfdashboard_window_tracker_backend_x11_window_tracker_backend_show_stage_window;
 	iface->hide_stage_window=_xfdashboard_window_tracker_backend_x11_window_tracker_backend_hide_stage_window;
 }

@@ -63,10 +63,12 @@ struct _XfdashboardWindowTrackerBackendInterface
 
 	XfdashboardWindowTracker* (*get_window_tracker)(XfdashboardWindowTrackerBackend *self);
 
+	ClutterStage* (*get_stage_from_window)(XfdashboardWindowTrackerBackend *self,
+											XfdashboardWindowTrackerWindow *inWindow);
 	void (*show_stage_window)(XfdashboardWindowTrackerBackend *self,
-								XfdashboardWindowTrackerWindow *inStageWindow);
+								XfdashboardWindowTrackerWindow *inWindow);
 	void (*hide_stage_window)(XfdashboardWindowTrackerBackend *self,
-								XfdashboardWindowTrackerWindow *inStageWindow);
+								XfdashboardWindowTrackerWindow *inWindow);
 };
 
 
@@ -79,10 +81,12 @@ const gchar* xfdashboard_window_tracker_backend_get_name(XfdashboardWindowTracke
 
 XfdashboardWindowTracker* xfdashboard_window_tracker_backend_get_window_tracker(XfdashboardWindowTrackerBackend *self);
 
+ClutterStage* xfdashboard_window_tracker_backend_get_stage_from_window(XfdashboardWindowTrackerBackend *self,
+																		XfdashboardWindowTrackerWindow *inWindow);
 void xfdashboard_window_tracker_backend_show_stage_window(XfdashboardWindowTrackerBackend *self,
-															XfdashboardWindowTrackerWindow *inStageWindow);
+															XfdashboardWindowTrackerWindow *inWindow);
 void xfdashboard_window_tracker_backend_hide_stage_window(XfdashboardWindowTrackerBackend *self,
-															XfdashboardWindowTrackerWindow *inStageWindow);
+															XfdashboardWindowTrackerWindow *inWindow);
 
 G_END_DECLS
 

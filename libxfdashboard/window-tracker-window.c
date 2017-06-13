@@ -743,23 +743,48 @@ gboolean xfdashboard_window_tracker_window_is_stage(XfdashboardWindowTrackerWind
 }
 
 /* Get stage for requested window */
+/**
+ * xfdashboard_window_tracker_window_get_stage:
+ * @self: A #XfdashboardWindowTrackerWindow
+ *
+ * Get stage for requested stage window @self from default window tracker backend.
+ *
+ * This function is the logical equivalent of:
+ *
+ * |[<!-- language="C" -->
+ *   XfdashboardWindowTrackerBackend *backend;
+ *   ClutterStage                    *stage;
+ *
+ *   backend=xfdashboard_window_tracker_backend_get_default();
+ *   stage=xfdashboard_window_tracker_backend_get_stage_from_window(backend, self);
+ * ]|
+ *
+ * Return value: (transfer none): The #ClutterStage for stage window @self or
+ *   %NULL if @self is not a stage window or stage could not be found.
+ */
 ClutterStage* xfdashboard_window_tracker_window_get_stage(XfdashboardWindowTrackerWindow *self)
 {
-	XfdashboardWindowTrackerWindowInterface		*iface;
+	XfdashboardWindowTrackerBackend		*backend;
+	ClutterStage						*stage;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(self), NULL);
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(self));
 
-	iface=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GET_IFACE(self);
-
-	/* Call virtual function */
-	if(iface->get_stage)
+	/* Get default window tracker backend */
+	backend=xfdashboard_window_tracker_backend_get_default();
+	if(!backend)
 	{
-		return(iface->get_stage(self));
+		g_critical(_("Could not get default window tracker backend"));
+		return;
 	}
 
-	/* If we get here the virtual function was not overridden */
-	XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, "get_stage");
-	return(NULL);
+	/* Redirect function to window tracker backend */
+	stage=xfdashboard_window_tracker_backend_get_stage_from_window(backend, self);
+
+	/* Release allocated resources */
+	if(backend) g_object_unref(backend);
+
+	/* Return the stage found */
+	return(stage);
 }
 
 /**

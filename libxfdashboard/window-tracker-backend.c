@@ -177,27 +177,59 @@ XfdashboardWindowTracker* xfdashboard_window_tracker_backend_get_window_tracker(
 }
 
 /**
+ * xfdashboard_window_tracker_backend_get_stage_from_window:
+ * @self: A #XfdashboardWindowTrackerBackend
+ * @inWindow: A #XfdashboardWindowTrackerWindow defining the stage window
+ *
+ * Asks the window tracker backend @self to find the #ClutterStage which uses
+ * stage window @inWindow.
+ *
+ * Return value: (transfer none): The #ClutterStage for stage window @inWindow or
+ *   %NULL if @inWindow is not a stage window or stage could not be found.
+ */
+ClutterStage* xfdashboard_window_tracker_backend_get_stage_from_window(XfdashboardWindowTrackerBackend *self,
+																		XfdashboardWindowTrackerWindow *inWindow)
+{
+	XfdashboardWindowTrackerBackendInterface		*iface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_BACKEND(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), NULL);
+
+	iface=XFDASHBOARD_WINDOW_TRACKER_BACKEND_GET_IFACE(self);
+
+	/* Call virtual function */
+	if(iface->get_stage_from_window)
+	{
+		return(iface->get_stage_from_window(self, inWindow));
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_WINDOWS_TRACKER_BACKEND_WARN_NOT_IMPLEMENTED(self, "get_stage_from_window");
+	return(NULL);
+}
+
+/**
  * xfdashboard_window_tracker_backend_show_stage_window:
  * @self: A #XfdashboardWindowTrackerBackend
- * @inStageWindow: A #XfdashboardWindowTrackerWindow defining the stage window
+ * @inWindow: A #XfdashboardWindowTrackerWindow defining the stage window
  *
- * Asks the window tracker backend @self to set up and show the window @inStageWindow
+ * Asks the window tracker backend @self to set up and show the window @inWindow
  * for use as stage window.
  */
 void xfdashboard_window_tracker_backend_show_stage_window(XfdashboardWindowTrackerBackend *self,
-															XfdashboardWindowTrackerWindow *inStageWindow)
+															XfdashboardWindowTrackerWindow *inWindow)
 {
 	XfdashboardWindowTrackerBackendInterface		*iface;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_BACKEND(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inStageWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
 	iface=XFDASHBOARD_WINDOW_TRACKER_BACKEND_GET_IFACE(self);
 
 	/* Call virtual function */
 	if(iface->show_stage_window)
 	{
-		iface->show_stage_window(self, inStageWindow);
+		iface->show_stage_window(self, inWindow);
 		return;
 	}
 
@@ -208,24 +240,24 @@ void xfdashboard_window_tracker_backend_show_stage_window(XfdashboardWindowTrack
 /**
  * xfdashboard_window_tracker_backend_hide_stage_window:
  * @self: A #XfdashboardWindowTrackerBackend
- * @inStageWindow: A #XfdashboardWindowTrackerWindow defining the stage window
+ * @inWindow: A #XfdashboardWindowTrackerWindow defining the stage window
  *
- * Asks the window tracker backend @self to hide the stage window @inStageWindow.
+ * Asks the window tracker backend @self to hide the stage window @inWindow.
  */
 void xfdashboard_window_tracker_backend_hide_stage_window(XfdashboardWindowTrackerBackend *self,
-															XfdashboardWindowTrackerWindow *inStageWindow)
+															XfdashboardWindowTrackerWindow *inWindow)
 {
 	XfdashboardWindowTrackerBackendInterface		*iface;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_BACKEND(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inStageWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
 	iface=XFDASHBOARD_WINDOW_TRACKER_BACKEND_GET_IFACE(self);
 
 	/* Call virtual function */
 	if(iface->hide_stage_window)
 	{
-		iface->hide_stage_window(self, inStageWindow);
+		iface->hide_stage_window(self, inWindow);
 		return;
 	}
 

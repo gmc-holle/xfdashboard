@@ -1140,45 +1140,6 @@ static ClutterContent* _xfdashboard_window_tracker_window_x11_window_tracker_win
 	return(priv->content);
 }
 
-/* Get associated stage of window */
-static ClutterStage* _xfdashboard_window_tracker_window_x11_window_tracker_window_get_stage(XfdashboardWindowTrackerWindow *inWindow)
-{
-	XfdashboardWindowTrackerWindowX11			*self;
-	XfdashboardWindowTrackerWindowX11Private	*priv;
-	ClutterStage								*foundStage;
-	ClutterStage								*stage;
-	Window										stageXWindow;
-	GSList										*stages, *entry;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inWindow), NULL);
-
-	self=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inWindow);
-	priv=self->priv;
-
-	/* A wnck window must be wrapped by this object */
-	if(!priv->window)
-	{
-		XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_WARN_NO_WINDOW(self);
-		return(NULL);
-	}
-
-	/* Iterate through stages and check if stage window matches requested one */
-	foundStage=NULL;
-	stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
-	for(entry=stages; !foundStage && entry; entry=g_slist_next(entry))
-	{
-		stage=CLUTTER_STAGE(entry->data);
-		if(stage)
-		{
-			stageXWindow=clutter_x11_get_stage_window(stage);
-			if(stageXWindow==wnck_window_get_xid(priv->window)) foundStage=stage;
-		}
-	}
-	g_slist_free(stages);
-
-	return(foundStage);
-}
-
 /* Interface initialization
  * Set up default functions
  */
@@ -1213,8 +1174,6 @@ static void _xfdashboard_window_tracker_window_x11_window_tracker_window_iface_i
 	iface->get_instance_names=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_instance_names;
 
 	iface->get_content=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_content;
-
-	iface->get_stage=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_stage;
 }
 
 

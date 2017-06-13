@@ -129,8 +129,6 @@ struct _XfdashboardWindowTrackerWindowInterface
 
 	ClutterContent* (*get_content)(XfdashboardWindowTrackerWindow *self);
 
-	ClutterStage* (*get_stage)(XfdashboardWindowTrackerWindow *self);
-
 	/* Signals */
 	void (*name_changed)(XfdashboardWindowTrackerWindow *self);
 	void (*state_changed)(XfdashboardWindowTrackerWindow *self,
