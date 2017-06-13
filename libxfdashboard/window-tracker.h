@@ -67,7 +67,6 @@ typedef struct _XfdashboardWindowTrackerInterface	XfdashboardWindowTrackerInterf
  * @get_screen_size: Get total size of screen (size over all connected monitors)
  * @get_window_manager_name: Get name of window manager at desktop environment
  * @get_root_window: Get root window (usually the desktop at background)
- * @get_stage_window: Get window for requested stage at @inStage
  * @window_stacking_changed: Signal emitted when the stacking order of windows
  *    has changed
  * @active_window_changed: Signal emitted when the active window has changed,
