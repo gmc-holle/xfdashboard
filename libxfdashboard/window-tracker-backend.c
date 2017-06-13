@@ -114,7 +114,6 @@ XfdashboardWindowTrackerBackend* xfdashboard_window_tracker_backend_get_default(
 		else g_object_ref(_xfdashboard_window_tracker_backend_singleton);
 
 	return(_xfdashboard_window_tracker_backend_singleton);
-
 }
 
 /**

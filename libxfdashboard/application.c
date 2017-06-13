@@ -59,6 +59,7 @@
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/application-tracker.h>
 #include <libxfdashboard/plugins-manager.h>
+#include <libxfdashboard/window-tracker-backend.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -76,32 +77,34 @@ G_DEFINE_TYPE(XfdashboardApplication,
 struct _XfdashboardApplicationPrivate
 {
 	/* Properties related */
-	gboolean						isDaemon;
-	gboolean						isSuspended;
-	gchar							*themeName;
+	gboolean							isDaemon;
+	gboolean							isSuspended;
+	gchar								*themeName;
 
 	/* Instance related */
-	gboolean						initialized;
-	gboolean						isQuitting;
-	gboolean						forcedNewInstance;
+	gboolean							initialized;
+	gboolean							isQuitting;
+	gboolean							forcedNewInstance;
 
-	XfconfChannel					*xfconfChannel;
-	XfdashboardStage				*stage;
-	XfdashboardViewManager			*viewManager;
-	XfdashboardSearchManager		*searchManager;
-	XfdashboardFocusManager			*focusManager;
+	XfconfChannel						*xfconfChannel;
+	XfdashboardStage					*stage;
+	XfdashboardViewManager				*viewManager;
+	XfdashboardSearchManager			*searchManager;
+	XfdashboardFocusManager				*focusManager;
 
-	XfdashboardTheme				*theme;
-	gulong							xfconfThemeChangedSignalID;
+	XfdashboardTheme					*theme;
+	gulong								xfconfThemeChangedSignalID;
 
-	XfdashboardBindingsPool			*bindings;
+	XfdashboardBindingsPool				*bindings;
 
-	XfdashboardApplicationDatabase	*appDatabase;
-	XfdashboardApplicationTracker	*appTracker;
+	XfdashboardApplicationDatabase		*appDatabase;
+	XfdashboardApplicationTracker		*appTracker;
 
-	XfceSMClient					*sessionManagementClient;
+	XfceSMClient						*sessionManagementClient;
 
-	XfdashboardPluginsManager		*pluginManager;
+	XfdashboardPluginsManager			*pluginManager;
+
+	XfdashboardWindowTrackerBackend		*windowTrackerBackend;
 };
 
 /* Properties */
@@ -411,6 +414,17 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 		g_critical(_("Could not load bindings: %s"),
 					(error && error->message) ? error->message : _("unknown error"));
 		if(error!=NULL) g_error_free(error);
+		return(FALSE);
+	}
+
+	/* Create single-instance of window tracker backend to keep it alive while
+	 * application is running and to avoid multiple reinitializations. It must
+	 * be create before any class using a window tracker.
+	 */
+	priv->windowTrackerBackend=xfdashboard_window_tracker_backend_get_default();
+	if(!priv->windowTrackerBackend)
+	{
+		g_critical(_("Could not setup window tracker backend"));
 		return(FALSE);
 	}
 
@@ -981,6 +995,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SHUTDOWN_FINAL], 0);
 
 	/* Release allocated resources */
+	if(priv->windowTrackerBackend)
+	{
+		g_object_unref(priv->windowTrackerBackend);
+		priv->windowTrackerBackend=NULL;
+	}
+
 	if(priv->pluginManager)
 	{
 		g_object_unref(priv->pluginManager);
@@ -1452,6 +1472,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->sessionManagementClient=NULL;
 	priv->pluginManager=NULL;
 	priv->forcedNewInstance=FALSE;
+	priv->windowTrackerBackend=NULL;
 
 	/* Add callable DBUS actions for this application */
 	action=g_simple_action_new("Quit", NULL);

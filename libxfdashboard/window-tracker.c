@@ -31,8 +31,7 @@
 
 #include <glib/gi18n-lib.h>
 
-#include <libxfdashboard/x11/window-tracker-x11.h>
-#include <libxfdashboard/gdk/window-tracker-gdk.h>
+#include <libxfdashboard/window-tracker-backend.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -84,8 +83,6 @@ static guint XfdashboardWindowTrackerSignals[SIGNAL_LAST]={ 0, };
 	g_warning(_("Object of type %s does not implement required virtual function XfdashboardWindowTracker::%s"),\
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
-
-static XfdashboardWindowTracker *_xfdashboard_window_tracker_singleton=NULL;
 
 
 /* IMPLEMENTATION: GObject */
@@ -574,43 +571,39 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
  * Retrieves the singleton instance of #XfdashboardWindowTracker. If not needed
  * anymore the caller must unreference the returned object instance.
  *
+ * This function is the logical equivalent of:
+ *
+ * |[<!-- language="C" -->
+ *   XfdashboardWindowTrackerBackend *backend;
+ *   XfdashboardWindowTracker        *tracker;
+ *
+ *   backend=xfdashboard_window_tracker_backend_get_default();
+ *   tracker=xfdashboard_window_tracker_backend_get_window_tracker(backend);
+ * ]|
+ *
  * Return value: (transfer full): The instance of #XfdashboardWindowTracker.
  */
 XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void)
 {
-	if(G_UNLIKELY(_xfdashboard_window_tracker_singleton==NULL))
+	XfdashboardWindowTrackerBackend		*backend;
+	XfdashboardWindowTracker			*windowTracker;
+
+	/* Get default window tracker backend */
+	backend=xfdashboard_window_tracker_backend_get_default();
+	if(!backend)
 	{
-		GType			windowTrackerBackendType=G_TYPE_INVALID;
-		const gchar		*windowTrackerBackend;
-
-		/* Check if a specific backend was requested */
-		windowTrackerBackend=g_getenv("XFDASHBOARD_BACKEND");
-
-		if(g_strcmp0(windowTrackerBackend, "gdk")==0)
-		{
-			windowTrackerBackendType=XFDASHBOARD_TYPE_WINDOW_TRACKER_GDK;
-		}
-
-		/* If no specific backend was requested use default one */
-		if(windowTrackerBackendType==G_TYPE_INVALID)
-		{
-			windowTrackerBackendType=XFDASHBOARD_TYPE_WINDOW_TRACKER_X11;
-			XFDASHBOARD_DEBUG(NULL, WINDOWS,
-								"Using default backend %s",
-								g_type_name(windowTrackerBackendType));
-		}
-
-		/* Create singleton */
-		_xfdashboard_window_tracker_singleton=XFDASHBOARD_WINDOW_TRACKER(g_object_new(windowTrackerBackendType, NULL));
-		XFDASHBOARD_DEBUG(_xfdashboard_window_tracker_singleton, WINDOWS,
-							"Created window tracker of type %s for %s backend",
-							_xfdashboard_window_tracker_singleton ? G_OBJECT_TYPE_NAME(_xfdashboard_window_tracker_singleton) : "<<unknown>>",
-							windowTrackerBackend ? windowTrackerBackend : "default");
+		g_critical(_("Could not get default window tracker backend"));
+		return(NULL);
 	}
-		else g_object_ref(_xfdashboard_window_tracker_singleton);
 
-	return(_xfdashboard_window_tracker_singleton);
+	/* Get window tracker object instance of backend */
+	windowTracker=xfdashboard_window_tracker_backend_get_window_tracker(backend);
 
+	/* Release allocated resources */
+	if(backend) g_object_unref(backend);
+
+	/* Return window tracker object instance */
+	return(windowTracker);
 }
 
 /**
