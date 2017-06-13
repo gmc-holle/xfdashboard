@@ -29,7 +29,7 @@
 
 #include <glib/gi18n-lib.h>
 
-#include <libxfdashboard/window-tracker.h>
+#include <libxfdashboard/window-tracker-backend.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
@@ -762,44 +762,76 @@ ClutterStage* xfdashboard_window_tracker_window_get_stage(XfdashboardWindowTrack
 	return(NULL);
 }
 
-/* Set up and show window for use as stage window */
+/**
+ * xfdashboard_window_tracker_window_show_stage:
+ * @self: A #XfdashboardWindowTrackerWindow
+ *
+ * Asks the default window tracker backend to set up and show the window @self
+ * for use as stage window.
+ *
+ * This function is the logical equivalent of:
+ *
+ * |[<!-- language="C" -->
+ *   XfdashboardWindowTrackerBackend *backend;
+ *
+ *   backend=xfdashboard_window_tracker_backend_get_default();
+ *   xfdashboard_window_tracker_backend_show_stage_window(backend, self);
+ * ]|
+ */
 void xfdashboard_window_tracker_window_show_stage(XfdashboardWindowTrackerWindow *self)
 {
-	XfdashboardWindowTrackerWindowInterface		*iface;
+	XfdashboardWindowTrackerBackend		*backend;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(self));
 
-	iface=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GET_IFACE(self);
-
-	/* Call virtual function */
-	if(iface->show_stage)
+	/* Get default window tracker backend */
+	backend=xfdashboard_window_tracker_backend_get_default();
+	if(!backend)
 	{
-		iface->show_stage(self);
+		g_critical(_("Could not get default window tracker backend"));
 		return;
 	}
 
-	/* If we get here the virtual function was not overridden */
-	XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, "show_stage");
+	/* Redirect function to window tracker backend */
+	xfdashboard_window_tracker_backend_show_stage_window(backend, self);
+
+	/* Release allocated resources */
+	if(backend) g_object_unref(backend);
 }
 
-/* Unset up and hide stage window */
+/**
+ * xfdashboard_window_tracker_window_hide_stage:
+ * @self: A #XfdashboardWindowTrackerWindow
+ *
+ * Asks the default window tracker backend to hide the stage window @self.
+ * This function is the logical equivalent of:
+ *
+ * |[<!-- language="C" -->
+ *   XfdashboardWindowTrackerBackend *backend;
+ *
+ *   backend=xfdashboard_window_tracker_backend_get_default();
+ *   xfdashboard_window_tracker_backend_hide_stage_window(backend, self);
+ * ]|
+ */
 void xfdashboard_window_tracker_window_hide_stage(XfdashboardWindowTrackerWindow *self)
 {
-	XfdashboardWindowTrackerWindowInterface		*iface;
+	XfdashboardWindowTrackerBackend		*backend;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(self));
 
-	iface=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GET_IFACE(self);
-
-	/* Call virtual function */
-	if(iface->hide_stage)
+	/* Get default window tracker backend */
+	backend=xfdashboard_window_tracker_backend_get_default();
+	if(!backend)
 	{
-		iface->hide_stage(self);
+		g_critical(_("Could not get default window tracker backend"));
 		return;
 	}
 
-	/* If we get here the virtual function was not overridden */
-	XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, "hide_stage");
+	/* Redirect function to window tracker backend */
+	xfdashboard_window_tracker_backend_hide_stage_window(backend, self);
+
+	/* Release allocated resources */
+	if(backend) g_object_unref(backend);
 }
 
 /* Get process ID owning the requested window */
