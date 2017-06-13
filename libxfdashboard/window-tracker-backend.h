@@ -48,6 +48,7 @@ typedef struct _XfdashboardWindowTrackerBackendInterface	XfdashboardWindowTracke
  * XfdashboardWindowTrackerBackendInterface:
  * @get_name: Name of window tracker backend
  * @get_window_tracker: Get window tracker instance used by backend
+ * @get_stage_from_window: Get stage using requested window
  * @show_stage_window: Setup and show stage window
  * @hide_stage_window: Hide (and maybe deconfigure) stage window
  */
