@@ -30,8 +30,8 @@
 
 #include <glib/gi18n-lib.h>
 
-/*#include <libxfdashboard/x11/window-tracker-backend-x11.h>*/
-/*#include <libxfdashboard/gdk/window-tracker-backend-gdk.h>*/
+#include <libxfdashboard/x11/window-tracker-backend-x11.h>
+#include <libxfdashboard/gdk/window-tracker-backend-gdk.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -90,15 +90,15 @@ XfdashboardWindowTrackerBackend* xfdashboard_window_tracker_backend_get_default(
 		/* Check if a specific backend was requested */
 		windowTrackerBackend=g_getenv("XFDASHBOARD_BACKEND");
 
-		/*if(g_strcmp0(windowTrackerBackend, "gdk")==0)
+		if(g_strcmp0(windowTrackerBackend, "gdk")==0)
 		{
 			windowTrackerBackendType=XFDASHBOARD_TYPE_WINDOW_TRACKER_BACKEND_GDK;
-		}*/
+		}
 
 		/* If no specific backend was requested use default one */
 		if(windowTrackerBackendType==G_TYPE_INVALID)
 		{
-			/*windowTrackerBackendType=XFDASHBOARD_TYPE_WINDOW_TRACKER_BACKEND_X11;*/
+			windowTrackerBackendType=XFDASHBOARD_TYPE_WINDOW_TRACKER_BACKEND_X11;
 			XFDASHBOARD_DEBUG(NULL, WINDOWS,
 								"Using default backend %s",
 								g_type_name(windowTrackerBackendType));
