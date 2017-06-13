@@ -92,6 +92,7 @@ libxfdashboard_la_headers = \
 	viewpad.h \
 	window-content.h \
 	window-tracker.h \
+	window-tracker-backend.h \
 	window-tracker-monitor.h \
 	window-tracker-window.h \
 	window-tracker-workspace.h \
@@ -165,6 +166,7 @@ libxfdashboard_la_SOURCES = \
 	viewpad.c \
 	window-content.c \
 	window-tracker.c \
+	window-tracker-backend.c \
 	window-tracker-monitor.c \
 	window-tracker-window.c \
 	window-tracker-workspace.c \
