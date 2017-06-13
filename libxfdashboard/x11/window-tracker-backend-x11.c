@@ -386,6 +386,37 @@ static XfdashboardWindowTracker* _xfdashboard_window_tracker_backend_x11_window_
 	return(XFDASHBOARD_WINDOW_TRACKER(priv->windowTracker));
 }
 
+/* Get window of stage */
+static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_backend_x11_window_tracker_backend_get_window_for_stage(XfdashboardWindowTrackerBackend *inBackend,
+																															ClutterStage *inStage)
+{
+	XfdashboardWindowTrackerBackendX11			*self;
+	XfdashboardWindowTrackerBackendX11Private	*priv;
+	Window										stageXWindow;
+	WnckWindow									*wnckWindow;
+	XfdashboardWindowTrackerWindow				*window;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_BACKEND_X11(inBackend), NULL);
+	g_return_val_if_fail(CLUTTER_IS_STAGE(inStage), NULL);
+
+	self=XFDASHBOARD_WINDOW_TRACKER_BACKEND_X11(inBackend);
+	priv=self->priv;
+
+	/* Get stage X window and translate to needed window type */
+	stageXWindow=clutter_x11_get_stage_window(inStage);
+	wnckWindow=wnck_window_get(stageXWindow);
+
+	/* Get or create window object for wnck background window */
+	window=xfdashboard_window_tracker_x11_get_window_for_wnck(priv->windowTracker, wnckWindow);
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Resolved stage wnck window %s@%p of stage %s@%p to window object %s@%p",
+						G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow,
+						G_OBJECT_TYPE_NAME(inStage), inStage,
+						G_OBJECT_TYPE_NAME(window), window);
+
+	return(window);
+}
+
 /* Get associated stage of window */
 static ClutterStage* _xfdashboard_window_tracker_backend_x11_window_tracker_backend_get_stage_from_window(XfdashboardWindowTrackerBackend *inBackend,
 																											XfdashboardWindowTrackerWindow *inStageWindow)
@@ -658,6 +689,7 @@ static void _xfdashboard_window_tracker_backend_x11_window_tracker_backend_iface
 
 	iface->get_window_tracker=_xfdashboard_window_tracker_backend_x11_window_tracker_backend_get_window_tracker;
 
+	iface->get_window_for_stage=_xfdashboard_window_tracker_backend_x11_window_tracker_backend_get_window_for_stage;
 	iface->get_stage_from_window=_xfdashboard_window_tracker_backend_x11_window_tracker_backend_get_stage_from_window;
 	iface->show_stage_window=_xfdashboard_window_tracker_backend_x11_window_tracker_backend_show_stage_window;
 	iface->hide_stage_window=_xfdashboard_window_tracker_backend_x11_window_tracker_backend_hide_stage_window;

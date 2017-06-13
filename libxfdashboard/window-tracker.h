@@ -128,7 +128,6 @@ struct _XfdashboardWindowTrackerInterface
 	const gchar* (*get_window_manager_name)(XfdashboardWindowTracker *self);
 
 	XfdashboardWindowTrackerWindow* (*get_root_window)(XfdashboardWindowTracker *self);
-	XfdashboardWindowTrackerWindow* (*get_stage_window)(XfdashboardWindowTracker *self, ClutterStage *inStage);
 
 	/* Signals */
 	void (*window_stacking_changed)(XfdashboardWindowTracker *self);

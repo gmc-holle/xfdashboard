@@ -1107,6 +1107,16 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(Xfdas
  *
  * Retrieves the window created for the requested stage @inStage.
  *
+ * This function is the logical equivalent of:
+ *
+ * |[<!-- language="C" -->
+ *   XfdashboardWindowTrackerBackend *backend;
+ *   XfdashboardWindowTrackerWindow  *stageWindow;
+ *
+ *   backend=xfdashboard_window_tracker_backend_get_default();
+ *   stageWindow=xfdashboard_window_tracker_backend_get_window_for_stage(backend, inStage);
+ * ]|
+ *
  * Return value: (transfer none): The #XfdashboardWindowTrackerWindow representing
  *   the window of requested stage or %NULL if not available. The returned object
  *   is owned by Xfdashboard and it should not be referenced or unreferenced.
@@ -1114,20 +1124,23 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(Xfdas
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_stage_window(XfdashboardWindowTracker *self,
 																			ClutterStage *inStage)
 {
-	XfdashboardWindowTrackerInterface		*iface;
+	XfdashboardWindowTrackerBackend		*backend;
+	XfdashboardWindowTrackerWindow		*stageWindow;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self), NULL);
-	g_return_val_if_fail(CLUTTER_IS_STAGE(inStage), NULL);
-
-	iface=XFDASHBOARD_WINDOW_TRACKER_GET_IFACE(self);
-
-	/* Call virtual function */
-	if(iface->get_stage_window)
+	/* Get default window tracker backend */
+	backend=xfdashboard_window_tracker_backend_get_default();
+	if(!backend)
 	{
-		return(iface->get_stage_window(self, inStage));
+		g_critical(_("Could not get default window tracker backend"));
+		return(NULL);
 	}
 
-	/* If we get here the virtual function was not overridden */
-	XFDASHBOARD_WINDOWS_TRACKER_WARN_NOT_IMPLEMENTED(self, "get_stage_window");
-	return(NULL);
+	/* Get window for requested stage from backend */
+	stageWindow=xfdashboard_window_tracker_backend_get_window_for_stage(backend, inStage);
+
+	/* Release allocated resources */
+	if(backend) g_object_unref(backend);
+
+	/* Return window object instance */
+	return(stageWindow);
 }

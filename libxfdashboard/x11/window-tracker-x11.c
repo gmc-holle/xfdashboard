@@ -1573,34 +1573,6 @@ static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tr
 	return(NULL);
 }
 
-/* Get window of stage */
-static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_x11_window_tracker_get_stage_window(XfdashboardWindowTracker *inWindowTracker,
-																										ClutterStage *inStage)
-{
-	XfdashboardWindowTrackerX11				*self;
-	Window									stageXWindow;
-	WnckWindow								*wnckWindow;
-	XfdashboardWindowTrackerWindowX11		*window;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_X11(inWindowTracker), NULL);
-	g_return_val_if_fail(CLUTTER_IS_STAGE(inStage), NULL);
-
-	self=XFDASHBOARD_WINDOW_TRACKER_X11(inWindowTracker);
-
-	/* Get stage X window and translate to needed window type */
-	stageXWindow=clutter_x11_get_stage_window(inStage);
-	wnckWindow=wnck_window_get(stageXWindow);
-
-	/* Get or create window object for wnck background window */
-	window=_xfdashboard_window_tracker_x11_create_window_for_wnck(self, wnckWindow);
-	XFDASHBOARD_DEBUG(self, WINDOWS,
-						"Resolved stage window %s@%p to window object %s@%p",
-						G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow,
-						G_OBJECT_TYPE_NAME(window), window);
-
-	return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
-}
-
 /* Interface initialization
  * Set up default functions
  */
@@ -1627,7 +1599,6 @@ static void _xfdashboard_window_tracker_x11_window_tracker_iface_init(Xfdashboar
 	iface->get_window_manager_name=_xfdashboard_window_tracker_x11_window_tracker_get_window_manager_name;
 
 	iface->get_root_window=_xfdashboard_window_tracker_x11_window_tracker_get_root_window;
-	iface->get_stage_window=_xfdashboard_window_tracker_x11_window_tracker_get_stage_window;
 }
 
 

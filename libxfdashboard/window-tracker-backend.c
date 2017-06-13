@@ -177,6 +177,38 @@ XfdashboardWindowTracker* xfdashboard_window_tracker_backend_get_window_tracker(
 }
 
 /**
+ * xfdashboard_window_tracker_backend_get_window_for_stage:
+ * @self: A #XfdashboardWindowTrackerBackend
+ * @inStage: A #ClutterStage
+ *
+ * Retrieves the window created for the requested stage @inStage from window
+ * tracker backend @self.
+ *
+ * Return value: (transfer none): The #XfdashboardWindowTrackerWindow representing
+ *   the window of requested stage or %NULL if not available. The returned object
+ *   is owned by Xfdashboard and it should not be referenced or unreferenced.
+ */
+XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_backend_get_window_for_stage(XfdashboardWindowTrackerBackend *self,
+																						ClutterStage *inStage)
+{
+	XfdashboardWindowTrackerBackendInterface		*iface;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_BACKEND(self), NULL);
+
+	iface=XFDASHBOARD_WINDOW_TRACKER_BACKEND_GET_IFACE(self);
+
+	/* Call virtual function */
+	if(iface->get_window_for_stage)
+	{
+		return(iface->get_window_for_stage(self, inStage));
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_WINDOWS_TRACKER_BACKEND_WARN_NOT_IMPLEMENTED(self, "get_window_for_stage");
+	return(NULL);
+}
+
+/**
  * xfdashboard_window_tracker_backend_get_stage_from_window:
  * @self: A #XfdashboardWindowTrackerBackend
  * @inWindow: A #XfdashboardWindowTrackerWindow defining the stage window

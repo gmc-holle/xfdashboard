@@ -64,6 +64,8 @@ struct _XfdashboardWindowTrackerBackendInterface
 
 	XfdashboardWindowTracker* (*get_window_tracker)(XfdashboardWindowTrackerBackend *self);
 
+	XfdashboardWindowTrackerWindow* (*get_window_for_stage)(XfdashboardWindowTrackerBackend *self,
+															ClutterStage *inStage);
 	ClutterStage* (*get_stage_from_window)(XfdashboardWindowTrackerBackend *self,
 											XfdashboardWindowTrackerWindow *inWindow);
 	void (*show_stage_window)(XfdashboardWindowTrackerBackend *self,
@@ -82,6 +84,8 @@ const gchar* xfdashboard_window_tracker_backend_get_name(XfdashboardWindowTracke
 
 XfdashboardWindowTracker* xfdashboard_window_tracker_backend_get_window_tracker(XfdashboardWindowTrackerBackend *self);
 
+XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_backend_get_window_for_stage(XfdashboardWindowTrackerBackend *self,
+																						ClutterStage *inStage);
 ClutterStage* xfdashboard_window_tracker_backend_get_stage_from_window(XfdashboardWindowTrackerBackend *self,
 																		XfdashboardWindowTrackerWindow *inWindow);
 void xfdashboard_window_tracker_backend_show_stage_window(XfdashboardWindowTrackerBackend *self,

@@ -1574,36 +1574,6 @@ static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_gdk_window_tr
 	return(NULL);
 }
 
-/* Get window of stage */
-static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_gdk_window_tracker_get_stage_window(XfdashboardWindowTracker *inWindowTracker,
-																										ClutterStage *inStage)
-{
-	XfdashboardWindowTrackerGDK				*self;
-	GdkWindow								*stageGdkWindow;
-	Window									stageXWindow;
-	WnckWindow								*wnckWindow;
-	XfdashboardWindowTrackerWindowGDK		*window;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_GDK(inWindowTracker), NULL);
-	g_return_val_if_fail(CLUTTER_IS_STAGE(inStage), NULL);
-
-	self=XFDASHBOARD_WINDOW_TRACKER_GDK(inWindowTracker);
-
-	/* Get stage window and translate to needed window type */
-	stageGdkWindow=clutter_gdk_get_stage_window(inStage);
-	stageXWindow=gdk_x11_window_get_xid(stageGdkWindow);
-	wnckWindow=wnck_window_get(stageXWindow);
-
-	/* Get or create window object for wnck background window */
-	window=_xfdashboard_window_tracker_gdk_create_window_for_wnck(self, wnckWindow);
-	XFDASHBOARD_DEBUG(self, WINDOWS,
-						"Resolved stage window %s@%p to window object %s@%p",
-						G_OBJECT_TYPE_NAME(wnckWindow), wnckWindow,
-						G_OBJECT_TYPE_NAME(window), window);
-
-	return(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
-}
-
 /* Interface initialization
  * Set up default functions
  */
@@ -1630,7 +1600,6 @@ static void _xfdashboard_window_tracker_gdk_window_tracker_iface_init(Xfdashboar
 	iface->get_window_manager_name=_xfdashboard_window_tracker_gdk_window_tracker_get_window_manager_name;
 
 	iface->get_root_window=_xfdashboard_window_tracker_gdk_window_tracker_get_root_window;
-	iface->get_stage_window=_xfdashboard_window_tracker_gdk_window_tracker_get_stage_window;
 }
 
 
