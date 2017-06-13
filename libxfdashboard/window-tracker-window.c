@@ -767,14 +767,14 @@ ClutterStage* xfdashboard_window_tracker_window_get_stage(XfdashboardWindowTrack
 	XfdashboardWindowTrackerBackend		*backend;
 	ClutterStage						*stage;
 
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(self));
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(self), NULL);
 
 	/* Get default window tracker backend */
 	backend=xfdashboard_window_tracker_backend_get_default();
 	if(!backend)
 	{
 		g_critical(_("Could not get default window tracker backend"));
-		return;
+		return(NULL);
 	}
 
 	/* Redirect function to window tracker backend */
