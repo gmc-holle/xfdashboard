@@ -210,6 +210,7 @@ libxfdashboard_la_LDFLAGS = \
 x11_headers = \
 	x11/window-content-x11.h \
 	x11/window-tracker-x11.h \
+	x11/window-tracker-backend-x11.h \
 	x11/window-tracker-monitor-x11.h \
 	x11/window-tracker-window-x11.h \
 	x11/window-tracker-workspace-x11.h
@@ -217,6 +218,7 @@ x11_headers = \
 x11_sources = \
 	x11/window-content-x11.c \
 	x11/window-tracker-x11.c \
+	x11/window-tracker-backend-x11.c \
 	x11/window-tracker-monitor-x11.c \
 	x11/window-tracker-window-x11.c \
 	x11/window-tracker-workspace-x11.c
