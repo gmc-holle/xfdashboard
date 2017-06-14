@@ -39,6 +39,9 @@
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
+#ifdef CLUTTER_WINDOWING_GDK
+#include <clutter/gdk/clutter-gdk.h>
+#endif
 #include <gdk/gdkx.h>
 #ifdef HAVE_XINERAMA
 #include <X11/extensions/Xinerama.h>
@@ -1954,10 +1957,6 @@ guint32 xfdashboard_window_tracker_x11_get_time(void)
 	const ClutterEvent		*currentClutterEvent;
 	guint32					timestamp;
 	GdkDisplay				*display;
-	GdkWindow				*window;
-	GdkEventMask			eventMask;
-	GSList					*stages, *entry;
-	ClutterStage			*stage;
 
 	/* We don't use clutter_get_current_event_time as it can return
 	 * a too old timestamp if there is no current event.
@@ -1970,66 +1969,134 @@ guint32 xfdashboard_window_tracker_x11_get_time(void)
 	if(timestamp>0) return(timestamp);
 
 	/* Next we try to ask GDK for a timestamp */
-	timestamp=gdk_x11_display_get_user_time(gdk_display_get_default());
-	if(timestamp>0) return(timestamp);
-
-	/* Next we try to retrieve timestamp of last X11 event in clutter */
-	XFDASHBOARD_DEBUG(NULL, WINDOWS, "No timestamp for windows - trying timestamp of last X11 event in Clutter");
-	timestamp=(guint32)clutter_x11_get_current_event_time();
-	if(timestamp!=0)
-	{
-		XFDASHBOARD_DEBUG(NULL, WINDOWS,
-							"Got timestamp %u of last X11 event in Clutter",
-							timestamp);
-		return(timestamp);
-	}
-
-	/* Last resort is to get X11 server time via stage windows */
-	XFDASHBOARD_DEBUG(NULL, WINDOWS, "No timestamp for windows - trying last resort via stage windows");
-
 	display=gdk_display_get_default();
-	if(!display)
+	if(display)
 	{
-		XFDASHBOARD_DEBUG(NULL, WINDOWS, "No default display found in GDK to get timestamp for windows");
-		return(0);
+		timestamp=gdk_x11_display_get_user_time(display);
+		if(timestamp>0) return(timestamp);
 	}
 
-	/* Iterate through stages, get their GDK window and try to retrieve timestamp */
-	timestamp=0;
-	stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
-	for(entry=stages; timestamp==0 && entry; entry=g_slist_next(entry))
+#ifdef CLUTTER_WINDOWING_X11
+	/* Next we try to get timestamp via Clutter X11 backend if available and used */
+	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_X11))
 	{
-		/* Get stage */
-		stage=CLUTTER_STAGE(entry->data);
-		if(stage)
+		GdkWindow			*window;
+		GdkEventMask		eventMask;
+		GSList				*stages;
+		GSList				*iter;
+		ClutterStage		*stage;
+
+		/* Next we try to retrieve timestamp of last X11 event in clutter */
+		XFDASHBOARD_DEBUG(NULL, WINDOWS, "No timestamp for windows - trying timestamp of last X11 event in Clutter");
+		timestamp=(guint32)clutter_x11_get_current_event_time();
+		if(timestamp!=0)
 		{
-			/* Get GDK window of stage */
-			window=gdk_x11_window_lookup_for_display(display, clutter_x11_get_stage_window(stage));
-			if(!window)
-			{
-				XFDASHBOARD_DEBUG(NULL, WINDOWS,
-									"No GDK window found for stage %p to get timestamp for windows",
-									stage);
-				continue;
-			}
-
-			/* Check if GDK window supports GDK_PROPERTY_CHANGE_MASK event
-			 * or application (or worst X server) will hang
-			 */
-			eventMask=gdk_window_get_events(window);
-			if(!(eventMask & GDK_PROPERTY_CHANGE_MASK))
-			{
-				XFDASHBOARD_DEBUG(NULL, WINDOWS,
-									"GDK window %p for stage %p does not support GDK_PROPERTY_CHANGE_MASK to get timestamp for windows",
-									window,
-									stage);
-				continue;
-			}
-
-			timestamp=gdk_x11_get_server_time(window);
+			XFDASHBOARD_DEBUG(NULL, WINDOWS,
+								"Got timestamp %u of last X11 event in Clutter",
+								timestamp);
+			return(timestamp);
 		}
+
+		/* Last resort is to get X11 server time via stage windows, so iterate
+		 * through stages, get their GDK-X11 window and try to retrieve timestamp.
+		 */
+		XFDASHBOARD_DEBUG(NULL, WINDOWS, "No timestamp for windows - trying last resort via X11 stage windows");
+		if(!display)
+		{
+			XFDASHBOARD_DEBUG(NULL, WINDOWS, "No default X11 display found in GDK to get timestamp for windows");
+			return(0);
+		}
+
+		timestamp=0;
+		stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
+		for(iter=stages; timestamp==0 && iter; iter=g_slist_next(iter))
+		{
+			/* Get stage */
+			stage=CLUTTER_STAGE(iter->data);
+			if(stage)
+			{
+				/* Get GDK window of stage */
+				window=gdk_x11_window_lookup_for_display(display, clutter_x11_get_stage_window(stage));
+				if(!window)
+				{
+					XFDASHBOARD_DEBUG(NULL, WINDOWS,
+										"No GDK-X11 window found for stage %s@%p to get timestamp for windows",
+										G_OBJECT_TYPE_NAME(stage),
+										stage);
+					continue;
+				}
+
+				/* Check if GDK window supports GDK_PROPERTY_CHANGE_MASK event
+				 * or application (or worst X server) will hang
+				 */
+				eventMask=gdk_window_get_events(window);
+				if(!(eventMask & GDK_PROPERTY_CHANGE_MASK))
+				{
+					XFDASHBOARD_DEBUG(NULL, WINDOWS,
+										"GDK-X11 window %p for stage %s@%p does not support GDK_PROPERTY_CHANGE_MASK to get timestamp for windows",
+										window,
+										G_OBJECT_TYPE_NAME(stage),
+										stage);
+					continue;
+				}
+
+				timestamp=gdk_x11_get_server_time(window);
+			}
+		}
+		g_slist_free(stages);
 	}
-	g_slist_free(stages);
+#endif
+
+#ifdef CLUTTER_WINDOWING_GDK
+	/* Next we try to get timestamp via Clutter GDK backend if available and used */
+	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_GDK))
+	{
+		GdkWindow			*window;
+		GdkEventMask		eventMask;
+		GSList				*stages;
+		GSList				*iter;
+		ClutterStage		*stage;
+
+		/* Iterate through stages, get their GDK-X11 window and try to retrieve timestamp */
+		timestamp=0;
+		stages=clutter_stage_manager_list_stages(clutter_stage_manager_get_default());
+		for(iter=stages; timestamp==0 && iter; iter=g_slist_next(iter))
+		{
+			/* Get stage */
+			stage=CLUTTER_STAGE(iter->data);
+			if(stage)
+			{
+				/* Get GDK window of stage */
+				window=clutter_gdk_get_stage_window(stage);
+				if(!window)
+				{
+					XFDASHBOARD_DEBUG(NULL, WINDOWS,
+										"No GDK-X11 window found for stage %s@%p to get timestamp for windows",
+										G_OBJECT_TYPE_NAME(stage),
+										stage);
+					continue;
+				}
+
+				/* Check if GDK window supports GDK_PROPERTY_CHANGE_MASK event
+				 * or application (or worst X server) will hang
+				 */
+				eventMask=gdk_window_get_events(window);
+				if(!(eventMask & GDK_PROPERTY_CHANGE_MASK))
+				{
+					XFDASHBOARD_DEBUG(NULL, WINDOWS,
+										"GDK-X11 window %p for stage %s@%p does not support GDK_PROPERTY_CHANGE_MASK to get timestamp for windows",
+										window,
+										G_OBJECT_TYPE_NAME(stage),
+										stage);
+					continue;
+				}
+
+				timestamp=gdk_x11_get_server_time(window);
+			}
+		}
+		g_slist_free(stages);
+	}
+#endif
 
 	/* Return timestamp of last resort */
 	XFDASHBOARD_DEBUG(NULL, WINDOWS,

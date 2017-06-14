@@ -532,40 +532,42 @@ static void _xfdashboard_window_tracker_backend_gdk_window_tracker_backend_show_
 	/* Connect signals if not already connected */
 	signalID=g_signal_lookup("state-changed", WNCK_TYPE_WINDOW);
 	handlerID=g_signal_handler_find(stageWnckWindow,
-									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
 									signalID,
 									0,
 									NULL,
 									G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_state_changed),
-									NULL);
+									stageWindow);
 	if(!handlerID)
 	{
-		g_signal_connect(stageWnckWindow,
-							"state-changed",
-							G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_state_changed),
-							stageWindow);
+		handlerID=g_signal_connect(stageWnckWindow,
+									"state-changed",
+									G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_state_changed),
+									stageWindow);
 		XFDASHBOARD_DEBUG(self, WINDOWS,
-							"Connecting signal to 'state-changed' at window %p (wnck-window=%p)",
+							"Connecting signal handler %lu to 'state-changed' at window %p (wnck-window=%p)",
+							handlerID,
 							stageWindow,
 							stageWnckWindow);
 	}
 
 	signalID=g_signal_lookup("active-window-changed", WNCK_TYPE_SCREEN);
 	handlerID=g_signal_handler_find(screen,
-									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
 									signalID,
 									0,
 									NULL,
 									G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_active_window_changed),
-									NULL);
+									stageWindow);
 	if(!handlerID)
 	{
-		g_signal_connect(screen,
-							"active-window-changed",
-							G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_active_window_changed),
-							self);
+		handlerID=g_signal_connect(screen,
+									"active-window-changed",
+									G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_active_window_changed),
+									stageWindow);
 		XFDASHBOARD_DEBUG(self, WINDOWS,
-							"Connecting signal to 'active-window-changed' at screen %p of window %p (wnck-window=%p)",
+							"Connecting signal handler %lu to 'active-window-changed' at screen %p of window %p (wnck-window=%p)",
+							handlerID,
 							screen,
 							stageWindow,
 							stageWnckWindow);
@@ -573,20 +575,21 @@ static void _xfdashboard_window_tracker_backend_gdk_window_tracker_backend_show_
 
 	signalID=g_signal_lookup("screen-size-changed", XFDASHBOARD_TYPE_WINDOW_TRACKER);
 	handlerID=g_signal_handler_find(priv->windowTracker,
-									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
 									signalID,
 									0,
 									NULL,
 									G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_screen_size_changed),
-									NULL);
+									stageWindow);
 	if(!handlerID)
 	{
-		g_signal_connect(priv->windowTracker,
-							"screen-size-changed",
-							G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_screen_size_changed),
-							self);
+		handlerID=g_signal_connect(priv->windowTracker,
+									"screen-size-changed",
+									G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_screen_size_changed),
+									stageWindow);
 		XFDASHBOARD_DEBUG(self, WINDOWS,
-							"Connecting signal to 'screen-size-changed' at window %p (wnck-window=%p)",
+							"Connecting signal handler %lu to 'screen-size-changed' at window %p (wnck-window=%p)",
+							handlerID,
 							stageWindow,
 							stageWnckWindow);
 	}
@@ -594,7 +597,7 @@ static void _xfdashboard_window_tracker_backend_gdk_window_tracker_backend_show_
 	_xfdashboard_window_tracker_backend_gdk_on_stage_screen_size_changed(XFDASHBOARD_WINDOW_TRACKER(priv->windowTracker),
 																			width,
 																			height,
-																			self);
+																			inStageWindow);
 
 	/* Now the window is set up and we can show it */
 	xfdashboard_window_tracker_window_show(inStageWindow);
@@ -638,12 +641,12 @@ static void _xfdashboard_window_tracker_backend_gdk_window_tracker_backend_hide_
 	/* Disconnect signals */
 	signalID=g_signal_lookup("state-changed", WNCK_TYPE_WINDOW);
 	handlerID=g_signal_handler_find(stageWnckWindow,
-									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
 									signalID,
 									0,
 									NULL,
 									G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_state_changed),
-									NULL);
+									stageWindow);
 	if(handlerID)
 	{
 		g_signal_handler_disconnect(stageWnckWindow, handlerID);
@@ -656,12 +659,12 @@ static void _xfdashboard_window_tracker_backend_gdk_window_tracker_backend_hide_
 
 	signalID=g_signal_lookup("active-window-changed", WNCK_TYPE_SCREEN);
 	handlerID=g_signal_handler_find(screen,
-									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
 									signalID,
 									0,
 									NULL,
 									G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_active_window_changed),
-									NULL);
+									stageWindow);
 	if(handlerID)
 	{
 		g_signal_handler_disconnect(screen, handlerID);
@@ -675,12 +678,12 @@ static void _xfdashboard_window_tracker_backend_gdk_window_tracker_backend_hide_
 
 	signalID=g_signal_lookup("screen-size-changed", XFDASHBOARD_TYPE_WINDOW_TRACKER);
 	handlerID=g_signal_handler_find(priv->windowTracker,
-									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
+									G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
 									signalID,
 									0,
 									NULL,
 									G_CALLBACK(_xfdashboard_window_tracker_backend_gdk_on_stage_screen_size_changed),
-									NULL);
+									stageWindow);
 	if(handlerID)
 	{
 		g_signal_handler_disconnect(priv->windowTracker, handlerID);

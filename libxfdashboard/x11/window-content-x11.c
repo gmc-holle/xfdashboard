@@ -32,6 +32,9 @@
 
 #include <glib/gi18n-lib.h>
 #include <clutter/x11/clutter-x11.h>
+#ifdef CLUTTER_WINDOWING_GDK
+#include <clutter/gdk/clutter-gdk.h>
+#endif
 #include <cogl/cogl-texture-pixmap-x11.h>
 #ifdef HAVE_XCOMPOSITE
 #include <X11/extensions/Xcomposite.h>
@@ -188,6 +191,35 @@ static guint									_xfdashboard_window_content_x11_window_creation_shutdown_si
 static void _xfdashboard_window_content_x11_suspend(XfdashboardWindowContentX11 *self);
 static void _xfdashboard_window_content_x11_resume(XfdashboardWindowContentX11 *self);
 static gboolean _xfdashboard_window_content_x11_resume_on_idle(gpointer inUserData);
+
+/* Get X server display */
+static Display* _xfdashboard_window_content_x11_get_display(void)
+{
+	Display			*display;
+
+	display=None;
+
+#ifdef CLUTTER_WINDOWING_X11
+	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_X11))
+	{
+		display=clutter_x11_get_default_display();
+	}
+#endif
+
+#ifdef CLUTTER_WINDOWING_GDK
+	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_GDK))
+	{
+		display=gdk_x11_display_get_xdisplay(clutter_gdk_get_default_display());
+	}
+#endif
+
+	if(G_UNLIKELY(display==None))
+	{
+		g_critical(_("No default X11 display found in GDK to check X extensions"));
+	}
+
+	return(display);
+}
 
 /* Remove all entries from resume queue and release all allocated resources */
 static void _xfdashboard_window_content_x11_destroy_resume_queue(void)
@@ -629,16 +661,17 @@ static void _xfdashboard_window_content_x11_check_extension(void)
 	/* Check if we have already checked extensions */
 	if(_xfdashboard_window_content_x11_have_checked_extensions!=FALSE) return;
 
-	/* Mark that we have check for extensions regardless of any error*/
+	/* Mark that we have check for extensions regardless of any error */
 	_xfdashboard_window_content_x11_have_checked_extensions=TRUE;
 
 	/* Get display */
-	display=clutter_x11_get_default_display();
+	display=_xfdashboard_window_content_x11_get_display();
 
 	/* Check for composite extenstion */
 	_xfdashboard_window_content_x11_have_composite_extension=FALSE;
 #ifdef HAVE_XCOMPOSITE
-	if(XCompositeQueryExtension(display, &compositeEventBase, &compositeError))
+	if(G_LIKELY(display!=None) &&
+		XCompositeQueryExtension(display, &compositeEventBase, &compositeError))
 	{
 		compositeMajor=compositeMinor=0;
 		if(XCompositeQueryVersion(display, &compositeMajor, &compositeMinor))
@@ -663,7 +696,8 @@ static void _xfdashboard_window_content_x11_check_extension(void)
 	_xfdashboard_window_content_x11_damage_event_base=0;
 
 #ifdef HAVE_XDAMAGE
-	if(XDamageQueryExtension(display, &_xfdashboard_window_content_x11_damage_event_base, &damageError))
+	if(G_LIKELY(display!=None) &&
+		XDamageQueryExtension(display, &_xfdashboard_window_content_x11_damage_event_base, &damageError))
 	{
 		_xfdashboard_window_content_x11_have_damage_extension=TRUE;
 	}
@@ -677,8 +711,8 @@ static void _xfdashboard_window_content_x11_check_extension(void)
 
 /* Suspension state of application changed */
 static void _xfdashboard_window_content_x11_on_application_suspended_changed(XfdashboardWindowContentX11 *self,
-																			GParamSpec *inSpec,
-																			gpointer inUserData)
+																				GParamSpec *inSpec,
+																				gpointer inUserData)
 {
 	XfdashboardWindowContentX11Private		*priv;
 	XfdashboardApplication					*app;
@@ -705,14 +739,14 @@ static void _xfdashboard_window_content_x11_on_application_suspended_changed(Xfd
 }
 
 /* Filter X events for damages */
-static ClutterX11FilterReturn _xfdashboard_window_content_x11_on_x_event(XEvent *inXEvent, ClutterEvent *inEvent, gpointer inUserData)
+static void _xfdashboard_window_content_x11_handle_x_event(XfdashboardWindowContentX11 *self,
+															XEvent *inXEvent)
 {
-	XfdashboardWindowContentX11				*self;
 	XfdashboardWindowContentX11Private		*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT_X11(inUserData), CLUTTER_X11_FILTER_CONTINUE);
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT_X11(self));
+	g_return_if_fail(inXEvent);
 
-	self=XFDASHBOARD_WINDOW_CONTENT_X11(inUserData);
 	priv=self->priv;
 
 	/* Check for mapped, unmapped related X events as pixmap, damage, texture etc.
@@ -752,9 +786,43 @@ static ClutterX11FilterReturn _xfdashboard_window_content_x11_on_x_event(XEvent 
 		clutter_content_invalidate(CLUTTER_CONTENT(self));
 	}
 #endif
+}
 
+static ClutterX11FilterReturn _xfdashboard_window_content_x11_on_x_event(XEvent *inXEvent, ClutterEvent *inEvent, gpointer inUserData)
+{
+	XfdashboardWindowContentX11				*self;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT_X11(inUserData), CLUTTER_X11_FILTER_CONTINUE);
+
+	self=XFDASHBOARD_WINDOW_CONTENT_X11(inUserData);
+
+	/* Call X event handler */
+	_xfdashboard_window_content_x11_handle_x_event(self, inXEvent);
+
+	/* Always return FILTER_CONTINUE value to let other components handle this
+	 * event also.
+	 */
 	return(CLUTTER_X11_FILTER_CONTINUE);
 }
+
+#ifdef CLUTTER_WINDOWING_GDK
+static GdkFilterReturn _xfdashboard_window_content_x11_on_gdkx_event(GdkXEvent *inXEvent, GdkEvent *inEvent, gpointer inUserData)
+{
+	XfdashboardWindowContentX11				*self;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT_X11(inUserData), GDK_FILTER_CONTINUE);
+
+	self=XFDASHBOARD_WINDOW_CONTENT_X11(inUserData);
+
+	/* Call X event handler */
+	_xfdashboard_window_content_x11_handle_x_event(self, inXEvent);
+
+	/* Always return FILTER_CONTINUE value to let other components handle this
+	 * event also.
+	 */
+	return(GDK_FILTER_CONTINUE);
+}
+#endif
 
 /* Release all resources used by this instance */
 static void _xfdashboard_window_content_x11_release_resources(XfdashboardWindowContentX11 *self)
@@ -771,13 +839,11 @@ static void _xfdashboard_window_content_x11_release_resources(XfdashboardWindowC
 	_xfdashboard_window_content_x11_resume_on_idle_remove(self);
 
 	/* Get display as it used more than once ;) */
-	display=clutter_x11_get_default_display();
+	display=_xfdashboard_window_content_x11_get_display();
 
 	/* Release resources. It might be important to release them
 	 * in reverse order as they were created.
 	 */
-	clutter_x11_remove_filter(_xfdashboard_window_content_x11_on_x_event, (gpointer)self);
-
 	clutter_x11_trap_x_errors();
 	{
 		if(priv->texture)
@@ -853,7 +919,7 @@ static void _xfdashboard_window_content_x11_suspend(XfdashboardWindowContentX11 
 	_xfdashboard_window_content_x11_resume_on_idle_remove(self);
 
 	/* Get display as it used more than once ;) */
-	display=clutter_x11_get_default_display();
+	display=_xfdashboard_window_content_x11_get_display();
 
 	/* Release resources */
 	clutter_x11_trap_x_errors();
@@ -980,7 +1046,7 @@ static gboolean _xfdashboard_window_content_x11_resume_on_idle(gpointer inUserDa
 	}
 
 	/* Get display as it used more than once ;) */
-	display=clutter_x11_get_default_display();
+	display=_xfdashboard_window_content_x11_get_display();
 
 	/* Set up resources */
 	clutter_x11_trap_x_errors();
@@ -1143,7 +1209,7 @@ static void _xfdashboard_window_content_x11_resume(XfdashboardWindowContentX11 *
 	if(!_xfdashboard_window_content_x11_have_composite_extension) return;
 
 	/* Get display as it used more than once ;) */
-	display=clutter_x11_get_default_display();
+	display=_xfdashboard_window_content_x11_get_display();
 
 	/* Set up resources */
 	clutter_x11_trap_x_errors();
@@ -1284,21 +1350,25 @@ static Window _xfdashboard_window_content_x11_get_window_frame_xid(Display *inDi
 	/* Check if window is client side decorated and if it has no decorations
 	 * so skip finding window frame and behave like we did not found it.
 	 */
-	gdkDisplay=gdk_display_get_default();
+	XSync(inDisplay, False);
+
+	gdkDisplay=gdk_x11_lookup_xdisplay(inDisplay);
+	if(!gdkDisplay) gdkDisplay=gdk_display_get_default();
+
 	gdkWindow=gdk_x11_window_foreign_new_for_display(gdkDisplay, xWindowID);
 	if(gdkWindow)
 	{
-		if(gdk_window_get_decorations(gdkWindow, &gdkWindowDecoration) &&
+		if(!gdk_window_get_decorations(gdkWindow, &gdkWindowDecoration) ||
 			gdkWindowDecoration==0)
 		{
 			XFDASHBOARD_DEBUG(inWindow, WINDOWS,
-								"Window '%s' has CSD enabled and no decorations so skip finding window frame.",
+								"Window '%s' has either CSD not enabled or no decorations applied so skip finding window frame",
 								xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(inWindow)));
 
 			/* Release allocated resources */
 			g_object_unref(gdkWindow);
 
-			/* Skip finding window frame but return "not-found" result */
+			/* Skip finding window frame and return "not-found" result */
 			return(0);
 		}
 		g_object_unref(gdkWindow);
@@ -1359,7 +1429,7 @@ static void _xfdashboard_window_content_x11_set_window(XfdashboardWindowContentX
 	g_object_freeze_notify(G_OBJECT(self));
 
 	/* Get display as it used more than once ;) */
-	display=clutter_x11_get_default_display();
+	display=_xfdashboard_window_content_x11_get_display();
 
 	/* Set new value */
 	priv->window=inWindow;
@@ -1835,6 +1905,20 @@ static void _xfdashboard_window_content_x11_dispose(GObject *inObject)
 	XfdashboardWindowContentX11Private		*priv=self->priv;
 
 	/* Dispose allocated resources */
+#ifdef CLUTTER_WINDOWING_X11
+	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_X11))
+	{
+		clutter_x11_remove_filter(_xfdashboard_window_content_x11_on_x_event, self);
+	}
+#endif
+
+#ifdef CLUTTER_WINDOWING_GDK
+	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_GDK))
+	{
+		gdk_window_remove_filter(NULL, _xfdashboard_window_content_x11_on_gdkx_event, self);
+	}
+#endif
+
 	_xfdashboard_window_content_x11_release_resources(self);
 
 	if(priv->workaroundStateSignalID)
@@ -2201,7 +2285,19 @@ void xfdashboard_window_content_x11_init(XfdashboardWindowContentX11 *self)
 	_xfdashboard_window_content_x11_check_extension();
 
 	/* Add event filter for this instance */
-	clutter_x11_add_filter(_xfdashboard_window_content_x11_on_x_event, self);
+#ifdef CLUTTER_WINDOWING_X11
+	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_X11))
+	{
+		clutter_x11_add_filter(_xfdashboard_window_content_x11_on_x_event, self);
+	}
+#endif
+
+#ifdef CLUTTER_WINDOWING_GDK
+	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_GDK))
+	{
+		gdk_window_add_filter(NULL, _xfdashboard_window_content_x11_on_gdkx_event, self);
+	}
+#endif
 
 	/* Style content */
 	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
