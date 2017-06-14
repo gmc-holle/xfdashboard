@@ -579,6 +579,7 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
  *
  *   backend=xfdashboard_window_tracker_backend_get_default();
  *   tracker=xfdashboard_window_tracker_backend_get_window_tracker(backend);
+ *   g_object_unref(backend);
  * ]|
  *
  * Return value: (transfer full): The instance of #XfdashboardWindowTracker.
@@ -1115,6 +1116,7 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(Xfdas
  *
  *   backend=xfdashboard_window_tracker_backend_get_default();
  *   stageWindow=xfdashboard_window_tracker_backend_get_window_for_stage(backend, inStage);
+ *   g_object_unref(backend);
  * ]|
  *
  * Return value: (transfer none): The #XfdashboardWindowTrackerWindow representing

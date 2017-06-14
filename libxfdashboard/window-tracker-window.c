@@ -757,6 +757,7 @@ gboolean xfdashboard_window_tracker_window_is_stage(XfdashboardWindowTrackerWind
  *
  *   backend=xfdashboard_window_tracker_backend_get_default();
  *   stage=xfdashboard_window_tracker_backend_get_stage_from_window(backend, self);
+ *   g_object_unref(backend);
  * ]|
  *
  * Return value: (transfer none): The #ClutterStage for stage window @self or
@@ -801,6 +802,7 @@ ClutterStage* xfdashboard_window_tracker_window_get_stage(XfdashboardWindowTrack
  *
  *   backend=xfdashboard_window_tracker_backend_get_default();
  *   xfdashboard_window_tracker_backend_show_stage_window(backend, self);
+ *   g_object_unref(backend);
  * ]|
  */
 void xfdashboard_window_tracker_window_show_stage(XfdashboardWindowTrackerWindow *self)
@@ -836,6 +838,7 @@ void xfdashboard_window_tracker_window_show_stage(XfdashboardWindowTrackerWindow
  *
  *   backend=xfdashboard_window_tracker_backend_get_default();
  *   xfdashboard_window_tracker_backend_hide_stage_window(backend, self);
+ *   g_object_unref(backend);
  * ]|
  */
 void xfdashboard_window_tracker_window_hide_stage(XfdashboardWindowTrackerWindow *self)
