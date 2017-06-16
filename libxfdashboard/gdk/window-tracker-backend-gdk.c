@@ -759,3 +759,45 @@ void xfdashboard_window_tracker_backend_gdk_init(XfdashboardWindowTrackerBackend
 	/* Create window tracker instance */
 	priv->windowTracker=g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_X11, NULL);
 }
+
+/* IMPLEMENTATION: Public API */
+
+/**
+ * xfdashboard_window_tracker_backend_gdk_new:
+ *
+ * Creates a new #XfdashboardWindowTrackerBackendGDK backend for use with
+ * Clutter's GDK backend.
+ *
+ * Currently only the X11 backend of GDK is supported.
+ *
+ * Return value: The newly created #XfdashboardWindowTrackerBackend
+ */
+XfdashboardWindowTrackerBackend* xfdashboard_window_tracker_backend_gdk_new(void)
+{
+	GdkDisplay						*display;
+	gboolean						supported;
+
+	/* Check for supported windowing system */
+	supported=FALSE;
+
+	display=gdk_display_manager_get_default_display(gdk_display_manager_get());
+#ifdef GDK_WINDOWING_X11
+	if(!supported && GDK_IS_X11_DISPLAY(display))
+	{
+		XFDASHBOARD_DEBUG(NULL, WINDOWS, "GDK windowing system is X11");
+		supported=TRUE;
+	}
+#endif
+
+	/* If no supported windowing system was found, print a message and return
+	 * NULL to indicate an error.
+	 */
+	if(!supported)
+	{
+		XFDASHBOARD_DEBUG(NULL, WINDOWS, "Cannot create GDK window tracker backend as no supported backend found");
+		return(NULL);
+	}
+
+	/* Create window tracker backend and return it */
+	return(g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_BACKEND_GDK, NULL));
+}

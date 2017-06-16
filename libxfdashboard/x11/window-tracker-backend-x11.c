@@ -747,3 +747,19 @@ void xfdashboard_window_tracker_backend_x11_init(XfdashboardWindowTrackerBackend
 	/* Create window tracker instance */
 	priv->windowTracker=g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_X11, NULL);
 }
+
+
+/* IMPLEMENTATION: Public API */
+
+/**
+ * xfdashboard_window_tracker_backend_x11_new:
+ *
+ * Creates a new #XfdashboardWindowTrackerBackendX11 backend for use with
+ * Clutter's X11 backend.
+ *
+ * Return value: The newly created #XfdashboardWindowTrackerBackend
+ */
+XfdashboardWindowTrackerBackend* xfdashboard_window_tracker_backend_x11_new(void)
+{
+	return(g_object_new(XFDASHBOARD_TYPE_WINDOW_TRACKER_BACKEND_X11, NULL));
+}

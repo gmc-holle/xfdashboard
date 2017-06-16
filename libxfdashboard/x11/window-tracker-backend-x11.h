@@ -69,6 +69,8 @@ struct _XfdashboardWindowTrackerBackendX11Class
 /* Public API */
 GType xfdashboard_window_tracker_backend_x11_get_type(void) G_GNUC_CONST;
 
+XfdashboardWindowTrackerBackend* xfdashboard_window_tracker_backend_x11_new(void);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_WINDOW_TRACKER_BACKEND_X11__ */
