@@ -32,6 +32,7 @@
 
 #include <libxfdashboard/x11/window-tracker-backend-x11.h>
 #include <libxfdashboard/gdk/window-tracker-backend-gdk.h>
+#include <libxfdashboard/application.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -147,6 +148,79 @@ XfdashboardWindowTrackerBackend* xfdashboard_window_tracker_backend_get_default(
 		else g_object_ref(_xfdashboard_window_tracker_backend_singleton);
 
 	return(_xfdashboard_window_tracker_backend_singleton);
+}
+
+/**
+ * xfdashboard_window_tracker_backend_set_backend:
+ * @inBackend: the backend to use
+ *
+ * Sets the backend that xfdashboard should try to use. It will also restrict
+ * the backend Clutter should try to use. By default xfdashboard will select
+ * the backend automatically based on the backend Clutter uses.
+ *
+ * For example:
+ *
+ * |[<!-- language="C" -->
+ *   xfdashboard_window_tracker_backend_set_allowed_backends("x11");
+ * ]|
+ *
+ * Will make xfdashboard and Clutter use the X11 backend.
+ *
+ * Possible backends are: x11 and gdk.
+ *
+ * This function must be called before the first API call to xfdashboard or any
+ * library xfdashboard depends on like Clutter, GTK+ etc. This function can also
+ * be called only once.
+ */
+void xfdashboard_window_tracker_backend_set_backend(const gchar *inBackend)
+{
+#if CLUTTER_CHECK_VERSION(1, 16, 0)
+	XfdashboardWindowTrackerBackendMap	*iter;
+	static gboolean						wasSet=FALSE;
+
+	g_return_if_fail(inBackend && *inBackend);
+
+	/* Warn if this function was called more than once */
+	if(wasSet)
+	{
+		g_critical(_("Cannot set backend to '%s' because it the backend was already set"),
+					inBackend);
+		return;
+	}
+
+	/* Set flag that this function was called regardless of the result of this
+	 * function call.
+	 */
+	wasSet=TRUE;
+
+	/* Backend can only be set if application was not already created */
+	if(xfdashboard_application_has_default())
+	{
+		g_critical(_("Cannot set backend to '%s' because application is already initialized"),
+					inBackend);
+		return;
+	}
+
+	/* Iterate through list of available backends and lookup the requested
+	 * backend. If this entry is found, restrict Clutter backend as listed in
+	 * found entry and return.
+	 */
+	for(iter=_xfdashboard_window_tracker_backend_map; iter->backendID; iter++)
+	{
+		/* If this entry does not match requested backend, try next one */
+		if(g_strcmp0(iter->backendID, inBackend)!=0) continue;
+
+		/* The entry matches so restrict allowed backends in Clutter to the one
+		 * listed at this entry.
+		 */
+		clutter_set_windowing_backend(iter->clutterBackendID);
+
+		return;
+	}
+
+	/* If we get here the requested backend is unknown */
+	g_warning(_("Unknown backend '%s' - using default backend"), inBackend);
+#endif
 }
 
 /**

@@ -80,6 +80,8 @@ GType xfdashboard_window_tracker_backend_get_type(void) G_GNUC_CONST;
 
 XfdashboardWindowTrackerBackend* xfdashboard_window_tracker_backend_get_default(void);
 
+void xfdashboard_window_tracker_backend_set_backend(const gchar *inBackend);
+
 const gchar* xfdashboard_window_tracker_backend_get_name(XfdashboardWindowTrackerBackend *self);
 
 XfdashboardWindowTracker* xfdashboard_window_tracker_backend_get_window_tracker(XfdashboardWindowTrackerBackend *self);

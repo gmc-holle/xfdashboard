@@ -1484,6 +1484,27 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 /* IMPLEMENTATION: Public API */
 
 /**
+ * xfdashboard_application_has_default:
+ *
+ * Determine if the singleton instance of #XfdashboardApplication was created.
+ * If the singleton instance of #XfdashboardApplication was created, it can be
+ * retrieved with xfdashboard_application_get_default().
+ *
+ * This function is useful if only the availability of the singleton instance
+ * wants to be checked as xfdashboard_application_get_default() will create this
+ * singleton instance if not available.
+ *
+ * Return value: %TRUE if singleton instance of #XfdashboardApplication was
+ *   created or %FALSE if not.
+ */
+gboolean xfdashboard_application_has_default(void)
+{
+	if(G_LIKELY(_xfdashboard_application)) return(TRUE);
+
+	return(FALSE);
+}
+
+/**
  * xfdashboard_application_get_default:
  *
  * Retrieves the singleton instance of #XfdashboardApplication.

@@ -131,6 +131,7 @@ struct _XfdashboardApplicationClass
 /* Public API */
 GType xfdashboard_application_get_type(void) G_GNUC_CONST;
 
+gboolean xfdashboard_application_has_default(void);
 XfdashboardApplication* xfdashboard_application_get_default(void);
 
 gboolean xfdashboard_application_is_daemonized(XfdashboardApplication *self);
