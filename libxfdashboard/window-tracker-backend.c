@@ -49,7 +49,26 @@ G_DEFINE_INTERFACE(XfdashboardWindowTrackerBackend,
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
-static XfdashboardWindowTrackerBackend *_xfdashboard_window_tracker_backend_singleton=NULL;
+struct _XfdashboardWindowTrackerBackendMap
+{
+	const gchar							*backendID;
+	const gchar							*clutterBackendID;
+	XfdashboardWindowTrackerBackend*	(*createBackend)(void);
+};
+typedef struct _XfdashboardWindowTrackerBackendMap	XfdashboardWindowTrackerBackendMap;
+
+static XfdashboardWindowTrackerBackendMap	_xfdashboard_window_tracker_backend_map[]=
+											{
+#ifdef CLUTTER_WINDOWING_X11
+												{ "x11", CLUTTER_WINDOWING_X11, xfdashboard_window_tracker_backend_x11_new },
+#endif
+#ifdef CLUTTER_WINDOWING_GDK
+												{ "gdk", CLUTTER_WINDOWING_GDK, xfdashboard_window_tracker_backend_gdk_new },
+#endif
+												{ NULL, NULL, NULL }
+											};
+
+static XfdashboardWindowTrackerBackend		*_xfdashboard_window_tracker_backend_singleton=NULL;
 
 
 /* IMPLEMENTATION: GObject */
@@ -71,25 +90,6 @@ void xfdashboard_window_tracker_backend_default_init(XfdashboardWindowTrackerBac
 
 
 /* IMPLEMENTATION: Public API */
-
-struct _XfdashboardWindowTrackerBackendMap
-{
-	const gchar							*backendID;
-	const gchar							*clutterBackendID;
-	XfdashboardWindowTrackerBackend*	(*createBackend)(void);
-};
-typedef struct _XfdashboardWindowTrackerBackendMap	XfdashboardWindowTrackerBackendMap;
-
-XfdashboardWindowTrackerBackendMap	_xfdashboard_window_tracker_backend_map[]=
-									{
-#ifdef CLUTTER_WINDOWING_X11
-										{ "x11", CLUTTER_WINDOWING_X11, xfdashboard_window_tracker_backend_x11_new },
-#endif
-#ifdef CLUTTER_WINDOWING_GDK
-										{ "gdk", CLUTTER_WINDOWING_GDK, xfdashboard_window_tracker_backend_gdk_new },
-#endif
-										{ NULL, NULL, NULL }
-									};
 
 /**
  * xfdashboard_window_tracker_backend_get_default:
