@@ -59,6 +59,13 @@
 	</keywords>
 
 	<releases>
+		<release version="0.7.3" timestamp="1499409263">
+			<description>
+				<_p>This unstable development implements a new experimental
+				backend for GDK as well as it supports user stylesheets now.
+				</_p>
+			</description>
+		</release>
 		<release version="0.7.2" timestamp="1494826045">
 			<description>
 				<_p>This unstable development improves loading performance of

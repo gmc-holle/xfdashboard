@@ -75,13 +75,16 @@ libxfdashboard/view-selector.c
 libxfdashboard/view.c
 libxfdashboard/viewpad.c
 libxfdashboard/window-content.c
+libxfdashboard/window-tracker-backend.c
 libxfdashboard/window-tracker-monitor.c
 libxfdashboard/window-tracker-window.c
 libxfdashboard/window-tracker-workspace.c
 libxfdashboard/window-tracker.c
 libxfdashboard/windows-view.c
 libxfdashboard/workspace-selector.c
+libxfdashboard/gdk/window-tracker-backend-gdk.c
 libxfdashboard/x11/window-content-x11.c
+libxfdashboard/x11/window-tracker-backend-x11.c
 libxfdashboard/x11/window-tracker-window-x11.c
 libxfdashboard/x11/window-tracker-workspace-x11.c
 libxfdashboard/x11/window-tracker-x11.c
