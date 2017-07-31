@@ -1082,7 +1082,9 @@ static void _xfdashboard_window_tracker_x11_on_screen_size_changed(XfdashboardWi
 	priv=self->priv;
 
 	/* Get new total size of screen */
+#if GTK_CHECK_VERSION(3, 22, 0)
 	priv->needScreenSizeUpdate=TRUE;
+#endif
 	xfdashboard_window_tracker_get_screen_size(XFDASHBOARD_WINDOW_TRACKER(self), &w, &h);
 
 	/* Emit signal to tell that screen size has changed */
