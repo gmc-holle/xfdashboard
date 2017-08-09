@@ -201,7 +201,6 @@ dnl ***********************************
 dnl *** Check for required packages ***
 dnl ***********************************
 XDT_CHECK_PACKAGE([LIBWNCK], [libwnck-3.0], [wnck_minimum_version])
-XDT_CHECK_PACKAGE([CLUTTER], [clutter-1.0], [clutter_minimum_version])
 XDT_CHECK_PACKAGE([CLUTTER_COGL], [clutter-cogl-1.0], [clutter_minimum_version])
 XDT_CHECK_PACKAGE([GTK], [gtk+-3.0], [gtk_minimum_version])
 XDT_CHECK_PACKAGE([GLIB], [glib-2.0], [glib_minimum_version])
@@ -219,6 +218,15 @@ XDT_CHECK_PACKAGE([DBUS_GLIB], [dbus-glib-1], [dbus_glib_minimum_version], [
 
 	GLIB_GENMARSHAL=`$PKG_CONFIG --variable=glib_genmarshal glib-2.0`
 	AC_SUBST(GLIB_GENMARSHAL)])
+
+dnl **********************************************
+dnl *** Check for Clutter and its backend: GDK ***
+dnl **********************************************
+XDT_CHECK_PACKAGE([CLUTTER], [clutter-1.0], [clutter_minimum_version], [
+	XDT_CHECK_PACKAGE([CLUTTER_GDK], [clutter-gdk-1.0], [clutter_minimum_version],
+	[ac_clutter_gdk=yes], [ac_clutter_gdk=no])]
+)
+AM_CONDITIONAL([GDK], [test x"$ac_clutter_gdk" = x"yes"])
 
 dnl ***********************************
 dnl *** Check for debugging support ***

@@ -253,11 +253,20 @@ endif
 gdk_headers = \
 	gdk/window-tracker-backend-gdk.h
 
+libxfdashboard_la_headers += $(gdk_headers)
+
+if GDK
 gdk_sources = \
 	gdk/window-tracker-backend-gdk.c
 
-libxfdashboard_la_headers += $(gdk_headers)
 libxfdashboard_la_SOURCES += $(gdk_sources)
+
+libxfdashboard_la_CFLAGS += \
+	$(CLUTTER_GDK_CFLAGS)
+
+libxfdashboard_la_LIBADD += \
+	$(CLUTTER_GDK_LIBS)
+endif
 
 libxfdashboard_la_includedir = \
 	$(includedir)/xfdashboard/libxfdashboard
