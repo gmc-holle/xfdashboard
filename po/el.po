@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Apostolos Papadimitriu <apostolos.papadimitriu@gmail.com>, 2016
+# Apóstolos Papaðimitríu <apostolos.papadimitriu@gmail.com>, 2016
+# Apóstolos Papaðimitríu <apostolos.papadimitriu@gmail.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2016-03-02 18:12+0000\n"
-"Last-Translator: gmcholle <nomad@froevel.de>\n"
+"PO-Revision-Date: 2017-04-30 07:38+0000\n"
+"Last-Translator: Apóstolos Papaðimitríu <apostolos.papadimitriu@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/xfdashboard/xfdashboard/language/el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -231,11 +232,11 @@ msgstr "Αρχική έκδοση."
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
-msgstr ""
+msgstr "<span size=\"large\"><b>Ρυθμίσεις του Xfdashboard</b></span>"
 
 #: ../data/data/preferences.ui.h:2
 msgid "Configure plugin"
-msgstr ""
+msgstr "Διαμόρφωση προσθέτου"
 
 #: ../data/data/preferences.ui.h:3
 msgid ""
@@ -382,11 +383,11 @@ msgstr "Θέματα"
 
 #: ../data/data/preferences.ui.h:45
 msgid "<b>License:</b>"
-msgstr ""
+msgstr "<b>Άδεια:</b>"
 
 #: ../data/data/preferences.ui.h:46
 msgid "Plugins"
-msgstr ""
+msgstr "Πρόσθετα"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard"
@@ -3850,7 +3851,7 @@ msgstr ""
 
 #: ../settings/plugins.c:958
 msgid "Name"
-msgstr ""
+msgstr "Όνομα"
 
 #: ../settings/themes.c:784
 msgid "Theme"

@@ -3,21 +3,19 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Miguel Hernández <michelangelo93@gmail.com>, 2015
-# Pablo Lezaeta Reyes [pˈaβ̞lo lˌe̞θaˈeta rˈejɛ] <prflr88@gmail.com>, 2015
-# Pablo Lezaeta Reyes [pˈaβ̞lo lˌe̞θaˈeta rˈejɛ] <prflr88@gmail.com>, 2017
+# Gregor Santner <gsantner@mailbox.org>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2017-07-27 06:19+0000\n"
-"Last-Translator: Pablo Lezaeta Reyes [pˈaβ̞lo lˌe̞θaˈeta rˈejɛ] <prflr88@gmail.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/xfdashboard/xfdashboard/language/es/)\n"
+"PO-Revision-Date: 2017-06-29 02:59+0000\n"
+"Last-Translator: Gregor Santner <gsantner@mailbox.org>\n"
+"Language-Team: German (http://www.transifex.com/xfdashboard/xfdashboard/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es\n"
+"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../data/xfdashboard.desktop.in.in.h:1
@@ -28,25 +26,25 @@ msgstr "Xfdashboard"
 #: ../data/xfdashboard.desktop.in.in.h:2
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
-msgstr "Tal vez un intérprete de órdenes a modo de panel para Xfce"
+msgstr "Ein Gnome Shell ähnliches Dashboard für Xfce"
 
 #: ../data/xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
-msgstr "Iniciar Xfdashboard como servicio en segundo plano"
+msgstr "Xfdashboard als Daemon im Hintergrund starten"
 
 #: ../data/xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
-msgstr "Ajustes de Xfdashboard"
+msgstr "Xfdashboard Einstellungen"
 
 #: ../data/xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
-msgstr "Configurar Xfdashboard"
+msgstr "Konfigurieren von xfdashboard"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
-msgstr "Xfdashboard provee un Intérprete de panel como el de GNOME para usarse en el entorno de escritorio Xfce."
+msgstr "Xfdashboard bietet ein GNOME Shell ähnliches Dashboard Interface für die Benützung mit dem Xfce Desktop an."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:3
 msgid ""
@@ -54,15 +52,15 @@ msgid ""
 "provides an overview of applications currently open enabling the user to "
 "switch between different applications. The search feature works like Xfce's "
 "app finder which makes it convenient to search for and start applications."
-msgstr "Puede ser configurado para funcionar con cualquier combinación de teclas y cuando se ejecuta proporciona una visión general de las aplicaciones que estén abiertas permitendo al usuario cambiar entre diferentes aplicaciones. La función de búsqueda funciona como el buscador de aplicaciones de Xfce que hace que sea conveniente para buscar e iniciar aplicaciones."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:4
 msgid "Browsing applications"
-msgstr "Navegar por las aplicaciones"
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:5
 msgid "Searching applications"
-msgstr "Buscar aplicaciones"
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid ""
@@ -70,25 +68,25 @@ msgid ""
 "application when the pointer is near a specific corner of the screen. It "
 "also introduce a new settings application which allows to enable and/or "
 "disable plugin as well as to configure them."
-msgstr "Esta versión de desarrollo inestable introduce un complemento de esquina activa para activar esta aplicación cuando el puntero está cerca de una esquina específica de la pantalla. También introduce una nueva aplicación de configuración que permite habilitar y/o deshabilitar el complemento así como configurarlos."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:7
 msgid ""
 "This unstable development introduces a new search provider plugin which uses"
 " installed Gnome-Shell search providers as additional source."
-msgstr "Esta versión de desarrollo inestable introduce un nuevo complemento de proveedor de búsqueda que utiliza los proveedores de búsqueda de Gnome-Shell instalados como fuente adicional."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:8
 msgid ""
 "This unstable development introduces a new optional configuration to themes "
 "about defining which elements can be focused and in which order."
-msgstr "Esta versión de desarrollo inestable introduce una nueva configuración opcional a los temas sobre la definición de los elementos que se pueden enfocar y en qué orden."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
 "This unstable development introduces a basic and simple plugin system as "
 "well as a sample plugin adding a new view showing a clock."
-msgstr "Esta versión de desarrollo inestable introduce un sistema de complementos básicos y simples, así como un complemento de ejemplo que añade una nueva vista que muestra un reloj."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
@@ -96,7 +94,7 @@ msgid ""
 "start a new instance of an application or to activate the current window. It"
 " also improves the detection of running application as well as bug-fixes and"
 " other smaller improvements."
-msgstr "Esta versión de desarrollo inestable introduce nuevas opciones configurables que permiten iniciar una nueva instancia de una aplicación o activar la ventana actual. También mejora la detección de aplicaciones en ejecución, así como correcciones de errores y otras mejoras más pequeñas."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
@@ -104,7 +102,7 @@ msgid ""
 "loading window contents in background and it shows also running applications"
 " in quicklaunch for those not being stored as favourites. As usual it also "
 "contains a lots of bug-fixes and smaller improvements."
-msgstr "Esta versión de desarrollo inestable introduce nuevas opciones configurables para acelerar el contenido de la ventana de carga en segundo plano y también muestra las aplicaciones en ejecución en el lanzador rápido para aquellas que no se han almacenado como favoritas. Como de costumbre, también contiene un montón de correcciones de errores y mejoras más pequeñas."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid ""
@@ -112,76 +110,76 @@ msgid ""
 "loads the window contents in background to make the application feel "
 "smoother and faster, especially at start-up. It also contains a lots of bug-"
 "fixes and smaller improvements."
-msgstr "Esta versión de desarrollo inestable introduce nuevas opciones al selector de espacio de trabajo y carga el contenido de la ventana en segundo plano para hacer que la aplicación se sienta más suave y más rápida, especialmente en la puesta en marcha. También contiene un montón de correcciones de errores y mejoras más pequeñas."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This release hopefully fixes problems with the stage resizes finally. Also "
 "the method to determine the desktop window was changed."
-msgstr "Esta versión corrige finalmente los problemas con el cambio de tamaño del escenario. También el método para determinar la ventana del escritorio que ha cambiado."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid ""
 "This release hopefully fixes problems with the stage as it size might not "
 "reflect the screen size preventing dragging windows over the whole screen. "
 "It also includes lots of smaller bug-fixes."
-msgstr "Esta versión corrige problemas como que el tamaño no pueda reflejar el tamaño de la ventana previniendo arrastrar las ventanas por toda la pantalla. También incluye muchas correcciones de errores pequeñas."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid ""
 "This stable version introduces lots of new features. like multi-monitor "
 "support, configurable key bindings and a settings dialog. It also contains a"
 " lot of other larger and smaller improvements."
-msgstr "Esta versión de desarrollo estable introduce un montón de nuevas características: soporte multi-monitor, atajos de teclado configurables y un diálogo de ajustes. También contiene muchas otras grandes y pequeñas mejoras."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This unstable development introduces a new box layout fixing layout of "
 "children when using right-to-left language. Also support for localization "
 "was fixed and other smaller bug-fixes and improvements."
-msgstr "Esta versión de desarrollo inestable introduce una nueva disposición de la caja de la disposición de hijos al usar lenguas de derecha a izquierda. También se solucionó la compatibilidad con la localización y otras mejoras y correcciones de errores menores."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:17
 msgid ""
 "This unstable development introduces support for multiple monitors and also "
 "bug-fixes and other smaller improvements."
-msgstr "Esta versión de desarrollo inestable introduce el soporte de múltiples monitores, correcciones de errores y otras pequeñas mejoras."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:18
 msgid ""
 "This unstable development introduces an application database and monitoring "
 "of installed and uninstalled applications. It also includes bug-fixes and "
 "other smaller improvements."
-msgstr "Esta versión de desarrollo inestable introduce una aplicación de base de datos y monitorización de las aplicaciones instaladas y desinstaladas. También incluye correcciones de errores y otras pequeñas mejoras."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:19
 msgid ""
 "This unstable development introduces a hotkey tracker to allow starting "
 "xfdashboard with a single press of &lt;Super&gt; key."
-msgstr "Esta versión de desarrollo inestable introduce un rastreador de atajos para permitir iniciar xfdashboard con la pulsación de la tecla &lt;Super&gt;."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:20
 msgid ""
 "This unstable development fixes a bug which rendered the new settings "
 "application completely unusable."
-msgstr "Esta versión de desarrollo inestable corrige un error que hacía que la nueva aplicación de ajustes quedará totalmente inutilizable."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:21
 msgid "This unstable development introduces a settings application."
-msgstr "Esta versión de desarrollo inestable introduce una aplicación de ajustes"
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:22
 msgid ""
 "This unstable development introduces configurable key-bindings, allows "
 "changing themes at runtime and includes lots of smaller bug-fixes."
-msgstr "Este versión de desarrollo introduce atajos de teclado modificables que permite cambiar de temas en tiempo de ejecución e incluye un montón de pequeñas correcciones de errores."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:23
 msgid ""
 "This unstable development introduces additional themes, fixes handling of "
 "client-side decorated windows (CSD) and adds a new CSS command @import() to "
 "include external CSS resources in themes."
-msgstr "Este versión de desarrollo introduce temas adicionales, arreglos en el manejo de decoración de ventanas del lado del cliente (CSD) y añade una nueva orden CSS @import() para incluir recursos CSS externos en temas."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:24
 msgid ""
@@ -191,7 +189,7 @@ msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:25
 msgid "This unstable development introduces effects."
-msgstr "Esta versión de desarrollo inestable introduce efectos."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:26
 msgid ""
@@ -229,47 +227,47 @@ msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:31
 msgid "Initial release."
-msgstr "Primera versión."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
-msgstr "<span size=\"large\"><b>Configuraciones de Xfdashboard</b></span>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:2
 msgid "Configure plugin"
-msgstr "Configurar complemento"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:3
 msgid ""
 "<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
 "Configure xfdashboard"
-msgstr "<span size=\"large\"><b>Configuraciones de Xfdashboard</b></span>\nConfigure Xfdashboard"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:5
 msgid "<b>General settings:</b>"
-msgstr "<b>Ajustes generales:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr "Restablecer la vista de búsqueda cuando se reanude"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
 "If enabled the search view will be resetted when xfdashboard is resumed. That means the active view is switched back to last view active before last search was started and search box will be emptied.\n"
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
-msgstr "Si está activada, la vista de búsqueda se reiniciará cuando se reinicie Xfdashboard. Esto significa que la vista activa se cambia a la última vista activa antes de que se inicie la última búsqueda y se vacíe el cuadro de búsqueda.\n\n<b>NOTA:</b> Esta configuración solamente tiene efecto si Xfdashboard se ejecuta en modo demonio."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
 "When xfdashboard resumes the selected view will be activated.\n"
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
-msgstr "Cuando Xfdashboard se reanude, la vista seleccionada se activará.\n\n<b>NOTA:</b> Esta configuración solamente tiene efecto si Xfdashboard se ejecuta en modo demonio."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr "Cambiar a vista cuando se reanude:"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
@@ -280,11 +278,11 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
-msgstr "Tiempo mínimo de espera de la notificación:"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
-msgstr "Activar solución para minimizar ventanas"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:19
 msgid ""
@@ -298,7 +296,7 @@ msgid ""
 "This value defines how fast the window content should be created. While the value 'immediate' tells xfdashboard to create the window content at the time it is requested, all other values will set up a queue and value defines how fast the queue will be processed.\n"
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
-msgstr "Este valor define la rapidez con que se debe crear el contenido de la ventana. Mientras que el valor «inmediato» indica a Xfdashboard que cree el contenido de la ventana en el momento en que se solicite, todos los demás valores establecerán una cola y el valor definirá la velocidad de procesamiento de la cola.\n\n<b>NOTA:</b> Solamente cambie este valor de «inmediato» a otro valor si su tarjeta gráfica, controlador o sistema es demasiado lento para crear el contenido de la ventana inmediatamente. Debe de probar cada valor para encontrar el que se adapte a su sistema."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
@@ -306,7 +304,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:26
 msgid "Always start a new instance for application"
-msgstr "Siempre iniciar una nueva instancia por aplicación"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
@@ -317,70 +315,70 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:30
 msgid "<b>Applications view:</b>"
-msgstr "<b>Vista de aplicaciones:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:31
 msgid "Show menu for all installed applications"
-msgstr "Mostrar menú para todas las aplicaciones instaladas"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:32
 msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
-msgstr "Cuando se activa un menú \"todas las aplicaciones\" con todas las instaladas aplicaciones se mostrarán como una vista de aplicaciones."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:33
 msgid "<b>Windows view:</b>"
-msgstr "<b>Vista de ventanas:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:34
 msgid "Mouse wheel changes workspace"
-msgstr "La rueda del ratón cambia de espacio de trabajo"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:35
 msgid ""
 "When enabled any scroll event, like mouse-wheel up and down, at the windows "
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
-msgstr "Cuando se activa cualquier desplazamiento, como subir y bajar la rueda del ratón, la vista de ventanas cambiarán al del espacio de trabajo actual. Este comportamiento es el mismo que seleccionar un espacio de trabajo."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:36
 msgid "<b>Search view:</b>"
-msgstr "<b>Vista de búsqueda:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:37
 msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
-msgstr "Establece el intervalo de búsqueda que debe retrasarse después de que se haya introducido el primer carácter."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:38
 msgid "Delay initial search interval:"
-msgstr "Retrasar el intervalo de búsqueda inicial:"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:39
 msgid "General"
-msgstr "General"
+msgstr "Allgemeines"
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Name:</b>"
-msgstr "<b>Nombre:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:41
 msgid "<b>Author:</b>"
-msgstr "<b>Autor:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:42
 msgid "<b>Version:</b>"
-msgstr "<b>Version:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:43
 msgid "<b>Description:</b>"
-msgstr "<b>Descripción:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:44
 msgid "Themes"
-msgstr "Temas"
+msgstr "Themen"
 
 #: ../data/data/preferences.ui.h:45
 msgid "<b>License:</b>"
@@ -388,63 +386,63 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:46
 msgid "Plugins"
-msgstr "Complementos"
+msgstr "Plugins"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard"
-msgstr "Xfdashboard"
+msgstr "xfdashboard"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:2
 msgid "Default theme for xfdashboard"
-msgstr "Tema predeterminado para Xfdashboard"
+msgstr ""
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-auber"
-msgstr "Xfdashboard auber"
+msgstr ""
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
 msgid "Aubergine theme for xfdashboard"
-msgstr "Tema de color berenjena para Xfdashboard"
+msgstr ""
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-blue"
-msgstr "Xfdashboard azul"
+msgstr ""
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:2
 msgid "Blue theme for xfdashboard"
-msgstr "Tema de color azul para Xfdashboard"
+msgstr ""
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-dark"
-msgstr "Xfdashboard oscuro"
+msgstr ""
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:2
 msgid "Dark theme for xfdashboard"
-msgstr "Tema de color oscuro para el Xfdashboard"
+msgstr ""
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-mint"
-msgstr "Xfdashboard menta"
+msgstr ""
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
 msgid "Fresh-green flavored theme for xfdashboard"
-msgstr "Tema con sabor a verde fresco para Xfdashboard"
+msgstr ""
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-moranga"
-msgstr "Xfdashboard moronga"
+msgstr ""
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:2
 msgid "Moranga theme for xfdashboard"
-msgstr "Tema de color calabaza para Xfdashboard"
+msgstr ""
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-wine"
-msgstr "Xfdashboard vino"
+msgstr ""
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
 msgid "Red wine theme for xfdashboard"
-msgstr "Tema de color vino para el Xfdashboard"
+msgstr ""
 
 #: ../libxfdashboard/action-button.c:109 ../libxfdashboard/focus-manager.c:930
 #, c-format
@@ -496,11 +494,11 @@ msgstr ""
 msgid ""
 "Could not transform CSS string value for property '%s' to type %s of class "
 "%s"
-msgstr "No se pudo transformar el valor de la cadena de CSS para la propiedad '%s' al tipo %s de clase %s"
+msgstr ""
 
 #: ../libxfdashboard/actor.c:953
 msgid "Can focus"
-msgstr "Puede enfocar"
+msgstr ""
 
 #: ../libxfdashboard/actor.c:954
 msgid "This flag indicates if this actor can be focused"
@@ -508,7 +506,7 @@ msgstr ""
 
 #: ../libxfdashboard/actor.c:961
 msgid "Effects"
-msgstr "Efectos"
+msgstr ""
 
 #: ../libxfdashboard/actor.c:962
 msgid "List of space-separated strings with IDs of effects set at this actor"
@@ -516,7 +514,7 @@ msgstr ""
 
 #: ../libxfdashboard/application-button.c:337
 msgid "Application information"
-msgstr "Información de la aplicación"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:338
 msgid "The application information whose title and description to display"
@@ -524,33 +522,33 @@ msgstr ""
 
 #: ../libxfdashboard/application-button.c:344
 msgid "Show description"
-msgstr "Mostrar descripción"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:345
 msgid "Show also description next to tile"
-msgstr "Mostrar también la descripción al lado del icono"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:351
 #: ../libxfdashboard/applications-view.c:1346
 msgid "Format title only"
-msgstr "Formato de título solamente"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:352
 #: ../libxfdashboard/applications-view.c:1347
 msgid "Format string used when only title is display"
-msgstr "Formato de cadena usado cuando solo se muestre el título"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:358
 #: ../libxfdashboard/applications-view.c:1353
 msgid "Format title and description"
-msgstr "Formato de título y descripción"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:359
 #: ../libxfdashboard/applications-view.c:1354
 msgid ""
 "Format string used when title and description is display. First argument is "
 "title and second one is description."
-msgstr "Formato de cadena usado cuando el título y la descripción se muestre. El primer argumento es el título y el segundo la descripción."
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:655
 #: ../libxfdashboard/application-button.c:658
@@ -560,13 +558,13 @@ msgstr "Formato de cadena usado cuando el título y la descripción se muestre. 
 #: ../libxfdashboard/quicklaunch.c:390 ../libxfdashboard/quicklaunch.c:394
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr "La ejecución de la aplicación '%s' falló: %s"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:657
 #: ../libxfdashboard/application-button.c:660
 #: ../libxfdashboard/quicklaunch.c:344 ../libxfdashboard/quicklaunch.c:348
 msgid "No information available for application"
-msgstr "No hay información disponible para la aplicación"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:675
 #: ../libxfdashboard/application-button.c:678
@@ -575,27 +573,27 @@ msgstr "No hay información disponible para la aplicación"
 #: ../libxfdashboard/application.c:372 ../libxfdashboard/application.c:388
 #: ../libxfdashboard/application.c:604
 msgid "unknown error"
-msgstr "error desconocido"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:686
 #, c-format
 msgid "Application '%s' launched"
-msgstr "Aplicación «%s» ejecutada"
+msgstr ""
 
 #. Show critical warning at console
 #: ../libxfdashboard/application.c:272 ../libxfdashboard/application.c:279
 #, c-format
 msgid "Could not load theme '%s': %s"
-msgstr "No se pudo cargar el tema '%s': %s"
+msgstr ""
 
 #: ../libxfdashboard/application.c:353
 #, c-format
 msgid "Could not initialize xfconf: %s"
-msgstr "No se pudo iniciar xfconf: %s"
+msgstr ""
 
 #: ../libxfdashboard/application.c:365
 msgid "Could not initialize bindings"
-msgstr "No se pudo init"
+msgstr ""
 
 #: ../libxfdashboard/application.c:371
 #, c-format
@@ -604,16 +602,16 @@ msgstr ""
 
 #: ../libxfdashboard/application.c:381
 msgid "Could not initialize application database"
-msgstr "No se pudo iniciar la base de datos de la aplicación"
+msgstr ""
 
 #: ../libxfdashboard/application.c:387
 #, c-format
 msgid "Could not load application database: %s"
-msgstr "No se pudo cargar la base de datos de la aplicación: %s"
+msgstr ""
 
 #: ../libxfdashboard/application.c:397
 msgid "Could not initialize application tracker"
-msgstr "No se puedo iniciar el rastreador de la aplicación"
+msgstr ""
 
 #: ../libxfdashboard/application.c:409
 msgid ""
@@ -632,24 +630,24 @@ msgstr ""
 #: ../libxfdashboard/application.c:478
 #, c-format
 msgid "Welcome to %s (%s)!"
-msgstr "¡Bienvenido a %s (%s)!"
+msgstr ""
 
 #: ../libxfdashboard/application.c:480
 #, c-format
 msgid "Welcome to %s!"
-msgstr "¡Bienvenido a %s!"
+msgstr ""
 
 #: ../libxfdashboard/application.c:557
 msgid "Fork to background"
-msgstr "Mantener en segundo plano"
+msgstr ""
 
 #: ../libxfdashboard/application.c:558
 msgid "Quit running instance"
-msgstr "Cerrar la instancia en ejecución"
+msgstr ""
 
 #: ../libxfdashboard/application.c:559
 msgid "Restart running instance"
-msgstr "Reiniciar la instancia en ejecución"
+msgstr ""
 
 #: ../libxfdashboard/application.c:560
 msgid ""
@@ -660,17 +658,17 @@ msgstr ""
 #. Setup command-line options
 #: ../libxfdashboard/application.c:583
 msgid "- A Gnome Shell like dashboard for Xfce4"
-msgstr "- Un tablero como el de Gnome Shell para Xfce4"
+msgstr ""
 
 #. Show error
 #: ../libxfdashboard/application.c:604
 #, c-format
 msgid "%s\n"
-msgstr "%s\n"
+msgstr ""
 
 #: ../libxfdashboard/application.c:915
 msgid "Is daemonized"
-msgstr "Está demonizado"
+msgstr ""
 
 #: ../libxfdashboard/application.c:916
 msgid "Flag indicating if application is daemonized"
@@ -678,7 +676,7 @@ msgstr ""
 
 #: ../libxfdashboard/application.c:922
 msgid "Is suspended"
-msgstr "Está suspendido"
+msgstr ""
 
 #: ../libxfdashboard/application.c:923
 msgid "Flag indicating if application is suspended currently"
@@ -686,16 +684,16 @@ msgstr ""
 
 #: ../libxfdashboard/application.c:929 ../libxfdashboard/theme.c:577
 msgid "Theme name"
-msgstr "Nombre del tema"
+msgstr ""
 
 #: ../libxfdashboard/application.c:930
 msgid "Name of current theme"
-msgstr "Nombre del tema actual"
+msgstr ""
 
 #: ../libxfdashboard/application-database.c:132
 #, c-format
 msgid "Could not reload application menu: %s"
-msgstr "No se pudo recargar el menú de aplicaciones: %s"
+msgstr ""
 
 #: ../libxfdashboard/application-database.c:133
 #: ../libxfdashboard/application-database.c:302
@@ -737,7 +735,7 @@ msgstr "No se pudo recargar el menú de aplicaciones: %s"
 #: ../settings/themes.c:590 ../settings/themes.c:609 ../settings/themes.c:628
 #: ../settings/main.c:63 ../settings/main.c:85 ../settings/settings.c:140
 msgid "Unknown error"
-msgstr "Error desconocido"
+msgstr ""
 
 #: ../libxfdashboard/application-database.c:265
 msgid "Received event from unknown file monitor"
@@ -779,7 +777,7 @@ msgstr ""
 
 #: ../libxfdashboard/application-database.c:1258
 msgid "Is loaded"
-msgstr "Está cargado"
+msgstr ""
 
 #: ../libxfdashboard/application-database.c:1259
 msgid ""
@@ -817,33 +815,33 @@ msgstr ""
 #: ../libxfdashboard/applications-menu-model.c:804
 #: ../libxfdashboard/plugin.c:782
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID
 #: ../libxfdashboard/applications-menu-model.c:805
 msgid "Menu item"
-msgstr "Ítem de menú"
+msgstr ""
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT
 #: ../libxfdashboard/applications-menu-model.c:806
 msgid "Parent menu"
-msgstr "Menú padre"
+msgstr ""
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU
 #: ../libxfdashboard/applications-menu-model.c:807
 msgid "Section"
-msgstr "Sección"
+msgstr ""
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION
 #: ../libxfdashboard/applications-menu-model.c:808
 msgid "Title"
-msgstr "Título"
+msgstr ""
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE
 #: ../libxfdashboard/applications-menu-model.c:809
 #: ../libxfdashboard/plugin.c:796
 msgid "Description"
-msgstr "Descripción"
+msgstr ""
 
 #: ../libxfdashboard/applications-search-provider.c:251
 #, c-format
@@ -893,7 +891,7 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:1399
 #: ../libxfdashboard/quicklaunch.c:2877
 msgid "Applications"
-msgstr "Aplicaciones"
+msgstr "Anwendungen"
 
 #: ../libxfdashboard/applications-search-provider.c:1031
 msgid ""
@@ -924,21 +922,21 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:505
 #: ../libxfdashboard/applications-view.c:506
 msgid "Back"
-msgstr "Atrás"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:399
 #: ../libxfdashboard/applications-view.c:505
 msgid "Go back to previous menu"
-msgstr "Volver al menú anterior"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:533
 #: ../libxfdashboard/applications-view.c:534
 msgid "All applications"
-msgstr "Todas las aplicaciones"
+msgstr "Alle Anwendungen"
 
 #: ../libxfdashboard/applications-view.c:533
 msgid "List of all installed applications"
-msgstr "Listar todas las aplicaciones instaladas"
+msgstr "Liste aller installierten Anwendungen"
 
 #: ../libxfdashboard/applications-view.c:742
 #: ../libxfdashboard/search-result-container.c:1755
@@ -988,7 +986,7 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:1323
 #: ../libxfdashboard/search-result-container.c:1258
 msgid "View mode"
-msgstr "Modo de vista"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:1324
 msgid "The view mode used in this view"
@@ -1001,7 +999,7 @@ msgstr ""
 #: ../libxfdashboard/view-selector.c:401 ../libxfdashboard/windows-view.c:1912
 #: ../libxfdashboard/workspace-selector.c:1239
 msgid "Spacing"
-msgstr "Espaciado"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:1332
 #: ../libxfdashboard/windows-view.c:1913
@@ -1018,7 +1016,7 @@ msgstr ""
 
 #: ../libxfdashboard/applications-view.c:1360
 msgid "Show all applications"
-msgstr "Mostrar todas las aplicaciones"
+msgstr "Alle Anwendungen anzeigen"
 
 #: ../libxfdashboard/applications-view.c:1361
 msgid "Whether to show a menu for all installed applications at root menu"
@@ -1026,11 +1024,11 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:420 ../libxfdashboard/background.c:421
 msgid "Background type"
-msgstr "Tipo de fondo"
+msgstr ""
 
 #: ../libxfdashboard/background.c:428 ../libxfdashboard/outline-effect.c:451
 msgid "Corners"
-msgstr "Esquinas"
+msgstr ""
 
 #: ../libxfdashboard/background.c:429
 msgid "Determines which corners are rounded for background and outline"
@@ -1039,7 +1037,7 @@ msgstr ""
 #: ../libxfdashboard/background.c:436 ../libxfdashboard/background.c:459
 #: ../libxfdashboard/outline-effect.c:459
 msgid "Corner radius"
-msgstr "Radio del borde"
+msgstr ""
 
 #: ../libxfdashboard/background.c:437
 msgid "Radius of rounded corners for background and outline"
@@ -1107,7 +1105,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:506
 msgid "Image"
-msgstr "Imagen"
+msgstr ""
 
 #: ../libxfdashboard/background.c:507
 msgid "Image to draw as background"
@@ -1726,7 +1724,7 @@ msgstr ""
 msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardFocusable::%s"
-msgstr "El objeto del tipo %s no implementa la función virtual requerida XfdashboardFocusable::%s"
+msgstr ""
 
 #: ../libxfdashboard/focusable.c:178
 #, c-format
@@ -2317,7 +2315,7 @@ msgstr ""
 msgid ""
 "Search provider of type %s does not implement required virtual function "
 "XfdashboardSearchProvider::%s"
-msgstr "La búsqueda provista por el tipo %s no implementa la función virtual requerida XfdashboardSearchProvider::%s"
+msgstr ""
 
 #: ../libxfdashboard/search-provider.c:171
 msgid "Provider ID"
@@ -2345,7 +2343,7 @@ msgstr ""
 #: ../libxfdashboard/search-result-container.c:1718
 #, c-format
 msgid "Show %d more results..."
-msgstr ""
+msgstr "%d weitere Ergebnisse anzeigen..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:675
@@ -2488,7 +2486,7 @@ msgstr ""
 
 #: ../libxfdashboard/stage.c:991
 msgid "Just type to search..."
-msgstr ""
+msgstr "Suche starten mit Eingabe..."
 
 #: ../libxfdashboard/stage.c:1600 ../libxfdashboard/stage-interface.c:342
 #: ../plugins/clock-view/clock-view-settings.c:254
@@ -2517,7 +2515,7 @@ msgstr ""
 msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardStylable::%s"
-msgstr "El objeto del tipo %s no implementa la función virtual requerida XfdashboardStylable::%s"
+msgstr ""
 
 #: ../libxfdashboard/stylable.c:267
 msgid "Style classes"
@@ -3022,11 +3020,11 @@ msgstr ""
 
 #: ../libxfdashboard/tooltip-action.c:525
 msgid "Tooltip text"
-msgstr "Texto de herramienta"
+msgstr ""
 
 #: ../libxfdashboard/tooltip-action.c:526
 msgid "The text to display in a tooltip"
-msgstr "El texto que se mostrará en una descripción de herramienta"
+msgstr ""
 
 #: ../libxfdashboard/utils.c:160
 #, c-format
@@ -3035,43 +3033,43 @@ msgstr ""
 
 #: ../libxfdashboard/view.c:368
 msgid "View ID"
-msgstr "Ver Id"
+msgstr ""
 
 #: ../libxfdashboard/view.c:369
 msgid "The internal ID used to register this type of view"
-msgstr "El Id interno utilizado para registrar este tipo de vista"
+msgstr ""
 
 #: ../libxfdashboard/view.c:375
 msgid "View name"
-msgstr "Ver nombre"
+msgstr ""
 
 #: ../libxfdashboard/view.c:376
 msgid "Name of view used to display"
-msgstr "Nombre de la vista utilizada para mostrar"
+msgstr ""
 
 #: ../libxfdashboard/view.c:382
 msgid "View icon"
-msgstr "Ver icono"
+msgstr ""
 
 #: ../libxfdashboard/view.c:383
 msgid ""
 "Icon of view used to display. Icon name can be a themed icon name or file "
 "name"
-msgstr "Icono de vista utilizado para mostrar. El nombre del icono puede ser un nombre de icono o un  icono temado"
+msgstr ""
 
 #: ../libxfdashboard/view.c:389
 msgid "View fit mode"
-msgstr "Ver modo compacto"
+msgstr ""
 
 #: ../libxfdashboard/view.c:390
 msgid ""
 "Defines if view should be fit into viewpad and in which directions it should"
 " fit into it"
-msgstr "Define si la vista debe encajar en visor y en qué direcciones debe encajar"
+msgstr ""
 
 #: ../libxfdashboard/view.c:397
 msgid "Enabled"
-msgstr "Habilitado"
+msgstr ""
 
 #: ../libxfdashboard/view.c:398
 msgid "This flag indicates if is view is enabled and activable"
@@ -3132,7 +3130,7 @@ msgstr ""
 
 #: ../libxfdashboard/viewpad.c:1230
 msgid "Active view"
-msgstr "Vista activa"
+msgstr ""
 
 #: ../libxfdashboard/viewpad.c:1231
 msgid "The current active view in viewpad"
@@ -3271,102 +3269,102 @@ msgstr ""
 #: ../libxfdashboard/window-content.c:1378
 #, c-format
 msgid "Could not get attributes of window '%s'"
-msgstr "No se pudieron obtener los atributos de la ventana '%s'"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:1443
 #, c-format
 msgid "Destroying window content cache still containing %d windows."
-msgstr "La destrucción del contenido caché de ventana todavía contiene %d ventanas."
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2076
 msgid "The window to handle and display"
-msgstr "La ventana para manejar y mostrar"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2082
 msgid "Suspended"
-msgstr "Suspendido"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2083
 msgid "Is this window suspended"
-msgstr "Esta ventana está suspendida"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2090
 msgid "Color to draw outline of mapped windows with"
-msgstr "Color para dibujar los contornos representados con ventanas"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2097
 msgid "Width of line used to draw outline of mapped windows"
-msgstr "Ancho de línea usado para dibujar el contorno de las ventanas representadas"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2104
 msgid "Include window frame"
-msgstr "Incluir marco de ventana"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2105
 msgid ""
 "Whether the window frame should be included or only the window content "
 "should be shown"
-msgstr "Si el marco de la ventana debe ser incluido o solo el contenido de la ventana debe ser mostrado"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2111
 msgid "Unmapped window icon X fill"
-msgstr "Icono de ventana sin asignar de relleno X"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2112
 msgid "Whether the unmapped window icon should fill up horizontal space"
-msgstr "Si el icono de la ventana sin asignar debe rellenar el espacio horizontal"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2118
 msgid "Unmapped window icon y fill"
-msgstr "Icono de ventana sin asignar de relleno Y"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2119
 msgid "Whether the unmapped window icon should fill up vertical space"
-msgstr "Si el icono de la ventana sin asignar debe rellenar el espacio vertical"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2125
 msgid "Unmapped window icon X align"
-msgstr "Icono de ventana sin asignar de alineación X"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2126
 msgid ""
 "The alignment of the unmapped window icon on the X axis within the "
 "allocation in normalized coordinate between 0 and 1"
-msgstr "La alineación del icono de la ventana sin asignar en el eje X en la asignación de coordenadas normalizadas entre 0 y 1"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2133
 msgid "Unmapped window icon Y align"
-msgstr "Icono de ventana sin asignar de alineación Y"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2134
 msgid ""
 "The alignment of the unmapped window icon on the Y axis within the "
 "allocation in normalized coordinate between 0 and 1"
-msgstr "La alineación del icono de la ventana sin asignar en el eje Y en la asignación de coordenadas normalizadas entre 0 y 1"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2141
 msgid "Unmapped window icon X scale"
-msgstr "Icono de ventana sin asignar de escala X"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2142
 msgid "Scale factor of unmapped window icon on the X axis"
-msgstr "Factor de escala del icono de ventana sin asignar en el eje Y"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2149
 msgid "Unmapped window icon Y scale"
-msgstr "Icono de ventana sin asignar de escala Y"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2150
 msgid "Scale factor of unmapped window icon on the Y axis"
-msgstr "Factor de escala del icono de ventana sin asignar en el eje Y"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2157
 msgid "Unmapped window icon anchor point"
-msgstr "Punto de anclaje del icono de ventana sin asignar"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2158
 msgid "The anchor point of unmapped window icon"
-msgstr "El punto de anclaje del icono de ventana sin asignar"
+msgstr ""
 
 #. If we get here we did not handle drop action properly
 #. * and this should never happen.
@@ -3379,15 +3377,15 @@ msgstr ""
 #: ../libxfdashboard/windows-view.c:1626
 #, c-format
 msgid "Cannot activate selection of type %s at %s because expecting type %s"
-msgstr "No se puede activar la selección de tipo %s en %s porque se espera un tipo %s"
+msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1905
 msgid "Current workspace"
-msgstr "Espacio de trabajo actual"
+msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1906
 msgid "The current workspace whose windows are shown"
-msgstr "El espacio de trabajo actual cuyas ventanas son mostradas"
+msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1921
 msgid ""
@@ -3396,76 +3394,76 @@ msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1927
 msgid "Scroll event changes workspace"
-msgstr "La rueda del ratón cambia el espacio de trabajo"
+msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1928
 msgid "Whether this view should change active workspace on scroll events"
-msgstr "Si esta vista debe cambiar el espacio de trabajo actual con la rueda del ratón"
+msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1934
 msgid "Filter monitor windows"
-msgstr "Filtro de ventanas del monitor"
+msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1935
 msgid ""
 "Whether this view should only show windows of monitor where it placed at"
-msgstr "Si esta vista debe mostrar solo las ventanas del monitor donde se está usando"
+msgstr ""
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2158
 msgid "Windows"
-msgstr "Ventanas"
+msgstr "Fenster"
 
 #: ../libxfdashboard/window-tracker.c:620
 #, c-format
 msgid "Cannot release unknown monitor %d"
-msgstr "No se puede lanzar el monitor desconocido %d"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:898
 msgid "Active window"
-msgstr "Ventana activa"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:899
 msgid "The current active window"
-msgstr "La actual ventana activa"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:905
 msgid "Active workspace"
-msgstr "Espacio de trabajo activo"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:906
 msgid "The current active workspace"
-msgstr "El actual espacio de trabajo"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:912
 msgid "Primary monitor"
-msgstr "Monitor principal"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:913
 msgid "The current primary monitor"
-msgstr "El actual monitor principal"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker-monitor.c:282
 msgid "Monitor index"
-msgstr "Índice del monitor"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker-monitor.c:283
 msgid "The index of this monitor"
-msgstr "El índice de este monitor"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker-monitor.c:290
 msgid "Is primary"
-msgstr "Es primario"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker-monitor.c:291
 msgid "Whether this monitor is the primary one"
-msgstr "Si este monitor es el principal"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker-window.c:86
 msgid ""
 "Keep window fullscreen on primary monitor because window manager does not "
 "support _NET_WM_FULLSCREEN_MONITORS."
-msgstr "Mantener ventana a pantalla completa en el monitor principal porque el gestor de ventanas no lo soporta _NET_WM_FULLSCREEN_MONITORS."
+msgstr ""
 
 #. Setting new selection was unsuccessful if we get here
 #. Activation was unsuccessful if we get here
@@ -3473,43 +3471,43 @@ msgstr "Mantener ventana a pantalla completa en el monitor principal porque el g
 #: ../libxfdashboard/workspace-selector.c:1094
 #, c-format
 msgid "Could not determine workspace of %s to set selection at %s"
-msgstr "No se puede determinar el espacio de trabajo de %s para establecer la selección como %s"
+msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1255
 msgid "Maximum size"
-msgstr "Tamaño máximo"
+msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1256
 msgid "The maximum size of this actor for opposite direction of orientation"
-msgstr "El tamaño máximo de este actor para la dirección opuesta de la orientación"
+msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1263
 msgid "Maximum fraction"
-msgstr "Porcentaje máximo"
+msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1264
 msgid ""
 "The maximum size of this actor for opposite direction of orientation defined"
 " by fraction between 0.0 and 1.0"
-msgstr "El tamaño máximo de este actor para la dirección opuesta de la orientación es definida por el porcentaje entre 0.0 y 1.0"
+msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1271
 msgid "Using fraction"
-msgstr "Uso de porcentaje"
+msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1272
 msgid ""
 "Flag indicating if maximum size is static or defined by fraction between 0.0"
 " and 1.0"
-msgstr "Bandera que indica si el tamaño máximo es estático o es definido por el porcentaje entre 0.0 y 1.0"
+msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1278
 msgid "Show current monitor only"
-msgstr "Mostrar solamente el monitor actual"
+msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1279
 msgid "Show only windows of the monitor where this actor is placed"
-msgstr "Mostrar solo ventanas del monitor donde el actor este colocado."
+msgstr ""
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:313 ../plugins/clock-view/plugin.c:311
@@ -3518,7 +3516,7 @@ msgstr ""
 
 #: ../plugins/clock-view/clock-view-settings.c:233
 msgid "Hour color"
-msgstr "Color de la hora"
+msgstr ""
 
 #: ../plugins/clock-view/clock-view-settings.c:234
 msgid "Color to draw the hour hand with"
@@ -3526,7 +3524,7 @@ msgstr ""
 
 #: ../plugins/clock-view/clock-view-settings.c:240
 msgid "Minute color"
-msgstr "Color del minuto"
+msgstr ""
 
 #: ../plugins/clock-view/clock-view-settings.c:241
 msgid "Color to draw the minute hand with"
@@ -3534,7 +3532,7 @@ msgstr ""
 
 #: ../plugins/clock-view/clock-view-settings.c:247
 msgid "Second color"
-msgstr "Color del segundo"
+msgstr ""
 
 #: ../plugins/clock-view/clock-view-settings.c:248
 msgid "Color to draw the second hand with"
@@ -3551,7 +3549,7 @@ msgstr ""
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:208
 msgid "Hour color:"
-msgstr "Color de la hora:"
+msgstr ""
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
@@ -3560,7 +3558,7 @@ msgstr ""
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
 msgid "Minute color:"
-msgstr "Color del minuto:"
+msgstr ""
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
@@ -3569,7 +3567,7 @@ msgstr ""
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
 msgid "Second color:"
-msgstr "Color del segundo:"
+msgstr ""
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
@@ -3578,7 +3576,7 @@ msgstr ""
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
 msgid "Background color:"
-msgstr "Color de fondo:"
+msgstr ""
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
@@ -3752,16 +3750,16 @@ msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
-msgstr "s"
+msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:367
 msgid "ms"
-msgstr "ms"
+msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:124
 #: ../settings/general.c:371
 msgid "Immediately"
-msgstr "Inmediato"
+msgstr ""
 
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:304
@@ -3780,46 +3778,46 @@ msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:418
 msgid "Hot corner"
-msgstr "Esquina activa"
+msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:419
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
-msgstr "Activa Xfdashboard cuando el puntero se mueve a una esquina configurada del monitor"
+msgstr ""
 
 #: ../settings/general.c:116
 msgid "Do nothing"
-msgstr "No hacer nada"
+msgstr ""
 
 #: ../settings/general.c:117
 msgid "Windows view"
-msgstr "Vista de ventanas"
+msgstr "Fenster-Ansicht"
 
 #: ../settings/general.c:118
 msgid "Applications view"
-msgstr "Vista de aplicaciones"
+msgstr "Anwendungs-Ansicht"
 
 #: ../settings/general.c:125
 msgid "High"
-msgstr "Alto"
+msgstr ""
 
 #: ../settings/general.c:126
 msgid "Normal"
-msgstr "Normal"
+msgstr ""
 
 #: ../settings/general.c:127
 msgid "Low"
-msgstr "Bajo"
+msgstr ""
 
 #: ../settings/general.c:312
 msgid "seconds"
-msgstr "segundos"
+msgstr ""
 
 #: ../settings/general.c:707 ../settings/plugins.c:1112
 #: ../settings/themes.c:913
 msgid "Builder"
-msgstr "Constructor"
+msgstr ""
 
 #: ../settings/general.c:708 ../settings/plugins.c:1113
 #: ../settings/themes.c:914
@@ -3829,17 +3827,17 @@ msgstr ""
 #: ../settings/plugins.c:223
 #, c-format
 msgid "Configure plugin: %s"
-msgstr "Configurar complemento: %s"
+msgstr ""
 
 #: ../settings/plugins.c:531
 msgid "Could not set list of enabled plugins!"
-msgstr "No se pudo establecer la lista de complementos habilitados."
+msgstr ""
 
 #. Show error message
 #: ../settings/plugins.c:746
 #, c-format
 msgid "Could not load plugin '%s' from '%s': %s"
-msgstr "No se pudo cargar el complemento «%s» desde «%s»: %s"
+msgstr ""
 
 #. Create error message to store in list
 #: ../settings/plugins.c:752
@@ -3848,32 +3846,32 @@ msgid ""
 "<b>Plugin could not be loaded.</b>\n"
 "\n"
 "%s"
-msgstr "<b>No se pudo cargar el complemento.</b>\n\n%s"
+msgstr ""
 
 #: ../settings/plugins.c:958
 msgid "Name"
-msgstr "Nombre"
+msgstr ""
 
 #: ../settings/themes.c:784
 msgid "Theme"
-msgstr "Tema"
+msgstr ""
 
 #: ../settings/main.c:46
 msgid "Settings manager socket"
-msgstr "Gestor de ajustes de socket"
+msgstr ""
 
 #: ../settings/main.c:46
 msgid "SOCKET ID"
-msgstr "ID SOCKET"
+msgstr ""
 
 #: ../settings/main.c:47
 msgid "Version information"
-msgstr "Información de la versión"
+msgstr ""
 
 #. Initialize GTK+
 #: ../settings/main.c:57
 msgid "."
-msgstr "."
+msgstr ""
 
 #: ../settings/main.c:61
 #, c-format
@@ -3885,25 +3883,25 @@ msgstr ""
 #: ../settings/main.c:84
 #, c-format
 msgid "Failed to initialize xfconf: %s"
-msgstr "Falló al iniciar xconf: %s"
+msgstr ""
 
 #: ../settings/main.c:96
 msgid "Could not create the settings dialog."
-msgstr "No se puedo crear el diálogo de ajustes."
+msgstr ""
 
 #: ../settings/settings.c:124
 #, c-format
 msgid "Could not find UI file '%s'."
-msgstr "No se pudo encontrar el archivo de UI '%s'."
+msgstr ""
 
 #: ../settings/settings.c:138
 #, c-format
 msgid "Could not load UI resources from '%s': %s"
-msgstr "No se pudieron cargar los recursos de la UI desde '%s': %s"
+msgstr ""
 
 #: ../settings/settings.c:291 ../settings/settings.c:325
 msgid "Could not get dialog from UI file."
-msgstr "No se pudo obtener el diálogo desde el archivo de UI."
+msgstr ""
 
 #: ../xfdashboard/main.c:172
 msgid "Cannot restart application: Failed to quit running instance"

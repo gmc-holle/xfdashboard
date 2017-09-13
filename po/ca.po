@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Robert Antoni Buj i Gelonch <rbuj@fedoraproject.org>, 2016
+# Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2016-2017
+# Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2016-06-21 20:48+0000\n"
-"Last-Translator: Robert Antoni Buj i Gelonch <rbuj@fedoraproject.org>\n"
+"PO-Revision-Date: 2017-02-16 13:24+0000\n"
+"Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/xfdashboard/xfdashboard/language/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -38,7 +39,7 @@ msgstr "Ajusts de Xfdashboard"
 
 #: ../data/xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
-msgstr "Configura xfdashboard"
+msgstr "Configureu xfdashboard"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:2
 msgid ""
@@ -514,7 +515,7 @@ msgstr ""
 
 #: ../libxfdashboard/application-button.c:337
 msgid "Application information"
-msgstr ""
+msgstr "Informació de l'aplicació"
 
 #: ../libxfdashboard/application-button.c:338
 msgid "The application information whose title and description to display"
@@ -558,7 +559,7 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:390 ../libxfdashboard/quicklaunch.c:394
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr ""
+msgstr "Ha fallat el llançament de l'aplicació «%s»: %s"
 
 #: ../libxfdashboard/application-button.c:657
 #: ../libxfdashboard/application-button.c:660
@@ -825,7 +826,7 @@ msgstr "Element del menú"
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT
 #: ../libxfdashboard/applications-menu-model.c:806
 msgid "Parent menu"
-msgstr ""
+msgstr "Menú superior"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU
 #: ../libxfdashboard/applications-menu-model.c:807
@@ -990,7 +991,7 @@ msgstr "Mode de visualització"
 
 #: ../libxfdashboard/applications-view.c:1324
 msgid "The view mode used in this view"
-msgstr ""
+msgstr "El mode de vista utilitzat en aquest vista"
 
 #: ../libxfdashboard/applications-view.c:1331 ../libxfdashboard/button.c:1322
 #: ../libxfdashboard/quicklaunch.c:2705 ../libxfdashboard/scrollbar.c:754
@@ -1008,7 +1009,7 @@ msgstr ""
 
 #: ../libxfdashboard/applications-view.c:1339
 msgid "Parent menu icon"
-msgstr ""
+msgstr "Icona del menú superior"
 
 #: ../libxfdashboard/applications-view.c:1340
 msgid "Name of icon to use for 'go-back-to-parent-menu' entries"
@@ -1045,7 +1046,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:444
 msgid "Background fill color"
-msgstr ""
+msgstr "Color d'ompliment del fons"
 
 #: ../libxfdashboard/background.c:445
 msgid "Color to fill background with"
@@ -1053,7 +1054,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:451
 msgid "Fill corners"
-msgstr ""
+msgstr "Omple les cantonades"
 
 #: ../libxfdashboard/background.c:452
 msgid "Determines which corners are rounded at background"
@@ -1065,7 +1066,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:467 ../libxfdashboard/window-content.c:2089
 msgid "Outline color"
-msgstr ""
+msgstr "Color del contorn"
 
 #: ../libxfdashboard/background.c:468 ../libxfdashboard/outline-effect.c:429
 msgid "Color to draw outline with"
@@ -1073,7 +1074,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:474 ../libxfdashboard/window-content.c:2096
 msgid "Outline width"
-msgstr ""
+msgstr "Amplada del contorn"
 
 #: ../libxfdashboard/background.c:475 ../libxfdashboard/outline-effect.c:436
 msgid "Width of line used to draw outline"
@@ -1081,7 +1082,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:482
 msgid "Outline borders"
-msgstr ""
+msgstr "Cantonades del contorn"
 
 #: ../libxfdashboard/background.c:483
 msgid "Determines which sides of border of outline should be drawn"
@@ -1089,7 +1090,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:490
 msgid "Outline corners"
-msgstr ""
+msgstr "Contorn de les cantonades"
 
 #: ../libxfdashboard/background.c:491
 msgid "Determines which corners are rounded at outline"
@@ -1097,7 +1098,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:498
 msgid "Outline corner radius"
-msgstr ""
+msgstr "Radi de la cantonada del contorn"
 
 #: ../libxfdashboard/background.c:499
 msgid "Radius of rounded corners of outline"
@@ -1176,7 +1177,7 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:250
 #, c-format
 msgid "Error on line %d char %d: "
-msgstr ""
+msgstr "Error en la línia %d caràcter %d: "
 
 #: ../libxfdashboard/bindings-pool.c:201
 #, c-format
@@ -1412,7 +1413,7 @@ msgstr ""
 
 #: ../libxfdashboard/button.c:1418
 msgid "Text justify"
-msgstr ""
+msgstr "Justificació del text"
 
 #: ../libxfdashboard/button.c:1419
 msgid "Justification (line alignment) of label"
@@ -1651,7 +1652,7 @@ msgstr ""
 
 #: ../libxfdashboard/emblem-effect.c:494
 msgid "X align"
-msgstr ""
+msgstr "Alineació X"
 
 #: ../libxfdashboard/emblem-effect.c:495
 msgid ""
@@ -1661,7 +1662,7 @@ msgstr ""
 
 #: ../libxfdashboard/emblem-effect.c:502
 msgid "Y align"
-msgstr ""
+msgstr "Alineació Y"
 
 #: ../libxfdashboard/emblem-effect.c:503
 msgid ""
@@ -1702,7 +1703,7 @@ msgstr "L'espaiat entre els fills"
 
 #: ../libxfdashboard/fill-box-layout.c:592
 msgid "Homogeneous"
-msgstr ""
+msgstr "Homogeni"
 
 #: ../libxfdashboard/fill-box-layout.c:593
 msgid ""
@@ -1964,7 +1965,7 @@ msgstr "Amplada"
 
 #: ../libxfdashboard/outline-effect.c:443
 msgid "Borders"
-msgstr ""
+msgstr "Cantonades"
 
 #: ../libxfdashboard/outline-effect.c:444
 msgid "Determines which sides of the border to draw"
@@ -2110,7 +2111,7 @@ msgstr ""
 #: ../libxfdashboard/plugin.c:964
 #, c-format
 msgid "Could not create plugin instance"
-msgstr ""
+msgstr "No s'ha pogut crear la instància del connector"
 
 #: ../libxfdashboard/plugin.c:1028
 #, c-format
@@ -2134,7 +2135,7 @@ msgstr ""
 #: ../libxfdashboard/plugins-manager.c:557
 #, c-format
 msgid "Could not load plugin '%s': %s"
-msgstr ""
+msgstr "No s'ha pogut carregar el connector «%s»: %s"
 
 #: ../libxfdashboard/quicklaunch.c:183
 #, c-format
@@ -2187,11 +2188,11 @@ msgstr ""
 
 #: ../libxfdashboard/quicklaunch.c:2697
 msgid "Normal icon size"
-msgstr ""
+msgstr "Mida de la icona normal"
 
 #: ../libxfdashboard/quicklaunch.c:2698
 msgid "Unscale size of icon"
-msgstr ""
+msgstr "Mida sense escalar de la icona"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
@@ -2542,7 +2543,7 @@ msgstr ""
 
 #: ../libxfdashboard/text-box.c:797
 msgid "Editable"
-msgstr ""
+msgstr "Editable"
 
 #: ../libxfdashboard/text-box.c:798
 msgid "Flag to set if text is editable"
@@ -2639,7 +2640,7 @@ msgstr ""
 
 #: ../libxfdashboard/theme.c:570 ../libxfdashboard/theme-css.c:2485
 msgid "Theme path"
-msgstr ""
+msgstr "Camí al tema"
 
 #: ../libxfdashboard/theme.c:571
 msgid "Path where theme was found and loaded from"
@@ -2712,18 +2713,18 @@ msgstr ""
 #: ../libxfdashboard/theme-css.c:742
 #, c-format
 msgid "Factor %.2f is out of range"
-msgstr ""
+msgstr "El factor %.2f està fora de l'interval"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:847
 #, c-format
 msgid "Alpha factor %.2f is out of range"
-msgstr ""
+msgstr "El factor alfa %.2f està fora de l'interval"
 
 #: ../libxfdashboard/theme-css.c:900
 #, c-format
 msgid "CSS function '%s' is already registered."
-msgstr ""
+msgstr "La funció CSS «%s» ja està registrada."
 
 #: ../libxfdashboard/theme-css.c:941 ../libxfdashboard/theme-css.c:1049
 #: ../libxfdashboard/theme-css.c:2054
@@ -2732,7 +2733,7 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1074
 msgid "Missing function argument"
-msgstr ""
+msgstr "Falta l'argument de la funció"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:1098
@@ -2746,11 +2747,11 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1159
 msgid "Missing ')' after function"
-msgstr ""
+msgstr "Falta un «)» després de la funció"
 
 #: ../libxfdashboard/theme-css.c:1174
 msgid "Missing '(' after function"
-msgstr ""
+msgstr "Falta un «(» després de la funció"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:1210
@@ -2784,15 +2785,15 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1584
 msgid "Invalid property value"
-msgstr ""
+msgstr "Valor incorrecte de la propietat"
 
 #: ../libxfdashboard/theme-css.c:1609
 msgid "Property values must end with semi-colon"
-msgstr ""
+msgstr "Els valors de les propietats han d'acabar amb punt i coma"
 
 #: ../libxfdashboard/theme-css.c:1746
 msgid "Missing '(' after @import keyword."
-msgstr ""
+msgstr "Falta un «(» després de la paraula clau @import."
 
 #: ../libxfdashboard/theme-css.c:1787
 msgid "Unexpected token in filename to import"
@@ -2804,7 +2805,7 @@ msgstr "Falta el nom del fitxer a importar"
 
 #: ../libxfdashboard/theme-css.c:1829
 msgid "Missing closing ')' at @import keyword."
-msgstr ""
+msgstr "Falta un «)» de tancament a la paraula clau @import."
 
 #. Build error message
 #: ../libxfdashboard/theme-css.c:1894
@@ -2832,16 +2833,16 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:2092
 msgid "'@' identifier"
-msgstr ""
+msgstr "identificador «@»"
 
 #: ../libxfdashboard/theme-css.c:2121 ../libxfdashboard/theme-css.c:2138
 msgid "Unhandled selector"
-msgstr ""
+msgstr "Selector sense tractament"
 
 #: ../libxfdashboard/theme-css.c:2288
 #, c-format
 msgid "The input stream of type %s is not supported"
-msgstr ""
+msgstr "El flux d'entrada %s no és compatible"
 
 #: ../libxfdashboard/theme-css.c:2486
 msgid "Path of theme loading from"
@@ -2850,12 +2851,12 @@ msgstr ""
 #: ../libxfdashboard/theme-css.c:2573
 #, c-format
 msgid "Could not get file for path '%s'"
-msgstr ""
+msgstr "No s'ha pogut obtenir el fitxer per al camí «%s»"
 
 #: ../libxfdashboard/theme-effects.c:334 ../libxfdashboard/theme-layout.c:483
 #, c-format
 msgid "Cannot allocate memory for object data of tag <%s>"
-msgstr ""
+msgstr "No es pot assignar memòria per a les dades de l'objecte de l'etiqueta <%s>"
 
 #: ../libxfdashboard/theme-effects.c:352
 #, c-format
@@ -2995,7 +2996,7 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1816
 #, c-format
 msgid "File %s does not contain an interface"
-msgstr ""
+msgstr "El fitxer %s no conté una interfície"
 
 #: ../libxfdashboard/theme-layout.c:1826
 #, c-format
@@ -3004,15 +3005,15 @@ msgstr ""
 
 #: ../libxfdashboard/toggle-button.c:162
 msgid "Toggle state"
-msgstr ""
+msgstr "Commuta l'estat"
 
 #: ../libxfdashboard/toggle-button.c:163
 msgid "State of toggle"
-msgstr ""
+msgstr "Estat de la commutació"
 
 #: ../libxfdashboard/toggle-button.c:169
 msgid "Auto toggle"
-msgstr ""
+msgstr "Commutació automàtica"
 
 #: ../libxfdashboard/toggle-button.c:170
 msgid "If set the toggle state will be toggled on each click"
@@ -3020,11 +3021,11 @@ msgstr ""
 
 #: ../libxfdashboard/tooltip-action.c:525
 msgid "Tooltip text"
-msgstr ""
+msgstr "Text d'indicador de funció"
 
 #: ../libxfdashboard/tooltip-action.c:526
 msgid "The text to display in a tooltip"
-msgstr ""
+msgstr "El text a mostrar en un indicador de funció"
 
 #: ../libxfdashboard/utils.c:160
 #, c-format
@@ -3045,7 +3046,7 @@ msgstr "Nom de la vista"
 
 #: ../libxfdashboard/view.c:376
 msgid "Name of view used to display"
-msgstr ""
+msgstr "No de la vista que s'utilitza per mostrar"
 
 #: ../libxfdashboard/view.c:382
 msgid "View icon"
@@ -3134,43 +3135,43 @@ msgstr "Vista activa"
 
 #: ../libxfdashboard/viewpad.c:1231
 msgid "The current active view in viewpad"
-msgstr ""
+msgstr "La vista activa actual dins de l'àrea de visualització"
 
 #: ../libxfdashboard/viewpad.c:1237
 msgid "Horizontal scrollbar visibility"
-msgstr ""
+msgstr "Visibilitat de la barra de desplaçament horitzontal"
 
 #: ../libxfdashboard/viewpad.c:1238
 msgid "This flag indicates if horizontal scrollbar is visible"
-msgstr ""
+msgstr "Aquest indicador indica si la barra de desplaçament horitzontal és visible"
 
 #: ../libxfdashboard/viewpad.c:1244
 msgid "Horizontal scrollbar policy"
-msgstr ""
+msgstr "Política de la barra de desplaçament horitzontal"
 
 #: ../libxfdashboard/viewpad.c:1245
 msgid "The policy for horizontal scrollbar controlling when it is displayed"
-msgstr ""
+msgstr "La política per al control de la barra de desplaçament horitzontal quan és mostrada"
 
 #: ../libxfdashboard/viewpad.c:1252
 msgid "Vertical scrollbar visibility"
-msgstr ""
+msgstr "Visibilitat de la barra de desplaçament vertical"
 
 #: ../libxfdashboard/viewpad.c:1253
 msgid "This flag indicates if vertical scrollbar is visible"
-msgstr ""
+msgstr "Aquest indicador indica si la barra de desplaçament vertical és visible"
 
 #: ../libxfdashboard/viewpad.c:1259
 msgid "Vertical scrollbar policy"
-msgstr ""
+msgstr "Política de la barra de desplaçament vertical"
 
 #: ../libxfdashboard/viewpad.c:1260
 msgid "The policy for vertical scrollbar controlling when it is displayed"
-msgstr ""
+msgstr "La política per al control de la barra de desplaçament vertical quan és mostrada"
 
 #: ../libxfdashboard/view-selector.c:389
 msgid "Viewpad"
-msgstr ""
+msgstr "Àrea de visualització"
 
 #: ../libxfdashboard/view-selector.c:390
 msgid "The viewpad this selector belongs to"
@@ -3381,7 +3382,7 @@ msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1905
 msgid "Current workspace"
-msgstr ""
+msgstr "Espai de treball actual"
 
 #: ../libxfdashboard/windows-view.c:1906
 msgid "The current workspace whose windows are shown"
@@ -3503,7 +3504,7 @@ msgstr "Indicador per si la mida màxima és estàtica o està definida amb la f
 
 #: ../libxfdashboard/workspace-selector.c:1278
 msgid "Show current monitor only"
-msgstr ""
+msgstr "Mostra només el monitor actual"
 
 #: ../libxfdashboard/workspace-selector.c:1279
 msgid "Show only windows of the monitor where this actor is placed"
@@ -3544,7 +3545,7 @@ msgstr ""
 
 #: ../plugins/clock-view/plugin.c:146 ../plugins/hot-corner/plugin.c:109
 msgid "Cannot allocate memory for mapping"
-msgstr ""
+msgstr "No es pot assignar memòria per a l'assignació"
 
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:208
@@ -3584,7 +3585,7 @@ msgstr "Trieu el color per al fons de l'agulla dels segons"
 
 #: ../plugins/clock-view/plugin.c:312
 msgid "Adds new a view showing a clock"
-msgstr ""
+msgstr "Afegeix una nova vista que mostra un rellotge"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:213
@@ -3817,7 +3818,7 @@ msgstr "segons"
 #: ../settings/general.c:707 ../settings/plugins.c:1112
 #: ../settings/themes.c:913
 msgid "Builder"
-msgstr ""
+msgstr "Constructor"
 
 #: ../settings/general.c:708 ../settings/plugins.c:1113
 #: ../settings/themes.c:914
@@ -3831,13 +3832,13 @@ msgstr "Configureu el connector: %s"
 
 #: ../settings/plugins.c:531
 msgid "Could not set list of enabled plugins!"
-msgstr ""
+msgstr "No s'ha pogut establir la llista dels connectors habilitats!"
 
 #. Show error message
 #: ../settings/plugins.c:746
 #, c-format
 msgid "Could not load plugin '%s' from '%s': %s"
-msgstr ""
+msgstr "No s'ha pogut carregar el connector «%s» des de «%s»: %s"
 
 #. Create error message to store in list
 #: ../settings/plugins.c:752
@@ -3846,7 +3847,7 @@ msgid ""
 "<b>Plugin could not be loaded.</b>\n"
 "\n"
 "%s"
-msgstr ""
+msgstr "<b>No s'ha pogut carregar el connector.</b>\n\n%s"
 
 #: ../settings/plugins.c:958
 msgid "Name"
@@ -3883,16 +3884,16 @@ msgstr ""
 #: ../settings/main.c:84
 #, c-format
 msgid "Failed to initialize xfconf: %s"
-msgstr ""
+msgstr "Ha fallat la inicialització de xfconf: %s"
 
 #: ../settings/main.c:96
 msgid "Could not create the settings dialog."
-msgstr ""
+msgstr "No s'ha pogut crear el diàleg dels ajusts."
 
 #: ../settings/settings.c:124
 #, c-format
 msgid "Could not find UI file '%s'."
-msgstr ""
+msgstr "No s'ha pogut trobar el fitxer de la interfície gràfica «%s»."
 
 #: ../settings/settings.c:138
 #, c-format
@@ -3901,7 +3902,7 @@ msgstr ""
 
 #: ../settings/settings.c:291 ../settings/settings.c:325
 msgid "Could not get dialog from UI file."
-msgstr ""
+msgstr "No s'ha pogut obtenir el diàleg des del fitxer de la interfície gràfica."
 
 #: ../xfdashboard/main.c:172
 msgid "Cannot restart application: Failed to quit running instance"
@@ -3909,12 +3910,12 @@ msgstr ""
 
 #: ../xfdashboard/main.c:212
 msgid "Failed to create application instance"
-msgstr ""
+msgstr "Ha fallat la creació de la instància de l'aplicació"
 
 #: ../xfdashboard/main.c:219
 #, c-format
 msgid "Unable to register application: %s"
-msgstr ""
+msgstr "No s'ha pogut registrar l'aplicació: %s"
 
 #: ../xfdashboard/main.c:249
 #, c-format
