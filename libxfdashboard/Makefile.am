@@ -184,7 +184,6 @@ libxfdashboard_la_CFLAGS = \
 	$(LIBXFCONF_CFLAGS) \
 	$(LIBXFCE4UTIL_CFLAGS) \
 	$(LIBXFCE4UI_CFLAGS) \
-	$(DBUS_GLIB_CFLAGS) \
 	$(PLATFORM_CFLAGS)
 
 libxfdashboard_la_LIBADD = \
@@ -198,8 +197,15 @@ libxfdashboard_la_LIBADD = \
 	$(LIBXFCONF_LIBS) \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(LIBXFCE4UI_LIBS) \
-	$(DBUS_GLIB_LIBS) \
 	$(LIBM)
+
+if DBUS_GLIB
+libxfdashboard_la_CFLAGS += \
+	$(DBUS_GLIB_CFLAGS)
+
+libxfdashboard_la_LIBADD += \
+	$(DBUS_GLIB_LIBS)
+endif
 
 libxfdashboard_la_LDFLAGS = \
 	-export-dynamic \
@@ -253,11 +259,20 @@ endif
 gdk_headers = \
 	gdk/window-tracker-backend-gdk.h
 
+libxfdashboard_la_headers += $(gdk_headers)
+
+if GDK
 gdk_sources = \
 	gdk/window-tracker-backend-gdk.c
 
-libxfdashboard_la_headers += $(gdk_headers)
 libxfdashboard_la_SOURCES += $(gdk_sources)
+
+libxfdashboard_la_CFLAGS += \
+	$(CLUTTER_GDK_CFLAGS)
+
+libxfdashboard_la_LIBADD += \
+	$(CLUTTER_GDK_LIBS)
+endif
 
 libxfdashboard_la_includedir = \
 	$(includedir)/xfdashboard/libxfdashboard

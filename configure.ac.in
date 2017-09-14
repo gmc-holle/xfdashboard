@@ -22,8 +22,6 @@ m4_define([clutter_minimum_version], [1.12.0])
 m4_define([glib_minimum_version], [2.32])
 m4_define([gio_minimum_version], [2.32])
 m4_define([garcon_minimum_version], [0.2.0])
-m4_define([xfconf_minimum_version], [4.10.0])
-m4_define([dbus_glib_minimum_version], [0.98])
 m4_define([xcomposite_minimum_version], [0.2])
 m4_define([intltool_minimum_version], [0.35])
 m4_define([gtk_minimum_version], [3.2])
@@ -200,18 +198,12 @@ AC_SUBST(HAVE_XINERAMA)
 dnl ***********************************
 dnl *** Check for required packages ***
 dnl ***********************************
-XDT_CHECK_PACKAGE([LIBWNCK], [libwnck-3.0], [wnck_minimum_version])
-XDT_CHECK_PACKAGE([CLUTTER], [clutter-1.0], [clutter_minimum_version])
-XDT_CHECK_PACKAGE([CLUTTER_COGL], [clutter-cogl-1.0], [clutter_minimum_version])
-XDT_CHECK_PACKAGE([GTK], [gtk+-3.0], [gtk_minimum_version])
-XDT_CHECK_PACKAGE([GLIB], [glib-2.0], [glib_minimum_version])
-XDT_CHECK_PACKAGE([GIO], [gio-2.0], [gio_minimum_version])
-XDT_CHECK_PACKAGE([GIO_UNIX], [gio-unix-2.0], [gio_minimum_version])
-XDT_CHECK_PACKAGE([GARCON], [garcon-1], [garcon_minimum_version])
-XDT_CHECK_PACKAGE([LIBXFCONF], [libxfconf-0], [xfconf_minimum_version])
-XDT_CHECK_PACKAGE([LIBXFCE4UTIL], [libxfce4util-1.0],[libxfce4util_minimum_version])
-XDT_CHECK_PACKAGE([LIBXFCE4UI], [libxfce4ui-2],[libxfce4ui_minimum_version])
-XDT_CHECK_PACKAGE([DBUS_GLIB], [dbus-glib-1], [dbus_glib_minimum_version], [
+XDT_CHECK_PACKAGE([LIBWNCK], [libwnck-3.0], [wnck_minimum_version], [XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES libwnck-3.0"])
+XDT_CHECK_PACKAGE([CLUTTER_COGL], [clutter-cogl-1.0], [clutter_minimum_version], [XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES clutter-cogl-1.0"])
+XDT_CHECK_PACKAGE([GTK], [gtk+-3.0], [gtk_minimum_version], [XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES gtk+-3.0"])
+XDT_CHECK_PACKAGE([GLIB], [glib-2.0], [glib_minimum_version], [
+	XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES glib-2.0"
+
 	XDT_PROG_PKG_CONFIG()
 
 	GLIB_MKENUMS=`$PKG_CONFIG --variable=glib_mkenums glib-2.0`
@@ -219,6 +211,37 @@ XDT_CHECK_PACKAGE([DBUS_GLIB], [dbus-glib-1], [dbus_glib_minimum_version], [
 
 	GLIB_GENMARSHAL=`$PKG_CONFIG --variable=glib_genmarshal glib-2.0`
 	AC_SUBST(GLIB_GENMARSHAL)])
+XDT_CHECK_PACKAGE([GIO], [gio-2.0], [gio_minimum_version], [XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES gio-2.0"])
+XDT_CHECK_PACKAGE([GIO_UNIX], [gio-unix-2.0], [gio_minimum_version], [XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES gio-unix-2.0"])
+XDT_CHECK_PACKAGE([GARCON], [garcon-1], [garcon_minimum_version], [XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES garcon-1"])
+XDT_CHECK_PACKAGE([LIBXFCONF], [libxfconf-0], [4.13.0], [
+	XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES libxfconf-0"], [
+	XDT_CHECK_PACKAGE([LIBXFCONF], [libxfconf-0], [4.12.0], [
+                XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES libxfconf-0"
+
+                XDT_CHECK_PACKAGE([DBUS_GLIB], [dbus-glib-1], [0.98], [
+			ac_dbus_glib=yes
+			XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES dbus-glib-1"], [
+			ac_dbus_glib=no])
+                AC_DEFINE([XFCONF_LEGACY], [], [Use xfconf < 4.13 to obtain array type])
+	])
+])
+XDT_CHECK_PACKAGE([LIBXFCE4UTIL], [libxfce4util-1.0],[libxfce4util_minimum_version], [XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES libxfce4util-1.0"])
+XDT_CHECK_PACKAGE([LIBXFCE4UI], [libxfce4ui-2],[libxfce4ui_minimum_version], [XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES libxfce4ui-2"])
+AM_CONDITIONAL([DBUS_GLIB], [test x"$ac_dbus_glib" = x"yes"])
+
+dnl **********************************************
+dnl *** Check for Clutter and its backend: GDK ***
+dnl **********************************************
+XDT_CHECK_PACKAGE([CLUTTER], [clutter-1.0], [clutter_minimum_version], [
+	XFDASHBOARD_REQUIRES="$XFDASHBOARD_REQUIRES clutter-1.0"
+
+	XDT_CHECK_PACKAGE([CLUTTER_GDK], [clutter-gdk-1.0], [clutter_minimum_version],
+	[ac_clutter_gdk=yes], [ac_clutter_gdk=no])]
+)
+AM_CONDITIONAL([GDK], [test x"$ac_clutter_gdk" = x"yes"])
+
+AC_SUBST(XFDASHBOARD_REQUIRES)
 
 dnl ***********************************
 dnl *** Check for debugging support ***
@@ -327,7 +350,9 @@ echo "  garcon:           $GARCON_VERSION"
 echo "  libxconf:         $LIBXFCONF_VERSION"
 echo "  libxfce4ui:       $LIBXFCE4UI_VERSION"
 echo "  libxfce4util:     $LIBXFCE4UTIL_VERSION"
+if test "x$ac_dbus_glib" = "xyes" ; then
 echo "  dbus-glib:        $DBUS_GLIB_VERSION"
+fi
 echo
 echo "Tools used:"
 echo "  glib-genmarshal:  $GLIB_GENMARSHAL"
@@ -337,4 +362,9 @@ echo "Features enabled:"
 echo "  XComposite:       $enabled_x11_extension_composite"
 echo "  XDamage:          $enabled_x11_extension_damage"
 echo "  Xinerama:         $enabled_x11_extension_xinerama"
+if test "x$ac_clutter_gdk" = "xyes" ; then
+echo "  GDK backend:      yes"
+else
+echo "  GDK backend:      no"
+fi
 echo

@@ -39,7 +39,9 @@
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <gtk/gtk.h>
+#ifdef XFCONF_LEGACY
 #include <dbus/dbus-glib.h>
+#endif
 #include <gio/gdesktopappinfo.h>
 
 #include <libxfdashboard/stage.h>
@@ -58,7 +60,11 @@ GType xfdashboard_pointer_array_get_type(void)
 
 	if(g_once_init_enter(&type__volatile))
 	{
+#ifdef XFCONF_LEGACY
 		type=dbus_g_type_get_collection("GPtrArray", G_TYPE_VALUE);
+#else
+		type=G_TYPE_PTR_ARRAY;
+#endif
 		g_once_init_leave(&type__volatile, type);
 	}
 
