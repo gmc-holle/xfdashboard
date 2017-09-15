@@ -31,7 +31,9 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/x11/window-tracker-backend-x11.h>
+#ifdef HAVE_BACKEND_GDK
 #include <libxfdashboard/gdk/window-tracker-backend-gdk.h>
+#endif
 #include <libxfdashboard/application.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
@@ -63,9 +65,11 @@ static XfdashboardWindowTrackerBackendMap	_xfdashboard_window_tracker_backend_ma
 #ifdef CLUTTER_WINDOWING_X11
 												{ "x11", CLUTTER_WINDOWING_X11, xfdashboard_window_tracker_backend_x11_new },
 #endif
-#ifdef CLUTTER_WINDOWING_GDK
+#ifdef HAVE_BACKEND_GDK
+#ifdef   CLUTTER_WINDOWING_GDK
 												{ "gdk", CLUTTER_WINDOWING_GDK, xfdashboard_window_tracker_backend_gdk_new },
-#endif
+#endif   /* CLUTTER_WINDOWING_GDK */
+#endif /* HAVE_BACKEND_GDK */
 												{ NULL, NULL, NULL }
 											};
 

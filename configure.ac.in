@@ -201,7 +201,6 @@ dnl ***********************************
 dnl *** Check for required packages ***
 dnl ***********************************
 XDT_CHECK_PACKAGE([LIBWNCK], [libwnck-3.0], [wnck_minimum_version])
-XDT_CHECK_PACKAGE([CLUTTER], [clutter-1.0], [clutter_minimum_version])
 XDT_CHECK_PACKAGE([CLUTTER_COGL], [clutter-cogl-1.0], [clutter_minimum_version])
 XDT_CHECK_PACKAGE([GTK], [gtk+-3.0], [gtk_minimum_version])
 XDT_CHECK_PACKAGE([GLIB], [glib-2.0], [glib_minimum_version])
@@ -219,6 +218,24 @@ XDT_CHECK_PACKAGE([DBUS_GLIB], [dbus-glib-1], [dbus_glib_minimum_version], [
 
 	GLIB_GENMARSHAL=`$PKG_CONFIG --variable=glib_genmarshal glib-2.0`
 	AC_SUBST(GLIB_GENMARSHAL)])
+
+dnl **********************************************
+dnl *** Check for Clutter and its backend: GDK ***
+dnl **********************************************
+BACKENDS="x11"
+
+XDT_CHECK_PACKAGE([CLUTTER], [clutter-1.0], [clutter_minimum_version], [
+	XDT_CHECK_PACKAGE([CLUTTER_GDK], [clutter-gdk-1.0], [clutter_minimum_version],
+	[ac_clutter_gdk=yes], [ac_clutter_gdk=no])]
+)
+
+HAVE_BACKEND_GDK=""
+AM_CONDITIONAL([XFDASHBOARD_BUILD_WITH_BACKEND_GDK], [test x"$ac_clutter_gdk" = x"yes"])
+if test "x$ac_clutter_gdk" = xyes; then
+	BACKENDS="$BACKENDS gdk"
+	AC_DEFINE([HAVE_BACKEND_GDK], [1], [Define if GDK backend is available])
+fi
+AC_SUBST(HAVE_BACKEND_GDK)
 
 dnl ***********************************
 dnl *** Check for debugging support ***
@@ -334,6 +351,7 @@ echo "  glib-genmarshal:  $GLIB_GENMARSHAL"
 echo "  glib-mkenums:     $GLIB_MKENUMS"
 echo
 echo "Features enabled:"
+echo "  Backends:         $BACKENDS"
 echo "  XComposite:       $enabled_x11_extension_composite"
 echo "  XDamage:          $enabled_x11_extension_damage"
 echo "  Xinerama:         $enabled_x11_extension_xinerama"
