@@ -184,7 +184,6 @@ libxfdashboard_la_CFLAGS = \
 	$(LIBXFCONF_CFLAGS) \
 	$(LIBXFCE4UTIL_CFLAGS) \
 	$(LIBXFCE4UI_CFLAGS) \
-	$(DBUS_GLIB_CFLAGS) \
 	$(PLATFORM_CFLAGS)
 
 libxfdashboard_la_LIBADD = \
@@ -198,8 +197,15 @@ libxfdashboard_la_LIBADD = \
 	$(LIBXFCONF_LIBS) \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(LIBXFCE4UI_LIBS) \
-	$(DBUS_GLIB_LIBS) \
 	$(LIBM)
+
+if DBUS_GLIB
+libxfdashboard_la_CFLAGS += \
+	$(DBUS_GLIB_CFLAGS)
+
+libxfdashboard_la_LIBADD += \
+	$(DBUS_GLIB_LIBS)
+endif
 
 libxfdashboard_la_LDFLAGS = \
 	-export-dynamic \
