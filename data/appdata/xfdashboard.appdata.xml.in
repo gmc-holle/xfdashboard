@@ -59,6 +59,13 @@
 	</keywords>
 
 	<releases>
+		<release version="0.7.4" timestamp="1505796460">
+			<description>
+				<_p>This unstable development adds lots of new and updated
+				translations and support for newer xfconf versions.
+				</_p>
+			</description>
+		</release>
 		<release version="0.7.3" timestamp="1499409263">
 			<description>
 				<_p>This unstable development implements a new experimental
