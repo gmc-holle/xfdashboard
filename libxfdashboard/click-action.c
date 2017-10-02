@@ -478,7 +478,7 @@ static gboolean _xfdashboard_click_action_on_event(XfdashboardClickAction *self,
 			}
 
 			/* Remember event data */
-			priv->pressButton=hasButton ? clutter_event_get_button(inEvent) : 0;
+			priv->pressButton=hasButton ? clutter_event_get_button(inEvent) : 1;
 			priv->pressDeviceID=clutter_event_get_device_id(inEvent);
 			priv->pressSequence=clutter_event_get_event_sequence(inEvent);
 			priv->modifierState=clutter_event_get_state(inEvent);
