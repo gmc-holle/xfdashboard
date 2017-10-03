@@ -887,3 +887,24 @@ void xfdashboard_click_action_release(XfdashboardClickAction *self)
 	_xfdashboard_click_action_set_held(self, FALSE);
 	_xfdashboard_click_action_set_pressed(self, FALSE);
 }
+
+/**
+ * xfdashboard_click_action_is_left_button_or_touch
+ * @self: A #XfdashboardClickAction
+ *
+ * Checks if the specified click action is either a left button press or a single touch 'tap'
+ */
+gboolean xfdashboard_click_action_is_left_button_or_touch(XfdashboardClickAction *self)
+{
+	XfdashboardClickActionPrivate *priv;
+	g_return_val_if_fail(XFDASHBOARD_IS_CLICK_ACTION(self), FALSE);
+
+	priv=self->priv;
+
+	if(priv->pressButton==0 || priv->pressButton==XFDASHBOARD_CLICK_ACTION_LEFT_BUTTON)
+	{
+		return(TRUE);
+	}
+
+	return(FALSE);
+}
