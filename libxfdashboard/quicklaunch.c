@@ -671,8 +671,11 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 	appButton=XFDASHBOARD_APPLICATION_BUTTON(inActor);
 	action=XFDASHBOARD_CLICK_ACTION(inUserData);
 
-	/* Check if right button was used when the application button was clicked */
-	if(xfdashboard_click_action_get_button(action)==XFDASHBOARD_CLICK_ACTION_RIGHT_BUTTON)
+	/* Only emit any of these signals if click was perform with left button 
+	 * or is a short touchscreen touch event.
+	 */
+	if(xfdashboard_click_action_get_button(action)!=XFDASHBOARD_CLICK_ACTION_LEFT_BUTTON &&
+			xfdashboard_click_action_get_button(action)!=0) return;
 	{
 		ClutterActor							*popup;
 		ClutterActor							*menuItem;
