@@ -348,7 +348,7 @@ static void _xfdashboard_live_workspace_on_clicked(XfdashboardLiveWorkspace *sel
 	/* Only emit any of these signals if click was perform with left button 
 	 * or is a short touchscreen touch event.
 	 */
-    if(xfdashboard_click_action_is_left_button_or_touch(action))
+	if(xfdashboard_click_action_is_left_button_or_touch(action))
 	{
 		/* Emit "clicked" signal */
 		g_signal_emit(self, XfdashboardLiveWorkspaceSignals[SIGNAL_CLICKED], 0);

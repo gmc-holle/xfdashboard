@@ -360,7 +360,7 @@ static void _xfdashboard_live_window_on_clicked(XfdashboardLiveWindow *self,
 	/* Only emit any of these signals if click was perform with left button 
 	 * or is a short touchscreen touch event.
 	 */
-    if(!xfdashboard_click_action_is_left_button_or_touch(action))
+	if(!xfdashboard_click_action_is_left_button_or_touch(action))
 	{
 		return;
 	}
