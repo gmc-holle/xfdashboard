@@ -63,8 +63,10 @@ static void _xfdashboard_popup_menu_item_button_clicked(XfdashboardClickAction *
 	g_return_if_fail(XFDASHBOARD_IS_CLICK_ACTION(inAction));
 	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM_BUTTON(self));
 
-	/* Only activate item if click was perform with left button */
-	if(xfdashboard_click_action_get_button(inAction)==XFDASHBOARD_CLICK_ACTION_LEFT_BUTTON)
+	/* Only emit any of these signals if click was perform with left button 
+	 * or is a short touchscreen touch event.
+	 */
+	if(xfdashboard_click_action_is_left_button_or_tap(inAction))
 	{
 		xfdashboard_popup_menu_item_activate(XFDASHBOARD_POPUP_MENU_ITEM(self));
 	}
