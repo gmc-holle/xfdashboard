@@ -128,7 +128,7 @@ void xfdashboard_click_action_get_coords(XfdashboardClickAction *self, gfloat *o
 
 void xfdashboard_click_action_release(XfdashboardClickAction *self);
 
-gboolean xfdashboard_click_action_is_left_button_or_touch(XfdashboardClickAction *self);
+gboolean xfdashboard_click_action_is_left_button_or_tap(XfdashboardClickAction *self);
 
 G_END_DECLS
 

@@ -893,8 +893,11 @@ void xfdashboard_click_action_release(XfdashboardClickAction *self)
  * @self: A #XfdashboardClickAction
  *
  * Checks if the specified click action is either a left button press or a single touch 'tap'
+ *
+ * Return value: Returns %TRUE if the click action event is a left button press or a single 
+ * touch tap, otherwise %FALSE
  */
-gboolean xfdashboard_click_action_is_left_button_or_touch(XfdashboardClickAction *self)
+gboolean xfdashboard_click_action_is_left_button_or_tap(XfdashboardClickAction *self)
 {
 	XfdashboardClickActionPrivate *priv;
 	g_return_val_if_fail(XFDASHBOARD_IS_CLICK_ACTION(self), FALSE);
