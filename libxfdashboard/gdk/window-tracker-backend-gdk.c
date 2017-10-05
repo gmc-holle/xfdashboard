@@ -475,7 +475,27 @@ static ClutterStage* _xfdashboard_window_tracker_backend_gdk_window_tracker_back
 		if(stage)
 		{
 			iterGdkWindow=clutter_gdk_get_stage_window(stage);
+			if(!iterGdkWindow)
+			{
+				XFDASHBOARD_DEBUG(self, WINDOWS,
+									"Could not get GDK window from stage %s@%p",
+									G_OBJECT_TYPE_NAME(stage),
+									stage);
+				continue;
+			}
+
 			iterXWindow=gdk_x11_window_get_xid(iterGdkWindow);
+			if(iterXWindow==None)
+			{
+				XFDASHBOARD_DEBUG(self, WINDOWS,
+									"Could not get X server window for GDK window %s@%p of stage %s@%p",
+									G_OBJECT_TYPE_NAME(iterGdkWindow),
+									iterGdkWindow,
+									G_OBJECT_TYPE_NAME(stage),
+									stage);
+				continue;
+			}
+
 			if(stageXWindow==iterXWindow) foundStage=stage;
 		}
 	}
