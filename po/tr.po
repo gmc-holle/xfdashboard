@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2017-09-18 10:23+0000\n"
+"PO-Revision-Date: 2017-10-05 13:45+0000\n"
 "Last-Translator: Yaşar Çiv\n"
 "Language-Team: Turkish (http://www.transifex.com/xfdashboard/xfdashboard/language/tr/)\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +21,7 @@ msgstr ""
 #: ../data/xfdashboard.desktop.in.in.h:1
 #: ../data/xfdashboard-autostart.desktop.in.in.h:1
 msgid "Xfdashboard"
-msgstr ""
+msgstr "Xfdashboard"
 
 #: ../data/xfdashboard.desktop.in.in.h:2
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:1
@@ -123,34 +123,34 @@ msgid ""
 "This release hopefully fixes problems with the stage as it size might not "
 "reflect the screen size preventing dragging windows over the whole screen. "
 "It also includes lots of smaller bug-fixes."
-msgstr ""
+msgstr "Bu sürüm, pencerenin sürüklenmesini önleyen ekran boyutunu tüm ekranda yansıtmayabileceğinden umutla sahne sorunlarını giderir. Ayrıca, çok sayıda daha küçük hata düzeltmesi içerir."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid ""
 "This stable version introduces lots of new features. like multi-monitor "
 "support, configurable key bindings and a settings dialog. It also contains a"
 " lot of other larger and smaller improvements."
-msgstr ""
+msgstr "Bu kararlı sürüm çok sayıda yeni özellik sunuyor. çoklu monitör desteği, yapılandırılabilir anahtar bağları ve bir ayarlar iletişim kutusu gibi. Ayrıca diğer birçok büyük ve küçük iyileştirme içerir."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This unstable development introduces a new box layout fixing layout of "
 "children when using right-to-left language. Also support for localization "
 "was fixed and other smaller bug-fixes and improvements."
-msgstr ""
+msgstr "Bu kararsız geliştirme sağdan sola dili kullanırken çocukların düzenini düzenleyen yeni bir kutu düzenini getiriyor. Yerelleştirme desteği de düzeltildi ve diğer küçük hata düzeltmeleri ve geliştirmeler yapıldı."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:17
 msgid ""
 "This unstable development introduces support for multiple monitors and also "
 "bug-fixes and other smaller improvements."
-msgstr ""
+msgstr "Bu kararsız gelişme, birden çok monitör ve ayrıca hata düzeltmeleri ve diğer küçük geliştirmeler için destek getiriyor."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:18
 msgid ""
 "This unstable development introduces an application database and monitoring "
 "of installed and uninstalled applications. It also includes bug-fixes and "
 "other smaller improvements."
-msgstr ""
+msgstr "Bu kararsız gelişme, bir uygulama veritabanını tanıtır ve yüklenmiş ve kaldırılmış uygulamaları izlemektedir. Ayrıca, hata düzeltmeleri ve diğer küçük geliştirmeler de içerir."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:19
 msgid ""
@@ -162,34 +162,34 @@ msgstr ""
 msgid ""
 "This unstable development fixes a bug which rendered the new settings "
 "application completely unusable."
-msgstr ""
+msgstr "Bu kararsız gelişme, yeni ayarların uygulamayı tamamen kullanışsız hale getiren bir hatasını düzeltir."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:21
 msgid "This unstable development introduces a settings application."
-msgstr ""
+msgstr "Bu kararsız gelişme, bir ayar uygulaması sunar."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:22
 msgid ""
 "This unstable development introduces configurable key-bindings, allows "
 "changing themes at runtime and includes lots of smaller bug-fixes."
-msgstr ""
+msgstr "Bu kararsız geliştirme, yapılandırılabilir anahtar bağlamaları getirir, çalışma zamanında temaların değiştirilmesine izin verir ve çok sayıda daha küçük hata düzeltmesi içerir."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:23
 msgid ""
 "This unstable development introduces additional themes, fixes handling of "
 "client-side decorated windows (CSD) and adds a new CSS command @import() to "
 "include external CSS resources in themes."
-msgstr ""
+msgstr "Bu istikrarsız geliştirme, ek temalar getiriyor, istemci tarafında dekore edilmiş pencerelerin (CSD) işlenmesini düzeltiyor ve temalarda harici CSS kaynaklarını içerecek yeni bir CSS komutu @import () ekliyor."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:24
 msgid ""
 "This unstable development introduces a workaround to get window content of "
 "minimized windows to display them in windows view."
-msgstr ""
+msgstr "Bu kararsız gelişme, pencere görünümünde bunları görüntülemek için simge durumuna küçültülmüş pencerelerin içeriğini elde etmede geçici bir çözüm getiriyor."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:25
 msgid "This unstable development introduces effects."
-msgstr ""
+msgstr "Bu kararsız gelişme etkiler getiriyor."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:26
 msgid ""
@@ -197,18 +197,18 @@ msgid ""
 "pressing the key 'backspace' to refine search more often than characters "
 "entered. It also includes new image-loading functions to CSS. It also "
 "introduces a new generic selection framework for focusable actors."
-msgstr ""
+msgstr "Bu kararsız gelişme, girilen karakterlerden daha sık aralıklarla arama yapmak için 'backspace' tuşuna basarak pencereleri yanlışlıkla kapatan bir sorunu giderir. CSS'ye yeni resim yükleme fonksiyonları da içerir. Odaklanabilir oyuncular için yeni bir genel seçim çerçevesi de getiriyor."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:27
 msgid ""
 "This release fixes a problem closing windows accidently by pressing the key "
 "'backspace' to refine search more often than characters entered."
-msgstr ""
+msgstr "Bu sürüm, girilen karakterlerden daha sık aralıklarla arama yapmak için 'backspace' tuşuna basarak pencereleri yanlışlıkla kapatan bir sorunu giderir."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:28
 msgid ""
 "This release fixes a problem when loading scalable images by icon name."
-msgstr ""
+msgstr "Bu sürüm, simge adı ile ölçeklenebilir görüntüler yüklenirken bir sorunu giderir."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:29
 msgid ""
@@ -216,266 +216,266 @@ msgid ""
 "and allows to launch the first item by pressing ENTER in search view when a "
 "search was started by just typing. It also includes an improved CSS parsing "
 "allowing the usage of constant values and functions in theme's CSS file."
-msgstr ""
+msgstr "Bu kararsız geliştirme sürümü, temalar için simge modu ile ilgili sorunları düzeltir ve yalnızca arama yazarak başlatıldığında arama görünümünde ENTER'a basarak ilk öğeyi başlatmaya izin verir. Ayrıca, temanın CSS dosyasında sabit değerlerin ve işlevlerin kullanılmasına olanak tanıyan gelişmiş bir CSS ayrıştırma da içerir."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:30
 msgid ""
 "This release fixes problems with icon mode in theming and allows to launch "
 "the first item by pressing ENTER in search view when a search was started by"
 " just typing."
-msgstr ""
+msgstr "Bu sürüm, temalar için simge modu ile ilgili sorunları giderir ve yalnızca arama yazarak başlatıldığında arama görünümünde ENTER'a basarak ilk öğeyi başlatmanıza izin verir."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:31
 msgid "Initial release."
-msgstr ""
+msgstr "İlk sürüm."
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
-msgstr ""
+msgstr "<span size=\"large\"><b>Xfdashboard ayarları</b></span>"
 
 #: ../data/data/preferences.ui.h:2
 msgid "Configure plugin"
-msgstr ""
+msgstr "Eklentiyi yapılandır"
 
 #: ../data/data/preferences.ui.h:3
 msgid ""
 "<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
 "Configure xfdashboard"
-msgstr ""
+msgstr "<span size=\"large\"><b>Xfdashboard ayarları</b></span>\nXfdashboardu yapılandır"
 
 #: ../data/data/preferences.ui.h:5
 msgid "<b>General settings:</b>"
-msgstr ""
+msgstr "<b>Genel ayarlar:</b>"
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr ""
+msgstr "Devreye girdiğinde arama görünümünü sıfırlayın"
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
 "If enabled the search view will be resetted when xfdashboard is resumed. That means the active view is switched back to last view active before last search was started and search box will be emptied.\n"
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
-msgstr ""
+msgstr "Etkinleştirilirse, arama görünümü xfdashboard yeniden başlatıldığında sıfırlanır. Bu, son arama başlamadan ve arama kutusu boşaltılmadan önce aktif görünümün son görünüme aktif hale getirildiği anlamına gelir.\n\n<b>NOT:</b> Bu ayar yalnızca xfdashboard arkaplan programı modunda çalışıyorsa etkindir."
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
 "When xfdashboard resumes the selected view will be activated.\n"
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
-msgstr ""
+msgstr "Xfdashboard devam edince seçilen görüntü etkinleştirilir.\n\n<b>NOT:</b> Bu ayar yalnızca xfdashboard arkaplan programı modunda çalışıyorsa etkindir."
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr ""
+msgstr "Devam ettirildiğinde görünümü değiştir:"
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
 "Sets the minimum time a notification is being shown.\n"
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
-msgstr ""
+msgstr "Bir bildirimin gösterileceği en az süreyi ayarlar.\n\nSüre, bildirimde gösterilecek metnin uzunluğuna göre hesaplanır. Bu ayar, bildirimin ne kadar süreyle gösterilmesi gerektiğini belirlemenizi sağlar."
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
-msgstr ""
+msgstr "En az bildirim zamanaşımı:"
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
-msgstr ""
+msgstr "Küçültülmüş pencereler için geçici çözüm etkinleştirme"
 
 #: ../data/data/preferences.ui.h:19
 msgid ""
 "When enabled a workaround for minimized windows will be tried to get still images of these windows by restoring them shortly and minimizing them again.\n"
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
-msgstr ""
+msgstr "Etkinleştirildiğinde, simge durumuna küçültülmüş pencereler için bu pencerelerin hareketsiz görüntülerini elde etmek için kısa bir süre geri yükleyip bunları en aza indirgemek için bir geçici çözüm denenecektir.\n\n<b>NOT:</b> Bunun bir <u>geçici çözüm</u> olduğunu ve pencerelerinizin simge durumunda kalabileceğini, çalışma alanınızı değiştirebileceğini vb. unutmayın."
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
 "This value defines how fast the window content should be created. While the value 'immediate' tells xfdashboard to create the window content at the time it is requested, all other values will set up a queue and value defines how fast the queue will be processed.\n"
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
-msgstr ""
+msgstr "Bu değer, pencere içeriğinin ne kadar hızlı oluşturulacağını belirler. 'Immediate' değeri, xfdashboard'a pencere içeriğini istenen zamanda yaratmasını söylerken diğer tüm değerler bir sıra oluşturur ve değer kuyruğun ne kadar hızlı işleneceğini tanımlar.\n\n<b>NOT:</b> Ekran kartınız, sürücünüz veya sisteminiz pencerenin içeriğini derhal oluşturmak için çok yavaşsa, bu değeri yalnızca 'derhal' değerinden başka bir değere değiştirin. Sisteminize uyan birini bulmak için her değeri denemek zorundasınız."
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
-msgstr ""
+msgstr "Pencere içerik oluşturma önceliği"
 
 #: ../data/data/preferences.ui.h:26
 msgid "Always start a new instance for application"
-msgstr ""
+msgstr "Her zaman yeni bir uygulama örneği başlat"
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
 "When enabled and an icon in quicklaunch is clicked it will always start a new instance of the application.\n"
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
-msgstr ""
+msgstr "Etkinleştirildiğinde ve hızlı başlatmada bir simge tıklandığında, uygulamanın her zaman yeni bir örneğini başlatır.\n\nEtkinleştirilmediğinde, çalışan uygulama örneğinin bilinen en son aktif penceresini seçecektir. Uygulama çalışmıyorsa, yeni bir örnek başlatılacaktır."
 
 #: ../data/data/preferences.ui.h:30
 msgid "<b>Applications view:</b>"
-msgstr ""
+msgstr "<b>Uygulamalar görünümü:</b>"
 
 #: ../data/data/preferences.ui.h:31
 msgid "Show menu for all installed applications"
-msgstr ""
+msgstr "Yüklü tüm uygulamalar için menü göster"
 
 #: ../data/data/preferences.ui.h:32
 msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
-msgstr ""
+msgstr "Etkinleştirildiğinde, yüklü olan tüm uygulamaları içeren bir \"tüm uygulamalar\" menüsü uygulamalar görünümünde gösterilir"
 
 #: ../data/data/preferences.ui.h:33
 msgid "<b>Windows view:</b>"
-msgstr ""
+msgstr "<b>Pencereler görünümü:</b>"
 
 #: ../data/data/preferences.ui.h:34
 msgid "Mouse wheel changes workspace"
-msgstr ""
+msgstr "Fare tekerleği çalışma alanını değiştirir"
 
 #: ../data/data/preferences.ui.h:35
 msgid ""
 "When enabled any scroll event, like mouse-wheel up and down, at the windows "
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
-msgstr ""
+msgstr "Etkinleştirildiğinde, fare tekerleği yukarı ve aşağı gibi pencereler görünümünde herhangi bir kaydırma etkinliği, etkin çalışma alanını değiştirecektir. Bu davranış, çalışma alanı seçiminde olduğu gibi aynıdır."
 
 #: ../data/data/preferences.ui.h:36
 msgid "<b>Search view:</b>"
-msgstr ""
+msgstr "<b>Arama görünümü:</b>"
 
 #: ../data/data/preferences.ui.h:37
 msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
-msgstr ""
+msgstr "İlk karakter girildikten sonra aramanın geciktirilmesi gereken aralığı ayarlar."
 
 #: ../data/data/preferences.ui.h:38
 msgid "Delay initial search interval:"
-msgstr ""
+msgstr "İlk arama aralığını geciktir:"
 
 #: ../data/data/preferences.ui.h:39
 msgid "General"
-msgstr ""
+msgstr "Genel"
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Name:</b>"
-msgstr ""
+msgstr "<b>Ad:</b>"
 
 #: ../data/data/preferences.ui.h:41
 msgid "<b>Author:</b>"
-msgstr ""
+msgstr "<b>Yazar:</b>"
 
 #: ../data/data/preferences.ui.h:42
 msgid "<b>Version:</b>"
-msgstr ""
+msgstr "<b>Sürüm:</b>"
 
 #: ../data/data/preferences.ui.h:43
 msgid "<b>Description:</b>"
-msgstr ""
+msgstr "<b>Açıklama:</b>"
 
 #: ../data/data/preferences.ui.h:44
 msgid "Themes"
-msgstr ""
+msgstr "Temalar"
 
 #: ../data/data/preferences.ui.h:45
 msgid "<b>License:</b>"
-msgstr ""
+msgstr "<b>Lisans:</b>"
 
 #: ../data/data/preferences.ui.h:46
 msgid "Plugins"
-msgstr ""
+msgstr "Eklentiler"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard"
-msgstr ""
+msgstr "xfdashboard"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:2
 msgid "Default theme for xfdashboard"
-msgstr ""
+msgstr "Xfdashboard için varsayılan tema"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-auber"
-msgstr ""
+msgstr "xfdashboard-auber"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
 msgid "Aubergine theme for xfdashboard"
-msgstr ""
+msgstr "Xfdashboard için Patlıcan teması"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-blue"
-msgstr ""
+msgstr "xfdashboard-blue"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:2
 msgid "Blue theme for xfdashboard"
-msgstr ""
+msgstr "Xfdashboard için mavi tema"
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-dark"
-msgstr ""
+msgstr "xfdashboard-dark"
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:2
 msgid "Dark theme for xfdashboard"
-msgstr ""
+msgstr "Xfdashboard için koyu tema"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-mint"
-msgstr ""
+msgstr "xfdashboard-mint"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
 msgid "Fresh-green flavored theme for xfdashboard"
-msgstr ""
+msgstr "Xfdashboard için taze yeşil aromalı tema"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-moranga"
-msgstr ""
+msgstr "xfdashboard-moranga"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:2
 msgid "Moranga theme for xfdashboard"
-msgstr ""
+msgstr "Xfdashboard için Moranga teması"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-wine"
-msgstr ""
+msgstr "xfdashboard-wine"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
 msgid "Red wine theme for xfdashboard"
-msgstr ""
+msgstr "Xfdashboard için kırmızı şarap teması"
 
 #: ../libxfdashboard/action-button.c:109 ../libxfdashboard/focus-manager.c:930
 #, c-format
 msgid "Object type %s does not provide action '%s'"
-msgstr ""
+msgstr "%s öğe türü  '%s' eylemini sağlamıyor"
 
 #: ../libxfdashboard/action-button.c:121 ../libxfdashboard/focus-manager.c:942
 #, c-format
 msgid "Action '%s' at object type %s is not an action signal."
-msgstr ""
+msgstr "%s öğe türündeki '%s' hareketi bir eylem sinyali değildir."
 
 #: ../libxfdashboard/action-button.c:140 ../libxfdashboard/focus-manager.c:962
 #, c-format
 msgid ""
 "Action '%s' at object type %s wants return value of type %s but expected is "
 "%s."
-msgstr ""
+msgstr "%s öğe türündeki '%s' eylemi %stürden dönüş değeri istiyor ancak beklenen %s dir."
 
 #: ../libxfdashboard/action-button.c:151 ../libxfdashboard/focus-manager.c:973
 #, c-format
 msgid "Action '%s' at object type %s wants %u parameters but expected are %u."
-msgstr ""
+msgstr "%s öğe türündeki '%s' eylemi %uparametrelerini istiyor ancak %u bekleniyor."
 
 #: ../libxfdashboard/action-button.c:162 ../libxfdashboard/focus-manager.c:984
 #, c-format
 msgid ""
 "Action '%s' at object type %s wants type %s at parameter %u but type %s is "
 "expected."
-msgstr ""
+msgstr "%s öğe türündeki '%s' eylemi %uparametresinde%s türü istiyor ancak %s türü bekleniyor."
 
 #: ../libxfdashboard/action-button.c:418 ../libxfdashboard/binding.c:245
 msgid "Target"
-msgstr ""
+msgstr "Hedef"
 
 #: ../libxfdashboard/action-button.c:419
 msgid "The target actor's class name to lookup and to perform action at"
@@ -483,72 +483,72 @@ msgstr ""
 
 #: ../libxfdashboard/action-button.c:425 ../libxfdashboard/binding.c:252
 msgid "Action"
-msgstr ""
+msgstr "Eylem"
 
 #: ../libxfdashboard/action-button.c:426
 msgid "The action signal to perform at target"
-msgstr ""
+msgstr "Hedefte gerçekleştirilecek eylem sinyali"
 
 #: ../libxfdashboard/actor.c:596 ../libxfdashboard/stylable.c:203
 #, c-format
 msgid ""
 "Could not transform CSS string value for property '%s' to type %s of class "
 "%s"
-msgstr ""
+msgstr "'%s' özelliği için CSS dize değeri, %s sınıfının %s öğesine dönüştürülemiyor"
 
 #: ../libxfdashboard/actor.c:953
 msgid "Can focus"
-msgstr ""
+msgstr "Odaklayabilir"
 
 #: ../libxfdashboard/actor.c:954
 msgid "This flag indicates if this actor can be focused"
-msgstr ""
+msgstr "Bu aktör odaklanabilirse bu bayrak gösterir"
 
 #: ../libxfdashboard/actor.c:961
 msgid "Effects"
-msgstr ""
+msgstr "Etkiler"
 
 #: ../libxfdashboard/actor.c:962
 msgid "List of space-separated strings with IDs of effects set at this actor"
-msgstr ""
+msgstr "Bu aktörde efekt kimliğini içeren boşluklarla ayrılmış dizelerin listesi"
 
 #: ../libxfdashboard/application-button.c:337
 msgid "Application information"
-msgstr ""
+msgstr "Uygulama bilgisi"
 
 #: ../libxfdashboard/application-button.c:338
 msgid "The application information whose title and description to display"
-msgstr ""
+msgstr "Başlığı ve açıklaması görüntülenen uygulama bilgileri"
 
 #: ../libxfdashboard/application-button.c:344
 msgid "Show description"
-msgstr ""
+msgstr "Açıklamayı göster"
 
 #: ../libxfdashboard/application-button.c:345
 msgid "Show also description next to tile"
-msgstr ""
+msgstr "Döşeme yanında açıklama da göster"
 
 #: ../libxfdashboard/application-button.c:351
 #: ../libxfdashboard/applications-view.c:1346
 msgid "Format title only"
-msgstr ""
+msgstr "Sadece biçim başlığı"
 
 #: ../libxfdashboard/application-button.c:352
 #: ../libxfdashboard/applications-view.c:1347
 msgid "Format string used when only title is display"
-msgstr ""
+msgstr "Sadece başlığı görüntülediğinde kullanılan biçim dizgesi"
 
 #: ../libxfdashboard/application-button.c:358
 #: ../libxfdashboard/applications-view.c:1353
 msgid "Format title and description"
-msgstr ""
+msgstr "Biçim başlığı ve açıklama"
 
 #: ../libxfdashboard/application-button.c:359
 #: ../libxfdashboard/applications-view.c:1354
 msgid ""
 "Format string used when title and description is display. First argument is "
 "title and second one is description."
-msgstr ""
+msgstr "Başlık ve açıklama görüntülendiğinde kullanılan biçim dizgesi. Birinci değişken başlık, ikincisi tanımıdır."
 
 #: ../libxfdashboard/application-button.c:655
 #: ../libxfdashboard/application-button.c:658
@@ -558,13 +558,13 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:390 ../libxfdashboard/quicklaunch.c:394
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr ""
+msgstr "'%s' uygulaması başlatılamadı: %s"
 
 #: ../libxfdashboard/application-button.c:657
 #: ../libxfdashboard/application-button.c:660
 #: ../libxfdashboard/quicklaunch.c:344 ../libxfdashboard/quicklaunch.c:348
 msgid "No information available for application"
-msgstr ""
+msgstr "Uygulama için bilgi mevcut değil"
 
 #: ../libxfdashboard/application-button.c:675
 #: ../libxfdashboard/application-button.c:678
@@ -573,122 +573,122 @@ msgstr ""
 #: ../libxfdashboard/application.c:372 ../libxfdashboard/application.c:388
 #: ../libxfdashboard/application.c:604
 msgid "unknown error"
-msgstr ""
+msgstr "bilinmeyen hata"
 
 #: ../libxfdashboard/application-button.c:686
 #, c-format
 msgid "Application '%s' launched"
-msgstr ""
+msgstr "'%s' uygulaması başlatıldı"
 
 #. Show critical warning at console
 #: ../libxfdashboard/application.c:272 ../libxfdashboard/application.c:279
 #, c-format
 msgid "Could not load theme '%s': %s"
-msgstr ""
+msgstr "'%s' teması yüklenemedi: %s"
 
 #: ../libxfdashboard/application.c:353
 #, c-format
 msgid "Could not initialize xfconf: %s"
-msgstr ""
+msgstr "Xfconf başlatılamadı: %s"
 
 #: ../libxfdashboard/application.c:365
 msgid "Could not initialize bindings"
-msgstr ""
+msgstr "Bağlar başlatılamadı"
 
 #: ../libxfdashboard/application.c:371
 #, c-format
 msgid "Could not load bindings: %s"
-msgstr ""
+msgstr "Bağlar yüklenemedi: %s"
 
 #: ../libxfdashboard/application.c:381
 msgid "Could not initialize application database"
-msgstr ""
+msgstr "Uygulama veritabanı başlatılamadı"
 
 #: ../libxfdashboard/application.c:387
 #, c-format
 msgid "Could not load application database: %s"
-msgstr ""
+msgstr "Uygulama veritabanı yüklenemedi: %s"
 
 #: ../libxfdashboard/application.c:397
 msgid "Could not initialize application tracker"
-msgstr ""
+msgstr "Uygulama izleyici başlatılamadı"
 
 #: ../libxfdashboard/application.c:409
 msgid ""
 "Could not create binding between xfconf property and local resource for "
 "theme change notification."
-msgstr ""
+msgstr "Tema değiştirme bildirimi için xfconf özelliği ve yerel kaynak arasında bağlama oluşturulamadı."
 
 #: ../libxfdashboard/application.c:451
 msgid "Could not initialize plugin manager"
-msgstr ""
+msgstr "Eklenti yöneticisi başlatılamadı"
 
 #: ../libxfdashboard/application.c:457
 msgid "Could not setup plugin manager"
-msgstr ""
+msgstr "Eklenti yöneticisi kurulamadı"
 
 #: ../libxfdashboard/application.c:478
 #, c-format
 msgid "Welcome to %s (%s)!"
-msgstr ""
+msgstr "%s (%s)'e hoşgeldiniz!"
 
 #: ../libxfdashboard/application.c:480
 #, c-format
 msgid "Welcome to %s!"
-msgstr ""
+msgstr "%s'e hoşgeldiniz!"
 
 #: ../libxfdashboard/application.c:557
 msgid "Fork to background"
-msgstr ""
+msgstr "Arka plana çatalla"
 
 #: ../libxfdashboard/application.c:558
 msgid "Quit running instance"
-msgstr ""
+msgstr "Örneği çalıştırmayı bırak"
 
 #: ../libxfdashboard/application.c:559
 msgid "Restart running instance"
-msgstr ""
+msgstr "Çalışan örneği yeniden başlat"
 
 #: ../libxfdashboard/application.c:560
 msgid ""
 "Toggles suspend/resume state if running instance was started in daemon mode "
 "otherwise it quits running non-daemon instance"
-msgstr ""
+msgstr "Çalışan örneği arka plan programı modunda başlatılmışsa askıya almaya/devam ettirme durumunu değiştirir; aksi halde arka plan uygulaması işlem dışı çalışmayı bırakır."
 
 #. Setup command-line options
 #: ../libxfdashboard/application.c:583
 msgid "- A Gnome Shell like dashboard for Xfce4"
-msgstr ""
+msgstr "- Xfce4 için Gnome Shell benzeri bir kumanda paneli"
 
 #. Show error
 #: ../libxfdashboard/application.c:604
 #, c-format
 msgid "%s\n"
-msgstr ""
+msgstr "%s\n"
 
 #: ../libxfdashboard/application.c:915
 msgid "Is daemonized"
-msgstr ""
+msgstr "Simgeleştirildi"
 
 #: ../libxfdashboard/application.c:916
 msgid "Flag indicating if application is daemonized"
-msgstr ""
+msgstr "Uygulama simgeleştirilmişse bayrak belirt"
 
 #: ../libxfdashboard/application.c:922
 msgid "Is suspended"
-msgstr ""
+msgstr "Askıya alındı"
 
 #: ../libxfdashboard/application.c:923
 msgid "Flag indicating if application is suspended currently"
-msgstr ""
+msgstr "Uygulamanın şu anda askıya alınıp alınmadığını gösteren bayrak"
 
 #: ../libxfdashboard/application.c:929 ../libxfdashboard/theme.c:577
 msgid "Theme name"
-msgstr ""
+msgstr "Tema adı"
 
 #: ../libxfdashboard/application.c:930
 msgid "Name of current theme"
-msgstr ""
+msgstr "Geçerli tema adı"
 
 #: ../libxfdashboard/application-database.c:132
 #, c-format
@@ -735,7 +735,7 @@ msgstr ""
 #: ../settings/themes.c:590 ../settings/themes.c:609 ../settings/themes.c:628
 #: ../settings/main.c:63 ../settings/main.c:85 ../settings/settings.c:140
 msgid "Unknown error"
-msgstr ""
+msgstr "Bilinmeyen hata "
 
 #: ../libxfdashboard/application-database.c:265
 msgid "Received event from unknown file monitor"
@@ -815,12 +815,12 @@ msgstr ""
 #: ../libxfdashboard/applications-menu-model.c:804
 #: ../libxfdashboard/plugin.c:782
 msgid "ID"
-msgstr ""
+msgstr "Kimlik"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID
 #: ../libxfdashboard/applications-menu-model.c:805
 msgid "Menu item"
-msgstr ""
+msgstr "Menü öğesi"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT
 #: ../libxfdashboard/applications-menu-model.c:806
@@ -835,13 +835,13 @@ msgstr ""
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION
 #: ../libxfdashboard/applications-menu-model.c:808
 msgid "Title"
-msgstr ""
+msgstr "Başlık"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE
 #: ../libxfdashboard/applications-menu-model.c:809
 #: ../libxfdashboard/plugin.c:796
 msgid "Description"
-msgstr ""
+msgstr "Açıklama"
 
 #: ../libxfdashboard/applications-search-provider.c:251
 #, c-format
@@ -891,7 +891,7 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:1399
 #: ../libxfdashboard/quicklaunch.c:2877
 msgid "Applications"
-msgstr ""
+msgstr "Uygulamalar"
 
 #: ../libxfdashboard/applications-search-provider.c:1031
 msgid ""
@@ -922,21 +922,21 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:505
 #: ../libxfdashboard/applications-view.c:506
 msgid "Back"
-msgstr ""
+msgstr "Geri"
 
 #: ../libxfdashboard/applications-view.c:399
 #: ../libxfdashboard/applications-view.c:505
 msgid "Go back to previous menu"
-msgstr ""
+msgstr "Önceki menüye dön"
 
 #: ../libxfdashboard/applications-view.c:533
 #: ../libxfdashboard/applications-view.c:534
 msgid "All applications"
-msgstr ""
+msgstr "Tüm uygulamalar"
 
 #: ../libxfdashboard/applications-view.c:533
 msgid "List of all installed applications"
-msgstr ""
+msgstr "Tüm kurulu uygulamaları listele"
 
 #: ../libxfdashboard/applications-view.c:742
 #: ../libxfdashboard/search-result-container.c:1755
@@ -986,11 +986,11 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:1323
 #: ../libxfdashboard/search-result-container.c:1258
 msgid "View mode"
-msgstr ""
+msgstr "Görüntüleme modu"
 
 #: ../libxfdashboard/applications-view.c:1324
 msgid "The view mode used in this view"
-msgstr ""
+msgstr "Bu görünümde kullanılan görüntüleme modu"
 
 #: ../libxfdashboard/applications-view.c:1331 ../libxfdashboard/button.c:1322
 #: ../libxfdashboard/quicklaunch.c:2705 ../libxfdashboard/scrollbar.c:754
@@ -999,7 +999,7 @@ msgstr ""
 #: ../libxfdashboard/view-selector.c:401 ../libxfdashboard/windows-view.c:1912
 #: ../libxfdashboard/workspace-selector.c:1239
 msgid "Spacing"
-msgstr ""
+msgstr "Aralık"
 
 #: ../libxfdashboard/applications-view.c:1332
 #: ../libxfdashboard/windows-view.c:1913
@@ -1016,7 +1016,7 @@ msgstr ""
 
 #: ../libxfdashboard/applications-view.c:1360
 msgid "Show all applications"
-msgstr ""
+msgstr "Tüm uygulamaları göster"
 
 #: ../libxfdashboard/applications-view.c:1361
 msgid "Whether to show a menu for all installed applications at root menu"
@@ -1024,11 +1024,11 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:420 ../libxfdashboard/background.c:421
 msgid "Background type"
-msgstr ""
+msgstr "Arkaplan türü"
 
 #: ../libxfdashboard/background.c:428 ../libxfdashboard/outline-effect.c:451
 msgid "Corners"
-msgstr ""
+msgstr "Köşeler"
 
 #: ../libxfdashboard/background.c:429
 msgid "Determines which corners are rounded for background and outline"
@@ -1037,7 +1037,7 @@ msgstr ""
 #: ../libxfdashboard/background.c:436 ../libxfdashboard/background.c:459
 #: ../libxfdashboard/outline-effect.c:459
 msgid "Corner radius"
-msgstr ""
+msgstr "Köşe yarıçapı"
 
 #: ../libxfdashboard/background.c:437
 msgid "Radius of rounded corners for background and outline"
@@ -1045,7 +1045,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:444
 msgid "Background fill color"
-msgstr ""
+msgstr "Arka plan dolgu rengi"
 
 #: ../libxfdashboard/background.c:445
 msgid "Color to fill background with"
@@ -1053,7 +1053,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:451
 msgid "Fill corners"
-msgstr ""
+msgstr "Köşeleri doldur"
 
 #: ../libxfdashboard/background.c:452
 msgid "Determines which corners are rounded at background"
@@ -1065,7 +1065,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:467 ../libxfdashboard/window-content.c:2089
 msgid "Outline color"
-msgstr ""
+msgstr "Anahat rengi"
 
 #: ../libxfdashboard/background.c:468 ../libxfdashboard/outline-effect.c:429
 msgid "Color to draw outline with"
@@ -1073,7 +1073,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:474 ../libxfdashboard/window-content.c:2096
 msgid "Outline width"
-msgstr ""
+msgstr "Anahat genişliği"
 
 #: ../libxfdashboard/background.c:475 ../libxfdashboard/outline-effect.c:436
 msgid "Width of line used to draw outline"
@@ -1081,7 +1081,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:482
 msgid "Outline borders"
-msgstr ""
+msgstr "Anahat kenar süsleri"
 
 #: ../libxfdashboard/background.c:483
 msgid "Determines which sides of border of outline should be drawn"
@@ -1089,7 +1089,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:490
 msgid "Outline corners"
-msgstr ""
+msgstr "Anahat köşeleri"
 
 #: ../libxfdashboard/background.c:491
 msgid "Determines which corners are rounded at outline"
@@ -1097,7 +1097,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:498
 msgid "Outline corner radius"
-msgstr ""
+msgstr "Anahat köşe yarıçapı"
 
 #: ../libxfdashboard/background.c:499
 msgid "Radius of rounded corners of outline"
@@ -1105,15 +1105,15 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:506
 msgid "Image"
-msgstr ""
+msgstr "Resim"
 
 #: ../libxfdashboard/background.c:507
 msgid "Image to draw as background"
-msgstr ""
+msgstr "Arka plan olarak çizilecek resim"
 
 #: ../libxfdashboard/binding.c:214
 msgid "Event type"
-msgstr ""
+msgstr "Etkinlik türü"
 
 #: ../libxfdashboard/binding.c:215
 msgid "The event type this binding is bound to"
@@ -1121,7 +1121,7 @@ msgstr ""
 
 #: ../libxfdashboard/binding.c:222
 msgid "Class name"
-msgstr ""
+msgstr "Sınıf adı"
 
 #: ../libxfdashboard/binding.c:223
 msgid "Class name of object this binding is bound to"
@@ -1129,7 +1129,7 @@ msgstr ""
 
 #: ../libxfdashboard/binding.c:229 ../libxfdashboard/image-content.c:1200
 msgid "Key"
-msgstr ""
+msgstr "Anahtar"
 
 #: ../libxfdashboard/binding.c:230
 msgid "Key code of a keyboard event this binding is bound to"
@@ -1153,7 +1153,7 @@ msgstr ""
 
 #: ../libxfdashboard/binding.c:259
 msgid "Flags"
-msgstr ""
+msgstr "Bayraklar"
 
 #: ../libxfdashboard/binding.c:260
 msgid "Flags assigned to this binding"
@@ -1220,7 +1220,7 @@ msgstr ""
 
 #: ../libxfdashboard/bindings-pool.c:374
 msgid "Missing action"
-msgstr ""
+msgstr "Eksik eylem"
 
 #: ../libxfdashboard/bindings-pool.c:400
 #, c-format
@@ -1314,7 +1314,7 @@ msgstr ""
 
 #: ../libxfdashboard/button.c:1330
 msgid "Button style"
-msgstr ""
+msgstr "Düğme tarzı"
 
 #: ../libxfdashboard/button.c:1331
 msgid "Style of button showing text and/or icon"
@@ -1322,7 +1322,7 @@ msgstr ""
 
 #: ../libxfdashboard/button.c:1338 ../libxfdashboard/emblem-effect.c:471
 msgid "Icon name"
-msgstr ""
+msgstr "Simge adı"
 
 #: ../libxfdashboard/button.c:1339 ../libxfdashboard/emblem-effect.c:472
 msgid "Themed icon name or file name of icon"
@@ -1338,11 +1338,11 @@ msgstr ""
 
 #: ../libxfdashboard/button.c:1352
 msgid "Icon image"
-msgstr ""
+msgstr "Simge resmi"
 
 #: ../libxfdashboard/button.c:1353
 msgid "Image of icon"
-msgstr ""
+msgstr "Simge resmi"
 
 #: ../libxfdashboard/button.c:1359
 msgid "Synchronize icon size"
@@ -1354,7 +1354,7 @@ msgstr ""
 
 #: ../libxfdashboard/button.c:1366 ../libxfdashboard/emblem-effect.c:478
 msgid "Icon size"
-msgstr ""
+msgstr "Simge boyutu"
 
 #: ../libxfdashboard/button.c:1367
 msgid ""
@@ -1364,35 +1364,35 @@ msgstr ""
 
 #: ../libxfdashboard/button.c:1374
 msgid "Icon orientation"
-msgstr ""
+msgstr "Simge yönlendirme"
 
 #: ../libxfdashboard/button.c:1375
 msgid "Orientation of icon to label"
-msgstr ""
+msgstr "Etikete simge yönlendirme"
 
 #: ../libxfdashboard/button.c:1382
 msgid "Label text"
-msgstr ""
+msgstr "Etiket metni"
 
 #: ../libxfdashboard/button.c:1383
 msgid "Text of label"
-msgstr ""
+msgstr "Etiket metni"
 
 #: ../libxfdashboard/button.c:1389
 msgid "Font"
-msgstr ""
+msgstr "Yazı tipi"
 
 #: ../libxfdashboard/button.c:1390
 msgid "Font of label"
-msgstr ""
+msgstr "Etiket yazı tipi"
 
 #: ../libxfdashboard/button.c:1396 ../libxfdashboard/outline-effect.c:428
 msgid "Color"
-msgstr ""
+msgstr "Renk"
 
 #: ../libxfdashboard/button.c:1397
 msgid "Color of label"
-msgstr ""
+msgstr "Etiket rengi"
 
 #: ../libxfdashboard/button.c:1403
 msgid "Ellipsize mode"
@@ -1404,7 +1404,7 @@ msgstr ""
 
 #: ../libxfdashboard/button.c:1411
 msgid "Single line"
-msgstr ""
+msgstr "Tek satır"
 
 #: ../libxfdashboard/button.c:1412
 msgid "Flag to determine if text can only be in one or multiple lines"
@@ -1420,11 +1420,11 @@ msgstr ""
 
 #: ../libxfdashboard/click-action.c:585
 msgid "Pressed"
-msgstr ""
+msgstr "Basılı"
 
 #: ../libxfdashboard/click-action.c:586
 msgid "Whether the clickable should be in pressed state"
-msgstr ""
+msgstr "Tıklanabilir alanın basılı durumda olması gerekip gerekmediği"
 
 #: ../libxfdashboard/click-action.c:592
 msgid "Held"
@@ -1436,15 +1436,15 @@ msgstr ""
 
 #: ../libxfdashboard/click-action.c:599
 msgid "Long Press Duration"
-msgstr ""
+msgstr "Uzun basma süresi"
 
 #: ../libxfdashboard/click-action.c:600
 msgid "The minimum duration of a long press to recognize the gesture"
-msgstr ""
+msgstr "Hareketi tanımak için en az uzun basma süresi"
 
 #: ../libxfdashboard/click-action.c:608
 msgid "Long Press Threshold"
-msgstr ""
+msgstr "Uzun Basma Eşiği"
 
 #: ../libxfdashboard/click-action.c:609
 msgid "The maximum threshold before a long press is cancelled"
@@ -1545,7 +1545,7 @@ msgstr ""
 
 #: ../libxfdashboard/desktop-app-info.c:1202
 msgid "Valid"
-msgstr ""
+msgstr "Geçerli"
 
 #: ../libxfdashboard/desktop-app-info.c:1203
 msgid ""

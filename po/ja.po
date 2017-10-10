@@ -3,20 +3,20 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Moo, 2015-2016
+# Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2017-09-22 17:09+0000\n"
-"Last-Translator: Moo\n"
-"Language-Team: Lithuanian (http://www.transifex.com/xfdashboard/xfdashboard/language/lt/)\n"
+"PO-Revision-Date: 2017-09-30 08:27+0000\n"
+"Last-Translator: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>\n"
+"Language-Team: Japanese (http://www.transifex.com/xfdashboard/xfdashboard/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: lt\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../data/xfdashboard.desktop.in.in.h:1
 #: ../data/xfdashboard-autostart.desktop.in.in.h:1
@@ -26,25 +26,25 @@ msgstr "Xfdashboard"
 #: ../data/xfdashboard.desktop.in.in.h:2
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
-msgstr "Galbūt, į Gnome apvalkalą panašus skydelis, skirtas Xfce"
+msgstr ""
 
 #: ../data/xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
-msgstr "Paleisti xfdashboard kaip tarnybą fone"
+msgstr "Start xfdashboard をバックグランドでデーモンとして起動する"
 
 #: ../data/xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
-msgstr "Xfdashboard nustatymai"
+msgstr ""
 
 #: ../data/xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
-msgstr "Konfigūruoti xfdashboard"
+msgstr "xfdashboard 設定"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
-msgstr "Xfdashboard pateikia į Gnome apvalkalo skydelį panašią sąsają, skirtą naudoti Xfce darbalaukyje."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:3
 msgid ""
@@ -60,7 +60,7 @@ msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:5
 msgid "Searching applications"
-msgstr ""
+msgstr "アプリケーションを検索"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid ""
@@ -86,7 +86,7 @@ msgstr ""
 msgid ""
 "This unstable development introduces a basic and simple plugin system as "
 "well as a sample plugin adding a new view showing a clock."
-msgstr "Šis nestabilus kūrimas pristato pagrindinę ir paprastą įskiepių sistemą, o taip pat pavyzdinį įskiepį, pridėdamas naują rodinį, kuris rodo laikrodį."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
@@ -94,7 +94,7 @@ msgid ""
 "start a new instance of an application or to activate the current window. It"
 " also improves the detection of running application as well as bug-fixes and"
 " other smaller improvements."
-msgstr "Šis nestabilus kūrimas pristato naujas konfigūruojamas parinktis, leidžiančias paleisti naują programos egzempliorių arba aktyvuoti esamą langą. Jis taip pat pagerina vykdomų programų aptikimą, o taip pat jame yra yra ištaisytos klaidos bei yra kiti nedideli patobulinimai."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
@@ -130,7 +130,7 @@ msgid ""
 "This stable version introduces lots of new features. like multi-monitor "
 "support, configurable key bindings and a settings dialog. It also contains a"
 " lot of other larger and smaller improvements."
-msgstr "Šioje stabilioje versijoje yra pristatoma daug naujų ypatybių, tokių kaip kelių monitorių palaikymas, konfigūruojami klavišų susiejimai ir nustatymų dialogas. Joje taip pat yra daugybė kitų didesnių ir mažesnių patobulinimų."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
@@ -143,14 +143,14 @@ msgstr ""
 msgid ""
 "This unstable development introduces support for multiple monitors and also "
 "bug-fixes and other smaller improvements."
-msgstr "Šioje nestabilus kūrimas pristato kelių monitorių palaikymą, o taip pat klaidų pataisymus ir kitus nedidelius patobulinimus."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:18
 msgid ""
 "This unstable development introduces an application database and monitoring "
 "of installed and uninstalled applications. It also includes bug-fixes and "
 "other smaller improvements."
-msgstr "Šis nestabilus kūrimas pristato programos duomenų bazę ir įdiegtų bei pašalintų programų stebėjimą. Jame taip pat yra klaidų pataisymai bei kiti nedideli patobulinimai."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:19
 msgid ""
@@ -166,7 +166,7 @@ msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:21
 msgid "This unstable development introduces a settings application."
-msgstr "Šioje nestabilioje kūrimo laidoje pristatoma nustatymų programa."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:22
 msgid ""
@@ -189,7 +189,7 @@ msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:25
 msgid "This unstable development introduces effects."
-msgstr "Šioje nestabilioje kūrimo laidoje yra pristatomi efektai."
+msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:26
 msgid ""
@@ -227,84 +227,84 @@ msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:31
 msgid "Initial release."
-msgstr "Pradinė laida."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
-msgstr "<span size=\"large\"><b>Xfdashboard nustatymai</b></span>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:2
 msgid "Configure plugin"
-msgstr "Konfigūruoti įskiepį"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:3
 msgid ""
 "<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
 "Configure xfdashboard"
-msgstr "<span size=\"large\"><b>Xfdashboard nustatymai</b></span>\nKonfigūruoti xfdashboard"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:5
 msgid "<b>General settings:</b>"
-msgstr "<b>Bendri nustatymai:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr "Pratęsiant, atstatyti paieškos rodinį"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
 "If enabled the search view will be resetted when xfdashboard is resumed. That means the active view is switched back to last view active before last search was started and search box will be emptied.\n"
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
-msgstr "Jei įjungta, pratęsiant xfdashboard, bus atstatytas paieškos rodinys. Tai reiškia, kad aktyvus rodinys bus perjungtas į tą, kuris buvo vėliausiai prieš pradedant paiešką, o paieškos langelis bus išvalytas.\n\n<b>PASTABA:</b> Šis nustatymas veikia tik tuomet, jei xfdashboard yra vykdoma tarnybos veiksenoje."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
 "When xfdashboard resumes the selected view will be activated.\n"
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
-msgstr "Pratęsiant xfdashboard, bus aktyvuojamas šis rodinys.\n\n<b>PASTABA:</b> Šis nustatymas veikia tik tuomet, jei xfdashboard yra vykdoma tarnybos veiksenoje."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr "Pratęsiant, perjungti į rodinį:"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
 "Sets the minimum time a notification is being shown.\n"
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
-msgstr "Nustato mažiausią laiką per kurį yra rodomas pranešimas.\n\nTrukmė yra apskaičiuojama pagal pranešime rodomo teksto ilgį. Šis nustatymas leidžia jums nurodyti bent kiek laiko turėtų būti rodomas pranešimas."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
-msgstr "Mažiausias pranešimui skiriamas laikas:"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
-msgstr "Įjungti suskleistų langų problemos apėjimą"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:19
 msgid ""
 "When enabled a workaround for minimized windows will be tried to get still images of these windows by restoring them shortly and minimizing them again.\n"
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
-msgstr "Kai įjungta, bus bandoma apeiti suskleistų langų problemą ir gauti pastovius šių langų atvaizdus, trumpai juos išdidinant ir vėl suskleidžiant.\n\n<b>PASTABA:</b> Turėkite omenyje, kad tai yra <u>problemos apėjimas</u> ir jūsų suskleisti langai gali likti išskleisti arba pakeisti darbo sritį ir t. t."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
 "This value defines how fast the window content should be created. While the value 'immediate' tells xfdashboard to create the window content at the time it is requested, all other values will set up a queue and value defines how fast the queue will be processed.\n"
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
-msgstr "Ši reikšmė apibrėžia kaip greitai turėtų būti kuriamas langų turinys. Reikšmė \"nedelsiant\" pasako xfdashboard sukurti lango turinį užklausos metu, visos kitos reikšmės nustatys eilę, o reikšmė apibrėš kaip greitai eilė bus vykdoma.\n\n<b>PASTABA:</b> Keiskite šią reikšmė iš \"nedelsiant\" į kitą reikšmę tik tuo atveju, jei jūsų vaizdo plokštė, tvarkyklė ar sistema yra pernelyg lėta, kad kurtų langų turinius nedelsiant. Jums reikia išbandyti kiekvieną reikšmę, kad rastumėte tą, kuri tiks jūsų sistemai."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
-msgstr "Langų turinio kūrimo pirmenybė"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:26
 msgid "Always start a new instance for application"
-msgstr "Visada paleisti naują programos egzempliorių"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
@@ -315,78 +315,78 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:30
 msgid "<b>Applications view:</b>"
-msgstr "<b>Programų rodinys:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:31
 msgid "Show menu for all installed applications"
-msgstr "Rodyti visų įdiegtų programų meniu"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:32
 msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
-msgstr "Kai įjungta, programų rodinyje bus rodomas \"visos programos\" meniu, kuriame bus rodomos visos įdiegtos programos"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:33
 msgid "<b>Windows view:</b>"
-msgstr "<b>Langų rodinys:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:34
 msgid "Mouse wheel changes workspace"
-msgstr "Pelės ratukas keičia darbo sritis"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:35
 msgid ""
 "When enabled any scroll event, like mouse-wheel up and down, at the windows "
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
-msgstr "Kai įjungta, bet koks slinkimo įvykis, toks kaip pelės ratuko pasukimas aukštyn ar žemyn, langų rodinyje keis aktyvią darbo sritį. Ši elgsena yra tokia pati kaip ir darbo sričių pasirinkimo."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:36
 msgid "<b>Search view:</b>"
-msgstr "<b>Paieškos rodinys:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:37
 msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
-msgstr "Nustato intervalą, kuriam turėtų būti atidėta paiešką po to, kai yra įvedamas pirmasis simbolis."
+msgstr ""
 
 #: ../data/data/preferences.ui.h:38
 msgid "Delay initial search interval:"
-msgstr "Pradinės paieškos delsos intervalas:"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:39
 msgid "General"
-msgstr "Bendra"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Name:</b>"
-msgstr "<b>Pavadinimas:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:41
 msgid "<b>Author:</b>"
-msgstr "<b>Autorius:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:42
 msgid "<b>Version:</b>"
-msgstr "<b>Versija:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:43
 msgid "<b>Description:</b>"
-msgstr "<b>Aprašas:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:44
 msgid "Themes"
-msgstr "Temos"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:45
 msgid "<b>License:</b>"
-msgstr "<b>Licencija:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:46
 msgid "Plugins"
-msgstr "Įskiepiai"
+msgstr "プラグイン"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard"
@@ -394,60 +394,60 @@ msgstr "xfdashboard"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:2
 msgid "Default theme for xfdashboard"
-msgstr "Numatytoji xfdashboard tema"
+msgstr "xfdashboard のデフォルトテーマ"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-auber"
-msgstr "xfdashboard-baklažanas"
+msgstr ""
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
 msgid "Aubergine theme for xfdashboard"
-msgstr "Baklažaninė xfdashboard tema"
+msgstr ""
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-blue"
-msgstr "xfdashboard-mėlyna"
+msgstr ""
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:2
 msgid "Blue theme for xfdashboard"
-msgstr "Mėlyna xfdashboard tema"
+msgstr ""
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-dark"
-msgstr "xfdashboard-tamsi"
+msgstr ""
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:2
 msgid "Dark theme for xfdashboard"
-msgstr "Tamsi xfdashboard tema"
+msgstr ""
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-mint"
-msgstr "xfdashboard-mėta"
+msgstr ""
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
 msgid "Fresh-green flavored theme for xfdashboard"
-msgstr "Šviežiai žalia xfdashboard tema"
+msgstr ""
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-moranga"
-msgstr "xfdashboard-moliūgas"
+msgstr ""
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:2
 msgid "Moranga theme for xfdashboard"
-msgstr "Moliūginė xfdashboard tema"
+msgstr ""
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-wine"
-msgstr "xfdashboard-vynas"
+msgstr ""
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
 msgid "Red wine theme for xfdashboard"
-msgstr "Raudono vyno xfdashboard tema"
+msgstr ""
 
 #: ../libxfdashboard/action-button.c:109 ../libxfdashboard/focus-manager.c:930
 #, c-format
 msgid "Object type %s does not provide action '%s'"
-msgstr "Objekto tipas %s nepateikia veiksmo \"%s\""
+msgstr ""
 
 #: ../libxfdashboard/action-button.c:121 ../libxfdashboard/focus-manager.c:942
 #, c-format
@@ -483,7 +483,7 @@ msgstr ""
 
 #: ../libxfdashboard/action-button.c:425 ../libxfdashboard/binding.c:252
 msgid "Action"
-msgstr "Veiksmas"
+msgstr ""
 
 #: ../libxfdashboard/action-button.c:426
 msgid "The action signal to perform at target"
@@ -506,7 +506,7 @@ msgstr ""
 
 #: ../libxfdashboard/actor.c:961
 msgid "Effects"
-msgstr "Efektai"
+msgstr ""
 
 #: ../libxfdashboard/actor.c:962
 msgid "List of space-separated strings with IDs of effects set at this actor"
@@ -514,7 +514,7 @@ msgstr ""
 
 #: ../libxfdashboard/application-button.c:337
 msgid "Application information"
-msgstr "Programos informacija"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:338
 msgid "The application information whose title and description to display"
@@ -522,11 +522,11 @@ msgstr ""
 
 #: ../libxfdashboard/application-button.c:344
 msgid "Show description"
-msgstr "Rodyti aprašą"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:345
 msgid "Show also description next to tile"
-msgstr "Rodyti šalia plytelės aprašą"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:351
 #: ../libxfdashboard/applications-view.c:1346
@@ -558,13 +558,13 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:390 ../libxfdashboard/quicklaunch.c:394
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr "\"%s programos paleidimas nepavyko: %s"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:657
 #: ../libxfdashboard/application-button.c:660
 #: ../libxfdashboard/quicklaunch.c:344 ../libxfdashboard/quicklaunch.c:348
 msgid "No information available for application"
-msgstr "Nėra apie programą prieinamos informacijos"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:675
 #: ../libxfdashboard/application-button.c:678
@@ -573,41 +573,41 @@ msgstr "Nėra apie programą prieinamos informacijos"
 #: ../libxfdashboard/application.c:372 ../libxfdashboard/application.c:388
 #: ../libxfdashboard/application.c:604
 msgid "unknown error"
-msgstr "nežinoma klaida"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:686
 #, c-format
 msgid "Application '%s' launched"
-msgstr "Paleista programa \"%s\""
+msgstr ""
 
 #. Show critical warning at console
 #: ../libxfdashboard/application.c:272 ../libxfdashboard/application.c:279
 #, c-format
 msgid "Could not load theme '%s': %s"
-msgstr "Nepavyko įkelti temos \"%s\": %s"
+msgstr ""
 
 #: ../libxfdashboard/application.c:353
 #, c-format
 msgid "Could not initialize xfconf: %s"
-msgstr "Nepavyko inicijuoti xfconf: %s"
+msgstr ""
 
 #: ../libxfdashboard/application.c:365
 msgid "Could not initialize bindings"
-msgstr "Nepavyko inicijuoti saistymų"
+msgstr ""
 
 #: ../libxfdashboard/application.c:371
 #, c-format
 msgid "Could not load bindings: %s"
-msgstr "Nepavyko įkelti saistymų: %s"
+msgstr ""
 
 #: ../libxfdashboard/application.c:381
 msgid "Could not initialize application database"
-msgstr "Nepavyko inicijuoti programų duomenų bazės"
+msgstr ""
 
 #: ../libxfdashboard/application.c:387
 #, c-format
 msgid "Could not load application database: %s"
-msgstr "Nepavyko įkelti programų duomenų bazės: %s"
+msgstr ""
 
 #: ../libxfdashboard/application.c:397
 msgid "Could not initialize application tracker"
@@ -621,50 +621,50 @@ msgstr ""
 
 #: ../libxfdashboard/application.c:451
 msgid "Could not initialize plugin manager"
-msgstr "Nepavyko inicijuoti įskiepių tvarkytuvės"
+msgstr ""
 
 #: ../libxfdashboard/application.c:457
 msgid "Could not setup plugin manager"
-msgstr "Nepavyko nustatyti įskiepių tvarkytuvės"
+msgstr ""
 
 #: ../libxfdashboard/application.c:478
 #, c-format
 msgid "Welcome to %s (%s)!"
-msgstr "Sveiki atvykę į %s (%s)!"
+msgstr ""
 
 #: ../libxfdashboard/application.c:480
 #, c-format
 msgid "Welcome to %s!"
-msgstr "Sveiki atvykę į %s!"
+msgstr ""
 
 #: ../libxfdashboard/application.c:557
 msgid "Fork to background"
-msgstr "Atšakoti į foną"
+msgstr ""
 
 #: ../libxfdashboard/application.c:558
 msgid "Quit running instance"
-msgstr "Baigti vykdomo egzemplioriaus darbą"
+msgstr ""
 
 #: ../libxfdashboard/application.c:559
 msgid "Restart running instance"
-msgstr "Iš naujo paleisti vykdomą egzempliorių"
+msgstr ""
 
 #: ../libxfdashboard/application.c:560
 msgid ""
 "Toggles suspend/resume state if running instance was started in daemon mode "
 "otherwise it quits running non-daemon instance"
-msgstr "Jei vykdomas egzempliorius buvo paleistas tarnybos veiksenoje, perjungia pristabdymo/pratęsimo būseną, kitu atveju baigia vykdomo ne tarnybos egzemplioriaus darbą"
+msgstr ""
 
 #. Setup command-line options
 #: ../libxfdashboard/application.c:583
 msgid "- A Gnome Shell like dashboard for Xfce4"
-msgstr "- Į Gnome apvalkalą panašus skydelis, skirtas Xfce4"
+msgstr ""
 
 #. Show error
 #: ../libxfdashboard/application.c:604
 #, c-format
 msgid "%s\n"
-msgstr "%s\n"
+msgstr ""
 
 #: ../libxfdashboard/application.c:915
 msgid "Is daemonized"
@@ -676,24 +676,24 @@ msgstr ""
 
 #: ../libxfdashboard/application.c:922
 msgid "Is suspended"
-msgstr "Yra pristabdyta"
+msgstr ""
 
 #: ../libxfdashboard/application.c:923
 msgid "Flag indicating if application is suspended currently"
-msgstr "Vėliavėlė, nurodanti ar programa šiuo metu yra pristabdyta"
+msgstr ""
 
 #: ../libxfdashboard/application.c:929 ../libxfdashboard/theme.c:577
 msgid "Theme name"
-msgstr "Temos pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/application.c:930
 msgid "Name of current theme"
-msgstr "Esamos temos pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/application-database.c:132
 #, c-format
 msgid "Could not reload application menu: %s"
-msgstr "Nepavyko iš naujo įkelti programų meniu: %s"
+msgstr ""
 
 #: ../libxfdashboard/application-database.c:133
 #: ../libxfdashboard/application-database.c:302
@@ -735,7 +735,7 @@ msgstr "Nepavyko iš naujo įkelti programų meniu: %s"
 #: ../settings/themes.c:590 ../settings/themes.c:609 ../settings/themes.c:628
 #: ../settings/main.c:63 ../settings/main.c:85 ../settings/settings.c:140
 msgid "Unknown error"
-msgstr "Nežinoma klaida"
+msgstr ""
 
 #: ../libxfdashboard/application-database.c:265
 msgid "Received event from unknown file monitor"
@@ -777,13 +777,13 @@ msgstr ""
 
 #: ../libxfdashboard/application-database.c:1258
 msgid "Is loaded"
-msgstr "Yra įkelta"
+msgstr ""
 
 #: ../libxfdashboard/application-database.c:1259
 msgid ""
 "Flag indicating if application database has been initialized and loaded "
 "successfully"
-msgstr "Vėliavėlė, nurodanti ar programos duomenų bazė buvo sėkmingai inicijuota ir įkelta"
+msgstr ""
 
 #: ../libxfdashboard/application-tracker.c:282
 #, c-format
@@ -815,33 +815,33 @@ msgstr ""
 #: ../libxfdashboard/applications-menu-model.c:804
 #: ../libxfdashboard/plugin.c:782
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SEQUENCE_ID
 #: ../libxfdashboard/applications-menu-model.c:805
 msgid "Menu item"
-msgstr "Meniu elementas"
+msgstr ""
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT
 #: ../libxfdashboard/applications-menu-model.c:806
 msgid "Parent menu"
-msgstr "Tėvinis elementas"
+msgstr ""
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU
 #: ../libxfdashboard/applications-menu-model.c:807
 msgid "Section"
-msgstr "Sekcija"
+msgstr ""
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION
 #: ../libxfdashboard/applications-menu-model.c:808
 msgid "Title"
-msgstr "Antraštė"
+msgstr ""
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_TITLE
 #: ../libxfdashboard/applications-menu-model.c:809
 #: ../libxfdashboard/plugin.c:796
 msgid "Description"
-msgstr "Aprašas"
+msgstr ""
 
 #: ../libxfdashboard/applications-search-provider.c:251
 #, c-format
@@ -853,7 +853,7 @@ msgstr ""
 #: ../libxfdashboard/applications-search-provider.c:356
 #, c-format
 msgid "Statistics were not initialized"
-msgstr "Statistika nebuvo inicijuota"
+msgstr ""
 
 #: ../libxfdashboard/applications-search-provider.c:376
 #, c-format
@@ -891,7 +891,7 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:1399
 #: ../libxfdashboard/quicklaunch.c:2877
 msgid "Applications"
-msgstr "Programos"
+msgstr ""
 
 #: ../libxfdashboard/applications-search-provider.c:1031
 msgid ""
@@ -906,11 +906,11 @@ msgstr ""
 
 #: ../libxfdashboard/applications-search-provider.c:1286
 msgid "Sort mode"
-msgstr "Rikiavimo veiksena"
+msgstr ""
 
 #: ../libxfdashboard/applications-search-provider.c:1287
 msgid "Defines how to sort matching applications"
-msgstr "Apibrėžia kaip rikiuoti atitinkančias programas"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:236
 #, c-format
@@ -922,21 +922,21 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:505
 #: ../libxfdashboard/applications-view.c:506
 msgid "Back"
-msgstr "Atgal"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:399
 #: ../libxfdashboard/applications-view.c:505
 msgid "Go back to previous menu"
-msgstr "Grįžti į ankstesnį meniu"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:533
 #: ../libxfdashboard/applications-view.c:534
 msgid "All applications"
-msgstr "Visos programos"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:533
 msgid "List of all installed applications"
-msgstr "Visų įdiegtų programų sąrašas"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:742
 #: ../libxfdashboard/search-result-container.c:1755
@@ -986,11 +986,11 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:1323
 #: ../libxfdashboard/search-result-container.c:1258
 msgid "View mode"
-msgstr "Rodinio veiksena"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:1324
 msgid "The view mode used in this view"
-msgstr "Šiame rodinyje naudojama rodinio veiksena"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:1331 ../libxfdashboard/button.c:1322
 #: ../libxfdashboard/quicklaunch.c:2705 ../libxfdashboard/scrollbar.c:754
@@ -1016,7 +1016,7 @@ msgstr ""
 
 #: ../libxfdashboard/applications-view.c:1360
 msgid "Show all applications"
-msgstr "Rodyti visas programas"
+msgstr ""
 
 #: ../libxfdashboard/applications-view.c:1361
 msgid "Whether to show a menu for all installed applications at root menu"
@@ -1024,11 +1024,11 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:420 ../libxfdashboard/background.c:421
 msgid "Background type"
-msgstr "Fono tipas"
+msgstr ""
 
 #: ../libxfdashboard/background.c:428 ../libxfdashboard/outline-effect.c:451
 msgid "Corners"
-msgstr "Kampai"
+msgstr ""
 
 #: ../libxfdashboard/background.c:429
 msgid "Determines which corners are rounded for background and outline"
@@ -1045,11 +1045,11 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:444
 msgid "Background fill color"
-msgstr "Fono užpildo spalva"
+msgstr ""
 
 #: ../libxfdashboard/background.c:445
 msgid "Color to fill background with"
-msgstr "Spalva, kuria užpildyti foną"
+msgstr ""
 
 #: ../libxfdashboard/background.c:451
 msgid "Fill corners"
@@ -1105,7 +1105,7 @@ msgstr ""
 
 #: ../libxfdashboard/background.c:506
 msgid "Image"
-msgstr "Paveikslas"
+msgstr ""
 
 #: ../libxfdashboard/background.c:507
 msgid "Image to draw as background"
@@ -1113,7 +1113,7 @@ msgstr ""
 
 #: ../libxfdashboard/binding.c:214
 msgid "Event type"
-msgstr "Įvykio tipas"
+msgstr ""
 
 #: ../libxfdashboard/binding.c:215
 msgid "The event type this binding is bound to"
@@ -1121,7 +1121,7 @@ msgstr ""
 
 #: ../libxfdashboard/binding.c:222
 msgid "Class name"
-msgstr "Klasės pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/binding.c:223
 msgid "Class name of object this binding is bound to"
@@ -1129,7 +1129,7 @@ msgstr ""
 
 #: ../libxfdashboard/binding.c:229 ../libxfdashboard/image-content.c:1200
 msgid "Key"
-msgstr "Raktas"
+msgstr ""
 
 #: ../libxfdashboard/binding.c:230
 msgid "Key code of a keyboard event this binding is bound to"
@@ -1153,7 +1153,7 @@ msgstr ""
 
 #: ../libxfdashboard/binding.c:259
 msgid "Flags"
-msgstr "Vėliavėlės"
+msgstr ""
 
 #: ../libxfdashboard/binding.c:260
 msgid "Flags assigned to this binding"
@@ -1176,7 +1176,7 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:250
 #, c-format
 msgid "Error on line %d char %d: "
-msgstr "Klaida %d eilutėje, %d simbolyje: "
+msgstr ""
 
 #: ../libxfdashboard/bindings-pool.c:201
 #, c-format
@@ -1233,7 +1233,7 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1022
 #, c-format
 msgid "Unknown tag <%s>"
-msgstr "Nežinoma žymė <%s>"
+msgstr ""
 
 #: ../libxfdashboard/bindings-pool.c:524
 msgid "Missing attribute 'code' for key"
@@ -1242,7 +1242,7 @@ msgstr ""
 #: ../libxfdashboard/bindings-pool.c:544
 #, c-format
 msgid "Could not translate key '%s'"
-msgstr "Nepavyko išversti klavišo \"%s\""
+msgstr ""
 
 #: ../libxfdashboard/bindings-pool.c:580
 #, c-format
@@ -1267,7 +1267,7 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1397
 #, c-format
 msgid "Tag <%s> cannot contain tag <%s>"
-msgstr "Žymėje <%s> negali būti žymė <%s>"
+msgstr ""
 
 #: ../libxfdashboard/bindings-pool.c:827
 #: ../libxfdashboard/theme-effects.c:1068
@@ -1338,23 +1338,23 @@ msgstr ""
 
 #: ../libxfdashboard/button.c:1352
 msgid "Icon image"
-msgstr "Piktogramos paveikslas"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1353
 msgid "Image of icon"
-msgstr "Piktogramos paveikslas"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1359
 msgid "Synchronize icon size"
-msgstr "Sinchronizuoti piktogramos dydį"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1360
 msgid "Synchronize icon size with text size"
-msgstr "Sinchronizuoti piktogramos dydį su teksto dydžiu"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1366 ../libxfdashboard/emblem-effect.c:478
 msgid "Icon size"
-msgstr "Piktogramos dydis"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1367
 msgid ""
@@ -1364,35 +1364,35 @@ msgstr ""
 
 #: ../libxfdashboard/button.c:1374
 msgid "Icon orientation"
-msgstr "Piktogramos orientacija"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1375
 msgid "Orientation of icon to label"
-msgstr "Piktogramos orientacija etiketės atžvilgiu"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1382
 msgid "Label text"
-msgstr "Etiketės tekstas"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1383
 msgid "Text of label"
-msgstr "Etiketės tekstas"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1389
 msgid "Font"
-msgstr "Šriftas"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1390
 msgid "Font of label"
-msgstr "Etiketės šriftas"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1396 ../libxfdashboard/outline-effect.c:428
 msgid "Color"
-msgstr "Spalva"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1397
 msgid "Color of label"
-msgstr "Etiketės spalva"
+msgstr ""
 
 #: ../libxfdashboard/button.c:1403
 msgid "Ellipsize mode"
@@ -1436,19 +1436,19 @@ msgstr ""
 
 #: ../libxfdashboard/click-action.c:599
 msgid "Long Press Duration"
-msgstr "Ilgo nuspaudimo trukmė"
+msgstr ""
 
 #: ../libxfdashboard/click-action.c:600
 msgid "The minimum duration of a long press to recognize the gesture"
-msgstr "Mažiausia ilgo nuspaudimo trukmė, kad būtų atpažintas gestas"
+msgstr ""
 
 #: ../libxfdashboard/click-action.c:608
 msgid "Long Press Threshold"
-msgstr "Ilgo nuspaudimo slenkstis"
+msgstr ""
 
 #: ../libxfdashboard/click-action.c:609
 msgid "The maximum threshold before a long press is cancelled"
-msgstr "Didžiausias slenkstis prieš tai, kai ilgas nuspaudimas bus atšauktas"
+msgstr ""
 
 #: ../libxfdashboard/collapse-box.c:276
 #, c-format
@@ -1513,7 +1513,7 @@ msgstr ""
 
 #: ../libxfdashboard/css-selector.c:870
 msgid "Priority"
-msgstr "Pirmenybė"
+msgstr ""
 
 #: ../libxfdashboard/css-selector.c:871
 msgid "The priority of this CSS selector"
@@ -1541,7 +1541,7 @@ msgstr ""
 #, c-format
 msgid ""
 "Working directory '%s' does not exist. It won't be used when launching '%s'."
-msgstr "Darbinio katalogo \"%s\" nėra. Jis nebus naudojamas, kai bus paleidžiama \"%s\"."
+msgstr ""
 
 #: ../libxfdashboard/desktop-app-info.c:1202
 msgid "Valid"
@@ -1554,24 +1554,24 @@ msgstr ""
 
 #: ../libxfdashboard/desktop-app-info.c:1209
 msgid "Desktop ID"
-msgstr "Darbalaukio ID"
+msgstr ""
 
 #: ../libxfdashboard/desktop-app-info.c:1210
 msgid "Name of desktop ID"
-msgstr "Darbalaukio ID pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/desktop-app-info.c:1216
 msgid "File"
-msgstr "Failas"
+msgstr ""
 
 #: ../libxfdashboard/desktop-app-info.c:1217
 msgid "The desktop file"
-msgstr "Darbalaukio failas"
+msgstr ""
 
 #: ../libxfdashboard/desktop-app-info.c:1272
 #, c-format
 msgid "Desktop ID '%s' not found"
-msgstr "Darbalaukio ID \"%s\" nerastas"
+msgstr ""
 
 #: ../libxfdashboard/desktop-app-info.c:1430
 #, c-format
@@ -1580,7 +1580,7 @@ msgstr ""
 
 #: ../libxfdashboard/drag-action.c:933
 msgid "Source"
-msgstr "Šaltinis"
+msgstr ""
 
 #: ../libxfdashboard/drag-action.c:934
 msgid "The source actor where drag began"
@@ -1643,7 +1643,7 @@ msgstr ""
 
 #: ../libxfdashboard/emblem-effect.c:479
 msgid "Size of icon"
-msgstr "Piktogramos dydis"
+msgstr ""
 
 #: ../libxfdashboard/emblem-effect.c:487
 msgid "Padding around emblem"
@@ -1875,22 +1875,22 @@ msgstr ""
 
 #: ../libxfdashboard/live-window.c:773 ../libxfdashboard/window-content.c:2075
 msgid "Window"
-msgstr "Langas"
+msgstr ""
 
 #: ../libxfdashboard/live-window.c:774
 msgid "The window to show"
-msgstr "Langas, kurį rodyti"
+msgstr ""
 
 #: ../libxfdashboard/live-window.c:780
 msgid "Window number"
-msgstr "Lango numeris"
+msgstr ""
 
 #: ../libxfdashboard/live-window.c:781
 msgid ""
 "The assigned window number. If set to non-zero the close button will be "
 "hidden and the window number will be shown instead. If set to zero the close"
 " button will be shown again."
-msgstr "Priskirtas lango numeris. Jei nustatyta į nenulinę reikšmę, tuomet užvėrimo mygtukas bus paslėptas, o vietoj jo bus rodomas lango numeris. Jei nustatytas nulis, tuomet vėl bus rodomas užvėrimo mygtukas."
+msgstr ""
 
 #: ../libxfdashboard/live-window.c:788
 msgid "Close button padding"
@@ -1910,45 +1910,45 @@ msgstr ""
 
 #: ../libxfdashboard/live-workspace.c:835
 msgid "Workspace"
-msgstr "Darbo sritis"
+msgstr ""
 
 #: ../libxfdashboard/live-workspace.c:836
 msgid "The workspace to show"
-msgstr "Darbo sritis, kurią rodyti"
+msgstr ""
 
 #: ../libxfdashboard/live-workspace.c:842
 #: ../libxfdashboard/stage-interface.c:327
 msgid "Monitor"
-msgstr "Monitorius"
+msgstr ""
 
 #: ../libxfdashboard/live-workspace.c:843
 msgid "The monitor whose window to show only"
-msgstr "Monitorius, kurio langus rodyti"
+msgstr ""
 
 #: ../libxfdashboard/live-workspace.c:849
 msgid "Show window content"
-msgstr "Rodyti langų turinį"
+msgstr ""
 
 #: ../libxfdashboard/live-workspace.c:850
 msgid ""
 "If TRUE the window content should be shown otherwise the window's icon will "
 "be shown"
-msgstr "Jei TEISINGA, turėtų būti rodomas langų turinys, kitu atveju, bus rodomos langų piktogramos"
+msgstr ""
 
 #: ../libxfdashboard/live-workspace.c:856
 #: ../libxfdashboard/live-workspace.c:857 ../libxfdashboard/stage.c:1592
 #: ../libxfdashboard/stage.c:1593 ../libxfdashboard/stage-interface.c:334
 #: ../libxfdashboard/stage-interface.c:335
 msgid "Background image type"
-msgstr "Fono paveikslo tipas"
+msgstr ""
 
 #: ../libxfdashboard/live-workspace.c:864
 msgid "Show workspace name"
-msgstr "Rodyti darbo srities pavadinimą"
+msgstr ""
 
 #: ../libxfdashboard/live-workspace.c:865
 msgid "If TRUE the name of workspace should be shown"
-msgstr "Jei TEISINGA, turėtų būti rodomi darbo sričių pavadinimai "
+msgstr ""
 
 #: ../libxfdashboard/live-workspace.c:871
 msgid "Workspace name padding"
@@ -1960,7 +1960,7 @@ msgstr ""
 
 #: ../libxfdashboard/outline-effect.c:435
 msgid "Width"
-msgstr "Plotis"
+msgstr ""
 
 #: ../libxfdashboard/outline-effect.c:443
 msgid "Borders"
@@ -1985,132 +1985,132 @@ msgstr ""
 
 #: ../libxfdashboard/plugin.c:420
 msgid "Missing path to plugin"
-msgstr "Trūksta kelio į įskiepį"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:426
 #, c-format
 msgid "Path '%s' does not exist"
-msgstr "Kelio \"%s\" nėra"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:434
 #, c-format
 msgid "Bad state '%s' - expected '%s"
-msgstr "Bloga būsena \"%s\" - buvo tikimasi \"%s\""
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:443
 msgid "Plugin was already initialized"
-msgstr "Įskiepis jau buvo inicijuotas"
+msgstr ""
 
 #. If we get here the virtual function was not overridden
 #: ../libxfdashboard/plugin.c:471
 #, c-format
 msgid "Plugin does not implement required function %s"
-msgstr "Įskiepis neįgyvendina reikiamos funkcijos %s"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:479
 msgid "Plugin did not set required ID"
-msgstr "Įskiepis nenustatė reikiamo ID"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:494
 msgid "Plugin cannot be enabled"
-msgstr "Įskiepis negali būti įjungtas"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:509
 msgid "Plugin cannot be disabled"
-msgstr "Įskiepis negali būti išjungtas"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:555
 #, c-format
 msgid "Plugin '%s' could not be unloaded successfully: %s"
-msgstr "Nepavyko sėkmingai iškelti įskiepio \"%s\": %s"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:556 ../libxfdashboard/plugin.c:1029
 #: ../libxfdashboard/plugin.c:1078
 msgid "Unknown"
-msgstr "Nežinoma"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:775
 msgid "File name"
-msgstr "Failo pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:776
 msgid "Path and file name of this plugin"
-msgstr "Šio įskiepio kelias ir failo pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:783
 msgid "The unique ID for this plugin"
-msgstr "Unikalus šio įskiepio ID"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:789
 msgid "name"
-msgstr "pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:790
 msgid "Name of plugin"
-msgstr "Įskiepio pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:797
 msgid "A short description about this plugin"
-msgstr "Trumpas aprašas apie šį įskiepį"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:803
 msgid "Author"
-msgstr "Autorius"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:804
 msgid "The author of this plugin"
-msgstr "Šio įskiepio autorius"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:810
 msgid "Copyright"
-msgstr "Autorių teisės"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:811
 msgid ""
 "The copyright of this plugin which usually contains year of development"
-msgstr "Šio įskiepio autorių teisės, kuriose, dažniausiai, yra kūrimo metai"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:817
 msgid "License"
-msgstr "Licencija"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:818
 msgid "The license of this plugin"
-msgstr "Šio įskiepio licencija"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:824
 msgid "Config path"
-msgstr "Konfigūracijos kelias"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:825
 msgid "The base path to configuration files of this plugin"
-msgstr "Pagrindinis kelias į šio įskiepio konfigūracijos failus"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:831
 msgid "Cache path"
-msgstr "Podėlio kelias"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:832
 msgid "The base path to cache files of this plugin"
-msgstr "Pagrindinis kelias į šio įskiepio podėlio failus"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:838
 msgid "Data path"
-msgstr "Duomenų kelias"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:839
 msgid "The base path to data files of this plugin"
-msgstr "Pagrindinis kelias į šio įskiepio duomenų failus"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:937
 #, c-format
 msgid "Could not get plugin ID for file %s"
-msgstr "Nepavyko gauti įskiepio ID failui %s"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:964
 #, c-format
 msgid "Could not create plugin instance"
-msgstr "Nepavyko sukurti įskiepio egzemplioriaus"
+msgstr ""
 
 #: ../libxfdashboard/plugin.c:1028
 #, c-format
@@ -2134,7 +2134,7 @@ msgstr ""
 #: ../libxfdashboard/plugins-manager.c:557
 #, c-format
 msgid "Could not load plugin '%s': %s"
-msgstr "Nepavyko įkelti įskiepio \"%s\": %s"
+msgstr ""
 
 #: ../libxfdashboard/quicklaunch.c:183
 #, c-format
@@ -2197,7 +2197,7 @@ msgstr ""
 #. target
 #: ../libxfdashboard/quicklaunch.c:2884
 msgid "Remove"
-msgstr "Šalinti"
+msgstr ""
 
 #: ../libxfdashboard/scaled-table-layout.c:503
 msgid "Relative scale"
@@ -2224,7 +2224,7 @@ msgstr ""
 
 #: ../libxfdashboard/scrollbar.c:722
 msgid "Value"
-msgstr "Reikšmė"
+msgstr ""
 
 #: ../libxfdashboard/scrollbar.c:723
 msgid "Current value of scroll bar within range"
@@ -2343,13 +2343,13 @@ msgstr ""
 #: ../libxfdashboard/search-result-container.c:1718
 #, c-format
 msgid "Show %d more results..."
-msgstr "Rodyti dar %d rezultatų..."
+msgstr ""
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:675
 #, c-format
 msgid "Show all %d results..."
-msgstr "Rodyti visus %d rezultatus..."
+msgstr ""
 
 #: ../libxfdashboard/search-result-container.c:710
 #, c-format
@@ -2368,7 +2368,7 @@ msgstr ""
 
 #: ../libxfdashboard/search-result-container.c:1244
 msgid "Icon"
-msgstr "Piktograma"
+msgstr ""
 
 #: ../libxfdashboard/search-result-container.c:1245
 msgid ""
@@ -2398,7 +2398,7 @@ msgstr ""
 
 #: ../libxfdashboard/search-result-container.c:1282
 msgid "Initial results size"
-msgstr "Pradinių rezultatų dydis"
+msgstr ""
 
 #: ../libxfdashboard/search-result-container.c:1283
 msgid "The maximum number of results shown initially. 0 means all results"
@@ -2449,7 +2449,7 @@ msgstr ""
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1582
 msgid "Search"
-msgstr "Paieška"
+msgstr ""
 
 #: ../libxfdashboard/stage.c:396
 msgid "Cannot perform search because search view was not found in viewpad."
@@ -2486,12 +2486,12 @@ msgstr ""
 
 #: ../libxfdashboard/stage.c:991
 msgid "Just type to search..."
-msgstr "Tiesiog, rašykite, norėdami ieškoti..."
+msgstr ""
 
 #: ../libxfdashboard/stage.c:1600 ../libxfdashboard/stage-interface.c:342
 #: ../plugins/clock-view/clock-view-settings.c:254
 msgid "Background color"
-msgstr "Fono spalva"
+msgstr ""
 
 #: ../libxfdashboard/stage.c:1601 ../libxfdashboard/stage-interface.c:343
 msgid "Color of stage's background"
@@ -2550,7 +2550,7 @@ msgstr ""
 
 #: ../libxfdashboard/text-box.c:804
 msgid "Primary icon name"
-msgstr "Pirminis piktogramos pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/text-box.c:805
 msgid "Themed icon name or file name of primary icon shown left of text box"
@@ -2558,7 +2558,7 @@ msgstr ""
 
 #: ../libxfdashboard/text-box.c:811
 msgid "Secondary icon name"
-msgstr "Antrinis piktogramos pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/text-box.c:812
 msgid ""
@@ -2567,7 +2567,7 @@ msgstr ""
 
 #: ../libxfdashboard/text-box.c:818
 msgid "Text"
-msgstr "Tekstas"
+msgstr ""
 
 #: ../libxfdashboard/text-box.c:819
 msgid "Text of editable text box"
@@ -2575,7 +2575,7 @@ msgstr ""
 
 #: ../libxfdashboard/text-box.c:825
 msgid "Text font"
-msgstr "Teksto šriftas"
+msgstr ""
 
 #: ../libxfdashboard/text-box.c:826
 msgid "Font of editable text box"
@@ -2583,7 +2583,7 @@ msgstr ""
 
 #: ../libxfdashboard/text-box.c:832
 msgid "Text color"
-msgstr "Teksto spalva"
+msgstr ""
 
 #: ../libxfdashboard/text-box.c:833
 msgid "Color of text in editable text box"
@@ -2639,11 +2639,11 @@ msgstr ""
 
 #: ../libxfdashboard/theme.c:570 ../libxfdashboard/theme-css.c:2485
 msgid "Theme path"
-msgstr "Temos kelias"
+msgstr ""
 
 #: ../libxfdashboard/theme.c:571
 msgid "Path where theme was found and loaded from"
-msgstr "Kelias, kuriame tema buvo rasta ir iš kurio yra įkelta"
+msgstr ""
 
 #: ../libxfdashboard/theme.c:578
 msgid ""
@@ -2653,19 +2653,19 @@ msgstr ""
 
 #: ../libxfdashboard/theme.c:584
 msgid "Theme display name"
-msgstr "Rodomas temos pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/theme.c:585
 msgid "The name of theme"
-msgstr "Temos pavadinimas"
+msgstr ""
 
 #: ../libxfdashboard/theme.c:591
 msgid "Theme comment"
-msgstr "Temos komentaras"
+msgstr ""
 
 #: ../libxfdashboard/theme.c:592
 msgid "The comment of theme used as description"
-msgstr "Temos komentaras, naudojamas kaip aprašas"
+msgstr ""
 
 #: ../libxfdashboard/theme.c:690
 #, c-format
@@ -2675,7 +2675,7 @@ msgstr ""
 #: ../libxfdashboard/theme.c:707
 #, c-format
 msgid "Theme '%s' not found"
-msgstr "Tema \"%s\" nerasta"
+msgstr ""
 
 #: ../libxfdashboard/theme-css.c:273
 #, c-format
@@ -2761,12 +2761,12 @@ msgstr ""
 #: ../libxfdashboard/theme-css.c:1240
 #, c-format
 msgid "Function '%s' failed with error: %s"
-msgstr "Funkcija \"%s\" nepavyko su klaida: %s"
+msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1246
 #, c-format
 msgid "Function '%s' failed!"
-msgstr "Funkcija \"%s\" nepavyko!"
+msgstr ""
 
 #. Identifier was unresolvable so print error message
 #: ../libxfdashboard/theme-css.c:1314
@@ -2784,7 +2784,7 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1584
 msgid "Invalid property value"
-msgstr "Neteisinga savybės reikšmė"
+msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1609
 msgid "Property values must end with semi-colon"
@@ -2810,7 +2810,7 @@ msgstr ""
 #: ../libxfdashboard/theme-css.c:1894
 #, c-format
 msgid "Failed to import CSS file '%s': %s"
-msgstr "Nepavyko importuoti CSS failą \"%s\": %s"
+msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1999
 msgid ""
@@ -3069,7 +3069,7 @@ msgstr ""
 
 #: ../libxfdashboard/view.c:397
 msgid "Enabled"
-msgstr "Įjungta"
+msgstr ""
 
 #: ../libxfdashboard/view.c:398
 msgid "This flag indicates if is view is enabled and activable"
@@ -3282,11 +3282,11 @@ msgstr ""
 
 #: ../libxfdashboard/window-content.c:2082
 msgid "Suspended"
-msgstr "Pristabdytas"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2083
 msgid "Is this window suspended"
-msgstr "Ar šis langas pristabdytas"
+msgstr ""
 
 #: ../libxfdashboard/window-content.c:2090
 msgid "Color to draw outline of mapped windows with"
@@ -3381,11 +3381,11 @@ msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1905
 msgid "Current workspace"
-msgstr "Esama darbo sritis"
+msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1906
 msgid "The current workspace whose windows are shown"
-msgstr "Esama darbo sritis, kurios langai yra rodomi"
+msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1921
 msgid ""
@@ -3412,7 +3412,7 @@ msgstr ""
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2158
 msgid "Windows"
-msgstr "Langai"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:620
 #, c-format
@@ -3421,27 +3421,27 @@ msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:898
 msgid "Active window"
-msgstr "Aktyvus langas"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:899
 msgid "The current active window"
-msgstr "Esamas aktyvus langas"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:905
 msgid "Active workspace"
-msgstr "Aktyvi darbo sritis"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:906
 msgid "The current active workspace"
-msgstr "Esama aktyvi darbo sritis"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:912
 msgid "Primary monitor"
-msgstr "Pirminis monitorius"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:913
 msgid "The current primary monitor"
-msgstr "Esamas pirminis monitorius"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker-monitor.c:282
 msgid "Monitor index"
@@ -3457,7 +3457,7 @@ msgstr ""
 
 #: ../libxfdashboard/window-tracker-monitor.c:291
 msgid "Whether this monitor is the primary one"
-msgstr "Ar šis monitorius yra pirminis"
+msgstr ""
 
 #: ../libxfdashboard/window-tracker-window.c:86
 msgid ""
@@ -3503,7 +3503,7 @@ msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1278
 msgid "Show current monitor only"
-msgstr "Rodyti tik esamą monitorių"
+msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1279
 msgid "Show only windows of the monitor where this actor is placed"
@@ -3512,11 +3512,11 @@ msgstr ""
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:313 ../plugins/clock-view/plugin.c:311
 msgid "Clock"
-msgstr "Laikrodis"
+msgstr ""
 
 #: ../plugins/clock-view/clock-view-settings.c:233
 msgid "Hour color"
-msgstr "Valandų spalva"
+msgstr ""
 
 #: ../plugins/clock-view/clock-view-settings.c:234
 msgid "Color to draw the hour hand with"
@@ -3524,7 +3524,7 @@ msgstr ""
 
 #: ../plugins/clock-view/clock-view-settings.c:240
 msgid "Minute color"
-msgstr "Minučių spalva"
+msgstr ""
 
 #: ../plugins/clock-view/clock-view-settings.c:241
 msgid "Color to draw the minute hand with"
@@ -3549,7 +3549,7 @@ msgstr ""
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:208
 msgid "Hour color:"
-msgstr "Valandų spalva:"
+msgstr ""
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
@@ -3558,7 +3558,7 @@ msgstr ""
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
 msgid "Minute color:"
-msgstr "Minučių spalva:"
+msgstr ""
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
@@ -3567,7 +3567,7 @@ msgstr ""
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
 msgid "Second color:"
-msgstr "Sekundžių spalva:"
+msgstr ""
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
@@ -3576,7 +3576,7 @@ msgstr ""
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
 msgid "Background color:"
-msgstr "Fono spalva:"
+msgstr ""
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
@@ -3584,7 +3584,7 @@ msgstr ""
 
 #: ../plugins/clock-view/plugin.c:312
 msgid "Adds new a view showing a clock"
-msgstr "Prideda naują rodinį, kuris rodo laikrodį"
+msgstr ""
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:213
@@ -3702,7 +3702,7 @@ msgstr ""
 
 #: ../plugins/hot-corner/hot-corner-settings.c:236
 msgid "Activation corner"
-msgstr "Aktyvavimo kampas"
+msgstr ""
 
 #: ../plugins/hot-corner/hot-corner-settings.c:237
 msgid ""
@@ -3719,7 +3719,7 @@ msgstr ""
 
 #: ../plugins/hot-corner/hot-corner-settings.c:252
 msgid "Activation duration"
-msgstr "Aktyvavimo trukmė"
+msgstr ""
 
 #: ../plugins/hot-corner/hot-corner-settings.c:253
 msgid ""
@@ -3750,21 +3750,21 @@ msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
-msgstr "s"
+msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:367
 msgid "ms"
-msgstr "ms"
+msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:124
 #: ../settings/general.c:371
 msgid "Immediately"
-msgstr "Nedelsiant"
+msgstr ""
 
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:304
 msgid "Activation corner:"
-msgstr "Aktyvavimo kampas"
+msgstr ""
 
 #. Add widget to choose activation radius
 #: ../plugins/hot-corner/plugin.c:340
@@ -3788,31 +3788,31 @@ msgstr ""
 
 #: ../settings/general.c:116
 msgid "Do nothing"
-msgstr "Nieko nedaryti"
+msgstr ""
 
 #: ../settings/general.c:117
 msgid "Windows view"
-msgstr "Langų rodinys"
+msgstr ""
 
 #: ../settings/general.c:118
 msgid "Applications view"
-msgstr "Programų rodinys"
+msgstr ""
 
 #: ../settings/general.c:125
 msgid "High"
-msgstr "Aukšta"
+msgstr ""
 
 #: ../settings/general.c:126
 msgid "Normal"
-msgstr "Normali"
+msgstr ""
 
 #: ../settings/general.c:127
 msgid "Low"
-msgstr "Žema"
+msgstr ""
 
 #: ../settings/general.c:312
 msgid "seconds"
-msgstr "sekundžių"
+msgstr ""
 
 #: ../settings/general.c:707 ../settings/plugins.c:1112
 #: ../settings/themes.c:913
@@ -3827,17 +3827,17 @@ msgstr ""
 #: ../settings/plugins.c:223
 #, c-format
 msgid "Configure plugin: %s"
-msgstr "Konfigūruoti įskiepį: %s"
+msgstr ""
 
 #: ../settings/plugins.c:531
 msgid "Could not set list of enabled plugins!"
-msgstr "Nepavyko nustatyti įjungtų įskiepių sąrašo!"
+msgstr ""
 
 #. Show error message
 #: ../settings/plugins.c:746
 #, c-format
 msgid "Could not load plugin '%s' from '%s': %s"
-msgstr "Nepavyko įkelti įskiepio \"%s\" iš \"%s\": %s"
+msgstr ""
 
 #. Create error message to store in list
 #: ../settings/plugins.c:752
@@ -3846,70 +3846,70 @@ msgid ""
 "<b>Plugin could not be loaded.</b>\n"
 "\n"
 "%s"
-msgstr "<b>Įskiepio įkelti nepavyko.</b>\n\n%s"
+msgstr ""
 
 #: ../settings/plugins.c:958
 msgid "Name"
-msgstr "Pavadinimas"
+msgstr ""
 
 #: ../settings/themes.c:784
 msgid "Theme"
-msgstr "Tema"
+msgstr ""
 
 #: ../settings/main.c:46
 msgid "Settings manager socket"
-msgstr "Nustatymų tvarkytuvės lizdas"
+msgstr ""
 
 #: ../settings/main.c:46
 msgid "SOCKET ID"
-msgstr "LIZDO ID"
+msgstr ""
 
 #: ../settings/main.c:47
 msgid "Version information"
-msgstr "Versijos informacija"
+msgstr ""
 
 #. Initialize GTK+
 #: ../settings/main.c:57
 msgid "."
-msgstr "."
+msgstr ""
 
 #: ../settings/main.c:61
 #, c-format
 msgid ""
 "%s: %s\n"
 "Try %s --help to see a full list of available command line options.\n"
-msgstr "%s: %s\nBandykite %s --help, norėdami pamatyti visą prieinamų komandų eilutės parinkčių sąrašą.\n"
+msgstr ""
 
 #: ../settings/main.c:84
 #, c-format
 msgid "Failed to initialize xfconf: %s"
-msgstr "Nepavyko inicijuoti xfconf: %s"
+msgstr ""
 
 #: ../settings/main.c:96
 msgid "Could not create the settings dialog."
-msgstr "Nepavyko sukurti nustatymų dialogo."
+msgstr ""
 
 #: ../settings/settings.c:124
 #, c-format
 msgid "Could not find UI file '%s'."
-msgstr "Nepavyko rasti naudotojo sąsajos failo \"%s\"."
+msgstr ""
 
 #: ../settings/settings.c:138
 #, c-format
 msgid "Could not load UI resources from '%s': %s"
-msgstr "Nepavyko įkelti naudotojo sąsajos išteklių iš \"%s\": %s"
+msgstr ""
 
 #: ../settings/settings.c:291 ../settings/settings.c:325
 msgid "Could not get dialog from UI file."
-msgstr "Nepavyko gauti dialogo iš naudotojo sąsajos failo."
+msgstr ""
 
 #: ../xfdashboard/main.c:172
 msgid "Cannot restart application: Failed to quit running instance"
-msgstr "Nepavyksta iš naujo paleisti programos: Nepavyko baigti vykdomo egzemplioriaus darbą"
+msgstr ""
 
 #: ../xfdashboard/main.c:212
 msgid "Failed to create application instance"
-msgstr "Nepavyko sukurti programos egzempliorių"
+msgstr ""
 
 #: ../xfdashboard/main.c:219
 #, c-format
@@ -3919,7 +3919,7 @@ msgstr ""
 #: ../xfdashboard/main.c:249
 #, c-format
 msgid "Initializing application failed with status code %d"
-msgstr "Programos inicijavimas nepavyko su būsenos kodu %d"
+msgstr ""
 
 #: ../xfdashboard/main.c:277
 msgid "Initializing clutter failed!"
