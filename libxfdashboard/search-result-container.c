@@ -1346,7 +1346,7 @@ static void xfdashboard_search_result_container_class_init(XfdashboardSearchResu
 						G_STRUCT_OFFSET(XfdashboardSearchResultContainerClass, item_clicked),
 						NULL,
 						NULL,
-						_xfdashboard_marshal_VOID__OBJECT_OBJECT,
+						_xfdashboard_marshal_VOID__VARIANT_OBJECT,
 						G_TYPE_NONE,
 						2,
 						G_TYPE_VARIANT,
