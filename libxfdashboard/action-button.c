@@ -548,7 +548,7 @@ void xfdashboard_action_button_set_target(XfdashboardActionButton *self, const g
 }
 
 /**
- * xfdashboard_action_button_get_target:
+ * xfdashboard_action_button_get_action:
  * @self: A #XfdashboardActionButton
  *
  * Retrieves the action's signal name of @self which will be performed at target.
