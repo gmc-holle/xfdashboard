@@ -98,6 +98,43 @@ typedef struct
 	gchar	*desktopFile;
 } XfdashboardDesktopAppInfoChildSetupData;
 
+/* Get or update path to executable file for this application */
+static void __xfdashboard_desktop_app_info_update_binary_executable(XfdashboardDesktopAppInfo *self)
+{
+	XfdashboardDesktopAppInfoPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self));
+
+	priv=self->priv;
+
+	/* Get path to executable file for this application by striping white-space from
+	 * the beginning of the command to execute when launching up to first white-space
+	 * after the first command-line argument (which is the command).
+	 */
+	if(priv->binaryExecutable)
+	{
+		g_free(priv->binaryExecutable);
+		priv->binaryExecutable=NULL;
+	}
+
+	if(priv->item)
+	{
+		const gchar						*command;
+		const gchar						*commandStart;
+		const gchar						*commandEnd;
+
+		command=garcon_menu_item_get_command(priv->item);
+
+		while(*command==' ') command++;
+		commandStart=command;
+
+		while(*command && *command!=' ') command++;
+		commandEnd=command;
+
+		priv->binaryExecutable=g_strndup(commandStart, commandEnd-commandStart);
+	}
+}
+
 /* (Re-)Load application actions */
 static void _xfdashboard_desktop_app_info_update_actions(XfdashboardDesktopAppInfo *self)
 {
@@ -255,32 +292,8 @@ static void _xfdashboard_desktop_app_info_set_file(XfdashboardDesktopAppInfo *se
 															self);
 		}
 
-		/* Get path to executable file for this application by striping white-space from
-		 * the beginning of the command to execute when launching up to first white-space
-		 * after the first command-line argument (which is the command).
-		 */
-		if(priv->binaryExecutable)
-		{
-			g_free(priv->binaryExecutable);
-			priv->binaryExecutable=NULL;
-		}
-
-		if(priv->item)
-		{
-			const gchar						*command;
-			const gchar						*commandStart;
-			const gchar						*commandEnd;
-
-			command=garcon_menu_item_get_command(priv->item);
-
-			while(*command==' ') command++;
-			commandStart=command;
-
-			while(*command && *command!=' ') command++;
-			commandEnd=command;
-
-			priv->binaryExecutable=g_strndup(commandStart, commandEnd-commandStart);
-		}
+		/* Get path to executable file for this application */
+		__xfdashboard_desktop_app_info_update_binary_executable(self);
 
 		/* Get application actions */
 		_xfdashboard_desktop_app_info_update_actions(self);
@@ -1481,6 +1494,9 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 						error ? error->message : _("Unknown error"));
 			if(error) g_error_free(error);
 		}
+
+		/* Update path to executable file for this application */
+		__xfdashboard_desktop_app_info_update_binary_executable(self);
 
 		/* Reload application actions */
 		_xfdashboard_desktop_app_info_update_actions(self);
