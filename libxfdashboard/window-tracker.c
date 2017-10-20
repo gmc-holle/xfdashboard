@@ -819,7 +819,7 @@ XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_get_workspace_by_n
 }
 
 /**
- * xfdashboard_window_tracker_get_monitors_count:
+ * xfdashboard_window_tracker_supports_multiple_monitors:
  * @self: A #XfdashboardWindowTracker
  *
  * Determines if window tracker at @self supports multiple monitors.
