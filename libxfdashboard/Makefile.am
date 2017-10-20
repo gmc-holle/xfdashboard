@@ -46,6 +46,7 @@ libxfdashboard_la_headers = \
 	css-selector.h \
 	debug.h \
 	desktop-app-info.h \
+	desktop-app-info-action.h \
 	drag-action.h \
 	drop-action.h \
 	dynamic-table-layout.h \
@@ -121,6 +122,7 @@ libxfdashboard_la_SOURCES = \
 	css-selector.c \
 	debug.c \
 	desktop-app-info.c \
+	desktop-app-info-action.c \
 	drag-action.c \
 	drop-action.c \
 	dynamic-table-layout.c \
