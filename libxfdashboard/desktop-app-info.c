@@ -29,6 +29,7 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/desktop-app-info.h>
+#include <libxfdashboard/desktop-app-info-action.h>
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -60,6 +61,8 @@ struct _XfdashboardDesktopAppInfoPrivate
 	guint				itemChangedID;
 
 	gchar				*binaryExecutable;
+
+	GList				*actions;
 };
 
 /* Properties */
@@ -94,6 +97,72 @@ typedef struct
 	gchar	*startupNotificationID;
 	gchar	*desktopFile;
 } XfdashboardDesktopAppInfoChildSetupData;
+
+/* (Re-)Load application actions */
+static void _xfdashboard_desktop_app_info_update_actions(XfdashboardDesktopAppInfo *self)
+{
+	XfdashboardDesktopAppInfoPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self));
+
+	priv=self->priv;
+
+	/* Get application actions for menu item (desktop entry) */
+	if(priv->actions)
+	{
+		g_list_free_full(priv->actions, g_object_unref);
+		priv->actions=NULL;
+	}
+
+#if GARCON_CHECK_VERSION(0, 6, 0)
+	if(priv->item)
+	{
+		GList								*itemActions;
+		GList								*iter;
+		const gchar							*itemActionName;
+		GarconMenuItemAction				*itemAction;
+		XfdashboardDesktopAppInfoAction		*action;
+
+		itemActions=garcon_menu_item_get_actions(priv->item);
+		for(iter=itemActions; iter; iter=g_list_next(iter))
+		{
+			itemActionName=(const gchar*)(iter->data);
+			if(!itemActionName)
+			{
+				g_warning(_("Cannot create application action because of empty action name for desktop ID '%s'"),
+							priv->desktopID);
+				continue;
+			}
+
+			itemAction=garcon_menu_item_get_action(priv->item, itemActionName);
+			if(!itemAction)
+			{
+				g_warning(_("Cannot create application action for desktop ID '%s'"),
+							priv->desktopID);
+				continue;
+			}
+
+			action=XFDASHBOARD_DESKTOP_APP_INFO_ACTION
+					(
+						g_object_new(XFDASHBOARD_TYPE_DESKTOP_APP_INFO_ACTION,
+										"name", garcon_menu_item_action_get_name(itemAction),
+										"icon-name", garcon_menu_item_action_get_icon_name(itemAction),
+										"command", garcon_menu_item_action_get_command(itemAction),
+										NULL)
+					);
+			priv->actions=g_list_prepend(priv->actions, action);
+
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Created application action '%s' for desktop ID '%s'",
+								xfdashboard_desktop_app_info_action_get_name(action),
+								priv->desktopID);
+		}
+		priv->actions=g_list_reverse(priv->actions);
+
+		g_list_free(itemActions);
+	}
+#endif
+}
 
 /* Menu item has changed */
 static void _xfdashboard_desktop_app_info_on_item_changed(XfdashboardDesktopAppInfo *self,
@@ -212,6 +281,9 @@ static void _xfdashboard_desktop_app_info_set_file(XfdashboardDesktopAppInfo *se
 
 			priv->binaryExecutable=g_strndup(commandStart, commandEnd-commandStart);
 		}
+
+		/* Get application actions */
+		_xfdashboard_desktop_app_info_update_actions(self);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardDesktopAppInfoProperties[PROP_FILE]);
@@ -1100,6 +1172,12 @@ static void _xfdashboard_desktop_app_info_dispose(GObject *inObject)
 	XfdashboardDesktopAppInfoPrivate	*priv=self->priv;
 
 	/* Release allocated variables */
+	if(priv->actions)
+	{
+		g_list_free_full(priv->actions, g_object_unref);
+		priv->actions=NULL;
+	}
+
 	if(priv->binaryExecutable)
 	{
 		g_free(priv->binaryExecutable);
@@ -1256,6 +1334,7 @@ static void xfdashboard_desktop_app_info_init(XfdashboardDesktopAppInfo *self)
 	priv->item=NULL;
 	priv->itemChangedID=0;
 	priv->binaryExecutable=NULL;
+	priv->actions=NULL;
 }
 
 /* IMPLEMENTATION: Public API */
@@ -1402,6 +1481,9 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 						error ? error->message : _("Unknown error"));
 			if(error) g_error_free(error);
 		}
+
+		/* Reload application actions */
+		_xfdashboard_desktop_app_info_update_actions(self);
 	}
 
 	/* If reload was successful emit changed signal */
