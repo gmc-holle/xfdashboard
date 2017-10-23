@@ -441,8 +441,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_activate_windo
 }
 
 /* User selected to open a new window or to launch that application at pop-up menu */
-static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(XfdashboardPopupMenu *inPopupMenu,
-																			XfdashboardPopupMenuItem *inMenuItem,
+static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(XfdashboardPopupMenuItem *inMenuItem,
 																			gpointer inUserData)
 {
 	GAppInfo							*appInfo;
@@ -450,7 +449,6 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(Xfdashb
 	GIcon								*gicon;
 	const gchar							*iconName;
 
-	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU(inPopupMenu));
 	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
 	g_return_if_fail(G_IS_APP_INFO(inUserData));
 
@@ -476,7 +474,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(Xfdashb
 		if(!g_app_info_launch(appInfo, NULL, context, &error))
 		{
 			/* Show notification about failed application launch */
-			xfdashboard_notify(CLUTTER_ACTOR(inPopupMenu),
+			xfdashboard_notify(CLUTTER_ACTOR(inMenuItem),
 								iconName,
 								_("Launching application '%s' failed: %s"),
 								g_app_info_get_display_name(appInfo),
@@ -489,7 +487,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(Xfdashb
 			else
 			{
 				/* Show notification about successful application launch */
-				xfdashboard_notify(CLUTTER_ACTOR(inPopupMenu),
+				xfdashboard_notify(CLUTTER_ACTOR(inMenuItem),
 									iconName,
 									_("Application '%s' launched"),
 									g_app_info_get_display_name(appInfo));
@@ -511,8 +509,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(Xfdashb
 }
 
 /* User selected to remove application from favourites via pop-up menu */
-static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_favourite(XfdashboardPopupMenu *inPopupMenu,
-																						XfdashboardPopupMenuItem *inMenuItem,
+static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_favourite(XfdashboardPopupMenuItem *inMenuItem,
 																						gpointer inUserData)
 {
 	XfdashboardApplicationButton		*appButton;
@@ -521,7 +518,6 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_fa
 	XfdashboardQuicklaunch				*self;
 	XfdashboardQuicklaunchPrivate		*priv;
 
-	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU(inPopupMenu));
 	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
 
@@ -580,8 +576,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_fa
 }
 
 /* User selected to add application to favourites via pop-up menu */
-static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_add_to_favourite(XfdashboardPopupMenu *inPopupMenu,
-																					XfdashboardPopupMenuItem *inMenuItem,
+static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_add_to_favourite(XfdashboardPopupMenuItem *inMenuItem,
 																					gpointer inUserData)
 {
 	XfdashboardApplicationButton		*appButton;
@@ -590,7 +585,6 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_add_to_favouri
 	XfdashboardQuicklaunch				*self;
 	XfdashboardQuicklaunchPrivate		*priv;
 
-	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU(inPopupMenu));
 	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
 
@@ -707,7 +701,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_application_ac
 			/* Get icon of application */
 			iconName=NULL;
 
-			gicon=g_app_info_get_icon(appInfo);
+			gicon=g_app_info_get_icon(G_APP_INFO(appInfo));
 			if(gicon) iconName=g_icon_to_string(gicon);
 
 			/* Show notification about successful launch of action */
