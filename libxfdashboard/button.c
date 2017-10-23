@@ -150,12 +150,6 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 	g_type_class_add_private(klass, sizeof(XfdashboardButtonPrivate));
 
 	/* Define properties */
-	/**
-	 * XfdashboardPopupMenu:destroy-on-cancel:
-	 *
-	 * A flag indicating if this pop-up menu should be destroyed automatically
-	 * when it is cancelled.
-	 */
 	XfdashboardButtonProperties[PROP_STYLE]=
 		g_param_spec_override("button-style",
 								g_object_class_find_property(gobjectClass, "label-style"));
