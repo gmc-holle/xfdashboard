@@ -43,6 +43,7 @@
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/desktop-app-info.h>
+#include <libxfdashboard/desktop-app-info-action.h>
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/application-tracker.h>
 #include <libxfdashboard/window-tracker.h>
@@ -654,6 +655,73 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_add_to_favouri
 	}
 }
 
+
+/* User selected to execute an application action */
+static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_application_action(XfdashboardPopupMenuItem *inMenuItem,
+																						gpointer inUserData)
+{
+	XfdashboardQuicklaunch				*self;
+	XfdashboardDesktopAppInfo			*appInfo;
+	XfdashboardDesktopAppInfoAction		*appAction;
+	GError								*error;
+
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
+	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(inUserData));
+
+	self=XFDASHBOARD_QUICKLAUNCH(inUserData);
+	error=NULL;
+
+	/* Get application and action to execute */
+	appInfo=XFDASHBOARD_DESKTOP_APP_INFO(g_object_get_data(G_OBJECT(inMenuItem), "popup-menu-item-app-info"));
+	if(!appInfo)
+	{
+		g_warning(_("Could not get application to execute action"));
+		return;
+	}
+
+	appAction=XFDASHBOARD_DESKTOP_APP_INFO_ACTION(g_object_get_data(G_OBJECT(inMenuItem), "popup-menu-item-app-action"));
+	if(!appInfo)
+	{
+		g_warning(_("Could not get application action for application '%s'"),
+					g_app_info_get_display_name(G_APP_INFO(appInfo)));
+		return;
+	}
+
+	/* Execute action */
+	if(!xfdashboard_desktop_app_info_launch_action(appInfo, appAction, NULL, &error))
+	{
+		/* Show notification about failed launch of action */
+		xfdashboard_notify(CLUTTER_ACTOR(self),
+							"dialog-error",
+							_("Could not execute action '%s' for application '%s': %s"),
+							xfdashboard_desktop_app_info_action_get_name(appAction),
+							g_app_info_get_display_name(G_APP_INFO(appInfo)),
+							error ? error->message : _("Unknown error"));
+		g_error_free(error);
+	}
+		else
+		{
+			GIcon						*gicon;
+			const gchar					*iconName;
+
+			/* Get icon of application */
+			iconName=NULL;
+
+			gicon=g_app_info_get_icon(appInfo);
+			if(gicon) iconName=g_icon_to_string(gicon);
+
+			/* Show notification about successful launch of action */
+			xfdashboard_notify(CLUTTER_ACTOR(self),
+								iconName,
+								_("Executed action '%s' for application '%s'"),
+								xfdashboard_desktop_app_info_action_get_name(appAction),
+								g_app_info_get_display_name(G_APP_INFO(appInfo)));
+
+			/* Release allocated resources */
+			g_object_unref(gicon);
+		}
+}
+
 /* A right-click might have happened on an application icon (favourite) in quicklaunch */
 static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklaunch *self,
 																ClutterActor *inActor,
@@ -797,7 +865,48 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 								appInfo);
 		}
 
-// TODO: Add actions from GAppInfo
+		/* Add application actions */
+		if(XFDASHBOARD_IS_DESKTOP_APP_INFO(appInfo))
+		{
+			GList									*appActions;
+			const GList								*iter;
+
+			appActions=xfdashboard_desktop_app_info_get_actions(XFDASHBOARD_DESKTOP_APP_INFO(appInfo));
+			for(iter=appActions; iter; iter=g_list_next(iter))
+			{
+				XfdashboardDesktopAppInfoAction		*appAction;
+				const gchar							*iconName;
+
+				/* Get currently iterated application action */
+				appAction=XFDASHBOARD_DESKTOP_APP_INFO_ACTION(iter->data);
+				if(!appAction) continue;
+
+				/* Get icon name to determine style of pop-up menu item */
+				iconName=xfdashboard_desktop_app_info_action_get_icon_name(appAction);
+
+				/* Create pop-up menu item. If icon name is available then set
+				 * style to both (text+icon) and set icon. If icon name is NULL
+				 * then keep style at text-only.
+				 */
+				menuItem=xfdashboard_popup_menu_item_button_new();
+				xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), xfdashboard_desktop_app_info_action_get_name(appAction));
+				if(iconName)
+				{
+					xfdashboard_label_set_icon_name(XFDASHBOARD_LABEL(menuItem), iconName);
+					xfdashboard_label_set_style(XFDASHBOARD_LABEL(menuItem), XFDASHBOARD_LABEL_STYLE_BOTH);
+				}
+				clutter_actor_set_x_expand(menuItem, TRUE);
+				xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+
+				g_object_set_data_full(G_OBJECT(menuItem), "popup-menu-item-app-info", g_object_ref(appInfo), g_object_unref);
+				g_object_set_data_full(G_OBJECT(menuItem), "popup-menu-item-app-action", g_object_ref(appAction), g_object_unref);
+
+				g_signal_connect(menuItem,
+									"activated",
+									G_CALLBACK(_xfdashboard_quicklaunch_on_favourite_popup_menu_item_application_action),
+									self);
+			}
+		}
 
 		/* Add "Remove from favourites" if application button is for a favourite application */
 		if(xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(appButton), "favourite-app"))

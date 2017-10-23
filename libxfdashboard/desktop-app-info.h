@@ -29,6 +29,7 @@
 #error "Only <libxfdashboard/libxfdashboard.h> can be included directly."
 #endif
 
+#include <libxfdashboard/desktop-app-info-action.h>
 #include <garcon/garcon.h>
 
 G_BEGIN_DECLS
@@ -77,6 +78,16 @@ gboolean xfdashboard_desktop_app_info_is_valid(XfdashboardDesktopAppInfo *self);
 
 GFile* xfdashboard_desktop_app_info_get_file(XfdashboardDesktopAppInfo *self);
 gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self);
+
+GList* xfdashboard_desktop_app_info_get_actions(XfdashboardDesktopAppInfo *self);
+gboolean xfdashboard_desktop_app_info_launch_action(XfdashboardDesktopAppInfo *self,
+													XfdashboardDesktopAppInfoAction *inAction,
+													GAppLaunchContext *inContext,
+													GError **outError);
+gboolean xfdashboard_desktop_app_info_launch_action_by_name(XfdashboardDesktopAppInfo *self,
+															const gchar *inActionName,
+															GAppLaunchContext *inContext,
+															GError **outError);
 
 G_END_DECLS
 

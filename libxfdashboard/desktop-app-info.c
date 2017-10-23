@@ -29,7 +29,6 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/desktop-app-info.h>
-#include <libxfdashboard/desktop-app-info-action.h>
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -391,37 +390,35 @@ static void _xfdashboard_desktop_app_info_expand_macros_add_uri(const gchar *inU
 }
 
 static gboolean _xfdashboard_desktop_app_info_expand_macros(XfdashboardDesktopAppInfo *self,
+															const gchar *inCommand,
 															GList *inURIs,
 															GString *ioExpanded)
 {
 	XfdashboardDesktopAppInfoPrivate	*priv;
-	const gchar							*command;
 	gboolean							filesOrUriAdded;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+	g_return_val_if_fail(inCommand && *inCommand, FALSE);
 	g_return_val_if_fail(ioExpanded, FALSE);
 
 	priv=self->priv;
 
-	/* Get command-line whose macros to expand */
-	command=garcon_menu_item_get_command(priv->item);
-
 	/* Iterate through command-line char by char and expand known macros */
 	filesOrUriAdded=FALSE;
 
-	while(*command)
+	while(*inCommand)
 	{
 		/* Check if character is '%' indicating that a macro could follow ... */
-		if(*command=='%')
+		if(*inCommand=='%')
 		{
 			/* Move to next character to determin which macro to expand
-			 * but check also that we have not reached end of command-line.
+			 * but check also that we have not reached end of inCommand-line.
 			 */
-			command++;
-			if(!*command) break;
+			inCommand++;
+			if(!*inCommand) break;
 
 			/* Expand macro */
-			switch(*command)
+			switch(*inCommand)
 			{
 				case 'f':
 					if(inURIs) _xfdashboard_desktop_app_info_expand_macros_add_file(inURIs->data, ioExpanded);
@@ -510,14 +507,14 @@ static gboolean _xfdashboard_desktop_app_info_expand_macros(XfdashboardDesktopAp
 			}
 		}
 			/* ... otherwise just add the character */
-			else g_string_append_c(ioExpanded, *command);
+			else g_string_append_c(ioExpanded, *inCommand);
 
-		/* Continue with next character in command-line */
-		command++;
+		/* Continue with next character in inCommand-line */
+		inCommand++;
 	}
 
 	/* If URIs was provided but not used (exec key does not contain %f, %F, %u, %U)
-	 * append first URI to expanded command-line.
+	 * append first URI to expanded inCommand-line.
 	 */
 	if(inURIs && !filesOrUriAdded)
 	{
@@ -567,6 +564,7 @@ static void _xfdashboard_desktop_app_info_on_child_spawned(gpointer inUserData)
 }
 
 static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(XfdashboardDesktopAppInfo *self,
+																		const gchar *inCommand,
 																		GList *inURIs,
 																		GAppLaunchContext *inContext,
 																		GError **outError)
@@ -585,6 +583,7 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 	XfdashboardDesktopAppInfoChildSetupData		childSetup;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+	g_return_val_if_fail(inCommand && *inCommand, FALSE);
 	g_return_val_if_fail(!inContext || G_IS_APP_LAUNCH_CONTEXT(inContext), FALSE);
 	g_return_val_if_fail(outError && *outError==NULL, FALSE);
 
@@ -600,7 +599,7 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 	/* Get command-line with expanded macros */
 	expanded=g_string_new(NULL);
 	if(!expanded ||
-		!_xfdashboard_desktop_app_info_expand_macros(self, inURIs, expanded))
+		!_xfdashboard_desktop_app_info_expand_macros(self, inCommand, inURIs, expanded))
 	{
 		/* Set error */
 		g_set_error_literal(outError,
@@ -1042,17 +1041,19 @@ static gboolean _xfdashboard_desktop_app_info_gappinfo_launch(GAppInfo *inAppInf
 																GAppLaunchContext *inContext,
 																GError **outError)
 {
-	XfdashboardDesktopAppInfo	*self;
-	GList						*iter;
-	GList						*uris;
-	gchar						*uri;
-	gboolean					result;
+	XfdashboardDesktopAppInfo			*self;
+	XfdashboardDesktopAppInfoPrivate	*priv;
+	GList								*iter;
+	GList								*uris;
+	gchar								*uri;
+	gboolean							result;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(inAppInfo), FALSE);
 	g_return_val_if_fail(!inContext || G_IS_APP_LAUNCH_CONTEXT(inContext), FALSE);
 	g_return_val_if_fail(outError && *outError==NULL, FALSE);
 
 	self=XFDASHBOARD_DESKTOP_APP_INFO(inAppInfo);
+	priv=self->priv;
 	uris=NULL;
 
 	/* Create list of URIs for files */
@@ -1065,6 +1066,7 @@ static gboolean _xfdashboard_desktop_app_info_gappinfo_launch(GAppInfo *inAppInf
 
 	/* Call function to launch application of XfdashboardDesktopAppInfo with URIs */
 	result=_xfdashboard_desktop_app_info_launch_appinfo_internal(self,
+																	garcon_menu_item_get_command(priv->item),
 																	uris,
 																	inContext,
 																	outError);
@@ -1082,24 +1084,26 @@ static gboolean _xfdashboard_desktop_app_info_gappinfo_launch_uris(GAppInfo *inA
 																	GAppLaunchContext *inContext,
 																	GError **outError)
 {
-	XfdashboardDesktopAppInfo	*self;
-	gboolean					result;
+	XfdashboardDesktopAppInfo			*self;
+	XfdashboardDesktopAppInfoPrivate	*priv;
+	gboolean							result;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(inAppInfo), FALSE);
 	g_return_val_if_fail(!inContext || G_IS_APP_LAUNCH_CONTEXT(inContext), FALSE);
 	g_return_val_if_fail(outError && *outError==NULL, FALSE);
 
 	self=XFDASHBOARD_DESKTOP_APP_INFO(inAppInfo);
+	priv=self->priv;
 
 	/* Call function to launch application of XfdashboardDesktopAppInfo with URIs */
 	result=_xfdashboard_desktop_app_info_launch_appinfo_internal(self,
+																	garcon_menu_item_get_command(priv->item),
 																	inURIs,
 																	inContext,
 																	outError);
 
 	return(result);
 }
-
 
 /* Check if the application info should be shown */
 static gboolean _xfdashboard_desktop_app_info_gappinfo_should_show(GAppInfo *inAppInfo)
@@ -1519,5 +1523,105 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 	}
 
 	/* Return success result */
+	return(success);
+}
+
+/* Get list of application actions */
+GList* xfdashboard_desktop_app_info_get_actions(XfdashboardDesktopAppInfo *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+
+	/* Return the create copy of list of application actions */
+	return(self->priv->actions);
+}
+
+/* Launch application action at this application */
+gboolean xfdashboard_desktop_app_info_launch_action(XfdashboardDesktopAppInfo *self,
+													XfdashboardDesktopAppInfoAction *inAction,
+													GAppLaunchContext *inContext,
+													GError **outError)
+{
+	const gchar						*actionName;
+	gboolean						success;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO_ACTION(inAction), FALSE);
+	g_return_val_if_fail(!inContext || G_IS_APP_LAUNCH_CONTEXT(inContext), FALSE);
+	g_return_val_if_fail(outError && *outError==NULL, FALSE);
+
+	/* Launch by application action's name as it will lookup a maybe updated
+	 * action, e.g. when reloaded in the meantime.
+	 */
+	actionName=xfdashboard_desktop_app_info_action_get_name(inAction);
+	success=xfdashboard_desktop_app_info_launch_action_by_name(self,
+																actionName,
+																inContext,
+																outError);
+
+	/* Return success result */
+	return(success);
+}
+
+gboolean xfdashboard_desktop_app_info_launch_action_by_name(XfdashboardDesktopAppInfo *self,
+															const gchar *inActionName,
+															GAppLaunchContext *inContext,
+															GError **outError)
+{
+	XfdashboardDesktopAppInfoPrivate	*priv;
+	XfdashboardDesktopAppInfoAction		*action;
+	GList								*iter;
+	gboolean							success;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+	g_return_val_if_fail(inActionName && *inActionName, FALSE);
+	g_return_val_if_fail(!inContext || G_IS_APP_LAUNCH_CONTEXT(inContext), FALSE);
+	g_return_val_if_fail(outError && *outError==NULL, FALSE);
+
+	priv=self->priv;
+
+	/* Find application action data by name */
+	action=NULL;
+	for(iter=priv->actions; iter && !action; iter=g_list_next(iter))
+	{
+		XfdashboardDesktopAppInfoAction	*iterAction;
+
+		iterAction=XFDASHBOARD_DESKTOP_APP_INFO_ACTION(iter->data);
+		if(!iterAction) continue;
+
+		if(g_strcmp0(xfdashboard_desktop_app_info_action_get_name(iterAction), inActionName)==0)
+		{
+			action=iterAction;
+		}
+	}
+
+	if(!action)
+	{
+		/* Set error */
+		g_set_error(outError,
+					G_IO_ERROR,
+					G_IO_ERROR_NOT_FOUND,
+					_("Invalid application action '%s' to execute for desktop ID '%s'"),
+					inActionName,
+					priv->desktopID);
+
+		/* Return fail status */
+		return(FALSE);
+	}
+
+	/* Launch application action found */
+	success=_xfdashboard_desktop_app_info_launch_appinfo_internal(self,
+																	xfdashboard_desktop_app_info_action_get_command(action),
+																	NULL,
+																	inContext,
+																	outError);
+	if(!success)
+	{
+		g_warning(_("Could launch action '%s' for desktop ID '%s': %s"),
+					xfdashboard_desktop_app_info_action_get_name(action),
+					self->priv->desktopID,
+					(outError && *outError) ? (*outError)->message : _("Unknown error"));
+	}
+
+	/* Return success result of launching action */
 	return(success);
 }
