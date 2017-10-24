@@ -711,6 +711,9 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_application_ac
 								xfdashboard_desktop_app_info_action_get_name(appAction),
 								g_app_info_get_display_name(G_APP_INFO(appInfo)));
 
+			/* Quit application */
+			xfdashboard_application_suspend_or_quit(NULL);
+
 			/* Release allocated resources */
 			g_object_unref(gicon);
 		}
