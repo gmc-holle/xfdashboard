@@ -1144,6 +1144,9 @@ void xfdashboard_live_workspace_set_workspace(XfdashboardLiveWorkspace *self, Xf
 		window=xfdashboard_live_window_simple_get_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(child));
 		if(!window || !XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(window)) continue;
 
+		/* Do not destroy background image layer */
+		if(child==priv->backgroundImageLayer) continue;
+
 		/* Destroy window actor */
 		clutter_actor_destroy(child);
 	}
@@ -1250,6 +1253,7 @@ void xfdashboard_live_workspace_set_background_image_type(XfdashboardLiveWorkspa
 						if(backgroundWindow)
 						{
 							xfdashboard_live_window_simple_set_window(XFDASHBOARD_LIVE_WINDOW_SIMPLE(priv->backgroundImageLayer), backgroundWindow);
+							clutter_actor_show(priv->backgroundImageLayer);
 							XFDASHBOARD_DEBUG(self, ACTOR,
 												"Desktop window was found and set up as background image for workspace '%s'",
 												xfdashboard_window_tracker_workspace_get_name(priv->workspace));
