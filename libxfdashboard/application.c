@@ -574,6 +574,7 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	gboolean						optionRestart;
 	gboolean						optionToggle;
 	gchar							*optionSwitchToView;
+	gboolean						optionVersion;
 	GOptionEntry					entries[]=
 									{
 										{ "daemonize", 'd', 0, G_OPTION_ARG_NONE, &optionDaemonize, N_("Fork to background"), NULL },
@@ -581,6 +582,7 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 										{ "restart", 'r', 0, G_OPTION_ARG_NONE, &optionRestart, N_("Restart running instance"), NULL },
 										{ "toggle", 't', 0, G_OPTION_ARG_NONE, &optionToggle, N_("Toggles visibility if running instance was started in daemon mode otherwise it quits running non-daemon instance"), NULL },
 										{ "view", 0, 0, G_OPTION_ARG_STRING, &optionSwitchToView, N_("The ID of view to switch to on startup or resume"), "ID" },
+										{ "version", 'v', 0, G_OPTION_ARG_NONE, &optionVersion, N_("Show version"), NULL },
 										{ NULL }
 									};
 
@@ -595,6 +597,7 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	optionRestart=FALSE;
 	optionToggle=FALSE;
 	optionSwitchToView=NULL;
+	optionVersion=FALSE;
 
 	/* Setup command-line options */
 	context=g_option_context_new(N_(""));
@@ -685,6 +688,12 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	if(g_application_get_is_remote(G_APPLICATION(self)))
 	{
 		XFDASHBOARD_DEBUG(self, MISC, "Do not handle command-line parameters on remote application instance");
+
+		/* One exception is "--version" */
+		if(optionVersion)
+		{
+			g_print("Remote instance: %s-%s\n", PACKAGE_NAME, PACKAGE_VERSION);
+		}
 
 		/* Release allocated resources */
 		if(optionSwitchToView) g_free(optionSwitchToView);
@@ -806,6 +815,23 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 			else
 			{
 				g_warning(_("Cannot daemonized because a temporary new instance of application was forced."));
+			}
+	}
+
+	/* Handle options: version
+	 *
+	 * Show the version of this (maybe daemonized) instance.
+	 */
+	if(optionVersion)
+	{
+		if(priv->isDaemon)
+		{
+			g_print("Daemon instance: %s-%s\n", PACKAGE_NAME, PACKAGE_VERSION);
+		}
+			else
+			{
+				g_print("Version: %s-%s\n", PACKAGE_NAME, PACKAGE_VERSION);
+				return(XFDASHBOARD_APPLICATION_ERROR_QUIT);
 			}
 	}
 
