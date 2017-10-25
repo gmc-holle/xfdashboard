@@ -89,6 +89,8 @@ gboolean xfdashboard_desktop_app_info_launch_action_by_name(XfdashboardDesktopAp
 															GAppLaunchContext *inContext,
 															GError **outError);
 
+GList* xfdashboard_desktop_app_info_get_keywords(XfdashboardDesktopAppInfo *self);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_DESKTOP_APP_INFO__ */

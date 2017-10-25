@@ -64,6 +64,7 @@ struct _XfdashboardDesktopAppInfoPrivate
 	gchar				*binaryExecutable;
 
 	GList				*actions;
+	GList				*keywords;
 };
 
 /* Properties */
@@ -391,6 +392,93 @@ static void _xfdashboard_desktop_app_info_update_actions(XfdashboardDesktopAppIn
 #endif
 }
 
+/* (Re-)Load keywords */
+static void _xfdashboard_desktop_app_info_update_keywords(XfdashboardDesktopAppInfo *self)
+{
+	XfdashboardDesktopAppInfoPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self));
+
+	priv=self->priv;
+
+	/* Get application actions for menu item (desktop entry) */
+	if(priv->keywords)
+	{
+		g_list_free_full(priv->keywords, g_free);
+		priv->keywords=NULL;
+	}
+
+#if 0 /*GARCON_CHECK_VERSION(0, 6, 3)*/
+	if(priv->item)
+	{
+		const GList							*keywords;
+
+		/* Get keywords from garcon menu item and create a deep copy of list */
+		keywords=garcon_menu_item_get_keywords(priv->item);
+		for(iter=keywords; iter; iter=g_list_next(iter))
+		{
+			/* Create copy of list entry and prepend to new list */
+			priv->keywords=g_list_prepend(priv->keywords, g_strdup((const gchar*)(iter->data)));
+
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Added keyword '%s' for desktop ID '%s'",
+								(const gchar*)(iter->data),
+								priv->desktopID);
+		}
+		priv->keywords=g_list_reverse(priv->keywords);
+	}
+#else
+	/* Garcon does not provide an accessor function to get keywords for desktop
+	 * entries in any official released version yet. So load them ourselve from
+	 * secondary source.
+	 */
+	if(_xfdashboard_desktop_app_info_load_secondary_source(self))
+	{
+		gchar								**keywords;
+		gchar								**iter;
+		GError								*error;
+
+		error=NULL;
+
+		/* Get keywords from secondary source */
+		keywords=g_key_file_get_string_list(priv->secondarySource,
+												G_KEY_FILE_DESKTOP_GROUP,
+												"Keywords",
+												NULL,
+												&error);
+		if(!keywords)
+		{
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Could not fetch list of keywords from secondary source for desktop ID '%s': %s",
+								priv->desktopID,
+								error ? error->message : _("Unknown error"));
+
+			/* Release allocated resources */
+			if(error) g_error_free(error);
+
+			/* Return from here as we cannot collect any list of actions */
+			return;
+		}
+
+		/* Get action currently iterated from string list of secondary source */
+		for(iter=keywords; *iter; iter++)
+		{
+			/* Create copy a currently iterated keyword and prepend to list */
+			priv->keywords=g_list_prepend(priv->keywords, g_strdup(*iter));
+
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Added keyword '%s' for desktop ID '%s' from secondary source",
+								*iter,
+								priv->desktopID);
+		}
+		priv->keywords=g_list_reverse(priv->keywords);
+
+		/* Release allocated resources */
+		if(keywords) g_strfreev(keywords);
+	}
+#endif
+}
+
 /* Menu item has changed */
 static void _xfdashboard_desktop_app_info_on_item_changed(XfdashboardDesktopAppInfo *self,
 															gpointer inUserData)
@@ -494,6 +582,9 @@ static void _xfdashboard_desktop_app_info_set_file(XfdashboardDesktopAppInfo *se
 
 		/* Get application actions */
 		_xfdashboard_desktop_app_info_update_actions(self);
+
+		/* Get keywords of application */
+		_xfdashboard_desktop_app_info_update_keywords(self);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardDesktopAppInfoProperties[PROP_FILE]);
@@ -1387,6 +1478,12 @@ static void _xfdashboard_desktop_app_info_dispose(GObject *inObject)
 	XfdashboardDesktopAppInfoPrivate	*priv=self->priv;
 
 	/* Release allocated variables */
+	if(priv->keywords)
+	{
+		g_list_free_full(priv->keywords, g_free);
+		priv->keywords=NULL;
+	}
+
 	if(priv->actions)
 	{
 		g_list_free_full(priv->actions, g_object_unref);
@@ -1717,6 +1814,9 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 
 		/* Reload application actions */
 		_xfdashboard_desktop_app_info_update_actions(self);
+
+		/* Reload keywords of application */
+		_xfdashboard_desktop_app_info_update_keywords(self);
 	}
 
 	/* If reload was successful emit changed signal */
@@ -1739,16 +1839,16 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 	return(success);
 }
 
-/* Get list of application actions */
+/* Get list of application actions of desktop app info */
 GList* xfdashboard_desktop_app_info_get_actions(XfdashboardDesktopAppInfo *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
 
-	/* Return the create copy of list of application actions */
+	/* Return the list of application actions */
 	return(self->priv->actions);
 }
 
-/* Launch application action at this application */
+/* Launch application action of desktop app info */
 gboolean xfdashboard_desktop_app_info_launch_action(XfdashboardDesktopAppInfo *self,
 													XfdashboardDesktopAppInfoAction *inAction,
 													GAppLaunchContext *inContext,
@@ -1837,4 +1937,13 @@ gboolean xfdashboard_desktop_app_info_launch_action_by_name(XfdashboardDesktopAp
 
 	/* Return success result of launching action */
 	return(success);
+}
+
+/* Get list of keywords of desktop app info */
+GList* xfdashboard_desktop_app_info_get_keywords(XfdashboardDesktopAppInfo *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+
+	/* Return the list of keywords */
+	return(self->priv->keywords);
 }
