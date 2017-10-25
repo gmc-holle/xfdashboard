@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2017-10-05 13:45+0000\n"
+"PO-Revision-Date: 2017-10-25 12:34+0000\n"
 "Last-Translator: Yaşar Çiv\n"
 "Language-Team: Turkish (http://www.transifex.com/xfdashboard/xfdashboard/language/tr/)\n"
 "MIME-Version: 1.0\n"
@@ -479,7 +479,7 @@ msgstr "Hedef"
 
 #: ../libxfdashboard/action-button.c:419
 msgid "The target actor's class name to lookup and to perform action at"
-msgstr ""
+msgstr "Arama ve eylem gerçekleştirmek için hedef aktörün sınıf adı"
 
 #: ../libxfdashboard/action-button.c:425 ../libxfdashboard/binding.c:252
 msgid "Action"
@@ -693,7 +693,7 @@ msgstr "Geçerli tema adı"
 #: ../libxfdashboard/application-database.c:132
 #, c-format
 msgid "Could not reload application menu: %s"
-msgstr ""
+msgstr "Uygulama menüsü yeniden yüklenemedi: %s"
 
 #: ../libxfdashboard/application-database.c:133
 #: ../libxfdashboard/application-database.c:302
@@ -739,32 +739,32 @@ msgstr "Bilinmeyen hata "
 
 #: ../libxfdashboard/application-database.c:265
 msgid "Received event from unknown file monitor"
-msgstr ""
+msgstr "Bilinmeyen dosya monitöründen alınan etkinlik"
 
 #: ../libxfdashboard/application-database.c:289
 #, c-format
 msgid "Unable to create file monitor for newly created directory '%s'"
-msgstr ""
+msgstr "Yeni oluşturulan '%s' dizini için dosya monitörü oluşturulamadı"
 
 #: ../libxfdashboard/application-database.c:300
 #, c-format
 msgid "Unable to create file monitor for '%s': %s"
-msgstr ""
+msgstr "'%s' için dosya monitörü oluşturulamadı: %s"
 
 #: ../libxfdashboard/application-database.c:752
 #, c-format
 msgid "Unable to build path to '%s%s%s' to search for desktop files"
-msgstr ""
+msgstr "Masaüstü dosyalarını aramak için '%s%s%s' yolunu oluşturamıyor"
 
 #: ../libxfdashboard/application-database.c:831
 #, c-format
 msgid "Could not determine desktop ID for '%s'"
-msgstr ""
+msgstr "'%s' için masaüstü kimliği belirlenemedi"
 
 #: ../libxfdashboard/application-database.c:907
 #, c-format
 msgid "Unable to create file monitor for '%s'"
-msgstr ""
+msgstr "'%s' için dosya monitörü oluşturulamadı"
 
 #. Workaround for FreeBSD with Glib bug (file/directory monitors cannot be
 #. created)
@@ -773,22 +773,22 @@ msgstr ""
 msgid ""
 "[workaround for FreeBSD] Cannot initialize file monitor for path '%s' but "
 "will not fail: %s"
-msgstr ""
+msgstr "[FreeBSD için geçici çözüm] Dosya izleyicisi '%s' yolu için başlatılamıyor ancak başarısız olmaz: %s"
 
 #: ../libxfdashboard/application-database.c:1258
 msgid "Is loaded"
-msgstr ""
+msgstr "Yüklendi"
 
 #: ../libxfdashboard/application-database.c:1259
 msgid ""
 "Flag indicating if application database has been initialized and loaded "
 "successfully"
-msgstr ""
+msgstr "Uygulama veritabanının başlatılıp başlatılmadığını ve başarıyla yüklendiğini gösteren bayrak"
 
 #: ../libxfdashboard/application-tracker.c:282
 #, c-format
 msgid "Could not create environment lookup table for PID %d"
-msgstr ""
+msgstr "PID %d için ortam arama tablosu oluşturulamadı"
 
 #: ../libxfdashboard/application-tracker.c:353
 #, c-format
@@ -805,12 +805,12 @@ msgstr ""
 msgid ""
 "Application database was not initialized. Application tracking might not "
 "working."
-msgstr ""
+msgstr "Uygulama veritabanı başlatılmadı. Uygulama izleme çalışmayabilir."
 
 #: ../libxfdashboard/applications-menu-model.c:718
 #, c-format
 msgid "Sorting column %d without user-defined function is not possible"
-msgstr ""
+msgstr "%d sütununu kullanıcı tanımlı fonksiyon olmadan sıralama mümkün değildir"
 
 #: ../libxfdashboard/applications-menu-model.c:804
 #: ../libxfdashboard/plugin.c:782
@@ -825,12 +825,12 @@ msgstr "Menü öğesi"
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_MENU_ELEMENT
 #: ../libxfdashboard/applications-menu-model.c:806
 msgid "Parent menu"
-msgstr ""
+msgstr "Ana menü"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_PARENT_MENU
 #: ../libxfdashboard/applications-menu-model.c:807
 msgid "Section"
-msgstr ""
+msgstr "Bölüm"
 
 #. XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_SECTION
 #: ../libxfdashboard/applications-menu-model.c:808
@@ -848,25 +848,25 @@ msgstr "Açıklama"
 msgid ""
 "Could not create configuration folder for applications search provider at "
 "%s: %s"
-msgstr ""
+msgstr "%s adresindeki uygulamalar arama sağlayıcısı için yapılandırma klasörü oluşturulamadı: %s"
 
 #: ../libxfdashboard/applications-search-provider.c:356
 #, c-format
 msgid "Statistics were not initialized"
-msgstr ""
+msgstr "İstatistikler başlatılmadı"
 
 #: ../libxfdashboard/applications-search-provider.c:376
 #, c-format
 msgid ""
 "Could not build path to statistics file of applications search provider"
-msgstr ""
+msgstr "Uygulamalar arama sağlayıcısının istatistik dosyasının yolu oluşturulamadı"
 
 #: ../libxfdashboard/applications-search-provider.c:474
 #, c-format
 msgid ""
 "Could not create statistics data for application '%s' of applications search"
 " provider"
-msgstr ""
+msgstr "Uygulamalar arama sağlayıcısının '%s' uygulaması için istatistik verileri oluşturulamadı"
 
 #: ../libxfdashboard/applications-search-provider.c:487
 #, c-format
@@ -878,12 +878,12 @@ msgstr ""
 #: ../libxfdashboard/applications-search-provider.c:553
 #, c-format
 msgid "Failed to save statistics of applications search provider to %s: %s"
-msgstr ""
+msgstr "Uygulamalar arama sağlayıcının istatistiklerini %s'e kaydetme başarısız oldu: %s"
 
 #: ../libxfdashboard/applications-search-provider.c:611
 #, c-format
 msgid "Failed to load statistics of applications search provider from %s: %s"
-msgstr ""
+msgstr "Uygulamalar arama sağlayıcının istatistiklerini %s'den yükleme başarısız oldu: %s"
 
 #. Set up view
 #. Add "applications" button
@@ -897,25 +897,25 @@ msgstr "Uygulamalar"
 msgid ""
 "Could not allocate memory to copy search criterias for case-insensitive "
 "search"
-msgstr ""
+msgstr "Büyük/küçük harf duyarlı arama için arama kriterlerini kopyalamaya bellek tahsis edilemedi"
 
 #: ../libxfdashboard/applications-search-provider.c:1131
 #, c-format
 msgid "Cannot create actor for desktop ID '%s' in result set of %s"
-msgstr ""
+msgstr "%s sonuç kümesinde '%s' masaüstü kimliği için aktör oluşturulamıyor"
 
 #: ../libxfdashboard/applications-search-provider.c:1286
 msgid "Sort mode"
-msgstr ""
+msgstr "Sıralama modu"
 
 #: ../libxfdashboard/applications-search-provider.c:1287
 msgid "Defines how to sort matching applications"
-msgstr ""
+msgstr "Eşleşen uygulamaların nasıl sıralanacağını tanımlar."
 
 #: ../libxfdashboard/applications-view.c:236
 #, c-format
 msgid "Could not find view of type %s for menu '%s'"
-msgstr ""
+msgstr "'%s' menüsü için %s türü görünüm bulunamadı"
 
 #: ../libxfdashboard/applications-view.c:399
 #: ../libxfdashboard/applications-view.c:400
@@ -1004,15 +1004,15 @@ msgstr "Aralık"
 #: ../libxfdashboard/applications-view.c:1332
 #: ../libxfdashboard/windows-view.c:1913
 msgid "Spacing between each element in view"
-msgstr ""
+msgstr "Görünümdeki her öğe arasındaki boşluk"
 
 #: ../libxfdashboard/applications-view.c:1339
 msgid "Parent menu icon"
-msgstr ""
+msgstr "Ana menü simgesi"
 
 #: ../libxfdashboard/applications-view.c:1340
 msgid "Name of icon to use for 'go-back-to-parent-menu' entries"
-msgstr ""
+msgstr "'Ana-menüye-geri-dön' girişleri için kullanılacak simgenin adı"
 
 #: ../libxfdashboard/applications-view.c:1360
 msgid "Show all applications"
@@ -1020,7 +1020,7 @@ msgstr "Tüm uygulamaları göster"
 
 #: ../libxfdashboard/applications-view.c:1361
 msgid "Whether to show a menu for all installed applications at root menu"
-msgstr ""
+msgstr "Kök menüsünde yüklü tüm uygulamalar için bir menü gösterilip gösterilmeyeceği"
 
 #: ../libxfdashboard/background.c:420 ../libxfdashboard/background.c:421
 msgid "Background type"
@@ -1032,7 +1032,7 @@ msgstr "Köşeler"
 
 #: ../libxfdashboard/background.c:429
 msgid "Determines which corners are rounded for background and outline"
-msgstr ""
+msgstr "Arka plan ve açıklık için hangi köşelerin yuvarlandığını belirler"
 
 #: ../libxfdashboard/background.c:436 ../libxfdashboard/background.c:459
 #: ../libxfdashboard/outline-effect.c:459
@@ -1041,7 +1041,7 @@ msgstr "Köşe yarıçapı"
 
 #: ../libxfdashboard/background.c:437
 msgid "Radius of rounded corners for background and outline"
-msgstr ""
+msgstr "Arka plan ve açıklık için yuvarlak köşe yarıçapı"
 
 #: ../libxfdashboard/background.c:444
 msgid "Background fill color"
@@ -1049,7 +1049,7 @@ msgstr "Arka plan dolgu rengi"
 
 #: ../libxfdashboard/background.c:445
 msgid "Color to fill background with"
-msgstr ""
+msgstr "Arka planı doldurmak için renk"
 
 #: ../libxfdashboard/background.c:451
 msgid "Fill corners"
@@ -1057,11 +1057,11 @@ msgstr "Köşeleri doldur"
 
 #: ../libxfdashboard/background.c:452
 msgid "Determines which corners are rounded at background"
-msgstr ""
+msgstr "Hangi köşelerin arka planda yuvarlak olduğunu belirler"
 
 #: ../libxfdashboard/background.c:460
 msgid "Radius of rounded corners of background"
-msgstr ""
+msgstr "Hangi köşelerin arka planda yuvarlak olduğunu belirler"
 
 #: ../libxfdashboard/background.c:467 ../libxfdashboard/window-content.c:2089
 msgid "Outline color"
@@ -1069,7 +1069,7 @@ msgstr "Anahat rengi"
 
 #: ../libxfdashboard/background.c:468 ../libxfdashboard/outline-effect.c:429
 msgid "Color to draw outline with"
-msgstr ""
+msgstr "Anahat çizmek için renk"
 
 #: ../libxfdashboard/background.c:474 ../libxfdashboard/window-content.c:2096
 msgid "Outline width"
@@ -1077,7 +1077,7 @@ msgstr "Anahat genişliği"
 
 #: ../libxfdashboard/background.c:475 ../libxfdashboard/outline-effect.c:436
 msgid "Width of line used to draw outline"
-msgstr ""
+msgstr "Anahattı çizmek için kullanılan çizginin genişliği"
 
 #: ../libxfdashboard/background.c:482
 msgid "Outline borders"
@@ -1085,7 +1085,7 @@ msgstr "Anahat kenar süsleri"
 
 #: ../libxfdashboard/background.c:483
 msgid "Determines which sides of border of outline should be drawn"
-msgstr ""
+msgstr "Anahat sınırının hangi kenarlarının çizileceğini belirler"
 
 #: ../libxfdashboard/background.c:490
 msgid "Outline corners"
@@ -1093,7 +1093,7 @@ msgstr "Anahat köşeleri"
 
 #: ../libxfdashboard/background.c:491
 msgid "Determines which corners are rounded at outline"
-msgstr ""
+msgstr "Anahatta hangi köşelerin yuvarlak olduğunu belirler"
 
 #: ../libxfdashboard/background.c:498
 msgid "Outline corner radius"
@@ -1101,7 +1101,7 @@ msgstr "Anahat köşe yarıçapı"
 
 #: ../libxfdashboard/background.c:499
 msgid "Radius of rounded corners of outline"
-msgstr ""
+msgstr "Anahattaki yuvarlak köşelerin yarıçapı"
 
 #: ../libxfdashboard/background.c:506
 msgid "Image"
@@ -1117,7 +1117,7 @@ msgstr "Etkinlik türü"
 
 #: ../libxfdashboard/binding.c:215
 msgid "The event type this binding is bound to"
-msgstr ""
+msgstr "Bu ciltlemenin bağlı olduğu etkinlik türü"
 
 #: ../libxfdashboard/binding.c:222
 msgid "Class name"
@@ -1125,7 +1125,7 @@ msgstr "Sınıf adı"
 
 #: ../libxfdashboard/binding.c:223
 msgid "Class name of object this binding is bound to"
-msgstr ""
+msgstr "Bu ciltlemenin bağlı olduğu nesnenin sınıf adı"
 
 #: ../libxfdashboard/binding.c:229 ../libxfdashboard/image-content.c:1200
 msgid "Key"
@@ -1133,11 +1133,11 @@ msgstr "Anahtar"
 
 #: ../libxfdashboard/binding.c:230
 msgid "Key code of a keyboard event this binding is bound to"
-msgstr ""
+msgstr "Bu cildin bağlı olduğu bir klavye olayının anahtar kodu"
 
 #: ../libxfdashboard/binding.c:237
 msgid "Modifiers"
-msgstr ""
+msgstr "Düzenleyiciler"
 
 #: ../libxfdashboard/binding.c:238
 msgid "Modifiers this binding is bound to"
@@ -1145,11 +1145,11 @@ msgstr ""
 
 #: ../libxfdashboard/binding.c:246
 msgid "Class name of target of this binding"
-msgstr ""
+msgstr "Bu cilt hedefinin sınıf adı"
 
 #: ../libxfdashboard/binding.c:253
 msgid "Action assigned to this binding"
-msgstr ""
+msgstr "Bu cilt için atanan eylem"
 
 #: ../libxfdashboard/binding.c:259
 msgid "Flags"
@@ -1157,20 +1157,20 @@ msgstr "Bayraklar"
 
 #: ../libxfdashboard/binding.c:260
 msgid "Flags assigned to this binding"
-msgstr ""
+msgstr "Bu cilt için atanan bayraklar"
 
 #: ../libxfdashboard/binding.c:305
 msgid "Failed to create binding instance"
-msgstr ""
+msgstr "Cilt örneği oluşturulamadı."
 
 #: ../libxfdashboard/binding.c:449
 #, c-format
 msgid "Cannot set unsupported event type %s at binding"
-msgstr ""
+msgstr "Ciltleme sırasında %s desteklenmeyen olay türü ayarlanamıyor"
 
 #: ../libxfdashboard/binding.c:454
 msgid "Cannot set invalid event type at binding"
-msgstr ""
+msgstr "Ciltlemede geçersiz olay türü ayarlanamıyor"
 
 #: ../libxfdashboard/bindings-pool.c:133 ../libxfdashboard/theme-effects.c:172
 #: ../libxfdashboard/theme-layout.c:250
@@ -1233,16 +1233,16 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1022
 #, c-format
 msgid "Unknown tag <%s>"
-msgstr ""
+msgstr "Bilinmeyen etiket <%s>"
 
 #: ../libxfdashboard/bindings-pool.c:524
 msgid "Missing attribute 'code' for key"
-msgstr ""
+msgstr "Anahtar için eksik öznitelik 'kodu' "
 
 #: ../libxfdashboard/bindings-pool.c:544
 #, c-format
 msgid "Could not translate key '%s'"
-msgstr ""
+msgstr "'%s' anahtarı tercüme edilemedi"
 
 #: ../libxfdashboard/bindings-pool.c:580
 #, c-format
@@ -1296,21 +1296,21 @@ msgstr ""
 #: ../libxfdashboard/bindings-pool.c:1073
 #, c-format
 msgid "No bindings configuration file found."
-msgstr ""
+msgstr "Hiçbir bağlama yapılandırma dosyası bulunamadı."
 
 #: ../libxfdashboard/button.c:1314 ../libxfdashboard/emblem-effect.c:486
 #: ../libxfdashboard/search-result-container.c:1274
 #: ../libxfdashboard/text-box.c:781
 msgid "Padding"
-msgstr ""
+msgstr "Dolgu"
 
 #: ../libxfdashboard/button.c:1315 ../libxfdashboard/text-box.c:782
 msgid "Padding between background and elements"
-msgstr ""
+msgstr "Arka plan ve öğeler arasında dolgu yapılması"
 
 #: ../libxfdashboard/button.c:1323 ../libxfdashboard/text-box.c:790
 msgid "Spacing between text and icon"
-msgstr ""
+msgstr "Metin ve simge arasındaki boşluk"
 
 #: ../libxfdashboard/button.c:1330
 msgid "Button style"
@@ -1318,7 +1318,7 @@ msgstr "Düğme tarzı"
 
 #: ../libxfdashboard/button.c:1331
 msgid "Style of button showing text and/or icon"
-msgstr ""
+msgstr "Metin ve/veya simge gösteren düğme tarzı"
 
 #: ../libxfdashboard/button.c:1338 ../libxfdashboard/emblem-effect.c:471
 msgid "Icon name"
@@ -1326,11 +1326,11 @@ msgstr "Simge adı"
 
 #: ../libxfdashboard/button.c:1339 ../libxfdashboard/emblem-effect.c:472
 msgid "Themed icon name or file name of icon"
-msgstr ""
+msgstr "Temalı simge adı veya simge dosya adı"
 
 #: ../libxfdashboard/button.c:1345
 msgid "Icon GIcon"
-msgstr ""
+msgstr "GIcon simgesi"
 
 #: ../libxfdashboard/button.c:1346
 msgid "The GIcon of icon"
@@ -1346,11 +1346,11 @@ msgstr "Simge resmi"
 
 #: ../libxfdashboard/button.c:1359
 msgid "Synchronize icon size"
-msgstr ""
+msgstr "Simge boyutunu eşitle"
 
 #: ../libxfdashboard/button.c:1360
 msgid "Synchronize icon size with text size"
-msgstr ""
+msgstr "Simge boyutunu metin boyutu ile eşitle"
 
 #: ../libxfdashboard/button.c:1366 ../libxfdashboard/emblem-effect.c:478
 msgid "Icon size"
@@ -1360,7 +1360,7 @@ msgstr "Simge boyutu"
 msgid ""
 "Size of icon if size of icon is not synchronized. -1 is valid for icon "
 "images and sets icon image's default size."
-msgstr ""
+msgstr "Simgenin boyutu eşzamanlı değilse, simge boyutu. -1, simge görüntüleri için geçerlidir ve simge görüntüsünün varsayılan boyutunu ayarlar."
 
 #: ../libxfdashboard/button.c:1374
 msgid "Icon orientation"
@@ -1408,11 +1408,11 @@ msgstr "Tek satır"
 
 #: ../libxfdashboard/button.c:1412
 msgid "Flag to determine if text can only be in one or multiple lines"
-msgstr ""
+msgstr "Metnin yalnızca bir veya birden fazla satırda bulunup bulunmayacağını belirlemek için bayrak"
 
 #: ../libxfdashboard/button.c:1418
 msgid "Text justify"
-msgstr ""
+msgstr "Metin doğrulama"
 
 #: ../libxfdashboard/button.c:1419
 msgid "Justification (line alignment) of label"
@@ -1448,100 +1448,100 @@ msgstr "Uzun Basma Eşiği"
 
 #: ../libxfdashboard/click-action.c:609
 msgid "The maximum threshold before a long press is cancelled"
-msgstr ""
+msgstr "Uzun basmadan önceki en fazla eşik iptal edildi"
 
 #: ../libxfdashboard/collapse-box.c:276
 #, c-format
 msgid "More than one actor added to %s - result are unexpected"
-msgstr ""
+msgstr "%s 'e birden fazla aktör eklendi - sonuçlar beklenmedik"
 
 #: ../libxfdashboard/collapse-box.c:576
 msgid "Collapsed"
-msgstr ""
+msgstr "Çöktü"
 
 #: ../libxfdashboard/collapse-box.c:577
 msgid "If TRUE this actor is collapsed otherwise it is expanded to real size"
-msgstr ""
+msgstr "DOĞRUYSA bu aktör çöktü, aksi takdirde gerçek boyuta genişletilir"
 
 #: ../libxfdashboard/collapse-box.c:583
 msgid "Collapsed size"
-msgstr ""
+msgstr "Çökmüş boyut"
 
 #: ../libxfdashboard/collapse-box.c:584
 msgid "The size of actor when collapsed"
-msgstr ""
+msgstr "Çöktüğünde aktörün boyutu"
 
 #: ../libxfdashboard/collapse-box.c:591
 msgid "Collapse orientation"
-msgstr ""
+msgstr "Yönlendirme çökmesi"
 
 #: ../libxfdashboard/collapse-box.c:592
 msgid "Orientation of area being visible in collapsed state"
-msgstr ""
+msgstr "Çökmüş durumda görünen alanın yönlendirilmesi"
 
 #: ../libxfdashboard/css-selector.c:147
 msgid "Could not create string for parent css selector"
-msgstr ""
+msgstr "Üst css seçici için dize oluşturulamadı"
 
 #: ../libxfdashboard/css-selector.c:153
 msgid "Invalid mode for parent rule in CSS selector"
-msgstr ""
+msgstr "CSS seçicide üst kural için geçersiz mod"
 
 #: ../libxfdashboard/css-selector.c:531
 msgid "Invalid name identifier"
-msgstr ""
+msgstr "Geçersiz ad tanımlayıcı"
 
 #: ../libxfdashboard/css-selector.c:557
 msgid "Invalid class identifier"
-msgstr ""
+msgstr "Geçersiz sınıf tanımlayıcı"
 
 #: ../libxfdashboard/css-selector.c:593
 msgid "Invalid pseudo-class identifier"
-msgstr ""
+msgstr "Geçersiz sahte sınıf tanımlayıcı"
 
 #: ../libxfdashboard/css-selector.c:692
 msgid "No parent when parsing '>'"
-msgstr ""
+msgstr "'>' ayrıştırılırken üst öğesi yok"
 
 #: ../libxfdashboard/css-selector.c:773
 msgid "Failed to parse css selector."
-msgstr ""
+msgstr "CSS seçici ayrıştırılamadı."
 
 #: ../libxfdashboard/css-selector.c:779
 msgid "Failed to parse css selector because stream is empty."
-msgstr ""
+msgstr "Akış boş olduğu için css seçicisini ayrıştıramadı."
 
 #: ../libxfdashboard/css-selector.c:870
 msgid "Priority"
-msgstr ""
+msgstr "Öncelik"
 
 #: ../libxfdashboard/css-selector.c:871
 msgid "The priority of this CSS selector"
-msgstr ""
+msgstr "Bu CSS seçicinin önceliği"
 
 #: ../libxfdashboard/css-selector.c:914 ../libxfdashboard/css-selector.c:984
 msgid "Could not create seleector."
-msgstr ""
+msgstr "Seçici oluşturulamadı"
 
 #: ../libxfdashboard/css-selector.c:941 ../libxfdashboard/theme-css.c:2320
 #: ../libxfdashboard/theme-css.c:2326
 msgid "Parser did not reach end of stream"
-msgstr ""
+msgstr "Ayrıştırıcı akış sonuna ulaşmadı."
 
 #: ../libxfdashboard/css-selector.c:1011
 msgid "Unexpected state of CSS scanner."
-msgstr ""
+msgstr "CSS tarayıcının beklenmedik durumu."
 
 #: ../libxfdashboard/desktop-app-info.c:521
 msgid "Unable to expand macros at command-line."
-msgstr ""
+msgstr "Komut satırında makrolar genişletilemiyor."
 
 #. Working directory does not exist or is not a directory
 #: ../libxfdashboard/desktop-app-info.c:600
 #, c-format
 msgid ""
 "Working directory '%s' does not exist. It won't be used when launching '%s'."
-msgstr ""
+msgstr "'%s' çalışma dizini yok. '%s' başlatılırken kullanılamaz."
 
 #: ../libxfdashboard/desktop-app-info.c:1202
 msgid "Valid"
@@ -1550,66 +1550,66 @@ msgstr "Geçerli"
 #: ../libxfdashboard/desktop-app-info.c:1203
 msgid ""
 "Flag indicating whether this desktop application information is valid or not"
-msgstr ""
+msgstr "Bu masaüstü uygulama bilgisinin geçerli olup olmadığını gösteren bayrak"
 
 #: ../libxfdashboard/desktop-app-info.c:1209
 msgid "Desktop ID"
-msgstr ""
+msgstr "Masaüstü Kimliği"
 
 #: ../libxfdashboard/desktop-app-info.c:1210
 msgid "Name of desktop ID"
-msgstr ""
+msgstr "Masaüstü Kimliği Adı"
 
 #: ../libxfdashboard/desktop-app-info.c:1216
 msgid "File"
-msgstr ""
+msgstr "Dosya"
 
 #: ../libxfdashboard/desktop-app-info.c:1217
 msgid "The desktop file"
-msgstr ""
+msgstr "Masaüstü dosyası"
 
 #: ../libxfdashboard/desktop-app-info.c:1272
 #, c-format
 msgid "Desktop ID '%s' not found"
-msgstr ""
+msgstr "'%s' Masaüstü kimliği bulunamadı."
 
 #: ../libxfdashboard/desktop-app-info.c:1430
 #, c-format
 msgid "Could not reload desktop application information for '%s': %s"
-msgstr ""
+msgstr "'%s' için masaüstü uygulama bilgisi yeniden yüklenemedi: %s"
 
 #: ../libxfdashboard/drag-action.c:933
 msgid "Source"
-msgstr ""
+msgstr "Kaynak"
 
 #: ../libxfdashboard/drag-action.c:934
 msgid "The source actor where drag began"
-msgstr ""
+msgstr "Sürüklemenin başladığı kaynak aktör"
 
 #: ../libxfdashboard/drop-action.c:80
 #, c-format
 msgid "Target %s is already registered"
-msgstr ""
+msgstr "%s hedefi zaten kayıtlı"
 
 #: ../libxfdashboard/dynamic-table-layout.c:493
 #: ../libxfdashboard/scaled-table-layout.c:485
 msgid "Row spacing"
-msgstr ""
+msgstr "Satır aralığı"
 
 #: ../libxfdashboard/dynamic-table-layout.c:494
 #: ../libxfdashboard/scaled-table-layout.c:486
 msgid "The spacing between rows in table"
-msgstr ""
+msgstr "Tabloda sıralar arasındaki boşluk"
 
 #: ../libxfdashboard/dynamic-table-layout.c:502
 #: ../libxfdashboard/scaled-table-layout.c:494
 msgid "Column spacing"
-msgstr ""
+msgstr "Sütun aralığı"
 
 #: ../libxfdashboard/dynamic-table-layout.c:503
 #: ../libxfdashboard/scaled-table-layout.c:495
 msgid "The spacing between columns in table"
-msgstr ""
+msgstr "Tablodaki sütunlar arasındaki boşluk"
 
 #: ../libxfdashboard/dynamic-table-layout.c:511
 #: ../libxfdashboard/scaled-table-layout.c:517
@@ -1624,30 +1624,30 @@ msgstr ""
 #: ../libxfdashboard/dynamic-table-layout.c:520
 #: ../libxfdashboard/scaled-table-layout.c:526
 msgid "Rows"
-msgstr ""
+msgstr "Satırlar"
 
 #: ../libxfdashboard/dynamic-table-layout.c:521
 #: ../libxfdashboard/scaled-table-layout.c:527
 msgid "Current number of rows in this layout"
-msgstr ""
+msgstr "Bu düzendeki satırların şimdiki sayısı"
 
 #: ../libxfdashboard/dynamic-table-layout.c:529
 #: ../libxfdashboard/scaled-table-layout.c:535
 msgid "Columns"
-msgstr ""
+msgstr "Sütunlar"
 
 #: ../libxfdashboard/dynamic-table-layout.c:530
 #: ../libxfdashboard/scaled-table-layout.c:536
 msgid "Current number of columns in this layout"
-msgstr ""
+msgstr "Bu düzendeki sütunların şimdiki sayısı"
 
 #: ../libxfdashboard/emblem-effect.c:479
 msgid "Size of icon"
-msgstr ""
+msgstr "Simge boyutu"
 
 #: ../libxfdashboard/emblem-effect.c:487
 msgid "Padding around emblem"
-msgstr ""
+msgstr "Amblemin etrafında dolgu"
 
 #: ../libxfdashboard/emblem-effect.c:494
 msgid "X align"
@@ -1671,18 +1671,18 @@ msgstr ""
 
 #: ../libxfdashboard/emblem-effect.c:510
 msgid "Anchor point"
-msgstr ""
+msgstr "Dayanak noktası"
 
 #: ../libxfdashboard/emblem-effect.c:511
 msgid "The anchor point of emblem"
-msgstr ""
+msgstr "Amblemin bağlantı noktası"
 
 #: ../libxfdashboard/fill-box-layout.c:575
 #: ../libxfdashboard/quicklaunch.c:2713 ../libxfdashboard/scrollbar.c:714
 #: ../libxfdashboard/view-selector.c:414
 #: ../libxfdashboard/workspace-selector.c:1247
 msgid "Orientation"
-msgstr ""
+msgstr "Yönlendirme"
 
 #: ../libxfdashboard/fill-box-layout.c:576
 #: ../libxfdashboard/quicklaunch.c:2714
@@ -1692,7 +1692,7 @@ msgstr ""
 
 #: ../libxfdashboard/fill-box-layout.c:583
 msgid "spacing"
-msgstr ""
+msgstr "aralık"
 
 #: ../libxfdashboard/fill-box-layout.c:584
 #: ../libxfdashboard/quicklaunch.c:2706
@@ -1702,7 +1702,7 @@ msgstr ""
 
 #: ../libxfdashboard/fill-box-layout.c:592
 msgid "Homogeneous"
-msgstr ""
+msgstr "Homojen"
 
 #: ../libxfdashboard/fill-box-layout.c:593
 msgid ""
@@ -1712,7 +1712,7 @@ msgstr ""
 
 #: ../libxfdashboard/fill-box-layout.c:599
 msgid "Keep aspect"
-msgstr ""
+msgstr "Görünüşü koru"
 
 #: ../libxfdashboard/fill-box-layout.c:600
 msgid "Whether all children should keep their aspect"
@@ -1853,15 +1853,15 @@ msgstr ""
 
 #: ../libxfdashboard/image-content.c:1201
 msgid "The hash key for caching this image"
-msgstr ""
+msgstr "Bu görüntüyü önbelleklemek için karma anahtar"
 
 #: ../libxfdashboard/image-content.c:1207
 msgid "Missing icon name"
-msgstr ""
+msgstr "Simge adı eksik"
 
 #: ../libxfdashboard/image-content.c:1208
 msgid "The icon's name to use when requested image cannot be loaded"
-msgstr ""
+msgstr "İstenen resim yüklenemediğinde kullanılacak simge adı"
 
 #: ../libxfdashboard/image-content.c:1309
 #, c-format
@@ -1875,108 +1875,108 @@ msgstr ""
 
 #: ../libxfdashboard/live-window.c:773 ../libxfdashboard/window-content.c:2075
 msgid "Window"
-msgstr ""
+msgstr "Pencere"
 
 #: ../libxfdashboard/live-window.c:774
 msgid "The window to show"
-msgstr ""
+msgstr "Gösterilecek pencere"
 
 #: ../libxfdashboard/live-window.c:780
 msgid "Window number"
-msgstr ""
+msgstr "Pencere numarası"
 
 #: ../libxfdashboard/live-window.c:781
 msgid ""
 "The assigned window number. If set to non-zero the close button will be "
 "hidden and the window number will be shown instead. If set to zero the close"
 " button will be shown again."
-msgstr ""
+msgstr "Atanmış pencere numarası. Sıfırdan farklı bir değere ayarlanırsa kapat düğmesi gizlenecek ve bunun yerine pencere numarası gösterilecektir. Sıfır olarak ayarlanırsa, kapat düğmesi tekrar gösterilir."
 
 #: ../libxfdashboard/live-window.c:788
 msgid "Close button padding"
-msgstr ""
+msgstr "Kapat düğmesi dolgusu"
 
 #: ../libxfdashboard/live-window.c:789
 msgid "Padding of close button to window actor in pixels"
-msgstr ""
+msgstr "Kapat düğmesinin pencere aktörüne piksel olarak doldurulması"
 
 #: ../libxfdashboard/live-window.c:796
 msgid "Title actor padding"
-msgstr ""
+msgstr "Başlık aktörü dolgusu"
 
 #: ../libxfdashboard/live-window.c:797
 msgid "Padding of title actor to window actor in pixels"
-msgstr ""
+msgstr "Başlık aktörünün pencere aktörüne piksel olarak dolgulanması"
 
 #: ../libxfdashboard/live-workspace.c:835
 msgid "Workspace"
-msgstr ""
+msgstr "Çalışma Alanı"
 
 #: ../libxfdashboard/live-workspace.c:836
 msgid "The workspace to show"
-msgstr ""
+msgstr "Gösterilecek çalışma alanı"
 
 #: ../libxfdashboard/live-workspace.c:842
 #: ../libxfdashboard/stage-interface.c:327
 msgid "Monitor"
-msgstr ""
+msgstr "Ekran"
 
 #: ../libxfdashboard/live-workspace.c:843
 msgid "The monitor whose window to show only"
-msgstr ""
+msgstr "Sadece penceresini gösterecek olan ekran"
 
 #: ../libxfdashboard/live-workspace.c:849
 msgid "Show window content"
-msgstr ""
+msgstr "Pencere içeriğini göster"
 
 #: ../libxfdashboard/live-workspace.c:850
 msgid ""
 "If TRUE the window content should be shown otherwise the window's icon will "
 "be shown"
-msgstr ""
+msgstr "DOĞRUYSA pencere içeriği gösterilmelidir aksi takdirde pencerenin simgesi gösterilir"
 
 #: ../libxfdashboard/live-workspace.c:856
 #: ../libxfdashboard/live-workspace.c:857 ../libxfdashboard/stage.c:1592
 #: ../libxfdashboard/stage.c:1593 ../libxfdashboard/stage-interface.c:334
 #: ../libxfdashboard/stage-interface.c:335
 msgid "Background image type"
-msgstr ""
+msgstr "Arkaplan resim türü"
 
 #: ../libxfdashboard/live-workspace.c:864
 msgid "Show workspace name"
-msgstr ""
+msgstr "Çalışma alanı adını göster"
 
 #: ../libxfdashboard/live-workspace.c:865
 msgid "If TRUE the name of workspace should be shown"
-msgstr ""
+msgstr "DOĞRUYSA çalışma alanının adı gösterilmelidir"
 
 #: ../libxfdashboard/live-workspace.c:871
 msgid "Workspace name padding"
-msgstr ""
+msgstr "Çalışma alanı adı dolgusu"
 
 #: ../libxfdashboard/live-workspace.c:872
 msgid "Padding of workspace name actor in pixels"
-msgstr ""
+msgstr "Çalışma alanı adı aktörünün piksel olarak doldurulması"
 
 #: ../libxfdashboard/outline-effect.c:435
 msgid "Width"
-msgstr ""
+msgstr "Genişlik"
 
 #: ../libxfdashboard/outline-effect.c:443
 msgid "Borders"
-msgstr ""
+msgstr "Kenarlar"
 
 #: ../libxfdashboard/outline-effect.c:444
 msgid "Determines which sides of the border to draw"
-msgstr ""
+msgstr "Sınırın hangi kenarlarının çizileceğini belirler"
 
 #: ../libxfdashboard/outline-effect.c:452
 msgid "Determines which corners are rounded"
-msgstr ""
+msgstr "Hangi köşelerin yuvarlak olduğunu belirler"
 
 #: ../libxfdashboard/outline-effect.c:460
 msgid "Radius of rounded corners"
-msgstr ""
+msgstr "Yuvarlak köşelerin yarıçapı"
 
 #: ../libxfdashboard/plugin.c:191
 #, c-format
@@ -1985,7 +1985,7 @@ msgstr ""
 
 #: ../libxfdashboard/plugin.c:420
 msgid "Missing path to plugin"
-msgstr ""
+msgstr "Eklenti için eksik yol"
 
 #: ../libxfdashboard/plugin.c:426
 #, c-format
@@ -1999,7 +1999,7 @@ msgstr ""
 
 #: ../libxfdashboard/plugin.c:443
 msgid "Plugin was already initialized"
-msgstr ""
+msgstr "Eklenti zaten başlatıldı"
 
 #. If we get here the virtual function was not overridden
 #: ../libxfdashboard/plugin.c:471
@@ -2009,15 +2009,15 @@ msgstr ""
 
 #: ../libxfdashboard/plugin.c:479
 msgid "Plugin did not set required ID"
-msgstr ""
+msgstr "Eklenti gerekli kimlik ayarlamadı"
 
 #: ../libxfdashboard/plugin.c:494
 msgid "Plugin cannot be enabled"
-msgstr ""
+msgstr "Eklenti etkinleştirilemiyor"
 
 #: ../libxfdashboard/plugin.c:509
 msgid "Plugin cannot be disabled"
-msgstr ""
+msgstr "Eklenti devre dışı bırakılamıyor"
 
 #: ../libxfdashboard/plugin.c:555
 #, c-format
@@ -2027,80 +2027,80 @@ msgstr ""
 #: ../libxfdashboard/plugin.c:556 ../libxfdashboard/plugin.c:1029
 #: ../libxfdashboard/plugin.c:1078
 msgid "Unknown"
-msgstr ""
+msgstr "Bilinmeyen"
 
 #: ../libxfdashboard/plugin.c:775
 msgid "File name"
-msgstr ""
+msgstr "Dosya adı"
 
 #: ../libxfdashboard/plugin.c:776
 msgid "Path and file name of this plugin"
-msgstr ""
+msgstr "Bu eklentinin yolu ve dosya adı"
 
 #: ../libxfdashboard/plugin.c:783
 msgid "The unique ID for this plugin"
-msgstr ""
+msgstr "Bu eklentinin benzersiz kimliği"
 
 #: ../libxfdashboard/plugin.c:789
 msgid "name"
-msgstr ""
+msgstr "ad"
 
 #: ../libxfdashboard/plugin.c:790
 msgid "Name of plugin"
-msgstr ""
+msgstr "Eklenti adı"
 
 #: ../libxfdashboard/plugin.c:797
 msgid "A short description about this plugin"
-msgstr ""
+msgstr "Bu eklenti hakkında kısa bir açıklama"
 
 #: ../libxfdashboard/plugin.c:803
 msgid "Author"
-msgstr ""
+msgstr "Yazar"
 
 #: ../libxfdashboard/plugin.c:804
 msgid "The author of this plugin"
-msgstr ""
+msgstr "Bu eklentinin yazarı"
 
 #: ../libxfdashboard/plugin.c:810
 msgid "Copyright"
-msgstr ""
+msgstr "Telif hakkı"
 
 #: ../libxfdashboard/plugin.c:811
 msgid ""
 "The copyright of this plugin which usually contains year of development"
-msgstr ""
+msgstr "Genellikle gelişme yılını içeren bu eklentinin telif hakkı"
 
 #: ../libxfdashboard/plugin.c:817
 msgid "License"
-msgstr ""
+msgstr "Lisans"
 
 #: ../libxfdashboard/plugin.c:818
 msgid "The license of this plugin"
-msgstr ""
+msgstr "Bu eklentinin lisansı"
 
 #: ../libxfdashboard/plugin.c:824
 msgid "Config path"
-msgstr ""
+msgstr "Yapılandırma yolu"
 
 #: ../libxfdashboard/plugin.c:825
 msgid "The base path to configuration files of this plugin"
-msgstr ""
+msgstr "Bu eklenti yapılandırma dosyalarının temel yolu"
 
 #: ../libxfdashboard/plugin.c:831
 msgid "Cache path"
-msgstr ""
+msgstr "Önbellek yolu"
 
 #: ../libxfdashboard/plugin.c:832
 msgid "The base path to cache files of this plugin"
-msgstr ""
+msgstr "Bu eklenti önbellek dosyalarının temel yolu"
 
 #: ../libxfdashboard/plugin.c:838
 msgid "Data path"
-msgstr ""
+msgstr "Veri yolu"
 
 #: ../libxfdashboard/plugin.c:839
 msgid "The base path to data files of this plugin"
-msgstr ""
+msgstr "Bu eklentinin veri dosyalarına giden yol"
 
 #: ../libxfdashboard/plugin.c:937
 #, c-format
@@ -2110,7 +2110,7 @@ msgstr ""
 #: ../libxfdashboard/plugin.c:964
 #, c-format
 msgid "Could not create plugin instance"
-msgstr ""
+msgstr "Eklenti örneği oluşturulamadı"
 
 #: ../libxfdashboard/plugin.c:1028
 #, c-format
@@ -2158,17 +2158,17 @@ msgstr ""
 
 #: ../libxfdashboard/quicklaunch.c:392 ../libxfdashboard/quicklaunch.c:396
 msgid "No windows to activate for application"
-msgstr ""
+msgstr "Uygulama için etkinleştirilecek pencere yok"
 
 #: ../libxfdashboard/quicklaunch.c:621 ../libxfdashboard/quicklaunch.c:1700
 #, c-format
 msgid "Favourite '%s' added"
-msgstr ""
+msgstr "Sık kullanılan '%s' eklendi"
 
 #: ../libxfdashboard/quicklaunch.c:912 ../libxfdashboard/quicklaunch.c:1764
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr ""
+msgstr "Sık kullanılan '%s' kaldırıldı"
 
 #: ../libxfdashboard/quicklaunch.c:2339
 #: ../libxfdashboard/workspace-selector.c:886
@@ -2179,29 +2179,29 @@ msgstr ""
 
 #: ../libxfdashboard/quicklaunch.c:2690
 msgid "Favourites"
-msgstr ""
+msgstr "Sık kullanılanlar"
 
 #: ../libxfdashboard/quicklaunch.c:2691
 msgid "An array of strings pointing to desktop files shown as icons"
-msgstr ""
+msgstr "Simge olarak gösterilen masaüstü dosyalarını gösteren dizeler dizisi"
 
 #: ../libxfdashboard/quicklaunch.c:2697
 msgid "Normal icon size"
-msgstr ""
+msgstr "Normal simge boyutu"
 
 #: ../libxfdashboard/quicklaunch.c:2698
 msgid "Unscale size of icon"
-msgstr ""
+msgstr "Simgenin boyutunu küçült"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
 #: ../libxfdashboard/quicklaunch.c:2884
 msgid "Remove"
-msgstr ""
+msgstr "Kaldır"
 
 #: ../libxfdashboard/scaled-table-layout.c:503
 msgid "Relative scale"
-msgstr ""
+msgstr "Göreli ölçek"
 
 #: ../libxfdashboard/scaled-table-layout.c:504
 msgid "Whether all children should be scaled relatively to largest child"
@@ -2210,7 +2210,7 @@ msgstr ""
 #: ../libxfdashboard/scaled-table-layout.c:510
 #: ../libxfdashboard/windows-view.c:1920
 msgid "Prevent upscaling"
-msgstr ""
+msgstr "Ölçeklemeyi önleme"
 
 #: ../libxfdashboard/scaled-table-layout.c:511
 msgid ""
@@ -2220,69 +2220,69 @@ msgstr ""
 
 #: ../libxfdashboard/scrollbar.c:715
 msgid "Defines if scrollbar is horizontal or vertical"
-msgstr ""
+msgstr "Kaydırma çubuğunun yatay veya dikey olup olmadığını tanımlar"
 
 #: ../libxfdashboard/scrollbar.c:722
 msgid "Value"
-msgstr ""
+msgstr "Değer"
 
 #: ../libxfdashboard/scrollbar.c:723
 msgid "Current value of scroll bar within range"
-msgstr ""
+msgstr "Aralıktaki kaydırma çubuğunun geçerli değeri"
 
 #: ../libxfdashboard/scrollbar.c:730
 msgid "Value range"
-msgstr ""
+msgstr "Değer aralığı"
 
 #: ../libxfdashboard/scrollbar.c:731
 msgid "The range the slider of scroll bar covers"
-msgstr ""
+msgstr "Kaydırma çubuğunun kaydırıcıları kapsayan aralık"
 
 #: ../libxfdashboard/scrollbar.c:738
 msgid "Range"
-msgstr ""
+msgstr "Menzil"
 
 #: ../libxfdashboard/scrollbar.c:739
 msgid "Range to scroll within"
-msgstr ""
+msgstr "İçinde kaydırmak için menzil"
 
 #: ../libxfdashboard/scrollbar.c:746
 msgid "Page size factor"
-msgstr ""
+msgstr "Sayfa boyutu faktörü"
 
 #: ../libxfdashboard/scrollbar.c:747
 msgid ""
 "The factor of value range to increase or decrease value by on pointer scroll"
 " events."
-msgstr ""
+msgstr "İşaretçi kaydırma olaylarında değeri artırmak veya azaltmak için değer faktörü aralığı."
 
 #: ../libxfdashboard/scrollbar.c:755
 msgid "The spacing between scrollbar and background"
-msgstr ""
+msgstr "Kaydırma çubuğu ve arka plan arasındaki boşluk"
 
 #: ../libxfdashboard/scrollbar.c:762
 msgid "Slider width"
-msgstr ""
+msgstr "Kaydırıcı genişliği"
 
 #: ../libxfdashboard/scrollbar.c:763
 msgid "The width of slider"
-msgstr ""
+msgstr "Kaydırıcının genişliği"
 
 #: ../libxfdashboard/scrollbar.c:770
 msgid "Slider radius"
-msgstr ""
+msgstr "Kaydırıcı yarıçapı"
 
 #: ../libxfdashboard/scrollbar.c:771
 msgid "The radius of slider's rounded corners"
-msgstr ""
+msgstr "Kaydırıcının yuvarlatılmış köşelerinin yarıçapı"
 
 #: ../libxfdashboard/scrollbar.c:778
 msgid "Slider color"
-msgstr ""
+msgstr "Kaydırıcı rengi"
 
 #: ../libxfdashboard/scrollbar.c:779
 msgid "Color of slider"
-msgstr ""
+msgstr "Kaydırıcının rengi"
 
 #: ../libxfdashboard/search-manager.c:270
 #, c-format
@@ -2319,11 +2319,11 @@ msgstr ""
 
 #: ../libxfdashboard/search-provider.c:171
 msgid "Provider ID"
-msgstr ""
+msgstr "Sağlayıcı Kimliği"
 
 #: ../libxfdashboard/search-provider.c:172
 msgid "The internal ID used to register this type of search provider"
-msgstr ""
+msgstr "Bu tür bir arama sağlayıcısını kaydetmek için kullanılan dahili kimlik"
 
 #: ../libxfdashboard/search-result-container.c:416
 #, c-format
@@ -2360,57 +2360,57 @@ msgstr ""
 
 #: ../libxfdashboard/search-result-container.c:1237
 msgid "Provider"
-msgstr ""
+msgstr "Sağlayıcı"
 
 #: ../libxfdashboard/search-result-container.c:1238
 msgid "The search provider this result container is for"
-msgstr ""
+msgstr "Arama sağlayıcı bu sonuç konteynerı için"
 
 #: ../libxfdashboard/search-result-container.c:1244
 msgid "Icon"
-msgstr ""
+msgstr "Simge"
 
 #: ../libxfdashboard/search-result-container.c:1245
 msgid ""
 "A themed icon name or file name of icon this container will display. If not "
 "set the icon the search provider defines will be used."
-msgstr ""
+msgstr "Bu konteynerin simgesinin temalı bir simge adı veya dosya adı görüntülenir. Ayarlanmazsa, arama sağlayıcının tanımladığı simge kullanılır."
 
 #: ../libxfdashboard/search-result-container.c:1251
 msgid "Title format"
-msgstr ""
+msgstr "Başlık biçimi"
 
 #: ../libxfdashboard/search-result-container.c:1252
 msgid "Format string for title which will contain the name of search provider"
-msgstr ""
+msgstr "Başlık için arama sağlayıcının adını içerecek şekilde biçimlendirme dizesi"
 
 #: ../libxfdashboard/search-result-container.c:1259
 msgid "View mode of container for result items"
-msgstr ""
+msgstr "Sonuç öğeleri için konteynırın görünüm modu"
 
 #: ../libxfdashboard/search-result-container.c:1267
 msgid "Spacing between each result item"
-msgstr ""
+msgstr "Her bir sonuç öğesi arasındaki boşluk"
 
 #: ../libxfdashboard/search-result-container.c:1275
 msgid "Padding between title and item results container"
-msgstr ""
+msgstr "Başlık ve öğe sonuçları konteyneri arasındaki dolgu"
 
 #: ../libxfdashboard/search-result-container.c:1282
 msgid "Initial results size"
-msgstr ""
+msgstr "İlk sonuçlar boyutu"
 
 #: ../libxfdashboard/search-result-container.c:1283
 msgid "The maximum number of results shown initially. 0 means all results"
-msgstr ""
+msgstr "Başlangıçta gösterilen en fazla sonuç sayısı. 0 tüm sonuçlar anlamına gelir"
 
 #: ../libxfdashboard/search-result-container.c:1290
 msgid "More results size"
-msgstr ""
+msgstr "Daha fazla sonuç boyutu"
 
 #: ../libxfdashboard/search-result-container.c:1291
 msgid "The number of results to increase current limit by"
-msgstr ""
+msgstr "Akım sınırını artırmak için sonuç sayısı"
 
 #: ../libxfdashboard/search-result-container.c:1820
 #, c-format
@@ -2449,15 +2449,15 @@ msgstr ""
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1582
 msgid "Search"
-msgstr ""
+msgstr "Ara"
 
 #: ../libxfdashboard/stage.c:396
 msgid "Cannot perform search because search view was not found in viewpad."
-msgstr ""
+msgstr "Arama görünümü görünüm bölmesinde bulunmadığından arama yapamıyor."
 
 #: ../libxfdashboard/stage.c:667
 msgid "Cannot find search viewin viewpad to reset view."
-msgstr ""
+msgstr "Görünümü sıfırlamak için görünüm penceresinde arama görünümü bulunamıyor."
 
 #: ../libxfdashboard/stage.c:677 ../libxfdashboard/stage.c:1365
 #, c-format
@@ -2482,32 +2482,32 @@ msgstr ""
 
 #: ../libxfdashboard/stage.c:962
 msgid "Invalid multiple stages for primary monitor"
-msgstr ""
+msgstr "Birincil monitör için geçersiz çok aşamalı"
 
 #: ../libxfdashboard/stage.c:991
 msgid "Just type to search..."
-msgstr ""
+msgstr "Sadece aramak için yazın ..."
 
 #: ../libxfdashboard/stage.c:1600 ../libxfdashboard/stage-interface.c:342
 #: ../plugins/clock-view/clock-view-settings.c:254
 msgid "Background color"
-msgstr ""
+msgstr "Arkaplan rengi"
 
 #: ../libxfdashboard/stage.c:1601 ../libxfdashboard/stage-interface.c:343
 msgid "Color of stage's background"
-msgstr ""
+msgstr "Sahne arka planının rengi"
 
 #: ../libxfdashboard/stage.c:1607
 msgid "Switch to view"
-msgstr ""
+msgstr "Görüntülemeye geç"
 
 #: ../libxfdashboard/stage.c:1608
 msgid "Switch to this named view as soon as stage gets visible"
-msgstr ""
+msgstr "Sahne alanına girdiğinde bu adlandırılmış görünümde geçiş yapın"
 
 #: ../libxfdashboard/stage-interface.c:328
 msgid "The monitor where this stage interface is connected to"
-msgstr ""
+msgstr "Bu sahne arayüzünün bağlı olduğu monitör"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/stylable.c:42
@@ -2519,21 +2519,21 @@ msgstr ""
 
 #: ../libxfdashboard/stylable.c:267
 msgid "Style classes"
-msgstr ""
+msgstr "Tarz sınıfları"
 
 #: ../libxfdashboard/stylable.c:268
 msgid "String representing list of classes separated by '.'"
-msgstr ""
+msgstr "'.' Ile ayrılmış sınıfların listesini temsil eden dize."
 
 #: ../libxfdashboard/stylable.c:274
 msgid "Style pseudo-classes"
-msgstr ""
+msgstr "Sözde sınıflar tarzı"
 
 #: ../libxfdashboard/stylable.c:275
 msgid ""
 "String representing list of pseudo-classes, e.g. current state, separated by"
 " ':'"
-msgstr ""
+msgstr "Sahte sınıfların listesini temsil eden dize, ör. ':' ile ayrılmış mevcut durum"
 
 #: ../libxfdashboard/stylable.c:334
 #, c-format
@@ -2542,130 +2542,130 @@ msgstr ""
 
 #: ../libxfdashboard/text-box.c:797
 msgid "Editable"
-msgstr ""
+msgstr "Düzenlenebilir"
 
 #: ../libxfdashboard/text-box.c:798
 msgid "Flag to set if text is editable"
-msgstr ""
+msgstr "Metin düzenlenebilirse ayarlamak için işaretle"
 
 #: ../libxfdashboard/text-box.c:804
 msgid "Primary icon name"
-msgstr ""
+msgstr "Birincil simge adı"
 
 #: ../libxfdashboard/text-box.c:805
 msgid "Themed icon name or file name of primary icon shown left of text box"
-msgstr ""
+msgstr "Metin kutusunun solunda gösterilen birincil simgenin temalı simge adı veya dosya adı"
 
 #: ../libxfdashboard/text-box.c:811
 msgid "Secondary icon name"
-msgstr ""
+msgstr "İkincil simge adı"
 
 #: ../libxfdashboard/text-box.c:812
 msgid ""
 "Themed icon name or file name of secondary icon shown right of text box"
-msgstr ""
+msgstr "Metin kutusunun sağında gösterilen ikinci simgenin temalı simge adı veya dosya adı"
 
 #: ../libxfdashboard/text-box.c:818
 msgid "Text"
-msgstr ""
+msgstr "Metin"
 
 #: ../libxfdashboard/text-box.c:819
 msgid "Text of editable text box"
-msgstr ""
+msgstr "Düzenlenebilir metin kutusu metni"
 
 #: ../libxfdashboard/text-box.c:825
 msgid "Text font"
-msgstr ""
+msgstr "Metin yazı tipi"
 
 #: ../libxfdashboard/text-box.c:826
 msgid "Font of editable text box"
-msgstr ""
+msgstr "Düzenlenebilir metin kutusu yazı tipi"
 
 #: ../libxfdashboard/text-box.c:832
 msgid "Text color"
-msgstr ""
+msgstr "Metin rengi"
 
 #: ../libxfdashboard/text-box.c:833
 msgid "Color of text in editable text box"
-msgstr ""
+msgstr "Düzenlenebilir metin kutusundaki metin rengi"
 
 #: ../libxfdashboard/text-box.c:840
 msgid "Selection text color"
-msgstr ""
+msgstr "Seçim metni rengi"
 
 #: ../libxfdashboard/text-box.c:841
 msgid "Color of text of selected text"
-msgstr ""
+msgstr "Seçili metnin metin rengi"
 
 #: ../libxfdashboard/text-box.c:847
 msgid "Selection background color"
-msgstr ""
+msgstr "Seçim arka plan rengi"
 
 #: ../libxfdashboard/text-box.c:848
 msgid "Color of background of selected text"
-msgstr ""
+msgstr "Seçili metnin arka plan rengi"
 
 #: ../libxfdashboard/text-box.c:854
 msgid "Hint text"
-msgstr ""
+msgstr "Ipucu metni"
 
 #: ../libxfdashboard/text-box.c:855
 msgid "Hint text shown if editable text box is empty"
-msgstr ""
+msgstr "Düzenlenebilir metin kutusu boşsa, ipucu metni gösterilir"
 
 #: ../libxfdashboard/text-box.c:861
 msgid "Hint text font"
-msgstr ""
+msgstr "İpucu metni yazı tipi"
 
 #: ../libxfdashboard/text-box.c:862
 msgid "Font of hint text shown if editable text box is empty"
-msgstr ""
+msgstr "Düzenlenebilir metin kutusu boşsa, ipucu metninin yazı tipi"
 
 #: ../libxfdashboard/text-box.c:868
 msgid "Hint text color"
-msgstr ""
+msgstr "İpucu metin rengi"
 
 #: ../libxfdashboard/text-box.c:869
 msgid "Color of hint text shown if editable text box is empty"
-msgstr ""
+msgstr "Düzenlenebilir metin kutusu boşsa, ipucu metninin rengi"
 
 #: ../libxfdashboard/text-box.c:875
 msgid "Hint text set"
-msgstr ""
+msgstr "İpucu metin ayarı"
 
 #: ../libxfdashboard/text-box.c:876
 msgid "Flag indicating if a hint text was set"
-msgstr ""
+msgstr "Bir ipucu metninin ayarlanmış olup olmadığını gösteren bayrak"
 
 #: ../libxfdashboard/theme.c:570 ../libxfdashboard/theme-css.c:2485
 msgid "Theme path"
-msgstr ""
+msgstr "Tema yolu"
 
 #: ../libxfdashboard/theme.c:571
 msgid "Path where theme was found and loaded from"
-msgstr ""
+msgstr "Temanın bulunduğu ve yüklendiği yol"
 
 #: ../libxfdashboard/theme.c:578
 msgid ""
 "Short name of theme which was used to lookup theme and folder name where "
 "theme is stored in"
-msgstr ""
+msgstr "Temayı aramak için kullanılan temanın kısa adı ve temanın saklandığı dizin adı"
 
 #: ../libxfdashboard/theme.c:584
 msgid "Theme display name"
-msgstr ""
+msgstr "Tema görünen adı"
 
 #: ../libxfdashboard/theme.c:585
 msgid "The name of theme"
-msgstr ""
+msgstr "Tema Adı"
 
 #: ../libxfdashboard/theme.c:591
 msgid "Theme comment"
-msgstr ""
+msgstr "Tema yorumu"
 
 #: ../libxfdashboard/theme.c:592
 msgid "The comment of theme used as description"
-msgstr ""
+msgstr "Açıklama olarak kullanılan tema yorumu"
 
 #: ../libxfdashboard/theme.c:690
 #, c-format
@@ -2728,11 +2728,11 @@ msgstr ""
 #: ../libxfdashboard/theme-css.c:941 ../libxfdashboard/theme-css.c:1049
 #: ../libxfdashboard/theme-css.c:2054
 msgid "An identifier must follow '@'"
-msgstr ""
+msgstr "Bir tanımlayıcı '@' işaretini takip etmelidir"
 
 #: ../libxfdashboard/theme-css.c:1074
 msgid "Missing function argument"
-msgstr ""
+msgstr "Eksik işlev değişkeni"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:1098
@@ -2746,11 +2746,11 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1159
 msgid "Missing ')' after function"
-msgstr ""
+msgstr "Eksik ')' fonksiyonundan sonra"
 
 #: ../libxfdashboard/theme-css.c:1174
 msgid "Missing '(' after function"
-msgstr ""
+msgstr "Eksik '(' fonksiyonundan sonra"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:1210
@@ -2776,19 +2776,19 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1508
 msgid "Invalid property name"
-msgstr ""
+msgstr "Geçersiz özellik adı"
 
 #: ../libxfdashboard/theme-css.c:1528
 msgid "Property names and values must be separated by colon"
-msgstr ""
+msgstr "Özellik adları ve değerler kolon ile ayrılmalıdır"
 
 #: ../libxfdashboard/theme-css.c:1584
 msgid "Invalid property value"
-msgstr ""
+msgstr "Geçersiz özellik değeri"
 
 #: ../libxfdashboard/theme-css.c:1609
 msgid "Property values must end with semi-colon"
-msgstr ""
+msgstr "Özellik değerleri yarım kolon ile bitmelidir"
 
 #: ../libxfdashboard/theme-css.c:1746
 msgid "Missing '(' after @import keyword."
@@ -2796,11 +2796,11 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1787
 msgid "Unexpected token in filename to import"
-msgstr ""
+msgstr "Alınacak dosya adında beklenmeyen belirteç"
 
 #: ../libxfdashboard/theme-css.c:1807
 msgid "Missing filename to import"
-msgstr ""
+msgstr "Alınacak dosya adı eksik"
 
 #: ../libxfdashboard/theme-css.c:1829
 msgid "Missing closing ')' at @import keyword."
@@ -2832,11 +2832,11 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:2092
 msgid "'@' identifier"
-msgstr ""
+msgstr "'@' tanımlayıcı"
 
 #: ../libxfdashboard/theme-css.c:2121 ../libxfdashboard/theme-css.c:2138
 msgid "Unhandled selector"
-msgstr ""
+msgstr "İşlenmeyen seçici"
 
 #: ../libxfdashboard/theme-css.c:2288
 #, c-format
@@ -2845,7 +2845,7 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:2486
 msgid "Path of theme loading from"
-msgstr ""
+msgstr "Temanın yükleme yolu"
 
 #: ../libxfdashboard/theme-css.c:2573
 #, c-format
@@ -2871,7 +2871,7 @@ msgstr ""
 
 #: ../libxfdashboard/theme-effects.c:589
 msgid "Missing property name to set value for"
-msgstr ""
+msgstr "Değer ayarı için özelliğin adı eksik"
 
 #: ../libxfdashboard/theme-effects.c:601
 #, c-format
@@ -2930,7 +2930,7 @@ msgstr ""
 
 #: ../libxfdashboard/theme-layout.c:389
 msgid "Cannot allocate memory for unknown tag"
-msgstr ""
+msgstr "Bilinmeyen etiket için bellek tahsis edilemiyor"
 
 #: ../libxfdashboard/theme-layout.c:401
 #, c-format
@@ -2944,12 +2944,12 @@ msgstr ""
 
 #: ../libxfdashboard/theme-layout.c:903
 msgid "Unexpected empty tag stack when parsing property text node"
-msgstr ""
+msgstr "Mülk metin düğümünü ayrıştırırken beklenmeyen boş etiket yığını"
 
 #: ../libxfdashboard/theme-layout.c:914
 #, c-format
 msgid "Value for property '%s' is already set"
-msgstr ""
+msgstr "'%s' özellik değeri zaten ayarlanmış"
 
 #: ../libxfdashboard/theme-layout.c:1203
 #, c-format
@@ -3004,27 +3004,27 @@ msgstr ""
 
 #: ../libxfdashboard/toggle-button.c:162
 msgid "Toggle state"
-msgstr ""
+msgstr "Geçiş durumu"
 
 #: ../libxfdashboard/toggle-button.c:163
 msgid "State of toggle"
-msgstr ""
+msgstr "Geçişin durumu"
 
 #: ../libxfdashboard/toggle-button.c:169
 msgid "Auto toggle"
-msgstr ""
+msgstr "Otomatik geçiş"
 
 #: ../libxfdashboard/toggle-button.c:170
 msgid "If set the toggle state will be toggled on each click"
-msgstr ""
+msgstr "Geçiş durumu ayarlandıysa her tıklamayla değiştirilecek"
 
 #: ../libxfdashboard/tooltip-action.c:525
 msgid "Tooltip text"
-msgstr ""
+msgstr "İpucu metni"
 
 #: ../libxfdashboard/tooltip-action.c:526
 msgid "The text to display in a tooltip"
-msgstr ""
+msgstr "Bir ipucunda görüntülenecek metin"
 
 #: ../libxfdashboard/utils.c:160
 #, c-format
@@ -3033,29 +3033,29 @@ msgstr ""
 
 #: ../libxfdashboard/view.c:368
 msgid "View ID"
-msgstr ""
+msgstr "Görünüm Kimliği"
 
 #: ../libxfdashboard/view.c:369
 msgid "The internal ID used to register this type of view"
-msgstr ""
+msgstr "Bu görünüm türünü kaydetmek için kullanılan dahili kimlik"
 
 #: ../libxfdashboard/view.c:375
 msgid "View name"
-msgstr ""
+msgstr "Görünüm adı"
 
 #: ../libxfdashboard/view.c:376
 msgid "Name of view used to display"
-msgstr ""
+msgstr "Görüntülenecek görünümün adı"
 
 #: ../libxfdashboard/view.c:382
 msgid "View icon"
-msgstr ""
+msgstr "Görünüm simgesi"
 
 #: ../libxfdashboard/view.c:383
 msgid ""
 "Icon of view used to display. Icon name can be a themed icon name or file "
 "name"
-msgstr ""
+msgstr "Görüntülemek için kullanılan görünüm simgesi. Simge adı temalı bir simge adı veya dosya adı olabilir"
 
 #: ../libxfdashboard/view.c:389
 msgid "View fit mode"
