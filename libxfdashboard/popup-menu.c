@@ -104,6 +104,8 @@ struct _XfdashboardPopupMenuPrivate
 	guint							capturedEventSignalID;
 
 	guint							sourceDestroySignalID;
+
+	guint							suspendSignalID;
 };
 
 /* Properties */
@@ -145,6 +147,37 @@ static guint XfdashboardPopupMenuSignals[SIGNAL_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
+
+/* Suspension state of application changed */
+static void _xfdashboard_popup_menu_on_application_suspended_changed(XfdashboardPopupMenu *self,
+																		GParamSpec *inSpec,
+																		gpointer inUserData)
+{
+	XfdashboardPopupMenuPrivate		*priv;
+	XfdashboardApplication			*application;
+	gboolean						isSuspended;
+
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU(self));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+
+	priv=self->priv;
+	application=XFDASHBOARD_APPLICATION(inUserData);
+
+	/* Get application suspend state */
+	isSuspended=xfdashboard_application_is_suspended(application);
+
+	/* If application is suspended then cancel pop-up menu */
+	if(isSuspended)
+	{
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Cancel active pop-up menu '%s' for source %s@%p because application was suspended",
+							xfdashboard_popup_menu_get_title(self),
+							priv->source ? G_OBJECT_TYPE_NAME(priv->source) : "<nil>",
+							priv->source);
+
+		xfdashboard_popup_menu_cancel(self);
+	}
+}
 
 /* An event occured after a popup menu was activated so check if popup menu should
  * be cancelled because a button was pressed and release outside the popup menu.
@@ -723,6 +756,12 @@ static void _xfdashboard_popup_menu_dispose(GObject *inObject)
 	xfdashboard_popup_menu_cancel(self);
 
 	/* Release our allocated variables */
+	if(priv->suspendSignalID)
+	{
+		g_signal_handler_disconnect(xfdashboard_application_get_default(), priv->suspendSignalID);
+		priv->suspendSignalID=0;
+	}
+
 	if(priv->capturedEventSignalID)
 	{
 		g_signal_handler_disconnect(priv->stage, priv->capturedEventSignalID);
@@ -1116,6 +1155,7 @@ static void xfdashboard_popup_menu_init(XfdashboardPopupMenu *self)
 	priv->stage=NULL;
 	priv->capturedEventSignalID=0;
 	priv->sourceDestroySignalID=0;
+	priv->suspendSignalID=0;
 
 	/* This actor is react on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -1155,6 +1195,12 @@ static void xfdashboard_popup_menu_init(XfdashboardPopupMenu *self)
 	/* Add popup menu to stage */
 	priv->stage=xfdashboard_application_get_stage(xfdashboard_application_get_default());
 	clutter_actor_insert_child_above(CLUTTER_ACTOR(priv->stage), CLUTTER_ACTOR(self), NULL);
+
+	/* Connect signal to get notified when application suspends to cancel pop-up menu */
+	priv->suspendSignalID=g_signal_connect_swapped(xfdashboard_application_get_default(),
+													"notify::is-suspended",
+													G_CALLBACK(_xfdashboard_popup_menu_on_application_suspended_changed),
+													self);
 }
 
 /* IMPLEMENTATION: Public API */
