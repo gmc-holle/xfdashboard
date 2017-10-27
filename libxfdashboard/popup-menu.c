@@ -1873,6 +1873,9 @@ void xfdashboard_popup_menu_activate(XfdashboardPopupMenu *self)
 	pointerDevice=gdk_device_manager_get_client_pointer(deviceManager);
 #endif
 	gdk_device_get_position(pointerDevice, NULL, &pointerX, &pointerY);
+	XFDASHBOARD_DEBUG(self, ACTOR,
+						"Pointer is at position %d,%d",
+						pointerX, pointerY);
 
 	monitor=xfdashboard_window_tracker_get_monitor_by_position(priv->windowTracker, pointerX, pointerY);
 	if(!monitor)

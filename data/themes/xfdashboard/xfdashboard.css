@@ -571,13 +571,15 @@ XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selecte
 	background-fill-color: #93c1ffff;
 }
 
-.popup-menu.popup-menu-source-XfdashboardQuicklaunch
+.popup-menu.popup-menu-source-XfdashboardQuicklaunch,
+.popup-menu.popup-menu-source-XfdashboardApplicationsView
 {
 	show-title: true;
 	show-title-icon: true;
 }
 
-.popup-menu.popup-menu-source-XfdashboardQuicklaunch XfdashboardLabel.popup-menu-item
+.popup-menu.popup-menu-source-XfdashboardQuicklaunch XfdashboardLabel.popup-menu-item,
+.popup-menu.popup-menu-source-XfdashboardApplicationsView XfdashboardLabel.popup-menu-item
 {
 	icon-size: 16;
 	text-justify: left;

@@ -44,6 +44,11 @@
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/desktop-app-info.h>
 #include <libxfdashboard/application-database.h>
+#include <libxfdashboard/click-action.h>
+#include <libxfdashboard/popup-menu.h>
+#include <libxfdashboard/popup-menu-item-button.h>
+#include <libxfdashboard/popup-menu-item-separator.h>
+#include <libxfdashboard/application-tracker.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -252,6 +257,7 @@ static void _xfdashboard_applications_view_on_menu_clicked(XfdashboardButton *in
 	xfdashboard_view_scroll_to(XFDASHBOARD_VIEW(self), -1, 0);
 }
 
+/* Parent menu item to go up in menus was clicked */
 static void _xfdashboard_applications_view_on_parent_menu_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
 {
 	XfdashboardApplicationsViewPrivate	*priv;
@@ -273,6 +279,7 @@ static void _xfdashboard_applications_view_on_parent_menu_clicked(XfdashboardApp
 	}
 }
 
+/* An application menu item was clicked */
 static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData)
 {
 	XfdashboardApplicationButton		*button;
@@ -288,6 +295,150 @@ static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicatio
 		/* Launching application seems to be successfuly so quit application */
 		xfdashboard_application_suspend_or_quit(NULL);
 		return;
+	}
+}
+
+/* User selected to open a new window or to launch that application at pop-up menu */
+static void _xfdashboard_applications_view_on_popup_menu_item_launch(XfdashboardPopupMenuItem *inMenuItem,
+																		gpointer inUserData)
+{
+	GAppInfo							*appInfo;
+	XfdashboardApplicationTracker		*appTracker;
+	GIcon								*gicon;
+	const gchar							*iconName;
+
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
+	g_return_if_fail(G_IS_APP_INFO(inUserData));
+
+	appInfo=G_APP_INFO(inUserData);
+	iconName=NULL;
+
+	/* Get icon of application */
+	gicon=g_app_info_get_icon(appInfo);
+	if(gicon) iconName=g_icon_to_string(gicon);
+
+	/* Check if we should launch that application or to open a new window */
+	appTracker=xfdashboard_application_tracker_get_default();
+	if(!xfdashboard_application_tracker_is_running_by_app_info(appTracker, appInfo))
+	{
+		GAppLaunchContext			*context;
+		GError						*error;
+
+		/* Create context to start application at */
+		context=xfdashboard_create_app_context(NULL);
+
+		/* Try to launch application */
+		error=NULL;
+		if(!g_app_info_launch(appInfo, NULL, context, &error))
+		{
+			/* Show notification about failed application launch */
+			xfdashboard_notify(CLUTTER_ACTOR(inMenuItem),
+								iconName,
+								_("Launching application '%s' failed: %s"),
+								g_app_info_get_display_name(appInfo),
+								(error && error->message) ? error->message : _("unknown error"));
+			g_warning(_("Launching application '%s' failed: %s"),
+						g_app_info_get_display_name(appInfo),
+						(error && error->message) ? error->message : _("unknown error"));
+			if(error) g_error_free(error);
+		}
+			else
+			{
+				/* Show notification about successful application launch */
+				xfdashboard_notify(CLUTTER_ACTOR(inMenuItem),
+									iconName,
+									_("Application '%s' launched"),
+									g_app_info_get_display_name(appInfo));
+
+				/* Emit signal for successful application launch */
+				g_signal_emit_by_name(xfdashboard_application_get_default(), "application-launched", appInfo);
+
+				/* Quit application */
+				xfdashboard_application_suspend_or_quit(NULL);
+			}
+
+		/* Release allocated resources */
+		g_object_unref(context);
+	}
+
+	/* Release allocated resources */
+	g_object_unref(appTracker);
+	g_object_unref(gicon);
+}
+
+/* A right-click might have happened on an application icon */
+static void _xfdashboard_applications_view_on_popup_menu(XfdashboardApplicationsView *self,
+															ClutterActor *inActor,
+															gpointer inUserData)
+{
+	XfdashboardApplicationButton				*button;
+	XfdashboardClickAction						*action;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inActor));
+	g_return_if_fail(XFDASHBOARD_IS_CLICK_ACTION(inUserData));
+
+	button=XFDASHBOARD_APPLICATION_BUTTON(inActor);
+	action=XFDASHBOARD_CLICK_ACTION(inUserData);
+
+	/* Check if right button was used when the application button was clicked */
+	if(xfdashboard_click_action_get_button(action)==XFDASHBOARD_CLICK_ACTION_RIGHT_BUTTON)
+	{
+		ClutterActor							*popup;
+		ClutterActor							*menuItem;
+		GAppInfo								*appInfo;
+		XfdashboardApplicationTracker			*appTracker;
+
+		/* Get app info for application button as it is needed most the time */
+		appInfo=xfdashboard_application_button_get_app_info(button);
+		if(!appInfo)
+		{
+			g_critical(_("No application information available for clicked application button."));
+			return;
+		}
+
+		/* Create pop-up menu */
+		popup=xfdashboard_popup_menu_new_for_source(CLUTTER_ACTOR(self));
+		xfdashboard_popup_menu_set_destroy_on_cancel(XFDASHBOARD_POPUP_MENU(popup), TRUE);
+		xfdashboard_popup_menu_set_title(XFDASHBOARD_POPUP_MENU(popup), g_app_info_get_display_name(appInfo));
+		xfdashboard_popup_menu_set_title_gicon(XFDASHBOARD_POPUP_MENU(popup), g_app_info_get_icon(appInfo));
+
+		/* Add each open window to pop-up of application */
+		if(xfdashboard_application_button_add_popup_menu_items_for_windows(button, XFDASHBOARD_POPUP_MENU(popup))>0)
+		{
+			/* Add a separator to split windows from other actions in pop-up menu */
+			menuItem=xfdashboard_popup_menu_item_separator_new();
+			clutter_actor_set_x_expand(menuItem, TRUE);
+			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+		}
+
+		/* Add menu item to launch application if it is not running */
+		appTracker=xfdashboard_application_tracker_get_default();
+		if(!xfdashboard_application_tracker_is_running_by_app_info(appTracker, appInfo))
+		{
+			menuItem=xfdashboard_popup_menu_item_button_new();
+			xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), _("Launch"));
+			clutter_actor_set_x_expand(menuItem, TRUE);
+			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+
+			g_signal_connect(menuItem,
+								"activated",
+								G_CALLBACK(_xfdashboard_applications_view_on_popup_menu_item_launch),
+								appInfo);
+		}
+		g_object_unref(appTracker);
+
+		/* Add application actions */
+		if(xfdashboard_application_button_add_popup_menu_items_for_actions(button, XFDASHBOARD_POPUP_MENU(popup))>0)
+		{
+			/* Add a separator to split windows from other actions in pop-up menu */
+			menuItem=xfdashboard_popup_menu_item_separator_new();
+			clutter_actor_set_x_expand(menuItem, TRUE);
+			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+		}
+
+		/* Activate pop-up menu */
+		xfdashboard_popup_menu_activate(XFDASHBOARD_POPUP_MENU(popup));
 	}
 }
 
@@ -382,6 +533,7 @@ static void _xfdashboard_applications_view_on_all_applications_menu_clicked(Xfda
 	GList								*iter;
 	XfdashboardDesktopAppInfo			*appInfo;
 	XfdashboardApplicationDatabase		*appDB;
+	ClutterAction						*clickAction;
 	ClutterAction						*dragAction;
 	gchar								*actorText;
 
@@ -442,6 +594,11 @@ static void _xfdashboard_applications_view_on_all_applications_menu_clicked(Xfda
 
 		g_signal_connect_swapped(actor, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_item_clicked), self);
 
+		/* Set up and add pop-up menu click action */
+		clickAction=xfdashboard_click_action_new();
+		g_signal_connect_swapped(clickAction, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_popup_menu), self);
+		clutter_actor_add_action(actor, clickAction);
+
 		/* Add to view and layout */
 		_xfdashboard_applications_view_setup_actor_for_view_mode(self, CLUTTER_ACTOR(actor));
 		clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(actor));
@@ -468,6 +625,7 @@ static void _xfdashboard_applications_view_on_all_applications_menu_clicked(Xfda
 	g_object_unref(appDB);
 }
 
+/* Filter to display applications has changed */
 static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicationsView *self, gpointer inUserData)
 {
 	XfdashboardApplicationsViewPrivate	*priv;
@@ -475,6 +633,7 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 	ClutterActor						*actor;
 	GarconMenuElement					*menuElement=NULL;
 	GarconMenu							*parentMenu=NULL;
+	ClutterAction						*clickAction;
 	ClutterAction						*dragAction;
 	GAppInfo							*appInfo;
 
@@ -616,8 +775,13 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 			clutter_actor_add_child(CLUTTER_ACTOR(self), CLUTTER_ACTOR(actor));
 			clutter_actor_show(actor);
 
+			/* Set up and add pop-up menu click action and drag action */
 			if(GARCON_IS_MENU_ITEM(menuElement))
 			{
+				clickAction=xfdashboard_click_action_new();
+				g_signal_connect_swapped(clickAction, "clicked", G_CALLBACK(_xfdashboard_applications_view_on_popup_menu), self);
+				clutter_actor_add_action(actor, clickAction);
+
 				dragAction=xfdashboard_drag_action_new_with_source(CLUTTER_ACTOR(self));
 				clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(dragAction), -1, -1);
 				clutter_actor_add_action(actor, dragAction);
@@ -776,7 +940,7 @@ static gboolean _xfdashboard_applications_view_focusable_set_selection(Xfdashboa
 }
 
 /* Find requested selection target depending of current selection */
-static ClutterActor* xfdashboard_applications_view_get_selection_from_icon_mode(XfdashboardApplicationsView *self,
+static ClutterActor* _xfdashboard_applications_view_get_selection_from_icon_mode(XfdashboardApplicationsView *self,
 																				ClutterActor *inSelection,
 																				XfdashboardSelectionTarget inDirection)
 {
@@ -916,7 +1080,7 @@ static ClutterActor* xfdashboard_applications_view_get_selection_from_icon_mode(
 	return(selection);
 }
 
-static ClutterActor* xfdashboard_applications_view_get_selection_from_list_mode(XfdashboardApplicationsView *self,
+static ClutterActor* _xfdashboard_applications_view_get_selection_from_list_mode(XfdashboardApplicationsView *self,
 																				ClutterActor *inSelection,
 																				XfdashboardSelectionTarget inDirection)
 {
@@ -1100,11 +1264,11 @@ static ClutterActor* _xfdashboard_applications_view_focusable_find_selection(Xfd
 		case XFDASHBOARD_SELECTION_TARGET_PAGE_DOWN:
 			if(priv->viewMode==XFDASHBOARD_VIEW_MODE_LIST)
 			{
-				newSelection=xfdashboard_applications_view_get_selection_from_list_mode(self, inSelection, inDirection);
+				newSelection=_xfdashboard_applications_view_get_selection_from_list_mode(self, inSelection, inDirection);
 			}
 				else
 				{
-					newSelection=xfdashboard_applications_view_get_selection_from_icon_mode(self, inSelection, inDirection);
+					newSelection=_xfdashboard_applications_view_get_selection_from_icon_mode(self, inSelection, inDirection);
 				}
 			break;
 
