@@ -115,12 +115,12 @@ static void _xfdashboard_application_button_update_text(XfdashboardApplicationBu
 	if(priv->showDescription==FALSE)
 	{
 		if(priv->formatTitleOnly) text=g_markup_printf_escaped(priv->formatTitleOnly, title ? title : "");
-			else text=g_strdup(title ? title : "");
+			else text=g_markup_escape_text(title ? title : "", -1);
 	}
 		else
 		{
 			if(priv->formatTitleDescription) text=g_markup_printf_escaped(priv->formatTitleDescription, title ? title : "", description ? description : "");
-				else text=g_strdup_printf("%s\n%s", title ? title : "", description ? description : "");
+				else text=g_markup_printf_escaped("%s\n%s", title ? title : "", description ? description : "");
 		}
 
 	xfdashboard_label_set_text(XFDASHBOARD_LABEL(self), text);
@@ -821,6 +821,7 @@ guint xfdashboard_application_button_add_popup_menu_items_for_windows(Xfdashboar
 		XfdashboardWindowTrackerWorkspace	*windowWorkspace;
 		gboolean							separatorAdded;
 		ClutterActor						*menuItem;
+		gchar								*windowName;
 
 		/* Create sorted list of windows. The window is added to begin
 		 * of list if it is on active workspace and to end of list if it
@@ -880,9 +881,12 @@ guint xfdashboard_application_button_add_popup_menu_items_for_windows(Xfdashboar
 
 			/* Create menu item for window */
 			menuItem=xfdashboard_popup_menu_item_button_new();
-			xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), xfdashboard_window_tracker_window_get_name(window));
 			clutter_actor_set_x_expand(menuItem, TRUE);
 			xfdashboard_popup_menu_add_item(inMenu, XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+
+			windowName=g_markup_printf_escaped("%s", xfdashboard_window_tracker_window_get_name(window));
+			xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), windowName);
+			g_free(windowName);
 
 			g_signal_connect(menuItem,
 								"activated",
