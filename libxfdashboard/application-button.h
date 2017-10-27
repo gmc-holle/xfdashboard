@@ -33,6 +33,7 @@
 
 #include <libxfdashboard/button.h>
 #include <libxfdashboard/desktop-app-info.h>
+#include <libxfdashboard/popup-menu.h>
 
 G_BEGIN_DECLS
 
@@ -74,21 +75,30 @@ ClutterActor* xfdashboard_application_button_new(void);
 ClutterActor* xfdashboard_application_button_new_from_app_info(GAppInfo *inAppInfo);
 
 GAppInfo* xfdashboard_application_button_get_app_info(XfdashboardApplicationButton *self);
-void xfdashboard_application_button_set_app_info(XfdashboardApplicationButton *self, GAppInfo *inAppInfo);
+void xfdashboard_application_button_set_app_info(XfdashboardApplicationButton *self,
+													GAppInfo *inAppInfo);
 
 gboolean xfdashboard_application_button_get_show_description(XfdashboardApplicationButton *self);
-void xfdashboard_application_button_set_show_description(XfdashboardApplicationButton *self, gboolean inShowDescription);
+void xfdashboard_application_button_set_show_description(XfdashboardApplicationButton *self,
+															gboolean inShowDescription);
 
 const gchar* xfdashboard_application_button_get_format_title_only(XfdashboardApplicationButton *self);
-void xfdashboard_application_button_set_format_title_only(XfdashboardApplicationButton *self, const gchar *inFormat);
+void xfdashboard_application_button_set_format_title_only(XfdashboardApplicationButton *self,
+															const gchar *inFormat);
 
 const gchar* xfdashboard_application_button_get_format_title_description(XfdashboardApplicationButton *self);
-void xfdashboard_application_button_set_format_title_description(XfdashboardApplicationButton *self, const gchar *inFormat);
+void xfdashboard_application_button_set_format_title_description(XfdashboardApplicationButton *self,
+																	const gchar *inFormat);
 
 const gchar* xfdashboard_application_button_get_display_name(XfdashboardApplicationButton *self);
 const gchar* xfdashboard_application_button_get_icon_name(XfdashboardApplicationButton *self);
 
 gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *self, GAppLaunchContext *inContext);
+
+guint xfdashboard_application_button_add_popup_menu_items_for_windows(XfdashboardApplicationButton *self,
+																		XfdashboardPopupMenu *inMenu);
+guint xfdashboard_application_button_add_popup_menu_items_for_actions(XfdashboardApplicationButton *self,
+																		XfdashboardPopupMenu *inMenu);
 
 G_END_DECLS
 

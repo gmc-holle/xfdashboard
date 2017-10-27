@@ -37,6 +37,10 @@
 #include <libxfdashboard/application-tracker.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/application.h>
+#include <libxfdashboard/window-tracker.h>
+#include <libxfdashboard/popup-menu-item-button.h>
+#include <libxfdashboard/popup-menu-item-separator.h>
+#include <libxfdashboard/desktop-app-info.h>
 #include <libxfdashboard/compat.h>
 
 
@@ -202,6 +206,95 @@ static void _xfdashboard_application_button_on_running_state_changed(Xfdashboard
 
 	_xfdashboard_application_button_update_running_state(self);
 }
+
+/* User selected to activate a window at pop-up menu */
+static void _xfdashboard_application_button_on_popup_menu_item_activate_window(XfdashboardPopupMenuItem *inMenuItem,
+																				gpointer inUserData)
+{
+	XfdashboardWindowTrackerWindow		*window;
+
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
+
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(inUserData);
+
+	/* Activate window */
+	xfdashboard_window_tracker_window_activate(window);
+
+	/* Quit application */
+	xfdashboard_application_suspend_or_quit(NULL);
+}
+
+/* User selected to execute an application action */
+static void _xfdashboard_application_button_on_popup_menu_item_application_action(XfdashboardPopupMenuItem *inMenuItem,
+																					gpointer inUserData)
+{
+	XfdashboardApplicationButton			*self;
+	XfdashboardApplicationButtonPrivate		*priv;
+	XfdashboardDesktopAppInfoAction			*action;
+	GError									*error;
+
+	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(inUserData));
+
+	self=XFDASHBOARD_APPLICATION_BUTTON(inUserData);
+	priv=self->priv;
+	error=NULL;
+
+	/* Get action to execute */
+	if(!XFDASHBOARD_IS_DESKTOP_APP_INFO(priv->appInfo))
+	{
+		g_warning(_("Could not get information about application '%s'"),
+					g_app_info_get_display_name(priv->appInfo));
+		return;
+	}
+
+	action=XFDASHBOARD_DESKTOP_APP_INFO_ACTION(g_object_get_data(G_OBJECT(inMenuItem), "popup-menu-item-app-action"));
+	if(!action)
+	{
+		g_warning(_("Could not get application action for application '%s'"),
+					g_app_info_get_display_name(priv->appInfo));
+		return;
+	}
+
+	/* Execute action */
+	if(!xfdashboard_desktop_app_info_launch_action(XFDASHBOARD_DESKTOP_APP_INFO(priv->appInfo), action, NULL, &error))
+	{
+		/* Show notification about failed launch of action */
+		xfdashboard_notify(CLUTTER_ACTOR(self),
+							"dialog-error",
+							_("Could not execute action '%s' for application '%s': %s"),
+							xfdashboard_desktop_app_info_action_get_name(action),
+							g_app_info_get_display_name(priv->appInfo),
+							error ? error->message : _("Unknown error"));
+		g_error_free(error);
+	}
+		else
+		{
+			GIcon						*gicon;
+			const gchar					*iconName;
+
+			/* Get icon of application */
+			iconName=NULL;
+
+			gicon=g_app_info_get_icon(priv->appInfo);
+			if(gicon) iconName=g_icon_to_string(gicon);
+
+			/* Show notification about successful launch of action */
+			xfdashboard_notify(CLUTTER_ACTOR(self),
+								iconName,
+								_("Executed action '%s' for application '%s'"),
+								xfdashboard_desktop_app_info_action_get_name(action),
+								g_app_info_get_display_name(priv->appInfo));
+
+			/* Quit application */
+			xfdashboard_application_suspend_or_quit(NULL);
+
+			/* Release allocated resources */
+			g_object_unref(gicon);
+		}
+}
+
 
 /* IMPLEMENTATION: GObject */
 
@@ -700,4 +793,174 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 
 	/* Return status */
 	return(started);
+}
+
+/* Add each open window of applicatio as menu item to pop-up menu*/
+guint xfdashboard_application_button_add_popup_menu_items_for_windows(XfdashboardApplicationButton *self,
+																		XfdashboardPopupMenu *inMenu)
+{
+	XfdashboardApplicationButtonPrivate		*priv;
+	guint									numberItems;
+	const GList								*windows;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), 0);
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(inMenu), 0);
+
+	priv=self->priv;
+	numberItems=0;
+
+	/* Add each open window to pop-up of application */
+	windows=xfdashboard_application_tracker_get_window_list_by_app_info(priv->appTracker, priv->appInfo);
+	if(windows)
+	{
+		const GList							*iter;
+		GList								*sortedList;
+		XfdashboardWindowTracker			*windowTracker;
+		XfdashboardWindowTrackerWindow		*window;
+		XfdashboardWindowTrackerWorkspace	*activeWorkspace;
+		XfdashboardWindowTrackerWorkspace	*windowWorkspace;
+		gboolean							separatorAdded;
+		ClutterActor						*menuItem;
+
+		/* Create sorted list of windows. The window is added to begin
+		 * of list if it is on active workspace and to end of list if it
+		 * is on any other workspace.
+		 */
+		windowTracker=xfdashboard_window_tracker_get_default();
+		activeWorkspace=xfdashboard_window_tracker_get_active_workspace(windowTracker);
+
+		sortedList=NULL;
+		for(iter=windows; iter; iter=g_list_next(iter))
+		{
+			/* Get window currently iterated */
+			window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(iter->data);
+			if(!window) continue;
+
+			/* Get workspace of window */
+			windowWorkspace=xfdashboard_window_tracker_window_get_workspace(window);
+
+			/* If window is on active workspace add to begin of sorted list,
+			 * otherwise add to end of sorted list.
+			 */
+			if(windowWorkspace==activeWorkspace)
+			{
+				sortedList=g_list_prepend(sortedList, window);
+			}
+				else
+				{
+					sortedList=g_list_append(sortedList, window);
+				}
+		}
+
+		/* Now add menu items for each window in sorted list */
+		separatorAdded=FALSE;
+		for(iter=sortedList; iter; iter=g_list_next(iter))
+		{
+			/* Get window currently iterated */
+			window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(iter->data);
+			if(!window) continue;
+
+			/* Get workspace of window */
+			windowWorkspace=xfdashboard_window_tracker_window_get_workspace(window);
+
+			/* Add separator if currently iterated window is not on active
+			 * workspace then all following windows are not on active workspace
+			 * anymore and a separator is added to split them from the ones
+			 * on active workspace. But add this separator only once.
+			 */
+			if(windowWorkspace!=activeWorkspace &&
+				!separatorAdded)
+			{
+				menuItem=xfdashboard_popup_menu_item_separator_new();
+				clutter_actor_set_x_expand(menuItem, TRUE);
+				xfdashboard_popup_menu_add_item(inMenu, XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+
+				separatorAdded=TRUE;
+			}
+
+			/* Create menu item for window */
+			menuItem=xfdashboard_popup_menu_item_button_new();
+			xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), xfdashboard_window_tracker_window_get_name(window));
+			clutter_actor_set_x_expand(menuItem, TRUE);
+			xfdashboard_popup_menu_add_item(inMenu, XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+
+			g_signal_connect(menuItem,
+								"activated",
+								G_CALLBACK(_xfdashboard_application_button_on_popup_menu_item_activate_window),
+								window);
+
+			/* Count number of menu items created */
+			numberItems++;
+		}
+
+		/* Release allocated resources */
+		g_list_free(sortedList);
+		g_object_unref(windowTracker);
+	}
+
+	/* Return number of menu items added to pop-up menu */
+	return(numberItems);
+}
+
+/* Add application actions as menu items to pop-up menu */
+guint xfdashboard_application_button_add_popup_menu_items_for_actions(XfdashboardApplicationButton *self,
+																		XfdashboardPopupMenu *inMenu)
+{
+	XfdashboardApplicationButtonPrivate			*priv;
+	guint										numberItems;
+	GList										*actions;
+	const GList									*iter;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), 0);
+	g_return_val_if_fail(XFDASHBOARD_IS_POPUP_MENU(inMenu), 0);
+
+	priv=self->priv;
+	numberItems=0;
+
+	/* Check if application actions can be requested */
+	if(XFDASHBOARD_IS_DESKTOP_APP_INFO(priv->appInfo))
+	{
+		/* Get actions and create a menu item for each one */
+		actions=xfdashboard_desktop_app_info_get_actions(XFDASHBOARD_DESKTOP_APP_INFO(priv->appInfo));
+		for(iter=actions; iter; iter=g_list_next(iter))
+		{
+			XfdashboardDesktopAppInfoAction		*action;
+			const gchar							*iconName;
+			ClutterActor						*menuItem;
+
+			/* Get currently iterated application action */
+			action=XFDASHBOARD_DESKTOP_APP_INFO_ACTION(iter->data);
+			if(!action) continue;
+
+			/* Get icon name to determine style of pop-up menu item */
+			iconName=xfdashboard_desktop_app_info_action_get_icon_name(action);
+
+			/* Create pop-up menu item. If icon name is available then set
+			 * style to both (text+icon) and set icon. If icon name is NULL
+			 * then keep style at text-only.
+			 */
+			menuItem=xfdashboard_popup_menu_item_button_new();
+			xfdashboard_label_set_text(XFDASHBOARD_LABEL(menuItem), xfdashboard_desktop_app_info_action_get_name(action));
+			if(iconName)
+			{
+				xfdashboard_label_set_icon_name(XFDASHBOARD_LABEL(menuItem), iconName);
+				xfdashboard_label_set_style(XFDASHBOARD_LABEL(menuItem), XFDASHBOARD_LABEL_STYLE_BOTH);
+			}
+			clutter_actor_set_x_expand(menuItem, TRUE);
+			xfdashboard_popup_menu_add_item(inMenu, XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
+
+			g_object_set_data_full(G_OBJECT(menuItem), "popup-menu-item-app-action", g_object_ref(action), g_object_unref);
+
+			g_signal_connect(menuItem,
+								"activated",
+								G_CALLBACK(_xfdashboard_application_button_on_popup_menu_item_application_action),
+								self);
+
+			/* Count number of menu items created */
+			numberItems++;
+		}
+	}
+
+	/* Return number of menu items added to pop-up menu */
+	return(numberItems);
 }
