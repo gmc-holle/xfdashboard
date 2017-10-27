@@ -429,13 +429,7 @@ static void _xfdashboard_applications_view_on_popup_menu(XfdashboardApplications
 		g_object_unref(appTracker);
 
 		/* Add application actions */
-		if(xfdashboard_application_button_add_popup_menu_items_for_actions(button, XFDASHBOARD_POPUP_MENU(popup))>0)
-		{
-			/* Add a separator to split windows from other actions in pop-up menu */
-			menuItem=xfdashboard_popup_menu_item_separator_new();
-			clutter_actor_set_x_expand(menuItem, TRUE);
-			xfdashboard_popup_menu_add_item(XFDASHBOARD_POPUP_MENU(popup), XFDASHBOARD_POPUP_MENU_ITEM(menuItem));
-		}
+		xfdashboard_application_button_add_popup_menu_items_for_actions(button, XFDASHBOARD_POPUP_MENU(popup));
 
 		/* Activate pop-up menu */
 		xfdashboard_popup_menu_activate(XFDASHBOARD_POPUP_MENU(popup));
