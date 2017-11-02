@@ -63,7 +63,10 @@ struct _XfdashboardDesktopAppInfoPrivate
 
 	gchar				*binaryExecutable;
 
+	gboolean			needActions;
 	GList				*actions;
+
+	gboolean			needKeywords;
 	GList				*keywords;
 };
 
@@ -212,13 +215,17 @@ static void _xfdashboard_desktop_app_info_update_actions(XfdashboardDesktopAppIn
 
 	priv=self->priv;
 
-	/* Get application actions for menu item (desktop entry) */
+	/* Reload only if needed */
+	if(!priv->needActions) return;
+
+	/* Remove old actions loaded */
 	if(priv->actions)
 	{
 		g_list_free_full(priv->actions, g_object_unref);
 		priv->actions=NULL;
 	}
 
+	/* Get application actions for menu item (desktop entry) */
 #if 0 /*GARCON_CHECK_VERSION(0, 6, 3)*/
 	if(priv->item)
 	{
@@ -390,6 +397,9 @@ static void _xfdashboard_desktop_app_info_update_actions(XfdashboardDesktopAppIn
 		if(itemActions) g_strfreev(itemActions);
 	}
 #endif
+
+	/* Set flag that application actions are loaded and do not need futher updates */
+	priv->needActions=FALSE;
 }
 
 /* (Re-)Load keywords */
@@ -401,13 +411,17 @@ static void _xfdashboard_desktop_app_info_update_keywords(XfdashboardDesktopAppI
 
 	priv=self->priv;
 
-	/* Get application actions for menu item (desktop entry) */
+	/* Reload only if needed */
+	if(!priv->needKeywords) return;
+
+	/* Remove old actions loaded */
 	if(priv->keywords)
 	{
 		g_list_free_full(priv->keywords, g_free);
 		priv->keywords=NULL;
 	}
 
+	/* Get application actions for menu item (desktop entry) */
 #if 0 /*GARCON_CHECK_VERSION(0, 6, 3)*/
 	if(priv->item)
 	{
@@ -477,6 +491,9 @@ static void _xfdashboard_desktop_app_info_update_keywords(XfdashboardDesktopAppI
 		if(keywords) g_strfreev(keywords);
 	}
 #endif
+
+	/* Set flag that keywords are loaded and do not need futher updates */
+	priv->needKeywords=FALSE;
 }
 
 /* Menu item has changed */
@@ -580,11 +597,11 @@ static void _xfdashboard_desktop_app_info_set_file(XfdashboardDesktopAppInfo *se
 		/* Get path to executable file for this application */
 		__xfdashboard_desktop_app_info_update_binary_executable(self);
 
-		/* Get application actions */
-		_xfdashboard_desktop_app_info_update_actions(self);
-
-		/* Get keywords of application */
-		_xfdashboard_desktop_app_info_update_keywords(self);
+		/* Set flag to reload application actions and keywords. They will be
+		 * cleared and (re-)loaded on-demand.
+		 */
+		priv->needActions=TRUE;
+		priv->needKeywords=TRUE;
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardDesktopAppInfoProperties[PROP_FILE]);
@@ -1483,12 +1500,14 @@ static void _xfdashboard_desktop_app_info_dispose(GObject *inObject)
 		g_list_free_full(priv->keywords, g_free);
 		priv->keywords=NULL;
 	}
+	priv->needKeywords=TRUE;
 
 	if(priv->actions)
 	{
 		g_list_free_full(priv->actions, g_object_unref);
 		priv->actions=NULL;
 	}
+	priv->needActions=TRUE;
 
 	if(priv->binaryExecutable)
 	{
@@ -1653,6 +1672,9 @@ static void xfdashboard_desktop_app_info_init(XfdashboardDesktopAppInfo *self)
 	priv->itemChangedID=0;
 	priv->binaryExecutable=NULL;
 	priv->actions=NULL;
+	priv->needActions=TRUE;
+	priv->keywords=NULL;
+	priv->needKeywords=TRUE;
 }
 
 /* IMPLEMENTATION: Public API */
@@ -1812,11 +1834,11 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 		/* Update path to executable file for this application */
 		__xfdashboard_desktop_app_info_update_binary_executable(self);
 
-		/* Reload application actions */
-		_xfdashboard_desktop_app_info_update_actions(self);
-
-		/* Reload keywords of application */
-		_xfdashboard_desktop_app_info_update_keywords(self);
+		/* Set flag to reload application actions and keywords. They will be
+		 * cleared and (re-)loaded on-demand.
+		 */
+		priv->needActions=TRUE;
+		priv->needKeywords=TRUE;
 	}
 
 	/* If reload was successful emit changed signal */
@@ -1843,6 +1865,9 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 GList* xfdashboard_desktop_app_info_get_actions(XfdashboardDesktopAppInfo *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+
+	/* Update list of application actions */
+	_xfdashboard_desktop_app_info_update_actions(self);
 
 	/* Return the list of application actions */
 	return(self->priv->actions);
@@ -1943,6 +1968,9 @@ gboolean xfdashboard_desktop_app_info_launch_action_by_name(XfdashboardDesktopAp
 GList* xfdashboard_desktop_app_info_get_keywords(XfdashboardDesktopAppInfo *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+
+	/* Update list of keywords */
+	_xfdashboard_desktop_app_info_update_keywords(self);
 
 	/* Return the list of keywords */
 	return(self->priv->keywords);
