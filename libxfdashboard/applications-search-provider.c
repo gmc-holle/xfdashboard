@@ -721,7 +721,7 @@ static void _xfdashboard_applications_search_provider_on_application_removed(Xfd
 
 /* User selected to open a new window or to launch that application at pop-up menu */
 static void _xfdashboard_applications_search_provider_on_popup_menu_item_launch(XfdashboardPopupMenuItem *inMenuItem,
-																			gpointer inUserData)
+																				gpointer inUserData)
 {
 	GAppInfo							*appInfo;
 	XfdashboardApplicationTracker		*appTracker;
@@ -935,6 +935,7 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 	XfdashboardApplicationsSearchProviderPrivate		*priv;
 	gchar												*title;
 	gchar												*description;
+	GList												*keywords;
 	const gchar											*command;
 	const gchar											*value;
 	gint												matchesFound, matchesExpected;
@@ -946,6 +947,7 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 
 	priv=self->priv;
 	score=-1.0f;
+	keywords=NULL;
 
 	/* Empty search term matches no menu item */
 	if(!inSearchTerms) return(0.0f);
@@ -959,9 +961,9 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 	 * search terms.
 	 *
 	 * But a matching display names weights more than a matching description and
-	 * also a matching command weights more than a matching description. The weights
-	 * are 0.4 for matching display names, 0.4 for matching commands and 0.2 for
-	 * matching descriptions.
+	 * also a matching command or keyword weights more than a matching description.
+	 * So the weights are 0.4 for matching display names, 0.25 for matching commands,
+	 * 0.25 for matching keywords and 0.1 for matching descriptions.
 	 *
 	 * While iterating through all search terms we add the weights "points" for
 	 * each matching item and when we iterated through all search terms we divide
@@ -979,13 +981,25 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 
 	command=g_app_info_get_executable(inAppInfo);
 
+	if(XFDASHBOARD_IS_DESKTOP_APP_INFO(inAppInfo))
+	{
+		GList											*appKeywords;
+		GList											*iter;
+
+		appKeywords=xfdashboard_desktop_app_info_get_keywords(XFDASHBOARD_DESKTOP_APP_INFO(inAppInfo));
+		for(iter=appKeywords; iter; iter=g_list_next(iter))
+		{
+			keywords=g_list_prepend(keywords, g_utf8_strdown(iter->data, -1));
+		}
+	}
+
 	matchesFound=0;
 	pointsSearch=0.0f;
 	while(*inSearchTerms)
 	{
-		gboolean						termMatch;
-		gchar							*commandPos;
-		gfloat							pointsTerm;
+		gboolean										termMatch;
+		gchar											*commandPos;
+		gfloat											pointsTerm;
 
 		/* Reset "found" indicator and score of current search term */
 		termMatch=FALSE;
@@ -999,11 +1013,20 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 			termMatch=TRUE;
 		}
 
-		if(description &&
-			g_strstr_len(description, -1, *inSearchTerms))
+		if(keywords)
 		{
-			pointsTerm+=0.2;
-			termMatch=TRUE;
+			GList						*iter;
+
+			for(iter=keywords; iter; iter=g_list_next(iter))
+			{
+				if(iter->data &&
+					g_strstr_len(iter->data, -1, *inSearchTerms))
+				{
+					pointsTerm+=0.25;
+					termMatch=TRUE;
+					break;
+				}
+			}
 		}
 
 		if(command)
@@ -1012,9 +1035,16 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 			if(commandPos &&
 				(commandPos==command || *(commandPos-1)==G_DIR_SEPARATOR))
 			{
-				pointsTerm+=0.4;
+				pointsTerm+=0.25;
 				termMatch=TRUE;
 			}
+		}
+
+		if(description &&
+			g_strstr_len(description, -1, *inSearchTerms))
+		{
+			pointsTerm+=0.1;
+			termMatch=TRUE;
 		}
 
 		/* Increase match counter if we found a match */
@@ -1070,6 +1100,7 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 	}
 
 	/* Release allocated resources */
+	if(keywords) g_list_free_full(keywords, g_free);
 	if(description) g_free(description);
 	if(title) g_free(title);
 
@@ -1165,7 +1196,6 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 	GList												*iter;
 	guint												numberTerms;
 	gchar												**terms, **termsIter;
-	GVariant											*resultItem;
 	XfdashboardDesktopAppInfo							*appInfo;
 	gfloat												score;
 
@@ -1225,26 +1255,19 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 			continue;
 		}
 
-		/* Get result item */
-		resultItem=g_variant_new_string(g_app_info_get_id(G_APP_INFO(appInfo)));
-
-		/* Check if current app info is in previous result set and should be checked
-		 * if a previous result set is provided.
-		 */
-		if(!inPreviousResultSet ||
-			xfdashboard_search_result_set_has_item(inPreviousResultSet, resultItem))
+		/* Check for a match against search terms */
+		score=_xfdashboard_applications_search_provider_score(self, terms, G_APP_INFO(appInfo));
+		if(score>=0.0f)
 		{
-			/* Check for a match against search terms */
-			score=_xfdashboard_applications_search_provider_score(self, terms, G_APP_INFO(appInfo));
-			if(score>=0.0f)
-			{
-				xfdashboard_search_result_set_add_item(resultSet, g_variant_ref(resultItem));
-				xfdashboard_search_result_set_set_item_score(resultSet, resultItem, score);
-			}
-		}
+			GVariant									*resultItem;
 
-		/* Release allocated resources */
-		g_variant_unref(resultItem);
+			/* Create result item */
+			resultItem=g_variant_new_string(g_app_info_get_id(G_APP_INFO(appInfo)));
+
+			/* Add result item to result set */
+			xfdashboard_search_result_set_add_item(resultSet, resultItem);
+			xfdashboard_search_result_set_set_item_score(resultSet, resultItem, score);
+		}
 	}
 
 	/* Sort result set */
