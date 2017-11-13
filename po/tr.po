@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2017-10-25 12:34+0000\n"
+"PO-Revision-Date: 2017-11-01 13:40+0000\n"
 "Last-Translator: Yaşar Çiv\n"
 "Language-Team: Turkish (http://www.transifex.com/xfdashboard/xfdashboard/language/tr/)\n"
 "MIME-Version: 1.0\n"
@@ -793,7 +793,7 @@ msgstr "PID %d için ortam arama tablosu oluşturulamadı"
 #: ../libxfdashboard/application-tracker.c:353
 #, c-format
 msgid "Malformed enviroment '%s' in environment set for PID %d at %s"
-msgstr ""
+msgstr "PID %d için %s'de belirlenen ortamda hatalı biçimlendirilmiş '%s' çevresi "
 
 #: ../libxfdashboard/application-tracker.c:383
 #, c-format
@@ -1225,7 +1225,7 @@ msgstr "Eksik eylem"
 #: ../libxfdashboard/bindings-pool.c:400
 #, c-format
 msgid "Missing binding to set action '%s'"
-msgstr ""
+msgstr "'%s' işlemini ayarlamak için eksik bağlama"
 
 #: ../libxfdashboard/bindings-pool.c:453 ../libxfdashboard/bindings-pool.c:724
 #: ../libxfdashboard/theme-effects.c:556 ../libxfdashboard/theme-effects.c:642
@@ -1247,11 +1247,11 @@ msgstr "'%s' anahtarı tercüme edilemedi"
 #: ../libxfdashboard/bindings-pool.c:580
 #, c-format
 msgid "Unknown value '%s' for attribute 'when'"
-msgstr ""
+msgstr "'Ne zaman' özelliği için bilinmeyen '%s' değeri"
 
 #: ../libxfdashboard/bindings-pool.c:603
 msgid "Could not initialize binding for key-binding"
-msgstr ""
+msgstr "Anahtar bağlama için bağlama başlatılamadı"
 
 #: ../libxfdashboard/bindings-pool.c:633
 #, c-format
@@ -1651,23 +1651,23 @@ msgstr "Amblemin etrafında dolgu"
 
 #: ../libxfdashboard/emblem-effect.c:494
 msgid "X align"
-msgstr ""
+msgstr "X hizalama"
 
 #: ../libxfdashboard/emblem-effect.c:495
 msgid ""
 "The alignment of emblem on the X axis within the allocation in normalized "
 "coordinate between 0 and 1"
-msgstr ""
+msgstr "Amblemin X ekseni üzerindeki hizalanması, 0 ile 1 arasındaki normalleştirilmiş koordinat içindeki tahsisi içinde"
 
 #: ../libxfdashboard/emblem-effect.c:502
 msgid "Y align"
-msgstr ""
+msgstr "Y hizalama"
 
 #: ../libxfdashboard/emblem-effect.c:503
 msgid ""
 "The alignment of emblem on the Y axis within the allocation in normalized "
 "coordinate between 0 and 1"
-msgstr ""
+msgstr "Amblemin Y ekseni üzerindeki hizalanması, 0 ile 1 arasındaki normalleştirilmiş koordinat içindeki tahsisi içinde."
 
 #: ../libxfdashboard/emblem-effect.c:510
 msgid "Anchor point"
@@ -1688,7 +1688,7 @@ msgstr "Yönlendirme"
 #: ../libxfdashboard/quicklaunch.c:2714
 #: ../libxfdashboard/workspace-selector.c:1248
 msgid "The orientation to layout children"
-msgstr ""
+msgstr "Düzeni çocuklara yönelik yönlendirme"
 
 #: ../libxfdashboard/fill-box-layout.c:583
 msgid "spacing"
@@ -1698,7 +1698,7 @@ msgstr "aralık"
 #: ../libxfdashboard/quicklaunch.c:2706
 #: ../libxfdashboard/workspace-selector.c:1240
 msgid "The spacing between children"
-msgstr ""
+msgstr "Çocuklar arasındaki boşluk"
 
 #: ../libxfdashboard/fill-box-layout.c:592
 msgid "Homogeneous"
@@ -1708,7 +1708,7 @@ msgstr "Homojen"
 msgid ""
 "Whether the layout should be homogeneous, i.e. all children get the same "
 "size"
-msgstr ""
+msgstr "Düzenin homojen mi olması gerektiği, diğer bir deyişle tüm çocuklar aynı boyuta sahip olsunlar"
 
 #: ../libxfdashboard/fill-box-layout.c:599
 msgid "Keep aspect"
@@ -1716,7 +1716,7 @@ msgstr "Görünüşü koru"
 
 #: ../libxfdashboard/fill-box-layout.c:600
 msgid "Whether all children should keep their aspect"
-msgstr ""
+msgstr "Tüm çocuklar kendi yönlerini korumalı mı"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/focusable.c:75
@@ -1724,7 +1724,7 @@ msgstr ""
 msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardFocusable::%s"
-msgstr ""
+msgstr "%s türü nesnesi gereken sanal fonksiyonu uygulamıyor XfdashboardFocusable ::%s"
 
 #: ../libxfdashboard/focusable.c:178
 #, c-format
@@ -1736,28 +1736,28 @@ msgstr ""
 #: ../libxfdashboard/focus-manager.c:407 ../libxfdashboard/focus-manager.c:415
 #, c-format
 msgid "Object %s does not inherit %s and cannot be registered"
-msgstr ""
+msgstr "%s nsenesi %s tarafından devralınamaz ve kayıt edilemez"
 
 #: ../libxfdashboard/focus-manager.c:439
 #, c-format
 msgid ""
 "Could not find registered focusable object %s to register object %s - "
 "appending to end of list."
-msgstr ""
+msgstr "Kayıtlı odaklanabilir %s öğesi %s öğesi olarak bulunamıyor - liste sonuna ekleniyor."
 
 #: ../libxfdashboard/focus-manager.c:578
 #, c-format
 msgid "Cannot build target list for unknown type %s"
-msgstr ""
+msgstr "Bilinmeyen %s türü için hedef liste oluşturulamıyor"
 
 #: ../libxfdashboard/focus-manager.c:685
 msgid "Trying to focus an unregistered focusable actor"
-msgstr ""
+msgstr "Kayıtlı olmayan odaklanabilir bir aktörü odaklanmaya çalışılıyor"
 
 #: ../libxfdashboard/image-content.c:154
 #, c-format
 msgid "Destroying image cache still containing %d images."
-msgstr ""
+msgstr "Hala %d resimleri içeren resim önbelleği yok ediliyor"
 
 #: ../libxfdashboard/image-content.c:213
 #, c-format
@@ -2343,13 +2343,13 @@ msgstr ""
 #: ../libxfdashboard/search-result-container.c:1718
 #, c-format
 msgid "Show %d more results..."
-msgstr ""
+msgstr "%d daha fazla sonuç göster..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:675
 #, c-format
 msgid "Show all %d results..."
-msgstr ""
+msgstr "Tüm %d sonuçlarını göster..."
 
 #: ../libxfdashboard/search-result-container.c:710
 #, c-format
@@ -2427,7 +2427,7 @@ msgstr ""
 #: ../libxfdashboard/search-view.c:857
 #, c-format
 msgid "No results found for '%s'"
-msgstr ""
+msgstr "'%s' için sonuç bulunamadı"
 
 #: ../libxfdashboard/search-view.c:986
 #, c-format
@@ -3069,11 +3069,11 @@ msgstr ""
 
 #: ../libxfdashboard/view.c:397
 msgid "Enabled"
-msgstr ""
+msgstr "Etkin"
 
 #: ../libxfdashboard/view.c:398
 msgid "This flag indicates if is view is enabled and activable"
-msgstr ""
+msgstr "Bu bayrak, görünümün etkin ve etkinleştirilebilir olup olmadığını gösterir"
 
 #: ../libxfdashboard/view-manager.c:265
 #, c-format
@@ -3130,55 +3130,55 @@ msgstr ""
 
 #: ../libxfdashboard/viewpad.c:1230
 msgid "Active view"
-msgstr ""
+msgstr "Aktif görünüm"
 
 #: ../libxfdashboard/viewpad.c:1231
 msgid "The current active view in viewpad"
-msgstr ""
+msgstr "Görünüş alanındaki geçerli etkin görünüm"
 
 #: ../libxfdashboard/viewpad.c:1237
 msgid "Horizontal scrollbar visibility"
-msgstr ""
+msgstr "Yatay kaydırma çubuğu görünürlüğü"
 
 #: ../libxfdashboard/viewpad.c:1238
 msgid "This flag indicates if horizontal scrollbar is visible"
-msgstr ""
+msgstr "Bu bayrak, yatay kaydırma çubuğunun görünür olup olmadığını gösterir"
 
 #: ../libxfdashboard/viewpad.c:1244
 msgid "Horizontal scrollbar policy"
-msgstr ""
+msgstr "Yatay kaydırma çubuğu ilkesi"
 
 #: ../libxfdashboard/viewpad.c:1245
 msgid "The policy for horizontal scrollbar controlling when it is displayed"
-msgstr ""
+msgstr "Görüntülendiğinde yatay kaydırma çubuğunun kontrol edilmesi ilkesi"
 
 #: ../libxfdashboard/viewpad.c:1252
 msgid "Vertical scrollbar visibility"
-msgstr ""
+msgstr "Dikey kaydırma çubuğu görünürlüğü"
 
 #: ../libxfdashboard/viewpad.c:1253
 msgid "This flag indicates if vertical scrollbar is visible"
-msgstr ""
+msgstr "Bu bayrak, dikey kaydırma çubuğunun görünür olup olmadığını gösterir"
 
 #: ../libxfdashboard/viewpad.c:1259
 msgid "Vertical scrollbar policy"
-msgstr ""
+msgstr "Dikey kaydırma çubuğu ilkesi"
 
 #: ../libxfdashboard/viewpad.c:1260
 msgid "The policy for vertical scrollbar controlling when it is displayed"
-msgstr ""
+msgstr "Görüntülendiğinde dikey kaydırma çubuğunun kontrol edilmesi ilkesi"
 
 #: ../libxfdashboard/view-selector.c:389
 msgid "Viewpad"
-msgstr ""
+msgstr "Görünüş alanı"
 
 #: ../libxfdashboard/view-selector.c:390
 msgid "The viewpad this selector belongs to"
-msgstr ""
+msgstr "Bu seçicinin ait olduğu görünüş alanı"
 
 #: ../libxfdashboard/view-selector.c:415
 msgid "Orientation of view selector"
-msgstr ""
+msgstr "Görünüm seçicinin yönelimi"
 
 #: ../libxfdashboard/window-content.c:221
 #, c-format
@@ -3223,11 +3223,11 @@ msgstr ""
 
 #: ../libxfdashboard/window-content.c:635
 msgid "Query for X composite extension failed - using only fallback imagess"
-msgstr ""
+msgstr "X kompozit uzantısı için sorgu başarısız oldu - yalnızca yedek resim kullanılıyor"
 
 #: ../libxfdashboard/window-content.c:637
 msgid "X does not support composite extension - using only fallback images"
-msgstr ""
+msgstr "X kompozit uzantısı için sorgu başarısız oldu - yalnızca yedek resim kullanılıyor"
 
 #: ../libxfdashboard/window-content.c:647
 #, c-format
@@ -3238,7 +3238,7 @@ msgstr ""
 
 #: ../libxfdashboard/window-content.c:897
 msgid "Resume handler called for empty queue."
-msgstr ""
+msgstr "Boş kuyruk için çağrılan özgeçmiş işleyicisi."
 
 #: ../libxfdashboard/window-content.c:959
 #: ../libxfdashboard/window-content.c:1116
@@ -3278,93 +3278,93 @@ msgstr ""
 
 #: ../libxfdashboard/window-content.c:2076
 msgid "The window to handle and display"
-msgstr ""
+msgstr "İşlemek ve görüntülemek için pencere"
 
 #: ../libxfdashboard/window-content.c:2082
 msgid "Suspended"
-msgstr ""
+msgstr "Askıya alındı"
 
 #: ../libxfdashboard/window-content.c:2083
 msgid "Is this window suspended"
-msgstr ""
+msgstr "Bu pencere askıya alınsın mı"
 
 #: ../libxfdashboard/window-content.c:2090
 msgid "Color to draw outline of mapped windows with"
-msgstr ""
+msgstr "Eşlenen pencerelerin ana hattını çizmek için renk"
 
 #: ../libxfdashboard/window-content.c:2097
 msgid "Width of line used to draw outline of mapped windows"
-msgstr ""
+msgstr "Eşlenen pencerelerin anahatlarını çizmek için kullanılan çizginin genişliği"
 
 #: ../libxfdashboard/window-content.c:2104
 msgid "Include window frame"
-msgstr ""
+msgstr "Pencere çerçevesi dahil"
 
 #: ../libxfdashboard/window-content.c:2105
 msgid ""
 "Whether the window frame should be included or only the window content "
 "should be shown"
-msgstr ""
+msgstr "Pencere çerçevesinin dahil edilip edilmeyeceği yoksa sadece pencere içeriğinin mi gösterilmesi gerektiği"
 
 #: ../libxfdashboard/window-content.c:2111
 msgid "Unmapped window icon X fill"
-msgstr ""
+msgstr "Eşleştirilmemiş pencere simgesi X dolgusu"
 
 #: ../libxfdashboard/window-content.c:2112
 msgid "Whether the unmapped window icon should fill up horizontal space"
-msgstr ""
+msgstr "Eşleştirilmemiş pencere simgesinin yatay alan doldurup doldurmayacağı"
 
 #: ../libxfdashboard/window-content.c:2118
 msgid "Unmapped window icon y fill"
-msgstr ""
+msgstr "Eşleştirilmemiş pencere simgesi y dolgusu"
 
 #: ../libxfdashboard/window-content.c:2119
 msgid "Whether the unmapped window icon should fill up vertical space"
-msgstr ""
+msgstr "Eşleştirilmemiş pencere simgesinin dikey alan doldurup doldurmayacağı"
 
 #: ../libxfdashboard/window-content.c:2125
 msgid "Unmapped window icon X align"
-msgstr ""
+msgstr "Eşleştirilmemiş pencere simgesi X hizalama"
 
 #: ../libxfdashboard/window-content.c:2126
 msgid ""
 "The alignment of the unmapped window icon on the X axis within the "
 "allocation in normalized coordinate between 0 and 1"
-msgstr ""
+msgstr "Eşleşmeyen pencere simgesinin X ekseninde, 0 ile 1 arasındaki normalleştirilmiş koordinatta tahsisat içindeki hizalanması"
 
 #: ../libxfdashboard/window-content.c:2133
 msgid "Unmapped window icon Y align"
-msgstr ""
+msgstr "Eşleştirilmemiş pencere simgesi Y hizalama"
 
 #: ../libxfdashboard/window-content.c:2134
 msgid ""
 "The alignment of the unmapped window icon on the Y axis within the "
 "allocation in normalized coordinate between 0 and 1"
-msgstr ""
+msgstr "Eşleşmeyen pencere simgesinin Y ekseni üzerinde 0 ile 1 arasında normalleştirilmiş koordinat içindeki tahsisinde hizalanması"
 
 #: ../libxfdashboard/window-content.c:2141
 msgid "Unmapped window icon X scale"
-msgstr ""
+msgstr "Eşleştirilmemiş pencere simgesi X ölçeği"
 
 #: ../libxfdashboard/window-content.c:2142
 msgid "Scale factor of unmapped window icon on the X axis"
-msgstr ""
+msgstr "Eşlenmeyen pencere simgesinin X ekseni üzerindeki ölçek faktörü"
 
 #: ../libxfdashboard/window-content.c:2149
 msgid "Unmapped window icon Y scale"
-msgstr ""
+msgstr "Eşleştirilmemiş pencere simgesi Y ölçeği"
 
 #: ../libxfdashboard/window-content.c:2150
 msgid "Scale factor of unmapped window icon on the Y axis"
-msgstr ""
+msgstr "Eşlenmeyen pencere simgesinin Y ekseni üzerindeki ölçek faktörü"
 
 #: ../libxfdashboard/window-content.c:2157
 msgid "Unmapped window icon anchor point"
-msgstr ""
+msgstr "Eşleştirilmemiş pencere simgesi bağlantı noktası"
 
 #: ../libxfdashboard/window-content.c:2158
 msgid "The anchor point of unmapped window icon"
-msgstr ""
+msgstr "Eşleştirilmemiş pencere simgesinin bağlantı noktası"
 
 #. If we get here we did not handle drop action properly
 #. * and this should never happen.
@@ -3381,38 +3381,38 @@ msgstr ""
 
 #: ../libxfdashboard/windows-view.c:1905
 msgid "Current workspace"
-msgstr ""
+msgstr "Geçerli çalışma alanı"
 
 #: ../libxfdashboard/windows-view.c:1906
 msgid "The current workspace whose windows are shown"
-msgstr ""
+msgstr "Pencereleri gösterilen geçerli çalışma alanı"
 
 #: ../libxfdashboard/windows-view.c:1921
 msgid ""
 "Whether this view should prevent upsclaing any window beyond its real size"
-msgstr ""
+msgstr "Bu görünümün herhangi bir pencerenin gerçek boyutunun üstünde yer almasını engelleyip engelleyemeyeceği"
 
 #: ../libxfdashboard/windows-view.c:1927
 msgid "Scroll event changes workspace"
-msgstr ""
+msgstr "Kaydırma olayı çalışma alanını değiştirir"
 
 #: ../libxfdashboard/windows-view.c:1928
 msgid "Whether this view should change active workspace on scroll events"
-msgstr ""
+msgstr "Bu görünümün kaydırma etkinliklerinde etkin çalışma alanını değiştirip değiştirmeyeceği"
 
 #: ../libxfdashboard/windows-view.c:1934
 msgid "Filter monitor windows"
-msgstr ""
+msgstr "Monitör pencerelerini filtreleme"
 
 #: ../libxfdashboard/windows-view.c:1935
 msgid ""
 "Whether this view should only show windows of monitor where it placed at"
-msgstr ""
+msgstr "Bu görünümün yalnızca monitör pencerelerini nereye yerleştirdiğini göstermesi gerekip gerekmediği"
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2158
 msgid "Windows"
-msgstr ""
+msgstr "Pencereler"
 
 #: ../libxfdashboard/window-tracker.c:620
 #, c-format
@@ -3421,49 +3421,49 @@ msgstr ""
 
 #: ../libxfdashboard/window-tracker.c:898
 msgid "Active window"
-msgstr ""
+msgstr "Etkin pencere"
 
 #: ../libxfdashboard/window-tracker.c:899
 msgid "The current active window"
-msgstr ""
+msgstr "Geçerli etkin pencere"
 
 #: ../libxfdashboard/window-tracker.c:905
 msgid "Active workspace"
-msgstr ""
+msgstr "Etkin çalışma alanı"
 
 #: ../libxfdashboard/window-tracker.c:906
 msgid "The current active workspace"
-msgstr ""
+msgstr "Geçerli etkin çalışma alanı"
 
 #: ../libxfdashboard/window-tracker.c:912
 msgid "Primary monitor"
-msgstr ""
+msgstr "Birincil ekran"
 
 #: ../libxfdashboard/window-tracker.c:913
 msgid "The current primary monitor"
-msgstr ""
+msgstr "Geçerli birincil ekran"
 
 #: ../libxfdashboard/window-tracker-monitor.c:282
 msgid "Monitor index"
-msgstr ""
+msgstr "Ekran dizini"
 
 #: ../libxfdashboard/window-tracker-monitor.c:283
 msgid "The index of this monitor"
-msgstr ""
+msgstr "Bu ekranın dizini"
 
 #: ../libxfdashboard/window-tracker-monitor.c:290
 msgid "Is primary"
-msgstr ""
+msgstr "Birincil mi"
 
 #: ../libxfdashboard/window-tracker-monitor.c:291
 msgid "Whether this monitor is the primary one"
-msgstr ""
+msgstr "Bu ekran birincil mi"
 
 #: ../libxfdashboard/window-tracker-window.c:86
 msgid ""
 "Keep window fullscreen on primary monitor because window manager does not "
 "support _NET_WM_FULLSCREEN_MONITORS."
-msgstr ""
+msgstr "Pencere yöneticisi _NET_WM_FULLSCREEN_MONITORS özelliğini desteklemediğinden, birincil ekranda pencereyi tam ekran olarak tutun."
 
 #. Setting new selection was unsuccessful if we get here
 #. Activation was unsuccessful if we get here
@@ -3475,68 +3475,68 @@ msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1255
 msgid "Maximum size"
-msgstr ""
+msgstr "En fazla boyut"
 
 #: ../libxfdashboard/workspace-selector.c:1256
 msgid "The maximum size of this actor for opposite direction of orientation"
-msgstr ""
+msgstr "Yönlendirmenin zıt yönü için bu aktörün en fazla boyutu"
 
 #: ../libxfdashboard/workspace-selector.c:1263
 msgid "Maximum fraction"
-msgstr ""
+msgstr "En fazla kesir"
 
 #: ../libxfdashboard/workspace-selector.c:1264
 msgid ""
 "The maximum size of this actor for opposite direction of orientation defined"
 " by fraction between 0.0 and 1.0"
-msgstr ""
+msgstr "Bu aktörün karşı yönü için en fazla boyutu 0.0 ile 1.0 arasında bir kesir ile tanımlanır"
 
 #: ../libxfdashboard/workspace-selector.c:1271
 msgid "Using fraction"
-msgstr ""
+msgstr "Kesirin kullanılması"
 
 #: ../libxfdashboard/workspace-selector.c:1272
 msgid ""
 "Flag indicating if maximum size is static or defined by fraction between 0.0"
 " and 1.0"
-msgstr ""
+msgstr "En fazla boyutun statik mi yoksa 0,0 ile 1,0 arasındaki kesir tarafından mı tanımlandığını gösteren bayrak"
 
 #: ../libxfdashboard/workspace-selector.c:1278
 msgid "Show current monitor only"
-msgstr ""
+msgstr "Sadece geçerli ekranı göster"
 
 #: ../libxfdashboard/workspace-selector.c:1279
 msgid "Show only windows of the monitor where this actor is placed"
-msgstr ""
+msgstr "Bu aktörün yerleştirildiği ekranın yalnızca pencerelerini göster"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:313 ../plugins/clock-view/plugin.c:311
 msgid "Clock"
-msgstr ""
+msgstr "Saat"
 
 #: ../plugins/clock-view/clock-view-settings.c:233
 msgid "Hour color"
-msgstr ""
+msgstr "Saat rengi"
 
 #: ../plugins/clock-view/clock-view-settings.c:234
 msgid "Color to draw the hour hand with"
-msgstr ""
+msgstr "Saat ibresini çizmek için renk"
 
 #: ../plugins/clock-view/clock-view-settings.c:240
 msgid "Minute color"
-msgstr ""
+msgstr "Dakika rengi"
 
 #: ../plugins/clock-view/clock-view-settings.c:241
 msgid "Color to draw the minute hand with"
-msgstr ""
+msgstr "Dakika ibresini çizmek için renk"
 
 #: ../plugins/clock-view/clock-view-settings.c:247
 msgid "Second color"
-msgstr ""
+msgstr "Saniye rengi"
 
 #: ../plugins/clock-view/clock-view-settings.c:248
 msgid "Color to draw the second hand with"
-msgstr ""
+msgstr "Saniye ibresini çizmek için renk"
 
 #: ../plugins/clock-view/clock-view-settings.c:255
 msgid "Color to draw the circle with that holds the second hand"
@@ -3544,47 +3544,47 @@ msgstr ""
 
 #: ../plugins/clock-view/plugin.c:146 ../plugins/hot-corner/plugin.c:109
 msgid "Cannot allocate memory for mapping"
-msgstr ""
+msgstr "Haritalama için bellek ayrılamadı"
 
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:208
 msgid "Hour color:"
-msgstr ""
+msgstr "Saat rengi:"
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
-msgstr ""
+msgstr "Saat ibresi için renk seçin"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
 msgid "Minute color:"
-msgstr ""
+msgstr "Dakika rengi:"
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
-msgstr ""
+msgstr "Dakika ibresi  için renk seçin"
 
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
 msgid "Second color:"
-msgstr ""
+msgstr "Saniye rengi:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "Saniye ibresi için renk seçin"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
 msgid "Background color:"
-msgstr ""
+msgstr "Arkaplan rengi:"
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "Saniye ibresi arkaplanı için renk seçin"
 
 #: ../plugins/clock-view/plugin.c:312
 msgid "Adds new a view showing a clock"
-msgstr ""
+msgstr "Saat gösteren bir görünüm ekler"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:213
@@ -3648,7 +3648,7 @@ msgstr ""
 
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:724
 msgid "Deserialization failed"
-msgstr ""
+msgstr "Seri kaldırma başarısız"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:865
@@ -3694,130 +3694,130 @@ msgstr ""
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:432
 msgid "Gnome-Shell search provider"
-msgstr ""
+msgstr "Gnome kabuğu arama sağlayıcı"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr ""
+msgstr "Aramalar için Gnome kabuğu arama sağlayıcılarını kaynak olarak kullanır"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:236
 msgid "Activation corner"
-msgstr ""
+msgstr "Etkinleştirme köşesi"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:237
 msgid ""
 "The hot corner where to trigger the application to suspend or to resume"
-msgstr ""
+msgstr "Uygulamayı askıya almak veya devam ettirmek için tetikleyeceğiniz sıcak köşe"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:244
 msgid "Activation radius"
-msgstr ""
+msgstr "Etkinleştirme yarıçapı"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:245
 msgid "The radius around hot corner where the pointer must be inside"
-msgstr ""
+msgstr "İşaretçinin içinde olması gereken sıcak köşedeki yarıçap"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:252
 msgid "Activation duration"
-msgstr ""
+msgstr "Etkinleştirme süresi"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:253
 msgid ""
 "The time in milliseconds the pointer must stay inside the radius at hot "
 "corner to trigger"
-msgstr ""
+msgstr "İşaretçinin, sıcak köşedeki yarıçapın içinde kalması gereken milisaniye cinsinden süre"
 
 #: ../plugins/hot-corner/hot-corner.c:151
 msgid "Could not get pointer to determine pointer position"
-msgstr ""
+msgstr "İşaretçi konumunu belirlemek için işaretçi alınamadı"
 
 #: ../plugins/hot-corner/hot-corner.c:375
 msgid ""
 "Disabling hot-corner plugin because the root window to determine pointer "
 "position could not be found."
-msgstr ""
+msgstr "İşaretçi konumunu belirlemek için kök pencere bulunamadığından sıcak köşe eklentisini devre dışı bırakma."
 
 #: ../plugins/hot-corner/hot-corner.c:387
 msgid ""
 "Disabling hot-corner plugin because the device manager to determine pointer "
 "position could not be found."
-msgstr ""
+msgstr "İşaretçi konumunu belirlemek için aygıt yöneticisi bulunamadığından sıcak köşe eklentisini devre dışı bırakma."
 
 #: ../plugins/hot-corner/hot-corner.c:392
 msgid ""
 "Disabling hot-corner plugin because application is not running as daemon."
-msgstr ""
+msgstr "Uygulama arka plan olarak çalışmadığından sıcak köşe eklentisini devre dışı bırakma."
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:367
 msgid "ms"
-msgstr ""
+msgstr "ms"
 
 #: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:124
 #: ../settings/general.c:371
 msgid "Immediately"
-msgstr ""
+msgstr "Hemen"
 
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:304
 msgid "Activation corner:"
-msgstr ""
+msgstr "Etkinleştirme köşesi:"
 
 #. Add widget to choose activation radius
 #: ../plugins/hot-corner/plugin.c:340
 msgid "Radius of activation corner:"
-msgstr ""
+msgstr "Etkinleştirme köşesi yarıçapı:"
 
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:358
 msgid "Timeout to activate:"
-msgstr ""
+msgstr "Etkinleştirilecek zaman aşımı:"
 
 #: ../plugins/hot-corner/plugin.c:418
 msgid "Hot corner"
-msgstr ""
+msgstr "Sıcak köşe"
 
 #: ../plugins/hot-corner/plugin.c:419
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
-msgstr ""
+msgstr "İşaretçi yapılandırılmış bir ekran köşesine taşındığında xfdashboard'u etkinleştirir"
 
 #: ../settings/general.c:116
 msgid "Do nothing"
-msgstr ""
+msgstr "Hiçbir şey yapma"
 
 #: ../settings/general.c:117
 msgid "Windows view"
-msgstr ""
+msgstr "Pencereler görünümü"
 
 #: ../settings/general.c:118
 msgid "Applications view"
-msgstr ""
+msgstr "Uygulamalar görünümü"
 
 #: ../settings/general.c:125
 msgid "High"
-msgstr ""
+msgstr "Yüksek"
 
 #: ../settings/general.c:126
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: ../settings/general.c:127
 msgid "Low"
-msgstr ""
+msgstr "Düşük"
 
 #: ../settings/general.c:312
 msgid "seconds"
-msgstr ""
+msgstr "saniyeler"
 
 #: ../settings/general.c:707 ../settings/plugins.c:1112
 #: ../settings/themes.c:913
 msgid "Builder"
-msgstr ""
+msgstr "İnşa edici"
 
 #: ../settings/general.c:708 ../settings/plugins.c:1113
 #: ../settings/themes.c:914
@@ -3831,7 +3831,7 @@ msgstr ""
 
 #: ../settings/plugins.c:531
 msgid "Could not set list of enabled plugins!"
-msgstr ""
+msgstr "Etkin eklentilerin listesi ayarlanamadı!"
 
 #. Show error message
 #: ../settings/plugins.c:746
@@ -3850,28 +3850,28 @@ msgstr ""
 
 #: ../settings/plugins.c:958
 msgid "Name"
-msgstr ""
+msgstr "Ad"
 
 #: ../settings/themes.c:784
 msgid "Theme"
-msgstr ""
+msgstr "Tema"
 
 #: ../settings/main.c:46
 msgid "Settings manager socket"
-msgstr ""
+msgstr "Ayar yöneticisi soketi"
 
 #: ../settings/main.c:46
 msgid "SOCKET ID"
-msgstr ""
+msgstr "SOKET KİMLİĞİ"
 
 #: ../settings/main.c:47
 msgid "Version information"
-msgstr ""
+msgstr "Sürüm bilgisi"
 
 #. Initialize GTK+
 #: ../settings/main.c:57
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../settings/main.c:61
 #, c-format
@@ -3887,7 +3887,7 @@ msgstr ""
 
 #: ../settings/main.c:96
 msgid "Could not create the settings dialog."
-msgstr ""
+msgstr "Ayarlar iletişim kutusu oluşturulamadı."
 
 #: ../settings/settings.c:124
 #, c-format
@@ -3901,26 +3901,26 @@ msgstr ""
 
 #: ../settings/settings.c:291 ../settings/settings.c:325
 msgid "Could not get dialog from UI file."
-msgstr ""
+msgstr "Arayüz dosyası üzerinden iletişim kurulamadı."
 
 #: ../xfdashboard/main.c:172
 msgid "Cannot restart application: Failed to quit running instance"
-msgstr ""
+msgstr "Uygulama yeniden başlatılamıyor: Çalışan örnekten çıkılamadı"
 
 #: ../xfdashboard/main.c:212
 msgid "Failed to create application instance"
-msgstr ""
+msgstr "Uygulama örneği oluşturma başarısız"
 
 #: ../xfdashboard/main.c:219
 #, c-format
 msgid "Unable to register application: %s"
-msgstr ""
+msgstr "Uygulama kaydedilemiyor: %s"
 
 #: ../xfdashboard/main.c:249
 #, c-format
 msgid "Initializing application failed with status code %d"
-msgstr ""
+msgstr "Başlatma uygulaması, %d durum koduyla başarısız oldu"
 
 #: ../xfdashboard/main.c:277
 msgid "Initializing clutter failed!"
-msgstr ""
+msgstr "Dağınıklığı başlatmak başarısız oldu!"
