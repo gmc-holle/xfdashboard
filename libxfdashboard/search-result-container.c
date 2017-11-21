@@ -658,7 +658,7 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 		/* If we tried to create at least one more actore than maximum allowed
 		 * then set text at "more"-label otherwise set empty text to "hide" it
 		 */
-		if(actorsCount>priv->maxResultsItemsCount)
+		if(!inShowAllItems && actorsCount>priv->maxResultsItemsCount)
 		{
 			gchar								*labelText;
 			gint								moreCount;
