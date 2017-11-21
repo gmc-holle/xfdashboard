@@ -921,7 +921,7 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_string_with_priority(c
 							NULL);
 	if(!selector)
 	{
-		g_warning(_("Could not create seleector."));
+		g_warning(_("Could not create selector."));
 		return(NULL);
 	}
 
@@ -991,7 +991,7 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner_with_priority(
 							NULL);
 	if(!selector)
 	{
-		g_warning(_("Could not create seleector."));
+		g_warning(_("Could not create selector."));
 		return(NULL);
 	}
 
