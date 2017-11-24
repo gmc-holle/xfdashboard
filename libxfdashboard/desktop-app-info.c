@@ -170,7 +170,7 @@ static gboolean _xfdashboard_desktop_app_info_load_secondary_source(XfdashboardD
 }
 
 /* Get or update path to executable file for this application */
-static void __xfdashboard_desktop_app_info_update_binary_executable(XfdashboardDesktopAppInfo *self)
+static void _xfdashboard_desktop_app_info_update_binary_executable(XfdashboardDesktopAppInfo *self)
 {
 	XfdashboardDesktopAppInfoPrivate		*priv;
 
@@ -595,7 +595,7 @@ static void _xfdashboard_desktop_app_info_set_file(XfdashboardDesktopAppInfo *se
 		}
 
 		/* Get path to executable file for this application */
-		__xfdashboard_desktop_app_info_update_binary_executable(self);
+		_xfdashboard_desktop_app_info_update_binary_executable(self);
 
 		/* Set flag to reload application actions and keywords. They will be
 		 * cleared and (re-)loaded on-demand.
@@ -1832,7 +1832,7 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 		}
 
 		/* Update path to executable file for this application */
-		__xfdashboard_desktop_app_info_update_binary_executable(self);
+		_xfdashboard_desktop_app_info_update_binary_executable(self);
 
 		/* Set flag to reload application actions and keywords. They will be
 		 * cleared and (re-)loaded on-demand.
