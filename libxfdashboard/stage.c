@@ -1845,7 +1845,7 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 						G_STRUCT_OFFSET(XfdashboardStageClass, actor_created),
 						NULL,
 						NULL,
-						g_cclosure_marshal_VOID__VOID,
+						g_cclosure_marshal_VOID__OBJECT,
 						G_TYPE_NONE,
 						1,
 						CLUTTER_TYPE_ACTOR);
