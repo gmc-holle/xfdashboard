@@ -931,6 +931,28 @@ static void _xfdashboard_application_tracker_on_active_window_changed(Xfdashboar
 
 /* IMPLEMENTATION: GObject */
 
+/* Construct this object */
+static GObject* _xfdashboard_application_tracker_constructor(GType inType,
+																guint inNumberConstructParams,
+																GObjectConstructParam *inConstructParams)
+{
+	GObject									*object;
+
+	if(!_xfdashboard_application_tracker)
+	{
+		object=G_OBJECT_CLASS(xfdashboard_application_tracker_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
+		_xfdashboard_application_tracker=XFDASHBOARD_APPLICATION_TRACKER(object);
+g_message("%s: Created singleton for application tracker %p", __func__, _xfdashboard_application_tracker);
+	}
+		else
+		{
+			object=g_object_ref(G_OBJECT(_xfdashboard_application_tracker));
+g_message("%s: Increased reference counter to %u for singleton of application tracker %p", __func__, G_OBJECT(_xfdashboard_application_tracker)->ref_count, _xfdashboard_application_tracker);
+		}
+
+	return(object);
+}
+
 /* Dispose this object */
 static void _xfdashboard_application_tracker_dispose(GObject *inObject)
 {
@@ -957,14 +979,22 @@ static void _xfdashboard_application_tracker_dispose(GObject *inObject)
 		priv->appDatabase=NULL;
 	}
 
-	/* Unset singleton */
+	/* Call parent's class dispose method */
+	G_OBJECT_CLASS(xfdashboard_application_tracker_parent_class)->dispose(inObject);
+}
+
+/* Finalize this object */
+static void _xfdashboard_application_tracker_finalize(GObject *inObject)
+{
+	/* Release allocated resources finally, e.g. unset singleton */
 	if(G_LIKELY(G_OBJECT(_xfdashboard_application_tracker)==inObject))
 	{
+g_message("%s: Finally unset application tracker %p", __func__, _xfdashboard_application_tracker);
 		_xfdashboard_application_tracker=NULL;
 	}
 
 	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_application_tracker_parent_class)->dispose(inObject);
+	G_OBJECT_CLASS(xfdashboard_application_tracker_parent_class)->finalize(inObject);
 }
 
 /* Class initialization
@@ -976,7 +1006,9 @@ static void xfdashboard_application_tracker_class_init(XfdashboardApplicationTra
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	gobjectClass->constructor=_xfdashboard_application_tracker_constructor;
 	gobjectClass->dispose=_xfdashboard_application_tracker_dispose;
+	gobjectClass->finalize=_xfdashboard_application_tracker_finalize;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardApplicationTrackerPrivate));
@@ -1036,13 +1068,10 @@ static void xfdashboard_application_tracker_init(XfdashboardApplicationTracker *
 /* Get single instance of application */
 XfdashboardApplicationTracker* xfdashboard_application_tracker_get_default(void)
 {
-	if(G_UNLIKELY(_xfdashboard_application_tracker==NULL))
-	{
-		_xfdashboard_application_tracker=g_object_new(XFDASHBOARD_TYPE_APPLICATION_TRACKER, NULL);
-	}
-		else g_object_ref(_xfdashboard_application_tracker);
+	GObject									*singleton;
 
-	return(_xfdashboard_application_tracker);
+	singleton=g_object_new(XFDASHBOARD_TYPE_APPLICATION_TRACKER, NULL);
+	return(XFDASHBOARD_APPLICATION_TRACKER(singleton));
 }
 
 /* Get running state of application */

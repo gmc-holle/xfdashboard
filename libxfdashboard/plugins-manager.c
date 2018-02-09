@@ -504,6 +504,28 @@ static void _xfdashboard_plugins_manager_on_application_initialized(XfdashboardP
 
 /* IMPLEMENTATION: GObject */
 
+/* Construct this object */
+static GObject* _xfdashboard_plugins_manager_constructor(GType inType,
+															guint inNumberConstructParams,
+															GObjectConstructParam *inConstructParams)
+{
+	GObject									*object;
+
+	if(!_xfdashboard_plugins_manager)
+	{
+		object=G_OBJECT_CLASS(xfdashboard_plugins_manager_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
+		_xfdashboard_plugins_manager=XFDASHBOARD_PLUGINS_MANAGER(object);
+g_message("%s: Created singleton for plugins manager %p", __func__, _xfdashboard_plugins_manager);
+	}
+		else
+		{
+			object=g_object_ref(G_OBJECT(_xfdashboard_plugins_manager));
+g_message("%s: Increased reference counter to %u for singleton of plugins manager %p", __func__, G_OBJECT(_xfdashboard_plugins_manager)->ref_count, _xfdashboard_plugins_manager);
+		}
+
+	return(object);
+}
+
 /* Dispose this object */
 static void _xfdashboard_plugins_manager_dispose_remove_plugin(gpointer inData)
 {
@@ -549,11 +571,22 @@ static void _xfdashboard_plugins_manager_dispose(GObject *inObject)
 		priv->searchPaths=NULL;
 	}
 
-	/* Unset singleton */
-	if(G_LIKELY(G_OBJECT(_xfdashboard_plugins_manager)==inObject)) _xfdashboard_plugins_manager=NULL;
-
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_plugins_manager_parent_class)->dispose(inObject);
+}
+
+/* Finalize this object */
+static void _xfdashboard_plugins_manager_finalize(GObject *inObject)
+{
+	/* Release allocated resources finally, e.g. unset singleton */
+	if(G_LIKELY(G_OBJECT(_xfdashboard_plugins_manager)==inObject))
+	{
+g_message("%s: Finally unset plugins manager %p", __func__, _xfdashboard_plugins_manager);
+		_xfdashboard_plugins_manager=NULL;
+	}
+
+	/* Call parent's class dispose method */
+	G_OBJECT_CLASS(xfdashboard_plugins_manager_parent_class)->finalize(inObject);
 }
 
 /* Class initialization
@@ -565,7 +598,9 @@ static void xfdashboard_plugins_manager_class_init(XfdashboardPluginsManagerClas
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	gobjectClass->constructor=_xfdashboard_plugins_manager_constructor;
 	gobjectClass->dispose=_xfdashboard_plugins_manager_dispose;
+	gobjectClass->finalize=_xfdashboard_plugins_manager_finalize;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardPluginsManagerPrivate));
@@ -617,13 +652,10 @@ static void xfdashboard_plugins_manager_init(XfdashboardPluginsManager *self)
  */
 XfdashboardPluginsManager* xfdashboard_plugins_manager_get_default(void)
 {
-	if(G_UNLIKELY(_xfdashboard_plugins_manager==NULL))
-	{
-		_xfdashboard_plugins_manager=g_object_new(XFDASHBOARD_TYPE_PLUGINS_MANAGER, NULL);
-	}
-		else g_object_ref(_xfdashboard_plugins_manager);
+	GObject									*singleton;
 
-	return(_xfdashboard_plugins_manager);
+	singleton=g_object_new(XFDASHBOARD_TYPE_PLUGINS_MANAGER, NULL);
+	return(XFDASHBOARD_PLUGINS_MANAGER(singleton));
 }
 
 /**

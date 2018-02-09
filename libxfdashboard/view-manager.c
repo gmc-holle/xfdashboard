@@ -152,6 +152,28 @@ static XfdashboardViewManagerData* _xfdashboard_view_manager_entry_find_data_by_
 
 /* IMPLEMENTATION: GObject */
 
+/* Construct this object */
+static GObject* _xfdashboard_view_manager_constructor(GType inType,
+														guint inNumberConstructParams,
+														GObjectConstructParam *inConstructParams)
+{
+	GObject									*object;
+
+	if(!_xfdashboard_view_manager)
+	{
+		object=G_OBJECT_CLASS(xfdashboard_view_manager_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
+		_xfdashboard_view_manager=XFDASHBOARD_VIEW_MANAGER(object);
+g_message("%s: Created singleton for view manager %p", __func__, _xfdashboard_view_manager);
+	}
+		else
+		{
+			object=g_object_ref(G_OBJECT(_xfdashboard_view_manager));
+g_message("%s: Increased reference counter to %u for singleton of view manager %p", __func__, G_OBJECT(_xfdashboard_view_manager)->ref_count, _xfdashboard_view_manager);
+		}
+
+	return(object);
+}
+
 /* Dispose this object */
 static void _xfdashboard_view_manager_dispose_unregister_view(gpointer inData, gpointer inUserData)
 {
@@ -176,11 +198,22 @@ static void _xfdashboard_view_manager_dispose(GObject *inObject)
 		priv->registeredViews=NULL;
 	}
 
-	/* Unset singleton */
-	if(G_LIKELY(G_OBJECT(_xfdashboard_view_manager)==inObject)) _xfdashboard_view_manager=NULL;
-
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_view_manager_parent_class)->dispose(inObject);
+}
+
+/* Finalize this object */
+static void _xfdashboard_view_manager_finalize(GObject *inObject)
+{
+	/* Release allocated resources finally, e.g. unset singleton */
+	if(G_LIKELY(G_OBJECT(_xfdashboard_view_manager)==inObject))
+	{
+g_message("%s: Finally unset view manager %p", __func__, _xfdashboard_view_manager);
+		_xfdashboard_view_manager=NULL;
+	}
+
+	/* Call parent's class dispose method */
+	G_OBJECT_CLASS(xfdashboard_view_manager_parent_class)->finalize(inObject);
 }
 
 /* Class initialization
@@ -192,7 +225,9 @@ static void xfdashboard_view_manager_class_init(XfdashboardViewManagerClass *kla
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	gobjectClass->constructor=_xfdashboard_view_manager_constructor;
 	gobjectClass->dispose=_xfdashboard_view_manager_dispose;
+	gobjectClass->finalize=_xfdashboard_view_manager_finalize;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardViewManagerPrivate));
@@ -241,13 +276,10 @@ static void xfdashboard_view_manager_init(XfdashboardViewManager *self)
 /* Get single instance of manager */
 XfdashboardViewManager* xfdashboard_view_manager_get_default(void)
 {
-	if(G_UNLIKELY(_xfdashboard_view_manager==NULL))
-	{
-		_xfdashboard_view_manager=g_object_new(XFDASHBOARD_TYPE_VIEW_MANAGER, NULL);
-	}
-		else g_object_ref(_xfdashboard_view_manager);
+	GObject									*singleton;
 
-	return(_xfdashboard_view_manager);
+	singleton=g_object_new(XFDASHBOARD_TYPE_VIEW_MANAGER, NULL);
+	return(XFDASHBOARD_VIEW_MANAGER(singleton));
 }
 
 /* Register a view */

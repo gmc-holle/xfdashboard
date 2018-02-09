@@ -157,6 +157,28 @@ static XfdashboardSearchManagerData* _xfdashboard_search_manager_entry_find_data
 
 /* IMPLEMENTATION: GObject */
 
+/* Construct this object */
+static GObject* _xfdashboard_search_manager_constructor(GType inType,
+														guint inNumberConstructParams,
+														GObjectConstructParam *inConstructParams)
+{
+	GObject									*object;
+
+	if(!_xfdashboard_search_manager)
+	{
+		object=G_OBJECT_CLASS(xfdashboard_search_manager_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
+		_xfdashboard_search_manager=XFDASHBOARD_SEARCH_MANAGER(object);
+g_message("%s: Created singleton for search manager %p", __func__, _xfdashboard_search_manager);
+	}
+		else
+		{
+			object=g_object_ref(G_OBJECT(_xfdashboard_search_manager));
+g_message("%s: Increased reference counter to %u for singleton of search manager %p", __func__, G_OBJECT(_xfdashboard_search_manager)->ref_count, _xfdashboard_search_manager);
+		}
+
+	return(object);
+}
+
 /* Dispose this object */
 static void _xfdashboard_search_manager_dispose_unregister_search_provider(gpointer inData, gpointer inUserData)
 {
@@ -181,11 +203,22 @@ static void _xfdashboard_search_manager_dispose(GObject *inObject)
 		priv->registeredProviders=NULL;
 	}
 
-	/* Unset singleton */
-	if(G_LIKELY(G_OBJECT(_xfdashboard_search_manager)==inObject)) _xfdashboard_search_manager=NULL;
-
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_search_manager_parent_class)->dispose(inObject);
+}
+
+/* Finalize this object */
+static void _xfdashboard_search_manager_finalize(GObject *inObject)
+{
+	/* Release allocated resources finally, e.g. unset singleton */
+	if(G_LIKELY(G_OBJECT(_xfdashboard_search_manager)==inObject))
+	{
+g_message("%s: Finally unset search manager %p", __func__, _xfdashboard_search_manager);
+		_xfdashboard_search_manager=NULL;
+	}
+
+	/* Call parent's class dispose method */
+	G_OBJECT_CLASS(xfdashboard_search_manager_parent_class)->finalize(inObject);
 }
 
 /* Class initialization
@@ -197,7 +230,9 @@ static void xfdashboard_search_manager_class_init(XfdashboardSearchManagerClass 
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	gobjectClass->constructor=_xfdashboard_search_manager_constructor;
 	gobjectClass->dispose=_xfdashboard_search_manager_dispose;
+	gobjectClass->finalize=_xfdashboard_search_manager_finalize;
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardSearchManagerPrivate));
@@ -246,13 +281,10 @@ static void xfdashboard_search_manager_init(XfdashboardSearchManager *self)
 /* Get single instance of manager */
 XfdashboardSearchManager* xfdashboard_search_manager_get_default(void)
 {
-	if(G_UNLIKELY(_xfdashboard_search_manager==NULL))
-	{
-		_xfdashboard_search_manager=g_object_new(XFDASHBOARD_TYPE_SEARCH_MANAGER, NULL);
-	}
-		else g_object_ref(_xfdashboard_search_manager);
+	GObject									*singleton;
 
-	return(_xfdashboard_search_manager);
+	singleton=g_object_new(XFDASHBOARD_TYPE_SEARCH_MANAGER, NULL);
+	return(XFDASHBOARD_SEARCH_MANAGER(singleton));
 }
 
 /* Register a search provider */

@@ -327,6 +327,28 @@ static gboolean _xfdashboard_focus_manager_move_focus_previous(XfdashboardFocusM
 
 /* IMPLEMENTATION: GObject */
 
+/* Construct this object */
+static GObject* _xfdashboard_focus_manager_constructor(GType inType,
+														guint inNumberConstructParams,
+														GObjectConstructParam *inConstructParams)
+{
+	GObject									*object;
+
+	if(!_xfdashboard_focus_manager)
+	{
+		object=G_OBJECT_CLASS(xfdashboard_focus_manager_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
+		_xfdashboard_focus_manager=XFDASHBOARD_FOCUS_MANAGER(object);
+g_message("%s: Created singleton for focus manager %p", __func__, _xfdashboard_focus_manager);
+	}
+		else
+		{
+			object=g_object_ref(G_OBJECT(_xfdashboard_focus_manager));
+g_message("%s: Increased reference counter to %u for singleton of focus manager %p", __func__, G_OBJECT(_xfdashboard_focus_manager)->ref_count, _xfdashboard_focus_manager);
+		}
+
+	return(object);
+}
+
 /* Dispose this object */
 static void _xfdashboard_focus_manager_dispose_unregister_focusable(gpointer inData, gpointer inUserData)
 {
@@ -366,12 +388,24 @@ static void _xfdashboard_focus_manager_dispose(GObject *inObject)
 		priv->registeredFocusables=NULL;
 	}
 
-	/* Unset singleton */
-	if(G_LIKELY(G_OBJECT(_xfdashboard_focus_manager)==inObject)) _xfdashboard_focus_manager=NULL;
-
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_focus_manager_parent_class)->dispose(inObject);
 }
+
+/* Finalize this object */
+static void _xfdashboard_focus_manager_finalize(GObject *inObject)
+{
+	/* Release allocated resources finally, e.g. unset singleton */
+	if(G_LIKELY(G_OBJECT(_xfdashboard_focus_manager)==inObject))
+	{
+g_message("%s: Finally unset focus manager %p", __func__, _xfdashboard_focus_manager);
+		_xfdashboard_focus_manager=NULL;
+	}
+
+	/* Call parent's class dispose method */
+	G_OBJECT_CLASS(xfdashboard_focus_manager_parent_class)->finalize(inObject);
+}
+
 
 /* Class initialization
  * Override functions in parent classes and define properties
@@ -382,7 +416,9 @@ static void xfdashboard_focus_manager_class_init(XfdashboardFocusManagerClass *k
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
+	gobjectClass->constructor=_xfdashboard_focus_manager_constructor;
 	gobjectClass->dispose=_xfdashboard_focus_manager_dispose;
+	gobjectClass->finalize=_xfdashboard_focus_manager_finalize;
 
 	klass->focus_move_first=_xfdashboard_focus_manager_move_focus_first;
 	klass->focus_move_last=_xfdashboard_focus_manager_move_focus_last;
@@ -506,13 +542,10 @@ static void xfdashboard_focus_manager_init(XfdashboardFocusManager *self)
 /* Get single instance of manager */
 XfdashboardFocusManager* xfdashboard_focus_manager_get_default(void)
 {
-	if(G_UNLIKELY(_xfdashboard_focus_manager==NULL))
-	{
-		_xfdashboard_focus_manager=g_object_new(XFDASHBOARD_TYPE_FOCUS_MANAGER, NULL);
-	}
-		else g_object_ref(_xfdashboard_focus_manager);
+	GObject									*singleton;
 
-	return(_xfdashboard_focus_manager);
+	singleton=g_object_new(XFDASHBOARD_TYPE_FOCUS_MANAGER, NULL);
+	return(XFDASHBOARD_FOCUS_MANAGER(singleton));
 }
 
 /* Register a focusable actor */
