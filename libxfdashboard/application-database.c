@@ -1247,12 +1247,10 @@ static GObject* _xfdashboard_application_database_constructor(GType inType,
 	{
 		object=G_OBJECT_CLASS(xfdashboard_application_database_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
 		_xfdashboard_application_database=XFDASHBOARD_APPLICATION_DATABASE(object);
-g_message("%s: Created singleton for application database %p", __func__, _xfdashboard_application_database);
 	}
 		else
 		{
 			object=g_object_ref(G_OBJECT(_xfdashboard_application_database));
-g_message("%s: Increased reference counter to %u for singleton of application database %p", __func__, G_OBJECT(_xfdashboard_application_database)->ref_count, _xfdashboard_application_database);
 		}
 
 	return(object);
@@ -1275,7 +1273,6 @@ static void _xfdashboard_application_database_dispose(GObject *inObject)
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_application_database_parent_class)->dispose(inObject);
-g_message("%s: Decreased reference counter to %u for singleton of application database %p", __func__, G_OBJECT(_xfdashboard_application_database)->ref_count, _xfdashboard_application_database);
 }
 
 /* Finalize this object */
@@ -1284,7 +1281,6 @@ static void _xfdashboard_application_database_finalize(GObject *inObject)
 	/* Release allocated resources finally, e.g. unset singleton */
 	if(G_LIKELY(G_OBJECT(_xfdashboard_application_database)==inObject))
 	{
-g_message("%s: Finally unset application database %p", __func__, _xfdashboard_application_database);
 		_xfdashboard_application_database=NULL;
 	}
 

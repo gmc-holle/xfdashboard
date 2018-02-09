@@ -942,12 +942,10 @@ static GObject* _xfdashboard_application_tracker_constructor(GType inType,
 	{
 		object=G_OBJECT_CLASS(xfdashboard_application_tracker_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
 		_xfdashboard_application_tracker=XFDASHBOARD_APPLICATION_TRACKER(object);
-g_message("%s: Created singleton for application tracker %p", __func__, _xfdashboard_application_tracker);
 	}
 		else
 		{
 			object=g_object_ref(G_OBJECT(_xfdashboard_application_tracker));
-g_message("%s: Increased reference counter to %u for singleton of application tracker %p", __func__, G_OBJECT(_xfdashboard_application_tracker)->ref_count, _xfdashboard_application_tracker);
 		}
 
 	return(object);
@@ -989,7 +987,6 @@ static void _xfdashboard_application_tracker_finalize(GObject *inObject)
 	/* Release allocated resources finally, e.g. unset singleton */
 	if(G_LIKELY(G_OBJECT(_xfdashboard_application_tracker)==inObject))
 	{
-g_message("%s: Finally unset application tracker %p", __func__, _xfdashboard_application_tracker);
 		_xfdashboard_application_tracker=NULL;
 	}
 

@@ -515,12 +515,10 @@ static GObject* _xfdashboard_plugins_manager_constructor(GType inType,
 	{
 		object=G_OBJECT_CLASS(xfdashboard_plugins_manager_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
 		_xfdashboard_plugins_manager=XFDASHBOARD_PLUGINS_MANAGER(object);
-g_message("%s: Created singleton for plugins manager %p", __func__, _xfdashboard_plugins_manager);
 	}
 		else
 		{
 			object=g_object_ref(G_OBJECT(_xfdashboard_plugins_manager));
-g_message("%s: Increased reference counter to %u for singleton of plugins manager %p", __func__, G_OBJECT(_xfdashboard_plugins_manager)->ref_count, _xfdashboard_plugins_manager);
 		}
 
 	return(object);
@@ -581,7 +579,6 @@ static void _xfdashboard_plugins_manager_finalize(GObject *inObject)
 	/* Release allocated resources finally, e.g. unset singleton */
 	if(G_LIKELY(G_OBJECT(_xfdashboard_plugins_manager)==inObject))
 	{
-g_message("%s: Finally unset plugins manager %p", __func__, _xfdashboard_plugins_manager);
 		_xfdashboard_plugins_manager=NULL;
 	}
 

@@ -168,12 +168,10 @@ static GObject* _xfdashboard_search_manager_constructor(GType inType,
 	{
 		object=G_OBJECT_CLASS(xfdashboard_search_manager_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
 		_xfdashboard_search_manager=XFDASHBOARD_SEARCH_MANAGER(object);
-g_message("%s: Created singleton for search manager %p", __func__, _xfdashboard_search_manager);
 	}
 		else
 		{
 			object=g_object_ref(G_OBJECT(_xfdashboard_search_manager));
-g_message("%s: Increased reference counter to %u for singleton of search manager %p", __func__, G_OBJECT(_xfdashboard_search_manager)->ref_count, _xfdashboard_search_manager);
 		}
 
 	return(object);
@@ -213,7 +211,6 @@ static void _xfdashboard_search_manager_finalize(GObject *inObject)
 	/* Release allocated resources finally, e.g. unset singleton */
 	if(G_LIKELY(G_OBJECT(_xfdashboard_search_manager)==inObject))
 	{
-g_message("%s: Finally unset search manager %p", __func__, _xfdashboard_search_manager);
 		_xfdashboard_search_manager=NULL;
 	}
 

@@ -952,12 +952,10 @@ static GObject* _xfdashboard_bindings_pool_constructor(GType inType,
 	{
 		object=G_OBJECT_CLASS(xfdashboard_bindings_pool_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
 		_xfdashboard_bindings_pool=XFDASHBOARD_BINDINGS_POOL(object);
-g_message("%s: Created singleton for bindings pool %p", __func__, _xfdashboard_bindings_pool);
 	}
 		else
 		{
 			object=g_object_ref(G_OBJECT(_xfdashboard_bindings_pool));
-g_message("%s: Increased reference counter to %u for singleton of bindings pool %p", __func__, G_OBJECT(_xfdashboard_bindings_pool)->ref_count, _xfdashboard_bindings_pool);
 		}
 
 	return(object);
@@ -986,7 +984,6 @@ static void _xfdashboard_bindings_pool_finalize(GObject *inObject)
 	/* Release allocated resources finally, e.g. unset singleton */
 	if(G_LIKELY(G_OBJECT(_xfdashboard_bindings_pool)==inObject))
 	{
-g_message("%s: Finally unset bindings pool %p", __func__, _xfdashboard_bindings_pool);
 		_xfdashboard_bindings_pool=NULL;
 	}
 
