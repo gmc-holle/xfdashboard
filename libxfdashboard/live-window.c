@@ -680,7 +680,7 @@ static void _xfdashboard_live_window_get_preferred_width(ClutterActor *self,
 			clutter_actor_get_preferred_width(child,
 												inForHeight,
 												&childMinWidth,
-												 &childNaturalWidth);
+												&childNaturalWidth);
 			if(childMinWidth>minWidth) minWidth=childMinWidth;
 			if(childNaturalWidth>naturalWidth) naturalWidth=childNaturalWidth;
 		}

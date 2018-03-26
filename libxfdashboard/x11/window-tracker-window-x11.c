@@ -820,10 +820,10 @@ static gboolean _xfdashboard_window_tracker_window_x11_window_tracker_window_is_
 
 /* Get geometry (position and size) of window */
 static void _xfdashboard_window_tracker_window_x11_window_tracker_window_get_geometry(XfdashboardWindowTrackerWindow *inWindow,
-																				gint *outX,
-																				gint *outY,
-																				gint *outWidth,
-																				gint *outHeight)
+																						gint *outX,
+																						gint *outY,
+																						gint *outWidth,
+																						gint *outHeight)
 {
 	XfdashboardWindowTrackerWindowX11			*self;
 	XfdashboardWindowTrackerWindowX11Private	*priv;

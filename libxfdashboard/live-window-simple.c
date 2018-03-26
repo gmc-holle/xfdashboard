@@ -338,7 +338,7 @@ static void _xfdashboard_live_window_simple_get_preferred_width(ClutterActor *se
 				XFDASHBOARD_IS_WINDOW_CONTENT(content))
 			{
 				if(clutter_content_get_preferred_size(content, &childNaturalWidth, NULL)) windowWidth=childNaturalWidth;
-								XFDASHBOARD_DEBUG(self, WINDOWS,
+				XFDASHBOARD_DEBUG(self, WINDOWS,
 									"Using fallback method to determine preferred width for window '%s'",
 									xfdashboard_window_tracker_window_get_name(priv->window));
 			}
