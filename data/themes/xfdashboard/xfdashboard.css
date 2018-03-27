@@ -364,6 +364,7 @@ XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardApplicationBut
 
 XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton.result-item.view-mode-icon
 {
+	button-style: both;
 	icon-size: 64.0;
 	single-line: false;
 	sync-icon-size: false;
