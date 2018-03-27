@@ -2481,7 +2481,7 @@ static gint _xfdashboard_theme_css_sort_by_score(XfdashboardThemeCSSSelectorMatc
 	leftRule=xfdashboard_css_selector_get_rule(inLeft->selector->selector);
 	rightRule=xfdashboard_css_selector_get_rule(inRight->selector->selector);
 
-	/* Compar CSS selector rules */
+	/* Compare CSS selector rules */
 	priority=xfdashboard_css_selector_rule_get_priority(leftRule);
 	priority-=xfdashboard_css_selector_rule_get_priority(rightRule);
 	if(priority!=0) return(priority);
