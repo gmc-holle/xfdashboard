@@ -6,3 +6,4 @@ Layout=xfdashboard.xml;xfdashboard-secondary.xml
 Effects=effects.xml
 Author=lacios
 Version=@PACKAGE_VERSION@
+Screenshot=screenshot-xfdashboard-blue.png
