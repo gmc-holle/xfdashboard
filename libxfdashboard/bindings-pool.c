@@ -801,7 +801,7 @@ static void _xfdashboard_bindings_pool_merge_bindings(gpointer inKey,
 	/* Insert binding into target hash table which will either insert a new key
 	 * with the binding value or replaces the binding value at the existing key.
 	 */
-	g_hash_table_insert(targetBindingsHashTable, g_object_ref(binding), inValue);
+	g_hash_table_replace(targetBindingsHashTable, g_object_ref(binding), inValue);
 }
 
 /* Load bindings from XML file */
