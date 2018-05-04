@@ -307,7 +307,7 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 
 	if(!key && !modifiers)
 	{
-		g_warning(_("Invalid key-binding '%s' as either a key nor a modifier was assigned."), inText);
+		g_warning(_("Invalid key-binding '%s' as neither a key nor a modifier was assigned."), inText);
 		return(FALSE);
 	}
 
@@ -784,6 +784,26 @@ static void _xfdashboard_bindings_pool_parse_document_end(GMarkupParseContext *i
 	g_markup_parse_context_pop(inContext);
 }
 
+/* Merge bindings from one hash-table into another one */
+static void _xfdashboard_bindings_pool_merge_bindings(gpointer inKey,
+														gpointer inValue,
+														gpointer inUserData)
+{
+	GHashTable						*targetBindingsHashTable;
+	XfdashboardBinding				*binding;
+
+	g_return_if_fail(XFDASHBOARD_IS_BINDING(inKey));
+	g_return_if_fail(inUserData);
+
+	targetBindingsHashTable=(GHashTable*)inUserData;
+	binding=XFDASHBOARD_BINDING(inKey);
+
+	/* Insert binding into target hash table which will either insert a new key
+	 * with the binding value or replaces the binding value at the existing key.
+	 */
+	g_hash_table_insert(targetBindingsHashTable, g_object_ref(binding), inValue);
+}
+
 /* Load bindings from XML file */
 static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBindingsPool *self,
 																	const gchar *inPath,
@@ -914,17 +934,19 @@ static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBi
 	/* Handle collected data if parsing was successful */
 	if(success)
 	{
-		/* Destroy bindings used currently */
-		if(priv->bindings)
-		{
-			g_hash_table_destroy(priv->bindings);
-			priv->bindings=NULL;
-		}
+		guint							oldBindingsCount;
 
-		/* Take a reference at newly read-in bindings now as it will be unreffed
-		 * in clean-up code block within this function.
-		 */
-		priv->bindings=g_hash_table_ref(data->bindings);
+		/* Get current number of bindings */
+		oldBindingsCount=g_hash_table_size(priv->bindings);
+
+		/* Merge newly read-in bindings into global ones */
+		g_hash_table_foreach(data->bindings, _xfdashboard_bindings_pool_merge_bindings, priv->bindings);
+		XFDASHBOARD_DEBUG(self, MISC,
+							"Merged %u bindings from file '%s', now having a total of %u bindings (was %u bindings before)",
+							g_hash_table_size(data->bindings),
+							inPath,
+							g_hash_table_size(priv->bindings),
+							oldBindingsCount);
 	}
 
 	/* Clean up resources */
@@ -1042,22 +1064,109 @@ XfdashboardBindingsPool* xfdashboard_bindings_pool_get_default(void)
 /* Load bindings from configuration file */
 gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **outError)
 {
-	gchar							*configFile;
-	GError							*error;
-	gboolean						success;
+	XfdashboardBindingsPoolPrivate		*priv;
+	gchar								*configFile;
+	GError								*error;
+	gboolean							success;
+	gint								numberSources;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_BINDINGS_POOL(self), FALSE);
 	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
 
+	priv=self->priv;
 	configFile=NULL;
 	error=NULL;
 	success=TRUE;
+	numberSources=0;
 
-#ifdef DEBUG
-	/* If compile with debug mode enabled allow specifiing an alternate
-	 * configuration path. The path must contain the path and file to load.
+	/* Destroy bindings used currently */
+	if(priv->bindings)
+	{
+		g_hash_table_destroy(priv->bindings);
+		priv->bindings=NULL;
+
+		XFDASHBOARD_DEBUG(self, MISC, "Removed current bindings because of reloading bindings configuration files");
+	}
+
+	/* Create hash-table to store bindings at */
+	priv->bindings=g_hash_table_new_full(xfdashboard_binding_hash,
+											xfdashboard_binding_compare,
+											(GDestroyNotify)g_object_unref,
+											NULL);
+	if(!priv->bindings)
+	{
+		/* Set error */
+		g_set_error(outError,
+					XFDASHBOARD_BINDINGS_POOL_ERROR,
+					XFDASHBOARD_BINDINGS_POOL_ERROR_INTERNAL_ERROR,
+					_("Could not set up hash-table to store bindings"));
+
+		/* Return error result */
+		return(FALSE);
+	}
+
+	/* First try to load bindings configuration file from system-wide path,
+	 * usually located at /usr/share/xfdashboard. The file is called "bindings.xml".
 	 */
-	if(!configFile)
+	if(success)
+	{
+		configFile=g_build_filename(PACKAGE_DATADIR, "xfdashboard", "bindings.xml", NULL);
+		XFDASHBOARD_DEBUG(self, MISC,
+							"Trying system bindings configuration file: %s",
+							configFile);
+		if(g_file_test(configFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+		{
+			if(!_xfdashboard_bindings_pool_load_bindings_from_file(self, configFile, &error))
+			{
+				/* Propagate error if available */
+				if(error) g_propagate_error(outError, error);
+
+				/* Set error status */
+				success=FALSE;
+			}
+
+			/* Increase source counter regardless if loading succeeded or failed */
+			numberSources++;
+		}
+
+		g_free(configFile);
+		configFile=NULL;
+	}
+
+	/* Next try to load user configuration file. This file is located in
+	 * the folder 'xfdashboard' at configuration directory in user's home
+	 * path (usually ~/.config/xfdashboard). The file is called "bindings.xml".
+	 */
+	if(success)
+	{
+		configFile=g_build_filename(g_get_user_config_dir(), "xfdashboard", "bindings.xml", NULL);
+		XFDASHBOARD_DEBUG(self, MISC,
+							"Trying user bindings configuration file: %s",
+							configFile);
+		if(g_file_test(configFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+		{
+			if(!_xfdashboard_bindings_pool_load_bindings_from_file(self, configFile, &error))
+			{
+				/* Propagate error if available */
+				if(error) g_propagate_error(outError, error);
+
+				/* Set error status */
+				success=FALSE;
+			}
+
+			/* Increase source counter regardless if loading succeeded or failed */
+			numberSources++;
+		}
+
+		g_free(configFile);
+		configFile=NULL;
+	}
+
+	/* At last tro to load a user defined configuration file from an alternate
+	 * configuration path provided by an environment variable. This environment
+	 * variable must contain the full path (path and file name) to load.
+	 */
+	if(success)
 	{
 		const gchar					*envFile;
 
@@ -1066,45 +1175,23 @@ gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **
 		{
 			configFile=g_strdup(envFile);
 			XFDASHBOARD_DEBUG(self, MISC,
-								"Trying bindings configuration file: %s",
+								"Trying alternate bindings configuration file: %s",
 								configFile);
-			if(!g_file_test(configFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+			if(g_file_test(configFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
 			{
-				g_free(configFile);
-				configFile=NULL;
+				if(!_xfdashboard_bindings_pool_load_bindings_from_file(self, configFile, &error))
+				{
+					/* Propagate error if available */
+					if(error) g_propagate_error(outError, error);
+
+					/* Set error status */
+					success=FALSE;
+				}
+
+				/* Increase source counter regardless if loading succeeded or failed */
+				numberSources++;
 			}
-		}
-	}
-#endif
 
-	/* User configuration should be tried first. This file is located in
-	 * the folder 'xfdashboard' at configuration directory in user's home
-	 * path (usually ~/.config/xfdashboard). The file is called "bindings.xml".
-	 */
-	if(!configFile)
-	{
-		configFile=g_build_filename(g_get_user_config_dir(), "xfdashboard", "bindings.xml", NULL);
-		XFDASHBOARD_DEBUG(self, MISC,
-							"Trying bindings configuration file: %s",
-							configFile);
-		if(!g_file_test(configFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
-		{
-			g_free(configFile);
-			configFile=NULL;
-		}
-	}
-
-	/* Next try to load bindings configuration file from system-wide path,
-	 * usually located at /usr/share/xfdashboard. The file is called "bindings.xml".
-	 */
-	if(!configFile)
-	{
-		configFile=g_build_filename(PACKAGE_DATADIR, "xfdashboard", "bindings.xml", NULL);
-		XFDASHBOARD_DEBUG(self, MISC,
-							"Trying bindings configuration file: %s",
-							configFile);
-		if(!g_file_test(configFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
-		{
 			g_free(configFile);
 			configFile=NULL;
 		}
@@ -1113,7 +1200,7 @@ gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **
 	/* If we get here and if we have still not found any bindings file we could load
 	 * then return error.
 	 */
-	if(!configFile)
+	if(numberSources==0)
 	{
 		/* Set error */
 		g_set_error(outError,
@@ -1123,16 +1210,6 @@ gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **
 
 		/* Return error result */
 		return(FALSE);
-	}
-
-	/* Load, parse and set up bindings from configuration file found */
-	if(!_xfdashboard_bindings_pool_load_bindings_from_file(self, configFile, &error))
-	{
-		/* Propagate error if available */
-		if(error) g_propagate_error(outError, error);
-
-		/* Set error status */
-		success=FALSE;
 	}
 
 	/* Release allocated resources */
