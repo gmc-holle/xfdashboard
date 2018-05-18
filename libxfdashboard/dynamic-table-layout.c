@@ -34,13 +34,18 @@
 #include <clutter/clutter.h>
 #include <math.h>
 
+#include <libxfdashboard/stylable.h>
 #include <libxfdashboard/compat.h>
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardDynamicTableLayout,
-				xfdashboard_dynamic_table_layout,
-				CLUTTER_TYPE_LAYOUT_MANAGER)
+static void _xfdashboard_dynamic_table_layout_stylable_iface_init(XfdashboardStylableInterface *inInterface);
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardDynamicTableLayout,
+						xfdashboard_dynamic_table_layout,
+						CLUTTER_TYPE_LAYOUT_MANAGER,
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_STYLABLE, _xfdashboard_dynamic_table_layout_stylable_iface_init));
+
 
 /* Private structure - access only by public API if needed */
 #define XFDASHBOARD_DYNAMIC_TABLE_LAYOUT_GET_PRIVATE(obj) \
@@ -49,16 +54,19 @@ G_DEFINE_TYPE(XfdashboardDynamicTableLayout,
 struct _XfdashboardDynamicTableLayoutPrivate
 {
 	/* Properties related */
-	gfloat		rowSpacing;
-	gfloat		columnSpacing;
+	gfloat				rowSpacing;
+	gfloat				columnSpacing;
 
 	/* Instance related */
-	gint		rows;
-	gint		columns;
-	gint		numberChildren;
+	gint				numberChildren;
+	gint				rows;
+	gint				columns;
+	gint				fixedColumns;
 
-	GArray		*columnCoords;
-	GArray		*rowCoords;
+	GArray				*columnCoords;
+	GArray				*rowCoords;
+
+	gpointer			container;
 };
 
 /* Properties */
@@ -72,6 +80,11 @@ enum
 	PROP_NUMBER_CHILDREN,
 	PROP_ROWS,
 	PROP_COLUMNS,
+	PROP_FIXED_COLUMNS,
+
+	/* From interface: XfdashboardStylable */
+	PROP_STYLE_CLASSES,
+	PROP_STYLE_PSEUDO_CLASSES,
 
 	PROP_LAST
 };
@@ -80,11 +93,11 @@ static GParamSpec* XfdashboardDynamicTableLayoutProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
-/* Updates data needed for layout */
-static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDynamicTableLayout *self,
-																	ClutterContainer *inContainer,
-																	gfloat inWidth,
-																	gfloat inHeight)
+/* Updates data needed for layout in dynamic mode (dynamic number of columns) */
+static void _xfdashboard_dynamic_table_layout_update_layout_data_dynamic(XfdashboardDynamicTableLayout *self,
+																			ClutterContainer *inContainer,
+																			gfloat inWidth,
+																			gfloat inHeight)
 {
 	XfdashboardDynamicTableLayoutPrivate		*priv;
 	ClutterActorIter							iter;
@@ -191,7 +204,7 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardDynamicTableLayoutProperties[PROP_COLUMNS]);
 	}
 
-	/* Step four: Determine column and row coordinates */
+	/* Step four: Determine column coordinates */
 	if(priv->columnCoords)
 	{
 		g_array_free(priv->columnCoords, TRUE);
@@ -259,6 +272,202 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 	/* Thaw notification */
 	g_object_thaw_notify(G_OBJECT(self));
 }
+
+/* Updates data needed for layout in fixed mode (fixed number of columns) */
+static void _xfdashboard_dynamic_table_layout_update_layout_data_fixed(XfdashboardDynamicTableLayout *self,
+																		ClutterContainer *inContainer,
+																		gfloat inWidth,
+																		gfloat inHeight)
+{
+	XfdashboardDynamicTableLayoutPrivate		*priv;
+	ClutterActorIter							iter;
+	ClutterActor								*child;
+	gint										numberChildren;
+	gint										rows, columns;
+	gfloat										childHeight;
+	gfloat										fixedWidth;
+	gfloat										largestHeight;
+	gint										i;
+	gfloat										x, y;
+	ClutterRequestMode							requestMode;
+
+	g_return_if_fail(XFDASHBOARD_IS_DYNAMIC_TABLE_LAYOUT(self));
+	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inContainer));
+
+	priv=self->priv;
+
+	/* Freeze notification */
+	g_object_freeze_notify(G_OBJECT(self));
+
+	/* Step one: Get number of visible child actors */
+	numberChildren=0;
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Handle only visible actors */
+		if(clutter_actor_is_visible(child))
+		{
+			/* Count visible children */
+			numberChildren++;
+		}
+	}
+
+	if(numberChildren!=priv->numberChildren)
+	{
+		priv->numberChildren=numberChildren;
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardDynamicTableLayoutProperties[PROP_NUMBER_CHILDREN]);
+	}
+
+	/* Step two: Get request mode of container to layout. The request will be
+	 *           overriden if any of given width or height is not set (< 0)
+	 */
+	requestMode=clutter_actor_get_request_mode(CLUTTER_ACTOR(inContainer));
+
+	if(inWidth<0.0f) requestMode=CLUTTER_REQUEST_WIDTH_FOR_HEIGHT;
+		else if(inHeight<0.0f) requestMode=CLUTTER_REQUEST_HEIGHT_FOR_WIDTH;
+
+
+	/* Step three: Determine number of rows as number of columns is fixed */
+	rows=0;
+	columns=0;
+	rows=columns=0;
+	if(inWidth<0.0f && inHeight<0.0f)
+	{
+		columns=priv->numberChildren;
+		rows=1;
+	}
+		else if(requestMode==CLUTTER_REQUEST_HEIGHT_FOR_WIDTH)
+		{
+			columns=priv->fixedColumns;
+			rows=ceil((double)priv->numberChildren / (double)columns);
+		}
+		else if(requestMode==CLUTTER_REQUEST_WIDTH_FOR_HEIGHT)
+		{
+			rows=priv->fixedColumns;
+			columns=ceil((double)priv->numberChildren / (double)rows);
+		}
+		else
+		{
+			g_assert_not_reached();
+		}
+
+
+	if(rows!=priv->rows)
+	{
+		priv->rows=rows;
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardDynamicTableLayoutProperties[PROP_ROWS]);
+	}
+
+	if(columns!=priv->columns)
+	{
+		priv->columns=columns;
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardDynamicTableLayoutProperties[PROP_COLUMNS]);
+	}
+
+	/* Step four: Determine column coordinates */
+	if(priv->columnCoords)
+	{
+		g_array_free(priv->columnCoords, TRUE);
+		priv->columnCoords=NULL;
+	}
+
+	priv->columnCoords=g_array_new(FALSE, FALSE, sizeof(gfloat));
+	x=0.0f;
+	i=0;
+	fixedWidth=(inWidth>0.0f ? inWidth/priv->columns : 0.0f);
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Handle only visible actors */
+		if(clutter_actor_is_visible(child))
+		{
+			g_array_append_val(priv->columnCoords, x);
+			x+=(fixedWidth+priv->columnSpacing);
+
+			/* Increase counter for visible children */
+			i++;
+		}
+	}
+
+	g_array_append_val(priv->columnCoords, x);
+
+	/* Step five: Determine row coordinates */
+	if(priv->rowCoords)
+	{
+		g_array_free(priv->rowCoords, TRUE);
+		priv->rowCoords=NULL;
+	}
+
+	priv->rowCoords=g_array_new(FALSE, FALSE, sizeof(gfloat));
+	largestHeight=0.0f;
+	y=-priv->rowSpacing;
+	i=0;
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		/* Handle only visible actors */
+		if(clutter_actor_is_visible(child))
+		{
+			/* If it is the first columns in row, calculate y-coordinate
+			 * and append it to array.
+			 */
+			if((i % priv->columns)==0)
+			{
+				y+=largestHeight+priv->rowSpacing;
+				g_array_append_val(priv->rowCoords, y);
+				largestHeight=0.0f;
+			}
+
+			/* Determine largest height in row */
+			clutter_actor_get_preferred_size(child, NULL, NULL, NULL, &childHeight);
+			largestHeight=MAX(largestHeight, childHeight);
+
+			/* Increase counter for visible children */
+			i++;
+		}
+	}
+
+	y+=largestHeight;
+	g_array_append_val(priv->rowCoords, y);
+
+	/* Thaw notification */
+	g_object_thaw_notify(G_OBJECT(self));
+}
+
+/* Switch to updates data needed for layout in dynamic or fixed mode */
+static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDynamicTableLayout *self,
+																	ClutterContainer *inContainer,
+																	gfloat inWidth,
+																	gfloat inHeight)
+{
+	XfdashboardDynamicTableLayoutPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_DYNAMIC_TABLE_LAYOUT(self));
+	g_return_if_fail(CLUTTER_IS_CONTAINER(inContainer));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inContainer));
+
+	priv=self->priv;
+
+	/* If a fixed number of column is set call the update data function for fixed
+	 * mode otherwise the one for dynamic mode.
+	 */
+	if(priv->fixedColumns>0)
+	{
+		_xfdashboard_dynamic_table_layout_update_layout_data_fixed(self,
+																	inContainer,
+																	inWidth,
+																	inHeight);
+	}
+		else
+		{
+			_xfdashboard_dynamic_table_layout_update_layout_data_dynamic(self,
+																			inContainer,
+																			inWidth,
+																			inHeight);
+		}
+}
+
 
 /* IMPLEMENTATION: ClutterLayoutManager */
 
@@ -385,6 +594,107 @@ static void _xfdashboard_dynamic_table_layout_allocate(ClutterLayoutManager *sel
 	}
 }
 
+/* Container was set at this layout manager */
+static void _xfdashboard_dynamic_table_layout_set_container(ClutterLayoutManager *self,
+															ClutterContainer *inContainer)
+{
+	XfdashboardDynamicTableLayoutPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_DYNAMIC_TABLE_LAYOUT(self));
+	g_return_if_fail(inContainer==NULL || CLUTTER_IS_CONTAINER(inContainer));
+
+	priv=XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(self)->priv;
+
+	/* Remove weak reference at old container */
+	if(priv->container)
+	{
+		g_object_remove_weak_pointer(G_OBJECT(priv->container), &priv->container);
+		priv->container=NULL;
+	}
+
+	/* Add weak reference at new container */
+	if(inContainer)
+	{
+		priv->container=inContainer;
+		g_object_add_weak_pointer(G_OBJECT(priv->container), &priv->container);
+	}
+
+	/* Invalidate style to get new possible styles applied */
+	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
+}
+
+
+/* IMPLEMENTATION: Interface XfdashboardStylable */
+
+/* Get stylable properties of this stylable object */
+static void _xfdashboard_dynamic_table_layout_stylable_get_stylable_properties(XfdashboardStylable *inStylable,
+																				GHashTable *ioStylableProperties)
+{
+	g_return_if_fail(XFDASHBOARD_IS_STYLABLE(inStylable));
+
+	/* Add stylable properties to hashtable */
+	xfdashboard_stylable_add_stylable_property(inStylable, ioStylableProperties, "fixed-columns");
+}
+
+/* Get parent stylable actor of this stylable object */
+static XfdashboardStylable* _xfdashboard_dynamic_table_layout_stylable_get_parent(XfdashboardStylable *inStylable)
+{
+	XfdashboardDynamicTableLayoutPrivate	*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(inStylable), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_DYNAMIC_TABLE_LAYOUT(inStylable), NULL);
+
+	priv=XFDASHBOARD_DYNAMIC_TABLE_LAYOUT(inStylable)->priv;
+
+	/* Check if container set in this layout manager is stylable and return the container as parent */
+	if(priv->container &&
+		XFDASHBOARD_IS_STYLABLE(priv->container))
+	{
+		return(XFDASHBOARD_STYLABLE(priv->container));
+	}
+
+	/* If we get here either no container was set or it is not stylable */
+	return(NULL);
+}
+
+/* Get/set style classes of this stylable object */
+static const gchar* _xfdashboard_dynamic_table_layout_stylable_get_classes(XfdashboardStylable *inStylable)
+{
+	/* Not implemented */
+	return(NULL);
+}
+
+static void _xfdashboard_dynamic_table_layout_stylable_set_classes(XfdashboardStylable *inStylable, const gchar *inStyleClasses)
+{
+	/* Not implemented */
+}
+
+/* Get/set style pseudo-classes of this stylable object */
+static const gchar* _xfdashboard_dynamic_table_layout_stylable_get_pseudo_classes(XfdashboardStylable *inStylable)
+{
+	/* Not implemented */
+	return(NULL);
+}
+
+static void _xfdashboard_dynamic_table_layout_stylable_set_pseudo_classes(XfdashboardStylable *inStylable, const gchar *inStylePseudoClasses)
+{
+	/* Not implemented */
+}
+
+/* Interface initialization
+ * Set up default functions
+ */
+void _xfdashboard_dynamic_table_layout_stylable_iface_init(XfdashboardStylableInterface *iface)
+{
+	iface->get_stylable_properties=_xfdashboard_dynamic_table_layout_stylable_get_stylable_properties;
+	iface->get_parent=_xfdashboard_dynamic_table_layout_stylable_get_parent;
+	iface->get_classes=_xfdashboard_dynamic_table_layout_stylable_get_classes;
+	iface->set_classes=_xfdashboard_dynamic_table_layout_stylable_set_classes;
+	iface->get_pseudo_classes=_xfdashboard_dynamic_table_layout_stylable_get_pseudo_classes;
+	iface->set_pseudo_classes=_xfdashboard_dynamic_table_layout_stylable_set_pseudo_classes;
+}
+
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -404,6 +714,12 @@ static void _xfdashboard_dynamic_table_layout_dispose(GObject *inObject)
 	{
 		g_array_free(priv->rowCoords, TRUE);
 		priv->rowCoords=NULL;
+	}
+
+	if(priv->container)
+	{
+		g_object_remove_weak_pointer(G_OBJECT(priv->container), &priv->container);
+		priv->container=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -426,6 +742,10 @@ static void _xfdashboard_dynamic_table_layout_set_property(GObject *inObject,
 
 		case PROP_COLUMN_SPACING:
 			xfdashboard_dynamic_table_layout_set_column_spacing(self, g_value_get_float(inValue));
+			break;
+
+		case PROP_FIXED_COLUMNS:
+			xfdashboard_dynamic_table_layout_set_fixed_columns(self, g_value_get_int(inValue));
 			break;
 
 		default:
@@ -463,6 +783,10 @@ static void _xfdashboard_dynamic_table_layout_get_property(GObject *inObject,
 			g_value_set_int(outValue, self->priv->columns);
 			break;
 
+		case PROP_FIXED_COLUMNS:
+			g_value_set_int(outValue, self->priv->fixedColumns);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -475,10 +799,13 @@ static void _xfdashboard_dynamic_table_layout_get_property(GObject *inObject,
  */
 static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableLayoutClass *klass)
 {
-	ClutterLayoutManagerClass	*layoutClass=CLUTTER_LAYOUT_MANAGER_CLASS(klass);
-	GObjectClass				*gobjectClass=G_OBJECT_CLASS(klass);
+	ClutterLayoutManagerClass		*layoutClass=CLUTTER_LAYOUT_MANAGER_CLASS(klass);
+	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
+	XfdashboardStylableInterface	*stylableIface;
+	GParamSpec						*paramSpec;
 
 	/* Override functions */
+	layoutClass->set_container=_xfdashboard_dynamic_table_layout_set_container;
 	layoutClass->get_preferred_width=_xfdashboard_dynamic_table_layout_get_preferred_width;
 	layoutClass->get_preferred_height=_xfdashboard_dynamic_table_layout_get_preferred_height;
 	layoutClass->allocate=_xfdashboard_dynamic_table_layout_allocate;
@@ -486,6 +813,8 @@ static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableL
 	gobjectClass->dispose=_xfdashboard_dynamic_table_layout_dispose;
 	gobjectClass->set_property=_xfdashboard_dynamic_table_layout_set_property;
 	gobjectClass->get_property=_xfdashboard_dynamic_table_layout_get_property;
+
+	stylableIface=g_type_default_interface_ref(XFDASHBOARD_TYPE_STYLABLE);
 
 	/* Set up private structure */
 	g_type_class_add_private(klass, sizeof(XfdashboardDynamicTableLayoutPrivate));
@@ -510,7 +839,7 @@ static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableL
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardDynamicTableLayoutProperties[PROP_NUMBER_CHILDREN]=
-		g_param_spec_float("number-children",
+		g_param_spec_int("number-children",
 								_("Number children"),
 								_("Current number of child actors in this layout"),
 								0,
@@ -519,7 +848,7 @@ static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableL
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardDynamicTableLayoutProperties[PROP_ROWS]=
-		g_param_spec_float("rows",
+		g_param_spec_int("rows",
 								_("Rows"),
 								_("Current number of rows in this layout"),
 								0,
@@ -528,15 +857,35 @@ static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableL
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardDynamicTableLayoutProperties[PROP_COLUMNS]=
-		g_param_spec_float("columns",
+		g_param_spec_int("columns",
 								_("Columns"),
 								_("Current number of columns in this layout"),
 								0,
 								G_MAXINT,
 								0,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-	
+
+	XfdashboardDynamicTableLayoutProperties[PROP_FIXED_COLUMNS]=
+		g_param_spec_int("fixed-columns",
+								_("Fixed columns"),
+								_("Fixed number of columns to use in this layout"),
+								0,
+								G_MAXINT,
+								0,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	paramSpec=g_object_interface_find_property(stylableIface, "style-classes");
+	XfdashboardDynamicTableLayoutProperties[PROP_STYLE_CLASSES]=
+		g_param_spec_override("style-classes", paramSpec);
+
+	paramSpec=g_object_interface_find_property(stylableIface, "style-pseudo-classes");
+	XfdashboardDynamicTableLayoutProperties[PROP_STYLE_PSEUDO_CLASSES]=
+		g_param_spec_override("style-pseudo-classes", paramSpec);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardDynamicTableLayoutProperties);
+
+	/* Release allocated resources */
+	g_type_default_interface_unref(stylableIface);
 }
 
 /* Object initialization
@@ -552,11 +901,16 @@ static void xfdashboard_dynamic_table_layout_init(XfdashboardDynamicTableLayout 
 	priv->rowSpacing=0.0f;
 	priv->columnSpacing=0.0f;
 
+	priv->numberChildren=0;
 	priv->rows=0;
 	priv->columns=0;
-	priv->numberChildren=0;
+	priv->fixedColumns=0;
 	priv->columnCoords=NULL;
 	priv->rowCoords=NULL;
+	priv->container=NULL;
+
+	/* Style content */
+	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 }
 
 /* IMPLEMENTATION: Public API */
@@ -668,6 +1022,35 @@ void xfdashboard_dynamic_table_layout_set_column_spacing(XfdashboardDynamicTable
 		/* Set new value and notify about property change */
 		priv->columnSpacing=inSpacing;
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardDynamicTableLayoutProperties[PROP_COLUMN_SPACING]);
+
+		/* Notify for upcoming layout changes */
+		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));
+	}
+}
+
+/* Get/set fixed number of columns */
+gint xfdashboard_dynamic_table_layout_get_fixed_columns(XfdashboardDynamicTableLayout *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_DYNAMIC_TABLE_LAYOUT(self), 0.0f);
+
+	return(self->priv->fixedColumns);
+}
+
+void xfdashboard_dynamic_table_layout_set_fixed_columns(XfdashboardDynamicTableLayout *self, gint inColumns)
+{
+	XfdashboardDynamicTableLayoutPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_DYNAMIC_TABLE_LAYOUT(self));
+	g_return_if_fail(inColumns>=0);
+
+	priv=self->priv;
+
+	/* Set new value if changed */
+	if(priv->fixedColumns!=inColumns)
+	{
+		/* Set new value and notify about property change */
+		priv->fixedColumns=inColumns;
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardDynamicTableLayoutProperties[PROP_FIXED_COLUMNS]);
 
 		/* Notify for upcoming layout changes */
 		clutter_layout_manager_layout_changed(CLUTTER_LAYOUT_MANAGER(self));

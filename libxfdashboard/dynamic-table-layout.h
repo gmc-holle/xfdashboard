@@ -80,6 +80,9 @@ void xfdashboard_dynamic_table_layout_set_row_spacing(XfdashboardDynamicTableLay
 gfloat xfdashboard_dynamic_table_layout_get_column_spacing(XfdashboardDynamicTableLayout *self);
 void xfdashboard_dynamic_table_layout_set_column_spacing(XfdashboardDynamicTableLayout *self, gfloat inSpacing);
 
+gint xfdashboard_dynamic_table_layout_get_fixed_columns(XfdashboardDynamicTableLayout *self);
+void xfdashboard_dynamic_table_layout_set_fixed_columns(XfdashboardDynamicTableLayout *self, gint inColumns);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_DYNAMIC_TABLE_LAYOUT__ */
