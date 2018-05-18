@@ -1540,7 +1540,7 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 	/* Now re-add all application icons for current favourites */
 	for(i=0; i<priv->favourites->len; i++)
 	{
-		/* Create application button from desktop file and hide label in quicklaunch */
+		/* Get desktop file to create application button for in quicklaunch */
 		desktopFile=(GValue*)g_ptr_array_index(priv->favourites, i);
 
 		desktopFilename=g_value_get_string(desktopFile);
@@ -1551,6 +1551,12 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 				if(!appInfo) appInfo=xfdashboard_desktop_app_info_new_from_desktop_id(desktopFilename);
 			}
 
+		/* If we could not get application information for desktop file, do not
+		 * create the application button.
+		 */
+		if(!appInfo) continue;
+
+		/* Create application button from desktop file */
 		actor=_xfdashboard_quicklaunch_create_favourite_actor(self, appInfo);
 		clutter_actor_show(actor);
 		clutter_actor_insert_child_below(CLUTTER_ACTOR(self), actor, priv->separatorFavouritesToDynamic);
