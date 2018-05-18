@@ -39,6 +39,17 @@ G_DEFINE_INTERFACE(XfdashboardStylable,
 					xfdashboard_stylable,
 					G_TYPE_OBJECT)
 
+/* Signals */
+enum
+{
+	/* Signals */
+	SIGNAL_STYLE_REVALIDATED,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardStylableSignals[SIGNAL_LAST]={ 0, };
+
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_STYLABLE_WARN_NOT_IMPLEMENTED(self, vfunc) \
 	g_warning(_("Object of type %s does not implement required virtual function XfdashboardStylable::%s"), \
@@ -239,6 +250,9 @@ static void _xfdashboard_stylable_real_invalidate(XfdashboardStylable *self)
 	/* Release allocated resources */
 	g_hash_table_destroy(themeStyleSet);
 	g_hash_table_destroy(stylableProperties);
+
+	/* Emit 'style-revalidated' signal to notify other objects about it's done */
+	g_signal_emit(self, XfdashboardStylableSignals[SIGNAL_STYLE_REVALIDATED], 0);
 }
 
 /* IMPLEMENTATION: GObject */
@@ -282,6 +296,31 @@ void xfdashboard_stylable_default_init(XfdashboardStylableInterface *iface)
 										NULL,
 										G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 		g_object_interface_install_property(iface, property);
+
+		/* Define signals */
+		/**
+		 * XfdashboardStylable::style-revalidated:
+		 * @self: A #XfdashboardStylable
+		 *
+		 * The ::style-revalidated signal is emitted when the style information
+		 * for @self were invalidated and the new style information were calculated
+		 * and applied.
+		 *
+		 * Connecting to this signal is mostly useful for stylable non-actor object,
+		 * i.e. objects which are no sub-class of #XfdashboardActor (neither directly
+		 * not indirectly) but inherit the #XfdashboardStylable interface, to invalidate
+		 * their style information and to get them recalculated and applied.
+		 */
+		XfdashboardStylableSignals[SIGNAL_STYLE_REVALIDATED]=
+			g_signal_new("style-revalidated",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST,
+							0,
+							NULL,
+							NULL,
+							g_cclosure_marshal_VOID__VOID,
+							G_TYPE_NONE,
+							0);
 
 		/* Set flag that base initialization was done for this interface */
 		initialized=TRUE;

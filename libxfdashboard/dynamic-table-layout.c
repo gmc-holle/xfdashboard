@@ -67,6 +67,7 @@ struct _XfdashboardDynamicTableLayoutPrivate
 	GArray				*rowCoords;
 
 	gpointer			container;
+	guint				styleRevalidationSignalID;
 };
 
 /* Properties */
@@ -468,6 +469,16 @@ static void _xfdashboard_dynamic_table_layout_update_layout_data(XfdashboardDyna
 		}
 }
 
+/* A style revalidation happened at container this layout manager is attached to */
+static void _xfdashboard_dynamic_table_layout_on_style_revalidated(XfdashboardDynamicTableLayout *self,
+																	gpointer inUserData)
+{
+	g_return_if_fail(XFDASHBOARD_IS_DYNAMIC_TABLE_LAYOUT(self));
+
+	/* Invalidate style to get new possible styles applied */
+	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
+}
+
 
 /* IMPLEMENTATION: ClutterLayoutManager */
 
@@ -608,6 +619,14 @@ static void _xfdashboard_dynamic_table_layout_set_container(ClutterLayoutManager
 	/* Remove weak reference at old container */
 	if(priv->container)
 	{
+		/* Disconnect signal handler to get notified about style revalidations */
+		if(priv->styleRevalidationSignalID)
+		{
+			g_signal_handler_disconnect(priv->container, priv->styleRevalidationSignalID);
+			priv->styleRevalidationSignalID=0;
+		}
+
+		/* Remove weak reference from container */
 		g_object_remove_weak_pointer(G_OBJECT(priv->container), &priv->container);
 		priv->container=NULL;
 	}
@@ -615,8 +634,15 @@ static void _xfdashboard_dynamic_table_layout_set_container(ClutterLayoutManager
 	/* Add weak reference at new container */
 	if(inContainer)
 	{
+		/* Remember new container set and add weak reference */
 		priv->container=inContainer;
 		g_object_add_weak_pointer(G_OBJECT(priv->container), &priv->container);
+
+		/* Connect signal handler to get notified about style revalidations */
+		priv->styleRevalidationSignalID=g_signal_connect_swapped(priv->container,
+																	"style-revalidated",
+																	G_CALLBACK(_xfdashboard_dynamic_table_layout_on_style_revalidated),
+																	self);
 	}
 
 	/* Invalidate style to get new possible styles applied */
@@ -718,6 +744,14 @@ static void _xfdashboard_dynamic_table_layout_dispose(GObject *inObject)
 
 	if(priv->container)
 	{
+		/* Disconnect signal handler to get notified about style revalidations */
+		if(priv->styleRevalidationSignalID)
+		{
+			g_signal_handler_disconnect(priv->container, priv->styleRevalidationSignalID);
+			priv->styleRevalidationSignalID=0;
+		}
+
+		/* Remove weak reference from container */
 		g_object_remove_weak_pointer(G_OBJECT(priv->container), &priv->container);
 		priv->container=NULL;
 	}
@@ -908,8 +942,9 @@ static void xfdashboard_dynamic_table_layout_init(XfdashboardDynamicTableLayout 
 	priv->columnCoords=NULL;
 	priv->rowCoords=NULL;
 	priv->container=NULL;
+	priv->styleRevalidationSignalID=0;
 
-	/* Style content */
+	/* Style layout manager */
 	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 }
 
