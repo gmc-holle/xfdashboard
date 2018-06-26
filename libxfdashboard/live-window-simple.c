@@ -55,11 +55,9 @@ struct _XfdashboardLiveWindowSimplePrivate
 	XfdashboardLiveWindowSimpleDisplayType	displayType;
 
 	/* Instance related */
-	XfdashboardWindowTracker				*windowTracker;
-
 	gboolean								isVisible;
-
 	ClutterActor							*actorWindow;
+	gboolean								destroyOnClose;
 };
 
 /* Properties */
@@ -69,6 +67,7 @@ enum
 
 	PROP_WINDOW,
 	PROP_DISPLAY_TYPE,
+	PROP_DESTROY_ON_CLOSE,
 
 	PROP_LAST
 };
@@ -110,18 +109,19 @@ static gboolean _xfdashboard_live_window_simple_is_visible_window(XfdashboardLiv
 
 /* Position and/or size of window has changed */
 static void _xfdashboard_live_window_simple_on_geometry_changed(XfdashboardLiveWindowSimple *self,
-																XfdashboardWindowTrackerWindow *inWindow,
 																gpointer inUserData)
 {
 	XfdashboardLiveWindowSimplePrivate	*priv;
+	XfdashboardWindowTrackerWindow		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
 
 	priv=self->priv;
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(inUserData);
 
 	/* Check if signal is for this window */
-	if(inWindow!=priv->window) return;
+	if(window!=priv->window) return;
 
 	/* Actor's allocation may change because of new geometry so relayout */
 	clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
@@ -132,23 +132,24 @@ static void _xfdashboard_live_window_simple_on_geometry_changed(XfdashboardLiveW
 
 /* Window's state has changed */
 static void _xfdashboard_live_window_simple_on_state_changed(XfdashboardLiveWindowSimple *self,
-																XfdashboardWindowTrackerWindow *inWindow,
 																gpointer inUserData)
 {
 	XfdashboardLiveWindowSimplePrivate		*priv;
+	XfdashboardWindowTrackerWindow			*window;
 	gboolean								isVisible;
 	XfdashboardWindowTrackerWindowState		state;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
 
 	priv=self->priv;
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(inUserData);
 
 	/* Check if signal is for this window */
-	if(inWindow!=priv->window) return;
+	if(window!=priv->window) return;
 
 	/* Check if window's visibility has changed */
-	isVisible=_xfdashboard_live_window_simple_is_visible_window(self, inWindow);
+	isVisible=_xfdashboard_live_window_simple_is_visible_window(self, window);
 	if(priv->isVisible!=isVisible)
 	{
 		priv->isVisible=isVisible;
@@ -156,7 +157,7 @@ static void _xfdashboard_live_window_simple_on_state_changed(XfdashboardLiveWind
 	}
 
 	/* Add or remove class depending on 'pinned' window state */
-	state=xfdashboard_window_tracker_window_get_state(inWindow);
+	state=xfdashboard_window_tracker_window_get_state(window);
 	if(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED)
 	{
 		xfdashboard_stylable_add_class(XFDASHBOARD_STYLABLE(self), "window-state-pinned");
@@ -199,21 +200,48 @@ static void _xfdashboard_live_window_simple_on_state_changed(XfdashboardLiveWind
 
 /* Window's workspace has changed */
 static void _xfdashboard_live_window_simple_on_workspace_changed(XfdashboardLiveWindowSimple *self,
-																	XfdashboardWindowTrackerWindow *inWindow,
 																	gpointer inUserData)
 {
 	XfdashboardLiveWindowSimplePrivate	*priv;
+	XfdashboardWindowTrackerWindow		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
 
 	priv=self->priv;
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(inUserData);
 
 	/* Check if signal is for this window */
-	if(inWindow!=priv->window) return;
+	if(window!=priv->window) return;
 
 	/* Emit "workspace-changed" signal */
 	g_signal_emit(self, XfdashboardLiveWindowSimpleSignals[SIGNAL_WORKSPACE_CHANGED], 0);
+}
+
+/* Window's was closed */
+static void _xfdashboard_live_window_simple_on_closed(XfdashboardLiveWindowSimple *self,
+														gpointer inUserData)
+{
+	XfdashboardLiveWindowSimplePrivate	*priv;
+	XfdashboardWindowTrackerWindow		*window;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
+
+	priv=self->priv;
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(inUserData);
+
+	/* Check if signal is for this window */
+	if(window!=priv->window) return;
+
+	/* Check if actor should be destroy when window was closed */
+	if(priv->destroyOnClose)
+	{
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Window '%s' was closed and auto-destruction of actor was requested",
+							xfdashboard_window_tracker_window_get_name(priv->window));
+		clutter_actor_destroy(CLUTTER_ACTOR(self));
+	}
 }
 
 /* Set up actor's content depending on display. If no window is set the current
@@ -384,14 +412,8 @@ static void _xfdashboard_live_window_simple_dispose(GObject *inObject)
 	/* Dispose allocated resources */
 	if(priv->window)
 	{
+		g_signal_handlers_disconnect_by_data(priv->window, self);
 		priv->window=NULL;
-	}
-
-	if(priv->windowTracker)
-	{
-		g_signal_handlers_disconnect_by_data(priv->windowTracker, self);
-		g_object_unref(priv->windowTracker);
-		priv->windowTracker=NULL;
 	}
 
 	if(priv->actorWindow)
@@ -422,6 +444,10 @@ static void _xfdashboard_live_window_simple_set_property(GObject *inObject,
 			xfdashboard_live_window_simple_set_display_type(self, g_value_get_enum(inValue));
 			break;
 
+		case PROP_DESTROY_ON_CLOSE:
+			xfdashboard_live_window_simple_set_destroy_on_close(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -443,6 +469,10 @@ static void _xfdashboard_live_window_simple_get_property(GObject *inObject,
 
 		case PROP_DISPLAY_TYPE:
 			g_value_set_enum(outValue, self->priv->displayType);
+			break;
+
+		case PROP_DESTROY_ON_CLOSE:
+			g_value_set_boolean(outValue, self->priv->destroyOnClose);
 			break;
 
 		default:
@@ -488,6 +518,13 @@ static void xfdashboard_live_window_simple_class_init(XfdashboardLiveWindowSimpl
 							XFDASHBOARD_TYPE_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE,
 							XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	XfdashboardLiveWindowSimpleProperties[PROP_DESTROY_ON_CLOSE]=
+		g_param_spec_boolean("destroy-on-close",
+								_("Destroy on close"),
+								_("If this actor should be destroy when window was closed"),
+								TRUE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWindowSimpleProperties);
 
@@ -543,19 +580,15 @@ static void xfdashboard_live_window_simple_init(XfdashboardLiveWindowSimple *sel
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set default values */
-	priv->windowTracker=xfdashboard_window_tracker_get_default();
 	priv->window=NULL;
 	priv->displayType=XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW;
+	priv->destroyOnClose=TRUE;
+	
 
 	/* Set up child actors (order is important) */
 	priv->actorWindow=clutter_actor_new();
 	clutter_actor_show(priv->actorWindow);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->actorWindow);
-
-	/* Connect signals */
-	g_signal_connect_swapped(priv->windowTracker, "window-geometry-changed", G_CALLBACK(_xfdashboard_live_window_simple_on_geometry_changed), self);
-	g_signal_connect_swapped(priv->windowTracker, "window-state-changed", G_CALLBACK(_xfdashboard_live_window_simple_on_state_changed), self);
-	g_signal_connect_swapped(priv->windowTracker, "window-workspace-changed", G_CALLBACK(_xfdashboard_live_window_simple_on_workspace_changed), self);
 }
 
 /* IMPLEMENTATION: Public API */
@@ -615,9 +648,15 @@ void xfdashboard_live_window_simple_set_window(XfdashboardLiveWindowSimple *self
 		_xfdashboard_live_window_simple_setup_content(self);
 
 		/* Set up this actor and child actor by calling each signal handler now */
-		_xfdashboard_live_window_simple_on_geometry_changed(self, priv->window, priv->windowTracker);
-		_xfdashboard_live_window_simple_on_state_changed(self, priv->window, priv->windowTracker);
-		_xfdashboard_live_window_simple_on_workspace_changed(self, priv->window, priv->windowTracker);
+		_xfdashboard_live_window_simple_on_geometry_changed(self, priv->window);
+		_xfdashboard_live_window_simple_on_state_changed(self, priv->window);
+		_xfdashboard_live_window_simple_on_workspace_changed(self, priv->window);
+
+		/* Connect signal handlers */
+		g_signal_connect_swapped(priv->window, "geometry-changed", G_CALLBACK(_xfdashboard_live_window_simple_on_geometry_changed), self);
+		g_signal_connect_swapped(priv->window, "state-changed", G_CALLBACK(_xfdashboard_live_window_simple_on_state_changed), self);
+		g_signal_connect_swapped(priv->window, "workspace-changed", G_CALLBACK(_xfdashboard_live_window_simple_on_workspace_changed), self);
+		g_signal_connect_swapped(priv->window, "closed", G_CALLBACK(_xfdashboard_live_window_simple_on_closed), self);
 	}
 		else
 		{
@@ -660,5 +699,32 @@ void xfdashboard_live_window_simple_set_display_type(XfdashboardLiveWindowSimple
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowSimpleProperties[PROP_DISPLAY_TYPE]);
+	}
+}
+
+/* Get/set flag for destruction on window close */
+gboolean xfdashboard_live_window_simple_get_destroy_on_close(XfdashboardLiveWindowSimple *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self), FALSE);
+
+	return(self->priv->destroyOnClose);
+}
+
+void xfdashboard_live_window_simple_set_destroy_on_close(XfdashboardLiveWindowSimple *self, gboolean inDestroyOnClose)
+{
+	XfdashboardLiveWindowSimplePrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
+
+	priv=self->priv;
+
+	/* Only set value if it changes */
+	if(priv->destroyOnClose!=inDestroyOnClose)
+	{
+		/* Set value */
+		priv->destroyOnClose=inDestroyOnClose;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardLiveWindowSimpleProperties[PROP_DESTROY_ON_CLOSE]);
 	}
 }

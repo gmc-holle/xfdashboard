@@ -98,6 +98,9 @@ void xfdashboard_live_window_simple_set_window(XfdashboardLiveWindowSimple *self
 XfdashboardLiveWindowSimpleDisplayType xfdashboard_live_window_simple_get_display_type(XfdashboardLiveWindowSimple *self);
 void xfdashboard_live_window_simple_set_display_type(XfdashboardLiveWindowSimple *self, XfdashboardLiveWindowSimpleDisplayType inType);
 
+gboolean xfdashboard_live_window_simple_get_destroy_on_close(XfdashboardLiveWindowSimple *self);
+void xfdashboard_live_window_simple_set_destroy_on_close(XfdashboardLiveWindowSimple *self, gboolean inDestroyOnClose);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_LIVE_WINDOW_SIMPLE__ */
