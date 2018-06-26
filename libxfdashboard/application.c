@@ -364,7 +364,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 		 */
 		desktop="XFCE";
 	}
-		/* If desktop enviroment was found but has no name
+		/* If desktop environment was found but has no name
 		 * set NULL to get all menu items shown.
 		 */
 		else if(*desktop==0) desktop=NULL;

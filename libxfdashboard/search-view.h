@@ -1,5 +1,5 @@
 /*
- * search-view: A view showing applications matching search criterias
+ * search-view: A view showing applications matching search criteria
  * 
  * Copyright 2012-2017 Stephan Haller <nomad@froevel.de>
  * 

@@ -286,7 +286,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 		return(NULL);
 	}
 
-	/* Open enviroment variables of process.
+	/* Open environment variables of process.
 	 * This is the initial set of environment variables set when process was spawned.
 	 * But that is ok because the environment variables we lookup are set
 	 * at launch time and do not change.
@@ -298,7 +298,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 	if(!g_file_get_contents(procEnvFile, &envContent, &envLength, &error))
 	{
 		XFDASHBOARD_DEBUG(_xfdashboard_application_tracker, APPLICATIONS,
-							"Could not read enviroment varibles for PID %d at %s: %s",
+							"Could not read environment varibles for PID %d at %s: %s",
 							inPID,
 							procEnvFile,
 							error ? error->message : _("Unknown error"));
@@ -314,12 +314,12 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 	}
 
 	XFDASHBOARD_DEBUG(_xfdashboard_application_tracker, APPLICATIONS,
-						"Enviroment set for PID %d at %s is %lu bytes long",
+						"environment set for PID %d at %s is %lu bytes long",
 						inPID,
 						procEnvFile,
 						envLength);
 
-	/* Iterate through enviroment variables and insert copy of environment
+	/* Iterate through environment variables and insert copy of environment
 	 * variable's name as key and the copy of its value as value into hash-table.
 	 */
 	iter=envContent;
@@ -355,7 +355,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 		}
 		if(*iter!='=')
 		{
-			g_warning(_("Malformed enviroment '%s' in environment set for PID %d at %s"),
+			g_warning(_("Malformed environment '%s' in environment set for PID %d at %s"),
 						name,
 						inPID,
 						procEnvFile);
@@ -545,7 +545,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 	 * application database.
 	 */
 	XFDASHBOARD_DEBUG(self, APPLICATIONS,
-						"Resolved enviroment variables of window '%s' to desktop ID '%s'",
+						"Resolved environment variables of window '%s' to desktop ID '%s'",
 						xfdashboard_window_tracker_window_get_name(inWindow),
 						foundAppInfo ? g_app_info_get_id(foundAppInfo) : "<nil>");
 

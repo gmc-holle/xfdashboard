@@ -290,7 +290,7 @@ static gboolean _xfdashboard_settings_plugins_on_treeview_button_pressed(Xfdashb
 		!path ||
 		!column)
 	{
-		g_debug("Could not get path and colum in tree view for position %.2f, %.2f",
+		g_debug("Could not get path and column in tree view for position %.2f, %.2f",
 				inEvent->button.x,
 				inEvent->button.y);
 

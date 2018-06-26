@@ -1221,7 +1221,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 	terms=g_new(gchar*, numberTerms+1);
 	if(!terms)
 	{
-		g_critical(_("Could not allocate memory to copy search criterias for case-insensitive search"));
+		g_critical(_("Could not allocate memory to copy search criteria for case-insensitive search"));
 		return(NULL);
 	}
 

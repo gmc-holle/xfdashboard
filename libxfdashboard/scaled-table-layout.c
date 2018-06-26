@@ -120,7 +120,7 @@ static void _xfdashboard_scaled_table_layout_update_rows_and_columns(Xfdashboard
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardScaledTableLayoutProperties[PROP_NUMBER_CHILDREN]);
 	}
 
-	/* Get request mode to determine if more rows than colums are needed
+	/* Get request mode to determine if more rows than columns are needed
 	 * or the opposite
 	 */
 	requestMode=clutter_actor_get_request_mode(CLUTTER_ACTOR(inContainer));

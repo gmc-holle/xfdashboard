@@ -484,7 +484,7 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 	/* Check if current text length if greater than zero and previous text length
 	 * was zero. If check is successful it marks the start of a search. Emit the
 	 * "search-started" signal. There is no need to start a search a search over
-	 * all search providers as it will be done later by updating search criterias.
+	 * all search providers as it will be done later by updating search criteria.
 	 * There is also no need to activate search view because we will ensure that
 	 * search view is activate on any change in search text box but we enable that
 	 * view to be able to activate it ;)
@@ -515,7 +515,7 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 	}
 
 	/* Ensure that search view is active, emit signal for text changed,
-	 * update search criterias and set active toggle state at apps button
+	 * update search criteria and set active toggle state at apps button
 	 */
 	xfdashboard_viewpad_set_active_view(XFDASHBOARD_VIEWPAD(priv->viewpad), searchView);
 	xfdashboard_search_view_update_search(XFDASHBOARD_SEARCH_VIEW(searchView), text);

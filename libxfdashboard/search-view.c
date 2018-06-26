@@ -1,5 +1,5 @@
 /*
- * search-view: A view showing applications matching search criterias
+ * search-view: A view showing applications matching search criteria
  * 
  * Copyright 2012-2017 Stephan Haller <nomad@froevel.de>
  * 
@@ -736,7 +736,7 @@ static gboolean _xfdashboard_search_view_can_do_incremental_search(XfdashboardSe
 	 */
 	if(!(*iterProvider) && !(*iterCurrent)) return(TRUE);
 
-	/* If we get here both terms list the criterias do not match
+	/* If we get here both terms list the criteria do not match
 	 * and an incremental search cannot be done. Return FALSE
 	 * to indicate that a full search is needed.
 	 */
