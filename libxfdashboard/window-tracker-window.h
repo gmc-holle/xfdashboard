@@ -143,6 +143,7 @@ struct _XfdashboardWindowTrackerWindowInterface
 	void (*monitor_changed)(XfdashboardWindowTrackerWindow *self,
 							XfdashboardWindowTrackerMonitor *inOldMonitor);
 	void (*geometry_changed)(XfdashboardWindowTrackerWindow *self);
+	void (*closed)(XfdashboardWindowTrackerWindow *self);
 };
 
 /* Public API */

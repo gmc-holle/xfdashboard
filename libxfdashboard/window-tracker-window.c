@@ -51,6 +51,7 @@ enum
 	SIGNAL_WORKSPACE_CHANGED,
 	SIGNAL_MONITOR_CHANGED,
 	SIGNAL_GEOMETRY_CHANGED,
+	SIGNAL_CLOSED,
 
 	SIGNAL_LAST
 };
@@ -278,6 +279,17 @@ static void xfdashboard_window_tracker_window_default_init(XfdashboardWindowTrac
 							G_TYPE_FROM_INTERFACE(iface),
 							G_SIGNAL_RUN_LAST,
 							G_STRUCT_OFFSET(XfdashboardWindowTrackerWindowInterface, geometry_changed),
+							NULL,
+							NULL,
+							g_cclosure_marshal_VOID__VOID,
+							G_TYPE_NONE,
+							0);
+
+		XfdashboardWindowTrackerWindowSignals[SIGNAL_CLOSED]=
+			g_signal_new("closed",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST,
+							G_STRUCT_OFFSET(XfdashboardWindowTrackerWindowInterface, closed),
 							NULL,
 							NULL,
 							g_cclosure_marshal_VOID__VOID,
