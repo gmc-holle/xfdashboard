@@ -629,25 +629,26 @@ static void _xfdashboard_stage_on_view_activated(XfdashboardStage *self, Xfdashb
  * signal handler to find new stage window.
  */
 static void _xfdashboard_stage_on_window_closed(XfdashboardStage *self,
-												XfdashboardWindowTrackerWindow *inWindow,
 												gpointer inUserData)
 {
 	XfdashboardStagePrivate				*priv;
+	XfdashboardWindowTrackerWindow		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
 
 	priv=self->priv;
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(inUserData);
 
 	/* Check if window closed is this stage window */
-	if(priv->stageWindow!=inWindow) return;
-
-	/* Forget stage window as it was closed */
-	priv->stageWindow=NULL;
+	if(priv->stageWindow!=window) return;
 
 	/* Disconnect this signal handler as this stage window was closed*/
 	XFDASHBOARD_DEBUG(self, ACTOR, "Stage window was closed. Removing signal handler");
-	g_signal_handlers_disconnect_by_func(priv->windowTracker, G_CALLBACK(_xfdashboard_stage_on_window_closed), self);
+	g_signal_handlers_disconnect_by_func(priv->stageWindow, G_CALLBACK(_xfdashboard_stage_on_window_closed), self);
+
+	/* Forget stage window as it was closed */
+	priv->stageWindow=NULL;
 
 	/* Instead reconnect signal handler to find new stage window */
 	XFDASHBOARD_DEBUG(self, ACTOR, "Reconnecting signal to find new stage window as this one as closed");
@@ -690,7 +691,10 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 	 * handler again.
 	 */
 	XFDASHBOARD_DEBUG(self, ACTOR, "Connecting signal signal handler to get notified about destruction of stage window");
-	g_signal_connect_swapped(priv->windowTracker, "window-closed", G_CALLBACK(_xfdashboard_stage_on_window_closed), self);
+	g_signal_connect_swapped(priv->stageWindow,
+								"closed",
+								G_CALLBACK(_xfdashboard_stage_on_window_closed),
+								self);
 
 	/* Set focus */
 	_xfdashboard_stage_set_focus(self);
@@ -1628,6 +1632,7 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 	/* Release allocated resources */
 	if(priv->stageWindow)
 	{
+		g_signal_handlers_disconnect_by_func(priv->stageWindow, G_CALLBACK(_xfdashboard_stage_on_window_closed), self);
 		xfdashboard_window_tracker_window_hide_stage(priv->stageWindow);
 		priv->stageWindow=NULL;
 	}

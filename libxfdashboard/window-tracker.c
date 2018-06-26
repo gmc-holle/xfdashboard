@@ -84,14 +84,14 @@ static guint XfdashboardWindowTrackerSignals[SIGNAL_LAST]={ 0, };
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
-/* Default implementation of virtual signal handler function "window_closed" */
+/* Default signal handler for signal "window_closed" */
 static void _xfdashboard_window_tracker_real_window_closed(XfdashboardWindowTracker *self,
 															XfdashboardWindowTrackerWindow *inWindow)
 {
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
-	/* By default (if not overidden) emit "close" signal at window */
+	/* By default (if not overidden) emit "closed" signal at window */
 	g_signal_emit_by_name(inWindow, "closed");
 }
 
