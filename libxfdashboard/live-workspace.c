@@ -103,6 +103,7 @@ static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWor
 {
 	XfdashboardLiveWorkspacePrivate			*priv;
 	XfdashboardWindowTrackerWindowState		state;
+	gboolean								visible;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_LIVE_WORKSPACE(self), FALSE);
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow), FALSE);
@@ -110,19 +111,64 @@ static gboolean _xfdashboard_live_workspace_is_visible_window(XfdashboardLiveWor
 	priv=self->priv;
 
 	/* Determine if windows should be shown at workspace depending on its state */
+	visible=TRUE;
+
 	state=xfdashboard_window_tracker_window_get_state(inWindow);
-	if((state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER) ||
-		(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST) ||
-		!xfdashboard_window_tracker_window_is_visible(inWindow) ||
-		(!priv->workspace && !(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED)) ||
-		(priv->workspace && !xfdashboard_window_tracker_window_is_on_workspace(inWindow, priv->workspace)) ||
-		xfdashboard_window_tracker_window_is_stage(inWindow))
+	if(visible && (state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER))
 	{
-		return(FALSE);
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Window '%s' is invisible due to 'skip-pager' window state",
+							xfdashboard_window_tracker_window_get_name(inWindow));
+		visible=FALSE;
 	}
 
-	/* If we get here the window should be shown */
-	return(TRUE);
+	if(visible && (state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST))
+	{
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Window '%s' is invisible due to 'skip-tasklist' window state",
+							xfdashboard_window_tracker_window_get_name(inWindow));
+		visible=FALSE;
+	}
+
+	if(visible &&
+		!xfdashboard_window_tracker_window_is_visible(inWindow))
+	{
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Window '%s' is really invisible",
+							xfdashboard_window_tracker_window_get_name(inWindow));
+		visible=FALSE;
+	}
+
+	if(visible &&
+		(!priv->workspace && !(state & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED)))
+	{
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Window '%s' is invisible because no workspace was set and window is not pinned",
+							xfdashboard_window_tracker_window_get_name(inWindow));
+		visible=FALSE;
+	}
+
+	if(visible &&
+		(priv->workspace && !xfdashboard_window_tracker_window_is_on_workspace(inWindow, priv->workspace)))
+	{
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Window '%s' is invisible because window is not on workspace '%s'",
+							xfdashboard_window_tracker_window_get_name(inWindow),
+							xfdashboard_window_tracker_workspace_get_name(priv->workspace));
+		visible=FALSE;
+	}
+
+	if(visible &&
+		xfdashboard_window_tracker_window_is_stage(inWindow))
+	{
+		XFDASHBOARD_DEBUG(self, ACTOR,
+							"Window '%s' is invisible because it is the stage window",
+							xfdashboard_window_tracker_window_get_name(inWindow));
+		visible=FALSE;
+	}
+
+	/* Return visibility result */
+	return(visible);
 }
 
 /* Find live window actor by window */
