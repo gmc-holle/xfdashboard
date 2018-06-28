@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Gregor Santner <gsantner@mailbox.org>, 2017
+# Gregor Santner <gsantner@mailbox.org>, 2017-2018
 # Vinzenz Vietzke <vinz@vinzv.de>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2017-10-02 17:36+0000\n"
-"Last-Translator: Vinzenz Vietzke <vinz@vinzv.de>\n"
+"PO-Revision-Date: 2018-05-12 00:05+0000\n"
+"Last-Translator: Gregor Santner <gsantner@mailbox.org>\n"
 "Language-Team: German (http://www.transifex.com/xfdashboard/xfdashboard/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -228,11 +228,11 @@ msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:31
 msgid "Initial release."
-msgstr ""
+msgstr "Erste Release-Version"
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
-msgstr ""
+msgstr "<span size=\"large\"><b>Xfdashboard Einstellungen</b></span>"
 
 #: ../data/data/preferences.ui.h:2
 msgid "Configure plugin"
@@ -250,7 +250,7 @@ msgstr "<b>Allgemeine Einstellungen:</b>"
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr ""
+msgstr "Suche-Ansicht zurücksetzen bei erneuter Anzeige"
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
@@ -268,7 +268,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr ""
+msgstr "Zur Ansicht wechseln bei erneuter Anzeige:"
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
@@ -301,11 +301,11 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
-msgstr ""
+msgstr "Priorität des Erfassens von Fenster-Inhalten"
 
 #: ../data/data/preferences.ui.h:26
 msgid "Always start a new instance for application"
-msgstr ""
+msgstr "Immer eine neue Instanz für die Anwendung starten"
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
@@ -316,11 +316,11 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:30
 msgid "<b>Applications view:</b>"
-msgstr ""
+msgstr "<b>Anwendungs-Ansicht:</b>"
 
 #: ../data/data/preferences.ui.h:31
 msgid "Show menu for all installed applications"
-msgstr ""
+msgstr "Menü für alle installierten Anwendungen anzeigen"
 
 #: ../data/data/preferences.ui.h:32
 msgid ""
@@ -330,11 +330,11 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:33
 msgid "<b>Windows view:</b>"
-msgstr ""
+msgstr "<b>Fenster-Ansicht:</b>"
 
 #: ../data/data/preferences.ui.h:34
 msgid "Mouse wheel changes workspace"
-msgstr ""
+msgstr "Mit dem Mausrad die Arbeitsoberfläche wechseln"
 
 #: ../data/data/preferences.ui.h:35
 msgid ""
@@ -345,7 +345,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:36
 msgid "<b>Search view:</b>"
-msgstr ""
+msgstr "<b>Such-Ansicht:</b>"
 
 #: ../data/data/preferences.ui.h:37
 msgid ""
@@ -363,19 +363,19 @@ msgstr "Allgemeines"
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Name:</b>"
-msgstr ""
+msgstr "<b>Name:</b>"
 
 #: ../data/data/preferences.ui.h:41
 msgid "<b>Author:</b>"
-msgstr ""
+msgstr "<b>Autor:</b>"
 
 #: ../data/data/preferences.ui.h:42
 msgid "<b>Version:</b>"
-msgstr ""
+msgstr "<b>Version:</b>"
 
 #: ../data/data/preferences.ui.h:43
 msgid "<b>Description:</b>"
-msgstr ""
+msgstr "<b>Beschreibung:</b>"
 
 #: ../data/data/preferences.ui.h:44
 msgid "Themes"
@@ -383,7 +383,7 @@ msgstr "Themen"
 
 #: ../data/data/preferences.ui.h:45
 msgid "<b>License:</b>"
-msgstr ""
+msgstr "<b>Lizenz:</b>"
 
 #: ../data/data/preferences.ui.h:46
 msgid "Plugins"
@@ -523,7 +523,7 @@ msgstr ""
 
 #: ../libxfdashboard/application-button.c:344
 msgid "Show description"
-msgstr ""
+msgstr "Beschreibung anzeigen"
 
 #: ../libxfdashboard/application-button.c:345
 msgid "Show also description next to tile"
@@ -923,12 +923,12 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:505
 #: ../libxfdashboard/applications-view.c:506
 msgid "Back"
-msgstr ""
+msgstr "Zurück"
 
 #: ../libxfdashboard/applications-view.c:399
 #: ../libxfdashboard/applications-view.c:505
 msgid "Go back to previous menu"
-msgstr ""
+msgstr "Zurückkehren zum vorherigen Menü"
 
 #: ../libxfdashboard/applications-view.c:533
 #: ../libxfdashboard/applications-view.c:534
