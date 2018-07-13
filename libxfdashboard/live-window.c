@@ -235,8 +235,7 @@ static void _xfdashboard_live_window_on_subwindow_actor_workspace_changed(Xfdash
  * shown anymore and find associated actor to destroy it
  */
 static void _xfdashboard_live_window_on_subwindow_actor_state_changed(XfdashboardLiveWindow *self,
-																		gint inChangedMask,
-																		gint inNewState,
+																		XfdashboardWindowTrackerWindowState inOldState,
 																		gpointer inUserData)
 {
 	XfdashboardWindowTrackerWindow		*window;

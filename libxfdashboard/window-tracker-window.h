@@ -132,11 +132,9 @@ struct _XfdashboardWindowTrackerWindowInterface
 	/* Signals */
 	void (*name_changed)(XfdashboardWindowTrackerWindow *self);
 	void (*state_changed)(XfdashboardWindowTrackerWindow *self,
-							XfdashboardWindowTrackerWindowState inChangedStates,
-							XfdashboardWindowTrackerWindowState inNewState);
+							XfdashboardWindowTrackerWindowState inOldStates);
 	void (*actions_changed)(XfdashboardWindowTrackerWindow *self,
-							XfdashboardWindowTrackerWindowAction inChangedActions,
-							XfdashboardWindowTrackerWindowAction inNewActions);
+							XfdashboardWindowTrackerWindowAction inOldActions);
 	void (*icon_changed)(XfdashboardWindowTrackerWindow *self);
 	void (*workspace_changed)(XfdashboardWindowTrackerWindow *self,
 								XfdashboardWindowTrackerWorkspace *inOldWorkspace);

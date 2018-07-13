@@ -132,6 +132,7 @@ static void _xfdashboard_live_window_simple_on_geometry_changed(XfdashboardLiveW
 
 /* Window's state has changed */
 static void _xfdashboard_live_window_simple_on_state_changed(XfdashboardLiveWindowSimple *self,
+																XfdashboardWindowTrackerWindowState inOldState,
 																gpointer inUserData)
 {
 	XfdashboardLiveWindowSimplePrivate		*priv;
@@ -649,7 +650,7 @@ void xfdashboard_live_window_simple_set_window(XfdashboardLiveWindowSimple *self
 
 		/* Set up this actor and child actor by calling each signal handler now */
 		_xfdashboard_live_window_simple_on_geometry_changed(self, priv->window);
-		_xfdashboard_live_window_simple_on_state_changed(self, priv->window);
+		_xfdashboard_live_window_simple_on_state_changed(self, 0, priv->window);
 		_xfdashboard_live_window_simple_on_workspace_changed(self, priv->window);
 
 		/* Connect signal handlers */

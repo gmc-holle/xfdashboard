@@ -220,10 +220,9 @@ static void xfdashboard_window_tracker_window_default_init(XfdashboardWindowTrac
 							G_STRUCT_OFFSET(XfdashboardWindowTrackerWindowInterface, state_changed),
 							NULL,
 							NULL,
-							_xfdashboard_marshal_VOID__FLAGS_FLAGS,
+							g_cclosure_marshal_VOID__FLAGS,
 							G_TYPE_NONE,
-							2,
-							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_STATE,
+							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_STATE);
 
 		XfdashboardWindowTrackerWindowSignals[SIGNAL_ACTIONS_CHANGED]=
@@ -233,10 +232,9 @@ static void xfdashboard_window_tracker_window_default_init(XfdashboardWindowTrac
 							G_STRUCT_OFFSET(XfdashboardWindowTrackerWindowInterface, actions_changed),
 							NULL,
 							NULL,
-							_xfdashboard_marshal_VOID__FLAGS_FLAGS,
+							g_cclosure_marshal_VOID__FLAGS,
 							G_TYPE_NONE,
-							2,
-							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_ACTION,
+							1,
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_ACTION);
 
 		XfdashboardWindowTrackerWindowSignals[SIGNAL_ICON_CHANGED]=

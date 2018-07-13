@@ -250,6 +250,7 @@ static void _xfdashboard_window_tracker_window_x11_on_wnck_state_changed(Xfdashb
 {
 	XfdashboardWindowTrackerWindowX11Private	*priv;
 	WnckWindow									*window;
+	XfdashboardWindowTrackerWindowState			oldStates;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
@@ -264,11 +265,14 @@ static void _xfdashboard_window_tracker_window_x11_on_wnck_state_changed(Xfdashb
 		return;
 	}
 
+	/* Remember current states as old ones for signal emission before updating them */
+	oldStates=priv->state;
+
 	/* Update state before emitting signal */
 	_xfdashboard_window_tracker_window_x11_update_state(self);
 
 	/* Proxy signal */
-	g_signal_emit_by_name(self, "state-changed", inChangedStates, inNewState);
+	g_signal_emit_by_name(self, "state-changed", oldStates);
 }
 
 /* Proxy signal for mapped wnck window which changed actions */
@@ -279,6 +283,7 @@ static void _xfdashboard_window_tracker_window_x11_on_wnck_actions_changed(Xfdas
 {
 	XfdashboardWindowTrackerWindowX11Private	*priv;
 	WnckWindow									*window;
+	XfdashboardWindowTrackerWindowAction		oldActions;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(self));
 	g_return_if_fail(WNCK_IS_WINDOW(inUserData));
@@ -293,11 +298,14 @@ static void _xfdashboard_window_tracker_window_x11_on_wnck_actions_changed(Xfdas
 		return;
 	}
 
+	/* Remember current actions as old ones for signal emission before updating them */
+	oldActions=priv->actions;
+
 	/* Update actions before emitting signal */
 	_xfdashboard_window_tracker_window_x11_update_actions(self);
 
 	/* Proxy signal */
-	g_signal_emit_by_name(self, "actions-changed", inChangedActions, inNewActions);
+	g_signal_emit_by_name(self, "actions-changed", oldActions);
 }
 
 /* Proxy signal for mapped wnck window which changed icon */

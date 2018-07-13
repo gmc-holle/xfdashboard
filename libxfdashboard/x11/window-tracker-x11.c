@@ -428,43 +428,53 @@ static void _xfdashboard_window_tracker_x11_on_window_geometry_changed(Xfdashboa
 
 /* Action items of window has changed */
 static void _xfdashboard_window_tracker_x11_on_window_actions_changed(XfdashboardWindowTrackerX11 *self,
-																		XfdashboardWindowTrackerWindowAction inChangedMask,
-																		XfdashboardWindowTrackerWindowAction inNewValue,
+																		XfdashboardWindowTrackerWindowAction inOldActions,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerWindowX11	*window;
+	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerWindowAction	newActions;
+	XfdashboardWindowTrackerWindowAction	changedActions;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
 
 	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inUserData);
 
-	/* Emit signal */
+	/* Debugging information */
+	newActions=xfdashboard_window_tracker_window_get_state(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
+	changedActions=inOldActions ^ newActions;
 	XFDASHBOARD_DEBUG(self, WINDOWS,
-						"Window '%s' changed actions to %u with mask %u",
+						"Window '%s' changed actions from %u to %u with mask %u",
 						xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window)),
-						inNewValue, inChangedMask);
+						inOldActions, newActions, changedActions);
+
+	/* Emit signal */
 	g_signal_emit_by_name(self, "window-actions-changed", window);
 }
 
 /* State of window has changed */
 static void _xfdashboard_window_tracker_x11_on_window_state_changed(XfdashboardWindowTrackerX11 *self,
-																	XfdashboardWindowTrackerWindowState inChangedMask,
-																	XfdashboardWindowTrackerWindowState inNewValue,
+																	XfdashboardWindowTrackerWindowState inOldState,
 																	gpointer inUserData)
 {
-	XfdashboardWindowTrackerWindowX11	*window;
+	XfdashboardWindowTrackerWindowX11		*window;
+	XfdashboardWindowTrackerWindowState		newState;
+	XfdashboardWindowTrackerWindowState		changedStates;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
 
 	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inUserData);
 
-	/* Emit signal */
+	/* Debugging information */
+	newState=xfdashboard_window_tracker_window_get_state(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
+	changedStates=inOldState ^ newState;
 	XFDASHBOARD_DEBUG(self, WINDOWS,
-						"Window '%s' changed state to %u with mask %u",
+						"Window '%s' changed state from %u to %u with mask %u",
 						xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window)),
-						inNewValue, inChangedMask);
+						inOldState, newState, changedStates);
+
+	/* Emit signal */
 	g_signal_emit_by_name(self, "window-state-changed", window);
 }
 
