@@ -326,7 +326,7 @@ static ClutterActor* _xfdashboard_live_workspace_create_and_add_window_actor(Xfd
 		/* Move existing window actor to new stacking position */
 		g_object_ref(actor);
 		clutter_actor_remove_child(CLUTTER_ACTOR(self), actor);
-		if(lastWindowActor)
+		if(lastWindowActor && lastWindowActor!=actor)
 		{
 			clutter_actor_insert_child_above(CLUTTER_ACTOR(self), actor, lastWindowActor);
 			XFDASHBOARD_DEBUG(self, ACTOR,
