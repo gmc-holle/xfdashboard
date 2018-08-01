@@ -201,12 +201,14 @@ static void _xfdashboard_live_window_simple_on_state_changed(XfdashboardLiveWind
 
 /* Window's workspace has changed */
 static void _xfdashboard_live_window_simple_on_workspace_changed(XfdashboardLiveWindowSimple *self,
+																	XfdashboardWindowTrackerWorkspace *inWorkspace,
 																	gpointer inUserData)
 {
 	XfdashboardLiveWindowSimplePrivate	*priv;
 	XfdashboardWindowTrackerWindow		*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_LIVE_WINDOW_SIMPLE(self));
+	g_return_if_fail(!inWorkspace || XFDASHBOARD_IS_WINDOW_TRACKER_WORKSPACE(inWorkspace));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
 
 	priv=self->priv;
@@ -651,7 +653,7 @@ void xfdashboard_live_window_simple_set_window(XfdashboardLiveWindowSimple *self
 		/* Set up this actor and child actor by calling each signal handler now */
 		_xfdashboard_live_window_simple_on_geometry_changed(self, priv->window);
 		_xfdashboard_live_window_simple_on_state_changed(self, 0, priv->window);
-		_xfdashboard_live_window_simple_on_workspace_changed(self, priv->window);
+		_xfdashboard_live_window_simple_on_workspace_changed(self, NULL, priv->window);
 
 		/* Connect signal handlers */
 		g_signal_connect_swapped(priv->window, "geometry-changed", G_CALLBACK(_xfdashboard_live_window_simple_on_geometry_changed), self);
