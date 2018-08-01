@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# yaşar çiv <yasarciv67@gmail.com>, 2018
 # Yaşar Çiv, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2017-11-01 13:40+0000\n"
-"Last-Translator: Yaşar Çiv\n"
+"PO-Revision-Date: 2018-07-30 13:37+0000\n"
+"Last-Translator: yaşar çiv <yasarciv67@gmail.com>\n"
 "Language-Team: Turkish (http://www.transifex.com/xfdashboard/xfdashboard/language/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -156,7 +157,7 @@ msgstr "Bu kararsız gelişme, bir uygulama veritabanını tanıtır ve yüklenm
 msgid ""
 "This unstable development introduces a hotkey tracker to allow starting "
 "xfdashboard with a single press of &lt;Super&gt; key."
-msgstr ""
+msgstr "Bu kararsız gelişme, xfdashboard'un tek bir &lt;Super&gt; tuşu ile başlatılmasına izin veren bir kısayol tuşu izleyici sunar."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:20
 msgid ""
@@ -799,7 +800,7 @@ msgstr "PID %d için %s'de belirlenen ortamda hatalı biçimlendirilmiş '%s' ç
 #, c-format
 msgid ""
 "Unexpected duplicate name '%s' in environment set for PID %d at %s: %s = %s"
-msgstr ""
+msgstr "PID %d için %s konumunda ayarlanmış ortamda beklenmedik yinelenen ad '%s': %s = %s"
 
 #: ../libxfdashboard/application-tracker.c:984
 msgid ""
@@ -873,7 +874,7 @@ msgstr "Uygulamalar arama sağlayıcısının '%s' uygulaması için istatistik 
 msgid ""
 "Could not get value from group [%s] for application %s from statistics file "
 "of applications search provider: %s"
-msgstr ""
+msgstr "Uygulama arama sağlayıcısı istatistik dosyasından  [%s]  uygulaması için %s grubundan değer alınamadı: %s"
 
 #: ../libxfdashboard/applications-search-provider.c:553
 #, c-format
@@ -943,7 +944,7 @@ msgstr "Tüm kurulu uygulamaları listele"
 #: ../libxfdashboard/windows-view.c:1398
 #, c-format
 msgid "%s is not a child of %s and cannot be selected"
-msgstr ""
+msgstr "%s, %s'in bir alt öğesi değildir ve seçilemez"
 
 #: ../libxfdashboard/applications-view.c:879
 #: ../libxfdashboard/search-result-container.c:884
@@ -951,7 +952,7 @@ msgstr ""
 msgid ""
 "Focusable object %s does not handle selection direction of type %s in icon "
 "mode."
-msgstr ""
+msgstr "Odaklanabilir %s nesnesi simge modunda %s türündeki seçim yönünü işlemez."
 
 #: ../libxfdashboard/applications-view.c:999
 #: ../libxfdashboard/search-result-container.c:1034
@@ -959,14 +960,14 @@ msgstr ""
 msgid ""
 "Focusable object %s does not handle selection direction of type %s in list "
 "mode."
-msgstr ""
+msgstr "Odaklanabilir %s nesnesi liste modunda %s türündeki seçim yönünü işlemez."
 
 #: ../libxfdashboard/applications-view.c:1057
 #: ../libxfdashboard/quicklaunch.c:2391 ../libxfdashboard/windows-view.c:1460
 #: ../libxfdashboard/workspace-selector.c:956
 #, c-format
 msgid "Cannot lookup selection target at %s because %s is a child of %s"
-msgstr ""
+msgstr "Seçim hedefi %s konumunda olamaz çünkü %s %s'in bir alt öğesidir"
 
 #: ../libxfdashboard/applications-view.c:1104
 #: ../libxfdashboard/quicklaunch.c:2482
@@ -975,13 +976,13 @@ msgstr ""
 #: ../libxfdashboard/workspace-selector.c:1027
 #, c-format
 msgid "Focusable object %s does not handle selection direction of type %s."
-msgstr ""
+msgstr "Odaklanabilir %s nesnesi  %s tipinin seçim yönünü işlemez."
 
 #: ../libxfdashboard/applications-view.c:1143
 #: ../libxfdashboard/quicklaunch.c:2521 ../libxfdashboard/windows-view.c:1615
 #, c-format
 msgid "%s is a child of %s and cannot be activated at %s"
-msgstr ""
+msgstr "%s %s'in bir alt öğesi ve %sde etkinleştirilemez"
 
 #: ../libxfdashboard/applications-view.c:1323
 #: ../libxfdashboard/search-result-container.c:1258
@@ -1141,7 +1142,7 @@ msgstr "Düzenleyiciler"
 
 #: ../libxfdashboard/binding.c:238
 msgid "Modifiers this binding is bound to"
-msgstr ""
+msgstr "Bu bağlamayı düzenleyiciler bağlı"
 
 #: ../libxfdashboard/binding.c:246
 msgid "Class name of target of this binding"
@@ -1176,47 +1177,47 @@ msgstr "Ciltlemede geçersiz olay türü ayarlanamıyor"
 #: ../libxfdashboard/theme-layout.c:250
 #, c-format
 msgid "Error on line %d char %d: "
-msgstr ""
+msgstr "%d satırında %dkarakter hatası:"
 
 #: ../libxfdashboard/bindings-pool.c:201
 #, c-format
 msgid "Could not parse empty key-binding '%s'."
-msgstr ""
+msgstr "%s boş anahtar bağlaması ayrıştırılamadı."
 
 #: ../libxfdashboard/bindings-pool.c:226
 #, c-format
 msgid ""
 "Could not parse modifier '%s' of key-binding '%s' because it is not enclosed"
 " by '<...>'"
-msgstr ""
+msgstr "'<...>' ile çevrelenmediğinden '%s' anahtar bağlayıcısının '%s' değiştiricisi ayrıştırılamadı."
 
 #: ../libxfdashboard/bindings-pool.c:249
 #, c-format
 msgid "Could not parse unknown modifier '%s' of key-binding '%s'"
-msgstr ""
+msgstr "'%s' anahtar bağlayıcısının bilinmeyen '%s' değiştiricisi ayrıştırılamadı"
 
 #: ../libxfdashboard/bindings-pool.c:271
 #, c-format
 msgid ""
 "Could not parse '%s' of key-binding '%s' because it is already a key "
 "assigned."
-msgstr ""
+msgstr "Zaten atanmış bir anahtar olduğundan  '%s' '%s' anahtar bağlayıcısından  ayrıştırılamadı."
 
 #: ../libxfdashboard/bindings-pool.c:286
 #, c-format
 msgid "Could not parse '%s' of key-binding '%s'"
-msgstr ""
+msgstr "'%s' '%s' anahtar değiştiricisinden ayrıştırılamadı"
 
 #: ../libxfdashboard/bindings-pool.c:305
 #, c-format
 msgid "Invalid key-binding '%s' as either a key nor a modifier was assigned."
-msgstr ""
+msgstr "Bir anahtar veya değiştirici olarak geçersiz anahtar bağlaması '%s' atanmıştır."
 
 #: ../libxfdashboard/bindings-pool.c:344 ../libxfdashboard/theme-effects.c:524
 #: ../libxfdashboard/theme-layout.c:981
 #, c-format
 msgid "Unexpected text node '%s' at tag <%s>"
-msgstr ""
+msgstr "<%s> etiketinde beklenmeyen '%s' metin düğümü"
 
 #: ../libxfdashboard/bindings-pool.c:374
 msgid "Missing action"
@@ -1258,7 +1259,7 @@ msgstr "Anahtar bağlama için bağlama başlatılamadı"
 msgid ""
 "Cannot transform attribute 'allow-unfocusable-target' from type '%s' to type"
 " '%s'"
-msgstr ""
+msgstr "'%s' türünden '%s' türüne 'odaklanamayan-hedefe-izin' özelliği dönüştürülemiyor"
 
 #: ../libxfdashboard/bindings-pool.c:684 ../libxfdashboard/bindings-pool.c:764
 #: ../libxfdashboard/theme-effects.c:566 ../libxfdashboard/theme-effects.c:718
@@ -1267,31 +1268,31 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1397
 #, c-format
 msgid "Tag <%s> cannot contain tag <%s>"
-msgstr ""
+msgstr "<%s> etiketi <%s> etiketini içeremez"
 
 #: ../libxfdashboard/bindings-pool.c:827
 #: ../libxfdashboard/theme-effects.c:1068
 #: ../libxfdashboard/theme-layout.c:1768
 #, c-format
 msgid "Could not set up parser data for file %s"
-msgstr ""
+msgstr "%s dosyası için ayrıştırıcı verileri ayarlanamadı"
 
 #: ../libxfdashboard/bindings-pool.c:839
 #: ../libxfdashboard/theme-effects.c:1080
 #: ../libxfdashboard/theme-layout.c:1780
 #, c-format
 msgid "Could not create parser for file %s"
-msgstr ""
+msgstr "%s dosyası için ayrıştırıcı oluşturulamadı"
 
 #: ../libxfdashboard/bindings-pool.c:868
 #, c-format
 msgid "Could not set up hash-table at parser data for file %s"
-msgstr ""
+msgstr "%s dosyası için ayrıştırıcı verilerinde hash-table ayarlanamadı"
 
 #: ../libxfdashboard/bindings-pool.c:898
 #, c-format
 msgid "Unexpected binding state set at parser data for file %s"
-msgstr ""
+msgstr "Beklenmeyen bağlanma durumu, %s dosyası için ayrıştırıcı verilerinde ayarlanır"
 
 #: ../libxfdashboard/bindings-pool.c:1073
 #, c-format
@@ -1334,7 +1335,7 @@ msgstr "GIcon simgesi"
 
 #: ../libxfdashboard/button.c:1346
 msgid "The GIcon of icon"
-msgstr ""
+msgstr "Simgesinin GIcon'u"
 
 #: ../libxfdashboard/button.c:1352
 msgid "Icon image"
@@ -1396,11 +1397,11 @@ msgstr "Etiket rengi"
 
 #: ../libxfdashboard/button.c:1403
 msgid "Ellipsize mode"
-msgstr ""
+msgstr "Ellipsize modu"
 
 #: ../libxfdashboard/button.c:1404
 msgid "Mode of ellipsize if text in label is too long"
-msgstr ""
+msgstr "Etiketdeki metin çok uzunsa elipsin modu"
 
 #: ../libxfdashboard/button.c:1411
 msgid "Single line"
@@ -1416,7 +1417,7 @@ msgstr "Metin doğrulama"
 
 #: ../libxfdashboard/button.c:1419
 msgid "Justification (line alignment) of label"
-msgstr ""
+msgstr "Etiketin gerekçesi (çizgi hizalama)"
 
 #: ../libxfdashboard/click-action.c:585
 msgid "Pressed"
@@ -1428,11 +1429,11 @@ msgstr "Tıklanabilir alanın basılı durumda olması gerekip gerekmediği"
 
 #: ../libxfdashboard/click-action.c:592
 msgid "Held"
-msgstr ""
+msgstr "Bekletilen"
 
 #: ../libxfdashboard/click-action.c:593
 msgid "Whether the clickable has a grab"
-msgstr ""
+msgstr "Tıklanabilir bir kapmanın olup olmadığı"
 
 #: ../libxfdashboard/click-action.c:599
 msgid "Long Press Duration"
@@ -1614,12 +1615,12 @@ msgstr "Tablodaki sütunlar arasındaki boşluk"
 #: ../libxfdashboard/dynamic-table-layout.c:511
 #: ../libxfdashboard/scaled-table-layout.c:517
 msgid "Number children"
-msgstr ""
+msgstr "Alt öğelerin sayısı"
 
 #: ../libxfdashboard/dynamic-table-layout.c:512
 #: ../libxfdashboard/scaled-table-layout.c:518
 msgid "Current number of child actors in this layout"
-msgstr ""
+msgstr "Bu düzende mevcut alt öğe aktörlerinin sayısı"
 
 #: ../libxfdashboard/dynamic-table-layout.c:520
 #: ../libxfdashboard/scaled-table-layout.c:526
@@ -1731,7 +1732,7 @@ msgstr "%s türü nesnesi gereken sanal fonksiyonu uygulamıyor XfdashboardFocus
 msgid ""
 "Old selection %s at %s is unavailable but setting new selection either to %s"
 " or nothing failed!"
-msgstr ""
+msgstr "Eski seçim %s'de %s kullanılamıyor, ancak %s veya yeni hiçbir şey ayarlanmadı!"
 
 #: ../libxfdashboard/focus-manager.c:407 ../libxfdashboard/focus-manager.c:415
 #, c-format
@@ -1762,94 +1763,94 @@ msgstr "Hala %d resimleri içeren resim önbelleği yok ediliyor"
 #: ../libxfdashboard/image-content.c:213
 #, c-format
 msgid "Image has already key '%s' set and will be replaced with '%s'"
-msgstr ""
+msgstr "Resim zaten '%s' anahtar kümesine sahip ve '%s' ile değiştirilecek"
 
 #: ../libxfdashboard/image-content.c:224
 #, c-format
 msgid "An image with key '%s' is already cache and will be replaced."
-msgstr ""
+msgstr "'%s' anahtarlı bir görüntü zaten önbellek ve değiştirilecek."
 
 #: ../libxfdashboard/image-content.c:279
 #, c-format
 msgid "Failed to load image data into content for key '%s': %s"
-msgstr ""
+msgstr "Resim verileri '%s' anahtarının içeriğine yüklenemedi: %s"
 
 #: ../libxfdashboard/image-content.c:295
 #, c-format
 msgid "Failed to load image for key '%s': %s"
-msgstr ""
+msgstr "'%s' anahtarı için resim yüklenemedi: %s"
 
 #: ../libxfdashboard/image-content.c:374
 #, c-format
 msgid "Icon file '%s' does not exist - trying fallback icon '%s'"
-msgstr ""
+msgstr "'%s' simge dosyası mevcut değil - '%s' geri dönüş simgesini deniyor."
 
 #: ../libxfdashboard/image-content.c:389
 #, c-format
 msgid "Could not load fallback icon for file '%s'"
-msgstr ""
+msgstr "%s geri dönüş simge dosyası yüklenemedi"
 
 #: ../libxfdashboard/image-content.c:412 ../libxfdashboard/image-content.c:654
 #, c-format
 msgid "Failed to load image data into content for icon '%s': %s"
-msgstr ""
+msgstr "Resim verisi '%s' simge dosyası içeriğine yüklenemedi: %s"
 
 #: ../libxfdashboard/image-content.c:445
 #, c-format
 msgid "Could not create stream for file '%s' of icon '%s': %s"
-msgstr ""
+msgstr "'%s' simgesinin '%s' dosyası için akış oluşturulamadı: %s"
 
 #: ../libxfdashboard/image-content.c:604
 #, c-format
 msgid "Could not lookup icon name '%s' for icon '%s'"
-msgstr ""
+msgstr "'%s' simgesi için  '%s' simge adı  bulunamadı"
 
 #: ../libxfdashboard/image-content.c:620
 #, c-format
 msgid "Could not lookup themed icon '%s' - trying fallback icon '%s'"
-msgstr ""
+msgstr "'%s' simge teması bulunamadı - '%s' geri dönüş simgesi deneniyor"
 
 #: ../libxfdashboard/image-content.c:633
 #, c-format
 msgid "Could not lookup fallback icon '%s' for icon '%s'"
-msgstr ""
+msgstr "'%s' simgesi için '%s' geri dönüş simgesi bulunamadı"
 
 #: ../libxfdashboard/image-content.c:680
 #, c-format
 msgid "Could not create stream for icon file %s of icon '%s': %s"
-msgstr ""
+msgstr "'%s' simgesinin %s simge dosyası için akış oluşturulamadı: %s"
 
 #: ../libxfdashboard/image-content.c:750
 #, c-format
 msgid "Could not lookup gicon '%s'"
-msgstr ""
+msgstr "'%s' gicon bulunamadı"
 
 #: ../libxfdashboard/image-content.c:761
 #, c-format
 msgid "Could not lookup fallback icon for gicon '%s'"
-msgstr ""
+msgstr "'%s' giconu için geri dönüş simgesi bulunamadı"
 
 #: ../libxfdashboard/image-content.c:782
 #, c-format
 msgid "Failed to load image data into content for gicon '%s': %s"
-msgstr ""
+msgstr "'%s' gicon içeriğine resim verisi yüklenemedi: %s"
 
 #: ../libxfdashboard/image-content.c:808
 #, c-format
 msgid "Could not create stream for file %s of gicon '%s': %s"
-msgstr ""
+msgstr "'%s' gicon %s dosyası için akış oluşturulamadı: %s"
 
 #: ../libxfdashboard/image-content.c:869
 #: ../libxfdashboard/image-content.c:1012
 #, c-format
 msgid "Cannot load image '%s' without type"
-msgstr ""
+msgstr "'%s' resmi türsüz yüklenemiyor"
 
 #: ../libxfdashboard/image-content.c:885
 #: ../libxfdashboard/image-content.c:1028
 #, c-format
 msgid "Cannot load image '%s' of unknown type %d"
-msgstr ""
+msgstr "Bilinmeyen%d türünde '%s' resmi yüklenemiyor"
 
 #: ../libxfdashboard/image-content.c:1201
 msgid "The hash key for caching this image"
@@ -1866,12 +1867,12 @@ msgstr "İstenen resim yüklenemediğinde kullanılacak simge adı"
 #: ../libxfdashboard/image-content.c:1309
 #, c-format
 msgid "Could not create key for icon name '%s' at size %u"
-msgstr ""
+msgstr "%u boyutunda '%s' simge adı için anahtar oluşturulamadı"
 
 #: ../libxfdashboard/image-content.c:1396
 #, c-format
 msgid "Could not create key for gicon '%s' at size %u"
-msgstr ""
+msgstr "%u boyutunda '%s' gicon adı için anahtar oluşturulamadı"
 
 #: ../libxfdashboard/live-window.c:773 ../libxfdashboard/window-content.c:2075
 msgid "Window"
@@ -1981,7 +1982,7 @@ msgstr "Yuvarlak köşelerin yarıçapı"
 #: ../libxfdashboard/plugin.c:191
 #, c-format
 msgid "Cannot get path for plugin at %s"
-msgstr ""
+msgstr "%s'de eklenti için yol alınamıyor"
 
 #: ../libxfdashboard/plugin.c:420
 msgid "Missing path to plugin"
@@ -1990,12 +1991,12 @@ msgstr "Eklenti için eksik yol"
 #: ../libxfdashboard/plugin.c:426
 #, c-format
 msgid "Path '%s' does not exist"
-msgstr ""
+msgstr "'%s' yolu mevcut değil"
 
 #: ../libxfdashboard/plugin.c:434
 #, c-format
 msgid "Bad state '%s' - expected '%s"
-msgstr ""
+msgstr "Kötü durum '%s' - beklenen '%s"
 
 #: ../libxfdashboard/plugin.c:443
 msgid "Plugin was already initialized"
@@ -2005,7 +2006,7 @@ msgstr "Eklenti zaten başlatıldı"
 #: ../libxfdashboard/plugin.c:471
 #, c-format
 msgid "Plugin does not implement required function %s"
-msgstr ""
+msgstr "Eklenti gerekli %s işlevini uygulamıyor"
 
 #: ../libxfdashboard/plugin.c:479
 msgid "Plugin did not set required ID"
@@ -2022,7 +2023,7 @@ msgstr "Eklenti devre dışı bırakılamıyor"
 #: ../libxfdashboard/plugin.c:555
 #, c-format
 msgid "Plugin '%s' could not be unloaded successfully: %s"
-msgstr ""
+msgstr "'%s' eklentisi başarıyla kaldırılamadı: %s"
 
 #: ../libxfdashboard/plugin.c:556 ../libxfdashboard/plugin.c:1029
 #: ../libxfdashboard/plugin.c:1078
@@ -2105,7 +2106,7 @@ msgstr "Bu eklentinin veri dosyalarına giden yol"
 #: ../libxfdashboard/plugin.c:937
 #, c-format
 msgid "Could not get plugin ID for file %s"
-msgstr ""
+msgstr "%s dosyası için eklenti kimliği alınamadı"
 
 #: ../libxfdashboard/plugin.c:964
 #, c-format
@@ -2117,44 +2118,44 @@ msgstr "Eklenti örneği oluşturulamadı"
 msgid ""
 "Setting plugin information for plugin '%s' at path '%s' failed: Plugin is "
 "already initialized"
-msgstr ""
+msgstr "'%s' yolundaki '%s' eklentisi için eklenti bilgisi ayarlama başarısız: Eklenti zaten başlatıldı"
 
 #: ../libxfdashboard/plugin.c:1077
 #, c-format
 msgid "Enabling plugin '%s' failed: Bad state '%s' - expected '%s'"
-msgstr ""
+msgstr "'%s' eklentisini etkinleştirme başarısız: Kötü durum '%s' - beklenen '%s'"
 
 #: ../libxfdashboard/plugins-manager.c:246
 #, c-format
 msgid "Could not find module for plugin ID '%s'"
-msgstr ""
+msgstr "'%s' eklenti kimliği için modül bulunamadı"
 
 #. Show error message
 #: ../libxfdashboard/plugins-manager.c:379
 #: ../libxfdashboard/plugins-manager.c:557
 #, c-format
 msgid "Could not load plugin '%s': %s"
-msgstr ""
+msgstr "'%s' eklentisi yüklenemedi: %s"
 
 #: ../libxfdashboard/quicklaunch.c:183
 #, c-format
 msgid ""
 "Could not check for duplicates for invalid %s object so assume no actor "
 "exists"
-msgstr ""
+msgstr "Geçersiz %s nesnesinin kopyaları kontrol edilemedi, dolayısıyla aktörün var olmadığını varsayın"
 
 #: ../libxfdashboard/quicklaunch.c:245
 #, c-format
 msgid ""
 "Could not check for duplicates for invalid %s object so assume it exists"
-msgstr ""
+msgstr "Geçersiz %s nesnesinin kopyaları kontrol edilemedi, dolayısıyla var olduğunu varsayın"
 
 #: ../libxfdashboard/quicklaunch.c:268
 #, c-format
 msgid ""
 "Value at %p of type %s is not a %s so assume this desktop application item "
 "exists"
-msgstr ""
+msgstr "%p deki %s türünde değer bir %sdeğildir, dolayısıyla bu masaüstü uygulama öğesinin var olduğunu varsayın"
 
 #: ../libxfdashboard/quicklaunch.c:392 ../libxfdashboard/quicklaunch.c:396
 msgid "No windows to activate for application"
@@ -2175,7 +2176,7 @@ msgstr "Sık kullanılan '%s' kaldırıldı"
 #: ../libxfdashboard/workspace-selector.c:1073
 #, c-format
 msgid "%s is a child of %s and cannot be selected at %s"
-msgstr ""
+msgstr "%s bir %s alt öğesidir ve %s de seçilemiyor"
 
 #: ../libxfdashboard/quicklaunch.c:2690
 msgid "Favourites"
@@ -2205,7 +2206,7 @@ msgstr "Göreli ölçek"
 
 #: ../libxfdashboard/scaled-table-layout.c:504
 msgid "Whether all children should be scaled relatively to largest child"
-msgstr ""
+msgstr "Tüm alt öğelerin en büyük alt öğeye göre ölçeklendirilip büyütülmemesi gerektiği"
 
 #: ../libxfdashboard/scaled-table-layout.c:510
 #: ../libxfdashboard/windows-view.c:1920
@@ -2216,7 +2217,7 @@ msgstr "Ölçeklemeyi önleme"
 msgid ""
 "Whether this layout manager should prevent upsclaing any child beyond its "
 "real size"
-msgstr ""
+msgstr "Bu düzen yöneticisinin herhangi bir alt öğeyi gerçek boyutunun ötesinde yükseltmeyi önlemesi gerekip gerekmediği"
 
 #: ../libxfdashboard/scrollbar.c:715
 msgid "Defines if scrollbar is horizontal or vertical"
@@ -2287,27 +2288,27 @@ msgstr "Kaydırıcının rengi"
 #: ../libxfdashboard/search-manager.c:270
 #, c-format
 msgid "Search provider %s of type %s is not a %s and cannot be registered"
-msgstr ""
+msgstr "%s türünde %s arama sağlayıcısı bir %s değildir ve kayıt edilemez"
 
 #: ../libxfdashboard/search-manager.c:280
 #, c-format
 msgid "Search provider %s of type %s is registered already"
-msgstr ""
+msgstr "%s türünde %s arama sağlayıcısı zaten kayıtlı"
 
 #: ../libxfdashboard/search-manager.c:294
 #, c-format
 msgid "Failed to register seaarch provider %s of type %s"
-msgstr ""
+msgstr "%s türünde %s arama sağlayıcısı kaydedilemedi"
 
 #: ../libxfdashboard/search-manager.c:323
 #, c-format
 msgid "Search provider %s is not registered and cannot be unregistered"
-msgstr ""
+msgstr "%s arama sağlayıcısı kayıtlı değil ve kayıtsız olamaz"
 
 #: ../libxfdashboard/search-manager.c:404
 #, c-format
 msgid "Cannot create search provider %s because it is not registered"
-msgstr ""
+msgstr "Kayıtlı olmadığından %s arama sağlayıcısı oluşturulamadı"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/search-provider.c:64
@@ -2315,7 +2316,7 @@ msgstr ""
 msgid ""
 "Search provider of type %s does not implement required virtual function "
 "XfdashboardSearchProvider::%s"
-msgstr ""
+msgstr "%s türü arama sağlayıcısı gerekli XfdashboardAramaSağlayıcı sanal işlevini uygulamıyor::%s"
 
 #: ../libxfdashboard/search-provider.c:171
 msgid "Provider ID"
@@ -2330,14 +2331,14 @@ msgstr "Bu tür bir arama sağlayıcısını kaydetmek için kullanılan dahili 
 msgid ""
 "Failed to add actor for result item %s of provider %s: Could not create "
 "actor"
-msgstr ""
+msgstr "%s sağlayıcısının %s sonuç öğesi için aktör eklenemedi: Aktör oluşturulamadı"
 
 #: ../libxfdashboard/search-result-container.c:429
 #, c-format
 msgid ""
 "Failed to add actor for result item %s of provider %s: Actor of type %s is "
 "not derived from class %s"
-msgstr ""
+msgstr "%s sağlayıcısının %s sonuç öğesi için aktör eklenemedi: %s türünün aktörü %ssınıfından türetilemiyor."
 
 #: ../libxfdashboard/search-result-container.c:653
 #: ../libxfdashboard/search-result-container.c:1718
@@ -2356,7 +2357,7 @@ msgstr "Tüm %d sonuçlarını göster..."
 msgid ""
 "Failed to remove actor for result item %s of provider %s: Actor of type %s "
 "is not derived from class %s"
-msgstr ""
+msgstr "%s sağlayıcısının %s sonuç öğesi silinemiyor: %s türünün aktörü %s sınıfından türetilemiyor"
 
 #: ../libxfdashboard/search-result-container.c:1237
 msgid "Provider"
@@ -2417,12 +2418,12 @@ msgstr "Akım sınırını artırmak için sonuç sayısı"
 msgid ""
 "Cannot lookup selection target at %s because %s is a child of %s but not of "
 "this container"
-msgstr ""
+msgstr "Seçim hedefi %s konumunda değil çünkü %s %s'in bir alt öğesi ama bu konteynırdan değil"
 
 #: ../libxfdashboard/search-result-container.c:1899
 #, c-format
 msgid "%s is not a child of %s and cannot be activated"
-msgstr ""
+msgstr "%s  bir %s alt öğesi değildir ve aktif edilemiyor"
 
 #: ../libxfdashboard/search-view.c:857
 #, c-format
@@ -2432,19 +2433,19 @@ msgstr "'%s' için sonuç bulunamadı"
 #: ../libxfdashboard/search-view.c:986
 #, c-format
 msgid "%s is not a child of any provider at %s and cannot be selected"
-msgstr ""
+msgstr "%s %s 'deki herhangi bir sağlayıcı alt öğesi değildir ve seçilemez"
 
 #: ../libxfdashboard/search-view.c:1390
 #, c-format
 msgid ""
 "Focusable object %s and provider %s do not handle selection direction of "
 "type %s."
-msgstr ""
+msgstr "%s odaklanabilir nesnesi ve %s sağlayıcısı %s türünün seçim yönünü işlemez."
 
 #: ../libxfdashboard/search-view.c:1426
 #, c-format
 msgid "%s is not a child of any provider at %s and cannot be activated"
-msgstr ""
+msgstr "%s %s konumundaki herhangi bir  sağlayıcının alt öğesi değil ve etkinleştirilemedi"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1582
@@ -2462,23 +2463,23 @@ msgstr "Görünümü sıfırlamak için görünüm penceresinde arama görünüm
 #: ../libxfdashboard/stage.c:677 ../libxfdashboard/stage.c:1365
 #, c-format
 msgid "Will not switch to unknown view '%s'"
-msgstr ""
+msgstr "Bilinmeyen '%s' görünümüne geçmeyecek"
 
 #: ../libxfdashboard/stage.c:695
 #, c-format
 msgid "Cannot switch to unknown view '%s'"
-msgstr ""
+msgstr "Bilinmeyen '%s' görünümüne geçilemiyor"
 
 #: ../libxfdashboard/stage.c:835 ../libxfdashboard/stage.c:902
 #, c-format
 msgid "Could not build interface '%s' from theme '%s'"
-msgstr ""
+msgstr "'%s' temasından '%s' arabirimi oluşturulamadı"
 
 #: ../libxfdashboard/stage.c:848 ../libxfdashboard/stage.c:873
 #: ../libxfdashboard/stage.c:910 ../libxfdashboard/stage.c:1240
 #, c-format
 msgid "Interface '%s' from theme '%s' must be an actor of type %s"
-msgstr ""
+msgstr "'%s' temasından '%s' arayüzü %s türü bir aktör olmalı"
 
 #: ../libxfdashboard/stage.c:962
 msgid "Invalid multiple stages for primary monitor"
@@ -2515,7 +2516,7 @@ msgstr "Bu sahne arayüzünün bağlı olduğu monitör"
 msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardStylable::%s"
-msgstr ""
+msgstr "%s türü nesne gerekli XfdashboardStylable sanal işlevini yerine getiremez::%s"
 
 #: ../libxfdashboard/stylable.c:267
 msgid "Style classes"
@@ -2538,7 +2539,7 @@ msgstr "Sahte sınıfların listesini temsil eden dize, ör. ':' ile ayrılmış
 #: ../libxfdashboard/stylable.c:334
 #, c-format
 msgid "Could not find property '%s' for class %s"
-msgstr ""
+msgstr "%s sınıfı için '%s' özelliği bulunamadı"
 
 #: ../libxfdashboard/text-box.c:797
 msgid "Editable"
@@ -2670,60 +2671,60 @@ msgstr "Açıklama olarak kullanılan tema yorumu"
 #: ../libxfdashboard/theme.c:690
 #, c-format
 msgid "Theme '%s' requested but '%s' was already loaded"
-msgstr ""
+msgstr "'%s' teması isteniyor ama '%s' zaten yüklenmiş"
 
 #: ../libxfdashboard/theme.c:707
 #, c-format
 msgid "Theme '%s' not found"
-msgstr ""
+msgstr "'%s' teması bulunamadı"
 
 #: ../libxfdashboard/theme-css.c:273
 #, c-format
 msgid "Cannot get argument %d because only %d arguments are available"
-msgstr ""
+msgstr "%d değişkeni alınamıyor çünkü sadece %d değişkenleri mevcut"
 
 #: ../libxfdashboard/theme-css.c:286
 #, c-format
 msgid "Cannot allocate memory for argument %d"
-msgstr ""
+msgstr "%d değişkeni için bellek ayrılamıyor"
 
 #: ../libxfdashboard/theme-css.c:304
 #, c-format
 msgid "Cannot transform argument %d from type '%s' to type '%s'"
-msgstr ""
+msgstr "%d değişkeni  '%s' türünden '%s' türüne dönüştürülemiyor"
 
 #: ../libxfdashboard/theme-css.c:341
 msgid "Missing string to convert to color component value."
-msgstr ""
+msgstr "Renk bileşeni değerine dönüştürmek için eksik dize."
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:364
 #, c-format
 msgid "Cannot convert string '%s' to color component value."
-msgstr ""
+msgstr "%s' dizesi renk bileşeni değerine dönüştürülemiyor."
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:384
 #, c-format
 msgid "Color component value %.2f out of range"
-msgstr ""
+msgstr "Renk bileşeni değeri %.2f aralık dışı"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:742
 #, c-format
 msgid "Factor %.2f is out of range"
-msgstr ""
+msgstr "%.2f etkeni aralık dışı"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:847
 #, c-format
 msgid "Alpha factor %.2f is out of range"
-msgstr ""
+msgstr "Alfa etkeni %.2f aralık dışı"
 
 #: ../libxfdashboard/theme-css.c:900
 #, c-format
 msgid "CSS function '%s' is already registered."
-msgstr ""
+msgstr "CSS işlevi  '%s' zaten kayıtlı"
 
 #: ../libxfdashboard/theme-css.c:941 ../libxfdashboard/theme-css.c:1049
 #: ../libxfdashboard/theme-css.c:2054
@@ -2738,11 +2739,11 @@ msgstr "Eksik işlev değişkeni"
 #: ../libxfdashboard/theme-css.c:1098
 #, c-format
 msgid "Invalid character '%c' in function argument"
-msgstr ""
+msgstr "İşlev değişkeninde bilinmeyen '%c' karakteri"
 
 #: ../libxfdashboard/theme-css.c:1123
 msgid "Invalid character in function argument"
-msgstr ""
+msgstr "İşlev değişkeninde bilinmeyen karakter"
 
 #: ../libxfdashboard/theme-css.c:1159
 msgid "Missing ')' after function"
@@ -2756,23 +2757,23 @@ msgstr "Eksik '(' fonksiyonundan sonra"
 #: ../libxfdashboard/theme-css.c:1210
 #, c-format
 msgid "Could not transform result of function '%s' to a string"
-msgstr ""
+msgstr "'%s' işlevinin sonucunu bir dizgeye dönüştüremedi"
 
 #: ../libxfdashboard/theme-css.c:1240
 #, c-format
 msgid "Function '%s' failed with error: %s"
-msgstr ""
+msgstr "'%s' işlevi hatayla başarısız oldu: %s"
 
 #: ../libxfdashboard/theme-css.c:1246
 #, c-format
 msgid "Function '%s' failed!"
-msgstr ""
+msgstr "'%s' işlevi başarısız!"
 
 #. Identifier was unresolvable so print error message
 #: ../libxfdashboard/theme-css.c:1314
 #, c-format
 msgid "Unresolvable identifier '@%s'"
-msgstr ""
+msgstr "Çözülemeyen tanımlayıcı '@%s'"
 
 #: ../libxfdashboard/theme-css.c:1508
 msgid "Invalid property name"
@@ -2792,7 +2793,7 @@ msgstr "Özellik değerleri yarım kolon ile bitmelidir"
 
 #: ../libxfdashboard/theme-css.c:1746
 msgid "Missing '(' after @import keyword."
-msgstr ""
+msgstr "@import anahtar kelimesinden sonra '(' eksik."
 
 #: ../libxfdashboard/theme-css.c:1787
 msgid "Unexpected token in filename to import"
@@ -2804,31 +2805,31 @@ msgstr "Alınacak dosya adı eksik"
 
 #: ../libxfdashboard/theme-css.c:1829
 msgid "Missing closing ')' at @import keyword."
-msgstr ""
+msgstr "@import anahtar kelimesinde için ')' kaptması eksik."
 
 #. Build error message
 #: ../libxfdashboard/theme-css.c:1894
 #, c-format
 msgid "Failed to import CSS file '%s': %s"
-msgstr ""
+msgstr "'%s' CSS dosyası içe aktarılamadı: %s"
 
 #: ../libxfdashboard/theme-css.c:1999
 msgid ""
 "Mixing selectors and '@' identifiers or defining more than one '@' "
 "identifier at once is not allowed"
-msgstr ""
+msgstr "Karıştırma seçicileri ve '@' tanımlayıcılarını veya birden fazla '@' tanımlayıcısını bir kerede tanımlamaya izin verilmiyor"
 
 #: ../libxfdashboard/theme-css.c:2020
 msgid ""
 "A selector must have been defined before other one can follow comma-"
 "separated."
-msgstr ""
+msgstr "Bir seçici virgülle ayrılan diğerini takip etmeden önce tanımlanmış olmalıdır."
 
 #. Build warning message
 #: ../libxfdashboard/theme-css.c:2086
 #, c-format
 msgid "Skipping block of unknown identifier '@%s'"
-msgstr ""
+msgstr "Bilinmeyen '@ %s' tanımlayıcı bloğunun atlanması"
 
 #: ../libxfdashboard/theme-css.c:2092
 msgid "'@' identifier"
@@ -2841,7 +2842,7 @@ msgstr "İşlenmeyen seçici"
 #: ../libxfdashboard/theme-css.c:2288
 #, c-format
 msgid "The input stream of type %s is not supported"
-msgstr ""
+msgstr "%s türü giriş akışı desteklenmiyor"
 
 #: ../libxfdashboard/theme-css.c:2486
 msgid "Path of theme loading from"
@@ -2850,24 +2851,24 @@ msgstr "Temanın yükleme yolu"
 #: ../libxfdashboard/theme-css.c:2573
 #, c-format
 msgid "Could not get file for path '%s'"
-msgstr ""
+msgstr "'%s' yoluna dosya alınamadı"
 
 #: ../libxfdashboard/theme-effects.c:334 ../libxfdashboard/theme-layout.c:483
 #, c-format
 msgid "Cannot allocate memory for object data of tag <%s>"
-msgstr ""
+msgstr "<%s> etiketinin nesne verileri için bellek ayrılamıyor"
 
 #: ../libxfdashboard/theme-effects.c:352
 #, c-format
 msgid ""
 "Freeing effect object parser data at %p with a reference counter of %d "
 "greater than one"
-msgstr ""
+msgstr "%p'deki efekt nesne ayrıştırıcı verisini %d'dan daha büyük bir referans sayacıyla serbest bırakma"
 
 #: ../libxfdashboard/theme-effects.c:482
 #, c-format
 msgid "Object of type %s is not derived from %s"
-msgstr ""
+msgstr "%s türü nesne %s'den türetilemedi"
 
 #: ../libxfdashboard/theme-effects.c:589
 msgid "Missing property name to set value for"
@@ -2876,17 +2877,17 @@ msgstr "Değer ayarı için özelliğin adı eksik"
 #: ../libxfdashboard/theme-effects.c:601
 #, c-format
 msgid "Missing object data to set value of property '%s'"
-msgstr ""
+msgstr "'%s' özelliğinin değerini ayarlamak için eksik nesne verileri"
 
 #: ../libxfdashboard/theme-effects.c:655 ../libxfdashboard/theme-effects.c:742
 #, c-format
 msgid "Missing parser data for <%s> tag"
-msgstr ""
+msgstr "<%s> etiketi için eksik ayrıştırma verileri"
 
 #: ../libxfdashboard/theme-effects.c:697
 #, c-format
 msgid "Multiple definition of property '%s' at object with ID '%s'"
-msgstr ""
+msgstr "'%s' kimliğine sahip nesnede '%s' özelliğinin çoklu tanımı"
 
 #: ../libxfdashboard/theme-effects.c:759
 #, c-format
@@ -3690,7 +3691,7 @@ msgstr ""
 #, c-format
 msgid ""
 "Unable to create file monitor for Gnome-Shell search providers at '%s': %s"
-msgstr ""
+msgstr "'%s' de Gnome-Shell arama sağlayıcıları için dosya monitörü oluşturulamıyor: %s"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:432
 msgid "Gnome-Shell search provider"
@@ -3822,12 +3823,12 @@ msgstr "İnşa edici"
 #: ../settings/general.c:708 ../settings/plugins.c:1113
 #: ../settings/themes.c:914
 msgid "The initialized GtkBuilder object where to set up themes tab from"
-msgstr ""
+msgstr "Temalar sekmesinin ayarlandığı başlangıç GtkBuilder nesnesi"
 
 #: ../settings/plugins.c:223
 #, c-format
 msgid "Configure plugin: %s"
-msgstr ""
+msgstr "Eklentiyi yapılandır: %s"
 
 #: ../settings/plugins.c:531
 msgid "Could not set list of enabled plugins!"
@@ -3837,7 +3838,7 @@ msgstr "Etkin eklentilerin listesi ayarlanamadı!"
 #: ../settings/plugins.c:746
 #, c-format
 msgid "Could not load plugin '%s' from '%s': %s"
-msgstr ""
+msgstr "'%s' den '%s' eklentisi yüklenemedi: %s"
 
 #. Create error message to store in list
 #: ../settings/plugins.c:752
@@ -3846,7 +3847,7 @@ msgid ""
 "<b>Plugin could not be loaded.</b>\n"
 "\n"
 "%s"
-msgstr ""
+msgstr "<b>Eklenti yüklenemedi.</b>\n\n%s"
 
 #: ../settings/plugins.c:958
 msgid "Name"
@@ -3878,12 +3879,12 @@ msgstr "."
 msgid ""
 "%s: %s\n"
 "Try %s --help to see a full list of available command line options.\n"
-msgstr ""
+msgstr "%s: %s\nKullanılabilir bir komut satırı tam listesi görmek için %s  --help deneyin\n"
 
 #: ../settings/main.c:84
 #, c-format
 msgid "Failed to initialize xfconf: %s"
-msgstr ""
+msgstr "Xfconf başlatılamadı: %s"
 
 #: ../settings/main.c:96
 msgid "Could not create the settings dialog."
@@ -3892,12 +3893,12 @@ msgstr "Ayarlar iletişim kutusu oluşturulamadı."
 #: ../settings/settings.c:124
 #, c-format
 msgid "Could not find UI file '%s'."
-msgstr ""
+msgstr "'%s' arayüz dosyası bulunamadı."
 
 #: ../settings/settings.c:138
 #, c-format
 msgid "Could not load UI resources from '%s': %s"
-msgstr ""
+msgstr "Arayüz kaynakları '%s' den yüklenemedi: %s"
 
 #: ../settings/settings.c:291 ../settings/settings.c:325
 msgid "Could not get dialog from UI file."
