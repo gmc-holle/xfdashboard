@@ -697,8 +697,8 @@ static void _xfdashboard_windows_view_on_window_monitor_changed(XfdashboardWindo
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inOldMonitor));
-	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inNewMonitor));
+	g_return_if_fail(inOldMonitor==NULL || XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inOldMonitor));
+	g_return_if_fail(inNewMonitor==NULL || XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inNewMonitor));
 
 	priv=self->priv;
 
@@ -707,9 +707,11 @@ static void _xfdashboard_windows_view_on_window_monitor_changed(XfdashboardWindo
 	 * and create it. Otherwise recreate all window actors for changed stage
 	 * interface and monitor.
 	 */
-	if(!_xfdashboard_windows_view_update_stage_and_monitor(self))
+	if(!_xfdashboard_windows_view_update_stage_and_monitor(self) &&
+		G_LIKELY(!inOldMonitor) &&
+		G_LIKELY(!inNewMonitor))
 	{
-		/* Check if window moved away from this view*/
+		/* Check if window moved away from this view */
 		if(priv->currentMonitor==inOldMonitor &&
 			!_xfdashboard_windows_view_is_visible_window(self, inWindow))
 		{
