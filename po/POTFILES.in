@@ -29,6 +29,7 @@ libxfdashboard/click-action.c
 libxfdashboard/collapse-box.c
 libxfdashboard/css-selector.c
 libxfdashboard/desktop-app-info.c
+libxfdashboard/desktop-app-info-action.c
 libxfdashboard/drag-action.c
 libxfdashboard/drop-action.c
 libxfdashboard/dynamic-table-layout.c

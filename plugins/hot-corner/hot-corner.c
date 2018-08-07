@@ -146,7 +146,7 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 		XfdashboardWindowTrackerWindowState			activeWindowState;
 
 		activeWindowState=xfdashboard_window_tracker_window_get_state(activeWindow);
-		if(activeWindowState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_FULLSCREEN) &&
+		if((activeWindowState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_FULLSCREEN) &&
 			!xfdashboard_window_tracker_window_is_stage(activeWindow))
 		{
 			return(G_SOURCE_CONTINUE);
