@@ -118,7 +118,6 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 	XfdashboardHotCorner							*self;
 	XfdashboardHotCornerPrivate						*priv;
 	XfdashboardWindowTrackerWindow					*activeWindow;
-	XfdashboardWindowTrackerWindowState				activeWindowState;
 	GdkDevice										*pointerDevice;
 	gint											pointerX, pointerY;
 	XfdashboardWindowTrackerMonitor					*primaryMonitor;
@@ -142,12 +141,16 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 
 	/* Do nothing if current window is fullscreen but not this application */
 	activeWindow=xfdashboard_window_tracker_get_active_window(priv->windowTracker);
-	activeWindowState=xfdashboard_window_tracker_window_get_state(activeWindow);
-	if(activeWindow &&
-		(activeWindowState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_FULLSCREEN) &&
-		!xfdashboard_window_tracker_window_is_stage(activeWindow))
+	if(activeWindow)
 	{
-		return(G_SOURCE_CONTINUE);
+		XfdashboardWindowTrackerWindowState			activeWindowState;
+
+		activeWindowState=xfdashboard_window_tracker_window_get_state(activeWindow);
+		if(activeWindowState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_FULLSCREEN) &&
+			!xfdashboard_window_tracker_window_is_stage(activeWindow))
+		{
+			return(G_SOURCE_CONTINUE);
+		}
 	}
 
 	/* Get current position of pointer */
