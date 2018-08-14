@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: xfdashboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 19:11+0100\n"
-"PO-Revision-Date: 2018-07-30 13:37+0000\n"
+"PO-Revision-Date: 2018-08-13 11:53+0000\n"
 "Last-Translator: yaşar çiv <yasarciv67@gmail.com>\n"
 "Language-Team: Turkish (http://www.transifex.com/xfdashboard/xfdashboard/language/tr/)\n"
 "MIME-Version: 1.0\n"
@@ -2894,40 +2894,40 @@ msgstr "'%s' kimliğine sahip nesnede '%s' özelliğinin çoklu tanımı"
 msgid ""
 "Invalid state of parser after parsing property '%s' at object with id '%s' "
 "of type %s"
-msgstr ""
+msgstr "'%s' özelliği, %s türünde '%s' kimliğine sahip nesnede ayrıştırıldıktan sonra geçersiz ayrıştırıcı durumu"
 
 #: ../libxfdashboard/theme-effects.c:863 ../libxfdashboard/theme-layout.c:1119
 #, c-format
 msgid "Empty ID at tag '%s'"
-msgstr ""
+msgstr "'%s' etiketinde boş kimlik"
 
 #: ../libxfdashboard/theme-effects.c:875 ../libxfdashboard/theme-layout.c:1132
 #, c-format
 msgid "Invalid ID '%s' at tag '%s'"
-msgstr ""
+msgstr "'%s' etiketinde geçersiz '%s' kimliği"
 
 #: ../libxfdashboard/theme-effects.c:888
 #, c-format
 msgid "Multiple definition of effect with id '%s'"
-msgstr ""
+msgstr "'%s' kimliğine sahip efektin çoklu tanımı"
 
 #: ../libxfdashboard/theme-effects.c:901 ../libxfdashboard/theme-layout.c:1148
 #, c-format
 msgid "Unknown object class %s for tag '%s'"
-msgstr ""
+msgstr "'%s' etiketi için bilinmeyen %s nesne sınıfı"
 
 #: ../libxfdashboard/theme-effects.c:915 ../libxfdashboard/theme-layout.c:1168
 #, c-format
 msgid ""
 "Invalid class %s in object for parent tag <%s> - expecting class derived "
 "from %s"
-msgstr ""
+msgstr "<%s> ana etiketi için geçersiz %s sınıfı - %s'den türetilen sınıf bekliyor"
 
 #. If we get here we did not find an object with requested ID
 #: ../libxfdashboard/theme-effects.c:1270
 #, c-format
 msgid "Could not find effect with ID '%s'"
-msgstr ""
+msgstr "'%s' kimliğine sahip efekt bulunamadı"
 
 #: ../libxfdashboard/theme-layout.c:389
 msgid "Cannot allocate memory for unknown tag"
@@ -2936,12 +2936,12 @@ msgstr "Bilinmeyen etiket için bellek tahsis edilemiyor"
 #: ../libxfdashboard/theme-layout.c:401
 #, c-format
 msgid "Cannot allocate memory for tag '%s'"
-msgstr ""
+msgstr "'%s' etiketi için bellek ayrılamadı"
 
 #: ../libxfdashboard/theme-layout.c:618
 #, c-format
 msgid "Unsupported tag type '%s' to resolve ID"
-msgstr ""
+msgstr "Kimliği çözmek için desteklenmeyen etiket türü '%s'"
 
 #: ../libxfdashboard/theme-layout.c:903
 msgid "Unexpected empty tag stack when parsing property text node"
@@ -2956,52 +2956,52 @@ msgstr "'%s' özellik değeri zaten ayarlanmış"
 #, c-format
 msgid ""
 "Tag <%s> can only be set at <%s> creating objects derived from class %s"
-msgstr ""
+msgstr "<%s> etiketi yalnızca %s sınıfından türetilen nesneler oluşturmak için <%s> olarak ayarlanabilir"
 
 #: ../libxfdashboard/theme-layout.c:1289
 #, c-format
 msgid "Attribute 'ref' cannot be empty at tag <%s>"
-msgstr ""
+msgstr "'ref' özniteliği <%s> etiketinde boş olamaz"
 
 #: ../libxfdashboard/theme-layout.c:1318
 #, c-format
 msgid "Tag <%s> can have only one <%s>"
-msgstr ""
+msgstr "<%s> etiketi yalnızca bir tane <%s> sahibi olabilir"
 
 #: ../libxfdashboard/theme-layout.c:1419
 #, c-format
 msgid "Internal error when handling end of tag <%s>"
-msgstr ""
+msgstr "<%s> etiketinin sonuna işlenirken dahili hata oluştu"
 
 #: ../libxfdashboard/theme-layout.c:1448
 #, c-format
 msgid "Document can have only one <%s>"
-msgstr ""
+msgstr "Belge yalnızca bir tane  <%s> sahibi olabilir"
 
 #: ../libxfdashboard/theme-layout.c:1486
 #, c-format
 msgid "Object can have only one <%s>"
-msgstr ""
+msgstr "Nesne yalnızca bir tane  <%s> sahibi olabilir"
 
 #: ../libxfdashboard/theme-layout.c:1684
 #, c-format
 msgid "ID '%s' was specified more than once (%d times)"
-msgstr ""
+msgstr "'%s' kimliği bir defadan fazla belirtildi (%d kez)"
 
 #: ../libxfdashboard/theme-layout.c:1715
 #, c-format
 msgid "Referenced ID '%s' could not be resolved"
-msgstr ""
+msgstr "Başvurulan '%s' kimliği çözülemedi"
 
 #: ../libxfdashboard/theme-layout.c:1816
 #, c-format
 msgid "File %s does not contain an interface"
-msgstr ""
+msgstr "%s dosyası bir arayüz içermiyor"
 
 #: ../libxfdashboard/theme-layout.c:1826
 #, c-format
 msgid "Interface at file %s has no ID"
-msgstr ""
+msgstr "%s dosyasındaki arayüzde kimlik yok"
 
 #: ../libxfdashboard/toggle-button.c:162
 msgid "Toggle state"
@@ -3030,7 +3030,7 @@ msgstr "Bir ipucunda görüntülenecek metin"
 #: ../libxfdashboard/utils.c:160
 #, c-format
 msgid "Could find any stage to show notification: %s"
-msgstr ""
+msgstr "Bildirimi göstermek için herhangi bir sahne bulabilir: %s"
 
 #: ../libxfdashboard/view.c:368
 msgid "View ID"
@@ -3060,13 +3060,13 @@ msgstr "Görüntülemek için kullanılan görünüm simgesi. Simge adı temalı
 
 #: ../libxfdashboard/view.c:389
 msgid "View fit mode"
-msgstr ""
+msgstr "Uygun modu göster"
 
 #: ../libxfdashboard/view.c:390
 msgid ""
 "Defines if view should be fit into viewpad and in which directions it should"
 " fit into it"
-msgstr ""
+msgstr "Görünümün viewpad'e sığması gerekip gerekmediğini ve hangi yönlerin içine sığması gerektiğini tanımlar"
 
 #: ../libxfdashboard/view.c:397
 msgid "Enabled"
@@ -3079,55 +3079,55 @@ msgstr "Bu bayrak, görünümün etkin ve etkinleştirilebilir olup olmadığın
 #: ../libxfdashboard/view-manager.c:265
 #, c-format
 msgid "View %s of type %s is not a %s and cannot be registered"
-msgstr ""
+msgstr "%s türünden %s görünümü %s değildir ve kaydedilemez"
 
 #: ../libxfdashboard/view-manager.c:275
 #, c-format
 msgid "View %s of type %s is registered already"
-msgstr ""
+msgstr "%s türünde %s görünüm zaten kayıtlı"
 
 #: ../libxfdashboard/view-manager.c:289
 #, c-format
 msgid "Failed to register view %s of type %s"
-msgstr ""
+msgstr "%s türü %s görünüm kaydı başarısız"
 
 #: ../libxfdashboard/view-manager.c:318
 #, c-format
 msgid "View %s is not registered and cannot be unregistered"
-msgstr ""
+msgstr "%s görünümü kayıtlı değil ve kayıtsız olamaz"
 
 #: ../libxfdashboard/view-manager.c:399
 #, c-format
 msgid "Cannot create view %s because it is not registered"
-msgstr ""
+msgstr "Kayıtlı olmadığından %s görünümü oluşturulamadı"
 
 #: ../libxfdashboard/viewpad.c:130
 msgid "Cannot update viewport of view because no one is active"
-msgstr ""
+msgstr "Kimse etkin olmadığından görünümün görüntüleme alanı güncellenemiyor"
 
 #: ../libxfdashboard/viewpad.c:246
 #, c-format
 msgid "View %s is not a child of %s and cannot be activated"
-msgstr ""
+msgstr "%s görünümü bir %s alt öğesi değildir ve etkinleştirilemez"
 
 #: ../libxfdashboard/viewpad.c:254
 #, c-format
 msgid "Cannot activate disabled view %s at %s"
-msgstr ""
+msgstr "%s'de engellenmiş %s görünümü etkinleştirilemiyor"
 
 #: ../libxfdashboard/viewpad.c:698
 #, c-format
 msgid "Failed to create view %s for viewpad"
-msgstr ""
+msgstr "Viewpad için %s görünümü oluşturulamadı"
 
 #: ../libxfdashboard/viewpad.c:704
 #, c-format
 msgid "View %s of type %s is not a %s and cannot be added to %s"
-msgstr ""
+msgstr "%s türünden %s görünümü %s değildir ve %s'e eklenemedi"
 
 #: ../libxfdashboard/viewpad.c:1223 ../libxfdashboard/view-selector.c:402
 msgid "The spacing between views and scrollbars"
-msgstr ""
+msgstr "Görünümler ve kaydırma çubukları arasındaki boşluk"
 
 #: ../libxfdashboard/viewpad.c:1230
 msgid "Active view"
@@ -3184,43 +3184,43 @@ msgstr "Görünüm seçicinin yönelimi"
 #: ../libxfdashboard/window-content.c:221
 #, c-format
 msgid "Destroying window content resume queue containing %d windows."
-msgstr ""
+msgstr "Pencere içeriğinin yok edilmesi %d pencereleri içeren kuyruğa devam eder."
 
 #: ../libxfdashboard/window-content.c:360
 #, c-format
 msgid ""
 "Unknown value '%s' for property '%s' - defaulting to '%s' with priority of "
 "%d"
-msgstr ""
+msgstr "'%s' özelliği için bilinmeyen '%s' değeri - %d önceliği ile '%s' varsayılanı"
 
 #. Show warning
 #: ../libxfdashboard/window-content.c:476
 #, c-format
 msgid "Could not create copy of texture of mininized window '%s': %s"
-msgstr ""
+msgstr "Küçültülmüş '%s' penceresi dokusunun kopyası oluşturulamadı: %s"
 
 #. Show warning
 #: ../libxfdashboard/window-content.c:504
 #, c-format
 msgid "Could not create copy of texture of mininized window '%s'"
-msgstr ""
+msgstr "Küçültülmüş '%s' penceresi dokusunun kopyası oluşturulamadı"
 
 #: ../libxfdashboard/window-content.c:515
 #, c-format
 msgid "Could not determine size of texture of minimized window '%s'"
-msgstr ""
+msgstr "Küçültülmüş '%s' penceresinin doku boyutu belirlenemedi"
 
 #: ../libxfdashboard/window-content.c:520
 #, c-format
 msgid "Could not allocate memory for copy of texture of mininized window '%s'"
-msgstr ""
+msgstr "Küçültülmüş '%s' penceresinin doku boyutu kopyalaması için bellek ayrılamadı"
 
 #: ../libxfdashboard/window-content.c:631
 #, c-format
 msgid ""
 "Need at least version %d.%d of composite extension but found %d.%d - using "
 "only fallback images"
-msgstr ""
+msgstr "Kompozit uzantısının en az %d.%d sürümüne ihtiyacınız var ama bulunan %d.%d - sadece geri dönüş görüntüleri kullanma"
 
 #: ../libxfdashboard/window-content.c:635
 msgid "Query for X composite extension failed - using only fallback imagess"
@@ -3235,7 +3235,7 @@ msgstr "X kompozit uzantısı için sorgu başarısız oldu - yalnızca yedek re
 msgid ""
 "Query for X damage extension resulted in error code %d - using only still "
 "images of windows"
-msgstr ""
+msgstr "X hasar uzantısı için sorgu %d hata koduyla sonuçlandı - sadece pencerelerin hareketsiz görüntülerini kullanma"
 
 #: ../libxfdashboard/window-content.c:897
 msgid "Resume handler called for empty queue."
@@ -3245,7 +3245,7 @@ msgstr "Boş kuyruk için çağrılan özgeçmiş işleyicisi."
 #: ../libxfdashboard/window-content.c:1116
 #, c-format
 msgid "Could not get pixmap for window '%s"
-msgstr ""
+msgstr "'%s penceresi için pixmap alınamadı"
 
 #. We should never get here as existance of composite extension was checked
 #. before
@@ -3253,29 +3253,29 @@ msgstr ""
 #: ../libxfdashboard/window-content.c:1122
 #, c-format
 msgid "Cannot resume window '%s' as composite extension is not available"
-msgstr ""
+msgstr "Kompozit eklenti mevcut olmadığından '%s' penceresine devam edilemiyor"
 
 #: ../libxfdashboard/window-content.c:1009
 #: ../libxfdashboard/window-content.c:1163
 #, c-format
 msgid "Could not create damage for window '%s' - using still image of window"
-msgstr ""
+msgstr "'%s' penceresi için hasar oluşturulamadı - pencerenin hareketsiz görüntüsünü kullanma"
 
 #. Show warning
 #: ../libxfdashboard/window-content.c:1336
 #, c-format
 msgid "Could not create fallback texture for window '%s': %s"
-msgstr ""
+msgstr "'%s' penceresi için yedek doku oluşturulamadı: %s"
 
 #: ../libxfdashboard/window-content.c:1378
 #, c-format
 msgid "Could not get attributes of window '%s'"
-msgstr ""
+msgstr "'%s' penceresinin özellikleri alınamadı"
 
 #: ../libxfdashboard/window-content.c:1443
 #, c-format
 msgid "Destroying window content cache still containing %d windows."
-msgstr ""
+msgstr "Hala %d pencereleri içeren pencere içerik önbelleğini yok et."
 
 #: ../libxfdashboard/window-content.c:2076
 msgid "The window to handle and display"
@@ -3373,12 +3373,12 @@ msgstr "Eşleştirilmemiş pencere simgesinin bağlantı noktası"
 #, c-format
 msgid ""
 "Did not handle drop action for dragged actor %s of source %s at target %s"
-msgstr ""
+msgstr "%s hedefindeki %s kaynağının sürüklenen %s aktörü için bırakma eylemi ele alınmadı"
 
 #: ../libxfdashboard/windows-view.c:1626
 #, c-format
 msgid "Cannot activate selection of type %s at %s because expecting type %s"
-msgstr ""
+msgstr "%s' de %s türü seçim etkinleştirilemiyor çünkü %s türü bekleniyor"
 
 #: ../libxfdashboard/windows-view.c:1905
 msgid "Current workspace"
@@ -3418,7 +3418,7 @@ msgstr "Pencereler"
 #: ../libxfdashboard/window-tracker.c:620
 #, c-format
 msgid "Cannot release unknown monitor %d"
-msgstr ""
+msgstr "Bilinmeyen %d monitörü yayınlanamıyor"
 
 #: ../libxfdashboard/window-tracker.c:898
 msgid "Active window"
@@ -3472,7 +3472,7 @@ msgstr "Pencere yöneticisi _NET_WM_FULLSCREEN_MONITORS özelliğini desteklemed
 #: ../libxfdashboard/workspace-selector.c:1094
 #, c-format
 msgid "Could not determine workspace of %s to set selection at %s"
-msgstr ""
+msgstr "%s'de seçim yapmak için %s çalışma alanı belirlenemedi"
 
 #: ../libxfdashboard/workspace-selector.c:1255
 msgid "Maximum size"
@@ -3541,7 +3541,7 @@ msgstr "Saniye ibresini çizmek için renk"
 
 #: ../plugins/clock-view/clock-view-settings.c:255
 msgid "Color to draw the circle with that holds the second hand"
-msgstr ""
+msgstr "Bu daireyi çizmek için renk ikinci el tutar"
 
 #: ../plugins/clock-view/plugin.c:146 ../plugins/hot-corner/plugin.c:109
 msgid "Cannot allocate memory for mapping"
@@ -3591,13 +3591,13 @@ msgstr "Saat gösteren bir görünüm ekler"
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:213
 #, c-format
 msgid "Unknown application '%s' for Gnome-Shell search provider '%s'"
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcısı '%s' için bilinmeyen '%s' uygulaması"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:291
 #, c-format
 msgid "Cannot update information about Gnome-Shell search provider '%s': %s"
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcısı '%s' hakkında bilgi güncellenemiyor: %s"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:376
@@ -3605,13 +3605,13 @@ msgstr ""
 msgid ""
 "Cannot initialize file monitor to detect changes for Gnome-Shell search "
 "provider '%s': %s"
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcısı '%s' için değişiklikleri algılamak üzere dosya izleyicisi başlatılamıyor: %s"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:393
 #, c-format
 msgid "Cannot load information about Gnome-Shell search provider '%s': %s"
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcısı '%s' hakkında bilgi yüklenemedi: %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:475
@@ -3621,7 +3621,7 @@ msgstr ""
 #, c-format
 msgid ""
 "Could not create dbus connection for Gnome-Shell search provider '%s': %s"
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcısı '%s' için dbus bağlantısı oluşturulamıyor: %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:548
@@ -3629,7 +3629,7 @@ msgstr ""
 msgid ""
 "Could get result set from dbus connection for Gnome-Shell search provider "
 "'%s': %s"
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcısı '%s' için dbus bağlantısından sonuç alınabilir: %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:661
@@ -3637,7 +3637,7 @@ msgstr ""
 msgid ""
 "Could get meta data for '%s' from dbus connection for Gnome-Shell search "
 "provider '%s': %s"
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcısı '%s' için dbus bağlantısından '%s' için meta veriler alınabilir: %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:720
@@ -3645,7 +3645,7 @@ msgstr ""
 #, c-format
 msgid ""
 "Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcısı %s' için '%s' anahtarının '%s' simgesi alınabilir: %s"
 
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:724
 msgid "Deserialization failed"
@@ -3657,7 +3657,7 @@ msgstr "Seri kaldırma başarısız"
 msgid ""
 "Could activate result item '%s' over dbus connection for Gnome-Shell search "
 "provider '%s': %s"
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcısı '%s' için dbus bağlantısı üzerinden '%s' sonuç öğesini etkinleştirebilirsiniz: %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:938
@@ -3665,25 +3665,25 @@ msgstr ""
 msgid ""
 "Could not launch search over dbus connection for Gnome-Shell search provider"
 " '%s': %s"
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcısı '%s' için dbus bağlantısı üzerinden arama başlatılamadı: %s"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:68
 msgid "Gnome-Shell search provider filename has wrong file extension."
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcı dosya adı yanlış dosya uzantısına sahiptir."
 
 #. Show warning
 #: ../plugins/gnome-shell-search-provider/plugin.c:133
 #: ../plugins/gnome-shell-search-provider/plugin.c:285
 #, c-format
 msgid "Could not register Gnome-Shell search provider at file '%s': %s"
-msgstr ""
+msgstr "Gnome-Kabuğu arama sağlayıcısı '%s' dosyasına kaydedilemedi: %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/plugin.c:229
 #: ../plugins/gnome-shell-search-provider/plugin.c:303
 #, c-format
 msgid "Could not scan for gnome-shell search provider at '%s': %s"
-msgstr ""
+msgstr "Gnome-shell arama sağlayıcısı '%s' için tarama yapılamadı: %s"
 
 #. Just print a warning but do not fail. We will just not get notified
 #. * about changes at path where the providers are stored.
