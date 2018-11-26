@@ -891,8 +891,18 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 				}
 					else
 					{
+						/* Although desktop file for desktop ID is invalid, add
+						 * it to the database to prevent that a valid desktop file
+						 * for the same desktop ID will be found at path of lower
+						 * prioritory which will then be store in the database as
+						 * no entry exists. The first entry found - valid or invalid -
+						 * has the highest priority. Later the caller has to ensure
+						 * that all invalid desktop IDs in the database will be removed.
+						 */
+						g_hash_table_insert(*ioDesktopAppInfos, g_strdup(desktopID), g_object_ref(appInfo));
+
 						XFDASHBOARD_DEBUG(self, APPLICATIONS,
-											"Not adding invalid desktop file '%s%s%s' with desktop ID '%s' at search path '%s'",
+											"Adding and mark invalid desktop file '%s%s%s' with desktop ID '%s' at search path '%s'",
 											path,
 											G_DIR_SEPARATOR_S,
 											childName,
@@ -1070,6 +1080,30 @@ static gboolean _xfdashboard_application_database_load_applications(XfdashboardA
 
 		if(directory) g_object_unref(directory);
 	}
+
+	/* Remove invalid desktop IDs from database */
+	if(apps)
+	{
+		GHashTableIter								appsIter;
+		const gchar									*desktopID;
+		XfdashboardDesktopAppInfo					*appInfo;
+
+		g_hash_table_iter_init(&appsIter, apps);
+		while(g_hash_table_iter_next(&appsIter, (gpointer*)&desktopID, (gpointer*)&appInfo))
+		{
+			/* If value for key is invalid then remove this entry now */
+			if(!xfdashboard_desktop_app_info_is_valid(appInfo))
+			{
+				XFDASHBOARD_DEBUG(self, APPLICATIONS,
+									"Removing invalid desktop ID '%s' from application database",
+									desktopID);
+
+				/* Remove entry from hash table via the iterator */
+				g_hash_table_iter_remove(&appsIter);
+			}
+		}
+	}
+
 	XFDASHBOARD_DEBUG(self, APPLICATIONS,
 						"Loaded %u applications desktop files",
 						g_hash_table_size(apps));
