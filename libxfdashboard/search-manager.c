@@ -324,7 +324,7 @@ gboolean xfdashboard_search_manager_register(XfdashboardSearchManager *self, con
 	data=_xfdashboard_search_manager_entry_new(inID, inProviderType);
 	if(!data)
 	{
-		g_warning(_("Failed to register seaarch provider %s of type %s"),
+		g_warning(_("Failed to register search provider %s of type %s"),
 					inID,
 					g_type_name(inProviderType));
 		return(FALSE);
