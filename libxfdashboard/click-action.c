@@ -10,7 +10,7 @@
  *
  *               See bug: https://bugzilla.gnome.org/show_bug.cgi?id=714993
  * 
- * Copyright 2012-2017 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2019 Stephan Haller <nomad@froevel.de>
  *         original by Emmanuele Bassi <ebassi@linux.intel.com>
  * 
  * This program is free software; you can redistribute it and/or modify
