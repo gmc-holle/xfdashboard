@@ -39,14 +39,12 @@
 
 /* Define this class in GObject system */
 static gpointer				xfdashboard_actor_parent_class=NULL;
+static gint					xfdashboard_actor_private_offset=0;
 
+static gpointer xfdashboard_actor_get_instance_private(XfdashboardActor *self);
 void xfdashboard_actor_class_init(XfdashboardActorClass *klass);
 void xfdashboard_actor_init(XfdashboardActor *self);
 void xfdashboard_actor_base_class_finalize(XfdashboardActorClass *klass);
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_ACTOR_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_ACTOR, XfdashboardActorPrivate))
 
 struct _XfdashboardActorPrivate
 {
@@ -971,6 +969,12 @@ static void _xfdashboard_actor_get_property(GObject *inObject,
 	}
 }
 
+/* Access instance's private structure */
+static inline gpointer xfdashboard_actor_get_instance_private(XfdashboardActor *self)
+{
+	return(G_STRUCT_MEMBER_P(self, xfdashboard_actor_private_offset));
+}
+ 
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
@@ -983,6 +987,12 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 	/* Get parent class */
 	xfdashboard_actor_parent_class=g_type_class_peek_parent(klass);
 
+	/* Adjust offset to instance private structure */
+	if(xfdashboard_actor_private_offset!=0)
+	{
+		g_type_class_adjust_private_offset(klass, &xfdashboard_actor_private_offset);
+	}
+
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_actor_dispose;
 	gobjectClass->set_property=_xfdashboard_actor_set_property;
@@ -993,9 +1003,6 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 	clutterActorClass->leave_event=_xfdashboard_actor_leave_event;
 	clutterActorClass->show=_xfdashboard_actor_show;
 	clutterActorClass->hide=_xfdashboard_actor_hide;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardActorPrivate));
 
 	/* Create param-spec pool for themable properties */
 	g_assert(_xfdashboard_actor_stylable_properties_pool==NULL);
@@ -1040,7 +1047,7 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 {
 	XfdashboardActorPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_ACTOR_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_actor_get_instance_private(self);
 
 	/* Set up default values */
 	priv->canFocus=FALSE;
@@ -1094,27 +1101,27 @@ GType xfdashboard_actor_get_type(void)
 		{
 			sizeof(XfdashboardActorClass),
 			NULL,
-			(GBaseFinalizeFunc)xfdashboard_actor_base_class_finalize,
-			(GClassInitFunc)xfdashboard_actor_class_init,
+			(GBaseFinalizeFunc)(void*)xfdashboard_actor_base_class_finalize,
+			(GClassInitFunc)(void*)xfdashboard_actor_class_init,
 			NULL, /* class_finalize */
 			NULL, /* class_data */
 			sizeof(XfdashboardActor),
 			0,    /* n_preallocs */
-			(GInstanceInitFunc)xfdashboard_actor_init,
+			(GInstanceInitFunc)(void*)xfdashboard_actor_init,
 			NULL, /* value_table */
 		};
 
 		/* Implemented interfaces info */
 		const GInterfaceInfo	actorStylableInterfaceInfo=
 		{
-			(GInterfaceInitFunc)_xfdashboard_actor_stylable_iface_init,
+			(GInterfaceInitFunc)(void*)_xfdashboard_actor_stylable_iface_init,
 			NULL,
 			NULL
 		};
 
 		const GInterfaceInfo	actorFocusableInterfaceInfo=
 		{
-			(GInterfaceInitFunc)_xfdashboard_actor_focusable_iface_init,
+			(GInterfaceInitFunc)(void*)_xfdashboard_actor_focusable_iface_init,
 			NULL,
 			NULL
 		};
@@ -1124,6 +1131,9 @@ GType xfdashboard_actor_get_type(void)
 											g_intern_static_string("XfdashboardActor"),
 											&actorInfo,
 											0);
+
+		/* Add private structure */
+		xfdashboard_actor_private_offset=g_type_add_instance_private(actorType, sizeof(XfdashboardActorPrivate));
 
 		/* Add implemented interfaces */
 		g_type_add_interface_static(actorType,
