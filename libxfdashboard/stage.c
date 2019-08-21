@@ -951,8 +951,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 
 					/* Release allocated resources */
 					_xfdashboard_stage_theme_interface_data_free(interface);
-					g_list_foreach(interfaces, (GFunc)_xfdashboard_stage_theme_interface_data_free, NULL);
-					g_list_free(interfaces);
+					g_list_free_full(interfaces, (GDestroyNotify)_xfdashboard_stage_theme_interface_data_free);
 
 					return;
 				}
@@ -966,8 +965,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 
 					/* Release allocated resources */
 					_xfdashboard_stage_theme_interface_data_free(interface);
-					g_list_foreach(interfaces, (GFunc)_xfdashboard_stage_theme_interface_data_free, NULL);
-					g_list_free(interfaces);
+					g_list_free_full(interfaces, (GDestroyNotify)_xfdashboard_stage_theme_interface_data_free);
 
 					return;
 				}
@@ -997,8 +995,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 
 						/* Release allocated resources */
 						_xfdashboard_stage_theme_interface_data_free(interface);
-						g_list_foreach(interfaces, (GFunc)_xfdashboard_stage_theme_interface_data_free, NULL);
-						g_list_free(interfaces);
+						g_list_free_full(interfaces, (GDestroyNotify)_xfdashboard_stage_theme_interface_data_free);
 
 						return;
 					}
@@ -1031,8 +1028,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 
 				/* Release allocated resources */
 				_xfdashboard_stage_theme_interface_data_free(interface);
-				g_list_foreach(interfaces, (GFunc)_xfdashboard_stage_theme_interface_data_free, NULL);
-				g_list_free(interfaces);
+				g_list_free_full(interfaces, (GDestroyNotify)_xfdashboard_stage_theme_interface_data_free);
 
 				return;
 			}
@@ -1046,8 +1042,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 
 				/* Release allocated resources */
 				_xfdashboard_stage_theme_interface_data_free(interface);
-				g_list_foreach(interfaces, (GFunc)_xfdashboard_stage_theme_interface_data_free, NULL);
-				g_list_free(interfaces);
+				g_list_free_full(interfaces, (GDestroyNotify)_xfdashboard_stage_theme_interface_data_free);
 
 				return;
 			}
@@ -1344,8 +1339,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 	}
 
 	/* Release allocated resources */
-	g_list_foreach(interfaces, (GFunc)_xfdashboard_stage_theme_interface_data_free, NULL);
-	g_list_free(interfaces);
+	g_list_free_full(interfaces, (GDestroyNotify)_xfdashboard_stage_theme_interface_data_free);
 
 	/* Set focus */
 	_xfdashboard_stage_set_focus(self);
