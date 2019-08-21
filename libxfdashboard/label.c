@@ -46,14 +46,6 @@ typedef enum /*< skip,prefix=XFDASHBOARD_LABEL_ICON_TYPE >*/
 } XfdashboardLabelIconType;
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardLabel,
-				xfdashboard_label,
-				XFDASHBOARD_TYPE_BACKGROUND)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_LABEL_GET_PRIVATE(obj)                                     \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_LABEL, XfdashboardLabelPrivate))
-
 struct _XfdashboardLabelPrivate
 {
 	/* Properties related */
@@ -80,6 +72,10 @@ struct _XfdashboardLabelPrivate
 
 	XfdashboardLabelIconType	iconType;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardLabel,
+							xfdashboard_label,
+							XFDASHBOARD_TYPE_BACKGROUND)
 
 /* Properties */
 enum
@@ -1238,9 +1234,6 @@ static void xfdashboard_label_class_init(XfdashboardLabelClass *klass)
 	clutterActorClass->allocate=_xfdashboard_label_allocate;
 	clutterActorClass->destroy=_xfdashboard_label_destroy;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardLabelPrivate));
-
 	/* Define properties */
 	XfdashboardLabelProperties[PROP_PADDING]=
 		g_param_spec_float("padding",
@@ -1380,7 +1373,7 @@ static void xfdashboard_label_init(XfdashboardLabel *self)
 {
 	XfdashboardLabelPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_LABEL_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_label_get_instance_private(self);
 
 	/* This actor reacts on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);

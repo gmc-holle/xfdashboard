@@ -48,14 +48,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardApplicationsSearchProvider,
-				xfdashboard_applications_search_provider,
-				XFDASHBOARD_TYPE_SEARCH_PROVIDER)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER, XfdashboardApplicationsSearchProviderPrivate))
-
 struct _XfdashboardApplicationsSearchProviderPrivate
 {
 	/* Properties related */
@@ -72,6 +64,10 @@ struct _XfdashboardApplicationsSearchProviderPrivate
 	guint											xfconfSortModeBindingID;
 	XfdashboardApplicationsSearchProviderSortMode	currentSortMode;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardApplicationsSearchProvider,
+							xfdashboard_applications_search_provider,
+							XFDASHBOARD_TYPE_SEARCH_PROVIDER)
 
 /* Properties */
 enum
@@ -1467,9 +1463,6 @@ static void xfdashboard_applications_search_provider_class_init(XfdashboardAppli
 	providerClass->create_result_actor=_xfdashboard_applications_search_provider_create_result_actor;
 	providerClass->activate_result=_xfdashboard_applications_search_provider_activate_result;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardApplicationsSearchProviderPrivate));
-
 	/* Define properties */
 	XfdashboardApplicationsSearchProviderProperties[PROP_SORT_MODE]=
 		g_param_spec_flags("sort-mode",
@@ -1489,7 +1482,7 @@ static void xfdashboard_applications_search_provider_init(XfdashboardApplication
 {
 	XfdashboardApplicationsSearchProviderPrivate	*priv;
 
-	self->priv=priv=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_GET_PRIVATE(self);
+	self->priv=priv=xfdashboard_applications_search_provider_get_instance_private(self);
 
 	/* Set up default values */
 	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);

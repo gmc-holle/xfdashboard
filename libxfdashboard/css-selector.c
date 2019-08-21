@@ -34,14 +34,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardCssSelector,
-				xfdashboard_css_selector,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_CSS_SELECTOR_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_CSS_SELECTOR, XfdashboardCssSelectorPrivate))
-
 struct _XfdashboardCssSelectorPrivate
 {
 	/* Properties related */
@@ -50,6 +42,10 @@ struct _XfdashboardCssSelectorPrivate
 	/* Instance related */
 	XfdashboardCssSelectorRule		*rule;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardCssSelector,
+				xfdashboard_css_selector,
+				G_TYPE_OBJECT)
 
 /* Properties */
 enum
@@ -871,9 +867,6 @@ static void xfdashboard_css_selector_class_init(XfdashboardCssSelectorClass *kla
 	gobjectClass->get_property=_xfdashboard_css_selector_get_property;
 	gobjectClass->dispose=_xfdashboard_css_selector_dispose;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardCssSelectorPrivate));
-
 	/* Define properties */
 	XfdashboardCssSelectorProperties[PROP_PRIORITY]=
 		g_param_spec_int("priority",
@@ -893,7 +886,7 @@ static void xfdashboard_css_selector_init(XfdashboardCssSelector *self)
 {
 	XfdashboardCssSelectorPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_CSS_SELECTOR_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_css_selector_get_instance_private(self);
 
 	/* Set up default values */
 	priv->priority=0;

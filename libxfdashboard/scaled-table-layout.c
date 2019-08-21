@@ -39,14 +39,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardScaledTableLayout,
-				xfdashboard_scaled_table_layout,
-				CLUTTER_TYPE_LAYOUT_MANAGER)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SCALED_TABLE_LAYOUT_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SCALED_TABLE_LAYOUT, XfdashboardScaledTableLayoutPrivate))
-
 struct _XfdashboardScaledTableLayoutPrivate
 {
 	/* Properties related */
@@ -63,6 +55,10 @@ struct _XfdashboardScaledTableLayoutPrivate
 	gboolean	reentrantDetermineWidth;
 	gboolean	reentrantDetermineHeight;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardScaledTableLayout,
+							xfdashboard_scaled_table_layout,
+							CLUTTER_TYPE_LAYOUT_MANAGER)
 
 /* Properties */
 enum
@@ -479,9 +475,6 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 	gobjectClass->set_property=_xfdashboard_scaled_table_layout_set_property;
 	gobjectClass->get_property=_xfdashboard_scaled_table_layout_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardScaledTableLayoutPrivate));
-
 	/* Define properties */
 	XfdashboardScaledTableLayoutProperties[PROP_ROW_SPACING]=
 		g_param_spec_float("row-spacing",
@@ -552,7 +545,7 @@ static void xfdashboard_scaled_table_layout_init(XfdashboardScaledTableLayout *s
 {
 	XfdashboardScaledTableLayoutPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_SCALED_TABLE_LAYOUT_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_scaled_table_layout_get_instance_private(self);
 
 	/* Set default values */
 	priv->rowSpacing=0.0f;

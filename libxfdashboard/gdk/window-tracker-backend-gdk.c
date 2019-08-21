@@ -46,22 +46,17 @@
 /* Define this class in GObject system */
 static void _xfdashboard_window_tracker_backend_gdk_window_tracker_backend_iface_init(XfdashboardWindowTrackerBackendInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowTrackerBackendGDK,
-						xfdashboard_window_tracker_backend_gdk,
-						G_TYPE_OBJECT,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_WINDOW_TRACKER_BACKEND, _xfdashboard_window_tracker_backend_gdk_window_tracker_backend_iface_init))
-
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_WINDOW_TRACKER_BACKEND_GDK_GET_PRIVATE(obj)                \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_BACKEND_GDK, XfdashboardWindowTrackerBackendGDKPrivate))
-
 struct _XfdashboardWindowTrackerBackendGDKPrivate
 {
 	/* Instance related */
 	XfdashboardWindowTrackerX11		*windowTracker;
 };
 
+G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowTrackerBackendGDK,
+						xfdashboard_window_tracker_backend_gdk,
+						G_TYPE_OBJECT,
+						G_ADD_PRIVATE(XfdashboardWindowTrackerBackendGDK)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_WINDOW_TRACKER_BACKEND, _xfdashboard_window_tracker_backend_gdk_window_tracker_backend_iface_init))
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -760,9 +755,6 @@ void xfdashboard_window_tracker_backend_gdk_class_init(XfdashboardWindowTrackerB
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_window_tracker_backend_gdk_dispose;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardWindowTrackerBackendGDKPrivate));
 }
 
 /* Object initialization
@@ -772,7 +764,7 @@ void xfdashboard_window_tracker_backend_gdk_init(XfdashboardWindowTrackerBackend
 {
 	XfdashboardWindowTrackerBackendGDKPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_BACKEND_GDK_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_window_tracker_backend_gdk_get_instance_private(self);
 
 	XFDASHBOARD_DEBUG(self, WINDOWS, "Initializing GDK-X11 window tracker backend");
 

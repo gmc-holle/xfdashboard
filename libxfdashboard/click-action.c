@@ -120,14 +120,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardClickAction,
-				xfdashboard_click_action,
-				CLUTTER_TYPE_ACTION);
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_CLICK_ACTION_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_CLICK_ACTION, XfdashboardClickActionPrivate))
-
 struct _XfdashboardClickActionPrivate
 {
 	/* Properties related */
@@ -153,6 +145,10 @@ struct _XfdashboardClickActionPrivate
 	gfloat					pressX;
 	gfloat					pressY;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardClickAction,
+							xfdashboard_click_action,
+							CLUTTER_TYPE_ACTION);
 
 /* Properties */
 enum
@@ -652,9 +648,6 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 	gobjectClass->set_property=_xfdashboard_click_action_set_property;
 	gobjectClass->get_property=_xfdashboard_click_action_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof (XfdashboardClickActionPrivate));
-
 	/* Define properties */
 	/**
 	 * XfdashboardClickAction:pressed:
@@ -784,7 +777,7 @@ static void xfdashboard_click_action_init(XfdashboardClickAction *self)
 {
 	XfdashboardClickActionPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_CLICK_ACTION_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_click_action_get_instance_private(self);
 
 	/* Set up default values */
 	priv->longPressThreshold=-1;

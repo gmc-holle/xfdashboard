@@ -45,14 +45,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardApplicationButton,
-				xfdashboard_application_button,
-				XFDASHBOARD_TYPE_BUTTON)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_APPLICATION_BUTTON_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_APPLICATION_BUTTON, XfdashboardApplicationButtonPrivate))
-
 struct _XfdashboardApplicationButtonPrivate
 {
 	/* Properties related */
@@ -68,6 +60,10 @@ struct _XfdashboardApplicationButtonPrivate
 	XfdashboardApplicationTracker		*appTracker;
 	guint								runningStateChangedID;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardApplicationButton,
+							xfdashboard_application_button,
+							XFDASHBOARD_TYPE_BUTTON)
 
 /* Properties */
 enum
@@ -423,9 +419,6 @@ static void xfdashboard_application_button_class_init(XfdashboardApplicationButt
 	gobjectClass->set_property=_xfdashboard_application_button_set_property;
 	gobjectClass->get_property=_xfdashboard_application_button_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardApplicationButtonPrivate));
-
 	/* Define properties */
 	XfdashboardApplicationButtonProperties[PROP_APP_INFO]=
 		g_param_spec_object("app-info",
@@ -470,7 +463,7 @@ static void xfdashboard_application_button_init(XfdashboardApplicationButton *se
 {
 	XfdashboardApplicationButtonPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_APPLICATION_BUTTON_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_application_button_get_instance_private(self);
 
 	/* This actor is react on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);

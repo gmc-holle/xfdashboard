@@ -60,15 +60,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_quicklaunch_focusable_iface_init(XfdashboardFocusableInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardQuicklaunch,
-						xfdashboard_quicklaunch,
-						XFDASHBOARD_TYPE_BACKGROUND,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_quicklaunch_focusable_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_QUICKLAUNCH_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_QUICKLAUNCH, XfdashboardQuicklaunchPrivate))
-
 struct _XfdashboardQuicklaunchPrivate
 {
 	/* Properties related */
@@ -102,6 +93,12 @@ struct _XfdashboardQuicklaunchPrivate
 	XfdashboardApplicationDatabase	*appDB;
 	XfdashboardApplicationTracker	*appTracker;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardQuicklaunch,
+						xfdashboard_quicklaunch,
+						XFDASHBOARD_TYPE_BACKGROUND,
+						G_ADD_PRIVATE(XfdashboardQuicklaunch)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_quicklaunch_focusable_iface_init))
 
 /* Properties */
 enum
@@ -3033,9 +3030,6 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 	klass->favourite_reorder_up=_xfdashboard_quicklaunch_favourite_reorder_up;
 	klass->favourite_reorder_down=_xfdashboard_quicklaunch_favourite_reorder_down;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardQuicklaunchPrivate));
-
 	/* Define properties */
 	XfdashboardQuicklaunchProperties[PROP_FAVOURITES]=
 		g_param_spec_boxed("favourites",
@@ -3194,7 +3188,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	ClutterRequestMode				requestMode;
 	ClutterAction					*dropAction;
 
-	priv=self->priv=XFDASHBOARD_QUICKLAUNCH_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_quicklaunch_get_instance_private(self);
 
 	/* Set up default values */
 	priv->favourites=NULL;

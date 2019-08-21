@@ -51,14 +51,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardPluginsManager,
-				xfdashboard_plugins_manager,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_PLUGINS_MANAGER_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_PLUGINS_MANAGER, XfdashboardPluginsManagerPrivate))
-
 struct _XfdashboardPluginsManagerPrivate
 {
 	/* Instance related */
@@ -72,6 +64,9 @@ struct _XfdashboardPluginsManagerPrivate
 	guint					applicationInitializedSignalID;
 };
 
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardPluginsManager,
+							xfdashboard_plugins_manager,
+							G_TYPE_OBJECT)
 
 /* IMPLEMENTATION: Private variables and methods */
 #define ENABLED_PLUGINS_XFCONF_PROP			"/enabled-plugins"
@@ -598,9 +593,6 @@ static void xfdashboard_plugins_manager_class_init(XfdashboardPluginsManagerClas
 	gobjectClass->constructor=_xfdashboard_plugins_manager_constructor;
 	gobjectClass->dispose=_xfdashboard_plugins_manager_dispose;
 	gobjectClass->finalize=_xfdashboard_plugins_manager_finalize;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardPluginsManagerPrivate));
 }
 
 /* Object initialization
@@ -610,7 +602,7 @@ static void xfdashboard_plugins_manager_init(XfdashboardPluginsManager *self)
 {
 	XfdashboardPluginsManagerPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_PLUGINS_MANAGER_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_plugins_manager_get_instance_private(self);
 
 	/* Set default values */
 	priv->isInited=FALSE;

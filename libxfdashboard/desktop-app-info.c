@@ -37,15 +37,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_desktop_app_info_gappinfo_iface_init(GAppInfoIface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardDesktopAppInfo,
-						xfdashboard_desktop_app_info,
-						G_TYPE_OBJECT,
-						G_IMPLEMENT_INTERFACE(G_TYPE_APP_INFO, _xfdashboard_desktop_app_info_gappinfo_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_DESKTOP_APP_INFO_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_DESKTOP_APP_INFO, XfdashboardDesktopAppInfoPrivate))
-
 struct _XfdashboardDesktopAppInfoPrivate
 {
 	/* Properties related */
@@ -69,6 +60,12 @@ struct _XfdashboardDesktopAppInfoPrivate
 	gboolean			needKeywords;
 	GList				*keywords;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardDesktopAppInfo,
+						xfdashboard_desktop_app_info,
+						G_TYPE_OBJECT,
+						G_ADD_PRIVATE(XfdashboardDesktopAppInfo)
+						G_IMPLEMENT_INTERFACE(G_TYPE_APP_INFO, _xfdashboard_desktop_app_info_gappinfo_iface_init))
 
 /* Properties */
 enum
@@ -974,8 +971,7 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 		}
 
 		/* Release allocated resources */
-		g_list_foreach(filesToLaunch, (GFunc)g_object_unref, NULL);
-		g_list_free(filesToLaunch);
+		g_list_free_full(filesToLaunch, g_object_unref);
 	}
 
 	/* Get working directory and test if directory exists */
@@ -1378,8 +1374,7 @@ static gboolean _xfdashboard_desktop_app_info_gappinfo_launch(GAppInfo *inAppInf
 																	outError);
 
 	/* Release allocated resources */
-	g_list_foreach(uris, (GFunc)g_free, NULL);
-	g_list_free(uris);
+	g_list_free_full(uris, g_free);
 
 	return(result);
 }
@@ -1614,9 +1609,6 @@ static void xfdashboard_desktop_app_info_class_init(XfdashboardDesktopAppInfoCla
 	gobjectClass->set_property=_xfdashboard_desktop_app_info_set_property;
 	gobjectClass->get_property=_xfdashboard_desktop_app_info_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardDesktopAppInfoPrivate));
-
 	/* Define properties */
 	XfdashboardDesktopAppInfoProperties[PROP_VALID]=
 		g_param_spec_boolean("valid",
@@ -1661,7 +1653,7 @@ static void xfdashboard_desktop_app_info_init(XfdashboardDesktopAppInfo *self)
 {
 	XfdashboardDesktopAppInfoPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_DESKTOP_APP_INFO_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_desktop_app_info_get_instance_private(self);
 
 	/* Set up default values */
 	priv->inited=FALSE;

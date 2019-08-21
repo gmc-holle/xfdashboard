@@ -40,14 +40,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_ABSTRACT_TYPE(XfdashboardView,
-						xfdashboard_view,
-						XFDASHBOARD_TYPE_ACTOR)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_VIEW_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_VIEW, XfdashboardViewPrivate))
-
 struct _XfdashboardViewPrivate
 {
 	/* Properties related */
@@ -65,6 +57,10 @@ struct _XfdashboardViewPrivate
 	/* Layout manager */
 	guint					signalChangedID;
 };
+
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE(XfdashboardView,
+									xfdashboard_view,
+									XFDASHBOARD_TYPE_ACTOR)
 
 /* Properties */
 enum
@@ -361,9 +357,6 @@ static void xfdashboard_view_class_init(XfdashboardViewClass *klass)
 	klass->enabled=_xfdashboard_view_enabled;
 	klass->disabled=_xfdashboard_view_disabled;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardViewPrivate));
-
 	/* Define properties */
 	XfdashboardViewProperties[PROP_VIEW_ID]=
 		g_param_spec_string("view-id",
@@ -579,7 +572,7 @@ static void xfdashboard_view_init(XfdashboardView *self)
 {
 	XfdashboardViewPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_VIEW_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_view_get_instance_private(self);
 
 	/* Set up default values */
 	priv->viewName=NULL;

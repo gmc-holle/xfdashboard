@@ -35,14 +35,6 @@
 
 
 /* Define these classes in GObject system */
-G_DEFINE_TYPE(XfdashboardApplicationsMenuModel,
-				xfdashboard_applications_menu_model,
-				XFDASHBOARD_TYPE_MODEL)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_APPLICATIONS_MENU_MODEL_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_APPLICATIONS_MENU_MODEL, XfdashboardApplicationsMenuModelPrivate))
-
 struct _XfdashboardApplicationsMenuModelPrivate
 {
 	/* Instance related */
@@ -51,6 +43,10 @@ struct _XfdashboardApplicationsMenuModelPrivate
 	XfdashboardApplicationDatabase	*appDB;
 	guint							reloadRequiredSignalID;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardApplicationsMenuModel,
+							xfdashboard_applications_menu_model,
+							XFDASHBOARD_TYPE_MODEL)
 
 /* Signals */
 enum
@@ -440,7 +436,7 @@ static void _xfdashboard_applications_menu_model_fill_model_collect_menu(Xfdashb
 
 			item=_xfdashboard_applications_menu_model_item_new();
 			item->sequenceID=inFillData->sequenceID;
-			if(inMenu) item->menuElement=g_object_ref(inMenu);
+			if(inMenu) item->menuElement=GARCON_MENU_ELEMENT(g_object_ref(inMenu));
 			if(inParentMenu) item->parentMenu=g_object_ref(inParentMenu);
 			if(section) item->section=g_object_ref(section);
 			if(title) item->title=g_strdup(title);
@@ -610,9 +606,6 @@ static void xfdashboard_applications_menu_model_class_init(XfdashboardApplicatio
 
 	gobjectClass->dispose=_xfdashboard_applications_menu_model_dispose;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardApplicationsMenuModelPrivate));
-
 	/* Define signals */
 	XfdashboardApplicationsMenuModelSignals[SIGNAL_LOADED]=
 		g_signal_new("loaded",
@@ -633,7 +626,7 @@ static void xfdashboard_applications_menu_model_init(XfdashboardApplicationsMenu
 {
 	XfdashboardApplicationsMenuModelPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_APPLICATIONS_MENU_MODEL_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_applications_menu_model_get_instance_private(self);
 
 	/* Set up default values */
 	priv->rootMenu=NULL;

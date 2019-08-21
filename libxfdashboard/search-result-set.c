@@ -33,14 +33,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardSearchResultSet,
-				xfdashboard_search_result_set,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SEARCH_RESULT_SET_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SEARCH_RESULT_SET, XfdashboardSearchResultSetPrivate))
-
 struct _XfdashboardSearchResultSetPrivate
 {
 	/* Instance related */
@@ -50,6 +42,10 @@ struct _XfdashboardSearchResultSetPrivate
 	gpointer								sortUserData;
 	GDestroyNotify							sortUserDataDestroyFunc;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSearchResultSet,
+							xfdashboard_search_result_set,
+							G_TYPE_OBJECT)
 
 /* IMPLEMENTATION: Private variables and methods */
 typedef struct _XfdashboardSearchResultSetItemData		XfdashboardSearchResultSetItemData;
@@ -211,9 +207,6 @@ static void xfdashboard_search_result_set_class_init(XfdashboardSearchResultSetC
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_search_result_set_dispose;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardSearchResultSetPrivate));
 }
 
 /* Object initialization
@@ -223,7 +216,7 @@ static void xfdashboard_search_result_set_init(XfdashboardSearchResultSet *self)
 {
 	XfdashboardSearchResultSetPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_SEARCH_RESULT_SET_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_search_result_set_get_instance_private(self);
 
 	/* Set default values */
 	priv->set=g_hash_table_new_full(g_variant_hash,

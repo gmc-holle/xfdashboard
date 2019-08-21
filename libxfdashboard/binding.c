@@ -35,14 +35,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardBinding,
-				xfdashboard_binding,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_BINDING_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_BINDING, XfdashboardBindingPrivate))
-
 struct _XfdashboardBindingPrivate
 {
 	/* Instance related */
@@ -54,6 +46,10 @@ struct _XfdashboardBindingPrivate
 	gchar					*action;
 	XfdashboardBindingFlags	flags;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardBinding,
+							xfdashboard_binding,
+							G_TYPE_OBJECT)
 
 /* Properties */
 enum
@@ -208,9 +204,6 @@ static void xfdashboard_binding_class_init(XfdashboardBindingClass *klass)
 	gobjectClass->set_property=_xfdashboard_binding_set_property;
 	gobjectClass->get_property=_xfdashboard_binding_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardBindingPrivate));
-
 	/* Define properties */
 	XfdashboardBindingProperties[PROP_EVENT_TYPE]=
 		g_param_spec_enum("event-type",
@@ -275,7 +268,7 @@ static void xfdashboard_binding_init(XfdashboardBinding *self)
 {
 	XfdashboardBindingPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_BINDING_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_binding_get_instance_private(self);
 
 	/* Set up default values */
 	priv->eventType=CLUTTER_NOTHING;

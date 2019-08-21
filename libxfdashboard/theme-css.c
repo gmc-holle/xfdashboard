@@ -43,14 +43,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardThemeCSS,
-				xfdashboard_theme_css,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_THEME_CSS_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_THEME_CSS, XfdashboardThemeCSSPrivate))
-
 struct _XfdashboardThemeCSSPrivate
 {
 	/* Instance related */
@@ -64,6 +56,10 @@ struct _XfdashboardThemeCSSPrivate
 
 	gint		offsetLine;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardThemeCSS,
+							xfdashboard_theme_css,
+							G_TYPE_OBJECT)
 
 /* Properties */
 enum
@@ -2278,8 +2274,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_block(XfdashboardThemeCSS *se
 	token=_xfdashboard_theme_css_parse_css_ruleset(self, inScanner, &selectors);
 	if(token!=G_TOKEN_NONE)
 	{
-		g_list_foreach(selectors, (GFunc)_xfdashboard_theme_css_selector_free, NULL);
-		g_list_free(selectors);
+		g_list_free_full(selectors, (GDestroyNotify)_xfdashboard_theme_css_selector_free);
 
 		return(token);
 	}
@@ -2311,8 +2306,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_block(XfdashboardThemeCSS *se
 													styles);
 	if(token!=G_TOKEN_NONE)
 	{
-		g_list_foreach(selectors, (GFunc)_xfdashboard_theme_css_selector_free, NULL);
-		g_list_free(selectors);
+		g_list_free_full(selectors, (GDestroyNotify)_xfdashboard_theme_css_selector_free);
 
 		g_hash_table_unref(styles);
 
@@ -2434,12 +2428,10 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 		success=FALSE;
 
 		/* Free selectors and styles */
-		g_list_foreach(selectors, (GFunc)_xfdashboard_theme_css_selector_free, NULL);
-		g_list_free(selectors);
+		g_list_free_full(selectors, (GDestroyNotify)_xfdashboard_theme_css_selector_free);
 		selectors=NULL;
 
-		g_list_foreach(styles, (GFunc)g_hash_table_unref, NULL);
-		g_list_free(styles);
+		g_list_free_full(styles, (GDestroyNotify)g_hash_table_unref);
 		styles=NULL;
 	}
 
@@ -2514,22 +2506,19 @@ static void _xfdashboard_theme_css_dispose(GObject *inObject)
 
 	if(priv->selectors)
 	{
-		g_list_foreach(priv->selectors, (GFunc)_xfdashboard_theme_css_selector_free, NULL);
-		g_list_free(priv->selectors);
+		g_list_free_full(priv->selectors, (GDestroyNotify)_xfdashboard_theme_css_selector_free);
 		priv->selectors=NULL;
 	}
 
 	if(priv->styles)
 	{
-		g_list_foreach(priv->styles, (GFunc)g_hash_table_unref, NULL);
-		g_list_free(priv->styles);
+		g_list_free_full(priv->styles, (GDestroyNotify)g_hash_table_unref);
 		priv->styles=NULL;
 	}
 
 	if(priv->names)
 	{
-		g_slist_foreach(priv->names, (GFunc)g_free, NULL);
-		g_slist_free(priv->names);
+		g_slist_free_full(priv->names, (GDestroyNotify)g_free);
 		priv->names=NULL;
 	}
 
@@ -2582,9 +2571,6 @@ void xfdashboard_theme_css_class_init(XfdashboardThemeCSSClass *klass)
 	gobjectClass->dispose=_xfdashboard_theme_css_dispose;
 	gobjectClass->set_property=_xfdashboard_theme_css_set_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardThemeCSSPrivate));
-
 	/* Define properties */
 	XfdashboardThemeCSSProperties[PROP_THEME_PATH]=
 		g_param_spec_string("theme-path",
@@ -2603,7 +2589,7 @@ void xfdashboard_theme_css_init(XfdashboardThemeCSS *self)
 {
 	XfdashboardThemeCSSPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_THEME_CSS_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_theme_css_get_instance_private(self);
 
 	/* Set default values */
 	priv->themePath=NULL;
@@ -2832,8 +2818,7 @@ GHashTable* xfdashboard_theme_css_get_properties(XfdashboardThemeCSS *self,
 								&copyData);
 	}
 
-	g_list_foreach(matches, (GFunc)_xfdashboard_themes_css_selector_match_free, NULL);
-	g_list_free(matches);
+	g_list_free_full(matches, (GDestroyNotify)_xfdashboard_themes_css_selector_match_free);
 
 #ifdef DEBUG
 	XFDASHBOARD_DEBUG(self, STYLE,

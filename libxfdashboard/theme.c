@@ -37,14 +37,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardTheme,
-				xfdashboard_theme,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_THEME_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_THEME, XfdashboardThemePrivate))
-
 struct _XfdashboardThemePrivate
 {
 	/* Properties related */
@@ -64,6 +56,10 @@ struct _XfdashboardThemePrivate
 	gchar						*userThemeStyleFile;
 	gchar						*userGlobalStyleFile;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardTheme,
+							xfdashboard_theme,
+							G_TYPE_OBJECT)
 
 /* Properties */
 enum
@@ -724,9 +720,6 @@ void xfdashboard_theme_class_init(XfdashboardThemeClass *klass)
 	gobjectClass->set_property=_xfdashboard_theme_set_property;
 	gobjectClass->get_property=_xfdashboard_theme_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardThemePrivate));
-
 	/* Define properties */
 	XfdashboardThemeProperties[PROP_NAME]=
 		g_param_spec_string("theme-name",
@@ -766,7 +759,7 @@ void xfdashboard_theme_init(XfdashboardTheme *self)
 {
 	XfdashboardThemePrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_THEME_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_theme_get_instance_private(self);
 
 	/* Set default values */
 	priv->loaded=FALSE;

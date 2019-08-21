@@ -63,15 +63,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_window_tracker_window_x11_window_tracker_window_iface_init(XfdashboardWindowTrackerWindowInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowTrackerWindowX11,
-						xfdashboard_window_tracker_window_x11,
-						G_TYPE_OBJECT,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW, _xfdashboard_window_tracker_window_x11_window_tracker_window_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_GET_PRIVATE(obj)                 \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11, XfdashboardWindowTrackerWindowX11Private))
-
 struct _XfdashboardWindowTrackerWindowX11Private
 {
 	/* Properties related */
@@ -90,6 +81,11 @@ struct _XfdashboardWindowTrackerWindowX11Private
 	ClutterContent							*content;
 };
 
+G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowTrackerWindowX11,
+						xfdashboard_window_tracker_window_x11,
+						G_TYPE_OBJECT,
+						G_ADD_PRIVATE(XfdashboardWindowTrackerWindowX11)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW, _xfdashboard_window_tracker_window_x11_window_tracker_window_iface_init))
 
 /* Properties */
 enum
@@ -1276,9 +1272,6 @@ void xfdashboard_window_tracker_window_x11_class_init(XfdashboardWindowTrackerWi
 	gobjectClass->set_property=_xfdashboard_window_tracker_window_x11_set_property;
 	gobjectClass->get_property=_xfdashboard_window_tracker_window_x11_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardWindowTrackerWindowX11Private));
-
 	/* Define properties */
 	XfdashboardWindowTrackerWindowX11Properties[PROP_WINDOW]=
 		g_param_spec_object("window",
@@ -1308,7 +1301,7 @@ void xfdashboard_window_tracker_window_x11_init(XfdashboardWindowTrackerWindowX1
 {
 	XfdashboardWindowTrackerWindowX11Private	*priv;
 
-	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_window_tracker_window_x11_get_instance_private(self);
 
 	/* Set default values */
 	priv->window=NULL;

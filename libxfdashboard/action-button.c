@@ -65,15 +65,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_action_button_focusable_iface_init(XfdashboardFocusableInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardActionButton,
-						xfdashboard_action_button,
-						XFDASHBOARD_TYPE_BUTTON,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_action_button_focusable_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_ACTION_BUTTON_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_ACTION_BUTTON, XfdashboardActionButtonPrivate))
-
 struct _XfdashboardActionButtonPrivate
 {
 	/* Properties related */
@@ -83,6 +74,12 @@ struct _XfdashboardActionButtonPrivate
 	/* Instance related */
 	XfdashboardFocusManager				*focusManager;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardActionButton,
+						xfdashboard_action_button,
+						XFDASHBOARD_TYPE_BUTTON,
+						G_ADD_PRIVATE(XfdashboardActionButton)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_action_button_focusable_iface_init))
 
 /* Properties */
 enum
@@ -438,9 +435,6 @@ static void xfdashboard_action_button_class_init(XfdashboardActionButtonClass *k
 	gobjectClass->set_property=_xfdashboard_action_button_set_property;
 	gobjectClass->get_property=_xfdashboard_action_button_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardActionButtonPrivate));
-
 	/* Define properties */
 	/**
 	 * XfdashboardActionButton:target:
@@ -477,7 +471,7 @@ static void xfdashboard_action_button_init(XfdashboardActionButton *self)
 {
 	XfdashboardActionButtonPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_ACTION_BUTTON_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_action_button_get_instance_private(self);
 
 	/* This actor is react on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);

@@ -37,11 +37,6 @@
 #include <libxfdashboard/debug.h>
 
 
-/* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardThemeLayout,
-				xfdashboard_theme_layout,
-				G_TYPE_OBJECT)
-
 /* Forward declaration */
 typedef struct _XfdashboardThemeLayoutTagData				XfdashboardThemeLayoutTagData;
 typedef struct _XfdashboardThemeLayoutParsedObject			XfdashboardThemeLayoutParsedObject;
@@ -49,10 +44,7 @@ typedef struct _XfdashboardThemeLayoutParserData			XfdashboardThemeLayoutParserD
 typedef struct _XfdashboardThemeLayoutUnresolvedBuildID		XfdashboardThemeLayoutUnresolvedBuildID;
 typedef struct _XfdashboardThemeLayoutCheckRefID			XfdashboardThemeLayoutCheckRefID;
 
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_THEME_LAYOUT_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_THEME_LAYOUT, XfdashboardThemeLayoutPrivate))
-
+/* Define this class in GObject system */
 struct _XfdashboardThemeLayoutPrivate
 {
 	/* Instance related */
@@ -60,6 +52,10 @@ struct _XfdashboardThemeLayoutPrivate
 
 	XfdashboardThemeLayoutTagData		*focusSelected;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardThemeLayout,
+							xfdashboard_theme_layout,
+							G_TYPE_OBJECT)
 
 /* IMPLEMENTATION: Private variables and methods */
 enum
@@ -637,7 +633,7 @@ static void _xfdashboard_theme_layout_create_object_resolve_unresolved(Xfdashboa
 				 */
 				if(!focusSelected && unresolvedID->property->tag.focus.selected)
 				{
-					focusSelected=g_object_ref(refObject);
+					focusSelected=CLUTTER_ACTOR(g_object_ref(refObject));
 
 					XFDASHBOARD_DEBUG(self, THEME,
 										"Remember resolved focusable actor %s with reference ID '%s' as pre-selected actor at target object %s ",
@@ -713,7 +709,8 @@ static GObject* _xfdashboard_theme_layout_create_object(XfdashboardThemeLayout *
 {
 	GObject									*object;
 	GSList									*iter;
-	GParameter								*properties;
+	gchar									**names;
+	GValue									*values;
 	gint									maxProperties, usedProperties, i;
 	guint									j;
 
@@ -724,10 +721,15 @@ static GObject* _xfdashboard_theme_layout_create_object(XfdashboardThemeLayout *
 
 	/* Collect all properties as array which do not refer to other objects */
 	usedProperties=0;
-	properties=NULL;
+	names=NULL;
+	values=NULL;
 
 	maxProperties=g_slist_length(inObjectData->properties);
-	if(maxProperties>0) properties=g_new0(GParameter, maxProperties);
+	if(maxProperties>0)
+	{
+		names=g_new0(gchar*, maxProperties);
+		values=g_new0(GValue, maxProperties);
+	}
 
 	for(iter=inObjectData->properties; iter; iter=g_slist_next(iter))
 	{
@@ -738,11 +740,11 @@ static GObject* _xfdashboard_theme_layout_create_object(XfdashboardThemeLayout *
 		/* Check if property refers to an other object, if not add it */
 		if(!property->tag.property.refID)
 		{
-			properties[usedProperties].name=property->tag.property.name;
-			g_value_init(&properties[usedProperties].value, G_TYPE_STRING);
+			names[usedProperties]=g_strdup(property->tag.property.name);
+			g_value_init(&values[usedProperties], G_TYPE_STRING);
 
-			if(!property->tag.property.translatable) g_value_set_string(&properties[usedProperties].value, property->tag.property.value);
-				else g_value_set_string(&properties[usedProperties].value, _(property->tag.property.value));
+			if(!property->tag.property.translatable) g_value_set_string(&values[usedProperties], property->tag.property.value);
+				else g_value_set_string(&values[usedProperties], _(property->tag.property.value));
 
 			usedProperties++;
 		}
@@ -752,14 +754,18 @@ static GObject* _xfdashboard_theme_layout_create_object(XfdashboardThemeLayout *
 	 * of creation release allocated resources for properties as they are
 	 * not needed anymore.
 	 */
-	object=G_OBJECT(g_object_newv(inObjectData->classType, usedProperties, properties));
+	object=g_object_new_with_properties(inObjectData->classType,
+										usedProperties,
+										(const gchar **)names,
+										(const GValue *)values);
 
 	for(i=0; i<usedProperties; i++)
 	{
-		properties[i].name=NULL;
-		g_value_unset(&properties[i].value);
+		g_free(names[i]);
+		g_value_unset(&values[i]);
 	}
-	g_free(properties);
+	g_free(names);
+	g_free(values);
 
 	if(!object)
 	{
@@ -2067,9 +2073,6 @@ void xfdashboard_theme_layout_class_init(XfdashboardThemeLayoutClass *klass)
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_theme_layout_dispose;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardThemeLayoutPrivate));
 }
 
 /* Object initialization
@@ -2079,7 +2082,7 @@ void xfdashboard_theme_layout_init(XfdashboardThemeLayout *self)
 {
 	XfdashboardThemeLayoutPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_THEME_LAYOUT_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_theme_layout_get_instance_private(self);
 
 	/* Set default values */
 	priv->interfaces=NULL;

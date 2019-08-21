@@ -38,14 +38,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardStageInterface,
-				xfdashboard_stage_interface,
-				XFDASHBOARD_TYPE_ACTOR)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_STAGE_INTERFACE_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_STAGE_INTERFACE, XfdashboardStageInterfacePrivate))
-
 struct _XfdashboardStageInterfacePrivate
 {
 	/* Properties related */
@@ -61,6 +53,10 @@ struct _XfdashboardStageInterfacePrivate
 	guint									geometryChangedID;
 	guint									primaryChangedID;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardStageInterface,
+							xfdashboard_stage_interface,
+							XFDASHBOARD_TYPE_ACTOR)
 
 /* Properties */
 enum
@@ -357,9 +353,6 @@ static void xfdashboard_stage_interface_class_init(XfdashboardStageInterfaceClas
 	gobjectClass->set_property=_xfdashboard_stage_interface_set_property;
 	gobjectClass->get_property=_xfdashboard_stage_interface_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardStageInterfacePrivate));
-
 	/* Define properties */
 	XfdashboardStageInterfaceProperties[PROP_MONITOR]=
 		g_param_spec_object("monitor",
@@ -397,7 +390,7 @@ static void xfdashboard_stage_interface_init(XfdashboardStageInterface *self)
 {
 	XfdashboardStageInterfacePrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_STAGE_INTERFACE_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_stage_interface_get_instance_private(self);
 
 	/* Set default values */
 	priv->monitor=NULL;

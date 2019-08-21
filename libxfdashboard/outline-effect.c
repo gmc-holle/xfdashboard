@@ -35,14 +35,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardOutlineEffect,
-				xfdashboard_outline_effect,
-				CLUTTER_TYPE_EFFECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_OUTLINE_EFFECT_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_OUTLINE_EFFECT, XfdashboardOutlineEffectPrivate))
-
 struct _XfdashboardOutlineEffectPrivate
 {
 	/* Properties related */
@@ -52,6 +44,10 @@ struct _XfdashboardOutlineEffectPrivate
 	XfdashboardCorners			corners;
 	gfloat						cornersRadius;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardOutlineEffect,
+							xfdashboard_outline_effect,
+							CLUTTER_TYPE_EFFECT)
 
 /* Properties */
 enum
@@ -421,9 +417,6 @@ static void xfdashboard_outline_effect_class_init(XfdashboardOutlineEffectClass 
 
 	effectClass->paint=_xfdashboard_outline_effect_paint;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardOutlineEffectPrivate));
-
 	/* Define properties */
 	XfdashboardOutlineEffectProperties[PROP_COLOR]=
 		clutter_param_spec_color("color",
@@ -474,7 +467,7 @@ static void xfdashboard_outline_effect_init(XfdashboardOutlineEffect *self)
 {
 	XfdashboardOutlineEffectPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_OUTLINE_EFFECT_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_outline_effect_get_instance_private(self);
 
 	/* Set up default values */
 	priv->color=clutter_color_copy(CLUTTER_COLOR_White);

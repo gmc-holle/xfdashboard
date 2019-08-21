@@ -41,16 +41,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_dynamic_table_layout_stylable_iface_init(XfdashboardStylableInterface *inInterface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardDynamicTableLayout,
-						xfdashboard_dynamic_table_layout,
-						CLUTTER_TYPE_LAYOUT_MANAGER,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_STYLABLE, _xfdashboard_dynamic_table_layout_stylable_iface_init));
-
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_DYNAMIC_TABLE_LAYOUT_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_DYNAMIC_TABLE_LAYOUT, XfdashboardDynamicTableLayoutPrivate))
-
 struct _XfdashboardDynamicTableLayoutPrivate
 {
 	/* Properties related */
@@ -69,6 +59,12 @@ struct _XfdashboardDynamicTableLayoutPrivate
 	gpointer			container;
 	guint				styleRevalidationSignalID;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardDynamicTableLayout,
+						xfdashboard_dynamic_table_layout,
+						CLUTTER_TYPE_LAYOUT_MANAGER,
+						G_ADD_PRIVATE(XfdashboardDynamicTableLayout)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_STYLABLE, _xfdashboard_dynamic_table_layout_stylable_iface_init));
 
 /* Properties */
 enum
@@ -850,9 +846,6 @@ static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableL
 
 	stylableIface=g_type_default_interface_ref(XFDASHBOARD_TYPE_STYLABLE);
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardDynamicTableLayoutPrivate));
-
 	/* Define properties */
 	XfdashboardDynamicTableLayoutProperties[PROP_ROW_SPACING]=
 		g_param_spec_float("row-spacing",
@@ -929,7 +922,7 @@ static void xfdashboard_dynamic_table_layout_init(XfdashboardDynamicTableLayout 
 {
 	XfdashboardDynamicTableLayoutPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_DYNAMIC_TABLE_LAYOUT_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_dynamic_table_layout_get_instance_private(self);
 
 	/* Set default values */
 	priv->rowSpacing=0.0f;

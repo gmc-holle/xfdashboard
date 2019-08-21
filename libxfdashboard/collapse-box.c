@@ -39,15 +39,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_collapse_box_container_iface_init(ClutterContainerIface *inInterface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardCollapseBox,
-						xfdashboard_collapse_box,
-						XFDASHBOARD_TYPE_ACTOR,
-						G_IMPLEMENT_INTERFACE(CLUTTER_TYPE_CONTAINER, _xfdashboard_collapse_box_container_iface_init));
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_COLLAPSE_BOX_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_COLLAPSE_BOX, XfdashboardCollapseBoxPrivate))
-
 struct _XfdashboardCollapseBoxPrivate
 {
 	/* Properties related */
@@ -65,6 +56,12 @@ struct _XfdashboardCollapseBoxPrivate
 	gboolean				expandedByPointer;
 	gboolean				expandedByFocus;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardCollapseBox,
+						xfdashboard_collapse_box,
+						XFDASHBOARD_TYPE_ACTOR,
+						G_ADD_PRIVATE(XfdashboardCollapseBox)
+						G_IMPLEMENT_INTERFACE(CLUTTER_TYPE_CONTAINER, _xfdashboard_collapse_box_container_iface_init));
 
 /* Properties */
 enum
@@ -569,9 +566,6 @@ static void xfdashboard_collapse_box_class_init(XfdashboardCollapseBoxClass *kla
 	gobjectClass->get_property=_xfdashboard_collapse_box_get_property;
 	gobjectClass->dispose=_xfdashboard_collapse_box_dispose;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardCollapseBoxPrivate));
-
 	/* Define properties */
 	XfdashboardCollapseBoxProperties[PROP_COLLAPSED]=
 		g_param_spec_boolean("collapsed",
@@ -623,7 +617,7 @@ static void xfdashboard_collapse_box_init(XfdashboardCollapseBox *self)
 {
 	XfdashboardCollapseBoxPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_COLLAPSE_BOX_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_collapse_box_get_instance_private(self);
 
 	/* Set up default values */
 	priv->isCollapsed=TRUE;

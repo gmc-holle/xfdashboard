@@ -35,14 +35,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardApplicationDatabase,
-				xfdashboard_application_database,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_APPLICATION_DATABASE_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_APPLICATION_DATABASE, XfdashboardApplicationDatabasePrivate))
-
 struct _XfdashboardApplicationDatabasePrivate
 {
 	/* Properties related */
@@ -57,6 +49,10 @@ struct _XfdashboardApplicationDatabasePrivate
 	GHashTable			*applications;
 	GList				*appDirMonitors;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardApplicationDatabase,
+							xfdashboard_application_database,
+							G_TYPE_OBJECT)
 
 /* Properties */
 enum
@@ -1357,9 +1353,6 @@ static void xfdashboard_application_database_class_init(XfdashboardApplicationDa
 	gobjectClass->finalize=_xfdashboard_application_database_finalize;
 	gobjectClass->get_property=_xfdashboard_application_database_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardApplicationDatabasePrivate));
-
 	/* Define properties */
 	XfdashboardApplicationDatabaseProperties[PROP_IS_LOADED]=
 		g_param_spec_boolean("is-loaded",
@@ -1414,7 +1407,7 @@ static void xfdashboard_application_database_init(XfdashboardApplicationDatabase
 	const gchar* const						*systemPaths;
 	gchar									*path;
 
-	priv=self->priv=XFDASHBOARD_APPLICATION_DATABASE_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_application_database_get_instance_private(self);
 
 	/* Set default values */
 	priv->isLoaded=FALSE;

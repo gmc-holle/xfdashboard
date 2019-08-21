@@ -51,14 +51,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardViewSelector,
-				xfdashboard_view_selector,
-				XFDASHBOARD_TYPE_ACTOR)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_VIEW_SELECTOR_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_VIEW_SELECTOR, XfdashboardViewSelectorPrivate))
-
 struct _XfdashboardViewSelectorPrivate
 {
 	/* Properties related */
@@ -69,6 +61,10 @@ struct _XfdashboardViewSelectorPrivate
 	/* Instance related */
 	ClutterLayoutManager	*layout;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardViewSelector,
+							xfdashboard_view_selector,
+							XFDASHBOARD_TYPE_ACTOR)
 
 /* Properties */
 enum
@@ -376,9 +372,6 @@ static void xfdashboard_view_selector_class_init(XfdashboardViewSelectorClass *k
 	gobjectClass->get_property=_xfdashboard_view_selector_get_property;
 	gobjectClass->dispose=_xfdashboard_view_selector_dispose;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardViewSelectorPrivate));
-
 	/* Define properties */
 
 	/**
@@ -454,7 +447,7 @@ static void xfdashboard_view_selector_init(XfdashboardViewSelector *self)
 {
 	XfdashboardViewSelectorPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_VIEW_SELECTOR_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_view_selector_get_instance_private(self);
 
 	/* Set up default values */
 	priv->viewpad=NULL;

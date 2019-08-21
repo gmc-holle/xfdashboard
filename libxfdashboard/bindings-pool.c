@@ -38,19 +38,15 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardBindingsPool,
-				xfdashboard_bindings_pool,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_BINDINGS_POOL_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_BINDINGS_POOL, XfdashboardBindingsPoolPrivate))
-
 struct _XfdashboardBindingsPoolPrivate
 {
 	/* Instance related */
 	GHashTable		*bindings;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardBindingsPool,
+							xfdashboard_bindings_pool,
+							G_TYPE_OBJECT)
 
 /* IMPLEMENTATION: Private variables and methods */
 enum
@@ -1025,9 +1021,6 @@ static void xfdashboard_bindings_pool_class_init(XfdashboardBindingsPoolClass *k
 	gobjectClass->constructor=_xfdashboard_bindings_pool_constructor;
 	gobjectClass->dispose=_xfdashboard_bindings_pool_dispose;
 	gobjectClass->finalize=_xfdashboard_bindings_pool_finalize;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardBindingsPoolPrivate));
 }
 
 /* Object initialization
@@ -1037,7 +1030,7 @@ static void xfdashboard_bindings_pool_init(XfdashboardBindingsPool *self)
 {
 	XfdashboardBindingsPoolPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_BINDINGS_POOL_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_bindings_pool_get_instance_private(self);
 
 	/* Set up default values */
 	priv->bindings=NULL;

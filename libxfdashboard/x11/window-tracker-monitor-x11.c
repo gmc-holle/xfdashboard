@@ -42,15 +42,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_window_tracker_monitor_x11_x11_window_tracker_monitor_iface_init(XfdashboardWindowTrackerMonitorInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowTrackerMonitorX11,
-						xfdashboard_window_tracker_monitor_x11,
-						G_TYPE_OBJECT,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR, _xfdashboard_window_tracker_monitor_x11_x11_window_tracker_monitor_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_WINDOW_TRACKER_MONITOR_X11_GET_PRIVATE(obj)                \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR_X11, XfdashboardWindowTrackerMonitorX11Private))
-
 struct _XfdashboardWindowTrackerMonitorX11Private
 {
 	/* Properties related */
@@ -61,6 +52,12 @@ struct _XfdashboardWindowTrackerMonitorX11Private
 	GdkScreen			*screen;
 	GdkRectangle		geometry;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowTrackerMonitorX11,
+						xfdashboard_window_tracker_monitor_x11,
+						G_TYPE_OBJECT,
+						G_ADD_PRIVATE(XfdashboardWindowTrackerMonitorX11)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR, _xfdashboard_window_tracker_monitor_x11_x11_window_tracker_monitor_iface_init))
 
 /* Properties */
 enum
@@ -387,9 +384,6 @@ static void xfdashboard_window_tracker_monitor_x11_class_init(XfdashboardWindowT
 	gobjectClass->set_property=_xfdashboard_window_tracker_monitor_x11_set_property;
 	gobjectClass->get_property=_xfdashboard_window_tracker_monitor_x11_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardWindowTrackerMonitorX11Private));
-
 	/* Define properties */
 	paramSpec=g_object_interface_find_property(monitorIface, "is-primary");
 	XfdashboardWindowTrackerMonitorX11Properties[PROP_IS_PRIMARY]=
@@ -412,7 +406,7 @@ static void xfdashboard_window_tracker_monitor_x11_init(XfdashboardWindowTracker
 {
 	XfdashboardWindowTrackerMonitorX11Private		*priv;
 
-	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_MONITOR_X11_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_window_tracker_monitor_x11_get_instance_private(self);
 
 	/* Set default values */
 	priv->monitorIndex=-1;

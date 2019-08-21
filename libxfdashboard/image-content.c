@@ -44,14 +44,6 @@
 #endif
 
 
-/* Define this class in GObject system */
-static void _xfdashboard_image_content_stylable_iface_init(XfdashboardStylableInterface *iface);
-
-G_DEFINE_TYPE_WITH_CODE(XfdashboardImageContent,
-						xfdashboard_image_content,
-						CLUTTER_TYPE_IMAGE,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_STYLABLE, _xfdashboard_image_content_stylable_iface_init))
-
 /* Local definitions */
 typedef enum /*< skip,prefix=XFDASHBOARD_IMAGE_TYPE >*/
 {
@@ -61,9 +53,8 @@ typedef enum /*< skip,prefix=XFDASHBOARD_IMAGE_TYPE >*/
 	XFDASHBOARD_IMAGE_TYPE_GICON,
 } XfdashboardImageType;
 
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_IMAGE_CONTENT_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_IMAGE_CONTENT, XfdashboardImageContentPrivate))
+/* Define this class in GObject system */
+static void _xfdashboard_image_content_stylable_iface_init(XfdashboardStylableInterface *iface);
 
 struct _XfdashboardImageContentPrivate
 {
@@ -85,6 +76,12 @@ struct _XfdashboardImageContentPrivate
 	guint								contentDetachedSignalID;
 	guint								iconThemeChangedSignalID;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardImageContent,
+						xfdashboard_image_content,
+						CLUTTER_TYPE_IMAGE,
+						G_ADD_PRIVATE(XfdashboardImageContent)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_STYLABLE, _xfdashboard_image_content_stylable_iface_init))
 
 /* Properties */
 enum
@@ -1441,9 +1438,6 @@ void xfdashboard_image_content_class_init(XfdashboardImageContentClass *klass)
 
 	stylableIface=g_type_default_interface_ref(XFDASHBOARD_TYPE_STYLABLE);
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardImageContentPrivate));
-
 	/* Define properties */
 	XfdashboardImageContentProperties[PROP_KEY]=
 		g_param_spec_string("key",
@@ -1503,7 +1497,7 @@ void xfdashboard_image_content_init(XfdashboardImageContent *self)
 {
 	XfdashboardImageContentPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_IMAGE_CONTENT_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_image_content_get_instance_private(self);
 
 	/* Set up default values */
 	priv->key=NULL;

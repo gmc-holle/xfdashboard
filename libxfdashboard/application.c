@@ -66,14 +66,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardApplication,
-				xfdashboard_application,
-				G_TYPE_APPLICATION)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_APPLICATION_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_APPLICATION, XfdashboardApplicationPrivate))
-
 struct _XfdashboardApplicationPrivate
 {
 	/* Properties related */
@@ -106,6 +98,10 @@ struct _XfdashboardApplicationPrivate
 
 	XfdashboardWindowTrackerBackend		*windowTrackerBackend;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardApplication,
+							xfdashboard_application,
+							G_TYPE_APPLICATION)
 
 /* Properties */
 enum
@@ -1195,9 +1191,6 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	gobjectClass->set_property=_xfdashboard_application_set_property;
 	gobjectClass->get_property=_xfdashboard_application_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardApplicationPrivate));
-
 	/* Define properties */
 	/**
 	 * XfdashboardApplication:is-daemonized:
@@ -1480,7 +1473,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	XfdashboardApplicationPrivate	*priv;
 	GSimpleAction					*action;
 
-	priv=self->priv=XFDASHBOARD_APPLICATION_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_application_get_instance_private(self);
 
 	/* Set default values */
 	priv->isDaemon=FALSE;

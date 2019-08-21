@@ -35,14 +35,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardScrollbar,
-				xfdashboard_scrollbar,
-				XFDASHBOARD_TYPE_BACKGROUND)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SCROLLBAR_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SCROLLBAR, XfdashboardScrollbarPrivate))
-
 struct _XfdashboardScrollbarPrivate
 {
 	/* Properties related */
@@ -66,6 +58,10 @@ struct _XfdashboardScrollbarPrivate
 	guint					signalButtonReleasedID;
 	guint					signalMotionEventID;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardScrollbar,
+							xfdashboard_scrollbar,
+							XFDASHBOARD_TYPE_BACKGROUND)
 
 /* Properties */
 enum
@@ -711,9 +707,6 @@ static void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 	clutterActorClass->get_preferred_height=_xfdashboard_scrollbar_get_preferred_height;
 	clutterActorClass->allocate=_xfdashboard_scrollbar_allocate;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardScrollbarPrivate));
-
 	/* Define properties */
 	XfdashboardScrollbarProperties[PROP_ORIENTATION]=
 		g_param_spec_enum("orientation",
@@ -817,7 +810,7 @@ static void xfdashboard_scrollbar_init(XfdashboardScrollbar *self)
 {
 	XfdashboardScrollbarPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_SCROLLBAR_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_scrollbar_get_instance_private(self);
 
 	/* Set up default values */
 	priv->orientation=CLUTTER_ORIENTATION_HORIZONTAL;

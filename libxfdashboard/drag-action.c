@@ -37,14 +37,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardDragAction,
-				xfdashboard_drag_action,
-				CLUTTER_TYPE_DRAG_ACTION)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_DRAG_ACTION_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_DRAG_ACTION, XfdashboardDragActionPrivate))
-
 struct _XfdashboardDragActionPrivate
 {
 	/* Properties related */
@@ -63,6 +55,10 @@ struct _XfdashboardDragActionPrivate
 	ClutterActor			*dragHandle;
 	guint					dragHandleChangedID;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardDragAction,
+							xfdashboard_drag_action,
+							CLUTTER_TYPE_DRAG_ACTION)
 
 /* Properties */
 enum
@@ -926,9 +922,6 @@ void xfdashboard_drag_action_class_init(XfdashboardDragActionClass *klass)
 	dragActionClass->drag_motion=_xfdashboard_drag_action_drag_motion;
 	dragActionClass->drag_end=_xfdashboard_drag_action_drag_end;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardDragActionPrivate));
-
 	/* Define properties */
 	XfdashboardDragActionProperties[PROP_SOURCE]=
 		g_param_spec_object("source",
@@ -962,7 +955,7 @@ void xfdashboard_drag_action_init(XfdashboardDragAction *self)
 {
 	XfdashboardDragActionPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_DRAG_ACTION_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_drag_action_get_instance_private(self);
 
 	/* Set up default values */
 	priv->source=NULL;

@@ -36,19 +36,15 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardViewManager,
-				xfdashboard_view_manager,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_VIEW_MANAGER_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_VIEW_MANAGER, XfdashboardViewManagerPrivate))
-
 struct _XfdashboardViewManagerPrivate
 {
 	/* Instance related */
 	GList		*registeredViews;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardViewManager,
+							xfdashboard_view_manager,
+							G_TYPE_OBJECT)
 
 /* Signals */
 enum
@@ -226,9 +222,6 @@ static void xfdashboard_view_manager_class_init(XfdashboardViewManagerClass *kla
 	gobjectClass->dispose=_xfdashboard_view_manager_dispose;
 	gobjectClass->finalize=_xfdashboard_view_manager_finalize;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardViewManagerPrivate));
-
 	/* Define signals */
 	XfdashboardViewManagerSignals[SIGNAL_REGISTERED]=
 		g_signal_new("registered",
@@ -262,7 +255,7 @@ static void xfdashboard_view_manager_init(XfdashboardViewManager *self)
 {
 	XfdashboardViewManagerPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_VIEW_MANAGER_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_view_manager_get_instance_private(self);
 
 	/* Set default values */
 	priv->registeredViews=NULL;

@@ -46,14 +46,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardSearchResultContainer,
-				xfdashboard_search_result_container,
-				XFDASHBOARD_TYPE_ACTOR)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SEARCH_RESULT_CONTAINER_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SEARCH_RESULT_CONTAINER, XfdashboardSearchResultContainerPrivate))
-
 struct _XfdashboardSearchResultContainerPrivate
 {
 	/* Properties related */
@@ -84,6 +76,10 @@ struct _XfdashboardSearchResultContainerPrivate
 	ClutterActor				*moreResultsLabelActor;
 	ClutterActor				*allResultsLabelActor;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSearchResultContainer,
+							xfdashboard_search_result_container,
+							XFDASHBOARD_TYPE_ACTOR)
 
 /* Properties */
 enum
@@ -1251,9 +1247,6 @@ static void xfdashboard_search_result_container_class_init(XfdashboardSearchResu
 	gobjectClass->set_property=_xfdashboard_search_result_container_set_property;
 	gobjectClass->get_property=_xfdashboard_search_result_container_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardSearchResultContainerPrivate));
-
 	/* Define properties */
 	XfdashboardSearchResultContainerProperties[PROP_PROVIDER]=
 		g_param_spec_object("provider",
@@ -1362,7 +1355,7 @@ static void xfdashboard_search_result_container_init(XfdashboardSearchResultCont
 	ClutterLayoutManager						*layout;
 	ClutterActor								*buttonContainer;
 
-	priv=self->priv=XFDASHBOARD_SEARCH_RESULT_CONTAINER_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_search_result_container_get_instance_private(self);
 
 	/* Set up default values */
 	priv->icon=NULL;

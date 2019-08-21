@@ -68,16 +68,6 @@ typedef enum /*< skip,prefix=XFDASHBOARD_WINDOW_CONTENT_X11_WORKAROUND_MODE >*/
 static void _xfdashboard_window_content_clutter_content_iface_init(ClutterContentIface *iface);
 static void _xfdashboard_window_content_x11_stylable_iface_init(XfdashboardStylableInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowContentX11,
-						xfdashboard_window_content_x11,
-						XFDASHBOARD_TYPE_WINDOW_CONTENT,
-						G_IMPLEMENT_INTERFACE(CLUTTER_TYPE_CONTENT, _xfdashboard_window_content_clutter_content_iface_init)
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_STYLABLE, _xfdashboard_window_content_x11_stylable_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_WINDOW_CONTENT_X11_GET_PRIVATE(obj)                        \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_WINDOW_CONTENT_X11, XfdashboardWindowContentX11Private))
-
 struct _XfdashboardWindowContentX11Private
 {
 	/* Properties related */
@@ -117,6 +107,13 @@ struct _XfdashboardWindowContentX11Private
 
 	gboolean									suspendAfterResumeOnIdle;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowContentX11,
+						xfdashboard_window_content_x11,
+						XFDASHBOARD_TYPE_WINDOW_CONTENT,
+						G_ADD_PRIVATE(XfdashboardWindowContentX11)
+						G_IMPLEMENT_INTERFACE(CLUTTER_TYPE_CONTENT, _xfdashboard_window_content_clutter_content_iface_init)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_STYLABLE, _xfdashboard_window_content_x11_stylable_iface_init))
 
 /* Properties */
 enum
@@ -2134,9 +2131,6 @@ void xfdashboard_window_content_x11_class_init(XfdashboardWindowContentX11Class 
 
 	stylableIface=g_type_default_interface_ref(XFDASHBOARD_TYPE_STYLABLE);
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardWindowContentX11Private));
-
 	/* Define properties */
 	XfdashboardWindowContentX11Properties[PROP_WINDOW]=
 		g_param_spec_object("window",
@@ -2250,7 +2244,7 @@ void xfdashboard_window_content_x11_init(XfdashboardWindowContentX11 *self)
 	XfdashboardWindowContentX11Private		*priv;
 	XfdashboardApplication				*app;
 
-	priv=self->priv=XFDASHBOARD_WINDOW_CONTENT_X11_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_window_content_x11_get_instance_private(self);
 
 	/* Set default values */
 	priv->window=NULL;

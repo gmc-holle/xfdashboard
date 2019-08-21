@@ -38,14 +38,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardApplicationTracker,
-				xfdashboard_application_tracker,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_APPLICATION_TRACKER_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_APPLICATION_TRACKER, XfdashboardApplicationTrackerPrivate))
-
 struct _XfdashboardApplicationTrackerPrivate
 {
 	/* Instance related */
@@ -54,6 +46,10 @@ struct _XfdashboardApplicationTrackerPrivate
 	XfdashboardApplicationDatabase	*appDatabase;
 	XfdashboardWindowTracker		*windowTracker;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardApplicationTracker,
+				xfdashboard_application_tracker,
+				G_TYPE_OBJECT)
 
 /* Signals */
 enum
@@ -1007,9 +1003,6 @@ static void xfdashboard_application_tracker_class_init(XfdashboardApplicationTra
 	gobjectClass->dispose=_xfdashboard_application_tracker_dispose;
 	gobjectClass->finalize=_xfdashboard_application_tracker_finalize;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardApplicationTrackerPrivate));
-
 	/* Define signals */
 	XfdashboardApplicationTrackerSignals[SIGNAL_STATE_CHANGED]=
 		g_signal_new("state-changed",
@@ -1032,7 +1025,7 @@ static void xfdashboard_application_tracker_init(XfdashboardApplicationTracker *
 {
 	XfdashboardApplicationTrackerPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_APPLICATION_TRACKER_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_application_tracker_get_instance_private(self);
 
 	/* Set default values */
 	priv->runningApps=NULL;

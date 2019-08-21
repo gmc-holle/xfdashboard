@@ -40,14 +40,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardLiveWindowSimple,
-				xfdashboard_live_window_simple,
-				XFDASHBOARD_TYPE_BACKGROUND)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_LIVE_WINDOW_SIMPLE_GET_PRIVATE(obj)                        \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_LIVE_WINDOW_SIMPLE, XfdashboardLiveWindowSimplePrivate))
-
 struct _XfdashboardLiveWindowSimplePrivate
 {
 	/* Properties related */
@@ -59,6 +51,10 @@ struct _XfdashboardLiveWindowSimplePrivate
 	ClutterActor							*actorWindow;
 	gboolean								destroyOnClose;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardLiveWindowSimple,
+							xfdashboard_live_window_simple,
+							XFDASHBOARD_TYPE_BACKGROUND)
 
 /* Properties */
 enum
@@ -503,9 +499,6 @@ static void xfdashboard_live_window_simple_class_init(XfdashboardLiveWindowSimpl
 	gobjectClass->set_property=_xfdashboard_live_window_simple_set_property;
 	gobjectClass->get_property=_xfdashboard_live_window_simple_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardLiveWindowSimplePrivate));
-
 	/* Define properties */
 	XfdashboardLiveWindowSimpleProperties[PROP_WINDOW]=
 		g_param_spec_object("window",
@@ -577,7 +570,7 @@ static void xfdashboard_live_window_simple_init(XfdashboardLiveWindowSimple *sel
 {
 	XfdashboardLiveWindowSimplePrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_LIVE_WINDOW_SIMPLE_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_live_window_simple_get_instance_private(self);
 
 	/* This actor reacts on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);

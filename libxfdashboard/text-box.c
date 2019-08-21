@@ -42,15 +42,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_text_box_focusable_iface_init(XfdashboardFocusableInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardTextBox,
-						xfdashboard_text_box,
-						XFDASHBOARD_TYPE_BACKGROUND,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_text_box_focusable_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_TEXT_BOX_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_TEXT_BOX, XfdashboardTextBoxPrivate))
-
 struct _XfdashboardTextBoxPrivate
 {
 	/* Properties related */
@@ -83,6 +74,12 @@ struct _XfdashboardTextBoxPrivate
 
 	gboolean				selectionColorSet;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardTextBox,
+						xfdashboard_text_box,
+						XFDASHBOARD_TYPE_BACKGROUND,
+						G_ADD_PRIVATE(XfdashboardTextBox)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_text_box_focusable_iface_init))
 
 /* Properties */
 enum
@@ -774,9 +771,6 @@ static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 	clutterActorClass->destroy=_xfdashboard_text_box_destroy;
 	clutterActorClass->key_focus_in=_xfdashboard_text_box_key_focus_in;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardTextBoxPrivate));
-
 	/* Define properties */
 	XfdashboardTextBoxProperties[PROP_PADDING]=
 		g_param_spec_float("padding",
@@ -935,7 +929,7 @@ static void xfdashboard_text_box_init(XfdashboardTextBox *self)
 {
 	XfdashboardTextBoxPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_TEXT_BOX_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_text_box_get_instance_private(self);
 
 	/* This actor is react on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);

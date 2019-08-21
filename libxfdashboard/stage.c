@@ -57,14 +57,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardStage,
-				xfdashboard_stage,
-				CLUTTER_TYPE_STAGE)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_STAGE_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_STAGE, XfdashboardStagePrivate))
-
 struct _XfdashboardStagePrivate
 {
 	/* Properties related */
@@ -99,6 +91,10 @@ struct _XfdashboardStagePrivate
 
 	XfdashboardFocusManager					*focusManager;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardStage,
+							xfdashboard_stage,
+							CLUTTER_TYPE_STAGE)
 
 /* Properties */
 enum
@@ -1814,9 +1810,6 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 	gobjectClass->set_property=_xfdashboard_stage_set_property;
 	gobjectClass->get_property=_xfdashboard_stage_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardStagePrivate));
-
 	/* Define properties */
 	XfdashboardStageProperties[PROP_BACKGROUND_IMAGE_TYPE]=
 		g_param_spec_enum("background-image-type",
@@ -1925,7 +1918,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	ClutterConstraint			*heightConstraint;
 	ClutterColor				transparent;
 
-	priv=self->priv=XFDASHBOARD_STAGE_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_stage_get_instance_private(self);
 
 	/* Set default values */
 	priv->focusManager=xfdashboard_focus_manager_get_default();

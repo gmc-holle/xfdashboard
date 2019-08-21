@@ -37,14 +37,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardFillBoxLayout,
-				xfdashboard_fill_box_layout,
-				CLUTTER_TYPE_LAYOUT_MANAGER)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_FILL_BOX_LAYOUT_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_FILL_BOX_LAYOUT, XfdashboardFillBoxLayoutPrivate))
-
 struct _XfdashboardFillBoxLayoutPrivate
 {
 	/* Properties related */
@@ -53,6 +45,10 @@ struct _XfdashboardFillBoxLayoutPrivate
 	gboolean			isHomogeneous;
 	gboolean			keepAspect;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardFillBoxLayout,
+							xfdashboard_fill_box_layout,
+							CLUTTER_TYPE_LAYOUT_MANAGER)
 
 /* Properties */
 enum
@@ -569,9 +565,6 @@ static void xfdashboard_fill_box_layout_class_init(XfdashboardFillBoxLayoutClass
 	gobjectClass->set_property=_xfdashboard_fill_box_layout_set_property;
 	gobjectClass->get_property=_xfdashboard_fill_box_layout_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardFillBoxLayoutPrivate));
-
 	/* Define properties */
 	XfdashboardFillBoxLayoutProperties[PROP_ORIENTATION]=
 		g_param_spec_enum("orientation",
@@ -614,7 +607,7 @@ static void xfdashboard_fill_box_layout_init(XfdashboardFillBoxLayout *self)
 {
 	XfdashboardFillBoxLayoutPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_FILL_BOX_LAYOUT_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_fill_box_layout_get_instance_private(self);
 
 	/* Set default values */
 	priv->orientation=CLUTTER_ORIENTATION_HORIZONTAL;

@@ -39,20 +39,16 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardFocusManager,
-				xfdashboard_focus_manager,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_FOCUS_MANAGER_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_FOCUS_MANAGER, XfdashboardFocusManagerPrivate))
-
 struct _XfdashboardFocusManagerPrivate
 {
 	/* Instance related */
 	GList					*registeredFocusables;
 	XfdashboardFocusable	*currentFocus;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardFocusManager,
+							xfdashboard_focus_manager,
+							G_TYPE_OBJECT)
 
 /* Signals */
 enum
@@ -422,9 +418,6 @@ static void xfdashboard_focus_manager_class_init(XfdashboardFocusManagerClass *k
 	klass->focus_move_next=_xfdashboard_focus_manager_move_focus_next;
 	klass->focus_move_previous=_xfdashboard_focus_manager_move_focus_previous;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardFocusManagerPrivate));
-
 	/* Define signals */
 	XfdashboardFocusManagerSignals[SIGNAL_REGISTERED]=
 		g_signal_new("registered",
@@ -527,7 +520,7 @@ static void xfdashboard_focus_manager_init(XfdashboardFocusManager *self)
 {
 	XfdashboardFocusManagerPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_FOCUS_MANAGER_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_focus_manager_get_instance_private(self);
 
 	/* Set default values */
 	priv->registeredFocusables=NULL;

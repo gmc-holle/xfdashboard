@@ -57,20 +57,16 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardToggleButton,
-				xfdashboard_toggle_button,
-				XFDASHBOARD_TYPE_BUTTON)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_TOGGLE_BUTTON_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_TOGGLE_BUTTON, XfdashboardToggleButtonPrivate))
-
 struct _XfdashboardToggleButtonPrivate
 {
 	/* Properties related */
 	gboolean		toggleState;
 	gboolean		autoToggleOnClick;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardToggleButton,
+							xfdashboard_toggle_button,
+							XFDASHBOARD_TYPE_BUTTON)
 
 /* Properties */
 enum
@@ -178,9 +174,6 @@ static void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *k
 
 	buttonClass->clicked=_xfdashboard_toggle_button_clicked;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardToggleButtonPrivate));
-
 	/* Define properties */
 	/**
 	 * XfdashboardToggleButton:toggle-state:
@@ -240,7 +233,7 @@ static void xfdashboard_toggle_button_init(XfdashboardToggleButton *self)
 {
 	XfdashboardToggleButtonPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_TOGGLE_BUTTON_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_toggle_button_get_instance_private(self);
 
 	/* This actor reacts on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);

@@ -36,19 +36,15 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_ABSTRACT_TYPE(XfdashboardSearchProvider,
-						xfdashboard_search_provider,
-						G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SEARCH_PROVIDER_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SEARCH_PROVIDER, XfdashboardSearchProviderPrivate))
-
 struct _XfdashboardSearchProviderPrivate
 {
 	/* Properties related */
 	gchar					*providerID;
 };
+
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE(XfdashboardSearchProvider,
+									xfdashboard_search_provider,
+									G_TYPE_OBJECT)
 
 /* Properties */
 enum
@@ -166,9 +162,6 @@ static void xfdashboard_search_provider_class_init(XfdashboardSearchProviderClas
 	gobjectClass->get_property=_xfdashboard_search_provider_get_property;
 	gobjectClass->dispose=_xfdashboard_search_provider_dispose;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardSearchProviderPrivate));
-
 	/* Define properties */
 	XfdashboardSearchProviderProperties[PROP_PROVIDER_ID]=
 		g_param_spec_string("provider-id",
@@ -187,7 +180,7 @@ static void xfdashboard_search_provider_init(XfdashboardSearchProvider *self)
 {
 	XfdashboardSearchProviderPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_SEARCH_PROVIDER_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_search_provider_get_instance_private(self);
 
 	/* Set up default values */
 	priv->providerID=NULL;

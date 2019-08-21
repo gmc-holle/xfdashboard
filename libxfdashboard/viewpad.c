@@ -44,15 +44,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_viewpad_focusable_iface_init(XfdashboardFocusableInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardViewpad,
-						xfdashboard_viewpad,
-						XFDASHBOARD_TYPE_BACKGROUND,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_viewpad_focusable_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_VIEWPAD_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_VIEWPAD, XfdashboardViewpadPrivate))
-
 struct _XfdashboardViewpadPrivate
 {
 	/* Properties related */
@@ -77,6 +68,12 @@ struct _XfdashboardViewpadPrivate
 
 	ClutterActorBox					*lastAllocation;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardViewpad,
+						xfdashboard_viewpad,
+						XFDASHBOARD_TYPE_BACKGROUND,
+						G_ADD_PRIVATE(XfdashboardViewpad)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_viewpad_focusable_iface_init))
 
 /* Properties */
 enum
@@ -1229,9 +1226,6 @@ static void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 	clutterActorClass->get_preferred_height=_xfdashboard_viewpad_get_preferred_height;
 	clutterActorClass->allocate=_xfdashboard_viewpad_allocate;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardViewpadPrivate));
-
 	/* Define properties */
 	XfdashboardViewpadProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
@@ -1367,7 +1361,7 @@ static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	XfdashboardViewpadPrivate	*priv;
 	GList						*views, *viewEntry;
 
-	priv=self->priv=XFDASHBOARD_VIEWPAD_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_viewpad_get_instance_private(self);
 
 	/* Set up default values */
 	priv->viewManager=xfdashboard_view_manager_get_default();

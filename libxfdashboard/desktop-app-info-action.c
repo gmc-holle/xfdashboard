@@ -44,14 +44,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardDesktopAppInfoAction,
-				xfdashboard_desktop_app_info_action,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_DESKTOP_APP_INFO_ACTION_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_DESKTOP_APP_INFO_ACTION, XfdashboardDesktopAppInfoActionPrivate))
-
 struct _XfdashboardDesktopAppInfoActionPrivate
 {
 	/* Properties related */
@@ -59,6 +51,10 @@ struct _XfdashboardDesktopAppInfoActionPrivate
 	gchar				*iconName;
 	gchar				*command;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardDesktopAppInfoAction,
+							xfdashboard_desktop_app_info_action,
+							G_TYPE_OBJECT)
 
 /* Properties */
 enum
@@ -178,9 +174,6 @@ static void xfdashboard_desktop_app_info_action_class_init(XfdashboardDesktopApp
 	gobjectClass->set_property=_xfdashboard_desktop_app_info_action_set_property;
 	gobjectClass->get_property=_xfdashboard_desktop_app_info_action_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardDesktopAppInfoActionPrivate));
-
 	/* Define properties */
 	/**
 	 * XfdashboardDesktopAppInfoAction:name:
@@ -230,7 +223,7 @@ static void xfdashboard_desktop_app_info_action_init(XfdashboardDesktopAppInfoAc
 {
 	XfdashboardDesktopAppInfoActionPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_DESKTOP_APP_INFO_ACTION_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_desktop_app_info_action_get_instance_private(self);
 
 	/* Set up default values */
 	priv->name=NULL;

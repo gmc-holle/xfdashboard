@@ -56,15 +56,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_applications_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardApplicationsView,
-						xfdashboard_applications_view,
-						XFDASHBOARD_TYPE_VIEW,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_applications_view_focusable_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_APPLICATIONS_VIEW_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_APPLICATIONS_VIEW, XfdashboardApplicationsViewPrivate))
-
 struct _XfdashboardApplicationsViewPrivate
 {
 	/* Properties related */
@@ -85,6 +76,12 @@ struct _XfdashboardApplicationsViewPrivate
 	gboolean							showAllAppsMenu;
 	guint								xfconfShowAllAppsMenuBindingID;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardApplicationsView,
+						xfdashboard_applications_view,
+						XFDASHBOARD_TYPE_VIEW,
+						G_ADD_PRIVATE(XfdashboardApplicationsView)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_applications_view_focusable_iface_init))
 
 /* Properties */
 enum
@@ -1508,9 +1505,6 @@ static void xfdashboard_applications_view_class_init(XfdashboardApplicationsView
 	gobjectClass->set_property=_xfdashboard_applications_view_set_property;
 	gobjectClass->get_property=_xfdashboard_applications_view_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardApplicationsViewPrivate));
-
 	/* Define properties */
 	XfdashboardApplicationsViewProperties[PROP_VIEW_MODE]=
 		g_param_spec_enum("view-mode",
@@ -1574,7 +1568,7 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	XfdashboardApplicationsViewPrivate	*priv;
 	XfdashboardApplication				*application;
 
-	self->priv=priv=XFDASHBOARD_APPLICATIONS_VIEW_GET_PRIVATE(self);
+	self->priv=priv=xfdashboard_applications_view_get_instance_private(self);
 
 	/* Set up default values */
 	priv->apps=XFDASHBOARD_APPLICATIONS_MENU_MODEL(xfdashboard_applications_menu_model_new());

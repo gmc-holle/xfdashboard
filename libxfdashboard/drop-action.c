@@ -36,20 +36,16 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardDropAction,
-				xfdashboard_drop_action,
-				CLUTTER_TYPE_ACTION)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_DROP_ACTION_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_DROP_ACTION, XfdashboardDropActionPrivate))
-
 struct _XfdashboardDropActionPrivate
 {
 	/* Instance related */
 	ClutterActor	*actor;
 	guint			destroySignalID;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardDropAction,
+							xfdashboard_drop_action,
+							CLUTTER_TYPE_ACTION)
 
 /* Signals */
 enum
@@ -337,9 +333,6 @@ void xfdashboard_drop_action_class_init(XfdashboardDropActionClass *klass)
 	klass->drag_enter=_xfdashboard_drop_action_class_real_drag_enter;
 	klass->drag_leave=_xfdashboard_drop_action_class_real_drag_leave;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardDropActionPrivate));
-
 	/* Define signals */
 	XfdashboardDropActionSignals[SIGNAL_BEGIN]=
 		g_signal_new("begin",
@@ -439,7 +432,7 @@ void xfdashboard_drop_action_init(XfdashboardDropAction *self)
 {
 	XfdashboardDropActionPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_DROP_ACTION_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_drop_action_get_instance_private(self);
 
 	/* Set up default values */
 	priv->destroySignalID=0;

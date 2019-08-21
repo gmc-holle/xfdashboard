@@ -37,19 +37,15 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardThemeEffects,
-				xfdashboard_theme_effects,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_THEME_EFFECTS_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_THEME_EFFECTS, XfdashboardThemeEffectsPrivate))
-
 struct _XfdashboardThemeEffectsPrivate
 {
 	/* Instance related */
 	GSList			*effects;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardThemeEffects,
+							xfdashboard_theme_effects,
+							G_TYPE_OBJECT)
 
 /* IMPLEMENTATION: Private variables and methods */
 enum
@@ -65,7 +61,8 @@ struct _XfdashboardThemeEffectsPropertiesCollectData
 {
 	guint			index;
 	guint			maxProperties;
-	GParameter		*properties;
+	gchar			**names;
+	GValue			*values;
 };
 
 typedef struct _XfdashboardThemeEffectsParsedObject				XfdashboardThemeEffectsParsedObject;
@@ -431,10 +428,10 @@ static void _xfdashboard_theme_effects_create_object_collect_properties(gpointer
 	data=(XfdashboardThemeEffectsPropertiesCollectData*)inUserData;
 
 	/* Add property parameter to array */
-	data->properties[data->index].name=name;
+	data->names[data->index]=g_strdup(name);
 
-	g_value_init(&data->properties[data->index].value, G_TYPE_STRING);
-	g_value_set_string(&data->properties[data->index].value, value);
+	g_value_init(&data->values[data->index], G_TYPE_STRING);
+	g_value_set_string(&data->values[data->index], value);
 
 	/* Increase pointer to next parameter in array */
 	data->index++;
@@ -447,12 +444,14 @@ static ClutterEffect* _xfdashboard_theme_effects_create_object(XfdashboardThemeE
 
 	/* Collect all properties as array */
 	collectData.index=0;
-	collectData.properties=NULL;
+	collectData.names=NULL;
+	collectData.values=NULL;
 
 	collectData.maxProperties=g_hash_table_size(inObjectData->properties);
 	if(collectData.maxProperties>0)
 	{
-		collectData.properties=g_new0(GParameter, collectData.maxProperties);
+		collectData.names=g_new0(gchar*, collectData.maxProperties);
+		collectData.values=g_new0(GValue, collectData.maxProperties);
 		g_hash_table_foreach(inObjectData->properties, _xfdashboard_theme_effects_create_object_collect_properties, &collectData);
 	}
 
@@ -460,14 +459,18 @@ static ClutterEffect* _xfdashboard_theme_effects_create_object(XfdashboardThemeE
 	 * of creation release allocated resources for properties as they are
 	 * not needed anymore.
 	 */
-	object=G_OBJECT(g_object_newv(inObjectData->classType, collectData.maxProperties, collectData.properties));
+	object=g_object_new_with_properties(inObjectData->classType,
+										collectData.maxProperties,
+										(const gchar **)collectData.names,
+										(const GValue *)collectData.values);
 
 	for(collectData.index=0; collectData.index<collectData.maxProperties; collectData.index++)
 	{
-		collectData.properties[collectData.index].name=NULL;
-		g_value_unset(&collectData.properties[collectData.index].value);
+		g_free(collectData.names[collectData.index]);
+		g_value_unset(&collectData.values[collectData.index]);
 	}
-	g_free(collectData.properties);
+	g_free(collectData.names);
+	g_free(collectData.values);
 
 	if(!object)
 	{
@@ -1136,8 +1139,7 @@ static gboolean _xfdashboard_theme_effects_parse_xml(XfdashboardThemeEffects *se
 
 	g_markup_parse_context_free(context);
 
-	g_slist_foreach(data->effects, (GFunc)_xfdashboard_theme_effects_object_data_unref, NULL);
-	g_slist_free(data->effects);
+	g_slist_free_full(data->effects, (GDestroyNotify)_xfdashboard_theme_effects_object_data_unref);
 	if(data->lastPropertyName) g_free(data->lastPropertyName);
 	g_free(data);
 
@@ -1174,9 +1176,6 @@ void xfdashboard_theme_effects_class_init(XfdashboardThemeEffectsClass *klass)
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_theme_effects_dispose;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardThemeEffectsPrivate));
 }
 
 /* Object initialization
@@ -1186,7 +1185,7 @@ void xfdashboard_theme_effects_init(XfdashboardThemeEffects *self)
 {
 	XfdashboardThemeEffectsPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_THEME_EFFECTS_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_theme_effects_get_instance_private(self);
 
 	/* Set default values */
 	priv->effects=NULL;

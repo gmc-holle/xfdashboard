@@ -38,14 +38,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardBackground,
-				xfdashboard_background,
-				XFDASHBOARD_TYPE_ACTOR)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_BACKGROUND_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_BACKGROUND, XfdashboardBackgroundPrivate))
-
 struct _XfdashboardBackgroundPrivate
 {
 	/* Properties related */
@@ -66,6 +58,10 @@ struct _XfdashboardBackgroundPrivate
 	XfdashboardOutlineEffect	*outline;
 	ClutterImage				*image;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardBackground,
+							xfdashboard_background,
+							XFDASHBOARD_TYPE_ACTOR)
 
 /* Properties */
 enum
@@ -413,9 +409,6 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 	clutterActorClass->paint_node=_xfdashboard_background_paint_node;
 	clutterActorClass->allocate=_xfdashboard_background_allocate;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardBackgroundPrivate));
-
 	/* Define properties */
 	XfdashboardBackgroundProperties[PROP_TYPE]=
 		g_param_spec_flags("background-type",
@@ -534,7 +527,7 @@ static void xfdashboard_background_init(XfdashboardBackground *self)
 {
 	XfdashboardBackgroundPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_BACKGROUND_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_background_get_instance_private(self);
 
 	/* This actor reacts on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);

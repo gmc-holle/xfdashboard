@@ -46,14 +46,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardLiveWindow,
-				xfdashboard_live_window,
-				XFDASHBOARD_TYPE_LIVE_WINDOW_SIMPLE)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_LIVE_WINDOW_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_LIVE_WINDOW, XfdashboardLiveWindowPrivate))
-
 struct _XfdashboardLiveWindowPrivate
 {
 	/* Properties related */
@@ -77,6 +69,10 @@ struct _XfdashboardLiveWindowPrivate
 	XfconfChannel						*xfconfChannel;
 	guint								xfconfAllowSubwindowsBindingID;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardLiveWindow,
+							xfdashboard_live_window,
+							XFDASHBOARD_TYPE_LIVE_WINDOW_SIMPLE)
 
 /* Properties */
 enum
@@ -1065,9 +1061,6 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 	gobjectClass->set_property=_xfdashboard_live_window_set_property;
 	gobjectClass->get_property=_xfdashboard_live_window_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardLiveWindowPrivate));
-
 	/* Define properties */
 	XfdashboardLiveWindowProperties[PROP_WINDOW_NUMBER]=
 		g_param_spec_uint("window-number",
@@ -1146,7 +1139,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	XfdashboardLiveWindowPrivate	*priv;
 	ClutterAction					*action;
 
-	priv=self->priv=XFDASHBOARD_LIVE_WINDOW_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_live_window_get_instance_private(self);
 
 	/* This actor reacts on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);

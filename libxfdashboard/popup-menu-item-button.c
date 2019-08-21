@@ -37,21 +37,18 @@
 /* Define this class in GObject system */
 static void _xfdashboard_popup_menu_item_button_popup_menu_item_iface_init(XfdashboardPopupMenuItemInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardPopupMenuItemButton,
-						xfdashboard_popup_menu_item_button,
-						XFDASHBOARD_TYPE_LABEL,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_POPUP_MENU_ITEM, _xfdashboard_popup_menu_item_button_popup_menu_item_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_BUTTON_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_POPUP_MENU_ITEM_BUTTON, XfdashboardPopupMenuItemButtonPrivate))
-
 struct _XfdashboardPopupMenuItemButtonPrivate
 {
 	/* Instance related */
 	ClutterAction				*clickAction;
 	gboolean					enabled;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardPopupMenuItemButton,
+						xfdashboard_popup_menu_item_button,
+						XFDASHBOARD_TYPE_LABEL,
+						G_ADD_PRIVATE(XfdashboardPopupMenuItemButton)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_POPUP_MENU_ITEM, _xfdashboard_popup_menu_item_button_popup_menu_item_iface_init))
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -121,8 +118,6 @@ void _xfdashboard_popup_menu_item_button_popup_menu_item_iface_init(XfdashboardP
  */
 static void xfdashboard_popup_menu_item_button_class_init(XfdashboardPopupMenuItemButtonClass *klass)
 {
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardPopupMenuItemButtonPrivate));
 }
 
 /* Object initialization
@@ -132,7 +127,7 @@ static void xfdashboard_popup_menu_item_button_init(XfdashboardPopupMenuItemButt
 {
 	XfdashboardPopupMenuItemButtonPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_BUTTON_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_popup_menu_item_button_get_instance_private(self);
 
 	/* Set up default values */
 	priv->enabled=TRUE;

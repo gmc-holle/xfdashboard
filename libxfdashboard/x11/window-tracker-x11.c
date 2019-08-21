@@ -60,15 +60,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_window_tracker_x11_window_tracker_iface_init(XfdashboardWindowTrackerInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowTrackerX11,
-						xfdashboard_window_tracker_x11,
-						G_TYPE_OBJECT,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_WINDOW_TRACKER, _xfdashboard_window_tracker_x11_window_tracker_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_WINDOW_TRACKER_X11_GET_PRIVATE(obj)                        \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_WINDOW_TRACKER_X11, XfdashboardWindowTrackerX11Private))
-
 struct _XfdashboardWindowTrackerX11Private
 {
 	/* Properties related */
@@ -96,6 +87,12 @@ struct _XfdashboardWindowTrackerX11Private
 	gint									screenWidth, screenHeight;
 #endif
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowTrackerX11,
+						xfdashboard_window_tracker_x11,
+						G_TYPE_OBJECT,
+						G_ADD_PRIVATE(XfdashboardWindowTrackerX11)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_WINDOW_TRACKER, _xfdashboard_window_tracker_x11_window_tracker_iface_init))
 
 /* Properties */
 enum
@@ -1810,9 +1807,6 @@ void xfdashboard_window_tracker_x11_class_init(XfdashboardWindowTrackerX11Class 
 	gobjectClass->set_property=_xfdashboard_window_tracker_x11_set_property;
 	gobjectClass->get_property=_xfdashboard_window_tracker_x11_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardWindowTrackerX11Private));
-
 	/* Define properties */
 	paramSpec=g_object_interface_find_property(trackerIface, "active-window");
 	XfdashboardWindowTrackerX11Properties[PROP_ACTIVE_WINDOW]=
@@ -1839,7 +1833,7 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 {
 	XfdashboardWindowTrackerX11Private		*priv;
 
-	priv=self->priv=XFDASHBOARD_WINDOW_TRACKER_X11_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_window_tracker_x11_get_instance_private(self);
 
 	XFDASHBOARD_DEBUG(self, WINDOWS, "Initializing X11 window tracker");
 

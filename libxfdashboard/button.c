@@ -36,19 +36,15 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardButton,
-				xfdashboard_button,
-				XFDASHBOARD_TYPE_LABEL)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_BUTTON_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_BUTTON, XfdashboardButtonPrivate))
-
 struct _XfdashboardButtonPrivate
 {
 	/* Instance related */
 	ClutterAction				*clickAction;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardButton,
+							xfdashboard_button,
+							XFDASHBOARD_TYPE_LABEL)
 
 /* Properties */
 enum
@@ -146,9 +142,6 @@ static void xfdashboard_button_class_init(XfdashboardButtonClass *klass)
 	gobjectClass->set_property=_xfdashboard_button_set_property;
 	gobjectClass->get_property=_xfdashboard_button_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardButtonPrivate));
-
 	/* Define properties */
 	XfdashboardButtonProperties[PROP_STYLE]=
 		g_param_spec_override("button-style",
@@ -179,7 +172,7 @@ static void xfdashboard_button_init(XfdashboardButton *self)
 {
 	XfdashboardButtonPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_BUTTON_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_button_get_instance_private(self);
 
 	/* This actor reacts on events */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);

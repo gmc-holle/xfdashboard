@@ -44,14 +44,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardLiveWorkspace,
-				xfdashboard_live_workspace,
-				XFDASHBOARD_TYPE_BACKGROUND)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_LIVE_WORKSPACE_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_LIVE_WORKSPACE, XfdashboardLiveWorkspacePrivate))
-
 struct _XfdashboardLiveWorkspacePrivate
 {
 	/* Properties related */
@@ -67,6 +59,10 @@ struct _XfdashboardLiveWorkspacePrivate
 	ClutterActor							*actorTitle;
 	ClutterAction							*clickAction;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardLiveWorkspace,
+							xfdashboard_live_workspace,
+							XFDASHBOARD_TYPE_BACKGROUND)
 
 /* Properties */
 enum
@@ -997,9 +993,6 @@ static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass 
 	gobjectClass->set_property=_xfdashboard_live_workspace_set_property;
 	gobjectClass->get_property=_xfdashboard_live_workspace_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardLiveWorkspacePrivate));
-
 	/* Define properties */
 	XfdashboardLiveWorkspaceProperties[PROP_WORKSPACE]=
 		g_param_spec_object("workspace",
@@ -1065,7 +1058,7 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 {
 	XfdashboardLiveWorkspacePrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_LIVE_WORKSPACE_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_live_workspace_get_instance_private(self);
 
 	/* Set default values */
 	priv->windowTracker=xfdashboard_window_tracker_get_default();

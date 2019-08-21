@@ -49,15 +49,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_workspace_selector_focusable_iface_init(XfdashboardFocusableInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardWorkspaceSelector,
-						xfdashboard_workspace_selector,
-						XFDASHBOARD_TYPE_BACKGROUND,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_workspace_selector_focusable_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_WORKSPACE_SELECTOR_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_WORKSPACE_SELECTOR, XfdashboardWorkspaceSelectorPrivate))
-
 struct _XfdashboardWorkspaceSelectorPrivate
 {
 	/* Properties related */
@@ -72,6 +63,12 @@ struct _XfdashboardWorkspaceSelectorPrivate
 	XfdashboardWindowTracker			*windowTracker;
 	XfdashboardWindowTrackerWorkspace	*activeWorkspace;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardWorkspaceSelector,
+						xfdashboard_workspace_selector,
+						XFDASHBOARD_TYPE_BACKGROUND,
+						G_ADD_PRIVATE(XfdashboardWorkspaceSelector)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_workspace_selector_focusable_iface_init))
 
 /* Properties */
 enum
@@ -1249,9 +1246,6 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 	clutterActorClass->get_preferred_height=_xfdashboard_workspace_selector_get_preferred_height;
 	clutterActorClass->allocate=_xfdashboard_workspace_selector_allocate;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardWorkspaceSelectorPrivate));
-
 	/* Define properties */
 	XfdashboardWorkspaceSelectorProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
@@ -1318,7 +1312,7 @@ static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *se
 	GList									*workspaces;
 	XfdashboardWindowTrackerWorkspace		*workspace;
 
-	priv=self->priv=XFDASHBOARD_WORKSPACE_SELECTOR_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_workspace_selector_get_instance_private(self);
 
 	/* Set up default values */
 	priv->windowTracker=xfdashboard_window_tracker_get_default();

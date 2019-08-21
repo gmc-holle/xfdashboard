@@ -62,21 +62,12 @@
 #include <libxfdashboard/debug.h>
 
 
-/* Define this class in GObject system */
-static void _xfdashboard_search_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
-
-G_DEFINE_TYPE_WITH_CODE(XfdashboardSearchView,
-						xfdashboard_search_view,
-						XFDASHBOARD_TYPE_VIEW,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_search_view_focusable_iface_init))
-
 /* Forward declarations */
 typedef struct _XfdashboardSearchViewProviderData	XfdashboardSearchViewProviderData;
 typedef struct _XfdashboardSearchViewSearchTerms	XfdashboardSearchViewSearchTerms;
 
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SEARCH_VIEW_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SEARCH_VIEW, XfdashboardSearchViewPrivate))
+/* Define this class in GObject system */
+static void _xfdashboard_search_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
 
 struct _XfdashboardSearchViewPrivate
 {
@@ -96,6 +87,12 @@ struct _XfdashboardSearchViewPrivate
 
 	XfdashboardFocusManager				*focusManager;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardSearchView,
+						xfdashboard_search_view,
+						XFDASHBOARD_TYPE_VIEW,
+						G_ADD_PRIVATE(XfdashboardSearchView)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_search_view_focusable_iface_init))
 
 /* Signals */
 enum
@@ -825,7 +822,7 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 
 	/* Perform a search at all registered search providers */
 	providers=g_list_copy(priv->providers);
-	g_list_foreach(providers, (GFunc)_xfdashboard_search_view_provider_data_ref, NULL);
+	g_list_foreach(providers, (GFunc)(void*)_xfdashboard_search_view_provider_data_ref, NULL);
 	for(iter=providers; iter; iter=g_list_next(iter))
 	{
 		XfdashboardSearchViewProviderData		*providerData;
@@ -1651,9 +1648,6 @@ static void xfdashboard_search_view_class_init(XfdashboardSearchViewClass *klass
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_search_view_dispose;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardSearchViewPrivate));
-
 	/* Define signals */
 	/**
 	 * XfdashboardSearchView::search-reset:
@@ -1701,7 +1695,7 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	GList							*providers, *providerEntry;
 	ClutterLayoutManager			*layout;
 
-	self->priv=priv=XFDASHBOARD_SEARCH_VIEW_GET_PRIVATE(self);
+	self->priv=priv=xfdashboard_search_view_get_instance_private(self);
 
 	/* Set up default values */
 	priv->searchManager=xfdashboard_search_manager_get_default();
@@ -1782,7 +1776,7 @@ void xfdashboard_search_view_reset_search(XfdashboardSearchView *self)
 	 * clearing mappings and release all other allocated resources used.
 	 */
 	providers=g_list_copy(priv->providers);
-	g_list_foreach(providers, (GFunc)_xfdashboard_search_view_provider_data_ref, NULL);
+	g_list_foreach(providers, (GFunc)(void*)_xfdashboard_search_view_provider_data_ref, NULL);
 	for(iter=providers; iter; iter=g_list_next(iter))
 	{
 		XfdashboardSearchViewProviderData		*providerData;

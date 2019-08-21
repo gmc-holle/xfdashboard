@@ -52,15 +52,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_windows_view_focusable_iface_init(XfdashboardFocusableInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowsView,
-						xfdashboard_windows_view,
-						XFDASHBOARD_TYPE_VIEW,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_windows_view_focusable_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_WINDOWS_VIEW_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_WINDOWS_VIEW, XfdashboardWindowsViewPrivate))
-
 struct _XfdashboardWindowsViewPrivate
 {
 	/* Properties related */
@@ -87,6 +78,12 @@ struct _XfdashboardWindowsViewPrivate
 	XfdashboardWindowTrackerMonitor		*currentMonitor;
 	guint								currentStageMonitorBindingID;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowsView,
+						xfdashboard_windows_view,
+						XFDASHBOARD_TYPE_VIEW,
+						G_ADD_PRIVATE(XfdashboardWindowsView)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_FOCUSABLE, _xfdashboard_windows_view_focusable_iface_init))
 
 /* Properties */
 enum
@@ -2010,9 +2007,6 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 	klass->windows_activate_window_nine=_xfdashboard_windows_view_windows_activate_window_nine;
 	klass->windows_activate_window_ten=_xfdashboard_windows_view_windows_activate_window_ten;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardWindowsViewPrivate));
-
 	/* Define properties */
 	XfdashboardWindowsViewProperties[PROP_WORKSPACE]=
 		g_param_spec_object("workspace",
@@ -2258,7 +2252,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	ClutterAction						*action;
 	XfdashboardWindowTrackerWorkspace	*activeWorkspace;
 
-	self->priv=priv=XFDASHBOARD_WINDOWS_VIEW_GET_PRIVATE(self);
+	self->priv=priv=xfdashboard_windows_view_get_instance_private(self);
 
 	/* Set up default values */
 	priv->windowTracker=xfdashboard_window_tracker_get_default();

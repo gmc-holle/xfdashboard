@@ -41,14 +41,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardEmblemEffect,
-				xfdashboard_emblem_effect,
-				CLUTTER_TYPE_EFFECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_EMBLEM_EFFECT_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_EMBLEM_EFFECT, XfdashboardEmblemEffectPrivate))
-
 struct _XfdashboardEmblemEffectPrivate
 {
 	/* Properties related */
@@ -66,6 +58,10 @@ struct _XfdashboardEmblemEffectPrivate
 
 	CoglPipeline				*pipeline;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardEmblemEffect,
+							xfdashboard_emblem_effect,
+							CLUTTER_TYPE_EFFECT)
 
 /* Properties */
 enum
@@ -469,9 +465,6 @@ static void xfdashboard_emblem_effect_class_init(XfdashboardEmblemEffectClass *k
 
 	effectClass->paint=_xfdashboard_emblem_effect_paint;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardEmblemEffectPrivate));
-
 	/* Define properties */
 	XfdashboardEmblemEffectProperties[PROP_ICON_NAME]=
 		g_param_spec_string("icon-name",
@@ -530,7 +523,7 @@ static void xfdashboard_emblem_effect_init(XfdashboardEmblemEffect *self)
 {
 	XfdashboardEmblemEffectPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_EMBLEM_EFFECT_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_emblem_effect_get_instance_private(self);
 
 	/* Set up default values */
 	priv->iconName=NULL;

@@ -37,14 +37,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardTooltipAction,
-				xfdashboard_tooltip_action,
-				CLUTTER_TYPE_ACTION);
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_TOOLTIP_ACTION_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_TOOLTIP_ACTION, XfdashboardTooltipActionPrivate))
-
 struct _XfdashboardTooltipActionPrivate
 {
 	/* Properties related */
@@ -64,6 +56,10 @@ struct _XfdashboardTooltipActionPrivate
 
 	gboolean		isVisible;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardTooltipAction,
+							xfdashboard_tooltip_action,
+							CLUTTER_TYPE_ACTION);
 
 /* Properties */
 enum
@@ -518,9 +514,6 @@ static void xfdashboard_tooltip_action_class_init(XfdashboardTooltipActionClass 
 	gobjectClass->set_property=_xfdashboard_tooltip_action_set_property;
 	gobjectClass->get_property=_xfdashboard_tooltip_action_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof (XfdashboardTooltipActionPrivate));
-
 	/* Define properties */
 	XfdashboardTooltipActionProperties[PROP_TOOLTIP_TEXT]=
 		g_param_spec_string("tooltip-text",
@@ -551,7 +544,7 @@ static void xfdashboard_tooltip_action_init(XfdashboardTooltipAction *self)
 {
 	XfdashboardTooltipActionPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_TOOLTIP_ACTION_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_tooltip_action_get_instance_private(self);
 
 	/* Set up default values */
 	priv->tooltipText=NULL;

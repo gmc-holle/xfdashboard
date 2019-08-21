@@ -31,18 +31,6 @@
 
 
 /* Define theses classes in GObject system */
-G_DEFINE_TYPE(XfdashboardModel,
-				xfdashboard_model,
-				G_TYPE_OBJECT);
-
-G_DEFINE_TYPE(XfdashboardModelIter,
-				xfdashboard_model_iter,
-				G_TYPE_OBJECT);
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_MODEL_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_MODEL, XfdashboardModelPrivate))
-
 struct _XfdashboardModelPrivate
 {
 	/* Instance related */
@@ -58,8 +46,9 @@ struct _XfdashboardModelPrivate
 	GDestroyNotify				filterUserDataDestroyCallback;
 };
 
-#define XFDASHBOARD_MODEL_ITER_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_MODEL_ITER, XfdashboardModelIterPrivate))
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardModel,
+							xfdashboard_model,
+							G_TYPE_OBJECT);
 
 struct _XfdashboardModelIterPrivate
 {
@@ -67,6 +56,10 @@ struct _XfdashboardModelIterPrivate
 	XfdashboardModel			*model;
 	GSequenceIter				*iter;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardModelIter,
+							xfdashboard_model_iter,
+							G_TYPE_OBJECT);
 
 /* Properties */
 enum
@@ -284,9 +277,6 @@ static void xfdashboard_model_class_init(XfdashboardModelClass *klass)
 	gobjectClass->set_property=_xfdashboard_model_set_property;
 	gobjectClass->get_property=_xfdashboard_model_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardModelPrivate));
-
 	/* Define properties */
 	XfdashboardModelProperties[PROP_ROWS]=
 		g_param_spec_int("rows",
@@ -385,7 +375,7 @@ static void xfdashboard_model_init(XfdashboardModel *self)
 {
 	XfdashboardModelPrivate			*priv;
 
-	priv=self->priv=XFDASHBOARD_MODEL_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_model_get_instance_private(self);
 
 	/* Set up default values */
 	priv->data=g_sequence_new(NULL);
@@ -429,9 +419,6 @@ static void xfdashboard_model_iter_class_init(XfdashboardModelIterClass *klass)
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_model_iter_dispose;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardModelIterPrivate));
 }
 
 /* Object initialization of type XfdashboardModelIter
@@ -441,7 +428,7 @@ static void xfdashboard_model_iter_init(XfdashboardModelIter *self)
 {
 	XfdashboardModelIterPrivate		*priv;
 
-	priv=self->priv=XFDASHBOARD_MODEL_ITER_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_model_iter_get_instance_private(self);
 
 	/* Set up default values */
 	priv->model=NULL;

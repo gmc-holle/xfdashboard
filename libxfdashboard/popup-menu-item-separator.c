@@ -48,15 +48,6 @@
 /* Define this class in GObject system */
 static void _xfdashboard_popup_menu_item_separator_popup_menu_item_iface_init(XfdashboardPopupMenuItemInterface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(XfdashboardPopupMenuItemSeparator,
-						xfdashboard_popup_menu_item_separator,
-						XFDASHBOARD_TYPE_BACKGROUND,
-						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_POPUP_MENU_ITEM, _xfdashboard_popup_menu_item_separator_popup_menu_item_iface_init))
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_BUTTON_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_POPUP_MENU_ITEM_SEPARATOR, XfdashboardPopupMenuItemSeparatorPrivate))
-
 struct _XfdashboardPopupMenuItemSeparatorPrivate
 {
 	/* Properties related */
@@ -71,6 +62,12 @@ struct _XfdashboardPopupMenuItemSeparatorPrivate
 	/* Instance related */
 	ClutterContent				*lineCanvas;
 };
+
+G_DEFINE_TYPE_WITH_CODE(XfdashboardPopupMenuItemSeparator,
+						xfdashboard_popup_menu_item_separator,
+						XFDASHBOARD_TYPE_BACKGROUND,
+						G_ADD_PRIVATE(XfdashboardPopupMenuItemSeparator)
+						G_IMPLEMENT_INTERFACE(XFDASHBOARD_TYPE_POPUP_MENU_ITEM, _xfdashboard_popup_menu_item_separator_popup_menu_item_iface_init))
 
 /* Properties */
 enum
@@ -365,9 +362,6 @@ static void xfdashboard_popup_menu_item_separator_class_init(XfdashboardPopupMen
 	clutterActorClass->paint_node=_xfdashboard_popup_menu_item_separator_paint_node;
 	clutterActorClass->allocate=_xfdashboard_popup_menu_item_separator_allocate;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardPopupMenuItemSeparatorPrivate));
-
 	/* Define properties */
 	/**
 	 * XfdashboardPopupMenuItemSeparator:minimum-height:
@@ -467,7 +461,7 @@ static void xfdashboard_popup_menu_item_separator_init(XfdashboardPopupMenuItemS
 {
 	XfdashboardPopupMenuItemSeparatorPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_BUTTON_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_popup_menu_item_separator_get_instance_private(self);
 
 	/* Set up default values */
 	priv->minHeight=4.0f;
