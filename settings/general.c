@@ -33,14 +33,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardSettingsGeneral,
-				xfdashboard_settings_general,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SETTINGS_GENERAL_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SETTINGS_GENERAL, XfdashboardSettingsGeneralPrivate))
-
 struct _XfdashboardSettingsGeneralPrivate
 {
 	/* Properties related */
@@ -60,6 +52,10 @@ struct _XfdashboardSettingsGeneralPrivate
 	GtkWidget		*widgetDelaySearchTimeout;
 	GtkWidget		*widgetAllowSubwindows;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSettingsGeneral,
+							xfdashboard_settings_general,
+							G_TYPE_OBJECT)
 
 /* Properties */
 enum
@@ -718,9 +714,6 @@ static void xfdashboard_settings_general_class_init(XfdashboardSettingsGeneralCl
 	gobjectClass->set_property=_xfdashboard_settings_general_set_property;
 	gobjectClass->get_property=_xfdashboard_settings_general_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardSettingsGeneralPrivate));
-
 	/* Define properties */
 	XfdashboardSettingsGeneralProperties[PROP_BUILDER]=
 		g_param_spec_object("builder",
@@ -739,7 +732,7 @@ static void xfdashboard_settings_general_init(XfdashboardSettingsGeneral *self)
 {
 	XfdashboardSettingsGeneralPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_SETTINGS_GENERAL_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_settings_general_get_instance_private(self);
 
 	/* Set default values */
 	priv->builder=NULL;

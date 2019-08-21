@@ -37,14 +37,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardSettings,
-				xfdashboard_settings,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SETTINGS_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SETTINGS, XfdashboardSettingsPrivate))
-
 struct _XfdashboardSettingsPrivate
 {
 	/* Instance related */
@@ -59,6 +51,9 @@ struct _XfdashboardSettingsPrivate
 	GtkWidget						*widgetCloseButton;
 };
 
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSettings,
+							xfdashboard_settings,
+							G_TYPE_OBJECT)
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_XFCONF_CHANNEL					"xfdashboard"
@@ -236,9 +231,6 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_settings_dispose;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardSettingsPrivate));
 }
 
 /* Object initialization
@@ -248,7 +240,7 @@ static void xfdashboard_settings_init(XfdashboardSettings *self)
 {
 	XfdashboardSettingsPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_SETTINGS_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_settings_get_instance_private(self);
 
 	/* Set default values */
 	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);

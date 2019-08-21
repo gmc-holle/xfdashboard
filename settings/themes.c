@@ -31,14 +31,6 @@
 #include <xfconf/xfconf.h>
 
 /* Define this class in GObject system */
-G_DEFINE_TYPE(XfdashboardSettingsThemes,
-				xfdashboard_settings_themes,
-				G_TYPE_OBJECT)
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_SETTINGS_THEMES_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_SETTINGS_THEMES, XfdashboardSettingsThemesPrivate))
-
 struct _XfdashboardSettingsThemesPrivate
 {
 	/* Properties related */
@@ -58,6 +50,10 @@ struct _XfdashboardSettingsThemesPrivate
 	GtkWidget		*widgetThemeDescriptionLabel;
 	GtkWidget		*widgetThemeDescription;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSettingsThemes,
+							xfdashboard_settings_themes,
+							G_TYPE_OBJECT)
 
 /* Properties */
 enum
@@ -380,7 +376,8 @@ static void _xfdashboard_settings_themes_theme_changed_by_xfconf(XfdashboardSett
 /* Sorting function for theme list's model */
 static gint _xfdashboard_settings_themes_sort_themes_list_model(GtkTreeModel *inModel,
 																GtkTreeIter *inLeft,
-																GtkTreeIter *inRight)
+																GtkTreeIter *inRight,
+																gpointer inUserData)
 {
 	gchar	*leftName;
 	gchar	*rightName;
@@ -904,9 +901,6 @@ static void xfdashboard_settings_themes_class_init(XfdashboardSettingsThemesClas
 	gobjectClass->set_property=_xfdashboard_settings_themes_set_property;
 	gobjectClass->get_property=_xfdashboard_settings_themes_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardSettingsThemesPrivate));
-
 	/* Define properties */
 	XfdashboardSettingsThemesProperties[PROP_BUILDER]=
 		g_param_spec_object("builder",
@@ -925,7 +919,7 @@ static void xfdashboard_settings_themes_init(XfdashboardSettingsThemes *self)
 {
 	XfdashboardSettingsThemesPrivate	*priv;
 
-	priv=self->priv=XFDASHBOARD_SETTINGS_THEMES_GET_PRIVATE(self);
+	priv=self->priv=xfdashboard_settings_themes_get_instance_private(self);
 
 	/* Set default values */
 	priv->builder=NULL;
