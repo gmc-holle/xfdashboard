@@ -272,25 +272,33 @@ static GarconMenu* _xfdashboard_applications_menu_model_find_similar_menu(Xfdash
 	foundMenu=NULL;
 	for(iter=inFillData->populatedMenus; iter && !foundMenu; iter=g_slist_next(iter))
 	{
-		GarconMenu				*menu;
+		GarconMenu				*iterMenu;
 
 		/* Get menu element from list */
-		menu=GARCON_MENU(iter->data);
+		iterMenu=GARCON_MENU(iter->data);
 
 		/* We can only process menus which have the same parent menu as the
 		 * requested menu and they need to be visible.
 		 */
-		if(garcon_menu_get_parent(menu) &&
-			garcon_menu_element_get_visible(GARCON_MENU_ELEMENT(menu)))
+		if(garcon_menu_get_parent(iterMenu) &&
+			garcon_menu_element_get_visible(GARCON_MENU_ELEMENT(iterMenu)))
 		{
 			gboolean			isSimilar;
+			GarconMenuDirectory	*iterMenuDirectory;
+			GarconMenuDirectory	*menuDirectory;
 
 			/* Check if both menus share the same directory. That will be the
 			 * case if iterator point to the menu which was given as function
 			 * parameter. So it's safe just to iterate through.
 			 */
-			isSimilar=garcon_menu_directory_equal(garcon_menu_get_directory(menu),
-													garcon_menu_get_directory(inMenu));
+			iterMenuDirectory=garcon_menu_get_directory(iterMenu);
+			menuDirectory=garcon_menu_get_directory(inMenu);
+
+			isSimilar=FALSE;
+			if(iterMenuDirectory && menuDirectory)
+			{
+				isSimilar=garcon_menu_directory_equal(iterMenuDirectory, menuDirectory);
+			}
 
 			/* If both menus do not share the same directory, check if they
 			 * match in name, description and icon.
@@ -309,7 +317,7 @@ static GarconMenu* _xfdashboard_applications_menu_model_find_similar_menu(Xfdash
 				if(isSimilar)
 				{
 					left=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(inMenu));
-					right=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(menu));
+					right=garcon_menu_element_get_name(GARCON_MENU_ELEMENT(iterMenu));
 					if(g_strcmp0(left, right)!=0) isSimilar=FALSE;
 				}
 
@@ -318,7 +326,7 @@ static GarconMenu* _xfdashboard_applications_menu_model_find_similar_menu(Xfdash
 				if(isSimilar)
 				{
 					left=garcon_menu_element_get_comment(GARCON_MENU_ELEMENT(inMenu));
-					right=garcon_menu_element_get_comment(GARCON_MENU_ELEMENT(menu));
+					right=garcon_menu_element_get_comment(GARCON_MENU_ELEMENT(iterMenu));
 					if(g_strcmp0(left, right)!=0) isSimilar=FALSE;
 				}
 
@@ -327,13 +335,13 @@ static GarconMenu* _xfdashboard_applications_menu_model_find_similar_menu(Xfdash
 				if(isSimilar)
 				{
 					left=garcon_menu_element_get_icon_name(GARCON_MENU_ELEMENT(inMenu));
-					right=garcon_menu_element_get_icon_name(GARCON_MENU_ELEMENT(menu));
+					right=garcon_menu_element_get_icon_name(GARCON_MENU_ELEMENT(iterMenu));
 					if(g_strcmp0(left, right)!=0) isSimilar=FALSE;
 				}
 			}
 
 			/* If we get and we found a similar menu set result to return */
-			if(isSimilar) foundMenu=menu;
+			if(isSimilar) foundMenu=iterMenu;
 		}
 	}
 
