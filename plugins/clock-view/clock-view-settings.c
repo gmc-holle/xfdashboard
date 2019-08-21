@@ -34,17 +34,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_DYNAMIC_TYPE(XfdashboardClockViewSettings,
-						xfdashboard_clock_view_settings,
-						G_TYPE_OBJECT)
-
-/* Define this class in this plugin */
-XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_clock_view_settings);
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_CLOCK_VIEW_SETTINGS_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_CLOCK_VIEW_SETTINGS, XfdashboardClockViewSettingsPrivate))
-
 struct _XfdashboardClockViewSettingsPrivate
 {
 	/* Properties related */
@@ -60,6 +49,15 @@ struct _XfdashboardClockViewSettingsPrivate
 	guint					xfconfSecondColorBindingID;
 	guint					xfconfBackgroundColorBindingID;
 };
+
+G_DEFINE_DYNAMIC_TYPE_EXTENDED(XfdashboardClockViewSettings,
+								xfdashboard_clock_view_settings,
+								G_TYPE_OBJECT,
+								0,
+								G_ADD_PRIVATE_DYNAMIC(XfdashboardClockViewSettings))
+
+/* Define this class in this plugin */
+XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_clock_view_settings);
 
 /* Properties */
 enum
@@ -224,9 +222,6 @@ void xfdashboard_clock_view_settings_class_init(XfdashboardClockViewSettingsClas
 	gobjectClass->set_property=_xfdashboard_clock_view_settings_set_property;
 	gobjectClass->get_property=_xfdashboard_clock_view_settings_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardClockViewSettingsPrivate));
-
 	/* Define properties */
 	XfdashboardClockViewSettingsProperties[PROP_HOUR_COLOR]=
 		clutter_param_spec_color("hour-color",
@@ -271,7 +266,7 @@ void xfdashboard_clock_view_settings_init(XfdashboardClockViewSettings *self)
 {
 	XfdashboardClockViewSettingsPrivate		*priv;
 
-	self->priv=priv=XFDASHBOARD_CLOCK_VIEW_SETTINGS_GET_PRIVATE(self);
+	self->priv=priv=xfdashboard_clock_view_settings_get_instance_private(self);
 
 	/* Set up default values */
 	priv->hourColor=clutter_color_copy(CLUTTER_COLOR_LightChameleon);

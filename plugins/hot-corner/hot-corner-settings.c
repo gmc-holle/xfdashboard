@@ -34,17 +34,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_DYNAMIC_TYPE(XfdashboardHotCornerSettings,
-						xfdashboard_hot_corner_settings,
-						G_TYPE_OBJECT)
-
-/* Define this class in this plugin */
-XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_hot_corner_settings);
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_HOT_CORNER_SETTINGS_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_HOT_CORNER_SETTINGS, XfdashboardHotCornerSettingsPrivate))
-
 struct _XfdashboardHotCornerSettingsPrivate
 {
 	/* Properties related */
@@ -58,6 +47,15 @@ struct _XfdashboardHotCornerSettingsPrivate
 	guint											xfconfActivationRadiusBindingID;
 	guint											xfconfActivationDurationBindingID;
 };
+
+G_DEFINE_DYNAMIC_TYPE_EXTENDED(XfdashboardHotCornerSettings,
+								xfdashboard_hot_corner_settings,
+								G_TYPE_OBJECT,
+								0,
+								G_ADD_PRIVATE_DYNAMIC(XfdashboardHotCornerSettings))
+
+/* Define this class in this plugin */
+XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_hot_corner_settings);
 
 /* Properties */
 enum
@@ -227,9 +225,6 @@ void xfdashboard_hot_corner_settings_class_init(XfdashboardHotCornerSettingsClas
 	gobjectClass->set_property=_xfdashboard_hot_corner_settings_set_property;
 	gobjectClass->get_property=_xfdashboard_hot_corner_settings_get_property;
 
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardHotCornerSettingsPrivate));
-
 	/* Define properties */
 	XfdashboardHotCornerSettingsProperties[PROP_ACTIVATION_CORNER]=
 		g_param_spec_enum("activation-corner",
@@ -270,7 +265,7 @@ void xfdashboard_hot_corner_settings_init(XfdashboardHotCornerSettings *self)
 {
 	XfdashboardHotCornerSettingsPrivate		*priv;
 
-	self->priv=priv=XFDASHBOARD_HOT_CORNER_SETTINGS_GET_PRIVATE(self);
+	self->priv=priv=xfdashboard_hot_corner_settings_get_instance_private(self);
 
 	/* Set up default values */
 	priv->activationCorner=DEFAULT_ACTIVATION_CORNER;

@@ -36,17 +36,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_DYNAMIC_TYPE(XfdashboardHotCorner,
-						xfdashboard_hot_corner,
-						G_TYPE_OBJECT)
-
-/* Define this class in this plugin */
-XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_hot_corner);
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_HOT_CORNER_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_HOT_CORNER, XfdashboardHotCornerPrivate))
-
 struct _XfdashboardHotCornerPrivate
 {
 	/* Instance related */
@@ -66,6 +55,14 @@ struct _XfdashboardHotCornerPrivate
 	XfdashboardHotCornerSettings			*settings;
 };
 
+G_DEFINE_DYNAMIC_TYPE_EXTENDED(XfdashboardHotCorner,
+								xfdashboard_hot_corner,
+								G_TYPE_OBJECT,
+								0,
+								G_ADD_PRIVATE_DYNAMIC(XfdashboardHotCorner))
+
+/* Define this class in this plugin */
+XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_hot_corner);
 
 /* IMPLEMENTATION: Enum XFDASHBOARD_TYPE_HOT_CORNER_ACTIVATION_CORNER */
 
@@ -338,9 +335,6 @@ void xfdashboard_hot_corner_class_init(XfdashboardHotCornerClass *klass)
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_hot_corner_dispose;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardHotCornerPrivate));
 }
 
 /* Class finalization */
@@ -357,7 +351,7 @@ void xfdashboard_hot_corner_init(XfdashboardHotCorner *self)
 	GdkScreen						*screen;
 	GdkDisplay						*display;
 
-	self->priv=priv=XFDASHBOARD_HOT_CORNER_GET_PRIVATE(self);
+	self->priv=priv=xfdashboard_hot_corner_get_instance_private(self);
 
 	/* Set up default values */
 	priv->application=xfdashboard_application_get_default();

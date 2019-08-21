@@ -36,17 +36,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_DYNAMIC_TYPE(XfdashboardClockView,
-						xfdashboard_clock_view,
-						XFDASHBOARD_TYPE_VIEW)
-
-/* Define this class in this plugin */
-XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_clock_view);
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_CLOCK_VIEW_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_CLOCK_VIEW, XfdashboardClockViewPrivate))
-
 struct _XfdashboardClockViewPrivate
 {
 	/* Instance related */
@@ -57,6 +46,14 @@ struct _XfdashboardClockViewPrivate
 	XfdashboardClockViewSettings	*settings;
 };
 
+G_DEFINE_DYNAMIC_TYPE_EXTENDED(XfdashboardClockView,
+								xfdashboard_clock_view,
+								XFDASHBOARD_TYPE_VIEW,
+								0,
+								G_ADD_PRIVATE_DYNAMIC(XfdashboardClockView))
+
+/* Define this class in this plugin */
+XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_clock_view);
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -258,7 +255,7 @@ static void _xfdashboard_clock_view_dispose(GObject *inObject)
  * Override functions in parent classes and define properties
  * and signals
  */
-void xfdashboard_clock_view_class_init(XfdashboardClockViewClass *klass)
+static void xfdashboard_clock_view_class_init(XfdashboardClockViewClass *klass)
 {
 	XfdashboardViewClass	*viewClass=XFDASHBOARD_VIEW_CLASS(klass);
 	ClutterActorClass		*actorClass=CLUTTER_ACTOR_CLASS(klass);
@@ -271,13 +268,10 @@ void xfdashboard_clock_view_class_init(XfdashboardClockViewClass *klass)
 
 	viewClass->activated=_xfdashboard_clock_view_activated;
 	viewClass->deactivating=_xfdashboard_clock_view_deactivating;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardClockViewPrivate));
 }
 
 /* Class finalization */
-void xfdashboard_clock_view_class_finalize(XfdashboardClockViewClass *klass)
+static void xfdashboard_clock_view_class_finalize(XfdashboardClockViewClass *klass)
 {
 }
 
@@ -288,7 +282,7 @@ void xfdashboard_clock_view_init(XfdashboardClockView *self)
 {
 	XfdashboardClockViewPrivate		*priv;
 
-	self->priv=priv=XFDASHBOARD_CLOCK_VIEW_GET_PRIVATE(self);
+	self->priv=priv=xfdashboard_clock_view_get_instance_private(self);
 
 	/* Set up default values */
 	priv->timeoutID=0;

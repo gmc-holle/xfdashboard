@@ -33,17 +33,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_DYNAMIC_TYPE(XfdashboardGnomeShellSearchProvider,
-						xfdashboard_gnome_shell_search_provider,
-						XFDASHBOARD_TYPE_SEARCH_PROVIDER)
-
-/* Define this class in this plugin */
-XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_gnome_shell_search_provider);
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_GET_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_GNOME_SHELL_SEARCH_PROVIDER, XfdashboardGnomeShellSearchProviderPrivate))
-
 struct _XfdashboardGnomeShellSearchProviderPrivate
 {
 	/* Instance related */
@@ -59,6 +48,15 @@ struct _XfdashboardGnomeShellSearchProviderPrivate
 	gchar			*providerName;
 	gchar			*providerIcon;
 };
+
+G_DEFINE_DYNAMIC_TYPE_EXTENDED(XfdashboardGnomeShellSearchProvider,
+								xfdashboard_gnome_shell_search_provider,
+								XFDASHBOARD_TYPE_SEARCH_PROVIDER,
+								0,
+								G_ADD_PRIVATE_DYNAMIC(XfdashboardGnomeShellSearchProvider))
+
+/* Define this class in this plugin */
+XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_gnome_shell_search_provider);
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_KEYFILE_GROUP		"Shell Search Provider"
@@ -1069,9 +1067,6 @@ void xfdashboard_gnome_shell_search_provider_class_init(XfdashboardGnomeShellSea
 	providerClass->create_result_actor=_xfdashboard_gnome_shell_search_provider_create_result_actor;
 	providerClass->activate_result=_xfdashboard_gnome_shell_search_provider_activate_result;
 	providerClass->launch_search=_xfdashboard_gnome_shell_search_provider_launch_search;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardGnomeShellSearchProviderPrivate));
 }
 
 /* Class finalization */
@@ -1086,7 +1081,7 @@ void xfdashboard_gnome_shell_search_provider_init(XfdashboardGnomeShellSearchPro
 {
 	XfdashboardGnomeShellSearchProviderPrivate		*priv;
 
-	self->priv=priv=XFDASHBOARD_GNOME_SHELL_SEARCH_PROVIDER_GET_PRIVATE(self);
+	self->priv=priv=xfdashboard_gnome_shell_search_provider_get_instance_private(self);
 
 	/* Set up default values */
 	priv->gnomeShellID=NULL;

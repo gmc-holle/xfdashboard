@@ -34,17 +34,6 @@
 
 
 /* Define this class in GObject system */
-G_DEFINE_DYNAMIC_TYPE(XfdashboardMiddleClickWindowClose,
-						xfdashboard_middle_click_window_close,
-						G_TYPE_OBJECT)
-
-/* Define this class in this plugin */
-XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_middle_click_window_close);
-
-/* Private structure - access only by public API if needed */
-#define XFDASHBOARD_MIDDLE_CLICK_WINDOW_CLOSE_GET_PRIVATE(obj)         \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), XFDASHBOARD_TYPE_MIDDLE_CLICK_WINDOW_CLOSE, XfdashboardMiddleClickWindowClosePrivate))
-
 struct _XfdashboardMiddleClickWindowClosePrivate
 {
 	/* Instance related */
@@ -55,6 +44,14 @@ struct _XfdashboardMiddleClickWindowClosePrivate
 	XfdashboardCssSelector					*liveWindowSelector;
 };
 
+G_DEFINE_DYNAMIC_TYPE_EXTENDED(XfdashboardMiddleClickWindowClose,
+								xfdashboard_middle_click_window_close,
+								G_TYPE_OBJECT,
+								0,
+								G_ADD_PRIVATE_DYNAMIC(XfdashboardMiddleClickWindowClose))
+
+/* Define this class in this plugin */
+XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_middle_click_window_close);
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_WINDOW_CLOSE_BUTTON							XFDASHBOARD_CLICK_ACTION_MIDDLE_BUTTON
@@ -251,9 +248,6 @@ void xfdashboard_middle_click_window_close_class_init(XfdashboardMiddleClickWind
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_middle_click_window_close_dispose;
-
-	/* Set up private structure */
-	g_type_class_add_private(klass, sizeof(XfdashboardMiddleClickWindowClosePrivate));
 }
 
 /* Class finalization */
@@ -268,7 +262,7 @@ void xfdashboard_middle_click_window_close_init(XfdashboardMiddleClickWindowClos
 {
 	XfdashboardMiddleClickWindowClosePrivate		*priv;
 
-	self->priv=priv=XFDASHBOARD_MIDDLE_CLICK_WINDOW_CLOSE_GET_PRIVATE(self);
+	self->priv=priv=xfdashboard_middle_click_window_close_get_instance_private(self);
 
 	/* Set up default values */
 	priv->stage=xfdashboard_application_get_stage(NULL);
