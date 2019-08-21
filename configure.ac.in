@@ -19,8 +19,8 @@ dnl *** Minimum package version needed ***
 dnl **************************************
 m4_define([wnck_minimum_version], [3.0])
 m4_define([clutter_minimum_version], [1.12.0])
-m4_define([glib_minimum_version], [2.32])
-m4_define([gio_minimum_version], [2.32])
+m4_define([glib_minimum_version], [2.38])
+m4_define([gio_minimum_version], [2.38])
 m4_define([garcon_minimum_version], [0.2.0])
 m4_define([xfconf_minimum_version], [4.13.0])
 m4_define([xfconf_legacy_minimum_version], [4.10.0])
