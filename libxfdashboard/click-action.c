@@ -348,10 +348,10 @@ static gboolean _xfdashboard_click_action_on_captured_event(XfdashboardClickActi
 	switch(clutter_event_type(inEvent))
 	{
 		case CLUTTER_TOUCH_END:
-			hasButton=FALSE;
-
 		case CLUTTER_BUTTON_RELEASE:
 			if(!priv->isHeld) return(CLUTTER_EVENT_STOP);
+
+			hasButton=(clutter_event_type(inEvent)==CLUTTER_TOUCH_END ? FALSE : TRUE);
 
 			if((hasButton && clutter_event_get_button(inEvent)!=priv->pressButton) ||
 				(hasButton && clutter_event_get_click_count(inEvent)!=1) ||
@@ -453,9 +453,9 @@ static gboolean _xfdashboard_click_action_on_event(XfdashboardClickAction *self,
 	switch(clutter_event_type(inEvent))
 	{
 		case CLUTTER_TOUCH_BEGIN:
-			hasButton=FALSE;
-
 		case CLUTTER_BUTTON_PRESS:
+			hasButton=(clutter_event_type(inEvent)==CLUTTER_TOUCH_BEGIN ? FALSE : TRUE);
+
 			/* We only handle single clicks if it is pointer device */
 			if(hasButton && clutter_event_get_click_count(inEvent)!=1)
 			{
