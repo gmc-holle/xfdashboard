@@ -34,6 +34,7 @@
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
+#include <libxfdashboard/animation.h>
 
 
 /* Define this class in GObject system */
@@ -55,6 +56,7 @@ struct _XfdashboardCollapseBoxPrivate
 
 	gboolean				expandedByPointer;
 	gboolean				expandedByFocus;
+	XfdashboardAnimation	*expandCollapseAnimation;
 };
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardCollapseBox,
@@ -237,6 +239,22 @@ static void _xfdashboard_collapse_box_on_focus_changed(XfdashboardCollapseBox *s
 			priv->expandedByFocus=TRUE;
 			xfdashboard_collapse_box_set_collapsed(self, FALSE);
 		}
+}
+
+/* Collapse or expand animation has stopped and is done */
+static void _xfdashboard_collapse_box_animation_done(XfdashboardAnimation *inAnimation, gpointer inUserData)
+{
+	XfdashboardCollapseBox			*self;
+	XfdashboardCollapseBoxPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_ANIMATION(inAnimation));
+	g_return_if_fail(XFDASHBOARD_IS_COLLAPSE_BOX(inUserData));
+
+	self=XFDASHBOARD_COLLAPSE_BOX(inUserData);
+	priv=self->priv;
+
+	/* Collapse or expand animation is done, so reset pointer to running animation */
+	priv->expandCollapseAnimation=NULL;
 }
 
 /* IMPLEMENTATION: Interface ClutterContainer */
@@ -629,6 +647,7 @@ static void xfdashboard_collapse_box_init(XfdashboardCollapseBox *self)
 	priv->focusChangedSignalID=0;
 	priv->expandedByPointer=FALSE;
 	priv->expandedByFocus=FALSE;
+	priv->expandCollapseAnimation=NULL;
 
 	/* Set up actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -666,6 +685,7 @@ gboolean xfdashboard_collapse_box_get_collapsed(XfdashboardCollapseBox *self)
 void xfdashboard_collapse_box_set_collapsed(XfdashboardCollapseBox *self, gboolean inCollapsed)
 {
 	XfdashboardCollapseBoxPrivate	*priv;
+	XfdashboardAnimation			*animation;
 
 	g_return_if_fail(XFDASHBOARD_IS_COLLAPSE_BOX(self));
 
@@ -674,6 +694,25 @@ void xfdashboard_collapse_box_set_collapsed(XfdashboardCollapseBox *self, gboole
 	/* Only set value if it changes */
 	if(inCollapsed!=priv->isCollapsed)
 	{
+		/* Create animation for new expand/collapse state before stopping
+		 * any possibly running animation for the old expand/collapse state,
+		 * so that the new animation will take over any property value in
+		 * the middle of currently running animation. If we stop the animation
+		 * beforehand then the new animation would take the initial value in
+		 * a state assuming that the current animation has completed.
+		 */
+		animation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), inCollapsed ? "collapse" : "expand");
+
+		/* Expand/collapse state changed, so stop any running animation */
+		if(priv->expandCollapseAnimation)
+		{
+			g_object_unref(priv->expandCollapseAnimation);
+			priv->expandCollapseAnimation=NULL;
+		}
+
+		/* Store new animation */
+		priv->expandCollapseAnimation=animation;
+
 		/* Set new value */
 		priv->isCollapsed=inCollapsed;
 		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
@@ -683,6 +722,9 @@ void xfdashboard_collapse_box_set_collapsed(XfdashboardCollapseBox *self, gboole
 
 		/* Emit signal */
 		g_signal_emit(self, XfdashboardCollapseBoxSignals[SIGNAL_COLLAPSED_CHANGED], 0, priv->isCollapsed);
+
+		/* Start animation */
+		xfdashboard_animation_run(priv->expandCollapseAnimation, _xfdashboard_collapse_box_animation_done, self);
 	}
 }
 

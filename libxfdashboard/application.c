@@ -645,6 +645,8 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 										{ "images", XFDASHBOARD_DEBUG_IMAGES },
 										{ "windows", XFDASHBOARD_DEBUG_WINDOWS },
 										{ "window-tracker", XFDASHBOARD_DEBUG_WINDOWS },
+										{ "animation", XFDASHBOARD_DEBUG_ANIMATION },
+										{ "animations", XFDASHBOARD_DEBUG_ANIMATION },
 									};
 
 		/* Parse debug flags */

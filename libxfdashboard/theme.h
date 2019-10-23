@@ -34,6 +34,7 @@
 #include <libxfdashboard/theme-css.h>
 #include <libxfdashboard/theme-layout.h>
 #include <libxfdashboard/theme-effects.h>
+#include <libxfdashboard/theme-animation.h>
 
 G_BEGIN_DECLS
 
@@ -96,6 +97,7 @@ gboolean xfdashboard_theme_load(XfdashboardTheme *self,
 XfdashboardThemeCSS* xfdashboard_theme_get_css(XfdashboardTheme *self);
 XfdashboardThemeLayout* xfdashboard_theme_get_layout(XfdashboardTheme *self);
 XfdashboardThemeEffects* xfdashboard_theme_get_effects(XfdashboardTheme *self);
+XfdashboardThemeAnimation* xfdashboard_theme_get_animation(XfdashboardTheme *self);
 
 G_END_DECLS
 

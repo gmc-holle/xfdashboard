@@ -28,6 +28,7 @@ libxfdashboard_la_built_sources = \
 libxfdashboard_la_headers = \
 	action-button.h \
 	actor.h \
+	animation.h \
 	application.h \
 	application-button.h \
 	application-database.h \
@@ -80,11 +81,13 @@ libxfdashboard_la_headers = \
 	stylable.h \
 	text-box.h \
 	theme.h \
+	theme-animation.h \
 	theme-css.h \
 	theme-effects.h \
 	theme-layout.h \
 	toggle-button.h \
 	tooltip-action.h \
+	transition-group.h \
 	types.h \
 	utils.h \
 	view.h \
@@ -105,6 +108,7 @@ libxfdashboard_la_SOURCES = \
 	$(xfdashboard_headers) \
 	action-button.c \
 	actor.c \
+	animation.c \
 	application.c \
 	application-button.c \
 	application-database.c \
@@ -156,11 +160,13 @@ libxfdashboard_la_SOURCES = \
 	stylable.c \
 	text-box.c \
 	theme.c \
+	theme-animation.c \
 	theme-css.c \
 	theme-effects.c \
 	theme-layout.c \
 	toggle-button.c \
 	tooltip-action.c \
+	transition-group.c \
 	utils.c \
 	view.c \
 	view-manager.c \

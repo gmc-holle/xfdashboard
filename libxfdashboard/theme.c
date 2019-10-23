@@ -52,6 +52,7 @@ struct _XfdashboardThemePrivate
 	XfdashboardThemeCSS			*styling;
 	XfdashboardThemeLayout		*layout;
 	XfdashboardThemeEffects		*effects;
+	XfdashboardThemeAnimation	*animation;
 
 	gchar						*userThemeStyleFile;
 	gchar						*userGlobalStyleFile;
@@ -367,7 +368,7 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 			/* Get path and file for effect resource */
 			resourceFile=g_build_filename(priv->themePath, *resource, NULL);
 
-			/* Try to load style resource */
+			/* Try to load effects resource */
 			XFDASHBOARD_DEBUG(self, THEME,
 								"Loading XML effects file %s for theme %s",
 								resourceFile,
@@ -397,8 +398,70 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 		g_strfreev(resources);
 	}
 
+	/* Create XML parser and load animation resources which are optional */
+	if(g_key_file_has_key(themeKeyFile,
+							XFDASHBOARD_THEME_GROUP,
+							"Animation",
+							NULL))
+	{
+		resources=g_key_file_get_string_list(themeKeyFile,
+												XFDASHBOARD_THEME_GROUP,
+												"Animation",
+												NULL,
+												&error);
+		if(!resources)
+		{
+			/* Set error */
+			g_propagate_error(outError, error);
+
+			/* Release allocated resources */
+			if(themeKeyFile) g_key_file_free(themeKeyFile);
+
+			/* Return FALSE to indicate error */
+			return(FALSE);
+		}
+
+		resource=resources;
+		while(*resource)
+		{
+			/* Get path and file for animation resource */
+			resourceFile=g_build_filename(priv->themePath, *resource, NULL);
+
+			/* Try to load animation resource */
+			XFDASHBOARD_DEBUG(self, THEME,
+								"Loading XML animation file %s for theme %s",
+								resourceFile,
+								priv->themeName);
+
+			if(!xfdashboard_theme_animation_add_file(priv->animation, resourceFile, &error))
+			{
+				/* Set error */
+				g_propagate_error(outError, error);
+
+				/* Release allocated resources */
+				if(resources) g_strfreev(resources);
+				if(resourceFile) g_free(resourceFile);
+				if(themeKeyFile) g_key_file_free(themeKeyFile);
+
+				/* Return FALSE to indicate error */
+				return(FALSE);
+			}
+
+			/* Release allocated resources */
+			if(resourceFile) g_free(resourceFile);
+
+			/* Continue with next entry */
+			resource++;
+			counter++;
+		}
+		g_strfreev(resources);
+	}
+
 	/* Release allocated resources */
 	if(themeKeyFile) g_key_file_free(themeKeyFile);
+
+	/* TODO: Just for testing animations  */
+	xfdashboard_theme_animation_add_file(priv->animation, "dummy", &error);
 
 	/* Return TRUE to indicate success */
 	return(TRUE);
@@ -549,6 +612,7 @@ static void _xfdashboard_theme_set_theme_name(XfdashboardTheme *self, const gcha
 	priv->styling=xfdashboard_theme_css_new(priv->themePath);
 	priv->layout=xfdashboard_theme_layout_new();
 	priv->effects=xfdashboard_theme_effects_new();
+	priv->animation=xfdashboard_theme_animation_new();
 
 	/* Check for user resource files */
 	resourceFile=g_build_filename(g_get_user_config_dir(), "xfdashboard", "themes", XFDASHBOARD_USER_GLOBAL_CSS_FILE, NULL);
@@ -649,6 +713,12 @@ static void _xfdashboard_theme_dispose(GObject *inObject)
 	{
 		g_object_unref(priv->effects);
 		priv->effects=NULL;
+	}
+
+	if(priv->animation)
+	{
+		g_object_unref(priv->animation);
+		priv->animation=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -772,6 +842,7 @@ void xfdashboard_theme_init(XfdashboardTheme *self)
 	priv->styling=NULL;
 	priv->layout=NULL;
 	priv->effects=NULL;
+	priv->animation=NULL;
 }
 
 /* IMPLEMENTATION: Errors */
@@ -890,4 +961,12 @@ XfdashboardThemeEffects* xfdashboard_theme_get_effects(XfdashboardTheme *self)
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);
 
 	return(self->priv->effects);
+}
+
+/* Get theme animation */
+XfdashboardThemeAnimation* xfdashboard_theme_get_animation(XfdashboardTheme *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);
+
+	return(self->priv->animation);
 }
