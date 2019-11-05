@@ -51,6 +51,7 @@ struct _XfdashboardSettingsGeneralPrivate
 	GtkWidget		*widgetScrollEventChangesWorkspace;
 	GtkWidget		*widgetDelaySearchTimeout;
 	GtkWidget		*widgetAllowSubwindows;
+	GtkWidget		*widgetEnableAnimations;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSettingsGeneral,
@@ -102,6 +103,9 @@ static GParamSpec* XfdashboardSettingsGeneralProperties[PROP_LAST]={ 0, };
 
 #define ALLOW_SUBWINDOWS_XFCONF_PROP						"/allow-subwindows"
 #define DEFAULT_ALLOW_SUBWINDOWS							TRUE
+
+#define ENABLE_ANIMATIONS_XFCONF_PROP						"/enable-animations"
+#define DEFAULT_ENABLE_ANIMATIONS							TRUE
 
 
 typedef struct _XfdashboardSettingsGeneralNameValuePair		XfdashboardSettingsGeneralNameValuePair;
@@ -625,6 +629,14 @@ static void _xfdashboard_settings_general_set_builder(XfdashboardSettingsGeneral
 							ALLOW_SUBWINDOWS_XFCONF_PROP,
 							G_TYPE_BOOLEAN,
 							priv->widgetAllowSubwindows,
+							"active");
+
+	priv->widgetEnableAnimations=GTK_WIDGET(gtk_builder_get_object(priv->builder, "enable-animations"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(priv->widgetEnableAnimations), DEFAULT_ENABLE_ANIMATIONS);
+	xfconf_g_property_bind(priv->xfconfChannel,
+							ENABLE_ANIMATIONS_XFCONF_PROP,
+							G_TYPE_BOOLEAN,
+							priv->widgetEnableAnimations,
 							"active");
 }
 
