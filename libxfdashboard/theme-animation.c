@@ -34,6 +34,7 @@
 
 #include <libxfdashboard/transition-group.h>
 #include <libxfdashboard/stylable.h>
+#include <libxfdashboard/application.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
@@ -53,6 +54,9 @@ G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardThemeAnimation,
 
 
 /* IMPLEMENTATION: Private variables and methods */
+#define ENABLE_ANIMATIONS_XFCONF_PROP		"/enable-animations"
+#define DEFAULT_ENABLE_ANIMATIONS			TRUE
+
 enum
 {
 	TAG_DOCUMENT,
@@ -1690,6 +1694,7 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 	XfdashboardAnimationClass								*animationClass;
 	GSList													*iterTargets;
 	gint													counterTargets;
+	gboolean												animationEnabled;
 #ifdef DEBUG
 	gboolean												doDebug=TRUE;
 #endif
@@ -1709,6 +1714,20 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 					G_OBJECT_TYPE_NAME(inSender),
 					inSignal);
 		return(NULL);
+	}
+
+	/* Check if user wants animation at all. If user does not want any animation,
+	 * return the empty one.
+	 */
+	animationEnabled=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
+												ENABLE_ANIMATIONS_XFCONF_PROP,
+												DEFAULT_ENABLE_ANIMATIONS);
+	if(!animationEnabled)
+	{
+		XFDASHBOARD_DEBUG(self, ANIMATION, "User disabled animations");
+
+		/* Return NULL as user does not want any animation */
+		return(animation);
 	}
 
 	/* Get best matching animation specification for sender and signal.
