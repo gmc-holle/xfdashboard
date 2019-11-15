@@ -30,6 +30,7 @@
 #include <glib/gi18n-lib.h>
 #include <glib.h>
 #include <gio/gio.h>
+#include <errno.h>
 
 #include <libxfdashboard/transition-group.h>
 #include <libxfdashboard/stylable.h>
@@ -52,6 +53,16 @@ G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardThemeAnimation,
 
 
 /* IMPLEMENTATION: Private variables and methods */
+enum
+{
+	TAG_DOCUMENT,
+	TAG_ANIMATIONS,
+	TAG_TRIGGER,
+	TAG_TIMELINE,
+	TAG_APPLY,
+	TAG_PROPERTY
+};
+
 enum
 {
 	XFDASHBOARD_THEME_ANIMATION_APPLY_TO_ORIGIN_SENDER=0,
@@ -86,6 +97,24 @@ struct _XfdashboardThemeAnimationTargetsProperty
 	GValue					from;
 	GValue					to;
 };
+
+typedef struct _XfdashboardThemeAnimationParserData			XfdashboardThemeAnimationParserData;
+struct _XfdashboardThemeAnimationParserData
+{
+	XfdashboardThemeAnimation			*self;
+
+	GSList								*specs;
+
+	XfdashboardThemeAnimationSpec		*currentSpec;
+	ClutterTimeline						*currentTimeline;
+	XfdashboardThemeAnimationTargets	*currentTargets;
+
+	gint								lastLine;
+	gint								lastPosition;
+	gint								currentLine;
+	gint								currentPostition;
+};
+
 
 /* Create, destroy, ref and unref animation targets data */
 static XfdashboardThemeAnimationTargetsProperty* _xfdashboard_theme_animation_targets_property_new(const gchar *inPropertyName,
@@ -430,6 +459,1128 @@ static GSList* _xfdashboard_theme_animation_find_actors_for_animation_targets(Xf
 	return(actors);
 }
 
+/* Callback to add each successfully parsed animation specifications to list of
+ * known animations of this theme.
+ */
+static void _xfdashboard_theme_animation_ref_and_add_to_theme(gpointer inData, gpointer inUserData)
+{
+	XfdashboardThemeAnimation				*self;
+	XfdashboardThemeAnimationPrivate		*priv;
+	XfdashboardThemeAnimationSpec			*spec;
+
+	g_return_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(inUserData));
+	g_return_if_fail(inData);
+
+	self=XFDASHBOARD_THEME_ANIMATION(inUserData);
+	priv=self->priv;
+	spec=(XfdashboardThemeAnimationSpec*)inData;
+
+	/* Increase reference of specified animation specification and add to list
+	 * of known ones.
+	 */
+	priv->specs=g_slist_prepend(priv->specs, _xfdashboard_theme_animation_spec_ref(spec));
+}
+
+/* Check if an animation specification with requested ID exists */
+static gboolean _xfdashboard_theme_animation_has_id(XfdashboardThemeAnimation *self,
+													XfdashboardThemeAnimationParserData *inParserData,
+													const gchar *inID)
+{
+	XfdashboardThemeAnimationPrivate		*priv;
+	GSList									*ids;
+	gboolean								hasID;
+	XfdashboardThemeAnimationSpec			*spec;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), TRUE);
+
+	priv=self->priv;
+	hasID=FALSE;
+
+	/* Check that ID to lookup is specified */
+	g_assert(inID && *inID);
+
+	/* Lookup ID first in currently parsed file if specified */
+	if(inParserData)
+	{
+		for(ids=inParserData->specs; !hasID && ids; ids=g_slist_next(ids))
+		{
+			spec=(XfdashboardThemeAnimationSpec*)ids->data;
+			if(spec && g_strcmp0(spec->id, inID)==0) hasID=TRUE;
+		}
+	}
+
+	/* If ID was not found in currently parsed effects xml file (if specified)
+	 * continue search in already parsed and known effects.
+	 */
+	if(!hasID)
+	{
+		for(ids=priv->specs; !hasID && ids; ids=g_slist_next(ids))
+		{
+			spec=(XfdashboardThemeAnimationSpec*)ids->data;
+			if(spec && g_strcmp0(spec->id, inID)==0) hasID=TRUE;
+		}
+	}
+
+	/* Return lookup result */
+	return(hasID);
+}
+
+/* Convert string to integer and throw error if conversion failed */
+static gboolean _xfdashboard_theme_animation_string_to_gint(const gchar *inNumberString, gint *outNumber, GError **outError)
+{
+	gint64			convertedNumber;
+	gchar			*outNumberStringEnd;
+
+	g_return_val_if_fail(inNumberString && *inNumberString, FALSE);
+	g_return_val_if_fail(outNumber, FALSE);
+	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
+
+	/* Try to convert string to number */
+	convertedNumber=g_ascii_strtoll(inNumberString, &outNumberStringEnd, 10);
+
+	/* Check if invalid base was specified */
+	if(errno==EINVAL)
+	{
+		/* Set error */
+		g_set_error(outError,
+					XFDASHBOARD_THEME_ANIMATION_ERROR,
+					XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
+					_("Invalid base for conversion"));
+		return(FALSE);
+	}
+
+	/* Check if integer is out of range */
+	if(errno==ERANGE)
+	{
+		/* Set error */
+		g_set_error(outError,
+					XFDASHBOARD_THEME_ANIMATION_ERROR,
+					XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
+					_("Integer out of range"));
+		return(FALSE);
+	}
+
+	/* If converted integer resulted in zero check if end pointer
+	 * has moved and does not match start pointer and points to a
+	 * NULL byte (as NULL-terminated strings must be provided).
+	 */
+	if(convertedNumber==0 &&
+		(outNumberStringEnd==inNumberString || *outNumberStringEnd!=0))
+	{
+		/* Set error */
+		g_set_error(outError,
+					XFDASHBOARD_THEME_ANIMATION_ERROR,
+					XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
+					_("Cannot convert string '%s' to integer"),
+					inNumberString);
+		return(FALSE);
+	}
+
+	/* Set converted number - the integer */
+	*outNumber=((gint)convertedNumber);
+
+	/* Return TRUE for successful conversion */
+	return(TRUE);
+}
+
+/* Helper function to set up GError object in this parser */
+static void _xfdashboard_theme_animation_parse_set_error(XfdashboardThemeAnimationParserData *inParserData,
+															GMarkupParseContext *inContext,
+															GError **outError,
+															XfdashboardThemeAnimationErrorEnum inCode,
+															const gchar *inFormat,
+															...)
+{
+	GError		*tempError;
+	gchar		*message;
+	va_list		args;
+
+	/* Get error message */
+	va_start(args, inFormat);
+	message=g_strdup_vprintf(inFormat, args);
+	va_end(args);
+
+	/* Create error object */
+	tempError=g_error_new_literal(XFDASHBOARD_THEME_ANIMATION_ERROR, inCode, message);
+	if(inParserData)
+	{
+		g_prefix_error(&tempError,
+						_("Error on line %d char %d: "),
+						inParserData->lastLine,
+						inParserData->lastPosition);
+	}
+
+	/* Set error */
+	g_propagate_error(outError, tempError);
+
+	/* Release allocated resources */
+	g_free(message);
+}
+
+/* General callbacks which can be used for any tag */
+static void _xfdashboard_theme_animation_parse_general_no_text_nodes(GMarkupParseContext *inContext,
+																		const gchar *inText,
+																		gsize inTextLength,
+																		gpointer inUserData,
+																		GError **outError)
+{
+	XfdashboardThemeAnimationParserData			*data=(XfdashboardThemeAnimationParserData*)inUserData;
+	gchar										*realText;
+
+	/* Check if text contains only whitespace. If we find any non-whitespace
+	 * in text then set error.
+	 */
+	realText=g_strstrip(g_strdup(inText));
+	if(*realText)
+	{
+		const GSList	*parents;
+
+		parents=g_markup_parse_context_get_element_stack(inContext);
+		if(parents) parents=g_slist_next(parents);
+
+		_xfdashboard_theme_animation_parse_set_error(data,
+														inContext,
+														outError,
+														XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+														_("Unexpected text node '%s' at tag <%s>"),
+														realText,
+														parents ? (gchar*)parents->data : "document");
+	}
+	g_free(realText);
+}
+
+/* Determine tag name and ID */
+static gint _xfdashboard_theme_animation_get_tag_by_name(const gchar *inTag)
+{
+	g_return_val_if_fail(inTag && *inTag, -1);
+
+	/* Compare string and return type ID */
+	if(g_strcmp0(inTag, "animations")==0) return(TAG_ANIMATIONS);
+	if(g_strcmp0(inTag, "trigger")==0) return(TAG_TRIGGER);
+	if(g_strcmp0(inTag, "timeline")==0) return(TAG_TIMELINE);
+	if(g_strcmp0(inTag, "apply")==0) return(TAG_APPLY);
+	if(g_strcmp0(inTag, "property")==0) return(TAG_PROPERTY);
+
+	/* If we get here we do not know tag name and return invalid ID */
+	return(-1);
+}
+
+static const gchar* _xfdashboard_theme_animation_get_tag_by_id(guint inTagType)
+{
+	/* Compare ID and return string */
+	switch(inTagType)
+	{
+		case TAG_DOCUMENT:
+			return("document");
+
+		case TAG_ANIMATIONS:
+			return("animations");
+
+		case TAG_TRIGGER:
+			return("trigger");
+
+		case TAG_TIMELINE:
+			return("timeline");
+
+		case TAG_APPLY:
+			return("apply");
+
+		case TAG_PROPERTY:
+			return("property");
+
+		default:
+			break;
+	}
+
+	/* If we get here we do not know tag name and return NULL */
+	return(NULL);
+}
+
+/* Parser callbacks for <property> node */
+static void _xfdashboard_theme_animation_parse_property_start(GMarkupParseContext *inContext,
+																const gchar *inElementName,
+																const gchar **inAttributeNames,
+																const gchar **inAttributeValues,
+																gpointer inUserData,
+																GError **outError)
+{
+	XfdashboardThemeAnimationParserData			*data=(XfdashboardThemeAnimationParserData*)inUserData;
+	gint										currentTag=TAG_PROPERTY;
+	gint										nextTag;
+
+	/* Update last position for more accurate line and position in error messages */
+	data->lastLine=data->currentLine;
+	data->lastPosition=data->currentPostition;
+	g_markup_parse_context_get_position(inContext, &data->currentLine, &data->currentPostition);
+
+	/* Get tag of next element */
+	nextTag=_xfdashboard_theme_animation_get_tag_by_name(inElementName);
+	if(nextTag==-1)
+	{
+		_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Unknown tag <%s>"),
+													inElementName);
+		return;
+	}
+
+	/* If we get here the given element name cannot follow this tag */
+	_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Tag <%s> cannot contain tag <%s>"),
+													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
+													inElementName);
+}
+
+/* Parser callbacks for <apply> node */
+static void _xfdashboard_theme_animation_parse_apply_start(GMarkupParseContext *inContext,
+																const gchar *inElementName,
+																const gchar **inAttributeNames,
+																const gchar **inAttributeValues,
+																gpointer inUserData,
+																GError **outError)
+{
+	XfdashboardThemeAnimationParserData			*data=(XfdashboardThemeAnimationParserData*)inUserData;
+	gint										currentTag=TAG_APPLY;
+	gint										nextTag;
+	GError										*error=NULL;
+
+	/* Update last position for more accurate line and position in error messages */
+	data->lastLine=data->currentLine;
+	data->lastPosition=data->currentPostition;
+	g_markup_parse_context_get_position(inContext, &data->currentLine, &data->currentPostition);
+
+	/* Get tag of next element */
+	nextTag=_xfdashboard_theme_animation_get_tag_by_name(inElementName);
+	if(nextTag==-1)
+	{
+		_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Unknown tag <%s>"),
+													inElementName);
+		return;
+	}
+
+	/* Check if element name is <property> and follows expected parent tags:
+	 * <apply>
+	 */
+	if(nextTag==TAG_PROPERTY)
+	{
+		static GMarkupParser						propertyParser=
+													{
+														_xfdashboard_theme_animation_parse_property_start,
+														NULL,
+														_xfdashboard_theme_animation_parse_general_no_text_nodes,
+														NULL,
+														NULL,
+													};
+
+		const gchar									*propertyName=NULL;
+		const gchar									*propertyFrom=NULL;
+		const gchar									*propertyTo=NULL;
+		XfdashboardThemeAnimationTargetsProperty	*property=NULL;
+
+		g_assert(data->currentTargets!=NULL);
+
+		/* Get tag's attributes */
+		if(!g_markup_collect_attributes(inElementName,
+											inAttributeNames,
+											inAttributeValues,
+											&error,
+											G_MARKUP_COLLECT_STRING,
+											"name",
+											&propertyName,
+											G_MARKUP_COLLECT_STRING | G_MARKUP_COLLECT_OPTIONAL,
+											"from",
+											&propertyFrom,
+											G_MARKUP_COLLECT_STRING | G_MARKUP_COLLECT_OPTIONAL,
+											"to",
+											&propertyTo,
+											G_MARKUP_COLLECT_INVALID))
+		{
+			g_propagate_error(outError, error);
+			return;
+		}
+
+		/* Check tag's attributes */
+		if(strlen(propertyName)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Empty 'name' at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		if(propertyFrom && strlen(propertyFrom)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Empty 'from' at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		if(propertyTo && strlen(propertyTo)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Empty 'to' at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		/* Create new animation property and add to current targets */
+		property=_xfdashboard_theme_animation_targets_property_new(propertyName, propertyFrom, propertyTo);
+		_xfdashboard_theme_animation_targets_add_property(data->currentTargets, property);
+		_xfdashboard_theme_animation_targets_property_unref(property);
+
+		/* Set up context for tag <apply> */
+		g_markup_parse_context_push(inContext, &propertyParser, inUserData);
+		return;
+	}
+
+	/* If we get here the given element name cannot follow this tag */
+	_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Tag <%s> cannot contain tag <%s>"),
+													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
+													inElementName);
+}
+
+static void _xfdashboard_theme_animation_parse_apply_end(GMarkupParseContext *inContext,
+															const gchar *inElementName,
+															gpointer inUserData,
+															GError **outError)
+{
+	/* Restore previous parser context */
+	g_markup_parse_context_pop(inContext);
+}
+
+/* Parser callbacks for <timeline> node */
+static void _xfdashboard_theme_animation_parse_timeline_start(GMarkupParseContext *inContext,
+																const gchar *inElementName,
+																const gchar **inAttributeNames,
+																const gchar **inAttributeValues,
+																gpointer inUserData,
+																GError **outError)
+{
+	XfdashboardThemeAnimationParserData			*data=(XfdashboardThemeAnimationParserData*)inUserData;
+	gint										currentTag=TAG_TIMELINE;
+	gint										nextTag;
+	GError										*error=NULL;
+
+	/* Update last position for more accurate line and position in error messages */
+	data->lastLine=data->currentLine;
+	data->lastPosition=data->currentPostition;
+	g_markup_parse_context_get_position(inContext, &data->currentLine, &data->currentPostition);
+
+	/* Get tag of next element */
+	nextTag=_xfdashboard_theme_animation_get_tag_by_name(inElementName);
+	if(nextTag==-1)
+	{
+		_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Unknown tag <%s>"),
+													inElementName);
+		return;
+	}
+
+	/* Check if element name is <apply> and follows expected parent tags:
+	 * <timeline>
+	 */
+	if(nextTag==TAG_APPLY)
+	{
+		static GMarkupParser					propertyParser=
+												{
+													_xfdashboard_theme_animation_parse_apply_start,
+													_xfdashboard_theme_animation_parse_apply_end,
+													_xfdashboard_theme_animation_parse_general_no_text_nodes,
+													NULL,
+													NULL,
+												};
+
+		const gchar								*applyToText=NULL;
+		XfdashboardCssSelector					*applyTo=NULL;
+		const gchar								*applyOriginText=NULL;
+		gint									applyOrigin;
+
+		g_assert(data->currentTargets==NULL);
+
+		/* Get tag's attributes */
+		if(!g_markup_collect_attributes(inElementName,
+											inAttributeNames,
+											inAttributeValues,
+											&error,
+											G_MARKUP_COLLECT_STRING | G_MARKUP_COLLECT_OPTIONAL,
+											"to",
+											&applyToText,
+											G_MARKUP_COLLECT_STRING | G_MARKUP_COLLECT_OPTIONAL,
+											"origin",
+											&applyOriginText,
+											G_MARKUP_COLLECT_INVALID))
+		{
+			g_propagate_error(outError, error);
+			return;
+		}
+
+		/* Check tag's attributes */
+		if(applyToText && strlen(applyToText)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Empty 'to' at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		if(applyOriginText && strlen(applyOriginText)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Empty 'origin' at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		/* Convert tag's attributes' value to usable values */
+		applyOrigin=XFDASHBOARD_THEME_ANIMATION_APPLY_TO_ORIGIN_SENDER;
+		if(applyOriginText)
+		{
+			if(g_strcmp0(applyOriginText, "sender")==0) applyOrigin=XFDASHBOARD_THEME_ANIMATION_APPLY_TO_ORIGIN_SENDER;
+				else if(g_strcmp0(applyOriginText, "stage")==0) applyOrigin=XFDASHBOARD_THEME_ANIMATION_APPLY_TO_ORIGIN_STAGE;
+				else
+				{
+					_xfdashboard_theme_animation_parse_set_error(data,
+																	inContext,
+																	outError,
+																	XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+																	_("Invalid value '%s' for 'origin' at tag '%s'"),
+																	applyOriginText,
+																	inElementName);
+					return;
+				}
+		}
+
+		/* Create new animation timeline with timeline data */
+		applyTo=NULL;
+		if(applyToText)
+		{
+			applyTo=xfdashboard_css_selector_new_from_string(applyToText);
+		}
+
+		data->currentTargets=_xfdashboard_theme_animation_targets_new(applyTo, applyOrigin, data->currentTimeline);
+
+		if(applyTo) g_object_unref(applyTo);
+
+		/* Set up context for tag <apply> */
+		g_markup_parse_context_push(inContext, &propertyParser, inUserData);
+		return;
+	}
+
+	/* If we get here the given element name cannot follow this tag */
+	_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Tag <%s> cannot contain tag <%s>"),
+													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
+													inElementName);
+}
+
+static void _xfdashboard_theme_animation_parse_timeline_end(GMarkupParseContext *inContext,
+															const gchar *inElementName,
+															gpointer inUserData,
+															GError **outError)
+{
+	XfdashboardThemeAnimationParserData			*data=(XfdashboardThemeAnimationParserData*)inUserData;
+
+	g_assert(data->currentSpec);
+	g_assert(data->currentTargets);
+
+	/* Add targets to animation specification */
+	_xfdashboard_theme_animation_spec_add_targets(data->currentSpec, data->currentTargets);
+	_xfdashboard_theme_animation_targets_unref(data->currentTargets);
+	data->currentTargets=NULL;
+
+	/* Restore previous parser context */
+	g_markup_parse_context_pop(inContext);
+}
+
+/* Parser callbacks for <trigger> node */
+static void _xfdashboard_theme_animation_parse_trigger_start(GMarkupParseContext *inContext,
+																const gchar *inElementName,
+																const gchar **inAttributeNames,
+																const gchar **inAttributeValues,
+																gpointer inUserData,
+																GError **outError)
+{
+	XfdashboardThemeAnimationParserData			*data=(XfdashboardThemeAnimationParserData*)inUserData;
+	gint										currentTag=TAG_TRIGGER;
+	gint										nextTag;
+	GError										*error=NULL;
+
+	/* Update last position for more accurate line and position in error messages */
+	data->lastLine=data->currentLine;
+	data->lastPosition=data->currentPostition;
+	g_markup_parse_context_get_position(inContext, &data->currentLine, &data->currentPostition);
+
+	/* Get tag of next element */
+	nextTag=_xfdashboard_theme_animation_get_tag_by_name(inElementName);
+	if(nextTag==-1)
+	{
+		_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Unknown tag <%s>"),
+													inElementName);
+		return;
+	}
+
+	/* Check if element name is <timeline> and follows expected parent tags:
+	 * <trigger>
+	 */
+	if(nextTag==TAG_TIMELINE)
+	{
+		static GMarkupParser					propertyParser=
+												{
+													_xfdashboard_theme_animation_parse_timeline_start,
+													_xfdashboard_theme_animation_parse_timeline_end,
+													_xfdashboard_theme_animation_parse_general_no_text_nodes,
+													NULL,
+													NULL,
+												};
+
+		const gchar								*timelineDelayText=NULL;
+		const gchar								*timelineDurationText=NULL;
+		const gchar								*timelineModeText=NULL;
+		const gchar								*timelineRepeatText=NULL;
+		gint									timelineDelay;
+		gint									timelineDuration;
+		gint									timelineMode;
+		gint									timelineRepeat;
+
+		g_assert(data->currentTimeline==NULL);
+
+		/* Get tag's attributes */
+		if(!g_markup_collect_attributes(inElementName,
+											inAttributeNames,
+											inAttributeValues,
+											&error,
+											G_MARKUP_COLLECT_STRING,
+											"delay",
+											&timelineDelayText,
+											G_MARKUP_COLLECT_STRING,
+											"duration",
+											&timelineDurationText,
+											G_MARKUP_COLLECT_STRING,
+											"mode",
+											&timelineModeText,
+											G_MARKUP_COLLECT_STRING | G_MARKUP_COLLECT_OPTIONAL,
+											"repeat",
+											&timelineRepeatText,
+											G_MARKUP_COLLECT_INVALID))
+		{
+			g_propagate_error(outError, error);
+			return;
+		}
+
+		/* Check tag's attributes */
+		if(!timelineDelayText || strlen(timelineDelayText)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Missing or empty delay at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		if(!timelineDurationText || strlen(timelineDurationText)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Missing or empty duration at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		if(!timelineModeText || strlen(timelineModeText)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Missing or empty mode at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		if(timelineRepeatText && strlen(timelineRepeatText)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Empty repeat at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		/* Convert tag's attributes' value to usable values */
+		if(!_xfdashboard_theme_animation_string_to_gint(timelineDelayText, &timelineDelay, &error))
+		{
+			g_propagate_error(outError, error);
+			return;
+		}
+
+		if(!_xfdashboard_theme_animation_string_to_gint(timelineDurationText, &timelineDuration, &error))
+		{
+			g_propagate_error(outError, error);
+			return;
+		}
+
+		if(!_xfdashboard_theme_animation_string_to_gint(timelineDelayText, &timelineDelay, &error))
+		{
+			g_propagate_error(outError, error);
+			return;
+		}
+
+		timelineMode=xfdashboard_get_enum_value_from_nickname(CLUTTER_TYPE_ANIMATION_MODE, timelineModeText);
+		if(timelineMode==G_MININT)
+		{
+			/* Set error */
+			g_set_error(outError,
+						XFDASHBOARD_THEME_ANIMATION_ERROR,
+						XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
+						_("Invalid mode '%s'"),
+						timelineModeText);
+			return;
+		}
+
+		timelineRepeat=0;
+		if(timelineRepeatText &&
+			!_xfdashboard_theme_animation_string_to_gint(timelineRepeatText, &timelineRepeat, &error))
+		{
+			g_propagate_error(outError, error);
+			return;
+		}
+
+		/* Create new animation timeline with timeline data */
+		data->currentTimeline=clutter_timeline_new(timelineDuration);
+		clutter_timeline_set_delay(data->currentTimeline, timelineDelay);
+		clutter_timeline_set_progress_mode(data->currentTimeline, timelineMode);
+		clutter_timeline_set_repeat_count(data->currentTimeline, timelineRepeat);
+
+		/* Set up context for tag <timeline> */
+		g_markup_parse_context_push(inContext, &propertyParser, inUserData);
+		return;
+	}
+
+	/* If we get here the given element name cannot follow this tag */
+	_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Tag <%s> cannot contain tag <%s>"),
+													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
+													inElementName);
+}
+
+static void _xfdashboard_theme_animation_parse_trigger_end(GMarkupParseContext *inContext,
+															const gchar *inElementName,
+															gpointer inUserData,
+															GError **outError)
+{
+	XfdashboardThemeAnimationParserData			*data=(XfdashboardThemeAnimationParserData*)inUserData;
+
+	g_assert(data->currentTimeline);
+
+	/* Add targets to animation specification */
+	g_object_unref(data->currentTimeline);
+	data->currentTimeline=NULL;
+
+	/* Restore previous parser context */
+	g_markup_parse_context_pop(inContext);
+}
+
+/* Parser callbacks for <animations> node */
+static void _xfdashboard_theme_animation_parse_animations_start(GMarkupParseContext *inContext,
+																const gchar *inElementName,
+																const gchar **inAttributeNames,
+																const gchar **inAttributeValues,
+																gpointer inUserData,
+																GError **outError)
+{
+	XfdashboardThemeAnimationParserData			*data=(XfdashboardThemeAnimationParserData*)inUserData;
+	gint										currentTag=TAG_ANIMATIONS;
+	gint										nextTag;
+	GError										*error=NULL;
+
+	/* Update last position for more accurate line and position in error messages */
+	data->lastLine=data->currentLine;
+	data->lastPosition=data->currentPostition;
+	g_markup_parse_context_get_position(inContext, &data->currentLine, &data->currentPostition);
+
+	/* Get tag of next element */
+	nextTag=_xfdashboard_theme_animation_get_tag_by_name(inElementName);
+	if(nextTag==-1)
+	{
+		_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Unknown tag <%s>"),
+													inElementName);
+		return;
+	}
+
+	/* Check if element name is <trigger> and follows expected parent tags:
+	 * <animations>
+	 */
+	if(nextTag==TAG_TRIGGER)
+	{
+		static GMarkupParser					propertyParser=
+												{
+													_xfdashboard_theme_animation_parse_trigger_start,
+													_xfdashboard_theme_animation_parse_trigger_end,
+													_xfdashboard_theme_animation_parse_general_no_text_nodes,
+													NULL,
+													NULL,
+												};
+
+		const gchar								*triggerID=NULL;
+		const gchar								*triggerSender=NULL;
+		const gchar								*triggerSignal=NULL;
+		XfdashboardCssSelector					*selector=NULL;
+
+		g_assert(data->currentSpec==NULL);
+
+		/* Get tag's attributes */
+		if(!g_markup_collect_attributes(inElementName,
+											inAttributeNames,
+											inAttributeValues,
+											&error,
+											G_MARKUP_COLLECT_STRING,
+											"id",
+											&triggerID,
+											G_MARKUP_COLLECT_STRING,
+											"sender",
+											&triggerSender,
+											G_MARKUP_COLLECT_STRING,
+											"signal",
+											&triggerSignal,
+											G_MARKUP_COLLECT_INVALID))
+		{
+			g_propagate_error(outError, error);
+			return;
+		}
+
+		/* Check tag's attributes */
+		if(!triggerID || strlen(triggerID)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Missing or empty ID at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		if(!triggerSender || strlen(triggerSender)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Missing or empty sender at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		if(!triggerSignal || strlen(triggerSignal)==0)
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Missing or empty signal at tag '%s'"),
+															inElementName);
+			return;
+		}
+
+		if(!xfdashboard_is_valid_id(triggerID))
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Invalid ID '%s' at tag '%s'"),
+															triggerID,
+															inElementName);
+			return;
+		}
+
+		if(_xfdashboard_theme_animation_has_id(data->self, data, triggerID))
+		{
+			_xfdashboard_theme_animation_parse_set_error(data,
+															inContext,
+															outError,
+															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+															_("Multiple definition of trigger with ID '%s'"),
+															triggerID);
+			return;
+		}
+
+		/* Create new animation specification with trigger data */
+		selector=xfdashboard_css_selector_new_from_string(triggerSender);
+		data->currentSpec=_xfdashboard_theme_animation_spec_new(triggerID, selector, triggerSignal);
+		g_object_unref(selector);
+
+		/* Set up context for tag <trigger> */
+		g_markup_parse_context_push(inContext, &propertyParser, inUserData);
+		return;
+	}
+
+	/* If we get here the given element name cannot follow this tag */
+	_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Tag <%s> cannot contain tag <%s>"),
+													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
+													inElementName);
+}
+
+static void _xfdashboard_theme_animation_parse_animations_end(GMarkupParseContext *inContext,
+																const gchar *inElementName,
+																gpointer inUserData,
+																GError **outError)
+{
+	XfdashboardThemeAnimationParserData			*data=(XfdashboardThemeAnimationParserData*)inUserData;
+
+	g_assert(data->currentSpec);
+
+	/* Add animation specification to list of animations */
+	data->specs=g_slist_prepend(data->specs, data->currentSpec);
+	data->currentSpec=NULL;
+
+	/* Restore previous parser context */
+	g_markup_parse_context_pop(inContext);
+}
+
+/* Parser callbacks for document root node */
+static void _xfdashboard_theme_animation_parse_document_start(GMarkupParseContext *inContext,
+																const gchar *inElementName,
+																const gchar **inAttributeNames,
+																const gchar **inAttributeValues,
+																gpointer inUserData,
+																GError **outError)
+{
+	XfdashboardThemeAnimationParserData			*data=(XfdashboardThemeAnimationParserData*)inUserData;
+	gint										currentTag=TAG_DOCUMENT;
+	gint										nextTag;
+	GError										*error=NULL;
+
+	/* Update last position for more accurate line and position in error messages */
+	data->lastLine=data->currentLine;
+	data->lastPosition=data->currentPostition;
+	g_markup_parse_context_get_position(inContext, &data->currentLine, &data->currentPostition);
+
+	/* Get tag of next element */
+	nextTag=_xfdashboard_theme_animation_get_tag_by_name(inElementName);
+	if(nextTag==-1)
+	{
+		_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Unknown tag <%s>"),
+													inElementName);
+		return;
+	}
+
+	/* Check if element name is <animations> and follows expected parent tags:
+	 * <document>
+	 */
+	if(nextTag==TAG_ANIMATIONS)
+	{
+		static GMarkupParser					propertyParser=
+												{
+													_xfdashboard_theme_animation_parse_animations_start,
+													_xfdashboard_theme_animation_parse_animations_end,
+													_xfdashboard_theme_animation_parse_general_no_text_nodes,
+													NULL,
+													NULL,
+												};
+
+		/* Get tag's attributes */
+		if(!g_markup_collect_attributes(inElementName,
+											inAttributeNames,
+											inAttributeValues,
+											&error,
+											G_MARKUP_COLLECT_INVALID,
+											NULL))
+		{
+			g_propagate_error(outError, error);
+		}
+
+		/* Set up context for tag <animations> */
+		g_markup_parse_context_push(inContext, &propertyParser, inUserData);
+		return;
+	}
+
+	/* If we get here the given element name cannot follow this tag */
+	_xfdashboard_theme_animation_parse_set_error(data,
+													inContext,
+													outError,
+													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
+													_("Tag <%s> cannot contain tag <%s>"),
+													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
+													inElementName);
+}
+
+static void _xfdashboard_theme_animation_parse_document_end(GMarkupParseContext *inContext,
+															const gchar *inElementName,
+															gpointer inUserData,
+															GError **outError)
+{
+	/* Restore previous parser context */
+	g_markup_parse_context_pop(inContext);
+}
+
+/* Parse XML from string */
+static gboolean _xfdashboard_theme_animation_parse_xml(XfdashboardThemeAnimation *self,
+														const gchar *inPath,
+														const gchar *inContents,
+														GError **outError)
+{
+	static GMarkupParser					parser=
+											{
+												_xfdashboard_theme_animation_parse_document_start,
+												_xfdashboard_theme_animation_parse_document_end,
+												_xfdashboard_theme_animation_parse_general_no_text_nodes,
+												NULL,
+												NULL,
+											};
+
+	XfdashboardThemeAnimationParserData		*data;
+	GMarkupParseContext						*context;
+	GError									*error;
+	gboolean								success;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), FALSE);
+	g_return_val_if_fail(inPath && *inPath, FALSE);
+	g_return_val_if_fail(inContents && *inContents, FALSE);
+	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
+
+	error=NULL;
+	success=TRUE;
+
+	/* Create and set up parser instance */
+	data=g_new0(XfdashboardThemeAnimationParserData, 1);
+	if(!data)
+	{
+		/* Set error */
+		g_set_error(outError,
+					XFDASHBOARD_THEME_ANIMATION_ERROR,
+					XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
+					_("Could not set up parser data for file %s"),
+					inPath);
+		return(FALSE);
+	}
+
+	context=g_markup_parse_context_new(&parser, 0, data, NULL);
+	if(!context)
+	{
+		/* Set error */
+		g_set_error(outError,
+					XFDASHBOARD_THEME_ANIMATION_ERROR,
+					XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
+					_("Could not create parser for file %s"),
+					inPath);
+
+		g_free(data);
+		return(FALSE);
+	}
+
+	/* Now the parser and its context is set up and we can now
+	 * safely initialize data.
+	 */
+	data->self=self;
+	data->specs=NULL;
+	data->currentSpec=NULL;
+	data->currentTimeline=NULL;
+	data->currentTargets=NULL;
+	data->lastLine=1;
+	data->lastPosition=1;
+	data->currentLine=1;
+	data->currentPostition=1;
+
+	/* Parse XML string */
+	if(success && !g_markup_parse_context_parse(context, inContents, -1, &error))
+	{
+		g_propagate_error(outError, error);
+		success=FALSE;
+	}
+
+	if(success && !g_markup_parse_context_end_parse(context, &error))
+	{
+		g_propagate_error(outError, error);
+		success=FALSE;
+	}
+
+	/* Handle collected data if parsing was successful */
+	if(success)
+	{
+		g_slist_foreach(data->specs, (GFunc)_xfdashboard_theme_animation_ref_and_add_to_theme, self);
+	}
+
+	/* Clean up resources */
+#ifdef DEBUG
+	if(!success)
+	{
+		// TODO: g_slist_foreach(data->specs, (GFunc)_xfdashboard_theme_animation_print_parsed_objects, "Animation specs (this file):");
+		// TODO: g_slist_foreach(self->priv->specs, (GFunc)_xfdashboard_theme_animation_print_parsed_objects, "Animation specs (parsed before):");
+		XFDASHBOARD_DEBUG(self, THEME,
+							"PARSER ERROR: %s",
+							(outError && *outError) ? (*outError)->message : "unknown error");
+	}
+#endif
+
+	g_markup_parse_context_free(context);
+
+	g_slist_free_full(data->specs, (GDestroyNotify)_xfdashboard_theme_animation_spec_unref);
+	g_free(data);
+
+	return(success);
+}
+
 
 /* IMPLEMENTATION: GObject */
 
@@ -490,144 +1641,38 @@ XfdashboardThemeAnimation* xfdashboard_theme_animation_new(void)
 	return(XFDASHBOARD_THEME_ANIMATION(g_object_new(XFDASHBOARD_TYPE_THEME_ANIMATION, NULL)));
 }
 
-
 /* Load a XML file into theme */
 gboolean xfdashboard_theme_animation_add_file(XfdashboardThemeAnimation *self,
 												const gchar *inPath,
 												GError **outError)
 {
-	XfdashboardThemeAnimationPrivate			*priv;
-	XfdashboardThemeAnimationSpec				*spec;
-	gchar										*id;
-	gchar										*sender;
-	gchar										*signal;
-	XfdashboardCssSelector						*senderSelector;
-	ClutterTimeline								*timeline;
-	gint										timelineDelay;
-	gint										timelineDuration;
-	guint										timelineMode;
-	gint										timelineRepeat;
-	XfdashboardThemeAnimationTargets			*targets;
-	XfdashboardCssSelector						*targetsSelector;
-	gint										targetsOrigin;
-	XfdashboardThemeAnimationTargetsProperty	*property;
-	gchar										*propertyName;
-	gchar										*propertyFrom;
-	gchar										*propertyTo;
+	gchar								*contents;
+	gsize								contentsLength;
+	GError								*error;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), FALSE);
 	g_return_val_if_fail(inPath!=NULL && *inPath!=0, FALSE);
 	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
 
-	priv=self->priv;
+	/* Load XML file, parse it and build objects from file */
+	error=NULL;
+	if(!g_file_get_contents(inPath, &contents, &contentsLength, &error))
+	{
+		g_propagate_error(outError, error);
+		return(FALSE);
+	}
 
-	/* TODO: Replace with real loading code ;) */
+	_xfdashboard_theme_animation_parse_xml(self, inPath, contents, &error);
+	if(error)
+	{
+		g_propagate_error(outError, error);
+		g_free(contents);
+		return(FALSE);
+	}
+	XFDASHBOARD_DEBUG(self, THEME, "Loaded animation file '%s'", inPath);
 
-	/* <trigger id="expand-workspace" sender="#workspace-selector-collapse-box" signal="expand"> */
-	id="expand-workspace";
-	sender="XfdashboardCollapseBox";
-	signal="expand";
-
-	senderSelector=xfdashboard_css_selector_new_from_string(sender);
-	spec=_xfdashboard_theme_animation_spec_new(id, senderSelector, signal);
-	g_object_unref(senderSelector);
-
-	/*   <timeline delay="0" duration="500" mode=ease-out-cubic" repeat="0" (optional, default=0) > */
-	timelineDelay=0;
-	timelineDuration=500;
-	timelineMode=CLUTTER_EASE_OUT_CUBIC;
-	timelineRepeat=0;
-
-	timeline=clutter_timeline_new(timelineDuration);
-	clutter_timeline_set_delay(timeline, timelineDelay);
-	clutter_timeline_set_progress_mode(timeline, timelineMode);
-	clutter_timeline_set_repeat_count(timeline, timelineRepeat);
-
-	/*     <apply to="" (optional, default="" -> sender) origin="sender" (optional, default="sender") > */
-	targetsSelector=NULL;
-	targetsOrigin=XFDASHBOARD_THEME_ANIMATION_APPLY_TO_ORIGIN_SENDER;
-
-	targets=_xfdashboard_theme_animation_targets_new(targetsSelector, targetsOrigin, timeline);
-
-	/*       <property name="collapse-fraction" from="" (optional, default="") to="" (optional, default="")> */
-	propertyName="width";
-	propertyFrom=NULL;
-	propertyTo=NULL;
-
-	property=_xfdashboard_theme_animation_targets_property_new(propertyName, propertyFrom, propertyTo);
-
-	/*       </property> */
-	_xfdashboard_theme_animation_targets_add_property(targets, property);
-	_xfdashboard_theme_animation_targets_property_unref(property);
-	property=NULL;
-
-	/*     </apply> */
-	_xfdashboard_theme_animation_spec_add_targets(spec, targets);
-	_xfdashboard_theme_animation_targets_unref(targets);
-	targets=NULL;
-
-	/*   </timeline> */
-	g_object_unref(timeline);
-	timeline=NULL;
-
-	/* </trigger> */
-	priv->specs=g_slist_prepend(priv->specs, spec);
-
-
-
-	/* <trigger id="collapse-workspace" sender="#workspace-selector-collapse-box" signal="collapse"> */
-	id="collapse-workspace";
-	sender="XfdashboardCollapseBox";
-	signal="collapse";
-
-	senderSelector=xfdashboard_css_selector_new_from_string(sender);
-	spec=_xfdashboard_theme_animation_spec_new(id, senderSelector, signal);
-	g_object_unref(senderSelector);
-
-	/*   <timeline delay="0" duration="500" mode=ease-in-cubic" repeat="0" (optional, default=0) > */
-	timelineDelay=0;
-	timelineDuration=500;
-	timelineMode=CLUTTER_EASE_OUT_CUBIC;
-	timelineRepeat=0;
-
-	timeline=clutter_timeline_new(timelineDuration);
-	clutter_timeline_set_delay(timeline, timelineDelay);
-	clutter_timeline_set_progress_mode(timeline, timelineMode);
-	clutter_timeline_set_repeat_count(timeline, timelineRepeat);
-
-	/*     <apply to="" (optional, default="" -> sender) origin="sender" (optional, default="sender") > */
-	targetsSelector=NULL;
-	targetsOrigin=XFDASHBOARD_THEME_ANIMATION_APPLY_TO_ORIGIN_SENDER;
-
-	targets=_xfdashboard_theme_animation_targets_new(targetsSelector, targetsOrigin, timeline);
-
-	/*       <property name="collapse-fraction" from="" (optional, default="") to="" (optional, default="")> */
-	propertyName="width";
-	propertyFrom=NULL;
-	propertyTo=NULL;
-
-	property=_xfdashboard_theme_animation_targets_property_new(propertyName, propertyFrom, propertyTo);
-
-	/*       </property> */
-	_xfdashboard_theme_animation_targets_add_property(targets, property);
-	_xfdashboard_theme_animation_targets_property_unref(property);
-	property=NULL;
-
-	/*     </apply> */
-	_xfdashboard_theme_animation_spec_add_targets(spec, targets);
-	_xfdashboard_theme_animation_targets_unref(targets);
-	targets=NULL;
-
-	/*   </timeline> */
-	g_object_unref(timeline);
-	timeline=NULL;
-
-	/* </trigger> */
-	priv->specs=g_slist_prepend(priv->specs, spec);
-
-
-	/* TODO: Just for testing animations */
-	g_message("Loading animations done!");
+	/* Release allocated resources */
+	g_free(contents);
 
 	/* If we get here loading and parsing XML file was successful
 	 * so return TRUE here

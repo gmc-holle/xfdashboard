@@ -750,6 +750,49 @@ gchar* xfdashboard_get_enum_value_name(GType inEnumClass, gint inValue)
 	return(valueName);
 }
 
+/**
+ * xfdashboard_get_enum_value_from_nickname:
+ * @inEnumClass: The #GType of enum class
+ * @inNickname: The nickname for value of enumeration at @inEnumClass
+ *
+ * Returns integer value for nickname @inNickname of
+ * enumeration class @inEnumClass.
+ *
+ * NOTE: %G_MININT will be returned even if nickname was not found but it can
+ *       match the value of enumeration. So do not use this function if
+ *       %G_INTMIN could be a valid value for enumeration
+ *
+ * Return value: An integer value for nickname of enumeration or %G_MININT
+ *               if nickname was not found.
+ */
+gint xfdashboard_get_enum_value_from_nickname(GType inEnumClass, const gchar *inNickname)
+{
+	GEnumClass		*enumClass;
+	GEnumValue		*enumValue;
+	gint			value;
+
+	enumClass=NULL;
+	enumValue=NULL;
+	value=G_MININT;
+
+	/* Reference enum class to keep it alive for transformation */
+	enumClass=g_type_class_ref(inEnumClass);
+
+	/* Get enum value */
+	if(enumClass) enumValue=g_enum_get_value_by_nick(enumClass, inNickname);
+
+	/* Get a copy of value's name if it could be found */
+	if(enumValue)
+	{
+		value=enumValue->value;
+	}
+
+	/* Release allocated resources */
+	if(enumClass) g_type_class_unref(enumClass);
+
+	/* Return integer value */
+	return(value);
+}
 /* Dump actors */
 static void _xfdashboard_dump_actor_print(ClutterActor *inActor, gint inLevel)
 {

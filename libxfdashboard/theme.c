@@ -81,8 +81,16 @@ static GParamSpec* XfdashboardThemeProperties[PROP_LAST]={ 0, };
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_THEME_SUBPATH						"xfdashboard-1.0"
 #define XFDASHBOARD_THEME_FILE							"xfdashboard.theme"
-#define XFDASHBOARD_THEME_GROUP							"Xfdashboard Theme"
 #define XFDASHBOARD_USER_GLOBAL_CSS_FILE				"global.css"
+
+#define XFDASHBOARD_THEME_GROUP							"Xfdashboard Theme"
+#define XFDASHBOARD_THEME_GROUP_KEY_NAME				"Name"
+#define XFDASHBOARD_THEME_GROUP_KEY_COMMENT				"Comment"
+#define XFDASHBOARD_THEME_GROUP_KEY_STYLE				"Style"
+#define XFDASHBOARD_THEME_GROUP_KEY_LAYOUT				"Layout"
+#define XFDASHBOARD_THEME_GROUP_KEY_EFFECTS				"Effects"
+#define XFDASHBOARD_THEME_GROUP_KEY_ANIMATIONS			"Animations"
+
 
 /* Load theme file and all listed resources in this file */
 static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
@@ -141,7 +149,7 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 	/* Get display name and notify about property change (regardless of success result) */
 	priv->themeDisplayName=g_key_file_get_locale_string(themeKeyFile,
 														XFDASHBOARD_THEME_GROUP,
-														"Name",
+														XFDASHBOARD_THEME_GROUP_KEY_NAME,
 														NULL,
 														&error);
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardThemeProperties[PROP_DISPLAY_NAME]);
@@ -161,7 +169,7 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 	/* Get comment and notify about property change (regardless of success result) */
 	priv->themeComment=g_key_file_get_locale_string(themeKeyFile,
 														XFDASHBOARD_THEME_GROUP,
-														"Comment",
+														XFDASHBOARD_THEME_GROUP_KEY_COMMENT,
 														NULL,
 														&error);
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardThemeProperties[PROP_COMMENT]);
@@ -184,7 +192,7 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 	 */
 	resources=g_key_file_get_string_list(themeKeyFile,
 											XFDASHBOARD_THEME_GROUP,
-											"Style",
+											XFDASHBOARD_THEME_GROUP_KEY_STYLE,
 											NULL,
 											&error);
 	if(!resources)
@@ -289,7 +297,7 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 	/* Create XML parser and load layout resources */
 	resources=g_key_file_get_string_list(themeKeyFile,
 											XFDASHBOARD_THEME_GROUP,
-											"Layout",
+											XFDASHBOARD_THEME_GROUP_KEY_LAYOUT,
 											NULL,
 											&error);
 	if(!resources)
@@ -342,12 +350,12 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 	/* Create XML parser and load effect resources which are optional */
 	if(g_key_file_has_key(themeKeyFile,
 							XFDASHBOARD_THEME_GROUP,
-							"Effects",
+							XFDASHBOARD_THEME_GROUP_KEY_EFFECTS,
 							NULL))
 	{
 		resources=g_key_file_get_string_list(themeKeyFile,
 												XFDASHBOARD_THEME_GROUP,
-												"Effects",
+												XFDASHBOARD_THEME_GROUP_KEY_EFFECTS,
 												NULL,
 												&error);
 		if(!resources)
@@ -401,12 +409,12 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 	/* Create XML parser and load animation resources which are optional */
 	if(g_key_file_has_key(themeKeyFile,
 							XFDASHBOARD_THEME_GROUP,
-							"Animation",
+							XFDASHBOARD_THEME_GROUP_KEY_ANIMATIONS,
 							NULL))
 	{
 		resources=g_key_file_get_string_list(themeKeyFile,
 												XFDASHBOARD_THEME_GROUP,
-												"Animation",
+												XFDASHBOARD_THEME_GROUP_KEY_ANIMATIONS,
 												NULL,
 												&error);
 		if(!resources)
@@ -459,9 +467,6 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 
 	/* Release allocated resources */
 	if(themeKeyFile) g_key_file_free(themeKeyFile);
-
-	/* TODO: Just for testing animations  */
-	xfdashboard_theme_animation_add_file(priv->animation, "dummy", &error);
 
 	/* Return TRUE to indicate success */
 	return(TRUE);
