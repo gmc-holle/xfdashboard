@@ -4,6 +4,7 @@ _Comment=Default theme for xfdashboard
 Style=xfdashboard.css
 Layout=xfdashboard.xml;xfdashboard-secondary.xml
 Effects=effects.xml
+Animations=animations.xml
 Author=Stephan Haller
 Version=@PACKAGE_VERSION@
 Screenshot=screenshot-xfdashboard.png
