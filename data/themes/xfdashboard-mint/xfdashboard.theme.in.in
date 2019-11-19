@@ -4,6 +4,7 @@ _Comment=Fresh-green flavored theme for xfdashboard
 Style=xfdashboard-mint.css
 Layout=xfdashboard.xml;xfdashboard-secondary.xml
 Effects=effects.xml
+Animations=animations.xml
 Author=lacios
 Version=@PACKAGE_VERSION@
 Screenshot=screenshot-xfdashboard-mint.png

@@ -4,6 +4,7 @@ _Comment=Aubergine theme for xfdashboard
 Style=xfdashboard-auber.css
 Layout=xfdashboard.xml;xfdashboard-secondary.xml
 Effects=effects.xml
+Animations=animations.xml
 Author=lacios
 Version=@PACKAGE_VERSION@
 Screenshot=screenshot-xfdashboard-auber.png
