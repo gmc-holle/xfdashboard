@@ -59,6 +59,20 @@
 	</keywords>
 
 	<releases>
+		<release version="0.7.6" timestamp="1575026916">
+			<description>
+				<_p>This unstable development adds animations.
+				</_p>
+			</description>
+		</release>
+		<release version="0.7.5" timestamp="1533679200">
+			<description>
+				<_p>This unstable development adds support for touchpads
+				and application actions (Jumplists, Quicklists) as well
+				as new and updated translations.
+				</_p>
+			</description>
+		</release>
 		<release version="0.7.4" timestamp="1505796460">
 			<description>
 				<_p>This unstable development adds lots of new and updated
@@ -108,215 +122,6 @@
 				plugins and application tracker. It also contains a huge
 				collection of other larger and smaller improvements.
 				</_p>
-			</description>
-		</release>
-		<release version="0.5.92" timestamp="1459448722">
-			<description>
-				<_p>This unstable development fixes crashes in search view.
-				</_p>
-			</description>
-		</release>
-		<release version="0.5.91" timestamp="1458673002">
-			<description>
-				<_p>This unstable development fixes running this application in daemon mode
-				and unpredictable reselections in search view.
-				</_p>
-			</description>
-		</release>
-		<release version="0.5.90" timestamp="1456659470">
-			<description>
-				<_p>This unstable development introduces a hot-corner plugin to activate
-				this application when the pointer is near a specific corner of the screen.
-				It also introduce a new settings application which allows to enable and/or
-				disable plugin as well as to configure them.
-				</_p>
-			</description>
-		</release>
-		<release version="0.5.5" timestamp="1454269066">
-			<description>
-				<_p>This unstable development introduces a new search provider plugin
-				which uses installed Gnome-Shell search providers as additional source.
-				</_p>
-			</description>
-		</release>
-		<release version="0.5.4" timestamp="1450515013">
-			<description>
-				<_p>This unstable development introduces a new optional configuration to
-				themes about defining which elements can be focused and in which order.
-				</_p>
-			</description>
-		</release>
-		<release version="0.5.3" timestamp="1447437275">
-			<description>
-				<_p>This unstable development introduces a basic and simple plugin system
-				as well as a sample plugin adding a new view showing a clock.
-				</_p>
-			</description>
-		</release>
-		<release version="0.5.2" timestamp="1444326527">
-			<description>
-				<_p>This unstable development introduces a new configurable options to
-				allows start a new instance of an application or to activate the current
-				window. It also improves the detection of running application as well
-				as bug-fixes and other smaller improvements.
-				</_p>
-			</description>
-		</release>
-		<release version="0.5.1" timestamp="1441652092">
-			<description>
-				<_p>This unstable development introduces a new configurable options to
-				speed up loading window contents in background and it shows also running
-				applications in quicklaunch for those not being stored as favourites.
-				As usual it also contains a lots of bug-fixes and smaller improvements.
-				</_p>
-			</description>
-		</release>
-		<release version="0.5.0" timestamp="1434045183">
-			<description>
-				<_p>This unstable development introduces new options to workspace selector
-				and loads the window contents in background to make the application feel
-				smoother and faster, especially at start-up. It also contains a lots of
-				bug-fixes and smaller improvements.
-				</_p>
-			</description>
-		</release>
-		<release version="0.4.2" timestamp="1433008431">
-			<description>
-				<_p>This release hopefully fixes problems with the stage resizes
-				finally. Also the method to determine the desktop window was changed.
-				</_p>
-			</description>
-		</release>
-		<release version="0.4.1" timestamp="1432920422">
-			<description>
-				<_p>This release hopefully fixes problems with the stage as it
-				size might not reflect the screen size preventing dragging windows
-				over the whole screen. It also includes lots of smaller bug-fixes.
-				</_p>
-			</description>
-		</release>
-		<release version="0.4.0" timestamp="1428778076">
-			<description>
-				<_p>This stable version introduces lots of new features. like
-				multi-monitor support, configurable key bindings and a settings
-				dialog. It also contains a lot of other larger and smaller
-				improvements.
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.91" timestamp="1427561560">
-			<description>
-				<_p>This unstable development introduces a new box layout
-				fixing layout of children when using right-to-left language.
-				Also support for localization was fixed and other smaller
-				bug-fixes and improvements.
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.90" timestamp="1426700895">
-			<description>
-				<_p>This unstable development introduces support for multiple
-				monitors and also bug-fixes and other smaller improvements.
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.9" timestamp="1424455951">
-			<description>
-				<_p>This unstable development introduces an application database
-				and monitoring of installed and uninstalled applications. It also
-				includes bug-fixes and other smaller improvements. 
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.8" timestamp="1422108114">
-			<description>
-				<_p>This unstable development introduces a hotkey tracker to allow
-				starting xfdashboard with a single press of &lt;Super&gt; key.
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.7" timestamp="1421530687">
-			<description>
-				<_p>This unstable development fixes a bug which rendered the new
-				settings application completely unusable.
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.6" timestamp="1421519406">
-			<description>
-				<_p>This unstable development introduces a settings application.
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.5" timestamp="1420890300">
-			<description>
-				<_p>This unstable development introduces configurable key-bindings, allows
-				changing themes at runtime and includes lots of smaller bug-fixes.
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.4" timestamp="1417066424">
-			<description>
-				<_p>This unstable development introduces additional themes, fixes handling
-				of client-side decorated windows (CSD) and adds a new CSS command @import()
-				to include external CSS resources in themes.
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.3" timestamp="1413740495">
-			<description>
-				<_p>This unstable development introduces a workaround to get window content
-				of minimized windows to display them in windows view.
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.2" timestamp="1410150601">
-			<description>
-				<_p>This unstable development introduces effects.
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.1" timestamp="1409068837">
-			<description>
-				<_p>This unstable development fixes a problem closing windows accidently by
-				pressing the key 'backspace' to refine search more often than characters entered.
-				It also includes new image-loading functions to CSS. It also introduces a new
-				generic selection framework for focusable actors.
-				</_p>
-			</description>
-		</release>
-		<release version="0.2.3" timestamp="1409068569">
-			<description>
-				<_p>This release fixes a problem closing windows accidently by pressing
-				the key 'backspace' to refine search more often than characters entered.
-				</_p>
-			</description>
-		</release>
-		<release version="0.2.2" timestamp="1407869332">
-			<description>
-				<_p>This release fixes a problem when loading scalable images by icon name.
-				</_p>
-			</description>
-		</release>
-		<release version="0.3.0" timestamp="1406052137">
-			<description>
-				<_p>This unstable development release fixes problems with icon mode in theming and
-				allows to launch the first item by pressing ENTER in search view when a search was
-				started by just typing. It also includes an improved CSS parsing allowing the usage
-				of constant values and functions in theme's CSS file.
-				</_p>
-			</description>
-		</release>
-		<release version="0.2.1" timestamp="1405537974">
-			<description>
-				<_p>This release fixes problems with icon mode in theming and allows to launch the
-				first item by pressing ENTER in search view when a search was started by just typing.
-				</_p>
-			</description>
-		</release>
-		<release version="0.2.0" timestamp="1402160953">
-			<description>
-				<_p>Initial release.</_p>
 			</description>
 		</release>
 	</releases>

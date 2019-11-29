@@ -13,6 +13,7 @@ data/themes/xfdashboard-moranga/xfdashboard.theme.in.in
 data/themes/xfdashboard-wine/xfdashboard.theme.in.in
 libxfdashboard/action-button.c
 libxfdashboard/actor.c
+libxfdashboard/animation.c
 libxfdashboard/application-button.c
 libxfdashboard/application-database.c
 libxfdashboard/application-tracker.c
@@ -65,11 +66,13 @@ libxfdashboard/stage.c
 libxfdashboard/stylable.c
 libxfdashboard/text-box.c
 libxfdashboard/theme-css.c
+libxfdashboard/theme-animation.c
 libxfdashboard/theme-effects.c
 libxfdashboard/theme-layout.c
 libxfdashboard/theme.c
 libxfdashboard/toggle-button.c
 libxfdashboard/tooltip-action.c
+libxfdashboard/transition-group.c
 libxfdashboard/utils.c
 libxfdashboard/view-manager.c
 libxfdashboard/view-selector.c
