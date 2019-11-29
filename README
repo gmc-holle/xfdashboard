@@ -33,7 +33,7 @@ libXdamage (for live windows)
 libXinerama (for multi-monitor support)
 
 
-On debian based distros, all requeriments are installed with:
+On debian based distros, all requirements are installed with:
 
 > apt-get install xfce4-dev-tools build-essential glib2.0 libglib2.0-dev xorg-dev libwnck-3-dev libclutter-1.0-dev libgarcon-1-0-dev libxfconf-0-dev libxfce4util-dev libxfce4ui-2-dev libxcomposite-dev libxdamage-dev libxinerama-dev
 
@@ -41,14 +41,24 @@ On debian based distros, all requeriments are installed with:
 Homepage
 ========
 
-The homepage of xfdashboard is at http://goodies.xfce.org/projects/applications/xfdashboard/start
+The homepage of xfdashboard is at https://docs.xfce.org/apps/xfdashboard/start
 
 
 Documentation
 =============
 
-A simple quick guide with screenshots can be found at http://goodies.xfce.org/projects/applications/xfdashboard/manual
+A simple quick guide with screenshots can be found at http://docs.xfce.org/apps/xfdashboard/manual
 
 Documentation about theming xfdashboard can be found at http://xfdashboard.froevel.de/theming.html
 
 Documentation about settings in xfdashboard can be found at http://xfdashboard.froevel.de/settings.html
+
+How to report bugs?
+===================
+
+You can report bugs and feature requests at http://bugzilla.xfce.org.
+Choose the product Apps and the component xfdashboard.
+You will need to create an account for yourself.
+
+You can also join the Xfce development mailing-list:
+https://mail.xfce.org/mailman/listinfo/xfce4-dev

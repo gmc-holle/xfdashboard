@@ -20,22 +20,22 @@
 
 	<screenshots>
 		<screenshot type="default">
-			<image>http://goodies.xfce.org/_media/projects/applications/xfdashboard/starting-up.png</image>
+			<image>http://docs.xfce.org/_media/apps/xfdashboard/starting-up.png</image>
 		</screenshot>
 		<screenshot>
 			<_caption>Browsing applications</_caption>
-			<image>http://goodies.xfce.org/_media/projects/applications/xfdashboard/applications-view.png</image>
+			<image>http://docs.xfce.org/_media/apps/xfdashboard/applications-view.png</image>
 		</screenshot>
 		<screenshot>
 			<_caption>Searching applications</_caption>
-			<image>http://goodies.xfce.org/_media/projects/applications/xfdashboard/search-view.png</image>
+			<image>http://docs.xfce.org/_media/apps/xfdashboard/search-view.png</image>
 		</screenshot>
 	</screenshots>
 
-	<url type="homepage">http://goodies.xfce.org/projects/applications/xfdashboard/start/</url>
+	<url type="homepage">http://docs.xfce.org/apps/xfdashboard/start/</url>
 	<url type="bugtracker">https://bugzilla.xfce.org</url>
 	<url type="bugtracker">https://github.com/gmc-holle/xfdashboard/issues</url>
-	<url type="help">http://goodies.xfce.org/projects/applications/xfdashboard/manual</url>
+	<url type="help">http://docs.xfce.org/apps/xfdashboard/manual</url>
 
 	<project_group>XFCE</project_group>
 
