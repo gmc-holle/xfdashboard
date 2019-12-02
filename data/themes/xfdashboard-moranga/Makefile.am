@@ -9,6 +9,7 @@ theme_DATA = \
 	xfdashboard.css \
 	xfdashboard.xml \
 	xfdashboard-secondary.xml \
+	animations.xml \
 	effects.xml \
 	screenshot-xfdashboard-moranga.png
 

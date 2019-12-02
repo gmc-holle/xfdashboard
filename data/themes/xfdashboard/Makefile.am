@@ -8,6 +8,7 @@ theme_DATA = \
 	xfdashboard.css \
 	xfdashboard.xml \
 	xfdashboard-secondary.xml \
+	animations.xml \
 	effects.xml \
 	windows-view.png \
 	screenshot-xfdashboard.png
