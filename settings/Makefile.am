@@ -29,6 +29,7 @@ xfdashboard_settings_CFLAGS = \
 	$(CLUTTER_CFLAGS) \
 	$(LIBXFCONF_CFLAGS) \
 	$(LIBXFCE4UTIL_CFLAGS) \
+	$(LIBXFCE4UI_CFLAGS) \
 	$(PLATFORM_CFLAGS)
 
 xfdashboard_settings_LDADD = \
@@ -36,6 +37,7 @@ xfdashboard_settings_LDADD = \
 	$(CLUTTER_LIBS) \
 	$(LIBXFCONF_LIBS) \
 	$(LIBXFCE4UTIL_LIBS) \
+	$(LIBXFCE4UI_LIBS) \
 	$(LIBM) \
 	$(top_builddir)/libxfdashboard/libxfdashboard.la
 

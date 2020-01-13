@@ -28,6 +28,7 @@
 #include "settings.h"
 
 #include <glib/gi18n-lib.h>
+#include <libxfce4ui/libxfce4ui.h>
 #include <xfconf/xfconf.h>
 #include <math.h>
 
@@ -43,11 +44,13 @@ struct _XfdashboardSettingsPrivate
 	XfconfChannel					*xfconfChannel;
 
 	GtkBuilder						*builder;
+	GObject							*dialog;
 
 	XfdashboardSettingsGeneral		*general;
 	XfdashboardSettingsThemes		*themes;
 	XfdashboardSettingsPlugins		*plugins;
 
+	GtkWidget						*widgetHelpButton;
 	GtkWidget						*widgetCloseButton;
 };
 
@@ -60,6 +63,28 @@ G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSettings,
 
 #define PREFERENCES_UI_FILE							"preferences.ui"
 
+
+/* Help button was clicked */
+static void _xfdashboard_settings_on_help_clicked(XfdashboardSettings *self,
+													GtkWidget *inWidget)
+{
+	XfdashboardSettingsPrivate				*priv;
+	GtkWindow								*window;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+
+	priv=self->priv;
+
+	/* Show online manual for xfdashboard but ask user if needed */
+	window=NULL;
+	if(GTK_IS_WINDOW(priv->dialog)) window=GTK_WINDOW(priv->dialog);
+
+	xfce_dialog_show_help_with_version(window,
+										"xfdashboard",
+										"start",
+										NULL,
+										NULL);
+}
 
 /* Close button was clicked */
 static void _xfdashboard_settings_on_close_clicked(XfdashboardSettings *self,
@@ -153,6 +178,12 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 	g_debug("Loaded UI resources from '%s' successfully.", builderFile);
 
 	/* Setup common widgets */
+	priv->widgetHelpButton=GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-button"));
+	g_signal_connect_swapped(priv->widgetHelpButton,
+								"clicked",
+								G_CALLBACK(_xfdashboard_settings_on_help_clicked),
+								self);
+
 	priv->widgetCloseButton=GTK_WIDGET(gtk_builder_get_object(priv->builder, "close-button"));
 	g_signal_connect_swapped(priv->widgetCloseButton,
 								"clicked",
@@ -186,6 +217,8 @@ static void _xfdashboard_settings_dispose(GObject *inObject)
 	XfdashboardSettingsPrivate	*priv=self->priv;
 
 	/* Release allocated resouces */
+	priv->dialog=NULL;
+	priv->widgetHelpButton=NULL;
 	priv->widgetCloseButton=NULL;
 
 	if(priv->themes)
@@ -245,9 +278,11 @@ static void xfdashboard_settings_init(XfdashboardSettings *self)
 	/* Set default values */
 	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
 	priv->builder=NULL;
+	priv->dialog=NULL;
 	priv->general=NULL;
 	priv->themes=NULL;
 	priv->plugins=NULL;
+	priv->widgetHelpButton=NULL;
 	priv->widgetCloseButton=NULL;
 }
 
@@ -263,7 +298,6 @@ XfdashboardSettings* xfdashboard_settings_new(void)
 GtkWidget* xfdashboard_settings_create_dialog(XfdashboardSettings *self)
 {
 	XfdashboardSettingsPrivate	*priv;
-	GObject						*dialog;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS(self), NULL);
 
@@ -277,15 +311,17 @@ GtkWidget* xfdashboard_settings_create_dialog(XfdashboardSettings *self)
 	}
 
 	/* Get dialog object */
-	dialog=gtk_builder_get_object(priv->builder, "preferences-dialog");
-	if(!dialog)
+	g_assert(priv->dialog==NULL);
+
+	priv->dialog=gtk_builder_get_object(priv->builder, "preferences-dialog");
+	if(!priv->dialog)
 	{
 		g_critical(_("Could not get dialog from UI file."));
 		return(NULL);
 	}
 
 	/* Return widget */
-	return(GTK_WIDGET(dialog));
+	return(GTK_WIDGET(priv->dialog));
 }
 
 /* Create "pluggable" dialog for this settings instance */
