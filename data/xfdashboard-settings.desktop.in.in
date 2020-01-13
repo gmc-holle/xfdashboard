@@ -12,3 +12,5 @@ NotShowIn=GNOME;KDE;Unity;
 Terminal=false
 StartupNotify=true
 X-XfcePluggable=true
+X-XfceHelpComponent=xfdashboard
+X-XfceHelpPage=start
