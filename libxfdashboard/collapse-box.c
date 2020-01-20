@@ -32,9 +32,9 @@
 
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/focus-manager.h>
+#include <libxfdashboard/animation.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
-#include <libxfdashboard/animation.h>
 
 
 /* Define this class in GObject system */

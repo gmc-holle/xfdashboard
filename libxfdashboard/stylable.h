@@ -57,9 +57,13 @@ struct _XfdashboardStylableInterface
 
 	const gchar* (*get_classes)(XfdashboardStylable *self);
 	void (*set_classes)(XfdashboardStylable *self, const gchar *inClasses);
+	void (*class_added)(XfdashboardStylable *self, const gchar *inClass);
+	void (*class_removed)(XfdashboardStylable *self, const gchar *inClass);
 
 	const gchar* (*get_pseudo_classes)(XfdashboardStylable *self);
 	void (*set_pseudo_classes)(XfdashboardStylable *self, const gchar *inClasses);
+	void (*pseudo_class_added)(XfdashboardStylable *self, const gchar *inClass);
+	void (*pseudo_class_removed)(XfdashboardStylable *self, const gchar *inClass);
 
 	void (*invalidate)(XfdashboardStylable *self);
 };

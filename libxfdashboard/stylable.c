@@ -45,16 +45,110 @@ enum
 	/* Signals */
 	SIGNAL_STYLE_REVALIDATED,
 
+	SIGNAL_CLASS_ADDED,
+	SIGNAL_CLASS_REMOVED,
+
+	SIGNAL_PSEUDO_CLASS_ADDED,
+	SIGNAL_PSEUDO_CLASS_REMOVED,
+
 	SIGNAL_LAST
 };
 
 static guint XfdashboardStylableSignals[SIGNAL_LAST]={ 0, };
+
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_STYLABLE_WARN_NOT_IMPLEMENTED(self, vfunc) \
 	g_warning(_("Object of type %s does not implement required virtual function XfdashboardStylable::%s"), \
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
+
+/* Create list of added and removed class by difference of current classes string
+ * and new classes string.
+ */
+static void _xfdashboard_stylable_split_into_added_removed_lists(const gchar *inCurrentClasses,
+																	const gchar *inNewClasses,
+																	gchar *inDelimiter,
+																	GSList **outAddedClasses,
+																	GSList **outRemovedClasses)
+{
+	gchar			**currentClasses;
+	gchar			**newClasses;
+	gchar			**iter;
+	gchar			**iterDest;
+
+	g_return_if_fail(inDelimiter!=NULL && *inDelimiter);
+	g_return_if_fail(outAddedClasses!=NULL && *outAddedClasses==NULL);
+	g_return_if_fail(outRemovedClasses!=NULL && *outRemovedClasses==NULL);
+
+	/* Split current classes string into tokens */
+	currentClasses=NULL;
+	if(inCurrentClasses) currentClasses=g_strsplit(inCurrentClasses, inDelimiter, -1);
+
+	/* Split new classes string into tokens */
+	newClasses=NULL;
+	if(inNewClasses) newClasses=g_strsplit(inNewClasses, inDelimiter, -1);
+
+	/* Create list of added classes */
+	for(iter=newClasses; iter && *iter; iter++)
+	{
+		/* Skip empty strings */
+		if(!**iter) continue;
+
+		/* Iterate through current classes and stop further iteration if a match
+		 * was found. If no match is found, add added class to list.
+		 */
+		for(iterDest=currentClasses; iterDest && *iterDest; iterDest++)
+		{
+			/* Skip empty strings */
+			if(!**iterDest) continue;
+
+			/* If new class matches current class, stop iteration */
+			if(g_strcmp0(*iterDest, *iter)==0) break;
+		}
+
+		/* If pointer of iterator for current classes is NULL, then no match
+		 * was found and we have to add the iterated new class to list of added
+		 * classes.
+		 */
+		if(!iterDest || !*iterDest)
+		{
+			*outAddedClasses=g_slist_prepend(*outAddedClasses, g_strdup(*iter));
+		}
+	}
+
+	/* Create list of removed classes */
+	for(iter=currentClasses; iter && *iter; iter++)
+	{
+		/* Skip empty strings */
+		if(!**iter) continue;
+
+		/* Iterate through new classes and stop further iteration if a match
+		 * was found. If no match is found, add removed class to list.
+		 */
+		for(iterDest=newClasses; iterDest && *iterDest; iterDest++)
+		{
+			/* Skip empty strings */
+			if(!**iterDest) continue;
+
+			/* If current class matches new class, stop iteration */
+			if(g_strcmp0(*iterDest, *iter)==0) break;
+		}
+
+		/* If pointer of iterator for new classes is NULL, then no match
+		 * was found and we have to add the iterated current class to list of
+		 * removed classes.
+		 */
+		if(!iterDest || !*iterDest)
+		{
+			*outRemovedClasses=g_slist_prepend(*outRemovedClasses, g_strdup(*iter));
+		}
+	}
+
+	/* Release allocated resources */
+	if(currentClasses) g_strfreev(currentClasses);
+	if(newClasses) g_strfreev(newClasses);
+}
 
 /* Check if haystack contains needle.
  * The haystack is a string representing a list which entries is seperated
@@ -255,6 +349,7 @@ static void _xfdashboard_stylable_real_invalidate(XfdashboardStylable *self)
 	g_signal_emit(self, XfdashboardStylableSignals[SIGNAL_STYLE_REVALIDATED], 0);
 }
 
+
 /* IMPLEMENTATION: GObject */
 
 /* Interface initialization
@@ -322,10 +417,103 @@ void xfdashboard_stylable_default_init(XfdashboardStylableInterface *iface)
 							G_TYPE_NONE,
 							0);
 
+		/**
+		 * XfdashboardStylable::class-added:
+		 * @self: A #XfdashboardStylable
+		 * @inClass: The class added to @self
+		 *
+		 * The ::class-added signal is emitted when the class @inClass, e.g. ".foo",
+		 * was added to @self.
+		 *
+		 * This signal is only emitted when the class @inClass added to @self was
+		 * not set before. If the class @inClass was already set, this signal will
+		 * not be emitted again.
+		 */
+		XfdashboardStylableSignals[SIGNAL_CLASS_ADDED]=
+			g_signal_new("class-added",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST,
+							G_STRUCT_OFFSET(XfdashboardStylableInterface, class_added),
+							NULL,
+							NULL,
+							g_cclosure_marshal_VOID__STRING,
+							G_TYPE_NONE,
+							1,
+							G_TYPE_STRING);
+
+		/**
+		 * XfdashboardStylable::class-remove:
+		 * @self: A #XfdashboardStylable
+		 * @inClass: The class remove from @self
+		 *
+		 * The ::class-removed signal is emitted when the class @inClass, e.g. ".foo",
+		 * was removed from @self.
+		 *
+		 * This signal is only emitted when the class @inClass was set at @self.
+		 */
+		XfdashboardStylableSignals[SIGNAL_CLASS_REMOVED]=
+			g_signal_new("class-removed",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST,
+							G_STRUCT_OFFSET(XfdashboardStylableInterface, class_removed),
+							NULL,
+							NULL,
+							g_cclosure_marshal_VOID__STRING,
+							G_TYPE_NONE,
+							1,
+							G_TYPE_STRING);
+
+		/**
+		 * XfdashboardStylable::pseudo-class-added:
+		 * @self: A #XfdashboardStylable
+		 * @inClass: The pseudo-class added to @self
+		 *
+		 * The ::pseudo-class-added signal is emitted when the pseudo-class @inClass,
+		 * e.g. ".foo", was added to @self.
+		 *
+		 * This signal is only emitted when the psuedo-class @inClass added to @self
+		 * was not set before. If the pseudo-class @inClass was already set, this signal
+		 * will not be emitted again.
+		 */
+		XfdashboardStylableSignals[SIGNAL_PSEUDO_CLASS_ADDED]=
+			g_signal_new("pseudo-class-added",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST,
+							G_STRUCT_OFFSET(XfdashboardStylableInterface, pseudo_class_added),
+							NULL,
+							NULL,
+							g_cclosure_marshal_VOID__STRING,
+							G_TYPE_NONE,
+							1,
+							G_TYPE_STRING);
+
+		/**
+		 * XfdashboardStylable::pseudo-class-remove:
+		 * @self: A #XfdashboardStylable
+		 * @inClass: The pseudo-class remove from @self
+		 *
+		 * The ::pseudo-class-removed signal is emitted when the pseudo-class
+		 * @inClass, e.g. ".foo", was removed from @self.
+		 *
+		 * This signal is only emitted when the class @inClass was set at @self.
+		 */
+		XfdashboardStylableSignals[SIGNAL_PSEUDO_CLASS_REMOVED]=
+			g_signal_new("pseudo-class-removed",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST,
+							G_STRUCT_OFFSET(XfdashboardStylableInterface, pseudo_class_removed),
+							NULL,
+							NULL,
+							g_cclosure_marshal_VOID__STRING,
+							G_TYPE_NONE,
+							1,
+							G_TYPE_STRING);
+
 		/* Set flag that base initialization was done for this interface */
 		initialized=TRUE;
 	}
 }
+
 
 /* IMPLEMENTATION: Public API */
 
@@ -456,10 +644,48 @@ const gchar* xfdashboard_stylable_get_classes(XfdashboardStylable *self)
 void xfdashboard_stylable_set_classes(XfdashboardStylable *self, const gchar *inClasses)
 {
 	XfdashboardStylableInterface		*iface;
+	const gchar							*currentClasses;
+	GSList								*addedClasses;
+	GSList								*removedClasses;
+	GSList								*iter;
 
 	g_return_if_fail(XFDASHBOARD_IS_STYLABLE(self));
 
 	iface=XFDASHBOARD_STYLABLE_GET_IFACE(self);
+
+	/* Split new classes to set into lists of added classes and removed ones. */
+	currentClasses=xfdashboard_stylable_get_classes(self);
+	addedClasses=NULL;
+	removedClasses=NULL;
+	_xfdashboard_stylable_split_into_added_removed_lists(currentClasses,
+															inClasses,
+															".",
+															&addedClasses,
+															&removedClasses);
+
+	/* Iterate through list of newly added classes and emit "class-added" signal
+	 * for each new class.
+	 */
+	if(addedClasses)
+	{
+		for(iter=addedClasses; iter; iter=g_slist_next(iter))
+		{
+			g_signal_emit(self, XfdashboardStylableSignals[SIGNAL_CLASS_ADDED], 0, iter->data);
+		}
+		g_slist_free_full(addedClasses, g_free);
+	}
+
+	/* Iterate through list of removed classes and emit "class-removed" signal
+	 * for each class removed.
+	 */
+	if(removedClasses)
+	{
+		for(iter=removedClasses; iter; iter=g_slist_next(iter))
+		{
+			g_signal_emit(self, XfdashboardStylableSignals[SIGNAL_CLASS_REMOVED], 0, iter->data);
+		}
+		g_slist_free_full(removedClasses, g_free);
+	}
 
 	/* Call virtual function */
 	if(iface->set_classes)
@@ -595,10 +821,48 @@ const gchar* xfdashboard_stylable_get_pseudo_classes(XfdashboardStylable *self)
 void xfdashboard_stylable_set_pseudo_classes(XfdashboardStylable *self, const gchar *inClasses)
 {
 	XfdashboardStylableInterface		*iface;
+	const gchar							*currentClasses;
+	GSList								*addedClasses;
+	GSList								*removedClasses;
+	GSList								*iter;
 
 	g_return_if_fail(XFDASHBOARD_IS_STYLABLE(self));
 
 	iface=XFDASHBOARD_STYLABLE_GET_IFACE(self);
+
+	/* Split new classes to set into lists of added classes and removed ones. */
+	currentClasses=xfdashboard_stylable_get_pseudo_classes(self);
+	addedClasses=NULL;
+	removedClasses=NULL;
+	_xfdashboard_stylable_split_into_added_removed_lists(currentClasses,
+															inClasses,
+															":",
+															&addedClasses,
+															&removedClasses);
+
+	/* Iterate through list of newly added classes and emit "pseudo-class-added"
+	 * signal for each new pseudo-class.
+	 */
+	if(addedClasses)
+	{
+		for(iter=addedClasses; iter; iter=g_slist_next(iter))
+		{
+			g_signal_emit(self, XfdashboardStylableSignals[SIGNAL_PSEUDO_CLASS_ADDED], 0, iter->data);
+		}
+		g_slist_free_full(addedClasses, g_free);
+	}
+
+	/* Iterate through list of removed classes and emit "pseudo-class-removed"
+	 * signal for each pseudo-class removed.
+	 */
+	if(removedClasses)
+	{
+		for(iter=removedClasses; iter; iter=g_slist_next(iter))
+		{
+			g_signal_emit(self, XfdashboardStylableSignals[SIGNAL_PSEUDO_CLASS_REMOVED], 0, iter->data);
+		}
+		g_slist_free_full(removedClasses, g_free);
+	}
 
 	/* Call virtual function */
 	if(iface->set_pseudo_classes)
