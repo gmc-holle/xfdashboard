@@ -658,26 +658,37 @@ void xfdashboard_animation_run(XfdashboardAnimation *self,
 	priv->doneCallback=inCallback;
 	priv->doneUserData=inUserData;
 
-	/* Add all transition to their actors now */
-	for(iter=priv->entries; iter; iter=g_slist_next(iter))
+	/* Add all transition to their actors now if any available ... */
+	if(priv->entries)
 	{
-		/* Get entry */
-		entry=(XfdashboardAnimationEntry*)iter->data;
-		if(!entry) continue;
+		for(iter=priv->entries; iter; iter=g_slist_next(iter))
+		{
+			/* Get entry */
+			entry=(XfdashboardAnimationEntry*)iter->data;
+			if(!entry) continue;
 
-		/* Add transition to actor which will start immediately */
-		clutter_actor_add_transition(entry->actor, priv->id, entry->transition);
+			/* Add transition to actor which will start immediately */
+			clutter_actor_add_transition(entry->actor, priv->id, entry->transition);
 #ifdef DEBUG
-		XFDASHBOARD_DEBUG(self, ANIMATION,
-							"Animation '%s' added transition %p to actor %s@%p",
-							priv->id,
-							entry->transition,
-							G_OBJECT_TYPE_NAME(entry->actor),
-							entry->actor);
+			XFDASHBOARD_DEBUG(self, ANIMATION,
+								"Animation '%s' added transition %p to actor %s@%p",
+								priv->id,
+								entry->transition,
+								G_OBJECT_TYPE_NAME(entry->actor),
+								entry->actor);
 #endif
-	}
+		}
 
-	XFDASHBOARD_DEBUG(self, ANIMATION,
-						"Started animation '%s'",
-						priv->id);
+		XFDASHBOARD_DEBUG(self, ANIMATION,
+							"Started animation '%s'",
+							priv->id);
+	}
+		/* ... otherwise destroy empty animation immediately to get callback
+		 * function called and to avoid memory leaks.
+		 */
+		else
+		{
+			/* Destroy empty animation */
+			g_object_unref(self);
+		}
 }

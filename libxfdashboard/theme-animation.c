@@ -1168,12 +1168,6 @@ static void _xfdashboard_theme_animation_parse_trigger_start(GMarkupParseContext
 			return;
 		}
 
-		if(!_xfdashboard_theme_animation_string_to_gint(timelineDelayText, &timelineDelay, &error))
-		{
-			g_propagate_error(outError, error);
-			return;
-		}
-
 		timelineMode=xfdashboard_get_enum_value_from_nickname(CLUTTER_TYPE_ANIMATION_MODE, timelineModeText);
 		if(timelineMode==G_MININT)
 		{
