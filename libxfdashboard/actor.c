@@ -106,6 +106,7 @@ static void _xfdashboard_actor_animation_entry_free(XfdashboardActorAnimationEnt
 	g_return_if_fail(inData);
 
 	/* Release allocated resources */
+	if(inData->animation) g_object_unref(inData->animation);
 	if(inData->signal) g_free(inData->signal);
 	g_free(inData);
 }
@@ -758,7 +759,11 @@ static void _xfdashboard_actor_animation_done(XfdashboardAnimation *inAnimation,
 									"Removing stopped animation '%s'",
 									xfdashboard_animation_get_id(data->animation));
 
-			/* Remove entry from list */
+			/* Remove entry from list, but set pointer to animation in entry
+			 * to NULL to avoid unreffing an already disposed or finalized
+			 * object instance.
+			 */
+			data->animation=NULL;
 			_xfdashboard_actor_animation_entry_free(data);
 			priv->animations=g_slist_delete_link(priv->animations, iter);
 
@@ -807,7 +812,9 @@ static void _xfdashboard_actor_remove_animation(XfdashboardStylable *inStylable,
 									xfdashboard_animation_get_id(data->animation),
 									animationSignal);
 
-			/* Stop animation by unreffing object instance */
+			/* Stop animation by unreffing object instance which calls the
+			 * done callback _xfdashboard_actor_animation_done() of animation.
+			 */
 			g_object_unref(data->animation);
 		}
 	}
@@ -1138,7 +1145,8 @@ static void _xfdashboard_actor_dispose(GObject *inObject)
 
 	if(priv->animations)
 	{
-		// TODO: Release list of animations
+		g_slist_free_full(priv->animations, (GDestroyNotify)_xfdashboard_actor_animation_entry_free);
+		priv->animations=NULL;
 	}
 
 	/* Call parent's class dispose method */
