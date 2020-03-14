@@ -1610,12 +1610,16 @@ gchar* xfdashboard_application_database_get_file_from_desktop_id(const gchar *in
 
 	g_return_val_if_fail(inDesktopID && *inDesktopID, NULL);
 
+	/* Get singleton of application database */
+	appDB=xfdashboard_application_database_get_default();
+
 	/* Requested desktop ID must have ".desktop" suffix */
 	if(!g_str_has_suffix(inDesktopID, ".desktop"))
 	{
-		XFDASHBOARD_DEBUG(self, APPLICATIONS,
+		XFDASHBOARD_DEBUG(appDB, APPLICATIONS,
 							"Skipping non-desktop file '%s'",
 							inDesktopID);
+		g_object_unref(appDB);
 		return(NULL);
 	}
 
@@ -1644,9 +1648,6 @@ gchar* xfdashboard_application_database_get_file_from_desktop_id(const gchar *in
 	 *     is any search path left.
 	 * 5.) If this step is reached, no desktop file was found.
 	 */
-
-	/* Get singleton of application database */
-	appDB=xfdashboard_application_database_get_default();
 
 	/* Get search paths */
 	searchPaths=xfdashboard_application_database_get_application_search_paths(appDB);
