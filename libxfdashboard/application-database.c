@@ -1600,7 +1600,7 @@ GAppInfo* xfdashboard_application_database_lookup_desktop_id(XfdashboardApplicat
 }
 
 /* Get path to desktop file for requested desktop ID.
- * Returns NULL if no desktop file is invalid or was not found at any search path.
+ * Returns NULL if desktop file is invalid or was not found at any search path.
  */
 gchar* xfdashboard_application_database_get_file_from_desktop_id(const gchar *inDesktopID)
 {
