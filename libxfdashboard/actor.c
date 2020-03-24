@@ -50,17 +50,22 @@ void xfdashboard_actor_base_class_finalize(XfdashboardActorClass *klass);
 struct _XfdashboardActorPrivate
 {
 	/* Properties related */
-	gboolean		canFocus;
-	gchar			*effects;
+	gboolean				canFocus;
+	gchar					*effects;
 
-	gchar			*styleClasses;
-	gchar			*stylePseudoClasses;
+	gchar					*styleClasses;
+	gchar					*stylePseudoClasses;
 
 	/* Instance related */
-	GHashTable		*lastThemeStyleSet;
-	gboolean		forceStyleRevalidation;
-	gboolean		isFirstParent;
-	GSList			*animations;
+	GHashTable				*lastThemeStyleSet;
+	gboolean				forceStyleRevalidation;
+
+	gboolean				isFirstParent;
+
+	gboolean				firstTimeMapped;
+	XfdashboardAnimation	*firstTimeMappedAnimation;
+
+	GSList					*animations;
 };
 
 /* Properties */
@@ -181,19 +186,73 @@ static gboolean _xfdashboard_actor_hashtable_is_duplicate_key(gpointer inKey,
 	return(g_hash_table_lookup_extended(otherHashtable, inKey, NULL, NULL));
 }
 
+/* 'created' animation has completed */
+static void _xfdashboard_actor_first_time_created_animation_done(XfdashboardAnimation *inAnimation,
+																	gpointer inUserData)
+{
+	XfdashboardActor				*self;
+	XfdashboardActorPrivate			*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_ANIMATION(inAnimation));
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inUserData));
+
+	self=XFDASHBOARD_ACTOR(inUserData);
+	priv=self->priv;
+
+	/* Mark completed first-time animation as removed */
+	priv->firstTimeMappedAnimation=NULL;
+}
+
 /* Actor was mapped or unmapped */
 static void _xfdashboard_actor_on_mapped_changed(GObject *inObject,
 													GParamSpec *inSpec,
 													gpointer inUserData)
 {
-	XfdashboardActor		*self;
+	XfdashboardActor			*self;
+	XfdashboardActorPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inObject));
 
 	self=XFDASHBOARD_ACTOR(inObject);
+	priv=self->priv;
 
-	/* Invalide styling to get it recomputed */
-	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
+	/* If actor was mapped, invalidate styling and check for first-time animation */
+	if(clutter_actor_is_mapped(CLUTTER_ACTOR(self)))
+	{
+		/* Invalide styling to get it recomputed if actor was mapped */
+		xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
+
+		/* If actor was mapped for the first time then check if an animation
+		 * should be created and run.
+		 */
+		if(!priv->firstTimeMapped)
+		{
+			g_assert(!priv->firstTimeMappedAnimation);
+
+			/* Lookup animation for create signal and if any found (i.e. has an ID),
+			 * run it.
+			 */
+			priv->firstTimeMappedAnimation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), "created");
+			if(!xfdashboard_animation_get_id(priv->firstTimeMappedAnimation))
+			{
+				/* Empty or invalid animation, so release allocated resources and return */
+				g_object_unref(priv->firstTimeMappedAnimation);
+				priv->firstTimeMappedAnimation=NULL;
+
+				return;
+			}
+
+			/* Start animation */
+			xfdashboard_animation_run(priv->firstTimeMappedAnimation, _xfdashboard_actor_first_time_created_animation_done, self);
+			XFDASHBOARD_DEBUG(self, ANIMATION,
+									"Found and starting animation '%s' for created signal at actor %s",
+									xfdashboard_animation_get_id(priv->firstTimeMappedAnimation),
+									G_OBJECT_TYPE_NAME(self));
+
+			/* Set flag that first-time visible happened at this actor */
+			priv->firstTimeMapped=TRUE;
+		}
+	}
 }
 
 /* Actor was (re)named */
@@ -1143,6 +1202,12 @@ static void _xfdashboard_actor_dispose(GObject *inObject)
 		priv->lastThemeStyleSet=NULL;
 	}
 
+	if(priv->firstTimeMappedAnimation)
+	{
+		g_object_unref(priv->firstTimeMappedAnimation);
+		priv->firstTimeMappedAnimation=NULL;
+	}
+
 	if(priv->animations)
 	{
 		g_slist_free_full(priv->animations, (GDestroyNotify)_xfdashboard_actor_animation_entry_free);
@@ -1306,6 +1371,8 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 	priv->stylePseudoClasses=NULL;
 	priv->lastThemeStyleSet=NULL;
 	priv->isFirstParent=TRUE;
+	priv->firstTimeMapped=FALSE;
+	priv->firstTimeMappedAnimation=NULL;
 	priv->animations=NULL;
 
 	/* Connect signals */

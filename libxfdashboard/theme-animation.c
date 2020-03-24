@@ -1857,9 +1857,15 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 
 				/* Check if actor has property to animate */
 				propertySpec=g_object_class_find_property(G_OBJECT_GET_CLASS(actor), propertyTargetSpec->name);
+				if(!propertySpec && CLUTTER_IS_ANIMATABLE(actor))
+				{
+					propertySpec=clutter_animatable_find_property(CLUTTER_ANIMATABLE(actor), propertyTargetSpec->name);
+				}
+
 				if(!propertySpec)
 				{
-					g_warning(_("Cannot create animation for non-existing property '%s' at actor of type '%s'"),
+					g_warning(_("Cannot create animation '%s' for non-existing property '%s' at actor of type '%s'"),
+								spec->id,
 								propertyTargetSpec->name,
 								G_OBJECT_TYPE_NAME(actor));
 

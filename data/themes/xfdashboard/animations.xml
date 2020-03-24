@@ -14,4 +14,12 @@
 			</apply>
 		</timeline>
 	</trigger>
+
+	<trigger id="application-startup" sender="XfdashboardStageInterface" signal="created">
+		<timeline delay="0" duration="500" mode="linear">
+			<apply>
+				<property name="opacity" from="0" to="255" />
+			</apply>
+		</timeline>
+	</trigger>
 </animations>
