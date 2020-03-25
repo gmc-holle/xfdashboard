@@ -836,12 +836,10 @@ static void _xfdashboard_actor_animation_done(XfdashboardAnimation *inAnimation,
 
 /* Remove animations for signal and (pseudo-)class */
 static void _xfdashboard_actor_remove_animation(XfdashboardStylable *inStylable,
-												const gchar *inSignalPrefix,
-												const gchar *inClass)
+												const gchar *inAnimationSignal)
 {
 	XfdashboardActor				*self;
 	XfdashboardActorPrivate			*priv;
-	gchar							*animationSignal;
 	GSList							*iter;
 	XfdashboardActorAnimationEntry	*data;
 
@@ -849,9 +847,6 @@ static void _xfdashboard_actor_remove_animation(XfdashboardStylable *inStylable,
 
 	self=XFDASHBOARD_ACTOR(inStylable);
 	priv=self->priv;
-
-	/* Get signal to lookup animation */
-	animationSignal=g_strdup_printf("%s:%s", inSignalPrefix, inClass);
 
 	/* Iterate through list of animation and lookup animation for signal. If an
 	 * animation is found, stop it. It will be remove from list of animations
@@ -864,12 +859,12 @@ static void _xfdashboard_actor_remove_animation(XfdashboardStylable *inStylable,
 		if(!data) continue;
 
 		/* Check if animation entry matches the signal to lookup */
-		if(g_strcmp0(data->signal, animationSignal)==0)
+		if(g_strcmp0(data->signal, inAnimationSignal)==0)
 		{
 			XFDASHBOARD_DEBUG(self, ANIMATION,
 									"Stopping and removing animation '%s' for signal '%s'",
 									xfdashboard_animation_get_id(data->animation),
-									animationSignal);
+									inAnimationSignal);
 
 			/* Stop animation by unreffing object instance which calls the
 			 * done callback _xfdashboard_actor_animation_done() of animation.
@@ -877,20 +872,15 @@ static void _xfdashboard_actor_remove_animation(XfdashboardStylable *inStylable,
 			g_object_unref(data->animation);
 		}
 	}
-
-	/* Release allocated resources */
-	g_free(animationSignal);
 }
 
 /* Lookup animations for signal and (pseudo-)class and run animation at actor */
 static void _xfdashboard_actor_add_animation(XfdashboardStylable *inStylable,
-												const gchar *inSignalPrefix,
-												const gchar *inClass)
+												const gchar *inAnimationSignal)
 {
 	XfdashboardActor				*self;
 	XfdashboardActorPrivate			*priv;
 	XfdashboardAnimation			*animation;
-	gchar							*animationSignal;
 	XfdashboardActorAnimationEntry	*data;
 
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inStylable));
@@ -898,18 +888,14 @@ static void _xfdashboard_actor_add_animation(XfdashboardStylable *inStylable,
 	self=XFDASHBOARD_ACTOR(inStylable);
 	priv=self->priv;
 
-	/* Get signal to lookup animation */
-	animationSignal=g_strdup_printf("%s:%s", inSignalPrefix, inClass);
-
 	/* Lookup animation for signal-(pseudo-)class combination and if any found
 	 * (i.e. has an ID) add it to list of animations of actor and run it.
 	 */
-	animation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), animationSignal);
+	animation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), inAnimationSignal);
 	if(!xfdashboard_animation_get_id(animation))
 	{
 		/* Empty or invalid animation, so release allocated resources and return */
 		g_object_unref(animation);
-		g_free(animationSignal);
 
 		return;
 	}
@@ -919,11 +905,10 @@ static void _xfdashboard_actor_add_animation(XfdashboardStylable *inStylable,
 	{
 		XFDASHBOARD_DEBUG(self, ANIMATION,
 								"Duplicate animation found for signal '%s'",
-								animationSignal);
+								inAnimationSignal);
 
 		/* Release allocated resources */
 		g_object_unref(animation);
-		g_free(animationSignal);
 
 		return;
 	}
@@ -934,16 +919,15 @@ static void _xfdashboard_actor_add_animation(XfdashboardStylable *inStylable,
 	{
 		g_critical(_("Cannot allocate memory for animation entry for animation '%s' with signal '%s'"),
 					xfdashboard_animation_get_id(animation),
-					animationSignal);
+					inAnimationSignal);
 
 		/* Release allocated resources */
 		g_object_unref(animation);
-		g_free(animationSignal);
 
 		return;
 	}
 
-	data->signal=g_strdup(animationSignal);
+	data->signal=g_strdup(inAnimationSignal);
 	data->animation=animation;
 
 	priv->animations=g_slist_prepend(priv->animations, data);
@@ -953,58 +937,79 @@ static void _xfdashboard_actor_add_animation(XfdashboardStylable *inStylable,
 	XFDASHBOARD_DEBUG(self, ANIMATION,
 							"Found and starting animation '%s' for signal '%s'",
 							xfdashboard_animation_get_id(animation),
-							animationSignal);
-
-	/* Release allocated resources */
-	g_free(animationSignal);
+							inAnimationSignal);
 }
 
 /* Signal handler for "class-added" signal of stylable interface */
 static void _xfdashboard_actor_stylable_class_added(XfdashboardStylable *inStylable, const gchar *inClass)
 {
+	gchar			*animationSignal;
+
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inStylable));
 
 	/* Remove any animation that was added when this class was removed */
-	_xfdashboard_actor_remove_animation(inStylable, "class-removed", inClass);
+	animationSignal=g_strdup_printf("class-removed:%s", inClass);
+	_xfdashboard_actor_remove_animation(inStylable, animationSignal);
+	g_free(animationSignal);
 
 	/* Create animation for this class added */
-	_xfdashboard_actor_add_animation(inStylable, "class-added", inClass);
+	animationSignal=g_strdup_printf("class-added:%s", inClass);
+	_xfdashboard_actor_add_animation(inStylable, animationSignal);
+	g_free(animationSignal);
 }
 
 /* Signal handler for "class-removed" signal of stylable interface */
 static void _xfdashboard_actor_stylable_class_removed(XfdashboardStylable *inStylable, const gchar *inClass)
 {
+	gchar			*animationSignal;
+
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inStylable));
 
 	/* Remove any animation that was added when this class was added */
-	_xfdashboard_actor_remove_animation(inStylable, "class-added", inClass);
+	animationSignal=g_strdup_printf("class-added:%s", inClass);
+	_xfdashboard_actor_remove_animation(inStylable, animationSignal);
+	g_free(animationSignal);
 
 	/* Create animation for this class removed */
-	_xfdashboard_actor_add_animation(inStylable, "class-removed", inClass);
+	animationSignal=g_strdup_printf("class-removed:%s", inClass);
+	_xfdashboard_actor_add_animation(inStylable, animationSignal);
+	g_free(animationSignal);
 }
 
 /* Signal handler for "pseudo-class-added" signal of stylable interface */
 static void _xfdashboard_actor_stylable_pseudo_class_added(XfdashboardStylable *inStylable, const gchar *inClass)
 {
+	gchar			*animationSignal;
+
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inStylable));
 
 	/* Remove any animation that was added when this pseudo-class was removed */
-	_xfdashboard_actor_remove_animation(inStylable, "pseudo-class-removed", inClass);
+	animationSignal=g_strdup_printf("pseudo-class-removed:%s", inClass);
+	_xfdashboard_actor_remove_animation(inStylable, animationSignal);
+	g_free(animationSignal);
 
 	/* Create animation for this pseudo-class added */
-	_xfdashboard_actor_add_animation(inStylable, "pseudo-class-added", inClass);
+	animationSignal=g_strdup_printf("pseudo-class-added:%s", inClass);
+	_xfdashboard_actor_add_animation(inStylable, animationSignal);
+	g_free(animationSignal);
 }
 
 /* Signal handler for "pseudo-class-removed" signal of stylable interface */
 static void _xfdashboard_actor_stylable_pseudo_class_removed(XfdashboardStylable *inStylable, const gchar *inClass)
 {
+	gchar			*animationSignal;
+
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inStylable));
 
 	/* Remove any animation that was added when this pseudo-class was added */
-	_xfdashboard_actor_remove_animation(inStylable, "pseudo-class-added", inClass);
+	animationSignal=g_strdup_printf("pseudo-class-added:%s", inClass);
+	_xfdashboard_actor_remove_animation(inStylable, animationSignal);
+	g_free(animationSignal);
 
 	/* Create animation for this pseudo-class removed */
-	_xfdashboard_actor_add_animation(inStylable, "pseudo-class-removed", inClass);
+	animationSignal=g_strdup_printf("pseudo-class-removed:%s", inClass);
+	_xfdashboard_actor_add_animation(inStylable, animationSignal);
+	g_free(animationSignal);
 }
 
 /* Interface initialization
