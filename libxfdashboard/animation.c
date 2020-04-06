@@ -71,9 +71,7 @@ struct _XfdashboardAnimationPrivate
 
 	/* Instance related */
 	GSList								*entries;
-
-	XfdashboardAnimationDoneCallback	doneCallback;
-	gpointer							doneUserData;
+	gboolean							inDestruction;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardAnimation,
@@ -92,6 +90,15 @@ enum
 
 static GParamSpec* XfdashboardAnimationProperties[PROP_LAST]={ 0, };
 
+/* Signals */
+enum
+{
+	SIGNAL_ANIMIATION_DONE,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardAnimationSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
@@ -229,12 +236,16 @@ static void _xfdashboard_animation_entry_free(XfdashboardAnimationEntry *inData)
 	g_return_if_fail(inData);
 
 	/* Release allocated resources */
-	if(inData->newFrameSignalID) g_signal_handler_disconnect(inData->transition, inData->newFrameSignalID);
-	if(inData->transitionStoppedID) g_signal_handler_disconnect(inData->transition, inData->transitionStoppedID);
-	if(inData->actorDestroyID) g_signal_handler_disconnect(inData->actor, inData->actorDestroyID);
-	if(inData->transition) g_object_unref(inData->transition);
+	if(inData->transition)
+	{
+		if(inData->newFrameSignalID) g_signal_handler_disconnect(inData->transition, inData->newFrameSignalID);
+		if(inData->transitionStoppedID) g_signal_handler_disconnect(inData->transition, inData->transitionStoppedID);
+		clutter_timeline_stop(CLUTTER_TIMELINE(inData->transition));
+		g_object_unref(inData->transition);
+	}
 	if(inData->actor)
 	{
+		if(inData->actorDestroyID) g_signal_handler_disconnect(inData->actor, inData->actorDestroyID);
 		clutter_actor_remove_transition(inData->actor, inData->self->priv->id);
 		g_object_unref(inData->actor);
 	}
@@ -458,16 +469,29 @@ static void _xfdashboard_animation_dispose(GObject *inObject)
 						"Destroying animation '%s'",
 						priv->id);
 
-	/* Call done callback first before any private data is destroyed */
-	if(priv->doneCallback)
+	if(!priv->inDestruction)
 	{
-		/* Call done callback function */
-		(priv->doneCallback)(self, priv->doneUserData);
+		priv->inDestruction=TRUE;
 
-		/* Unset done callback data */
-		priv->doneCallback=NULL;
-		priv->doneUserData=NULL;
+		/* Emit 'animation-done' signal*/
+		g_signal_emit(self, XfdashboardAnimationSignals[SIGNAL_ANIMIATION_DONE], 0);
 	}
+
+	/* Call parent's class dispose method */
+	G_OBJECT_CLASS(xfdashboard_animation_parent_class)->dispose(inObject);
+}
+
+/* Finalize this object */
+static void _xfdashboard_animation_finalize(GObject *inObject)
+{
+	XfdashboardAnimation			*self=XFDASHBOARD_ANIMATION(inObject);
+	XfdashboardAnimationPrivate		*priv=self->priv;
+
+	XFDASHBOARD_DEBUG(self, ANIMATION,
+						"Destroying animation '%s'",
+						priv->id);
+
+	g_assert(priv->inDestruction);
 
 	/* Release our allocated variables
 	 * Order is important as the ID MUST be released at last!
@@ -485,7 +509,7 @@ static void _xfdashboard_animation_dispose(GObject *inObject)
 	}
 
 	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_animation_parent_class)->dispose(inObject);
+	G_OBJECT_CLASS(xfdashboard_animation_parent_class)->finalize(inObject);
 }
 
 /* Set/get properties */
@@ -540,8 +564,29 @@ void xfdashboard_animation_class_init(XfdashboardAnimationClass *klass)
 	klass->add_animation=_xfdashboard_animation_real_add_animation;
 
 	gobjectClass->dispose=_xfdashboard_animation_dispose;
+	gobjectClass->finalize=_xfdashboard_animation_finalize;
 	gobjectClass->set_property=_xfdashboard_animation_set_property;
 	gobjectClass->get_property=_xfdashboard_animation_get_property;
+
+	/* Define signals */
+	/**
+	 * XfdashboardAnimation::animation-done:
+	 * @self: The animation
+	 *
+	 * The ::animation-done signal is emitted when the animation
+	 * will be destroyed, i.e. either the animation has completed
+	 * or was removed while running.
+	 */
+	XfdashboardAnimationSignals[SIGNAL_ANIMIATION_DONE]=
+		g_signal_new("animation-done",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_CLEANUP,
+						G_STRUCT_OFFSET(XfdashboardAnimationClass, animation_done),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
 
 	/* Define properties */
 	/**
@@ -571,6 +616,7 @@ void xfdashboard_animation_init(XfdashboardAnimation *self)
 	/* Set up default values */
 	priv->id=NULL;
 	priv->entries=NULL;
+	priv->inDestruction=FALSE;
 }
 
 
@@ -629,19 +675,29 @@ const gchar* xfdashboard_animation_get_id(XfdashboardAnimation *self)
 }
 
 /**
+ * xfdashboard_animation_is_empty:
+ * @self: A #XfdashboardAnimation
+ *
+ * Dertermines if animation at @self has any transitions.
+ *
+ * Return value: FALSE if animation contains transition or TRUE if empty.
+ */
+gboolean xfdashboard_animation_is_empty(XfdashboardAnimation *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_ANIMATION(self), TRUE);
+
+	return(self->priv->entries ? FALSE : TRUE);
+}
+
+/**
  * xfdashboard_animation_run:
  * @self: A #XfdashboardAnimation
- * @inCallback: Function to call when animation is destroyed
- * @inUserData: Data to pass to callback function
  *
- * Starts the animation of @self. The callback function @inCallback
- * with this animation and the user-data at @inUserData is called
- * when the animation is destroyed, either is has reached the end
- * of its timeline or was stopped before.
+ * Starts the animation of @self. It emits the ::done signal
+ * when the animation is destroyed, either is has reached the
+ * end of its timeline or was stopped before.
  */
-void xfdashboard_animation_run(XfdashboardAnimation *self,
-								XfdashboardAnimationDoneCallback inCallback,
-								gpointer inUserData)
+void xfdashboard_animation_run(XfdashboardAnimation *self)
 {
 	XfdashboardAnimationPrivate		*priv;
 	GSList							*iter;
@@ -650,13 +706,6 @@ void xfdashboard_animation_run(XfdashboardAnimation *self,
 	g_return_if_fail(XFDASHBOARD_IS_ANIMATION(self));
 
 	priv=self->priv;
-
-	/* Store callback function and its user data which is called
-	 * in destruction function when animation is done, e.g.
-	 * animation completed or was removed before it completed.
-	 */
-	priv->doneCallback=inCallback;
-	priv->doneUserData=inUserData;
 
 	/* Add all transition to their actors now if any available ... */
 	if(priv->entries)
@@ -688,7 +737,40 @@ void xfdashboard_animation_run(XfdashboardAnimation *self,
 		 */
 		else
 		{
-			/* Destroy empty animation */
+			/* Destroy empty animation immediately */
 			g_object_unref(self);
 		}
+}
+
+/**
+ * xfdashboard_animation_ensure_complete:
+ * @self: A #XfdashboardAnimation
+ *
+ * Ensures that the animation at @self has reached the end
+ * of its timeline but will not destroy the animation. Its
+ * purpose is mainly to ensure the animation has completed
+ * before it gets destroyed by other parts of the application.
+ */
+void xfdashboard_animation_ensure_complete(XfdashboardAnimation *self)
+{
+	XfdashboardAnimationPrivate		*priv;
+	GSList							*iter;
+	XfdashboardAnimationEntry		*entry;
+	guint							duration;
+
+	g_return_if_fail(XFDASHBOARD_IS_ANIMATION(self));
+
+	priv=self->priv;
+
+	for(iter=priv->entries; iter; iter=g_slist_next(iter))
+	{
+		/* Get entry */
+		entry=(XfdashboardAnimationEntry*)iter->data;
+		if(!entry) continue;
+
+		/* Advance timeline to last frame */
+		duration=clutter_timeline_get_duration(CLUTTER_TIMELINE(entry->transition));
+		clutter_timeline_advance(CLUTTER_TIMELINE(entry->transition), duration);
+		g_signal_emit_by_name(entry->transition, "new-frame", 0, clutter_timeline_get_elapsed_time(CLUTTER_TIMELINE(entry->transition)));
+	}
 }

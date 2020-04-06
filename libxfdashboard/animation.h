@@ -75,8 +75,7 @@ struct _XfdashboardAnimationClass
 	/*< public >*/
 	/* Virtual functions */
 	void (*add_animation)(XfdashboardAnimation *self, ClutterActor *inActor, ClutterTransition *inTransition);
-	void (*started)(XfdashboardAnimation *self);
-	void (*stopped)(XfdashboardAnimation *self);
+	void (*animation_done)(XfdashboardAnimation *self);
 };
 
 /* Public API */
@@ -86,19 +85,11 @@ XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, cons
 
 const gchar* xfdashboard_animation_get_id(XfdashboardAnimation *self);
 
-/**
- * XfdashboardAnimationDoneCallback:
- * @inAnimation: The animation which completed
- * @inUserData: Data passed to the function, set with xfdashboard_animation_run()
- *
- * A callback called when animation, started by xfdashboard_animation_run(),
- * has completed and will be destroyed.
- */
-typedef void (*XfdashboardAnimationDoneCallback)(XfdashboardAnimation *inAnimation, gpointer inUserData);
+gboolean xfdashboard_animation_is_empty(XfdashboardAnimation *self);
 
-void xfdashboard_animation_run(XfdashboardAnimation *self,
-								XfdashboardAnimationDoneCallback inCallback,
-								gpointer inUserData);
+void xfdashboard_animation_run(XfdashboardAnimation *self);
+
+void xfdashboard_animation_ensure_complete(XfdashboardAnimation *self);
 
 G_END_DECLS
 

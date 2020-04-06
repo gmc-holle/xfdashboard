@@ -81,7 +81,6 @@ struct _XfdashboardTransitionGroupPrivate
 
 	/* Instance related */
 	GHashTable							*transitions;
-	GList								*bindings;
 	XfdashboardTransitionActorSetFlags	flags;
 };
 
@@ -103,46 +102,6 @@ enum
 static GParamSpec* XfdashboardTransitionGroupProperties[PROP_LAST]={ 0, };
 
 
-/* IMPLEMENTATION: Private variables and methods */
-
-typedef struct _XfdashboardTransitionGroupBindingEntry		XfdashboardTransitionGroupBindingEntry;
-struct _XfdashboardTransitionGroupBindingEntry
-{
-	XfdashboardTransitionGroup	*self;
-	GBinding					*binding;
-};
-
-/* Property names to bind when transition is added */
-static const gchar *_xfdashboard_transition_group_bindable_properties[]=
-{
-	"auto-reverse",
-	"delay",
-	"duration",
-	"loop",
-	"progress-mode",
-	"repeat-count",
-	NULL
-};
-
-/* A binding entry is notified about its destruction */
-static void _xfdashboard_transition_group_binding_notified(gpointer inData)
-{
-	XfdashboardTransitionGroup					*self;
-	XfdashboardTransitionGroupPrivate			*priv;
-	XfdashboardTransitionGroupBindingEntry		*entry;
-
-	entry=(XfdashboardTransitionGroupBindingEntry*)inData;
-	self=entry->self;
-	priv=self->priv;
-
-	/* Remove binding from list */
-	priv->bindings=g_list_remove(priv->bindings, entry->binding);
-
-	/* Release allocated resources of entry */
-	g_free(inData);
-}
-
-
 /* IMPLEMENTATION: ClutterTimeline */
 
 /* Time at transition has elapsed, so advance all transitions as well */
@@ -153,19 +112,125 @@ static void _xfdashboard_transition_group_timeline_new_frame(ClutterTimeline *in
 	XfdashboardTransitionGroupPrivate	*priv;
 	GHashTableIter						iter;
 	gpointer							element;
+	gint								currentLoop;
+#ifdef DEBUG
+	gboolean							doDebug=TRUE;
+#endif
 
 	g_return_if_fail(XFDASHBOARD_IS_TRANSITION_GROUP(inTimeline));
 
 	self=XFDASHBOARD_TRANSITION_GROUP(inTimeline);
 	priv=self->priv;
 
+	/* Get current number of loop repeated */
+	currentLoop=clutter_timeline_get_repeat_count(inTimeline);
+
 	/* Iterate through transitions and advance their timeline */
+#ifdef DEBUG
+	if(doDebug)
+	{
+		ClutterAnimatable				*animatable;
+
+		animatable=clutter_transition_get_animatable(CLUTTER_TRANSITION(self));
+		XFDASHBOARD_DEBUG(self, ANIMATION,
+							"Processing 'new-frame' signal for %s@%p with state %s and timeline %u ms/%u ms for animatable actor %s@%p",
+							G_OBJECT_TYPE_NAME(self),
+							self,
+							clutter_timeline_is_playing(inTimeline) ? "PLAYING" : "STOPPED",
+							clutter_timeline_get_elapsed_time(inTimeline),
+							clutter_timeline_get_duration(inTimeline),
+							G_OBJECT_TYPE_NAME(animatable),
+							animatable);
+	}
+#endif
+
 	g_hash_table_iter_init(&iter, priv->transitions);
 	while(g_hash_table_iter_next(&iter, &element, NULL))
 	{
-		clutter_timeline_advance(CLUTTER_TIMELINE(element), clutter_timeline_get_elapsed_time(inTimeline));
-		g_signal_emit_by_name(element, "new-frame", 0, clutter_timeline_get_elapsed_time(inTimeline));
+		guint							maxDuration;
+		gint							maxLoop;
+
+		maxDuration=clutter_timeline_get_delay(CLUTTER_TIMELINE(element))+clutter_timeline_get_duration(CLUTTER_TIMELINE(element));
+		maxLoop=clutter_timeline_get_repeat_count(CLUTTER_TIMELINE(element));
+		if(((guint)inElapsed)<=maxDuration &&
+			(maxLoop<0 || currentLoop<=maxLoop))
+		{
+			clutter_timeline_advance(CLUTTER_TIMELINE(element), clutter_timeline_get_elapsed_time(inTimeline));
+			g_signal_emit_by_name(element, "new-frame", 0, clutter_timeline_get_elapsed_time(inTimeline));
+#ifdef DEBUG
+			if(doDebug)
+			{
+				const gchar				*propertyName=clutter_property_transition_get_property_name(CLUTTER_PROPERTY_TRANSITION(element));
+				ClutterInterval			*propertyInterval=clutter_transition_get_interval(CLUTTER_TRANSITION(element));
+				GValue					*fromValue=clutter_interval_peek_final_value(propertyInterval);
+				gchar					*fromValueString;
+				GValue					*toValue=clutter_interval_peek_final_value(propertyInterval);
+				gchar					*toValueString;
+				GValue					currentValue=G_VALUE_INIT;
+				gchar					*currentValueString;
+				ClutterAnimatable		*animatable;
+
+				animatable=clutter_transition_get_animatable(CLUTTER_TRANSITION(element));
+
+				g_value_init(&currentValue, clutter_interval_get_value_type(propertyInterval));
+				g_object_get_property(G_OBJECT(animatable), propertyName, &currentValue);
+
+				fromValueString=g_strdup_value_contents(fromValue);
+				toValueString=g_strdup_value_contents(toValue);
+				currentValueString=g_strdup_value_contents(&currentValue);
+
+				XFDASHBOARD_DEBUG(self, ANIMATION,
+									"Processing transition %s@%p with timeline %u ms/%u ms and loop of %d/%d, so set property '%s' to %s (from=%s, to=%s)",
+									G_OBJECT_TYPE_NAME(element),
+									element,
+									clutter_timeline_get_elapsed_time(CLUTTER_TIMELINE(element)),
+									maxDuration,
+									currentLoop,
+									maxLoop,
+									propertyName,
+									currentValueString,
+									fromValueString,
+									toValueString);
+
+				g_free(currentValueString);
+				g_free(toValueString);
+				g_free(fromValueString);
+				g_value_unset(&currentValue);
+			}
+#endif
+		}
+#ifdef DEBUG
+			else
+			{
+				if(doDebug)
+				{
+					XFDASHBOARD_DEBUG(self, ANIMATION,
+										"Skipping transition %s@%p because elapsed time of %u ms and loop %d is behind its duration of %u ms and max loop of %d",
+										G_OBJECT_TYPE_NAME(element),
+										element,
+										inElapsed,
+										currentLoop,
+										maxDuration,
+										maxLoop);
+				}
+			}
+#endif
 	}
+
+#ifdef DEBUG
+	if(doDebug)
+	{
+		ClutterAnimatable				*animatable;
+
+		animatable=clutter_transition_get_animatable(CLUTTER_TRANSITION(self));
+		XFDASHBOARD_DEBUG(self, ANIMATION,
+							"Processed 'new-frame' signal for %s@%p and animatable actor %s@%p",
+							G_OBJECT_TYPE_NAME(self),
+							self,
+							G_OBJECT_TYPE_NAME(animatable),
+							animatable);
+	}
+#endif
 }
 
 /* This transition group was started */
@@ -340,6 +405,20 @@ static void _xfdashboard_transition_group_transition_detached(ClutterTransition 
 
 /* IMPLEMENTATION: GObject */
 
+/* Dispose this object */
+static void _xfdashboard_transition_group_dispose(GObject *inObject)
+{
+	XfdashboardTransitionGroup			*self=XFDASHBOARD_TRANSITION_GROUP(inObject);
+	ClutterAnimatable					*animatable;
+
+	/* Restore "*-set" properties */
+	animatable=clutter_transition_get_animatable(CLUTTER_TRANSITION(self));
+	if(animatable) _xfdashboard_transition_group_transition_detached(CLUTTER_TRANSITION(self), animatable);
+
+	/* Call parent's class dispose method */
+	G_OBJECT_CLASS(xfdashboard_transition_group_parent_class)->dispose(inObject);
+}
+
 /* Finalize this object */
 static void _xfdashboard_transition_group_finalize(GObject *inObject)
 {
@@ -347,24 +426,6 @@ static void _xfdashboard_transition_group_finalize(GObject *inObject)
 	XfdashboardTransitionGroupPrivate	*priv=self->priv;
 
 	/* Release our allocated variables */
-	if(priv->bindings)
-	{
-		GList							*iter;
-		GBinding						*binding;
-
-		for(iter=priv->bindings; iter; iter=g_list_next(iter))
-		{
-			/* Release valid bindings */
-			binding=(GBinding*)iter->data;
-			if(!binding) continue;
-
-			/* Unbind binding and release object */
-			g_object_unref(binding);
-		}
-		g_list_free(priv->bindings);
-		priv->bindings=NULL;
-	}
-
 	if(priv->transitions)
 	{
 		g_hash_table_unref(priv->transitions);
@@ -429,6 +490,7 @@ void xfdashboard_transition_group_class_init(XfdashboardTransitionGroupClass *kl
 	/* Override functions */
 	gobjectClass->set_property=_xfdashboard_transition_group_set_property;
 	gobjectClass->get_property=_xfdashboard_transition_group_get_property;
+	gobjectClass->dispose=_xfdashboard_transition_group_dispose;
 	gobjectClass->finalize=_xfdashboard_transition_group_finalize;
 
 	timelineClass->started=_xfdashboard_transition_group_timeline_started;
@@ -462,7 +524,6 @@ void xfdashboard_transition_group_init(XfdashboardTransitionGroup *self)
 											NULL,
 											(GDestroyNotify)g_object_unref,
 											NULL);
-	priv->bindings=NULL;
 }
 
 
@@ -502,43 +563,7 @@ void xfdashboard_transition_group_add_transition(XfdashboardTransitionGroup *sel
 	priv=self->priv;
 
 	/* Add and set up transition */
-	if(g_hash_table_add(priv->transitions, g_object_ref(inTransition)))
-	{
-		const gchar								**iter;
-		GBinding								*binding;
-		XfdashboardTransitionGroupBindingEntry	*entry;
-
-		/* Clone timeline configuration to transition and bind properties
-		 * to update them at added transition when this timeline changes
-		 * as this transition is new to this group.
-		 */
-		for(iter=_xfdashboard_transition_group_bindable_properties; *iter; iter++)
-		{
-			entry=g_new0(XfdashboardTransitionGroupBindingEntry, 1);
-			binding=g_object_bind_property_full(self, *iter,
-												inTransition, *iter,
-												G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE,
-												NULL,
-												NULL,
-												entry,
-												_xfdashboard_transition_group_binding_notified);
-
-			entry->self=self;
-			entry->binding=binding;
-
-			priv->bindings=g_list_prepend(priv->bindings, binding);
-
-			XFDASHBOARD_DEBUG(self, ANIMATION,
-								"Bind property '%s' from transition group %s@%p to actor %s@%p via %s@%p",
-								*iter,
-								G_OBJECT_TYPE_NAME(self),
-								self,
-								G_OBJECT_TYPE_NAME(inTransition),
-								inTransition,
-								G_OBJECT_TYPE_NAME(binding),
-								binding);
-		}
-	}
+	g_hash_table_add(priv->transitions, g_object_ref(inTransition));
 }
 
 /**
@@ -561,57 +586,6 @@ void xfdashboard_transition_group_remove_transition(XfdashboardTransitionGroup *
 
 	priv=self->priv;
 
-	/* First remove bindings to transition as long as a reference is held */
-	if(priv->bindings)
-	{
-		GList							*iter;
-		GList							*nextIter;
-
-		iter=priv->bindings;
-		while(iter)
-		{
-			GBinding					*binding;
-
-			/* Get next element to iterate */
-			nextIter=g_list_next(iter);
-
-			/* Get currently iterated binding */
-			binding=(GBinding*)(iter->data);
-			if(!binding)
-			{
-				iter=nextIter;
-				continue;
-			}
-
-			/* If binding's target refers to transition removed,
-			 * unbind it.
-			 */
-			if(g_binding_get_target(binding)==G_OBJECT(inTransition))
-			{
-				/* Remove binding from list */
-				priv->bindings=g_list_remove_link(priv->bindings, iter);
-
-				/* Unbind property binding */
-				XFDASHBOARD_DEBUG(self, ANIMATION,
-									"Unbinding property '%s' from transition group %s@%p at actor %s@%p via %s@%p",
-									g_binding_get_source_property(binding),
-									G_OBJECT_TYPE_NAME(self),
-									self,
-									G_OBJECT_TYPE_NAME(inTransition),
-									inTransition,
-									G_OBJECT_TYPE_NAME(binding),
-									binding);
-				g_binding_unbind(binding);
-
-				/* Free list element currently iterated */
-				g_list_free(iter);
-			}
-
-			/* Move to next element */
-			iter=nextIter;
-		}
-	}
-
 	/* Remove transition */
 	g_hash_table_remove(priv->transitions, inTransition);
 }
@@ -632,13 +606,6 @@ void xfdashboard_transition_group_remove_all(XfdashboardTransitionGroup *self)
 	g_return_if_fail(XFDASHBOARD_IS_TRANSITION_GROUP(self));
 
 	priv=self->priv;
-
-	/* First remove all binding as long as a reference to transition is held */
-	if(priv->bindings)
-	{
-		g_list_free_full(priv->bindings, (GDestroyNotify)g_binding_unbind);
-		priv->bindings=NULL;
-	}
 
 	/* Remove all transitions */
 	g_hash_table_remove_all(priv->transitions);

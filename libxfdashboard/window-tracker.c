@@ -44,7 +44,6 @@ G_DEFINE_INTERFACE(XfdashboardWindowTracker,
 
 
 /* Signals */
-
 enum
 {
 	SIGNAL_WINDOW_STACKING_CHANGED,
@@ -77,6 +76,7 @@ enum
 };
 
 static guint XfdashboardWindowTrackerSignals[SIGNAL_LAST]={ 0, };
+
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_WINDOWS_TRACKER_WARN_NOT_IMPLEMENTED(self, vfunc)  \

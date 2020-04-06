@@ -724,7 +724,8 @@ void xfdashboard_collapse_box_set_collapsed(XfdashboardCollapseBox *self, gboole
 		g_signal_emit(self, XfdashboardCollapseBoxSignals[SIGNAL_COLLAPSED_CHANGED], 0, priv->isCollapsed);
 
 		/* Start animation */
-		xfdashboard_animation_run(priv->expandCollapseAnimation, _xfdashboard_collapse_box_animation_done, self);
+		g_signal_connect(priv->expandCollapseAnimation, "animation-done", G_CALLBACK(_xfdashboard_collapse_box_animation_done), self);
+		xfdashboard_animation_run(priv->expandCollapseAnimation);
 	}
 }
 

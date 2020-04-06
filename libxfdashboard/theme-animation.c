@@ -1689,6 +1689,7 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 	GSList													*iterTargets;
 	gint													counterTargets;
 	gboolean												animationEnabled;
+	GHashTable												*animationActorMap;
 #ifdef DEBUG
 	gboolean												doDebug=TRUE;
 #endif
@@ -1698,6 +1699,7 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 	g_return_val_if_fail(inSignal && *inSignal, NULL);
 
 	animation=NULL;
+	animationActorMap=NULL;
 
 	/* Create empty animation */
 	animation=g_object_new(XFDASHBOARD_TYPE_ANIMATION,
@@ -1768,6 +1770,9 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 						inSignal,
 						g_slist_length(spec->targets));
 
+	/* Create actor-animation-list-mapping via a hash-table */
+	animationActorMap=g_hash_table_new(g_direct_hash, g_direct_equal);
+
 	/* Iterate through animation targets of animation specification and create
 	 * property transition for each target and property found.
 	 */
@@ -1802,42 +1807,11 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 		{
 			GSList											*iterProperties;
 			ClutterActor									*actor;
-			ClutterTransition								*transitionGroup;
 			int												counterProperties;
 
 			/* Get actor */
 			actor=(ClutterActor*)iterActors->data;
 			if(!actor) continue;
-
-			/* Create transition group to collect property transitions at */
-			transitionGroup=xfdashboard_transition_group_new();
-			if(!transitionGroup)
-			{
-				g_critical(_("Cannot allocate memory for transition group of animation specification '%s'"),
-							spec->id);
-				
-				/* Release allocated resources */
-				g_slist_free(actors);
-				g_object_unref(animation);
-
-				return(NULL);
-			}
-
-			/* Clone timeline configuration from animation target */
-			clutter_timeline_set_duration(CLUTTER_TIMELINE(transitionGroup), clutter_timeline_get_duration(targets->timeline));
-			clutter_timeline_set_delay(CLUTTER_TIMELINE(transitionGroup), clutter_timeline_get_delay(targets->timeline));
-			clutter_timeline_set_progress_mode(CLUTTER_TIMELINE(transitionGroup), clutter_timeline_get_progress_mode(targets->timeline));
-			clutter_timeline_set_repeat_count(CLUTTER_TIMELINE(transitionGroup), clutter_timeline_get_repeat_count(targets->timeline));
-
-			XFDASHBOARD_DEBUG(self, ANIMATION,
-								"Created transition group at %p for %d properties for target #%d and actor #%d (%s@%p) of animation specification '%s'",
-								transitionGroup,
-								g_slist_length(targets->properties),
-								counterTargets,
-								counterActors,
-								G_OBJECT_TYPE_NAME(actor),
-								actor,
-								spec->id);
 
 			/* Iterate through properties and create a property transition
 			 * with cloned timeline from animation target. Determine "from"
@@ -1993,6 +1967,7 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 				if(G_VALUE_TYPE(&fromValue)!=G_TYPE_INVALID)
 				{
 					ClutterTransition						*propertyTransition;
+					GSList									*animationList;
 
 					/* Create property transition */
 					propertyTransition=clutter_property_transition_new(propertyTargetSpec->name);
@@ -2010,6 +1985,12 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 						continue;
 					}
 
+					/* Clone timeline configuration from animation target */
+					clutter_timeline_set_duration(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_duration(targets->timeline));
+					clutter_timeline_set_delay(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_delay(targets->timeline));
+					clutter_timeline_set_progress_mode(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_progress_mode(targets->timeline));
+					clutter_timeline_set_repeat_count(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_repeat_count(targets->timeline));
+
 					/* Set "from" value */
 					clutter_transition_set_from_value(propertyTransition, &fromValue);
 
@@ -2019,11 +2000,11 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 						clutter_transition_set_to_value(propertyTransition, &toValue);
 					}
 
-					/* Add property transition to transition group */
-					xfdashboard_transition_group_add_transition(XFDASHBOARD_TRANSITION_GROUP(transitionGroup), propertyTransition);
+					/* Add animation to list of animations of target actor */
+					animationList=g_hash_table_lookup(animationActorMap, actor);
+					animationList=g_slist_prepend(animationList, propertyTransition);
+					g_hash_table_insert(animationActorMap, actor, animationList);
 
-					/* Release allocated resources */
-					g_object_unref(propertyTransition);
 					XFDASHBOARD_DEBUG(self, ANIMATION,
 										"Created transition for property '%s' at target #%d and actor #%d (%s@%p) of animation specification '%s'",
 										propertyTargetSpec->name,
@@ -2038,21 +2019,137 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 				g_value_unset(&fromValue);
 				g_value_unset(&toValue);
 			}
+		}
+
+		/* Release allocated resources */
+		g_slist_free(actors);
+	}
+
+	/* Now iterate through actor-animation-list-mapping, create a transition group for each actor
+	 * and add its animation to this newly created group.
+	 */
+	if(animationActorMap)
+	{
+		GHashTableIter										hashIter;
+		ClutterActor										*hashIterActor;
+		GSList												*hashIterList;
+
+		g_hash_table_iter_init(&hashIter, animationActorMap);
+		while(g_hash_table_iter_next(&hashIter, (gpointer*)&hashIterActor, (gpointer*)&hashIterList))
+		{
+			ClutterTransition								*transitionGroup;
+			GSList											*listIter;
+			guint											groupDuration;
+			gint											groupLoop;
+
+			/* Skip empty but warn */
+			if(!hashIterList)
+			{
+				g_critical(_("Empty animation list when creating animation for animation specification '%s'"),
+							spec->id);
+				continue;
+			}
+
+			/* Create transition group to collect property transitions at */
+			transitionGroup=xfdashboard_transition_group_new();
+			if(!transitionGroup)
+			{
+				g_critical(_("Cannot allocate memory for transition group of animation specification '%s'"),
+							spec->id);
+				
+				/* Release allocated resources */
+				g_hash_table_foreach(animationActorMap, g_slist_free, NULL);
+				g_hash_table_destroy(animationActorMap);
+				g_object_unref(animation);
+				if(spec) _xfdashboard_theme_animation_spec_unref(spec);
+
+				return(NULL);
+			}
+
+			XFDASHBOARD_DEBUG(self, ANIMATION,
+								"Created transition group at %p for %d properties for actor %s@%p of animation specification '%s'",
+								transitionGroup,
+								g_slist_length(hashIterList),
+								G_OBJECT_TYPE_NAME(hashIterActor),
+								hashIterActor,
+								spec->id);
+
+			/* Add animations to transition group */
+			groupDuration=0;
+			groupLoop=0;
+			for(listIter=hashIterList; listIter; listIter=g_slist_next(listIter))
+			{
+				ClutterTransition							*transition;
+				gint										transitionLoop;
+				guint										transitionDuration;
+
+				/* Get transition to add */
+				transition=(ClutterTransition*)listIter->data;
+				if(!transition) continue;
+
+				/* Adjust timeline values for transition group to play animation fully */
+				transitionDuration=clutter_timeline_get_delay(CLUTTER_TIMELINE(transition))+clutter_timeline_get_duration(CLUTTER_TIMELINE(transition));
+				if(transitionDuration>groupDuration) groupDuration=transitionDuration;
+
+				if(groupLoop>=0)
+				{
+					transitionLoop=clutter_timeline_get_repeat_count(CLUTTER_TIMELINE(transition));
+					if(transitionLoop>groupLoop) groupLoop=transitionLoop;
+				}
+
+				/* Add property transition to transition group */
+				xfdashboard_transition_group_add_transition(XFDASHBOARD_TRANSITION_GROUP(transitionGroup), transition);
+
+				XFDASHBOARD_DEBUG(self, ANIMATION,
+									"Added transition %s@%p (duration %u ms in %d loops) for actor %s@%p of animation specification '%s' to group %s@%p",
+									G_OBJECT_TYPE_NAME(transition),
+									transition,
+									transitionDuration,
+									transitionLoop,
+									G_OBJECT_TYPE_NAME(hashIterActor),
+									hashIterActor,
+									spec->id,
+									G_OBJECT_TYPE_NAME(transitionGroup),
+									transitionGroup);
+			}
+
+			/* Set up timeline configuration for transition group of target actor */
+			clutter_timeline_set_duration(CLUTTER_TIMELINE(transitionGroup), groupDuration);
+			clutter_timeline_set_delay(CLUTTER_TIMELINE(transitionGroup), 0);
+			clutter_timeline_set_progress_mode(CLUTTER_TIMELINE(transitionGroup), CLUTTER_LINEAR);
+			clutter_timeline_set_repeat_count(CLUTTER_TIMELINE(transitionGroup), groupLoop);
+
+			XFDASHBOARD_DEBUG(self, ANIMATION,
+								"Set up timeline of group %s@%p with duration of %u ms and %d loops for actor %s@%p",
+								G_OBJECT_TYPE_NAME(transitionGroup),
+								transitionGroup,
+								groupDuration,
+								groupLoop,
+								G_OBJECT_TYPE_NAME(hashIterActor),
+								hashIterActor);
 
 			/* Add transition group with collected property transitions
 			 * to actor.
 			 */
 			if(animationClass->add_animation)
 			{
-				animationClass->add_animation(animation, actor, transitionGroup);
+				animationClass->add_animation(animation, hashIterActor, transitionGroup);
+				XFDASHBOARD_DEBUG(self, ANIMATION,
+									"Added transition group %s@%p to actor %s@%p of animation specification '%s'",
+									G_OBJECT_TYPE_NAME(transitionGroup),
+									transitionGroup,
+									G_OBJECT_TYPE_NAME(hashIterActor),
+									hashIterActor,
+									spec->id);
 			}
 
 			/* Release allocated resources */
 			g_object_unref(transitionGroup);
+			g_slist_free_full(hashIterList, g_object_unref);
 		}
 
-		/* Release allocated resources */
-		g_slist_free(actors);
+		/* Destroy hash table */
+		g_hash_table_destroy(animationActorMap);
 	}
 
 	/* Release allocated resources */
