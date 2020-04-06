@@ -1701,17 +1701,6 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 	animation=NULL;
 	animationActorMap=NULL;
 
-	/* Create empty animation */
-	animation=g_object_new(XFDASHBOARD_TYPE_ANIMATION,
-							NULL);
-	if(!animation)
-	{
-		g_critical(_("Cannot allocate memory for animation of sender '%s' and signal '%s'"),
-					G_OBJECT_TYPE_NAME(inSender),
-					inSignal);
-		return(NULL);
-	}
-
 	/* Check if user wants animation at all. If user does not want any animation,
 	 * return the empty one.
 	 */
@@ -1722,8 +1711,8 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 	{
 		XFDASHBOARD_DEBUG(self, ANIMATION, "User disabled animations");
 
-		/* Return empty animation object as user does not want any animation */
-		return(animation);
+		/* Return NULL as user does not want any animation */
+		return(NULL);
 	}
 
 	/* Get best matching animation specification for sender and signal.
@@ -1737,13 +1726,11 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 							G_OBJECT_TYPE_NAME(inSender),
 							inSignal);
 
-		/* Return empty animation object as no matching animation specification was found */
-		return(animation);
+		/* Return NULL as no matching animation specification was found */
+		return(NULL);
 	}
 
-	/* Create new animation for animation specification */
-	g_object_unref(animation);
-
+	/* Create animation for animation specification */
 	animation=g_object_new(XFDASHBOARD_TYPE_ANIMATION,
 							"id", spec->id,
 							NULL);

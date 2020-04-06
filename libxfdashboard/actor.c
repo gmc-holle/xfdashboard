@@ -245,10 +245,12 @@ static void _xfdashboard_actor_on_mapped_changed(GObject *inObject,
 			 * run it.
 			 */
 			priv->firstTimeMappedAnimation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), "created");
-			if(!xfdashboard_animation_get_id(priv->firstTimeMappedAnimation))
+			if(!priv->firstTimeMappedAnimation ||
+				!xfdashboard_animation_get_id(priv->firstTimeMappedAnimation) ||
+				xfdashboard_animation_is_empty(priv->firstTimeMappedAnimation))
 			{
 				/* Empty or invalid animation, so release allocated resources and return */
-				g_object_unref(priv->firstTimeMappedAnimation);
+				if(priv->firstTimeMappedAnimation) g_object_unref(priv->firstTimeMappedAnimation);
 				priv->firstTimeMappedAnimation=NULL;
 
 				return;
@@ -903,10 +905,11 @@ static XfdashboardAnimation* _xfdashboard_actor_add_animation(XfdashboardActor *
 	 * (i.e. has an ID) add it to list of animations of actor and run it.
 	 */
 	animation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), inAnimationSignal);
-	if(xfdashboard_animation_is_empty(animation))
+	if(!animation ||
+		xfdashboard_animation_is_empty(animation))
 	{
 		/* Release animation and return NULL */
-		g_object_unref(animation);
+		if(animation) g_object_unref(animation);
 		return(NULL);
 	}
 
