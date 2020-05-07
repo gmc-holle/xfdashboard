@@ -329,6 +329,7 @@ libxfdashboard/libxfdashboard.pc
 libxfdashboard/Makefile
 plugins/Makefile
 plugins/clock-view/Makefile
+plugins/example-search-provider/Makefile
 plugins/gnome-shell-search-provider/Makefile
 plugins/hot-corner/Makefile
 plugins/middle-click-window-close/Makefile

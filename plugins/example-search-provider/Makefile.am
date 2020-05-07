@@ -1,0 +1,52 @@
+plugindir = $(libdir)/xfdashboard/plugins
+PLUGIN_ID = example-search-provider
+
+AM_CPPFLAGS = \
+	-I$(top_builddir) \
+	-I$(top_srcdir) \
+	-DG_LOG_DOMAIN=\"xfdashboard-plugin-example_search_provider\" \
+	-DLIBEXECDIR=\"$(libexecdir)\" \
+	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
+	-DPLUGIN_ID=\"$(PLUGIN_ID)\"
+
+plugin_LTLIBRARIES = \
+	example-search-provider.la
+
+example_search_provider_la_SOURCES = \
+	example-search-provider.c \
+	example-search-provider.h \
+	plugin.c
+
+example_search_provider_la_CFLAGS = \
+	$(LIBXFCE4UTIL_CFLAGS) \
+	$(GTK_CFLAGS) \
+	$(CLUTTER_CFLAGS) \
+	$(LIBXFCONF_CFLAGS) \
+	$(GARCON_CFLAGS) \
+	$(PLATFORM_CFLAGS)
+
+example_search_provider_la_LDFLAGS = \
+	-avoid-version \
+	-export-dynamic \
+	-export-symbols-regex '^plugin_init$$' \
+	-no-undefined \
+	-module \
+	-shared \
+	$(PLATFORM_LDFLAGS)
+
+example_search_provider_la_LIBADD = \
+	$(LIBXFCE4UTIL_LIBS) \
+	$(GTK_LIBS) \
+	$(CLUTTER_LIBS) \
+	$(LIBXFCONF_LIBS) \
+	$(GARCON_LIBS) \
+	$(top_builddir)/libxfdashboard/libxfdashboard.la
+
+CLEANFILES = \
+	$(plugin_DATA)
+
+EXTRA_DIST = \
+	$(plugin_DATA)
+
+DISTCLEANFILES = \
+	$(plugin_DATA)
