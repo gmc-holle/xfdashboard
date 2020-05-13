@@ -95,6 +95,8 @@ libxfdashboard/x11/window-tracker-x11.c
 plugins/clock-view/clock-view.c
 plugins/clock-view/clock-view-settings.c
 plugins/clock-view/plugin.c
+plugins/example-search-provider/example-search-provider.c
+plugins/example-search-provider/plugin.c
 plugins/gnome-shell-search-provider/gnome-shell-search-provider.c
 plugins/gnome-shell-search-provider/plugin.c
 plugins/hot-corner/hot-corner-settings.c

@@ -39,7 +39,7 @@ m4_define([xfdashboard_debug_default], [ifelse(xfdashboard_version_tag(), [git],
 dnl ***************************
 dnl *** Initialize autoconf ***
 dnl ***************************
-AC_COPYRIGHT([Copyright (c) 2012-2016 Stephan Haller <nomad@froevel.de>])
+AC_COPYRIGHT([Copyright (c) 2012-2020 Stephan Haller <nomad@froevel.de>])
 AC_INIT([xfdashboard], [xfdashboard_version], [http://docs.xfce.org/apps/xfdashboard/start], [xfdashboard])
 AC_PREREQ([2.50])
 AC_REVISION([xfdashboard_version_build])
@@ -48,7 +48,7 @@ dnl ***************************
 dnl *** Initialize automake ***
 dnl ***************************
 AM_CONFIG_HEADER([config.h])
-AM_INIT_AUTOMAKE([1.8 no-dist-gzip dist-bzip2 tar-ustar])
+AM_INIT_AUTOMAKE([1.8 no-dist-gzip dist-bzip2 tar-ustar foreign])
 AM_MAINTAINER_MODE()
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_CONFIG_MACRO_DIR([m4])
