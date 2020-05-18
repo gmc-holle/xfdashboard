@@ -21,6 +21,9 @@ SUBDIRS = \
 	settings \
 	xfdashboard
 
+distuninstallcheck_listfiles =                                          \
+        find . -type f -print | grep -v ./share/icons/hicolor/icon-theme.cache
+
 distclean-local:
 	rm -rf *.cache
 
