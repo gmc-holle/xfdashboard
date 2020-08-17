@@ -8,6 +8,7 @@ data/themes/xfdashboard-mint/xfdashboard.theme.in
 data/themes/xfdashboard-moranga/xfdashboard.theme.in
 data/themes/xfdashboard-wine/xfdashboard.theme.in
 data/themes/xfdashboard/xfdashboard.theme.in
+libxfdashboard/enums.c
 # https://bugs.launchpad.net/intltool/+bug/1117944
 sub/data/themes/xfdashboard-auber/xfdashboard.theme.in
 sub/data/themes/xfdashboard-blue/xfdashboard.theme.in

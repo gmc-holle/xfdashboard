@@ -35,7 +35,6 @@ libxfdashboard/drag-action.c
 libxfdashboard/drop-action.c
 libxfdashboard/dynamic-table-layout.c
 libxfdashboard/emblem-effect.c
-libxfdashboard/enums.c
 libxfdashboard/fill-box-layout.c
 libxfdashboard/focus-manager.c
 libxfdashboard/focusable.c
