@@ -43,4 +43,16 @@
 			</apply>
 		</timeline>
 	</trigger>
+
+	<trigger id="window-moved" sender="XfdashboardLiveWindow" signal="move-resize">
+		<timeline delay="0" duration="1000" mode="linear">
+			<apply>
+				<property name="x" />
+				<property name="y" />
+				<property name="width" />
+				<property name="height" />
+			</apply>
+		</timeline>
+	</trigger>
+
 </animations>

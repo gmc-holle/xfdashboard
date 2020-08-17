@@ -101,7 +101,9 @@ gboolean xfdashboard_theme_animation_add_file(XfdashboardThemeAnimation *self,
 
 XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimation *self,
 															XfdashboardActor *inSender,
-															const gchar *inSignal);
+															const gchar *inSignal,
+															XfdashboardAnimationValue **inDefaultInitialValues,
+															XfdashboardAnimationValue **inDefaultFinalValuess);
 
 G_END_DECLS
 

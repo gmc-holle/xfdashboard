@@ -114,7 +114,7 @@ static void _xfdashboard_transition_group_timeline_new_frame(ClutterTimeline *in
 	gpointer							element;
 	gint								currentLoop;
 #ifdef DEBUG
-	gboolean							doDebug=TRUE;
+	gboolean							doDebug=FALSE;
 #endif
 
 	g_return_if_fail(XFDASHBOARD_IS_TRANSITION_GROUP(inTimeline));
@@ -162,7 +162,7 @@ static void _xfdashboard_transition_group_timeline_new_frame(ClutterTimeline *in
 			{
 				const gchar				*propertyName=clutter_property_transition_get_property_name(CLUTTER_PROPERTY_TRANSITION(element));
 				ClutterInterval			*propertyInterval=clutter_transition_get_interval(CLUTTER_TRANSITION(element));
-				GValue					*fromValue=clutter_interval_peek_final_value(propertyInterval);
+				GValue					*fromValue=clutter_interval_peek_initial_value(propertyInterval);
 				gchar					*fromValueString;
 				GValue					*toValue=clutter_interval_peek_final_value(propertyInterval);
 				gchar					*toValueString;

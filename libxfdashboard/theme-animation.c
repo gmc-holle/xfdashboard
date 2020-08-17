@@ -421,22 +421,11 @@ static GSList* _xfdashboard_theme_animation_find_actors_for_animation_targets(Xf
 																				XfdashboardThemeAnimationTargets *inTargetSpec,
 																				ClutterActor *inSender)
 {
-	ClutterActor								*rootNode;
-	GSList										*actors;
+	GSList									*actors;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), NULL);
 	g_return_val_if_fail(inTargetSpec, NULL);
 	g_return_val_if_fail(CLUTTER_IS_ACTOR(inSender), NULL);
-
-
-	/* Depending on origin at animation target data select root node to start
-	 * traversal and collecting matching actors.
-	 */
-	rootNode=NULL;
-	if(inTargetSpec->origin==XFDASHBOARD_THEME_ANIMATION_APPLY_TO_ORIGIN_SENDER)
-	{
-		rootNode=inSender;
-	}
 
 	/* Traverse through actors beginning at the root node and collect each actor
 	 * matching the target selector but only if a target selector is set. If
@@ -446,6 +435,17 @@ static GSList* _xfdashboard_theme_animation_find_actors_for_animation_targets(Xf
 	actors=NULL;
 	if(inTargetSpec->targetSelector)
 	{
+		ClutterActor						*rootNode;
+
+		/* Depending on origin at animation target data select root node to start
+		 * traversal and collecting matching actors.
+		 */
+		rootNode=NULL;
+		if(inTargetSpec->origin==XFDASHBOARD_THEME_ANIMATION_APPLY_TO_ORIGIN_SENDER)
+		{
+			rootNode=inSender;
+		}
+
 		xfdashboard_traverse_actor(rootNode,
 									inTargetSpec->targetSelector,
 									_xfdashboard_theme_animation_find_actors_for_animation_targets_traverse_callback,
@@ -1579,6 +1579,90 @@ static gboolean _xfdashboard_theme_animation_parse_xml(XfdashboardThemeAnimation
 	return(success);
 }
 
+/* Find matching entry in list of provided default value and set up value if found */
+static gboolean _xfdashboard_theme_animation_find_default_property_value(XfdashboardThemeAnimation *self,
+																			XfdashboardAnimationValue **inDefaultValues,
+																			XfdashboardActor *inSender,
+																			const gchar *inProperty,
+																			ClutterActor *inActor,
+																			GValue *ioValue)
+{
+	XfdashboardAnimationValue			*foundValue;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), FALSE);
+	g_return_val_if_fail(inProperty && *inProperty, FALSE);
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(inActor), FALSE);
+	g_return_val_if_fail(ioValue && G_VALUE_TYPE(ioValue)!=G_TYPE_INVALID, FALSE);
+
+	foundValue=NULL;
+
+	/* Skip if actor is not stylable and cannot be matched againt the selectors in values list */
+	if(!XFDASHBOARD_IS_STYLABLE(inActor))
+	{
+		XFDASHBOARD_DEBUG(self, ANIMATION,
+							"Actor %s@%p is not stylable and cannot match any selector in list of default values so fail",
+							G_OBJECT_TYPE_NAME(inActor),
+							inActor);
+
+		/* Unset value to prevent using it as it could not be converted */
+		g_value_unset(ioValue);
+
+		return(FALSE);
+	}
+
+	/* Iterate through list of values and find best matching entry for given actor */
+	if(inDefaultValues)
+	{
+		XfdashboardAnimationValue		**iter;
+		gfloat							iterScore;
+		gfloat							foundScore;
+
+		for(iter=inDefaultValues; *iter; iter++)
+		{
+			/* Check if currently iterated entry in list of value matches the actor */
+			if((*iter)->selector)
+			{
+				iterScore=xfdashboard_css_selector_score((*iter)->selector, XFDASHBOARD_STYLABLE(inActor));
+				if(iterScore<0) continue;
+
+				/* Check match is the best one with a higher sore as the previous one (if available) */
+				if(foundValue && iterScore<=foundScore) continue;
+			}
+				else if((gpointer)inActor!=(gpointer)inSender) continue;
+
+			/* Check if entry matches the requested property */
+			if(g_strcmp0((*iter)->property, inProperty)!=0) continue;
+
+			/* Remember this match as best one */
+			foundValue=*iter;
+			foundScore=iterScore;
+		}
+	}
+
+	/* If no match was found, return FALSE here */
+	if(!foundValue) return(FALSE);
+
+	/* Set up value as a match was found */
+	if(!g_value_transform(foundValue->value, ioValue))
+	{
+		g_warning(_("Could not transform default value of for property '%s' of %s from type %s to %s of class %s"),
+					foundValue->property,
+					G_OBJECT_TYPE_NAME(inActor),
+					G_VALUE_TYPE_NAME(foundValue->value),
+					G_VALUE_TYPE_NAME(ioValue),
+					G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(inActor)));
+
+		/* Unset value to prevent using it as it could not be converted */
+		g_value_unset(ioValue);
+
+		return(FALSE);
+	}
+
+	/* If we get here, we found a match and could convert the value */
+	return(TRUE);
+}
+
 
 /* IMPLEMENTATION: GObject */
 
@@ -1679,9 +1763,18 @@ gboolean xfdashboard_theme_animation_add_file(XfdashboardThemeAnimation *self,
 }
 
 /* Build requested animation */
+static void _xfdashboard_theme_animation_free_animation_actor_map_hashtable(gpointer inKey, gpointer inValue, gpointer inUserData)
+{
+	g_return_if_fail(inKey);
+
+	g_slist_free(inKey);
+}
+
 XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimation *self,
 															XfdashboardActor *inSender,
-															const gchar *inSignal)
+															const gchar *inSignal,
+															XfdashboardAnimationValue **inDefaultInitialValues,
+															XfdashboardAnimationValue **inDefaultFinalValues)
 {
 	XfdashboardThemeAnimationSpec							*spec;
 	XfdashboardAnimation									*animation;
@@ -1691,7 +1784,7 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 	gboolean												animationEnabled;
 	GHashTable												*animationActorMap;
 #ifdef DEBUG
-	gboolean												doDebug=TRUE;
+	gboolean												doDebug=FALSE;
 #endif
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), NULL);
@@ -1709,7 +1802,10 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 												DEFAULT_ENABLE_ANIMATIONS);
 	if(!animationEnabled)
 	{
-		XFDASHBOARD_DEBUG(self, ANIMATION, "User disabled animations");
+		XFDASHBOARD_DEBUG(self, ANIMATION,
+							"User disabled animations so do not lookup animation for sender '%s' and signal '%s'",
+							G_OBJECT_TYPE_NAME(inSender),
+							inSignal);
 
 		/* Return NULL as user does not want any animation */
 		return(NULL);
@@ -1880,27 +1976,51 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 					else
 					{
 						g_value_init(&fromValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
-						g_object_get_property(G_OBJECT(actor),
-												propertyTargetSpec->name,
-												&fromValue);
-#ifdef DEBUG
-						if(doDebug)
+						if(inDefaultInitialValues && _xfdashboard_theme_animation_find_default_property_value(self, inDefaultInitialValues, inSender, propertyTargetSpec->name, actor, &fromValue))
 						{
-							gchar	*valueString;
+#ifdef DEBUG
+							if(doDebug)
+							{
+								gchar	*valueString;
 
-							valueString=g_strdup_value_contents(&fromValue);
-							XFDASHBOARD_DEBUG(self, ANIMATION,
-												"Fetching current 'from'-value %s for property '%s' from target #%d and actor #%d (%s@%p) of animation specification '%s' as no 'from' value was specified",
-												valueString,
-												propertyTargetSpec->name,
-												counterTargets,
-												counterActors,
-												G_OBJECT_TYPE_NAME(actor),
-												actor,
-												spec->id);
-							g_free(valueString);
-						}
+								valueString=g_strdup_value_contents(&fromValue);
+								XFDASHBOARD_DEBUG(self, ANIMATION,
+													"Using provided default 'from'-value %s for property '%s' from target #%d and actor #%d (%s@%p) of animation specification '%s' as no 'from' value was specified",
+													valueString,
+													propertyTargetSpec->name,
+													counterTargets,
+													counterActors,
+													G_OBJECT_TYPE_NAME(actor),
+													actor,
+													spec->id);
+								g_free(valueString);
+							}
 #endif
+						}
+							else
+							{
+								g_object_get_property(G_OBJECT(actor),
+														propertyTargetSpec->name,
+														&fromValue);
+#ifdef DEBUG
+								if(doDebug)
+								{
+									gchar	*valueString;
+
+									valueString=g_strdup_value_contents(&fromValue);
+									XFDASHBOARD_DEBUG(self, ANIMATION,
+														"Fetching current 'from'-value %s for property '%s' from target #%d and actor #%d (%s@%p) of animation specification '%s' as no 'from' value was specified",
+														valueString,
+														propertyTargetSpec->name,
+														counterTargets,
+														counterActors,
+														G_OBJECT_TYPE_NAME(actor),
+														actor,
+														spec->id);
+									g_free(valueString);
+								}
+#endif
+							}
 					}
 
 				/* If "to" value is set at target's property data, convert it
@@ -1946,6 +2066,31 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 					}
 #endif
 				}
+					else
+					{
+						g_value_init(&toValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
+						if(inDefaultFinalValues && _xfdashboard_theme_animation_find_default_property_value(self, inDefaultFinalValues, inSender, propertyTargetSpec->name, actor, &toValue))
+						{
+#ifdef DEBUG
+							if(doDebug)
+							{
+								gchar	*valueString;
+
+								valueString=g_strdup_value_contents(&toValue);
+								XFDASHBOARD_DEBUG(self, ANIMATION,
+													"Using provided default 'to'-value %s for property '%s' from target #%d and actor #%d (%s@%p) of animation specification '%s' as no 'to' value was specified",
+													valueString,
+													propertyTargetSpec->name,
+													counterTargets,
+													counterActors,
+													G_OBJECT_TYPE_NAME(actor),
+													actor,
+													spec->id);
+								g_free(valueString);
+							}
+#endif
+						}
+					}
 
 				/* Create property transition for property with cloned timeline
 				 * and add this new transition to transition group if from value
@@ -2045,7 +2190,7 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 							spec->id);
 				
 				/* Release allocated resources */
-				g_hash_table_foreach(animationActorMap, g_slist_free, NULL);
+				g_hash_table_foreach(animationActorMap, _xfdashboard_theme_animation_free_animation_actor_map_hashtable, NULL);
 				g_hash_table_destroy(animationActorMap);
 				g_object_unref(animation);
 				if(spec) _xfdashboard_theme_animation_spec_unref(spec);

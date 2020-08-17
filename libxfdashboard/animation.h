@@ -31,6 +31,8 @@
 #include <clutter/clutter.h>
 
 #include <libxfdashboard/actor.h>
+#include <libxfdashboard/css-selector.h>
+
 
 G_BEGIN_DECLS
 
@@ -51,7 +53,8 @@ typedef struct _XfdashboardAnimationPrivate		XfdashboardAnimationPrivate;
  *
  * The #XfdashboardAnimation structure contains only private data and
  * should be accessed using the provided API
- */struct _XfdashboardAnimation
+ */
+struct _XfdashboardAnimation
 {
 	/*< private >*/
 	/* Parent instance */
@@ -78,10 +81,30 @@ struct _XfdashboardAnimationClass
 	void (*animation_done)(XfdashboardAnimation *self);
 };
 
+/**
+ * XfdashboardAnimationValue:
+ * @selector: A #XfdashboardCssSelector to find matchhing actors for the property's value in animation
+ * @property: A string containing the name of the property this value belongs to
+ * @value: A #GValue containing the value for the property
+ *
+ */
+struct _XfdashboardAnimationValue
+{
+	XfdashboardCssSelector				*selector;
+	gchar								*property;
+	GValue								*value;
+};
+
+typedef struct _XfdashboardAnimationValue		XfdashboardAnimationValue;
+
 /* Public API */
 GType xfdashboard_animation_get_type(void) G_GNUC_CONST;
 
 XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, const gchar *inSignal);
+XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *inSender,
+															const gchar *inSignal,
+															XfdashboardAnimationValue **inDefaultInitialValues,
+															XfdashboardAnimationValue **inDefaultFinalValues);
 
 const gchar* xfdashboard_animation_get_id(XfdashboardAnimation *self);
 

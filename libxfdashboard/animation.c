@@ -638,7 +638,7 @@ void xfdashboard_animation_init(XfdashboardAnimation *self)
  *
  *   theme=xfdashboard_application_get_theme(NULL);
  *   theme_animations=xfdashboard_theme_get_animation(theme);
- *   animation=xfdashboard_theme_animation_create(theme_animations, inSender, inSignal);
+ *   animation=xfdashboard_theme_animation_create(theme_animations, inSender, inSignal, NULL, NULL);
  * ]|
  *
  * Return value: (transfer full): The instance of #XfdashboardAnimation.
@@ -654,10 +654,68 @@ XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, cons
 
 	theme=xfdashboard_application_get_theme(NULL);
 	themeAnimation=xfdashboard_theme_get_animation(theme);
-	animation=xfdashboard_theme_animation_create(themeAnimation, inSender, inSignal);
+	animation=xfdashboard_theme_animation_create(themeAnimation, inSender, inSignal, NULL, NULL);
 
 	return(animation);
 }
+
+/**
+ * xfdashboard_animation_new_with_values:
+ * @inSender: A #ClutterActor emitting the animation signal
+ * @inSignal: A string containing the signal emitted at sending actor
+ * @inDefaultInitialValues: A %NULL-terminated list of default initial values
+ * @inDefaultFinalValues: A %NULL-terminated list of default final values
+ *
+ * Creates a new animation of type #XfdashboardAnimation matching the sending
+ * actor at @inSender and the emitted signal at @inSignal.
+ *
+ * A list of default values to set the initial values of the properties can be
+ * provided at @inDefaultInitialValues. If it is set to %NULL then the current
+ * property's value is used as initial value. This list must be %NULL-terminated.
+ *
+ * A list of default values to set the final values of the properties can be
+ * provided at @inDefaultFinalValues. If it is set to %NULL then the current
+ * property's value when the animation is started will be used as final value.
+ * This list must be %NULL-terminated.
+ *
+ * The theme can provide an initial and final values and have higher precedence
+ * as the default initial and final values passed to this function.
+ *
+ * The caller is responsible to free and/or unref the values in the lists
+ * provided at @inDefaultInitialValues and @inDefaultFinalValues.
+ *
+ * This function is the logical equivalent of:
+ *
+ * |[<!-- language="C" -->
+ *   XfdashboardTheme          *theme;
+ *   XfdashboardThemeAnimation *theme_animations;
+ *
+ *   theme=xfdashboard_application_get_theme(NULL);
+ *   theme_animations=xfdashboard_theme_get_animation(theme);
+ *   animation=xfdashboard_theme_animation_create(theme_animations, inSender, inSignal, inDefaultInitialValues, inDefaultFinalValues);
+ * ]|
+ *
+ * Return value: (transfer full): The instance of #XfdashboardAnimation.
+ */
+XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *inSender,
+															const gchar *inSignal,
+															XfdashboardAnimationValue **inDefaultInitialValues,
+															XfdashboardAnimationValue **inDefaultFinalValues)
+{
+	XfdashboardTheme				*theme;
+	XfdashboardThemeAnimation		*themeAnimation;
+	XfdashboardAnimation			*animation;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
+	g_return_val_if_fail(inSignal && *inSignal, NULL);
+
+	theme=xfdashboard_application_get_theme(NULL);
+	themeAnimation=xfdashboard_theme_get_animation(theme);
+	animation=xfdashboard_theme_animation_create(themeAnimation, inSender, inSignal, inDefaultInitialValues, inDefaultFinalValues);
+
+	return(animation);
+}
+
 
 /**
  * xfdashboard_animation_get_id:

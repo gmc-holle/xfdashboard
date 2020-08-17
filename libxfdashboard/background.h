@@ -68,7 +68,12 @@ typedef struct _XfdashboardBackground				XfdashboardBackground;
 typedef struct _XfdashboardBackgroundClass			XfdashboardBackgroundClass;
 typedef struct _XfdashboardBackgroundPrivate		XfdashboardBackgroundPrivate;
 
-struct _XfdashboardBackground
+/**
+ * XfdashboardBackground:
+ *
+ * The #XfdashboardBackground structure contains only private data and
+ * should be accessed using the provided API
+ */struct _XfdashboardBackground
 {
 	/*< private >*/
 	/* Parent instance */
@@ -78,6 +83,11 @@ struct _XfdashboardBackground
 	XfdashboardBackgroundPrivate	*priv;
 };
 
+/**
+ * XfdashboardBackgroundClass:
+ *
+ * The #XfdashboardBackgroundClass structure contains only private data
+ */
 struct _XfdashboardBackgroundClass
 {
 	/*< private >*/
