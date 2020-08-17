@@ -45,7 +45,7 @@
 	</trigger>
 
 	<trigger id="window-moved" sender="XfdashboardLiveWindow" signal="move-resize">
-		<timeline delay="0" duration="1000" mode="linear">
+		<timeline delay="0" duration="500" mode="linear">
 			<apply>
 				<property name="x" />
 				<property name="y" />
