@@ -579,6 +579,10 @@ static void _xfdashboard_dynamic_table_layout_allocate(ClutterLayoutManager *sel
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
+		gboolean							fixedPosition;
+		gfloat								fixedX, fixedY;
+		gfloat								childWidth, childHeight;
+
 		/* Handle only visible actors */
 		if(clutter_actor_is_visible(child))
 		{
@@ -586,11 +590,29 @@ static void _xfdashboard_dynamic_table_layout_allocate(ClutterLayoutManager *sel
 			column=floor(i % priv->columns);
 			row=floor(i / priv->columns);
 
-			/* Get available allocation space for child*/
+			/* Get available allocation space for child */
 			childAllocation.x1=g_array_index(priv->columnCoords, gfloat, column);
 			childAllocation.x2=g_array_index(priv->columnCoords, gfloat, column+1)-priv->columnSpacing;
 			childAllocation.y1=g_array_index(priv->rowCoords, gfloat, row);
 			childAllocation.y2=g_array_index(priv->rowCoords, gfloat, row+1)-priv->rowSpacing;
+
+			/* Respect fixed position of child */
+			g_object_get(child,
+							"fixed-position-set", &fixedPosition,
+							"fixed-x", &fixedX,
+							"fixed-y", &fixedY,
+							NULL);
+
+			if(fixedPosition)
+			{
+				childWidth=childAllocation.x2-childAllocation.x1;
+				childHeight=childAllocation.y2-childAllocation.y1;
+
+				childAllocation.x1=ceil(fixedX);
+				childAllocation.x2=childAllocation.x1+childWidth;
+				childAllocation.y1=ceil(fixedY);
+				childAllocation.y2=childAllocation.y1+childHeight;
+			}
 
 			/* Set allocation at child */
 			clutter_actor_allocate(child, &childAllocation, inFlags);

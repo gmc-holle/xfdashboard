@@ -436,6 +436,9 @@ static void _xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inLayout
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
+		gboolean						fixedPosition;
+		gfloat							fixedX, fixedY;
+
 		/* Only set sizes on visible children */
 		if(!clutter_actor_is_visible(child)) continue;
 
@@ -470,9 +473,24 @@ static void _xfdashboard_fill_box_layout_allocate(ClutterLayoutManager *inLayout
 					}
 			}
 
-		/* Set new allocation of child */
-		childAllocation.x1=ceil(x);
-		childAllocation.y1=ceil(y);
+		/* Set new allocation of child but respect fixed position of actor */
+		g_object_get(child,
+						"fixed-position-set", &fixedPosition,
+						"fixed-x", &fixedX,
+						"fixed-y", &fixedY,
+						NULL);
+
+		if(fixedPosition)
+		{
+			childAllocation.x1=ceil(fixedX);
+			childAllocation.y1=ceil(fixedY);
+		}
+			else
+			{
+				childAllocation.x1=ceil(x);
+				childAllocation.y1=ceil(y);
+			}
+
 		childAllocation.x2=ceil(childAllocation.x1+w);
 		childAllocation.y2=ceil(childAllocation.y1+h);
 		clutter_actor_allocate(child, &childAllocation, inFlags);
