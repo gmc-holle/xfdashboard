@@ -1,64 +1,54 @@
-xfdashboard
-===========
+[![License](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://gitlab.xfce.org/xfce/xfdashboard/COPYING)
 
-Maybe a Gnome shell like dashboard for Xfce
+# xfdashboard
 
+xfdashboard is maybe a Gnome shell and macOS Expose like dashboard for Xfce.
 
-Requirements
-============
+**xfdashboard** provides a GNOME shell dashboard and macOS Mission Control
+(e.g. Exposé and Spaces) like interface for use with the Xfce desktop. It can
+be configured to run with any keyboard shortcut and when executed provides an
+overview of applications currently open enabling the user to switch between
+different applications. The search feature works like Xfce's app finder which
+makes it convenient to search for and start applications.
 
-libwnck >= 2.30
-clutter >= 1.12
-glib >= 2.32
-gio >= 2.32
-gio-unix-2.0 >= 2.32
-xfconf >= 4.10.0
-garcon >= 0.2.0
-gtk+ >= 3.2
-libxfce4util >= 4.10.0
-libxfce4ui >= 4.10.0
+----
 
-... and the dependencies of these libraries of course ;)
+### Homepage
 
+[xfdashboard documentation](https://docs.xfce.org/apps/xfdashboard/start)
 
-The following libraries are semi-optional:
+### Changelog
 
-dbus-glib >= 0.98 (required if xfconf < 4.13)
+See [NEWS](https://gitlab.xfce.org/apps/xfdashboard/-/blob/master/NEWS) for details on changes and fixes made in the current release.
 
+### Source Code Repository
 
-The following libraries are optional and configurable:
+[xfdashboard source code](https://gitlab.xfce.org/apps/xfdashboard)
 
-libXcomposite >= 0.2 (for live windows)
-libXdamage (for live windows)
-libXinerama (for multi-monitor support)
+### Download A Release Tarball
 
+[xfdashboard archive](https://archive.xfce.org/src/apps/xfdashboard)
+    or
+[xfdashboard tags](https://gitlab.xfce.org/apps/xfdashboard/-/tags)
 
-On debian based distros, all requirements are installed with:
+### Installation
 
-> apt-get install xfce4-dev-tools build-essential glib2.0 libglib2.0-dev xorg-dev libwnck-3-dev libclutter-1.0-dev libgarcon-1-0-dev libxfconf-0-dev libxfce4util-dev libxfce4ui-2-dev libxcomposite-dev libxdamage-dev libxinerama-dev
+From source code repository: 
 
+    % cd xfdashboard
+    % ./autogen.sh
+    % make
+    % make install
 
-Homepage
-========
+From release tarball:
 
-The homepage of xfdashboard is at https://docs.xfce.org/apps/xfdashboard/start
+    % tar xf xfdashboard-<version>.tar.bz2
+    % cd xfdashboard-<version>
+    % ./configure
+    % make
+    % make install
 
+### Reporting Bugs
 
-Documentation
-=============
+Visit the [reporting bugs](https://docs.xfce.org/apps/xfdashboard/bugs) page to view currently open bug reports and instructions on reporting new bugs or submitting bugfixes.
 
-A simple quick guide with screenshots can be found at http://docs.xfce.org/apps/xfdashboard/manual
-
-Documentation about theming xfdashboard can be found at http://xfdashboard.froevel.de/theming.html
-
-Documentation about settings in xfdashboard can be found at http://xfdashboard.froevel.de/settings.html
-
-How to report bugs?
-===================
-
-You can report bugs and feature requests at http://bugzilla.xfce.org.
-Choose the product Apps and the component xfdashboard.
-You will need to create an account for yourself.
-
-You can also join the Xfce development mailing-list:
-https://mail.xfce.org/mailman/listinfo/xfce4-dev
