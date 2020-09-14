@@ -1,10 +1,10 @@
-[![License](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://gitlab.xfce.org/xfce/xfdashboard/COPYING)
+[![License](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://gitlab.xfce.org/apps/xfdashboard/-/blob/master/COPYING)
 
 # xfdashboard
 
-xfdashboard is maybe a Gnome shell and macOS Expose like dashboard for Xfce.
+Xfdashboard is maybe a Gnome shell and macOS Expose like dashboard for Xfce.
 
-**xfdashboard** provides a GNOME shell dashboard and macOS Mission Control
+**Xfdashboard** provides a GNOME shell dashboard and macOS Mission Control
 (e.g. Exposé and Spaces) like interface for use with the Xfce desktop. It can
 be configured to run with any keyboard shortcut and when executed provides an
 overview of applications currently open enabling the user to switch between
@@ -15,7 +15,7 @@ makes it convenient to search for and start applications.
 
 ### Homepage
 
-[xfdashboard documentation](https://docs.xfce.org/apps/xfdashboard/start)
+[Xfdashboard documentation](https://docs.xfce.org/apps/xfdashboard/start)
 
 ### Changelog
 
@@ -25,11 +25,11 @@ See [NEWS](https://gitlab.xfce.org/apps/xfdashboard/-/blob/master/NEWS) for deta
 
 [xfdashboard source code](https://gitlab.xfce.org/apps/xfdashboard)
 
-### Download A Release Tarball
+### Download a Release Tarball
 
-[xfdashboard archive](https://archive.xfce.org/src/apps/xfdashboard)
+[Xfdashboard archive](https://archive.xfce.org/src/apps/xfdashboard)
     or
-[xfdashboard tags](https://gitlab.xfce.org/apps/xfdashboard/-/tags)
+[Xfdashboard tags](https://gitlab.xfce.org/apps/xfdashboard/-/tags)
 
 ### Installation
 
