@@ -1,5 +1,3 @@
-#define EXPLICIT_ALLOCATION_ANIMATION
-
 /*
  * actor: Abstract base actor
  * 
@@ -79,14 +77,12 @@ struct _XfdashboardActorPrivate
 
 	GSList							*animations;
 
-#ifdef EXPLICIT_ALLOCATION_ANIMATION
 	ClutterActorBox					*allocationTrackBox;
 
 	gboolean						doAllocationAnimation;
 	XfdashboardAnimation			*allocationAnimation;
 	ClutterActorBox					*allocationInitialBox;
 	ClutterActorBox					*allocationFinalBox;
-#endif
 };
 
 /* Properties */
@@ -107,9 +103,7 @@ enum
 static GParamSpec* XfdashboardActorProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#ifdef EXPLICIT_ALLOCATION_ANIMATION
 #define ALLOCATION_ANIMATION_SIGNAL		"move-resize"
-#endif
 
 typedef struct _XfdashboardActorAnimationEntry		XfdashboardActorAnimationEntry;
 struct _XfdashboardActorAnimationEntry
@@ -1072,7 +1066,6 @@ static void _xfdashboard_actor_stylable_iface_init(XfdashboardStylableInterface 
 
 /* IMPLEMENTATION: ClutterActor */
 
-#ifdef EXPLICIT_ALLOCATION_ANIMATION
 /* Allocation animation ended */
 static void _xfdashboard_actor_on_allocation_animation_done(XfdashboardAnimation *inAnimation,
 															gpointer inUserData)
@@ -1237,7 +1230,6 @@ static void _xfdashboard_actor_on_allocation_changed(ClutterActor *inActor,
 		priv->doAllocationAnimation=FALSE;
 	}
 }
-#endif
 
 /* Pointer left actor */
 static gboolean _xfdashboard_actor_leave_event(ClutterActor *inActor, ClutterCrossingEvent *inEvent)
@@ -1508,7 +1500,6 @@ static void _xfdashboard_actor_dispose(GObject *inObject)
 		priv->animations=NULL;
 	}
 
-#ifdef EXPLICIT_ALLOCATION_ANIMATION
 	if(priv->allocationAnimation)
 	{
 		g_object_unref(priv->allocationAnimation);
@@ -1528,7 +1519,6 @@ static void _xfdashboard_actor_dispose(GObject *inObject)
 	}
 
 	priv->doAllocationAnimation=FALSE;
-#endif
 
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_actor_parent_class)->dispose(inObject);
@@ -1691,20 +1681,16 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 	priv->firstTimeMapped=FALSE;
 	priv->firstTimeMappedAnimation=NULL;
 	priv->animations=NULL;
-#ifdef EXPLICIT_ALLOCATION_ANIMATION
 	priv->doAllocationAnimation=FALSE;
 	priv->allocationAnimation=NULL;
 	priv->allocationInitialBox=NULL;
 	priv->allocationTrackBox=clutter_actor_box_new(0, 0, 0, 0);
-#endif
 
 	/* Connect signals */
 	g_signal_connect(self, "notify::mapped", G_CALLBACK(_xfdashboard_actor_on_mapped_changed), NULL);
 	g_signal_connect(self, "notify::name", G_CALLBACK(_xfdashboard_actor_on_name_changed), NULL);
 	g_signal_connect(self, "notify::reactive", G_CALLBACK(_xfdashboard_actor_on_reactive_changed), NULL);
-#ifdef EXPLICIT_ALLOCATION_ANIMATION
 	g_signal_connect(self, "allocation-changed", G_CALLBACK(_xfdashboard_actor_on_allocation_changed), NULL);
-#endif
 }
 
 /* IMPLEMENTATION: GType */
@@ -1953,7 +1939,6 @@ void xfdashboard_actor_invalidate(XfdashboardActor *self)
 	self->priv->forceStyleRevalidation=TRUE;
 }
 
-#ifdef EXPLICIT_ALLOCATION_ANIMATION
 /* Requests to start an animation at next allocation change
  * if theme defines an animation for move/resize.
  */
@@ -1980,4 +1965,3 @@ void xfdashboard_actor_enable_allocation_animation_once(XfdashboardActor *self)
 
 	priv->allocationInitialBox=clutter_actor_box_copy(priv->allocationTrackBox);
 }
-#endif
