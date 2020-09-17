@@ -1714,13 +1714,10 @@ static void _xfdashboard_actor_on_allocation_changed(ClutterActor *inActor,
 		XfdashboardAnimationValue	**finals;
 		gint						i;
 
-g_message("%s: Requested allocation animation for %s@%p", __FUNCTION__, G_OBJECT_TYPE_NAME(self), self);
-
 		/* Stop currently running animation if any */
 		if(priv->allocationAnimation)
 		{
 			/* Stop animation */
-g_message("%s: Stopping running animation %p for new animation", __FUNCTION__, priv->allocationAnimation);
 			g_object_unref(priv->allocationAnimation);
 
 			// TODO: /* Copy last tracked allocation as initial allocation
@@ -1781,14 +1778,6 @@ g_message("%s: Stopping running animation %p for new animation", __FUNCTION__, p
 														ALLOCATION_ANIMATION_SIGNAL,
 														initials,
 														finals);
-g_message("%s: Created animation %p for allocation animation of %s@%p with signal '%s' from [%.2f,%2f]x[%.2f,%.2f] to [%.2f,%2f]x[%.2f,%.2f]",
-			__FUNCTION__, animation,
-			G_OBJECT_TYPE_NAME(self), self,
-			ALLOCATION_ANIMATION_SIGNAL,
-			priv->allocationInitialBox->x1, priv->allocationInitialBox->y1,
-			clutter_actor_box_get_width(priv->allocationInitialBox), clutter_actor_box_get_height(priv->allocationInitialBox),
-			inAllocationBox->x1, inAllocationBox->y1,
-			clutter_actor_box_get_width(inAllocationBox), clutter_actor_box_get_height(inAllocationBox));
 		if(animation)
 		{
 			/* If animation is not empty, start it now */
@@ -1803,7 +1792,6 @@ g_message("%s: Created animation %p for allocation animation of %s@%p with signa
 										G_CALLBACK(_xfdashboard_actor_on_allocation_animation_done),
 										inActor);
 				xfdashboard_animation_run(priv->allocationAnimation);
-g_message("%s: Started animation %p for allocation animation", __FUNCTION__, priv->allocationAnimation);
 
 				/* Take an extra reference on animation to keep it alive
 				 * when it is unreferenced later this function.
