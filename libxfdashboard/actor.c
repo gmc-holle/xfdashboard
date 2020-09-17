@@ -1117,17 +1117,6 @@ static void _xfdashboard_actor_on_allocation_changed(ClutterActor *inActor,
 		{
 			/* Stop animation */
 			g_object_unref(priv->allocationAnimation);
-
-			// TODO: /* Copy last tracked allocation as initial allocation
-			 // TODO: * for animation as the last initial allocation
-			 // TODO: * was deleted when the animation was stopped above.
-			 // TODO: */
-			// TODO: if(priv->allocationInitialBox)
-			// TODO: {
-				// TODO: clutter_actor_box_free(priv->allocationInitialBox);
-				// TODO: priv->allocationInitialBox=NULL;
-			// TODO: }
-			// TODO: priv->allocationInitialBox=clutter_actor_box_copy(priv->allocationTrackBox);
 		}
 
 		/* Set up default initial values for animation */
