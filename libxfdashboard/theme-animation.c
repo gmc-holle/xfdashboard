@@ -348,10 +348,10 @@ static void _xfdashboard_theme_animation_spec_add_targets(XfdashboardThemeAnimat
 	inData->targets=g_slist_prepend(inData->targets, _xfdashboard_theme_animation_targets_ref(inTargets));
 }
 
-/* Find best matching animation for sender and signal */
-static XfdashboardThemeAnimationSpec* _xfdashboard_theme_animation_find_animation_spec(XfdashboardThemeAnimation *self,
-																						XfdashboardStylable *inSender,
-																						const gchar *inSignal)
+/* Find best matching animation specification for sender and signal */
+static XfdashboardThemeAnimationSpec* _xfdashboard_theme_animation_find_matching_animation_spec(XfdashboardThemeAnimation *self,
+																										XfdashboardStylable *inSender,
+																										const gchar *inSignal)
 {
 	XfdashboardThemeAnimationPrivate			*priv;
 	GSList										*iter;
@@ -405,6 +405,40 @@ static XfdashboardThemeAnimationSpec* _xfdashboard_theme_animation_find_animatio
 
 	/* Return best matching animation specification found */
 	return(bestAnimation);
+}
+
+/* Lookup animation specification for requested ID */
+static XfdashboardThemeAnimationSpec* _xfdashboard_theme_animation_find_animation_spec_by_id(XfdashboardThemeAnimation *self,
+																									const gchar *inID)
+{
+	XfdashboardThemeAnimationPrivate			*priv;
+	GSList										*iter;
+	XfdashboardThemeAnimationSpec				*spec;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), NULL);
+	g_return_val_if_fail(inID && *inID, NULL);
+
+	priv=self->priv;
+
+	/* Iterate through all animation specification and check if it matches
+	 * the requested ID.
+	 */
+	for(iter=priv->specs; iter; iter=g_slist_next(iter))
+	{
+		/* Get currently iterated specification */
+		spec=(XfdashboardThemeAnimationSpec*)iter->data;
+		if(!spec) continue;
+
+		/* Return animation specification if ID matches requested one */
+		if(g_strcmp0(spec->id, inID)==0)
+		{
+			_xfdashboard_theme_animation_spec_ref(spec);
+			return(spec);
+		}
+	}
+
+	/* If we get here no animation specification with requested ID was found */
+	return(NULL);
 }
 
 /* Find actors matching an animation target data */
@@ -1663,6 +1697,489 @@ static gboolean _xfdashboard_theme_animation_find_default_property_value(Xfdashb
 	return(TRUE);
 }
 
+/* Create animation by specification */
+static void _xfdashboard_theme_animation_free_animation_actor_map_hashtable(gpointer inKey, gpointer inValue, gpointer inUserData)
+{
+	g_return_if_fail(inKey);
+
+	g_slist_free(inKey);
+}
+
+static XfdashboardAnimation* _xfdashboard_theme_animation_create_by_spec(XfdashboardThemeAnimation *self,
+																			XfdashboardThemeAnimationSpec *inSpec,
+																			XfdashboardActor *inSender,
+																			XfdashboardAnimationValue **inDefaultInitialValues,
+																			XfdashboardAnimationValue **inDefaultFinalValues)
+{
+	XfdashboardAnimation									*animation;
+	XfdashboardAnimationClass								*animationClass;
+	GSList													*iterTargets;
+	gint													counterTargets;
+	GHashTable												*animationActorMap;
+#ifdef DEBUG
+	gboolean												doDebug=FALSE;
+#endif
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
+	g_return_val_if_fail(inSpec, NULL);
+
+	animation=NULL;
+	animationActorMap=NULL;
+
+	/* Create animation for animation specification */
+	animation=g_object_new(XFDASHBOARD_TYPE_ANIMATION,
+							"id", inSpec->id,
+							NULL);
+	if(!animation)
+	{
+		g_critical(_("Cannot allocate memory for animation '%s'"),
+					inSpec->id);
+		return(NULL);
+	}
+
+	animationClass=XFDASHBOARD_ANIMATION_GET_CLASS(animation);
+	if(!animationClass->add_animation)
+	{
+		g_warning(_("Will not be able to add animations to actors as object of type %s does not implement required virtual function XfdashboardAnimation::%s"), \
+					G_OBJECT_TYPE_NAME(self), \
+					"add_animation");
+	}
+
+	/* Create actor-animation-list-mapping via a hash-table */
+	animationActorMap=g_hash_table_new(g_direct_hash, g_direct_equal);
+
+	/* Iterate through animation targets of animation specification and create
+	 * property transition for each target and property found.
+	 */
+	for(counterTargets=0, iterTargets=inSpec->targets; iterTargets; iterTargets=g_slist_next(iterTargets), counterTargets++)
+	{
+		XfdashboardThemeAnimationTargets					*targets;
+		GSList												*actors;
+		GSList												*iterActors;
+		gint												counterActors;
+
+		/* Get currently iterate animation targets */
+		targets=(XfdashboardThemeAnimationTargets*)iterTargets->data;
+		if(!targets) continue;
+
+		/* Find targets to apply property transitions to */
+		actors=_xfdashboard_theme_animation_find_actors_for_animation_targets(self, targets, CLUTTER_ACTOR(inSender));
+		if(!actors) continue;
+		XFDASHBOARD_DEBUG(self, ANIMATION,
+							"Target #%d of animation specification '%s' applies to %d actors",
+							counterTargets,
+							inSpec->id,
+							g_slist_length(actors));
+
+		/* Iterate through actor, create a transition group to collect
+		 * property transitions at, create a property transition for each
+		 * property specified in animation target, determine "from" value
+		 * where missing, add property transition to transition group and
+		 * finally add transition group with currently iterated actor to
+		 * animation object.
+		 */
+		for(counterActors=0, iterActors=actors; iterActors; iterActors=g_slist_next(iterActors), counterActors++)
+		{
+			GSList											*iterProperties;
+			ClutterActor									*actor;
+			int												counterProperties;
+
+			/* Get actor */
+			actor=(ClutterActor*)iterActors->data;
+			if(!actor) continue;
+
+			/* Iterate through properties and create a property transition
+			 * with cloned timeline from animation target. Determine "from"
+			 * value if missing in animation targets property specification
+			 * and add the property transition to transition group.
+			 */
+			for(counterProperties=0, iterProperties=targets->properties; iterProperties; iterProperties=g_slist_next(iterProperties), counterProperties++)
+			{
+				XfdashboardThemeAnimationTargetsProperty	*propertyTargetSpec;
+				GParamSpec									*propertySpec;
+				GValue										fromValue=G_VALUE_INIT;
+				GValue										toValue=G_VALUE_INIT;
+
+				/* Get target's property data to animate */
+				propertyTargetSpec=(XfdashboardThemeAnimationTargetsProperty*)iterProperties->data;
+				if(!propertyTargetSpec) continue;
+
+				/* Check if actor has property to animate */
+				propertySpec=g_object_class_find_property(G_OBJECT_GET_CLASS(actor), propertyTargetSpec->name);
+				if(!propertySpec && CLUTTER_IS_ANIMATABLE(actor))
+				{
+					propertySpec=clutter_animatable_find_property(CLUTTER_ANIMATABLE(actor), propertyTargetSpec->name);
+				}
+
+				if(!propertySpec)
+				{
+					g_warning(_("Cannot create animation '%s' for non-existing property '%s' at actor of type '%s'"),
+								inSpec->id,
+								propertyTargetSpec->name,
+								G_OBJECT_TYPE_NAME(actor));
+
+					/* Skip this property as it does not exist at actor */
+					continue;
+				}
+
+				/* If no "from" value is set at target's property data, get
+				 * current value. Otherwise convert "from" value from target's
+				 * property data to expected type of property.
+				 */
+				if(G_VALUE_TYPE(&propertyTargetSpec->from)!=G_TYPE_INVALID)
+				{
+					g_value_init(&fromValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
+					if(!g_value_transform(&propertyTargetSpec->from, &fromValue))
+					{
+						g_warning(_("Could not transform 'from'-value of '%s' for property '%s' to type %s of class %s"),
+									g_value_get_string(&propertyTargetSpec->from),
+									propertyTargetSpec->name,
+									g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertySpec)),
+									G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(actor)));
+
+						/* Unset "from" value to skip it, means it will no transition will be
+						 * create and it will not be added to transition group.
+						 */
+						g_value_unset(&fromValue);
+					}
+#ifdef DEBUG
+					if(doDebug)
+					{
+						gchar	*valueString;
+
+						valueString=g_strdup_value_contents(&propertyTargetSpec->from);
+						XFDASHBOARD_DEBUG(self, ANIMATION,
+											"%s 'from'-value %s of type %s for property '%s' to type %s of class %s for target #%d and actor #%d (%s@%p) of animation specification '%s'",
+											(G_VALUE_TYPE(&fromValue)!=G_TYPE_INVALID) ? "Converted" : "Could not convert",
+											valueString,
+											G_VALUE_TYPE_NAME(&propertyTargetSpec->from),
+											propertyTargetSpec->name,
+											g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertySpec)),
+											G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(actor)),
+											counterTargets,
+											counterActors,
+											G_OBJECT_TYPE_NAME(actor),
+											actor,
+											inSpec->id);
+						g_free(valueString);
+					}
+#endif
+				}
+					else
+					{
+						g_value_init(&fromValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
+						if(inDefaultInitialValues && _xfdashboard_theme_animation_find_default_property_value(self, inDefaultInitialValues, inSender, propertyTargetSpec->name, actor, &fromValue))
+						{
+#ifdef DEBUG
+							if(doDebug)
+							{
+								gchar	*valueString;
+
+								valueString=g_strdup_value_contents(&fromValue);
+								XFDASHBOARD_DEBUG(self, ANIMATION,
+													"Using provided default 'from'-value %s for property '%s' from target #%d and actor #%d (%s@%p) of animation specification '%s' as no 'from' value was specified",
+													valueString,
+													propertyTargetSpec->name,
+													counterTargets,
+													counterActors,
+													G_OBJECT_TYPE_NAME(actor),
+													actor,
+													inSpec->id);
+								g_free(valueString);
+							}
+#endif
+						}
+							else
+							{
+								g_object_get_property(G_OBJECT(actor),
+														propertyTargetSpec->name,
+														&fromValue);
+#ifdef DEBUG
+								if(doDebug)
+								{
+									gchar	*valueString;
+
+									valueString=g_strdup_value_contents(&fromValue);
+									XFDASHBOARD_DEBUG(self, ANIMATION,
+														"Fetching current 'from'-value %s for property '%s' from target #%d and actor #%d (%s@%p) of animation specification '%s' as no 'from' value was specified",
+														valueString,
+														propertyTargetSpec->name,
+														counterTargets,
+														counterActors,
+														G_OBJECT_TYPE_NAME(actor),
+														actor,
+														inSpec->id);
+									g_free(valueString);
+								}
+#endif
+							}
+					}
+
+				/* If "to" value is set at target's property data, convert it
+				 * from target's property data to expected type of property.
+				 */
+				if(G_VALUE_TYPE(&propertyTargetSpec->to)!=G_TYPE_INVALID)
+				{
+					g_value_init(&toValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
+					if(!g_value_transform(&propertyTargetSpec->to, &toValue))
+					{
+						g_warning(_("Could not transform 'to'-value of '%s' for property '%s' to type %s of class %s"),
+									g_value_get_string(&propertyTargetSpec->to),
+									propertyTargetSpec->name,
+									g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertySpec)),
+									G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(actor)));
+
+						/* Unset "to" value to prevent setting it at transition.
+						 * The animation will set a value when starting the
+						 * animation.
+						 */
+						g_value_unset(&toValue);
+					}
+#ifdef DEBUG
+					if(doDebug)
+					{
+						gchar	*valueString;
+
+						valueString=g_strdup_value_contents(&propertyTargetSpec->to);
+						XFDASHBOARD_DEBUG(self, ANIMATION,
+											"%s 'to'-value %s of type %s for property '%s' to type %s of class %s for target #%d and actor #%d (%s@%p) of animation specification '%s'",
+											(G_VALUE_TYPE(&toValue)!=G_TYPE_INVALID) ? "Converted" : "Could not convert",
+											valueString,
+											G_VALUE_TYPE_NAME(&propertyTargetSpec->to),
+											propertyTargetSpec->name,
+											g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertySpec)),
+											G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(actor)),
+											counterTargets,
+											counterActors,
+											G_OBJECT_TYPE_NAME(actor),
+											actor,
+											inSpec->id);
+						g_free(valueString);
+					}
+#endif
+				}
+					else
+					{
+						g_value_init(&toValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
+						if(inDefaultFinalValues && _xfdashboard_theme_animation_find_default_property_value(self, inDefaultFinalValues, inSender, propertyTargetSpec->name, actor, &toValue))
+						{
+#ifdef DEBUG
+							if(doDebug)
+							{
+								gchar	*valueString;
+
+								valueString=g_strdup_value_contents(&toValue);
+								XFDASHBOARD_DEBUG(self, ANIMATION,
+													"Using provided default 'to'-value %s for property '%s' from target #%d and actor #%d (%s@%p) of animation specification '%s' as no 'to' value was specified",
+													valueString,
+													propertyTargetSpec->name,
+													counterTargets,
+													counterActors,
+													G_OBJECT_TYPE_NAME(actor),
+													actor,
+													inSpec->id);
+								g_free(valueString);
+							}
+#endif
+						}
+					}
+
+				/* Create property transition for property with cloned timeline
+				 * and add this new transition to transition group if from value
+				 * is not invalid.
+				 */
+				if(G_VALUE_TYPE(&fromValue)!=G_TYPE_INVALID)
+				{
+					ClutterTransition						*propertyTransition;
+					GSList									*animationList;
+
+					/* Create property transition */
+					propertyTransition=clutter_property_transition_new(propertyTargetSpec->name);
+					if(!propertyTransition)
+					{
+						g_critical(_("Cannot allocate memory for transition of property '%s' of animation specification '%s'"),
+									propertyTargetSpec->name,
+									inSpec->id);
+
+						/* Release allocated resources */
+						g_value_unset(&fromValue);
+						g_value_unset(&toValue);
+
+						/* Skip this property transition */
+						continue;
+					}
+
+					/* Clone timeline configuration from animation target */
+					clutter_timeline_set_duration(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_duration(targets->timeline));
+					clutter_timeline_set_delay(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_delay(targets->timeline));
+					clutter_timeline_set_progress_mode(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_progress_mode(targets->timeline));
+					clutter_timeline_set_repeat_count(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_repeat_count(targets->timeline));
+
+					/* Set "from" value */
+					clutter_transition_set_from_value(propertyTransition, &fromValue);
+
+					/* Set "to" value if valid */
+					if(G_VALUE_TYPE(&toValue)!=G_TYPE_INVALID)
+					{
+						clutter_transition_set_to_value(propertyTransition, &toValue);
+					}
+
+					/* Add animation to list of animations of target actor */
+					animationList=g_hash_table_lookup(animationActorMap, actor);
+					animationList=g_slist_prepend(animationList, propertyTransition);
+					g_hash_table_insert(animationActorMap, actor, animationList);
+
+					XFDASHBOARD_DEBUG(self, ANIMATION,
+										"Created transition for property '%s' at target #%d and actor #%d (%s@%p) of animation specification '%s'",
+										propertyTargetSpec->name,
+										counterTargets,
+										counterActors,
+										G_OBJECT_TYPE_NAME(actor),
+										actor,
+										inSpec->id);
+				}
+
+				/* Release allocated resources */
+				g_value_unset(&fromValue);
+				g_value_unset(&toValue);
+			}
+		}
+
+		/* Release allocated resources */
+		g_slist_free(actors);
+	}
+
+	/* Now iterate through actor-animation-list-mapping, create a transition group for each actor
+	 * and add its animation to this newly created group.
+	 */
+	if(animationActorMap)
+	{
+		GHashTableIter										hashIter;
+		ClutterActor										*hashIterActor;
+		GSList												*hashIterList;
+
+		g_hash_table_iter_init(&hashIter, animationActorMap);
+		while(g_hash_table_iter_next(&hashIter, (gpointer*)&hashIterActor, (gpointer*)&hashIterList))
+		{
+			ClutterTransition								*transitionGroup;
+			GSList											*listIter;
+			guint											groupDuration;
+			gint											groupLoop;
+
+			/* Skip empty but warn */
+			if(!hashIterList)
+			{
+				g_critical(_("Empty animation list when creating animation for animation specification '%s'"),
+							inSpec->id);
+				continue;
+			}
+
+			/* Create transition group to collect property transitions at */
+			transitionGroup=xfdashboard_transition_group_new();
+			if(!transitionGroup)
+			{
+				g_critical(_("Cannot allocate memory for transition group of animation specification '%s'"),
+							inSpec->id);
+				
+				/* Release allocated resources */
+				g_hash_table_foreach(animationActorMap, _xfdashboard_theme_animation_free_animation_actor_map_hashtable, NULL);
+				g_hash_table_destroy(animationActorMap);
+				g_object_unref(animation);
+
+				return(NULL);
+			}
+
+			XFDASHBOARD_DEBUG(self, ANIMATION,
+								"Created transition group at %p for %d properties for actor %s@%p of animation specification '%s'",
+								transitionGroup,
+								g_slist_length(hashIterList),
+								G_OBJECT_TYPE_NAME(hashIterActor),
+								hashIterActor,
+								inSpec->id);
+
+			/* Add animations to transition group */
+			groupDuration=0;
+			groupLoop=0;
+			for(listIter=hashIterList; listIter; listIter=g_slist_next(listIter))
+			{
+				ClutterTransition							*transition;
+				gint										transitionLoop;
+				guint										transitionDuration;
+
+				/* Get transition to add */
+				transition=(ClutterTransition*)listIter->data;
+				if(!transition) continue;
+
+				/* Adjust timeline values for transition group to play animation fully */
+				transitionDuration=clutter_timeline_get_delay(CLUTTER_TIMELINE(transition))+clutter_timeline_get_duration(CLUTTER_TIMELINE(transition));
+				if(transitionDuration>groupDuration) groupDuration=transitionDuration;
+
+				transitionLoop=0;
+				if(groupLoop>=0)
+				{
+					transitionLoop=clutter_timeline_get_repeat_count(CLUTTER_TIMELINE(transition));
+					if(transitionLoop>groupLoop) groupLoop=transitionLoop;
+				}
+
+				/* Add property transition to transition group */
+				xfdashboard_transition_group_add_transition(XFDASHBOARD_TRANSITION_GROUP(transitionGroup), transition);
+
+				XFDASHBOARD_DEBUG(self, ANIMATION,
+									"Added transition %s@%p (duration %u ms in %d loops) for actor %s@%p of animation specification '%s' to group %s@%p",
+									G_OBJECT_TYPE_NAME(transition),
+									transition,
+									transitionDuration,
+									transitionLoop,
+									G_OBJECT_TYPE_NAME(hashIterActor),
+									hashIterActor,
+									inSpec->id,
+									G_OBJECT_TYPE_NAME(transitionGroup),
+									transitionGroup);
+			}
+
+			/* Set up timeline configuration for transition group of target actor */
+			clutter_timeline_set_duration(CLUTTER_TIMELINE(transitionGroup), groupDuration);
+			clutter_timeline_set_delay(CLUTTER_TIMELINE(transitionGroup), 0);
+			clutter_timeline_set_progress_mode(CLUTTER_TIMELINE(transitionGroup), CLUTTER_LINEAR);
+			clutter_timeline_set_repeat_count(CLUTTER_TIMELINE(transitionGroup), groupLoop);
+
+			XFDASHBOARD_DEBUG(self, ANIMATION,
+								"Set up timeline of group %s@%p with duration of %u ms and %d loops for actor %s@%p",
+								G_OBJECT_TYPE_NAME(transitionGroup),
+								transitionGroup,
+								groupDuration,
+								groupLoop,
+								G_OBJECT_TYPE_NAME(hashIterActor),
+								hashIterActor);
+
+			/* Add transition group with collected property transitions
+			 * to actor.
+			 */
+			if(animationClass->add_animation)
+			{
+				animationClass->add_animation(animation, hashIterActor, transitionGroup);
+				XFDASHBOARD_DEBUG(self, ANIMATION,
+									"Added transition group %s@%p to actor %s@%p of animation specification '%s'",
+									G_OBJECT_TYPE_NAME(transitionGroup),
+									transitionGroup,
+									G_OBJECT_TYPE_NAME(hashIterActor),
+									hashIterActor,
+									inSpec->id);
+			}
+
+			/* Release allocated resources */
+			g_object_unref(transitionGroup);
+			g_slist_free_full(hashIterList, g_object_unref);
+		}
+
+		/* Destroy hash table */
+		g_hash_table_destroy(animationActorMap);
+	}
+
+	return(animation);
+}
+
 
 /* IMPLEMENTATION: GObject */
 
@@ -1762,14 +2279,7 @@ gboolean xfdashboard_theme_animation_add_file(XfdashboardThemeAnimation *self,
 	return(TRUE);
 }
 
-/* Build requested animation */
-static void _xfdashboard_theme_animation_free_animation_actor_map_hashtable(gpointer inKey, gpointer inValue, gpointer inUserData)
-{
-	g_return_if_fail(inKey);
-
-	g_slist_free(inKey);
-}
-
+/* Build requested animation for sender and its signal */
 XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimation *self,
 															XfdashboardActor *inSender,
 															const gchar *inSignal,
@@ -1778,24 +2288,16 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 {
 	XfdashboardThemeAnimationSpec							*spec;
 	XfdashboardAnimation									*animation;
-	XfdashboardAnimationClass								*animationClass;
-	GSList													*iterTargets;
-	gint													counterTargets;
 	gboolean												animationEnabled;
-	GHashTable												*animationActorMap;
-#ifdef DEBUG
-	gboolean												doDebug=FALSE;
-#endif
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), NULL);
 	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
 	g_return_val_if_fail(inSignal && *inSignal, NULL);
 
 	animation=NULL;
-	animationActorMap=NULL;
 
 	/* Check if user wants animation at all. If user does not want any animation,
-	 * return the empty one.
+	 * return NULL.
 	 */
 	animationEnabled=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
 												ENABLE_ANIMATIONS_XFCONF_PROP,
@@ -1814,7 +2316,7 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 	/* Get best matching animation specification for sender and signal.
 	 * If no matching animation specification is found, return the empty one.
 	 */
-	spec=_xfdashboard_theme_animation_find_animation_spec(self, XFDASHBOARD_STYLABLE(inSender), inSignal);
+	spec=_xfdashboard_theme_animation_find_matching_animation_spec(self, XFDASHBOARD_STYLABLE(inSender), inSignal);
 	if(!spec)
 	{
 		XFDASHBOARD_DEBUG(self, ANIMATION,
@@ -1826,26 +2328,6 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 		return(NULL);
 	}
 
-	/* Create animation for animation specification */
-	animation=g_object_new(XFDASHBOARD_TYPE_ANIMATION,
-							"id", spec->id,
-							NULL);
-	if(!animation)
-	{
-		g_critical(_("Cannot allocate memory for animation of sender '%s' and signal '%s'"),
-					G_OBJECT_TYPE_NAME(inSender),
-					inSignal);
-		return(NULL);
-	}
-
-	animationClass=XFDASHBOARD_ANIMATION_GET_CLASS(animation);
-	if(!animationClass->add_animation)
-	{
-		g_warning(_("Will not be able to add animations to actors as object of type %s does not implement required virtual function XfdashboardAnimation::%s"), \
-					G_OBJECT_TYPE_NAME(self), \
-					"add_animation");
-	}
-
 	XFDASHBOARD_DEBUG(self, ANIMATION,
 						"Found animation specification '%s' for sender '%s' and signal '%s' with %d targets",
 						spec->id,
@@ -1853,439 +2335,103 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 						inSignal,
 						g_slist_length(spec->targets));
 
-	/* Create actor-animation-list-mapping via a hash-table */
-	animationActorMap=g_hash_table_new(g_direct_hash, g_direct_equal);
-
-	/* Iterate through animation targets of animation specification and create
-	 * property transition for each target and property found.
-	 */
-	for(counterTargets=0, iterTargets=spec->targets; iterTargets; iterTargets=g_slist_next(iterTargets), counterTargets++)
-	{
-		XfdashboardThemeAnimationTargets					*targets;
-		GSList												*actors;
-		GSList												*iterActors;
-		gint												counterActors;
-
-		/* Get currently iterate animation targets */
-		targets=(XfdashboardThemeAnimationTargets*)iterTargets->data;
-		if(!targets) continue;
-
-		/* Find targets to apply property transitions to */
-		actors=_xfdashboard_theme_animation_find_actors_for_animation_targets(self, targets, CLUTTER_ACTOR(inSender));
-		if(!actors) continue;
-		XFDASHBOARD_DEBUG(self, ANIMATION,
-							"Target #%d of animation specification '%s' applies to %d actors",
-							counterTargets,
-							spec->id,
-							g_slist_length(actors));
-
-		/* Iterate through actor, create a transition group to collect
-		 * property transitions at, create a property transition for each
-		 * property specified in animation target, determine "from" value
-		 * where missing, add property transition to transition group and
-		 * finally add transition group with currently iterated actor to
-		 * animation object.
-		 */
-		for(counterActors=0, iterActors=actors; iterActors; iterActors=g_slist_next(iterActors), counterActors++)
-		{
-			GSList											*iterProperties;
-			ClutterActor									*actor;
-			int												counterProperties;
-
-			/* Get actor */
-			actor=(ClutterActor*)iterActors->data;
-			if(!actor) continue;
-
-			/* Iterate through properties and create a property transition
-			 * with cloned timeline from animation target. Determine "from"
-			 * value if missing in animation targets property specification
-			 * and add the property transition to transition group.
-			 */
-			for(counterProperties=0, iterProperties=targets->properties; iterProperties; iterProperties=g_slist_next(iterProperties), counterProperties++)
-			{
-				XfdashboardThemeAnimationTargetsProperty	*propertyTargetSpec;
-				GParamSpec									*propertySpec;
-				GValue										fromValue=G_VALUE_INIT;
-				GValue										toValue=G_VALUE_INIT;
-
-				/* Get target's property data to animate */
-				propertyTargetSpec=(XfdashboardThemeAnimationTargetsProperty*)iterProperties->data;
-				if(!propertyTargetSpec) continue;
-
-				/* Check if actor has property to animate */
-				propertySpec=g_object_class_find_property(G_OBJECT_GET_CLASS(actor), propertyTargetSpec->name);
-				if(!propertySpec && CLUTTER_IS_ANIMATABLE(actor))
-				{
-					propertySpec=clutter_animatable_find_property(CLUTTER_ANIMATABLE(actor), propertyTargetSpec->name);
-				}
-
-				if(!propertySpec)
-				{
-					g_warning(_("Cannot create animation '%s' for non-existing property '%s' at actor of type '%s'"),
-								spec->id,
-								propertyTargetSpec->name,
-								G_OBJECT_TYPE_NAME(actor));
-
-					/* Skip this property as it does not exist at actor */
-					continue;
-				}
-
-				/* If no "from" value is set at target's property data, get
-				 * current value. Otherwise convert "from" value from target's
-				 * property data to expected type of property.
-				 */
-				if(G_VALUE_TYPE(&propertyTargetSpec->from)!=G_TYPE_INVALID)
-				{
-					g_value_init(&fromValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
-					if(!g_value_transform(&propertyTargetSpec->from, &fromValue))
-					{
-						g_warning(_("Could not transform 'from'-value of '%s' for property '%s' to type %s of class %s"),
-									g_value_get_string(&propertyTargetSpec->from),
-									propertyTargetSpec->name,
-									g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertySpec)),
-									G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(actor)));
-
-						/* Unset "from" value to skip it, means it will no transition will be
-						 * create and it will not be added to transition group.
-						 */
-						g_value_unset(&fromValue);
-					}
-#ifdef DEBUG
-					if(doDebug)
-					{
-						gchar	*valueString;
-
-						valueString=g_strdup_value_contents(&propertyTargetSpec->from);
-						XFDASHBOARD_DEBUG(self, ANIMATION,
-											"%s 'from'-value %s of type %s for property '%s' to type %s of class %s for target #%d and actor #%d (%s@%p) of animation specification '%s'",
-											(G_VALUE_TYPE(&fromValue)!=G_TYPE_INVALID) ? "Converted" : "Could not convert",
-											valueString,
-											G_VALUE_TYPE_NAME(&propertyTargetSpec->from),
-											propertyTargetSpec->name,
-											g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertySpec)),
-											G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(actor)),
-											counterTargets,
-											counterActors,
-											G_OBJECT_TYPE_NAME(actor),
-											actor,
-											spec->id);
-						g_free(valueString);
-					}
-#endif
-				}
-					else
-					{
-						g_value_init(&fromValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
-						if(inDefaultInitialValues && _xfdashboard_theme_animation_find_default_property_value(self, inDefaultInitialValues, inSender, propertyTargetSpec->name, actor, &fromValue))
-						{
-#ifdef DEBUG
-							if(doDebug)
-							{
-								gchar	*valueString;
-
-								valueString=g_strdup_value_contents(&fromValue);
-								XFDASHBOARD_DEBUG(self, ANIMATION,
-													"Using provided default 'from'-value %s for property '%s' from target #%d and actor #%d (%s@%p) of animation specification '%s' as no 'from' value was specified",
-													valueString,
-													propertyTargetSpec->name,
-													counterTargets,
-													counterActors,
-													G_OBJECT_TYPE_NAME(actor),
-													actor,
-													spec->id);
-								g_free(valueString);
-							}
-#endif
-						}
-							else
-							{
-								g_object_get_property(G_OBJECT(actor),
-														propertyTargetSpec->name,
-														&fromValue);
-#ifdef DEBUG
-								if(doDebug)
-								{
-									gchar	*valueString;
-
-									valueString=g_strdup_value_contents(&fromValue);
-									XFDASHBOARD_DEBUG(self, ANIMATION,
-														"Fetching current 'from'-value %s for property '%s' from target #%d and actor #%d (%s@%p) of animation specification '%s' as no 'from' value was specified",
-														valueString,
-														propertyTargetSpec->name,
-														counterTargets,
-														counterActors,
-														G_OBJECT_TYPE_NAME(actor),
-														actor,
-														spec->id);
-									g_free(valueString);
-								}
-#endif
-							}
-					}
-
-				/* If "to" value is set at target's property data, convert it
-				 * from target's property data to expected type of property.
-				 */
-				if(G_VALUE_TYPE(&propertyTargetSpec->to)!=G_TYPE_INVALID)
-				{
-					g_value_init(&toValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
-					if(!g_value_transform(&propertyTargetSpec->to, &toValue))
-					{
-						g_warning(_("Could not transform 'to'-value of '%s' for property '%s' to type %s of class %s"),
-									g_value_get_string(&propertyTargetSpec->to),
-									propertyTargetSpec->name,
-									g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertySpec)),
-									G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(actor)));
-
-						/* Unset "to" value to prevent setting it at transition.
-						 * The animation will set a value when starting the
-						 * animation.
-						 */
-						g_value_unset(&toValue);
-					}
-#ifdef DEBUG
-					if(doDebug)
-					{
-						gchar	*valueString;
-
-						valueString=g_strdup_value_contents(&propertyTargetSpec->to);
-						XFDASHBOARD_DEBUG(self, ANIMATION,
-											"%s 'to'-value %s of type %s for property '%s' to type %s of class %s for target #%d and actor #%d (%s@%p) of animation specification '%s'",
-											(G_VALUE_TYPE(&toValue)!=G_TYPE_INVALID) ? "Converted" : "Could not convert",
-											valueString,
-											G_VALUE_TYPE_NAME(&propertyTargetSpec->to),
-											propertyTargetSpec->name,
-											g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertySpec)),
-											G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(actor)),
-											counterTargets,
-											counterActors,
-											G_OBJECT_TYPE_NAME(actor),
-											actor,
-											spec->id);
-						g_free(valueString);
-					}
-#endif
-				}
-					else
-					{
-						g_value_init(&toValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
-						if(inDefaultFinalValues && _xfdashboard_theme_animation_find_default_property_value(self, inDefaultFinalValues, inSender, propertyTargetSpec->name, actor, &toValue))
-						{
-#ifdef DEBUG
-							if(doDebug)
-							{
-								gchar	*valueString;
-
-								valueString=g_strdup_value_contents(&toValue);
-								XFDASHBOARD_DEBUG(self, ANIMATION,
-													"Using provided default 'to'-value %s for property '%s' from target #%d and actor #%d (%s@%p) of animation specification '%s' as no 'to' value was specified",
-													valueString,
-													propertyTargetSpec->name,
-													counterTargets,
-													counterActors,
-													G_OBJECT_TYPE_NAME(actor),
-													actor,
-													spec->id);
-								g_free(valueString);
-							}
-#endif
-						}
-					}
-
-				/* Create property transition for property with cloned timeline
-				 * and add this new transition to transition group if from value
-				 * is not invalid.
-				 */
-				if(G_VALUE_TYPE(&fromValue)!=G_TYPE_INVALID)
-				{
-					ClutterTransition						*propertyTransition;
-					GSList									*animationList;
-
-					/* Create property transition */
-					propertyTransition=clutter_property_transition_new(propertyTargetSpec->name);
-					if(!propertyTransition)
-					{
-						g_critical(_("Cannot allocate memory for transition of property '%s' of animation specification '%s'"),
-									propertyTargetSpec->name,
-									spec->id);
-
-						/* Release allocated resources */
-						g_value_unset(&fromValue);
-						g_value_unset(&toValue);
-
-						/* Skip this property transition */
-						continue;
-					}
-
-					/* Clone timeline configuration from animation target */
-					clutter_timeline_set_duration(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_duration(targets->timeline));
-					clutter_timeline_set_delay(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_delay(targets->timeline));
-					clutter_timeline_set_progress_mode(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_progress_mode(targets->timeline));
-					clutter_timeline_set_repeat_count(CLUTTER_TIMELINE(propertyTransition), clutter_timeline_get_repeat_count(targets->timeline));
-
-					/* Set "from" value */
-					clutter_transition_set_from_value(propertyTransition, &fromValue);
-
-					/* Set "to" value if valid */
-					if(G_VALUE_TYPE(&toValue)!=G_TYPE_INVALID)
-					{
-						clutter_transition_set_to_value(propertyTransition, &toValue);
-					}
-
-					/* Add animation to list of animations of target actor */
-					animationList=g_hash_table_lookup(animationActorMap, actor);
-					animationList=g_slist_prepend(animationList, propertyTransition);
-					g_hash_table_insert(animationActorMap, actor, animationList);
-
-					XFDASHBOARD_DEBUG(self, ANIMATION,
-										"Created transition for property '%s' at target #%d and actor #%d (%s@%p) of animation specification '%s'",
-										propertyTargetSpec->name,
-										counterTargets,
-										counterActors,
-										G_OBJECT_TYPE_NAME(actor),
-										actor,
-										spec->id);
-				}
-
-				/* Release allocated resources */
-				g_value_unset(&fromValue);
-				g_value_unset(&toValue);
-			}
-		}
-
-		/* Release allocated resources */
-		g_slist_free(actors);
-	}
-
-	/* Now iterate through actor-animation-list-mapping, create a transition group for each actor
-	 * and add its animation to this newly created group.
-	 */
-	if(animationActorMap)
-	{
-		GHashTableIter										hashIter;
-		ClutterActor										*hashIterActor;
-		GSList												*hashIterList;
-
-		g_hash_table_iter_init(&hashIter, animationActorMap);
-		while(g_hash_table_iter_next(&hashIter, (gpointer*)&hashIterActor, (gpointer*)&hashIterList))
-		{
-			ClutterTransition								*transitionGroup;
-			GSList											*listIter;
-			guint											groupDuration;
-			gint											groupLoop;
-
-			/* Skip empty but warn */
-			if(!hashIterList)
-			{
-				g_critical(_("Empty animation list when creating animation for animation specification '%s'"),
-							spec->id);
-				continue;
-			}
-
-			/* Create transition group to collect property transitions at */
-			transitionGroup=xfdashboard_transition_group_new();
-			if(!transitionGroup)
-			{
-				g_critical(_("Cannot allocate memory for transition group of animation specification '%s'"),
-							spec->id);
-				
-				/* Release allocated resources */
-				g_hash_table_foreach(animationActorMap, _xfdashboard_theme_animation_free_animation_actor_map_hashtable, NULL);
-				g_hash_table_destroy(animationActorMap);
-				g_object_unref(animation);
-				if(spec) _xfdashboard_theme_animation_spec_unref(spec);
-
-				return(NULL);
-			}
-
-			XFDASHBOARD_DEBUG(self, ANIMATION,
-								"Created transition group at %p for %d properties for actor %s@%p of animation specification '%s'",
-								transitionGroup,
-								g_slist_length(hashIterList),
-								G_OBJECT_TYPE_NAME(hashIterActor),
-								hashIterActor,
-								spec->id);
-
-			/* Add animations to transition group */
-			groupDuration=0;
-			groupLoop=0;
-			for(listIter=hashIterList; listIter; listIter=g_slist_next(listIter))
-			{
-				ClutterTransition							*transition;
-				gint										transitionLoop;
-				guint										transitionDuration;
-
-				/* Get transition to add */
-				transition=(ClutterTransition*)listIter->data;
-				if(!transition) continue;
-
-				/* Adjust timeline values for transition group to play animation fully */
-				transitionDuration=clutter_timeline_get_delay(CLUTTER_TIMELINE(transition))+clutter_timeline_get_duration(CLUTTER_TIMELINE(transition));
-				if(transitionDuration>groupDuration) groupDuration=transitionDuration;
-
-				if(groupLoop>=0)
-				{
-					transitionLoop=clutter_timeline_get_repeat_count(CLUTTER_TIMELINE(transition));
-					if(transitionLoop>groupLoop) groupLoop=transitionLoop;
-				}
-
-				/* Add property transition to transition group */
-				xfdashboard_transition_group_add_transition(XFDASHBOARD_TRANSITION_GROUP(transitionGroup), transition);
-
-				XFDASHBOARD_DEBUG(self, ANIMATION,
-									"Added transition %s@%p (duration %u ms in %d loops) for actor %s@%p of animation specification '%s' to group %s@%p",
-									G_OBJECT_TYPE_NAME(transition),
-									transition,
-									transitionDuration,
-									transitionLoop,
-									G_OBJECT_TYPE_NAME(hashIterActor),
-									hashIterActor,
-									spec->id,
-									G_OBJECT_TYPE_NAME(transitionGroup),
-									transitionGroup);
-			}
-
-			/* Set up timeline configuration for transition group of target actor */
-			clutter_timeline_set_duration(CLUTTER_TIMELINE(transitionGroup), groupDuration);
-			clutter_timeline_set_delay(CLUTTER_TIMELINE(transitionGroup), 0);
-			clutter_timeline_set_progress_mode(CLUTTER_TIMELINE(transitionGroup), CLUTTER_LINEAR);
-			clutter_timeline_set_repeat_count(CLUTTER_TIMELINE(transitionGroup), groupLoop);
-
-			XFDASHBOARD_DEBUG(self, ANIMATION,
-								"Set up timeline of group %s@%p with duration of %u ms and %d loops for actor %s@%p",
-								G_OBJECT_TYPE_NAME(transitionGroup),
-								transitionGroup,
-								groupDuration,
-								groupLoop,
-								G_OBJECT_TYPE_NAME(hashIterActor),
-								hashIterActor);
-
-			/* Add transition group with collected property transitions
-			 * to actor.
-			 */
-			if(animationClass->add_animation)
-			{
-				animationClass->add_animation(animation, hashIterActor, transitionGroup);
-				XFDASHBOARD_DEBUG(self, ANIMATION,
-									"Added transition group %s@%p to actor %s@%p of animation specification '%s'",
-									G_OBJECT_TYPE_NAME(transitionGroup),
-									transitionGroup,
-									G_OBJECT_TYPE_NAME(hashIterActor),
-									hashIterActor,
-									spec->id);
-			}
-
-			/* Release allocated resources */
-			g_object_unref(transitionGroup);
-			g_slist_free_full(hashIterList, g_object_unref);
-		}
-
-		/* Destroy hash table */
-		g_hash_table_destroy(animationActorMap);
-	}
+	/* Create animation for found animation specification */
+	animation=_xfdashboard_theme_animation_create_by_spec(self, spec, inSender, inDefaultInitialValues, inDefaultFinalValues);
 
 	/* Release allocated resources */
 	if(spec) _xfdashboard_theme_animation_spec_unref(spec);
 
 	return(animation);
+}
+
+/* Build requested animation by animation ID */
+XfdashboardAnimation* xfdashboard_theme_animation_create_by_id(XfdashboardThemeAnimation *self,
+																XfdashboardActor *inSender,
+																const gchar *inID,
+																XfdashboardAnimationValue **inDefaultInitialValues,
+																XfdashboardAnimationValue **inDefaultFinalValues)
+{
+	XfdashboardThemeAnimationSpec							*spec;
+	XfdashboardAnimation									*animation;
+	gboolean												animationEnabled;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
+	g_return_val_if_fail(inID && *inID, NULL);
+
+	animation=NULL;
+
+	/* Check if user wants animation at all. If user does not want any animation,
+	 * return NULL.
+	 */
+	animationEnabled=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
+												ENABLE_ANIMATIONS_XFCONF_PROP,
+												DEFAULT_ENABLE_ANIMATIONS);
+	if(!animationEnabled)
+	{
+		XFDASHBOARD_DEBUG(self, ANIMATION,
+							"User disabled animations so do not lookup animation with ID '%s'",
+							inID);
+
+		/* Return NULL as user does not want any animation */
+		return(NULL);
+	}
+
+	/* Find animation specification by looking up requested ID.
+	 * If no matching animation specification is found, return the empty one.
+	 */
+	spec=_xfdashboard_theme_animation_find_animation_spec_by_id(self, inID);
+	if(!spec)
+	{
+		XFDASHBOARD_DEBUG(self, ANIMATION,
+							"Could not find an animation specification with ID '%s'",
+							inID);
+
+		/* Return NULL as no matching animation specification was found */
+		return(NULL);
+	}
+
+	XFDASHBOARD_DEBUG(self, ANIMATION,
+						"Found animation specification '%s'  with %d targets",
+						spec->id,
+						g_slist_length(spec->targets));
+
+	/* Create animation for found animation specification */
+	animation=_xfdashboard_theme_animation_create_by_spec(self, spec, inSender, inDefaultInitialValues, inDefaultFinalValues);
+
+	/* Release allocated resources */
+	if(spec) _xfdashboard_theme_animation_spec_unref(spec);
+
+	return(animation);
+}
+
+/* Look up ID of animation specification for sender and its signal*/
+gchar* xfdashboard_theme_animation_lookup_id(XfdashboardThemeAnimation *self,
+												XfdashboardActor *inSender,
+												const gchar *inSignal)
+{
+	XfdashboardThemeAnimationSpec							*spec;
+	gchar													*id;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
+	g_return_val_if_fail(inSignal && *inSignal, NULL);
+
+	id=NULL;
+
+	/* Get best matching animation specification for sender and signal.
+	 * If no matching animation specification is found, return the empty one.
+	 */
+	spec=_xfdashboard_theme_animation_find_matching_animation_spec(self, XFDASHBOARD_STYLABLE(inSender), inSignal);
+	if(spec)
+	{
+		/* Get ID of animation specification to return */
+		id=g_strdup(spec->id);
+
+		/* Release allocated resources */
+		_xfdashboard_theme_animation_spec_unref(spec);
+	}
+
+	/* Return found ID or NULL */
+	return(id);
 }

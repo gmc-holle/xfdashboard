@@ -46,6 +46,7 @@ struct _XfdashboardCollapseBoxPrivate
 	gboolean				isCollapsed;
 	gfloat					collapsedSize;
 	XfdashboardOrientation	collapseOrientation;
+	gfloat					collapseProgress;
 
 	/* Instance related */
 	ClutterActor			*child;
@@ -73,6 +74,7 @@ enum
 	PROP_COLLAPSED,
 	PROP_COLLAPSED_SIZE,
 	PROP_COLLAPSE_ORIENTATION,
+	PROP_COLLAPSE_PROGRESS,
 
 	PROP_LAST
 };
@@ -362,11 +364,18 @@ static void _xfdashboard_collapse_box_get_preferred_height(ClutterActor *inActor
 	}
 
 	/* If actor is collapsed set minimum size */
-	if(priv->isCollapsed &&
-		(priv->collapseOrientation==XFDASHBOARD_ORIENTATION_TOP ||
-			priv->collapseOrientation==XFDASHBOARD_ORIENTATION_BOTTOM))
+	if(priv->collapseOrientation==XFDASHBOARD_ORIENTATION_TOP ||
+			priv->collapseOrientation==XFDASHBOARD_ORIENTATION_BOTTOM)
 	{
-		minHeight=naturalHeight=priv->collapsedSize;
+		if(minHeight>priv->collapsedSize)
+		{
+			minHeight=priv->collapsedSize+((minHeight-priv->collapsedSize)*priv->collapseProgress);
+		}
+
+		if(naturalHeight>priv->collapsedSize)
+		{
+			naturalHeight=priv->collapsedSize+((naturalHeight-priv->collapsedSize)*priv->collapseProgress);
+		}
 	}
 
 	/* Store sizes computed */
@@ -395,11 +404,18 @@ static void _xfdashboard_collapse_box_get_preferred_width(ClutterActor *inActor,
 	}
 
 	/* If actor is collapsed set minimum size */
-	if(priv->isCollapsed &&
-		(priv->collapseOrientation==XFDASHBOARD_ORIENTATION_LEFT ||
-			priv->collapseOrientation==XFDASHBOARD_ORIENTATION_RIGHT))
+	if(priv->collapseOrientation==XFDASHBOARD_ORIENTATION_LEFT ||
+			priv->collapseOrientation==XFDASHBOARD_ORIENTATION_RIGHT)
 	{
-		minWidth=naturalWidth=priv->collapsedSize;
+		if(minWidth>priv->collapsedSize)
+		{
+			minWidth=priv->collapsedSize+((minWidth-priv->collapsedSize)*priv->collapseProgress);
+		}
+
+		if(naturalWidth>priv->collapsedSize)
+		{
+			naturalWidth=priv->collapsedSize+((naturalWidth-priv->collapsedSize)*priv->collapseProgress);
+		}
 	}
 
 	/* Store sizes computed */
@@ -531,6 +547,10 @@ static void _xfdashboard_collapse_box_set_property(GObject *inObject,
 			xfdashboard_collapse_box_set_collapse_orientation(self, g_value_get_enum(inValue));
 			break;
 
+		case PROP_COLLAPSE_PROGRESS:
+			xfdashboard_collapse_box_set_collapse_progress(self, g_value_get_float(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -557,6 +577,10 @@ static void _xfdashboard_collapse_box_get_property(GObject *inObject,
 
 		case PROP_COLLAPSE_ORIENTATION:
 			g_value_set_enum(outValue, priv->collapseOrientation);
+			break;
+
+		case PROP_COLLAPSE_PROGRESS:
+			g_value_set_float(outValue, priv->collapseProgress);
 			break;
 
 		default:
@@ -608,6 +632,15 @@ static void xfdashboard_collapse_box_class_init(XfdashboardCollapseBoxClass *kla
 							XFDASHBOARD_ORIENTATION_LEFT,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardCollapseBoxProperties[PROP_COLLAPSE_PROGRESS]=
+		g_param_spec_float("collapse-progress",
+							_("Collapse progress"),
+							_("The progress fraction used to animate collapse or expand. The fraction must be between 0.0 and 1.0 and "
+								"defines the progress between collapsed size (fraction of 0.0) and preferred size (fraction of 1.0)."),
+							0.0f, 1.0f,
+							0.0f,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardCollapseBoxProperties);
 
 	/* Define stylable properties */
@@ -641,6 +674,7 @@ static void xfdashboard_collapse_box_init(XfdashboardCollapseBox *self)
 	priv->isCollapsed=TRUE;
 	priv->collapsedSize=0.0f;
 	priv->collapseOrientation=XFDASHBOARD_ORIENTATION_LEFT;
+	priv->collapseProgress=0.0f;
 	priv->child=NULL;
 	priv->requestModeSignalID=0;
 	priv->focusManager=xfdashboard_focus_manager_get_default();
@@ -784,5 +818,34 @@ void xfdashboard_collapse_box_set_collapse_orientation(XfdashboardCollapseBox *s
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardCollapseBoxProperties[PROP_COLLAPSE_ORIENTATION]);
+	}
+}
+
+/* Get/set size for collapse/expand progress */
+gfloat xfdashboard_collapse_box_get_collapse_progress(XfdashboardCollapseBox *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_COLLAPSE_BOX(self), FALSE);
+
+	return(self->priv->collapseProgress);
+}
+
+void xfdashboard_collapse_box_set_collapse_progress(XfdashboardCollapseBox *self, gfloat inProgress)
+{
+	XfdashboardCollapseBoxPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_COLLAPSE_BOX(self));
+	g_return_if_fail(inProgress>=0.0f && inProgress<=1.0f);
+
+	priv=self->priv;
+
+	/* Only set value if it changes */
+	if(inProgress!=priv->collapseProgress)
+	{
+		/* Set new value */
+		priv->collapseProgress=inProgress;
+		clutter_actor_queue_relayout(CLUTTER_ACTOR(self));
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardCollapseBoxProperties[PROP_COLLAPSE_PROGRESS]);
 	}
 }

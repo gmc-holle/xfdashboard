@@ -105,6 +105,16 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 															XfdashboardAnimationValue **inDefaultInitialValues,
 															XfdashboardAnimationValue **inDefaultFinalValuess);
 
+XfdashboardAnimation* xfdashboard_theme_animation_create_by_id(XfdashboardThemeAnimation *self,
+																XfdashboardActor *inSender,
+																const gchar *inID,
+																XfdashboardAnimationValue **inDefaultInitialValues,
+																XfdashboardAnimationValue **inDefaultFinalValues);
+
+gchar* xfdashboard_theme_animation_lookup_id(XfdashboardThemeAnimation *self,
+															XfdashboardActor *inSender,
+															const gchar *inID);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_THEME_ANIMATION__ */

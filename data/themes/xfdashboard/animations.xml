@@ -2,7 +2,7 @@
 	<trigger id="expand-workspace" sender="XfdashboardCollapseBox" signal="expand">
 		<timeline delay="0" duration="500" mode="ease-out-cubic">
 			<apply>
-				<property name="width" />
+				<property name="collapse-progress" from="0.0" to="1.0" />
 			</apply>
 		</timeline>
 	</trigger>
@@ -10,7 +10,7 @@
 	<trigger id="collapse-workspace" sender="XfdashboardCollapseBox" signal="collapse">
 		<timeline delay="0" duration="500" mode="ease-in-cubic">
 			<apply>
-				<property name="width" />
+				<property name="collapse-progress" from="1.0" to="0.0" />
 			</apply>
 		</timeline>
 	</trigger>
@@ -46,6 +46,17 @@
 
 	<trigger id="window-moved" sender="XfdashboardLiveWindow" signal="move-resize">
 		<timeline delay="0" duration="500" mode="linear">
+			<apply>
+				<property name="x" />
+				<property name="y" />
+				<property name="width" />
+				<property name="height" />
+			</apply>
+		</timeline>
+	</trigger>
+
+	<trigger id="quicklaunch-item-moved" sender="XfdashboardQuicklaunch XfdashboardApplicationButton" signal="move-resize">
+		<timeline delay="0" duration="100" mode="linear">
 			<apply>
 				<property name="x" />
 				<property name="y" />

@@ -82,6 +82,9 @@ void xfdashboard_collapse_box_set_collapsed_size(XfdashboardCollapseBox *self, g
 XfdashboardOrientation xfdashboard_collapse_box_get_collapse_orientation(XfdashboardCollapseBox *self);
 void xfdashboard_collapse_box_set_collapse_orientation(XfdashboardCollapseBox *self, XfdashboardOrientation inOrientation);
 
+gfloat xfdashboard_collapse_box_get_collapse_progress(XfdashboardCollapseBox *self);
+void xfdashboard_collapse_box_set_collapse_progress(XfdashboardCollapseBox *self, gfloat inProgress);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_COLLAPSE_BOX__ */

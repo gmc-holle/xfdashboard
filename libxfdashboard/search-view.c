@@ -771,6 +771,7 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 	 * this search.
 	 */
 	reselectProvider=NULL;
+	reselectDirection=XFDASHBOARD_SELECTION_TARGET_NEXT;
 	reselectOldSelection=xfdashboard_focusable_get_selection(XFDASHBOARD_FOCUSABLE(self));
 	if(reselectOldSelection)
 	{

@@ -632,6 +632,48 @@ static void _xfdashboard_windows_view_on_drop_drop(XfdashboardWindowsView *self,
 				G_OBJECT_TYPE_NAME(self));
 }
 
+/* A child actor was added to view */
+static void _xfdashboard_windows_view_on_child_added(ClutterContainer *inContainer,
+														ClutterActor *inChild,
+														gpointer inUserData)
+{
+	ClutterActorIter			iter;
+	ClutterActor				*child;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inContainer));
+
+	/* Iterate through list of current actors and enable allocation animation */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		if(XFDASHBOARD_IS_ACTOR(child))
+		{
+			xfdashboard_actor_enable_allocation_animation_once(XFDASHBOARD_ACTOR(child));
+		}
+	}
+}
+
+/* A child actor was removed from view */
+static void _xfdashboard_windows_view_on_child_removed(ClutterContainer *inContainer,
+														ClutterActor *inChild,
+														gpointer inUserData)
+{
+	ClutterActorIter			iter;
+	ClutterActor				*child;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOWS_VIEW(inContainer));
+
+	/* Iterate through list of current actors and enable allocation animation */
+	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
+	while(clutter_actor_iter_next(&iter, &child))
+	{
+		if(XFDASHBOARD_IS_ACTOR(child))
+		{
+			xfdashboard_actor_enable_allocation_animation_once(XFDASHBOARD_ACTOR(child));
+		}
+	}
+}
+
 /* Active workspace was changed */
 static void _xfdashboard_windows_view_on_active_workspace_changed(XfdashboardWindowsView *self,
 																	XfdashboardWindowTrackerWorkspace *inPrevWorkspace,
@@ -2297,6 +2339,16 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 																				"scroll-event-changes-workspace");
 
 	/* Connect signals */
+	g_signal_connect(self,
+						"actor-added",
+						G_CALLBACK(_xfdashboard_windows_view_on_child_added),
+						NULL);
+
+	g_signal_connect(self,
+						"actor-removed",
+						G_CALLBACK(_xfdashboard_windows_view_on_child_removed),
+						NULL);
+
 	g_signal_connect_swapped(priv->windowTracker,
 								"active-workspace-changed",
 								G_CALLBACK(_xfdashboard_windows_view_on_active_workspace_changed),

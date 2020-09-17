@@ -1100,6 +1100,8 @@ static void _xfdashboard_quicklaunch_on_drop_motion(XfdashboardQuicklaunch *self
 		gfloat						stageX, stageY;
 		gfloat						deltaX, deltaY;
 		ClutterActor				*actorUnderMouse;
+		ClutterActorIter			iter;
+		ClutterActor				*iterChild;
 
 		/* Preview icon and drag handle should not be reactive to prevent
 		 * clutter_stage_get_actor_at_pos() choosing one of both as the
@@ -1138,6 +1140,31 @@ static void _xfdashboard_quicklaunch_on_drop_motion(XfdashboardQuicklaunch *self
 			 * show preview icon at wrong position when entering quicklaunch
 			 */
 			if(priv->dragMode==DRAG_MODE_CREATE) clutter_actor_show(priv->dragPreviewIcon);
+
+			/* Iterate through list of current actors and enable allocation animation */
+			clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
+			if((priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL && deltaX<0) ||
+				(priv->orientation==CLUTTER_ORIENTATION_VERTICAL && deltaY<0))
+			{
+				while(clutter_actor_iter_next(&iter, &iterChild) && iterChild!=priv->dragPreviewIcon)
+				{
+					if(XFDASHBOARD_IS_ACTOR(iterChild))
+					{
+						xfdashboard_actor_enable_allocation_animation_once(XFDASHBOARD_ACTOR(iterChild));
+					}
+				}
+			}
+				else
+				{
+					while(clutter_actor_iter_next(&iter, &iterChild) && iterChild!=priv->dragPreviewIcon);
+					while(clutter_actor_iter_next(&iter, &iterChild))
+					{
+						if(XFDASHBOARD_IS_ACTOR(iterChild))
+						{
+							xfdashboard_actor_enable_allocation_animation_once(XFDASHBOARD_ACTOR(iterChild));
+						}
+					}
+				}
 		}
 
 		/* Reset reactive state of preview icon and drag handle */
@@ -2583,6 +2610,9 @@ static void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 	ClutterActor					*child;
 	ClutterActorIter				iter;
 	ClutterActorBox					childAllocation={ 0, };
+	ClutterActorBox					oldChildAllocation={ 0, };
+	gboolean						fixedPosition;
+	gfloat							fixedX, fixedY;
 
 	/* Chain up to store the allocation of the actor */
 	CLUTTER_ACTOR_CLASS(xfdashboard_quicklaunch_parent_class)->allocate(inActor, inBox, inFlags);
@@ -2622,9 +2652,42 @@ static void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 			}
 
 		clutter_actor_set_scale(child, priv->scaleCurrent, priv->scaleCurrent);
+
+		/* Respect fixed position of child */
+		g_object_get(child,
+						"fixed-position-set", &fixedPosition,
+						"fixed-x", &fixedX,
+						"fixed-y", &fixedY,
+						NULL);
+
+		if(fixedPosition)
+		{
+			oldChildAllocation.x1=childAllocation.x1;
+			oldChildAllocation.x2=childAllocation.x2;
+			oldChildAllocation.y1=childAllocation.y1;
+			oldChildAllocation.y2=childAllocation.y2;
+
+			childWidth=childAllocation.x2-childAllocation.x1;
+			childHeight=childAllocation.y2-childAllocation.y1;
+
+			childAllocation.x1=ceil(fixedX);
+			childAllocation.x2=childAllocation.x1+childWidth;
+			childAllocation.y1=ceil(fixedY);
+			childAllocation.y2=childAllocation.y1+childHeight;
+		}
+
+		/* Allocate child */
 		clutter_actor_allocate(child, &childAllocation, inFlags);
 
 		/* Set up for next child */
+		if(fixedPosition)
+		{
+			childAllocation.x1=oldChildAllocation.x1;
+			childAllocation.x2=oldChildAllocation.x2;
+			childAllocation.y1=oldChildAllocation.y1;
+			childAllocation.y2=oldChildAllocation.y2;
+		}
+
 		childWidth*=priv->scaleCurrent;
 		childHeight*=priv->scaleCurrent;
 		if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL) childAllocation.x1=ceil(childAllocation.x1+childWidth+priv->spacing);

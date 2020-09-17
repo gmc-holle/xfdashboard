@@ -35,6 +35,8 @@
 #include <clutter/clutter.h>
 #include <math.h>
 
+#include <libxfdashboard/actor.h>
+#include <libxfdashboard/animation.h>
 #include <libxfdashboard/compat.h>
 
 
@@ -78,6 +80,7 @@ enum
 };
 
 static GParamSpec* XfdashboardScaledTableLayoutProperties[PROP_LAST]={ 0, };
+
 
 /* IMPLEMENTATION: Private variables and methods */
 

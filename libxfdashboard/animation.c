@@ -291,10 +291,17 @@ static void _xfdashboard_animation_on_transition_stopped(XfdashboardAnimation *s
 						priv->id);
 
 	/* Find entries to remove from list of entries */
-	for(iter=priv->entries; iter; iter=g_slist_next(iter))
+	iter=priv->entries;
+	while(iter)
 	{
+		GSList						*node;
+
+		/* Get current and next node from list */
+		node=iter;
+		iter=g_slist_next(iter);
+
 		/* Get entry */
-		entry=(XfdashboardAnimationEntry*)iter->data;
+		entry=(XfdashboardAnimationEntry*)node->data;
 		if(!entry) continue;
 
 		/* Check if the currently iterated entry must be freed */
@@ -307,13 +314,13 @@ static void _xfdashboard_animation_on_transition_stopped(XfdashboardAnimation *s
 								destroyedTransition,
 								G_OBJECT_TYPE_NAME(entry->actor),
 								entry->actor,
-								iter->data,
+								entry,
 								priv->id);
 #endif
 
-			priv->entries=g_slist_remove_link(priv->entries, iter);
+			priv->entries=g_slist_remove_link(priv->entries, node);
 			_xfdashboard_animation_entry_free(entry);
-			g_slist_free_1(iter);
+			g_slist_free_1(node);
 		}
 	}
 
@@ -348,10 +355,17 @@ static void _xfdashboard_animation_on_actor_destroyed(XfdashboardAnimation *self
 	destroyedActor=CLUTTER_ACTOR(inUserData);
 
 	/* Find entries to remove from list of entries */
-	for(iter=priv->entries; iter; iter=g_slist_next(iter))
+	iter=priv->entries;
+	while(iter)
 	{
+		GSList						*node;
+
+		/* Get current and next node from list */
+		node=iter;
+		iter=g_slist_next(iter);
+
 		/* Get entry */
-		entry=(XfdashboardAnimationEntry*)iter->data;
+		entry=(XfdashboardAnimationEntry*)node->data;
 		if(!entry) continue;
 
 		/* Check if the currently iterated entry must be freed */
@@ -362,13 +376,13 @@ static void _xfdashboard_animation_on_actor_destroyed(XfdashboardAnimation *self
 								"Actor %s@%p destroyed, removing entry %p from animation list of animation '%s'",
 								G_OBJECT_TYPE_NAME(destroyedActor),
 								destroyedActor,
-								iter->data,
+								entry,
 								priv->id);
 #endif
 
-			priv->entries=g_slist_remove_link(priv->entries, iter);
+			priv->entries=g_slist_remove_link(priv->entries, node);
 			_xfdashboard_animation_entry_free(entry);
-			g_slist_free_1(iter);
+			g_slist_free_1(node);
 		}
 	}
 
@@ -718,6 +732,100 @@ XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *in
 
 
 /**
+ * xfdashboard_animation_new_by_id:
+ * @inSender: The #ClutterActor requesting the animation
+ * @inID: A string containing the ID of animation to create for sender
+ *
+ * Creates a new animation of type #XfdashboardAnimation for the sending
+ * actor at @inSender from theme's animation with ID requested at @inID.
+ *
+ * This function is the logical equivalent of:
+ *
+ * |[<!-- language="C" -->
+ *   XfdashboardTheme          *theme;
+ *   XfdashboardThemeAnimation *theme_animations;
+ *
+ *   theme=xfdashboard_application_get_theme(NULL);
+ *   theme_animations=xfdashboard_theme_get_animation(theme);
+ *   animation=xfdashboard_theme_animation_create_by_id(theme_animations, inSender, inSignal, NULL, NULL);
+ * ]|
+ *
+ * Return value: (transfer full): The instance of #XfdashboardAnimation.
+ */
+XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender, const gchar *inID)
+{
+	XfdashboardTheme				*theme;
+	XfdashboardThemeAnimation		*themeAnimation;
+	XfdashboardAnimation			*animation;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
+	g_return_val_if_fail(inID && *inID, NULL);
+
+	theme=xfdashboard_application_get_theme(NULL);
+	themeAnimation=xfdashboard_theme_get_animation(theme);
+	animation=xfdashboard_theme_animation_create_by_id(themeAnimation, inSender, inID, NULL, NULL);
+
+	return(animation);
+}
+
+/**
+ * xfdashboard_animation_new_by_id_with_values:
+ * @inSender: The #ClutterActor requesting the animation
+ * @inID: A string containing the ID of animation to create for sender
+ * @inDefaultInitialValues: A %NULL-terminated list of default initial values
+ * @inDefaultFinalValues: A %NULL-terminated list of default final values
+ *
+ * Creates a new animation of type #XfdashboardAnimation for the sending
+ * actor at @inSender from theme's animation with ID requested at @inID.
+ *
+ * A list of default values to set the initial values of the properties can be
+ * provided at @inDefaultInitialValues. If it is set to %NULL then the current
+ * property's value is used as initial value. This list must be %NULL-terminated.
+ *
+ * A list of default values to set the final values of the properties can be
+ * provided at @inDefaultFinalValues. If it is set to %NULL then the current
+ * property's value when the animation is started will be used as final value.
+ * This list must be %NULL-terminated.
+ *
+ * The theme can provide an initial and final values and have higher precedence
+ * as the default initial and final values passed to this function.
+ *
+ * The caller is responsible to free and/or unref the values in the lists
+ * provided at @inDefaultInitialValues and @inDefaultFinalValues.
+ *
+ * This function is the logical equivalent of:
+ *
+ * |[<!-- language="C" -->
+ *   XfdashboardTheme          *theme;
+ *   XfdashboardThemeAnimation *theme_animations;
+ *
+ *   theme=xfdashboard_application_get_theme(NULL);
+ *   theme_animations=xfdashboard_theme_get_animation(theme);
+ *   animation=xfdashboard_theme_animation_create_by_id(theme_animations, inSender, inSignal, inDefaultInitialValues, inDefaultFinalValues);
+ * ]|
+ *
+ * Return value: (transfer full): The instance of #XfdashboardAnimation.
+ */
+XfdashboardAnimation* xfdashboard_animation_new_by_id_with_values(XfdashboardActor *inSender,
+																	const gchar *inID,
+																	XfdashboardAnimationValue **inDefaultInitialValues,
+																	XfdashboardAnimationValue **inDefaultFinalValues)
+{
+	XfdashboardTheme				*theme;
+	XfdashboardThemeAnimation		*themeAnimation;
+	XfdashboardAnimation			*animation;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
+	g_return_val_if_fail(inID && *inID, NULL);
+
+	theme=xfdashboard_application_get_theme(NULL);
+	themeAnimation=xfdashboard_theme_get_animation(theme);
+	animation=xfdashboard_theme_animation_create_by_id(themeAnimation, inSender, inID, inDefaultInitialValues, inDefaultFinalValues);
+
+	return(animation);
+}
+
+/**
  * xfdashboard_animation_get_id:
  * @self: A #XfdashboardAnimation
  *
@@ -830,5 +938,179 @@ void xfdashboard_animation_ensure_complete(XfdashboardAnimation *self)
 		duration=clutter_timeline_get_duration(CLUTTER_TIMELINE(entry->transition));
 		clutter_timeline_advance(CLUTTER_TIMELINE(entry->transition), duration);
 		g_signal_emit_by_name(entry->transition, "new-frame", 0, clutter_timeline_get_elapsed_time(CLUTTER_TIMELINE(entry->transition)));
+	}
+}
+
+/* Dump animation */
+static void _xfdashboard_animation_dump_transition(ClutterTransition *inTransition, guint inTransitionCounter, gint inLevel)
+{
+	ClutterTimeline			*transitionTimeline;
+	gint					i;
+
+	g_return_if_fail(CLUTTER_IS_TRANSITION(inTransition));
+	g_return_if_fail(inLevel>=0);
+
+	/* Dump gerenal transition data */
+	transitionTimeline=CLUTTER_TIMELINE(inTransition);
+	for(i=0; i<inLevel; i++) g_print("  ");
+	g_print("+- Transition #%u: transition=%s@%p, duration=%u/%u, loops=%u, progress=%.2f\n",
+				inTransitionCounter,
+				G_OBJECT_TYPE_NAME(inTransition), inTransition,
+				clutter_timeline_get_elapsed_time(transitionTimeline),
+				clutter_timeline_get_duration(transitionTimeline),
+				clutter_timeline_get_repeat_count(transitionTimeline),
+				clutter_timeline_get_progress(transitionTimeline));
+
+	if(CLUTTER_IS_PROPERTY_TRANSITION(inTransition))
+	{
+		ClutterInterval				*interval;
+		gboolean					validTransition;
+		GType						valueType;
+		gchar						*currentValue;
+		gchar						*fromValue;
+		gchar						*toValue;
+		ClutterAnimatable			*animatable;
+
+		validTransition=FALSE;
+		valueType=G_TYPE_INVALID;
+		currentValue=NULL;
+		fromValue=NULL;
+		toValue=NULL;
+		animatable=NULL;
+
+		/* Get property transition related data */
+		interval=clutter_transition_get_interval(inTransition);
+		if(interval)
+		{
+			GValue						*intervalValue;
+
+			intervalValue=clutter_interval_peek_initial_value(interval);
+			if(intervalValue) fromValue=g_strdup_value_contents(intervalValue);
+
+			intervalValue=clutter_interval_peek_final_value(interval);
+			if(intervalValue) toValue=g_strdup_value_contents(intervalValue);
+
+			/* Complete missing "to" value */
+			animatable=clutter_transition_get_animatable(CLUTTER_TRANSITION(inTransition));
+			if(animatable)
+			{
+				GValue					animatableValue=G_VALUE_INIT;
+
+				g_object_get_property(G_OBJECT(animatable),
+										clutter_property_transition_get_property_name(CLUTTER_PROPERTY_TRANSITION(inTransition)),
+										&animatableValue);
+				valueType=G_VALUE_TYPE(&animatableValue);
+				if(valueType!=G_TYPE_INVALID)
+				{
+					currentValue=g_strdup_value_contents(&animatableValue);
+					validTransition=TRUE;
+				}
+				g_value_unset(&animatableValue);
+			}
+		}
+
+		/* Dump transition */
+		if(validTransition)
+		{
+			for(i=0; i<inLevel; i++) g_print("  ");
+			g_print("   Property '%s' at actor %s@%p: current=%s - type=%s, from=%s, to=%s\n",
+						clutter_property_transition_get_property_name(CLUTTER_PROPERTY_TRANSITION(inTransition)),
+						G_OBJECT_TYPE_NAME(animatable), animatable,
+						currentValue,
+						g_type_name(valueType),
+						fromValue,
+						toValue);
+		}
+			else
+			{
+				g_print("   Property '%s' at actor %s@%p: invalid state\n",
+							clutter_property_transition_get_property_name(CLUTTER_PROPERTY_TRANSITION(inTransition)),
+							animatable ? G_OBJECT_TYPE_NAME(animatable) : "", animatable);
+			}
+
+		/* Release allocated resources */
+		if(currentValue) g_free(currentValue);
+		if(fromValue) g_free(fromValue);
+		if(toValue) g_free(toValue);
+	}
+}
+
+/**
+ * xfdashboard_animation_dump:
+ * @self: The #XfdashboardAnimation to dump
+ *
+ * Dumps a textual representation of animation specified in @self
+ * to console. The dump contains all transitions recursively displayed
+ * in a tree.
+ *
+ * This functions is for debugging purposes and should not be used
+ * normally.
+ */
+void xfdashboard_animation_dump(XfdashboardAnimation *self)
+{
+	XfdashboardAnimationPrivate			*priv;
+	GSList								*iter;
+	XfdashboardAnimationEntry			*entry;
+	guint								counter;
+
+	g_return_if_fail(XFDASHBOARD_IS_ANIMATION(self));
+
+	priv=self->priv;
+
+	/* Dump animation object related data */
+	g_print("+- %s@%p - id=%s, entries=%u\n",
+				G_OBJECT_TYPE_NAME(self), self,
+				priv->id,
+				g_slist_length(priv->entries));
+
+	/* Dump animation entries */
+	counter=0;
+	for(iter=priv->entries; iter; iter=g_slist_next(iter))
+	{
+		ClutterTimeline				*timeline;
+
+		/* Get entry */
+		entry=(XfdashboardAnimationEntry*)iter->data;
+		if(!entry) continue;
+
+		/* Dump entry related data */
+		timeline=CLUTTER_TIMELINE(entry->transition);
+		g_print("  +- Entry #%u: actor=%s@%p, transition=%s@%p, duration=%u/%u, loops=%u, progress=%.2f\n",
+					++counter,
+					G_OBJECT_TYPE_NAME(entry->actor), entry->actor,
+					G_OBJECT_TYPE_NAME(entry->transition), entry->transition,
+					clutter_timeline_get_elapsed_time(timeline),
+					clutter_timeline_get_duration(timeline),
+					clutter_timeline_get_repeat_count(timeline),
+					clutter_timeline_get_progress(timeline));
+
+		/* Dump transition related data at entry */
+		if(XFDASHBOARD_IS_TRANSITION_GROUP(entry->transition))
+		{
+			GSList						*transitions;
+			GSList						*transitionIter;
+			guint						transitionCounter;
+
+			/* Get list of transitions from group */
+			transitions=xfdashboard_transition_group_get_transitions(XFDASHBOARD_TRANSITION_GROUP(entry->transition));
+
+			/* Dump transition group data */
+			g_print("    +- Group #%u: entries=%u\n", counter, g_slist_length(transitions));
+
+			/* Iterate through transitions and dump them */
+			transitionCounter=0;
+			for(transitionIter=transitions; transitionIter; transitionIter=g_slist_next(transitionIter))
+			{
+				/* Skip invalid transition */
+				if(!transitionIter->data) continue;
+
+				/* Dump transition of transition group */
+				_xfdashboard_animation_dump_transition(CLUTTER_TRANSITION(transitionIter->data), transitionCounter++, 3);
+			}
+
+			/* Release allocated resources */
+			g_slist_free_full(transitions, g_object_unref);
+		}
+			else _xfdashboard_animation_dump_transition(entry->transition, 0, 2);
 	}
 }

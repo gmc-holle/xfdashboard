@@ -81,6 +81,8 @@ GHashTable* xfdashboard_actor_get_stylable_properties_full(XfdashboardActorClass
 
 void xfdashboard_actor_invalidate(XfdashboardActor *self);
 
+void xfdashboard_actor_enable_allocation_animation_once(XfdashboardActor *self);
+
 G_END_DECLS
 
 #endif

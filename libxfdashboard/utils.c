@@ -793,6 +793,7 @@ gint xfdashboard_get_enum_value_from_nickname(GType inEnumClass, const gchar *in
 	/* Return integer value */
 	return(value);
 }
+
 /* Dump actors */
 static void _xfdashboard_dump_actor_print(ClutterActor *inActor, gint inLevel)
 {
