@@ -1,5 +1,3 @@
-#undef ALLOCATION_ANIMATION
-#undef NEW_ALLOCATION_ANIMATION
 #define EXPLICIT_ALLOCATION_ANIMATION
 
 /*
@@ -81,15 +79,6 @@ struct _XfdashboardActorPrivate
 
 	GSList							*animations;
 
-#ifdef NEW_ALLOCATION_ANIMATION
-	gboolean						allocationAnimationNeedLookupID;
-	gchar							*allocationAnimationID;
-	XfdashboardAnimation			*allocationAnimation;
-	ClutterActorBox					*allocationTrackBox;
-	ClutterActorBox					*allocationInitialBox;
-	ClutterActorBox					*allocationFinalBox;
-#endif
-
 #ifdef EXPLICIT_ALLOCATION_ANIMATION
 	ClutterActorBox					*allocationTrackBox;
 
@@ -118,10 +107,6 @@ enum
 static GParamSpec* XfdashboardActorProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#ifdef NEW_ALLOCATION_ANIMATION
-#define ALLOCATION_ANIMATION_SIGNAL		"move-resize"
-#endif
-
 #ifdef EXPLICIT_ALLOCATION_ANIMATION
 #define ALLOCATION_ANIMATION_SIGNAL		"move-resize"
 #endif
@@ -599,10 +584,6 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 	XfdashboardActorClass		*klass;
 	XfdashboardTheme			*theme;
 	XfdashboardThemeCSS			*themeCSS;
-#ifdef NEW_ALLOCATION_ANIMATION
-	XfdashboardThemeAnimation	*themeAnimation;
-	gchar						*animationID;
-#endif
 	GHashTable					*possibleStyleSet;
 	GParamSpec					*paramSpec;
 	GHashTableIter				hashIter;
@@ -626,22 +607,6 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 
 	/* Get theme */
 	theme=xfdashboard_application_get_theme(NULL);
-
-	/* Invalidate allocation animation ID */
-#ifdef NEW_ALLOCATION_ANIMATION
-	themeAnimation=xfdashboard_theme_get_animation(theme);
-	animationID=xfdashboard_theme_animation_lookup_id(themeAnimation, self, ALLOCATION_ANIMATION_SIGNAL);
-
-	if(g_strcmp0(animationID, priv->allocationAnimationID)!=0)
-	{
-		if(priv->allocationAnimationID) g_free(priv->allocationAnimationID);
-		priv->allocationAnimationID=g_strdup(animationID);
-		priv->allocationAnimationNeedLookupID=FALSE;
-		didChange=TRUE;
-	}
-
-	g_free(animationID);
-#endif
 
 	/* Get theme CSS */
 	themeCSS=xfdashboard_theme_get_css(theme);
@@ -1107,211 +1072,6 @@ static void _xfdashboard_actor_stylable_iface_init(XfdashboardStylableInterface 
 
 /* IMPLEMENTATION: ClutterActor */
 
-#ifdef NEW_ALLOCATION_ANIMATION
-/* Allocate position and size of actor and its children */
-static void _xfdashboard_actor_allocation_animation_done(XfdashboardAnimation *inAnimation,
-															gpointer inUserData)
-{
-	XfdashboardActor				*self;
-	XfdashboardActorPrivate			*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_ANIMATION(inAnimation));
-	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inUserData));
-
-	self=XFDASHBOARD_ACTOR(inUserData);
-	priv=self->priv;
-
-	/* If last tracked and cached allocation does not match the expected
-	 * final allocation of animation, then just update cached allocation
-	 * only as the actor should be in correct allocation and only the
-	 * cached allocation does not reflect this. Doing it this way avoids
-	 * repeating allocation animations.
-	 */
-	g_assert(priv->allocationTrackBox!=NULL);
-	g_assert(priv->allocationInitialBox!=NULL);
-	g_assert(priv->allocationFinalBox!=NULL);
-	if(!clutter_actor_box_equal(priv->allocationTrackBox, priv->allocationFinalBox))
-	{
-		clutter_actor_box_free(priv->allocationTrackBox);
-		priv->allocationTrackBox=clutter_actor_box_copy(priv->allocationFinalBox);
-	}
-
-	/* Release allocated resources */
-	priv->allocationAnimation=NULL;
-
-	clutter_actor_box_free(priv->allocationInitialBox);
-	priv->allocationInitialBox=NULL;
-
-	clutter_actor_box_free(priv->allocationFinalBox);
-	priv->allocationFinalBox=NULL;
-}
-
-static void _xfdashboard_actor_allocate(ClutterActor *inActor,
-										const ClutterActorBox *inAllocationBox,
-										ClutterAllocationFlags inFlags)
-{
-	XfdashboardActor							*self;
-	XfdashboardActorPrivate						*priv;
-	XfdashboardAnimation						*animation;
-	gboolean									animationExists;
-	ClutterActorBox								*initialBox;
-	XfdashboardAnimationValue					**initials;
-	XfdashboardAnimationValue					**finals;
-	gint										i;
-
-	self=XFDASHBOARD_ACTOR(inActor);
-	priv=self->priv;
-
-	/* Actor to allocate and maybe animate must be visible and mapped*/
-	if(!clutter_actor_is_visible(inActor)) return;
-	if(!clutter_actor_is_mapped(inActor)) return;
-
-	/* Set empty allocation for actor if it does not exist */
-	if(!priv->allocationTrackBox)
-	{
-		priv->allocationTrackBox=clutter_actor_box_new(0, 0, 0, 0);
-	}
-
-	/* Check if an animation for move/resize was specified in theme */
-	animation=priv->allocationAnimation;
-	animationExists=(animation ? TRUE : FALSE);
-
-	/* Skip animation if allocation has not changed even if this
-	 * allocation function was called.
-	 */
-	initialBox=priv->allocationTrackBox;
-
-	/* Lookup animation ID if needed */
-	if(priv->allocationAnimationNeedLookupID)
-	{
-		XfdashboardTheme						*theme;
-		XfdashboardThemeAnimation				*themeAnimation;
-
-		/* Get allocation animation */
-		if(priv->allocationAnimationID)
-		{
-			g_free(priv->allocationAnimationID);
-		}
-
-		theme=xfdashboard_application_get_theme(NULL);
-		themeAnimation=xfdashboard_theme_get_animation(theme);
-		priv->allocationAnimationID=xfdashboard_theme_animation_lookup_id(themeAnimation, self, ALLOCATION_ANIMATION_SIGNAL);
-		priv->allocationAnimationNeedLookupID=FALSE;
-	}
-
-	/* Create animation if non exists and if not to skip */
-	if(!animationExists &&
-		priv->allocationAnimationID &&
-		!clutter_actor_box_equal(initialBox, inAllocationBox))
-	{
-		/* Set up default initial values for animation */
-		initials=g_new0(XfdashboardAnimationValue*, 5);
-		for(i=0; i<4; i++)
-		{
-			initials[i]=g_new0(XfdashboardAnimationValue, 1);
-			initials[i]->value=g_new0(GValue, 1);
-		}
-		initials[0]->property="x";
-		g_value_init(initials[0]->value, G_TYPE_FLOAT);
-		g_value_set_float(initials[0]->value, initialBox->x1);
-		initials[1]->property="y";
-		g_value_init(initials[1]->value, G_TYPE_FLOAT);
-		g_value_set_float(initials[1]->value, initialBox->y1);
-		initials[2]->property="width";
-		g_value_init(initials[2]->value, G_TYPE_FLOAT);
-		g_value_set_float(initials[2]->value, clutter_actor_box_get_width(initialBox));
-		initials[3]->property="height";
-		g_value_init(initials[3]->value, G_TYPE_FLOAT);
-		g_value_set_float(initials[3]->value, clutter_actor_box_get_height(initialBox));
-
-		/* Set up default final values for animation */
-		finals=g_new0(XfdashboardAnimationValue*, 5);
-		for(i=0; i<4; i++)
-		{
-			finals[i]=g_new0(XfdashboardAnimationValue, 1);
-			finals[i]->value=g_new0(GValue, 1);
-		}
-		finals[0]->property="x";
-		g_value_init(finals[0]->value, G_TYPE_FLOAT);
-		g_value_set_float(finals[0]->value, inAllocationBox->x1);
-		finals[1]->property="y";
-		g_value_init(finals[1]->value, G_TYPE_FLOAT);
-		g_value_set_float(finals[1]->value, inAllocationBox->y1);
-		finals[2]->property="width";
-		g_value_init(finals[2]->value, G_TYPE_FLOAT);
-		g_value_set_float(finals[2]->value, clutter_actor_box_get_width(inAllocationBox));
-		finals[3]->property="height";
-		g_value_init(finals[3]->value, G_TYPE_FLOAT);
-		g_value_set_float(finals[3]->value, clutter_actor_box_get_height(inAllocationBox));
-
-		/* Create animation */
-		animation=xfdashboard_animation_new_by_id_with_values(self,
-																priv->allocationAnimationID,
-																initials,
-																finals);
-
-		if(!animation ||
-			xfdashboard_animation_is_empty(animation))
-		{
-			if(animation) g_object_unref(animation);
-			animation=NULL;
-		}
-
-		/* Free default initial and final values */
-		for(i=0; i<4; i++)
-		{
-			if(initials[i])
-			{
-				g_value_unset(initials[i]->value);
-				g_free(initials[i]->value);
-				g_free(initials[i]);
-			}
-
-			if(finals[i])
-			{
-				g_value_unset(finals[i]->value);
-				g_free(finals[i]->value);
-				g_free(finals[i]);
-			}
-		}
-		g_free(initials);
-		g_free(finals);
-	}
-
-	/* Allocate child actor */
-	// TODO: CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class)->allocate(inActor, inAllocationBox, inFlags);
-	CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class)->allocate(inActor, inAllocationBox, inFlags | CLUTTER_DELEGATE_LAYOUT);
-
-	priv->allocationTrackBox->x1=inAllocationBox->x1;
-	priv->allocationTrackBox->x2=inAllocationBox->x2;
-	priv->allocationTrackBox->y1=inAllocationBox->y1;
-	priv->allocationTrackBox->y2=inAllocationBox->y2;
-
-	/* If an animation for move/resize was specified in theme
-	 * but does not exist, then add new animation now.
-	 */
-	if(animation && !animationExists)
-	{
-		/* Run animation */
-		g_signal_connect_after(animation, "animation-done", G_CALLBACK(_xfdashboard_actor_allocation_animation_done), inActor);
-		xfdashboard_animation_run(animation);
-
-		/* Store animation at child but take an extra reference on
-		 * animation to keep this object alive, as at this function's
-		 * end a reference will be released.
-		 */
-		g_assert(priv->allocationAnimation==NULL);
-		priv->allocationAnimation=animation;
-
-		g_assert(priv->allocationInitialBox==NULL);
-		priv->allocationInitialBox=clutter_actor_box_copy(initialBox);
-
-		g_assert(priv->allocationFinalBox==NULL);
-		priv->allocationFinalBox=clutter_actor_box_copy(inAllocationBox);
-	}
-}
-#endif
-
 #ifdef EXPLICIT_ALLOCATION_ANIMATION
 /* Allocation animation ended */
 static void _xfdashboard_actor_on_allocation_animation_done(XfdashboardAnimation *inAnimation,
@@ -1748,38 +1508,6 @@ static void _xfdashboard_actor_dispose(GObject *inObject)
 		priv->animations=NULL;
 	}
 
-#ifdef NEW_ALLOCATION_ANIMATION
-	if(priv->allocationAnimationID)
-	{
-		g_free(priv->allocationAnimationID);
-		priv->allocationAnimationID=NULL;
-	}
-
-	if(priv->allocationAnimation)
-	{
-		g_object_unref(priv->allocationAnimation);
-		priv->allocationAnimation=NULL;
-	}
-
-	if(priv->allocationInitialBox)
-	{
-		clutter_actor_box_free(priv->allocationInitialBox);
-		priv->allocationInitialBox=NULL;
-	}
-
-	if(priv->allocationFinalBox)
-	{
-		clutter_actor_box_free(priv->allocationFinalBox);
-		priv->allocationFinalBox=NULL;
-	}
-
-	if(priv->allocationTrackBox)
-	{
-		clutter_actor_box_free(priv->allocationTrackBox);
-		priv->allocationTrackBox=NULL;
-	}
-#endif
-
 #ifdef EXPLICIT_ALLOCATION_ANIMATION
 	if(priv->allocationAnimation)
 	{
@@ -1901,9 +1629,6 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 	gobjectClass->set_property=_xfdashboard_actor_set_property;
 	gobjectClass->get_property=_xfdashboard_actor_get_property;
 
-#ifdef NEW_ALLOCATION_ANIMATION
-	clutterActorClass->allocate=_xfdashboard_actor_allocate;
-#endif
 	clutterActorClass->parent_set=_xfdashboard_actor_parent_set;
 	clutterActorClass->enter_event=_xfdashboard_actor_enter_event;
 	clutterActorClass->leave_event=_xfdashboard_actor_leave_event;
@@ -1966,14 +1691,6 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 	priv->firstTimeMapped=FALSE;
 	priv->firstTimeMappedAnimation=NULL;
 	priv->animations=NULL;
-#ifdef NEW_ALLOCATION_ANIMATION
-	priv->allocationAnimationNeedLookupID=TRUE;
-	priv->allocationAnimationID=NULL;
-	priv->allocationAnimation=NULL;
-	priv->allocationInitialBox=NULL;
-	priv->allocationFinalBox=NULL;
-	priv->allocationTrackBox=NULL;
-#endif
 #ifdef EXPLICIT_ALLOCATION_ANIMATION
 	priv->doAllocationAnimation=FALSE;
 	priv->allocationAnimation=NULL;
