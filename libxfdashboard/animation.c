@@ -55,6 +55,7 @@
 #include <libxfdashboard/animation.h>
 
 #include <glib/gi18n-lib.h>
+#include <gobject/gvaluecollector.h>
 
 #include <libxfdashboard/transition-group.h>
 #include <libxfdashboard/application.h>
@@ -1113,4 +1114,100 @@ void xfdashboard_animation_dump(XfdashboardAnimation *self)
 		}
 			else _xfdashboard_animation_dump_transition(entry->transition, 0, 2);
 	}
+}
+
+/**
+ * xfdashboard_animation_defaults_new:
+ * @inNumberValues: The number of values to follow
+ * @...: Tuples of property names as string, a parameter type by #GType and the parameter value of any type
+ *
+ * This is a convenience function to create a %NULL-terminated list
+ * of #XfdashboardAnimationValue with the definitions of the arguments
+ * at @...
+ * 
+ * The list can be freed by calling xfdashboard_animation_defaults_free()
+ *
+ * Return value: (transfer none): A pointer to start of %NULL-terminated list
+ *   or %NULL in case of errors.
+ */
+XfdashboardAnimationValue** xfdashboard_animation_defaults_new(gint inNumberValues, ...)
+{
+	XfdashboardAnimationValue	**list;
+	XfdashboardAnimationValue	**iter;
+	va_list						args;
+	const gchar					*propertyName;
+	GType						propertyType;
+	gchar						*error;
+
+	g_return_val_if_fail(inNumberValues>0, NULL);
+
+	error=NULL;
+
+	/* Create list array */
+	iter=list=g_new0(XfdashboardAnimationValue*, inNumberValues+1);
+
+	/* Build list entries */
+	va_start(args, inNumberValues);
+
+	do
+	{
+		/* Create list entry */
+		*iter=g_new0(XfdashboardAnimationValue, 1);
+
+		/* Get property name */
+		propertyName=va_arg(args, gchar*);
+		(*iter)->property=g_strdup(propertyName);
+
+		/* Get property type */
+		propertyType=va_arg(args, GType);
+
+		/* Get property value */
+		(*iter)->value=g_new0(GValue, 1);
+		G_VALUE_COLLECT_INIT((*iter)->value, propertyType, args, 0, &error);
+		if(error!=NULL)
+		{
+			g_critical ("%s: %s", G_STRLOC, error);
+			g_free (error);
+			break;
+		}
+
+		/* Set up for next list entry */
+		iter++;
+	}
+	while(--inNumberValues>0);
+
+	va_end(args);
+
+	/* Return created list */
+	return(list);
+}
+
+/**
+ * xfdashboard_animation_defaults_free:
+ * @inDefaultValues: The list containing #XfdashboardAnimationValue to free
+ *
+ * This is a convenience function to free all entries in the
+ * %NULL-terminated list of #XfdashboardAnimationValue at @inDefaultValues
+ */
+void xfdashboard_animation_defaults_free(XfdashboardAnimationValue **inDefaultValues)
+{
+	XfdashboardAnimationValue	**iter;
+
+	g_return_if_fail(inDefaultValues);
+
+	/* Iterate through list and free all entries */
+	for(iter=inDefaultValues; *iter; iter++)
+	{
+		/* Free entry */
+		if((*iter)->selector) g_object_unref((*iter)->selector);
+		if((*iter)->property) g_free((*iter)->property);
+		if((*iter)->value)
+		{
+			g_value_unset((*iter)->value);
+			g_free((*iter)->value);
+		}
+	}
+
+	/* Free list itself */
+	g_free(inDefaultValues);
 }

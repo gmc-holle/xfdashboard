@@ -83,7 +83,7 @@ struct _XfdashboardAnimationClass
 
 /**
  * XfdashboardAnimationValue:
- * @selector: A #XfdashboardCssSelector to find matchhing actors for the property's value in animation
+ * @selector: A #XfdashboardCssSelector to find matchhing actors for the property's value in animation or %NULL to match sender
  * @property: A string containing the name of the property this value belongs to
  * @value: A #GValue containing the value for the property
  *
@@ -121,6 +121,9 @@ void xfdashboard_animation_run(XfdashboardAnimation *self);
 void xfdashboard_animation_ensure_complete(XfdashboardAnimation *self);
 
 void xfdashboard_animation_dump(XfdashboardAnimation *self);
+
+XfdashboardAnimationValue** xfdashboard_animation_defaults_new(gint inNumberValues, ...);
+void xfdashboard_animation_defaults_free(XfdashboardAnimationValue **inDefaultValues);
 
 G_END_DECLS
 

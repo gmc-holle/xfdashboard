@@ -1110,7 +1110,6 @@ static void _xfdashboard_actor_on_allocation_changed(ClutterActor *inActor,
 		XfdashboardAnimation		*animation;
 		XfdashboardAnimationValue	**initials;
 		XfdashboardAnimationValue	**finals;
-		gint						i;
 
 		/* Stop currently running animation if any */
 		if(priv->allocationAnimation)
@@ -1121,44 +1120,18 @@ static void _xfdashboard_actor_on_allocation_changed(ClutterActor *inActor,
 
 		/* Set up default initial values for animation */
 		g_assert(priv->allocationInitialBox!=NULL);
-		initials=g_new0(XfdashboardAnimationValue*, 5);
-		for(i=0; i<4; i++)
-		{
-			initials[i]=g_new0(XfdashboardAnimationValue, 1);
-			initials[i]->value=g_new0(GValue, 1);
-		}
-		initials[0]->property="x";
-		g_value_init(initials[0]->value, G_TYPE_FLOAT);
-		g_value_set_float(initials[0]->value, priv->allocationInitialBox->x1);
-		initials[1]->property="y";
-		g_value_init(initials[1]->value, G_TYPE_FLOAT);
-		g_value_set_float(initials[1]->value, priv->allocationInitialBox->y1);
-		initials[2]->property="width";
-		g_value_init(initials[2]->value, G_TYPE_FLOAT);
-		g_value_set_float(initials[2]->value, clutter_actor_box_get_width(priv->allocationInitialBox));
-		initials[3]->property="height";
-		g_value_init(initials[3]->value, G_TYPE_FLOAT);
-		g_value_set_float(initials[3]->value, clutter_actor_box_get_height(priv->allocationInitialBox));
+		initials=xfdashboard_animation_defaults_new(4,
+													"x", G_TYPE_FLOAT, priv->allocationInitialBox->x1,
+													"y", G_TYPE_FLOAT, priv->allocationInitialBox->y1,
+													"width", G_TYPE_FLOAT, clutter_actor_box_get_width(priv->allocationInitialBox),
+													"height", G_TYPE_FLOAT, clutter_actor_box_get_height(priv->allocationInitialBox));
 
 		/* Set up default final values for animation */
-		finals=g_new0(XfdashboardAnimationValue*, 5);
-		for(i=0; i<4; i++)
-		{
-			finals[i]=g_new0(XfdashboardAnimationValue, 1);
-			finals[i]->value=g_new0(GValue, 1);
-		}
-		finals[0]->property="x";
-		g_value_init(finals[0]->value, G_TYPE_FLOAT);
-		g_value_set_float(finals[0]->value, inAllocationBox->x1);
-		finals[1]->property="y";
-		g_value_init(finals[1]->value, G_TYPE_FLOAT);
-		g_value_set_float(finals[1]->value, inAllocationBox->y1);
-		finals[2]->property="width";
-		g_value_init(finals[2]->value, G_TYPE_FLOAT);
-		g_value_set_float(finals[2]->value, clutter_actor_box_get_width(inAllocationBox));
-		finals[3]->property="height";
-		g_value_init(finals[3]->value, G_TYPE_FLOAT);
-		g_value_set_float(finals[3]->value, clutter_actor_box_get_height(inAllocationBox));
+		finals=xfdashboard_animation_defaults_new(4,
+													"x", G_TYPE_FLOAT, inAllocationBox->x1,
+													"y", G_TYPE_FLOAT, inAllocationBox->y1,
+													"width", G_TYPE_FLOAT, clutter_actor_box_get_width(inAllocationBox),
+													"height", G_TYPE_FLOAT, clutter_actor_box_get_height(inAllocationBox));
 
 		/* Create and start animation */
 		animation=xfdashboard_animation_new_with_values(self,
@@ -1194,24 +1167,8 @@ static void _xfdashboard_actor_on_allocation_changed(ClutterActor *inActor,
 		}
 
 		/* Free default initial and final values */
-		for(i=0; i<4; i++)
-		{
-			if(initials[i])
-			{
-				g_value_unset(initials[i]->value);
-				g_free(initials[i]->value);
-				g_free(initials[i]);
-			}
-
-			if(finals[i])
-			{
-				g_value_unset(finals[i]->value);
-				g_free(finals[i]->value);
-				g_free(finals[i]);
-			}
-		}
-		g_free(initials);
-		g_free(finals);
+		xfdashboard_animation_defaults_free(initials);
+		xfdashboard_animation_defaults_free(finals);
 
 		/* Unset flag indicating an allocation animation was requested,
 		 * as it was handled now.

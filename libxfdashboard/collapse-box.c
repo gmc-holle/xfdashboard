@@ -720,6 +720,8 @@ void xfdashboard_collapse_box_set_collapsed(XfdashboardCollapseBox *self, gboole
 {
 	XfdashboardCollapseBoxPrivate	*priv;
 	XfdashboardAnimation			*animation;
+	XfdashboardAnimationValue		**initials;
+	XfdashboardAnimationValue		**finals;
 
 	g_return_if_fail(XFDASHBOARD_IS_COLLAPSE_BOX(self));
 
@@ -735,7 +737,12 @@ void xfdashboard_collapse_box_set_collapsed(XfdashboardCollapseBox *self, gboole
 		 * beforehand then the new animation would take the initial value in
 		 * a state assuming that the current animation has completed.
 		 */
-		animation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), inCollapsed ? "collapse" : "expand");
+		initials=xfdashboard_animation_defaults_new(1, "collapse-progress", G_TYPE_FLOAT, inCollapsed ? 1.0 : 0.0);
+		finals=xfdashboard_animation_defaults_new(1, "collapse-progress", G_TYPE_FLOAT, inCollapsed ? 0.0 : 1.0);
+		animation=xfdashboard_animation_new_with_values(XFDASHBOARD_ACTOR(self),
+														inCollapsed ? "collapse" : "expand",
+														initials,
+														finals);
 
 		/* Expand/collapse state changed, so stop any running animation */
 		if(priv->expandCollapseAnimation)
@@ -760,6 +767,10 @@ void xfdashboard_collapse_box_set_collapsed(XfdashboardCollapseBox *self, gboole
 		/* Start animation */
 		g_signal_connect(priv->expandCollapseAnimation, "animation-done", G_CALLBACK(_xfdashboard_collapse_box_animation_done), self);
 		xfdashboard_animation_run(priv->expandCollapseAnimation);
+
+		/* Free default initial and final values */
+		xfdashboard_animation_defaults_free(initials);
+		xfdashboard_animation_defaults_free(finals);
 	}
 }
 

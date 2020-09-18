@@ -2,7 +2,7 @@
 	<trigger id="expand-workspace" sender="XfdashboardCollapseBox" signal="expand">
 		<timeline delay="0" duration="500" mode="ease-out-cubic">
 			<apply>
-				<property name="collapse-progress" from="0.0" to="1.0" />
+				<property name="collapse-progress" />
 			</apply>
 		</timeline>
 	</trigger>
@@ -10,7 +10,7 @@
 	<trigger id="collapse-workspace" sender="XfdashboardCollapseBox" signal="collapse">
 		<timeline delay="0" duration="500" mode="ease-in-cubic">
 			<apply>
-				<property name="collapse-progress" from="1.0" to="0.0" />
+				<property name="collapse-progress" />
 			</apply>
 		</timeline>
 	</trigger>
