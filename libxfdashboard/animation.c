@@ -26,26 +26,31 @@
  * @short_description: An animation for an actor
  * @include: xfdashboard/animation.h
  *
- * This actor is a #XfdashboardButton and behaves exactly like a key binding which
- * performs a specified action on a specific actor when the associated key
- * combination is pressed. But instead of a key combination a button is displayed
- * and the action performed when this button is clicked.
+ * An animation takes care to animate properties at selected actors within
+ * a timeline according their progress mode. An animation is created by
+ * simply calling xfdashboard_animation_new() with the sender and the
+ * signal it emits. Then it looks up the animation at the theme's animation
+ * file and creates the animation for the selected actors (targets) if a
+ * match was found. To start the animation just call xfdashboard_animation_run().
  *
- * A #XfdashboardAnimation is usually created in the layout definition
- * of a theme but it can also be created with xfdashboard_animation_new()
- * followed by a call to xfdashboard_animation_set_target() and
- * xfdashboard_animation_set_action() to configure it.
+ * It is possible to provide default values for start values (initial) and
+ * end values (final) which are set if the theme's animation file does not
+ * provide any of them. Use the function xfdashboard_animation_new_with_values()
+ * in this case.
  *
- * For example a #XfdashboardAnimation can be created which will quit the
- * application when clicked:
+ * There exists also two similar functions for the tasks described before:
+ * xfdashboard_animation_new_by_id() and xfdashboard_animation_new_by_id_with_values()
+ * These take the ID of theme's animation instead of a sender and the emitting
+ * signal.
  *
- * |[<!-- language="C" -->
- *   ClutterActor       *actionButton;
- *
- *   actionButton=xfdashboard_animation_new();
- *   xfdashboard_animation_set_target(XFDASHBOARD_ANIMATION(actionButton), "XfdashboardApplication");
- *   xfdashboard_animation_set_action(XFDASHBOARD_ANIMATION(actionButton), "exit");
- * ]|
+ * If an animation has reached its end, the object instance is destroyed
+ * automatically. To stop the animation just unreference the object instance
+ * with g_object_unref(). As soon as the last reference was release, the animation
+ * object is destroyed as well. In both cases the signal "animation-done" will be
+ * emitted before it is finally destroyed. It may be that the animation will not
+ * set the final value at the target on destruction if the animation is stopped
+ * forcibly, so it may be useful to call xfdashboard_animation_ensure_complete()
+ * before unreferencing the object instance.
  */
 
 #ifdef HAVE_CONFIG_H
