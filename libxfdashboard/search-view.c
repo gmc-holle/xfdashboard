@@ -888,7 +888,8 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 	/* Reselect first or last item at provider if we remembered the provider where
 	 * the item should be reselected and if selection has changed while updating results.
 	 */
-	if(reselectProvider)
+	if(reselectProvider &&
+		reselectProvider->container)
 	{
 		ClutterActor							*selection;
 
