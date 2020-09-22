@@ -59,6 +59,13 @@
 	</keywords>
 
 	<releases>
+		<release version="0.7.7" timestamp="1600772127">
+			<description>
+				<_p>This unstable development adds more animations as
+				well as some smaller fixes.
+				</_p>
+			</description>
+		</release>
 		<release version="0.7.6" timestamp="1575026916">
 			<description>
 				<_p>This unstable development adds animations.
