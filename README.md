@@ -7,11 +7,11 @@ Maybe a Gnome shell like dashboard for Xfce
 Requirements
 ============
 
-libwnck >= 2.30
+libwnck >= 3.0
 clutter >= 1.12
-glib >= 2.32
-gio >= 2.32
-gio-unix-2.0 >= 2.32
+glib >= 2.38
+gio >= 2.38
+gio-unix-2.0 >= 2.38
 xfconf >= 4.10.0
 garcon >= 0.2.0
 gtk+ >= 3.2
