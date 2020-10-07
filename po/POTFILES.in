@@ -43,7 +43,6 @@ libxfdashboard/label.c
 libxfdashboard/live-window-simple.c
 libxfdashboard/live-window.c
 libxfdashboard/live-workspace.c
-libxfdashboard/marshal.c
 libxfdashboard/model.c
 libxfdashboard/outline-effect.c
 libxfdashboard/plugin.c
