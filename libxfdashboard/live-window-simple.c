@@ -239,7 +239,18 @@ static void _xfdashboard_live_window_simple_on_closed(XfdashboardLiveWindowSimpl
 		XFDASHBOARD_DEBUG(self, WINDOWS,
 							"Window '%s' was closed and auto-destruction of actor was requested",
 							xfdashboard_window_tracker_window_get_name(priv->window));
-		clutter_actor_destroy(CLUTTER_ACTOR(self));
+
+		if(xfdashboard_actor_destroy(CLUTTER_ACTOR(self)))
+		{
+			/* Release allocated resources early, before the dispose function
+			 * is called, if an animation was started as the window is now gone!
+			 */
+			if(priv->window)
+			{
+				g_signal_handlers_disconnect_by_data(priv->window, self);
+				priv->window=NULL;
+			}
+		}
 	}
 }
 

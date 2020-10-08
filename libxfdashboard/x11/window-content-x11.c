@@ -106,6 +106,8 @@ struct _XfdashboardWindowContentX11Private
 	guint										workaroundStateSignalID;
 
 	gboolean									suspendAfterResumeOnIdle;
+
+	guint										windowClosedSignalID;
 };
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowContentX11,
@@ -1401,6 +1403,38 @@ static Window _xfdashboard_window_content_x11_get_window_frame_xid(Display *inDi
 	return(foundXWindowID);
 }
 
+/* Window's was closed */
+static void _xfdashboard_window_content_x11_on_window_closed(XfdashboardWindowContentX11 *self,
+																gpointer inUserData)
+{
+	XfdashboardWindowContentX11Private	*priv;
+	XfdashboardWindowTrackerWindow		*window;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT_X11(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
+
+	priv=self->priv;
+	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(inUserData);
+
+	/* X11 window was closed so suspend this window content
+	 * to keep current texture of window and prevent futher
+	 * live updates.
+	 */
+	_xfdashboard_window_content_x11_suspend(self);
+
+	/* Disconnect all signal handler from window as it was closed */
+	if(priv->windowClosedSignalID)
+	{
+		g_signal_handler_disconnect(priv->window, priv->windowClosedSignalID);
+		priv->windowClosedSignalID=0;
+	}
+
+	g_signal_handlers_disconnect_by_data(priv->window, self);
+
+	/* libwnck resources should never be freed. Just set to NULL */
+	priv->window=NULL;
+}
+
 /* Set window to handle and to display */
 static void _xfdashboard_window_content_x11_set_window(XfdashboardWindowContentX11 *self, XfdashboardWindowTrackerWindowX11 *inWindow)
 {
@@ -1419,6 +1453,7 @@ static void _xfdashboard_window_content_x11_set_window(XfdashboardWindowContentX
 	g_return_if_fail(inWindow!=NULL && XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inWindow));
 	g_return_if_fail(self->priv->window==NULL);
 	g_return_if_fail(self->priv->xWindowID==0);
+	g_return_if_fail(self->priv->windowClosedSignalID==0);
 
 	priv=self->priv;
 
@@ -1430,6 +1465,14 @@ static void _xfdashboard_window_content_x11_set_window(XfdashboardWindowContentX
 
 	/* Set new value */
 	priv->window=inWindow;
+
+	/* Connect signal handler to get notified if window was closed
+	 * to suspend this window content.
+	 */
+	priv->windowClosedSignalID=g_signal_connect_swapped(priv->window,
+														"closed",
+														G_CALLBACK(_xfdashboard_window_content_x11_on_window_closed),
+														self);
 
 	/* Create fallback texture first in case we cannot create
 	 * a live updated texture for window in the next steps
@@ -1939,6 +1982,13 @@ static void _xfdashboard_window_content_x11_dispose(GObject *inObject)
 
 	if(priv->window)
 	{
+		/* Disconnect signal handler to get notified when window is closed */
+		if(priv->windowClosedSignalID)
+		{
+			g_signal_handler_disconnect(priv->window, priv->windowClosedSignalID);
+			priv->windowClosedSignalID=0;
+		}
+
 		/* Disconnect signals */
 		g_signal_handlers_disconnect_by_data(priv->window, self);
 
@@ -2274,6 +2324,7 @@ void xfdashboard_window_content_x11_init(XfdashboardWindowContentX11 *self)
 	priv->unmappedWindowIconYScale=1.0f;
 	priv->unmappedWindowIconAnchorPoint=XFDASHBOARD_ANCHOR_POINT_NONE;
 	priv->suspendAfterResumeOnIdle=FALSE;
+	priv->windowClosedSignalID=0;
 
 	/* Check extensions (will only be done once) */
 	_xfdashboard_window_content_x11_check_extension();

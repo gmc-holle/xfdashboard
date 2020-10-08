@@ -83,6 +83,10 @@ void xfdashboard_actor_invalidate(XfdashboardActor *self);
 
 void xfdashboard_actor_enable_allocation_animation_once(XfdashboardActor *self);
 
+gboolean xfdashboard_actor_destroy(ClutterActor *self);
+void xfdashboard_actor_destroy_all_children(ClutterActor *self);
+gboolean xfdashboard_actor_iter_destroy(ClutterActorIter *self);
+
 G_END_DECLS
 
 #endif

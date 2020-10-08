@@ -66,4 +66,12 @@
 		</timeline>
 	</trigger>
 
+	<trigger id="window-destroyed" sender="XfdashboardLiveWindowSimple" signal="destroy">
+		<timeline delay="0" duration="200" mode="linear">
+			<apply>
+				<property name="opacity" to="0" />
+			</apply>
+		</timeline>
+	</trigger>
+
 </animations>

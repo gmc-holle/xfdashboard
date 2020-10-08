@@ -1911,3 +1911,105 @@ void xfdashboard_actor_enable_allocation_animation_once(XfdashboardActor *self)
 
 	priv->allocationInitialBox=clutter_actor_box_copy(priv->allocationTrackBox);
 }
+
+/* Destroys an actor but checks first if an animation should be played.
+ * If an animation for this actor exists, it will be played and after it
+ * has ended, it will be destroyed. If no animation exists, the actor will
+ * be destroyed immediately.
+ */
+static void _xfdashboard_actor_on_destroy_animation_done(XfdashboardAnimation *inAnimation,
+															gpointer inUserData)
+{
+	ClutterActor				*self;
+
+	g_return_if_fail(XFDASHBOARD_IS_ANIMATION(inAnimation));
+	g_return_if_fail(CLUTTER_IS_ACTOR(inUserData));
+
+	self=CLUTTER_ACTOR(inUserData);
+
+	/* Destroy animation has ended, so destroy actor now for real */
+	clutter_actor_destroy(self);
+}
+
+gboolean xfdashboard_actor_destroy(ClutterActor *self)
+{
+	XfdashboardAnimation		*animation;
+	gboolean					animationStarted;
+
+	g_return_if_fail(CLUTTER_IS_ACTOR(self));
+
+	animation=NULL;
+	animationStarted=FALSE;
+
+	/* Check if an animation exists */
+	if(XFDASHBOARD_IS_ACTOR(self))
+	{
+		animation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), "destroy");
+	}
+
+	if(animation &&
+		!xfdashboard_animation_is_empty(animation))
+	{
+		/* Connect signal to destroy actor when animation has ended */
+		g_signal_connect_after(animation,
+								"animation-done",
+								G_CALLBACK(_xfdashboard_actor_on_destroy_animation_done),
+								self);
+
+		/* Start destroy animation and set flag that animation was
+		 * found and started.
+		 */
+		xfdashboard_animation_run(animation);
+		animationStarted=TRUE;
+
+		/* Take extra reference to keep animation alive as it will be
+		 * unreferenced when cleaning allocated resources.
+		 */
+		g_object_ref(animation);
+	}
+		else
+		{
+			/* No animation exists so destroy actor immediately */
+			clutter_actor_destroy(self);
+		}
+
+	/* Clean allocated resources */
+	if(animation) g_object_unref(animation);
+
+	/* Return TRUE if animation was found and started or FALSE if no
+	 * animation was found and actor as destroyed immediately.
+	 */
+	return(animationStarted);
+}
+
+void xfdashboard_actor_destroy_all_children(ClutterActor *self)
+{
+	ClutterActorIter		iter;
+
+	g_return_if_fail(CLUTTER_IS_ACTOR(self));
+
+	/* Iterate through children and destroy them */
+	g_object_freeze_notify(G_OBJECT(self));
+
+	clutter_actor_iter_init(&iter, self);
+	while(clutter_actor_iter_next(&iter, NULL))
+	{
+		xfdashboard_actor_iter_destroy(&iter);
+	}
+
+	g_object_thaw_notify(G_OBJECT(self));
+}
+
+gboolean xfdashboard_actor_iter_destroy(ClutterActorIter *self)
+{
+	/* Do not know currently how to wrap this safely, so just call
+	 * clutter_actor_iter_destroy() and return FALSE as no animation
+	 * was found (because we did not check ;) ).
+	 */
+	clutter_actor_iter_destroy(self);
+
+	/* Return TRUE if animation was found and started or FALSE if no
+	 * animation was found and actor as destroyed immediately.
+	 */
+	return(FALSE);
+}
