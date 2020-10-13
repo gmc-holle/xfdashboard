@@ -867,6 +867,8 @@ msgid ""
 "Cannot daemonized because a temporary new instance of application was "
 "forced."
 msgstr ""
+"Kan ikke domænisere fordi en midlertidig ny instans af programmet blev "
+"tvunget."
 
 #: ../libxfdashboard/application.c:950
 #, c-format
