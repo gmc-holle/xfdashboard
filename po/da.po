@@ -975,7 +975,7 @@ msgstr "Kunne ikke indlæse statistik af programmets søgeudbyder fra %s: %s"
 #: ../libxfdashboard/applications-view.c:393
 #: ../libxfdashboard/quicklaunch.c:659
 msgid "No application information available for clicked application button."
-msgstr ""
+msgstr "Ingen programinformation tilgænglige for klikket programknap."
 
 #: ../libxfdashboard/applications-search-provider.c:838
 #: ../libxfdashboard/applications-view.c:417
@@ -2593,7 +2593,7 @@ msgstr "Tilføj til favoritter"
 #: ../libxfdashboard/workspace-selector.c:1089
 #, c-format
 msgid "%s is a child of %s and cannot be selected at %s"
-msgstr ""
+msgstr "%s er et barn af %s og kan ikke vælges ved %s"
 
 #: ../libxfdashboard/quicklaunch.c:3099
 msgid "Favourites"
@@ -2849,12 +2849,12 @@ msgstr ""
 #: ../libxfdashboard/search-view.c:979
 #, c-format
 msgid "No results found for '%s'"
-msgstr ""
+msgstr "Fandt ingen resultater for '%s'"
 
 #: ../libxfdashboard/search-view.c:1108
 #, c-format
 msgid "%s is not a child of any provider at %s and cannot be selected"
-msgstr ""
+msgstr "%s er ikke et barn af nogen udbyder ved %s og kan ikke vælges"
 
 #: ../libxfdashboard/search-view.c:1512
 #, c-format
@@ -2866,7 +2866,7 @@ msgstr ""
 #: ../libxfdashboard/search-view.c:1548
 #, c-format
 msgid "%s is not a child of any provider at %s and cannot be activated"
-msgstr ""
+msgstr "%s er ikke et barn af nogen udbyder ved %s og kan ikke aktiveres"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
@@ -2899,10 +2899,13 @@ msgstr "Kan ikke skifte til den ukendte visning '%s'"
 #: ../libxfdashboard/stage.c:469
 msgid "Cannot perform search because search view was not found in viewpad."
 msgstr ""
+"Kan ikke udføre søgning fordi søgevisningen ikke blev fundet i "
+"visningsområdet."
 
 #: ../libxfdashboard/stage.c:780
 msgid "Cannot find search view in viewpad to reset view."
 msgstr ""
+"Kan ikke finde søgningvisning i visningsområde til at nulstille visning."
 
 #: ../libxfdashboard/stage.c:948 ../libxfdashboard/stage.c:1025
 #, c-format
@@ -3688,35 +3691,35 @@ msgstr "Kunne ikke finde scene til at vise underretning: %s"
 #: ../libxfdashboard/view-manager.c:290
 #, c-format
 msgid "View %s of type %s is not a %s and cannot be registered"
-msgstr ""
+msgstr "Visningen %s af typen %s er ikke en %s og kan ikke registreres"
 
 #: ../libxfdashboard/view-manager.c:300
 #, c-format
 msgid "View %s of type %s is registered already"
-msgstr ""
+msgstr "Visningen %s af typen %s er allerede registreret"
 
 #: ../libxfdashboard/view-manager.c:315
 #, c-format
 msgid "Failed to register view %s of type %s"
-msgstr ""
+msgstr "Kunne ikke registrere visningen %s af typen %s"
 
 #: ../libxfdashboard/view-manager.c:344
 #, c-format
 msgid "View %s is not registered and cannot be unregistered"
-msgstr ""
+msgstr "Visningen %s er ikke registreret og kan ikke afregistreres"
 
 #: ../libxfdashboard/view-manager.c:426
 #, c-format
 msgid "Cannot create view %s because it is not registered"
-msgstr ""
+msgstr "Kan ikke oprette visningen %s fordi den ikke er registreret"
 
 #: ../libxfdashboard/view-selector.c:384
 msgid "Viewpad"
-msgstr ""
+msgstr "Visningsområde"
 
 #: ../libxfdashboard/view-selector.c:385
 msgid "The viewpad this selector belongs to"
-msgstr ""
+msgstr "Visningsområdet som vælgeren tilhører"
 
 #: ../libxfdashboard/view-selector.c:397 ../libxfdashboard/viewpad.c:1233
 msgid "The spacing between views and scrollbars"
@@ -3763,6 +3766,8 @@ msgid ""
 "Defines if view should be fit into viewpad and in which directions it should"
 " fit into it"
 msgstr ""
+"Angiver om visningen skal passe i visningsområdet og i hvilke retninger den "
+"skal passe i"
 
 #: ../libxfdashboard/view.c:392
 msgid "Enabled"
@@ -3770,7 +3775,7 @@ msgstr "Aktiveret"
 
 #: ../libxfdashboard/view.c:393
 msgid "This flag indicates if is view is enabled and activable"
-msgstr ""
+msgstr "Flaget indikerer om visningen er aktiveret og aktiverbar"
 
 #: ../libxfdashboard/viewpad.c:130
 msgid "Cannot update viewport of view because no one is active"
@@ -3789,7 +3794,7 @@ msgstr ""
 #: ../libxfdashboard/viewpad.c:710
 #, c-format
 msgid "Failed to create view %s for viewpad"
-msgstr ""
+msgstr "Kunne ikke oprette visningen %s for visningsområde"
 
 #: ../libxfdashboard/viewpad.c:716
 #, c-format
@@ -3802,7 +3807,7 @@ msgstr "Aktive visning"
 
 #: ../libxfdashboard/viewpad.c:1241
 msgid "The current active view in viewpad"
-msgstr ""
+msgstr "Den nuværende aktive visning i visningsområde"
 
 #: ../libxfdashboard/viewpad.c:1247
 msgid "Horizontal scrollbar visibility"
@@ -3988,7 +3993,7 @@ msgstr ""
 
 #: ../libxfdashboard/windows-view.c:2077
 msgid "Scroll event changes workspace"
-msgstr ""
+msgstr "Rullehændelse ændre arbejdsområde"
 
 #: ../libxfdashboard/windows-view.c:2078
 msgid "Whether this view should change active workspace on scroll events"
@@ -3996,7 +4001,7 @@ msgstr ""
 
 #: ../libxfdashboard/windows-view.c:2084
 msgid "Filter monitor windows"
-msgstr ""
+msgstr "Filtrer skærmens vinduer"
 
 #: ../libxfdashboard/windows-view.c:2085
 msgid ""
@@ -4005,7 +4010,7 @@ msgstr ""
 
 #: ../libxfdashboard/windows-view.c:2091
 msgid "Filter workspace windows"
-msgstr ""
+msgstr "Filtrer arbejdsområdets vinduer"
 
 #: ../libxfdashboard/windows-view.c:2092
 msgid "Whether this view should only show windows of active workspace"
@@ -4023,10 +4028,11 @@ msgstr "Vinduer"
 #, c-format
 msgid "Could not determine workspace of %s to set selection at %s"
 msgstr ""
+"Kunne ikke bestemme arbejdsområde af %s til at indstille markering ved %s"
 
 #: ../libxfdashboard/workspace-selector.c:1268
 msgid "Maximum size"
-msgstr ""
+msgstr "Maksimum størrelse"
 
 #: ../libxfdashboard/workspace-selector.c:1269
 msgid "The maximum size of this actor for opposite direction of orientation"
@@ -4034,7 +4040,7 @@ msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1276
 msgid "Maximum fraction"
-msgstr ""
+msgstr "Maksimum fraktion"
 
 #: ../libxfdashboard/workspace-selector.c:1277
 msgid ""
@@ -4044,7 +4050,7 @@ msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1284
 msgid "Using fraction"
-msgstr ""
+msgstr "Bruger fraktion"
 
 #: ../libxfdashboard/workspace-selector.c:1285
 msgid ""
@@ -4054,7 +4060,7 @@ msgstr ""
 
 #: ../libxfdashboard/workspace-selector.c:1291
 msgid "Show current monitor only"
-msgstr ""
+msgstr "Vis kun nuværende skærm"
 
 #: ../libxfdashboard/workspace-selector.c:1292
 msgid "Show only windows of the monitor where this actor is placed"
@@ -4541,6 +4547,7 @@ msgstr "Aktiveringshjørne"
 msgid ""
 "The hot corner where to trigger the application to suspend or to resume"
 msgstr ""
+"Hothjørnet hvor programmet til at suspendere eller genoptage skal udløses"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:239
 msgid "Activation radius"
@@ -4548,7 +4555,7 @@ msgstr "Aktiveringsradius"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:240
 msgid "The radius around hot corner where the pointer must be inside"
-msgstr ""
+msgstr "Radiussen omkring hothjørne hvor markøren skal være i"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:247
 msgid "Activation duration"
@@ -4564,19 +4571,23 @@ msgstr ""
 
 #: ../plugins/hot-corner/hot-corner.c:161
 msgid "Could not get pointer to determine pointer position"
-msgstr ""
+msgstr "Kunne ikke få markør til at bestemme markørplacering"
 
 #: ../plugins/hot-corner/hot-corner.c:389
 msgid ""
 "Disabling hot-corner plugin because the root window to determine pointer "
 "position could not be found."
 msgstr ""
+"Deaktiverer hothjørne-plugin fordi rodvinduet til at bestemme "
+"markørplaceringen ikke blev fundet."
 
 #: ../plugins/hot-corner/hot-corner.c:405
 msgid ""
 "Disabling hot-corner plugin because the device manager to determine pointer "
 "position could not be found."
 msgstr ""
+"Deaktiverer hothjørne-plugin fordi enhedshåndteringen til at bestemme "
+"markørplaceringen ikke blev fundet."
 
 #: ../plugins/hot-corner/hot-corner.c:410
 msgid ""
