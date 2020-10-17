@@ -893,11 +893,11 @@ msgstr "Flag som indikerer om programmet er suspenderet"
 
 #: ../libxfdashboard/application.c:1232
 msgid "Stage"
-msgstr ""
+msgstr "Scene"
 
 #: ../libxfdashboard/application.c:1233
 msgid "The stage object of application"
-msgstr ""
+msgstr "Programmets sceneobjekt"
 
 #: ../libxfdashboard/application.c:1244 ../libxfdashboard/theme.c:801
 msgid "Theme name"
@@ -909,7 +909,7 @@ msgstr "Navn på nuværende tema"
 
 #: ../libxfdashboard/applications-menu-model.c:691
 msgid "Iterator does not belong to application menu model."
-msgstr ""
+msgstr "Iterator tilhører ikke programmets menumodel."
 
 #: ../libxfdashboard/applications-menu-model.c:709
 #, c-format
@@ -1418,12 +1418,12 @@ msgstr "Kunne ikke oprette fortolker for filen %s"
 #: ../libxfdashboard/bindings-pool.c:895
 #, c-format
 msgid "Could not set up hash-table at parser data for file %s"
-msgstr ""
+msgstr "Kunne ikke opsætte hash-tabel ved fortolkerdata for filen %s"
 
 #: ../libxfdashboard/bindings-pool.c:925
 #, c-format
 msgid "Unexpected binding state set at parser data for file %s"
-msgstr ""
+msgstr "Uventet bindingstilstand indstillet ved fortolkerdata for filen %s"
 
 #: ../libxfdashboard/bindings-pool.c:1095
 #, c-format
@@ -1486,7 +1486,7 @@ msgstr "Sammenfoldet størrelse"
 
 #: ../libxfdashboard/collapse-box.c:622
 msgid "The size of actor when collapsed"
-msgstr ""
+msgstr "Størrelsen på actor'en når den er sammenfoldet"
 
 #: ../libxfdashboard/collapse-box.c:629
 msgid "Collapse orientation"
@@ -1498,7 +1498,7 @@ msgstr ""
 
 #: ../libxfdashboard/collapse-box.c:637
 msgid "Collapse progress"
-msgstr ""
+msgstr "Sammenfold forløb"
 
 #: ../libxfdashboard/collapse-box.c:638
 msgid ""
@@ -1517,15 +1517,15 @@ msgstr ""
 
 #: ../libxfdashboard/css-selector.c:531
 msgid "Invalid name identifier"
-msgstr ""
+msgstr "Ugyldig name-identifikator"
 
 #: ../libxfdashboard/css-selector.c:563
 msgid "Invalid class identifier"
-msgstr ""
+msgstr "Ugyldig class-identifikator"
 
 #: ../libxfdashboard/css-selector.c:599
 msgid "Invalid pseudo-class identifier"
-msgstr ""
+msgstr "Ugyldig pseudo-class-identifikator"
 
 #: ../libxfdashboard/css-selector.c:698
 msgid "No parent when parsing '>'"
@@ -1533,11 +1533,11 @@ msgstr ""
 
 #: ../libxfdashboard/css-selector.c:779
 msgid "Failed to parse css selector."
-msgstr ""
+msgstr "Kunne ikke fortolke css-selector."
 
 #: ../libxfdashboard/css-selector.c:785
 msgid "Failed to parse css selector because stream is empty."
-msgstr ""
+msgstr "Kunne ikke fortolke css-selector pga. at stream er tomt."
 
 #: ../libxfdashboard/css-selector.c:873
 msgid "Priority"
@@ -1747,11 +1747,11 @@ msgstr "Størrelse på ikon"
 #: ../libxfdashboard/search-result-container.c:1290
 #: ../libxfdashboard/text-box.c:777
 msgid "Padding"
-msgstr ""
+msgstr "Udfyldning"
 
 #: ../libxfdashboard/emblem-effect.c:487
 msgid "Padding around emblem"
-msgstr ""
+msgstr "Udfyldning omkring emblem"
 
 #: ../libxfdashboard/emblem-effect.c:494
 msgid "X align"
@@ -1981,7 +1981,7 @@ msgstr ""
 
 #: ../libxfdashboard/label.c:1241 ../libxfdashboard/text-box.c:778
 msgid "Padding between background and elements"
-msgstr ""
+msgstr "Udfyldning mellem baggrund og elementer"
 
 #: ../libxfdashboard/label.c:1249 ../libxfdashboard/text-box.c:786
 msgid "Spacing between text and icon"
@@ -2121,19 +2121,19 @@ msgstr ""
 
 #: ../libxfdashboard/live-window.c:1075
 msgid "Close button padding"
-msgstr ""
+msgstr "Udfyldning for luk-knap"
 
 #: ../libxfdashboard/live-window.c:1076
 msgid "Padding of close button to window actor in pixels"
-msgstr ""
+msgstr "Udfyldning for luk-knap til vindues-actor i pixels"
 
 #: ../libxfdashboard/live-window.c:1083
 msgid "Title actor padding"
-msgstr ""
+msgstr "Udfyldning for titel-actor"
 
 #: ../libxfdashboard/live-window.c:1084
 msgid "Padding of title actor to window actor in pixels"
-msgstr ""
+msgstr "Udfyldning for titel-actor til vindues-actor i pixels"
 
 #: ../libxfdashboard/live-window.c:1091
 msgid "Show sub-windows"
@@ -2186,11 +2186,11 @@ msgstr "Hvis TRUE, så skal navnet på arbejdsområdet vises"
 
 #: ../libxfdashboard/live-workspace.c:1028
 msgid "Workspace name padding"
-msgstr ""
+msgstr "Udfyldning for arbejdsområdenavn"
 
 #: ../libxfdashboard/live-workspace.c:1029
 msgid "Padding of workspace name actor in pixels"
-msgstr ""
+msgstr "Udfyldning for arbejdsområdenavn-actor i pixels"
 
 #: ../libxfdashboard/model.c:284
 msgid "The number of rows this model contains"
@@ -2423,19 +2423,19 @@ msgstr ""
 
 #: ../libxfdashboard/popup-menu-item-separator.c:387
 msgid "Line horizontal alignment"
-msgstr ""
+msgstr "Linjens vandrette justering"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:388
 msgid "The horizontal alignment of the actor within its allocation"
-msgstr ""
+msgstr "Den vandrette justering af actor'en i dens allokering"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:401
 msgid "Line vertical alignment"
-msgstr ""
+msgstr "Linjens lodrette justering"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:402
 msgid "The vertical alignment of the actor within its allocation"
-msgstr ""
+msgstr "Den lodrette justering af actor'en i dens allokering"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:415
 msgid "Line length"
@@ -2668,7 +2668,7 @@ msgstr "Område som der skal rulles i"
 
 #: ../libxfdashboard/scrollbar.c:745
 msgid "Page size factor"
-msgstr ""
+msgstr "Faktor for sidestørrelse"
 
 #: ../libxfdashboard/scrollbar.c:746
 msgid ""
@@ -2816,11 +2816,11 @@ msgstr ""
 
 #: ../libxfdashboard/search-result-container.c:1291
 msgid "Padding between title and item results container"
-msgstr ""
+msgstr "Udfyldning mellem resultaterbeholder for titel og post"
 
 #: ../libxfdashboard/search-result-container.c:1298
 msgid "Initial results size"
-msgstr ""
+msgstr "Indledende størrelse for resultater"
 
 #: ../libxfdashboard/search-result-container.c:1299
 msgid "The maximum number of results shown initially. 0 means all results"
@@ -2875,7 +2875,7 @@ msgstr "Søg"
 
 #: ../libxfdashboard/stage-interface.c:360
 msgid "The monitor where this stage interface is connected to"
-msgstr ""
+msgstr "Monitoren hvor scenegrænsfladen er forbundet til"
 
 #: ../libxfdashboard/stage-interface.c:374 ../libxfdashboard/stage.c:1818
 #: ../plugins/clock-view/clock-view-settings.c:249
@@ -2920,7 +2920,7 @@ msgstr ""
 
 #: ../libxfdashboard/stage.c:1095
 msgid "Invalid multiple stages for primary monitor"
-msgstr ""
+msgstr "Ugyldig flere scener for primær monitor"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
@@ -2932,7 +2932,7 @@ msgstr "Skift til visning"
 
 #: ../libxfdashboard/stage.c:1826
 msgid "Switch to this named view as soon as stage gets visible"
-msgstr ""
+msgstr "Skift til denne navngivne visning så snart scenen bliver synlig"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/stylable.c:62
@@ -3117,7 +3117,7 @@ msgstr ""
 #: ../libxfdashboard/theme-css.c:944 ../libxfdashboard/theme-css.c:1057
 #: ../libxfdashboard/theme-css.c:2156
 msgid "An identifier must follow '@'"
-msgstr ""
+msgstr "En identifikator skal komme efter '@'"
 
 #: ../libxfdashboard/theme-css.c:1083
 msgid "Missing function argument"
@@ -3296,84 +3296,84 @@ msgstr ""
 #: ../libxfdashboard/theme-animation.c:597
 #, c-format
 msgid "Integer out of range"
-msgstr ""
+msgstr "Heltal uden for område"
 
 #: ../libxfdashboard/theme-animation.c:612
 #, c-format
 msgid "Cannot convert string '%s' to integer"
-msgstr ""
+msgstr "Kan ikke konvertere strengen '%s' til heltal"
 
 #: ../libxfdashboard/theme-animation.c:856
 #, c-format
 msgid "Empty 'name' at tag '%s'"
-msgstr ""
+msgstr "Tomt 'name' ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:867
 #, c-format
 msgid "Empty 'from' at tag '%s'"
-msgstr ""
+msgstr "Tomt 'from' ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:878
 #: ../libxfdashboard/theme-animation.c:988
 #, c-format
 msgid "Empty 'to' at tag '%s'"
-msgstr ""
+msgstr "Tomt 'to' ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:999
 #, c-format
 msgid "Empty 'origin' at tag '%s'"
-msgstr ""
+msgstr "Tomt 'origin' ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1016
 #, c-format
 msgid "Invalid value '%s' for 'origin' at tag '%s'"
-msgstr ""
+msgstr "Ugyldig værdi '%s' for 'origin' ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1154
 #, c-format
 msgid "Missing or empty delay at tag '%s'"
-msgstr ""
+msgstr "Manglende eller tom delay ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1165
 #, c-format
 msgid "Missing or empty duration at tag '%s'"
-msgstr ""
+msgstr "Manglende eller tom duration ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1176
 #, c-format
 msgid "Missing or empty mode at tag '%s'"
-msgstr ""
+msgstr "Manglende eller tom mode ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1187
 #, c-format
 msgid "Empty repeat at tag '%s'"
-msgstr ""
+msgstr "Tom repeat ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1212
 #, c-format
 msgid "Invalid mode '%s'"
-msgstr ""
+msgstr "Ugyldig tilstand '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1342
 #, c-format
 msgid "Missing or empty ID at tag '%s'"
-msgstr ""
+msgstr "Manglende eller tom ID ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1353
 #, c-format
 msgid "Missing or empty sender at tag '%s'"
-msgstr ""
+msgstr "Manglende eller tom sender ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1364
 #, c-format
 msgid "Missing or empty signal at tag '%s'"
-msgstr ""
+msgstr "Manglende eller tom signal ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1375
 #: ../libxfdashboard/theme-effects.c:887 ../libxfdashboard/theme-layout.c:1237
 #, c-format
 msgid "Invalid ID '%s' at tag '%s'"
-msgstr ""
+msgstr "Ugyldigt ID '%s' ved tagget '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1387
 #, c-format
@@ -3390,7 +3390,7 @@ msgstr ""
 #: ../libxfdashboard/theme-animation.c:1736
 #, c-format
 msgid "Cannot allocate memory for animation '%s'"
-msgstr ""
+msgstr "Kan ikke allokere hukommelse til animationen '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1744
 #, c-format
@@ -3469,7 +3469,7 @@ msgstr ""
 #: ../libxfdashboard/theme-effects.c:666 ../libxfdashboard/theme-effects.c:753
 #, c-format
 msgid "Missing parser data for <%s> tag"
-msgstr ""
+msgstr "Manglende fortolkerdata for <%s>-tag"
 
 #: ../libxfdashboard/theme-effects.c:708
 #, c-format
@@ -3496,7 +3496,7 @@ msgstr ""
 #: ../libxfdashboard/theme-effects.c:913 ../libxfdashboard/theme-layout.c:1253
 #, c-format
 msgid "Unknown object class %s for tag '%s'"
-msgstr ""
+msgstr "Ukendt objektklasse %s for tagget '%s'"
 
 #: ../libxfdashboard/theme-effects.c:927 ../libxfdashboard/theme-layout.c:1273
 #, c-format
@@ -3518,12 +3518,12 @@ msgstr ""
 
 #: ../libxfdashboard/theme-layout.c:403
 msgid "Cannot allocate memory for unknown tag"
-msgstr ""
+msgstr "Kan ikke allokere hukommelse for ukendt tag"
 
 #: ../libxfdashboard/theme-layout.c:415
 #, c-format
 msgid "Cannot allocate memory for tag '%s'"
-msgstr ""
+msgstr "Kan ikke allokere hukommelse for tagget '%s'"
 
 #: ../libxfdashboard/theme-layout.c:647
 #, c-format
@@ -3553,17 +3553,17 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1394
 #, c-format
 msgid "Attribute 'ref' cannot be empty at tag <%s>"
-msgstr ""
+msgstr "Attributten 'ref' må ikke være tom ved tagget <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1423
 #, c-format
 msgid "Tag <%s> can have only one <%s>"
-msgstr ""
+msgstr "Tagget <%s> må kun have én <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1527
 #, c-format
 msgid "Internal error when handling end of tag <%s>"
-msgstr ""
+msgstr "Intern fejl ved håndtering af slutningen af tagget <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1556
 #, c-format
@@ -3595,12 +3595,12 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1963
 #, c-format
 msgid "File %s - "
-msgstr ""
+msgstr "Filen %s - "
 
 #: ../libxfdashboard/theme-layout.c:1974
 #, c-format
 msgid "File %s does not contain an interface"
-msgstr ""
+msgstr "Filen %s indeholder ikke en grænseflade"
 
 #: ../libxfdashboard/theme-layout.c:1984
 #, c-format
@@ -4071,6 +4071,8 @@ msgstr ""
 msgid ""
 "Could not get real stage window to handle signal 'active-window-changed'"
 msgstr ""
+"Kunne ikke få ægte scenevindue til at håndtere signalet 'active-window-"
+"changed'"
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:194
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:193
@@ -4084,13 +4086,13 @@ msgstr ""
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:443
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:456
 msgid "Could not get real stage window to find stage"
-msgstr ""
+msgstr "Kunne ikke få ægte scenevindue til at finde svene"
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:527
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:645
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:502
 msgid "Could not get real stage window to show"
-msgstr ""
+msgstr "Kunne ikke få ægte scenevindue til at blive vist"
 
 #: ../libxfdashboard/x11/window-content-x11.c:215
 msgid "No default X11 display found in GDK to check X extensions"
@@ -4279,7 +4281,7 @@ msgstr ""
 
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:614
 msgid "Could not get real stage window to hide"
-msgstr ""
+msgstr "Kunne ikke få ægte scenevindue til at blive skjult"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:109
