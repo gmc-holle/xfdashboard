@@ -917,6 +917,8 @@ msgid ""
 "Invalid column number %d added to iter (remember to end your list of columns"
 " with a -1)"
 msgstr ""
+"Ugyldigt kolonnetal %d tilføjet til iter (husk at afslutte din liste over "
+"kolonne med et -1)"
 
 #: ../libxfdashboard/applications-menu-model.c:720
 #, c-format
@@ -1114,12 +1116,11 @@ msgstr "Afstand mellem hvert element i visningen"
 
 #: ../libxfdashboard/applications-view.c:1527
 msgid "Parent menu icon"
-msgstr "Ikon til forældermenu"
+msgstr "Ikon til overordnet menu"
 
 #: ../libxfdashboard/applications-view.c:1528
 msgid "Name of icon to use for 'go-back-to-parent-menu' entries"
-msgstr ""
-"Navn eller ikon som skal bruges til 'gå-tilbage-til-forældermenu'-poster"
+msgstr "Navn eller ikon som skal bruges til 'go-back-to-parent-menu'-poster"
 
 #: ../libxfdashboard/applications-view.c:1548
 msgid "Show all applications"
@@ -1433,7 +1434,7 @@ msgstr ""
 #: ../libxfdashboard/bindings-pool.c:1202
 #, c-format
 msgid "No bindings configuration file found."
-msgstr ""
+msgstr "Fandt ikke nogen bindingskonfigurationsfil."
 
 #: ../libxfdashboard/click-action.c:659
 msgid "Pressed"
@@ -1441,7 +1442,7 @@ msgstr "Trykket"
 
 #: ../libxfdashboard/click-action.c:660
 msgid "Whether the clickable should be in pressed state"
-msgstr ""
+msgstr "Om den klikbare skal være i en trykket tilstand."
 
 #: ../libxfdashboard/click-action.c:671
 msgid "Held"
@@ -1449,7 +1450,7 @@ msgstr "Holdt"
 
 #: ../libxfdashboard/click-action.c:672
 msgid "Whether the clickable has a grab"
-msgstr ""
+msgstr "Om den klikbare har et håndtag"
 
 #: ../libxfdashboard/click-action.c:687
 msgid "Long Press Duration"
@@ -1509,11 +1510,11 @@ msgstr ""
 
 #: ../libxfdashboard/css-selector.c:147
 msgid "Could not create string for parent css selector"
-msgstr ""
+msgstr "Kunne ikke oprette string til overordnet css-selector"
 
 #: ../libxfdashboard/css-selector.c:153
 msgid "Invalid mode for parent rule in CSS selector"
-msgstr ""
+msgstr "Ugyldig tilstand for overordnet regel i CSS-selector"
 
 #: ../libxfdashboard/css-selector.c:531
 msgid "Invalid name identifier"
@@ -1529,7 +1530,7 @@ msgstr "Ugyldig pseudo-class-identifikator"
 
 #: ../libxfdashboard/css-selector.c:698
 msgid "No parent when parsing '>'"
-msgstr ""
+msgstr "Ingen overordnet ved fortolkning af '>'"
 
 #: ../libxfdashboard/css-selector.c:779
 msgid "Failed to parse css selector."
@@ -1549,7 +1550,7 @@ msgstr "Prioriteten af denne CSS-vælger"
 
 #: ../libxfdashboard/css-selector.c:917 ../libxfdashboard/css-selector.c:987
 msgid "Could not create selector."
-msgstr ""
+msgstr "Kunne ikke oprette selector."
 
 #: ../libxfdashboard/css-selector.c:944 ../libxfdashboard/theme-css.c:2420
 #: ../libxfdashboard/theme-css.c:2426
@@ -1565,6 +1566,7 @@ msgstr "Uventet tilstand af CSS-skanner."
 #, c-format
 msgid "Could not load secondary source %s for desktop ID '%s': %s"
 msgstr ""
+"Kunne ikke indlæse den sekundære kilde %s til skrivebords-id'et '%s': %s"
 
 #: ../libxfdashboard/desktop-app-info.c:247
 #, c-format
@@ -1576,7 +1578,7 @@ msgstr ""
 #: ../libxfdashboard/desktop-app-info.c:255
 #, c-format
 msgid "Cannot create application action for desktop ID '%s'"
-msgstr ""
+msgstr "Kunne ikke oprette programhandling til skrivebords-id'et '%s'"
 
 #: ../libxfdashboard/desktop-app-info.c:919
 #: ../libxfdashboard/desktop-app-info.c:1197
@@ -3504,6 +3506,8 @@ msgid ""
 "Invalid class %s in object for parent tag <%s> - expecting class derived "
 "from %s"
 msgstr ""
+"Ugyldig klasse %s i objekt for overordnet tag <%s> - forventer klasse som "
+"kommer fra %s"
 
 #. If we get here we did not find an object with requested ID
 #: ../libxfdashboard/theme-effects.c:1280
