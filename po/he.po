@@ -2515,34 +2515,34 @@ msgstr "לא יכול לבדוק כפולים עבור אובייקט %s לא ח
 #, c-format
 msgid ""
 "Could not check for duplicates for invalid %s object so assume it exists"
-msgstr ""
+msgstr "לא יכול לבדוק כפולים עבור אובייקט %s לא חוקי אז מניח שהוא קיים"
 
 #: ../libxfdashboard/quicklaunch.c:278
 #, c-format
 msgid ""
 "Value at %p of type %s is not a %s so assume this desktop application item "
 "exists"
-msgstr ""
+msgstr "ערך ב%p של סוג %s הוא לא %s אז מניח שפריט ישום שולחן עבודה זה קיים"
 
 #: ../libxfdashboard/quicklaunch.c:402 ../libxfdashboard/quicklaunch.c:406
 msgid "No windows to activate for application"
-msgstr ""
+msgstr "אין חלונות להפעיל עבור ישום"
 
 #: ../libxfdashboard/quicklaunch.c:515 ../libxfdashboard/quicklaunch.c:582
 msgid "Cannot find quicklaunch for application button."
-msgstr ""
+msgstr "לא יכול למצוא הפעלה מהירה עבור כפתור ישום."
 
 #: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
 #: ../libxfdashboard/quicklaunch.c:2128
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr ""
+msgstr "מועדף '%s' הוסר"
 
 #: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
 #: ../libxfdashboard/quicklaunch.c:2061
 #, c-format
 msgid "Favourite '%s' added"
-msgstr ""
+msgstr "מועדף '%s' התווסף"
 
 #: ../libxfdashboard/quicklaunch.c:705
 msgid "Remove from favourites"
@@ -2557,7 +2557,7 @@ msgstr "הוסף למועדפים"
 #: ../libxfdashboard/workspace-selector.c:1089
 #, c-format
 msgid "%s is a child of %s and cannot be selected at %s"
-msgstr ""
+msgstr "%s הוא ילד של %s ולא ניתן לבחירה ב%s"
 
 #: ../libxfdashboard/quicklaunch.c:3099
 msgid "Favourites"
@@ -2565,7 +2565,7 @@ msgstr "מועדפים"
 
 #: ../libxfdashboard/quicklaunch.c:3100
 msgid "An array of strings pointing to desktop files shown as icons"
-msgstr ""
+msgstr "מערך של מחרוזות המצביעות על קבצי שולחן עבודה המוצגים כאיקונים"
 
 #: ../libxfdashboard/quicklaunch.c:3106
 msgid "Normal icon size"
@@ -2583,113 +2583,113 @@ msgstr "הסר"
 
 #: ../libxfdashboard/scaled-table-layout.c:521
 msgid "Relative scale"
-msgstr ""
+msgstr "קנה מידה יחסי"
 
 #: ../libxfdashboard/scaled-table-layout.c:522
 msgid "Whether all children should be scaled relatively to largest child"
-msgstr ""
+msgstr "האם כל הילדים צריכים להיות בקנה מידה יחסי לילד הגדול ביותר"
 
 #: ../libxfdashboard/scaled-table-layout.c:528
 #: ../libxfdashboard/windows-view.c:2070
 msgid "Prevent upscaling"
-msgstr ""
+msgstr "מנע הרחבה"
 
 #: ../libxfdashboard/scaled-table-layout.c:529
 msgid ""
 "Whether this layout manager should prevent upsclaing any child beyond its "
 "real size"
-msgstr ""
+msgstr "האם מנהל סידור זה צריך למנוע הרחבה של ילד כלשהוא מעבר לגודלו האמיתי"
 
 #: ../libxfdashboard/scrollbar.c:714
 msgid "Defines if scrollbar is horizontal or vertical"
-msgstr ""
+msgstr "מגדיר האם סרגל הגלילה הוא אופקי או אנכי"
 
 #: ../libxfdashboard/scrollbar.c:721
 msgid "Value"
-msgstr ""
+msgstr "ערך"
 
 #: ../libxfdashboard/scrollbar.c:722
 msgid "Current value of scroll bar within range"
-msgstr ""
+msgstr "ערך נוכחי של סרגל גלילה בתוך טווח"
 
 #: ../libxfdashboard/scrollbar.c:729
 msgid "Value range"
-msgstr ""
+msgstr "טווח ערך"
 
 #: ../libxfdashboard/scrollbar.c:730
 msgid "The range the slider of scroll bar covers"
-msgstr ""
+msgstr "הטווח שסליידר סרגל הגלילה מכסה"
 
 #: ../libxfdashboard/scrollbar.c:737
 msgid "Range"
-msgstr ""
+msgstr "טווח"
 
 #: ../libxfdashboard/scrollbar.c:738
 msgid "Range to scroll within"
-msgstr ""
+msgstr "טווח לגלול בתוכו"
 
 #: ../libxfdashboard/scrollbar.c:745
 msgid "Page size factor"
-msgstr ""
+msgstr "פקטור גודל דף"
 
 #: ../libxfdashboard/scrollbar.c:746
 msgid ""
 "The factor of value range to increase or decrease value by on pointer scroll"
 " events."
-msgstr ""
+msgstr "הפקטור של טווח הערך להגדלה או הקטנה של הערך באירועי גלילת מצביע."
 
 #: ../libxfdashboard/scrollbar.c:754
 msgid "The spacing between scrollbar and background"
-msgstr ""
+msgstr "הרווח בין סרגל גלילה ורקע"
 
 #: ../libxfdashboard/scrollbar.c:761
 msgid "Slider width"
-msgstr ""
+msgstr "רוחב סליידר"
 
 #: ../libxfdashboard/scrollbar.c:762
 msgid "The width of slider"
-msgstr ""
+msgstr "הרוחב של הסליידר"
 
 #: ../libxfdashboard/scrollbar.c:769
 msgid "Slider radius"
-msgstr ""
+msgstr "רדיוס סליידר"
 
 #: ../libxfdashboard/scrollbar.c:770
 msgid "The radius of slider's rounded corners"
-msgstr ""
+msgstr "הרדיוס של הפינות המעוגלות של הסליידר"
 
 #: ../libxfdashboard/scrollbar.c:777
 msgid "Slider color"
-msgstr ""
+msgstr "צבע סליידר"
 
 #: ../libxfdashboard/scrollbar.c:778
 msgid "Color of slider"
-msgstr ""
+msgstr "צבע סליידר"
 
 #: ../libxfdashboard/search-manager.c:295
 #, c-format
 msgid "Search provider %s of type %s is not a %s and cannot be registered"
-msgstr ""
+msgstr "ספק חיפוש %s מסוג %s הוא לא %s ולא ניתן לרישום"
 
 #: ../libxfdashboard/search-manager.c:305
 #, c-format
 msgid "Search provider %s of type %s is registered already"
-msgstr ""
+msgstr "ספק חיפוש %s מסוג %s כבר רשום"
 
 #: ../libxfdashboard/search-manager.c:320
 #, c-format
 msgid "Failed to register search provider %s of type %s"
-msgstr ""
+msgstr "נכשל לרשום ספק חיפוש %s מסוג %s"
 
 #: ../libxfdashboard/search-manager.c:349
 #, c-format
 msgid "Search provider %s is not registered and cannot be unregistered"
-msgstr ""
+msgstr "ספק חיפוש %s לא רשום ולא ניתן לבטל את רישומו"
 
 #: ../libxfdashboard/search-manager.c:431
 #, c-format
 msgid "Cannot create search provider %s because it is not registered"
-msgstr ""
+msgstr "לא יכול ליצור ספק חיפוש %s כי הוא לא רשום"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/search-provider.c:63
@@ -2698,21 +2698,23 @@ msgid ""
 "Search provider of type %s does not implement required virtual function "
 "XfdashboardSearchProvider::%s"
 msgstr ""
+"ספק חיפוש מסוג %s לא מיישם פונקציה וירטואלית נדרשת "
+"XfdashboardSearchProvider::%s"
 
 #: ../libxfdashboard/search-provider.c:168
 msgid "Provider ID"
-msgstr ""
+msgstr "זהות ספק"
 
 #: ../libxfdashboard/search-provider.c:169
 msgid "The internal ID used to register this type of search provider"
-msgstr ""
+msgstr "הזהות הפנימית בשימוש לרישום ספק חיפוש מסוג זה"
 
 #: ../libxfdashboard/search-result-container.c:427
 #, c-format
 msgid ""
 "Failed to add actor for result item %s of provider %s: Could not create "
 "actor"
-msgstr ""
+msgstr "נכשל להוסיף שחקן לפריט תוצאה %s של ספק %s: לא יכול ליצור שחקן"
 
 #: ../libxfdashboard/search-result-container.c:440
 #, c-format
@@ -2720,18 +2722,19 @@ msgid ""
 "Failed to add actor for result item %s of provider %s: Actor of type %s is "
 "not derived from class %s"
 msgstr ""
+"נכשל להוסיף שחקן לפריט תוצאה %s של ספק %s: שחקן מסוג %s לא נובע מדרגה %s"
 
 #: ../libxfdashboard/search-result-container.c:664
 #: ../libxfdashboard/search-result-container.c:1734
 #, c-format
 msgid "Show %d more results..."
-msgstr ""
+msgstr "הצג %d תוצאות נוספות..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:686
 #, c-format
 msgid "Show all %d results..."
-msgstr ""
+msgstr "הצג את כל %d התוצאות..."
 
 #: ../libxfdashboard/search-result-container.c:721
 #, c-format
@@ -2739,14 +2742,15 @@ msgid ""
 "Failed to remove actor for result item %s of provider %s: Actor of type %s "
 "is not derived from class %s"
 msgstr ""
+"נכשל להסיר שחקן עבור פריט תוצאה %s של ספק %s: שחקן מסוג %s לא נובע מדרגה %s"
 
 #: ../libxfdashboard/search-result-container.c:1253
 msgid "Provider"
-msgstr ""
+msgstr "ספק"
 
 #: ../libxfdashboard/search-result-container.c:1254
 msgid "The search provider this result container is for"
-msgstr ""
+msgstr "ספק החיפוש עבורו תוצאת גורם מכיל זה"
 
 #: ../libxfdashboard/search-result-container.c:1260
 msgid "Icon"
@@ -2757,42 +2761,44 @@ msgid ""
 "A themed icon name or file name of icon this container will display. If not "
 "set the icon the search provider defines will be used."
 msgstr ""
+"שם איקון ערכת נושא או שם קובץ של איקון אותו גורם מכיל זה יציג. אם לא מוגדר "
+"האיקון שספק החיפוש מגדיר יהיה בשימוש."
 
 #: ../libxfdashboard/search-result-container.c:1267
 msgid "Title format"
-msgstr ""
+msgstr "פורמט כותרת"
 
 #: ../libxfdashboard/search-result-container.c:1268
 msgid "Format string for title which will contain the name of search provider"
-msgstr ""
+msgstr "מחרוזת פורמט עבור כותרת אשר תכיל את שם ספק החיפוש"
 
 #: ../libxfdashboard/search-result-container.c:1275
 msgid "View mode of container for result items"
-msgstr ""
+msgstr "מצב תצוגה של גורם מכיל עבור פריטי תוצאה"
 
 #: ../libxfdashboard/search-result-container.c:1283
 msgid "Spacing between each result item"
-msgstr ""
+msgstr "רווח בין כל פריט תוצאה"
 
 #: ../libxfdashboard/search-result-container.c:1291
 msgid "Padding between title and item results container"
-msgstr ""
+msgstr "מרווח בין כותרת וגורם מכיל תוצאות פריט"
 
 #: ../libxfdashboard/search-result-container.c:1298
 msgid "Initial results size"
-msgstr ""
+msgstr "גודל תוצאות התחלתי"
 
 #: ../libxfdashboard/search-result-container.c:1299
 msgid "The maximum number of results shown initially. 0 means all results"
-msgstr ""
+msgstr "מספר התוצאות המקסימלי המוצג בהתחלה. 0 אומר כל התוצאות"
 
 #: ../libxfdashboard/search-result-container.c:1306
 msgid "More results size"
-msgstr ""
+msgstr "גודל תוצאות נוספות"
 
 #: ../libxfdashboard/search-result-container.c:1307
 msgid "The number of results to increase current limit by"
-msgstr ""
+msgstr "מספר התוצאות להגדלת הגבול הנוכחי"
 
 #: ../libxfdashboard/search-result-container.c:1836
 #, c-format
