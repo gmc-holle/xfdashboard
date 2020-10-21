@@ -4,9 +4,12 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Nick Schermer <nick@xfce.org>, 2020
-# Саша Петровић <salepetronije@gmail.com>, 2020
+# se7entime <se7entime@disroot.org>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
+# Ardjuna <Asyura.x@gmail.com>, 2020
+# Nick Schermer <nick@xfce.org>, 2020
+# Kukuh Syafaat <syafaatkukuh@gmail.com>, 2020
+# Triyan W. Nugroho <triyan.wn@gmail.com>, 2020
 # 
 #, fuzzy
 msgid ""
@@ -15,43 +18,43 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-08 00:46+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Xfce Bot <transifex@xfce.org>, 2020\n"
-"Language-Team: Serbian (https://www.transifex.com/xfce/teams/16840/sr/)\n"
+"Last-Translator: Triyan W. Nugroho <triyan.wn@gmail.com>, 2020\n"
+"Language-Team: Indonesian (https://www.transifex.com/xfce/teams/16840/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sr\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: id\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../data/xfdashboard.desktop.in.in.h:1
 #: ../data/xfdashboard-autostart.desktop.in.in.h:1
 msgid "Xfdashboard"
-msgstr "Полетник Иксфце-а"
+msgstr "Xfdashboard"
 
 #: ../data/xfdashboard.desktop.in.in.h:2
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
-msgstr "Полетник Иксфце-а који подсећа на Гномову шкољку"
+msgstr "Sebuah dasbor mirip Gnome shell untuk Xfce"
 
 #: ../data/xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
-msgstr "Покрени полетника иксфце-а као домара у позадини"
+msgstr "Jalankan xfdashboard sebagai jurik di latar belakang"
 
 #: ../data/xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
-msgstr "Поставке полетника Иксфце-а"
+msgstr "Pengaturan xfdashboard"
 
 #: ../data/xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
-msgstr "Подесите полетника Иксфце-а"
+msgstr "Konfigurasi xfdashboard"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
 msgstr ""
-"Полетник Иксфце-а је сучеље попут Гномове шкољке за употребу на радној "
-"површи Иксфце-а."
+"Xfdashboard menyediakan sebuah antarmuka mirip dasbor GNOME shell untuk "
+"digunakan dengan desktop Xfce."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:3
 msgid ""
@@ -60,47 +63,56 @@ msgid ""
 "switch between different applications. The search feature works like Xfce's "
 "app finder which makes it convenient to search for and start applications."
 msgstr ""
-"Може се подесити да се покреће на било коју пречицу дугмади, и када се "
-"изврши даје преглед тренутно отворених програма, омогућујући кориснику да "
-"прелази са једног програма на други. Претрага ради попут претраживача "
-"програма за Иксфце што чини полетника згодним за претрагу и покретање "
-"програма."
+"Xfdashboard dapat dikonfigurasi untuk dijalankan melalui suatu pintasan "
+"papan tik, dan ketika dijalankan, akan menyediakan sebuah ikhtisar aplikasi-"
+"aplikasi yang sedang terbuka, memungkinkan pengguna untuk berpindah antar "
+"aplikasi yang berbeda. Fitur pencarian bekerja seperti pencari aplikasi Xfce"
+" yang memudahkan untuk mencari dan menjalankan aplikasi."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:4
 msgid "Browsing applications"
-msgstr "Преглед програма"
+msgstr "Meramban aplikasi"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:5
 msgid "Searching applications"
-msgstr "Претрага програма"
+msgstr "Mencari aplikasi"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid ""
 "This unstable development adds more animations as well as some smaller "
 "fixes."
 msgstr ""
+"Pengembangan tak stabil ini menambahkan lebih banyak animasi di samping "
+"beberapa perbaikan kecil."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:7
 msgid "This unstable development adds animations."
-msgstr ""
+msgstr "Pengembangan tak stabil ini menambahkan beberapa animasi."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:8
 msgid ""
 "This unstable development adds support for touchpads and application actions"
 " (Jumplists, Quicklists) as well as new and updated translations."
 msgstr ""
+"Pengembangan tak stabil ini menambahkan dukungan untuk lapik sentuh dan "
+"aksi-aksi aplikasi (Daftar Lompat, Daftar Cepat) di samping terjemahan baru "
+"dan yang diperbarui."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
 "This unstable development adds lots of new and updated translations and "
 "support for newer xfconf versions."
 msgstr ""
+"Pengembangan tak stabil ini menambahkan banyak terjemahan baru dan yang "
+"diperbarui, serta dukungan untuk versi xfconf yang lebih baru."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
 "This unstable development implements a new experimental backend for GDK as "
 "well as it supports user stylesheets now."
 msgstr ""
+"Pengembangan tak stabil ini mengimplementasikan sebuah backend eksperimental"
+" baru untuk GDK, serta mendukung lembar gaya pengguna."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
@@ -108,22 +120,30 @@ msgid ""
 "adds a fine-grained debugging system and introduces an interface for "
 "multiple backends but only X11 is still the one only one supported."
 msgstr ""
+"Pengembangan tak stabil ini meningkatkan performa pemuatan gambar dan ikon, "
+"menambahkan sebuah sistem pengawakutuan yang diperbaiki dan memperkenalkan "
+"sebuah antarmuka untuk beberapa backend namun saat ini hanya X11 yang "
+"didukung."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid ""
 "This unstable development introduces child windows shown next to the main "
 "window."
 msgstr ""
+"Pengembangan tak stabil ini memperkenalkan jendela anak yang ditampilkan di "
+"sebelah jendela utama."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
+"Versi stabil ini memperbaiki sebuah kutu yang mengatur aplikasi bawaan yang "
+"tepat pada saat pertama kali digunakan."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid "This unstable development introduces pop-up menus."
-msgstr ""
+msgstr "Pengembangan tak stabil ini memperkenalkan menu pop-up."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid ""
@@ -131,30 +151,33 @@ msgid ""
 "application tracker. It also contains a huge collection of other larger and "
 "smaller improvements."
 msgstr ""
+"Versi stabil ini memperkenalkan banyak fitur-fitur baru seperti plugin dan "
+"pelacak aplikasi. Juga berisi sejumlah besar peningkatan, baik peningkatan "
+"besar maupun kecil."
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
-msgstr ""
+msgstr "<span size=\"large\"><b>Pengaturan Xfdashboard</b></span>"
 
 #: ../data/data/preferences.ui.h:2
 msgid "Configure plugin"
-msgstr ""
+msgstr "Konfigurasi plugin"
 
 #: ../data/data/preferences.ui.h:3
 msgid ""
 "<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
 "Configure xfdashboard"
 msgstr ""
-"<span size=\"large\"><b>Поставке полетника Иксфце-а</b></span>\n"
-"Подесите полетника"
+"<span size=\"large\"><b>Pengaturan Xfdashboard</b></span>\n"
+"Konfigurasi xfdashboard"
 
 #: ../data/data/preferences.ui.h:5
 msgid "<b>General settings:</b>"
-msgstr "<b>Опште поставке:</b>"
+msgstr "<b>Pengaturan umum:</b>"
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr "Обнови преглед претраге при наставку"
+msgstr "Setel ulang tampilan pencarian saat dilanjutkan"
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
@@ -162,9 +185,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
-"Ако је омогућено, преглед претраге ће се поново постављати сваки пут када полетник наставља са радом. То значи да ће преглед бити враћан на претходно употребљени и да ће кућица претраге бити редовно чишћена.\n"
+"Jika diaktifkan, tampilan pencarian akan disetel ulang ketika xfdashboard dilanjutkan. Ini berarti tampilan aktif akan dikembalikan ke tampilan terakhir yang aktif sebelum pencarian terakhir dimulai dan kotak pencarian akan dikosongkan.\n"
 "\n"
-"<b>Примедба:</b> Ове поставке ступају на снагу само ако полетник ради као домар. "
+"<b>CATATAN:</b> Pengaturan ini hanya akan berpengaruh jika xfdashboard berjalan pada mode jurik. "
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
@@ -172,13 +195,13 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
 msgstr ""
-"Када полетник настави са радом, изабрани преглед ће се покретати.\n"
+"Ketika xfdashboard dilanjutkan, tampilan terpilih akan diaktifkan.\n"
 "\n"
-"<b>Примедба:</b>Ове поставке ступају на снагу само ако полетник ради као домар."
+"<b>CATATAN:</b> Pengaturan ini hanya akan berpengaruh jika xfdashboard berjalan pada mode jurik."
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr "Пређи на преглед при наставку:"
+msgstr "Berpindah ke tampilan saat dilanjutkan:"
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
@@ -186,17 +209,17 @@ msgid ""
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
 msgstr ""
-"Поставља најмање време за приказ обавештења.\n"
+"Mengatur waktu minimum sebuah notifikasi ditampilkan.\n"
 "\n"
-"Трајање се рачуна по дужини натписа који се приказују у обавештењима. Ове поставке омогућавају да одредите најмање временско трајање приказа обавештења."
+"Durasi dihitung berdasarkan panjang teks yang akan ditampilkan di notifikasi. Pengaturan ini memungkinkan Anda untuk menentukan berapa lama notifikasi akan ditampilkan."
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
-msgstr "Најмање трајање обавештења:"
+msgstr "Batas waktu minimum notifikasi:"
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
-msgstr "Омогући заобилажење правила отсустава приказа умањених прозоре"
+msgstr "Aktifkan solusi sementara untuk jendela yang diminimalkan"
 
 #: ../data/data/preferences.ui.h:19
 msgid ""
@@ -204,8 +227,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
 msgstr ""
-"Када је омогућено заобилажење правила поставки умањених прозора, ипак ће се покушати са приказом слика прозора њиховим краткотрајним увећањем и поновним умањењем.\n"
-"<b>Примедба:</b> Знајте да је ово <u>заобилажење</u> и да умањени прозори могу да остају умањени, мењају радне просторе, и слично."
+"Jika diaktifkan, solusi sementara untuk jendela yang diminimalkan akan coba diaplikasikan untuk mendapatkan gambar jendela ini dengan mengembalikan mereka secara cepat dan meminimalkannya lagi.\n"
+"\n"
+"<b>Catatan:</b>Perhatikan bahwa ini adalah <u>solusi sementara</u> dan jendela yang diminimalkan bisa tetap kembali tak diminimalkan, berpindah ruang kerja, dll."
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
@@ -213,24 +237,30 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
+"Nilai ini mendefinisikan seberapa cepat isi jendela harus dibuat. Nilai 'langsung' memberitahu xfdashboard untuk membuat konten jendela pada saat diminta, sedangkan nilai-nilai lain akan mengatur antrian dan nilainya mendefinisikan seberapa cepat antrian akan diproses.\n"
+"\n"
+"<b>Catatan:</b> Hanya ubah nilai ini dari 'langsung' ke nilai lain jika kartu grafis, penggerak atau sistem Anda terlalu lambat untuk membuat isi jendela segera. Anda harus mencoba setiap nilai untuk menemukan pengaturan yang pas pada sistem Anda."
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
-msgstr ""
+msgstr "Prioritas pembuatan konten jendela"
 
 #: ../data/data/preferences.ui.h:26
 msgid "Show child windows in main windows"
-msgstr ""
+msgstr "Tampilkan jendela anak di jendela utama"
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
 msgstr ""
+"Jika diaktifkan, semua pratinjau langsung jendela juga akan menampilkan "
+"jendela anak mereka. Menonaktifkan opsi ini akan meningkatkan kinerja pada "
+"mesin yang lebih lambat."
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
-msgstr ""
+msgstr "Selalu mulai instansi baru untuk aplikasi"
 
 #: ../data/data/preferences.ui.h:29
 msgid ""
@@ -238,38 +268,41 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
+"Jika diaktifkan dan ikon di quiklaunch diklik, akan selalu memulai instansi baru dari aplikasi.\n"
+"\n"
+"Ketika tidak diaktifkan, ia akan memilih jendela aktif terakhir yang diketahui dari instansi aplikasi yang berjalan. Jika aplikasi tidak berjalan, instansi baru akan dimulai."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
-msgstr ""
+msgstr "Aktifkan animasi"
 
 #: ../data/data/preferences.ui.h:33
 msgid "If enabled theme-defined animations will be shown."
-msgstr ""
+msgstr "Jika diaktifkan, animasi sesuai tema akan ditampilkan."
 
 #: ../data/data/preferences.ui.h:34
 msgid "<b>Applications view:</b>"
-msgstr "<b>Преглед програма:</b>"
+msgstr "<b>Tampilan aplikasi:</b>"
 
 #: ../data/data/preferences.ui.h:35
 msgid "Show menu for all installed applications"
-msgstr "Приказуј изборник свих уграђених прозора"
+msgstr "Tampilkan menu untuk semua aplikasi terpasang"
 
 #: ../data/data/preferences.ui.h:36
 msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
 msgstr ""
-"Када је омогућен изборник „свих програма“, сви уграђени програми се "
-"приказују заједно у прегледу програма"
+"Jika diaktifkan, menu \"semua aplikasi\" yang berisi semua aplikasi yang "
+"terpasang akan ditampilkan pada tampilan aplikasi"
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
-msgstr "<b>Преглед прозора:</b>"
+msgstr "<b>Tampilan jendela:</b>"
 
 #: ../data/data/preferences.ui.h:38
 msgid "Mouse wheel changes workspace"
-msgstr "Точкић миша мења радне просторе"
+msgstr "Roda tetikus mengubah area kerja"
 
 #: ../data/data/preferences.ui.h:39
 msgid ""
@@ -277,124 +310,124 @@ msgid ""
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
 msgstr ""
-"Када је омогућено, сваки догађај клизања, попут обртања точкића миша надоле "
-"или нагоре, мењаће се на који ће радни простор бити поглед. Ово понашање је "
-"исто као код изабирача радног простора."
+"Jika diaktifkan, setiap kali menggulir, seperti menggulir roda tetikus ke "
+"atas dan ke bawah, di tampilan jendela akan mengubah ruang kerja aktif. "
+"Perilaku ini sama seperti di pemilih ruang kerja."
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
-msgstr "<b>Преглед претраге:</b>"
+msgstr "<b>Tampilan pencarian:</b>"
 
 #: ../data/data/preferences.ui.h:41
 msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
 msgstr ""
-"Постави време за које ће се одгодити претрага од првог унесеног слова."
+"Setel interval penundaan pencarian setelah karakter pertama dimasukkan."
 
 #: ../data/data/preferences.ui.h:42
 msgid "Delay initial search interval:"
-msgstr "Одгода почетка претраге:"
+msgstr "Interval awal penundaan pencarian:"
 
 #: ../data/data/preferences.ui.h:43
 msgid "General"
-msgstr "Опште"
+msgstr "Umum"
 
 #: ../data/data/preferences.ui.h:44
 msgid "<b>Name:</b>"
-msgstr "<b>_Име:</b>"
+msgstr "<b>Nama:</b>"
 
 #: ../data/data/preferences.ui.h:45
 msgid "<b>Author:</b>"
-msgstr "<b>Стваралац:</b>"
+msgstr "<b>Penulis:</b>"
 
 #: ../data/data/preferences.ui.h:46
 msgid "<b>Version:</b>"
-msgstr "<b>Издање:</b>"
+msgstr "<b>Versi:</b>"
 
 #: ../data/data/preferences.ui.h:47
 msgid "<b>Description:</b>"
-msgstr "<b>Опис:</b>"
+msgstr "<b>Keterangan:</b>"
 
 #: ../data/data/preferences.ui.h:48
 msgid "Themes"
-msgstr "Теме"
+msgstr "Tema"
 
 #: ../data/data/preferences.ui.h:49
 msgid "<b>License:</b>"
-msgstr ""
+msgstr "<b>Lisensi:</b>"
 
 #: ../data/data/preferences.ui.h:50
 msgid "Plugins"
-msgstr "Прикључци"
+msgstr "Plugin"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard"
-msgstr "полетник иксфцеа"
+msgstr "xfdashboard"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:2
 msgid "Default theme for xfdashboard"
-msgstr "Подразумевана тема полетника"
+msgstr "Tema bawaan untuk xfdashboard"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-auber"
-msgstr "Полетник Аубер"
+msgstr "xfdashboard-auber"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
 msgid "Aubergine theme for xfdashboard"
-msgstr "Тема полетника Aubergine"
+msgstr "Tema Aubergine untuk xfdashboard"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-blue"
-msgstr "Полетник плави"
+msgstr "xfdashboard-blue"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:2
 msgid "Blue theme for xfdashboard"
-msgstr "Плава тема полетника"
+msgstr "Tema biru untuk xfdashboard"
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-dark"
-msgstr "Полетник тамни"
+msgstr "xfdashboard-dark"
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:2
 msgid "Dark theme for xfdashboard"
-msgstr "Тамна тема полетника"
+msgstr "Tema gelap untuk xfdashboard"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-mint"
-msgstr "полетник-мента"
+msgstr "xfdashboard-mint"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
 msgid "Fresh-green flavored theme for xfdashboard"
-msgstr "Свежа зелена тема полетника"
+msgstr "Tema rasa hijau-segar untuk xfdashboard"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-moranga"
-msgstr "Полетник Моранга"
+msgstr "xfdashboard-moranga"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:2
 msgid "Moranga theme for xfdashboard"
-msgstr "Тема полетника моранга"
+msgstr "Tema Moranga untuk xfdashboard"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-wine"
-msgstr "Полетник у вину"
+msgstr "xfdashboard-wine"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
 msgid "Red wine theme for xfdashboard"
-msgstr "Тема полетника у боји црвеног вина"
+msgstr "Tema anggur merah untuk xfdashboard"
 
 #: ../libxfdashboard/action-button.c:136
 #: ../libxfdashboard/focus-manager.c:1174
 #, c-format
 msgid "Object type %s does not provide action '%s'"
-msgstr "Предмет врсте %s не обезбеђује радњу „%s“"
+msgstr "Tipe objek %s tidak memberikan aksi '%s'"
 
 #: ../libxfdashboard/action-button.c:148
 #: ../libxfdashboard/focus-manager.c:1186
 #, c-format
 msgid "Action '%s' at object type %s is not an action signal."
-msgstr "Радња „%s“ предмету врсте %s није знак за радњу."
+msgstr "Aksi '%s' pada tipe objek %s bukan merupakan sinyal aksi."
 
 #: ../libxfdashboard/action-button.c:167
 #: ../libxfdashboard/focus-manager.c:1206
@@ -403,14 +436,16 @@ msgid ""
 "Action '%s' at object type %s wants return value of type %s but expected is "
 "%s."
 msgstr ""
-"Радња „%s“ предмету %s жели да врати вредност врсте %s, али се очекује %s."
+"Aksi '%s' pada tipe objek %s menginginkan nilai pengembalian dengan tipe %s "
+"tapi diharapkan adalah %s."
 
 #: ../libxfdashboard/action-button.c:178
 #: ../libxfdashboard/focus-manager.c:1217
 #, c-format
 msgid "Action '%s' at object type %s wants %u parameters but expected are %u."
 msgstr ""
-"Радња „%s“ на предмету врсте %s захтева одредницу %u, али се очекује %u."
+"Aksi '%s' pada tipe objek %s menginginkan parameter %u tapi diharapkan "
+"adalah %u."
 
 #: ../libxfdashboard/action-button.c:189
 #: ../libxfdashboard/focus-manager.c:1228
@@ -419,24 +454,24 @@ msgid ""
 "Action '%s' at object type %s wants type %s at parameter %u but type %s is "
 "expected."
 msgstr ""
-"Радња „%s“ предмету врсте %s захтева врсту %s на одредници %u, али се "
-"очекује врта %s."
+"Aksi '%s' pada tipe objek %s menginginkan tipe %s pada parameter %u tetapi "
+"tipe %s yang diharapkan."
 
 #: ../libxfdashboard/action-button.c:447 ../libxfdashboard/binding.c:241
 msgid "Target"
-msgstr "Циљ"
+msgstr "Target"
 
 #: ../libxfdashboard/action-button.c:448
 msgid "The target actor's class name to lookup and to perform action at"
-msgstr ""
+msgstr "Nama kelas target aktor untuk melakukan pencarian dan melakukan aksi"
 
 #: ../libxfdashboard/action-button.c:459 ../libxfdashboard/binding.c:248
 msgid "Action"
-msgstr "Радња"
+msgstr "Aksi"
 
 #: ../libxfdashboard/action-button.c:460
 msgid "The action signal to perform at target"
-msgstr ""
+msgstr "Sinyal aksi yang akan dilakukan pada target"
 
 #: ../libxfdashboard/actor.c:737 ../libxfdashboard/stylable.c:310
 #, c-format
@@ -444,8 +479,8 @@ msgid ""
 "Could not transform CSS string value for property '%s' to type %s of class "
 "%s"
 msgstr ""
-"Нисам успео да претворим вредност нисака ЦСС-а својства „%s“ у врсту %s "
-"разреда %s"
+"Tak dapat mengubah nilai string CSS untuk properti '%s' untuk tipe %s dari "
+"kelas %s"
 
 #: ../libxfdashboard/actor.c:951
 #, c-format
@@ -453,52 +488,57 @@ msgid ""
 "Cannot allocate memory for animation entry for animation '%s' with signal "
 "'%s'"
 msgstr ""
+"Tak dapat mengalokasikan memori untuk entri animasi untuk animasi '%s' "
+"dengan sinyal '%s'"
 
 #: ../libxfdashboard/actor.c:1581
 msgid "Can focus"
-msgstr "Нисам успео да применим жижу"
+msgstr "Bisa fokus"
 
 #: ../libxfdashboard/actor.c:1582
 msgid "This flag indicates if this actor can be focused"
-msgstr "Заставица приказује да предмет не може да се стави у жижу"
+msgstr "Bendera ini mengindikasikan jika aktor ini dapat difokuskan"
 
 #: ../libxfdashboard/actor.c:1589
 msgid "Effects"
-msgstr "Дејства"
+msgstr "Efek"
 
 #: ../libxfdashboard/actor.c:1590
 msgid "List of space-separated strings with IDs of effects set at this actor"
 msgstr ""
-"Списак ниски раздвојених размаком са ИД-јем низа дејстава за овог чиниоца"
+"Daftar string dipisahkan dengan spasi dengan ID efek yang ditetapkan pada "
+"aktor ini"
 
 #: ../libxfdashboard/animation.c:425
 #, c-format
 msgid ""
 "Cannot allocate memory for animation entry with actor '%s' at animation '%s'"
 msgstr ""
+"Tidak dapat mengalokasikan memori untuk entri animasi dengan aktor '%s' pada"
+" animasi '%s'"
 
 #: ../libxfdashboard/animation.c:619 ../libxfdashboard/plugin.c:813
 msgid "ID"
-msgstr "ЛБ"
+msgstr "ID"
 
 #: ../libxfdashboard/animation.c:620
 msgid "The animation ID"
-msgstr ""
+msgstr "ID animasi"
 
 #: ../libxfdashboard/application-button.c:243
 #, c-format
 msgid "Could not get information about application '%s'"
-msgstr ""
+msgstr "Tak bisa mendapatkan informasi tentang aplikasi '%s'"
 
 #: ../libxfdashboard/application-button.c:251
 #, c-format
 msgid "Could not get application action for application '%s'"
-msgstr ""
+msgstr "Tak bisa mendapatkan aksi aplikasi untuk aplikasi '%s'"
 
 #: ../libxfdashboard/application-button.c:262
 #, c-format
 msgid "Could not execute action '%s' for application '%s': %s"
-msgstr ""
+msgstr "Tak dapat mengeksekusi aksi '%s' untuk aplikasi '%s': %s"
 
 #: ../libxfdashboard/application-button.c:265
 #: ../libxfdashboard/application-database.c:133
@@ -549,43 +589,43 @@ msgstr ""
 #: ../settings/themes.c:587 ../settings/themes.c:606 ../settings/themes.c:625
 #: ../settings/main.c:63 ../settings/main.c:85 ../settings/settings.c:160
 msgid "Unknown error"
-msgstr "Непозната грешка"
+msgstr "Galat tak dikenal"
 
 #: ../libxfdashboard/application-button.c:282
 #, c-format
 msgid "Executed action '%s' for application '%s'"
-msgstr ""
+msgstr "Mengeksekusi aksi '%s' untuk aplikasi '%s'"
 
 #: ../libxfdashboard/application-button.c:425
 msgid "Application information"
-msgstr "Подаци програма"
+msgstr "Informasi aplikasi"
 
 #: ../libxfdashboard/application-button.c:426
 msgid "The application information whose title and description to display"
-msgstr "Подаци програма чији наслов и опис треба да се прикаже"
+msgstr "Informasi aplikasi yang mana judul dan deskripsinya akan ditampilkan"
 
 #: ../libxfdashboard/application-button.c:432
 msgid "Show description"
-msgstr "Прикажи опис"
+msgstr "Tampilkan deskripsi"
 
 #: ../libxfdashboard/application-button.c:433
 msgid "Show also description next to tile"
-msgstr "Такође приказуј опис поред наслова"
+msgstr "Tampilkan juga deskripsi"
 
 #: ../libxfdashboard/application-button.c:439
 #: ../libxfdashboard/applications-view.c:1534
 msgid "Format title only"
-msgstr "Обликуј само наслов"
+msgstr "Format hanya judul"
 
 #: ../libxfdashboard/application-button.c:440
 #: ../libxfdashboard/applications-view.c:1535
 msgid "Format string used when only title is display"
-msgstr "Обликуј ниске коришћене за приказ само наслова"
+msgstr "Format string yang digunakan ketika hanya judul yang tampil"
 
 #: ../libxfdashboard/application-button.c:446
 #: ../libxfdashboard/applications-view.c:1541
 msgid "Format title and description"
-msgstr "Обликуј наслов и опис"
+msgstr "Format judul dan deskripsi"
 
 #: ../libxfdashboard/application-button.c:447
 #: ../libxfdashboard/applications-view.c:1542
@@ -593,8 +633,8 @@ msgid ""
 "Format string used when title and description is display. First argument is "
 "title and second one is description."
 msgstr ""
-"Обликуј ниске коришћене при приказу наслова и описа. Прва одредница је "
-"наслов, а следећа је опис."
+"Format string yang digunakan ketika judul dan deskripsi yang tampil. Argumen"
+" pertama adalah judul dan kedua adalah deskripsi."
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:746
@@ -609,13 +649,13 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:458 ../libxfdashboard/quicklaunch.c:461
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr "Нисам успео да покренем програм „%s“: %s"
+msgstr "Meluncurkan aplikasi '%s' gagal: %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/application-button.c:748
 #: ../libxfdashboard/quicklaunch.c:354 ../libxfdashboard/quicklaunch.c:358
 msgid "No information available for application"
-msgstr "Нема доступних података о програму"
+msgstr "Tak ada informasi yang tersedia untuk aplikasi"
 
 #: ../libxfdashboard/application-button.c:763
 #: ../libxfdashboard/application-button.c:766
@@ -629,7 +669,7 @@ msgstr "Нема доступних података о програму"
 #: ../libxfdashboard/applications-view.c:339
 #: ../libxfdashboard/quicklaunch.c:460 ../libxfdashboard/quicklaunch.c:463
 msgid "unknown error"
-msgstr "непозната грешка"
+msgstr "galat tak diketahui"
 
 #: ../libxfdashboard/application-button.c:774
 #: ../libxfdashboard/applications-search-provider.c:767
@@ -637,43 +677,42 @@ msgstr "непозната грешка"
 #: ../libxfdashboard/quicklaunch.c:471
 #, c-format
 msgid "Application '%s' launched"
-msgstr "Програм „%s“ је покренут"
+msgstr "Aplikasi '%s' diluncurkan"
 
 #: ../libxfdashboard/application-database.c:132
 #, c-format
 msgid "Could not reload application menu: %s"
-msgstr "Нисам успео да поново учитам изборник програма: %s"
+msgstr "Tak dapat memuat menu aplikasi: %s"
 
 #: ../libxfdashboard/application-database.c:265
 msgid "Received event from unknown file monitor"
-msgstr "Примљен је догађај од непознатог надзорника датотеке"
+msgstr "Menerima kejadian dari monitor berkas yang tak diketahui"
 
 #: ../libxfdashboard/application-database.c:291
 #, c-format
 msgid "Unable to create file monitor for newly created directory '%s'"
 msgstr ""
-"Нисам успео да образујем надзорника датотеке из новообразоване фасцикле „%s“"
+"Tak dapat membuat monitor berkas untuk direktori yang baru dibuat '%s'"
 
 #: ../libxfdashboard/application-database.c:302
 #, c-format
 msgid "Unable to create file monitor for '%s': %s"
-msgstr "Нисам успео да образујем надзорника датотеке за „%s“: %s"
+msgstr "Tak dapat membuat monitor berkas untuk '%s': %s"
 
 #: ../libxfdashboard/application-database.c:776
 #, c-format
 msgid "Unable to build path to '%s%s%s' to search for desktop files"
-msgstr ""
-"Нисам успео да изградим путању за „%s%s%s“ ради претраге датотека површи"
+msgstr "Tak dapat membangun path untuk '%s%s%s' untuk mencari berkas desktop"
 
 #: ../libxfdashboard/application-database.c:857
 #, c-format
 msgid "Could not determine desktop ID for '%s'"
-msgstr "Нисам успео да одредим ЛБ радне површи за „%s“"
+msgstr "Tak dapat menentukan ID desktop untuk '%s'"
 
 #: ../libxfdashboard/application-database.c:947
 #, c-format
 msgid "Unable to create file monitor for '%s'"
-msgstr "Нисам успео да образујем надзорника датотека за „%s“"
+msgstr "Tak dapat membuat monitor berkas untuk '%s'"
 
 #. Workaround for FreeBSD with Glib bug (file/directory monitors cannot be
 #. created)
@@ -683,132 +722,142 @@ msgid ""
 "[workaround for FreeBSD] Cannot initialize file monitor for path '%s' but "
 "will not fail: %s"
 msgstr ""
+"[Solusi sementara untuk FreeBSD] Tak dapat menginisialisasi monitor berkas "
+"untuk path '%s' tetapi tidak akan gagal: %s"
 
 #: ../libxfdashboard/application-database.c:1359
 msgid "Is loaded"
-msgstr "Је учитан"
+msgstr "Telah dimuat"
 
 #: ../libxfdashboard/application-database.c:1360
 msgid ""
 "Flag indicating if application database has been initialized and loaded "
 "successfully"
 msgstr ""
-"Заставица која указује да је складиште података покренуто и успешно учитано"
+"Bendera yang menunjukkan jika basis data aplikasi telah berhasil "
+"diinisialisasi dan dimuat"
 
 #: ../libxfdashboard/application-tracker.c:281
 #, c-format
 msgid "Could not create environment lookup table for PID %d"
-msgstr ""
+msgstr "Tak dapat membuat tabel pencarian lingkungan untuk PID %d"
 
 #: ../libxfdashboard/application-tracker.c:354
 #, c-format
 msgid "Malformed environment '%s' in environment set for PID %d at %s"
 msgstr ""
+"Lingkungan cacat '%s' dalam lingkungan yang disetel untuk PID %d pada %s"
 
 #: ../libxfdashboard/application-tracker.c:384
 #, c-format
 msgid ""
 "Unexpected duplicate name '%s' in environment set for PID %d at %s: %s = %s"
 msgstr ""
+"Nama duplikat tak diharapkan '%s' di lingkungan yang disetel untuk PID %d "
+"pada %s: %s = %s"
 
 #: ../libxfdashboard/application-tracker.c:1038
 msgid ""
 "Application database was not initialized. Application tracking might not "
 "working."
 msgstr ""
+"Basis data aplikasi tak diinisialisasi. Pelacakan aplikasi mungkin tidak "
+"bekerja."
 
 #. Show critical warning at console
 #: ../libxfdashboard/application.c:299 ../libxfdashboard/application.c:306
 #, c-format
 msgid "Could not load theme '%s': %s"
-msgstr "Нисам успео да учитам тему „%s“ : %s"
+msgstr "Tak dapat memuat tema '%s': %s"
 
 #: ../libxfdashboard/application.c:392
 #, c-format
 msgid "Could not initialize xfconf: %s"
-msgstr "Нисам успео да покренем xfconf: %s"
+msgstr "Tak dapat menginisialisasi xfconf: %s"
 
 #: ../libxfdashboard/application.c:404
 msgid "Could not initialize bindings"
-msgstr "Нисам успео да покренем пречице"
+msgstr "Tak dapat menginisialisasi binding"
 
 #: ../libxfdashboard/application.c:410
 #, c-format
 msgid "Could not load bindings: %s"
-msgstr "Нисам успео да учитам пречице: %s"
+msgstr "Tak dapat memuat binding: %s"
 
 #: ../libxfdashboard/application.c:423
 msgid "Could not setup window tracker backend"
-msgstr ""
+msgstr "Tak dapat menyiapkan backend pelacak jendela"
 
 #: ../libxfdashboard/application.c:431
 msgid "Could not initialize application database"
-msgstr "Нисам успео да покренем складиште података програма"
+msgstr "Tak dapat menginisialisasi basis data aplikasi"
 
 #: ../libxfdashboard/application.c:437
 #, c-format
 msgid "Could not load application database: %s"
-msgstr "Нисам успео да учитам складиште података: %s"
+msgstr "Tak dapat memuat basis data aplikasi: %s"
 
 #: ../libxfdashboard/application.c:447
 msgid "Could not initialize application tracker"
-msgstr ""
+msgstr "Tak dapat menginisialisasi pelacak aplikasi"
 
 #: ../libxfdashboard/application.c:474
 msgid "Could not initialize plugin manager"
-msgstr ""
+msgstr "Tak dapat menginisialisasi manajer plugin"
 
 #: ../libxfdashboard/application.c:480
 msgid "Could not setup plugin manager"
-msgstr ""
+msgstr "Tak dapat menyiapkan manajer plugin"
 
 #: ../libxfdashboard/application.c:492
 msgid ""
 "Could not create binding between xfconf property and local resource for "
 "theme change notification."
 msgstr ""
-"Нисам успео да образујем пречицу између својства иксфцеконфа и месних извора"
-" за обавештење о измени теме."
+"Tak dapat membuat binding antara properti xfconf dan sumber daya lokal untuk"
+" notifikasi perubahan tema."
 
 #: ../libxfdashboard/application.c:527
 #, c-format
 msgid "Welcome to %s (%s)!"
-msgstr "Добро дошли у %s (%s)!"
+msgstr "Selamat datang di %s (%s)!"
 
 #: ../libxfdashboard/application.c:529
 #, c-format
 msgid "Welcome to %s!"
-msgstr "Добродошли у %s!"
+msgstr "Selamat datang di %s!"
 
 #: ../libxfdashboard/application.c:576
 msgid "Fork to background"
-msgstr "Рачвај у позадину"
+msgstr "Cabangkan di latar belakang"
 
 #: ../libxfdashboard/application.c:577
 msgid "Quit running instance"
-msgstr "Искључи покренути примерак"
+msgstr "Keluar dari aplikasi yang sedang berjalan"
 
 #: ../libxfdashboard/application.c:578
 msgid "Restart running instance"
-msgstr "Поново покрени примерак који је у погону"
+msgstr "Jalankan ulang aplikasi yang sedang berjalan"
 
 #: ../libxfdashboard/application.c:579
 msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
 msgstr ""
+"Ubah visibilitas jika instansi yang berjalan dimulai dalam mode jurik, jika "
+"tidak, instansi non-jurik akan dihentikan"
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
-msgstr ""
+msgstr "ID tampilan untuk beralih saat mulai atau melanjutkan"
 
 #: ../libxfdashboard/application.c:581
 msgid "Show version"
-msgstr ""
+msgstr "Tampilkan versi"
 
 #: ../libxfdashboard/application.c:600
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr ""
+msgstr "Sebuah dasbor mirip Gnome Shell untuk Xfce4 - versi "
 
 #. Show error
 #: ../libxfdashboard/application.c:617
@@ -821,47 +870,49 @@ msgid ""
 "Cannot daemonized because a temporary new instance of application was "
 "forced."
 msgstr ""
+"Tak dapat menjadikan jurik karena instansi baru yang temporer dari aplikasi "
+"telah dipaksakan."
 
 #: ../libxfdashboard/application.c:950
 #, c-format
 msgid "Unable to register application: %s"
-msgstr "Нисам успео да заведем програм: %s"
+msgstr "Tak dapat mendaftarkan aplikasi: %s"
 
 #: ../libxfdashboard/application.c:1206
 msgid "Is daemonized"
-msgstr "Ради као домар"
+msgstr "Dijadikan jurik"
 
 #: ../libxfdashboard/application.c:1207
 msgid "Flag indicating if application is daemonized"
-msgstr "Белег који показује да ли програм ради као домар"
+msgstr "Bendera yang mengindikasikan jika aplikasi dijadikan jurik"
 
 #: ../libxfdashboard/application.c:1220
 msgid "Is suspended"
-msgstr "Је обустављен"
+msgstr "Ditangguhkan"
 
 #: ../libxfdashboard/application.c:1221
 msgid "Flag indicating if application is suspended currently"
-msgstr "Белег који показује да ли је програм исправно обустављен"
+msgstr "Bendera yang mengindikasikan jika aplikasi ditangguhkan saat ini"
 
 #: ../libxfdashboard/application.c:1232
 msgid "Stage"
-msgstr ""
+msgstr "Panggung"
 
 #: ../libxfdashboard/application.c:1233
 msgid "The stage object of application"
-msgstr ""
+msgstr "Objek panggung dari aplikasi"
 
 #: ../libxfdashboard/application.c:1244 ../libxfdashboard/theme.c:801
 msgid "Theme name"
-msgstr "Име теме"
+msgstr "Nama tema"
 
 #: ../libxfdashboard/application.c:1245
 msgid "Name of current theme"
-msgstr "Име тренутне теме"
+msgstr "Nama tema saat ini"
 
 #: ../libxfdashboard/applications-menu-model.c:691
 msgid "Iterator does not belong to application menu model."
-msgstr ""
+msgstr "Iterator bukan milik model menu aplikasi."
 
 #: ../libxfdashboard/applications-menu-model.c:709
 #, c-format
@@ -869,11 +920,15 @@ msgid ""
 "Invalid column number %d added to iter (remember to end your list of columns"
 " with a -1)"
 msgstr ""
+"Nomor kolom yang tidak valid %d ditambahkan ke iter (ingat untuk mengakhiri "
+"daftar kolom dengan -1)"
 
 #: ../libxfdashboard/applications-menu-model.c:720
 #, c-format
 msgid "No storage pointer provided to store value of column number %d"
 msgstr ""
+"Tak ada penunjuk penyimpanan yang disediakan untuk menyimpan nilai dari "
+"kolom nomor %d"
 
 #: ../libxfdashboard/applications-search-provider.c:254
 #, c-format
@@ -881,17 +936,21 @@ msgid ""
 "Could not create configuration folder for applications search provider at "
 "%s: %s"
 msgstr ""
+"Tak dapat membuat folder konfigurasi untuk penyedia pencarian aplikasi pada "
+"%s: %s"
 
 #: ../libxfdashboard/applications-search-provider.c:359
 #, c-format
 msgid "Statistics were not initialized"
-msgstr ""
+msgstr "Statistik tidak diinisialisasi"
 
 #: ../libxfdashboard/applications-search-provider.c:379
 #, c-format
 msgid ""
 "Could not build path to statistics file of applications search provider"
 msgstr ""
+"Tak dapat membangun path menuju berkas statistik dari penyedia pencarian "
+"aplikasi"
 
 #: ../libxfdashboard/applications-search-provider.c:483
 #, c-format
@@ -899,6 +958,8 @@ msgid ""
 "Could not create statistics data for application '%s' of applications search"
 " provider"
 msgstr ""
+"Tak dapat membuat data statistik untuk aplikasi '%s' dari penyedia pencarian"
+" aplikasi"
 
 #: ../libxfdashboard/applications-search-provider.c:496
 #, c-format
@@ -906,28 +967,31 @@ msgid ""
 "Could not get value from group [%s] for application %s from statistics file "
 "of applications search provider: %s"
 msgstr ""
+"Tak bisa mendapatkan nilai dari grup [%s] untuk aplikasi %s dari berkas "
+"statistik penyedia pencarian aplikasi: %s"
 
 #: ../libxfdashboard/applications-search-provider.c:565
 #, c-format
 msgid "Failed to save statistics of applications search provider to %s: %s"
-msgstr ""
+msgstr "Gagal menyimpan statistik penyedia pencarian aplikasi untuk %s: %s"
 
 #: ../libxfdashboard/applications-search-provider.c:623
 #, c-format
 msgid "Failed to load statistics of applications search provider from %s: %s"
-msgstr ""
+msgstr "Gagal memuat statistik penyedia pencarian aplikasi dari %s: %s"
 
 #: ../libxfdashboard/applications-search-provider.c:814
 #: ../libxfdashboard/applications-view.c:393
 #: ../libxfdashboard/quicklaunch.c:659
 msgid "No application information available for clicked application button."
 msgstr ""
+"Tak ada informasi aplikasi yang tersedia untuk tombol aplikasi yang diklik."
 
 #: ../libxfdashboard/applications-search-provider.c:838
 #: ../libxfdashboard/applications-view.c:417
 #: ../libxfdashboard/quicklaunch.c:682
 msgid "Launch"
-msgstr ""
+msgstr "Luncurkan"
 
 #. Set up view
 #. Add "applications" button
@@ -935,53 +999,54 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:1587
 #: ../libxfdashboard/quicklaunch.c:3286
 msgid "Applications"
-msgstr "Програми"
+msgstr "Aplikasi"
 
 #: ../libxfdashboard/applications-search-provider.c:1220
 msgid ""
 "Could not allocate memory to copy search criteria for case-insensitive "
 "search"
 msgstr ""
+"Tak dapat mengalokasikan memori untuk menyalin kriteria pencarian untuk "
+"pencarian tak peka huruf besar/kecil"
 
 #: ../libxfdashboard/applications-search-provider.c:1313
 #, c-format
 msgid "Cannot create actor for desktop ID '%s' in result set of %s"
-msgstr ""
-"Нисам успео да образујем чиниоца за ЛБ радне површи „%s“ у низу излаза %s"
+msgstr "Tak dapat membuat aktor untuk ID desktop '%s' pada kumpulan hasil %s"
 
 #: ../libxfdashboard/applications-search-provider.c:1469
 msgid "Sort mode"
-msgstr ""
+msgstr "Mode urutan"
 
 #: ../libxfdashboard/applications-search-provider.c:1470
 msgid "Defines how to sort matching applications"
-msgstr ""
+msgstr "Mendefinisikan bagaimana mengurutkan aplikasi yang cocok"
 
 #: ../libxfdashboard/applications-view.c:241
 #, c-format
 msgid "Could not find view of type %s for menu '%s'"
-msgstr "Нисам успео да пронађем проглед врсте %s за изборник „%s“"
+msgstr "Tak dapat menemukan tampilan tipe %s untuk menu '%s'"
 
 #: ../libxfdashboard/applications-view.c:545
 #: ../libxfdashboard/applications-view.c:546
 #: ../libxfdashboard/applications-view.c:657
 #: ../libxfdashboard/applications-view.c:658
 msgid "Back"
-msgstr "Назад"
+msgstr "Kembali"
 
 #: ../libxfdashboard/applications-view.c:545
 #: ../libxfdashboard/applications-view.c:657
 msgid "Go back to previous menu"
-msgstr "Идите на претходни изборник"
+msgstr "Kembali ke menu sebelumnya"
 
 #: ../libxfdashboard/applications-view.c:685
 #: ../libxfdashboard/applications-view.c:686
 msgid "All applications"
-msgstr "Сви програми"
+msgstr "Semua aplikasi"
 
 #: ../libxfdashboard/applications-view.c:685
 msgid "List of all installed applications"
-msgstr "Списак уграђених програма"
+msgstr "Tampilkan daftar semua aplikasi terpasang"
 
 #: ../libxfdashboard/applications-view.c:905
 #: ../libxfdashboard/popup-menu.c:565
@@ -989,7 +1054,7 @@ msgstr "Списак уграђених програма"
 #: ../libxfdashboard/windows-view.c:1525
 #, c-format
 msgid "%s is not a child of %s and cannot be selected"
-msgstr "%s није потомак %s и не може да се одабере"
+msgstr "%s bukan anak dari %s dan tak dapat dipilih"
 
 #: ../libxfdashboard/applications-view.c:1053
 #: ../libxfdashboard/search-result-container.c:895
@@ -998,8 +1063,8 @@ msgid ""
 "Focusable object %s does not handle selection direction of type %s in icon "
 "mode."
 msgstr ""
-"Жижни предмет %s не може да управља избором правца врсте %s у начину рада "
-"иконица."
+"Objek yang dapat difokuskan %s tidak menangani arah pemilihan untuk tipe %s "
+"pada mode ikon."
 
 #: ../libxfdashboard/applications-view.c:1174
 #: ../libxfdashboard/search-result-container.c:1046
@@ -1008,8 +1073,8 @@ msgid ""
 "Focusable object %s does not handle selection direction of type %s in list "
 "mode."
 msgstr ""
-"Жижни предмет %s не може да управља избором правца врсте %s у начину рада "
-"списка."
+"Objek yang dapat difokuskan %s tidak menangani arah pemilihan untuk tipe %s "
+"pada mode daftar."
 
 #: ../libxfdashboard/applications-view.c:1237
 #: ../libxfdashboard/popup-menu.c:634 ../libxfdashboard/quicklaunch.c:2804
@@ -1017,7 +1082,8 @@ msgstr ""
 #: ../libxfdashboard/workspace-selector.c:973
 #, c-format
 msgid "Cannot lookup selection target at %s because %s is a child of %s"
-msgstr "Нисам успео да дођем до изабраног циља %s јер је  %s наследник  %s"
+msgstr ""
+"Tak dapat mencari target pemilihan pada %s karena %s adalah anak dari %s"
 
 #: ../libxfdashboard/applications-view.c:1282
 #: ../libxfdashboard/popup-menu.c:671 ../libxfdashboard/quicklaunch.c:2893
@@ -1026,23 +1092,24 @@ msgstr "Нисам успео да дођем до изабраног циља %
 #: ../libxfdashboard/workspace-selector.c:1042
 #, c-format
 msgid "Focusable object %s does not handle selection direction of type %s."
-msgstr "Жижни предмет %s не управља избором правца врсте %s."
+msgstr ""
+"Objek yang dapat difokuskan %s tidak menangani arah pemilihan untuk tipe %s."
 
 #: ../libxfdashboard/applications-view.c:1322
 #: ../libxfdashboard/popup-menu.c:713 ../libxfdashboard/quicklaunch.c:2933
 #: ../libxfdashboard/windows-view.c:1754
 #, c-format
 msgid "%s is a child of %s and cannot be activated at %s"
-msgstr " %s је наследник  %s и не може да се покрене на %s"
+msgstr "%s adalah anak dari %s dan tidak dapat diaktifkan di %s"
 
 #: ../libxfdashboard/applications-view.c:1511
 #: ../libxfdashboard/search-result-container.c:1274
 msgid "View mode"
-msgstr "Начин приказа"
+msgstr "Mode tampilan"
 
 #: ../libxfdashboard/applications-view.c:1512
 msgid "The view mode used in this view"
-msgstr "Начин прегледа у оваквом приказу"
+msgstr "Mode tampilan yang digunakan pada tampilan ini"
 
 #: ../libxfdashboard/applications-view.c:1519 ../libxfdashboard/label.c:1248
 #: ../libxfdashboard/quicklaunch.c:3114 ../libxfdashboard/scrollbar.c:753
@@ -1051,193 +1118,195 @@ msgstr "Начин прегледа у оваквом приказу"
 #: ../libxfdashboard/viewpad.c:1232 ../libxfdashboard/windows-view.c:2062
 #: ../libxfdashboard/workspace-selector.c:1252
 msgid "Spacing"
-msgstr "Размак"
+msgstr "Spasi"
 
 #: ../libxfdashboard/applications-view.c:1520
 #: ../libxfdashboard/windows-view.c:2063
 msgid "Spacing between each element in view"
-msgstr "Размак између погледа на појединачне чиниоце"
+msgstr "Jarak antar tiap elemen pada tampilan"
 
 #: ../libxfdashboard/applications-view.c:1527
 msgid "Parent menu icon"
-msgstr "Родитељска иконица изборника"
+msgstr "Ikon menu utama"
 
 #: ../libxfdashboard/applications-view.c:1528
 msgid "Name of icon to use for 'go-back-to-parent-menu' entries"
-msgstr "Име иконице за коришћење за „иди назад у родитељски избор“ уносе"
+msgstr "Nama ikon yang digunakan untuk entri 'go-back-to-parent-menu'"
 
 #: ../libxfdashboard/applications-view.c:1548
 msgid "Show all applications"
-msgstr "Приказуј све програме"
+msgstr "Tampilkan semua aplikasi"
 
 #: ../libxfdashboard/applications-view.c:1549
 msgid "Whether to show a menu for all installed applications at root menu"
 msgstr ""
-"Да ли да се приказује изборник свих уграђених програма као корени изборник"
+"Apakah menampilkan sebuah menu untuk semua aplikasi terpasang pada menu "
+"utama"
 
 #: ../libxfdashboard/background.c:415 ../libxfdashboard/background.c:416
 msgid "Background type"
-msgstr "Врста позадине"
+msgstr "Tipe latar belakang"
 
 #: ../libxfdashboard/background.c:423 ../libxfdashboard/outline-effect.c:446
 msgid "Corners"
-msgstr "Ивице"
+msgstr "Sudut"
 
 #: ../libxfdashboard/background.c:424
 msgid "Determines which corners are rounded for background and outline"
-msgstr "Одређује који углови позадине и оквира су заобљени"
+msgstr ""
+"Menentukan sudut mana yang akan dibulatkan untuk latar belakang dan ikhtisar"
 
 #: ../libxfdashboard/background.c:431 ../libxfdashboard/background.c:454
 #: ../libxfdashboard/outline-effect.c:454
 msgid "Corner radius"
-msgstr "Полупречник угла"
+msgstr "Radius sudut"
 
 #: ../libxfdashboard/background.c:432
 msgid "Radius of rounded corners for background and outline"
-msgstr "Полупречник заобљенисти позадине и оквира"
+msgstr "Radius sudut bulat untuk latar belakang dan ikhtisar"
 
 #: ../libxfdashboard/background.c:439
 msgid "Background fill color"
-msgstr "Одаберите боју попуне позадине"
+msgstr "Warna isian latar belakang"
 
 #: ../libxfdashboard/background.c:440
 msgid "Color to fill background with"
-msgstr "Жељена боја попуне позадине."
+msgstr "Warna untuk mengisi latar belakang"
 
 #: ../libxfdashboard/background.c:446
 msgid "Fill corners"
-msgstr "Попуни ивице"
+msgstr "Sudut isian"
 
 #: ../libxfdashboard/background.c:447
 msgid "Determines which corners are rounded at background"
-msgstr "Одређује који углови на позадини су заобљени"
+msgstr "Menentukan sudut mana yang dibulatkan di latar belakang"
 
 #: ../libxfdashboard/background.c:455
 msgid "Radius of rounded corners of background"
-msgstr "Полупречник заобљених углова позадине"
+msgstr "Radius sudut latar belakang yang dibulatkan"
 
 #: ../libxfdashboard/background.c:462
 #: ../libxfdashboard/x11/window-content-x11.c:2151
 msgid "Outline color"
-msgstr "Боја обриса"
+msgstr "Warna ikhtisar"
 
 #: ../libxfdashboard/background.c:463 ../libxfdashboard/outline-effect.c:424
 msgid "Color to draw outline with"
-msgstr "Боја за исцртавање оквира"
+msgstr "Warna untuk menggambar ikhtisar"
 
 #: ../libxfdashboard/background.c:469
 #: ../libxfdashboard/x11/window-content-x11.c:2158
 msgid "Outline width"
-msgstr "Дебљина линије оквира"
+msgstr "Lebar ikhtisar"
 
 #: ../libxfdashboard/background.c:470 ../libxfdashboard/outline-effect.c:431
 msgid "Width of line used to draw outline"
-msgstr "Ширина линије која исцртава позадину"
+msgstr "Lebar garis yang digunakan untuk menggambar ikhtisar"
 
 #: ../libxfdashboard/background.c:477
 msgid "Outline borders"
-msgstr "Ивице оквира"
+msgstr "Tepi ikhtisar"
 
 #: ../libxfdashboard/background.c:478
 msgid "Determines which sides of border of outline should be drawn"
-msgstr "Одређује које стране ивица оквира треба да се исцртавају"
+msgstr "Menentukan sisi tepi yang mana ikhtisar akan digambar"
 
 #: ../libxfdashboard/background.c:485
 msgid "Outline corners"
-msgstr "Ивице оквира"
+msgstr "Sudut ikhtisar"
 
 #: ../libxfdashboard/background.c:486
 msgid "Determines which corners are rounded at outline"
-msgstr "Одређује који углови оквира су заобљени"
+msgstr "Menentukan sudut mana yang dibulatkan pada ikhtisar"
 
 #: ../libxfdashboard/background.c:493
 msgid "Outline corner radius"
-msgstr "Полупречник ивице оквира"
+msgstr "Radius sudut ikhtisar"
 
 #: ../libxfdashboard/background.c:494
 msgid "Radius of rounded corners of outline"
-msgstr "Полупречник заобљених углова оквира"
+msgstr "Radius sudut bulat pada ikhtisar"
 
 #: ../libxfdashboard/background.c:501
 msgid "Image"
-msgstr "Слика"
+msgstr "Gambar"
 
 #: ../libxfdashboard/background.c:502
 msgid "Image to draw as background"
-msgstr "Слика која ће се користити за позадину"
+msgstr "Gambar untuk ditampilkan sebagai latar belakang"
 
 #: ../libxfdashboard/binding.c:210
 msgid "Event type"
-msgstr "Врста догађаја"
+msgstr "Tipe kejadian"
 
 #: ../libxfdashboard/binding.c:211
 msgid "The event type this binding is bound to"
-msgstr "Врста догађаја на коју се односи пречица"
+msgstr "Tipe kejadian di mana ikatan ini terikat"
 
 #: ../libxfdashboard/binding.c:218
 msgid "Class name"
-msgstr "Име врсте"
+msgstr "Nama kelas"
 
 #: ../libxfdashboard/binding.c:219
 msgid "Class name of object this binding is bound to"
-msgstr "Име врсте предмета на коју се односи пречица"
+msgstr "Nama kelas objek di mana ikatan ini terikat"
 
 #: ../libxfdashboard/binding.c:225 ../libxfdashboard/image-content.c:1444
 msgid "Key"
-msgstr "Дугме"
+msgstr "Tombol"
 
 #: ../libxfdashboard/binding.c:226
 msgid "Key code of a keyboard event this binding is bound to"
-msgstr "Шифра дугмета догађаја тастатуре на коју се односи пречица"
+msgstr "Kode tombol papan tik di mana ikatan ini terikat"
 
 #: ../libxfdashboard/binding.c:233
 msgid "Modifiers"
-msgstr "Измењивачи"
+msgstr "Pengubah"
 
 #: ../libxfdashboard/binding.c:234
 msgid "Modifiers this binding is bound to"
-msgstr "Измењивачи на које се односи пречица"
+msgstr "Pengubah di mana ikatan ini terikat"
 
 #: ../libxfdashboard/binding.c:242
 msgid "Class name of target of this binding"
-msgstr "Име врсте или циља ове пречице"
+msgstr "Nama kelas target ikatan ini"
 
 #: ../libxfdashboard/binding.c:249
 msgid "Action assigned to this binding"
-msgstr "Радња додељена овој пречици"
+msgstr "Aksi yang ditetapkan ke ikatan ini"
 
 #: ../libxfdashboard/binding.c:255 ../libxfdashboard/plugin.c:820
 msgid "Flags"
-msgstr "Заставице"
+msgstr "Bendera"
 
 #: ../libxfdashboard/binding.c:256
 msgid "Flags assigned to this binding"
-msgstr "Заставице додељене овој пречици"
+msgstr "Bendera yang ditetapkan ke ikatan ini"
 
 #: ../libxfdashboard/binding.c:301
 msgid "Failed to create binding instance"
-msgstr "Нисам успео да образујем примерак пречице"
+msgstr "Gagal instansi ikatan"
 
 #: ../libxfdashboard/binding.c:447
 #, c-format
 msgid "Cannot set unsupported event type %s at binding"
-msgstr "Нисам успео да поставим неподржани догађај врсте %s пречици"
+msgstr "Tak dapat menyetel tipe kejadian yang tak didukung %s pada ikatan"
 
 #: ../libxfdashboard/binding.c:452
 msgid "Cannot set invalid event type at binding"
-msgstr "Нисам успео да поставим неподржану врсту догађаја пречици"
+msgstr "Tak dapat menyetel tipe kejadian yang tak valid pada ikatan"
 
 #: ../libxfdashboard/bindings-pool.c:132
 #: ../libxfdashboard/theme-animation.c:646
 #: ../libxfdashboard/theme-effects.c:172
 #, c-format
 msgid "Error on line %d char %d: "
-msgstr "Грешка на линији %d знаку %d: "
+msgstr "Galat pada baris %d karakter %d: "
 
 #: ../libxfdashboard/bindings-pool.c:202
 #, c-format
 msgid "Could not parse empty key-binding '%s'."
-msgstr "Нисам успео да рашчланим празну пречицу дугмади „%s“."
+msgstr "Tak dapat mengurai ikatan-tombol yang kosong '%s'."
 
 #: ../libxfdashboard/bindings-pool.c:227
 #, c-format
@@ -1245,14 +1314,14 @@ msgid ""
 "Could not parse modifier '%s' of key-binding '%s' because it is not enclosed"
 " by '<...>'"
 msgstr ""
-"Нисам успео да рашчланим „%s“ пречице „%s“ јер није ограђена знаковима "
-"„<...>“"
+"Tak dapat mengurai pengubah '%s' ikatan-tombol '%s' karena tidak ditutup "
+"dengan '<...>'"
 
 #: ../libxfdashboard/bindings-pool.c:250
 #, c-format
 msgid "Could not parse unknown modifier '%s' of key-binding '%s'"
 msgstr ""
-"Нисам успео да рашчланим непознати измењивач „%s“ пречице дугмади „%s“"
+"Tak dapat mengurai pengubah yang tak diketahui '%s' ikatan-tombol '%s'"
 
 #: ../libxfdashboard/bindings-pool.c:272
 #, c-format
@@ -1260,33 +1329,34 @@ msgid ""
 "Could not parse '%s' of key-binding '%s' because it is already a key "
 "assigned."
 msgstr ""
-"Нисам успео да рашчланим „%s“ пречице „%s“ јер јој је дугме већ додељено."
+"Tak dapat mengurai '%s' ikatan-tombol '%s' karena sudah ditetapkan kunci."
 
 #: ../libxfdashboard/bindings-pool.c:287
 #, c-format
 msgid "Could not parse '%s' of key-binding '%s'"
-msgstr "Нисам успео да рашчланим „%s“ пречице „%s“"
+msgstr "Tak dapat mengurai '%s' ikatan-tombol '%s'"
 
 #: ../libxfdashboard/bindings-pool.c:306
 #, c-format
 msgid "Invalid key-binding '%s' as neither a key nor a modifier was assigned."
 msgstr ""
+"Ikatan-tombol tak valid '%s' tak ditetapkan sebagai tombol maupun pengubah."
 
 #: ../libxfdashboard/bindings-pool.c:349
 #: ../libxfdashboard/theme-animation.c:683
 #: ../libxfdashboard/theme-effects.c:531 ../libxfdashboard/theme-layout.c:1086
 #, c-format
 msgid "Unexpected text node '%s' at tag <%s>"
-msgstr "Неочекиван чвор писања „%s“ на ознаци <%s>"
+msgstr "Simpul teks tak diharapkan '%s' pada tag <%s>"
 
 #: ../libxfdashboard/bindings-pool.c:379
 msgid "Missing action"
-msgstr "Недостаје радња"
+msgstr "Aksi tidak ada"
 
 #: ../libxfdashboard/bindings-pool.c:405
 #, c-format
 msgid "Missing binding to set action '%s'"
-msgstr "Недостаје пречица за постављање радње „%s“"
+msgstr "Ikatan untuk menyetel aksi '%s' tidak ada"
 
 #: ../libxfdashboard/bindings-pool.c:458 ../libxfdashboard/bindings-pool.c:729
 #: ../libxfdashboard/theme-animation.c:762
@@ -1300,25 +1370,25 @@ msgstr "Недостаје пречица за постављање радње �
 #: ../libxfdashboard/theme-layout.c:1127
 #, c-format
 msgid "Unknown tag <%s>"
-msgstr "Непозната ознака <%s>"
+msgstr "Tag tak diketahui <%s>"
 
 #: ../libxfdashboard/bindings-pool.c:529
 msgid "Missing attribute 'code' for key"
-msgstr "Дугмету недостаје особина „code“"
+msgstr "Atribut 'code' untuk tombol tidak ada"
 
 #: ../libxfdashboard/bindings-pool.c:549
 #, c-format
 msgid "Could not translate key '%s'"
-msgstr "Нисам успео да преведем кључ „%s“"
+msgstr "Tak dapat menerjemahkan tombol '%s'"
 
 #: ../libxfdashboard/bindings-pool.c:585
 #, c-format
 msgid "Unknown value '%s' for attribute 'when'"
-msgstr "Вредност „%s“ за особину „when“ је непозната"
+msgstr "Nilai tak diketahui '%s' untuk atribut 'when'"
 
 #: ../libxfdashboard/bindings-pool.c:608
 msgid "Could not initialize binding for key-binding"
-msgstr "Нисам успео да покренем пречицу за пречицу дугмета"
+msgstr "Tak bisa menginisialisasi ikatan untuk ikatan-tombol"
 
 #: ../libxfdashboard/bindings-pool.c:638
 #, c-format
@@ -1326,8 +1396,8 @@ msgid ""
 "Cannot transform attribute 'allow-unfocusable-target' from type '%s' to type"
 " '%s'"
 msgstr ""
-"Нисам успео да претворим особину „allow-unfocusable-target“ врсте „%s“ врсти"
-" „%s“"
+"Tak dapat mengubah atribut 'allow-unfocusable-target' dari tipe '%s' ke tipe"
+" '%s'"
 
 #: ../libxfdashboard/bindings-pool.c:689 ../libxfdashboard/bindings-pool.c:769
 #: ../libxfdashboard/theme-animation.c:772
@@ -1342,7 +1412,7 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1056 ../libxfdashboard/theme-layout.c:1505
 #, c-format
 msgid "Tag <%s> cannot contain tag <%s>"
-msgstr "Ознака <%s> не може да садржи ознаку <%s>"
+msgstr "Tag <%s> tak dapat berisi tag <%s>"
 
 #: ../libxfdashboard/bindings-pool.c:854
 #: ../libxfdashboard/theme-animation.c:1545
@@ -1350,7 +1420,7 @@ msgstr "Ознака <%s> не може да садржи ознаку <%s>"
 #: ../libxfdashboard/theme-layout.c:1922
 #, c-format
 msgid "Could not set up parser data for file %s"
-msgstr "Нисам успео да поставим рашчлањивач података за датотеку %s"
+msgstr "Tak dapat menyiapkan data pengurai untuk berkas %s"
 
 #: ../libxfdashboard/bindings-pool.c:866
 #: ../libxfdashboard/theme-animation.c:1557
@@ -1358,97 +1428,94 @@ msgstr "Нисам успео да поставим рашчлањивач по�
 #: ../libxfdashboard/theme-layout.c:1934
 #, c-format
 msgid "Could not create parser for file %s"
-msgstr "Нисам успео да направим рашчлањивач за датотеку %s"
+msgstr "Tak dapat membuat pengurai untuk berkas %s"
 
 #: ../libxfdashboard/bindings-pool.c:895
 #, c-format
 msgid "Could not set up hash-table at parser data for file %s"
-msgstr ""
-"Нисам успео да поставим табелу збирне суме рашчлањивачу података за датотеку"
-" %s"
+msgstr "Tak dapat menyiapkan tabel-hash pada data pengurai untuk berkas %s"
 
 #: ../libxfdashboard/bindings-pool.c:925
 #, c-format
 msgid "Unexpected binding state set at parser data for file %s"
 msgstr ""
-"Стање пречице није очекивано постављено за рашчлањивач података датотеке %s"
+"Status ikatan yang tak terduga disetel pada data pengurai untuk berkas %s"
 
 #: ../libxfdashboard/bindings-pool.c:1095
 #, c-format
 msgid "Could not set up hash-table to store bindings"
-msgstr ""
+msgstr "Tak dapat menyiapkan tabel-hash untuk menyimpan ikatan"
 
 #: ../libxfdashboard/bindings-pool.c:1202
 #, c-format
 msgid "No bindings configuration file found."
-msgstr "Нисам пронашао датотеку подешавања пречица."
+msgstr "Tak ada berkas konfigurasi ikatan yang ditemukan."
 
 #: ../libxfdashboard/click-action.c:659
 msgid "Pressed"
-msgstr "Притиснуто"
+msgstr "Ditekan"
 
 #: ../libxfdashboard/click-action.c:660
 msgid "Whether the clickable should be in pressed state"
-msgstr "Да ли је кликљиво начину рада притискања"
+msgstr "Apakah yang bisa diklik harus dalam keadaan ditekan"
 
 #: ../libxfdashboard/click-action.c:671
 msgid "Held"
-msgstr "Задржан"
+msgstr "Ditahan"
 
 #: ../libxfdashboard/click-action.c:672
 msgid "Whether the clickable has a grab"
-msgstr "Да ли кликљив може да има захват"
+msgstr "Apakah yang dapat diklik memiliki pengambil"
 
 #: ../libxfdashboard/click-action.c:687
 msgid "Long Press Duration"
-msgstr "Трајање дугог притиска"
+msgstr "Durasi Tekan Lama"
 
 #: ../libxfdashboard/click-action.c:688
 msgid "The minimum duration of a long press to recognize the gesture"
-msgstr "Најмање трајање дугог притиска за препознавање потеза"
+msgstr "Durasi minimal tekan lama untuk mengenali gerakan itu"
 
 #: ../libxfdashboard/click-action.c:705
 msgid "Long Press Threshold"
-msgstr "Праг дугог притиска"
+msgstr "Ambang Tekan Lama"
 
 #: ../libxfdashboard/click-action.c:706
 msgid "The maximum threshold before a long press is cancelled"
-msgstr "Највећи праг пре отказивања дугог притиска"
+msgstr "Ambang batas maksimum sebelum tekan lama dibatalkan"
 
 #: ../libxfdashboard/collapse-box.c:295
 #, c-format
 msgid "More than one actor added to %s - result are unexpected"
-msgstr "Више од једног чиниоца је додато на %s - исход је неочекиван"
+msgstr "Lebih dari satu aktor ditambahkan ke %s - hasil tak diharapkan"
 
 #: ../libxfdashboard/collapse-box.c:614
 msgid "Collapsed"
-msgstr "Сакупљено"
+msgstr "Ciutkan"
 
 #: ../libxfdashboard/collapse-box.c:615
 msgid "If TRUE this actor is collapsed otherwise it is expanded to real size"
 msgstr ""
-"Ако је означено ТАЧНО, овај чинилац је скупљен, иначе је проширен на стварну"
-" величину"
+"Jika TRUE aktor ini diciutkan, jika tidak maka dilebarkan ke ukuran nyata"
 
 #: ../libxfdashboard/collapse-box.c:621
 msgid "Collapsed size"
-msgstr "Величина при скупљању"
+msgstr "Ukuran diciutkan"
 
 #: ../libxfdashboard/collapse-box.c:622
 msgid "The size of actor when collapsed"
-msgstr "Величина скупљеног чиниоца"
+msgstr "Ukuran aktor ketika diciutkan"
 
 #: ../libxfdashboard/collapse-box.c:629
 msgid "Collapse orientation"
-msgstr "Усмерење скупљеног"
+msgstr "Orientasi diciutkan"
 
 #: ../libxfdashboard/collapse-box.c:630
 msgid "Orientation of area being visible in collapsed state"
-msgstr "Усмерење видљиве области у скупљеном стању"
+msgstr "Orientasi area yang terlihat pada keadaan diciutkan"
 
 #: ../libxfdashboard/collapse-box.c:637
 msgid "Collapse progress"
-msgstr ""
+msgstr "Kemajuan penciutan"
 
 #: ../libxfdashboard/collapse-box.c:638
 msgid ""
@@ -1456,65 +1523,69 @@ msgid ""
 "be between 0.0 and 1.0 and defines the progress between collapsed size "
 "(fraction of 0.0) and preferred size (fraction of 1.0)."
 msgstr ""
+"Fraksi kemajuan yang digunakan untuk menganimasikan penciutan atau "
+"pelebaran. Fraksi harus berada antara 0.0 dan 1.0 dan mendefinisikan "
+"kemajuan antara ukuran yang diciutkan (fraksi dari 0.0) dan ukuran yang "
+"diinginkan (fraksi dari 1.0)."
 
 #: ../libxfdashboard/css-selector.c:147
 msgid "Could not create string for parent css selector"
-msgstr "Нисам успео да образујем ниску за родитеља цсс одабирача"
+msgstr "Tak dapat membuat string untuk selektor css induk"
 
 #: ../libxfdashboard/css-selector.c:153
 msgid "Invalid mode for parent rule in CSS selector"
-msgstr "Неисправан начин родитељског правила у цсс одабирачу"
+msgstr "Mode tidak valid untuk aturan induk di selektor CSS"
 
 #: ../libxfdashboard/css-selector.c:531
 msgid "Invalid name identifier"
-msgstr "Неисправан одредник имена"
+msgstr "Pengidentifikasi nama tidak valid"
 
 #: ../libxfdashboard/css-selector.c:563
 msgid "Invalid class identifier"
-msgstr "Неисправан одредник врсте"
+msgstr "Pengidentifikasi kelas tidak valid"
 
 #: ../libxfdashboard/css-selector.c:599
 msgid "Invalid pseudo-class identifier"
-msgstr "Неисправан одредник псеудоврсте"
+msgstr "Pengidentifikasi pseudo-kelas tidak valid"
 
 #: ../libxfdashboard/css-selector.c:698
 msgid "No parent when parsing '>'"
-msgstr "Нема родитеља при рашчлањивању „>“"
+msgstr "Tak ada induk saat mengurai '>'"
 
 #: ../libxfdashboard/css-selector.c:779
 msgid "Failed to parse css selector."
-msgstr "Нисам успео да рашчланим ознаку ЦСС-а."
+msgstr "Gagal mengurai selektor css."
 
 #: ../libxfdashboard/css-selector.c:785
 msgid "Failed to parse css selector because stream is empty."
-msgstr "Нисам успео да рашчланим цсс одабирача јер је ток празан."
+msgstr "Gagal mengurai selektor css karena aliran kosong."
 
 #: ../libxfdashboard/css-selector.c:873
 msgid "Priority"
-msgstr "Предност"
+msgstr "Prioritas"
 
 #: ../libxfdashboard/css-selector.c:874
 msgid "The priority of this CSS selector"
-msgstr "Предност овог одабирача ЦСС-а."
+msgstr "Prioritas pemilih CSS ini"
 
 #: ../libxfdashboard/css-selector.c:917 ../libxfdashboard/css-selector.c:987
 msgid "Could not create selector."
-msgstr ""
+msgstr "Tak dapat membuat pemilih."
 
 #: ../libxfdashboard/css-selector.c:944 ../libxfdashboard/theme-css.c:2420
 #: ../libxfdashboard/theme-css.c:2426
 msgid "Parser did not reach end of stream"
-msgstr "Расчлањивач није досегао крај тока"
+msgstr "Pengurai tak mencapai ujung aliran"
 
 #: ../libxfdashboard/css-selector.c:1014
 msgid "Unexpected state of CSS scanner."
-msgstr "Неочекивано стање цсс прегледника."
+msgstr "Status tak diharapkan dari pemindai CSS."
 
 #. Show warning
 #: ../libxfdashboard/desktop-app-info.c:140
 #, c-format
 msgid "Could not load secondary source %s for desktop ID '%s': %s"
-msgstr ""
+msgstr "Tak dapat memuat sumber sekunder %s untuk ID desktop '%s': %s"
 
 #: ../libxfdashboard/desktop-app-info.c:247
 #, c-format
@@ -1522,16 +1593,18 @@ msgid ""
 "Cannot create application action because of empty action name for desktop ID"
 " '%s'"
 msgstr ""
+"Tak dapat membuat aksi aplikasi karena nama aksi yang kosong untuk ID "
+"desktop '%s'"
 
 #: ../libxfdashboard/desktop-app-info.c:255
 #, c-format
 msgid "Cannot create application action for desktop ID '%s'"
-msgstr ""
+msgstr "Tak dapat membuat aksi aplikasi untuk ID desktop '%s'"
 
 #: ../libxfdashboard/desktop-app-info.c:919
 #: ../libxfdashboard/desktop-app-info.c:1197
 msgid "Unable to expand macros at command-line."
-msgstr "Нисам успео да проширим макрое наредбеном линијом."
+msgstr "Tak dapat melebarkan makro pada baris-perintah."
 
 #. Working directory does not exist or is not a directory
 #: ../libxfdashboard/desktop-app-info.c:997
@@ -1540,243 +1613,251 @@ msgstr "Нисам успео да проширим макрое наредбе�
 msgid ""
 "Working directory '%s' does not exist. It won't be used when launching '%s'."
 msgstr ""
-"Радна фасцикла „%s“ не постоји. Неће бити коришћена приликом покретања „%s“."
+"Direktori kerja '%s' tidak ada. Ini tidak akan digunakan ketika meluncurkan "
+"'%s'."
 
 #: ../libxfdashboard/desktop-app-info.c:1904
 msgid "Valid"
-msgstr "Ваљано"
+msgstr "Valid"
 
 #: ../libxfdashboard/desktop-app-info.c:1905
 msgid ""
 "Flag indicating whether this desktop application information is valid or not"
 msgstr ""
-"Заставица која указује да ли је податак о програму површи ваљан или није"
+"Bendera yang mengindikasikan apakah informasi aplikasi desktop ini valid "
+"atau tidak"
 
 #: ../libxfdashboard/desktop-app-info.c:1911
 msgid "Desktop ID"
-msgstr "ЛБ радне површи"
+msgstr "ID Desktop"
 
 #: ../libxfdashboard/desktop-app-info.c:1912
 msgid "Name of desktop ID"
-msgstr "Име ЛБ-ја радне површи"
+msgstr "Nama ID desktop"
 
 #: ../libxfdashboard/desktop-app-info.c:1918
 msgid "File"
-msgstr "Датотека"
+msgstr "Berkas"
 
 #: ../libxfdashboard/desktop-app-info.c:1919
 msgid "The desktop file"
-msgstr "Датотека радне површи"
+msgstr "Berkas desktop"
 
 #: ../libxfdashboard/desktop-app-info.c:1978
 #, c-format
 msgid "Desktop ID '%s' not found"
-msgstr "Нисам успео да пронађем ЛБ површи „%s“"
+msgstr "ID desktop '%s' tak ditemukan"
 
 #: ../libxfdashboard/desktop-app-info.c:2109
 #, c-format
 msgid "Could not reload desktop application information for '%s': %s"
-msgstr "Нисам успео да учитам поново податак програма површи за „%s“: %s"
+msgstr "Tak dapat memuat ulang informasi aplikasi desktop untuk '%s':%s"
 
 #: ../libxfdashboard/desktop-app-info.c:2222
 #, c-format
 msgid "Invalid application action '%s' to execute for desktop ID '%s'"
 msgstr ""
+"Aksi aplikasi tidak valid '%s' untuk mengeksekusi untuk ID desktop '%s'"
 
 #: ../libxfdashboard/desktop-app-info.c:2238
 #, c-format
 msgid "Could launch action '%s' for desktop ID '%s': %s"
-msgstr ""
+msgstr "Bisa meluncurkan aksi '%s' untuk ID desktop '%s': %s"
 
 #: ../libxfdashboard/desktop-app-info-action.c:186
 #: ../libxfdashboard/desktop-app-info-action.c:211 ../settings/plugins.c:1020
 msgid "Name"
-msgstr "Име"
+msgstr "Nama"
 
 #: ../libxfdashboard/desktop-app-info-action.c:187
 msgid "Name of the action"
-msgstr ""
+msgstr "Nama aksi"
 
 #: ../libxfdashboard/desktop-app-info-action.c:199
 #: ../libxfdashboard/emblem-effect.c:471 ../libxfdashboard/label.c:1264
 msgid "Icon name"
-msgstr "Назив иконице"
+msgstr "Nama ikon"
 
 #: ../libxfdashboard/desktop-app-info-action.c:200
 msgid "Icon name of action"
-msgstr ""
+msgstr "Nama icon untuk aksi"
 
 #: ../libxfdashboard/desktop-app-info-action.c:212
 msgid "Application command of action"
-msgstr ""
+msgstr "Perintah aplikasi untuk aksi"
 
 #: ../libxfdashboard/drag-action.c:928 ../libxfdashboard/popup-menu.c:956
 msgid "Source"
-msgstr "Извор"
+msgstr "Sumber"
 
 #: ../libxfdashboard/drag-action.c:929
 msgid "The source actor where drag began"
-msgstr "Изворни чинилац одакле вучење почиње"
+msgstr "Aktor sumber ketika mulai menyeret"
 
 #: ../libxfdashboard/drop-action.c:78
 #, c-format
 msgid "Target %s is already registered"
-msgstr "Циљ %s је већ заведен"
+msgstr "Target %s sudah terdaftar"
 
 #: ../libxfdashboard/dynamic-table-layout.c:874
 #: ../libxfdashboard/scaled-table-layout.c:503
 msgid "Row spacing"
-msgstr "Размак редова"
+msgstr "Jarak baris"
 
 #: ../libxfdashboard/dynamic-table-layout.c:875
 #: ../libxfdashboard/scaled-table-layout.c:504
 msgid "The spacing between rows in table"
-msgstr "Размак између редова у табели"
+msgstr "Jarak antar baris dalam tabel"
 
 #: ../libxfdashboard/dynamic-table-layout.c:883
 #: ../libxfdashboard/scaled-table-layout.c:512
 msgid "Column spacing"
-msgstr "Размак стубаца"
+msgstr "Jarak kolom"
 
 #: ../libxfdashboard/dynamic-table-layout.c:884
 #: ../libxfdashboard/scaled-table-layout.c:513
 msgid "The spacing between columns in table"
-msgstr "Размак између стубаца у табели"
+msgstr "Jarak antar kolom dalam tabel"
 
 #: ../libxfdashboard/dynamic-table-layout.c:892
 #: ../libxfdashboard/scaled-table-layout.c:535
 msgid "Number children"
-msgstr "Број потомака"
+msgstr "Jumlah anak"
 
 #: ../libxfdashboard/dynamic-table-layout.c:893
 #: ../libxfdashboard/scaled-table-layout.c:536
 msgid "Current number of child actors in this layout"
-msgstr "Тренутни број потомака чиниоца овог распореда"
+msgstr "Jumlah aktor anak saat ini di tata letak ini"
 
 #: ../libxfdashboard/dynamic-table-layout.c:901 ../libxfdashboard/model.c:283
 #: ../libxfdashboard/scaled-table-layout.c:544
 msgid "Rows"
-msgstr "Редови"
+msgstr "Baris"
 
 #: ../libxfdashboard/dynamic-table-layout.c:902
 #: ../libxfdashboard/scaled-table-layout.c:545
 msgid "Current number of rows in this layout"
-msgstr "Тренутни број редова у овом распореду"
+msgstr "Jumlah baris saat ini pada tata letak ini"
 
 #: ../libxfdashboard/dynamic-table-layout.c:910
 #: ../libxfdashboard/scaled-table-layout.c:553
 msgid "Columns"
-msgstr "Ступци"
+msgstr "Kolom"
 
 #: ../libxfdashboard/dynamic-table-layout.c:911
 #: ../libxfdashboard/scaled-table-layout.c:554
 msgid "Current number of columns in this layout"
-msgstr "Тренутни број стубаца у овом распореду"
+msgstr "Jumlah kolom saat ini pada tata letak ini"
 
 #: ../libxfdashboard/dynamic-table-layout.c:919
 msgid "Fixed columns"
-msgstr ""
+msgstr "Kolom tetap"
 
 #: ../libxfdashboard/dynamic-table-layout.c:920
 msgid "Fixed number of columns to use in this layout"
-msgstr ""
+msgstr "Jumlah kolom tetap untuk digunakan pada tata letak ini"
 
 #: ../libxfdashboard/emblem-effect.c:472 ../libxfdashboard/label.c:1265
 msgid "Themed icon name or file name of icon"
-msgstr "Име темиране иконице или датотеке иконице"
+msgstr "Nama ikon bertema atau nama berkas ikon"
 
 #: ../libxfdashboard/emblem-effect.c:478 ../libxfdashboard/label.c:1292
 msgid "Icon size"
-msgstr "Величина икона"
+msgstr "Ukuran ikon"
 
 #: ../libxfdashboard/emblem-effect.c:479
 msgid "Size of icon"
-msgstr "Величина сличице"
+msgstr "Ukuran ikon"
 
 #: ../libxfdashboard/emblem-effect.c:486 ../libxfdashboard/label.c:1240
 #: ../libxfdashboard/search-result-container.c:1290
 #: ../libxfdashboard/text-box.c:777
 msgid "Padding"
-msgstr "Попуна"
+msgstr "Pengisi"
 
 #: ../libxfdashboard/emblem-effect.c:487
 msgid "Padding around emblem"
-msgstr ""
+msgstr "Pengisi sekitar emblem"
 
 #: ../libxfdashboard/emblem-effect.c:494
 msgid "X align"
-msgstr ""
+msgstr "Perataan X"
 
 #: ../libxfdashboard/emblem-effect.c:495
 msgid ""
 "The alignment of emblem on the X axis within the allocation in normalized "
 "coordinate between 0 and 1"
 msgstr ""
+"Perataan emblem pada sumbu X di dalam alokasi pada koordinat yang "
+"dinormalisasi antara 0 dan 1"
 
 #: ../libxfdashboard/emblem-effect.c:502
 msgid "Y align"
-msgstr ""
+msgstr "Perataan Y"
 
 #: ../libxfdashboard/emblem-effect.c:503
 msgid ""
 "The alignment of emblem on the Y axis within the allocation in normalized "
 "coordinate between 0 and 1"
 msgstr ""
+"Perataan emblem pada sumbu Y di dalam alokasi pada koorinat yang "
+"dinormalisasi antara 0 dan 1"
 
 #: ../libxfdashboard/emblem-effect.c:510
 msgid "Anchor point"
-msgstr ""
+msgstr "Titik jangkar"
 
 #: ../libxfdashboard/emblem-effect.c:511
 msgid "The anchor point of emblem"
-msgstr ""
+msgstr "Jangkar titik untuk emblem"
 
 #: ../libxfdashboard/fill-box-layout.c:589
 #: ../libxfdashboard/quicklaunch.c:3122 ../libxfdashboard/scrollbar.c:713
 #: ../libxfdashboard/view-selector.c:409
 #: ../libxfdashboard/workspace-selector.c:1260
 msgid "Orientation"
-msgstr "Усмерење"
+msgstr "Orientasi"
 
 #: ../libxfdashboard/fill-box-layout.c:590
 #: ../libxfdashboard/quicklaunch.c:3123
 #: ../libxfdashboard/workspace-selector.c:1261
 msgid "The orientation to layout children"
-msgstr "Усмерење за смештај потомака"
+msgstr "Orientasi untuk anak-anak tata letak"
 
 #: ../libxfdashboard/fill-box-layout.c:597
 msgid "spacing"
-msgstr "размаци"
+msgstr "jarak"
 
 #: ../libxfdashboard/fill-box-layout.c:598
 #: ../libxfdashboard/quicklaunch.c:3115
 #: ../libxfdashboard/workspace-selector.c:1253
 msgid "The spacing between children"
-msgstr "Размаци између потомака"
+msgstr "Jarak antar anak"
 
 #: ../libxfdashboard/fill-box-layout.c:606
 msgid "Homogeneous"
-msgstr "Уједначено"
+msgstr "Homogen"
 
 #: ../libxfdashboard/fill-box-layout.c:607
 msgid ""
 "Whether the layout should be homogeneous, i.e. all children get the same "
 "size"
 msgstr ""
-"Да ли распоред треба да буде истородан, тј. сав пород добија исту величину"
+"Apakah tata letak harus homogen, yaitu semua anak mendapatkan ukuran yang "
+"sama"
 
 #: ../libxfdashboard/fill-box-layout.c:613
 msgid "Keep aspect"
-msgstr "Задржи размере"
+msgstr "Jaga aspek"
 
 #: ../libxfdashboard/fill-box-layout.c:614
 msgid "Whether all children should keep their aspect"
-msgstr "Да ли потомци треба да одрже своје размере"
+msgstr "Apakah semua anak harus menjaga aspek mereka"
 
 #: ../libxfdashboard/focus-manager.c:562 ../libxfdashboard/focus-manager.c:570
 #, c-format
 msgid "Object %s does not inherit %s and cannot be registered"
-msgstr "Предмет %s не наслеђује %s и не може да се заведе"
+msgstr "Objek %s tidak mewarisi %s dan tidak dapat didaftarkan"
 
 #: ../libxfdashboard/focus-manager.c:596
 #, c-format
@@ -1784,17 +1865,18 @@ msgid ""
 "Could not find registered focusable object %s to register object %s - "
 "appending to end of list."
 msgstr ""
-"Нисам успео да пронађем заведени нежижни предмет %s заведеном предмету %s - "
-"додајем на крају списка."
+"Tak dapat menemukan objek yang dapat difokuskan yang terdaftar %s untuk "
+"mendaftarkan objek %s - menambahkan ke bagian akhir daftar."
 
 #: ../libxfdashboard/focus-manager.c:737
 #, c-format
 msgid "Cannot build target list for unknown type %s"
-msgstr "Нисам успео да направим списак циљева непознате врсте %s"
+msgstr "Tak dapat membangun daftar target untuk tipe yang tidak diketahui %s"
 
 #: ../libxfdashboard/focus-manager.c:845
 msgid "Trying to focus an unregistered focusable actor"
-msgstr "Покушај да се узме у жижу незаведени чинилац жиже"
+msgstr ""
+"Mencoba untuk memfokuskan aktor yang dapat difokuskan yang tak terdaftar"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/focusable.c:82
@@ -1803,8 +1885,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardFocusable::%s"
 msgstr ""
-"Предмет врсте %s не примењује захтевану нестварну улогу "
-"XfdashboardFocusable::%s"
+"Objek dari tipe %s tidak mengimplementasikan fungsi virtual "
+"XfdashboardFocusable::%s yang diperlukan"
 
 #: ../libxfdashboard/focusable.c:185
 #, c-format
@@ -1812,265 +1894,267 @@ msgid ""
 "Old selection %s at %s is unavailable but setting new selection either to %s"
 " or nothing failed!"
 msgstr ""
-"Стари избор %s на %s није доступан, а ни постављање новог избора на %s или "
-"ништа није успело!"
+"Pemilihan lama %s pada %s tidak tersedia tetapi gagal menyetel seleksi baru "
+"baik untuk %s atau tak satupun!"
 
 #: ../libxfdashboard/image-content.c:161
 #, c-format
 msgid "Destroying image cache still containing %d images."
-msgstr "Уништење оставе сличица које и даље садрже %d сличица."
+msgstr "Menghancurkan tembolok gambar yang masih berisi %d gambar."
 
 #: ../libxfdashboard/image-content.c:243
 #, c-format
 msgid "Image has already key '%s' set and will be replaced with '%s'"
-msgstr "Сличица већ има постављен кључ „%s“  и биће замењен са „%s“"
+msgstr ""
+"Gambar sudah memiliki kunci '%s' yang disetel dan akan digantikan dengan "
+"'%s'"
 
 #: ../libxfdashboard/image-content.c:254
 #, c-format
 msgid "An image with key '%s' is already cache and will be replaced."
-msgstr "Сличица са кључем „%s“ је већ у остави и биће замењена."
+msgstr "Sebuah gambar dengan kunci '%s' sudah di tembolok dan akan diganti."
 
 #: ../libxfdashboard/image-content.c:315
 #, c-format
 msgid "Failed to load image data into content for key '%s': %s"
-msgstr "Нисам успео да учитам датотеку сличице у садржај за кључ „%s“: %s"
+msgstr "Gagal memuat data gambar ke dalam konten untuk kunci '%s': %s"
 
 #: ../libxfdashboard/image-content.c:331
 #, c-format
 msgid "Failed to load image for key '%s': %s"
-msgstr "Нисам успео да учитам слику кључа „%s“: %s"
+msgstr "Gagal memuat gambar untuk kunci '%s': %s"
 
 #: ../libxfdashboard/image-content.c:414
 #, c-format
 msgid "Icon file '%s' does not exist - trying fallback icon '%s'"
-msgstr ""
+msgstr "Berkas ikon '%s' tidak ada - mencoba ikon sandaran '%s'"
 
 #: ../libxfdashboard/image-content.c:429
 #, c-format
 msgid "Could not load fallback icon for file '%s'"
-msgstr "Нисам успео да учитам заменску иконицу за датотеку „%s“"
+msgstr "Tak dapat memuat ikon sandaran untuk berkas '%s'"
 
 #: ../libxfdashboard/image-content.c:452 ../libxfdashboard/image-content.c:718
 #, c-format
 msgid "Failed to load image data into content for icon '%s': %s"
-msgstr "Нисам успео да учитам податке сличице у садржај иконице „%s“: %s"
+msgstr "Gagal memuat data gambar ke dalam konten untuk ikon '%s': %s"
 
 #: ../libxfdashboard/image-content.c:490
 #, c-format
 msgid "Could not create stream for file '%s' of icon '%s': %s"
-msgstr "Нисам успео да направим ток датотеке „%s“ иконице „%s“: %s"
+msgstr "Tak dapat membuat aliran untuk berkas '%s' ikon '%s': %s"
 
 #: ../libxfdashboard/image-content.c:656
 #, c-format
 msgid "Could not lookup icon name '%s' for icon '%s'"
-msgstr "Нисам успео да пронађем темирано име иконице „%s“ за иконицу „%s“"
+msgstr "Tak dapat mencari nama ikon '%s' untuk ikon '%s'"
 
 #: ../libxfdashboard/image-content.c:684
 #, c-format
 msgid "Could not lookup themed icon '%s' - trying fallback icon '%s'"
-msgstr ""
+msgstr "Tak dapat mencari ikon bertema '%s' - mencoba ikon sandaran '%s'"
 
 #: ../libxfdashboard/image-content.c:697
 #, c-format
 msgid "Could not lookup fallback icon '%s' for icon '%s'"
-msgstr "Нисам успео да пронађем заменску иконицу „%s“ за иконицу „%s“"
+msgstr "Tak dapat mencari ikon sandaran '%s' untuk ikon '%s'"
 
 #: ../libxfdashboard/image-content.c:749
 #, c-format
 msgid "Could not create stream for icon file %s of icon '%s': %s"
-msgstr "Нисам успео да образујем ток датотеке иконице %s иконице „%s“: %s"
+msgstr "Tak dapat membuat aliran untuk berkas ikon %s dari ikon '%s': %s"
 
 #: ../libxfdashboard/image-content.c:822
 #, c-format
 msgid "Could not lookup gicon '%s'"
-msgstr "Нисам успео да пронађем гномову иконицу „%s“"
+msgstr "Tak dapat mencari gicon '%s'"
 
 #: ../libxfdashboard/image-content.c:833
 #, c-format
 msgid "Could not lookup fallback icon for gicon '%s'"
-msgstr "Нисам успео да пронађем заменску иконицу за гномову иконицу „%s“"
+msgstr "Tak dapat mencari ikon sandaran untuk gicon '%s'"
 
 #: ../libxfdashboard/image-content.c:854
 #, c-format
 msgid "Failed to load image data into content for gicon '%s': %s"
-msgstr ""
-"Нисам успео д учитам податке иконице у садржај гномове иконице „%s“: %s"
+msgstr "Gagal memuat data gambar ke dalam konten untuk gicon '%s': %s"
 
 #: ../libxfdashboard/image-content.c:885
 #, c-format
 msgid "Could not create stream for file %s of gicon '%s': %s"
-msgstr "Нисам успео да образујем ток датотеке %s гномове иконице „%s“: %s"
+msgstr "Tak dapat membuat aliran untuk berkas %s dari gicon '%s': %s"
 
 #: ../libxfdashboard/image-content.c:947
 #: ../libxfdashboard/image-content.c:1061
 #, c-format
 msgid "Cannot load image '%s' without type"
-msgstr "Нисам успео да учитам слику „%s“ без врсте"
+msgstr "Tak dapat memuat gambar '%s' tanpa tipe"
 
 #: ../libxfdashboard/image-content.c:963
 #: ../libxfdashboard/image-content.c:1077
 #, c-format
 msgid "Cannot load image '%s' of unknown type %d"
-msgstr "Нисам успео да учитам иконицу „%s“ непознате врсте %d"
+msgstr "Tak dapat memuat gambar '%s' untuk tipe yang tidak diketahui %d"
 
 #: ../libxfdashboard/image-content.c:1445
 msgid "The hash key for caching this image"
-msgstr "Кључ за смештање слике у оставу"
+msgstr "Kunci hash untuk tembolok gambar ini"
 
 #: ../libxfdashboard/image-content.c:1451
 msgid "Missing icon name"
-msgstr "Име недостајуће иконице"
+msgstr "Nama ikon yang tidak ada"
 
 #: ../libxfdashboard/image-content.c:1452
 msgid "The icon's name to use when requested image cannot be loaded"
 msgstr ""
-"Име иконице која ће се користити ако се захтевана сличица не може учитати"
+"Nama ikon untuk digunakan ketika gambar yang diminta tidak dapat dimuat"
 
 #: ../libxfdashboard/image-content.c:1560
 #, c-format
 msgid "Could not create key for icon name '%s' at size %u"
-msgstr "Нисам успео да образујем кључ за иконицу под именом „%s“ величине %u"
+msgstr "Tak dapat membuat kunci untuk nama ikon '%s' pada ukuran %u"
 
 #: ../libxfdashboard/image-content.c:1647
 #, c-format
 msgid "Could not create key for gicon '%s' at size %u"
-msgstr "Нисам успео да образујем кључ за гномову иконицу „%s“ величине %u"
+msgstr "Tak dapat membuat kunci untuk gicon '%s' pada ukuran %u"
 
 #: ../libxfdashboard/label.c:1241 ../libxfdashboard/text-box.c:778
 msgid "Padding between background and elements"
-msgstr "Попуна између позадине и ставки"
+msgstr "Pengisi antara latar belakang dan elemen"
 
 #: ../libxfdashboard/label.c:1249 ../libxfdashboard/text-box.c:786
 msgid "Spacing between text and icon"
-msgstr "Размак текста и иконице"
+msgstr "Jarak antara teks dan ikon"
 
 #: ../libxfdashboard/label.c:1256
 msgid "Label style"
-msgstr ""
+msgstr "Gaya label"
 
 #: ../libxfdashboard/label.c:1257
 msgid "Style of button showing text and/or icon"
-msgstr "Начин приказа дугмета које приказује натпис и/или иконицу"
+msgstr "Gaya tombol yang menampilkan teks dan/atau ikon"
 
 #: ../libxfdashboard/label.c:1271
 msgid "Icon GIcon"
-msgstr ""
+msgstr "GIcon ikon"
 
 #: ../libxfdashboard/label.c:1272
 msgid "The GIcon of icon"
-msgstr ""
+msgstr "GIcon untuk ikon"
 
 #: ../libxfdashboard/label.c:1278
 msgid "Icon image"
-msgstr "Слика иконице"
+msgstr "Gambar ikon"
 
 #: ../libxfdashboard/label.c:1279
 msgid "Image of icon"
-msgstr "Слика иконице"
+msgstr "Gambar dari ikon"
 
 #: ../libxfdashboard/label.c:1285
 msgid "Synchronize icon size"
-msgstr "Усклади величину иконице"
+msgstr "Sinkronkan ukuran ikon"
 
 #: ../libxfdashboard/label.c:1286
 msgid "Synchronize icon size with text size"
-msgstr "Усклади величину иконице са текстом"
+msgstr "Sinkronkan ukuran ikon dengan ukuran teks"
 
 #: ../libxfdashboard/label.c:1293
 msgid ""
 "Size of icon if size of icon is not synchronized. -1 is valid for icon "
 "images and sets icon image's default size."
 msgstr ""
-"Величина иконице ако величине иконице није усклађена. -1 је исправно за "
-"иконице слика и поставља слику иконице на подразумевану величину."
+"Ukuran ikon jika ukuran ikon tidak disinkronkan. -1 valid untuk gambar ikon "
+"dan menyetel ukuran bawaan gambar ikon."
 
 #: ../libxfdashboard/label.c:1300
 msgid "Icon orientation"
-msgstr "Усмерење иконице"
+msgstr "Orientasi ikon"
 
 #: ../libxfdashboard/label.c:1301
 msgid "Orientation of icon to label"
-msgstr "Усмерење иконице према ознаци"
+msgstr "Orientasi ikon ke label"
 
 #: ../libxfdashboard/label.c:1308
 msgid "Label text"
-msgstr "Текст натписа"
+msgstr "Teks label"
 
 #: ../libxfdashboard/label.c:1309
 msgid "Text of label"
-msgstr "Текст натписа"
+msgstr "Teks untuk label"
 
 #: ../libxfdashboard/label.c:1315
 msgid "Font"
-msgstr "Словни лик"
+msgstr "Fonta"
 
 #: ../libxfdashboard/label.c:1316
 msgid "Font of label"
-msgstr "Словни лик ознаке"
+msgstr "Fonta untuk label"
 
 #: ../libxfdashboard/label.c:1322 ../libxfdashboard/outline-effect.c:423
 msgid "Color"
-msgstr "Боја"
+msgstr "Warna"
 
 #: ../libxfdashboard/label.c:1323
 msgid "Color of label"
-msgstr "Боја ознаке"
+msgstr "Warna label"
 
 #: ../libxfdashboard/label.c:1329
 msgid "Ellipsize mode"
-msgstr "Начин приказа елипсоиде"
+msgstr "Mode elips"
 
 #: ../libxfdashboard/label.c:1330
 msgid "Mode of ellipsize if text in label is too long"
-msgstr "Начин приказа елипсоиде ако је текст на ознаци предугачак"
+msgstr "Mode elips jika teks dalam label terlalu panjang"
 
 #: ../libxfdashboard/label.c:1337
 msgid "Single line"
-msgstr "Једна линија"
+msgstr "Baris tunggal"
 
 #: ../libxfdashboard/label.c:1338
 msgid "Flag to determine if text can only be in one or multiple lines"
 msgstr ""
-"Заставица које одређује да ли текст треба да буде у једној или више линија"
+"Bendera untuk menentukan apakah teks hanya boleh dalam satu atau beberapa "
+"baris"
 
 #: ../libxfdashboard/label.c:1344
 msgid "Text justify"
-msgstr "Поравнај текста"
+msgstr "Perataan teks"
 
 #: ../libxfdashboard/label.c:1345
 msgid "Justification (line alignment) of label"
-msgstr "Поравнање (линија) ознаке"
+msgstr "Perataan (keselarasan baris) untuk label"
 
 #: ../libxfdashboard/live-window-simple.c:505
 #: ../libxfdashboard/x11/window-content-x11.c:2137
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:1278
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:385
 msgid "Window"
-msgstr "Прозор"
+msgstr "Jendela"
 
 #: ../libxfdashboard/live-window-simple.c:506
 msgid "The window to show"
-msgstr "Прозор за приказ"
+msgstr "Jendela untuk ditampilkan"
 
 #: ../libxfdashboard/live-window-simple.c:512
 msgid "Display type"
-msgstr ""
+msgstr "Tipe tampilan"
 
 #: ../libxfdashboard/live-window-simple.c:513
 msgid "How to display the window"
-msgstr ""
+msgstr "Bagaimana cara menampilkan jendela"
 
 #: ../libxfdashboard/live-window-simple.c:520
 msgid "Destroy on close"
-msgstr ""
+msgstr "Hancurkan saat menutup"
 
 #: ../libxfdashboard/live-window-simple.c:521
 msgid "If this actor should be destroy when window was closed"
-msgstr ""
+msgstr "Apakah aktor ini harus dihancurkan ketika jendela ditutup"
 
 #: ../libxfdashboard/live-window.c:1067
 msgid "Window number"
-msgstr "Број прозора"
+msgstr "Nomor jendela"
 
 #: ../libxfdashboard/live-window.c:1068
 msgid ""
@@ -2078,58 +2162,58 @@ msgid ""
 "hidden and the window number will be shown instead. If set to zero the close"
 " button will be shown again."
 msgstr ""
-"Додељени број прозора. Ако је различит од нуле, дугме за затварање ће бити "
-"скривено и број прозора ће бити приказан уместо дугмета. Ако је нула, дугме "
-"за затварање ће се приказивати поново."
+"Nomor jendela yang ditetapkan. Jika disetel ke selain nol, tombol tutup akan"
+" disembunyikan dan nomor jendela akan ditampilkan. Jika disetel ke nol, "
+"tombol tutup akan ditampilkan kembali."
 
 #: ../libxfdashboard/live-window.c:1075
 msgid "Close button padding"
-msgstr "Поравнање дугмета затвори"
+msgstr "Pengisi tombol tutup"
 
 #: ../libxfdashboard/live-window.c:1076
 msgid "Padding of close button to window actor in pixels"
-msgstr "Поравнање дугмета затвори у односу на чиниоца прозора у тачкама"
+msgstr "Pengisi tombol tutup ke aktor jendela dalam piksel"
 
 #: ../libxfdashboard/live-window.c:1083
 msgid "Title actor padding"
-msgstr "Поравнање чиниоца насова"
+msgstr "Pengisi aktor judul"
 
 #: ../libxfdashboard/live-window.c:1084
 msgid "Padding of title actor to window actor in pixels"
-msgstr "Поравнање чиниоца наслова према прозору у тачкама"
+msgstr "Pengisi aktor judul ke aktor jendela dalam piksel"
 
 #: ../libxfdashboard/live-window.c:1091
 msgid "Show sub-windows"
-msgstr ""
+msgstr "Tampilkan sub-jendela"
 
 #: ../libxfdashboard/live-window.c:1092
 msgid "Whether to show sub-windows of this main window"
-msgstr ""
+msgstr "Apakah akan menampilkan sub-jendela dari jendela utama ini"
 
 #: ../libxfdashboard/live-window.c:1098
 msgid "Allow sub-windows"
-msgstr ""
+msgstr "Izinkan sub-jendela"
 
 #: ../libxfdashboard/live-window.c:1099
 msgid "Whether to show sub-windows if requested by theme"
-msgstr ""
+msgstr "Apakah akan menampilkan sub-jendela jika diminta oleh tema"
 
 #: ../libxfdashboard/live-workspace.c:999
 msgid "Workspace"
-msgstr "Радни простор"
+msgstr "Ruang kerja"
 
 #: ../libxfdashboard/live-workspace.c:1000
 msgid "The workspace to show"
-msgstr "Расни простор за приказ"
+msgstr "Ruang kerja untuk ditampilkan"
 
 #: ../libxfdashboard/live-workspace.c:1006
 #: ../libxfdashboard/stage-interface.c:359
 msgid "Monitor"
-msgstr "Екран"
+msgstr "Monitor"
 
 #: ../libxfdashboard/live-workspace.c:1007
 msgid "The monitor whose window to show only"
-msgstr "Екран чији ће се прозор искључиво приказивати"
+msgstr "Monitor yang jendelanya hanya untuk ditampilkan"
 
 #: ../libxfdashboard/live-workspace.c:1013
 #: ../libxfdashboard/live-workspace.c:1014
@@ -2137,214 +2221,216 @@ msgstr "Екран чији ће се прозор искључиво прика
 #: ../libxfdashboard/stage-interface.c:367 ../libxfdashboard/stage.c:1810
 #: ../libxfdashboard/stage.c:1811
 msgid "Background image type"
-msgstr "Врста позадинске слике"
+msgstr "Tipe gambar latar belakang"
 
 #: ../libxfdashboard/live-workspace.c:1021
 msgid "Show workspace name"
-msgstr ""
+msgstr "Tampilkan nama ruang kerja"
 
 #: ../libxfdashboard/live-workspace.c:1022
 msgid "If TRUE the name of workspace should be shown"
-msgstr ""
+msgstr "Jika TRUE, nama ruang kerja harus ditampilkan"
 
 #: ../libxfdashboard/live-workspace.c:1028
 msgid "Workspace name padding"
-msgstr ""
+msgstr "Pengisi nama ruang kerja"
 
 #: ../libxfdashboard/live-workspace.c:1029
 msgid "Padding of workspace name actor in pixels"
-msgstr ""
+msgstr "Pengisi aktor nama ruang kerja dalam piksel"
 
 #: ../libxfdashboard/model.c:284
 msgid "The number of rows this model contains"
-msgstr ""
+msgstr "Jumlah baris yang dimiliki model ini"
 
 #: ../libxfdashboard/model.c:291
 msgid "Sort set"
-msgstr ""
+msgstr "Urutan disetel"
 
 #: ../libxfdashboard/model.c:292
 msgid "Whether a sorting function is set or not"
-msgstr ""
+msgstr "Apakah fungsi sortir disetel atau tidak"
 
 #: ../libxfdashboard/model.c:298
 msgid "Filter set"
-msgstr ""
+msgstr "Penyaring disetel"
 
 #: ../libxfdashboard/model.c:299
 msgid "Whether a filter is set or not"
-msgstr ""
+msgstr "Apakah penyaring disetel atau tidak"
 
 #: ../libxfdashboard/model.c:305
 msgid "Free data callback"
-msgstr ""
+msgstr "Sandaran pembebasan data"
 
 #: ../libxfdashboard/model.c:306
 msgid ""
 "Callback function to free data when removing or overwriting data in model"
 msgstr ""
+"Fungsi sandaran untuk membebaskan data saat menghapus atau menimpa data "
+"dalam model"
 
 #: ../libxfdashboard/outline-effect.c:430
 msgid "Width"
-msgstr "Ширина"
+msgstr "Lebar"
 
 #: ../libxfdashboard/outline-effect.c:438
 msgid "Borders"
-msgstr "Оквири"
+msgstr "Tepi"
 
 #: ../libxfdashboard/outline-effect.c:439
 msgid "Determines which sides of the border to draw"
-msgstr "Одређује које стране ивица да се исцртавају"
+msgstr "Menentukan sisi tepi mana yang akan digambar"
 
 #: ../libxfdashboard/outline-effect.c:447
 msgid "Determines which corners are rounded"
-msgstr "Одређује који углови су заобљени"
+msgstr "Menentukan sudut mana yang akan dibulatkan"
 
 #: ../libxfdashboard/outline-effect.c:455
 msgid "Radius of rounded corners"
-msgstr "Полупречник заобљених ивица"
+msgstr "Radius sudut dibulatkan"
 
 #: ../libxfdashboard/plugin.c:192
 #, c-format
 msgid "Cannot get path for plugin at %s"
-msgstr ""
+msgstr "Tak bisa mendapatkan path untuk plugin pada %s"
 
 #: ../libxfdashboard/plugin.c:443
 msgid "Missing path to plugin"
-msgstr ""
+msgstr "Path ke plugin tidak ada"
 
 #: ../libxfdashboard/plugin.c:449
 #, c-format
 msgid "Path '%s' does not exist"
-msgstr ""
+msgstr "Path '%s' tidak ada"
 
 #: ../libxfdashboard/plugin.c:457
 #, c-format
 msgid "Bad state '%s' - expected '%s"
-msgstr ""
+msgstr "Status salah '%s'- diharapkan '%s"
 
 #: ../libxfdashboard/plugin.c:466
 msgid "Plugin was already initialized"
-msgstr ""
+msgstr "Plugin sudah diinisialisasi"
 
 #. If we get here the virtual function was not overridden
 #: ../libxfdashboard/plugin.c:494
 #, c-format
 msgid "Plugin does not implement required function %s"
-msgstr ""
+msgstr "Plugin tidak mengimplementasikan fungsi %s yang diperlukan"
 
 #: ../libxfdashboard/plugin.c:502
 msgid "Plugin did not set required ID"
-msgstr ""
+msgstr "Plugin tidak mengatur ID yang diperlukan"
 
 #: ../libxfdashboard/plugin.c:517
 msgid "Plugin cannot be enabled"
-msgstr ""
+msgstr "Plugin tidak dapat diaktifkan"
 
 #: ../libxfdashboard/plugin.c:532
 msgid "Plugin cannot be disabled"
-msgstr ""
+msgstr "Plugin tidak dapat dinonaktifkan"
 
 #: ../libxfdashboard/plugin.c:581
 #, c-format
 msgid "Plugin '%s' could not be unloaded successfully: %s"
-msgstr ""
+msgstr "Plugin '%s' tidak dapat dimuat: %s"
 
 #: ../libxfdashboard/plugin.c:582 ../libxfdashboard/plugin.c:1077
 #: ../libxfdashboard/plugin.c:1128
 msgid "Unknown"
-msgstr "Непознато"
+msgstr "Tak Dikenal"
 
 #: ../libxfdashboard/plugin.c:806
 msgid "File name"
-msgstr ""
+msgstr "Nama berkas"
 
 #: ../libxfdashboard/plugin.c:807
 msgid "Path and file name of this plugin"
-msgstr ""
+msgstr "Path dan nama berkas dari plugin ini"
 
 #: ../libxfdashboard/plugin.c:814
 msgid "The unique ID for this plugin"
-msgstr ""
+msgstr "ID unik untuk plugin ini"
 
 #: ../libxfdashboard/plugin.c:821
 msgid "Flags defining behaviour of this plugin"
-msgstr ""
+msgstr "Bendera yang mendefinisikan perilaku plugin ini"
 
 #: ../libxfdashboard/plugin.c:828
 msgid "name"
-msgstr ""
+msgstr "nama"
 
 #: ../libxfdashboard/plugin.c:829
 msgid "Name of plugin"
-msgstr ""
+msgstr "Nama plugin"
 
 #: ../libxfdashboard/plugin.c:835
 msgid "Description"
-msgstr "Опис"
+msgstr "Deskripsi"
 
 #: ../libxfdashboard/plugin.c:836
 msgid "A short description about this plugin"
-msgstr ""
+msgstr "Sebuah deskripsi singkat tentang plugin ini"
 
 #: ../libxfdashboard/plugin.c:842
 msgid "Author"
-msgstr ""
+msgstr "Penulis"
 
 #: ../libxfdashboard/plugin.c:843
 msgid "The author of this plugin"
-msgstr ""
+msgstr "Penulis plugin ini"
 
 #: ../libxfdashboard/plugin.c:849
 msgid "Copyright"
-msgstr ""
+msgstr "Hak cipta"
 
 #: ../libxfdashboard/plugin.c:850
 msgid ""
 "The copyright of this plugin which usually contains year of development"
-msgstr ""
+msgstr "Hak cipta dari plugin ini yang biasanya menyertakan tahun pembangunan"
 
 #: ../libxfdashboard/plugin.c:856
 msgid "License"
-msgstr ""
+msgstr "Lisensi"
 
 #: ../libxfdashboard/plugin.c:857
 msgid "The license of this plugin"
-msgstr ""
+msgstr "Lisensi dari plugin ini"
 
 #: ../libxfdashboard/plugin.c:863
 msgid "Config path"
-msgstr ""
+msgstr "Path konfigurasi"
 
 #: ../libxfdashboard/plugin.c:864
 msgid "The base path to configuration files of this plugin"
-msgstr ""
+msgstr "Basis path menuju berkas konfigurasi plugin ini"
 
 #: ../libxfdashboard/plugin.c:870
 msgid "Cache path"
-msgstr ""
+msgstr "Path tembolok"
 
 #: ../libxfdashboard/plugin.c:871
 msgid "The base path to cache files of this plugin"
-msgstr ""
+msgstr "Basis path ke berkas tembolok plugin ini"
 
 #: ../libxfdashboard/plugin.c:877
 msgid "Data path"
-msgstr ""
+msgstr "Path data"
 
 #: ../libxfdashboard/plugin.c:878
 msgid "The base path to data files of this plugin"
-msgstr ""
+msgstr "Basis path ke berkas data plugin ini"
 
 #: ../libxfdashboard/plugin.c:977
 #, c-format
 msgid "Could not get plugin ID for file %s"
-msgstr ""
+msgstr "Tak bisa mendapatkan ID plugin untuk berkas %s"
 
 #: ../libxfdashboard/plugin.c:1004
 #, c-format
 msgid "Could not create plugin instance"
-msgstr ""
+msgstr "Tak dapat membuat instansi plugin"
 
 #: ../libxfdashboard/plugin.c:1076
 #, c-format
@@ -2352,76 +2438,78 @@ msgid ""
 "Setting plugin information for plugin '%s' at path '%s' failed: Plugin is "
 "already initialized"
 msgstr ""
+"Pengaturan informasi plugin untuk plugin '%s' di path '%s' gagal: Plugin "
+"sudah diinisialisasi"
 
 #: ../libxfdashboard/plugin.c:1127
 #, c-format
 msgid "Enabling plugin '%s' failed: Bad state '%s' - expected '%s'"
-msgstr ""
+msgstr "Mengaktifkan plugin '%s' gagal: Status salah '%s'- diharapkan '%s'"
 
 #: ../libxfdashboard/plugins-manager.c:273
 #, c-format
 msgid "Could not find module for plugin ID '%s'"
-msgstr ""
+msgstr "Tak dapat menemukan modul untuk ID plugin '%s'"
 
 #. Show error message
 #: ../libxfdashboard/plugins-manager.c:414
 #: ../libxfdashboard/plugins-manager.c:718
 #, c-format
 msgid "Could not load plugin '%s': %s"
-msgstr ""
+msgstr "Tak dapat memuat plugin '%s': %s"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:169
 #, c-format
 msgid "Object of type %s is always disabled and cannot be enabled."
-msgstr ""
+msgstr "Objek dengan tipe %s selalu dinonaktifkan dan tidak dapat diaktifkan."
 
 #: ../libxfdashboard/popup-menu-item-separator.c:373
 msgid "Minimum height"
-msgstr ""
+msgstr "Tinggi minimum"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:374
 msgid "Forced minimum height request for the actor"
-msgstr ""
+msgstr "Paksa permintaan tinggi minimum untuk aktor"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:387
 msgid "Line horizontal alignment"
-msgstr ""
+msgstr "Perataan horizontal garis"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:388
 msgid "The horizontal alignment of the actor within its allocation"
-msgstr ""
+msgstr "Perataan horizontal aktor dalam alokasinya"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:401
 msgid "Line vertical alignment"
-msgstr ""
+msgstr "Perataan vertikal garis"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:402
 msgid "The vertical alignment of the actor within its allocation"
-msgstr ""
+msgstr "Perataan vertikal aktor dalam alokasinya"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:415
 msgid "Line length"
-msgstr ""
+msgstr "Panjang garis"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:416
 msgid "Fraction of length of line"
-msgstr ""
+msgstr "Fraksi panjang baris"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:428
 msgid "Line width"
-msgstr ""
+msgstr "Lebar garis"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:429
 msgid "Width of line"
-msgstr ""
+msgstr "Lebar garis"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:441
 msgid "Line color"
-msgstr ""
+msgstr "Warna garis"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:442
 msgid "Color to draw line with"
-msgstr ""
+msgstr "Warna untuk menggambar garis"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/popup-menu-item.c:53
@@ -2430,77 +2518,84 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardPopupMenuItem::%s"
 msgstr ""
+"Objek dari tipe %s tidak mengimplementasikan fungsi virtual "
+"XfdashboardPopupMenuItem::%s yang diperlukan"
 
 #: ../libxfdashboard/popup-menu.c:943
 msgid "Destroy on cancel"
-msgstr ""
+msgstr "Hancurkan saat batal"
 
 #: ../libxfdashboard/popup-menu.c:944
 msgid ""
 "Flag indicating this pop-up menu should be destroyed automatically when it "
 "is cancelled"
 msgstr ""
+"Bendera yang menunjukkan menu pop-up ini harus dihancurkan secara otomatis "
+"ketika dibatalkan"
 
 #: ../libxfdashboard/popup-menu.c:957
 msgid "The object on which this pop-up menu depends on"
-msgstr ""
+msgstr "Objek yang mana menu pop-up ini bergantung"
 
 #: ../libxfdashboard/popup-menu.c:968
 msgid "Show title"
-msgstr ""
+msgstr "Tampilkan judul"
 
 #: ../libxfdashboard/popup-menu.c:969
 msgid "Flag indicating if the title of this pop-up menu should be shown"
 msgstr ""
+"Bendera yang menunjukkan apakah judul menu pop-up ini harus ditampilkan"
 
 #: ../libxfdashboard/popup-menu.c:980
 msgid "Title"
-msgstr "Наслов"
+msgstr "Judul"
 
 #: ../libxfdashboard/popup-menu.c:981
 msgid "Title of pop-up menu"
-msgstr ""
+msgstr "Judul dari menu pop-up"
 
 #: ../libxfdashboard/popup-menu.c:992
 msgid "Show title icon"
-msgstr ""
+msgstr "Tampilkan ikon judul"
 
 #: ../libxfdashboard/popup-menu.c:993
 msgid ""
 "Flag indicating if the icon of title of this pop-up menu should be shown"
 msgstr ""
+"Bendera yang menunjukkan apakah ikon judul menu pop-up ini harus ditampilkan"
 
 #: ../libxfdashboard/popup-menu.c:1005
 msgid "Title icon name"
-msgstr ""
+msgstr "Nama ikon judul"
 
 #: ../libxfdashboard/popup-menu.c:1006
 msgid "Themed icon name or file name of icon used in title"
 msgstr ""
+"Nama ikon bertema atau nama berkas dari ikon yang digunakan pada judul"
 
 #: ../libxfdashboard/popup-menu.c:1017
 msgid "Title GIcon"
-msgstr ""
+msgstr "GIcon judul"
 
 #: ../libxfdashboard/popup-menu.c:1018
 msgid "The GIcon of icon used in title"
-msgstr ""
+msgstr "GIcon dari ikon yang digunakan pada judul"
 
 #: ../libxfdashboard/popup-menu.c:1692
 #, c-format
 msgid "%s is not a child of %s and cannot be moved"
-msgstr ""
+msgstr "%s bukan anak dari %s dan tidak dapat dipindahkan"
 
 #: ../libxfdashboard/popup-menu.c:1799
 #, c-format
 msgid "%s is not a child of %s and cannot be removed"
-msgstr ""
+msgstr "%s bukan anak dari %s dan tidak dapat dihapus"
 
 #. Show error message
 #: ../libxfdashboard/popup-menu.c:1878
 #, c-format
 msgid "Could not find monitor at pointer position %d,%d"
-msgstr ""
+msgstr "Tak dapat menemukan monitor pada posisi penunjuk %d,%d"
 
 #: ../libxfdashboard/quicklaunch.c:192
 #, c-format
@@ -2508,14 +2603,16 @@ msgid ""
 "Could not check for duplicates for invalid %s object so assume no actor "
 "exists"
 msgstr ""
+"Tak dapat memeriksa duplikat untuk %s objek yang tidak valid, maka anggap "
+"tidak ada aktor"
 
 #: ../libxfdashboard/quicklaunch.c:255
 #, c-format
 msgid ""
 "Could not check for duplicates for invalid %s object so assume it exists"
 msgstr ""
-"Нисам успео да проверим да ли има близнака са неисправним предметом %s, па "
-"претпоставите да постоји"
+"Tak dapat memeriksa duplikat untuk %s objek yang tidak valid, maka anggap "
+"itu ada"
 
 #: ../libxfdashboard/quicklaunch.c:278
 #, c-format
@@ -2523,180 +2620,180 @@ msgid ""
 "Value at %p of type %s is not a %s so assume this desktop application item "
 "exists"
 msgstr ""
-"Вредност %p врсте %s није %s, па претпоставите да ова ставка програма "
-"површипостоји"
+"Nilai pada %p tipe %s bukan %s jadi anggap item aplikasi desktop ini ada"
 
 #: ../libxfdashboard/quicklaunch.c:402 ../libxfdashboard/quicklaunch.c:406
 msgid "No windows to activate for application"
-msgstr ""
+msgstr "Tak ada jendela untuk mengaktifkan aplikasi"
 
 #: ../libxfdashboard/quicklaunch.c:515 ../libxfdashboard/quicklaunch.c:582
 msgid "Cannot find quicklaunch for application button."
-msgstr ""
+msgstr "Tak dapat menemukan quicklaunch untuk tombol aplikasi."
 
 #: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
 #: ../libxfdashboard/quicklaunch.c:2128
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr "„%s“ је уклоњено из омиљених"
+msgstr "Favorit '%s' dihapus"
 
 #: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
 #: ../libxfdashboard/quicklaunch.c:2061
 #, c-format
 msgid "Favourite '%s' added"
-msgstr "„%s“ је додато у омиљене"
+msgstr "Favorit '%s' ditambahkan"
 
 #: ../libxfdashboard/quicklaunch.c:705
 msgid "Remove from favourites"
-msgstr ""
+msgstr "Hapus dari favorit"
 
 #: ../libxfdashboard/quicklaunch.c:719
 msgid "Add to favourites"
-msgstr ""
+msgstr "Tambahkan ke favorit"
 
 #: ../libxfdashboard/quicklaunch.c:2748
 #: ../libxfdashboard/workspace-selector.c:899
 #: ../libxfdashboard/workspace-selector.c:1089
 #, c-format
 msgid "%s is a child of %s and cannot be selected at %s"
-msgstr "%s је наследник %s и не може да се изабере на %s"
+msgstr "%s adalah anak dari %s dan tidak dapat dipilih di %s"
 
 #: ../libxfdashboard/quicklaunch.c:3099
 msgid "Favourites"
-msgstr "Омиљено"
+msgstr "Favorit"
 
 #: ../libxfdashboard/quicklaunch.c:3100
 msgid "An array of strings pointing to desktop files shown as icons"
 msgstr ""
-"Распон ниски које указују на датотеке радне површи приказаних као иконице"
+"Sebuah himpunan string yang menunjuk ke berkas desktop ditampilkan sebagai "
+"ikon"
 
 #: ../libxfdashboard/quicklaunch.c:3106
 msgid "Normal icon size"
-msgstr "Уобичајена величина иконице"
+msgstr "Ukuran ikon normal"
 
 #: ../libxfdashboard/quicklaunch.c:3107
 msgid "Unscale size of icon"
-msgstr "Промени величину иконице"
+msgstr "Ukuran ikon tak berskala"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
 #: ../libxfdashboard/quicklaunch.c:3293
 msgid "Remove"
-msgstr "Уклони"
+msgstr "Hapus"
 
 #: ../libxfdashboard/scaled-table-layout.c:521
 msgid "Relative scale"
-msgstr "Лествица размере"
+msgstr "Skala relatif"
 
 #: ../libxfdashboard/scaled-table-layout.c:522
 msgid "Whether all children should be scaled relatively to largest child"
-msgstr "Да ли сви потомци требају да буду сразмерни највећем потомку"
+msgstr "Apakah semua anak harus diskalakan relatif ke anak terbesar"
 
 #: ../libxfdashboard/scaled-table-layout.c:528
 #: ../libxfdashboard/windows-view.c:2070
 msgid "Prevent upscaling"
-msgstr "Спречи увећање"
+msgstr "Cegak skala ke atas"
 
 #: ../libxfdashboard/scaled-table-layout.c:529
 msgid ""
 "Whether this layout manager should prevent upsclaing any child beyond its "
 "real size"
 msgstr ""
-"Да ли овај управник распореда треба да спречи увећање свих потомака преко "
-"своје стварне величине"
+"Apakah manajer tata letak ini harus mencegah penskalaan naik suatu anak "
+"melampaui ukuran sebenarnya"
 
 #: ../libxfdashboard/scrollbar.c:714
 msgid "Defines if scrollbar is horizontal or vertical"
-msgstr "Описује да ли је трака клизача положена или усправна"
+msgstr "Mendefinisikan apakah bilah gulir horizontal atau vertikal"
 
 #: ../libxfdashboard/scrollbar.c:721
 msgid "Value"
-msgstr "Вредност"
+msgstr "Nilai"
 
 #: ../libxfdashboard/scrollbar.c:722
 msgid "Current value of scroll bar within range"
-msgstr "Тренутна вредност траке клизача у опсегу"
+msgstr "Nilai sekarang bilah gulir di dalam rentang"
 
 #: ../libxfdashboard/scrollbar.c:729
 msgid "Value range"
-msgstr "Опсег вредности"
+msgstr "Rentang nilai"
 
 #: ../libxfdashboard/scrollbar.c:730
 msgid "The range the slider of scroll bar covers"
-msgstr "Опсег клизача на корицама траке клизача"
+msgstr "Rentang slider bilah gulir"
 
 #: ../libxfdashboard/scrollbar.c:737
 msgid "Range"
-msgstr "Опсег"
+msgstr "Rentang"
 
 #: ../libxfdashboard/scrollbar.c:738
 msgid "Range to scroll within"
-msgstr "Опсег клизача"
+msgstr "Rentang untuk menggulir"
 
 #: ../libxfdashboard/scrollbar.c:745
 msgid "Page size factor"
-msgstr "Множилац величине стране"
+msgstr "Faktor ukuran halaman"
 
 #: ../libxfdashboard/scrollbar.c:746
 msgid ""
 "The factor of value range to increase or decrease value by on pointer scroll"
 " events."
 msgstr ""
-"Множилац опсега вредности увећања или умањења вредности по догађајима "
-"клизања показивача."
+"Faktor rentang nilai untuk menambah atau mengurangi nilai menggunakan gulir "
+"penunjuk."
 
 #: ../libxfdashboard/scrollbar.c:754
 msgid "The spacing between scrollbar and background"
-msgstr "Размак између траке клизача и позадине"
+msgstr "Jarak antara bilah gulir dan latar belakang"
 
 #: ../libxfdashboard/scrollbar.c:761
 msgid "Slider width"
-msgstr "Ширина клизача"
+msgstr "Lebar slider"
 
 #: ../libxfdashboard/scrollbar.c:762
 msgid "The width of slider"
-msgstr "Ширина клизача"
+msgstr "Lebar slider"
 
 #: ../libxfdashboard/scrollbar.c:769
 msgid "Slider radius"
-msgstr "Полупречник клизача"
+msgstr "Radius slider"
 
 #: ../libxfdashboard/scrollbar.c:770
 msgid "The radius of slider's rounded corners"
-msgstr "Полупречник заобљености углова клизача"
+msgstr "Radius dari sudut bulat slider"
 
 #: ../libxfdashboard/scrollbar.c:777
 msgid "Slider color"
-msgstr "Боја клизача"
+msgstr "Warna slider"
 
 #: ../libxfdashboard/scrollbar.c:778
 msgid "Color of slider"
-msgstr "Боја клизача"
+msgstr "Warna slider"
 
 #: ../libxfdashboard/search-manager.c:295
 #, c-format
 msgid "Search provider %s of type %s is not a %s and cannot be registered"
-msgstr ""
+msgstr "Penyedia pencarian %s tipe %s bukan %s dan tidak dapat didaftarkan"
 
 #: ../libxfdashboard/search-manager.c:305
 #, c-format
 msgid "Search provider %s of type %s is registered already"
-msgstr ""
+msgstr "Penyedia pencarian %s tipe %s sudah terdaftar"
 
 #: ../libxfdashboard/search-manager.c:320
 #, c-format
 msgid "Failed to register search provider %s of type %s"
-msgstr ""
+msgstr "Gagal mendaftarkan penyedia pencarian %s tipe %s"
 
 #: ../libxfdashboard/search-manager.c:349
 #, c-format
 msgid "Search provider %s is not registered and cannot be unregistered"
-msgstr ""
+msgstr "Penyedia pencarian %s tidak terdaftar dan tidak bisa didaftarkan"
 
 #: ../libxfdashboard/search-manager.c:431
 #, c-format
 msgid "Cannot create search provider %s because it is not registered"
-msgstr ""
+msgstr "Tak dapat membuat penyedia pencarian %s karena tidak terdaftar"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/search-provider.c:63
@@ -2705,16 +2802,17 @@ msgid ""
 "Search provider of type %s does not implement required virtual function "
 "XfdashboardSearchProvider::%s"
 msgstr ""
-"Добављач претраге врсте %s нема захтевану нестварну улогу "
-"XfdashboardSearchProvider::%s"
+"Penyedia pencarian tipe %s tidak mengimplementasikan fungsi virtual "
+"XfdashboardSearchProvider::%s yang diperlukan"
 
 #: ../libxfdashboard/search-provider.c:168
 msgid "Provider ID"
-msgstr ""
+msgstr "ID Penyedia"
 
 #: ../libxfdashboard/search-provider.c:169
 msgid "The internal ID used to register this type of search provider"
 msgstr ""
+"ID internal yang digunakan untuk mendaftarkan tipe penyedia pencarian ini"
 
 #: ../libxfdashboard/search-result-container.c:427
 #, c-format
@@ -2722,8 +2820,8 @@ msgid ""
 "Failed to add actor for result item %s of provider %s: Could not create "
 "actor"
 msgstr ""
-"Нисам успео да додам чиниоца за исходну датотеку %s побављача %s: Нисам "
-"успео да образујем чиниоца"
+"Gagal menambahkan aktor untuk item hasil %s dari penyedia %s: Tidak dapat "
+"membuat aktor"
 
 #: ../libxfdashboard/search-result-container.c:440
 #, c-format
@@ -2731,20 +2829,20 @@ msgid ""
 "Failed to add actor for result item %s of provider %s: Actor of type %s is "
 "not derived from class %s"
 msgstr ""
-"Нисам успео да додам чиниоца за исходну ставку %s добављача %s: Чинилац "
-"врсте %s није произишао из врсте %s."
+"Gagal menambahkan aktor untuk item hasil %s dari penyedia %s: Aktor tipe %s "
+"tidak berasal dari kelas %s"
 
 #: ../libxfdashboard/search-result-container.c:664
 #: ../libxfdashboard/search-result-container.c:1734
 #, c-format
 msgid "Show %d more results..."
-msgstr ""
+msgstr "Tampilkan %d hasil lebih..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:686
 #, c-format
 msgid "Show all %d results..."
-msgstr ""
+msgstr "Tampilkan keseluruhan %d hasil..."
 
 #: ../libxfdashboard/search-result-container.c:721
 #, c-format
@@ -2752,64 +2850,65 @@ msgid ""
 "Failed to remove actor for result item %s of provider %s: Actor of type %s "
 "is not derived from class %s"
 msgstr ""
-"Нисам успео да уклоним чиниоца исходне ставке %s добављача %s: Чинилац врсте"
-" %s није произишао из врсте %s."
+"Gagal menghapus aktor untuk item hasil %s dari penyedia %s: Aktor tipe %s "
+"tidak berasal dari kelas %s"
 
 #: ../libxfdashboard/search-result-container.c:1253
 msgid "Provider"
-msgstr "Добављач претраге"
+msgstr "Penyedia"
 
 #: ../libxfdashboard/search-result-container.c:1254
 msgid "The search provider this result container is for"
-msgstr "Добављач претраге чији је ово излаз"
+msgstr "Penyedia pencarian untuk kontainer hasil ini"
 
 #: ../libxfdashboard/search-result-container.c:1260
 msgid "Icon"
-msgstr "Иконица"
+msgstr "Ikon"
 
 #: ../libxfdashboard/search-result-container.c:1261
 msgid ""
 "A themed icon name or file name of icon this container will display. If not "
 "set the icon the search provider defines will be used."
 msgstr ""
-"Име темиране иконице или име датотеке иконице које ће овај садржалац "
-"приказивати. Ако иконица није постављена, добављач претраге ће се користити."
+"Sebuah nama ikon bertema atau nama berkas ikon yang akan ditampilkan "
+"kontainer ini. Jika tidak disetel, ikon yang didefinisikan penyedia "
+"pencarian akan digunakan."
 
 #: ../libxfdashboard/search-result-container.c:1267
 msgid "Title format"
-msgstr "Облик наслова"
+msgstr "Format judul"
 
 #: ../libxfdashboard/search-result-container.c:1268
 msgid "Format string for title which will contain the name of search provider"
-msgstr "Облик ниске наслова који ће садржати име добављача претраге"
+msgstr "Format string untuk judul yang akan berisi nama penyedia pencarian"
 
 #: ../libxfdashboard/search-result-container.c:1275
 msgid "View mode of container for result items"
-msgstr "Начин приказа садржаоца за иконице које су излаз претраге"
+msgstr "Mode tampilan kontainer untuk item hasil"
 
 #: ../libxfdashboard/search-result-container.c:1283
 msgid "Spacing between each result item"
-msgstr "Размак између сваке ставке излаза"
+msgstr "Jarak antar tiap item hasil"
 
 #: ../libxfdashboard/search-result-container.c:1291
 msgid "Padding between title and item results container"
-msgstr "Поравнање између наслова и ставки садржалаца излаза претраге"
+msgstr "Pengisi antara judul dan kontainer item hasil"
 
 #: ../libxfdashboard/search-result-container.c:1298
 msgid "Initial results size"
-msgstr ""
+msgstr "Ukuran hasil awal"
 
 #: ../libxfdashboard/search-result-container.c:1299
 msgid "The maximum number of results shown initially. 0 means all results"
-msgstr ""
+msgstr "Jumlah maksimum hasil yang ditampilkan di awal. 0 berarti semua hasil"
 
 #: ../libxfdashboard/search-result-container.c:1306
 msgid "More results size"
-msgstr ""
+msgstr "Ukuran lebih banyak hasil"
 
 #: ../libxfdashboard/search-result-container.c:1307
 msgid "The number of results to increase current limit by"
-msgstr ""
+msgstr "Jumlah hasil untuk meningkatkan batas saat ini"
 
 #: ../libxfdashboard/search-result-container.c:1836
 #, c-format
@@ -2817,23 +2916,23 @@ msgid ""
 "Cannot lookup selection target at %s because %s is a child of %s but not of "
 "this container"
 msgstr ""
-"Нисам успео да пронађем циљ избора на %s јер је %s потомак %s, али не овог "
-"садржаоца"
+"Tak dapat mencari target pemilihan pada %s karena %s adalah anak dari %s "
+"tetapi bukan dari kontainer ini"
 
 #: ../libxfdashboard/search-result-container.c:1916
 #, c-format
 msgid "%s is not a child of %s and cannot be activated"
-msgstr ""
+msgstr "%s bukan anak dari %s dan tidak dapat diaktifkan"
 
 #: ../libxfdashboard/search-view.c:979
 #, c-format
 msgid "No results found for '%s'"
-msgstr ""
+msgstr "Tak ada hasil yang ditemukan untuk '%s'"
 
 #: ../libxfdashboard/search-view.c:1108
 #, c-format
 msgid "%s is not a child of any provider at %s and cannot be selected"
-msgstr "%s није потомак било ког добављача са %s и не може бити одабран"
+msgstr "%s bukan anak dari penyedia apapun di %s dan tidak dapat dipilih"
 
 #: ../libxfdashboard/search-view.c:1512
 #, c-format
@@ -2841,77 +2940,80 @@ msgid ""
 "Focusable object %s and provider %s do not handle selection direction of "
 "type %s."
 msgstr ""
-"Жижни предмет %s и добављач %s не могу да обраде правац избора врсте %s."
+"Objek yang dapat difokuskan %s dan penyedia %s tidak menangani arah "
+"pemilihan tipe %s."
 
 #: ../libxfdashboard/search-view.c:1548
 #, c-format
 msgid "%s is not a child of any provider at %s and cannot be activated"
-msgstr "%s није потомак било ког добављача са %s и не може бити покренут"
+msgstr "%s bukan anak dari penyedia apapun pada %s dan tidak dapat diaktifkan"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
 msgid "Search"
-msgstr "Тражи"
+msgstr "Cari"
 
 #: ../libxfdashboard/stage-interface.c:360
 msgid "The monitor where this stage interface is connected to"
-msgstr "Екран са којим је ово сучеље повезано"
+msgstr "Monitor di mana antarmuka panggung ini terhubung"
 
 #: ../libxfdashboard/stage-interface.c:374 ../libxfdashboard/stage.c:1818
 #: ../plugins/clock-view/clock-view-settings.c:249
 msgid "Background color"
-msgstr "Боја позадине"
+msgstr "Warna latar belakang"
 
 #: ../libxfdashboard/stage-interface.c:375 ../libxfdashboard/stage.c:1819
 msgid "Color of stage's background"
-msgstr "Боја позадине "
+msgstr "Warna latar belakang panggung"
 
 #: ../libxfdashboard/stage.c:256
 #, c-format
 msgid "Will not switch to unknown view '%s'"
-msgstr ""
+msgstr "Tak akan beralih ke tampilan yang tidak diketahui '%s'"
 
 #: ../libxfdashboard/stage.c:283
 #, c-format
 msgid "Cannot switch to unknown view '%s'"
-msgstr "Нисам успео да променим приказ на непознати „%s“"
+msgstr "Tak dapat beralih ke tampilan yang tidak diketahui '%s'"
 
 #: ../libxfdashboard/stage.c:469
 msgid "Cannot perform search because search view was not found in viewpad."
 msgstr ""
-"Нисам успео да изведен претрагу јер нисам нашао приказ претраге у овом "
-"начину прегледа"
+"Tak dapat melakukan pencarian karena tampilan pencarian tidak ditemukan di "
+"viewpad."
 
 #: ../libxfdashboard/stage.c:780
 msgid "Cannot find search view in viewpad to reset view."
 msgstr ""
+"Tak dapat menemukan tampilan pencarian di viewpad untuk menyetel ulang "
+"tampilan."
 
 #: ../libxfdashboard/stage.c:948 ../libxfdashboard/stage.c:1025
 #, c-format
 msgid "Could not build interface '%s' from theme '%s'"
-msgstr "Нисам успео да изградим сучеље „%s“ за тему „%s“"
+msgstr "Tak dapat membangun antarmuka '%s' dari tema '%s'"
 
 #: ../libxfdashboard/stage.c:961 ../libxfdashboard/stage.c:991
 #: ../libxfdashboard/stage.c:1038 ../libxfdashboard/stage.c:1438
 #, c-format
 msgid "Interface '%s' from theme '%s' must be an actor of type %s"
-msgstr "Сучеље „%s“ из теме „%s“ мора да буде чинилац врсте %s"
+msgstr "Antarmuka '%s' dari tema '%s' harus merupakan aktor dengan tipe %s"
 
 #: ../libxfdashboard/stage.c:1095
 msgid "Invalid multiple stages for primary monitor"
-msgstr "Вишеструки приказ главног екрана је неисправан"
+msgstr "Beberapa panggung untuk monitor utama tidak valid"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
-msgstr "Само куцајте ради претраге..."
+msgstr "Cukup ketik untuk melakukan pencarian..."
 
 #: ../libxfdashboard/stage.c:1825
 msgid "Switch to view"
-msgstr ""
+msgstr "Beralih ke tampilan"
 
 #: ../libxfdashboard/stage.c:1826
 msgid "Switch to this named view as soon as stage gets visible"
-msgstr ""
+msgstr "Beralih ke tampilan bernama ini segera setelah panggung terlihat"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/stylable.c:62
@@ -2920,236 +3022,242 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardStylable::%s"
 msgstr ""
-"Предмет врсте %s нема уграђену захтевану могућност XfdashboardStylable::%s"
+"Objek dengan tipe %s tidak mengimplementasikan fungsi virtual "
+"XfdashboardStylable::%s yang diperlukan"
 
 #: ../libxfdashboard/stylable.c:382
 msgid "Style classes"
-msgstr "Врсте начина рада"
+msgstr "Kelas gaya"
 
 #: ../libxfdashboard/stylable.c:383
 msgid "String representing list of classes separated by '.'"
-msgstr "Ниске које представљају списак врста одвојен помоћу „.“"
+msgstr "String yang mewakili daftar kelas yang dipisahkan oleh '.'"
 
 #: ../libxfdashboard/stylable.c:389
 msgid "Style pseudo-classes"
-msgstr "Начин лажних врста"
+msgstr "Gaya pseudo-kelas"
 
 #: ../libxfdashboard/stylable.c:390
 msgid ""
 "String representing list of pseudo-classes, e.g. current state, separated by"
 " ':'"
 msgstr ""
-"Ниске које представљају списак лажних врста, тј. тренутног стања, одвојен "
-"помоћу „:“"
+"String yang mewakili daftar pseudo-kelas, misalnya status saat ini, "
+"dipisahkan oleh ':'"
 
 #: ../libxfdashboard/stylable.c:571
 #, c-format
 msgid "Could not find property '%s' for class %s"
-msgstr "Нисам успео да пронађем својство „%s“ за врсту %s"
+msgstr "Tak dapat menemukan properti '%s' untuk kelas %s"
 
 #: ../libxfdashboard/text-box.c:793
 msgid "Editable"
-msgstr "Измењива"
+msgstr "Dapat disunting"
 
 #: ../libxfdashboard/text-box.c:794
 msgid "Flag to set if text is editable"
-msgstr "Заставица уредивог текста"
+msgstr "Bendera yang menyetel apakah teks dapat disunting"
 
 #: ../libxfdashboard/text-box.c:800
 msgid "Primary icon name"
-msgstr "Назив главне иконице"
+msgstr "Nama ikon utama"
 
 #: ../libxfdashboard/text-box.c:801
 msgid "Themed icon name or file name of primary icon shown left of text box"
 msgstr ""
-"Име темиране иконице или датотеке главне иконе која се приказује лево од "
-"кућице за унос текста"
+"Nama ikon bertema atau nama berkas dari ikon utama yang ditampilkan di kiri "
+"kotak teks"
 
 #: ../libxfdashboard/text-box.c:807
 msgid "Secondary icon name"
-msgstr "Назив помоћне иконице"
+msgstr "Nama ikon sekunder"
 
 #: ../libxfdashboard/text-box.c:808
 msgid ""
 "Themed icon name or file name of secondary icon shown right of text box"
 msgstr ""
-"Име темиране иконице или датотеке друге иконице која се приказује десно од "
-"кућице за унос текста"
+"Nama ikon bertema atau nama berkas dari ikon sekunder yang ditampilkan di "
+"kanan kotak teks"
 
 #: ../libxfdashboard/text-box.c:814
 msgid "Text"
-msgstr "Текст"
+msgstr "Teks"
 
 #: ../libxfdashboard/text-box.c:815
 msgid "Text of editable text box"
-msgstr "Текст у кућици за унос текста"
+msgstr "Teks dari kotak teks yang dapat disunting"
 
 #: ../libxfdashboard/text-box.c:821
 msgid "Text font"
-msgstr "Словни лик текста"
+msgstr "Fonta teks"
 
 #: ../libxfdashboard/text-box.c:822
 msgid "Font of editable text box"
-msgstr "Словни лик кућице за унос текста"
+msgstr "Fonta kotak teks yang dapat disunting"
 
 #: ../libxfdashboard/text-box.c:828
 msgid "Text color"
-msgstr "Боја текста"
+msgstr "Warna teks"
 
 #: ../libxfdashboard/text-box.c:829
 msgid "Color of text in editable text box"
-msgstr "Основна боја текста у кућици за унос текста"
+msgstr "Warna teks dalam kotak teks yang dapat disunting"
 
 #: ../libxfdashboard/text-box.c:836
 msgid "Selection text color"
-msgstr "Избор боје текста"
+msgstr "Warna teks yang dipilih"
 
 #: ../libxfdashboard/text-box.c:837
 msgid "Color of text of selected text"
-msgstr "Боја изабраног текста"
+msgstr "Warna teks untuk teks yang dipilih"
 
 #: ../libxfdashboard/text-box.c:843
 msgid "Selection background color"
-msgstr "Избор позадинске боје"
+msgstr "Warna latar belakang yang dipilih"
 
 #: ../libxfdashboard/text-box.c:844
 msgid "Color of background of selected text"
-msgstr "Боја позадине изабраног текста"
+msgstr "Warna latar belakang teks yang dipilih"
 
 #: ../libxfdashboard/text-box.c:850
 msgid "Hint text"
-msgstr "Наговештај текста"
+msgstr "Teks petunjuk"
 
 #: ../libxfdashboard/text-box.c:851
 msgid "Hint text shown if editable text box is empty"
-msgstr "Наговештај текста приказаног ако је поље за унос текста празно"
+msgstr ""
+"Teks petunjuk yang ditampilkan jika kotak teks yang dapat disunting kosong"
 
 #: ../libxfdashboard/text-box.c:857
 msgid "Hint text font"
-msgstr "Наговештај словног лика текста"
+msgstr "Fonta teks petunjuk"
 
 #: ../libxfdashboard/text-box.c:858
 msgid "Font of hint text shown if editable text box is empty"
-msgstr "Словолик приказа текста ако је поље за унос празно"
+msgstr ""
+"Fonta teks petunjuk yang ditampilkan jika kotak teks yang dapat disunting "
+"kosong"
 
 #: ../libxfdashboard/text-box.c:864
 msgid "Hint text color"
-msgstr "Боја наговештаја текста"
+msgstr "Warna teks petunjuk"
 
 #: ../libxfdashboard/text-box.c:865
 msgid "Color of hint text shown if editable text box is empty"
-msgstr "Боја приказа наговештаја текста ако је поље уноса празно"
+msgstr ""
+"Warna teks petunjuk yang ditampilkan jika kotak teks yang dapat disunting "
+"kosong"
 
 #: ../libxfdashboard/text-box.c:871
 msgid "Hint text set"
-msgstr "Наговештај текста је постављен"
+msgstr "Teks petunjuk disetel"
 
 #: ../libxfdashboard/text-box.c:872
 msgid "Flag indicating if a hint text was set"
-msgstr "Заставица који показује да је наговештај текста постављен"
+msgstr "Bendera yang mengindikasikan jika teks petunjuk telah disetel"
 
 #: ../libxfdashboard/theme-css.c:274
 #, c-format
 msgid "Cannot get argument %d because only %d arguments are available"
-msgstr ""
-"Нисам успео да добијем одредницу %d јер је једино одредница %d доступна"
+msgstr "Tak bisa mendapatkan argumen %d karena hanya %d argumen yang tersedia"
 
 #: ../libxfdashboard/theme-css.c:287
 #, c-format
 msgid "Cannot allocate memory for argument %d"
-msgstr "Нисам успео да доделим меморију одредници %d"
+msgstr "Tak dapat mengalokasikan memori untuk argumen %d"
 
 #: ../libxfdashboard/theme-css.c:305
 #, c-format
 msgid "Cannot transform argument %d from type '%s' to type '%s'"
-msgstr "Нисам успео да претворим одредницу %d од врсте „%s“ врсти „%s“"
+msgstr "Tak dapat mengubah argumen %d dari tipe '%s' ke tipe '%s'"
 
 #: ../libxfdashboard/theme-css.c:342
 msgid "Missing string to convert to color component value."
-msgstr "Недостаје ниска за претварање у вредност састојка боје"
+msgstr "String untuk mengkonversi nilai komponen warna tidak ada."
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:365
 #, c-format
 msgid "Cannot convert string '%s' to color component value."
-msgstr "Нисам успео да претворим ниску „%s“ у вредност састојка боје."
+msgstr "Tak dapat mengkonversi string '%s' ke nilai nilai komponen warna."
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:385
 #, c-format
 msgid "Color component value %.2f out of range"
-msgstr "Вредност састојка боје %.2f је ван опсега"
+msgstr "Nilai komponen warna %.2f di luar rentang"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:743
 #, c-format
 msgid "Factor %.2f is out of range"
-msgstr "Чинилац %.2f је ван опсега"
+msgstr "Faktor %.2f di luar rentang"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:848
 #, c-format
 msgid "Alpha factor %.2f is out of range"
-msgstr "Чинилац прозирности %.2f је ван опсега"
+msgstr "Faktor Alfa %.2f di luar rentang"
 
 #: ../libxfdashboard/theme-css.c:901
 #, c-format
 msgid "CSS function '%s' is already registered."
-msgstr "Функција ЦСС-а „%s“ је већ уписана."
+msgstr "Fungsi CSS '%s' sudah terdaftar."
 
 #: ../libxfdashboard/theme-css.c:944 ../libxfdashboard/theme-css.c:1057
 #: ../libxfdashboard/theme-css.c:2156
 msgid "An identifier must follow '@'"
-msgstr "Указивач мора да следи „@“"
+msgstr "Sebuah pengidentifikasi harus mengikuti '@'"
 
 #: ../libxfdashboard/theme-css.c:1083
 msgid "Missing function argument"
-msgstr "Недостаје одредница функције"
+msgstr "Argumen fungsi tidak ada"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:1107
 #, c-format
 msgid "Invalid character '%c' in function argument"
-msgstr "Неисправан знак „%c“ у одредници функције"
+msgstr "Terdapat karakter tidak valid '%c' dalam argumen fungsi"
 
 #: ../libxfdashboard/theme-css.c:1132
 msgid "Invalid character in function argument"
-msgstr "Неисправан знак у одредници функције"
+msgstr "Terdapat karakter tidak valid dalam argumen fungsi"
 
 #: ../libxfdashboard/theme-css.c:1169
 msgid "Missing ')' after function"
-msgstr "Недостаје „)“ након функције"
+msgstr "Tak ada ')' setelah fungsi"
 
 #: ../libxfdashboard/theme-css.c:1184
 msgid "Missing '(' after function"
-msgstr "Недостаје „(“ након функције"
+msgstr "Tak ada '(' setelah fungsi"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:1223
 #, c-format
 msgid "Could not transform result of function '%s' to a string"
-msgstr "Нисам успео да претворим излаз функције „%s“ у ниску"
+msgstr "Tak dapat mentransformasikan hasil dari fungsi '%s' ke string"
 
 #: ../libxfdashboard/theme-css.c:1258
 #, c-format
 msgid "Function '%s' failed with error: %s"
-msgstr "Функција „%s“ није успела уз грешку %s"
+msgstr "Fungsi '%s' gagal dengan galat: %s"
 
 #: ../libxfdashboard/theme-css.c:1264
 #, c-format
 msgid "Function '%s' failed!"
-msgstr "Функција „%s“ није успела!"
+msgstr "Fungsi '%s' gagal!"
 
 #: ../libxfdashboard/theme-css.c:1303
 #, c-format
 msgid "Cannot resolve identifier '@%s' because of indefinite recursion"
 msgstr ""
+"Tak dapat menyelesaikan pengidentifikasi '@%s' karena rekursi tak terbatas"
 
 #. Identifier was unresolvable so print error message
 #: ../libxfdashboard/theme-css.c:1357
 #, c-format
 msgid "Unresolvable identifier '@%s'"
-msgstr "Неразрешиви одредник „@%s“"
+msgstr "Pengidentifikasi tak terselesaikan '@%s'"
 
 #: ../libxfdashboard/theme-css.c:1509
 #, c-format
@@ -3157,101 +3265,107 @@ msgid ""
 "Possible recursion detected because call depth is too deep while resolving "
 "'%s'"
 msgstr ""
+"Kemungkinan rekursi terdeteksi karena kedalaman panggilan terlalu dalam saat"
+" menyelesaikan '%s'"
 
 #: ../libxfdashboard/theme-css.c:1600
 msgid "Invalid property name"
-msgstr "Неисправно име својства"
+msgstr "Nama properti tidak valid"
 
 #: ../libxfdashboard/theme-css.c:1620
 msgid "Property names and values must be separated by colon"
-msgstr "Имена својстава и вредности морају да буду раздвојена двотачком"
+msgstr ""
+"Nama properti dan nilai-nilainya harus dipisahkan oleh tanda titik dua"
 
 #: ../libxfdashboard/theme-css.c:1676
 msgid "Invalid property value"
-msgstr "Неисправна вредност својства"
+msgstr "Nilai properti tidak valid"
 
 #: ../libxfdashboard/theme-css.c:1701
 msgid "Property values must end with semi-colon"
-msgstr "Вредности својстава морају да се завршавају тачком и запетом"
+msgstr "Nilai properti harus diakhiri dengan tanda titik koma"
 
 #: ../libxfdashboard/theme-css.c:1844
 msgid "Missing '(' after @import keyword."
-msgstr "Недостаје „(“ након кључне речи @import."
+msgstr "Tak ada '(' setelah kata kunci @import."
 
 #: ../libxfdashboard/theme-css.c:1885
 msgid "Unexpected token in filename to import"
-msgstr "Неочекивана значка у имену датотеке за унос"
+msgstr "Terdapat token yang tak diharapkan pada nama berkas untuk impor"
 
 #: ../libxfdashboard/theme-css.c:1905
 msgid "Missing filename to import"
-msgstr "Недостаје име увозне датотеке"
+msgstr "Nama berkas untuk impor tidak ada"
 
 #: ../libxfdashboard/theme-css.c:1927
 msgid "Missing closing ')' at @import keyword."
-msgstr "Недостаје „)“ након кључне речи @import."
+msgstr "Tak ada tanda penutup ')' pada kata kunci @import."
 
 #. Build error message
 #: ../libxfdashboard/theme-css.c:1994
 #, c-format
 msgid "Failed to import CSS file '%s': %s"
-msgstr "Нисам успео да увезем датотеку ЦСС-а „%s“: %s"
+msgstr "Gagal mengimpor berkas CSS '%s': %s"
 
 #: ../libxfdashboard/theme-css.c:2101
 msgid ""
 "Mixing selectors and '@' identifiers or defining more than one '@' "
 "identifier at once is not allowed"
 msgstr ""
-"Мешање одабирача и „@“ одредника или одређивање више од једног одредника „@“"
-" одједном није дозвољено"
+"Mencampur selektor dan pengidentifikasi '@' atau mendefinisikan lebih dari "
+"satu pengidentifikasi '@' sekaligus adalah tidak diperbolehkan"
 
 #: ../libxfdashboard/theme-css.c:2122
 msgid ""
 "A selector must have been defined before other one can follow comma-"
 "separated."
 msgstr ""
-"Одабирач мора бити одређен да би наставак могао да буде одвојен запетом."
+"Sebuah selektor harus sudah didefinisikan sebelum yang lain dapat mengikuti "
+"dipisahkan-koma."
 
 #. Build warning message
 #: ../libxfdashboard/theme-css.c:2188
 #, c-format
 msgid "Skipping block of unknown identifier '@%s'"
-msgstr "Прескачем блок непознатог одредника „@%s“"
+msgstr "Melewatkan blok pengidentifikasi yang tidak diketahui '@%s'"
 
 #: ../libxfdashboard/theme-css.c:2194
 msgid "'@' identifier"
-msgstr "Одредник „@%s“"
+msgstr "Pengidentifikasi '@'"
 
 #: ../libxfdashboard/theme-css.c:2223 ../libxfdashboard/theme-css.c:2240
 msgid "Unhandled selector"
-msgstr "Неупотребљени одабирач"
+msgstr "Selektor tak tertangani"
 
 #: ../libxfdashboard/theme-css.c:2388
 #, c-format
 msgid "The input stream of type %s is not supported"
-msgstr "Улазни ток врсте %s није подржан"
+msgstr "Aliran masukan dengan tipe %s tidak didukung"
 
 #: ../libxfdashboard/theme-css.c:2577 ../libxfdashboard/theme.c:808
 msgid "Theme path"
-msgstr "Путања теме"
+msgstr "Path tema"
 
 #: ../libxfdashboard/theme-css.c:2578
 msgid "Path of theme loading from"
-msgstr "Путања теме за учитавање"
+msgstr "Path untuk memuat tema"
 
 #: ../libxfdashboard/theme-css.c:2665
 #, c-format
 msgid "Could not get file for path '%s'"
-msgstr "Нисам успео да добавим датотеку на путањи „%s“"
+msgstr "Tak bisa mendapatkan berkas untuk path '%s'"
 
 #: ../libxfdashboard/theme-animation.c:138
 #, c-format
 msgid "Cannot allocate memory for animation targets property '%s'"
-msgstr ""
+msgstr "Tak dapat mengalokasikan memori untuk properti target animasi '%s'"
 
 #: ../libxfdashboard/theme-animation.c:205
 #, c-format
 msgid "Cannot allocate memory for animation targets data with selector '%s'"
 msgstr ""
+"Tak dapat mengalokasikan memori untuk data target animasi dengan selektor "
+"'%s'"
 
 #: ../libxfdashboard/theme-animation.c:227
 #, c-format
@@ -3259,6 +3373,8 @@ msgid ""
 "Freeing animation targets data at %p with a reference counter of %d greater "
 "than one"
 msgstr ""
+"Membebaskan data target animasi pada %p dengan pencacah referensi %d lebih "
+"dari satu"
 
 #: ../libxfdashboard/theme-animation.c:286
 #, c-format
@@ -3266,6 +3382,8 @@ msgid ""
 "Cannot allocate memory for animation specification data with sender '%s' and"
 " signal '%s'"
 msgstr ""
+"Tak dapat mengalokasikan memori untuk data spesifikasi animasi dengan "
+"pengirim '%s' dan sinyal '%s'"
 
 #: ../libxfdashboard/theme-animation.c:310
 #, c-format
@@ -3273,98 +3391,100 @@ msgid ""
 "Freeing animation specification data at %p with a reference counter of %d "
 "greater than one"
 msgstr ""
+"Membebaskan data spesifikasi animasi di %p dengan pencacah referensi %d "
+"lebih dari satu"
 
 #: ../libxfdashboard/theme-animation.c:586
 #, c-format
 msgid "Invalid base for conversion"
-msgstr ""
+msgstr "Dasar untuk konversi tidak valid"
 
 #: ../libxfdashboard/theme-animation.c:597
 #, c-format
 msgid "Integer out of range"
-msgstr ""
+msgstr "Integer di luar rentang"
 
 #: ../libxfdashboard/theme-animation.c:612
 #, c-format
 msgid "Cannot convert string '%s' to integer"
-msgstr ""
+msgstr "Tak dapat mengkonversi string '%s' ke integer"
 
 #: ../libxfdashboard/theme-animation.c:856
 #, c-format
 msgid "Empty 'name' at tag '%s'"
-msgstr ""
+msgstr "'name' di tag '%s' kosong"
 
 #: ../libxfdashboard/theme-animation.c:867
 #, c-format
 msgid "Empty 'from' at tag '%s'"
-msgstr ""
+msgstr "'from' di tag '%s' kosong"
 
 #: ../libxfdashboard/theme-animation.c:878
 #: ../libxfdashboard/theme-animation.c:988
 #, c-format
 msgid "Empty 'to' at tag '%s'"
-msgstr ""
+msgstr "'to' di tag '%s' kosong"
 
 #: ../libxfdashboard/theme-animation.c:999
 #, c-format
 msgid "Empty 'origin' at tag '%s'"
-msgstr ""
+msgstr "'origin' di tag '%s' kosong"
 
 #: ../libxfdashboard/theme-animation.c:1016
 #, c-format
 msgid "Invalid value '%s' for 'origin' at tag '%s'"
-msgstr ""
+msgstr "Nilai tidak valid '%s' untuk 'origin' di tag '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1154
 #, c-format
 msgid "Missing or empty delay at tag '%s'"
-msgstr ""
+msgstr "Jeda pada tag '%s' tidak ada atau kosong"
 
 #: ../libxfdashboard/theme-animation.c:1165
 #, c-format
 msgid "Missing or empty duration at tag '%s'"
-msgstr ""
+msgstr "Durasi pada tag '%s' tidak ada atau kosong"
 
 #: ../libxfdashboard/theme-animation.c:1176
 #, c-format
 msgid "Missing or empty mode at tag '%s'"
-msgstr ""
+msgstr "Mode pada tag '%s' tidak ada atau kosong"
 
 #: ../libxfdashboard/theme-animation.c:1187
 #, c-format
 msgid "Empty repeat at tag '%s'"
-msgstr ""
+msgstr "Pengulangan pada tag '%s' kosong"
 
 #: ../libxfdashboard/theme-animation.c:1212
 #, c-format
 msgid "Invalid mode '%s'"
-msgstr ""
+msgstr "Mode '%s' tidak valid"
 
 #: ../libxfdashboard/theme-animation.c:1342
 #, c-format
 msgid "Missing or empty ID at tag '%s'"
-msgstr ""
+msgstr "ID pada tag '%s' tidak ada atau kosong"
 
 #: ../libxfdashboard/theme-animation.c:1353
 #, c-format
 msgid "Missing or empty sender at tag '%s'"
-msgstr ""
+msgstr "Pengirim pada tag '%s' tidak ada atau kosong"
 
 #: ../libxfdashboard/theme-animation.c:1364
 #, c-format
 msgid "Missing or empty signal at tag '%s'"
-msgstr ""
+msgstr "Sinyal pada tag '%s' tidak ada atau kosong"
 
 #: ../libxfdashboard/theme-animation.c:1375
 #: ../libxfdashboard/theme-effects.c:887 ../libxfdashboard/theme-layout.c:1237
 #, c-format
 msgid "Invalid ID '%s' at tag '%s'"
-msgstr "Неисправан је ЛБ „%s“ на ознаци „%s“"
+msgstr "ID tidak valid '%s' pada tag '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1387
 #, c-format
 msgid "Multiple definition of trigger with ID '%s'"
-msgstr ""
+msgstr "Beberapa definisi pemicu dengan ID '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1683
 #, c-format
@@ -3372,11 +3492,13 @@ msgid ""
 "Could not transform default value of for property '%s' of %s from type %s to"
 " %s of class %s"
 msgstr ""
+"Tak dapat mengubah nilai bawaan untuk properti '%s' untuk %s dari tipe %s ke"
+" %s untuk kelas %s"
 
 #: ../libxfdashboard/theme-animation.c:1736
 #, c-format
 msgid "Cannot allocate memory for animation '%s'"
-msgstr ""
+msgstr "Tak dapat mengalokasikan memori untuk animasi '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1744
 #, c-format
@@ -3384,6 +3506,9 @@ msgid ""
 "Will not be able to add animations to actors as object of type %s does not "
 "implement required virtual function XfdashboardAnimation::%s"
 msgstr ""
+"Tak akan dapat menambahkan animasi untuk aktor sebagai objek dari tipe %s "
+"tidak mengimplementasikan fungsi virtual XfdashboardAnimation::%s yang "
+"diperlukan"
 
 #: ../libxfdashboard/theme-animation.c:1817
 #, c-format
@@ -3391,6 +3516,8 @@ msgid ""
 "Cannot create animation '%s' for non-existing property '%s' at actor of type"
 " '%s'"
 msgstr ""
+"Tak dapat membuat animasi '%s' untuk properti '%s' yang tidak ada pada aktor"
+" tipe '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1835
 #, c-format
@@ -3398,6 +3525,8 @@ msgid ""
 "Could not transform 'from'-value of '%s' for property '%s' to type %s of "
 "class %s"
 msgstr ""
+"Tak dapat mengubah nilai-'from' '%s' untuk properti '%s' ke tipe %s dari "
+"kelas %s"
 
 #: ../libxfdashboard/theme-animation.c:1927
 #, c-format
@@ -3405,6 +3534,8 @@ msgid ""
 "Could not transform 'to'-value of '%s' for property '%s' to type %s of class"
 " %s"
 msgstr ""
+"Tak dapat mengubah nilai-'to' '%s' untuk properti '%s' ke tipe %s dari kelas"
+" %s"
 
 #: ../libxfdashboard/theme-animation.c:2001
 #, c-format
@@ -3412,6 +3543,8 @@ msgid ""
 "Cannot allocate memory for transition of property '%s' of animation "
 "specification '%s'"
 msgstr ""
+"Tak dapat mengalokasikan memori untuk transisi dari properti '%s' "
+"spesifikasi animasi '%s'"
 
 #: ../libxfdashboard/theme-animation.c:2073
 #, c-format
@@ -3419,17 +3552,20 @@ msgid ""
 "Empty animation list when creating animation for animation specification "
 "'%s'"
 msgstr ""
+"Daftar animasi kosong saat membuat animasi untuk spesifikasi animasi '%s'"
 
 #: ../libxfdashboard/theme-animation.c:2082
 #, c-format
 msgid ""
 "Cannot allocate memory for transition group of animation specification '%s'"
 msgstr ""
+"Tak dapat mengalokasikan memori untuk kelompok transisi dari spesifikasi "
+"animasi '%s'"
 
 #: ../libxfdashboard/theme-effects.c:334 ../libxfdashboard/theme-layout.c:497
 #, c-format
 msgid "Cannot allocate memory for object data of tag <%s>"
-msgstr "Нисам успео да доделим меморију подацима предмета ознаке <%s>"
+msgstr "Tak dapat mengalokasikan memori untuk data objek dari tag <%s>"
 
 #: ../libxfdashboard/theme-effects.c:352
 #, c-format
@@ -3437,32 +3573,32 @@ msgid ""
 "Freeing effect object parser data at %p with a reference counter of %d "
 "greater than one"
 msgstr ""
-"Ослобађање података рашчлањивача предмета дејства на %p са односним бројачем"
-" %d је веће од један"
+"Membebaskan data pengurai objek efek pada %p dengan pencacah referensi %d "
+"lebih dari satu"
 
 #: ../libxfdashboard/theme-effects.c:489
 #, c-format
 msgid "Object of type %s is not derived from %s"
-msgstr "Предмет врсте %s није изведен од %s"
+msgstr "Objek dengan tipe %s tidak berasal dari %s"
 
 #: ../libxfdashboard/theme-effects.c:596
 msgid "Missing property name to set value for"
-msgstr "Недостају својства имена за постављање вредности за"
+msgstr "Nama properti untuk menyetel nilai tidak ada"
 
 #: ../libxfdashboard/theme-effects.c:608
 #, c-format
 msgid "Missing object data to set value of property '%s'"
-msgstr "Недостају подаци предмета за постављање вредности својства „%s“"
+msgstr "Data objek untuk menyetel nilai properti '%s' tidak ada"
 
 #: ../libxfdashboard/theme-effects.c:666 ../libxfdashboard/theme-effects.c:753
 #, c-format
 msgid "Missing parser data for <%s> tag"
-msgstr "Недостају подаци рашчлањивача ознаци <%s>"
+msgstr "Data pengurai untuk tag <%s> tidak ada"
 
 #: ../libxfdashboard/theme-effects.c:708
 #, c-format
 msgid "Multiple definition of property '%s' at object with ID '%s'"
-msgstr "Вишеструки опис својства „%s“ на предмету са ЛБ-ом „%s“"
+msgstr "Beberapa definisi properti '%s' pada objek dengan ID '%s'"
 
 #: ../libxfdashboard/theme-effects.c:770
 #, c-format
@@ -3470,23 +3606,23 @@ msgid ""
 "Invalid state of parser after parsing property '%s' at object with id '%s' "
 "of type %s"
 msgstr ""
-"Неисправно стање рашчлањивача после рашчлањивања својства „%s“ на предмету "
-"са лб-ом „%s“ врсте %s"
+"Status tidak valid dari pengurai setelah mengurai properti '%s' pada objek "
+"dengan id '%s' tipe %s"
 
 #: ../libxfdashboard/theme-effects.c:875 ../libxfdashboard/theme-layout.c:1224
 #, c-format
 msgid "Empty ID at tag '%s'"
-msgstr "Празан је ЛБ на ознаци „%s“"
+msgstr "ID pada tag '%s' kosong"
 
 #: ../libxfdashboard/theme-effects.c:900
 #, c-format
 msgid "Multiple definition of effect with id '%s'"
-msgstr "Вишеструки описи за дејство са лб-ом „%s“"
+msgstr "Terdapat beberapa definisi efek dengan id '%s'"
 
 #: ../libxfdashboard/theme-effects.c:913 ../libxfdashboard/theme-layout.c:1253
 #, c-format
 msgid "Unknown object class %s for tag '%s'"
-msgstr "Непозната је врста предмета %s ознаке „%s“"
+msgstr "Kelas objek %s untuk tag '%s' tak diketahui"
 
 #: ../libxfdashboard/theme-effects.c:927 ../libxfdashboard/theme-layout.c:1273
 #, c-format
@@ -3494,80 +3630,82 @@ msgid ""
 "Invalid class %s in object for parent tag <%s> - expecting class derived "
 "from %s"
 msgstr ""
-"Неисправна је врста %s у предмету на родитељској ознаци <%s> - очекивана је "
-"врста изведена из  %s"
+"Kelas tidak valid %s pada objek untuk tag induk <%s> - mengharapkan kelas "
+"turunan dari %s"
 
 #. If we get here we did not find an object with requested ID
 #: ../libxfdashboard/theme-effects.c:1280
 #, c-format
 msgid "Could not find effect with ID '%s'"
-msgstr "Нисам успео да пронађем дејство са ЛБ-ем „%s“"
+msgstr "Tak dapat menemukan efek dengan ID '%s'"
 
 #: ../libxfdashboard/theme-layout.c:263
 #, c-format
 msgid "File %s - Error on line %d char %d: "
-msgstr ""
+msgstr "Berkas %s - Galat pada baris %d karakter %d: "
 
 #: ../libxfdashboard/theme-layout.c:403
 msgid "Cannot allocate memory for unknown tag"
-msgstr "Нисам успео да доделим меморију непознатој ознаци"
+msgstr "Tak dapat mengalokasikan memori untuk tag yang tidak diketahui"
 
 #: ../libxfdashboard/theme-layout.c:415
 #, c-format
 msgid "Cannot allocate memory for tag '%s'"
-msgstr "Нисам успео да доделим меморију ознаци „%s“"
+msgstr "Tak dapat mengalokasikan memori untuk tag '%s'"
 
 #: ../libxfdashboard/theme-layout.c:647
 #, c-format
 msgid "Unsupported tag type '%s' to resolve ID"
-msgstr ""
+msgstr "Tipe tag tak didukung '%s' untuk menyelesaikan ID"
 
 #: ../libxfdashboard/theme-layout.c:668
 #, c-format
 msgid "No storage pointer provided to store value of %s"
 msgstr ""
+"Tak ada penunjuk penyimpanan yang disediakan untuk menyimpan nilai dari %s"
 
 #: ../libxfdashboard/theme-layout.c:1008
 msgid "Unexpected empty tag stack when parsing property text node"
-msgstr "Неочекивани празни скуп ознака при рашлањивању чвора својстава текста"
+msgstr ""
+"Tumpukan tag kosong tak diharapkan ketika mengurai simpul teks properti"
 
 #: ../libxfdashboard/theme-layout.c:1019
 #, c-format
 msgid "Value for property '%s' is already set"
-msgstr "Вредност за својство „%s“ је већ постављена"
+msgstr "Nilai untuk properti '%s' sudah disetel"
 
 #: ../libxfdashboard/theme-layout.c:1308
 #, c-format
 msgid ""
 "Tag <%s> can only be set at <%s> creating objects derived from class %s"
 msgstr ""
-"Ознака <%s> може да буде постављена само на <%s> при стварању предмета "
-"изведених из врсте %s"
+"Tag <%s> hanya dapat disetel pada <%s> membuat objek yang berasal dari kelas"
+" %s"
 
 #: ../libxfdashboard/theme-layout.c:1394
 #, c-format
 msgid "Attribute 'ref' cannot be empty at tag <%s>"
-msgstr "Особина 'ref' не може да буде празна ознака <%s>"
+msgstr "Atribut 'ref' tidak boleh kosong pada tag <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1423
 #, c-format
 msgid "Tag <%s> can have only one <%s>"
-msgstr ""
+msgstr "Tag <%s> hanya bisa memiliki satu <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1527
 #, c-format
 msgid "Internal error when handling end of tag <%s>"
-msgstr "Десила се унутрашња грешка при обради завршетка ознаке <%s>"
+msgstr "Kesalahan internal ketika menangani akhir tag <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1556
 #, c-format
 msgid "Document can have only one <%s>"
-msgstr "Документ може да има само један <%s>"
+msgstr "Dokumen hanya dapat memiliki satu <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1594
 #, c-format
 msgid "Object can have only one <%s>"
-msgstr "Предмет може да има само једно <%s>"
+msgstr "Objek hanya dapat memiliki satu <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1645
 #, c-format
@@ -3575,265 +3713,272 @@ msgid ""
 "File %s - Warning on line %d char %d: At interface '%s' the ID '%s' should "
 "get focus but the ID '%s' was selected already"
 msgstr ""
+"Berkas %s - Peringatan pada baris %d karakter %d: Pada antarmuka '%s' ID "
+"'%s' harus mendapatkan fokus tetapi ID '%s' telah terpilih"
 
 #: ../libxfdashboard/theme-layout.c:1838
 #, c-format
 msgid "ID '%s' was specified more than once (%d times)"
-msgstr "ЛБ „%s“ је одређен више од једном (%d пута)"
+msgstr "ID '%s' telah ditentukan lebih dari sekali (%d kali)"
 
 #: ../libxfdashboard/theme-layout.c:1869
 #, c-format
 msgid "Referenced ID '%s' could not be resolved"
-msgstr "Нисам успео да разрешим односни ЛБ „%s“"
+msgstr "ID '%s' yang direferensikan tidak bisa diselesaikan"
 
 #: ../libxfdashboard/theme-layout.c:1963
 #, c-format
 msgid "File %s - "
-msgstr ""
+msgstr "Berekas %s - "
 
 #: ../libxfdashboard/theme-layout.c:1974
 #, c-format
 msgid "File %s does not contain an interface"
-msgstr "Датотека %s не садржи сучеље"
+msgstr "Berkas %s tidak memiliki antarmuka"
 
 #: ../libxfdashboard/theme-layout.c:1984
 #, c-format
 msgid "Interface at file %s has no ID"
-msgstr "Сучеље датотеке %s нема ЛБ"
+msgstr "Antarmuka pada berkas %s tidak memiliki ID"
 
 #: ../libxfdashboard/theme.c:120 ../libxfdashboard/theme.c:603
 #, c-format
 msgid "Theme '%s' not found"
-msgstr "Нисам пронашао тему „%s“"
+msgstr "Tema '%s' tidak ditemukan"
 
 #. Show error message
 #: ../libxfdashboard/theme.c:592
 #, c-format
 msgid "Cannot change theme name to '%s' because it is already set to '%s'"
-msgstr ""
+msgstr "Tak dapat mengubah nama tema ke '%s' karena sudah disetel ke '%s'"
 
 #: ../libxfdashboard/theme.c:802
 msgid ""
 "Short name of theme which was used to lookup theme and folder name where "
 "theme is stored in"
 msgstr ""
-"Кратко име теме која се користи за претрагу теме и име фасцикле где је тема "
-"смештена"
+"Nama pendek dari tema yang digunakan untuk mencari nama dan folder tema di "
+"mana tema disimpan"
 
 #: ../libxfdashboard/theme.c:809
 msgid "Path where theme was found and loaded from"
-msgstr "Путања одакле се учитава тема"
+msgstr "Path di mana tema ditemukan dan dimuat"
 
 #: ../libxfdashboard/theme.c:815
 msgid "Theme display name"
-msgstr "Име теме за приказ"
+msgstr "Nama tampilan tema"
 
 #: ../libxfdashboard/theme.c:816
 msgid "The name of theme"
-msgstr "Име теме"
+msgstr "Nama tema"
 
 #: ../libxfdashboard/theme.c:822
 msgid "Theme comment"
-msgstr "Напомена теме"
+msgstr "Komentar tema"
 
 #: ../libxfdashboard/theme.c:823
 msgid "The comment of theme used as description"
-msgstr "Напомена која описује тему"
+msgstr "Komentar tema yang digunakan sebagai deskripsi"
 
 #: ../libxfdashboard/theme.c:921
 #, c-format
 msgid "Theme '%s' was already loaded"
-msgstr ""
+msgstr "Tema '%s' sudah dimuat"
 
 #: ../libxfdashboard/toggle-button.c:187
 msgid "Toggle state"
-msgstr "Прекидач стања"
+msgstr "Ganti status"
 
 #: ../libxfdashboard/toggle-button.c:188
 msgid "State of toggle"
-msgstr "Стање прекидача"
+msgstr "Status saklar"
 
 #: ../libxfdashboard/toggle-button.c:200
 msgid "Auto toggle"
-msgstr "Самостални прекидач"
+msgstr "Ganti otomatis"
 
 #: ../libxfdashboard/toggle-button.c:201
 msgid "If set the toggle state will be toggled on each click"
-msgstr "Ако је постављено, прекидач стања ће бити окидан на сваки клик"
+msgstr "Jika disetel, status saklar akan diganti setiap kali klik"
 
 #: ../libxfdashboard/tooltip-action.c:520
 msgid "Tooltip text"
-msgstr "Текст облачића"
+msgstr "Teks tip alat"
 
 #: ../libxfdashboard/tooltip-action.c:521
 msgid "The text to display in a tooltip"
-msgstr "Запис за приказ у облачићу"
+msgstr "Teks untuk ditampilkan di dalam tip alat"
 
 #: ../libxfdashboard/transition-group.c:505
 msgid "Reset flags"
-msgstr ""
+msgstr "Setel ulang bendera"
 
 #: ../libxfdashboard/transition-group.c:506
 msgid ""
 "If TRUE the flags for static sizes, transformations etc. at animatable actor"
 " is resetted to old state"
 msgstr ""
+"Jika TRUE, bendera untuk ukuran statis, transformasi dsb. pada aktor yang "
+"bisa dianimasikan disetel ulang ke status lama"
 
 #: ../libxfdashboard/utils.c:156
 #, c-format
 msgid "Could find any stage to show notification: %s"
-msgstr "Нисам успео да пронађем ни  један ступањ за приказ обавештења: %s"
+msgstr "Bisa menemukan panggung untuk menampilkan notifikasi: %s"
 
 #: ../libxfdashboard/view-manager.c:290
 #, c-format
 msgid "View %s of type %s is not a %s and cannot be registered"
-msgstr ""
+msgstr "Tampilan %s tipe %s bukan %s dan tidak dapat didaftarkan"
 
 #: ../libxfdashboard/view-manager.c:300
 #, c-format
 msgid "View %s of type %s is registered already"
-msgstr ""
+msgstr "Tampilan %s tipe %s sudah terdaftar"
 
 #: ../libxfdashboard/view-manager.c:315
 #, c-format
 msgid "Failed to register view %s of type %s"
-msgstr ""
+msgstr "Gagal mendaftarkan tampilan %s tipe %s"
 
 #: ../libxfdashboard/view-manager.c:344
 #, c-format
 msgid "View %s is not registered and cannot be unregistered"
-msgstr ""
+msgstr "Tampilan %s tidak terdaftar dan tidak bisa dikeluarkan dari daftar"
 
 #: ../libxfdashboard/view-manager.c:426
 #, c-format
 msgid "Cannot create view %s because it is not registered"
-msgstr ""
+msgstr "Tak dapat membuat tampilan %s karena tidak terdaftar"
 
 #: ../libxfdashboard/view-selector.c:384
 msgid "Viewpad"
-msgstr "Поље прегледа"
+msgstr "Viewpad"
 
 #: ../libxfdashboard/view-selector.c:385
 msgid "The viewpad this selector belongs to"
-msgstr "Поље прегледа којој овај избирач припада"
+msgstr "Viewpad milik selektor ini"
 
 #: ../libxfdashboard/view-selector.c:397 ../libxfdashboard/viewpad.c:1233
 msgid "The spacing between views and scrollbars"
-msgstr "Размак између погледа и траке клизача"
+msgstr "Jarak antara tampilan dan bilah gulir"
 
 #: ../libxfdashboard/view-selector.c:410
 msgid "Orientation of view selector"
-msgstr "Усмерење избирача погледа"
+msgstr "Orientasi selektor tampilan"
 
 #: ../libxfdashboard/view.c:363
 msgid "View ID"
-msgstr ""
+msgstr "ID tampilan"
 
 #: ../libxfdashboard/view.c:364
 msgid "The internal ID used to register this type of view"
-msgstr ""
+msgstr "ID internal yang digunakan untuk mendaftarkan tipe tampilan ini"
 
 #: ../libxfdashboard/view.c:370
 msgid "View name"
-msgstr "Име прегледа"
+msgstr "Nama tampilan"
 
 #: ../libxfdashboard/view.c:371
 msgid "Name of view used to display"
-msgstr "Име погледа који се користи за приказ"
+msgstr "Nama tampilan yang digunakan untuk menampilkan"
 
 #: ../libxfdashboard/view.c:377
 msgid "View icon"
-msgstr "Иконица прегледа"
+msgstr "Ikon tampilan"
 
 #: ../libxfdashboard/view.c:378
 msgid ""
 "Icon of view used to display. Icon name can be a themed icon name or file "
 "name"
 msgstr ""
-"Иконица прегледа за приказ. Име иконице може бити из теме или из датотеке"
+"Ikon tampilan yang digunakan untuk menampilkan. Nama ikon bisa berupa nama "
+"ikon bertema atau nama berkas"
 
 #: ../libxfdashboard/view.c:384
 msgid "View fit mode"
-msgstr ""
+msgstr "Mode tampilan pas"
 
 #: ../libxfdashboard/view.c:385
 msgid ""
 "Defines if view should be fit into viewpad and in which directions it should"
 " fit into it"
 msgstr ""
+"Mendefinisikan apakah tampilan harus pas ke dalam viewpad dan pada arah mana"
+" tampilan itu harus pas di dalamnya"
 
 #: ../libxfdashboard/view.c:392
 msgid "Enabled"
-msgstr "Омогућено"
+msgstr "Aktifkan"
 
 #: ../libxfdashboard/view.c:393
 msgid "This flag indicates if is view is enabled and activable"
-msgstr "Ова заставица указује да је поглед омогућен и да се може покретати"
+msgstr ""
+"Bendera ini mengindikasikan jika tampilan diaktifkan dan dapat diaktifkan"
 
 #: ../libxfdashboard/viewpad.c:130
 msgid "Cannot update viewport of view because no one is active"
-msgstr "Нисам успео да освежим поље прегледа погледа јер нема покренутих"
+msgstr "Tak dapat memperbarui viewport tampilan karena tidak ada yang aktif"
 
 #: ../libxfdashboard/viewpad.c:246
 #, c-format
 msgid "View %s is not a child of %s and cannot be activated"
-msgstr "Поглед %s не може бити потомак %s и не може да се покрене"
+msgstr "Tampilan %s bukan anak dari %s dan tidak dapat diaktifkan"
 
 #: ../libxfdashboard/viewpad.c:254
 #, c-format
 msgid "Cannot activate disabled view %s at %s"
-msgstr "Нисам успео да покренем онемогућен поглед %s на %s"
+msgstr "Tak dapat mengaktifkan tampilan yang dinonaktifkan %s pada %s"
 
 #: ../libxfdashboard/viewpad.c:710
 #, c-format
 msgid "Failed to create view %s for viewpad"
-msgstr ""
+msgstr "Gagal membuat tampilan %s untuk viewpad"
 
 #: ../libxfdashboard/viewpad.c:716
 #, c-format
 msgid "View %s of type %s is not a %s and cannot be added to %s"
-msgstr ""
+msgstr "Tampilan %s tipe %s bukan %s dan tidak dapat ditambahkan ke %s"
 
 #: ../libxfdashboard/viewpad.c:1240
 msgid "Active view"
-msgstr "Тренутни поглед"
+msgstr "Tampilan aktif"
 
 #: ../libxfdashboard/viewpad.c:1241
 msgid "The current active view in viewpad"
-msgstr "Тренутни приказ у пољу прегледа"
+msgstr "Tampilan aktif saat ini di viewpad"
 
 #: ../libxfdashboard/viewpad.c:1247
 msgid "Horizontal scrollbar visibility"
-msgstr "Водоравна видљивост траке клизача"
+msgstr "Visibilitas bilah gulir horizontal"
 
 #: ../libxfdashboard/viewpad.c:1248
 msgid "This flag indicates if horizontal scrollbar is visible"
-msgstr "Ова заставица указује да ли је водоравна клизна трака видљива"
+msgstr "Bendera ini mengindikasikan apakah bilah gulir horizontal terlihat"
 
 #: ../libxfdashboard/viewpad.c:1254
 msgid "Horizontal scrollbar policy"
-msgstr "Смернице водоравне траке клизача"
+msgstr "Aturan bilah gulir horizontal"
 
 #: ../libxfdashboard/viewpad.c:1255
 msgid "The policy for horizontal scrollbar controlling when it is displayed"
-msgstr "Смернице водоравне траке клизача за понашање када се она приказује"
+msgstr "Aturan untuk pengendalian bilah gulir horizontal ketika ditampilkan"
 
 #: ../libxfdashboard/viewpad.c:1262
 msgid "Vertical scrollbar visibility"
-msgstr "Усправна видљивост главне траке клизача"
+msgstr "Visibilitas bilah gulir vertikal"
 
 #: ../libxfdashboard/viewpad.c:1263
 msgid "This flag indicates if vertical scrollbar is visible"
-msgstr "Ова заставица указује да ли је усправна клизна трака видљива"
+msgstr "Bendera ini mengindikasikan apakah bilah gulir vertikal terlihat"
 
 #: ../libxfdashboard/viewpad.c:1269
 msgid "Vertical scrollbar policy"
-msgstr "Смернице усправне клизне траке"
+msgstr "Aturan bilah gulir vertikal"
 
 #: ../libxfdashboard/viewpad.c:1270
 msgid "The policy for vertical scrollbar controlling when it is displayed"
-msgstr ""
-"Смернице усправне траке клизача за понашање када је клизна трака видљива"
+msgstr "Aturan untuk mengendalikan bilah gulir vertikal ketika ditampilkan"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker-backend.c:51
@@ -3842,26 +3987,29 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerBackend::%s"
 msgstr ""
+"Objek dari tipe %s tidak mengimplementasikan fungsi virtual "
+"XfdashboardWindowTrackerBackend::%s yang diperlukan"
 
 #: ../libxfdashboard/window-tracker-backend.c:148
 msgid "Cannot find any usable window tracker backend"
-msgstr ""
+msgstr "Tak dapat menemukan backend pelacak jendela yang dapat digunakan"
 
 #: ../libxfdashboard/window-tracker-backend.c:190
 #, c-format
 msgid "Cannot set backend to '%s' because it the backend was already set"
-msgstr ""
+msgstr "Tak dapat menyetel backend ke '%s' karena backend sudah disetel"
 
 #: ../libxfdashboard/window-tracker-backend.c:203
 #, c-format
 msgid "Cannot set backend to '%s' because application is already initialized"
 msgstr ""
+"Tak dapat menyetel backend ke '%s' karena aplikasi ini sudah diinisialisasi"
 
 #. If we get here the requested backend is unknown
 #: ../libxfdashboard/window-tracker-backend.c:226
 #, c-format
 msgid "Unknown backend '%s' - using default backend"
-msgstr ""
+msgstr "Backend '%s' tak diketahui - menggunakan backend bawaan"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker-monitor.c:58
@@ -3870,22 +4018,24 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerMonitor::%s"
 msgstr ""
+"Objek dari tipe %s tidak mengimplementasikan fungsi virtual "
+"XfdashboardWindowTrackerMonitor::%s yang diperlukan"
 
 #: ../libxfdashboard/window-tracker-monitor.c:101
 msgid "Monitor index"
-msgstr "Ознака екрана"
+msgstr "Indeks monitor"
 
 #: ../libxfdashboard/window-tracker-monitor.c:102
 msgid "The index of this monitor"
-msgstr "Ознака овог екрана"
+msgstr "Indeks monitor ini"
 
 #: ../libxfdashboard/window-tracker-monitor.c:109
 msgid "Is primary"
-msgstr "Је главни"
+msgstr "Adalah utama"
 
 #: ../libxfdashboard/window-tracker-monitor.c:110
 msgid "Whether this monitor is the primary one"
-msgstr "Да ли је ово главни екран"
+msgstr "Apakah monitor ini adalah yang utama"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker-window.c:64
@@ -3894,22 +4044,24 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerWindow::%s"
 msgstr ""
+"Objek dari tipe %s tidak mengimplementasikan fungsi virtual "
+"XfdashboardWindowTrackerWindow::%s yang diperlukan"
 
 #: ../libxfdashboard/window-tracker-window.c:189
 msgid "State"
-msgstr "Стање"
+msgstr "Status"
 
 #: ../libxfdashboard/window-tracker-window.c:190
 msgid "The state of window"
-msgstr ""
+msgstr "Status jendela"
 
 #: ../libxfdashboard/window-tracker-window.c:197
 msgid "Actions"
-msgstr ""
+msgstr "Aksi"
 
 #: ../libxfdashboard/window-tracker-window.c:198
 msgid "The possible actions at window"
-msgstr ""
+msgstr "Aksi yang mungkin pada jendela"
 
 #: ../libxfdashboard/window-tracker-window.c:787
 #: ../libxfdashboard/window-tracker-window.c:828
@@ -3917,7 +4069,7 @@ msgstr ""
 #: ../libxfdashboard/window-tracker.c:612
 #: ../libxfdashboard/window-tracker.c:1152
 msgid "Could not get default window tracker backend"
-msgstr ""
+msgstr "Tak bisa mendapatkan backend pelacak jendela bawaan"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker-workspace.c:56
@@ -3926,6 +4078,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerWorkspace::%s"
 msgstr ""
+"Objek dari tipe %s tidak mengimplementasikan fungsi virtual "
+"XfdashboardWindowTrackerWorkspace::%s yang diperlukan"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker.c:83
@@ -3934,30 +4088,32 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTracker::%s"
 msgstr ""
+"Objek dari tipe %s tidak mengimplementasikan fungsi virtual "
+"XfdashboardWindowTracker::%s yang diperlukan"
 
 #: ../libxfdashboard/window-tracker.c:119
 msgid "Active window"
-msgstr "Радни прозор"
+msgstr "Jendela aktif"
 
 #: ../libxfdashboard/window-tracker.c:120
 msgid "The current active window"
-msgstr "Тренутни радни прозор"
+msgstr "Jendela aktif saat ini"
 
 #: ../libxfdashboard/window-tracker.c:126
 msgid "Active workspace"
-msgstr "Тренутни радни простор"
+msgstr "Ruang kerja aktif"
 
 #: ../libxfdashboard/window-tracker.c:127
 msgid "The current active workspace"
-msgstr "Тренутни радни простор"
+msgstr "Ruang kerja aktif saat ini"
 
 #: ../libxfdashboard/window-tracker.c:133
 msgid "Primary monitor"
-msgstr "Главни екран"
+msgstr "Monitor utama"
 
 #: ../libxfdashboard/window-tracker.c:134
 msgid "The current primary monitor"
-msgstr "Тренутни главни екран"
+msgstr "Monitor utama saat ini"
 
 #. If we get here we did not handle drop action properly
 #. * and this should never happen.
@@ -3966,60 +4122,63 @@ msgstr "Тренутни главни екран"
 msgid ""
 "Did not handle drop action for dragged actor %s of source %s at target %s"
 msgstr ""
+"Tidak menangani tindakan jatuhkan untuk aktor yang diseret %s dari sumber %s"
+" pada target %s"
 
 #: ../libxfdashboard/windows-view.c:1765
 #, c-format
 msgid "Cannot activate selection of type %s at %s because expecting type %s"
 msgstr ""
-"Нисам успео да покренем врсту избора %s на %s јер је очекивана врста %s"
+"Tak dapat mengaktifkan pemilihan tipe %s pada %s karena mengharapkan tipe %s"
 
 #: ../libxfdashboard/windows-view.c:2055
 msgid "Current workspace"
-msgstr "Тренутни радни простор"
+msgstr "Ruang kerja saat ini"
 
 #: ../libxfdashboard/windows-view.c:2056
 msgid "The current workspace whose windows are shown"
-msgstr "Тренутни радни простор са ког су приказани прозори"
+msgstr "Ruang kerja saat ini di mana jendela ditampilkan"
 
 #: ../libxfdashboard/windows-view.c:2071
 msgid ""
 "Whether this view should prevent upsclaing any window beyond its real size"
 msgstr ""
-"Да ли овај преглед треба да спречи повећање размере било ког прозора преко "
-"стварне његове величине"
+"Apakah tampilan ini harus mencegah penskalaan naik suatu jendela di luar "
+"ukuran sebenarnya"
 
 #: ../libxfdashboard/windows-view.c:2077
 msgid "Scroll event changes workspace"
-msgstr "Догађај клизања мења радни простор"
+msgstr "Tindakan menggulir mengubah ruang kerja"
 
 #: ../libxfdashboard/windows-view.c:2078
 msgid "Whether this view should change active workspace on scroll events"
-msgstr ""
-"Да ли овај преглед треба да промени тренутни рани простор на догађаје "
-"клизања"
+msgstr "Apakah tampilan ini harus mengubah ruang kerja aktif ketika menggulir"
 
 #: ../libxfdashboard/windows-view.c:2084
 msgid "Filter monitor windows"
-msgstr "Пропуштај прозоре екрана по услову"
+msgstr "Saring jendela monitor"
 
 #: ../libxfdashboard/windows-view.c:2085
 msgid ""
 "Whether this view should only show windows of monitor where it placed at"
 msgstr ""
-"Да ли овај поглед треба да приказује сам прозоре екрана ту где су смештени"
+"Apakah tampilan ini hanya hanya akan menampilkan jendela-jendela pada "
+"monitor di mana ia ditempatkan"
 
 #: ../libxfdashboard/windows-view.c:2091
 msgid "Filter workspace windows"
-msgstr ""
+msgstr "Saring jendela ruang kerja"
 
 #: ../libxfdashboard/windows-view.c:2092
 msgid "Whether this view should only show windows of active workspace"
 msgstr ""
+"Apakah tampilan ini hanya akan menampilkan jendela-jendela dari ruang kerja "
+"aktif"
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2317
 msgid "Windows"
-msgstr "Прозори"
+msgstr "Jendela"
 
 #. Setting new selection was unsuccessful if we get here
 #. Activation was unsuccessful if we get here
@@ -4028,53 +4187,55 @@ msgstr "Прозори"
 #, c-format
 msgid "Could not determine workspace of %s to set selection at %s"
 msgstr ""
-"Нисам успео да одредим радни простор за %s ради постављања избора на %s"
+"Tak dapat menentukan ruang kerja dari %s untuk menyetel pemilihan pada %s"
 
 #: ../libxfdashboard/workspace-selector.c:1268
 msgid "Maximum size"
-msgstr "Највећа величина"
+msgstr "Ukuran maksimum"
 
 #: ../libxfdashboard/workspace-selector.c:1269
 msgid "The maximum size of this actor for opposite direction of orientation"
-msgstr "Највећа величина овог чиниоца за супротан правац усмерења"
+msgstr "Ukuran maksimum aktor ini untuk orientasi yang berlawanan arah"
 
 #: ../libxfdashboard/workspace-selector.c:1276
 msgid "Maximum fraction"
-msgstr "Највећи разломак"
+msgstr "Fraksi maksimum"
 
 #: ../libxfdashboard/workspace-selector.c:1277
 msgid ""
 "The maximum size of this actor for opposite direction of orientation defined"
 " by fraction between 0.0 and 1.0"
 msgstr ""
-"Највиша величина овог чиниоца за супротан смер усмерења који је одређен "
-"разломком између 0.0 и 1.0"
+"Ukuran maksimum aktor ini untuk orientasi yang berlawanan arah yang "
+"ditentukan oleh fraksi antara 0.0 dan 1.0"
 
 #: ../libxfdashboard/workspace-selector.c:1284
 msgid "Using fraction"
-msgstr "Користим разломак"
+msgstr "Menggunakan fraksi"
 
 #: ../libxfdashboard/workspace-selector.c:1285
 msgid ""
 "Flag indicating if maximum size is static or defined by fraction between 0.0"
 " and 1.0"
 msgstr ""
-"Заставица која указује да ли је највиша величина мирујућа или је одређена "
-"разломком између 0.0 и 1.0"
+"Bendera yang mengindikasikan jika ukuran maksimum adalah statis atau "
+"ditentukan oleh fraksi antara 0.0 dan 1.0"
 
 #: ../libxfdashboard/workspace-selector.c:1291
 msgid "Show current monitor only"
-msgstr ""
+msgstr "Tampilkan hanya monitor saat ini"
 
 #: ../libxfdashboard/workspace-selector.c:1292
 msgid "Show only windows of the monitor where this actor is placed"
-msgstr ""
+msgstr "Tampilkan hanya jendela dari monitor di mana aktor ini diletakkan"
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:132
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:131
 msgid ""
 "Could not get real stage window to handle signal 'active-window-changed'"
 msgstr ""
+"Tak bisa mendapatkan jendela panggung yang sesungguhnya untuk menangani "
+"sinyal 'active-window-changed'"
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:194
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:193
@@ -4082,8 +4243,8 @@ msgid ""
 "Keep window fullscreen on primary monitor because window manager does not "
 "support _NET_WM_FULLSCREEN_MONITORS."
 msgstr ""
-"Држи прозор преко целог екрана на главном екрану јер управник прозора не "
-"подржава _NET_WM_FULLSCREEN_MONITORS."
+"Jaga jendela layar penuh pada monitor utama karena manajer jendela tidak "
+"mendukung _NET_WM_FULLSCREEN_MONITORS."
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:447
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:460
@@ -4091,21 +4252,26 @@ msgstr ""
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:456
 msgid "Could not get real stage window to find stage"
 msgstr ""
+"Tak bisa mendapatkan jendela panggung yang sesungguhnya untuk menemukan "
+"panggung"
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:527
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:645
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:502
 msgid "Could not get real stage window to show"
 msgstr ""
+"Tak bisa mendapatkan jendela panggung yang sesungguhnya untuk ditampilkan"
 
 #: ../libxfdashboard/x11/window-content-x11.c:215
 msgid "No default X11 display found in GDK to check X extensions"
 msgstr ""
+"Tak ada tampilan X11 bawaan yang ditemukan di GDK untuk memeriksa ekstensi X"
 
 #: ../libxfdashboard/x11/window-content-x11.c:254
 #, c-format
 msgid "Destroying window content resume queue containing %d windows."
 msgstr ""
+"Menghancurkan konten jendela melanjutkan antrian yang berisi %d jendela."
 
 #: ../libxfdashboard/x11/window-content-x11.c:400
 #, c-format
@@ -4113,28 +4279,32 @@ msgid ""
 "Unknown value '%s' for property '%s' - defaulting to '%s' with priority of "
 "%d"
 msgstr ""
+"Nilai tak diketahui '%s' untuk properti '%s' - kembali ke bawaan '%s' dengan"
+" prioritas %d"
 
 #. Show warning
 #: ../libxfdashboard/x11/window-content-x11.c:522
 #, c-format
 msgid "Could not create copy of texture of mininized window '%s': %s"
-msgstr "Нисам успео да образујем умножак плетива умањеног прозора „%s“: %s"
+msgstr "Tak dapat membuat salinan tekstur jendela yang diminimalkan '%s': %s"
 
 #. Show warning
 #: ../libxfdashboard/x11/window-content-x11.c:550
 #, c-format
 msgid "Could not create copy of texture of mininized window '%s'"
-msgstr "Нисам успео да образујем умножак плетива умањеног прозора „%s“"
+msgstr "Tak dapat membuat salinan tekstur jendela yang diminimalkan '%s'"
 
 #: ../libxfdashboard/x11/window-content-x11.c:561
 #, c-format
 msgid "Could not determine size of texture of minimized window '%s'"
-msgstr "Нисам успео да одредим величина плетива умањеног прозора „%s“"
+msgstr "Tak dapat menentukan ukuran tekstur jendela yang diminimalkan '%s'"
 
 #: ../libxfdashboard/x11/window-content-x11.c:566
 #, c-format
 msgid "Could not allocate memory for copy of texture of mininized window '%s'"
-msgstr "Нисам успео да доделим меморију умношка плетива умањеног прозора „%s“"
+msgstr ""
+"Tak dapat mengalokasikan memori untuk salinan tekstur jendela yang "
+"diminimalkan '%s'"
 
 #: ../libxfdashboard/x11/window-content-x11.c:682
 #, c-format
@@ -4142,16 +4312,18 @@ msgid ""
 "Need at least version %d.%d of composite extension but found %d.%d - using "
 "only fallback images"
 msgstr ""
-"Потрбно је најмање издање %d.%d проширења слагања, али је пронађено %d.%d - "
-"користим заменске слике"
+"Membutuhkan setidaknya versi %d.%d perpanjangan komposit tetapi ditemukan "
+"%d.%d - Menggunakan hanya gambar sandaran"
 
 #: ../libxfdashboard/x11/window-content-x11.c:686
 msgid "Query for X composite extension failed - using only fallback imagess"
-msgstr "Упит проширења слагања Икса није успео - користим заменске слике"
+msgstr ""
+"Permintaan perpanjangan komposit X gagal - menggunakan hanya gambar sandaran"
 
 #: ../libxfdashboard/x11/window-content-x11.c:688
 msgid "X does not support composite extension - using only fallback images"
-msgstr "Икс не подржава проширење слагања - користим само заменске слике"
+msgstr ""
+"X tidak mendukung perpanjangan komposit - menggunakan hanya gambar sandaran"
 
 #: ../libxfdashboard/x11/window-content-x11.c:703
 #, c-format
@@ -4159,18 +4331,18 @@ msgid ""
 "Query for X damage extension resulted in error code %d - using only still "
 "images of windows"
 msgstr ""
-"Упит проширења оштећења Икса је довео дао грешке под шифром %d - користим "
-"само слике прозора"
+"Permintaan untuk perpanjangan kerusakan X mengakibatkan kode kesalahan %d - "
+"menggunakan hanya gambar diam jendela"
 
 #: ../libxfdashboard/x11/window-content-x11.c:995
 msgid "Resume handler called for empty queue."
-msgstr ""
+msgstr "Penanganan lanjut dipanggil untuk antrian kosong."
 
 #: ../libxfdashboard/x11/window-content-x11.c:1058
 #: ../libxfdashboard/x11/window-content-x11.c:1221
 #, c-format
 msgid "Could not get pixmap for window '%s"
-msgstr "Нисам успео да добавим мапу тачака прозора %s"
+msgstr "Tak bisa mendapatkan pixmap untuk jendela '%s"
 
 #. We should never get here as existance of composite extension was checked
 #. before
@@ -4179,136 +4351,143 @@ msgstr "Нисам успео да добавим мапу тачака проз
 #, c-format
 msgid "Cannot resume window '%s' as composite extension is not available"
 msgstr ""
-"Нисам успео да наставим са приказом прозора „%s“ јер је проширење слагања "
-"недоступно"
+"Tak dapat melanjutkan jendela '%s' karena perpanjangan komposit tidak "
+"tersedia"
 
 #: ../libxfdashboard/x11/window-content-x11.c:1109
 #: ../libxfdashboard/x11/window-content-x11.c:1269
 #, c-format
 msgid "Could not create damage for window '%s' - using still image of window"
-msgstr "Нисам успео да образујем штету прозора „%s“ - користим слику прозора"
+msgstr ""
+"Tak dapat membuat kerusakan untuk jendela '%s' - menggunakan gambar diam "
+"jendela"
 
 #. Show warning
 #: ../libxfdashboard/x11/window-content-x11.c:1454
 #, c-format
 msgid "Could not create fallback texture for window '%s': %s"
-msgstr "Нисам успео да образујем заменско плетиво прозора „%s“: %s"
+msgstr "Tak dapat membuat tekstur sandaran untuk jendela '%s': %s"
 
 #: ../libxfdashboard/x11/window-content-x11.c:1496
 #, c-format
 msgid "Could not get attributes of window '%s'"
-msgstr "Нисам успео да добавим особине прозора „%s“"
+msgstr "Tak bisa mendapatkan atribut jendela '%s'"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2138
 msgid "The window to handle and display"
-msgstr "Прозор за управљање и приказ"
+msgstr "Jendela untuk ditangani dan ditampilkan"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2144
 msgid "Suspended"
-msgstr "Обустаљен"
+msgstr "Disuspensi"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2145
 msgid "Is this window suspended"
-msgstr "Да ли је овај прозор овустављен"
+msgstr "Apakah jendela ini disuspensi"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2152
 msgid "Color to draw outline of mapped windows with"
-msgstr "Боја исцртавања обриса на мапираном прозору"
+msgstr "Warna untuk menggambar ikhtisar jendela yang dipetakan"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2159
 msgid "Width of line used to draw outline of mapped windows"
-msgstr "Ширина линије за исцртавање обриса мапираног прозора"
+msgstr ""
+"Lebar garis yang digunakan untuk menggambar ikhtisar jendela yang dipetakan"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2166
 msgid "Include window frame"
-msgstr "Укључи оквир прозора"
+msgstr "Sertakan bingkai jendela"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2167
 msgid ""
 "Whether the window frame should be included or only the window content "
 "should be shown"
 msgstr ""
-"Да ли оквир прозора треба да буде укључен или да се приказује само садржај "
-"прозора"
+"Apakah bingkai jendela harus disertakan atau hanya isi jendela saja yang "
+"ditampilkan"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2173
 msgid "Unmapped window icon X fill"
-msgstr "Попуна иконицом икс осе немапираног прозора"
+msgstr "Isian ikon jendela yang tak dipetakan X"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2174
 msgid "Whether the unmapped window icon should fill up horizontal space"
-msgstr "Да ли иконица немапираног прозора треба да попуни простор водоравно"
+msgstr "Apakah ikon jendela yang tak dipetakan harus mengisi ruang horizontal"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2180
 msgid "Unmapped window icon y fill"
-msgstr "Попуна иконицом ипсилон осе немапираног прозора"
+msgstr "Isian ikon jendela yang tak dipetakan Y"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2181
 msgid "Whether the unmapped window icon should fill up vertical space"
-msgstr "Да ли иконица немапираног прозора треба да попуни усправан простор"
+msgstr "Apakah ikon jendela yang tak dipetakan harus mengisi ruang vertikal"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2187
 msgid "Unmapped window icon X align"
-msgstr "Поравнање иконице немапираног прозора по икс оси"
+msgstr "Penyelarasan ikon jendela yang tak dipetakan X"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2188
 msgid ""
 "The alignment of the unmapped window icon on the X axis within the "
 "allocation in normalized coordinate between 0 and 1"
 msgstr ""
-"Поравнање иконице немапираног прозора по икс оси уз доделу на прилагођену "
-"координату између 0 и 1"
+"Penyelarasan ikon jendela yang tak dipetakan pada sumbu X di dalam alokasi "
+"pada kooordinat yang dinormalisasi antara 0 dan 1"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2195
 msgid "Unmapped window icon Y align"
-msgstr "Иконица неуцртаног прозора са ипсилон поравнањем"
+msgstr "Penyelarasan ikon jendela yang tak dipetakan Y"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2196
 msgid ""
 "The alignment of the unmapped window icon on the Y axis within the "
 "allocation in normalized coordinate between 0 and 1"
 msgstr ""
-"Поравнање иконице неуцртаног прозора на ипсилон оси унутар расподеле "
-"координата између 0 и 1"
+"Penyelarasan ikon jendela yang tak dipetakan pada sumbu Y di dalam alokasi "
+"pada kooordinat yang dinormalisasi antara 0 dan 1"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2203
 msgid "Unmapped window icon X scale"
-msgstr "Размера немапиране иконице прозора по Y оси"
+msgstr "Skala ikon jendela yang tak dipetakan X"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2204
 msgid "Scale factor of unmapped window icon on the X axis"
-msgstr "Множилац размере немапиране иконице прозора по X оси"
+msgstr "Faktor skala ikon jendela yang tak dipetakan pada sumbu X"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2211
 msgid "Unmapped window icon Y scale"
-msgstr "Размера немапиране иконице прозора по Y оси"
+msgstr "Skala ikon jendela yang tak dipetakan Y"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2212
 msgid "Scale factor of unmapped window icon on the Y axis"
-msgstr "Множилац размере иконице немапираног прозора по Y оси"
+msgstr "Faktor skala ikon jendela yang tak dipetakan pada sumbu Y"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2219
 msgid "Unmapped window icon anchor point"
-msgstr ""
+msgstr "Titik jangkar ikon jendela yang tak dipetakan"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2220
 msgid "The anchor point of unmapped window icon"
-msgstr "Тачка сидришта немапиране иконице прозора"
+msgstr "Titik jangkar untuk ikon jendela yang tak dipetakan"
 
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:614
 msgid "Could not get real stage window to hide"
 msgstr ""
+"Tak bisa mendapatkan jendela panggung yang sesungguhnya untuk disembunyikan"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:109
 #, c-format
 msgid "No wnck window wrapped at %s in called function %s"
 msgstr ""
+"Tak ada jendela wnck yang dibungkus di %s pada fungsi yang dipanggil %s"
 
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:114
 #, c-format
 msgid "Got signal from wrong wnck window wrapped at %s in called function %s"
 msgstr ""
+"Mendapatkan sinyal dari jendela wnck yang salah yang dibungkus di %s pada "
+"fungsi yang dipanggil %s"
 
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:815
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:963
@@ -4317,142 +4496,150 @@ msgid ""
 "Either no wnck workspace is wrapped at %s or workspace is not available "
 "anymore when called at function %s"
 msgstr ""
+"Tak ada ruang kerja wnck yang dibungkus di %s, atau ruang kerja tidak "
+"tersedia lagi saat dipanggil pada fungsi %s"
 
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:1279
 msgid "The mapped wnck window"
-msgstr ""
+msgstr "Jendela wnck yang dipetakan"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:85
 #, c-format
 msgid "No wnck workspace wrapped at %s in called function %s"
 msgstr ""
+"Tidak ada ruang kerja wnck yang dibungkus di %s pada fungsi yang dipanggil "
+"%s"
 
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:90
 #, c-format
 msgid ""
 "Got signal from wrong wnck workspace wrapped at %s in called function %s"
 msgstr ""
+"Mendapatkan sinyal dari ruang kerja wnck yang salah yang dibungkus di %s "
+"pada fungsi yang dipanggil %s"
 
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:386
 msgid "The mapped wnck workspace"
-msgstr ""
+msgstr "Ruang kerja wnck yang dipetakan"
 
 #: ../libxfdashboard/x11/window-tracker-x11.c:218
 #, c-format
 msgid "Could not create workspace object of type %s for workspace '%s'"
-msgstr ""
+msgstr "Tak bisa membuat objek kerja tipe %s untuk ruang kerja '%s'"
 
 #: ../libxfdashboard/x11/window-tracker-x11.c:388
 #, c-format
 msgid "Could not create window object of type %s for window '%s'"
-msgstr ""
+msgstr "Tak bisa membuat objek jendela tipe %s untuk jendela '%s'"
 
 #: ../libxfdashboard/x11/window-tracker-x11.c:977
 #, c-format
 msgid "Cannot release unknown monitor %d"
-msgstr "Нисам успео д отпустим непознати екран %d"
+msgstr "Tak dapat melepaskan monitor yang tak diketahui %d"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:312
 msgid "Clock"
-msgstr "Часовник"
+msgstr "Jam"
 
 #: ../plugins/clock-view/clock-view-settings.c:228
 msgid "Hour color"
-msgstr ""
+msgstr "Warna jam"
 
 #: ../plugins/clock-view/clock-view-settings.c:229
 msgid "Color to draw the hour hand with"
-msgstr ""
+msgstr "Warna untuk jarum jam"
 
 #: ../plugins/clock-view/clock-view-settings.c:235
 msgid "Minute color"
-msgstr ""
+msgstr "Warna menit"
 
 #: ../plugins/clock-view/clock-view-settings.c:236
 msgid "Color to draw the minute hand with"
-msgstr ""
+msgstr "Warna untuk jarum menit"
 
 #: ../plugins/clock-view/clock-view-settings.c:242
 msgid "Second color"
-msgstr ""
+msgstr "Warna detik"
 
 #: ../plugins/clock-view/clock-view-settings.c:243
 msgid "Color to draw the second hand with"
-msgstr ""
+msgstr "Warna untuk jarum detik"
 
 #: ../plugins/clock-view/clock-view-settings.c:250
 msgid "Color to draw the circle with that holds the second hand"
-msgstr ""
+msgstr "Warna untuk menggambar lingkaran yang memegang jarum detik"
 
 #: ../plugins/clock-view/plugin.c:146 ../plugins/hot-corner/plugin.c:109
 msgid "Cannot allocate memory for mapping"
-msgstr ""
+msgstr "Tak dapat mengalokasikan memori untuk pemetaan"
 
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:208
 msgid "Hour color:"
-msgstr ""
+msgstr "Warna jam:"
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
-msgstr ""
+msgstr "Pilih warna untuk jarum jam"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
 msgid "Minute color:"
-msgstr ""
+msgstr "Warna menit:"
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
-msgstr ""
+msgstr "Pilih warna untuk jarum menit"
 
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
 msgid "Second color:"
-msgstr ""
+msgstr "Warna detik:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "Pilih warna untuk jarum detik"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
 msgid "Background color:"
-msgstr "Боја позадине:"
+msgstr "Warna latar belakang:"
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "Pilih warna latar belakang untuk jarum detik"
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
-msgstr ""
+msgstr "Menambahkan tampilan baru yang menampilkan sebuah jam"
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
-msgstr ""
+msgstr "Contoh pencarian"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "Contoh penyedia pencarian"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr ""
+msgstr "Ini hanyalah sebuah contoh plugin penyedia pencarian yang tak berguna"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:211
 #, c-format
 msgid "Unknown application '%s' for Gnome-Shell search provider '%s'"
-msgstr ""
+msgstr "Aplikasi tak diketahui '%s' untuk penyedia pencarian Gnome-Shell '%s'"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:289
 #, c-format
 msgid "Cannot update information about Gnome-Shell search provider '%s': %s"
 msgstr ""
+"Tak dapat memperbarui informasi tentang penyedia pencarian Gnome-Shell '%s':"
+" %s"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:374
@@ -4461,12 +4648,15 @@ msgid ""
 "Cannot initialize file monitor to detect changes for Gnome-Shell search "
 "provider '%s': %s"
 msgstr ""
+"Tak dapat menginisialisasi monitor berkas untuk mendeteksi perubahan untuk "
+"penyedia pencarian Gnome-Shell '%s': %s"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:391
 #, c-format
 msgid "Cannot load information about Gnome-Shell search provider '%s': %s"
 msgstr ""
+"Tak dapat memuat informasi tentang penyedia pencarian Gnome-Shell '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:473
@@ -4477,6 +4667,7 @@ msgstr ""
 msgid ""
 "Could not create dbus connection for Gnome-Shell search provider '%s': %s"
 msgstr ""
+"Tak dapat membuat koneksi dbus untuk penyedia pencarian Gnome-Shell '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:546
@@ -4485,6 +4676,8 @@ msgid ""
 "Could get result set from dbus connection for Gnome-Shell search provider "
 "'%s': %s"
 msgstr ""
+"Bisa mendapatkan hasil yang ditetapkan dari koneksi dbus untuk penyedia "
+"pencarian Gnome-Shell '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:663
@@ -4493,6 +4686,8 @@ msgid ""
 "Could get meta data for '%s' from dbus connection for Gnome-Shell search "
 "provider '%s': %s"
 msgstr ""
+"Bisa mendapatkan meta data untuk '%s' dari koneksi dbus untuk penyedia "
+"pencarian Gnome-Shell '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:729
@@ -4502,10 +4697,12 @@ msgstr ""
 msgid ""
 "Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"
 msgstr ""
+"Bisa mendapatkan ikon untuk '%s' pada kunci '%s' untuk penyedia pencarian "
+"Gnome-Shell '%s': %s"
 
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:733
 msgid "Deserialization failed"
-msgstr ""
+msgstr "Deserialisasi gagal"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:897
@@ -4514,6 +4711,8 @@ msgid ""
 "Could activate result item '%s' over dbus connection for Gnome-Shell search "
 "provider '%s': %s"
 msgstr ""
+"Bisa mengaktifkan item hasil '%s' melalui koneksi dbus untuk penyedia "
+"pencarian Gnome-Shell '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:970
@@ -4522,10 +4721,14 @@ msgid ""
 "Could not launch search over dbus connection for Gnome-Shell search provider"
 " '%s': %s"
 msgstr ""
+"Tak dapat memulai pencarian melalui koneksi dbus untuk penyedia pencarian "
+"Gnome-Shell '%s': %s"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:68
 msgid "Gnome-Shell search provider filename has wrong file extension."
 msgstr ""
+"Nama berkas penyedia pencarian Gnome-Shell memiliki ekstensi berkas yang "
+"salah."
 
 #. Show warning
 #: ../plugins/gnome-shell-search-provider/plugin.c:133
@@ -4533,13 +4736,14 @@ msgstr ""
 #, c-format
 msgid "Could not register Gnome-Shell search provider at file '%s': %s"
 msgstr ""
+"Tak dapat mendaftarkan penyedia pencarian Gnome-Shell pada berkas '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/plugin.c:229
 #: ../plugins/gnome-shell-search-provider/plugin.c:303
 #, c-format
 msgid "Could not scan for gnome-shell search provider at '%s': %s"
-msgstr ""
+msgstr "Tak dapat memindai penyedia pencarian gnome-shell pada '%s': %s"
 
 #. Just print a warning but do not fail. We will just not get notified
 #. * about changes at path where the providers are stored.
@@ -4548,66 +4752,80 @@ msgstr ""
 msgid ""
 "Unable to create file monitor for Gnome-Shell search providers at '%s': %s"
 msgstr ""
+"Tak dapat membuat monitor berkas untuk penyedia pencarian Gnome-Shell pada "
+"'%s': %s"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr ""
+msgstr "Penyedia pencarian Gnome-Shell"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
 msgstr ""
+"Menggunakan penyedia pencarian Gnome-Shell sebagai sumber untuk pencarian"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:231
 msgid "Activation corner"
-msgstr ""
+msgstr "Sudut aktivasi"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:232
 msgid ""
 "The hot corner where to trigger the application to suspend or to resume"
 msgstr ""
+"Sudut panas yang digunakan untuk memicu aplikasi untuk disuspensi atau untuk"
+" dilanjutkan"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:239
 msgid "Activation radius"
-msgstr ""
+msgstr "Radius aktivasi"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:240
 msgid "The radius around hot corner where the pointer must be inside"
 msgstr ""
+"Radius di sekitar sudut panas di mana penunjuk harus berada di dalamnya"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:247
 msgid "Activation duration"
-msgstr ""
+msgstr "Durasi aktivasi"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:248
 msgid ""
 "The time in milliseconds the pointer must stay inside the radius at hot "
 "corner to trigger"
 msgstr ""
+"Waktu dalam milidetik penunjuk harus berada di dalam radius di sudut panas "
+"sebagai pemicu"
 
 #: ../plugins/hot-corner/hot-corner.c:161
 msgid "Could not get pointer to determine pointer position"
-msgstr ""
+msgstr "Tak bisa mendapatkan penunjuk untuk menentukan posisi penunjuk"
 
 #: ../plugins/hot-corner/hot-corner.c:389
 msgid ""
 "Disabling hot-corner plugin because the root window to determine pointer "
 "position could not be found."
 msgstr ""
+"Menonaktifkan plugin sudut-panas karena jendela root yang menentukan posisi "
+"pointer tidak dapat ditemukan."
 
 #: ../plugins/hot-corner/hot-corner.c:405
 msgid ""
 "Disabling hot-corner plugin because the device manager to determine pointer "
 "position could not be found."
 msgstr ""
+"Menonaktifkan plugin sudut-panas karena manajer perangkat yang menentukan "
+"posisi pointer tidak dapat ditemukan."
 
 #: ../plugins/hot-corner/hot-corner.c:410
 msgid ""
 "Disabling hot-corner plugin because application is not running as daemon."
 msgstr ""
+"Menonaktifkan plugin sudut-panas karena aplikasi tidak berjalan sebagai "
+"jurik."
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
 msgid "ms"
@@ -4616,93 +4834,95 @@ msgstr "ms"
 #: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
 #: ../settings/general.c:383
 msgid "Immediately"
-msgstr "Омах"
+msgstr "Segera"
 
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:304
 msgid "Activation corner:"
-msgstr ""
+msgstr "Sudut aktivasi:"
 
 #. Add widget to choose activation radius
 #: ../plugins/hot-corner/plugin.c:340
 msgid "Radius of activation corner:"
-msgstr ""
+msgstr "Radius sudut aktivasi:"
 
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:358
 msgid "Timeout to activate:"
-msgstr ""
+msgstr "Tenggat waktu untuk mengaktifkan:"
 
 #: ../plugins/hot-corner/plugin.c:418
 msgid "Hot corner"
-msgstr ""
+msgstr "Sudut panas"
 
 #: ../plugins/hot-corner/plugin.c:419
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
 msgstr ""
+"Mengaktifkan xfdashboard ketika penunjuk dipindahkan ke sudut monitor yang "
+"dikonfigurasi"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr ""
+msgstr "Menutup jendela dengan klik-tengah"
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
-msgstr ""
+msgstr "Menutup jendela pada tampilan jendela dengan klik-tengah"
 
 #: ../settings/general.c:120
 msgid "Do nothing"
-msgstr "Не ради ништа"
+msgstr "Tak lakukan apapun"
 
 #: ../settings/general.c:121
 msgid "Windows view"
-msgstr "Преглед прозора"
+msgstr "Tampilan jendela"
 
 #: ../settings/general.c:122
 msgid "Applications view"
-msgstr "Преглед програма"
+msgstr "Tampilan aplikasi"
 
 #: ../settings/general.c:129
 msgid "High"
-msgstr "Висок"
+msgstr "Tinggi"
 
 #: ../settings/general.c:130
 msgid "Normal"
-msgstr "Уобичајене"
+msgstr "Normal"
 
 #: ../settings/general.c:131
 msgid "Low"
-msgstr "Низак"
+msgstr "Rendah"
 
 #: ../settings/general.c:324
 msgid "seconds"
-msgstr "секунди"
+msgstr "detik"
 
 #: ../settings/general.c:732 ../settings/plugins.c:1178
 #: ../settings/themes.c:907
 msgid "Builder"
-msgstr ""
+msgstr "Pembangun"
 
 #: ../settings/general.c:733 ../settings/plugins.c:1179
 #: ../settings/themes.c:908
 msgid "The initialized GtkBuilder object where to set up themes tab from"
-msgstr ""
+msgstr "Objek GtkBuilder yang diinisialisasi dari mana tab tema disetel"
 
 #: ../settings/plugins.c:222
 #, c-format
 msgid "Configure plugin: %s"
-msgstr ""
+msgstr "Konfigurasi plugin: %s"
 
 #: ../settings/plugins.c:591
 msgid "Could not set list of enabled plugins!"
-msgstr ""
+msgstr "Tak dapat mengatur daftar plugin yang diaktifkan!"
 
 #. Show error message
 #: ../settings/plugins.c:807
 #, c-format
 msgid "Could not load plugin '%s' from '%s': %s"
-msgstr ""
+msgstr "Tak dapat memuat plugin %s 'dari '% s':% s"
 
 #. Create error message to store in list
 #: ../settings/plugins.c:813
@@ -4712,22 +4932,25 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
+"<b>Plugin tak dapat dimuat.</b>\n"
+"\n"
+"%s"
 
 #: ../settings/themes.c:781
 msgid "Theme"
-msgstr "Тема"
+msgstr "Tema"
 
 #: ../settings/main.c:46
 msgid "Settings manager socket"
-msgstr "Поставке управника прикључнице"
+msgstr "Soket manajer pengaturan"
 
 #: ../settings/main.c:46
 msgid "SOCKET ID"
-msgstr "ЛБ УТИЧНИЦЕ"
+msgstr "SOCKET_ID"
 
 #: ../settings/main.c:47
 msgid "Version information"
-msgstr "Подаци о издању"
+msgstr "Informasi versi"
 
 #. Initialize GTK+
 #: ../settings/main.c:57
@@ -4741,47 +4964,49 @@ msgid ""
 "Try %s --help to see a full list of available command line options.\n"
 msgstr ""
 "%s: %s\n"
-"Покушајте %s --help да би видели потпуни списак могућности наредбене линије.\n"
+"Gunakan %s --help untuk melihat senarai lengkap opsi baris perintah yang tersedia.\n"
 
 #: ../settings/main.c:84
 #, c-format
 msgid "Failed to initialize xfconf: %s"
-msgstr "Нисам успео да покренем xfconf: %s"
+msgstr "Gagal menginisialisasi xfconf: %s"
 
 #: ../settings/main.c:96
 msgid "Could not create the settings dialog."
-msgstr "Нисам успео да направим прозорче поставки."
+msgstr "Tak dapat membuat dialog pengaturan."
 
 #: ../settings/settings.c:144
 #, c-format
 msgid "Could not find UI file '%s'."
-msgstr "Нисам успео да пронађен датотеку корисничког сучеља „%s“."
+msgstr "Tak dapat menemukan berkas UI '%s'."
 
 #: ../settings/settings.c:158
 #, c-format
 msgid "Could not load UI resources from '%s': %s"
-msgstr "Нисам успео да учитам изворе корисничког сучеља из „%s“: %s"
+msgstr "Tak dapat memuat sumber UI dari '%s': %s"
 
 #: ../settings/settings.c:319 ../settings/settings.c:353
 msgid "Could not get dialog from UI file."
-msgstr "Нисам успео да добавим прозорче из датотеке корисничког сучеља."
+msgstr "Tak bisa mendapatkan dialog dari berkas UI."
 
 #: ../xfdashboard/main.c:174
 msgid "Cannot restart application: Failed to quit running instance"
 msgstr ""
-"Нисам успео да поново покренем програм: Нисам успео да искључим покренути "
-"примерак"
+"Tak dapat memulai ulang aplikasi: Gagal untuk menghentikan instansi yang "
+"berjalan"
 
 #: ../xfdashboard/main.c:237
 msgid "Initializing clutter failed!"
-msgstr "Покретање клатера није успело"
+msgstr "Gagal menginisialisasi kekacauan!"
 
 #: ../xfdashboard/main.c:248 ../xfdashboard/main.c:271
 msgid "Failed to create application instance"
-msgstr "Нисам успео да образујем примерак програма"
+msgstr "Gagal membuat instansi aplikasi"
 
 #: ../xfdashboard/main.c:280
 msgid ""
 "Could not restart application because existing instance seems still to be "
 "running."
 msgstr ""
+"Tak dapat memulai ulang aplikasi karena instansi yang ada tampaknya masih "
+"akan berjalan."
