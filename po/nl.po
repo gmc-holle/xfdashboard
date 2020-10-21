@@ -231,6 +231,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
+"Deze waarde bepaalt hoe snel de vensterinhoud moet worden aangemaakt. De waarde 'onmiddellijk' instrueert xfdashboard om de vensterinhoud aan te maken op het ogenblik dat die wordt verzocht; alle andere waarden zullen een wachtrij opstellen en de waarde bepaalt hoe snel de wachtrij zal worden verwerkt.\n"
+"\n"
+"<b>Let op:</b> wijzig deze waarde alleen dan van 'onmiddellijk' in een andere waarde, wanneer uw videokaart, stuurprogramma of systeem te langzaam is om de vensterinhoud meteen aan te maken. U dient elke waarde uit te proberen om die waarde te vinden die het beste bij uw systeem past."
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
@@ -259,6 +262,9 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
+"Indien ingeschakeld zal het aanklikken van een snelstarterpictogram altijd een nieuwe instantie starten van de toepassing.\n"
+"\n"
+"Indien niet ingeschakeld zal het aanklikken het laatst bekende actieve venster van de draaiende toepassing kiezen. Als de toepassing niet al draait, zal er een nieuwe instantie worden gestart."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
@@ -299,6 +305,9 @@ msgid ""
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
 msgstr ""
+"Indien ingeschakeld zal elke schuifgebeurtenis, zoals op en neer met het "
+"muiswieltje, in de vensterweergave het actieve werkblad wijzigen. Dit gedrag"
+" is hetzelfde als in de werkbladselectie."
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
@@ -812,6 +821,9 @@ msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
 msgstr ""
+"Schakelt zichtbaarheid om indien draaiende instantie werd gestart als "
+"achtergronddienst; anders sluit het een draaiende instantie die geen "
+"achtergronddienst is"
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
@@ -896,6 +908,7 @@ msgid ""
 "Could not create configuration folder for applications search provider at "
 "%s: %s"
 msgstr ""
+"Kon geen instellingenmap maken voor zoekdienst voor toepassingen op %s: %s"
 
 #: ../libxfdashboard/applications-search-provider.c:359
 #, c-format
@@ -929,17 +942,20 @@ msgstr ""
 #, c-format
 msgid "Failed to save statistics of applications search provider to %s: %s"
 msgstr ""
+"Kon statistieken van zoekdienst voor toepassingen niet opslaan op %s: %s"
 
 #: ../libxfdashboard/applications-search-provider.c:623
 #, c-format
 msgid "Failed to load statistics of applications search provider from %s: %s"
 msgstr ""
+"Kon statistieken van zoekdienst voor toepassingen niet laden van %s: %s"
 
 #: ../libxfdashboard/applications-search-provider.c:814
 #: ../libxfdashboard/applications-view.c:393
 #: ../libxfdashboard/quicklaunch.c:659
 msgid "No application information available for clicked application button."
 msgstr ""
+"Geen toepassingsinformatie beschikbaar voor aangeklikte toepassingsknop."
 
 #: ../libxfdashboard/applications-search-provider.c:838
 #: ../libxfdashboard/applications-view.c:417
@@ -960,6 +976,8 @@ msgid ""
 "Could not allocate memory to copy search criteria for case-insensitive "
 "search"
 msgstr ""
+"Kon geen geheugen toewijzen om zoekcriteria te kopiëren voor hoofdletter-"
+"ongevoelig zoeken"
 
 #: ../libxfdashboard/applications-search-provider.c:1313
 #, c-format
@@ -1047,6 +1065,7 @@ msgstr ""
 #, c-format
 msgid "%s is a child of %s and cannot be activated at %s"
 msgstr ""
+"%s is een afgeleid venster van %s en kan niet worden geactiveerd op %s"
 
 #: ../libxfdashboard/applications-view.c:1511
 #: ../libxfdashboard/search-result-container.c:1274
@@ -1244,7 +1263,7 @@ msgstr ""
 #: ../libxfdashboard/theme-effects.c:172
 #, c-format
 msgid "Error on line %d char %d: "
-msgstr ""
+msgstr "Fout in regel %d teken %d: "
 
 #: ../libxfdashboard/bindings-pool.c:202
 #, c-format
@@ -1289,7 +1308,7 @@ msgstr ""
 
 #: ../libxfdashboard/bindings-pool.c:379
 msgid "Missing action"
-msgstr ""
+msgstr "Ontbrekende actie"
 
 #: ../libxfdashboard/bindings-pool.c:405
 #, c-format
@@ -1388,68 +1407,71 @@ msgstr ""
 
 #: ../libxfdashboard/click-action.c:659
 msgid "Pressed"
-msgstr ""
+msgstr "Ingedrukt"
 
 #: ../libxfdashboard/click-action.c:660
 msgid "Whether the clickable should be in pressed state"
-msgstr ""
+msgstr "Of het aanklikbare in ingedrukte staat moet verkeren"
 
 #: ../libxfdashboard/click-action.c:671
 msgid "Held"
-msgstr ""
+msgstr "Vastgehouden"
 
 #: ../libxfdashboard/click-action.c:672
 msgid "Whether the clickable has a grab"
-msgstr ""
+msgstr "Of het aanklikbare een handgreep heeft"
 
 #: ../libxfdashboard/click-action.c:687
 msgid "Long Press Duration"
-msgstr ""
+msgstr "Duur van langdurig indrukken"
 
 #: ../libxfdashboard/click-action.c:688
 msgid "The minimum duration of a long press to recognize the gesture"
 msgstr ""
+"De minimale tijdsduur van langdurig indrukken voordat de actie wordt herkend"
 
 #: ../libxfdashboard/click-action.c:705
 msgid "Long Press Threshold"
-msgstr ""
+msgstr "Drempel voor langdurig indrukken"
 
 #: ../libxfdashboard/click-action.c:706
 msgid "The maximum threshold before a long press is cancelled"
-msgstr ""
+msgstr "De maximale drempel voordat langdurig indrukken wordt afgebroken"
 
 #: ../libxfdashboard/collapse-box.c:295
 #, c-format
 msgid "More than one actor added to %s - result are unexpected"
-msgstr ""
+msgstr "Meer dan één acteur toegevoegd aan %s - resultaten zijn onverwacht"
 
 #: ../libxfdashboard/collapse-box.c:614
 msgid "Collapsed"
-msgstr ""
+msgstr "Ingeklapt"
 
 #: ../libxfdashboard/collapse-box.c:615
 msgid "If TRUE this actor is collapsed otherwise it is expanded to real size"
 msgstr ""
+"Indien TRUE (waar), dan wordt deze acteur ingeklapt; anders wordt hij "
+"uitgeklapt naar werkelijke grootte"
 
 #: ../libxfdashboard/collapse-box.c:621
 msgid "Collapsed size"
-msgstr ""
+msgstr "Ingeklapte grootte"
 
 #: ../libxfdashboard/collapse-box.c:622
 msgid "The size of actor when collapsed"
-msgstr ""
+msgstr "De grootte van de acteur wanneer ingeklapt"
 
 #: ../libxfdashboard/collapse-box.c:629
 msgid "Collapse orientation"
-msgstr ""
+msgstr "Oriëntatie van inklapping"
 
 #: ../libxfdashboard/collapse-box.c:630
 msgid "Orientation of area being visible in collapsed state"
-msgstr ""
+msgstr "Oriëntatie van gebied dat zichtbaar is in ingeklapte staat"
 
 #: ../libxfdashboard/collapse-box.c:637
 msgid "Collapse progress"
-msgstr ""
+msgstr "Voortgang van inklappen"
 
 #: ../libxfdashboard/collapse-box.c:638
 msgid ""
@@ -1457,6 +1479,9 @@ msgid ""
 "be between 0.0 and 1.0 and defines the progress between collapsed size "
 "(fraction of 0.0) and preferred size (fraction of 1.0)."
 msgstr ""
+"De voortgangsfractie gebruikt om inklappen of uitklappen te animeren. De "
+"fractie moet tussen 0.0 en 1.0 zijn en bepaalt de voortgang tussen "
+"ingeklapte grootte (fractie van 0.0) en voorkeursgrootte (fractie van 1.0)."
 
 #: ../libxfdashboard/css-selector.c:147
 msgid "Could not create string for parent css selector"
@@ -1515,7 +1540,7 @@ msgstr ""
 #: ../libxfdashboard/desktop-app-info.c:140
 #, c-format
 msgid "Could not load secondary source %s for desktop ID '%s': %s"
-msgstr ""
+msgstr "Kon secundaire bron %s niet laden voor bureaublad-ID '%s': %s"
 
 #: ../libxfdashboard/desktop-app-info.c:247
 #, c-format
@@ -1523,16 +1548,18 @@ msgid ""
 "Cannot create application action because of empty action name for desktop ID"
 " '%s'"
 msgstr ""
+"Kan geen toepassingsactie maken wegens lege actienaam voor bureaublad-ID "
+"'%s'"
 
 #: ../libxfdashboard/desktop-app-info.c:255
 #, c-format
 msgid "Cannot create application action for desktop ID '%s'"
-msgstr ""
+msgstr "Kan geen toepassingsactie maken voor bureaublad-ID '%s'"
 
 #: ../libxfdashboard/desktop-app-info.c:919
 #: ../libxfdashboard/desktop-app-info.c:1197
 msgid "Unable to expand macros at command-line."
-msgstr ""
+msgstr "Kan macro's niet uitklappen via de opdrachtregel."
 
 #. Working directory does not exist or is not a directory
 #: ../libxfdashboard/desktop-app-info.c:997
@@ -1541,6 +1568,8 @@ msgstr ""
 msgid ""
 "Working directory '%s' does not exist. It won't be used when launching '%s'."
 msgstr ""
+"Werkmap '%s' bestaat niet. Hij zal niet worden gebruikt bij het starten van "
+"'%s'."
 
 #: ../libxfdashboard/desktop-app-info.c:1904
 msgid "Valid"
@@ -1584,11 +1613,12 @@ msgstr ""
 #, c-format
 msgid "Invalid application action '%s' to execute for desktop ID '%s'"
 msgstr ""
+"Ongeldige toepassingsactie '%s' om uit te voeren voor bureaublad-ID '%s'"
 
 #: ../libxfdashboard/desktop-app-info.c:2238
 #, c-format
 msgid "Could launch action '%s' for desktop ID '%s': %s"
-msgstr ""
+msgstr "Kon actie '%s'starten voor bureaublad-ID '%s': %s"
 
 #: ../libxfdashboard/desktop-app-info-action.c:186
 #: ../libxfdashboard/desktop-app-info-action.c:211 ../settings/plugins.c:1020
@@ -1618,7 +1648,7 @@ msgstr "Bron"
 
 #: ../libxfdashboard/drag-action.c:929
 msgid "The source actor where drag began"
-msgstr ""
+msgstr "De bronacteur waar het slepen begon"
 
 #: ../libxfdashboard/drop-action.c:78
 #, c-format
@@ -1648,12 +1678,12 @@ msgstr "De ruimte tussen kolommen in een tabel"
 #: ../libxfdashboard/dynamic-table-layout.c:892
 #: ../libxfdashboard/scaled-table-layout.c:535
 msgid "Number children"
-msgstr ""
+msgstr "Aantal afgeleide processen"
 
 #: ../libxfdashboard/dynamic-table-layout.c:893
 #: ../libxfdashboard/scaled-table-layout.c:536
 msgid "Current number of child actors in this layout"
-msgstr ""
+msgstr "Huidig aantal afgeleide processen in deze vormgeving"
 
 #: ../libxfdashboard/dynamic-table-layout.c:901 ../libxfdashboard/model.c:283
 #: ../libxfdashboard/scaled-table-layout.c:544
@@ -1699,15 +1729,15 @@ msgstr "Grootte van pictogram"
 #: ../libxfdashboard/search-result-container.c:1290
 #: ../libxfdashboard/text-box.c:777
 msgid "Padding"
-msgstr ""
+msgstr "Opvulling"
 
 #: ../libxfdashboard/emblem-effect.c:487
 msgid "Padding around emblem"
-msgstr ""
+msgstr "Opvulling rond embleem"
 
 #: ../libxfdashboard/emblem-effect.c:494
 msgid "X align"
-msgstr ""
+msgstr "X-uitlijning"
 
 #: ../libxfdashboard/emblem-effect.c:495
 msgid ""
@@ -1717,7 +1747,7 @@ msgstr ""
 
 #: ../libxfdashboard/emblem-effect.c:502
 msgid "Y align"
-msgstr ""
+msgstr "Y-uitlijning"
 
 #: ../libxfdashboard/emblem-effect.c:503
 msgid ""
@@ -1727,11 +1757,11 @@ msgstr ""
 
 #: ../libxfdashboard/emblem-effect.c:510
 msgid "Anchor point"
-msgstr ""
+msgstr "Ankerpunt"
 
 #: ../libxfdashboard/emblem-effect.c:511
 msgid "The anchor point of emblem"
-msgstr ""
+msgstr "Het ankerpunt van het embleem"
 
 #: ../libxfdashboard/fill-box-layout.c:589
 #: ../libxfdashboard/quicklaunch.c:3122 ../libxfdashboard/scrollbar.c:713
@@ -1748,13 +1778,13 @@ msgstr ""
 
 #: ../libxfdashboard/fill-box-layout.c:597
 msgid "spacing"
-msgstr ""
+msgstr "ruimte"
 
 #: ../libxfdashboard/fill-box-layout.c:598
 #: ../libxfdashboard/quicklaunch.c:3115
 #: ../libxfdashboard/workspace-selector.c:1253
 msgid "The spacing between children"
-msgstr ""
+msgstr "De ruimte tussen afgeleide vensters"
 
 #: ../libxfdashboard/fill-box-layout.c:606
 msgid "Homogeneous"
@@ -1765,14 +1795,16 @@ msgid ""
 "Whether the layout should be homogeneous, i.e. all children get the same "
 "size"
 msgstr ""
+"Of de vormgeving eensoortig moet zijn, d.i. alle afgeleide vensters krijgen "
+"dezelfde grootte"
 
 #: ../libxfdashboard/fill-box-layout.c:613
 msgid "Keep aspect"
-msgstr ""
+msgstr "Verhoudingen behouden"
 
 #: ../libxfdashboard/fill-box-layout.c:614
 msgid "Whether all children should keep their aspect"
-msgstr ""
+msgstr "Of alle afgeleide vensters hun verhouding moeten behouden"
 
 #: ../libxfdashboard/focus-manager.c:562 ../libxfdashboard/focus-manager.c:570
 #, c-format
@@ -1839,16 +1871,17 @@ msgstr ""
 #, c-format
 msgid "Icon file '%s' does not exist - trying fallback icon '%s'"
 msgstr ""
+"Pictogrambestand '%s' bestaat niet - terugvalpictogram '%s' aan het proberen"
 
 #: ../libxfdashboard/image-content.c:429
 #, c-format
 msgid "Could not load fallback icon for file '%s'"
-msgstr ""
+msgstr "Kon geen terugvalpictogram laden voor bestand '%s'"
 
 #: ../libxfdashboard/image-content.c:452 ../libxfdashboard/image-content.c:718
 #, c-format
 msgid "Failed to load image data into content for icon '%s': %s"
-msgstr ""
+msgstr "Kon geen afbeeldingsgegevens laden in inhoud voor pictogram '%s': %s"
 
 #: ../libxfdashboard/image-content.c:490
 #, c-format
@@ -1858,17 +1891,19 @@ msgstr ""
 #: ../libxfdashboard/image-content.c:656
 #, c-format
 msgid "Could not lookup icon name '%s' for icon '%s'"
-msgstr ""
+msgstr "Kon pictogramnaam '%s' niet opzoeken voor pictogram '%s'"
 
 #: ../libxfdashboard/image-content.c:684
 #, c-format
 msgid "Could not lookup themed icon '%s' - trying fallback icon '%s'"
 msgstr ""
+"Kon themapictogram '%s' niet opzoeken - terugvalpictogram '%s' aan het "
+"proberen"
 
 #: ../libxfdashboard/image-content.c:697
 #, c-format
 msgid "Could not lookup fallback icon '%s' for icon '%s'"
-msgstr ""
+msgstr "Kon terugvalpictogram '%s' niet opzoeken voor pictogram '%s'"
 
 #: ../libxfdashboard/image-content.c:749
 #, c-format
@@ -1878,17 +1913,17 @@ msgstr ""
 #: ../libxfdashboard/image-content.c:822
 #, c-format
 msgid "Could not lookup gicon '%s'"
-msgstr ""
+msgstr "Kon gicon '%s' niet opzoeken"
 
 #: ../libxfdashboard/image-content.c:833
 #, c-format
 msgid "Could not lookup fallback icon for gicon '%s'"
-msgstr ""
+msgstr "Kon geen terugvalpictogram opzoeken voor gicon '%s'"
 
 #: ../libxfdashboard/image-content.c:854
 #, c-format
 msgid "Failed to load image data into content for gicon '%s': %s"
-msgstr ""
+msgstr "Kon geen afbeeldingsgegevens laden in inhoud voor gicon '%s': %s"
 
 #: ../libxfdashboard/image-content.c:885
 #, c-format
@@ -1933,7 +1968,7 @@ msgstr ""
 
 #: ../libxfdashboard/label.c:1241 ../libxfdashboard/text-box.c:778
 msgid "Padding between background and elements"
-msgstr ""
+msgstr "Opvulling tussen achtergrond en elementen"
 
 #: ../libxfdashboard/label.c:1249 ../libxfdashboard/text-box.c:786
 msgid "Spacing between text and icon"
@@ -1949,15 +1984,15 @@ msgstr "Stijl van de knop die tekst en/of pictogram toont"
 
 #: ../libxfdashboard/label.c:1271
 msgid "Icon GIcon"
-msgstr ""
+msgstr "Pictogram GIcon"
 
 #: ../libxfdashboard/label.c:1272
 msgid "The GIcon of icon"
-msgstr ""
+msgstr "De GIcon van pictogram"
 
 #: ../libxfdashboard/label.c:1278
 msgid "Icon image"
-msgstr ""
+msgstr "Pictogramafbeelding"
 
 #: ../libxfdashboard/label.c:1279
 msgid "Image of icon"
@@ -2032,11 +2067,11 @@ msgstr ""
 
 #: ../libxfdashboard/label.c:1344
 msgid "Text justify"
-msgstr ""
+msgstr "Tekstuitlijning"
 
 #: ../libxfdashboard/label.c:1345
 msgid "Justification (line alignment) of label"
-msgstr ""
+msgstr "Uitlijning (regeluitlijning) van etiket"
 
 #: ../libxfdashboard/live-window-simple.c:505
 #: ../libxfdashboard/x11/window-content-x11.c:2137
@@ -2067,7 +2102,7 @@ msgstr ""
 
 #: ../libxfdashboard/live-window.c:1067
 msgid "Window number"
-msgstr ""
+msgstr "Vensternummer"
 
 #: ../libxfdashboard/live-window.c:1068
 msgid ""
@@ -2075,18 +2110,21 @@ msgid ""
 "hidden and the window number will be shown instead. If set to zero the close"
 " button will be shown again."
 msgstr ""
+"Het toegewezen vensternummer. Indien ingesteld op niet-nul zal de sluitknop "
+"verborgen zijn en in plaats daarvan zal het vensternummer worden getoond. "
+"Indien ingesteld op nul, dan zal de sluitknop weer worden getoond."
 
 #: ../libxfdashboard/live-window.c:1075
 msgid "Close button padding"
-msgstr ""
+msgstr "Opvulling van sluitknop"
 
 #: ../libxfdashboard/live-window.c:1076
 msgid "Padding of close button to window actor in pixels"
-msgstr ""
+msgstr "Opvulling van sluitknop voor vensteracteur in beeldpunten"
 
 #: ../libxfdashboard/live-window.c:1083
 msgid "Title actor padding"
-msgstr ""
+msgstr "Opvulling titelacteur"
 
 #: ../libxfdashboard/live-window.c:1084
 msgid "Padding of title actor to window actor in pixels"
@@ -2143,11 +2181,11 @@ msgstr "indien TRUE (waar), dan moet de naam van het werkblad worden getoond"
 
 #: ../libxfdashboard/live-workspace.c:1028
 msgid "Workspace name padding"
-msgstr ""
+msgstr "Opvulling van werkbladnaam"
 
 #: ../libxfdashboard/live-workspace.c:1029
 msgid "Padding of workspace name actor in pixels"
-msgstr ""
+msgstr "Opvulling van werkbladnaamacteur in beeldpunten"
 
 #: ../libxfdashboard/model.c:284
 msgid "The number of rows this model contains"
@@ -2488,21 +2526,21 @@ msgstr ""
 
 #: ../libxfdashboard/popup-menu.c:1017
 msgid "Title GIcon"
-msgstr ""
+msgstr "Titel GIcon"
 
 #: ../libxfdashboard/popup-menu.c:1018
 msgid "The GIcon of icon used in title"
-msgstr ""
+msgstr "De GIcon van pictogram gebruikt in titel"
 
 #: ../libxfdashboard/popup-menu.c:1692
 #, c-format
 msgid "%s is not a child of %s and cannot be moved"
-msgstr ""
+msgstr "%s is geen afgeleid venster van %s en kan niet worden verplaatst"
 
 #: ../libxfdashboard/popup-menu.c:1799
 #, c-format
 msgid "%s is not a child of %s and cannot be removed"
-msgstr ""
+msgstr "%s is geen afgeleid venster van %s en kan niet worden verwijderd"
 
 #. Show error message
 #: ../libxfdashboard/popup-menu.c:1878
@@ -2715,11 +2753,11 @@ msgstr ""
 
 #: ../libxfdashboard/search-provider.c:168
 msgid "Provider ID"
-msgstr ""
+msgstr "Zoekdienst-ID"
 
 #: ../libxfdashboard/search-provider.c:169
 msgid "The internal ID used to register this type of search provider"
-msgstr ""
+msgstr "De interne ID voor het registreren van dit soort zoekdienst"
 
 #: ../libxfdashboard/search-result-container.c:427
 #, c-format
@@ -2786,7 +2824,7 @@ msgstr ""
 
 #: ../libxfdashboard/search-result-container.c:1283
 msgid "Spacing between each result item"
-msgstr ""
+msgstr "Ruimte tussen elk resultaatelement"
 
 #: ../libxfdashboard/search-result-container.c:1291
 msgid "Padding between title and item results container"
@@ -3044,49 +3082,50 @@ msgstr "Vlag die aangeeft of er een suggestietekst is ingesteld"
 #, c-format
 msgid "Cannot get argument %d because only %d arguments are available"
 msgstr ""
+"Kan argument %d niet verkrijgen want slechts %d argumenten beschikbaar"
 
 #: ../libxfdashboard/theme-css.c:287
 #, c-format
 msgid "Cannot allocate memory for argument %d"
-msgstr ""
+msgstr "Kan geen geheugen toewijzen voor argument %d"
 
 #: ../libxfdashboard/theme-css.c:305
 #, c-format
 msgid "Cannot transform argument %d from type '%s' to type '%s'"
-msgstr ""
+msgstr "Kan argument %d niet omzetten van type '%s' naar type '%s'"
 
 #: ../libxfdashboard/theme-css.c:342
 msgid "Missing string to convert to color component value."
-msgstr ""
+msgstr "Ontbrekende tekenreeks voor omzetting naar kleurcomponentwaarde."
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:365
 #, c-format
 msgid "Cannot convert string '%s' to color component value."
-msgstr ""
+msgstr "Kan tekenreeks '%s' niet omzetten naar kleurcomponentwaarde."
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:385
 #, c-format
 msgid "Color component value %.2f out of range"
-msgstr ""
+msgstr "Kleurcomponentwaarde %.2f is buiten bereik"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:743
 #, c-format
 msgid "Factor %.2f is out of range"
-msgstr ""
+msgstr "Factor %.2f is buiten bereik"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:848
 #, c-format
 msgid "Alpha factor %.2f is out of range"
-msgstr ""
+msgstr "Alpha factor %.2f is buiten bereik"
 
 #: ../libxfdashboard/theme-css.c:901
 #, c-format
 msgid "CSS function '%s' is already registered."
-msgstr ""
+msgstr "CSS-functie '%s' is reeds geregistreerd."
 
 #: ../libxfdashboard/theme-css.c:944 ../libxfdashboard/theme-css.c:1057
 #: ../libxfdashboard/theme-css.c:2156
@@ -3176,7 +3215,7 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1905
 msgid "Missing filename to import"
-msgstr ""
+msgstr "Ontbrekende bestandsnaam voor importeren"
 
 #: ../libxfdashboard/theme-css.c:1927
 msgid "Missing closing ')' at @import keyword."
@@ -3225,12 +3264,12 @@ msgstr "Themapad"
 
 #: ../libxfdashboard/theme-css.c:2578
 msgid "Path of theme loading from"
-msgstr ""
+msgstr "Pad van thema te laden van"
 
 #: ../libxfdashboard/theme-css.c:2665
 #, c-format
 msgid "Could not get file for path '%s'"
-msgstr ""
+msgstr "Kon geen bestand verkrijgen voor pad '%s'"
 
 #: ../libxfdashboard/theme-animation.c:138
 #, c-format
@@ -3266,7 +3305,7 @@ msgstr ""
 #: ../libxfdashboard/theme-animation.c:586
 #, c-format
 msgid "Invalid base for conversion"
-msgstr ""
+msgstr "Ongeldige basis voor omzetting"
 
 #: ../libxfdashboard/theme-animation.c:597
 #, c-format
@@ -3365,7 +3404,7 @@ msgstr ""
 #: ../libxfdashboard/theme-animation.c:1736
 #, c-format
 msgid "Cannot allocate memory for animation '%s'"
-msgstr ""
+msgstr "Kan geen geheugen toewijzen voor animatie '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1744
 #, c-format
@@ -3570,17 +3609,17 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1963
 #, c-format
 msgid "File %s - "
-msgstr ""
+msgstr "Bestand %s - "
 
 #: ../libxfdashboard/theme-layout.c:1974
 #, c-format
 msgid "File %s does not contain an interface"
-msgstr ""
+msgstr "Bestand %s bevat geen gebruikersschil"
 
 #: ../libxfdashboard/theme-layout.c:1984
 #, c-format
 msgid "Interface at file %s has no ID"
-msgstr ""
+msgstr "Gebruikersschil voor bestand %s heeft geen ID"
 
 #: ../libxfdashboard/theme.c:120 ../libxfdashboard/theme.c:603
 #, c-format
@@ -3868,7 +3907,7 @@ msgstr ""
 
 #: ../libxfdashboard/window-tracker-monitor.c:109
 msgid "Is primary"
-msgstr ""
+msgstr "Is primair"
 
 #: ../libxfdashboard/window-tracker-monitor.c:110
 msgid "Whether this monitor is the primary one"
@@ -3896,7 +3935,7 @@ msgstr "Acties"
 
 #: ../libxfdashboard/window-tracker-window.c:198
 msgid "The possible actions at window"
-msgstr ""
+msgstr "De mogelijke acties voor venster"
 
 #: ../libxfdashboard/window-tracker-window.c:787
 #: ../libxfdashboard/window-tracker-window.c:828
@@ -3992,7 +4031,7 @@ msgstr ""
 
 #: ../libxfdashboard/windows-view.c:2091
 msgid "Filter workspace windows"
-msgstr ""
+msgstr "Werkbladvensters filteren"
 
 #: ../libxfdashboard/windows-view.c:2092
 msgid "Whether this view should only show windows of active workspace"
@@ -4018,26 +4057,31 @@ msgstr "Maximale grootte"
 #: ../libxfdashboard/workspace-selector.c:1269
 msgid "The maximum size of this actor for opposite direction of orientation"
 msgstr ""
+"De maximumgrootte van deze acteur voor omgekeerde richting van oriëntatie"
 
 #: ../libxfdashboard/workspace-selector.c:1276
 msgid "Maximum fraction"
-msgstr ""
+msgstr "Maximale fractie"
 
 #: ../libxfdashboard/workspace-selector.c:1277
 msgid ""
 "The maximum size of this actor for opposite direction of orientation defined"
 " by fraction between 0.0 and 1.0"
 msgstr ""
+"De maximumgrootte van deze acteur voor omgekeerde richting van oriëntatie "
+"bepaald door fractie tussen 0.0 en 1.0"
 
 #: ../libxfdashboard/workspace-selector.c:1284
 msgid "Using fraction"
-msgstr ""
+msgstr "Met gebruik van fractie"
 
 #: ../libxfdashboard/workspace-selector.c:1285
 msgid ""
 "Flag indicating if maximum size is static or defined by fraction between 0.0"
 " and 1.0"
 msgstr ""
+"Vlag die aangeeft of maximumgrootte statisch is of wordt bepaald door "
+"fractie tussen 0.0 en 1.0"
 
 #: ../libxfdashboard/workspace-selector.c:1291
 msgid "Show current monitor only"
