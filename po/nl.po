@@ -76,28 +76,37 @@ msgid ""
 "This unstable development adds more animations as well as some smaller "
 "fixes."
 msgstr ""
+"Deze onstabiele ontwikkelversie voegt meer animaties toe alsook enkele "
+"kleinere reparaties."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:7
 msgid "This unstable development adds animations."
-msgstr ""
+msgstr "Deze onstabiele ontwikkelversie voegt animaties toe."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:8
 msgid ""
 "This unstable development adds support for touchpads and application actions"
 " (Jumplists, Quicklists) as well as new and updated translations."
 msgstr ""
+"Deze onstabiele ontwikkelversie voegt ondersteuning toe voor aanraakvelden "
+"en toepassingsacties (Springlijsten, Snellijsten), alsook nieuwe en "
+"bijgewerkte vertalingen."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
 "This unstable development adds lots of new and updated translations and "
 "support for newer xfconf versions."
 msgstr ""
+"Deze onstabiele ontwikkelversie voegt veel nieuwe en bijgewerkte vertalingen"
+" toe en ondersteuning voor nieuwere versies van xfconf."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
 "This unstable development implements a new experimental backend for GDK as "
 "well as it supports user stylesheets now."
 msgstr ""
+"Deze onstabiele ontwikkelversie implementeert een nieuwe experimentele "
+"achtergronddienst voor GDK alsook ondersteuning voor gebruikerssjablonen."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
@@ -105,22 +114,30 @@ msgid ""
 "adds a fine-grained debugging system and introduces an interface for "
 "multiple backends but only X11 is still the one only one supported."
 msgstr ""
+"Deze onstabiele ontwikkelversie verbetert de laadsnelheid van afbeeldingen "
+"en pictogrammen, voegt een fijnmazig foutopsporingssysteem toe en "
+"introduceert een gebruikerschil voor meerdere achtergronddiensten. Maar "
+"alleen X11 wordt vooralsnog ondersteund."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid ""
 "This unstable development introduces child windows shown next to the main "
 "window."
 msgstr ""
+"Deze onstabiele ontwikkelversie introduceert afgeleide vensters die naast "
+"het hoofdvenster worden getoond."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
+"Deze stabiele versie repareert een fout inzake het instellen van de juiste "
+"standaardtoepassingen bij eerste gebruik."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid "This unstable development introduces pop-up menus."
-msgstr ""
+msgstr "Deze onstabiele ontwikkelversie introduceert opduikmenu's."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid ""
@@ -128,6 +145,9 @@ msgid ""
 "application tracker. It also contains a huge collection of other larger and "
 "smaller improvements."
 msgstr ""
+"Deze stabiele versie introduceert vele nieuwe functies zoals invoegsels en "
+"een toepassingentraceerder. Hij bevat ook een enorme verzameling grotere en "
+"kleinere verbeteringen. "
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
@@ -3075,41 +3095,41 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1083
 msgid "Missing function argument"
-msgstr ""
+msgstr "Ontbrekend functie-argument"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:1107
 #, c-format
 msgid "Invalid character '%c' in function argument"
-msgstr ""
+msgstr "Ongeldig teken '%c' in functie-argument"
 
 #: ../libxfdashboard/theme-css.c:1132
 msgid "Invalid character in function argument"
-msgstr ""
+msgstr "Ongeldig teken in functie-argument"
 
 #: ../libxfdashboard/theme-css.c:1169
 msgid "Missing ')' after function"
-msgstr ""
+msgstr "Ontbrekend ')' na functie"
 
 #: ../libxfdashboard/theme-css.c:1184
 msgid "Missing '(' after function"
-msgstr ""
+msgstr "Ontbrekend '(' na functie"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:1223
 #, c-format
 msgid "Could not transform result of function '%s' to a string"
-msgstr ""
+msgstr "Kon resultaat van functie '%s' niet omzetten naar een tekenreeks"
 
 #: ../libxfdashboard/theme-css.c:1258
 #, c-format
 msgid "Function '%s' failed with error: %s"
-msgstr ""
+msgstr "Functie '%s' mislukte met foutmelding: %s"
 
 #: ../libxfdashboard/theme-css.c:1264
 #, c-format
 msgid "Function '%s' failed!"
-msgstr ""
+msgstr "Functie '%s' is mislukt."
 
 #: ../libxfdashboard/theme-css.c:1303
 #, c-format
@@ -3131,19 +3151,20 @@ msgstr ""
 
 #: ../libxfdashboard/theme-css.c:1600
 msgid "Invalid property name"
-msgstr ""
+msgstr "Ongeldige eigenschapnaam"
 
 #: ../libxfdashboard/theme-css.c:1620
 msgid "Property names and values must be separated by colon"
 msgstr ""
+"Eigenschapnamen en waarden moeten worden gescheiden door een dubbele punt"
 
 #: ../libxfdashboard/theme-css.c:1676
 msgid "Invalid property value"
-msgstr ""
+msgstr "Ongeldige eigenschapwaarde"
 
 #: ../libxfdashboard/theme-css.c:1701
 msgid "Property values must end with semi-colon"
-msgstr ""
+msgstr "Eigenschapwaarden moeten eindigen met puntkomma"
 
 #: ../libxfdashboard/theme-css.c:1844
 msgid "Missing '(' after @import keyword."
