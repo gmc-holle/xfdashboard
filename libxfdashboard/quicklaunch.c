@@ -1486,8 +1486,10 @@ static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuick
 
 		/* Only add desktop file if it is an application button for
 		 * a favourite and provides a desktop ID or desktop file name
+		 * and is not going to be destroyed
 		 */
  		if(!XFDASHBOARD_IS_APPLICATION_BUTTON(child)) continue;
+		if(xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(child), "destroying")) continue;
 		if(!xfdashboard_stylable_has_class(XFDASHBOARD_STYLABLE(child), "favourite-app")) continue;
 
 		desktopAppInfo=xfdashboard_application_button_get_app_info(XFDASHBOARD_APPLICATION_BUTTON(child));

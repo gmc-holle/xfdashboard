@@ -1956,6 +1956,9 @@ gboolean xfdashboard_actor_destroy(ClutterActor *self)
 								G_CALLBACK(_xfdashboard_actor_on_destroy_animation_done),
 								self);
 
+		/* Set CSS pseudo-class that this actor is going to be destroyed */
+		xfdashboard_stylable_add_pseudo_class(XFDASHBOARD_STYLABLE(self), "destroying");
+
 		/* Start destroy animation and set flag that animation was
 		 * found and started.
 		 */
