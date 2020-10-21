@@ -264,7 +264,7 @@ static void _xfdashboard_view_selector_on_view_removed(XfdashboardViewSelector *
 		view=g_object_get_data(G_OBJECT(child), "view");
 		if(XFDASHBOARD_IS_VIEW(view) && XFDASHBOARD_VIEW(view)==inView)
 		{
-			clutter_actor_destroy(child);
+			xfdashboard_actor_destroy(child);
 		}
 	}
 }
@@ -545,7 +545,7 @@ void xfdashboard_view_selector_set_viewpad(XfdashboardViewSelector *self, Xfdash
 	if(priv->viewpad)
 	{
 		/* Destroy all children */
-		clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
+		xfdashboard_actor_destroy_all_children(CLUTTER_ACTOR(self));
 
 		/* Release old viewpad */
 		g_signal_handlers_disconnect_by_data(priv->viewpad, self);

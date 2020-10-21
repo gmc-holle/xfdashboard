@@ -445,7 +445,7 @@ static ClutterActor* _xfdashboard_search_result_container_result_item_actor_new(
 		g_free(resultItemText);
 
 		/* Release allocated resources */
-		clutter_actor_destroy(actor);
+		xfdashboard_actor_destroy(actor);
 
 		return(NULL);
 	}
@@ -735,7 +735,7 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 				g_hash_table_remove(priv->mapping, resultItem);
 
 				/* Destroy actor and remove from hash table */
-				clutter_actor_destroy(actor);
+				xfdashboard_actor_destroy(actor);
 			}
 		}
 	}

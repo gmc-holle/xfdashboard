@@ -339,7 +339,7 @@ static void _xfdashboard_windows_view_recreate_window_actors(XfdashboardWindowsV
 	}
 
 	/* Destroy all actors */
-	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
+	xfdashboard_actor_destroy_all_children(CLUTTER_ACTOR(self));
 
 	/* Create live window actors for new workspace */
 	if(priv->workspace!=NULL)
@@ -759,7 +759,7 @@ static void _xfdashboard_windows_view_on_window_monitor_changed(XfdashboardWindo
 			if(G_LIKELY(liveWindow))
 			{
 				/* Destroy actor */
-				clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
+				xfdashboard_actor_destroy(CLUTTER_ACTOR(liveWindow));
 			}
 		}
 
@@ -908,7 +908,7 @@ static void _xfdashboard_windows_view_on_window_workspace_changed(XfdashboardWin
 			if(G_LIKELY(liveWindow))
 			{
 				/* Destroy actor */
-				clutter_actor_destroy(CLUTTER_ACTOR(liveWindow));
+				xfdashboard_actor_destroy(CLUTTER_ACTOR(liveWindow));
 			}
 		}
 
@@ -1002,7 +1002,7 @@ static void _xfdashboard_windows_view_on_drag_end(ClutterDragAction *inAction,
 		 */
 		clutter_drag_action_set_drag_handle(inAction, NULL);
 #endif
-		clutter_actor_destroy(dragHandle);
+		xfdashboard_actor_destroy(dragHandle);
 	}
 
 	/* Allow signal "clicked" from being emitted again */

@@ -548,7 +548,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_fa
 	}
 
 	/* Destroy favourite icon before updating property */
-	clutter_actor_destroy(CLUTTER_ACTOR(appButton));
+	xfdashboard_actor_destroy(CLUTTER_ACTOR(appButton));
 
 	/* Update favourites from icon order */
 	_xfdashboard_quicklaunch_update_property_from_icons(self);
@@ -603,7 +603,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_add_to_favouri
 		if(favouriteActor)
 		{
 			/* Remove existing actor from this quicklaunch */
-			clutter_actor_destroy(favouriteActor);
+			xfdashboard_actor_destroy(favouriteActor);
 		}
 
 		/* Now (re-)add current selection to favourites but hidden as
@@ -798,7 +798,7 @@ static void _xfdashboard_quicklaunch_on_favourite_drag_end(ClutterDragAction *in
 		 */
 		clutter_drag_action_set_drag_handle(inAction, NULL);
 #endif
-		clutter_actor_destroy(dragHandle);
+		xfdashboard_actor_destroy(dragHandle);
 	}
 
 	/* Allow signal "clicked" from being emitted again */
@@ -950,7 +950,7 @@ static void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardQuicklaunch *self,
 			 * apps for the newly added favourite if available.
 			 */
 			actor=_xfdashboard_quicklaunch_get_actor_for_appinfo(self, appInfo);
-			if(actor) clutter_actor_destroy(actor);
+			if(actor) xfdashboard_actor_destroy(actor);
 
 			/* Emit signal for newly added favourite */
 			g_signal_emit(self, XfdashboardQuicklaunchSignals[SIGNAL_FAVOURITE_ADDED], 0, appInfo);
@@ -974,7 +974,7 @@ static void _xfdashboard_quicklaunch_on_drop_drop(XfdashboardQuicklaunch *self,
 
 		if(priv->dragPreviewIcon)
 		{
-			clutter_actor_destroy(priv->dragPreviewIcon);
+			xfdashboard_actor_destroy(priv->dragPreviewIcon);
 			priv->dragPreviewIcon=NULL;
 		}
 	}
@@ -1042,7 +1042,7 @@ static void _xfdashboard_quicklaunch_on_drop_end(XfdashboardQuicklaunch *self,
 	 */
 	if(priv->dragPreviewIcon)
 	{
-		clutter_actor_destroy(priv->dragPreviewIcon);
+		xfdashboard_actor_destroy(priv->dragPreviewIcon);
 		priv->dragPreviewIcon=NULL;
 	}
 
@@ -1284,12 +1284,12 @@ static void _xfdashboard_quicklaunch_on_trash_drop_drop(XfdashboardQuicklaunch *
 	}
 
 	/* Destroy dragged favourite icon before updating property */
-	clutter_actor_destroy(draggedActor);
+	xfdashboard_actor_destroy(draggedActor);
 
 	/* Destroy preview icon before updating property */
 	if(priv->dragPreviewIcon)
 	{
-		clutter_actor_destroy(priv->dragPreviewIcon);
+		xfdashboard_actor_destroy(priv->dragPreviewIcon);
 		priv->dragPreviewIcon=NULL;
 	}
 
@@ -2040,7 +2040,7 @@ static gboolean _xfdashboard_quicklaunch_selection_add_favourite(XfdashboardQuic
 		if(favouriteActor)
 		{
 			/* Remove existing actor from this quicklaunch */
-			clutter_actor_destroy(favouriteActor);
+			xfdashboard_actor_destroy(favouriteActor);
 		}
 
 		/* Now (re-)add current selection to favourites but hidden as
@@ -2143,7 +2143,7 @@ static gboolean _xfdashboard_quicklaunch_selection_remove_favourite(XfdashboardQ
 	}
 
 	/* Remove actor from this quicklaunch */
-	clutter_actor_destroy(currentSelection);
+	xfdashboard_actor_destroy(currentSelection);
 
 	/* Re-add removed favourite as dynamically added application button
 	 * for non-favourites apps when it is still running.
@@ -2392,7 +2392,7 @@ static void _xfdashboard_quicklaunch_on_app_tracker_state_changed(XfdashboardQui
 								actor,
 								inDesktopID);
 
-			clutter_actor_destroy(actor);
+			xfdashboard_actor_destroy(actor);
 		}
 	}
 }

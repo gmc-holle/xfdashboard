@@ -259,7 +259,7 @@ static void _xfdashboard_search_view_provider_data_free(XfdashboardSearchViewPro
 		g_signal_handlers_disconnect_by_data(inData->container, inData);
 
 		/* Destroy container */
-		clutter_actor_destroy(inData->container);
+		xfdashboard_actor_destroy(inData->container);
 		inData->container=NULL;
 	}
 
@@ -683,7 +683,7 @@ static void _xfdashboard_search_view_update_provider_container(XfdashboardSearch
 				g_signal_handlers_disconnect_by_data(inProviderData->container, inProviderData);
 
 				/* Destroy container */
-				clutter_actor_destroy(inProviderData->container);
+				xfdashboard_actor_destroy(inProviderData->container);
 				inProviderData->container=NULL;
 			}
 		}
@@ -1793,7 +1793,7 @@ void xfdashboard_search_view_reset_search(XfdashboardSearchView *self)
 			g_signal_handlers_disconnect_by_data(providerData->container, providerData);
 
 			/* Destroy container */
-			clutter_actor_destroy(providerData->container);
+			xfdashboard_actor_destroy(providerData->container);
 			providerData->container=NULL;
 		}
 

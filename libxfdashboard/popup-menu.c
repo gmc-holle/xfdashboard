@@ -424,7 +424,7 @@ static void _xfdashboard_popup_menu_on_source_destroy(XfdashboardPopupMenu *self
 			/* Destroy this pop-up menu actor when destroy-on-cancel was enabled */
 			if(priv->destroyOnCancel)
 			{
-				clutter_actor_destroy(CLUTTER_ACTOR(self));
+				xfdashboard_actor_destroy(CLUTTER_ACTOR(self));
 			}
 		}
 }
@@ -1235,7 +1235,7 @@ ClutterActor* xfdashboard_popup_menu_new_for_source(ClutterActor *inSource)
  * @self: A #XfdashboardPopupMenu
  *
  * Retrieves the automatic destruction mode of @self. If automatic destruction mode
- * is %TRUE then the pop-up menu will be destroy by calling clutter_actor_destroy()
+ * is %TRUE then the pop-up menu will be destroy by calling xfdashboard_actor_destroy()
  * when it is cancelled, e.g. by calling xfdashboard_popup_menu_cancel().
  *
  * Return value: Returns %TRUE if automatic destruction mode is enabled, otherwise
@@ -1254,7 +1254,7 @@ gboolean xfdashboard_popup_menu_get_destroy_on_cancel(XfdashboardPopupMenu *self
  * @inDestroyOnCancel: The automatic destruction mode to set at @self
  *
  * Sets the automatic destruction mode of @self. If @inDestroyOnCancel is set to
- * %TRUE then the pop-up menu will automatically destroyed by calling clutter_actor_destroy()
+ * %TRUE then the pop-up menu will automatically destroyed by calling xfdashboard_actor_destroy()
  * when it is cancelled, e.g. by calling xfdashboard_popup_menu_cancel().
  */
 void xfdashboard_popup_menu_set_destroy_on_cancel(XfdashboardPopupMenu *self, gboolean inDestroyOnCancel)
@@ -1985,6 +1985,6 @@ void xfdashboard_popup_menu_cancel(XfdashboardPopupMenu *self)
 	/* Destroy this pop-up menu actor when destroy-on-cancel was enabled */
 	if(priv->destroyOnCancel)
 	{
-		clutter_actor_destroy(CLUTTER_ACTOR(self));
+		xfdashboard_actor_destroy(CLUTTER_ACTOR(self));
 	}
 }

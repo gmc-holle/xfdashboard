@@ -1941,7 +1941,7 @@ gboolean xfdashboard_actor_destroy(ClutterActor *self)
 	animation=NULL;
 	animationStarted=FALSE;
 
-	/* Check if an animation exists */
+	/* Check if an animation exists but only for actors derived from XfdashboardActor */
 	if(XFDASHBOARD_IS_ACTOR(self))
 	{
 		animation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), "destroy");

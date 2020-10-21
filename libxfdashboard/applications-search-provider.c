@@ -916,7 +916,7 @@ static void _xfdashboard_applications_search_provider_on_drag_end(ClutterDragAct
 		 */
 		clutter_drag_action_set_drag_handle(inAction, NULL);
 #endif
-		clutter_actor_destroy(dragHandle);
+		xfdashboard_actor_destroy(dragHandle);
 	}
 }
 

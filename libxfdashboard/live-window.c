@@ -224,7 +224,7 @@ static void _xfdashboard_live_window_on_subwindow_actor_workspace_changed(Xfdash
 	 * destroy it.
 	 */
 	actor=_xfdashboard_live_window_find_subwindow_actor(self, window);
-	if(actor) clutter_actor_destroy(actor);
+	if(actor) xfdashboard_actor_destroy(actor);
 }
 
 /* A sub-window changed its state, so check if this sub-window should not be
@@ -251,7 +251,7 @@ static void _xfdashboard_live_window_on_subwindow_actor_state_changed(Xfdashboar
 	 * destroy it.
 	 */
 	actor=_xfdashboard_live_window_find_subwindow_actor(self, window);
-	if(actor) clutter_actor_destroy(actor);
+	if(actor) xfdashboard_actor_destroy(actor);
 }
 
 /* A sub-window actor is going to be destroyed, so clean up */
@@ -527,7 +527,7 @@ static void _xfdashboard_live_window_setup_subwindows_layer(XfdashboardLiveWindo
 	/* Destroy all sub-windows and do not create sub-windows actor if showing
 	 * them was disabled.
 	 */
-	clutter_actor_destroy_all_children(priv->actorSubwindowsLayer);
+	xfdashboard_actor_destroy_all_children(priv->actorSubwindowsLayer);
 	if(!priv->allowSubwindows || !priv->showSubwindows) return;
 
 	/* Create sub-window actors for the windows belonging to this one */

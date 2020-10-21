@@ -409,7 +409,7 @@ static void _xfdashboard_workspace_selector_on_workspace_removed(XfdashboardWork
 
 	/* Iterate through children and find workspace to destroy */
 	liveWorkspace=_xfdashboard_workspace_selector_find_actor_for_workspace(self, inWorkspace);
-	if(liveWorkspace) clutter_actor_destroy(CLUTTER_ACTOR(liveWorkspace));
+	if(liveWorkspace) xfdashboard_actor_destroy(CLUTTER_ACTOR(liveWorkspace));
 }
 
 /* A workspace was created */

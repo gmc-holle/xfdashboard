@@ -209,7 +209,7 @@ static void _xfdashboard_applications_view_on_drag_end(ClutterDragAction *inActi
 		 */
 		clutter_drag_action_set_drag_handle(inAction, NULL);
 #endif
-		clutter_actor_destroy(dragHandle);
+		xfdashboard_actor_destroy(dragHandle);
 	}
 
 	/* Allow signal "clicked" from being emitted again */
@@ -534,7 +534,7 @@ static void _xfdashboard_applications_view_on_all_applications_menu_clicked(Xfda
 
 	/* Destroy all children */
 	xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), NULL);
-	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
+	xfdashboard_actor_destroy_all_children(CLUTTER_ACTOR(self));
 	clutter_layout_manager_layout_changed(priv->layout);
 
 	/* Create parent menu item */
@@ -634,7 +634,7 @@ static void _xfdashboard_applications_view_on_filter_changed(XfdashboardApplicat
 
 	/* Destroy all children */
 	xfdashboard_focusable_set_selection(XFDASHBOARD_FOCUSABLE(self), NULL);
-	clutter_actor_destroy_all_children(CLUTTER_ACTOR(self));
+	xfdashboard_actor_destroy_all_children(CLUTTER_ACTOR(self));
 	clutter_layout_manager_layout_changed(priv->layout);
 
 	/* Get parent menu */
