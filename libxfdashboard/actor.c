@@ -1936,7 +1936,7 @@ gboolean xfdashboard_actor_destroy(ClutterActor *self)
 	XfdashboardAnimation		*animation;
 	gboolean					animationStarted;
 
-	g_return_if_fail(CLUTTER_IS_ACTOR(self));
+	g_return_val_if_fail(CLUTTER_IS_ACTOR(self), FALSE);
 
 	animation=NULL;
 	animationStarted=FALSE;
