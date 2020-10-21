@@ -2806,33 +2806,34 @@ msgid ""
 "Cannot lookup selection target at %s because %s is a child of %s but not of "
 "this container"
 msgstr ""
+"לא יכול למצוא מטרת בחירה ב%s כי %s הוא ילד של %s אבל לא של הגורם המכיל שלו"
 
 #: ../libxfdashboard/search-result-container.c:1916
 #, c-format
 msgid "%s is not a child of %s and cannot be activated"
-msgstr ""
+msgstr "%s הוא לא ילד של %s ולא ניתן להפעלה"
 
 #: ../libxfdashboard/search-view.c:979
 #, c-format
 msgid "No results found for '%s'"
-msgstr ""
+msgstr "לא נמצאו תוצאות עבור '%s'"
 
 #: ../libxfdashboard/search-view.c:1108
 #, c-format
 msgid "%s is not a child of any provider at %s and cannot be selected"
-msgstr ""
+msgstr "%s הוא לא ילד של אף ספק ב%s ולא ניתן לבחירה"
 
 #: ../libxfdashboard/search-view.c:1512
 #, c-format
 msgid ""
 "Focusable object %s and provider %s do not handle selection direction of "
 "type %s."
-msgstr ""
+msgstr "אובייקט ניתן לפוקוס %s וספק %s לא מטפלים בהוראת בחירה מסוג %s."
 
 #: ../libxfdashboard/search-view.c:1548
 #, c-format
 msgid "%s is not a child of any provider at %s and cannot be activated"
-msgstr ""
+msgstr "%s הוא לא ילד של אף ספק ב%s ולא ניתן להפעלה"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
@@ -2841,7 +2842,7 @@ msgstr "חיפוש"
 
 #: ../libxfdashboard/stage-interface.c:360
 msgid "The monitor where this stage interface is connected to"
-msgstr ""
+msgstr "העוקב אליו מחובר ממשק שלב זה"
 
 #: ../libxfdashboard/stage-interface.c:374 ../libxfdashboard/stage.c:1818
 #: ../plugins/clock-view/clock-view-settings.c:249
@@ -2850,40 +2851,40 @@ msgstr "צבע רקע"
 
 #: ../libxfdashboard/stage-interface.c:375 ../libxfdashboard/stage.c:1819
 msgid "Color of stage's background"
-msgstr ""
+msgstr "צבע של רקע שלב"
 
 #: ../libxfdashboard/stage.c:256
 #, c-format
 msgid "Will not switch to unknown view '%s'"
-msgstr ""
+msgstr "לא יעבור אל תצוגה לא ידועה '%s'"
 
 #: ../libxfdashboard/stage.c:283
 #, c-format
 msgid "Cannot switch to unknown view '%s'"
-msgstr ""
+msgstr "לא יכול לעבור אל תצוגה לא ידועה '%s'"
 
 #: ../libxfdashboard/stage.c:469
 msgid "Cannot perform search because search view was not found in viewpad."
-msgstr ""
+msgstr "לא יכול לבצע חיפוש כי תצוגת חיפוש לא נמצאה ב-viewpad."
 
 #: ../libxfdashboard/stage.c:780
 msgid "Cannot find search view in viewpad to reset view."
-msgstr ""
+msgstr "לא יכול למצוא תצוגת חיפוש ב-viewpad לאתחול התצוגה."
 
 #: ../libxfdashboard/stage.c:948 ../libxfdashboard/stage.c:1025
 #, c-format
 msgid "Could not build interface '%s' from theme '%s'"
-msgstr ""
+msgstr "לא יכול לבנות ממשק '%s' מערכת נושא '%s'"
 
 #: ../libxfdashboard/stage.c:961 ../libxfdashboard/stage.c:991
 #: ../libxfdashboard/stage.c:1038 ../libxfdashboard/stage.c:1438
 #, c-format
 msgid "Interface '%s' from theme '%s' must be an actor of type %s"
-msgstr ""
+msgstr "ממשק '%s' מערכת נושא '%s' חייב להיות שחקן מסוג %s"
 
 #: ../libxfdashboard/stage.c:1095
 msgid "Invalid multiple stages for primary monitor"
-msgstr ""
+msgstr "שלבים מרובים לא חוקיים עבור עוקב ראשי"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
@@ -2891,11 +2892,11 @@ msgstr "הקלד כדי לחפש..."
 
 #: ../libxfdashboard/stage.c:1825
 msgid "Switch to view"
-msgstr ""
+msgstr "עבור אל תצוגה"
 
 #: ../libxfdashboard/stage.c:1826
 msgid "Switch to this named view as soon as stage gets visible"
-msgstr ""
+msgstr "עבור אל תצוגה בעלת שם זו ברגע ששלב נראה לעין"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/stylable.c:62
@@ -2904,29 +2905,30 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardStylable::%s"
 msgstr ""
+"אובייקט מסוג %s לא מיישם פונקציה וירטואלית נדרשת XfdashboardStylable::%s"
 
 #: ../libxfdashboard/stylable.c:382
 msgid "Style classes"
-msgstr ""
+msgstr "דרגות עיצוב"
 
 #: ../libxfdashboard/stylable.c:383
 msgid "String representing list of classes separated by '.'"
-msgstr ""
+msgstr "מחרוזת המייצגת רשימת דרגות מופרדות ב\".\""
 
 #: ../libxfdashboard/stylable.c:389
 msgid "Style pseudo-classes"
-msgstr ""
+msgstr "דרגות למחצה של עיצוב"
 
 #: ../libxfdashboard/stylable.c:390
 msgid ""
 "String representing list of pseudo-classes, e.g. current state, separated by"
 " ':'"
-msgstr ""
+msgstr "מחרוזת המייצגת רשימה של דרגות למחצה, למשל מצב נוכחי, מופרדות ב\".\""
 
 #: ../libxfdashboard/stylable.c:571
 #, c-format
 msgid "Could not find property '%s' for class %s"
-msgstr ""
+msgstr "לא יכול למצוא מאפיין '%s' עבור דרגה %s"
 
 #: ../libxfdashboard/text-box.c:793
 msgid "Editable"
@@ -2934,7 +2936,7 @@ msgstr "ניתן לעריכה"
 
 #: ../libxfdashboard/text-box.c:794
 msgid "Flag to set if text is editable"
-msgstr ""
+msgstr "אות סימון לקביעה האם טקסט ניתן לעריכה"
 
 #: ../libxfdashboard/text-box.c:800
 msgid "Primary icon name"
@@ -2942,7 +2944,7 @@ msgstr "שם סמל ראשי"
 
 #: ../libxfdashboard/text-box.c:801
 msgid "Themed icon name or file name of primary icon shown left of text box"
-msgstr ""
+msgstr "שם איקון ערכת נושא או שם קובץ של איקון עיקרי מוצג משמאל לתיבת הטקסט"
 
 #: ../libxfdashboard/text-box.c:807
 msgid "Secondary icon name"
@@ -2951,7 +2953,7 @@ msgstr "שם סמל משני"
 #: ../libxfdashboard/text-box.c:808
 msgid ""
 "Themed icon name or file name of secondary icon shown right of text box"
-msgstr ""
+msgstr "שם איקון ערכת נושא או שם קובץ של איקון משני מוצג מימין לתיבת הטקסט"
 
 #: ../libxfdashboard/text-box.c:814
 msgid "Text"
@@ -2963,7 +2965,7 @@ msgstr "טקסט של תיבת טקסט הניתנת לעריכה"
 
 #: ../libxfdashboard/text-box.c:821
 msgid "Text font"
-msgstr ""
+msgstr "גופן טקסט"
 
 #: ../libxfdashboard/text-box.c:822
 msgid "Font of editable text box"
@@ -2979,99 +2981,99 @@ msgstr "צבע הטקסט של תיבת הטקסט הניתנת לעריכה"
 
 #: ../libxfdashboard/text-box.c:836
 msgid "Selection text color"
-msgstr ""
+msgstr "צבע טקסט בחירה"
 
 #: ../libxfdashboard/text-box.c:837
 msgid "Color of text of selected text"
-msgstr ""
+msgstr "צבע טקסט של טקסט נבחר"
 
 #: ../libxfdashboard/text-box.c:843
 msgid "Selection background color"
-msgstr ""
+msgstr "צבע רקע בחירה"
 
 #: ../libxfdashboard/text-box.c:844
 msgid "Color of background of selected text"
-msgstr ""
+msgstr "צבע רקע של טקסט נבחר"
 
 #: ../libxfdashboard/text-box.c:850
 msgid "Hint text"
-msgstr ""
+msgstr "טקסט רמז"
 
 #: ../libxfdashboard/text-box.c:851
 msgid "Hint text shown if editable text box is empty"
-msgstr ""
+msgstr "טקסט רמז המוצג אם תיבת טקסט ניתן לעריכה ריקה"
 
 #: ../libxfdashboard/text-box.c:857
 msgid "Hint text font"
-msgstr ""
+msgstr "גופן טקסט רמז"
 
 #: ../libxfdashboard/text-box.c:858
 msgid "Font of hint text shown if editable text box is empty"
-msgstr ""
+msgstr "גופן של טקסט רמז המוצג אם תיבת טקסט ניתן לעריכה ריקה"
 
 #: ../libxfdashboard/text-box.c:864
 msgid "Hint text color"
-msgstr ""
+msgstr "צבע טקסט רמז"
 
 #: ../libxfdashboard/text-box.c:865
 msgid "Color of hint text shown if editable text box is empty"
-msgstr ""
+msgstr "צבע טקסט רמז המוצג אם תיבת טקסט ניתן לעריכה ריקה"
 
 #: ../libxfdashboard/text-box.c:871
 msgid "Hint text set"
-msgstr ""
+msgstr "קביעת טקסט רמז"
 
 #: ../libxfdashboard/text-box.c:872
 msgid "Flag indicating if a hint text was set"
-msgstr ""
+msgstr "אות סימון הנותן אינדיקציה האם טקסט רמז נקבע"
 
 #: ../libxfdashboard/theme-css.c:274
 #, c-format
 msgid "Cannot get argument %d because only %d arguments are available"
-msgstr ""
+msgstr "לא יכול לקבל ארגומנט %d כי רק %d ארגומנטים זמינים"
 
 #: ../libxfdashboard/theme-css.c:287
 #, c-format
 msgid "Cannot allocate memory for argument %d"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון לארגומט %d"
 
 #: ../libxfdashboard/theme-css.c:305
 #, c-format
 msgid "Cannot transform argument %d from type '%s' to type '%s'"
-msgstr ""
+msgstr "לא יכול להפוך ארגומנט %d מסוג '%s' לסוג '%s'"
 
 #: ../libxfdashboard/theme-css.c:342
 msgid "Missing string to convert to color component value."
-msgstr ""
+msgstr "מחרוזת חסרה להמרה לערך רכיב צבע."
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:365
 #, c-format
 msgid "Cannot convert string '%s' to color component value."
-msgstr ""
+msgstr "לא יכול להמיר מחרוזת '%s' לערך רכיב צבע."
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:385
 #, c-format
 msgid "Color component value %.2f out of range"
-msgstr ""
+msgstr "ערך רכיב צבע %.2f מחוץ לתחום"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:743
 #, c-format
 msgid "Factor %.2f is out of range"
-msgstr ""
+msgstr "פקטור %.2f מחוץ לתחום"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:848
 #, c-format
 msgid "Alpha factor %.2f is out of range"
-msgstr ""
+msgstr "פקטור אלפא %.2f מחוץ לתחום"
 
 #: ../libxfdashboard/theme-css.c:901
 #, c-format
 msgid "CSS function '%s' is already registered."
-msgstr ""
+msgstr "פונקצית CSS '%s' כבר רשומה."
 
 #: ../libxfdashboard/theme-css.c:944 ../libxfdashboard/theme-css.c:1057
 #: ../libxfdashboard/theme-css.c:2156
