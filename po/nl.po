@@ -459,6 +459,8 @@ msgstr "Doel"
 #: ../libxfdashboard/action-button.c:448
 msgid "The target actor's class name to lookup and to perform action at"
 msgstr ""
+"De klassenaam van de doelacteur die moet worden opgezocht en waarbij een "
+"actie moet worden uitgevoerd"
 
 #: ../libxfdashboard/action-button.c:459 ../libxfdashboard/binding.c:248
 msgid "Action"
@@ -466,7 +468,7 @@ msgstr "Actie"
 
 #: ../libxfdashboard/action-button.c:460
 msgid "The action signal to perform at target"
-msgstr ""
+msgstr "Het actiesignaal om uit te voeren bij doel"
 
 #: ../libxfdashboard/actor.c:737 ../libxfdashboard/stylable.c:310
 #, c-format
@@ -474,6 +476,8 @@ msgid ""
 "Could not transform CSS string value for property '%s' to type %s of class "
 "%s"
 msgstr ""
+"Kon CSS-tekenreekswaarde voor eigenschap '%s' niet omzetten naar type %s van"
+" klasse %s"
 
 #: ../libxfdashboard/actor.c:951
 #, c-format
@@ -689,11 +693,12 @@ msgstr ""
 #, c-format
 msgid "Unable to build path to '%s%s%s' to search for desktop files"
 msgstr ""
+"Kon pad niet opbouwen naar '%s%s%s' om te zoeken naar bureaubladbestanden"
 
 #: ../libxfdashboard/application-database.c:857
 #, c-format
 msgid "Could not determine desktop ID for '%s'"
-msgstr ""
+msgstr "Kon bureaublad-ID niet vaststellen voor '%s'"
 
 #: ../libxfdashboard/application-database.c:947
 #, c-format
@@ -729,13 +734,15 @@ msgstr ""
 #: ../libxfdashboard/application-tracker.c:354
 #, c-format
 msgid "Malformed environment '%s' in environment set for PID %d at %s"
-msgstr ""
+msgstr "Misvormde omgeving '%s' in omgeving ingesteld voor PID %d op %s"
 
 #: ../libxfdashboard/application-tracker.c:384
 #, c-format
 msgid ""
 "Unexpected duplicate name '%s' in environment set for PID %d at %s: %s = %s"
 msgstr ""
+"Onverwachte dubbele naam '%s' in omgeving ingesteld voor PID %d op %s: %s = "
+"%s"
 
 #: ../libxfdashboard/application-tracker.c:1038
 msgid ""
@@ -848,6 +855,8 @@ msgid ""
 "Cannot daemonized because a temporary new instance of application was "
 "forced."
 msgstr ""
+"Kan niet als achtergronddienst draaien omdat er een tijdelijke nieuwe "
+"instantie van de toepassing werd afgedwongen."
 
 #: ../libxfdashboard/application.c:950
 #, c-format
@@ -1024,7 +1033,7 @@ msgstr "Lijst van alle geïnstalleerde toepassingen"
 #: ../libxfdashboard/windows-view.c:1525
 #, c-format
 msgid "%s is not a child of %s and cannot be selected"
-msgstr ""
+msgstr "%s is geen afgeleid venster van %s en kan niet worden gekozen"
 
 #: ../libxfdashboard/applications-view.c:1053
 #: ../libxfdashboard/search-result-container.c:895
@@ -1092,7 +1101,7 @@ msgstr "Ruimte tussen elk element in weergave"
 
 #: ../libxfdashboard/applications-view.c:1527
 msgid "Parent menu icon"
-msgstr ""
+msgstr "Pictogram van bovenliggend menu"
 
 #: ../libxfdashboard/applications-view.c:1528
 msgid "Name of icon to use for 'go-back-to-parent-menu' entries"
@@ -1203,39 +1212,41 @@ msgstr "Gebeurtenistype"
 
 #: ../libxfdashboard/binding.c:211
 msgid "The event type this binding is bound to"
-msgstr ""
+msgstr "Het gebeurtenistype waar deze toetsbinding aan is gekoppeld"
 
 #: ../libxfdashboard/binding.c:218
 msgid "Class name"
-msgstr ""
+msgstr "Klassenaam"
 
 #: ../libxfdashboard/binding.c:219
 msgid "Class name of object this binding is bound to"
-msgstr ""
+msgstr "Klassenaam van object waar deze toetsbinding aan is gekoppeld"
 
 #: ../libxfdashboard/binding.c:225 ../libxfdashboard/image-content.c:1444
 msgid "Key"
-msgstr ""
+msgstr "Toets"
 
 #: ../libxfdashboard/binding.c:226
 msgid "Key code of a keyboard event this binding is bound to"
 msgstr ""
+"Toetscode van een toetsenbordgebeurtenis waar deze toetsbinding aan is "
+"gekoppeld"
 
 #: ../libxfdashboard/binding.c:233
 msgid "Modifiers"
-msgstr ""
+msgstr "Speciale toetsen"
 
 #: ../libxfdashboard/binding.c:234
 msgid "Modifiers this binding is bound to"
-msgstr ""
+msgstr "Speciale toetsen waar deze toetsbinding aan is gekoppeld"
 
 #: ../libxfdashboard/binding.c:242
 msgid "Class name of target of this binding"
-msgstr ""
+msgstr "Klassenaam van doel van deze toetsbinding"
 
 #: ../libxfdashboard/binding.c:249
 msgid "Action assigned to this binding"
-msgstr ""
+msgstr "Actie toegewezen aan deze toetsbinding"
 
 #: ../libxfdashboard/binding.c:255 ../libxfdashboard/plugin.c:820
 msgid "Flags"
@@ -1243,20 +1254,21 @@ msgstr "Merktekens"
 
 #: ../libxfdashboard/binding.c:256
 msgid "Flags assigned to this binding"
-msgstr ""
+msgstr "Vlaggen toegewezen aan deze toetsbinding"
 
 #: ../libxfdashboard/binding.c:301
 msgid "Failed to create binding instance"
-msgstr ""
+msgstr "Kon geen toetsbindingsinstantie maken"
 
 #: ../libxfdashboard/binding.c:447
 #, c-format
 msgid "Cannot set unsupported event type %s at binding"
 msgstr ""
+"Kan niet-ondersteund gebeurtenistype %s niet instellen voor toetsbinding"
 
 #: ../libxfdashboard/binding.c:452
 msgid "Cannot set invalid event type at binding"
-msgstr ""
+msgstr "Kan ongeldig gebeurtenistype niet instellen voor toetsbinding"
 
 #: ../libxfdashboard/bindings-pool.c:132
 #: ../libxfdashboard/theme-animation.c:646
@@ -1268,7 +1280,7 @@ msgstr "Fout in regel %d teken %d: "
 #: ../libxfdashboard/bindings-pool.c:202
 #, c-format
 msgid "Could not parse empty key-binding '%s'."
-msgstr ""
+msgstr "Kon lege toetsbinding '%s' niet lezen."
 
 #: ../libxfdashboard/bindings-pool.c:227
 #, c-format
@@ -1280,7 +1292,7 @@ msgstr ""
 #: ../libxfdashboard/bindings-pool.c:250
 #, c-format
 msgid "Could not parse unknown modifier '%s' of key-binding '%s'"
-msgstr ""
+msgstr "Kon onbekende speciale toets '%s' niet lezen van toetsbinding '%s'"
 
 #: ../libxfdashboard/bindings-pool.c:272
 #, c-format
@@ -1288,16 +1300,20 @@ msgid ""
 "Could not parse '%s' of key-binding '%s' because it is already a key "
 "assigned."
 msgstr ""
+"Kon '%s' niet lezen van toetsbinding '%s' omdat het al een toegewezen toets "
+"is."
 
 #: ../libxfdashboard/bindings-pool.c:287
 #, c-format
 msgid "Could not parse '%s' of key-binding '%s'"
-msgstr ""
+msgstr "Kon '%s' niet lezen van toetsbinding '%s'"
 
 #: ../libxfdashboard/bindings-pool.c:306
 #, c-format
 msgid "Invalid key-binding '%s' as neither a key nor a modifier was assigned."
 msgstr ""
+"Ongeldige toetsbinding '%s' aangezien er noch een toets nog een speciale "
+"toets werd toegewezen."
 
 #: ../libxfdashboard/bindings-pool.c:349
 #: ../libxfdashboard/theme-animation.c:683
@@ -1313,7 +1329,7 @@ msgstr "Ontbrekende actie"
 #: ../libxfdashboard/bindings-pool.c:405
 #, c-format
 msgid "Missing binding to set action '%s'"
-msgstr ""
+msgstr "Ontbrekende toetsbinding voor het instellen van actie '%s'"
 
 #: ../libxfdashboard/bindings-pool.c:458 ../libxfdashboard/bindings-pool.c:729
 #: ../libxfdashboard/theme-animation.c:762
@@ -1327,25 +1343,25 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1127
 #, c-format
 msgid "Unknown tag <%s>"
-msgstr ""
+msgstr "Onbekende markering <%s>"
 
 #: ../libxfdashboard/bindings-pool.c:529
 msgid "Missing attribute 'code' for key"
-msgstr ""
+msgstr "Ontbrekend attribuut 'code' voor toets"
 
 #: ../libxfdashboard/bindings-pool.c:549
 #, c-format
 msgid "Could not translate key '%s'"
-msgstr ""
+msgstr "Kon toets '%s' niet vertalen"
 
 #: ../libxfdashboard/bindings-pool.c:585
 #, c-format
 msgid "Unknown value '%s' for attribute 'when'"
-msgstr ""
+msgstr "Onbekende waarde '%s' voor attribuut 'wanneer'"
 
 #: ../libxfdashboard/bindings-pool.c:608
 msgid "Could not initialize binding for key-binding"
-msgstr ""
+msgstr "Kon toetsbinding niet initialiseren"
 
 #: ../libxfdashboard/bindings-pool.c:638
 #, c-format
@@ -1367,7 +1383,7 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1056 ../libxfdashboard/theme-layout.c:1505
 #, c-format
 msgid "Tag <%s> cannot contain tag <%s>"
-msgstr ""
+msgstr "Markering <%s> kan niet markering <%s> bevatten"
 
 #: ../libxfdashboard/bindings-pool.c:854
 #: ../libxfdashboard/theme-animation.c:1545
@@ -1403,7 +1419,7 @@ msgstr ""
 #: ../libxfdashboard/bindings-pool.c:1202
 #, c-format
 msgid "No bindings configuration file found."
-msgstr ""
+msgstr "Geen instellingenbestand gevonden voor toetsbindingen."
 
 #: ../libxfdashboard/click-action.c:659
 msgid "Pressed"
@@ -1653,7 +1669,7 @@ msgstr "De bronacteur waar het slepen begon"
 #: ../libxfdashboard/drop-action.c:78
 #, c-format
 msgid "Target %s is already registered"
-msgstr ""
+msgstr "Doel %s is reeds geregistreerd"
 
 #: ../libxfdashboard/dynamic-table-layout.c:874
 #: ../libxfdashboard/scaled-table-layout.c:503
@@ -1846,6 +1862,8 @@ msgstr ""
 #, c-format
 msgid "Destroying image cache still containing %d images."
 msgstr ""
+"Tijdelijke afbeeldingenopslag vernietigen die nog steeds %d afbeeldingen "
+"bevat."
 
 #: ../libxfdashboard/image-content.c:243
 #, c-format
@@ -2098,7 +2116,7 @@ msgstr "Vernietigen bij sluiten"
 
 #: ../libxfdashboard/live-window-simple.c:521
 msgid "If this actor should be destroy when window was closed"
-msgstr ""
+msgstr "Of deze acteur moet worden vernietigd wanneer venster wordt gesloten"
 
 #: ../libxfdashboard/live-window.c:1067
 msgid "Window number"
@@ -2750,6 +2768,8 @@ msgid ""
 "Search provider of type %s does not implement required virtual function "
 "XfdashboardSearchProvider::%s"
 msgstr ""
+"Zoekdienst van type %s implementeert niet de vereiste virtuele functie "
+"XfdashboardSearchProvider::%s"
 
 #: ../libxfdashboard/search-provider.c:168
 msgid "Provider ID"
@@ -2765,6 +2785,8 @@ msgid ""
 "Failed to add actor for result item %s of provider %s: Could not create "
 "actor"
 msgstr ""
+"Kon geen acteur toevoegen voor resultaatelement %s van zoekdienst %s: Kon "
+"acteur niet maken"
 
 #: ../libxfdashboard/search-result-container.c:440
 #, c-format
@@ -2812,15 +2834,16 @@ msgstr ""
 
 #: ../libxfdashboard/search-result-container.c:1267
 msgid "Title format"
-msgstr ""
+msgstr "Titelopmaak"
 
 #: ../libxfdashboard/search-result-container.c:1268
 msgid "Format string for title which will contain the name of search provider"
 msgstr ""
+"Opmaak-tekenreeks voor titel die de naam van de zoekdienst zal bevatten"
 
 #: ../libxfdashboard/search-result-container.c:1275
 msgid "View mode of container for result items"
-msgstr ""
+msgstr "Weergavemodus van vensterdeel voor resultaatelementen"
 
 #: ../libxfdashboard/search-result-container.c:1283
 msgid "Spacing between each result item"
@@ -2828,7 +2851,7 @@ msgstr "Ruimte tussen elk resultaatelement"
 
 #: ../libxfdashboard/search-result-container.c:1291
 msgid "Padding between title and item results container"
-msgstr ""
+msgstr "Opvulling tussen titel en vensterdeel voor resultaatelementen"
 
 #: ../libxfdashboard/search-result-container.c:1298
 msgid "Initial results size"
@@ -2854,11 +2877,13 @@ msgid ""
 "Cannot lookup selection target at %s because %s is a child of %s but not of "
 "this container"
 msgstr ""
+"Kan selectiedoel op %s niet opzoeken want %s is een afgeleid venster van %s "
+"maar niet van dit vensterdeel"
 
 #: ../libxfdashboard/search-result-container.c:1916
 #, c-format
 msgid "%s is not a child of %s and cannot be activated"
-msgstr ""
+msgstr "%s is geen afgeleid venster van %s en kan niet worden geactiveerd"
 
 #: ../libxfdashboard/search-view.c:979
 #, c-format
@@ -2869,6 +2894,8 @@ msgstr "Geen resultaten gevonden voor '%s'"
 #, c-format
 msgid "%s is not a child of any provider at %s and cannot be selected"
 msgstr ""
+"%s is geen afgeleid venster van een zoekdienst op %s en kan niet worden "
+"geselecteerd"
 
 #: ../libxfdashboard/search-view.c:1512
 #, c-format
@@ -2881,6 +2908,8 @@ msgstr ""
 #, c-format
 msgid "%s is not a child of any provider at %s and cannot be activated"
 msgstr ""
+"%s is geen afgeleid venster van een zoekdienst op %s en kan niet worden "
+"geactiveerd"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
@@ -2955,26 +2984,27 @@ msgstr ""
 
 #: ../libxfdashboard/stylable.c:382
 msgid "Style classes"
-msgstr ""
+msgstr "Stijlklassen"
 
 #: ../libxfdashboard/stylable.c:383
 msgid "String representing list of classes separated by '.'"
-msgstr ""
+msgstr "Tekenreeks die klassenlijst vertegenwoordigt gescheiden door '.'"
 
 #: ../libxfdashboard/stylable.c:389
 msgid "Style pseudo-classes"
-msgstr ""
+msgstr "Stijl van pseudoklassen"
 
 #: ../libxfdashboard/stylable.c:390
 msgid ""
 "String representing list of pseudo-classes, e.g. current state, separated by"
 " ':'"
 msgstr ""
+"Tekenreeks die lijst van pseudoklassen vertegenwoordigt, gescheiden door '.'"
 
 #: ../libxfdashboard/stylable.c:571
 #, c-format
 msgid "Could not find property '%s' for class %s"
-msgstr ""
+msgstr "Kon eigenschap '%s' niet vinden voor klasse %s"
 
 #: ../libxfdashboard/text-box.c:793
 msgid "Editable"
@@ -3320,48 +3350,48 @@ msgstr ""
 #: ../libxfdashboard/theme-animation.c:856
 #, c-format
 msgid "Empty 'name' at tag '%s'"
-msgstr ""
+msgstr "Lege 'naam' bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:867
 #, c-format
 msgid "Empty 'from' at tag '%s'"
-msgstr ""
+msgstr "Lege 'van' bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:878
 #: ../libxfdashboard/theme-animation.c:988
 #, c-format
 msgid "Empty 'to' at tag '%s'"
-msgstr ""
+msgstr "Lege 'naar' bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:999
 #, c-format
 msgid "Empty 'origin' at tag '%s'"
-msgstr ""
+msgstr "Lege 'oorsprong' bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1016
 #, c-format
 msgid "Invalid value '%s' for 'origin' at tag '%s'"
-msgstr ""
+msgstr "Ongeldige waarde '%s' voor 'oorsprong' bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1154
 #, c-format
 msgid "Missing or empty delay at tag '%s'"
-msgstr ""
+msgstr "Ontbrekende of lege vertraging bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1165
 #, c-format
 msgid "Missing or empty duration at tag '%s'"
-msgstr ""
+msgstr "Ontbrekende of lege duur bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1176
 #, c-format
 msgid "Missing or empty mode at tag '%s'"
-msgstr ""
+msgstr "Ontbrekende of lege modus bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1187
 #, c-format
 msgid "Empty repeat at tag '%s'"
-msgstr ""
+msgstr "Lege herhaling bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1212
 #, c-format
@@ -3371,23 +3401,23 @@ msgstr "Ongeldige modus '%s'"
 #: ../libxfdashboard/theme-animation.c:1342
 #, c-format
 msgid "Missing or empty ID at tag '%s'"
-msgstr ""
+msgstr "Ontbrekende of lege ID bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1353
 #, c-format
 msgid "Missing or empty sender at tag '%s'"
-msgstr ""
+msgstr "Ontbrekende of lege afzender bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1364
 #, c-format
 msgid "Missing or empty signal at tag '%s'"
-msgstr ""
+msgstr "Ontbrekend of leeg signaal bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1375
 #: ../libxfdashboard/theme-effects.c:887 ../libxfdashboard/theme-layout.c:1237
 #, c-format
 msgid "Invalid ID '%s' at tag '%s'"
-msgstr ""
+msgstr "Ongeldig ID '%s' bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1387
 #, c-format
@@ -3500,7 +3530,7 @@ msgstr ""
 #: ../libxfdashboard/theme-effects.c:875 ../libxfdashboard/theme-layout.c:1224
 #, c-format
 msgid "Empty ID at tag '%s'"
-msgstr ""
+msgstr "Lege ID bij markering '%s'"
 
 #: ../libxfdashboard/theme-effects.c:900
 #, c-format
@@ -3532,17 +3562,17 @@ msgstr ""
 
 #: ../libxfdashboard/theme-layout.c:403
 msgid "Cannot allocate memory for unknown tag"
-msgstr ""
+msgstr "Kan geen geheugen toewijzen voor onbekende markering"
 
 #: ../libxfdashboard/theme-layout.c:415
 #, c-format
 msgid "Cannot allocate memory for tag '%s'"
-msgstr ""
+msgstr "Kan geen geheugen toewijzen voor markering '%s'"
 
 #: ../libxfdashboard/theme-layout.c:647
 #, c-format
 msgid "Unsupported tag type '%s' to resolve ID"
-msgstr ""
+msgstr "Niet-ondersteund markeringstype '%s' voor oplossen van ID"
 
 #: ../libxfdashboard/theme-layout.c:668
 #, c-format
@@ -3572,12 +3602,12 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1423
 #, c-format
 msgid "Tag <%s> can have only one <%s>"
-msgstr ""
+msgstr "Markering <%s> kan slechts één <%s> hebben"
 
 #: ../libxfdashboard/theme-layout.c:1527
 #, c-format
 msgid "Internal error when handling end of tag <%s>"
-msgstr ""
+msgstr "Interne fout bij het afhandelen van einde van merkering <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1556
 #, c-format
