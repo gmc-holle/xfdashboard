@@ -2512,7 +2512,7 @@ msgstr ""
 
 #: ../libxfdashboard/popup-menu.c:1005
 msgid "Title icon name"
-msgstr ""
+msgstr "Titlens ikonnavn"
 
 #: ../libxfdashboard/popup-menu.c:1006
 msgid "Themed icon name or file name of icon used in title"
@@ -2520,21 +2520,21 @@ msgstr "Temabaseret ikonnavn eller filnavn for ikon som bruges i titlen"
 
 #: ../libxfdashboard/popup-menu.c:1017
 msgid "Title GIcon"
-msgstr ""
+msgstr "Titlens GIcon"
 
 #: ../libxfdashboard/popup-menu.c:1018
 msgid "The GIcon of icon used in title"
-msgstr ""
+msgstr "GIcon'et på det ikon som bruges i titlen"
 
 #: ../libxfdashboard/popup-menu.c:1692
 #, c-format
 msgid "%s is not a child of %s and cannot be moved"
-msgstr ""
+msgstr "%s er ikke et barn af %s og kan ikke flyttes"
 
 #: ../libxfdashboard/popup-menu.c:1799
 #, c-format
 msgid "%s is not a child of %s and cannot be removed"
-msgstr ""
+msgstr "%s er ikke et barn af %s og kan ikke fjernes"
 
 #. Show error message
 #: ../libxfdashboard/popup-menu.c:1878
@@ -2842,11 +2842,13 @@ msgid ""
 "Cannot lookup selection target at %s because %s is a child of %s but not of "
 "this container"
 msgstr ""
+"Kan ikke opslå markeringsmål ved %s fordi %s er et barn af %s men ikke af "
+"beholderen"
 
 #: ../libxfdashboard/search-result-container.c:1916
 #, c-format
 msgid "%s is not a child of %s and cannot be activated"
-msgstr ""
+msgstr "%s er ikke et barn af %s og kan ikke aktiveres"
 
 #: ../libxfdashboard/search-view.c:979
 #, c-format
@@ -3788,7 +3790,7 @@ msgstr ""
 #: ../libxfdashboard/viewpad.c:246
 #, c-format
 msgid "View %s is not a child of %s and cannot be activated"
-msgstr ""
+msgstr "Visningen %s er ikke et barn af %s og kan ikke aktiveres"
 
 #: ../libxfdashboard/viewpad.c:254
 #, c-format
