@@ -485,6 +485,8 @@ msgid ""
 "Cannot allocate memory for animation entry for animation '%s' with signal "
 "'%s'"
 msgstr ""
+"Kan geen geheugen toewijzen voor animatieregel voor animatie '%s' met "
+"signaal '%s'"
 
 #: ../libxfdashboard/actor.c:1581
 msgid "Can focus"
@@ -501,12 +503,16 @@ msgstr "Effecten"
 #: ../libxfdashboard/actor.c:1590
 msgid "List of space-separated strings with IDs of effects set at this actor"
 msgstr ""
+"Lijst van spatiegescheiden tekenreeksen met ID's van effecten ingesteld bij "
+"deze acteur"
 
 #: ../libxfdashboard/animation.c:425
 #, c-format
 msgid ""
 "Cannot allocate memory for animation entry with actor '%s' at animation '%s'"
 msgstr ""
+"Kan geen geheugen toewijzen voor animatieregel met acteur '%s' bij animatie "
+"'%s'"
 
 #: ../libxfdashboard/animation.c:619 ../libxfdashboard/plugin.c:813
 msgid "ID"
@@ -608,17 +614,18 @@ msgstr "Toon ook beschrijving naast tegel"
 #: ../libxfdashboard/application-button.c:439
 #: ../libxfdashboard/applications-view.c:1534
 msgid "Format title only"
-msgstr ""
+msgstr "Vormgeving voor alleen titel"
 
 #: ../libxfdashboard/application-button.c:440
 #: ../libxfdashboard/applications-view.c:1535
 msgid "Format string used when only title is display"
 msgstr ""
+"Vormgevingstekenreeks te gebruiken wanneer alleen titel wordt weergegeven"
 
 #: ../libxfdashboard/application-button.c:446
 #: ../libxfdashboard/applications-view.c:1541
 msgid "Format title and description"
-msgstr ""
+msgstr "Vormgeving voor titel en beschrijving"
 
 #: ../libxfdashboard/application-button.c:447
 #: ../libxfdashboard/applications-view.c:1542
@@ -626,6 +633,8 @@ msgid ""
 "Format string used when title and description is display. First argument is "
 "title and second one is description."
 msgstr ""
+"Vormgevingstekenreeks te gebruiken wanneer titel en beschrijving worden "
+"weergegeven. Eerste argument is titel en tweede is beschrijving."
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:746
@@ -1042,6 +1051,8 @@ msgid ""
 "Focusable object %s does not handle selection direction of type %s in icon "
 "mode."
 msgstr ""
+"Scherpstelbaar object %s kan niet overweg met selectierichting van type %s "
+"in pictogrammodus."
 
 #: ../libxfdashboard/applications-view.c:1174
 #: ../libxfdashboard/search-result-container.c:1046
@@ -1050,6 +1061,8 @@ msgid ""
 "Focusable object %s does not handle selection direction of type %s in list "
 "mode."
 msgstr ""
+"Scherpstelbaar object %s kan niet overweg met selectierichting van type %s "
+"in lijstmodus."
 
 #: ../libxfdashboard/applications-view.c:1237
 #: ../libxfdashboard/popup-menu.c:634 ../libxfdashboard/quicklaunch.c:2804
@@ -1058,6 +1071,7 @@ msgstr ""
 #, c-format
 msgid "Cannot lookup selection target at %s because %s is a child of %s"
 msgstr ""
+"Kan selectiedoel niet opzoeken bij %s want %s is een afgeleid venster van %s"
 
 #: ../libxfdashboard/applications-view.c:1282
 #: ../libxfdashboard/popup-menu.c:671 ../libxfdashboard/quicklaunch.c:2893
@@ -1067,6 +1081,7 @@ msgstr ""
 #, c-format
 msgid "Focusable object %s does not handle selection direction of type %s."
 msgstr ""
+"Scherpstelbaar object %s kan niet overweg met selectierichting van type %s."
 
 #: ../libxfdashboard/applications-view.c:1322
 #: ../libxfdashboard/popup-menu.c:713 ../libxfdashboard/quicklaunch.c:2933
@@ -1106,6 +1121,7 @@ msgstr "Pictogram van bovenliggend menu"
 #: ../libxfdashboard/applications-view.c:1528
 msgid "Name of icon to use for 'go-back-to-parent-menu' entries"
 msgstr ""
+"Naam van te gebruiken pictogram bij 'ga-terug-naar bovenliggend-menu'-regels"
 
 #: ../libxfdashboard/applications-view.c:1548
 msgid "Show all applications"
@@ -1114,6 +1130,8 @@ msgstr "Toon alle toepassingen"
 #: ../libxfdashboard/applications-view.c:1549
 msgid "Whether to show a menu for all installed applications at root menu"
 msgstr ""
+"Of er een menu moet worden getoond voor alle geïnstalleerde toepassingen in "
+"het beginmenu"
 
 #: ../libxfdashboard/background.c:415 ../libxfdashboard/background.c:416
 msgid "Background type"
@@ -1369,6 +1387,8 @@ msgid ""
 "Cannot transform attribute 'allow-unfocusable-target' from type '%s' to type"
 " '%s'"
 msgstr ""
+"Kan attribuut 'allow-unfocusable-target' niet omzetten van type '%s' naar "
+"type '%s'"
 
 #: ../libxfdashboard/bindings-pool.c:689 ../libxfdashboard/bindings-pool.c:769
 #: ../libxfdashboard/theme-animation.c:772
@@ -1391,7 +1411,7 @@ msgstr "Markering <%s> kan niet markering <%s> bevatten"
 #: ../libxfdashboard/theme-layout.c:1922
 #, c-format
 msgid "Could not set up parser data for file %s"
-msgstr ""
+msgstr "Kon geen leesgegevens instellen voor bestand %s"
 
 #: ../libxfdashboard/bindings-pool.c:866
 #: ../libxfdashboard/theme-animation.c:1557
@@ -1399,7 +1419,7 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1934
 #, c-format
 msgid "Could not create parser for file %s"
-msgstr ""
+msgstr "Kon geen lezer instellen voor bestand %s"
 
 #: ../libxfdashboard/bindings-pool.c:895
 #, c-format
@@ -1525,11 +1545,11 @@ msgstr ""
 
 #: ../libxfdashboard/css-selector.c:779
 msgid "Failed to parse css selector."
-msgstr ""
+msgstr "Kon CSS-kiezer niet lezen."
 
 #: ../libxfdashboard/css-selector.c:785
 msgid "Failed to parse css selector because stream is empty."
-msgstr ""
+msgstr "Kon CSS-kiezer niet lezen want stroom is leeg."
 
 #: ../libxfdashboard/css-selector.c:873
 msgid "Priority"
@@ -1537,16 +1557,16 @@ msgstr "Prioriteit"
 
 #: ../libxfdashboard/css-selector.c:874
 msgid "The priority of this CSS selector"
-msgstr ""
+msgstr "De prioriteit van deze CSS-kiezer"
 
 #: ../libxfdashboard/css-selector.c:917 ../libxfdashboard/css-selector.c:987
 msgid "Could not create selector."
-msgstr ""
+msgstr "Kon geen kiezer maken."
 
 #: ../libxfdashboard/css-selector.c:944 ../libxfdashboard/theme-css.c:2420
 #: ../libxfdashboard/theme-css.c:2426
 msgid "Parser did not reach end of stream"
-msgstr ""
+msgstr "Lezer bereikte einde van stroom niet"
 
 #: ../libxfdashboard/css-selector.c:1014
 msgid "Unexpected state of CSS scanner."
@@ -1825,7 +1845,7 @@ msgstr "Of alle afgeleide vensters hun verhouding moeten behouden"
 #: ../libxfdashboard/focus-manager.c:562 ../libxfdashboard/focus-manager.c:570
 #, c-format
 msgid "Object %s does not inherit %s and cannot be registered"
-msgstr ""
+msgstr "Object %s erft %s niet en kan niet worden geregistreerd"
 
 #: ../libxfdashboard/focus-manager.c:596
 #, c-format
@@ -1833,15 +1853,19 @@ msgid ""
 "Could not find registered focusable object %s to register object %s - "
 "appending to end of list."
 msgstr ""
+"Kon geen geregistreerd scherpstelbaar object %s vinden om object %s te "
+"registreren - wordt toegevoegd aan einde van lijst."
 
 #: ../libxfdashboard/focus-manager.c:737
 #, c-format
 msgid "Cannot build target list for unknown type %s"
-msgstr ""
+msgstr "Kan geen doellijst bouwen voor onbekend type %s"
 
 #: ../libxfdashboard/focus-manager.c:845
 msgid "Trying to focus an unregistered focusable actor"
 msgstr ""
+"Aan het proberen om een niet-geregistreerde scherpstelbare acteur scherp te "
+"stellen"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/focusable.c:82
@@ -1857,6 +1881,8 @@ msgid ""
 "Old selection %s at %s is unavailable but setting new selection either to %s"
 " or nothing failed!"
 msgstr ""
+"Oude selectie %s bij %s is niet beschikbaar maar instellen van nieuwe "
+"selectie op hetzij %s of op niets, is mislukt!"
 
 #: ../libxfdashboard/image-content.c:161
 #, c-format
@@ -1904,7 +1930,7 @@ msgstr "Kon geen afbeeldingsgegevens laden in inhoud voor pictogram '%s': %s"
 #: ../libxfdashboard/image-content.c:490
 #, c-format
 msgid "Could not create stream for file '%s' of icon '%s': %s"
-msgstr ""
+msgstr "Kon geen stroom maken voor bestand '%s' van pictogram '%s': %s"
 
 #: ../libxfdashboard/image-content.c:656
 #, c-format
@@ -1926,7 +1952,7 @@ msgstr "Kon terugvalpictogram '%s' niet opzoeken voor pictogram '%s'"
 #: ../libxfdashboard/image-content.c:749
 #, c-format
 msgid "Could not create stream for icon file %s of icon '%s': %s"
-msgstr ""
+msgstr "Kon geen stroom maken voor pictogrambestand %s van pictogram '%s': %s"
 
 #: ../libxfdashboard/image-content.c:822
 #, c-format
@@ -1946,7 +1972,7 @@ msgstr "Kon geen afbeeldingsgegevens laden in inhoud voor gicon '%s': %s"
 #: ../libxfdashboard/image-content.c:885
 #, c-format
 msgid "Could not create stream for file %s of gicon '%s': %s"
-msgstr ""
+msgstr "Kon geen stroom maken voor bestand %s van gicon '%s': %s"
 
 #: ../libxfdashboard/image-content.c:947
 #: ../libxfdashboard/image-content.c:1061
@@ -2831,6 +2857,9 @@ msgid ""
 "A themed icon name or file name of icon this container will display. If not "
 "set the icon the search provider defines will be used."
 msgstr ""
+"Een themabepaalde pictogramnaam of bestandsnaam van pictogram dat dit "
+"vensterdeel zal weergeven. Indien niet ingesteld zal het pictogram worden "
+"gebruikt dat de zoekdienst bepaalt."
 
 #: ../libxfdashboard/search-result-container.c:1267
 msgid "Title format"
@@ -2903,6 +2932,8 @@ msgid ""
 "Focusable object %s and provider %s do not handle selection direction of "
 "type %s."
 msgstr ""
+"Scherpstelbaar object %s en zoekdienst %s kunnen niet overweg met "
+"selectierichting van type %s."
 
 #: ../libxfdashboard/search-view.c:1548
 #, c-format
@@ -3255,7 +3286,7 @@ msgstr ""
 #: ../libxfdashboard/theme-css.c:1994
 #, c-format
 msgid "Failed to import CSS file '%s': %s"
-msgstr ""
+msgstr "Kon CSS-bestand '%s' niet importeren: %s"
 
 #: ../libxfdashboard/theme-css.c:2101
 msgid ""
@@ -3286,7 +3317,7 @@ msgstr ""
 #: ../libxfdashboard/theme-css.c:2388
 #, c-format
 msgid "The input stream of type %s is not supported"
-msgstr ""
+msgstr "De invoerstroom van type %s wordt niet ondersteund"
 
 #: ../libxfdashboard/theme-css.c:2577 ../libxfdashboard/theme.c:808
 msgid "Theme path"
@@ -4022,6 +4053,8 @@ msgstr "Het huidige primaire beeldscherm"
 msgid ""
 "Did not handle drop action for dragged actor %s of source %s at target %s"
 msgstr ""
+"Kon niet overweg met sleepactie voor versleepte acteur %s van bron %s bij "
+"doel %s"
 
 #: ../libxfdashboard/windows-view.c:1765
 #, c-format
@@ -4133,6 +4166,8 @@ msgid ""
 "Keep window fullscreen on primary monitor because window manager does not "
 "support _NET_WM_FULLSCREEN_MONITORS."
 msgstr ""
+"Houd venster schermvullend op primaire beeldscherm aangezien "
+"vensterbeheerder _NET_WM_FULLSCREEN_MONITORS niet ondersteunt."
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:447
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:460
@@ -4240,11 +4275,11 @@ msgstr ""
 #: ../libxfdashboard/x11/window-content-x11.c:1496
 #, c-format
 msgid "Could not get attributes of window '%s'"
-msgstr ""
+msgstr "Kon attributen van venster '%s' niet verkrijgen"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2138
 msgid "The window to handle and display"
-msgstr ""
+msgstr "Het af te handelen en te tonen venster"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2144
 msgid "Suspended"
@@ -4471,27 +4506,27 @@ msgstr "Voegt een nieuwe weergave toe die een klok toont"
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
-msgstr ""
+msgstr "Zoekvoorbeeld"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "Voorbeeld van zoekdienst"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr ""
+msgstr "Dit is slechts een nutteloos invoegsel met een zoekdienstvoorbeeld"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:211
 #, c-format
 msgid "Unknown application '%s' for Gnome-Shell search provider '%s'"
-msgstr ""
+msgstr "Onbekende toepassing '%s' voor Gnome-Shell zoekdienst '%s'"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:289
 #, c-format
 msgid "Cannot update information about Gnome-Shell search provider '%s': %s"
-msgstr ""
+msgstr "Kan informatie over Gnome-Shell zoekdienst '%s' niet bijwerken: %s"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:374
@@ -4505,7 +4540,7 @@ msgstr ""
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:391
 #, c-format
 msgid "Cannot load information about Gnome-Shell search provider '%s': %s"
-msgstr ""
+msgstr "Kan informatie over Gnome-Shell zoekdienst '%s' niet laden: %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:473
@@ -4515,7 +4550,7 @@ msgstr ""
 #, c-format
 msgid ""
 "Could not create dbus connection for Gnome-Shell search provider '%s': %s"
-msgstr ""
+msgstr "Kon geen dbus-verbinding maken voor Gnome-Shell zoekdienst '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:546
@@ -4524,6 +4559,8 @@ msgid ""
 "Could get result set from dbus connection for Gnome-Shell search provider "
 "'%s': %s"
 msgstr ""
+"Kon resultaat verkrijgen van dbus-verbinding voor Gnome-Shell zoekdienst "
+"'%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:663
@@ -4532,6 +4569,8 @@ msgid ""
 "Could get meta data for '%s' from dbus connection for Gnome-Shell search "
 "provider '%s': %s"
 msgstr ""
+"Kon metagegevens verkrijgen voor '%s' van dbus-verbinding voor Gnome-Shell "
+"zoekdienst '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:729
@@ -4541,6 +4580,8 @@ msgstr ""
 msgid ""
 "Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"
 msgstr ""
+"Kon pictogram verkrijgen voor '%s' van toets '%s' voor Gnome-Shell "
+"zoekdienst '%s': %s"
 
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:733
 msgid "Deserialization failed"
@@ -4553,6 +4594,8 @@ msgid ""
 "Could activate result item '%s' over dbus connection for Gnome-Shell search "
 "provider '%s': %s"
 msgstr ""
+"Kon resultaatelement '%s' activeren via dbus-verbinding voor Gnome-Shell "
+"zoekdienst '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:970
@@ -4561,24 +4604,27 @@ msgid ""
 "Could not launch search over dbus connection for Gnome-Shell search provider"
 " '%s': %s"
 msgstr ""
+"Kon geen zoekactie starten via dbus-verbinding voor Gnome-Shell zoekdienst "
+"'%s': %s"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:68
 msgid "Gnome-Shell search provider filename has wrong file extension."
 msgstr ""
+"Bestandsnaam van Gnome-Shell zoekdienst heeft verkeerde bestandsextensie."
 
 #. Show warning
 #: ../plugins/gnome-shell-search-provider/plugin.c:133
 #: ../plugins/gnome-shell-search-provider/plugin.c:285
 #, c-format
 msgid "Could not register Gnome-Shell search provider at file '%s': %s"
-msgstr ""
+msgstr "Kon Gnome-Shell zoekdienst niet registreren bij bestand '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/plugin.c:229
 #: ../plugins/gnome-shell-search-provider/plugin.c:303
 #, c-format
 msgid "Could not scan for gnome-shell search provider at '%s': %s"
-msgstr ""
+msgstr "Kon niet zoeken naar Gnome-Shell zoekdienst op '%s': %s"
 
 #. Just print a warning but do not fail. We will just not get notified
 #. * about changes at path where the providers are stored.
@@ -4590,11 +4636,11 @@ msgstr ""
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr ""
+msgstr "Gnome-Shell zoekdienst"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr ""
+msgstr "Gebruikt Gnome-Shell zoekdiensten als bron voor zoekacties"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:231
 msgid "Activation corner"
@@ -4636,17 +4682,23 @@ msgid ""
 "Disabling hot-corner plugin because the root window to determine pointer "
 "position could not be found."
 msgstr ""
+"Invoegsel voor actieve hoek wordt uitgeschakeld want het beginvenster voor "
+"het bepalen van de muispijlpositie kan niet worden gevonden."
 
 #: ../plugins/hot-corner/hot-corner.c:405
 msgid ""
 "Disabling hot-corner plugin because the device manager to determine pointer "
 "position could not be found."
 msgstr ""
+"Invoegsel voor actieve hoek wordt uitgeschakeld want de apparaatbeheerder "
+"voor het vaststellen van de muispijlpositie kon niet worden gevonden."
 
 #: ../plugins/hot-corner/hot-corner.c:410
 msgid ""
 "Disabling hot-corner plugin because application is not running as daemon."
 msgstr ""
+"Invoegsel voor actieve hoek wordt uitgeschakeld want toepassing draait niet "
+"als achtergronddienst."
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
