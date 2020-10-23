@@ -3078,237 +3078,238 @@ msgstr "פונקצית CSS '%s' כבר רשומה."
 #: ../libxfdashboard/theme-css.c:944 ../libxfdashboard/theme-css.c:1057
 #: ../libxfdashboard/theme-css.c:2156
 msgid "An identifier must follow '@'"
-msgstr ""
+msgstr "חייב להיות מזהה אחרי '@'"
 
 #: ../libxfdashboard/theme-css.c:1083
 msgid "Missing function argument"
-msgstr ""
+msgstr "ארגומנט פונקציה חסר"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:1107
 #, c-format
 msgid "Invalid character '%c' in function argument"
-msgstr ""
+msgstr "תו לא חוקי '%c' בארגומנט פונקציה"
 
 #: ../libxfdashboard/theme-css.c:1132
 msgid "Invalid character in function argument"
-msgstr ""
+msgstr "תו לא חוקי בארגומנט פונקציה"
 
 #: ../libxfdashboard/theme-css.c:1169
 msgid "Missing ')' after function"
-msgstr ""
+msgstr "חסר '(' לאחר פונקציה"
 
 #: ../libxfdashboard/theme-css.c:1184
 msgid "Missing '(' after function"
-msgstr ""
+msgstr "חסר ')' לאחר פונקציה"
 
 #. Set error message
 #: ../libxfdashboard/theme-css.c:1223
 #, c-format
 msgid "Could not transform result of function '%s' to a string"
-msgstr ""
+msgstr "לא יכול להפוך תוצאה של פונקציה '%s' למחרוזת"
 
 #: ../libxfdashboard/theme-css.c:1258
 #, c-format
 msgid "Function '%s' failed with error: %s"
-msgstr ""
+msgstr "פונקציה '%s' נכשלה עם שגיאה:%s"
 
 #: ../libxfdashboard/theme-css.c:1264
 #, c-format
 msgid "Function '%s' failed!"
-msgstr ""
+msgstr "פונקציה '%s' נכשלה!"
 
 #: ../libxfdashboard/theme-css.c:1303
 #, c-format
 msgid "Cannot resolve identifier '@%s' because of indefinite recursion"
-msgstr ""
+msgstr "לא יכול לפתור מזהה '@%s' בגלל רקורסיה בלתי מוגדרת"
 
 #. Identifier was unresolvable so print error message
 #: ../libxfdashboard/theme-css.c:1357
 #, c-format
 msgid "Unresolvable identifier '@%s'"
-msgstr ""
+msgstr "מזהה לא פתיר '@%s'"
 
 #: ../libxfdashboard/theme-css.c:1509
 #, c-format
 msgid ""
 "Possible recursion detected because call depth is too deep while resolving "
 "'%s'"
-msgstr ""
+msgstr "רקורסיה אפשרית התגלתה כי עומק קריאה עמוק מדי בעת פתירה של '%s'"
 
 #: ../libxfdashboard/theme-css.c:1600
 msgid "Invalid property name"
-msgstr ""
+msgstr "שם מאפיין לא חוקי"
 
 #: ../libxfdashboard/theme-css.c:1620
 msgid "Property names and values must be separated by colon"
-msgstr ""
+msgstr "שמות וערכי מאפיינים חייבים להיות מופרדים בפסיק"
 
 #: ../libxfdashboard/theme-css.c:1676
 msgid "Invalid property value"
-msgstr ""
+msgstr "ערך מאפיין לא חוקי"
 
 #: ../libxfdashboard/theme-css.c:1701
 msgid "Property values must end with semi-colon"
-msgstr ""
+msgstr "ערכי מאפיינים חייבים להסתיים בנקודה פסיק"
 
 #: ../libxfdashboard/theme-css.c:1844
 msgid "Missing '(' after @import keyword."
-msgstr ""
+msgstr "חסר ')' לאחר מילת מפתח @import."
 
 #: ../libxfdashboard/theme-css.c:1885
 msgid "Unexpected token in filename to import"
-msgstr ""
+msgstr "אות לא צפוי בשם קובץ לייבוא"
 
 #: ../libxfdashboard/theme-css.c:1905
 msgid "Missing filename to import"
-msgstr ""
+msgstr "שם קובץ חסר לייבוא"
 
 #: ../libxfdashboard/theme-css.c:1927
 msgid "Missing closing ')' at @import keyword."
-msgstr ""
+msgstr "חסר '(' במילת מפתח @import. "
 
 #. Build error message
 #: ../libxfdashboard/theme-css.c:1994
 #, c-format
 msgid "Failed to import CSS file '%s': %s"
-msgstr ""
+msgstr "נכשל לייבא קובץ CSS '%s':%s"
 
 #: ../libxfdashboard/theme-css.c:2101
 msgid ""
 "Mixing selectors and '@' identifiers or defining more than one '@' "
 "identifier at once is not allowed"
 msgstr ""
+"ערבוב סלקטורים ומזהים '@' או הגדרה של יותר ממזהה '@' בבת אחת אינם מותרים"
 
 #: ../libxfdashboard/theme-css.c:2122
 msgid ""
 "A selector must have been defined before other one can follow comma-"
 "separated."
-msgstr ""
+msgstr "יש להגדיר סלקטור לפני שסלקטור נוסף עוקב לאחר הפרדה בפסיק."
 
 #. Build warning message
 #: ../libxfdashboard/theme-css.c:2188
 #, c-format
 msgid "Skipping block of unknown identifier '@%s'"
-msgstr ""
+msgstr "מדלג על בלוק של מזהה לא ידוע '@%s'"
 
 #: ../libxfdashboard/theme-css.c:2194
 msgid "'@' identifier"
-msgstr ""
+msgstr "מזהה '@'"
 
 #: ../libxfdashboard/theme-css.c:2223 ../libxfdashboard/theme-css.c:2240
 msgid "Unhandled selector"
-msgstr ""
+msgstr "בורר לא מטופל"
 
 #: ../libxfdashboard/theme-css.c:2388
 #, c-format
 msgid "The input stream of type %s is not supported"
-msgstr ""
+msgstr "זרם הקלט מסוג %s לא נתמך"
 
 #: ../libxfdashboard/theme-css.c:2577 ../libxfdashboard/theme.c:808
 msgid "Theme path"
-msgstr ""
+msgstr "נתיב ערכת נושא"
 
 #: ../libxfdashboard/theme-css.c:2578
 msgid "Path of theme loading from"
-msgstr ""
+msgstr "נתיב שממנו נטענת ערכת נושא"
 
 #: ../libxfdashboard/theme-css.c:2665
 #, c-format
 msgid "Could not get file for path '%s'"
-msgstr ""
+msgstr "לא יכול לקבל קובץ עבור נתיב '%s'"
 
 #: ../libxfdashboard/theme-animation.c:138
 #, c-format
 msgid "Cannot allocate memory for animation targets property '%s'"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון למאפיין מטרות אנימציה '%s'"
 
 #: ../libxfdashboard/theme-animation.c:205
 #, c-format
 msgid "Cannot allocate memory for animation targets data with selector '%s'"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון עבור מידע מטרות אנימציה עם בורר '%s'"
 
 #: ../libxfdashboard/theme-animation.c:227
 #, c-format
 msgid ""
 "Freeing animation targets data at %p with a reference counter of %d greater "
 "than one"
-msgstr ""
+msgstr "מפנה מידע מטרות אנימציה ב%p עם מונה יחוס של %d גדול מאחד"
 
 #: ../libxfdashboard/theme-animation.c:286
 #, c-format
 msgid ""
 "Cannot allocate memory for animation specification data with sender '%s' and"
 " signal '%s'"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון עבור מידע מפרט אנימציה עם שולח '%s' ואות '%s'"
 
 #: ../libxfdashboard/theme-animation.c:310
 #, c-format
 msgid ""
 "Freeing animation specification data at %p with a reference counter of %d "
 "greater than one"
-msgstr ""
+msgstr "מפנה מידע מפרט אנימציה ב%p עם מונה יחוס של %d גדול מאחד"
 
 #: ../libxfdashboard/theme-animation.c:586
 #, c-format
 msgid "Invalid base for conversion"
-msgstr ""
+msgstr "בסיס לא חוקי להמרה"
 
 #: ../libxfdashboard/theme-animation.c:597
 #, c-format
 msgid "Integer out of range"
-msgstr ""
+msgstr "מספר שלם מחוץ לתחום"
 
 #: ../libxfdashboard/theme-animation.c:612
 #, c-format
 msgid "Cannot convert string '%s' to integer"
-msgstr ""
+msgstr "לא יכול להמיר מחרוזת '%s' למספר שלם"
 
 #: ../libxfdashboard/theme-animation.c:856
 #, c-format
 msgid "Empty 'name' at tag '%s'"
-msgstr ""
+msgstr "'שם' ריק בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:867
 #, c-format
 msgid "Empty 'from' at tag '%s'"
-msgstr ""
+msgstr "'מאת' ריק בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:878
 #: ../libxfdashboard/theme-animation.c:988
 #, c-format
 msgid "Empty 'to' at tag '%s'"
-msgstr ""
+msgstr "'אל' ריק בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:999
 #, c-format
 msgid "Empty 'origin' at tag '%s'"
-msgstr ""
+msgstr "'מקור' ריק בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1016
 #, c-format
 msgid "Invalid value '%s' for 'origin' at tag '%s'"
-msgstr ""
+msgstr "ערך לא חוקי '%s' עבור 'מקור' בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1154
 #, c-format
 msgid "Missing or empty delay at tag '%s'"
-msgstr ""
+msgstr "שיהוי חסר או ריק בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1165
 #, c-format
 msgid "Missing or empty duration at tag '%s'"
-msgstr ""
+msgstr "משך חסר או ריק בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1176
 #, c-format
 msgid "Missing or empty mode at tag '%s'"
-msgstr ""
+msgstr "מצב חסר או ריק בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1187
 #, c-format
 msgid "Empty repeat at tag '%s'"
-msgstr ""
+msgstr "חזרה ריקה בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1212
 #, c-format
@@ -3318,28 +3319,28 @@ msgstr "מצב לא תקין \"%s\""
 #: ../libxfdashboard/theme-animation.c:1342
 #, c-format
 msgid "Missing or empty ID at tag '%s'"
-msgstr ""
+msgstr "זהות חסרה או ריקה בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1353
 #, c-format
 msgid "Missing or empty sender at tag '%s'"
-msgstr ""
+msgstr "שולח חסר או ריק בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1364
 #, c-format
 msgid "Missing or empty signal at tag '%s'"
-msgstr ""
+msgstr "אות חסר או ריק בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1375
 #: ../libxfdashboard/theme-effects.c:887 ../libxfdashboard/theme-layout.c:1237
 #, c-format
 msgid "Invalid ID '%s' at tag '%s'"
-msgstr ""
+msgstr "זהות לא חוקית '%s' בתג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1387
 #, c-format
 msgid "Multiple definition of trigger with ID '%s'"
-msgstr ""
+msgstr "הגדרה מרובה של טריגר עם זהות '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1683
 #, c-format
@@ -3347,11 +3348,13 @@ msgid ""
 "Could not transform default value of for property '%s' of %s from type %s to"
 " %s of class %s"
 msgstr ""
+"לא יכול להפוך ערך ברירת מחדל של מאפיין עבור '%s' של %sמסוג %s אל %s של דרגה "
+"%s"
 
 #: ../libxfdashboard/theme-animation.c:1736
 #, c-format
 msgid "Cannot allocate memory for animation '%s'"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון עבור אנימציה '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1744
 #, c-format
