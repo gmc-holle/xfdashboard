@@ -686,17 +686,17 @@ msgstr "Kon toepassingsmenu niet herladen: %s"
 
 #: ../libxfdashboard/application-database.c:265
 msgid "Received event from unknown file monitor"
-msgstr ""
+msgstr "Gebeurtenis ontvangen van onbekende bestandsmonitor"
 
 #: ../libxfdashboard/application-database.c:291
 #, c-format
 msgid "Unable to create file monitor for newly created directory '%s'"
-msgstr ""
+msgstr "Kon geen bestandsmonitor maken voor nieuw gemaakte map '%s'"
 
 #: ../libxfdashboard/application-database.c:302
 #, c-format
 msgid "Unable to create file monitor for '%s': %s"
-msgstr ""
+msgstr "Kon geen bestandsmonitor maken voor '%s': %s"
 
 #: ../libxfdashboard/application-database.c:776
 #, c-format
@@ -712,7 +712,7 @@ msgstr "Kon bureaublad-ID niet vaststellen voor '%s'"
 #: ../libxfdashboard/application-database.c:947
 #, c-format
 msgid "Unable to create file monitor for '%s'"
-msgstr ""
+msgstr "Kan geen bestandsmonitor maken voor '%s'"
 
 #. Workaround for FreeBSD with Glib bug (file/directory monitors cannot be
 #. created)
@@ -722,6 +722,8 @@ msgid ""
 "[workaround for FreeBSD] Cannot initialize file monitor for path '%s' but "
 "will not fail: %s"
 msgstr ""
+"[noodoplossing voor FreeBSD] Kan bestandsmonitor niet maken voor '%s' maar "
+"zal toch slagen: %s"
 
 #: ../libxfdashboard/application-database.c:1359
 msgid "Is loaded"
@@ -738,7 +740,7 @@ msgstr ""
 #: ../libxfdashboard/application-tracker.c:281
 #, c-format
 msgid "Could not create environment lookup table for PID %d"
-msgstr ""
+msgstr "Kon geen omgevingsopzoektabel maken voor PID %d"
 
 #: ../libxfdashboard/application-tracker.c:354
 #, c-format
@@ -758,6 +760,8 @@ msgid ""
 "Application database was not initialized. Application tracking might not "
 "working."
 msgstr ""
+"Gegevensbank voor toepassingen werd niet geïnitialiseerd. Het bijhouden van "
+"toepassingen zou mogelijk niet kunnen werken."
 
 #. Show critical warning at console
 #: ../libxfdashboard/application.c:299 ../libxfdashboard/application.c:306
@@ -781,7 +785,7 @@ msgstr "Kon bindingen niet laden: %s"
 
 #: ../libxfdashboard/application.c:423
 msgid "Could not setup window tracker backend"
-msgstr ""
+msgstr "Kon geen achtergronddienst instellen voor bijhouden van vensters"
 
 #: ../libxfdashboard/application.c:431
 msgid "Could not initialize application database"
@@ -794,7 +798,7 @@ msgstr "Kon gegevensbank van toepassingen niet laden: %s"
 
 #: ../libxfdashboard/application.c:447
 msgid "Could not initialize application tracker"
-msgstr ""
+msgstr "Kon bijhouden van toepassingen niet initialiseren"
 
 #: ../libxfdashboard/application.c:474
 msgid "Could not initialize plugin manager"
@@ -809,6 +813,8 @@ msgid ""
 "Could not create binding between xfconf property and local resource for "
 "theme change notification."
 msgstr ""
+"Kon geen binding maken tussen xfconf-eigenschap en lokale hulpbron voor "
+"themawijzigingsmelding."
 
 #: ../libxfdashboard/application.c:527
 #, c-format
@@ -843,7 +849,7 @@ msgstr ""
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
-msgstr ""
+msgstr "De ID van weergave die getoond moet worden bij opstarten of hervatten"
 
 #: ../libxfdashboard/application.c:581
 msgid "Show version"
@@ -955,6 +961,8 @@ msgid ""
 "Could not get value from group [%s] for application %s from statistics file "
 "of applications search provider: %s"
 msgstr ""
+"Kon waarde niet verkrijgen van groep [%s] voor toepassing %s van "
+"statistiekbestand van toepassingenzoekdienst: %s"
 
 #: ../libxfdashboard/applications-search-provider.c:565
 #, c-format
@@ -1780,6 +1788,8 @@ msgid ""
 "The alignment of emblem on the X axis within the allocation in normalized "
 "coordinate between 0 and 1"
 msgstr ""
+"De uitlijning van embleem op de X-as binnen de toewijzing in genormaliseerde"
+" coördinaten tussen 0 en 1"
 
 #: ../libxfdashboard/emblem-effect.c:502
 msgid "Y align"
@@ -1790,6 +1800,8 @@ msgid ""
 "The alignment of emblem on the Y axis within the allocation in normalized "
 "coordinate between 0 and 1"
 msgstr ""
+"De uitlijning van embleem op de Y-as binnen de toewijzing in genormaliseerde"
+" coördinaten tussen 0 en 1"
 
 #: ../libxfdashboard/emblem-effect.c:510
 msgid "Anchor point"
@@ -1874,6 +1886,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardFocusable::%s"
 msgstr ""
+"Object van type %s implementeert niet de vereiste virtuele functie "
+"XfdashboardFocusable::%s"
 
 #: ../libxfdashboard/focusable.c:185
 #, c-format
@@ -2093,11 +2107,11 @@ msgstr "Kleur van etiket"
 
 #: ../libxfdashboard/label.c:1329
 msgid "Ellipsize mode"
-msgstr ""
+msgstr "Modus voor afkorten met puntjes"
 
 #: ../libxfdashboard/label.c:1330
 msgid "Mode of ellipsize if text in label is too long"
-msgstr ""
+msgstr "Modus voor afkorten met puntjes indien tekst in etiket te lang is"
 
 #: ../libxfdashboard/label.c:1337
 msgid "Single line"
@@ -2590,7 +2604,7 @@ msgstr "%s is geen afgeleid venster van %s en kan niet worden verwijderd"
 #: ../libxfdashboard/popup-menu.c:1878
 #, c-format
 msgid "Could not find monitor at pointer position %d,%d"
-msgstr ""
+msgstr "Kon geen monitor vinden op muispijlpositie %d,%d"
 
 #: ../libxfdashboard/quicklaunch.c:192
 #, c-format
@@ -2737,6 +2751,8 @@ msgid ""
 "The factor of value range to increase or decrease value by on pointer scroll"
 " events."
 msgstr ""
+"De factor van het waardenbereik om de toename of afname van de waarde te "
+"bepalen bij schuifgebeurtenissen van de muispijl."
 
 #: ../libxfdashboard/scrollbar.c:754
 msgid "The spacing between scrollbar and background"
@@ -2826,6 +2842,8 @@ msgid ""
 "Failed to add actor for result item %s of provider %s: Actor of type %s is "
 "not derived from class %s"
 msgstr ""
+"Kon acteur voor resultaatelement %s niet toevoegen van zoekdienst %s: acteur"
+" van type %s wordt niet afgeleid van klasse %s"
 
 #: ../libxfdashboard/search-result-container.c:664
 #: ../libxfdashboard/search-result-container.c:1734
@@ -2845,6 +2863,8 @@ msgid ""
 "Failed to remove actor for result item %s of provider %s: Actor of type %s "
 "is not derived from class %s"
 msgstr ""
+"Kon acteur niet verwijderen voor resultaatelement %s van zoekdienst %s: "
+"acteur van type %s wordt niet afgeleid van klasse %s"
 
 #: ../libxfdashboard/search-result-container.c:1253
 msgid "Provider"
@@ -2979,21 +2999,26 @@ msgstr "Kan niet omschakelen naar onbekende weergave '%s'"
 #: ../libxfdashboard/stage.c:469
 msgid "Cannot perform search because search view was not found in viewpad."
 msgstr ""
+"Kan zoekopdracht niet uitvoeren omdat zoekweergave niet werd gevonden in "
+"weergavevenster."
 
 #: ../libxfdashboard/stage.c:780
 msgid "Cannot find search view in viewpad to reset view."
 msgstr ""
+"Kan zoekweergave niet vinden in weergavevenster om weergave terug te zetten "
+"op de standaard."
 
 #: ../libxfdashboard/stage.c:948 ../libxfdashboard/stage.c:1025
 #, c-format
 msgid "Could not build interface '%s' from theme '%s'"
-msgstr ""
+msgstr "Kon gebruikersschil '%s' niet bouwen vanuit thema '%s'"
 
 #: ../libxfdashboard/stage.c:961 ../libxfdashboard/stage.c:991
 #: ../libxfdashboard/stage.c:1038 ../libxfdashboard/stage.c:1438
 #, c-format
 msgid "Interface '%s' from theme '%s' must be an actor of type %s"
 msgstr ""
+"Gebruikersschil '%s' vanuit thema '%s' moet een acteur zijn van type %s"
 
 #: ../libxfdashboard/stage.c:1095
 msgid "Invalid multiple stages for primary monitor"
@@ -3361,6 +3386,8 @@ msgid ""
 "Cannot allocate memory for animation specification data with sender '%s' and"
 " signal '%s'"
 msgstr ""
+"Kan geen geheugen toewijzen voor animatiespecificatiegegevens met afzender "
+"'%s' en signaal '%s'"
 
 #: ../libxfdashboard/theme-animation.c:310
 #, c-format
@@ -3479,6 +3506,9 @@ msgid ""
 "Will not be able to add animations to actors as object of type %s does not "
 "implement required virtual function XfdashboardAnimation::%s"
 msgstr ""
+"Zal geen animaties kunnen toevoegen aan acteurs aangezien object van type %s"
+" niet een vereiste virtuele functie implementeert, namelijk "
+"XfdashboardAnimation::%s"
 
 #: ../libxfdashboard/theme-animation.c:1817
 #, c-format
@@ -3792,79 +3822,83 @@ msgstr ""
 #: ../libxfdashboard/view-manager.c:290
 #, c-format
 msgid "View %s of type %s is not a %s and cannot be registered"
-msgstr ""
+msgstr "Weergave %s van type %s is geen %s en kan niet worden geregistreerd"
 
 #: ../libxfdashboard/view-manager.c:300
 #, c-format
 msgid "View %s of type %s is registered already"
-msgstr ""
+msgstr "Weergave %s van type %s is reeds geregistreerd"
 
 #: ../libxfdashboard/view-manager.c:315
 #, c-format
 msgid "Failed to register view %s of type %s"
-msgstr ""
+msgstr "Kon weergave %s van type %s niet registreren"
 
 #: ../libxfdashboard/view-manager.c:344
 #, c-format
 msgid "View %s is not registered and cannot be unregistered"
-msgstr ""
+msgstr "Weergave %s is niet geregistreerd en kan niet worden geontregistreerd"
 
 #: ../libxfdashboard/view-manager.c:426
 #, c-format
 msgid "Cannot create view %s because it is not registered"
-msgstr ""
+msgstr "Kan weergave %s niet maken want die is niet geregistreerd"
 
 #: ../libxfdashboard/view-selector.c:384
 msgid "Viewpad"
-msgstr ""
+msgstr "Weergavevenster"
 
 #: ../libxfdashboard/view-selector.c:385
 msgid "The viewpad this selector belongs to"
-msgstr ""
+msgstr "Het weergavevenster waar deze kiezer toe behoort"
 
 #: ../libxfdashboard/view-selector.c:397 ../libxfdashboard/viewpad.c:1233
 msgid "The spacing between views and scrollbars"
-msgstr ""
+msgstr "De ruimte tussen weergaven en schuifbalken"
 
 #: ../libxfdashboard/view-selector.c:410
 msgid "Orientation of view selector"
-msgstr ""
+msgstr "Oriëntatie van weergavekiezer"
 
 #: ../libxfdashboard/view.c:363
 msgid "View ID"
-msgstr ""
+msgstr "Weergave-ID"
 
 #: ../libxfdashboard/view.c:364
 msgid "The internal ID used to register this type of view"
-msgstr ""
+msgstr "De interne ID om dit soort weergave te registreren"
 
 #: ../libxfdashboard/view.c:370
 msgid "View name"
-msgstr ""
+msgstr "Weergavenaam"
 
 #: ../libxfdashboard/view.c:371
 msgid "Name of view used to display"
-msgstr ""
+msgstr "Te tonen naam van weergave"
 
 #: ../libxfdashboard/view.c:377
 msgid "View icon"
-msgstr ""
+msgstr "Weergavepictogram"
 
 #: ../libxfdashboard/view.c:378
 msgid ""
 "Icon of view used to display. Icon name can be a themed icon name or file "
 "name"
 msgstr ""
+"Te tonen pictogram van weergave. Pictogramnaam kan een gethematiseerde "
+"pictogramnaam zijn of een bestandsnaam"
 
 #: ../libxfdashboard/view.c:384
 msgid "View fit mode"
-msgstr ""
+msgstr "Passendheidsmodus voor weergave"
 
 #: ../libxfdashboard/view.c:385
 msgid ""
 "Defines if view should be fit into viewpad and in which directions it should"
 " fit into it"
 msgstr ""
+"Bepaalt of weergave passend gemaakt moet worden voor weergavevenster en in "
+"welke richtingen hij moet passen."
 
 #: ../libxfdashboard/view.c:392
 msgid "Enabled"
@@ -3872,7 +3906,7 @@ msgstr "Ingeschakeld"
 
 #: ../libxfdashboard/view.c:393
 msgid "This flag indicates if is view is enabled and activable"
-msgstr ""
+msgstr "Deze vlag geeft aan of weergave is ingeschakeld en activeerbaar is"
 
 #: ../libxfdashboard/viewpad.c:130
 msgid "Cannot update viewport of view because no one is active"
@@ -3882,29 +3916,31 @@ msgstr ""
 #, c-format
 msgid "View %s is not a child of %s and cannot be activated"
 msgstr ""
+"Weergave %s is geen afgeleid venster van %s en kan niet worden geactiveerd"
 
 #: ../libxfdashboard/viewpad.c:254
 #, c-format
 msgid "Cannot activate disabled view %s at %s"
-msgstr ""
+msgstr "Kan uitgeschakelde weergave %s niet activeren bij %s"
 
 #: ../libxfdashboard/viewpad.c:710
 #, c-format
 msgid "Failed to create view %s for viewpad"
-msgstr ""
+msgstr "Kon weergave %s niet maken voor weergavevenster"
 
 #: ../libxfdashboard/viewpad.c:716
 #, c-format
 msgid "View %s of type %s is not a %s and cannot be added to %s"
 msgstr ""
+"Weergave %s van type %s is geen %s en kan niet worden toegevoegd aan %s"
 
 #: ../libxfdashboard/viewpad.c:1240
 msgid "Active view"
-msgstr ""
+msgstr "Actieve weergave"
 
 #: ../libxfdashboard/viewpad.c:1241
 msgid "The current active view in viewpad"
-msgstr ""
+msgstr "De huidige actieve weergave in weergavevenster"
 
 #: ../libxfdashboard/viewpad.c:1247
 msgid "Horizontal scrollbar visibility"
@@ -3958,17 +3994,23 @@ msgstr ""
 #, c-format
 msgid "Cannot set backend to '%s' because it the backend was already set"
 msgstr ""
+"Kan achtergronddienst niet instellen op '%s' aangezien de achtergronddienst "
+"reeds was ingesteld"
 
 #: ../libxfdashboard/window-tracker-backend.c:203
 #, c-format
 msgid "Cannot set backend to '%s' because application is already initialized"
 msgstr ""
+"Kan achtergronddienst niet instellen op '%s' aangezien toepassing reeds is "
+"geïnitialiseerd"
 
 #. If we get here the requested backend is unknown
 #: ../libxfdashboard/window-tracker-backend.c:226
 #, c-format
 msgid "Unknown backend '%s' - using default backend"
 msgstr ""
+"Onbekende achtergronddienst '%s' - standaard-achtergronddienst wordt "
+"gebruikt"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker-monitor.c:58
@@ -3977,10 +4019,12 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerMonitor::%s"
 msgstr ""
+"Object van type %s implementeert niet de vereiste virtuele functie "
+"XfdashboardWindowTrackerMonitor::%s"
 
 #: ../libxfdashboard/window-tracker-monitor.c:101
 msgid "Monitor index"
-msgstr "Index van beeldscherm"
+msgstr "Beeldschermindex"
 
 #: ../libxfdashboard/window-tracker-monitor.c:102
 msgid "The index of this monitor"
@@ -4001,6 +4045,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerWindow::%s"
 msgstr ""
+"Object van type %s implementeert niet de vereiste virtuele functie "
+"XfdashboardWindowTrackerWindow::%s"
 
 #: ../libxfdashboard/window-tracker-window.c:189
 msgid "State"
@@ -4033,6 +4079,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerWorkspace::%s"
 msgstr ""
+"Object van type %s implementeert niet de vereiste virtuele functie "
+"XfdashboardWindowTrackerWorkspace::%s"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker.c:83
@@ -4041,6 +4089,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTracker::%s"
 msgstr ""
+"Object van type %s implementeert niet de vereiste virtuele functie "
+"XfdashboardWindowTracker::%s"
 
 #: ../libxfdashboard/window-tracker.c:119
 msgid "Active window"
@@ -4079,7 +4129,7 @@ msgstr ""
 #: ../libxfdashboard/windows-view.c:1765
 #, c-format
 msgid "Cannot activate selection of type %s at %s because expecting type %s"
-msgstr ""
+msgstr "Kan selectie van type %s niet activeren bij %s want verwacht type %s"
 
 #: ../libxfdashboard/windows-view.c:2055
 msgid "Current workspace"
@@ -4093,6 +4143,8 @@ msgstr "Het huidige werkblad waarvan de vensters worden getoond"
 msgid ""
 "Whether this view should prevent upsclaing any window beyond its real size"
 msgstr ""
+"Of deze weergave moet voorkomen dat een venster wordt opgeschaald voorbij "
+"zijn werkelijke grootte"
 
 #: ../libxfdashboard/windows-view.c:2077
 msgid "Scroll event changes workspace"
@@ -4101,7 +4153,7 @@ msgstr "Schuifgebeurtenis verandert werkblad"
 #: ../libxfdashboard/windows-view.c:2078
 msgid "Whether this view should change active workspace on scroll events"
 msgstr ""
-"Of deze weergave actieve werkblad moet wijzigen bij schuifgebeurtenissen"
+"Of deze weergave het actieve werkblad moet wijzigen bij schuifgebeurtenissen"
 
 #: ../libxfdashboard/windows-view.c:2084
 msgid "Filter monitor windows"
@@ -4118,7 +4170,7 @@ msgstr "Werkbladvensters filteren"
 
 #: ../libxfdashboard/windows-view.c:2092
 msgid "Whether this view should only show windows of active workspace"
-msgstr ""
+msgstr "Of deze weergave alleen vensters moet tonen van actieve werkblad"
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2317
@@ -4131,7 +4183,7 @@ msgstr "Vensters"
 #: ../libxfdashboard/workspace-selector.c:1110
 #, c-format
 msgid "Could not determine workspace of %s to set selection at %s"
-msgstr ""
+msgstr "Kon werkblad niet bepalen van %s om selectie voor in te stellen op %s"
 
 #: ../libxfdashboard/workspace-selector.c:1268
 msgid "Maximum size"
@@ -4173,6 +4225,7 @@ msgstr "Toon alleen huidige beeldscherm"
 #: ../libxfdashboard/workspace-selector.c:1292
 msgid "Show only windows of the monitor where this actor is placed"
 msgstr ""
+"Toon alleen vensters van het beeldscherm waar deze acteur is geplaatst"
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:132
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:131
@@ -4217,28 +4270,32 @@ msgid ""
 "Unknown value '%s' for property '%s' - defaulting to '%s' with priority of "
 "%d"
 msgstr ""
+"Onbekende waarde '%s' voor eigenschap '%s' - valt terug op '%s' met "
+"prioriteit van %d"
 
 #. Show warning
 #: ../libxfdashboard/x11/window-content-x11.c:522
 #, c-format
 msgid "Could not create copy of texture of mininized window '%s': %s"
-msgstr ""
+msgstr "Kon geen kopie maken van textuur van geminimaliseerd venster '%s': %s"
 
 #. Show warning
 #: ../libxfdashboard/x11/window-content-x11.c:550
 #, c-format
 msgid "Could not create copy of texture of mininized window '%s'"
-msgstr ""
+msgstr "Kon geen kopie maken van textuur van geminimaliseerd venster '%s'"
 
 #: ../libxfdashboard/x11/window-content-x11.c:561
 #, c-format
 msgid "Could not determine size of texture of minimized window '%s'"
-msgstr ""
+msgstr "Kon grootte van textuur niet bepalen van geminimaliseerd venster '%s'"
 
 #: ../libxfdashboard/x11/window-content-x11.c:566
 #, c-format
 msgid "Could not allocate memory for copy of texture of mininized window '%s'"
 msgstr ""
+"Kon geen geheugen toewijzen voor kopie van textuur van geminimaliseerd "
+"venster '%s'"
 
 #: ../libxfdashboard/x11/window-content-x11.c:682
 #, c-format
@@ -4246,14 +4303,20 @@ msgid ""
 "Need at least version %d.%d of composite extension but found %d.%d - using "
 "only fallback images"
 msgstr ""
+"Heeft tenminste versie %d.%d nodig van beeldsamenstellingsextensie, maar "
+"vond %d.%d - er worden alleen terugvalafbeeldingen gebruikt"
 
 #: ../libxfdashboard/x11/window-content-x11.c:686
 msgid "Query for X composite extension failed - using only fallback imagess"
 msgstr ""
+"Zoektocht naar X-beeldsamenstellingsextensie is mislukt - er worden alleen "
+"terugvalafbeeldingen gebruikt"
 
 #: ../libxfdashboard/x11/window-content-x11.c:688
 msgid "X does not support composite extension - using only fallback images"
 msgstr ""
+"X ondersteunt geen beeldsamenstellingsextensie - er worden alleen "
+"terugvalafbeeldingen gebruikt"
 
 #: ../libxfdashboard/x11/window-content-x11.c:703
 #, c-format
@@ -4279,6 +4342,8 @@ msgstr ""
 #, c-format
 msgid "Cannot resume window '%s' as composite extension is not available"
 msgstr ""
+"Kan venster '%s' niet hervatten aangezien beeldsamenstellingsextensie niet "
+"beschikbaar is"
 
 #: ../libxfdashboard/x11/window-content-x11.c:1109
 #: ../libxfdashboard/x11/window-content-x11.c:1269
@@ -4290,7 +4355,7 @@ msgstr ""
 #: ../libxfdashboard/x11/window-content-x11.c:1454
 #, c-format
 msgid "Could not create fallback texture for window '%s': %s"
-msgstr ""
+msgstr "Kon geen terugvaltextuur maken voor venster '%s': %s"
 
 #: ../libxfdashboard/x11/window-content-x11.c:1496
 #, c-format
@@ -4311,11 +4376,12 @@ msgstr "Is dit venster gepauzeerd"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2152
 msgid "Color to draw outline of mapped windows with"
-msgstr ""
+msgstr "Kleur om de omtrek van toegewezen vensters in weer te geven"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2159
 msgid "Width of line used to draw outline of mapped windows"
 msgstr ""
+"Breedte van regel voor het weergeven van de omtrek van toegewezen vensters"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2166
 msgid "Include window frame"
@@ -4331,63 +4397,71 @@ msgstr ""
 
 #: ../libxfdashboard/x11/window-content-x11.c:2173
 msgid "Unmapped window icon X fill"
-msgstr ""
+msgstr "X-vulling voor pictogram van niet-toegewezen venster"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2174
 msgid "Whether the unmapped window icon should fill up horizontal space"
 msgstr ""
+"Of het pictogram van het niet-toegewezen venster horizontale ruimte op moet "
+"vullen"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2180
 msgid "Unmapped window icon y fill"
-msgstr ""
+msgstr "Y-vulling van pictogram voor niet-toegewezen venster"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2181
 msgid "Whether the unmapped window icon should fill up vertical space"
 msgstr ""
+"Of het pictogram van het niet-toegewezen venster verticale ruimte op moet "
+"vullen"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2187
 msgid "Unmapped window icon X align"
-msgstr ""
+msgstr "X-uitlijning van pictogram voor niet-toegewezen venster"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2188
 msgid ""
 "The alignment of the unmapped window icon on the X axis within the "
 "allocation in normalized coordinate between 0 and 1"
 msgstr ""
+"De uitlijning van het niet-toegewezen vensterpictogram op de X-as binnen de "
+"allocatie in genormaliseerde coördinaten tussen 0 en 1"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2195
 msgid "Unmapped window icon Y align"
-msgstr ""
+msgstr "Y-uitlijning van pictogram voor niet-toegewezen venster"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2196
 msgid ""
 "The alignment of the unmapped window icon on the Y axis within the "
 "allocation in normalized coordinate between 0 and 1"
 msgstr ""
+"De uitlijning van het niet-toegewezen vensterpictogram op de Y-as binnen de "
+"allocatie in genormaliseerde coördinaten tussen 0 en 1"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2203
 msgid "Unmapped window icon X scale"
-msgstr ""
+msgstr "X-schaal van niet-toegewezen vensterpictogram"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2204
 msgid "Scale factor of unmapped window icon on the X axis"
-msgstr ""
+msgstr "Schaalfactor van niet-toegewezen vensterpictogram op de X-as"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2211
 msgid "Unmapped window icon Y scale"
-msgstr ""
+msgstr "Y-schaal van niet-toegewezen vensterpictogram"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2212
 msgid "Scale factor of unmapped window icon on the Y axis"
-msgstr ""
+msgstr "Schaalfactor van niet-toegewezen vensterpictogram op de Y-as"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2219
 msgid "Unmapped window icon anchor point"
-msgstr ""
+msgstr "Ankerpunt van niet-toegewezen vensterpictogram"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2220
 msgid "The anchor point of unmapped window icon"
-msgstr ""
+msgstr "Het ankerpunt van een niet-toegewezen vensterpictogram"
 
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:614
 msgid "Could not get real stage window to hide"
@@ -4414,7 +4488,7 @@ msgstr ""
 
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:1279
 msgid "The mapped wnck window"
-msgstr ""
+msgstr "Het toegewezen wnck-venster"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:85
@@ -4430,22 +4504,22 @@ msgstr ""
 
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:386
 msgid "The mapped wnck workspace"
-msgstr ""
+msgstr "Het toegewezen wnck-werkblad"
 
 #: ../libxfdashboard/x11/window-tracker-x11.c:218
 #, c-format
 msgid "Could not create workspace object of type %s for workspace '%s'"
-msgstr ""
+msgstr "Kon geen werkbladobject maken van type %s voor werkblad '%s'"
 
 #: ../libxfdashboard/x11/window-tracker-x11.c:388
 #, c-format
 msgid "Could not create window object of type %s for window '%s'"
-msgstr ""
+msgstr "Kon geen vensterobject maken van type %s voor venster '%s'"
 
 #: ../libxfdashboard/x11/window-tracker-x11.c:977
 #, c-format
 msgid "Cannot release unknown monitor %d"
-msgstr ""
+msgstr "Kan onbekend beeldscherm %d niet vrijgeven"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:312
@@ -4482,7 +4556,7 @@ msgstr "Kleur voor het rondje dat de tweede wijzer vasthoudt"
 
 #: ../plugins/clock-view/plugin.c:146 ../plugins/hot-corner/plugin.c:109
 msgid "Cannot allocate memory for mapping"
-msgstr ""
+msgstr "Kan geen geheugen alloceren voor toewijzing "
 
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:208
@@ -4555,6 +4629,8 @@ msgid ""
 "Cannot initialize file monitor to detect changes for Gnome-Shell search "
 "provider '%s': %s"
 msgstr ""
+"Kan bestandsmonitor niet initialiseren om veranderingen te bespeuren voor "
+"Gnome-Shell zoekdienst '%s': %s"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:391
@@ -4653,6 +4729,7 @@ msgstr "Kon niet zoeken naar Gnome-Shell zoekdienst op '%s': %s"
 msgid ""
 "Unable to create file monitor for Gnome-Shell search providers at '%s': %s"
 msgstr ""
+"Kan geen bestandsmonitor maken voor Gnome-Shell zoekdiensten bij '%s': %s"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
