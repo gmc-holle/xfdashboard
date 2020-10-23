@@ -1570,7 +1570,7 @@ msgstr "Lezer bereikte einde van stroom niet"
 
 #: ../libxfdashboard/css-selector.c:1014
 msgid "Unexpected state of CSS scanner."
-msgstr ""
+msgstr "Onverwachte status van CSS-doorzoeker."
 
 #. Show warning
 #: ../libxfdashboard/desktop-app-info.c:140
@@ -1810,7 +1810,7 @@ msgstr "Oriëntatie"
 #: ../libxfdashboard/quicklaunch.c:3123
 #: ../libxfdashboard/workspace-selector.c:1261
 msgid "The orientation to layout children"
-msgstr ""
+msgstr "De oriëntatie voor de vormgeving van afgeleide vensters"
 
 #: ../libxfdashboard/fill-box-layout.c:597
 msgid "spacing"
@@ -2598,12 +2598,16 @@ msgid ""
 "Could not check for duplicates for invalid %s object so assume no actor "
 "exists"
 msgstr ""
+"Kon niet controleren op duplicaten voor ongeldig %s object, dus neem aan dat"
+" er geen acteur bestaat"
 
 #: ../libxfdashboard/quicklaunch.c:255
 #, c-format
 msgid ""
 "Could not check for duplicates for invalid %s object so assume it exists"
 msgstr ""
+"Kon niet controleren op duplicaten voor ongeldig %s object, dus neem aan dat"
+" het bestaat"
 
 #: ../libxfdashboard/quicklaunch.c:278
 #, c-format
@@ -2611,6 +2615,8 @@ msgid ""
 "Value at %p of type %s is not a %s so assume this desktop application item "
 "exists"
 msgstr ""
+"Waarde bij %p van type %s is geen %s dus neem aan dat dit "
+"bureaubladtoepassingselement bestaat"
 
 #: ../libxfdashboard/quicklaunch.c:402 ../libxfdashboard/quicklaunch.c:406
 msgid "No windows to activate for application"
@@ -2663,7 +2669,7 @@ msgstr "Normale pictogramgrootte"
 
 #: ../libxfdashboard/quicklaunch.c:3107
 msgid "Unscale size of icon"
-msgstr ""
+msgstr "Grootte van pictogram ontschalen"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
@@ -3480,6 +3486,8 @@ msgid ""
 "Cannot create animation '%s' for non-existing property '%s' at actor of type"
 " '%s'"
 msgstr ""
+"Kan animatie '%s' niet maken voor niet-bestaande eigenschap '%s' bij acteur "
+"van type '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1835
 #, c-format
@@ -3501,6 +3509,8 @@ msgid ""
 "Cannot allocate memory for transition of property '%s' of animation "
 "specification '%s'"
 msgstr ""
+"Kan geen geheugen toewijzen voor overgang van eigenschap '%s' van "
+"animatiespecificatie '%s'"
 
 #: ../libxfdashboard/theme-animation.c:2073
 #, c-format
@@ -3508,17 +3518,20 @@ msgid ""
 "Empty animation list when creating animation for animation specification "
 "'%s'"
 msgstr ""
+"Lege animatielijst bij maken van animatie voor animatiespecificatie '%s'"
 
 #: ../libxfdashboard/theme-animation.c:2082
 #, c-format
 msgid ""
 "Cannot allocate memory for transition group of animation specification '%s'"
 msgstr ""
+"Kan geen geheugen toewijzen voor overgangsgroep van animatiespecificatie "
+"'%s'"
 
 #: ../libxfdashboard/theme-effects.c:334 ../libxfdashboard/theme-layout.c:497
 #, c-format
 msgid "Cannot allocate memory for object data of tag <%s>"
-msgstr ""
+msgstr "Kan geen geheugen toewijzen voor objectgegevens van markering <%s>"
 
 #: ../libxfdashboard/theme-effects.c:352
 #, c-format
@@ -3530,26 +3543,27 @@ msgstr ""
 #: ../libxfdashboard/theme-effects.c:489
 #, c-format
 msgid "Object of type %s is not derived from %s"
-msgstr ""
+msgstr "Object van type %s is niet afgeleid van %s"
 
 #: ../libxfdashboard/theme-effects.c:596
 msgid "Missing property name to set value for"
-msgstr ""
+msgstr "Ontbrekende eigenschapnaam waarvoor waarde ingesteld moet worden"
 
 #: ../libxfdashboard/theme-effects.c:608
 #, c-format
 msgid "Missing object data to set value of property '%s'"
 msgstr ""
+"Ontbrekende objectgegevens voor instellen van waarde van eigenschap '%s'"
 
 #: ../libxfdashboard/theme-effects.c:666 ../libxfdashboard/theme-effects.c:753
 #, c-format
 msgid "Missing parser data for <%s> tag"
-msgstr ""
+msgstr "Ontbrekende leesgegevens voor <%s> markering"
 
 #: ../libxfdashboard/theme-effects.c:708
 #, c-format
 msgid "Multiple definition of property '%s' at object with ID '%s'"
-msgstr ""
+msgstr "Meervoudige definitie van eigenschap '%s' bij object met ID '%s'"
 
 #: ../libxfdashboard/theme-effects.c:770
 #, c-format
@@ -3557,6 +3571,8 @@ msgid ""
 "Invalid state of parser after parsing property '%s' at object with id '%s' "
 "of type %s"
 msgstr ""
+"Ongeldige staat van lezer na lezen van eigenschap '%s' bij object met ID "
+"'%s' van type %s"
 
 #: ../libxfdashboard/theme-effects.c:875 ../libxfdashboard/theme-layout.c:1224
 #, c-format
@@ -3566,12 +3582,12 @@ msgstr "Lege ID bij markering '%s'"
 #: ../libxfdashboard/theme-effects.c:900
 #, c-format
 msgid "Multiple definition of effect with id '%s'"
-msgstr ""
+msgstr "Meervoudige definitie van effect met ID '%s'"
 
 #: ../libxfdashboard/theme-effects.c:913 ../libxfdashboard/theme-layout.c:1253
 #, c-format
 msgid "Unknown object class %s for tag '%s'"
-msgstr ""
+msgstr "Onbekende objectklasse %s voor markering '%s'"
 
 #: ../libxfdashboard/theme-effects.c:927 ../libxfdashboard/theme-layout.c:1273
 #, c-format
@@ -3584,12 +3600,12 @@ msgstr ""
 #: ../libxfdashboard/theme-effects.c:1280
 #, c-format
 msgid "Could not find effect with ID '%s'"
-msgstr ""
+msgstr "Kon geen effect vinden met ID '%s'"
 
 #: ../libxfdashboard/theme-layout.c:263
 #, c-format
 msgid "File %s - Error on line %d char %d: "
-msgstr ""
+msgstr "Bestand %s - fout op regel %d teken %d: "
 
 #: ../libxfdashboard/theme-layout.c:403
 msgid "Cannot allocate memory for unknown tag"
@@ -3617,13 +3633,15 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1019
 #, c-format
 msgid "Value for property '%s' is already set"
-msgstr ""
+msgstr "Waarde voor eigenschap '%s' is reeds ingesteld"
 
 #: ../libxfdashboard/theme-layout.c:1308
 #, c-format
 msgid ""
 "Tag <%s> can only be set at <%s> creating objects derived from class %s"
 msgstr ""
+"Markering <%s> kan alleen worden ingesteld bij <%s> voor het maken van "
+"objecten afgeleid uit klasse %s"
 
 #: ../libxfdashboard/theme-layout.c:1394
 #, c-format
@@ -3656,11 +3674,13 @@ msgid ""
 "File %s - Warning on line %d char %d: At interface '%s' the ID '%s' should "
 "get focus but the ID '%s' was selected already"
 msgstr ""
+"Bestand %s - waarschuwing op regel %d teken %d: bij interface '%s' moet de "
+"ID '%s' worden scherpgesteld maar de ID '%s' was reeds geselecteerd"
 
 #: ../libxfdashboard/theme-layout.c:1838
 #, c-format
 msgid "ID '%s' was specified more than once (%d times)"
-msgstr ""
+msgstr "ID '%s' werd meer dan eens gespecificeerd (%d keer)"
 
 #: ../libxfdashboard/theme-layout.c:1869
 #, c-format
@@ -3964,7 +3984,7 @@ msgstr "Index van beeldscherm"
 
 #: ../libxfdashboard/window-tracker-monitor.c:102
 msgid "The index of this monitor"
-msgstr ""
+msgstr "De index van dit beeldscherm"
 
 #: ../libxfdashboard/window-tracker-monitor.c:109
 msgid "Is primary"
@@ -4855,16 +4875,16 @@ msgstr "Kon de instellingendialoog niet aanmaken."
 #: ../settings/settings.c:144
 #, c-format
 msgid "Could not find UI file '%s'."
-msgstr ""
+msgstr "Kon gebruikersschilbestand '%s' niet vinden."
 
 #: ../settings/settings.c:158
 #, c-format
 msgid "Could not load UI resources from '%s': %s"
-msgstr ""
+msgstr "Kon geen gebruikersschilhulpbronnen laden van '%s': %s"
 
 #: ../settings/settings.c:319 ../settings/settings.c:353
 msgid "Could not get dialog from UI file."
-msgstr ""
+msgstr "Kon geen dialoogvenster verkrijgen uit bestand met gebruikersschil."
 
 #: ../xfdashboard/main.c:174
 msgid "Cannot restart application: Failed to quit running instance"
