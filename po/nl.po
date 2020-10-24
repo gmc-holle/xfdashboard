@@ -30,7 +30,7 @@ msgstr "Xfdashboard"
 #: ../data/xfdashboard.desktop.in.in.h:2
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
-msgstr "Een dashboard voor Xfce dat lijkt op dat van Gnome Shell."
+msgstr "Een bedieningspaneel voor Xfce dat lijkt op dat van Gnome Shell."
 
 #: ../data/xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
@@ -106,7 +106,8 @@ msgid ""
 "well as it supports user stylesheets now."
 msgstr ""
 "Deze onstabiele ontwikkelversie implementeert een nieuwe experimentele "
-"achtergronddienst voor GDK alsook ondersteuning voor gebruikerssjablonen."
+"achterliggende dienst voor GDK alsook ondersteuning voor "
+"gebruikerssjablonen."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
@@ -116,7 +117,7 @@ msgid ""
 msgstr ""
 "Deze onstabiele ontwikkelversie verbetert de laadsnelheid van afbeeldingen "
 "en pictogrammen, voegt een fijnmazig foutopsporingssysteem toe en "
-"introduceert een gebruikerschil voor meerdere achtergronddiensten. Maar "
+"introduceert een gebruikerschil voor meerdere achterliggende diensten. Maar "
 "alleen X11 wordt vooralsnog ondersteund."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:12
@@ -171,7 +172,7 @@ msgstr "<b>Algemene instellingen:</b>"
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr "Zoekweergave terugzetten bij hervatting"
+msgstr "Zoekweergave terugzetten op standaard bij hervatting"
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
@@ -179,7 +180,7 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
-"Indien ingeschakeld zal de zoekweergave worden teruggezet wanneer xfdashboard wordt hervat. Dat betekent dat de actieve weergave wordt teruggeschakeld naar de laatste actieve weergave voordat de laatste zoekopdracht plaatsvond en het zoekveld zal worden leeggemaakt.\n"
+"Indien ingeschakeld zal de zoekweergave worden teruggezet op de standaard wanneer xfdashboard wordt hervat. Dat betekent dat de actieve weergave wordt teruggeschakeld naar de laatste actieve weergave voordat de laatste zoekopdracht plaatsvond en het zoekveld zal worden leeggemaakt.\n"
 "\n"
 "<b>Let op:</b> Deze instelling wordt alleen van kracht wanneer xfdashboard draait in achtergrondmodus. "
 
@@ -231,9 +232,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
-"Deze waarde bepaalt hoe snel de vensterinhoud moet worden aangemaakt. De waarde 'onmiddellijk' instrueert xfdashboard om de vensterinhoud aan te maken op het ogenblik dat die wordt verzocht; alle andere waarden zullen een wachtrij opstellen en de waarde bepaalt hoe snel de wachtrij zal worden verwerkt.\n"
+"Deze waarde bepaalt hoe snel de vensterinhoud moet worden aangemaakt. De waarde 'immediate' instrueert xfdashboard om de vensterinhoud aan te maken op het ogenblik dat die wordt verzocht; alle andere waarden zullen een wachtrij opstellen en de waarde bepaalt hoe snel de wachtrij zal worden verwerkt.\n"
 "\n"
-"<b>Let op:</b> wijzig deze waarde alleen dan van 'onmiddellijk' in een andere waarde, wanneer uw videokaart, stuurprogramma of systeem te langzaam is om de vensterinhoud meteen aan te maken. U dient elke waarde uit te proberen om die waarde te vinden die het beste bij uw systeem past."
+"<b>Let op:</b> wijzig deze waarde alleen dan van 'immediate' in een andere waarde, wanneer uw videokaart, stuurprogramma of systeem te langzaam is om de vensterinhoud meteen aan te maken. U dient elke waarde uit te proberen om die waarde te vinden die het beste bij uw systeem past."
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
@@ -241,7 +242,7 @@ msgstr "Prioriteit van vensterinhoudcreatie"
 
 #: ../data/data/preferences.ui.h:26
 msgid "Show child windows in main windows"
-msgstr "Toon afgeleide vensters in hoofdvenster"
+msgstr "Toon afgeleide vensters in hoofdvensters"
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
@@ -272,8 +273,7 @@ msgstr "Animaties inschakelen"
 
 #: ../data/data/preferences.ui.h:33
 msgid "If enabled theme-defined animations will be shown."
-msgstr ""
-"Indien ingeschakeld zullen er thema-bepaalde animaties worden getoond."
+msgstr "Indien ingeschakeld zullen er themabepaalde animaties worden getoond."
 
 #: ../data/data/preferences.ui.h:34
 msgid "<b>Applications view:</b>"
@@ -297,7 +297,7 @@ msgstr "<b>Vensterweergave:</b>"
 
 #: ../data/data/preferences.ui.h:38
 msgid "Mouse wheel changes workspace"
-msgstr "Muiswiel verandert van werkblad"
+msgstr "Muiswiel verandert werkblad"
 
 #: ../data/data/preferences.ui.h:39
 msgid ""
@@ -323,7 +323,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:42
 msgid "Delay initial search interval:"
-msgstr "Vertraging eerste zoekopdracht:"
+msgstr "Vertraging eerste zoektussenpoze:"
 
 #: ../data/data/preferences.ui.h:43
 msgid "General"
@@ -494,7 +494,7 @@ msgstr "Kan scherpstellen"
 
 #: ../libxfdashboard/actor.c:1582
 msgid "This flag indicates if this actor can be focused"
-msgstr "Deze vlag geeft aan of deze uitvoerder scherpgesteld kan worden"
+msgstr "Deze vlag geeft aan of deze acteur scherpgesteld kan worden"
 
 #: ../libxfdashboard/actor.c:1589
 msgid "Effects"
@@ -745,15 +745,15 @@ msgstr "Kon geen omgevingsopzoektabel maken voor PID %d"
 #: ../libxfdashboard/application-tracker.c:354
 #, c-format
 msgid "Malformed environment '%s' in environment set for PID %d at %s"
-msgstr "Misvormde omgeving '%s' in omgeving ingesteld voor PID %d op %s"
+msgstr "Misvormde omgeving '%s' in omgeving ingesteld voor PID %d bij %s"
 
 #: ../libxfdashboard/application-tracker.c:384
 #, c-format
 msgid ""
 "Unexpected duplicate name '%s' in environment set for PID %d at %s: %s = %s"
 msgstr ""
-"Onverwachte dubbele naam '%s' in omgeving ingesteld voor PID %d op %s: %s = "
-"%s"
+"Onverwachte dubbele naam '%s' in omgeving ingesteld voor PID %d bij %s: %s ="
+" %s"
 
 #: ../libxfdashboard/application-tracker.c:1038
 msgid ""
@@ -785,7 +785,7 @@ msgstr "Kon bindingen niet laden: %s"
 
 #: ../libxfdashboard/application.c:423
 msgid "Could not setup window tracker backend"
-msgstr "Kon geen achtergronddienst instellen voor bijhouden van vensters"
+msgstr "Kon geen achterliggende dienst instellen voor bijhouden van vensters"
 
 #: ../libxfdashboard/application.c:431
 msgid "Could not initialize application database"
@@ -857,7 +857,7 @@ msgstr "Toon versie"
 
 #: ../libxfdashboard/application.c:600
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "Een bedieningspaneel voor Xfce4-version zoals Gnome Shell"
+msgstr "Een bedieningspaneel voor Xfce4 - version zoals Gnome Shell"
 
 #. Show error
 #: ../libxfdashboard/application.c:617
@@ -912,7 +912,7 @@ msgstr "Naam van huidige thema"
 
 #: ../libxfdashboard/applications-menu-model.c:691
 msgid "Iterator does not belong to application menu model."
-msgstr "Iterator behoort niet tot toepassingsmenumodel"
+msgstr "Iterator behoort niet tot toepassingsmenumodel."
 
 #: ../libxfdashboard/applications-menu-model.c:709
 #, c-format
@@ -1018,7 +1018,7 @@ msgstr "Rangschikwijze"
 
 #: ../libxfdashboard/applications-search-provider.c:1470
 msgid "Defines how to sort matching applications"
-msgstr "Bepaalt hoe overeenkomende toepassingen moeten worden gerangschikt"
+msgstr "Bepaalt hoe overeenkomstige toepassingen moeten worden gerangschikt"
 
 #: ../libxfdashboard/applications-view.c:241
 #, c-format
@@ -1130,8 +1130,7 @@ msgstr "Pictogram van bovenliggend menu"
 
 #: ../libxfdashboard/applications-view.c:1528
 msgid "Name of icon to use for 'go-back-to-parent-menu' entries"
-msgstr ""
-"Naam van te gebruiken pictogram bij 'ga-terug-naar bovenliggend-menu'-regels"
+msgstr "Naam van te gebruiken pictogram bij 'go-back-to-parent-menu'-regels"
 
 #: ../libxfdashboard/applications-view.c:1548
 msgid "Show all applications"
@@ -1208,7 +1207,7 @@ msgstr "Omtrekranden"
 
 #: ../libxfdashboard/background.c:478
 msgid "Determines which sides of border of outline should be drawn"
-msgstr "Bepaalt welke kanten van de rand van een omtrek worden getoond"
+msgstr "Bepaalt welke zijden van de rand van een omtrek worden getoond"
 
 #: ../libxfdashboard/background.c:485
 msgid "Outline corners"
@@ -1262,11 +1261,11 @@ msgstr ""
 
 #: ../libxfdashboard/binding.c:233
 msgid "Modifiers"
-msgstr "Speciale toetsen"
+msgstr "Speciale toetsdefinities"
 
 #: ../libxfdashboard/binding.c:234
 msgid "Modifiers this binding is bound to"
-msgstr "Speciale toetsen waar deze toetsbinding aan is gekoppeld"
+msgstr "Speciale toetsdefinities waar deze toetsbinding aan is gekoppeld"
 
 #: ../libxfdashboard/binding.c:242
 msgid "Class name of target of this binding"
@@ -1278,7 +1277,7 @@ msgstr "Actie toegewezen aan deze toetsbinding"
 
 #: ../libxfdashboard/binding.c:255 ../libxfdashboard/plugin.c:820
 msgid "Flags"
-msgstr "Merktekens"
+msgstr "Vlaggen"
 
 #: ../libxfdashboard/binding.c:256
 msgid "Flags assigned to this binding"
@@ -1308,7 +1307,7 @@ msgstr "Fout in regel %d teken %d: "
 #: ../libxfdashboard/bindings-pool.c:202
 #, c-format
 msgid "Could not parse empty key-binding '%s'."
-msgstr "Kon lege toetsbinding '%s' niet lezen."
+msgstr "Kon lege toetsbinding '%s' niet inlezen."
 
 #: ../libxfdashboard/bindings-pool.c:227
 #, c-format
@@ -1316,13 +1315,15 @@ msgid ""
 "Could not parse modifier '%s' of key-binding '%s' because it is not enclosed"
 " by '<...>'"
 msgstr ""
-"Kon modifier '%s' niet lezen van toetsbinding '%s' aangezien die niet tussen"
-" deze tekens staat: '<...>'"
+"Kon speciale toetsdefinitie '%s' niet inlezen van toetsbinding '%s' "
+"aangezien die niet tussen deze tekens staat: '<...>'"
 
 #: ../libxfdashboard/bindings-pool.c:250
 #, c-format
 msgid "Could not parse unknown modifier '%s' of key-binding '%s'"
-msgstr "Kon onbekende speciale toets '%s' niet lezen van toetsbinding '%s'"
+msgstr ""
+"Kon onbekende speciale toetsdefinitie '%s' niet inlezen van toetsbinding "
+"'%s'"
 
 #: ../libxfdashboard/bindings-pool.c:272
 #, c-format
@@ -1330,20 +1331,20 @@ msgid ""
 "Could not parse '%s' of key-binding '%s' because it is already a key "
 "assigned."
 msgstr ""
-"Kon '%s' niet lezen van toetsbinding '%s' omdat het al een toegewezen toets "
-"is."
+"Kon '%s' niet inlezen van toetsbinding '%s' omdat het al een toegewezen "
+"toets is."
 
 #: ../libxfdashboard/bindings-pool.c:287
 #, c-format
 msgid "Could not parse '%s' of key-binding '%s'"
-msgstr "Kon '%s' niet lezen van toetsbinding '%s'"
+msgstr "Kon '%s' niet inlezen van toetsbinding '%s'"
 
 #: ../libxfdashboard/bindings-pool.c:306
 #, c-format
 msgid "Invalid key-binding '%s' as neither a key nor a modifier was assigned."
 msgstr ""
 "Ongeldige toetsbinding '%s' aangezien er noch een toets nog een speciale "
-"toets werd toegewezen."
+"toetsdefinitie werd toegewezen."
 
 #: ../libxfdashboard/bindings-pool.c:349
 #: ../libxfdashboard/theme-animation.c:683
@@ -1387,7 +1388,7 @@ msgstr "Kon toets '%s' niet vertalen"
 #: ../libxfdashboard/bindings-pool.c:585
 #, c-format
 msgid "Unknown value '%s' for attribute 'when'"
-msgstr "Onbekende waarde '%s' voor attribuut 'wanneer'"
+msgstr "Onbekende waarde '%s' voor attribuut 'when'"
 
 #: ../libxfdashboard/bindings-pool.c:608
 msgid "Could not initialize binding for key-binding"
@@ -1423,7 +1424,7 @@ msgstr "Markering <%s> kan niet markering <%s> bevatten"
 #: ../libxfdashboard/theme-layout.c:1922
 #, c-format
 msgid "Could not set up parser data for file %s"
-msgstr "Kon geen leesgegevens instellen voor bestand %s"
+msgstr "Kon geen inleesgegevens instellen voor bestand %s"
 
 #: ../libxfdashboard/bindings-pool.c:866
 #: ../libxfdashboard/theme-animation.c:1557
@@ -1431,17 +1432,18 @@ msgstr "Kon geen leesgegevens instellen voor bestand %s"
 #: ../libxfdashboard/theme-layout.c:1934
 #, c-format
 msgid "Could not create parser for file %s"
-msgstr "Kon geen lezer instellen voor bestand %s"
+msgstr "Kon geen inlezer instellen voor bestand %s"
 
 #: ../libxfdashboard/bindings-pool.c:895
 #, c-format
 msgid "Could not set up hash-table at parser data for file %s"
-msgstr "Kon geen hashtabel instellen bij leesgegevens voor bestand %s"
+msgstr "Kon geen hashtabel instellen bij inleesgegevens voor bestand %s"
 
 #: ../libxfdashboard/bindings-pool.c:925
 #, c-format
 msgid "Unexpected binding state set at parser data for file %s"
-msgstr "Onverwachte bindingsstaat ingesteld bij leesgegevens voor bestand %s"
+msgstr ""
+"Onverwachte bindingsstaat ingesteld bij inleesgegevens voor bestand %s"
 
 #: ../libxfdashboard/bindings-pool.c:1095
 #, c-format
@@ -1498,8 +1500,8 @@ msgstr "Ingeklapt"
 #: ../libxfdashboard/collapse-box.c:615
 msgid "If TRUE this actor is collapsed otherwise it is expanded to real size"
 msgstr ""
-"Indien TRUE (waar), dan wordt deze acteur ingeklapt; anders wordt hij "
-"uitgeklapt naar werkelijke grootte"
+"Indien TRUE, dan wordt deze acteur ingeklapt; anders wordt hij uitgeklapt "
+"naar werkelijke grootte"
 
 #: ../libxfdashboard/collapse-box.c:621
 msgid "Collapsed size"
@@ -1533,35 +1535,35 @@ msgstr ""
 
 #: ../libxfdashboard/css-selector.c:147
 msgid "Could not create string for parent css selector"
-msgstr "Kon geen tekenreeks maken voor parent css selector"
+msgstr "Kon geen tekenreeks maken voor parent CSS-kiezer"
 
 #: ../libxfdashboard/css-selector.c:153
 msgid "Invalid mode for parent rule in CSS selector"
-msgstr "Ongeldige modus voor parent rule in CSS selector"
+msgstr "Ongeldige modus voor parent rule in CSS-kiezer"
 
 #: ../libxfdashboard/css-selector.c:531
 msgid "Invalid name identifier"
-msgstr "Ongeldige naam-identificeerder"
+msgstr "Ongeldige naam-identificator"
 
 #: ../libxfdashboard/css-selector.c:563
 msgid "Invalid class identifier"
-msgstr "Ongeldige klasse-identificeerder"
+msgstr "Ongeldige klasse-identificator"
 
 #: ../libxfdashboard/css-selector.c:599
 msgid "Invalid pseudo-class identifier"
-msgstr "Ongeldige pseudo-klasse-identificeerder"
+msgstr "Ongeldige pseudo-klasse-identificator"
 
 #: ../libxfdashboard/css-selector.c:698
 msgid "No parent when parsing '>'"
-msgstr "Geen parent bij lezen '>'"
+msgstr "Geen parent bij inlezen '>'"
 
 #: ../libxfdashboard/css-selector.c:779
 msgid "Failed to parse css selector."
-msgstr "Kon CSS-kiezer niet lezen."
+msgstr "Kon CSS-kiezer niet inlezen."
 
 #: ../libxfdashboard/css-selector.c:785
 msgid "Failed to parse css selector because stream is empty."
-msgstr "Kon CSS-kiezer niet lezen want stroom is leeg."
+msgstr "Kon CSS-kiezer niet inlezen want stroom is leeg."
 
 #: ../libxfdashboard/css-selector.c:873
 msgid "Priority"
@@ -1578,7 +1580,7 @@ msgstr "Kon geen kiezer maken."
 #: ../libxfdashboard/css-selector.c:944 ../libxfdashboard/theme-css.c:2420
 #: ../libxfdashboard/theme-css.c:2426
 msgid "Parser did not reach end of stream"
-msgstr "Lezer bereikte einde van stroom niet"
+msgstr "Inlezer bereikte einde van stroom niet"
 
 #: ../libxfdashboard/css-selector.c:1014
 msgid "Unexpected state of CSS scanner."
@@ -1666,7 +1668,7 @@ msgstr ""
 #: ../libxfdashboard/desktop-app-info.c:2238
 #, c-format
 msgid "Could launch action '%s' for desktop ID '%s': %s"
-msgstr "Kon actie '%s'starten voor bureaublad-ID '%s': %s"
+msgstr "Kon actie '%s' starten voor bureaublad-ID '%s': %s"
 
 #: ../libxfdashboard/desktop-app-info-action.c:186
 #: ../libxfdashboard/desktop-app-info-action.c:211 ../settings/plugins.c:1020
@@ -1726,12 +1728,12 @@ msgstr "De ruimte tussen kolommen in een tabel"
 #: ../libxfdashboard/dynamic-table-layout.c:892
 #: ../libxfdashboard/scaled-table-layout.c:535
 msgid "Number children"
-msgstr "Aantal afgeleide processen"
+msgstr "Aantal afgeleide vensters"
 
 #: ../libxfdashboard/dynamic-table-layout.c:893
 #: ../libxfdashboard/scaled-table-layout.c:536
 msgid "Current number of child actors in this layout"
-msgstr "Huidig aantal afgeleide processen in deze vormgeving"
+msgstr "Huidig aantal afgeleide acteurs in deze vormgeving"
 
 #: ../libxfdashboard/dynamic-table-layout.c:901 ../libxfdashboard/model.c:283
 #: ../libxfdashboard/scaled-table-layout.c:544
@@ -1763,7 +1765,7 @@ msgstr "Vastgezet aantal kolommen om in deze vormgeving te gebruiken"
 
 #: ../libxfdashboard/emblem-effect.c:472 ../libxfdashboard/label.c:1265
 msgid "Themed icon name or file name of icon"
-msgstr "Thema-bepaalde pictogramnaam of bestandsnaam van pictogram"
+msgstr "Themabepaalde pictogramnaam of bestandsnaam van pictogram"
 
 #: ../libxfdashboard/emblem-effect.c:478 ../libxfdashboard/label.c:1292
 msgid "Icon size"
@@ -1840,7 +1842,7 @@ msgstr "De ruimte tussen afgeleide vensters"
 
 #: ../libxfdashboard/fill-box-layout.c:606
 msgid "Homogeneous"
-msgstr "Homogeen"
+msgstr "Eensoortig"
 
 #: ../libxfdashboard/fill-box-layout.c:607
 msgid ""
@@ -2243,7 +2245,7 @@ msgstr "Toon werkbladnaam"
 
 #: ../libxfdashboard/live-workspace.c:1022
 msgid "If TRUE the name of workspace should be shown"
-msgstr "indien TRUE (waar), dan moet de naam van het werkblad worden getoond"
+msgstr "indien TRUE, dan moet de naam van het werkblad worden getoond"
 
 #: ../libxfdashboard/live-workspace.c:1028
 msgid "Workspace name padding"
@@ -2348,7 +2350,7 @@ msgstr "Invoegsel kan niet worden uitgeschakeld"
 #: ../libxfdashboard/plugin.c:581
 #, c-format
 msgid "Plugin '%s' could not be unloaded successfully: %s"
-msgstr "Invoegsel '%s' kon niet met succes worden afgeladen: %s"
+msgstr "Invoegsel '%s' kon niet met succes worden uitgezet: %s"
 
 #: ../libxfdashboard/plugin.c:582 ../libxfdashboard/plugin.c:1077
 #: ../libxfdashboard/plugin.c:1128
@@ -2488,7 +2490,7 @@ msgstr "Minimale hoogte"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:374
 msgid "Forced minimum height request for the actor"
-msgstr "Afgedwongen minimale hoogteverzoek voor de uitvoerder"
+msgstr "Afgedwongen minimale hoogteverzoek voor de acteur"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:387
 msgid "Line horizontal alignment"
@@ -2496,7 +2498,7 @@ msgstr "Lijn horizontale uitlijning"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:388
 msgid "The horizontal alignment of the actor within its allocation"
-msgstr "De horizontale uitlijning van de uitvoerder binnen zijn toewijzing"
+msgstr "De horizontale uitlijning van de acteur binnen zijn toewijzing"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:401
 msgid "Line vertical alignment"
@@ -2504,7 +2506,7 @@ msgstr "Lijn verticale uitlijning"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:402
 msgid "The vertical alignment of the actor within its allocation"
-msgstr "De verticale uitlijning van de uitvoerder binnen zijn toewijzing"
+msgstr "De verticale uitlijning van de acteur binnen zijn toewijzing"
 
 #: ../libxfdashboard/popup-menu-item-separator.c:415
 msgid "Line length"
@@ -2537,7 +2539,7 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardPopupMenuItem::%s"
 msgstr ""
-"Object van type %s implementeert niet vereiste virtuele functie "
+"Object van type %s implementeert niet de vereiste virtuele functie "
 "XfdashboardPopupMenuItem::%s"
 
 #: ../libxfdashboard/popup-menu.c:943
@@ -2677,7 +2679,7 @@ msgstr "Toevoegen aan bladwijzers"
 #: ../libxfdashboard/workspace-selector.c:1089
 #, c-format
 msgid "%s is a child of %s and cannot be selected at %s"
-msgstr "%s is een afgeleid proces van %s en kan niet worden gekozen bij %s"
+msgstr "%s is een afgeleid venster van %s en kan niet worden gekozen bij %s"
 
 #: ../libxfdashboard/quicklaunch.c:3099
 msgid "Favourites"
@@ -2710,8 +2712,8 @@ msgstr "Relatieve schaal"
 #: ../libxfdashboard/scaled-table-layout.c:522
 msgid "Whether all children should be scaled relatively to largest child"
 msgstr ""
-"Of alle afgeleide processen moeten worden geschaald ten opzichte van het "
-"grootste afgeleide proces"
+"Of alle afgeleide vensters moeten worden geschaald ten opzichte van het "
+"grootste afgeleide venster"
 
 #: ../libxfdashboard/scaled-table-layout.c:528
 #: ../libxfdashboard/windows-view.c:2070
@@ -2723,7 +2725,7 @@ msgid ""
 "Whether this layout manager should prevent upsclaing any child beyond its "
 "real size"
 msgstr ""
-"Of deze opmaakbeheerder moet verhinderen dat een afgeleid proces wordt "
+"Of deze opmaakbeheerder moet verhinderen dat een afgeleid venster wordt "
 "vergroot voorbij zijn werkelijke grootte"
 
 #: ../libxfdashboard/scrollbar.c:714
@@ -2744,7 +2746,7 @@ msgstr "Waardebereik"
 
 #: ../libxfdashboard/scrollbar.c:730
 msgid "The range the slider of scroll bar covers"
-msgstr "Het bereik dat de schuifbalk heeft"
+msgstr "Het bereik dat de schuifbalk afdekt"
 
 #: ../libxfdashboard/scrollbar.c:737
 msgid "Range"
@@ -3046,8 +3048,7 @@ msgstr "Overschakelen naar weergave"
 
 #: ../libxfdashboard/stage.c:1826
 msgid "Switch to this named view as soon as stage gets visible"
-msgstr ""
-"Schakel over naar deze benoemde weergave zo gauw als stage zichtbaar wordt"
+msgstr "Schakel over naar deze benoemde weergave zodra stage zichtbaar wordt"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/stylable.c:62
@@ -3056,7 +3057,7 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardStylable::%s"
 msgstr ""
-"Object van type %s implementeert niet vereiste virtuele functie "
+"Object van type %s implementeert niet de vereiste virtuele functie "
 "XfdashboardStylable::%s"
 
 #: ../libxfdashboard/stylable.c:382
@@ -3440,28 +3441,28 @@ msgstr "Kan tekenreeks '%s' niet omzetten in integer"
 #: ../libxfdashboard/theme-animation.c:856
 #, c-format
 msgid "Empty 'name' at tag '%s'"
-msgstr "Lege 'naam' bij markering '%s'"
+msgstr "Lege 'name' bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:867
 #, c-format
 msgid "Empty 'from' at tag '%s'"
-msgstr "Lege 'van' bij markering '%s'"
+msgstr "Lege 'from' bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:878
 #: ../libxfdashboard/theme-animation.c:988
 #, c-format
 msgid "Empty 'to' at tag '%s'"
-msgstr "Lege 'naar' bij markering '%s'"
+msgstr "Lege 'to' bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:999
 #, c-format
 msgid "Empty 'origin' at tag '%s'"
-msgstr "Lege 'oorsprong' bij markering '%s'"
+msgstr "Lege 'origin' bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1016
 #, c-format
 msgid "Invalid value '%s' for 'origin' at tag '%s'"
-msgstr "Ongeldige waarde '%s' voor 'oorsprong' bij markering '%s'"
+msgstr "Ongeldige waarde '%s' voor 'origin' bij markering '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1154
 #, c-format
@@ -3520,6 +3521,8 @@ msgid ""
 "Could not transform default value of for property '%s' of %s from type %s to"
 " %s of class %s"
 msgstr ""
+"Kon standaardwaarde niet omzetten voor eigenschap '%s' van %s van type %s "
+"naar %s van klasse %s"
 
 #: ../libxfdashboard/theme-animation.c:1736
 #, c-format
@@ -3551,6 +3554,8 @@ msgid ""
 "Could not transform 'from'-value of '%s' for property '%s' to type %s of "
 "class %s"
 msgstr ""
+"Kon 'from'-waarde niet omzetten van '%s' voor eigenschap '%s' van type %s "
+"van klasse %s"
 
 #: ../libxfdashboard/theme-animation.c:1927
 #, c-format
@@ -3558,6 +3563,8 @@ msgid ""
 "Could not transform 'to'-value of '%s' for property '%s' to type %s of class"
 " %s"
 msgstr ""
+"Kon 'to'-waarde niet omzetten van '%s' voor eigenschap '%s' van type %s van "
+"klasse %s"
 
 #: ../libxfdashboard/theme-animation.c:2001
 #, c-format
@@ -3595,6 +3602,8 @@ msgid ""
 "Freeing effect object parser data at %p with a reference counter of %d "
 "greater than one"
 msgstr ""
+"Bezig met vrijmaken van inleesgegevens van effectobject bij %p met een "
+"referentieteller van%d groter dan één"
 
 #: ../libxfdashboard/theme-effects.c:489
 #, c-format
@@ -3614,7 +3623,7 @@ msgstr ""
 #: ../libxfdashboard/theme-effects.c:666 ../libxfdashboard/theme-effects.c:753
 #, c-format
 msgid "Missing parser data for <%s> tag"
-msgstr "Ontbrekende leesgegevens voor <%s> markering"
+msgstr "Ontbrekende inleesgegevens voor <%s> markering"
 
 #: ../libxfdashboard/theme-effects.c:708
 #, c-format
@@ -3627,8 +3636,8 @@ msgid ""
 "Invalid state of parser after parsing property '%s' at object with id '%s' "
 "of type %s"
 msgstr ""
-"Ongeldige staat van lezer na lezen van eigenschap '%s' bij object met ID "
-"'%s' van type %s"
+"Ongeldige staat van inlezer na inlezen van eigenschap '%s' bij object met ID"
+" '%s' van type %s"
 
 #: ../libxfdashboard/theme-effects.c:875 ../libxfdashboard/theme-layout.c:1224
 #, c-format
@@ -3651,6 +3660,8 @@ msgid ""
 "Invalid class %s in object for parent tag <%s> - expecting class derived "
 "from %s"
 msgstr ""
+"Ongeldige klasse %s in object voor parent-markering <%s> - klasse afgeleid "
+"van %s wordt verwacht"
 
 #. If we get here we did not find an object with requested ID
 #: ../libxfdashboard/theme-effects.c:1280
@@ -3680,11 +3691,11 @@ msgstr "Niet-ondersteund markeringstype '%s' voor oplossen van ID"
 #: ../libxfdashboard/theme-layout.c:668
 #, c-format
 msgid "No storage pointer provided to store value of %s"
-msgstr ""
+msgstr "Geen opslagpointer geleverd voor opslaan van waarde van %s"
 
 #: ../libxfdashboard/theme-layout.c:1008
 msgid "Unexpected empty tag stack when parsing property text node"
-msgstr ""
+msgstr "Onverwachte lege markeringenstack bij inlezen van eigenschaptekstnode"
 
 #: ../libxfdashboard/theme-layout.c:1019
 #, c-format
@@ -3702,7 +3713,7 @@ msgstr ""
 #: ../libxfdashboard/theme-layout.c:1394
 #, c-format
 msgid "Attribute 'ref' cannot be empty at tag <%s>"
-msgstr ""
+msgstr "Attribuut 'ref' kan niet leeg zijn bij markering <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1423
 #, c-format
@@ -3741,7 +3752,7 @@ msgstr "ID '%s' werd meer dan eens gespecificeerd (%d keer)"
 #: ../libxfdashboard/theme-layout.c:1869
 #, c-format
 msgid "Referenced ID '%s' could not be resolved"
-msgstr ""
+msgstr "Referentie-ID '%s' kon niet worden opgelost"
 
 #: ../libxfdashboard/theme-layout.c:1963
 #, c-format
@@ -3801,7 +3812,7 @@ msgstr "Commentaar bij het thema bedoeld als beschrijving"
 #: ../libxfdashboard/theme.c:921
 #, c-format
 msgid "Theme '%s' was already loaded"
-msgstr "Thema '%s' was reeds geladen"
+msgstr "Thema '%s' werd reeds geladen"
 
 #: ../libxfdashboard/toggle-button.c:187
 msgid "Toggle state"
@@ -3837,13 +3848,13 @@ msgid ""
 "If TRUE the flags for static sizes, transformations etc. at animatable actor"
 " is resetted to old state"
 msgstr ""
-"Indien TRUE (waar), dan worden de vlaggen voor statische groottes, "
-"transformaties enz. teruggezet naar de oude status"
+"Indien TRUE, dan worden de vlaggen voor statische groottes, transformaties "
+"enz. teruggezet naar de oude status"
 
 #: ../libxfdashboard/utils.c:156
 #, c-format
 msgid "Could find any stage to show notification: %s"
-msgstr ""
+msgstr "Kon geen stage vinden om melding te tonen: %s"
 
 #: ../libxfdashboard/view-manager.c:290
 #, c-format
@@ -3936,7 +3947,7 @@ msgstr "Deze vlag geeft aan of weergave is ingeschakeld en activeerbaar is"
 
 #: ../libxfdashboard/viewpad.c:130
 msgid "Cannot update viewport of view because no one is active"
-msgstr ""
+msgstr "Kan viewport van weergave niet bijwerken aangezien er geen actief is"
 
 #: ../libxfdashboard/viewpad.c:246
 #, c-format
@@ -4011,32 +4022,34 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerBackend::%s"
 msgstr ""
+"Object van type %s implementeert niet de vereiste virtuele functie "
+"XfdashboardWindowTrackerBackend::%s"
 
 #: ../libxfdashboard/window-tracker-backend.c:148
 msgid "Cannot find any usable window tracker backend"
-msgstr ""
+msgstr "Kan geen bruikbare achterliggende dienst vinden voor vensterbijhouder"
 
 #: ../libxfdashboard/window-tracker-backend.c:190
 #, c-format
 msgid "Cannot set backend to '%s' because it the backend was already set"
 msgstr ""
-"Kan achtergronddienst niet instellen op '%s' aangezien de achtergronddienst "
-"reeds was ingesteld"
+"Kan achterliggende dienst niet instellen op '%s' aangezien de achterliggende"
+" dienst reeds was ingesteld"
 
 #: ../libxfdashboard/window-tracker-backend.c:203
 #, c-format
 msgid "Cannot set backend to '%s' because application is already initialized"
 msgstr ""
-"Kan achtergronddienst niet instellen op '%s' aangezien toepassing reeds is "
-"geïnitialiseerd"
+"Kan achterliggende dienst niet instellen op '%s' aangezien toepassing reeds "
+"is geïnitialiseerd"
 
 #. If we get here the requested backend is unknown
 #: ../libxfdashboard/window-tracker-backend.c:226
 #, c-format
 msgid "Unknown backend '%s' - using default backend"
 msgstr ""
-"Onbekende achtergronddienst '%s' - standaard-achtergronddienst wordt "
-"gebruikt"
+"Onbekende achterliggende dienst '%s' - standaard-achterliggende dienst wordt"
+" gebruikt"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker-monitor.c:58
@@ -4088,7 +4101,7 @@ msgstr "Acties"
 
 #: ../libxfdashboard/window-tracker-window.c:198
 msgid "The possible actions at window"
-msgstr "De mogelijke acties voor venster"
+msgstr "De mogelijke acties bij venster"
 
 #: ../libxfdashboard/window-tracker-window.c:787
 #: ../libxfdashboard/window-tracker-window.c:828
@@ -4096,7 +4109,7 @@ msgstr "De mogelijke acties voor venster"
 #: ../libxfdashboard/window-tracker.c:612
 #: ../libxfdashboard/window-tracker.c:1152
 msgid "Could not get default window tracker backend"
-msgstr ""
+msgstr "Kon standaard-achterliggende dienst voor vensterbijhouder niet vinden"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker-workspace.c:56
@@ -4128,7 +4141,7 @@ msgstr "Het huidige actieve venster"
 
 #: ../libxfdashboard/window-tracker.c:126
 msgid "Active workspace"
-msgstr "Actieve werkblad"
+msgstr "Actief werkblad"
 
 #: ../libxfdashboard/window-tracker.c:127
 msgid "The current active workspace"
@@ -4136,7 +4149,7 @@ msgstr "Het huidige actieve werkblad"
 
 #: ../libxfdashboard/window-tracker.c:133
 msgid "Primary monitor"
-msgstr "Primaire beeldscherm"
+msgstr "Primair beeldscherm"
 
 #: ../libxfdashboard/window-tracker.c:134
 msgid "The current primary monitor"
@@ -4159,7 +4172,7 @@ msgstr "Kan selectie van type %s niet activeren bij %s want verwacht type %s"
 
 #: ../libxfdashboard/windows-view.c:2055
 msgid "Current workspace"
-msgstr "Huidige werkblad"
+msgstr "Huidig werkblad"
 
 #: ../libxfdashboard/windows-view.c:2056
 msgid "The current workspace whose windows are shown"
@@ -4183,12 +4196,14 @@ msgstr ""
 
 #: ../libxfdashboard/windows-view.c:2084
 msgid "Filter monitor windows"
-msgstr ""
+msgstr "Beeldschermvensters filteren"
 
 #: ../libxfdashboard/windows-view.c:2085
 msgid ""
 "Whether this view should only show windows of monitor where it placed at"
 msgstr ""
+"Of deze weergave alleen vensters moet tonen van het beeldscherm waar hij op "
+"is geplaatst"
 
 #: ../libxfdashboard/windows-view.c:2091
 msgid "Filter workspace windows"
@@ -4196,7 +4211,7 @@ msgstr "Werkbladvensters filteren"
 
 #: ../libxfdashboard/windows-view.c:2092
 msgid "Whether this view should only show windows of active workspace"
-msgstr "Of deze weergave alleen vensters moet tonen van actieve werkblad"
+msgstr "Of deze weergave alleen vensters moet tonen van actief werkblad"
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2317
@@ -4209,7 +4224,8 @@ msgstr "Vensters"
 #: ../libxfdashboard/workspace-selector.c:1110
 #, c-format
 msgid "Could not determine workspace of %s to set selection at %s"
-msgstr "Kon werkblad niet bepalen van %s om selectie voor in te stellen op %s"
+msgstr ""
+"Kon werkblad niet bepalen van %s om selectie voor in te stellen bij %s"
 
 #: ../libxfdashboard/workspace-selector.c:1268
 msgid "Maximum size"
@@ -4258,6 +4274,8 @@ msgstr ""
 msgid ""
 "Could not get real stage window to handle signal 'active-window-changed'"
 msgstr ""
+"Kon geen echt stage-venster verkrijgen om signaal 'active-window-changed' af"
+" te handelen"
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:194
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:193
@@ -4265,30 +4283,33 @@ msgid ""
 "Keep window fullscreen on primary monitor because window manager does not "
 "support _NET_WM_FULLSCREEN_MONITORS."
 msgstr ""
-"Houd venster schermvullend op primaire beeldscherm aangezien "
-"vensterbeheerder _NET_WM_FULLSCREEN_MONITORS niet ondersteunt."
+"Houd venster schermvullend op primair beeldscherm aangezien vensterbeheerder"
+" _NET_WM_FULLSCREEN_MONITORS niet ondersteunt."
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:447
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:460
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:443
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:456
 msgid "Could not get real stage window to find stage"
-msgstr ""
+msgstr "Kon geen echt stage-venster verkrijgen om stage te vinden"
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:527
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:645
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:502
 msgid "Could not get real stage window to show"
-msgstr ""
+msgstr "Kon geen echt stage-venster vinden om te tonen"
 
 #: ../libxfdashboard/x11/window-content-x11.c:215
 msgid "No default X11 display found in GDK to check X extensions"
 msgstr ""
+"Geen standaard X11-scherm gevonden in GDK om X-extensies te controleren"
 
 #: ../libxfdashboard/x11/window-content-x11.c:254
 #, c-format
 msgid "Destroying window content resume queue containing %d windows."
 msgstr ""
+"Bezig met vernietigen van hervattingswachtrij voor vensterinhoud met daarin "
+"%d vensters."
 
 #: ../libxfdashboard/x11/window-content-x11.c:400
 #, c-format
@@ -4350,16 +4371,18 @@ msgid ""
 "Query for X damage extension resulted in error code %d - using only still "
 "images of windows"
 msgstr ""
+"Zoektocht naar X schade extensie resulteerde in code %d - er worden alleen "
+"statische afbeeldingen van vensters gebruikt"
 
 #: ../libxfdashboard/x11/window-content-x11.c:995
 msgid "Resume handler called for empty queue."
-msgstr ""
+msgstr "Hervattingsafhandelaar aangeroepen voor lege wachtrij."
 
 #: ../libxfdashboard/x11/window-content-x11.c:1058
 #: ../libxfdashboard/x11/window-content-x11.c:1221
 #, c-format
 msgid "Could not get pixmap for window '%s"
-msgstr ""
+msgstr "Kon geen beeldpuntenraster verkrijgen voor venster '%s"
 
 #. We should never get here as existance of composite extension was checked
 #. before
@@ -4376,6 +4399,8 @@ msgstr ""
 #, c-format
 msgid "Could not create damage for window '%s' - using still image of window"
 msgstr ""
+"Kon geen schade creëren voor venster '%s' - er wordt een statische "
+"afbeelding van het venster gebruikt"
 
 #. Show warning
 #: ../libxfdashboard/x11/window-content-x11.c:1454
@@ -4491,18 +4516,20 @@ msgstr "Het ankerpunt van een niet-toegewezen vensterpictogram"
 
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:614
 msgid "Could not get real stage window to hide"
-msgstr ""
+msgstr "Kon echte stage-venster niet verkrijgen om te verbergen"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:109
 #, c-format
 msgid "No wnck window wrapped at %s in called function %s"
-msgstr ""
+msgstr "Geen wnck-venster verpakt bij %s in aangeroepen functie %s"
 
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:114
 #, c-format
 msgid "Got signal from wrong wnck window wrapped at %s in called function %s"
 msgstr ""
+" Verkreeg signaal van verkeerde wnck-venster verpakt bij%s in aangeroepen "
+"functie %s"
 
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:815
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:963
@@ -4511,6 +4538,8 @@ msgid ""
 "Either no wnck workspace is wrapped at %s or workspace is not available "
 "anymore when called at function %s"
 msgstr ""
+"Of er is geen wnck-werkblad verpakt bij %s of werkblad is niet meer "
+"beschikbaar wanneer aangeroepen bij functie%s"
 
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:1279
 msgid "The mapped wnck window"
@@ -4520,13 +4549,15 @@ msgstr "Het toegewezen wnck-venster"
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:85
 #, c-format
 msgid "No wnck workspace wrapped at %s in called function %s"
-msgstr ""
+msgstr "Geen wnck-werkblad verpakt bij %s in aangeroepen functie %s"
 
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:90
 #, c-format
 msgid ""
 "Got signal from wrong wnck workspace wrapped at %s in called function %s"
 msgstr ""
+"Kreeg signaal van verkeerde wnck-werkblad verpakt bij %s in aangeroepen "
+"functie %s"
 
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:386
 msgid "The mapped wnck workspace"
@@ -4640,13 +4671,13 @@ msgstr "Dit is slechts een nutteloos invoegsel met een zoekdienstvoorbeeld"
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:211
 #, c-format
 msgid "Unknown application '%s' for Gnome-Shell search provider '%s'"
-msgstr "Onbekende toepassing '%s' voor Gnome-Shell zoekdienst '%s'"
+msgstr "Onbekende toepassing '%s' voor Gnome-Shell-zoekdienst '%s'"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:289
 #, c-format
 msgid "Cannot update information about Gnome-Shell search provider '%s': %s"
-msgstr "Kan informatie over Gnome-Shell zoekdienst '%s' niet bijwerken: %s"
+msgstr "Kan informatie over Gnome-Shell-zoekdienst '%s' niet bijwerken: %s"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:374
@@ -4656,13 +4687,13 @@ msgid ""
 "provider '%s': %s"
 msgstr ""
 "Kan bestandsmonitor niet initialiseren om veranderingen te bespeuren voor "
-"Gnome-Shell zoekdienst '%s': %s"
+"Gnome-Shell-zoekdienst '%s': %s"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:391
 #, c-format
 msgid "Cannot load information about Gnome-Shell search provider '%s': %s"
-msgstr "Kan informatie over Gnome-Shell zoekdienst '%s' niet laden: %s"
+msgstr "Kan informatie over Gnome-Shell-zoekdienst '%s' niet laden: %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:473
@@ -4672,7 +4703,7 @@ msgstr "Kan informatie over Gnome-Shell zoekdienst '%s' niet laden: %s"
 #, c-format
 msgid ""
 "Could not create dbus connection for Gnome-Shell search provider '%s': %s"
-msgstr "Kon geen dbus-verbinding maken voor Gnome-Shell zoekdienst '%s': %s"
+msgstr "Kon geen dbus-verbinding maken voor Gnome-Shell-zoekdienst '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:546
@@ -4681,7 +4712,7 @@ msgid ""
 "Could get result set from dbus connection for Gnome-Shell search provider "
 "'%s': %s"
 msgstr ""
-"Kon resultaat verkrijgen van dbus-verbinding voor Gnome-Shell zoekdienst "
+"Kon resultaat verkrijgen van dbus-verbinding voor Gnome-Shell-zoekdienst "
 "'%s': %s"
 
 #. Show error message
@@ -4691,7 +4722,7 @@ msgid ""
 "Could get meta data for '%s' from dbus connection for Gnome-Shell search "
 "provider '%s': %s"
 msgstr ""
-"Kon metagegevens verkrijgen voor '%s' van dbus-verbinding voor Gnome-Shell "
+"Kon metagegevens verkrijgen voor '%s' van dbus-verbinding voor Gnome-Shell-"
 "zoekdienst '%s': %s"
 
 #. Show error message
@@ -4702,12 +4733,12 @@ msgstr ""
 msgid ""
 "Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"
 msgstr ""
-"Kon pictogram verkrijgen voor '%s' van toets '%s' voor Gnome-Shell "
+"Kon pictogram verkrijgen voor '%s' van toets '%s' voor Gnome-Shell-"
 "zoekdienst '%s': %s"
 
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:733
 msgid "Deserialization failed"
-msgstr ""
+msgstr "Deserialisatie is mislukt"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:897
@@ -4716,7 +4747,7 @@ msgid ""
 "Could activate result item '%s' over dbus connection for Gnome-Shell search "
 "provider '%s': %s"
 msgstr ""
-"Kon resultaatelement '%s' activeren via dbus-verbinding voor Gnome-Shell "
+"Kon resultaatelement '%s' activeren via dbus-verbinding voor Gnome-Shell-"
 "zoekdienst '%s': %s"
 
 #. Show error message
@@ -4726,27 +4757,27 @@ msgid ""
 "Could not launch search over dbus connection for Gnome-Shell search provider"
 " '%s': %s"
 msgstr ""
-"Kon geen zoekactie starten via dbus-verbinding voor Gnome-Shell zoekdienst "
+"Kon geen zoekactie starten via dbus-verbinding voor Gnome-Shell-zoekdienst "
 "'%s': %s"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:68
 msgid "Gnome-Shell search provider filename has wrong file extension."
 msgstr ""
-"Bestandsnaam van Gnome-Shell zoekdienst heeft verkeerde bestandsextensie."
+"Bestandsnaam van Gnome-Shell-zoekdienst heeft verkeerde bestandsextensie."
 
 #. Show warning
 #: ../plugins/gnome-shell-search-provider/plugin.c:133
 #: ../plugins/gnome-shell-search-provider/plugin.c:285
 #, c-format
 msgid "Could not register Gnome-Shell search provider at file '%s': %s"
-msgstr "Kon Gnome-Shell zoekdienst niet registreren bij bestand '%s': %s"
+msgstr "Kon Gnome-Shell-zoekdienst niet registreren bij bestand '%s': %s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/plugin.c:229
 #: ../plugins/gnome-shell-search-provider/plugin.c:303
 #, c-format
 msgid "Could not scan for gnome-shell search provider at '%s': %s"
-msgstr "Kon niet zoeken naar Gnome-Shell zoekdienst op '%s': %s"
+msgstr "Kon niet zoeken naar Gnome-Shell-zoekdienst op '%s': %s"
 
 #. Just print a warning but do not fail. We will just not get notified
 #. * about changes at path where the providers are stored.
@@ -4755,15 +4786,15 @@ msgstr "Kon niet zoeken naar Gnome-Shell zoekdienst op '%s': %s"
 msgid ""
 "Unable to create file monitor for Gnome-Shell search providers at '%s': %s"
 msgstr ""
-"Kan geen bestandsmonitor maken voor Gnome-Shell zoekdiensten bij '%s': %s"
+"Kan geen bestandsmonitor maken voor Gnome-Shell-zoekdiensten bij '%s': %s"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr "Gnome-Shell zoekdienst"
+msgstr "Gnome-Shell-zoekdienst"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr "Gebruikt Gnome-Shell zoekdiensten als bron voor zoekacties"
+msgstr "Gebruikt Gnome-Shell-zoekdiensten als bron voor zoekacties"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:231
 msgid "Activation corner"
@@ -4849,7 +4880,7 @@ msgstr "Straal van activatie voor hoek:"
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:358
 msgid "Timeout to activate:"
-msgstr "Aftellen tot activatie:"
+msgstr "Aftelduur tot activatie:"
 
 #: ../plugins/hot-corner/plugin.c:418
 msgid "Hot corner"
@@ -4902,12 +4933,14 @@ msgstr "seconden"
 #: ../settings/general.c:732 ../settings/plugins.c:1178
 #: ../settings/themes.c:907
 msgid "Builder"
-msgstr ""
+msgstr "Bouwer"
 
 #: ../settings/general.c:733 ../settings/plugins.c:1179
 #: ../settings/themes.c:908
 msgid "The initialized GtkBuilder object where to set up themes tab from"
 msgstr ""
+"Het geïnitialiseerde GtkBuilder-object van waaruit thematab moet worden "
+"ingesteld"
 
 #: ../settings/plugins.c:222
 #, c-format
