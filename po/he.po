@@ -3362,182 +3362,184 @@ msgid ""
 "Will not be able to add animations to actors as object of type %s does not "
 "implement required virtual function XfdashboardAnimation::%s"
 msgstr ""
+"לא יהיה ניתן להוסיף אנימציות לשחקנים כי אובייקט מסוג %s לא מיישם פונקציה "
+"וירטואלית נדרשת XfdashboardAnimation::%s"
 
 #: ../libxfdashboard/theme-animation.c:1817
 #, c-format
 msgid ""
 "Cannot create animation '%s' for non-existing property '%s' at actor of type"
 " '%s'"
-msgstr ""
+msgstr "לא יכול ליצור אנימציה '%s' למאפיין לא קיים '%s' בשחקן מסוג '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1835
 #, c-format
 msgid ""
 "Could not transform 'from'-value of '%s' for property '%s' to type %s of "
 "class %s"
-msgstr ""
+msgstr "לא יכול להפוך ערך 'מאת' של '%s' עבור מאפיין '%s' לסוג %s של דרגה %s"
 
 #: ../libxfdashboard/theme-animation.c:1927
 #, c-format
 msgid ""
 "Could not transform 'to'-value of '%s' for property '%s' to type %s of class"
 " %s"
-msgstr ""
+msgstr "לא יכול להפוך ערך 'אל' של '%s' עבור מאפיין '%s' לסוג %s של דרגה %s"
 
 #: ../libxfdashboard/theme-animation.c:2001
 #, c-format
 msgid ""
 "Cannot allocate memory for transition of property '%s' of animation "
 "specification '%s'"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון למעבר של מאפיין '%s' של מפרט אנימציה '%s'"
 
 #: ../libxfdashboard/theme-animation.c:2073
 #, c-format
 msgid ""
 "Empty animation list when creating animation for animation specification "
 "'%s'"
-msgstr ""
+msgstr "רשימת אנימציה ריקה בעת יצירת אנימציה עבור מפרט אנימציה '%s'"
 
 #: ../libxfdashboard/theme-animation.c:2082
 #, c-format
 msgid ""
 "Cannot allocate memory for transition group of animation specification '%s'"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון לקבוצת מעבר של מפרט אנימציה '%s'"
 
 #: ../libxfdashboard/theme-effects.c:334 ../libxfdashboard/theme-layout.c:497
 #, c-format
 msgid "Cannot allocate memory for object data of tag <%s>"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון עבור מידע אובייקט של תג <%s>"
 
 #: ../libxfdashboard/theme-effects.c:352
 #, c-format
 msgid ""
 "Freeing effect object parser data at %p with a reference counter of %d "
 "greater than one"
-msgstr ""
+msgstr "מפנה מידע מנתח אובייקט אפקט ב%p עם מונה יחוס של%d גדול מאחד"
 
 #: ../libxfdashboard/theme-effects.c:489
 #, c-format
 msgid "Object of type %s is not derived from %s"
-msgstr ""
+msgstr "אובייקט מסוג %s לא נובע מ%s"
 
 #: ../libxfdashboard/theme-effects.c:596
 msgid "Missing property name to set value for"
-msgstr ""
+msgstr "שם מאפיין חסר לקביעת ערך עבורו"
 
 #: ../libxfdashboard/theme-effects.c:608
 #, c-format
 msgid "Missing object data to set value of property '%s'"
-msgstr ""
+msgstr "מידע אובייקט חסר לקביעת ערך מאפיין '%s'"
 
 #: ../libxfdashboard/theme-effects.c:666 ../libxfdashboard/theme-effects.c:753
 #, c-format
 msgid "Missing parser data for <%s> tag"
-msgstr ""
+msgstr "מידע מנתח חסר עבור תג <%s>"
 
 #: ../libxfdashboard/theme-effects.c:708
 #, c-format
 msgid "Multiple definition of property '%s' at object with ID '%s'"
-msgstr ""
+msgstr "הגדרה מרובה של מאפיין '%s' באובייקט עם זהות '%s'"
 
 #: ../libxfdashboard/theme-effects.c:770
 #, c-format
 msgid ""
 "Invalid state of parser after parsing property '%s' at object with id '%s' "
 "of type %s"
-msgstr ""
+msgstr "מצב מנתח לא חוקי לאחר ניתוח מאפיין '%s' באובייקט עם זהות '%s' מסוג %s"
 
 #: ../libxfdashboard/theme-effects.c:875 ../libxfdashboard/theme-layout.c:1224
 #, c-format
 msgid "Empty ID at tag '%s'"
-msgstr ""
+msgstr "זהות ריקה בתג '%s'"
 
 #: ../libxfdashboard/theme-effects.c:900
 #, c-format
 msgid "Multiple definition of effect with id '%s'"
-msgstr ""
+msgstr "הגדרה מרובה של אפקט עם זהות '%s'"
 
 #: ../libxfdashboard/theme-effects.c:913 ../libxfdashboard/theme-layout.c:1253
 #, c-format
 msgid "Unknown object class %s for tag '%s'"
-msgstr ""
+msgstr "דרגת אובייקט לא ידועה %s עבור תג '%s'"
 
 #: ../libxfdashboard/theme-effects.c:927 ../libxfdashboard/theme-layout.c:1273
 #, c-format
 msgid ""
 "Invalid class %s in object for parent tag <%s> - expecting class derived "
 "from %s"
-msgstr ""
+msgstr "דרגה לא חוקית %s באובייקט עבור תג הורה <%s> - מצפה לדרגה שנובעת מ%s"
 
 #. If we get here we did not find an object with requested ID
 #: ../libxfdashboard/theme-effects.c:1280
 #, c-format
 msgid "Could not find effect with ID '%s'"
-msgstr ""
+msgstr "לא יכול למצוא אפקט עם זהות '%s'"
 
 #: ../libxfdashboard/theme-layout.c:263
 #, c-format
 msgid "File %s - Error on line %d char %d: "
-msgstr ""
+msgstr "קובץ %s - שגיאה בשורה %d תו %d:"
 
 #: ../libxfdashboard/theme-layout.c:403
 msgid "Cannot allocate memory for unknown tag"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון עבור תג לא ידוע"
 
 #: ../libxfdashboard/theme-layout.c:415
 #, c-format
 msgid "Cannot allocate memory for tag '%s'"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון עבור תג '%s'"
 
 #: ../libxfdashboard/theme-layout.c:647
 #, c-format
 msgid "Unsupported tag type '%s' to resolve ID"
-msgstr ""
+msgstr "סוג תג לא נתמך '%s' לפתירת זהות "
 
 #: ../libxfdashboard/theme-layout.c:668
 #, c-format
 msgid "No storage pointer provided to store value of %s"
-msgstr ""
+msgstr "לא סופק מצביע אחסון לשמירת ערך של %s"
 
 #: ../libxfdashboard/theme-layout.c:1008
 msgid "Unexpected empty tag stack when parsing property text node"
-msgstr ""
+msgstr "מצבור תגים ריק לא צפוי בעת ניתוח צומת טקסט מאפיין"
 
 #: ../libxfdashboard/theme-layout.c:1019
 #, c-format
 msgid "Value for property '%s' is already set"
-msgstr ""
+msgstr "ערך עבור מאפיין '%s' כבר נקבע"
 
 #: ../libxfdashboard/theme-layout.c:1308
 #, c-format
 msgid ""
 "Tag <%s> can only be set at <%s> creating objects derived from class %s"
-msgstr ""
+msgstr "תג <%s> ניתן להגדרה רק ב<%s> יצירת אובייקטים הנובעים מדרגה %s"
 
 #: ../libxfdashboard/theme-layout.c:1394
 #, c-format
 msgid "Attribute 'ref' cannot be empty at tag <%s>"
-msgstr ""
+msgstr "תכונה 'ref' לא יכולה להיות ריקה בתג <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1423
 #, c-format
 msgid "Tag <%s> can have only one <%s>"
-msgstr ""
+msgstr "תג <%s> יכול להיות בעל <%s> אחד בלבד"
 
 #: ../libxfdashboard/theme-layout.c:1527
 #, c-format
 msgid "Internal error when handling end of tag <%s>"
-msgstr ""
+msgstr "שגיאה פנימית בעת טיפול בסוף תג <%s>"
 
 #: ../libxfdashboard/theme-layout.c:1556
 #, c-format
 msgid "Document can have only one <%s>"
-msgstr ""
+msgstr "מסמך יכול להיות בעל <%s> אחד בלבד"
 
 #: ../libxfdashboard/theme-layout.c:1594
 #, c-format
 msgid "Object can have only one <%s>"
-msgstr ""
+msgstr "אובייקט יכול להיות בעל <%s> אחד בלבד"
 
 #: ../libxfdashboard/theme-layout.c:1645
 #, c-format
@@ -3545,16 +3547,18 @@ msgid ""
 "File %s - Warning on line %d char %d: At interface '%s' the ID '%s' should "
 "get focus but the ID '%s' was selected already"
 msgstr ""
+"קובץ %s - אזהרה בשורה %d תו %d: בממשק '%s' הזהות '%s' צריכה לקבל פוקוס אבל "
+"הזהות '%s' כבר נבחרה"
 
 #: ../libxfdashboard/theme-layout.c:1838
 #, c-format
 msgid "ID '%s' was specified more than once (%d times)"
-msgstr ""
+msgstr "זהות '%s' הוגדרה יותר מפעם אחת (%d פעמים)"
 
 #: ../libxfdashboard/theme-layout.c:1869
 #, c-format
 msgid "Referenced ID '%s' could not be resolved"
-msgstr ""
+msgstr "זהות מיוחסת '%s' לא ניתנת לפתירה"
 
 #: ../libxfdashboard/theme-layout.c:1963
 #, c-format
@@ -3569,7 +3573,7 @@ msgstr "הקובץ %s אינו מכיל ממשק"
 #: ../libxfdashboard/theme-layout.c:1984
 #, c-format
 msgid "Interface at file %s has no ID"
-msgstr ""
+msgstr "ממשק בקובץ %s חסר זהות"
 
 #: ../libxfdashboard/theme.c:120 ../libxfdashboard/theme.c:603
 #, c-format
@@ -3580,134 +3584,138 @@ msgstr "ערכת הנושא \"%s\" לא נמצאה"
 #: ../libxfdashboard/theme.c:592
 #, c-format
 msgid "Cannot change theme name to '%s' because it is already set to '%s'"
-msgstr ""
+msgstr "לא יכול לשנות שם ערכת נושא ל'%s' כי הוא כבר נקבע עבור '%s'"
 
 #: ../libxfdashboard/theme.c:802
 msgid ""
 "Short name of theme which was used to lookup theme and folder name where "
 "theme is stored in"
 msgstr ""
+"שם קצר של ערכת נושא שהיה בשימוש לחיפוש ערכת נושא ושם תיקיה היכן שערכת נושא "
+"מאוחסנת"
 
 #: ../libxfdashboard/theme.c:809
 msgid "Path where theme was found and loaded from"
-msgstr ""
+msgstr "נתיב שבו ערכת נושא נמצאה וממנו נטענה"
 
 #: ../libxfdashboard/theme.c:815
 msgid "Theme display name"
-msgstr ""
+msgstr "שם תצוגה ערכת נושא"
 
 #: ../libxfdashboard/theme.c:816
 msgid "The name of theme"
-msgstr ""
+msgstr "השם של ערכת הנושא"
 
 #: ../libxfdashboard/theme.c:822
 msgid "Theme comment"
-msgstr ""
+msgstr "הערה ערכת נושא"
 
 #: ../libxfdashboard/theme.c:823
 msgid "The comment of theme used as description"
-msgstr ""
+msgstr "ההערה של ערכת הנושא המשמשת כתיאור"
 
 #: ../libxfdashboard/theme.c:921
 #, c-format
 msgid "Theme '%s' was already loaded"
-msgstr ""
+msgstr "ערכת נושא '%s' כבר נטענה"
 
 #: ../libxfdashboard/toggle-button.c:187
 msgid "Toggle state"
-msgstr ""
+msgstr "החלף מצב"
 
 #: ../libxfdashboard/toggle-button.c:188
 msgid "State of toggle"
-msgstr ""
+msgstr "מצב המפסק"
 
 #: ../libxfdashboard/toggle-button.c:200
 msgid "Auto toggle"
-msgstr ""
+msgstr "מפסק אוטומטי"
 
 #: ../libxfdashboard/toggle-button.c:201
 msgid "If set the toggle state will be toggled on each click"
-msgstr ""
+msgstr "אם מוגדר מצב המפסק יוחלף בכל קליק"
 
 #: ../libxfdashboard/tooltip-action.c:520
 msgid "Tooltip text"
-msgstr ""
+msgstr "טקסט טיפ עזר"
 
 #: ../libxfdashboard/tooltip-action.c:521
 msgid "The text to display in a tooltip"
-msgstr ""
+msgstr "הטקסט להצגה בטיפ עזר"
 
 #: ../libxfdashboard/transition-group.c:505
 msgid "Reset flags"
-msgstr ""
+msgstr "אתחל אותות סימון"
 
 #: ../libxfdashboard/transition-group.c:506
 msgid ""
 "If TRUE the flags for static sizes, transformations etc. at animatable actor"
 " is resetted to old state"
 msgstr ""
+"אם אמת אותות הסימון עבור גדלים סטטיים, טרנספורמציות וכולי בשחקן הניתן "
+"לאנימציה מאותחלים למצב ישן"
 
 #: ../libxfdashboard/utils.c:156
 #, c-format
 msgid "Could find any stage to show notification: %s"
-msgstr ""
+msgstr "לא יכול למצוא שלב כלשהוא להצגת הודעה: %s"
 
 #: ../libxfdashboard/view-manager.c:290
 #, c-format
 msgid "View %s of type %s is not a %s and cannot be registered"
-msgstr ""
+msgstr "תצוגה %s מסוג %s היא לא %s ולא ניתנת לרישום"
 
 #: ../libxfdashboard/view-manager.c:300
 #, c-format
 msgid "View %s of type %s is registered already"
-msgstr ""
+msgstr "תצוגה %s מסוג %s כבר רשומה"
 
 #: ../libxfdashboard/view-manager.c:315
 #, c-format
 msgid "Failed to register view %s of type %s"
-msgstr ""
+msgstr "נכשל לרשום תצוגה %s מסוג %s"
 
 #: ../libxfdashboard/view-manager.c:344
 #, c-format
 msgid "View %s is not registered and cannot be unregistered"
-msgstr ""
+msgstr "תצוגה %s אינה רשומה ולא ניתן לבטל רישום עבורה"
 
 #: ../libxfdashboard/view-manager.c:426
 #, c-format
 msgid "Cannot create view %s because it is not registered"
-msgstr ""
+msgstr "לא יכול ליצור תצוגה %s כי היא לא רשומה"
 
 #: ../libxfdashboard/view-selector.c:384
 msgid "Viewpad"
-msgstr ""
+msgstr "לוח תצוגה"
 
 #: ../libxfdashboard/view-selector.c:385
 msgid "The viewpad this selector belongs to"
-msgstr ""
+msgstr "לוח התצוגה אליו שייך בורר זה"
 
 #: ../libxfdashboard/view-selector.c:397 ../libxfdashboard/viewpad.c:1233
 msgid "The spacing between views and scrollbars"
-msgstr ""
+msgstr "הרווח בין תצוגות וסרגלי גלילה"
 
 #: ../libxfdashboard/view-selector.c:410
 msgid "Orientation of view selector"
-msgstr ""
+msgstr "אוריינטציה של בורר תצוגה"
 
 #: ../libxfdashboard/view.c:363
 msgid "View ID"
-msgstr ""
+msgstr "זהות תצוגה"
 
 #: ../libxfdashboard/view.c:364
 msgid "The internal ID used to register this type of view"
-msgstr ""
+msgstr "הזהות הפנימית בשימוש לרישום סוג זה של תצוגה"
 
 #: ../libxfdashboard/view.c:370
 msgid "View name"
-msgstr ""
+msgstr "שם תצוגה"
 
 #: ../libxfdashboard/view.c:371
 msgid "Name of view used to display"
-msgstr ""
+msgstr "שם התצוגה בשימוש להצגה"
 
 #: ../libxfdashboard/view.c:377
 msgid "View icon"
@@ -3718,16 +3726,20 @@ msgid ""
 "Icon of view used to display. Icon name can be a themed icon name or file "
 "name"
 msgstr ""
+"איקון של תצוגה בשימוש לתצוגה. שם איקון יכול להיות שם איקון ערכת נושא או שם "
+"קובץ"
 
 #: ../libxfdashboard/view.c:384
 msgid "View fit mode"
-msgstr ""
+msgstr "מצב כשיר לתצוגה"
 
 #: ../libxfdashboard/view.c:385
 msgid ""
 "Defines if view should be fit into viewpad and in which directions it should"
 " fit into it"
 msgstr ""
+"מגדיר האם תצוגה צריכה להיות מוכנסת לתוך לוח תצוגה ובאיזה כיוונים היא צריכה "
+"להיות מוכנסת לתוכו"
 
 #: ../libxfdashboard/view.c:392
 msgid "Enabled"
