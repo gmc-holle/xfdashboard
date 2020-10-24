@@ -896,11 +896,11 @@ msgstr "Vlag die aangeeft of een toepassing thans is gepauzeerd"
 
 #: ../libxfdashboard/application.c:1232
 msgid "Stage"
-msgstr ""
+msgstr "Stage"
 
 #: ../libxfdashboard/application.c:1233
 msgid "The stage object of application"
-msgstr ""
+msgstr "Het stage-object van de toepassing"
 
 #: ../libxfdashboard/application.c:1244 ../libxfdashboard/theme.c:801
 msgid "Theme name"
@@ -912,7 +912,7 @@ msgstr "Naam van huidige thema"
 
 #: ../libxfdashboard/applications-menu-model.c:691
 msgid "Iterator does not belong to application menu model."
-msgstr ""
+msgstr "Iterator behoort niet tot toepassingsmenumodel"
 
 #: ../libxfdashboard/applications-menu-model.c:709
 #, c-format
@@ -920,11 +920,13 @@ msgid ""
 "Invalid column number %d added to iter (remember to end your list of columns"
 " with a -1)"
 msgstr ""
+"Ongeldig kolomnummer %d toegevoegd aan iter (denk eraan om uw kolommenlijst "
+"te eindigen met a -1)"
 
 #: ../libxfdashboard/applications-menu-model.c:720
 #, c-format
 msgid "No storage pointer provided to store value of column number %d"
-msgstr ""
+msgstr "Geen opslagpointer geleverd om waarde van kolom nummer %d op te slaan"
 
 #: ../libxfdashboard/applications-search-provider.c:254
 #, c-format
@@ -1008,7 +1010,7 @@ msgstr ""
 #: ../libxfdashboard/applications-search-provider.c:1313
 #, c-format
 msgid "Cannot create actor for desktop ID '%s' in result set of %s"
-msgstr ""
+msgstr "Kan geen acteur maken voor bureaublad-ID '%s' in resultaatset van %s"
 
 #: ../libxfdashboard/applications-search-provider.c:1469
 msgid "Sort mode"
@@ -1314,6 +1316,8 @@ msgid ""
 "Could not parse modifier '%s' of key-binding '%s' because it is not enclosed"
 " by '<...>'"
 msgstr ""
+"Kon modifier '%s' niet lezen van toetsbinding '%s' aangezien die niet tussen"
+" deze tekens staat: '<...>'"
 
 #: ../libxfdashboard/bindings-pool.c:250
 #, c-format
@@ -1346,7 +1350,7 @@ msgstr ""
 #: ../libxfdashboard/theme-effects.c:531 ../libxfdashboard/theme-layout.c:1086
 #, c-format
 msgid "Unexpected text node '%s' at tag <%s>"
-msgstr ""
+msgstr "Onverwachte tekstnode '%s' bij markering <%s>"
 
 #: ../libxfdashboard/bindings-pool.c:379
 msgid "Missing action"
@@ -1432,17 +1436,17 @@ msgstr "Kon geen lezer instellen voor bestand %s"
 #: ../libxfdashboard/bindings-pool.c:895
 #, c-format
 msgid "Could not set up hash-table at parser data for file %s"
-msgstr ""
+msgstr "Kon geen hashtabel instellen bij leesgegevens voor bestand %s"
 
 #: ../libxfdashboard/bindings-pool.c:925
 #, c-format
 msgid "Unexpected binding state set at parser data for file %s"
-msgstr ""
+msgstr "Onverwachte bindingsstaat ingesteld bij leesgegevens voor bestand %s"
 
 #: ../libxfdashboard/bindings-pool.c:1095
 #, c-format
 msgid "Could not set up hash-table to store bindings"
-msgstr ""
+msgstr "Kon geen hashtabel instellen voor opslaan van bindingen"
 
 #: ../libxfdashboard/bindings-pool.c:1202
 #, c-format
@@ -1529,27 +1533,27 @@ msgstr ""
 
 #: ../libxfdashboard/css-selector.c:147
 msgid "Could not create string for parent css selector"
-msgstr ""
+msgstr "Kon geen tekenreeks maken voor parent css selector"
 
 #: ../libxfdashboard/css-selector.c:153
 msgid "Invalid mode for parent rule in CSS selector"
-msgstr ""
+msgstr "Ongeldige modus voor parent rule in CSS selector"
 
 #: ../libxfdashboard/css-selector.c:531
 msgid "Invalid name identifier"
-msgstr ""
+msgstr "Ongeldige naam-identificeerder"
 
 #: ../libxfdashboard/css-selector.c:563
 msgid "Invalid class identifier"
-msgstr ""
+msgstr "Ongeldige klasse-identificeerder"
 
 #: ../libxfdashboard/css-selector.c:599
 msgid "Invalid pseudo-class identifier"
-msgstr ""
+msgstr "Ongeldige pseudo-klasse-identificeerder"
 
 #: ../libxfdashboard/css-selector.c:698
 msgid "No parent when parsing '>'"
-msgstr ""
+msgstr "Geen parent bij lezen '>'"
 
 #: ../libxfdashboard/css-selector.c:779
 msgid "Failed to parse css selector."
@@ -1909,21 +1913,25 @@ msgstr ""
 #, c-format
 msgid "Image has already key '%s' set and will be replaced with '%s'"
 msgstr ""
+"Afbeelding heeft reeds sleutel '%s' ingesteld en zal worden vervangen door "
+"'%s'"
 
 #: ../libxfdashboard/image-content.c:254
 #, c-format
 msgid "An image with key '%s' is already cache and will be replaced."
 msgstr ""
+"Een afbeelding met sleutel '%s' is reeds in tijdelijke opslag en zal worden "
+"vervangen.."
 
 #: ../libxfdashboard/image-content.c:315
 #, c-format
 msgid "Failed to load image data into content for key '%s': %s"
-msgstr ""
+msgstr "Kon geen afbeeldingsgegevens laden in inhoud voor sleutel '%s': %s"
 
 #: ../libxfdashboard/image-content.c:331
 #, c-format
 msgid "Failed to load image for key '%s': %s"
-msgstr ""
+msgstr "Kon geen afbeelding laden voor sleutel '%s': %s"
 
 #: ../libxfdashboard/image-content.c:414
 #, c-format
@@ -2002,7 +2010,7 @@ msgstr "Kan afbeelding '%s' van onbekend type %d niet laden"
 
 #: ../libxfdashboard/image-content.c:1445
 msgid "The hash key for caching this image"
-msgstr ""
+msgstr "De hash-sleutel voor tijdelijke opslag van deze afbeelding"
 
 #: ../libxfdashboard/image-content.c:1451
 msgid "Missing icon name"
@@ -2017,12 +2025,12 @@ msgstr ""
 #: ../libxfdashboard/image-content.c:1560
 #, c-format
 msgid "Could not create key for icon name '%s' at size %u"
-msgstr ""
+msgstr "Kon geen sleutel maken voor pictogramnaam '%s' op grootte %u"
 
 #: ../libxfdashboard/image-content.c:1647
 #, c-format
 msgid "Could not create key for gicon '%s' at size %u"
-msgstr ""
+msgstr "Kon geen sleutel maken voor gicon '%s' op grootte %u"
 
 #: ../libxfdashboard/label.c:1241 ../libxfdashboard/text-box.c:778
 msgid "Padding between background and elements"
@@ -2186,7 +2194,7 @@ msgstr "Opvulling titelacteur"
 
 #: ../libxfdashboard/live-window.c:1084
 msgid "Padding of title actor to window actor in pixels"
-msgstr ""
+msgstr "Opvulling van titelacteur tot vensteracteur in beeldpunten"
 
 #: ../libxfdashboard/live-window.c:1091
 msgid "Show sub-windows"
@@ -2267,12 +2275,14 @@ msgstr "Of er al dan niet een filter is ingesteld"
 
 #: ../libxfdashboard/model.c:305
 msgid "Free data callback"
-msgstr ""
+msgstr "Callback voor vrijmaken van gegevens"
 
 #: ../libxfdashboard/model.c:306
 msgid ""
 "Callback function to free data when removing or overwriting data in model"
 msgstr ""
+"Callback-functie om gegevens vrij te maken bij verwijderen of overschrijven "
+"van gegevens in model"
 
 #: ../libxfdashboard/outline-effect.c:430
 msgid "Width"
@@ -2527,6 +2537,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardPopupMenuItem::%s"
 msgstr ""
+"Object van type %s implementeert niet vereiste virtuele functie "
+"XfdashboardPopupMenuItem::%s"
 
 #: ../libxfdashboard/popup-menu.c:943
 msgid "Destroy on cancel"
@@ -2638,7 +2650,7 @@ msgstr "Geen te activeren vensters voor toepassing"
 
 #: ../libxfdashboard/quicklaunch.c:515 ../libxfdashboard/quicklaunch.c:582
 msgid "Cannot find quicklaunch for application button."
-msgstr ""
+msgstr "Kan geen snelstarter vinden voor toepassingsknop."
 
 #: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
 #: ../libxfdashboard/quicklaunch.c:2128
@@ -2975,7 +2987,7 @@ msgstr "Zoeken"
 
 #: ../libxfdashboard/stage-interface.c:360
 msgid "The monitor where this stage interface is connected to"
-msgstr ""
+msgstr "Het beeldscherm waar deze stage interface aan is verbonden"
 
 #: ../libxfdashboard/stage-interface.c:374 ../libxfdashboard/stage.c:1818
 #: ../plugins/clock-view/clock-view-settings.c:249
@@ -2984,7 +2996,7 @@ msgstr "Achtergrondkleur"
 
 #: ../libxfdashboard/stage-interface.c:375 ../libxfdashboard/stage.c:1819
 msgid "Color of stage's background"
-msgstr ""
+msgstr "Kleur van achtergrond van stage"
 
 #: ../libxfdashboard/stage.c:256
 #, c-format
@@ -3022,7 +3034,7 @@ msgstr ""
 
 #: ../libxfdashboard/stage.c:1095
 msgid "Invalid multiple stages for primary monitor"
-msgstr ""
+msgstr "Ongeldige meervoudige stages voor primaire beeldscherm"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
@@ -3035,6 +3047,7 @@ msgstr "Overschakelen naar weergave"
 #: ../libxfdashboard/stage.c:1826
 msgid "Switch to this named view as soon as stage gets visible"
 msgstr ""
+"Schakel over naar deze benoemde weergave zo gauw als stage zichtbaar wordt"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/stylable.c:62
@@ -3043,6 +3056,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardStylable::%s"
 msgstr ""
+"Object van type %s implementeert niet vereiste virtuele functie "
+"XfdashboardStylable::%s"
 
 #: ../libxfdashboard/stylable.c:382
 msgid "Style classes"
@@ -3222,7 +3237,7 @@ msgstr "CSS-functie '%s' is reeds geregistreerd."
 #: ../libxfdashboard/theme-css.c:944 ../libxfdashboard/theme-css.c:1057
 #: ../libxfdashboard/theme-css.c:2156
 msgid "An identifier must follow '@'"
-msgstr ""
+msgstr "Op '@' moet een identificator volgen"
 
 #: ../libxfdashboard/theme-css.c:1083
 msgid "Missing function argument"
@@ -3265,13 +3280,13 @@ msgstr "Functie '%s' is mislukt."
 #: ../libxfdashboard/theme-css.c:1303
 #, c-format
 msgid "Cannot resolve identifier '@%s' because of indefinite recursion"
-msgstr ""
+msgstr "Kan identificator '@%s' niet oplossen wegens oneindige recursie"
 
 #. Identifier was unresolvable so print error message
 #: ../libxfdashboard/theme-css.c:1357
 #, c-format
 msgid "Unresolvable identifier '@%s'"
-msgstr ""
+msgstr "Niet-oplosbare identificator '@%s'"
 
 #: ../libxfdashboard/theme-css.c:1509
 #, c-format
@@ -3279,6 +3294,8 @@ msgid ""
 "Possible recursion detected because call depth is too deep while resolving "
 "'%s'"
 msgstr ""
+"Mogelijke recursie bespeurd aangezien aanroepdiepte te diep is bij oplossen "
+"van '%s'"
 
 #: ../libxfdashboard/theme-css.c:1600
 msgid "Invalid property name"
@@ -3299,11 +3316,11 @@ msgstr "Eigenschapwaarden moeten eindigen met puntkomma"
 
 #: ../libxfdashboard/theme-css.c:1844
 msgid "Missing '(' after @import keyword."
-msgstr ""
+msgstr "Ontbrekend '(' na @import keyword."
 
 #: ../libxfdashboard/theme-css.c:1885
 msgid "Unexpected token in filename to import"
-msgstr ""
+msgstr "Onverwacht teken in te importeren bestandsnaam"
 
 #: ../libxfdashboard/theme-css.c:1905
 msgid "Missing filename to import"
@@ -3311,7 +3328,7 @@ msgstr "Ontbrekende bestandsnaam voor importeren"
 
 #: ../libxfdashboard/theme-css.c:1927
 msgid "Missing closing ')' at @import keyword."
-msgstr ""
+msgstr "Ontbrekend afsluitend ')' bij @import keyword."
 
 #. Build error message
 #: ../libxfdashboard/theme-css.c:1994
@@ -3324,26 +3341,30 @@ msgid ""
 "Mixing selectors and '@' identifiers or defining more than one '@' "
 "identifier at once is not allowed"
 msgstr ""
+"Het vermengen van kiezers en '@'-identificatoren of het definiëren van meer "
+"dan één '@'-identificator tegelijk, is niet toegestaan"
 
 #: ../libxfdashboard/theme-css.c:2122
 msgid ""
 "A selector must have been defined before other one can follow comma-"
 "separated."
 msgstr ""
+"Er moet een kiezer zijn bepaald voordat er een tweede kan volgen na een "
+"kommascheiding."
 
 #. Build warning message
 #: ../libxfdashboard/theme-css.c:2188
 #, c-format
 msgid "Skipping block of unknown identifier '@%s'"
-msgstr ""
+msgstr "Blok van onbekende identificator '@%s' wordt overgeslagen"
 
 #: ../libxfdashboard/theme-css.c:2194
 msgid "'@' identifier"
-msgstr ""
+msgstr "'@'-identificator"
 
 #: ../libxfdashboard/theme-css.c:2223 ../libxfdashboard/theme-css.c:2240
 msgid "Unhandled selector"
-msgstr ""
+msgstr "Niet-afgehandelde kiezer"
 
 #: ../libxfdashboard/theme-css.c:2388
 #, c-format
@@ -3366,12 +3387,13 @@ msgstr "Kon geen bestand verkrijgen voor pad '%s'"
 #: ../libxfdashboard/theme-animation.c:138
 #, c-format
 msgid "Cannot allocate memory for animation targets property '%s'"
-msgstr ""
+msgstr "Kan geen geheugen toewijzen voor eigenschap '%s' van animatiedoelen"
 
 #: ../libxfdashboard/theme-animation.c:205
 #, c-format
 msgid "Cannot allocate memory for animation targets data with selector '%s'"
 msgstr ""
+"Kan geen geheugen toewijzen voor gegevens van animatiedoelen met kiezer '%s'"
 
 #: ../libxfdashboard/theme-animation.c:227
 #, c-format
@@ -3379,6 +3401,8 @@ msgid ""
 "Freeing animation targets data at %p with a reference counter of %d greater "
 "than one"
 msgstr ""
+"Bezig met vrijmaken van gegevens van animatiedoelen bij %p met een "
+"referentieteller van %d groter dan één"
 
 #: ../libxfdashboard/theme-animation.c:286
 #, c-format
@@ -3395,6 +3419,8 @@ msgid ""
 "Freeing animation specification data at %p with a reference counter of %d "
 "greater than one"
 msgstr ""
+"Bezig met vrijmaken van animatiespecificatiegegevens bij %p met een "
+"referentieteller van %d groter dan één"
 
 #: ../libxfdashboard/theme-animation.c:586
 #, c-format
@@ -3404,12 +3430,12 @@ msgstr "Ongeldige basis voor omzetting"
 #: ../libxfdashboard/theme-animation.c:597
 #, c-format
 msgid "Integer out of range"
-msgstr ""
+msgstr "Integer buiten bereik"
 
 #: ../libxfdashboard/theme-animation.c:612
 #, c-format
 msgid "Cannot convert string '%s' to integer"
-msgstr ""
+msgstr "Kan tekenreeks '%s' niet omzetten in integer"
 
 #: ../libxfdashboard/theme-animation.c:856
 #, c-format
@@ -3486,7 +3512,7 @@ msgstr "Ongeldig ID '%s' bij markering '%s'"
 #: ../libxfdashboard/theme-animation.c:1387
 #, c-format
 msgid "Multiple definition of trigger with ID '%s'"
-msgstr ""
+msgstr "Meervoudige definitie van trigger met ID '%s'"
 
 #: ../libxfdashboard/theme-animation.c:1683
 #, c-format
