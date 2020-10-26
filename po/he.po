@@ -3747,71 +3747,71 @@ msgstr "מאופשר"
 
 #: ../libxfdashboard/view.c:393
 msgid "This flag indicates if is view is enabled and activable"
-msgstr ""
+msgstr "אות סימון זה נותן אינדיקציה האם תצוגה מופעלת ופעילה"
 
 #: ../libxfdashboard/viewpad.c:130
 msgid "Cannot update viewport of view because no one is active"
-msgstr ""
+msgstr "לא יכול לעדכן אשנב של תצוגה כי אף אחד לא פעיל"
 
 #: ../libxfdashboard/viewpad.c:246
 #, c-format
 msgid "View %s is not a child of %s and cannot be activated"
-msgstr ""
+msgstr "תצוגה %s היא לא ילד של %s ולא ניתנת להפעלה"
 
 #: ../libxfdashboard/viewpad.c:254
 #, c-format
 msgid "Cannot activate disabled view %s at %s"
-msgstr ""
+msgstr "לא יכול להפעיל תצוגה כבויה %s ב%s"
 
 #: ../libxfdashboard/viewpad.c:710
 #, c-format
 msgid "Failed to create view %s for viewpad"
-msgstr ""
+msgstr "נכשל ליצור תצוגה %s עבור אשנב"
 
 #: ../libxfdashboard/viewpad.c:716
 #, c-format
 msgid "View %s of type %s is not a %s and cannot be added to %s"
-msgstr ""
+msgstr "תצוגה %s מסוג %s היא לא %s ולא ניתנת להוספה אל %s"
 
 #: ../libxfdashboard/viewpad.c:1240
 msgid "Active view"
-msgstr ""
+msgstr "תצוגה פעילה"
 
 #: ../libxfdashboard/viewpad.c:1241
 msgid "The current active view in viewpad"
-msgstr ""
+msgstr "התצוגה הפעילה הנוכחית באשנב"
 
 #: ../libxfdashboard/viewpad.c:1247
 msgid "Horizontal scrollbar visibility"
-msgstr ""
+msgstr "ניראות סרגל גלילה אופקי"
 
 #: ../libxfdashboard/viewpad.c:1248
 msgid "This flag indicates if horizontal scrollbar is visible"
-msgstr ""
+msgstr "אות סימון זה נותן אינדיקציה האם סרגל גלילה אופקי נראה"
 
 #: ../libxfdashboard/viewpad.c:1254
 msgid "Horizontal scrollbar policy"
-msgstr ""
+msgstr "מדיניות סרגל גלילה אופקי"
 
 #: ../libxfdashboard/viewpad.c:1255
 msgid "The policy for horizontal scrollbar controlling when it is displayed"
-msgstr ""
+msgstr "המדיניות עבור סרגל גלילה אופקי המבקרת מתי הוא מוצג"
 
 #: ../libxfdashboard/viewpad.c:1262
 msgid "Vertical scrollbar visibility"
-msgstr ""
+msgstr "ניראות סרגל גלילה אנכי"
 
 #: ../libxfdashboard/viewpad.c:1263
 msgid "This flag indicates if vertical scrollbar is visible"
-msgstr ""
+msgstr "אות סימון זה נותן אינדיקציה האם סרגל גלילה אנכי נראה"
 
 #: ../libxfdashboard/viewpad.c:1269
 msgid "Vertical scrollbar policy"
-msgstr ""
+msgstr "מדיניות סרגל גלילה אנכי"
 
 #: ../libxfdashboard/viewpad.c:1270
 msgid "The policy for vertical scrollbar controlling when it is displayed"
-msgstr ""
+msgstr "המדיניות עבור סרגל גלילה אנכי המבקרת מתי הוא מוצג"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker-backend.c:51
@@ -3820,26 +3820,28 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerBackend::%s"
 msgstr ""
+"אובייקט מסוג %s לא מיישם פונקציה וירטואלית נדרשת "
+"XfdashboardWindowTrackerBackend::%s"
 
 #: ../libxfdashboard/window-tracker-backend.c:148
 msgid "Cannot find any usable window tracker backend"
-msgstr ""
+msgstr "לא יכול למצוא מגשר עורפי עוקב חלון שימושי כלשהוא"
 
 #: ../libxfdashboard/window-tracker-backend.c:190
 #, c-format
 msgid "Cannot set backend to '%s' because it the backend was already set"
-msgstr ""
+msgstr "לא יכול לקבוע מגשר עורפי ל'%s' כי מגשר עורפי כבר הוגדר"
 
 #: ../libxfdashboard/window-tracker-backend.c:203
 #, c-format
 msgid "Cannot set backend to '%s' because application is already initialized"
-msgstr ""
+msgstr "לא יכול לקבוע מגשר עורפי ל'%s' כי ישום כבר התחיל"
 
 #. If we get here the requested backend is unknown
 #: ../libxfdashboard/window-tracker-backend.c:226
 #, c-format
 msgid "Unknown backend '%s' - using default backend"
-msgstr ""
+msgstr "מגשר עורפי לא ידוע '%s' - משתמש במגשר עורפי ברירת מחדל"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker-monitor.c:58
@@ -3848,6 +3850,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerMonitor::%s"
 msgstr ""
+"אובייקט מסוג %s לא מיישם פונקציה וירטואלית נדרשת "
+"XfdashboardWindowTrackerMonitor::%s"
 
 #: ../libxfdashboard/window-tracker-monitor.c:101
 msgid "Monitor index"
@@ -3855,15 +3859,15 @@ msgstr "אינדקס מסך"
 
 #: ../libxfdashboard/window-tracker-monitor.c:102
 msgid "The index of this monitor"
-msgstr ""
+msgstr "האינדקס של מסך זה"
 
 #: ../libxfdashboard/window-tracker-monitor.c:109
 msgid "Is primary"
-msgstr ""
+msgstr "הוא עיקרי"
 
 #: ../libxfdashboard/window-tracker-monitor.c:110
 msgid "Whether this monitor is the primary one"
-msgstr ""
+msgstr "האם מסך זה הוא המסך העיקרי"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker-window.c:64
@@ -3872,6 +3876,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerWindow::%s"
 msgstr ""
+"אובייקט מסוג %s לא מיישם פונקציה וירטואלית נדרשת "
+"XfdashboardWindowTrackerWindow::%s"
 
 #: ../libxfdashboard/window-tracker-window.c:189
 msgid "State"
@@ -3879,15 +3885,15 @@ msgstr "מצב"
 
 #: ../libxfdashboard/window-tracker-window.c:190
 msgid "The state of window"
-msgstr ""
+msgstr "המצב של חלון"
 
 #: ../libxfdashboard/window-tracker-window.c:197
 msgid "Actions"
-msgstr ""
+msgstr "פעולות"
 
 #: ../libxfdashboard/window-tracker-window.c:198
 msgid "The possible actions at window"
-msgstr ""
+msgstr "הפעולות האפשריות בחלון"
 
 #: ../libxfdashboard/window-tracker-window.c:787
 #: ../libxfdashboard/window-tracker-window.c:828
@@ -3895,7 +3901,7 @@ msgstr ""
 #: ../libxfdashboard/window-tracker.c:612
 #: ../libxfdashboard/window-tracker.c:1152
 msgid "Could not get default window tracker backend"
-msgstr ""
+msgstr "לא יכול לקבל מגשר עורפי עוקב חלון ברירת מחדל"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker-workspace.c:56
@@ -3904,6 +3910,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTrackerWorkspace::%s"
 msgstr ""
+"אובייקט מסוג %s לא מיישם פונקציה וירטואלית נדרשת "
+"XfdashboardWindowTrackerWorkspace::%s"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/window-tracker.c:83
@@ -3912,6 +3920,8 @@ msgid ""
 "Object of type %s does not implement required virtual function "
 "XfdashboardWindowTracker::%s"
 msgstr ""
+"אובייקט מסוג %s לא מיישם פונקציה וירטואלית נדרשת "
+"XfdashboardWindowTracker::%s"
 
 #: ../libxfdashboard/window-tracker.c:119
 msgid "Active window"
@@ -3919,23 +3929,23 @@ msgstr "חלון פעיל"
 
 #: ../libxfdashboard/window-tracker.c:120
 msgid "The current active window"
-msgstr ""
+msgstr "החלון הפעיל הנוכחי"
 
 #: ../libxfdashboard/window-tracker.c:126
 msgid "Active workspace"
-msgstr ""
+msgstr "חלל עבודה פעיל"
 
 #: ../libxfdashboard/window-tracker.c:127
 msgid "The current active workspace"
-msgstr ""
+msgstr "חלל העבודה הפעיל הנוכחי"
 
 #: ../libxfdashboard/window-tracker.c:133
 msgid "Primary monitor"
-msgstr ""
+msgstr "מסך עיקרי"
 
 #: ../libxfdashboard/window-tracker.c:134
 msgid "The current primary monitor"
-msgstr ""
+msgstr "המסך העיקרי הנוכחי"
 
 #. If we get here we did not handle drop action properly
 #. * and this should never happen.
@@ -3943,50 +3953,50 @@ msgstr ""
 #, c-format
 msgid ""
 "Did not handle drop action for dragged actor %s of source %s at target %s"
-msgstr ""
+msgstr "ללא טיפול בפעולת עזיבה עבור שחקן נגרר %s של מקור %s במטרה %s"
 
 #: ../libxfdashboard/windows-view.c:1765
 #, c-format
 msgid "Cannot activate selection of type %s at %s because expecting type %s"
-msgstr ""
+msgstr "לא יכול להפעיל בחירה מסוג %s ב%s כי מצפה לסוג %s"
 
 #: ../libxfdashboard/windows-view.c:2055
 msgid "Current workspace"
-msgstr ""
+msgstr "חלל עבודה נוכחי"
 
 #: ../libxfdashboard/windows-view.c:2056
 msgid "The current workspace whose windows are shown"
-msgstr ""
+msgstr "חלל העבודה הנוכחי שהחלונות שלו מוצגים"
 
 #: ../libxfdashboard/windows-view.c:2071
 msgid ""
 "Whether this view should prevent upsclaing any window beyond its real size"
-msgstr ""
+msgstr "האם תצוגה זו צריכה למנוע הגדלה של חלון כלשהוא מעבר לגודלו האמיתי"
 
 #: ../libxfdashboard/windows-view.c:2077
 msgid "Scroll event changes workspace"
-msgstr ""
+msgstr "אירוע גלילה משנה חלל עבודה"
 
 #: ../libxfdashboard/windows-view.c:2078
 msgid "Whether this view should change active workspace on scroll events"
-msgstr ""
+msgstr "האם תצוגה זו צריכה לשנות חלל עבודה פעיל בעת אירועי גלילה"
 
 #: ../libxfdashboard/windows-view.c:2084
 msgid "Filter monitor windows"
-msgstr ""
+msgstr "סנן חלונות מסך"
 
 #: ../libxfdashboard/windows-view.c:2085
 msgid ""
 "Whether this view should only show windows of monitor where it placed at"
-msgstr ""
+msgstr "האם תצוגה זו צריכה להציג רק חלונות של מסך בו היא ממוקמת"
 
 #: ../libxfdashboard/windows-view.c:2091
 msgid "Filter workspace windows"
-msgstr ""
+msgstr "סנן חלונות חלל עבודה"
 
 #: ../libxfdashboard/windows-view.c:2092
 msgid "Whether this view should only show windows of active workspace"
-msgstr ""
+msgstr "האם תצוגה זו צריכה להציג רק חלונות של חלל עבודה פעיל"
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2317
@@ -3999,49 +4009,53 @@ msgstr "חלונות"
 #: ../libxfdashboard/workspace-selector.c:1110
 #, c-format
 msgid "Could not determine workspace of %s to set selection at %s"
-msgstr ""
+msgstr "לא יכול לקבוע חלל עבודה של %s לקביעת בחירה ב%s"
 
 #: ../libxfdashboard/workspace-selector.c:1268
 msgid "Maximum size"
-msgstr ""
+msgstr "גודל מירבי"
 
 #: ../libxfdashboard/workspace-selector.c:1269
 msgid "The maximum size of this actor for opposite direction of orientation"
-msgstr ""
+msgstr "הגודל המירבי של שחקן זה לכיוון נגדי של אוריינטציה"
 
 #: ../libxfdashboard/workspace-selector.c:1276
 msgid "Maximum fraction"
-msgstr ""
+msgstr "השבר המירבי"
 
 #: ../libxfdashboard/workspace-selector.c:1277
 msgid ""
 "The maximum size of this actor for opposite direction of orientation defined"
 " by fraction between 0.0 and 1.0"
 msgstr ""
+"הגודל המירבי של שחקן זה לכיוון נגדי של אוריינטציה המוגדר ע\"י שבר בין 0.0 "
+"ו-1.0"
 
 #: ../libxfdashboard/workspace-selector.c:1284
 msgid "Using fraction"
-msgstr ""
+msgstr "שימוש בשבר"
 
 #: ../libxfdashboard/workspace-selector.c:1285
 msgid ""
 "Flag indicating if maximum size is static or defined by fraction between 0.0"
 " and 1.0"
 msgstr ""
+"אות סימון הנותן אינדיקציה האם גודל מירבי הוא סטטי או מוגדר ע\"י שבר בין 0.0 "
+"ו-1.0"
 
 #: ../libxfdashboard/workspace-selector.c:1291
 msgid "Show current monitor only"
-msgstr ""
+msgstr "הצג מסך נוכחי בלבד"
 
 #: ../libxfdashboard/workspace-selector.c:1292
 msgid "Show only windows of the monitor where this actor is placed"
-msgstr ""
+msgstr "הצג רק חלונות של המסך בו שחקן זה ממוקם"
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:132
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:131
 msgid ""
 "Could not get real stage window to handle signal 'active-window-changed'"
-msgstr ""
+msgstr "לא יכול לקבל חלון שלב אמיתי לטיפול באות 'active-window-changed'"
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:194
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:193
@@ -4049,28 +4063,30 @@ msgid ""
 "Keep window fullscreen on primary monitor because window manager does not "
 "support _NET_WM_FULLSCREEN_MONITORS."
 msgstr ""
+"שמור חלון במצב מסך מלא במסך עיקרי כי מנהל חלונות לא תומך "
+"ב-_NET_WM_FULLSCREEN_MONITORS."
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:447
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:460
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:443
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:456
 msgid "Could not get real stage window to find stage"
-msgstr ""
+msgstr "לא יכול לקבל חלון שלב אמיתי למציאת שלב"
 
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:527
 #: ../libxfdashboard/gdk/window-tracker-backend-gdk.c:645
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:502
 msgid "Could not get real stage window to show"
-msgstr ""
+msgstr "לא יכול לקבל חלון שלב אמיתי להצגה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:215
 msgid "No default X11 display found in GDK to check X extensions"
-msgstr ""
+msgstr "לא נמצא מסך X11 ברירת מחדל בGDK לבדיקת הרחבות X"
 
 #: ../libxfdashboard/x11/window-content-x11.c:254
 #, c-format
 msgid "Destroying window content resume queue containing %d windows."
-msgstr ""
+msgstr "משמיד תכולת חלון תור חזרה מכיל %d חלונות."
 
 #: ../libxfdashboard/x11/window-content-x11.c:400
 #, c-format
@@ -4078,28 +4094,29 @@ msgid ""
 "Unknown value '%s' for property '%s' - defaulting to '%s' with priority of "
 "%d"
 msgstr ""
+"ערך לא ידוע '%s' עבור מאפיין '%s' - פונה לברירת מחדל '%s' עם עדיפות של %d"
 
 #. Show warning
 #: ../libxfdashboard/x11/window-content-x11.c:522
 #, c-format
 msgid "Could not create copy of texture of mininized window '%s': %s"
-msgstr ""
+msgstr "לא יכול ליצור עותק של מרקם של חלון ממוזער '%s':%s"
 
 #. Show warning
 #: ../libxfdashboard/x11/window-content-x11.c:550
 #, c-format
 msgid "Could not create copy of texture of mininized window '%s'"
-msgstr ""
+msgstr "לא יכול ליצור עותק של מרקם של חלון ממוזער '%s'"
 
 #: ../libxfdashboard/x11/window-content-x11.c:561
 #, c-format
 msgid "Could not determine size of texture of minimized window '%s'"
-msgstr ""
+msgstr "לא יכול לקבוע גודל של מרקם של חלון ממוזער '%s'"
 
 #: ../libxfdashboard/x11/window-content-x11.c:566
 #, c-format
 msgid "Could not allocate memory for copy of texture of mininized window '%s'"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון עבור עותק של מרקם של חלון ממוזער '%s'"
 
 #: ../libxfdashboard/x11/window-content-x11.c:682
 #, c-format
@@ -4107,14 +4124,16 @@ msgid ""
 "Need at least version %d.%d of composite extension but found %d.%d - using "
 "only fallback images"
 msgstr ""
+"צריך לפחות גרסה %d.%d של הרחבה מרוכבת אבל נמצא %d.%d - משתמש בתמונות חלופיות"
+" בלבד"
 
 #: ../libxfdashboard/x11/window-content-x11.c:686
 msgid "Query for X composite extension failed - using only fallback imagess"
-msgstr ""
+msgstr "שאילתה עבור הרחבה מרוכבת X נכשלה - משתמש בתמונות חלופיות בלבד"
 
 #: ../libxfdashboard/x11/window-content-x11.c:688
 msgid "X does not support composite extension - using only fallback images"
-msgstr ""
+msgstr "X לא תומך בהרחבה מרוכבת - משתמש בתמונות חלופיות בלבד"
 
 #: ../libxfdashboard/x11/window-content-x11.c:703
 #, c-format
@@ -4122,16 +4141,18 @@ msgid ""
 "Query for X damage extension resulted in error code %d - using only still "
 "images of windows"
 msgstr ""
+"שאילתה עבור הרחבת נזק X הסתיימה בקוד שגיאה %d - משתמש רק בתמונות קפואות של "
+"חלונות"
 
 #: ../libxfdashboard/x11/window-content-x11.c:995
 msgid "Resume handler called for empty queue."
-msgstr ""
+msgstr "חזור אל מטפל שנקרא עבור תור ריק."
 
 #: ../libxfdashboard/x11/window-content-x11.c:1058
 #: ../libxfdashboard/x11/window-content-x11.c:1221
 #, c-format
 msgid "Could not get pixmap for window '%s"
-msgstr ""
+msgstr "לא יכול לקבל מפת פיקסלים עבור חלון '%s'"
 
 #. We should never get here as existance of composite extension was checked
 #. before
@@ -4139,129 +4160,134 @@ msgstr ""
 #: ../libxfdashboard/x11/window-content-x11.c:1227
 #, c-format
 msgid "Cannot resume window '%s' as composite extension is not available"
-msgstr ""
+msgstr "לא יכול לחזור אל חלון '%s' כשהרחבה מרוכבת אינה זמינה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:1109
 #: ../libxfdashboard/x11/window-content-x11.c:1269
 #, c-format
 msgid "Could not create damage for window '%s' - using still image of window"
-msgstr ""
+msgstr "לא יכול ליצור נזק עבור חלון '%s' - משתמש בתמונה קפואה של חלון"
 
 #. Show warning
 #: ../libxfdashboard/x11/window-content-x11.c:1454
 #, c-format
 msgid "Could not create fallback texture for window '%s': %s"
-msgstr ""
+msgstr "לא יכול ליצור מרקם חלופי עבור חלון '%s':%s"
 
 #: ../libxfdashboard/x11/window-content-x11.c:1496
 #, c-format
 msgid "Could not get attributes of window '%s'"
-msgstr ""
+msgstr "לא יכול לקבל תכונות של חלון '%s'"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2138
 msgid "The window to handle and display"
-msgstr ""
+msgstr "החלון לטיפול ותצוגה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2144
 msgid "Suspended"
-msgstr ""
+msgstr "מושעה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2145
 msgid "Is this window suspended"
-msgstr ""
+msgstr "האם חלון זה מושעה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2152
 msgid "Color to draw outline of mapped windows with"
-msgstr ""
+msgstr "צבע איתו לצייר קו חיצון של חלונות ממופים"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2159
 msgid "Width of line used to draw outline of mapped windows"
-msgstr ""
+msgstr "רוחב הקו המשמש לציור קו חיצון של חלונות ממופים"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2166
 msgid "Include window frame"
-msgstr ""
+msgstr "כלול מסגרת חלון"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2167
 msgid ""
 "Whether the window frame should be included or only the window content "
 "should be shown"
 msgstr ""
+"האם מסגרת החלון צריכה להיות נכללת או תכולת החלון בלבד צריכה להיות מוצגת"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2173
 msgid "Unmapped window icon X fill"
-msgstr ""
+msgstr "מילוי X איקון חלון לא ממופה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2174
 msgid "Whether the unmapped window icon should fill up horizontal space"
-msgstr ""
+msgstr "האם איקון חלון לא ממופה צריך למלא חלל אופקי"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2180
 msgid "Unmapped window icon y fill"
-msgstr ""
+msgstr "מילוי Y איקון חלון לא ממופה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2181
 msgid "Whether the unmapped window icon should fill up vertical space"
-msgstr ""
+msgstr "האם איקון חלון לא ממופה צריך למלא חלל אנכי"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2187
 msgid "Unmapped window icon X align"
-msgstr ""
+msgstr "ישור X איקון חלון לא ממופה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2188
 msgid ""
 "The alignment of the unmapped window icon on the X axis within the "
 "allocation in normalized coordinate between 0 and 1"
 msgstr ""
+"הישור של איקון חלון לא ממופה בציר X בתוך ההקצבה בקואורדינטות מנורמלות בין 0 "
+"ו-1 "
 
 #: ../libxfdashboard/x11/window-content-x11.c:2195
 msgid "Unmapped window icon Y align"
-msgstr ""
+msgstr "ישור Y איקון חלון לא ממופה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2196
 msgid ""
 "The alignment of the unmapped window icon on the Y axis within the "
 "allocation in normalized coordinate between 0 and 1"
 msgstr ""
+"הישור של איקון חלון לא ממופה בציר Y בתוך ההקצבה בקואורדינטות מנורמלות בין 0 "
+"ו-1"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2203
 msgid "Unmapped window icon X scale"
-msgstr ""
+msgstr "קנה מידה X איקון חלון לא ממופה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2204
 msgid "Scale factor of unmapped window icon on the X axis"
-msgstr ""
+msgstr "פקטור קנה מידה של איקון חלון לא ממופה בציר X"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2211
 msgid "Unmapped window icon Y scale"
-msgstr ""
+msgstr "קנה מידה Y איקון חלון לא ממופה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2212
 msgid "Scale factor of unmapped window icon on the Y axis"
-msgstr ""
+msgstr "פקטור קנה מידה של איקון חלון לא ממופה בציר Y"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2219
 msgid "Unmapped window icon anchor point"
-msgstr ""
+msgstr "נקודת עוגן איקון חלון לא ממופה"
 
 #: ../libxfdashboard/x11/window-content-x11.c:2220
 msgid "The anchor point of unmapped window icon"
-msgstr ""
+msgstr "נקודת העוגן של איקון חלון לא ממופה"
 
 #: ../libxfdashboard/x11/window-tracker-backend-x11.c:614
 msgid "Could not get real stage window to hide"
-msgstr ""
+msgstr "לא יכול לקבל חלון שלב אמיתי להסתרה"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:109
 #, c-format
 msgid "No wnck window wrapped at %s in called function %s"
-msgstr ""
+msgstr "אף חלון wnck לא עטוף ב%s בפונקציה נקראת %s"
 
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:114
 #, c-format
 msgid "Got signal from wrong wnck window wrapped at %s in called function %s"
-msgstr ""
+msgstr "התקבל אות מחלון wnck שגוי עטוף ב%s בפונקציה נקראת %s"
 
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:815
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:963
@@ -4270,41 +4296,43 @@ msgid ""
 "Either no wnck workspace is wrapped at %s or workspace is not available "
 "anymore when called at function %s"
 msgstr ""
+"או שאף חלל עבודה wnck עטוף ב%s או שחלל עבודה לא זמין יותר כאשר נקרא בפונקציה"
+" %s"
 
 #: ../libxfdashboard/x11/window-tracker-window-x11.c:1279
 msgid "The mapped wnck window"
-msgstr ""
+msgstr "חלון wnck ממופה"
 
 #. IMPLEMENTATION: Private variables and methods
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:85
 #, c-format
 msgid "No wnck workspace wrapped at %s in called function %s"
-msgstr ""
+msgstr "אף חלל עבודה wnck לא עטוף ב%s בפונקציה נקראת %s"
 
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:90
 #, c-format
 msgid ""
 "Got signal from wrong wnck workspace wrapped at %s in called function %s"
-msgstr ""
+msgstr "התקבל אות מחלל עבודה wnck שגוי עטוף ב%s בפונקציה נקראת %s"
 
 #: ../libxfdashboard/x11/window-tracker-workspace-x11.c:386
 msgid "The mapped wnck workspace"
-msgstr ""
+msgstr "חלל עבודה wnck ממופה"
 
 #: ../libxfdashboard/x11/window-tracker-x11.c:218
 #, c-format
 msgid "Could not create workspace object of type %s for workspace '%s'"
-msgstr ""
+msgstr "לא יכול ליצור אובייקט חלל עבודה מסוג %s עבור חלל עבודה '%s' "
 
 #: ../libxfdashboard/x11/window-tracker-x11.c:388
 #, c-format
 msgid "Could not create window object of type %s for window '%s'"
-msgstr ""
+msgstr "לא יכול ליצור אובייקט חלון מסוג %s עבור חלון '%s'"
 
 #: ../libxfdashboard/x11/window-tracker-x11.c:977
 #, c-format
 msgid "Cannot release unknown monitor %d"
-msgstr ""
+msgstr "לא יכול לשחרר מסך לא ידוע %d"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:312
@@ -4317,7 +4345,7 @@ msgstr "צבע לשעות"
 
 #: ../plugins/clock-view/clock-view-settings.c:229
 msgid "Color to draw the hour hand with"
-msgstr ""
+msgstr "צבע איתו לצייר מחוג שעות"
 
 #: ../plugins/clock-view/clock-view-settings.c:235
 msgid "Minute color"
@@ -4325,7 +4353,7 @@ msgstr "צבע לדקות"
 
 #: ../plugins/clock-view/clock-view-settings.c:236
 msgid "Color to draw the minute hand with"
-msgstr ""
+msgstr "צבע איתו לצייר מחוג דקות"
 
 #: ../plugins/clock-view/clock-view-settings.c:242
 msgid "Second color"
@@ -4333,15 +4361,15 @@ msgstr "צבע לשניות"
 
 #: ../plugins/clock-view/clock-view-settings.c:243
 msgid "Color to draw the second hand with"
-msgstr ""
+msgstr "צבע איתו לצייר מחוג שניות"
 
 #: ../plugins/clock-view/clock-view-settings.c:250
 msgid "Color to draw the circle with that holds the second hand"
-msgstr ""
+msgstr "צבע איתו לצייר את העיגול שתופס את מחוג השניות"
 
 #: ../plugins/clock-view/plugin.c:146 ../plugins/hot-corner/plugin.c:109
 msgid "Cannot allocate memory for mapping"
-msgstr ""
+msgstr "לא יכול להקצות זיכרון למיפוי"
 
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:208
@@ -4350,7 +4378,7 @@ msgstr "צבע לשעות:"
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
-msgstr ""
+msgstr "בחר צבע למחוג שעות"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
@@ -4359,7 +4387,7 @@ msgstr "צבע לדקות:"
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
-msgstr ""
+msgstr "בחר צבע למחוג דקות"
 
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
@@ -4368,7 +4396,7 @@ msgstr "צבע לשניות:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "בחר צבע למחוג שניות"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
@@ -4377,35 +4405,35 @@ msgstr "צבע רקע:"
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "בחר צבע לרקע של מחוג שניות"
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
-msgstr ""
+msgstr "מוסיף תצוגה חדשה המציגה שעון"
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
-msgstr ""
+msgstr "חיפוש דוגמה"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "ספק חיפוש דוגמה"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr ""
+msgstr "זהו רק תוסף ספק חיפוש דוגמה חסר תועלת"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:211
 #, c-format
 msgid "Unknown application '%s' for Gnome-Shell search provider '%s'"
-msgstr ""
+msgstr "ישום לא ידוע '%s' לספק חיפוש מעטפת Gnome '%s'"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:289
 #, c-format
 msgid "Cannot update information about Gnome-Shell search provider '%s': %s"
-msgstr ""
+msgstr "לא יכול לעדכן מידע אודות ספק חיפוש מעטפת Gnome '%s':%s"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:374
@@ -4414,12 +4442,13 @@ msgid ""
 "Cannot initialize file monitor to detect changes for Gnome-Shell search "
 "provider '%s': %s"
 msgstr ""
+"לא יכול להתחיל עוקב קבצים לגילוי שינויים עבור ספק חיפוש מעטפת Gnome '%s':%s"
 
 #. Show warning message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:391
 #, c-format
 msgid "Cannot load information about Gnome-Shell search provider '%s': %s"
-msgstr ""
+msgstr "לא יכול לטעון מידע אודות ספק חיפוש מעטפת Gnome '%s':%s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:473
@@ -4429,7 +4458,7 @@ msgstr ""
 #, c-format
 msgid ""
 "Could not create dbus connection for Gnome-Shell search provider '%s': %s"
-msgstr ""
+msgstr "לא יכול ליצור חיבור dbus עבור ספק חיפוש מעטפת Gnome '%s':%s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:546
@@ -4437,7 +4466,7 @@ msgstr ""
 msgid ""
 "Could get result set from dbus connection for Gnome-Shell search provider "
 "'%s': %s"
-msgstr ""
+msgstr "יכול לקבל סדרת תוצאות מחיבור dbus עבור ספק חיפוש מעטפת Gnome '%s':%s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:663
@@ -4446,6 +4475,7 @@ msgid ""
 "Could get meta data for '%s' from dbus connection for Gnome-Shell search "
 "provider '%s': %s"
 msgstr ""
+"יכול לקבל metadata עבור '%s' מחיבור dbus עבור ספק חיפוש מעטפת Gnome '%s':%s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:729
@@ -4455,10 +4485,11 @@ msgstr ""
 msgid ""
 "Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"
 msgstr ""
+"יכול לקבל איקון עבור '%s' של מקש '%s' עבור ספק חיפוש מעטפת Gnome '%s':%s"
 
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:733
 msgid "Deserialization failed"
-msgstr ""
+msgstr "ביטול עריכה בסידרה נכשל"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:897
@@ -4467,6 +4498,8 @@ msgid ""
 "Could activate result item '%s' over dbus connection for Gnome-Shell search "
 "provider '%s': %s"
 msgstr ""
+"יכול להפעיל פריט תוצאה '%s' על גבי חיבור dbus עבור ספק חיפוש מעטפת Gnome "
+"'%s':%s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/gnome-shell-search-provider.c:970
@@ -4475,24 +4508,25 @@ msgid ""
 "Could not launch search over dbus connection for Gnome-Shell search provider"
 " '%s': %s"
 msgstr ""
+"לא יכול להפעיל חיפוש על גבי חיבור dbus עבור ספק חיפוש מעטפת Gnome '%s':%s"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:68
 msgid "Gnome-Shell search provider filename has wrong file extension."
-msgstr ""
+msgstr "שם קובץ ספק חיפוש מעטפת Gnome בעל סיומת קובץ שגויה."
 
 #. Show warning
 #: ../plugins/gnome-shell-search-provider/plugin.c:133
 #: ../plugins/gnome-shell-search-provider/plugin.c:285
 #, c-format
 msgid "Could not register Gnome-Shell search provider at file '%s': %s"
-msgstr ""
+msgstr "לא יכול לרשום ספק חיפוש מעטפת Gnome בקובץ '%s':%s"
 
 #. Show error message
 #: ../plugins/gnome-shell-search-provider/plugin.c:229
 #: ../plugins/gnome-shell-search-provider/plugin.c:303
 #, c-format
 msgid "Could not scan for gnome-shell search provider at '%s': %s"
-msgstr ""
+msgstr "לא יכול לסרוק עבור ספק חיפוש מעטפת Gnome ב'%s':%s"
 
 #. Just print a warning but do not fail. We will just not get notified
 #. * about changes at path where the providers are stored.
@@ -4500,7 +4534,7 @@ msgstr ""
 #, c-format
 msgid ""
 "Unable to create file monitor for Gnome-Shell search providers at '%s': %s"
-msgstr ""
+msgstr "לא יכול ליצור עוקב קבצים עבור ספקי חיפוש מעטפת Gnome ב'%s':%s"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
@@ -4508,59 +4542,59 @@ msgstr "ספק חיפוש של Gnome-Shell"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr ""
+msgstr "משתמש בספקי חיפוש מעטפת Gnome כמקור לחיפושים"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:231
 msgid "Activation corner"
-msgstr ""
+msgstr "פינת אקטיבציה"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:232
 msgid ""
 "The hot corner where to trigger the application to suspend or to resume"
-msgstr ""
+msgstr "הפינה החמה בה ניתן לגרום לישום להיות מושעה או להמשיך"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:239
 msgid "Activation radius"
-msgstr ""
+msgstr "רדיוס אקטיבציה"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:240
 msgid "The radius around hot corner where the pointer must be inside"
-msgstr ""
+msgstr "הרדיוס מסביב לפינה החמה בו הסמן צריך להיות בפנים"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:247
 msgid "Activation duration"
-msgstr ""
+msgstr "משך אקטיבציה"
 
 #: ../plugins/hot-corner/hot-corner-settings.c:248
 msgid ""
 "The time in milliseconds the pointer must stay inside the radius at hot "
 "corner to trigger"
-msgstr ""
+msgstr "הזמן במילישניות שבו הסמן צריך להיות בתוך הרדיוס של הפינה החמה להפעלה"
 
 #: ../plugins/hot-corner/hot-corner.c:161
 msgid "Could not get pointer to determine pointer position"
-msgstr ""
+msgstr "לא יכול לקבל סמן לקביעת מיקום סמן"
 
 #: ../plugins/hot-corner/hot-corner.c:389
 msgid ""
 "Disabling hot-corner plugin because the root window to determine pointer "
 "position could not be found."
-msgstr ""
+msgstr "כיבוי תוסף פינה חמה כי לא ניתן למצוא חלון בסיס לקביעת מיקום סמן."
 
 #: ../plugins/hot-corner/hot-corner.c:405
 msgid ""
 "Disabling hot-corner plugin because the device manager to determine pointer "
 "position could not be found."
-msgstr ""
+msgstr "כיבוי תוסף פינה חמה כי לא ניתן למצוא מנהל התקנים לקביעת מיקום סמן."
 
 #: ../plugins/hot-corner/hot-corner.c:410
 msgid ""
 "Disabling hot-corner plugin because application is not running as daemon."
-msgstr ""
+msgstr "כיבוי תוסף פינה חמה כי ישום לא פועל כדמון."
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
 msgid "ms"
@@ -4569,44 +4603,44 @@ msgstr "מ״ש"
 #: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
 #: ../settings/general.c:383
 msgid "Immediately"
-msgstr ""
+msgstr "מיד"
 
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:304
 msgid "Activation corner:"
-msgstr ""
+msgstr "פינת הפעלה:"
 
 #. Add widget to choose activation radius
 #: ../plugins/hot-corner/plugin.c:340
 msgid "Radius of activation corner:"
-msgstr ""
+msgstr "רדיוס פינת הפעלה:"
 
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:358
 msgid "Timeout to activate:"
-msgstr ""
+msgstr "זמן קצוב להפעלה:"
 
 #: ../plugins/hot-corner/plugin.c:418
 msgid "Hot corner"
-msgstr ""
+msgstr "פינה חמה"
 
 #: ../plugins/hot-corner/plugin.c:419
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
-msgstr ""
+msgstr "מפעיל xfdashboard כאשר סמן מוזז לפינה מוגדרת של המסך"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr ""
+msgstr "סגירת חלון קליק אמצעי"
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
-msgstr ""
+msgstr "סוגר חלונות בתצוגת חלונות ע\"י קליק אמצעי"
 
 #: ../settings/general.c:120
 msgid "Do nothing"
-msgstr ""
+msgstr "אל תעשה דבר"
 
 #: ../settings/general.c:121
 msgid "Windows view"
@@ -4635,27 +4669,27 @@ msgstr "שניות"
 #: ../settings/general.c:732 ../settings/plugins.c:1178
 #: ../settings/themes.c:907
 msgid "Builder"
-msgstr ""
+msgstr "בונה"
 
 #: ../settings/general.c:733 ../settings/plugins.c:1179
 #: ../settings/themes.c:908
 msgid "The initialized GtkBuilder object where to set up themes tab from"
-msgstr ""
+msgstr "אובייקט GtkBuilder מותחל בו נקבעת לשונית ערכות נושא"
 
 #: ../settings/plugins.c:222
 #, c-format
 msgid "Configure plugin: %s"
-msgstr ""
+msgstr "הגדר תוסף:%s"
 
 #: ../settings/plugins.c:591
 msgid "Could not set list of enabled plugins!"
-msgstr ""
+msgstr "לא יכול לקבוע רשימה של תוספים מופעלים!"
 
 #. Show error message
 #: ../settings/plugins.c:807
 #, c-format
 msgid "Could not load plugin '%s' from '%s': %s"
-msgstr ""
+msgstr "לא יכול לטעון תוסף '%s' מ'%s':%s"
 
 #. Create error message to store in list
 #: ../settings/plugins.c:813
@@ -4665,6 +4699,9 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
+"<b>תוסף לא ניתן לטעינה.</b>\n"
+"\n"
+"%s"
 
 #: ../settings/themes.c:781
 msgid "Theme"
@@ -4685,7 +4722,7 @@ msgstr "מידע גרסה"
 #. Initialize GTK+
 #: ../settings/main.c:57
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../settings/main.c:61
 #, c-format
@@ -4700,7 +4737,7 @@ msgstr ""
 #: ../settings/main.c:84
 #, c-format
 msgid "Failed to initialize xfconf: %s"
-msgstr ""
+msgstr "נכשל להתחיל את xfconf:%s"
 
 #: ../settings/main.c:96
 msgid "Could not create the settings dialog."
@@ -4709,31 +4746,31 @@ msgstr "לא ניתן ליצור את דו־שיח הגדרות."
 #: ../settings/settings.c:144
 #, c-format
 msgid "Could not find UI file '%s'."
-msgstr ""
+msgstr "לא יכול למצוא קובץ UI '%s'."
 
 #: ../settings/settings.c:158
 #, c-format
 msgid "Could not load UI resources from '%s': %s"
-msgstr ""
+msgstr "לא יכול לטעון משאבי UI מ'%s':%s"
 
 #: ../settings/settings.c:319 ../settings/settings.c:353
 msgid "Could not get dialog from UI file."
-msgstr ""
+msgstr "לא יכול לקבל דו שיח מקובץ UI."
 
 #: ../xfdashboard/main.c:174
 msgid "Cannot restart application: Failed to quit running instance"
-msgstr ""
+msgstr "לא יכול לאתחל ישום: נכשל להפסיק מופע פועל"
 
 #: ../xfdashboard/main.c:237
 msgid "Initializing clutter failed!"
-msgstr ""
+msgstr "התחלת העומס נכשלה!"
 
 #: ../xfdashboard/main.c:248 ../xfdashboard/main.c:271
 msgid "Failed to create application instance"
-msgstr ""
+msgstr "נכשל ליצור מופע ישום "
 
 #: ../xfdashboard/main.c:280
 msgid ""
 "Could not restart application because existing instance seems still to be "
 "running."
-msgstr ""
+msgstr "לא יכול לאתחל ישום כי נראה שמופע קיים עדיין פועל."
