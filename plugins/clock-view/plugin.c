@@ -143,7 +143,7 @@ static void _plugin_configure_setup_color_button(GtkColorButton *inButton,
 	mapping=g_new0(PluginWidgetSettingsMap,1);
 	if(!mapping)
 	{
-		g_critical(_("Cannot allocate memory for mapping"));
+		g_critical("Cannot allocate memory for mapping");
 		return;
 	}
 

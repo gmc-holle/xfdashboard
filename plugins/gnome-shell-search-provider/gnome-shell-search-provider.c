@@ -208,7 +208,7 @@ static gboolean _xfdashboard_gnome_shell_search_provider_update_from_file(Xfdash
 		else
 		{
 			/* Show error message */
-			g_warning(_("Unknown application '%s' for Gnome-Shell search provider '%s'"),
+			g_warning("Unknown application '%s' for Gnome-Shell search provider '%s'",
 						desktopID,
 						priv->gnomeShellID);
 		}
@@ -286,9 +286,9 @@ static void _xfdashboard_gnome_shell_search_provider_on_data_file_changed(Xfdash
 		if(!_xfdashboard_gnome_shell_search_provider_update_from_file(self, &error))
 		{
 			/* Show warning message */
-			g_warning(_("Cannot update information about Gnome-Shell search provider '%s': %s"),
+			g_warning("Cannot update information about Gnome-Shell search provider '%s': %s",
 						priv->gnomeShellID,
-						(error && error->message) ? error->message : _("Unknown error"));
+						(error && error->message) ? error->message : "Unknown error");
 
 			/* Release allocated resources */
 			if(error)
@@ -371,9 +371,9 @@ static void _xfdashboard_gnome_shell_search_provider_initialize(XfdashboardSearc
 			else
 			{
 				/* Show warning message */
-				g_warning(_("Cannot initialize file monitor to detect changes for Gnome-Shell search provider '%s': %s"),
+				g_warning("Cannot initialize file monitor to detect changes for Gnome-Shell search provider '%s': %s",
 							priv->gnomeShellID,
-							(error && error->message) ? error->message : _("Unknown error"));
+							(error && error->message) ? error->message : "Unknown error");
 
 				/* Release allocated resources */
 				if(error)
@@ -388,9 +388,9 @@ static void _xfdashboard_gnome_shell_search_provider_initialize(XfdashboardSearc
 	if(!_xfdashboard_gnome_shell_search_provider_update_from_file(self, &error))
 	{
 		/* Show warning message */
-		g_warning(_("Cannot load information about Gnome-Shell search provider '%s': %s"),
+		g_warning("Cannot load information about Gnome-Shell search provider '%s': %s",
 					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error)
@@ -470,9 +470,9 @@ static XfdashboardSearchResultSet* _xfdashboard_gnome_shell_search_provider_get_
 	if(!proxy)
 	{
 		/* Show error message */
-		g_warning(_("Could not create dbus connection for Gnome-Shell search provider '%s': %s"),
+		g_warning("Could not create dbus connection for Gnome-Shell search provider '%s': %s",
 					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);
@@ -543,9 +543,9 @@ static XfdashboardSearchResultSet* _xfdashboard_gnome_shell_search_provider_get_
 	if(!proxyResult)
 	{
 		/* Show error message */
-		g_warning(_("Could get result set from dbus connection for Gnome-Shell search provider '%s': %s"),
+		g_warning("Could get result set from dbus connection for Gnome-Shell search provider '%s': %s",
 					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);
@@ -637,9 +637,9 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 	if(!proxy)
 	{
 		/* Show error message */
-		g_warning(_("Could not create dbus connection for Gnome-Shell search provider '%s': %s"),
+		g_warning("Could not create dbus connection for Gnome-Shell search provider '%s': %s",
 					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);
@@ -660,10 +660,10 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 	if(!proxyResult)
 	{
 		/* Show error message */
-		g_warning(_("Could get meta data for '%s' from dbus connection for Gnome-Shell search provider '%s': %s"),
+		g_warning("Could get meta data for '%s' from dbus connection for Gnome-Shell search provider '%s': %s",
 					identifier[0],
 					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);
@@ -726,11 +726,11 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 				if(!icon)
 				{
 					/* Show error message */
-					g_warning(_("Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"),
+					g_warning("Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s",
 								identifier[0],
 								"icon",
 								priv->gnomeShellID,
-								_("Deserialization failed"));
+								"Deserialization failed");
 				}
 
 				/* Release data extracted for icon */
@@ -745,11 +745,11 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 				if(!icon)
 				{
 					/* Show error message */
-					g_warning(_("Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"),
+					g_warning("Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s",
 								identifier[0],
 								"gicon",
 								priv->gnomeShellID,
-								(error && error->message) ? error->message : _("Unknown error"));
+								(error && error->message) ? error->message : "Unknown error");
 
 					/* Release allocated resources */
 					if(error)
@@ -770,11 +770,11 @@ static ClutterActor* _xfdashboard_gnome_shell_search_provider_create_result_acto
 				if(!clutter_image_set_data(CLUTTER_IMAGE(iconImage), iconData, iconHasAlpha ? COGL_PIXEL_FORMAT_RGBA_8888 : COGL_PIXEL_FORMAT_RGB_888, iconWidth, iconHeight, iconRowstride, &error))
 				{
 					/* Show error message */
-					g_warning(_("Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s"),
+					g_warning("Could get icon for '%s' of key '%s' for Gnome-Shell search provider '%s': %s",
 								identifier[0],
 								"icon-data",
 								priv->gnomeShellID,
-								(error && error->message) ? error->message : _("Unknown error"));
+								(error && error->message) ? error->message : "Unknown error");
 
 					/* Release allocated resources */
 					if(error)
@@ -870,9 +870,9 @@ static gboolean _xfdashboard_gnome_shell_search_provider_activate_result(Xfdashb
 	if(!proxy)
 	{
 		/* Show error message */
-		g_warning(_("Could not create dbus connection for Gnome-Shell search provider '%s': %s"),
+		g_warning("Could not create dbus connection for Gnome-Shell search provider '%s': %s",
 					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);
@@ -894,10 +894,10 @@ static gboolean _xfdashboard_gnome_shell_search_provider_activate_result(Xfdashb
 	if(!proxyResult)
 	{
 		/* Show error message */
-		g_warning(_("Could activate result item '%s' over dbus connection for Gnome-Shell search provider '%s': %s"),
+		g_warning("Could activate result item '%s' over dbus connection for Gnome-Shell search provider '%s': %s",
 					identifier,
 					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);
@@ -944,9 +944,9 @@ static gboolean _xfdashboard_gnome_shell_search_provider_launch_search(Xfdashboa
 	if(!proxy)
 	{
 		/* Show error message */
-		g_warning(_("Could not create dbus connection for Gnome-Shell search provider '%s': %s"),
+		g_warning("Could not create dbus connection for Gnome-Shell search provider '%s': %s",
 					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);
@@ -967,9 +967,9 @@ static gboolean _xfdashboard_gnome_shell_search_provider_launch_search(Xfdashboa
 	if(!proxyResult)
 	{
 		/* Show error message */
-		g_warning(_("Could not launch search over dbus connection for Gnome-Shell search provider '%s': %s"),
+		g_warning("Could not launch search over dbus connection for Gnome-Shell search provider '%s': %s",
 					priv->gnomeShellID,
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);

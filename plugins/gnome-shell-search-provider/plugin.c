@@ -65,7 +65,7 @@ static gchar* _xfdashboard_gnome_shell_search_provider_plugin_get_provider_name_
 		g_set_error_literal(outError,
 							G_IO_ERROR,
 							G_IO_ERROR_INVALID_FILENAME,
-							_("Gnome-Shell search provider filename has wrong file extension."));
+							"Gnome-Shell search provider filename has wrong file extension.");
 
 		return(NULL);
 	}
@@ -130,9 +130,9 @@ static void _xfdashboard_gnome_shell_search_provider_plugin_on_file_monitor_chan
 			else
 			{
 				/* Show warning */
-				g_warning(_("Could not register Gnome-Shell search provider at file '%s': %s"),
+				g_warning("Could not register Gnome-Shell search provider at file '%s': %s",
 							filePath,
-							(error && error->message) ? error->message : _("Unknown error"));
+							(error && error->message) ? error->message : "Unknown error");
 			}
 
 		/* Release allocated resources */
@@ -226,9 +226,9 @@ static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 	if(!enumerator)
 	{
 		/* Show error message */
-		g_warning(_("Could not scan for gnome-shell search provider at '%s': %s"),
+		g_warning("Could not scan for gnome-shell search provider at '%s': %s",
 					GNOME_SHELL_PROVIDERS_PATH,
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);
@@ -282,9 +282,9 @@ static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 				else
 				{
 					/* Show warning */
-					g_warning(_("Could not register Gnome-Shell search provider at file '%s': %s"),
+					g_warning("Could not register Gnome-Shell search provider at file '%s': %s",
 								infoFilename,
-								(infoError && infoError->message) ? infoError->message : _("Unknown error"));
+								(infoError && infoError->message) ? infoError->message : "Unknown error");
 				}
 
 			/* Release allocated resources */
@@ -300,9 +300,9 @@ static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 	if(error)
 	{
 		/* Show error message */
-		g_warning(_("Could not scan for gnome-shell search provider at '%s': %s"),
+		g_warning("Could not scan for gnome-shell search provider at '%s': %s",
 					GNOME_SHELL_PROVIDERS_PATH,
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);
@@ -331,9 +331,9 @@ static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 			/* Just print a warning but do not fail. We will just not get notified
 			 * about changes at path where the providers are stored.
 			 */
-			g_warning(_("Unable to create file monitor for Gnome-Shell search providers at '%s': %s"),
+			g_warning("Unable to create file monitor for Gnome-Shell search providers at '%s': %s",
 						GNOME_SHELL_PROVIDERS_PATH,
-						error ? error->message : _("Unknown error"));
+						error ? error->message : "Unknown error");
 
 			/* Release allocated resources */
 			if(error)

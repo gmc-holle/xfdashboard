@@ -158,7 +158,7 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 #endif
 	if(!pointerDevice)
 	{
-		g_critical(_("Could not get pointer to determine pointer position"));
+		g_critical("Could not get pointer to determine pointer position");
 		return(G_SOURCE_CONTINUE);
 	}
 
@@ -386,7 +386,7 @@ void xfdashboard_hot_corner_init(XfdashboardHotCorner *self)
 		}
 			else
 			{
-				g_critical(_("Disabling hot-corner plugin because the root window to determine pointer position could not be found."));
+				g_critical("Disabling hot-corner plugin because the root window to determine pointer position could not be found.");
 			}
 
 #if GTK_CHECK_VERSION(3, 20, 0)
@@ -402,12 +402,12 @@ void xfdashboard_hot_corner_init(XfdashboardHotCorner *self)
 		}
 			else
 			{
-				g_critical(_("Disabling hot-corner plugin because the device manager to determine pointer position could not be found."));
+				g_critical("Disabling hot-corner plugin because the device manager to determine pointer position could not be found.");
 			}
 	}
 		else
 		{
-			g_warning(_("Disabling hot-corner plugin because application is not running as daemon."));
+			g_warning("Disabling hot-corner plugin because application is not running as daemon.");
 		}
 }
 

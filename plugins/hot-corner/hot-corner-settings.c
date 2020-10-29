@@ -228,24 +228,24 @@ void xfdashboard_hot_corner_settings_class_init(XfdashboardHotCornerSettingsClas
 	/* Define properties */
 	XfdashboardHotCornerSettingsProperties[PROP_ACTIVATION_CORNER]=
 		g_param_spec_enum("activation-corner",
-							_("Activation corner"),
-							_("The hot corner where to trigger the application to suspend or to resume"),
+							"Activation corner",
+							"The hot corner where to trigger the application to suspend or to resume",
 							XFDASHBOARD_TYPE_HOT_CORNER_SETTINGS_ACTIVATION_CORNER,
 							DEFAULT_ACTIVATION_CORNER,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardHotCornerSettingsProperties[PROP_ACTIVATION_RADIUS]=
 		g_param_spec_int("activation-radius",
-							_("Activation radius"),
-							_("The radius around hot corner where the pointer must be inside"),
+							"Activation radius",
+							"The radius around hot corner where the pointer must be inside",
 							0, G_MAXINT,
 							DEFAULT_ACTIVATION_RADIUS,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardHotCornerSettingsProperties[PROP_ACTIVATION_DURATION]=
 		g_param_spec_uint64("activation-duration",
-							_("Activation duration"),
-							_("The time in milliseconds the pointer must stay inside the radius at hot corner to trigger"),
+							"Activation duration",
+							"The time in milliseconds the pointer must stay inside the radius at hot corner to trigger",
 							0, G_MAXUINT64,
 							DEFAULT_ACTIVATION_DURATION,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);

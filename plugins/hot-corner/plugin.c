@@ -106,7 +106,7 @@ static PluginWidgetSettingsMap* _plugin_widget_settings_map_bind(GtkWidget *inWi
 	mapping=g_new0(PluginWidgetSettingsMap, 1);
 	if(!mapping)
 	{
-		g_critical(_("Cannot allocate memory for mapping"));
+		g_critical("Cannot allocate memory for mapping");
 		return(NULL);
 	}
 

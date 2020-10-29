@@ -225,29 +225,29 @@ void xfdashboard_clock_view_settings_class_init(XfdashboardClockViewSettingsClas
 	/* Define properties */
 	XfdashboardClockViewSettingsProperties[PROP_HOUR_COLOR]=
 		clutter_param_spec_color("hour-color",
-									_("Hour color"),
-									_("Color to draw the hour hand with"),
+									"Hour color",
+									"Color to draw the hour hand with",
 									CLUTTER_COLOR_LightChameleon,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardClockViewSettingsProperties[PROP_MINUTE_COLOR]=
 		clutter_param_spec_color("minute-color",
-									_("Minute color"),
-									_("Color to draw the minute hand with"),
+									"Minute color",
+									"Color to draw the minute hand with",
 									CLUTTER_COLOR_LightChameleon,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardClockViewSettingsProperties[PROP_SECOND_COLOR]=
 		clutter_param_spec_color("second-color",
-									_("Second color"),
-									_("Color to draw the second hand with"),
+									"Second color",
+									"Color to draw the second hand with",
 									CLUTTER_COLOR_White,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardClockViewSettingsProperties[PROP_BACKGROUOND_COLOR]=
 		clutter_param_spec_color("background-color",
-									_("Background color"),
-									_("Color to draw the circle with that holds the second hand"),
+									"Background color",
+									"Color to draw the circle with that holds the second hand",
 									CLUTTER_COLOR_Blue,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
