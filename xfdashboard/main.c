@@ -171,7 +171,7 @@ static gboolean _restart(XfdashboardApplication *inApplication)
 	/* Show warning if timeout had been reached */
 	if(!restartData.appHasQuitted)
 	{
-		g_warning(_("Cannot restart application: Failed to quit running instance"));
+		g_warning("Cannot restart application: Failed to quit running instance");
 	}
 
 	/* Destroy DBUS watcher */
@@ -234,7 +234,7 @@ int main(int argc, char **argv)
 	gtk_init(&argc, &argv);
 	if(!clutter_init(&argc, &argv))
 	{
-		g_error(_("Initializing clutter failed!"));
+		g_error("Initializing clutter failed!");
 		return(1);
 	}
 
@@ -245,7 +245,7 @@ int main(int argc, char **argv)
 	app=xfdashboard_application_get_default();
 	if(!app)
 	{
-		g_warning(_("Failed to create application instance"));
+		g_warning("Failed to create application instance");
 		return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
 	}
 
@@ -268,7 +268,7 @@ int main(int argc, char **argv)
 			app=xfdashboard_application_get_default();
 			if(!app)
 			{
-				g_warning(_("Failed to create application instance"));
+				g_warning("Failed to create application instance");
 				return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
 			}
 
@@ -277,7 +277,7 @@ int main(int argc, char **argv)
 		}
 			else
 			{
-				g_warning(_("Could not restart application because existing instance seems still to be running."));
+				g_warning("Could not restart application because existing instance seems still to be running.");
 			}
 	}
 
