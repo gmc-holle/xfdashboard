@@ -189,7 +189,7 @@ static ClutterActor* _xfdashboard_quicklaunch_get_actor_for_appinfo(XfdashboardQ
 	desktopFile=xfdashboard_desktop_app_info_get_file(XFDASHBOARD_DESKTOP_APP_INFO(inAppInfo));
 	if(!desktopFile)
 	{
-		g_critical(_("Could not check for duplicates for invalid %s object so assume no actor exists"),
+		g_critical("Could not check for duplicates for invalid %s object so assume no actor exists",
 					G_OBJECT_TYPE_NAME(inAppInfo));
 		return(NULL);
 	}
@@ -252,7 +252,7 @@ static gboolean _xfdashboard_quicklaunch_has_favourite_appinfo(XfdashboardQuickl
 	desktopFile=xfdashboard_desktop_app_info_get_file(XFDASHBOARD_DESKTOP_APP_INFO(inAppInfo));
 	if(!desktopFile)
 	{
-		g_critical(_("Could not check for duplicates for invalid %s object so assume it exists"),
+		g_critical("Could not check for duplicates for invalid %s object so assume it exists",
 					G_OBJECT_TYPE_NAME(inAppInfo));
 		return(TRUE);
 	}
@@ -275,7 +275,7 @@ static gboolean _xfdashboard_quicklaunch_has_favourite_appinfo(XfdashboardQuickl
 #if DEBUG
 			if(!G_VALUE_HOLDS_STRING(value))
 			{
-				g_critical(_("Value at %p of type %s is not a %s so assume this desktop application item exists"),
+				g_critical("Value at %p of type %s is not a %s so assume this desktop application item exists",
 							value,
 							G_VALUE_TYPE_NAME(value),
 							g_type_name(G_TYPE_STRING));
@@ -353,9 +353,9 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 								xfdashboard_application_button_get_display_name(button),
 								_("No information available for application"));
 
-			g_warning(_("Launching application '%s' failed: %s"),
+			g_warning("Launching application '%s' failed: %s",
 						xfdashboard_application_button_get_display_name(button),
-						_("No information available for application"));
+						"No information available for application");
 
 			return;
 		}
@@ -401,9 +401,9 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 								xfdashboard_application_button_get_display_name(button),
 								_("No windows to activate for application"));
 
-			g_warning(_("Launching application '%s' failed: %s"),
+			g_warning("Launching application '%s' failed: %s",
 						xfdashboard_application_button_get_display_name(button),
-						_("No windows to activate for application"));
+						"No windows to activate for application");
 
 			return;
 		}
@@ -458,9 +458,9 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(Xfdashb
 								_("Launching application '%s' failed: %s"),
 								g_app_info_get_display_name(appInfo),
 								(error && error->message) ? error->message : _("unknown error"));
-			g_warning(_("Launching application '%s' failed: %s"),
+			g_warning("Launching application '%s' failed: %s",
 						g_app_info_get_display_name(appInfo),
-						(error && error->message) ? error->message : _("unknown error"));
+						(error && error->message) ? error->message : "unknown error");
 			if(error) g_error_free(error);
 		}
 			else
@@ -512,7 +512,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_remove_from_fa
 
 	if(!actor)
 	{
-		g_critical(_("Cannot find quicklaunch for application button."));
+		g_critical("Cannot find quicklaunch for application button.");
 		return;
 	}
 
@@ -579,7 +579,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_add_to_favouri
 
 	if(!actor)
 	{
-		g_critical(_("Cannot find quicklaunch for application button."));
+		g_critical("Cannot find quicklaunch for application button.");
 		return;
 	}
 
@@ -656,7 +656,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu(XfdashboardQuicklau
 		appInfo=xfdashboard_application_button_get_app_info(appButton);
 		if(!appInfo)
 		{
-			g_critical(_("No application information available for clicked application button."));
+			g_critical("No application information available for clicked application button.");
 			return;
 		}
 
@@ -2747,7 +2747,7 @@ static gboolean _xfdashboard_quicklaunch_focusable_set_selection(XfdashboardFocu
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("%s is a child of %s and cannot be selected at %s"),
+		g_warning("%s is a child of %s and cannot be selected at %s",
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
 					G_OBJECT_TYPE_NAME(self));
@@ -2803,7 +2803,7 @@ static ClutterActor* _xfdashboard_quicklaunch_focusable_find_selection(Xfdashboa
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("Cannot lookup selection target at %s because %s is a child of %s"),
+		g_warning("Cannot lookup selection target at %s because %s is a child of %s",
 					G_OBJECT_TYPE_NAME(self),
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>");
@@ -2892,7 +2892,7 @@ static ClutterActor* _xfdashboard_quicklaunch_focusable_find_selection(Xfdashboa
 		default:
 			{
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-				g_critical(_("Focusable object %s does not handle selection direction of type %s."),
+				g_critical("Focusable object %s does not handle selection direction of type %s.",
 							G_OBJECT_TYPE_NAME(self),
 							valueName);
 				g_free(valueName);
@@ -2932,7 +2932,7 @@ static gboolean _xfdashboard_quicklaunch_focusable_activate_selection(Xfdashboar
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("%s is a child of %s and cannot be activated at %s"),
+		g_warning("%s is a child of %s and cannot be activated at %s",
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
 					G_OBJECT_TYPE_NAME(self));
@@ -3098,31 +3098,31 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 	/* Define properties */
 	XfdashboardQuicklaunchProperties[PROP_FAVOURITES]=
 		g_param_spec_boxed("favourites",
-							_("Favourites"),
-							_("An array of strings pointing to desktop files shown as icons"),
+							"Favourites",
+							"An array of strings pointing to desktop files shown as icons",
 							XFDASHBOARD_TYPE_POINTER_ARRAY,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardQuicklaunchProperties[PROP_NORMAL_ICON_SIZE]=
 		g_param_spec_float("normal-icon-size",
-								_("Normal icon size"),
-								_("Unscale size of icon"),
+								"Normal icon size",
+								"Unscale size of icon",
 								1.0, G_MAXFLOAT,
 								1.0f,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardQuicklaunchProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-								_("Spacing"),
-								_("The spacing between children"),
+								"Spacing",
+								"The spacing between children",
 								0.0, G_MAXFLOAT,
 								0.0,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardQuicklaunchProperties[PROP_ORIENTATION]=
 		g_param_spec_enum("orientation",
-							_("Orientation"),
-							_("The orientation to layout children"),
+							"Orientation",
+							"The orientation to layout children",
 							CLUTTER_TYPE_ORIENTATION,
 							CLUTTER_ORIENTATION_VERTICAL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
@@ -3292,7 +3292,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->appsButton);
 
 	/* Next add trash button to box but initially hidden and register as drop target */
-	priv->trashButton=xfdashboard_toggle_button_new_with_text( _("Remove"));
+	priv->trashButton=xfdashboard_toggle_button_new_with_text(_("Remove"));
 	clutter_actor_set_name(priv->trashButton, "trash-button");
 	clutter_actor_hide(priv->trashButton);
 	xfdashboard_label_set_icon_size(XFDASHBOARD_LABEL(priv->trashButton), priv->normalIconSize);

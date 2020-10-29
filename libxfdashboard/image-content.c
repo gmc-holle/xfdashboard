@@ -158,7 +158,7 @@ static void _xfdashboard_image_content_destroy_cache(void)
 
 	/* Destroy cache hashtable */
 	cacheSize=g_hash_table_size(_xfdashboard_image_content_cache);
-	if(cacheSize>0) g_warning(_("Destroying image cache still containing %d images."), cacheSize);
+	if(cacheSize>0) g_warning("Destroying image cache still containing %d images.", cacheSize);
 #ifdef DEBUG
 	if(cacheSize>0)
 	{
@@ -240,7 +240,9 @@ static void _xfdashboard_image_content_store_in_cache(XfdashboardImageContent *s
 	/* Set key */
 	if(priv->key)
 	{
-		g_critical(_("Image has already key '%s' set and will be replaced with '%s'"), priv->key, inKey);
+		g_critical("Image has already key '%s' set and will be replaced with '%s'",
+					priv->key,
+					inKey);
 		g_free(priv->key);
 		priv->key=NULL;
 	}
@@ -251,7 +253,7 @@ static void _xfdashboard_image_content_store_in_cache(XfdashboardImageContent *s
 	{
 		ClutterContent		*content;
 
-		g_critical(_("An image with key '%s' is already cache and will be replaced."), priv->key);
+		g_critical("An image with key '%s' is already cache and will be replaced.", priv->key);
 
 		/* Unreference current cached image */
 		content=CLUTTER_CONTENT(g_hash_table_lookup(_xfdashboard_image_content_cache, inKey));
@@ -312,9 +314,9 @@ static void _xfdashboard_image_content_loading_async_callback(GObject *inSource,
 									gdk_pixbuf_get_rowstride(pixbuf),
 									&error))
 		{
-			g_warning(_("Failed to load image data into content for key '%s': %s"),
+			g_warning("Failed to load image data into content for key '%s': %s",
 						priv->key ? priv->key : "<nil>",
-						error ? error->message : _("Unknown error"));
+						error ? error->message : "Unknown error");
 			if(error)
 			{
 				g_error_free(error);
@@ -328,9 +330,9 @@ static void _xfdashboard_image_content_loading_async_callback(GObject *inSource,
 	}
 		else
 		{
-			g_warning(_("Failed to load image for key '%s': %s"),
+			g_warning("Failed to load image for key '%s': %s",
 						priv->key ? priv->key : "<nil>",
-						error ? error->message : _("Unknown error"));
+						error ? error->message : "Unknown error");
 			if(error)
 			{
 				g_error_free(error);
@@ -411,7 +413,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 	{
 		GtkIconInfo						*iconInfo;
 
-		g_warning(_("Icon file '%s' does not exist - trying fallback icon '%s'"),
+		g_warning("Icon file '%s' does not exist - trying fallback icon '%s'",
 					priv->iconName,
 					priv->missingIconName);
 
@@ -426,7 +428,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 
 		if(!iconInfo)
 		{
-			g_error(_("Could not load fallback icon for file '%s'"), priv->iconName);
+			g_error("Could not load fallback icon for file '%s'", priv->iconName);
 			_xfdashboard_image_content_set_empty_image(self);
 			g_free(lookupFilename);
 			return;
@@ -449,9 +451,9 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 										gdk_pixbuf_get_rowstride(iconPixbuf),
 										&error))
 			{
-				g_warning(_("Failed to load image data into content for icon '%s': %s"),
+				g_warning("Failed to load image data into content for icon '%s': %s",
 							priv->iconName,
-							error ? error->message : _("Unknown error"));
+							error ? error->message : "Unknown error");
 				if(error)
 				{
 					g_error_free(error);
@@ -487,10 +489,10 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 		stream=G_INPUT_STREAM(g_file_read(file, NULL, &error));
 		if(!stream)
 		{
-			g_warning(_("Could not create stream for file '%s' of icon '%s': %s"),
+			g_warning("Could not create stream for file '%s' of icon '%s': %s",
 						filename,
 						priv->iconName,
-						error ? error->message : _("Unknown error"));
+						error ? error->message : "Unknown error");
 
 			if(error!=NULL)
 			{
@@ -653,7 +655,12 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 													0);
 #endif
 
-				if(!iconInfo) g_warning(_("Could not lookup icon name '%s' for icon '%s'"), iconName, priv->iconName);
+				if(!iconInfo)
+				{
+					g_warning("Could not lookup icon name '%s' for icon '%s'",
+								iconName,
+								priv->iconName);
+				}
 					else
 					{
 						XFDASHBOARD_DEBUG(self, IMAGES,
@@ -681,7 +688,7 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 	/* If we got no icon info we try to fallback icon next */
 	if(!iconInfo)
 	{
-		g_warning(_("Could not lookup themed icon '%s' - trying fallback icon '%s'"),
+		g_warning("Could not lookup themed icon '%s' - trying fallback icon '%s'",
 					priv->iconName,
 					priv->missingIconName);
 
@@ -694,7 +701,9 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 	/* If we still got no icon info then we cannot load icon at all */
 	if(!iconInfo)
 	{
-		g_warning(_("Could not lookup fallback icon '%s' for icon '%s'"), priv->missingIconName, priv->iconName);
+		g_warning("Could not lookup fallback icon '%s' for icon '%s'",
+					priv->missingIconName,
+					priv->iconName);
 		return;
 	}
 
@@ -715,9 +724,9 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 									gdk_pixbuf_get_rowstride(iconPixbuf),
 									&error))
 		{
-			g_warning(_("Failed to load image data into content for icon '%s': %s"),
+			g_warning("Failed to load image data into content for icon '%s': %s",
 						priv->iconName,
-						error ? error->message : _("Unknown error"));
+						error ? error->message : "Unknown error");
 			if(error)
 			{
 				g_error_free(error);
@@ -746,10 +755,10 @@ static void _xfdashboard_image_content_load_from_icon_name(XfdashboardImageConte
 			stream=G_INPUT_STREAM(g_file_read(file, NULL, &error));
 			if(!stream)
 			{
-				g_warning(_("Could not create stream for icon file %s of icon '%s': %s"),
+				g_warning("Could not create stream for icon file %s of icon '%s': %s",
 							filename,
 							priv->iconName,
-							error ? error->message : _("Unknown error"));
+							error ? error->message : "Unknown error");
 
 				if(error!=NULL)
 				{
@@ -819,7 +828,7 @@ static void _xfdashboard_image_content_load_from_gicon(XfdashboardImageContent *
 	/* If we got no icon info we try to fallback icon next */
 	if(!iconInfo)
 	{
-		g_warning(_("Could not lookup gicon '%s'"), g_icon_to_string(priv->gicon));
+		g_warning("Could not lookup gicon '%s'", g_icon_to_string(priv->gicon));
 
 		iconInfo=gtk_icon_theme_lookup_icon(priv->iconTheme,
 											priv->missingIconName,
@@ -830,7 +839,7 @@ static void _xfdashboard_image_content_load_from_gicon(XfdashboardImageContent *
 	/* If we still got no icon info then we cannot load icon at all */
 	if(!iconInfo)
 	{
-		g_error(_("Could not lookup fallback icon for gicon '%s'"), g_icon_to_string(priv->gicon));
+		g_error("Could not lookup fallback icon for gicon '%s'", g_icon_to_string(priv->gicon));
 		return;
 	}
 
@@ -851,9 +860,9 @@ static void _xfdashboard_image_content_load_from_gicon(XfdashboardImageContent *
 									gdk_pixbuf_get_rowstride(iconPixbuf),
 									&error))
 		{
-			g_warning(_("Failed to load image data into content for gicon '%s': %s"),
+			g_warning("Failed to load image data into content for gicon '%s': %s",
 						g_icon_to_string(priv->gicon),
-						error ? error->message : _("Unknown error"));
+						error ? error->message : "Unknown error");
 			if(error)
 			{
 				g_error_free(error);
@@ -882,10 +891,10 @@ static void _xfdashboard_image_content_load_from_gicon(XfdashboardImageContent *
 			stream=G_INPUT_STREAM(g_file_read(file, NULL, &error));
 			if(!stream)
 			{
-				g_warning(_("Could not create stream for file %s of gicon '%s': %s"),
+				g_warning("Could not create stream for file %s of gicon '%s': %s",
 							filename,
 							g_icon_to_string(priv->gicon),
-							error ? error->message : _("Unknown error"));
+							error ? error->message : "Unknown error");
 
 				if(error!=NULL)
 				{
@@ -944,7 +953,7 @@ static void _xfdashboard_image_content_on_icon_theme_changed(XfdashboardImageCon
 	switch(priv->type)
 	{
 		case XFDASHBOARD_IMAGE_TYPE_NONE:
-			g_warning(_("Cannot load image '%s' without type"), priv->key);
+			g_warning("Cannot load image '%s' without type", priv->key);
 			break;
 
 		case XFDASHBOARD_IMAGE_TYPE_FILE:
@@ -960,7 +969,7 @@ static void _xfdashboard_image_content_on_icon_theme_changed(XfdashboardImageCon
 			break;
 
 		default:
-			g_warning(_("Cannot load image '%s' of unknown type %d"), priv->key, priv->type);
+			g_warning("Cannot load image '%s' of unknown type %d", priv->key, priv->type);
 			break;
 	}
 }
@@ -1058,7 +1067,7 @@ static void _xfdashboard_image_content_load(XfdashboardImageContent *self)
 	switch(priv->type)
 	{
 		case XFDASHBOARD_IMAGE_TYPE_NONE:
-			g_warning(_("Cannot load image '%s' without type"), priv->key);
+			g_warning("Cannot load image '%s' without type", priv->key);
 			break;
 
 		case XFDASHBOARD_IMAGE_TYPE_FILE:
@@ -1074,7 +1083,7 @@ static void _xfdashboard_image_content_load(XfdashboardImageContent *self)
 			break;
 
 		default:
-			g_warning(_("Cannot load image '%s' of unknown type %d"), priv->key, priv->type);
+			g_warning("Cannot load image '%s' of unknown type %d", priv->key, priv->type);
 			break;
 	}
 }
@@ -1441,15 +1450,15 @@ void xfdashboard_image_content_class_init(XfdashboardImageContentClass *klass)
 	/* Define properties */
 	XfdashboardImageContentProperties[PROP_KEY]=
 		g_param_spec_string("key",
-							_("Key"),
-							_("The hash key for caching this image"),
+							"Key",
+							"The hash key for caching this image",
 							N_(""),
 							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	XfdashboardImageContentProperties[PROP_MISSING_ICON_NAME]=
 		g_param_spec_string("missing-icon-name",
-							_("Missing icon name"),
-							_("The icon's name to use when requested image cannot be loaded"),
+							"Missing icon name",
+							"The icon's name to use when requested image cannot be loaded",
 							XFDASHBOARD_IMAGE_CONTENT_DEFAULT_FALLBACK_ICON_NAME,
 							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS);
 
@@ -1557,7 +1566,7 @@ ClutterContent* xfdashboard_image_content_new_for_icon_name(const gchar *inIconN
 	key=g_strdup_printf("icon-name:%s,%d", inIconName, inSize);
 	if(!key)
 	{
-		g_warning(_("Could not create key for icon name '%s' at size %u"), inIconName, inSize);
+		g_warning("Could not create key for icon name '%s' at size %u", inIconName, inSize);
 		return(NULL);
 	}
 
@@ -1644,7 +1653,7 @@ ClutterContent* xfdashboard_image_content_new_for_gicon(GIcon *inIcon, gint inSi
 	key=g_strdup_printf("gicon:%s-%u,%d", G_OBJECT_TYPE_NAME(inIcon), g_icon_hash(inIcon), inSize);
 	if(!key)
 	{
-		g_warning(_("Could not create key for gicon '%s' at size %u"), g_icon_to_string(inIcon), inSize);
+		g_warning("Could not create key for gicon '%s' at size %u", g_icon_to_string(inIcon), inSize);
 		return(NULL);
 	}
 
@@ -1692,7 +1701,7 @@ ClutterContent* xfdashboard_image_content_new_for_pixbuf(GdkPixbuf *inPixbuf)
 								&error))
 	{
 		g_warning("Failed to load image data from pixbuf into content: %s",
-					error ? error->message : _("Unknown error"));
+					error ? error->message : "Unknown error");
 
 		if(error)
 		{

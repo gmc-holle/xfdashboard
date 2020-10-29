@@ -106,12 +106,12 @@ static GParamSpec* XfdashboardWindowTrackerWindowX11Properties[PROP_LAST]={ 0, }
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_WARN_NO_WINDOW(self)             \
-	g_critical(_("No wnck window wrapped at %s in called function %s"),        \
+	g_critical("No wnck window wrapped at %s in called function %s",           \
 				G_OBJECT_TYPE_NAME(self),                                      \
 				__func__);
 
 #define XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_WARN_WRONG_WINDOW(self)          \
-	g_critical(_("Got signal from wrong wnck window wrapped at %s in called function %s"),\
+	g_critical("Got signal from wrong wnck window wrapped at %s in called function %s",\
 				G_OBJECT_TYPE_NAME(self),                                      \
 				__func__);
 
@@ -812,7 +812,7 @@ static gboolean _xfdashboard_window_tracker_window_x11_window_tracker_window_is_
 	workspace=xfdashboard_window_tracker_workspace_x11_get_workspace(XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_X11(inWorkspace));
 	if(!workspace)
 	{
-		g_critical(_("Either no wnck workspace is wrapped at %s or workspace is not available anymore when called at function %s"),
+		g_critical("Either no wnck workspace is wrapped at %s or workspace is not available anymore when called at function %s",
 					G_OBJECT_TYPE_NAME(inWorkspace),
 					__func__);
 		return(FALSE);
@@ -960,7 +960,7 @@ static void _xfdashboard_window_tracker_window_x11_window_tracker_window_move_to
 	workspace=xfdashboard_window_tracker_workspace_x11_get_workspace(XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_X11(inWorkspace));
 	if(!workspace)
 	{
-		g_critical(_("Either no wnck workspace is wrapped at %s or workspace is not available anymore when called at function %s"),
+		g_critical("Either no wnck workspace is wrapped at %s or workspace is not available anymore when called at function %s",
 					G_OBJECT_TYPE_NAME(inWorkspace),
 					__func__);
 		return;
@@ -1275,8 +1275,8 @@ void xfdashboard_window_tracker_window_x11_class_init(XfdashboardWindowTrackerWi
 	/* Define properties */
 	XfdashboardWindowTrackerWindowX11Properties[PROP_WINDOW]=
 		g_param_spec_object("window",
-							_("Window"),
-							_("The mapped wnck window"),
+							"Window",
+							"The mapped wnck window",
 							WNCK_TYPE_WINDOW,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 

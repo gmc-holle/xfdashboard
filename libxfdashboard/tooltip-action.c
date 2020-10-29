@@ -517,8 +517,8 @@ static void xfdashboard_tooltip_action_class_init(XfdashboardTooltipActionClass 
 	/* Define properties */
 	XfdashboardTooltipActionProperties[PROP_TOOLTIP_TEXT]=
 		g_param_spec_string("tooltip-text",
-								_("Tooltip text"),
-								_("The text to display in a tooltip"),
+								"Tooltip text",
+								"The text to display in a tooltip",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

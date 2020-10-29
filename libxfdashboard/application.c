@@ -296,9 +296,9 @@ static void _xfdashboard_application_set_theme_name(XfdashboardApplication *self
 		if(!xfdashboard_theme_load(theme, &error))
 		{
 			/* Show critical warning at console */
-			g_critical(_("Could not load theme '%s': %s"),
+			g_critical("Could not load theme '%s': %s",
 						inThemeName,
-						(error && error->message) ? error->message : _("unknown error"));
+						(error && error->message) ? error->message : "unknown error");
 
 			/* Show warning as notification */
 			xfdashboard_notify(NULL,
@@ -382,15 +382,15 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	if(!xfce_sm_client_connect(priv->sessionManagementClient, &error))
 	{
 		g_warning("Failed to connect to session manager: %s",
-					(error && error->message) ? error->message : _("unknown error"));
+					(error && error->message) ? error->message : "unknown error");
 		g_clear_error(&error);
 	}
 
 	/* Initialize xfconf */
 	if(!xfconf_init(&error))
 	{
-		g_critical(_("Could not initialize xfconf: %s"),
-					(error && error->message) ? error->message : _("unknown error"));
+		g_critical("Could not initialize xfconf: %s",
+					(error && error->message) ? error->message : "unknown error");
 		if(error) g_error_free(error);
 		return(FALSE);
 	}
@@ -401,14 +401,14 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	priv->bindings=xfdashboard_bindings_pool_get_default();
 	if(!priv->bindings)
 	{
-		g_critical(_("Could not initialize bindings"));
+		g_critical("Could not initialize bindings");
 		return(FALSE);
 	}
 
 	if(!xfdashboard_bindings_pool_load(priv->bindings, &error))
 	{
-		g_critical(_("Could not load bindings: %s"),
-					(error && error->message) ? error->message : _("unknown error"));
+		g_critical("Could not load bindings: %s",
+					(error && error->message) ? error->message : "unknown error");
 		if(error!=NULL) g_error_free(error);
 		return(FALSE);
 	}
@@ -420,7 +420,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	priv->windowTrackerBackend=xfdashboard_window_tracker_backend_get_default();
 	if(!priv->windowTrackerBackend)
 	{
-		g_critical(_("Could not setup window tracker backend"));
+		g_critical("Could not setup window tracker backend");
 		return(FALSE);
 	}
 
@@ -428,14 +428,14 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	priv->appDatabase=xfdashboard_application_database_get_default();
 	if(!priv->appDatabase)
 	{
-		g_critical(_("Could not initialize application database"));
+		g_critical("Could not initialize application database");
 		return(FALSE);
 	}
 
 	if(!xfdashboard_application_database_load(priv->appDatabase, &error))
 	{
-		g_critical(_("Could not load application database: %s"),
-					(error && error->message) ? error->message : _("unknown error"));
+		g_critical("Could not load application database: %s",
+					(error && error->message) ? error->message : "unknown error");
 		if(error!=NULL) g_error_free(error);
 		return(FALSE);
 	}
@@ -444,7 +444,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	priv->appTracker=xfdashboard_application_tracker_get_default();
 	if(!priv->appTracker)
 	{
-		g_critical(_("Could not initialize application tracker"));
+		g_critical("Could not initialize application tracker");
 		return(FALSE);
 	}
 
@@ -471,13 +471,13 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	priv->pluginManager=xfdashboard_plugins_manager_get_default();
 	if(!priv->pluginManager)
 	{
-		g_critical(_("Could not initialize plugin manager"));
+		g_critical("Could not initialize plugin manager");
 		return(FALSE);
 	}
 
 	if(!xfdashboard_plugins_manager_setup(priv->pluginManager))
 	{
-		g_critical(_("Could not setup plugin manager"));
+		g_critical("Could not setup plugin manager");
 		return(FALSE);
 	}
 
@@ -489,7 +489,7 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 															"theme-name");
 	if(!priv->xfconfThemeChangedSignalID)
 	{
-		g_warning(_("Could not create binding between xfconf property and local resource for theme change notification."));
+		g_warning("Could not create binding between xfconf property and local resource for theme change notification.");
 	}
 
 	/* Set up default theme in Xfcond if property in channel does not exist
@@ -812,7 +812,7 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 		}
 			else
 			{
-				g_warning(_("Cannot daemonized because a temporary new instance of application was forced."));
+				g_warning("Cannot daemonized because a temporary new instance of application was forced.");
 			}
 	}
 
@@ -947,8 +947,8 @@ static gboolean _xfdashboard_application_local_command_line(GApplication *inAppl
 	 */
 	if(!g_application_register(inApplication, NULL, &error))
 	{
-		g_critical(_("Unable to register application: %s"),
-					(error && error->message) ? error->message : _("Unknown error"));
+		g_critical("Unable to register application: %s",
+					(error && error->message) ? error->message : "Unknown error");
 		if(error)
 		{
 			g_error_free(error);
@@ -1203,8 +1203,8 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	 */
 	XfdashboardApplicationProperties[PROP_DAEMONIZED]=
 		g_param_spec_boolean("is-daemonized",
-								_("Is daemonized"),
-								_("Flag indicating if application is daemonized"),
+								"Is daemonized",
+								"Flag indicating if application is daemonized",
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
@@ -1217,8 +1217,8 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	 */
 	XfdashboardApplicationProperties[PROP_SUSPENDED]=
 		g_param_spec_boolean("is-suspended",
-								_("Is suspended"),
-								_("Flag indicating if application is suspended currently"),
+								"Is suspended",
+								"Flag indicating if application is suspended currently",
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
@@ -1229,8 +1229,8 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	 */
 	XfdashboardApplicationProperties[PROP_STAGE]=
 		g_param_spec_object("stage",
-								_("Stage"),
-								_("The stage object of application"),
+								"Stage",
+								"The stage object of application",
 								XFDASHBOARD_TYPE_STAGE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -1241,8 +1241,8 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 	 */
 	XfdashboardApplicationProperties[PROP_THEME_NAME]=
 		g_param_spec_string("theme-name",
-								_("Theme name"),
-								_("Name of current theme"),
+								"Theme name",
+								"Name of current theme",
 								DEFAULT_THEME_NAME,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

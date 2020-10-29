@@ -420,39 +420,39 @@ static void xfdashboard_outline_effect_class_init(XfdashboardOutlineEffectClass 
 	/* Define properties */
 	XfdashboardOutlineEffectProperties[PROP_COLOR]=
 		clutter_param_spec_color("color",
-									_("Color"),
-									_("Color to draw outline with"),
+									"Color",
+									"Color to draw outline with",
 									CLUTTER_COLOR_White,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardOutlineEffectProperties[PROP_WIDTH]=
 		g_param_spec_float("width",
-							_("Width"),
-							_("Width of line used to draw outline"),
+							"Width",
+							"Width of line used to draw outline",
 							0.0f, G_MAXFLOAT,
 							1.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardOutlineEffectProperties[PROP_BORDERS]=
 		g_param_spec_flags("borders",
-							_("Borders"),
-							_("Determines which sides of the border to draw"),
+							"Borders",
+							"Determines which sides of the border to draw",
 							XFDASHBOARD_TYPE_BORDERS,
 							XFDASHBOARD_BORDERS_ALL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardOutlineEffectProperties[PROP_CORNERS]=
 		g_param_spec_flags("corners",
-							_("Corners"),
-							_("Determines which corners are rounded"),
+							"Corners",
+							"Determines which corners are rounded",
 							XFDASHBOARD_TYPE_CORNERS,
 							XFDASHBOARD_CORNERS_ALL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardOutlineEffectProperties[PROP_CORNERS_RADIUS]=
 		g_param_spec_float("corner-radius",
-							_("Corner radius"),
-							_("Radius of rounded corners"),
+							"Corner radius",
+							"Radius of rounded corners",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);

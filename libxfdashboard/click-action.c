@@ -656,8 +656,8 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 	 */
 	XfdashboardClickActionProperties[PROP_PRESSED]=
 		g_param_spec_boolean("pressed",
-								_("Pressed"),
-								_("Whether the clickable should be in pressed state"),
+								"Pressed",
+								"Whether the clickable should be in pressed state",
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
@@ -668,8 +668,8 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 	 */
 	XfdashboardClickActionProperties[PROP_HELD]=
 		g_param_spec_boolean("held",
-								_("Held"),
-								_("Whether the clickable has a grab"),
+								"Held",
+								"Whether the clickable has a grab",
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
@@ -684,8 +684,8 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 	 */
 	XfdashboardClickActionProperties[PROP_LONG_PRESS_DURATION]=
 		g_param_spec_int("long-press-duration",
-							_("Long Press Duration"),
-							_("The minimum duration of a long press to recognize the gesture"),
+							"Long Press Duration",
+							"The minimum duration of a long press to recognize the gesture",
 							-1,
 							G_MAXINT,
 							-1,
@@ -702,8 +702,8 @@ static void xfdashboard_click_action_class_init(XfdashboardClickActionClass *kla
 	 */
 	XfdashboardClickActionProperties[PROP_LONG_PRESS_THRESHOLD]=
 		g_param_spec_int("long-press-threshold",
-							_("Long Press Threshold"),
-							_("The maximum threshold before a long press is cancelled"),
+							"Long Press Threshold",
+							"The maximum threshold before a long press is cancelled",
 							-1,
 							G_MAXINT,
 							-1,

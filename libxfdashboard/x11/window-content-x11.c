@@ -214,7 +214,7 @@ static Display* _xfdashboard_window_content_x11_get_display(void)
 
 	if(G_UNLIKELY(display==None))
 	{
-		g_critical(_("No default X11 display found in GDK to check X extensions"));
+		g_critical("No default X11 display found in GDK to check X extensions");
 	}
 
 	return(display);
@@ -253,7 +253,7 @@ static void _xfdashboard_window_content_x11_destroy_resume_queue(void)
 	if(_xfdashboard_window_content_x11_resume_idle_queue)
 	{
 		queueSize=g_list_length(_xfdashboard_window_content_x11_resume_idle_queue);
-		if(queueSize>0) g_warning(_("Destroying window content resume queue containing %d windows."), queueSize);
+		if(queueSize>0) g_warning("Destroying window content resume queue containing %d windows.", queueSize);
 #ifdef DEBUG
 		if(queueSize>0)
 		{
@@ -399,7 +399,7 @@ static void _xfdashboard_window_content_x11_on_window_creation_priority_value_ch
 		/* Default value is the first one in mapping */
 		found=_xfdashboard_window_content_x11_window_creation_priority_map;
 
-		g_warning(_("Unknown value '%s' for property '%s' - defaulting to '%s' with priority of %d"),
+		g_warning("Unknown value '%s' for property '%s' - defaulting to '%s' with priority of %d",
 					priorityValue,
 					inProperty,
 					found->name,
@@ -521,9 +521,9 @@ static void _xfdashboard_window_content_x11_on_workaround_state_changed(Xfdashbo
 							if(!copyTexture || error)
 							{
 								/* Show warning */
-								g_warning(_("Could not create copy of texture of mininized window '%s': %s"),
+								g_warning("Could not create copy of texture of mininized window '%s': %s",
 											xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)),
-											(error && error->message) ? error->message : _("Unknown error"));
+											(error && error->message) ? error->message : "Unknown error");
 
 								/* Release allocated resources */
 								if(copyTexture)
@@ -549,7 +549,7 @@ static void _xfdashboard_window_content_x11_on_workaround_state_changed(Xfdashbo
 							if(!copyTexture)
 							{
 								/* Show warning */
-								g_warning(_("Could not create copy of texture of mininized window '%s'"),
+								g_warning("Could not create copy of texture of mininized window '%s'",
 											xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 							}
 #endif
@@ -560,12 +560,12 @@ static void _xfdashboard_window_content_x11_on_workaround_state_changed(Xfdashbo
 								priv->texture=copyTexture;
 							}
 						}
-							else g_warning(_("Could not determine size of texture of minimized window '%s'"),
+							else g_warning("Could not determine size of texture of minimized window '%s'",
 											xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 					}
 						else
 						{
-							g_warning(_("Could not allocate memory for copy of texture of mininized window '%s'"),
+							g_warning("Could not allocate memory for copy of texture of mininized window '%s'",
 										xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 						}
 				}
@@ -681,13 +681,13 @@ static void _xfdashboard_window_content_x11_check_extension(void)
 			}
 				else
 				{
-					g_warning(_("Need at least version %d.%d of composite extension but found %d.%d - using only fallback images"),
+					g_warning("Need at least version %d.%d of composite extension but found %d.%d - using only fallback images",
 								COMPOSITE_VERSION_MIN_MAJOR, COMPOSITE_VERSION_MIN_MINOR, compositeMajor, compositeMinor);
 				}
 		}
-			else g_warning(_("Query for X composite extension failed - using only fallback imagess"));
+			else g_warning("Query for X composite extension failed - using only fallback imagess");
 	}
-		else g_warning(_("X does not support composite extension - using only fallback images"));
+		else g_warning("X does not support composite extension - using only fallback images");
 #endif
 
 	/* Get base of damage event in X */
@@ -702,7 +702,7 @@ static void _xfdashboard_window_content_x11_check_extension(void)
 	}
 		else
 		{
-			g_warning(_("Query for X damage extension resulted in error code %d - using only still images of windows"),
+			g_warning("Query for X damage extension resulted in error code %d - using only still images of windows",
 						damageError);
 		}
 #endif
@@ -994,7 +994,7 @@ static gboolean _xfdashboard_window_content_x11_resume_on_idle(gpointer inUserDa
 	queueEntry=g_list_first(_xfdashboard_window_content_x11_resume_idle_queue);
 	if(!queueEntry)
 	{
-		g_warning(_("Resume handler called for empty queue."));
+		g_warning("Resume handler called for empty queue.");
 
 		/* Queue must be empty but ensure it will */
 		if(_xfdashboard_window_content_x11_resume_idle_queue)
@@ -1057,7 +1057,7 @@ static gboolean _xfdashboard_window_content_x11_resume_on_idle(gpointer inUserDa
 		XSync(display, False);
 		if(priv->pixmap==None)
 		{
-			g_warning(_("Could not get pixmap for window '%s"), xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
+			g_warning("Could not get pixmap for window '%s", xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 
 			/* Set flag to suspend window content after resuming because of error */
 			priv->suspendAfterResumeOnIdle=TRUE;
@@ -1065,7 +1065,7 @@ static gboolean _xfdashboard_window_content_x11_resume_on_idle(gpointer inUserDa
 		}
 #else
 		/* We should never get here as existance of composite extension was checked before */
-		g_critical(_("Cannot resume window '%s' as composite extension is not available"),
+		g_critical("Cannot resume window '%s' as composite extension is not available",
 					xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 		break;
 #endif
@@ -1081,7 +1081,7 @@ static gboolean _xfdashboard_window_content_x11_resume_on_idle(gpointer inUserDa
 			XFDASHBOARD_DEBUG(self, WINDOWS,
 								"Could not create texture for window '%s': %s",
 								xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)),
-								error ? error->message : _("Unknown error"));
+								error ? error->message : "Unknown error");
 			if(error)
 			{
 				g_error_free(error);
@@ -1108,7 +1108,7 @@ static gboolean _xfdashboard_window_content_x11_resume_on_idle(gpointer inUserDa
 			XSync(display, False);
 			if(priv->damage==None)
 			{
-				g_warning(_("Could not create damage for window '%s' - using still image of window"), xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
+				g_warning("Could not create damage for window '%s' - using still image of window", xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 			}
 		}
 #endif
@@ -1220,13 +1220,13 @@ static void _xfdashboard_window_content_x11_resume(XfdashboardWindowContentX11 *
 		XSync(display, False);
 		if(priv->pixmap==None)
 		{
-			g_warning(_("Could not get pixmap for window '%s"), xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
+			g_warning("Could not get pixmap for window '%s", xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 			_xfdashboard_window_content_x11_suspend(self);
 			break;
 		}
 #else
 		/* We should never get here as existance of composite extension was checked before */
-		g_critical(_("Cannot resume window '%s' as composite extension is not available"),
+		g_critical("Cannot resume window '%s' as composite extension is not available",
 					xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 		break;
 #endif
@@ -1242,7 +1242,7 @@ static void _xfdashboard_window_content_x11_resume(XfdashboardWindowContentX11 *
 			XFDASHBOARD_DEBUG(self, WINDOWS,
 								"Could not create texture for window '%s': %s",
 								xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)),
-								error ? error->message : _("Unknown error"));
+								error ? error->message : "Unknown error");
 			if(error)
 			{
 				g_error_free(error);
@@ -1268,7 +1268,7 @@ static void _xfdashboard_window_content_x11_resume(XfdashboardWindowContentX11 *
 			XSync(display, False);
 			if(priv->damage==None)
 			{
-				g_warning(_("Could not create damage for window '%s' - using still image of window"), xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
+				g_warning("Could not create damage for window '%s' - using still image of window", xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 			}
 		}
 #endif
@@ -1408,7 +1408,7 @@ static void _xfdashboard_window_content_x11_on_window_closed(XfdashboardWindowCo
 																gpointer inUserData)
 {
 	XfdashboardWindowContentX11Private	*priv;
-	XfdashboardWindowTrackerWindow		*window;
+	XfdashboardWindowTrackerWindow		*window G_GNUC_UNUSED;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT_X11(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
@@ -1494,9 +1494,9 @@ static void _xfdashboard_window_content_x11_set_window(XfdashboardWindowContentX
 	if(!priv->texture || error)
 	{
 		/* Show warning */
-		g_warning(_("Could not create fallback texture for window '%s': %s"),
+		g_warning("Could not create fallback texture for window '%s': %s",
 					xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)),
-					(error && error->message) ? error->message : _("Unknown error"));
+					(error && error->message) ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(priv->texture)
@@ -1536,7 +1536,7 @@ static void _xfdashboard_window_content_x11_set_window(XfdashboardWindowContentX
 
 	if(!XGetWindowAttributes(display, priv->xWindowID, &windowAttrs))
 	{
-		g_warning(_("Could not get attributes of window '%s'"), xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
+		g_warning("Could not get attributes of window '%s'", xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
 		XSync(display, False);
 	}
 
@@ -2184,90 +2184,90 @@ void xfdashboard_window_content_x11_class_init(XfdashboardWindowContentX11Class 
 	/* Define properties */
 	XfdashboardWindowContentX11Properties[PROP_WINDOW]=
 		g_param_spec_object("window",
-							_("Window"),
-							_("The window to handle and display"),
+							"Window",
+							"The window to handle and display",
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	XfdashboardWindowContentX11Properties[PROP_SUSPENDED]=
 		g_param_spec_boolean("suspended",
-							_("Suspended"),
-							_("Is this window suspended"),
+							"Suspended",
+							"Is this window suspended",
 							TRUE,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentX11Properties[PROP_OUTLINE_COLOR]=
 		clutter_param_spec_color("outline-color",
-									_("Outline color"),
-									_("Color to draw outline of mapped windows with"),
+									"Outline color",
+									"Color to draw outline of mapped windows with",
 									CLUTTER_COLOR_Black,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentX11Properties[PROP_OUTLINE_WIDTH]=
 		g_param_spec_float("outline-width",
-							_("Outline width"),
-							_("Width of line used to draw outline of mapped windows"),
+							"Outline width",
+							"Width of line used to draw outline of mapped windows",
 							0.0f, G_MAXFLOAT,
 							1.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentX11Properties[PROP_INCLUDE_WINDOW_FRAME]=
 		g_param_spec_boolean("include-window-frame",
-							_("Include window frame"),
-							_("Whether the window frame should be included or only the window content should be shown"),
+							"Include window frame",
+							"Whether the window frame should be included or only the window content should be shown",
 							FALSE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentX11Properties[PROP_UNMAPPED_WINDOW_ICON_X_FILL]=
 		g_param_spec_boolean("unmapped-window-icon-x-fill",
-							_("Unmapped window icon X fill"),
-							_("Whether the unmapped window icon should fill up horizontal space"),
+							"Unmapped window icon X fill",
+							"Whether the unmapped window icon should fill up horizontal space",
 							TRUE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentX11Properties[PROP_UNMAPPED_WINDOW_ICON_Y_FILL]=
 		g_param_spec_boolean("unmapped-window-icon-y-fill",
-							_("Unmapped window icon y fill"),
-							_("Whether the unmapped window icon should fill up vertical space"),
+							"Unmapped window icon y fill",
+							"Whether the unmapped window icon should fill up vertical space",
 							TRUE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentX11Properties[PROP_UNMAPPED_WINDOW_ICON_X_ALIGN]=
 		g_param_spec_float("unmapped-window-icon-x-align",
-							_("Unmapped window icon X align"),
-							_("The alignment of the unmapped window icon on the X axis within the allocation in normalized coordinate between 0 and 1"),
+							"Unmapped window icon X align",
+							"The alignment of the unmapped window icon on the X axis within the allocation in normalized coordinate between 0 and 1",
 							0.0f, 1.0f,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentX11Properties[PROP_UNMAPPED_WINDOW_ICON_Y_ALIGN]=
 		g_param_spec_float("unmapped-window-icon-y-align",
-							_("Unmapped window icon Y align"),
-							_("The alignment of the unmapped window icon on the Y axis within the allocation in normalized coordinate between 0 and 1"),
+							"Unmapped window icon Y align",
+							"The alignment of the unmapped window icon on the Y axis within the allocation in normalized coordinate between 0 and 1",
 							0.0f, 1.0f,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentX11Properties[PROP_UNMAPPED_WINDOW_ICON_X_SCALE]=
 		g_param_spec_float("unmapped-window-icon-x-scale",
-							_("Unmapped window icon X scale"),
-							_("Scale factor of unmapped window icon on the X axis"),
+							"Unmapped window icon X scale",
+							"Scale factor of unmapped window icon on the X axis",
 							0.0f, G_MAXFLOAT,
 							1.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentX11Properties[PROP_UNMAPPED_WINDOW_ICON_Y_SCALE]=
 		g_param_spec_float("unmapped-window-icon-y-scale",
-							_("Unmapped window icon Y scale"),
-							_("Scale factor of unmapped window icon on the Y axis"),
+							"Unmapped window icon Y scale",
+							"Scale factor of unmapped window icon on the Y axis",
 							0.0f, G_MAXFLOAT,
 							1.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowContentX11Properties[PROP_UNMAPPED_WINDOW_ICON_ANCHOR_POINT]=
 		g_param_spec_enum("unmapped-window-icon-anchor-point",
-							_("Unmapped window icon anchor point"),
-							_("The anchor point of unmapped window icon"),
+							"Unmapped window icon anchor point",
+							"The anchor point of unmapped window icon",
 							XFDASHBOARD_TYPE_ANCHOR_POINT,
 							XFDASHBOARD_ANCHOR_POINT_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);

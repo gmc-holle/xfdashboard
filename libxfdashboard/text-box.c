@@ -774,102 +774,102 @@ static void xfdashboard_text_box_class_init(XfdashboardTextBoxClass *klass)
 	/* Define properties */
 	XfdashboardTextBoxProperties[PROP_PADDING]=
 		g_param_spec_float("padding",
-							_("Padding"),
-							_("Padding between background and elements"),
+							"Padding",
+							"Padding between background and elements",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-							_("Spacing"),
-							_("Spacing between text and icon"),
+							"Spacing",
+							"Spacing between text and icon",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_EDITABLE]=
 		g_param_spec_boolean("editable",
-								_("Editable"),
-								_("Flag to set if text is editable"),
+								"Editable",
+								"Flag to set if text is editable",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_PRIMARY_ICON_NAME]=
 		g_param_spec_string("primary-icon-name",
-							_("Primary icon name"),
-							_("Themed icon name or file name of primary icon shown left of text box"),
+							"Primary icon name",
+							"Themed icon name or file name of primary icon shown left of text box",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_SECONDARY_ICON_NAME]=
 		g_param_spec_string("secondary-icon-name",
-							_("Secondary icon name"),
-							_("Themed icon name or file name of secondary icon shown right of text box"),
+							"Secondary icon name",
+							"Themed icon name or file name of secondary icon shown right of text box",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_TEXT]=
 		g_param_spec_string("text",
-							_("Text"),
-							_("Text of editable text box"),
+							"Text",
+							"Text of editable text box",
 							N_(""),
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_TEXT_FONT]=
 		g_param_spec_string("text-font",
-							_("Text font"),
-							_("Font of editable text box"),
+							"Text font",
+							"Font of editable text box",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_TEXT_COLOR]=
 		clutter_param_spec_color("text-color",
-									_("Text color"),
-									_("Color of text in editable text box"),
+									"Text color",
+									"Color of text in editable text box",
 									NULL,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 
 	XfdashboardTextBoxProperties[PROP_SELECTION_TEXT_COLOR]=
 		clutter_param_spec_color("selection-text-color",
-									_("Selection text color"),
-									_("Color of text of selected text"),
+									"Selection text color",
+									"Color of text of selected text",
 									NULL,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_SELECTION_BACKGROUND_COLOR]=
 		clutter_param_spec_color("selection-background-color",
-									_("Selection background color"),
-									_("Color of background of selected text"),
+									"Selection background color",
+									"Color of background of selected text",
 									NULL,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_HINT_TEXT]=
 		g_param_spec_string("hint-text",
-							_("Hint text"),
-							_("Hint text shown if editable text box is empty"),
+							"Hint text",
+							"Hint text shown if editable text box is empty",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_HINT_TEXT_FONT]=
 		g_param_spec_string("hint-text-font",
-							_("Hint text font"),
-							_("Font of hint text shown if editable text box is empty"),
+							"Hint text font",
+							"Font of hint text shown if editable text box is empty",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_HINT_TEXT_COLOR]=
 		clutter_param_spec_color("hint-text-color",
-									_("Hint text color"),
-									_("Color of hint text shown if editable text box is empty"),
+									"Hint text color",
+									"Color of hint text shown if editable text box is empty",
 									NULL,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardTextBoxProperties[PROP_HINT_TEXT_SET]=
 		g_param_spec_boolean("hint-text-set",
-								_("Hint text set"),
-								_("Flag indicating if a hint text was set"),
+								"Hint text set",
+								"Flag indicating if a hint text was set",
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 

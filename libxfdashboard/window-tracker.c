@@ -80,7 +80,7 @@ static guint XfdashboardWindowTrackerSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_WINDOWS_TRACKER_WARN_NOT_IMPLEMENTED(self, vfunc)  \
-	g_warning(_("Object of type %s does not implement required virtual function XfdashboardWindowTracker::%s"),\
+	g_warning("Object of type %s does not implement required virtual function XfdashboardWindowTracker::%s",\
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
@@ -116,22 +116,22 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 	{
 		/* Define properties */
 		property=g_param_spec_object("active-window",
-										_("Active window"),
-										_("The current active window"),
+										"Active window",
+										"The current active window",
 										XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW,
 										G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 		g_object_interface_install_property(iface, property);
 
 		property=g_param_spec_object("active-workspace",
-										_("Active workspace"),
-										_("The current active workspace"),
+										"Active workspace",
+										"The current active workspace",
 										XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE,
 										G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 		g_object_interface_install_property(iface, property);
 
 		property=g_param_spec_object("primary-monitor",
-										_("Primary monitor"),
-										_("The current primary monitor"),
+										"Primary monitor",
+										"The current primary monitor",
 										XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR,
 										G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 		g_object_interface_install_property(iface, property);
@@ -609,7 +609,7 @@ XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void)
 	backend=xfdashboard_window_tracker_backend_get_default();
 	if(!backend)
 	{
-		g_critical(_("Could not get default window tracker backend"));
+		g_critical("Could not get default window tracker backend");
 		return(NULL);
 	}
 
@@ -1149,7 +1149,7 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_stage_window(Xfda
 	backend=xfdashboard_window_tracker_backend_get_default();
 	if(!backend)
 	{
-		g_critical(_("Could not get default window tracker backend"));
+		g_critical("Could not get default window tracker backend");
 		return(NULL);
 	}
 

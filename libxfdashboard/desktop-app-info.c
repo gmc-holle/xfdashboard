@@ -137,10 +137,10 @@ static gboolean _xfdashboard_desktop_app_info_load_secondary_source(XfdashboardD
 										&error))
 		{
 			/* Show warning */
-			g_warning(_("Could not load secondary source %s for desktop ID '%s': %s"),
+			g_warning("Could not load secondary source %s for desktop ID '%s': %s",
 						secondarySourceFilename,
 						priv->desktopID,
-						error ? error->message : _("Unknown error"));
+						error ? error->message : "Unknown error");
 
 			/* Release allocated resources */
 			if(error) g_error_free(error);
@@ -244,7 +244,7 @@ static void _xfdashboard_desktop_app_info_update_actions(XfdashboardDesktopAppIn
 			itemActionName=(const gchar*)(iter->data);
 			if(!itemActionName)
 			{
-				g_warning(_("Cannot create application action because of empty action name for desktop ID '%s'"),
+				g_warning("Cannot create application action because of empty action name for desktop ID '%s'",
 							priv->desktopID);
 				continue;
 			}
@@ -252,7 +252,7 @@ static void _xfdashboard_desktop_app_info_update_actions(XfdashboardDesktopAppIn
 			itemAction=garcon_menu_item_get_action(priv->item, itemActionName);
 			if(!itemAction)
 			{
-				g_warning(_("Cannot create application action for desktop ID '%s'"),
+				g_warning("Cannot create application action for desktop ID '%s'",
 							priv->desktopID);
 				continue;
 			}
@@ -309,7 +309,7 @@ static void _xfdashboard_desktop_app_info_update_actions(XfdashboardDesktopAppIn
 			XFDASHBOARD_DEBUG(self, APPLICATIONS,
 								"Could not fetch list of actions from secondary source for desktop ID '%s': %s",
 								priv->desktopID,
-								error ? error->message : _("Unknown error"));
+								error ? error->message : "Unknown error");
 
 			/* Release allocated resources */
 			if(error) g_error_free(error);
@@ -342,7 +342,7 @@ static void _xfdashboard_desktop_app_info_update_actions(XfdashboardDesktopAppIn
 									"Could not get name of action '%s' from secondary source for desktop ID '%s': %s",
 									*iter,
 									priv->desktopID,
-									error ? error->message : _("Unknown error"));
+									error ? error->message : "Unknown error");
 
 				/* Release allocated resources */
 				if(itemActionGroup) g_free(itemActionGroup);
@@ -464,7 +464,7 @@ static void _xfdashboard_desktop_app_info_update_keywords(XfdashboardDesktopAppI
 			XFDASHBOARD_DEBUG(self, APPLICATIONS,
 								"Could not fetch list of keywords from secondary source for desktop ID '%s': %s",
 								priv->desktopID,
-								error ? error->message : _("Unknown error"));
+								error ? error->message : "Unknown error");
 
 			/* Release allocated resources */
 			if(error) g_error_free(error);
@@ -916,7 +916,7 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 		g_set_error_literal(outError,
 								G_IO_ERROR,
 								G_IO_ERROR_FAILED,
-								_("Unable to expand macros at command-line."));
+								"Unable to expand macros at command-line.");
 
 		/* Release allocated resources */
 		if(expanded) g_string_free(expanded, TRUE);
@@ -994,7 +994,7 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 		else if(!g_file_test(workingDirectory, G_FILE_TEST_IS_DIR))
 		{
 			/* Working directory does not exist or is not a directory */
-			g_warning(_("Working directory '%s' does not exist. It won't be used when launching '%s'."),
+			g_warning("Working directory '%s' does not exist. It won't be used when launching '%s'.",
 						workingDirectory,
 						*argv);
 
@@ -1194,7 +1194,7 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 		g_set_error_literal(outError,
 								G_IO_ERROR,
 								G_IO_ERROR_FAILED,
-								_("Unable to expand macros at command-line."));
+								"Unable to expand macros at command-line.");
 
 		/* Return error state */
 		return(FALSE);
@@ -1274,7 +1274,7 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 		else if(!g_file_test(workingDirectory, G_FILE_TEST_IS_DIR))
 		{
 			/* Working directory does not exist or is not a directory */
-			g_warning(_("Working directory '%s' does not exist. It won't be used when launching '%s'."),
+			g_warning("Working directory '%s' does not exist. It won't be used when launching '%s'.",
 						workingDirectory,
 						*argv);
 
@@ -1901,22 +1901,22 @@ static void xfdashboard_desktop_app_info_class_init(XfdashboardDesktopAppInfoCla
 	/* Define properties */
 	XfdashboardDesktopAppInfoProperties[PROP_VALID]=
 		g_param_spec_boolean("valid",
-								_("Valid"),
-								_("Flag indicating whether this desktop application information is valid or not"),
+								"Valid",
+								"Flag indicating whether this desktop application information is valid or not",
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardDesktopAppInfoProperties[PROP_DESKTOP_ID]=
 		g_param_spec_string("desktop-id",
-								_("Desktop ID"),
-								_("Name of desktop ID"),
+								"Desktop ID",
+								"Name of desktop ID",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardDesktopAppInfoProperties[PROP_FILE]=
 		g_param_spec_object("file",
-							_("File"),
-							_("The desktop file"),
+							"File",
+							"The desktop file",
 							G_TYPE_FILE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -1975,7 +1975,7 @@ GAppInfo* xfdashboard_desktop_app_info_new_from_desktop_id(const gchar *inDeskto
 	desktopFilename=xfdashboard_application_database_get_file_from_desktop_id(inDesktopID);
 	if(!desktopFilename)
 	{
-		g_warning(_("Desktop ID '%s' not found"), inDesktopID);
+		g_warning("Desktop ID '%s' not found", inDesktopID);
 		return(NULL);
 	}
 
@@ -2106,9 +2106,9 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 		success=garcon_menu_item_reload(priv->item, NULL, &error);
 		if(!success)
 		{
-			g_warning(_("Could not reload desktop application information for '%s': %s"),
+			g_warning("Could not reload desktop application information for '%s': %s",
 						garcon_menu_item_get_name(priv->item),
-						error ? error->message : _("Unknown error"));
+						error ? error->message : "Unknown error");
 			if(error) g_error_free(error);
 		}
 
@@ -2219,7 +2219,7 @@ gboolean xfdashboard_desktop_app_info_launch_action_by_name(XfdashboardDesktopAp
 		g_set_error(outError,
 					G_IO_ERROR,
 					G_IO_ERROR_NOT_FOUND,
-					_("Invalid application action '%s' to execute for desktop ID '%s'"),
+					"Invalid application action '%s' to execute for desktop ID '%s'",
 					inActionName,
 					priv->desktopID);
 
@@ -2235,10 +2235,10 @@ gboolean xfdashboard_desktop_app_info_launch_action_by_name(XfdashboardDesktopAp
 																	outError);
 	if(!success)
 	{
-		g_warning(_("Could launch action '%s' for desktop ID '%s': %s"),
+		g_warning("Could launch action '%s' for desktop ID '%s': %s",
 					xfdashboard_desktop_app_info_action_get_name(action),
 					self->priv->desktopID,
-					(outError && *outError) ? (*outError)->message : _("Unknown error"));
+					(outError && *outError) ? (*outError)->message : "Unknown error");
 	}
 
 	/* Return success result of launching action */

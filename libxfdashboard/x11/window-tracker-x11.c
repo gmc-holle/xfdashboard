@@ -215,7 +215,7 @@ static XfdashboardWindowTrackerWorkspaceX11* _xfdashboard_window_tracker_x11_cre
 														NULL));
 	if(!workspace)
 	{
-		g_critical(_("Could not create workspace object of type %s for workspace '%s'"),
+		g_critical("Could not create workspace object of type %s for workspace '%s'",
 					g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE_X11),
 					wnck_workspace_get_name(inWorkspace));
 		return(NULL);
@@ -385,7 +385,7 @@ static XfdashboardWindowTrackerWindowX11* _xfdashboard_window_tracker_x11_create
 																NULL));
 	if(!window)
 	{
-		g_critical(_("Could not create window object of type %s for window '%s'"),
+		g_critical("Could not create window object of type %s for window '%s'",
 					g_type_name(XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_X11),
 					wnck_window_get_name(inWindow));
 		return(NULL);
@@ -974,7 +974,7 @@ static void _xfdashboard_window_tracker_x11_monitor_free(XfdashboardWindowTracke
 	iter=g_list_find(priv->monitors,  inMonitor);
 	if(!iter)
 	{
-		g_critical(_("Cannot release unknown monitor %d"),
+		g_critical("Cannot release unknown monitor %d",
 					xfdashboard_window_tracker_monitor_get_number(XFDASHBOARD_WINDOW_TRACKER_MONITOR(inMonitor)));
 		return;
 	}

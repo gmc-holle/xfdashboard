@@ -127,7 +127,7 @@ static void _xfdashboard_viewpad_update_view_viewport(XfdashboardViewpad *self)
 	/* Check for active view */
 	if(priv->activeView==NULL)
 	{
-		g_warning(_("Cannot update viewport of view because no one is active"));
+		g_warning("Cannot update viewport of view because no one is active");
 		return;
 	}
 
@@ -243,7 +243,7 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 	/* Check if view is a child of this actor */
 	if(inView && clutter_actor_contains(CLUTTER_ACTOR(self), CLUTTER_ACTOR(inView))==FALSE)
 	{
-		g_warning(_("View %s is not a child of %s and cannot be activated"),
+		g_warning("View %s is not a child of %s and cannot be activated",
 					G_OBJECT_TYPE_NAME(inView), G_OBJECT_TYPE_NAME(self));
 		return;
 	}
@@ -251,7 +251,7 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 	/* Only allow enabled views to be activated */
 	if(inView && !xfdashboard_view_get_enabled(inView))
 	{
-		g_warning(_("Cannot activate disabled view %s at %s"),
+		g_warning("Cannot activate disabled view %s at %s",
 					G_OBJECT_TYPE_NAME(inView), G_OBJECT_TYPE_NAME(self));
 		return;
 	}
@@ -707,13 +707,13 @@ static void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, const gchar 
 	view=xfdashboard_view_manager_create_view(priv->viewManager, inID);
 	if(view==NULL)
 	{
-		g_critical(_("Failed to create view %s for viewpad"), inID);
+		g_critical("Failed to create view %s for viewpad", inID);
 		return;
 	}
 
 	if(XFDASHBOARD_IS_VIEW(view)!=TRUE)
 	{
-		g_critical(_("View %s of type %s is not a %s and cannot be added to %s"),
+		g_critical("View %s of type %s is not a %s and cannot be added to %s",
 					inID,
 					G_OBJECT_TYPE_NAME(view),
 					g_type_name(XFDASHBOARD_TYPE_VIEW),
@@ -1229,45 +1229,45 @@ static void xfdashboard_viewpad_class_init(XfdashboardViewpadClass *klass)
 	/* Define properties */
 	XfdashboardViewpadProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-							_("Spacing"),
-							_("The spacing between views and scrollbars"),
+							"Spacing",
+							"The spacing between views and scrollbars",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewpadProperties[PROP_ACTIVE_VIEW]=
 		g_param_spec_object("active-view",
-								_("Active view"),
-								_("The current active view in viewpad"),
+								"Active view",
+								"The current active view in viewpad",
 								XFDASHBOARD_TYPE_VIEW,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewpadProperties[PROP_HSCROLLBAR_VISIBLE]=
 		g_param_spec_boolean("horizontal-scrollbar-visible",
-								_("Horizontal scrollbar visibility"),
-								_("This flag indicates if horizontal scrollbar is visible"),
+								"Horizontal scrollbar visibility",
+								"This flag indicates if horizontal scrollbar is visible",
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewpadProperties[PROP_HSCROLLBAR_POLICY]=
 		g_param_spec_enum("horizontal-scrollbar-policy",
-							_("Horizontal scrollbar policy"),
-							_("The policy for horizontal scrollbar controlling when it is displayed"),
+							"Horizontal scrollbar policy",
+							"The policy for horizontal scrollbar controlling when it is displayed",
 							XFDASHBOARD_TYPE_VISIBILITY_POLICY,
 							XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewpadProperties[PROP_VSCROLLBAR_VISIBLE]=
 		g_param_spec_boolean("vertical-scrollbar-visible",
-								_("Vertical scrollbar visibility"),
-								_("This flag indicates if vertical scrollbar is visible"),
+								"Vertical scrollbar visibility",
+								"This flag indicates if vertical scrollbar is visible",
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardViewpadProperties[PROP_VSCROLLBAR_POLICY]=
 		g_param_spec_enum("vertical-scrollbar-policy",
-							_("Vertical scrollbar policy"),
-							_("The policy for vertical scrollbar controlling when it is displayed"),
+							"Vertical scrollbar policy",
+							"The policy for vertical scrollbar controlling when it is displayed",
 							XFDASHBOARD_TYPE_VISIBILITY_POLICY,
 							XFDASHBOARD_VISIBILITY_POLICY_AUTOMATIC,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);

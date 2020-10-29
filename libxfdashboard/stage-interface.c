@@ -356,23 +356,23 @@ static void xfdashboard_stage_interface_class_init(XfdashboardStageInterfaceClas
 	/* Define properties */
 	XfdashboardStageInterfaceProperties[PROP_MONITOR]=
 		g_param_spec_object("monitor",
-							_("Monitor"),
-							_("The monitor where this stage interface is connected to"),
+							"Monitor",
+							"The monitor where this stage interface is connected to",
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardStageInterfaceProperties[PROP_BACKGROUND_IMAGE_TYPE]=
 		g_param_spec_enum("background-image-type",
-							_("Background image type"),
-							_("Background image type"),
+							"Background image type",
+							"Background image type",
 							XFDASHBOARD_TYPE_STAGE_BACKGROUND_IMAGE_TYPE,
 							XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardStageInterfaceProperties[PROP_BACKGROUND_COLOR]=
 		clutter_param_spec_color("background-color",
-									_("Background color"),
-									_("Color of stage's background"),
+									"Background color",
+									"Color of stage's background",
 									NULL,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

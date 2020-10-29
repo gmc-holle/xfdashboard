@@ -50,7 +50,7 @@ static guint XfdashboardPopupMenuItemSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_POPUP_MENU_ITEM_WARN_NOT_IMPLEMENTED(self, vfunc) \
-	g_warning(_("Object of type %s does not implement required virtual function XfdashboardPopupMenuItem::%s"), \
+	g_warning("Object of type %s does not implement required virtual function XfdashboardPopupMenuItem::%s",\
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 

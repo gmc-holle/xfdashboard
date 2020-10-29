@@ -559,7 +559,7 @@ void xfdashboard_focus_manager_register_after(XfdashboardFocusManager *self, Xfd
 	/* Check if given focusable actor is really focusable and stylable */
 	if(!XFDASHBOARD_IS_FOCUSABLE(inFocusable))
 	{
-		g_warning(_("Object %s does not inherit %s and cannot be registered"),
+		g_warning("Object %s does not inherit %s and cannot be registered",
 					G_OBJECT_TYPE_NAME(inFocusable),
 					g_type_name(XFDASHBOARD_TYPE_FOCUSABLE));
 		return;
@@ -567,7 +567,7 @@ void xfdashboard_focus_manager_register_after(XfdashboardFocusManager *self, Xfd
 
 	if(!XFDASHBOARD_IS_STYLABLE(inFocusable))
 	{
-		g_warning(_("Object %s does not inherit %s and cannot be registered"),
+		g_warning("Object %s does not inherit %s and cannot be registered",
 					G_OBJECT_TYPE_NAME(inFocusable),
 					g_type_name(XFDASHBOARD_TYPE_STYLABLE));
 		return;
@@ -593,7 +593,7 @@ void xfdashboard_focus_manager_register_after(XfdashboardFocusManager *self, Xfd
 			if(insertPosition!=-1) insertPosition++;
 				else
 				{
-					g_warning(_("Could not find registered focusable object %s to register object %s - appending to end of list."),
+					g_warning("Could not find registered focusable object %s to register object %s - appending to end of list.",
 								G_OBJECT_TYPE_NAME(inAfterFocusable),
 								G_OBJECT_TYPE_NAME(inFocusable));
 				}
@@ -734,7 +734,7 @@ GSList* xfdashboard_focus_manager_get_targets(XfdashboardFocusManager *self, con
 	targetType=g_type_from_name(inTarget);
 	if(!targetType)
 	{
-		g_warning(_("Cannot build target list for unknown type %s"), inTarget);
+		g_warning("Cannot build target list for unknown type %s", inTarget);
 		return(NULL);
 	}
 
@@ -842,7 +842,7 @@ void xfdashboard_focus_manager_set_focus(XfdashboardFocusManager *self, Xfdashbo
 	/* Check if focusable actor is really registered */
 	if(g_list_find(priv->registeredFocusables, inFocusable)==NULL)
 	{
-		g_warning(_("Trying to focus an unregistered focusable actor"));
+		g_warning("Trying to focus an unregistered focusable actor");
 		return;
 	}
 
@@ -1171,7 +1171,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 			signalID=g_signal_lookup(action, G_OBJECT_TYPE(targetObject));
 			if(!signalID)
 			{
-				g_warning(_("Object type %s does not provide action '%s'"),
+				g_warning("Object type %s does not provide action '%s'",
 							G_OBJECT_TYPE_NAME(targetObject),
 							action);
 				continue;
@@ -1183,7 +1183,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 			/* Check if signal is an action signal */
 			if(!(signalData.signal_flags & G_SIGNAL_ACTION))
 			{
-				g_warning(_("Action '%s' at object type %s is not an action signal."),
+				g_warning("Action '%s' at object type %s is not an action signal.",
 							action,
 							G_OBJECT_TYPE_NAME(targetObject));
 				continue;
@@ -1203,7 +1203,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 				/* Check if signal wants the right type of return value */
 				if(signalData.return_type!=returnValueType)
 				{
-					g_critical(_("Action '%s' at object type %s wants return value of type %s but expected is %s."),
+					g_critical("Action '%s' at object type %s wants return value of type %s but expected is %s.",
 								action,
 								G_OBJECT_TYPE_NAME(targetObject),
 								g_type_name(signalData.return_type),
@@ -1214,7 +1214,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 				parameterCount=sizeof(parameterTypes)/sizeof(GType);
 				if(signalData.n_params!=parameterCount)
 				{
-					g_critical(_("Action '%s' at object type %s wants %u parameters but expected are %u."),
+					g_critical("Action '%s' at object type %s wants %u parameters but expected are %u.",
 								action,
 								G_OBJECT_TYPE_NAME(targetObject),
 								signalData.n_params,
@@ -1225,7 +1225,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 				{
 					if(signalData.param_types[i]!=parameterTypes[i])
 					{
-						g_critical(_("Action '%s' at object type %s wants type %s at parameter %u but type %s is expected."),
+						g_critical("Action '%s' at object type %s wants type %s at parameter %u but type %s is expected.",
 									action,
 									G_OBJECT_TYPE_NAME(targetObject),
 									g_type_name(signalData.param_types[i]),

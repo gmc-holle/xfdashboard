@@ -688,7 +688,7 @@ void xfdashboard_applications_menu_model_get(XfdashboardApplicationsMenuModel *s
 	if(!XFDASHBOARD_IS_APPLICATIONS_MENU_MODEL(model) ||
 		XFDASHBOARD_APPLICATIONS_MENU_MODEL(model)!=self)
 	{
-		g_critical(_("Iterator does not belong to application menu model."));
+		g_critical("Iterator does not belong to application menu model.");
 		return;
 	}
 
@@ -706,7 +706,7 @@ void xfdashboard_applications_menu_model_get(XfdashboardApplicationsMenuModel *s
 	{
 		if(column<0 || column>=XFDASHBOARD_APPLICATIONS_MENU_MODEL_COLUMN_LAST)
 		{
-			g_warning(_("Invalid column number %d added to iter (remember to end your list of columns with a -1)"),
+			g_warning("Invalid column number %d added to iter (remember to end your list of columns with a -1)",
 						column);
 			break;
 		}
@@ -717,7 +717,7 @@ void xfdashboard_applications_menu_model_get(XfdashboardApplicationsMenuModel *s
 		storage=va_arg(args, gpointer*);
 		if(!storage)
 		{
-			g_warning(_("No storage pointer provided to store value of column number %d"),
+			g_warning("No storage pointer provided to store value of column number %d",
 						column);
 			break;
 		}

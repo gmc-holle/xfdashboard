@@ -422,7 +422,7 @@ static void _xfdashboard_animation_real_add_animation(XfdashboardAnimation *self
 	data=g_new0(XfdashboardAnimationEntry, 1);
 	if(!data)
 	{
-		g_critical(_("Cannot allocate memory for animation entry with actor '%s' at animation '%s'"),
+		g_critical("Cannot allocate memory for animation entry with actor '%s' at animation '%s'",
 					G_OBJECT_TYPE_NAME(inActor),
 					priv->id);
 		return;
@@ -616,8 +616,8 @@ void xfdashboard_animation_class_init(XfdashboardAnimationClass *klass)
 	 */
 	XfdashboardAnimationProperties[PROP_ID]=
 		g_param_spec_string("id",
-								_("ID"),
-								_("The animation ID"),
+								"ID",
+								"The animation ID",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 

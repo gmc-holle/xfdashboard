@@ -586,16 +586,16 @@ static void xfdashboard_fill_box_layout_class_init(XfdashboardFillBoxLayoutClass
 	/* Define properties */
 	XfdashboardFillBoxLayoutProperties[PROP_ORIENTATION]=
 		g_param_spec_enum("orientation",
-							_("Orientation"),
-							_("The orientation to layout children"),
+							"Orientation",
+							"The orientation to layout children",
 							CLUTTER_TYPE_ORIENTATION,
 							CLUTTER_ORIENTATION_HORIZONTAL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardFillBoxLayoutProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-								_("spacing"),
-								_("The spacing between children"),
+								"spacing",
+								"The spacing between children",
 								0.0f,
 								G_MAXFLOAT,
 								0.0f,
@@ -603,15 +603,15 @@ static void xfdashboard_fill_box_layout_class_init(XfdashboardFillBoxLayoutClass
 
 	XfdashboardFillBoxLayoutProperties[PROP_HOMOGENEOUS]=
 		g_param_spec_boolean("homogeneous",
-								_("Homogeneous"),
-								_("Whether the layout should be homogeneous, i.e. all children get the same size"),
+								"Homogeneous",
+								"Whether the layout should be homogeneous, i.e. all children get the same size",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardFillBoxLayoutProperties[PROP_KEEP_ASPECT]=
 		g_param_spec_boolean("keep-aspect",
-								_("Keep aspect"),
-								_("Whether all children should keep their aspect"),
+								"Keep aspect",
+								"Whether all children should keep their aspect",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

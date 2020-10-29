@@ -278,7 +278,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 	environments=g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 	if(!environments)
 	{
-		g_warning(_("Could not create environment lookup table for PID %d"), inPID);
+		g_warning("Could not create environment lookup table for PID %d", inPID);
 		return(NULL);
 	}
 
@@ -297,7 +297,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 							"Could not read environment varibles for PID %d at %s: %s",
 							inPID,
 							procEnvFile,
-							error ? error->message : _("Unknown error"));
+							error ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);
@@ -351,7 +351,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 		}
 		if(*iter!='=')
 		{
-			g_warning(_("Malformed environment '%s' in environment set for PID %d at %s"),
+			g_warning("Malformed environment '%s' in environment set for PID %d at %s",
 						name,
 						inPID,
 						procEnvFile);
@@ -381,7 +381,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 		 */
 		if(g_hash_table_lookup(environments, name))
 		{
-			g_warning(_("Unexpected duplicate name '%s' in environment set for PID %d at %s: %s = %s"),
+			g_warning("Unexpected duplicate name '%s' in environment set for PID %d at %s: %s = %s",
 						name,
 						inPID,
 						procEnvFile,
@@ -1035,7 +1035,7 @@ static void xfdashboard_application_tracker_init(XfdashboardApplicationTracker *
 	/* Load application database if not done already */
 	if(!xfdashboard_application_database_is_loaded(priv->appDatabase))
 	{
-		g_warning(_("Application database was not initialized. Application tracking might not working."));
+		g_warning("Application database was not initialized. Application tracking might not working.");
 	}
 
 	/* Connect signals */

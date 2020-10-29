@@ -207,53 +207,53 @@ static void xfdashboard_binding_class_init(XfdashboardBindingClass *klass)
 	/* Define properties */
 	XfdashboardBindingProperties[PROP_EVENT_TYPE]=
 		g_param_spec_enum("event-type",
-							_("Event type"),
-							_("The event type this binding is bound to"),
+							"Event type",
+							"The event type this binding is bound to",
 							CLUTTER_TYPE_EVENT_TYPE,
 							CLUTTER_NOTHING,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBindingProperties[PROP_CLASS_NAME]=
 		g_param_spec_string("class-name",
-								_("Class name"),
-								_("Class name of object this binding is bound to"),
+								"Class name",
+								"Class name of object this binding is bound to",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBindingProperties[PROP_KEY]=
 		g_param_spec_uint("key",
-							_("Key"),
-							_("Key code of a keyboard event this binding is bound to"),
+							"Key",
+							"Key code of a keyboard event this binding is bound to",
 							0, G_MAXUINT,
 							0,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBindingProperties[PROP_MODIFIERS]=
 		g_param_spec_flags("modifiers",
-							_("Modifiers"),
-							_("Modifiers this binding is bound to"),
+							"Modifiers",
+							"Modifiers this binding is bound to",
 							CLUTTER_TYPE_MODIFIER_TYPE,
 							0,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBindingProperties[PROP_TARGET]=
 		g_param_spec_string("target",
-								_("Target"),
-								_("Class name of target of this binding"),
+								"Target",
+								"Class name of target of this binding",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBindingProperties[PROP_ACTION]=
 		g_param_spec_string("action",
-								_("Action"),
-								_("Action assigned to this binding"),
+								"Action",
+								"Action assigned to this binding",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBindingProperties[PROP_FLAGS]=
 		g_param_spec_flags("flags",
-								_("Flags"),
-								_("Flags assigned to this binding"),
+								"Flags",
+								"Flags assigned to this binding",
 								XFDASHBOARD_TYPE_BINDING_FLAGS,
 								0,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
@@ -298,7 +298,7 @@ XfdashboardBinding* xfdashboard_binding_new_for_event(const ClutterEvent *inEven
 	binding=XFDASHBOARD_BINDING(g_object_new(XFDASHBOARD_TYPE_BINDING, NULL));
 	if(!binding)
 	{
-		g_warning(_("Failed to create binding instance"));
+		g_warning("Failed to create binding instance");
 		return(NULL);
 	}
 
@@ -444,12 +444,12 @@ void xfdashboard_binding_set_event_type(XfdashboardBinding *self, ClutterEventTy
 		eventEnumValue=g_enum_get_value(eventEnumClass, inType);
 		if(eventEnumValue)
 		{
-			g_warning(_("Cannot set unsupported event type %s at binding"),
+			g_warning("Cannot set unsupported event type %s at binding",
 						eventEnumValue->value_name);
 		}
 			else
 			{
-				g_warning(_("Cannot set invalid event type at binding"));
+				g_warning("Cannot set invalid event type at binding");
 			}
 
 		g_type_class_unref(eventEnumClass);

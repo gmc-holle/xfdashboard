@@ -896,7 +896,7 @@ static gboolean _xfdashboard_workspace_selector_focusable_set_selection(Xfdashbo
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("%s is a child of %s and cannot be selected at %s"),
+		g_warning("%s is a child of %s and cannot be selected at %s",
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
 					G_OBJECT_TYPE_NAME(self));
@@ -914,7 +914,7 @@ static gboolean _xfdashboard_workspace_selector_focusable_set_selection(Xfdashbo
 	}
 
 	/* Setting new selection was unsuccessful if we get here */
-	g_warning(_("Could not determine workspace of %s to set selection at %s"),
+	g_warning("Could not determine workspace of %s to set selection at %s",
 				G_OBJECT_TYPE_NAME(actor),
 				G_OBJECT_TYPE_NAME(self));
 
@@ -970,7 +970,7 @@ static ClutterActor* _xfdashboard_workspace_selector_focusable_find_selection(Xf
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("Cannot lookup selection target at %s because %s is a child of %s"),
+		g_warning("Cannot lookup selection target at %s because %s is a child of %s",
 					G_OBJECT_TYPE_NAME(self),
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>");
@@ -1039,7 +1039,7 @@ static ClutterActor* _xfdashboard_workspace_selector_focusable_find_selection(Xf
 		default:
 			{
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-				g_critical(_("Focusable object %s does not handle selection direction of type %s."),
+				g_critical("Focusable object %s does not handle selection direction of type %s.",
 							G_OBJECT_TYPE_NAME(self),
 							valueName);
 				g_free(valueName);
@@ -1086,7 +1086,7 @@ static gboolean _xfdashboard_workspace_selector_focusable_activate_selection(Xfd
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("%s is a child of %s and cannot be selected at %s"),
+		g_warning("%s is a child of %s and cannot be selected at %s",
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
 					G_OBJECT_TYPE_NAME(self));
@@ -1107,7 +1107,7 @@ static gboolean _xfdashboard_workspace_selector_focusable_activate_selection(Xfd
 	}
 
 	/* Activation was unsuccessful if we get here */
-	g_warning(_("Could not determine workspace of %s to set selection at %s"),
+	g_warning("Could not determine workspace of %s to set selection at %s",
 				G_OBJECT_TYPE_NAME(actor),
 				G_OBJECT_TYPE_NAME(self));
 	return(FALSE);
@@ -1249,47 +1249,47 @@ static void xfdashboard_workspace_selector_class_init(XfdashboardWorkspaceSelect
 	/* Define properties */
 	XfdashboardWorkspaceSelectorProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-								_("Spacing"),
-								_("The spacing between children"),
+								"Spacing",
+								"The spacing between children",
 								0.0, G_MAXFLOAT,
 								0.0,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWorkspaceSelectorProperties[PROP_ORIENTATION]=
 		g_param_spec_enum("orientation",
-							_("Orientation"),
-							_("The orientation to layout children"),
+							"Orientation",
+							"The orientation to layout children",
 							CLUTTER_TYPE_ORIENTATION,
 							DEFAULT_ORIENTATION,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWorkspaceSelectorProperties[PROP_MAX_SIZE]=
 		g_param_spec_float("max-size",
-								_("Maximum size"),
-								_("The maximum size of this actor for opposite direction of orientation"),
+								"Maximum size",
+								"The maximum size of this actor for opposite direction of orientation",
 								0.0, G_MAXFLOAT,
 								DEFAULT_MAX_SIZE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWorkspaceSelectorProperties[PROP_MAX_FRACTION]=
 		g_param_spec_float("max-fraction",
-								_("Maximum fraction"),
-								_("The maximum size of this actor for opposite direction of orientation defined by fraction between 0.0 and 1.0"),
+								"Maximum fraction",
+								"The maximum size of this actor for opposite direction of orientation defined by fraction between 0.0 and 1.0",
 								0.0, G_MAXFLOAT,
 								DEFAULT_MAX_FRACTION,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWorkspaceSelectorProperties[PROP_USING_FRACTION]=
 		g_param_spec_boolean("using-fraction",
-								_("Using fraction"),
-								_("Flag indicating if maximum size is static or defined by fraction between 0.0 and 1.0"),
+								"Using fraction",
+								"Flag indicating if maximum size is static or defined by fraction between 0.0 and 1.0",
 								DEFAULT_USING_FRACTION,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWorkspaceSelectorProperties[PROP_SHOW_CURRENT_MONITOR_ONLY]=
 		g_param_spec_boolean("show-current-monitor-only",
-								_("Show current monitor only"),
-								_("Show only windows of the monitor where this actor is placed"),
+								"Show current monitor only",
+								"Show only windows of the monitor where this actor is placed",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

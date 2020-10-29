@@ -424,7 +424,7 @@ static ClutterActor* _xfdashboard_search_result_container_result_item_actor_new(
 		gchar			*resultItemText;
 
 		resultItemText=g_variant_print(inResultItem, TRUE);
-		g_warning(_("Failed to add actor for result item %s of provider %s: Could not create actor"),
+		g_warning("Failed to add actor for result item %s of provider %s: Could not create actor",
 					resultItemText,
 					G_OBJECT_TYPE_NAME(priv->provider));
 		g_free(resultItemText);
@@ -437,7 +437,7 @@ static ClutterActor* _xfdashboard_search_result_container_result_item_actor_new(
 		gchar			*resultItemText;
 
 		resultItemText=g_variant_print(inResultItem, TRUE);
-		g_critical(_("Failed to add actor for result item %s of provider %s: Actor of type %s is not derived from class %s"),
+		g_critical("Failed to add actor for result item %s of provider %s: Actor of type %s is not derived from class %s",
 					resultItemText,
 					G_OBJECT_TYPE_NAME(priv->provider),
 					G_IS_OBJECT(actor) ? G_OBJECT_TYPE_NAME(actor) : "<unknown>",
@@ -718,7 +718,7 @@ static void _xfdashboard_search_result_container_update_result_items(Xfdashboard
 					gchar		*resultItemText;
 
 					resultItemText=g_variant_print(resultItem, TRUE);
-					g_critical(_("Failed to remove actor for result item %s of provider %s: Actor of type %s is not derived from class %s"),
+					g_critical("Failed to remove actor for result item %s of provider %s: Actor of type %s is not derived from class %s",
 								resultItemText,
 								G_OBJECT_TYPE_NAME(priv->provider),
 								G_IS_OBJECT(actor) ? G_OBJECT_TYPE_NAME(actor) : "<unknown>",
@@ -892,7 +892,7 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_ic
 				gchar							*valueName;
 
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-				g_critical(_("Focusable object %s does not handle selection direction of type %s in icon mode."),
+				g_critical("Focusable object %s does not handle selection direction of type %s in icon mode.",
 							G_OBJECT_TYPE_NAME(self),
 							valueName);
 				g_free(valueName);
@@ -1043,7 +1043,7 @@ static ClutterActor* _xfdashboard_search_result_container_find_selection_from_li
 				gchar						*valueName;
 
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-				g_critical(_("Focusable object %s does not handle selection direction of type %s in list mode."),
+				g_critical("Focusable object %s does not handle selection direction of type %s in list mode.",
 							G_OBJECT_TYPE_NAME(self),
 							valueName);
 				g_free(valueName);
@@ -1250,61 +1250,61 @@ static void xfdashboard_search_result_container_class_init(XfdashboardSearchResu
 	/* Define properties */
 	XfdashboardSearchResultContainerProperties[PROP_PROVIDER]=
 		g_param_spec_object("provider",
-							_("Provider"),
-							_("The search provider this result container is for"),
+							"Provider",
+							"The search provider this result container is for",
 							XFDASHBOARD_TYPE_SEARCH_PROVIDER,
 							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	XfdashboardSearchResultContainerProperties[PROP_ICON]=
 		g_param_spec_string("icon",
-							_("Icon"),
-							_("A themed icon name or file name of icon this container will display. If not set the icon the search provider defines will be used."),
+							"Icon",
+							"A themed icon name or file name of icon this container will display. If not set the icon the search provider defines will be used.",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardSearchResultContainerProperties[PROP_TITLE_FORMAT]=
 		g_param_spec_string("title-format",
-							_("Title format"),
-							_("Format string for title which will contain the name of search provider"),
+							"Title format",
+							"Format string for title which will contain the name of search provider",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardSearchResultContainerProperties[PROP_VIEW_MODE]=
 		g_param_spec_enum("view-mode",
-							_("View mode"),
-							_("View mode of container for result items"),
+							"View mode",
+							"View mode of container for result items",
 							XFDASHBOARD_TYPE_VIEW_MODE,
 							DEFAULT_VIEW_MODE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardSearchResultContainerProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-							_("Spacing"),
-							_("Spacing between each result item"),
+							"Spacing",
+							"Spacing between each result item",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardSearchResultContainerProperties[PROP_PADDING]=
 		g_param_spec_float("padding",
-							_("Padding"),
-							_("Padding between title and item results container"),
+							"Padding",
+							"Padding between title and item results container",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardSearchResultContainerProperties[PROP_INITIAL_RESULTS_SIZE]=
 		g_param_spec_int("initial-results-size",
-							_("Initial results size"),
-							_("The maximum number of results shown initially. 0 means all results"),
+							"Initial results size",
+							"The maximum number of results shown initially. 0 means all results",
 							0, G_MAXINT,
 							DEFAULT_INITIAL_RESULT_SIZE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardSearchResultContainerProperties[PROP_MORE_RESULTS_SIZE]=
 		g_param_spec_int("more-results-size",
-							_("More results size"),
-							_("The number of results to increase current limit by"),
+							"More results size",
+							"The number of results to increase current limit by",
 							0, G_MAXINT,
 							DEFAULT_MORE_RESULT_SIZE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
@@ -1768,7 +1768,7 @@ gboolean xfdashboard_search_result_container_set_selection(XfdashboardSearchResu
 	if(inSelection &&
 		!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
 	{
-		g_warning(_("%s is not a child of %s and cannot be selected"),
+		g_warning("%s is not a child of %s and cannot be selected",
 					G_OBJECT_TYPE_NAME(inSelection),
 					G_OBJECT_TYPE_NAME(self));
 
@@ -1833,7 +1833,7 @@ ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSear
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("Cannot lookup selection target at %s because %s is a child of %s but not of this container"),
+		g_warning("Cannot lookup selection target at %s because %s is a child of %s but not of this container",
 					G_OBJECT_TYPE_NAME(self),
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>");
@@ -1880,7 +1880,7 @@ ClutterActor* xfdashboard_search_result_container_find_selection(XfdashboardSear
 				gchar					*valueName;
 
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-				g_critical(_("Focusable object %s does not handle selection direction of type %s."),
+				g_critical("Focusable object %s does not handle selection direction of type %s.",
 							G_OBJECT_TYPE_NAME(self),
 							valueName);
 				g_free(valueName);
@@ -1913,7 +1913,7 @@ void xfdashboard_search_result_container_activate_selection(XfdashboardSearchRes
 	/* Check that selection is a child of this actor */
 	if(!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
 	{
-		g_warning(_("%s is not a child of %s and cannot be activated"),
+		g_warning("%s is not a child of %s and cannot be activated",
 					G_OBJECT_TYPE_NAME(inSelection),
 					G_OBJECT_TYPE_NAME(self));
 

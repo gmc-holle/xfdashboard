@@ -153,7 +153,7 @@ void xfdashboard_notify(ClutterActor *inSender,
 		 */
 		if(!stage)
 		{
-			g_critical(_("Could find any stage to show notification: %s"), text);
+			g_critical("Could find any stage to show notification: %s", text);
 		}
 	}
 

@@ -129,7 +129,7 @@ static void _xfdashboard_window_tracker_backend_gdk_on_stage_active_window_chang
 	stageWnckWindow=xfdashboard_window_tracker_window_x11_get_window(stageWindow);
 	if(!stageWnckWindow)
 	{
-		g_critical(_("Could not get real stage window to handle signal 'active-window-changed'"));
+		g_critical("Could not get real stage window to handle signal 'active-window-changed'");
 		return;
 	}
 
@@ -191,7 +191,7 @@ static void _xfdashboard_window_tracker_backend_gdk_on_stage_screen_size_changed
 	 */
 	if(!wnck_screen_net_wm_supports(wnck_window_get_screen(stageWindow), "_NET_WM_FULLSCREEN_MONITORS"))
 	{
-		g_warning(_("Keep window fullscreen on primary monitor because window manager does not support _NET_WM_FULLSCREEN_MONITORS."));
+		g_warning("Keep window fullscreen on primary monitor because window manager does not support _NET_WM_FULLSCREEN_MONITORS.");
 		return;
 	}
 
@@ -444,7 +444,7 @@ static ClutterStage* _xfdashboard_window_tracker_backend_gdk_window_tracker_back
 							"Could not get wnck window for window %s@%p",
 							G_OBJECT_TYPE_NAME(stageWindow),
 							stageWindow);
-		g_critical(_("Could not get real stage window to find stage"));
+		g_critical("Could not get real stage window to find stage");
 		return(NULL);
 	}
 
@@ -457,7 +457,7 @@ static ClutterStage* _xfdashboard_window_tracker_backend_gdk_window_tracker_back
 							stageWnckWindow,
 							G_OBJECT_TYPE_NAME(stageWindow),
 							stageWindow);
-		g_critical(_("Could not get real stage window to find stage"));
+		g_critical("Could not get real stage window to find stage");
 		return(NULL);
 	}
 
@@ -524,7 +524,7 @@ static void _xfdashboard_window_tracker_backend_gdk_window_tracker_backend_show_
 	stageGdkWindow=clutter_gdk_get_stage_window(xfdashboard_window_tracker_window_get_stage(inStageWindow));
 	if(!stageGdkWindow)
 	{
-		g_critical(_("Could not get real stage window to show"));
+		g_critical("Could not get real stage window to show");
 		return;
 	}
 
@@ -642,7 +642,7 @@ static void _xfdashboard_window_tracker_backend_gdk_window_tracker_backend_hide_
 	stageGdkWindow=clutter_gdk_get_stage_window(xfdashboard_window_tracker_window_get_stage(inStageWindow));
 	if(!stageGdkWindow)
 	{
-		g_critical(_("Could not get real stage window to show"));
+		g_critical("Could not get real stage window to show");
 		return;
 	}
 

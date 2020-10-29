@@ -117,7 +117,7 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 		g_set_error(outError,
 					XFDASHBOARD_THEME_ERROR,
 					XFDASHBOARD_THEME_ERROR_THEME_NOT_FOUND,
-					_("Theme '%s' not found"),
+					"Theme '%s' not found",
 					priv->themeName);
 
 		/* Return FALSE to indicate error */
@@ -589,7 +589,7 @@ static void _xfdashboard_theme_set_theme_name(XfdashboardTheme *self, const gcha
 	if(priv->themeName)
 	{
 		/* Show error message */
-		g_critical(_("Cannot change theme name to '%s' because it is already set to '%s'"),
+		g_critical("Cannot change theme name to '%s' because it is already set to '%s'",
 					inThemeName,
 					priv->themeName);
 
@@ -600,7 +600,7 @@ static void _xfdashboard_theme_set_theme_name(XfdashboardTheme *self, const gcha
 	themePath=_xfdashboard_theme_lookup_path_for_theme(self, inThemeName);
 	if(!themePath)
 	{
-		g_critical(_("Theme '%s' not found"), inThemeName);
+		g_critical("Theme '%s' not found", inThemeName);
 
 		/* Return here because looking up path failed */
 		return;
@@ -798,29 +798,29 @@ void xfdashboard_theme_class_init(XfdashboardThemeClass *klass)
 	/* Define properties */
 	XfdashboardThemeProperties[PROP_NAME]=
 		g_param_spec_string("theme-name",
-							_("Theme name"),
-							_("Short name of theme which was used to lookup theme and folder name where theme is stored in"),
+							"Theme name",
+							"Short name of theme which was used to lookup theme and folder name where theme is stored in",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	XfdashboardThemeProperties[PROP_PATH]=
 		g_param_spec_string("theme-path",
-							_("Theme path"),
-							_("Path where theme was found and loaded from"),
+							"Theme path",
+							"Path where theme was found and loaded from",
 							NULL,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardThemeProperties[PROP_DISPLAY_NAME]=
 		g_param_spec_string("theme-display-name",
-							_("Theme display name"),
-							_("The name of theme"),
+							"Theme display name",
+							"The name of theme",
 							NULL,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardThemeProperties[PROP_COMMENT]=
 		g_param_spec_string("theme-comment",
-							_("Theme comment"),
-							_("The comment of theme used as description"),
+							"Theme comment",
+							"The comment of theme used as description",
 							NULL,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
@@ -918,7 +918,7 @@ gboolean xfdashboard_theme_load(XfdashboardTheme *self,
 		g_set_error(outError,
 					XFDASHBOARD_THEME_ERROR,
 					XFDASHBOARD_THEME_ERROR_ALREADY_LOADED,
-					_("Theme '%s' was already loaded"),
+					"Theme '%s' was already loaded",
 					priv->themeName);
 
 		return(FALSE);

@@ -60,7 +60,7 @@ static GParamSpec* XfdashboardSearchProviderProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_SEARCH_PROVIDER_WARN_NOT_IMPLEMENTED(self, vfunc) \
-	g_warning(_("Search provider of type %s does not implement required virtual function XfdashboardSearchProvider::%s"), \
+	g_warning("Search provider of type %s does not implement required virtual function XfdashboardSearchProvider::%s",\
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
@@ -165,8 +165,8 @@ static void xfdashboard_search_provider_class_init(XfdashboardSearchProviderClas
 	/* Define properties */
 	XfdashboardSearchProviderProperties[PROP_PROVIDER_ID]=
 		g_param_spec_string("provider-id",
-							_("Provider ID"),
-							_("The internal ID used to register this type of search provider"),
+							"Provider ID",
+							"The internal ID used to register this type of search provider",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 

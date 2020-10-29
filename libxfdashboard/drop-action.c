@@ -75,7 +75,7 @@ static void _xfdashboard_drop_action_register_target(XfdashboardDropAction *self
 	/* Check if target is already registered */
 	if(g_slist_find(_xfdashboard_drop_action_targets, self))
 	{
-		g_warning(_("Target %s is already registered"), G_OBJECT_TYPE_NAME(self));
+		g_warning("Target %s is already registered", G_OBJECT_TYPE_NAME(self));
 		return;
 	}
 

@@ -292,7 +292,7 @@ gboolean xfdashboard_search_manager_register(XfdashboardSearchManager *self, con
 	if(inProviderType==XFDASHBOARD_TYPE_SEARCH_PROVIDER ||
 		g_type_is_a(inProviderType, XFDASHBOARD_TYPE_SEARCH_PROVIDER)!=TRUE)
 	{
-		g_warning(_("Search provider %s of type %s is not a %s and cannot be registered"),
+		g_warning("Search provider %s of type %s is not a %s and cannot be registered",
 					inID,
 					g_type_name(inProviderType),
 					g_type_name(XFDASHBOARD_TYPE_SEARCH_PROVIDER));
@@ -302,7 +302,7 @@ gboolean xfdashboard_search_manager_register(XfdashboardSearchManager *self, con
 	/* Check if search provider is registered already */
 	if(_xfdashboard_search_manager_entry_find_list_entry_by_id(self, inID))
 	{
-		g_warning(_("Search provider %s of type %s is registered already"),
+		g_warning("Search provider %s of type %s is registered already",
 					inID,
 					g_type_name(inProviderType));
 		return(FALSE);
@@ -317,7 +317,7 @@ gboolean xfdashboard_search_manager_register(XfdashboardSearchManager *self, con
 	data=_xfdashboard_search_manager_entry_new(inID, inProviderType);
 	if(!data)
 	{
-		g_warning(_("Failed to register search provider %s of type %s"),
+		g_warning("Failed to register search provider %s of type %s",
 					inID,
 					g_type_name(inProviderType));
 		return(FALSE);
@@ -346,7 +346,7 @@ gboolean xfdashboard_search_manager_unregister(XfdashboardSearchManager *self, c
 	iter=_xfdashboard_search_manager_entry_find_list_entry_by_id(self, inID);
 	if(!iter)
 	{
-		g_warning(_("Search provider %s is not registered and cannot be unregistered"), inID);
+		g_warning("Search provider %s is not registered and cannot be unregistered", inID);
 		return(FALSE);
 	}
 
@@ -428,7 +428,7 @@ GObject* xfdashboard_search_manager_create_provider(XfdashboardSearchManager *se
 	data=_xfdashboard_search_manager_entry_find_data_by_id(self, inID);
 	if(!data)
 	{
-		g_warning(_("Cannot create search provider %s because it is not registered"), inID);
+		g_warning("Cannot create search provider %s because it is not registered", inID);
 		return(NULL);
 	}
 

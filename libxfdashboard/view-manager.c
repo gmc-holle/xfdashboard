@@ -287,7 +287,7 @@ gboolean xfdashboard_view_manager_register(XfdashboardViewManager *self, const g
 	if(inViewType==XFDASHBOARD_TYPE_VIEW ||
 		g_type_is_a(inViewType, XFDASHBOARD_TYPE_VIEW)!=TRUE)
 	{
-		g_warning(_("View %s of type %s is not a %s and cannot be registered"),
+		g_warning("View %s of type %s is not a %s and cannot be registered",
 					inID,
 					g_type_name(inViewType),
 					g_type_name(XFDASHBOARD_TYPE_VIEW));
@@ -297,7 +297,7 @@ gboolean xfdashboard_view_manager_register(XfdashboardViewManager *self, const g
 	/* Check if view is registered already */
 	if(_xfdashboard_view_manager_entry_find_list_entry_by_id(self, inID))
 	{
-		g_warning(_("View %s of type %s is registered already"),
+		g_warning("View %s of type %s is registered already",
 					inID,
 					g_type_name(inViewType));
 		return(FALSE);
@@ -312,7 +312,7 @@ gboolean xfdashboard_view_manager_register(XfdashboardViewManager *self, const g
 	data=_xfdashboard_view_manager_entry_new(inID, inViewType);
 	if(!data)
 	{
-		g_warning(_("Failed to register view %s of type %s"),
+		g_warning("Failed to register view %s of type %s",
 					inID,
 					g_type_name(inViewType));
 		return(FALSE);
@@ -341,7 +341,7 @@ gboolean xfdashboard_view_manager_unregister(XfdashboardViewManager *self, const
 	iter=_xfdashboard_view_manager_entry_find_list_entry_by_id(self, inID);
 	if(!iter)
 	{
-		g_warning(_("View %s is not registered and cannot be unregistered"), inID);
+		g_warning("View %s is not registered and cannot be unregistered", inID);
 		return(FALSE);
 	}
 
@@ -423,7 +423,7 @@ GObject* xfdashboard_view_manager_create_view(XfdashboardViewManager *self, cons
 	data=_xfdashboard_view_manager_entry_find_data_by_id(self, inID);
 	if(!data)
 	{
-		g_warning(_("Cannot create view %s because it is not registered"), inID);
+		g_warning("Cannot create view %s because it is not registered", inID);
 		return(NULL);
 	}
 

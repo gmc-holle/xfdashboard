@@ -129,7 +129,7 @@ static void _xfdashboard_bindings_pool_parse_set_error(XfdashboardBindingsPoolPa
 	if(inParserData)
 	{
 		g_prefix_error(&tempError,
-						_("Error on line %d char %d: "),
+						"Error on line %d char %d: ",
 						inParserData->lastLine,
 						inParserData->lastPosition);
 	}
@@ -199,7 +199,7 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 	parts=xfdashboard_split_string(inText, "+- \t");
 	if(!parts)
 	{
-		g_warning(_("Could not parse empty key-binding '%s'."), inText);
+		g_warning("Could not parse empty key-binding '%s'.", inText);
 		return(FALSE);
 	}
 
@@ -224,7 +224,7 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 			/* Check that modifier ends at '>' so it is surrounded by '<' and '>' */
 			if(!g_str_has_suffix(*iter, ">"))
 			{
-				g_warning(_("Could not parse modifier '%s' of key-binding '%s' because it is not enclosed by '<...>'"),
+				g_warning("Could not parse modifier '%s' of key-binding '%s' because it is not enclosed by '<...>'",
 							*iter,
 							inText);
 
@@ -247,7 +247,7 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 
 			if(!wasModifier)
 			{
-				g_warning(_("Could not parse unknown modifier '%s' of key-binding '%s'"),
+				g_warning("Could not parse unknown modifier '%s' of key-binding '%s'",
 							*iter,
 							inText);
 							
@@ -269,7 +269,7 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 			 */
 			if(key)
 			{
-				g_warning(_("Could not parse '%s' of key-binding '%s' because it is already a key assigned."),
+				g_warning("Could not parse '%s' of key-binding '%s' because it is already a key assigned.",
 							*iter,
 							inText);
 
@@ -284,7 +284,7 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 			key=gdk_keyval_from_name(*iter);
 			if(key==GDK_KEY_VoidSymbol || key==0)
 			{
-				g_warning(_("Could not parse '%s' of key-binding '%s'"), *iter, inText);
+				g_warning("Could not parse '%s' of key-binding '%s'", *iter, inText);
 
 				/* Free allocated resources */
 				g_strfreev(parts);
@@ -303,7 +303,7 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 
 	if(!key && !modifiers)
 	{
-		g_warning(_("Invalid key-binding '%s' as neither a key nor a modifier was assigned."), inText);
+		g_warning("Invalid key-binding '%s' as neither a key nor a modifier was assigned.", inText);
 		return(FALSE);
 	}
 
@@ -346,7 +346,7 @@ static void _xfdashboard_bindings_pool_parse_general_no_text_nodes(GMarkupParseC
 												inContext,
 												outError,
 												XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-												_("Unexpected text node '%s' at tag <%s>"),
+												"Unexpected text node '%s' at tag <%s>",
 												realText,
 												parents ? (gchar*)parents->data : "document");
 	}
@@ -376,7 +376,7 @@ static void _xfdashboard_bindings_pool_parse_general_action_text_node(GMarkupPar
 												inContext,
 												outError,
 												XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-												_("Missing action"));
+												"Missing action");
 
 		/* Release allocated resources */
 		if(data->lastBinding)
@@ -402,7 +402,8 @@ static void _xfdashboard_bindings_pool_parse_general_action_text_node(GMarkupPar
 												inContext,
 												outError,
 												XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-												_("Missing binding to set action '%s'"), action);
+												"Missing binding to set action '%s'",
+												action);
 
 		/* Release allocated resources */
 		if(data->lastBinding)
@@ -455,7 +456,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 												inContext,
 												outError,
 												XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-												_("Unknown tag <%s>"),
+												"Unknown tag <%s>",
 												inElementName);
 		return;
 	}
@@ -526,7 +527,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 														inContext,
 														outError,
 														XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-														_("Missing attribute 'code' for key"));
+														"Missing attribute 'code' for key");
 
 			/* Release allocated resources */
 			if(keycode) g_free(keycode);
@@ -546,7 +547,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 														inContext,
 														outError,
 														XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-														_("Could not translate key '%s'"),
+														"Could not translate key '%s'",
 														keycode);
 
 			/* Release allocated resources */
@@ -582,7 +583,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 																inContext,
 																outError,
 																XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-																_("Unknown value '%s' for attribute 'when'"),
+																"Unknown value '%s' for attribute 'when'",
 																when);
 
 					/* Release allocated resources */
@@ -605,7 +606,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 														inContext,
 														outError,
 														XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
-														_("Could not initialize binding for key-binding"));
+														"Could not initialize binding for key-binding");
 
 			/* Release allocated resources */
 			if(keycode) g_free(keycode);
@@ -635,7 +636,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 															inContext,
 															outError,
 															XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
-															_("Cannot transform attribute 'allow-unfocusable-target' from type '%s' to type '%s'"),
+															"Cannot transform attribute 'allow-unfocusable-target' from type '%s' to type '%s'",
 															g_type_name(G_VALUE_TYPE(&allowUnfocusableTargetsInitialValue)),
 															g_type_name(G_VALUE_TYPE(&allowUnfocusableTargetsTransformedValue)));
 
@@ -686,7 +687,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 											inContext,
 											outError,
 											XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-											_("Tag <%s> cannot contain tag <%s>"),
+											"Tag <%s> cannot contain tag <%s>",
 											_xfdashboard_bindings_pool_get_tag_by_id(currentTag),
 											inElementName);
 }
@@ -726,7 +727,7 @@ static void _xfdashboard_bindings_pool_parse_document_start(GMarkupParseContext 
 												inContext,
 												outError,
 												XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-												_("Unknown tag <%s>"),
+												"Unknown tag <%s>",
 												inElementName);
 		return;
 	}
@@ -766,7 +767,7 @@ static void _xfdashboard_bindings_pool_parse_document_start(GMarkupParseContext 
 											inContext,
 											outError,
 											XFDASHBOARD_BINDINGS_POOL_ERROR_MALFORMED,
-											_("Tag <%s> cannot contain tag <%s>"),
+											"Tag <%s> cannot contain tag <%s>",
 											_xfdashboard_bindings_pool_get_tag_by_id(currentTag),
 											inElementName);
 }
@@ -851,7 +852,7 @@ static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBi
 		g_set_error(outError,
 					XFDASHBOARD_BINDINGS_POOL_ERROR,
 					XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
-					_("Could not set up parser data for file %s"),
+					"Could not set up parser data for file %s",
 					inPath);
 		return(FALSE);
 	}
@@ -863,7 +864,7 @@ static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBi
 		g_set_error(outError,
 					XFDASHBOARD_BINDINGS_POOL_ERROR,
 					XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
-					_("Could not create parser for file %s"),
+					"Could not create parser for file %s",
 					inPath);
 
 		/* Release allocated resources */
@@ -892,7 +893,7 @@ static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBi
 		g_set_error(outError,
 					XFDASHBOARD_BINDINGS_POOL_ERROR,
 					XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
-					_("Could not set up hash-table at parser data for file %s"),
+					"Could not set up hash-table at parser data for file %s",
 					inPath);
 
 		/* Release allocated resources */
@@ -922,7 +923,7 @@ static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBi
 		g_set_error(outError,
 					XFDASHBOARD_BINDINGS_POOL_ERROR,
 					XFDASHBOARD_BINDINGS_POOL_ERROR_PARSER_INTERNAL_ERROR,
-					_("Unexpected binding state set at parser data for file %s"),
+					"Unexpected binding state set at parser data for file %s",
 					inPath);
 		success=FALSE;
 	}
@@ -1092,7 +1093,7 @@ gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **
 		g_set_error(outError,
 					XFDASHBOARD_BINDINGS_POOL_ERROR,
 					XFDASHBOARD_BINDINGS_POOL_ERROR_INTERNAL_ERROR,
-					_("Could not set up hash-table to store bindings"));
+					"Could not set up hash-table to store bindings");
 
 		/* Return error result */
 		return(FALSE);
@@ -1199,7 +1200,7 @@ gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **
 		g_set_error(outError,
 					XFDASHBOARD_BINDINGS_POOL_ERROR,
 					XFDASHBOARD_BINDINGS_POOL_ERROR_FILE_NOT_FOUND,
-					_("No bindings configuration file found."));
+					"No bindings configuration file found.");
 
 		/* Return error result */
 		return(FALSE);

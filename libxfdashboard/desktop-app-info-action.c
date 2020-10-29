@@ -183,8 +183,8 @@ static void xfdashboard_desktop_app_info_action_class_init(XfdashboardDesktopApp
 	 */
 	XfdashboardDesktopAppInfoActionProperties[PROP_NAME]=
 		g_param_spec_string("name",
-								_("Name"),
-								_("Name of the action"),
+								"Name",
+								"Name of the action",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -196,8 +196,8 @@ static void xfdashboard_desktop_app_info_action_class_init(XfdashboardDesktopApp
 	 */
 	XfdashboardDesktopAppInfoActionProperties[PROP_ICON_NAME]=
 		g_param_spec_string("icon-name",
-								_("Icon name"),
-								_("Icon name of action"),
+								"Icon name",
+								"Icon name of action",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -208,8 +208,8 @@ static void xfdashboard_desktop_app_info_action_class_init(XfdashboardDesktopApp
 	 */
 	XfdashboardDesktopAppInfoActionProperties[PROP_COMMAND]=
 		g_param_spec_string("command",
-								_("Name"),
-								_("Application command of action"),
+								"Name",
+								"Application command of action",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

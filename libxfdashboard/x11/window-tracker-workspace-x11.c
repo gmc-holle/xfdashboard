@@ -82,12 +82,12 @@ static GParamSpec* XfdashboardWindowTrackerWorkspaceX11Properties[PROP_LAST]={ 0
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_X11_WARN_NO_WORKSPACE(self)       \
-	g_critical(_("No wnck workspace wrapped at %s in called function %s"),     \
+	g_critical("No wnck workspace wrapped at %s in called function %s",        \
 				G_OBJECT_TYPE_NAME(self),                                      \
 				__func__);
 
 #define XFDASHBOARD_WINDOW_TRACKER_WORKSPACE_X11_WARN_WRONG_WORKSPACE(self)    \
-	g_critical(_("Got signal from wrong wnck workspace wrapped at %s in called function %s"),\
+	g_critical("Got signal from wrong wnck workspace wrapped at %s in called function %s",\
 				G_OBJECT_TYPE_NAME(self),                                      \
 				__func__);
 
@@ -382,8 +382,8 @@ void xfdashboard_window_tracker_workspace_x11_class_init(XfdashboardWindowTracke
 	/* Define properties */
 	XfdashboardWindowTrackerWorkspaceX11Properties[PROP_WORKSPACE]=
 		g_param_spec_object("workspace",
-							_("Window"),
-							_("The mapped wnck workspace"),
+							"Window",
+							"The mapped wnck workspace",
 							WNCK_TYPE_WORKSPACE,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 

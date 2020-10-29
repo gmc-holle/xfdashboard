@@ -271,7 +271,7 @@ static GValue* _xfdashboard_theme_css_get_argument(XfdashboardThemeCSS *self,
 		_xfdashboard_theme_css_set_error(self,
 											outError,
 											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
-											_("Cannot get argument %d because only %d arguments are available"),
+											"Cannot get argument %d because only %d arguments are available",
 											inArgumentIndex,
 											numberArguments);
 		return(NULL);
@@ -284,7 +284,7 @@ static GValue* _xfdashboard_theme_css_get_argument(XfdashboardThemeCSS *self,
 		_xfdashboard_theme_css_set_error(self,
 											outError,
 											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
-											_("Cannot allocate memory for argument %d"),
+											"Cannot allocate memory for argument %d",
 											inArgumentIndex);
 		return(NULL);
 	}
@@ -302,7 +302,7 @@ static GValue* _xfdashboard_theme_css_get_argument(XfdashboardThemeCSS *self,
 		_xfdashboard_theme_css_set_error(self,
 											outError,
 											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
-											_("Cannot transform argument %d from type '%s' to type '%s'"),
+											"Cannot transform argument %d from type '%s' to type '%s'",
 											inArgumentIndex,
 											g_type_name(G_VALUE_TYPE(&argValue)),
 											g_type_name(G_VALUE_TYPE(resultValue)));
@@ -339,7 +339,7 @@ static gboolean _xfdashboard_theme_css_parse_string_to_color_component(Xfdashboa
 		_xfdashboard_theme_css_set_error(self,
 											outError,
 											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
-											_("Missing string to convert to color component value."));
+											"Missing string to convert to color component value.");
 		return(FALSE);
 	}
 
@@ -362,7 +362,7 @@ static gboolean _xfdashboard_theme_css_parse_string_to_color_component(Xfdashboa
 				gchar		*message;
 
 				/* Set error message */
-				message=g_strdup_printf(_("Cannot convert string '%s' to color component value."), inString);
+				message=g_strdup_printf("Cannot convert string '%s' to color component value.", inString);
 				_xfdashboard_theme_css_set_error(self,
 													outError,
 													XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
@@ -382,7 +382,7 @@ static gboolean _xfdashboard_theme_css_parse_string_to_color_component(Xfdashboa
 		gchar		*message;
 
 		/* Set error message */
-		message=g_strdup_printf(_("Color component value %.2f out of range"), componentValue);
+		message=g_strdup_printf("Color component value %.2f out of range", componentValue);
 		_xfdashboard_theme_css_set_error(self,
 											outError,
 											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
@@ -740,7 +740,7 @@ static gboolean _xfdashboard_theme_css_function_mix(XfdashboardThemeCSS *self,
 		clutter_color_free(color1);
 
 		/* Set error message */
-		message=g_strdup_printf(_("Factor %.2f is out of range"), factor);
+		message=g_strdup_printf("Factor %.2f is out of range", factor);
 		_xfdashboard_theme_css_set_error(self,
 											outError,
 											XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
@@ -845,7 +845,7 @@ static gboolean _xfdashboard_theme_css_function_rgb_rgba(XfdashboardThemeCSS *se
 			gchar		*message;
 
 			/* Set error message */
-			message=g_strdup_printf(_("Alpha factor %.2f is out of range"), alpha);
+			message=g_strdup_printf("Alpha factor %.2f is out of range", alpha);
 			_xfdashboard_theme_css_set_error(self,
 												outError,
 												XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR,
@@ -898,7 +898,7 @@ static void _xfdashboard_theme_css_register_function(XfdashboardThemeCSS *self,
 	/* Check if a function with this name is already registered */
 	if(g_hash_table_lookup_extended(priv->registeredFunctions, inName, NULL, NULL))
 	{
-		g_warning(_("CSS function '%s' is already registered."), inName);
+		g_warning("CSS function '%s' is already registered.", inName);
 		return;
 	}
 
@@ -941,7 +941,7 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 								NULL,
 								NULL,
 								NULL,
-								_("An identifier must follow '@'"),
+								"An identifier must follow '@'",
 								FALSE);
 		return(NULL);
 	}
@@ -1054,7 +1054,7 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 														NULL,
 														NULL,
 														NULL,
-														_("An identifier must follow '@'"),
+														"An identifier must follow '@'",
 														FALSE);
 							}
 						break;
@@ -1080,7 +1080,7 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 														NULL,
 														NULL,
 														NULL,
-														_("Missing function argument"),
+														"Missing function argument",
 														FALSE);
 							}
 						break;
@@ -1104,7 +1104,7 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 							error=TRUE;
 
 							/* Set error message */
-							message=g_strdup_printf(_("Invalid character '%c' in function argument"), (gchar)token);
+							message=g_strdup_printf("Invalid character '%c' in function argument", (gchar)token);
 							g_scanner_unexp_token(inScopeScanner,
 													G_TOKEN_ERROR,
 													NULL,
@@ -1129,7 +1129,7 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 														NULL,
 														NULL,
 														NULL,
-														_("Invalid character in function argument"),
+														"Invalid character in function argument",
 														FALSE);
 							}
 						break;
@@ -1166,7 +1166,7 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 										NULL,
 										NULL,
 										NULL,
-										_("Missing ')' after function"),
+										"Missing ')' after function",
 										FALSE);
 			}
 		}
@@ -1181,7 +1181,7 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 										NULL,
 										NULL,
 										NULL,
-										_("Missing '(' after function"),
+										"Missing '(' after function",
 										FALSE);
 			}
 
@@ -1220,7 +1220,7 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 						error=TRUE;
 
 						/* Set error message */
-						errorMessage=g_strdup_printf(_("Could not transform result of function '%s' to a string"),
+						errorMessage=g_strdup_printf("Could not transform result of function '%s' to a string",
 														identifier);
 						g_scanner_unexp_token(inScopeScanner,
 												G_TOKEN_ERROR,
@@ -1250,18 +1250,18 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 										"Calling function %s with %d arguments failed: %s",
 										identifier,
 										g_list_length(arguments),
-										(functionError && functionError->message) ? functionError->message : _("Unknown error"));
+										(functionError && functionError->message) ? functionError->message : "Unknown error");
 
 					/* Set error message */
 					if(functionError && functionError->message)
 					{
-						message=g_strdup_printf(_("Function '%s' failed with error: %s"),
+						message=g_strdup_printf("Function '%s' failed with error: %s",
 													identifier,
 													functionError->message);
 					}
 						else
 						{
-							message=g_strdup_printf(_("Function '%s' failed!"),
+							message=g_strdup_printf("Function '%s' failed!",
 														identifier);
 						}
 
@@ -1300,7 +1300,7 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 		 */
 		g_critical("Indefinte recursion of @-constant '%s' detected - aborting parsing", inRecursionIdentifier);
 
-		errorMessage=g_strdup_printf(_("Cannot resolve identifier '@%s' because of indefinite recursion"), identifier);
+		errorMessage=g_strdup_printf("Cannot resolve identifier '@%s' because of indefinite recursion", identifier);
 		g_scanner_unexp_token(inScopeScanner,
 								G_TOKEN_ERROR,
 								NULL,
@@ -1354,7 +1354,7 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 	}
 
 	/* Identifier was unresolvable so print error message */
-	errorMessage=g_strdup_printf(_("Unresolvable identifier '@%s'"), identifier);
+	errorMessage=g_strdup_printf("Unresolvable identifier '@%s'", identifier);
 	g_scanner_unexp_token(inScopeScanner,
 							G_TOKEN_ERROR,
 							NULL,
@@ -1506,7 +1506,7 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_by_string(Xfdashboard
 	{
 		gchar		*error;
 
-		error=g_strdup_printf(_("Possible recursion detected because call depth is too deep while resolving '%s'"),
+		error=g_strdup_printf("Possible recursion detected because call depth is too deep while resolving '%s'",
 								inText);
 		g_scanner_unexp_token(inScopeScanner,
 								G_TOKEN_ERROR,
@@ -1597,7 +1597,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 								NULL,
 								NULL,
 								NULL,
-								_("Invalid property name"),
+								"Invalid property name",
 								TRUE);
 
 		return(G_TOKEN_IDENTIFIER);
@@ -1617,7 +1617,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 								NULL,
 								NULL,
 								NULL,
-								_("Property names and values must be separated by colon"),
+								"Property names and values must be separated by colon",
 								TRUE);
 
 		/* Return error result */
@@ -1673,7 +1673,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 										NULL,
 										NULL,
 										NULL,
-										_("Invalid property value"),
+										"Invalid property value",
 										TRUE);
 
 				/* Return error result */
@@ -1698,7 +1698,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 								NULL,
 								NULL,
 								NULL,
-								_("Property values must end with semi-colon"),
+								"Property values must end with semi-colon",
 								TRUE);
 
 		/* Return error result */
@@ -1841,7 +1841,7 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 								NULL,
 								NULL,
 								NULL,
-								_("Missing '(' after @import keyword."),
+								"Missing '(' after @import keyword.",
 								TRUE);
 		return(G_TOKEN_LEFT_PAREN);
 	}
@@ -1882,7 +1882,7 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 										NULL,
 										NULL,
 										NULL,
-										_("Unexpected token in filename to import"),
+										"Unexpected token in filename to import",
 										TRUE);
 				return(token);
 		}
@@ -1902,7 +1902,7 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 								NULL,
 								NULL,
 								NULL,
-								_("Missing filename to import"),
+								"Missing filename to import",
 								TRUE);
 		return(G_TOKEN_ERROR);
 	}
@@ -1924,7 +1924,7 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 								NULL,
 								NULL,
 								NULL,
-								_("Missing closing ')' at @import keyword."),
+								"Missing closing ')' at @import keyword.",
 								TRUE);
 		return(G_TOKEN_RIGHT_PAREN);
 	}
@@ -1991,9 +1991,9 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 		gchar					*errorMessage;
 
 		/* Build error message */
-		errorMessage=g_strdup_printf(_("Failed to import CSS file '%s': %s"),
+		errorMessage=g_strdup_printf("Failed to import CSS file '%s': %s",
 										filename,
-										error && error->message ? error->message : _("Unknown error"));
+										error && error->message ? error->message : "Unknown error");
 
 		/* Show parser error message */
 		g_scanner_unexp_token(inScanner,
@@ -2098,7 +2098,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 									NULL,
 									NULL,
 									NULL,
-									_("Mixing selectors and '@' identifiers or defining more than one '@' identifier at once is not allowed"),
+									"Mixing selectors and '@' identifiers or defining more than one '@' identifier at once is not allowed",
 									TRUE);
 			return(G_TOKEN_LEFT_CURLY);
 		}
@@ -2119,7 +2119,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 											NULL,
 											NULL,
 											NULL,
-											_("A selector must have been defined before other one can follow comma-separated."),
+											"A selector must have been defined before other one can follow comma-separated.",
 											TRUE);
 					return(token);
 				}
@@ -2153,7 +2153,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 											NULL,
 											NULL,
 											NULL,
-											_("An identifier must follow '@'"),
+											"An identifier must follow '@'",
 											TRUE);
 					return(token);
 				}
@@ -2185,13 +2185,13 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 						gchar		*message;
 
 						/* Build warning message */
-						message=g_strdup_printf(_("Skipping block of unknown identifier '@%s'"),
+						message=g_strdup_printf("Skipping block of unknown identifier '@%s'",
 												inScanner->value.v_identifier);
 
 						/* Set warning */
 						g_scanner_unexp_token(inScanner,
 												G_TOKEN_IDENTIFIER,
-												_("'@' identifier"),
+												"'@' identifier",
 												NULL,
 												NULL,
 												message,
@@ -2220,7 +2220,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 											NULL,
 											NULL,
 											NULL,
-											_("Unhandled selector"),
+											"Unhandled selector",
 											TRUE);
 					return(G_TOKEN_LEFT_CURLY);
 				}
@@ -2237,7 +2237,7 @@ static GTokenType _xfdashboard_theme_css_parse_css_ruleset(XfdashboardThemeCSS *
 										NULL,
 										NULL,
 										NULL,
-										_("Unhandled selector"),
+										"Unhandled selector",
 										TRUE);
 				return(G_TOKEN_LEFT_CURLY);
 		}
@@ -2385,7 +2385,7 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 			_xfdashboard_theme_css_set_error(self,
 												outError,
 												XFDASHBOARD_THEME_CSS_ERROR_UNSUPPORTED_STREAM,
-												_("The input stream of type %s is not supported"),
+												"The input stream of type %s is not supported",
 												G_OBJECT_TYPE_NAME(inStream));
 
 			/* Destroy scanner */
@@ -2417,13 +2417,13 @@ static gboolean _xfdashboard_theme_css_parse_css(XfdashboardThemeCSS *self,
 								NULL,
 								NULL,
 								NULL,
-								_("Parser did not reach end of stream"),
+								"Parser did not reach end of stream",
 								TRUE);
 
 		_xfdashboard_theme_css_set_error(self,
 											outError,
 											XFDASHBOARD_THEME_CSS_ERROR_PARSER_ERROR,
-											_("Parser did not reach end of stream"));
+											"Parser did not reach end of stream");
 
 		success=FALSE;
 
@@ -2574,8 +2574,8 @@ void xfdashboard_theme_css_class_init(XfdashboardThemeCSSClass *klass)
 	/* Define properties */
 	XfdashboardThemeCSSProperties[PROP_THEME_PATH]=
 		g_param_spec_string("theme-path",
-							_("Theme path"),
-							_("Path of theme loading from"),
+							"Theme path",
+							"Path of theme loading from",
 							NULL,
 							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
@@ -2662,7 +2662,7 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 		_xfdashboard_theme_css_set_error(self,
 											outError,
 											XFDASHBOARD_THEME_CSS_ERROR_UNSUPPORTED_STREAM,
-											_("Could not get file for path '%s'"),
+											"Could not get file for path '%s'",
 											inPath);
 
 		return(FALSE);

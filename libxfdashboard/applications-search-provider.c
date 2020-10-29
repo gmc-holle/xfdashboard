@@ -251,7 +251,7 @@ static gboolean _xfdashboard_applications_search_provider_save_statistics(GError
 		g_set_error(outError,
 						G_IO_ERROR,
 						g_io_error_from_errno(errno_save),
-						_("Could not create configuration folder for applications search provider at %s: %s"),
+						"Could not create configuration folder for applications search provider at %s: %s",
 						fileFolder,
 						g_strerror(errno_save));
 
@@ -356,7 +356,7 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 			g_set_error(outError,
 							G_IO_ERROR,
 							G_IO_ERROR_FAILED,
-							_("Statistics were not initialized"));
+							"Statistics were not initialized");
 
 			return(FALSE);
 	}
@@ -376,7 +376,7 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 			g_set_error(outError,
 							G_IO_ERROR,
 							G_IO_ERROR_NOT_FOUND,
-							_("Could not build path to statistics file of applications search provider"));
+							"Could not build path to statistics file of applications search provider");
 
 			return(FALSE);
 		}
@@ -480,7 +480,7 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 		stats=_xfdashboard_applications_search_provider_statistics_new();
 		if(!stats)
 		{
-			g_critical(_("Could not create statistics data for application '%s' of applications search provider"), appID);
+			g_critical("Could not create statistics data for application '%s' of applications search provider", appID);
 			continue;
 		}
 
@@ -493,7 +493,7 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 														&error);
 			if(error)
 			{
-				g_critical(_("Could not get value from group [%s] for application %s from statistics file of applications search provider: %s"),
+				g_critical("Could not get value from group [%s] for application %s from statistics file of applications search provider: %s",
 							XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_USED_COUNTER_GROUP,
 							appID,
 							error->message);
@@ -562,9 +562,9 @@ static void _xfdashboard_applications_search_provider_destroy_statistics(void)
 	/* Save statistics to file */
 	if(!_xfdashboard_applications_search_provider_save_statistics(&error))
 	{
-		g_critical(_("Failed to save statistics of applications search provider to %s: %s"),
+		g_critical("Failed to save statistics of applications search provider to %s: %s",
 					_xfdashboard_applications_search_provider_statistics.filename,
-					error ? error->message : _("Unknown error"));
+					error ? error->message : "Unknown error");
 		if(error) g_clear_error(&error);
 	}
 
@@ -620,9 +620,9 @@ static void _xfdashboard_applications_search_provider_create_statistics(Xfdashbo
 	/* Load statistics from file */
 	if(!_xfdashboard_applications_search_provider_load_statistics(self, &error))
 	{
-		g_critical(_("Failed to load statistics of applications search provider from %s: %s"),
+		g_critical("Failed to load statistics of applications search provider from %s: %s",
 					_xfdashboard_applications_search_provider_statistics.filename,
-					error ? error->message : _("Unknown error"));
+					error ? error->message : "Unknown error");
 		if(error) g_clear_error(&error);
 
 		/* Destroy hash-table to avoid the half-loaded hash-table being stored again
@@ -754,9 +754,9 @@ static void _xfdashboard_applications_search_provider_on_popup_menu_item_launch(
 								_("Launching application '%s' failed: %s"),
 								g_app_info_get_display_name(appInfo),
 								(error && error->message) ? error->message : _("unknown error"));
-			g_warning(_("Launching application '%s' failed: %s"),
+			g_warning("Launching application '%s' failed: %s",
 						g_app_info_get_display_name(appInfo),
-						(error && error->message) ? error->message : _("unknown error"));
+						(error && error->message) ? error->message : "unknown error");
 			if(error) g_error_free(error);
 		}
 			else
@@ -811,7 +811,7 @@ static void _xfdashboard_applications_search_provider_on_popup_menu(XfdashboardA
 		appInfo=xfdashboard_application_button_get_app_info(button);
 		if(!appInfo)
 		{
-			g_critical(_("No application information available for clicked application button."));
+			g_critical("No application information available for clicked application button.");
 			return;
 		}
 
@@ -1217,7 +1217,7 @@ static XfdashboardSearchResultSet* _xfdashboard_applications_search_provider_get
 	terms=g_new(gchar*, numberTerms+1);
 	if(!terms)
 	{
-		g_critical(_("Could not allocate memory to copy search criteria for case-insensitive search"));
+		g_critical("Could not allocate memory to copy search criteria for case-insensitive search");
 		return(NULL);
 	}
 
@@ -1310,7 +1310,7 @@ static ClutterActor* _xfdashboard_applications_search_provider_create_result_act
 	if(!appInfo) appInfo=xfdashboard_desktop_app_info_new_from_desktop_id(g_variant_get_string(inResultItem, NULL));
 	if(!appInfo)
 	{
-		g_warning(_("Cannot create actor for desktop ID '%s' in result set of %s"),
+		g_warning("Cannot create actor for desktop ID '%s' in result set of %s",
 					g_variant_get_string(inResultItem, NULL),
 					G_OBJECT_TYPE_NAME(inProvider));
 		return(NULL);
@@ -1466,8 +1466,8 @@ static void xfdashboard_applications_search_provider_class_init(XfdashboardAppli
 	/* Define properties */
 	XfdashboardApplicationsSearchProviderProperties[PROP_SORT_MODE]=
 		g_param_spec_flags("sort-mode",
-							_("Sort mode"),
-							_("Defines how to sort matching applications"),
+							"Sort mode",
+							"Defines how to sort matching applications",
 							XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE,
 							XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);

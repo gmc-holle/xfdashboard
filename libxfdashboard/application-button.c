@@ -240,7 +240,7 @@ static void _xfdashboard_application_button_on_popup_menu_item_application_actio
 	/* Get action to execute */
 	if(!XFDASHBOARD_IS_DESKTOP_APP_INFO(priv->appInfo))
 	{
-		g_warning(_("Could not get information about application '%s'"),
+		g_warning("Could not get information about application '%s'",
 					g_app_info_get_display_name(priv->appInfo));
 		return;
 	}
@@ -248,7 +248,7 @@ static void _xfdashboard_application_button_on_popup_menu_item_application_actio
 	action=XFDASHBOARD_DESKTOP_APP_INFO_ACTION(g_object_get_data(G_OBJECT(inMenuItem), "popup-menu-item-app-action"));
 	if(!action)
 	{
-		g_warning(_("Could not get application action for application '%s'"),
+		g_warning("Could not get application action for application '%s'",
 					g_app_info_get_display_name(priv->appInfo));
 		return;
 	}
@@ -422,29 +422,29 @@ static void xfdashboard_application_button_class_init(XfdashboardApplicationButt
 	/* Define properties */
 	XfdashboardApplicationButtonProperties[PROP_APP_INFO]=
 		g_param_spec_object("app-info",
-								_("Application information"),
-								_("The application information whose title and description to display"),
+								"Application information",
+								"The application information whose title and description to display",
 								G_TYPE_APP_INFO,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationButtonProperties[PROP_SHOW_DESCRIPTION]=
 		g_param_spec_boolean("show-description",
-								_("Show description"),
-								_("Show also description next to tile"),
+								"Show description",
+								"Show also description next to tile",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationButtonProperties[PROP_FORMAT_TITLE_ONLY]=
 		g_param_spec_string("format-title-only",
-								_("Format title only"),
-								_("Format string used when only title is display"),
+								"Format title only",
+								"Format string used when only title is display",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationButtonProperties[PROP_FORMAT_TITLE_DESCRIPTION]=
 		g_param_spec_string("format-title-description",
-								_("Format title and description"),
-								_("Format string used when title and description is display. First argument is title and second one is description."),
+								"Format title and description",
+								"Format string used when title and description is display. First argument is title and second one is description.",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -743,9 +743,9 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 							_("Launching application '%s' failed: %s"),
 							xfdashboard_application_button_get_display_name(self),
 							_("No information available for application"));
-		g_warning(_("Launching application '%s' failed: %s"),
+		g_warning("Launching application '%s' failed: %s",
 					xfdashboard_application_button_get_display_name(self),
-					_("No information available for application"));
+					"No information available for application");
 		return(FALSE);
 	}
 
@@ -761,9 +761,9 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 							_("Launching application '%s' failed: %s"),
 							xfdashboard_application_button_get_display_name(self),
 							(error && error->message) ? error->message : _("unknown error"));
-		g_warning(_("Launching application '%s' failed: %s"),
+		g_warning("Launching application '%s' failed: %s",
 					xfdashboard_application_button_get_display_name(self),
-					(error && error->message) ? error->message : _("unknown error"));
+					(error && error->message) ? error->message : "unknown error");
 		if(error) g_error_free(error);
 	}
 		else

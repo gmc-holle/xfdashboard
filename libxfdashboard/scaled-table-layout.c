@@ -500,8 +500,8 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 	/* Define properties */
 	XfdashboardScaledTableLayoutProperties[PROP_ROW_SPACING]=
 		g_param_spec_float("row-spacing",
-								_("Row spacing"),
-								_("The spacing between rows in table"),
+								"Row spacing",
+								"The spacing between rows in table",
 								0.0f,
 								G_MAXFLOAT,
 								0.0f,
@@ -509,8 +509,8 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 
 	XfdashboardScaledTableLayoutProperties[PROP_COLUMN_SPACING]=
 		g_param_spec_float("column-spacing",
-								_("Column spacing"),
-								_("The spacing between columns in table"),
+								"Column spacing",
+								"The spacing between columns in table",
 								0.0f,
 								G_MAXFLOAT,
 								0.0f,
@@ -518,22 +518,22 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 
 	XfdashboardScaledTableLayoutProperties[PROP_RELATIVE_SCALE]=
 		g_param_spec_boolean("relative-scale",
-								_("Relative scale"),
-								_("Whether all children should be scaled relatively to largest child"),
+								"Relative scale",
+								"Whether all children should be scaled relatively to largest child",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScaledTableLayoutProperties[PROP_PREVENT_UPSCALING]=
 		g_param_spec_boolean("prevent-upscaling",
-								_("Prevent upscaling"),
-								_("Whether this layout manager should prevent upsclaing any child beyond its real size"),
+								"Prevent upscaling",
+								"Whether this layout manager should prevent upsclaing any child beyond its real size",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScaledTableLayoutProperties[PROP_NUMBER_CHILDREN]=
 		g_param_spec_float("number-children",
-								_("Number children"),
-								_("Current number of child actors in this layout"),
+								"Number children",
+								"Current number of child actors in this layout",
 								0,
 								G_MAXINT,
 								0,
@@ -541,8 +541,8 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 
 	XfdashboardScaledTableLayoutProperties[PROP_ROWS]=
 		g_param_spec_float("rows",
-								_("Rows"),
-								_("Current number of rows in this layout"),
+								"Rows",
+								"Current number of rows in this layout",
 								0,
 								G_MAXINT,
 								0,
@@ -550,8 +550,8 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 
 	XfdashboardScaledTableLayoutProperties[PROP_COLUMNS]=
 		g_param_spec_float("columns",
-								_("Columns"),
-								_("Current number of columns in this layout"),
+								"Columns",
+								"Current number of columns in this layout",
 								0,
 								G_MAXINT,
 								0,

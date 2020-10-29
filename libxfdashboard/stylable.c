@@ -59,7 +59,7 @@ static guint XfdashboardStylableSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_STYLABLE_WARN_NOT_IMPLEMENTED(self, vfunc) \
-	g_warning(_("Object of type %s does not implement required virtual function XfdashboardStylable::%s"), \
+	g_warning("Object of type %s does not implement required virtual function XfdashboardStylable::%s",\
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
@@ -307,7 +307,7 @@ static void _xfdashboard_stylable_real_invalidate(XfdashboardStylable *self)
 			}
 				else
 				{
-					g_warning(_("Could not transform CSS string value for property '%s' to type %s of class %s"),
+					g_warning("Could not transform CSS string value for property '%s' to type %s of class %s",
 								propertyName,
 								g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertyValueParamSpec)),
 								G_OBJECT_TYPE_NAME(self));
@@ -379,15 +379,15 @@ void xfdashboard_stylable_default_init(XfdashboardStylableInterface *iface)
 	{
 		/* Define properties */
 		property=g_param_spec_string("style-classes",
-										_("Style classes"),
-										_("String representing list of classes separated by '.'"),
+										"Style classes",
+										"String representing list of classes separated by '.'",
 										NULL,
 										G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 		g_object_interface_install_property(iface, property);
 
 		property=g_param_spec_string("style-pseudo-classes",
-										_("Style pseudo-classes"),
-										_("String representing list of pseudo-classes, e.g. current state, separated by ':'"),
+										"Style pseudo-classes",
+										"String representing list of pseudo-classes, e.g. current state, separated by ':'",
 										NULL,
 										G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 		g_object_interface_install_property(iface, property);
@@ -568,7 +568,7 @@ gboolean xfdashboard_stylable_add_stylable_property(XfdashboardStylable *self,
 	spec=g_object_class_find_property(G_OBJECT_GET_CLASS(self), inProperty);
 	if(!spec)
 	{
-		g_warning(_("Could not find property '%s' for class %s"),
+		g_warning("Could not find property '%s' for class %s",
 					inProperty,
 					G_OBJECT_TYPE_NAME(self));
 		return(FALSE);

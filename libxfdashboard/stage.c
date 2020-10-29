@@ -253,7 +253,7 @@ static XfdashboardView* _xfdashboard_stage_get_view_to_switch_to(XfdashboardStag
 	if(priv->switchToView)
 	{
 		view=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), priv->switchToView);
-		if(!view) g_warning(_("Will not switch to unknown view '%s'"), priv->switchToView);
+		if(!view) g_warning("Will not switch to unknown view '%s'", priv->switchToView);
 
 		/* Regardless if we could find view by its internal name or not
 		 * reset variable because the switch should happen once only.
@@ -280,7 +280,7 @@ static XfdashboardView* _xfdashboard_stage_get_view_to_switch_to(XfdashboardStag
 		{
 			/* Lookup view by its ID set configured settings */
 			view=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewID);
-			if(!view) g_warning(_("Cannot switch to unknown view '%s'"), resumeViewID);
+			if(!view) g_warning("Cannot switch to unknown view '%s'", resumeViewID);
 
 			/* Release allocated resources */
 			g_free(resumeViewID);
@@ -466,7 +466,7 @@ static void _xfdashboard_stage_on_searchbox_text_changed(XfdashboardStage *self,
 	searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
 	if(searchView==NULL)
 	{
-		g_critical(_("Cannot perform search because search view was not found in viewpad."));
+		g_critical("Cannot perform search because search view was not found in viewpad.");
 		return;
 	}
 
@@ -777,7 +777,7 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 
 		/* Find search view */
 		searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
-		if(!searchView) g_critical(_("Cannot find search view in viewpad to reset view."));
+		if(!searchView) g_critical("Cannot find search view in viewpad to reset view.");
 
 		/* Find view to switch to if requested */
 		resumeView=_xfdashboard_stage_get_view_to_switch_to(self);
@@ -945,7 +945,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 																			-1);
 				if(!interface->actor)
 				{
-					g_critical(_("Could not build interface '%s' from theme '%s'"),
+					g_critical("Could not build interface '%s' from theme '%s'",
 								XFDASHBOARD_THEME_LAYOUT_PRIMARY,
 								xfdashboard_theme_get_theme_name(inTheme));
 
@@ -958,7 +958,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 
 				if(!XFDASHBOARD_IS_STAGE_INTERFACE(interface->actor))
 				{
-					g_critical(_("Interface '%s' from theme '%s' must be an actor of type %s"),
+					g_critical("Interface '%s' from theme '%s' must be an actor of type %s",
 								XFDASHBOARD_THEME_LAYOUT_PRIMARY,
 								xfdashboard_theme_get_theme_name(inTheme),
 								g_type_name(XFDASHBOARD_TYPE_STAGE_INTERFACE));
@@ -988,7 +988,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 
 					if(!XFDASHBOARD_IS_STAGE_INTERFACE(interface->actor))
 					{
-						g_critical(_("Interface '%s' from theme '%s' must be an actor of type %s"),
+						g_critical("Interface '%s' from theme '%s' must be an actor of type %s",
 									XFDASHBOARD_THEME_LAYOUT_SECONDARY,
 									xfdashboard_theme_get_theme_name(inTheme),
 									g_type_name(XFDASHBOARD_TYPE_STAGE_INTERFACE));
@@ -1022,7 +1022,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 																		-1);
 			if(!interface->actor)
 			{
-				g_critical(_("Could not build interface '%s' from theme '%s'"),
+				g_critical("Could not build interface '%s' from theme '%s'",
 							XFDASHBOARD_THEME_LAYOUT_PRIMARY,
 							xfdashboard_theme_get_theme_name(inTheme));
 
@@ -1035,7 +1035,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 
 			if(!XFDASHBOARD_IS_STAGE_INTERFACE(interface->actor))
 			{
-				g_critical(_("Interface '%s' from theme '%s' must be an actor of type %s"),
+				g_critical("Interface '%s' from theme '%s' must be an actor of type %s",
 							XFDASHBOARD_THEME_LAYOUT_PRIMARY,
 							xfdashboard_theme_get_theme_name(inTheme),
 							g_type_name(XFDASHBOARD_TYPE_STAGE_INTERFACE));
@@ -1092,7 +1092,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 				priv->primaryInterface=interface->actor;
 				g_object_add_weak_pointer(G_OBJECT(priv->primaryInterface), &priv->primaryInterface);
 			}
-				else g_critical(_("Invalid multiple stages for primary monitor"));
+				else g_critical("Invalid multiple stages for primary monitor");
 
 			/* Get children from built stage and connect signals */
 			priv->viewSelector=NULL;
@@ -1435,7 +1435,7 @@ static void _xfdashboard_stage_on_monitor_added(XfdashboardStage *self,
 
 	if(!XFDASHBOARD_IS_STAGE_INTERFACE(interface))
 	{
-		g_critical(_("Interface '%s' from theme '%s' must be an actor of type %s"),
+		g_critical("Interface '%s' from theme '%s' must be an actor of type %s",
 					XFDASHBOARD_THEME_LAYOUT_SECONDARY,
 					xfdashboard_theme_get_theme_name(theme),
 					g_type_name(XFDASHBOARD_TYPE_STAGE_INTERFACE));
@@ -1807,23 +1807,23 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 	/* Define properties */
 	XfdashboardStageProperties[PROP_BACKGROUND_IMAGE_TYPE]=
 		g_param_spec_enum("background-image-type",
-							_("Background image type"),
-							_("Background image type"),
+							"Background image type",
+							"Background image type",
 							XFDASHBOARD_TYPE_STAGE_BACKGROUND_IMAGE_TYPE,
 							XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardStageProperties[PROP_BACKGROUND_COLOR]=
 		clutter_param_spec_color("background-color",
-									_("Background color"),
-									_("Color of stage's background"),
+									"Background color",
+									"Color of stage's background",
 									NULL,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardStageProperties[PROP_SWITCH_TO_VIEW]=
 		g_param_spec_string("switch-to-view",
-							_("Switch to view"),
-							_("Switch to this named view as soon as stage gets visible"),
+							"Switch to view",
+							"Switch to this named view as soon as stage gets visible",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

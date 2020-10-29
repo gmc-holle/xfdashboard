@@ -61,7 +61,7 @@ static guint XfdashboardWindowTrackerWindowSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, vfunc)\
-	g_warning(_("Object of type %s does not implement required virtual function XfdashboardWindowTrackerWindow::%s"),\
+	g_warning("Object of type %s does not implement required virtual function XfdashboardWindowTrackerWindow::%s",\
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
@@ -186,16 +186,16 @@ static void xfdashboard_window_tracker_window_default_init(XfdashboardWindowTrac
 	{
 		/* Define properties */
 		property=g_param_spec_flags("state",
-									_("State"),
-									_("The state of window"),
+									"State",
+									"The state of window",
 									XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_STATE,
 									0,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 		g_object_interface_install_property(iface, property);
 
 		property=g_param_spec_flags("actions",
-									_("Actions"),
-									_("The possible actions at window"),
+									"Actions",
+									"The possible actions at window",
 									XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW_ACTION,
 									0,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
@@ -784,7 +784,7 @@ ClutterStage* xfdashboard_window_tracker_window_get_stage(XfdashboardWindowTrack
 	backend=xfdashboard_window_tracker_backend_get_default();
 	if(!backend)
 	{
-		g_critical(_("Could not get default window tracker backend"));
+		g_critical("Could not get default window tracker backend");
 		return(NULL);
 	}
 
@@ -825,7 +825,7 @@ void xfdashboard_window_tracker_window_show_stage(XfdashboardWindowTrackerWindow
 	backend=xfdashboard_window_tracker_backend_get_default();
 	if(!backend)
 	{
-		g_critical(_("Could not get default window tracker backend"));
+		g_critical("Could not get default window tracker backend");
 		return;
 	}
 
@@ -861,7 +861,7 @@ void xfdashboard_window_tracker_window_hide_stage(XfdashboardWindowTrackerWindow
 	backend=xfdashboard_window_tracker_backend_get_default();
 	if(!backend)
 	{
-		g_critical(_("Could not get default window tracker backend"));
+		g_critical("Could not get default window tracker backend");
 		return;
 	}
 

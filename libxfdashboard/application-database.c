@@ -129,8 +129,8 @@ static void _xfdashboard_application_database_on_application_menu_reload_require
 						garcon_menu_element_get_name(GARCON_MENU_ELEMENT(menu)));
 	if(!_xfdashboard_application_database_load_application_menu(self, &error))
 	{
-		g_critical(_("Could not reload application menu: %s"),
-					error ? error->message : _("Unknown error"));
+		g_critical("Could not reload application menu: %s",
+					error ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		if(error) g_error_free(error);
@@ -262,7 +262,7 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 	monitorData=_xfdashboard_application_database_monitor_data_find_by_monitor(self, monitor);
 	if(!monitorData)
 	{
-		g_warning(_("Received event from unknown file monitor"));
+		g_warning("Received event from unknown file monitor");
 		return;
 	}
 
@@ -288,7 +288,7 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 		fileMonitorData=_xfdashboard_application_database_monitor_data_new(inFile);
 		if(!fileMonitorData)
 		{
-			g_warning(_("Unable to create file monitor for newly created directory '%s'"), filePath);
+			g_warning("Unable to create file monitor for newly created directory '%s'", filePath);
 
 			/* Release allocated resources */
 			if(filePath) g_free(filePath);
@@ -299,9 +299,9 @@ static void _xfdashboard_application_database_on_file_monitor_changed(Xfdashboar
 		fileMonitorData->monitor=g_file_monitor(inFile, G_FILE_MONITOR_NONE, NULL, &error);
 		if(!fileMonitorData->monitor)
 		{
-			g_warning(_("Unable to create file monitor for '%s': %s"),
+			g_warning("Unable to create file monitor for '%s': %s",
 						filePath,
-						error ? error->message : _("Unknown error"));
+						error ? error->message : "Unknown error");
 
 			/* Release allocated resources */
 			if(fileMonitorData) _xfdashboard_application_database_monitor_data_free(fileMonitorData);
@@ -773,7 +773,7 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 				g_set_error(outError,
 								G_IO_ERROR,
 								G_IO_ERROR_FAILED,
-								_("Unable to build path to '%s%s%s' to search for desktop files"),
+								"Unable to build path to '%s%s%s' to search for desktop files",
 								path,
 								G_DIR_SEPARATOR_S,
 								g_file_info_get_name(info));
@@ -854,7 +854,7 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 			}
 				else
 				{
-					g_warning(_("Could not determine desktop ID for '%s'"),
+					g_warning("Could not determine desktop ID for '%s'",
 								g_file_info_get_name(info));
 				}
 
@@ -944,7 +944,7 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 		g_set_error(outError,
 						G_IO_ERROR,
 						G_IO_ERROR_FAILED,
-						_("Unable to create file monitor for '%s'"),
+						"Unable to create file monitor for '%s'",
 						path);
 
 		/* Release allocated resources */
@@ -960,9 +960,9 @@ static gboolean _xfdashboard_application_database_load_applications_recursive(Xf
 	{
 #if defined(__unix__)
 		/* Workaround for FreeBSD with Glib bug (file/directory monitors cannot be created) */
-		g_warning(_("[workaround for FreeBSD] Cannot initialize file monitor for path '%s' but will not fail: %s"),
+		g_warning("[workaround for FreeBSD] Cannot initialize file monitor for path '%s' but will not fail: %s",
 					path,
-					error ? error->message : _("Unknown error"));
+					error ? error->message : "Unknown error");
 
 		/* Clear error as this error will not fail at FreeBSD */
 		g_clear_error(&error);
@@ -1356,8 +1356,8 @@ static void xfdashboard_application_database_class_init(XfdashboardApplicationDa
 	/* Define properties */
 	XfdashboardApplicationDatabaseProperties[PROP_IS_LOADED]=
 		g_param_spec_boolean("is-loaded",
-								_("Is loaded"),
-								_("Flag indicating if application database has been initialized and loaded successfully"),
+								"Is loaded",
+								"Flag indicating if application database has been initialized and loaded successfully",
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 

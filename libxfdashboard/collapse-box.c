@@ -292,7 +292,7 @@ static void _xfdashboard_collapse_box_container_iface_actor_added(ClutterContain
 															G_CALLBACK(_xfdashboard_collapse_box_on_child_actor_request_mode_changed),
 															self);
 	}
-		else g_warning(_("More than one actor added to %s - result are unexpected"), G_OBJECT_TYPE_NAME(self));
+		else g_warning("More than one actor added to %s - results are unexpected", G_OBJECT_TYPE_NAME(self));
 
 	/* Chain up old function */
 	if(parentInterfaceClass->actor_added) parentInterfaceClass->actor_added(inContainer, inActor);
@@ -611,32 +611,32 @@ static void xfdashboard_collapse_box_class_init(XfdashboardCollapseBoxClass *kla
 	/* Define properties */
 	XfdashboardCollapseBoxProperties[PROP_COLLAPSED]=
 		g_param_spec_boolean("collapsed",
-								_("Collapsed"),
-								_("If TRUE this actor is collapsed otherwise it is expanded to real size"),
+								"Collapsed",
+								"If TRUE this actor is collapsed otherwise it is expanded to real size",
 								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardCollapseBoxProperties[PROP_COLLAPSED_SIZE]=
 		g_param_spec_float("collapsed-size",
-							_("Collapsed size"),
-							_("The size of actor when collapsed"),
+							"Collapsed size",
+							"The size of actor when collapsed",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardCollapseBoxProperties[PROP_COLLAPSE_ORIENTATION]=
 		g_param_spec_enum("collapse-orientation",
-							_("Collapse orientation"),
-							_("Orientation of area being visible in collapsed state"),
+							"Collapse orientation",
+							"Orientation of area being visible in collapsed state",
 							XFDASHBOARD_TYPE_ORIENTATION,
 							XFDASHBOARD_ORIENTATION_LEFT,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardCollapseBoxProperties[PROP_COLLAPSE_PROGRESS]=
 		g_param_spec_float("collapse-progress",
-							_("Collapse progress"),
-							_("The progress fraction used to animate collapse or expand. The fraction must be between 0.0 and 1.0 and "
-								"defines the progress between collapsed size (fraction of 0.0) and preferred size (fraction of 1.0)."),
+							"Collapse progress",
+							"The progress fraction used to animate collapse or expand. The fraction must be between 0.0 and 1.0 and "
+								"defines the progress between collapsed size (fraction of 0.0) and preferred size (fraction of 1.0).",
 							0.0f, 1.0f,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);

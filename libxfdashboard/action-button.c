@@ -133,7 +133,7 @@ static void _xfdashboard_action_button_clicked(XfdashboardButton *inButton)
 		signalID=g_signal_lookup(priv->action, G_OBJECT_TYPE(targetObject));
 		if(!signalID)
 		{
-			g_warning(_("Object type %s does not provide action '%s'"),
+			g_warning("Object type %s does not provide action '%s'",
 						G_OBJECT_TYPE_NAME(targetObject),
 						priv->action);
 			continue;
@@ -145,7 +145,7 @@ static void _xfdashboard_action_button_clicked(XfdashboardButton *inButton)
 		/* Check if signal is an action signal */
 		if(!(signalData.signal_flags & G_SIGNAL_ACTION))
 		{
-			g_warning(_("Action '%s' at object type %s is not an action signal."),
+			g_warning("Action '%s' at object type %s is not an action signal.",
 						priv->action,
 						G_OBJECT_TYPE_NAME(targetObject));
 			continue;
@@ -164,7 +164,7 @@ static void _xfdashboard_action_button_clicked(XfdashboardButton *inButton)
 			/* Check if signal wants the right type of return value */
 			if(signalData.return_type!=returnValueType)
 			{
-				g_critical(_("Action '%s' at object type %s wants return value of type %s but expected is %s."),
+				g_critical("Action '%s' at object type %s wants return value of type %s but expected is %s.",
 							priv->action,
 							G_OBJECT_TYPE_NAME(targetObject),
 							g_type_name(signalData.return_type),
@@ -175,7 +175,7 @@ static void _xfdashboard_action_button_clicked(XfdashboardButton *inButton)
 			parameterCount=sizeof(parameterTypes)/sizeof(GType);
 			if(signalData.n_params!=parameterCount)
 			{
-				g_critical(_("Action '%s' at object type %s wants %u parameters but expected are %u."),
+				g_critical("Action '%s' at object type %s wants %u parameters but expected are %u.",
 							priv->action,
 							G_OBJECT_TYPE_NAME(targetObject),
 							signalData.n_params,
@@ -186,7 +186,7 @@ static void _xfdashboard_action_button_clicked(XfdashboardButton *inButton)
 			{
 				if(signalData.param_types[i]!=parameterTypes[i])
 				{
-					g_critical(_("Action '%s' at object type %s wants type %s at parameter %u but type %s is expected."),
+					g_critical("Action '%s' at object type %s wants type %s at parameter %u but type %s is expected.",
 								priv->action,
 								G_OBJECT_TYPE_NAME(targetObject),
 								g_type_name(signalData.param_types[i]),
@@ -444,8 +444,8 @@ static void xfdashboard_action_button_class_init(XfdashboardActionButtonClass *k
 	 */
 	XfdashboardActionButtonProperties[PROP_TARGET]=
 		g_param_spec_string("target",
-								_("Target"),
-								_("The target actor's class name to lookup and to perform action at"),
+								"Target",
+								"The target actor's class name to lookup and to perform action at",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -456,8 +456,8 @@ static void xfdashboard_action_button_class_init(XfdashboardActionButtonClass *k
 	 */
 	XfdashboardActionButtonProperties[PROP_ACTION]=
 		g_param_spec_string("action",
-								_("Action"),
-								_("The action signal to perform at target"),
+								"Action",
+								"The action signal to perform at target",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

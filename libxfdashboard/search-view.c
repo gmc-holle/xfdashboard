@@ -1105,7 +1105,7 @@ static gboolean _xfdashboard_search_view_focusable_set_selection(XfdashboardFocu
 	data=_xfdashboard_search_view_get_provider_data_by_actor(self, inSelection);
 	if(!data)
 	{
-		g_warning(_("%s is not a child of any provider at %s and cannot be selected"),
+		g_warning("%s is not a child of any provider at %s and cannot be selected",
 					G_OBJECT_TYPE_NAME(inSelection),
 					G_OBJECT_TYPE_NAME(self));
 
@@ -1509,7 +1509,7 @@ static ClutterActor* _xfdashboard_search_view_focusable_find_selection(Xfdashboa
 				gchar					*valueName;
 
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-				g_critical(_("Focusable object %s and provider %s do not handle selection direction of type %s."),
+				g_critical("Focusable object %s and provider %s do not handle selection direction of type %s.",
 							G_OBJECT_TYPE_NAME(self),
 							newSelectionProvider->provider ? G_OBJECT_TYPE_NAME(newSelectionProvider->provider) : "<unknown provider>",
 							valueName);
@@ -1545,7 +1545,7 @@ static gboolean _xfdashboard_search_view_focusable_activate_selection(Xfdashboar
 	providerData=_xfdashboard_search_view_get_provider_data_by_actor(self, inSelection);
 	if(!providerData)
 	{
-		g_warning(_("%s is not a child of any provider at %s and cannot be activated"),
+		g_warning("%s is not a child of any provider at %s and cannot be activated",
 					G_OBJECT_TYPE_NAME(inSelection),
 					G_OBJECT_TYPE_NAME(self));
 

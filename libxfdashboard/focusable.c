@@ -79,7 +79,7 @@ static guint XfdashboardFocusableSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_FOCUSABLE_WARN_NOT_IMPLEMENTED(self, vfunc) \
-	g_warning(_("Object of type %s does not implement required virtual function XfdashboardFocusable::%s"), \
+	g_warning("Object of type %s does not implement required virtual function XfdashboardFocusable::%s",\
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
@@ -182,7 +182,7 @@ static void _xfdashboard_focusable_on_selection_unavailable(XfdashboardFocusable
 			success=iface->set_selection(self, newSelection);
 			if(!success)
 			{
-				g_critical(_("Old selection %s at %s is unavailable but setting new selection either to %s or nothing failed!"),
+				g_critical("Old selection %s at %s is unavailable but setting new selection either to %s or nothing failed!",
 							G_OBJECT_TYPE_NAME(oldSelection),
 							G_OBJECT_TYPE_NAME(self),
 							newSelection ? G_OBJECT_TYPE_NAME(newSelection) : "<nil>");

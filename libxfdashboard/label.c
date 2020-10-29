@@ -1237,112 +1237,112 @@ static void xfdashboard_label_class_init(XfdashboardLabelClass *klass)
 	/* Define properties */
 	XfdashboardLabelProperties[PROP_PADDING]=
 		g_param_spec_float("padding",
-							_("Padding"),
-							_("Padding between background and elements"),
+							"Padding",
+							"Padding between background and elements",
 							0.0f, G_MAXFLOAT,
 							4.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardLabelProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-							_("Spacing"),
-							_("Spacing between text and icon"),
+							"Spacing",
+							"Spacing between text and icon",
 							0.0f, G_MAXFLOAT,
 							4.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardLabelProperties[PROP_STYLE]=
 		g_param_spec_enum("label-style",
-							_("Label style"),
-							_("Style of button showing text and/or icon"),
+							"Label style",
+							"Style of button showing text and/or icon",
 							XFDASHBOARD_TYPE_LABEL_STYLE,
 							XFDASHBOARD_LABEL_STYLE_TEXT,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardLabelProperties[PROP_ICON_NAME]=
 		g_param_spec_string("icon-name",
-							_("Icon name"),
-							_("Themed icon name or file name of icon"),
+							"Icon name",
+							"Themed icon name or file name of icon",
 							N_(""),
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLabelProperties[PROP_ICON_GICON]=
 		g_param_spec_object("icon-gicon",
-							_("Icon GIcon"),
-							_("The GIcon of icon"),
+							"Icon GIcon",
+							"The GIcon of icon",
 							G_TYPE_ICON,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLabelProperties[PROP_ICON_IMAGE]=
 		g_param_spec_object("icon-image",
-							_("Icon image"),
-							_("Image of icon"),
+							"Icon image",
+							"Image of icon",
 							CLUTTER_TYPE_IMAGE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLabelProperties[PROP_ICON_SYNC_SIZE]=
 		g_param_spec_boolean("sync-icon-size",
-								_("Synchronize icon size"),
-								_("Synchronize icon size with text size"),
+								"Synchronize icon size",
+								"Synchronize icon size with text size",
 								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLabelProperties[PROP_ICON_SIZE]=
 		g_param_spec_uint("icon-size",
-							_("Icon size"),
-							_("Size of icon if size of icon is not synchronized. -1 is valid for icon images and sets icon image's default size."),
+							"Icon size",
+							"Size of icon if size of icon is not synchronized. -1 is valid for icon images and sets icon image's default size.",
 							1, G_MAXUINT,
 							16,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLabelProperties[PROP_ICON_ORIENTATION]=
 		g_param_spec_enum("icon-orientation",
-							_("Icon orientation"),
-							_("Orientation of icon to label"),
+							"Icon orientation",
+							"Orientation of icon to label",
 							XFDASHBOARD_TYPE_ORIENTATION,
 							XFDASHBOARD_ORIENTATION_LEFT,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardLabelProperties[PROP_TEXT]=
 		g_param_spec_string("text",
-							_("Label text"),
-							_("Text of label"),
+							"Label text",
+							"Text of label",
 							N_(""),
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLabelProperties[PROP_TEXT_FONT]=
 		g_param_spec_string("font",
-							_("Font"),
-							_("Font of label"),
+							"Font",
+							"Font of label",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLabelProperties[PROP_TEXT_COLOR]=
 		clutter_param_spec_color("color",
-									_("Color"),
-									_("Color of label"),
+									"Color",
+									"Color of label",
 									NULL,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLabelProperties[PROP_TEXT_ELLIPSIZE_MODE]=
 		g_param_spec_enum("ellipsize-mode",
-							_("Ellipsize mode"),
-							_("Mode of ellipsize if text in label is too long"),
+							"Ellipsize mode",
+							"Mode of ellipsize if text in label is too long",
 							PANGO_TYPE_ELLIPSIZE_MODE,
 							PANGO_ELLIPSIZE_MIDDLE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 
 	XfdashboardLabelProperties[PROP_TEXT_SINGLE_LINE]=
 		g_param_spec_boolean("single-line",
-								_("Single line"),
-								_("Flag to determine if text can only be in one or multiple lines"),
+								"Single line",
+								"Flag to determine if text can only be in one or multiple lines",
 								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLabelProperties[PROP_TEXT_JUSTIFY]=
 		g_param_spec_enum("text-justify",
-							_("Text justify"),
-							_("Justification (line alignment) of label"),
+							"Text justify",
+							"Justification (line alignment) of label",
 							PANGO_TYPE_ALIGNMENT,
 							PANGO_ALIGN_LEFT,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);

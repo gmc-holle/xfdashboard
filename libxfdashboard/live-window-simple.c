@@ -513,23 +513,23 @@ static void xfdashboard_live_window_simple_class_init(XfdashboardLiveWindowSimpl
 	/* Define properties */
 	XfdashboardLiveWindowSimpleProperties[PROP_WINDOW]=
 		g_param_spec_object("window",
-								_("Window"),
-								_("The window to show"),
+								"Window",
+								"The window to show",
 								XFDASHBOARD_TYPE_WINDOW_TRACKER_WINDOW,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLiveWindowSimpleProperties[PROP_DISPLAY_TYPE]=
 		g_param_spec_enum("display-type",
-							_("Display type"),
-							_("How to display the window"),
+							"Display type",
+							"How to display the window",
 							XFDASHBOARD_TYPE_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE,
 							XFDASHBOARD_LIVE_WINDOW_SIMPLE_DISPLAY_TYPE_LIVE_PREVIEW,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLiveWindowSimpleProperties[PROP_DESTROY_ON_CLOSE]=
 		g_param_spec_boolean("destroy-on-close",
-								_("Destroy on close"),
-								_("If this actor should be destroy when window was closed"),
+								"Destroy on close",
+								"If this actor should be destroy when window was closed",
 								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

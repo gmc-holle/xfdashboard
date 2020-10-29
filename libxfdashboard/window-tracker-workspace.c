@@ -53,7 +53,7 @@ static guint XfdashboardWindowTrackerWorkspaceSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_WINDOWS_TRACKER_WORKSPACE_WARN_NOT_IMPLEMENTED(self, vfunc)\
-	g_warning(_("Object of type %s does not implement required virtual function XfdashboardWindowTrackerWorkspace::%s"),\
+	g_warning("Object of type %s does not implement required virtual function XfdashboardWindowTrackerWorkspace::%s",\
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 

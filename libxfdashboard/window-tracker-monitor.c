@@ -55,7 +55,7 @@ static guint XfdashboardWindowTrackerMonitorSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_WINDOWS_TRACKER_MONITOR_WARN_NOT_IMPLEMENTED(self, vfunc)\
-	g_warning(_("Object of type %s does not implement required virtual function XfdashboardWindowTrackerMonitor::%s"),\
+	g_warning("Object of type %s does not implement required virtual function XfdashboardWindowTrackerMonitor::%s",\
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
@@ -98,16 +98,16 @@ static void xfdashboard_window_tracker_monitor_default_init(XfdashboardWindowTra
 	{
 		/* Define properties */
 		property=g_param_spec_int("monitor-index",
-									_("Monitor index"),
-									_("The index of this monitor"),
+									"Monitor index",
+									"The index of this monitor",
 									0, G_MAXINT,
 									0,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 		g_object_interface_install_property(iface, property);
 
 		property=g_param_spec_boolean("is-primary",
-										_("Is primary"),
-										_("Whether this monitor is the primary one"),
+										"Is primary",
+										"Whether this monitor is the primary one",
 										FALSE,
 										G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 		g_object_interface_install_property(iface, property);

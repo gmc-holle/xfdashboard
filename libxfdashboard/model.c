@@ -280,30 +280,30 @@ static void xfdashboard_model_class_init(XfdashboardModelClass *klass)
 	/* Define properties */
 	XfdashboardModelProperties[PROP_ROWS]=
 		g_param_spec_int("rows",
-							_("Rows"),
-							_("The number of rows this model contains"),
+							"Rows",
+							"The number of rows this model contains",
 							0, G_MAXINT,
 							0,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardModelProperties[PROP_SORT_SET]=
 		g_param_spec_boolean("sort-set",
-								_("Sort set"),
-								_("Whether a sorting function is set or not"),
+								"Sort set",
+								"Whether a sorting function is set or not",
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardModelProperties[PROP_FILTER_SET]=
 		g_param_spec_boolean("filter-set",
-								_("Filter set"),
-								_("Whether a filter is set or not"),
+								"Filter set",
+								"Whether a filter is set or not",
 								FALSE,
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardModelProperties[PROP_FREE_DATA_CALLBACK]=
 		g_param_spec_pointer("free-data-callback",
-								_("Free data callback"),
-								_("Callback function to free data when removing or overwriting data in model"),
+								"Free data callback",
+								"Callback function to free data when removing or overwriting data in model",
 								G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardModelProperties);

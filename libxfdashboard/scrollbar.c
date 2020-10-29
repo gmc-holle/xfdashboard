@@ -710,72 +710,72 @@ static void xfdashboard_scrollbar_class_init(XfdashboardScrollbarClass *klass)
 	/* Define properties */
 	XfdashboardScrollbarProperties[PROP_ORIENTATION]=
 		g_param_spec_enum("orientation",
-							_("Orientation"),
-							_("Defines if scrollbar is horizontal or vertical"),
+							"Orientation",
+							"Defines if scrollbar is horizontal or vertical",
 							CLUTTER_TYPE_ORIENTATION,
 							CLUTTER_ORIENTATION_HORIZONTAL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScrollbarProperties[PROP_VALUE]=
 		g_param_spec_float("value",
-							_("Value"),
-							_("Current value of scroll bar within range"),
+							"Value",
+							"Current value of scroll bar within range",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScrollbarProperties[PROP_VALUE_RANGE]=
 		g_param_spec_float("value-range",
-							_("Value range"),
-							_("The range the slider of scroll bar covers"),
+							"Value range",
+							"The range the slider of scroll bar covers",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScrollbarProperties[PROP_RANGE]=
 		g_param_spec_float("range",
-							_("Range"),
-							_("Range to scroll within"),
+							"Range",
+							"Range to scroll within",
 							0.0f, G_MAXFLOAT,
 							1.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScrollbarProperties[PROP_PAGE_SIZE_FACTOR]=
 		g_param_spec_float("page-size-factor",
-							_("Page size factor"),
-							_("The factor of value range to increase or decrease value by on pointer scroll events."),
+							"Page size factor",
+							"The factor of value range to increase or decrease value by on pointer scroll events.",
 							0.1f, 1.0f,
 							0.5f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScrollbarProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-							_("Spacing"),
-							_("The spacing between scrollbar and background"),
+							"Spacing",
+							"The spacing between scrollbar and background",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScrollbarProperties[PROP_SLIDER_WIDTH]=
 		g_param_spec_float("slider-width",
-							_("Slider width"),
-							_("The width of slider"),
+							"Slider width",
+							"The width of slider",
 							1.0f, G_MAXFLOAT,
 							1.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScrollbarProperties[PROP_SLIDER_RADIUS]=
 		g_param_spec_float("slider-radius",
-							_("Slider radius"),
-							_("The radius of slider's rounded corners"),
+							"Slider radius",
+							"The radius of slider's rounded corners",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScrollbarProperties[PROP_SLIDER_COLOR]=
 		clutter_param_spec_color("slider-color",
-									_("Slider color"),
-									_("Color of slider"),
+									"Slider color",
+									"Color of slider",
 									CLUTTER_COLOR_White,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
 

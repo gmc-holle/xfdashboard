@@ -871,8 +871,8 @@ static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableL
 	/* Define properties */
 	XfdashboardDynamicTableLayoutProperties[PROP_ROW_SPACING]=
 		g_param_spec_float("row-spacing",
-								_("Row spacing"),
-								_("The spacing between rows in table"),
+								"Row spacing",
+								"The spacing between rows in table",
 								0.0f,
 								G_MAXFLOAT,
 								0.0f,
@@ -880,8 +880,8 @@ static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableL
 
 	XfdashboardDynamicTableLayoutProperties[PROP_COLUMN_SPACING]=
 		g_param_spec_float("column-spacing",
-								_("Column spacing"),
-								_("The spacing between columns in table"),
+								"Column spacing",
+								"The spacing between columns in table",
 								0.0f,
 								G_MAXFLOAT,
 								0.0f,
@@ -889,8 +889,8 @@ static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableL
 
 	XfdashboardDynamicTableLayoutProperties[PROP_NUMBER_CHILDREN]=
 		g_param_spec_int("number-children",
-								_("Number children"),
-								_("Current number of child actors in this layout"),
+								"Number children",
+								"Current number of child actors in this layout",
 								0,
 								G_MAXINT,
 								0,
@@ -898,8 +898,8 @@ static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableL
 
 	XfdashboardDynamicTableLayoutProperties[PROP_ROWS]=
 		g_param_spec_int("rows",
-								_("Rows"),
-								_("Current number of rows in this layout"),
+								"Rows",
+								"Current number of rows in this layout",
 								0,
 								G_MAXINT,
 								0,
@@ -907,8 +907,8 @@ static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableL
 
 	XfdashboardDynamicTableLayoutProperties[PROP_COLUMNS]=
 		g_param_spec_int("columns",
-								_("Columns"),
-								_("Current number of columns in this layout"),
+								"Columns",
+								"Current number of columns in this layout",
 								0,
 								G_MAXINT,
 								0,
@@ -916,8 +916,8 @@ static void xfdashboard_dynamic_table_layout_class_init(XfdashboardDynamicTableL
 
 	XfdashboardDynamicTableLayoutProperties[PROP_FIXED_COLUMNS]=
 		g_param_spec_int("fixed-columns",
-								_("Fixed columns"),
-								_("Fixed number of columns to use in this layout"),
+								"Fixed columns",
+								"Fixed number of columns to use in this layout",
 								0,
 								G_MAXINT,
 								0,

@@ -135,7 +135,7 @@ static XfdashboardThemeAnimationTargetsProperty* _xfdashboard_theme_animation_ta
 	data=g_new0(XfdashboardThemeAnimationTargetsProperty, 1);
 	if(!data)
 	{
-		g_critical(_("Cannot allocate memory for animation targets property '%s'"), inPropertyName);
+		g_critical("Cannot allocate memory for animation targets property '%s'", inPropertyName);
 		return(NULL);
 	}
 
@@ -202,7 +202,7 @@ static XfdashboardThemeAnimationTargets* _xfdashboard_theme_animation_targets_ne
 		gchar							*selector;
 
 		selector=xfdashboard_css_selector_to_string(inTargetSelector);
-		g_critical(_("Cannot allocate memory for animation targets data with selector '%s'"), selector);
+		g_critical("Cannot allocate memory for animation targets data with selector '%s'", selector);
 		g_free(selector);
 
 		return(NULL);
@@ -224,7 +224,7 @@ static void _xfdashboard_theme_animation_targets_free(XfdashboardThemeAnimationT
 #ifdef DEBUG
 	if(inData->refCount>1)
 	{
-		g_critical(_("Freeing animation targets data at %p with a reference counter of %d greater than one"),
+		g_critical("Freeing animation targets data at %p with a reference counter of %d greater than one",
 					inData,
 					inData->refCount);
 	}
@@ -283,7 +283,7 @@ static XfdashboardThemeAnimationSpec* _xfdashboard_theme_animation_spec_new(cons
 		gchar							*selector;
 
 		selector=xfdashboard_css_selector_to_string(inSenderSelector);
-		g_critical(_("Cannot allocate memory for animation specification data with sender '%s' and signal '%s'"),
+		g_critical("Cannot allocate memory for animation specification data with sender '%s' and signal '%s'",
 					selector,
 					inSignal);
 		g_free(selector);
@@ -307,7 +307,7 @@ static void _xfdashboard_theme_animation_spec_free(XfdashboardThemeAnimationSpec
 #ifdef DEBUG
 	if(inData->refCount>1)
 	{
-		g_critical(_("Freeing animation specification data at %p with a reference counter of %d greater than one"),
+		g_critical("Freeing animation specification data at %p with a reference counter of %d greater than one",
 					inData,
 					inData->refCount);
 	}
@@ -583,7 +583,7 @@ static gboolean _xfdashboard_theme_animation_string_to_gint(const gchar *inNumbe
 		g_set_error(outError,
 					XFDASHBOARD_THEME_ANIMATION_ERROR,
 					XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
-					_("Invalid base for conversion"));
+					"Invalid base for conversion");
 		return(FALSE);
 	}
 
@@ -594,7 +594,7 @@ static gboolean _xfdashboard_theme_animation_string_to_gint(const gchar *inNumbe
 		g_set_error(outError,
 					XFDASHBOARD_THEME_ANIMATION_ERROR,
 					XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
-					_("Integer out of range"));
+					"Integer out of range");
 		return(FALSE);
 	}
 
@@ -609,7 +609,7 @@ static gboolean _xfdashboard_theme_animation_string_to_gint(const gchar *inNumbe
 		g_set_error(outError,
 					XFDASHBOARD_THEME_ANIMATION_ERROR,
 					XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
-					_("Cannot convert string '%s' to integer"),
+					"Cannot convert string '%s' to integer",
 					inNumberString);
 		return(FALSE);
 	}
@@ -643,7 +643,7 @@ static void _xfdashboard_theme_animation_parse_set_error(XfdashboardThemeAnimati
 	if(inParserData)
 	{
 		g_prefix_error(&tempError,
-						_("Error on line %d char %d: "),
+						"Error on line %d char %d: ",
 						inParserData->lastLine,
 						inParserData->lastPosition);
 	}
@@ -680,7 +680,7 @@ static void _xfdashboard_theme_animation_parse_general_no_text_nodes(GMarkupPars
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-														_("Unexpected text node '%s' at tag <%s>"),
+														"Unexpected text node '%s' at tag <%s>",
 														realText,
 														parents ? (gchar*)parents->data : "document");
 	}
@@ -759,7 +759,7 @@ static void _xfdashboard_theme_animation_parse_property_start(GMarkupParseContex
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Unknown tag <%s>"),
+													"Unknown tag <%s>",
 													inElementName);
 		return;
 	}
@@ -769,7 +769,7 @@ static void _xfdashboard_theme_animation_parse_property_start(GMarkupParseContex
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Tag <%s> cannot contain tag <%s>"),
+													"Tag <%s> cannot contain tag <%s>",
 													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
 													inElementName);
 }
@@ -800,7 +800,7 @@ static void _xfdashboard_theme_animation_parse_apply_start(GMarkupParseContext *
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Unknown tag <%s>"),
+													"Unknown tag <%s>",
 													inElementName);
 		return;
 	}
@@ -853,7 +853,7 @@ static void _xfdashboard_theme_animation_parse_apply_start(GMarkupParseContext *
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Empty 'name' at tag '%s'"),
+															"Empty 'name' at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -864,7 +864,7 @@ static void _xfdashboard_theme_animation_parse_apply_start(GMarkupParseContext *
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Empty 'from' at tag '%s'"),
+															"Empty 'from' at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -875,7 +875,7 @@ static void _xfdashboard_theme_animation_parse_apply_start(GMarkupParseContext *
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Empty 'to' at tag '%s'"),
+															"Empty 'to' at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -895,7 +895,7 @@ static void _xfdashboard_theme_animation_parse_apply_start(GMarkupParseContext *
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Tag <%s> cannot contain tag <%s>"),
+													"Tag <%s> cannot contain tag <%s>",
 													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
 													inElementName);
 }
@@ -935,7 +935,7 @@ static void _xfdashboard_theme_animation_parse_timeline_start(GMarkupParseContex
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Unknown tag <%s>"),
+													"Unknown tag <%s>",
 													inElementName);
 		return;
 	}
@@ -985,7 +985,7 @@ static void _xfdashboard_theme_animation_parse_timeline_start(GMarkupParseContex
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Empty 'to' at tag '%s'"),
+															"Empty 'to' at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -996,7 +996,7 @@ static void _xfdashboard_theme_animation_parse_timeline_start(GMarkupParseContex
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Empty 'origin' at tag '%s'"),
+															"Empty 'origin' at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -1013,7 +1013,7 @@ static void _xfdashboard_theme_animation_parse_timeline_start(GMarkupParseContex
 																	inContext,
 																	outError,
 																	XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-																	_("Invalid value '%s' for 'origin' at tag '%s'"),
+																	"Invalid value '%s' for 'origin' at tag '%s'",
 																	applyOriginText,
 																	inElementName);
 					return;
@@ -1041,7 +1041,7 @@ static void _xfdashboard_theme_animation_parse_timeline_start(GMarkupParseContex
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Tag <%s> cannot contain tag <%s>"),
+													"Tag <%s> cannot contain tag <%s>",
 													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
 													inElementName);
 }
@@ -1091,7 +1091,7 @@ static void _xfdashboard_theme_animation_parse_trigger_start(GMarkupParseContext
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Unknown tag <%s>"),
+													"Unknown tag <%s>",
 													inElementName);
 		return;
 	}
@@ -1151,7 +1151,7 @@ static void _xfdashboard_theme_animation_parse_trigger_start(GMarkupParseContext
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Missing or empty delay at tag '%s'"),
+															"Missing or empty delay at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -1162,7 +1162,7 @@ static void _xfdashboard_theme_animation_parse_trigger_start(GMarkupParseContext
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Missing or empty duration at tag '%s'"),
+															"Missing or empty duration at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -1173,7 +1173,7 @@ static void _xfdashboard_theme_animation_parse_trigger_start(GMarkupParseContext
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Missing or empty mode at tag '%s'"),
+															"Missing or empty mode at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -1184,7 +1184,7 @@ static void _xfdashboard_theme_animation_parse_trigger_start(GMarkupParseContext
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Empty repeat at tag '%s'"),
+															"Empty repeat at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -1209,7 +1209,7 @@ static void _xfdashboard_theme_animation_parse_trigger_start(GMarkupParseContext
 			g_set_error(outError,
 						XFDASHBOARD_THEME_ANIMATION_ERROR,
 						XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
-						_("Invalid mode '%s'"),
+						"Invalid mode '%s'",
 						timelineModeText);
 			return;
 		}
@@ -1238,7 +1238,7 @@ static void _xfdashboard_theme_animation_parse_trigger_start(GMarkupParseContext
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Tag <%s> cannot contain tag <%s>"),
+													"Tag <%s> cannot contain tag <%s>",
 													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
 													inElementName);
 }
@@ -1286,7 +1286,7 @@ static void _xfdashboard_theme_animation_parse_animations_start(GMarkupParseCont
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Unknown tag <%s>"),
+													"Unknown tag <%s>",
 													inElementName);
 		return;
 	}
@@ -1339,7 +1339,7 @@ static void _xfdashboard_theme_animation_parse_animations_start(GMarkupParseCont
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Missing or empty ID at tag '%s'"),
+															"Missing or empty ID at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -1350,7 +1350,7 @@ static void _xfdashboard_theme_animation_parse_animations_start(GMarkupParseCont
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Missing or empty sender at tag '%s'"),
+															"Missing or empty sender at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -1361,7 +1361,7 @@ static void _xfdashboard_theme_animation_parse_animations_start(GMarkupParseCont
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Missing or empty signal at tag '%s'"),
+															"Missing or empty signal at tag '%s'",
 															inElementName);
 			return;
 		}
@@ -1372,7 +1372,7 @@ static void _xfdashboard_theme_animation_parse_animations_start(GMarkupParseCont
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Invalid ID '%s' at tag '%s'"),
+															"Invalid ID '%s' at tag '%s'",
 															triggerID,
 															inElementName);
 			return;
@@ -1384,7 +1384,7 @@ static void _xfdashboard_theme_animation_parse_animations_start(GMarkupParseCont
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-															_("Multiple definition of trigger with ID '%s'"),
+															"Multiple definition of trigger with ID '%s'",
 															triggerID);
 			return;
 		}
@@ -1404,7 +1404,7 @@ static void _xfdashboard_theme_animation_parse_animations_start(GMarkupParseCont
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Tag <%s> cannot contain tag <%s>"),
+													"Tag <%s> cannot contain tag <%s>",
 													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
 													inElementName);
 }
@@ -1452,7 +1452,7 @@ static void _xfdashboard_theme_animation_parse_document_start(GMarkupParseContex
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Unknown tag <%s>"),
+													"Unknown tag <%s>",
 													inElementName);
 		return;
 	}
@@ -1492,7 +1492,7 @@ static void _xfdashboard_theme_animation_parse_document_start(GMarkupParseContex
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-													_("Tag <%s> cannot contain tag <%s>"),
+													"Tag <%s> cannot contain tag <%s>",
 													_xfdashboard_theme_animation_get_tag_by_id(currentTag),
 													inElementName);
 }
@@ -1542,7 +1542,7 @@ static gboolean _xfdashboard_theme_animation_parse_xml(XfdashboardThemeAnimation
 		g_set_error(outError,
 					XFDASHBOARD_THEME_ANIMATION_ERROR,
 					XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
-					_("Could not set up parser data for file %s"),
+					"Could not set up parser data for file %s",
 					inPath);
 		return(FALSE);
 	}
@@ -1554,7 +1554,7 @@ static gboolean _xfdashboard_theme_animation_parse_xml(XfdashboardThemeAnimation
 		g_set_error(outError,
 					XFDASHBOARD_THEME_ANIMATION_ERROR,
 					XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
-					_("Could not create parser for file %s"),
+					"Could not create parser for file %s",
 					inPath);
 
 		g_free(data);
@@ -1680,7 +1680,7 @@ static gboolean _xfdashboard_theme_animation_find_default_property_value(Xfdashb
 	/* Set up value as a match was found */
 	if(!g_value_transform(foundValue->value, ioValue))
 	{
-		g_warning(_("Could not transform default value of for property '%s' of %s from type %s to %s of class %s"),
+		g_warning("Could not transform default value of for property '%s' of %s from type %s to %s of class %s",
 					foundValue->property,
 					G_OBJECT_TYPE_NAME(inActor),
 					G_VALUE_TYPE_NAME(foundValue->value),
@@ -1733,7 +1733,7 @@ static XfdashboardAnimation* _xfdashboard_theme_animation_create_by_spec(Xfdashb
 							NULL);
 	if(!animation)
 	{
-		g_critical(_("Cannot allocate memory for animation '%s'"),
+		g_critical("Cannot allocate memory for animation '%s'",
 					inSpec->id);
 		return(NULL);
 	}
@@ -1741,8 +1741,8 @@ static XfdashboardAnimation* _xfdashboard_theme_animation_create_by_spec(Xfdashb
 	animationClass=XFDASHBOARD_ANIMATION_GET_CLASS(animation);
 	if(!animationClass->add_animation)
 	{
-		g_warning(_("Will not be able to add animations to actors as object of type %s does not implement required virtual function XfdashboardAnimation::%s"), \
-					G_OBJECT_TYPE_NAME(self), \
+		g_warning("Will not be able to add animations to actors as object of type %s does not implement required virtual function XfdashboardAnimation::%s",
+					G_OBJECT_TYPE_NAME(self),
 					"add_animation");
 	}
 
@@ -1814,7 +1814,7 @@ static XfdashboardAnimation* _xfdashboard_theme_animation_create_by_spec(Xfdashb
 
 				if(!propertySpec)
 				{
-					g_warning(_("Cannot create animation '%s' for non-existing property '%s' at actor of type '%s'"),
+					g_warning("Cannot create animation '%s' for non-existing property '%s' at actor of type '%s'",
 								inSpec->id,
 								propertyTargetSpec->name,
 								G_OBJECT_TYPE_NAME(actor));
@@ -1832,7 +1832,7 @@ static XfdashboardAnimation* _xfdashboard_theme_animation_create_by_spec(Xfdashb
 					g_value_init(&fromValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
 					if(!g_value_transform(&propertyTargetSpec->from, &fromValue))
 					{
-						g_warning(_("Could not transform 'from'-value of '%s' for property '%s' to type %s of class %s"),
+						g_warning("Could not transform 'from'-value of '%s' for property '%s' to type %s of class %s",
 									g_value_get_string(&propertyTargetSpec->from),
 									propertyTargetSpec->name,
 									g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertySpec)),
@@ -1924,7 +1924,7 @@ static XfdashboardAnimation* _xfdashboard_theme_animation_create_by_spec(Xfdashb
 					g_value_init(&toValue, G_PARAM_SPEC_VALUE_TYPE(propertySpec));
 					if(!g_value_transform(&propertyTargetSpec->to, &toValue))
 					{
-						g_warning(_("Could not transform 'to'-value of '%s' for property '%s' to type %s of class %s"),
+						g_warning("Could not transform 'to'-value of '%s' for property '%s' to type %s of class %s",
 									g_value_get_string(&propertyTargetSpec->to),
 									propertyTargetSpec->name,
 									g_type_name(G_PARAM_SPEC_VALUE_TYPE(propertySpec)),
@@ -1998,7 +1998,7 @@ static XfdashboardAnimation* _xfdashboard_theme_animation_create_by_spec(Xfdashb
 					propertyTransition=clutter_property_transition_new(propertyTargetSpec->name);
 					if(!propertyTransition)
 					{
-						g_critical(_("Cannot allocate memory for transition of property '%s' of animation specification '%s'"),
+						g_critical("Cannot allocate memory for transition of property '%s' of animation specification '%s'",
 									propertyTargetSpec->name,
 									inSpec->id);
 
@@ -2070,7 +2070,7 @@ static XfdashboardAnimation* _xfdashboard_theme_animation_create_by_spec(Xfdashb
 			/* Skip empty but warn */
 			if(!hashIterList)
 			{
-				g_critical(_("Empty animation list when creating animation for animation specification '%s'"),
+				g_critical("Empty animation list when creating animation for animation specification '%s'",
 							inSpec->id);
 				continue;
 			}
@@ -2079,7 +2079,7 @@ static XfdashboardAnimation* _xfdashboard_theme_animation_create_by_spec(Xfdashb
 			transitionGroup=xfdashboard_transition_group_new();
 			if(!transitionGroup)
 			{
-				g_critical(_("Cannot allocate memory for transition group of animation specification '%s'"),
+				g_critical("Cannot allocate memory for transition group of animation specification '%s'",
 							inSpec->id);
 				
 				/* Release allocated resources */

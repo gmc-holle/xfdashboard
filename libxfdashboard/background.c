@@ -412,94 +412,94 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 	/* Define properties */
 	XfdashboardBackgroundProperties[PROP_TYPE]=
 		g_param_spec_flags("background-type",
-							_("Background type"),
-							_("Background type"),
+							"Background type",
+							"Background type",
 							XFDASHBOARD_TYPE_BACKGROUND_TYPE,
 							XFDASHBOARD_BACKGROUND_TYPE_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_CORNERS]=
 		g_param_spec_flags("corners",
-							_("Corners"),
-							_("Determines which corners are rounded for background and outline"),
+							"Corners",
+							"Determines which corners are rounded for background and outline",
 							XFDASHBOARD_TYPE_CORNERS,
 							XFDASHBOARD_CORNERS_ALL,
 							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_CORNERS_RADIUS]=
 		g_param_spec_float("corner-radius",
-							_("Corner radius"),
-							_("Radius of rounded corners for background and outline"),
+							"Corner radius",
+							"Radius of rounded corners for background and outline",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_FILL_COLOR]=
 		clutter_param_spec_color("background-fill-color",
-									_("Background fill color"),
-									_("Color to fill background with"),
+									"Background fill color",
+									"Color to fill background with",
 									CLUTTER_COLOR_Black,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_FILL_CORNERS]=
 		g_param_spec_flags("background-fill-corners",
-							_("Fill corners"),
-							_("Determines which corners are rounded at background"),
+							"Fill corners",
+							"Determines which corners are rounded at background",
 							XFDASHBOARD_TYPE_CORNERS,
 							XFDASHBOARD_CORNERS_ALL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_FILL_CORNERS_RADIUS]=
 		g_param_spec_float("background-fill-corner-radius",
-							_("Corner radius"),
-							_("Radius of rounded corners of background"),
+							"Corner radius",
+							"Radius of rounded corners of background",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_OUTLINE_COLOR]=
 		clutter_param_spec_color("outline-color",
-									_("Outline color"),
-									_("Color to draw outline with"),
+									"Outline color",
+									"Color to draw outline with",
 									CLUTTER_COLOR_White,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_OUTLINE_WIDTH]=
 		g_param_spec_float("outline-width",
-							_("Outline width"),
-							_("Width of line used to draw outline"),
+							"Outline width",
+							"Width of line used to draw outline",
 							0.0f, G_MAXFLOAT,
 							1.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_OUTLINE_BORDERS]=
 		g_param_spec_flags("outline-borders",
-							_("Outline borders"),
-							_("Determines which sides of border of outline should be drawn"),
+							"Outline borders",
+							"Determines which sides of border of outline should be drawn",
 							XFDASHBOARD_TYPE_BORDERS,
 							XFDASHBOARD_BORDERS_ALL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_OUTLINE_CORNERS]=
 		g_param_spec_flags("outline-corners",
-							_("Outline corners"),
-							_("Determines which corners are rounded at outline"),
+							"Outline corners",
+							"Determines which corners are rounded at outline",
 							XFDASHBOARD_TYPE_CORNERS,
 							XFDASHBOARD_CORNERS_ALL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_OUTLINE_CORNERS_RADIUS]=
 		g_param_spec_float("outline-corner-radius",
-							_("Outline corner radius"),
-							_("Radius of rounded corners of outline"),
+							"Outline corner radius",
+							"Radius of rounded corners of outline",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_IMAGE]=
 		g_param_spec_object("image",
-							_("Image"),
-							_("Image to draw as background"),
+							"Image",
+							"Image to draw as background",
 							CLUTTER_TYPE_IMAGE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

@@ -189,7 +189,7 @@ static gboolean _xfdashboard_plugin_update_special_paths(XfdashboardPlugin *self
 	/* Check that ID of plugin is set */
 	if(!priv->id)
 	{
-		g_critical(_("Cannot get path for plugin at %s"), priv->filename);
+		g_critical("Cannot get path for plugin at %s", priv->filename);
 		return(FALSE);
 	}
 
@@ -440,13 +440,13 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 	/* Check if path to plugin was set and exists */
 	if(!priv->filename)
 	{
-		priv->lastLoadingError=g_strdup(_("Missing path to plugin"));
+		priv->lastLoadingError=g_strdup("Missing path to plugin");
 		return(FALSE);
 	}
 
 	if(!g_file_test(priv->filename, G_FILE_TEST_IS_REGULAR))
 	{
-		priv->lastLoadingError=g_strdup_printf(_("Path '%s' does not exist"), priv->filename);
+		priv->lastLoadingError=g_strdup_printf("Path '%s' does not exist", priv->filename);
 		return(FALSE);
 	}
 
@@ -454,7 +454,7 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 	if(priv->state!=XFDASHBOARD_PLUGIN_STATE_NONE)
 	{
 		priv->lastLoadingError=
-			g_strdup_printf(_("Bad state '%s' - expected '%s"),
+			g_strdup_printf("Bad state '%s' - expected '%s",
 							_xfdashboard_plugin_get_plugin_state_value_name(priv->state),
 							_xfdashboard_plugin_get_plugin_state_value_name(XFDASHBOARD_PLUGIN_STATE_NONE));
 		return(FALSE);
@@ -463,7 +463,7 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 	/* Open plugin module */
 	if(priv->module)
 	{
-		priv->lastLoadingError=g_strdup(_("Plugin was already initialized"));
+		priv->lastLoadingError=g_strdup("Plugin was already initialized");
 		return(FALSE);
 	}
 
@@ -491,7 +491,7 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 		else
 		{
 			/* If we get here the virtual function was not overridden */
-			priv->lastLoadingError=g_strdup_printf(_("Plugin does not implement required function %s"), XFDASHBOARD_PLUGIN_FUNCTION_NAME_INITIALIZE);
+			priv->lastLoadingError=g_strdup_printf("Plugin does not implement required function %s", XFDASHBOARD_PLUGIN_FUNCTION_NAME_INITIALIZE);
 			g_critical("Loading plugin at '%s' failed: %s", priv->filename, priv->lastLoadingError);
 			return(FALSE);
 		}
@@ -499,7 +499,7 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 	/* Check that plugin has required properties set */
 	if(!priv->id)
 	{
-		priv->lastLoadingError=g_strdup(_("Plugin did not set required ID"));
+		priv->lastLoadingError=g_strdup("Plugin did not set required ID");
 		return(FALSE);
 	}
 
@@ -514,7 +514,7 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 									NULL);
 	if(!handlerID)
 	{
-		priv->lastLoadingError=g_strdup(_("Plugin cannot be enabled"));
+		priv->lastLoadingError=g_strdup("Plugin cannot be enabled");
 		g_critical("Loading plugin at '%s' failed: %s", priv->filename, priv->lastLoadingError);
 		return(FALSE);
 	}
@@ -529,7 +529,7 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 									NULL);
 	if(!handlerID)
 	{
-		priv->lastLoadingError=g_strdup(_("Plugin cannot be disabled"));
+		priv->lastLoadingError=g_strdup("Plugin cannot be disabled");
 		g_critical("Loading plugin at '%s' failed: %s", priv->filename, priv->lastLoadingError);
 		return(FALSE);
 	}
@@ -578,8 +578,8 @@ static void _xfdashboard_plugin_unload(GTypeModule *inModule)
 		/* Close module */
 		if(!g_module_close(priv->module))
 		{
-			g_warning(_("Plugin '%s' could not be unloaded successfully: %s"),
-						priv->id ? priv->id : _("Unknown"),
+			g_warning("Plugin '%s' could not be unloaded successfully: %s",
+						priv->id ? priv->id : "Unknown",
 						g_module_error());
 			return;
 		}
@@ -803,79 +803,79 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 	/* Define properties */
 	XfdashboardPluginProperties[PROP_FILENAME]=
 		g_param_spec_string("filename",
-							_("File name"),
-							_("Path and file name of this plugin"),
+							"File name",
+							"Path and file name of this plugin",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	XfdashboardPluginProperties[PROP_ID]=
 		g_param_spec_string("id",
-							_("ID"),
-							_("The unique ID for this plugin"),
+							"ID",
+							"The unique ID for this plugin",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	XfdashboardPluginProperties[PROP_FLAGS]=
 		g_param_spec_flags("flags",
-							_("Flags"),
-							_("Flags defining behaviour of this plugin"),
+							"Flags",
+							"Flags defining behaviour of this plugin",
 							XFDASHBOARD_TYPE_PLUGIN_FLAG,
 							XFDASHBOARD_PLUGIN_FLAG_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardPluginProperties[PROP_NAME]=
 		g_param_spec_string("name",
-							_("name"),
-							_("Name of plugin"),
+							"name",
+							"Name of plugin",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardPluginProperties[PROP_DESCRIPTION]=
 		g_param_spec_string("description",
-							_("Description"),
-							_("A short description about this plugin"),
+							"Description",
+							"A short description about this plugin",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardPluginProperties[PROP_AUTHOR]=
 		g_param_spec_string("author",
-							_("Author"),
-							_("The author of this plugin"),
+							"Author",
+							"The author of this plugin",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardPluginProperties[PROP_COPYRIGHT]=
 		g_param_spec_string("copyright",
-							_("Copyright"),
-							_("The copyright of this plugin which usually contains year of development"),
+							"Copyright",
+							"The copyright of this plugin which usually contains year of development",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardPluginProperties[PROP_LICENSE]=
 		g_param_spec_string("license",
-							_("License"),
-							_("The license of this plugin"),
+							"License",
+							"The license of this plugin",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardPluginProperties[PROP_CONFIG_PATH]=
 		g_param_spec_string("config-path",
-							_("Config path"),
-							_("The base path to configuration files of this plugin"),
+							"Config path",
+							"The base path to configuration files of this plugin",
 							NULL,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardPluginProperties[PROP_CACHE_PATH]=
 		g_param_spec_string("cache-path",
-							_("Cache path"),
-							_("The base path to cache files of this plugin"),
+							"Cache path",
+							"The base path to cache files of this plugin",
 							NULL,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardPluginProperties[PROP_DATA_PATH]=
 		g_param_spec_string("data-path",
-							_("Data path"),
-							_("The base path to data files of this plugin"),
+							"Data path",
+							"The base path to data files of this plugin",
 							NULL,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
@@ -974,7 +974,7 @@ XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError 
 		g_set_error(outError,
 					XFDASHBOARD_PLUGIN_ERROR,
 					XFDASHBOARD_PLUGIN_ERROR_ERROR,
-					_("Could not get plugin ID for file %s"),
+					"Could not get plugin ID for file %s",
 					inPluginFilename);
 
 		/* Return NULL to indicate failure */
@@ -1001,7 +1001,7 @@ XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError 
 		g_set_error(outError,
 					XFDASHBOARD_PLUGIN_ERROR,
 					XFDASHBOARD_PLUGIN_ERROR_ERROR,
-					_("Could not create plugin instance"));
+					"Could not create plugin instance");
 
 		/* Release allocated resources */
 		if(pluginID) g_free(pluginID);
@@ -1073,8 +1073,8 @@ void xfdashboard_plugin_set_info(XfdashboardPlugin *self,
 	/* Check that plugin is not initialized already */
 	if(priv->state!=XFDASHBOARD_PLUGIN_STATE_NONE)
 	{
-		g_critical(_("Setting plugin information for plugin '%s' at path '%s' failed: Plugin is already initialized"),
-					priv->id ? priv->id : _("Unknown"),
+		g_critical("Setting plugin information for plugin '%s' at path '%s' failed: Plugin is already initialized",
+					priv->id ? priv->id : "Unknown",
 					priv->filename);
 		return;
 	}
@@ -1124,8 +1124,8 @@ void xfdashboard_plugin_enable(XfdashboardPlugin *self)
 	/* Check that plugin is initialized */
 	if(priv->state!=XFDASHBOARD_PLUGIN_STATE_INITIALIZED)
 	{
-		g_critical(_("Enabling plugin '%s' failed: Bad state '%s' - expected '%s'"),
-					priv->id ? priv->id : _("Unknown"),
+		g_critical("Enabling plugin '%s' failed: Bad state '%s' - expected '%s'",
+					priv->id ? priv->id : "Unknown",
 					_xfdashboard_plugin_get_plugin_state_value_name(priv->state),
 					_xfdashboard_plugin_get_plugin_state_value_name(XFDASHBOARD_PLUGIN_STATE_INITIALIZED));
 		return;

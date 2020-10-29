@@ -166,7 +166,7 @@ static void _xfdashboard_popup_menu_item_separator_popup_menu_item_set_enabled(X
 	 */
 	if(inEnabled)
 	{
-		g_warning(_("Object of type %s is always disabled and cannot be enabled."),
+		g_warning("Object of type %s is always disabled and cannot be enabled.",
 					G_OBJECT_TYPE_NAME(inMenuItem));
 	}
 }
@@ -370,8 +370,8 @@ static void xfdashboard_popup_menu_item_separator_class_init(XfdashboardPopupMen
 	 */
 	XfdashboardPopupMenuItemSeparatorProperties[PROP_MINIMUM_HEIGHT]=
 		g_param_spec_float("minimum-height",
-							_("Minimum height"),
-							_("Forced minimum height request for the actor"),
+							"Minimum height",
+							"Forced minimum height request for the actor",
 							0.0f, G_MAXFLOAT,
 							4.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
@@ -384,8 +384,8 @@ static void xfdashboard_popup_menu_item_separator_class_init(XfdashboardPopupMen
 	 */
 	XfdashboardPopupMenuItemSeparatorProperties[PROP_LINE_HORIZONTAL_ALIGNMENT]=
 		g_param_spec_float("line-horizontal-alignment",
-							_("Line horizontal alignment"),
-							_("The horizontal alignment of the actor within its allocation"),
+							"Line horizontal alignment",
+							"The horizontal alignment of the actor within its allocation",
 							0.0f, 1.0f,
 							0.5f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
@@ -398,8 +398,8 @@ static void xfdashboard_popup_menu_item_separator_class_init(XfdashboardPopupMen
 	 */
 	XfdashboardPopupMenuItemSeparatorProperties[PROP_LINE_VERTICAL_ALIGNMENT]=
 		g_param_spec_float("line-vertical-alignment",
-							_("Line vertical alignment"),
-							_("The vertical alignment of the actor within its allocation"),
+							"Line vertical alignment",
+							"The vertical alignment of the actor within its allocation",
 							0.0f, 1.0f,
 							0.5f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
@@ -412,8 +412,8 @@ static void xfdashboard_popup_menu_item_separator_class_init(XfdashboardPopupMen
 	 */
 	XfdashboardPopupMenuItemSeparatorProperties[PROP_LINE_LENGTH]=
 		g_param_spec_float("line-length",
-							_("Line length"),
-							_("Fraction of length of line"),
+							"Line length",
+							"Fraction of length of line",
 							0.0f, 1.0f,
 							1.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
@@ -425,8 +425,8 @@ static void xfdashboard_popup_menu_item_separator_class_init(XfdashboardPopupMen
 	 */
 	XfdashboardPopupMenuItemSeparatorProperties[PROP_LINE_WIDTH]=
 		g_param_spec_float("line-width",
-							_("Line width"),
-							_("Width of line"),
+							"Line width",
+							"Width of line",
 							0.0f, G_MAXFLOAT,
 							1.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
@@ -438,8 +438,8 @@ static void xfdashboard_popup_menu_item_separator_class_init(XfdashboardPopupMen
 	 */
 	XfdashboardPopupMenuItemSeparatorProperties[PROP_LINE_COLOR]=
 		clutter_param_spec_color("line-color",
-									_("Line color"),
-									_("Color to draw line with"),
+									"Line color",
+									"Color to draw line with",
 									CLUTTER_COLOR_White,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

@@ -734,7 +734,7 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 		}
 			else
 			{
-				g_warning(_("Could not transform CSS string value for property '%s' to type %s of class %s"),
+				g_warning("Could not transform CSS string value for property '%s' to type %s of class %s",
 							styleName, g_type_name(G_PARAM_SPEC_VALUE_TYPE(realParamSpec)), G_OBJECT_CLASS_NAME(klass));
 			}
 
@@ -948,7 +948,7 @@ static XfdashboardAnimation* _xfdashboard_actor_add_animation(XfdashboardActor *
 	data=g_new0(XfdashboardActorAnimationEntry, 1);
 	if(!data)
 	{
-		g_critical(_("Cannot allocate memory for animation entry for animation '%s' with signal '%s'"),
+		g_critical("Cannot allocate memory for animation entry for animation '%s' with signal '%s'",
 					xfdashboard_animation_get_id(animation),
 					inAnimationSignal);
 
@@ -1578,16 +1578,16 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 	/* Define properties */
 	XfdashboardActorProperties[PROP_CAN_FOCUS]=
 		g_param_spec_boolean("can-focus",
-								_("Can focus"),
-								_("This flag indicates if this actor can be focused"),
+								"Can focus",
+								"This flag indicates if this actor can be focused",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 	g_object_class_install_property(G_OBJECT_CLASS(klass), PROP_CAN_FOCUS, XfdashboardActorProperties[PROP_CAN_FOCUS]);
 
 	XfdashboardActorProperties[PROP_EFFECTS]=
 		g_param_spec_string("effects",
-								_("Effects"),
-								_("List of space-separated strings with IDs of effects set at this actor"),
+								"Effects",
+								"List of space-separated strings with IDs of effects set at this actor",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 	g_object_class_install_property(G_OBJECT_CLASS(klass), PROP_EFFECTS, XfdashboardActorProperties[PROP_EFFECTS]);

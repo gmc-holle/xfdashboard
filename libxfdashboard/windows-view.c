@@ -626,7 +626,7 @@ static void _xfdashboard_windows_view_on_drop_drop(XfdashboardWindowsView *self,
 	/* If we get here we did not handle drop action properly
 	 * and this should never happen.
 	 */
-	g_critical(_("Did not handle drop action for dragged actor %s of source %s at target %s"),
+	g_critical("Did not handle drop action for dragged actor %s of source %s at target %s",
 				G_OBJECT_TYPE_NAME(draggedActor),
 				G_OBJECT_TYPE_NAME(dragSource),
 				G_OBJECT_TYPE_NAME(self));
@@ -1522,7 +1522,7 @@ static gboolean _xfdashboard_windows_view_focusable_set_selection(XfdashboardFoc
 	if(inSelection &&
 		!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
 	{
-		g_warning(_("%s is not a child of %s and cannot be selected"),
+		g_warning("%s is not a child of %s and cannot be selected",
 					G_OBJECT_TYPE_NAME(inSelection),
 					G_OBJECT_TYPE_NAME(self));
 
@@ -1597,7 +1597,7 @@ static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(Xfdashbo
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("Cannot lookup selection target at %s because %s is a child of %s"),
+		g_warning("Cannot lookup selection target at %s because %s is a child of %s",
 					G_OBJECT_TYPE_NAME(self),
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>");
@@ -1711,7 +1711,7 @@ static ClutterActor* _xfdashboard_windows_view_focusable_find_selection(Xfdashbo
 		default:
 			{
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-				g_critical(_("Focusable object %s does not handle selection direction of type %s."),
+				g_critical("Focusable object %s does not handle selection direction of type %s.",
 							G_OBJECT_TYPE_NAME(self),
 							valueName);
 				g_free(valueName);
@@ -1751,7 +1751,7 @@ static gboolean _xfdashboard_windows_view_focusable_activate_selection(Xfdashboa
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("%s is a child of %s and cannot be activated at %s"),
+		g_warning("%s is a child of %s and cannot be activated at %s",
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
 					G_OBJECT_TYPE_NAME(self));
@@ -1762,7 +1762,7 @@ static gboolean _xfdashboard_windows_view_focusable_activate_selection(Xfdashboa
 	/* Check that child is a live window */
 	if(!XFDASHBOARD_IS_LIVE_WINDOW(inSelection))
 	{
-		g_warning(_("Cannot activate selection of type %s at %s because expecting type %s"),
+		g_warning("Cannot activate selection of type %s at %s because expecting type %s",
 					G_OBJECT_TYPE_NAME(inSelection),
 					G_OBJECT_TYPE_NAME(self),
 					g_type_name(XFDASHBOARD_TYPE_LIVE_WINDOW));
@@ -2052,44 +2052,44 @@ static void xfdashboard_windows_view_class_init(XfdashboardWindowsViewClass *kla
 	/* Define properties */
 	XfdashboardWindowsViewProperties[PROP_WORKSPACE]=
 		g_param_spec_object("workspace",
-							_("Current workspace"),
-							_("The current workspace whose windows are shown"),
+							"Current workspace",
+							"The current workspace whose windows are shown",
 							XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowsViewProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-							_("Spacing"),
-							_("Spacing between each element in view"),
+							"Spacing",
+							"Spacing between each element in view",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowsViewProperties[PROP_PREVENT_UPSCALING]=
 		g_param_spec_boolean("prevent-upscaling",
-								_("Prevent upscaling"),
-								_("Whether this view should prevent upsclaing any window beyond its real size"),
+								"Prevent upscaling",
+								"Whether this view should prevent upsclaing any window beyond its real size",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowsViewProperties[PROP_SCROLL_EVENT_CHANGES_WORKSPACE]=
 		g_param_spec_boolean("scroll-event-changes-workspace",
-								_("Scroll event changes workspace"),
-								_("Whether this view should change active workspace on scroll events"),
+								"Scroll event changes workspace",
+								"Whether this view should change active workspace on scroll events",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowsViewProperties[PROP_FILTER_MONITOR_WINDOWS]=
 		g_param_spec_boolean("filter-monitor-windows",
-								_("Filter monitor windows"),
-								_("Whether this view should only show windows of monitor where it placed at"),
+								"Filter monitor windows",
+								"Whether this view should only show windows of monitor where it placed at",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardWindowsViewProperties[PROP_FILTER_WORKSPACE_WINDOWS]=
 		g_param_spec_boolean("filter-workspace-windows",
-								_("Filter workspace windows"),
-								_("Whether this view should only show windows of active workspace"),
+								"Filter workspace windows",
+								"Whether this view should only show windows of active workspace",
 								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

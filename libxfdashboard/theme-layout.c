@@ -260,7 +260,7 @@ static void _xfdashboard_theme_layout_parse_set_error(XfdashboardThemeLayoutPars
 	if(inParserData)
 	{
 		g_prefix_error(&tempError,
-						_("File %s - Error on line %d char %d: "),
+						"File %s - Error on line %d char %d: ",
 						inParserData->currentPath,
 						inParserData->lastLine,
 						inParserData->lastPosition);
@@ -400,7 +400,7 @@ static XfdashboardThemeLayoutTagData* _xfdashboard_theme_layout_tag_data_new(GMa
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-													_("Cannot allocate memory for unknown tag"));
+													"Cannot allocate memory for unknown tag");
 		return(NULL);
 	}
 
@@ -412,7 +412,7 @@ static XfdashboardThemeLayoutTagData* _xfdashboard_theme_layout_tag_data_new(GMa
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-													_("Cannot allocate memory for tag '%s'"),
+													"Cannot allocate memory for tag '%s'",
 													tagName);
 		return(NULL);
 	}
@@ -494,7 +494,7 @@ static XfdashboardThemeLayoutParsedObject* _xfdashboard_theme_layout_object_data
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-													_("Cannot allocate memory for object data of tag <%s>"),
+													"Cannot allocate memory for object data of tag <%s>",
 													_xfdashboard_theme_layout_get_tag_by_id(inParentTagType));
 		return(NULL);
 	}
@@ -644,7 +644,7 @@ static void _xfdashboard_theme_layout_create_object_resolve_unresolved(Xfdashboa
 				break;
 
 			default:
-				g_critical(_("Unsupported tag type '%s' to resolve ID"),
+				g_critical("Unsupported tag type '%s' to resolve ID",
 							_xfdashboard_theme_layout_get_tag_by_id(unresolvedID->property->tagType));
 				break;
 		}
@@ -665,7 +665,7 @@ static void _xfdashboard_theme_layout_create_object_resolve_unresolved(Xfdashboa
 			gchar *valueName;
 
 			valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_THEME_LAYOUT_BUILD_GET, extraDataID);
-			g_warning(_("No storage pointer provided to store value of %s"),
+			g_warning("No storage pointer provided to store value of %s",
 						valueName);
 			g_free(valueName);
 			break;
@@ -1005,7 +1005,7 @@ static void _xfdashboard_theme_layout_parse_property_text_node(GMarkupParseConte
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-													_("Unexpected empty tag stack when parsing property text node"));
+													"Unexpected empty tag stack when parsing property text node");
 		return;
 	}
 
@@ -1016,7 +1016,7 @@ static void _xfdashboard_theme_layout_parse_property_text_node(GMarkupParseConte
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-													_("Value for property '%s' is already set"),
+													"Value for property '%s' is already set",
 													tagData->tag.property.name);
 		return;
 	}
@@ -1053,7 +1053,7 @@ static void _xfdashboard_theme_layout_parse_property_start(GMarkupParseContext *
 												inContext,
 												outError,
 												XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-												_("Tag <%s> cannot contain tag <%s>"),
+												"Tag <%s> cannot contain tag <%s>",
 												_xfdashboard_theme_layout_get_tag_by_id(currentTag),
 												inElementName);
 }
@@ -1083,7 +1083,7 @@ static void _xfdashboard_theme_layout_parse_general_no_text_nodes(GMarkupParseCo
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-													_("Unexpected text node '%s' at tag <%s>"),
+													"Unexpected text node '%s' at tag <%s>",
 													realText,
 													parents ? (gchar*)parents->data : "document");
 	}
@@ -1124,7 +1124,7 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-													_("Unknown tag <%s>"),
+													"Unknown tag <%s>",
 													inElementName);
 		return;
 	}
@@ -1221,7 +1221,7 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-															_("Empty ID at tag '%s'"),
+															"Empty ID at tag '%s'",
 															inElementName);
 				_xfdashboard_theme_layout_tag_data_unref(tagData);
 				_xfdashboard_theme_layout_object_data_unref(objectData);
@@ -1234,7 +1234,7 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-															_("Invalid ID '%s' at tag '%s'"),
+															"Invalid ID '%s' at tag '%s'",
 															tagData->tag.object.id,
 															inElementName);
 				_xfdashboard_theme_layout_tag_data_unref(tagData);
@@ -1250,7 +1250,7 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-														_("Unknown object class %s for tag '%s'"),
+														"Unknown object class %s for tag '%s'",
 														tagData->tag.object.class,
 														inElementName);
 			_xfdashboard_theme_layout_tag_data_unref(tagData);
@@ -1270,7 +1270,7 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-														_("Invalid class %s in object for parent tag <%s> - expecting class derived from %s"),
+														"Invalid class %s in object for parent tag <%s> - expecting class derived from %s",
 														tagData->tag.object.class,
 														_xfdashboard_theme_layout_get_tag_by_id(currentTag),
 														g_type_name(expectedClassType));
@@ -1305,7 +1305,7 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-														_("Tag <%s> can only be set at <%s> creating objects derived from class %s"),
+														"Tag <%s> can only be set at <%s> creating objects derived from class %s",
 														inElementName,
 														_xfdashboard_theme_layout_get_tag_by_id(currentTag),
 														g_type_name(CLUTTER_TYPE_ACTOR));
@@ -1391,7 +1391,7 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-														_("Attribute 'ref' cannot be empty at tag <%s>"),
+														"Attribute 'ref' cannot be empty at tag <%s>",
 														inElementName);
 			_xfdashboard_theme_layout_tag_data_unref(tagData);
 			return;
@@ -1420,7 +1420,7 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-														_("Tag <%s> can have only one <%s>"),
+														"Tag <%s> can have only one <%s>",
 														_xfdashboard_theme_layout_get_tag_by_id(currentTag),
 														inElementName);
 			return;
@@ -1502,7 +1502,7 @@ static void _xfdashboard_theme_layout_parse_general_start(GMarkupParseContext *i
 												inContext,
 												outError,
 												XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-												_("Tag <%s> cannot contain tag <%s>"),
+												"Tag <%s> cannot contain tag <%s>",
 												_xfdashboard_theme_layout_get_tag_by_id(currentTag),
 												inElementName);
 }
@@ -1524,7 +1524,7 @@ static void _xfdashboard_theme_layout_parse_general_end(GMarkupParseContext *inC
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-													_("Internal error when handling end of tag <%s>"),
+													"Internal error when handling end of tag <%s>",
 													inElementName);
 		return;
 	}
@@ -1553,7 +1553,7 @@ static void _xfdashboard_theme_layout_parse_general_end(GMarkupParseContext *inC
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-															_("Document can have only one <%s>"),
+															"Document can have only one <%s>",
 															_xfdashboard_theme_layout_get_tag_by_id(subTagData->tagType));
 				_xfdashboard_theme_layout_tag_data_unref(subTagData);
 				_xfdashboard_theme_layout_object_data_unref(objectData);
@@ -1591,7 +1591,7 @@ static void _xfdashboard_theme_layout_parse_general_end(GMarkupParseContext *inC
 															inContext,
 															outError,
 															XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-															_("Object can have only one <%s>"),
+															"Object can have only one <%s>",
 															_xfdashboard_theme_layout_get_tag_by_id(subTagData->tagType));
 				_xfdashboard_theme_layout_tag_data_unref(subTagData);
 				_xfdashboard_theme_layout_object_data_unref(objectData);
@@ -1642,7 +1642,7 @@ static void _xfdashboard_theme_layout_parse_general_end(GMarkupParseContext *inC
 			/* Check if any focus was already set and print a warning */
 			if(priv->focusSelected)
 			{
-				g_warning(_("File %s - Warning on line %d char %d: At interface '%s' the ID '%s' should get focus but the ID '%s' was selected already"),
+				g_warning("File %s - Warning on line %d char %d: At interface '%s' the ID '%s' should get focus but the ID '%s' was selected already",
 							data->currentPath,
 							data->lastLine,
 							data->lastPosition,
@@ -1835,7 +1835,7 @@ static gboolean _xfdashboard_theme_layout_check_ids_and_refids(XfdashboardThemeL
 			g_set_error(outError,
 						XFDASHBOARD_THEME_LAYOUT_ERROR,
 						XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-						_("ID '%s' was specified more than once (%d times)"),
+						"ID '%s' was specified more than once (%d times)",
 						(const gchar*)key,
 						GPOINTER_TO_INT(value));
 			success=FALSE;
@@ -1866,7 +1866,7 @@ static gboolean _xfdashboard_theme_layout_check_ids_and_refids(XfdashboardThemeL
 				g_set_error(outError,
 							XFDASHBOARD_THEME_LAYOUT_ERROR,
 							XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-							_("Referenced ID '%s' could not be resolved"),
+							"Referenced ID '%s' could not be resolved",
 							(const gchar*)key);
 				success=FALSE;
 			}
@@ -1919,7 +1919,7 @@ static gboolean _xfdashboard_theme_layout_parse_xml(XfdashboardThemeLayout *self
 		g_set_error(outError,
 					XFDASHBOARD_THEME_LAYOUT_ERROR,
 					XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-					_("Could not set up parser data for file %s"),
+					"Could not set up parser data for file %s",
 					inPath);
 		return(FALSE);
 	}
@@ -1931,7 +1931,7 @@ static gboolean _xfdashboard_theme_layout_parse_xml(XfdashboardThemeLayout *self
 		g_set_error(outError,
 					XFDASHBOARD_THEME_LAYOUT_ERROR,
 					XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-					_("Could not create parser for file %s"),
+					"Could not create parser for file %s",
 					inPath);
 
 		g_free(data);
@@ -1960,7 +1960,7 @@ static gboolean _xfdashboard_theme_layout_parse_xml(XfdashboardThemeLayout *self
 	if(success && !g_markup_parse_context_end_parse(context, &error))
 	{
 		g_prefix_error(&error,
-						_("File %s - "),
+						"File %s - ",
 						inPath);
 		g_propagate_error(outError, error);
 		success=FALSE;
@@ -1971,7 +1971,7 @@ static gboolean _xfdashboard_theme_layout_parse_xml(XfdashboardThemeLayout *self
 		g_set_error(outError,
 					XFDASHBOARD_THEME_LAYOUT_ERROR,
 					XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-					_("File %s does not contain an interface"),
+					"File %s does not contain an interface",
 					inPath);
 		success=FALSE;
 	}
@@ -1981,7 +1981,7 @@ static gboolean _xfdashboard_theme_layout_parse_xml(XfdashboardThemeLayout *self
 		g_set_error(outError,
 					XFDASHBOARD_THEME_LAYOUT_ERROR,
 					XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
-					_("Interface at file %s has no ID"),
+					"Interface at file %s has no ID",
 					inPath);
 		success=FALSE;
 	}

@@ -169,7 +169,7 @@ static void _xfdashboard_theme_effects_parse_set_error(XfdashboardThemeEffectsPa
 	if(inParserData)
 	{
 		g_prefix_error(&tempError,
-						_("Error on line %d char %d: "),
+						"Error on line %d char %d: ",
 						inParserData->lastLine,
 						inParserData->lastPosition);
 	}
@@ -331,7 +331,7 @@ static XfdashboardThemeEffectsParsedObject* _xfdashboard_theme_effects_object_da
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_EFFECTS_ERROR_ERROR,
-													_("Cannot allocate memory for object data of tag <%s>"),
+													"Cannot allocate memory for object data of tag <%s>",
 													_xfdashboard_theme_effects_get_tag_by_id(inTagType));
 		return(NULL);
 	}
@@ -349,7 +349,7 @@ static void _xfdashboard_theme_effects_object_data_free(XfdashboardThemeEffectsP
 #ifdef DEBUG
 	if(inData->refCount>1)
 	{
-		g_critical(_("Freeing effect object parser data at %p with a reference counter of %d greater than one"),
+		g_critical("Freeing effect object parser data at %p with a reference counter of %d greater than one",
 					inData,
 					inData->refCount);
 	}
@@ -486,7 +486,7 @@ static ClutterEffect* _xfdashboard_theme_effects_create_object(XfdashboardThemeE
 	/* Check if created object is really an effect */
 	if(!CLUTTER_IS_EFFECT(object))
 	{
-		g_warning(_("Object of type %s is not derived from %s"),
+		g_warning("Object of type %s is not derived from %s",
 					g_type_name(inObjectData->classType),
 					g_type_name(CLUTTER_TYPE_EFFECT));
 
@@ -528,7 +528,7 @@ static void _xfdashboard_theme_effects_parse_general_no_text_nodes(GMarkupParseC
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-													_("Unexpected text node '%s' at tag <%s>"),
+													"Unexpected text node '%s' at tag <%s>",
 													realText,
 													parents ? (gchar*)parents->data : "document");
 	}
@@ -560,7 +560,7 @@ static void _xfdashboard_theme_effects_parse_property_start(GMarkupParseContext 
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-													_("Unknown tag <%s>"),
+													"Unknown tag <%s>",
 													inElementName);
 		return;
 	}
@@ -570,7 +570,7 @@ static void _xfdashboard_theme_effects_parse_property_start(GMarkupParseContext 
 												inContext,
 												outError,
 												XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-												_("Tag <%s> cannot contain tag <%s>"),
+												"Tag <%s> cannot contain tag <%s>",
 												_xfdashboard_theme_effects_get_tag_by_id(currentTag),
 												inElementName);
 }
@@ -593,7 +593,7 @@ static void _xfdashboard_theme_effects_parse_property_text_node(GMarkupParseCont
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-													_("Missing property name to set value for"));
+													"Missing property name to set value for");
 		return;
 	}
 
@@ -605,7 +605,7 @@ static void _xfdashboard_theme_effects_parse_property_text_node(GMarkupParseCont
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-													_("Missing object data to set value of property '%s'"),
+													"Missing object data to set value of property '%s'",
 													data->lastPropertyName);
 		return;
 	}
@@ -650,7 +650,7 @@ static void _xfdashboard_theme_effects_parse_object_start(GMarkupParseContext *i
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-													_("Unknown tag <%s>"),
+													"Unknown tag <%s>",
 													inElementName);
 		return;
 	}
@@ -663,7 +663,7 @@ static void _xfdashboard_theme_effects_parse_object_start(GMarkupParseContext *i
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-													_("Missing parser data for <%s> tag"),
+													"Missing parser data for <%s> tag",
 													inElementName);
 		return;
 	}
@@ -705,7 +705,7 @@ static void _xfdashboard_theme_effects_parse_object_start(GMarkupParseContext *i
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-														_("Multiple definition of property '%s' at object with ID '%s'"),
+														"Multiple definition of property '%s' at object with ID '%s'",
 														name,
 														objectData->id);
 			if(name) g_free(name);
@@ -726,7 +726,7 @@ static void _xfdashboard_theme_effects_parse_object_start(GMarkupParseContext *i
 												inContext,
 												outError,
 												XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-												_("Tag <%s> cannot contain tag <%s>"),
+												"Tag <%s> cannot contain tag <%s>",
 												_xfdashboard_theme_effects_get_tag_by_id(currentTag),
 												inElementName);
 }
@@ -750,7 +750,7 @@ static void _xfdashboard_theme_effects_parse_object_end(GMarkupParseContext *inC
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-														_("Missing parser data for <%s> tag"),
+														"Missing parser data for <%s> tag",
 														inElementName);
 		}
 		objectData=(XfdashboardThemeEffectsParsedObject*)(data->effects->data);
@@ -767,7 +767,7 @@ static void _xfdashboard_theme_effects_parse_object_end(GMarkupParseContext *inC
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-														_("Invalid state of parser after parsing property '%s' at object with id '%s' of type %s"),
+														"Invalid state of parser after parsing property '%s' at object with id '%s' of type %s",
 														data->lastPropertyName,
 														objectData->id,
 														g_type_name(objectData->classType));
@@ -818,7 +818,7 @@ static void _xfdashboard_theme_effects_parse_effects_start(GMarkupParseContext *
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-													_("Unknown tag <%s>"),
+													"Unknown tag <%s>",
 													inElementName);
 		return;
 	}
@@ -872,7 +872,7 @@ static void _xfdashboard_theme_effects_parse_effects_start(GMarkupParseContext *
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-														_("Empty ID at tag '%s'"),
+														"Empty ID at tag '%s'",
 														inElementName);
 			_xfdashboard_theme_effects_object_data_unref(objectData);
 			return;
@@ -884,7 +884,7 @@ static void _xfdashboard_theme_effects_parse_effects_start(GMarkupParseContext *
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-														_("Invalid ID '%s' at tag '%s'"),
+														"Invalid ID '%s' at tag '%s'",
 														objectData->id,
 														inElementName);
 			_xfdashboard_theme_effects_object_data_unref(objectData);
@@ -897,7 +897,7 @@ static void _xfdashboard_theme_effects_parse_effects_start(GMarkupParseContext *
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-														_("Multiple definition of effect with id '%s'"),
+														"Multiple definition of effect with id '%s'",
 														objectData->id);
 			_xfdashboard_theme_effects_object_data_unref(objectData);
 			return;
@@ -910,7 +910,7 @@ static void _xfdashboard_theme_effects_parse_effects_start(GMarkupParseContext *
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-														_("Unknown object class %s for tag '%s'"),
+														"Unknown object class %s for tag '%s'",
 														objectData->className,
 														inElementName);
 			_xfdashboard_theme_effects_object_data_unref(objectData);
@@ -924,7 +924,7 @@ static void _xfdashboard_theme_effects_parse_effects_start(GMarkupParseContext *
 														inContext,
 														outError,
 														XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-														_("Invalid class %s in object for parent tag <%s> - expecting class derived from %s"),
+														"Invalid class %s in object for parent tag <%s> - expecting class derived from %s",
 														objectData->className,
 														_xfdashboard_theme_effects_get_tag_by_id(currentTag),
 														g_type_name(expectedClassType));
@@ -947,7 +947,7 @@ static void _xfdashboard_theme_effects_parse_effects_start(GMarkupParseContext *
 												inContext,
 												outError,
 												XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-												_("Tag <%s> cannot contain tag <%s>"),
+												"Tag <%s> cannot contain tag <%s>",
 												_xfdashboard_theme_effects_get_tag_by_id(currentTag),
 												inElementName);
 }
@@ -987,7 +987,7 @@ static void _xfdashboard_theme_effects_parse_document_start(GMarkupParseContext 
 													inContext,
 													outError,
 													XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-													_("Unknown tag <%s>"),
+													"Unknown tag <%s>",
 													inElementName);
 		return;
 	}
@@ -1027,7 +1027,7 @@ static void _xfdashboard_theme_effects_parse_document_start(GMarkupParseContext 
 												inContext,
 												outError,
 												XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-												_("Tag <%s> cannot contain tag <%s>"),
+												"Tag <%s> cannot contain tag <%s>",
 												_xfdashboard_theme_effects_get_tag_by_id(currentTag),
 												inElementName);
 }
@@ -1077,7 +1077,7 @@ static gboolean _xfdashboard_theme_effects_parse_xml(XfdashboardThemeEffects *se
 		g_set_error(outError,
 					XFDASHBOARD_THEME_EFFECTS_ERROR,
 					XFDASHBOARD_THEME_EFFECTS_ERROR_ERROR,
-					_("Could not set up parser data for file %s"),
+					"Could not set up parser data for file %s",
 					inPath);
 		return(FALSE);
 	}
@@ -1089,7 +1089,7 @@ static gboolean _xfdashboard_theme_effects_parse_xml(XfdashboardThemeEffects *se
 		g_set_error(outError,
 					XFDASHBOARD_THEME_EFFECTS_ERROR,
 					XFDASHBOARD_THEME_EFFECTS_ERROR_ERROR,
-					_("Could not create parser for file %s"),
+					"Could not create parser for file %s",
 					inPath);
 
 		g_free(data);
@@ -1277,7 +1277,7 @@ ClutterEffect* xfdashboard_theme_effects_create_effect(XfdashboardThemeEffects *
 	}
 
 	/* If we get here we did not find an object with requested ID */
-	g_warning(_("Could not find effect with ID '%s'"), inID);
+	g_warning("Could not find effect with ID '%s'", inID);
 
 	return(NULL);
 }

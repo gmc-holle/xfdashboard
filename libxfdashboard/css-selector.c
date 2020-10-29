@@ -144,13 +144,13 @@ static gchar* _xfdashboard_css_selector_rule_to_string(XfdashboardCssSelectorRul
 				temp=_xfdashboard_css_selector_rule_to_string(inRule->parentRule);
 				if(!temp)
 				{
-					g_critical(_("Could not create string for parent css selector"));
+					g_critical("Could not create string for parent css selector");
 					return(NULL);
 				}
 				break;
 
 			default:
-				g_critical(_("Invalid mode for parent rule in CSS selector"));
+				g_critical("Invalid mode for parent rule in CSS selector");
 				return(NULL);
 		}
 
@@ -528,7 +528,7 @@ static GTokenType _xfdashboard_css_selector_parse_css_simple_selector(Xfdashboar
 											NULL,
 											NULL,
 											NULL,
-											_("Invalid name identifier"),
+											"Invalid name identifier",
 											TRUE);
 					return(G_TOKEN_ERROR);
 				}
@@ -560,7 +560,7 @@ static GTokenType _xfdashboard_css_selector_parse_css_simple_selector(Xfdashboar
 											NULL,
 											NULL,
 											NULL,
-											_("Invalid class identifier"),
+											"Invalid class identifier",
 											TRUE);
 					return(G_TOKEN_ERROR);
 				}
@@ -596,7 +596,7 @@ static GTokenType _xfdashboard_css_selector_parse_css_simple_selector(Xfdashboar
 											NULL,
 											NULL,
 											NULL,
-											_("Invalid pseudo-class identifier"),
+											"Invalid pseudo-class identifier",
 											TRUE);
 					return(G_TOKEN_ERROR);
 				}
@@ -695,7 +695,7 @@ static GTokenType _xfdashboard_css_selector_parse_css_rule(XfdashboardCssSelecto
 											NULL,
 											NULL,
 											NULL,
-											_("No parent when parsing '>'"),
+											"No parent when parsing '>'",
 											TRUE);
 					return(G_TOKEN_ERROR);
 				}
@@ -776,13 +776,13 @@ static gboolean _xfdashboard_css_selector_parse(XfdashboardCssSelector *self, GS
 		token=_xfdashboard_css_selector_parse_css_rule(self, ioScanner);
 		if(token==G_TOKEN_ERROR)
 		{
-			g_warning(_("Failed to parse css selector."));
+			g_warning("Failed to parse css selector.");
 			success=FALSE;
 		}
 	}
 		else
 		{
-			g_warning(_("Failed to parse css selector because stream is empty."));
+			g_warning("Failed to parse css selector because stream is empty.");
 			success=FALSE;
 		}
 
@@ -870,8 +870,8 @@ static void xfdashboard_css_selector_class_init(XfdashboardCssSelectorClass *kla
 	/* Define properties */
 	XfdashboardCssSelectorProperties[PROP_PRIORITY]=
 		g_param_spec_int("priority",
-							_("Priority"),
-							_("The priority of this CSS selector"),
+							"Priority",
+							"The priority of this CSS selector",
 							G_MININT, G_MAXINT,
 							0,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
@@ -914,7 +914,7 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_string_with_priority(c
 							NULL);
 	if(!selector)
 	{
-		g_warning(_("Could not create selector."));
+		g_warning("Could not create selector.");
 		return(NULL);
 	}
 
@@ -941,7 +941,7 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_string_with_priority(c
 								NULL,
 								NULL,
 								NULL,
-								_("Parser did not reach end of stream"),
+								"Parser did not reach end of stream",
 								TRUE);
 
 		g_object_unref(selector);
@@ -984,7 +984,7 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner_with_priority(
 							NULL);
 	if(!selector)
 	{
-		g_warning(_("Could not create selector."));
+		g_warning("Could not create selector.");
 		return(NULL);
 	}
 
@@ -1011,7 +1011,7 @@ XfdashboardCssSelector* xfdashboard_css_selector_new_from_scanner_with_priority(
 									NULL,
 									NULL,
 									NULL,
-									_("Unexpected state of CSS scanner."),
+									"Unexpected state of CSS scanner.",
 									TRUE);
 			g_object_unref(selector);
 			return(NULL);

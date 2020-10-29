@@ -468,47 +468,47 @@ static void xfdashboard_emblem_effect_class_init(XfdashboardEmblemEffectClass *k
 	/* Define properties */
 	XfdashboardEmblemEffectProperties[PROP_ICON_NAME]=
 		g_param_spec_string("icon-name",
-							_("Icon name"),
-							_("Themed icon name or file name of icon"),
+							"Icon name",
+							"Themed icon name or file name of icon",
 							N_(""),
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardEmblemEffectProperties[PROP_ICON_SIZE]=
 		g_param_spec_int("icon-size",
-							_("Icon size"),
-							_("Size of icon"),
+							"Icon size",
+							"Size of icon",
 							1, G_MAXINT,
 							16,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardEmblemEffectProperties[PROP_PADDING]=
 		g_param_spec_float("padding",
-							_("Padding"),
-							_("Padding around emblem"),
+							"Padding",
+							"Padding around emblem",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardEmblemEffectProperties[PROP_X_ALIGN]=
 		g_param_spec_float("x-align",
-							_("X align"),
-							_("The alignment of emblem on the X axis within the allocation in normalized coordinate between 0 and 1"),
+							"X align",
+							"The alignment of emblem on the X axis within the allocation in normalized coordinate between 0 and 1",
 							0.0f, 1.0f,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardEmblemEffectProperties[PROP_Y_ALIGN]=
 		g_param_spec_float("y-align",
-							_("Y align"),
-							_("The alignment of emblem on the Y axis within the allocation in normalized coordinate between 0 and 1"),
+							"Y align",
+							"The alignment of emblem on the Y axis within the allocation in normalized coordinate between 0 and 1",
 							0.0f, 1.0f,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardEmblemEffectProperties[PROP_ANCHOR_POINT]=
 		g_param_spec_enum("anchor-point",
-							_("Anchor point"),
-							_("The anchor point of emblem"),
+							"Anchor point",
+							"The anchor point of emblem",
 							XFDASHBOARD_TYPE_ANCHOR_POINT,
 							XFDASHBOARD_ANCHOR_POINT_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);

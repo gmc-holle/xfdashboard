@@ -502,8 +502,8 @@ void xfdashboard_transition_group_class_init(XfdashboardTransitionGroupClass *kl
 	/* Define properties */
 	XfdashboardTransitionGroupProperties[PROP_RESET_FLAGS]=
 		g_param_spec_boolean("reset-flags",
-								_("Reset flags"),
-								_("If TRUE the flags for static sizes, transformations etc. at animatable actor is resetted to old state"),
+								"Reset flags",
+								"If TRUE the flags for static sizes, transformations etc. at animatable actor is resetted to old state",
 								TRUE,
 								G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 

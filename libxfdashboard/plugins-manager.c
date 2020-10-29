@@ -270,7 +270,7 @@ static gboolean _xfdashboard_plugins_manager_load_plugin(XfdashboardPluginsManag
 		g_set_error(outError,
 					XFDASHBOARD_PLUGIN_ERROR,
 					XFDASHBOARD_PLUGIN_ERROR_ERROR,
-					_("Could not find module for plugin ID '%s'"),
+					"Could not find module for plugin ID '%s'",
 					inPluginID);
 
 		/* Return error */
@@ -411,9 +411,9 @@ static void _xfdashboard_plugins_manager_on_enabled_plugins_changed(XfdashboardP
 				if(!_xfdashboard_plugins_manager_load_plugin(self, pluginID, &error))
 				{
 					/* Show error message */
-					g_warning(_("Could not load plugin '%s': %s"),
+					g_warning("Could not load plugin '%s': %s",
 								pluginID,
-								error ? error->message : _("Unknown error"));
+								error ? error->message : "Unknown error");
 
 					/* Release allocated resources */
 					if(error)
@@ -715,9 +715,9 @@ gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self)
 		if(!_xfdashboard_plugins_manager_load_plugin(self, pluginID, &error))
 		{
 			/* Show error message */
-			g_warning(_("Could not load plugin '%s': %s"),
+			g_warning("Could not load plugin '%s': %s",
 						pluginID,
-						error ? error->message : _("Unknown error"));
+						error ? error->message : "Unknown error");
 
 			/* Release allocated resources */
 			if(error)

@@ -48,7 +48,7 @@ G_DEFINE_INTERFACE(XfdashboardWindowTrackerBackend,
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_WINDOWS_TRACKER_BACKEND_WARN_NOT_IMPLEMENTED(self, vfunc)  \
-	g_warning(_("Object of type %s does not implement required virtual function XfdashboardWindowTrackerBackend::%s"),\
+	g_warning("Object of type %s does not implement required virtual function XfdashboardWindowTrackerBackend::%s",\
 				G_OBJECT_TYPE_NAME(self), \
 				vfunc);
 
@@ -145,7 +145,7 @@ XfdashboardWindowTrackerBackend* xfdashboard_window_tracker_backend_get_default(
 
 		if(!_xfdashboard_window_tracker_backend_singleton)
 		{
-			g_critical(_("Cannot find any usable window tracker backend"));
+			g_critical("Cannot find any usable window tracker backend");
 			return(NULL);
 		}
 	}
@@ -187,7 +187,7 @@ void xfdashboard_window_tracker_backend_set_backend(const gchar *inBackend)
 	/* Warn if this function was called more than once */
 	if(wasSet)
 	{
-		g_critical(_("Cannot set backend to '%s' because it the backend was already set"),
+		g_critical("Cannot set backend to '%s' because it the backend was already set",
 					inBackend);
 		return;
 	}
@@ -200,7 +200,7 @@ void xfdashboard_window_tracker_backend_set_backend(const gchar *inBackend)
 	/* Backend can only be set if application was not already created */
 	if(xfdashboard_application_has_default())
 	{
-		g_critical(_("Cannot set backend to '%s' because application is already initialized"),
+		g_critical("Cannot set backend to '%s' because application is already initialized",
 					inBackend);
 		return;
 	}
@@ -223,7 +223,7 @@ void xfdashboard_window_tracker_backend_set_backend(const gchar *inBackend)
 	}
 
 	/* If we get here the requested backend is unknown */
-	g_warning(_("Unknown backend '%s' - using default backend"), inBackend);
+	g_warning("Unknown backend '%s' - using default backend", inBackend);
 #endif
 }
 

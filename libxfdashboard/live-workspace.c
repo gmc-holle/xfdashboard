@@ -996,37 +996,37 @@ static void xfdashboard_live_workspace_class_init(XfdashboardLiveWorkspaceClass 
 	/* Define properties */
 	XfdashboardLiveWorkspaceProperties[PROP_WORKSPACE]=
 		g_param_spec_object("workspace",
-								_("Workspace"),
-								_("The workspace to show"),
+								"Workspace",
+								"The workspace to show",
 								XFDASHBOARD_TYPE_WINDOW_TRACKER_WORKSPACE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLiveWorkspaceProperties[PROP_MONITOR]=
 		g_param_spec_object("monitor",
-								_("Monitor"),
-								_("The monitor whose window to show only"),
+								"Monitor",
+								"The monitor whose window to show only",
 								XFDASHBOARD_TYPE_WINDOW_TRACKER_MONITOR,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLiveWorkspaceProperties[PROP_BACKGROUND_IMAGE_TYPE]=
 		g_param_spec_enum("background-image-type",
-							_("Background image type"),
-							_("Background image type"),
+							"Background image type",
+							"Background image type",
 							XFDASHBOARD_TYPE_STAGE_BACKGROUND_IMAGE_TYPE,
 							XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLiveWorkspaceProperties[PROP_SHOW_WORKSPACE_NAME]=
 		g_param_spec_boolean("show-workspace-name",
-								_("Show workspace name"),
-								_("If TRUE the name of workspace should be shown"),
+								"Show workspace name",
+								"If TRUE the name of workspace should be shown",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardLiveWorkspaceProperties[PROP_WORKSPACE_NAME_PADDING]=
 		g_param_spec_float("workspace-name-padding",
-							_("Workspace name padding"),
-							_("Padding of workspace name actor in pixels"),
+							"Workspace name padding",
+							"Padding of workspace name actor in pixels",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);

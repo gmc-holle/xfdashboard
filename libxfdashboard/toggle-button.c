@@ -184,8 +184,8 @@ static void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *k
 	 */
 	XfdashboardToggleButtonProperties[PROP_TOGGLE_STATE]=
 		g_param_spec_boolean("toggle-state",
-								_("Toggle state"),
-								_("State of toggle"),
+								"Toggle state",
+								"State of toggle",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -197,8 +197,8 @@ static void xfdashboard_toggle_button_class_init(XfdashboardToggleButtonClass *k
 	 */
 	XfdashboardToggleButtonProperties[PROP_AUTO_TOGGLE]=
 		g_param_spec_boolean("auto-toggle",
-								_("Auto toggle"),
-								_("If set the toggle state will be toggled on each click"),
+								"Auto toggle",
+								"If set the toggle state will be toggled on each click",
 								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

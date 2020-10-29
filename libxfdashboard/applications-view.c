@@ -238,7 +238,7 @@ static void _xfdashboard_applications_view_on_menu_clicked(XfdashboardButton *in
 
 	if(!parent)
 	{
-		g_warning(_("Could not find view of type %s for menu '%s'"),
+		g_warning("Could not find view of type %s for menu '%s'",
 					g_type_name(XFDASHBOARD_TYPE_APPLICATIONS_VIEW),
 					garcon_menu_element_get_name(GARCON_MENU_ELEMENT(menu)));
 		return;
@@ -334,9 +334,9 @@ static void _xfdashboard_applications_view_on_popup_menu_item_launch(Xfdashboard
 								_("Launching application '%s' failed: %s"),
 								g_app_info_get_display_name(appInfo),
 								(error && error->message) ? error->message : _("unknown error"));
-			g_warning(_("Launching application '%s' failed: %s"),
+			g_warning("Launching application '%s' failed: %s",
 						g_app_info_get_display_name(appInfo),
-						(error && error->message) ? error->message : _("unknown error"));
+						(error && error->message) ? error->message : "unknown error");
 			if(error) g_error_free(error);
 		}
 			else
@@ -390,7 +390,7 @@ static void _xfdashboard_applications_view_on_popup_menu(XfdashboardApplications
 		appInfo=xfdashboard_application_button_get_app_info(button);
 		if(!appInfo)
 		{
-			g_critical(_("No application information available for clicked application button."));
+			g_critical("No application information available for clicked application button.");
 			return;
 		}
 
@@ -902,7 +902,7 @@ static gboolean _xfdashboard_applications_view_focusable_set_selection(Xfdashboa
 	if(inSelection &&
 		!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
 	{
-		g_warning(_("%s is not a child of %s and cannot be selected"),
+		g_warning("%s is not a child of %s and cannot be selected",
 					G_OBJECT_TYPE_NAME(inSelection),
 					G_OBJECT_TYPE_NAME(self));
 
@@ -1050,7 +1050,7 @@ static ClutterActor* _xfdashboard_applications_view_get_selection_from_icon_mode
 				gchar					*valueName;
 
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-				g_critical(_("Focusable object %s does not handle selection direction of type %s in icon mode."),
+				g_critical("Focusable object %s does not handle selection direction of type %s in icon mode.",
 							G_OBJECT_TYPE_NAME(self),
 							valueName);
 				g_free(valueName);
@@ -1171,7 +1171,7 @@ static ClutterActor* _xfdashboard_applications_view_get_selection_from_list_mode
 				gchar					*valueName;
 
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-				g_critical(_("Focusable object %s does not handle selection direction of type %s in list mode."),
+				g_critical("Focusable object %s does not handle selection direction of type %s in list mode.",
 							G_OBJECT_TYPE_NAME(self),
 							valueName);
 				g_free(valueName);
@@ -1234,7 +1234,7 @@ static ClutterActor* _xfdashboard_applications_view_focusable_find_selection(Xfd
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("Cannot lookup selection target at %s because %s is a child of %s"),
+		g_warning("Cannot lookup selection target at %s because %s is a child of %s",
 					G_OBJECT_TYPE_NAME(self),
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>");
@@ -1279,7 +1279,7 @@ static ClutterActor* _xfdashboard_applications_view_focusable_find_selection(Xfd
 		default:
 			{
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-				g_critical(_("Focusable object %s does not handle selection direction of type %s."),
+				g_critical("Focusable object %s does not handle selection direction of type %s.",
 							G_OBJECT_TYPE_NAME(self),
 							valueName);
 				g_free(valueName);
@@ -1319,7 +1319,7 @@ static gboolean _xfdashboard_applications_view_focusable_activate_selection(Xfda
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("%s is a child of %s and cannot be activated at %s"),
+		g_warning("%s is a child of %s and cannot be activated at %s",
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
 					G_OBJECT_TYPE_NAME(self));
@@ -1508,45 +1508,45 @@ static void xfdashboard_applications_view_class_init(XfdashboardApplicationsView
 	/* Define properties */
 	XfdashboardApplicationsViewProperties[PROP_VIEW_MODE]=
 		g_param_spec_enum("view-mode",
-							_("View mode"),
-							_("The view mode used in this view"),
+							"View mode",
+							"The view mode used in this view",
 							XFDASHBOARD_TYPE_VIEW_MODE,
 							XFDASHBOARD_VIEW_MODE_LIST,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationsViewProperties[PROP_SPACING]=
 		g_param_spec_float("spacing",
-							_("Spacing"),
-							_("Spacing between each element in view"),
+							"Spacing",
+							"Spacing between each element in view",
 							0.0f, G_MAXFLOAT,
 							0.0f,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationsViewProperties[PROP_PARENT_MENU_ICON]=
 		g_param_spec_string("parent-menu-icon",
-								_("Parent menu icon"),
-								_("Name of icon to use for 'go-back-to-parent-menu' entries"),
+								"Parent menu icon",
+								"Name of icon to use for 'go-back-to-parent-menu' entries",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationsViewProperties[PROP_FORMAT_TITLE_ONLY]=
 		g_param_spec_string("format-title-only",
-								_("Format title only"),
-								_("Format string used when only title is display"),
+								"Format title only",
+								"Format string used when only title is display",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationsViewProperties[PROP_FORMAT_TITLE_DESCRIPTION]=
 		g_param_spec_string("format-title-description",
-								_("Format title and description"),
-								_("Format string used when title and description is display. First argument is title and second one is description."),
+								"Format title and description",
+								"Format string used when title and description is display. First argument is title and second one is description.",
 								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardApplicationsViewProperties[PROP_SHOW_ALL_APPS]=
 		g_param_spec_boolean("show-all-apps",
-								_("Show all applications"),
-								_("Whether to show a menu for all installed applications at root menu"),
+								"Show all applications",
+								"Whether to show a menu for all installed applications at root menu",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 

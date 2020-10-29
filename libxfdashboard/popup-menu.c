@@ -562,7 +562,7 @@ static gboolean _xfdashboard_popup_menu_focusable_set_selection(XfdashboardFocus
 	if(inSelection &&
 		!clutter_actor_contains(CLUTTER_ACTOR(self), inSelection))
 	{
-		g_warning(_("%s is not a child of %s and cannot be selected"),
+		g_warning("%s is not a child of %s and cannot be selected",
 					G_OBJECT_TYPE_NAME(inSelection),
 					G_OBJECT_TYPE_NAME(self));
 
@@ -631,7 +631,7 @@ static ClutterActor* _xfdashboard_popup_menu_focusable_find_selection(Xfdashboar
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("Cannot lookup selection target at %s because %s is a child of %s"),
+		g_warning("Cannot lookup selection target at %s because %s is a child of %s",
 					G_OBJECT_TYPE_NAME(self),
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>");
@@ -668,7 +668,7 @@ static ClutterActor* _xfdashboard_popup_menu_focusable_find_selection(Xfdashboar
 		default:
 			{
 				valueName=xfdashboard_get_enum_value_name(XFDASHBOARD_TYPE_SELECTION_TARGET, inDirection);
-				g_critical(_("Focusable object %s does not handle selection direction of type %s."),
+				g_critical("Focusable object %s does not handle selection direction of type %s.",
 							G_OBJECT_TYPE_NAME(self),
 							valueName);
 				g_free(valueName);
@@ -710,7 +710,7 @@ static gboolean _xfdashboard_popup_menu_focusable_activate_selection(Xfdashboard
 		ClutterActor						*parent;
 
 		parent=clutter_actor_get_parent(inSelection);
-		g_warning(_("%s is a child of %s and cannot be activated at %s"),
+		g_warning("%s is a child of %s and cannot be activated at %s",
 					G_OBJECT_TYPE_NAME(inSelection),
 					parent ? G_OBJECT_TYPE_NAME(parent) : "<nil>",
 					G_OBJECT_TYPE_NAME(self));
@@ -940,8 +940,8 @@ static void xfdashboard_popup_menu_class_init(XfdashboardPopupMenuClass *klass)
 	 */
 	XfdashboardPopupMenuProperties[PROP_DESTROY_ON_CANCEL]=
 		g_param_spec_boolean("destroy-on-cancel",
-								_("Destroy on cancel"),
-								_("Flag indicating this pop-up menu should be destroyed automatically when it is cancelled"),
+								"Destroy on cancel",
+								"Flag indicating this pop-up menu should be destroyed automatically when it is cancelled",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -953,8 +953,8 @@ static void xfdashboard_popup_menu_class_init(XfdashboardPopupMenuClass *klass)
 	 */
 	XfdashboardPopupMenuProperties[PROP_SOURCE]=
 		g_param_spec_object("source",
-							_("Source"),
-							_("The object on which this pop-up menu depends on"),
+							"Source",
+							"The object on which this pop-up menu depends on",
 							CLUTTER_TYPE_ACTOR,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -965,8 +965,8 @@ static void xfdashboard_popup_menu_class_init(XfdashboardPopupMenuClass *klass)
 	 */
 	XfdashboardPopupMenuProperties[PROP_SHOW_TITLE]=
 		g_param_spec_boolean("show-title",
-								_("Show title"),
-								_("Flag indicating if the title of this pop-up menu should be shown"),
+								"Show title",
+								"Flag indicating if the title of this pop-up menu should be shown",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -977,8 +977,8 @@ static void xfdashboard_popup_menu_class_init(XfdashboardPopupMenuClass *klass)
 	 */
 	XfdashboardPopupMenuProperties[PROP_TITLE]=
 		g_param_spec_string("title",
-							_("Title"),
-							_("Title of pop-up menu"),
+							"Title",
+							"Title of pop-up menu",
 							N_(""),
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -989,8 +989,8 @@ static void xfdashboard_popup_menu_class_init(XfdashboardPopupMenuClass *klass)
 	 */
 	XfdashboardPopupMenuProperties[PROP_SHOW_TITLE_ICON]=
 		g_param_spec_boolean("show-title-icon",
-								_("Show title icon"),
-								_("Flag indicating if the icon of title of this pop-up menu should be shown"),
+								"Show title icon",
+								"Flag indicating if the icon of title of this pop-up menu should be shown",
 								FALSE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -1002,8 +1002,8 @@ static void xfdashboard_popup_menu_class_init(XfdashboardPopupMenuClass *klass)
 	 */
 	XfdashboardPopupMenuProperties[PROP_TITLE_ICON_NAME]=
 		g_param_spec_string("title-icon-name",
-							_("Title icon name"),
-							_("Themed icon name or file name of icon used in title"),
+							"Title icon name",
+							"Themed icon name or file name of icon used in title",
 							N_(""),
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -1014,8 +1014,8 @@ static void xfdashboard_popup_menu_class_init(XfdashboardPopupMenuClass *klass)
 	 */
 	XfdashboardPopupMenuProperties[PROP_TITLE_GICON]=
 		g_param_spec_object("title-gicon",
-							_("Title GIcon"),
-							_("The GIcon of icon used in title"),
+							"Title GIcon",
+							"The GIcon of icon used in title",
 							G_TYPE_ICON,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -1689,7 +1689,7 @@ gboolean xfdashboard_popup_menu_move_item(XfdashboardPopupMenu *self,
 	/* Check if menu item is really part of this pop-up menu */
 	if(!_xfdashboard_popup_menu_contains_menu_item(self, inMenuItem))
 	{
-		g_warning(_("%s is not a child of %s and cannot be moved"),
+		g_warning("%s is not a child of %s and cannot be moved",
 					G_OBJECT_TYPE_NAME(inMenuItem),
 					G_OBJECT_TYPE_NAME(self));
 		return(FALSE);
@@ -1796,7 +1796,7 @@ gboolean xfdashboard_popup_menu_remove_item(XfdashboardPopupMenu *self, Xfdashbo
 	/* Check if menu item is really part of this pop-up menu */
 	if(!_xfdashboard_popup_menu_contains_menu_item(self, inMenuItem))
 	{
-		g_warning(_("%s is not a child of %s and cannot be removed"),
+		g_warning("%s is not a child of %s and cannot be removed",
 					G_OBJECT_TYPE_NAME(inMenuItem),
 					G_OBJECT_TYPE_NAME(self));
 		return(FALSE);
@@ -1875,7 +1875,7 @@ void xfdashboard_popup_menu_activate(XfdashboardPopupMenu *self)
 	if(!monitor)
 	{
 		/* Show error message */
-		g_critical(_("Could not find monitor at pointer position %d,%d"),
+		g_critical("Could not find monitor at pointer position %d,%d",
 					pointerX,
 					pointerY);
 

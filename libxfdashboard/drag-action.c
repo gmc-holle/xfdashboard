@@ -925,8 +925,8 @@ void xfdashboard_drag_action_class_init(XfdashboardDragActionClass *klass)
 	/* Define properties */
 	XfdashboardDragActionProperties[PROP_SOURCE]=
 		g_param_spec_object("source",
-							_("Source"),
-							_("The source actor where drag began"),
+							"Source",
+							"The source actor where drag began",
 							CLUTTER_TYPE_ACTOR,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
