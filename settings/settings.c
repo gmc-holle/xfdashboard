@@ -141,7 +141,7 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 		g_debug("Trying UI file: %s", builderFile);
 		if(!g_file_test(builderFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
 		{
-			g_critical(_("Could not find UI file '%s'."), builderFile);
+			g_critical("Could not find UI file '%s'.", builderFile);
 
 			/* Release allocated resources */
 			g_free(builderFile);
@@ -155,9 +155,9 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 	builder=gtk_builder_new();
 	if(!gtk_builder_add_from_file(builder, builderFile, &error))
 	{
-		g_critical(_("Could not load UI resources from '%s': %s"),
+		g_critical("Could not load UI resources from '%s': %s",
 					builderFile,
-					error ? error->message : _("Unknown error"));
+					error ? error->message : "Unknown error");
 
 		/* Release allocated resources */
 		g_free(builderFile);
@@ -316,7 +316,7 @@ GtkWidget* xfdashboard_settings_create_dialog(XfdashboardSettings *self)
 	priv->dialog=gtk_builder_get_object(priv->builder, "preferences-dialog");
 	if(!priv->dialog)
 	{
-		g_critical(_("Could not get dialog from UI file."));
+		g_critical("Could not get dialog from UI file.");
 		return(NULL);
 	}
 
@@ -350,7 +350,7 @@ GtkWidget* xfdashboard_settings_create_plug(XfdashboardSettings *self, Window in
 	dialogChild=gtk_builder_get_object(priv->builder, "preferences-plug-child");
 	if(!dialogChild)
 	{
-		g_critical(_("Could not get dialog from UI file."));
+		g_critical("Could not get dialog from UI file.");
 		return(NULL);
 	}
 

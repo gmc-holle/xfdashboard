@@ -256,7 +256,7 @@ static void _xfdashboard_settings_themes_theme_changed_by_widget(XfdashboardSett
 				if(error)
 				{
 					g_warning("Could not load screenshot: %s",
-								error ? error->message : _("Unknown error"));
+								error ? error->message : "Unknown error");
 
 					/* Release allocated resources */
 					if(error) g_error_free(error);
@@ -543,7 +543,7 @@ static void _xfdashboard_settings_themes_populate_themes_list(XfdashboardSetting
 				g_warning("Invalid theme '%s' at %s: %s",
 							themeName,
 							themeIndexFile,
-							error ? error->message : _("Unknown error"));
+							error ? error->message : "Unknown error");
 
 				/* Release allocated resources */
 				if(error) g_error_free(error);
@@ -565,7 +565,7 @@ static void _xfdashboard_settings_themes_populate_themes_list(XfdashboardSetting
 				g_warning("Invalid theme '%s' at %s: %s",
 							themeName,
 							themeIndexFile,
-							error ? error->message : _("Unknown error"));
+							error ? error->message : "Unknown error");
 
 				/* Release allocated resources */
 				if(error) g_error_free(error);
@@ -584,7 +584,7 @@ static void _xfdashboard_settings_themes_populate_themes_list(XfdashboardSetting
 				g_warning("Invalid theme '%s' at %s: %s",
 							themeName,
 							themeIndexFile,
-							error ? error->message : _("Unknown error"));
+							error ? error->message : "Unknown error");
 
 				/* Release allocated resources */
 				if(error) g_error_free(error);
@@ -603,7 +603,7 @@ static void _xfdashboard_settings_themes_populate_themes_list(XfdashboardSetting
 				g_warning("Invalid theme '%s' at %s: %s",
 							themeName,
 							themeIndexFile,
-							error ? error->message : _("Unknown error"));
+							error ? error->message : "Unknown error");
 
 				/* Release allocated resources */
 				if(error) g_error_free(error);
@@ -622,7 +622,7 @@ static void _xfdashboard_settings_themes_populate_themes_list(XfdashboardSetting
 				g_warning("Invalid theme '%s' at %s: %s",
 							themeName,
 							themeIndexFile,
-							error ? error->message : _("Unknown error"));
+							error ? error->message : "Unknown error");
 
 				/* Release allocated resources */
 				if(error) g_error_free(error);
@@ -904,8 +904,8 @@ static void xfdashboard_settings_themes_class_init(XfdashboardSettingsThemesClas
 	/* Define properties */
 	XfdashboardSettingsThemesProperties[PROP_BUILDER]=
 		g_param_spec_object("builder",
-								_("Builder"),
-								_("The initialized GtkBuilder object where to set up themes tab from"),
+								"Builder",
+								"The initialized GtkBuilder object where to set up themes tab from",
 								GTK_TYPE_BUILDER,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 

@@ -588,7 +588,7 @@ static void _xfdashboard_settings_plugins_enabled_plugins_changed_by_widget(Xfda
 		success=xfconf_channel_set_string_list(priv->xfconfChannel,
 												ENABLED_PLUGINS_XFCONF_PROP,
 												(const gchar * const*)enabledPluginsList);
-		if(!success) g_critical(_("Could not set list of enabled plugins!"));
+		if(!success) g_critical("Could not set list of enabled plugins!");
 
 		/* Release allocated resources */
 		if(enabledPluginsList) g_strfreev(enabledPluginsList);
@@ -804,10 +804,10 @@ static void _xfdashboard_settings_plugins_populate_plugins_list(XfdashboardSetti
 				gchar				*message;
 
 				/* Show error message */
-				g_warning(_("Could not load plugin '%s' from '%s': %s"),
+				g_warning("Could not load plugin '%s' from '%s': %s",
 							pluginName,
 							fullPath,
-							error ? error->message : _("Unknown error"));
+							error ? error->message : "Unknown error");
 
 				/* Create error message to store in list */
 				message=g_strdup_printf(_("<b>Plugin could not be loaded.</b>\n\n%s"),
@@ -1175,8 +1175,8 @@ static void xfdashboard_settings_plugins_class_init(XfdashboardSettingsPluginsCl
 	/* Define properties */
 	XfdashboardSettingsPluginsProperties[PROP_BUILDER]=
 		g_param_spec_object("builder",
-								_("Builder"),
-								_("The initialized GtkBuilder object where to set up themes tab from"),
+								"Builder",
+								"The initialized GtkBuilder object where to set up themes tab from",
 								GTK_TYPE_BUILDER,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 

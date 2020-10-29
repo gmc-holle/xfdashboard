@@ -729,8 +729,8 @@ static void xfdashboard_settings_general_class_init(XfdashboardSettingsGeneralCl
 	/* Define properties */
 	XfdashboardSettingsGeneralProperties[PROP_BUILDER]=
 		g_param_spec_object("builder",
-								_("Builder"),
-								_("The initialized GtkBuilder object where to set up themes tab from"),
+								"Builder",
+								"The initialized GtkBuilder object where to set up themes tab from",
 								GTK_TYPE_BUILDER,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 

@@ -81,8 +81,8 @@ int main(int argc, char **argv)
 	{
 		if(G_LIKELY(error))
 		{
-			g_error(_("Failed to initialize xfconf: %s"),
-					error ? error->message : _("Unknown error"));
+			g_error("Failed to initialize xfconf: %s",
+					error ? error->message : "Unknown error");
 			if(error) g_error_free(error);
 		}
 
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 	settings=xfdashboard_settings_new();
 	if(G_UNLIKELY(!settings))
 	{
-		g_error(_("Could not create the settings dialog."));
+		g_error("Could not create the settings dialog.");
 
 		/* Shutdown xfconf */
 		xfconf_shutdown();
