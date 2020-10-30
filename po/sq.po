@@ -30,7 +30,7 @@ msgstr "Xfdashboard"
 #: ../data/xfdashboard.desktop.in.in.h:2
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
-msgstr "Një pult për Xfce-në i ngjashëm ndoshta me shellin Gnome"
+msgstr "Një pult për Xfce-në, i ngjashëm ndoshta me shellin Gnome"
 
 #: ../data/xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
@@ -195,7 +195,7 @@ msgid ""
 msgstr ""
 "Kur rimerret puna e xfdashboard-it, do të aktivizohet pamja e përzgjedhur.\n"
 "\n"
-"<b>SHËNIM:</b> Ky rregullim ka efekt vetëm nëse xfdashboard-i xhiron nën mënyrën demon. "
+"<b>SHËNIM:</b> Ky rregullim ka efekt vetëm nëse xfdashboard-i xhiron nën mënyrën demon."
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
@@ -207,6 +207,9 @@ msgid ""
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
 msgstr ""
+"Cakton kohën minimum që shfaqet një njoftim.\n"
+"\n"
+"Kohëzgjatja llogaritet sipas gjatësisë së tekstit që duhet shfaqur në njoftim. Ky rregullim ju lejon të specifikoni sa gjatë duhet shfaqur të paktën njoftimi."
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
@@ -214,7 +217,7 @@ msgstr "Kohë minimum mbarimi njoftimi:"
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
-msgstr ""
+msgstr "Aktivizoni rrugëzgjidhje për dritare të minimuzuara"
 
 #: ../data/data/preferences.ui.h:19
 msgid ""
@@ -222,6 +225,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
 msgstr ""
+"Kur aktivizohet një rrugëzgjidhje për dritare të minimizuara do të provohet të merren figura të palëvizshme të këtyre dritareve, duke i rikthyer pas pak dhe duke i minimizuar sërish.\n"
+"\n"
+"<b>SHËNIM:</b> Mbani parasysh se kjo është një <u>rrugëzgjidhje</u> nga halli dhe dritaret tuaja mund të qëndronin të minimizuara, të ndryshoni hapësirë pune, etj."
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
@@ -229,6 +235,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
+"Kjo vlerë përcakton sa shpejt duhet krijuar lënda e dritare. Teksa vlera 'immediate' i tregon xfdashboard-it ta krijojë dritaren në kohën kur i kërkohet, krejt vlerat e tjera do të ujdisin një radhë dhe vlera përcakton se sa shpejt trajtohet radha.\n"
+"\n"
+"<b>SHËNIM:</b> Ndryshojeni këtë vlerë nga 'immediate' në një tjetër vlerë vetëm nëse karta juaj grafike, përudhësi ose sistemi është shumë i ngadaltë në krijimin e lëndës së dritareve menjëherë. Ju mbetet të provoni çdo vlerë që të gjeni atë që përputhet me sistemin tuaj."
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
@@ -243,10 +252,13 @@ msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
 msgstr ""
+"Kur aktivizohet, krejt paraparjet e atypëratyshme të dritareve do të shfaqin"
+" gjithashtu dritaret e tyre pjella. Çaktivizimi i kësaj mundësie do të "
+"përmirësojë punimin në makina të ngadalta."
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
-msgstr ""
+msgstr "Nis përherë një instancë të re për aplikacionin"
 
 #: ../data/data/preferences.ui.h:29
 msgid ""
@@ -254,6 +266,9 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
+"Kur aktivizohet, dhe klikohet një ikonë te paneli i nisjes së shpejtë, do të niset përherë një instancë e re e aplikacionit.\n"
+"\n"
+"Kur nuk aktivizohet, do të përzgjedhë dritaren e fundit të njohur si aktive të instancës xhiruese të aplikacionit. Nëse aplikacioni s’është duke xhiruar, do të niset një instancë e re."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
@@ -261,7 +276,7 @@ msgstr "Aktivizo animacione"
 
 #: ../data/data/preferences.ui.h:33
 msgid "If enabled theme-defined animations will be shown."
-msgstr ""
+msgstr "Në u aktivizoftë, do të shfaqen animacione të përcaktuar nga tema."
 
 #: ../data/data/preferences.ui.h:34
 msgid "<b>Applications view:</b>"
@@ -276,6 +291,8 @@ msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
 msgstr ""
+"Kur aktivizohet, do të shfaqet një menu “krejt aplikacionet” që përmban "
+"krejt aplikacionet e instaluara"
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
@@ -291,6 +308,10 @@ msgid ""
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
 msgstr ""
+"Kur aktivizohet, çfarëdo akti rrëshqitjeje, bie fjala, rrotullimi në këtë "
+"kah apo në atë kah i rrotëzës së miut, në dritare do të ndryshojë hapësirën "
+"aktive të punës. Kjo sjellje është e njëjtë si te përzgjedhësi i hapësirës "
+"së punës."
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
@@ -301,6 +322,8 @@ msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
 msgstr ""
+"Cakton intervalin sa duhet vonuar kërkimi pasi të jetë dhënë shkronja e parë"
+" në të."
 
 #: ../data/data/preferences.ui.h:42
 msgid "Delay initial search interval:"
@@ -472,10 +495,12 @@ msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
 msgstr ""
+"Këmben dukshmërinë, nëse instanca xhiruese qe nisur nën mënyrën demon, "
+"përndryshe del nga instanca xhiruese jo-demon"
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
-msgstr ""
+msgstr "ID-ja e pamjes te e cila të kalohet gjatë nisjes ose rimarrjes"
 
 #: ../libxfdashboard/application.c:581
 msgid "Show version"
@@ -483,7 +508,7 @@ msgstr "Shfaq versionin"
 
 #: ../libxfdashboard/application.c:600
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr ""
+msgstr "Një pult për Xfce-në, i ngjashëm me Shellin Gnome - version "
 
 #. Show error
 #: ../libxfdashboard/application.c:617
@@ -534,13 +559,13 @@ msgstr "S’ka dritare që të aktivizohen për aplikacionin"
 #: ../libxfdashboard/quicklaunch.c:2130
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr ""
+msgstr "I parapëlqyeri '%s' u hoq"
 
 #: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
 #: ../libxfdashboard/quicklaunch.c:2063
 #, c-format
 msgid "Favourite '%s' added"
-msgstr ""
+msgstr "I parapëlqyeri '%s' u shtua"
 
 #: ../libxfdashboard/quicklaunch.c:705
 msgid "Remove from favourites"
@@ -646,11 +671,11 @@ msgstr "Ku është një shembull kot shtojce furnizuesi kërkimesh"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr ""
+msgstr "Furnizues Gnome-Shell kërkimesh"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr ""
+msgstr "Përdor furnizues Gnome-Shell kërkimesh, si burim për kërkime"
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
@@ -682,13 +707,15 @@ msgstr "Skadim për t’u aktivizuar:"
 
 #: ../plugins/hot-corner/plugin.c:418
 msgid "Hot corner"
-msgstr ""
+msgstr "Cep i ndjeshëm"
 
 #: ../plugins/hot-corner/plugin.c:419
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
 msgstr ""
+"Aktivizon xfdashboard-in, kur treguesi i miut lëvizet te një cep i monitorit"
+" i formësuar për këtë"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
