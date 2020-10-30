@@ -1,0 +1,778 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Nick Schermer <nick@xfce.org>, 2020
+# Besnik Bleta <besnik@programeshqip.org>, 2020
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-30 00:47+0100\n"
+"PO-Revision-Date: 2020-10-07 10:59+0000\n"
+"Last-Translator: Besnik Bleta <besnik@programeshqip.org>, 2020\n"
+"Language-Team: Albanian (https://www.transifex.com/xfce/teams/16840/sq/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sq\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../data/xfdashboard.desktop.in.in.h:1
+#: ../data/xfdashboard-autostart.desktop.in.in.h:1
+msgid "Xfdashboard"
+msgstr "Xfdashboard"
+
+#: ../data/xfdashboard.desktop.in.in.h:2
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:1
+msgid "Maybe a Gnome shell like dashboard for Xfce"
+msgstr "Një pult për Xfce-në i ngjashëm ndoshta me shellin Gnome"
+
+#: ../data/xfdashboard-autostart.desktop.in.in.h:2
+msgid "Start xfdashboard as daemon in background"
+msgstr "Nise xfdashboard-in si demon në prapaskenë"
+
+#: ../data/xfdashboard-settings.desktop.in.in.h:1
+msgid "Xfdashboard settings"
+msgstr "Rregullime Xfdashboard-i"
+
+#: ../data/xfdashboard-settings.desktop.in.in.h:2
+msgid "Configure xfdashboard"
+msgstr "Formësoni xfdashboard-in"
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:2
+msgid ""
+"Xfdashboard provides a GNOME shell dashboard like interface for use with "
+"Xfce desktop."
+msgstr ""
+"Xfdashboard furnizon një pult të ngjashëm me shellin GNOME për përdorim me "
+"desktopin Xfce."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:3
+msgid ""
+"It can be configured to run to any keyboard shortcut and when executed "
+"provides an overview of applications currently open enabling the user to "
+"switch between different applications. The search feature works like Xfce's "
+"app finder which makes it convenient to search for and start applications."
+msgstr ""
+"Mund të formësohet për t’u vënë në punë me çfarëdo shkurtoreje tastiere dhe,"
+" kur ekzekutohet, furnizon një përmbledhje të aplikacioneve aktualisht të "
+"hapura, duke i bërë të mundur përdoruesit të kalojë nga një aplikacion në "
+"tjetrin. Veçoria e kërkimit funksionon në mënyrë të ngjashme me gjetësin e "
+"aplikacioneve të Xfce-së, çka e bën të lehtë kërkimin dhe nisjen e "
+"aplikacioneve."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:4
+msgid "Browsing applications"
+msgstr "Aplikacione shfletimi"
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:5
+msgid "Searching applications"
+msgstr "Aplikacione kërkimi"
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+msgid ""
+"This unstable development adds more animations as well as some smaller "
+"fixes."
+msgstr ""
+"Ky version i paqëndrueshëm zhvillimi shton më tepër animacione, si dhe disa "
+"ndreqje më të vockla."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+msgid "This unstable development adds animations."
+msgstr "Ky version i paqëndrueshëm zhvillimi shton animacione."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+msgid ""
+"This unstable development adds support for touchpads and application actions"
+" (Jumplists, Quicklists) as well as new and updated translations."
+msgstr ""
+"Ky version i paqëndrueshëm zhvillimi shton mbulim për touchpad-e dhe veprime"
+" aplikacionesh (Jumplists, Quicklists), si dhe përkthime të reja dhe të "
+"përditësuara."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+msgid ""
+"This unstable development adds lots of new and updated translations and "
+"support for newer xfconf versions."
+msgstr ""
+"Ky version i paqëndrueshëm zhvillimi shton plot përkthime të reja dhe të "
+"përditësuara dhe mbulim për versione më të rinj të xfconf-it."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+msgid ""
+"This unstable development implements a new experimental backend for GDK as "
+"well as it supports user stylesheets now."
+msgstr ""
+"Ky version i paqëndrueshëm zhvillimi shton një pjesë të pasme të re "
+"eksperimentale për GDK-në, si dhe mbulim për fletëstile përdoruesish tanimë."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
+msgid ""
+"This unstable development improves loading performance of images and icon, "
+"adds a fine-grained debugging system and introduces an interface for "
+"multiple backends but only X11 is still the one only one supported."
+msgstr ""
+"Ky version i paqëndrueshëm zhvillimi përmirëson funksionimin e ngarkimit të "
+"figurave dhe ikonave, shton një sistem të imët diagnostikimi dhe sjell për "
+"herë të parë një ndërfaqe për pjesë të pasme të shumta, por vetëm X11 është "
+"ende i vetmi i mbuluar ndër to."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+msgid ""
+"This unstable development introduces child windows shown next to the main "
+"window."
+msgstr ""
+"Ky version i paqëndrueshëm zhvillimi sjell për herë të parë dritare pjella "
+"të shfaqura në krah të dritares kryesore."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+msgid ""
+"This stable version fixes a bug setting the correct default applications at "
+"first use."
+msgstr ""
+"Ky version i qëndrueshëm ndreq një të metë në ujdisjen e aplikacioneve të "
+"sakta parazgjedhje gjatë përdorimit të parë fare."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+msgid "This unstable development introduces pop-up menus."
+msgstr ""
+"Ky version i paqëndrueshëm zhvillimi sjell për herë të parë menu flluska."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+msgid ""
+"This stable version introduces lots of new features like plugins and "
+"application tracker. It also contains a huge collection of other larger and "
+"smaller improvements."
+msgstr ""
+"Ky version i qëndrueshëm sjell plotë veçori të reja, të tilla si ndjekës "
+"shtojcash dhe aplikacionesh. Përmban gjithashtu një koleksion të stërmadh "
+"përmirësimesh të tjera më të mëdha dhe më të vogla."
+
+#: ../data/data/preferences.ui.h:1
+msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
+msgstr "<span size=\"large\"><b>Rregullime Xfdashboard-i</b></span>"
+
+#: ../data/data/preferences.ui.h:2
+msgid "Configure plugin"
+msgstr "Formësoni shtojcën"
+
+#: ../data/data/preferences.ui.h:3
+msgid ""
+"<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
+"Configure xfdashboard"
+msgstr ""
+"<span size=\"large\"><b>Rregullime Xfdashboard-i</b></span>\n"
+"Formësoni xfdashboard-in"
+
+#: ../data/data/preferences.ui.h:5
+msgid "<b>General settings:</b>"
+msgstr "<b>Rregullime të përgjithshme:</b>"
+
+#: ../data/data/preferences.ui.h:6
+msgid "Reset search view when resumed"
+msgstr "Rikthe pamjen e kërkimit te parazgjedhjet, kur rimerret"
+
+#: ../data/data/preferences.ui.h:7
+msgid ""
+"If enabled the search view will be resetted when xfdashboard is resumed. That means the active view is switched back to last view active before last search was started and search box will be emptied.\n"
+"\n"
+"<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
+msgstr ""
+"Në u aktivizoftë, pamja kërkim do të rikthehet te parazgjedhjet, kur të rimerret funksionimi i xfdashboard-it. Kjo do të thotë që pamja aktive kalohet te pamja aktive e fundit para se të nisej kërkimi i fundit dhe kuadrati i kërkimit do të zbrazet.\n"
+"\n"
+"<b>SHËNIM:</b> Ky rregullim ka efekt vetëm nëse xfdashboard-i xhiron nën mënyrën demon. "
+
+#: ../data/data/preferences.ui.h:10
+msgid ""
+"When xfdashboard resumes the selected view will be activated.\n"
+"\n"
+"<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
+msgstr ""
+"Kur rimerret puna e xfdashboard-it, do të aktivizohet pamja e përzgjedhur.\n"
+"\n"
+"<b>SHËNIM:</b> Ky rregullim ka efekt vetëm nëse xfdashboard-i xhiron nën mënyrën demon. "
+
+#: ../data/data/preferences.ui.h:13
+msgid "Switch to view when resumed:"
+msgstr "Kalo te pamja, kur rimerret:"
+
+#: ../data/data/preferences.ui.h:14
+msgid ""
+"Sets the minimum time a notification is being shown.\n"
+"\n"
+"The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:17
+msgid "Minimum notification timeout:"
+msgstr "Kohë minimum mbarimi njoftimi:"
+
+#: ../data/data/preferences.ui.h:18
+msgid "Enable workaround for minimized windows"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:19
+msgid ""
+"When enabled a workaround for minimized windows will be tried to get still images of these windows by restoring them shortly and minimizing them again.\n"
+"\n"
+"<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:22
+msgid ""
+"This value defines how fast the window content should be created. While the value 'immediate' tells xfdashboard to create the window content at the time it is requested, all other values will set up a queue and value defines how fast the queue will be processed.\n"
+"\n"
+"<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:25
+msgid "Priority of window content creation"
+msgstr "Përparësi krijimi lënde dritareje"
+
+#: ../data/data/preferences.ui.h:26
+msgid "Show child windows in main windows"
+msgstr "Shfaq dritare pjella te dritarja kryesore"
+
+#: ../data/data/preferences.ui.h:27
+msgid ""
+"When enabled all live window previews will also show their child windows. "
+"Disabling this option will increase performance on slower machines."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:28
+msgid "Always start a new instance for application"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:29
+msgid ""
+"When enabled and an icon in quicklaunch is clicked it will always start a new instance of the application.\n"
+"\n"
+"When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:32
+msgid "Enable animations"
+msgstr "Aktivizo animacione"
+
+#: ../data/data/preferences.ui.h:33
+msgid "If enabled theme-defined animations will be shown."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:34
+msgid "<b>Applications view:</b>"
+msgstr "<b>Pamje aplikacionesh:</b>"
+
+#: ../data/data/preferences.ui.h:35
+msgid "Show menu for all installed applications"
+msgstr "Shfaq menu për krejt aplikacionet e instaluara"
+
+#: ../data/data/preferences.ui.h:36
+msgid ""
+"When enabled an \"all applications\" menu containing all installed "
+"applications will be shown at applications view"
+msgstr ""
+
+#: ../data/data/preferences.ui.h:37
+msgid "<b>Windows view:</b>"
+msgstr "<b>Pamje Dritaresh:</b>"
+
+#: ../data/data/preferences.ui.h:38
+msgid "Mouse wheel changes workspace"
+msgstr "Rrotullimi i rrotës së miut ndryshon hapësirë pune"
+
+#: ../data/data/preferences.ui.h:39
+msgid ""
+"When enabled any scroll event, like mouse-wheel up and down, at the windows "
+"view will change the active workspace. This behaviour is the same as in "
+"workspace selector."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:40
+msgid "<b>Search view:</b>"
+msgstr "<b>Pamje kërkimesh:</b>"
+
+#: ../data/data/preferences.ui.h:41
+msgid ""
+"Sets the interval the search should be delayed by after the first character "
+"was entered."
+msgstr ""
+
+#: ../data/data/preferences.ui.h:42
+msgid "Delay initial search interval:"
+msgstr "Interval vonese kërkimi fillestar:"
+
+#: ../data/data/preferences.ui.h:43
+msgid "General"
+msgstr "Të përgjithshme"
+
+#: ../data/data/preferences.ui.h:44
+msgid "<b>Name:</b>"
+msgstr "<b>Emër:</b>"
+
+#: ../data/data/preferences.ui.h:45
+msgid "<b>Author:</b>"
+msgstr "<b>Autor:</b>"
+
+#: ../data/data/preferences.ui.h:46
+msgid "<b>Version:</b>"
+msgstr "<b>Version:</b>"
+
+#: ../data/data/preferences.ui.h:47
+msgid "<b>Description:</b>"
+msgstr "<b>Përshkrim:</b>"
+
+#: ../data/data/preferences.ui.h:48
+msgid "Themes"
+msgstr "Tema"
+
+#: ../data/data/preferences.ui.h:49
+msgid "<b>License:</b>"
+msgstr "<b>Licencë:</b>"
+
+#: ../data/data/preferences.ui.h:50
+msgid "Plugins"
+msgstr "Shtojca"
+
+#: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard"
+msgstr "xfdashboard"
+
+#: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:2
+msgid "Default theme for xfdashboard"
+msgstr "Temë parazgjedhje për xfdashboard-in"
+
+#: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-auber"
+msgstr "xfdashboard-auber"
+
+#: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
+msgid "Aubergine theme for xfdashboard"
+msgstr "Temë Patëllxhane për xfdashboard-in"
+
+#: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-blue"
+msgstr "xfdashboard-blue"
+
+#: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:2
+msgid "Blue theme for xfdashboard"
+msgstr "Temë Blu për xfdashboard-in"
+
+#: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-dark"
+msgstr "xfdashboard-dark"
+
+#: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:2
+msgid "Dark theme for xfdashboard"
+msgstr "Temë e Errët për xfdashboard-in"
+
+#: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-mint"
+msgstr "xfdashboard-mint"
+
+#: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
+msgid "Fresh-green flavored theme for xfdashboard"
+msgstr "Temë e ngjyrosur me të gjelbër të freskët për xfdashboard-in"
+
+#: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-moranga"
+msgstr "xfdashboard-moranga"
+
+#: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:2
+msgid "Moranga theme for xfdashboard"
+msgstr "Temë Moranga për xfdashboard-in"
+
+#: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-wine"
+msgstr "xfdashboard-wine"
+
+#: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
+msgid "Red wine theme for xfdashboard"
+msgstr "Temë Verë e Kuqe për xfdashboard-in"
+
+#: ../libxfdashboard/application-button.c:262
+#, c-format
+msgid "Could not execute action '%s' for application '%s': %s"
+msgstr "S’u krye dot veprimi '%s' për aplikacionin '%s': %s"
+
+#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:814
+#: ../settings/main.c:63
+msgid "Unknown error"
+msgstr "Gabim i panjohur"
+
+#: ../libxfdashboard/application-button.c:282
+#, c-format
+msgid "Executed action '%s' for application '%s'"
+msgstr "U krye veprimi '%s' për aplikacionin '%s'"
+
+#: ../libxfdashboard/application-button.c:743
+#: ../libxfdashboard/application-button.c:761
+#: ../libxfdashboard/applications-search-provider.c:754
+#: ../libxfdashboard/applications-view.c:334
+#: ../libxfdashboard/quicklaunch.c:352 ../libxfdashboard/quicklaunch.c:400
+#: ../libxfdashboard/quicklaunch.c:458
+#, c-format
+msgid "Launching application '%s' failed: %s"
+msgstr "Dështoi nisja e aplikacionit '%s': %s"
+
+#: ../libxfdashboard/application-button.c:745
+#: ../libxfdashboard/quicklaunch.c:354
+msgid "No information available for application"
+msgstr "S’ka të dhëna të gatshme për aplikacionin"
+
+#: ../libxfdashboard/application-button.c:763
+#: ../libxfdashboard/application.c:308 ../libxfdashboard/application.c:618
+#: ../libxfdashboard/applications-search-provider.c:756
+#: ../libxfdashboard/applications-view.c:336
+#: ../libxfdashboard/quicklaunch.c:460
+msgid "unknown error"
+msgstr "gabim i panjohur"
+
+#: ../libxfdashboard/application-button.c:774
+#: ../libxfdashboard/applications-search-provider.c:767
+#: ../libxfdashboard/applications-view.c:347
+#: ../libxfdashboard/quicklaunch.c:471
+#, c-format
+msgid "Application '%s' launched"
+msgstr "Aplikacioni '%s' u nis"
+
+#: ../libxfdashboard/application.c:306
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr "S’u ngarkua dot tema '%s': %s"
+
+#: ../libxfdashboard/application.c:527
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr "Mirë se vini te %s (%s)!"
+
+#: ../libxfdashboard/application.c:529
+#, c-format
+msgid "Welcome to %s!"
+msgstr "Mirë se vini te %s!"
+
+#: ../libxfdashboard/application.c:576
+msgid "Fork to background"
+msgstr "Degëzoje në prapaskenë"
+
+#: ../libxfdashboard/application.c:577
+msgid "Quit running instance"
+msgstr "Dil nga instanca në xhirim"
+
+#: ../libxfdashboard/application.c:578
+msgid "Restart running instance"
+msgstr "Rinise instancën xhiruese"
+
+#: ../libxfdashboard/application.c:579
+msgid ""
+"Toggles visibility if running instance was started in daemon mode otherwise "
+"it quits running non-daemon instance"
+msgstr ""
+
+#: ../libxfdashboard/application.c:580
+msgid "The ID of view to switch to on startup or resume"
+msgstr ""
+
+#: ../libxfdashboard/application.c:581
+msgid "Show version"
+msgstr "Shfaq versionin"
+
+#: ../libxfdashboard/application.c:600
+msgid "A Gnome Shell like dashboard for Xfce4 - version "
+msgstr ""
+
+#. Show error
+#: ../libxfdashboard/application.c:617
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
+
+#: ../libxfdashboard/applications-search-provider.c:838
+#: ../libxfdashboard/applications-view.c:417
+#: ../libxfdashboard/quicklaunch.c:682
+msgid "Launch"
+msgstr "Nise"
+
+#. Set up view
+#. Add "applications" button
+#: ../libxfdashboard/applications-search-provider.c:1175
+#: ../libxfdashboard/applications-view.c:1587
+#: ../libxfdashboard/quicklaunch.c:3288
+msgid "Applications"
+msgstr "Aplikacione"
+
+#: ../libxfdashboard/applications-view.c:545
+#: ../libxfdashboard/applications-view.c:546
+#: ../libxfdashboard/applications-view.c:657
+#: ../libxfdashboard/applications-view.c:658
+msgid "Back"
+msgstr "Prapa"
+
+#: ../libxfdashboard/applications-view.c:545
+#: ../libxfdashboard/applications-view.c:657
+msgid "Go back to previous menu"
+msgstr "Kthehu te menuja e mëparshme"
+
+#: ../libxfdashboard/applications-view.c:685
+#: ../libxfdashboard/applications-view.c:686
+msgid "All applications"
+msgstr "Krejt aplikacionet"
+
+#: ../libxfdashboard/applications-view.c:685
+msgid "List of all installed applications"
+msgstr "Listë e krejt aplikacioneve të instaluara"
+
+#: ../libxfdashboard/quicklaunch.c:402
+msgid "No windows to activate for application"
+msgstr "S’ka dritare që të aktivizohen për aplikacionin"
+
+#: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
+#: ../libxfdashboard/quicklaunch.c:2130
+#, c-format
+msgid "Favourite '%s' removed"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
+#: ../libxfdashboard/quicklaunch.c:2063
+#, c-format
+msgid "Favourite '%s' added"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:705
+msgid "Remove from favourites"
+msgstr "Hiqe prej të parapëlqyerish"
+
+#: ../libxfdashboard/quicklaunch.c:719
+msgid "Add to favourites"
+msgstr "Shtoje te të parapëlqyerit"
+
+#. Next add trash button to box but initially hidden and register as drop
+#. target
+#: ../libxfdashboard/quicklaunch.c:3295
+msgid "Remove"
+msgstr "Hiqe"
+
+#: ../libxfdashboard/search-result-container.c:664
+#: ../libxfdashboard/search-result-container.c:1734
+#, c-format
+msgid "Show %d more results..."
+msgstr "Shfaq %d përfundime më tepër…"
+
+#. Get text to set at "all"-label
+#: ../libxfdashboard/search-result-container.c:686
+#, c-format
+msgid "Show all %d results..."
+msgstr "Shfaqi krejt %d përfundimet…"
+
+#: ../libxfdashboard/search-view.c:979
+#, c-format
+msgid "No results found for '%s'"
+msgstr "S’u gjetën përfundime për '%s'"
+
+#. Set up view (Note: Search view is disabled by default!)
+#: ../libxfdashboard/search-view.c:1715
+msgid "Search"
+msgstr "Kërko"
+
+#: ../libxfdashboard/stage.c:1124
+msgid "Just type to search..."
+msgstr "Thjesht shtypni, që të kërkohet…"
+
+#. Set up view
+#: ../libxfdashboard/windows-view.c:2317
+msgid "Windows"
+msgstr "Dritare"
+
+#. Set up view
+#: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:312
+msgid "Clock"
+msgstr "Orë"
+
+#. Add widget to choose hour color
+#: ../plugins/clock-view/plugin.c:208
+msgid "Hour color:"
+msgstr "Ngjyrë orësh:"
+
+#: ../plugins/clock-view/plugin.c:218
+msgid "Choose color for hour hand"
+msgstr "Zgjidhni ngjyrë për akrepin e orëve"
+
+#. Add widget to choose minute color
+#: ../plugins/clock-view/plugin.c:223
+msgid "Minute color:"
+msgstr "Ngjyrë minutash:"
+
+#: ../plugins/clock-view/plugin.c:233
+msgid "Choose color for minute hand"
+msgstr "Zgjidhni ngjyrë për akrepin e minutave"
+
+#. Add widget to choose second color
+#: ../plugins/clock-view/plugin.c:238
+msgid "Second color:"
+msgstr "Ngjyrën sekondash:"
+
+#: ../plugins/clock-view/plugin.c:248
+msgid "Choose color for second hand"
+msgstr "Zgjidhni ngjyrë për akrepin e sekondave"
+
+#. Add widget to choose minute color
+#: ../plugins/clock-view/plugin.c:253
+msgid "Background color:"
+msgstr "Ngjyrë sfondi:"
+
+#: ../plugins/clock-view/plugin.c:263
+msgid "Choose color for background of second hand"
+msgstr "Zgjidhni ngjyrë për sfondin e akrepit të sekondave"
+
+#: ../plugins/clock-view/plugin.c:313
+msgid "Adds a new view showing a clock"
+msgstr "Shton një pamje të re që shfaq një sahat"
+
+#: ../plugins/example-search-provider/example-search-provider.c:73
+msgid "Example search"
+msgstr "Shembull kërkimi"
+
+#: ../plugins/example-search-provider/plugin.c:75
+msgid "Example search provider"
+msgstr "Shembull furnizuesi kërkimesh"
+
+#: ../plugins/example-search-provider/plugin.c:76
+msgid "This is just a useless example search provider plugin"
+msgstr "Ku është një shembull kot shtojce furnizuesi kërkimesh"
+
+#: ../plugins/gnome-shell-search-provider/plugin.c:433
+msgid "Gnome-Shell search provider"
+msgstr ""
+
+#: ../plugins/gnome-shell-search-provider/plugin.c:434
+msgid "Uses Gnome-Shell search providers as source for searches"
+msgstr ""
+
+#: ../plugins/hot-corner/plugin.c:268
+msgid "s"
+msgstr "s"
+
+#: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
+msgid "ms"
+msgstr "ms"
+
+#: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
+#: ../settings/general.c:383
+msgid "Immediately"
+msgstr "Menjëherë"
+
+#. Add widget to choose activation corner
+#: ../plugins/hot-corner/plugin.c:304
+msgid "Activation corner:"
+msgstr "Kulm aktivizimi:"
+
+#. Add widget to choose activation radius
+#: ../plugins/hot-corner/plugin.c:340
+msgid "Radius of activation corner:"
+msgstr "Rreze kulmesh aktivizimi:"
+
+#. Add widget to choose activation duration
+#: ../plugins/hot-corner/plugin.c:358
+msgid "Timeout to activate:"
+msgstr "Skadim për t’u aktivizuar:"
+
+#: ../plugins/hot-corner/plugin.c:418
+msgid "Hot corner"
+msgstr ""
+
+#: ../plugins/hot-corner/plugin.c:419
+msgid ""
+"Activates xfdashboard when pointer is moved to a configured corner of "
+"monitor"
+msgstr ""
+
+#: ../plugins/middle-click-window-close/plugin.c:71
+msgid "Middle-click window close"
+msgstr "Mbyllje dritareje me klikim të butonit të mesit"
+
+#: ../plugins/middle-click-window-close/plugin.c:72
+msgid "Closes windows in windows view by middle-click"
+msgstr "Mbyll dritare në pamjen dritare përmes klikimit të butonit të mesit"
+
+#: ../settings/general.c:120
+msgid "Do nothing"
+msgstr "Mos bëj gjë"
+
+#: ../settings/general.c:121
+msgid "Windows view"
+msgstr "Pamje dritaresh"
+
+#: ../settings/general.c:122
+msgid "Applications view"
+msgstr "Pamje aplikacionesh"
+
+#: ../settings/general.c:129
+msgid "High"
+msgstr "E lartë"
+
+#: ../settings/general.c:130
+msgid "Normal"
+msgstr "Normale"
+
+#: ../settings/general.c:131
+msgid "Low"
+msgstr "E ulët"
+
+#: ../settings/general.c:324
+msgid "seconds"
+msgstr "sekonda"
+
+#: ../settings/plugins.c:222
+#, c-format
+msgid "Configure plugin: %s"
+msgstr "Formësoni shtojcën: %s"
+
+#. Create error message to store in list
+#: ../settings/plugins.c:813
+#, c-format
+msgid ""
+"<b>Plugin could not be loaded.</b>\n"
+"\n"
+"%s"
+msgstr ""
+"<b>Shtojca s’u ngarkua dot.</b>\n"
+"\n"
+"%s"
+
+#: ../settings/plugins.c:1020
+msgid "Name"
+msgstr "Emër"
+
+#: ../settings/themes.c:781
+msgid "Theme"
+msgstr "Temë"
+
+#: ../settings/main.c:46
+msgid "Settings manager socket"
+msgstr "\"Socket\" përgjegjësi rregullimesh"
+
+#: ../settings/main.c:46
+msgid "SOCKET ID"
+msgstr "ID SOCKET-i"
+
+#: ../settings/main.c:47
+msgid "Version information"
+msgstr "Të dhëna versioni"
+
+#. Initialize GTK+
+#: ../settings/main.c:57
+msgid "."
+msgstr "."
+
+#: ../settings/main.c:61
+#, c-format
+msgid ""
+"%s: %s\n"
+"Try %s --help to see a full list of available command line options.\n"
+msgstr ""
+"%s: %s\n"
+"Provoni %s --help për të parë një listë të plotë të mundësive të gatshme për rresht urdhrash.\n"
