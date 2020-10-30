@@ -1,0 +1,795 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Kernc, 2020
+# ansich <mojmejlzaforume@gmail.com>, 2020
+# Nick Schermer <nick@xfce.org>, 2020
+# Aljoša Žagar <anthon.manix@gmail.com>, 2020
+# Arnold Marko <arnold.marko@gmail.com>, 2020
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-30 00:47+0100\n"
+"PO-Revision-Date: 2020-10-07 10:59+0000\n"
+"Last-Translator: Arnold Marko <arnold.marko@gmail.com>, 2020\n"
+"Language-Team: Slovenian (https://www.transifex.com/xfce/teams/16840/sl/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sl\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);\n"
+
+#: ../data/xfdashboard.desktop.in.in.h:1
+#: ../data/xfdashboard-autostart.desktop.in.in.h:1
+msgid "Xfdashboard"
+msgstr "Xfdashboard ndazorna plošča"
+
+#: ../data/xfdashboard.desktop.in.in.h:2
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:1
+msgid "Maybe a Gnome shell like dashboard for Xfce"
+msgstr "Morda nadzorna plošča podobna Gnome lupini za Xfce"
+
+#: ../data/xfdashboard-autostart.desktop.in.in.h:2
+msgid "Start xfdashboard as daemon in background"
+msgstr "Zaženi xfdashboard kot pritajeni demon program v ozadju"
+
+#: ../data/xfdashboard-settings.desktop.in.in.h:1
+msgid "Xfdashboard settings"
+msgstr "Xfdashboard nastavitve"
+
+#: ../data/xfdashboard-settings.desktop.in.in.h:2
+msgid "Configure xfdashboard"
+msgstr "Nastavi xfdashboard"
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:2
+msgid ""
+"Xfdashboard provides a GNOME shell dashboard like interface for use with "
+"Xfce desktop."
+msgstr ""
+"Xfdashboard za namizje Xfce ponuja vmesnik v obliki nadzorne plošče, ki je "
+"podobna GNOME lupini"
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:3
+msgid ""
+"It can be configured to run to any keyboard shortcut and when executed "
+"provides an overview of applications currently open enabling the user to "
+"switch between different applications. The search feature works like Xfce's "
+"app finder which makes it convenient to search for and start applications."
+msgstr ""
+"Mogoče ga je nastaviti  za zaganjanje poljubnih bližnjiv na tipkovnici in ko"
+" je zagnan ponuja pregled nad trenutno odprtimi aplikacijami, kar omogoča "
+"uporabniku preklapljanje med njimi. Iskalnik deluje kakor Xfce iskalnik "
+"programov, zaradi česar je primeren za iskanje in zagon apliakcij."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:4
+msgid "Browsing applications"
+msgstr "Brskanje po aplikacijah"
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:5
+msgid "Searching applications"
+msgstr "Iskanje aplikacij"
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+msgid ""
+"This unstable development adds more animations as well as some smaller "
+"fixes."
+msgstr ""
+"Nestabilna razvojna različica doda več animacij in nekaj manjših popravkov."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+msgid "This unstable development adds animations."
+msgstr "Ta nestabilna razvojna različica doda animacije."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+msgid ""
+"This unstable development adds support for touchpads and application actions"
+" (Jumplists, Quicklists) as well as new and updated translations."
+msgstr ""
+"Ta nestabilna razvojna različica dodaja popdoro za sledilne plošče in akcije"
+" aplikaciji (seznami skokov, hitri szenami) in nove ter posodobljene "
+"prevode."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+msgid ""
+"This unstable development adds lots of new and updated translations and "
+"support for newer xfconf versions."
+msgstr ""
+"Ta nestabilna razvojna različica dodaja veliko število novih in "
+"posodobljenih prevodov ter podporo za novejše različice xfconf."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+msgid ""
+"This unstable development implements a new experimental backend for GDK as "
+"well as it supports user stylesheets now."
+msgstr ""
+"Ta nestabilna razvojna različica implementira novo eksperimentalno hrbtišče "
+"za GDK ter podporo za uporabnišče slogovne oblike."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
+msgid ""
+"This unstable development improves loading performance of images and icon, "
+"adds a fine-grained debugging system and introduces an interface for "
+"multiple backends but only X11 is still the one only one supported."
+msgstr ""
+"Ta nestabilna razvojna različica izboljša zmogljivost nalaganja slik in "
+"ikon, dodaja natančen sistem za razhroščevanje in uvaja vmesnik za več "
+"končnih odjemalcev, čeprav je zaenkrat podprt le X11."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+msgid ""
+"This unstable development introduces child windows shown next to the main "
+"window."
+msgstr ""
+"Ta nestabilna razvojna različica uvaja podrejena okna, ki se prikažejo ob "
+"glavnem oknu."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+msgid ""
+"This stable version fixes a bug setting the correct default applications at "
+"first use."
+msgstr ""
+"Ta stabilna različica popravi hrošč ob nastavljanju privzete aplikacije ob "
+"prvi rabi."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+msgid "This unstable development introduces pop-up menus."
+msgstr "Ta nestabilna razvojna različica uvaja pojavne menije."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+msgid ""
+"This stable version introduces lots of new features like plugins and "
+"application tracker. It also contains a huge collection of other larger and "
+"smaller improvements."
+msgstr ""
+"Ta stabilna različica uvaja mnogo novih funkciji, kot so vtičniki in "
+"sledilniki aplikacijam. Vsebuje tudi velik nabor manjših in večjih "
+"izboljšav."
+
+#: ../data/data/preferences.ui.h:1
+msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
+msgstr "<span size=\"large\"><b>Xfdashboard nastavitve</b></span>"
+
+#: ../data/data/preferences.ui.h:2
+msgid "Configure plugin"
+msgstr "Nastavitve vtičnika"
+
+#: ../data/data/preferences.ui.h:3
+msgid ""
+"<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
+"Configure xfdashboard"
+msgstr ""
+"<span size=\"large\"><b>Xfdashboard nastavitve</b></span>\n"
+"Nastavitve za xfdashboard"
+
+#: ../data/data/preferences.ui.h:5
+msgid "<b>General settings:</b>"
+msgstr "<b>Splošne nastavitve:</b>"
+
+#: ../data/data/preferences.ui.h:6
+msgid "Reset search view when resumed"
+msgstr "Ob vrnitvi ponastavi prikaz iskanja"
+
+#: ../data/data/preferences.ui.h:7
+msgid ""
+"If enabled the search view will be resetted when xfdashboard is resumed. That means the active view is switched back to last view active before last search was started and search box will be emptied.\n"
+"\n"
+"<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
+msgstr ""
+"Če je to vklopljeno, se bo prikaz iskanja ponastavil, ob vrnitvi v xfdashboard. To pomeni, da se aktivni prikaz povrne nazaj na zadnji aktivni prikaz pred začetkom iskanja, iskalnik pa bo počiščen.\n"
+"\n"
+"<b>OPOMBA:</b> Ta nastavitev deluje samo, če je xfdashboard zagnan  v pritajenem demonskem načinu."
+
+#: ../data/data/preferences.ui.h:10
+msgid ""
+"When xfdashboard resumes the selected view will be activated.\n"
+"\n"
+"<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
+msgstr ""
+"Ob vrnitvi v xfdashboard bo aktiviran izbrani prikaz.\n"
+"\n"
+"<b>OPOMBA:</b> Ta nastavitev deluje samo, če je xfdashboard zagnan v pritajenem demonskem načinu."
+
+#: ../data/data/preferences.ui.h:13
+msgid "Switch to view when resumed:"
+msgstr "Ob vrnitvi preklopi na prikaz:"
+
+#: ../data/data/preferences.ui.h:14
+msgid ""
+"Sets the minimum time a notification is being shown.\n"
+"\n"
+"The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
+msgstr ""
+"Določi najmanjši čas prikazovanja obvestila.\n"
+"\n"
+"Čas trajanja je izračunan iz dolžine teksta, ki se mora prikazati v obvestilu. Ta nastavitev omogoča, da določite najmanjši čas prikazovanja obvestila."
+
+#: ../data/data/preferences.ui.h:17
+msgid "Minimum notification timeout:"
+msgstr "Najmanjši čas prikazovanja obestila:"
+
+#: ../data/data/preferences.ui.h:18
+msgid "Enable workaround for minimized windows"
+msgstr "Vklopi obvod za pomanjšana okna"
+
+#: ../data/data/preferences.ui.h:19
+msgid ""
+"When enabled a workaround for minimized windows will be tried to get still images of these windows by restoring them shortly and minimizing them again.\n"
+"\n"
+"<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
+msgstr ""
+"Ko je vklopljeno, bo obvod za pomanjšana okna skušal pridobiti posnetke teh oknov, tako da jih na kratko povrne in potem spet zmanjša.\n"
+"\n"
+"<b>OPOMBA:</b> Gre za <u>obvod</u>, ki lahko povzroči, da se okna ne zmanjšajo nazaj, da se zamenja delovna površina itd."
+
+#: ../data/data/preferences.ui.h:22
+msgid ""
+"This value defines how fast the window content should be created. While the value 'immediate' tells xfdashboard to create the window content at the time it is requested, all other values will set up a queue and value defines how fast the queue will be processed.\n"
+"\n"
+"<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
+msgstr ""
+"Vrednost določa hitrost ustvarjanja vsebine okna. Vrednost 'immediate' pomeni, da naj xfdashboard ustvari vsebino okna takoj, vse ostale vrednosti pa ustvarijo čakalno vrsto, vrednost pa definira hitrost obdelave te čakalne vrste.\n"
+"\n"
+"<b>OPOMBA:</b> To vrednost spremenite iz \"immediate\" v neko drugo le v primeru, da so vaša grafična kartica, gonilnik ali sistem prepočasni za takojšnje ustvarjanje vsebine. Ustrezno vrednost je potrebno poiskati s preizkušanjem."
+
+#: ../data/data/preferences.ui.h:25
+msgid "Priority of window content creation"
+msgstr "Prioriteta pri ustvarjanju vsebin zaslonov"
+
+#: ../data/data/preferences.ui.h:26
+msgid "Show child windows in main windows"
+msgstr "Prikaži podrejena okna v glavnem oknu"
+
+#: ../data/data/preferences.ui.h:27
+msgid ""
+"When enabled all live window previews will also show their child windows. "
+"Disabling this option will increase performance on slower machines."
+msgstr ""
+"Ko je to vklopljeno, bodo vsi živi predogledi oken prikazali tudi podrejena "
+"okna. Izklop te opcije poveča zmogljivost na počasnejših računalnikih."
+
+#: ../data/data/preferences.ui.h:28
+msgid "Always start a new instance for application"
+msgstr "Vedno zaženi novo instanco aplikacije"
+
+#: ../data/data/preferences.ui.h:29
+msgid ""
+"When enabled and an icon in quicklaunch is clicked it will always start a new instance of the application.\n"
+"\n"
+"When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
+msgstr ""
+"Ko je to vklopljeno in uporabnik klikne na ikono v hitrem zagonu, bo to vedno odprlo novo instanco te aplikacije.\n"
+"\n"
+"Če je izklopljeno, bo izbrano zadnje znano aktivno okno zagnane instance aplikacije. Če aplikacija ni zagnana, bo ustvarjena nova instanca."
+
+#: ../data/data/preferences.ui.h:32
+msgid "Enable animations"
+msgstr "Vklopi animacije"
+
+#: ../data/data/preferences.ui.h:33
+msgid "If enabled theme-defined animations will be shown."
+msgstr ""
+"Če je vklopljeno, se bo prikazovale animacije, ki so definirane v temi."
+
+#: ../data/data/preferences.ui.h:34
+msgid "<b>Applications view:</b>"
+msgstr "</b>Prikaz aplikacij:</b>"
+
+#: ../data/data/preferences.ui.h:35
+msgid "Show menu for all installed applications"
+msgstr "Prikaži meni za vse nameščene aplikacije"
+
+#: ../data/data/preferences.ui.h:36
+msgid ""
+"When enabled an \"all applications\" menu containing all installed "
+"applications will be shown at applications view"
+msgstr ""
+"Ko je to vklopljeno, bo prikaz aplikacij prikazal meni \"vse aplikacije\", "
+"ki vsebuje vse nameščene aplikacije"
+
+#: ../data/data/preferences.ui.h:37
+msgid "<b>Windows view:</b>"
+msgstr "Prikaz oken:</b>"
+
+#: ../data/data/preferences.ui.h:38
+msgid "Mouse wheel changes workspace"
+msgstr "Kolesce mišče spreminja delovno površino"
+
+#: ../data/data/preferences.ui.h:39
+msgid ""
+"When enabled any scroll event, like mouse-wheel up and down, at the windows "
+"view will change the active workspace. This behaviour is the same as in "
+"workspace selector."
+msgstr ""
+"Ko je to vklopljeno, bo vsak vrtenje kolesca miške gor ali dol zamenjalo "
+"aktivno delovno površino. Način obnašanja je enak, kot pri izbirniku delovne"
+" površine."
+
+#: ../data/data/preferences.ui.h:40
+msgid "<b>Search view:</b>"
+msgstr "<b>Prikaz iskanja:</b>"
+
+#: ../data/data/preferences.ui.h:41
+msgid ""
+"Sets the interval the search should be delayed by after the first character "
+"was entered."
+msgstr "Določi interval zamika iskanja, po tem ko je bil vnešen prvi znak."
+
+#: ../data/data/preferences.ui.h:42
+msgid "Delay initial search interval:"
+msgstr "Zamakni začetni interval iskanja:"
+
+#: ../data/data/preferences.ui.h:43
+msgid "General"
+msgstr "Splošno"
+
+#: ../data/data/preferences.ui.h:44
+msgid "<b>Name:</b>"
+msgstr "<b>Ime:</b>"
+
+#: ../data/data/preferences.ui.h:45
+msgid "<b>Author:</b>"
+msgstr "<b>Avtor:</b>"
+
+#: ../data/data/preferences.ui.h:46
+msgid "<b>Version:</b>"
+msgstr "<b>Različica:</b>"
+
+#: ../data/data/preferences.ui.h:47
+msgid "<b>Description:</b>"
+msgstr "<b>Opis:</b>"
+
+#: ../data/data/preferences.ui.h:48
+msgid "Themes"
+msgstr "Teme"
+
+#: ../data/data/preferences.ui.h:49
+msgid "<b>License:</b>"
+msgstr "<b>Licenca:</b>"
+
+#: ../data/data/preferences.ui.h:50
+msgid "Plugins"
+msgstr "Vtičniki"
+
+#: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard"
+msgstr "xfdashboard"
+
+#: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:2
+msgid "Default theme for xfdashboard"
+msgstr "Privzeta tema za xfdashboard"
+
+#: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-auber"
+msgstr "xfdashboard-auber"
+
+#: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
+msgid "Aubergine theme for xfdashboard"
+msgstr "Tema jajčevci za xfdashboard"
+
+#: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-blue"
+msgstr "xfdashboard-blue"
+
+#: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:2
+msgid "Blue theme for xfdashboard"
+msgstr "Modra tema za xfdashboard"
+
+#: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-dark"
+msgstr "xfdashboard-dark"
+
+#: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:2
+msgid "Dark theme for xfdashboard"
+msgstr "Temna tema za xfdashboard"
+
+#: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-mint"
+msgstr "xfdashboard-mint"
+
+#: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
+msgid "Fresh-green flavored theme for xfdashboard"
+msgstr "Sveže-zeleno obarvana tema za xfdashboard"
+
+#: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-moranga"
+msgstr "xfdashboard-moranga"
+
+#: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:2
+msgid "Moranga theme for xfdashboard"
+msgstr "Moranga tema za xfdashboard"
+
+#: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-wine"
+msgstr "xfdashboard-wine"
+
+#: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
+msgid "Red wine theme for xfdashboard"
+msgstr "Rdeče vino tema za xfdashboard"
+
+#: ../libxfdashboard/application-button.c:262
+#, c-format
+msgid "Could not execute action '%s' for application '%s': %s"
+msgstr "Dejanja '%s' za aplikacijo '%s' ni bilo mogoče izvršiti: %s"
+
+#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:814
+#: ../settings/main.c:63
+msgid "Unknown error"
+msgstr "Neznana napaka"
+
+#: ../libxfdashboard/application-button.c:282
+#, c-format
+msgid "Executed action '%s' for application '%s'"
+msgstr "Izvedeno je bilo dejanje '%s' za aplikacijo '%s'"
+
+#: ../libxfdashboard/application-button.c:743
+#: ../libxfdashboard/application-button.c:761
+#: ../libxfdashboard/applications-search-provider.c:754
+#: ../libxfdashboard/applications-view.c:334
+#: ../libxfdashboard/quicklaunch.c:352 ../libxfdashboard/quicklaunch.c:400
+#: ../libxfdashboard/quicklaunch.c:458
+#, c-format
+msgid "Launching application '%s' failed: %s"
+msgstr "Zagon aplikacije '%s' ni uspel: %s"
+
+#: ../libxfdashboard/application-button.c:745
+#: ../libxfdashboard/quicklaunch.c:354
+msgid "No information available for application"
+msgstr "Informacij za aplikacijo ni na voljo"
+
+#: ../libxfdashboard/application-button.c:763
+#: ../libxfdashboard/application.c:308 ../libxfdashboard/application.c:618
+#: ../libxfdashboard/applications-search-provider.c:756
+#: ../libxfdashboard/applications-view.c:336
+#: ../libxfdashboard/quicklaunch.c:460
+msgid "unknown error"
+msgstr "neznana napaka"
+
+#: ../libxfdashboard/application-button.c:774
+#: ../libxfdashboard/applications-search-provider.c:767
+#: ../libxfdashboard/applications-view.c:347
+#: ../libxfdashboard/quicklaunch.c:471
+#, c-format
+msgid "Application '%s' launched"
+msgstr "Aplikacija '%s' je zagnana"
+
+#: ../libxfdashboard/application.c:306
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr "Teme '%s' ni bilo mogoče naložiti: %s"
+
+#: ../libxfdashboard/application.c:527
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr "Dobrodošli v %s (%s)!"
+
+#: ../libxfdashboard/application.c:529
+#, c-format
+msgid "Welcome to %s!"
+msgstr "Dobrodošli v %s!"
+
+#: ../libxfdashboard/application.c:576
+msgid "Fork to background"
+msgstr ""
+
+#: ../libxfdashboard/application.c:577
+msgid "Quit running instance"
+msgstr ""
+
+#: ../libxfdashboard/application.c:578
+msgid "Restart running instance"
+msgstr ""
+
+#: ../libxfdashboard/application.c:579
+msgid ""
+"Toggles visibility if running instance was started in daemon mode otherwise "
+"it quits running non-daemon instance"
+msgstr ""
+"Preklopi vidnost, če je zagnana instanca bila zagnana v pritajenem demonskem"
+" načinu, sicer zapre nepritajeno instanco programa"
+
+#: ../libxfdashboard/application.c:580
+msgid "The ID of view to switch to on startup or resume"
+msgstr ""
+
+#: ../libxfdashboard/application.c:581
+msgid "Show version"
+msgstr ""
+
+#: ../libxfdashboard/application.c:600
+msgid "A Gnome Shell like dashboard for Xfce4 - version "
+msgstr ""
+
+#. Show error
+#: ../libxfdashboard/application.c:617
+#, c-format
+msgid "%s\n"
+msgstr ""
+
+#: ../libxfdashboard/applications-search-provider.c:838
+#: ../libxfdashboard/applications-view.c:417
+#: ../libxfdashboard/quicklaunch.c:682
+msgid "Launch"
+msgstr ""
+
+#. Set up view
+#. Add "applications" button
+#: ../libxfdashboard/applications-search-provider.c:1175
+#: ../libxfdashboard/applications-view.c:1587
+#: ../libxfdashboard/quicklaunch.c:3288
+msgid "Applications"
+msgstr "Aplikacije"
+
+#: ../libxfdashboard/applications-view.c:545
+#: ../libxfdashboard/applications-view.c:546
+#: ../libxfdashboard/applications-view.c:657
+#: ../libxfdashboard/applications-view.c:658
+msgid "Back"
+msgstr "Nazaj"
+
+#: ../libxfdashboard/applications-view.c:545
+#: ../libxfdashboard/applications-view.c:657
+msgid "Go back to previous menu"
+msgstr ""
+
+#: ../libxfdashboard/applications-view.c:685
+#: ../libxfdashboard/applications-view.c:686
+msgid "All applications"
+msgstr ""
+
+#: ../libxfdashboard/applications-view.c:685
+msgid "List of all installed applications"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:402
+msgid "No windows to activate for application"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
+#: ../libxfdashboard/quicklaunch.c:2130
+#, c-format
+msgid "Favourite '%s' removed"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
+#: ../libxfdashboard/quicklaunch.c:2063
+#, c-format
+msgid "Favourite '%s' added"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:705
+msgid "Remove from favourites"
+msgstr ""
+
+#: ../libxfdashboard/quicklaunch.c:719
+msgid "Add to favourites"
+msgstr ""
+
+#. Next add trash button to box but initially hidden and register as drop
+#. target
+#: ../libxfdashboard/quicklaunch.c:3295
+msgid "Remove"
+msgstr "Odstrani"
+
+#: ../libxfdashboard/search-result-container.c:664
+#: ../libxfdashboard/search-result-container.c:1734
+#, c-format
+msgid "Show %d more results..."
+msgstr ""
+
+#. Get text to set at "all"-label
+#: ../libxfdashboard/search-result-container.c:686
+#, c-format
+msgid "Show all %d results..."
+msgstr ""
+
+#: ../libxfdashboard/search-view.c:979
+#, c-format
+msgid "No results found for '%s'"
+msgstr ""
+
+#. Set up view (Note: Search view is disabled by default!)
+#: ../libxfdashboard/search-view.c:1715
+msgid "Search"
+msgstr "Išči"
+
+#: ../libxfdashboard/stage.c:1124
+msgid "Just type to search..."
+msgstr ""
+
+#. Set up view
+#: ../libxfdashboard/windows-view.c:2317
+msgid "Windows"
+msgstr ""
+
+#. Set up view
+#: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:312
+msgid "Clock"
+msgstr "Ura"
+
+#. Add widget to choose hour color
+#: ../plugins/clock-view/plugin.c:208
+msgid "Hour color:"
+msgstr ""
+
+#: ../plugins/clock-view/plugin.c:218
+msgid "Choose color for hour hand"
+msgstr ""
+
+#. Add widget to choose minute color
+#: ../plugins/clock-view/plugin.c:223
+msgid "Minute color:"
+msgstr ""
+
+#: ../plugins/clock-view/plugin.c:233
+msgid "Choose color for minute hand"
+msgstr ""
+
+#. Add widget to choose second color
+#: ../plugins/clock-view/plugin.c:238
+msgid "Second color:"
+msgstr ""
+
+#: ../plugins/clock-view/plugin.c:248
+msgid "Choose color for second hand"
+msgstr ""
+
+#. Add widget to choose minute color
+#: ../plugins/clock-view/plugin.c:253
+msgid "Background color:"
+msgstr "Barva ozadja:"
+
+#: ../plugins/clock-view/plugin.c:263
+msgid "Choose color for background of second hand"
+msgstr ""
+
+#: ../plugins/clock-view/plugin.c:313
+msgid "Adds a new view showing a clock"
+msgstr ""
+
+#: ../plugins/example-search-provider/example-search-provider.c:73
+msgid "Example search"
+msgstr ""
+
+#: ../plugins/example-search-provider/plugin.c:75
+msgid "Example search provider"
+msgstr ""
+
+#: ../plugins/example-search-provider/plugin.c:76
+msgid "This is just a useless example search provider plugin"
+msgstr ""
+
+#: ../plugins/gnome-shell-search-provider/plugin.c:433
+msgid "Gnome-Shell search provider"
+msgstr ""
+
+#: ../plugins/gnome-shell-search-provider/plugin.c:434
+msgid "Uses Gnome-Shell search providers as source for searches"
+msgstr ""
+
+#: ../plugins/hot-corner/plugin.c:268
+msgid "s"
+msgstr ""
+
+#: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
+msgid "ms"
+msgstr "ms"
+
+#: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
+#: ../settings/general.c:383
+msgid "Immediately"
+msgstr ""
+
+#. Add widget to choose activation corner
+#: ../plugins/hot-corner/plugin.c:304
+msgid "Activation corner:"
+msgstr ""
+
+#. Add widget to choose activation radius
+#: ../plugins/hot-corner/plugin.c:340
+msgid "Radius of activation corner:"
+msgstr ""
+
+#. Add widget to choose activation duration
+#: ../plugins/hot-corner/plugin.c:358
+msgid "Timeout to activate:"
+msgstr ""
+
+#: ../plugins/hot-corner/plugin.c:418
+msgid "Hot corner"
+msgstr "Aktivni koti"
+
+#: ../plugins/hot-corner/plugin.c:419
+msgid ""
+"Activates xfdashboard when pointer is moved to a configured corner of "
+"monitor"
+msgstr ""
+
+#: ../plugins/middle-click-window-close/plugin.c:71
+msgid "Middle-click window close"
+msgstr ""
+
+#: ../plugins/middle-click-window-close/plugin.c:72
+msgid "Closes windows in windows view by middle-click"
+msgstr ""
+
+#: ../settings/general.c:120
+msgid "Do nothing"
+msgstr ""
+
+#: ../settings/general.c:121
+msgid "Windows view"
+msgstr ""
+
+#: ../settings/general.c:122
+msgid "Applications view"
+msgstr ""
+
+#: ../settings/general.c:129
+msgid "High"
+msgstr "Visoka"
+
+#: ../settings/general.c:130
+msgid "Normal"
+msgstr "Normalno"
+
+#: ../settings/general.c:131
+msgid "Low"
+msgstr "Nizka"
+
+#: ../settings/general.c:324
+msgid "seconds"
+msgstr "sekunde"
+
+#: ../settings/plugins.c:222
+#, c-format
+msgid "Configure plugin: %s"
+msgstr "Nastavitve vtičnika: %s"
+
+#. Create error message to store in list
+#: ../settings/plugins.c:813
+#, c-format
+msgid ""
+"<b>Plugin could not be loaded.</b>\n"
+"\n"
+"%s"
+msgstr ""
+
+#: ../settings/plugins.c:1020
+msgid "Name"
+msgstr "Ime"
+
+#: ../settings/themes.c:781
+msgid "Theme"
+msgstr "Tema"
+
+#: ../settings/main.c:46
+msgid "Settings manager socket"
+msgstr "Vtičnik za upravljalnje nastavitev"
+
+#: ../settings/main.c:46
+msgid "SOCKET ID"
+msgstr "SOCKET ID"
+
+#: ../settings/main.c:47
+msgid "Version information"
+msgstr "Informacije o različici"
+
+#. Initialize GTK+
+#: ../settings/main.c:57
+msgid "."
+msgstr ""
+
+#: ../settings/main.c:61
+#, c-format
+msgid ""
+"%s: %s\n"
+"Try %s --help to see a full list of available command line options.\n"
+msgstr ""
+"%s: %s\n"
+"Poskusite %s --help za pregled vseh razpoložljivih možnosti ukaza.\n"
