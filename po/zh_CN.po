@@ -171,7 +171,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr ""
+msgstr "恢复后切换到视图："
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
@@ -255,7 +255,7 @@ msgstr "<b>窗口视图:</b>"
 
 #: ../data/data/preferences.ui.h:38
 msgid "Mouse wheel changes workspace"
-msgstr ""
+msgstr "使用鼠标滚轮更改工作区"
 
 #: ../data/data/preferences.ui.h:39
 msgid ""
@@ -272,11 +272,11 @@ msgstr "<b>搜索视图:</b>"
 msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
-msgstr ""
+msgstr "设置输入第一个字符后应延迟搜索的时间间隔。"
 
 #: ../data/data/preferences.ui.h:42
 msgid "Delay initial search interval:"
-msgstr ""
+msgstr "延迟初始搜索间隔："
 
 #: ../data/data/preferences.ui.h:43
 msgid "General"
@@ -506,13 +506,13 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:2130
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr ""
+msgstr "收藏 '%s' 已删除"
 
 #: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
 #: ../libxfdashboard/quicklaunch.c:2063
 #, c-format
 msgid "Favourite '%s' added"
-msgstr ""
+msgstr "收藏 '%s' 已添加"
 
 #: ../libxfdashboard/quicklaunch.c:705
 msgid "Remove from favourites"
@@ -552,7 +552,7 @@ msgstr "搜索"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
-msgstr ""
+msgstr "只需键入搜索..."
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2317
@@ -571,7 +571,7 @@ msgstr "小时颜色:"
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
-msgstr ""
+msgstr "选择时针颜色"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
@@ -580,7 +580,7 @@ msgstr "分钟颜色："
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
-msgstr ""
+msgstr "选择分针颜色"
 
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
@@ -589,7 +589,7 @@ msgstr "秒钟颜色:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "选择秒针颜色"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
@@ -598,7 +598,7 @@ msgstr "背景色："
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "选择秒针的背景颜色"
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
