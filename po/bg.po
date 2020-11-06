@@ -282,7 +282,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
-msgstr ""
+msgstr "<b>Изглед на прозорците:</b>"
 
 #: ../data/data/preferences.ui.h:38
 msgid "Mouse wheel changes workspace"
@@ -294,10 +294,14 @@ msgid ""
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
 msgstr ""
+"Когато е активирано всяко събитие за превъртане, като колелото на мишката "
+"нагоре и надолу в изгледа на прозореца ще промени активното работно "
+"пространство. Това поведение е същото като при селектора на работно "
+"пространство."
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
-msgstr ""
+msgstr "<b>Изглед на търсенето:</b>"
 
 #: ../data/data/preferences.ui.h:41
 msgid ""
@@ -357,15 +361,15 @@ msgstr "xfdashboard-auber"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
 msgid "Aubergine theme for xfdashboard"
-msgstr ""
+msgstr "Тема Патладжан за xfdashboard"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-blue"
-msgstr ""
+msgstr "xfdashboard-blue"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:2
 msgid "Blue theme for xfdashboard"
-msgstr ""
+msgstr "Синя тема за xfdashboard"
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-dark"
