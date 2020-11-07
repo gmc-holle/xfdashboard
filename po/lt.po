@@ -63,11 +63,11 @@ msgstr ""
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:4
 msgid "Browsing applications"
-msgstr ""
+msgstr "Programų naršymas"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:5
 msgid "Searching applications"
-msgstr ""
+msgstr "Programų paieška"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid ""
@@ -244,7 +244,7 @@ msgstr "Įjungti animacijas"
 
 #: ../data/data/preferences.ui.h:33
 msgid "If enabled theme-defined animations will be shown."
-msgstr ""
+msgstr "Jei įjungta, bus rodomos temos apibrėžtos animacijos."
 
 #: ../data/data/preferences.ui.h:34
 msgid "<b>Applications view:</b>"
@@ -387,7 +387,7 @@ msgstr "Raudono vyno xfdashboard tema"
 #: ../libxfdashboard/application-button.c:262
 #, c-format
 msgid "Could not execute action '%s' for application '%s': %s"
-msgstr ""
+msgstr "Nepavyko įvykdyti veiksmo „%s“, skirto programai „%s“: %s"
 
 #: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:814
 #: ../settings/main.c:63
@@ -524,21 +524,21 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:2130
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr ""
+msgstr "„%s“ pašalinta iš mėgstamų"
 
 #: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
 #: ../libxfdashboard/quicklaunch.c:2063
 #, c-format
 msgid "Favourite '%s' added"
-msgstr ""
+msgstr "„%s“ pridėta į mėgstamas"
 
 #: ../libxfdashboard/quicklaunch.c:705
 msgid "Remove from favourites"
-msgstr ""
+msgstr "Pridėti į mėgstamas"
 
 #: ../libxfdashboard/quicklaunch.c:719
 msgid "Add to favourites"
-msgstr ""
+msgstr "Šalinti iš mėgstamų"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
@@ -561,7 +561,7 @@ msgstr "Rodyti visus %d rezultatus..."
 #: ../libxfdashboard/search-view.c:979
 #, c-format
 msgid "No results found for '%s'"
-msgstr ""
+msgstr "„%s“ negrąžino jokių rezultatų"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
@@ -589,7 +589,7 @@ msgstr "Valandų spalva:"
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
-msgstr ""
+msgstr "Pasirinkti valandų rodyklės spalvą"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
@@ -598,7 +598,7 @@ msgstr "Minučių spalva:"
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
-msgstr ""
+msgstr "Pasirinkti minučių rodyklės spalvą"
 
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
@@ -607,7 +607,7 @@ msgstr "Sekundžių spalva:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "Pasirinkti sekundžių rodyklės spalvą"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
@@ -616,19 +616,19 @@ msgstr "Fono spalva:"
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "Pasirinkti sekundžių rodyklės fono spalvą"
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
-msgstr ""
+msgstr "Prideda naują rodinį, kuriame rodomas laikrodis"
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
-msgstr ""
+msgstr "Pavyzdinė paieška"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "Pavyzdinės paieškos teikėjas"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
@@ -636,7 +636,7 @@ msgstr ""
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr ""
+msgstr "Gnome-Shell paieškos teikėjas"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
@@ -663,12 +663,12 @@ msgstr "Aktyvavimo kampas"
 #. Add widget to choose activation radius
 #: ../plugins/hot-corner/plugin.c:340
 msgid "Radius of activation corner:"
-msgstr ""
+msgstr "Kampo aktyvavimo spindulys:"
 
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:358
 msgid "Timeout to activate:"
-msgstr ""
+msgstr "Aktyvavimo laiko limitas:"
 
 #: ../plugins/hot-corner/plugin.c:418
 msgid "Hot corner"
@@ -682,11 +682,11 @@ msgstr ""
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr ""
+msgstr "Užverti langus viduriniuoju pelės mygtuku"
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
-msgstr ""
+msgstr "Viduriniuoju pelės mygtuku užveria langų rodinyje esančius langus"
 
 #: ../settings/general.c:120
 msgid "Do nothing"
