@@ -515,7 +515,7 @@ msgstr "%s\n"
 #: ../libxfdashboard/applications-view.c:417
 #: ../libxfdashboard/quicklaunch.c:682
 msgid "Launch"
-msgstr ""
+msgstr "Kjør"
 
 #. Set up view
 #. Add "applications" button
@@ -535,40 +535,40 @@ msgstr "Tilbake"
 #: ../libxfdashboard/applications-view.c:545
 #: ../libxfdashboard/applications-view.c:657
 msgid "Go back to previous menu"
-msgstr ""
+msgstr "Gå tilbake til forrige meny"
 
 #: ../libxfdashboard/applications-view.c:685
 #: ../libxfdashboard/applications-view.c:686
 msgid "All applications"
-msgstr ""
+msgstr "Alle programmer"
 
 #: ../libxfdashboard/applications-view.c:685
 msgid "List of all installed applications"
-msgstr ""
+msgstr "Liste med alle installerte programmer"
 
 #: ../libxfdashboard/quicklaunch.c:402
 msgid "No windows to activate for application"
-msgstr ""
+msgstr "Programmet har ingen vinduer som kan aktiveres"
 
 #: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
 #: ../libxfdashboard/quicklaunch.c:2130
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr ""
+msgstr "Fjernet favoritten «%s»"
 
 #: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
 #: ../libxfdashboard/quicklaunch.c:2063
 #, c-format
 msgid "Favourite '%s' added"
-msgstr ""
+msgstr "La til favoritten «%s»"
 
 #: ../libxfdashboard/quicklaunch.c:705
 msgid "Remove from favourites"
-msgstr ""
+msgstr "Fjern fra favoritter"
 
 #: ../libxfdashboard/quicklaunch.c:719
 msgid "Add to favourites"
-msgstr ""
+msgstr "Legg til favoritter"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
@@ -580,18 +580,18 @@ msgstr "Fjern"
 #: ../libxfdashboard/search-result-container.c:1734
 #, c-format
 msgid "Show %d more results..."
-msgstr ""
+msgstr "Vis %d flere resultater …"
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:686
 #, c-format
 msgid "Show all %d results..."
-msgstr ""
+msgstr "Vis alle %d resultater …"
 
 #: ../libxfdashboard/search-view.c:979
 #, c-format
 msgid "No results found for '%s'"
-msgstr ""
+msgstr "Fant ingen resultater for «%s»"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
@@ -600,12 +600,12 @@ msgstr "Søk"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
-msgstr ""
+msgstr "Skriv for å søke …"
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2317
 msgid "Windows"
-msgstr ""
+msgstr "Vinduer"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:312
@@ -615,29 +615,29 @@ msgstr "Klokke"
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:208
 msgid "Hour color:"
-msgstr ""
+msgstr "Timefarge:"
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
-msgstr ""
+msgstr "Velg farge for timehånda"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
 msgid "Minute color:"
-msgstr ""
+msgstr "Minuttfarge:"
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
-msgstr ""
+msgstr "Velg farge for minutthånda"
 
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
 msgid "Second color:"
-msgstr ""
+msgstr "Sekundfarge:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "Velg farge for sekundhånda"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
@@ -646,35 +646,35 @@ msgstr "Bakgrunnsfarge:"
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "Velg farge for sekundhåndas bakgrunn"
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
-msgstr ""
+msgstr "Legg til en ny visning med klokke"
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
-msgstr ""
+msgstr "Eksempelsøk"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "Eksempel på søketilbyder"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr ""
+msgstr "Dette tillegget er et eksempel på en søketilbyder"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr ""
+msgstr "Søketilbyder for Gnome-Shell"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr ""
+msgstr "Bruker søketilbydere fra Gnome-Shell som kilde for søk "
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
 msgid "ms"
@@ -683,52 +683,54 @@ msgstr "ms"
 #: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
 #: ../settings/general.c:383
 msgid "Immediately"
-msgstr ""
+msgstr "Umiddelbart"
 
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:304
 msgid "Activation corner:"
-msgstr ""
+msgstr "Aktiveringshjørne"
 
 #. Add widget to choose activation radius
 #: ../plugins/hot-corner/plugin.c:340
 msgid "Radius of activation corner:"
-msgstr ""
+msgstr "Aktiveringshjørnets radius:"
 
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:358
 msgid "Timeout to activate:"
-msgstr ""
+msgstr "Tidsavbrudd for aktivering:"
 
 #: ../plugins/hot-corner/plugin.c:418
 msgid "Hot corner"
-msgstr ""
+msgstr "Aktiveringshjørne"
 
 #: ../plugins/hot-corner/plugin.c:419
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
 msgstr ""
+"Aktiverer xfdashboard når musepekeren flyttes til et bestemt hjørne på "
+"skjermen"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr ""
+msgstr "Lukk vindu med midtklikk "
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
-msgstr ""
+msgstr "Midtklikk lukker vinduer i vinduer"
 
 #: ../settings/general.c:120
 msgid "Do nothing"
-msgstr ""
+msgstr "Ikke gjør noe"
 
 #: ../settings/general.c:121
 msgid "Windows view"
-msgstr ""
+msgstr "Vindusvisning"
 
 #: ../settings/general.c:122
 msgid "Applications view"
-msgstr ""
+msgstr "Programvisning"
 
 #: ../settings/general.c:129
 msgid "High"
@@ -749,7 +751,7 @@ msgstr "sekunder"
 #: ../settings/plugins.c:222
 #, c-format
 msgid "Configure plugin: %s"
-msgstr ""
+msgstr "Sett opp tillegg: %s"
 
 #. Create error message to store in list
 #: ../settings/plugins.c:813
@@ -759,6 +761,9 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
+"<b>Klarte ikke laste tillegg.</b>\n"
+"\n"
+"%s"
 
 #: ../settings/plugins.c:1020
 msgid "Name"
@@ -783,7 +788,7 @@ msgstr "Versjonsinformasjon"
 #. Initialize GTK+
 #: ../settings/main.c:57
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../settings/main.c:61
 #, c-format
