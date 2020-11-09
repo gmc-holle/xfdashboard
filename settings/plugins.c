@@ -746,7 +746,19 @@ static void _xfdashboard_settings_plugins_populate_plugins_list(XfdashboardSetti
 
 	/* Get search paths */
 	envPath=g_getenv("XFDASHBOARD_PLUGINS_PATH");
-	if(envPath) pluginsSearchPaths=g_list_append(pluginsSearchPaths, g_strdup(envPath));
+	if(envPath)
+	{
+		gchar						**paths;
+		gchar						**iter;
+
+		iter=paths=g_strsplit(envPath, ":", -1);
+		while(*iter)
+		{
+			pluginsSearchPaths=g_list_append(pluginsSearchPaths, g_strdup(*iter));
+			iter++;
+		}
+		g_strfreev(paths);
+	}
 
 	path=g_build_filename(g_get_user_data_dir(), "xfdashboard", "plugins", NULL);
 	if(path) pluginsSearchPaths=g_list_append(pluginsSearchPaths, path);

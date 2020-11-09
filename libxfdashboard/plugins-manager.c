@@ -31,7 +31,7 @@
  *
  * The plugin manager will look up each plugin at the following paths and order:
  *
- * - Path specified in evironment variable XFDASHBOARD_PLUGINS_PATH
+ * - Paths specified in environment variable XFDASHBOARD_PLUGINS_PATH (colon-seperated list)
  * - $XDG_DATA_HOME/xfdashboard/plugins
  * - (install prefix)/lib/xfdashboard/plugins
  */
@@ -690,7 +690,15 @@ gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self)
 	envPath=g_getenv("XFDASHBOARD_PLUGINS_PATH");
 	if(envPath)
 	{
-		_xfdashboard_plugins_manager_add_search_path(self, envPath);
+		gchar						**paths;
+
+		iter=paths=g_strsplit(envPath, ":", -1);
+		while(*iter)
+		{
+			_xfdashboard_plugins_manager_add_search_path(self, *iter);
+			iter++;
+		}
+		g_strfreev(paths);
 	}
 
 	path=g_build_filename(g_get_user_data_dir(), "xfdashboard", "plugins", NULL);
