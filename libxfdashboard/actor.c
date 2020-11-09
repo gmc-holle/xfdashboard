@@ -48,13 +48,6 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass);
 void xfdashboard_actor_init(XfdashboardActor *self);
 void xfdashboard_actor_base_class_finalize(XfdashboardActorClass *klass);
 
-typedef enum
-{
-	XFDASHBOARD_ACTOR_ANIMATION_NONE=0,
-	XFDASHBOARD_ACTOR_ANIMATION_RUNNING=1 << 0,
-	XFDASHBOARD_ACTOR_ANIMATION_SKIP_DONE=1 << 1,
-} XfdashboardActorAnimationFlags;
-
 struct _XfdashboardActorPrivate
 {
 	/* Properties related */
