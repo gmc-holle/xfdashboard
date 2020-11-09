@@ -40,12 +40,14 @@ struct _XfdashboardHotCornerSettingsPrivate
 	XfdashboardHotCornerSettingsActivationCorner	activationCorner;
 	gint											activationRadius;
 	gint64											activationDuration;
+	gboolean										primaryMonitorOnly;
 
 	/* Instance related */
 	XfconfChannel									*xfconfChannel;
 	guint											xfconfActivationCornerBindingID;
 	guint											xfconfActivationRadiusBindingID;
 	guint											xfconfActivationDurationBindingID;
+	guint											xfconfPrimaryMonitorOnlyBindingID;
 };
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED(XfdashboardHotCornerSettings,
@@ -65,6 +67,7 @@ enum
 	PROP_ACTIVATION_CORNER,
 	PROP_ACTIVATION_RADIUS,
 	PROP_ACTIVATION_DURATION,
+	PROP_PRIMARY_MONITOR_ONLY,
 
 	PROP_LAST
 };
@@ -111,6 +114,9 @@ GType xfdashboard_hot_corner_settings_activation_corner_get_type(void)
 #define ACTIVATION_DURATION_XFCONF_PROP			"/plugins/"PLUGIN_ID"/activation-duration"
 #define DEFAULT_ACTIVATION_DURATION				300
 
+#define PRIMARY_MONITOR_ONLY_XFCONF_PROP		"/plugins/"PLUGIN_ID"/primary-monitor-only"
+#define DEFAULT_PRIMARY_MONITOR_ONLY			TRUE
+
 
 typedef struct _XfdashboardHotCornerSettingsBox		XfdashboardHotCornerSettingsBox;
 struct _XfdashboardHotCornerSettingsBox
@@ -147,6 +153,12 @@ static void _xfdashboard_hot_corner_settings_dispose(GObject *inObject)
 		priv->xfconfActivationDurationBindingID=0;
 	}
 
+	if(priv->xfconfPrimaryMonitorOnlyBindingID)
+	{
+		xfconf_g_property_unbind(priv->xfconfPrimaryMonitorOnlyBindingID);
+		priv->xfconfPrimaryMonitorOnlyBindingID=0;
+	}
+
 	if(priv->xfconfChannel)
 	{
 		priv->xfconfChannel=NULL;
@@ -178,6 +190,10 @@ static void _xfdashboard_hot_corner_settings_set_property(GObject *inObject,
 			xfdashboard_hot_corner_settings_set_activation_duration(self, g_value_get_uint64(inValue));
 			break;
 
+		case PROP_PRIMARY_MONITOR_ONLY:
+			xfdashboard_hot_corner_settings_set_primary_monitor_only(self, g_value_get_boolean(inValue));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -204,6 +220,9 @@ static void _xfdashboard_hot_corner_settings_get_property(GObject *inObject,
 
 		case PROP_ACTIVATION_DURATION:
 			g_value_set_uint64(outValue, priv->activationDuration);
+			break;
+		case PROP_PRIMARY_MONITOR_ONLY:
+			g_value_set_boolean(outValue, priv->primaryMonitorOnly);
 			break;
 
 		default:
@@ -250,6 +269,13 @@ void xfdashboard_hot_corner_settings_class_init(XfdashboardHotCornerSettingsClas
 							DEFAULT_ACTIVATION_DURATION,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	XfdashboardHotCornerSettingsProperties[PROP_PRIMARY_MONITOR_ONLY]=
+		g_param_spec_boolean("primary-monitor-only",
+								"Primary monitor only",
+								"A flag indicating if all monitors or only the primary one should be check for hot corner",
+								DEFAULT_PRIMARY_MONITOR_ONLY,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardHotCornerSettingsProperties);
 }
 
@@ -271,6 +297,7 @@ void xfdashboard_hot_corner_settings_init(XfdashboardHotCornerSettings *self)
 	priv->activationCorner=DEFAULT_ACTIVATION_CORNER;
 	priv->activationRadius=DEFAULT_ACTIVATION_RADIUS;
 	priv->activationDuration=DEFAULT_ACTIVATION_DURATION;
+	priv->primaryMonitorOnly=DEFAULT_PRIMARY_MONITOR_ONLY;
 	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
 
 	/* Bind to xfconf to react on changes */
@@ -294,6 +321,13 @@ void xfdashboard_hot_corner_settings_init(XfdashboardHotCornerSettings *self)
 								G_TYPE_INT64,
 								self,
 								"activation-duration");
+
+	priv->xfconfPrimaryMonitorOnlyBindingID=
+		xfconf_g_property_bind(priv->xfconfChannel,
+								PRIMARY_MONITOR_ONLY_XFCONF_PROP,
+								G_TYPE_BOOLEAN,
+								self,
+								"primary-monitor-only");
 }
 
 
@@ -391,5 +425,32 @@ void xfdashboard_hot_corner_settings_set_activation_duration(XfdashboardHotCorne
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardHotCornerSettingsProperties[PROP_ACTIVATION_DURATION]);
+	}
+}
+
+/* Get/set flag to check primary monitor only if hot corner was entered */
+gboolean xfdashboard_hot_corner_settings_get_primary_monitor_only(XfdashboardHotCornerSettings *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_HOT_CORNER_SETTINGS(self), 0);
+
+	return(self->priv->primaryMonitorOnly);
+}
+
+void xfdashboard_hot_corner_settings_set_primary_monitor_only(XfdashboardHotCornerSettings *self, gboolean inPrimaryOnly)
+{
+	XfdashboardHotCornerSettingsPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_HOT_CORNER_SETTINGS(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->primaryMonitorOnly!=inPrimaryOnly)
+	{
+		/* Set value */
+		priv->primaryMonitorOnly=inPrimaryOnly;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardHotCornerSettingsProperties[PROP_PRIMARY_MONITOR_ONLY]);
 	}
 }

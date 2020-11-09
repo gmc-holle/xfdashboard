@@ -92,16 +92,6 @@ GType xfdashboard_hot_corner_activation_corner_get_type(void)
 /* IMPLEMENTATION: Private variables and methods */
 #define POLL_POINTER_POSITION_INTERVAL			100
 
-#define ACTIVATION_CORNER_XFCONF_PROP			"/plugins/"PLUGIN_ID"/activation-corner"
-#define DEFAULT_ACTIVATION_CORNER				XFDASHBOARD_HOT_CORNER_ACTIVATION_CORNER_TOP_LEFT
-
-#define ACTIVATION_RADIUS_XFCONF_PROP			"/plugins/"PLUGIN_ID"/activation-radius"
-#define DEFAULT_ACTIVATION_RADIUS				4
-
-#define ACTIVATION_DURATION_XFCONF_PROP			"/plugins/"PLUGIN_ID"/activation-duration"
-#define DEFAULT_ACTIVATION_DURATION				300
-
-
 typedef struct _XfdashboardHotCornerBox		XfdashboardHotCornerBox;
 struct _XfdashboardHotCornerBox
 {
@@ -117,14 +107,15 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 	XfdashboardWindowTrackerWindow					*activeWindow;
 	GdkDevice										*pointerDevice;
 	gint											pointerX, pointerY;
-	XfdashboardWindowTrackerMonitor					*primaryMonitor;
+	XfdashboardHotCornerSettingsActivationCorner	activationCorner;
+	gint											activationRadius;
+	gint64											activationDuration;
+	gboolean										primaryMonitorOnly;
+	XfdashboardWindowTrackerMonitor					*monitor;
 	XfdashboardHotCornerBox							monitorRect;
 	XfdashboardHotCornerBox							hotCornerRect;
 	GDateTime										*currentTime;
 	GTimeSpan										timeDiff;
-	XfdashboardHotCornerSettingsActivationCorner	activationCorner;
-	gint											activationRadius;
-	gint64											activationDuration;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_HOT_CORNER(inUserData), G_SOURCE_CONTINUE);
 
@@ -135,6 +126,7 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 	activationCorner=xfdashboard_hot_corner_settings_get_activation_corner(priv->settings);
 	activationRadius=xfdashboard_hot_corner_settings_get_activation_radius(priv->settings);
 	activationDuration=xfdashboard_hot_corner_settings_get_activation_duration(priv->settings);
+	primaryMonitorOnly=xfdashboard_hot_corner_settings_get_primary_monitor_only(priv->settings);
 
 	/* Do nothing if current window is fullscreen but not this application */
 	activeWindow=xfdashboard_window_tracker_get_active_window(priv->windowTracker);
@@ -164,19 +156,19 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 
 	gdk_window_get_device_position(priv->rootWindow, pointerDevice, &pointerX, &pointerY, NULL);
 
-	/* Get position and size of primary monitor */
-	primaryMonitor=xfdashboard_window_tracker_get_primary_monitor(priv->windowTracker);
-	if(primaryMonitor)
+	/* Get monitor and its position and size at pointer position */
+	monitor=xfdashboard_window_tracker_get_monitor_by_position(priv->windowTracker, pointerX, pointerY);
+	if(monitor)
 	{
-		gint							w, h;
+		gint										monitorWidth, monitorHeight;
 
-		xfdashboard_window_tracker_monitor_get_geometry(primaryMonitor,
+		xfdashboard_window_tracker_monitor_get_geometry(monitor,
 														&monitorRect.x1,
 														&monitorRect.y1,
-														&w,
-														&h);
-		monitorRect.x2=monitorRect.x1+w;
-		monitorRect.y2=monitorRect.y1+h;
+														&monitorWidth,
+														&monitorHeight);
+		monitorRect.x2=monitorRect.x1+monitorWidth;
+		monitorRect.y2=monitorRect.y1+monitorHeight;
 	}
 		else
 		{
@@ -184,6 +176,14 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 			monitorRect.x1=monitorRect.y1=0;
 			xfdashboard_window_tracker_get_screen_size(priv->windowTracker, &monitorRect.x2, &monitorRect.y2);
 		}
+
+	/* Check pointer in currently iterated monitor should be checked */
+	if(primaryMonitorOnly &&
+		monitor &&
+		!xfdashboard_window_tracker_monitor_is_primary(monitor))
+	{
+		return(G_SOURCE_CONTINUE);
+	}
 
 	/* Get rectangle where pointer must be inside to activate hot corner */
 	switch(activationCorner)
@@ -231,7 +231,6 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 			priv->enteredTime=NULL;
 		}
 
-		/* Return without doing anything */
 		return(G_SOURCE_CONTINUE);
 	}
 
@@ -246,7 +245,6 @@ static gboolean _xfdashboard_hot_corner_check_hot_corner(gpointer inUserData)
 		/* Reset handled flag to get duration checked next time */
 		priv->wasHandledRecently=FALSE;
 
-		/* Return without doing anything */
 		return(G_SOURCE_CONTINUE);
 	}
 

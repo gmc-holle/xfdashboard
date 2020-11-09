@@ -85,6 +85,9 @@ void xfdashboard_hot_corner_settings_set_activation_radius(XfdashboardHotCornerS
 gint64 xfdashboard_hot_corner_settings_get_activation_duration(XfdashboardHotCornerSettings *self);
 void xfdashboard_hot_corner_settings_set_activation_duration(XfdashboardHotCornerSettings *self, gint64 inDuration);
 
+gboolean xfdashboard_hot_corner_settings_get_primary_monitor_only(XfdashboardHotCornerSettings *self);
+void xfdashboard_hot_corner_settings_set_primary_monitor_only(XfdashboardHotCornerSettings *self, gboolean inPrimaryOnly);
+
 G_END_DECLS
 
 #endif
