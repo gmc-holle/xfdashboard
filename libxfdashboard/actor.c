@@ -58,11 +58,11 @@ typedef enum
 struct _XfdashboardActorPrivate
 {
 	/* Properties related */
-	gboolean				canFocus;
-	gchar					*effects;
+	gboolean						canFocus;
+	gchar							*effects;
 
-	gchar					*styleClasses;
-	gchar					*stylePseudoClasses;
+	gchar							*styleClasses;
+	gchar							*stylePseudoClasses;
 
 	/* Instance related */
 	gboolean						inDestruction;
@@ -258,6 +258,9 @@ static void _xfdashboard_actor_on_mapped_changed(GObject *inObject,
 		{
 			g_assert(!priv->firstTimeMappedAnimation);
 
+			/* Set flag that first-time visible happened at this actor */
+			priv->firstTimeMapped=TRUE;
+
 			/* Lookup animation for create signal and if any found (i.e. has an ID),
 			 * run it.
 			 */
@@ -280,9 +283,6 @@ static void _xfdashboard_actor_on_mapped_changed(GObject *inObject,
 									"Found and starting animation '%s' for created signal at actor %s",
 									xfdashboard_animation_get_id(priv->firstTimeMappedAnimation),
 									G_OBJECT_TYPE_NAME(self));
-
-			/* Set flag that first-time visible happened at this actor */
-			priv->firstTimeMapped=TRUE;
 		}
 	}
 }
