@@ -161,6 +161,11 @@ static gchar* _xfdashboard_plugins_manager_find_plugin_path(XfdashboardPluginsMa
 		path=g_strdup_printf("%s%s%s.%s", iterPath, G_DIR_SEPARATOR_S, inPluginName, G_MODULE_SUFFIX);
 		if(!path) continue;
 
+		XFDASHBOARD_DEBUG(self, PLUGINS,
+							"Trying path %s for plugin '%s'",
+							path,
+							inPluginName);
+
 		/* Check if file exists and return it if we does */
 		if(g_file_test(path, G_FILE_TEST_IS_REGULAR))
 		{
