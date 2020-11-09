@@ -278,6 +278,41 @@ static gchar* _plugin_on_duration_settings_format_value(GtkScale *inWidget,
 
 	return(text);
 }
+
+/* Value for primary-monitor-only was changed at widget */
+static void _plugin_on_primary_monitor_only_widget_value_changed(GtkToggleButton *inButton,
+																	gpointer inUserData)
+{
+	PluginWidgetSettingsMap			*mapping;
+	gboolean						value;
+
+	g_return_if_fail(GTK_IS_TOGGLE_BUTTON(inButton));
+	g_return_if_fail(inUserData);
+
+	mapping=(PluginWidgetSettingsMap*)inUserData;
+
+	/* Get new value from widget */
+	value=gtk_toggle_button_get_active(inButton);
+
+	/* Store new value at settings */
+	xfdashboard_hot_corner_settings_set_primary_monitor_only(mapping->settings, value);
+}
+
+/* Value for activation duration was changed at settings */
+static void _plugin_on_primary_monitor_only_settings_value_changed(PluginWidgetSettingsMap *inMapping)
+{
+	gboolean						value;
+
+	g_return_if_fail(inMapping);
+
+	/* Get new value from settings */
+	value=xfdashboard_hot_corner_settings_get_primary_monitor_only(inMapping->settings);
+
+	/* Set new value at widget */
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(inMapping->widget), value);
+}
+
+
 /* Plugin configuration function */
 static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 {
@@ -375,6 +410,20 @@ static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 	gtk_range_set_value(GTK_RANGE(widgetValue),
 						xfdashboard_hot_corner_settings_get_activation_duration(settings));
 	gtk_grid_attach_next_to(GTK_GRID(layout), widgetValue, widgetLabel, GTK_POS_RIGHT, 1, 1);
+
+	/* Add widget to limit checks to primary monitor only or to all monitors */
+	widgetValue=gtk_check_button_new_with_label(_("Primary monitor only"));
+	mapping=_plugin_widget_settings_map_bind(widgetValue,
+												settings,
+												"primary-monitor-only",
+												G_CALLBACK(_plugin_on_primary_monitor_only_settings_value_changed));
+	g_signal_connect(widgetValue,
+						"toggled",
+						G_CALLBACK(_plugin_on_primary_monitor_only_widget_value_changed),
+						mapping);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widgetValue),
+								xfdashboard_hot_corner_settings_get_primary_monitor_only(settings));
+	gtk_grid_attach(GTK_GRID(layout), widgetValue, 0, 3, 2, 1);
 
 	/* Release allocated resources */
 	if(settings) g_object_unref(settings);
