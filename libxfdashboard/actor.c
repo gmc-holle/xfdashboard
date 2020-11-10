@@ -72,6 +72,7 @@ struct _XfdashboardActorPrivate
 
 	ClutterActorBox					*allocationTrackBox;
 
+	gboolean						disallowAllocationAnimation;
 	gboolean						doAllocationAnimation;
 	XfdashboardAnimation			*allocationAnimation;
 	ClutterActorBox					*allocationInitialBox;
@@ -223,6 +224,9 @@ static void _xfdashboard_actor_first_time_created_animation_done(XfdashboardAnim
 
 	/* Mark completed first-time animation as removed */
 	priv->firstTimeMappedAnimation=NULL;
+
+	/* Allow allocation animation again */
+	priv->disallowAllocationAnimation=FALSE;
 }
 
 /* Actor was mapped or unmapped */
@@ -268,6 +272,9 @@ static void _xfdashboard_actor_on_mapped_changed(GObject *inObject,
 
 				return;
 			}
+
+			/* Disallow allocation animation if not set in 'created' animation */
+			priv->disallowAllocationAnimation=TRUE;
 
 			/* Start animation */
 			g_signal_connect_after(priv->firstTimeMappedAnimation, "animation-done", G_CALLBACK(_xfdashboard_actor_first_time_created_animation_done), self);
@@ -1097,8 +1104,11 @@ static void _xfdashboard_actor_on_allocation_changed(ClutterActor *inActor,
 	priv->allocationTrackBox->y1=inAllocationBox->y1;
 	priv->allocationTrackBox->y2=inAllocationBox->y2;
 
+if(priv->disallowAllocationAnimation) g_message("Disallow allocation animation at %s@%p", G_OBJECT_TYPE_NAME(self), self);
+
 	/* Check if allocation animation was requested explicitly */
-	if(priv->doAllocationAnimation)
+	if(priv->doAllocationAnimation &&
+		!priv->disallowAllocationAnimation)
 	{
 		XfdashboardAnimation		*animation;
 		XfdashboardAnimationValue	**initials;
@@ -1162,12 +1172,12 @@ static void _xfdashboard_actor_on_allocation_changed(ClutterActor *inActor,
 		/* Free default initial and final values */
 		xfdashboard_animation_defaults_free(initials);
 		xfdashboard_animation_defaults_free(finals);
-
-		/* Unset flag indicating an allocation animation was requested,
-		 * as it was handled now.
-		 */
-		priv->doAllocationAnimation=FALSE;
 	}
+
+	/* Unset flag indicating an allocation animation was requested,
+	 * as it was handled now or prevented if disallowed.
+	 */
+	priv->doAllocationAnimation=FALSE;
 }
 
 /* Pointer left actor */
@@ -1620,6 +1630,7 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 	priv->firstTimeMapped=FALSE;
 	priv->firstTimeMappedAnimation=NULL;
 	priv->animations=NULL;
+	priv->disallowAllocationAnimation=FALSE;
 	priv->doAllocationAnimation=FALSE;
 	priv->allocationAnimation=NULL;
 	priv->allocationInitialBox=NULL;
