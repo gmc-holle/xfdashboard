@@ -4,19 +4,19 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Arve Eriksson <031299870@telia.com>, 2020
 # Nick Schermer <nick@xfce.org>, 2020
 # Påvel Nicklasson <pavel2@frimix.se>, 2020
 # Luna Jernberg <bittin@cafe8bitar.se>, 2020
+# Arve Eriksson <031299870@telia.com>, 2020
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-30 00:47+0100\n"
+"POT-Creation-Date: 2020-11-09 12:49+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Luna Jernberg <bittin@cafe8bitar.se>, 2020\n"
+"Last-Translator: Arve Eriksson <031299870@telia.com>, 2020\n"
 "Language-Team: Swedish (https://www.transifex.com/xfce/teams/16840/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -61,6 +61,10 @@ msgid ""
 "switch between different applications. The search feature works like Xfce's "
 "app finder which makes it convenient to search for and start applications."
 msgstr ""
+"Det kan konfigureras till att köra godtyckliga tangentbordsgenvägar, och ger"
+" vid körning en översikt av öppna program, vilket låter användaren växla "
+"mellan olika program. Sökfunktionen fungerar precis som Xfces "
+"programsökning, vilket gör det smidigt att söka efter och starta program."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:4
 msgid "Browsing applications"
@@ -87,6 +91,8 @@ msgid ""
 "This unstable development adds support for touchpads and application actions"
 " (Jumplists, Quicklists) as well as new and updated translations."
 msgstr ""
+"Den här ostabila utvecklingen lägger till stöd för pekplattor och "
+"programåtgärder (snabblistor), och nya och uppdaterade översättningar."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
@@ -101,6 +107,8 @@ msgid ""
 "This unstable development implements a new experimental backend for GDK as "
 "well as it supports user stylesheets now."
 msgstr ""
+"Den här ostabila utvecklingen tillämpar en ny experimentell bakände för GDK,"
+" och har nu stöd för användardefinierade stilmallar."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
@@ -108,18 +116,25 @@ msgid ""
 "adds a fine-grained debugging system and introduces an interface for "
 "multiple backends but only X11 is still the one only one supported."
 msgstr ""
+"Den här ostabila utvecklingen förbättrar inläsningsprestanda för bilder och "
+"ikoner, lägger till ett finmaskigt felsökningssystem, och introducerar ett "
+"gränssnitt för flera bakändar, men X11 är fortfarande den enda som stöds."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid ""
 "This unstable development introduces child windows shown next to the main "
 "window."
 msgstr ""
+"Den här ostabila utvecklingen introducerar barnfönster som visas bredvid "
+"huvudfönstret."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
+"Den här stabila versionen åtgärdar ett fel med att ställa in korrekta "
+"förvalda program vid första uppstart."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid "This unstable development introduces pop-up menus."
@@ -131,6 +146,9 @@ msgid ""
 "application tracker. It also contains a huge collection of other larger and "
 "smaller improvements."
 msgstr ""
+"Den här stabila versionen introducerar många nya funktioner, som "
+"insticksprogram och programspårare. Den innehåller också en omfattande lista"
+" av andra större och mindre förbättringar."
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
@@ -154,7 +172,7 @@ msgstr "<b>Allmänna inställningar:</b>"
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr ""
+msgstr "Återställ sökvy vid fortsättning"
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
@@ -162,6 +180,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
+"Om detta aktiveras kommer sökvyn att återställas när xfdashboard fortsätts. Det betyder att den aktiva vyn växlas tillbaka till det som senast var aktivt innan den senaste sökningen startades, och sökrutan kommer att tömmas.\n"
+"\n"
+"<b>OBS:</b> Den här inställningen används bara om xfdashboard körs i daemon-läge."
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
@@ -169,10 +190,13 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
 msgstr ""
+"När xfdashboard fortsätter kommer den markerade vyn att aktiveras.\n"
+"\n"
+"<b>OBS:</b> Den här inställningen används bara om xfdashboard körs i daemon-läge."
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr ""
+msgstr "Växla till vy vid fortsättning:"
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
@@ -180,10 +204,13 @@ msgid ""
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
 msgstr ""
+"Anger kortast tid för att visa en avisering.\n"
+"\n"
+"Varaktigheten beräknas utifrån hur mycket text som ska visas i en avisering. Den här inställningen låter dig ange hur länge aviseringen måste visas som kortast innan den försvinner."
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
-msgstr ""
+msgstr "Kortast timeout för avisering:"
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
@@ -195,6 +222,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
 msgstr ""
+"När detta aktiveras kommer en workaround för minimerade fönster att testas för att skapa stillbilder för dessa fönster genom att snabbt återställa och sedan minimera dem igen.\n"
+"\n"
+"<b>OBS:</b> Kom ihåg att detta är en <u>workaround</u> och att dina minimerade fönster kan förbli avminimerade, byta arbetsyta osv."
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
@@ -202,20 +232,26 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
+"Det här värdet definierar hur snabbt fönsterinnehållet ska skapas. Medan värdet 'omedelbart' instruerar xfdashboard att skapa fönsterinnehållet exakt när det begärs kommer alla andra värden att bygga upp en kö, och deras värden definierar hur snabbt kön kommer att behandlas.\n"
+"\n"
+"<b>OBS:</b> Ändra endast detta värde från 'omedelbart' till något annat värde om ditt grafikkort, drivrutin eller system är för långsamt för att skapa fönsterinnehåll omedelbart. Du måste testa varje värde för att hitta det som passar ditt system bäst."
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
-msgstr ""
+msgstr "Prioritet för att skapa fönsterinnehåll"
 
 #: ../data/data/preferences.ui.h:26
 msgid "Show child windows in main windows"
-msgstr ""
+msgstr "Visa barnfönster i huvudfönster"
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
 msgstr ""
+"När det aktiveras kommer alla fönsterminiatyrer också visa deras "
+"barnfönster. Att avaktivera det här alternativet kommer att förbättra "
+"prestandan för långsammare maskiner."
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
@@ -227,6 +263,9 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
+"När det aktiveras och en ikon i snabbstarten används kommer det alltid att startas en ny instans av programmet.\n"
+"\n"
+"När det inte är aktiverat kommer det att välja det senast aktiva fönster för den aktiva programinstansen. Om programmet inte körs kommer en ny instans att startas."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
@@ -249,6 +288,8 @@ msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
 msgstr ""
+"När det aktiveras kommer en \"alla program\"-meny som innehåller alla "
+"installerade program att visas på programvyn"
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
@@ -264,6 +305,8 @@ msgid ""
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
 msgstr ""
+"När det aktiveras kommer alla rullningar i fönstervyn, upp och ned, att byta"
+" aktiv arbetsyta. Detta beteende är samma som i arbetsyteväljaren."
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
@@ -274,10 +317,12 @@ msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
 msgstr ""
+"Anger intervallet som sökning ska fördröjas med efter att första tecknet "
+"skrivs in."
 
 #: ../data/data/preferences.ui.h:42
 msgid "Delay initial search interval:"
-msgstr "Fördröj initialt sökintervall:"
+msgstr "Intervall för att fördröja första sökning:"
 
 #: ../data/data/preferences.ui.h:43
 msgid "General"
@@ -349,7 +394,7 @@ msgstr "xfdashboard-mint"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
 msgid "Fresh-green flavored theme for xfdashboard"
-msgstr ""
+msgstr "Tema med uppfriskande grön smak för xfdashboard"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-moranga"
@@ -370,9 +415,9 @@ msgstr "Rödvin tema för xfdashboard"
 #: ../libxfdashboard/application-button.c:262
 #, c-format
 msgid "Could not execute action '%s' for application '%s': %s"
-msgstr ""
+msgstr "Kunde inte utföra åtgärd '%s' för program '%s': %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:814
+#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
 msgid "Unknown error"
 msgstr "Okänt fel"
@@ -380,7 +425,7 @@ msgstr "Okänt fel"
 #: ../libxfdashboard/application-button.c:282
 #, c-format
 msgid "Executed action '%s' for application '%s'"
-msgstr ""
+msgstr "Utförde åtgärd '%s' för program '%s'"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
@@ -430,7 +475,7 @@ msgstr "Välkommen till %s!"
 
 #: ../libxfdashboard/application.c:576
 msgid "Fork to background"
-msgstr ""
+msgstr "Placera i bakgrunden"
 
 #: ../libxfdashboard/application.c:577
 msgid "Quit running instance"
@@ -445,10 +490,12 @@ msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
 msgstr ""
+"Växlar synlighet om körande instans startades i daemon-läge, annars avslutas"
+" körande icke-daemon-instans"
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
-msgstr ""
+msgstr "Vy-ID att växla till vid uppstart eller fortsättning"
 
 #: ../libxfdashboard/application.c:581
 msgid "Show version"
@@ -553,7 +600,7 @@ msgstr "Sök"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
-msgstr ""
+msgstr "Bara skriv för att söka..."
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2317
@@ -590,7 +637,7 @@ msgstr "Sekundfärg:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "Välj färg för sekundvisare"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
@@ -599,7 +646,7 @@ msgstr "Bakgrundsfärg:"
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "Välj bakgrundsfärg för sekundvisare"
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
@@ -615,7 +662,7 @@ msgstr "Exempel sökmotor"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr ""
+msgstr "Detta är bara ett oanvändbart exempelinstick för sökmotorer"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
@@ -639,37 +686,44 @@ msgid "Immediately"
 msgstr "Genast"
 
 #. Add widget to choose activation corner
-#: ../plugins/hot-corner/plugin.c:304
+#: ../plugins/hot-corner/plugin.c:339
 msgid "Activation corner:"
 msgstr "Aktiveringshörn:"
 
 #. Add widget to choose activation radius
-#: ../plugins/hot-corner/plugin.c:340
+#: ../plugins/hot-corner/plugin.c:375
 msgid "Radius of activation corner:"
 msgstr "Radie av aktiveringshörn:"
 
 #. Add widget to choose activation duration
-#: ../plugins/hot-corner/plugin.c:358
+#: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
-msgstr ""
+msgstr "Timeout för aktivering:"
 
-#: ../plugins/hot-corner/plugin.c:418
+#. Add widget to limit checks to primary monitor only or to all monitors
+#: ../plugins/hot-corner/plugin.c:415
+msgid "Primary monitor only"
+msgstr "Endast primär skärm"
+
+#: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
 msgstr "Heta hörn"
 
-#: ../plugins/hot-corner/plugin.c:419
+#: ../plugins/hot-corner/plugin.c:468
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
 msgstr ""
+"Aktiverar xfdashboard när pekaren flyttas till ett konfigurerat hörn på "
+"skärmen"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr ""
+msgstr "Mittenklick för fönsterstängning"
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
-msgstr ""
+msgstr "Stänger fönster i fönstervyn vid mittenklick"
 
 #: ../settings/general.c:120
 msgid "Do nothing"
@@ -705,7 +759,7 @@ msgid "Configure plugin: %s"
 msgstr "Konfigurera insticksprogram: %s"
 
 #. Create error message to store in list
-#: ../settings/plugins.c:813
+#: ../settings/plugins.c:825
 #, c-format
 msgid ""
 "<b>Plugin could not be loaded.</b>\n"
@@ -716,7 +770,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../settings/plugins.c:1020
+#: ../settings/plugins.c:1032
 msgid "Name"
 msgstr "Namn"
 
