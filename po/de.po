@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-30 00:47+0100\n"
+"POT-Creation-Date: 2020-11-09 12:49+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Andreas Eitel <github-aneitel@online.de>, 2020\n"
 "Language-Team: German (https://www.transifex.com/xfce/teams/16840/de/)\n"
@@ -425,7 +425,7 @@ msgstr "Rotweinfarbiges Thema für xfdashboard"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Konnte die Aktion '%s' für die Anwendung '%s' nicht ausführen: %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:814
+#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
 msgid "Unknown error"
 msgstr "Unbekannter Fehler"
@@ -696,25 +696,30 @@ msgid "Immediately"
 msgstr "Sofort"
 
 #. Add widget to choose activation corner
-#: ../plugins/hot-corner/plugin.c:304
+#: ../plugins/hot-corner/plugin.c:339
 msgid "Activation corner:"
 msgstr "Aktivierungsecke:"
 
 #. Add widget to choose activation radius
-#: ../plugins/hot-corner/plugin.c:340
+#: ../plugins/hot-corner/plugin.c:375
 msgid "Radius of activation corner:"
 msgstr "Radius der Aktivierungsecke:"
 
 #. Add widget to choose activation duration
-#: ../plugins/hot-corner/plugin.c:358
+#: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
 msgstr "Zeitüberschreitung zum Aktivieren:"
 
-#: ../plugins/hot-corner/plugin.c:418
+#. Add widget to limit checks to primary monitor only or to all monitors
+#: ../plugins/hot-corner/plugin.c:415
+msgid "Primary monitor only"
+msgstr "Nur primärer Monitor"
+
+#: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
 msgstr "Heiße Ecke"
 
-#: ../plugins/hot-corner/plugin.c:419
+#: ../plugins/hot-corner/plugin.c:468
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
@@ -764,7 +769,7 @@ msgid "Configure plugin: %s"
 msgstr "Plugin konfigurieren: %s"
 
 #. Create error message to store in list
-#: ../settings/plugins.c:813
+#: ../settings/plugins.c:825
 #, c-format
 msgid ""
 "<b>Plugin could not be loaded.</b>\n"
@@ -775,7 +780,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../settings/plugins.c:1020
+#: ../settings/plugins.c:1032
 msgid "Name"
 msgstr "Name"
 
