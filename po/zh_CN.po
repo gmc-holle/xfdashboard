@@ -9,8 +9,8 @@
 # Nick Schermer <nick@xfce.org>, 2020
 # Mingcong Bai <jeffbai@aosc.xyz>, 2020
 # YuHeng Chou <wojiushixxx@126.com>, 2020
-# 玉堂白鹤 <yjwork@qq.com>, 2020
 # No Body, 2020
+# 玉堂白鹤 <yjwork@qq.com>, 2020
 # 
 #, fuzzy
 msgid ""
@@ -19,7 +19,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-09 12:49+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: No Body, 2020\n"
+"Last-Translator: 玉堂白鹤 <yjwork@qq.com>, 2020\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/xfce/teams/16840/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -203,9 +203,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
 msgstr ""
-"启用后, 已最小化窗口将通过短期恢复并再次最小化这些窗口来获取它们的静态图像.\n"
+"启用后， 已最小化窗口将通过短期恢复并再次最小化这些窗口来获取它们的静态图像。\n"
 "\n"
-"<b>注意:</b> 须知这是个<u>临时替代方案</u> 并且您本已最小化的窗口可能将会维持非最小化的状态, 且工作区可能会改变等."
+"<b>注意:</b> 须知这是个<u>临时替代方案</u> 并且您本已最小化的窗口可能将会维持非最小化的状态，且工作区可能会改变等。"
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
@@ -213,9 +213,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
-"此值定义应多快创建窗口内容. 虽然 '立即' 这个值告诉 xfdashboard 在请求时立即创建窗口内容, 但所有其它值将建立一个队列, 而该值定义队列将被处理的速度.\n"
+"此值定义应多快创建窗口内容。 虽然 '立即' 这个值告诉 xfdashboard 在请求时立即创建窗口内容，但所有其它值将建立一个队列，而该值定义队列将被处理的速度。\n"
 "\n"
-"<b>注意:</b>仅在显卡, 驱动程序或系统太慢而无法立即创建窗口内容时，才将此值从 '立即' 更改为其他值. 您须尝试每个值才可能找到适合您系统的值."
+"<b>注意:</b>仅在显卡，驱动程序或系统太慢而无法立即创建窗口内容时，才将此值从 '立即' 更改为其他值。 您须尝试每个值才可能找到适合您系统的值。"
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
@@ -229,7 +229,7 @@ msgstr "在主窗口中显示子窗口"
 msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
-msgstr "启用后, 所有实时窗口预览也将显示其子窗口. 禁用此选项在较慢的计算机上会提高性能."
+msgstr "启用后，所有实时窗口预览也将显示其子窗口。禁用此选项在较慢的计算机上会提高性能。"
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
@@ -241,9 +241,9 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
-"启用后, 单击快速启动中的图标将始终启动该应用程序的新实例.\n"
+"启用后，单击快速启动中的图标将始终启动该应用程序的新实例。\n"
 "\n"
-"未启用时, 它将选择这个正在运行的应用程序实例的最后一个已知活动窗口.  如果应用程序未在运行, 则将启动一个新实例."
+"未启用时，它将选择这个正在运行的应用程序实例的最后一个已知活动窗口。 如果应用程序未在运行，则将启动一个新实例。"
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
@@ -280,7 +280,7 @@ msgid ""
 "When enabled any scroll event, like mouse-wheel up and down, at the windows "
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
-msgstr "启用后, 在窗口视图中的任何滚动事件, 例如上下鼠标滚轮, 都会更改激活的工作空间. 此行为与工作区选择器中的行为相同."
+msgstr "启用后，在窗口视图中的任何滚动事件，例如上下鼠标滚轮, 都会更改激活的工作空间。此行为与工作区选择器中的行为相同。"
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
@@ -461,7 +461,7 @@ msgstr "重启运行实例"
 msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
-msgstr "如果以守护程序模式启动的此正在运行的程序实例, 则切换可见性, 否则它会退出以非守护程序模式运行中的实例"
+msgstr "如果以守护程序模式启动的此正在运行的程序实例，则切换可见性，否则它会退出以非守护程序模式运行中的实例"
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
