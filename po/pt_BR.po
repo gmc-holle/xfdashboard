@@ -4,13 +4,12 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# elhuevogrande <kbusch21@yahoo.com>, 2020
-# Chipong Luo <chipong.luo@yahoo.com>, 2020
+# Rafael Fontenelle <rffontenelle@gmail.com>, 2020
+# Xfce Bot <transifex@xfce.org>, 2020
 # Nick Schermer <nick@xfce.org>, 2020
-# Mingcong Bai <jeffbai@aosc.xyz>, 2020
-# YuHeng Chou <wojiushixxx@126.com>, 2020
-# No Body, 2020
-# 玉堂白鹤 <yjwork@qq.com>, 2020
+# Andre Miranda <andre42m@gmail.com>, 2020
+# Michael Martins <michaelfm21@gmail.com>, 2020
+# Wellington Almeida <wsalmeida6@gmail.com>, 2020
 # 
 #, fuzzy
 msgid ""
@@ -19,13 +18,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-09 12:49+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: 玉堂白鹤 <yjwork@qq.com>, 2020\n"
-"Language-Team: Chinese (China) (https://www.transifex.com/xfce/teams/16840/zh_CN/)\n"
+"Last-Translator: Wellington Almeida <wsalmeida6@gmail.com>, 2020\n"
+"Language-Team: Portuguese (Brazil) (https://www.transifex.com/xfce/teams/16840/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../data/xfdashboard.desktop.in.in.h:1
 #: ../data/xfdashboard-autostart.desktop.in.in.h:1
@@ -35,25 +34,27 @@ msgstr "Xfdashboard"
 #: ../data/xfdashboard.desktop.in.in.h:2
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
-msgstr "也许是一个适用于 Xfce，像仪表板的 Gnome shell"
+msgstr "Talvez um painel semelhante ao shell do Gnome para o Xfce"
 
 #: ../data/xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
-msgstr "xfdashboard 以守护进程启动"
+msgstr "Inicie o xfdashboard como daemon em segundo plano"
 
 #: ../data/xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
-msgstr "Xfdashboard 设置"
+msgstr "Configurações do Xfdashboard"
 
 #: ../data/xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
-msgstr "配置 xfdashboard"
+msgstr "Configurar o xfdashboard"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
-msgstr "Xfdashboard 提供了一个 GNOME shell 仪表盘的接口，用于与Xfce桌面使用。"
+msgstr ""
+"O Xfdashboard fornece um painel do shell do GNOME como interface para uso "
+"com a área de trabalho do Xfce."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:3
 msgid ""
@@ -62,98 +63,119 @@ msgid ""
 "switch between different applications. The search feature works like Xfce's "
 "app finder which makes it convenient to search for and start applications."
 msgstr ""
-"可以将其配置为运行到任何键盘快捷键，并且在执行时可以概述当前打开的应用程序，从而使用户可以在不同的应用程序之间进行切换。 搜索功能的作用类似于 Xfce"
-" 的 app finder，它使搜索和启动应用程序变得非常方便。"
+"Ele pode ser configurado para ser executado em qualquer atalho do teclado e,"
+" quando executado, fornece uma visão geral dos aplicativos atualmente "
+"abertos, permitindo que o usuário alterne entre diferentes aplicativos. O "
+"recurso de pesquisa funciona como o localizador de aplicativos do Xfce, o "
+"que facilita a pesquisa e o início de aplicativos."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:4
 msgid "Browsing applications"
-msgstr "浏览应用"
+msgstr "Navegando em aplicativos"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:5
 msgid "Searching applications"
-msgstr "搜索应用"
+msgstr "Procurando aplicativos"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid ""
 "This unstable development adds more animations as well as some smaller "
 "fixes."
-msgstr "此不稳定开发添加了一些动画并修复了一些小问题。"
+msgstr ""
+"Esta versão instável de desenvolvimento adiciona mais animações assim como "
+"pequenas correções."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:7
 msgid "This unstable development adds animations."
-msgstr "此不稳定开发添加了一些动画。"
+msgstr "Esta versão de desenvolvimento instável adiciona animações."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:8
 msgid ""
 "This unstable development adds support for touchpads and application actions"
 " (Jumplists, Quicklists) as well as new and updated translations."
-msgstr "此不稳定开发添加了对触控板的支持和应用行为（跳转列表、快速列表）并添加了新功能，更新了翻译。"
+msgstr ""
+"Esta versão de desenvolvimento instável adiciona suporte para touchpads e "
+"ações de aplicativos (Jumplists, Quicklists), além de traduções novas e "
+"atualizadas."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
 "This unstable development adds lots of new and updated translations and "
 "support for newer xfconf versions."
-msgstr "此不稳定开发添加了许多新功能，更新了翻译并支持了新的 xfconf 版本。"
+msgstr ""
+"Esta versão de desenvolvimento instável adiciona muitas traduções novas e "
+"atualizadas e suporte para versões mais recentes do xfconf."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
 "This unstable development implements a new experimental backend for GDK as "
 "well as it supports user stylesheets now."
-msgstr "此不稳定开发实施了一个新的实验性的 GDK 后端并且它现在支持用户样式表。"
+msgstr ""
+"Esta versão de desenvolvimento instável implementa um novo back-end "
+"experimental para o GDK, bem como agora suporta folhas de estilo do usuário."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
 "This unstable development improves loading performance of images and icon, "
 "adds a fine-grained debugging system and introduces an interface for "
 "multiple backends but only X11 is still the one only one supported."
-msgstr "此不稳定开发提高了图像和图标的加载性能，添加了一个颗粒调试系统，并为多个后端引入了一个接口，但只有 X11 是仍是唯一受支持的。"
+msgstr ""
+"Esta versão de desenvolvimento instável melhora o desempenho de carregamento"
+" de imagens e ícones, adiciona um sistema de depuração refinado e introduz "
+"uma interface para vários back-ends, mas apenas o X11 ainda é o único "
+"suportado."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid ""
 "This unstable development introduces child windows shown next to the main "
 "window."
-msgstr "此不稳定开发会在主窗口旁显示子窗口。"
+msgstr ""
+"Esta versão de desenvolvimento instável apresenta janelas filho mostradas ao"
+" lado da janela principal."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
-msgstr "此稳定版本修复了在首次使用时设置正确的默认应用程序的错误。"
+msgstr ""
+"Esta versão estável corrige um problema ao definir os aplicativos padrões "
+"corretos no primeiro uso."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid "This unstable development introduces pop-up menus."
-msgstr "此不稳开发引入了弹出菜单。"
+msgstr "Esta versão de desenvolvimento instável introduz menus pop-up."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
 "smaller improvements."
-msgstr "此稳定版本引入了许多新的特性(比如插件和应用追踪器).它还包含大量较大或较小的改进。"
+msgstr ""
+"Esta versão estável introduz várias novos recursos como plug-ins e o "
+"rastreador de aplicativos. Ela também contém uma enorme coleção de outras "
+"melhorias grandes e pequenas."
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
-msgstr "<span size=\"large\"><b>Xfdashboard 设置</b></span>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:2
 msgid "Configure plugin"
-msgstr "配置插件"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:3
 msgid ""
 "<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
 "Configure xfdashboard"
 msgstr ""
-"<span size=\"large\"><b>Xfdashboard 设置</b></span>\n"
-"配置 xfdashboard"
 
 #: ../data/data/preferences.ui.h:5
 msgid "<b>General settings:</b>"
-msgstr "<b>通用设置:</b>"
+msgstr "Configurações Gerais:"
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr "恢复时重置搜索视图"
+msgstr "Redefinir a visualização da pesquisa ao retomar"
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
@@ -161,9 +183,6 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
-"如果启用, 则在恢复 xfdashboard 时重置搜索视图。这意味着活动视图将切换回上次搜索开始前的最后一个活动视图，搜索框将清空。\n"
-"\n"
-"<b>备注: </b>此设置仅在 xfdashboard 以守护进程运行时生效。"
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
@@ -171,13 +190,10 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
 msgstr ""
-"当 xfdashboard 恢复时，所选视图将被激活。\n"
-"\n"
-"<b>注意: </b> 此设置仅在 xfdashboard 以守护进程运行时生效。"
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr "恢复后切换到视图："
+msgstr ""
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
@@ -185,17 +201,14 @@ msgid ""
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
 msgstr ""
-"设置显示通知的最短时间。\n"
-"\n"
-"持续时间由需要显示的通知中的文本长度计算得出。 此设置允许您指定通知必须至少显示多长时间。"
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
-msgstr "最小通知超时:"
+msgstr "Tempo limite mínimo de notificação:"
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
-msgstr "在最小化的窗口中启用解决方案"
+msgstr "Ativar solução alternativa para janelas minimizadas"
 
 #: ../data/data/preferences.ui.h:19
 msgid ""
@@ -203,9 +216,6 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
 msgstr ""
-"启用后， 已最小化窗口将通过短期恢复并再次最小化这些窗口来获取它们的静态图像。\n"
-"\n"
-"<b>注意:</b> 须知这是个<u>临时替代方案</u> 并且您本已最小化的窗口可能将会维持非最小化的状态，且工作区可能会改变等。"
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
@@ -213,27 +223,24 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
-"此值定义应多快创建窗口内容。 虽然 '立即' 这个值告诉 xfdashboard 在请求时立即创建窗口内容，但所有其它值将建立一个队列，而该值定义队列将被处理的速度。\n"
-"\n"
-"<b>注意:</b>仅在显卡，驱动程序或系统太慢而无法立即创建窗口内容时，才将此值从 '立即' 更改为其他值。 您须尝试每个值才可能找到适合您系统的值。"
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
-msgstr "创建窗口内容的优先级"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:26
 msgid "Show child windows in main windows"
-msgstr "在主窗口中显示子窗口"
+msgstr "Mostrar janelas filhas nas janelas principais"
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
-msgstr "启用后，所有实时窗口预览也将显示其子窗口。禁用此选项在较慢的计算机上会提高性能。"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
-msgstr "始终为应用程序启动新实例"
+msgstr "Sempre inicie uma nova instância para o aplicativo"
 
 #: ../data/data/preferences.ui.h:29
 msgid ""
@@ -241,92 +248,94 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
-"启用后，单击快速启动中的图标将始终启动该应用程序的新实例。\n"
-"\n"
-"未启用时，它将选择这个正在运行的应用程序实例的最后一个已知活动窗口。 如果应用程序未在运行，则将启动一个新实例。"
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
-msgstr "启用动画"
+msgstr "Habilitar animações"
 
 #: ../data/data/preferences.ui.h:33
 msgid "If enabled theme-defined animations will be shown."
-msgstr "如果启用了 theme-defined，将会显示动画。"
+msgstr "Se habilitado, animações definidas por tema serão mostradas."
 
 #: ../data/data/preferences.ui.h:34
 msgid "<b>Applications view:</b>"
-msgstr "<b>应用视图:</b>"
+msgstr "Visualização de aplicativos:"
 
 #: ../data/data/preferences.ui.h:35
 msgid "Show menu for all installed applications"
-msgstr "显示所有已安装应用的菜单"
+msgstr "Mostrar menu para todos os aplicativos instalados"
 
 #: ../data/data/preferences.ui.h:36
 msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
-msgstr "启用后，将在应用程序视图中显示包含所有已安装应用程序的“所有应用程序”菜单"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
-msgstr "<b>窗口视图:</b>"
+msgstr ""
 
 #: ../data/data/preferences.ui.h:38
 msgid "Mouse wheel changes workspace"
-msgstr "使用鼠标滚轮更改工作区"
+msgstr "A roda do mouse muda a área de trabalho"
 
 #: ../data/data/preferences.ui.h:39
 msgid ""
 "When enabled any scroll event, like mouse-wheel up and down, at the windows "
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
-msgstr "启用后，在窗口视图中的任何滚动事件，例如上下鼠标滚轮, 都会更改激活的工作空间。此行为与工作区选择器中的行为相同。"
+msgstr ""
+"Quando habilitado, qualquer evento de rolagem, como a roda do mouse para "
+"cima e para baixo, na visualização da janela mudará o espaço de trabalho "
+"ativo. Este comportamento é igual ao do seletor de espaço de trabalho."
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
-msgstr "<b>搜索视图:</b>"
+msgstr "Resultado da pesquisa:"
 
 #: ../data/data/preferences.ui.h:41
 msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
-msgstr "设置输入第一个字符后应延迟搜索的时间间隔。"
+msgstr ""
+"Define o intervalo pelo qual a pesquisa deve ser atrasada depois que o "
+"primeiro caractere foi inserido."
 
 #: ../data/data/preferences.ui.h:42
 msgid "Delay initial search interval:"
-msgstr "延迟初始搜索间隔："
+msgstr "Atrasar o intervalo de pesquisa inicial:"
 
 #: ../data/data/preferences.ui.h:43
 msgid "General"
-msgstr "通用"
+msgstr "Geral"
 
 #: ../data/data/preferences.ui.h:44
 msgid "<b>Name:</b>"
-msgstr "<b>名称:</b>"
+msgstr "<b>Nome:</b>"
 
 #: ../data/data/preferences.ui.h:45
 msgid "<b>Author:</b>"
-msgstr "<b>作者:</b>"
+msgstr "Autor:"
 
 #: ../data/data/preferences.ui.h:46
 msgid "<b>Version:</b>"
-msgstr "<b>版本:</b>"
+msgstr "Versão:"
 
 #: ../data/data/preferences.ui.h:47
 msgid "<b>Description:</b>"
-msgstr "<b>描述:</b>"
+msgstr "Descrição:"
 
 #: ../data/data/preferences.ui.h:48
 msgid "Themes"
-msgstr "主题"
+msgstr "Temas:"
 
 #: ../data/data/preferences.ui.h:49
 msgid "<b>License:</b>"
-msgstr "<b>许可:</b>"
+msgstr "Licença:"
 
 #: ../data/data/preferences.ui.h:50
 msgid "Plugins"
-msgstr "插件"
+msgstr "Plugins"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard"
@@ -334,15 +343,15 @@ msgstr "xfdashboard"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:2
 msgid "Default theme for xfdashboard"
-msgstr "xfdashboard 默认主题"
+msgstr "Tema padrão para xfdashboard"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-auber"
-msgstr "xfdashboard-auber"
+msgstr ""
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
 msgid "Aubergine theme for xfdashboard"
-msgstr "xfdashboard Aubergine 主题"
+msgstr "Tema Aubergine para xfdashboard"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-blue"
@@ -350,7 +359,7 @@ msgstr "xfdashboard-blue"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:2
 msgid "Blue theme for xfdashboard"
-msgstr "xfdashboard 蓝色主题"
+msgstr "Tema azul para xfdashboard"
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-dark"
@@ -358,15 +367,15 @@ msgstr "xfdashboard-dark"
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:2
 msgid "Dark theme for xfdashboard"
-msgstr "xfdashboard 暗色主题"
+msgstr "Tema escuro para xfdashboard"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-mint"
-msgstr "xfdashboard-mint"
+msgstr ""
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
 msgid "Fresh-green flavored theme for xfdashboard"
-msgstr "xfdashboard 清新绿色主题"
+msgstr ""
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-moranga"
@@ -374,7 +383,7 @@ msgstr "xfdashboard-moranga"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:2
 msgid "Moranga theme for xfdashboard"
-msgstr "xfdashboard 的 Moranga 主题"
+msgstr "Tema Moranga para xfdashboard"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-wine"
@@ -382,22 +391,22 @@ msgstr "xfdashboard-wine"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
 msgid "Red wine theme for xfdashboard"
-msgstr "xfdashboard 红色 wine 主题"
+msgstr "Tema vinho tinto para xfdashboard"
 
 #: ../libxfdashboard/application-button.c:262
 #, c-format
 msgid "Could not execute action '%s' for application '%s': %s"
-msgstr "无法对应用 ‘’%s 处理动作 '%s': '%s'"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
 msgid "Unknown error"
-msgstr "未知错误"
+msgstr "Erro desconhecido"
 
 #: ../libxfdashboard/application-button.c:282
 #, c-format
 msgid "Executed action '%s' for application '%s'"
-msgstr "已处理对应用 ‘%s’ 的动作 '%s'"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
@@ -407,12 +416,12 @@ msgstr "已处理对应用 ‘%s’ 的动作 '%s'"
 #: ../libxfdashboard/quicklaunch.c:458
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr "启动应用'%s'错误:'%s'"
+msgstr ""
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:354
 msgid "No information available for application"
-msgstr "此应用没有可获得的介绍"
+msgstr "Nenhuma informação disponível para aplicação"
 
 #: ../libxfdashboard/application-button.c:763
 #: ../libxfdashboard/application.c:308 ../libxfdashboard/application.c:618
@@ -420,7 +429,7 @@ msgstr "此应用没有可获得的介绍"
 #: ../libxfdashboard/applications-view.c:336
 #: ../libxfdashboard/quicklaunch.c:460
 msgid "unknown error"
-msgstr "未知错误"
+msgstr "erro desconhecido"
 
 #: ../libxfdashboard/application-button.c:774
 #: ../libxfdashboard/applications-search-provider.c:767
@@ -428,64 +437,64 @@ msgstr "未知错误"
 #: ../libxfdashboard/quicklaunch.c:471
 #, c-format
 msgid "Application '%s' launched"
-msgstr "应用'%s'已启动"
+msgstr ""
 
 #: ../libxfdashboard/application.c:306
 #, c-format
 msgid "Could not load theme '%s': %s"
-msgstr "无法加载主题'%s': %s"
+msgstr ""
 
 #: ../libxfdashboard/application.c:527
 #, c-format
 msgid "Welcome to %s (%s)!"
-msgstr "欢迎使用 %s (%s)!"
+msgstr ""
 
 #: ../libxfdashboard/application.c:529
 #, c-format
 msgid "Welcome to %s!"
-msgstr "欢迎使用 %s!"
+msgstr ""
 
 #: ../libxfdashboard/application.c:576
 msgid "Fork to background"
-msgstr "分叉到背景"
+msgstr ""
 
 #: ../libxfdashboard/application.c:577
 msgid "Quit running instance"
-msgstr "退出运行中的实例"
+msgstr ""
 
 #: ../libxfdashboard/application.c:578
 msgid "Restart running instance"
-msgstr "重启运行实例"
+msgstr ""
 
 #: ../libxfdashboard/application.c:579
 msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
-msgstr "如果以守护程序模式启动的此正在运行的程序实例，则切换可见性，否则它会退出以非守护程序模式运行中的实例"
+msgstr ""
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
-msgstr "在启动或唤醒时切换到的视图的 ID"
+msgstr ""
 
 #: ../libxfdashboard/application.c:581
 msgid "Show version"
-msgstr "显示版本"
+msgstr "Exibir versão"
 
 #: ../libxfdashboard/application.c:600
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "为 Xfce4 - 版本开发的一个类似仪表板的 Gnome Shell"
+msgstr "Um painel do tipo Shell do Gnome para Xfce4 - versão"
 
 #. Show error
 #: ../libxfdashboard/application.c:617
 #, c-format
 msgid "%s\n"
-msgstr "%s\n"
+msgstr ""
 
 #: ../libxfdashboard/applications-search-provider.c:838
 #: ../libxfdashboard/applications-view.c:417
 #: ../libxfdashboard/quicklaunch.c:682
 msgid "Launch"
-msgstr "启动"
+msgstr "Lançador"
 
 #. Set up view
 #. Add "applications" button
@@ -493,158 +502,158 @@ msgstr "启动"
 #: ../libxfdashboard/applications-view.c:1587
 #: ../libxfdashboard/quicklaunch.c:3288
 msgid "Applications"
-msgstr "应用"
+msgstr "Aplicativos"
 
 #: ../libxfdashboard/applications-view.c:545
 #: ../libxfdashboard/applications-view.c:546
 #: ../libxfdashboard/applications-view.c:657
 #: ../libxfdashboard/applications-view.c:658
 msgid "Back"
-msgstr "后退"
+msgstr "Voltar"
 
 #: ../libxfdashboard/applications-view.c:545
 #: ../libxfdashboard/applications-view.c:657
 msgid "Go back to previous menu"
-msgstr "返回到上一级菜单"
+msgstr "Voltar ao menu anterior"
 
 #: ../libxfdashboard/applications-view.c:685
 #: ../libxfdashboard/applications-view.c:686
 msgid "All applications"
-msgstr "所有应用"
+msgstr "Todos os aplicativos"
 
 #: ../libxfdashboard/applications-view.c:685
 msgid "List of all installed applications"
-msgstr "所有已安装的应用列表"
+msgstr "Lista de todos os aplicativos instalados"
 
 #: ../libxfdashboard/quicklaunch.c:402
 msgid "No windows to activate for application"
-msgstr "没有可以为应用激活的窗口"
+msgstr ""
 
 #: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
 #: ../libxfdashboard/quicklaunch.c:2130
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr "收藏 '%s' 已删除"
+msgstr ""
 
 #: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
 #: ../libxfdashboard/quicklaunch.c:2063
 #, c-format
 msgid "Favourite '%s' added"
-msgstr "收藏 '%s' 已添加"
+msgstr ""
 
 #: ../libxfdashboard/quicklaunch.c:705
 msgid "Remove from favourites"
-msgstr "从收藏中移除"
+msgstr "Remova dos favoritos"
 
 #: ../libxfdashboard/quicklaunch.c:719
 msgid "Add to favourites"
-msgstr "添加到收藏"
+msgstr "Adicionar aos favoritos"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
 #: ../libxfdashboard/quicklaunch.c:3295
 msgid "Remove"
-msgstr "移除"
+msgstr "Remover"
 
 #: ../libxfdashboard/search-result-container.c:664
 #: ../libxfdashboard/search-result-container.c:1734
 #, c-format
 msgid "Show %d more results..."
-msgstr "显示 %d 更多结果..."
+msgstr ""
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:686
 #, c-format
 msgid "Show all %d results..."
-msgstr "显示全部 %d 结果..."
+msgstr ""
 
 #: ../libxfdashboard/search-view.c:979
 #, c-format
 msgid "No results found for '%s'"
-msgstr "在 ‘%s’ 中没有找到结果"
+msgstr ""
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
 msgid "Search"
-msgstr "搜索"
+msgstr "Pesquisar"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
-msgstr "只需键入搜索..."
+msgstr "Basta digitar para pesquisar ..."
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2317
 msgid "Windows"
-msgstr "窗口"
+msgstr "Janelas"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:312
 msgid "Clock"
-msgstr "时钟"
+msgstr "Relógio"
 
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:208
 msgid "Hour color:"
-msgstr "小时颜色:"
+msgstr "Cor da hora:"
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
-msgstr "选择时针颜色"
+msgstr "Escolha a cor do ponteiro das horas"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
 msgid "Minute color:"
-msgstr "分钟颜色："
+msgstr "Cor dos minutos:"
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
-msgstr "选择分针颜色"
+msgstr "Escolha a cor do ponteiro dos minutos"
 
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
 msgid "Second color:"
-msgstr "秒钟颜色:"
+msgstr "Cor dos segundos:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr "选择秒针颜色"
+msgstr ""
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
 msgid "Background color:"
-msgstr "背景色："
+msgstr "Cor de fundo:"
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr "选择秒针的背景颜色"
+msgstr ""
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
-msgstr "添加一个显示时钟的新视图"
+msgstr ""
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
-msgstr "示例搜索"
+msgstr ""
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr "示例搜索提供程序"
+msgstr ""
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr "这只是一个无用的示例搜索提供程序插件"
+msgstr ""
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr "Gnome-Shell 搜索提供程序"
+msgstr ""
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr "使用 Gnome Shell 搜索提供程序作为搜索源"
+msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
-msgstr "s"
+msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
 msgid "ms"
@@ -653,78 +662,78 @@ msgstr "ms"
 #: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
 #: ../settings/general.c:383
 msgid "Immediately"
-msgstr "立即"
+msgstr ""
 
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:339
 msgid "Activation corner:"
-msgstr "激活角落:"
+msgstr ""
 
 #. Add widget to choose activation radius
 #: ../plugins/hot-corner/plugin.c:375
 msgid "Radius of activation corner:"
-msgstr "激活角半径: "
+msgstr ""
 
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
-msgstr "激活超时:"
+msgstr ""
 
 #. Add widget to limit checks to primary monitor only or to all monitors
 #: ../plugins/hot-corner/plugin.c:415
 msgid "Primary monitor only"
-msgstr "仅主显示器"
+msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
-msgstr "触发角"
+msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:468
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
-msgstr "当指针移动到显示器的配置角时激活 xfdashboard"
+msgstr ""
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr "鼠标中键关闭窗口"
+msgstr ""
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
-msgstr "单击鼠标中键关闭windows视图中的窗口"
+msgstr ""
 
 #: ../settings/general.c:120
 msgid "Do nothing"
-msgstr "啥都不干"
+msgstr ""
 
 #: ../settings/general.c:121
 msgid "Windows view"
-msgstr "窗口视图"
+msgstr ""
 
 #: ../settings/general.c:122
 msgid "Applications view"
-msgstr "应用程序视图"
+msgstr ""
 
 #: ../settings/general.c:129
 msgid "High"
-msgstr "高"
+msgstr "Alta"
 
 #: ../settings/general.c:130
 msgid "Normal"
-msgstr "正常"
+msgstr "Normal"
 
 #: ../settings/general.c:131
 msgid "Low"
-msgstr "低"
+msgstr "Baixa"
 
 #: ../settings/general.c:324
 msgid "seconds"
-msgstr "秒"
+msgstr "segundos"
 
 #: ../settings/plugins.c:222
 #, c-format
 msgid "Configure plugin: %s"
-msgstr "配置插件: %s"
+msgstr ""
 
 #. Create error message to store in list
 #: ../settings/plugins.c:825
@@ -734,21 +743,18 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
-"<b>无法加载插件。</b>\n"
-"\n"
-"%s"
 
 #: ../settings/plugins.c:1032
 msgid "Name"
-msgstr "名称"
+msgstr "Nome"
 
 #: ../settings/themes.c:781
 msgid "Theme"
-msgstr "主题"
+msgstr "Tema"
 
 #: ../settings/main.c:46
 msgid "Settings manager socket"
-msgstr "设置管理器套接字"
+msgstr "Socket do gerenciador de configurações"
 
 #: ../settings/main.c:46
 msgid "SOCKET ID"
@@ -756,12 +762,12 @@ msgstr "SOCKET ID"
 
 #: ../settings/main.c:47
 msgid "Version information"
-msgstr "版本信息"
+msgstr "Informação da versão"
 
 #. Initialize GTK+
 #: ../settings/main.c:57
 msgid "."
-msgstr "."
+msgstr ""
 
 #: ../settings/main.c:61
 #, c-format
@@ -770,4 +776,4 @@ msgid ""
 "Try %s --help to see a full list of available command line options.\n"
 msgstr ""
 "%s: %s\n"
-"尝试 %s --help 查看可用命令行选项的完整列表。\n"
+"Tente %s --help para ver uma lista completa das opções de linha de comando disponíveis.\n"
