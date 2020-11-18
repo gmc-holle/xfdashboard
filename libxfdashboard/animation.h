@@ -108,9 +108,11 @@ XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *in
 
 XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender, const gchar *inID);
 XfdashboardAnimation* xfdashboard_animation_new_by_id_with_values(XfdashboardActor *inSender,
-															const gchar *inID,
-															XfdashboardAnimationValue **inDefaultInitialValues,
-															XfdashboardAnimationValue **inDefaultFinalValues);
+																	const gchar *inID,
+																	XfdashboardAnimationValue **inDefaultInitialValues,
+																	XfdashboardAnimationValue **inDefaultFinalValues);
+
+gboolean xfdashboard_animation_has_animation(XfdashboardActor *inSender, const gchar *inSignal);
 
 const gchar* xfdashboard_animation_get_id(XfdashboardAnimation *self);
 

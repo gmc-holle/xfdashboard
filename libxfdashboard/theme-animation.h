@@ -113,7 +113,7 @@ XfdashboardAnimation* xfdashboard_theme_animation_create_by_id(XfdashboardThemeA
 
 gchar* xfdashboard_theme_animation_lookup_id(XfdashboardThemeAnimation *self,
 															XfdashboardActor *inSender,
-															const gchar *inID);
+															const gchar *inSignal);
 
 G_END_DECLS
 

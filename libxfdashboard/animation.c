@@ -644,7 +644,7 @@ void xfdashboard_animation_init(XfdashboardAnimation *self)
 
 /**
  * xfdashboard_animation_new:
- * @inSender: A #ClutterActor emitting the animation signal
+ * @inSender: A #XfdashboardActor emitting the animation signal
  * @inSignal: A string containing the signal emitted at sending actor
  *
  * Creates a new animation of type #XfdashboardAnimation matching the sending
@@ -681,7 +681,7 @@ XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, cons
 
 /**
  * xfdashboard_animation_new_with_values:
- * @inSender: A #ClutterActor emitting the animation signal
+ * @inSender: A #XfdashboardActor emitting the animation signal
  * @inSignal: A string containing the signal emitted at sending actor
  * @inDefaultInitialValues: A %NULL-terminated list of default initial values
  * @inDefaultFinalValues: A %NULL-terminated list of default final values
@@ -739,7 +739,7 @@ XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *in
 
 /**
  * xfdashboard_animation_new_by_id:
- * @inSender: The #ClutterActor requesting the animation
+ * @inSender: The #XfdashboardActor requesting the animation
  * @inID: A string containing the ID of animation to create for sender
  *
  * Creates a new animation of type #XfdashboardAnimation for the sending
@@ -776,7 +776,7 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender
 
 /**
  * xfdashboard_animation_new_by_id_with_values:
- * @inSender: The #ClutterActor requesting the animation
+ * @inSender: The #XfdashboardActor requesting the animation
  * @inID: A string containing the ID of animation to create for sender
  * @inDefaultInitialValues: A %NULL-terminated list of default initial values
  * @inDefaultFinalValues: A %NULL-terminated list of default final values
@@ -829,6 +829,56 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id_with_values(XfdashboardAct
 	animation=xfdashboard_theme_animation_create_by_id(themeAnimation, inSender, inID, inDefaultInitialValues, inDefaultFinalValues);
 
 	return(animation);
+}
+
+/**
+ * xfdashboard_animation_has_animation:
+ * @inSender: A #XfdashboardActor emitting the animation signal
+ * @inSignal: A string containing the signal emitted at sending actor
+ *
+ * Check if an animation is defined at the current theme matching
+ * the sending actor at @inSender and the emitted signal at @inSignal.
+ *
+ * This function is the logical equivalent of:
+ *
+ * |[<!-- language="C" -->
+ *   XfdashboardTheme          *theme;
+ *   XfdashboardThemeAnimation *theme_animations;
+ *   gchar                     *animation_id;
+ *   gboolean                  has_animation;
+ *
+ *   theme=xfdashboard_application_get_theme(NULL);
+ *   theme_animations=xfdashboard_theme_get_animation(theme);
+ *   animation_id=xfdashboard_theme_animation_lookup_id(theme_animations, inSender, inSignal);
+ *   has_animation=(animation_id!=NULL ? TRUE : FALSE);
+ * ]|
+ * * Return value: %TRUE if an animation exists, otherwise %FALSE
+ */
+gboolean xfdashboard_animation_has_animation(XfdashboardActor *inSender, const gchar *inSignal)
+{
+	XfdashboardTheme				*theme;
+	XfdashboardThemeAnimation		*themeAnimation;
+	gchar							*animationID;
+	gboolean						hasAnimation;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), FALSE);
+	g_return_val_if_fail(inSignal && *inSignal, FALSE);
+
+	hasAnimation=FALSE;
+
+	/* Check if an animation ID matching sender and signal could be found. If it is found
+	 * then an animation exists otherwise not.
+	 */
+	theme=xfdashboard_application_get_theme(NULL);
+	themeAnimation=xfdashboard_theme_get_animation(theme);
+	animationID=xfdashboard_theme_animation_lookup_id(themeAnimation, inSender, inSignal);
+	if(animationID)
+	{
+		hasAnimation=TRUE;
+		g_free(animationID);
+	}
+
+	return(hasAnimation);
 }
 
 /**

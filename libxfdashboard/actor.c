@@ -262,50 +262,54 @@ static void _xfdashboard_actor_on_mapped_changed(GObject *inObject,
 			/* Set flag that first-time visible happened at this actor */
 			priv->firstTimeMapped=TRUE;
 
-			/* Set up default initial values for animation */
-			initials=xfdashboard_animation_defaults_new(4,
-														"x", G_TYPE_FLOAT, 0.0f,
-														"y", G_TYPE_FLOAT, 0.0f,
-														"width", G_TYPE_FLOAT, 0.0f,
-														"height", G_TYPE_FLOAT, 0.0f);
-
-			/* Set up default final values for animation */
-			clutter_actor_get_allocation_box(CLUTTER_ACTOR(self), &finalBox);
-			finals=xfdashboard_animation_defaults_new(4,
-														"x", G_TYPE_FLOAT, finalBox.x1,
-														"y", G_TYPE_FLOAT, finalBox.y1,
-														"width", G_TYPE_FLOAT, clutter_actor_box_get_width(&finalBox),
-														"height", G_TYPE_FLOAT, clutter_actor_box_get_height(&finalBox));
-
-			/* Lookup animation for create signal and set up values for allocation */
-			priv->firstTimeMappedAnimation=xfdashboard_animation_new_with_values(self, "created", initials, finals);
-
-			/* Free default initial and final values */
-			xfdashboard_animation_defaults_free(initials);
-			xfdashboard_animation_defaults_free(finals);
-
-			/* Run animation if found */
-			if(!priv->firstTimeMappedAnimation ||
-				!xfdashboard_animation_get_id(priv->firstTimeMappedAnimation) ||
-				xfdashboard_animation_is_empty(priv->firstTimeMappedAnimation))
+			/* If an animation for "created" signal exists, then set up animation */
+			if(xfdashboard_animation_has_animation(self, "created"))
 			{
-				/* Empty or invalid animation, so release allocated resources and return */
-				if(priv->firstTimeMappedAnimation) g_object_unref(priv->firstTimeMappedAnimation);
-				priv->firstTimeMappedAnimation=NULL;
+				/* Set up default initial values for animation */
+				initials=xfdashboard_animation_defaults_new(4,
+															"x", G_TYPE_FLOAT, 0.0f,
+															"y", G_TYPE_FLOAT, 0.0f,
+															"width", G_TYPE_FLOAT, 0.0f,
+															"height", G_TYPE_FLOAT, 0.0f);
 
-				return;
+				/* Set up default final values for animation */
+				clutter_actor_get_allocation_box(CLUTTER_ACTOR(self), &finalBox);
+				finals=xfdashboard_animation_defaults_new(4,
+															"x", G_TYPE_FLOAT, finalBox.x1,
+															"y", G_TYPE_FLOAT, finalBox.y1,
+															"width", G_TYPE_FLOAT, clutter_actor_box_get_width(&finalBox),
+															"height", G_TYPE_FLOAT, clutter_actor_box_get_height(&finalBox));
+
+				/* Lookup animation for create signal and set up values for allocation */
+				priv->firstTimeMappedAnimation=xfdashboard_animation_new_with_values(self, "created", initials, finals);
+
+				/* Free default initial and final values */
+				xfdashboard_animation_defaults_free(initials);
+				xfdashboard_animation_defaults_free(finals);
+
+				/* Run animation if found */
+				if(!priv->firstTimeMappedAnimation ||
+					!xfdashboard_animation_get_id(priv->firstTimeMappedAnimation) ||
+					xfdashboard_animation_is_empty(priv->firstTimeMappedAnimation))
+				{
+					/* Empty or invalid animation, so release allocated resources and return */
+					if(priv->firstTimeMappedAnimation) g_object_unref(priv->firstTimeMappedAnimation);
+					priv->firstTimeMappedAnimation=NULL;
+
+					return;
+				}
+
+				/* Disallow allocation animation if not set in 'created' animation */
+				priv->disallowAllocationAnimation=TRUE;
+
+				/* Start animation */
+				g_signal_connect_after(priv->firstTimeMappedAnimation, "animation-done", G_CALLBACK(_xfdashboard_actor_first_time_created_animation_done), self);
+				xfdashboard_animation_run(priv->firstTimeMappedAnimation);
+				XFDASHBOARD_DEBUG(self, ANIMATION,
+										"Found and starting animation '%s' for created signal at actor %s",
+										xfdashboard_animation_get_id(priv->firstTimeMappedAnimation),
+										G_OBJECT_TYPE_NAME(self));
 			}
-
-			/* Disallow allocation animation if not set in 'created' animation */
-			priv->disallowAllocationAnimation=TRUE;
-
-			/* Start animation */
-			g_signal_connect_after(priv->firstTimeMappedAnimation, "animation-done", G_CALLBACK(_xfdashboard_actor_first_time_created_animation_done), self);
-			xfdashboard_animation_run(priv->firstTimeMappedAnimation);
-			XFDASHBOARD_DEBUG(self, ANIMATION,
-									"Found and starting animation '%s' for created signal at actor %s",
-									xfdashboard_animation_get_id(priv->firstTimeMappedAnimation),
-									G_OBJECT_TYPE_NAME(self));
 		}
 	}
 }
