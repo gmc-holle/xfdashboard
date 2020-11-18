@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-09 12:49+0100\n"
+"POT-Creation-Date: 2020-11-17 12:52+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: scootergrisen, 2020\n"
 "Language-Team: Danish (https://www.transifex.com/xfce/teams/16840/da/)\n"
@@ -77,6 +77,10 @@ msgid "Searching applications"
 msgstr "Søger efter programmer"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+msgid "This release candidate adds also more animations as well as fixes."
+msgstr "Udgivelseskandidaten tilføjer også flere animationer samt rettelser."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
 msgid ""
 "This unstable development adds more animations as well as some smaller "
 "fixes."
@@ -84,11 +88,11 @@ msgstr ""
 "Denne ustabile udviklingsversion tilføjer flere animationer samt nogle "
 "mindre rettelser."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
 msgid "This unstable development adds animations."
 msgstr "Denne ustabile udviklingsversion tilføjer animationer."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
 "This unstable development adds support for touchpads and application actions"
 " (Jumplists, Quicklists) as well as new and updated translations."
@@ -97,7 +101,7 @@ msgstr ""
 "programhandlinger (hoppelister, hurtiglister) samt nye og opdaterede "
 "oversættelser."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
 "This unstable development adds lots of new and updated translations and "
 "support for newer xfconf versions."
@@ -105,7 +109,7 @@ msgstr ""
 "Denne ustabile udviklingsversion tilføjer mange nye og opdaterede "
 "oversættelser og understøttelse af nyere xfconf-versioner."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
 "This unstable development implements a new experimental backend for GDK as "
 "well as it supports user stylesheets now."
@@ -113,7 +117,7 @@ msgstr ""
 "Denne ustabile udviklingsversion implementerer en ny eksperimentel motor for"
 " GDK samt den understøtter nu brugertypografiark."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid ""
 "This unstable development improves loading performance of images and icon, "
 "adds a fine-grained debugging system and introduces an interface for "
@@ -123,7 +127,7 @@ msgstr ""
 "ikoner, tilføjer et fintmasket fejlsøgningssystem og introducerer en "
 "grænseflade til flere motorer, men der er forsat kun understøttelse af X11."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This unstable development introduces child windows shown next to the main "
 "window."
@@ -131,7 +135,7 @@ msgstr ""
 "Denne ustabile udviklingsversion introducerer undervinduer som vises ved "
 "siden af hovedvinduet."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -139,11 +143,11 @@ msgstr ""
 "Denne stabile version retter en fejl ved indstilling af de korrekte "
 "standardprogrammer første gang det bruges."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid "This unstable development introduces pop-up menus."
 msgstr "Denne ustabile udviklingsversion introducerer pop op-menuer."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
