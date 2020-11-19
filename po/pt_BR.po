@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-09 12:49+0100\n"
+"POT-Creation-Date: 2020-11-17 12:52+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Wellington Almeida <wsalmeida6@gmail.com>, 2020\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/xfce/teams/16840/pt_BR/)\n"
@@ -78,6 +78,10 @@ msgid "Searching applications"
 msgstr "Procurando aplicativos"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+msgid "This release candidate adds also more animations as well as fixes."
+msgstr ""
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
 msgid ""
 "This unstable development adds more animations as well as some smaller "
 "fixes."
@@ -85,11 +89,11 @@ msgstr ""
 "Esta versão instável de desenvolvimento adiciona mais animações assim como "
 "pequenas correções."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
 msgid "This unstable development adds animations."
 msgstr "Esta versão de desenvolvimento instável adiciona animações."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
 "This unstable development adds support for touchpads and application actions"
 " (Jumplists, Quicklists) as well as new and updated translations."
@@ -98,7 +102,7 @@ msgstr ""
 "ações de aplicativos (Jumplists, Quicklists), além de traduções novas e "
 "atualizadas."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
 "This unstable development adds lots of new and updated translations and "
 "support for newer xfconf versions."
@@ -106,7 +110,7 @@ msgstr ""
 "Esta versão de desenvolvimento instável adiciona muitas traduções novas e "
 "atualizadas e suporte para versões mais recentes do xfconf."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
 "This unstable development implements a new experimental backend for GDK as "
 "well as it supports user stylesheets now."
@@ -114,7 +118,7 @@ msgstr ""
 "Esta versão de desenvolvimento instável implementa um novo back-end "
 "experimental para o GDK, bem como agora suporta folhas de estilo do usuário."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid ""
 "This unstable development improves loading performance of images and icon, "
 "adds a fine-grained debugging system and introduces an interface for "
@@ -125,7 +129,7 @@ msgstr ""
 "uma interface para vários back-ends, mas apenas o X11 ainda é o único "
 "suportado."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This unstable development introduces child windows shown next to the main "
 "window."
@@ -133,7 +137,7 @@ msgstr ""
 "Esta versão de desenvolvimento instável apresenta janelas filho mostradas ao"
 " lado da janela principal."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -141,11 +145,11 @@ msgstr ""
 "Esta versão estável corrige um problema ao definir os aplicativos padrões "
 "corretos no primeiro uso."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid "This unstable development introduces pop-up menus."
 msgstr "Esta versão de desenvolvimento instável introduz menus pop-up."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -161,7 +165,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:2
 msgid "Configure plugin"
-msgstr ""
+msgstr "Configurar plugin"
 
 #: ../data/data/preferences.ui.h:3
 msgid ""
