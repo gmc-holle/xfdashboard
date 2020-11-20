@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-30 00:47+0100\n"
+"POT-Creation-Date: 2020-11-17 12:52+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Casper casper, 2020\n"
 "Language-Team: Spanish (https://www.transifex.com/xfce/teams/16840/es/)\n"
@@ -80,6 +80,10 @@ msgid "Searching applications"
 msgstr "Buscar aplicaciones"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+msgid "This release candidate adds also more animations as well as fixes."
+msgstr "Esta versión candidata añade también más animaciones y correcciones."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
 msgid ""
 "This unstable development adds more animations as well as some smaller "
 "fixes."
@@ -87,11 +91,11 @@ msgstr ""
 "Esta versión de desarrollo inestable agrega más animaciones y algunos "
 "arreglos menores."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
 msgid "This unstable development adds animations."
 msgstr "Esta versión de desarrollo inestable agrega animaciones."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
 "This unstable development adds support for touchpads and application actions"
 " (Jumplists, Quicklists) as well as new and updated translations."
@@ -100,7 +104,7 @@ msgstr ""
 "aplicaciones (Saltos de listas, Listas rapidas), así como traducciones "
 "nuevas y actualizadas."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
 "This unstable development adds lots of new and updated translations and "
 "support for newer xfconf versions."
@@ -108,7 +112,7 @@ msgstr ""
 "Esta versión de desarrollo inestable agrega muchas traduccioines nuevas y "
 "actualizadas y soporte para nuevas versiones de xfconf."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
 "This unstable development implements a new experimental backend for GDK as "
 "well as it supports user stylesheets now."
@@ -116,7 +120,7 @@ msgstr ""
 "Este desarrollo inestable implementa un nuevo backend experimental para GDK "
 "y ahora admite hojas de estilo de usuario."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid ""
 "This unstable development improves loading performance of images and icon, "
 "adds a fine-grained debugging system and introduces an interface for "
@@ -127,7 +131,7 @@ msgstr ""
 "interfaz para múltiples backends, pero solo X11 sigue siendo el único "
 "compatible."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This unstable development introduces child windows shown next to the main "
 "window."
@@ -135,7 +139,7 @@ msgstr ""
 "Este desarrollo inestable introduce ventanas secundarias que se muestran "
 "junto a la ventana principal."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -143,11 +147,11 @@ msgstr ""
 "Esta versión estable arregla un error configurando las aplicaciones por "
 "defecto correctas en el primer uso."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid "This unstable development introduces pop-up menus."
 msgstr "Esta versión de desarrollo inestable introduce menús emergentes."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -426,7 +430,7 @@ msgstr "Tema de color vino para el Xfdashboard"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "No se pudo ejecutar la acción '%s' para la aplicación '%s': %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:814
+#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
 msgid "Unknown error"
 msgstr "Error desconocido"
@@ -695,25 +699,30 @@ msgid "Immediately"
 msgstr "Inmediato"
 
 #. Add widget to choose activation corner
-#: ../plugins/hot-corner/plugin.c:304
+#: ../plugins/hot-corner/plugin.c:339
 msgid "Activation corner:"
 msgstr "Esquina de activación:"
 
 #. Add widget to choose activation radius
-#: ../plugins/hot-corner/plugin.c:340
+#: ../plugins/hot-corner/plugin.c:375
 msgid "Radius of activation corner:"
 msgstr "Radio de la esquina de activación:"
 
 #. Add widget to choose activation duration
-#: ../plugins/hot-corner/plugin.c:358
+#: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
 msgstr "Lapso para activación:"
 
-#: ../plugins/hot-corner/plugin.c:418
+#. Add widget to limit checks to primary monitor only or to all monitors
+#: ../plugins/hot-corner/plugin.c:415
+msgid "Primary monitor only"
+msgstr "Solo monitor principal"
+
+#: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
 msgstr "Esquina activa"
 
-#: ../plugins/hot-corner/plugin.c:419
+#: ../plugins/hot-corner/plugin.c:468
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
@@ -764,7 +773,7 @@ msgid "Configure plugin: %s"
 msgstr "Configurar complemento: %s"
 
 #. Create error message to store in list
-#: ../settings/plugins.c:813
+#: ../settings/plugins.c:825
 #, c-format
 msgid ""
 "<b>Plugin could not be loaded.</b>\n"
@@ -775,7 +784,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../settings/plugins.c:1020
+#: ../settings/plugins.c:1032
 msgid "Name"
 msgstr "Nombre"
 
