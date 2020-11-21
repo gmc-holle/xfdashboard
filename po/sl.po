@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-30 00:47+0100\n"
+"POT-Creation-Date: 2020-11-17 12:52+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Arnold Marko <arnold.marko@gmail.com>, 2020\n"
 "Language-Team: Slovenian (https://www.transifex.com/xfce/teams/16840/sl/)\n"
@@ -76,17 +76,21 @@ msgid "Searching applications"
 msgstr "Iskanje aplikacij"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+msgid "This release candidate adds also more animations as well as fixes."
+msgstr "Ta kandidat za izdajo dodaja tudi več animacij in popravkov."
+
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
 msgid ""
 "This unstable development adds more animations as well as some smaller "
 "fixes."
 msgstr ""
 "Nestabilna razvojna različica doda več animacij in nekaj manjših popravkov."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
 msgid "This unstable development adds animations."
 msgstr "Ta nestabilna razvojna različica doda animacije."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
 msgid ""
 "This unstable development adds support for touchpads and application actions"
 " (Jumplists, Quicklists) as well as new and updated translations."
@@ -95,7 +99,7 @@ msgstr ""
 " aplikaciji (seznami skokov, hitri szenami) in nove ter posodobljene "
 "prevode."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
 msgid ""
 "This unstable development adds lots of new and updated translations and "
 "support for newer xfconf versions."
@@ -103,7 +107,7 @@ msgstr ""
 "Ta nestabilna razvojna različica dodaja veliko število novih in "
 "posodobljenih prevodov ter podporo za novejše različice xfconf."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
 msgid ""
 "This unstable development implements a new experimental backend for GDK as "
 "well as it supports user stylesheets now."
@@ -111,7 +115,7 @@ msgstr ""
 "Ta nestabilna razvojna različica implementira novo eksperimentalno hrbtišče "
 "za GDK ter podporo za uporabnišče slogovne oblike."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
 msgid ""
 "This unstable development improves loading performance of images and icon, "
 "adds a fine-grained debugging system and introduces an interface for "
@@ -121,7 +125,7 @@ msgstr ""
 "ikon, dodaja natančen sistem za razhroščevanje in uvaja vmesnik za več "
 "končnih odjemalcev, čeprav je zaenkrat podprt le X11."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
 msgid ""
 "This unstable development introduces child windows shown next to the main "
 "window."
@@ -129,7 +133,7 @@ msgstr ""
 "Ta nestabilna razvojna različica uvaja podrejena okna, ki se prikažejo ob "
 "glavnem oknu."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -137,11 +141,11 @@ msgstr ""
 "Ta stabilna različica popravi hrošč ob nastavljanju privzete aplikacije ob "
 "prvi rabi."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid "This unstable development introduces pop-up menus."
 msgstr "Ta nestabilna razvojna različica uvaja pojavne menije."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -417,7 +421,7 @@ msgstr "Rdeče vino tema za xfdashboard"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Dejanja '%s' za aplikacijo '%s' ni bilo mogoče izvršiti: %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:814
+#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
 msgid "Unknown error"
 msgstr "Neznana napaka"
@@ -475,15 +479,15 @@ msgstr "Dobrodošli v %s!"
 
 #: ../libxfdashboard/application.c:576
 msgid "Fork to background"
-msgstr ""
+msgstr "Odcepi v ozadje"
 
 #: ../libxfdashboard/application.c:577
 msgid "Quit running instance"
-msgstr ""
+msgstr "Končaj instanco, ki se izvaja"
 
 #: ../libxfdashboard/application.c:578
 msgid "Restart running instance"
-msgstr ""
+msgstr "Ponovno zaženi instanco, ki se izvaja"
 
 #: ../libxfdashboard/application.c:579
 msgid ""
@@ -495,27 +499,27 @@ msgstr ""
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
-msgstr ""
+msgstr "Id prikaza, na katerega naj se preklopi ob zagonu ali povratku"
 
 #: ../libxfdashboard/application.c:581
 msgid "Show version"
-msgstr ""
+msgstr "Prikaži različico"
 
 #: ../libxfdashboard/application.c:600
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr ""
+msgstr "Nadzorna plošča v stilu Gnomelupine za Xfce4 -različico"
 
 #. Show error
 #: ../libxfdashboard/application.c:617
 #, c-format
 msgid "%s\n"
-msgstr ""
+msgstr "%s\n"
 
 #: ../libxfdashboard/applications-search-provider.c:838
 #: ../libxfdashboard/applications-view.c:417
 #: ../libxfdashboard/quicklaunch.c:682
 msgid "Launch"
-msgstr ""
+msgstr "Zaženi"
 
 #. Set up view
 #. Add "applications" button
@@ -535,40 +539,40 @@ msgstr "Nazaj"
 #: ../libxfdashboard/applications-view.c:545
 #: ../libxfdashboard/applications-view.c:657
 msgid "Go back to previous menu"
-msgstr ""
+msgstr "Vrni se na prejšnji meni"
 
 #: ../libxfdashboard/applications-view.c:685
 #: ../libxfdashboard/applications-view.c:686
 msgid "All applications"
-msgstr ""
+msgstr "Vse aplikacije"
 
 #: ../libxfdashboard/applications-view.c:685
 msgid "List of all installed applications"
-msgstr ""
+msgstr "Seznam vseh nameščenih aplikacij"
 
 #: ../libxfdashboard/quicklaunch.c:402
 msgid "No windows to activate for application"
-msgstr ""
+msgstr "Ni okna za aktiviranje za to aplikacijo"
 
 #: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
 #: ../libxfdashboard/quicklaunch.c:2130
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr ""
+msgstr "Priljubljeni '%s' je bil odstranjen"
 
 #: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
 #: ../libxfdashboard/quicklaunch.c:2063
 #, c-format
 msgid "Favourite '%s' added"
-msgstr ""
+msgstr "Priljubljeni '%s' je bil dodan"
 
 #: ../libxfdashboard/quicklaunch.c:705
 msgid "Remove from favourites"
-msgstr ""
+msgstr "Odstrani iz priljubljenih"
 
 #: ../libxfdashboard/quicklaunch.c:719
 msgid "Add to favourites"
-msgstr ""
+msgstr "Dodaj med priljubljene"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
@@ -580,18 +584,18 @@ msgstr "Odstrani"
 #: ../libxfdashboard/search-result-container.c:1734
 #, c-format
 msgid "Show %d more results..."
-msgstr ""
+msgstr "Prikaži %d več rezultatov..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:686
 #, c-format
 msgid "Show all %d results..."
-msgstr ""
+msgstr "Prikaži vseh %d rezultatov..."
 
 #: ../libxfdashboard/search-view.c:979
 #, c-format
 msgid "No results found for '%s'"
-msgstr ""
+msgstr "Za '%s'ni bilo najdenih rezultatov"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
@@ -600,12 +604,12 @@ msgstr "Išči"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
-msgstr ""
+msgstr "Tipkajte za iskanje..."
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2317
 msgid "Windows"
-msgstr ""
+msgstr "Okna"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:312
@@ -615,29 +619,29 @@ msgstr "Ura"
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:208
 msgid "Hour color:"
-msgstr ""
+msgstr "Barva ure:"
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
-msgstr ""
+msgstr "Izberite barvo za roko ure"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
 msgid "Minute color:"
-msgstr ""
+msgstr "Barva minute:"
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
-msgstr ""
+msgstr "Izberite barvo za roko minute"
 
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
 msgid "Second color:"
-msgstr ""
+msgstr "Barva sekunde:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "Izberite barvo za roko sekunde"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
@@ -646,35 +650,35 @@ msgstr "Barva ozadja:"
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "Izberite barvo za ozadje druge roke"
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
-msgstr ""
+msgstr "Doda nov prikaz, ki prikazuje uro"
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
-msgstr ""
+msgstr "Primer iskanja"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "Primer ponudnika iskanja"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr ""
+msgstr "To je zgolj neuporaben primer vtičnika ponudnika iskanja"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr ""
+msgstr "Ponudnik iskanja za Gnome lupino"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr ""
+msgstr "Uporabite ponudnike iskanj za Gnome lupino, kot vire iskanja"
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
 msgid "ms"
@@ -683,52 +687,57 @@ msgstr "ms"
 #: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
 #: ../settings/general.c:383
 msgid "Immediately"
-msgstr ""
+msgstr "Takoj"
 
 #. Add widget to choose activation corner
-#: ../plugins/hot-corner/plugin.c:304
+#: ../plugins/hot-corner/plugin.c:339
 msgid "Activation corner:"
-msgstr ""
+msgstr "Aktivni kot:"
 
 #. Add widget to choose activation radius
-#: ../plugins/hot-corner/plugin.c:340
+#: ../plugins/hot-corner/plugin.c:375
 msgid "Radius of activation corner:"
-msgstr ""
+msgstr "Polmer aktivnega kota:"
 
 #. Add widget to choose activation duration
-#: ../plugins/hot-corner/plugin.c:358
+#: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
-msgstr ""
+msgstr "Časovna omejitev za aktivacijo:"
 
-#: ../plugins/hot-corner/plugin.c:418
+#. Add widget to limit checks to primary monitor only or to all monitors
+#: ../plugins/hot-corner/plugin.c:415
+msgid "Primary monitor only"
+msgstr "Zgolj glavni monitor"
+
+#: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
 msgstr "Aktivni koti"
 
-#: ../plugins/hot-corner/plugin.c:419
+#: ../plugins/hot-corner/plugin.c:468
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
-msgstr ""
+msgstr "Aktivira xfdashboard, ko se kazalec premakne na določeni kot zaslona"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr ""
+msgstr "Zapiranje okna s srednjim klikom"
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
-msgstr ""
+msgstr "Zapre okna v prikazu oken s srednjim klikom"
 
 #: ../settings/general.c:120
 msgid "Do nothing"
-msgstr ""
+msgstr "Ne stori ničesar"
 
 #: ../settings/general.c:121
 msgid "Windows view"
-msgstr ""
+msgstr "Okenski prikaz"
 
 #: ../settings/general.c:122
 msgid "Applications view"
-msgstr ""
+msgstr "Programski prikaz"
 
 #: ../settings/general.c:129
 msgid "High"
@@ -752,15 +761,18 @@ msgid "Configure plugin: %s"
 msgstr "Nastavitve vtičnika: %s"
 
 #. Create error message to store in list
-#: ../settings/plugins.c:813
+#: ../settings/plugins.c:825
 #, c-format
 msgid ""
 "<b>Plugin could not be loaded.</b>\n"
 "\n"
 "%s"
 msgstr ""
+"<b>Vtičnika ni bilo mogoče naložiti.</b>\n"
+"\n"
+"%s"
 
-#: ../settings/plugins.c:1020
+#: ../settings/plugins.c:1032
 msgid "Name"
 msgstr "Ime"
 
@@ -783,7 +795,7 @@ msgstr "Informacije o različici"
 #. Initialize GTK+
 #: ../settings/main.c:57
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../settings/main.c:61
 #, c-format
