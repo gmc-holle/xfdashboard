@@ -1941,6 +1941,19 @@ void xfdashboard_actor_enable_allocation_animation_once(XfdashboardActor *self)
 	priv->allocationInitialBox=clutter_actor_box_copy(priv->allocationTrackBox);
 }
 
+/* Calling clutter_actor_get_allocation_box() is dangerous with animationa
+ * because it may modify the internal state of the position and size of
+ * an actor used for initial values for position and size at the animation
+ * to run. Therefore this safe function exists which returns the last allocation
+ * set to this actor.
+ */
+const ClutterActorBox* xfdashboard_actor_get_allocation_box(XfdashboardActor *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(self), NULL);
+
+	return(self->priv->allocationTrackBox);
+}
+
 /* Destroys an actor but checks first if an animation should be played.
  * If an animation for this actor exists, it will be played and after it
  * has ended, it will be destroyed. If no animation exists, the actor will
