@@ -80,6 +80,8 @@ msgstr "A procurar aplicações"
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid "This release candidate adds also more animations as well as fixes."
 msgstr ""
+"Este candidato a lançamento também adiciona mais animações, bem como "
+"correções."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:7
 msgid ""
@@ -179,7 +181,7 @@ msgstr "<b>Definições gerais:</b>"
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr ""
+msgstr "Repor a visualização da pesquisa ao retomar"
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
@@ -187,6 +189,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
+"Se ativada, a vista de pesquisa será reiniciada quando o xfdashboard for reiniciado. Isto significa que a vista ativa é alterada de novo para a última vista ativa antes do início da última pesquisa e a caixa de pesquisa será esvaziada.\n"
+"\n"
+"<b>NOTA:</b> Esta definição só tem efeito se o xfdashboard estiver a ser executado no modo daemon."
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
@@ -194,10 +199,13 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
 msgstr ""
+"Quando o xfdashboard retomar a vista selecionada será ativada.\n"
+"\n"
+"<b>NOTA:</b>Esta definição só tem efeito se o xfdashboard estiver a ser executado em modo daemon ."
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr ""
+msgstr "Mudar para visualização quando retomada:"
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
@@ -205,14 +213,17 @@ msgid ""
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
 msgstr ""
+"Define o tempo mínimo em que uma notificação está a ser mostrada.\n"
+"\n"
+"A duração é calculada pela extensão do texto a mostrar na notificação. Esta definição permite especificar a duração mínima da notificação a ser mostrada."
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
-msgstr ""
+msgstr "Tempo limite mínimo de notificação:"
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
-msgstr ""
+msgstr "Ativar solução alternativa para janelas minimizadas"
 
 #: ../data/data/preferences.ui.h:19
 msgid ""
@@ -220,6 +231,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
 msgstr ""
+"Quando ativada uma alternativa para janelas minimizadas, tenta-se obter imagens destas janelas, restaurando-as em breve e minimizando-as novamente.\n"
+"\n"
+"<b>NOTA:</b> Esteja ciente de que isto é uma <u>alternativa</u> e que as suas janelas minimizadas poderão permanecer sem serem minimizadas, mudar a área de trabalho, etc."
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
@@ -227,24 +241,30 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
+"Este valor define a rapidez com que o conteúdo da janela deve ser criado. Embora o valor 'imediato' diga ao xfdashboard para criar o conteúdo da janela no momento em que for solicitado, todos os outros valores irão configurar uma fila e o valor define o quão rápido a fila será processada.\n"
+"\n"
+"<b>NOTA:</b> Apenas altere este valor de 'imediato' para outro valor se a sua placa gráfica, controlador ou sistema for muito lento para criar o conteúdo da janela imediatamente. Deve tentar cada valor para encontrar aquele que se encaixa no seu sistema."
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
-msgstr ""
+msgstr "Prioridade de criação de conteúdo de janela"
 
 #: ../data/data/preferences.ui.h:26
 msgid "Show child windows in main windows"
-msgstr ""
+msgstr "Mostrar janelas secundárias nas janelas principais"
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
 msgstr ""
+"Quando ativadas, todas as pré-visualizações ao vivo das janelas mostrarão "
+"também as suas janelas secundárias. A desativação desta opção irá aumentar o"
+" desempenho em máquinas mais lentas."
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
-msgstr ""
+msgstr "Iniciar sempre uma nova instância para aplicação"
 
 #: ../data/data/preferences.ui.h:29
 msgid ""
@@ -252,36 +272,41 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
+"Quando ativado e um ícone no início rápido é clicado, sempre iniciará uma nova instância da aplicação.\n"
+"\n"
+"Quando não ativado, ele seleciona a última janela ativa conhecida da instância da aplicação em execução. Se a aplicação não estiver em execução, uma nova instância será iniciada."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
-msgstr ""
+msgstr "Ativar animações"
 
 #: ../data/data/preferences.ui.h:33
 msgid "If enabled theme-defined animations will be shown."
-msgstr ""
+msgstr "Se ativadas, serão mostradas animações definidas por tema."
 
 #: ../data/data/preferences.ui.h:34
 msgid "<b>Applications view:</b>"
-msgstr ""
+msgstr "<b>Vista de aplicações:</b>"
 
 #: ../data/data/preferences.ui.h:35
 msgid "Show menu for all installed applications"
-msgstr ""
+msgstr "Mostrar menu para todas as aplicações instaladas"
 
 #: ../data/data/preferences.ui.h:36
 msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
 msgstr ""
+"Quando ativado, um menu \"todas as aplicações\" contendo todas as aplicações"
+" instaladas será mostrado na vista de aplicações"
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
-msgstr ""
+msgstr "<b>Vista de janelas:</b>"
 
 #: ../data/data/preferences.ui.h:38
 msgid "Mouse wheel changes workspace"
-msgstr ""
+msgstr "Roda do rato muda a área de trabalho"
 
 #: ../data/data/preferences.ui.h:39
 msgid ""
@@ -289,20 +314,25 @@ msgid ""
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
 msgstr ""
+"Quando ativado qualquer evento de rolar, como a roda do rato para cima e "
+"para baixo, na vista de janelas irá alterar a área de trabalho ativa. Este "
+"comportamento é o mesmo que no selector da área de trabalho."
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
-msgstr ""
+msgstr "<b>Vista de pesquisa:</b>"
 
 #: ../data/data/preferences.ui.h:41
 msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
 msgstr ""
+"Define o intervalo pelo qual a pesquisa deve ser atrasada depois que o "
+"primeiro carácter foi inserido."
 
 #: ../data/data/preferences.ui.h:42
 msgid "Delay initial search interval:"
-msgstr ""
+msgstr "Atrasar o intervalo de pesquisa inicial:"
 
 #: ../data/data/preferences.ui.h:43
 msgid "General"
@@ -395,7 +425,7 @@ msgstr "Tema vinho tinto para o xfdashboard"
 #: ../libxfdashboard/application-button.c:262
 #, c-format
 msgid "Could not execute action '%s' for application '%s': %s"
-msgstr ""
+msgstr "Não foi possível executar a ação '%s' para a aplicação '%s': %s"
 
 #: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
@@ -405,7 +435,7 @@ msgstr "Erro desconhecido"
 #: ../libxfdashboard/application-button.c:282
 #, c-format
 msgid "Executed action '%s' for application '%s'"
-msgstr ""
+msgstr "Ação executada '%s' para a aplicação '%s'"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
@@ -415,12 +445,12 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:458
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr ""
+msgstr "Ao iniciar a aplicação '%s' falhou: %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:354
 msgid "No information available for application"
-msgstr ""
+msgstr "Nenhuma informação disponível para aplicação"
 
 #: ../libxfdashboard/application-button.c:763
 #: ../libxfdashboard/application.c:308 ../libxfdashboard/application.c:618
@@ -436,12 +466,12 @@ msgstr "erro desconhecido"
 #: ../libxfdashboard/quicklaunch.c:471
 #, c-format
 msgid "Application '%s' launched"
-msgstr ""
+msgstr "Aplicação '%s' iniciada"
 
 #: ../libxfdashboard/application.c:306
 #, c-format
 msgid "Could not load theme '%s': %s"
-msgstr ""
+msgstr "Não foi possível carregar o tema '%s': %s"
 
 #: ../libxfdashboard/application.c:527
 #, c-format
@@ -455,25 +485,27 @@ msgstr "Bem-vindo ao %s!"
 
 #: ../libxfdashboard/application.c:576
 msgid "Fork to background"
-msgstr ""
+msgstr "Bifurcar para segundo plano"
 
 #: ../libxfdashboard/application.c:577
 msgid "Quit running instance"
-msgstr ""
+msgstr "Sair da instância em execução"
 
 #: ../libxfdashboard/application.c:578
 msgid "Restart running instance"
-msgstr ""
+msgstr "Reiniciar a instância em execução"
 
 #: ../libxfdashboard/application.c:579
 msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
 msgstr ""
+"Alterna a visibilidade se a instância em execução foi iniciada em modo "
+"daemon, caso contrário deixa de executar uma instância não daemon"
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
-msgstr ""
+msgstr "O ID da vista para a qual alternar no arranque ou no retomar"
 
 #: ../libxfdashboard/application.c:581
 msgid "Show version"
@@ -481,7 +513,7 @@ msgstr "Mostrar versão"
 
 #: ../libxfdashboard/application.c:600
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr ""
+msgstr "Um painel do tipo Gnome Shell para o Xfce4 - versão"
 
 #. Show error
 #: ../libxfdashboard/application.c:617
@@ -513,7 +545,7 @@ msgstr "Recuar"
 #: ../libxfdashboard/applications-view.c:545
 #: ../libxfdashboard/applications-view.c:657
 msgid "Go back to previous menu"
-msgstr ""
+msgstr "Voltar ao menu anterior"
 
 #: ../libxfdashboard/applications-view.c:685
 #: ../libxfdashboard/applications-view.c:686
@@ -522,31 +554,31 @@ msgstr "Todas as aplicações"
 
 #: ../libxfdashboard/applications-view.c:685
 msgid "List of all installed applications"
-msgstr ""
+msgstr "Lista de todas as aplicações instaladas"
 
 #: ../libxfdashboard/quicklaunch.c:402
 msgid "No windows to activate for application"
-msgstr ""
+msgstr "Sem janelas a ativar para aplicação"
 
 #: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
 #: ../libxfdashboard/quicklaunch.c:2130
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr ""
+msgstr "Favorito '%s' removido"
 
 #: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
 #: ../libxfdashboard/quicklaunch.c:2063
 #, c-format
 msgid "Favourite '%s' added"
-msgstr ""
+msgstr "Favorito '%s' adicionado"
 
 #: ../libxfdashboard/quicklaunch.c:705
 msgid "Remove from favourites"
-msgstr ""
+msgstr "Remover dos favoritos"
 
 #: ../libxfdashboard/quicklaunch.c:719
 msgid "Add to favourites"
-msgstr ""
+msgstr "Adicionar aos favoritos"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
@@ -558,18 +590,18 @@ msgstr "Remover"
 #: ../libxfdashboard/search-result-container.c:1734
 #, c-format
 msgid "Show %d more results..."
-msgstr ""
+msgstr "Mostrar mais %d resultados..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:686
 #, c-format
 msgid "Show all %d results..."
-msgstr ""
+msgstr "Mostrar todos os %d resultados..."
 
 #: ../libxfdashboard/search-view.c:979
 #, c-format
 msgid "No results found for '%s'"
-msgstr ""
+msgstr "Não foram encontrados resultados para '%s'"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
@@ -578,7 +610,7 @@ msgstr "Procurar"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
-msgstr ""
+msgstr "Apenas escreva para pesquisar..."
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2317
@@ -593,29 +625,29 @@ msgstr "Relógio"
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:208
 msgid "Hour color:"
-msgstr ""
+msgstr "Cor da hora:"
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
-msgstr ""
+msgstr "Escolher cor para o ponteiro das horas"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
 msgid "Minute color:"
-msgstr ""
+msgstr "Cor dos minutos:"
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
-msgstr ""
+msgstr "Escolher cor para o ponteiro dos minutos"
 
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
 msgid "Second color:"
-msgstr ""
+msgstr "Cor dos segundos:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "Escolher cor para o ponteiro dos segundos"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
@@ -624,31 +656,32 @@ msgstr "Cor de fundo:"
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "Escolher cor de fundo para o ponteiro dos segundos"
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
-msgstr ""
+msgstr "Adiciona uma nova vista mostrando um relógio"
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
-msgstr ""
+msgstr "Exemplo de pesquisa"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "Exemplo de fornecedor de pesquisa"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr ""
+msgstr "Este é apenas um exemplo de plugin de fornecedor de pesquisa inútil"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr ""
+msgstr "Fornecedor de pesquisa do Gnome-Shell"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
 msgstr ""
+"Utiliza fornecedores de pesquisa Gnome-Shell como fonte para pesquisas"
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
@@ -661,27 +694,27 @@ msgstr "ms"
 #: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
 #: ../settings/general.c:383
 msgid "Immediately"
-msgstr ""
+msgstr "Imediatamente"
 
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:339
 msgid "Activation corner:"
-msgstr ""
+msgstr "Canto de ativação:"
 
 #. Add widget to choose activation radius
 #: ../plugins/hot-corner/plugin.c:375
 msgid "Radius of activation corner:"
-msgstr ""
+msgstr "Raio do canto de ativação:"
 
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
-msgstr ""
+msgstr "Tempo limite para ativar:"
 
 #. Add widget to limit checks to primary monitor only or to all monitors
 #: ../plugins/hot-corner/plugin.c:415
 msgid "Primary monitor only"
-msgstr ""
+msgstr "Apenas no monitor principal"
 
 #: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
@@ -692,26 +725,28 @@ msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
 msgstr ""
+"Ativa o xfdashboard quando o cursor é movido para um canto configurado do "
+"monitor"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr ""
+msgstr "Clique com o botão do meio para fechar a janela"
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
-msgstr ""
+msgstr "Fecha as janelas na vista de janelas ao clicar com o botão do meio"
 
 #: ../settings/general.c:120
 msgid "Do nothing"
-msgstr ""
+msgstr "Não fazer nada"
 
 #: ../settings/general.c:121
 msgid "Windows view"
-msgstr ""
+msgstr "Vista de janelas"
 
 #: ../settings/general.c:122
 msgid "Applications view"
-msgstr ""
+msgstr "Vista de aplicações"
 
 #: ../settings/general.c:129
 msgid "High"
@@ -742,6 +777,9 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
+"<b>O plugin não pôde ser carregado.</b>\n"
+"\n"
+"%s"
 
 #: ../settings/plugins.c:1032
 msgid "Name"
