@@ -273,7 +273,7 @@ static void _xfdashboard_actor_on_mapped_changed(GObject *inObject,
 															"height", G_TYPE_FLOAT, 0.0f);
 
 				/* Set up default final values for animation */
-				clutter_actor_get_allocation_box(CLUTTER_ACTOR(self), &finalBox);
+				xfdashboard_actor_get_allocation_box(self, &finalBox);
 				finals=xfdashboard_animation_defaults_new(4,
 															"x", G_TYPE_FLOAT, finalBox.x1,
 															"y", G_TYPE_FLOAT, finalBox.y1,
@@ -1126,10 +1126,17 @@ static void _xfdashboard_actor_on_allocation_changed(ClutterActor *inActor,
 	priv=self->priv;
 
 	/* Track allocation changes */
-	priv->allocationTrackBox->x1=inAllocationBox->x1;
-	priv->allocationTrackBox->x2=inAllocationBox->x2;
-	priv->allocationTrackBox->y1=inAllocationBox->y1;
-	priv->allocationTrackBox->y2=inAllocationBox->y2;
+	if(G_LIKELY(priv->allocationTrackBox))
+	{
+		priv->allocationTrackBox->x1=inAllocationBox->x1;
+		priv->allocationTrackBox->x2=inAllocationBox->x2;
+		priv->allocationTrackBox->y1=inAllocationBox->y1;
+		priv->allocationTrackBox->y2=inAllocationBox->y2;
+	}
+		else
+		{
+			priv->allocationTrackBox=clutter_actor_box_copy(inAllocationBox);
+		}
 
 		/* Check if allocation animation was requested explicitly */
 	if(priv->doAllocationAnimation &&
@@ -1659,7 +1666,7 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 	priv->doAllocationAnimation=FALSE;
 	priv->allocationAnimation=NULL;
 	priv->allocationInitialBox=NULL;
-	priv->allocationTrackBox=clutter_actor_box_new(0, 0, 0, 0);
+	priv->allocationTrackBox=NULL;
 
 	/* Connect signals */
 	g_signal_connect(self, "notify::mapped", G_CALLBACK(_xfdashboard_actor_on_mapped_changed), NULL);
@@ -1947,11 +1954,29 @@ void xfdashboard_actor_enable_allocation_animation_once(XfdashboardActor *self)
  * to run. Therefore this safe function exists which returns the last allocation
  * set to this actor.
  */
-const ClutterActorBox* xfdashboard_actor_get_allocation_box(XfdashboardActor *self)
+void xfdashboard_actor_get_allocation_box(XfdashboardActor *self, ClutterActorBox *outAllocationBox)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(self), NULL);
+	XfdashboardActorPrivate		*priv;
 
-	return(self->priv->allocationTrackBox);
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
+	g_return_if_fail(outAllocationBox!=NULL);
+
+	priv=self->priv;
+
+	/* Get current allocation box from actor the unsafe way if tracked allocation box
+	 * must be initialized.
+	 */
+	if(G_UNLIKELY(!priv->allocationTrackBox))
+	{
+		priv->allocationTrackBox=clutter_actor_box_new(0.0f, 0.0f, 0.0f, 0.0f);
+		clutter_actor_get_allocation_box(CLUTTER_ACTOR(self), priv->allocationTrackBox);
+	}
+
+	/* Copy tracked allocation box to result */
+	outAllocationBox->x1=priv->allocationTrackBox->x1;
+	outAllocationBox->x2=priv->allocationTrackBox->x2;
+	outAllocationBox->y1=priv->allocationTrackBox->y1;
+	outAllocationBox->y2=priv->allocationTrackBox->y2;
 }
 
 /* Destroys an actor but checks first if an animation should be played.
