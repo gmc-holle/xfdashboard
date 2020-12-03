@@ -1945,6 +1945,11 @@ void xfdashboard_actor_enable_allocation_animation_once(XfdashboardActor *self)
 		priv->allocationInitialBox=NULL;
 	}
 
+	if(G_UNLIKELY(!priv->allocationTrackBox))
+	{
+		priv->allocationTrackBox=clutter_actor_box_new(0.0f, 0.0f, 0.0f, 0.0f);
+	}
+
 	priv->allocationInitialBox=clutter_actor_box_copy(priv->allocationTrackBox);
 }
 
@@ -1959,7 +1964,6 @@ void xfdashboard_actor_get_allocation_box(XfdashboardActor *self, ClutterActorBo
 	XfdashboardActorPrivate		*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
-	g_return_if_fail(outAllocationBox!=NULL);
 
 	priv=self->priv;
 
@@ -1973,10 +1977,13 @@ void xfdashboard_actor_get_allocation_box(XfdashboardActor *self, ClutterActorBo
 	}
 
 	/* Copy tracked allocation box to result */
-	outAllocationBox->x1=priv->allocationTrackBox->x1;
-	outAllocationBox->x2=priv->allocationTrackBox->x2;
-	outAllocationBox->y1=priv->allocationTrackBox->y1;
-	outAllocationBox->y2=priv->allocationTrackBox->y2;
+	if(G_LIKELY(outAllocationBox))
+	{
+		outAllocationBox->x1=priv->allocationTrackBox->x1;
+		outAllocationBox->x2=priv->allocationTrackBox->x2;
+		outAllocationBox->y1=priv->allocationTrackBox->y1;
+		outAllocationBox->y2=priv->allocationTrackBox->y2;
+	}
 }
 
 /* Destroys an actor but checks first if an animation should be played.
