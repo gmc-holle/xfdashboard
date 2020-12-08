@@ -10,6 +10,7 @@
 # Andre Miranda <andre42m@gmail.com>, 2020
 # Michael Martins <michaelfm21@gmail.com>, 2020
 # Wellington Almeida <wsalmeida6@gmail.com>, 2020
+# The Cat, 2020
 # 
 #, fuzzy
 msgid ""
@@ -18,7 +19,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-17 12:52+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Wellington Almeida <wsalmeida6@gmail.com>, 2020\n"
+"Last-Translator: The Cat, 2020\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/xfce/teams/16840/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -174,6 +175,8 @@ msgid ""
 "<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
 "Configure xfdashboard"
 msgstr ""
+"<span size=\"large\"><b>Definições Xfdashboard</b></span>\n"
+"Configurar xfdashboard"
 
 #: ../data/data/preferences.ui.h:5
 msgid "<b>General settings:</b>"
@@ -189,6 +192,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
+"Se ativada, a vista de pesquisa será redefinida quando o xfdashboard for reiniciado. Isto significa que a vista ativa retorna à última vista ativa antes do início da última pesquisa e a caixa de pesquisa será esvaziada.\n"
+"\n"
+"<b>NOTA:</b> Esta definição só tem efeito se o xfdashboard estiver sendo executado no modo daemon."
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
@@ -196,6 +202,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
 msgstr ""
+"Quando o xfdashboard retomar, a vista selecionada será ativada.\n"
+"\n"
+"<b>NOTA:</b>Esta definição só tem efeito se o xfdashboard estiver sendo executado em modo daemon ."
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
@@ -279,7 +288,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
-msgstr ""
+msgstr "<b>Vista de janelas:</b>"
 
 #: ../data/data/preferences.ui.h:38
 msgid "Mouse wheel changes workspace"
@@ -353,7 +362,7 @@ msgstr "Tema padrão para xfdashboard"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-auber"
-msgstr ""
+msgstr "xfdashboard-beringela"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
 msgid "Aubergine theme for xfdashboard"
@@ -377,11 +386,11 @@ msgstr "Tema escuro para xfdashboard"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-mint"
-msgstr ""
+msgstr "xfdashboard-hortelã"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
 msgid "Fresh-green flavored theme for xfdashboard"
-msgstr ""
+msgstr "Tema com sabor verde-fresco para o xfdashboard"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-moranga"
@@ -443,26 +452,26 @@ msgstr "erro desconhecido"
 #: ../libxfdashboard/quicklaunch.c:471
 #, c-format
 msgid "Application '%s' launched"
-msgstr ""
+msgstr "Aplicação '%s' iniciada"
 
 #: ../libxfdashboard/application.c:306
 #, c-format
 msgid "Could not load theme '%s': %s"
-msgstr ""
+msgstr "Não foi possível carregar o tema '%s': %s"
 
 #: ../libxfdashboard/application.c:527
 #, c-format
 msgid "Welcome to %s (%s)!"
-msgstr ""
+msgstr "Bem-vindo ao %s (%s)!"
 
 #: ../libxfdashboard/application.c:529
 #, c-format
 msgid "Welcome to %s!"
-msgstr ""
+msgstr "Bem-vindo ao %s!"
 
 #: ../libxfdashboard/application.c:576
 msgid "Fork to background"
-msgstr ""
+msgstr "Bifurcar para segundo plano"
 
 #: ../libxfdashboard/application.c:577
 msgid "Quit running instance"
@@ -477,6 +486,8 @@ msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
 msgstr ""
+"Alterna a visibilidade se a instância em execução foi iniciada em modo "
+"daemon, caso contrário deixa de executar uma instância não daemon"
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
@@ -494,7 +505,7 @@ msgstr "Um painel do tipo Shell do Gnome para Xfce4 - versão"
 #: ../libxfdashboard/application.c:617
 #, c-format
 msgid "%s\n"
-msgstr ""
+msgstr "%s\n"
 
 #: ../libxfdashboard/applications-search-provider.c:838
 #: ../libxfdashboard/applications-view.c:417
@@ -533,19 +544,19 @@ msgstr "Lista de todos os aplicativos instalados"
 
 #: ../libxfdashboard/quicklaunch.c:402
 msgid "No windows to activate for application"
-msgstr ""
+msgstr "Nenhuma janela para ativar para o aplicativo"
 
 #: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
 #: ../libxfdashboard/quicklaunch.c:2130
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr ""
+msgstr "Favorito '%s' removido"
 
 #: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
 #: ../libxfdashboard/quicklaunch.c:2063
 #, c-format
 msgid "Favourite '%s' added"
-msgstr ""
+msgstr "Favorito '%s' adicionado"
 
 #: ../libxfdashboard/quicklaunch.c:705
 msgid "Remove from favourites"
@@ -565,18 +576,18 @@ msgstr "Remover"
 #: ../libxfdashboard/search-result-container.c:1734
 #, c-format
 msgid "Show %d more results..."
-msgstr ""
+msgstr "Mostrar mais %d resultados..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:686
 #, c-format
 msgid "Show all %d results..."
-msgstr ""
+msgstr "Mostrar todos os %d resultados..."
 
 #: ../libxfdashboard/search-view.c:979
 #, c-format
 msgid "No results found for '%s'"
-msgstr ""
+msgstr "Não foram encontrados resultados para '%s'"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
@@ -622,7 +633,7 @@ msgstr "Cor dos segundos:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "Escolher cor para o ponteiro dos segundos"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
@@ -631,23 +642,23 @@ msgstr "Cor de fundo:"
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "Escolher cor de fundo para o ponteiro dos segundos"
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
-msgstr ""
+msgstr "Adiciona uma nova vista mostrando um relógio"
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
-msgstr ""
+msgstr "Exemplo de pesquisa"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "Exemplo de provedor de pesquisa"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr ""
+msgstr "Este é apenas um exemplo inútil de plugin de provedor de pesquisa"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
@@ -659,7 +670,7 @@ msgstr ""
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
 msgid "ms"
@@ -668,7 +679,7 @@ msgstr "ms"
 #: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
 #: ../settings/general.c:383
 msgid "Immediately"
-msgstr ""
+msgstr "Imediatamente"
 
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:339
@@ -699,6 +710,8 @@ msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
 msgstr ""
+"Ativa o xfdashboard quando o cursor é movido para um canto configurado do "
+"monitor"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
@@ -710,15 +723,15 @@ msgstr ""
 
 #: ../settings/general.c:120
 msgid "Do nothing"
-msgstr ""
+msgstr "Não fazer nada"
 
 #: ../settings/general.c:121
 msgid "Windows view"
-msgstr ""
+msgstr "Vista de janelas"
 
 #: ../settings/general.c:122
 msgid "Applications view"
-msgstr ""
+msgstr "Vista de aplicações"
 
 #: ../settings/general.c:129
 msgid "High"
@@ -739,7 +752,7 @@ msgstr "segundos"
 #: ../settings/plugins.c:222
 #, c-format
 msgid "Configure plugin: %s"
-msgstr ""
+msgstr "Configurar plugin: %s"
 
 #. Create error message to store in list
 #: ../settings/plugins.c:825
@@ -749,6 +762,9 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
+"<b>O plugin não pôde ser carregado.</b>\n"
+"\n"
+"%s"
 
 #: ../settings/plugins.c:1032
 msgid "Name"
@@ -773,7 +789,7 @@ msgstr "Informação da versão"
 #. Initialize GTK+
 #: ../settings/main.c:57
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../settings/main.c:61
 #, c-format
