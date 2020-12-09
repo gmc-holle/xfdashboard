@@ -216,6 +216,9 @@ msgid ""
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
 msgstr ""
+"Define o tempo mínimo que uma notificação é exibida.\n"
+"\n"
+"A duração é calculada pela extensão do texto que será exibido na notificação. Esta definição permite especificar a duração mínima da notificação que será exibida."
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
@@ -231,6 +234,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
 msgstr ""
+"Quando ativada, uma solução alternativa para janelas minimizadas será tentada para obter imagens estáticas dessas janelas, restaurando-as rapidamente e minimizando-as novamente.\n"
+"\n"
+"<b>NOTA:</b> Esteja ciente de que isto é uma <u>solução alternativa</u> e que as suas janelas minimizadas podem permanecer não minimizadas, alterar a área de trabalho, etc."
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
@@ -238,6 +244,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
+"Este valor define a velocidade com que o conteúdo da janela deve ser criado. Embora o valor 'imediato' diga ao xfdashboard para criar o conteúdo da janela no momento em que for solicitado, todos os outros valores irão criar uma fila e o valor define o quão rápido a fila será processada.\n"
+"\n"
+"<b>NOTA:</b> Apenas altere este valor de 'imediato' para outro valor se a sua placa de vídeo, controlador ou sistema forem muito lentos para criar o conteúdo da janela imediatamente. Você precisa testar cada valor para encontrar aquele que se encaixa no seu sistema."
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
@@ -252,6 +261,9 @@ msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
 msgstr ""
+"Quando ativadas, todas as pré-visualizações em tempo real das janelas "
+"mostrarão também as suas janelas secundárias. A desativação desta opção irá "
+"melhorar o desempenho em máquinas mais lentas."
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
@@ -263,6 +275,9 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
+"Quando ativado e um ícone no início rápido é clicado, sempre iniciará uma nova instância da aplicação.\n"
+"\n"
+"Quando não ativado, ele seleciona a última janela ativa conhecida da instância da aplicação em execução. Se a aplicação não estiver em execução, uma nova instância será iniciada."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
@@ -285,6 +300,8 @@ msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
 msgstr ""
+"Quando ativado, um menu \"todos os aplicativos\" contendo todos os "
+"aplicativos instalados será mostrado na visualização de aplicativos"
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
@@ -411,7 +428,7 @@ msgstr "Tema vinho tinto para xfdashboard"
 #: ../libxfdashboard/application-button.c:262
 #, c-format
 msgid "Could not execute action '%s' for application '%s': %s"
-msgstr ""
+msgstr "Não foi possível executar a ação '%s' para o aplicativo '%s': %s"
 
 #: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
@@ -421,7 +438,7 @@ msgstr "Erro desconhecido"
 #: ../libxfdashboard/application-button.c:282
 #, c-format
 msgid "Executed action '%s' for application '%s'"
-msgstr ""
+msgstr "Ação executada '%s' para o aplicativo '%s'"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
@@ -431,7 +448,7 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:458
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr ""
+msgstr "Falha%s ao iniciar o aplicativo '%s'"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:354
@@ -491,7 +508,7 @@ msgstr ""
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
-msgstr ""
+msgstr "O ID da vista para a qual alternar na inicialização ou ao retomar"
 
 #: ../libxfdashboard/application.c:581
 msgid "Show version"
@@ -662,11 +679,11 @@ msgstr "Este é apenas um exemplo inútil de plugin de provedor de pesquisa"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr ""
+msgstr "Provedor de pesquisa do Gnome-Shell"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr ""
+msgstr "Utiliza provedores de pesquisa Gnome-Shell como fonte para pesquisas"
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
@@ -684,26 +701,26 @@ msgstr "Imediatamente"
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:339
 msgid "Activation corner:"
-msgstr ""
+msgstr "Canto de ativação:"
 
 #. Add widget to choose activation radius
 #: ../plugins/hot-corner/plugin.c:375
 msgid "Radius of activation corner:"
-msgstr ""
+msgstr "Raio do canto de ativação:"
 
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
-msgstr ""
+msgstr "Tempo limite para ativar:"
 
 #. Add widget to limit checks to primary monitor only or to all monitors
 #: ../plugins/hot-corner/plugin.c:415
 msgid "Primary monitor only"
-msgstr ""
+msgstr "Somente no monitor principal"
 
 #: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
-msgstr ""
+msgstr "Canto ativo"
 
 #: ../plugins/hot-corner/plugin.c:468
 msgid ""
@@ -715,11 +732,11 @@ msgstr ""
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr ""
+msgstr "Clique com o botão do meio para fechar a janela"
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
-msgstr ""
+msgstr "Fecha as janelas na vista de janelas ao clicar com o botão do meio"
 
 #: ../settings/general.c:120
 msgid "Do nothing"
