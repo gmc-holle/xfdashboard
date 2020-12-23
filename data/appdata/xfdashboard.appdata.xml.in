@@ -59,74 +59,12 @@
 	</keywords>
 
 	<releases>
-		<release version="0.7.90" timestamp="1605597446">
+		<release version="0.8.0" timestamp="1608711235">
 			<description>
-				<_p>This release candidate adds also more animations as
-				well as fixes.
-				</_p>
-			</description>
-		</release>
-		<release version="0.7.7" timestamp="1600772127">
-			<description>
-				<_p>This unstable development adds more animations as
-				well as some smaller fixes.
-				</_p>
-			</description>
-		</release>
-		<release version="0.7.6" timestamp="1575026916">
-			<description>
-				<_p>This unstable development adds animations.
-				</_p>
-			</description>
-		</release>
-		<release version="0.7.5" timestamp="1533679200">
-			<description>
-				<_p>This unstable development adds support for touchpads
-				and application actions (Jumplists, Quicklists) as well
-				as new and updated translations.
-				</_p>
-			</description>
-		</release>
-		<release version="0.7.4" timestamp="1505796460">
-			<description>
-				<_p>This unstable development adds lots of new and updated
-				translations and support for newer xfconf versions.
-				</_p>
-			</description>
-		</release>
-		<release version="0.7.3" timestamp="1499409263">
-			<description>
-				<_p>This unstable development implements a new experimental
-				backend for GDK as well as it supports user stylesheets now.
-				</_p>
-			</description>
-		</release>
-		<release version="0.7.2" timestamp="1494826045">
-			<description>
-				<_p>This unstable development improves loading performance of
-				images and icon, adds a fine-grained debugging system and introduces
-				an interface for multiple backends but only X11 is still the one
-				only one supported.
-				</_p>
-			</description>
-		</release>
-		<release version="0.7.1" timestamp="1488792398">
-			<description>
-				<_p>This unstable development introduces child windows shown
-				next to the main window.
-				</_p>
-			</description>
-		</release>
-		<release version="0.6.1" timestamp="1482422594">
-			<description>
-				<_p>This stable version fixes a bug setting the correct default
-				applications at first use.
-				</_p>
-			</description>
-		</release>
-		<release version="0.7.0" timestamp="1473183039">
-			<description>
-				<_p>This unstable development introduces pop-up menus.
+				<_p>This stable version introduces lots of new features like
+				animations, pop-up menus, multiple backend and support for
+				jumplists etc. It also includes lots of new and updated
+				translations.
 				</_p>
 			</description>
 		</release>
