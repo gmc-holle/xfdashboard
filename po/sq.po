@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-30 00:47+0100\n"
+"POT-Creation-Date: 2020-12-23 12:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Besnik Bleta <besnik@programeshqip.org>, 2020\n"
 "Language-Team: Albanian (https://www.transifex.com/xfce/teams/16840/sq/)\n"
@@ -76,74 +76,16 @@ msgstr "Aplikacione kërkimi"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid ""
-"This unstable development adds more animations as well as some smaller "
-"fixes."
+"This stable version introduces lots of new features like animations, pop-up "
+"menus, multiple backend and support for jumplists etc. It also includes lots"
+" of new and updated translations."
 msgstr ""
-"Ky version i paqëndrueshëm zhvillimi shton më tepër animacione, si dhe disa "
-"ndreqje më të vockla."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
-msgid "This unstable development adds animations."
-msgstr "Ky version i paqëndrueshëm zhvillimi shton animacione."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
-msgid ""
-"This unstable development adds support for touchpads and application actions"
-" (Jumplists, Quicklists) as well as new and updated translations."
-msgstr ""
-"Ky version i paqëndrueshëm zhvillimi shton mbulim për touchpad-e dhe veprime"
-" aplikacionesh (Jumplists, Quicklists), si dhe përkthime të reja dhe të "
+"Ky version i qëndrueshëm sjell plotë veçori të reja, të tilla si, "
+"animacione, menu flluskë, pjesë të pasme të shumëfishtë dhe mbulim për "
+"“jumplists”, etj. Përmban gjithashtu plot përkthime të reja dhe të "
 "përditësuara."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
-msgid ""
-"This unstable development adds lots of new and updated translations and "
-"support for newer xfconf versions."
-msgstr ""
-"Ky version i paqëndrueshëm zhvillimi shton plot përkthime të reja dhe të "
-"përditësuara dhe mbulim për versione më të rinj të xfconf-it."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
-msgid ""
-"This unstable development implements a new experimental backend for GDK as "
-"well as it supports user stylesheets now."
-msgstr ""
-"Ky version i paqëndrueshëm zhvillimi shton një pjesë të pasme të re "
-"eksperimentale për GDK-në, si dhe mbulim për fletëstile përdoruesish tanimë."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
-msgid ""
-"This unstable development improves loading performance of images and icon, "
-"adds a fine-grained debugging system and introduces an interface for "
-"multiple backends but only X11 is still the one only one supported."
-msgstr ""
-"Ky version i paqëndrueshëm zhvillimi përmirëson funksionimin e ngarkimit të "
-"figurave dhe ikonave, shton një sistem të imët diagnostikimi dhe sjell për "
-"herë të parë një ndërfaqe për pjesë të pasme të shumta, por vetëm X11 është "
-"ende i vetmi i mbuluar ndër to."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
-msgid ""
-"This unstable development introduces child windows shown next to the main "
-"window."
-msgstr ""
-"Ky version i paqëndrueshëm zhvillimi sjell për herë të parë dritare pjella "
-"të shfaqura në krah të dritares kryesore."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
-msgid ""
-"This stable version fixes a bug setting the correct default applications at "
-"first use."
-msgstr ""
-"Ky version i qëndrueshëm ndreq një të metë në ujdisjen e aplikacioneve të "
-"sakta parazgjedhje gjatë përdorimit të parë fare."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
-msgid "This unstable development introduces pop-up menus."
-msgstr ""
-"Ky version i paqëndrueshëm zhvillimi sjell për herë të parë menu flluska."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -422,7 +364,7 @@ msgstr "Temë Verë e Kuqe për xfdashboard-in"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "S’u krye dot veprimi '%s' për aplikacionin '%s': %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:814
+#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
 msgid "Unknown error"
 msgstr "Gabim i panjohur"
@@ -691,25 +633,30 @@ msgid "Immediately"
 msgstr "Menjëherë"
 
 #. Add widget to choose activation corner
-#: ../plugins/hot-corner/plugin.c:304
+#: ../plugins/hot-corner/plugin.c:339
 msgid "Activation corner:"
 msgstr "Kulm aktivizimi:"
 
 #. Add widget to choose activation radius
-#: ../plugins/hot-corner/plugin.c:340
+#: ../plugins/hot-corner/plugin.c:375
 msgid "Radius of activation corner:"
 msgstr "Rreze kulmesh aktivizimi:"
 
 #. Add widget to choose activation duration
-#: ../plugins/hot-corner/plugin.c:358
+#: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
 msgstr "Skadim për t’u aktivizuar:"
 
-#: ../plugins/hot-corner/plugin.c:418
+#. Add widget to limit checks to primary monitor only or to all monitors
+#: ../plugins/hot-corner/plugin.c:415
+msgid "Primary monitor only"
+msgstr "Vetëm te monitori parësor"
+
+#: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
 msgstr "Cep i ndjeshëm"
 
-#: ../plugins/hot-corner/plugin.c:419
+#: ../plugins/hot-corner/plugin.c:468
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
@@ -759,7 +706,7 @@ msgid "Configure plugin: %s"
 msgstr "Formësoni shtojcën: %s"
 
 #. Create error message to store in list
-#: ../settings/plugins.c:813
+#: ../settings/plugins.c:825
 #, c-format
 msgid ""
 "<b>Plugin could not be loaded.</b>\n"
@@ -770,7 +717,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../settings/plugins.c:1020
+#: ../settings/plugins.c:1032
 msgid "Name"
 msgstr "Emër"
 
