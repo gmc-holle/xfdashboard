@@ -7,7 +7,7 @@
 # Yaron Shahrabani <sh.yaron@gmail.com>, 2020
 # GenghisKhan <genghiskhan@gmx.ca>, 2020
 # Nick Schermer <nick@xfce.org>, 2020
-# Omeritzics Games <omeritzicschwartz@gmail.com>, 2020
+# Omer I.S. <omeritzicschwartz@gmail.com>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # Elishai Eliyahu <elishai@mailfence.com>, 2020
 # 
@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-17 12:52+0100\n"
+"POT-Creation-Date: 2020-12-23 12:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Elishai Eliyahu <elishai@mailfence.com>, 2020\n"
 "Language-Team: Hebrew (https://www.transifex.com/xfce/teams/16840/he/)\n"
@@ -76,70 +76,16 @@ msgid "Searching applications"
 msgstr "חיפוש אפליקציות"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
-msgid "This release candidate adds also more animations as well as fixes."
-msgstr "הגרסה המועמדת לפרסום הזו מוסיפה עוד אנימציות וכמו כן תיקונים."
+msgid ""
+"This stable version introduces lots of new features like animations, pop-up "
+"menus, multiple backend and support for jumplists etc. It also includes lots"
+" of new and updated translations."
+msgstr ""
+"הגרסה היציבה הזו מציגה הרבה תכונות חדשות כמו אנימציות, תפריטים קופצים, מגשר "
+"עורפי מרובה ותמיכה ברשימות קופצות ועוד. היא גם כוללת הרבה תרגומים חדשים "
+"ומעודכנים."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:7
-msgid ""
-"This unstable development adds more animations as well as some smaller "
-"fixes."
-msgstr "הפיתוח הלא יציב הזה מוסיף עוד אנימציות ובנוסף כמה תיקונים קטנים יותר."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
-msgid "This unstable development adds animations."
-msgstr "הפיתוח הלא יציב הזה מוסיף אנימציות."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
-msgid ""
-"This unstable development adds support for touchpads and application actions"
-" (Jumplists, Quicklists) as well as new and updated translations."
-msgstr ""
-"הפיתוח הלא יציב הזה מוסיף תמיכה למשטחי נגיעה ופעולות ישומים (רשימות קפיצה, "
-"רשימות מהירות) ובנוסף תרגומים חדשים ומעודכנים."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
-msgid ""
-"This unstable development adds lots of new and updated translations and "
-"support for newer xfconf versions."
-msgstr ""
-"הפיתוח הלא יציב הזה מוסיף הרבה תרגומים חדשים ומעודכנים ותמיכה עבור גרסאות "
-"xfconf חדשות יותר."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
-msgid ""
-"This unstable development implements a new experimental backend for GDK as "
-"well as it supports user stylesheets now."
-msgstr ""
-"הפיתוח הלא יציב הזה מיישם מגשר עורפי ניסיוני חדש עבור GDK ובנוסף תומך עכשיו "
-"בעמודי סגנון משתמש."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
-msgid ""
-"This unstable development improves loading performance of images and icon, "
-"adds a fine-grained debugging system and introduces an interface for "
-"multiple backends but only X11 is still the one only one supported."
-msgstr ""
-"הפיתוח הלא יציב הזה משפר ביצועי טעינה של תמונות ושל אייקון, מוסיף מערכת "
-"ניפוי באגים מעודנת ומציג ממשק למספר מגשרים עורפיים אבל רק X11 כרגע נתמך."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
-msgid ""
-"This unstable development introduces child windows shown next to the main "
-"window."
-msgstr "הפיתוח הלא יציב הזה מציג חלונות ילדים ליד החלון העיקרי."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
-msgid ""
-"This stable version fixes a bug setting the correct default applications at "
-"first use."
-msgstr ""
-"הגרסה היציבה הזו מתקנת באג הקובע את ישומי ברירת המחדל הנכונים בשימוש ראשון."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
-msgid "This unstable development introduces pop-up menus."
-msgstr "הפיתוח הלא יציב הזה מציג תפריטים קופצים."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
