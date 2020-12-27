@@ -1,5 +1,5 @@
 SUBDIRS = \
-	appdata \
+	metainfo \
 	data \
 	icons \
 	themes
