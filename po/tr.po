@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-17 12:52+0100\n"
+"POT-Creation-Date: 2020-12-23 12:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>, 2020\n"
 "Language-Team: Turkish (https://www.transifex.com/xfce/teams/16840/tr/)\n"
@@ -80,76 +80,16 @@ msgid "Searching applications"
 msgstr "Uygulamaları arama"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
-msgid "This release candidate adds also more animations as well as fixes."
-msgstr "Bu aday sürüm, daha çok animasyon ve düzeltmeler ekliyor."
+msgid ""
+"This stable version introduces lots of new features like animations, pop-up "
+"menus, multiple backend and support for jumplists etc. It also includes lots"
+" of new and updated translations."
+msgstr ""
+"Bu kararlı sürüm; animasyonlar, açılır pencere menüler, çoklu arkayüzler ve "
+"atlama listeleri için destek gibi yeni özellikleri içerir. Yeni ve "
+"güncellenmiş birçok çeviriyi de içerir."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:7
-msgid ""
-"This unstable development adds more animations as well as some smaller "
-"fixes."
-msgstr ""
-"Bu kararsız geliştirme, daha çok animasyon ve bazı küçük düzeltmeler ekler."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
-msgid "This unstable development adds animations."
-msgstr "Bu kararsız geliştirme animasyonlar ekliyor."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
-msgid ""
-"This unstable development adds support for touchpads and application actions"
-" (Jumplists, Quicklists) as well as new and updated translations."
-msgstr ""
-"Bu kararsız geliştirme, dokunmatik yüzeyler ve uygulama eylemleri "
-"(Jumplists, Quicklists) ve yeni ve güncellenmiş çeviriler için destek "
-"ekliyor."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
-msgid ""
-"This unstable development adds lots of new and updated translations and "
-"support for newer xfconf versions."
-msgstr ""
-"Bu kararsız gelişme, yeni xfconf sürümleri için birçok yeni ve güncellenmiş "
-"çeviri ve destek ekler."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
-msgid ""
-"This unstable development implements a new experimental backend for GDK as "
-"well as it supports user stylesheets now."
-msgstr ""
-"Bu kararsız gelişme, GDK için yeni deneysel arka plan uygular ve kullanıcı "
-"tarzlarını artık desteklemektedir."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
-msgid ""
-"This unstable development improves loading performance of images and icon, "
-"adds a fine-grained debugging system and introduces an interface for "
-"multiple backends but only X11 is still the one only one supported."
-msgstr ""
-"Bu kararsız gelişme, görüntülerin ve simgenin yüklenme performansını "
-"geliştirir, ince taneli hata ayıklama sistemi ekler ve çoklu arka planlar "
-"için arabirim sunar, ancak yalnızca X11 desteklenmektedir."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
-msgid ""
-"This unstable development introduces child windows shown next to the main "
-"window."
-msgstr ""
-"Bu kararsız gelişme, ana pencerenin yanında gösterilen çocuk pencerelerini "
-"tanıtır."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
-msgid ""
-"This stable version fixes a bug setting the correct default applications at "
-"first use."
-msgstr ""
-"Bu kararlı sürüm, ilk kullanımda doğru öntanımlı uygulamaları ayarlayan "
-"hatayı düzeltir."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
-msgid "This unstable development introduces pop-up menus."
-msgstr "Bu kararsız gelişme, açılır menüler sunuyor."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "

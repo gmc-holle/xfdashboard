@@ -11,17 +11,17 @@
 # Xfce Bot <transifex@xfce.org>, 2020
 # Ldm Public <ldmpub@gmail.com>, 2020
 # Yannick Le Guen <leguen.yannick@gmail.com>, 2020
-# jc1 <jc1.quebecos@gmail.com>, 2020
 # roxfr <roxfr@outlook.fr>, 2020
+# jc1 <jc1.quebecos@gmail.com>, 2020
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-17 12:52+0100\n"
+"POT-Creation-Date: 2020-12-23 12:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: roxfr <roxfr@outlook.fr>, 2020\n"
+"Last-Translator: jc1 <jc1.quebecos@gmail.com>, 2020\n"
 "Language-Team: French (https://www.transifex.com/xfce/teams/16840/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -82,80 +82,17 @@ msgid "Searching applications"
 msgstr "Applications de recherche"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
-msgid "This release candidate adds also more animations as well as fixes."
+msgid ""
+"This stable version introduces lots of new features like animations, pop-up "
+"menus, multiple backend and support for jumplists etc. It also includes lots"
+" of new and updated translations."
 msgstr ""
-"Cette version candidate ajoute également plus d'animations ainsi que des "
-"correctifs."
+"Cette version stable introduit de nombreuses nouvelles fonctionnalités "
+"telles que les animations, les menues pop-up, de multiples retours et le "
+"support des listes de saut, etc. Il contient également des traductions "
+"nouvelles et mise à jour."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:7
-msgid ""
-"This unstable development adds more animations as well as some smaller "
-"fixes."
-msgstr ""
-"Ce développement instable ajoute plus d'animations ainsi que quelques "
-"corrections plus petites."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
-msgid "This unstable development adds animations."
-msgstr "Ce développement instable ajoute des animations"
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
-msgid ""
-"This unstable development adds support for touchpads and application actions"
-" (Jumplists, Quicklists) as well as new and updated translations."
-msgstr ""
-"Ce développement instable ajoute la prise en charge des pavés tactiles et "
-"des actions d'application (Jumplists, Quicklists) ainsi que de nouvelles "
-"traductions et mises à jour."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
-msgid ""
-"This unstable development adds lots of new and updated translations and "
-"support for newer xfconf versions."
-msgstr ""
-"Ce développement instable ajoute de nombreuses traductions nouvelles et des "
-"mises à jour et prend en charge les nouvelles versions de xfconf."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
-msgid ""
-"This unstable development implements a new experimental backend for GDK as "
-"well as it supports user stylesheets now."
-msgstr ""
-"Ce développement instable implémente un nouvel arrière-plan expérimental "
-"pour GDK et prend désormais en charge les feuilles de style utilisateur."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
-msgid ""
-"This unstable development improves loading performance of images and icon, "
-"adds a fine-grained debugging system and introduces an interface for "
-"multiple backends but only X11 is still the one only one supported."
-msgstr ""
-"Ce développement instable améliore les performances de chargement des images"
-" et des icônes, ajoute un système de débogage à granularité fine et "
-"introduit une interface pour plusieurs moteurs de traitement, mais seul X11 "
-"est toujours celui qui est pris en charge."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
-msgid ""
-"This unstable development introduces child windows shown next to the main "
-"window."
-msgstr ""
-"Ce développement instable introduit les fenêtres enfants affichées à côté de"
-" la fenêtre principale."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
-msgid ""
-"This stable version fixes a bug setting the correct default applications at "
-"first use."
-msgstr ""
-"Cette version stable corrige un bogue définissant les applications par "
-"défaut correctes lors de la première utilisation."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
-msgid "This unstable development introduces pop-up menus."
-msgstr "Ce développement instable introduit des menus contextuels."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "

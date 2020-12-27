@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-09 12:49+0100\n"
+"POT-Creation-Date: 2020-12-23 12:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Andreas Eitel <github-aneitel@online.de>, 2020\n"
 "Language-Team: German (https://www.transifex.com/xfce/teams/16840/de/)\n"
@@ -81,73 +81,15 @@ msgstr "Suche Anwendungen"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
 msgid ""
-"This unstable development adds more animations as well as some smaller "
-"fixes."
+"This stable version introduces lots of new features like animations, pop-up "
+"menus, multiple backend and support for jumplists etc. It also includes lots"
+" of new and updated translations."
 msgstr ""
-"Diese instabile Entwicklung fügt einige Animationen hinzu, sowie einige "
-"kleinere Fehlerbehebungen."
+"Diese stabile Version enthält viele neue Funktionen wie Animationen, Pop-up-"
+"Menüs, mehrere Backends und Unterstützung für Jumplists usw. Sie enthält "
+"auch viele neue und aktualisierte Übersetzungen."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:7
-msgid "This unstable development adds animations."
-msgstr "Diese instabile Entwicklung fügt Animationen hinzu."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
-msgid ""
-"This unstable development adds support for touchpads and application actions"
-" (Jumplists, Quicklists) as well as new and updated translations."
-msgstr ""
-"Diese instabile Entwicklung fügt Unterstützung für Touchpads und "
-"Anwendungsaktionen (Jumplists, Quicklists) sowie neue und aktualisierte "
-"Übersetzungen hinzu."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
-msgid ""
-"This unstable development adds lots of new and updated translations and "
-"support for newer xfconf versions."
-msgstr ""
-"Diese instabile Entwicklung fügt viele neue und aktualisierte Übersetzungen "
-"und Unterstützung für neuere xfconf-Versionen hinzu."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
-msgid ""
-"This unstable development implements a new experimental backend for GDK as "
-"well as it supports user stylesheets now."
-msgstr ""
-"Diese instabile Entwicklung implementiert ein neues experimentelles Backend "
-"für GDK und unterstützt jetzt auch Benutzer-Stylesheets."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
-msgid ""
-"This unstable development improves loading performance of images and icon, "
-"adds a fine-grained debugging system and introduces an interface for "
-"multiple backends but only X11 is still the one only one supported."
-msgstr ""
-"Diese instabile Entwicklung verbessert die Ladegeschwindigkeit von Bildern "
-"und Symbolen, fügt ein feinkörniges Debugging-System hinzu und führt eine "
-"Schnittstelle für mehrere Backends ein, aber nur X11 wird noch immer als "
-"einziges unterstützt."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
-msgid ""
-"This unstable development introduces child windows shown next to the main "
-"window."
-msgstr ""
-"Diese instabile Entwicklung führt Kinderfenster ein, die neben dem "
-"Hauptfenster angezeigt werden."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
-msgid ""
-"This stable version fixes a bug setting the correct default applications at "
-"first use."
-msgstr ""
-"Diese stabile Version behebt einen Fehler bei der Einstellung der korrekten "
-"Standardanwendungen bei der ersten Benutzung."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
-msgid "This unstable development introduces pop-up menus."
-msgstr "Diese instabile Entwicklung führt Pop-up-Menüs ein."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
