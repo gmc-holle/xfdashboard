@@ -1,6 +1,6 @@
-data/xfdashboard-autostart.desktop.in
-data/xfdashboard.desktop.in
-data/xfdashboard-settings.desktop.in
+data/org.xfce.xfdashboard-autostart.desktop.in
+data/org.xfce.xfdashboard.desktop.in
+data/org.xfce.xfdashboard-settings.desktop.in
 data/themes/xfdashboard-auber/xfdashboard.theme.in
 data/themes/xfdashboard-blue/xfdashboard.theme.in
 data/themes/xfdashboard-dark/xfdashboard.theme.in
@@ -17,6 +17,6 @@ sub/data/themes/xfdashboard-mint/xfdashboard.theme.in
 sub/data/themes/xfdashboard-moranga/xfdashboard.theme.in
 sub/data/themes/xfdashboard-wine/xfdashboard.theme.in
 sub/data/themes/xfdashboard/xfdashboard.theme.in
-sub/data/xfdashboard-autostart.desktop.in
-sub/data/xfdashboard-settings.desktop.in
-sub/data/xfdashboard.desktop.in
+sub/data/org.xfce.xfdashboard-autostart.desktop.in
+sub/data/org.xfce.xfdashboard-settings.desktop.in
+sub/data/org.xfce.xfdashboard.desktop.in

@@ -1,8 +1,8 @@
 [encoding: UTF-8]
-data/xfdashboard.desktop.in.in
-data/xfdashboard-autostart.desktop.in.in
-data/xfdashboard-settings.desktop.in.in
-data/appdata/xfdashboard.appdata.xml.in
+data/org.xfce.xfdashboard.desktop.in.in
+data/org.xfce.xfdashboard-autostart.desktop.in.in
+data/org.xfce.xfdashboard-settings.desktop.in.in
+data/metainfo/org.xfce.xfdashboard.metainfo.xml.in
 [type: gettext/glade]data/data/preferences.ui
 data/themes/xfdashboard/xfdashboard.theme.in.in
 data/themes/xfdashboard-auber/xfdashboard.theme.in.in
