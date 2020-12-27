@@ -8,7 +8,7 @@
 *.geany
 *~
 ChangeLog
-data/appdata/xfdashboard.appdata.xml
+data/metainfo/org.xfce.xfdashboard.metainfo.xml
 data/themes/xfdashboard/xfdashboard.theme
 data/themes/xfdashboard/xfdashboard.theme.in
 data/themes/xfdashboard-auber/xfdashboard.theme
