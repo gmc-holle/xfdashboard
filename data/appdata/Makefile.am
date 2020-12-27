@@ -1,12 +1,12 @@
-appdatadir = $(datadir)/appdata
-appdata_DATA = $(appdata_in_files:.xml.in=.xml)
-appdata_in_files = xfdashboard.appdata.xml.in
+metainfodir = $(datadir)/metainfo
+metainfo_DATA = $(metainfo_in_files:.xml.in=.xml)
+metainfo_in_files = org.xfce.xfdashboard.metainfo.xml.in
 
 @INTLTOOL_XML_RULE@
 
 EXTRA_DIST = \
-        $(appdata_DATA) \
-        xfdashboard.appdata.xml.in
+        $(metainfo_DATA) \
+        org.xfce.xfdashboard.metainfo.xml.in
 
 DISTCLEANFILES = \
-        $(appdata_in_files:.xml.in=.xml)
+        $(metainfo_in_files:.xml.in=.xml)
