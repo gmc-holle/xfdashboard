@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-17 12:52+0100\n"
+"POT-Creation-Date: 2020-12-23 12:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>, 2020\n"
 "Language-Team: Portuguese (https://www.transifex.com/xfce/teams/16840/pt/)\n"
@@ -63,11 +63,11 @@ msgid ""
 "switch between different applications. The search feature works like Xfce's "
 "app finder which makes it convenient to search for and start applications."
 msgstr ""
-"Pode ser configurado para executar qualquer tecla de atalho e, quando "
+"Pode ser configurado para executar qualquer tecla de atalho e quando "
 "executado, fornece uma visão geral das aplicações abertas no momento, "
-"permitindo que o utilizador alterne entre as diferentes aplicações. O "
-"recurso de pesquisa funciona como o localizador de aplicações do Xfce, o que"
-" torna mais conveniente pesquisar e iniciar aplicações."
+"permitindo ao utilizador trocar entre as diferentes aplicações. O recurso de"
+" pesquisa funciona como o localizador de aplicações do Xfce, o que torna "
+"mais conveniente pesquisar e iniciar aplicações."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:4
 msgid "Browsing applications"
@@ -78,84 +78,22 @@ msgid "Searching applications"
 msgstr "A procurar aplicações"
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:6
-msgid "This release candidate adds also more animations as well as fixes."
+msgid ""
+"This stable version introduces lots of new features like animations, pop-up "
+"menus, multiple backend and support for jumplists etc. It also includes lots"
+" of new and updated translations."
 msgstr ""
-"Este candidato a lançamento também adiciona mais animações, bem como "
-"correções."
+"Esta versão estável apresenta muitas funcionalidades novas como animações, "
+"menus pop-up, backend múltiplo e suporte para jumplists etc. Também inclui "
+"muitas traduções novas e atualizadas."
 
 #: ../data/appdata/xfdashboard.appdata.xml.in.h:7
-msgid ""
-"This unstable development adds more animations as well as some smaller "
-"fixes."
-msgstr ""
-"Este desenvolvimento instável adiciona mais animações, bem como algumas "
-"correções menores."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
-msgid "This unstable development adds animations."
-msgstr "Este desenvolvimento instável adiciona animações."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
-msgid ""
-"This unstable development adds support for touchpads and application actions"
-" (Jumplists, Quicklists) as well as new and updated translations."
-msgstr ""
-"Este desenvolvimento instável adiciona suporte a touchpads e ações de "
-"aplicações (Jumplists, Quicklists), bem como traduções novas e atualizadas."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
-msgid ""
-"This unstable development adds lots of new and updated translations and "
-"support for newer xfconf versions."
-msgstr ""
-"Este desenvolvimento instável acrescenta muitas traduções novas e "
-"atualizadas e suporte para versões mais recentes do xfconf."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
-msgid ""
-"This unstable development implements a new experimental backend for GDK as "
-"well as it supports user stylesheets now."
-msgstr ""
-"Este desenvolvimento instável implementa um novo backend experimental para a"
-" GDK, bem como suporta agora as folhas de estilo do utilizador."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
-msgid ""
-"This unstable development improves loading performance of images and icon, "
-"adds a fine-grained debugging system and introduces an interface for "
-"multiple backends but only X11 is still the one only one supported."
-msgstr ""
-"Este desenvolvimento instável melhora o desempenho de carregamento de "
-"imagens e ícones, adiciona um sistema de depuração refinado e introduz uma "
-"interface para vários backends mas apenas o X11 é ainda o único suportado."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
-msgid ""
-"This unstable development introduces child windows shown next to the main "
-"window."
-msgstr ""
-"Este desenvolvimento instável introduz janelas órfãs mostradas ao lado da "
-"janela principal."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
-msgid ""
-"This stable version fixes a bug setting the correct default applications at "
-"first use."
-msgstr ""
-"Esta versão estável corrige um erro que define as aplicações padrão corretas"
-" na primeira utilização."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
-msgid "This unstable development introduces pop-up menus."
-msgstr "Este desenvolvimento instável introduz menus pop-up."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
 "smaller improvements."
 msgstr ""
-"Esta versão estável introduz muitas características novas como plugins e "
+"Esta versão estável introduz muitas funcionalidades novas como plugins e "
 "rastreio de aplicações. Contém também uma enorme coleção de outras melhorias"
 " maiores e menores."
 
@@ -191,7 +129,7 @@ msgid ""
 msgstr ""
 "Se ativada, a vista de pesquisa será reiniciada quando o xfdashboard for reiniciado. Isto significa que a vista ativa é alterada de novo para a última vista ativa antes do início da última pesquisa e a caixa de pesquisa será esvaziada.\n"
 "\n"
-"<b>NOTA:</b> Esta definição só tem efeito se o xfdashboard estiver a ser executado no modo daemon."
+"<b>NOTA:</b> Esta definição só tem efeito se o xfdashboard estiver a ser executado no modo daemon. "
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
@@ -258,9 +196,9 @@ msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
 msgstr ""
-"Quando ativadas, todas as pré-visualizações ao vivo das janelas mostrarão "
-"também as suas janelas secundárias. A desativação desta opção irá aumentar o"
-" desempenho em máquinas mais lentas."
+"Quando ativadas, todas as pré-visualizações ao vivo das janelas irão mostrar"
+" também as suas janelas secundárias. A desativação desta opção irá aumentar "
+"o desempenho em máquinas mais lentas."
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
@@ -513,7 +451,7 @@ msgstr "Mostrar versão"
 
 #: ../libxfdashboard/application.c:600
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "Um painel do tipo Gnome Shell para o Xfce4 - versão"
+msgstr "Um painel do tipo Gnome Shell para o Xfce4 - versão "
 
 #. Show error
 #: ../libxfdashboard/application.c:617
@@ -606,7 +544,7 @@ msgstr "Não foram encontrados resultados para '%s'"
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
 msgid "Search"
-msgstr "Procurar"
+msgstr "Pesquisar"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
