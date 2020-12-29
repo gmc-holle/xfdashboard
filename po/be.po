@@ -1,0 +1,749 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Сяргей Снапкоўскі, 2020
+# Nick Schermer <nick@xfce.org>, 2020
+# Źmicier Turok <nashtlumach@gmail.com>, 2020
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-28 00:48+0100\n"
+"PO-Revision-Date: 2020-10-07 10:59+0000\n"
+"Last-Translator: Źmicier Turok <nashtlumach@gmail.com>, 2020\n"
+"Language-Team: Belarusian (https://www.transifex.com/xfce/teams/16840/be/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: be\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:1
+msgid "Xfdashboard"
+msgstr "Xfdashboard"
+
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:1
+msgid "Maybe a Gnome shell like dashboard for Xfce"
+msgstr "Інтэрфейс Gnome shell для абалонкі Xfce"
+
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:2
+msgid "Start xfdashboard as daemon in background"
+msgstr "Запусціць xfdashboard у фонавым рэжыме"
+
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:1
+msgid "Xfdashboard settings"
+msgstr "Налады Xfdashboard"
+
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:2
+msgid "Configure xfdashboard"
+msgstr "Наладка xfdashboard"
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:2
+msgid ""
+"Xfdashboard provides a GNOME shell dashboard like interface for use with "
+"Xfce desktop."
+msgstr "Xfdashboard падае панэль інструментаў GNOME як інтэрфейс для XFCE."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:3
+msgid ""
+"It can be configured to run to any keyboard shortcut and when executed "
+"provides an overview of applications currently open enabling the user to "
+"switch between different applications. The search feature works like Xfce's "
+"app finder which makes it convenient to search for and start applications."
+msgstr ""
+"Яе можна наладзіць для запуску любым спалучэннем клавіш. Пасля запуску "
+"забяспечваецца магчымасць прагляду запушчаных праграм і пераключэння паміж "
+"рознымі праграмамі. Функцыя пошуку працуе як Хfce App finder."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:4
+msgid "Browsing applications"
+msgstr "Прагляд праграм"
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:5
+msgid "Searching applications"
+msgstr "Пошук праграм"
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
+msgid ""
+"This stable version introduces lots of new features like animations, pop-up "
+"menus, multiple backend and support for jumplists etc. It also includes lots"
+" of new and updated translations."
+msgstr ""
+"У гэтай стабільнай версіі дадаецца мноства новых функцый: анімацыі, "
+"выплыўныя меню, некалькі рухавікоў і іншыя. Дададзены новыя і абноўленыя "
+"існыя пераклады."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
+"This stable version fixes a bug setting the correct default applications at "
+"first use."
+msgstr ""
+"У гэтым стабільным выпуску выпраўлена памылка наладкі прадвызначаных праграм"
+" падчас першага запуску."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+msgid ""
+"This stable version introduces lots of new features like plugins and "
+"application tracker. It also contains a huge collection of other larger and "
+"smaller improvements."
+msgstr ""
+"У гэтай стабільнай версіі дадаецца мноства новых функцый кшталту ўбудоў і "
+"трэкера праграм. Таксама ў яе ўключаная вялікая колькасць разнастайных "
+"паляпшэнняў."
+
+#: ../data/data/preferences.ui.h:1
+msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
+msgstr "<span size=\"large\"><b>Налады Xfdashboard</b></span>"
+
+#: ../data/data/preferences.ui.h:2
+msgid "Configure plugin"
+msgstr "Налады ўбудовы"
+
+#: ../data/data/preferences.ui.h:3
+msgid ""
+"<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
+"Configure xfdashboard"
+msgstr ""
+"<span size=\"large\"><b>Налады Xfdashboard </b></span>\n"
+"Наладка xfdashboard"
+
+#: ../data/data/preferences.ui.h:5
+msgid "<b>General settings:</b>"
+msgstr "<b>Асноўныя налады:</b>"
+
+#: ../data/data/preferences.ui.h:6
+msgid "Reset search view when resumed"
+msgstr "Скідваць выгляд пошуку пры кожным запуску"
+
+#: ../data/data/preferences.ui.h:7
+msgid ""
+"If enabled the search view will be resetted when xfdashboard is resumed. That means the active view is switched back to last view active before last search was started and search box will be emptied.\n"
+"\n"
+"<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
+msgstr ""
+"Калі ўключана, выгляд пошуку будзе скідвацца пры кожным запуску xfdashboard. Гэта азначае, што актыўны выгляд пераключыцца назад да стану апошняга пошуку і акно часткова ачысціцца.\n"
+"\n"
+"<b> НАТАТКА:</b> гэты параметр дзейнічае толькі, калі xfdashboard працуе ў рэжыме дэмана. "
+
+#: ../data/data/preferences.ui.h:10
+msgid ""
+"When xfdashboard resumes the selected view will be activated.\n"
+"\n"
+"<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
+msgstr ""
+"Пры запуску xfdashboard, будзе актывавацца абраны выгляд.\n"
+"\n"
+"<b> НАТАТКА:</b> гэты параметр дзейнічае толькі, калі xfdashboard працуе ў рэжыме дэмана."
+
+#: ../data/data/preferences.ui.h:13
+msgid "Switch to view when resumed:"
+msgstr "Выгляд пры запуску:"
+
+#: ../data/data/preferences.ui.h:14
+msgid ""
+"Sets the minimum time a notification is being shown.\n"
+"\n"
+"The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
+msgstr ""
+"Мінімальны час адлюстравання апавяшчэння.\n"
+"\n"
+"Працягласць разлічваецца ў залежнасці ад даўжыні тэксту апавяшчэння."
+
+#: ../data/data/preferences.ui.h:17
+msgid "Minimum notification timeout:"
+msgstr "Працягласць апавяшчэння:"
+
+#: ../data/data/preferences.ui.h:18
+msgid "Enable workaround for minimized windows"
+msgstr "Уключыць абыходны шлях для згорнутых акон"
+
+#: ../data/data/preferences.ui.h:19
+msgid ""
+"When enabled a workaround for minimized windows will be tried to get still images of these windows by restoring them shortly and minimizing them again.\n"
+"\n"
+"<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
+msgstr ""
+"Калі ўключаны абыходны шлях для згорнутых акон, будзе выконвацца спроба атрымаць нерухомую выяву гэтых акон. Гэта азначае, што акно будзе разгортвацца на кароткі час, а пасля зноў згортвацца.\n"
+"\n"
+"<b>НАТАТКА:</b> майце на ўвазе, што пры ўключаным <u>абыходным шляху</u> вашыя згорнутыя вокны могуць не згарнуцца пасля працэсу."
+
+#: ../data/data/preferences.ui.h:22
+msgid ""
+"This value defines how fast the window content should be created. While the value 'immediate' tells xfdashboard to create the window content at the time it is requested, all other values will set up a queue and value defines how fast the queue will be processed.\n"
+"\n"
+"<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
+msgstr ""
+"Гэтыя значэнні вызначаюць хуткасць стварэння змесціва акна. Са значэннем \"Неадкладна\" xfdashboard змесціва будзе стварацца падчас запыту, усе іншыя значэнні будуць ствараць чаргу і вызначаць хуткасць апрацоўкі.\n"
+"\n"
+"<b>НАТАТКА:</b>змяніце значэнне з \"Неадкладна\" на іншае, калі ў вас слабое абсталяванне. Паспрабуйце іншыя значэнні і вызначце тое, якое больш пасуе вашай сістэме."
+
+#: ../data/data/preferences.ui.h:25
+msgid "Priority of window content creation"
+msgstr "Прыярытэт стварэння змесціва акна"
+
+#: ../data/data/preferences.ui.h:26
+msgid "Show child windows in main windows"
+msgstr "Паказваць дачынныя вокны ў асноўных вокнах"
+
+#: ../data/data/preferences.ui.h:27
+msgid ""
+"When enabled all live window previews will also show their child windows. "
+"Disabling this option will increase performance on slower machines."
+msgstr ""
+"Калі ўключана, на мініяцюрах усіх акон таксама будуць паказвацца іх дачынныя"
+" вокны. Калі адключыць гэты параметр, то на слабых машынах пагоршыцца "
+"прадукцыйнасць."
+
+#: ../data/data/preferences.ui.h:28
+msgid "Always start a new instance for application"
+msgstr "Заўсёды запускаць новы асобнік праграмы"
+
+#: ../data/data/preferences.ui.h:29
+msgid ""
+"When enabled and an icon in quicklaunch is clicked it will always start a new instance of the application.\n"
+"\n"
+"When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
+msgstr ""
+"Калі ўключана, то пры націсканні па значку хуткага запуску будзе заўжды адкрывацца новы асобнік праграмы.\n"
+"\n"
+"Калі адключана, то будзе абірацца апошняе вядомае адкрытае акно запушчанай праграмы. Калі праграма не працуе, то будзе запускацца новы асобнік."
+
+#: ../data/data/preferences.ui.h:32
+msgid "Enable animations"
+msgstr "Уключыць анімацыю"
+
+#: ../data/data/preferences.ui.h:33
+msgid "If enabled theme-defined animations will be shown."
+msgstr "Калі ўключана, будуць паказвацца вызначаныя тэмай анімацыі."
+
+#: ../data/data/preferences.ui.h:34
+msgid "<b>Applications view:</b>"
+msgstr "<b>Праграмы: </b>"
+
+#: ../data/data/preferences.ui.h:35
+msgid "Show menu for all installed applications"
+msgstr "Паказваць усе ўсталяваныя праграмы"
+
+#: ../data/data/preferences.ui.h:36
+msgid ""
+"When enabled an \"all applications\" menu containing all installed "
+"applications will be shown at applications view"
+msgstr ""
+"Калі ўключана, то пры праглядзе праграм будуць паказвацца ўсе ўсталяваныя "
+"праграмы"
+
+#: ../data/data/preferences.ui.h:37
+msgid "<b>Windows view:</b>"
+msgstr "<b>Вокны:</b>"
+
+#: ../data/data/preferences.ui.h:38
+msgid "Mouse wheel changes workspace"
+msgstr "Змяняць працоўныя прасторы колам мышы"
+
+#: ../data/data/preferences.ui.h:39
+msgid ""
+"When enabled any scroll event, like mouse-wheel up and down, at the windows "
+"view will change the active workspace. This behaviour is the same as in "
+"workspace selector."
+msgstr ""
+"Калі ўключана, пры праглядзе акон рухі колам мышы будуць пераключаць "
+"працоўныя прасторы."
+
+#: ../data/data/preferences.ui.h:40
+msgid "<b>Search view:</b>"
+msgstr "<b>Пошук: </b>"
+
+#: ../data/data/preferences.ui.h:41
+msgid ""
+"Sets the interval the search should be delayed by after the first character "
+"was entered."
+msgstr "Вызначае інтэрвал затрымкі пошуку пасля ўводу першага сімвала."
+
+#: ../data/data/preferences.ui.h:42
+msgid "Delay initial search interval:"
+msgstr "Затрымка пошуку:"
+
+#: ../data/data/preferences.ui.h:43
+msgid "General"
+msgstr "Асноўнае"
+
+#: ../data/data/preferences.ui.h:44
+msgid "<b>Name:</b>"
+msgstr "<b>Назва:</b>"
+
+#: ../data/data/preferences.ui.h:45
+msgid "<b>Author:</b>"
+msgstr "<b>Аўтар: </b>"
+
+#: ../data/data/preferences.ui.h:46
+msgid "<b>Version:</b>"
+msgstr "<b>Версія: </b>"
+
+#: ../data/data/preferences.ui.h:47
+msgid "<b>Description:</b>"
+msgstr "<b>Апісанне:</b>"
+
+#: ../data/data/preferences.ui.h:48
+msgid "Themes"
+msgstr "Тэмы"
+
+#: ../data/data/preferences.ui.h:49
+msgid "<b>License:</b>"
+msgstr "<b>Ліцэнзія: </b>"
+
+#: ../data/data/preferences.ui.h:50
+msgid "Plugins"
+msgstr "Убудовы"
+
+#: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard"
+msgstr "xfdashboard"
+
+#: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:2
+msgid "Default theme for xfdashboard"
+msgstr "Прадвызначаная тэма xfdashboard"
+
+#: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-auber"
+msgstr "xfdashboard-auber"
+
+#: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
+msgid "Aubergine theme for xfdashboard"
+msgstr "Баклажанавая тэма для xfdashboard"
+
+#: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-blue"
+msgstr "xfdashboard-blue"
+
+#: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:2
+msgid "Blue theme for xfdashboard"
+msgstr "Сіняя тэма для xfdashboard"
+
+#: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-dark"
+msgstr "xfdashboard-dark"
+
+#: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:2
+msgid "Dark theme for xfdashboard"
+msgstr "Цёмная тэма для xfdashboard"
+
+#: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-mint"
+msgstr "xfdashboard-mint"
+
+#: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
+msgid "Fresh-green flavored theme for xfdashboard"
+msgstr "Мятная тэма для xfdashboard"
+
+#: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-moranga"
+msgstr "xfdashboard-moranga"
+
+#: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:2
+msgid "Moranga theme for xfdashboard"
+msgstr "Патысонавая тэма для xfdashboard"
+
+#: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
+msgid "xfdashboard-wine"
+msgstr "xfdashboard-wine"
+
+#: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
+msgid "Red wine theme for xfdashboard"
+msgstr "Вінная тэма xfdashboard"
+
+#: ../libxfdashboard/application-button.c:262
+#, c-format
+msgid "Could not execute action '%s' for application '%s': %s"
+msgstr "Не атрымалася выканаць дзеянне \"%s\" для праграмы \"%s\": %s"
+
+#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
+#: ../settings/main.c:63
+msgid "Unknown error"
+msgstr "Невядомая памылка"
+
+#: ../libxfdashboard/application-button.c:282
+#, c-format
+msgid "Executed action '%s' for application '%s'"
+msgstr "Дзеянне \"%s\" выканана для праграмы \"%s\""
+
+#: ../libxfdashboard/application-button.c:743
+#: ../libxfdashboard/application-button.c:761
+#: ../libxfdashboard/applications-search-provider.c:754
+#: ../libxfdashboard/applications-view.c:334
+#: ../libxfdashboard/quicklaunch.c:352 ../libxfdashboard/quicklaunch.c:400
+#: ../libxfdashboard/quicklaunch.c:458
+#, c-format
+msgid "Launching application '%s' failed: %s"
+msgstr "Запусціць праграму \"%s\" не атрымалася: %s"
+
+#: ../libxfdashboard/application-button.c:745
+#: ../libxfdashboard/quicklaunch.c:354
+msgid "No information available for application"
+msgstr "Звесткі пра праграму адсутнічаюць"
+
+#: ../libxfdashboard/application-button.c:763
+#: ../libxfdashboard/application.c:308 ../libxfdashboard/application.c:618
+#: ../libxfdashboard/applications-search-provider.c:756
+#: ../libxfdashboard/applications-view.c:336
+#: ../libxfdashboard/quicklaunch.c:460
+msgid "unknown error"
+msgstr "невядомая памылка"
+
+#: ../libxfdashboard/application-button.c:774
+#: ../libxfdashboard/applications-search-provider.c:767
+#: ../libxfdashboard/applications-view.c:347
+#: ../libxfdashboard/quicklaunch.c:471
+#, c-format
+msgid "Application '%s' launched"
+msgstr "Праграма \"%s\" запушчаная"
+
+#: ../libxfdashboard/application.c:306
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr "Не атрымалася загрузіць тэму '%s': %s"
+
+#: ../libxfdashboard/application.c:527
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr "Вітаем у %s (%s)!"
+
+#: ../libxfdashboard/application.c:529
+#, c-format
+msgid "Welcome to %s!"
+msgstr "Вітаем у %s!"
+
+#: ../libxfdashboard/application.c:576
+msgid "Fork to background"
+msgstr "У фон"
+
+#: ../libxfdashboard/application.c:577
+msgid "Quit running instance"
+msgstr "Выйсці"
+
+#: ../libxfdashboard/application.c:578
+msgid "Restart running instance"
+msgstr "Перазапусціць"
+
+#: ../libxfdashboard/application.c:579
+msgid ""
+"Toggles visibility if running instance was started in daemon mode otherwise "
+"it quits running non-daemon instance"
+msgstr ""
+"Пераключае бачнасць, калі асобнік запушчаны ў рэжыме дэмана, альбо спыняе "
+"працу асобніка, калі той працуе ў звычайным рэжыме"
+
+#: ../libxfdashboard/application.c:580
+msgid "The ID of view to switch to on startup or resume"
+msgstr "Ідэнтыфікатар выгляду для пераключэння падчас запуску ці ўзнаўлення"
+
+#: ../libxfdashboard/application.c:581
+msgid "Show version"
+msgstr "Паказаць версію"
+
+#: ../libxfdashboard/application.c:600
+msgid "A Gnome Shell like dashboard for Xfce4 - version "
+msgstr "Панэль інструментаў Gnome Shell для Xfce4 - версія "
+
+#. Show error
+#: ../libxfdashboard/application.c:617
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
+
+#: ../libxfdashboard/applications-search-provider.c:838
+#: ../libxfdashboard/applications-view.c:417
+#: ../libxfdashboard/quicklaunch.c:682
+msgid "Launch"
+msgstr "Запусціць"
+
+#. Set up view
+#. Add "applications" button
+#: ../libxfdashboard/applications-search-provider.c:1175
+#: ../libxfdashboard/applications-view.c:1587
+#: ../libxfdashboard/quicklaunch.c:3288
+msgid "Applications"
+msgstr "Праграмы"
+
+#: ../libxfdashboard/applications-view.c:545
+#: ../libxfdashboard/applications-view.c:546
+#: ../libxfdashboard/applications-view.c:657
+#: ../libxfdashboard/applications-view.c:658
+msgid "Back"
+msgstr "Назад"
+
+#: ../libxfdashboard/applications-view.c:545
+#: ../libxfdashboard/applications-view.c:657
+msgid "Go back to previous menu"
+msgstr "Вярнуцца да папярэдняга меню"
+
+#: ../libxfdashboard/applications-view.c:685
+#: ../libxfdashboard/applications-view.c:686
+msgid "All applications"
+msgstr "Усе праграмы"
+
+#: ../libxfdashboard/applications-view.c:685
+msgid "List of all installed applications"
+msgstr "Спіс усіх усталяваных праграм"
+
+#: ../libxfdashboard/quicklaunch.c:402
+msgid "No windows to activate for application"
+msgstr "Для актывацыі праграмы няма акон"
+
+#: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
+#: ../libxfdashboard/quicklaunch.c:2130
+#, c-format
+msgid "Favourite '%s' removed"
+msgstr "\"%s\" выдалена з улюбёнага"
+
+#: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
+#: ../libxfdashboard/quicklaunch.c:2063
+#, c-format
+msgid "Favourite '%s' added"
+msgstr "\"%s\" дададзена ва ўлюбёнае"
+
+#: ../libxfdashboard/quicklaunch.c:705
+msgid "Remove from favourites"
+msgstr "Выдаліць з улюбёнага"
+
+#: ../libxfdashboard/quicklaunch.c:719
+msgid "Add to favourites"
+msgstr "Дадаць ва ўлюбёнае"
+
+#. Next add trash button to box but initially hidden and register as drop
+#. target
+#: ../libxfdashboard/quicklaunch.c:3295
+msgid "Remove"
+msgstr "Выдаліць"
+
+#: ../libxfdashboard/search-result-container.c:664
+#: ../libxfdashboard/search-result-container.c:1734
+#, c-format
+msgid "Show %d more results..."
+msgstr "Паказаць %d больш вынікаў..."
+
+#. Get text to set at "all"-label
+#: ../libxfdashboard/search-result-container.c:686
+#, c-format
+msgid "Show all %d results..."
+msgstr "Паказаць усе %d вынікі..."
+
+#: ../libxfdashboard/search-view.c:979
+#, c-format
+msgid "No results found for '%s'"
+msgstr "Вынікаў для \"%s\" не знойдзена"
+
+#. Set up view (Note: Search view is disabled by default!)
+#: ../libxfdashboard/search-view.c:1715
+msgid "Search"
+msgstr "Пошук"
+
+#: ../libxfdashboard/stage.c:1124
+msgid "Just type to search..."
+msgstr "Увядзіце назву для пошуку..."
+
+#. Set up view
+#: ../libxfdashboard/windows-view.c:2317
+msgid "Windows"
+msgstr "Вокны"
+
+#. Set up view
+#: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:312
+msgid "Clock"
+msgstr "Гадзіннік"
+
+#. Add widget to choose hour color
+#: ../plugins/clock-view/plugin.c:208
+msgid "Hour color:"
+msgstr "Колер гадзіннай стрэлкі:"
+
+#: ../plugins/clock-view/plugin.c:218
+msgid "Choose color for hour hand"
+msgstr "Абярыце колер гадзіннай стрэлкі"
+
+#. Add widget to choose minute color
+#: ../plugins/clock-view/plugin.c:223
+msgid "Minute color:"
+msgstr "Колер хвіліннай стрэлкі:"
+
+#: ../plugins/clock-view/plugin.c:233
+msgid "Choose color for minute hand"
+msgstr "Абярыце колер хвіліннай стрэлкі"
+
+#. Add widget to choose second color
+#: ../plugins/clock-view/plugin.c:238
+msgid "Second color:"
+msgstr "Колер секунднай стрэлкі:"
+
+#: ../plugins/clock-view/plugin.c:248
+msgid "Choose color for second hand"
+msgstr "Абярыце колер секунднай стрэлкі"
+
+#. Add widget to choose minute color
+#: ../plugins/clock-view/plugin.c:253
+msgid "Background color:"
+msgstr "Колер фону:"
+
+#: ../plugins/clock-view/plugin.c:263
+msgid "Choose color for background of second hand"
+msgstr "Абярыце колер падстрэлка"
+
+#: ../plugins/clock-view/plugin.c:313
+msgid "Adds a new view showing a clock"
+msgstr "Дадаць новы выгляд гадзінніка"
+
+#: ../plugins/example-search-provider/example-search-provider.c:73
+msgid "Example search"
+msgstr "Прыклад пошуку"
+
+#: ../plugins/example-search-provider/plugin.c:75
+msgid "Example search provider"
+msgstr "Прыклад сістэмы пошуку"
+
+#: ../plugins/example-search-provider/plugin.c:76
+msgid "This is just a useless example search provider plugin"
+msgstr "Гэта проста прыклад убудовы сістэмы пошуку"
+
+#: ../plugins/gnome-shell-search-provider/plugin.c:433
+msgid "Gnome-Shell search provider"
+msgstr "Сістэма пошуку Gnome-Shell"
+
+#: ../plugins/gnome-shell-search-provider/plugin.c:434
+msgid "Uses Gnome-Shell search providers as source for searches"
+msgstr "Для пошуку выкарыстоўваюцца сістэмы пошуку Gnome-Shell"
+
+#: ../plugins/hot-corner/plugin.c:268
+msgid "s"
+msgstr "с"
+
+#: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
+msgid "ms"
+msgstr "мс"
+
+#: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
+#: ../settings/general.c:383
+msgid "Immediately"
+msgstr "Неадкладна"
+
+#. Add widget to choose activation corner
+#: ../plugins/hot-corner/plugin.c:339
+msgid "Activation corner:"
+msgstr "Кут актывацыі:"
+
+#. Add widget to choose activation radius
+#: ../plugins/hot-corner/plugin.c:375
+msgid "Radius of activation corner:"
+msgstr "Радыус кута актывацыі:"
+
+#. Add widget to choose activation duration
+#: ../plugins/hot-corner/plugin.c:393
+msgid "Timeout to activate:"
+msgstr "Затрымка актывацыі:"
+
+#. Add widget to limit checks to primary monitor only or to all monitors
+#: ../plugins/hot-corner/plugin.c:415
+msgid "Primary monitor only"
+msgstr "Толькі асноўны манітор"
+
+#: ../plugins/hot-corner/plugin.c:467
+msgid "Hot corner"
+msgstr "Гарачыя куты"
+
+#: ../plugins/hot-corner/plugin.c:468
+msgid ""
+"Activates xfdashboard when pointer is moved to a configured corner of "
+"monitor"
+msgstr "Пры перамяшчэнні курсора ў наладжаны кут актывуе xfdashboard"
+
+#: ../plugins/middle-click-window-close/plugin.c:71
+msgid "Middle-click window close"
+msgstr "Закрываць акно сярэдняй кнопкай мышы"
+
+#: ../plugins/middle-click-window-close/plugin.c:72
+msgid "Closes windows in windows view by middle-click"
+msgstr "Закрываць вокны націскам сярэдняй кнопкі мышы"
+
+#: ../settings/general.c:120
+msgid "Do nothing"
+msgstr "Нічога не рабіць"
+
+#: ../settings/general.c:121
+msgid "Windows view"
+msgstr "Вокны"
+
+#: ../settings/general.c:122
+msgid "Applications view"
+msgstr "Праграмы"
+
+#: ../settings/general.c:129
+msgid "High"
+msgstr "Высокі"
+
+#: ../settings/general.c:130
+msgid "Normal"
+msgstr "Звычайны"
+
+#: ../settings/general.c:131
+msgid "Low"
+msgstr "Нізкі"
+
+#: ../settings/general.c:324
+msgid "seconds"
+msgstr "секунд(ы)"
+
+#: ../settings/plugins.c:222
+#, c-format
+msgid "Configure plugin: %s"
+msgstr "Налады ўбудовы: %s"
+
+#. Create error message to store in list
+#: ../settings/plugins.c:825
+#, c-format
+msgid ""
+"<b>Plugin could not be loaded.</b>\n"
+"\n"
+"%s"
+msgstr ""
+"<b>Не атрымалася загрузіць убудову.</b>\n"
+"\n"
+"%s"
+
+#: ../settings/plugins.c:1032
+msgid "Name"
+msgstr "Назва"
+
+#: ../settings/themes.c:781
+msgid "Theme"
+msgstr "Тэма"
+
+#: ../settings/main.c:46
+msgid "Settings manager socket"
+msgstr "Сокет кіраўніка налад"
+
+#: ../settings/main.c:46
+msgid "SOCKET ID"
+msgstr "Ідэнтыфікатар сокета"
+
+#: ../settings/main.c:47
+msgid "Version information"
+msgstr "Інфармацыя пра версію"
+
+#. Initialize GTK+
+#: ../settings/main.c:57
+msgid "."
+msgstr "."
+
+#: ../settings/main.c:61
+#, c-format
+msgid ""
+"%s: %s\n"
+"Try %s --help to see a full list of available command line options.\n"
+msgstr ""
+"%s: %s\n"
+"Паспрабуйце \"%s --help\", каб праглядзець спіс даступных параметраў загаднага радка.\n"
