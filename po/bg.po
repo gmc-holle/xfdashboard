@@ -7,16 +7,16 @@
 # Xfce Bot <transifex@xfce.org>, 2020
 # Nick Schermer <nick@xfce.org>, 2020
 # Любомир Василев, 2020
-# Kiril Kirilov <cybercop_montana@abv.bg>, 2020
+# Kiril Kirilov <cybercop_montana@abv.bg>, 2021
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-30 00:47+0100\n"
+"POT-Creation-Date: 2020-12-28 00:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Kiril Kirilov <cybercop_montana@abv.bg>, 2020\n"
+"Last-Translator: Kiril Kirilov <cybercop_montana@abv.bg>, 2021\n"
 "Language-Team: Bulgarian (https://www.transifex.com/xfce/teams/16840/bg/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,29 +24,29 @@ msgstr ""
 "Language: bg\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../data/xfdashboard.desktop.in.in.h:1
-#: ../data/xfdashboard-autostart.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:1
 msgid "Xfdashboard"
 msgstr "Xfdashboard"
 
-#: ../data/xfdashboard.desktop.in.in.h:2
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
 msgstr "Табло за управление за Xfce подобно на „Gnome Shell“"
 
-#: ../data/xfdashboard-autostart.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
 msgstr "Стартиране на xfdashboard като демон във фонов режим"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
 msgstr "Настройки на Xfdashboard"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
 msgstr "Конфигуриране на Xfdashboard"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
@@ -54,7 +54,7 @@ msgstr ""
 "Xfdashboard предлага GNOME shell подобно табло за управление, предназначено "
 "за Xfce."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:3
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:3
 msgid ""
 "It can be configured to run to any keyboard shortcut and when executed "
 "provides an overview of applications currently open enabling the user to "
@@ -67,70 +67,25 @@ msgstr ""
 "Функцията за търсене работи като търсачката на програми на Xfce, което го "
 "прави удобен за търсене и стартиране на приложения."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:4
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:4
 msgid "Browsing applications"
 msgstr "Преглед на програмите"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:5
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:5
 msgid "Searching applications"
 msgstr "Търсене на програми"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
-"This unstable development adds more animations as well as some smaller "
-"fixes."
+"This stable version introduces lots of new features like animations, pop-up "
+"menus, multiple backend and support for jumplists etc. It also includes lots"
+" of new and updated translations."
 msgstr ""
-"Това нестабилно издание добавя подобрения в анимациите и някои малки "
-"поправки."
+"Тази стабилна версия въвежда много нови функции като анимации, изскачащи "
+"менюта, множество бекенди, поддръжка на прескачане в списъка и т.н. Също "
+"така включва много нови и актуализирани преводи."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
-msgid "This unstable development adds animations."
-msgstr "Тази нестабилна разработка добавя анимации."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
-msgid ""
-"This unstable development adds support for touchpads and application actions"
-" (Jumplists, Quicklists) as well as new and updated translations."
-msgstr ""
-"Тази нестабилна разработка добавя поддръжка за тъчпада и действия на "
-"приложения (Jumplists, Quicklists), както и нови и актуализирани преводи."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
-msgid ""
-"This unstable development adds lots of new and updated translations and "
-"support for newer xfconf versions."
-msgstr ""
-"Тази нестабилна разработка добавя много нови и актуализирани преводи и "
-"поддръжка за по-нови версии на xfconf."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
-msgid ""
-"This unstable development implements a new experimental backend for GDK as "
-"well as it supports user stylesheets now."
-msgstr ""
-"Тази нестабилна разработка реализира нов експериментален бекенд за GDK, "
-"както и поддържа потребителски стилове на таблици."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
-msgid ""
-"This unstable development improves loading performance of images and icon, "
-"adds a fine-grained debugging system and introduces an interface for "
-"multiple backends but only X11 is still the one only one supported."
-msgstr ""
-"Тази нестабилна разработка подобрява производителността на зареждане на "
-"изображения и икони, добавя подобрена система за отстраняване на грешки и "
-"въвежда интерфейс за множество бекендове, обаче X11 все още се поддържа само"
-" един."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
-msgid ""
-"This unstable development introduces child windows shown next to the main "
-"window."
-msgstr ""
-"Тази нестабилна разработка представя дъщерни прозорци, показвани до главния "
-"прозорец."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -138,11 +93,7 @@ msgstr ""
 "Тази стабилна версия коригира грешка при задаване на правилните приложения "
 "по подразбиране при ползване за първи път."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
-msgid "This unstable development introduces pop-up menus."
-msgstr "Тази нестабилна разработка въвежда изскачащи менюта."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -215,7 +166,7 @@ msgstr "Минимално време за известяване:"
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
-msgstr ""
+msgstr "Активирайте заобиколно решение за минимизирани прозорци"
 
 #: ../data/data/preferences.ui.h:19
 msgid ""
@@ -408,7 +359,7 @@ msgstr "Тема за xfdashboard с цвят на червено вино"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr ""
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:814
+#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
 msgid "Unknown error"
 msgstr "Неизвестна грешка"
@@ -426,12 +377,12 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:458
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr ""
+msgstr "Стартирането на приложението \"%s\" е неуспешно: %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:354
 msgid "No information available for application"
-msgstr ""
+msgstr "Няма налична информация за приложението"
 
 #: ../libxfdashboard/application-button.c:763
 #: ../libxfdashboard/application.c:308 ../libxfdashboard/application.c:618
@@ -439,7 +390,7 @@ msgstr ""
 #: ../libxfdashboard/applications-view.c:336
 #: ../libxfdashboard/quicklaunch.c:460
 msgid "unknown error"
-msgstr ""
+msgstr "неизвестна грешка"
 
 #: ../libxfdashboard/application-button.c:774
 #: ../libxfdashboard/applications-search-provider.c:767
@@ -447,7 +398,7 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:471
 #, c-format
 msgid "Application '%s' launched"
-msgstr ""
+msgstr "Приложението \"%s\" е стартирано"
 
 #: ../libxfdashboard/application.c:306
 #, c-format
@@ -675,25 +626,30 @@ msgid "Immediately"
 msgstr "Незабавно"
 
 #. Add widget to choose activation corner
-#: ../plugins/hot-corner/plugin.c:304
+#: ../plugins/hot-corner/plugin.c:339
 msgid "Activation corner:"
 msgstr "Ъгъл за активиране:"
 
 #. Add widget to choose activation radius
-#: ../plugins/hot-corner/plugin.c:340
+#: ../plugins/hot-corner/plugin.c:375
 msgid "Radius of activation corner:"
 msgstr "Радиус на ъгъла за активиране:"
 
 #. Add widget to choose activation duration
-#: ../plugins/hot-corner/plugin.c:358
+#: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
 msgstr "Време за активиране:"
 
-#: ../plugins/hot-corner/plugin.c:418
+#. Add widget to limit checks to primary monitor only or to all monitors
+#: ../plugins/hot-corner/plugin.c:415
+msgid "Primary monitor only"
+msgstr ""
+
+#: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
 msgstr "Горещ ъгъл"
 
-#: ../plugins/hot-corner/plugin.c:419
+#: ../plugins/hot-corner/plugin.c:468
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
@@ -744,7 +700,7 @@ msgid "Configure plugin: %s"
 msgstr "Конфигуриране на добавка: %s"
 
 #. Create error message to store in list
-#: ../settings/plugins.c:813
+#: ../settings/plugins.c:825
 #, c-format
 msgid ""
 "<b>Plugin could not be loaded.</b>\n"
@@ -752,7 +708,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../settings/plugins.c:1020
+#: ../settings/plugins.c:1032
 msgid "Name"
 msgstr "Име"
 
