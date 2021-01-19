@@ -10,17 +10,17 @@
 # mc <correomc2000-ing@yahoo.es>, 2020
 # 629cf3e396111bb8c5fb6664e2dbc91d, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
-# emiliano casal chiarotti <emiliano.casal.chiarotti@gmail.com>, 2020
 # Casper casper, 2020
+# emiliano casal chiarotti <emiliano.casal.chiarotti@gmail.com>, 2020
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-17 12:52+0100\n"
+"POT-Creation-Date: 2020-12-28 00:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Casper casper, 2020\n"
+"Last-Translator: emiliano casal chiarotti <emiliano.casal.chiarotti@gmail.com>, 2020\n"
 "Language-Team: Spanish (https://www.transifex.com/xfce/teams/16840/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,29 +28,29 @@ msgstr ""
 "Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../data/xfdashboard.desktop.in.in.h:1
-#: ../data/xfdashboard-autostart.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:1
 msgid "Xfdashboard"
 msgstr "Xfdashboard"
 
-#: ../data/xfdashboard.desktop.in.in.h:2
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
 msgstr "Tal vez un intérprete de órdenes a modo de panel para Xfce"
 
-#: ../data/xfdashboard-autostart.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
 msgstr "Iniciar Xfdashboard como servicio en segundo plano"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
 msgstr "Ajustes de Xfdashboard"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
 msgstr "Configurar Xfdashboard"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
@@ -58,7 +58,7 @@ msgstr ""
 "Xfdashboard provee un Intérprete de panel como el de GNOME para usarse en el"
 " entorno de escritorio Xfce."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:3
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:3
 msgid ""
 "It can be configured to run to any keyboard shortcut and when executed "
 "provides an overview of applications currently open enabling the user to "
@@ -71,75 +71,25 @@ msgstr ""
 "La función de búsqueda funciona como el buscador de aplicaciones de Xfce que"
 " hace que sea conveniente para buscar e iniciar aplicaciones."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:4
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:4
 msgid "Browsing applications"
 msgstr "Navegar por las aplicaciones"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:5
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:5
 msgid "Searching applications"
 msgstr "Buscar aplicaciones"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:6
-msgid "This release candidate adds also more animations as well as fixes."
-msgstr "Esta versión candidata añade también más animaciones y correcciones."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
-"This unstable development adds more animations as well as some smaller "
-"fixes."
+"This stable version introduces lots of new features like animations, pop-up "
+"menus, multiple backend and support for jumplists etc. It also includes lots"
+" of new and updated translations."
 msgstr ""
-"Esta versión de desarrollo inestable agrega más animaciones y algunos "
-"arreglos menores."
+"Esta versión estable presenta muchas características nuevas como "
+"animaciones, menús emergentes, backend múltiple y soporte para listas de "
+"salto, etc. También incluye muchas traducciones nuevas y actualizadas."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
-msgid "This unstable development adds animations."
-msgstr "Esta versión de desarrollo inestable agrega animaciones."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
-msgid ""
-"This unstable development adds support for touchpads and application actions"
-" (Jumplists, Quicklists) as well as new and updated translations."
-msgstr ""
-"Este desarrollo inestable añade soporte para paneles táctiles y acciones de "
-"aplicaciones (Saltos de listas, Listas rapidas), así como traducciones "
-"nuevas y actualizadas."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
-msgid ""
-"This unstable development adds lots of new and updated translations and "
-"support for newer xfconf versions."
-msgstr ""
-"Esta versión de desarrollo inestable agrega muchas traduccioines nuevas y "
-"actualizadas y soporte para nuevas versiones de xfconf."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
-msgid ""
-"This unstable development implements a new experimental backend for GDK as "
-"well as it supports user stylesheets now."
-msgstr ""
-"Este desarrollo inestable implementa un nuevo backend experimental para GDK "
-"y ahora admite hojas de estilo de usuario."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
-msgid ""
-"This unstable development improves loading performance of images and icon, "
-"adds a fine-grained debugging system and introduces an interface for "
-"multiple backends but only X11 is still the one only one supported."
-msgstr ""
-"Este desarrollo inestable mejora el rendimiento de carga de imágenes e "
-"íconos, añade un sistema de depuración de grano fino e introduce una "
-"interfaz para múltiples backends, pero solo X11 sigue siendo el único "
-"compatible."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
-msgid ""
-"This unstable development introduces child windows shown next to the main "
-"window."
-msgstr ""
-"Este desarrollo inestable introduce ventanas secundarias que se muestran "
-"junto a la ventana principal."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -147,11 +97,7 @@ msgstr ""
 "Esta versión estable arregla un error configurando las aplicaciones por "
 "defecto correctas en el primer uso."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
-msgid "This unstable development introduces pop-up menus."
-msgstr "Esta versión de desarrollo inestable introduce menús emergentes."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
