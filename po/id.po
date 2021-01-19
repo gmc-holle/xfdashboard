@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-17 12:52+0100\n"
+"POT-Creation-Date: 2020-12-28 00:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Triyan W. Nugroho <triyan.wn@gmail.com>, 2020\n"
 "Language-Team: Indonesian (https://www.transifex.com/xfce/teams/16840/id/)\n"
@@ -26,29 +26,29 @@ msgstr ""
 "Language: id\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../data/xfdashboard.desktop.in.in.h:1
-#: ../data/xfdashboard-autostart.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:1
 msgid "Xfdashboard"
 msgstr "Xfdashboard"
 
-#: ../data/xfdashboard.desktop.in.in.h:2
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
 msgstr "Sebuah dasbor mirip Gnome shell untuk Xfce"
 
-#: ../data/xfdashboard-autostart.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
 msgstr "Jalankan xfdashboard sebagai jurik di latar belakang"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
 msgstr "Pengaturan xfdashboard"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
 msgstr "Konfigurasi xfdashboard"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
@@ -56,7 +56,7 @@ msgstr ""
 "Xfdashboard menyediakan sebuah antarmuka mirip dasbor GNOME shell untuk "
 "digunakan dengan desktop Xfce."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:3
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:3
 msgid ""
 "It can be configured to run to any keyboard shortcut and when executed "
 "provides an overview of applications currently open enabling the user to "
@@ -69,77 +69,22 @@ msgstr ""
 "aplikasi yang berbeda. Fitur pencarian bekerja seperti pencari aplikasi Xfce"
 " yang memudahkan untuk mencari dan menjalankan aplikasi."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:4
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:4
 msgid "Browsing applications"
 msgstr "Meramban aplikasi"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:5
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:5
 msgid "Searching applications"
 msgstr "Mencari aplikasi"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:6
-msgid "This release candidate adds also more animations as well as fixes."
-msgstr ""
-"Kandidat rilis ini juga menambahkan beberapa animasi di samping perbaikan-"
-"perbaikan."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
-"This unstable development adds more animations as well as some smaller "
-"fixes."
+"This stable version introduces lots of new features like animations, pop-up "
+"menus, multiple backend and support for jumplists etc. It also includes lots"
+" of new and updated translations."
 msgstr ""
-"Pengembangan tak stabil ini menambahkan lebih banyak animasi di samping "
-"beberapa perbaikan kecil."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
-msgid "This unstable development adds animations."
-msgstr "Pengembangan tak stabil ini menambahkan beberapa animasi."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
-msgid ""
-"This unstable development adds support for touchpads and application actions"
-" (Jumplists, Quicklists) as well as new and updated translations."
-msgstr ""
-"Pengembangan tak stabil ini menambahkan dukungan untuk lapik sentuh dan "
-"aksi-aksi aplikasi (Daftar Lompat, Daftar Cepat) di samping terjemahan baru "
-"dan yang diperbarui."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
-msgid ""
-"This unstable development adds lots of new and updated translations and "
-"support for newer xfconf versions."
-msgstr ""
-"Pengembangan tak stabil ini menambahkan banyak terjemahan baru dan yang "
-"diperbarui, serta dukungan untuk versi xfconf yang lebih baru."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
-msgid ""
-"This unstable development implements a new experimental backend for GDK as "
-"well as it supports user stylesheets now."
-msgstr ""
-"Pengembangan tak stabil ini mengimplementasikan sebuah backend eksperimental"
-" baru untuk GDK, serta mendukung lembar gaya pengguna."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
-msgid ""
-"This unstable development improves loading performance of images and icon, "
-"adds a fine-grained debugging system and introduces an interface for "
-"multiple backends but only X11 is still the one only one supported."
-msgstr ""
-"Pengembangan tak stabil ini meningkatkan performa pemuatan gambar dan ikon, "
-"menambahkan sebuah sistem pengawakutuan yang diperbaiki dan memperkenalkan "
-"sebuah antarmuka untuk beberapa backend namun saat ini hanya X11 yang "
-"didukung."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
-msgid ""
-"This unstable development introduces child windows shown next to the main "
-"window."
-msgstr ""
-"Pengembangan tak stabil ini memperkenalkan jendela anak yang ditampilkan di "
-"sebelah jendela utama."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -147,11 +92,7 @@ msgstr ""
 "Versi stabil ini memperbaiki sebuah kutu yang mengatur aplikasi bawaan yang "
 "tepat pada saat pertama kali digunakan."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
-msgid "This unstable development introduces pop-up menus."
-msgstr "Pengembangan tak stabil ini memperkenalkan menu pop-up."
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:16
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
