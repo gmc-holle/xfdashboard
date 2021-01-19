@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-30 00:47+0100\n"
+"POT-Creation-Date: 2020-12-28 00:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Moo, 2020\n"
 "Language-Team: Lithuanian (https://www.transifex.com/xfce/teams/16840/lt/)\n"
@@ -23,29 +23,29 @@ msgstr ""
 "Language: lt\n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);\n"
 
-#: ../data/xfdashboard.desktop.in.in.h:1
-#: ../data/xfdashboard-autostart.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:1
 msgid "Xfdashboard"
 msgstr "Xfdashboard"
 
-#: ../data/xfdashboard.desktop.in.in.h:2
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
 msgstr "Galbūt, į Gnome apvalkalą panašus skydelis, skirtas Xfce"
 
-#: ../data/xfdashboard-autostart.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
 msgstr "Paleisti xfdashboard kaip tarnybą fone"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
 msgstr "Xfdashboard nustatymai"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
 msgstr "Konfigūruoti xfdashboard"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
@@ -53,79 +53,54 @@ msgstr ""
 "Xfdashboard pateikia į Gnome apvalkalo skydelį panašią sąsają, skirtą "
 "naudoti Xfce darbalaukyje."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:3
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:3
 msgid ""
 "It can be configured to run to any keyboard shortcut and when executed "
 "provides an overview of applications currently open enabling the user to "
 "switch between different applications. The search feature works like Xfce's "
 "app finder which makes it convenient to search for and start applications."
 msgstr ""
+"Skydelis gali būti susietas su bet kuriuo sparčiuoju klavišu, o jį paleidus,"
+" skydelis pateikia esamu metu atvertų programų apžvalgą, taip leisdamas "
+"naudotojui perjungti tarp įvairių programų. Paieškos ypatybė veikia taip "
+"pat, kaip ir Xfce programų paieška, dėl to, ją patogu naudoti programų "
+"paieškai bei paleidimui."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:4
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:4
 msgid "Browsing applications"
 msgstr "Programų naršymas"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:5
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:5
 msgid "Searching applications"
 msgstr "Programų paieška"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
-"This unstable development adds more animations as well as some smaller "
-"fixes."
+"This stable version introduces lots of new features like animations, pop-up "
+"menus, multiple backend and support for jumplists etc. It also includes lots"
+" of new and updated translations."
 msgstr ""
+"Ši stabili versija pristato daug naujų ypatybių, tokių kaip animacijos, "
+"iškylantieji meniu, kelios vidinės pusės, peršokimo sąrašų palaikymas ir "
+"t.t. Joje taip pat yra daugybė naujų ir atnaujintų vertimų."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
-msgid "This unstable development adds animations."
-msgstr ""
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:8
-msgid ""
-"This unstable development adds support for touchpads and application actions"
-" (Jumplists, Quicklists) as well as new and updated translations."
-msgstr ""
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:9
-msgid ""
-"This unstable development adds lots of new and updated translations and "
-"support for newer xfconf versions."
-msgstr ""
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:10
-msgid ""
-"This unstable development implements a new experimental backend for GDK as "
-"well as it supports user stylesheets now."
-msgstr ""
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:11
-msgid ""
-"This unstable development improves loading performance of images and icon, "
-"adds a fine-grained debugging system and introduces an interface for "
-"multiple backends but only X11 is still the one only one supported."
-msgstr ""
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:12
-msgid ""
-"This unstable development introduces child windows shown next to the main "
-"window."
-msgstr ""
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:13
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
+"Ši stabili versija ištaiso klaidą ir pirmojo paleidimo metu nustato "
+"teisingas numatytąsias programas."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:14
-msgid "This unstable development introduces pop-up menus."
-msgstr ""
-
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:15
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
 "smaller improvements."
 msgstr ""
+"Ši stabili versija pristato daug naujų ypatybių, tokių kaip įskiepiai ir "
+"programų sekikliai. Joje taip pat yra didžiulė smulkesnių ir didesnių "
+"patobulinimų kolekcija."
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
@@ -219,13 +194,15 @@ msgstr "Langų turinio kūrimo pirmenybė"
 
 #: ../data/data/preferences.ui.h:26
 msgid "Show child windows in main windows"
-msgstr ""
+msgstr "Rodyti pagrindiniuose languose pavaldžius langus"
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
 msgstr ""
+"Įjungus, visos tiesioginės langų peržiūros taip pat rodys ir jų pavaldžius "
+"langus. Išjungus šią parinktį, senesniuose kompiuteriuose padidės našumas."
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
@@ -237,6 +214,9 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
+"Kai įjungta, spustelėjus ant piktogramos sparčiajame paleidime, visada bus paleidžiamas naujas programos egzempliorius.\n"
+"\n"
+"Kai išjungta, bus pasirenkamas paskiausiai aktyvus veikiančio programos egzemplioriaus langas. Jei programa nepaleista, bus paleistas naujas jos egzempliorius."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
@@ -389,7 +369,7 @@ msgstr "Raudono vyno xfdashboard tema"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Nepavyko įvykdyti veiksmo „%s“, skirto programai „%s“: %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:814
+#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
 msgid "Unknown error"
 msgstr "Nežinoma klaida"
@@ -397,7 +377,7 @@ msgstr "Nežinoma klaida"
 #: ../libxfdashboard/application-button.c:282
 #, c-format
 msgid "Executed action '%s' for application '%s'"
-msgstr ""
+msgstr "Įvykdytas veiksmas „%s“, skirtas programai „%s“"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
@@ -462,10 +442,13 @@ msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
 msgstr ""
+"Perjungia matomumą, jei veikiantis programos egzempliorius buvo paleistas "
+"tarnybos veiksenoje. Priešingu atveju baigia egzemplioriaus, veikiančio ne "
+"tarnybos veiksenoje, darbą"
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
-msgstr ""
+msgstr "Rodinio, į kurį perjungti paleidimo ar pratęsimo metu, ID"
 
 #: ../libxfdashboard/application.c:581
 msgid "Show version"
@@ -473,7 +456,7 @@ msgstr "Rodyti versiją"
 
 #: ../libxfdashboard/application.c:600
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr ""
+msgstr "Gnome apvalkalo pavidalo skydelis skirtas Xfce4 - versija"
 
 #. Show error
 #: ../libxfdashboard/application.c:617
@@ -518,7 +501,7 @@ msgstr "Visų įdiegtų programų sąrašas"
 
 #: ../libxfdashboard/quicklaunch.c:402
 msgid "No windows to activate for application"
-msgstr ""
+msgstr "Programa neturi aktyvuojamų langų"
 
 #: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
 #: ../libxfdashboard/quicklaunch.c:2130
@@ -632,7 +615,7 @@ msgstr "Pavyzdinės paieškos teikėjas"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr ""
+msgstr "Tai yra tiesiog nenaudingas pavyzdinis paieškos teikėjo įskiepis"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
@@ -640,7 +623,7 @@ msgstr "Gnome-Shell paieškos teikėjas"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr ""
+msgstr "Naudoja Gnome apvalkalo paieškos teikėjus kaip savo paieškų šaltinį"
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
@@ -656,29 +639,36 @@ msgid "Immediately"
 msgstr "Nedelsiant"
 
 #. Add widget to choose activation corner
-#: ../plugins/hot-corner/plugin.c:304
+#: ../plugins/hot-corner/plugin.c:339
 msgid "Activation corner:"
 msgstr "Aktyvavimo kampas"
 
 #. Add widget to choose activation radius
-#: ../plugins/hot-corner/plugin.c:340
+#: ../plugins/hot-corner/plugin.c:375
 msgid "Radius of activation corner:"
 msgstr "Kampo aktyvavimo spindulys:"
 
 #. Add widget to choose activation duration
-#: ../plugins/hot-corner/plugin.c:358
+#: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
 msgstr "Aktyvavimo laiko limitas:"
 
-#: ../plugins/hot-corner/plugin.c:418
+#. Add widget to limit checks to primary monitor only or to all monitors
+#: ../plugins/hot-corner/plugin.c:415
+msgid "Primary monitor only"
+msgstr "Tik pirminis monitorius"
+
+#: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
 msgstr "Karštasis kampas"
 
-#: ../plugins/hot-corner/plugin.c:419
+#: ../plugins/hot-corner/plugin.c:468
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
 msgstr ""
+"Aktyvuoja xfdashboard, kai pelė perkeliama į sukonfigūruotą monitoriaus "
+"kampą"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
@@ -722,7 +712,7 @@ msgid "Configure plugin: %s"
 msgstr "Konfigūruoti įskiepį: %s"
 
 #. Create error message to store in list
-#: ../settings/plugins.c:813
+#: ../settings/plugins.c:825
 #, c-format
 msgid ""
 "<b>Plugin could not be loaded.</b>\n"
@@ -733,7 +723,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../settings/plugins.c:1020
+#: ../settings/plugins.c:1032
 msgid "Name"
 msgstr "Pavadinimas"
 
