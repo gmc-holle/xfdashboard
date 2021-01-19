@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-23 12:48+0100\n"
+"POT-Creation-Date: 2020-12-28 00:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Besnik Bleta <besnik@programeshqip.org>, 2020\n"
 "Language-Team: Albanian (https://www.transifex.com/xfce/teams/16840/sq/)\n"
@@ -22,29 +22,29 @@ msgstr ""
 "Language: sq\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../data/xfdashboard.desktop.in.in.h:1
-#: ../data/xfdashboard-autostart.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:1
 msgid "Xfdashboard"
 msgstr "Xfdashboard"
 
-#: ../data/xfdashboard.desktop.in.in.h:2
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
 msgstr "Një pult për Xfce-në, i ngjashëm ndoshta me shellin Gnome"
 
-#: ../data/xfdashboard-autostart.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
 msgstr "Nise xfdashboard-in si demon në prapaskenë"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
 msgstr "Rregullime Xfdashboard-i"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
 msgstr "Formësoni xfdashboard-in"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
@@ -52,7 +52,7 @@ msgstr ""
 "Xfdashboard furnizon një pult të ngjashëm me shellin GNOME për përdorim me "
 "desktopin Xfce."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:3
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:3
 msgid ""
 "It can be configured to run to any keyboard shortcut and when executed "
 "provides an overview of applications currently open enabling the user to "
@@ -66,15 +66,15 @@ msgstr ""
 "aplikacioneve të Xfce-së, çka e bën të lehtë kërkimin dhe nisjen e "
 "aplikacioneve."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:4
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:4
 msgid "Browsing applications"
 msgstr "Aplikacione shfletimi"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:5
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:5
 msgid "Searching applications"
 msgstr "Aplikacione kërkimi"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -85,7 +85,15 @@ msgstr ""
 "“jumplists”, etj. Përmban gjithashtu plot përkthime të reja dhe të "
 "përditësuara."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
+"This stable version fixes a bug setting the correct default applications at "
+"first use."
+msgstr ""
+"Ky version i qëndrueshëm ndreq një të metë në ujdisjen e aplikacioneve të "
+"sakta parazgjedhje gjatë përdorimit të parë fare."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
