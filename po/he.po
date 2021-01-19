@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-23 12:48+0100\n"
+"POT-Creation-Date: 2020-12-28 00:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Elishai Eliyahu <elishai@mailfence.com>, 2020\n"
 "Language-Team: Hebrew (https://www.transifex.com/xfce/teams/16840/he/)\n"
@@ -26,29 +26,29 @@ msgstr ""
 "Language: he\n"
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;\n"
 
-#: ../data/xfdashboard.desktop.in.in.h:1
-#: ../data/xfdashboard-autostart.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:1
 msgid "Xfdashboard"
 msgstr "Xfdashboard"
 
-#: ../data/xfdashboard.desktop.in.in.h:2
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:1
+#: ../data/org.xfce.xfdashboard.desktop.in.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
 msgstr "אולי לוח מחוונים דומה Gnome עבור Xfce"
 
-#: ../data/xfdashboard-autostart.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
 msgstr "התחל את xfdashboard כשדון ברקע"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:1
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
 msgstr "הגדרות Xfdashboard"
 
-#: ../data/xfdashboard-settings.desktop.in.in.h:2
+#: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
 msgstr "תצורת xfdashboard"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:2
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
@@ -56,7 +56,7 @@ msgstr ""
 "Xfdashboard מספק ממשק דומה ללוח מחוונים של מעטפת GNOME לשימוש עם שולחן עבודה"
 " Xfce."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:3
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:3
 msgid ""
 "It can be configured to run to any keyboard shortcut and when executed "
 "provides an overview of applications currently open enabling the user to "
@@ -67,15 +67,15 @@ msgstr ""
 "ישומים שכרגע פתוחים ומאפשר למשתמש לעבור בין ישומים שונים. תכונת החיפוש עובדת"
 " כמו מוצא הישומים של Xfce והופכת לנח חיפוש והתחלה של ישומים."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:4
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:4
 msgid "Browsing applications"
 msgstr "סיור באפליקציות"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:5
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:5
 msgid "Searching applications"
 msgstr "חיפוש אפליקציות"
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:6
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -85,7 +85,14 @@ msgstr ""
 "עורפי מרובה ותמיכה ברשימות קופצות ועוד. היא גם כוללת הרבה תרגומים חדשים "
 "ומעודכנים."
 
-#: ../data/appdata/xfdashboard.appdata.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
+"This stable version fixes a bug setting the correct default applications at "
+"first use."
+msgstr ""
+"הגרסה היציבה הזו מתקנת באג הקובע את ישומי ברירת המחדל הנכונים בשימוש ראשון."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
