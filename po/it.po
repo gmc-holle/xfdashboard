@@ -83,12 +83,17 @@ msgid ""
 "menus, multiple backend and support for jumplists etc. It also includes lots"
 " of new and updated translations."
 msgstr ""
+"Questa versione stabile introduce molte nuove caratteristiche come "
+"animazioni, menu a comparsa, backend multipli, supporto per jumplist, ecc. "
+"Contiene inoltre molte traduzioni nuove ed aggiornate."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
+"Questa versione stabile risolve un bug impostando applicazioni predefinite "
+"corrette al primo utilizzo."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
@@ -122,7 +127,7 @@ msgstr "<b>Impostazioni generali:</b>"
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr ""
+msgstr "Ripristina visualizzazione di ricerca al ripristino"
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
@@ -137,6 +142,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
 msgstr ""
+"Quando xfdashboard viene ripristinato, la vista selezionata verrà attivata.\n"
+"\n"
+"<b>NOTA:</b> Questa impostazione prende effetto solo quando xfdashboard è avviato in modalità demone."
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
@@ -151,11 +159,11 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
-msgstr ""
+msgstr "Timeout minimo di notifica:"
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
-msgstr ""
+msgstr "Abilita workaround per finestre minimizzate"
 
 #: ../data/data/preferences.ui.h:19
 msgid ""
@@ -177,7 +185,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:26
 msgid "Show child windows in main windows"
-msgstr ""
+msgstr "Mostra finestre figlio nelle finestre principali"
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
@@ -187,7 +195,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
-msgstr ""
+msgstr "Avvia sempre una nuova istanza per applicazione"
 
 #: ../data/data/preferences.ui.h:29
 msgid ""
@@ -202,29 +210,31 @@ msgstr "Abilita animazioni"
 
 #: ../data/data/preferences.ui.h:33
 msgid "If enabled theme-defined animations will be shown."
-msgstr ""
+msgstr "Se attivato, verranno mostrate animazioni definite dal tema."
 
 #: ../data/data/preferences.ui.h:34
 msgid "<b>Applications view:</b>"
-msgstr ""
+msgstr "<b>Visualizzazione applicazioni:</b>"
 
 #: ../data/data/preferences.ui.h:35
 msgid "Show menu for all installed applications"
-msgstr ""
+msgstr "Mostra menu di tutte le applicazioni installate"
 
 #: ../data/data/preferences.ui.h:36
 msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
 msgstr ""
+"Quando attivato, un menu \"tutte le applicazioni\" contenente tutte le "
+"applicazioni installate verrà mostrato nella vista applicazioni"
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
-msgstr ""
+msgstr "<b>Visualizzazione finestre:</b>"
 
 #: ../data/data/preferences.ui.h:38
 msgid "Mouse wheel changes workspace"
-msgstr ""
+msgstr "Rotella del mouse cambia spazio di lavoro"
 
 #: ../data/data/preferences.ui.h:39
 msgid ""
@@ -235,17 +245,19 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
-msgstr ""
+msgstr "<b>Visualizzazione ricerca:</b>"
 
 #: ../data/data/preferences.ui.h:41
 msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
 msgstr ""
+"Imposta l'intervallo di tempo di cui la ricerca deve essere ritardata dopo "
+"l'inserimento del primo carattere."
 
 #: ../data/data/preferences.ui.h:42
 msgid "Delay initial search interval:"
-msgstr ""
+msgstr "Intervallo di cui ritardare la ricerca iniziale:"
 
 #: ../data/data/preferences.ui.h:43
 msgid "General"
@@ -317,7 +329,7 @@ msgstr "xfdashboard-menta"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
 msgid "Fresh-green flavored theme for xfdashboard"
-msgstr ""
+msgstr "Tema fresh-green per xfdashboard"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-moranga"
@@ -325,7 +337,7 @@ msgstr "xfdashboard-moranga"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:2
 msgid "Moranga theme for xfdashboard"
-msgstr ""
+msgstr "Tema moranga per xfdashboard"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-wine"
@@ -333,12 +345,12 @@ msgstr "xfdashboard-wine"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
 msgid "Red wine theme for xfdashboard"
-msgstr ""
+msgstr "Tema \"vino rosso\" per xfdashboard"
 
 #: ../libxfdashboard/application-button.c:262
 #, c-format
 msgid "Could not execute action '%s' for application '%s': %s"
-msgstr ""
+msgstr "Impossibile eseguire azione '%s' per applicazione '%s': %s"
 
 #: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
@@ -348,7 +360,7 @@ msgstr "Errore sconosciuto"
 #: ../libxfdashboard/application-button.c:282
 #, c-format
 msgid "Executed action '%s' for application '%s'"
-msgstr ""
+msgstr "Azione '%s' eseguita per applicazione '%s'"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
@@ -358,7 +370,7 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:458
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr ""
+msgstr "Esecuzione dell'applicazione  '%s' non riuscita: %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:354
@@ -398,7 +410,7 @@ msgstr "Benvenuti su %s!"
 
 #: ../libxfdashboard/application.c:576
 msgid "Fork to background"
-msgstr ""
+msgstr "Esegue il fork in background"
 
 #: ../libxfdashboard/application.c:577
 msgid "Quit running instance"
@@ -424,7 +436,7 @@ msgstr "Mostra la versione"
 
 #: ../libxfdashboard/application.c:600
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr ""
+msgstr "Una dashboard per Xfce4 simile a Gnome Shell - versione"
 
 #. Show error
 #: ../libxfdashboard/application.c:617
@@ -436,7 +448,7 @@ msgstr "%s\n"
 #: ../libxfdashboard/applications-view.c:417
 #: ../libxfdashboard/quicklaunch.c:682
 msgid "Launch"
-msgstr ""
+msgstr "Avvia"
 
 #. Set up view
 #. Add "applications" button
@@ -456,7 +468,7 @@ msgstr "Indietro"
 #: ../libxfdashboard/applications-view.c:545
 #: ../libxfdashboard/applications-view.c:657
 msgid "Go back to previous menu"
-msgstr ""
+msgstr "Vai al menu precedente"
 
 #: ../libxfdashboard/applications-view.c:685
 #: ../libxfdashboard/applications-view.c:686
@@ -469,19 +481,19 @@ msgstr "Elenco di tutte le applicazioni installate"
 
 #: ../libxfdashboard/quicklaunch.c:402
 msgid "No windows to activate for application"
-msgstr ""
+msgstr "Nessuna finestra da attivare per l'applicazione"
 
 #: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
 #: ../libxfdashboard/quicklaunch.c:2130
 #, c-format
 msgid "Favourite '%s' removed"
-msgstr ""
+msgstr "Preferito '%s' rimosso"
 
 #: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
 #: ../libxfdashboard/quicklaunch.c:2063
 #, c-format
 msgid "Favourite '%s' added"
-msgstr ""
+msgstr "Preferito '%s' aggiunto"
 
 #: ../libxfdashboard/quicklaunch.c:705
 msgid "Remove from favourites"
@@ -501,18 +513,18 @@ msgstr "Rimuovi"
 #: ../libxfdashboard/search-result-container.c:1734
 #, c-format
 msgid "Show %d more results..."
-msgstr ""
+msgstr "Mostra altri %d risultati..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:686
 #, c-format
 msgid "Show all %d results..."
-msgstr ""
+msgstr "Mostra tutti i %d risultati..."
 
 #: ../libxfdashboard/search-view.c:979
 #, c-format
 msgid "No results found for '%s'"
-msgstr ""
+msgstr "Nessun risultato trovato per '%s'"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
@@ -521,7 +533,7 @@ msgstr "Cerca"
 
 #: ../libxfdashboard/stage.c:1124
 msgid "Just type to search..."
-msgstr ""
+msgstr "Digita per cercare..."
 
 #. Set up view
 #: ../libxfdashboard/windows-view.c:2317
@@ -540,7 +552,7 @@ msgstr "Colore dell'ora:"
 
 #: ../plugins/clock-view/plugin.c:218
 msgid "Choose color for hour hand"
-msgstr ""
+msgstr "Scegli il colore della lancetta delle ore"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:223
@@ -549,16 +561,16 @@ msgstr "Colore del minuto:"
 
 #: ../plugins/clock-view/plugin.c:233
 msgid "Choose color for minute hand"
-msgstr ""
+msgstr "Scegli il colore della lancetta dei minuti"
 
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:238
 msgid "Second color:"
-msgstr ""
+msgstr "Secondo colore:"
 
 #: ../plugins/clock-view/plugin.c:248
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "Scegli il colore per la seconda lancetta"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:253
@@ -567,11 +579,11 @@ msgstr "Colore di sfondo:"
 
 #: ../plugins/clock-view/plugin.c:263
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "Scegli il colore per lo sfondo della seconda lancetta"
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
-msgstr ""
+msgstr "Aggiunge una nuova visualizzazione del orologio"
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
@@ -579,23 +591,24 @@ msgstr "Esempio di ricerca"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "Esempio del provider di ricerca"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
 msgstr ""
+"Questo è solo un'inutile esempio dell'estensione del provider di ricerca"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr ""
+msgstr "Provider di ricerca di Gnome-Shell"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr ""
+msgstr "Usa provider di ricerca di Gnome-Shell come sorgente di ricerche"
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
 msgid "ms"
@@ -619,7 +632,7 @@ msgstr "Raggio dell'angolo di attivazione:"
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
-msgstr ""
+msgstr "Timeout di attivazione:"
 
 #. Add widget to limit checks to primary monitor only or to all monitors
 #: ../plugins/hot-corner/plugin.c:415
@@ -628,21 +641,23 @@ msgstr "Solo schermo primario"
 
 #: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
-msgstr ""
+msgstr "Angolo attivo"
 
 #: ../plugins/hot-corner/plugin.c:468
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
 msgstr ""
+"Attiva xfdashboard quando il puntatore è spostato nell'angolo configurato "
+"dello schermo"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr ""
+msgstr "Chiusura di finestra con clic centrale"
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
-msgstr ""
+msgstr "Chiude finestre nella visualizzazione finestre con clic centrale"
 
 #: ../settings/general.c:120
 msgid "Do nothing"
@@ -650,11 +665,11 @@ msgstr "Non fare nulla"
 
 #: ../settings/general.c:121
 msgid "Windows view"
-msgstr ""
+msgstr "Visualizzazione finestre"
 
 #: ../settings/general.c:122
 msgid "Applications view"
-msgstr ""
+msgstr "Visualizzazione finestre"
 
 #: ../settings/general.c:129
 msgid "High"
