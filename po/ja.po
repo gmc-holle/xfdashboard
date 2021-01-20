@@ -8,8 +8,8 @@
 # Nick Schermer <nick@xfce.org>, 2020
 # Ken DEGUCHI <kdeguchi@sz.tokoha-u.ac.jp>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
-# Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2020
 # UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2021
+# Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2021
 # 
 #, fuzzy
 msgid ""
@@ -18,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-28 00:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2021\n"
+"Last-Translator: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2021\n"
 "Language-Team: Japanese (https://www.transifex.com/xfce/teams/16840/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -79,12 +79,13 @@ msgid ""
 "menus, multiple backend and support for jumplists etc. It also includes lots"
 " of new and updated translations."
 msgstr ""
+"この安定バージョンではアニメーション、ポップアップメニュー、複数のバックエンド、ジャンプリストのサポートなど、多くの新機能が導入されています。また多くの新規および更新された翻訳も含まれています。"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
-msgstr ""
+msgstr "この安定バージョンは、初回使用時に正しいデフォルトアプリケーションを設定するバグを修正します。"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
@@ -92,10 +93,12 @@ msgid ""
 "application tracker. It also contains a huge collection of other larger and "
 "smaller improvements."
 msgstr ""
+"この安定バージョンでは、プラグインやアプリケーショントラッカーなどの多くの新機能が導入されています。 "
+"また大小様々な多くの改善点コレクションも含まれています。"
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
-msgstr ""
+msgstr "<span size=\"large\"><b>Xfdashboard 設定</b></span>"
 
 #: ../data/data/preferences.ui.h:2
 msgid "Configure plugin"
@@ -123,6 +126,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
+"有効にすると、xfdashboard が再開されたときに検索ビューがリセットされます。つまり、アクティブなビューは前回の検索が開始される前にアクティブになっていたビューに戻り、検索ボックスが空になります。 \n"
+"\n"
+"<b>注:</b> この設定は、xfdashboard がデーモンモードで実行されている場合のみ有効です。"
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
