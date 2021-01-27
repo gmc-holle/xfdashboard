@@ -1161,7 +1161,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 				continue;
 			}
 
-#if DEBUG
+#ifdef DEBUG
 			/* In debug mode also check if signal has right signature
 			 * to be able to handle this action properly.
 			 */

@@ -273,7 +273,7 @@ static XfdashboardSettings* _xfdashboard_application_create_settings(Xfdashboard
 	_xfdashboard_application_add_settings_path_list(pathFileList, entry, FALSE);
 	g_free(entry);
 
-	themesSearchPaths=(gchar**)g_array_free(pathFileList, FALSE);
+	themesSearchPaths=(gchar**)(gpointer)g_array_free(pathFileList, FALSE);
 
 	/* Set up search path for plugins */
 	pathFileList=g_array_new(TRUE, TRUE, sizeof(gchar*));
@@ -301,7 +301,7 @@ static XfdashboardSettings* _xfdashboard_application_create_settings(Xfdashboard
 	_xfdashboard_application_add_settings_path_list(pathFileList, entry, FALSE);
 	g_free(entry);
 
-	pluginsSearchPaths=(gchar**)g_array_free(pathFileList, FALSE);
+	pluginsSearchPaths=(gchar**)(gpointer)g_array_free(pathFileList, FALSE);
 
 	/* Set up file path for bindings */
 	pathFileList=g_array_new(TRUE, TRUE, sizeof(gchar*));
@@ -329,7 +329,7 @@ static XfdashboardSettings* _xfdashboard_application_create_settings(Xfdashboard
 		g_strfreev(paths);
 	}
 
-	bindingFilePaths=(gchar**)g_array_free(pathFileList, FALSE);
+	bindingFilePaths=(gchar**)(gpointer)g_array_free(pathFileList, FALSE);
 
 	/* Create settings instance for Xfconf settings storage */
 	settings=g_object_new(XFDASHBOARD_TYPE_XFCONF_SETTINGS,

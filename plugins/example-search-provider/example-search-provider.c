@@ -53,13 +53,7 @@ XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_example_search_provider);
 /* One-time initialization of search provider */
 static void _xfdashboard_example_search_provider_initialize(XfdashboardSearchProvider *inProvider)
 {
-	XfdashboardExampleSearchProvider			*self;
-	XfdashboardExampleSearchProviderPrivate		*priv;
-
 	g_return_if_fail(XFDASHBOARD_IS_EXAMPLE_SEARCH_PROVIDER(inProvider));
-
-	self=XFDASHBOARD_EXAMPLE_SEARCH_PROVIDER(inProvider);
-	priv=self->priv;
 
 	/* Initialize search provider */
 	/* TODO: Here the search provider is initialized. This function is only called once after
@@ -84,17 +78,11 @@ static XfdashboardSearchResultSet* _xfdashboard_example_search_provider_get_resu
 																						const gchar **inSearchTerms,
 																						XfdashboardSearchResultSet *inPreviousResultSet)
 {
-	XfdashboardExampleSearchProvider				*self;
-	XfdashboardExampleSearchProviderPrivate			*priv;
 	XfdashboardSearchResultSet						*resultSet;
 	GVariant										*resultItem;
 	gchar											*resultItemTitle;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_EXAMPLE_SEARCH_PROVIDER(inProvider), NULL);
-
-	self=XFDASHBOARD_EXAMPLE_SEARCH_PROVIDER(inProvider);
-	priv=self->priv;
-	resultSet=NULL;
 
 	/* Create empty result set to store matching result items */
 	resultSet=xfdashboard_search_result_set_new();
@@ -125,17 +113,11 @@ static XfdashboardSearchResultSet* _xfdashboard_example_search_provider_get_resu
 static ClutterActor* _xfdashboard_example_search_provider_create_result_actor(XfdashboardSearchProvider *inProvider,
 																				GVariant *inResultItem)
 {
-	XfdashboardExampleSearchProvider				*self;
-	XfdashboardExampleSearchProviderPrivate			*priv;
 	ClutterActor									*actor;
 	gchar											*title;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_EXAMPLE_SEARCH_PROVIDER(inProvider), NULL);
 	g_return_val_if_fail(inResultItem, NULL);
-
-	self=XFDASHBOARD_EXAMPLE_SEARCH_PROVIDER(inProvider);
-	priv=self->priv;
-	actor=NULL;
 
 	/* Create actor for result item */
 	/* TODO: This example search provider will just create a button with a title
@@ -155,14 +137,8 @@ static gboolean _xfdashboard_example_search_provider_activate_result(Xfdashboard
 																		ClutterActor *inActor,
 																		const gchar **inSearchTerms)
 {
-	XfdashboardExampleSearchProvider				*self;
-	XfdashboardExampleSearchProviderPrivate			*priv;
-
 	g_return_val_if_fail(XFDASHBOARD_IS_EXAMPLE_SEARCH_PROVIDER(inProvider), FALSE);
 	g_return_val_if_fail(inResultItem, FALSE);
-
-	self=XFDASHBOARD_EXAMPLE_SEARCH_PROVIDER(inProvider);
-	priv=self->priv;
 	
 	/* Activate result item */
 	/* TODO: Here you have to perform the default action when a result item of
@@ -177,14 +153,8 @@ static gboolean _xfdashboard_example_search_provider_activate_result(Xfdashboard
 static gboolean _xfdashboard_example_search_provider_launch_search(XfdashboardSearchProvider* inProvider,
 																	const gchar **inSearchTerms)
 {
-	XfdashboardExampleSearchProvider				*self;
-	XfdashboardExampleSearchProviderPrivate			*priv;
-
 	g_return_val_if_fail(XFDASHBOARD_IS_EXAMPLE_SEARCH_PROVIDER(inProvider), FALSE);
 	g_return_val_if_fail(inSearchTerms, FALSE);
-
-	self=XFDASHBOARD_EXAMPLE_SEARCH_PROVIDER(inProvider);
-	priv=self->priv;
 
 	/* Launch selected result item */
 	/* TODO: Here you have to launch the application or other external services
@@ -200,9 +170,6 @@ static gboolean _xfdashboard_example_search_provider_launch_search(XfdashboardSe
 /* Dispose this object */
 static void _xfdashboard_example_search_provider_dispose(GObject *inObject)
 {
-	XfdashboardExampleSearchProvider			*self=XFDASHBOARD_EXAMPLE_SEARCH_PROVIDER(inObject);
-	XfdashboardExampleSearchProviderPrivate		*priv=self->priv;
-
 	/* Release allocated resources */
 	/* TODO: Release data in private instance if any */
 
@@ -241,9 +208,7 @@ void xfdashboard_example_search_provider_class_finalize(XfdashboardExampleSearch
  */
 void xfdashboard_example_search_provider_init(XfdashboardExampleSearchProvider *self)
 {
-	XfdashboardExampleSearchProviderPrivate		*priv;
-
-	self->priv=priv=xfdashboard_example_search_provider_get_instance_private(self);
+	self->priv=xfdashboard_example_search_provider_get_instance_private(self);
 
 	/* Set up default values */
 	/* TODO: Set up default value in private instance data if any */

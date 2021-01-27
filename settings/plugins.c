@@ -785,8 +785,7 @@ static void _xfdashboard_settings_plugins_populate_plugins_list(XfdashboardSetti
 				gchar				*message;
 
 				/* Show error message */
-				g_warning("Could not load plugin '%s' from '%s': %s",
-							pluginName,
+				g_warning("Could not load plugin from '%s': %s",
 							fullPath,
 							error ? error->message : "Unknown error");
 

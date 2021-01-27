@@ -124,7 +124,7 @@ static void _xfdashboard_window_tracker_x11_free_workspace(XfdashboardWindowTrac
 
 	priv=self->priv;
 
-#if DEBUG
+#ifdef DEBUG
 	/* There must be only one reference on that workspace object */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
 						"Freeing workspace %s@%p named '%s' with ref-count=%d",
@@ -244,7 +244,7 @@ static void _xfdashboard_window_tracker_x11_free_window(XfdashboardWindowTracker
 
 	priv=self->priv;
 
-#if DEBUG
+#ifdef DEBUG
 	/* There must be only one reference on that window object */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
 						"Freeing window %s@%p named '%s' with ref-count=%d",
@@ -430,7 +430,7 @@ static void _xfdashboard_window_tracker_x11_on_window_actions_changed(Xfdashboar
 {
 	XfdashboardWindowTrackerWindowX11		*window;
 	XfdashboardWindowTrackerWindowAction	newActions;
-	XfdashboardWindowTrackerWindowAction	changedActions;
+	G_GNUC_UNUSED XfdashboardWindowTrackerWindowAction	changedActions;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
@@ -456,7 +456,7 @@ static void _xfdashboard_window_tracker_x11_on_window_state_changed(XfdashboardW
 {
 	XfdashboardWindowTrackerWindowX11		*window;
 	XfdashboardWindowTrackerWindowState		newState;
-	XfdashboardWindowTrackerWindowState		changedStates;
+	G_GNUC_UNUSED XfdashboardWindowTrackerWindowState		changedStates;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
@@ -1106,16 +1106,12 @@ static void _xfdashboard_window_tracker_x11_on_screen_size_changed(XfdashboardWi
 static void _xfdashboard_window_tracker_x11_on_window_manager_changed(XfdashboardWindowTrackerX11 *self,
 																		gpointer inUserData)
 {
-	XfdashboardWindowTrackerX11Private		*priv;
-
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-
-	priv=self->priv;
 
 	/* Emit signal to tell that window manager has changed */
 	XFDASHBOARD_DEBUG(self, WINDOWS,
 						"Window manager changed to %s",
-						wnck_screen_get_window_manager_name(priv->screen));
+						wnck_screen_get_window_manager_name(self->priv->screen));
 	g_signal_emit_by_name(self, "window-manager-changed");
 }
 

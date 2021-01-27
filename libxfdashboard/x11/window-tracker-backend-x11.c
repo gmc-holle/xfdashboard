@@ -65,7 +65,7 @@ static void _xfdashboard_window_tracker_backend_x11_on_stage_state_changed(WnckW
 																			WnckWindowState inNewValue,
 																			gpointer inUserData)
 {
-	XfdashboardWindowTrackerWindowX11			*stageWindow;
+	G_GNUC_UNUSED XfdashboardWindowTrackerWindowX11			*stageWindow;
 
 	g_return_if_fail(WNCK_IS_WINDOW(inWindow));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inUserData));
@@ -416,7 +416,7 @@ static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_backend_x11_w
 static ClutterStage* _xfdashboard_window_tracker_backend_x11_window_tracker_backend_get_stage_from_window(XfdashboardWindowTrackerBackend *inBackend,
 																											XfdashboardWindowTrackerWindow *inStageWindow)
 {
-	XfdashboardWindowTrackerBackendX11			*self;
+	G_GNUC_UNUSED XfdashboardWindowTrackerBackendX11			*self;
 	XfdashboardWindowTrackerWindowX11			*stageWindow;
 	WnckWindow									*stageWnckWindow;
 	Window										stageXWindow;

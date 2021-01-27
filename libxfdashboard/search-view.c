@@ -174,7 +174,7 @@ static void _xfdashboard_search_view_search_terms_free(XfdashboardSearchViewSear
 {
 	g_return_if_fail(inData);
 
-#if DEBUG
+#ifdef DEBUG
 	/* Print a critical warning if more than one references to this object exist.
 	 * This is a debug message and should not be translated.
 	 */
@@ -240,7 +240,7 @@ static void _xfdashboard_search_view_provider_data_free(XfdashboardSearchViewPro
 {
 	g_return_if_fail(inData);
 
-#if DEBUG
+#ifdef DEBUG
 	/* Print a critical warning if more than one references to this object exist.
 	 * This is a debug message and should not be translated.
 	 */
@@ -529,9 +529,9 @@ static void _xfdashboard_search_view_on_provider_container_destroyed(ClutterActo
 	 */
 	if(priv->selectionProvider==providerData)
 	{
-		ClutterActor						*oldSelection;
+		G_GNUC_UNUSED ClutterActor						*oldSelection;
 		ClutterActor						*newSelection;
-		XfdashboardSearchViewProviderData	*newSelectionProvider;
+		G_GNUC_UNUSED XfdashboardSearchViewProviderData	*newSelectionProvider;
 		GList								*currentProviderIter;
 		GList								*iter;
 		XfdashboardSearchViewProviderData	*iterProviderData;
@@ -827,7 +827,7 @@ static guint _xfdashboard_search_view_perform_search(XfdashboardSearchView *self
 	for(iter=providers; iter; iter=g_list_next(iter))
 	{
 		XfdashboardSearchViewProviderData		*providerData;
-		gboolean								canDoIncrementalSearch;
+		G_GNUC_UNUSED gboolean								canDoIncrementalSearch;
 		XfdashboardSearchResultSet				*providerNewResultSet;
 		XfdashboardSearchResultSet				*providerLastResultSet;
 

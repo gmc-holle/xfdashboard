@@ -1497,7 +1497,7 @@ static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuick
 	}
 
 	/* Store new favourites list */
-	priv->favourites=(gchar**)g_array_free(newFavourites, FALSE);
+	priv->favourites=(gchar**)(gpointer)g_array_free(newFavourites, FALSE);
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardQuicklaunchProperties[PROP_FAVOURITES]);
