@@ -181,7 +181,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
-msgstr ""
+msgstr "Priorità della creazione del contenuto nelle finestre"
 
 #: ../data/data/preferences.ui.h:26
 msgid "Show child windows in main windows"
@@ -192,6 +192,9 @@ msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
 msgstr ""
+"Quando abilitato, tutte le anteprime delle finestre mostreranno anche le "
+"finestre figlie. Disabilitando questa impostazione vengono migliorate le "
+"prestazioni sulle macchine più lente."
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
@@ -425,6 +428,8 @@ msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
 msgstr ""
+"Mostra/nasconde visibilità se la istanza in esecuzione è in modalità demone,"
+" altrimenti arresta l'esecuzione della istanza non-demone."
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
