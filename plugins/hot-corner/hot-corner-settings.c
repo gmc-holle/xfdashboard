@@ -28,6 +28,7 @@
 #include "hot-corner-settings.h"
 
 #include <libxfdashboard/libxfdashboard.h>
+#include <xfconf/xfconf.h>
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 #include <math.h>

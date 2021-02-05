@@ -35,6 +35,7 @@
 #include <libxfdashboard/transition-group.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/application.h>
+#include <libxfdashboard/settings.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
@@ -45,7 +46,8 @@
 struct _XfdashboardThemeAnimationPrivate
 {
 	/* Instance related */
-	GSList			*specs;
+	GSList					*specs;
+	XfdashboardSettings		*settings;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardThemeAnimation,
@@ -54,8 +56,6 @@ G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardThemeAnimation,
 
 
 /* IMPLEMENTATION: Private variables and methods */
-#define ENABLE_ANIMATIONS_XFCONF_PROP		"/enable-animations"
-#define DEFAULT_ENABLE_ANIMATIONS			TRUE
 
 enum
 {
@@ -2196,6 +2196,12 @@ static void _xfdashboard_theme_animation_dispose(GObject *inObject)
 		priv->specs=NULL;
 	}
 
+	if(priv->settings)
+	{
+		g_object_unref(priv->settings);
+		priv->settings=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_theme_animation_parent_class)->dispose(inObject);
 }
@@ -2223,6 +2229,7 @@ void xfdashboard_theme_animation_init(XfdashboardThemeAnimation *self)
 
 	/* Set default values */
 	priv->specs=NULL;
+	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
 }
 
 /* IMPLEMENTATION: Errors */
@@ -2286,6 +2293,7 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 															XfdashboardAnimationValue **inDefaultInitialValues,
 															XfdashboardAnimationValue **inDefaultFinalValues)
 {
+	XfdashboardThemeAnimationPrivate						*priv;
 	XfdashboardThemeAnimationSpec							*spec;
 	XfdashboardAnimation									*animation;
 	gboolean												animationEnabled;
@@ -2294,14 +2302,13 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
 	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
 	g_return_val_if_fail(inSignal && *inSignal, NULL);
 
+	priv=self->priv;
 	animation=NULL;
 
 	/* Check if user wants animation at all. If user does not want any animation,
 	 * return NULL.
 	 */
-	animationEnabled=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
-												ENABLE_ANIMATIONS_XFCONF_PROP,
-												DEFAULT_ENABLE_ANIMATIONS);
+	animationEnabled=xfdashboard_settings_get_enable_animations(priv->settings);
 	if(!animationEnabled)
 	{
 		XFDASHBOARD_DEBUG(self, ANIMATION,
@@ -2351,6 +2358,7 @@ XfdashboardAnimation* xfdashboard_theme_animation_create_by_id(XfdashboardThemeA
 																XfdashboardAnimationValue **inDefaultInitialValues,
 																XfdashboardAnimationValue **inDefaultFinalValues)
 {
+	XfdashboardThemeAnimationPrivate						*priv;
 	XfdashboardThemeAnimationSpec							*spec;
 	XfdashboardAnimation									*animation;
 	gboolean												animationEnabled;
@@ -2359,14 +2367,13 @@ XfdashboardAnimation* xfdashboard_theme_animation_create_by_id(XfdashboardThemeA
 	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
 	g_return_val_if_fail(inID && *inID, NULL);
 
+	priv=self->priv;
 	animation=NULL;
 
 	/* Check if user wants animation at all. If user does not want any animation,
 	 * return NULL.
 	 */
-	animationEnabled=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
-												ENABLE_ANIMATIONS_XFCONF_PROP,
-												DEFAULT_ENABLE_ANIMATIONS);
+	animationEnabled=xfdashboard_settings_get_enable_animations(priv->settings);
 	if(!animationEnabled)
 	{
 		XFDASHBOARD_DEBUG(self, ANIMATION,

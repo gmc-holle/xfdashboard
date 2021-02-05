@@ -39,9 +39,6 @@
 #include <glib/gi18n-lib.h>
 #include <clutter/clutter.h>
 #include <gtk/gtk.h>
-#ifdef XFCONF_LEGACY
-#include <dbus/dbus-glib.h>
-#endif
 #include <gio/gdesktopappinfo.h>
 
 #include <libxfdashboard/stage.h>
@@ -51,25 +48,6 @@
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
-
-/* Gobject type for pointer arrays (GPtrArray) */
-GType xfdashboard_pointer_array_get_type(void)
-{
-	static volatile gsize	type__volatile=0;
-	GType					type;
-
-	if(g_once_init_enter(&type__volatile))
-	{
-#ifdef XFCONF_LEGACY
-		type=dbus_g_type_get_collection("GPtrArray", G_TYPE_VALUE);
-#else
-		type=G_TYPE_PTR_ARRAY;
-#endif
-		g_once_init_leave(&type__volatile, type);
-	}
-
-	return(type__volatile);
-}
 
 /* Callback function for xfdashboard_traverse_actor() to find stage interface
  * used in xfdashboard_notify().

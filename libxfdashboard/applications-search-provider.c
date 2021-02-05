@@ -60,8 +60,7 @@ struct _XfdashboardApplicationsSearchProviderPrivate
 
 	GList											*allApps;
 
-	XfconfChannel									*xfconfChannel;
-	guint											xfconfSortModeBindingID;
+	GBinding										*sortModeBinding;
 	XfdashboardApplicationsSearchProviderSortMode	currentSortMode;
 };
 
@@ -82,8 +81,6 @@ enum
 static GParamSpec* XfdashboardApplicationsSearchProviderProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define SORT_MODE_XFCONF_PROP													"/components/applications-search-provider/sort-mode"
-
 #define DEFAULT_DELIMITERS														"\t\n\r "
 
 #define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE				"applications-search-provider-statistics.ini"
@@ -1387,15 +1384,10 @@ static void _xfdashboard_applications_search_provider_dispose(GObject *inObject)
 		priv->allApps=NULL;
 	}
 
-	if(priv->xfconfSortModeBindingID)
+	if(priv->sortModeBinding)
 	{
-		xfconf_g_property_unbind(priv->xfconfSortModeBindingID);
-		priv->xfconfSortModeBindingID=0;
-	}
-
-	if(priv->xfconfChannel)
-	{
-		priv->xfconfChannel=NULL;
+		g_object_unref(priv->sortModeBinding);
+		priv->sortModeBinding=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -1481,11 +1473,11 @@ static void xfdashboard_applications_search_provider_class_init(XfdashboardAppli
 static void xfdashboard_applications_search_provider_init(XfdashboardApplicationsSearchProvider *self)
 {
 	XfdashboardApplicationsSearchProviderPrivate	*priv;
+	XfdashboardSettings								*settings;
 
 	self->priv=priv=xfdashboard_applications_search_provider_get_instance_private(self);
 
 	/* Set up default values */
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
 	priv->currentSortMode=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE;
 	priv->nextSortMode=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE;
 
@@ -1503,13 +1495,14 @@ static void xfdashboard_applications_search_provider_init(XfdashboardApplication
 	/* Get list of all installed applications */
 	priv->allApps=xfdashboard_application_database_get_all_applications(priv->appDB);
 
-	/* Bind to xfconf to react on changes */
-	priv->xfconfSortModeBindingID=
-		xfconf_g_property_bind(priv->xfconfChannel,
-								SORT_MODE_XFCONF_PROP,
-								G_TYPE_UINT,
+	/* Bind to settings property to react on changes */
+	settings=xfdashboard_application_get_settings(NULL);
+	priv->sortModeBinding=
+		g_object_bind_property(settings,
+								"applications-search-sort-mode",
 								self,
-								"sort-mode");
+								"sort-mode",
+								G_BINDING_BIDIRECTIONAL | G_BINDING_SYNC_CREATE);
 }
 
 /* IMPLEMENTATION: Public API */

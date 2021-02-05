@@ -72,20 +72,20 @@ struct _XfdashboardApplicationPrivate
 	gboolean							isDaemon;
 	gboolean							isSuspended;
 	gchar								*themeName;
+	XfdashboardSettings					*settings;
 
 	/* Instance related */
 	gboolean							initialized;
 	gboolean							isQuitting;
 	gboolean							forcedNewInstance;
 
-	XfconfChannel						*xfconfChannel;
 	XfdashboardStage					*stage;
 	XfdashboardViewManager				*viewManager;
 	XfdashboardSearchManager			*searchManager;
 	XfdashboardFocusManager				*focusManager;
 
 	XfdashboardTheme					*theme;
-	gulong								xfconfThemeChangedSignalID;
+	GBinding							*themeChangedBinding;
 
 	XfdashboardBindingsPool				*bindings;
 
@@ -112,6 +112,7 @@ enum
 	PROP_SUSPENDED,
 	PROP_THEME_NAME,
 	PROP_STAGE,
+	PROP_SETTINGS,
 
 	PROP_LAST
 };
@@ -145,10 +146,6 @@ static guint XfdashboardApplicationSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define XFDASHBOARD_APP_ID					"de.froevel.nomad.xfdashboard"
-#define XFDASHBOARD_XFCONF_CHANNEL			"xfdashboard"
-
-#define THEME_NAME_XFCONF_PROP				"/theme"
-#define DEFAULT_THEME_NAME					"xfdashboard"
 
 /* Single instance of application */
 static XfdashboardApplication*		_xfdashboard_application=NULL;
@@ -386,16 +383,13 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 		g_clear_error(&error);
 	}
 
-	/* Initialize xfconf */
-	if(!xfconf_init(&error))
+	/* Check for settings */
+	if(!priv->settings ||
+		!XFDASHBOARD_IS_SETTINGS(priv->settings))
 	{
-		g_critical("Could not initialize xfconf: %s",
-					(error && error->message) ? error->message : "unknown error");
-		if(error) g_error_free(error);
+		g_critical("Could not use settings");
 		return(FALSE);
 	}
-
-	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
 
 	/* Set up keyboard and pointer bindings */
 	priv->bindings=xfdashboard_bindings_pool_get_default();
@@ -482,30 +476,18 @@ static gboolean _xfdashboard_application_initialize_full(XfdashboardApplication 
 	}
 
 	/* Set up and load theme */
-	priv->xfconfThemeChangedSignalID=xfconf_g_property_bind(priv->xfconfChannel,
-															THEME_NAME_XFCONF_PROP,
-															G_TYPE_STRING,
-															self,
-															"theme-name");
-	if(!priv->xfconfThemeChangedSignalID)
+	priv->themeChangedBinding=g_object_bind_property(priv->settings,
+																"theme",
+																self,
+																"theme-name",
+																G_BINDING_SYNC_CREATE);
+	if(!priv->themeChangedBinding)
 	{
-		g_warning("Could not create binding between xfconf property and local resource for theme change notification.");
-	}
-
-	/* Set up default theme in Xfcond if property in channel does not exist
-	 * because it indicates first start.
-	 */
-	if(!xfconf_channel_has_property(priv->xfconfChannel, THEME_NAME_XFCONF_PROP))
-	{
-		xfconf_channel_set_string(priv->xfconfChannel,
-									THEME_NAME_XFCONF_PROP,
-									DEFAULT_THEME_NAME);
+		g_warning("Could not create binding between settings property and local resource for theme change notification.");
 	}
 
 	/* At this time the theme must have been loaded, either because we
-	 * set the default theme name because of missing theme property in
-	 * xfconf channel or the value of xfconf channel property has been read
-	 * and set when setting up binding (between xfconf property and local property)
+	 * set the theme name when creating the property binding to settings
 	 * what caused a call to function to set theme name in this object
 	 * and also caused a reload of theme.
 	 * So if no theme object is set in this object then loading theme has
@@ -875,6 +857,34 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	return(XFDASHBOARD_APPLICATION_ERROR_NONE);
 }
 
+/* Set settings object */
+static void _xfdashboard_application_set_settings(XfdashboardApplication *self,
+													XfdashboardSettings *inSettings)
+{
+	XfdashboardApplicationPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(self));
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(inSettings));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->settings!=inSettings)
+	{
+		/* Set value */
+		if(priv->settings)
+		{
+			g_object_unref(priv->settings);
+			priv->settings=NULL;
+		}
+		priv->settings=g_object_ref(inSettings);
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_SETTINGS]);
+	}
+}
+
+
 /* IMPLEMENTATION: GApplication */
 
 /* Received "activate" signal on primary instance */
@@ -1033,10 +1043,10 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 		priv->pluginManager=NULL;
 	}
 
-	if(priv->xfconfThemeChangedSignalID)
+	if(priv->themeChangedBinding)
 	{
-		xfconf_g_property_unbind(priv->xfconfThemeChangedSignalID);
-		priv->xfconfThemeChangedSignalID=0L;
+		g_object_unref(priv->themeChangedBinding);
+		priv->themeChangedBinding=NULL;
 	}
 
 	if(priv->viewManager)
@@ -1098,6 +1108,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 		priv->stage=NULL;
 	}
 
+	if(priv->settings)
+	{
+		g_object_unref(priv->settings);
+		priv->settings=NULL;
+	}
+
 	/* Shutdown session management */
 	if(priv->sessionManagementClient)
 	{
@@ -1112,10 +1128,6 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 
 		priv->sessionManagementClient=NULL;
 	}
-
-	/* Shutdown xfconf */
-	priv->xfconfChannel=NULL;
-	xfconf_shutdown();
 
 	/* Unset singleton */
 	if(G_LIKELY(G_OBJECT(_xfdashboard_application)==inObject)) _xfdashboard_application=NULL;
@@ -1136,6 +1148,10 @@ static void _xfdashboard_application_set_property(GObject *inObject,
 	{
 		case PROP_THEME_NAME:
 			_xfdashboard_application_set_theme_name(self, g_value_get_string(inValue));
+			break;
+
+		case PROP_SETTINGS:
+			_xfdashboard_application_set_settings(self, g_value_get_object(inValue));
 			break;
 
 		default:
@@ -1167,6 +1183,10 @@ static void _xfdashboard_application_get_property(GObject *inObject,
 
 		case PROP_THEME_NAME:
 			g_value_set_string(outValue, self->priv->themeName);
+			break;
+
+		case PROP_SETTINGS:
+			g_value_set_object(outValue, self->priv->settings);
 			break;
 
 		default:
@@ -1245,8 +1265,20 @@ static void xfdashboard_application_class_init(XfdashboardApplicationClass *klas
 		g_param_spec_string("theme-name",
 								"Theme name",
 								"Name of current theme",
-								DEFAULT_THEME_NAME,
+								NULL,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * XfdashboardApplication:settings:
+	 *
+	 * The #XfdashboardSettings of application.
+	 */
+	XfdashboardApplicationProperties[PROP_SETTINGS]=
+		g_param_spec_object("settings",
+								"Settings",
+								"The settings object of application",
+								XFDASHBOARD_TYPE_SETTINGS,
+								G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardApplicationProperties);
 
@@ -1484,13 +1516,13 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	priv->isSuspended=FALSE;
 	priv->themeName=NULL;
 	priv->initialized=FALSE;
-	priv->xfconfChannel=NULL;
+	priv->settings=NULL;
 	priv->stage=NULL;
 	priv->viewManager=NULL;
 	priv->searchManager=NULL;
 	priv->focusManager=NULL;
 	priv->theme=NULL;
-	priv->xfconfThemeChangedSignalID=0L;
+	priv->themeChangedBinding=NULL;
 	priv->isQuitting=FALSE;
 	priv->sessionManagementClient=NULL;
 	priv->pluginManager=NULL;
@@ -1503,6 +1535,7 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 	g_action_map_add_action(G_ACTION_MAP(self), G_ACTION(action));
 	g_object_unref(action);
 }
+
 
 /* IMPLEMENTATION: Public API */
 
@@ -1560,6 +1593,8 @@ XfdashboardApplication* xfdashboard_application_get_default(void)
 		_xfdashboard_application=g_object_new(XFDASHBOARD_TYPE_APPLICATION,
 												"application-id", appID,
 												"flags", G_APPLICATION_HANDLES_COMMAND_LINE,
+												// TODO: Better settings handling
+												"settings", g_object_new(XFDASHBOARD_TYPE_SETTINGS, NULL),
 												NULL);
 
 		if(forceNewInstance)
@@ -1756,29 +1791,28 @@ XfdashboardTheme* xfdashboard_application_get_theme(XfdashboardApplication *self
 }
 
 /**
- * xfdashboard_application_get_xfconf_channel:
+ * xfdashboard_application_get_settings:
  * @self: A #XfdashboardApplication or %NULL
  *
- * Retrieve the #XfconfChannel of @self used to query or modify settings stored
- * in Xfconf.
+ * Retrieve the #XfdashboardSettings class of @self used to query or modify settings.
  *
  * If @self is %NULL the default singleton is used if it was created.
  *
- * Return value: (transfer none): The current #XfconfChannel of application at @self.
+ * Return value: (transfer none): The #XfdashboardSettings of application at @self.
  */
-XfconfChannel* xfdashboard_application_get_xfconf_channel(XfdashboardApplication *self)
+XfdashboardSettings* xfdashboard_application_get_settings(XfdashboardApplication *self)
 {
-	XfconfChannel			*channel;
+	XfdashboardSettings		*settings;
 
 	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_APPLICATION(self), NULL);
 
-	channel=NULL;
+	settings=NULL;
 
 	/* Get default single instance if NULL is requested */
 	if(!self) self=_xfdashboard_application;
 
-	/* Get xfconf channel */
-	if(G_LIKELY(self)) channel=self->priv->xfconfChannel;
+	/* Get settings */
+	if(G_LIKELY(self)) settings=self->priv->settings;
 
-	return(channel);
+	return(settings);
 }

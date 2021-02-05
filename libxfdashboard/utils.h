@@ -79,8 +79,6 @@ G_BEGIN_DECLS
 #define GPOINTER_TO_GTYPE(pointer) \
 	((GType)GPOINTER_TO_SIZE(pointer))
 
-GType xfdashboard_pointer_array_get_type(void);
-
 void xfdashboard_notify(ClutterActor *inSender,
 							const gchar *inIconName,
 							const gchar *inFormat, ...)

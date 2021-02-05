@@ -66,8 +66,7 @@ struct _XfdashboardLiveWindowPrivate
 	ClutterActor						*actorWindowNumber;
 	ClutterActor						*actorTitle;
 
-	XfconfChannel						*xfconfChannel;
-	guint								xfconfAllowSubwindowsBindingID;
+	GBinding							*settingsAllowSubwindowsBinding;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardLiveWindow,
@@ -104,8 +103,6 @@ enum
 static guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define ALLOW_SUBWINDOWS_XFCONF_PROP						"/allow-subwindows"
-#define DEFAULT_ALLOW_SUBWINDOWS							TRUE
 
 /* Check if the requested window is a sub-window of this window */
 static gboolean _xfdashboard_live_window_is_subwindow(XfdashboardLiveWindow *self,
@@ -956,15 +953,10 @@ static void _xfdashboard_live_window_dispose(GObject *inObject)
 		priv->actorSubwindowsLayer=NULL;
 	}
 
-	if(priv->xfconfChannel)
+	if(priv->settingsAllowSubwindowsBinding)
 	{
-		priv->xfconfChannel=NULL;
-	}
-
-	if(priv->xfconfAllowSubwindowsBindingID)
-	{
-		xfconf_g_property_unbind(priv->xfconfAllowSubwindowsBindingID);
-		priv->xfconfAllowSubwindowsBindingID=0;
+		g_object_unref(priv->settingsAllowSubwindowsBinding);
+		priv->settingsAllowSubwindowsBinding=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -1093,11 +1085,18 @@ static void xfdashboard_live_window_class_init(XfdashboardLiveWindowClass *klass
 								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardLiveWindow:allow-subwindows:
+	 *
+	 * A flag indicating if live windows should also show sub-windows like dialogs etc.
+	 * within the main window. If set to %TRUE they will be shown and not shown if
+	 * set to %FALSE.
+	 */
 	XfdashboardLiveWindowProperties[PROP_ALLOW_SUBWINDOWS]=
 		g_param_spec_boolean("allow-subwindows",
 								"Allow sub-windows",
 								"Whether to show sub-windows if requested by theme",
-								DEFAULT_ALLOW_SUBWINDOWS,
+								TRUE,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardLiveWindowProperties);
@@ -1138,6 +1137,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 {
 	XfdashboardLiveWindowPrivate	*priv;
 	ClutterAction					*action;
+	XfdashboardSettings				*settings;
 
 	priv=self->priv=xfdashboard_live_window_get_instance_private(self);
 
@@ -1150,8 +1150,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	priv->paddingTitle=0.0f;
 	priv->paddingClose=0.0f;
 	priv->showSubwindows=TRUE;
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
-	priv->allowSubwindows=DEFAULT_ALLOW_SUBWINDOWS;
+	priv->allowSubwindows=TRUE;
 
 	/* Set up container for sub-windows and add it before the container for controls
 	 * to keep the controls on top.
@@ -1187,12 +1186,14 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_hide(priv->actorWindowNumber);
 	clutter_actor_add_child(priv->actorControlLayer, priv->actorWindowNumber);
 
-	/* Bind to xfconf to react on changes */
-	priv->xfconfAllowSubwindowsBindingID=xfconf_g_property_bind(priv->xfconfChannel,
-																ALLOW_SUBWINDOWS_XFCONF_PROP,
-																G_TYPE_BOOLEAN,
-																self,
-																"allow-subwindows");
+	/* Bind to settings to react on changes */
+	settings=xfdashboard_application_get_settings(NULL);
+	priv->settingsAllowSubwindowsBinding=
+		g_object_bind_property(settings,
+								"allow-subwindows",
+								self,
+								"allow-subwindows",
+								G_BINDING_SYNC_CREATE);
 
 	/* Connect signals */
 	action=xfdashboard_click_action_new();

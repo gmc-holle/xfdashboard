@@ -50,6 +50,7 @@
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/window-tracker.h>
+#include <libxfdashboard/settings.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -108,6 +109,8 @@ struct _XfdashboardWindowContentX11Private
 	gboolean									suspendAfterResumeOnIdle;
 
 	guint										windowClosedSignalID;
+
+	XfdashboardSettings							*settings;
 };
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardWindowContentX11,
@@ -152,12 +155,6 @@ static GParamSpec* XfdashboardWindowContentX11Properties[PROP_LAST]={ 0, };
 #define COMPOSITE_VERSION_MIN_MAJOR		0
 #define COMPOSITE_VERSION_MIN_MINOR		2
 
-#define WORKAROUND_UNMAPPED_WINDOW_XFCONF_PROP				"/enable-unmapped-window-workaround"
-#define DEFAULT_WORKAROUND_UNMAPPED_WINDOW					FALSE
-
-#define WINDOW_CONTENT_CREATION_PRIORITY_XFCONF_PROP		"/window-content-creation-priority"
-#define DEFAULT_WINDOW_CONTENT_X11_CREATION_PRIORITY		"immediate"
-
 struct _XfdashboardWindowContentX11PriorityMap
 {
 	const gchar		*name;
@@ -174,7 +171,7 @@ static GList*									_xfdashboard_window_content_x11_resume_idle_queue=NULL;
 static guint									_xfdashboard_window_content_x11_resume_idle_id=0;
 static guint									_xfdashboard_window_content_x11_resume_shutdown_signal_id=0;
 
-static guint									_xfdashboard_window_content_x11_xfconf_priority_notify_id=0;
+static guint									_xfdashboard_window_content_x11_settings_priority_notify_id=0;
 static gint										_xfdashboard_window_content_x11_window_creation_priority=-1;
 static XfdashboardWindowContentX11PriorityMap	_xfdashboard_window_content_x11_window_creation_priority_map[]=
 												{
@@ -376,16 +373,16 @@ static void _xfdashboard_window_content_x11_resume_on_idle_add(XfdashboardWindow
 	}
 }
 
-/* Value for window creation priority in xfconf has changed */
-static void _xfdashboard_window_content_x11_on_window_creation_priority_value_changed(XfconfChannel *inChannel,
-																					const gchar *inProperty,
-																					const GValue *inValue,
-																					gpointer inUserData)
+/* Value for window creation priority in settings has changed */
+static void _xfdashboard_window_content_x11_on_window_creation_priority_value_changed(XfdashboardSettings *inSettings,
+																						const gchar *inProperty,
+																						const GValue *inValue,
+																						gpointer inUserData)
 {
 	const gchar									*priorityValue;
 	XfdashboardWindowContentX11PriorityMap		*found;
 
-	g_return_if_fail(g_strcmp0(inProperty, WINDOW_CONTENT_CREATION_PRIORITY_XFCONF_PROP)==0);
+	g_return_if_fail(g_strcmp0(inProperty, "window-content-creation-priority")==0);
 	g_return_if_fail(inValue && G_VALUE_HOLDS_STRING(inValue));
 
 	/* Determine priority from new value */
@@ -417,41 +414,41 @@ static void _xfdashboard_window_content_x11_on_window_creation_priority_value_ch
 	}
 }
 
-/* Disconnect signal handler for xfconf value change notification on window priority */
-static void _xfdashboard_window_content_x11_on_window_creation_priority_shutdown(void)
+/* Disconnect signal handlers for settings value changed notifications */
+static void _xfdashboard_window_content_x11_on_window_creation_priority_shutdown(XfdashboardApplication *inApplication, gpointer inUserData)
 {
-	XfdashboardApplication					*application;
+	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication));
 
 	/* Disconnect application "shutdown" signal handler */
 	if(_xfdashboard_window_content_x11_window_creation_shutdown_signal_id)
 	{
+
 		XFDASHBOARD_DEBUG(NULL, WINDOWS,
 							"Disconnecting shutdown signal handler %u for window creation priority value change notifications",
 							_xfdashboard_window_content_x11_window_creation_shutdown_signal_id);
 
-		application=xfdashboard_application_get_default();
-		g_signal_handler_disconnect(application, _xfdashboard_window_content_x11_window_creation_shutdown_signal_id);
+		g_signal_handler_disconnect(inApplication, _xfdashboard_window_content_x11_window_creation_shutdown_signal_id);
 		_xfdashboard_window_content_x11_window_creation_shutdown_signal_id=0;
 	}
 
 	/* Disconnect property changed signal handler */
-	if(_xfdashboard_window_content_x11_xfconf_priority_notify_id)
+	if(_xfdashboard_window_content_x11_settings_priority_notify_id)
 	{
-		XfconfChannel					*xfconfChannel;
+		XfdashboardSettings				*settings;
 
 		XFDASHBOARD_DEBUG(NULL, WINDOWS,
 							"Disconnecting property changed signal handler %u for window creation priority value change notifications",
-							_xfdashboard_window_content_x11_xfconf_priority_notify_id);
+							_xfdashboard_window_content_x11_settings_priority_notify_id);
 
-		xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
-		g_signal_handler_disconnect(xfconfChannel, _xfdashboard_window_content_x11_xfconf_priority_notify_id);
-		_xfdashboard_window_content_x11_xfconf_priority_notify_id=0;
+		settings=xfdashboard_application_get_settings(inApplication);
+		g_signal_handler_disconnect(settings, _xfdashboard_window_content_x11_settings_priority_notify_id);
+		_xfdashboard_window_content_x11_settings_priority_notify_id=0;
 	}
 }
 
 /* Check if we should workaround unmapped window for requested window and set up workaround */
 static void _xfdashboard_window_content_x11_on_workaround_state_changed(XfdashboardWindowContentX11 *self,
-																	gpointer inUserData)
+																		gpointer inUserData)
 {
 	XfdashboardWindowContentX11Private		*priv;
 	XfdashboardWindowTrackerWindowState		windowState;
@@ -613,9 +610,7 @@ static void _xfdashboard_window_content_x11_setup_workaround(XfdashboardWindowCo
 	priv=self->priv;
 
 	/* Check if should workaround unmapped windows at all */
-	doWorkaround=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
-											WORKAROUND_UNMAPPED_WINDOW_XFCONF_PROP,
-											DEFAULT_WORKAROUND_UNMAPPED_WINDOW);
+	doWorkaround=xfdashboard_settings_get_enable_workaround_unmapped_window(priv->settings);
 	if(!doWorkaround) return;
 
 	/* Only workaround unmapped windows */
@@ -2020,6 +2015,12 @@ static void _xfdashboard_window_content_x11_dispose(GObject *inObject)
 		priv->stylePseudoClasses=NULL;
 	}
 
+	if(priv->settings)
+	{
+		g_object_unref(priv->settings);
+		priv->settings=NULL;
+	}
+
 	/* Call parent's class dispose method */
 	G_OBJECT_CLASS(xfdashboard_window_content_x11_parent_class)->dispose(inObject);
 }
@@ -2292,7 +2293,7 @@ void xfdashboard_window_content_x11_class_init(XfdashboardWindowContentX11Class 
 void xfdashboard_window_content_x11_init(XfdashboardWindowContentX11 *self)
 {
 	XfdashboardWindowContentX11Private		*priv;
-	XfdashboardApplication				*app;
+	XfdashboardApplication					*application;
 
 	priv=self->priv=xfdashboard_window_content_x11_get_instance_private(self);
 
@@ -2325,6 +2326,7 @@ void xfdashboard_window_content_x11_init(XfdashboardWindowContentX11 *self)
 	priv->unmappedWindowIconAnchorPoint=XFDASHBOARD_ANCHOR_POINT_NONE;
 	priv->suspendAfterResumeOnIdle=FALSE;
 	priv->windowClosedSignalID=0;
+	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
 
 	/* Check extensions (will only be done once) */
 	_xfdashboard_window_content_x11_check_extension();
@@ -2348,40 +2350,38 @@ void xfdashboard_window_content_x11_init(XfdashboardWindowContentX11 *self)
 	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 
 	/* Handle suspension signals from application */
-	app=xfdashboard_application_get_default();
-	priv->suspendSignalID=g_signal_connect_swapped(app,
+	application=xfdashboard_application_get_default();
+	priv->suspendSignalID=g_signal_connect_swapped(application,
 													"notify::is-suspended",
 													G_CALLBACK(_xfdashboard_window_content_x11_on_application_suspended_changed),
 													self);
-	priv->isAppSuspended=xfdashboard_application_is_suspended(app);
+	priv->isAppSuspended=xfdashboard_application_is_suspended(application);
 
-	/* Register global signal handler for xfconf value change notification
+	/* Register global signal handler for settings value change notification
 	 * if not done already.
 	 */
-	if(!_xfdashboard_window_content_x11_xfconf_priority_notify_id)
+	if(!_xfdashboard_window_content_x11_settings_priority_notify_id)
 	{
-		XfconfChannel					*xfconfChannel;
-		gchar							*detailedSignal;
-
-		/* Connect to property changed signal in xfconf */
-		xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
-		detailedSignal=g_strconcat("property-changed::", WINDOW_CONTENT_CREATION_PRIORITY_XFCONF_PROP, NULL);
-		_xfdashboard_window_content_x11_xfconf_priority_notify_id=g_signal_connect(xfconfChannel,
-																				detailedSignal,
-																				G_CALLBACK(_xfdashboard_window_content_x11_on_window_creation_priority_value_changed),
-																				NULL);
-		if(detailedSignal) g_free(detailedSignal);
+		/* Connect to property changed signal in settings */
+		_xfdashboard_window_content_x11_settings_priority_notify_id=
+			g_signal_connect(priv->settings,
+								"notify::window-content-creation-priority",
+								G_CALLBACK(_xfdashboard_window_content_x11_on_window_creation_priority_value_changed),
+								NULL);
 		XFDASHBOARD_DEBUG(self, WINDOWS,
-							"Connected to property changed signal with handler ID %u for xfconf value change notifications",
-							_xfdashboard_window_content_x11_xfconf_priority_notify_id);
+							"Connected to property changed signal with handler ID %u for window creation value changed notifications",
+							_xfdashboard_window_content_x11_settings_priority_notify_id);
 
-		/* Connect to application shutdown signal for xfconf value change notification */
-		_xfdashboard_window_content_x11_window_creation_shutdown_signal_id=g_signal_connect(app,
-																				"shutdown-final",
-																				G_CALLBACK(_xfdashboard_window_content_x11_on_window_creation_priority_shutdown),
-																				NULL);
+		/* Connect to application shutdown signal to disconnect handler for
+		 * settings value changed notifications.
+		 */
+		_xfdashboard_window_content_x11_window_creation_shutdown_signal_id=
+			g_signal_connect(application,
+								"shutdown-final",
+								G_CALLBACK(_xfdashboard_window_content_x11_on_window_creation_priority_shutdown),
+								self);
 		XFDASHBOARD_DEBUG(self, WINDOWS,
-							"Connected to shutdown signal with handler ID %u for xfconf value change notifications",
+							"Connected to shutdown signal with handler ID %u for disconnecting handler for window creation value changed notifications",
 							_xfdashboard_window_content_x11_window_creation_shutdown_signal_id);
 	}
 }

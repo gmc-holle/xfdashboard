@@ -58,6 +58,7 @@
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/application.h>
+#include <libxfdashboard/settings.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -77,7 +78,6 @@ struct _XfdashboardSearchViewPrivate
 
 	XfdashboardSearchViewSearchTerms	*lastTerms;
 
-	XfconfChannel						*xfconfChannel;
 	gboolean							delaySearch;
 	XfdashboardSearchViewSearchTerms	*delaySearchTerms;
 	gint								delaySearchTimeoutID;
@@ -86,6 +86,8 @@ struct _XfdashboardSearchViewPrivate
 	guint								repaintID;
 
 	XfdashboardFocusManager				*focusManager;
+
+	XfdashboardSettings					*settings;
 };
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardSearchView,
@@ -106,8 +108,6 @@ enum
 static guint XfdashboardSearchViewSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-#define DELAY_SEARCH_TIMEOUT_XFCONF_PROP		"/components/search-view/delay-search-timeout"
-#define DEFAULT_DELAY_SEARCH_TIMEOUT			0
 
 struct _XfdashboardSearchViewProviderData
 {
@@ -1584,8 +1584,6 @@ static void _xfdashboard_search_view_dispose(GObject *inObject)
 	XfdashboardSearchViewPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
-	if(priv->xfconfChannel) priv->xfconfChannel=NULL;
-
 	if(priv->repaintID)
 	{
 		g_source_remove(priv->repaintID);
@@ -1633,6 +1631,12 @@ static void _xfdashboard_search_view_dispose(GObject *inObject)
 	{
 		g_object_unref(priv->focusManager);
 		priv->focusManager=NULL;
+	}
+
+	if(priv->settings)
+	{
+		g_object_unref(priv->settings);
+		priv->settings=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -1709,7 +1713,7 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	priv->selectionProvider=NULL;
 	priv->focusManager=xfdashboard_focus_manager_get_default();
 	priv->repaintID=0;
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
+	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
 
 	/* Set up view (Note: Search view is disabled by default!) */
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Search"));
@@ -1874,9 +1878,7 @@ void xfdashboard_search_view_update_search(XfdashboardSearchView *self, const gc
 	}
 
 	/* Check if search should be delayed ... */
-	delaySearchTimeout=xfconf_channel_get_uint(priv->xfconfChannel,
-												DELAY_SEARCH_TIMEOUT_XFCONF_PROP,
-												DEFAULT_DELAY_SEARCH_TIMEOUT);
+	delaySearchTimeout=xfdashboard_settings_get_delay_search_timeout(priv->settings);
 	if(delaySearchTimeout>0 && priv->delaySearch)
 	{
 		/* Remember search terms for delayed search */

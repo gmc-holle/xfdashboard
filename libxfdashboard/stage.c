@@ -52,6 +52,7 @@
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/window-content.h>
 #include <libxfdashboard/stage-interface.h>
+#include <libxfdashboard/settings.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -90,6 +91,8 @@ struct _XfdashboardStagePrivate
 	guint									notificationTimeoutID;
 
 	XfdashboardFocusManager					*focusManager;
+
+	XfdashboardSettings						*settings;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardStage,
@@ -136,14 +139,7 @@ static void _xfdashboard_stage_on_window_opened(XfdashboardStage *self,
 
 
 /* IMPLEMENTATION: Private variables and methods */
-#define NOTIFICATION_TIMEOUT_XFCONF_PROP				"/min-notification-timeout"
-#define DEFAULT_NOTIFICATION_TIMEOUT					3000
-#define RESET_SEARCH_ON_RESUME_XFCONF_PROP				"/reset-search-on-resume"
-#define DEFAULT_RESET_SEARCH_ON_RESUME					TRUE
-#define SWITCH_VIEW_ON_RESUME_XFCONF_PROP				"/switch-to-view-on-resume"
-#define DEFAULT_SWITCH_VIEW_ON_RESUME					NULL
-#define RESELECT_THEME_FOCUS_ON_RESUME_XFCONF_PROP		"/reselect-theme-focus-on-resume"
-#define DEFAULT_RESELECT_THEME_FOCUS_ON_RESUME			FALSE
+
 #define XFDASHBOARD_THEME_LAYOUT_PRIMARY				"primary"
 #define XFDASHBOARD_THEME_LAYOUT_SECONDARY				"secondary"
 
@@ -270,20 +266,15 @@ static XfdashboardView* _xfdashboard_stage_get_view_to_switch_to(XfdashboardStag
 	 */
 	if(!view)
 	{
-		gchar							*resumeViewID;
+		const gchar						*resumeViewID;
 
 		/* Get view ID from settings and look up view */
-		resumeViewID=xfconf_channel_get_string(xfdashboard_application_get_xfconf_channel(NULL),
-												SWITCH_VIEW_ON_RESUME_XFCONF_PROP,
-												DEFAULT_SWITCH_VIEW_ON_RESUME);
+		resumeViewID=xfdashboard_settings_get_switch_to_view_on_resume(priv->settings);
 		if(resumeViewID)
 		{
 			/* Lookup view by its ID set configured settings */
 			view=xfdashboard_viewpad_find_view_by_id(XFDASHBOARD_VIEWPAD(priv->viewpad), resumeViewID);
 			if(!view) g_warning("Cannot switch to unknown view '%s'", resumeViewID);
-
-			/* Release allocated resources */
-			g_free(resumeViewID);
 		}
 	}
 
@@ -771,9 +762,7 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 		XfdashboardView					*resumeView;
 
 		/* Get configured options */
-		doResetSearch=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
-												RESET_SEARCH_ON_RESUME_XFCONF_PROP,
-												DEFAULT_RESET_SEARCH_ON_RESUME);
+		doResetSearch=xfdashboard_settings_get_reset_search_on_resume(priv->settings);
 
 		/* Find search view */
 		searchView=xfdashboard_viewpad_find_view_by_type(XFDASHBOARD_VIEWPAD(priv->viewpad), XFDASHBOARD_TYPE_SEARCH_VIEW);
@@ -831,9 +820,7 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 			gboolean				reselectFocusOnResume;
 
 			/* Determine if user (also) requests to reselect focus on resume */
-			reselectFocusOnResume=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
-															RESELECT_THEME_FOCUS_ON_RESUME_XFCONF_PROP,
-															DEFAULT_RESELECT_THEME_FOCUS_ON_RESUME);
+			reselectFocusOnResume=xfdashboard_settings_get_reselect_theme_focus_on_resume(priv->settings);
 			if(reselectFocusOnResume)
 			{
 				/* Move focus to actor */
@@ -1291,12 +1278,10 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 										clutter_actor_get_name(interface->actor));
 
 					/* Determine if user (also) requests to reselect focus on resume
-					 * because then remember the actor to focus to move the focus
+					 * because then remember the actor to focus, to move the focus
 					 * each time the stage window gets shown after it was hidden.
 					 */
-					reselectFocusOnResume=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
-																	RESELECT_THEME_FOCUS_ON_RESUME_XFCONF_PROP,
-																	DEFAULT_RESELECT_THEME_FOCUS_ON_RESUME);
+					reselectFocusOnResume=xfdashboard_settings_get_reselect_theme_focus_on_resume(priv->settings);
 					if(reselectFocusOnResume)
 					{
 						priv->focusActorOnShow=XFDASHBOARD_FOCUSABLE(interface->focus);
@@ -1588,9 +1573,7 @@ static void _xfdashboard_stage_show(ClutterActor *inActor)
 		gboolean				reselectFocusOnResume;
 
 		/* Determine if user (also) requests to reselect focus on resume */
-		reselectFocusOnResume=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
-														RESELECT_THEME_FOCUS_ON_RESUME_XFCONF_PROP,
-														DEFAULT_RESELECT_THEME_FOCUS_ON_RESUME);
+		reselectFocusOnResume=xfdashboard_settings_get_reselect_theme_focus_on_resume(priv->settings);
 
 		/* Move focus to actor */
 		xfdashboard_focus_manager_set_focus(priv->focusManager, XFDASHBOARD_FOCUSABLE(priv->focusActorOnShow));
@@ -1722,6 +1705,12 @@ static void _xfdashboard_stage_dispose(GObject *inObject)
 	{
 		g_free(priv->switchToView);
 		priv->switchToView=NULL;
+	}
+
+	if(priv->settings)
+	{
+		g_object_unref(priv->settings);
+		priv->settings=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -1936,6 +1925,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->backgroundImageLayer=NULL;
 	priv->switchToView=NULL;
 	priv->focusActorOnShow=NULL;
+	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
 
 	/* Create background actors but order of adding background children is important */
 	widthConstraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_WIDTH, 0.0f);
@@ -2207,9 +2197,7 @@ void xfdashboard_stage_show_notification(XfdashboardStage *self, const gchar *in
 	 * of the notification text to show but never drops below the minimum timeout configured.
 	 * The interval is calculated by one second for 30 characters.
 	 */
-	interval=xfconf_channel_get_uint(xfdashboard_application_get_xfconf_channel(NULL),
-										NOTIFICATION_TIMEOUT_XFCONF_PROP,
-										DEFAULT_NOTIFICATION_TIMEOUT);
+	interval=xfdashboard_settings_get_notification_timeout(priv->settings);
 	interval=MAX((gint)((strlen(inText)/30.0f)*1000.0f), interval);
 
 	priv->notificationTimeoutID=clutter_threads_add_timeout_full(G_PRIORITY_DEFAULT,
