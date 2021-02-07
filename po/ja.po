@@ -340,7 +340,7 @@ msgstr "Xfdashboard の赤ワインのテーマ"
 #: ../libxfdashboard/application-button.c:262
 #, c-format
 msgid "Could not execute action '%s' for application '%s': %s"
-msgstr ""
+msgstr "アプリケーション '%s' のアクション '%s' が実行できません: %s"
 
 #: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
@@ -350,7 +350,7 @@ msgstr "不明なエラー"
 #: ../libxfdashboard/application-button.c:282
 #, c-format
 msgid "Executed action '%s' for application '%s'"
-msgstr ""
+msgstr "アプリケーション '%s' のアクション '%s' を実行しました "
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
@@ -360,12 +360,12 @@ msgstr ""
 #: ../libxfdashboard/quicklaunch.c:458
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr ""
+msgstr "アプリケーション '%s' の起動に失敗しました: %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:354
 msgid "No information available for application"
-msgstr ""
+msgstr "アプリケーションに関する情報がありません"
 
 #: ../libxfdashboard/application-button.c:763
 #: ../libxfdashboard/application.c:308 ../libxfdashboard/application.c:618
@@ -381,12 +381,12 @@ msgstr "不明なエラー"
 #: ../libxfdashboard/quicklaunch.c:471
 #, c-format
 msgid "Application '%s' launched"
-msgstr ""
+msgstr "アプリケーション '%s' を起動しました"
 
 #: ../libxfdashboard/application.c:306
 #, c-format
 msgid "Could not load theme '%s': %s"
-msgstr ""
+msgstr "%s のテーマを読み込めません: %s"
 
 #: ../libxfdashboard/application.c:527
 #, c-format
@@ -404,11 +404,11 @@ msgstr ""
 
 #: ../libxfdashboard/application.c:577
 msgid "Quit running instance"
-msgstr ""
+msgstr "実行中のインスタンスを終了する"
 
 #: ../libxfdashboard/application.c:578
 msgid "Restart running instance"
-msgstr ""
+msgstr "実行中のインスタンスを再起動する"
 
 #: ../libxfdashboard/application.c:579
 msgid ""
