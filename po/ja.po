@@ -8,8 +8,8 @@
 # Nick Schermer <nick@xfce.org>, 2020
 # Ken DEGUCHI <kdeguchi@sz.tokoha-u.ac.jp>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
-# UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2021
 # Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2021
+# UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2021
 # 
 #, fuzzy
 msgid ""
@@ -18,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-28 00:48+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2021\n"
+"Last-Translator: UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2021\n"
 "Language-Team: Japanese (https://www.transifex.com/xfce/teams/16840/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -126,9 +126,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
-"有効にすると、xfdashboard が再開されたときに検索ビューがリセットされます。つまり、アクティブなビューは前回の検索が開始される前にアクティブになっていたビューに戻り、検索ボックスが空になります。 \n"
+"有効にすると、Xfdashboard が再開されたときに検索ビューがリセットされます。つまり、アクティブなビューは前回の検索が開始される前にアクティブになっていたビューに戻り、検索ボックスが空になります。 \n"
 "\n"
-"<b>注:</b> この設定は、xfdashboard がデーモンモードで実行されている場合のみ有効です。"
+"<b>注:</b> この設定は、Xfdashboard がデーモンモードで実行されている場合のみ有効です。"
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
@@ -136,6 +136,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
 msgstr ""
+"Xfdashboard が再開すると、選択したビューがアクティブになります。\n"
+"\n"
+"<b>注意:</b> この設定は Xfdashboard がデーモンモードで実行されている場合にのみ有効になります。"
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
@@ -147,6 +150,9 @@ msgid ""
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
 msgstr ""
+"通知が表示される最低時間を設定します。\n"
+"\n"
+"通知時間は表示するテキストの長さによって計算されます。この設定により、通知を表示する最低時間を指定できます。"
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
@@ -172,6 +178,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
+"この値は、ウィンドウコンテンツを作成する速さを定義します。値「すぐに」は、要求され次第ウィンドウコンテンツを作成するよう Xfdashboard に指示します。他の値の場合はキューを設定し、処理されるまでの速さを定義します。\n"
+"\n"
+"<b>注意:</b> グラフィックカード、ドライバ、システムが遅すぎてウィンドウコンテンツをすぐに作成できない場合のみ、「すぐに」から他の値に変更してください。各値を試してシステムに合う値を見つけてください。"
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
@@ -186,6 +195,7 @@ msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
 msgstr ""
+"有効にすると、すべてのライブウィンドウプレビューに子ウィンドウが表示されます。このオプションを無効にすると、低速のマシンでのパフォーマンスが向上します。"
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
@@ -197,6 +207,9 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
+"有効にしてクイック起動のアイコンをクリックすると、アプリケーションの新規インスタンスを常に開始します。\n"
+"\n"
+"有効にしない場合は実行中のアプリケーションインスタンスの最後のアクティブウィンドウが選択されます。アプリケーションが実行されていない場合は、新規インスタンスを開始します。"
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
@@ -204,7 +217,7 @@ msgstr "アニメーションを有効にする"
 
 #: ../data/data/preferences.ui.h:33
 msgid "If enabled theme-defined animations will be shown."
-msgstr ""
+msgstr "有効にすると、テーマ定義のアニメーションが表示されます。"
 
 #: ../data/data/preferences.ui.h:34
 msgid "<b>Applications view:</b>"
@@ -219,6 +232,7 @@ msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
 msgstr ""
+"有効にすると、インストールされているすべてのアプリケーションを含む「すべてのアプリケーション」メニューがアプリケーションビューに表示されます"
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
@@ -234,6 +248,7 @@ msgid ""
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
 msgstr ""
+"有効にすると、ウィンドウビューでマウスホイールの上下などのスクロールでアクティブなワークスペースを変更します。この動作はワークスペースセレクターの場合と同じです。"
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
@@ -414,7 +429,7 @@ msgstr "実行中のインスタンスを再起動する"
 msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
-msgstr ""
+msgstr "実行中のインスタンスがデーモンモードで開始された場合は可視性を切り替え、それ以外の場合は非デーモンインスタンスの実行を終了します"
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
@@ -573,7 +588,7 @@ msgstr "秒針の背景色を選択"
 
 #: ../plugins/clock-view/plugin.c:313
 msgid "Adds a new view showing a clock"
-msgstr ""
+msgstr "時計表示の新規ビューを追加する"
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
@@ -585,7 +600,7 @@ msgstr "検索プロバイダー例"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr ""
+msgstr "これは無益な検索プロバイダープラグインの例です"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
@@ -593,7 +608,7 @@ msgstr "Gnome-Shell 検索プロバイダー"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
-msgstr ""
+msgstr "Gnomeシェルの検索プロバイダーを検索のソースとして使用する"
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
@@ -636,7 +651,7 @@ msgstr "ホットコーナー"
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
-msgstr ""
+msgstr "ポインターがモニターの設定したコーナーに移動すると、Xfdashboard をアクティブにする"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
