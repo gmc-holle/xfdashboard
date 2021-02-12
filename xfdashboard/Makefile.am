@@ -27,6 +27,7 @@ xfdashboard_LDADD = \
 	$(LIBXFCONF_LIBS) \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(GTK_LIBS) \
+	$(top_builddir)/common/libxfconf-settings.la \
 	$(top_builddir)/libxfdashboard/libxfdashboard.la
 
 xfdashboard_LDFLAGS = \

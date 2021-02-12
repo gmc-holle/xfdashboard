@@ -39,6 +39,7 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/applications-search-provider.h>
+#include <libxfdashboard/marshal.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -114,6 +115,16 @@ enum
 
 static GParamSpec* XfdashboardSettingsProperties[PROP_LAST]={ 0, };
 
+/* Signals */
+enum
+{
+	SIGNAL_CHANGED,
+
+	SIGNAL_LAST
+};
+
+static guint XfdashboardSettingsSignals[SIGNAL_LAST]={ 0, };
+
 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_THEME											"xfdashboard"
@@ -132,57 +143,30 @@ static GParamSpec* XfdashboardSettingsProperties[PROP_LAST]={ 0, };
 #define DEFAULT_WINDOWS_VIEW_SCROLL_EVENT_CHANGES_WORKSPACE		FALSE
 
 
-#if 0==1
-
-#define XFDASHBOARD_XFCONF_CHANNEL			"xfdashboard"
-
-// OLD: #define THEME_NAME_XFCONF_PROP		"/theme"
-#define THEME_NAME_XFCONF_PROP				"theme" -> "xfdashboard" (G_TYPE_STRING)
-
-// OLD: #define SORT_MODE_XFCONF_PROP		"/components/applications-search-provider/sort-mode"
-#define SORT_MODE_XFCONF_PROP				"applications-search-sort-mode" -> XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE (enum)
-
-// OLD: #define SHOW_ALL_APPS_XFCONF_PROP	"/components/applications-view/show-all-apps"
-#define SHOW_ALL_APPS_XFCONF_PROP			"show-all-applications" -> FALSE (G_TYPE_BOOLEAN)
-
-#define ALLOW_SUBWINDOWS_XFCONF_PROP		"allow-subwindows" -> TRUE (G_TYPE_BOOLEAN)
-
-#define ENABLED_PLUGINS_XFCONF_PROP			"enabled-plugins" -> [] (Type: G_TYPE_STRV - G_TYPE_BOXED)
-
-#define FAVOURITES_XFCONF_PROP				"favourites" -> [ "exo-web-browser.desktop", "exo-mail-reader.desktop", "exo-file-manager.desktop", "exo-terminal-emulator.desktop" ]  (Type: G_TYPE_STRV - G_TYPE_BOXED)
-static const gchar*	_xfdashboard_settings_default_favourites[]=	{
-																	"exo-web-browser.desktop",
-																	"exo-mail-reader.desktop",
-																	"exo-file-manager.desktop",
-																	"exo-terminal-emulator.desktop",
-																	NULL
-																};
-
-#define LAUNCH_NEW_INSTANCE_XFCONF_PROP		"always-launch-new-instance" -> TRUE (G_TYPE_BOOLEAN)
-
-// OLD: #define DELAY_SEARCH_TIMEOUT_XFCONF_PROP	"/components/search-view/delay-search-timeout"
-#define DELAY_SEARCH_TIMEOUT_XFCONF_PROP			"delay-search-timeout" -> 0 (G_TYPE_UINT)
-#define DEFAULT_DELAY_SEARCH_TIMEOUT				0
-
-// OLD: #define SCROLL_EVENT_CHANGES_WORKSPACE_XFCONF_PROP		"/components/windows-view/scroll-event-changes-workspace"
-#define SCROLL_EVENT_CHANGES_WORKSPACE_XFCONF_PROP				"scroll-event-changes-workspace" -> FALSE (G_TYPE_BOOLEAN)
-
-#define WORKAROUND_UNMAPPED_WINDOW_XFCONF_PROP				"enable-unmapped-window-workaround" -> FALSE (G_TYPE_BOOLEAN)
-
-#define WINDOW_CONTENT_CREATION_PRIORITY_XFCONF_PROP		"window-content-creation-priority" -> "immediate" (XFDASHBOARD_TYPE_WINDOW_CONTENT_X11_WORKAROUND_MODE ? string?)
-
-#define ENABLE_ANIMATIONS_XFCONF_PROP		"enable-animations"
-
-#define NOTIFICATION_TIMEOUT_XFCONF_PROP				"min-notification-timeout"
-#define RESET_SEARCH_ON_RESUME_XFCONF_PROP				"reset-search-on-resume"
-#define SWITCH_VIEW_ON_RESUME_XFCONF_PROP				"switch-to-view-on-resume"
-#define RESELECT_THEME_FOCUS_ON_RESUME_XFCONF_PROP		"reselect-theme-focus-on-resume"
-
-#endif
-
-
 /* IMPLEMENTATION: GObject */
 
+/* Default nofity signal handler */
+static void _xfdashboard_settings_notify(GObject *inObject, GParamSpec *inParamSpec)
+{
+	XfdashboardSettings	*self=XFDASHBOARD_SETTINGS(inObject);
+
+	/* Only emit "changed" signal if changed property can be read and is not
+	 * construct-only (as this one cannot be changed later at runtime).
+	 */
+	if((inParamSpec->flags & G_PARAM_READABLE) &&
+		G_LIKELY(!(inParamSpec->flags & G_PARAM_CONSTRUCT_ONLY)))
+	{
+		GParamSpec		*redirectTarget;
+
+		/* If the parameter specification is redirected, notify on the target */
+		redirectTarget=g_param_spec_get_redirect_target(inParamSpec);
+		if(redirectTarget) inParamSpec=redirectTarget;
+
+		/* Emit "changed" signal but set no plugin ID as a core settings was changed */
+		g_signal_emit(self, XfdashboardSettingsSignals[SIGNAL_CHANGED], g_param_spec_get_name_quark(inParamSpec), NULL, inParamSpec);
+	}
+}
+ 
 /* Dispose this object */
 static void _xfdashboard_settings_dispose(GObject *inObject)
 {
@@ -407,6 +391,7 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 	gobjectClass->dispose=_xfdashboard_settings_dispose;
 	gobjectClass->set_property=_xfdashboard_settings_set_property;
 	gobjectClass->get_property=_xfdashboard_settings_get_property;
+	gobjectClass->notify=_xfdashboard_settings_notify;
 
 	/* Define properties */
 	/**
@@ -651,6 +636,20 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSettingsProperties);
+
+	/* Define signals */
+	XfdashboardSettingsSignals[SIGNAL_CHANGED]=
+		g_signal_new("changed",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_DETAILED | G_SIGNAL_NO_HOOKS | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardSettingsClass, changed),
+						NULL,
+						NULL,
+						_xfdashboard_marshal_VOID__STRING_OBJECT,
+						G_TYPE_NONE,
+						2,
+						G_TYPE_STRING,
+						G_TYPE_PARAM);
 }
 
 /* Object initialization
@@ -819,14 +818,26 @@ const gchar** xfdashboard_settings_get_enabled_plugins(XfdashboardSettings *self
 void xfdashboard_settings_set_enabled_plugins(XfdashboardSettings *self, const gchar **inEnabledPlugins)
 {
 	XfdashboardSettingsPrivate		*priv;
+	gboolean						changed;
 
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
 	g_return_if_fail(inEnabledPlugins==NULL || *inEnabledPlugins);
 
 	priv=self->priv;
+	changed=FALSE;
 
 	/* Set value if changed */
-	if(g_strv_equal((const gchar**)priv->enabledPlugins, inEnabledPlugins)!=0)
+	if(priv->enabledPlugins)
+	{
+		changed=(inEnabledPlugins ? g_strv_equal((const gchar**)priv->enabledPlugins, inEnabledPlugins)!=0 : TRUE);
+	}
+
+	if(!changed && inEnabledPlugins)
+	{
+		changed=(priv->enabledPlugins ? g_strv_equal((const gchar**)priv->enabledPlugins, inEnabledPlugins)!=0 : TRUE);
+	}
+
+	if(changed)
 	{
 		/* Set value */
 		if(priv->enabledPlugins)
@@ -876,14 +887,26 @@ const gchar** xfdashboard_settings_get_favourites(XfdashboardSettings *self)
 void xfdashboard_settings_set_favourites(XfdashboardSettings *self, const gchar **inFavourites)
 {
 	XfdashboardSettingsPrivate		*priv;
+	gboolean						changed;
 
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
 	g_return_if_fail(inFavourites==NULL || *inFavourites);
 
 	priv=self->priv;
+	changed=FALSE;
 
 	/* Set value if changed */
-	if(g_strv_equal((const gchar**)priv->favourites, inFavourites)!=0)
+	if(priv->favourites)
+	{
+		changed=(inFavourites ? g_strv_equal((const gchar**)priv->favourites, inFavourites)!=0 : TRUE);
+	}
+
+	if(!changed && inFavourites)
+	{
+		changed=(priv->favourites ? g_strv_equal((const gchar**)priv->favourites, inFavourites)!=0 : TRUE);
+	}
+
+	if(changed)
 	{
 		/* Set value */
 		if(priv->favourites)

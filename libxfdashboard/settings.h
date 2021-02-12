@@ -63,8 +63,9 @@ struct _XfdashboardSettings
 
 /**
  * XfdashboardSettingsClass:
+ * @settings_changed: The class closure for changed signal
  *
- * The #XfdashboardSettingsClass class structure contains only private data
+ * The #XfdashboardSettingsClass class structure
  */
 struct _XfdashboardSettingsClass
 {
@@ -74,7 +75,9 @@ struct _XfdashboardSettingsClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*changed)(XfdashboardSettings *self, const gchar *inPluginID, GParamSpec *inParamSpec);
 };
+
 
 /* Public API */
 GType xfdashboard_settings_get_type(void) G_GNUC_CONST;

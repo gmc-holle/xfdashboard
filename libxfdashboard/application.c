@@ -863,6 +863,11 @@ static void _xfdashboard_application_set_settings(XfdashboardApplication *self,
 {
 	XfdashboardApplicationPrivate	*priv;
 
+	g_message("%s: self=%s@%p, settings=%s@%p [%s]",
+				__FUNCTION__,
+				self ? G_OBJECT_TYPE_NAME(self) : "<null>", self,
+				inSettings ? G_OBJECT_TYPE_NAME(inSettings) : "<null>", inSettings, XFDASHBOARD_IS_SETTINGS(inSettings) ? "yes" : "no");
+
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(self));
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(inSettings));
 
@@ -1130,6 +1135,12 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	}
 
 	/* Unset singleton */
+g_message("%s: singleton=%s@%p, disposing=%s@%p [%s]",
+			__FUNCTION__,
+			_xfdashboard_application ? G_OBJECT_TYPE_NAME(_xfdashboard_application) : "<null>", _xfdashboard_application,
+			inObject ? G_OBJECT_TYPE_NAME(inObject) : "<null>", inObject,
+			(G_OBJECT(_xfdashboard_application)==inObject) ? "unset" : "no");
+
 	if(G_LIKELY(G_OBJECT(_xfdashboard_application)==inObject)) _xfdashboard_application=NULL;
 
 	/* Call parent's class dispose method */
@@ -1511,6 +1522,15 @@ static void xfdashboard_application_init(XfdashboardApplication *self)
 
 	priv=self->priv=xfdashboard_application_get_instance_private(self);
 
+	// TODO: Setting singleton here is wrong but essential for futher development and testing - Remove later!!!
+	if(_xfdashboard_application==NULL)
+	{
+		_xfdashboard_application=self;
+		g_message("%s: set singleton=%s@%p",
+					__FUNCTION__,
+					_xfdashboard_application ? G_OBJECT_TYPE_NAME(_xfdashboard_application) : "<null>", _xfdashboard_application);
+	}
+
 	/* Set default values */
 	priv->isDaemon=FALSE;
 	priv->isSuspended=FALSE;
@@ -1593,8 +1613,6 @@ XfdashboardApplication* xfdashboard_application_get_default(void)
 		_xfdashboard_application=g_object_new(XFDASHBOARD_TYPE_APPLICATION,
 												"application-id", appID,
 												"flags", G_APPLICATION_HANDLES_COMMAND_LINE,
-												// TODO: Better settings handling
-												"settings", g_object_new(XFDASHBOARD_TYPE_SETTINGS, NULL),
 												NULL);
 
 		if(forceNewInstance)

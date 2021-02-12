@@ -31,10 +31,16 @@
 #ifdef CLUTTER_WINDOWING_X11
 #include <clutter/x11/clutter-x11.h>
 #endif
+#include <xfconf/xfconf.h>
 #include <libxfce4util/libxfce4util.h>
 #include <libxfdashboard/application.h>
 #include <libxfdashboard/window-tracker-backend.h>
+#include <common/xfconf-settings.h>
 
+
+/* IMPLEMENTATION: Private variables and methods */
+
+#define DEFAULT_RESTART_WAIT_TIMEOUT	5000	/* Timeout in milliseconds */
 
 typedef struct _RestartData		RestartData;
 struct _RestartData
@@ -43,8 +49,6 @@ struct _RestartData
 	XfdashboardApplication	*application;
 	gboolean				appHasQuitted;
 };
-
-#define DEFAULT_RESTART_WAIT_TIMEOUT	5000	/* Timeout in milliseconds */
 
 
 /* Timeout to wait for application to disappear has been reached */
@@ -183,6 +187,58 @@ static gboolean _restart(XfdashboardApplication *inApplication)
 	return(restartData.appHasQuitted);
 }
 
+/* Create application instance */
+#define XFDASHBOARD_APP_ID					"de.froevel.nomad.xfdashboard"
+
+static XfdashboardApplication* _create_application(void)
+{
+	XfdashboardApplication		*application;
+	XfdashboardXfconfSettings	*settings;
+	gchar						*appID;
+	const gchar					*forceNewInstance;
+
+	application=NULL;
+	forceNewInstance=NULL;
+
+	/* Create settings instance for Xfconf settings storage */
+	settings=g_object_new(XFDASHBOARD_TYPE_XFCONF_SETTINGS, NULL);
+	if(!settings)
+	{
+		g_critical("Cannot create xfconf settings backend");
+		return(NULL);
+	}
+
+	g_message("%s: settings=%s@%p [%s]",
+				__FUNCTION__,
+				settings ? G_OBJECT_TYPE_NAME(settings) : "<null>", settings, XFDASHBOARD_IS_SETTINGS(settings) ? "yes" : "no");
+
+#ifdef DEBUG
+	/* If a new instance of xfdashboard is forced, e.g. for debugging purposes,
+	 * then create a unique application ID.
+	 */
+	forceNewInstance=g_getenv("XFDASHBOARD_FORCE_NEW_INSTANCE");
+#endif
+
+	if(forceNewInstance)
+	{
+		appID=g_strdup_printf("%s-%u", XFDASHBOARD_APP_ID, getpid());
+		g_message("Forcing new application instance with ID '%s'", appID);
+	}
+		else appID=g_strdup(XFDASHBOARD_APP_ID);
+
+	application=g_object_new(XFDASHBOARD_TYPE_APPLICATION,
+								"application-id", appID,
+								"flags", G_APPLICATION_HANDLES_COMMAND_LINE,
+								"settings", settings,
+								NULL);
+
+	/* Release allocated resources */
+	if(appID) g_free(appID);
+
+	/* Return newly created application instance */
+	return(application);
+}
+
 /* Main entry point */
 int main(int argc, char **argv)
 {
@@ -191,6 +247,7 @@ int main(int argc, char **argv)
 #if CLUTTER_CHECK_VERSION(1, 16, 0)
 	const gchar					*backend;
 #endif
+	GError						*error=NULL;
 
 #ifdef ENABLE_NLS
 	/* Set up localization */
@@ -201,6 +258,19 @@ int main(int argc, char **argv)
 	/* Initialize GObject type system */
 	g_type_init();
 #endif
+
+	/* Initialize Xfconf */
+	if(G_UNLIKELY(!xfconf_init(&error)))
+	{
+		if(G_LIKELY(error))
+		{
+			g_error("Failed to initialize xfconf: %s",
+						error ? error->message : "Unknown error");
+			if(error) g_error_free(error);
+		}
+
+		return(1);
+	}
 
 #if CLUTTER_CHECK_VERSION(1, 16, 0)
 	/* Enforce X11 backend in Clutter if no specific backend was requested via
@@ -242,7 +312,7 @@ int main(int argc, char **argv)
 	gdk_notify_startup_complete();
 
 	/* Start application as primary or remote instace */
-	app=xfdashboard_application_get_default();
+	app=_create_application();
 	if(!app)
 	{
 		g_warning("Failed to create application instance");
@@ -265,7 +335,7 @@ int main(int argc, char **argv)
 			/* Create new application instance which should become
 			 * the new primary instance.
 			 */
-			app=xfdashboard_application_get_default();
+			app=_create_application();
 			if(!app)
 			{
 				g_warning("Failed to create application instance");

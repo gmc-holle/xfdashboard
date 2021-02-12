@@ -102,6 +102,7 @@ enum
 
 static guint XfdashboardLiveWindowSignals[SIGNAL_LAST]={ 0, };
 
+
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Check if the requested window is a sub-window of this window */

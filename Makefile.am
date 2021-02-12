@@ -14,6 +14,7 @@ DISTCLEANFILES = \
 	intltool-update
 
 SUBDIRS = \
+	common \
 	data \
 	po \
 	libxfdashboard \
