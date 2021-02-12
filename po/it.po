@@ -135,6 +135,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
+"Se abilitato, la vista della ricerca verrà reimpostata quando l'esecuzione di xfdashboard viene ripresa. Questo significa che la vista attiva viene scambiata con l'ultima vista attiva prima dell'ultima ricerca e la barra di ricerca verrà svuotata.\n"
+"\n"
+"<b>NOTA:</b> Questa impostazione ha effetto soltanto se xfdashboard è avviato in modalità demone."
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
@@ -148,7 +151,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr ""
+msgstr "Spostarsi sulla vista al ripristino:"
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
@@ -156,6 +159,9 @@ msgid ""
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
 msgstr ""
+"Imposta il tempo minimo della visualizzazione di una notifica.\n"
+"\n"
+"La durata è calcolata in base alla lunghezza del testo da mostrare nella notifica. Questa impostazione ti permette di specificare il tempo minimo per cui la notifica deve essere visualizzata."
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
@@ -171,6 +177,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
 msgstr ""
+"Quando abilitato, verrà tentata una applicazione di un workaround per finestre minimizzate per far sì che vengano visualizzate le immagini ferme di queste finestre quando vengono ripristinate e minimizzate subito dopo.\n"
+"\n"
+"<b>NOTA:</b> Sii consapevole che questo è un <u>workaround</u> e le tue finestre minimizzate potrebbero rimanere non minimizzate, cambiare spazio di lavoro, ecc."
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
@@ -178,6 +187,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
+"Questo valore indica con quale velocità vengono creati i contenuti della finestra. Il valore 'immediato' dice a xfdashboard di creare il contenuto della finestra quando viene richiesto, mentre gli altri valori imposteranno una coda ed il valore indica con quale velocità la coda sarà processata.\n"
+"\n"
+"<b>NOTA:</b> Cambiare questo valore da 'immediato' ad un altro valore solo se la tua scheda grafica, driver o il sistema sono troppo lenti per creare il contenuto delle finestre immediatamente. Dovrai provare ogni valore per trovare quello che più si addice al tuo sistema."
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
@@ -206,6 +218,9 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
+"Quando abilitato e quando si fa clic su una icona di avvio rapido, verrà avviata sempre una nuova istanza della applicazione.\n"
+"\n"
+"Quando non abilitato, verrà selezionata l'ultima finestra attiva conosciuta dell'istanza della applicazione in esecuzione. Se l'applicazione non è in esecuzione, verrà avviata una nuova istanza."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
@@ -245,6 +260,9 @@ msgid ""
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
 msgstr ""
+"Quando abilitato, ogni evento di scorrimento, come quello della rotella del "
+"mouse, sulle finestre cambierà lo spazio di lavoro attivo. Questo "
+"comportamento è lo stesso di quello del selettore di spazio di lavoro."
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
@@ -433,7 +451,7 @@ msgstr ""
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
-msgstr ""
+msgstr "ID della vista su cui passare all'avvio o alla ripresa"
 
 #: ../libxfdashboard/application.c:581
 msgid "Show version"
