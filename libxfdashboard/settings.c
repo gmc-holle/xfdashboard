@@ -20,7 +20,7 @@
  * 
  * 
  */
-
+ 
 /**
  * SECTION:settings
  * @short_description: The settings class
@@ -452,7 +452,7 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 	 * A flag indicating if a new instance should an application choosen, e.g. at quicklaunch,
 	 * should be launched. If set to %TRUE, always a new instance will be launched. If set
 	 * to %FALSE an already running instance will be brought to front if existing, otherwise
-	 * it launches an instance of chosen application.  
+	 * it launches an instance of chosen application.
 	 */
 	XfdashboardSettingsProperties[PROP_ALWAYS_LAUNCH_NEW_INSTANCE]=
 		g_param_spec_boolean("always-launch-new-instance",
@@ -467,7 +467,7 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 	 * A flag indicating if a new instance should an application choosen at quicklaunch
 	 * should be sarted. If set to %TRUE, always a new instance will be started. If set
 	 * to %FALSE an already running instance will be brought to front if existing, otherwise
-	 * it starts an instance of chosen application.  
+	 * it starts an instance of chosen application.
 	 */
 	XfdashboardSettingsProperties[PROP_ALWAYS_LAUNCH_NEW_INSTANCE]=
 		g_param_spec_boolean("always-launch-new-instance",
@@ -551,7 +551,7 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 								"Whether to reset and end search when application resumes",
 								DEFAULT_RESET_SEARCH_ON_RESUME,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-								
+
 	/**
 	 * XfdashboardSettings:switch-to-view-on-resume:
 	 *
@@ -598,7 +598,7 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 	 *
 	 * A flag if set to %TRUE the applications in applications will all be shown at once without
 	 * any (sub-)menu. If set to %FALSE then category menus containing the corresponding
-	 * applications will be shown instead. 
+	 * applications will be shown instead.
 	 */
 	XfdashboardSettingsProperties[PROP_APPLICATIONS_VIEW_SHOW_ALL_APPS]=
 		g_param_spec_boolean("show-all-applications",
