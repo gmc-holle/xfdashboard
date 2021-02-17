@@ -51,6 +51,8 @@ msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
 msgstr ""
+"Xfdashboard GNOME shell interfazearen antzeko aginte-mahai bat hornitzen du "
+"Xfce mahaigainean erabiltzeko."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:3
 msgid ""
@@ -80,6 +82,8 @@ msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
+"Bertsio egonkor honek akats bat zuzentzen du aplikazio lehenetsi egokia "
+"ezartzerakoan lehen erabileran."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
