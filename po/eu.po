@@ -61,6 +61,11 @@ msgid ""
 "switch between different applications. The search feature works like Xfce's "
 "app finder which makes it convenient to search for and start applications."
 msgstr ""
+"Edozein teklatu lasterbide exekutatzeko konfiguratu daiteke eta "
+"exekutatzerakoan unean irekitako aplikazioen ikuspegia ematen du, "
+"erabiltzaileari aplikazioen aldatzeko aukera emanez. Bilaketa ezaugarriak "
+"Xfceren aplikazio bilatzailea bezala funtzionatzen du, aplikazioak bilatzea "
+"eta abiaraztea erraztuz."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:4
 msgid "Browsing applications"
@@ -76,6 +81,9 @@ msgid ""
 "menus, multiple backend and support for jumplists etc. It also includes lots"
 " of new and updated translations."
 msgstr ""
+"Bertsio egonkor honek ezaugarri berri asko dakar, animazioak bezala, "
+"goranzko menuak, hainbat backend eta jauzi zerrendak etab. Itzulpen berri "
+"eta eguneratu asko dakar ere."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
@@ -91,6 +99,9 @@ msgid ""
 "application tracker. It also contains a huge collection of other larger and "
 "smaller improvements."
 msgstr ""
+"Bertsio egonkor honek ezaugarri berri asko dakar, adibidez pluginak eta "
+"aplikazioen jarraitzailea. Beste hobekuntza handi eta txikien bilduma "
+"erraldoia dauka ere."
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
@@ -114,7 +125,7 @@ msgstr "<b>Ezarpen orokorrak:</b>"
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr ""
+msgstr "Berrezarri bilaketa ikuspegia berrekiterakoan"
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
@@ -122,6 +133,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
+"Gaitzen bada bilaketa ikuspegia berrezarri egingo da xfdashboard berrekiten denean. Horrek ikuspegi aktiboak azken ikuspegi aktibora bueltatuko dela esan nahi du eta bilaketa kutxa hustuko da.\n"
+"\n"
+"<b>OHARRA:</b> Ezarpen honek xfdashboard deabru moduan exekutatzen bada izango du efektua soilik."
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
@@ -129,6 +143,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
 msgstr ""
+"Xfdashboard berrekiten denean hautatuko ikuspegia aktibatuko da.\n"
+"\n"
+"<b>OHARRA:</b> Ezarpen honek xfdashboard deabru moduan exekutatzen bada izango du efektua soilik."
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
@@ -165,11 +182,11 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
-msgstr ""
+msgstr "Leiho edukia sortzeko lehentasuna"
 
 #: ../data/data/preferences.ui.h:26
 msgid "Show child windows in main windows"
-msgstr ""
+msgstr "Leiho umeak leiho nagusian erakutsi"
 
 #: ../data/data/preferences.ui.h:27
 msgid ""
@@ -179,7 +196,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
-msgstr ""
+msgstr "Instantzia berri bat hasi beti aplikaziorako"
 
 #: ../data/data/preferences.ui.h:29
 msgid ""
@@ -567,11 +584,11 @@ msgstr "Bista berri bat gehitzen du erloju batekin"
 
 #: ../plugins/example-search-provider/example-search-provider.c:73
 msgid "Example search"
-msgstr ""
+msgstr "Bilaketa eredua"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "Bilaketa hornitzaile eredua"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
@@ -596,17 +613,17 @@ msgstr "ms"
 #: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
 #: ../settings/general.c:383
 msgid "Immediately"
-msgstr ""
+msgstr "Berehala"
 
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:339
 msgid "Activation corner:"
-msgstr ""
+msgstr "Aktibatze izkina:"
 
 #. Add widget to choose activation radius
 #: ../plugins/hot-corner/plugin.c:375
 msgid "Radius of activation corner:"
-msgstr ""
+msgstr "Aktibazio izkinaren erradioa:"
 
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:393
@@ -616,25 +633,27 @@ msgstr ""
 #. Add widget to limit checks to primary monitor only or to all monitors
 #: ../plugins/hot-corner/plugin.c:415
 msgid "Primary monitor only"
-msgstr ""
+msgstr "Monitore nagusia soilik"
 
 #: ../plugins/hot-corner/plugin.c:467
 msgid "Hot corner"
-msgstr ""
+msgstr "Izkin beroa"
 
 #: ../plugins/hot-corner/plugin.c:468
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
 msgstr ""
+"Xfdashboard aktibatzen du sagu markatzailea zehaztutako monitorearen izkina "
+"batera mugitzen denean"
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr ""
+msgstr "Erdiko klikak leihoa itxi"
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
-msgstr ""
+msgstr "Leihoak itxi leihoen ikuspegian erdiko klik eginez"
 
 #: ../settings/general.c:120
 msgid "Do nothing"
@@ -642,7 +661,7 @@ msgstr "Ez egin ezer"
 
 #: ../settings/general.c:121
 msgid "Windows view"
-msgstr ""
+msgstr "Leiho ikuspegia"
 
 #: ../settings/general.c:122
 msgid "Applications view"
@@ -667,7 +686,7 @@ msgstr "segundo"
 #: ../settings/plugins.c:222
 #, c-format
 msgid "Configure plugin: %s"
-msgstr ""
+msgstr "Plugina konfiguratu: %s"
 
 #. Create error message to store in list
 #: ../settings/plugins.c:825
@@ -677,6 +696,9 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
+"<b>Plugina ezin izan da kargatu.</b>\n"
+"\n"
+"%s"
 
 #: ../settings/plugins.c:1032
 msgid "Name"
@@ -701,7 +723,7 @@ msgstr "Bertsio argibideak"
 #. Initialize GTK+
 #: ../settings/main.c:57
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../settings/main.c:61
 #, c-format
