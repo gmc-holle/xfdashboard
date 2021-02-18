@@ -863,11 +863,6 @@ static void _xfdashboard_application_set_settings(XfdashboardApplication *self,
 {
 	XfdashboardApplicationPrivate	*priv;
 
-	g_message("%s: self=%s@%p, settings=%s@%p [%s]",
-				__FUNCTION__,
-				self ? G_OBJECT_TYPE_NAME(self) : "<null>", self,
-				inSettings ? G_OBJECT_TYPE_NAME(inSettings) : "<null>", inSettings, XFDASHBOARD_IS_SETTINGS(inSettings) ? "yes" : "no");
-
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(self));
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(inSettings));
 
@@ -1135,12 +1130,6 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	}
 
 	/* Unset singleton */
-g_message("%s: singleton=%s@%p, disposing=%s@%p [%s]",
-			__FUNCTION__,
-			_xfdashboard_application ? G_OBJECT_TYPE_NAME(_xfdashboard_application) : "<null>", _xfdashboard_application,
-			inObject ? G_OBJECT_TYPE_NAME(inObject) : "<null>", inObject,
-			(G_OBJECT(_xfdashboard_application)==inObject) ? "unset" : "no");
-
 	if(G_LIKELY(G_OBJECT(_xfdashboard_application)==inObject)) _xfdashboard_application=NULL;
 
 	/* Call parent's class dispose method */

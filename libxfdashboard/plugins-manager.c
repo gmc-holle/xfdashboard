@@ -56,7 +56,6 @@ struct _XfdashboardPluginsManagerPrivate
 {
 	/* Instance related */
 	gboolean				isInited;
-	GList					*searchPaths;
 	GList					*plugins;
 
 	XfdashboardApplication	*application;
@@ -75,75 +74,13 @@ G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardPluginsManager,
 /* Single instance of plugin manager */
 static XfdashboardPluginsManager*			_xfdashboard_plugins_manager=NULL;
 
-/* Add path to search path but avoid duplicates */
-static gboolean _xfdashboard_plugins_manager_add_search_path(XfdashboardPluginsManager *self,
-																const gchar *inPath)
-{
-	XfdashboardPluginsManagerPrivate	*priv;
-	gchar								*normalizedPath;
-	GList								*iter;
-	gchar								*iterPath;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self), FALSE);
-	g_return_val_if_fail(inPath && *inPath, FALSE);
-
-	priv=self->priv;
-
-	/* Normalize requested path to add to list of search paths that means
-	 * that it should end with a directory seperator.
-	 */
-	if(!g_str_has_suffix(inPath, G_DIR_SEPARATOR_S))
-	{
-		normalizedPath=g_strjoin(NULL, inPath, G_DIR_SEPARATOR_S, NULL);
-	}
-		else normalizedPath=g_strdup(inPath);
-
-	/* Check if path is already in list of search paths */
-	for(iter=priv->searchPaths; iter; iter=g_list_next(iter))
-	{
-		/* Get search path at iterator */
-		iterPath=(gchar*)iter->data;
-
-		/* If the path at iterator matches the requested one that it is
-		 * already in list of search path, so return here with fail result.
-		 */
-		if(g_strcmp0(iterPath, normalizedPath)==0)
-		{
-			XFDASHBOARD_DEBUG(self, PLUGINS,
-								"Path '%s' was already added to search paths of plugin manager",
-								normalizedPath);
-
-			/* Release allocated resources */
-			if(normalizedPath) g_free(normalizedPath);
-
-			/* Return fail result */
-			return(FALSE);
-		}
-	}
-
-	/* If we get here the requested path is not in list of search path and
-	 * we can add it now.
-	 */
-	priv->searchPaths=g_list_append(priv->searchPaths, g_strdup(normalizedPath));
-	XFDASHBOARD_DEBUG(self, PLUGINS,
-						"Added path '%s' to search paths of plugin manager",
-						normalizedPath);
-
-	/* Release allocated resources */
-	if(normalizedPath) g_free(normalizedPath);
-
-	/* Return success result */
-	return(TRUE);
-}
-
 /* Find path to plugin */
 static gchar* _xfdashboard_plugins_manager_find_plugin_path(XfdashboardPluginsManager *self,
 															const gchar *inPluginName)
 {
 	XfdashboardPluginsManagerPrivate	*priv;
 	gchar								*path;
-	GList								*iter;
-	gchar								*iterPath;
+	const gchar							**iter;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self), NULL);
 	g_return_val_if_fail(inPluginName && *inPluginName, NULL);
@@ -153,13 +90,11 @@ static gchar* _xfdashboard_plugins_manager_find_plugin_path(XfdashboardPluginsMa
 	/* Iterate through list of search paths, lookup file name containing plugin name
 	 * followed by suffix ".so" and return first path found.
 	 */
-	for(iter=priv->searchPaths; iter; iter=g_list_next(iter))
+	iter=xfdashboard_settings_get_plugin_search_paths(priv->settings);
+	while(iter && *iter)
 	{
-		/* Get search path at iterator */
-		iterPath=(gchar*)iter->data;
-
 		/* Create full path of search path and plugin name */
-		path=g_strdup_printf("%s%s%s.%s", iterPath, G_DIR_SEPARATOR_S, inPluginName, G_MODULE_SUFFIX);
+		path=g_strdup_printf("%s%s%s.%s", *iter, G_DIR_SEPARATOR_S, inPluginName, G_MODULE_SUFFIX);
 		if(!path) continue;
 
 		XFDASHBOARD_DEBUG(self, PLUGINS,
@@ -179,6 +114,9 @@ static gchar* _xfdashboard_plugins_manager_find_plugin_path(XfdashboardPluginsMa
 
 		/* Release allocated resources */
 		if(path) g_free(path);
+
+		/* Move iterator to next entry */
+		iter++;
 	}
 
 	/* If we get here we did not found any suitable file, so return NULL */
@@ -559,12 +497,6 @@ static void _xfdashboard_plugins_manager_dispose(GObject *inObject)
 		priv->plugins=NULL;
 	}
 
-	if(priv->searchPaths)
-	{
-		g_list_free_full(priv->searchPaths, g_free);
-		priv->searchPaths=NULL;
-	}
-
 	if(priv->settings)
 	{
 		if(priv->settingsEnabledPluginsNotifySignalID)
@@ -619,7 +551,6 @@ static void xfdashboard_plugins_manager_init(XfdashboardPluginsManager *self)
 
 	/* Set default values */
 	priv->isInited=FALSE;
-	priv->searchPaths=NULL;
 	priv->plugins=NULL;
 	priv->application=xfdashboard_application_get_default();
 	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
@@ -679,8 +610,6 @@ XfdashboardPluginsManager* xfdashboard_plugins_manager_get_default(void)
 gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self)
 {
 	XfdashboardPluginsManagerPrivate	*priv;
-	gchar								*path;
-	const gchar							*envPath;
 	const gchar							**enabledPlugins;
 	const gchar							**iter;
 	GError								*error;
@@ -692,32 +621,6 @@ gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self)
 
 	/* If plugin manager is already initialized then return immediately */
 	if(priv->isInited) return(TRUE);
-
-	/* Add search paths. Some paths may fail because they already exist
-	 * in list of search paths. So this should not fail this function.
-	 */
-	envPath=g_getenv("XFDASHBOARD_PLUGINS_PATH");
-	if(envPath)
-	{
-		gchar						**paths;
-		gchar						**pathIter;
-
-		pathIter=paths=g_strsplit(envPath, ":", -1);
-		while(*pathIter)
-		{
-			_xfdashboard_plugins_manager_add_search_path(self, *pathIter);
-			pathIter++;
-		}
-		g_strfreev(paths);
-	}
-
-	path=g_build_filename(g_get_user_data_dir(), "xfdashboard", "plugins", NULL);
-	_xfdashboard_plugins_manager_add_search_path(self, path);
-	g_free(path);
-
-	path=g_build_filename(PACKAGE_LIBDIR, "xfdashboard", "plugins", NULL);
-	_xfdashboard_plugins_manager_add_search_path(self, path);
-	g_free(path);
 
 	/* Get list of enabled plugins and try to load them */
 	enabledPlugins=xfdashboard_settings_get_enabled_plugins(priv->settings);

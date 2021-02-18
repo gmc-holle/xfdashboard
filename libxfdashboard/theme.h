@@ -80,6 +80,7 @@ typedef enum /*< prefix=XFDASHBOARD_THEME_ERROR >*/
 	XFDASHBOARD_THEME_ERROR_ALREADY_LOADED
 } XfdashboardThemeErrorEnum;
 
+
 /* Public API */
 GType xfdashboard_theme_get_type(void) G_GNUC_CONST;
 

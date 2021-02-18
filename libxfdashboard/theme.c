@@ -32,6 +32,8 @@
 #include <glib.h>
 #include <gio/gio.h>
 
+#include <libxfdashboard/application.h>
+#include <libxfdashboard/settings.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -478,41 +480,27 @@ static gboolean _xfdashboard_theme_load_resources(XfdashboardTheme *self,
 static gchar* _xfdashboard_theme_lookup_path_for_theme(XfdashboardTheme *self,
 														const gchar *inThemeName)
 {
-	gchar				*themeFile;
+	XfdashboardSettings		*settings;
+	const gchar				**searchPaths;
+	gchar					*themeFile;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), FALSE);
 	g_return_val_if_fail(inThemeName!=NULL && *inThemeName!=0, FALSE);
 
 	themeFile=NULL;
 
-	/* Search theme file in given environment variable if set.
-	 * This makes development easier when theme changes are needed
-	 * without changing theme or changing symlinks in any of below
-	 * searched paths.
-	 */
-	if(!themeFile)
-	{
-		const gchar		*envPath;
+	/* Get search path for themes */
+	settings=xfdashboard_application_get_settings(NULL);
+	searchPaths=xfdashboard_settings_get_theme_search_paths(settings);
 
-		envPath=g_getenv("XFDASHBOARD_THEME_PATH");
-		if(envPath)
-		{
-			themeFile=g_build_filename(envPath, XFDASHBOARD_THEME_FILE, NULL);
-			XFDASHBOARD_DEBUG(self, THEME,
-								"Trying theme file: %s",
-								themeFile);
-			if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
-			{
-				g_free(themeFile);
-				themeFile=NULL;
-			}
-		}
-	}
-
-	/* If file not found search in user's config directory */
-	if(!themeFile)
+	/* Iterate through search paths and look up theme */
+	while(searchPaths && *searchPaths && !themeFile)
 	{
-		themeFile=g_build_filename(g_get_user_data_dir(), "themes", inThemeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_FILE, NULL);
+		/* Build theme file path and test for existence.
+		 * If it does exist, keep theme file path. If it does not exist,
+		 * unset theme file path and continue iterating.
+		 */
+		themeFile=g_build_filename(*searchPaths, inThemeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_FILE, NULL);
 		XFDASHBOARD_DEBUG(self, THEME,
 							"Trying theme file: %s",
 							themeFile);
@@ -521,43 +509,12 @@ static gchar* _xfdashboard_theme_lookup_path_for_theme(XfdashboardTheme *self,
 			g_free(themeFile);
 			themeFile=NULL;
 		}
+
+		/* Move iterator to next entry */
+		searchPaths++;
 	}
-
-	/* If file not found search in user's home directory */
-	if(!themeFile)
-	{
-		const gchar		*homeDirectory;
-
-		homeDirectory=g_get_home_dir();
-		if(homeDirectory)
-		{
-			themeFile=g_build_filename(homeDirectory, ".themes", inThemeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_FILE, NULL);
-			XFDASHBOARD_DEBUG(self, THEME,
-								"Trying theme file: %s",
-								themeFile);
-			if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
-			{
-				g_free(themeFile);
-				themeFile=NULL;
-			}
-		}
-	}
-
-	/* If file not found search in system-wide paths */
-	if(!themeFile)
-	{
-		themeFile=g_build_filename(PACKAGE_DATADIR, "themes", inThemeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_FILE, NULL);
-		XFDASHBOARD_DEBUG(self, THEME,
-							"Trying theme file: %s",
-							themeFile);
-		if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
-		{
-			g_free(themeFile);
-			themeFile=NULL;
-		}
-	}
-
-	/* If file was found get path contaning file and return it */
+	
+	/* If file was found, get path contaning file and return it */
 	if(themeFile)
 	{
 		gchar			*themePath;

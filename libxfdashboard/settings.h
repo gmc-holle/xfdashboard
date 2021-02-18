@@ -130,6 +130,15 @@ void xfdashboard_settings_set_delay_search_timeout(XfdashboardSettings *self, gu
 gboolean xfdashboard_settings_get_scroll_event_changes_workspace(XfdashboardSettings *self);
 void xfdashboard_settings_set_scroll_event_changes_workspace(XfdashboardSettings *self, gboolean inWindowsViewScrollEventChangesWorkspace);
 
+const gchar** xfdashboard_settings_get_binding_files(XfdashboardSettings *self);
+void xfdashboard_settings_set_binding_files(XfdashboardSettings *self, const gchar **inFileLocations);
+
+const gchar** xfdashboard_settings_get_theme_search_paths(XfdashboardSettings *self);
+void xfdashboard_settings_set_theme_search_paths(XfdashboardSettings *self, const gchar **inSearchPaths);
+
+const gchar** xfdashboard_settings_get_plugin_search_paths(XfdashboardSettings *self);
+void xfdashboard_settings_set_plugin_search_paths(XfdashboardSettings *self, const gchar **inSearchPaths);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_SETTINGS__ */

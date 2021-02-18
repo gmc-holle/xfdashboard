@@ -135,6 +135,8 @@ gint xfdashboard_get_enum_value_from_nickname(GType inEnumClass, const gchar *in
 
 void xfdashboard_dump_actor(ClutterActor *inActor);
 
+gboolean xfdashboard_strv_equal(const gchar **inLeft, const gchar **inRight);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_UTILS__ */

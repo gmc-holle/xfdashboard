@@ -850,3 +850,27 @@ void xfdashboard_dump_actor(ClutterActor *inActor)
 	 */
 	_xfdashboard_dump_actor_internal(inActor, 1);
 }
+
+/**
+ * xfdashboard_strv_equal:
+ * @inLeft: a %NULL-terminated array of strings
+ * @inRight: another %NULL-terminated array of strings
+ *
+ * Checks if @inLeft and @inRight contain exactly the same elements in exactly 
+ * the same order. Two empty arrays are considered equal. If @inLeft and/or
+ * @inRight are %NULL they are considered empty which is the difference to
+ * @g_strv_equal().
+ *
+ * Returns: %TRUE if @inLeft and @inRight are equal, otherwise %FALSE
+ */
+gboolean xfdashboard_strv_equal(const gchar **inLeft, const gchar **inRight)
+{
+	static const gchar		*empty[]={ NULL };
+
+	/* If any array pointer is NULL, consider them empty */
+	if(!inLeft) inLeft=empty;
+	if(!inRight) inRight=empty;
+
+	/* Now compare them */
+	return(g_strv_equal(inLeft, inRight));
+}
