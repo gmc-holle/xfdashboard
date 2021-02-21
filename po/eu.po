@@ -149,7 +149,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr ""
+msgstr "Ikuspegira aldatu berrekiterakoan:"
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
@@ -157,14 +157,17 @@ msgid ""
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
 msgstr ""
+"Jakinarazpen bat ikusiko den gutxieneko denbora ezartzen du.\n"
+"\n"
+"Iraupena jakinarazpenaren testuaren luzeraren arabera kalkulatzen da. Ezarpen honek jakinarazpena gutxienez zenbat denbora ikusiko den zehaztea baimentzen dizu."
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
-msgstr ""
+msgstr "Jakinarazpenen gutxieneko denbora-muga:"
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
-msgstr ""
+msgstr "Minimizatutako leihoentzako konponbidea gaitu"
 
 #: ../data/data/preferences.ui.h:19
 msgid ""
@@ -254,7 +257,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:42
 msgid "Delay initial search interval:"
-msgstr ""
+msgstr "Hasierako bilaketa tartea atzeratu:"
 
 #: ../data/data/preferences.ui.h:43
 msgid "General"
@@ -347,7 +350,7 @@ msgstr "Ardo beltz itxura xfdashboardentzako"
 #: ../libxfdashboard/application-button.c:262
 #, c-format
 msgid "Could not execute action '%s' for application '%s': %s"
-msgstr ""
+msgstr "Ezin izan da '%s' ekintza exekutatu '%s' aplikaziorako: %s"
 
 #: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
 #: ../settings/main.c:63
@@ -357,7 +360,7 @@ msgstr "Errore ezezaguna"
 #: ../libxfdashboard/application-button.c:282
 #, c-format
 msgid "Executed action '%s' for application '%s'"
-msgstr ""
+msgstr "'%s' ekintza exekutatu da '%s' aplikaziorako"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
@@ -398,7 +401,7 @@ msgstr "Ezin izan da '%s' itxura kargatu: %s"
 #: ../libxfdashboard/application.c:527
 #, c-format
 msgid "Welcome to %s (%s)!"
-msgstr ""
+msgstr "Ongi etorri %s(e)ra (%s)!"
 
 #: ../libxfdashboard/application.c:529
 #, c-format
@@ -407,7 +410,7 @@ msgstr "Ongi etorri %s(e)ra!"
 
 #: ../libxfdashboard/application.c:576
 msgid "Fork to background"
-msgstr ""
+msgstr "Atzealdera bidali"
 
 #: ../libxfdashboard/application.c:577
 msgid "Quit running instance"
@@ -425,7 +428,7 @@ msgstr ""
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
-msgstr ""
+msgstr "Abioan edo berrekiterakoan aldatzeko ikuspegiaren IDa"
 
 #: ../libxfdashboard/application.c:581
 msgid "Show version"
@@ -478,7 +481,7 @@ msgstr "Instalatutako aplikazio guztien zerrenda"
 
 #: ../libxfdashboard/quicklaunch.c:402
 msgid "No windows to activate for application"
-msgstr ""
+msgstr "Ez dago leihorik aktibatzeko aplikaziorako"
 
 #: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
 #: ../libxfdashboard/quicklaunch.c:2130
@@ -521,7 +524,7 @@ msgstr "%d emaitzak erakutsi..."
 #: ../libxfdashboard/search-view.c:979
 #, c-format
 msgid "No results found for '%s'"
-msgstr ""
+msgstr "Ez da emaitzarik aurkitu '%s'(e)rako"
 
 #. Set up view (Note: Search view is disabled by default!)
 #: ../libxfdashboard/search-view.c:1715
@@ -592,19 +595,20 @@ msgstr "Bilaketa hornitzaile eredua"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
-msgstr ""
+msgstr "Hau alferrikako bilaketa hornitzaile plugin eredu bat besterik ez da"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:433
 msgid "Gnome-Shell search provider"
-msgstr ""
+msgstr "Gnome-Shell bilaketa hornitzailea"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:434
 msgid "Uses Gnome-Shell search providers as source for searches"
 msgstr ""
+"Gnome-Shell bilaketa hornitzailea erabiltzen du bilaketen iturri bezala"
 
 #: ../plugins/hot-corner/plugin.c:268
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
 msgid "ms"
@@ -628,7 +632,7 @@ msgstr "Aktibazio izkinaren erradioa:"
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:393
 msgid "Timeout to activate:"
-msgstr ""
+msgstr "Aktibatzeko denbora-muga:"
 
 #. Add widget to limit checks to primary monitor only or to all monitors
 #: ../plugins/hot-corner/plugin.c:415
