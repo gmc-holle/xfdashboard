@@ -165,7 +165,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
-msgstr "Timeout minimo di notifica:"
+msgstr "Durata minima della notifica:"
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
@@ -362,7 +362,7 @@ msgstr "Tema moranga per xfdashboard"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-wine"
-msgstr "xfdashboard-wine"
+msgstr "xfdashboard-vino"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
 msgid "Red wine theme for xfdashboard"
