@@ -39,6 +39,7 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/applications-search-provider.h>
+#include <libxfdashboard/utils.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/compat.h>
@@ -891,7 +892,7 @@ void xfdashboard_settings_set_enabled_plugins(XfdashboardSettings *self, const g
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(!xfdashboard_strv_equal(priv->enabledPlugins, inEnabledPlugins))
+	if(!xfdashboard_strv_equal((const gchar**)priv->enabledPlugins, inEnabledPlugins))
 	{
 		/* Set value */
 		if(priv->enabledPlugins)
@@ -948,7 +949,7 @@ void xfdashboard_settings_set_favourites(XfdashboardSettings *self, const gchar 
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(!xfdashboard_strv_equal(priv->favourites, inFavourites))
+	if(!xfdashboard_strv_equal((const gchar**)priv->favourites, inFavourites))
 	{
 		/* Set value */
 		if(priv->favourites)
@@ -1564,7 +1565,7 @@ void xfdashboard_settings_set_binding_files(XfdashboardSettings *self, const gch
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(!xfdashboard_strv_equal(priv->bindingFiles, inFileLocations))
+	if(!xfdashboard_strv_equal((const gchar**)priv->bindingFiles, inFileLocations))
 	{
 		/* Set value */
 		if(priv->bindingFiles)
@@ -1621,7 +1622,7 @@ void xfdashboard_settings_set_theme_search_paths(XfdashboardSettings *self, cons
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(!xfdashboard_strv_equal(priv->themeSearchPaths, inSearchPaths))
+	if(!xfdashboard_strv_equal((const gchar**)priv->themeSearchPaths, inSearchPaths))
 	{
 		/* Set value */
 		if(priv->themeSearchPaths)
@@ -1678,7 +1679,7 @@ void xfdashboard_settings_set_plugin_search_paths(XfdashboardSettings *self, con
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(!xfdashboard_strv_equal(priv->pluginSearchPaths, inSearchPaths))
+	if(!xfdashboard_strv_equal((const gchar**)priv->pluginSearchPaths, inSearchPaths))
 	{
 		/* Set value */
 		if(priv->pluginSearchPaths)
