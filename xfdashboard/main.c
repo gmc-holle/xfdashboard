@@ -401,6 +401,13 @@ static XfdashboardApplication* _create_application(void)
 	if(!settings)
 	{
 		g_critical("Cannot create xfconf settings backend");
+
+		/* Release allocated resources */
+		if(themesSearchPaths) g_strfreev(themesSearchPaths);
+		if(pluginsSearchPaths) g_strfreev(pluginsSearchPaths);
+		if(bindingFilePaths) g_strfreev(bindingFilePaths);
+
+		/* Return failed state */
 		return(NULL);
 	}
 

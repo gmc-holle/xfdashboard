@@ -26,6 +26,8 @@
 
 #include <gtk/gtkx.h>
 
+#include "settings.h"
+
 G_BEGIN_DECLS
 
 #define XFDASHBOARD_TYPE_SETTINGS_THEMES				(xfdashboard_settings_themes_get_type())
@@ -61,7 +63,7 @@ struct _XfdashboardSettingsThemesClass
 /* Public API */
 GType xfdashboard_settings_themes_get_type(void) G_GNUC_CONST;
 
-XfdashboardSettingsThemes* xfdashboard_settings_themes_new(GtkBuilder *inBuilder);
+XfdashboardSettingsThemes* xfdashboard_settings_themes_new(XfdashboardSettingsApp *inApp);
 
 G_END_DECLS
 

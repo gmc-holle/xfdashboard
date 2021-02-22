@@ -27,28 +27,27 @@
 
 #include "themes.h"
 
+#include "settings.h"
 #include <glib/gi18n-lib.h>
-#include <xfconf/xfconf.h>
 
 /* Define this class in GObject system */
 struct _XfdashboardSettingsThemesPrivate
 {
 	/* Properties related */
-	GtkBuilder		*builder;
+	GtkBuilder				*builder;
+	XfdashboardSettings		*settings;
 
 	/* Instance related */
-	XfconfChannel	*xfconfChannel;
-
-	GtkWidget		*widgetThemes;
-	GtkWidget		*widgetThemeScreenshot;
-	GtkWidget		*widgetThemeNameLabel;
-	GtkWidget		*widgetThemeName;
-	GtkWidget		*widgetThemeAuthorLabel;
-	GtkWidget		*widgetThemeAuthor;
-	GtkWidget		*widgetThemeVersionLabel;
-	GtkWidget		*widgetThemeVersion;
-	GtkWidget		*widgetThemeDescriptionLabel;
-	GtkWidget		*widgetThemeDescription;
+	GtkWidget				*widgetThemes;
+	GtkWidget				*widgetThemeScreenshot;
+	GtkWidget				*widgetThemeNameLabel;
+	GtkWidget				*widgetThemeName;
+	GtkWidget				*widgetThemeAuthorLabel;
+	GtkWidget				*widgetThemeAuthor;
+	GtkWidget				*widgetThemeVersionLabel;
+	GtkWidget				*widgetThemeVersion;
+	GtkWidget				*widgetThemeDescriptionLabel;
+	GtkWidget				*widgetThemeDescription;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSettingsThemes,
@@ -61,6 +60,7 @@ enum
 	PROP_0,
 
 	PROP_BUILDER,
+	PROP_SETTINGS,
 
 	PROP_LAST
 };
@@ -291,14 +291,7 @@ static void _xfdashboard_settings_themes_theme_changed_by_widget(XfdashboardSett
 	/* Set value at xfconf property if it must be changed */
 	if(themeName)
 	{
-		gchar						*currentTheme;
-
-		currentTheme=xfconf_channel_get_string(priv->xfconfChannel, THEME_XFCONF_PROP, DEFAULT_THEME);
-		if(g_strcmp0(currentTheme, themeName))
-		{
-			xfconf_channel_set_string(priv->xfconfChannel, THEME_XFCONF_PROP, themeName);
-		}
-		g_free(currentTheme);
+		xfdashboard_settings_set_theme(priv->settings, themeName);
 	}
 
 	/* Release allocated resources */
@@ -311,26 +304,23 @@ static void _xfdashboard_settings_themes_theme_changed_by_widget(XfdashboardSett
 	if(themeName) g_free(themeName);
 }
 
-static void _xfdashboard_settings_themes_theme_changed_by_xfconf(XfdashboardSettingsThemes *self,
-																	const gchar *inProperty,
+static void _xfdashboard_settings_themes_theme_changed_by_settings(XfdashboardSettingsThemes *self,
 																	const GValue *inValue,
-																	XfconfChannel *inChannel)
+																	GObject *inObject)
 {
 	XfdashboardSettingsThemesPrivate		*priv;
-	const gchar						*newValue;
-	GtkTreeModel					*model;
-	GtkTreeIter						iter;
-	gboolean						selectionFound;
+	const gchar								*newValue;
+	GtkTreeModel							*model;
+	GtkTreeIter								iter;
+	gboolean								selectionFound;
 
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_THEMES(self));
-	g_return_if_fail(inValue);
-	g_return_if_fail(XFCONF_IS_CHANNEL(inChannel));
 
 	priv=self->priv;
 	newValue=DEFAULT_THEME;
 
 	/* Get new value to set at widget */
-	if(G_LIKELY(G_VALUE_TYPE(inValue)==G_TYPE_STRING)) newValue=g_value_get_string(inValue);
+	newValue=xfdashboard_settings_get_theme(priv->settings);
 
 	/* Iterate through themes' model and lookup matching item
 	 * against new theme name and select it
@@ -730,21 +720,24 @@ static void _xfdashboard_settings_themes_populate_themes_list(XfdashboardSetting
 	if(themes) g_hash_table_destroy(themes);
 }
 
-/* Create and set up GtkBuilder */
-static void _xfdashboard_settings_themes_set_builder(XfdashboardSettingsThemes *self,
-														GtkBuilder *inBuilder)
+/* Set up this tab */
+static void _xfdashboard_settings_themes_setup(XfdashboardSettingsThemes *self)
 {
-	XfdashboardSettingsThemesPrivate	*priv;
+	XfdashboardSettingsThemesPrivate				*priv;
+	static gboolean									setupDone=FALSE;
 
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_THEMES(self));
-	g_return_if_fail(GTK_IS_BUILDER(inBuilder));
 
 	priv=self->priv;
 
-	/* Set builder object which must not be set yet */
-	g_assert(!priv->builder);
+	/* Do nothing if builder or settings is not set yet */
+	if(!priv->settings || !priv->builder) return;
 
-	priv->builder=g_object_ref(inBuilder);
+	/* Do nothing if set up was done already */
+	if(setupDone) return;
+
+	/* Mark that set up is done */
+	setupDone=TRUE;
 
 	/* Get widgets from builder */
 	priv->widgetThemes=GTK_WIDGET(gtk_builder_get_object(priv->builder, "themes"));
@@ -761,16 +754,8 @@ static void _xfdashboard_settings_themes_set_builder(XfdashboardSettingsThemes *
 	/* Set up theme list */
 	if(priv->widgetThemes)
 	{
-		gchar							*currentTheme;
-		GValue							defaultValue=G_VALUE_INIT;
 		GtkTreeSelection				*selection;
 		GtkCellRenderer					*renderer;
-
-		/* Get default value */
-		currentTheme=xfconf_channel_get_string(priv->xfconfChannel, THEME_XFCONF_PROP, DEFAULT_THEME);
-		g_value_init(&defaultValue, G_TYPE_STRING);
-		g_value_set_string(&defaultValue, currentTheme);
-		g_free(currentTheme);
 
 		/* Themes widget has only one column displaying theme's name.
 		 * Set up column and renderer.
@@ -792,10 +777,7 @@ static void _xfdashboard_settings_themes_set_builder(XfdashboardSettingsThemes *
 		_xfdashboard_settings_themes_populate_themes_list(self, priv->widgetThemes);
 
 		/* Select default value */
-		_xfdashboard_settings_themes_theme_changed_by_xfconf(self,
-																THEME_XFCONF_PROP,
-																&defaultValue,
-																priv->xfconfChannel);
+		_xfdashboard_settings_themes_theme_changed_by_settings(self, NULL,G_OBJECT(priv->settings));
 		_xfdashboard_settings_themes_theme_changed_by_widget(self, selection);
 
 		/* Connect signals */
@@ -803,15 +785,53 @@ static void _xfdashboard_settings_themes_set_builder(XfdashboardSettingsThemes *
 									"changed",
 									G_CALLBACK(_xfdashboard_settings_themes_theme_changed_by_widget),
 									self);
-		g_signal_connect_swapped(priv->xfconfChannel,
-									"property-changed::/theme",
-									G_CALLBACK(_xfdashboard_settings_themes_theme_changed_by_xfconf),
+		g_signal_connect_swapped(priv->settings,
+									"notify::theme",
+									G_CALLBACK(_xfdashboard_settings_themes_theme_changed_by_settings),
 									self);
-
-		/* Release allocated resources */
-		g_value_unset(&defaultValue);
 	}
 }
+
+/* Create and set up GtkBuilder */
+static void _xfdashboard_settings_themes_set_builder(XfdashboardSettingsThemes *self,
+														GtkBuilder *inBuilder)
+{
+	XfdashboardSettingsThemesPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_THEMES(self));
+	g_return_if_fail(GTK_IS_BUILDER(inBuilder));
+
+	priv=self->priv;
+
+	/* Set builder object which must not be set yet */
+	g_assert(!priv->builder);
+
+	priv->builder=g_object_ref(inBuilder);
+
+	/* If both builder and settings are set, then set up tab */
+	_xfdashboard_settings_themes_setup(self);
+}
+
+/* Set settings object instance */
+static void _xfdashboard_settings_themes_set_settings(XfdashboardSettingsThemes *self,
+														XfdashboardSettings *inSettings)
+{
+	XfdashboardSettingsThemesPrivate				*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_THEMES(self));
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(inSettings));
+
+	priv=self->priv;
+
+	/* Set settings object which must not be set yet */
+	g_assert(!priv->settings);
+
+	priv->settings=g_object_ref(inSettings);
+
+	/* If both builder and settings are set, then set up tab */
+	_xfdashboard_settings_themes_setup(self);
+}
+
 
 /* IMPLEMENTATION: GObject */
 
@@ -839,9 +859,10 @@ static void _xfdashboard_settings_themes_dispose(GObject *inObject)
 		priv->builder=NULL;
 	}
 
-	if(priv->xfconfChannel)
+	if(priv->settings)
 	{
-		priv->xfconfChannel=NULL;
+		g_object_unref(priv->settings);
+		priv->settings=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -862,6 +883,10 @@ static void _xfdashboard_settings_themes_set_property(GObject *inObject,
 			_xfdashboard_settings_themes_set_builder(self, GTK_BUILDER(g_value_get_object(inValue)));
 			break;
 
+		case PROP_SETTINGS:
+			_xfdashboard_settings_themes_set_settings(self, XFDASHBOARD_SETTINGS(g_value_get_object(inValue)));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -880,6 +905,10 @@ static void _xfdashboard_settings_themes_get_property(GObject *inObject,
 	{
 		case PROP_BUILDER:
 			g_value_set_object(outValue, priv->builder);
+			break;
+
+		case PROP_SETTINGS:
+			g_value_set_object(outValue, priv->settings);
 			break;
 
 		default:
@@ -909,6 +938,13 @@ static void xfdashboard_settings_themes_class_init(XfdashboardSettingsThemesClas
 								GTK_TYPE_BUILDER,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
+	XfdashboardSettingsThemesProperties[PROP_SETTINGS]=
+		g_param_spec_object("settings",
+								"Settings",
+								"The settings object of application",
+								XFDASHBOARD_TYPE_SETTINGS,
+								G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSettingsThemesProperties);
 }
 
@@ -923,8 +959,7 @@ static void xfdashboard_settings_themes_init(XfdashboardSettingsThemes *self)
 
 	/* Set default values */
 	priv->builder=NULL;
-
-	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
+	priv->settings=NULL;
 
 	priv->widgetThemes=NULL;
 	priv->widgetThemeScreenshot=NULL;
@@ -941,15 +976,16 @@ static void xfdashboard_settings_themes_init(XfdashboardSettingsThemes *self)
 /* IMPLEMENTATION: Public API */
 
 /* Create instance of this class */
-XfdashboardSettingsThemes* xfdashboard_settings_themes_new(GtkBuilder *inBuilder)
+XfdashboardSettingsThemes* xfdashboard_settings_themes_new(XfdashboardSettingsApp *inApp)
 {
 	GObject		*instance;
 
-	g_return_val_if_fail(GTK_IS_BUILDER(inBuilder), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_APP(inApp), NULL);
 
 	/* Create instance */
 	instance=g_object_new(XFDASHBOARD_TYPE_SETTINGS_THEMES,
-							"builder", inBuilder,
+							"builder", xfdashboard_settings_app_get_builder(inApp),
+							"settings", xfdashboard_settings_app_get_settings(inApp),
 							NULL);
 
 	/* Return newly created instance */

@@ -381,8 +381,8 @@ static void _xfdashboard_xfconf_settings_on_settings_changed(XfdashboardSettings
 		XFDASHBOARD_DEBUG(self, MISC,
 							"Need to convert value of settings '%s' of type '%s' to type '%s' for xfconf property '%s'",
 							settingsName,
-							g_type_name(G_VALUE_TYPE(&value)),
-							g_type_name(G_VALUE_TYPE(&convertedValue)),
+							G_VALUE_TYPE_NAME(&value),
+							G_VALUE_TYPE_NAME(&convertedValue),
 							xfconfPropertyName);
 #endif
 		if(g_value_transform(&value, &convertedValue))
@@ -399,8 +399,8 @@ static void _xfdashboard_xfconf_settings_on_settings_changed(XfdashboardSettings
 				g_warning("Cannot transform settings '%s' for xfconf property '%s' from type '%s' to type '%s'",
 							settingsName,
 							xfconfPropertyName,
-							g_type_name(G_VALUE_TYPE(&value)),
-							g_type_name(G_VALUE_TYPE(&convertedValue)));
+							G_VALUE_TYPE_NAME(&value),
+							G_VALUE_TYPE_NAME(&convertedValue));
 
 				/* Set failed stat */
 				success=FALSE;
@@ -410,10 +410,11 @@ static void _xfdashboard_xfconf_settings_on_settings_changed(XfdashboardSettings
 		g_value_unset(&convertedValue);
 	}
 
-	/* Set value at xfconf property */
+	/* Set or reset value at xfconf property */
 	if(success)
 	{
 		gchar		*realXfconfPropertyName;
+		gboolean	needsReset;
 #ifdef DEBUG
 		gchar		*valueText;
 #endif
@@ -428,7 +429,25 @@ static void _xfdashboard_xfconf_settings_on_settings_changed(XfdashboardSettings
 		/* Block setting of plugin ID to prevent recursion by signal handling */ 
 		_xfdashboard_xfconf_settings_block_property_notification_ref(self, inPluginID, settingsName);
 
-		/* Set value at (real) xfconf property */
+		/* Check if property needs to be resetted, i.e. strings or string list
+		 * with NULL pointer.
+		 */
+		needsReset=FALSE;
+		if(G_VALUE_HOLDS_STRING(&value) ||
+			G_VALUE_TYPE(&value)==G_TYPE_STRV)
+		{
+			if(value.data[0].v_pointer==NULL)
+			{
+				XFDASHBOARD_DEBUG(self, MISC,
+									"Need to reset xfconf property '%s' as value of settings '%s' of type '%s' has null pointer",
+									xfconfPropertyName,
+									settingsName,
+									G_VALUE_TYPE_NAME(&value));
+				needsReset=TRUE;
+			}
+		}
+
+		/* Set or reset value at (real) xfconf property */
 #ifdef DEBUG
 		valueText=g_strdup_value_contents(&value);
 		XFDASHBOARD_DEBUG(self, MISC,
@@ -440,10 +459,20 @@ static void _xfdashboard_xfconf_settings_on_settings_changed(XfdashboardSettings
 		g_free(valueText);
 #endif
 
-		success=xfconf_channel_set_property(priv->channel, realXfconfPropertyName, &value);
+		if(G_LIKELY(!needsReset))
+		{
+			success=xfconf_channel_set_property(priv->channel, realXfconfPropertyName, &value);
+		}
+			else
+			{
+				xfconf_channel_reset_property(priv->channel, realXfconfPropertyName, FALSE);
+				success=TRUE;
+			}
+
 		if(!success)
 		{
-			g_warning("Could not set value of settings '%s' at xfconf property '%s' of type '%s'",
+			g_warning("Could not %s value of settings '%s' at xfconf property '%s' of type '%s'",
+						needsReset ? "reset" : "set",
 						settingsName,
 						realXfconfPropertyName,
 						g_type_name(G_VALUE_TYPE(&value)));
@@ -576,7 +605,6 @@ static gboolean _xfdashboard_xfconf_settings_set_settings_value(XfdashboardXfcon
 																	const gchar *inSettingsName,
 																	const GValue *inValue)
 {
-	XfdashboardXfconfSettingsPrivate	*priv;
 	GObject								*pluginSettings;
 	GParamSpec							*paramSpec;
 	GValue								value=G_VALUE_INIT;
@@ -587,7 +615,6 @@ static gboolean _xfdashboard_xfconf_settings_set_settings_value(XfdashboardXfcon
 	g_return_val_if_fail(inSettingsName && *inSettingsName, FALSE);
 	g_return_val_if_fail(inValue, FALSE);
 
-	priv=self->priv;
 	pluginSettings=NULL;
 	success=TRUE;
 
@@ -636,7 +663,7 @@ static gboolean _xfdashboard_xfconf_settings_set_settings_value(XfdashboardXfcon
 	}
 
 	/* Special case is that property at settings object (destination) is a GStrv
-	 * then the provided GValue from xfconf must be a GPtrArray containing GValues
+	 * then the provided GValue from xfconf can be a GPtrArray containing GValues
 	 * holding strings ... which must be converted in a special non-common way.
 	 */
 	if(G_PARAM_SPEC_VALUE_TYPE(paramSpec)==G_TYPE_STRV &&
@@ -696,6 +723,22 @@ static gboolean _xfdashboard_xfconf_settings_set_settings_value(XfdashboardXfcon
 
 		/* Release allocated memory */
 		g_strfreev(destStringList);
+	}
+
+	/* When a xfconf property was resetted then this function may be called with
+	 * a GValue of type G_TYPE_INVALID. This can neither be set nor converted
+	 * (in next step if required) so we use the default value of parameter
+	 * specification of (plugin) settings object.
+	 */
+	if(G_VALUE_TYPE(inValue)==G_TYPE_INVALID)
+	{
+		inValue=g_param_spec_get_default_value(paramSpec);
+		XFDASHBOARD_DEBUG(self, MISC,
+							"Using default value of type %s for settings '%s' of %s%s as the provided value was of invalid type",
+							G_VALUE_TYPE_NAME(inValue),
+							inSettingsName,
+							inPluginID ? "plug-in settings for plug-in " : "core settings",
+							inPluginID ? inPluginID : "");
 	}
 
 	/* Some parameters specification types of object properties are not supported
@@ -777,7 +820,6 @@ static void _xfdashboard_xfconf_settings_on_xfconf_property_changed(XfdashboardX
 																	const GValue *inValue,
 																	gpointer inUserData)
 {
-	XfdashboardXfconfSettingsPrivate	*priv;
 	gchar								*pluginID;
 	gchar								*settingsName;
 
@@ -785,7 +827,6 @@ static void _xfdashboard_xfconf_settings_on_xfconf_property_changed(XfdashboardX
 	g_return_if_fail(inProperty && *inProperty);
 	g_return_if_fail(inValue);
 
-	priv=self->priv;
 	pluginID=NULL;
 	settingsName=NULL;
 

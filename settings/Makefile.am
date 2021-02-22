@@ -39,6 +39,7 @@ xfdashboard_settings_LDADD = \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(LIBXFCE4UI_LIBS) \
 	$(LIBM) \
+	$(top_builddir)/common/libxfconf-settings.la \
 	$(top_builddir)/libxfdashboard/libxfdashboard.la
 
 xfdashboard_settings_LDFLAGS = \

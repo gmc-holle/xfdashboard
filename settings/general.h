@@ -26,6 +26,8 @@
 
 #include <gtk/gtkx.h>
 
+#include "settings.h"
+
 G_BEGIN_DECLS
 
 #define XFDASHBOARD_TYPE_SETTINGS_GENERAL				(xfdashboard_settings_general_get_type())
@@ -61,7 +63,7 @@ struct _XfdashboardSettingsGeneralClass
 /* Public API */
 GType xfdashboard_settings_general_get_type(void) G_GNUC_CONST;
 
-XfdashboardSettingsGeneral* xfdashboard_settings_general_new(GtkBuilder *inBuilder);
+XfdashboardSettingsGeneral* xfdashboard_settings_general_new(XfdashboardSettingsApp *inApp);
 
 G_END_DECLS
 

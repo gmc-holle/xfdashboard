@@ -498,21 +498,6 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	/**
-	 * XfdashboardSettings:always-launch-new-instance:
-	 *
-	 * A flag indicating if a new instance should an application choosen at quicklaunch
-	 * should be sarted. If set to %TRUE, always a new instance will be started. If set
-	 * to %FALSE an already running instance will be brought to front if existing, otherwise
-	 * it starts an instance of chosen application.
-	 */
-	XfdashboardSettingsProperties[PROP_ALWAYS_LAUNCH_NEW_INSTANCE]=
-		g_param_spec_boolean("always-launch-new-instance",
-								"Always launch new instance",
-								"Whether to always start a new instance of application or to bring an existing one to front",
-								DEFAULT_ALWAYS_LAUNCH_NEW_INSTANCE,
-								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	/**
 	 * XfdashboardSettings:enable-unmapped-window-workaround:
 	 *
 	 * A flag indicating if a workaround for unmapped windows should be enabled. If set to %TRUE
