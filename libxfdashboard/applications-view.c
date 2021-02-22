@@ -72,9 +72,8 @@ struct _XfdashboardApplicationsViewPrivate
 
 	gpointer							selectedItem;
 
-	XfconfChannel						*xfconfChannel;
 	gboolean							showAllAppsMenu;
-	guint								xfconfShowAllAppsMenuBindingID;
+	GBinding							*settingsShowAllAppsMenuBinding;
 };
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardApplicationsView,
@@ -104,7 +103,6 @@ static GParamSpec* XfdashboardApplicationsViewProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 #define ALL_APPLICATIONS_MENU_ICON		"applications-other"
-#define SHOW_ALL_APPS_XFCONF_PROP		"/components/applications-view/show-all-apps"
 
 /* Forward declarations */
 static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicationsView *self, gpointer inUserData);
@@ -1362,20 +1360,15 @@ static void _xfdashboard_applications_view_dispose(GObject *inObject)
 		priv->selectedItem=NULL;
 	}
 
-	if(priv->xfconfChannel)
-	{
-		priv->xfconfChannel=NULL;
-	}
-
 	if(priv->layout)
 	{
 		priv->layout=NULL;
 	}
 
-	if(priv->xfconfShowAllAppsMenuBindingID)
+	if(priv->settingsShowAllAppsMenuBinding)
 	{
-		xfconf_g_property_unbind(priv->xfconfShowAllAppsMenuBindingID);
-		priv->xfconfShowAllAppsMenuBindingID=0;
+		g_object_unref(priv->settingsShowAllAppsMenuBinding);
+		priv->settingsShowAllAppsMenuBinding=NULL;
 	}
 
 	if(priv->apps)
@@ -1567,6 +1560,7 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 {
 	XfdashboardApplicationsViewPrivate	*priv;
 	XfdashboardApplication				*application;
+	XfdashboardSettings					*settings;
 
 	self->priv=priv=xfdashboard_applications_view_get_instance_private(self);
 
@@ -1580,8 +1574,7 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	priv->formatTitleDescription=g_strdup("%s\n%s");
 	priv->selectedItem=NULL;
 	priv->showAllAppsMenu=FALSE;
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
-	priv->xfconfShowAllAppsMenuBindingID=0;
+	priv->settingsShowAllAppsMenuBinding=NULL;
 
 	/* Set up view */
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Applications"));
@@ -1601,12 +1594,14 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	application=xfdashboard_application_get_default();
 	g_signal_connect_swapped(application, "resume", G_CALLBACK(_xfdashboard_applications_view_on_application_resume), self);
 
-	/* Bind to xfconf to react on changes */
-	priv->xfconfShowAllAppsMenuBindingID=xfconf_g_property_bind(priv->xfconfChannel,
-																SHOW_ALL_APPS_XFCONF_PROP,
-																G_TYPE_BOOLEAN,
-																self,
-																"show-all-apps");
+	/* Bind to settings to react on changes */
+	settings=xfdashboard_application_get_settings(NULL);
+	priv->settingsShowAllAppsMenuBinding=
+		g_object_bind_property(settings,
+								"show-all-applications",
+								self,
+								"show-all-apps",
+								G_BINDING_SYNC_CREATE);
 }
 
 /* Get/set view mode of view */

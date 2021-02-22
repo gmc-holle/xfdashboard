@@ -31,10 +31,16 @@
 #ifdef CLUTTER_WINDOWING_X11
 #include <clutter/x11/clutter-x11.h>
 #endif
+#include <xfconf/xfconf.h>
 #include <libxfce4util/libxfce4util.h>
 #include <libxfdashboard/application.h>
 #include <libxfdashboard/window-tracker-backend.h>
+#include <common/xfconf-settings.h>
 
+
+/* IMPLEMENTATION: Private variables and methods */
+
+#define DEFAULT_RESTART_WAIT_TIMEOUT	5000	/* Timeout in milliseconds */
 
 typedef struct _RestartData		RestartData;
 struct _RestartData
@@ -43,8 +49,6 @@ struct _RestartData
 	XfdashboardApplication	*application;
 	gboolean				appHasQuitted;
 };
-
-#define DEFAULT_RESTART_WAIT_TIMEOUT	5000	/* Timeout in milliseconds */
 
 
 /* Timeout to wait for application to disappear has been reached */
@@ -183,6 +187,260 @@ static gboolean _restart(XfdashboardApplication *inApplication)
 	return(restartData.appHasQuitted);
 }
 
+/* Set up search paths */
+static GList* _path_file_list_add(GList *inSearchPaths, const gchar *inPath, gboolean isFile)
+{
+	gchar								*normalizedPath;
+	GList								*iter;
+	gchar								*iterPath;
+
+	g_return_val_if_fail(inPath && *inPath, FALSE);
+
+	/* Normalize requested path to add to list of search paths that means
+	 * that it should end with a directory seperator.
+	 */
+	if(!isFile && !g_str_has_suffix(inPath, G_DIR_SEPARATOR_S))
+	{
+		normalizedPath=g_strjoin(NULL, inPath, G_DIR_SEPARATOR_S, NULL);
+	}
+		else normalizedPath=g_strdup(inPath);
+
+	/* Check if path is already in list of search paths */
+	for(iter=inSearchPaths; iter; iter=g_list_next(iter))
+	{
+		/* Get search path at iterator */
+		iterPath=(gchar*)iter->data;
+
+		/* If the path at iterator matches the requested one that it is
+		 * already in list of search path, so return here with fail result.
+		 */
+		if(g_strcmp0(iterPath, normalizedPath)==0)
+		{
+			/* Release allocated resources */
+			if(normalizedPath) g_free(normalizedPath);
+
+			/* Return fail result by returning unmodified path list */
+			return(inSearchPaths);
+		}
+	}
+
+	/* If we get here the requested path is not in list of search path and
+	 * we can add it now.
+	 */
+	iter=g_list_append(inSearchPaths, g_strdup(normalizedPath));
+	inSearchPaths=iter;
+
+	/* Release allocated resources */
+	if(normalizedPath) g_free(normalizedPath);
+
+	/* Return success result by returning modified path list */
+	return(inSearchPaths);
+}
+
+/* Converts GList of paths of type string to NULL-terminated list, a strv.
+ * It also frees the GList.
+ */
+static gchar** _path_file_list_list_to_strv(GList *inPaths)
+{
+	guint			pathCount;
+	gchar			**strv;
+	GList			*iter;
+	gchar			*path;
+	guint			i;
+
+	/* Get size of list */
+	pathCount=g_list_length(inPaths);
+
+	/* Skip empty search path list */
+	if(pathCount==0) return(NULL);
+
+	/* Initialize empty NULL-terminated list of needed size */
+	strv=g_new0(gchar*, pathCount+1);
+
+	/* Iterate through list and move iterated path to NULL-terminated list */
+	i=0;
+	for(iter=inPaths; iter; iter=g_list_next(iter))
+	{
+		/* Get iterated path from list of search paths. Skip empty paths. */
+		path=iter->data;
+		if(!path) continue;
+
+		/* Move iterated path to NULL-terminated list */
+		strv[i]=path;
+		i++;
+	}
+
+	/* Free search path list */
+	g_list_free(inPaths);
+
+	/* Return new NULL-terminated list */
+	return(strv);
+}
+
+/* Create application instance */
+#define XFDASHBOARD_APP_ID					"de.froevel.nomad.xfdashboard"
+
+static XfdashboardApplication* _create_application(void)
+{
+	XfdashboardApplication		*application;
+	XfdashboardXfconfSettings	*settings;
+	gchar						*appID;
+	const gchar					*forceNewInstance;
+	GList						*pathFileList;
+	const gchar					*environmentVariable;
+	gchar						**themesSearchPaths;
+	gchar						**pluginsSearchPaths;
+	gchar						**bindingFilePaths;
+	gchar						*entry;
+	const gchar					*homeDirectory;
+
+	application=NULL;
+	forceNewInstance=NULL;
+	themesSearchPaths=NULL;
+	pluginsSearchPaths=NULL;
+	bindingFilePaths=NULL;
+
+	/* Set up search path for themes */
+	pathFileList=NULL;
+
+	environmentVariable=g_getenv("XFDASHBOARD_THEME_PATH");
+	if(environmentVariable)
+	{
+		gchar						**paths;
+		gchar						**pathIter;
+
+		pathIter=paths=g_strsplit(environmentVariable, ":", -1);
+		while(*pathIter)
+		{
+			pathFileList=_path_file_list_add(pathFileList, *pathIter, FALSE);
+			pathIter++;
+		}
+		g_strfreev(paths);
+	}
+
+	entry=g_build_filename(g_get_user_data_dir(), "themes", NULL);
+	pathFileList=_path_file_list_add(pathFileList, entry, FALSE);
+	g_free(entry);
+
+	homeDirectory=g_get_home_dir();
+	if(homeDirectory)
+	{
+		entry=g_build_filename(homeDirectory, ".themes", NULL);
+		pathFileList=_path_file_list_add(pathFileList, entry, FALSE);
+		g_free(entry);
+	}
+
+	entry=g_build_filename(PACKAGE_DATADIR, "themes", NULL);
+	pathFileList=_path_file_list_add(pathFileList, entry, FALSE);
+	g_free(entry);
+
+	themesSearchPaths=_path_file_list_list_to_strv(pathFileList);
+
+	/* Set up search path for plugins */
+	pathFileList=NULL;
+
+	environmentVariable=g_getenv("XFDASHBOARD_PLUGINS_PATH");
+	if(environmentVariable)
+	{
+		gchar						**paths;
+		gchar						**pathIter;
+
+		pathIter=paths=g_strsplit(environmentVariable, ":", -1);
+		while(*pathIter)
+		{
+			pathFileList=_path_file_list_add(pathFileList, *pathIter, FALSE);
+			pathIter++;
+		}
+		g_strfreev(paths);
+	}
+
+	entry=g_build_filename(g_get_user_data_dir(), "xfdashboard", "plugins", NULL);
+	pathFileList=_path_file_list_add(pathFileList, entry, FALSE);
+	g_free(entry);
+
+	entry=g_build_filename(PACKAGE_LIBDIR, "xfdashboard", "plugins", NULL);
+	pathFileList=_path_file_list_add(pathFileList, entry, FALSE);
+	g_free(entry);
+
+	pluginsSearchPaths=_path_file_list_list_to_strv(pathFileList);
+
+	/* Set up file path for bindings */
+	pathFileList=NULL;
+
+	entry=g_build_filename(PACKAGE_DATADIR, "xfdashboard", "bindings.xml", NULL);
+	pathFileList=_path_file_list_add(pathFileList, entry, TRUE);
+	g_free(entry);
+
+	entry=g_build_filename(g_get_user_config_dir(), "xfdashboard", "bindings.xml", NULL);
+	pathFileList=_path_file_list_add(pathFileList, entry, TRUE);
+	g_free(entry);
+
+	environmentVariable=g_getenv("XFDASHBOARD_BINDINGS_POOL_FILE");
+	if(environmentVariable)
+	{
+		gchar						**paths;
+		gchar						**pathIter;
+
+		pathIter=paths=g_strsplit(environmentVariable, ":", -1);
+		while(*pathIter)
+		{
+			pathFileList=_path_file_list_add(pathFileList, *pathIter, TRUE);
+			pathIter++;
+		}
+		g_strfreev(paths);
+	}
+
+	bindingFilePaths=_path_file_list_list_to_strv(pathFileList);
+
+	/* Create settings instance for Xfconf settings storage */
+	settings=g_object_new(XFDASHBOARD_TYPE_XFCONF_SETTINGS,
+							"binding-files", bindingFilePaths,
+							"theme-search-paths", themesSearchPaths,
+							"plugin-search-paths", pluginsSearchPaths,
+							NULL);
+	if(!settings)
+	{
+		g_critical("Cannot create xfconf settings backend");
+
+		/* Release allocated resources */
+		if(themesSearchPaths) g_strfreev(themesSearchPaths);
+		if(pluginsSearchPaths) g_strfreev(pluginsSearchPaths);
+		if(bindingFilePaths) g_strfreev(bindingFilePaths);
+
+		/* Return failed state */
+		return(NULL);
+	}
+
+#ifdef DEBUG
+	/* If a new instance of xfdashboard is forced, e.g. for debugging purposes,
+	 * then create a unique application ID.
+	 */
+	forceNewInstance=g_getenv("XFDASHBOARD_FORCE_NEW_INSTANCE");
+#endif
+
+	if(forceNewInstance)
+	{
+		appID=g_strdup_printf("%s-%u", XFDASHBOARD_APP_ID, getpid());
+		g_message("Forcing new application instance with ID '%s'", appID);
+	}
+		else appID=g_strdup(XFDASHBOARD_APP_ID);
+
+	application=g_object_new(XFDASHBOARD_TYPE_APPLICATION,
+								"application-id", appID,
+								"flags", G_APPLICATION_HANDLES_COMMAND_LINE,
+								"settings", settings,
+								NULL);
+
+	/* Release allocated resources */
+	if(appID) g_free(appID);
+	if(themesSearchPaths) g_strfreev(themesSearchPaths);
+	if(pluginsSearchPaths) g_strfreev(pluginsSearchPaths);
+	if(bindingFilePaths) g_strfreev(bindingFilePaths);
+
+	/* Return newly created application instance */
+	return(application);
+}
+
 /* Main entry point */
 int main(int argc, char **argv)
 {
@@ -191,6 +449,7 @@ int main(int argc, char **argv)
 #if CLUTTER_CHECK_VERSION(1, 16, 0)
 	const gchar					*backend;
 #endif
+	GError						*error=NULL;
 
 #ifdef ENABLE_NLS
 	/* Set up localization */
@@ -201,6 +460,19 @@ int main(int argc, char **argv)
 	/* Initialize GObject type system */
 	g_type_init();
 #endif
+
+	/* Initialize Xfconf */
+	if(G_UNLIKELY(!xfconf_init(&error)))
+	{
+		if(G_LIKELY(error))
+		{
+			g_error("Failed to initialize xfconf: %s",
+						error ? error->message : "Unknown error");
+			if(error) g_error_free(error);
+		}
+
+		return(1);
+	}
 
 #if CLUTTER_CHECK_VERSION(1, 16, 0)
 	/* Enforce X11 backend in Clutter if no specific backend was requested via
@@ -242,7 +514,7 @@ int main(int argc, char **argv)
 	gdk_notify_startup_complete();
 
 	/* Start application as primary or remote instace */
-	app=xfdashboard_application_get_default();
+	app=_create_application();
 	if(!app)
 	{
 		g_warning("Failed to create application instance");
@@ -265,7 +537,7 @@ int main(int argc, char **argv)
 			/* Create new application instance which should become
 			 * the new primary instance.
 			 */
-			app=xfdashboard_application_get_default();
+			app=_create_application();
 			if(!app)
 			{
 				g_warning("Failed to create application instance");

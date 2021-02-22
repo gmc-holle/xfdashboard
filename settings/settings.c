@@ -27,9 +27,9 @@
 
 #include "settings.h"
 
+#include <common/xfconf-settings.h>
 #include <glib/gi18n-lib.h>
 #include <libxfce4ui/libxfce4ui.h>
-#include <xfconf/xfconf.h>
 #include <math.h>
 
 #include "general.h"
@@ -38,10 +38,10 @@
 
 
 /* Define this class in GObject system */
-struct _XfdashboardSettingsPrivate
+struct _XfdashboardSettingsAppPrivate
 {
 	/* Instance related */
-	XfconfChannel					*xfconfChannel;
+	XfdashboardSettings				*settings;
 
 	GtkBuilder						*builder;
 	GObject							*dialog;
@@ -54,8 +54,8 @@ struct _XfdashboardSettingsPrivate
 	GtkWidget						*widgetCloseButton;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSettings,
-							xfdashboard_settings,
+G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSettingsApp,
+							xfdashboard_settings_app,
 							G_TYPE_OBJECT)
 
 /* IMPLEMENTATION: Private variables and methods */
@@ -65,13 +65,13 @@ G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSettings,
 
 
 /* Help button was clicked */
-static void _xfdashboard_settings_on_help_clicked(XfdashboardSettings *self,
-													GtkWidget *inWidget)
+static void _xfdashboard_settings_app_on_help_clicked(XfdashboardSettingsApp *self,
+														GtkWidget *inWidget)
 {
-	XfdashboardSettingsPrivate				*priv;
+	XfdashboardSettingsAppPrivate			*priv;
 	GtkWindow								*window;
 
-	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_APP(self));
 
 	priv=self->priv;
 
@@ -87,24 +87,259 @@ static void _xfdashboard_settings_on_help_clicked(XfdashboardSettings *self,
 }
 
 /* Close button was clicked */
-static void _xfdashboard_settings_on_close_clicked(XfdashboardSettings *self,
-													GtkWidget *inWidget)
+static void _xfdashboard_settings_app_on_close_clicked(XfdashboardSettingsApp *self,
+														GtkWidget *inWidget)
 {
-	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_APP(self));
 
 	/* Quit main loop */
 	gtk_main_quit();
 }
 
-/* Create and set up GtkBuilder */
-static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
+/* Set up search paths */
+static GList* _xfdashboard_settings_app_path_file_list_add(GList *inSearchPaths, const gchar *inPath, gboolean isFile)
 {
-	XfdashboardSettingsPrivate				*priv;
+	gchar								*normalizedPath;
+	GList								*iter;
+	gchar								*iterPath;
+
+	g_return_val_if_fail(inPath && *inPath, FALSE);
+
+	/* Normalize requested path to add to list of search paths that means
+	 * that it should end with a directory seperator.
+	 */
+	if(!isFile && !g_str_has_suffix(inPath, G_DIR_SEPARATOR_S))
+	{
+		normalizedPath=g_strjoin(NULL, inPath, G_DIR_SEPARATOR_S, NULL);
+	}
+		else normalizedPath=g_strdup(inPath);
+
+	/* Check if path is already in list of search paths */
+	for(iter=inSearchPaths; iter; iter=g_list_next(iter))
+	{
+		/* Get search path at iterator */
+		iterPath=(gchar*)iter->data;
+
+		/* If the path at iterator matches the requested one that it is
+		 * already in list of search path, so return here with fail result.
+		 */
+		if(g_strcmp0(iterPath, normalizedPath)==0)
+		{
+			/* Release allocated resources */
+			if(normalizedPath) g_free(normalizedPath);
+
+			/* Return fail result by returning unmodified path list */
+			return(inSearchPaths);
+		}
+	}
+
+	/* If we get here the requested path is not in list of search path and
+	 * we can add it now.
+	 */
+	iter=g_list_append(inSearchPaths, g_strdup(normalizedPath));
+	inSearchPaths=iter;
+
+	/* Release allocated resources */
+	if(normalizedPath) g_free(normalizedPath);
+
+	/* Return success result by returning modified path list */
+	return(inSearchPaths);
+}
+
+/* Converts GList of paths of type string to NULL-terminated list, a strv.
+ * It also frees the GList.
+ */
+static gchar** _xfdashboard_settings_app_path_file_list_list_to_strv(GList *inPaths)
+{
+	guint			pathCount;
+	gchar			**strv;
+	GList			*iter;
+	gchar			*path;
+	guint			i;
+
+	/* Get size of list */
+	pathCount=g_list_length(inPaths);
+
+	/* Skip empty search path list */
+	if(pathCount==0) return(NULL);
+
+	/* Initialize empty NULL-terminated list of needed size */
+	strv=g_new0(gchar*, pathCount+1);
+
+	/* Iterate through list and move iterated path to NULL-terminated list */
+	i=0;
+	for(iter=inPaths; iter; iter=g_list_next(iter))
+	{
+		/* Get iterated path from list of search paths. Skip empty paths. */
+		path=iter->data;
+		if(!path) continue;
+
+		/* Move iterated path to NULL-terminated list */
+		strv[i]=path;
+		i++;
+	}
+
+	/* Free search path list */
+	g_list_free(inPaths);
+
+	/* Return new NULL-terminated list */
+	return(strv);
+}
+
+/* Create and set up settings object instance */
+static gboolean _xfdashboard_settings_app_create_settings(XfdashboardSettingsApp *self)
+{
+	XfdashboardSettingsAppPrivate			*priv;
+	GList									*pathFileList;
+	const gchar								*environmentVariable;
+	gchar									**themesSearchPaths;
+	gchar									**pluginsSearchPaths;
+	gchar									**bindingFilePaths;
+	gchar									*entry;
+	const gchar								*homeDirectory;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_APP(self), FALSE);
+
+	priv=self->priv;
+	themesSearchPaths=NULL;
+	pluginsSearchPaths=NULL;
+	bindingFilePaths=NULL;
+
+	/* If settings is already set up return immediately */
+	if(priv->settings) return(TRUE);
+
+	/* Set up search path for themes */
+	pathFileList=NULL;
+
+	environmentVariable=g_getenv("XFDASHBOARD_THEME_PATH");
+	if(environmentVariable)
+	{
+		gchar						**paths;
+		gchar						**pathIter;
+
+		pathIter=paths=g_strsplit(environmentVariable, ":", -1);
+		while(*pathIter)
+		{
+			pathFileList=_xfdashboard_settings_app_path_file_list_add(pathFileList, *pathIter, FALSE);
+			pathIter++;
+		}
+		g_strfreev(paths);
+	}
+
+	entry=g_build_filename(g_get_user_data_dir(), "themes", NULL);
+	pathFileList=_xfdashboard_settings_app_path_file_list_add(pathFileList, entry, FALSE);
+	g_free(entry);
+
+	homeDirectory=g_get_home_dir();
+	if(homeDirectory)
+	{
+		entry=g_build_filename(homeDirectory, ".themes", NULL);
+		pathFileList=_xfdashboard_settings_app_path_file_list_add(pathFileList, entry, FALSE);
+		g_free(entry);
+	}
+
+	entry=g_build_filename(PACKAGE_DATADIR, "themes", NULL);
+	pathFileList=_xfdashboard_settings_app_path_file_list_add(pathFileList, entry, FALSE);
+	g_free(entry);
+
+	themesSearchPaths=_xfdashboard_settings_app_path_file_list_list_to_strv(pathFileList);
+
+	/* Set up search path for plugins */
+	pathFileList=NULL;
+
+	environmentVariable=g_getenv("XFDASHBOARD_PLUGINS_PATH");
+	if(environmentVariable)
+	{
+		gchar						**paths;
+		gchar						**pathIter;
+
+		pathIter=paths=g_strsplit(environmentVariable, ":", -1);
+		while(*pathIter)
+		{
+			pathFileList=_xfdashboard_settings_app_path_file_list_add(pathFileList, *pathIter, FALSE);
+			pathIter++;
+		}
+		g_strfreev(paths);
+	}
+
+	entry=g_build_filename(g_get_user_data_dir(), "xfdashboard", "plugins", NULL);
+	pathFileList=_xfdashboard_settings_app_path_file_list_add(pathFileList, entry, FALSE);
+	g_free(entry);
+
+	entry=g_build_filename(PACKAGE_LIBDIR, "xfdashboard", "plugins", NULL);
+	pathFileList=_xfdashboard_settings_app_path_file_list_add(pathFileList, entry, FALSE);
+	g_free(entry);
+
+	pluginsSearchPaths=_xfdashboard_settings_app_path_file_list_list_to_strv(pathFileList);
+
+	/* Set up file path for bindings */
+	pathFileList=NULL;
+
+	entry=g_build_filename(PACKAGE_DATADIR, "xfdashboard", "bindings.xml", NULL);
+	pathFileList=_xfdashboard_settings_app_path_file_list_add(pathFileList, entry, TRUE);
+	g_free(entry);
+
+	entry=g_build_filename(g_get_user_config_dir(), "xfdashboard", "bindings.xml", NULL);
+	pathFileList=_xfdashboard_settings_app_path_file_list_add(pathFileList, entry, TRUE);
+	g_free(entry);
+
+	environmentVariable=g_getenv("XFDASHBOARD_BINDINGS_POOL_FILE");
+	if(environmentVariable)
+	{
+		gchar						**paths;
+		gchar						**pathIter;
+
+		pathIter=paths=g_strsplit(environmentVariable, ":", -1);
+		while(*pathIter)
+		{
+			pathFileList=_xfdashboard_settings_app_path_file_list_add(pathFileList, *pathIter, TRUE);
+			pathIter++;
+		}
+		g_strfreev(paths);
+	}
+
+	bindingFilePaths=_xfdashboard_settings_app_path_file_list_list_to_strv(pathFileList);
+
+	/* Create settings instance for Xfconf settings storage */
+	priv->settings=g_object_new(XFDASHBOARD_TYPE_XFCONF_SETTINGS,
+							"binding-files", bindingFilePaths,
+							"theme-search-paths", themesSearchPaths,
+							"plugin-search-paths", pluginsSearchPaths,
+							NULL);
+	if(!priv->settings)
+	{
+		g_critical("Cannot create xfconf settings backend");
+
+		/* Release allocated resources */
+		if(themesSearchPaths) g_strfreev(themesSearchPaths);
+		if(pluginsSearchPaths) g_strfreev(pluginsSearchPaths);
+		if(bindingFilePaths) g_strfreev(bindingFilePaths);
+
+		/* Return failed state */
+		return(FALSE);
+	}
+
+	/* Setting object instance is unowned on creation, so take a reference to own it */
+	g_object_ref(priv->settings);
+
+	/* Release allocated resources */
+	if(themesSearchPaths) g_strfreev(themesSearchPaths);
+	if(pluginsSearchPaths) g_strfreev(pluginsSearchPaths);
+	if(bindingFilePaths) g_strfreev(bindingFilePaths);
+
+	/* Return success result */
+	return(TRUE);
+}
+
+/* Create and set up GtkBuilder */
+static gboolean _xfdashboard_settings_app_create_builder(XfdashboardSettingsApp *self)
+{
+	XfdashboardSettingsAppPrivate			*priv;
 	gchar									*builderFile;
 	GtkBuilder								*builder;
 	GError									*error;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_APP(self), FALSE);
 
 	priv=self->priv;
 	builderFile=NULL;
@@ -181,23 +416,23 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 	priv->widgetHelpButton=GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-button"));
 	g_signal_connect_swapped(priv->widgetHelpButton,
 								"clicked",
-								G_CALLBACK(_xfdashboard_settings_on_help_clicked),
+								G_CALLBACK(_xfdashboard_settings_app_on_help_clicked),
 								self);
 
 	priv->widgetCloseButton=GTK_WIDGET(gtk_builder_get_object(priv->builder, "close-button"));
 	g_signal_connect_swapped(priv->widgetCloseButton,
 								"clicked",
-								G_CALLBACK(_xfdashboard_settings_on_close_clicked),
+								G_CALLBACK(_xfdashboard_settings_app_on_close_clicked),
 								self);
 
 	/* Tab: General */
-	priv->general=xfdashboard_settings_general_new(builder);
+	priv->general=xfdashboard_settings_general_new(self);
 
 	/* Tab: Themes */
-	priv->themes=xfdashboard_settings_themes_new(builder);
+	priv->themes=xfdashboard_settings_themes_new(self);
 
 	/* Tab: Plugins */
-	priv->plugins=xfdashboard_settings_plugins_new(builder);
+	priv->plugins=xfdashboard_settings_plugins_new(self);
 
 	/* Release allocated resources */
 	g_free(builderFile);
@@ -207,14 +442,29 @@ static gboolean _xfdashboard_settings_create_builder(XfdashboardSettings *self)
 	return(TRUE);
 }
 
+/* Set up settings application */
+static gboolean _xfdashboard_settings_app_setup(XfdashboardSettingsApp *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_APP(self), FALSE);
+
+	/* First create settings if not done already */
+	if(!_xfdashboard_settings_app_create_settings(self)) return(FALSE);
+
+	/* Next setup build if not done already */
+	if(!_xfdashboard_settings_app_create_builder(self)) return(FALSE);
+
+	/* If we get here, setup was successful */
+	return(TRUE);
+}
+ 
 
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
-static void _xfdashboard_settings_dispose(GObject *inObject)
+static void _xfdashboard_settings_app_dispose(GObject *inObject)
 {
-	XfdashboardSettings			*self=XFDASHBOARD_SETTINGS(inObject);
-	XfdashboardSettingsPrivate	*priv=self->priv;
+	XfdashboardSettingsApp			*self=XFDASHBOARD_SETTINGS_APP(inObject);
+	XfdashboardSettingsAppPrivate	*priv=self->priv;
 
 	/* Release allocated resouces */
 	priv->dialog=NULL;
@@ -239,44 +489,45 @@ static void _xfdashboard_settings_dispose(GObject *inObject)
 		priv->plugins=NULL;
 	}
 
-	if(priv->xfconfChannel)
-	{
-		priv->xfconfChannel=NULL;
-	}
-
 	if(priv->builder)
 	{
 		g_object_unref(priv->builder);
 		priv->builder=NULL;
 	}
 
+	if(priv->settings)
+	{
+		g_object_unref(priv->settings);
+		priv->settings=NULL;
+	}
+
 	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_settings_parent_class)->dispose(inObject);
+	G_OBJECT_CLASS(xfdashboard_settings_app_parent_class)->dispose(inObject);
 }
 
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
  */
-static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
+static void xfdashboard_settings_app_class_init(XfdashboardSettingsAppClass *klass)
 {
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->dispose=_xfdashboard_settings_dispose;
+	gobjectClass->dispose=_xfdashboard_settings_app_dispose;
 }
 
 /* Object initialization
  * Create private structure and set up default values
  */
-static void xfdashboard_settings_init(XfdashboardSettings *self)
+static void xfdashboard_settings_app_init(XfdashboardSettingsApp *self)
 {
-	XfdashboardSettingsPrivate	*priv;
+	XfdashboardSettingsAppPrivate	*priv;
 
-	priv=self->priv=xfdashboard_settings_get_instance_private(self);
+	priv=self->priv=xfdashboard_settings_app_get_instance_private(self);
 
 	/* Set default values */
-	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
+	priv->settings=NULL;
 	priv->builder=NULL;
 	priv->dialog=NULL;
 	priv->general=NULL;
@@ -289,22 +540,22 @@ static void xfdashboard_settings_init(XfdashboardSettings *self)
 /* IMPLEMENTATION: Public API */
 
 /* Create instance of this class */
-XfdashboardSettings* xfdashboard_settings_new(void)
+XfdashboardSettingsApp* xfdashboard_settings_app_new(void)
 {
-	return(XFDASHBOARD_SETTINGS(g_object_new(XFDASHBOARD_TYPE_SETTINGS, NULL)));
+	return(XFDASHBOARD_SETTINGS_APP(g_object_new(XFDASHBOARD_TYPE_SETTINGS_APP, NULL)));
 }
 
 /* Create standalone dialog for this settings instance */
-GtkWidget* xfdashboard_settings_create_dialog(XfdashboardSettings *self)
+GtkWidget* xfdashboard_settings_app_create_dialog(XfdashboardSettingsApp *self)
 {
-	XfdashboardSettingsPrivate	*priv;
+	XfdashboardSettingsAppPrivate	*priv;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_APP(self), NULL);
 
 	priv=self->priv;
 
 	/* Get builder if not available */
-	if(!_xfdashboard_settings_create_builder(self))
+	if(!_xfdashboard_settings_app_setup(self))
 	{
 		/* An critical error message should be displayed so just return NULL */
 		return(NULL);
@@ -325,22 +576,22 @@ GtkWidget* xfdashboard_settings_create_dialog(XfdashboardSettings *self)
 }
 
 /* Create "pluggable" dialog for this settings instance */
-GtkWidget* xfdashboard_settings_create_plug(XfdashboardSettings *self, Window inSocketID)
+GtkWidget* xfdashboard_settings_app_create_plug(XfdashboardSettingsApp *self, Window inSocketID)
 {
-	XfdashboardSettingsPrivate	*priv;
-	GtkWidget					*plug;
-	GObject						*dialogChild;
+	XfdashboardSettingsAppPrivate	*priv;
+	GtkWidget						*plug;
+	GObject							*dialogChild;
 #if GTK_CHECK_VERSION(3, 14 ,0)
-	GtkWidget					*dialogParent;
+	GtkWidget						*dialogParent;
 #endif
 
-	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS(self), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_APP(self), NULL);
 	g_return_val_if_fail(inSocketID, NULL);
 
 	priv=self->priv;
 
 	/* Get builder if not available */
-	if(!_xfdashboard_settings_create_builder(self))
+	if(!_xfdashboard_settings_app_setup(self))
 	{
 		/* An critical error message should be displayed so just return NULL */
 		return(NULL);
@@ -371,4 +622,20 @@ GtkWidget* xfdashboard_settings_create_plug(XfdashboardSettings *self, Window in
 
 	/* Return widget */
 	return(GTK_WIDGET(plug));
+}
+
+/* Get builder */
+GtkBuilder* xfdashboard_settings_app_get_builder(XfdashboardSettingsApp *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_APP(self), NULL);
+
+	return(self->priv->builder);
+}
+
+/* Get settings object instance */
+XfdashboardSettings* xfdashboard_settings_app_get_settings(XfdashboardSettingsApp *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_APP(self), NULL);
+
+	return(self->priv->settings);
 }

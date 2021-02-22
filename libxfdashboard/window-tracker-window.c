@@ -752,7 +752,6 @@ gboolean xfdashboard_window_tracker_window_is_stage(XfdashboardWindowTrackerWind
 	return(xfdashboard_window_tracker_window_get_stage(self)!=NULL);
 }
 
-/* Get stage for requested window */
 /**
  * xfdashboard_window_tracker_window_get_stage:
  * @self: A #XfdashboardWindowTrackerWindow

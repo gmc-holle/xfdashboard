@@ -57,10 +57,6 @@ struct _XfdashboardPluginPrivate
 	gchar						*copyright;
 	gchar						*license;
 
-	gchar						*configPath;
-	gchar						*cachePath;
-	gchar						*dataPath;
-
 	/* Instance related */
 	gchar						*filename;
 	GModule						*module;
@@ -68,6 +64,8 @@ struct _XfdashboardPluginPrivate
 	XfdashboardPluginState		state;
 	gchar						*lastLoadingError;
 
+	gpointer					userData;
+	GDestroyNotify				userDataDestroyCallback;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardPlugin,
@@ -88,10 +86,6 @@ enum
 	PROP_AUTHOR,
 	PROP_COPYRIGHT,
 	PROP_LICENSE,
-
-	PROP_CONFIG_PATH,
-	PROP_CACHE_PATH,
-	PROP_DATA_PATH,
 
 	PROP_LAST
 };
@@ -177,54 +171,6 @@ static void _xfdashboard_plugin_set_filename(XfdashboardPlugin *self, const gcha
 	}
 }
 
-/* Update special paths for this plugin */
-static gboolean _xfdashboard_plugin_update_special_paths(XfdashboardPlugin *self)
-{
-	XfdashboardPluginPrivate		*priv;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), FALSE);
-
-	priv=self->priv;
-
-	/* Check that ID of plugin is set */
-	if(!priv->id)
-	{
-		g_critical("Cannot get path for plugin at %s", priv->filename);
-		return(FALSE);
-	}
-
-	/* Freeze notification */
-	g_object_freeze_notify(G_OBJECT(self));
-
-	/* Update paths of this plugin */
-	if(priv->configPath)
-	{
-		g_free(priv->configPath);
-		priv->configPath=NULL;
-	}
-	priv->configPath=g_build_filename(g_get_user_config_dir(), "xfdashboard", priv->id, NULL);
-
-	if(priv->cachePath)
-	{
-		g_free(priv->cachePath);
-		priv->cachePath=NULL;
-	}
-	priv->cachePath=g_build_filename(g_get_user_cache_dir(), "xfdashboard", priv->id, NULL);
-
-	if(priv->dataPath)
-	{
-		g_free(priv->dataPath);
-		priv->dataPath=NULL;
-	}
-	priv->dataPath=g_build_filename(g_get_user_data_dir(), "xfdashboard", priv->id, NULL);
-
-	/* Thaw notification */
-	g_object_thaw_notify(G_OBJECT(self));
-
-	/* Updating paths was successful */
-	return(TRUE);
-}
-
 /* Set ID for plugin */
 static void _xfdashboard_plugin_set_id(XfdashboardPlugin *self, const gchar *inID)
 {
@@ -246,9 +192,6 @@ static void _xfdashboard_plugin_set_id(XfdashboardPlugin *self, const gchar *inI
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPluginProperties[PROP_ID]);
-
-		/* When ID changes then also paths of this plugin change */
-		_xfdashboard_plugin_update_special_paths(self);
 	}
 }
 
@@ -413,6 +356,33 @@ static void _xfdashboard_plugin_set_license(XfdashboardPlugin *self, const gchar
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPluginProperties[PROP_LICENSE]);
 	}
 }
+
+/* Destroy user data */
+static void _xfdashboard_plugin_destroy_user_data(XfdashboardPlugin *self)
+{
+	XfdashboardPluginPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(self));
+
+	priv=self->priv;
+
+	/* Check if user data is set and call its destruction callback function
+	 * if it was set also.
+	 */
+	if(priv->userData)
+	{
+		/* Call destruction callback function with user data if available */
+		if(priv->userDataDestroyCallback)
+		{
+			(priv->userDataDestroyCallback)(priv->userData);
+		}
+
+		/* Unset user data and destruction callback */
+		priv->userData=NULL;
+		priv->userDataDestroyCallback=NULL;
+	}
+}
+
 
 /* IMPLEMENTATION: GTypeModule */
 
@@ -602,6 +572,9 @@ static void _xfdashboard_plugin_dispose(GObject *inObject)
 	XfdashboardPlugin			*self=XFDASHBOARD_PLUGIN(inObject);
 	XfdashboardPluginPrivate	*priv=self->priv;
 
+	/* First of all destroy user data as long as this object was not disposed */
+	_xfdashboard_plugin_destroy_user_data(self);
+
 	/* Release allocated resources */
 	if(priv->module)
 	{
@@ -648,24 +621,6 @@ static void _xfdashboard_plugin_dispose(GObject *inObject)
 	{
 		g_free(priv->license);
 		priv->license=NULL;
-	}
-
-	if(priv->configPath)
-	{
-		g_free(priv->configPath);
-		priv->configPath=NULL;
-	}
-
-	if(priv->cachePath)
-	{
-		g_free(priv->cachePath);
-		priv->cachePath=NULL;
-	}
-
-	if(priv->dataPath)
-	{
-		g_free(priv->dataPath);
-		priv->dataPath=NULL;
 	}
 
 	/* Sanity checks that module was unloaded - at least by us */
@@ -765,18 +720,6 @@ static void _xfdashboard_plugin_get_property(GObject *inObject,
 			g_value_set_string(outValue, priv->license);
 			break;
 
-		case PROP_CONFIG_PATH:
-			g_value_set_string(outValue, priv->configPath);
-			break;
-
-		case PROP_CACHE_PATH:
-			g_value_set_string(outValue, priv->cachePath);
-			break;
-
-		case PROP_DATA_PATH:
-			g_value_set_string(outValue, priv->dataPath);
-			break;
-
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -858,27 +801,6 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
-	XfdashboardPluginProperties[PROP_CONFIG_PATH]=
-		g_param_spec_string("config-path",
-							"Config path",
-							"The base path to configuration files of this plugin",
-							NULL,
-							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardPluginProperties[PROP_CACHE_PATH]=
-		g_param_spec_string("cache-path",
-							"Cache path",
-							"The base path to cache files of this plugin",
-							NULL,
-							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardPluginProperties[PROP_DATA_PATH]=
-		g_param_spec_string("data-path",
-							"Data path",
-							"The base path to data files of this plugin",
-							NULL,
-							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardPluginProperties);
 
 	/* Define signals */
@@ -931,6 +853,8 @@ static void xfdashboard_plugin_init(XfdashboardPlugin *self)
 	priv->initialize=NULL;
 	priv->state=XFDASHBOARD_PLUGIN_STATE_NONE;
 	priv->lastLoadingError=NULL;
+	priv->userData=NULL;
+	priv->userDataDestroyCallback=NULL;
 
 	priv->id=NULL;
 	priv->flags=XFDASHBOARD_PLUGIN_FLAG_NONE;
@@ -939,10 +863,6 @@ static void xfdashboard_plugin_init(XfdashboardPlugin *self)
 	priv->author=NULL;
 	priv->copyright=NULL;
 	priv->license=NULL;
-
-	priv->configPath=NULL;
-	priv->cachePath=NULL;
-	priv->dataPath=NULL;
 }
 
 
@@ -956,7 +876,24 @@ GQuark xfdashboard_plugin_error_quark(void)
 
 /* IMPLEMENTATION: Public API */
 
-/* Create an uninitialized plugin */
+/**
+ * xfdashboard_plugin_new:
+ *
+ * Creates a new uninitialized plugin instance of type #XfdashboardPlugin
+ * which will be loaded from path at @inPluginFilename. The plugin ID is
+ * retrieved from the basename of plugin's path, i.e. the file name without
+ * the absolute path and without file extension.
+ *
+ * The plugin instance created is uninitialized, i.e. it is neither loaded
+ * nor initialized. This has to be done after successful creation by calling
+ * xfdashboard_plugin_enable().
+ *
+ * In case of errors %NULL will be returned and the error is set at
+ * @outError.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardPlugin.
+ *   Use g_object_unref() when done.
+ */
 XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError **outError)
 {
 	GObject			*plugin;
@@ -1043,7 +980,14 @@ XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError 
 	return(XFDASHBOARD_PLUGIN(plugin));
 }
 
-/* Get ID of plugin */
+/**
+ * xfdashboard_plugin_get_id:
+ * @self: A #XfdashboardPlugin
+ *
+ * Retrieve the ID of plugin at @self.
+ *
+ * Return value: The plugin ID
+ */
 const gchar* xfdashboard_plugin_get_id(XfdashboardPlugin *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
@@ -1051,7 +995,14 @@ const gchar* xfdashboard_plugin_get_id(XfdashboardPlugin *self)
 	return(self->priv->id);
 }
 
-/* Get flags of plugin */
+/**
+ * xfdashboard_plugin_get_flags:
+ * @self: A #XfdashboardPlugin
+ *
+ * Retrieve the flags associated with plugin at @self.
+ *
+ * Return value: The flags of type #XfdashboardPluginFlag
+ */
 XfdashboardPluginFlag xfdashboard_plugin_get_flags(XfdashboardPlugin *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), XFDASHBOARD_PLUGIN_FLAG_NONE);
@@ -1060,6 +1011,17 @@ XfdashboardPluginFlag xfdashboard_plugin_get_flags(XfdashboardPlugin *self)
 }
 
 /* Set plugin information */
+
+/**
+ * xfdashboard_plugin_set_info:
+ * @self: A #XfdashboardPlugin
+ * @inFirstPropertyName: The name of the first informational property to set
+ * @...: The value for the first informational property to set, followed
+ *   optionally by more name/value pairs, followed by NULL
+ *
+ * Sets informational properties for plugin at @self. The plugin must not be
+ * initialized or enabled.
+ */
 void xfdashboard_plugin_set_info(XfdashboardPlugin *self,
 									const gchar *inFirstPropertyName, ...)
 {
@@ -1085,7 +1047,14 @@ void xfdashboard_plugin_set_info(XfdashboardPlugin *self,
 	va_end(args);
 }
 
-/* Get enabled state of plugin */
+/**
+ * xfdashboard_plugin_is_enabled:
+ * @self: A #XfdashboardPlugin
+ *
+ * Retrieve if plugin at @self was successfully loaded and enabled.
+ *
+ * Return value: %TRUE if plugin was enabled, otherwise %FALSE
+ */
 gboolean xfdashboard_plugin_is_enabled(XfdashboardPlugin *self)
 {
 	XfdashboardPluginPrivate		*priv;
@@ -1101,7 +1070,12 @@ gboolean xfdashboard_plugin_is_enabled(XfdashboardPlugin *self)
 	return(FALSE);
 }
 
-/* Enable plugin */
+/**
+ * xfdashboard_plugin_enable:
+ * @self: A #XfdashboardPlugin
+ *
+ * Enables the plugin at @self.
+ */
 void xfdashboard_plugin_enable(XfdashboardPlugin *self)
 {
 	XfdashboardPluginPrivate		*priv;
@@ -1141,7 +1115,12 @@ void xfdashboard_plugin_enable(XfdashboardPlugin *self)
 	priv->state=XFDASHBOARD_PLUGIN_STATE_ENABLED;
 }
 
-/* Disable plugin */
+/**
+ * xfdashboard_plugin_disable:
+ * @self: A #XfdashboardPlugin
+ *
+ * Disables the plugin at @self.
+ */
 void xfdashboard_plugin_disable(XfdashboardPlugin *self)
 {
 	XfdashboardPluginPrivate		*priv;
@@ -1170,26 +1149,66 @@ void xfdashboard_plugin_disable(XfdashboardPlugin *self)
 	priv->state=XFDASHBOARD_PLUGIN_STATE_INITIALIZED;
 }
 
-/* Get base path to configuration files of this plugin */
-const gchar* xfdashboard_plugin_get_config_path(XfdashboardPlugin *self)
+/**
+ * xfdashboard_plugin_get_user_data:
+ * @self: A #XfdashboardPlugin
+ *
+ * Retrieve the user data of plugin at @self.
+ *
+ * Return value: The user data
+ */
+gpointer xfdashboard_plugin_get_user_data(XfdashboardPlugin *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
 
-	return(self->priv->configPath);
+	return(self->priv->userData);
 }
 
-/* Get base path to cache files of this plugin */
-const gchar* xfdashboard_plugin_get_cache_path(XfdashboardPlugin *self)
+/**
+ * xfdashboard_plugin_set_user_data:
+ * @self: A #XfdashboardPlugin
+ * @inUserData: The user data to set
+ *
+ * Sets the user data @inUserData at plugin @self but without a callback
+ * function to call when user data is destroyed.
+ */
+void xfdashboard_plugin_set_user_data(XfdashboardPlugin *self, gpointer inUserData)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
-
-	return(self->priv->cachePath);
+	xfdashboard_plugin_set_user_data_full(self, inUserData, NULL);
 }
 
-/* Get base path to data files of this plugin */
-const gchar* xfdashboard_plugin_get_data_path(XfdashboardPlugin *self)
+/**
+ * xfdashboard_plugin_set_user_data_full:
+ * @self: A #XfdashboardPlugin
+ * @inUserData: The user data to set
+ * @inDestroyCallback: The callback to call when destructing user data
+ *
+ * Sets the user data at @inUserData at plugin at @self with a callback
+ * function at @inDestroyCallback which is called when user data will be
+ * destroyed. The destruction callback will always be set even if user
+ * data did not change. The current user data at plugin at @self will be
+ * destroyed with the current destruction callback if user data changes
+ * before the new user data at @inUserData and the new destruction
+ * callback at @inDestroyCallback is set.
+ */
+void xfdashboard_plugin_set_user_data_full(XfdashboardPlugin *self, gpointer inUserData, GDestroyNotify inDestroyCallback)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
+	XfdashboardPluginPrivate		*priv;
 
-	return(self->priv->dataPath);
+	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->userData!=inUserData)
+	{
+		/* Destroy old user data */
+		_xfdashboard_plugin_destroy_user_data(self);
+
+		/* Set value */
+		priv->userData=inUserData;
+	}
+
+	/* Set new destroy callback functions */
+	priv->userDataDestroyCallback=inDestroyCallback;
 }

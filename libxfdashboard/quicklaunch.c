@@ -52,6 +52,7 @@
 #include <libxfdashboard/popup-menu.h>
 #include <libxfdashboard/popup-menu-item-button.h>
 #include <libxfdashboard/popup-menu-item-separator.h>
+#include <libxfdashboard/settings.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -63,7 +64,7 @@ static void _xfdashboard_quicklaunch_focusable_iface_init(XfdashboardFocusableIn
 struct _XfdashboardQuicklaunchPrivate
 {
 	/* Properties related */
-	GPtrArray						*favourites;
+	gchar							**favourites;
 
 	gfloat							normalIconSize;
 	gfloat							scaleMin;
@@ -75,8 +76,7 @@ struct _XfdashboardQuicklaunchPrivate
 	ClutterOrientation				orientation;
 
 	/* Instance related */
-	XfconfChannel					*xfconfChannel;
-	guint							xfconfFavouritesBindingID;
+	GBinding						*settingsFavouritesBinding;
 
 	gfloat							scaleCurrent;
 
@@ -92,6 +92,8 @@ struct _XfdashboardQuicklaunchPrivate
 
 	XfdashboardApplicationDatabase	*appDB;
 	XfdashboardApplicationTracker	*appTracker;
+
+	XfdashboardSettings				*settings;
 };
 
 G_DEFINE_TYPE_WITH_CODE(XfdashboardQuicklaunch,
@@ -135,11 +137,6 @@ static guint XfdashboardQuicklaunchSignals[SIGNAL_LAST]={ 0, };
 
 
 /* IMPLEMENTATION: Private variables and methods */
-#define FAVOURITES_XFCONF_PROP				"/favourites"
-
-#define LAUNCH_NEW_INSTANCE_XFCONF_PROP		"/always-launch-new-instance"
-#define DEFAULT_LAUNCH_NEW_INSTANCE			TRUE
-
 #define DEFAULT_SCALE_MIN			0.1
 #define DEFAULT_SCALE_MAX			1.0
 #define DEFAULT_SCALE_STEP			0.1
@@ -258,40 +255,27 @@ static gboolean _xfdashboard_quicklaunch_has_favourite_appinfo(XfdashboardQuickl
 	}
 
 	/* Iterate through favourites and check if already a favourite for
-	 * requested desktop file.
+	 * requested desktop file exists.
 	 */
-	for(i=0; i<priv->favourites->len; i++)
+	for(i=0; i<g_strv_length(priv->favourites); i++)
 	{
-		GValue						*value;
+		gchar						*value;
 		GAppInfo					*valueAppInfo;
-		const gchar					*valueAppInfoFilename;
 
 		valueAppInfo=NULL;
 
 		/* Get favourite value and the string it contains */
-		value=(GValue*)g_ptr_array_index(priv->favourites, i);
+		value=priv->favourites[i];
 		if(value)
 		{
-#if DEBUG
-			if(!G_VALUE_HOLDS_STRING(value))
-			{
-				g_critical("Value at %p of type %s is not a %s so assume this desktop application item exists",
-							value,
-							G_VALUE_TYPE_NAME(value),
-							g_type_name(G_TYPE_STRING));
-				return(TRUE);
-			}
-#endif
-
 			/* Get application information for string */
-			valueAppInfoFilename=g_value_get_string(value);
-			if(g_path_is_absolute(valueAppInfoFilename))
+			if(g_path_is_absolute(value))
 			{
-				valueAppInfo=xfdashboard_desktop_app_info_new_from_path(valueAppInfoFilename);
+				valueAppInfo=xfdashboard_desktop_app_info_new_from_path(value);
 			}
 				else
 				{
-					valueAppInfo=xfdashboard_application_database_lookup_desktop_id(priv->appDB, valueAppInfoFilename);
+					valueAppInfo=xfdashboard_application_database_lookup_desktop_id(priv->appDB, value);
 				}
 		}
 
@@ -333,9 +317,7 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 	 * of application whose button was clicked, then check if a window exists
 	 * and activate it. Otherwise launch a new instance.
 	 */
-	launchNewInstance=xfconf_channel_get_bool(xfdashboard_application_get_xfconf_channel(NULL),
-												LAUNCH_NEW_INSTANCE_XFCONF_PROP,
-												DEFAULT_LAUNCH_NEW_INSTANCE);
+	launchNewInstance=xfdashboard_settings_get_always_launch_new_instance(priv->settings);
 	if(!launchNewInstance)
 	{
 		GAppInfo							*appInfo;
@@ -1461,7 +1443,7 @@ static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuick
 	ClutterActorIter				iter;
 	GAppInfo						*desktopAppInfo;
 	gchar							*desktopFile;
-	GValue							*desktopValue;
+	GArray							*newFavourites;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 
@@ -1470,14 +1452,14 @@ static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuick
 	/* Free current list of desktop files */
 	if(priv->favourites)
 	{
-		xfconf_array_free(priv->favourites);
+		g_strfreev(priv->favourites);
 		priv->favourites=NULL;
 	}
 
 	/* Create array of strings pointing to desktop files for new order,
 	 * update quicklaunch and store settings
 	 */
-	priv->favourites=g_ptr_array_new();
+	newFavourites=g_array_new(TRUE, TRUE, sizeof(gchar*));
 
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
 	while(clutter_actor_iter_next(&iter, &child))
@@ -1507,14 +1489,15 @@ static void _xfdashboard_quicklaunch_update_property_from_icons(XfdashboardQuick
 		}
 		if(!desktopFile) continue;
 
-		/* Add desktop file name to array */
-		desktopValue=g_value_init(g_new0(GValue, 1), G_TYPE_STRING);
-		g_value_set_string(desktopValue, desktopFile);
-		g_ptr_array_add(priv->favourites, desktopValue);
-
-		/* Release allocated resources */
-		g_free(desktopFile);
+		/* Add desktop file name to array but do not free memory allocated
+		 * by desktop file name as it will stored in array and will not
+		 * be duplicated.
+		 */
+		g_array_append_val(newFavourites, desktopFile);
 	}
+
+	/* Store new favourites list */
+	priv->favourites=(gchar**)g_array_free(newFavourites, FALSE);
 
 	/* Notify about property change */
 	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardQuicklaunchProperties[PROP_FAVOURITES]);
@@ -1528,7 +1511,6 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 	ClutterActorIter				iter;
 	guint							i;
 	ClutterActor					*actor;
-	GValue							*desktopFile;
 	GAppInfo						*currentSelectionAppInfo;
 	const gchar						*desktopFilename;
 	GAppInfo						*appInfo;
@@ -1564,12 +1546,10 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 	}
 
 	/* Now re-add all application icons for current favourites */
-	for(i=0; i<priv->favourites->len; i++)
+	for(i=0; i<g_strv_length(priv->favourites); i++)
 	{
 		/* Get desktop file to create application button for in quicklaunch */
-		desktopFile=(GValue*)g_ptr_array_index(priv->favourites, i);
-
-		desktopFilename=g_value_get_string(desktopFile);
+		desktopFilename=priv->favourites[i];
 		if(g_path_is_absolute(desktopFilename)) appInfo=xfdashboard_desktop_app_info_new_from_path(desktopFilename);
 			else
 			{
@@ -1615,10 +1595,9 @@ static void _xfdashboard_quicklaunch_update_icons_from_property(XfdashboardQuick
 static void _xfdashboard_quicklaunch_set_favourites(XfdashboardQuicklaunch *self, const GValue *inValue)
 {
 	XfdashboardQuicklaunchPrivate	*priv;
-	GPtrArray						*desktopFiles;
 	guint							i;
-	GValue							*element;
-	GValue							*desktopFile;
+	gchar							**desktopFiles;
+	guint							numberElements;
 
 	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
 	g_return_if_fail(G_IS_VALUE(inValue));
@@ -1628,81 +1607,25 @@ static void _xfdashboard_quicklaunch_set_favourites(XfdashboardQuicklaunch *self
 	/* Free current list of favourites */
 	if(priv->favourites)
 	{
-		xfconf_array_free(priv->favourites);
+		g_strfreev(priv->favourites);
 		priv->favourites=NULL;
 	}
 
-	/* Copy array of string pointing to desktop files */
+	/* Copy new array of strings pointing to desktop files */
 	desktopFiles=g_value_get_boxed(inValue);
 	if(desktopFiles)
 	{
-		priv->favourites=g_ptr_array_sized_new(desktopFiles->len);
-		for(i=0; i<desktopFiles->len; ++i)
+		numberElements=g_strv_length(desktopFiles);
+		priv->favourites=g_new0(gchar*, numberElements+1);
+		for(i=0; i<numberElements; ++i)
 		{
-			element=(GValue*)g_ptr_array_index(desktopFiles, i);
-
-			/* Filter string value types */
-			if(G_VALUE_HOLDS_STRING(element))
-			{
-				desktopFile=g_value_init(g_new0(GValue, 1), G_TYPE_STRING);
-				g_value_copy(element, desktopFile);
-				g_ptr_array_add(priv->favourites, desktopFile);
-			}
+			priv->favourites[i]=g_strdup(desktopFiles[i]);
 		}
 	}
-		else priv->favourites=g_ptr_array_new();
+		else priv->favourites=g_new0(gchar*, 1);
 
 	/* Update list of icons for desktop files */
 	_xfdashboard_quicklaunch_update_icons_from_property(self);
-}
-
-/* Set up default favourites (e.g. used when started for the very first time) */
-static void _xfdashboard_quicklaunch_setup_default_favourites(XfdashboardQuicklaunch *self)
-{
-	XfdashboardQuicklaunchPrivate	*priv;
-	guint							i;
-	const gchar						*defaultApplications[]=	{
-																"exo-web-browser.desktop",
-																"exo-mail-reader.desktop",
-																"exo-file-manager.desktop",
-																"exo-terminal-emulator.desktop",
-															};
-
-	g_return_if_fail(XFDASHBOARD_IS_QUICKLAUNCH(self));
-
-	priv=self->priv;
-
-	/* Free current list of favourites */
-	if(priv->favourites)
-	{
-		xfconf_array_free(priv->favourites);
-		priv->favourites=NULL;
-	}
-
-	/* Build array with each available default application */
-	priv->favourites=g_ptr_array_new();
-	for(i=0; i<(sizeof(defaultApplications)/sizeof(defaultApplications[0])); i++)
-	{
-		GAppInfo					*appInfo;
-		GValue						*desktopFile;
-
-		appInfo=xfdashboard_application_database_lookup_desktop_id(priv->appDB, defaultApplications[i]);
-		if(!appInfo) appInfo=xfdashboard_desktop_app_info_new_from_desktop_id(defaultApplications[i]);
-
-		if(appInfo)
-		{
-			/* Add desktop file to array */
-			desktopFile=g_value_init(g_new0(GValue, 1), G_TYPE_STRING);
-			g_value_set_string(desktopFile, defaultApplications[i]);
-			g_ptr_array_add(priv->favourites, desktopFile);
-
-			/* Release allocated resources */
-			g_object_unref(appInfo);
-		}
-	}
-
-	/* Notify about property change */
-	g_object_notify_by_pspec(G_OBJECT(self), XfdashboardQuicklaunchProperties[PROP_FAVOURITES]);
 }
 
 /* Get scale factor to fit all children into given width */
@@ -2966,15 +2889,10 @@ static void _xfdashboard_quicklaunch_dispose(GObject *inObject)
 	XfdashboardQuicklaunchPrivate	*priv=XFDASHBOARD_QUICKLAUNCH(inObject)->priv;
 
 	/* Release our allocated variables */
-	if(priv->xfconfFavouritesBindingID)
+	if(priv->settingsFavouritesBinding)
 	{
-		xfconf_g_property_unbind(priv->xfconfFavouritesBindingID);
-		priv->xfconfFavouritesBindingID=0;
-	}
-
-	if(priv->xfconfChannel)
-	{
-		priv->xfconfChannel=NULL;
+		g_object_unref(priv->settingsFavouritesBinding);
+		priv->settingsFavouritesBinding=NULL;
 	}
 
 	if(priv->appTracker)
@@ -2991,7 +2909,7 @@ static void _xfdashboard_quicklaunch_dispose(GObject *inObject)
 
 	if(priv->favourites)
 	{
-		xfconf_array_free(priv->favourites);
+		g_strfreev(priv->favourites);
 		priv->favourites=NULL;
 	}
 
@@ -2999,6 +2917,12 @@ static void _xfdashboard_quicklaunch_dispose(GObject *inObject)
 	{
 		clutter_actor_destroy(priv->separatorFavouritesToDynamic);
 		priv->separatorFavouritesToDynamic=NULL;
+	}
+
+	if(priv->settings)
+	{
+		g_object_unref(priv->settings);
+		priv->settings=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -3096,11 +3020,17 @@ static void xfdashboard_quicklaunch_class_init(XfdashboardQuicklaunchClass *klas
 	klass->favourite_reorder_down=_xfdashboard_quicklaunch_favourite_reorder_down;
 
 	/* Define properties */
+	/**
+	 * XfdashboardQuicklaunch:favourites:
+	 *
+	 * A %NULL-terminated list of strings where each one contains either the desktop ID
+	 * or an absolute file path to the desktop file of a favourite.
+	 */
 	XfdashboardQuicklaunchProperties[PROP_FAVOURITES]=
 		g_param_spec_boxed("favourites",
 							"Favourites",
 							"An array of strings pointing to desktop files shown as icons",
-							XFDASHBOARD_TYPE_POINTER_ARRAY,
+							G_TYPE_STRV,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardQuicklaunchProperties[PROP_NORMAL_ICON_SIZE]=
@@ -3264,11 +3194,11 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	priv->scaleMin=DEFAULT_SCALE_MIN;
 	priv->scaleMax=DEFAULT_SCALE_MAX;
 	priv->scaleStep=DEFAULT_SCALE_STEP;
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
 	priv->dragMode=DRAG_MODE_NONE;
 	priv->dragPreviewIcon=NULL;
 	priv->selectedItem=NULL;
 	priv->appDB=xfdashboard_application_database_get_default();
+	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
@@ -3316,20 +3246,13 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	clutter_actor_hide(priv->separatorFavouritesToDynamic);
 	clutter_actor_add_child(CLUTTER_ACTOR(self), priv->separatorFavouritesToDynamic);
 
-	/* Bind to xfconf to react on changes */
-	priv->xfconfFavouritesBindingID=xfconf_g_property_bind(priv->xfconfChannel,
-															FAVOURITES_XFCONF_PROP,
-															XFDASHBOARD_TYPE_POINTER_ARRAY,
-															self,
-															"favourites");
-
-	/* Set up default favourite items if property in channel does not exist
-	 * because it indicates first start.
-	 */
-	if(!xfconf_channel_has_property(priv->xfconfChannel, FAVOURITES_XFCONF_PROP))
-	{
-		_xfdashboard_quicklaunch_setup_default_favourites(self);
-	}
+	/* Bind to settings to react on changes */
+	priv->settingsFavouritesBinding=
+		g_object_bind_property(priv->settings,
+								"favourites",
+								self,
+								"favourites",
+								G_BINDING_SYNC_CREATE);
 
 	/* Connect to application tracker to recognize other running application
 	 * which are not known favourites.

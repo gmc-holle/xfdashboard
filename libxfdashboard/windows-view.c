@@ -65,8 +65,7 @@ struct _XfdashboardWindowsViewPrivate
 	ClutterLayoutManager				*layout;
 	gpointer							selectedItem;
 
-	XfconfChannel						*xfconfChannel;
-	guint								xfconfScrollEventChangingWorkspaceBindingID;
+	GBinding							*settingsScrollEventChangingWorkspaceBinding;
 	XfdashboardStageInterface			*scrollEventChangingWorkspaceStage;
 	guint								scrollEventChangingWorkspaceStageSignalID;
 
@@ -130,8 +129,6 @@ static XfdashboardLiveWindow* _xfdashboard_windows_view_create_actor(Xfdashboard
 static void _xfdashboard_windows_view_set_active_workspace(XfdashboardWindowsView *self, XfdashboardWindowTrackerWorkspace *inWorkspace);
 
 /* IMPLEMENTATION: Private variables and methods */
-#define SCROLL_EVENT_CHANGES_WORKSPACE_XFCONF_PROP		"/components/windows-view/scroll-event-changes-workspace"
-
 #define DEFAULT_VIEW_ICON								"view-fullscreen"
 #define DEFAULT_DRAG_HANDLE_SIZE						32.0f
 
@@ -1889,15 +1886,11 @@ static void _xfdashboard_windows_view_dispose(GObject *inObject)
 		priv->scrollEventChangingWorkspaceStage=NULL;
 	}
 
-	if(priv->xfconfChannel)
-	{
-		priv->xfconfChannel=NULL;
-	}
 
-	if(priv->xfconfScrollEventChangingWorkspaceBindingID)
+	if(priv->settingsScrollEventChangingWorkspaceBinding)
 	{
-		xfconf_g_property_unbind(priv->xfconfScrollEventChangingWorkspaceBindingID);
-		priv->xfconfScrollEventChangingWorkspaceBindingID=0;
+		g_object_unref(priv->settingsScrollEventChangingWorkspaceBinding);
+		priv->settingsScrollEventChangingWorkspaceBinding=NULL;
 	}
 
 	if(priv->workspace)
@@ -2293,6 +2286,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	XfdashboardWindowsViewPrivate		*priv;
 	ClutterAction						*action;
 	XfdashboardWindowTrackerWorkspace	*activeWorkspace;
+	XfdashboardSettings					*settings;
 
 	self->priv=priv=xfdashboard_windows_view_get_instance_private(self);
 
@@ -2303,7 +2297,6 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	priv->preventUpscaling=FALSE;
 	priv->selectedItem=NULL;
 	priv->isWindowsNumberShown=FALSE;
-	priv->xfconfChannel=xfdashboard_application_get_xfconf_channel(NULL);
 	priv->isScrollEventChangingWorkspace=FALSE;
 	priv->scrollEventChangingWorkspaceStage=NULL;
 	priv->scrollEventChangingWorkspaceStageSignalID=0;
@@ -2331,12 +2324,14 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	g_signal_connect_swapped(action, "begin", G_CALLBACK(_xfdashboard_windows_view_on_drop_begin), self);
 	g_signal_connect_swapped(action, "drop", G_CALLBACK(_xfdashboard_windows_view_on_drop_drop), self);
 
-	/* Bind to xfconf to react on changes */
-	priv->xfconfScrollEventChangingWorkspaceBindingID=xfconf_g_property_bind(priv->xfconfChannel,
-																				SCROLL_EVENT_CHANGES_WORKSPACE_XFCONF_PROP,
-																				G_TYPE_BOOLEAN,
-																				self,
-																				"scroll-event-changes-workspace");
+	/* Bind to settings to react on changes */
+	settings=xfdashboard_application_get_settings(NULL);
+	priv->settingsScrollEventChangingWorkspaceBinding=
+		g_object_bind_property(settings,
+								"scroll-event-changes-workspace",
+								self,
+								"scroll-event-changes-workspace",
+								G_BINDING_SYNC_CREATE);
 
 	/* Connect signals */
 	g_signal_connect(self,

@@ -76,6 +76,7 @@ libxfdashboard_la_headers = \
 	search-result-container.h \
 	search-result-set.h \
 	search-view.h \
+	settings.h \
 	stage.h \
 	stage-interface.h \
 	stylable.h \
@@ -155,6 +156,7 @@ libxfdashboard_la_SOURCES = \
 	search-result-container.c \
 	search-result-set.c \
 	search-view.c \
+	settings.c \
 	stage.c \
 	stage-interface.c \
 	stylable.c \
@@ -189,7 +191,6 @@ libxfdashboard_la_CFLAGS = \
 	$(GIO_CFLAGS) \
 	$(GIO_UNIX_CFLAGS) \
 	$(GARCON_CFLAGS) \
-	$(LIBXFCONF_CFLAGS) \
 	$(LIBXFCE4UTIL_CFLAGS) \
 	$(LIBXFCE4UI_CFLAGS) \
 	$(PLATFORM_CFLAGS)
@@ -202,7 +203,6 @@ libxfdashboard_la_LIBADD = \
 	$(GIO_LIBS) \
 	$(GIO_UNIX_LIBS) \
 	$(GARCON_LIBS) \
-	$(LIBXFCONF_LIBS) \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(LIBXFCE4UI_LIBS) \
 	$(LIBM)

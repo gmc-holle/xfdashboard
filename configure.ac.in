@@ -304,6 +304,7 @@ AC_SUBST(XFDASHBOARD_REQUIRES)
 
 AC_OUTPUT([
 Makefile
+common/Makefile
 data/Makefile
 data/metainfo/Makefile
 data/data/Makefile

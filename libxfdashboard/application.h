@@ -30,11 +30,11 @@
 #endif
 
 #include <gio/gio.h>
-#include <xfconf/xfconf.h>
 
 #include <libxfdashboard/theme.h>
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/stage.h>
+#include <libxfdashboard/settings.h>
 
 G_BEGIN_DECLS
 
@@ -134,6 +134,8 @@ GType xfdashboard_application_get_type(void) G_GNUC_CONST;
 gboolean xfdashboard_application_has_default(void);
 XfdashboardApplication* xfdashboard_application_get_default(void);
 
+XfdashboardSettings* xfdashboard_application_get_settings(XfdashboardApplication *self);
+
 gboolean xfdashboard_application_is_daemonized(XfdashboardApplication *self);
 gboolean xfdashboard_application_is_suspended(XfdashboardApplication *self);
 
@@ -144,8 +146,6 @@ void xfdashboard_application_quit_forced(XfdashboardApplication *self);
 
 XfdashboardStage* xfdashboard_application_get_stage(XfdashboardApplication *self);
 XfdashboardTheme* xfdashboard_application_get_theme(XfdashboardApplication *self);
-
-XfconfChannel* xfdashboard_application_get_xfconf_channel(XfdashboardApplication *self);
 
 G_END_DECLS
 

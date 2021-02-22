@@ -27,35 +27,34 @@
 
 #include "plugins.h"
 
+#include "settings.h"
 #include <libxfdashboard/plugin.h>
 #include <glib/gi18n-lib.h>
-#include <xfconf/xfconf.h>
 
 
 /* Define this class in GObject system */
 struct _XfdashboardSettingsPluginsPrivate
 {
 	/* Properties related */
-	GtkBuilder		*builder;
+	GtkBuilder				*builder;
+	XfdashboardSettings		*settings;
 
 	/* Instance related */
-	XfconfChannel	*xfconfChannel;
-
-	GtkWidget		*widgetPlugins;
-	GtkWidget		*widgetPluginNameLabel;
-	GtkWidget		*widgetPluginName;
-	GtkWidget		*widgetPluginAuthorsLabel;
-	GtkWidget		*widgetPluginAuthors;
-	GtkWidget		*widgetPluginCopyrightLabel;
-	GtkWidget		*widgetPluginCopyright;
-	GtkWidget		*widgetPluginLicenseLabel;
-	GtkWidget		*widgetPluginLicense;
-	GtkWidget		*widgetPluginDescriptionLabel;
-	GtkWidget		*widgetPluginDescription;
-	GtkWidget		*widgetPluginConfigureButton;
-	GtkWidget		*widgetPluginPreferencesDialog;
-	GtkWidget		*widgetPluginPreferencesWidgetBox;
-	GtkWidget		*widgetPluginPreferencesDialogTitle;
+	GtkWidget				*widgetPlugins;
+	GtkWidget				*widgetPluginNameLabel;
+	GtkWidget				*widgetPluginName;
+	GtkWidget				*widgetPluginAuthorsLabel;
+	GtkWidget				*widgetPluginAuthors;
+	GtkWidget				*widgetPluginCopyrightLabel;
+	GtkWidget				*widgetPluginCopyright;
+	GtkWidget				*widgetPluginLicenseLabel;
+	GtkWidget				*widgetPluginLicense;
+	GtkWidget				*widgetPluginDescriptionLabel;
+	GtkWidget				*widgetPluginDescription;
+	GtkWidget				*widgetPluginConfigureButton;
+	GtkWidget				*widgetPluginPreferencesDialog;
+	GtkWidget				*widgetPluginPreferencesWidgetBox;
+	GtkWidget				*widgetPluginPreferencesDialogTitle;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardSettingsPlugins,
@@ -68,6 +67,7 @@ enum
 	PROP_0,
 
 	PROP_BUILDER,
+	PROP_SETTINGS,
 
 	PROP_LAST
 };
@@ -576,7 +576,6 @@ static void _xfdashboard_settings_plugins_enabled_plugins_changed_by_widget(Xfda
 	{
 		gchar								**enabledPluginsList;
 		guint								i;
-		gboolean							success;
 
 		/* Create string list from array of enabled plugins to store at Xfconf */
 		enabledPluginsList=g_new0(gchar*, (enabledPlugins->len)+1);
@@ -585,10 +584,7 @@ static void _xfdashboard_settings_plugins_enabled_plugins_changed_by_widget(Xfda
 			enabledPluginsList[i]=g_strdup(g_ptr_array_index(enabledPlugins, i));
 		}
 
-		success=xfconf_channel_set_string_list(priv->xfconfChannel,
-												ENABLED_PLUGINS_XFCONF_PROP,
-												(const gchar * const*)enabledPluginsList);
-		if(!success) g_critical("Could not set list of enabled plugins!");
+		xfdashboard_settings_set_enabled_plugins(priv->settings, (const gchar**)enabledPluginsList);
 
 		/* Release allocated resources */
 		if(enabledPluginsList) g_strfreev(enabledPluginsList);
@@ -596,30 +592,28 @@ static void _xfdashboard_settings_plugins_enabled_plugins_changed_by_widget(Xfda
 		else
 		{
 			/* Array of enabled plugins is empty so reset property at Xfconf */
-			xfconf_channel_reset_property(priv->xfconfChannel, ENABLED_PLUGINS_XFCONF_PROP, FALSE);
+			xfdashboard_settings_set_enabled_plugins(priv->settings, NULL);
 		}
 
 	/* Release allocated resources */
 	if(enabledPlugins) g_ptr_array_free(enabledPlugins, TRUE);
 }
 
-static void _xfdashboard_settings_plugins_enabled_plugins_changed_by_xfconf(XfdashboardSettingsPlugins *self,
-																			const gchar *inProperty,
-																			const GValue *inValue,
-																			XfconfChannel *inChannel)
+static void _xfdashboard_settings_plugins_enabled_plugins_changed_by_settings(XfdashboardSettingsPlugins *self,
+																				GParamSpec *inParamSpec,
+																				GObject *inObject)
 {
 	XfdashboardSettingsPluginsPrivate		*priv;
-	gchar									**newValues;
+	const gchar								**newValues;
 	GtkTreeModel							*model;
 	GtkTreeIter								modelIter;
 
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self));
-	g_return_if_fail(XFCONF_IS_CHANNEL(inChannel));
 
 	priv=self->priv;
 
 	/* Get new value to set at widget */
-	newValues=xfconf_channel_get_string_list(priv->xfconfChannel, ENABLED_PLUGINS_XFCONF_PROP);
+	newValues=xfdashboard_settings_get_enabled_plugins(priv->settings);
 
 	/* Iterate through plugins' model and lookup each item to match against
 	 * one value in new value and enable or disable it
@@ -641,7 +635,7 @@ static void _xfdashboard_settings_plugins_enabled_plugins_changed_by_xfconf(Xfda
 		if(pluginID && newValues)
 		{
 			gboolean						isEnabled;
-			gchar							**valuesIter;
+			const gchar						**valuesIter;
 
 			/* Check if plugin ID of item is in list of enabled plugins */
 			isEnabled=FALSE;
@@ -662,9 +656,6 @@ static void _xfdashboard_settings_plugins_enabled_plugins_changed_by_xfconf(Xfda
 		if(pluginID) g_free(pluginID);
 	}
 	while(gtk_tree_model_iter_next(model, &modelIter));
-
-	/* Release allocated resources */
-	if(newValues) g_strfreev(newValues);
 }
 
 /* Sorting function for theme list's model */
@@ -942,21 +933,24 @@ static void _xfdashboard_settings_plugins_populate_plugins_list(XfdashboardSetti
 	if(pluginsSearchPaths) g_list_free_full(pluginsSearchPaths, g_free);
 }
 
-/* Create and set up GtkBuilder */
-static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins *self,
-														GtkBuilder *inBuilder)
+/* Set up this tab */
+static void _xfdashboard_settings_plugins_setup(XfdashboardSettingsPlugins *self)
 {
-	XfdashboardSettingsPluginsPrivate	*priv;
+	XfdashboardSettingsPluginsPrivate				*priv;
+	static gboolean									setupDone=FALSE;
 
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self));
-	g_return_if_fail(GTK_IS_BUILDER(inBuilder));
 
 	priv=self->priv;
 
-	/* Set builder object which must not be set yet */
-	g_assert(!priv->builder);
+	/* Do nothing if builder or settings is not set yet */
+	if(!priv->settings || !priv->builder) return;
 
-	priv->builder=g_object_ref(inBuilder);
+	/* Do nothing if set up was done already */
+	if(setupDone) return;
+
+	/* Mark that set up is done */
+	setupDone=TRUE;
 
 	/* Get widgets from builder */
 	priv->widgetPlugins=GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins"));
@@ -1045,10 +1039,7 @@ static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins
 		_xfdashboard_settings_plugins_populate_plugins_list(self, priv->widgetPlugins);
 
 		/* Check enabled plugins */
-		_xfdashboard_settings_plugins_enabled_plugins_changed_by_xfconf(self,
-																		ENABLED_PLUGINS_XFCONF_PROP,
-																		NULL,
-																		priv->xfconfChannel);
+		_xfdashboard_settings_plugins_enabled_plugins_changed_by_settings(self, NULL, G_OBJECT(priv->settings));
 
 		/* Connect signals */
 		g_signal_connect_swapped(selection,
@@ -1056,9 +1047,9 @@ static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins
 									G_CALLBACK(_xfdashboard_settings_plugins_enabled_plugins_on_plugins_selection_changed),
 									self);
 
-		g_signal_connect_swapped(priv->xfconfChannel,
-									"property-changed::"ENABLED_PLUGINS_XFCONF_PROP,
-									G_CALLBACK(_xfdashboard_settings_plugins_enabled_plugins_changed_by_xfconf),
+		g_signal_connect_swapped(priv->settings,
+									"notify::enabled-plugins",
+									G_CALLBACK(_xfdashboard_settings_plugins_enabled_plugins_changed_by_settings),
 									self);
 
 		g_signal_connect_swapped(priv->widgetPlugins,
@@ -1089,6 +1080,47 @@ static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins
 									self);
 	}
 }
+
+/* Create and set up GtkBuilder */
+static void _xfdashboard_settings_plugins_set_builder(XfdashboardSettingsPlugins *self,
+														GtkBuilder *inBuilder)
+{
+	XfdashboardSettingsPluginsPrivate	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self));
+	g_return_if_fail(GTK_IS_BUILDER(inBuilder));
+
+	priv=self->priv;
+
+	/* Set builder object which must not be set yet */
+	g_assert(!priv->builder);
+
+	priv->builder=g_object_ref(inBuilder);
+
+	/* If both builder and settings are set, then set up tab */
+	_xfdashboard_settings_plugins_setup(self);
+}
+
+/* Set settings object instance */
+static void _xfdashboard_settings_plugins_set_settings(XfdashboardSettingsPlugins *self,
+														XfdashboardSettings *inSettings)
+{
+	XfdashboardSettingsPluginsPrivate				*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self));
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(inSettings));
+
+	priv=self->priv;
+
+	/* Set settings object which must not be set yet */
+	g_assert(!priv->settings);
+
+	priv->settings=g_object_ref(inSettings);
+
+	/* If both builder and settings are set, then set up tab */
+	_xfdashboard_settings_plugins_setup(self);
+}
+
 
 /* IMPLEMENTATION: GObject */
 
@@ -1122,9 +1154,10 @@ static void _xfdashboard_settings_plugins_dispose(GObject *inObject)
 		priv->builder=NULL;
 	}
 
-	if(priv->xfconfChannel)
+	if(priv->settings)
 	{
-		priv->xfconfChannel=NULL;
+		g_object_unref(priv->settings);
+		priv->settings=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -1145,6 +1178,10 @@ static void _xfdashboard_settings_plugins_set_property(GObject *inObject,
 			_xfdashboard_settings_plugins_set_builder(self, GTK_BUILDER(g_value_get_object(inValue)));
 			break;
 
+		case PROP_SETTINGS:
+			_xfdashboard_settings_plugins_set_settings(self, XFDASHBOARD_SETTINGS(g_value_get_object(inValue)));
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -1163,6 +1200,10 @@ static void _xfdashboard_settings_plugins_get_property(GObject *inObject,
 	{
 		case PROP_BUILDER:
 			g_value_set_object(outValue, priv->builder);
+			break;
+
+		case PROP_SETTINGS:
+			g_value_set_object(outValue, priv->settings);
 			break;
 
 		default:
@@ -1192,6 +1233,13 @@ static void xfdashboard_settings_plugins_class_init(XfdashboardSettingsPluginsCl
 								GTK_TYPE_BUILDER,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
+	XfdashboardSettingsPluginsProperties[PROP_SETTINGS]=
+		g_param_spec_object("settings",
+								"Settings",
+								"The settings object of application",
+								XFDASHBOARD_TYPE_SETTINGS,
+								G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSettingsPluginsProperties);
 }
 
@@ -1206,8 +1254,7 @@ static void xfdashboard_settings_plugins_init(XfdashboardSettingsPlugins *self)
 
 	/* Set default values */
 	priv->builder=NULL;
-
-	priv->xfconfChannel=xfconf_channel_get(XFDASHBOARD_XFCONF_CHANNEL);
+	priv->settings=NULL;
 
 	priv->widgetPlugins=NULL;
 	priv->widgetPluginNameLabel=NULL;
@@ -1230,15 +1277,16 @@ static void xfdashboard_settings_plugins_init(XfdashboardSettingsPlugins *self)
 /* IMPLEMENTATION: Public API */
 
 /* Create instance of this class */
-XfdashboardSettingsPlugins* xfdashboard_settings_plugins_new(GtkBuilder *inBuilder)
+XfdashboardSettingsPlugins* xfdashboard_settings_plugins_new(XfdashboardSettingsApp *inApp)
 {
 	GObject		*instance;
 
-	g_return_val_if_fail(GTK_IS_BUILDER(inBuilder), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS_APP(inApp), NULL);
 
 	/* Create instance */
 	instance=g_object_new(XFDASHBOARD_TYPE_SETTINGS_PLUGINS,
-							"builder", inBuilder,
+							"builder", xfdashboard_settings_app_get_builder(inApp),
+							"settings", xfdashboard_settings_app_get_settings(inApp),
 							NULL);
 
 	/* Return newly created instance */
