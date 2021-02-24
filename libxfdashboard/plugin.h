@@ -32,6 +32,8 @@
 #include <glib-object.h>
 #include <gmodule.h>
 
+#include "plugin-settings.h"
+
 G_BEGIN_DECLS
 
 /* Public definitions */
@@ -151,6 +153,8 @@ void xfdashboard_plugin_disable(XfdashboardPlugin *self);
 gpointer xfdashboard_plugin_get_user_data(XfdashboardPlugin *self);
 void xfdashboard_plugin_set_user_data(XfdashboardPlugin *self, gpointer inUserData);
 void xfdashboard_plugin_set_user_data_full(XfdashboardPlugin *self, gpointer inUserData, GDestroyNotify inDestroyCallback);
+
+XfdashboardPluginSettings* xfdashboard_plugin_get_settings(XfdashboardPlugin *self);
 
 G_END_DECLS
 

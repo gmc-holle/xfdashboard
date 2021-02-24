@@ -56,6 +56,7 @@ struct _XfdashboardPluginPrivate
 	gchar						*author;
 	gchar						*copyright;
 	gchar						*license;
+	XfdashboardPluginSettings	*settings;
 
 	/* Instance related */
 	gchar						*filename;
@@ -86,6 +87,8 @@ enum
 	PROP_AUTHOR,
 	PROP_COPYRIGHT,
 	PROP_LICENSE,
+
+	PROP_SETTINGS,
 
 	PROP_LAST
 };
@@ -357,6 +360,38 @@ static void _xfdashboard_plugin_set_license(XfdashboardPlugin *self, const gchar
 	}
 }
 
+/* Set plugin settings object for plugin */
+static void _xfdashboard_plugin_set_settings(XfdashboardPlugin *self, XfdashboardPluginSettings *inSettings)
+{
+	XfdashboardPluginPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(self));
+	g_return_if_fail(XFDASHBOARD_IS_PLUGIN_SETTINGS(inSettings));
+	g_return_if_fail(self->priv->settings==NULL);
+	g_return_if_fail(self->priv->state==XFDASHBOARD_PLUGIN_STATE_NONE);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(inSettings!=priv->settings)
+	{
+		/* Set value */
+		if(priv->settings)
+		{
+			g_object_unref(priv->settings);
+			priv->settings=NULL;
+		}
+
+		if(inSettings)
+		{
+			priv->settings=g_object_ref(inSettings);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPluginProperties[PROP_SETTINGS]);
+	}
+}
+
 /* Destroy user data */
 static void _xfdashboard_plugin_destroy_user_data(XfdashboardPlugin *self)
 {
@@ -623,6 +658,12 @@ static void _xfdashboard_plugin_dispose(GObject *inObject)
 		priv->license=NULL;
 	}
 
+	if(priv->settings)
+	{
+		g_object_unref(priv->settings);
+		priv->settings=NULL;
+	}
+
 	/* Sanity checks that module was unloaded - at least by us */
 	g_assert(priv->initialize==NULL);
 
@@ -670,6 +711,10 @@ static void _xfdashboard_plugin_set_property(GObject *inObject,
 
 		case PROP_LICENSE:
 			_xfdashboard_plugin_set_license(self, g_value_get_string(inValue));
+			break;
+
+		case PROP_SETTINGS:
+			_xfdashboard_plugin_set_settings(self, g_value_get_object(inValue));
 			break;
 
 		default:
@@ -720,6 +765,10 @@ static void _xfdashboard_plugin_get_property(GObject *inObject,
 			g_value_set_string(outValue, priv->license);
 			break;
 
+		case PROP_SETTINGS:
+			g_value_set_object(outValue, priv->settings);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -744,6 +793,11 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 	gobjectClass->dispose=_xfdashboard_plugin_dispose;
 
 	/* Define properties */
+	/**
+	 * XfdashboardPlugin:filename:
+	 *
+	 * The path and file name of this plugin.
+	 */
 	XfdashboardPluginProperties[PROP_FILENAME]=
 		g_param_spec_string("filename",
 							"File name",
@@ -751,6 +805,11 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
+	/**
+	 * XfdashboardPlugin:id:
+	 *
+	 * The unique ID of this plugin.
+	 */
 	XfdashboardPluginProperties[PROP_ID]=
 		g_param_spec_string("id",
 							"ID",
@@ -758,6 +817,12 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
+	/**
+	 * XfdashboardPlugin:flags:
+	 *
+	 * None, one or more flags of type #XfdashboardPluginFlag defining behaviour
+	 * of this plugin.
+	 */
 	XfdashboardPluginProperties[PROP_FLAGS]=
 		g_param_spec_flags("flags",
 							"Flags",
@@ -766,6 +831,11 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 							XFDASHBOARD_PLUGIN_FLAG_NONE,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardPlugin:name:
+	 *
+	 * The name of this plugin.
+	 */
 	XfdashboardPluginProperties[PROP_NAME]=
 		g_param_spec_string("name",
 							"name",
@@ -773,6 +843,11 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardPlugin:description:
+	 *
+	 * The description for this plugin.
+	 */
 	XfdashboardPluginProperties[PROP_DESCRIPTION]=
 		g_param_spec_string("description",
 							"Description",
@@ -780,6 +855,11 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardPlugin:author:
+	 *
+	 * The author of this plugin.
+	 */
 	XfdashboardPluginProperties[PROP_AUTHOR]=
 		g_param_spec_string("author",
 							"Author",
@@ -787,6 +867,11 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardPlugin:copyright:
+	 *
+	 * The copyright message of this plugin.
+	 */
 	XfdashboardPluginProperties[PROP_COPYRIGHT]=
 		g_param_spec_string("copyright",
 							"Copyright",
@@ -794,6 +879,11 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardPlugin:license:
+	 *
+	 * The license of this plugin.
+	 */
 	XfdashboardPluginProperties[PROP_LICENSE]=
 		g_param_spec_string("license",
 							"License",
@@ -801,9 +891,28 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardPlugin:settings:
+	 *
+	 * The settings object of type #XfdashboardPluginSettings for this plugin.
+	 */
+	XfdashboardPluginProperties[PROP_SETTINGS]=
+		g_param_spec_object("settings",
+								"Settings",
+								"The plugin settings object of this plugin",
+								XFDASHBOARD_TYPE_PLUGIN_SETTINGS,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardPluginProperties);
 
 	/* Define signals */
+	/**
+	 * XfdashboardPlugin::enable:
+	 * @self: The plugin
+	 *
+	 * The ::enable signal is an action and when emitted it causes the plugin
+	 * at @self to get enabled.
+	 */
 	XfdashboardPluginSignals[ACTION_ENABLE]=
 		g_signal_new("enable",
 						G_TYPE_FROM_CLASS(klass),
@@ -815,6 +924,13 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 						G_TYPE_NONE,
 						0);
 
+	/**
+	 * XfdashboardPlugin::disable:
+	 * @self: The plugin
+	 *
+	 * The ::disable signal is an action and when emitted it causes the plugin
+	 * at @self to get disabled.
+	 */
 	XfdashboardPluginSignals[ACTION_DISABLE]=
 		g_signal_new("disable",
 						G_TYPE_FROM_CLASS(klass),
@@ -826,6 +942,16 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 						G_TYPE_NONE,
 						0);
 
+	/**
+	 * XfdashboardPlugin::configure:
+	 * @self: The plugin
+	 *
+	 * The ::configure signal is an action and when emitted it will let the plugin
+	 * at @self create any kind of object, usually an object derived from #GtkWidget,
+	 * to configure the settings of this plugin.
+	 *
+	 * Return value: A #GObject to use to configure this plugin.
+	 */
 	XfdashboardPluginSignals[ACTION_CONFIGURE]=
 		g_signal_new("configure",
 						G_TYPE_FROM_CLASS(klass),
@@ -863,6 +989,7 @@ static void xfdashboard_plugin_init(XfdashboardPlugin *self)
 	priv->author=NULL;
 	priv->copyright=NULL;
 	priv->license=NULL;
+	priv->settings=NULL;
 }
 
 
@@ -1211,4 +1338,19 @@ void xfdashboard_plugin_set_user_data_full(XfdashboardPlugin *self, gpointer inU
 
 	/* Set new destroy callback functions */
 	priv->userDataDestroyCallback=inDestroyCallback;
+}
+
+/**
+ * xfdashboard_plugin_get_settings:
+ * @self: A #XfdashboardPlugin
+ *
+ * Retrieve the settings object of plugin at @self.
+ *
+ * Return value: The setting object of plugin
+ */
+XfdashboardPluginSettings* xfdashboard_plugin_get_settings(XfdashboardPlugin *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
+
+	return(self->priv->settings);
 }
