@@ -63,6 +63,7 @@ libxfdashboard_la_headers = \
 	model.h \
 	outline-effect.h \
 	plugin.h \
+	plugin-settings.h \
 	plugins-manager.h \
 	popup-menu.h \
 	popup-menu-item.h \
@@ -143,6 +144,7 @@ libxfdashboard_la_SOURCES = \
 	model.c \
 	outline-effect.c \
 	plugin.c \
+	plugin-settings.c \
 	plugins-manager.c \
 	popup-menu.c \
 	popup-menu-item.c \

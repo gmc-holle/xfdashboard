@@ -702,6 +702,16 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSettingsProperties);
 
 	/* Define signals */
+	/**
+	 * XfdashboardSettings::changed:
+	 * @self: The settings object whose value or any of its plugin settings value has changed
+	 * @inPlugID: %NULL if a core setting has changed or the plugin ID whose value has changed
+	 * @inParamSpec: the #GParamSpec of the property which changed
+	 *
+	 * The ::changed signal is emitted when one of its properties or a property of
+	 * a plugin settings has its value set and the GObject::notify signal is emitted
+	 * as well.
+	 */
 	XfdashboardSettingsSignals[SIGNAL_CHANGED]=
 		g_signal_new("changed",
 						G_TYPE_FROM_CLASS(klass),
