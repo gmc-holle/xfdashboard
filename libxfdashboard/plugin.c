@@ -98,6 +98,10 @@ static GParamSpec* XfdashboardPluginProperties[PROP_LAST]={ 0, };
 /* Signals */
 enum
 {
+	/* Signals */
+	SIGNAL_LOADED,
+	SIGNAL_UNLOAD,
+
 	/* Actions */
 	ACTION_ENABLE,
 	ACTION_DISABLE,
@@ -542,6 +546,9 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 	/* Set state of plugin */
 	priv->state=XFDASHBOARD_PLUGIN_STATE_INITIALIZED;
 
+	/* Send signal that plugin was loaded */
+	g_signal_emit(self, XfdashboardPluginSignals[SIGNAL_LOADED], 0, NULL);
+
 	/* If we get here then loading and initializing plugin was successful */
 	XFDASHBOARD_DEBUG(self, PLUGINS,
 						"Loaded plugin '%s' successfully:\n  File: %s\n  Name: %s\n  Description: %s\n  Author: %s\n  Copyright: %s\n  License: %s",
@@ -567,6 +574,9 @@ static void _xfdashboard_plugin_unload(GTypeModule *inModule)
 
 	self=XFDASHBOARD_PLUGIN(inModule);
 	priv=self->priv;
+
+	/* Send signal that plugin will be unloaded */
+	g_signal_emit(self, XfdashboardPluginSignals[SIGNAL_UNLOAD], 0, NULL);
 
 	/* Disable plugin if it is still enabled */
 	if(priv->state==XFDASHBOARD_PLUGIN_STATE_ENABLED)
@@ -906,6 +916,42 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardPluginProperties);
 
 	/* Define signals */
+	/**
+	 * XfdashboardPlugin::loaded:
+	 * @self: The plugin
+	 *
+	 * The ::loaded signal is emitted when plugin file for plugin at @self
+	 * was loaded.
+	 */
+	XfdashboardPluginSignals[SIGNAL_LOADED]=
+		g_signal_new("loaded",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardPluginClass, loaded),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
+	/**
+	 * XfdashboardPlugin::unload:
+	 * @self: The plugin
+	 *
+	 * The ::unload signal is emitted just before the plugin module for plugin
+	 * @self will be unloaded.
+	 */
+	XfdashboardPluginSignals[SIGNAL_UNLOAD]=
+		g_signal_new("unload",
+						G_TYPE_FROM_CLASS(klass),
+						G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+						G_STRUCT_OFFSET(XfdashboardPluginClass, unload),
+						NULL,
+						NULL,
+						g_cclosure_marshal_VOID__VOID,
+						G_TYPE_NONE,
+						0);
+
 	/**
 	 * XfdashboardPlugin::enable:
 	 * @self: The plugin

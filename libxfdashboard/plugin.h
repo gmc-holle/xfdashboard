@@ -110,6 +110,9 @@ struct _XfdashboardPluginClass
 
 	/*< public >*/
 	/* Virtual functions */
+	void (*loaded)(XfdashboardPlugin *self);
+	void (*unload)(XfdashboardPlugin *self);
+
 	void (*enable)(XfdashboardPlugin *self);
 	void (*disable)(XfdashboardPlugin *self);
 
