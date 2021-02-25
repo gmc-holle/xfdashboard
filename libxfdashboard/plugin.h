@@ -110,7 +110,7 @@ struct _XfdashboardPluginClass
 
 	/*< public >*/
 	/* Virtual functions */
-	void (*loaded)(XfdashboardPlugin *self);
+	void (*loaded)(XfdashboardPlugin *self, gboolean inSuccess);
 	void (*unload)(XfdashboardPlugin *self);
 
 	void (*enable)(XfdashboardPlugin *self);
@@ -141,6 +141,8 @@ typedef enum /*< prefix=XFDASHBOARD_PLUGIN_ERROR >*/
 GType xfdashboard_plugin_get_type(void) G_GNUC_CONST;
 
 XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError **outError);
+
+gboolean xfdashboard_plugin_load(XfdashboardPlugin *self, GError **outError);
 
 const gchar* xfdashboard_plugin_get_id(XfdashboardPlugin *self);
 XfdashboardPluginFlag xfdashboard_plugin_get_flags(XfdashboardPlugin *self);

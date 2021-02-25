@@ -42,6 +42,7 @@ typedef enum /*< skip,prefix=XFDASHBOARD_PLUGIN_STATE >*/
 	XFDASHBOARD_PLUGIN_STATE_NONE=0,
 	XFDASHBOARD_PLUGIN_STATE_INITIALIZED,
 	XFDASHBOARD_PLUGIN_STATE_ENABLED,
+	XFDASHBOARD_PLUGIN_STATE_FAILED
 } XfdashboardPluginState;
 
 
@@ -60,6 +61,7 @@ struct _XfdashboardPluginPrivate
 
 	/* Instance related */
 	gchar						*filename;
+	gboolean					didLoad;
 	GModule						*module;
 	void 						(*initialize)(XfdashboardPlugin *self);
 	XfdashboardPluginState		state;
@@ -119,7 +121,7 @@ static guint XfdashboardPluginSignals[SIGNAL_LAST]={ 0, };
 /* Get display name for XFDASHBOARD_PLUGIN_STATE_* enum values */
 static const gchar* _xfdashboard_plugin_get_plugin_state_value_name(XfdashboardPluginState inState)
 {
-	g_return_val_if_fail(inState>XFDASHBOARD_PLUGIN_STATE_ENABLED, NULL);
+	g_return_val_if_fail(inState<=XFDASHBOARD_PLUGIN_STATE_FAILED, NULL);
 
 	/* Lookup name for value and return it */
 	switch(inState)
@@ -132,6 +134,9 @@ static const gchar* _xfdashboard_plugin_get_plugin_state_value_name(XfdashboardP
 
 		case XFDASHBOARD_PLUGIN_STATE_ENABLED:
 			return("enabled");
+
+		case XFDASHBOARD_PLUGIN_STATE_FAILED:
+			return("failed");
 
 		default:
 			break;
@@ -426,17 +431,14 @@ static void _xfdashboard_plugin_destroy_user_data(XfdashboardPlugin *self)
 /* IMPLEMENTATION: GTypeModule */
 
 /* Load and initialize plugin */
-static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
+static gboolean _xfdashboard_plugin_load_internal(XfdashboardPlugin *self)
 {
-	XfdashboardPlugin			*self;
 	XfdashboardPluginPrivate	*priv;
 	guint						signalID;
 	gulong						handlerID;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(inModule), FALSE);
-	g_return_val_if_fail(G_IS_TYPE_MODULE(inModule), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), FALSE);
 
-	self=XFDASHBOARD_PLUGIN(inModule);
 	priv=self->priv;
 
 	/* Reset last loading error if set */
@@ -463,7 +465,7 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 	if(priv->state!=XFDASHBOARD_PLUGIN_STATE_NONE)
 	{
 		priv->lastLoadingError=
-			g_strdup_printf("Bad state '%s' - expected '%s",
+			g_strdup_printf("Bad state '%s' - expected '%s'",
 							_xfdashboard_plugin_get_plugin_state_value_name(priv->state),
 							_xfdashboard_plugin_get_plugin_state_value_name(XFDASHBOARD_PLUGIN_STATE_NONE));
 		return(FALSE);
@@ -546,9 +548,6 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 	/* Set state of plugin */
 	priv->state=XFDASHBOARD_PLUGIN_STATE_INITIALIZED;
 
-	/* Send signal that plugin was loaded */
-	g_signal_emit(self, XfdashboardPluginSignals[SIGNAL_LOADED], 0, NULL);
-
 	/* If we get here then loading and initializing plugin was successful */
 	XFDASHBOARD_DEBUG(self, PLUGINS,
 						"Loaded plugin '%s' successfully:\n  File: %s\n  Name: %s\n  Description: %s\n  Author: %s\n  Copyright: %s\n  License: %s",
@@ -561,6 +560,26 @@ static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
 						priv->license ? priv->license : "");
 
 	return(TRUE);
+}
+
+static gboolean _xfdashboard_plugin_load(GTypeModule *inModule)
+{
+	XfdashboardPlugin			*self;
+	gboolean					loadResult;
+
+	g_return_val_if_fail(G_IS_TYPE_MODULE(inModule), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(inModule), FALSE);
+
+	self=XFDASHBOARD_PLUGIN(inModule);
+
+	/* Try to load plugin */
+	loadResult=_xfdashboard_plugin_load_internal(self);
+
+	/* Send signal that plugin was loaded successfully or not */
+	g_signal_emit(self, XfdashboardPluginSignals[SIGNAL_LOADED], 0, loadResult);
+
+	/* Return loading result */
+	return(loadResult);
 }
 
 /* Disable and unload plugin */
@@ -605,8 +624,11 @@ static void _xfdashboard_plugin_unload(GTypeModule *inModule)
 		priv->module=NULL;
 	}
 
-	/* Set state of plugin */
-	priv->state=XFDASHBOARD_PLUGIN_STATE_NONE;
+	/* Set state of plugin to uninitialzed if not in failed state */
+	if(priv->state!=XFDASHBOARD_PLUGIN_STATE_FAILED)
+	{
+		priv->state=XFDASHBOARD_PLUGIN_STATE_NONE;
+	}
 }
 
 /* IMPLEMENTATION: GObject */
@@ -919,9 +941,12 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 	/**
 	 * XfdashboardPlugin::loaded:
 	 * @self: The plugin
+	 * @inSuccess: State of loading plugin
 	 *
 	 * The ::loaded signal is emitted when plugin file for plugin at @self
-	 * was loaded.
+	 * was loaded. If @inSuccess is %TRUE then loading and initializing
+	 * the plugin at @self was successful but if any error occured it is
+	 * set to %FALSE.
 	 */
 	XfdashboardPluginSignals[SIGNAL_LOADED]=
 		g_signal_new("loaded",
@@ -930,9 +955,10 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 						G_STRUCT_OFFSET(XfdashboardPluginClass, loaded),
 						NULL,
 						NULL,
-						g_cclosure_marshal_VOID__VOID,
+						g_cclosure_marshal_VOID__BOOLEAN,
 						G_TYPE_NONE,
-						0);
+						1,
+						G_TYPE_BOOLEAN);
 
 	/**
 	 * XfdashboardPlugin::unload:
@@ -1021,6 +1047,7 @@ static void xfdashboard_plugin_init(XfdashboardPlugin *self)
 
 	/* Set up default values */
 	priv->filename=NULL;
+	priv->didLoad=FALSE;
 	priv->module=NULL;
 	priv->initialize=NULL;
 	priv->state=XFDASHBOARD_PLUGIN_STATE_NONE;
@@ -1052,20 +1079,21 @@ GQuark xfdashboard_plugin_error_quark(void)
 /**
  * xfdashboard_plugin_new:
  *
- * Creates a new uninitialized plugin instance of type #XfdashboardPlugin
- * which will be loaded from path at @inPluginFilename. The plugin ID is
- * retrieved from the basename of plugin's path, i.e. the file name without
- * the absolute path and without file extension.
+ * Creates a new unloaded and uninitialized plugin instance of type
+ * #XfdashboardPlugin which will be loaded from path at @inPluginFilename.
+ * The plugin ID is retrieved from the basename of plugin's path, i.e.
+ * the file name without the absolute path and without file extension.
  *
  * The plugin instance created is uninitialized, i.e. it is neither loaded
  * nor initialized. This has to be done after successful creation by calling
+ * xfdashboard_plugin_load() and then it can be enabled by calling
  * xfdashboard_plugin_enable().
  *
  * In case of errors %NULL will be returned and the error is set at
  * @outError.
  *
- * Return value: (transfer full): The instance of #XfdashboardPlugin.
- *   Use g_object_unref() when done.
+ * Return value: (transfer full): The unloaded and uninitalized instance of
+ *   #XfdashboardPlugin. Use g_object_unref() when done.
  */
 XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError **outError)
 {
@@ -1074,7 +1102,7 @@ XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError 
 	gchar			*pluginID;
 
 	g_return_val_if_fail(inPluginFilename && *inPluginFilename, NULL);
-	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
+	g_return_val_if_fail(outError==NULL || *outError==NULL, NULL);
 
 	/* Get plugin ID from filename */
 	pluginBasename=g_filename_display_basename(inPluginFilename);
@@ -1121,36 +1149,88 @@ XfdashboardPlugin* xfdashboard_plugin_new(const gchar *inPluginFilename, GError 
 		return(NULL);
 	}
 
-	/* Load plugin */
-	if(!g_type_module_use(G_TYPE_MODULE(plugin)))
-	{
-		/* Set error */
-		g_set_error(outError,
-					XFDASHBOARD_PLUGIN_ERROR,
-					XFDASHBOARD_PLUGIN_ERROR_ERROR,
-					"%s",
-					_xfdashboard_plugin_get_loading_error(XFDASHBOARD_PLUGIN(plugin)));
-
-		/* Release allocated resources */
-		if(pluginID) g_free(pluginID);
-		if(pluginBasename) g_free(pluginBasename);
-
-		/* At this point we return NULL to indicate failure although the object
-		 * instance (subclassing GTypeModule) now exists and it was tried to
-		 * use it (via g_type_module_use). As describe in GObject documentation
-		 * the object must not be unreffed via g_object_unref() but we also should
-		 * not call g_type_module_unuse() because loading failed and the reference
-		 * counter was not increased.
-		 */
-		return(NULL);
-	}
-
 	/* Release allocated resources */
 	if(pluginID) g_free(pluginID);
 	if(pluginBasename) g_free(pluginBasename);
 
 	/* Plugin loaded so return it */
 	return(XFDASHBOARD_PLUGIN(plugin));
+}
+
+/**
+ * xfdashboard_plugin_load:
+ *
+ * Loads the uninitialized plugin instance of type #XfdashboardPlugin
+ * specified at @self which was set up by calling xfdashboard_plugin_new().
+ *
+ * If loading the plugin instance was successful, %TRUE will be returned
+ * and the plugin can be enabled by calling xfdashboard_plugin_enable().
+ *
+ * In case of errors %FALSE will be returned and the error is set at
+ * @outError.
+ *
+ * Return value: %TRUE if loading plugin was successful otherwise %FALSE
+ */
+gboolean xfdashboard_plugin_load(XfdashboardPlugin *self, GError **outError)
+{
+	XfdashboardPluginPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), FALSE);
+	g_return_val_if_fail(outError==NULL || *outError==NULL, FALSE);
+
+	priv=self->priv;
+
+	/* Check if we tried already to load the plugin. If so check plugin
+	 * state to return either success or failure.
+	 */
+	if(priv->didLoad)
+	{
+		/* If plugin is in failed state set error and return FALSE */
+		if(priv->state==XFDASHBOARD_PLUGIN_STATE_FAILED)
+		{
+			/* Set error */
+			g_set_error(outError,
+						XFDASHBOARD_PLUGIN_ERROR,
+						XFDASHBOARD_PLUGIN_ERROR_ERROR,
+						"%s",
+						_xfdashboard_plugin_get_loading_error(self));
+
+			/* Return FALSE to indicate error */
+			return(FALSE);
+		}
+
+		/* If we get here the previous load was successful, return TRUE */
+		return(TRUE);
+	}
+
+	/* Set flag that at least once it was tried to load this plugin */
+	priv->didLoad=TRUE;
+
+	/* Load plugin */
+	if(!g_type_module_use(G_TYPE_MODULE(self)))
+	{
+		/* Set error */
+		g_set_error(outError,
+					XFDASHBOARD_PLUGIN_ERROR,
+					XFDASHBOARD_PLUGIN_ERROR_ERROR,
+					"%s",
+					_xfdashboard_plugin_get_loading_error(self));
+
+		/* At this point we return FALSE to indicate failure although the object
+		 * instance (subclassing GTypeModule) now exists and it was tried to
+		 * use it (via g_type_module_use). As describe in GObject documentation
+		 * the object must not be unreffed via g_object_unref() but we also should
+		 * not call g_type_module_unuse() because loading failed and the reference
+		 * counter was not increased. But we set plugin state to failed to prevent
+		 * any use of this plugin.
+		 */
+		priv->state=XFDASHBOARD_PLUGIN_STATE_FAILED;
+
+		return(FALSE);
+	}
+
+	/* Plugin loaded successfully so return TRUE */
+	return(TRUE);
 }
 
 /**
@@ -1208,9 +1288,10 @@ void xfdashboard_plugin_set_info(XfdashboardPlugin *self,
 	/* Check that plugin is not initialized already */
 	if(priv->state!=XFDASHBOARD_PLUGIN_STATE_NONE)
 	{
-		g_critical("Setting plugin information for plugin '%s' at path '%s' failed: Plugin is already initialized",
+		g_critical("Setting plugin information for plugin '%s' at path '%s' failed: Plugin has state '%s'",
 					priv->id ? priv->id : "Unknown",
-					priv->filename);
+					priv->filename,
+					_xfdashboard_plugin_get_plugin_state_value_name(priv->state));
 		return;
 	}
 

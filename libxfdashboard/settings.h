@@ -31,6 +31,7 @@
 #include <glib-object.h>
 
 #include <libxfdashboard/applications-search-provider.h>
+#include <libxfdashboard/plugin.h>
 
 G_BEGIN_DECLS
 
@@ -81,6 +82,8 @@ struct _XfdashboardSettingsClass
 
 /* Public API */
 GType xfdashboard_settings_get_type(void) G_GNUC_CONST;
+
+void xfdashboard_settings_register_plugin(XfdashboardSettings *self, XfdashboardPlugin *inPlugin);
 
 const gchar* xfdashboard_settings_get_theme(XfdashboardSettings *self);
 void xfdashboard_settings_set_theme(XfdashboardSettings *self, const gchar *inTheme);

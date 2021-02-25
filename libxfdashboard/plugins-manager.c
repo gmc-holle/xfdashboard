@@ -221,7 +221,10 @@ static gboolean _xfdashboard_plugins_manager_load_plugin(XfdashboardPluginsManag
 		return(FALSE);
 	}
 
-	/* Create and load plugin */
+	/* Create plugin and register it at core settings before loading it
+	 * to give core settings the change to handle the "loaded" signal
+	 * of the plugin.
+	 */
 	plugin=xfdashboard_plugin_new(path, &error);
 	if(!plugin)
 	{
@@ -231,6 +234,21 @@ static gboolean _xfdashboard_plugins_manager_load_plugin(XfdashboardPluginsManag
 		/* Return error */
 		return(FALSE);
 	}
+
+	xfdashboard_settings_register_plugin(priv->settings, plugin);
+
+	if(!xfdashboard_plugin_load(plugin, &error))
+	{
+		/* Propagate error */
+		g_propagate_error(outError, error);
+
+		/* Release allocated resources */
+		g_object_unref(plugin);
+
+		/* Return error */
+		return(FALSE);
+	}
+
 
 	/* Enable plugin if early initialization is requested by plugin */
 	if(xfdashboard_plugin_get_flags(plugin) & XFDASHBOARD_PLUGIN_FLAG_EARLY_INITIALIZATION)
