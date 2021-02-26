@@ -175,6 +175,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Be aware that this is a <u>workaround</u> and your minimized windows could stay unminimized, change workspace etc."
 msgstr ""
+"Gaituta dagoenean minimizatutako leihoetarako konponbide bat saiatuko da leiho hauen irudiak eskuratzen hauek berrezartzen eta berriro minimizatzen.\n"
+"\n"
+"<b>OHARRA:</b>Kontuan izan hau <u>konponbide</u> bat dela eta zure minimizatutako leihoak minimizatu gabe mantendu daitezkeela, lan-eremua aldatu etab."
 
 #: ../data/data/preferences.ui.h:22
 msgid ""
@@ -182,6 +185,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> Only change this value from 'immediate' to other value if your graphics card, driver or system is too slow to create the window contents immediately. You have to try each value to find the one fitting your system."
 msgstr ""
+"Balio honek leihoaren edukia zeinen azkar sortu behako litzatekeen zehazten du. 'Berehala' balioak xfdashboardi edukia eskatutakoan sortzeko esaten dio, beste balioek ilara bat sortuko dute eta balioak ilara zeinen azkar prozesatuko den zehazten du.\n"
+"\n"
+"<b>OHARRA:</b> Balio hau 'Berehala'-tik aldatu zure txartel grafikoa, driverra edo sistema leiho edukia berehala sortzeko motelegia denean soilik. Balio bakoitza probatu behar duzu zure sistemari hobekien doakiona aurkitzeko."
 
 #: ../data/data/preferences.ui.h:25
 msgid "Priority of window content creation"
@@ -229,6 +235,8 @@ msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
 msgstr ""
+"Gaituta dagoenean \"aplikazio guztiak\" menu bat ikusiko da aplikazioen "
+"ikuspegian instalatutako aplikazio guztiekin."
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
@@ -244,6 +252,10 @@ msgid ""
 "view will change the active workspace. This behaviour is the same as in "
 "workspace selector."
 msgstr ""
+"Gaituta dagoenean leihoen ikuspegian egindako edozein desplazamendu "
+"gertakari, saguaren erdiko gurpila gora eta behera mugitzea bezala, lan-"
+"eremu aktiboa aldatuko du. Portaera hau lan-eremuen hautatzailearen berdina "
+"da."
 
 #: ../data/data/preferences.ui.h:40
 msgid "<b>Search view:</b>"
@@ -254,6 +266,8 @@ msgid ""
 "Sets the interval the search should be delayed by after the first character "
 "was entered."
 msgstr ""
+"Lehen letra idazten denetik bilaketa atzeratu beharko litzatekeen denbora "
+"tartea zehazten du."
 
 #: ../data/data/preferences.ui.h:42
 msgid "Delay initial search interval:"
@@ -425,6 +439,8 @@ msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
 msgstr ""
+"Ikusgaitasuna txandakatzen du exekutatzen ari den instantzia deabru moduan "
+"hasi bazen, bestela ez-deabru moduan exekutatzen ari den instantzia ixten du"
 
 #: ../libxfdashboard/application.c:580
 msgid "The ID of view to switch to on startup or resume"
