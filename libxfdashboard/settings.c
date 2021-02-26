@@ -161,10 +161,6 @@ struct _XfdashboardSettingsPluginEntry
 {
 	XfdashboardPlugin				*plugin;
 	XfdashboardPluginSettings		*pluginSettings;
-	guint							loadedSignalID;
-	guint							enabledSignalID;
-	guint							disabledSignalID;
-	guint							unloadSignalID;
 };
 
 /* Free plugin settings entry */
@@ -180,292 +176,10 @@ g_message("%s: Unregistered plugin '%s' for plugin settings at settings",
 			inData->plugin ? xfdashboard_plugin_get_id(inData->plugin) : "<unknown>");
 
 	/* Release allocated resources */
-	if(inData->plugin)
-	{
-		/* Disconnect signal handlers */
-		if(inData->loadedSignalID) g_signal_handler_disconnect(inData->plugin, inData->loadedSignalID);
-		if(inData->enabledSignalID) g_signal_handler_disconnect(inData->plugin, inData->enabledSignalID);
-		if(inData->disabledSignalID) g_signal_handler_disconnect(inData->plugin, inData->disabledSignalID);
-		if(inData->unloadSignalID) g_signal_handler_disconnect(inData->plugin, inData->unloadSignalID);
-	}
-
 	if(inData->pluginSettings) g_object_unref(inData->pluginSettings);
 
 	/* Release entry */
 	g_free(inData);
-}
-
-/* Signal handler called when a plugin will be enabled */
-static void _xfdashboard_settings_on_plugin_enabled(XfdashboardSettings *self, XfdashboardPlugin *inPlugin)
-{
-	XfdashboardSettingsPrivate			*priv;
-	GList								*iter;
-	GList								*foundIter;
-	XfdashboardSettingsPluginEntry		*entry;
-	XfdashboardPluginSettings			*settings;
-
-	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
-	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(inPlugin));
-
-	priv=self->priv;
-	foundIter=NULL;
-
-	XFDASHBOARD_DEBUG(self, PLUGINS,
-						"Registered plugin '%s' was enabled",
-						xfdashboard_plugin_get_id(inPlugin));
-g_message("%s: Registered plugin '%s' was enabled",
-			__FUNCTION__,
-			xfdashboard_plugin_get_id(inPlugin));
-
-	/* Find plugin entry in registered plugin list */
-	for(iter=priv->plugins; iter && !foundIter; iter=g_list_next(iter))
-	{
-		/* Get iterated registered plugin */
-		entry=(XfdashboardSettingsPluginEntry*)iter->data;
-		if(!entry) continue;
-
-		/* Check if iterated registered plugin is the one loaded.
-		 * If so stop further iterating.
-		 */
-		if(entry->plugin==inPlugin) foundIter=iter;
-	}
-
-	if(!foundIter)
-	{
-		g_critical("Registered plugin '%s' enabled was not found in list", xfdashboard_plugin_get_id(inPlugin));
-		return;
-	}
-
-	/* Get found entry */
-	entry=(XfdashboardSettingsPluginEntry*)foundIter->data;
-
-	/* Should not happen but if any plugin settings for this plugin
-	 * is still registered, release it now.
-	 */
-	if(entry->pluginSettings)
-	{
-		g_critical("Settings for plugin '%s' were still registered but plugin was just enabled now",
-					xfdashboard_plugin_get_id(entry->plugin));
-
-		/* Release plugin settings now */
-		g_object_unref(entry->pluginSettings);
-		entry->pluginSettings=NULL;
-	}
-
-	/* Get settings of plugin loaded */
-	settings=xfdashboard_plugin_get_settings(entry->plugin);
-	if(settings)
-	{
-		entry->pluginSettings=g_object_ref(settings);
-		XFDASHBOARD_DEBUG(self, PLUGINS,
-							"Plugin '%s' was enabled and plugin settings %s@%p registered",
-							xfdashboard_plugin_get_id(entry->plugin),
-							G_OBJECT_TYPE_NAME(entry->pluginSettings), entry->pluginSettings);
-g_message("%s: Plugin '%s' was enabled and plugin settings %s@%p registered",
-			__FUNCTION__,
-			xfdashboard_plugin_get_id(entry->plugin),
-			G_OBJECT_TYPE_NAME(entry->pluginSettings), entry->pluginSettings);
-	}
-}
-
-/* Signal handler called when a plugin will be disabled */
-static void _xfdashboard_settings_on_plugin_disabled(XfdashboardSettings *self, XfdashboardPlugin *inPlugin)
-{
-	XfdashboardSettingsPrivate			*priv;
-	GList								*iter;
-	GList								*foundIter;
-	XfdashboardSettingsPluginEntry		*entry;
-
-	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
-	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(inPlugin));
-
-	priv=self->priv;
-	foundIter=NULL;
-
-	XFDASHBOARD_DEBUG(self, PLUGINS,
-						"Registered plugin '%s' was disabled",
-						xfdashboard_plugin_get_id(inPlugin));
-g_message("%s: Registered plugin '%s' was disabled",
-			__FUNCTION__,
-			xfdashboard_plugin_get_id(inPlugin));
-
-	/* Find plugin entry in registered plugin list */
-	for(iter=priv->plugins; iter && !foundIter; iter=g_list_next(iter))
-	{
-		/* Get iterated registered plugin */
-		entry=(XfdashboardSettingsPluginEntry*)iter->data;
-		if(!entry) continue;
-
-		/* Check if iterated registered plugin is the one loaded.
-		 * If so stop further iterating.
-		 */
-		if(entry->plugin==inPlugin) foundIter=iter;
-	}
-
-	if(!foundIter)
-	{
-		g_critical("Registered plugin '%s' disabled was not found in list", xfdashboard_plugin_get_id(inPlugin));
-		return;
-	}
-
-	/* Get found entry */
-	entry=(XfdashboardSettingsPluginEntry*)foundIter->data;
-
-	/* If we have got a plugin settings for this plugin then release it now */
-	if(entry->pluginSettings)
-	{
-		XFDASHBOARD_DEBUG(self, PLUGINS,
-							"Plugin '%s' was disabled so releasing plugin settings %s@%p",
-							xfdashboard_plugin_get_id(entry->plugin),
-							G_OBJECT_TYPE_NAME(entry->pluginSettings), entry->pluginSettings);
-g_message("%s: Plugin '%s' was disabled so releasing plugin settings %s@%p",
-			__FUNCTION__,
-			xfdashboard_plugin_get_id(entry->plugin),
-			G_OBJECT_TYPE_NAME(entry->pluginSettings), entry->pluginSettings);
-
-		/* Release plugin settings now */
-		g_object_unref(entry->pluginSettings);
-		entry->pluginSettings=NULL;
-	}
-}
-
-/* Signal handler called when a plugin will be unloaded */
-static void _xfdashboard_settings_on_plugin_unload(XfdashboardSettings *self, XfdashboardPlugin *inPlugin)
-{
-	XfdashboardSettingsPrivate			*priv;
-	GList								*iter;
-	GList								*foundIter;
-	XfdashboardSettingsPluginEntry		*entry;
-
-	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
-	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(inPlugin));
-
-	priv=self->priv;
-	foundIter=NULL;
-
-	XFDASHBOARD_DEBUG(self, PLUGINS,
-						"Registered plugin '%s' will be unloaded",
-						xfdashboard_plugin_get_id(inPlugin));
-g_message("%s: Registered plugin '%s' will be unloaded",
-			__FUNCTION__,
-			xfdashboard_plugin_get_id(inPlugin));
-
-	/* Find plugin entry in registered plugin list */
-	for(iter=priv->plugins; iter && !foundIter; iter=g_list_next(iter))
-	{
-		/* Get iterated registered plugin */
-		entry=(XfdashboardSettingsPluginEntry*)iter->data;
-		if(!entry) continue;
-
-		/* Check if iterated registered plugin is the one loaded.
-		 * If so stop further iterating.
-		 */
-		if(entry->plugin==inPlugin) foundIter=iter;
-	}
-
-	if(!foundIter)
-	{
-		g_critical("Registered plugin '%s' going to be unloaded was not found in list", xfdashboard_plugin_get_id(inPlugin));
-		return;
-	}
-
-	/* Get found entry */
-	entry=(XfdashboardSettingsPluginEntry*)foundIter->data;
- 
-	/* Remove from list */
-	priv->plugins=g_list_remove_link(priv->plugins, foundIter);
-
-	/* Release allocated resources */
-	XFDASHBOARD_DEBUG(self, PLUGINS,
-						"Removing plugin '%s' going to be unloaded from list",
-						xfdashboard_plugin_get_id(inPlugin));
-	_xfdashboard_settings_plugin_entry_free(entry);
-	g_list_free(foundIter);
-}
-
-/* Signal handler called when a plugin was loaded */
-static void _xfdashboard_settings_on_plugin_loaded(XfdashboardSettings *self, gboolean inSuccess, XfdashboardPlugin *inPlugin)
-{
-	XfdashboardSettingsPrivate			*priv;
-	GList								*iter;
-	GList								*foundIter;
-	XfdashboardSettingsPluginEntry		*entry;
-
-	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
-	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(inPlugin));
-
-	priv=self->priv;
-	foundIter=NULL;
-
-	XFDASHBOARD_DEBUG(self, PLUGINS,
-						"Registered plugin '%s' was loaded %s",
-						xfdashboard_plugin_get_id(inPlugin),
-						inSuccess ? "successfully" : "unsuccessfully");
-g_message("%s: Registered plugin '%s' was loaded %s",
-			__FUNCTION__,
-			xfdashboard_plugin_get_id(inPlugin),
-			inSuccess ? "successfully" : "unsuccessfully");
-
-	/* Find plugin entry in registered plugin list */
-	for(iter=priv->plugins; iter && !foundIter; iter=g_list_next(iter))
-	{
-		/* Get iterated registered plugin */
-		entry=(XfdashboardSettingsPluginEntry*)iter->data;
-		if(!entry) continue;
-
-		/* Check if iterated registered plugin is the one loaded.
-		 * If so stop further iterating.
-		 */
-		if(entry->plugin==inPlugin) foundIter=iter;
-	}
-
-	if(!foundIter)
-	{
-		g_critical("Registered plugin '%s' loaded was not found in list", xfdashboard_plugin_get_id(inPlugin));
-		return;
-	}
-
-	/* Get found entry */
-	entry=(XfdashboardSettingsPluginEntry*)foundIter->data;
- 
-	/* If loading plugin failed, remove it from list */
-	if(!inSuccess)
-	{
-		/* Remove from list */
-		priv->plugins=g_list_remove_link(priv->plugins, foundIter);
-
-		/* Release allocated resources */
-		_xfdashboard_settings_plugin_entry_free(entry);
-		g_list_free(foundIter);
-
-		return;
-	}
-
-	/* If we get here loading plugin was successful, so connect other signals */
-	entry->enabledSignalID=g_signal_connect_swapped(entry->plugin,
-													"enable",
-													G_CALLBACK(_xfdashboard_settings_on_plugin_enabled),
-													self);
-	entry->disabledSignalID=g_signal_connect_swapped(entry->plugin,
-													"disable",
-													G_CALLBACK(_xfdashboard_settings_on_plugin_disabled),
-													self);
-	entry->unloadSignalID=g_signal_connect_swapped(entry->plugin,
-													"unload",
-													G_CALLBACK(_xfdashboard_settings_on_plugin_unload),
-													self);
-
-	/* Disconnect signal as plugin was loaded */
-	if(entry->loadedSignalID)
-	{
-		g_signal_handler_disconnect(entry->plugin, entry->loadedSignalID);
-		entry->loadedSignalID=0;
-
-		XFDASHBOARD_DEBUG(self, PLUGINS,
-							"Disconnected 'loaded' signal handler for registered plugin '%s'",
-							xfdashboard_plugin_get_id(inPlugin));
-g_message("%s: Disconnected 'loaded' signal handler for registered plugin '%s'", __FUNCTION__, xfdashboard_plugin_get_id(inPlugin));
-	}
 }
 
 
@@ -1093,20 +807,17 @@ static void xfdashboard_settings_init(XfdashboardSettings *self)
 /* IMPLEMENTATION: Public API */
 
 /**
- * xfdashboard_settings_register_plugin:
+ * xfdashboard_settings_add_plugin:
  * @self: A #XfdashboardSettings
- * @inPlugin: The plugin to register at this settings
+ * @inPlugin: The plugin and its plugin settings to add to this settings
  *
- * Registers the plugin at @inPlugin at settings at @self. It will connect to the
- * XfdashboardPlugin::loaded and Xfdashboard::unload signals at plugin at @inPlugin
- * to add or remove plugin settings objet of the plugins at this settings object.
- * Because of this the plugin must be registered at this settings object before
- * it is loaded.
+ * Adds the plugin at @inPlugin with its plugin settings at settings at @self.
  */
-void xfdashboard_settings_register_plugin(XfdashboardSettings *self, XfdashboardPlugin *inPlugin)
+void xfdashboard_settings_add_plugin(XfdashboardSettings *self, XfdashboardPlugin *inPlugin)
 {
 	XfdashboardSettingsPrivate		*priv;
 	GList							*iter;
+	XfdashboardPluginSettings		*settings;
 	XfdashboardSettingsPluginEntry	*entry;
 
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
@@ -1133,25 +844,82 @@ void xfdashboard_settings_register_plugin(XfdashboardSettings *self, Xfdashboard
 		}
 	}
 
+	/* Get settings of plugin loaded */
+	settings=xfdashboard_plugin_get_settings(inPlugin);
+
 	/* If we get here the plugin is not registered yet, so set up plugin entry,
 	 * connect signals and add to list. Do not take a reference on plugin as
 	 * it will prevent the plugin to get unloaded.
 	 */
 	entry=g_new0(XfdashboardSettingsPluginEntry, 1);
 	entry->plugin=inPlugin;
-	entry->loadedSignalID=g_signal_connect_swapped(entry->plugin,
-													"loaded",
-													G_CALLBACK(_xfdashboard_settings_on_plugin_loaded),
-													self);
+	if(settings) entry->pluginSettings=g_object_ref(settings);
 
+	/* Add new plugin and its plugin settings to list */ 
 	priv->plugins=g_list_prepend(priv->plugins, entry);
 
 	XFDASHBOARD_DEBUG(self, PLUGINS,
-						"Registered plugin '%s' for plugin settings at settings",
-						xfdashboard_plugin_get_id(inPlugin));
-g_message("%s: Registered plugin '%s' for plugin settings at settings",
+						"Added plugin '%s' with plugin settings %s to settings",
+						xfdashboard_plugin_get_id(inPlugin),
+						settings ? G_OBJECT_TYPE_NAME(settings) : "<null>");
+g_message("%s: Added plugin '%s' with plugin settings %s to settings",
 			__FUNCTION__,
-			xfdashboard_plugin_get_id(inPlugin));
+			xfdashboard_plugin_get_id(inPlugin),
+			settings ? G_OBJECT_TYPE_NAME(settings) : "<null>");
+}
+
+/**
+ * xfdashboard_settings_remove_plugin:
+ * @self: A #XfdashboardSettings
+ * @inPlugin: The plugin with its plugin settings to remove from this settings
+ *
+ * Removes the plugin at @inPlugin with its plugin settings from settings at @self.
+ */
+void xfdashboard_settings_remove_plugin(XfdashboardSettings *self, XfdashboardPlugin *inPlugin)
+{
+	XfdashboardSettingsPrivate		*priv;
+	GList							*iter;
+	XfdashboardSettingsPluginEntry	*entry;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(inPlugin));
+
+	priv=self->priv;
+
+	/* Lookup entries matching requested plugin to remove */
+	iter=priv->plugins;
+	while(iter)
+	{
+		GList						*currentIter;
+
+		/* Get next entry to iterate */
+		currentIter=iter;
+		iter=g_list_next(iter);
+
+		/* Get iterated registered plugin */
+		entry=(XfdashboardSettingsPluginEntry*)currentIter->data;
+		if(!entry) continue;
+
+		/* If this entry matches the requested plugin, remove it */
+		if(entry->plugin==inPlugin ||
+			g_strcmp0(xfdashboard_plugin_get_id(entry->plugin), xfdashboard_plugin_get_id(inPlugin))==0)
+		{
+			/* Remove entry from list */
+			priv->plugins=g_list_remove(priv->plugins, currentIter);
+
+			/* Release entry itself */
+			XFDASHBOARD_DEBUG(self, PLUGINS,
+								"Removed plugin '%s' with plugin settings %s from settings",
+								xfdashboard_plugin_get_id(inPlugin),
+								entry->pluginSettings ? G_OBJECT_TYPE_NAME(entry->pluginSettings) : "<null>");
+g_message("%s: Removed plugin '%s' with plugin settings %s from settings",
+			__FUNCTION__,
+			xfdashboard_plugin_get_id(inPlugin),
+			entry->pluginSettings ? G_OBJECT_TYPE_NAME(entry->pluginSettings) : "<null>");
+			_xfdashboard_settings_plugin_entry_free(entry);
+			g_list_free(currentIter);
+		}
+	}
 }
 
 /**

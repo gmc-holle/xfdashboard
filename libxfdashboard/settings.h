@@ -83,7 +83,8 @@ struct _XfdashboardSettingsClass
 /* Public API */
 GType xfdashboard_settings_get_type(void) G_GNUC_CONST;
 
-void xfdashboard_settings_register_plugin(XfdashboardSettings *self, XfdashboardPlugin *inPlugin);
+void xfdashboard_settings_add_plugin(XfdashboardSettings *self, XfdashboardPlugin *inPlugin);
+void xfdashboard_settings_remove_plugin(XfdashboardSettings *self, XfdashboardPlugin *inPlugin);
 
 const gchar* xfdashboard_settings_get_theme(XfdashboardSettings *self);
 void xfdashboard_settings_set_theme(XfdashboardSettings *self, const gchar *inTheme);
