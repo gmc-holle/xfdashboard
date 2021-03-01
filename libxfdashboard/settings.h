@@ -77,6 +77,9 @@ struct _XfdashboardSettingsClass
 	/*< public >*/
 	/* Virtual functions */
 	void (*changed)(XfdashboardSettings *self, const gchar *inPluginID, GParamSpec *inParamSpec);
+
+	void (*plugin_added)(XfdashboardSettings *self, XfdashboardPlugin *inPlugin);
+	void (*plugin_removed)(XfdashboardSettings *self, XfdashboardPlugin *inPlugin);
 };
 
 
@@ -85,6 +88,7 @@ GType xfdashboard_settings_get_type(void) G_GNUC_CONST;
 
 void xfdashboard_settings_add_plugin(XfdashboardSettings *self, XfdashboardPlugin *inPlugin);
 void xfdashboard_settings_remove_plugin(XfdashboardSettings *self, XfdashboardPlugin *inPlugin);
+XfdashboardPlugin* xfdashboard_settings_lookup_plugin_by_id(XfdashboardSettings *self, const gchar *inPluginID);
 
 const gchar* xfdashboard_settings_get_theme(XfdashboardSettings *self);
 void xfdashboard_settings_set_theme(XfdashboardSettings *self, const gchar *inTheme);

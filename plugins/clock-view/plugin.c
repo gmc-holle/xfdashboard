@@ -38,28 +38,6 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self);
 
 /* IMPLEMENTATION: XfdashboardPlugin */
 
-#define CONFIGURATION_MAPPING				"xfdashboard-plugin-clock_view-configuration-mapping"
-
-typedef struct _PluginWidgetSettingsMap		PluginWidgetSettingsMap;
-struct _PluginWidgetSettingsMap
-{
-	XfdashboardClockViewSettings	*settings;
-	gchar							*property;
-	guint							settingsPropertyChangedSignalID;
-};
-
-/* Free mapping data */
-static void _plugin_widget_settings_map_free(PluginWidgetSettingsMap *inData)
-{
-	g_return_if_fail(inData);
-
-	/* Release allocated resources */
-	if(inData->settingsPropertyChangedSignalID) g_signal_handler_disconnect(inData->settings, inData->settingsPropertyChangedSignalID);
-	if(inData->property) g_free(inData->property);
-	if(inData->settings) g_object_unref(inData->settings);
-	g_free(inData);
-}
-
 /* Color has changed at settings */
 static void _plugin_on_settings_color_change(GObject *inObject,
 												GParamSpec *inSpec,
@@ -99,9 +77,13 @@ static void _plugin_on_color_button_color_chosen(GtkColorButton *inButton,
 {
 	GdkRGBA							widgetColor;
 	ClutterColor					settingsColor;
-	PluginWidgetSettingsMap			*mapping;
+	const gchar						*property;
+	XfdashboardClockViewSettings	*settings;
 
 	g_return_if_fail(GTK_IS_COLOR_BUTTON(inButton));
+	g_return_if_fail(inUserData);
+
+	property=(const gchar*)inUserData;
 
 	/* Get color from color button */
 #if GTK_CHECK_VERSION(3, 4, 0)
@@ -117,8 +99,30 @@ static void _plugin_on_color_button_color_chosen(GtkColorButton *inButton,
 	settingsColor.alpha=MIN(255, (gint)(widgetColor.alpha*255.0f));
 
 	/* Set converted color at settings */
-	mapping=(PluginWidgetSettingsMap*)g_object_get_data(G_OBJECT(inButton), CONFIGURATION_MAPPING);
-	if(mapping) g_object_set(G_OBJECT(mapping->settings), mapping->property, &settingsColor, NULL);
+	settings=xfdashboard_clock_view_settings_new();
+	g_object_set(settings, property, &settingsColor, NULL);
+	g_object_unref(settings);
+}
+
+/* A color button is going to be destroyed */
+static void _plugin_on_widget_value_destroy(GtkWidget *inWidget,
+											gpointer inUserData)
+{
+	XfdashboardClockViewSettings	*settings;
+	guint							signalID;
+
+	g_return_if_fail(GTK_IS_WIDGET(inWidget));
+	g_return_if_fail(inUserData);
+
+	signalID=GPOINTER_TO_UINT(inUserData);
+
+	/* Disconnect signal from setting as the widget where to update
+	 * the updated settings value at will be destroyed. So it will
+	 * not exist anymore when the signal handler is called.
+	 */
+	settings=xfdashboard_clock_view_settings_new();
+	g_signal_handler_disconnect(settings, signalID);
+	g_object_unref(settings);
 }
 
 /* Set up color button, e.g. set initial color from settings, connect signals
@@ -133,19 +137,10 @@ static void _plugin_configure_setup_color_button(GtkColorButton *inButton,
 	GdkRGBA							widgetColor;
 	gchar							*signalName;
 	guint							signalID;
-	PluginWidgetSettingsMap			*mapping;
 
 	g_return_if_fail(GTK_IS_COLOR_BUTTON(inButton));
 	g_return_if_fail(XFDASHBOARD_IS_CLOCK_VIEW_SETTINGS(inSettings));
 	g_return_if_fail(inProperty && *inProperty);
-
-	/* Create data for later use at color button */
-	mapping=g_new0(PluginWidgetSettingsMap,1);
-	if(!mapping)
-	{
-		g_critical("Cannot allocate memory for mapping");
-		return;
-	}
 
 	/* Get current color from settings */
 	g_object_get(G_OBJECT(inSettings), inProperty, &settingsColor, NULL);
@@ -163,11 +158,15 @@ static void _plugin_configure_setup_color_button(GtkColorButton *inButton,
 	gtk_color_button_set_rgba(inButton, &widgetColor);
 #endif
 
-	/* Connect signal to store color of new one was chosen at color button */
+	/* Connect signal to store color of new one was chosen at color button.
+	 * We connect to "destroy" signal of widget to release the signal handler
+	 * on settings object which will survive and will try to work on the
+	 * widget just being destroyed.
+	 */
 	g_signal_connect(inButton,
 						"color-set",
 						G_CALLBACK(_plugin_on_color_button_color_chosen),
-						NULL);
+						(gpointer)inProperty);
 
 	signalName=g_strdup_printf("notify::%s", inProperty);
 	signalID=g_signal_connect(inSettings,
@@ -175,14 +174,10 @@ static void _plugin_configure_setup_color_button(GtkColorButton *inButton,
 								G_CALLBACK(_plugin_on_settings_color_change),
 								inButton);
 
-	/* Set mapping data at color button */
-	mapping->settings=g_object_ref(inSettings);
-	mapping->property=g_strdup(inProperty);
-	mapping->settingsPropertyChangedSignalID=signalID;
-	g_object_set_data_full(G_OBJECT(inButton),
-							CONFIGURATION_MAPPING,
-							mapping,
-							(GDestroyNotify)_plugin_widget_settings_map_free);
+	g_signal_connect(inButton,
+						"destroy",
+						G_CALLBACK(_plugin_on_widget_value_destroy),
+						GUINT_TO_POINTER(signalID));
 
 	/* Release allocated resources */
 	if(settingsColor) clutter_color_free(settingsColor);
@@ -197,7 +192,7 @@ static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 	GtkWidget						*widgetValue;
 	XfdashboardClockViewSettings	*settings;
 
-	/* Get settings of plugin */
+	/* Get settings */
 	settings=xfdashboard_clock_view_settings_new();
 
 	/* Create layout widget */
@@ -216,8 +211,8 @@ static GObject* plugin_configure(XfdashboardPlugin *self, gpointer inUserData)
 	gtk_color_button_set_use_alpha(GTK_COLOR_BUTTON(widgetValue), TRUE);
 #endif
 	gtk_color_button_set_title(GTK_COLOR_BUTTON(widgetValue), _("Choose color for hour hand"));
-	_plugin_configure_setup_color_button(GTK_COLOR_BUTTON(widgetValue), settings, "hour-color");
 	gtk_grid_attach_next_to(GTK_GRID(layout), widgetValue, widgetLabel, GTK_POS_RIGHT, 1, 1);
+	_plugin_configure_setup_color_button(GTK_COLOR_BUTTON(widgetValue), settings, "hour-color");
 
 	/* Add widget to choose minute color */
 	widgetLabel=gtk_label_new(_("Minute color:"));
@@ -306,17 +301,18 @@ G_MODULE_EXPORT void plugin_init(XfdashboardPlugin *self)
 	/* Set up localization */
 	xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 
+	/* Register GObject types of this plugin */
+	XFDASHBOARD_REGISTER_PLUGIN_TYPE(self, xfdashboard_clock_view);
+	XFDASHBOARD_REGISTER_PLUGIN_TYPE(self, xfdashboard_clock_view_settings);
+
 	/* Set plugin info */
 	xfdashboard_plugin_set_info(self,
 								"flags", XFDASHBOARD_PLUGIN_FLAG_EARLY_INITIALIZATION,
 								"name", _("Clock"),
 								"description", _("Adds a new view showing a clock"),
 								"author", "Stephan Haller <nomad@froevel.de>",
+								"settings", xfdashboard_clock_view_settings_new(),
 								NULL);
-
-	/* Register GObject types of this plugin */
-	XFDASHBOARD_REGISTER_PLUGIN_TYPE(self, xfdashboard_clock_view);
-	XFDASHBOARD_REGISTER_PLUGIN_TYPE(self, xfdashboard_clock_view_settings);
 
 	/* Connect plugin action handlers */
 	g_signal_connect(self, "enable", G_CALLBACK(plugin_enable), NULL);

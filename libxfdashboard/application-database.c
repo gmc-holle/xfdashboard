@@ -79,6 +79,7 @@ enum
 
 static guint XfdashboardApplicationDatabaseSignals[SIGNAL_LAST]={ 0, };
 
+
 /* IMPLEMENTATION: Private variables and methods */
 
 /* Single instance of application database */

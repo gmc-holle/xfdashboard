@@ -346,19 +346,33 @@ static void _xfdashboard_xfconf_settings_on_settings_changed(XfdashboardSettings
 	 */
 	if(inPluginID)
 	{
-		// TODO: Find settings object instance for plugin ID to modify
-		pluginSettings=NULL;
+		XfdashboardPlugin					*plugin;
+		XfdashboardPluginSettings			*settings;
 
-		/* If we did not find a settings object instance, we cannot
-		 * modify any settings at it, so return FALSE.
-		 */
-		if(!pluginSettings)
+		/* Get plugin for plugin ID provided */
+		plugin=xfdashboard_settings_lookup_plugin_by_id(XFDASHBOARD_SETTINGS(self), inPluginID);
+		if(!plugin)
 		{
 			XFDASHBOARD_DEBUG(self, MISC,
-								"Could not get settings object instance for plug-in ID '%s'",
+								"Could not get settings object for unknown plug-in ID '%s'",
 								inPluginID);
 			return;
 		}
+
+		/* Get plugin settings from plugin. If we did not find a settings object
+		 * instance, we cannot modify any settings at it, so return immediately
+		 * and do nothing.
+		 */
+		settings=xfdashboard_plugin_get_settings(plugin);
+		if(!settings)
+		{
+			XFDASHBOARD_DEBUG(self, MISC,
+								"No settings object instance for plug-in ID '%s'",
+								inPluginID);
+			return;
+		}
+
+		pluginSettings=G_OBJECT(settings);
 	}
 		else pluginSettings=G_OBJECT(self);
 
@@ -371,6 +385,7 @@ static void _xfdashboard_xfconf_settings_on_settings_changed(XfdashboardSettings
 	transformType=G_TYPE_INVALID;
 	if(G_VALUE_HOLDS_ENUM(&value)) transformType=G_TYPE_INT;
 		else if(G_VALUE_HOLDS_FLAGS(&value)) transformType=G_TYPE_UINT;
+		else if(CLUTTER_VALUE_HOLDS_COLOR(&value)) transformType=G_TYPE_STRING;
 
 	if(transformType!=G_TYPE_INVALID)
 	{
@@ -419,12 +434,23 @@ static void _xfdashboard_xfconf_settings_on_settings_changed(XfdashboardSettings
 		gchar		*valueText;
 #endif
 
-		/* Property names at Xfconf MUST begin with '/' */
-		if(*xfconfPropertyName!='/')
+		/* Build xfconf property path for plugins if plugin ID provided and
+		 * property names at Xfconf MUST begin with '/'
+		 */
+		if(inPluginID)
 		{
-			realXfconfPropertyName=g_strdup_printf("/%s", xfconfPropertyName);
+			realXfconfPropertyName=g_strdup_printf("/%s/%s%s%s",
+													XFDASHBOARD_XFCONF_SETTINGS_PLUGINS_PATH,
+													inPluginID,
+													*xfconfPropertyName!='/' ? "/" : "",
+													xfconfPropertyName);
 		}
-			else realXfconfPropertyName=g_strdup(xfconfPropertyName);
+			else
+			{
+				realXfconfPropertyName=g_strdup_printf("%s%s",
+														*xfconfPropertyName!='/' ? "/" : "",
+														xfconfPropertyName);
+			}
 
 		/* Block setting of plugin ID to prevent recursion by signal handling */ 
 		_xfdashboard_xfconf_settings_block_property_notification_ref(self, inPluginID, settingsName);
@@ -634,19 +660,32 @@ static gboolean _xfdashboard_xfconf_settings_set_settings_value(XfdashboardXfcon
 	 */
 	if(inPluginID)
 	{
-		// TODO: Find settings object instance for plugin ID to modify
-		pluginSettings=NULL;
+		XfdashboardPlugin					*plugin;
+		XfdashboardPluginSettings			*settings;
+
+		/* Get plugin for plugin ID provided */
+		plugin=xfdashboard_settings_lookup_plugin_by_id(XFDASHBOARD_SETTINGS(self), inPluginID);
+		if(!plugin)
+		{
+			XFDASHBOARD_DEBUG(self, MISC,
+								"Could not get settings object for unknown plug-in ID '%s'",
+								inPluginID);
+			return(FALSE);
+		}
 
 		/* If we did not find a settings object instance, we cannot
 		 * modify any settings at it, so return FALSE.
 		 */
-		if(!pluginSettings)
+		settings=xfdashboard_plugin_get_settings(plugin);
+		if(!settings)
 		{
 			XFDASHBOARD_DEBUG(self, MISC,
-								"Could not get settings object instance for plug-in ID '%s'",
+								"No settings object instance for plug-in ID '%s'",
 								inPluginID);
 			return(FALSE);
 		}
+
+		pluginSettings=G_OBJECT(settings);
 	}
 		else pluginSettings=G_OBJECT(self);
 
@@ -849,7 +888,7 @@ static void _xfdashboard_xfconf_settings_on_xfconf_property_changed(XfdashboardX
 }
 
 /* Initialize initial settings from xfconf */
-static void _xfdashboard_xfconf_settings_init_core_settings(XfdashboardXfconfSettings *self)
+static void _xfdashboard_xfconf_settings_initialize_settings(XfdashboardXfconfSettings *self, const gchar *inPluginID)
 {
 	XfdashboardXfconfSettingsPrivate	*priv;
 	GHashTable							*xfconfProperties;
@@ -878,7 +917,8 @@ static void _xfdashboard_xfconf_settings_init_core_settings(XfdashboardXfconfSet
 		if(_xfdashboard_xfconf_settings_find_plugin_and_setting(iterKey, &pluginID, &settingsName))
 		{
 			/* Plugin ID must be NULL to be a core setting and skip plugin settings */
-			if(!pluginID)
+			if((!inPluginID && !pluginID) ||
+				g_strcmp0(pluginID, inPluginID)==0)
 			{
 				_xfdashboard_xfconf_settings_set_settings_value(self, pluginID, settingsName, iterValue);
 			}
@@ -894,6 +934,15 @@ static void _xfdashboard_xfconf_settings_init_core_settings(XfdashboardXfconfSet
 			}
 	}
 	g_hash_table_destroy(xfconfProperties);
+}
+
+/* A plugin was added to settings */
+static void _xfdashboard_xfconf_settings_plugin_added(XfdashboardSettings *inSettings, XfdashboardPlugin *inPlugin)
+{
+	g_return_if_fail(XFDASHBOARD_IS_XFCONF_SETTINGS(inSettings));
+	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(inPlugin));
+
+	_xfdashboard_xfconf_settings_initialize_settings(XFDASHBOARD_XFCONF_SETTINGS(inSettings), xfdashboard_plugin_get_id(inPlugin));
 }
 
 
@@ -940,6 +989,7 @@ static void xfdashboard_xfconf_settings_class_init(XfdashboardXfconfSettingsClas
 	gobjectClass->dispose=_xfdashboard_xfconf_settings_dispose;
 
 	settingsClass->changed=_xfdashboard_xfconf_settings_on_settings_changed;
+	settingsClass->plugin_added=_xfdashboard_xfconf_settings_plugin_added;
 }
 
 /* Object initialization
@@ -964,7 +1014,7 @@ static void xfdashboard_xfconf_settings_init(XfdashboardXfconfSettings *self)
 									self);
 
 	/* Initialize initial core settings from xfconf */
-	_xfdashboard_xfconf_settings_init_core_settings(self);
+	_xfdashboard_xfconf_settings_initialize_settings(self, NULL);
 }
 
 

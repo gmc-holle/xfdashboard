@@ -161,6 +161,7 @@ struct _XfdashboardSettingsPluginEntry
 {
 	XfdashboardPlugin				*plugin;
 	XfdashboardPluginSettings		*pluginSettings;
+	guint							pluginSettingsChangedSignalID;
 };
 
 /* Free plugin settings entry */
@@ -171,17 +172,59 @@ static void _xfdashboard_settings_plugin_entry_free(XfdashboardSettingsPluginEnt
 	XFDASHBOARD_DEBUG(NULL, PLUGINS,
 						"Unregistered plugin '%s' for plugin settings at settings",
 						inData->plugin ? xfdashboard_plugin_get_id(inData->plugin) : "<unknown>");
-g_message("%s: Unregistered plugin '%s' for plugin settings at settings",
-			__FUNCTION__,
-			inData->plugin ? xfdashboard_plugin_get_id(inData->plugin) : "<unknown>");
 
 	/* Release allocated resources */
-	if(inData->pluginSettings) g_object_unref(inData->pluginSettings);
+	if(inData->pluginSettings)
+	{
+		if(inData->pluginSettingsChangedSignalID)
+		{
+			g_signal_handler_disconnect(inData->pluginSettings, inData->pluginSettingsChangedSignalID);
+		}
+		g_object_unref(inData->pluginSettings);
+	}
 
 	/* Release entry */
 	g_free(inData);
 }
 
+/* A plugin settings object has changed its settings */
+static void _xfdashboard_settings_on_plugin_settings_changed(XfdashboardSettings *self,
+																GParamSpec *inParamSpec,
+																gpointer inUserData)
+{
+	XfdashboardSettingsPrivate			*priv;
+	XfdashboardPluginSettings			*pluginSettings;
+	GList								*iter;
+	XfdashboardSettingsPluginEntry		*entry;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(G_IS_PARAM_SPEC(inParamSpec));
+	g_return_if_fail(XFDASHBOARD_IS_PLUGIN_SETTINGS(inUserData));
+
+	priv=self->priv;
+	pluginSettings=XFDASHBOARD_PLUGIN_SETTINGS(inUserData);
+
+	/* Lookup plugin for plugin setting, retrieve its plugin ID and emit signal */
+	for(iter=priv->plugins; iter; iter=g_list_next(iter))
+	{
+		/* Get iterated registered plugin */
+		entry=(XfdashboardSettingsPluginEntry*)iter->data;
+		if(!entry) continue;
+
+		/* Check if iterated plugin has the requested ID and return it
+		 * if it matches.
+		 */
+		if(entry->pluginSettings==pluginSettings)
+		{
+			/* Emit "changed" signal with plugin ID as a plugin settings was changed */
+			g_signal_emit(self,
+							XfdashboardSettingsSignals[SIGNAL_CHANGED], g_param_spec_get_name_quark(inParamSpec),
+							xfdashboard_plugin_get_id(entry->plugin),
+							inParamSpec);
+			return;
+		}
+	}
+}
 
 /* IMPLEMENTATION: GObject */
 
@@ -816,6 +859,7 @@ static void xfdashboard_settings_init(XfdashboardSettings *self)
 void xfdashboard_settings_add_plugin(XfdashboardSettings *self, XfdashboardPlugin *inPlugin)
 {
 	XfdashboardSettingsPrivate		*priv;
+	XfdashboardSettingsClass		*klass;
 	GList							*iter;
 	XfdashboardPluginSettings		*settings;
 	XfdashboardSettingsPluginEntry	*entry;
@@ -824,16 +868,17 @@ void xfdashboard_settings_add_plugin(XfdashboardSettings *self, XfdashboardPlugi
 	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(inPlugin));
 
 	priv=self->priv;
+	klass=XFDASHBOARD_SETTINGS_GET_CLASS(self);
 
-	/* Check if plugin is already registered */
+	/* Check if plugin is already added to list */
 	for(iter=priv->plugins; iter; iter=g_list_next(iter))
 	{
-		/* Get iterated registered plugin */
+		/* Get iterated plugin */
 		entry=(XfdashboardSettingsPluginEntry*)iter->data;
 		if(!entry) continue;
 
-		/* Check if iterated registered plugin is the one to register.
-		 * If so return immediately.
+		/* Check if iterated plugin is the same as the one to add and return
+		 * immediately if they match.
 		 */
 		if(entry->plugin==inPlugin ||
 			g_strcmp0(xfdashboard_plugin_get_id(entry->plugin), xfdashboard_plugin_get_id(inPlugin))==0)
@@ -847,25 +892,35 @@ void xfdashboard_settings_add_plugin(XfdashboardSettings *self, XfdashboardPlugi
 	/* Get settings of plugin loaded */
 	settings=xfdashboard_plugin_get_settings(inPlugin);
 
-	/* If we get here the plugin is not registered yet, so set up plugin entry,
+	/* If we get here the plugin is not added yet, so set up plugin entry,
 	 * connect signals and add to list. Do not take a reference on plugin as
 	 * it will prevent the plugin to get unloaded.
 	 */
 	entry=g_new0(XfdashboardSettingsPluginEntry, 1);
 	entry->plugin=inPlugin;
-	if(settings) entry->pluginSettings=g_object_ref(settings);
+	if(settings)
+	{
+		entry->pluginSettings=g_object_ref(settings);
+		entry->pluginSettingsChangedSignalID=
+			g_signal_connect_swapped(settings,
+										"changed",
+										G_CALLBACK(_xfdashboard_settings_on_plugin_settings_changed),
+										self);
+	}
 
 	/* Add new plugin and its plugin settings to list */ 
 	priv->plugins=g_list_prepend(priv->plugins, entry);
+
+	/* Call virtual funtion for plugin added */
+	if(klass->plugin_added)
+	{
+		(klass->plugin_added)(self, inPlugin);
+	}
 
 	XFDASHBOARD_DEBUG(self, PLUGINS,
 						"Added plugin '%s' with plugin settings %s to settings",
 						xfdashboard_plugin_get_id(inPlugin),
 						settings ? G_OBJECT_TYPE_NAME(settings) : "<null>");
-g_message("%s: Added plugin '%s' with plugin settings %s to settings",
-			__FUNCTION__,
-			xfdashboard_plugin_get_id(inPlugin),
-			settings ? G_OBJECT_TYPE_NAME(settings) : "<null>");
 }
 
 /**
@@ -878,6 +933,7 @@ g_message("%s: Added plugin '%s' with plugin settings %s to settings",
 void xfdashboard_settings_remove_plugin(XfdashboardSettings *self, XfdashboardPlugin *inPlugin)
 {
 	XfdashboardSettingsPrivate		*priv;
+	XfdashboardSettingsClass		*klass;
 	GList							*iter;
 	XfdashboardSettingsPluginEntry	*entry;
 
@@ -885,6 +941,7 @@ void xfdashboard_settings_remove_plugin(XfdashboardSettings *self, XfdashboardPl
 	g_return_if_fail(XFDASHBOARD_IS_PLUGIN(inPlugin));
 
 	priv=self->priv;
+	klass=XFDASHBOARD_SETTINGS_GET_CLASS(self);
 
 	/* Lookup entries matching requested plugin to remove */
 	iter=priv->plugins;
@@ -907,19 +964,64 @@ void xfdashboard_settings_remove_plugin(XfdashboardSettings *self, XfdashboardPl
 			/* Remove entry from list */
 			priv->plugins=g_list_remove(priv->plugins, currentIter);
 
+			/* Call virtual funtion for plugin removed */
+			if(klass->plugin_removed)
+			{
+				(klass->plugin_removed)(self, entry->plugin);
+			}
+
 			/* Release entry itself */
 			XFDASHBOARD_DEBUG(self, PLUGINS,
 								"Removed plugin '%s' with plugin settings %s from settings",
-								xfdashboard_plugin_get_id(inPlugin),
+								xfdashboard_plugin_get_id(entry->plugin),
 								entry->pluginSettings ? G_OBJECT_TYPE_NAME(entry->pluginSettings) : "<null>");
-g_message("%s: Removed plugin '%s' with plugin settings %s from settings",
-			__FUNCTION__,
-			xfdashboard_plugin_get_id(inPlugin),
-			entry->pluginSettings ? G_OBJECT_TYPE_NAME(entry->pluginSettings) : "<null>");
 			_xfdashboard_settings_plugin_entry_free(entry);
 			g_list_free(currentIter);
 		}
 	}
+}
+
+/**
+ * xfdashboard_settings_lookup_plugin_by_id:
+ * @self: A #XfdashboardSettings
+ * @inPluginID: The plugin's ID to lookup
+ *
+ * Iterates through the list of plugins added at settings at @self and returns
+ * the plugin of type #XfdashboardPlugin matching the requested plugin ID at
+ * @inPluginID.
+ *
+ * Return value: The plugin of type #XfdashboardPlugin found or %NULL if plugin
+ *   was not found.
+ */
+XfdashboardPlugin* xfdashboard_settings_lookup_plugin_by_id(XfdashboardSettings *self, const gchar *inPluginID)
+{
+	XfdashboardSettingsPrivate		*priv;
+	GList							*iter;
+	XfdashboardSettingsPluginEntry	*entry;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS(self), NULL);
+	g_return_val_if_fail(inPluginID && *inPluginID, NULL);
+
+	priv=self->priv;
+
+	/* Iterate through list of plugins and lookup requested ID */
+	for(iter=priv->plugins; iter; iter=g_list_next(iter))
+	{
+		/* Get iterated registered plugin */
+		entry=(XfdashboardSettingsPluginEntry*)iter->data;
+		if(!entry) continue;
+
+		/* Check if iterated plugin has the requested ID and return it
+		 * if it matches.
+		 */
+		if(g_strcmp0(xfdashboard_plugin_get_id(entry->plugin), inPluginID)==0)
+		{
+			return(entry->plugin);
+		}
+	}
+
+	/* If we get here the plugin ID was not found, so return NULL */
+	return(NULL);
 }
 
 /**
