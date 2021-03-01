@@ -396,15 +396,17 @@ static gint _xfdashboard_settings_themes_sort_themes_list_model(GtkTreeModel *in
 static void _xfdashboard_settings_themes_populate_themes_list(XfdashboardSettingsThemes *self,
 																GtkWidget *inWidget)
 {
-	GHashTable						*themes;
-	GArray							*themesPaths;
-	GDir							*directory;
-	GtkListStore					*model;
-	GtkTreeIter						iter;
-	guint							i;
+	XfdashboardSettingsThemesPrivate		*priv;
+	GHashTable								*themes;
+	const gchar								**themesPaths;
+	GDir									*directory;
+	GtkListStore							*model;
+	GtkTreeIter								iter;
 
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_THEMES(self));
 	g_return_if_fail(GTK_IS_TREE_VIEW(inWidget));
+
+	priv=self->priv;
 
 	/* Create hash-table to keep track of duplicates (e.g. user overrides standard themes) */
 	themes=g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
@@ -428,41 +430,15 @@ static void _xfdashboard_settings_themes_populate_themes_list(XfdashboardSetting
 											XFDASHBOARD_SETTINGS_THEMES_COLUMN_DISPLAY_NAME,
 											GTK_SORT_ASCENDING);
 
-	/* Get paths to iterate through to find themes */
-	themesPaths=g_array_new(TRUE, TRUE, sizeof(gchar*));
-	if(themesPaths)
-	{
-		gchar						*themePath;
-		const gchar					*homeDirectory;
-
-		/* First add user's data dir */
-		themePath=g_build_filename(g_get_user_data_dir(), "themes", NULL);
-		g_array_append_val(themesPaths, themePath);
-		g_debug("Adding to theme search path: %s", themePath);
-
-		/* Then add user's home directory */
-		homeDirectory=g_get_home_dir();
-		if(homeDirectory)
-		{
-			themePath=g_build_filename(homeDirectory, ".themes", NULL);
-			g_array_append_val(themesPaths, themePath);
-			g_debug("Adding to theme search path: %s", themePath);
-		}
-
-		/* At last add system-wide path */
-		themePath=g_build_filename(PACKAGE_DATADIR, "themes", NULL);
-		g_array_append_val(themesPaths, themePath);
-		g_debug("Adding to theme search path: %s", themePath);
-	}
-
 	/* Iterate through all themes at all theme paths */
-	for(i=0; i<themesPaths->len; ++i)
+	themesPaths=xfdashboard_settings_get_theme_search_paths(priv->settings);
+	for( ; themesPaths && *themesPaths; themesPaths++)
 	{
 		const gchar					*themePath;
 		const gchar					*themeName;
 
 		/* Get theme path to iterate through */
-		themePath=g_array_index(themesPaths, const gchar*, i);
+		themePath=*themesPaths;
 
 		/* Open handle to directory to iterate through
 		 * but skip NULL paths or directory objects
@@ -706,17 +682,6 @@ static void _xfdashboard_settings_themes_populate_themes_list(XfdashboardSetting
 	g_object_unref(model);
 
 	/* Release allocated resources */
-	if(themesPaths)
-	{
-		for(i=0; i<themesPaths->len; ++i)
-		{
-			gchar						*themePath;
-
-			themePath=g_array_index(themesPaths, gchar*, i);
-			g_free(themePath);
-		}
-		g_array_free(themesPaths, TRUE);
-	}
 	if(themes) g_hash_table_destroy(themes);
 }
 
