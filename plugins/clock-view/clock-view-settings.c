@@ -70,7 +70,7 @@ static GParamSpec* XfdashboardClockViewSettingsProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
-/* Single instance of application database */
+/* Single instance of plugin settings */
 static XfdashboardClockViewSettings*		_xfdashboard_clock_view_settings=NULL;
 
 
@@ -274,7 +274,7 @@ void xfdashboard_clock_view_settings_init(XfdashboardClockViewSettings *self)
 /* IMPLEMENTATION: Public API */
 
 /* Create new plugin settings */
-XfdashboardClockViewSettings* xfdashboard_clock_view_settings_new()
+XfdashboardClockViewSettings* xfdashboard_clock_view_settings_new(void)
 {
 	GObject			*object;
 
