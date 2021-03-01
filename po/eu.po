@@ -202,6 +202,9 @@ msgid ""
 "When enabled all live window previews will also show their child windows. "
 "Disabling this option will increase performance on slower machines."
 msgstr ""
+"Gaitzen denean leihoen zuzeneko aurrebista guztiek bere leiho umeak "
+"erakutsiko dute ere. Aukera hau desgaitzeak errendimendua hobetuko du "
+"ordenagailu moteletan."
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
@@ -213,6 +216,9 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
+"Gaituta dagoenean eta abiarazle azkarrean ikono bat klikatzen denean aplikazioaren instantzia berri bat hasiko da beti.\n"
+"\n"
+"Ezgaituta dagoenean exekutatzen ari den aplikazioaren instantziaren azken leiho aktibo ezaguna hautatuko du. Aplikazioa ez bada exekutatzen ari, instantzia berri bat hasiko da."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
