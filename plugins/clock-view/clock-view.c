@@ -39,11 +39,10 @@
 struct _XfdashboardClockViewPrivate
 {
 	/* Instance related */
+	XfdashboardClockViewSettings	*settings;
 	ClutterActor					*clockActor;
 	ClutterContent					*clockCanvas;
 	guint							timeoutID;
-
-	XfdashboardClockViewSettings	*settings;
 };
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED(XfdashboardClockView,
@@ -54,6 +53,7 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED(XfdashboardClockView,
 
 /* Define this class in this plugin */
 XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_clock_view);
+
 
 /* IMPLEMENTATION: Private variables and methods */
 

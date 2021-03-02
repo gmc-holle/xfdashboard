@@ -56,17 +56,17 @@ typedef struct _XfdashboardHotCornerSettingsClass		XfdashboardHotCornerSettingsC
 struct _XfdashboardHotCornerSettings
 {
 	/* Parent instance */
-	GObject								parent_instance;
+	XfdashboardPluginSettings				parent_instance;
 
 	/* Private structure */
-	XfdashboardHotCornerSettingsPrivate	*priv;
+	XfdashboardHotCornerSettingsPrivate		*priv;
 };
 
 struct _XfdashboardHotCornerSettingsClass
 {
 	/*< private >*/
 	/* Parent class */
-	GObjectClass						parent_class;
+	XfdashboardPluginSettingsClass			parent_class;
 };
 
 /* Public API */

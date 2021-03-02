@@ -695,17 +695,16 @@ static gint _xfdashboard_settings_plugins_sort_plugins_list_model(GtkTreeModel *
 static void _xfdashboard_settings_plugins_populate_plugins_list(XfdashboardSettingsPlugins *self,
 																GtkWidget *inWidget)
 {
-	GHashTable						*plugins;
-	GtkListStore					*model;
-	GList							*pluginsSearchPaths;
-	GList							*pathIter;
-	const gchar						*envPath;
-	gchar							*path;
-	GtkTreeIter						modelIter;
+	XfdashboardSettingsPluginsPrivate	*priv;
+	GHashTable							*plugins;
+	GtkListStore						*model;
+	const gchar							**pluginsSearchPaths;
+	GtkTreeIter							modelIter;
 
 	g_return_if_fail(XFDASHBOARD_IS_SETTINGS_PLUGINS(self));
 	g_return_if_fail(GTK_IS_TREE_VIEW(inWidget));
 
+	priv=self->priv;
 	pluginsSearchPaths=NULL;
 
 	/* Create hash-table to keep track of duplicates (e.g. overrides by user) */
@@ -735,44 +734,23 @@ static void _xfdashboard_settings_plugins_populate_plugins_list(XfdashboardSetti
 											XFDASHBOARD_SETTINGS_PLUGINS_COLUMN_NAME,
 											GTK_SORT_ASCENDING);
 
-	/* Get search paths */
-	envPath=g_getenv("XFDASHBOARD_PLUGINS_PATH");
-	if(envPath)
-	{
-		gchar						**paths;
-		gchar						**iter;
-
-		iter=paths=g_strsplit(envPath, ":", -1);
-		while(*iter)
-		{
-			pluginsSearchPaths=g_list_append(pluginsSearchPaths, g_strdup(*iter));
-			iter++;
-		}
-		g_strfreev(paths);
-	}
-
-	path=g_build_filename(g_get_user_data_dir(), "xfdashboard", "plugins", NULL);
-	if(path) pluginsSearchPaths=g_list_append(pluginsSearchPaths, path);
-
-	path=g_build_filename(PACKAGE_LIBDIR, "xfdashboard", "plugins", NULL);
-	if(path) pluginsSearchPaths=g_list_append(pluginsSearchPaths, path);
-
 	/* Iterate through all plugin at all plugin paths, load them and
 	 * check if they are valid and can be configured.
 	 */
-	for(pathIter=pluginsSearchPaths; pathIter; pathIter=g_list_next(pathIter))
+	pluginsSearchPaths=xfdashboard_settings_get_plugin_search_paths(priv->settings);
+	for( ; pluginsSearchPaths && *pluginsSearchPaths; pluginsSearchPaths++)
 	{
 		const gchar					*pluginCurrentPath;
 		const gchar					*pluginCurrentFilename;
 		GDir						*directory;
 
-		/* Get plugin path to iterate through */
-		pluginCurrentPath=(const gchar*)pathIter->data;
+		/* Get currently iterated path */
+		pluginCurrentPath=*pluginsSearchPaths;
 
 		/* Open handle to directory to iterate through
 		 * but skip NULL paths or directory objects
 		 */
-		directory=g_dir_open(pluginCurrentPath, 0, NULL);
+		directory=g_dir_open(*pluginsSearchPaths, 0, NULL);
 		if(G_UNLIKELY(directory==NULL)) continue;
 
 		/* Iterate through directory and find available themes */
@@ -864,6 +842,9 @@ static void _xfdashboard_settings_plugins_populate_plugins_list(XfdashboardSetti
 				continue;
 			}
 
+			/* Add plugin to settings */
+			xfdashboard_settings_add_plugin(priv->settings, plugin);
+
 			/* Get plugin infos */
 			g_object_get(plugin,
 							"name", &pluginName,
@@ -930,7 +911,6 @@ static void _xfdashboard_settings_plugins_populate_plugins_list(XfdashboardSetti
 
 	/* Release allocated resources */
 	if(model) g_object_unref(model);
-	if(pluginsSearchPaths) g_list_free_full(pluginsSearchPaths, g_free);
 }
 
 /* Set up this tab */

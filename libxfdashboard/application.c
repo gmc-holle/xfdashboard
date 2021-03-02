@@ -194,13 +194,6 @@ static void _xfdashboard_application_quit(XfdashboardApplication *self, gboolean
 		/* Emit "quit" signal */
 		g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_QUIT], 0);
 
-		/* Destroy stage */
-		if(priv->stage)
-		{
-			clutter_actor_destroy(CLUTTER_ACTOR(priv->stage));
-			priv->stage=NULL;
-		}
-
 		/* Really quit application here and now */
 		if(priv->initialized)
 		{
@@ -1027,6 +1020,15 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	/* Ensure "is-quitting" flag is set just in case someone asks */
 	priv->isQuitting=TRUE;
 
+	/* First destroy stage to release all actors and their bindings
+	 * to any other sub-system.
+	 */
+	if(priv->stage)
+	{
+		clutter_actor_destroy(CLUTTER_ACTOR(priv->stage));
+		priv->stage=NULL;
+	}
+
 	/* Signal "shutdown-final" of application */
 	g_signal_emit(self, XfdashboardApplicationSignals[SIGNAL_SHUTDOWN_FINAL], 0);
 
@@ -1100,12 +1102,6 @@ static void _xfdashboard_application_dispose(GObject *inObject)
 	{
 		g_free(priv->themeName);
 		priv->themeName=NULL;
-	}
-
-	if(priv->stage)
-	{
-		g_object_unref(priv->stage);
-		priv->stage=NULL;
 	}
 
 	if(priv->settings)

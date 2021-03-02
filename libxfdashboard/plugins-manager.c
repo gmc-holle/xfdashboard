@@ -221,7 +221,7 @@ static gboolean _xfdashboard_plugins_manager_load_plugin(XfdashboardPluginsManag
 		return(FALSE);
 	}
 
-	/* Create and load plugin */
+	/* Create and initialize plugin */
 	plugin=xfdashboard_plugin_new(path, &error);
 	if(!plugin)
 	{
@@ -231,6 +231,11 @@ static gboolean _xfdashboard_plugins_manager_load_plugin(XfdashboardPluginsManag
 		/* Return error */
 		return(FALSE);
 	}
+
+	/* Plugin was loaded successfully so add it (at the end it is its
+	 * plugin settings) to core settings.
+	 */
+	xfdashboard_settings_add_plugin(priv->settings, plugin);
 
 	/* Enable plugin if early initialization is requested by plugin */
 	if(xfdashboard_plugin_get_flags(plugin) & XFDASHBOARD_PLUGIN_FLAG_EARLY_INITIALIZATION)
@@ -459,27 +464,41 @@ static GObject* _xfdashboard_plugins_manager_constructor(GType inType,
 }
 
 /* Dispose this object */
-static void _xfdashboard_plugins_manager_dispose_remove_plugin(gpointer inData)
-{
-	XfdashboardPlugin					*plugin;
-
-	g_return_if_fail(inData && XFDASHBOARD_IS_PLUGIN(inData));
-
-	plugin=XFDASHBOARD_PLUGIN(inData);
-
-	/* Disable plugin */
-	xfdashboard_plugin_disable(plugin);
-
-	/* Unload plugin */
-	g_type_module_unuse(G_TYPE_MODULE(plugin));
-}
-
 static void _xfdashboard_plugins_manager_dispose(GObject *inObject)
 {
 	XfdashboardPluginsManager			*self=XFDASHBOARD_PLUGINS_MANAGER(inObject);
 	XfdashboardPluginsManagerPrivate	*priv=self->priv;
 
 	/* Release allocated resources */
+	if(priv->plugins)
+	{
+		GList							*iter;
+
+		/* Disable all plugins, remove them from core settings and
+		 * unload them.
+		 */
+		for(iter=priv->plugins; iter; iter=g_list_next(iter))
+		{
+			XfdashboardPlugin			*plugin;
+
+			plugin=(XfdashboardPlugin*)iter->data;
+			if(plugin)
+			{
+				/* Disable plugin */
+				xfdashboard_plugin_disable(plugin);
+
+				/* Remove plugin settings from core settings */
+				if(priv->settings) xfdashboard_settings_remove_plugin(priv->settings, plugin);
+
+			/* Unload plugin */
+			g_type_module_unuse(G_TYPE_MODULE(plugin));
+			}
+		}
+
+		g_list_free(priv->plugins);
+		priv->plugins=NULL;
+	}
+
 	if(priv->application)
 	{
 		if(priv->applicationInitializedSignalID)
@@ -489,12 +508,6 @@ static void _xfdashboard_plugins_manager_dispose(GObject *inObject)
 		}
 
 		priv->application=NULL;
-	}
-
-	if(priv->plugins)
-	{
-		g_list_free_full(priv->plugins, (GDestroyNotify)_xfdashboard_plugins_manager_dispose_remove_plugin);
-		priv->plugins=NULL;
 	}
 
 	if(priv->settings)

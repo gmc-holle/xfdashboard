@@ -44,7 +44,7 @@ typedef struct _XfdashboardClockViewSettingsClass			XfdashboardClockViewSettings
 struct _XfdashboardClockViewSettings
 {
 	/* Parent instance */
-	GObject									parent_instance;
+	XfdashboardPluginSettings				parent_instance;
 
 	/* Private structure */
 	XfdashboardClockViewSettingsPrivate		*priv;
@@ -54,7 +54,7 @@ struct _XfdashboardClockViewSettingsClass
 {
 	/*< private >*/
 	/* Parent class */
-	GObjectClass							parent_class;
+	XfdashboardPluginSettingsClass			parent_class;
 };
 
 /* Public API */
