@@ -1038,6 +1038,12 @@ static void _xfdashboard_label_dispose(GObject *inObject)
 		priv->iconName=NULL;
 	}
 
+	if(priv->iconGIcon)
+	{
+		g_object_unref(priv->iconGIcon);
+		priv->iconGIcon=NULL;
+	}
+
 	if(priv->iconImage)
 	{
 		g_object_unref(priv->iconImage);
