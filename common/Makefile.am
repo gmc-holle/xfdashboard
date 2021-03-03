@@ -29,6 +29,7 @@ libxfconf_settings_la_LDFLAGS = \
 	$(PLATFORM_LDFLAGS)
 
 libxfconf_settings_la_LIBADD = \
+	$(CLUTTER_LIBS) \
 	$(LIBXFCONF_LIBS)
 
 CLEANFILES = \
