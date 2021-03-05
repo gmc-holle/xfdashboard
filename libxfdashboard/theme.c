@@ -496,18 +496,41 @@ static gchar* _xfdashboard_theme_lookup_path_for_theme(XfdashboardTheme *self,
 	/* Iterate through search paths and look up theme */
 	while(searchPaths && *searchPaths && !themeFile)
 	{
-		/* Build theme file path and test for existence.
-		 * If it does exist, keep theme file path. If it does not exist,
-		 * unset theme file path and continue iterating.
+		/* Restore old behaviour to force a theme path via an environment
+		 * variable but this time with theme search paths. The behaviour
+		 * was to take the provided path and add the theme file without
+		 * any additional subpath like theme name or theme subpath folder.
+		 * If this built path provides the theme file use it directly
+		 * although it might not match the theme name (that is for sure
+		 * as the theme name will not be added to the path built). This
+		 * behaviour makes development easier to test themes without
+		 * changing theme by settings or changing symlinks in any of
+		 * theme searched paths.
 		 */
-		themeFile=g_build_filename(*searchPaths, inThemeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_FILE, NULL);
+		themeFile=g_build_filename(*searchPaths, XFDASHBOARD_THEME_FILE, NULL);
 		XFDASHBOARD_DEBUG(self, THEME,
 							"Trying theme file: %s",
 							themeFile);
 		if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
 		{
+			/* File does not exists so release allocated resources */
 			g_free(themeFile);
 			themeFile=NULL;
+
+			/* Next build theme file path depending on theme name and
+			 * required sub-folders and test for existence.
+			 * If it does exist, keep theme file path. If it does not exist,
+			 * unset theme file path and continue iterating.
+			 */
+			themeFile=g_build_filename(*searchPaths, inThemeName, XFDASHBOARD_THEME_SUBPATH, XFDASHBOARD_THEME_FILE, NULL);
+			XFDASHBOARD_DEBUG(self, THEME,
+								"Trying theme file: %s",
+								themeFile);
+			if(!g_file_test(themeFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+			{
+				g_free(themeFile);
+				themeFile=NULL;
+			}
 		}
 
 		/* Move iterator to next entry */
