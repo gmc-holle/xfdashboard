@@ -33,7 +33,7 @@
 #include <libxfdashboard/live-window.h>
 #include <libxfdashboard/scaled-table-layout.h>
 #include <libxfdashboard/stage.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/view.h>
 #include <libxfdashboard/drop-action.h>
 #include <libxfdashboard/quicklaunch.h>
@@ -814,8 +814,8 @@ static void _xfdashboard_windows_view_on_window_clicked(XfdashboardWindowsView *
 	/* Activate window */
 	xfdashboard_window_tracker_window_activate(window);
 
-	/* Quit application */
-	xfdashboard_application_suspend_or_quit(NULL);
+	/* Request core to quit */
+	xfdashboard_core_quit(NULL);
 }
 
 /* The close button of a live window was clicked */
@@ -2325,7 +2325,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	g_signal_connect_swapped(action, "drop", G_CALLBACK(_xfdashboard_windows_view_on_drop_drop), self);
 
 	/* Bind to settings to react on changes */
-	settings=xfdashboard_application_get_settings(NULL);
+	settings=xfdashboard_core_get_settings(NULL);
 	priv->settingsScrollEventChangingWorkspaceBinding=
 		g_object_bind_property(settings,
 								"scroll-event-changes-workspace",

@@ -36,7 +36,7 @@
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/focus-manager.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -153,7 +153,7 @@ static void _xfdashboard_focusable_on_selection_unavailable(XfdashboardFocusable
 	ClutterActor						*oldSelection;
 	ClutterActor						*newSelection;
 	gboolean							success;
-	XfdashboardApplication				*application;
+	XfdashboardCore						*core;
 
 	g_return_if_fail(XFDASHBOARD_IS_FOCUSABLE(self));
 	g_return_if_fail(CLUTTER_IS_ACTOR(inUserData));
@@ -169,8 +169,8 @@ static void _xfdashboard_focusable_on_selection_unavailable(XfdashboardFocusable
 	 * and successfully called.
 	 * If setting new selection was unsuccessful we set selection to nothing (NULL);
 	 */
-	application=xfdashboard_application_get_default();
-	if(!xfdashboard_application_is_quitting(application))
+	core=xfdashboard_core_get_default();
+	if(!xfdashboard_core_is_quitting(core))
 	{
 		/* Get next selection */
 		newSelection=xfdashboard_focusable_find_selection(self, oldSelection, XFDASHBOARD_SELECTION_TARGET_NEXT);

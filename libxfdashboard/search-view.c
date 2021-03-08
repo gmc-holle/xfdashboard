@@ -57,7 +57,7 @@
 #include <libxfdashboard/search-result-container.h>
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/enums.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/settings.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -468,8 +468,8 @@ static void _xfdashboard_search_view_on_result_item_clicked(XfdashboardSearchRes
 														searchTerms);
 	if(success)
 	{
-		/* Activating result item seems to be successfuly so quit application */
-		xfdashboard_application_suspend_or_quit(NULL);
+		/* Activating result item seems to be successfuly so request core to quit */
+		xfdashboard_core_quit(NULL);
 	}
 }
 
@@ -500,8 +500,8 @@ static void _xfdashboard_search_view_on_provider_icon_clicked(XfdashboardSearchR
 	success=xfdashboard_search_provider_launch_search(providerData->provider, searchTerms);
 	if(success)
 	{
-		/* Activating result item seems to be successfuly so quit application */
-		xfdashboard_application_suspend_or_quit(NULL);
+		/* Activating result item seems to be successfuly so request core to quit */
+		xfdashboard_core_quit(NULL);
 	}
 }
 
@@ -1713,7 +1713,7 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	priv->selectionProvider=NULL;
 	priv->focusManager=xfdashboard_focus_manager_get_default();
 	priv->repaintID=0;
-	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
+	priv->settings=g_object_ref(xfdashboard_core_get_settings(NULL));
 
 	/* Set up view (Note: Search view is disabled by default!) */
 	xfdashboard_view_set_name(XFDASHBOARD_VIEW(self), _("Search"));

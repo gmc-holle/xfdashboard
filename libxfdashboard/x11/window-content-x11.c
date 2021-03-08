@@ -46,7 +46,7 @@
 
 #include <libxfdashboard/window-content.h>
 #include <libxfdashboard/x11/window-tracker-window-x11.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/window-tracker.h>
@@ -220,7 +220,7 @@ static Display* _xfdashboard_window_content_x11_get_display(void)
 /* Remove all entries from resume queue and release all allocated resources */
 static void _xfdashboard_window_content_x11_destroy_resume_queue(void)
 {
-	XfdashboardApplication					*application;
+	XfdashboardCore							*core;
 	gint									queueSize;
 
 	/* Disconnect application "shutdown" signal handler */
@@ -230,8 +230,8 @@ static void _xfdashboard_window_content_x11_destroy_resume_queue(void)
 							"Disconnecting shutdown signal handler %u because of resume queue destruction",
 							_xfdashboard_window_content_x11_resume_shutdown_signal_id);
 
-		application=xfdashboard_application_get_default();
-		g_signal_handler_disconnect(application, _xfdashboard_window_content_x11_resume_shutdown_signal_id);
+		core=xfdashboard_core_get_default();
+		g_signal_handler_disconnect(core, _xfdashboard_window_content_x11_resume_shutdown_signal_id);
 		_xfdashboard_window_content_x11_resume_shutdown_signal_id=0;
 	}
 
@@ -360,13 +360,13 @@ static void _xfdashboard_window_content_x11_resume_on_idle_add(XfdashboardWindow
 	/* Connect to "shutdown" signal of application to clean up resume queue */
 	if(!_xfdashboard_window_content_x11_resume_shutdown_signal_id)
 	{
-		XfdashboardApplication			*application;
+		XfdashboardCore					*core;
 
-		application=xfdashboard_application_get_default();
-		_xfdashboard_window_content_x11_resume_shutdown_signal_id=g_signal_connect(application,
-																				"shutdown-final",
-																				G_CALLBACK(_xfdashboard_window_content_x11_destroy_resume_queue),
-																				NULL);
+		core=xfdashboard_core_get_default();
+		_xfdashboard_window_content_x11_resume_shutdown_signal_id=g_signal_connect(core,
+																					"shutdown",
+																					G_CALLBACK(_xfdashboard_window_content_x11_destroy_resume_queue),
+																					NULL);
 		XFDASHBOARD_DEBUG(self, WINDOWS,
 							"Connected to shutdown signal with handler ID %u for resume queue destruction",
 							_xfdashboard_window_content_x11_resume_shutdown_signal_id);
@@ -415,9 +415,9 @@ static void _xfdashboard_window_content_x11_on_window_creation_priority_value_ch
 }
 
 /* Disconnect signal handlers for settings value changed notifications */
-static void _xfdashboard_window_content_x11_on_window_creation_priority_shutdown(XfdashboardApplication *inApplication, gpointer inUserData)
+static void _xfdashboard_window_content_x11_on_window_creation_priority_shutdown(XfdashboardCore *inCore, gpointer inUserData)
 {
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inApplication));
+	g_return_if_fail(XFDASHBOARD_IS_CORE(inCore));
 
 	/* Disconnect application "shutdown" signal handler */
 	if(_xfdashboard_window_content_x11_window_creation_shutdown_signal_id)
@@ -427,7 +427,7 @@ static void _xfdashboard_window_content_x11_on_window_creation_priority_shutdown
 							"Disconnecting shutdown signal handler %u for window creation priority value change notifications",
 							_xfdashboard_window_content_x11_window_creation_shutdown_signal_id);
 
-		g_signal_handler_disconnect(inApplication, _xfdashboard_window_content_x11_window_creation_shutdown_signal_id);
+		g_signal_handler_disconnect(inCore, _xfdashboard_window_content_x11_window_creation_shutdown_signal_id);
 		_xfdashboard_window_content_x11_window_creation_shutdown_signal_id=0;
 	}
 
@@ -440,7 +440,7 @@ static void _xfdashboard_window_content_x11_on_window_creation_priority_shutdown
 							"Disconnecting property changed signal handler %u for window creation priority value change notifications",
 							_xfdashboard_window_content_x11_settings_priority_notify_id);
 
-		settings=xfdashboard_application_get_settings(inApplication);
+		settings=xfdashboard_core_get_settings(inCore);
 		g_signal_handler_disconnect(settings, _xfdashboard_window_content_x11_settings_priority_notify_id);
 		_xfdashboard_window_content_x11_settings_priority_notify_id=0;
 	}
@@ -704,21 +704,21 @@ static void _xfdashboard_window_content_x11_check_extension(void)
 }
 
 /* Suspension state of application changed */
-static void _xfdashboard_window_content_x11_on_application_suspended_changed(XfdashboardWindowContentX11 *self,
-																				GParamSpec *inSpec,
-																				gpointer inUserData)
+static void _xfdashboard_window_content_x11_on_core_suspended_changed(XfdashboardWindowContentX11 *self,
+																		GParamSpec *inSpec,
+																		gpointer inUserData)
 {
 	XfdashboardWindowContentX11Private		*priv;
-	XfdashboardApplication					*app;
+	XfdashboardCore							*core;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT_X11(self));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_CORE(inUserData));
 
 	priv=self->priv;
-	app=XFDASHBOARD_APPLICATION(inUserData);
+	core=XFDASHBOARD_CORE(inUserData);
 
 	/* Get application suspend state */
-	priv->isAppSuspended=xfdashboard_application_is_suspended(app);
+	priv->isAppSuspended=xfdashboard_core_is_suspended(core);
 
 	/* If application is suspended then suspend this window too ... */
 	if(priv->isAppSuspended)
@@ -1434,7 +1434,7 @@ static void _xfdashboard_window_content_x11_on_window_closed(XfdashboardWindowCo
 static void _xfdashboard_window_content_x11_set_window(XfdashboardWindowContentX11 *self, XfdashboardWindowTrackerWindowX11 *inWindow)
 {
 	XfdashboardWindowContentX11Private		*priv;
-	XfdashboardApplication					*application;
+	XfdashboardCore							*core;
 	Display									*display;
 	GdkPixbuf								*windowIcon;
 	XWindowAttributes						windowAttrs;
@@ -1554,11 +1554,9 @@ static void _xfdashboard_window_content_x11_set_window(XfdashboardWindowContentX
 	_xfdashboard_window_content_x11_resume(self);
 	priv->isMapped=!priv->isSuspended;
 
-	/* But suspend window immediately again if application is suspended
-	 * (xfdashboard runs in daemon mode and is not active currently)
-	 */
-	application=xfdashboard_application_get_default();
-	if(xfdashboard_application_is_suspended(application))
+	/* But suspend window immediately again if core is suspended */
+	core=xfdashboard_core_get_default();
+	if(xfdashboard_core_is_suspended(core))
 	{
 		if(_xfdashboard_window_content_x11_window_creation_priority>0)
 		{
@@ -1993,7 +1991,7 @@ static void _xfdashboard_window_content_x11_dispose(GObject *inObject)
 
 	if(priv->suspendSignalID)
 	{
-		g_signal_handler_disconnect(xfdashboard_application_get_default(), priv->suspendSignalID);
+		g_signal_handler_disconnect(xfdashboard_core_get_default(), priv->suspendSignalID);
 		priv->suspendSignalID=0;
 	}
 
@@ -2293,7 +2291,7 @@ void xfdashboard_window_content_x11_class_init(XfdashboardWindowContentX11Class 
 void xfdashboard_window_content_x11_init(XfdashboardWindowContentX11 *self)
 {
 	XfdashboardWindowContentX11Private		*priv;
-	XfdashboardApplication					*application;
+	XfdashboardCore							*core;
 
 	priv=self->priv=xfdashboard_window_content_x11_get_instance_private(self);
 
@@ -2326,7 +2324,7 @@ void xfdashboard_window_content_x11_init(XfdashboardWindowContentX11 *self)
 	priv->unmappedWindowIconAnchorPoint=XFDASHBOARD_ANCHOR_POINT_NONE;
 	priv->suspendAfterResumeOnIdle=FALSE;
 	priv->windowClosedSignalID=0;
-	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
+	priv->settings=g_object_ref(xfdashboard_core_get_settings(NULL));
 
 	/* Check extensions (will only be done once) */
 	_xfdashboard_window_content_x11_check_extension();
@@ -2350,12 +2348,12 @@ void xfdashboard_window_content_x11_init(XfdashboardWindowContentX11 *self)
 	xfdashboard_stylable_invalidate(XFDASHBOARD_STYLABLE(self));
 
 	/* Handle suspension signals from application */
-	application=xfdashboard_application_get_default();
-	priv->suspendSignalID=g_signal_connect_swapped(application,
+	core=xfdashboard_core_get_default();
+	priv->suspendSignalID=g_signal_connect_swapped(core,
 													"notify::is-suspended",
-													G_CALLBACK(_xfdashboard_window_content_x11_on_application_suspended_changed),
+													G_CALLBACK(_xfdashboard_window_content_x11_on_core_suspended_changed),
 													self);
-	priv->isAppSuspended=xfdashboard_application_is_suspended(application);
+	priv->isAppSuspended=xfdashboard_core_is_suspended(core);
 
 	/* Register global signal handler for settings value change notification
 	 * if not done already.
@@ -2372,12 +2370,12 @@ void xfdashboard_window_content_x11_init(XfdashboardWindowContentX11 *self)
 							"Connected to property changed signal with handler ID %u for window creation value changed notifications",
 							_xfdashboard_window_content_x11_settings_priority_notify_id);
 
-		/* Connect to application shutdown signal to disconnect handler for
+		/* Connect to core shutdown signal to disconnect handler for
 		 * settings value changed notifications.
 		 */
 		_xfdashboard_window_content_x11_window_creation_shutdown_signal_id=
-			g_signal_connect(application,
-								"shutdown-final",
+			g_signal_connect(core,
+								"shutdown",
 								G_CALLBACK(_xfdashboard_window_content_x11_on_window_creation_priority_shutdown),
 								self);
 		XFDASHBOARD_DEBUG(self, WINDOWS,

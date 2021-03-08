@@ -33,7 +33,7 @@
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/bindings-pool.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -730,6 +730,22 @@ GSList* xfdashboard_focus_manager_get_targets(XfdashboardFocusManager *self, con
 	priv=self->priv;
 	targets=NULL;
 
+	/* Provide backward-compatibility by checking target for old application
+	 * type by name (XfdashboardApplication).
+	 */
+	if(g_strcmp0("XfdashboardApplication", inTarget)==0)
+	{
+		static gboolean				warnedDeprecation=FALSE;
+
+		if(!warnedDeprecation)
+		{
+			g_warning("Bindings uses deprecated target 'XfdashboardApplication'. Please update to use target 'XfdashboardCore'.");
+			warnedDeprecation=TRUE;
+		}
+
+		inTarget="XfdashboardCore";
+	}
+
 	/* Get type of target */
 	targetType=g_type_from_name(inTarget);
 	if(!targetType)
@@ -744,10 +760,13 @@ GSList* xfdashboard_focus_manager_get_targets(XfdashboardFocusManager *self, con
 		targets=g_slist_append(targets, g_object_ref(self));
 	}
 
-	/* Check if class name of requested target points to application */
-	if(g_type_is_a(XFDASHBOARD_TYPE_APPLICATION, targetType))
+	/* Check if class name of requested target points to core
+	 * and provide backward-compatibility by checking for old
+	 * application object by name.
+	 */
+	if(g_type_is_a(XFDASHBOARD_TYPE_CORE, targetType))
 	{
-		targets=g_slist_append(targets, g_object_ref(xfdashboard_application_get_default()));
+		targets=g_slist_append(targets, g_object_ref(xfdashboard_core_get_default()));
 	}
 
 	/* Iterate through list of registered actors and add each one

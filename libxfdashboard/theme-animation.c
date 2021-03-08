@@ -34,7 +34,7 @@
 
 #include <libxfdashboard/transition-group.h>
 #include <libxfdashboard/stylable.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/settings.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/utils.h>
@@ -2229,7 +2229,7 @@ void xfdashboard_theme_animation_init(XfdashboardThemeAnimation *self)
 
 	/* Set default values */
 	priv->specs=NULL;
-	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
+	priv->settings=g_object_ref(xfdashboard_core_get_settings(NULL));
 }
 
 /* IMPLEMENTATION: Errors */

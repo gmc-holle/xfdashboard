@@ -44,7 +44,7 @@
 #include <libxfdashboard/stage.h>
 #include <libxfdashboard/stage-interface.h>
 #include <libxfdashboard/window-tracker.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -457,7 +457,7 @@ void xfdashboard_traverse_actor(ClutterActor *inRootActor,
 	/* If root actor where begin traversal is NULL then begin at stage */
 	if(!inRootActor)
 	{
-		inRootActor=CLUTTER_ACTOR(xfdashboard_application_get_stage(NULL));
+		inRootActor=CLUTTER_ACTOR(xfdashboard_core_get_stage(NULL));
 
 		/* If root actor is still NULL then no stage was found and we cannot
 		 * start the traversal.

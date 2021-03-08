@@ -36,7 +36,7 @@
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/application-tracker.h>
 #include <libxfdashboard/stylable.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/popup-menu-item-button.h>
 #include <libxfdashboard/popup-menu-item-separator.h>
@@ -218,7 +218,7 @@ static void _xfdashboard_application_button_on_popup_menu_item_activate_window(X
 	xfdashboard_window_tracker_window_activate(window);
 
 	/* Quit application */
-	xfdashboard_application_suspend_or_quit(NULL);
+	xfdashboard_core_quit(NULL);
 }
 
 /* User selected to execute an application action */
@@ -284,7 +284,7 @@ static void _xfdashboard_application_button_on_popup_menu_item_application_actio
 								g_app_info_get_display_name(priv->appInfo));
 
 			/* Quit application */
-			xfdashboard_application_suspend_or_quit(NULL);
+			xfdashboard_core_quit(NULL);
 
 			/* Release allocated resources */
 			g_object_unref(gicon);
@@ -775,7 +775,7 @@ gboolean xfdashboard_application_button_execute(XfdashboardApplicationButton *se
 								xfdashboard_application_button_get_display_name(self));
 
 			/* Emit signal for successful application launch */
-			g_signal_emit_by_name(xfdashboard_application_get_default(), "application-launched", priv->appInfo);
+			g_signal_emit_by_name(xfdashboard_core_get_default(), "application-launched", priv->appInfo);
 
 			/* Set status that application has been started successfully */
 			started=TRUE;

@@ -33,7 +33,7 @@
 #include <libxfdashboard/applications-menu-model.h>
 #include <libxfdashboard/types.h>
 #include <libxfdashboard/button.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/application-button.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/drag-action.h>
@@ -288,7 +288,7 @@ static void _xfdashboard_applications_view_on_item_clicked(XfdashboardApplicatio
 	if(xfdashboard_application_button_execute(button, NULL))
 	{
 		/* Launching application seems to be successfuly so quit application */
-		xfdashboard_application_suspend_or_quit(NULL);
+		xfdashboard_core_quit(NULL);
 		return;
 	}
 }
@@ -346,10 +346,10 @@ static void _xfdashboard_applications_view_on_popup_menu_item_launch(Xfdashboard
 									g_app_info_get_display_name(appInfo));
 
 				/* Emit signal for successful application launch */
-				g_signal_emit_by_name(xfdashboard_application_get_default(), "application-launched", appInfo);
+				g_signal_emit_by_name(xfdashboard_core_get_default(), "application-launched", appInfo);
 
 				/* Quit application */
-				xfdashboard_application_suspend_or_quit(NULL);
+				xfdashboard_core_quit(NULL);
 			}
 
 		/* Release allocated resources */
@@ -817,7 +817,7 @@ static void _xfdashboard_applications_view_on_application_resume(XfdashboardAppl
 	XfdashboardApplicationsViewPrivate	*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_VIEW(self));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_CORE(inUserData));
 
 	priv=self->priv;
 
@@ -1559,7 +1559,7 @@ static void xfdashboard_applications_view_class_init(XfdashboardApplicationsView
 static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self)
 {
 	XfdashboardApplicationsViewPrivate	*priv;
-	XfdashboardApplication				*application;
+	XfdashboardCore						*core;
 	XfdashboardSettings					*settings;
 
 	self->priv=priv=xfdashboard_applications_view_get_instance_private(self);
@@ -1590,12 +1590,12 @@ static void xfdashboard_applications_view_init(XfdashboardApplicationsView *self
 	g_signal_connect_swapped(priv->apps, "filter-changed", G_CALLBACK(_xfdashboard_applications_view_on_filter_changed), self);
 	g_signal_connect_swapped(priv->apps, "loaded", G_CALLBACK(_xfdashboard_applications_view_on_model_loaded), self);
 
-	/* Connect signal to application */
-	application=xfdashboard_application_get_default();
-	g_signal_connect_swapped(application, "resume", G_CALLBACK(_xfdashboard_applications_view_on_application_resume), self);
+	/* Connect signal to core */
+	core=xfdashboard_core_get_default();
+	g_signal_connect_swapped(core, "resume", G_CALLBACK(_xfdashboard_applications_view_on_application_resume), self);
 
 	/* Bind to settings to react on changes */
-	settings=xfdashboard_application_get_settings(NULL);
+	settings=xfdashboard_core_get_settings(NULL);
 	priv->settingsShowAllAppsMenuBinding=
 		g_object_bind_property(settings,
 								"show-all-applications",

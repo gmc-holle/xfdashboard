@@ -34,7 +34,7 @@
 #ifdef HAVE_BACKEND_GDK
 #include <libxfdashboard/gdk/window-tracker-backend-gdk.h>
 #endif
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -198,7 +198,7 @@ void xfdashboard_window_tracker_backend_set_backend(const gchar *inBackend)
 	wasSet=TRUE;
 
 	/* Backend can only be set if application was not already created */
-	if(xfdashboard_application_has_default())
+	if(xfdashboard_core_has_default())
 	{
 		g_critical("Cannot set backend to '%s' because application is already initialized",
 					inBackend);

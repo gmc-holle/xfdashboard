@@ -30,7 +30,6 @@
 #include <libxfdashboard/actor.h>
 #include <libxfdashboard/application-button.h>
 #include <libxfdashboard/application-database.h>
-#include <libxfdashboard/application.h>
 #include <libxfdashboard/applications-menu-model.h>
 #include <libxfdashboard/applications-search-provider.h>
 #include <libxfdashboard/applications-view.h>
@@ -42,6 +41,7 @@
 #include <libxfdashboard/button.h>
 #include <libxfdashboard/click-action.h>
 #include <libxfdashboard/collapse-box.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/css-selector.h>
 #include <libxfdashboard/desktop-app-info.h>
 #include <libxfdashboard/drag-action.h>

@@ -34,7 +34,7 @@
 
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/application-button.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/drag-action.h>
 #include <libxfdashboard/click-action.h>
 #include <libxfdashboard/popup-menu.h>
@@ -171,7 +171,7 @@ static XfdashboardApplicationsSearchProviderStatistics* _xfdashboard_application
 }
 
 /* An application was launched successfully */
-static void _xfdashboard_applications_search_provider_on_application_launched(XfdashboardApplication *inApplication,
+static void _xfdashboard_applications_search_provider_on_application_launched(XfdashboardCore *inCore,
 																				GAppInfo *inAppInfo,
 																				gpointer inUserData)
 {
@@ -528,7 +528,7 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 /* Destroy statistics for this search provider */
 static void _xfdashboard_applications_search_provider_destroy_statistics(void)
 {
-	XfdashboardApplication			*application;
+	XfdashboardCore					*core;
 	GError							*error;
 
 	error=NULL;
@@ -539,20 +539,20 @@ static void _xfdashboard_applications_search_provider_destroy_statistics(void)
 	/* Lock for thread-safety */
 	G_LOCK(_xfdashboard_applications_search_provider_statistics_lock);
 
-	/* Get application instance */
-	application=xfdashboard_application_get_default();
+	/* Get core instance */
+	core=xfdashboard_core_get_default();
 
-	/* Disconnect application "shutdown" signal handler */
+	/* Disconnect core "shutdown" signal handler */
 	if(_xfdashboard_applications_search_provider_statistics.shutdownSignalID)
 	{
-		g_signal_handler_disconnect(application, _xfdashboard_applications_search_provider_statistics.shutdownSignalID);
+		g_signal_handler_disconnect(core, _xfdashboard_applications_search_provider_statistics.shutdownSignalID);
 		_xfdashboard_applications_search_provider_statistics.shutdownSignalID=0;
 	}
 
-	/* Disconnect application "application-launched" signal handler */
+	/* Disconnect core "application-launched" signal handler */
 	if(_xfdashboard_applications_search_provider_statistics.applicationLaunchedSignalID)
 	{
-		g_signal_handler_disconnect(application, _xfdashboard_applications_search_provider_statistics.applicationLaunchedSignalID);
+		g_signal_handler_disconnect(core, _xfdashboard_applications_search_provider_statistics.applicationLaunchedSignalID);
 		_xfdashboard_applications_search_provider_statistics.applicationLaunchedSignalID=0;
 	}
 
@@ -587,7 +587,7 @@ static void _xfdashboard_applications_search_provider_destroy_statistics(void)
 /* Create and load statistics for this search provider if not done already */
 static void _xfdashboard_applications_search_provider_create_statistics(XfdashboardApplicationsSearchProvider *self)
 {
-	XfdashboardApplication			*application;
+	XfdashboardCore					*core;
 	GError							*error;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self));
@@ -647,19 +647,19 @@ static void _xfdashboard_applications_search_provider_create_statistics(Xfdashbo
 		return;
 	}
 
-	/* Get application instance */
-	application=xfdashboard_application_get_default();
+	/* Get core instance */
+	core=xfdashboard_core_get_default();
 
-	/* Connect to "shutdown" signal of application to clean up statistics */
+	/* Connect to "shutdown" signal of core to clean up statistics */
 	_xfdashboard_applications_search_provider_statistics.shutdownSignalID=
-		g_signal_connect(application,
-							"shutdown-final",
+		g_signal_connect(core,
+							"shutdown",
 							G_CALLBACK(_xfdashboard_applications_search_provider_destroy_statistics),
 							NULL);
 
-	/* Connect to "application-launched" signal of application to track app launches */
+	/* Connect to "application-launched" signal of core to track app launches */
 	_xfdashboard_applications_search_provider_statistics.applicationLaunchedSignalID=
-		g_signal_connect(application,
+		g_signal_connect(core,
 							"application-launched",
 							G_CALLBACK(_xfdashboard_applications_search_provider_on_application_launched),
 							NULL);
@@ -765,10 +765,10 @@ static void _xfdashboard_applications_search_provider_on_popup_menu_item_launch(
 									g_app_info_get_display_name(appInfo));
 
 				/* Emit signal for successful application launch */
-				g_signal_emit_by_name(xfdashboard_application_get_default(), "application-launched", appInfo);
+				g_signal_emit_by_name(xfdashboard_core_get_default(), "application-launched", appInfo);
 
 				/* Quit application */
-				xfdashboard_application_suspend_or_quit(NULL);
+				xfdashboard_core_quit(NULL);
 			}
 
 		/* Release allocated resources */
@@ -1496,7 +1496,7 @@ static void xfdashboard_applications_search_provider_init(XfdashboardApplication
 	priv->allApps=xfdashboard_application_database_get_all_applications(priv->appDB);
 
 	/* Bind to settings property to react on changes */
-	settings=xfdashboard_application_get_settings(NULL);
+	settings=xfdashboard_core_get_settings(NULL);
 	priv->sortModeBinding=
 		g_object_bind_property(settings,
 								"applications-search-sort-mode",
