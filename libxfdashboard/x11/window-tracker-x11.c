@@ -52,7 +52,7 @@
 #include <libxfdashboard/x11/window-tracker-window-x11.h>
 #include <libxfdashboard/x11/window-tracker-workspace-x11.h>
 #include <libxfdashboard/marshal.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -73,8 +73,8 @@ struct _XfdashboardWindowTrackerX11Private
 	GList									*workspaces;
 	GList									*monitors;
 
-	XfdashboardApplication					*application;
-	gboolean								isAppSuspended;
+	XfdashboardCore							*core;
+	gboolean								isCoreSuspended;
 	guint									suspendSignalID;
 
 	WnckScreen								*screen;
@@ -687,7 +687,7 @@ static void _xfdashboard_window_tracker_x11_on_window_opened(XfdashboardWindowTr
 	g_signal_connect_swapped(window, "geometry-changed", G_CALLBACK(_xfdashboard_window_tracker_x11_on_window_geometry_changed), self);
 
 	/* Block signal handler for 'geometry-changed' at window if application is suspended */
-	if(priv->isAppSuspended)
+	if(priv->isCoreSuspended)
 	{
 		g_signal_handlers_block_by_func(window, _xfdashboard_window_tracker_x11_on_window_geometry_changed, self);
 	}
@@ -1120,23 +1120,23 @@ static void _xfdashboard_window_tracker_x11_on_window_manager_changed(Xfdashboar
 }
 
 /* Suspension state of application changed */
-static void _xfdashboard_window_tracker_x11_on_application_suspended_changed(XfdashboardWindowTrackerX11 *self,
-																				GParamSpec *inSpec,
-																				gpointer inUserData)
+static void _xfdashboard_window_tracker_x11_on_core_suspended_changed(XfdashboardWindowTrackerX11 *self,
+																		GParamSpec *inSpec,
+																		gpointer inUserData)
 {
 	XfdashboardWindowTrackerX11Private		*priv;
-	XfdashboardApplication					*app;
+	XfdashboardCore							*core;
 	GList									*iter;
 	XfdashboardWindowTrackerWindow			*window;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(self));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_CORE(inUserData));
 
 	priv=self->priv;
-	app=XFDASHBOARD_APPLICATION(inUserData);
+	core=XFDASHBOARD_CORE(inUserData);
 
 	/* Get application suspend state */
-	priv->isAppSuspended=xfdashboard_application_is_suspended(app);
+	priv->isCoreSuspended=xfdashboard_core_is_suspended(core);
 
 	/* Iterate through all windows and connect handler to signal 'geometry-changed'
 	 * if application was resumed or disconnect signal handler if it was suspended.
@@ -1148,7 +1148,7 @@ static void _xfdashboard_window_tracker_x11_on_application_suspended_changed(Xfd
 		if(!window) continue;
 
 		/* If application was suspended disconnect signal handlers ... */
-		if(priv->isAppSuspended)
+		if(priv->isCoreSuspended)
 		{
 			g_signal_handlers_block_by_func(window, _xfdashboard_window_tracker_x11_on_window_geometry_changed, self);
 		}
@@ -1673,10 +1673,10 @@ static void _xfdashboard_window_tracker_x11_dispose(GObject *inObject)
 	/* Dispose allocated resources */
 	if(priv->suspendSignalID)
 	{
-		if(priv->application)
+		if(priv->core)
 		{
-			g_signal_handler_disconnect(priv->application, priv->suspendSignalID);
-			priv->application=NULL;
+			g_signal_handler_disconnect(priv->core, priv->suspendSignalID);
+			priv->core=NULL;
 		}
 
 		priv->suspendSignalID=0;
@@ -1945,13 +1945,13 @@ void xfdashboard_window_tracker_x11_init(XfdashboardWindowTrackerX11 *self)
 	}
 #endif
 
-	/* Handle suspension signals from application */
-	priv->application=xfdashboard_application_get_default();
-	priv->suspendSignalID=g_signal_connect_swapped(priv->application,
+	/* Handle suspension signals from core */
+	priv->core=xfdashboard_core_get_default();
+	priv->suspendSignalID=g_signal_connect_swapped(priv->core,
 													"notify::is-suspended",
-													G_CALLBACK(_xfdashboard_window_tracker_x11_on_application_suspended_changed),
+													G_CALLBACK(_xfdashboard_window_tracker_x11_on_core_suspended_changed),
 													self);
-	priv->isAppSuspended=xfdashboard_application_is_suspended(priv->application);
+	priv->isCoreSuspended=xfdashboard_core_is_suspended(priv->core);
 }
 
 

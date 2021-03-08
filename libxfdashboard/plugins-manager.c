@@ -45,7 +45,7 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/plugin.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/settings.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -58,8 +58,8 @@ struct _XfdashboardPluginsManagerPrivate
 	gboolean				isInited;
 	GList					*plugins;
 
-	XfdashboardApplication	*application;
-	guint					applicationInitializedSignalID;
+	XfdashboardCore			*core;
+	guint					coreInitializedSignalID;
 
 	XfdashboardSettings		*settings;
 	guint					settingsEnabledPluginsNotifySignalID;
@@ -404,7 +404,7 @@ static void _xfdashboard_plugins_manager_on_application_initialized(XfdashboardP
 	XfdashboardPlugin					*plugin;
 
 	g_return_if_fail(XFDASHBOARD_IS_PLUGINS_MANAGER(self));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_CORE(inUserData));
 
 	priv=self->priv;
 
@@ -429,15 +429,15 @@ static void _xfdashboard_plugins_manager_on_application_initialized(XfdashboardP
 	}
 
 	/* Disconnect signal handler as this signal is emitted only once */
-	if(priv->application)
+	if(priv->core)
 	{
-		if(priv->applicationInitializedSignalID)
+		if(priv->coreInitializedSignalID)
 		{
-			g_signal_handler_disconnect(priv->application, priv->applicationInitializedSignalID);
-			priv->applicationInitializedSignalID=0;
+			g_signal_handler_disconnect(priv->core, priv->coreInitializedSignalID);
+			priv->coreInitializedSignalID=0;
 		}
 
-		priv->application=NULL;
+		priv->core=NULL;
 	}
 }
 
@@ -499,15 +499,15 @@ static void _xfdashboard_plugins_manager_dispose(GObject *inObject)
 		priv->plugins=NULL;
 	}
 
-	if(priv->application)
+	if(priv->core)
 	{
-		if(priv->applicationInitializedSignalID)
+		if(priv->coreInitializedSignalID)
 		{
-			g_signal_handler_disconnect(priv->application, priv->applicationInitializedSignalID);
-			priv->applicationInitializedSignalID=0;
+			g_signal_handler_disconnect(priv->core, priv->coreInitializedSignalID);
+			priv->coreInitializedSignalID=0;
 		}
 
-		priv->application=NULL;
+		priv->core=NULL;
 	}
 
 	if(priv->settings)
@@ -565,8 +565,7 @@ static void xfdashboard_plugins_manager_init(XfdashboardPluginsManager *self)
 	/* Set default values */
 	priv->isInited=FALSE;
 	priv->plugins=NULL;
-	priv->application=xfdashboard_application_get_default();
-	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
+	priv->settings=g_object_ref(xfdashboard_core_get_settings(NULL));
 
 	/* Connect signal to get notified about changes of enabled-plugins
 	 * property in settings.
@@ -580,8 +579,9 @@ static void xfdashboard_plugins_manager_init(XfdashboardPluginsManager *self)
 	/* Connect signal to get notified when application is fully initialized
 	 * to enable loaded plugins.
 	 */
-	priv->applicationInitializedSignalID=
-		g_signal_connect_swapped(priv->application,
+	priv->core=xfdashboard_core_get_default();
+	priv->coreInitializedSignalID=
+		g_signal_connect_swapped(priv->core,
 									"initialized",
 									G_CALLBACK(_xfdashboard_plugins_manager_on_application_initialized),
 									self);

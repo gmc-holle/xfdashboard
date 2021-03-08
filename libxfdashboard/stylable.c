@@ -30,7 +30,7 @@
 
 #include <glib/gi18n-lib.h>
 
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/compat.h>
 
 
@@ -266,7 +266,7 @@ static void _xfdashboard_stylable_real_invalidate(XfdashboardStylable *self)
 	if(!stylableProperties) return;
 
 	/* Get theme CSS */
-	theme=xfdashboard_application_get_theme(NULL);
+	theme=xfdashboard_core_get_theme(NULL);
 	themeCSS=xfdashboard_theme_get_css(theme);
 
 	/* Get styled properties from theme CSS */

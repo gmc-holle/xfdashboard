@@ -265,7 +265,7 @@ void xfdashboard_middle_click_window_close_init(XfdashboardMiddleClickWindowClos
 	self->priv=priv=xfdashboard_middle_click_window_close_get_instance_private(self);
 
 	/* Set up default values */
-	priv->stage=xfdashboard_application_get_stage(NULL);
+	priv->stage=xfdashboard_core_get_stage(NULL);
 	priv->stageActorCreatedSignalID=0;
 	priv->stageDestroySignalID=0;
 	priv->liveWindowSelector=xfdashboard_css_selector_new_from_string("XfdashboardWindowsView XfdashboardLiveWindow");

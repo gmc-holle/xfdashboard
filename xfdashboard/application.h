@@ -31,10 +31,7 @@
 
 #include <gio/gio.h>
 
-#include <libxfdashboard/theme.h>
 #include <libxfdashboard/focusable.h>
-#include <libxfdashboard/stage.h>
-#include <libxfdashboard/settings.h>
 
 G_BEGIN_DECLS
 
@@ -105,21 +102,6 @@ struct _XfdashboardApplicationClass
 	GApplicationClass				parent_class;
 
 	/*< public >*/
-	/* Virtual functions */
-	void (*initialized)(XfdashboardApplication *self);
-
-	void (*suspend)(XfdashboardApplication *self);
-	void (*resume)(XfdashboardApplication *self);
-
-	void (*quit)(XfdashboardApplication *self);
-	void (*shutdown_final)(XfdashboardApplication *self);
-
-	void (*theme_loading)(XfdashboardApplication *self, XfdashboardTheme *inTheme);
-	void (*theme_loaded)(XfdashboardApplication *self, XfdashboardTheme *inTheme);
-	void (*theme_changed)(XfdashboardApplication *self, XfdashboardTheme *inTheme);
-
-	void (*application_launched)(XfdashboardApplication *self, GAppInfo *inAppInfo);
-
 	/* Binding actions */
 	gboolean (*exit)(XfdashboardApplication *self,
 						XfdashboardFocusable *inSource,
@@ -131,21 +113,11 @@ struct _XfdashboardApplicationClass
 /* Public API */
 GType xfdashboard_application_get_type(void) G_GNUC_CONST;
 
-gboolean xfdashboard_application_has_default(void);
-XfdashboardApplication* xfdashboard_application_get_default(void);
-
-XfdashboardSettings* xfdashboard_application_get_settings(XfdashboardApplication *self);
+XfdashboardApplication* xfdashboard_application_new(void);
 
 gboolean xfdashboard_application_is_daemonized(XfdashboardApplication *self);
-gboolean xfdashboard_application_is_suspended(XfdashboardApplication *self);
 
-gboolean xfdashboard_application_is_quitting(XfdashboardApplication *self);
-void xfdashboard_application_resume(XfdashboardApplication *self);
-void xfdashboard_application_suspend_or_quit(XfdashboardApplication *self);
 void xfdashboard_application_quit_forced(XfdashboardApplication *self);
-
-XfdashboardStage* xfdashboard_application_get_stage(XfdashboardApplication *self);
-XfdashboardTheme* xfdashboard_application_get_theme(XfdashboardApplication *self);
 
 G_END_DECLS
 

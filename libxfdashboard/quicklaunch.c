@@ -33,7 +33,7 @@
 #include <gtk/gtk.h>
 
 #include <libxfdashboard/enums.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/application-button.h>
 #include <libxfdashboard/toggle-button.h>
 #include <libxfdashboard/drag-action.h>
@@ -362,9 +362,9 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 				xfdashboard_window_tracker_window_activate(lastActiveWindow);
 
 				/* Activating last active window of application seems to be successfully
-				 * so quit application.
+				 * so request core to quit.
 				 */
-				xfdashboard_application_suspend_or_quit(NULL);
+				xfdashboard_core_quit(NULL);
 
 				return;
 			}
@@ -394,8 +394,8 @@ static void _xfdashboard_quicklaunch_on_favourite_clicked(XfdashboardQuicklaunch
 	/* Launch a new instance of application whose button was clicked */
 	if(xfdashboard_application_button_execute(button, NULL))
 	{
-		/* Launching application seems to be successfully so quit application */
-		xfdashboard_application_suspend_or_quit(NULL);
+		/* Launching application seems to be successfully so request core to quit */
+		xfdashboard_core_quit(NULL);
 
 		return;
 	}
@@ -454,10 +454,10 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(Xfdashb
 									g_app_info_get_display_name(appInfo));
 
 				/* Emit signal for successful application launch */
-				g_signal_emit_by_name(xfdashboard_application_get_default(), "application-launched", appInfo);
+				g_signal_emit_by_name(xfdashboard_core_get_default(), "application-launched", appInfo);
 
-				/* Quit application */
-				xfdashboard_application_suspend_or_quit(NULL);
+				/* Request core to quit */
+				xfdashboard_core_quit(NULL);
 			}
 
 		/* Release allocated resources */
@@ -3198,7 +3198,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	priv->dragPreviewIcon=NULL;
 	priv->selectedItem=NULL;
 	priv->appDB=xfdashboard_application_database_get_default();
-	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
+	priv->settings=g_object_ref(xfdashboard_core_get_settings(NULL));
 
 	/* Set up this actor */
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);

@@ -29,7 +29,6 @@ libxfdashboard_la_headers = \
 	action-button.h \
 	actor.h \
 	animation.h \
-	application.h \
 	application-button.h \
 	application-database.h \
 	application-tracker.h \
@@ -44,6 +43,7 @@ libxfdashboard_la_headers = \
 	click-action.h \
 	collapse-box.h \
 	compat.h \
+	core.h \
 	css-selector.h \
 	debug.h \
 	desktop-app-info.h \
@@ -111,7 +111,6 @@ libxfdashboard_la_SOURCES = \
 	action-button.c \
 	actor.c \
 	animation.c \
-	application.c \
 	application-button.c \
 	application-database.c \
 	application-tracker.c \
@@ -125,6 +124,7 @@ libxfdashboard_la_SOURCES = \
 	button.c \
 	click-action.c \
 	collapse-box.c \
+	core.c \
 	css-selector.c \
 	debug.c \
 	desktop-app-info.c \

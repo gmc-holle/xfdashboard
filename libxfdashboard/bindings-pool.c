@@ -32,7 +32,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/settings.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
@@ -1102,7 +1102,7 @@ gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **
 	}
 
 	/* Get search path for themes */
-	settings=xfdashboard_application_get_settings(NULL);
+	settings=xfdashboard_core_get_settings(NULL);
 	filePaths=xfdashboard_settings_get_binding_files(settings);
 
 	/* Iterate through file paths and try to load any existing binding file */

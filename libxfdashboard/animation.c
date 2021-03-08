@@ -63,7 +63,7 @@
 #include <gobject/gvaluecollector.h>
 
 #include <libxfdashboard/transition-group.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/theme.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -656,7 +656,7 @@ void xfdashboard_animation_init(XfdashboardAnimation *self)
  *   XfdashboardTheme          *theme;
  *   XfdashboardThemeAnimation *theme_animations;
  *
- *   theme=xfdashboard_application_get_theme(NULL);
+ *   theme=xfdashboard_core_get_theme(NULL);
  *   theme_animations=xfdashboard_theme_get_animation(theme);
  *   animation=xfdashboard_theme_animation_create(theme_animations, inSender, inSignal, NULL, NULL);
  * ]|
@@ -672,7 +672,7 @@ XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, cons
 	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
 	g_return_val_if_fail(inSignal && *inSignal, NULL);
 
-	theme=xfdashboard_application_get_theme(NULL);
+	theme=xfdashboard_core_get_theme(NULL);
 	themeAnimation=xfdashboard_theme_get_animation(theme);
 	animation=xfdashboard_theme_animation_create(themeAnimation, inSender, inSignal, NULL, NULL);
 
@@ -710,7 +710,7 @@ XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, cons
  *   XfdashboardTheme          *theme;
  *   XfdashboardThemeAnimation *theme_animations;
  *
- *   theme=xfdashboard_application_get_theme(NULL);
+ *   theme=xfdashboard_core_get_theme(NULL);
  *   theme_animations=xfdashboard_theme_get_animation(theme);
  *   animation=xfdashboard_theme_animation_create(theme_animations, inSender, inSignal, inDefaultInitialValues, inDefaultFinalValues);
  * ]|
@@ -729,7 +729,7 @@ XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *in
 	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
 	g_return_val_if_fail(inSignal && *inSignal, NULL);
 
-	theme=xfdashboard_application_get_theme(NULL);
+	theme=xfdashboard_core_get_theme(NULL);
 	themeAnimation=xfdashboard_theme_get_animation(theme);
 	animation=xfdashboard_theme_animation_create(themeAnimation, inSender, inSignal, inDefaultInitialValues, inDefaultFinalValues);
 
@@ -751,7 +751,7 @@ XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *in
  *   XfdashboardTheme          *theme;
  *   XfdashboardThemeAnimation *theme_animations;
  *
- *   theme=xfdashboard_application_get_theme(NULL);
+ *   theme=xfdashboard_core_get_theme(NULL);
  *   theme_animations=xfdashboard_theme_get_animation(theme);
  *   animation=xfdashboard_theme_animation_create_by_id(theme_animations, inSender, inSignal, NULL, NULL);
  * ]|
@@ -767,7 +767,7 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender
 	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
 	g_return_val_if_fail(inID && *inID, NULL);
 
-	theme=xfdashboard_application_get_theme(NULL);
+	theme=xfdashboard_core_get_theme(NULL);
 	themeAnimation=xfdashboard_theme_get_animation(theme);
 	animation=xfdashboard_theme_animation_create_by_id(themeAnimation, inSender, inID, NULL, NULL);
 
@@ -805,7 +805,7 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender
  *   XfdashboardTheme          *theme;
  *   XfdashboardThemeAnimation *theme_animations;
  *
- *   theme=xfdashboard_application_get_theme(NULL);
+ *   theme=xfdashboard_core_get_theme(NULL);
  *   theme_animations=xfdashboard_theme_get_animation(theme);
  *   animation=xfdashboard_theme_animation_create_by_id(theme_animations, inSender, inSignal, inDefaultInitialValues, inDefaultFinalValues);
  * ]|
@@ -824,7 +824,7 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id_with_values(XfdashboardAct
 	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
 	g_return_val_if_fail(inID && *inID, NULL);
 
-	theme=xfdashboard_application_get_theme(NULL);
+	theme=xfdashboard_core_get_theme(NULL);
 	themeAnimation=xfdashboard_theme_get_animation(theme);
 	animation=xfdashboard_theme_animation_create_by_id(themeAnimation, inSender, inID, inDefaultInitialValues, inDefaultFinalValues);
 
@@ -847,7 +847,7 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id_with_values(XfdashboardAct
  *   gchar                     *animation_id;
  *   gboolean                  has_animation;
  *
- *   theme=xfdashboard_application_get_theme(NULL);
+ *   theme=xfdashboard_core_get_theme(NULL);
  *   theme_animations=xfdashboard_theme_get_animation(theme);
  *   animation_id=xfdashboard_theme_animation_lookup_id(theme_animations, inSender, inSignal);
  *   has_animation=(animation_id!=NULL ? TRUE : FALSE);
@@ -869,7 +869,7 @@ gboolean xfdashboard_animation_has_animation(XfdashboardActor *inSender, const g
 	/* Check if an animation ID matching sender and signal could be found. If it is found
 	 * then an animation exists otherwise not.
 	 */
-	theme=xfdashboard_application_get_theme(NULL);
+	theme=xfdashboard_core_get_theme(NULL);
 	themeAnimation=xfdashboard_theme_get_animation(theme);
 	animationID=xfdashboard_theme_animation_lookup_id(themeAnimation, inSender, inSignal);
 	if(animationID)

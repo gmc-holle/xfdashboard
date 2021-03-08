@@ -29,7 +29,7 @@
 
 #include <glib/gi18n-lib.h>
 
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/animation.h>
@@ -379,7 +379,7 @@ static void _xfdashboard_actor_update_effects(XfdashboardActor *self, const gcha
 	 * Also take a reference on theme effect instance as it needs to be alive
 	 * while iterating through list of effect IDs and creating these effects.
 	 */
-	theme=xfdashboard_application_get_theme(NULL);
+	theme=xfdashboard_core_get_theme(NULL);
 
 	themeEffects=xfdashboard_theme_get_effects(theme);
 	g_object_ref(themeEffects);
@@ -627,7 +627,7 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 	if(!priv->forceStyleRevalidation && !clutter_actor_is_mapped(CLUTTER_ACTOR(self))) return;
 
 	/* Get theme */
-	theme=xfdashboard_application_get_theme(NULL);
+	theme=xfdashboard_core_get_theme(NULL);
 
 	/* Get theme CSS */
 	themeCSS=xfdashboard_theme_get_css(theme);

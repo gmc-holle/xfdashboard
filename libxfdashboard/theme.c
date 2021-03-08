@@ -32,7 +32,7 @@
 #include <glib.h>
 #include <gio/gio.h>
 
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/settings.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -490,7 +490,7 @@ static gchar* _xfdashboard_theme_lookup_path_for_theme(XfdashboardTheme *self,
 	themeFile=NULL;
 
 	/* Get search path for themes */
-	settings=xfdashboard_application_get_settings(NULL);
+	settings=xfdashboard_core_get_settings(NULL);
 	searchPaths=xfdashboard_settings_get_theme_search_paths(settings);
 
 	/* Iterate through search paths and look up theme */

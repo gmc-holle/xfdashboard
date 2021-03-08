@@ -33,7 +33,7 @@
 #include <gdk/gdk.h>
 #include <math.h>
 
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/viewpad.h>
 #include <libxfdashboard/view-selector.h>
 #include <libxfdashboard/text-box.h>
@@ -189,10 +189,10 @@ static gboolean _xfdashboard_stage_event(ClutterActor *inActor, ClutterEvent *in
 					xfdashboard_text_box_set_text(XFDASHBOARD_TEXT_BOX(priv->searchbox), NULL);
 					return(CLUTTER_EVENT_STOP);
 				}
-					/* ... otherwise quit application */
+					/* ... otherwise request core to quit */
 					else
 					{
-						xfdashboard_application_suspend_or_quit(NULL);
+						xfdashboard_core_quit(NULL);
 						return(CLUTTER_EVENT_STOP);
 					}
 			}
@@ -723,7 +723,7 @@ static void _xfdashboard_stage_on_application_suspend(XfdashboardStage *self, gp
 	XfdashboardStagePrivate				*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_CORE(inUserData));
 
 	priv=self->priv;
 
@@ -750,7 +750,7 @@ static void _xfdashboard_stage_on_application_resume(XfdashboardStage *self, gpo
 	XfdashboardStagePrivate				*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_CORE(inUserData));
 
 	priv=self->priv;
 
@@ -903,7 +903,7 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 
 	g_return_if_fail(XFDASHBOARD_IS_STAGE(self));
 	g_return_if_fail(XFDASHBOARD_IS_THEME(inTheme));
-	g_return_if_fail(XFDASHBOARD_IS_APPLICATION(inUserData));
+	g_return_if_fail(XFDASHBOARD_IS_CORE(inUserData));
 
 	priv=self->priv;
 
@@ -1406,7 +1406,7 @@ static void _xfdashboard_stage_on_monitor_added(XfdashboardStage *self,
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER(inUserData));
 
 	/* Get theme and theme layout */
-	theme=xfdashboard_application_get_theme(NULL);
+	theme=xfdashboard_core_get_theme(NULL);
 	themeLayout=xfdashboard_theme_get_layout(theme);
 
 	/* Create interface for non-primary monitors. If no interface is defined in theme
@@ -1896,7 +1896,7 @@ static void xfdashboard_stage_class_init(XfdashboardStageClass *klass)
 static void xfdashboard_stage_init(XfdashboardStage *self)
 {
 	XfdashboardStagePrivate		*priv;
-	XfdashboardApplication		*application;
+	XfdashboardCore				*core;
 	ClutterConstraint			*widthConstraint;
 	ClutterConstraint			*heightConstraint;
 	ClutterColor				transparent;
@@ -1925,7 +1925,7 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv->backgroundImageLayer=NULL;
 	priv->switchToView=NULL;
 	priv->focusActorOnShow=NULL;
-	priv->settings=g_object_ref(xfdashboard_application_get_settings(NULL));
+	priv->settings=g_object_ref(xfdashboard_core_get_settings(NULL));
 
 	/* Create background actors but order of adding background children is important */
 	widthConstraint=clutter_bind_constraint_new(CLUTTER_ACTOR(self), CLUTTER_BIND_WIDTH, 0.0f);
@@ -1966,19 +1966,19 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 								G_CALLBACK(_xfdashboard_stage_on_primary_monitor_changed),
 								self);
 
-	/* Connect signal to application */
-	application=xfdashboard_application_get_default();
-	g_signal_connect_swapped(application,
+	/* Connect signal to core */
+	core=xfdashboard_core_get_default();
+	g_signal_connect_swapped(core,
 								"suspend",
 								G_CALLBACK(_xfdashboard_stage_on_application_suspend),
 								self);
 
-	g_signal_connect_swapped(application,
+	g_signal_connect_swapped(core,
 								"resume",
 								G_CALLBACK(_xfdashboard_stage_on_application_resume),
 								self);
 
-	g_signal_connect_swapped(application,
+	g_signal_connect_swapped(core,
 								"theme-changed",
 								G_CALLBACK(_xfdashboard_stage_on_application_theme_changed),
 								self);

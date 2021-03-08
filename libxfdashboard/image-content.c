@@ -31,7 +31,7 @@
 #include <gtk/gtk.h>
 #include <math.h>
 
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/stylable.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -145,15 +145,15 @@ static ClutterImage* _xfdashboard_image_content_get_cached_image(const gchar *in
 /* Destroy cache hashtable */
 static void _xfdashboard_image_content_destroy_cache(void)
 {
-	XfdashboardApplication		*application;
+	XfdashboardCore				*core;
 	gint						cacheSize;
 
 	/* Only an existing cache can be destroyed */
 	if(!_xfdashboard_image_content_cache) return;
 
 	/* Disconnect application "shutdown" signal handler */
-	application=xfdashboard_application_get_default();
-	g_signal_handler_disconnect(application, _xfdashboard_image_content_cache_shutdownSignalID);
+	core=xfdashboard_core_get_default();
+	g_signal_handler_disconnect(core, _xfdashboard_image_content_cache_shutdownSignalID);
 	_xfdashboard_image_content_cache_shutdownSignalID=0;
 
 	/* Destroy cache hashtable */
@@ -188,7 +188,7 @@ static void _xfdashboard_image_content_destroy_cache(void)
 /* Create cache hashtable if not already set up */
 static void _xfdashboard_image_content_create_cache(void)
 {
-	XfdashboardApplication		*application;
+	XfdashboardCore				*core;
 
 	/* Cache was already set up */
 	if(_xfdashboard_image_content_cache) return;
@@ -200,8 +200,12 @@ static void _xfdashboard_image_content_create_cache(void)
 	/* Connect to "shutdown" signal of application to
 	 * clean up hashtable
 	 */
-	application=xfdashboard_application_get_default();
-	_xfdashboard_image_content_cache_shutdownSignalID=g_signal_connect(application, "shutdown-final", G_CALLBACK(_xfdashboard_image_content_destroy_cache), NULL);
+	core=xfdashboard_core_get_default();
+	_xfdashboard_image_content_cache_shutdownSignalID=
+		g_signal_connect(core,
+							"shutdown",
+							G_CALLBACK(_xfdashboard_image_content_destroy_cache),
+							NULL);
 }
 
 /* Remove image from cache */
@@ -394,7 +398,7 @@ static void _xfdashboard_image_content_load_from_file(XfdashboardImageContent *s
 		const gchar						*themePath;
 
 		/* Get theme path */
-		theme=xfdashboard_application_get_theme(NULL);
+		theme=xfdashboard_core_get_theme(NULL);
 		g_object_ref(theme);
 
 		themePath=xfdashboard_theme_get_path(theme);
@@ -998,7 +1002,7 @@ static void _xfdashboard_image_content_setup_for_icon(XfdashboardImageContent *s
 			gchar						*iconFilename;
 
 			/* Build absolute path from theme path and given relative path to icon */
-			theme=xfdashboard_application_get_theme(NULL);
+			theme=xfdashboard_core_get_theme(NULL);
 			g_object_ref(theme);
 
 			iconFilename=g_build_filename(xfdashboard_theme_get_path(theme),

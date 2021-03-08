@@ -41,7 +41,7 @@
 #include <libxfdashboard/window-content.h>
 #include <libxfdashboard/image-content.h>
 #include <libxfdashboard/stylable.h>
-#include <libxfdashboard/application.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/compat.h>
 
 
@@ -1188,7 +1188,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_add_child(priv->actorControlLayer, priv->actorWindowNumber);
 
 	/* Bind to settings to react on changes */
-	settings=xfdashboard_application_get_settings(NULL);
+	settings=xfdashboard_core_get_settings(NULL);
 	priv->settingsAllowSubwindowsBinding=
 		g_object_bind_property(settings,
 								"allow-subwindows",

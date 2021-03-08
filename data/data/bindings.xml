@@ -1,5 +1,7 @@
 <bindings>
 	<!-- Global bindings -->
+<key code="<Ctrl>-q" source="XfdashboardFocusable" target="XfdashboardApplication" when="pressed">exit</key>
+
 	<key code="Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-next</key>
 	<key code="KP_Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-next</key>
 	<key code="<Shift>-Tab" source="XfdashboardFocusable" target="XfdashboardFocusManager" when="released">focus-move-previous</key>
