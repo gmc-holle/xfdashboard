@@ -791,7 +791,7 @@ void xfdashboard_background_set_outline_width(XfdashboardBackground *self, const
 /* Get/set sides of border of outline to draw rounded when drawing outline */
 XfdashboardBorders xfdashboard_background_get_outline_borders(XfdashboardBackground *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), XFDASHBOARD_CORNERS_NONE);
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), XFDASHBOARD_BORDERS_NONE);
 
 	return(self->priv->outlineBorders);
 }

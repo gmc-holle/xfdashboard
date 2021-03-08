@@ -438,7 +438,7 @@ static void _xfdashboard_window_tracker_x11_on_window_actions_changed(Xfdashboar
 	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inUserData);
 
 	/* Debugging information */
-	newActions=xfdashboard_window_tracker_window_get_state(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
+	newActions=xfdashboard_window_tracker_window_get_actions(XFDASHBOARD_WINDOW_TRACKER_WINDOW(window));
 	changedActions=inOldActions ^ newActions;
 	XFDASHBOARD_DEBUG(self, WINDOWS,
 						"Window '%s' changed actions from %u to %u with mask %u",
