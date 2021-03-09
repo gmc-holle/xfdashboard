@@ -209,14 +209,6 @@ libxfdashboard_la_LIBADD = \
 	$(LIBXFCE4UI_LIBS) \
 	$(LIBM)
 
-if DBUS_GLIB
-libxfdashboard_la_CFLAGS += \
-	$(DBUS_GLIB_CFLAGS)
-
-libxfdashboard_la_LIBADD += \
-	$(DBUS_GLIB_LIBS)
-endif
-
 libxfdashboard_la_LDFLAGS = \
 	-export-dynamic \
 	-version-info $(LIBXFDASHBOARD_VERINFO) \
