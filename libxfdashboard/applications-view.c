@@ -313,7 +313,7 @@ static void _xfdashboard_applications_view_on_popup_menu_item_launch(Xfdashboard
 	if(gicon) iconName=g_icon_to_string(gicon);
 
 	/* Check if we should launch that application or to open a new window */
-	appTracker=xfdashboard_application_tracker_get_default();
+	appTracker=xfdashboard_core_get_application_tracker(NULL);
 	if(!xfdashboard_application_tracker_is_running_by_app_info(appTracker, appInfo))
 	{
 		GAppLaunchContext			*context;
@@ -408,7 +408,7 @@ static void _xfdashboard_applications_view_on_popup_menu(XfdashboardApplications
 		}
 
 		/* Add menu item to launch application if it is not running */
-		appTracker=xfdashboard_application_tracker_get_default();
+		appTracker=xfdashboard_core_get_application_tracker(NULL);
 		if(!xfdashboard_application_tracker_is_running_by_app_info(appTracker, appInfo))
 		{
 			menuItem=xfdashboard_popup_menu_item_button_new();
@@ -562,7 +562,7 @@ static void _xfdashboard_applications_view_on_all_applications_menu_clicked(Xfda
 	}
 
 	/* Create menu items for all installed applications */
-	appDB=xfdashboard_application_database_get_default();
+	appDB=xfdashboard_core_get_application_database(NULL);
 
 	allApps=xfdashboard_application_database_get_all_applications(appDB);
 	allApps=g_list_sort(allApps, (GCompareFunc)_xfdashboard_applications_view_on_all_applications_sort_app_info);

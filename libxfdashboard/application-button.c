@@ -473,7 +473,7 @@ static void xfdashboard_application_button_init(XfdashboardApplicationButton *se
 	priv->showDescription=FALSE;
 	priv->formatTitleOnly=NULL;
 	priv->formatTitleDescription=NULL;
-	priv->appTracker=xfdashboard_application_tracker_get_default();
+	priv->appTracker=xfdashboard_core_get_application_tracker(NULL);
 	priv->runningStateChangedID=0;
 
 	/* Connect signals */
@@ -820,7 +820,7 @@ guint xfdashboard_application_button_add_popup_menu_items_for_windows(Xfdashboar
 		 * of list if it is on active workspace and to end of list if it
 		 * is on any other workspace.
 		 */
-		windowTracker=xfdashboard_window_tracker_get_default();
+		windowTracker=xfdashboard_core_get_window_tracker(NULL);
 		activeWorkspace=xfdashboard_window_tracker_get_active_workspace(windowTracker);
 
 		sortedList=NULL;

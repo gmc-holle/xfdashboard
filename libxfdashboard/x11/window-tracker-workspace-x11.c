@@ -48,6 +48,7 @@
 
 #include <libxfdashboard/x11/window-tracker-x11.h>
 #include <libxfdashboard/window-tracker.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
 
@@ -259,7 +260,7 @@ static gboolean _xfdashboard_window_tracker_workspace_x11_window_tracker_workspa
 	}
 
 	/* Get current active workspace */
-	windowTracker=xfdashboard_window_tracker_get_default();
+	windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	activeWorkspace=xfdashboard_window_tracker_get_active_workspace(windowTracker);
 	g_object_unref(windowTracker);
 

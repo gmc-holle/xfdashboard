@@ -1904,8 +1904,8 @@ static void xfdashboard_stage_init(XfdashboardStage *self)
 	priv=self->priv=xfdashboard_stage_get_instance_private(self);
 
 	/* Set default values */
-	priv->focusManager=xfdashboard_focus_manager_get_default();
-	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->focusManager=xfdashboard_core_get_focus_manager(NULL);
+	priv->windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	priv->stageWindow=NULL;
 	priv->primaryInterface=NULL;
 	priv->quicklaunch=NULL;

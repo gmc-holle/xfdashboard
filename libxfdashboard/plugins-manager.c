@@ -71,9 +71,6 @@ G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardPluginsManager,
 
 /* IMPLEMENTATION: Private variables and methods */
 
-/* Single instance of plugin manager */
-static XfdashboardPluginsManager*			_xfdashboard_plugins_manager=NULL;
-
 /* Find path to plugin */
 static gchar* _xfdashboard_plugins_manager_find_plugin_path(XfdashboardPluginsManager *self,
 															const gchar *inPluginName)
@@ -443,26 +440,6 @@ static void _xfdashboard_plugins_manager_on_application_initialized(XfdashboardP
 
 /* IMPLEMENTATION: GObject */
 
-/* Construct this object */
-static GObject* _xfdashboard_plugins_manager_constructor(GType inType,
-															guint inNumberConstructParams,
-															GObjectConstructParam *inConstructParams)
-{
-	GObject									*object;
-
-	if(!_xfdashboard_plugins_manager)
-	{
-		object=G_OBJECT_CLASS(xfdashboard_plugins_manager_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
-		_xfdashboard_plugins_manager=XFDASHBOARD_PLUGINS_MANAGER(object);
-	}
-		else
-		{
-			object=g_object_ref(G_OBJECT(_xfdashboard_plugins_manager));
-		}
-
-	return(object);
-}
-
 /* Dispose this object */
 static void _xfdashboard_plugins_manager_dispose(GObject *inObject)
 {
@@ -526,19 +503,6 @@ static void _xfdashboard_plugins_manager_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_plugins_manager_parent_class)->dispose(inObject);
 }
 
-/* Finalize this object */
-static void _xfdashboard_plugins_manager_finalize(GObject *inObject)
-{
-	/* Release allocated resources finally, e.g. unset singleton */
-	if(G_LIKELY(G_OBJECT(_xfdashboard_plugins_manager)==inObject))
-	{
-		_xfdashboard_plugins_manager=NULL;
-	}
-
-	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_plugins_manager_parent_class)->finalize(inObject);
-}
-
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
@@ -548,9 +512,7 @@ static void xfdashboard_plugins_manager_class_init(XfdashboardPluginsManagerClas
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->constructor=_xfdashboard_plugins_manager_constructor;
 	gobjectClass->dispose=_xfdashboard_plugins_manager_dispose;
-	gobjectClass->finalize=_xfdashboard_plugins_manager_finalize;
 }
 
 /* Object initialization
@@ -588,22 +550,6 @@ static void xfdashboard_plugins_manager_init(XfdashboardPluginsManager *self)
 }
 
 /* IMPLEMENTATION: Public API */
-
-/**
- * xfdashboard_plugins_manager_get_default:
- *
- * Retrieves the singleton instance of #XfdashboardPluginsManager.
- *
- * Return value: (transfer full): The instance of #XfdashboardPluginsManager.
- *   Use g_object_unref() when done.
- */
-XfdashboardPluginsManager* xfdashboard_plugins_manager_get_default(void)
-{
-	GObject									*singleton;
-
-	singleton=g_object_new(XFDASHBOARD_TYPE_PLUGINS_MANAGER, NULL);
-	return(XFDASHBOARD_PLUGINS_MANAGER(singleton));
-}
 
 /**
  * xfdashboard_plugins_manager_setup:

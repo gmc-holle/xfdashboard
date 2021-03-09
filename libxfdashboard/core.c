@@ -46,20 +46,12 @@
 
 #include <libxfdashboard/stage.h>
 #include <libxfdashboard/types.h>
-#include <libxfdashboard/view-manager.h>
 #include <libxfdashboard/applications-view.h>
 #include <libxfdashboard/windows-view.h>
 #include <libxfdashboard/search-view.h>
-#include <libxfdashboard/search-manager.h>
 #include <libxfdashboard/applications-search-provider.h>
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/theme.h>
-#include <libxfdashboard/focus-manager.h>
-#include <libxfdashboard/bindings-pool.h>
-#include <libxfdashboard/application-database.h>
-#include <libxfdashboard/application-tracker.h>
-#include <libxfdashboard/plugins-manager.h>
-#include <libxfdashboard/window-tracker-backend.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -90,7 +82,7 @@ struct _XfdashboardCorePrivate
 	XfdashboardApplicationDatabase		*appDatabase;
 	XfdashboardApplicationTracker		*appTracker;
 
-	XfdashboardPluginsManager			*pluginManager;
+	XfdashboardPluginsManager			*pluginsManager;
 
 	XfdashboardWindowTrackerBackend		*windowTrackerBackend;
 };
@@ -308,10 +300,10 @@ static void _xfdashboard_core_dispose(GObject *inObject)
 		priv->windowTrackerBackend=NULL;
 	}
 
-	if(priv->pluginManager)
+	if(priv->pluginsManager)
 	{
-		g_object_unref(priv->pluginManager);
-		priv->pluginManager=NULL;
+		g_object_unref(priv->pluginsManager);
+		priv->pluginsManager=NULL;
 	}
 
 	if(priv->themeChangedBinding)
@@ -783,7 +775,7 @@ static void xfdashboard_core_init(XfdashboardCore *self)
 	priv->theme=NULL;
 	priv->themeChangedBinding=NULL;
 	priv->isQuitting=FALSE;
-	priv->pluginManager=NULL;
+	priv->pluginsManager=NULL;
 	priv->windowTrackerBackend=NULL;
 }
 
@@ -946,7 +938,7 @@ gboolean xfdashboard_core_initialize(XfdashboardCore *self, GError **outError)
 	}
 
 	/* Set up keyboard and pointer bindings */
-	priv->bindings=xfdashboard_bindings_pool_get_default();
+	priv->bindings=XFDASHBOARD_BINDINGS_POOL(g_object_new(XFDASHBOARD_TYPE_BINDINGS_POOL, NULL));
 	if(!priv->bindings)
 	{
 		/* Set error */
@@ -972,7 +964,7 @@ gboolean xfdashboard_core_initialize(XfdashboardCore *self, GError **outError)
 	 * application is running and to avoid multiple reinitializations. It must
 	 * be create before any class using a window tracker.
 	 */
-	priv->windowTrackerBackend=xfdashboard_window_tracker_backend_get_default();
+	priv->windowTrackerBackend=xfdashboard_window_tracker_backend_create();
 	if(!priv->windowTrackerBackend)
 	{
 		/* Set error */
@@ -986,7 +978,7 @@ gboolean xfdashboard_core_initialize(XfdashboardCore *self, GError **outError)
 	}
 
 	/* Set up application database */
-	priv->appDatabase=xfdashboard_application_database_get_default();
+	priv->appDatabase=XFDASHBOARD_APPLICATION_DATABASE(g_object_new(XFDASHBOARD_TYPE_APPLICATION_DATABASE, NULL));
 	if(!priv->appDatabase)
 	{
 		/* Set error */
@@ -1009,7 +1001,7 @@ gboolean xfdashboard_core_initialize(XfdashboardCore *self, GError **outError)
 	}
 
 	/* Set up application tracker */
-	priv->appTracker=xfdashboard_application_tracker_get_default();
+	priv->appTracker=XFDASHBOARD_APPLICATION_TRACKER(g_object_new(XFDASHBOARD_TYPE_APPLICATION_TRACKER, NULL));
 	if(!priv->appTracker)
 	{
 		/* Set error */
@@ -1023,27 +1015,27 @@ gboolean xfdashboard_core_initialize(XfdashboardCore *self, GError **outError)
 	}
 
 	/* Register built-in views (order of registration is important) */
-	priv->viewManager=xfdashboard_view_manager_get_default();
+	priv->viewManager=XFDASHBOARD_VIEW_MANAGER(g_object_new(XFDASHBOARD_TYPE_VIEW_MANAGER, NULL));
 
 	xfdashboard_view_manager_register(priv->viewManager, "builtin.windows", XFDASHBOARD_TYPE_WINDOWS_VIEW);
 	xfdashboard_view_manager_register(priv->viewManager, "builtin.applications", XFDASHBOARD_TYPE_APPLICATIONS_VIEW);
 	xfdashboard_view_manager_register(priv->viewManager, "builtin.search", XFDASHBOARD_TYPE_SEARCH_VIEW);
 
 	/* Register built-in search providers */
-	priv->searchManager=xfdashboard_search_manager_get_default();
+	priv->searchManager=XFDASHBOARD_SEARCH_MANAGER(g_object_new(XFDASHBOARD_TYPE_SEARCH_MANAGER, NULL));
 
 	xfdashboard_search_manager_register(priv->searchManager, "builtin.applications", XFDASHBOARD_TYPE_APPLICATIONS_SEARCH_PROVIDER);
 
 	/* Create single-instance of focus manager to keep it alive while
 	 * application is running.
 	 */
-	priv->focusManager=xfdashboard_focus_manager_get_default();
+	priv->focusManager=XFDASHBOARD_FOCUS_MANAGER(g_object_new(XFDASHBOARD_TYPE_FOCUS_MANAGER, NULL));
 
 	/* Create single-instance of plugin manager to keep it alive while
 	 * application is running.
 	 */
-	priv->pluginManager=xfdashboard_plugins_manager_get_default();
-	if(!priv->pluginManager)
+	priv->pluginsManager=XFDASHBOARD_PLUGINS_MANAGER(g_object_new(XFDASHBOARD_TYPE_PLUGINS_MANAGER, NULL));
+	if(!priv->pluginsManager)
 	{
 		/* Set error */
 		g_set_error(outError,
@@ -1055,7 +1047,7 @@ gboolean xfdashboard_core_initialize(XfdashboardCore *self, GError **outError)
 		return(FALSE);
 	}
 
-	if(!xfdashboard_plugins_manager_setup(priv->pluginManager))
+	if(!xfdashboard_plugins_manager_setup(priv->pluginsManager))
 	{
 		/* Set error */
 		g_set_error(outError,
@@ -1312,7 +1304,7 @@ void xfdashboard_core_resume(XfdashboardCore *self)
  */
 XfdashboardStage* xfdashboard_core_get_stage(XfdashboardCore *self)
 {
-	XfdashboardStage		*stage;
+	XfdashboardStage					*stage;
 
 	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
 
@@ -1339,7 +1331,7 @@ XfdashboardStage* xfdashboard_core_get_stage(XfdashboardCore *self)
  */
 XfdashboardTheme* xfdashboard_core_get_theme(XfdashboardCore *self)
 {
-	XfdashboardTheme		*theme;
+	XfdashboardTheme					*theme;
 
 	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
 
@@ -1366,7 +1358,7 @@ XfdashboardTheme* xfdashboard_core_get_theme(XfdashboardCore *self)
  */
 XfdashboardSettings* xfdashboard_core_get_settings(XfdashboardCore *self)
 {
-	XfdashboardSettings		*settings;
+	XfdashboardSettings					*settings;
 
 	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
 
@@ -1379,4 +1371,279 @@ XfdashboardSettings* xfdashboard_core_get_settings(XfdashboardCore *self)
 	if(G_LIKELY(self)) settings=self->priv->settings;
 
 	return(settings);
+}
+
+/**
+ * xfdashboard_core_get_application_database:
+ *
+ * Retrieves the singleton instance of #XfdashboardApplicationDatabase from
+ * core instance at @self.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardApplicationDatabase.
+ *   Use g_object_unref() when done.
+ */
+XfdashboardApplicationDatabase* xfdashboard_core_get_application_database(XfdashboardCore *self)
+{
+	XfdashboardApplicationDatabase		*applicationDatabase;
+
+	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
+
+	applicationDatabase=NULL;
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_core;
+
+	/* Get application database */
+	if(G_LIKELY(self)) applicationDatabase=self->priv->appDatabase;
+
+	/* Take extra reference on object */
+	if(applicationDatabase) g_object_ref(applicationDatabase);
+
+	return(applicationDatabase);
+}
+
+/**
+ * xfdashboard_core_get_application_tracker:
+ *
+ * Retrieves the singleton instance of #XfdashboardApplicationTracker from
+ * core instance at @self.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardApplicationTracker.
+ *   Use g_object_unref() when done.
+ */
+XfdashboardApplicationTracker* xfdashboard_core_get_application_tracker(XfdashboardCore *self)
+{
+	XfdashboardApplicationTracker		*applicationTracker;
+
+	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
+
+	applicationTracker=NULL;
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_core;
+
+	/* Get application tracker */
+	if(G_LIKELY(self)) applicationTracker=self->priv->appTracker;
+
+	/* Take extra reference on object */
+	if(applicationTracker) g_object_ref(applicationTracker);
+
+	return(applicationTracker);
+}
+
+/**
+ * xfdashboard_core_get_bindings_pool:
+ *
+ * Retrieves the singleton instance of #XfdashboardBindingsPool from
+ * core instance at @self.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardBindingsPool.
+ *   Use g_object_unref() when done.
+ */
+XfdashboardBindingsPool* xfdashboard_core_get_bindings_pool(XfdashboardCore *self)
+{
+	XfdashboardBindingsPool				*bindingsPool;
+
+	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
+
+	bindingsPool=NULL;
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_core;
+
+	/* Get bindings pool */
+	if(G_LIKELY(self)) bindingsPool=self->priv->bindings;
+
+	/* Take extra reference on object */
+	if(bindingsPool) g_object_ref(bindingsPool);
+
+	return(bindingsPool);
+}
+
+/**
+ * xfdashboard_core_get_focus_manager:
+ *
+ * Retrieves the singleton instance of #XfdashboardFocusManager from
+ * core instance at @self.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardFocusManager.
+ *   Use g_object_unref() when done.
+ */
+XfdashboardFocusManager* xfdashboard_core_get_focus_manager(XfdashboardCore *self)
+{
+	XfdashboardFocusManager				*focusManager;
+
+	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
+
+	focusManager=NULL;
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_core;
+
+	/* Get focus manager */
+	if(G_LIKELY(self)) focusManager=self->priv->focusManager;
+
+	/* Take extra reference on object */
+	if(focusManager) g_object_ref(focusManager);
+
+	return(focusManager);
+}
+
+/**
+ * xfdashboard_core_get_plugins_manager:
+ *
+ * Retrieves the singleton instance of #XfdashboardPluginsManager from
+ * core instance at @self.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardPluginsManager.
+ *   Use g_object_unref() when done.
+ */
+XfdashboardPluginsManager* xfdashboard_core_get_plugins_manager(XfdashboardCore *self)
+{
+	XfdashboardPluginsManager			*pluginsManager;
+
+	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
+
+	pluginsManager=NULL;
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_core;
+
+	/* Get plugins manager */
+	if(G_LIKELY(self)) pluginsManager=self->priv->pluginsManager;
+
+	/* Take extra reference on object */
+	if(pluginsManager) g_object_ref(pluginsManager);
+
+	return(pluginsManager);
+}
+
+/**
+ * xfdashboard_core_get_search_manager:
+ *
+ * Retrieves the singleton instance of #XfdashboardSearchManager from
+ * core instance at @self.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardSearchManager.
+ *   Use g_object_unref() when done.
+ */
+XfdashboardSearchManager* xfdashboard_core_get_search_manager(XfdashboardCore *self)
+{
+	XfdashboardSearchManager			*searchManager;
+
+	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
+
+	searchManager=NULL;
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_core;
+
+	/* Get search manager */
+	if(G_LIKELY(self)) searchManager=self->priv->searchManager;
+
+	/* Take extra reference on object */
+	if(searchManager) g_object_ref(searchManager);
+
+	return(searchManager);
+}
+
+/**
+ * xfdashboard_core_get_view_manager:
+ *
+ * Retrieves the singleton instance of #XfdashboardViewManager from
+ * core instance at @self.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardViewManager.
+ *   Use g_object_unref() when done.
+ */
+XfdashboardViewManager* xfdashboard_core_get_view_manager(XfdashboardCore *self)
+{
+	XfdashboardViewManager				*viewManager;
+
+	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
+
+	viewManager=NULL;
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_core;
+
+	/* Get view manager */
+	if(G_LIKELY(self)) viewManager=self->priv->viewManager;
+
+	/* Take extra reference on object */
+	if(viewManager) g_object_ref(viewManager);
+
+	return(viewManager);
+}
+
+/**
+ * xfdashboard_core_get_window_tracker:
+ *
+ * Retrieves the singleton instance of #XfdashboardWindowTracker from
+ * core instance at @self.
+ *
+ * This function is the logical equivalent of:
+ *
+ * |[<!-- language="C" -->
+ *   XfdashboardWindowTrackerBackend *backend;
+ *   XfdashboardWindowTracker        *tracker;
+ *
+ *   backend=xfdashboard_core_get_window_tracker_backend(core);
+ *   tracker=xfdashboard_window_tracker_backend_get_window_tracker(backend);
+ *   g_object_unref(backend);
+ * ]|
+ *
+ * Return value: (transfer full): The instance of #XfdashboardWindowTracker.
+ *   Use g_object_unref() when done.
+ */
+XfdashboardWindowTracker* xfdashboard_core_get_window_tracker(XfdashboardCore *self)
+{
+	XfdashboardWindowTracker			*windowTracker;
+
+	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
+
+	windowTracker=NULL;
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_core;
+
+	/* Get window tracker */
+	if(G_LIKELY(self))
+	{
+		windowTracker=xfdashboard_window_tracker_backend_get_window_tracker(self->priv->windowTrackerBackend);
+	}
+
+	/* Take extra reference on object */
+	if(windowTracker) g_object_ref(windowTracker);
+
+	return(windowTracker);
+}
+
+/**
+ * xfdashboard_core_get_window_tracker_backend:
+ *
+ * Retrieves the singleton instance of #XfdashboardWindowTrackerBackend from
+ * core instance at @self.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardWindowTrackerBackend.
+ *   Use g_object_unref() when done.
+ */
+XfdashboardWindowTrackerBackend* xfdashboard_core_get_window_tracker_backend(XfdashboardCore *self)
+{
+	XfdashboardWindowTrackerBackend		*windowTrackerBackend;
+
+	g_return_val_if_fail(self==NULL || XFDASHBOARD_IS_CORE(self), NULL);
+
+	windowTrackerBackend=NULL;
+
+	/* Get default single instance if NULL is requested */
+	if(!self) self=_xfdashboard_core;
+
+	/* Get window tracker backend */
+	if(G_LIKELY(self)) windowTrackerBackend=self->priv->windowTrackerBackend;
+
+	/* Take extra reference on object */
+	if(windowTrackerBackend) g_object_ref(windowTrackerBackend);
+
+	return(windowTrackerBackend);
 }

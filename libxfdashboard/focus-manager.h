@@ -93,8 +93,6 @@ struct _XfdashboardFocusManagerClass
 /* Public API */
 GType xfdashboard_focus_manager_get_type(void) G_GNUC_CONST;
 
-XfdashboardFocusManager* xfdashboard_focus_manager_get_default(void);
-
 void xfdashboard_focus_manager_register(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable);
 void xfdashboard_focus_manager_register_after(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable, XfdashboardFocusable *inAfterFocusable);
 void xfdashboard_focus_manager_unregister(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable);

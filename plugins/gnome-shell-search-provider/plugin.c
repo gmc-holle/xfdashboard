@@ -102,7 +102,7 @@ static void _xfdashboard_gnome_shell_search_provider_plugin_on_file_monitor_chan
 	error=NULL;
 
 	/* Get search manager where search providers were registered at */
-	searchManager=xfdashboard_search_manager_get_default();
+	searchManager=xfdashboard_core_get_search_manager(NULL);
 
 	/* Get file path */
 	filePath=g_file_get_path(inFile);
@@ -213,7 +213,7 @@ static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 				GNOME_SHELL_PROVIDERS_PATH);
 
 	/* Get search manager where to register search providers at */
-	searchManager=xfdashboard_search_manager_get_default();
+	searchManager=xfdashboard_core_get_search_manager(NULL);
 
 	/* Create enumerator for search providers path to iterate through path and
 	 * register search providers found.
@@ -385,7 +385,7 @@ static void plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 	}
 
 	/* Get search manager where search providers were registered at */
-	searchManager=xfdashboard_search_manager_get_default();
+	searchManager=xfdashboard_core_get_search_manager(NULL);
 
 	/* Unregister registered search providers */
 	for(iter=priv->providers; iter; iter=g_list_next(iter))

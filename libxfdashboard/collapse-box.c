@@ -31,6 +31,7 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/enums.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/animation.h>
 #include <libxfdashboard/utils.h>
@@ -677,7 +678,7 @@ static void xfdashboard_collapse_box_init(XfdashboardCollapseBox *self)
 	priv->collapseProgress=0.0f;
 	priv->child=NULL;
 	priv->requestModeSignalID=0;
-	priv->focusManager=xfdashboard_focus_manager_get_default();
+	priv->focusManager=xfdashboard_core_get_focus_manager(NULL);
 	priv->focusChangedSignalID=0;
 	priv->expandedByPointer=FALSE;
 	priv->expandedByFocus=FALSE;

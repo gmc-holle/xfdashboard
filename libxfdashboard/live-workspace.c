@@ -39,6 +39,7 @@
 #include <libxfdashboard/image-content.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/stylable.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -1061,7 +1062,7 @@ static void xfdashboard_live_workspace_init(XfdashboardLiveWorkspace *self)
 	priv=self->priv=xfdashboard_live_workspace_get_instance_private(self);
 
 	/* Set default values */
-	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	priv->workspace=NULL;
 	priv->backgroundType=XFDASHBOARD_STAGE_BACKGROUND_IMAGE_TYPE_NONE;
 	priv->monitor=NULL;

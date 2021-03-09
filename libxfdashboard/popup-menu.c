@@ -1142,8 +1142,8 @@ static void xfdashboard_popup_menu_init(XfdashboardPopupMenu *self)
 	priv->isActive=FALSE;
 	priv->title=NULL;
 	priv->itemsContainer=NULL;
-	priv->windowTracker=xfdashboard_window_tracker_get_default();
-	priv->focusManager=xfdashboard_focus_manager_get_default();
+	priv->windowTracker=xfdashboard_core_get_window_tracker(NULL);
+	priv->focusManager=xfdashboard_core_get_focus_manager(NULL);
 	priv->oldFocusable=NULL;
 	priv->selectedItem=NULL;
 	priv->stage=NULL;

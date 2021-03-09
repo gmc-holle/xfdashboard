@@ -33,6 +33,7 @@
 
 #include <libxfdashboard/window-tracker-backend.h>
 #include <libxfdashboard/marshal.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -582,48 +583,6 @@ void xfdashboard_window_tracker_default_init(XfdashboardWindowTrackerInterface *
 /* IMPLEMENTATION: Public API */
 
 /**
- * xfdashboard_window_tracker_get_default:
- *
- * Retrieves the singleton instance of #XfdashboardWindowTracker. If not needed
- * anymore the caller must unreference the returned object instance.
- *
- * This function is the logical equivalent of:
- *
- * |[<!-- language="C" -->
- *   XfdashboardWindowTrackerBackend *backend;
- *   XfdashboardWindowTracker        *tracker;
- *
- *   backend=xfdashboard_window_tracker_backend_get_default();
- *   tracker=xfdashboard_window_tracker_backend_get_window_tracker(backend);
- *   g_object_unref(backend);
- * ]|
- *
- * Return value: (transfer full): The instance of #XfdashboardWindowTracker.
- */
-XfdashboardWindowTracker* xfdashboard_window_tracker_get_default(void)
-{
-	XfdashboardWindowTrackerBackend		*backend;
-	XfdashboardWindowTracker			*windowTracker;
-
-	/* Get default window tracker backend */
-	backend=xfdashboard_window_tracker_backend_get_default();
-	if(!backend)
-	{
-		g_critical("Could not get default window tracker backend");
-		return(NULL);
-	}
-
-	/* Get window tracker object instance of backend */
-	windowTracker=xfdashboard_window_tracker_backend_get_window_tracker(backend);
-
-	/* Release allocated resources */
-	if(backend) g_object_unref(backend);
-
-	/* Return window tracker object instance */
-	return(windowTracker);
-}
-
-/**
  * xfdashboard_window_tracker_get_windows:
  * @self: A #XfdashboardWindowTracker
  *
@@ -1130,7 +1089,7 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_root_window(Xfdas
  *   XfdashboardWindowTrackerBackend *backend;
  *   XfdashboardWindowTrackerWindow  *stageWindow;
  *
- *   backend=xfdashboard_window_tracker_backend_get_default();
+ *   backend=xfdashboard_core_get_window_tracker_backend(core);
  *   stageWindow=xfdashboard_window_tracker_backend_get_window_for_stage(backend, inStage);
  *   g_object_unref(backend);
  * ]|
@@ -1146,7 +1105,7 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_get_stage_window(Xfda
 	XfdashboardWindowTrackerWindow		*stageWindow;
 
 	/* Get default window tracker backend */
-	backend=xfdashboard_window_tracker_backend_get_default();
+	backend=xfdashboard_core_get_window_tracker_backend(NULL);
 	if(!backend)
 	{
 		g_critical("Could not get default window tracker backend");

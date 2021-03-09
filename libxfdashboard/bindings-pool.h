@@ -79,8 +79,6 @@ typedef enum /*< prefix=XFDASHBOARD_BINDINGS_POOL_ERROR >*/
 /* Public API */
 GType xfdashboard_bindings_pool_get_type(void) G_GNUC_CONST;
 
-XfdashboardBindingsPool* xfdashboard_bindings_pool_get_default(void);
-
 gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **outError);
 
 const XfdashboardBinding* xfdashboard_bindings_pool_find_for_event(XfdashboardBindingsPool *self, ClutterActor *inActor, const ClutterEvent *inEvent);

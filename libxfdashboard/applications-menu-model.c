@@ -26,9 +26,11 @@
 #include "config.h"
 #endif
 
+#include <libxfdashboard/applications-menu-model.h>
+
 #include <glib/gi18n-lib.h>
 
-#include <libxfdashboard/applications-menu-model.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -642,7 +644,7 @@ static void xfdashboard_applications_menu_model_init(XfdashboardApplicationsMenu
 	priv->reloadRequiredSignalID=0;
 
 	/* Get application database and connect signals */
-	priv->appDB=xfdashboard_application_database_get_default();
+	priv->appDB=xfdashboard_core_get_application_database(NULL);
 	priv->reloadRequiredSignalID=g_signal_connect_swapped(priv->appDB,
 															"menu-reload-required",
 															G_CALLBACK(_xfdashboard_applications_menu_model_on_reload_required),

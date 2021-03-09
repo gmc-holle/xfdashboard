@@ -55,6 +55,7 @@
 #include <libxfdashboard/x11/window-tracker-workspace-x11.h>
 #include <libxfdashboard/x11/window-tracker-x11.h>
 #include <libxfdashboard/window-tracker.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -355,7 +356,7 @@ static void _xfdashboard_window_tracker_window_x11_on_wnck_workspace_changed(Xfd
 	{
 		XfdashboardWindowTracker				*windowTracker;
 
-		windowTracker=xfdashboard_window_tracker_get_default();
+		windowTracker=xfdashboard_core_get_window_tracker(NULL);
 		oldWorkspace=xfdashboard_window_tracker_x11_get_workspace_for_wnck(XFDASHBOARD_WINDOW_TRACKER_X11(windowTracker), priv->workspace);
 		g_object_unref(windowTracker);
 	}
@@ -404,7 +405,7 @@ static void _xfdashboard_window_tracker_window_x11_on_wnck_geometry_changed(Xfda
 		gint									windowMiddleX, windowMiddleY;
 
 		/* Get window tracker */
-		windowTracker=xfdashboard_window_tracker_get_default();
+		windowTracker=xfdashboard_core_get_window_tracker(NULL);
 
 		/* Get monitor at old position of window and the monitor at current.
 		 * If they differ emit signal for window changed monitor.
@@ -640,7 +641,7 @@ static XfdashboardWindowTrackerWindow* _xfdashboard_window_tracker_window_x11_wi
 	/* Get window tracker and lookup the mapped and matching XfdashboardWindowTrackerWindow
 	 * for wnck window.
 	 */
-	windowTracker=xfdashboard_window_tracker_get_default();
+	windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	foundWindow=xfdashboard_window_tracker_x11_get_window_for_wnck(XFDASHBOARD_WINDOW_TRACKER_X11(windowTracker), parentWindow);
 	g_object_unref(windowTracker);
 
@@ -779,7 +780,7 @@ static XfdashboardWindowTrackerWorkspace* _xfdashboard_window_tracker_window_x11
 	/* Get window tracker and lookup the mapped and matching XfdashboardWindowTrackerWorkspace
 	 * for wnck workspace.
 	 */
-	windowTracker=xfdashboard_window_tracker_get_default();
+	windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	foundWorkspace=xfdashboard_window_tracker_x11_get_workspace_for_wnck(XFDASHBOARD_WINDOW_TRACKER_X11(windowTracker), wantedWorkspace);
 	g_object_unref(windowTracker);
 

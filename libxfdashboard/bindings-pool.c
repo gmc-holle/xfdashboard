@@ -88,9 +88,6 @@ static void _xfdashboard_bindings_pool_parse_set_error(XfdashboardBindingsPoolPa
 														const gchar *inFormat,
 														...) G_GNUC_PRINTF (5, 6);
 
-/* Single instance of bindings */
-static XfdashboardBindingsPool*				_xfdashboard_bindings_pool=NULL;
-
 /* Modifier map for conversion from string to integer used by parser */
 static XfdashboardBindingsPoolModifierMap	_xfdashboard_bindings_pool_modifier_map[]=
 											{
@@ -179,7 +176,8 @@ static const gchar* _xfdashboard_bindings_pool_get_tag_by_id(guint inTagType)
 }
 
 /* Parse a string representing a key binding */
-static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
+static gboolean _xfdashboard_bindings_pool_parse_keycode(XfdashboardBindingsPool *self,
+															const gchar *inText,
 															guint *outKey,
 															ClutterModifierType *outModifiers)
 {
@@ -188,12 +186,13 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 	gchar					**parts;
 	gchar					**iter;
 
+	g_return_val_if_fail(XFDASHBOARD_IS_BINDINGS_POOL(self), FALSE);
 	g_return_val_if_fail(inText && *inText, FALSE);
 
 	key=0;
 	modifiers=0;
 
-	XFDASHBOARD_DEBUG(_xfdashboard_bindings_pool, MISC,
+	XFDASHBOARD_DEBUG(self, MISC,
 						"Trying to translating key-binding '%s' to keycode and modifiers",
 						inText);
 
@@ -313,7 +312,7 @@ static gboolean _xfdashboard_bindings_pool_parse_keycode(const gchar *inText,
 	if(outKey) *outKey=key;
 	if(outModifiers) *outModifiers=modifiers;
 
-	XFDASHBOARD_DEBUG(_xfdashboard_bindings_pool, MISC,
+	XFDASHBOARD_DEBUG(self, MISC,
 						"Translated key-binding '%s' to keycode %04x and modifiers %04x",
 						inText,
 						key,
@@ -542,7 +541,7 @@ static void _xfdashboard_bindings_pool_parse_bindings_start(GMarkupParseContext 
 		}
 
 		/* Parse keycode */
-		if(!_xfdashboard_bindings_pool_parse_keycode(keycode, &key, &modifiers))
+		if(!_xfdashboard_bindings_pool_parse_keycode(data->self, keycode, &key, &modifiers))
 		{
 			/* Set error */
 			_xfdashboard_bindings_pool_parse_set_error(data,
@@ -962,26 +961,6 @@ static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBi
 
 /* IMPLEMENTATION: GObject */
 
-/* Construct this object */
-static GObject* _xfdashboard_bindings_pool_constructor(GType inType,
-														guint inNumberConstructParams,
-														GObjectConstructParam *inConstructParams)
-{
-	GObject									*object;
-
-	if(!_xfdashboard_bindings_pool)
-	{
-		object=G_OBJECT_CLASS(xfdashboard_bindings_pool_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
-		_xfdashboard_bindings_pool=XFDASHBOARD_BINDINGS_POOL(object);
-	}
-		else
-		{
-			object=g_object_ref(G_OBJECT(_xfdashboard_bindings_pool));
-		}
-
-	return(object);
-}
-
 /* Dispose this object */
 static void _xfdashboard_bindings_pool_dispose(GObject *inObject)
 {
@@ -999,19 +978,6 @@ static void _xfdashboard_bindings_pool_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_bindings_pool_parent_class)->dispose(inObject);
 }
 
-/* Finalize this object */
-static void _xfdashboard_bindings_pool_finalize(GObject *inObject)
-{
-	/* Release allocated resources finally, e.g. unset singleton */
-	if(G_LIKELY(G_OBJECT(_xfdashboard_bindings_pool)==inObject))
-	{
-		_xfdashboard_bindings_pool=NULL;
-	}
-
-	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_bindings_pool_parent_class)->finalize(inObject);
-}
-
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
@@ -1021,9 +987,7 @@ static void xfdashboard_bindings_pool_class_init(XfdashboardBindingsPoolClass *k
 	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->constructor=_xfdashboard_bindings_pool_constructor;
 	gobjectClass->dispose=_xfdashboard_bindings_pool_dispose;
-	gobjectClass->finalize=_xfdashboard_bindings_pool_finalize;
 }
 
 /* Object initialization
@@ -1047,15 +1011,6 @@ GQuark xfdashboard_bindings_pool_error_quark(void)
 }
 
 /* IMPLEMENTATION: Public API */
-
-/* Get single instance of manager */
-XfdashboardBindingsPool* xfdashboard_bindings_pool_get_default(void)
-{
-	GObject									*singleton;
-
-	singleton=g_object_new(XFDASHBOARD_TYPE_BINDINGS_POOL, NULL);
-	return(XFDASHBOARD_BINDINGS_POOL(singleton));
-}
 
 /* Load bindings from configuration file */
 gboolean xfdashboard_bindings_pool_load(XfdashboardBindingsPool *self, GError **outError)

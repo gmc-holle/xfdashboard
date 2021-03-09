@@ -35,6 +35,7 @@
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/viewpad.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/compat.h>
 
@@ -168,7 +169,7 @@ static gboolean _xfdashboard_view_activate(XfdashboardView *self,
 	}
 
 	/* Set focus to view if it has not the focus */
-	focusManager=xfdashboard_focus_manager_get_default();
+	focusManager=xfdashboard_core_get_focus_manager(NULL);
 	if(XFDASHBOARD_IS_FOCUSABLE(self) &&
 		!xfdashboard_focus_manager_has_focus(focusManager, XFDASHBOARD_FOCUSABLE(self)))
 	{
@@ -814,7 +815,7 @@ gboolean xfdashboard_view_has_focus(XfdashboardView *self)
 		return(FALSE);
 	}
 
-	focusManager=xfdashboard_focus_manager_get_default();
+	focusManager=xfdashboard_core_get_focus_manager(NULL);
 	if(!XFDASHBOARD_IS_FOCUSABLE(self) ||
 		!xfdashboard_focus_manager_has_focus(focusManager, XFDASHBOARD_FOCUSABLE(self)))
 	{

@@ -68,8 +68,6 @@ struct _XfdashboardApplicationTrackerClass
 /* Public API */
 GType xfdashboard_application_tracker_get_type(void) G_GNUC_CONST;
 
-XfdashboardApplicationTracker* xfdashboard_application_tracker_get_default(void);
-
 gboolean xfdashboard_application_tracker_is_running_by_desktop_id(XfdashboardApplicationTracker *self,
 																	const gchar *inDesktopID);
 gboolean xfdashboard_application_tracker_is_running_by_app_info(XfdashboardApplicationTracker *self,

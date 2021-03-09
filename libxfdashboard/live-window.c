@@ -1146,7 +1146,7 @@ static void xfdashboard_live_window_init(XfdashboardLiveWindow *self)
 	clutter_actor_set_reactive(CLUTTER_ACTOR(self), TRUE);
 
 	/* Set default values */
-	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	priv->windowNumber=0;
 	priv->paddingTitle=0.0f;
 	priv->paddingClose=0.0f;

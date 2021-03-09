@@ -2291,7 +2291,7 @@ static void xfdashboard_windows_view_init(XfdashboardWindowsView *self)
 	self->priv=priv=xfdashboard_windows_view_get_instance_private(self);
 
 	/* Set up default values */
-	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	priv->workspace=NULL;
 	priv->spacing=0.0f;
 	priv->preventUpscaling=FALSE;

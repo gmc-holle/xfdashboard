@@ -30,6 +30,7 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/window-tracker-backend.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
@@ -91,7 +92,7 @@ static XfdashboardWindowTrackerMonitor* _xfdashboard_window_tracker_window_real_
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(self), NULL);
 
 	/* Get window tracker to retrieve list of monitors */
-	windowTracker=xfdashboard_window_tracker_get_default();
+	windowTracker=xfdashboard_core_get_window_tracker(NULL);
 
 	/* Get list of monitors */
 	monitors=xfdashboard_window_tracker_get_monitors(windowTracker);
@@ -142,7 +143,7 @@ static gboolean _xfdashboard_window_tracker_window_real_is_on_monitor(Xfdashboar
 													&monitorHeight);
 
 	/* Get screen size */
-	windowTracker=xfdashboard_window_tracker_get_default();
+	windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	xfdashboard_window_tracker_get_screen_size(windowTracker, &screenWidth, &screenHeight);
 	g_object_unref(windowTracker);
 
@@ -780,7 +781,7 @@ ClutterStage* xfdashboard_window_tracker_window_get_stage(XfdashboardWindowTrack
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(self), NULL);
 
 	/* Get default window tracker backend */
-	backend=xfdashboard_window_tracker_backend_get_default();
+	backend=xfdashboard_core_get_window_tracker_backend(NULL);
 	if(!backend)
 	{
 		g_critical("Could not get default window tracker backend");
@@ -821,7 +822,7 @@ void xfdashboard_window_tracker_window_show_stage(XfdashboardWindowTrackerWindow
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(self));
 
 	/* Get default window tracker backend */
-	backend=xfdashboard_window_tracker_backend_get_default();
+	backend=xfdashboard_core_get_window_tracker_backend(NULL);
 	if(!backend)
 	{
 		g_critical("Could not get default window tracker backend");
@@ -857,7 +858,7 @@ void xfdashboard_window_tracker_window_hide_stage(XfdashboardWindowTrackerWindow
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(self));
 
 	/* Get default window tracker backend */
-	backend=xfdashboard_window_tracker_backend_get_default();
+	backend=xfdashboard_core_get_window_tracker_backend(NULL);
 	if(!backend)
 	{
 		g_critical("Could not get default window tracker backend");

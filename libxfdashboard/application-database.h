@@ -71,8 +71,6 @@ struct _XfdashboardApplicationDatabaseClass
 /* Public API */
 GType xfdashboard_application_database_get_type(void) G_GNUC_CONST;
 
-XfdashboardApplicationDatabase* xfdashboard_application_database_get_default(void);
-
 gboolean xfdashboard_application_database_is_loaded(const XfdashboardApplicationDatabase *self);
 gboolean xfdashboard_application_database_load(XfdashboardApplicationDatabase *self, GError **outError);
 

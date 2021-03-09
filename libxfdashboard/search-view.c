@@ -1704,14 +1704,14 @@ static void xfdashboard_search_view_init(XfdashboardSearchView *self)
 	self->priv=priv=xfdashboard_search_view_get_instance_private(self);
 
 	/* Set up default values */
-	priv->searchManager=xfdashboard_search_manager_get_default();
+	priv->searchManager=xfdashboard_core_get_search_manager(NULL);
 	priv->providers=NULL;
 	priv->lastTerms=NULL;
 	priv->delaySearch=TRUE;
 	priv->delaySearchTerms=NULL;
 	priv->delaySearchTimeoutID=0;
 	priv->selectionProvider=NULL;
-	priv->focusManager=xfdashboard_focus_manager_get_default();
+	priv->focusManager=xfdashboard_core_get_focus_manager(NULL);
 	priv->repaintID=0;
 	priv->settings=g_object_ref(xfdashboard_core_get_settings(NULL));
 

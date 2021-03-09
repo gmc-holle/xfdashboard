@@ -187,7 +187,7 @@ static gboolean _xfdashboard_gnome_shell_search_provider_update_from_file(Xfdash
 	providerName=NULL;
 	providerIcon=NULL;
 
-	appDB=xfdashboard_application_database_get_default();
+	appDB=xfdashboard_core_get_application_database(NULL);
 
 	appInfo=xfdashboard_application_database_lookup_desktop_id(appDB, desktopID);
 	if(appInfo)

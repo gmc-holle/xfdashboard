@@ -73,8 +73,6 @@ static XfdashboardWindowTrackerBackendMap	_xfdashboard_window_tracker_backend_ma
 												{ NULL, NULL, NULL }
 											};
 
-static XfdashboardWindowTrackerBackend		*_xfdashboard_window_tracker_backend_singleton=NULL;
-
 
 /* IMPLEMENTATION: GObject */
 
@@ -97,64 +95,6 @@ void xfdashboard_window_tracker_backend_default_init(XfdashboardWindowTrackerBac
 /* IMPLEMENTATION: Public API */
 
 /**
- * xfdashboard_window_tracker_backend_get_default:
- *
- * Retrieves the singleton instance of #XfdashboardWindowTrackerBackend. If not
- * needed anymore the caller must unreference the returned object instance.
- *
- * Return value: (transfer full): The instance of #XfdashboardWindowTrackerBackend.
- */
-XfdashboardWindowTrackerBackend* xfdashboard_window_tracker_backend_get_default(void)
-{
-	if(G_UNLIKELY(_xfdashboard_window_tracker_backend_singleton==NULL))
-	{
-		XfdashboardWindowTrackerBackendMap	*iter;
-
-		/* Iterate through list of available backends and check if any entry
-		 * matches the backend Clutter is using. If we can find a matching entry
-		 * then create our backend which interacts with Clutter's backend.
-		 */
-		for(iter=_xfdashboard_window_tracker_backend_map; !_xfdashboard_window_tracker_backend_singleton && iter->backendID; iter++)
-		{
-			/* If this entry does not match backend Clutter, try next one */
-			if(!clutter_check_windowing_backend(iter->clutterBackendID)) continue;
-
-			/* The entry matches so try to create our backend */
-			XFDASHBOARD_DEBUG(NULL, WINDOWS,
-								"Found window tracker backend ID '%s' for clutter backend '%s'",
-								iter->backendID,
-								iter->clutterBackendID);
-
-			_xfdashboard_window_tracker_backend_singleton=(iter->createBackend)();
-			if(!_xfdashboard_window_tracker_backend_singleton)
-			{
-				XFDASHBOARD_DEBUG(NULL, WINDOWS,
-									"Could not create window tracker backend of ID '%s' for clutter backend '%s'",
-									iter->backendID,
-									iter->clutterBackendID);
-			}
-				else
-				{
-					XFDASHBOARD_DEBUG(_xfdashboard_window_tracker_backend_singleton, WINDOWS,
-										"Create window tracker backend of type %s with ID '%s' for clutter backend '%s'",
-										G_OBJECT_TYPE_NAME(_xfdashboard_window_tracker_backend_singleton),
-										iter->backendID,
-										iter->clutterBackendID);
-				}
-		}
-
-		if(!_xfdashboard_window_tracker_backend_singleton)
-		{
-			g_critical("Cannot find any usable window tracker backend");
-			return(NULL);
-		}
-	}
-		else g_object_ref(_xfdashboard_window_tracker_backend_singleton);
-
-	return(_xfdashboard_window_tracker_backend_singleton);
-}
-
-/**
  * xfdashboard_window_tracker_backend_set_backend:
  * @inBackend: the backend to use
  *
@@ -165,7 +105,7 @@ XfdashboardWindowTrackerBackend* xfdashboard_window_tracker_backend_get_default(
  * For example:
  *
  * |[<!-- language="C" -->
- *   xfdashboard_window_tracker_backend_set_allowed_backends("x11");
+ *   xfdashboard_window_tracker_backend_set_backend("x11");
  * ]|
  *
  * Will make xfdashboard and Clutter use the X11 backend.
@@ -225,6 +165,66 @@ void xfdashboard_window_tracker_backend_set_backend(const gchar *inBackend)
 	/* If we get here the requested backend is unknown */
 	g_warning("Unknown backend '%s' - using default backend", inBackend);
 #endif
+}
+
+/**
+ * xfdashboard_window_tracker_backend_create:
+ *
+ * Creates an instance of #XfdashboardWindowTrackerBackend matching the clutter
+ * windowing backend used. If no matching window tracker backend can be found
+ * or created, %NULL will returned.
+ *
+ * Return value: (transfer full): The instance of #XfdashboardWindowTrackerBackend
+ *   or %NULL if no instance could be created
+ */
+XfdashboardWindowTrackerBackend* xfdashboard_window_tracker_backend_create(void)
+{
+	XfdashboardWindowTrackerBackend		*backend;
+	XfdashboardWindowTrackerBackendMap	*iter;
+
+	/* Iterate through list of available backends and check if any entry
+	 * matches the backend Clutter is using. If we can find a matching entry
+	 * then create our backend which interacts with Clutter's backend.
+	 */
+	backend=NULL;
+	for(iter=_xfdashboard_window_tracker_backend_map; !backend && iter->backendID; iter++)
+	{
+		/* If this entry does not match any backend at Clutter, try next one */
+		if(!clutter_check_windowing_backend(iter->clutterBackendID)) continue;
+
+		/* The entry matches so try to create our backend */
+		XFDASHBOARD_DEBUG(NULL, WINDOWS,
+							"Found window tracker backend ID '%s' for clutter backend '%s'",
+							iter->backendID,
+							iter->clutterBackendID);
+
+		backend=(iter->createBackend)();
+		if(!backend)
+		{
+			XFDASHBOARD_DEBUG(NULL, WINDOWS,
+								"Could not create window tracker backend of ID '%s' for clutter backend '%s'",
+								iter->backendID,
+								iter->clutterBackendID);
+		}
+			else
+			{
+				XFDASHBOARD_DEBUG(backend, WINDOWS,
+									"Create window tracker backend of type %s with ID '%s' for clutter backend '%s'",
+									G_OBJECT_TYPE_NAME(backend),
+									iter->backendID,
+									iter->clutterBackendID);
+			}
+	}
+
+	/* Check if we could create any backend */
+	if(!backend)
+	{
+		g_critical("Cannot find any usable window tracker backend");
+		return(NULL);
+	}
+
+	/* Return created backend */
+	return(backend);
 }
 
 /**

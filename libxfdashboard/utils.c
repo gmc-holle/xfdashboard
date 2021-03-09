@@ -173,7 +173,7 @@ GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorksp
 	/* Get active workspace if not specified */
 	if(!inWorkspace)
 	{
-		tracker=xfdashboard_window_tracker_get_default();
+		tracker=xfdashboard_core_get_window_tracker(NULL);
 		inWorkspace=xfdashboard_window_tracker_get_active_workspace(tracker);
 		g_object_unref(tracker);
 	}

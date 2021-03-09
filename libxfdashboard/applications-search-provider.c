@@ -732,7 +732,7 @@ static void _xfdashboard_applications_search_provider_on_popup_menu_item_launch(
 	if(gicon) iconName=g_icon_to_string(gicon);
 
 	/* Check if we should launch that application or to open a new window */
-	appTracker=xfdashboard_application_tracker_get_default();
+	appTracker=xfdashboard_core_get_application_tracker(NULL);
 	if(!xfdashboard_application_tracker_is_running_by_app_info(appTracker, appInfo))
 	{
 		GAppLaunchContext			*context;
@@ -828,7 +828,7 @@ static void _xfdashboard_applications_search_provider_on_popup_menu(XfdashboardA
 		}
 
 		/* Add menu item to launch application if it is not running */
-		appTracker=xfdashboard_application_tracker_get_default();
+		appTracker=xfdashboard_core_get_application_tracker(NULL);
 		if(!xfdashboard_application_tracker_is_running_by_app_info(appTracker, appInfo))
 		{
 			menuItem=xfdashboard_popup_menu_item_button_new();
@@ -1482,7 +1482,7 @@ static void xfdashboard_applications_search_provider_init(XfdashboardApplication
 	priv->nextSortMode=XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_NONE;
 
 	/* Get application database */
-	priv->appDB=xfdashboard_application_database_get_default();
+	priv->appDB=xfdashboard_core_get_application_database(NULL);
 	priv->applicationAddedID=g_signal_connect_swapped(priv->appDB,
 														"application-added",
 														G_CALLBACK(_xfdashboard_applications_search_provider_on_application_added),

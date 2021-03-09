@@ -37,6 +37,7 @@
 #include <libxfdashboard/utils.h>
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/focus-manager.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
 
@@ -257,7 +258,7 @@ static void _xfdashboard_viewpad_activate_view(XfdashboardViewpad *self, Xfdashb
 	}
 
 	/* Determine if this viewpad has the focus because we have to move focus in this case */
-	focusManager=xfdashboard_focus_manager_get_default();
+	focusManager=xfdashboard_core_get_focus_manager(NULL);
 
 	/* Deactivate current view */
 	if(priv->activeView)
@@ -745,7 +746,7 @@ static void _xfdashboard_viewpad_add_view(XfdashboardViewpad *self, const gchar 
 	{
 		XfdashboardFocusManager	*focusManager;
 
-		focusManager=xfdashboard_focus_manager_get_default();
+		focusManager=xfdashboard_core_get_focus_manager(NULL);
 		xfdashboard_focus_manager_register_after(focusManager,
 													XFDASHBOARD_FOCUSABLE(view),
 													XFDASHBOARD_FOCUSABLE(self));
@@ -1066,7 +1067,7 @@ static gboolean _xfdashboard_viewpad_focusable_can_focus(XfdashboardFocusable *i
 		ClutterActor				*child;
 
 		/* Get focus manager */
-		focusManager=xfdashboard_focus_manager_get_default();
+		focusManager=xfdashboard_core_get_focus_manager(NULL);
 
 		/* Iterate through children of this viewpad and register each focusable view found */
 		clutter_actor_iter_init(&iter, CLUTTER_ACTOR(self));
@@ -1364,7 +1365,7 @@ static void xfdashboard_viewpad_init(XfdashboardViewpad *self)
 	priv=self->priv=xfdashboard_viewpad_get_instance_private(self);
 
 	/* Set up default values */
-	priv->viewManager=xfdashboard_view_manager_get_default();
+	priv->viewManager=xfdashboard_core_get_view_manager(NULL);
 	priv->activeView=NULL;
 	priv->spacing=0.0f;
 	priv->hScrollbarVisible=FALSE;

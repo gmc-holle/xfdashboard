@@ -65,9 +65,6 @@ struct _XfdashboardViewManagerData
 	GType		gtype;
 };
 
-/* Single instance of view manager */
-static XfdashboardViewManager*		_xfdashboard_view_manager=NULL;
-
 /* Free an registered view entry */
 static void _xfdashboard_view_manager_entry_free(XfdashboardViewManagerData *inData)
 {
@@ -148,26 +145,6 @@ static XfdashboardViewManagerData* _xfdashboard_view_manager_entry_find_data_by_
 
 /* IMPLEMENTATION: GObject */
 
-/* Construct this object */
-static GObject* _xfdashboard_view_manager_constructor(GType inType,
-														guint inNumberConstructParams,
-														GObjectConstructParam *inConstructParams)
-{
-	GObject									*object;
-
-	if(!_xfdashboard_view_manager)
-	{
-		object=G_OBJECT_CLASS(xfdashboard_view_manager_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
-		_xfdashboard_view_manager=XFDASHBOARD_VIEW_MANAGER(object);
-	}
-		else
-		{
-			object=g_object_ref(G_OBJECT(_xfdashboard_view_manager));
-		}
-
-	return(object);
-}
-
 /* Dispose this object */
 static void _xfdashboard_view_manager_dispose_unregister_view(gpointer inData, gpointer inUserData)
 {
@@ -196,19 +173,6 @@ static void _xfdashboard_view_manager_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_view_manager_parent_class)->dispose(inObject);
 }
 
-/* Finalize this object */
-static void _xfdashboard_view_manager_finalize(GObject *inObject)
-{
-	/* Release allocated resources finally, e.g. unset singleton */
-	if(G_LIKELY(G_OBJECT(_xfdashboard_view_manager)==inObject))
-	{
-		_xfdashboard_view_manager=NULL;
-	}
-
-	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_view_manager_parent_class)->finalize(inObject);
-}
-
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
@@ -218,9 +182,7 @@ static void xfdashboard_view_manager_class_init(XfdashboardViewManagerClass *kla
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->constructor=_xfdashboard_view_manager_constructor;
 	gobjectClass->dispose=_xfdashboard_view_manager_dispose;
-	gobjectClass->finalize=_xfdashboard_view_manager_finalize;
 
 	/* Define signals */
 	XfdashboardViewManagerSignals[SIGNAL_REGISTERED]=
@@ -262,15 +224,6 @@ static void xfdashboard_view_manager_init(XfdashboardViewManager *self)
 }
 
 /* IMPLEMENTATION: Public API */
-
-/* Get single instance of manager */
-XfdashboardViewManager* xfdashboard_view_manager_get_default(void)
-{
-	GObject									*singleton;
-
-	singleton=g_object_new(XFDASHBOARD_TYPE_VIEW_MANAGER, NULL);
-	return(XFDASHBOARD_VIEW_MANAGER(singleton));
-}
 
 /* Register a view */
 gboolean xfdashboard_view_manager_register(XfdashboardViewManager *self, const gchar *inID, GType inViewType)

@@ -421,7 +421,7 @@ static void _xfdashboard_quicklaunch_on_favourite_popup_menu_item_launch(Xfdashb
 	if(gicon) iconName=g_icon_to_string(gicon);
 
 	/* Check if we should launch that application or to open a new window */
-	appTracker=xfdashboard_application_tracker_get_default();
+	appTracker=xfdashboard_core_get_application_tracker(NULL);
 	if(!xfdashboard_application_tracker_is_running_by_app_info(appTracker, appInfo))
 	{
 		GAppLaunchContext			*context;
@@ -3197,7 +3197,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	priv->dragMode=DRAG_MODE_NONE;
 	priv->dragPreviewIcon=NULL;
 	priv->selectedItem=NULL;
-	priv->appDB=xfdashboard_application_database_get_default();
+	priv->appDB=xfdashboard_core_get_application_database(NULL);
 	priv->settings=g_object_ref(xfdashboard_core_get_settings(NULL));
 
 	/* Set up this actor */
@@ -3257,7 +3257,7 @@ static void xfdashboard_quicklaunch_init(XfdashboardQuicklaunch *self)
 	/* Connect to application tracker to recognize other running application
 	 * which are not known favourites.
 	 */
-	priv->appTracker=xfdashboard_application_tracker_get_default();
+	priv->appTracker=xfdashboard_core_get_application_tracker(NULL);
 	g_signal_connect_swapped(priv->appTracker, "state-changed", G_CALLBACK(_xfdashboard_quicklaunch_on_app_tracker_state_changed), self);
 }
 

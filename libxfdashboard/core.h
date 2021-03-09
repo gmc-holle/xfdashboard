@@ -35,6 +35,15 @@
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/stage.h>
 #include <libxfdashboard/settings.h>
+#include <libxfdashboard/application-database.h>
+#include <libxfdashboard/application-tracker.h>
+#include <libxfdashboard/bindings-pool.h>
+#include <libxfdashboard/focus-manager.h>
+#include <libxfdashboard/plugins-manager.h>
+#include <libxfdashboard/search-manager.h>
+#include <libxfdashboard/view-manager.h>
+#include <libxfdashboard/window-tracker-backend.h>
+#include <libxfdashboard/window-tracker.h>
 
 G_BEGIN_DECLS
 
@@ -130,17 +139,30 @@ gboolean xfdashboard_core_initialize(XfdashboardCore *self, GError **outError);
 gboolean xfdashboard_core_has_default(void);
 XfdashboardCore* xfdashboard_core_get_default(void);
 
+/* Quit functions */
 gboolean xfdashboard_core_is_quitting(XfdashboardCore *self);
 void xfdashboard_core_quit(XfdashboardCore *self);
 
+/* Suspend/resume functions */
 gboolean xfdashboard_core_can_suspend(XfdashboardCore *self);
 gboolean xfdashboard_core_is_suspended(XfdashboardCore *self);
 void xfdashboard_core_suspend(XfdashboardCore *self);
 void xfdashboard_core_resume(XfdashboardCore *self);
 
+/* Access function for components and subsystems */
 XfdashboardSettings* xfdashboard_core_get_settings(XfdashboardCore *self);
 XfdashboardStage* xfdashboard_core_get_stage(XfdashboardCore *self);
 XfdashboardTheme* xfdashboard_core_get_theme(XfdashboardCore *self);
+
+XfdashboardApplicationDatabase* xfdashboard_core_get_application_database(XfdashboardCore *self);
+XfdashboardApplicationTracker* xfdashboard_core_get_application_tracker(XfdashboardCore *self);
+XfdashboardBindingsPool* xfdashboard_core_get_bindings_pool(XfdashboardCore *self);
+XfdashboardFocusManager* xfdashboard_core_get_focus_manager(XfdashboardCore *self);
+XfdashboardPluginsManager* xfdashboard_core_get_plugins_manager(XfdashboardCore *self);
+XfdashboardSearchManager* xfdashboard_core_get_search_manager(XfdashboardCore *self);
+XfdashboardViewManager* xfdashboard_core_get_view_manager(XfdashboardCore *self);
+XfdashboardWindowTracker* xfdashboard_core_get_window_tracker(XfdashboardCore *self);
+XfdashboardWindowTrackerBackend* xfdashboard_core_get_window_tracker_backend(XfdashboardCore *self);
 
 G_END_DECLS
 

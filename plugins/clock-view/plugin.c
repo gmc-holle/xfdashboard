@@ -275,7 +275,7 @@ static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 	XfdashboardViewManager	*viewManager;
 
 	/* Register view */
-	viewManager=xfdashboard_view_manager_get_default();
+	viewManager=xfdashboard_core_get_view_manager(NULL);
 
 	xfdashboard_view_manager_register(viewManager, PLUGIN_ID, XFDASHBOARD_TYPE_CLOCK_VIEW);
 
@@ -288,7 +288,7 @@ static void plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 	XfdashboardViewManager	*viewManager;
 
 	/* Unregister view */
-	viewManager=xfdashboard_view_manager_get_default();
+	viewManager=xfdashboard_core_get_view_manager(NULL);
 
 	xfdashboard_view_manager_unregister(viewManager, PLUGIN_ID);
 

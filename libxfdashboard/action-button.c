@@ -57,6 +57,7 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/focusable.h>
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/focus-manager.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -479,7 +480,7 @@ static void xfdashboard_action_button_init(XfdashboardActionButton *self)
 	/* Set up default values */
 	priv->target=NULL;
 	priv->action=FALSE;
-	priv->focusManager=xfdashboard_focus_manager_get_default();
+	priv->focusManager=xfdashboard_core_get_focus_manager(NULL);
 }
 
 /* IMPLEMENTATION: Public API */

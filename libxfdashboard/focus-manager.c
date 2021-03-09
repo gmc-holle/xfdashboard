@@ -71,9 +71,6 @@ static guint XfdashboardFocusManagerSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
-/* Single instance of focus manager */
-static XfdashboardFocusManager*		_xfdashboard_focus_manager=NULL;
-
 /* A registered focusable actor is going to be destroyed so unregister it */
 static void _xfdashboard_focus_manager_on_focusable_destroy(XfdashboardFocusManager *self,
 															gpointer inUserData)
@@ -323,26 +320,6 @@ static gboolean _xfdashboard_focus_manager_move_focus_previous(XfdashboardFocusM
 
 /* IMPLEMENTATION: GObject */
 
-/* Construct this object */
-static GObject* _xfdashboard_focus_manager_constructor(GType inType,
-														guint inNumberConstructParams,
-														GObjectConstructParam *inConstructParams)
-{
-	GObject									*object;
-
-	if(!_xfdashboard_focus_manager)
-	{
-		object=G_OBJECT_CLASS(xfdashboard_focus_manager_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
-		_xfdashboard_focus_manager=XFDASHBOARD_FOCUS_MANAGER(object);
-	}
-		else
-		{
-			object=g_object_ref(G_OBJECT(_xfdashboard_focus_manager));
-		}
-
-	return(object);
-}
-
 /* Dispose this object */
 static void _xfdashboard_focus_manager_dispose_unregister_focusable(gpointer inData, gpointer inUserData)
 {
@@ -386,19 +363,6 @@ static void _xfdashboard_focus_manager_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_focus_manager_parent_class)->dispose(inObject);
 }
 
-/* Finalize this object */
-static void _xfdashboard_focus_manager_finalize(GObject *inObject)
-{
-	/* Release allocated resources finally, e.g. unset singleton */
-	if(G_LIKELY(G_OBJECT(_xfdashboard_focus_manager)==inObject))
-	{
-		_xfdashboard_focus_manager=NULL;
-	}
-
-	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_focus_manager_parent_class)->finalize(inObject);
-}
-
 
 /* Class initialization
  * Override functions in parent classes and define properties
@@ -409,9 +373,7 @@ static void xfdashboard_focus_manager_class_init(XfdashboardFocusManagerClass *k
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->constructor=_xfdashboard_focus_manager_constructor;
 	gobjectClass->dispose=_xfdashboard_focus_manager_dispose;
-	gobjectClass->finalize=_xfdashboard_focus_manager_finalize;
 
 	klass->focus_move_first=_xfdashboard_focus_manager_move_focus_first;
 	klass->focus_move_last=_xfdashboard_focus_manager_move_focus_last;
@@ -528,15 +490,6 @@ static void xfdashboard_focus_manager_init(XfdashboardFocusManager *self)
 }
 
 /* IMPLEMENTATION: Public API */
-
-/* Get single instance of manager */
-XfdashboardFocusManager* xfdashboard_focus_manager_get_default(void)
-{
-	GObject									*singleton;
-
-	singleton=g_object_new(XFDASHBOARD_TYPE_FOCUS_MANAGER, NULL);
-	return(XFDASHBOARD_FOCUS_MANAGER(singleton));
-}
 
 /* Register a focusable actor */
 void xfdashboard_focus_manager_register(XfdashboardFocusManager *self, XfdashboardFocusable *inFocusable)
@@ -1031,7 +984,7 @@ gboolean xfdashboard_focus_manager_get_event_targets_and_action(XfdashboardFocus
 																const gchar **outAction)
 {
 	XfdashboardFocusManagerPrivate	*priv;
-	XfdashboardBindingsPool			*bindings;
+	XfdashboardBindingsPool			*bindingsPool;
 	const XfdashboardBinding		*binding;
 	const gchar						*action;
 	GSList							*targetFocusables;
@@ -1067,8 +1020,8 @@ gboolean xfdashboard_focus_manager_get_event_targets_and_action(XfdashboardFocus
 	/* Lookup action for event and emit action if a binding was found
 	 * for this event.
 	 */
-	bindings=xfdashboard_bindings_pool_get_default();
-	binding=xfdashboard_bindings_pool_find_for_event(bindings, CLUTTER_ACTOR(inFocusable), inEvent);
+	bindingsPool=xfdashboard_core_get_bindings_pool(NULL);
+	binding=xfdashboard_bindings_pool_find_for_event(bindingsPool, CLUTTER_ACTOR(inFocusable), inEvent);
 	if(binding)
 	{
 		const gchar					*target;
@@ -1114,7 +1067,7 @@ gboolean xfdashboard_focus_manager_get_event_targets_and_action(XfdashboardFocus
 				}
 			}
 	}
-	g_object_unref(bindings);
+	g_object_unref(bindingsPool);
 
 	/* Release reference on ourselve and the focusable actor to took to keep them alive  */
 	g_object_unref(inFocusable);

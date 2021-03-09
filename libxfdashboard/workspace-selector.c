@@ -1315,7 +1315,7 @@ static void xfdashboard_workspace_selector_init(XfdashboardWorkspaceSelector *se
 	priv=self->priv=xfdashboard_workspace_selector_get_instance_private(self);
 
 	/* Set up default values */
-	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	priv->activeWorkspace=NULL;
 	priv->spacing=0.0f;
 	priv->orientation=DEFAULT_ORIENTATION;

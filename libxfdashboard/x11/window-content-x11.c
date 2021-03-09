@@ -2312,7 +2312,7 @@ void xfdashboard_window_content_x11_init(XfdashboardWindowContentX11 *self)
 	priv->includeWindowFrame=FALSE;
 	priv->styleClasses=NULL;
 	priv->stylePseudoClasses=NULL;
-	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	priv->workaroundMode=XFDASHBOARD_WINDOW_CONTENT_X11_WORKAROUND_MODE_NONE;
 	priv->workaroundStateSignalID=0;
 	priv->unmappedWindowIconXFill=FALSE;

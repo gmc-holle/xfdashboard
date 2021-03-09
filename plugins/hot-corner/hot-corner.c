@@ -353,7 +353,7 @@ void xfdashboard_hot_corner_init(XfdashboardHotCorner *self)
 
 	/* Set up default values */
 	priv->core=xfdashboard_core_get_default();
-	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->windowTracker=xfdashboard_core_get_window_tracker(priv->core);
 	priv->rootWindow=NULL;
 #if GTK_CHECK_VERSION(3, 20, 0)
 	priv->seat=NULL;

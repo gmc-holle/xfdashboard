@@ -123,7 +123,7 @@ static gboolean _xfdashboard_focusable_has_focus(XfdashboardFocusable *self)
 	/* Ask focus manager which actor has the current focus and
 	 * check if it is this focusable actor.
 	 */
-	focusManager=xfdashboard_focus_manager_get_default();
+	focusManager=xfdashboard_core_get_focus_manager(NULL);
 	hasFocus=xfdashboard_focus_manager_has_focus(focusManager, self);
 	g_object_unref(focusManager);
 
@@ -1044,7 +1044,7 @@ gboolean xfdashboard_focusable_move_focus_to(XfdashboardFocusable *self)
 	if(!xfdashboard_focusable_can_focus(self)) return(FALSE);
 
 	/* Get focus manager to change focus */
-	focusManager=xfdashboard_focus_manager_get_default();
+	focusManager=xfdashboard_core_get_focus_manager(NULL);;
 
 	/* Try to move focus to this focusable actor and check success */
 	xfdashboard_focus_manager_set_focus(focusManager, self);

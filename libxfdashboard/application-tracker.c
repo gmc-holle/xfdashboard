@@ -30,6 +30,7 @@
 
 #include <libxfdashboard/application-tracker.h>
 
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/application-database.h>
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/marshal.h>
@@ -62,9 +63,6 @@ enum
 static guint XfdashboardApplicationTrackerSignals[SIGNAL_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
-
-/* Single instance of application database */
-static XfdashboardApplicationTracker*		_xfdashboard_application_tracker=NULL;
 
 typedef struct _XfdashboardApplicationTrackerItem	XfdashboardApplicationTrackerItem;
 struct _XfdashboardApplicationTrackerItem
@@ -261,15 +259,16 @@ static XfdashboardApplicationTrackerItem* _xfdashboard_application_tracker_find_
 /* Get process' environment set from requested PID when running at Linux
  * by reading in file in proc filesystem.
  */
-static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gint inPID)
+static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(XfdashboardApplicationTracker *self, gint inPID)
 {
-	GHashTable		*environments;
-	gchar			*procEnvFile;
-	gchar			*envContent;
-	gsize			envLength;
-	GError			*error;
-	gchar			*iter;
+	GHashTable							*environments;
+	gchar								*procEnvFile;
+	gchar								*envContent;
+	gsize								envLength;
+	GError								*error;
+	gchar								*iter;
 
+	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_TRACKER(self), NULL);
 	g_return_val_if_fail(inPID>0, NULL);
 
 	error=NULL;
@@ -279,6 +278,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 	if(!environments)
 	{
 		g_warning("Could not create environment lookup table for PID %d", inPID);
+
 		return(NULL);
 	}
 
@@ -293,7 +293,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 	procEnvFile=g_strdup_printf("/proc/%d/environ", inPID);
 	if(!g_file_get_contents(procEnvFile, &envContent, &envLength, &error))
 	{
-		XFDASHBOARD_DEBUG(_xfdashboard_application_tracker, APPLICATIONS,
+		XFDASHBOARD_DEBUG(self, APPLICATIONS,
 							"Could not read environment varibles for PID %d at %s: %s",
 							inPID,
 							procEnvFile,
@@ -309,7 +309,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 		return(NULL);
 	}
 
-	XFDASHBOARD_DEBUG(_xfdashboard_application_tracker, APPLICATIONS,
+	XFDASHBOARD_DEBUG(self, APPLICATIONS,
 						"environment set for PID %d at %s is %lu bytes long",
 						inPID,
 						procEnvFile,
@@ -411,7 +411,7 @@ static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gin
 /* Fallback funtion to get process' environment set from requested PID
  * when running at an unsupported system. It just simply returns NULL.
  */
-static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(gint inPID)
+static GHashTable* _xfdashboard_application_tracker_get_environment_from_pid(XfdashboardApplicationTracker *self, gint inPID)
 {
 	static gboolean		wasWarningPrinted=FALSE;
 
@@ -458,7 +458,7 @@ static GAppInfo* _xfdashboard_application_tracker_get_desktop_id_from_environmen
 	}
 
 	/* Get hash-table with environment variables found for window's PID */
-	environments=_xfdashboard_application_tracker_get_environment_from_pid(windowPID);
+	environments=_xfdashboard_application_tracker_get_environment_from_pid(self, windowPID);
 	if(!environments)
 	{
 		XFDASHBOARD_DEBUG(self, APPLICATIONS,
@@ -927,26 +927,6 @@ static void _xfdashboard_application_tracker_on_active_window_changed(Xfdashboar
 
 /* IMPLEMENTATION: GObject */
 
-/* Construct this object */
-static GObject* _xfdashboard_application_tracker_constructor(GType inType,
-																guint inNumberConstructParams,
-																GObjectConstructParam *inConstructParams)
-{
-	GObject									*object;
-
-	if(!_xfdashboard_application_tracker)
-	{
-		object=G_OBJECT_CLASS(xfdashboard_application_tracker_parent_class)->constructor(inType, inNumberConstructParams, inConstructParams);
-		_xfdashboard_application_tracker=XFDASHBOARD_APPLICATION_TRACKER(object);
-	}
-		else
-		{
-			object=g_object_ref(G_OBJECT(_xfdashboard_application_tracker));
-		}
-
-	return(object);
-}
-
 /* Dispose this object */
 static void _xfdashboard_application_tracker_dispose(GObject *inObject)
 {
@@ -977,19 +957,6 @@ static void _xfdashboard_application_tracker_dispose(GObject *inObject)
 	G_OBJECT_CLASS(xfdashboard_application_tracker_parent_class)->dispose(inObject);
 }
 
-/* Finalize this object */
-static void _xfdashboard_application_tracker_finalize(GObject *inObject)
-{
-	/* Release allocated resources finally, e.g. unset singleton */
-	if(G_LIKELY(G_OBJECT(_xfdashboard_application_tracker)==inObject))
-	{
-		_xfdashboard_application_tracker=NULL;
-	}
-
-	/* Call parent's class dispose method */
-	G_OBJECT_CLASS(xfdashboard_application_tracker_parent_class)->finalize(inObject);
-}
-
 /* Class initialization
  * Override functions in parent classes and define properties
  * and signals
@@ -999,9 +966,7 @@ static void xfdashboard_application_tracker_class_init(XfdashboardApplicationTra
 	GObjectClass		*gobjectClass=G_OBJECT_CLASS(klass);
 
 	/* Override functions */
-	gobjectClass->constructor=_xfdashboard_application_tracker_constructor;
 	gobjectClass->dispose=_xfdashboard_application_tracker_dispose;
-	gobjectClass->finalize=_xfdashboard_application_tracker_finalize;
 
 	/* Define signals */
 	XfdashboardApplicationTrackerSignals[SIGNAL_STATE_CHANGED]=
@@ -1029,8 +994,8 @@ static void xfdashboard_application_tracker_init(XfdashboardApplicationTracker *
 
 	/* Set default values */
 	priv->runningApps=NULL;
-	priv->appDatabase=xfdashboard_application_database_get_default();
-	priv->windowTracker=xfdashboard_window_tracker_get_default();
+	priv->appDatabase=xfdashboard_core_get_application_database(NULL);
+	priv->windowTracker=xfdashboard_core_get_window_tracker(NULL);
 
 	/* Load application database if not done already */
 	if(!xfdashboard_application_database_is_loaded(priv->appDatabase))
@@ -1054,15 +1019,6 @@ static void xfdashboard_application_tracker_init(XfdashboardApplicationTracker *
 }
 
 /* IMPLEMENTATION: Public API */
-
-/* Get single instance of application */
-XfdashboardApplicationTracker* xfdashboard_application_tracker_get_default(void)
-{
-	GObject									*singleton;
-
-	singleton=g_object_new(XFDASHBOARD_TYPE_APPLICATION_TRACKER, NULL);
-	return(XFDASHBOARD_APPLICATION_TRACKER(singleton));
-}
 
 /* Get running state of application */
 gboolean xfdashboard_application_tracker_is_running_by_desktop_id(XfdashboardApplicationTracker *self,

@@ -74,8 +74,6 @@ struct _XfdashboardPluginsManagerClass
 /* Public API */
 GType xfdashboard_plugins_manager_get_type(void) G_GNUC_CONST;
 
-XfdashboardPluginsManager* xfdashboard_plugins_manager_get_default(void);
-
 gboolean xfdashboard_plugins_manager_setup(XfdashboardPluginsManager *self);
 
 G_END_DECLS
