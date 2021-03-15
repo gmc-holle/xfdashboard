@@ -121,8 +121,16 @@ gfloat xfdashboard_background_get_fill_corner_radius(XfdashboardBackground *self
 void xfdashboard_background_set_fill_corner_radius(XfdashboardBackground *self, const gfloat inRadius);
 
 /* Outline functions */
-const ClutterColor* xfdashboard_background_get_outline_color(XfdashboardBackground *self);
 void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const ClutterColor *inColor);
+
+const ClutterColor* xfdashboard_background_get_outline_inner_color(XfdashboardBackground *self);
+void xfdashboard_background_set_outline_inner_color(XfdashboardBackground *self, const ClutterColor *inColor);
+
+const ClutterColor* xfdashboard_background_get_outline_center_color(XfdashboardBackground *self);
+void xfdashboard_background_set_outline_center_color(XfdashboardBackground *self, const ClutterColor *inColor);
+
+const ClutterColor* xfdashboard_background_get_outline_outer_color(XfdashboardBackground *self);
+void xfdashboard_background_set_outline_outer_color(XfdashboardBackground *self, const ClutterColor *inColor);
 
 gfloat xfdashboard_background_get_outline_width(XfdashboardBackground *self);
 void xfdashboard_background_set_outline_width(XfdashboardBackground *self, const gfloat inWidth);
