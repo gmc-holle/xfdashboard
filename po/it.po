@@ -10,6 +10,7 @@
 # Emanuele Petriglia <transifex@emanuelepetriglia.com>, 2020
 # Eugenio Marconicchio <eugeniomarconicchio@protonmail.com>, 2020
 # Dmytro Tokayev, 2021
+# Gianvito Cavasoli <gianvito@gmx.it>, 2021
 # 
 #, fuzzy
 msgid ""
@@ -18,7 +19,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-05 12:50+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Dmytro Tokayev, 2021\n"
+"Last-Translator: Gianvito Cavasoli <gianvito@gmx.it>, 2021\n"
 "Language-Team: Italian (https://www.transifex.com/xfce/teams/16840/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -709,7 +710,7 @@ msgstr "Visualizzazione finestre"
 
 #: ../settings/general.c:86
 msgid "Applications view"
-msgstr "Visualizzazione finestre"
+msgstr "Visualizzazione applicazioni"
 
 #: ../settings/general.c:93
 msgid "High"
