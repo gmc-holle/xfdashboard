@@ -47,9 +47,7 @@ struct _XfdashboardBackgroundPrivate
 	XfdashboardCorners			fillCorners;
 	gfloat						fillCornersRadius;
 
-	ClutterColor				*outlineInnerColor;
-	ClutterColor				*outlineCenterColor;
-	ClutterColor				*outlineOuterColor;
+	ClutterColor				*outlineColor;
 	gfloat						outlineWidth;
 	XfdashboardBorders			outlineBorders;
 	XfdashboardCorners			outlineCorners;
@@ -80,9 +78,6 @@ enum
 	PROP_FILL_CORNERS_RADIUS,
 
 	PROP_OUTLINE_COLOR,
-	PROP_OUTLINE_INNER_COLOR,
-	PROP_OUTLINE_CENTER_COLOR,
-	PROP_OUTLINE_OUTER_COLOR,
 	PROP_OUTLINE_WIDTH,
 	PROP_OUTLINE_BORDERS,
 	PROP_OUTLINE_CORNERS,
@@ -260,22 +255,10 @@ static void _xfdashboard_background_dispose(GObject *inObject)
 		priv->fillColor=NULL;
 	}
 
-	if(priv->outlineInnerColor)
+	if(priv->outlineColor)
 	{
-		clutter_color_free(priv->outlineInnerColor);
-		priv->outlineInnerColor=NULL;
-	}
-
-	if(priv->outlineCenterColor)
-	{
-		clutter_color_free(priv->outlineCenterColor);
-		priv->outlineCenterColor=NULL;
-	}
-
-	if(priv->outlineOuterColor)
-	{
-		clutter_color_free(priv->outlineOuterColor);
-		priv->outlineOuterColor=NULL;
+		clutter_color_free(priv->outlineColor);
+		priv->outlineColor=NULL;
 	}
 
 	if(priv->outline)
@@ -324,18 +307,6 @@ static void _xfdashboard_background_set_property(GObject *inObject,
 
 		case PROP_OUTLINE_COLOR:
 			xfdashboard_background_set_outline_color(self, clutter_value_get_color(inValue));
-			break;
-
-		case PROP_OUTLINE_INNER_COLOR:
-			xfdashboard_background_set_outline_inner_color(self, clutter_value_get_color(inValue));
-			break;
-
-		case PROP_OUTLINE_CENTER_COLOR:
-			xfdashboard_background_set_outline_center_color(self, clutter_value_get_color(inValue));
-			break;
-
-		case PROP_OUTLINE_OUTER_COLOR:
-			xfdashboard_background_set_outline_outer_color(self, clutter_value_get_color(inValue));
 			break;
 
 		case PROP_OUTLINE_WIDTH:
@@ -390,16 +361,8 @@ static void _xfdashboard_background_get_property(GObject *inObject,
 			g_value_set_float(outValue, priv->fillCornersRadius);
 			break;
 
-		case PROP_OUTLINE_INNER_COLOR:
-			clutter_value_set_color(outValue, priv->outlineInnerColor);
-			break;
-
-		case PROP_OUTLINE_CENTER_COLOR:
-			clutter_value_set_color(outValue, priv->outlineCenterColor);
-			break;
-
-		case PROP_OUTLINE_OUTER_COLOR:
-			clutter_value_set_color(outValue, priv->outlineOuterColor);
+		case PROP_OUTLINE_COLOR:
+			clutter_value_set_color(outValue, priv->outlineColor);
 			break;
 
 		case PROP_OUTLINE_WIDTH:
@@ -499,27 +462,6 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 									"Outline color",
 									"Color to draw outline with",
 									CLUTTER_COLOR_White,
-									G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardBackgroundProperties[PROP_OUTLINE_INNER_COLOR]=
-		clutter_param_spec_color("outline-inner-color",
-									"Outline inner color",
-									"Color of inner border of outline to draw",
-									CLUTTER_COLOR_White,
-									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardBackgroundProperties[PROP_OUTLINE_CENTER_COLOR]=
-		clutter_param_spec_color("outline-center-color",
-									"Outline center color",
-									"Color of center border of outline to draw",
-									CLUTTER_COLOR_White,
-									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardBackgroundProperties[PROP_OUTLINE_OUTER_COLOR]=
-		clutter_param_spec_color("outline-outer-color",
-									"Outline outer color",
-									"Color of outer border of outline to draw",
-									CLUTTER_COLOR_White,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_OUTLINE_WIDTH]=
@@ -571,9 +513,6 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_FILL_CORNERS]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_FILL_CORNERS_RADIUS]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_OUTLINE_COLOR]);
-	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_OUTLINE_INNER_COLOR]);
-	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_OUTLINE_CENTER_COLOR]);
-	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_OUTLINE_OUTER_COLOR]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_OUTLINE_WIDTH]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_OUTLINE_BORDERS]);
 	xfdashboard_actor_install_stylable_property(actorClass, XfdashboardBackgroundProperties[PROP_OUTLINE_CORNERS]);
@@ -602,9 +541,7 @@ static void xfdashboard_background_init(XfdashboardBackground *self)
 	priv->fillCornersRadius=0.0f;
 
 	priv->outline=XFDASHBOARD_OUTLINE_EFFECT(g_object_ref(xfdashboard_outline_effect_new()));
-	priv->outlineInnerColor=clutter_color_copy(CLUTTER_COLOR_White);
-	priv->outlineCenterColor=clutter_color_copy(CLUTTER_COLOR_White);
-	priv->outlineOuterColor=clutter_color_copy(CLUTTER_COLOR_White);
+	priv->outlineColor=clutter_color_copy(CLUTTER_COLOR_White);
 	priv->outlineWidth=1.0f;
 	priv->outlineCorners=XFDASHBOARD_CORNERS_ALL;
 	priv->outlineBorders=XFDASHBOARD_BORDERS_ALL;
@@ -789,27 +726,15 @@ void xfdashboard_background_set_fill_corner_radius(XfdashboardBackground *self, 
 }
 
 /* Get/set color to draw outline with */
-#define DEBUG_COLOR(p,c) g_message("%s: %s@%p -> %s=(%u,%u,%u)", __FUNCTION__, G_OBJECT_TYPE_NAME(self), self, p, (c).red, (c).green, (c).blue);
+const ClutterColor* xfdashboard_background_get_outline_color(XfdashboardBackground *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), NULL);
+
+	return(self->priv->outlineColor);
+}
 
 void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const ClutterColor *inColor)
 {
-	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
-	g_return_if_fail(inColor);
-
-	xfdashboard_background_set_outline_inner_color(self, inColor);
-	xfdashboard_background_set_outline_center_color(self, inColor);
-	xfdashboard_background_set_outline_outer_color(self, inColor);
-}
-
-const ClutterColor* xfdashboard_background_get_outline_inner_color(XfdashboardBackground *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), NULL);
-
-	return(self->priv->outlineInnerColor);
-}
-
-void xfdashboard_background_set_outline_inner_color(XfdashboardBackground *self, const ClutterColor *inColor)
-{
 	XfdashboardBackgroundPrivate	*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
@@ -818,79 +743,17 @@ void xfdashboard_background_set_outline_inner_color(XfdashboardBackground *self,
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->outlineInnerColor==NULL || clutter_color_equal(inColor, priv->outlineInnerColor)==FALSE)
+	if(priv->outlineColor==NULL || clutter_color_equal(inColor, priv->outlineColor)==FALSE)
 	{
 		/* Set value */
-		if(priv->outlineInnerColor) clutter_color_free(priv->outlineInnerColor);
-		priv->outlineInnerColor=clutter_color_copy(inColor);
+		if(priv->outlineColor) clutter_color_free(priv->outlineColor);
+		priv->outlineColor=clutter_color_copy(inColor);
 
 		/* Update effect */
-		if(priv->outline) xfdashboard_outline_effect_set_inner_color(priv->outline, inColor);
+		if(priv->outline) xfdashboard_outline_effect_set_color(priv->outline, inColor);
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_INNER_COLOR]);
-	}
-}
-
-const ClutterColor* xfdashboard_background_get_outline_center_color(XfdashboardBackground *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), NULL);
-
-	return(self->priv->outlineCenterColor);
-}
-
-void xfdashboard_background_set_outline_center_color(XfdashboardBackground *self, const ClutterColor *inColor)
-{
-	XfdashboardBackgroundPrivate	*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
-	g_return_if_fail(inColor);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->outlineCenterColor==NULL || clutter_color_equal(inColor, priv->outlineCenterColor)==FALSE)
-	{
-		/* Set value */
-		if(priv->outlineCenterColor) clutter_color_free(priv->outlineCenterColor);
-		priv->outlineCenterColor=clutter_color_copy(inColor);
-
-		/* Update effect */
-		if(priv->outline) xfdashboard_outline_effect_set_center_color(priv->outline, inColor);
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_CENTER_COLOR]);
-	}
-}
-
-const ClutterColor* xfdashboard_background_get_outline_outer_color(XfdashboardBackground *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), NULL);
-
-	return(self->priv->outlineOuterColor);
-}
-
-void xfdashboard_background_set_outline_outer_color(XfdashboardBackground *self, const ClutterColor *inColor)
-{
-	XfdashboardBackgroundPrivate	*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
-	g_return_if_fail(inColor);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->outlineOuterColor==NULL || clutter_color_equal(inColor, priv->outlineOuterColor)==FALSE)
-	{
-		/* Set value */
-		if(priv->outlineOuterColor) clutter_color_free(priv->outlineOuterColor);
-		priv->outlineOuterColor=clutter_color_copy(inColor);
-
-		/* Update effect */
-		if(priv->outline) xfdashboard_outline_effect_set_outer_color(priv->outline, inColor);
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_OUTER_COLOR]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_COLOR]);
 	}
 }
 

@@ -41,9 +41,7 @@
 struct _XfdashboardOutlineEffectPrivate
 {
 	/* Properties related */
-	ClutterColor				*innerColor;
-	ClutterColor				*centerColor;
-	ClutterColor				*outerColor;
+	ClutterColor				*color;
 	gfloat						width;
 	XfdashboardBorders			borders;
 	XfdashboardCorners			corners;
@@ -66,9 +64,6 @@ enum
 	PROP_0,
 
 	PROP_COLOR,
-	PROP_INNER_COLOR,
-	PROP_CENTER_COLOR,
-	PROP_OUTER_COLOR,
 	PROP_WIDTH,
 	PROP_BORDERS,
 	PROP_CORNERS,
@@ -278,11 +273,19 @@ static void _xfdashboard_outline_effect_draw_outline_gradient(XfdashboardOutline
 	gfloat								halfSize;
 	gdouble								progress;
 
+ClutterColor *innerColor;
+ClutterColor *centerColor;
+ClutterColor *outerColor;
+
 	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
 	g_return_if_fail(inWidth>0);
 	g_return_if_fail(inHeight>0);
 
 	priv=self->priv;
+
+innerColor=clutter_color_copy(CLUTTER_COLOR_Red);
+centerColor=clutter_color_copy(CLUTTER_COLOR_Green);
+outerColor=clutter_color_copy(CLUTTER_COLOR_Blue);
 
 	/* Clear current contents of the canvas */
 	cairo_save(inContext);
@@ -308,10 +311,14 @@ static void _xfdashboard_outline_effect_draw_outline_gradient(XfdashboardOutline
 		progress=(offset/halfSize);
 
 		/* Interpolate color according to progress */
-		clutter_color_interpolate(priv->outerColor, priv->centerColor, progress, &progressColor);
+		clutter_color_interpolate(outerColor, centerColor, progress, &progressColor);
 
 		/* Set line color */
-		clutter_cairo_set_source_color(inContext, &progressColor);
+		cairo_set_source_rgba(inContext,
+								progressColor.red / 255.0f,
+								progressColor.green / 255.0f,
+								progressColor.blue / 255.0f,
+								progressColor.alpha / 255.0f);
 
 		/* Draw outline */
 		_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, offset, TRUE);
@@ -327,10 +334,14 @@ static void _xfdashboard_outline_effect_draw_outline_gradient(XfdashboardOutline
 		progress=((offset-halfSize)/halfSize);
 
 		/* Interpolate color according to progress */
-		clutter_color_interpolate(priv->centerColor, priv->innerColor, progress, &progressColor);
+		clutter_color_interpolate(centerColor, innerColor, progress, &progressColor);
 
 		/* Set line color */
-		clutter_cairo_set_source_color(inContext, &progressColor);
+		cairo_set_source_rgba(inContext,
+								progressColor.red / 255.0f,
+								progressColor.green / 255.0f,
+								progressColor.blue / 255.0f,
+								progressColor.alpha / 255.0f);
 
 		/* Draw outline */
 		_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, offset, TRUE);
@@ -340,8 +351,16 @@ static void _xfdashboard_outline_effect_draw_outline_gradient(XfdashboardOutline
 	}
 
 	/* Draw last outline in final color at final position */
-	clutter_cairo_set_source_color(inContext, priv->innerColor);
+	cairo_set_source_rgba(inContext,
+							innerColor->red / 255.0f,
+							innerColor->green / 255.0f,
+							innerColor->blue / 255.0f,
+							innerColor->alpha / 255.0f);
 	_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, priv->drawLineWidth, TRUE);
+
+clutter_color_free(innerColor);
+clutter_color_free(centerColor);
+clutter_color_free(outerColor);
 }
 
 /* Draw outline in a single color */
@@ -370,7 +389,11 @@ static void _xfdashboard_outline_effect_draw_outline_solid(XfdashboardOutlineEff
 	cairo_set_line_width(inContext, priv->drawLineWidth);
 
 	/* Set line color */
-	clutter_cairo_set_source_color(inContext, priv->centerColor);
+	cairo_set_source_rgba(inContext,
+							priv->color->red / 255.0f,
+							priv->color->green / 255.0f,
+							priv->color->blue / 255.0f,
+							priv->color->alpha / 255.0f);
 
 	/* Draw outline */
 	_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, 0.0f, FALSE);
@@ -451,8 +474,8 @@ static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlin
 		priv->drawLineWidth=floor(priv->width+0.5f);
 		priv->drawRadius=MAX(priv->cornersRadius, priv->drawLineWidth);
 
-		if(priv->drawLineWidth<2 ||
-			(clutter_color_equal(priv->innerColor, priv->centerColor) && clutter_color_equal(priv->centerColor, priv->outerColor)))
+		if(priv->drawLineWidth<2 /* TODO: ||
+			(clutter_color_equal(priv->color, priv->color) && clutter_color_equal(priv->color, priv->color))*/ )
 		{
 			_xfdashboard_outline_effect_draw_outline_solid(self, cairoContext, inWidth, inHeight);
 		}
@@ -561,22 +584,10 @@ static void _xfdashboard_outline_effect_dispose(GObject *inObject)
 		priv->pipeline=NULL;
 	}
 
-	if(priv->innerColor)
+	if(priv->color)
 	{
-		clutter_color_free(priv->innerColor);
-		priv->innerColor=NULL;
-	}
-
-	if(priv->centerColor)
-	{
-		clutter_color_free(priv->centerColor);
-		priv->centerColor=NULL;
-	}
-
-	if(priv->outerColor)
-	{
-		clutter_color_free(priv->outerColor);
-		priv->outerColor=NULL;
+		clutter_color_free(priv->color);
+		priv->color=NULL;
 	}
 
 	/* Call parent's class dispose method */
@@ -595,18 +606,6 @@ static void _xfdashboard_outline_effect_set_property(GObject *inObject,
 	{
 		case PROP_COLOR:
 			xfdashboard_outline_effect_set_color(self, clutter_value_get_color(inValue));
-			break;
-
-		case PROP_INNER_COLOR:
-			xfdashboard_outline_effect_set_inner_color(self, clutter_value_get_color(inValue));
-			break;
-
-		case PROP_CENTER_COLOR:
-			xfdashboard_outline_effect_set_center_color(self, clutter_value_get_color(inValue));
-			break;
-
-		case PROP_OUTER_COLOR:
-			xfdashboard_outline_effect_set_outer_color(self, clutter_value_get_color(inValue));
 			break;
 
 		case PROP_WIDTH:
@@ -641,16 +640,8 @@ static void _xfdashboard_outline_effect_get_property(GObject *inObject,
 
 	switch(inPropID)
 	{
-		case PROP_INNER_COLOR:
-			clutter_value_set_color(outValue, priv->innerColor);
-			break;
-
-		case PROP_CENTER_COLOR:
-			clutter_value_set_color(outValue, priv->centerColor);
-			break;
-
-		case PROP_OUTER_COLOR:
-			clutter_value_set_color(outValue, priv->outerColor);
+		case PROP_COLOR:
+			clutter_value_set_color(outValue, priv->color);
 			break;
 
 		case PROP_WIDTH:
@@ -696,27 +687,6 @@ static void xfdashboard_outline_effect_class_init(XfdashboardOutlineEffectClass 
 		clutter_param_spec_color("color",
 									"Color",
 									"Color to draw outline with",
-									CLUTTER_COLOR_White,
-									G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardOutlineEffectProperties[PROP_INNER_COLOR]=
-		clutter_param_spec_color("inner-color",
-									"Inner color",
-									"Color of inner border of outline to draw",
-									CLUTTER_COLOR_White,
-									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardOutlineEffectProperties[PROP_CENTER_COLOR]=
-		clutter_param_spec_color("center-color",
-									"Center color",
-									"Color of center border of outline to draw",
-									CLUTTER_COLOR_White,
-									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	XfdashboardOutlineEffectProperties[PROP_OUTER_COLOR]=
-		clutter_param_spec_color("outer-color",
-									"Outer color",
-									"Color of outer border of outline to draw",
 									CLUTTER_COLOR_White,
 									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -765,9 +735,7 @@ static void xfdashboard_outline_effect_init(XfdashboardOutlineEffect *self)
 	priv=self->priv=xfdashboard_outline_effect_get_instance_private(self);
 
 	/* Set up default values */
-	priv->innerColor=clutter_color_copy(CLUTTER_COLOR_White);
-	priv->centerColor=clutter_color_copy(CLUTTER_COLOR_White);
-	priv->outerColor=clutter_color_copy(CLUTTER_COLOR_White);
+	priv->color=clutter_color_copy(CLUTTER_COLOR_White);
 	priv->width=1.0f;
 	priv->borders=XFDASHBOARD_BORDERS_ALL;
 	priv->corners=XFDASHBOARD_CORNERS_ALL;
@@ -800,26 +768,16 @@ ClutterEffect* xfdashboard_outline_effect_new(void)
 	return(g_object_new(XFDASHBOARD_TYPE_OUTLINE_EFFECT, NULL));
 }
 
-/* Get/set colors to draw outline with */
+/* Get/set color to draw outline with */
+const ClutterColor* xfdashboard_outline_effect_get_color(XfdashboardOutlineEffect *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self), NULL);
+
+	return(self->priv->color);
+}
+
 void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const ClutterColor *inColor)
 {
-	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
-	g_return_if_fail(inColor);
-
-	xfdashboard_outline_effect_set_inner_color(self, inColor);
-	xfdashboard_outline_effect_set_center_color(self, inColor);
-	xfdashboard_outline_effect_set_outer_color(self, inColor);
-}
-
-const ClutterColor* xfdashboard_outline_effect_get_inner_color(XfdashboardOutlineEffect *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self), NULL);
-
-	return(self->priv->innerColor);
-}
-
-void xfdashboard_outline_effect_set_inner_color(XfdashboardOutlineEffect *self, const ClutterColor *inColor)
-{
 	XfdashboardOutlineEffectPrivate	*priv;
 
 	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
@@ -828,82 +786,18 @@ void xfdashboard_outline_effect_set_inner_color(XfdashboardOutlineEffect *self, 
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->innerColor==NULL || clutter_color_equal(inColor, priv->innerColor)==FALSE)
+	if(priv->color==NULL || clutter_color_equal(inColor, priv->color)==FALSE)
 	{
 		/* Set value */
-		if(priv->innerColor) clutter_color_free(priv->innerColor);
-		priv->innerColor=clutter_color_copy(inColor);
+		if(priv->color) clutter_color_free(priv->color);
+		priv->color=clutter_color_copy(inColor);
 
 		/* Invalidate effect to get it redrawn */
 		_xfdashboard_outline_effect_invalidate(self);
 		clutter_effect_queue_repaint(CLUTTER_EFFECT(self));
 
 		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardOutlineEffectProperties[PROP_INNER_COLOR]);
-	}
-}
-
-const ClutterColor* xfdashboard_outline_effect_get_center_color(XfdashboardOutlineEffect *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self), NULL);
-
-	return(self->priv->centerColor);
-}
-
-void xfdashboard_outline_effect_set_center_color(XfdashboardOutlineEffect *self, const ClutterColor *inColor)
-{
-	XfdashboardOutlineEffectPrivate	*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
-	g_return_if_fail(inColor);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->centerColor==NULL || clutter_color_equal(inColor, priv->centerColor)==FALSE)
-	{
-		/* Set value */
-		if(priv->centerColor) clutter_color_free(priv->centerColor);
-		priv->centerColor=clutter_color_copy(inColor);
-
-		/* Invalidate effect to get it redrawn */
-		_xfdashboard_outline_effect_invalidate(self);
-		clutter_effect_queue_repaint(CLUTTER_EFFECT(self));
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardOutlineEffectProperties[PROP_CENTER_COLOR]);
-	}
-}
-
-const ClutterColor* xfdashboard_outline_effect_get_outer_color(XfdashboardOutlineEffect *self)
-{
-	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self), NULL);
-
-	return(self->priv->outerColor);
-}
-
-void xfdashboard_outline_effect_set_outer_color(XfdashboardOutlineEffect *self, const ClutterColor *inColor)
-{
-	XfdashboardOutlineEffectPrivate	*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
-	g_return_if_fail(inColor);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(priv->outerColor==NULL || clutter_color_equal(inColor, priv->outerColor)==FALSE)
-	{
-		/* Set value */
-		if(priv->outerColor) clutter_color_free(priv->outerColor);
-		priv->outerColor=clutter_color_copy(inColor);
-
-		/* Invalidate effect to get it redrawn */
-		_xfdashboard_outline_effect_invalidate(self);
-		clutter_effect_queue_repaint(CLUTTER_EFFECT(self));
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardOutlineEffectProperties[PROP_OUTER_COLOR]);
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardOutlineEffectProperties[PROP_COLOR]);
 	}
 }
 
