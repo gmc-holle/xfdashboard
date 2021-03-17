@@ -30,6 +30,7 @@
 
 #include <clutter/clutter.h>
 
+#include <libxfdashboard/custom-color.h>
 #include <libxfdashboard/types.h>
 
 G_BEGIN_DECLS
@@ -67,8 +68,8 @@ GType xfdashboard_outline_effect_get_type(void) G_GNUC_CONST;
 
 ClutterEffect* xfdashboard_outline_effect_new(void);
 
-const ClutterColor* xfdashboard_outline_effect_get_color(XfdashboardOutlineEffect *self);
-void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const ClutterColor *inColor);
+const XfdashboardCustomColor* xfdashboard_outline_effect_get_color(XfdashboardOutlineEffect *self);
+void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const XfdashboardCustomColor *inColor);
 
 gfloat xfdashboard_outline_effect_get_width(XfdashboardOutlineEffect *self);
 void xfdashboard_outline_effect_set_width(XfdashboardOutlineEffect *self, const gfloat inWidth);

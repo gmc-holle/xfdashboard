@@ -41,7 +41,7 @@
 struct _XfdashboardOutlineEffectPrivate
 {
 	/* Properties related */
-	ClutterColor				*color;
+	XfdashboardCustomColor		*color;
 	gfloat						width;
 	XfdashboardBorders			borders;
 	XfdashboardCorners			corners;
@@ -389,11 +389,22 @@ static void _xfdashboard_outline_effect_draw_outline_solid(XfdashboardOutlineEff
 	cairo_set_line_width(inContext, priv->drawLineWidth);
 
 	/* Set line color */
-	cairo_set_source_rgba(inContext,
-							priv->color->red / 255.0f,
-							priv->color->green / 255.0f,
-							priv->color->blue / 255.0f,
-							priv->color->alpha / 255.0f);
+	if(xfdashboard_custom_color_get_color_type(priv->color)==XFDASHBOARD_CUSTOM_COLOR_TYPE_SOLID)
+	{
+		clutter_cairo_set_source_color(inContext, xfdashboard_custom_color_get_solid_color(priv->color));
+	}
+		else
+		{
+			guint						lastIndex;
+			ClutterColor				color;
+
+			/* Get last index */
+			lastIndex=xfdashboard_custom_color_get_number_stops(priv->color);
+
+			/* Set color from last color stop */
+			xfdashboard_custom_color_get_stop(priv->color, lastIndex-1, NULL, &color);
+			clutter_cairo_set_source_color(inContext, &color);
+		}
 
 	/* Draw outline */
 	_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, 0.0f, FALSE);
@@ -474,8 +485,8 @@ static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlin
 		priv->drawLineWidth=floor(priv->width+0.5f);
 		priv->drawRadius=MAX(priv->cornersRadius, priv->drawLineWidth);
 
-		if(priv->drawLineWidth<2 /* TODO: ||
-			(clutter_color_equal(priv->color, priv->color) && clutter_color_equal(priv->color, priv->color))*/ )
+		if(priv->drawLineWidth<2 ||
+			xfdashboard_custom_color_get_color_type(priv->color)==XFDASHBOARD_CUSTOM_COLOR_TYPE_SOLID)
 		{
 			_xfdashboard_outline_effect_draw_outline_solid(self, cairoContext, inWidth, inHeight);
 		}
@@ -586,7 +597,7 @@ static void _xfdashboard_outline_effect_dispose(GObject *inObject)
 
 	if(priv->color)
 	{
-		clutter_color_free(priv->color);
+		xfdashboard_custom_color_free(priv->color);
 		priv->color=NULL;
 	}
 
@@ -605,7 +616,7 @@ static void _xfdashboard_outline_effect_set_property(GObject *inObject,
 	switch(inPropID)
 	{
 		case PROP_COLOR:
-			xfdashboard_outline_effect_set_color(self, clutter_value_get_color(inValue));
+			xfdashboard_outline_effect_set_color(self, g_value_get_boxed(inValue));
 			break;
 
 		case PROP_WIDTH:
@@ -641,7 +652,7 @@ static void _xfdashboard_outline_effect_get_property(GObject *inObject,
 	switch(inPropID)
 	{
 		case PROP_COLOR:
-			clutter_value_set_color(outValue, priv->color);
+			g_value_set_boxed(outValue, priv->color);
 			break;
 
 		case PROP_WIDTH:
@@ -674,6 +685,13 @@ static void xfdashboard_outline_effect_class_init(XfdashboardOutlineEffectClass 
 {
 	ClutterEffectClass				*effectClass=CLUTTER_EFFECT_CLASS(klass);
 	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
+	static XfdashboardCustomColor	*defaultColor=NULL;
+
+	/* Set up default value for param spec */
+	if(G_UNLIKELY(!defaultColor))
+	{
+		defaultColor=xfdashboard_custom_color_new_solid(CLUTTER_COLOR_White);
+	}
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_outline_effect_dispose;
@@ -684,11 +702,11 @@ static void xfdashboard_outline_effect_class_init(XfdashboardOutlineEffectClass 
 
 	/* Define properties */
 	XfdashboardOutlineEffectProperties[PROP_COLOR]=
-		clutter_param_spec_color("color",
-									"Color",
-									"Color to draw outline with",
-									CLUTTER_COLOR_White,
-									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+		xfdashboard_param_spec_custom_color("color",
+											"Color",
+											"Color to draw outline with",
+											defaultColor,
+											G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardOutlineEffectProperties[PROP_WIDTH]=
 		g_param_spec_float("width",
@@ -735,7 +753,7 @@ static void xfdashboard_outline_effect_init(XfdashboardOutlineEffect *self)
 	priv=self->priv=xfdashboard_outline_effect_get_instance_private(self);
 
 	/* Set up default values */
-	priv->color=clutter_color_copy(CLUTTER_COLOR_White);
+	priv->color=xfdashboard_custom_color_new_solid(CLUTTER_COLOR_White);
 	priv->width=1.0f;
 	priv->borders=XFDASHBOARD_BORDERS_ALL;
 	priv->corners=XFDASHBOARD_CORNERS_ALL;
@@ -769,14 +787,14 @@ ClutterEffect* xfdashboard_outline_effect_new(void)
 }
 
 /* Get/set color to draw outline with */
-const ClutterColor* xfdashboard_outline_effect_get_color(XfdashboardOutlineEffect *self)
+const XfdashboardCustomColor* xfdashboard_outline_effect_get_color(XfdashboardOutlineEffect *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self), NULL);
 
 	return(self->priv->color);
 }
 
-void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const ClutterColor *inColor)
+void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const XfdashboardCustomColor *inColor)
 {
 	XfdashboardOutlineEffectPrivate	*priv;
 
@@ -786,11 +804,12 @@ void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const 
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->color==NULL || clutter_color_equal(inColor, priv->color)==FALSE)
+	if(priv->color==NULL ||
+		!xfdashboard_custom_color_equal(inColor, priv->color))
 	{
 		/* Set value */
-		if(priv->color) clutter_color_free(priv->color);
-		priv->color=clutter_color_copy(inColor);
+		if(priv->color) xfdashboard_custom_color_free(priv->color);
+		priv->color=xfdashboard_custom_color_copy(inColor);
 
 		/* Invalidate effect to get it redrawn */
 		_xfdashboard_outline_effect_invalidate(self);

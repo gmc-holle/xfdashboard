@@ -45,6 +45,7 @@ libxfdashboard_la_headers = \
 	compat.h \
 	core.h \
 	css-selector.h \
+	custom-color.h \
 	debug.h \
 	desktop-app-info.h \
 	desktop-app-info-action.h \
@@ -126,6 +127,7 @@ libxfdashboard_la_SOURCES = \
 	collapse-box.c \
 	core.c \
 	css-selector.c \
+	custom-color.c \
 	debug.c \
 	desktop-app-info.c \
 	desktop-app-info-action.c \

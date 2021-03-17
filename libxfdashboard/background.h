@@ -32,6 +32,7 @@
 #include <clutter/clutter.h>
 
 #include <libxfdashboard/actor.h>
+#include <libxfdashboard/custom-color.h>
 #include <libxfdashboard/types.h>
 
 G_BEGIN_DECLS
@@ -121,8 +122,8 @@ gfloat xfdashboard_background_get_fill_corner_radius(XfdashboardBackground *self
 void xfdashboard_background_set_fill_corner_radius(XfdashboardBackground *self, const gfloat inRadius);
 
 /* Outline functions */
-const ClutterColor* xfdashboard_background_get_outline_color(XfdashboardBackground *self);
-void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const ClutterColor *inColor);
+const XfdashboardCustomColor* xfdashboard_background_get_outline_color(XfdashboardBackground *self);
+void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const XfdashboardCustomColor *inColor);
 
 gfloat xfdashboard_background_get_outline_width(XfdashboardBackground *self);
 void xfdashboard_background_set_outline_width(XfdashboardBackground *self, const gfloat inWidth);
