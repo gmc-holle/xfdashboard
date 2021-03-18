@@ -41,7 +41,7 @@
 struct _XfdashboardOutlineEffectPrivate
 {
 	/* Properties related */
-	XfdashboardCustomColor		*color;
+	XfdashboardGradientColor		*color;
 	gfloat						width;
 	XfdashboardBorders			borders;
 	XfdashboardCorners			corners;
@@ -270,22 +270,13 @@ static void _xfdashboard_outline_effect_draw_outline_gradient(XfdashboardOutline
 	XfdashboardOutlineEffectPrivate		*priv;
 	ClutterColor						progressColor;
 	gfloat								offset;
-	gfloat								halfSize;
 	gdouble								progress;
-
-ClutterColor *innerColor;
-ClutterColor *centerColor;
-ClutterColor *outerColor;
 
 	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
 	g_return_if_fail(inWidth>0);
 	g_return_if_fail(inHeight>0);
 
 	priv=self->priv;
-
-innerColor=clutter_color_copy(CLUTTER_COLOR_Red);
-centerColor=clutter_color_copy(CLUTTER_COLOR_Green);
-outerColor=clutter_color_copy(CLUTTER_COLOR_Blue);
 
 	/* Clear current contents of the canvas */
 	cairo_save(inContext);
@@ -299,49 +290,20 @@ outerColor=clutter_color_copy(CLUTTER_COLOR_Blue);
 	cairo_set_line_width(inContext, 1.0f);
 
 	/* Draw rounded or flat rectangle in 0.5 pixel steps in line width and
-	 * which color matching the progress. First inner to center then center
-	 * to outer.
+	 * in color matching the progress. 0.5 pixel is chosen to mostly ensure
+	 * that the lines drawn will slightly overlap to prevent "holes".
 	 */
-	halfSize=priv->drawLineWidth/2.0f;
-
 	offset=0.0f;
-	while(offset<halfSize)
-	{
-		/* Calculate progress */
-		progress=(offset/halfSize);
-
-		/* Interpolate color according to progress */
-		clutter_color_interpolate(outerColor, centerColor, progress, &progressColor);
-
-		/* Set line color */
-		cairo_set_source_rgba(inContext,
-								progressColor.red / 255.0f,
-								progressColor.green / 255.0f,
-								progressColor.blue / 255.0f,
-								progressColor.alpha / 255.0f);
-
-		/* Draw outline */
-		_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, offset, TRUE);
-
-		/* Adjust offset for next outline to draw */
-		offset+=0.5f;
-	}
-
-	offset=halfSize;
 	while(offset<priv->drawLineWidth)
 	{
 		/* Calculate progress */
-		progress=((offset-halfSize)/halfSize);
+		progress=(offset/priv->drawLineWidth);
 
 		/* Interpolate color according to progress */
-		clutter_color_interpolate(centerColor, innerColor, progress, &progressColor);
+		xfdashboard_gradient_color_interpolate(priv->color, progress, &progressColor);
 
 		/* Set line color */
-		cairo_set_source_rgba(inContext,
-								progressColor.red / 255.0f,
-								progressColor.green / 255.0f,
-								progressColor.blue / 255.0f,
-								progressColor.alpha / 255.0f);
+		clutter_cairo_set_source_color(inContext, &progressColor);
 
 		/* Draw outline */
 		_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, offset, TRUE);
@@ -350,17 +312,10 @@ outerColor=clutter_color_copy(CLUTTER_COLOR_Blue);
 		offset+=0.5f;
 	}
 
-	/* Draw last outline in final color at final position */
-	cairo_set_source_rgba(inContext,
-							innerColor->red / 255.0f,
-							innerColor->green / 255.0f,
-							innerColor->blue / 255.0f,
-							innerColor->alpha / 255.0f);
+	/* Draw last outline in final color at final position to ensure its visible */
+	xfdashboard_gradient_color_interpolate(priv->color, 1.0, &progressColor);
+	clutter_cairo_set_source_color(inContext, &progressColor);
 	_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, priv->drawLineWidth, TRUE);
-
-clutter_color_free(innerColor);
-clutter_color_free(centerColor);
-clutter_color_free(outerColor);
 }
 
 /* Draw outline in a single color */
@@ -389,9 +344,9 @@ static void _xfdashboard_outline_effect_draw_outline_solid(XfdashboardOutlineEff
 	cairo_set_line_width(inContext, priv->drawLineWidth);
 
 	/* Set line color */
-	if(xfdashboard_custom_color_get_color_type(priv->color)==XFDASHBOARD_CUSTOM_COLOR_TYPE_SOLID)
+	if(xfdashboard_gradient_color_get_color_type(priv->color)==XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID)
 	{
-		clutter_cairo_set_source_color(inContext, xfdashboard_custom_color_get_solid_color(priv->color));
+		clutter_cairo_set_source_color(inContext, xfdashboard_gradient_color_get_solid_color(priv->color));
 	}
 		else
 		{
@@ -399,10 +354,10 @@ static void _xfdashboard_outline_effect_draw_outline_solid(XfdashboardOutlineEff
 			ClutterColor				color;
 
 			/* Get last index */
-			lastIndex=xfdashboard_custom_color_get_number_stops(priv->color);
+			lastIndex=xfdashboard_gradient_color_get_number_stops(priv->color);
 
 			/* Set color from last color stop */
-			xfdashboard_custom_color_get_stop(priv->color, lastIndex-1, NULL, &color);
+			xfdashboard_gradient_color_get_stop(priv->color, lastIndex-1, NULL, &color);
 			clutter_cairo_set_source_color(inContext, &color);
 		}
 
@@ -486,7 +441,7 @@ static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlin
 		priv->drawRadius=MAX(priv->cornersRadius, priv->drawLineWidth);
 
 		if(priv->drawLineWidth<2 ||
-			xfdashboard_custom_color_get_color_type(priv->color)==XFDASHBOARD_CUSTOM_COLOR_TYPE_SOLID)
+			xfdashboard_gradient_color_get_color_type(priv->color)==XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID)
 		{
 			_xfdashboard_outline_effect_draw_outline_solid(self, cairoContext, inWidth, inHeight);
 		}
@@ -597,7 +552,7 @@ static void _xfdashboard_outline_effect_dispose(GObject *inObject)
 
 	if(priv->color)
 	{
-		xfdashboard_custom_color_free(priv->color);
+		xfdashboard_gradient_color_free(priv->color);
 		priv->color=NULL;
 	}
 
@@ -685,12 +640,12 @@ static void xfdashboard_outline_effect_class_init(XfdashboardOutlineEffectClass 
 {
 	ClutterEffectClass				*effectClass=CLUTTER_EFFECT_CLASS(klass);
 	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
-	static XfdashboardCustomColor	*defaultColor=NULL;
+	static XfdashboardGradientColor	*defaultColor=NULL;
 
 	/* Set up default value for param spec */
 	if(G_UNLIKELY(!defaultColor))
 	{
-		defaultColor=xfdashboard_custom_color_new_solid(CLUTTER_COLOR_White);
+		defaultColor=xfdashboard_gradient_color_new_solid(CLUTTER_COLOR_White);
 	}
 
 	/* Override functions */
@@ -702,7 +657,7 @@ static void xfdashboard_outline_effect_class_init(XfdashboardOutlineEffectClass 
 
 	/* Define properties */
 	XfdashboardOutlineEffectProperties[PROP_COLOR]=
-		xfdashboard_param_spec_custom_color("color",
+		xfdashboard_param_spec_gradient_color("color",
 											"Color",
 											"Color to draw outline with",
 											defaultColor,
@@ -753,7 +708,7 @@ static void xfdashboard_outline_effect_init(XfdashboardOutlineEffect *self)
 	priv=self->priv=xfdashboard_outline_effect_get_instance_private(self);
 
 	/* Set up default values */
-	priv->color=xfdashboard_custom_color_new_solid(CLUTTER_COLOR_White);
+	priv->color=xfdashboard_gradient_color_new_solid(CLUTTER_COLOR_White);
 	priv->width=1.0f;
 	priv->borders=XFDASHBOARD_BORDERS_ALL;
 	priv->corners=XFDASHBOARD_CORNERS_ALL;
@@ -787,14 +742,14 @@ ClutterEffect* xfdashboard_outline_effect_new(void)
 }
 
 /* Get/set color to draw outline with */
-const XfdashboardCustomColor* xfdashboard_outline_effect_get_color(XfdashboardOutlineEffect *self)
+const XfdashboardGradientColor* xfdashboard_outline_effect_get_color(XfdashboardOutlineEffect *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self), NULL);
 
 	return(self->priv->color);
 }
 
-void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const XfdashboardCustomColor *inColor)
+void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const XfdashboardGradientColor *inColor)
 {
 	XfdashboardOutlineEffectPrivate	*priv;
 
@@ -805,11 +760,11 @@ void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const 
 
 	/* Set value if changed */
 	if(priv->color==NULL ||
-		!xfdashboard_custom_color_equal(inColor, priv->color))
+		!xfdashboard_gradient_color_equal(inColor, priv->color))
 	{
 		/* Set value */
-		if(priv->color) xfdashboard_custom_color_free(priv->color);
-		priv->color=xfdashboard_custom_color_copy(inColor);
+		if(priv->color) xfdashboard_gradient_color_free(priv->color);
+		priv->color=xfdashboard_gradient_color_copy(inColor);
 
 		/* Invalidate effect to get it redrawn */
 		_xfdashboard_outline_effect_invalidate(self);

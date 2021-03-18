@@ -45,7 +45,6 @@ libxfdashboard_la_headers = \
 	compat.h \
 	core.h \
 	css-selector.h \
-	custom-color.h \
 	debug.h \
 	desktop-app-info.h \
 	desktop-app-info-action.h \
@@ -56,6 +55,7 @@ libxfdashboard_la_headers = \
 	fill-box-layout.h \
 	focusable.h \
 	focus-manager.h \
+	gradient-color.h \
 	image-content.h \
 	label.h \
 	live-window.h \
@@ -127,7 +127,6 @@ libxfdashboard_la_SOURCES = \
 	collapse-box.c \
 	core.c \
 	css-selector.c \
-	custom-color.c \
 	debug.c \
 	desktop-app-info.c \
 	desktop-app-info-action.c \
@@ -138,6 +137,7 @@ libxfdashboard_la_SOURCES = \
 	fill-box-layout.c \
 	focusable.c \
 	focus-manager.c \
+	gradient-color.c \
 	image-content.c \
 	label.c \
 	live-window.c \

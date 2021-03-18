@@ -47,7 +47,7 @@ struct _XfdashboardBackgroundPrivate
 	XfdashboardCorners			fillCorners;
 	gfloat						fillCornersRadius;
 
-	XfdashboardCustomColor		*outlineColor;
+	XfdashboardGradientColor		*outlineColor;
 	gfloat						outlineWidth;
 	XfdashboardBorders			outlineBorders;
 	XfdashboardCorners			outlineCorners;
@@ -257,7 +257,7 @@ static void _xfdashboard_background_dispose(GObject *inObject)
 
 	if(priv->outlineColor)
 	{
-		xfdashboard_custom_color_free(priv->outlineColor);
+		xfdashboard_gradient_color_free(priv->outlineColor);
 		priv->outlineColor=NULL;
 	}
 
@@ -400,12 +400,12 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 	XfdashboardActorClass			*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
 	ClutterActorClass				*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
-	static XfdashboardCustomColor	*defaultColor=NULL;
+	static XfdashboardGradientColor	*defaultColor=NULL;
 
 	/* Set up default value for param spec */
 	if(G_UNLIKELY(!defaultColor))
 	{
-		defaultColor=xfdashboard_custom_color_new_solid(CLUTTER_COLOR_White);
+		defaultColor=xfdashboard_gradient_color_new_solid(CLUTTER_COLOR_White);
 	}
 
 	/* Override functions */
@@ -465,7 +465,7 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_OUTLINE_COLOR]=
-		xfdashboard_param_spec_custom_color("outline-color",
+		xfdashboard_param_spec_gradient_color("outline-color",
 											"Outline color",
 											"Color to draw outline with",
 											defaultColor,
@@ -548,7 +548,7 @@ static void xfdashboard_background_init(XfdashboardBackground *self)
 	priv->fillCornersRadius=0.0f;
 
 	priv->outline=XFDASHBOARD_OUTLINE_EFFECT(g_object_ref(xfdashboard_outline_effect_new()));
-	priv->outlineColor=xfdashboard_custom_color_new_solid(CLUTTER_COLOR_White);
+	priv->outlineColor=xfdashboard_gradient_color_new_solid(CLUTTER_COLOR_White);
 	priv->outlineWidth=1.0f;
 	priv->outlineCorners=XFDASHBOARD_CORNERS_ALL;
 	priv->outlineBorders=XFDASHBOARD_BORDERS_ALL;
@@ -733,14 +733,14 @@ void xfdashboard_background_set_fill_corner_radius(XfdashboardBackground *self, 
 }
 
 /* Get/set color to draw outline with */
-const XfdashboardCustomColor* xfdashboard_background_get_outline_color(XfdashboardBackground *self)
+const XfdashboardGradientColor* xfdashboard_background_get_outline_color(XfdashboardBackground *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), NULL);
 
 	return(self->priv->outlineColor);
 }
 
-void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const XfdashboardCustomColor *inColor)
+void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const XfdashboardGradientColor *inColor)
 {
 	XfdashboardBackgroundPrivate	*priv;
 
@@ -751,11 +751,11 @@ void xfdashboard_background_set_outline_color(XfdashboardBackground *self, const
 
 	/* Set value if changed */
 	if(priv->outlineColor==NULL ||
-		!xfdashboard_custom_color_equal(inColor, priv->outlineColor))
+		!xfdashboard_gradient_color_equal(inColor, priv->outlineColor))
 	{
 		/* Set value */
-		if(priv->outlineColor) xfdashboard_custom_color_free(priv->outlineColor);
-		priv->outlineColor=xfdashboard_custom_color_copy(inColor);
+		if(priv->outlineColor) xfdashboard_gradient_color_free(priv->outlineColor);
+		priv->outlineColor=xfdashboard_gradient_color_copy(inColor);
 
 		/* Update effect */
 		if(priv->outline) xfdashboard_outline_effect_set_color(priv->outline, priv->outlineColor);
