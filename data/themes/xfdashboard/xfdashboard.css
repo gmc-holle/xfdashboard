@@ -458,10 +458,12 @@ XfdashboardWindowsView
 
 /* Focus */
 #searchbox.focus,
-#view-selector.focus
+#view-selector.focus,
+#quicklaunch.focus,
+#workspace-selector.focus
 {
-	outline-color: #3d71ffff;
-	outline-width: 2.0;
+	outline-color: path #3d71ffff #3dffffff;
+	outline-width: 3.0;
 }
 
 #searchbox.focus
@@ -473,12 +475,6 @@ XfdashboardWindowsView
 #view-selector.focus
 {
 	background-type: outline;
-}
-
-#quicklaunch.focus,
-#workspace-selector.focus
-{
-	outline-width: 2.0;
 }
 
 #workspace-selector.focus
@@ -507,8 +503,8 @@ XfdashboardWindowsView
 XfdashboardWindowsView XfdashboardLiveWindow:selected
 {
 	background-type: outline;
-	outline-color: #3d71ffff;
-	outline-width: 2.0;
+	outline-color: path #3d71ffff #3dffffff;
+	outline-width: 3.0;
 }
 
 XfdashboardLiveWindow:selected XfdashboardButton.title
@@ -523,8 +519,8 @@ XfdashboardApplicationsView XfdashboardButton:selected
 {
 	background-type: fill outline rounded-corners;
 	background-fill-color: @background;
-	outline-color: #5792e2ff;
-	outline-width: 2.0;
+	outline-color: path #3d71ffff #3dffffff;
+	outline-width: 3.0;
 	corners: all;
 	corner-radius: 4.0;
 }
@@ -533,8 +529,8 @@ XfdashboardSearchView XfdashboardSearchResultContainer XfdashboardButton:selecte
 {
 	background-type: fill outline rounded-corners;
 	background-fill-color: @background;
-	outline-color: #5792e2ff;
-	outline-width: 2.0;
+	outline-color: path #3d71ffff #3dffffff;
+	outline-width: 3.0;
 	corners: all;
 	corner-radius: 4.0;
 }
