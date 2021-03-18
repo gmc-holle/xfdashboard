@@ -98,9 +98,6 @@ int main(int argc, char **argv)
 		return(1);
 	}
 
-	/* Register GValue transformation functions */
-	xfdashboard_register_gvalue_transformation_funcs();
-
 	/* Create and show settings dialog as normal application window
 	 * if no socket ID for xfce settings manager is given ...
 	 */

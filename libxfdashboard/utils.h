@@ -86,8 +86,6 @@ void xfdashboard_notify(ClutterActor *inSender,
 
 GAppLaunchContext* xfdashboard_create_app_context(XfdashboardWindowTrackerWorkspace *inWorkspace);
 
-void xfdashboard_register_gvalue_transformation_funcs(void);
-
 ClutterActor* xfdashboard_find_actor_by_name(ClutterActor *inActor, const gchar *inName);
 
 /**
