@@ -43,7 +43,6 @@
 #include <libxfdashboard/collapse-box.h>
 #include <libxfdashboard/core.h>
 #include <libxfdashboard/css-selector.h>
-#include <libxfdashboard/custom-color.h>
 #include <libxfdashboard/desktop-app-info.h>
 #include <libxfdashboard/drag-action.h>
 #include <libxfdashboard/drop-action.h>
@@ -52,6 +51,7 @@
 #include <libxfdashboard/fill-box-layout.h>
 #include <libxfdashboard/focusable.h>
 #include <libxfdashboard/focus-manager.h>
+#include <libxfdashboard/gradient-color.h>
 #include <libxfdashboard/image-content.h>
 #include <libxfdashboard/label.h>
 #include <libxfdashboard/live-window.h>

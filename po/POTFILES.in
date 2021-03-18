@@ -41,7 +41,7 @@ libxfdashboard/enums.c
 libxfdashboard/fill-box-layout.c
 libxfdashboard/focusable.c
 libxfdashboard/focus-manager.c
-libxfdashboard/gdk/window-tracker-backend-gdk.c
+libxfdashboard/gradient-color.c
 libxfdashboard/image-content.c
 libxfdashboard/label.c
 libxfdashboard/live-window.c
@@ -91,6 +91,7 @@ libxfdashboard/window-tracker-monitor.c
 libxfdashboard/window-tracker-window.c
 libxfdashboard/window-tracker-workspace.c
 libxfdashboard/workspace-selector.c
+libxfdashboard/gdk/window-tracker-backend-gdk.c
 libxfdashboard/x11/window-content-x11.c
 libxfdashboard/x11/window-tracker-backend-x11.c
 libxfdashboard/x11/window-tracker-monitor-x11.c
