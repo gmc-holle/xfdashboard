@@ -25,6 +25,9 @@
 #include "config.h"
 #endif
 
+#define COGL_ENABLE_EXPERIMENTAL_API
+#define CLUTTER_ENABLE_EXPERIMENTAL_API
+
 #include <libxfdashboard/outline-effect.h>
 
 #include <glib/gi18n-lib.h>
@@ -38,11 +41,17 @@
 struct _XfdashboardOutlineEffectPrivate
 {
 	/* Properties related */
-	ClutterColor				*color;
+	XfdashboardGradientColor		*color;
 	gfloat						width;
 	XfdashboardBorders			borders;
 	XfdashboardCorners			corners;
 	gfloat						cornersRadius;
+
+	/* Instance related */
+	CoglPipeline				*pipeline;
+	CoglTexture					*texture;
+	gint						drawLineWidth;
+	gfloat						drawRadius;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardOutlineEffect,
@@ -67,6 +76,410 @@ static GParamSpec* XfdashboardOutlineEffectProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
+static CoglPipeline		*_xfdashboard_outline_effect_base_pipeline=NULL;
+
+/* Invalidate cached texture */
+static void _xfdashboard_outline_effect_invalidate(XfdashboardOutlineEffect *self)
+{
+	XfdashboardOutlineEffectPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
+
+	priv=self->priv;
+
+	/* Release texture */
+	if(priv->texture)
+	{
+		cogl_object_unref(priv->texture);
+		priv->texture=NULL;
+	}
+}
+
+/* Draw outline with gradient */
+static void _xfdashboard_outline_effect_draw_outline_intern(XfdashboardOutlineEffect *self,
+															cairo_t *inContext,
+															gint inWidth,
+															gint inHeight,
+															gfloat inOffset,
+															gboolean inIsGradient)
+{
+	XfdashboardOutlineEffectPrivate		*priv;
+	gfloat								penOffset;
+
+	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
+	g_return_if_fail(inWidth>0);
+	g_return_if_fail(inHeight>0);
+	g_return_if_fail(inOffset>=0.0f && inOffset<=self->priv->drawLineWidth);
+
+	priv=self->priv;
+
+	/* Calculate offset for pen width */
+	if(inIsGradient) penOffset=0.0f;
+		else penOffset=(priv->drawLineWidth / 2.0f);
+
+	/* Set path for rounded borders and corners */
+	if(priv->drawRadius>0.0f)
+	{
+		/* Top-left corner */
+		if(priv->corners & XFDASHBOARD_CORNERS_TOP_LEFT &&
+			priv->borders & XFDASHBOARD_BORDERS_LEFT &&
+			priv->borders & XFDASHBOARD_BORDERS_TOP)
+		{
+			cairo_arc(inContext,
+						priv->drawRadius+penOffset, priv->drawRadius+penOffset,
+						priv->drawRadius-inOffset,
+						M_PI, M_PI*1.5f);
+			cairo_stroke(inContext);
+		}
+
+		/* Top border */
+		if(priv->borders & XFDASHBOARD_BORDERS_TOP)
+		{
+			gfloat		offset1=0.0f;
+			gfloat		offset2=0.0f;
+
+			if(priv->corners & XFDASHBOARD_CORNERS_TOP_LEFT) offset1=priv->drawRadius;
+			if(priv->corners & XFDASHBOARD_CORNERS_TOP_RIGHT) offset2=priv->drawRadius;
+
+			cairo_move_to(inContext, offset1+penOffset, inOffset+penOffset);
+			cairo_line_to(inContext, inWidth-offset2-penOffset, inOffset+penOffset);
+			cairo_stroke(inContext);
+		}
+
+		/* Top-right corner */
+		if(priv->corners & XFDASHBOARD_CORNERS_TOP_RIGHT &&
+			priv->borders & XFDASHBOARD_BORDERS_TOP &&
+			priv->borders & XFDASHBOARD_BORDERS_RIGHT)
+		{
+			cairo_arc(inContext,
+						inWidth-priv->drawRadius-penOffset, priv->drawRadius+penOffset,
+						priv->drawRadius-inOffset,
+						M_PI*1.5f, M_PI*2.0f);
+			cairo_stroke(inContext);
+			cairo_stroke(inContext);
+		}
+
+		/* Right border */
+		if(priv->borders & XFDASHBOARD_BORDERS_RIGHT)
+		{
+			gfloat		offset1=0.0f;
+			gfloat		offset2=0.0f;
+
+			if(priv->corners & XFDASHBOARD_CORNERS_TOP_RIGHT) offset1=priv->drawRadius;
+			if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT) offset2=priv->drawRadius;
+
+			cairo_move_to(inContext, inWidth-inOffset-penOffset, offset1+penOffset);
+			cairo_line_to(inContext, inWidth-inOffset-penOffset, inHeight-offset2-penOffset);
+			cairo_stroke(inContext);
+		}
+
+		/* Bottom-right corner */
+		if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT &&
+			priv->borders & XFDASHBOARD_BORDERS_RIGHT &&
+			priv->borders & XFDASHBOARD_BORDERS_BOTTOM)
+		{
+			cairo_arc(inContext,
+						inWidth-priv->drawRadius-penOffset, inHeight-priv->drawRadius-penOffset,
+						priv->drawRadius-inOffset,
+						0.0f, M_PI*0.5f);
+			cairo_stroke(inContext);
+		}
+
+		/* Bottom border */
+		if(priv->borders & XFDASHBOARD_BORDERS_BOTTOM)
+		{
+			gfloat		offset1=0.0f;
+			gfloat		offset2=0.0f;
+
+			if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_LEFT) offset1=priv->drawRadius;
+			if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT) offset2=priv->drawRadius;
+
+			cairo_move_to(inContext, offset1+penOffset, inHeight-inOffset-penOffset);
+			cairo_line_to(inContext, inWidth-offset2-penOffset, inHeight-inOffset-penOffset);
+			cairo_stroke(inContext);
+		}
+
+		/* Bottom-left corner */
+		if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_LEFT &&
+			priv->borders & XFDASHBOARD_BORDERS_BOTTOM &&
+			priv->borders & XFDASHBOARD_BORDERS_LEFT)
+		{
+			cairo_arc(inContext,
+						priv->drawRadius+penOffset, inHeight-priv->drawRadius-penOffset,
+						priv->drawRadius-inOffset,
+						M_PI*0.5f, M_PI);
+			cairo_stroke(inContext);
+		}
+
+		/* Left border */
+		if(priv->borders & XFDASHBOARD_BORDERS_LEFT)
+		{
+			gfloat		offset1=0.0f;
+			gfloat		offset2=0.0f;
+
+			if(priv->corners & XFDASHBOARD_CORNERS_TOP_LEFT) offset1=priv->drawRadius;
+			if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_LEFT) offset2=priv->drawRadius;
+
+			cairo_move_to(inContext, inOffset+penOffset, offset1+penOffset);
+			cairo_line_to(inContext, inOffset+penOffset, inHeight-offset2-penOffset);
+			cairo_stroke(inContext);
+		}
+	}
+		/* Set up path for flat lines without rounded corners */
+		else
+		{
+			/* Top border */
+			if(priv->borders & XFDASHBOARD_BORDERS_TOP)
+			{
+				cairo_move_to(inContext, inOffset+penOffset, inOffset+penOffset);
+				cairo_line_to(inContext, inWidth-inOffset-penOffset, inOffset+penOffset);
+				cairo_stroke(inContext);
+			}
+
+			/* Right border */
+			if(priv->borders & XFDASHBOARD_BORDERS_RIGHT)
+			{
+				cairo_move_to(inContext, inWidth-inOffset-penOffset, inOffset+penOffset);
+				cairo_line_to(inContext, inWidth-inOffset-penOffset, inHeight-inOffset-penOffset);
+				cairo_stroke(inContext);
+			}
+
+			/* Bottom border */
+			if(priv->borders & XFDASHBOARD_BORDERS_BOTTOM)
+			{
+				cairo_move_to(inContext, inOffset+penOffset, inHeight-inOffset-penOffset);
+				cairo_line_to(inContext, inWidth-inOffset-penOffset, inHeight-inOffset-penOffset);
+				cairo_stroke(inContext);
+			}
+
+			/* Left border */
+			if(priv->borders & XFDASHBOARD_BORDERS_LEFT)
+			{
+				cairo_move_to(inContext, inOffset+penOffset, inOffset+penOffset);
+				cairo_line_to(inContext, inOffset+penOffset, inHeight-inOffset-penOffset);
+				cairo_stroke(inContext);
+			}
+		}
+}
+
+static void _xfdashboard_outline_effect_draw_outline_gradient(XfdashboardOutlineEffect *self,
+																cairo_t *inContext,
+																gint inWidth,
+																gint inHeight)
+{
+	XfdashboardOutlineEffectPrivate		*priv;
+	ClutterColor						progressColor;
+	gfloat								offset;
+	gdouble								progress;
+
+	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
+	g_return_if_fail(inWidth>0);
+	g_return_if_fail(inHeight>0);
+
+	priv=self->priv;
+
+	/* Clear current contents of the canvas */
+	cairo_save(inContext);
+	cairo_set_operator(inContext, CAIRO_OPERATOR_CLEAR);
+	cairo_paint(inContext);
+	cairo_restore(inContext);
+
+	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
+
+	/* Set line width */
+	cairo_set_line_width(inContext, 1.0f);
+
+	/* Draw rounded or flat rectangle in 0.5 pixel steps in line width and
+	 * in color matching the progress. 0.5 pixel is chosen to mostly ensure
+	 * that the lines drawn will slightly overlap to prevent "holes".
+	 */
+	offset=0.0f;
+	while(offset<priv->drawLineWidth)
+	{
+		/* Calculate progress */
+		progress=(offset/priv->drawLineWidth);
+
+		/* Interpolate color according to progress */
+		xfdashboard_gradient_color_interpolate(priv->color, progress, &progressColor);
+
+		/* Set line color */
+		clutter_cairo_set_source_color(inContext, &progressColor);
+
+		/* Draw outline */
+		_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, offset, TRUE);
+
+		/* Adjust offset for next outline to draw */
+		offset+=0.5f;
+	}
+
+	/* Draw last outline in final color at final position to ensure its visible */
+	xfdashboard_gradient_color_interpolate(priv->color, 1.0, &progressColor);
+	clutter_cairo_set_source_color(inContext, &progressColor);
+	_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, priv->drawLineWidth, TRUE);
+}
+
+/* Draw outline in a single color */
+static void _xfdashboard_outline_effect_draw_outline_solid(XfdashboardOutlineEffect *self,
+															cairo_t *inContext,
+															gint inWidth,
+															gint inHeight)
+{
+	XfdashboardOutlineEffectPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
+	g_return_if_fail(inWidth>0);
+	g_return_if_fail(inHeight>0);
+
+	priv=self->priv;
+
+	/* Clear current contents of the canvas */
+	cairo_save(inContext);
+	cairo_set_operator(inContext, CAIRO_OPERATOR_CLEAR);
+	cairo_paint(inContext);
+	cairo_restore(inContext);
+
+	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
+
+	/* Set line width */
+	cairo_set_line_width(inContext, priv->drawLineWidth);
+
+	/* Set line color */
+	if(xfdashboard_gradient_color_get_color_type(priv->color)==XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID)
+	{
+		clutter_cairo_set_source_color(inContext, xfdashboard_gradient_color_get_solid_color(priv->color));
+	}
+		else
+		{
+			guint						lastIndex;
+			ClutterColor				color;
+
+			/* Get last index */
+			lastIndex=xfdashboard_gradient_color_get_number_stops(priv->color);
+
+			/* Set color from last color stop */
+			xfdashboard_gradient_color_get_stop(priv->color, lastIndex-1, NULL, &color);
+			clutter_cairo_set_source_color(inContext, &color);
+		}
+
+	/* Draw outline */
+	_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, 0.0f, FALSE);
+}
+
+/* Create texture with outline for actor */
+static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlineEffect *self,
+																gfloat inWidth,
+																gfloat inHeight)
+{
+	XfdashboardOutlineEffectPrivate		*priv;
+	CoglContext							*coglContext;
+	CoglBitmap							*bitmapBuffer;
+	CoglBuffer							*buffer;
+	CoglTexture							*texture;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self), NULL);
+	g_return_val_if_fail(inWidth>=1.0f, NULL);
+	g_return_val_if_fail(inHeight>=1.0f, NULL);
+
+	priv=self->priv;
+	texture=NULL;
+
+	/* Set up bitmap buffer to draw outline into */
+	coglContext=clutter_backend_get_cogl_context(clutter_get_default_backend());
+	bitmapBuffer=cogl_bitmap_new_with_size(coglContext,
+											inWidth,
+											inHeight,
+											CLUTTER_CAIRO_FORMAT_ARGB32);
+	if(!bitmapBuffer) return(NULL);
+
+	/* If buffer could be created and retrieved begin to draw */
+	buffer=COGL_BUFFER(cogl_bitmap_get_buffer(bitmapBuffer));
+	if(buffer)
+	{
+		gpointer						bufferData;
+		gboolean						mappedBuffer;
+		cairo_t							*cairoContext;
+		cairo_surface_t					*cairoSurface;
+
+		/* Tell cogl that this buffer may change from time to time */
+		cogl_buffer_set_update_hint(buffer, COGL_BUFFER_UPDATE_HINT_DYNAMIC);
+
+		/* Create surface but try to map data of buffer for direct access which is faster */
+		bufferData=cogl_buffer_map(buffer, COGL_BUFFER_ACCESS_READ_WRITE, COGL_BUFFER_MAP_HINT_DISCARD);
+		if(bufferData)
+		{
+			cairoSurface=cairo_image_surface_create_for_data(bufferData,
+																CAIRO_FORMAT_ARGB32,
+																inWidth,
+																inHeight,
+																cogl_bitmap_get_rowstride(bitmapBuffer));
+			mappedBuffer=TRUE;
+		}
+			/* Buffer could not be mapped, so create a surface whose data we have
+			 * to copy once the outline is drawn.
+			 */
+			else
+			{
+				cairoSurface=cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
+														inWidth,
+														inHeight);
+
+				mappedBuffer=FALSE;
+			}
+
+		/* Create drawing context and draw outline.
+		 * If line width after rounding is below 2 pixels use the faster outline
+		 * drawing function for solid colors as there will be no visual difference.
+		 * Also use the faster outline drawing function if a solid color (inner,
+		 * middle and outer color are equal) was set regardless of the line width.
+		 * Otherwise use the slower but more accurate drawing function.
+		 * Also check that corner radius (if not zero) is at least as large as line
+		 * width.
+		 */
+		cairoContext=cairo_create(cairoSurface);
+
+		priv->drawLineWidth=floor(priv->width+0.5f);
+		priv->drawRadius=MAX(priv->cornersRadius, priv->drawLineWidth);
+
+		if(priv->drawLineWidth<2 ||
+			xfdashboard_gradient_color_get_color_type(priv->color)==XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID)
+		{
+			_xfdashboard_outline_effect_draw_outline_solid(self, cairoContext, inWidth, inHeight);
+		}
+			else
+			{
+				_xfdashboard_outline_effect_draw_outline_gradient(self, cairoContext, inWidth, inHeight);
+			}
+
+		cairo_destroy(cairoContext);
+
+		/* If buffer could be mapped before, unmap it now */
+		if(mappedBuffer)
+		{
+			cogl_buffer_unmap(buffer);
+		}
+			/* Otherwise copy surface data to buffer now */
+			else
+			{
+				cogl_buffer_set_data(buffer,
+										0,
+										cairo_image_surface_get_data(cairoSurface),
+										cairo_image_surface_get_stride(cairoSurface)*inHeight);
+			}
+
+		/* Create texture from buffer */
+		texture=cogl_texture_2d_new_from_bitmap(bitmapBuffer);
+
+		/* Destroy surface */
+		cairo_surface_destroy(cairoSurface);
+	}
+
+	/* Release allocated resources */
+	if(bitmapBuffer) cogl_object_unref(bitmapBuffer);
+
+	/* Return created texture */
+	return(texture);
+}
+
 /* Draw effect after actor was drawn */
 static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEffectPaintFlags inFlags)
 {
@@ -74,7 +487,7 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 	XfdashboardOutlineEffectPrivate		*priv;
 	ClutterActor						*target;
 	gfloat								width, height;
-	gfloat								lineWidth;
+	CoglFramebuffer						*framebuffer;
 
 	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(inEffect));
 
@@ -85,230 +498,36 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 	target=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
 	clutter_actor_continue_paint(target);
 
-	/* Get size of outline to draw */
+	/* Do not draw outline if this effect is not enabled */
+	if(!clutter_actor_meta_get_enabled(CLUTTER_ACTOR_META(self))) return;
+
+	/* Get and check size of outline to draw */
 	clutter_actor_get_size(target, &width, &height);
 
-	/* Round line width for better looking and check if we can draw
-	 * outline with configured line width. That means it needs to be
-	 * greater or equal to 1.0
-	 */
-	lineWidth=floor(priv->width+0.5);
-	if(lineWidth<1.0f) return;
 
-	/* Draw outline */
-	if(priv->color)
+	/* Create texture if no one is available */
+	if(!priv->texture)
 	{
-		cogl_set_source_color4ub(priv->color->red,
-									priv->color->green,
-									priv->color->blue,
-									priv->color->alpha);
+		/* Create texture */
+		priv->texture=_xfdashboard_outline_effect_create_texture(self, width, height);
+
+		/* If we still have no texture, do nothing and return */
+		if(!priv->texture) return;
 	}
 
-	if(priv->cornersRadius>0.0f)
-	{
-		gfloat							outerRadius, innerRadius;
+	/* Draw texture to stage in actor's space */
+	framebuffer=cogl_get_draw_framebuffer();
 
-		/* Determine radius for rounded corners of outer and inner lines */
-		outerRadius=MIN(priv->cornersRadius+(lineWidth/2.0f), width/2.0f);
-		outerRadius=MIN(outerRadius, width/2.0f);
-		outerRadius=MAX(outerRadius, 0.0f);
+	cogl_pipeline_set_layer_texture(priv->pipeline,
+										0,
+										priv->texture);
 
-		innerRadius=MIN(priv->cornersRadius-(lineWidth/2.0f), width/2.0f);
-		innerRadius=MIN(innerRadius, width/2.0f);
-		innerRadius=MAX(innerRadius, 0.0f);
-
-		/* Top-left corner */
-		if(priv->corners & XFDASHBOARD_CORNERS_TOP_LEFT &&
-			priv->borders & XFDASHBOARD_BORDERS_LEFT &&
-			priv->borders & XFDASHBOARD_BORDERS_TOP)
-		{
-			cogl_path_new();
-			cogl_path_move_to(0, outerRadius);
-			cogl_path_arc(outerRadius, outerRadius, outerRadius, outerRadius, 180, 270);
-			cogl_path_line_to(outerRadius, outerRadius-innerRadius);
-			cogl_path_arc(outerRadius, outerRadius, innerRadius, innerRadius, 270, 180);
-			cogl_path_line_to(0, outerRadius);
-			cogl_path_fill_preserve();
-			cogl_path_close();
-		}
-
-		/* Top border */
-		if(priv->borders & XFDASHBOARD_BORDERS_TOP)
-		{
-			gfloat		offset1=0.0f;
-			gfloat		offset2=0.0f;
-
-			if(priv->corners & XFDASHBOARD_CORNERS_TOP_LEFT) offset1=outerRadius;
-			if(priv->corners & XFDASHBOARD_CORNERS_TOP_RIGHT) offset2=outerRadius;
-
-			cogl_path_new();
-			cogl_path_move_to(offset1, 0);
-			cogl_path_line_to(width-offset2, 0);
-			cogl_path_line_to(width-offset2, outerRadius-innerRadius);
-			cogl_path_line_to(offset1, outerRadius-innerRadius);
-			cogl_path_line_to(offset1, 0);
-			cogl_path_fill_preserve();
-			cogl_path_close();
-		}
-
-		/* Top-right corner */
-		if(priv->corners & XFDASHBOARD_CORNERS_TOP_RIGHT &&
-			priv->borders & XFDASHBOARD_BORDERS_TOP &&
-			priv->borders & XFDASHBOARD_BORDERS_RIGHT)
-		{
-			cogl_path_new();
-			cogl_path_move_to(width-outerRadius, 0);
-			cogl_path_arc(width-outerRadius, outerRadius, outerRadius, outerRadius, 270, 360);
-			cogl_path_line_to(width-outerRadius+innerRadius, outerRadius);
-			cogl_path_arc(width-outerRadius, outerRadius, innerRadius, innerRadius, 360, 270);
-			cogl_path_line_to(width-outerRadius, 0);
-			cogl_path_fill_preserve();
-			cogl_path_close();
-		}
-
-		/* Right border */
-		if(priv->borders & XFDASHBOARD_BORDERS_RIGHT)
-		{
-			gfloat		offset1=0.0f;
-			gfloat		offset2=0.0f;
-
-			if(priv->corners & XFDASHBOARD_CORNERS_TOP_RIGHT) offset1=outerRadius;
-			if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT) offset2=outerRadius;
-
-			cogl_path_new();
-			cogl_path_move_to(width, offset1);
-			cogl_path_line_to(width, height-offset2);
-			cogl_path_line_to(width-outerRadius+innerRadius, height-offset2);
-			cogl_path_line_to(width-outerRadius+innerRadius, offset1);
-			cogl_path_line_to(width, offset1);
-			cogl_path_fill_preserve();
-			cogl_path_close();
-		}
-
-		/* Bottom-right corner */
-		if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT &&
-			priv->borders & XFDASHBOARD_BORDERS_RIGHT &&
-			priv->borders & XFDASHBOARD_BORDERS_BOTTOM)
-		{
-			cogl_path_new();
-			cogl_path_move_to(width, height-outerRadius);
-			cogl_path_arc(width-outerRadius, height-outerRadius, outerRadius, outerRadius, 0, 90);
-			cogl_path_line_to(width-outerRadius, height-outerRadius+innerRadius);
-			cogl_path_arc(width-outerRadius, height-outerRadius, innerRadius, innerRadius, 90, 0);
-			cogl_path_line_to(width, height-outerRadius);
-			cogl_path_fill_preserve();
-			cogl_path_close();
-		}
-
-		/* Bottom border */
-		if(priv->borders & XFDASHBOARD_BORDERS_BOTTOM)
-		{
-			gfloat		offset1=0.0f;
-			gfloat		offset2=0.0f;
-
-			if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_LEFT) offset1=outerRadius;
-			if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT) offset2=outerRadius;
-
-			cogl_path_new();
-			cogl_path_move_to(offset1, height);
-			cogl_path_line_to(width-offset2, height);
-			cogl_path_line_to(width-offset2, height-outerRadius+innerRadius);
-			cogl_path_line_to(offset1, height-outerRadius+innerRadius);
-			cogl_path_line_to(offset1, height);
-			cogl_path_fill_preserve();
-			cogl_path_close();
-		}
-
-		/* Bottom-left corner */
-		if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_LEFT &&
-			priv->borders & XFDASHBOARD_BORDERS_BOTTOM &&
-			priv->borders & XFDASHBOARD_BORDERS_LEFT)
-		{
-			cogl_path_new();
-			cogl_path_move_to(outerRadius, height);
-			cogl_path_arc(outerRadius, height-outerRadius, outerRadius, outerRadius, 90, 180);
-			cogl_path_line_to(outerRadius-innerRadius, height-outerRadius);
-			cogl_path_arc(outerRadius, height-outerRadius, innerRadius, innerRadius, 180, 90);
-			cogl_path_line_to(outerRadius, height);
-			cogl_path_fill_preserve();
-			cogl_path_close();
-		}
-
-		/* Left border */
-		if(priv->borders & XFDASHBOARD_BORDERS_LEFT)
-		{
-			gfloat		offset1=0.0f;
-			gfloat		offset2=0.0f;
-
-			if(priv->corners & XFDASHBOARD_CORNERS_TOP_LEFT) offset1=outerRadius;
-			if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_LEFT) offset2=outerRadius;
-
-			cogl_path_new();
-			cogl_path_move_to(0, offset1);
-			cogl_path_line_to(0, height-offset2);
-			cogl_path_line_to(outerRadius-innerRadius, height-offset2);
-			cogl_path_line_to(outerRadius-innerRadius, offset1);
-			cogl_path_line_to(0, offset1);
-			cogl_path_fill_preserve();
-			cogl_path_close();
-		}
-	}
-		else
-		{
-			/* Top border */
-			if(priv->borders & XFDASHBOARD_BORDERS_TOP)
-			{
-				cogl_path_new();
-				cogl_path_move_to(0, 0);
-				cogl_path_line_to(width, 0);
-				cogl_path_line_to(width, lineWidth);
-				cogl_path_line_to(0, lineWidth);
-				cogl_path_line_to(0, 0);
-				cogl_path_fill_preserve();
-				cogl_path_close();
-			}
-
-			/* Right border */
-			if(priv->borders & XFDASHBOARD_BORDERS_RIGHT)
-			{
-				cogl_path_new();
-				cogl_path_move_to(width, 0);
-				cogl_path_line_to(width, height);
-				cogl_path_line_to(width-lineWidth, height);
-				cogl_path_line_to(width-lineWidth, 0);
-				cogl_path_line_to(width, 0);
-				cogl_path_fill_preserve();
-				cogl_path_close();
-			}
-
-			/* Bottom border */
-			if(priv->borders & XFDASHBOARD_BORDERS_BOTTOM)
-			{
-				cogl_path_new();
-				cogl_path_move_to(0, height);
-				cogl_path_line_to(width, height);
-				cogl_path_line_to(width, height-lineWidth);
-				cogl_path_line_to(0, height-lineWidth);
-				cogl_path_line_to(0, height);
-				cogl_path_fill_preserve();
-				cogl_path_close();
-			}
-
-			/* Left border */
-			if(priv->borders & XFDASHBOARD_BORDERS_LEFT)
-			{
-				cogl_path_new();
-				cogl_path_move_to(0, 0);
-				cogl_path_line_to(0, height);
-				cogl_path_line_to(lineWidth, height);
-				cogl_path_line_to(lineWidth, 0);
-				cogl_path_line_to(0, 0);
-				cogl_path_fill_preserve();
-				cogl_path_close();
-			}
-		}
-
+	cogl_framebuffer_draw_textured_rectangle(framebuffer,
+												priv->pipeline,
+												0, 0, width, height,
+												0.0f, 0.0f, 1.0f, 1.0f);
 }
+
 
 /* IMPLEMENTATION: GObject */
 
@@ -319,9 +538,21 @@ static void _xfdashboard_outline_effect_dispose(GObject *inObject)
 	XfdashboardOutlineEffect			*self=XFDASHBOARD_OUTLINE_EFFECT(inObject);
 	XfdashboardOutlineEffectPrivate		*priv=self->priv;
 
+	if(priv->texture)
+	{
+		cogl_object_unref(priv->texture);
+		priv->texture=NULL;
+	}
+
+	if(priv->pipeline)
+	{
+		cogl_object_unref(priv->pipeline);
+		priv->pipeline=NULL;
+	}
+
 	if(priv->color)
 	{
-		clutter_color_free(priv->color);
+		xfdashboard_gradient_color_free(priv->color);
 		priv->color=NULL;
 	}
 
@@ -340,7 +571,7 @@ static void _xfdashboard_outline_effect_set_property(GObject *inObject,
 	switch(inPropID)
 	{
 		case PROP_COLOR:
-			xfdashboard_outline_effect_set_color(self, clutter_value_get_color(inValue));
+			xfdashboard_outline_effect_set_color(self, g_value_get_boxed(inValue));
 			break;
 
 		case PROP_WIDTH:
@@ -376,7 +607,7 @@ static void _xfdashboard_outline_effect_get_property(GObject *inObject,
 	switch(inPropID)
 	{
 		case PROP_COLOR:
-			clutter_value_set_color(outValue, priv->color);
+			g_value_set_boxed(outValue, priv->color);
 			break;
 
 		case PROP_WIDTH:
@@ -409,6 +640,13 @@ static void xfdashboard_outline_effect_class_init(XfdashboardOutlineEffectClass 
 {
 	ClutterEffectClass				*effectClass=CLUTTER_EFFECT_CLASS(klass);
 	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
+	static XfdashboardGradientColor	*defaultColor=NULL;
+
+	/* Set up default value for param spec */
+	if(G_UNLIKELY(!defaultColor))
+	{
+		defaultColor=xfdashboard_gradient_color_new_solid(CLUTTER_COLOR_White);
+	}
 
 	/* Override functions */
 	gobjectClass->dispose=_xfdashboard_outline_effect_dispose;
@@ -419,11 +657,11 @@ static void xfdashboard_outline_effect_class_init(XfdashboardOutlineEffectClass 
 
 	/* Define properties */
 	XfdashboardOutlineEffectProperties[PROP_COLOR]=
-		clutter_param_spec_color("color",
-									"Color",
-									"Color to draw outline with",
-									CLUTTER_COLOR_White,
-									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+		xfdashboard_param_spec_gradient_color("color",
+											"Color",
+											"Color to draw outline with",
+											defaultColor,
+											G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardOutlineEffectProperties[PROP_WIDTH]=
 		g_param_spec_float("width",
@@ -470,11 +708,29 @@ static void xfdashboard_outline_effect_init(XfdashboardOutlineEffect *self)
 	priv=self->priv=xfdashboard_outline_effect_get_instance_private(self);
 
 	/* Set up default values */
-	priv->color=clutter_color_copy(CLUTTER_COLOR_White);
+	priv->color=xfdashboard_gradient_color_new_solid(CLUTTER_COLOR_White);
 	priv->width=1.0f;
 	priv->borders=XFDASHBOARD_BORDERS_ALL;
 	priv->corners=XFDASHBOARD_CORNERS_ALL;
 	priv->cornersRadius=0.0f;
+	priv->texture=NULL;
+
+	/* Set up pipeline */
+	if(G_UNLIKELY(!_xfdashboard_outline_effect_base_pipeline))
+    {
+		CoglContext					*context;
+
+		/* Get context to create base pipeline */
+		context=clutter_backend_get_cogl_context(clutter_get_default_backend());
+
+		/* Create base pipeline */
+		_xfdashboard_outline_effect_base_pipeline=cogl_pipeline_new(context);
+		cogl_pipeline_set_layer_null_texture(_xfdashboard_outline_effect_base_pipeline,
+												0, /* layer number */
+												COGL_TEXTURE_TYPE_2D);
+	}
+
+	priv->pipeline=cogl_pipeline_copy(_xfdashboard_outline_effect_base_pipeline);
 }
 
 /* IMPLEMENTATION: Public API */
@@ -486,14 +742,14 @@ ClutterEffect* xfdashboard_outline_effect_new(void)
 }
 
 /* Get/set color to draw outline with */
-const ClutterColor* xfdashboard_outline_effect_get_color(XfdashboardOutlineEffect *self)
+const XfdashboardGradientColor* xfdashboard_outline_effect_get_color(XfdashboardOutlineEffect *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self), NULL);
 
 	return(self->priv->color);
 }
 
-void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const ClutterColor *inColor)
+void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const XfdashboardGradientColor *inColor)
 {
 	XfdashboardOutlineEffectPrivate	*priv;
 
@@ -503,13 +759,15 @@ void xfdashboard_outline_effect_set_color(XfdashboardOutlineEffect *self, const 
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->color==NULL || clutter_color_equal(inColor, priv->color)==FALSE)
+	if(priv->color==NULL ||
+		!xfdashboard_gradient_color_equal(inColor, priv->color))
 	{
 		/* Set value */
-		if(priv->color) clutter_color_free(priv->color);
-		priv->color=clutter_color_copy(inColor);
+		if(priv->color) xfdashboard_gradient_color_free(priv->color);
+		priv->color=xfdashboard_gradient_color_copy(inColor);
 
 		/* Invalidate effect to get it redrawn */
+		_xfdashboard_outline_effect_invalidate(self);
 		clutter_effect_queue_repaint(CLUTTER_EFFECT(self));
 
 		/* Notify about property change */
@@ -541,6 +799,7 @@ void xfdashboard_outline_effect_set_width(XfdashboardOutlineEffect *self, const 
 		priv->width=inWidth;
 
 		/* Invalidate effect to get it redrawn */
+		_xfdashboard_outline_effect_invalidate(self);
 		clutter_effect_queue_repaint(CLUTTER_EFFECT(self));
 
 		/* Notify about property change */
@@ -571,6 +830,7 @@ void xfdashboard_outline_effect_set_borders(XfdashboardOutlineEffect *self, Xfda
 		priv->borders=inBorders;
 
 		/* Invalidate effect to get it redrawn */
+		_xfdashboard_outline_effect_invalidate(self);
 		clutter_effect_queue_repaint(CLUTTER_EFFECT(self));
 
 		/* Notify about property change */
@@ -601,6 +861,7 @@ void xfdashboard_outline_effect_set_corners(XfdashboardOutlineEffect *self, Xfda
 		priv->corners=inCorners;
 
 		/* Invalidate effect to get it redrawn */
+		_xfdashboard_outline_effect_invalidate(self);
 		clutter_effect_queue_repaint(CLUTTER_EFFECT(self));
 
 		/* Notify about property change */
@@ -632,6 +893,7 @@ void xfdashboard_outline_effect_set_corner_radius(XfdashboardOutlineEffect *self
 		priv->cornersRadius=inRadius;
 
 		/* Invalidate effect to get it redrawn */
+		_xfdashboard_outline_effect_invalidate(self);
 		clutter_effect_queue_repaint(CLUTTER_EFFECT(self));
 
 		/* Notify about property change */

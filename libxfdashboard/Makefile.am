@@ -55,6 +55,7 @@ libxfdashboard_la_headers = \
 	fill-box-layout.h \
 	focusable.h \
 	focus-manager.h \
+	gradient-color.h \
 	image-content.h \
 	label.h \
 	live-window.h \
@@ -136,6 +137,7 @@ libxfdashboard_la_SOURCES = \
 	fill-box-layout.c \
 	focusable.c \
 	focus-manager.c \
+	gradient-color.c \
 	image-content.c \
 	label.c \
 	live-window.c \
