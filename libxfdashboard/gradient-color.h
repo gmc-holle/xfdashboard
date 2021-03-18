@@ -78,6 +78,7 @@ void xfdashboard_gradient_color_free(XfdashboardGradientColor *self);
 gint xfdashboard_gradient_color_compare(const XfdashboardGradientColor *inLeft, const XfdashboardGradientColor *inRight);
 gboolean xfdashboard_gradient_color_equal(const XfdashboardGradientColor *inLeft, const XfdashboardGradientColor *inRight);
 
+XfdashboardGradientColor* xfdashboard_gradient_color_from_string(const gchar *inString);
 gchar* xfdashboard_gradient_color_to_string(const XfdashboardGradientColor *self);
 
 /* Type functions */

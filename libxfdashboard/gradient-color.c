@@ -83,7 +83,7 @@ struct _XfdashboardGradientColorStop
 	ClutterColor					color;
 };
 
-/* Transform string value to XfdashboardGradientColor value */
+/* Parse a string into a XfdashboardGradientColor value */
 static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **inTokens, XfdashboardGradientColor **outColor)
 {
 	XfdashboardGradientColorType			type;
@@ -185,47 +185,22 @@ static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **
 	return(FALSE);
 }
 
+/* Transform string value to XfdashboardGradientColor value */
 static void _xfdashboard_gradient_color_transform_from_string(const GValue *inSourceValue, GValue *ioDestValue)
 {
 	const gchar							*text;
 	XfdashboardGradientColor			*color;
-	gboolean							success;
 
 	g_return_if_fail(G_VALUE_HOLDS_STRING(inSourceValue));
 	g_return_if_fail(XFDASHBOARD_VALUE_HOLDS_GRADIENT_COLOR(ioDestValue));
 
 	color=NULL;
-	success=FALSE;
 
-	/* If value contains a string, then parse it and create custom color
+	/* If value contains a string, then parse it and create gradient color
 	 * from it.
 	 */
 	text=g_value_get_string(inSourceValue);
-	if(text)
-	{
-		gchar							**tokens;
-
-		/* Split text into token for easier parsing */
-		tokens=g_strsplit_set(text, " \r\t\n", -1);
-
-		/* Parse tokens into color */
-		if(tokens)
-		{
-			/* Parse tokens */
-			success=_xfdashboard_gradient_color_transform_from_string_parse(tokens, &color);
-			if(!success) g_warning("Failed to parse gradient color '%s'", text);
-
-			/* Release allocated resources */
-			if(tokens) g_strfreev(tokens);
-		}
-	}
-
-	/* If parsing failed, destroy color */
-	if(!success && color)
-	{
-		xfdashboard_gradient_color_free(color);
-		color=NULL;
-	}
+	if(text) color=xfdashboard_gradient_color_from_string(text);
 
 	/* Set tranformed value */
 	g_value_set_boxed(ioDestValue, color);
@@ -456,11 +431,52 @@ gboolean xfdashboard_gradient_color_equal(const XfdashboardGradientColor *inLeft
 
 /**
  * xfdashboard_gradient_color_to_string:
+ * @inString: A string representation of gradient color
+ *
+ * Creates a gradient color by parsing the string representation of a gradient
+ * color as specified at @inString.
+ *
+ * Returns: A newly created #XfdashboardGradientColor
+ **/
+XfdashboardGradientColor* xfdashboard_gradient_color_from_string(const gchar *inString)
+{
+	XfdashboardGradientColor		*color;
+	gchar							**tokens;
+
+	g_return_val_if_fail(inString && *inString, NULL);
+
+	color=NULL;
+
+	/* Split text into token for easier parsing */
+	tokens=g_strsplit_set(inString, " \r\t\n", -1);
+	if(!tokens) return(NULL);
+
+	/* Parse tokens */
+	if(!_xfdashboard_gradient_color_transform_from_string_parse(tokens, &color))
+	{
+		if(color)
+		{
+			xfdashboard_gradient_color_free(color);
+			color=NULL;
+		}
+
+		g_warning("Failed to parse gradient color '%s'", inString);
+	}
+
+	/* Release allocated resources */
+	if(tokens) g_strfreev(tokens);
+
+	/* Return gradient color on success or NULL if failed */
+	return(color);
+}
+
+/**
+ * xfdashboard_gradient_color_to_string:
  * @self: A #XfdashboardGradientColor
  *
- * Creates a string representation of custom color at @self.
+ * Creates a string representation of gradient color at @self.
  *
- * Returns: A string for custom color or %NULL in case of errors.
+ * Returns: A string for gradient color or %NULL in case of errors.
  *   The caller is responsible to free returned string with g_free().
  **/
 gchar* xfdashboard_gradient_color_to_string(const XfdashboardGradientColor *self)
@@ -883,7 +899,7 @@ void xfdashboard_value_set_gradient_color(GValue *ioValue, const XfdashboardGrad
  *
  * Gets the #XfdashboardGradientColor contained in @inValue.
  *
- * Return value: (transfer none): The custom color inside the passed #GValue
+ * Return value: (transfer none): The gradient color inside the passed #GValue
  */
 const XfdashboardGradientColor* xfdashboard_value_get_gradient_color(const GValue *inValue)
 {
