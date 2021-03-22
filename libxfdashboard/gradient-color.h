@@ -36,18 +36,19 @@ G_BEGIN_DECLS
 
 /* Public definitions */
 /**
- * XfdashboardGradientColorType:
- * @XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID: The color is a single-color solid color
- * @XFDASHBOARD_GRADIENT_COLOR_TYPE_PATH_GRADIENT: The color is a linear gradient
+ * XfdashboardGradientType:
+ * @XFDASHBOARD_GRADIENT_TYPE_SOLID: The color is a single-color solid color
+ * @XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT: The color is a linear gradient
  *
  * Determines the type of color.
  */
-typedef enum /*< prefix=XFDASHBOARD_COLOR_TYPE >*/
+typedef enum /*< prefix=XFDASHBOARD_GRADIENT_TYPE >*/
 {
-	XFDASHBOARD_GRADIENT_COLOR_TYPE_NONE=0,
-	XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID,
-	XFDASHBOARD_GRADIENT_COLOR_TYPE_PATH_GRADIENT
-} XfdashboardGradientColorType;
+	XFDASHBOARD_GRADIENT_TYPE_NONE=0,
+	XFDASHBOARD_GRADIENT_TYPE_SOLID,
+	XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT,
+	XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT
+} XfdashboardGradientType;
 
 /**
  * XFDASHBOARD_VALUE_HOLDS_GRADIENT_COLOR:
@@ -69,6 +70,7 @@ GType xfdashboard_gradient_color_get_type(void) G_GNUC_CONST;
 
 /* Creation functions */
 XfdashboardGradientColor* xfdashboard_gradient_color_new_solid(const ClutterColor *inColor);
+XfdashboardGradientColor* xfdashboard_gradient_color_new_linear_gradient(const ClutterColor *inStartColor, const ClutterColor *inEndColor);
 XfdashboardGradientColor* xfdashboard_gradient_color_new_path_gradient(const ClutterColor *inStartColor, const ClutterColor *inEndColor);
 
 XfdashboardGradientColor* xfdashboard_gradient_color_copy(const XfdashboardGradientColor *self);
@@ -82,12 +84,21 @@ XfdashboardGradientColor* xfdashboard_gradient_color_from_string(const gchar *in
 gchar* xfdashboard_gradient_color_to_string(const XfdashboardGradientColor *self);
 
 /* Type functions */
-XfdashboardGradientColorType xfdashboard_gradient_color_get_color_type(const XfdashboardGradientColor *self);
+XfdashboardGradientType xfdashboard_gradient_color_get_gradient_type(const XfdashboardGradientColor *self);
 
 /* Solid color functions */
 const ClutterColor* xfdashboard_gradient_color_get_solid_color(const XfdashboardGradientColor *self);
+void xfdashboard_gradient_color_set_solid_color(XfdashboardGradientColor *self, const ClutterColor *inColor);
 
 /* Linear gradient functions */
+gdouble xfdashboard_gradient_color_get_angle(const XfdashboardGradientColor *self);
+void xfdashboard_gradient_color_set_angle(XfdashboardGradientColor *self, gdouble inRadians);
+
+gboolean xfdashboard_gradient_color_get_repeat(const XfdashboardGradientColor *self);
+gdouble xfdashboard_gradient_color_get_length(const XfdashboardGradientColor *self);
+void xfdashboard_gradient_color_set_repeat(XfdashboardGradientColor *self, gboolean inRepeat, gdouble inLength);
+
+/* Common gradient functions */
 guint xfdashboard_gradient_color_get_number_stops(const XfdashboardGradientColor *self);
 
 void xfdashboard_gradient_color_get_stop(const XfdashboardGradientColor *self,

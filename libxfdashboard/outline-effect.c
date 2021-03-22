@@ -344,7 +344,7 @@ static void _xfdashboard_outline_effect_draw_outline_solid(XfdashboardOutlineEff
 	cairo_set_line_width(inContext, priv->drawLineWidth);
 
 	/* Set line color */
-	if(xfdashboard_gradient_color_get_color_type(priv->color)==XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID)
+	if(xfdashboard_gradient_color_get_gradient_type(priv->color)==XFDASHBOARD_GRADIENT_TYPE_SOLID)
 	{
 		clutter_cairo_set_source_color(inContext, xfdashboard_gradient_color_get_solid_color(priv->color));
 	}
@@ -441,7 +441,7 @@ static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlin
 		priv->drawRadius=MAX(priv->cornersRadius, priv->drawLineWidth);
 
 		if(priv->drawLineWidth<2 ||
-			xfdashboard_gradient_color_get_color_type(priv->color)==XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID)
+			xfdashboard_gradient_color_get_gradient_type(priv->color)==XFDASHBOARD_GRADIENT_TYPE_SOLID)
 		{
 			_xfdashboard_outline_effect_draw_outline_solid(self, cairoContext, inWidth, inHeight);
 		}
