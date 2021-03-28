@@ -41,7 +41,7 @@
 struct _XfdashboardOutlineEffectPrivate
 {
 	/* Properties related */
-	XfdashboardGradientColor		*color;
+	XfdashboardGradientColor	*color;
 	gfloat						width;
 	XfdashboardBorders			borders;
 	XfdashboardCorners			corners;
@@ -372,7 +372,7 @@ static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlin
 {
 	XfdashboardOutlineEffectPrivate		*priv;
 	CoglContext							*coglContext;
-	CoglBitmap							*bitmapBuffer;
+	CoglBitmap							*bitmap;
 	CoglBuffer							*buffer;
 	CoglTexture							*texture;
 
@@ -385,14 +385,14 @@ static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlin
 
 	/* Set up bitmap buffer to draw outline into */
 	coglContext=clutter_backend_get_cogl_context(clutter_get_default_backend());
-	bitmapBuffer=cogl_bitmap_new_with_size(coglContext,
+	bitmap=cogl_bitmap_new_with_size(coglContext,
 											inWidth,
 											inHeight,
 											CLUTTER_CAIRO_FORMAT_ARGB32);
-	if(!bitmapBuffer) return(NULL);
+	if(!bitmap) return(NULL);
 
 	/* If buffer could be created and retrieved begin to draw */
-	buffer=COGL_BUFFER(cogl_bitmap_get_buffer(bitmapBuffer));
+	buffer=COGL_BUFFER(cogl_bitmap_get_buffer(bitmap));
 	if(buffer)
 	{
 		gpointer						bufferData;
@@ -411,7 +411,7 @@ static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlin
 																CAIRO_FORMAT_ARGB32,
 																inWidth,
 																inHeight,
-																cogl_bitmap_get_rowstride(bitmapBuffer));
+																cogl_bitmap_get_rowstride(bitmap));
 			mappedBuffer=TRUE;
 		}
 			/* Buffer could not be mapped, so create a surface whose data we have
@@ -467,14 +467,48 @@ static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlin
 			}
 
 		/* Create texture from buffer */
-		texture=cogl_texture_2d_new_from_bitmap(bitmapBuffer);
+#if 0
+		texture=cogl_texture_2d_new_from_bitmap(bitmap);
+		g_message("%s: [cogl_texture_2d_new_from_bitmap] texture=%p", __FUNCTION__, texture);
+#elif 1
+		texture=cogl_texture_2d_sliced_new_from_bitmap(bitmap, COGL_TEXTURE_MAX_WASTE);
+		g_message("%s: [cogl_texture_2d_sliced_new_from_bitmap] texture=%p", __FUNCTION__, texture);
+#else
+{
+		CoglPixelBuffer		*pixelBuffer;
+		uint8_t				*pixelData;
+		CoglError			*error;
+
+		error=NULL;
+		pixelBuffer=cogl_bitmap_get_buffer(bitmap);
+		pixelData=cogl_buffer_map(pixelBuffer, COGL_BUFFER_ACCESS_READ, COGL_BUFFER_MAP_HINT_DISCARD);
+		texture=cogl_texture_2d_new_from_data(coglContext,
+												cogl_bitmap_get_width(bitmap),
+												cogl_bitmap_get_height(bitmap),
+												cogl_bitmap_get_format(bitmap),
+												cogl_bitmap_get_rowstride(bitmap),
+												pixelData,
+												&error);
+		g_message("%s: [cogl_texture_2d_new_from_data] texture=%p", __FUNCTION__, texture);
+
+		if(error)
+		{
+			g_message("%s: Failed to create texture of size %ux%u: %s",
+						__FUNCTION__,
+						cogl_bitmap_get_width(bitmap),
+						cogl_bitmap_get_height(bitmap),
+						error->message);
+			cogl_error_free(error);
+		}
+}
+#endif
 
 		/* Destroy surface */
 		cairo_surface_destroy(cairoSurface);
 	}
 
 	/* Release allocated resources */
-	if(bitmapBuffer) cogl_object_unref(bitmapBuffer);
+	if(bitmap) cogl_object_unref(bitmap);
 
 	/* Return created texture */
 	return(texture);
@@ -501,27 +535,51 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 	/* Do not draw outline if this effect is not enabled */
 	if(!clutter_actor_meta_get_enabled(CLUTTER_ACTOR_META(self))) return;
 
-	/* Get and check size of outline to draw */
+	/* Get size of outline to draw and check if size has changed. If so, destroy
+	 * texture to create a new one matching the new size.
+	 */
 	clutter_actor_get_size(target, &width, &height);
+	if(G_LIKELY(priv->texture))
+	{
+		if(cogl_texture_get_width(priv->texture)!=width ||
+			cogl_texture_get_height(priv->texture)!=height)
+		{
+g_message("%s: Size of %s@%p changed from %ux%u to %.2fx%.2f",
+			__FUNCTION__,
+			G_OBJECT_TYPE_NAME(target), target,
+			cogl_texture_get_width(priv->texture), cogl_texture_get_height(priv->texture),
+			width, height);
 
+			_xfdashboard_outline_effect_invalidate(self);
+		}
+	}
 
 	/* Create texture if no one is available */
 	if(!priv->texture)
 	{
 		/* Create texture */
 		priv->texture=_xfdashboard_outline_effect_create_texture(self, width, height);
+g_message("%s: Created texture %p with size %ux%u from actor %s@%p of size %.2fx%.2f",
+			__FUNCTION__,
+			priv->texture,
+			priv->texture ? cogl_texture_get_width(priv->texture) : 0,
+			priv->texture ? cogl_texture_get_height(priv->texture) : 0,
+			G_OBJECT_TYPE_NAME(target), target,
+			width, height);
 
 		/* If we still have no texture, do nothing and return */
 		if(!priv->texture) return;
+
+		/* We only need to set texture at pipeline once after the texture
+		 * was created.
+		 */
+		cogl_pipeline_set_layer_texture(priv->pipeline,
+											0,
+											priv->texture);
 	}
 
 	/* Draw texture to stage in actor's space */
 	framebuffer=cogl_get_draw_framebuffer();
-
-	cogl_pipeline_set_layer_texture(priv->pipeline,
-										0,
-										priv->texture);
-
 	cogl_framebuffer_draw_textured_rectangle(framebuffer,
 												priv->pipeline,
 												0, 0, width, height,
