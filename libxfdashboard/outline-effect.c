@@ -535,10 +535,43 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 	/* Do not draw outline if this effect is not enabled */
 	if(!clutter_actor_meta_get_enabled(CLUTTER_ACTOR_META(self))) return;
 
-	/* Get size of outline to draw and check if size has changed. If so, destroy
-	 * texture to create a new one matching the new size.
-	 */
+	/* Get size of outline to draw */
 	clutter_actor_get_size(target, &width, &height);
+#if 1
+{
+	ClutterActorBox						targetBox;
+
+	g_message("%s: clutter_actor_get_size(%s@%p, %.2f, %.2f)",
+				__FUNCTION__,
+				G_OBJECT_TYPE_NAME(target), target,
+				width, height);
+
+	if(clutter_actor_get_paint_box(target, &targetBox))
+	{
+		g_message("%s: clutter_actor_get_paint_box(%s@%p, pos=[%.2f, %.2f] size=(%.2f, %.2f))",
+					__FUNCTION__,
+					G_OBJECT_TYPE_NAME(target), target,
+					targetBox.x1, targetBox.y1,
+					clutter_actor_box_get_width(&targetBox), clutter_actor_box_get_height(&targetBox));
+	}
+		else
+		{
+			g_message("%s: clutter_actor_get_paint_box(%s@%p, ...) FAILED!",
+						__FUNCTION__,
+						G_OBJECT_TYPE_NAME(target), target);
+		}
+}
+#endif
+
+	/* If width or height is below 1 pixel then do not draw as the texture will
+	 * be invalid and causes trouble (like crashes) as either width or height
+	 * (or both) will be 0 pixel.
+	 */
+	if(width<1.0f || height<1.0f) return;
+
+	/* Check if size has changed. If so, destroy texture to create a new one
+	 * matching the new size.
+	 */
 	if(G_LIKELY(priv->texture))
 	{
 		if(cogl_texture_get_width(priv->texture)!=width ||
