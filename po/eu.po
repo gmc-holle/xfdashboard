@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-05 12:50+0100\n"
+"POT-Creation-Date: 2021-03-29 12:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: beriain, 2021\n"
 "Language-Team: Basque (https://www.transifex.com/xfce/teams/16840/eu/)\n"
@@ -77,13 +77,22 @@ msgstr "Aplikazioak bilatzen"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version introduces completes turning "
+"libxfdashboard into a real library and introduces path gradients for "
+"outlines."
+msgstr ""
+"Garapeneko bertsio ezegonkor honek libxfdashboard benetako liburutegi batean"
+" bihurtzen amaitzen du eta bide gradienteak sartzen ditu ingeradetarako."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr ""
 "Garapeneko bertsio ezegonkor honek ez dakar ikus daitekeen ezer baina "
 "libxfdashboard benetako liburutegi bihurtzen hasten da."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -91,7 +100,7 @@ msgstr ""
 "Bertsio egonkor honek arazo bat konpontzen du eta AppInfo AppStream "
 "metainforekin ordezkatzen du."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -101,7 +110,7 @@ msgstr ""
 "goranzko menuak, hainbat backend eta jauzi zerrendak etab. Itzulpen berri "
 "eta eguneratu asko dakar ere."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -109,7 +118,7 @@ msgstr ""
 "Bertsio egonkor honek akats bat zuzentzen du aplikazio lehenetsi egokia "
 "ezartzerakoan lehen erabileran."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -388,8 +397,8 @@ msgstr "Ardo beltz itxura xfdashboardentzako"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Ezin izan da '%s' ekintza exekutatu '%s' aplikaziorako: %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:795
-#: ../settings/main.c:76
+#: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
+#: ../settings/plugins.c:795
 msgid "Unknown error"
 msgstr "Errore ezezaguna"
 
@@ -414,10 +423,9 @@ msgid "No information available for application"
 msgstr "Ez dago informaziorik eskuragarri aplikaziorako"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/application.c:298 ../libxfdashboard/application.c:593
 #: ../libxfdashboard/applications-search-provider.c:753
-#: ../libxfdashboard/applications-view.c:334
-#: ../libxfdashboard/quicklaunch.c:442
+#: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
+#: ../libxfdashboard/quicklaunch.c:442 ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "errore ezezaguna"
 
@@ -428,59 +436,6 @@ msgstr "errore ezezaguna"
 #, c-format
 msgid "Application '%s' launched"
 msgstr "'%s' aplikazioa abiarazi da"
-
-#: ../libxfdashboard/application.c:296
-#, c-format
-msgid "Could not load theme '%s': %s"
-msgstr "Ezin izan da '%s' itxura kargatu: %s"
-
-#: ../libxfdashboard/application.c:502
-#, c-format
-msgid "Welcome to %s (%s)!"
-msgstr "Ongi etorri %s(e)ra (%s)!"
-
-#: ../libxfdashboard/application.c:504
-#, c-format
-msgid "Welcome to %s!"
-msgstr "Ongi etorri %s(e)ra!"
-
-#: ../libxfdashboard/application.c:551
-msgid "Fork to background"
-msgstr "Atzealdera bidali"
-
-#: ../libxfdashboard/application.c:552
-msgid "Quit running instance"
-msgstr "Martxan dagoen instantzia itxi"
-
-#: ../libxfdashboard/application.c:553
-msgid "Restart running instance"
-msgstr "Martxan dagoen instantzia berrabiarazi"
-
-#: ../libxfdashboard/application.c:554
-msgid ""
-"Toggles visibility if running instance was started in daemon mode otherwise "
-"it quits running non-daemon instance"
-msgstr ""
-"Ikusgaitasuna txandakatzen du exekutatzen ari den instantzia deabru moduan "
-"hasi bazen, bestela ez-deabru moduan exekutatzen ari den instantzia ixten du"
-
-#: ../libxfdashboard/application.c:555
-msgid "The ID of view to switch to on startup or resume"
-msgstr "Abioan edo berrekiterakoan aldatzeko ikuspegiaren IDa"
-
-#: ../libxfdashboard/application.c:556
-msgid "Show version"
-msgstr "Bertsioa erakutsi"
-
-#: ../libxfdashboard/application.c:575
-msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "Gnome shell antzeko aginte-taula bat Xfce4rako - bertsioa"
-
-#. Show error
-#: ../libxfdashboard/application.c:592
-#, c-format
-msgid "%s\n"
-msgstr "%s\n"
 
 #: ../libxfdashboard/applications-search-provider.c:835
 #: ../libxfdashboard/applications-view.c:415
@@ -516,6 +471,21 @@ msgstr "Aplikazio guztiak"
 #: ../libxfdashboard/applications-view.c:683
 msgid "List of all installed applications"
 msgstr "Instalatutako aplikazio guztien zerrenda"
+
+#: ../libxfdashboard/core.c:371
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr "Ezin izan da '%s' itxura kargatu: %s"
+
+#: ../libxfdashboard/core.c:1259
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr "Ongi etorri %s(e)ra (%s)!"
+
+#: ../libxfdashboard/core.c:1261
+#, c-format
+msgid "Welcome to %s!"
+msgstr "Ongi etorri %s(e)ra!"
 
 #: ../libxfdashboard/quicklaunch.c:384
 msgid "No windows to activate for application"
@@ -725,31 +695,6 @@ msgstr "Baxua"
 msgid "seconds"
 msgstr "segundo"
 
-#: ../settings/plugins.c:222
-#, c-format
-msgid "Configure plugin: %s"
-msgstr "Plugina konfiguratu: %s"
-
-#. Create error message to store in list
-#: ../settings/plugins.c:794
-#, c-format
-msgid ""
-"<b>Plugin could not be loaded.</b>\n"
-"\n"
-"%s"
-msgstr ""
-"<b>Plugina ezin izan da kargatu.</b>\n"
-"\n"
-"%s"
-
-#: ../settings/plugins.c:1006
-msgid "Name"
-msgstr "Izena"
-
-#: ../settings/themes.c:731
-msgid "Theme"
-msgstr "Gaia"
-
 #: ../settings/main.c:46
 msgid "Settings manager socket"
 msgstr "Ezarpena kudeatzaile socket-a"
@@ -775,3 +720,66 @@ msgid ""
 msgstr ""
 "%s: %s\n"
 "Erabili %s --help komando-lerroko komando erabilgarriak ikusteko.\n"
+
+#: ../settings/plugins.c:222
+#, c-format
+msgid "Configure plugin: %s"
+msgstr "Plugina konfiguratu: %s"
+
+#. Create error message to store in list
+#: ../settings/plugins.c:794
+#, c-format
+msgid ""
+"<b>Plugin could not be loaded.</b>\n"
+"\n"
+"%s"
+msgstr ""
+"<b>Plugina ezin izan da kargatu.</b>\n"
+"\n"
+"%s"
+
+#: ../settings/plugins.c:1006
+msgid "Name"
+msgstr "Izena"
+
+#: ../settings/themes.c:731
+msgid "Theme"
+msgstr "Gaia"
+
+#: ../xfdashboard/application.c:466
+msgid "Fork to background"
+msgstr "Atzealdera bidali"
+
+#: ../xfdashboard/application.c:467
+msgid "Quit running instance"
+msgstr "Martxan dagoen instantzia itxi"
+
+#: ../xfdashboard/application.c:468
+msgid "Restart running instance"
+msgstr "Martxan dagoen instantzia berrabiarazi"
+
+#: ../xfdashboard/application.c:469
+msgid ""
+"Toggles visibility if running instance was started in daemon mode otherwise "
+"it quits running non-daemon instance"
+msgstr ""
+"Ikusgaitasuna txandakatzen du exekutatzen ari den instantzia deabru moduan "
+"hasi bazen, bestela ez-deabru moduan exekutatzen ari den instantzia ixten du"
+
+#: ../xfdashboard/application.c:470
+msgid "The ID of view to switch to on startup or resume"
+msgstr "Abioan edo berrekiterakoan aldatzeko ikuspegiaren IDa"
+
+#: ../xfdashboard/application.c:471
+msgid "Show version"
+msgstr "Bertsioa erakutsi"
+
+#: ../xfdashboard/application.c:490
+msgid "A Gnome Shell like dashboard for Xfce4 - version "
+msgstr "Gnome shell antzeko aginte-taula bat Xfce4rako - bertsioa"
+
+#. Show error
+#: ../xfdashboard/application.c:507
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
