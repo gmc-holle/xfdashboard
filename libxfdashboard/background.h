@@ -53,7 +53,7 @@ typedef enum /*< flags,prefix=XFDASHBOARD_BACKGROUND_TYPE >*/
 
 	XFDASHBOARD_BACKGROUND_TYPE_FILL=1 << 0,
 	XFDASHBOARD_BACKGROUND_TYPE_OUTLINE=1 << 1,
-	XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS=1 << 2,
+	XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS=1 << 2
 } XfdashboardBackgroundType;
 
 
@@ -116,7 +116,7 @@ const ClutterColor* xfdashboard_background_get_fill_color(XfdashboardBackground 
 void xfdashboard_background_set_fill_color(XfdashboardBackground *self, const ClutterColor *inColor);
 
 XfdashboardCorners xfdashboard_background_get_fill_corners(XfdashboardBackground *self);
-void xfdashboard_background_set_fill_corners(XfdashboardBackground *self, XfdashboardCorners inCorners);
+void xfdashboard_background_set_fill_corners(XfdashboardBackground *self, const XfdashboardCorners inCorners);
 
 gfloat xfdashboard_background_get_fill_corner_radius(XfdashboardBackground *self);
 void xfdashboard_background_set_fill_corner_radius(XfdashboardBackground *self, const gfloat inRadius);
@@ -129,10 +129,10 @@ gfloat xfdashboard_background_get_outline_width(XfdashboardBackground *self);
 void xfdashboard_background_set_outline_width(XfdashboardBackground *self, const gfloat inWidth);
 
 XfdashboardBorders xfdashboard_background_get_outline_borders(XfdashboardBackground *self);
-void xfdashboard_background_set_outline_borders(XfdashboardBackground *self, XfdashboardBorders inBorders);
+void xfdashboard_background_set_outline_borders(XfdashboardBackground *self, const XfdashboardBorders inBorders);
 
 XfdashboardCorners xfdashboard_background_get_outline_corners(XfdashboardBackground *self);
-void xfdashboard_background_set_outline_corners(XfdashboardBackground *self, XfdashboardCorners inCorners);
+void xfdashboard_background_set_outline_corners(XfdashboardBackground *self, const XfdashboardCorners inCorners);
 
 gfloat xfdashboard_background_get_outline_corner_radius(XfdashboardBackground *self);
 void xfdashboard_background_set_outline_corner_radius(XfdashboardBackground *self, const gfloat inRadius);

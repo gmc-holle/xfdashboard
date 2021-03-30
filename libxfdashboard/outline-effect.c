@@ -41,7 +41,7 @@
 struct _XfdashboardOutlineEffectPrivate
 {
 	/* Properties related */
-	XfdashboardGradientColor		*color;
+	XfdashboardGradientColor	*color;
 	gfloat						width;
 	XfdashboardBorders			borders;
 	XfdashboardCorners			corners;
@@ -121,9 +121,9 @@ static void _xfdashboard_outline_effect_draw_outline_intern(XfdashboardOutlineEf
 	if(priv->drawRadius>0.0f)
 	{
 		/* Top-left corner */
-		if(priv->corners & XFDASHBOARD_CORNERS_TOP_LEFT &&
-			priv->borders & XFDASHBOARD_BORDERS_LEFT &&
-			priv->borders & XFDASHBOARD_BORDERS_TOP)
+		if((priv->corners & XFDASHBOARD_CORNERS_TOP_LEFT) &&
+			(priv->borders & XFDASHBOARD_BORDERS_LEFT) &&
+			(priv->borders & XFDASHBOARD_BORDERS_TOP))
 		{
 			cairo_arc(inContext,
 						priv->drawRadius+penOffset, priv->drawRadius+penOffset,
@@ -147,9 +147,9 @@ static void _xfdashboard_outline_effect_draw_outline_intern(XfdashboardOutlineEf
 		}
 
 		/* Top-right corner */
-		if(priv->corners & XFDASHBOARD_CORNERS_TOP_RIGHT &&
-			priv->borders & XFDASHBOARD_BORDERS_TOP &&
-			priv->borders & XFDASHBOARD_BORDERS_RIGHT)
+		if((priv->corners & XFDASHBOARD_CORNERS_TOP_RIGHT) &&
+			(priv->borders & XFDASHBOARD_BORDERS_TOP) &&
+			(priv->borders & XFDASHBOARD_BORDERS_RIGHT))
 		{
 			cairo_arc(inContext,
 						inWidth-priv->drawRadius-penOffset, priv->drawRadius+penOffset,
@@ -174,9 +174,9 @@ static void _xfdashboard_outline_effect_draw_outline_intern(XfdashboardOutlineEf
 		}
 
 		/* Bottom-right corner */
-		if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT &&
-			priv->borders & XFDASHBOARD_BORDERS_RIGHT &&
-			priv->borders & XFDASHBOARD_BORDERS_BOTTOM)
+		if((priv->corners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT) &&
+			(priv->borders & XFDASHBOARD_BORDERS_RIGHT) &&
+			(priv->borders & XFDASHBOARD_BORDERS_BOTTOM))
 		{
 			cairo_arc(inContext,
 						inWidth-priv->drawRadius-penOffset, inHeight-priv->drawRadius-penOffset,
@@ -200,9 +200,9 @@ static void _xfdashboard_outline_effect_draw_outline_intern(XfdashboardOutlineEf
 		}
 
 		/* Bottom-left corner */
-		if(priv->corners & XFDASHBOARD_CORNERS_BOTTOM_LEFT &&
-			priv->borders & XFDASHBOARD_BORDERS_BOTTOM &&
-			priv->borders & XFDASHBOARD_BORDERS_LEFT)
+		if((priv->corners & XFDASHBOARD_CORNERS_BOTTOM_LEFT) &&
+			(priv->borders & XFDASHBOARD_BORDERS_BOTTOM) &&
+			(priv->borders & XFDASHBOARD_BORDERS_LEFT))
 		{
 			cairo_arc(inContext,
 						priv->drawRadius+penOffset, inHeight-priv->drawRadius-penOffset,
@@ -367,32 +367,32 @@ static void _xfdashboard_outline_effect_draw_outline_solid(XfdashboardOutlineEff
 
 /* Create texture with outline for actor */
 static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlineEffect *self,
-																gfloat inWidth,
-																gfloat inHeight)
+																gint inWidth,
+																gint inHeight)
 {
 	XfdashboardOutlineEffectPrivate		*priv;
 	CoglContext							*coglContext;
-	CoglBitmap							*bitmapBuffer;
+	CoglBitmap							*bitmap;
 	CoglBuffer							*buffer;
 	CoglTexture							*texture;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self), NULL);
-	g_return_val_if_fail(inWidth>=1.0f, NULL);
-	g_return_val_if_fail(inHeight>=1.0f, NULL);
+	g_return_val_if_fail(inWidth>0, NULL);
+	g_return_val_if_fail(inHeight>0, NULL);
 
 	priv=self->priv;
 	texture=NULL;
 
 	/* Set up bitmap buffer to draw outline into */
 	coglContext=clutter_backend_get_cogl_context(clutter_get_default_backend());
-	bitmapBuffer=cogl_bitmap_new_with_size(coglContext,
-											inWidth,
-											inHeight,
-											CLUTTER_CAIRO_FORMAT_ARGB32);
-	if(!bitmapBuffer) return(NULL);
+	bitmap=cogl_bitmap_new_with_size(coglContext,
+										inWidth,
+										inHeight,
+										CLUTTER_CAIRO_FORMAT_ARGB32);
+	if(!bitmap) return(NULL);
 
 	/* If buffer could be created and retrieved begin to draw */
-	buffer=COGL_BUFFER(cogl_bitmap_get_buffer(bitmapBuffer));
+	buffer=COGL_BUFFER(cogl_bitmap_get_buffer(bitmap));
 	if(buffer)
 	{
 		gpointer						bufferData;
@@ -411,7 +411,7 @@ static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlin
 																CAIRO_FORMAT_ARGB32,
 																inWidth,
 																inHeight,
-																cogl_bitmap_get_rowstride(bitmapBuffer));
+																cogl_bitmap_get_rowstride(bitmap));
 			mappedBuffer=TRUE;
 		}
 			/* Buffer could not be mapped, so create a surface whose data we have
@@ -466,15 +466,20 @@ static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlin
 										cairo_image_surface_get_stride(cairoSurface)*inHeight);
 			}
 
-		/* Create texture from buffer */
-		texture=cogl_texture_2d_new_from_bitmap(bitmapBuffer);
+		/* Create sliced texture from buffer as it may get very large. It would
+		 * be better to check for support of NPOT (non-power-of-two) textures
+		 * and the maximum size of a texture supported. If both (NPOT and requested
+		 * size is supported) use cogl_texture_2d_new_from_bitmap() instead of
+		 * cogl_texture_2d_sliced_new_from_bitmap().
+		 */
+		texture=cogl_texture_2d_sliced_new_from_bitmap(bitmap, COGL_TEXTURE_MAX_WASTE);
 
 		/* Destroy surface */
 		cairo_surface_destroy(cairoSurface);
 	}
 
 	/* Release allocated resources */
-	if(bitmapBuffer) cogl_object_unref(bitmapBuffer);
+	if(bitmap) cogl_object_unref(bitmap);
 
 	/* Return created texture */
 	return(texture);
@@ -498,12 +503,31 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 	target=clutter_actor_meta_get_actor(CLUTTER_ACTOR_META(self));
 	clutter_actor_continue_paint(target);
 
-	/* Do not draw outline if this effect is not enabled */
-	if(!clutter_actor_meta_get_enabled(CLUTTER_ACTOR_META(self))) return;
-
-	/* Get and check size of outline to draw */
+	/* Get size of outline to draw */
 	clutter_actor_get_size(target, &width, &height);
 
+	/* Do not draw outline if this effect is not enabled or if width or height
+	 * is below 1 pixel as the texture will be invalid and causes trouble
+	 * (like crashes) because neither width or height (or both) must be 0 pixels.
+	 */
+	if(!clutter_actor_meta_get_enabled(CLUTTER_ACTOR_META(self)) ||
+		width<1.0f ||
+		height<1.0f)
+	{
+		return;
+	}
+
+	/* Check if size has changed. If so, destroy texture to create a new one
+	 * matching the new size.
+	 */
+	if(G_LIKELY(priv->texture))
+	{
+		if(cogl_texture_get_width(priv->texture)!=width ||
+			cogl_texture_get_height(priv->texture)!=height)
+		{
+			_xfdashboard_outline_effect_invalidate(self);
+		}
+	}
 
 	/* Create texture if no one is available */
 	if(!priv->texture)
@@ -513,15 +537,17 @@ static void _xfdashboard_outline_effect_paint(ClutterEffect *inEffect, ClutterEf
 
 		/* If we still have no texture, do nothing and return */
 		if(!priv->texture) return;
+
+		/* We only need to set texture at pipeline once after the texture
+		 * was created.
+		 */
+		cogl_pipeline_set_layer_texture(priv->pipeline,
+											0,
+											priv->texture);
 	}
 
 	/* Draw texture to stage in actor's space */
 	framebuffer=cogl_get_draw_framebuffer();
-
-	cogl_pipeline_set_layer_texture(priv->pipeline,
-										0,
-										priv->texture);
-
 	cogl_framebuffer_draw_textured_rectangle(framebuffer,
 												priv->pipeline,
 												0, 0, width, height,
@@ -815,7 +841,7 @@ XfdashboardBorders xfdashboard_outline_effect_get_borders(XfdashboardOutlineEffe
 	return(self->priv->borders);
 }
 
-void xfdashboard_outline_effect_set_borders(XfdashboardOutlineEffect *self, XfdashboardBorders inBorders)
+void xfdashboard_outline_effect_set_borders(XfdashboardOutlineEffect *self, const XfdashboardBorders inBorders)
 {
 	XfdashboardOutlineEffectPrivate	*priv;
 
@@ -846,7 +872,7 @@ XfdashboardCorners xfdashboard_outline_effect_get_corners(XfdashboardOutlineEffe
 	return(self->priv->corners);
 }
 
-void xfdashboard_outline_effect_set_corners(XfdashboardOutlineEffect *self, XfdashboardCorners inCorners)
+void xfdashboard_outline_effect_set_corners(XfdashboardOutlineEffect *self, const XfdashboardCorners inCorners)
 {
 	XfdashboardOutlineEffectPrivate	*priv;
 

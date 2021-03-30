@@ -47,7 +47,7 @@ struct _XfdashboardBackgroundPrivate
 	XfdashboardCorners			fillCorners;
 	gfloat						fillCornersRadius;
 
-	XfdashboardGradientColor		*outlineColor;
+	XfdashboardGradientColor	*outlineColor;
 	gfloat						outlineWidth;
 	XfdashboardBorders			outlineBorders;
 	XfdashboardCorners			outlineCorners;
@@ -679,7 +679,7 @@ XfdashboardCorners xfdashboard_background_get_fill_corners(XfdashboardBackground
 	return(self->priv->fillCorners);
 }
 
-void xfdashboard_background_set_fill_corners(XfdashboardBackground *self, XfdashboardCorners inCorners)
+void xfdashboard_background_set_fill_corners(XfdashboardBackground *self, const XfdashboardCorners inCorners)
 {
 	XfdashboardBackgroundPrivate	*priv;
 
@@ -804,7 +804,7 @@ XfdashboardBorders xfdashboard_background_get_outline_borders(XfdashboardBackgro
 	return(self->priv->outlineBorders);
 }
 
-void xfdashboard_background_set_outline_borders(XfdashboardBackground *self, XfdashboardBorders inBorders)
+void xfdashboard_background_set_outline_borders(XfdashboardBackground *self, const XfdashboardBorders inBorders)
 {
 	XfdashboardBackgroundPrivate	*priv;
 
@@ -834,7 +834,7 @@ XfdashboardCorners xfdashboard_background_get_outline_corners(XfdashboardBackgro
 	return(self->priv->outlineCorners);
 }
 
-void xfdashboard_background_set_outline_corners(XfdashboardBackground *self, XfdashboardCorners inCorners)
+void xfdashboard_background_set_outline_corners(XfdashboardBackground *self, const XfdashboardCorners inCorners)
 {
 	XfdashboardBackgroundPrivate	*priv;
 

@@ -75,10 +75,10 @@ gfloat xfdashboard_outline_effect_get_width(XfdashboardOutlineEffect *self);
 void xfdashboard_outline_effect_set_width(XfdashboardOutlineEffect *self, const gfloat inWidth);
 
 XfdashboardBorders xfdashboard_outline_effect_get_borders(XfdashboardOutlineEffect *self);
-void xfdashboard_outline_effect_set_borders(XfdashboardOutlineEffect *self, XfdashboardBorders inBorders);
+void xfdashboard_outline_effect_set_borders(XfdashboardOutlineEffect *self, const XfdashboardBorders inBorders);
 
 XfdashboardCorners xfdashboard_outline_effect_get_corners(XfdashboardOutlineEffect *self);
-void xfdashboard_outline_effect_set_corners(XfdashboardOutlineEffect *self, XfdashboardCorners inCorners);
+void xfdashboard_outline_effect_set_corners(XfdashboardOutlineEffect *self, const XfdashboardCorners inCorners);
 
 gfloat xfdashboard_outline_effect_get_corner_radius(XfdashboardOutlineEffect *self);
 void xfdashboard_outline_effect_set_corner_radius(XfdashboardOutlineEffect *self, const gfloat inRadius);
