@@ -6,16 +6,16 @@
 # Translators:
 # Nick Schermer <nick@xfce.org>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
-# Moo, 2020
+# Moo, 2021
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-28 00:48+0100\n"
+"POT-Creation-Date: 2021-03-29 12:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Moo, 2020\n"
+"Last-Translator: Moo, 2021\n"
 "Language-Team: Lithuanian (https://www.transifex.com/xfce/teams/16840/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -76,6 +76,31 @@ msgstr "Programų paieška"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version introduces completes turning "
+"libxfdashboard into a real library and introduces path gradients for "
+"outlines."
+msgstr ""
+"Šioje nestabilioje plėtojimo versijoje pristatomas užbaigtas libxfdashboard "
+"pavertimas tikrąja biblioteka ir pristatomi kontūrų kelio gradientai."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
+"This unstable development version introduces nothing user visible but begin "
+"moving libxfdashboard into a real library."
+msgstr ""
+"Šioje nestabilioje plėtojimo versijoje nepristatoma nieko, kas būtų matoma "
+"naudotojui, bet pradėtas libxfdashboard perkėlimas į tikrą biblioteką."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+msgid ""
+"This stable version fixes a bug and replaces AppInfo with AppStream "
+"metainfo."
+msgstr ""
+"Ši stabili versija ištaiso klaidą ir pakeičia AppInfo į AppStream "
+"metainformaciją."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
 " of new and updated translations."
@@ -84,7 +109,7 @@ msgstr ""
 "iškylantieji meniu, kelios vidinės pusės, peršokimo sąrašų palaikymas ir "
 "t.t. Joje taip pat yra daugybė naujų ir atnaujintų vertimų."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -92,7 +117,7 @@ msgstr ""
 "Ši stabili versija ištaiso klaidą ir pirmojo paleidimo metu nustato "
 "teisingas numatytąsias programas."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -369,8 +394,8 @@ msgstr "Raudono vyno xfdashboard tema"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Nepavyko įvykdyti veiksmo „%s“, skirto programai „%s“: %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
-#: ../settings/main.c:63
+#: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
+#: ../settings/plugins.c:795
 msgid "Unknown error"
 msgstr "Nežinoma klaida"
 
@@ -381,151 +406,111 @@ msgstr "Įvykdytas veiksmas „%s“, skirtas programai „%s“"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:754
-#: ../libxfdashboard/applications-view.c:334
-#: ../libxfdashboard/quicklaunch.c:352 ../libxfdashboard/quicklaunch.c:400
-#: ../libxfdashboard/quicklaunch.c:458
+#: ../libxfdashboard/applications-search-provider.c:751
+#: ../libxfdashboard/applications-view.c:332
+#: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
+#: ../libxfdashboard/quicklaunch.c:440
 #, c-format
 msgid "Launching application '%s' failed: %s"
 msgstr "\"%s programos paleidimas nepavyko: %s"
 
 #: ../libxfdashboard/application-button.c:745
-#: ../libxfdashboard/quicklaunch.c:354
+#: ../libxfdashboard/quicklaunch.c:336
 msgid "No information available for application"
 msgstr "Nėra apie programą prieinamos informacijos"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/application.c:308 ../libxfdashboard/application.c:618
-#: ../libxfdashboard/applications-search-provider.c:756
-#: ../libxfdashboard/applications-view.c:336
-#: ../libxfdashboard/quicklaunch.c:460
+#: ../libxfdashboard/applications-search-provider.c:753
+#: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
+#: ../libxfdashboard/quicklaunch.c:442 ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "nežinoma klaida"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:767
-#: ../libxfdashboard/applications-view.c:347
-#: ../libxfdashboard/quicklaunch.c:471
+#: ../libxfdashboard/applications-search-provider.c:764
+#: ../libxfdashboard/applications-view.c:345
+#: ../libxfdashboard/quicklaunch.c:453
 #, c-format
 msgid "Application '%s' launched"
 msgstr "Paleista programa \"%s\""
 
-#: ../libxfdashboard/application.c:306
-#, c-format
-msgid "Could not load theme '%s': %s"
-msgstr "Nepavyko įkelti temos \"%s\": %s"
-
-#: ../libxfdashboard/application.c:527
-#, c-format
-msgid "Welcome to %s (%s)!"
-msgstr "Sveiki atvykę į %s (%s)!"
-
-#: ../libxfdashboard/application.c:529
-#, c-format
-msgid "Welcome to %s!"
-msgstr "Sveiki atvykę į %s!"
-
-#: ../libxfdashboard/application.c:576
-msgid "Fork to background"
-msgstr "Atšakoti į foną"
-
-#: ../libxfdashboard/application.c:577
-msgid "Quit running instance"
-msgstr "Baigti vykdomo egzemplioriaus darbą"
-
-#: ../libxfdashboard/application.c:578
-msgid "Restart running instance"
-msgstr "Iš naujo paleisti vykdomą egzempliorių"
-
-#: ../libxfdashboard/application.c:579
-msgid ""
-"Toggles visibility if running instance was started in daemon mode otherwise "
-"it quits running non-daemon instance"
-msgstr ""
-"Perjungia matomumą, jei veikiantis programos egzempliorius buvo paleistas "
-"tarnybos veiksenoje. Priešingu atveju baigia egzemplioriaus, veikiančio ne "
-"tarnybos veiksenoje, darbą"
-
-#: ../libxfdashboard/application.c:580
-msgid "The ID of view to switch to on startup or resume"
-msgstr "Rodinio, į kurį perjungti paleidimo ar pratęsimo metu, ID"
-
-#: ../libxfdashboard/application.c:581
-msgid "Show version"
-msgstr "Rodyti versiją"
-
-#: ../libxfdashboard/application.c:600
-msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "Gnome apvalkalo pavidalo skydelis skirtas Xfce4 - versija"
-
-#. Show error
-#: ../libxfdashboard/application.c:617
-#, c-format
-msgid "%s\n"
-msgstr "%s\n"
-
-#: ../libxfdashboard/applications-search-provider.c:838
-#: ../libxfdashboard/applications-view.c:417
-#: ../libxfdashboard/quicklaunch.c:682
+#: ../libxfdashboard/applications-search-provider.c:835
+#: ../libxfdashboard/applications-view.c:415
+#: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
 msgstr "Paleisti"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1175
-#: ../libxfdashboard/applications-view.c:1587
-#: ../libxfdashboard/quicklaunch.c:3288
+#: ../libxfdashboard/applications-search-provider.c:1172
+#: ../libxfdashboard/applications-view.c:1580
+#: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
 msgstr "Programos"
 
-#: ../libxfdashboard/applications-view.c:545
-#: ../libxfdashboard/applications-view.c:546
-#: ../libxfdashboard/applications-view.c:657
-#: ../libxfdashboard/applications-view.c:658
+#: ../libxfdashboard/applications-view.c:543
+#: ../libxfdashboard/applications-view.c:544
+#: ../libxfdashboard/applications-view.c:655
+#: ../libxfdashboard/applications-view.c:656
 msgid "Back"
 msgstr "Atgal"
 
-#: ../libxfdashboard/applications-view.c:545
-#: ../libxfdashboard/applications-view.c:657
+#: ../libxfdashboard/applications-view.c:543
+#: ../libxfdashboard/applications-view.c:655
 msgid "Go back to previous menu"
 msgstr "Grįžti į ankstesnį meniu"
 
-#: ../libxfdashboard/applications-view.c:685
-#: ../libxfdashboard/applications-view.c:686
+#: ../libxfdashboard/applications-view.c:683
+#: ../libxfdashboard/applications-view.c:684
 msgid "All applications"
 msgstr "Visos programos"
 
-#: ../libxfdashboard/applications-view.c:685
+#: ../libxfdashboard/applications-view.c:683
 msgid "List of all installed applications"
 msgstr "Visų įdiegtų programų sąrašas"
 
-#: ../libxfdashboard/quicklaunch.c:402
+#: ../libxfdashboard/core.c:371
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr "Nepavyko įkelti temos \"%s\": %s"
+
+#: ../libxfdashboard/core.c:1259
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr "Sveiki atvykę į %s (%s)!"
+
+#: ../libxfdashboard/core.c:1261
+#, c-format
+msgid "Welcome to %s!"
+msgstr "Sveiki atvykę į %s!"
+
+#: ../libxfdashboard/quicklaunch.c:384
 msgid "No windows to activate for application"
 msgstr "Programa neturi aktyvuojamų langų"
 
-#: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
-#: ../libxfdashboard/quicklaunch.c:2130
+#: ../libxfdashboard/quicklaunch.c:507 ../libxfdashboard/quicklaunch.c:1243
+#: ../libxfdashboard/quicklaunch.c:2053
 #, c-format
 msgid "Favourite '%s' removed"
 msgstr "„%s“ pašalinta iš mėgstamų"
 
-#: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
-#: ../libxfdashboard/quicklaunch.c:2063
+#: ../libxfdashboard/quicklaunch.c:606 ../libxfdashboard/quicklaunch.c:925
+#: ../libxfdashboard/quicklaunch.c:1986
 #, c-format
 msgid "Favourite '%s' added"
 msgstr "„%s“ pridėta į mėgstamas"
 
-#: ../libxfdashboard/quicklaunch.c:705
+#: ../libxfdashboard/quicklaunch.c:687
 msgid "Remove from favourites"
 msgstr "Pridėti į mėgstamas"
 
-#: ../libxfdashboard/quicklaunch.c:719
+#: ../libxfdashboard/quicklaunch.c:701
 msgid "Add to favourites"
 msgstr "Šalinti iš mėgstamų"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
-#: ../libxfdashboard/quicklaunch.c:3295
+#: ../libxfdashboard/quicklaunch.c:3225
 msgid "Remove"
 msgstr "Šalinti"
 
@@ -547,61 +532,61 @@ msgid "No results found for '%s'"
 msgstr "„%s“ negrąžino jokių rezultatų"
 
 #. Set up view (Note: Search view is disabled by default!)
-#: ../libxfdashboard/search-view.c:1715
+#: ../libxfdashboard/search-view.c:1719
 msgid "Search"
 msgstr "Paieška"
 
-#: ../libxfdashboard/stage.c:1124
+#: ../libxfdashboard/stage.c:1111
 msgid "Just type to search..."
 msgstr "Tiesiog, rašykite, norėdami ieškoti..."
 
 #. Set up view
-#: ../libxfdashboard/windows-view.c:2317
+#: ../libxfdashboard/windows-view.c:2310
 msgid "Windows"
 msgstr "Langai"
 
 #. Set up view
-#: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:312
+#: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311
 msgid "Clock"
 msgstr "Laikrodis"
 
 #. Add widget to choose hour color
-#: ../plugins/clock-view/plugin.c:208
+#: ../plugins/clock-view/plugin.c:203
 msgid "Hour color:"
 msgstr "Valandų spalva:"
 
-#: ../plugins/clock-view/plugin.c:218
+#: ../plugins/clock-view/plugin.c:213
 msgid "Choose color for hour hand"
 msgstr "Pasirinkti valandų rodyklės spalvą"
 
 #. Add widget to choose minute color
-#: ../plugins/clock-view/plugin.c:223
+#: ../plugins/clock-view/plugin.c:218
 msgid "Minute color:"
 msgstr "Minučių spalva:"
 
-#: ../plugins/clock-view/plugin.c:233
+#: ../plugins/clock-view/plugin.c:228
 msgid "Choose color for minute hand"
 msgstr "Pasirinkti minučių rodyklės spalvą"
 
 #. Add widget to choose second color
-#: ../plugins/clock-view/plugin.c:238
+#: ../plugins/clock-view/plugin.c:233
 msgid "Second color:"
 msgstr "Sekundžių spalva:"
 
-#: ../plugins/clock-view/plugin.c:248
+#: ../plugins/clock-view/plugin.c:243
 msgid "Choose color for second hand"
 msgstr "Pasirinkti sekundžių rodyklės spalvą"
 
 #. Add widget to choose minute color
-#: ../plugins/clock-view/plugin.c:253
+#: ../plugins/clock-view/plugin.c:248
 msgid "Background color:"
 msgstr "Fono spalva:"
 
-#: ../plugins/clock-view/plugin.c:263
+#: ../plugins/clock-view/plugin.c:258
 msgid "Choose color for background of second hand"
 msgstr "Pasirinkti sekundžių rodyklės fono spalvą"
 
-#: ../plugins/clock-view/plugin.c:313
+#: ../plugins/clock-view/plugin.c:312
 msgid "Adds a new view showing a clock"
 msgstr "Prideda naują rodinį, kuriame rodomas laikrodis"
 
@@ -625,44 +610,44 @@ msgstr "Gnome-Shell paieškos teikėjas"
 msgid "Uses Gnome-Shell search providers as source for searches"
 msgstr "Naudoja Gnome apvalkalo paieškos teikėjus kaip savo paieškų šaltinį"
 
-#: ../plugins/hot-corner/plugin.c:268
+#: ../plugins/hot-corner/plugin.c:194
 msgid "s"
 msgstr "s"
 
-#: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
+#: ../plugins/hot-corner/plugin.c:198 ../settings/general.c:320
 msgid "ms"
 msgstr "ms"
 
-#: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
-#: ../settings/general.c:383
+#: ../plugins/hot-corner/plugin.c:202 ../settings/general.c:92
+#: ../settings/general.c:324
 msgid "Immediately"
 msgstr "Nedelsiant"
 
 #. Add widget to choose activation corner
-#: ../plugins/hot-corner/plugin.c:339
+#: ../plugins/hot-corner/plugin.c:325
 msgid "Activation corner:"
 msgstr "Aktyvavimo kampas"
 
 #. Add widget to choose activation radius
-#: ../plugins/hot-corner/plugin.c:375
+#: ../plugins/hot-corner/plugin.c:361
 msgid "Radius of activation corner:"
 msgstr "Kampo aktyvavimo spindulys:"
 
 #. Add widget to choose activation duration
-#: ../plugins/hot-corner/plugin.c:393
+#: ../plugins/hot-corner/plugin.c:379
 msgid "Timeout to activate:"
 msgstr "Aktyvavimo laiko limitas:"
 
 #. Add widget to limit checks to primary monitor only or to all monitors
-#: ../plugins/hot-corner/plugin.c:415
+#: ../plugins/hot-corner/plugin.c:401
 msgid "Primary monitor only"
 msgstr "Tik pirminis monitorius"
 
-#: ../plugins/hot-corner/plugin.c:467
+#: ../plugins/hot-corner/plugin.c:457
 msgid "Hot corner"
 msgstr "Karštasis kampas"
 
-#: ../plugins/hot-corner/plugin.c:468
+#: ../plugins/hot-corner/plugin.c:458
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
@@ -678,58 +663,33 @@ msgstr "Užverti langus viduriniuoju pelės mygtuku"
 msgid "Closes windows in windows view by middle-click"
 msgstr "Viduriniuoju pelės mygtuku užveria langų rodinyje esančius langus"
 
-#: ../settings/general.c:120
+#: ../settings/general.c:84
 msgid "Do nothing"
 msgstr "Nieko nedaryti"
 
-#: ../settings/general.c:121
+#: ../settings/general.c:85
 msgid "Windows view"
 msgstr "Langų rodinys"
 
-#: ../settings/general.c:122
+#: ../settings/general.c:86
 msgid "Applications view"
 msgstr "Programų rodinys"
 
-#: ../settings/general.c:129
+#: ../settings/general.c:93
 msgid "High"
 msgstr "Aukšta"
 
-#: ../settings/general.c:130
+#: ../settings/general.c:94
 msgid "Normal"
 msgstr "Normali"
 
-#: ../settings/general.c:131
+#: ../settings/general.c:95
 msgid "Low"
 msgstr "Žema"
 
-#: ../settings/general.c:324
+#: ../settings/general.c:269
 msgid "seconds"
 msgstr "sekundžių"
-
-#: ../settings/plugins.c:222
-#, c-format
-msgid "Configure plugin: %s"
-msgstr "Konfigūruoti įskiepį: %s"
-
-#. Create error message to store in list
-#: ../settings/plugins.c:825
-#, c-format
-msgid ""
-"<b>Plugin could not be loaded.</b>\n"
-"\n"
-"%s"
-msgstr ""
-"<b>Įskiepio įkelti nepavyko.</b>\n"
-"\n"
-"%s"
-
-#: ../settings/plugins.c:1032
-msgid "Name"
-msgstr "Pavadinimas"
-
-#: ../settings/themes.c:781
-msgid "Theme"
-msgstr "Tema"
 
 #: ../settings/main.c:46
 msgid "Settings manager socket"
@@ -744,11 +704,11 @@ msgid "Version information"
 msgstr "Versijos informacija"
 
 #. Initialize GTK+
-#: ../settings/main.c:57
+#: ../settings/main.c:70
 msgid "."
 msgstr "."
 
-#: ../settings/main.c:61
+#: ../settings/main.c:74
 #, c-format
 msgid ""
 "%s: %s\n"
@@ -756,3 +716,67 @@ msgid ""
 msgstr ""
 "%s: %s\n"
 "Bandykite %s --help, norėdami pamatyti visą prieinamų komandų eilutės parinkčių sąrašą.\n"
+
+#: ../settings/plugins.c:222
+#, c-format
+msgid "Configure plugin: %s"
+msgstr "Konfigūruoti įskiepį: %s"
+
+#. Create error message to store in list
+#: ../settings/plugins.c:794
+#, c-format
+msgid ""
+"<b>Plugin could not be loaded.</b>\n"
+"\n"
+"%s"
+msgstr ""
+"<b>Įskiepio įkelti nepavyko.</b>\n"
+"\n"
+"%s"
+
+#: ../settings/plugins.c:1006
+msgid "Name"
+msgstr "Pavadinimas"
+
+#: ../settings/themes.c:731
+msgid "Theme"
+msgstr "Tema"
+
+#: ../xfdashboard/application.c:466
+msgid "Fork to background"
+msgstr "Atšakoti į foną"
+
+#: ../xfdashboard/application.c:467
+msgid "Quit running instance"
+msgstr "Baigti vykdomo egzemplioriaus darbą"
+
+#: ../xfdashboard/application.c:468
+msgid "Restart running instance"
+msgstr "Iš naujo paleisti vykdomą egzempliorių"
+
+#: ../xfdashboard/application.c:469
+msgid ""
+"Toggles visibility if running instance was started in daemon mode otherwise "
+"it quits running non-daemon instance"
+msgstr ""
+"Perjungia matomumą, jei veikiantis programos egzempliorius buvo paleistas "
+"tarnybos veiksenoje. Priešingu atveju baigia egzemplioriaus, veikiančio ne "
+"tarnybos veiksenoje, darbą"
+
+#: ../xfdashboard/application.c:470
+msgid "The ID of view to switch to on startup or resume"
+msgstr "Rodinio, į kurį perjungti paleidimo ar pratęsimo metu, ID"
+
+#: ../xfdashboard/application.c:471
+msgid "Show version"
+msgstr "Rodyti versiją"
+
+#: ../xfdashboard/application.c:490
+msgid "A Gnome Shell like dashboard for Xfce4 - version "
+msgstr "Gnome apvalkalo pavidalo skydelis skirtas Xfce4 - versija"
+
+#. Show error
+#: ../xfdashboard/application.c:507
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
