@@ -604,13 +604,29 @@ void xfdashboard_background_set_background_type(XfdashboardBackground *self, con
 		/* Force redraw of background canvas */
 		if(priv->fillCanvas) clutter_content_invalidate(priv->fillCanvas);
 
-		/* Enable or disable drawing outline */
+		/* Enable or disable drawing outline and also check if type does not
+		 * include rounded corners set corner radius at outline to zero. But
+		 * if set then set requested outline corner radius at outline.
+		 */
 		if(priv->outline)
 		{
+			/* Enable or disable outlines */
 			if(inType & XFDASHBOARD_BACKGROUND_TYPE_OUTLINE) enableOutline=TRUE;
 				else enableOutline=FALSE;
 
 			clutter_actor_meta_set_enabled(CLUTTER_ACTOR_META(priv->outline), enableOutline);
+
+			/* Set corner radius at outline depending on if rounded corners
+			 * at type is set or not.
+			 */
+			if(inType & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS)
+			{
+				xfdashboard_outline_effect_set_corner_radius(priv->outline, priv->outlineCornersRadius);
+			}
+				else
+				{
+					xfdashboard_outline_effect_set_corner_radius(priv->outline, 0.0f);
+				}
 		}
 
 		/* Notify about property change */
@@ -879,8 +895,21 @@ void xfdashboard_background_set_outline_corner_radius(XfdashboardBackground *sel
 		/* Set value */
 		priv->outlineCornersRadius=inRadius;
 
-		/* Update effect */
-		if(priv->outline) xfdashboard_outline_effect_set_corner_radius(priv->outline, inRadius);
+		/* Update effect but depend on type to decide if either a radius of zero
+		 * is set because no rounded corners were requested or to set the radius
+		 * is provided.
+		 */
+		if(priv->outline)
+		{
+			if(priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS)
+			{
+				xfdashboard_outline_effect_set_corner_radius(priv->outline, priv->outlineCornersRadius);
+			}
+				else
+				{
+					xfdashboard_outline_effect_set_corner_radius(priv->outline, 0.0f);
+				}
+		}
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardBackgroundProperties[PROP_OUTLINE_CORNERS_RADIUS]);
