@@ -920,14 +920,13 @@ static void xfdashboard_core_init(XfdashboardCore *self)
 
 	priv=self->priv=xfdashboard_core_get_instance_private(self);
 
-	// TODO: Setting singleton here is wrong but essential for futher development and testing - Remove later!!!
-	if(_xfdashboard_core==NULL)
-	{
-		_xfdashboard_core=self;
-		g_message("%s: set singleton=%s@%p",
-					__FUNCTION__,
-					_xfdashboard_core ? G_OBJECT_TYPE_NAME(_xfdashboard_core) : "<null>", _xfdashboard_core);
-	}
+	/* Set up singleton of core object instance.
+	 * Note: Setting singleton here is wrong but at current state essential
+	 * for futher development and testing. It should be find a way how to
+	 * remove it and use a pointer to core object instance instead at the
+	 * other components need access to core object functions.
+	 */
+	if(_xfdashboard_core==NULL) _xfdashboard_core=self;
 
 	/* Set default values */
 	priv->isSuspended=FALSE;
