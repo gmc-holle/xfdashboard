@@ -328,7 +328,7 @@ static void _xfdashboard_background_draw_fill_canvas_simple(XfdashboardBackgroun
 	cairo_close_path(inContext);
 }
 
-/* More comples canvas fill function for path gradient colors */
+/* More complex canvas fill function for path gradient colors */
 static void _xfdashboard_background_draw_fill_canvas_path_gradient(XfdashboardBackground *self,
 																	cairo_t *inContext,
 																	int inWidth,
