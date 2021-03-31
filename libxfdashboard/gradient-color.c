@@ -59,9 +59,12 @@ static void _xfdashboard_gradient_color_transform_to_string(const GValue *inSour
 /* Define this boxed type in GObject system */
 struct _XfdashboardGradientColor
 {
-	XfdashboardGradientColorType	type;
+	XfdashboardGradientType			type;
 	ClutterColor					*solid;
 	GArray							*stops;
+	gdouble							gradientAngle;
+	gboolean						gradientRepeat;
+	gdouble							gradientLength;
 };
 
 G_DEFINE_BOXED_TYPE_WITH_CODE(XfdashboardGradientColor,
@@ -86,38 +89,45 @@ struct _XfdashboardGradientColorStop
 /* Parse a string into a XfdashboardGradientColor value */
 static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **inTokens, XfdashboardGradientColor **outColor)
 {
-	XfdashboardGradientColorType			type;
+	XfdashboardGradientType			type;
 
 	g_return_val_if_fail(inTokens, FALSE);
 	g_return_val_if_fail(*inTokens, FALSE);
 	g_return_val_if_fail(outColor, FALSE);
 	g_return_val_if_fail(*outColor==NULL, FALSE);
 
-#define NEXT_TOKEN(x)	while(*(x) && !(*(*(x)))) { (x)++; }
-#define NEED_TOKEN(x)	NEXT_TOKEN(x); if(!*(x)) return(FALSE);
+#define NEXT_TOKEN(x)		while(*(x) && !(*(*(x)))) { (x)++; }
+#define NEED_TOKEN(x)		NEXT_TOKEN(x); if(!*(x)) return(FALSE);
+#define NO_MORE_TOKENS(x)	if(*(x)) (x)++; NEXT_TOKEN(x); if(*(x)) return(FALSE);
 
 	/* We first expect the type of this color whereby "solid" is optional.
 	 * We expect more tokens to parse.
 	 */
 	NEED_TOKEN(inTokens);
 
-	type=XFDASHBOARD_GRADIENT_COLOR_TYPE_NONE;
+	type=XFDASHBOARD_GRADIENT_TYPE_NONE;
 	if(g_strcmp0(*inTokens, "solid")==0)
 	{
-		type=XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID;
+		type=XFDASHBOARD_GRADIENT_TYPE_SOLID;
 		inTokens++;
 	}
 		else if(g_strcmp0(*inTokens, "path")==0)
 		{
-			type=XFDASHBOARD_GRADIENT_COLOR_TYPE_PATH_GRADIENT;
+			type=XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT;
+			inTokens++;
+		}
+		else if(g_strcmp0(*inTokens, "linear")==0)
+		{
+			type=XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT;
 			inTokens++;
 		}
 
 	/* If type of color is none or solid then read in color. The type can be
 	 * none as keyword "solid" is optional.
+	 * Syntax: [solid] <color>
 	 */
-	if(type==XFDASHBOARD_GRADIENT_COLOR_TYPE_NONE ||
-		type==XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID)
+	if(type==XFDASHBOARD_GRADIENT_TYPE_NONE ||
+		type==XFDASHBOARD_GRADIENT_TYPE_SOLID)
 	{
 		ClutterColor				solidColor={ 0, };
 
@@ -128,19 +138,22 @@ static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **
 		/* Set up color */
 		*outColor=xfdashboard_gradient_color_new_solid(&solidColor);
 
-		/* Return success result */
+		/* Return success result if no more tokens to parse exist */
+		NO_MORE_TOKENS(inTokens);
 		return(TRUE);
 	}
 
 	/* If type of color is path gradient, then read in start, end colors as well as
 	 * offsets and colors to create color stops.
+	 * Syntax: path <start-color> <end-color> [(offset|offset_in_%) <color>]*
 	 */
-	if(type==XFDASHBOARD_GRADIENT_COLOR_TYPE_PATH_GRADIENT)
+	if(type==XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT)
 	{
 		ClutterColor				startColor={ 0, };
 		ClutterColor				endColor={ 0, };
 		gdouble						offset;
 		ClutterColor				stopColor={ 0, };
+		gchar						*endToken;
 
 		/* Expect start color */
 		NEED_TOKEN(inTokens);
@@ -159,7 +172,23 @@ static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **
 		while(*inTokens)
 		{
 			NEED_TOKEN(inTokens);
-			offset=g_ascii_strtod(*inTokens, NULL);
+			endToken=NULL;
+			offset=g_ascii_strtod(*inTokens, &endToken);
+			if(endToken && *endToken)
+			{
+				if(g_strcmp0(endToken, "%")==0)
+				{
+					/* Calculate offset fraction between 0.0 and 1.0
+					 * for percentage.
+					 */
+					offset=fabs(offset)/100.0;
+				}
+					else
+					{
+						/* Unexpected suffix for offset */
+						return(FALSE);
+					}
+			}
 			inTokens++;
 
 			NEED_TOKEN(inTokens);
@@ -174,10 +203,168 @@ static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **
 			NEXT_TOKEN(inTokens);
 		};
 
-		/* Return success result */
+		/* Return success result if no more tokens to parse exist */
+		NO_MORE_TOKENS(inTokens);
 		return(TRUE);
 	}
 
+	/* If type of color is linear gradient, then read in start, end colors as well as
+	 * offsets and colors to create color stops.
+	 * Syntax: linear [angle] <start-color> <end-color> ((offset|offset_in_%) <color>)* [repeat (length|length_in_px|lenght_in_%)|no-repeat]
+	 */
+	if(type==XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT)
+	{
+		gdouble						angle;
+		gdouble						length;
+		ClutterColor				startColor={ 0, };
+		ClutterColor				endColor={ 0, };
+		gdouble						offset;
+		ClutterColor				stopColor={ 0, };
+		gchar						*endToken;
+
+		/* Check for optional angle */
+		NEED_TOKEN(inTokens);
+		angle=0.0;
+		if(g_ascii_isdigit((guchar)**inTokens))
+		{
+			/* Get angle */
+			endToken=NULL;
+			angle=g_ascii_strtod(*inTokens, &endToken);
+			if(endToken && *endToken)
+			{
+				if(g_ascii_strcasecmp(endToken, "deg")==0)
+				{
+					/* Convert degrees to radians */
+					angle=(angle/180)*M_PI;
+				}
+					else if(g_ascii_strcasecmp(endToken, "rad")==0)
+					{
+						/* Do nothing as value is already in radians */
+					}
+					else
+					{
+						/* Unexpected suffix for angle */
+						return(FALSE);
+					}
+			}
+
+			/* Move to next token */
+			inTokens++;
+		}
+
+		/* Expect start color */
+		NEED_TOKEN(inTokens);
+		clutter_color_from_string(&startColor, *inTokens);
+		inTokens++;
+
+		NEED_TOKEN(inTokens);
+		clutter_color_from_string(&endColor, *inTokens);
+		inTokens++;
+
+		/* Set up initial linear gradient color */
+		*outColor=xfdashboard_gradient_color_new_linear_gradient(&startColor, &endColor);
+		xfdashboard_gradient_color_set_angle(*outColor, angle);
+ 
+		/* If more tokens exists, read in offset and color for color stop */
+		NEXT_TOKEN(inTokens);
+		while(*inTokens &&
+				g_ascii_strcasecmp(*inTokens, "repeat")!=0 &&
+				g_ascii_strcasecmp(*inTokens, "no-repeat")!=0)
+		{
+			NEED_TOKEN(inTokens);
+			endToken=NULL;
+			offset=g_ascii_strtod(*inTokens, &endToken);
+			if(endToken && *endToken)
+			{
+				if(g_strcmp0(endToken, "%")==0)
+				{
+					/* Calculate offset fraction between 0.0 and 1.0
+					 * for percentage.
+					 */
+					offset=fabs(offset)/100.0;
+				}
+					else
+					{
+						/* Unexpected suffix for offset */
+						return(FALSE);
+					}
+			}
+			inTokens++;
+
+			NEED_TOKEN(inTokens);
+			clutter_color_from_string(&stopColor, *inTokens);
+			inTokens++;
+
+			xfdashboard_gradient_color_add_stop(*outColor, offset, &stopColor);
+
+			/* Move to next token or to end of token list. End of token list
+			 * will end this loop and return success result.
+			 */
+			NEXT_TOKEN(inTokens);
+		};
+
+		/* Check for optional repeat */
+		if(*inTokens)
+		{
+			/* Check for repeating pattern */
+			if(g_ascii_strcasecmp(*inTokens, "repeat")==0)
+			{
+				/* Skip "repeat" token */
+				inTokens++;
+
+				/* Get length either as fraction (without suffix) or as absolute
+				 * length in pixels (with suffix "px") or as percentage length
+				 * (with suffix "%").
+				 */
+				NEED_TOKEN(inTokens);
+				endToken=NULL;
+				length=g_ascii_strtod(*inTokens, &endToken);
+				if(endToken && *endToken)
+				{
+					if(g_strcmp0(endToken, "%")==0)
+					{
+						/* Calculate negative fraction between 0.0 and -1.0
+						 * for percentage.
+						 */
+						length=-(fabs(length)/100.0);
+					}
+						else if(g_ascii_strcasecmp(endToken, "px")==0)
+						{
+							/* Ensure absolute value above 0 for absolute length */
+							length=fabs(length);
+						}
+						else
+						{
+							/* Unexpected suffix for length */
+							return(FALSE);
+						}
+				}
+
+				/* Set up repeating pattern */
+				xfdashboard_gradient_color_set_repeat(*outColor, TRUE, length);
+			}
+				/* Check for non-repeating pattern */
+				else if(g_ascii_strcasecmp(*inTokens, "no-repeat")==0)
+				{
+					/* Skip "no-repeat" token */
+					inTokens++;
+
+					/* Set up non-repeating pattern */
+					xfdashboard_gradient_color_set_repeat(*outColor, FALSE, 0.0);
+				}
+				/* Unexpected token */
+				else
+				{
+					return(FALSE);
+				}
+		}
+
+		/* Return success result if no more tokens to parse exist */
+		NO_MORE_TOKENS(inTokens);
+		return(TRUE);
+	}
+
+#undef NO_MORE_TOKENS
 #undef NEED_TOKEN
 #undef NEXT_TOKEN
 
@@ -251,8 +438,42 @@ XfdashboardGradientColor* xfdashboard_gradient_color_new_solid(const ClutterColo
 	/* Create boxed type and set up for use of single-colored solids */ 
 	self=g_new0(XfdashboardGradientColor, 1);
 
-	self->type=XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID;
+	self->type=XFDASHBOARD_GRADIENT_TYPE_SOLID;
 	self->solid=clutter_color_copy(inColor);
+
+	/* Return newly created boxed type */
+	return(self);
+}
+
+/**
+ * xfdashboard_gradient_color_new_linear_gradient:
+ * @inStartColor: A #ClutterColor to begin linear gradient with
+ * @inEndColor: A #ClutterColor to end linear gradient with
+ *
+ * Creates a new linear gradient with the provided color @inStartColor at start
+ * offset (0.0) and color @inEndColor at end offset (1.0). The new gradient
+ * is non-repeative and covers the whole area.
+ *
+ * The path gradient can be more specific by adding color stops with
+ * xfdashboard_gradient_color_add_stop().
+ *
+ * Returns: A newly created #XfdashboardGradientColor
+ */
+XfdashboardGradientColor* xfdashboard_gradient_color_new_linear_gradient(const ClutterColor *inStartColor, const ClutterColor *inEndColor)
+{
+	XfdashboardGradientColor		*self;
+
+	g_return_val_if_fail(inStartColor, NULL);
+	g_return_val_if_fail(inEndColor, NULL);
+
+	/* Create boxed type and set up for use of linear gradients */
+	self=g_new0(XfdashboardGradientColor, 1);
+
+	self->type=XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT;
+	self->stops=g_array_new(FALSE, FALSE, sizeof(XfdashboardGradientColorStop));
+
+	xfdashboard_gradient_color_add_stop(self, 0.0, inStartColor);
+	xfdashboard_gradient_color_add_stop(self, 1.0, inEndColor);
 
 	/* Return newly created boxed type */
 	return(self);
@@ -278,10 +499,10 @@ XfdashboardGradientColor* xfdashboard_gradient_color_new_path_gradient(const Clu
 	g_return_val_if_fail(inStartColor, NULL);
 	g_return_val_if_fail(inEndColor, NULL);
 
-	/* Create boxed type and set up for use of single-colored solids */ 
+	/* Create boxed type and set up for use of path gradients */
 	self=g_new0(XfdashboardGradientColor, 1);
 
-	self->type=XFDASHBOARD_GRADIENT_COLOR_TYPE_PATH_GRADIENT;
+	self->type=XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT;
 	self->stops=g_array_new(FALSE, FALSE, sizeof(XfdashboardGradientColorStop));
 
 	xfdashboard_gradient_color_add_stop(self, 0.0, inStartColor);
@@ -315,6 +536,9 @@ XfdashboardGradientColor* xfdashboard_gradient_color_copy(const XfdashboardGradi
 	newColor->type=self->type;
 	if(self->solid) newColor->solid=clutter_color_copy(self->solid);
 	if(self->stops) newColor->stops=g_array_copy(self->stops);
+	newColor->gradientAngle=self->gradientAngle;
+	newColor->gradientRepeat=self->gradientRepeat;
+	newColor->gradientLength=self->gradientLength;
 
 	/* Return newly created boxed type */
 	return(newColor);
@@ -352,6 +576,7 @@ void xfdashboard_gradient_color_free(XfdashboardGradientColor *self)
 gint xfdashboard_gradient_color_compare(const XfdashboardGradientColor *inLeft, const XfdashboardGradientColor *inRight)
 {
 	gint								result;
+	gdouble								resultDouble;
 	guint								i;
 	guint32								leftPixel;
 	guint32								rightPixel;
@@ -373,7 +598,7 @@ gint xfdashboard_gradient_color_compare(const XfdashboardGradientColor *inLeft, 
 	/* Check if both colors share the same color definition depending on their type */
 	switch(inLeft->type)
 	{
-		case XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID:
+		case XFDASHBOARD_GRADIENT_TYPE_SOLID:
 			/* Check if both colors do have the same solid color */
 			leftPixel=clutter_color_to_pixel(inLeft->solid);
 			rightPixel=clutter_color_to_pixel(inRight->solid);
@@ -381,7 +606,45 @@ gint xfdashboard_gradient_color_compare(const XfdashboardGradientColor *inLeft, 
 				else if(leftPixel>rightPixel) return(1);
 			break;
 
-		case XFDASHBOARD_GRADIENT_COLOR_TYPE_PATH_GRADIENT:
+		case XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT:
+			/* Check if both colors have the same number of color stops */
+			result=inRight->stops->len - inLeft->stops->len;
+			if(result!=0) return(result);
+
+			/* Check if both colors have the same color stops */
+			for(i=0; i<inLeft->stops->len; i++)
+			{
+				/* Get color stop of both colors */
+				leftStop=&g_array_index(inLeft->stops, XfdashboardGradientColorStop, i);
+				rightStop=&g_array_index(inRight->stops, XfdashboardGradientColorStop, i);
+
+				/* Check if color stop of both colors have same offset */
+				if(leftStop->offset < rightStop->offset) return(-1);
+					else if(leftStop->offset > rightStop->offset) return(1);
+
+				/* Check if color stop of both colors have same color */
+				leftPixel=clutter_color_to_pixel(&leftStop->color);
+				rightPixel=clutter_color_to_pixel(&rightStop->color);
+				if(leftPixel<rightPixel) return(-1);
+					else if(leftPixel>rightPixel) return(1);
+			}
+
+			/* Check if both colors have same angle */
+			resultDouble=inRight->gradientAngle - inLeft->gradientAngle;
+			if(resultDouble!=0) return((gint)(round(resultDouble)));
+
+			/* Check if both colors have same repeat flag */
+			if(inLeft->gradientRepeat!=inRight->gradientRepeat) return(-1);
+
+			/* Check if both colors have same repeat length if repeat flag is set */
+			if(inLeft->gradientRepeat)
+			{
+				resultDouble=inRight->gradientLength - inLeft->gradientLength;
+				if(resultDouble!=0) return((gint)(round(resultDouble)));
+			}
+			break;
+
+		case XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT:
 			/* Check if both colors have the same number of color stops */
 			result=inRight->stops->len - inLeft->stops->len;
 			if(result!=0) return(result);
@@ -491,7 +754,7 @@ gchar* xfdashboard_gradient_color_to_string(const XfdashboardGradientColor *self
 	switch(self->type)
 	{
 		/* Build solid color representation, i.e. just the color */
-		case XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID:
+		case XFDASHBOARD_GRADIENT_TYPE_SOLID:
 			{
 				gchar							*temp;
 
@@ -502,7 +765,7 @@ gchar* xfdashboard_gradient_color_to_string(const XfdashboardGradientColor *self
 			break;
 
 		/* Build path gradient representation */
-		case XFDASHBOARD_GRADIENT_COLOR_TYPE_PATH_GRADIENT:
+		case XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT:
 			{
 				guint							i;
 				guint							lastIndex;
@@ -555,17 +818,17 @@ gchar* xfdashboard_gradient_color_to_string(const XfdashboardGradientColor *self
 }
 
 /**
- * xfdashboard_gradient_color_get_color_type:
+ * xfdashboard_gradient_color_get_gradient_type:
  * @self: A #XfdashboardGradientColor
  *
- * Determine the color type of @self which is one of #XfdashboardGradientColorType.
+ * Determine the gradient type of @self which is one of #XfdashboardGradientType.
  *
- * Returns: The color type of @self or %XFDASHBOARD_GRADIENT_COLOR_TYPE_NONE if @self
+ * Returns: The gradient type of @self or %XFDASHBOARD_GRADIENT_TYPE_NONE if @self
  *   is %NULL
  */
-XfdashboardGradientColorType xfdashboard_gradient_color_get_color_type(const XfdashboardGradientColor *self)
+XfdashboardGradientType xfdashboard_gradient_color_get_gradient_type(const XfdashboardGradientColor *self)
 {
-	g_return_val_if_fail(self, XFDASHBOARD_GRADIENT_COLOR_TYPE_NONE);
+	g_return_val_if_fail(self, XFDASHBOARD_GRADIENT_TYPE_NONE);
 
 	return(self->type);
 }
@@ -576,15 +839,136 @@ XfdashboardGradientColorType xfdashboard_gradient_color_get_color_type(const Xfd
  *
  * Determine the color of @self if it is a solid color type.
  *
- * Returns: The color type of @self or %NULL if @self is %NULL or it is not
- *   of color type %XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID
+ * Returns: The color of @self or %NULL if @self is %NULL or it is not
+ *   of gradient type %XFDASHBOARD_GRADIENT_TYPE_SOLID
  */
 const ClutterColor* xfdashboard_gradient_color_get_solid_color(const XfdashboardGradientColor *self)
 {
 	g_return_val_if_fail(self, NULL);
-	g_return_val_if_fail(self->type==XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID, NULL);
+	g_return_val_if_fail(self->type==XFDASHBOARD_GRADIENT_TYPE_SOLID, NULL);
 
 	return(self->solid);
+}
+
+/**
+ * xfdashboard_gradient_color_set_solid_color:
+ * @self: A #XfdashboardGradientColor
+ * @inColor: The #ClutterColor to set as solid color
+ *
+ * Sets the color of @self to @inColor if it is a solid color type.
+ */
+void xfdashboard_gradient_color_set_solid_color(XfdashboardGradientColor *self, const ClutterColor *inColor)
+{
+	g_return_if_fail(self);
+	g_return_if_fail(self->type==XFDASHBOARD_GRADIENT_TYPE_SOLID);
+	g_return_if_fail(inColor);
+
+	/* Set new solid color */
+	if(self->solid) clutter_color_free(self->solid);
+	self->solid=clutter_color_copy(inColor);
+}
+
+/**
+ * xfdashboard_gradient_color_get_angle:
+ * @self: A #XfdashboardGradientColor
+ *
+ * Determine the angle of @self if it is a linear gradient type.
+ *
+ * Returns: The angle of gradient between 0.0 and 2*PI. An angle of 0.0 is
+ *   also returned if the gradient type is not linear.
+ */
+gdouble xfdashboard_gradient_color_get_angle(const XfdashboardGradientColor *self)
+{
+	g_return_val_if_fail(self, 0.0);
+	g_return_val_if_fail(self->type==XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT, 0.0);
+
+	return(self->gradientAngle);
+}
+
+/**
+ * xfdashboard_gradient_color_set_angle:
+ * @self: A #XfdashboardGradientColor
+ * @inAngle: The angle of gradient in radians
+ *
+ * Sets the angle of @self to @inAngle if it is a linear gradient type. The
+ * angle must be provided as radians between 0.0 and 2*PI. A angle of 0.0 is
+ * directed to right and increasing angle rotate clockwise, e.g. PI/2 is directed
+ * to bottom.
+ */
+void xfdashboard_gradient_color_set_angle(XfdashboardGradientColor *self, gdouble inAngle)
+{
+	g_return_if_fail(self);
+	g_return_if_fail(self->type==XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT);
+	g_return_if_fail(inAngle>=0.0 && inAngle<=(2*M_PI));
+
+	/* Set angle */
+	self->gradientAngle=inAngle;
+}
+
+/**
+ * xfdashboard_gradient_color_get_repeat:
+ * @self: A #XfdashboardGradientColor
+ *
+ * Determine if gradient pattern of @self is repeated if it is a linear gradient
+ * type. The length of one gradient pattern, before it is repeated, can be
+ * determine with xfdashboard_gradient_color_get_length().
+ *
+ * Returns: %TRUE if gradient pattern is repeated and if gradient type is a linear
+ *   gradient. Otherwise it returns %FALSE.
+ */
+gboolean xfdashboard_gradient_color_get_repeat(const XfdashboardGradientColor *self)
+{
+	g_return_val_if_fail(self, FALSE);
+	g_return_val_if_fail(self->type==XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT, FALSE);
+
+	return(self->gradientRepeat);
+}
+
+/**
+ * xfdashboard_gradient_color_get_length:
+ * @self: A #XfdashboardGradientColor
+ *
+ * Determine the length of gradient pattern at @self if it is a linear gradient
+ * and repeated.
+ *
+ * If a negative value is returned the length is in percentage and the value is a
+ * fraction between 0.0 and -1.0. A positive value is the length in pixel. A
+ * length of 0.0 means the whole area this gradient pattern is applied to, i.e.
+ * the pattern is not repeated.
+ *
+ * Returns: the length of gradient pattern
+ */
+gdouble xfdashboard_gradient_color_get_length(const XfdashboardGradientColor *self)
+{
+	g_return_val_if_fail(self, 0.0);
+	g_return_val_if_fail(self->type==XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT, 0.0);
+
+	return(self->gradientRepeat ? self->gradientLength : 0.0);
+}
+
+/**
+ * xfdashboard_gradient_color_set_repeat:
+ * @self: A #XfdashboardGradientColor
+ * @inRepeat: %TRUE if gradient pattern should be repeated
+ * @inLength: The length of gradient pattern as percentage or pixels
+ *
+ * Sets if gradient pattern of @self is repeated or not repeated as specified
+ * at @inRepeat if it is a linear gradient type. The length @inLength can
+ * either be specified as fraction (percentage) between 0.0 and -1.0 as a
+ * negative value must be used. A positive value defines the length in piexels.
+ *
+ * If pattern should not be repeated the lenght is set to 0.0 indicating that
+ * the gradient pattern should be applied to the whole area.
+ */
+void xfdashboard_gradient_color_set_repeat(XfdashboardGradientColor *self, gboolean inRepeat, gdouble inLength)
+{
+	g_return_if_fail(self);
+	g_return_if_fail(self->type==XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT);
+	g_return_if_fail(inLength>=-1.0);
+	g_return_if_fail(inRepeat==FALSE || inLength!=0.0);
+
+	self->gradientRepeat=inRepeat;
+	self->gradientLength=(inRepeat ? inLength : 0.0);
 }
 
 /**
@@ -598,8 +982,8 @@ const ClutterColor* xfdashboard_gradient_color_get_solid_color(const Xfdashboard
 guint xfdashboard_gradient_color_get_number_stops(const XfdashboardGradientColor *self)
 {
 	g_return_val_if_fail(self, 0);
-	g_return_val_if_fail(self->type!=XFDASHBOARD_GRADIENT_COLOR_TYPE_NONE, 0);
-	g_return_val_if_fail(self->type!=XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID, 0);
+	g_return_val_if_fail(self->type!=XFDASHBOARD_GRADIENT_TYPE_NONE, 0);
+	g_return_val_if_fail(self->type!=XFDASHBOARD_GRADIENT_TYPE_SOLID, 0);
 
 	return(self->stops->len);
 }
@@ -622,8 +1006,8 @@ void xfdashboard_gradient_color_get_stop(const XfdashboardGradientColor *self, g
 	XfdashboardGradientColorStop		*stop;
 
 	g_return_if_fail(self);
-	g_return_if_fail(self->type!=XFDASHBOARD_GRADIENT_COLOR_TYPE_NONE);
-	g_return_if_fail(self->type!=XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID);
+	g_return_if_fail(self->type!=XFDASHBOARD_GRADIENT_TYPE_NONE);
+	g_return_if_fail(self->type!=XFDASHBOARD_GRADIENT_TYPE_SOLID);
 	g_return_if_fail(inIndex<self->stops->len);
 
 	/* Get stop color at requested index */ 
@@ -666,8 +1050,8 @@ gboolean xfdashboard_gradient_color_add_stop(XfdashboardGradientColor *self, gdo
 	XfdashboardGradientColorStop		*iter;
 
 	g_return_val_if_fail(self, FALSE);
-	g_return_val_if_fail(self->type!=XFDASHBOARD_GRADIENT_COLOR_TYPE_NONE, FALSE);
-	g_return_val_if_fail(self->type!=XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID, FALSE);
+	g_return_val_if_fail(self->type!=XFDASHBOARD_GRADIENT_TYPE_NONE, FALSE);
+	g_return_val_if_fail(self->type!=XFDASHBOARD_GRADIENT_TYPE_SOLID, FALSE);
 	g_return_val_if_fail(inOffset>=0.0 && inOffset<=1.0, FALSE);
 	g_return_val_if_fail(inColor, FALSE);
 
@@ -714,8 +1098,8 @@ void xfdashboard_gradient_color_interpolate(const XfdashboardGradientColor *self
 	XfdashboardGradientColorStop		*iterPrevious;
 
 	g_return_if_fail(self);
-	g_return_if_fail(self->type!=XFDASHBOARD_GRADIENT_COLOR_TYPE_NONE);
-	g_return_if_fail(self->type!=XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID);
+	g_return_if_fail(self->type!=XFDASHBOARD_GRADIENT_TYPE_NONE);
+	g_return_if_fail(self->type!=XFDASHBOARD_GRADIENT_TYPE_SOLID);
 	g_return_if_fail(self->stops->len>=2);
 	g_return_if_fail(inProgress>=0.0 && inProgress<=1.0);
 	g_return_if_fail(outColor);

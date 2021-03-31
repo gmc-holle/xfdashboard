@@ -95,7 +95,7 @@ static void _xfdashboard_outline_effect_invalidate(XfdashboardOutlineEffect *sel
 	}
 }
 
-/* Draw outline with gradient */
+/* Draw a single outline with current cairo context (line width, pattern etc.) */
 static void _xfdashboard_outline_effect_draw_outline_intern(XfdashboardOutlineEffect *self,
 															cairo_t *inContext,
 															gint inWidth,
@@ -262,10 +262,11 @@ static void _xfdashboard_outline_effect_draw_outline_intern(XfdashboardOutlineEf
 		}
 }
 
-static void _xfdashboard_outline_effect_draw_outline_gradient(XfdashboardOutlineEffect *self,
-																cairo_t *inContext,
-																gint inWidth,
-																gint inHeight)
+/* More complex drawing outline function for path gradient colors */
+static void _xfdashboard_outline_effect_draw_outline_path_gradient(XfdashboardOutlineEffect *self,
+																	cairo_t *inContext,
+																	gint inWidth,
+																	gint inHeight)
 {
 	XfdashboardOutlineEffectPrivate		*priv;
 	ClutterColor						progressColor;
@@ -318,13 +319,195 @@ static void _xfdashboard_outline_effect_draw_outline_gradient(XfdashboardOutline
 	_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, priv->drawLineWidth, TRUE);
 }
 
-/* Draw outline in a single color */
-static void _xfdashboard_outline_effect_draw_outline_solid(XfdashboardOutlineEffect *self,
+/* Create pattern for simple outline drawing function */
+static cairo_pattern_t* _xfdashboard_outline_effect_create_pattern(XfdashboardOutlineEffect *self,
+																	cairo_t *inContext,
+																	int inWidth,
+																	int inHeight)
+{
+	XfdashboardOutlineEffectPrivate		*priv;
+	XfdashboardGradientType				type;
+	cairo_pattern_t						*pattern;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self), NULL);
+
+	priv=self->priv;
+	pattern=NULL;
+
+	/* Get type of gradient to create pattern for */
+	type=xfdashboard_gradient_color_get_gradient_type(priv->color);
+
+	/* Create solid pattern if gradient is solid type */
+	if(type==XFDASHBOARD_GRADIENT_TYPE_SOLID)
+	{
+		const ClutterColor				*color;
+
+		color=xfdashboard_gradient_color_get_solid_color(priv->color);
+		pattern=cairo_pattern_create_rgba(CLAMP(color->red / 255.0, 0.0, 1.0),
+											CLAMP(color->green / 255.0, 0.0, 1.0),
+											CLAMP(color->blue / 255.0, 0.0, 1.0),
+											CLAMP(color->alpha / 255.0, 0.0, 1.0));
+	}
+
+	/* Create linear gradient pattern if gradient is linear */
+	if(type==XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT)
+	{
+		gdouble						width, height;
+		gdouble						midX, midY;
+		gdouble						startX, startY;
+		gdouble						endX, endY;
+		gdouble						angle;
+		gdouble						atanRectangle;
+		gdouble						tanAngle;
+		guint						i, stops;
+
+		/* Adjust angle to find region */
+		angle=(2*M_PI)-xfdashboard_gradient_color_get_angle(priv->color);
+		while(angle<-M_PI) angle+=(2*M_PI);
+		while(angle>M_PI) angle-=(2*M_PI);
+
+		/* I do not know why but exactly at radians of 0.0 and M_PI the
+		 * start and end points are mirrored so this is a dirty workaround
+		 * to swap angles. Maybe it is because tan(angle) resolves to -0.0
+		 * instead of 0.0. Looks like a sign error.
+		 */
+		if(angle==0.0) angle=M_PI;
+			else if(angle==M_PI) angle=0.0;
+
+		/* Get size of region */
+		width=inWidth;
+		height=inHeight;
+
+		/* Find region and calculates points */
+		atanRectangle=atan2(height, width);
+		tanAngle=tan(angle);
+
+		midX=(width/2.0);
+		midY=(height/2.0);
+
+		if(angle!=0.0 && (angle>-atanRectangle) && (angle<=atanRectangle))
+		{
+			/* Region 1 */
+			startX=midX+(width/2.0);
+			startY=midY-((width/2.0)*tanAngle);
+
+			endX=midX-(width/2.0);
+			endY=midY+((width/2.0)*tanAngle);
+		}
+			else if((angle>atanRectangle) && (angle<=(M_PI-atanRectangle)))
+			{
+				/* Region 2 */
+				startX=midX+(height/(2.0*tanAngle));
+				startY=midY-(height/2.0);
+
+				endX=midX-(height/(2.0*tanAngle));
+				endY=midY+(height/2.0);
+			}
+			else if(angle==0.0 || (angle>(M_PI-atanRectangle)) || (angle<=-(M_PI-atanRectangle)))
+			{
+				/* Region 3 */
+				startX=midX-(width/2.0);
+				startY=midY+((width/2.0)*tanAngle);
+
+				endX=midX+(width/2.0);
+				endY=midY-((width/2.0)*tanAngle);
+			}
+			else
+			{
+				/* Region 4 */
+				startX=midX-(height/(2.0*tanAngle));
+				startY=midY+(height/2.0);
+
+				endX=midX+(height/(2.0*tanAngle));
+				endY=midY-(height/2.0);
+			}
+
+		/* Reduce full length to requested length if gradient should be repeated */
+		if(xfdashboard_gradient_color_get_repeat(priv->color))
+		{
+			gdouble					vectorX, vectorY;
+			gdouble					distance;
+			gdouble					requestedLength;
+
+			/* Calculate distance between start and end point as this is the current
+			 * length of pattern.
+			 */
+			vectorX=endX-startX;
+			vectorY=endY-startY;
+			distance=sqrt((vectorX*vectorX) + (vectorY*vectorY));
+
+			/* Reduce distance by percentage or absolute length */
+			requestedLength=xfdashboard_gradient_color_get_length(priv->color);
+			if(requestedLength<0.0)
+			{
+				vectorX*=-requestedLength;
+				vectorY*=-requestedLength;
+			}
+				else
+				{
+					vectorX=(vectorX/distance)*requestedLength;
+					vectorY=(vectorY/distance)*requestedLength;
+				}
+
+			endX=startX+vectorX;
+			endY=startY+vectorY;
+		}
+
+		/* Create pattern based on calculated points */
+		pattern=cairo_pattern_create_linear(startX, startY, endX, endY);
+
+		stops=xfdashboard_gradient_color_get_number_stops(priv->color);
+		for(i=0; i<stops; i++)
+		{
+			gdouble					offset;
+			ClutterColor			color;
+
+			xfdashboard_gradient_color_get_stop(priv->color, i, &offset, &color);
+			cairo_pattern_add_color_stop_rgba(pattern,
+												offset,
+												CLAMP(color.red / 255.0, 0.0, 1.0),
+												CLAMP(color.green / 255.0, 0.0, 1.0),
+												CLAMP(color.blue / 255.0, 0.0, 1.0),
+												CLAMP(color.alpha / 255.0, 0.0, 1.0));
+		}
+
+		cairo_pattern_set_extend(pattern, xfdashboard_gradient_color_get_repeat(priv->color) ? CAIRO_EXTEND_REPEAT : CAIRO_EXTEND_PAD);
+	}
+
+	/* Create solid pattern if gradient is a path gradient as this should only
+	 * happen if using the complex drawing function for outline with path gradients
+	 * will not match and that's the line width is too small usually. Because of
+	 * this small line width we will draw a single line with the end color of
+	 * the path gradient.
+	 */
+	if(type==XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT)
+	{
+		guint						lastIndex;
+		ClutterColor				color;
+
+		/* Get last index */
+		lastIndex=xfdashboard_gradient_color_get_number_stops(priv->color);
+
+		/* Set color from last color stop */
+		xfdashboard_gradient_color_get_stop(priv->color, lastIndex-1, NULL, &color);
+		pattern=cairo_pattern_create_rgba(CLAMP(color.red / 255.0, 0.0, 1.0),
+											CLAMP(color.green / 255.0, 0.0, 1.0),
+											CLAMP(color.blue / 255.0, 0.0, 1.0),
+											CLAMP(color.alpha / 255.0, 0.0, 1.0));
+	}
+
+	/* Return created pattern */
+	return(pattern);
+}
+
+/* Simple draw outline function which can use a cairo pattern */
+static void _xfdashboard_outline_effect_draw_outline_simple(XfdashboardOutlineEffect *self,
 															cairo_t *inContext,
 															gint inWidth,
 															gint inHeight)
 {
 	XfdashboardOutlineEffectPrivate		*priv;
+	cairo_pattern_t						*pattern;
 
 	g_return_if_fail(XFDASHBOARD_IS_OUTLINE_EFFECT(self));
 	g_return_if_fail(inWidth>0);
@@ -343,26 +526,17 @@ static void _xfdashboard_outline_effect_draw_outline_solid(XfdashboardOutlineEff
 	/* Set line width */
 	cairo_set_line_width(inContext, priv->drawLineWidth);
 
-	/* Set line color */
-	if(xfdashboard_gradient_color_get_color_type(priv->color)==XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID)
-	{
-		clutter_cairo_set_source_color(inContext, xfdashboard_gradient_color_get_solid_color(priv->color));
-	}
-		else
-		{
-			guint						lastIndex;
-			ClutterColor				color;
+	/* Create pattern for line color or gradient */
+	pattern=_xfdashboard_outline_effect_create_pattern(self, inContext, inWidth, inHeight);
 
-			/* Get last index */
-			lastIndex=xfdashboard_gradient_color_get_number_stops(priv->color);
-
-			/* Set color from last color stop */
-			xfdashboard_gradient_color_get_stop(priv->color, lastIndex-1, NULL, &color);
-			clutter_cairo_set_source_color(inContext, &color);
-		}
+	/* Set line pattern */
+	if(pattern) cairo_set_source(inContext, pattern);
 
 	/* Draw outline */
 	_xfdashboard_outline_effect_draw_outline_intern(self, inContext, inWidth, inHeight, 0.0f, FALSE);
+
+	/* Release allocated resources */
+	if(pattern) cairo_pattern_destroy(pattern);
 }
 
 /* Create texture with outline for actor */
@@ -441,13 +615,13 @@ static CoglTexture* _xfdashboard_outline_effect_create_texture(XfdashboardOutlin
 		priv->drawRadius=MAX(priv->cornersRadius, priv->drawLineWidth);
 
 		if(priv->drawLineWidth<2 ||
-			xfdashboard_gradient_color_get_color_type(priv->color)==XFDASHBOARD_GRADIENT_COLOR_TYPE_SOLID)
+			xfdashboard_gradient_color_get_gradient_type(priv->color)!=XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT)
 		{
-			_xfdashboard_outline_effect_draw_outline_solid(self, cairoContext, inWidth, inHeight);
+			_xfdashboard_outline_effect_draw_outline_simple(self, cairoContext, inWidth, inHeight);
 		}
 			else
 			{
-				_xfdashboard_outline_effect_draw_outline_gradient(self, cairoContext, inWidth, inHeight);
+				_xfdashboard_outline_effect_draw_outline_path_gradient(self, cairoContext, inWidth, inHeight);
 			}
 
 		cairo_destroy(cairoContext);

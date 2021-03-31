@@ -112,8 +112,8 @@ void xfdashboard_background_set_corners(XfdashboardBackground *self, Xfdashboard
 void xfdashboard_background_set_corner_radius(XfdashboardBackground *self, const gfloat inRadius);
 
 /* Fill functions */
-const ClutterColor* xfdashboard_background_get_fill_color(XfdashboardBackground *self);
-void xfdashboard_background_set_fill_color(XfdashboardBackground *self, const ClutterColor *inColor);
+const XfdashboardGradientColor* xfdashboard_background_get_fill_color(XfdashboardBackground *self);
+void xfdashboard_background_set_fill_color(XfdashboardBackground *self, const XfdashboardGradientColor *inColor);
 
 XfdashboardCorners xfdashboard_background_get_fill_corners(XfdashboardBackground *self);
 void xfdashboard_background_set_fill_corners(XfdashboardBackground *self, const XfdashboardCorners inCorners);

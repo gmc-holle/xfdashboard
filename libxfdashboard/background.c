@@ -43,7 +43,7 @@ struct _XfdashboardBackgroundPrivate
 	/* Properties related */
 	XfdashboardBackgroundType	type;
 
-	ClutterColor				*fillColor;
+	XfdashboardGradientColor	*fillColor;
 	XfdashboardCorners			fillCorners;
 	gfloat						fillCornersRadius;
 
@@ -92,32 +92,180 @@ static GParamSpec* XfdashboardBackgroundProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
-/* Rectangle canvas should be redrawn */
-static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackground *self,
-																cairo_t *inContext,
-																int inWidth,
-																int inHeight,
-																gpointer inUserData)
+/* Create pattern for simple canvas fill function */
+static cairo_pattern_t* _xfdashboard_background_create_fill_pattern(XfdashboardBackground *self,
+																	cairo_t *inContext,
+																	int inWidth,
+																	int inHeight)
 {
 	XfdashboardBackgroundPrivate	*priv;
+	XfdashboardGradientType			type;
+	cairo_pattern_t					*pattern;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), TRUE);
-	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), NULL);
+
+	priv=self->priv;
+	pattern=NULL;
+
+	/* Get type of gradient to create pattern for */
+	type=xfdashboard_gradient_color_get_gradient_type(priv->fillColor);
+
+	/* Create solid pattern if gradient is solid type */
+	if(type==XFDASHBOARD_GRADIENT_TYPE_SOLID)
+	{
+		const ClutterColor			*color;
+
+		color=xfdashboard_gradient_color_get_solid_color(priv->fillColor);
+		pattern=cairo_pattern_create_rgba(CLAMP(color->red / 255.0, 0.0, 1.0),
+											CLAMP(color->green / 255.0, 0.0, 1.0),
+											CLAMP(color->blue / 255.0, 0.0, 1.0),
+											CLAMP(color->alpha / 255.0, 0.0, 1.0));
+	}
+
+	/* Create linear gradient pattern if gradient is linear */
+	if(type==XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT)
+	{
+		gdouble					width, height;
+		gdouble					midX, midY;
+		gdouble					startX, startY;
+		gdouble					endX, endY;
+		gdouble					angle;
+		gdouble					atanRectangle;
+		gdouble					tanAngle;
+		guint					i, stops;
+
+		/* Adjust angle to find region */
+		angle=(2*M_PI)-xfdashboard_gradient_color_get_angle(priv->fillColor);
+		while(angle<-M_PI) angle+=(2*M_PI);
+		while(angle>M_PI) angle-=(2*M_PI);
+
+		/* I do not know why but exactly at radians of 0.0 and M_PI the
+		 * start and end points are mirrored so this is a dirty workaround
+		 * to swap angles. Maybe it is because tan(angle) resolves to -0.0
+		 * instead of 0.0. Looks like a sign error.
+		 */
+		if(angle==0.0) angle=M_PI;
+			else if(angle==M_PI) angle=0.0;
+
+		/* Get size of region */
+		width=inWidth;
+		height=inHeight;
+
+		/* Find region and calculates points */
+		atanRectangle=atan2(height, width);
+		tanAngle=tan(angle);
+
+		midX=(width/2.0);
+		midY=(height/2.0);
+
+		if(angle!=0.0 && (angle>-atanRectangle) && (angle<=atanRectangle))
+		{
+			/* Region 1 */
+			startX=midX+(width/2.0);
+			startY=midY-((width/2.0)*tanAngle);
+
+			endX=midX-(width/2.0);
+			endY=midY+((width/2.0)*tanAngle);
+		}
+			else if((angle>atanRectangle) && (angle<=(M_PI-atanRectangle)))
+			{
+				/* Region 2 */
+				startX=midX+(height/(2.0*tanAngle));
+				startY=midY-(height/2.0);
+
+				endX=midX-(height/(2.0*tanAngle));
+				endY=midY+(height/2.0);
+			}
+			else if(angle==0.0 || (angle>(M_PI-atanRectangle)) || (angle<=-(M_PI-atanRectangle)))
+			{
+				/* Region 3 */
+				startX=midX-(width/2.0);
+				startY=midY+((width/2.0)*tanAngle);
+
+				endX=midX+(width/2.0);
+				endY=midY-((width/2.0)*tanAngle);
+			}
+			else
+			{
+				/* Region 4 */
+				startX=midX-(height/(2.0*tanAngle));
+				startY=midY+(height/2.0);
+
+				endX=midX+(height/(2.0*tanAngle));
+				endY=midY-(height/2.0);
+			}
+
+		/* Reduce full length to requested length if gradient should be repeated */
+		if(xfdashboard_gradient_color_get_repeat(priv->fillColor))
+		{
+			gdouble				vectorX, vectorY;
+			gdouble				distance;
+			gdouble				requestedLength;
+
+			/* Calculate distance between start and end point as this is the current
+			 * length of pattern.
+			 */
+			vectorX=endX-startX;
+			vectorY=endY-startY;
+			distance=sqrt((vectorX*vectorX) + (vectorY*vectorY));
+
+			/* Reduce distance by percentage or absolute length */
+			requestedLength=xfdashboard_gradient_color_get_length(priv->fillColor);
+			if(requestedLength<0.0)
+			{
+				vectorX*=-requestedLength;
+				vectorY*=-requestedLength;
+			}
+				else
+				{
+					vectorX=(vectorX/distance)*requestedLength;
+					vectorY=(vectorY/distance)*requestedLength;
+				}
+
+			endX=startX+vectorX;
+			endY=startY+vectorY;
+		}
+
+		/* Create pattern based on calculated points */
+		pattern=cairo_pattern_create_linear(startX, startY, endX, endY);
+
+		stops=xfdashboard_gradient_color_get_number_stops(priv->fillColor);
+		for(i=0; i<stops; i++)
+		{
+			gdouble				offset;
+			ClutterColor		color;
+
+			xfdashboard_gradient_color_get_stop(priv->fillColor, i, &offset, &color);
+			cairo_pattern_add_color_stop_rgba(pattern,
+												offset,
+												CLAMP(color.red / 255.0, 0.0, 1.0),
+												CLAMP(color.green / 255.0, 0.0, 1.0),
+												CLAMP(color.blue / 255.0, 0.0, 1.0),
+												CLAMP(color.alpha / 255.0, 0.0, 1.0));
+		}
+
+		cairo_pattern_set_extend(pattern, xfdashboard_gradient_color_get_repeat(priv->fillColor) ? CAIRO_EXTEND_REPEAT : CAIRO_EXTEND_PAD);
+	}
+
+	/* Return created pattern */
+	return(pattern);
+}
+
+/* Simple canvas fill function which can use a cairo pattern */
+static void _xfdashboard_background_draw_fill_canvas_simple(XfdashboardBackground *self,
+															cairo_t *inContext,
+															int inWidth,
+															int inHeight)
+{
+	XfdashboardBackgroundPrivate	*priv;
+	cairo_pattern_t					*pattern;
+
+	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 
 	priv=self->priv;
 
-	/* Clear current contents of the canvas */
-	cairo_save(inContext);
-	cairo_set_operator(inContext, CAIRO_OPERATOR_CLEAR);
-	cairo_paint(inContext);
-	cairo_restore(inContext);
-
-	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
-
-	/* Do nothing if type does not include filling background */
-	if(!(priv->type & XFDASHBOARD_BACKGROUND_TYPE_FILL)) return(CLUTTER_EVENT_PROPAGATE);
-
-	/* Determine if we should draw rounded corners */
+	/* Create pattern for filling */
+	pattern=_xfdashboard_background_create_fill_pattern(self, inContext, inWidth, inHeight);
 
 	/* Draw rectangle with or without rounded corners */
 	if((priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS) &&
@@ -171,12 +319,151 @@ static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackgroun
 			cairo_rectangle(inContext, 0, 0, inWidth, inHeight);
 		}
 
-	/* Set color for filling and fill canvas */
-	if(priv->fillColor) clutter_cairo_set_source_color(inContext, priv->fillColor);
+	/* Set up pattern for filling and fill pattern */
+	if(pattern) cairo_set_source(inContext, pattern);
 	cairo_fill_preserve(inContext);
 
 	/* Done drawing */
+	if(pattern) cairo_pattern_destroy(pattern);
 	cairo_close_path(inContext);
+}
+
+/* More complex canvas fill function for path gradient colors */
+static void _xfdashboard_background_draw_fill_canvas_path_gradient(XfdashboardBackground *self,
+																	cairo_t *inContext,
+																	int inWidth,
+																	int inHeight)
+{
+	XfdashboardBackgroundPrivate	*priv;
+	gfloat							offset;
+	gfloat							maxOffset;
+	gfloat							progress;
+	gfloat							radius;
+	ClutterColor					progressColor;
+
+	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
+
+	priv=self->priv;
+
+	/* Set line width */
+	cairo_set_line_width(inContext, 1.0f);
+
+	/* Draw rounded or flat rectangle in 0.5 pixel steps from inner to outer
+	 * in color matching the progress. 0.5 pixel is chosen to mostly ensure
+	 * that the lines drawn will slightly overlap to prevent "holes". As
+	 * width or height of canvas to fill are integer and therefore
+	 * "round/non-floating" numbers we chose that the loop will continue
+	 * as long as it is above -0.1 so that 0.0 as last line will be drawn
+	 * for sure.
+	 */
+	offset=maxOffset=MIN(inWidth, inHeight)/2.0;
+
+	while(offset>-0.1)
+	{
+		/* Calculate progress */
+		progress=(MAX(0.0f, offset)/maxOffset);
+
+		/* Interpolate color according to progress */
+		xfdashboard_gradient_color_interpolate(priv->fillColor, progress, &progressColor);
+
+		/* Set line color */
+		clutter_cairo_set_source_color(inContext, &progressColor);
+
+		/* Determine radius for rounded corners */
+		radius=MIN(priv->fillCornersRadius, maxOffset);
+		radius=MAX(0.0f, radius-offset);
+
+		/* Draw rectangle with or without rounded corners */
+		if((priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS) &&
+			(priv->fillCorners & XFDASHBOARD_CORNERS_ALL) &&
+			priv->fillCornersRadius>0.0f &&
+			radius>0.0f)
+		{
+			/* Top-left */
+			if(priv->fillCorners & XFDASHBOARD_CORNERS_TOP_LEFT)
+			{
+				cairo_move_to(inContext, 0+offset, 0+offset+radius);
+				cairo_arc(inContext, 0+offset+radius, 0+offset+radius, radius, G_PI, G_PI*1.5);
+			}
+				else cairo_move_to(inContext, 0+offset, 0+offset);
+
+			/* Top-right */
+			if(priv->fillCorners & XFDASHBOARD_CORNERS_TOP_RIGHT)
+			{
+				cairo_line_to(inContext, inWidth-radius-offset, 0+offset);
+				cairo_arc(inContext, inWidth-radius-offset, 0+offset+radius, radius, G_PI*1.5, 0);
+			}
+				else cairo_line_to(inContext, inWidth-offset, 0+offset);
+
+			/* Bottom-right */
+			if(priv->fillCorners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT)
+			{
+				cairo_line_to(inContext, inWidth-offset, inHeight-offset-radius);
+				cairo_arc(inContext, inWidth-offset-radius, inHeight-offset-radius, radius, 0, G_PI/2.0);
+			}
+				else cairo_line_to(inContext, inWidth-offset, inHeight-offset);
+
+			/* Bottom-left */
+			if(priv->fillCorners & XFDASHBOARD_CORNERS_BOTTOM_LEFT)
+			{
+				cairo_line_to(inContext, 0+offset+radius, inHeight-offset);
+				cairo_arc(inContext, 0+offset+radius, inHeight-offset-radius, radius, G_PI/2.0, G_PI);
+			}
+				else cairo_line_to(inContext, 0+offset, inHeight-offset);
+
+			/* Close to top-left */
+			if(priv->fillCorners & XFDASHBOARD_CORNERS_TOP_LEFT) cairo_line_to(inContext, 0+offset, 0+offset+radius);
+				else cairo_line_to(inContext, 0+offset, 0+offset);
+		}
+			else
+			{
+				cairo_rectangle(inContext, offset, offset, inWidth-offset-offset, inHeight-offset-offset);
+			}
+
+		/* Draw line for fill */
+		cairo_stroke(inContext);
+
+		/* Adjust offset for next path gradient line to draw */
+		offset-=0.5f;
+	}
+}
+
+/* Rectangle canvas (filling) should be redrawn */
+static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackground *self,
+															cairo_t *inContext,
+															int inWidth,
+															int inHeight,
+															gpointer inUserData)
+{
+	XfdashboardBackgroundPrivate	*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+
+	/* Clear current contents of the canvas */
+	cairo_save(inContext);
+	cairo_set_operator(inContext, CAIRO_OPERATOR_CLEAR);
+	cairo_paint(inContext);
+	cairo_restore(inContext);
+
+	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
+
+	/* Do nothing if type does not include filling background */
+	if(!(priv->type & XFDASHBOARD_BACKGROUND_TYPE_FILL)) return(CLUTTER_EVENT_PROPAGATE);
+
+	/* Depending on solid color or gradient type call draw function */
+	if(xfdashboard_gradient_color_get_gradient_type(priv->fillColor)!=XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT)
+	{
+		_xfdashboard_background_draw_fill_canvas_simple(self, inContext, inWidth, inHeight);
+	}
+		else
+		{
+			_xfdashboard_background_draw_fill_canvas_path_gradient(self, inContext, inWidth, inHeight);
+		}
+
+	/* Done filling canvas */
 	return(CLUTTER_EVENT_PROPAGATE);
 }
 
@@ -251,7 +538,7 @@ static void _xfdashboard_background_dispose(GObject *inObject)
 
 	if(priv->fillColor)
 	{
-		clutter_color_free(priv->fillColor);
+		xfdashboard_gradient_color_free(priv->fillColor);
 		priv->fillColor=NULL;
 	}
 
@@ -294,7 +581,7 @@ static void _xfdashboard_background_set_property(GObject *inObject,
 			break;
 
 		case PROP_FILL_COLOR:
-			xfdashboard_background_set_fill_color(self, clutter_value_get_color(inValue));
+			xfdashboard_background_set_fill_color(self, xfdashboard_value_get_gradient_color(inValue));
 			break;
 
 		case PROP_FILL_CORNERS:
@@ -350,7 +637,7 @@ static void _xfdashboard_background_get_property(GObject *inObject,
 			break;
 
 		case PROP_FILL_COLOR:
-			clutter_value_set_color(outValue, priv->fillColor);
+			xfdashboard_value_set_gradient_color(outValue, priv->fillColor);
 			break;
 
 		case PROP_FILL_CORNERS:
@@ -400,12 +687,18 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 	XfdashboardActorClass			*actorClass=XFDASHBOARD_ACTOR_CLASS(klass);
 	ClutterActorClass				*clutterActorClass=CLUTTER_ACTOR_CLASS(klass);
 	GObjectClass					*gobjectClass=G_OBJECT_CLASS(klass);
-	static XfdashboardGradientColor	*defaultColor=NULL;
+	static XfdashboardGradientColor	*defaultFillColor=NULL;
+	static XfdashboardGradientColor	*defaultOutlineColor=NULL;
 
 	/* Set up default value for param spec */
-	if(G_UNLIKELY(!defaultColor))
+	if(G_UNLIKELY(!defaultFillColor))
 	{
-		defaultColor=xfdashboard_gradient_color_new_solid(CLUTTER_COLOR_White);
+		defaultFillColor=xfdashboard_gradient_color_new_solid(CLUTTER_COLOR_Black);
+	}
+
+	if(G_UNLIKELY(!defaultOutlineColor))
+	{
+		defaultOutlineColor=xfdashboard_gradient_color_new_solid(CLUTTER_COLOR_White);
 	}
 
 	/* Override functions */
@@ -442,11 +735,11 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 							G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_FILL_COLOR]=
-		clutter_param_spec_color("background-fill-color",
-									"Background fill color",
-									"Color to fill background with",
-									CLUTTER_COLOR_Black,
-									G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+		xfdashboard_param_spec_gradient_color("background-fill-color",
+												"Background fill color",
+												"Color to fill background with",
+												defaultFillColor,
+												G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_FILL_CORNERS]=
 		g_param_spec_flags("background-fill-corners",
@@ -466,10 +759,10 @@ static void xfdashboard_background_class_init(XfdashboardBackgroundClass *klass)
 
 	XfdashboardBackgroundProperties[PROP_OUTLINE_COLOR]=
 		xfdashboard_param_spec_gradient_color("outline-color",
-											"Outline color",
-											"Color to draw outline with",
-											defaultColor,
-											G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+												"Outline color",
+												"Color to draw outline with",
+												defaultOutlineColor,
+												G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardBackgroundProperties[PROP_OUTLINE_WIDTH]=
 		g_param_spec_float("outline-width",
@@ -543,7 +836,7 @@ static void xfdashboard_background_init(XfdashboardBackground *self)
 	priv->type=XFDASHBOARD_BACKGROUND_TYPE_NONE;
 
 	priv->fillCanvas=clutter_canvas_new();
-	priv->fillColor=clutter_color_copy(CLUTTER_COLOR_Black);
+	priv->fillColor=xfdashboard_gradient_color_new_solid(CLUTTER_COLOR_Black);
 	priv->fillCorners=XFDASHBOARD_CORNERS_ALL;
 	priv->fillCornersRadius=0.0f;
 
@@ -656,14 +949,14 @@ void xfdashboard_background_set_corner_radius(XfdashboardBackground *self, const
 }
 
 /* Get/set color to fill background with */
-const ClutterColor* xfdashboard_background_get_fill_color(XfdashboardBackground *self)
+const XfdashboardGradientColor* xfdashboard_background_get_fill_color(XfdashboardBackground *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), NULL);
 
 	return(self->priv->fillColor);
 }
 
-void xfdashboard_background_set_fill_color(XfdashboardBackground *self, const ClutterColor *inColor)
+void xfdashboard_background_set_fill_color(XfdashboardBackground *self, const XfdashboardGradientColor *inColor)
 {
 	XfdashboardBackgroundPrivate	*priv;
 
@@ -673,11 +966,12 @@ void xfdashboard_background_set_fill_color(XfdashboardBackground *self, const Cl
 	priv=self->priv;
 
 	/* Set value if changed */
-	if(priv->fillColor==NULL || clutter_color_equal(inColor, priv->fillColor)==FALSE)
+	if(priv->fillColor==NULL ||
+		!xfdashboard_gradient_color_equal(inColor, priv->fillColor))
 	{
 		/* Set value */
-		if(priv->fillColor) clutter_color_free(priv->fillColor);
-		priv->fillColor=clutter_color_copy(inColor);
+		if(priv->fillColor) xfdashboard_gradient_color_free(priv->fillColor);
+		priv->fillColor=xfdashboard_gradient_color_copy(inColor);
 
 		/* Invalidate canvas to get it redrawn */
 		if(priv->fillCanvas) clutter_content_invalidate(priv->fillCanvas);
