@@ -96,8 +96,9 @@ static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **
 	g_return_val_if_fail(outColor, FALSE);
 	g_return_val_if_fail(*outColor==NULL, FALSE);
 
-#define NEXT_TOKEN(x)	while(*(x) && !(*(*(x)))) { (x)++; }
-#define NEED_TOKEN(x)	NEXT_TOKEN(x); if(!*(x)) return(FALSE);
+#define NEXT_TOKEN(x)		while(*(x) && !(*(*(x)))) { (x)++; }
+#define NEED_TOKEN(x)		NEXT_TOKEN(x); if(!*(x)) return(FALSE);
+#define NO_MORE_TOKENS(x)	if(*(x)) (x)++; NEXT_TOKEN(x); if(*(x)) return(FALSE);
 
 	/* We first expect the type of this color whereby "solid" is optional.
 	 * We expect more tokens to parse.
@@ -115,9 +116,15 @@ static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **
 			type=XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT;
 			inTokens++;
 		}
+		else if(g_strcmp0(*inTokens, "linear")==0)
+		{
+			type=XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT;
+			inTokens++;
+		}
 
 	/* If type of color is none or solid then read in color. The type can be
 	 * none as keyword "solid" is optional.
+	 * Syntax: [solid] <color>
 	 */
 	if(type==XFDASHBOARD_GRADIENT_TYPE_NONE ||
 		type==XFDASHBOARD_GRADIENT_TYPE_SOLID)
@@ -131,12 +138,14 @@ static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **
 		/* Set up color */
 		*outColor=xfdashboard_gradient_color_new_solid(&solidColor);
 
-		/* Return success result */
+		/* Return success result if no more tokens to parse exist */
+		NO_MORE_TOKENS(inTokens);
 		return(TRUE);
 	}
 
 	/* If type of color is path gradient, then read in start, end colors as well as
 	 * offsets and colors to create color stops.
+	 * Syntax: path <start-color> <end-color> [(offset|offset_in_%) <color>]*
 	 */
 	if(type==XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT)
 	{
@@ -144,6 +153,7 @@ static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **
 		ClutterColor				endColor={ 0, };
 		gdouble						offset;
 		ClutterColor				stopColor={ 0, };
+		gchar						*endToken;
 
 		/* Expect start color */
 		NEED_TOKEN(inTokens);
@@ -162,7 +172,23 @@ static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **
 		while(*inTokens)
 		{
 			NEED_TOKEN(inTokens);
-			offset=g_ascii_strtod(*inTokens, NULL);
+			endToken=NULL;
+			offset=g_ascii_strtod(*inTokens, &endToken);
+			if(endToken && *endToken)
+			{
+				if(g_strcmp0(endToken, "%")==0)
+				{
+					/* Calculate offset fraction between 0.0 and 1.0
+					 * for percentage.
+					 */
+					offset=fabs(offset)/100.0;
+				}
+					else
+					{
+						/* Unexpected suffix for offset */
+						return(FALSE);
+					}
+			}
 			inTokens++;
 
 			NEED_TOKEN(inTokens);
@@ -177,10 +203,168 @@ static gboolean _xfdashboard_gradient_color_transform_from_string_parse(gchar **
 			NEXT_TOKEN(inTokens);
 		};
 
-		/* Return success result */
+		/* Return success result if no more tokens to parse exist */
+		NO_MORE_TOKENS(inTokens);
 		return(TRUE);
 	}
 
+	/* If type of color is linear gradient, then read in start, end colors as well as
+	 * offsets and colors to create color stops.
+	 * Syntax: linear [angle] <start-color> <end-color> ((offset|offset_in_%) <color>)* [repeat (length|length_in_px|lenght_in_%)|no-repeat]
+	 */
+	if(type==XFDASHBOARD_GRADIENT_TYPE_LINEAR_GRADIENT)
+	{
+		gdouble						angle;
+		gdouble						length;
+		ClutterColor				startColor={ 0, };
+		ClutterColor				endColor={ 0, };
+		gdouble						offset;
+		ClutterColor				stopColor={ 0, };
+		gchar						*endToken;
+
+		/* Check for optional angle */
+		NEED_TOKEN(inTokens);
+		angle=0.0;
+		if(g_ascii_isdigit((guchar)**inTokens))
+		{
+			/* Get angle */
+			endToken=NULL;
+			angle=g_ascii_strtod(*inTokens, &endToken);
+			if(endToken && *endToken)
+			{
+				if(g_ascii_strcasecmp(endToken, "deg")==0)
+				{
+					/* Convert degrees to radians */
+					angle=(angle/180)*M_PI;
+				}
+					else if(g_ascii_strcasecmp(endToken, "rad")==0)
+					{
+						/* Do nothing as value is already in radians */
+					}
+					else
+					{
+						/* Unexpected suffix for angle */
+						return(FALSE);
+					}
+			}
+
+			/* Move to next token */
+			inTokens++;
+		}
+
+		/* Expect start color */
+		NEED_TOKEN(inTokens);
+		clutter_color_from_string(&startColor, *inTokens);
+		inTokens++;
+
+		NEED_TOKEN(inTokens);
+		clutter_color_from_string(&endColor, *inTokens);
+		inTokens++;
+
+		/* Set up initial linear gradient color */
+		*outColor=xfdashboard_gradient_color_new_linear_gradient(&startColor, &endColor);
+		xfdashboard_gradient_color_set_angle(*outColor, angle);
+ 
+		/* If more tokens exists, read in offset and color for color stop */
+		NEXT_TOKEN(inTokens);
+		while(*inTokens &&
+				g_ascii_strcasecmp(*inTokens, "repeat")!=0 &&
+				g_ascii_strcasecmp(*inTokens, "no-repeat")!=0)
+		{
+			NEED_TOKEN(inTokens);
+			endToken=NULL;
+			offset=g_ascii_strtod(*inTokens, &endToken);
+			if(endToken && *endToken)
+			{
+				if(g_strcmp0(endToken, "%")==0)
+				{
+					/* Calculate offset fraction between 0.0 and 1.0
+					 * for percentage.
+					 */
+					offset=fabs(offset)/100.0;
+				}
+					else
+					{
+						/* Unexpected suffix for offset */
+						return(FALSE);
+					}
+			}
+			inTokens++;
+
+			NEED_TOKEN(inTokens);
+			clutter_color_from_string(&stopColor, *inTokens);
+			inTokens++;
+
+			xfdashboard_gradient_color_add_stop(*outColor, offset, &stopColor);
+
+			/* Move to next token or to end of token list. End of token list
+			 * will end this loop and return success result.
+			 */
+			NEXT_TOKEN(inTokens);
+		};
+
+		/* Check for optional repeat */
+		if(*inTokens)
+		{
+			/* Check for repeating pattern */
+			if(g_ascii_strcasecmp(*inTokens, "repeat")==0)
+			{
+				/* Skip "repeat" token */
+				inTokens++;
+
+				/* Get length either as fraction (without suffix) or as absolute
+				 * length in pixels (with suffix "px") or as percentage length
+				 * (with suffix "%").
+				 */
+				NEED_TOKEN(inTokens);
+				endToken=NULL;
+				length=g_ascii_strtod(*inTokens, &endToken);
+				if(endToken && *endToken)
+				{
+					if(g_strcmp0(endToken, "%")==0)
+					{
+						/* Calculate negative fraction between 0.0 and -1.0
+						 * for percentage.
+						 */
+						length=-(fabs(length)/100.0);
+					}
+						else if(g_ascii_strcasecmp(endToken, "px")==0)
+						{
+							/* Ensure absolute value above 0 for absolute length */
+							length=fabs(length);
+						}
+						else
+						{
+							/* Unexpected suffix for length */
+							return(FALSE);
+						}
+				}
+
+				/* Set up repeating pattern */
+				xfdashboard_gradient_color_set_repeat(*outColor, TRUE, length);
+			}
+				/* Check for non-repeating pattern */
+				else if(g_ascii_strcasecmp(*inTokens, "no-repeat")==0)
+				{
+					/* Skip "no-repeat" token */
+					inTokens++;
+
+					/* Set up non-repeating pattern */
+					xfdashboard_gradient_color_set_repeat(*outColor, FALSE, 0.0);
+				}
+				/* Unexpected token */
+				else
+				{
+					return(FALSE);
+				}
+		}
+
+		/* Return success result if no more tokens to parse exist */
+		NO_MORE_TOKENS(inTokens);
+		return(TRUE);
+	}
+
+#undef NO_MORE_TOKENS
 #undef NEED_TOKEN
 #undef NEXT_TOKEN
 

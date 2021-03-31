@@ -193,7 +193,7 @@ XfdashboardLiveWorkspace
 XfdashboardLiveWorkspace:active
 {
 	background-type: outline;
-	outline-color: foo #ffff00ff;
+	outline-color: #ffff00ff;
 	outline-width: 2.0;
 }
 

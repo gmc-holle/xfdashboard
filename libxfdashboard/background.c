@@ -92,6 +92,7 @@ static GParamSpec* XfdashboardBackgroundProperties[PROP_LAST]={ 0, };
 
 /* IMPLEMENTATION: Private variables and methods */
 
+/* Create pattern for simple canvas fill function */
 static cairo_pattern_t* _xfdashboard_background_create_fill_pattern(XfdashboardBackground *self,
 																	cairo_t *inContext,
 																	int inWidth,
@@ -250,32 +251,18 @@ static cairo_pattern_t* _xfdashboard_background_create_fill_pattern(XfdashboardB
 	return(pattern);
 }
 
-/* Rectangle canvas should be redrawn */
-static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackground *self,
+/* Simple canvas fill function which can use a cairo pattern */
+static void _xfdashboard_background_draw_fill_canvas_simple(XfdashboardBackground *self,
 															cairo_t *inContext,
 															int inWidth,
-															int inHeight,
-															gpointer inUserData)
+															int inHeight)
 {
 	XfdashboardBackgroundPrivate	*priv;
 	cairo_pattern_t					*pattern;
 
-	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), TRUE);
-	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), TRUE);
+	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
 
 	priv=self->priv;
-	pattern=NULL;
-
-	/* Clear current contents of the canvas */
-	cairo_save(inContext);
-	cairo_set_operator(inContext, CAIRO_OPERATOR_CLEAR);
-	cairo_paint(inContext);
-	cairo_restore(inContext);
-
-	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
-
-	/* Do nothing if type does not include filling background */
-	if(!(priv->type & XFDASHBOARD_BACKGROUND_TYPE_FILL)) return(CLUTTER_EVENT_PROPAGATE);
 
 	/* Create pattern for filling */
 	pattern=_xfdashboard_background_create_fill_pattern(self, inContext, inWidth, inHeight);
@@ -339,7 +326,144 @@ static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackgroun
 	/* Done drawing */
 	if(pattern) cairo_pattern_destroy(pattern);
 	cairo_close_path(inContext);
+}
 
+/* More comples canvas fill function for path gradient colors */
+static void _xfdashboard_background_draw_fill_canvas_path_gradient(XfdashboardBackground *self,
+																	cairo_t *inContext,
+																	int inWidth,
+																	int inHeight)
+{
+	XfdashboardBackgroundPrivate	*priv;
+	gfloat							offset;
+	gfloat							maxOffset;
+	gfloat							progress;
+	gfloat							radius;
+	ClutterColor					progressColor;
+
+	g_return_if_fail(XFDASHBOARD_IS_BACKGROUND(self));
+
+	priv=self->priv;
+
+	/* Set line width */
+	cairo_set_line_width(inContext, 1.0f);
+
+	/* Draw rounded or flat rectangle in 0.5 pixel steps from inner to outer
+	 * in color matching the progress. 0.5 pixel is chosen to mostly ensure
+	 * that the lines drawn will slightly overlap to prevent "holes". As
+	 * width or height of canvas to fill are integer and therefore
+	 * "round/non-floating" numbers we chose that the loop will continue
+	 * as long as it is above -0.1 so that 0.0 as last line will be drawn
+	 * for sure.
+	 */
+	offset=maxOffset=MIN(inWidth, inHeight)/2.0;
+
+	while(offset>-0.1)
+	{
+		/* Calculate progress */
+		progress=(MAX(0.0f, offset)/maxOffset);
+
+		/* Interpolate color according to progress */
+		xfdashboard_gradient_color_interpolate(priv->fillColor, progress, &progressColor);
+
+		/* Set line color */
+		clutter_cairo_set_source_color(inContext, &progressColor);
+
+		/* Determine radius for rounded corners */
+		radius=MIN(priv->fillCornersRadius, maxOffset);
+		radius=MAX(0.0f, radius-offset);
+
+		/* Draw rectangle with or without rounded corners */
+		if((priv->type & XFDASHBOARD_BACKGROUND_TYPE_ROUNDED_CORNERS) &&
+			(priv->fillCorners & XFDASHBOARD_CORNERS_ALL) &&
+			priv->fillCornersRadius>0.0f &&
+			radius>0.0f)
+		{
+			/* Top-left */
+			if(priv->fillCorners & XFDASHBOARD_CORNERS_TOP_LEFT)
+			{
+				cairo_move_to(inContext, 0+offset, 0+offset+radius);
+				cairo_arc(inContext, 0+offset+radius, 0+offset+radius, radius, G_PI, G_PI*1.5);
+			}
+				else cairo_move_to(inContext, 0+offset, 0+offset);
+
+			/* Top-right */
+			if(priv->fillCorners & XFDASHBOARD_CORNERS_TOP_RIGHT)
+			{
+				cairo_line_to(inContext, inWidth-radius-offset, 0+offset);
+				cairo_arc(inContext, inWidth-radius-offset, 0+offset+radius, radius, G_PI*1.5, 0);
+			}
+				else cairo_line_to(inContext, inWidth-offset, 0+offset);
+
+			/* Bottom-right */
+			if(priv->fillCorners & XFDASHBOARD_CORNERS_BOTTOM_RIGHT)
+			{
+				cairo_line_to(inContext, inWidth-offset, inHeight-offset-radius);
+				cairo_arc(inContext, inWidth-offset-radius, inHeight-offset-radius, radius, 0, G_PI/2.0);
+			}
+				else cairo_line_to(inContext, inWidth-offset, inHeight-offset);
+
+			/* Bottom-left */
+			if(priv->fillCorners & XFDASHBOARD_CORNERS_BOTTOM_LEFT)
+			{
+				cairo_line_to(inContext, 0+offset+radius, inHeight-offset);
+				cairo_arc(inContext, 0+offset+radius, inHeight-offset-radius, radius, G_PI/2.0, G_PI);
+			}
+				else cairo_line_to(inContext, 0+offset, inHeight-offset);
+
+			/* Close to top-left */
+			if(priv->fillCorners & XFDASHBOARD_CORNERS_TOP_LEFT) cairo_line_to(inContext, 0+offset, 0+offset+radius);
+				else cairo_line_to(inContext, 0+offset, 0+offset);
+		}
+			else
+			{
+				cairo_rectangle(inContext, offset, offset, inWidth-offset-offset, inHeight-offset-offset);
+			}
+
+		/* Draw line for fill */
+		cairo_stroke(inContext);
+
+		/* Adjust offset for next path gradient line to draw */
+		offset-=0.5f;
+	}
+}
+
+/* Rectangle canvas (filling) should be redrawn */
+static gboolean _xfdashboard_background_on_draw_fill_canvas(XfdashboardBackground *self,
+															cairo_t *inContext,
+															int inWidth,
+															int inHeight,
+															gpointer inUserData)
+{
+	XfdashboardBackgroundPrivate	*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_BACKGROUND(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(CLUTTER_IS_CANVAS(inUserData), CLUTTER_EVENT_PROPAGATE);
+
+	priv=self->priv;
+
+	/* Clear current contents of the canvas */
+	cairo_save(inContext);
+	cairo_set_operator(inContext, CAIRO_OPERATOR_CLEAR);
+	cairo_paint(inContext);
+	cairo_restore(inContext);
+
+	cairo_set_operator(inContext, CAIRO_OPERATOR_OVER);
+
+	/* Do nothing if type does not include filling background */
+	if(!(priv->type & XFDASHBOARD_BACKGROUND_TYPE_FILL)) return(CLUTTER_EVENT_PROPAGATE);
+
+	/* Depending on solid color or gradient type call draw function */
+	if(xfdashboard_gradient_color_get_gradient_type(priv->fillColor)!=XFDASHBOARD_GRADIENT_TYPE_PATH_GRADIENT)
+	{
+		_xfdashboard_background_draw_fill_canvas_simple(self, inContext, inWidth, inHeight);
+	}
+		else
+		{
+			_xfdashboard_background_draw_fill_canvas_path_gradient(self, inContext, inWidth, inHeight);
+		}
+
+	/* Done filling canvas */
 	return(CLUTTER_EVENT_PROPAGATE);
 }
 
