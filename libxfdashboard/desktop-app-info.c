@@ -421,7 +421,7 @@ static void _xfdashboard_desktop_app_info_update_keywords(XfdashboardDesktopAppI
 	}
 
 	/* Get application actions for menu item (desktop entry) */
-#if 0 /*GARCON_CHECK_VERSION(0, 6, 3)*/
+#if GARCON_CHECK_VERSION(0, 6, 3)
 	if(priv->item)
 	{
 		const GList							*keywords;
@@ -1149,7 +1149,7 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 																		GError **outError)
 {
 	XfdashboardDesktopAppInfoPrivate			*priv;
-	GString									*string;
+	GString										*string;
 	gchar										*expanded;
 	gchar										*uri;
 	gchar										*filename;
@@ -1183,10 +1183,10 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 	name=garcon_menu_item_get_name(priv->item);
 	uri=garcon_menu_item_get_uri(priv->item);
 	expanded=xfce_expand_desktop_entry_field_codes(inCommand, (GSList*)inURIs,
-																								garcon_menu_item_get_icon_name(priv->item),
-																								name, uri,
-																								garcon_menu_item_requires_terminal(priv->item));
-  g_free(uri);
+													garcon_menu_item_get_icon_name(priv->item),
+													name, uri,
+													garcon_menu_item_requires_terminal(priv->item));
+	g_free(uri);
 
 	if(!expanded)
 	{
