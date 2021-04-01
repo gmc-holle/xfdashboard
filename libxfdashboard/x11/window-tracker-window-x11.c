@@ -1064,6 +1064,58 @@ static gchar** _xfdashboard_window_tracker_window_x11_window_tracker_window_get_
 		return(NULL);
 	}
 
+	/* If window property "_GTK_APPLICATION_ID" is available at X11 window,
+	 * then read in the value of this property and add it to list as first
+	 * entry to get the highest priority when resolving the collected names
+	 * to applications.
+	 */
+	if(priv->window)
+	{
+		GdkScreen								*screen;
+		Display									*display;
+		Atom									atomGtkAppID;
+		Atom									atomUTF8String;
+		Atom									actualType;
+		int										actualFormat;
+		unsigned long							numberItems;
+		unsigned long							bytesRemaining;
+		unsigned char	*						data;
+
+		data=NULL;
+
+		/* Get X11 display from default screen */
+		screen=gdk_screen_get_default();
+		display=GDK_DISPLAY_XDISPLAY(gdk_screen_get_display(screen));
+
+		/* Get X11 atoms needed for query */
+		atomGtkAppID=XInternAtom(display, "_GTK_APPLICATION_ID", True);
+		atomUTF8String=XInternAtom(display, "UTF8_STRING", True);
+
+		/* Query window property "_GTK_APPLICATION_ID" from X11 window */
+		XGetWindowProperty(display,
+							wnck_window_get_xid(priv->window),
+							atomGtkAppID,
+							0, G_MAXLONG,
+							False,
+							atomUTF8String,
+							&actualType,
+							&actualFormat,
+							&numberItems,
+							&bytesRemaining,
+							&data);
+
+		/* If we got data from X server then add retrieved value to list */
+		if(actualType==atomUTF8String &&
+			actualFormat==8 &&
+			numberItems>0)
+		{
+			names=g_slist_prepend(names, g_strdup((gchar*)data));
+		}
+
+		/* Release allocated resources */
+		if(data) XFree(data);
+	}
+
 	/* Add class name of window to list */
 	value=wnck_window_get_class_group_name(priv->window);
 	if(value) names=g_slist_prepend(names, g_strdup(value));
