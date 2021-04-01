@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-05 12:50+0100\n"
+"POT-Creation-Date: 2021-03-29 12:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Kjell Cato Heskjestad <cato@heskjestad.xyz>, 2021\n"
 "Language-Team: Norwegian Bokmål (https://www.transifex.com/xfce/teams/16840/nb/)\n"
@@ -77,13 +77,22 @@ msgstr "Søker etter programmer"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version introduces completes turning "
+"libxfdashboard into a real library and introduces path gradients for "
+"outlines."
+msgstr ""
+"Denne ustabile utviklerversjonen ferdigstiller flytting av libxfdashboard "
+"til et ordentlig bibliotek, og innfører fargeoverganger for uthevinger."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr ""
 "Denne ustabile utviklerversjonen har ingen endringer som er synlige for "
 "brukere. Man har begynt å flytte libxfdashboard til et ordentlig bibliotek."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -91,7 +100,7 @@ msgstr ""
 "Denne stabile utgivelsen fikser en feil, og erstatter AppInfo med AppStream "
 "metainfo."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -101,7 +110,7 @@ msgstr ""
 "animasjoner, sprettoppmenyer, flere bakstykker og hurtiglister. Den har "
 "dessuten flere nye og oppdaterte oversettelser."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -109,7 +118,7 @@ msgstr ""
 "Denne stabile utgivelsen fikser en feil ved valg av forvalgte programmer ved"
 " første bruk."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -385,8 +394,8 @@ msgstr "Vinfarget tema for xfdashboard"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Klarte ikke utføre handling «%s» for programmet «%s»: %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:795
-#: ../settings/main.c:76
+#: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
+#: ../settings/plugins.c:795
 msgid "Unknown error"
 msgstr "Ukjent feil"
 
@@ -411,10 +420,9 @@ msgid "No information available for application"
 msgstr "Programmet har ikke tilgjengelig informasjon"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/application.c:298 ../libxfdashboard/application.c:593
 #: ../libxfdashboard/applications-search-provider.c:753
-#: ../libxfdashboard/applications-view.c:334
-#: ../libxfdashboard/quicklaunch.c:442
+#: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
+#: ../libxfdashboard/quicklaunch.c:442 ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "ukjent feil"
 
@@ -425,59 +433,6 @@ msgstr "ukjent feil"
 #, c-format
 msgid "Application '%s' launched"
 msgstr "Startet programmet «%s»"
-
-#: ../libxfdashboard/application.c:296
-#, c-format
-msgid "Could not load theme '%s': %s"
-msgstr "Klarte ikke laste temaet «%s»: %s"
-
-#: ../libxfdashboard/application.c:502
-#, c-format
-msgid "Welcome to %s (%s)!"
-msgstr "Velkommen til %s (%s)!"
-
-#: ../libxfdashboard/application.c:504
-#, c-format
-msgid "Welcome to %s!"
-msgstr "Velkommen til %s!"
-
-#: ../libxfdashboard/application.c:551
-msgid "Fork to background"
-msgstr "Forgrein til bakgrunn"
-
-#: ../libxfdashboard/application.c:552
-msgid "Quit running instance"
-msgstr "Avslutt kjørende instans"
-
-#: ../libxfdashboard/application.c:553
-msgid "Restart running instance"
-msgstr "Start kjørende instans på nytt"
-
-#: ../libxfdashboard/application.c:554
-msgid ""
-"Toggles visibility if running instance was started in daemon mode otherwise "
-"it quits running non-daemon instance"
-msgstr ""
-"Veksler mellom synlighet hvis kjørende instans ble startet som nisse, ellers"
-" avsluttes kjørende instans"
-
-#: ../libxfdashboard/application.c:555
-msgid "The ID of view to switch to on startup or resume"
-msgstr "Bytt til oversikten med denne ID-en ved oppstart eller gjenopptakelse"
-
-#: ../libxfdashboard/application.c:556
-msgid "Show version"
-msgstr "Vis versjon"
-
-#: ../libxfdashboard/application.c:575
-msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "Et oversiktsprogram for Xfce4 som ligner Gnome-skallet, versjon"
-
-#. Show error
-#: ../libxfdashboard/application.c:592
-#, c-format
-msgid "%s\n"
-msgstr "%s\n"
 
 #: ../libxfdashboard/applications-search-provider.c:835
 #: ../libxfdashboard/applications-view.c:415
@@ -513,6 +468,21 @@ msgstr "Alle programmer"
 #: ../libxfdashboard/applications-view.c:683
 msgid "List of all installed applications"
 msgstr "Liste med alle installerte programmer"
+
+#: ../libxfdashboard/core.c:371
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr "Klarte ikke laste temaet «%s»: %s"
+
+#: ../libxfdashboard/core.c:1259
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr "Velkommen til %s (%s)!"
+
+#: ../libxfdashboard/core.c:1261
+#, c-format
+msgid "Welcome to %s!"
+msgstr "Velkommen til %s!"
 
 #: ../libxfdashboard/quicklaunch.c:384
 msgid "No windows to activate for application"
@@ -721,31 +691,6 @@ msgstr "Lav"
 msgid "seconds"
 msgstr "sekunder"
 
-#: ../settings/plugins.c:222
-#, c-format
-msgid "Configure plugin: %s"
-msgstr "Sett opp tillegg: %s"
-
-#. Create error message to store in list
-#: ../settings/plugins.c:794
-#, c-format
-msgid ""
-"<b>Plugin could not be loaded.</b>\n"
-"\n"
-"%s"
-msgstr ""
-"<b>Klarte ikke laste tillegg.</b>\n"
-"\n"
-"%s"
-
-#: ../settings/plugins.c:1006
-msgid "Name"
-msgstr "Navn"
-
-#: ../settings/themes.c:731
-msgid "Theme"
-msgstr "Tema"
-
 #: ../settings/main.c:46
 msgid "Settings manager socket"
 msgstr "Innstillingsbehandlersokkel"
@@ -771,3 +716,66 @@ msgid ""
 msgstr ""
 "%s: %s\n"
 "Prøv %s --help for å se alle kommandolinjevalg.\n"
+
+#: ../settings/plugins.c:222
+#, c-format
+msgid "Configure plugin: %s"
+msgstr "Sett opp tillegg: %s"
+
+#. Create error message to store in list
+#: ../settings/plugins.c:794
+#, c-format
+msgid ""
+"<b>Plugin could not be loaded.</b>\n"
+"\n"
+"%s"
+msgstr ""
+"<b>Klarte ikke laste tillegg.</b>\n"
+"\n"
+"%s"
+
+#: ../settings/plugins.c:1006
+msgid "Name"
+msgstr "Navn"
+
+#: ../settings/themes.c:731
+msgid "Theme"
+msgstr "Tema"
+
+#: ../xfdashboard/application.c:466
+msgid "Fork to background"
+msgstr "Forgrein til bakgrunn"
+
+#: ../xfdashboard/application.c:467
+msgid "Quit running instance"
+msgstr "Avslutt kjørende instans"
+
+#: ../xfdashboard/application.c:468
+msgid "Restart running instance"
+msgstr "Start kjørende instans på nytt"
+
+#: ../xfdashboard/application.c:469
+msgid ""
+"Toggles visibility if running instance was started in daemon mode otherwise "
+"it quits running non-daemon instance"
+msgstr ""
+"Veksler mellom synlighet hvis kjørende instans ble startet som nisse, ellers"
+" avsluttes kjørende instans"
+
+#: ../xfdashboard/application.c:470
+msgid "The ID of view to switch to on startup or resume"
+msgstr "Bytt til oversikten med denne ID-en ved oppstart eller gjenopptakelse"
+
+#: ../xfdashboard/application.c:471
+msgid "Show version"
+msgstr "Vis versjon"
+
+#: ../xfdashboard/application.c:490
+msgid "A Gnome Shell like dashboard for Xfce4 - version "
+msgstr "Et oversiktsprogram for Xfce4 som ligner Gnome-skallet, versjon"
+
+#. Show error
+#: ../xfdashboard/application.c:507
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
