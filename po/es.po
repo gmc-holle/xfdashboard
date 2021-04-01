@@ -11,7 +11,7 @@
 # 629cf3e396111bb8c5fb6664e2dbc91d, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # emiliano casal chiarotti <emiliano.casal.chiarotti@gmail.com>, 2020
-# Casper casper, 2021
+# Casper casper, 2020
 # Toni Estévez <toni.estevez@gmail.com>, 2021
 # 
 #, fuzzy
@@ -37,7 +37,7 @@ msgstr "Xfdashboard"
 #: ../data/org.xfce.xfdashboard.desktop.in.in.h:2
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
-msgstr "Tal vez un intérprete de órdenes a modo de panel para Xfce"
+msgstr "Un tablero para Xfce similar al de GNOME Shell"
 
 #: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
@@ -45,19 +45,19 @@ msgstr "Iniciar Xfdashboard como servicio en segundo plano"
 
 #: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:1
 msgid "Xfdashboard settings"
-msgstr "Ajustes de Xfdashboard"
+msgstr "Configuración de Xfdashboard"
 
 #: ../data/org.xfce.xfdashboard-settings.desktop.in.in.h:2
 msgid "Configure xfdashboard"
-msgstr "Configurar Xfdashboard"
+msgstr "Configure Xfdashboard"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:2
 msgid ""
 "Xfdashboard provides a GNOME shell dashboard like interface for use with "
 "Xfce desktop."
 msgstr ""
-"Xfdashboard provee un Intérprete de panel como el de GNOME para usarse en el"
-" entorno de escritorio Xfce."
+"Xfdashboard provee una interfaz similar al tablero de GNOME Shell para el "
+"escritorio Xfce"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:3
 msgid ""
@@ -66,11 +66,11 @@ msgid ""
 "switch between different applications. The search feature works like Xfce's "
 "app finder which makes it convenient to search for and start applications."
 msgstr ""
-"Puede ser configurado para funcionar con cualquier combinación de teclas y "
-"cuando se ejecuta proporciona una visión general de las aplicaciones que "
-"estén abiertas permitendo al usuario cambiar entre diferentes aplicaciones. "
-"La función de búsqueda funciona como el buscador de aplicaciones de Xfce que"
-" hace que sea conveniente para buscar e iniciar aplicaciones."
+"Se puede configurar para que se ejecute con cualquier atajo de teclado. Al "
+"ejecutarse proporciona una vista general de las aplicaciones abiertas y "
+"permite al usuario cambiar entre diferentes aplicaciones. La función de "
+"búsqueda funciona como el buscador de aplicaciones de Xfce, lo que facilita "
+"la búsqueda y el inicio de aplicaciones."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:4
 msgid "Browsing applications"
@@ -95,16 +95,16 @@ msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr ""
-"Esta versión inestable en desarrollo no presenta nada visible para el "
-"usuario, pero comienza a mover libxfdashboard a una biblioteca real."
+"Esta versión inestable en desarrollo no introduce nada visible para el "
+"usuario, sino que empieza a convertir libxfdashboard en una biblioteca real."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
 msgstr ""
-"Esta versión estable corrige un error y reemplaza AppInfo con AppStream "
-"metainfo."
+"Esta versión estable corrige un error y reemplaza la metainformación de "
+"AppInfo por la de AppStream."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
@@ -112,17 +112,18 @@ msgid ""
 "menus, multiple backend and support for jumplists etc. It also includes lots"
 " of new and updated translations."
 msgstr ""
-"Esta versión estable presenta muchas características nuevas como "
-"animaciones, menús emergentes, backend múltiple y soporte para listas de "
-"salto, etc. También incluye muchas traducciones nuevas y actualizadas."
+"Esta versión estable introduce muchas características nuevas, como "
+"animaciones, menús emergentes, múltiples motores y compatibilidad con listas"
+" de acciones, etc. También incluye muchas traducciones nuevas y "
+"actualizadas."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
-"Esta versión estable arregla un error configurando las aplicaciones por "
-"defecto correctas en el primer uso."
+"Esta versión estable corrige un error en la configuración de las "
+"aplicaciones por defecto en el primer uso."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
@@ -130,33 +131,33 @@ msgid ""
 "application tracker. It also contains a huge collection of other larger and "
 "smaller improvements."
 msgstr ""
-"Esta versión estable introduce muchas nuevas funcionalidades como "
-"complementos y buscador de aplicaciones. También contiene una vasta "
+"Esta versión estable introduce muchas características nuevas como los "
+"complementos y el buscador de aplicaciones. También contiene una enorme "
 "colección de otras mejoras mayores y menores."
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
-msgstr "<span size=\"large\"><b>Configuraciones de Xfdashboard</b></span>"
+msgstr "<span size=\"large\"><b>Configuración de Xfdashboard</b></span>"
 
 #: ../data/data/preferences.ui.h:2
 msgid "Configure plugin"
-msgstr "Configurar complemento"
+msgstr "Configurar el complemento"
 
 #: ../data/data/preferences.ui.h:3
 msgid ""
 "<span size=\"large\"><b>Xfdashboard settings</b></span>\n"
 "Configure xfdashboard"
 msgstr ""
-"<span size=\"large\"><b>Configuraciones de Xfdashboard</b></span>\n"
+"<span size=\"large\"><b>Configuración de Xfdashboard</b></span>\n"
 "Configure Xfdashboard"
 
 #: ../data/data/preferences.ui.h:5
 msgid "<b>General settings:</b>"
-msgstr "<b>Ajustes generales:</b>"
+msgstr "<b>Configuración general:</b>"
 
 #: ../data/data/preferences.ui.h:6
 msgid "Reset search view when resumed"
-msgstr "Restablecer la vista de búsqueda cuando se reanude"
+msgstr "Restablecer la vista de búsqueda al reiniciarse"
 
 #: ../data/data/preferences.ui.h:7
 msgid ""
@@ -164,9 +165,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
-"Si está activada, la vista de búsqueda se reiniciará cuando se reinicie Xfdashboard. Esto significa que la vista activa se cambia a la última vista activa antes de que se inicie la última búsqueda y se vacíe el cuadro de búsqueda.\n"
+"Si se activa, se restablecerá la vista de búsqueda al reiniciarse. Esto significa que se volverá a la última vista activa antes de iniciar la última búsqueda y que se borrará el cuadro de búsqueda.\n"
 "\n"
-"<b>NOTA:</b> Esta configuración solamente tiene efecto si Xfdashboard se ejecuta en modo demonio."
+"<b>NOTA:</b> Este ajuste solo tiene efecto si Xfdashboard se ejecuta en modo servicio."
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
@@ -174,13 +175,13 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
 msgstr ""
-"Cuando Xfdashboard se reanude, la vista seleccionada se activará.\n"
+"Al reiniciarse se activará la vista seleccionada.\n"
 "\n"
-"<b>NOTA:</b> Esta configuración solamente tiene efecto si Xfdashboard se ejecuta en modo demonio."
+"<b>NOTA:</b> Esta configuración solo tiene efecto si Xfdashboard se ejecuta en modo servicio."
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
-msgstr "Cambiar a vista cuando se reanude:"
+msgstr "Cambiar de vista al reiniciarse:"
 
 #: ../data/data/preferences.ui.h:14
 msgid ""
@@ -188,17 +189,17 @@ msgid ""
 "\n"
 "The duration is calculated by the length of the text to show in notification. This setting allows you to specify how long the notification must be shown at least."
 msgstr ""
-"Establece el tiempo mínimo en mostrarse una notificación.\n"
+"Configura el tiempo mínimo que se muestra una notificación.\n"
 "\n"
-"La duración se calcula por la longitud del texto que se mostrará en la notificación. Esta configuración le permite especificar cuánto tiempo debe mostrarse la notificación al menos."
+"La duración se calcula en función de la longitud del texto de la notificación. Este ajuste permite especificar el tiempo mínimo que debe mostrarse la notificación."
 
 #: ../data/data/preferences.ui.h:17
 msgid "Minimum notification timeout:"
-msgstr "Tiempo mínimo de espera de la notificación:"
+msgstr "Tiempo de espera mínimo de la notificación:"
 
 #: ../data/data/preferences.ui.h:18
 msgid "Enable workaround for minimized windows"
-msgstr "Activar solución para minimizar ventanas"
+msgstr "Activar una solución alternativa para las ventanas minimizadas"
 
 #: ../data/data/preferences.ui.h:19
 msgid ""
@@ -703,11 +704,11 @@ msgstr "segundos"
 
 #: ../settings/main.c:46
 msgid "Settings manager socket"
-msgstr "Gestor de ajustes de socket"
+msgstr "Socket del gestor de configuración"
 
 #: ../settings/main.c:46
 msgid "SOCKET ID"
-msgstr "ID SOCKET"
+msgstr "ID DEL SOCKET"
 
 #: ../settings/main.c:47
 msgid "Version information"
@@ -725,12 +726,12 @@ msgid ""
 "Try %s --help to see a full list of available command line options.\n"
 msgstr ""
 "%s: %s\n"
-"Pruebe %s --help para ver una lista completa de opciones de línea de órdenes.\n"
+"Pruebe %s --help para consultar la lista completa de opciones disponibles en la línea de comandos.\n"
 
 #: ../settings/plugins.c:222
 #, c-format
 msgid "Configure plugin: %s"
-msgstr "Configurar complemento: %s"
+msgstr "Configurar el complemento: %s"
 
 #. Create error message to store in list
 #: ../settings/plugins.c:794
@@ -740,7 +741,7 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
-"<b>No se pudo cargar el complemento.</b>\n"
+"<b>No se ha podido cargar el complemento.</b>\n"
 "\n"
 "%s"
 
@@ -769,20 +770,20 @@ msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
 msgstr ""
-"Alterna la visibilidad si la instancia en ejecución se inició en modo "
-"demonio; de lo contrario, dejará de ejecutar la instancia que no es demonio."
+"Cambia la visibilidad si la instancia en ejecución se ha iniciado en modo "
+"servicio o, de lo contrario, cierra la instancia en ejecución"
 
 #: ../xfdashboard/application.c:470
 msgid "The ID of view to switch to on startup or resume"
-msgstr "El ID de vista para cambiar al inicio o reanudar"
+msgstr "El ID de la vista a la que se debe cambiar al iniciarse o reiniciarse"
 
 #: ../xfdashboard/application.c:471
 msgid "Show version"
-msgstr "Mostrar versión"
+msgstr "Mostrar la versión"
 
 #: ../xfdashboard/application.c:490
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "Un tablero al estilo Gnome-Shell para la versión Xfce4"
+msgstr "Un tablero como el de GNOME Shell para Xfce4 - versión"
 
 #. Show error
 #: ../xfdashboard/application.c:507
