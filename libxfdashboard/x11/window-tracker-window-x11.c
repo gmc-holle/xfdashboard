@@ -1088,8 +1088,8 @@ static gchar** _xfdashboard_window_tracker_window_x11_window_tracker_window_get_
 		display=GDK_DISPLAY_XDISPLAY(gdk_screen_get_display(screen));
 
 		/* Get X11 atoms needed for query */
-		atomGtkAppID=XInternAtom(display, "_GTK_APPLICATION_ID", True);
-		atomUTF8String=XInternAtom(display, "UTF8_STRING", True);
+		atomGtkAppID=XInternAtom(display, "_GTK_APPLICATION_ID", False);
+		atomUTF8String=XInternAtom(display, "UTF8_STRING", False);
 
 		/* Query window property "_GTK_APPLICATION_ID" from X11 window */
 		XGetWindowProperty(display,
