@@ -425,6 +425,7 @@ static void _xfdashboard_desktop_app_info_update_keywords(XfdashboardDesktopAppI
 	if(priv->item)
 	{
 		const GList							*keywords;
+		const GList							*iter;
 
 		/* Get keywords from garcon menu item and create a deep copy of list */
 		keywords=garcon_menu_item_get_keywords(priv->item);
