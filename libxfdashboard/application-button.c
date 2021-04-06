@@ -905,7 +905,7 @@ guint xfdashboard_application_button_add_popup_menu_items_for_actions(Xfdashboar
 {
 	XfdashboardApplicationButtonPrivate			*priv;
 	guint										numberItems;
-	GList										*actions;
+	const GList									*actions;
 	const GList									*iter;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION_BUTTON(self), 0);

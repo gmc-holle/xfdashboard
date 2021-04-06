@@ -976,8 +976,8 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 
 	if(XFDASHBOARD_IS_DESKTOP_APP_INFO(inAppInfo))
 	{
-		GList											*appKeywords;
-		GList											*iter;
+		const GList										*appKeywords;
+		const GList										*iter;
 
 		appKeywords=xfdashboard_desktop_app_info_get_keywords(XFDASHBOARD_DESKTOP_APP_INFO(inAppInfo));
 		for(iter=appKeywords; iter; iter=g_list_next(iter))

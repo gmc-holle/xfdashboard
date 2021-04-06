@@ -79,7 +79,7 @@ gboolean xfdashboard_desktop_app_info_is_valid(XfdashboardDesktopAppInfo *self);
 GFile* xfdashboard_desktop_app_info_get_file(XfdashboardDesktopAppInfo *self);
 gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self);
 
-GList* xfdashboard_desktop_app_info_get_actions(XfdashboardDesktopAppInfo *self);
+const GList* xfdashboard_desktop_app_info_get_actions(XfdashboardDesktopAppInfo *self);
 gboolean xfdashboard_desktop_app_info_launch_action(XfdashboardDesktopAppInfo *self,
 													XfdashboardDesktopAppInfoAction *inAction,
 													GAppLaunchContext *inContext,
@@ -89,7 +89,14 @@ gboolean xfdashboard_desktop_app_info_launch_action_by_name(XfdashboardDesktopAp
 															GAppLaunchContext *inContext,
 															GError **outError);
 
-GList* xfdashboard_desktop_app_info_get_keywords(XfdashboardDesktopAppInfo *self);
+const GList* xfdashboard_desktop_app_info_get_keywords(XfdashboardDesktopAppInfo *self);
+
+gboolean xfdashboard_desktop_app_info_has_key(XfdashboardDesktopAppInfo *self, const gchar *inKey);
+gchar* xfdashboard_desktop_app_info_get_string(XfdashboardDesktopAppInfo *self, const gchar *inKey);
+gchar* xfdashboard_desktop_app_info_get_locale_string(XfdashboardDesktopAppInfo *self, const gchar *inKey);
+gchar** xfdashboard_desktop_app_info_get_string_list(XfdashboardDesktopAppInfo *self, const gchar *inKey);
+gchar** xfdashboard_desktop_app_info_get_locale_string_list(XfdashboardDesktopAppInfo *self, const gchar *inKey);
+gboolean xfdashboard_desktop_app_info_get_bool(XfdashboardDesktopAppInfo *self, const gchar *inKey);
 
 G_END_DECLS
 
