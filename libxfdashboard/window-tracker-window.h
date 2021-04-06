@@ -125,7 +125,7 @@ struct _XfdashboardWindowTrackerWindowInterface
 	void (*close)(XfdashboardWindowTrackerWindow *self);
 
 	gint (*get_pid)(XfdashboardWindowTrackerWindow *self);
-	gchar** (*get_instance_names)(XfdashboardWindowTrackerWindow *self);
+	GAppInfo* (*get_appinfo)(XfdashboardWindowTrackerWindow *self);
 
 	ClutterContent* (*get_content)(XfdashboardWindowTrackerWindow *self);
 
@@ -204,7 +204,7 @@ void xfdashboard_window_tracker_window_show_stage(XfdashboardWindowTrackerWindow
 void xfdashboard_window_tracker_window_hide_stage(XfdashboardWindowTrackerWindow *self);
 
 gint xfdashboard_window_tracker_window_get_pid(XfdashboardWindowTrackerWindow *self);
-gchar** xfdashboard_window_tracker_window_get_instance_names(XfdashboardWindowTrackerWindow *self);
+GAppInfo* xfdashboard_window_tracker_window_get_appinfo(XfdashboardWindowTrackerWindow *self);
 
 ClutterContent* xfdashboard_window_tracker_window_get_content(XfdashboardWindowTrackerWindow *self);
 

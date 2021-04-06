@@ -56,6 +56,7 @@
 #include <libxfdashboard/x11/window-tracker-x11.h>
 #include <libxfdashboard/window-tracker.h>
 #include <libxfdashboard/core.h>
+#include <libxfdashboard/desktop-app-info.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
 #include <libxfdashboard/debug.h>
@@ -115,6 +116,180 @@ static GParamSpec* XfdashboardWindowTrackerWindowX11Properties[PROP_LAST]={ 0, }
 	g_critical("Got signal from wrong wnck window wrapped at %s in called function %s",\
 				G_OBJECT_TYPE_NAME(self),                                      \
 				__func__);
+
+/* Try to resolve name to AppInfo */
+static GAppInfo*  _xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_name_to_appinfo(XfdashboardWindowTrackerWindowX11 *self,
+																										const gchar *inName)
+{
+	XfdashboardWindowTrackerWindowX11Private	*priv;
+	GAppInfo									*appInfo;
+	gchar										*iterName;
+	gchar										*iterNameLowerCase;
+	XfdashboardApplicationDatabase				*appDatabase;
+	GList										*apps;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(self), NULL);
+	g_return_val_if_fail(inName && *inName, NULL);
+	g_return_val_if_fail(self->priv->window, NULL);
+
+	priv=self->priv;
+	appInfo=NULL;
+
+	/* Get list of applications */
+	appDatabase=xfdashboard_core_get_application_database(NULL);
+	apps=xfdashboard_application_database_get_all_applications(appDatabase);
+
+	/* Build desktop ID from name */
+	if(!g_str_has_suffix(inName, ".desktop")) iterName=g_strconcat(inName, ".desktop", NULL);
+		else iterName=g_strdup(inName);
+
+	iterNameLowerCase=g_utf8_strdown(iterName, -1);
+
+	/* Lookup application from unmodified name */
+	appInfo=xfdashboard_application_database_lookup_desktop_id(appDatabase, iterName);
+
+	/* Lookup application from to-lower-case converted name if previous
+	 * lookup with unmodified name failed.
+	 */
+	if(!appInfo)
+	{
+		/* Lookup application from lower-case name */
+		appInfo=xfdashboard_application_database_lookup_desktop_id(appDatabase, iterNameLowerCase);
+	}
+
+	/* If no application was found for the name it may be an application
+	 * located in a subdirectory. Then the desktop ID is prefixed with
+	 * the subdirectory's name followed by a dash. So iterate through all
+	 * applications and lookup with glob pattern '*-' followed by name
+	 * and suffix '.desktop'.
+	 */
+	if(!appInfo)
+	{
+		GList									*iterApps;
+		GList									*foundSubdirApps;
+		gchar									*globName;
+		GPatternSpec							*globPattern;
+		GAppInfo								*globAppInfo;
+
+		/* Build glob pattern */
+		globAppInfo=NULL;
+		globName=g_strconcat("*-", iterNameLowerCase, NULL);
+		globPattern=g_pattern_spec_new(globName);
+
+		/* Iterate through application and collect applications matching
+		 * glob pattern.
+		 */
+		foundSubdirApps=NULL;
+		for(iterApps=apps; iterApps; iterApps=g_list_next(iterApps))
+		{
+			if(!G_IS_APP_INFO(iterApps->data)) continue;
+			globAppInfo=G_APP_INFO(iterApps->data);
+
+			if(g_pattern_match_string(globPattern, g_app_info_get_id(globAppInfo)))
+			{
+				foundSubdirApps=g_list_prepend(foundSubdirApps, globAppInfo);
+				XFDASHBOARD_DEBUG(self, APPLICATIONS,
+									"Found possible application '%s' for window '%s' using pattern '%s'",
+									g_app_info_get_id(globAppInfo),
+									wnck_window_get_name(priv->window),
+									globName);
+			}
+		}
+
+		/* If exactly one application was collected because it matched
+		 * the glob pattern then we found the application.
+		 */
+		if(g_list_length(foundSubdirApps)==1)
+		{
+			appInfo=G_APP_INFO(g_object_ref(G_OBJECT(foundSubdirApps->data)));
+
+			XFDASHBOARD_DEBUG(self, APPLICATIONS,
+								"Found exactly one application named '%s' for window '%s' using pattern '%s'",
+								g_app_info_get_id(appInfo),
+								wnck_window_get_name(priv->window),
+								globName);
+		}
+
+		/* Release allocated resources */
+		if(foundSubdirApps) g_list_free(foundSubdirApps);
+		if(globPattern) g_pattern_spec_free(globPattern);
+		if(globName) g_free(globName);
+	}
+
+	/* Release allocated resources */
+	if(iterName) g_free(iterName);
+	if(iterNameLowerCase) g_free(iterNameLowerCase);
+	if(apps) g_list_free_full(apps, g_object_unref);
+	if(appDatabase) g_object_unref(appDatabase);
+
+	/* Return found AppInfo */
+	return(appInfo);
+}
+
+/* Try to resolve start-up WM class to AppInfo */
+static GAppInfo*  _xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_startupwm_to_appinfo(XfdashboardWindowTrackerWindowX11 *self)
+{
+	XfdashboardWindowTrackerWindowX11Private	*priv;
+	GAppInfo									*appInfo;
+	XfdashboardApplicationDatabase				*appDatabase;
+	GList										*apps;
+	GList										*iter;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(self), NULL);
+	g_return_val_if_fail(self->priv->window, NULL);
+
+	priv=self->priv;
+	appInfo=NULL;
+
+	/* Get list of applications */
+	appDatabase=xfdashboard_core_get_application_database(NULL);
+	apps=xfdashboard_application_database_get_all_applications(appDatabase);
+
+	/* Iterate through application and lookup start-up WM class */
+	for(iter=apps; iter && !appInfo; iter=g_list_next(iter))
+	{
+		XfdashboardDesktopAppInfo				*iterAppInfo;
+		gchar									*appInfoStartupWM;
+		const gchar								*value;
+
+		/* Skip AppInfo which are not of type XfdashboardDesktopAppInfo */
+		if(!XFDASHBOARD_IS_DESKTOP_APP_INFO(iter->data)) continue;
+
+		iterAppInfo=XFDASHBOARD_DESKTOP_APP_INFO(iter->data);
+
+		/* If AppInfo has no entry for start-up WM class then skip it */
+		if(!xfdashboard_desktop_app_info_has_key(iterAppInfo, G_KEY_FILE_DESKTOP_KEY_STARTUP_WM_CLASS)) continue;
+
+		/* Check if start-up WM class of AppInfo matches */
+		appInfoStartupWM=xfdashboard_desktop_app_info_get_string(iterAppInfo, G_KEY_FILE_DESKTOP_KEY_STARTUP_WM_CLASS);
+
+		value=wnck_window_get_class_group_name(priv->window);
+		if(!appInfo &&
+			value &&
+			g_strcmp0(appInfoStartupWM, value)==0)
+		{
+			appInfo=G_APP_INFO(g_object_ref(iterAppInfo));
+		}
+
+		value=wnck_window_get_class_instance_name(priv->window);
+		if(!appInfo &&
+			value &&
+			g_strcmp0(appInfoStartupWM, value)==0)
+		{
+			appInfo=G_APP_INFO(g_object_ref(iterAppInfo));
+		}
+
+		/* Release allocated resources */
+		if(appInfoStartupWM) g_free(appInfoStartupWM);
+	}
+
+	/* Release allocated resources */
+	if(apps) g_list_free_full(apps, g_object_unref);
+	if(appDatabase) g_object_unref(appDatabase);
+
+	/* Return found AppInfo */
+	return(appInfo);
+}
 
 /* Get state of window */
 static void _xfdashboard_window_tracker_window_x11_update_state(XfdashboardWindowTrackerWindowX11 *self)
@@ -1037,25 +1212,19 @@ static gint _xfdashboard_window_tracker_window_x11_window_tracker_window_get_pid
 	return(wnck_window_get_pid(priv->window));
 }
 
-/* Get all possible instance name for window, e.g. class name, instance name.
- * Caller is responsible to free result with g_strfreev() if not NULL.
- */
-static gchar** _xfdashboard_window_tracker_window_x11_window_tracker_window_get_instance_names(XfdashboardWindowTrackerWindow *inWindow)
+/* Try to determine AppInfo for window */
+static GAppInfo* _xfdashboard_window_tracker_window_x11_window_tracker_window_get_appinfo(XfdashboardWindowTrackerWindow *inWindow)
 {
 	XfdashboardWindowTrackerWindowX11			*self;
 	XfdashboardWindowTrackerWindowX11Private	*priv;
-	GSList										*names;
-	GSList										*iter;
+	GAppInfo									*appInfo;
 	const gchar									*value;
-	guint										numberEntries;
-	gchar										**result;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inWindow), NULL);
 
 	self=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inWindow);
 	priv=self->priv;
-	names=NULL;
-	result=NULL;
+	appInfo=NULL;
 
 	/* A wnck window must be wrapped by this object */
 	if(!priv->window)
@@ -1065,11 +1234,10 @@ static gchar** _xfdashboard_window_tracker_window_x11_window_tracker_window_get_
 	}
 
 	/* If window property "_GTK_APPLICATION_ID" is available at X11 window,
-	 * then read in the value of this property and add it to list as first
-	 * entry to get the highest priority when resolving the collected names
-	 * to applications.
+	 * then read in the value of this property and try to lookup AppInfo
+	 * from this value.
 	 */
-	if(priv->window)
+	if(!appInfo)
 	{
 		GdkScreen								*screen;
 		Display									*display;
@@ -1109,44 +1277,46 @@ static gchar** _xfdashboard_window_tracker_window_x11_window_tracker_window_get_
 			actualFormat==8 &&
 			numberItems>0)
 		{
-			names=g_slist_prepend(names, g_strdup((gchar*)data));
+			appInfo=_xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_name_to_appinfo(self, (gchar*)data);
 		}
 
 		/* Release allocated resources */
 		if(data) XFree(data);
 	}
 
-	/* Add class name of window to list */
-	value=wnck_window_get_class_group_name(priv->window);
-	if(value) names=g_slist_prepend(names, g_strdup(value));
-
-	/* Add instance name of window to list */
-	value=wnck_window_get_class_instance_name(priv->window);
-	if(value) names=g_slist_prepend(names, g_strdup(value));
-
-	/* Add role of window to list */
-	value=wnck_window_get_role(priv->window);
-	if(value) names=g_slist_prepend(names, g_strdup(value));
-
-	/* If nothing was added to list of name, stop here and return */
-	if(!names) return(NULL);
-
-	/* Build result list as a NULL-terminated list of strings */
-	numberEntries=g_slist_length(names);
-
-	result=g_new(gchar*, numberEntries+1);
-	result[numberEntries]=NULL;
-	for(iter=names; iter; iter=g_slist_next(iter))
+	/* Try to resolve startup WM class of window to AppInfo if available */
+	if(!appInfo)
 	{
-		numberEntries--;
-		result[numberEntries]=iter->data;
+		appInfo=_xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_startupwm_to_appinfo(self);
 	}
 
-	/* Release allocated resources */
-	g_slist_free(names);
+	/* Try to resolve class name of window to AppInfo */
+	if(!appInfo)
+	{
+		value=wnck_window_get_class_group_name(priv->window);
+		if(value) appInfo=_xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_name_to_appinfo(self, value);
+	}
 
-	/* Return result list */
-	return(result);
+	/* Try to resolve instance name of window to AppInfo */
+	if(!appInfo)
+	{
+		value=wnck_window_get_class_instance_name(priv->window);
+		if(value) appInfo=_xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_name_to_appinfo(self, value);
+	}
+
+	/* Try to resolve role of window to AppInfo */
+	if(!appInfo)
+	{
+		value=wnck_window_get_role(priv->window);
+		if(value) appInfo=_xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_name_to_appinfo(self, value);
+	}
+
+	/* Return resolved AppInfo */
+	XFDASHBOARD_DEBUG(self, WINDOWS,
+						"Resolved window '%s' to desktop ID '%s'",
+						wnck_window_get_name(priv->window),
+						appInfo ? g_app_info_get_id(appInfo) : "<none>");
+	return(appInfo);
 }
 
 /* Get content for this window for use in actors.
@@ -1228,7 +1398,7 @@ static void _xfdashboard_window_tracker_window_x11_window_tracker_window_iface_i
 	iface->close=_xfdashboard_window_tracker_window_x11_window_tracker_window_close;
 
 	iface->get_pid=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_pid;
-	iface->get_instance_names=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_instance_names;
+	iface->get_appinfo=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_appinfo;
 
 	iface->get_content=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_content;
 }
