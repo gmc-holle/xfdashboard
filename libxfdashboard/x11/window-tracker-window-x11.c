@@ -227,7 +227,7 @@ static GAppInfo*  _xfdashboard_window_tracker_window_x11_window_tracker_window_r
 }
 
 /* Try to resolve start-up WM class to AppInfo */
-static GAppInfo*  _xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_startupwm_to_appinfo(XfdashboardWindowTrackerWindowX11 *self)
+static GAppInfo* _xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_startupwm_to_appinfo(XfdashboardWindowTrackerWindowX11 *self)
 {
 	XfdashboardWindowTrackerWindowX11Private	*priv;
 	GAppInfo									*appInfo;
@@ -286,6 +286,146 @@ static GAppInfo*  _xfdashboard_window_tracker_window_x11_window_tracker_window_r
 	/* Release allocated resources */
 	if(apps) g_list_free_full(apps, g_object_unref);
 	if(appDatabase) g_object_unref(appDatabase);
+
+	/* Return found AppInfo */
+	return(appInfo);
+}
+
+/* Try to resolve window's executable to AppInfo */
+static GAppInfo* _xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_binary_executable_to_appinfo(XfdashboardWindowTrackerWindowX11 *self)
+{
+	XfdashboardWindowTrackerWindowX11Private	*priv;
+	GAppInfo									*appInfo;
+	XfdashboardApplicationDatabase				*appDatabase;
+	GList										*apps;
+	GList										*iter;
+	gchar										*windowExecutable;
+#if defined(__linux__)
+	int											windowPID;
+#endif
+
+	g_return_val_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(self), NULL);
+	g_return_val_if_fail(self->priv->window, NULL);
+
+	priv=self->priv;
+	appInfo=NULL;
+	windowExecutable=NULL;
+
+	/* Get executable of process runnning this window */
+#if defined(__linux__)
+	windowPID=wnck_window_get_pid(priv->window);
+	if(windowPID)
+	{
+		gchar									*procExecFile;
+		GFile									*file;
+		GFileInfo								*fileInfo;
+		GError									*error;
+
+		error=NULL;
+
+		/* Get path to executable symlinked in proc filesystem */
+		procExecFile=g_strdup_printf("/proc/%d/exe", windowPID);
+
+		/* Read target of symlink of executable in proc filesystem.
+		 * That is the window's executable.
+		 */
+		file=g_file_new_for_path(procExecFile);
+		fileInfo=g_file_query_info(file,
+									G_FILE_ATTRIBUTE_STANDARD_NAME "," G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET,
+									G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS,
+									NULL,
+									&error);
+		if(!fileInfo)
+		{
+			/* Show warning */
+			g_warning("Could not determine executable of window '%s': %s",
+						wnck_window_get_name(priv->window),
+						error ? error->message : "unknown  error");
+		}
+			else
+			{
+				windowExecutable=g_strdup(g_file_info_get_symlink_target(fileInfo));
+			}
+
+		/* Release allocated resources */
+		if(error) g_error_free(error);
+		if(fileInfo) g_object_unref(fileInfo);
+		if(file) g_object_unref(file);
+		if(procExecFile) g_free(procExecFile);
+	}
+#else
+	/* Unsupported OS */
+#endif
+
+	/* If we could not get window's executable then we do not need to compare it
+	 * againt the executables of all applications.
+	 */
+	if(!windowExecutable) return(NULL);
+
+	/* Get list of applications */
+	appDatabase=xfdashboard_core_get_application_database(NULL);
+	apps=xfdashboard_application_database_get_all_applications(appDatabase);
+
+	/* Iterate through application and lookup start-up WM class */
+	for(iter=apps; iter && !appInfo; iter=g_list_next(iter))
+	{
+		XfdashboardDesktopAppInfo				*iterAppInfo;
+		const gchar								*iterExecutable;
+		gboolean								executableMatches;
+
+		/* Skip AppInfo which are not of type XfdashboardDesktopAppInfo */
+		if(!XFDASHBOARD_IS_DESKTOP_APP_INFO(iter->data)) continue;
+
+		iterAppInfo=XFDASHBOARD_DESKTOP_APP_INFO(iter->data);
+
+		/* If AppInfo has no entry for binary executable then skip it.
+		 * But this should never happen.
+		 */
+		iterExecutable=g_app_info_get_executable(G_APP_INFO(iterAppInfo));
+		if(G_UNLIKELY(!iterExecutable)) continue;
+
+		/* Check if executable of AppInfo matches the executable of process
+		 * running this window. If either AppInfo's executable or window's
+		 * executable is a relative path then check only their basenames as
+		 * we cannot determine if the process, which spawned the window's
+		 * executable, had the correct PATH enviroment set up to spawn the
+		 * process. So we have to assume it. If both executables are available
+		 * as absolute path then compre them entirely.
+		 */
+		if(!g_path_is_absolute(iterExecutable) ||
+			!g_path_is_absolute(windowExecutable))
+		{
+			gchar								*iterExecutableBasename;
+			gchar								*windowExecutableBasename;
+
+			/* Get basename of both executables */
+			iterExecutableBasename=g_path_get_basename(iterExecutable);
+			windowExecutableBasename=g_path_get_basename(windowExecutable);
+
+			/* Compare basename of both executables */
+			executableMatches=(g_strcmp0(iterExecutableBasename, windowExecutableBasename)==0 ? TRUE : FALSE);
+
+			/* Release allocated resources */
+			g_free(iterExecutableBasename);
+			g_free(windowExecutableBasename);
+		}
+			else
+			{
+				/* Both executable have absolute path so compare them entirely */
+				executableMatches=(g_strcmp0(iterExecutable, windowExecutable)==0 ? TRUE : FALSE);
+			}
+
+		/* If both executables matched then we found the AppInfo */
+		if(executableMatches)
+		{
+			appInfo=G_APP_INFO(g_object_ref(iterAppInfo));
+		}
+	}
+
+	/* Release allocated resources */
+	if(apps) g_list_free_full(apps, g_object_unref);
+	if(appDatabase) g_object_unref(appDatabase);
+	if(windowExecutable) g_free(windowExecutable);
 
 	/* Return found AppInfo */
 	return(appInfo);
@@ -1304,11 +1444,10 @@ static GAppInfo* _xfdashboard_window_tracker_window_x11_window_tracker_window_ge
 		if(value) appInfo=_xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_name_to_appinfo(self, value);
 	}
 
-	/* Try to resolve role of window to AppInfo */
+	/* Try to resolve binary executable of process running window to AppInfo */
 	if(!appInfo)
 	{
-		value=wnck_window_get_role(priv->window);
-		if(value) appInfo=_xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_name_to_appinfo(self, value);
+		appInfo=_xfdashboard_window_tracker_window_x11_window_tracker_window_resolve_binary_executable_to_appinfo(self);
 	}
 
 	/* Return resolved AppInfo */

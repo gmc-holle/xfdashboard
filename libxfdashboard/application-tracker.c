@@ -609,7 +609,7 @@ static void _xfdashboard_application_tracker_on_window_opened(XfdashboardApplica
 						xfdashboard_window_tracker_window_get_name(inWindow),
 						g_app_info_get_id(appInfo));
 
-	/* Create application tracker if no one exists for application and window ... */
+	/* Create application tracker item if no one exists for application and window ... */
 	item= _xfdashboard_application_tracker_find_item_by_app_info(self, appInfo);
 	if(!item)
 	{
