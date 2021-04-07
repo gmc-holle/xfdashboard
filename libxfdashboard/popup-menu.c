@@ -150,14 +150,12 @@ static void _xfdashboard_popup_menu_on_application_suspended_changed(Xfdashboard
 																		GParamSpec *inSpec,
 																		gpointer inUserData)
 {
-	XfdashboardPopupMenuPrivate		*priv;
 	XfdashboardCore					*core;
 	gboolean						isSuspended;
 
 	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU(self));
 	g_return_if_fail(XFDASHBOARD_IS_CORE(inUserData));
 
-	priv=self->priv;
 	core=XFDASHBOARD_CORE(inUserData);
 
 	/* Get application suspend state */
@@ -169,8 +167,8 @@ static void _xfdashboard_popup_menu_on_application_suspended_changed(Xfdashboard
 		XFDASHBOARD_DEBUG(self, ACTOR,
 							"Cancel active pop-up menu '%s' for source %s@%p because core was suspended",
 							xfdashboard_popup_menu_get_title(self),
-							priv->source ? G_OBJECT_TYPE_NAME(priv->source) : "<nil>",
-							priv->source);
+							self->priv->source ? G_OBJECT_TYPE_NAME(self->priv->source) : "<nil>",
+							self->priv->source);
 
 		xfdashboard_popup_menu_cancel(self);
 	}

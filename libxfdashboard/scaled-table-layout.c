@@ -531,7 +531,7 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScaledTableLayoutProperties[PROP_NUMBER_CHILDREN]=
-		g_param_spec_float("number-children",
+		g_param_spec_int("number-children",
 								"Number children",
 								"Current number of child actors in this layout",
 								0,
@@ -540,7 +540,7 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScaledTableLayoutProperties[PROP_ROWS]=
-		g_param_spec_float("rows",
+		g_param_spec_int("rows",
 								"Rows",
 								"Current number of rows in this layout",
 								0,
@@ -549,7 +549,7 @@ static void xfdashboard_scaled_table_layout_class_init(XfdashboardScaledTableLay
 								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	XfdashboardScaledTableLayoutProperties[PROP_COLUMNS]=
-		g_param_spec_float("columns",
+		g_param_spec_int("columns",
 								"Columns",
 								"Current number of columns in this layout",
 								0,

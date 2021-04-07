@@ -198,7 +198,7 @@ static void _xfdashboard_window_tracker_monitor_x11_set_index(XfdashboardWindowT
 																gint inIndex)
 {
 	XfdashboardWindowTrackerMonitorX11Private		*priv;
-	gint											numberMonitors;
+	G_GNUC_UNUSED gint											numberMonitors;
 
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR_X11(self));
 	g_return_if_fail(inIndex>=0);

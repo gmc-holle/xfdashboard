@@ -278,11 +278,7 @@ static void _xfdashboard_window_content_x11_destroy_resume_queue(void)
 /* Remove window content from resume on idle queue */
 static void _xfdashboard_window_content_x11_resume_on_idle_remove(XfdashboardWindowContentX11 *self)
 {
-	XfdashboardWindowContentX11Private		*priv;
-
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT_X11(self));
-
-	priv=self->priv;
 
 	/* Remove window content from queue */
 	if(_xfdashboard_window_content_x11_resume_idle_queue)
@@ -300,7 +296,7 @@ static void _xfdashboard_window_content_x11_resume_on_idle_remove(XfdashboardWin
 			XFDASHBOARD_DEBUG(self, WINDOWS,
 								"Removed queue entry %p for window '%s' because of releasing resources",
 								queueEntry,
-								xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
+								xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(self->priv->window)));
 		}
 	}
 
@@ -320,15 +316,11 @@ static void _xfdashboard_window_content_x11_resume_on_idle_remove(XfdashboardWin
 /* Add window content to resume on idle queue */
 static void _xfdashboard_window_content_x11_resume_on_idle_add(XfdashboardWindowContentX11 *self)
 {
-	XfdashboardWindowContentX11Private		*priv;
-
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_CONTENT_X11(self));
-
-	priv=self->priv;
 
 	XFDASHBOARD_DEBUG(self, WINDOWS,
 						"Using resume on idle for window '%s'",
-						xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
+						xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(self->priv->window)));
 
 	/* Only add callback to resume window content if no one was added */
 	if(!g_list_find(_xfdashboard_window_content_x11_resume_idle_queue, self))
@@ -337,7 +329,7 @@ static void _xfdashboard_window_content_x11_resume_on_idle_add(XfdashboardWindow
 		_xfdashboard_window_content_x11_resume_idle_queue=g_list_append(_xfdashboard_window_content_x11_resume_idle_queue, self);
 		XFDASHBOARD_DEBUG(self, WINDOWS,
 							"Queued window resume of '%s'",
-							xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
+							xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(self->priv->window)));
 	}
 
 	/* Create idle source for resuming queued window contents but with
@@ -354,7 +346,7 @@ static void _xfdashboard_window_content_x11_resume_on_idle_add(XfdashboardWindow
 							"Created idle source with ID %u with priority of %d because of new resume queue created for window resume of '%s'",
 							_xfdashboard_window_content_x11_resume_idle_id,
 							_xfdashboard_window_content_x11_window_creation_priority,
-							xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(priv->window)));
+							xfdashboard_window_tracker_window_get_name(XFDASHBOARD_WINDOW_TRACKER_WINDOW(self->priv->window)));
 	}
 
 	/* Connect to "shutdown" signal of application to clean up resume queue */

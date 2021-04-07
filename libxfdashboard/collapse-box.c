@@ -161,18 +161,14 @@ static void _xfdashboard_collapse_box_on_child_actor_request_mode_changed(Xfdash
 																			GParamSpec *inSpec,
 																			gpointer inUserData)
 {
-	XfdashboardCollapseBoxPrivate	*priv;
-	ClutterActor					*child;
+	XfdashboardCollapseBoxPrivate	*priv=self->priv;
 	ClutterRequestMode				requestMode;
 
 	g_return_if_fail(XFDASHBOARD_IS_COLLAPSE_BOX(self));
 	g_return_if_fail(CLUTTER_IS_ACTOR(inUserData));
 
-	priv=self->priv;
-	child=CLUTTER_ACTOR(inUserData);
-
 	/* Check if property changed happened at child we remembered */
-	g_return_if_fail(child==priv->child);
+	g_return_if_fail(CLUTTER_ACTOR(inUserData)==priv->child);
 
 	/* Apply actor's request mode to us */
 	requestMode=clutter_actor_get_request_mode(priv->child);

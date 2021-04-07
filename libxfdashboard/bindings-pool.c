@@ -932,7 +932,7 @@ static gboolean _xfdashboard_bindings_pool_load_bindings_from_file(XfdashboardBi
 	/* Handle collected data if parsing was successful */
 	if(success)
 	{
-		guint							oldBindingsCount;
+		G_GNUC_UNUSED guint	oldBindingsCount;
 
 		/* Get current number of bindings */
 		oldBindingsCount=g_hash_table_size(priv->bindings);

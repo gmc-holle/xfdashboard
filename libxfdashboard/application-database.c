@@ -113,19 +113,15 @@ static void _xfdashboard_application_database_add_hashtable_item_to_list(gpointe
 static void _xfdashboard_application_database_on_application_menu_reload_required(XfdashboardApplicationDatabase *self,
 																					gpointer inUserData)
 {
-	GarconMenu		*menu;
-	GError			*error;
+	GError	*error=NULL;
 
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATION_DATABASE(self));
 	g_return_if_fail(GARCON_IS_MENU(inUserData));
 
-	menu=GARCON_MENU(inUserData);
-	error=NULL;
-
 	/* Reload application menu. This also emits all necessary signals. */
 	XFDASHBOARD_DEBUG(self, APPLICATIONS,
 						"Menu '%s' changed and requires a reload of application menu",
-						garcon_menu_element_get_name(GARCON_MENU_ELEMENT(menu)));
+						garcon_menu_element_get_name(GARCON_MENU_ELEMENT(inUserData)));
 	if(!_xfdashboard_application_database_load_application_menu(self, &error))
 	{
 		g_critical("Could not reload application menu: %s",

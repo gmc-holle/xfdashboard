@@ -102,7 +102,7 @@ struct _XfdashboardModelSortData
 };
 
 /* Checks for valid iterator for model */
-static gboolean _xfdashboard_model_iter_is_valid(XfdashboardModelIter *self, gboolean inNeedsIter)
+G_GNUC_UNUSED static gboolean _xfdashboard_model_iter_is_valid(XfdashboardModelIter *self, gboolean inNeedsIter)
 {
 	XfdashboardModelIterPrivate		*priv;
 
@@ -131,7 +131,7 @@ static gboolean _xfdashboard_model_iter_is_valid(XfdashboardModelIter *self, gbo
 }
 
 /* Checks if requested row is valid in this model */
-static gboolean _xfdashboard_model_is_valid_row(XfdashboardModel *self, gint inRow)
+G_GNUC_UNUSED static gboolean _xfdashboard_model_is_valid_row(XfdashboardModel *self, gint inRow)
 {
 	XfdashboardModelPrivate			*priv;
 
