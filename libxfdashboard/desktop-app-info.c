@@ -421,10 +421,11 @@ static void _xfdashboard_desktop_app_info_update_keywords(XfdashboardDesktopAppI
 	}
 
 	/* Get application actions for menu item (desktop entry) */
-#if 0 /*GARCON_CHECK_VERSION(0, 6, 3)*/
+#if GARCON_CHECK_VERSION(0, 6, 3)
 	if(priv->item)
 	{
 		const GList							*keywords;
+		const GList							*iter;
 
 		/* Get keywords from garcon menu item and create a deep copy of list */
 		keywords=garcon_menu_item_get_keywords(priv->item);
@@ -1149,7 +1150,7 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 																		GError **outError)
 {
 	XfdashboardDesktopAppInfoPrivate			*priv;
-	GString									*string;
+	GString										*string;
 	gchar										*expanded;
 	gchar										*uri;
 	gchar										*filename;
@@ -1183,10 +1184,10 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 	name=garcon_menu_item_get_name(priv->item);
 	uri=garcon_menu_item_get_uri(priv->item);
 	expanded=xfce_expand_desktop_entry_field_codes(inCommand, (GSList*)inURIs,
-																								garcon_menu_item_get_icon_name(priv->item),
-																								name, uri,
-																								garcon_menu_item_requires_terminal(priv->item));
-  g_free(uri);
+													garcon_menu_item_get_icon_name(priv->item),
+													name, uri,
+													garcon_menu_item_requires_terminal(priv->item));
+	g_free(uri);
 
 	if(!expanded)
 	{
@@ -1960,7 +1961,14 @@ static void xfdashboard_desktop_app_info_init(XfdashboardDesktopAppInfo *self)
 
 /* IMPLEMENTATION: Public API */
 
-/* Create new instance */
+/** xfdashboard_desktop_app_info_new_from_desktop_id:
+ * @inDesktopID: The desktop ID
+ *
+ * Creates a #XfdashboardDesktopAppInfo object for the desktop ID at @inDesktopID.
+ *
+ * Return value: A new #XfdashboardDesktopAppInfo, or %NULL if desktop ID does
+ *   not exists. 
+ */
 GAppInfo* xfdashboard_desktop_app_info_new_from_desktop_id(const gchar *inDesktopID)
 {
 	XfdashboardDesktopAppInfo		*instance;
@@ -1999,6 +2007,13 @@ GAppInfo* xfdashboard_desktop_app_info_new_from_desktop_id(const gchar *inDeskto
 	return(G_APP_INFO(instance));
 }
 
+/** xfdashboard_desktop_app_info_new_from_path:
+ * @inPath: The file path for desktop file
+ *
+ * Creates a #XfdashboardDesktopAppInfo object for the file at @inPath.
+ *
+ * Return value: A new #XfdashboardDesktopAppInfo
+ */
 GAppInfo* xfdashboard_desktop_app_info_new_from_path(const gchar *inPath)
 {
 	XfdashboardDesktopAppInfo	*instance;
@@ -2017,6 +2032,14 @@ GAppInfo* xfdashboard_desktop_app_info_new_from_path(const gchar *inPath)
 	return(G_APP_INFO(instance));
 }
 
+/** xfdashboard_desktop_app_info_new_from_file:
+ * @inFile: The file of type #GFile for desktop file
+ *
+ * Creates a #XfdashboardDesktopAppInfo object for the file at @inFile
+ * of type #GFile.
+ *
+ * Return value: A new #XfdashboardDesktopAppInfo
+ */
 GAppInfo* xfdashboard_desktop_app_info_new_from_file(GFile *inFile)
 {
 	g_return_val_if_fail(G_IS_FILE(inFile), NULL);
@@ -2027,6 +2050,14 @@ GAppInfo* xfdashboard_desktop_app_info_new_from_file(GFile *inFile)
 									NULL)));
 }
 
+/** xfdashboard_desktop_app_info_new_from_menu_item:
+ * @inFile: The menu item of type #GarconMenuItem for desktop file
+ *
+ * Creates a #XfdashboardDesktopAppInfo object for the menu item at @inMenuItem
+ * of type #GarconMenuItem.
+ *
+ * Return value: A new #XfdashboardDesktopAppInfo
+ */
 GAppInfo* xfdashboard_desktop_app_info_new_from_menu_item(GarconMenuItem *inMenuItem)
 {
 	XfdashboardDesktopAppInfo	*instance;
@@ -2061,7 +2092,14 @@ GAppInfo* xfdashboard_desktop_app_info_new_from_menu_item(GarconMenuItem *inMenu
 	return(G_APP_INFO(instance));
 }
 
-/* Determine if desktop app info is valid */
+/** xfdashboard_desktop_app_info_is_valid:
+ * @self: A #XfdashboardDesktopAppInfo
+ *
+ * Determine if desktop app info at @self is valid.
+ *
+ * Return value: %TRUE if instance of #XfdashboardDesktopAppInfo is valid and
+ *   could be used. Otherwise %FALSE.
+ */
 gboolean xfdashboard_desktop_app_info_is_valid(XfdashboardDesktopAppInfo *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
@@ -2069,7 +2107,14 @@ gboolean xfdashboard_desktop_app_info_is_valid(XfdashboardDesktopAppInfo *self)
 	return(self->priv->isValid);
 }
 
-/* Get file of desktop app info */
+/** xfdashboard_desktop_app_info_get_file:
+ * @self: A #XfdashboardDesktopAppInfo
+ *
+ * Get file of desktop app info at @self.
+ *
+ * Return value: The #GFile object of #XfdashboardDesktopAppInfo or %NULL if
+ *   desktop app info is invalid or no file exists.
+ */
 GFile* xfdashboard_desktop_app_info_get_file(XfdashboardDesktopAppInfo *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), NULL);
@@ -2077,7 +2122,14 @@ GFile* xfdashboard_desktop_app_info_get_file(XfdashboardDesktopAppInfo *self)
 	return(self->priv->file);
 }
 
-/* Reload desktop app info */
+/** xfdashboard_desktop_app_info_reload:
+ * @self: A #XfdashboardDesktopAppInfo
+ *
+ * Reloads desktop app info at @self and emits signal ::changed.
+ *
+ * Return value: %TRUE if instance of #XfdashboardDesktopAppInfo could be reloaded.
+ *   Otherwise %FALSE.
+ */
 gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 {
 	XfdashboardDesktopAppInfoPrivate	*priv;
@@ -2142,10 +2194,20 @@ gboolean xfdashboard_desktop_app_info_reload(XfdashboardDesktopAppInfo *self)
 	return(success);
 }
 
-/* Get list of application actions of desktop app info */
-GList* xfdashboard_desktop_app_info_get_actions(XfdashboardDesktopAppInfo *self)
+/** xfdashboard_desktop_app_info_get_actions:
+ * @self: A #XfdashboardDesktopAppInfo
+ *
+ * Returns a list of all application actions of desktop app info at @self. The
+ * list is a #GList and each element contains a #XfdashboardDesktopAppInfoAction.
+ * The returned list is owned by @self and should not be modified.
+ *
+ * Return value: (element-type XfdashboardDesktopAppInfoAction) (transfer none):
+ *   The list of application actions of type #XfdashboardDesktopAppInfoAction
+ *   provided by this desktop app info at @self.
+ */
+const GList* xfdashboard_desktop_app_info_get_actions(XfdashboardDesktopAppInfo *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), NULL);
 
 	/* Update list of application actions */
 	_xfdashboard_desktop_app_info_update_actions(self);
@@ -2154,7 +2216,21 @@ GList* xfdashboard_desktop_app_info_get_actions(XfdashboardDesktopAppInfo *self)
 	return(self->priv->actions);
 }
 
-/* Launch application action of desktop app info */
+/** xfdashboard_desktop_app_info_launch_action:
+ * @self: A #XfdashboardDesktopAppInfo
+ * @inAction: A #XfdashboardDesktopAppInfoAction of action to launch
+ * @inContext: A #GAppLaunchContext of context to launch action at
+ * @outError: A return location for a #GError or %NULL
+ *
+ * Launch application action @inAction of desktop app infoat @self. If @inContext
+ * is not %NULL this context is used when launching the action.
+ *
+ * If launching the action fails, the error message will be placed inside error
+ * at @outError (if not %NULL).
+ *
+ * Return value: %TRUE if launching action succeeded or %FALSE if it failed and
+ *   error is stored at @outError.
+ */
 gboolean xfdashboard_desktop_app_info_launch_action(XfdashboardDesktopAppInfo *self,
 													XfdashboardDesktopAppInfoAction *inAction,
 													GAppLaunchContext *inContext,
@@ -2181,6 +2257,22 @@ gboolean xfdashboard_desktop_app_info_launch_action(XfdashboardDesktopAppInfo *s
 	return(success);
 }
 
+/** xfdashboard_desktop_app_info_launch_action_by_name:
+ * @self: A #XfdashboardDesktopAppInfo
+ * @inAction: The name of action to launch
+ * @inContext: A #GAppLaunchContext of context to launch action at
+ * @outError: A return location for a #GError or %NULL
+ *
+ * Launch application action @inActionName of desktop app infoat @self. Only
+ * action names as returned from xfdashboard_desktop_app_info_get_actions().
+ * If @inContext is not %NULL this context is used when launching the action.
+ *
+ * If launching the action fails, the error message will be placed inside error
+ * at @outError (if not %NULL).
+ *
+ * Return value: %TRUE if launching action succeeded or %FALSE if it failed and
+ *   error is stored at @outError.
+ */
 gboolean xfdashboard_desktop_app_info_launch_action_by_name(XfdashboardDesktopAppInfo *self,
 															const gchar *inActionName,
 															GAppLaunchContext *inContext,
@@ -2245,14 +2337,376 @@ gboolean xfdashboard_desktop_app_info_launch_action_by_name(XfdashboardDesktopAp
 	return(success);
 }
 
-/* Get list of keywords of desktop app info */
-GList* xfdashboard_desktop_app_info_get_keywords(XfdashboardDesktopAppInfo *self)
+/** xfdashboard_desktop_app_info_get_keywords:
+ * @self: A #XfdashboardDesktopAppInfo
+ *
+ * Returns a list of all keywords of desktop app info at @self. The list is a
+ * #GList and each element contains a string with one keyword. The returned
+ * list is owned by @self and should not be modified.
+ *
+ * Return value: (element-type utf8) (transfer none):
+ *   The list of keywords of type string  provided by this desktop app info.
+ */
+const GList* xfdashboard_desktop_app_info_get_keywords(XfdashboardDesktopAppInfo *self)
 {
-	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), NULL);
 
 	/* Update list of keywords */
 	_xfdashboard_desktop_app_info_update_keywords(self);
 
 	/* Return the list of keywords */
 	return(self->priv->keywords);
+}
+
+/** xfdashboard_desktop_app_info_has_key:
+ * @self: A #XfdashboardDesktopAppInfo
+ * @inKey: The key to lookup
+ *
+ * Checks if key @inKey exists at desktop app info at @self.
+ *
+ * Note: This function will cause to load a secondary source which is the same
+ * desktop app file although it is the same file as used by #GarconMenuItem but
+ * this time as #GKeyFile object to get access to entries not provided by garcon
+ * or implemented in an inaccessible way for xfdashboard.
+
+ * Return value: %TRUE if key exists or %FALSE if it does not exists.
+ */
+gboolean xfdashboard_desktop_app_info_has_key(XfdashboardDesktopAppInfo *self, const gchar *inKey)
+{
+	XfdashboardDesktopAppInfoPrivate		*priv;
+	gboolean								exists;
+	GError									*error;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+	g_return_val_if_fail(inKey && *inKey, FALSE);
+
+	priv=self->priv;
+	error=NULL;
+
+	/* Garcon does not provide an accessor function to get other entries from
+	 * desktop app info. So load them ourselve from secondary source.
+	 */
+	exists=FALSE;
+	if(_xfdashboard_desktop_app_info_load_secondary_source(self))
+	{
+		exists=g_key_file_has_key(priv->secondarySource,
+									G_KEY_FILE_DESKTOP_GROUP,
+									inKey,
+									&error);
+		if(error)
+		{
+			/* Show warning */
+			g_warning("Could not lookup key '%s' for desktop ID '%s': %s",
+						inKey,
+						priv->desktopID,
+						error ? error->message : "Unknown error");
+
+			/* Release allocated resources */
+			if(error) g_error_free(error);
+		}
+	}
+
+	/* Return status of lookup */
+	return(exists);
+}
+
+/** xfdashboard_desktop_app_info_get_string:
+ * @self: A #XfdashboardDesktopAppInfo
+ * @inKey: The key to retrieve string from
+ *
+ * Returns the string value associated with key @inKey from desktop app info
+ * at @self.
+ *
+ * Note: This function will cause to load a secondary source which is the same
+ * desktop app file although it is the same file as used by #GarconMenuItem but
+ * this time as #GKeyFile object to get access to entries not provided by garcon
+ * or implemented in an inaccessible way for xfdashboard.
+
+ * Return value: The value as string or %NULL if key does not exists. The
+ *   returned value must be freed with g_free().
+ */
+gchar* xfdashboard_desktop_app_info_get_string(XfdashboardDesktopAppInfo *self, const gchar *inKey)
+{
+	XfdashboardDesktopAppInfoPrivate		*priv;
+	gchar									*value;
+	GError									*error;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), NULL);
+	g_return_val_if_fail(inKey && *inKey, NULL);
+
+	priv=self->priv;
+	error=NULL;
+
+	/* Garcon does not provide an accessor function to get other entries from
+	 * desktop app info. So load them ourselve from secondary source.
+	 */
+	value=NULL;
+	if(_xfdashboard_desktop_app_info_load_secondary_source(self))
+	{
+		value=g_key_file_get_string(priv->secondarySource,
+										G_KEY_FILE_DESKTOP_GROUP,
+										inKey,
+										&error);
+		if(error)
+		{
+			/* Show warning */
+			g_warning("Could get string from key '%s' of desktop ID '%s': %s",
+						inKey,
+						priv->desktopID,
+						error ? error->message : "Unknown error");
+
+			/* Release allocated resources */
+			if(error) g_error_free(error);
+			if(value)
+			{
+				g_free(value);
+				value=NULL;
+			}
+		}
+	}
+
+	/* Return value of key */
+	return(value);
+}
+
+/** xfdashboard_desktop_app_info_get_locale_string:
+ * @self: A #XfdashboardDesktopAppInfo
+ * @inKey: The key to retrieve string from
+ *
+ * Returns the string value associated with key @inKey in the current locale
+ * from desktop app info at @self. If no translation for key in current locale
+ * exists, the untranslated value will be returned.
+ *
+ * Note: This function will cause to load a secondary source which is the same
+ * desktop app file although it is the same file as used by #GarconMenuItem but
+ * this time as #GKeyFile object to get access to entries not provided by garcon
+ * or implemented in an inaccessible way for xfdashboard.
+
+ * Return value: The value as string or %NULL if key does not exists. The
+ *   returned value must be freed with g_free().
+ */
+gchar* xfdashboard_desktop_app_info_get_locale_string(XfdashboardDesktopAppInfo *self, const gchar *inKey)
+{
+	XfdashboardDesktopAppInfoPrivate		*priv;
+	gchar									*value;
+	GError									*error;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), NULL);
+	g_return_val_if_fail(inKey && *inKey, NULL);
+
+	priv=self->priv;
+	error=NULL;
+
+	/* Garcon does not provide an accessor function to get other entries from
+	 * desktop app info. So load them ourselve from secondary source.
+	 */
+	value=NULL;
+	if(_xfdashboard_desktop_app_info_load_secondary_source(self))
+	{
+		value=g_key_file_get_locale_string(priv->secondarySource,
+											G_KEY_FILE_DESKTOP_GROUP,
+											inKey,
+											NULL,
+											&error);
+		if(error)
+		{
+			/* Show warning */
+			g_warning("Could get localized string from key '%s' of desktop ID '%s': %s",
+						inKey,
+						priv->desktopID,
+						error ? error->message : "Unknown error");
+
+			/* Release allocated resources */
+			if(error) g_error_free(error);
+			if(value)
+			{
+				g_free(value);
+				value=NULL;
+			}
+		}
+	}
+
+	/* Return value of key */
+	return(value);
+}
+
+/** xfdashboard_desktop_app_info_get_string_list:
+ * @self: A #XfdashboardDesktopAppInfo
+ * @inKey: The key to retrieve string list from
+ *
+ * Returns the string list value associated with key @inKey from desktop app info
+ * at @self.
+ *
+ * Note: This function will cause to load a secondary source which is the same
+ * desktop app file although it is the same file as used by #GarconMenuItem but
+ * this time as #GKeyFile object to get access to entries not provided by garcon
+ * or implemented in an inaccessible way for xfdashboard.
+
+ * Return value: (array zero-terminated=1 length=length) (element-type utf8) (transfer full):
+ *   A %NULL-terminated string array or %NULL if key does not exists. The
+ *   returned value must be freed with g_strfreev().
+ */
+gchar** xfdashboard_desktop_app_info_get_string_list(XfdashboardDesktopAppInfo *self, const gchar *inKey)
+{
+	XfdashboardDesktopAppInfoPrivate		*priv;
+	gchar									**value;
+	GError									*error;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), NULL);
+	g_return_val_if_fail(inKey && *inKey, NULL);
+
+	priv=self->priv;
+	error=NULL;
+
+	/* Garcon does not provide an accessor function to get other entries from
+	 * desktop app info. So load them ourselve from secondary source.
+	 */
+	value=NULL;
+	if(_xfdashboard_desktop_app_info_load_secondary_source(self))
+	{
+		value=g_key_file_get_string_list(priv->secondarySource,
+											G_KEY_FILE_DESKTOP_GROUP,
+											inKey,
+											NULL,
+											&error);
+		if(error)
+		{
+			/* Show warning */
+			g_warning("Could get string list from key '%s' of desktop ID '%s': %s",
+						inKey,
+						priv->desktopID,
+						error ? error->message : "Unknown error");
+
+			/* Release allocated resources */
+			if(error) g_error_free(error);
+			if(value)
+			{
+				g_strfreev(value);
+				value=NULL;
+			}
+		}
+	}
+
+	/* Return value of key */
+	return(value);
+}
+
+/** xfdashboard_desktop_app_info_get_locale_string_list:
+ * @self: A #XfdashboardDesktopAppInfo
+ * @inKey: The key to retrieve string list from
+ *
+ * Returns the string list value associated with key @inKey in the current locale
+ * from desktop app info at @self. If no translation for key in current locale
+ * exists, the untranslated values will be returned.
+ *
+ * Note: This function will cause to load a secondary source which is the same
+ * desktop app file although it is the same file as used by #GarconMenuItem but
+ * this time as #GKeyFile object to get access to entries not provided by garcon
+ * or implemented in an inaccessible way for xfdashboard.
+
+ * Return value: (array zero-terminated=1 length=length) (element-type utf8) (transfer full):
+ *   A %NULL-terminated string array or %NULL if key does not exists. The
+ *   returned value must be freed with g_strfreev().
+ */
+gchar** xfdashboard_desktop_app_info_get_locale_string_list(XfdashboardDesktopAppInfo *self, const gchar *inKey)
+{
+	XfdashboardDesktopAppInfoPrivate		*priv;
+	gchar									**value;
+	GError									*error;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), NULL);
+	g_return_val_if_fail(inKey && *inKey, NULL);
+
+	priv=self->priv;
+	error=NULL;
+
+	/* Garcon does not provide an accessor function to get other entries from
+	 * desktop app info. So load them ourselve from secondary source.
+	 */
+	value=NULL;
+	if(_xfdashboard_desktop_app_info_load_secondary_source(self))
+	{
+		value=g_key_file_get_locale_string_list(priv->secondarySource,
+												G_KEY_FILE_DESKTOP_GROUP,
+												inKey,
+												NULL,
+												NULL,
+												&error);
+		if(error)
+		{
+			/* Show warning */
+			g_warning("Could get localized string list from key '%s' of desktop ID '%s': %s",
+						inKey,
+						priv->desktopID,
+						error ? error->message : "Unknown error");
+
+			/* Release allocated resources */
+			if(error) g_error_free(error);
+			if(value)
+			{
+				g_strfreev(value);
+				value=NULL;
+			}
+		}
+	}
+
+	/* Return value of key */
+	return(value);
+}
+
+/** xfdashboard_desktop_app_info_get_bool:
+ * @self: A #XfdashboardDesktopAppInfo
+ * @inKey: The key to retrieve boolean value from
+ *
+ * Returns the boolean value associated with key @inKey from desktop app info
+ * at @self.
+ *
+ * This function will return %FALSE if either the value of key resolves to false
+ * or if key does not exist. So the existence of key should be checked in addition
+ * with xfdashboard_desktop_app_info_has_key().
+ *
+ * Note: This function will cause to load a secondary source which is the same
+ * desktop app file although it is the same file as used by #GarconMenuItem but
+ * this time as #GKeyFile object to get access to entries not provided by garcon
+ * or implemented in an inaccessible way for xfdashboard.
+
+ * Return value: The value as boolean or %FALSE if key does not exists.
+ */
+gboolean xfdashboard_desktop_app_info_get_bool(XfdashboardDesktopAppInfo *self, const gchar *inKey)
+{
+	XfdashboardDesktopAppInfoPrivate		*priv;
+	gboolean								value;
+	GError									*error;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_DESKTOP_APP_INFO(self), FALSE);
+	g_return_val_if_fail(inKey && *inKey, FALSE);
+
+	priv=self->priv;
+	error=NULL;
+
+	/* Garcon does not provide an accessor function to get other entries from
+	 * desktop app info. So load them ourselve from secondary source.
+	 */
+	value=FALSE;
+	if(_xfdashboard_desktop_app_info_load_secondary_source(self))
+	{
+		value=g_key_file_get_boolean(priv->secondarySource,
+										G_KEY_FILE_DESKTOP_GROUP,
+										inKey,
+										&error);
+		if(error)
+		{
+			/* Show warning */
+			g_warning("Could get boolean from key '%s' of desktop ID '%s': %s",
+						inKey,
+						priv->desktopID,
+						error ? error->message : "Unknown error");
+
+			/* Release allocated resources */
+			if(error) g_error_free(error);
+		}
+	}
+
+	/* Return value of key */
+	return(value);
 }

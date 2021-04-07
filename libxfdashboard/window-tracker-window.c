@@ -892,10 +892,8 @@ gint xfdashboard_window_tracker_window_get_pid(XfdashboardWindowTrackerWindow *s
 	return(-1);
 }
 
-/* Get all possible instance name for window, e.g. class name, instance name.
- * Caller is responsible to free result with g_strfreev() if not NULL.
- */
-gchar** xfdashboard_window_tracker_window_get_instance_names(XfdashboardWindowTrackerWindow *self)
+/* Try to determine AppInfo for window */
+GAppInfo* xfdashboard_window_tracker_window_get_appinfo(XfdashboardWindowTrackerWindow *self)
 {
 	XfdashboardWindowTrackerWindowInterface		*iface;
 
@@ -904,13 +902,13 @@ gchar** xfdashboard_window_tracker_window_get_instance_names(XfdashboardWindowTr
 	iface=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GET_IFACE(self);
 
 	/* Call virtual function */
-	if(iface->get_instance_names)
+	if(iface->get_appinfo)
 	{
-		return(iface->get_instance_names(self));
+		return(iface->get_appinfo(self));
 	}
 
 	/* If we get here the virtual function was not overridden */
-	XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, "get_instance_names");
+	XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, "get_appinfo");
 	return(NULL);
 }
 

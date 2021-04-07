@@ -962,8 +962,11 @@ GQuark xfdashboard_core_error_quark(void)
  * Initializes the core instance at @self and sets up all other components
  * like plugin manager, search manager, window tracker manager etc.
  *
- * If initialization fails Athe error message will be placed inside error
- * at @outError (if not NULL) instead of being printed on the display.
+ * If initialization fails, the error message will be placed inside error
+ * at @outError (if not %NULL) instead of being printed on the display.
+ *
+ * Return value: %TRUE if instance of #XfdashboardCore could be initialized
+ *   or %FALSE if not and error is stored at @outError.
  */
 gboolean xfdashboard_core_initialize(XfdashboardCore *self, GError **outError)
 {
