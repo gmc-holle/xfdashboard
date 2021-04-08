@@ -22,6 +22,8 @@
  * 
  */
 
+#undef ENABLE_STATISTICS_FILE
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -83,11 +85,6 @@ static GParamSpec* XfdashboardApplicationsSearchProviderProperties[PROP_LAST]={ 
 /* IMPLEMENTATION: Private variables and methods */
 #define DEFAULT_DELIMITERS														"\t\n\r "
 
-#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE				"applications-search-provider-statistics.ini"
-#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_ENTRIES_GROUP		"Entries"
-#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_ENTRIES_COUNT		"Count"
-#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_USED_COUNTER_GROUP	"Used Counters"
-
 typedef struct _XfdashboardApplicationsSearchProviderGlobal			XfdashboardApplicationsSearchProviderGlobal;
 struct _XfdashboardApplicationsSearchProviderGlobal
 {
@@ -100,6 +97,14 @@ struct _XfdashboardApplicationsSearchProviderGlobal
 
 	guint								maxUsedCounter;
 };
+
+#ifdef ENABLE_STATISTICS_FILE
+
+#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE				"applications-search-provider-statistics.ini"
+#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_ENTRIES_GROUP		"Entries"
+#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_ENTRIES_COUNT		"Count"
+#define XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_USED_COUNTER_GROUP	"Used Counters"
+
 
 G_LOCK_DEFINE_STATIC(_xfdashboard_applications_search_provider_statistics_lock);
 XfdashboardApplicationsSearchProviderGlobal		_xfdashboard_applications_search_provider_statistics={0, };
@@ -667,6 +672,7 @@ static void _xfdashboard_applications_search_provider_create_statistics(Xfdashbo
 	/* Unlock for thread-safety */
 	G_UNLOCK(_xfdashboard_applications_search_provider_statistics_lock);
 }
+#endif
 
 /* An application was added to database */
 static void _xfdashboard_applications_search_provider_on_application_added(XfdashboardApplicationsSearchProvider *self,
@@ -925,15 +931,15 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 																gchar **inSearchTerms,
 																GAppInfo *inAppInfo)
 {
-	XfdashboardApplicationsSearchProviderPrivate		*priv;
-	gchar												*title;
-	gchar												*description;
-	GList												*keywords;
-	const gchar											*command;
-	const gchar											*value;
-	gint												matchesFound, matchesExpected;
-	gfloat												pointsSearch;
-	gfloat												score;
+	XfdashboardApplicationsSearchProviderPrivate			*priv;
+	gchar													*title;
+	gchar													*description;
+	GList													*keywords;
+	const gchar												*command;
+	const gchar												*value;
+	gint													matchesFound, matchesExpected;
+	gfloat													pointsSearch;
+	gfloat													score;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(self), -1.0f);
 	g_return_val_if_fail(G_IS_APP_INFO(inAppInfo), -1.0f);
@@ -976,8 +982,8 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 
 	if(XFDASHBOARD_IS_DESKTOP_APP_INFO(inAppInfo))
 	{
-		const GList										*appKeywords;
-		const GList										*iter;
+		const GList											*appKeywords;
+		const GList											*iter;
 
 		appKeywords=xfdashboard_desktop_app_info_get_keywords(XFDASHBOARD_DESKTOP_APP_INFO(inAppInfo));
 		for(iter=appKeywords; iter; iter=g_list_next(iter))
@@ -990,9 +996,9 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 	pointsSearch=0.0f;
 	while(*inSearchTerms)
 	{
-		gboolean										termMatch;
-		gchar											*commandPos;
-		gfloat											pointsTerm;
+		gboolean											termMatch;
+		gchar												*commandPos;
+		gfloat												pointsTerm;
 
 		/* Reset "found" indicator and score of current search term */
 		termMatch=FALSE;
@@ -1057,9 +1063,8 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 	 */
 	if(matchesFound>=matchesExpected)
 	{
-		gfloat											currentPoints;
-		gfloat											maxPoints;
-		XfdashboardApplicationsSearchProviderStatistics	*stats;
+		gfloat												currentPoints;
+		gfloat												maxPoints;
 
 		currentPoints=0.0f;
 		maxPoints=0.0f;
@@ -1073,17 +1078,21 @@ static gfloat _xfdashboard_applications_search_provider_score(XfdashboardApplica
 			maxPoints+=matchesExpected*1.0f;
 		}
 
+#ifdef ENABLE_STATISTICS_FILE
 		/* If used counter should be taken into calculation add the highest number
 		 * of any application to the highest points possible and also add the number
 		 * of launches of this application to the total points we got so far.
 		 */
 		if(priv->currentSortMode & XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE_MOST_USED)
 		{
+			XfdashboardApplicationsSearchProviderStatistics	*stats;
+
 			maxPoints+=(_xfdashboard_applications_search_provider_statistics.maxUsedCounter*1.0f);
 
 			stats=_xfdashboard_applications_search_provider_statistics_get(g_app_info_get_id(inAppInfo));
 			if(stats) currentPoints+=(stats->usedCounter*1.0f);
 		}
+#endif
 
 		/* Calculate score but if maximum points is still zero we should do a simple
 		 * match by setting score to 1.
@@ -1162,8 +1171,10 @@ static void _xfdashboard_applications_search_provider_initialize(XfdashboardSear
 {
 	g_return_if_fail(XFDASHBOARD_IS_APPLICATIONS_SEARCH_PROVIDER(inProvider));
 
+#ifdef ENABLE_STATISTICS_FILE
 	/* Create and load statistics hash-table (will only be done once) */
 	_xfdashboard_applications_search_provider_create_statistics(XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER(inProvider));
+#endif
 }
 
 /* Get display name for this search provider */
