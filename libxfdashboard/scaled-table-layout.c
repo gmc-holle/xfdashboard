@@ -261,13 +261,15 @@ static void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self
 	gint									row, col;
 	ClutterActor							*child;
 	ClutterActorIter						iter;
-	gfloat									cellWidth, cellHeight;
+	gfloat									cellWidth, cellHeight, cellPadding;
 	gfloat									childWidth, childHeight;
 	gfloat									scaledChildWidth, scaledChildHeight;
 	gfloat									largestWidth, largestHeight;
 	gfloat									scaleWidth, scaleHeight;
 	gfloat									aspectRatio;
 	gfloat									x, y;
+	gint									adjuster, adjustRowBegin, filledCols;
+	gfloat									unfilledPadding;
 	ClutterActorBox							childAllocation;
 
 	g_return_if_fail(XFDASHBOARD_IS_SCALED_TABLE_LAYOUT(self));
@@ -305,9 +307,16 @@ static void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self
 		}
 	}
 
+	/* Determine how many columns in last row would not be filled, spread them
+	 * over the last rows and calculate padding for each row.
+	 */
+	filledCols=priv->numberChildren % priv->columns;
+	adjustRowBegin=(filledCols==0 ? 0 : priv->rows-priv->columns+filledCols);
+	unfilledPadding=cellWidth/2.0f;
+
 	/* Iterate through child actors and set their new allocation */
-	row=col=0;
-	x=y=0.0f;
+	row=col=adjuster=0;
+	x=y=cellPadding=0.0f;
 	clutter_actor_iter_init(&iter, CLUTTER_ACTOR(inContainer));
 	while(clutter_actor_iter_next(&iter, &child))
 	{
@@ -396,9 +405,17 @@ static void _xfdashboard_scaled_table_layout_allocate(ClutterLayoutManager *self
 		clutter_actor_allocate(child, &childAllocation, inFlags);
 
 		/* Set up for next child */
-		col=(col+1) % priv->columns;
-		if(col==0) row++;
-		x=col*(cellWidth+priv->columnSpacing);
+		col=(col+1) % (priv->columns-adjuster);
+		if(col==0)
+		{
+			row++;
+			if(adjuster==0 && row==adjustRowBegin)
+			{
+				adjuster=1;
+			}
+		}
+
+		x=(col*(cellWidth+priv->columnSpacing))+(adjuster*unfilledPadding);
 		y=row*(cellHeight+priv->rowSpacing);
 	}
 }
