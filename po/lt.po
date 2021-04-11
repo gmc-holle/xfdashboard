@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-29 12:48+0200\n"
+"POT-Creation-Date: 2021-04-08 12:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Moo, 2021\n"
 "Language-Team: Lithuanian (https://www.transifex.com/xfce/teams/16840/lt/)\n"
@@ -76,6 +76,14 @@ msgstr "Programų paieška"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version completes gradients with linear gradients "
+"for outline and background filling."
+msgstr ""
+"Ši nestabili plėtojimo versija užbaigia gradientus su tiesiniais "
+"gradientais, skirtais kontūrams ir fono užpildui."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
@@ -83,7 +91,7 @@ msgstr ""
 "Šioje nestabilioje plėtojimo versijoje pristatomas užbaigtas libxfdashboard "
 "pavertimas tikrąja biblioteka ir pristatomi kontūrų kelio gradientai."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -91,7 +99,7 @@ msgstr ""
 "Šioje nestabilioje plėtojimo versijoje nepristatoma nieko, kas būtų matoma "
 "naudotojui, bet pradėtas libxfdashboard perkėlimas į tikrą biblioteką."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -99,7 +107,7 @@ msgstr ""
 "Ši stabili versija ištaiso klaidą ir pakeičia AppInfo į AppStream "
 "metainformaciją."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -109,7 +117,7 @@ msgstr ""
 "iškylantieji meniu, kelios vidinės pusės, peršokimo sąrašų palaikymas ir "
 "t.t. Joje taip pat yra daugybė naujų ir atnaujintų vertimų."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -117,7 +125,7 @@ msgstr ""
 "Ši stabili versija ištaiso klaidą ir pirmojo paleidimo metu nustato "
 "teisingas numatytąsias programas."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -395,7 +403,7 @@ msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Nepavyko įvykdyti veiksmo „%s“, skirto programai „%s“: %s"
 
 #: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
-#: ../settings/plugins.c:795
+#: ../settings/plugins.c:794
 msgid "Unknown error"
 msgstr "Nežinoma klaida"
 
@@ -406,7 +414,7 @@ msgstr "Įvykdytas veiksmas „%s“, skirtas programai „%s“"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:751
+#: ../libxfdashboard/applications-search-provider.c:757
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
@@ -420,21 +428,21 @@ msgid "No information available for application"
 msgstr "Nėra apie programą prieinamos informacijos"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/applications-search-provider.c:753
+#: ../libxfdashboard/applications-search-provider.c:759
 #: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
 #: ../libxfdashboard/quicklaunch.c:442 ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "nežinoma klaida"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:764
+#: ../libxfdashboard/applications-search-provider.c:770
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
 #, c-format
 msgid "Application '%s' launched"
 msgstr "Paleista programa \"%s\""
 
-#: ../libxfdashboard/applications-search-provider.c:835
+#: ../libxfdashboard/applications-search-provider.c:841
 #: ../libxfdashboard/applications-view.c:415
 #: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
@@ -442,7 +450,7 @@ msgstr "Paleisti"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1172
+#: ../libxfdashboard/applications-search-provider.c:1183
 #: ../libxfdashboard/applications-view.c:1580
 #: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
@@ -474,12 +482,12 @@ msgstr "Visų įdiegtų programų sąrašas"
 msgid "Could not load theme '%s': %s"
 msgstr "Nepavyko įkelti temos \"%s\": %s"
 
-#: ../libxfdashboard/core.c:1259
+#: ../libxfdashboard/core.c:1261
 #, c-format
 msgid "Welcome to %s (%s)!"
 msgstr "Sveiki atvykę į %s (%s)!"
 
-#: ../libxfdashboard/core.c:1261
+#: ../libxfdashboard/core.c:1263
 #, c-format
 msgid "Welcome to %s!"
 msgstr "Sveiki atvykę į %s!"
@@ -590,7 +598,7 @@ msgstr "Pasirinkti sekundžių rodyklės fono spalvą"
 msgid "Adds a new view showing a clock"
 msgstr "Prideda naują rodinį, kuriame rodomas laikrodis"
 
-#: ../plugins/example-search-provider/example-search-provider.c:73
+#: ../plugins/example-search-provider/example-search-provider.c:67
 msgid "Example search"
 msgstr "Pavyzdinė paieška"
 
@@ -723,7 +731,7 @@ msgid "Configure plugin: %s"
 msgstr "Konfigūruoti įskiepį: %s"
 
 #. Create error message to store in list
-#: ../settings/plugins.c:794
+#: ../settings/plugins.c:793
 #, c-format
 msgid ""
 "<b>Plugin could not be loaded.</b>\n"
@@ -734,7 +742,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../settings/plugins.c:1006
+#: ../settings/plugins.c:1005
 msgid "Name"
 msgstr "Pavadinimas"
 
