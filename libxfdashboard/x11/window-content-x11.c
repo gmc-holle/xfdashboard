@@ -469,13 +469,15 @@ static void _xfdashboard_window_content_x11_on_workaround_state_changed(Xfdashbo
 					 * when can draw the last image known. If we can copy it successfully
 					 * replace current texture with the copied one.
 					 */
+					CoglTextureComponents	textureComponents;
 					CoglPixelFormat			textureFormat;
 					guint					textureWidth;
 					guint					textureHeight;
 					gint					textureSize;
 					guint8					*textureData;
 
-					textureFormat=cogl_texture_get_format(priv->texture);
+					textureComponents=cogl_texture_get_components(priv->texture);
+					textureFormat=(textureComponents==COGL_TEXTURE_COMPONENTS_RGBA ? COGL_PIXEL_FORMAT_RGBA_8888_PRE : COGL_PIXEL_FORMAT_RGB_888);
 					textureSize=cogl_texture_get_data(priv->texture, textureFormat, 0, NULL);
 					textureWidth=cogl_texture_get_width(priv->texture);
 					textureHeight=cogl_texture_get_height(priv->texture);
