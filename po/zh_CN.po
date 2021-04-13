@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-05 12:50+0100\n"
+"POT-Creation-Date: 2021-04-08 12:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: 玉堂白鹤 <yjwork@qq.com>, 2021\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/xfce/teams/16840/zh_CN/)\n"
@@ -75,30 +75,43 @@ msgstr "搜索应用"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version completes gradients with linear gradients "
+"for outline and background filling."
+msgstr "这个不稳定的开发版本可以通过轮廓和背景填充的线性渐变来完成渐变。"
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
+"This unstable development version introduces completes turning "
+"libxfdashboard into a real library and introduces path gradients for "
+"outlines."
+msgstr "这个不稳定的开发版本引入了将 libxfdashboard 变成真实库的完整功能，并引入了轮廓的路径渐变。 "
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr "这个不稳定的开发版本没有引入任何用户可见的内容，而是开始将 libxfmdashboard 移至真实库中。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
 msgstr "此稳定版本修复了一个错误，并用 AppStream metainfo 替换 AppInfo。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
 " of new and updated translations."
 msgstr "这个稳定的版本引入了许多新功能，比如动画，弹出菜单，多个后端和支持跳转列表等。它还包括许多新增和更新的翻译。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr "此稳定版本修复了在首次使用时设置正确的默认应用程序的错误。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -363,8 +376,8 @@ msgstr "xfdashboard 红色 wine 主题"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "无法对应用 ‘’%s 处理动作 '%s': '%s'"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:795
-#: ../settings/main.c:76
+#: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
+#: ../settings/plugins.c:794
 msgid "Unknown error"
 msgstr "未知错误"
 
@@ -375,7 +388,7 @@ msgstr "已处理对应用 ‘%s’ 的动作 '%s'"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:751
+#: ../libxfdashboard/applications-search-provider.c:757
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
@@ -389,73 +402,21 @@ msgid "No information available for application"
 msgstr "此应用没有可获得的介绍"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/application.c:298 ../libxfdashboard/application.c:593
-#: ../libxfdashboard/applications-search-provider.c:753
-#: ../libxfdashboard/applications-view.c:334
-#: ../libxfdashboard/quicklaunch.c:442
+#: ../libxfdashboard/applications-search-provider.c:759
+#: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
+#: ../libxfdashboard/quicklaunch.c:442 ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "未知错误"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:764
+#: ../libxfdashboard/applications-search-provider.c:770
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
 #, c-format
 msgid "Application '%s' launched"
 msgstr "应用'%s'已启动"
 
-#: ../libxfdashboard/application.c:296
-#, c-format
-msgid "Could not load theme '%s': %s"
-msgstr "无法加载主题'%s': %s"
-
-#: ../libxfdashboard/application.c:502
-#, c-format
-msgid "Welcome to %s (%s)!"
-msgstr "欢迎使用 %s (%s)!"
-
-#: ../libxfdashboard/application.c:504
-#, c-format
-msgid "Welcome to %s!"
-msgstr "欢迎使用 %s!"
-
-#: ../libxfdashboard/application.c:551
-msgid "Fork to background"
-msgstr "分叉到背景"
-
-#: ../libxfdashboard/application.c:552
-msgid "Quit running instance"
-msgstr "退出运行中的实例"
-
-#: ../libxfdashboard/application.c:553
-msgid "Restart running instance"
-msgstr "重启运行实例"
-
-#: ../libxfdashboard/application.c:554
-msgid ""
-"Toggles visibility if running instance was started in daemon mode otherwise "
-"it quits running non-daemon instance"
-msgstr "如果以守护程序模式启动的此正在运行的程序实例，则切换可见性，否则它会退出以非守护程序模式运行中的实例"
-
-#: ../libxfdashboard/application.c:555
-msgid "The ID of view to switch to on startup or resume"
-msgstr "在启动或唤醒时切换到的视图的 ID"
-
-#: ../libxfdashboard/application.c:556
-msgid "Show version"
-msgstr "显示版本"
-
-#: ../libxfdashboard/application.c:575
-msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "为 Xfce4 - 版本开发的一个类似仪表板的 Gnome Shell"
-
-#. Show error
-#: ../libxfdashboard/application.c:592
-#, c-format
-msgid "%s\n"
-msgstr "%s\n"
-
-#: ../libxfdashboard/applications-search-provider.c:835
+#: ../libxfdashboard/applications-search-provider.c:841
 #: ../libxfdashboard/applications-view.c:415
 #: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
@@ -463,7 +424,7 @@ msgstr "启动"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1172
+#: ../libxfdashboard/applications-search-provider.c:1183
 #: ../libxfdashboard/applications-view.c:1580
 #: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
@@ -489,6 +450,21 @@ msgstr "所有应用"
 #: ../libxfdashboard/applications-view.c:683
 msgid "List of all installed applications"
 msgstr "所有已安装的应用列表"
+
+#: ../libxfdashboard/core.c:371
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr "无法加载主题'%s': %s"
+
+#: ../libxfdashboard/core.c:1261
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr "欢迎使用 %s (%s)!"
+
+#: ../libxfdashboard/core.c:1263
+#, c-format
+msgid "Welcome to %s!"
+msgstr "欢迎使用 %s!"
 
 #: ../libxfdashboard/quicklaunch.c:384
 msgid "No windows to activate for application"
@@ -596,7 +572,7 @@ msgstr "选择秒针的背景颜色"
 msgid "Adds a new view showing a clock"
 msgstr "添加一个显示时钟的新视图"
 
-#: ../plugins/example-search-provider/example-search-provider.c:73
+#: ../plugins/example-search-provider/example-search-provider.c:67
 msgid "Example search"
 msgstr "示例搜索"
 
@@ -695,31 +671,6 @@ msgstr "低"
 msgid "seconds"
 msgstr "秒"
 
-#: ../settings/plugins.c:222
-#, c-format
-msgid "Configure plugin: %s"
-msgstr "配置插件: %s"
-
-#. Create error message to store in list
-#: ../settings/plugins.c:794
-#, c-format
-msgid ""
-"<b>Plugin could not be loaded.</b>\n"
-"\n"
-"%s"
-msgstr ""
-"<b>无法加载插件。</b>\n"
-"\n"
-"%s"
-
-#: ../settings/plugins.c:1006
-msgid "Name"
-msgstr "名称"
-
-#: ../settings/themes.c:731
-msgid "Theme"
-msgstr "主题"
-
 #: ../settings/main.c:46
 msgid "Settings manager socket"
 msgstr "设置管理器套接字"
@@ -745,3 +696,64 @@ msgid ""
 msgstr ""
 "%s: %s\n"
 "尝试 %s --help 查看可用命令行选项的完整列表。\n"
+
+#: ../settings/plugins.c:222
+#, c-format
+msgid "Configure plugin: %s"
+msgstr "配置插件: %s"
+
+#. Create error message to store in list
+#: ../settings/plugins.c:793
+#, c-format
+msgid ""
+"<b>Plugin could not be loaded.</b>\n"
+"\n"
+"%s"
+msgstr ""
+"<b>无法加载插件。</b>\n"
+"\n"
+"%s"
+
+#: ../settings/plugins.c:1005
+msgid "Name"
+msgstr "名称"
+
+#: ../settings/themes.c:731
+msgid "Theme"
+msgstr "主题"
+
+#: ../xfdashboard/application.c:466
+msgid "Fork to background"
+msgstr "分叉到背景"
+
+#: ../xfdashboard/application.c:467
+msgid "Quit running instance"
+msgstr "退出运行中的实例"
+
+#: ../xfdashboard/application.c:468
+msgid "Restart running instance"
+msgstr "重启运行实例"
+
+#: ../xfdashboard/application.c:469
+msgid ""
+"Toggles visibility if running instance was started in daemon mode otherwise "
+"it quits running non-daemon instance"
+msgstr "如果以守护程序模式启动的此正在运行的程序实例，则切换可见性，否则它会退出以非守护程序模式运行中的实例"
+
+#: ../xfdashboard/application.c:470
+msgid "The ID of view to switch to on startup or resume"
+msgstr "在启动或唤醒时切换到的视图的 ID"
+
+#: ../xfdashboard/application.c:471
+msgid "Show version"
+msgstr "显示版本"
+
+#: ../xfdashboard/application.c:490
+msgid "A Gnome Shell like dashboard for Xfce4 - version "
+msgstr "为 Xfce4 - 版本开发的一个类似仪表板的 Gnome Shell"
+
+#. Show error
+#: ../xfdashboard/application.c:507
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
