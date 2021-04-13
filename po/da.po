@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-28 00:48+0100\n"
+"POT-Creation-Date: 2021-04-08 12:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: scootergrisen, 2021\n"
 "Language-Team: Danish (https://www.transifex.com/xfce/teams/16840/da/)\n"
@@ -78,6 +78,33 @@ msgstr "Søger efter programmer"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version completes gradients with linear gradients "
+"for outline and background filling."
+msgstr ""
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
+"This unstable development version introduces completes turning "
+"libxfdashboard into a real library and introduces path gradients for "
+"outlines."
+msgstr ""
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+msgid ""
+"This unstable development version introduces nothing user visible but begin "
+"moving libxfdashboard into a real library."
+msgstr ""
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+msgid ""
+"This stable version fixes a bug and replaces AppInfo with AppStream "
+"metainfo."
+msgstr ""
+"Denne stabile version retter en fejl og erstatter AppInfo- med AppStream-"
+"metainfo."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
 " of new and updated translations."
@@ -86,7 +113,7 @@ msgstr ""
 "animationer pop op-menuer, adskillige motorer og understøttelse af hoplister"
 " osv. Den indeholder også massaere af nye og opdaterede oversættelser."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -94,7 +121,7 @@ msgstr ""
 "Denne stabile version retter en fejl ved indstilling af de korrekte "
 "standardprogrammer første gang det bruges."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -372,8 +399,8 @@ msgstr "Rødvin tema tile xfdashboard"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Kunne ikke udføre handlingen '%s' for programmet '%s': %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:826
-#: ../settings/main.c:63
+#: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
+#: ../settings/plugins.c:794
 msgid "Unknown error"
 msgstr "Ukendt fejl"
 
@@ -384,153 +411,111 @@ msgstr "Udførte handlingen '%s' for programmet '%s'"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:754
-#: ../libxfdashboard/applications-view.c:334
-#: ../libxfdashboard/quicklaunch.c:352 ../libxfdashboard/quicklaunch.c:400
-#: ../libxfdashboard/quicklaunch.c:458
+#: ../libxfdashboard/applications-search-provider.c:757
+#: ../libxfdashboard/applications-view.c:332
+#: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
+#: ../libxfdashboard/quicklaunch.c:440
 #, c-format
 msgid "Launching application '%s' failed: %s"
 msgstr "Start af program '%s' mislykkede: %s"
 
 #: ../libxfdashboard/application-button.c:745
-#: ../libxfdashboard/quicklaunch.c:354
+#: ../libxfdashboard/quicklaunch.c:336
 msgid "No information available for application"
 msgstr "Ingen information tilgængelige for programmet"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/application.c:308 ../libxfdashboard/application.c:618
-#: ../libxfdashboard/applications-search-provider.c:756
-#: ../libxfdashboard/applications-view.c:336
-#: ../libxfdashboard/quicklaunch.c:460
+#: ../libxfdashboard/applications-search-provider.c:759
+#: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
+#: ../libxfdashboard/quicklaunch.c:442 ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "ukendt fejl"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:767
-#: ../libxfdashboard/applications-view.c:347
-#: ../libxfdashboard/quicklaunch.c:471
+#: ../libxfdashboard/applications-search-provider.c:770
+#: ../libxfdashboard/applications-view.c:345
+#: ../libxfdashboard/quicklaunch.c:453
 #, c-format
 msgid "Application '%s' launched"
 msgstr "Programmet '%s' blev startet"
 
-#: ../libxfdashboard/application.c:306
-#, c-format
-msgid "Could not load theme '%s': %s"
-msgstr "Kunne ikke indlæse temaet '%s': %s"
-
-#: ../libxfdashboard/application.c:527
-#, c-format
-msgid "Welcome to %s (%s)!"
-msgstr "Velkommen til %s (%s)!"
-
-#: ../libxfdashboard/application.c:529
-#, c-format
-msgid "Welcome to %s!"
-msgstr "Velkommen til %s!"
-
-#: ../libxfdashboard/application.c:576
-msgid "Fork to background"
-msgstr "Forgren til baggrunden"
-
-#: ../libxfdashboard/application.c:577
-msgid "Quit running instance"
-msgstr "Afslut kørende instans"
-
-#: ../libxfdashboard/application.c:578
-msgid "Restart running instance"
-msgstr "Genstart kørende instans"
-
-#: ../libxfdashboard/application.c:579
-msgid ""
-"Toggles visibility if running instance was started in daemon mode otherwise "
-"it quits running non-daemon instance"
-msgstr ""
-"Skifter synligheden hvis den kørende instans blev startet i dæmontilstand, "
-"ellers afsluttes den kørende ikke-dæmon-instans"
-
-#: ../libxfdashboard/application.c:580
-msgid "The ID of view to switch to on startup or resume"
-msgstr ""
-"Id'et på visningen skal der skal skiftes til ved opstart eller genoptag"
-
-#: ../libxfdashboard/application.c:581
-msgid "Show version"
-msgstr "Vis version"
-
-#: ../libxfdashboard/application.c:600
-msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr ""
-"Et instrumentbræt til Xfce4 i stil med det der findes i Gnome Shell - "
-"version "
-
-#. Show error
-#: ../libxfdashboard/application.c:617
-#, c-format
-msgid "%s\n"
-msgstr "%s\n"
-
-#: ../libxfdashboard/applications-search-provider.c:838
-#: ../libxfdashboard/applications-view.c:417
-#: ../libxfdashboard/quicklaunch.c:682
+#: ../libxfdashboard/applications-search-provider.c:841
+#: ../libxfdashboard/applications-view.c:415
+#: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
 msgstr "Start"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1175
-#: ../libxfdashboard/applications-view.c:1587
-#: ../libxfdashboard/quicklaunch.c:3288
+#: ../libxfdashboard/applications-search-provider.c:1183
+#: ../libxfdashboard/applications-view.c:1580
+#: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
 msgstr "Programmer"
 
-#: ../libxfdashboard/applications-view.c:545
-#: ../libxfdashboard/applications-view.c:546
-#: ../libxfdashboard/applications-view.c:657
-#: ../libxfdashboard/applications-view.c:658
+#: ../libxfdashboard/applications-view.c:543
+#: ../libxfdashboard/applications-view.c:544
+#: ../libxfdashboard/applications-view.c:655
+#: ../libxfdashboard/applications-view.c:656
 msgid "Back"
 msgstr "Tilbage"
 
-#: ../libxfdashboard/applications-view.c:545
-#: ../libxfdashboard/applications-view.c:657
+#: ../libxfdashboard/applications-view.c:543
+#: ../libxfdashboard/applications-view.c:655
 msgid "Go back to previous menu"
 msgstr "Gå tilbage til forrige menu"
 
-#: ../libxfdashboard/applications-view.c:685
-#: ../libxfdashboard/applications-view.c:686
+#: ../libxfdashboard/applications-view.c:683
+#: ../libxfdashboard/applications-view.c:684
 msgid "All applications"
 msgstr "Alle programmer"
 
-#: ../libxfdashboard/applications-view.c:685
+#: ../libxfdashboard/applications-view.c:683
 msgid "List of all installed applications"
 msgstr "Liste over alle installerede programmer"
 
-#: ../libxfdashboard/quicklaunch.c:402
+#: ../libxfdashboard/core.c:371
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr "Kunne ikke indlæse temaet '%s': %s"
+
+#: ../libxfdashboard/core.c:1261
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr "Velkommen til %s (%s)!"
+
+#: ../libxfdashboard/core.c:1263
+#, c-format
+msgid "Welcome to %s!"
+msgstr "Velkommen til %s!"
+
+#: ../libxfdashboard/quicklaunch.c:384
 msgid "No windows to activate for application"
 msgstr "Ingen vinduer at aktivere for programmet"
 
-#: ../libxfdashboard/quicklaunch.c:525 ../libxfdashboard/quicklaunch.c:1261
-#: ../libxfdashboard/quicklaunch.c:2130
+#: ../libxfdashboard/quicklaunch.c:507 ../libxfdashboard/quicklaunch.c:1243
+#: ../libxfdashboard/quicklaunch.c:2053
 #, c-format
 msgid "Favourite '%s' removed"
 msgstr "Favoritten '%s' fjernet"
 
-#: ../libxfdashboard/quicklaunch.c:624 ../libxfdashboard/quicklaunch.c:943
-#: ../libxfdashboard/quicklaunch.c:2063
+#: ../libxfdashboard/quicklaunch.c:606 ../libxfdashboard/quicklaunch.c:925
+#: ../libxfdashboard/quicklaunch.c:1986
 #, c-format
 msgid "Favourite '%s' added"
 msgstr "Favoritten '%s' tilføjet"
 
-#: ../libxfdashboard/quicklaunch.c:705
+#: ../libxfdashboard/quicklaunch.c:687
 msgid "Remove from favourites"
 msgstr "Fjern fra favoritter"
 
-#: ../libxfdashboard/quicklaunch.c:719
+#: ../libxfdashboard/quicklaunch.c:701
 msgid "Add to favourites"
 msgstr "Tilføj til favoritter"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
-#: ../libxfdashboard/quicklaunch.c:3295
+#: ../libxfdashboard/quicklaunch.c:3225
 msgid "Remove"
 msgstr "Fjern"
 
@@ -552,65 +537,65 @@ msgid "No results found for '%s'"
 msgstr "Fandt ingen resultater for '%s'"
 
 #. Set up view (Note: Search view is disabled by default!)
-#: ../libxfdashboard/search-view.c:1715
+#: ../libxfdashboard/search-view.c:1719
 msgid "Search"
 msgstr "Søg"
 
-#: ../libxfdashboard/stage.c:1124
+#: ../libxfdashboard/stage.c:1111
 msgid "Just type to search..."
 msgstr "Skriv for at søge..."
 
 #. Set up view
-#: ../libxfdashboard/windows-view.c:2317
+#: ../libxfdashboard/windows-view.c:2310
 msgid "Windows"
 msgstr "Vinduer"
 
 #. Set up view
-#: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:312
+#: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311
 msgid "Clock"
 msgstr "Ur"
 
 #. Add widget to choose hour color
-#: ../plugins/clock-view/plugin.c:208
+#: ../plugins/clock-view/plugin.c:203
 msgid "Hour color:"
 msgstr "Farve for time:"
 
-#: ../plugins/clock-view/plugin.c:218
+#: ../plugins/clock-view/plugin.c:213
 msgid "Choose color for hour hand"
 msgstr "Vælg farve til timeviseren"
 
 #. Add widget to choose minute color
-#: ../plugins/clock-view/plugin.c:223
+#: ../plugins/clock-view/plugin.c:218
 msgid "Minute color:"
 msgstr "Farve for minut:"
 
-#: ../plugins/clock-view/plugin.c:233
+#: ../plugins/clock-view/plugin.c:228
 msgid "Choose color for minute hand"
 msgstr "Vælg farve til minutviseren"
 
 #. Add widget to choose second color
-#: ../plugins/clock-view/plugin.c:238
+#: ../plugins/clock-view/plugin.c:233
 msgid "Second color:"
 msgstr "Farve for sekund:"
 
-#: ../plugins/clock-view/plugin.c:248
+#: ../plugins/clock-view/plugin.c:243
 msgid "Choose color for second hand"
 msgstr "Vælg farve til sekundviseren"
 
 #. Add widget to choose minute color
-#: ../plugins/clock-view/plugin.c:253
+#: ../plugins/clock-view/plugin.c:248
 msgid "Background color:"
 msgstr "Baggrundsfarve:"
 
-#: ../plugins/clock-view/plugin.c:263
+#: ../plugins/clock-view/plugin.c:258
 msgid "Choose color for background of second hand"
 msgstr "Vælg farve til sekundviserens baggrund"
 
-#: ../plugins/clock-view/plugin.c:313
+#: ../plugins/clock-view/plugin.c:312
 msgid "Adds a new view showing a clock"
 msgstr "Tilføjer en ny visning med et ur"
 
-#: ../plugins/example-search-provider/example-search-provider.c:73
+#: ../plugins/example-search-provider/example-search-provider.c:67
 msgid "Example search"
 msgstr "Eksempel på søgning"
 
@@ -630,44 +615,44 @@ msgstr "GNOME Shell-søgeudbyder"
 msgid "Uses Gnome-Shell search providers as source for searches"
 msgstr "Bruger GNOME Shell-søgeudbydere som kilde til søgninger"
 
-#: ../plugins/hot-corner/plugin.c:268
+#: ../plugins/hot-corner/plugin.c:194
 msgid "s"
 msgstr "s"
 
-#: ../plugins/hot-corner/plugin.c:272 ../settings/general.c:379
+#: ../plugins/hot-corner/plugin.c:198 ../settings/general.c:320
 msgid "ms"
 msgstr "ms"
 
-#: ../plugins/hot-corner/plugin.c:276 ../settings/general.c:128
-#: ../settings/general.c:383
+#: ../plugins/hot-corner/plugin.c:202 ../settings/general.c:92
+#: ../settings/general.c:324
 msgid "Immediately"
 msgstr "Øjeblikkeligt"
 
 #. Add widget to choose activation corner
-#: ../plugins/hot-corner/plugin.c:339
+#: ../plugins/hot-corner/plugin.c:325
 msgid "Activation corner:"
 msgstr "Aktiveringshjørne:"
 
 #. Add widget to choose activation radius
-#: ../plugins/hot-corner/plugin.c:375
+#: ../plugins/hot-corner/plugin.c:361
 msgid "Radius of activation corner:"
 msgstr "Radius på aktiveringshjørne:"
 
 #. Add widget to choose activation duration
-#: ../plugins/hot-corner/plugin.c:393
+#: ../plugins/hot-corner/plugin.c:379
 msgid "Timeout to activate:"
 msgstr "Timeout for aktivering:"
 
 #. Add widget to limit checks to primary monitor only or to all monitors
-#: ../plugins/hot-corner/plugin.c:415
+#: ../plugins/hot-corner/plugin.c:401
 msgid "Primary monitor only"
 msgstr "Kun primær skærm"
 
-#: ../plugins/hot-corner/plugin.c:467
+#: ../plugins/hot-corner/plugin.c:457
 msgid "Hot corner"
 msgstr "Hothjørne"
 
-#: ../plugins/hot-corner/plugin.c:468
+#: ../plugins/hot-corner/plugin.c:458
 msgid ""
 "Activates xfdashboard when pointer is moved to a configured corner of "
 "monitor"
@@ -683,58 +668,33 @@ msgstr "Midterklik for vindueslukning"
 msgid "Closes windows in windows view by middle-click"
 msgstr "Lukker vinduer i vinduesvisningen med midterklik"
 
-#: ../settings/general.c:120
+#: ../settings/general.c:84
 msgid "Do nothing"
 msgstr "Gør intet"
 
-#: ../settings/general.c:121
+#: ../settings/general.c:85
 msgid "Windows view"
 msgstr "Vinduesvisning"
 
-#: ../settings/general.c:122
+#: ../settings/general.c:86
 msgid "Applications view"
 msgstr "Programvisning"
 
-#: ../settings/general.c:129
+#: ../settings/general.c:93
 msgid "High"
 msgstr "Høj"
 
-#: ../settings/general.c:130
+#: ../settings/general.c:94
 msgid "Normal"
 msgstr "Normal"
 
-#: ../settings/general.c:131
+#: ../settings/general.c:95
 msgid "Low"
 msgstr "Lav"
 
-#: ../settings/general.c:324
+#: ../settings/general.c:269
 msgid "seconds"
 msgstr "sekunder"
-
-#: ../settings/plugins.c:222
-#, c-format
-msgid "Configure plugin: %s"
-msgstr "Konfigurer plugin: %s"
-
-#. Create error message to store in list
-#: ../settings/plugins.c:825
-#, c-format
-msgid ""
-"<b>Plugin could not be loaded.</b>\n"
-"\n"
-"%s"
-msgstr ""
-"<b>Pluginet kunne ikke indlæses.</b>\n"
-"\n"
-"%s"
-
-#: ../settings/plugins.c:1032
-msgid "Name"
-msgstr "Navn"
-
-#: ../settings/themes.c:781
-msgid "Theme"
-msgstr "Tema"
 
 #: ../settings/main.c:46
 msgid "Settings manager socket"
@@ -749,11 +709,11 @@ msgid "Version information"
 msgstr "Versionsinformation"
 
 #. Initialize GTK+
-#: ../settings/main.c:57
+#: ../settings/main.c:70
 msgid "."
 msgstr "."
 
-#: ../settings/main.c:61
+#: ../settings/main.c:74
 #, c-format
 msgid ""
 "%s: %s\n"
@@ -761,3 +721,69 @@ msgid ""
 msgstr ""
 "%s: %s\n"
 "Prøv %s --help for at se en fuld liste af tilgængelige kommandolinjetilvalg.\n"
+
+#: ../settings/plugins.c:222
+#, c-format
+msgid "Configure plugin: %s"
+msgstr "Konfigurer plugin: %s"
+
+#. Create error message to store in list
+#: ../settings/plugins.c:793
+#, c-format
+msgid ""
+"<b>Plugin could not be loaded.</b>\n"
+"\n"
+"%s"
+msgstr ""
+"<b>Pluginet kunne ikke indlæses.</b>\n"
+"\n"
+"%s"
+
+#: ../settings/plugins.c:1005
+msgid "Name"
+msgstr "Navn"
+
+#: ../settings/themes.c:731
+msgid "Theme"
+msgstr "Tema"
+
+#: ../xfdashboard/application.c:466
+msgid "Fork to background"
+msgstr "Forgren til baggrunden"
+
+#: ../xfdashboard/application.c:467
+msgid "Quit running instance"
+msgstr "Afslut kørende instans"
+
+#: ../xfdashboard/application.c:468
+msgid "Restart running instance"
+msgstr "Genstart kørende instans"
+
+#: ../xfdashboard/application.c:469
+msgid ""
+"Toggles visibility if running instance was started in daemon mode otherwise "
+"it quits running non-daemon instance"
+msgstr ""
+"Skifter synligheden hvis den kørende instans blev startet i dæmontilstand, "
+"ellers afsluttes den kørende ikke-dæmon-instans"
+
+#: ../xfdashboard/application.c:470
+msgid "The ID of view to switch to on startup or resume"
+msgstr ""
+"Id'et på visningen skal der skal skiftes til ved opstart eller genoptag"
+
+#: ../xfdashboard/application.c:471
+msgid "Show version"
+msgstr "Vis version"
+
+#: ../xfdashboard/application.c:490
+msgid "A Gnome Shell like dashboard for Xfce4 - version "
+msgstr ""
+"Et instrumentbræt til Xfce4 i stil med det der findes i Gnome Shell - "
+"version "
+
+#. Show error
+#: ../xfdashboard/application.c:507
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
