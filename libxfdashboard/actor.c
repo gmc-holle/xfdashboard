@@ -139,6 +139,12 @@ static void _xfdashboard_actor_animation_entry_free(XfdashboardActorAnimationEnt
 	g_free(inData);
 }
 
+/* Free an animation entry called by dispose function */
+static void _xfdashboard_actor_animation_entry_free_dispose_callback(gpointer inData, gpointer inUserData)
+{
+	_xfdashboard_actor_animation_entry_free(inData);
+}
+
 /* Invalidate all stylable children recursively beginning at given actor */
 static void _xfdashboard_actor_invalidate_recursive(ClutterActor *inActor)
 {
@@ -866,10 +872,18 @@ static void _xfdashboard_actor_animation_done(XfdashboardAnimation *inAnimation,
 	priv=self->priv;
 
 	/* Lookup animation done in list of animation and remove animation entry */
-	for(iter=priv->animations; iter; iter=g_slist_next(iter))
+	for(iter=priv->animations; iter; )
 	{
+		GSList						*currentIter;
+
+		/* As we might remove an entry from list, remember current iterator
+		 * and move real iterator to next entry now.
+		 */
+		currentIter=iter;
+		iter=g_slist_next(iter);
+
 		/* Get animation entry at iterator */
-		data=(XfdashboardActorAnimationEntry*)iter->data;
+		data=(XfdashboardActorAnimationEntry*)currentIter->data;
 		if(!data) continue;
 
 		/* Check if animation entry matches the animation done */
@@ -883,11 +897,11 @@ static void _xfdashboard_actor_animation_done(XfdashboardAnimation *inAnimation,
 			 * to NULL to avoid unreffing an already disposed or finalized
 			 * object instance.
 			 */
-			priv->animations=g_slist_remove_link(priv->animations, iter);
+			priv->animations=g_slist_remove_link(priv->animations, currentIter);
 
-			data->animation=NULL;
+			if(!data->inDestruction) data->animation=NULL;
 			_xfdashboard_actor_animation_entry_free(data);
-			g_slist_free_1(iter);
+			g_slist_free_1(currentIter);
 		}
 	}
 }
@@ -1477,7 +1491,14 @@ static void _xfdashboard_actor_dispose(GObject *inObject)
 
 	if(priv->animations)
 	{
-		g_slist_free_full(priv->animations, (GDestroyNotify)_xfdashboard_actor_animation_entry_free);
+		/* Iterate through list of animation and call destruction function
+		 * _xfdashboard_actor_animation_entry_free() for each entry in list but
+		 * do not free the list itself with g_slist_free* function familiy as the
+		 * connected signal handler _xfdashboard_actor_animation_done() for
+		 * 'animation-done' will actually remove the this entry from list resulting
+		 * in an empty list with pointer NULL.
+		 */
+		g_slist_foreach(priv->animations, _xfdashboard_actor_animation_entry_free_dispose_callback, NULL);
 		priv->animations=NULL;
 	}
 
