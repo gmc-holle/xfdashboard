@@ -467,8 +467,8 @@ static void _xfdashboard_plugins_manager_dispose(GObject *inObject)
 				/* Remove plugin settings from core settings */
 				if(priv->settings) xfdashboard_settings_remove_plugin(priv->settings, plugin);
 
-			/* Unload plugin */
-			g_type_module_unuse(G_TYPE_MODULE(plugin));
+				/* Unload plugin */
+				g_type_module_unuse(G_TYPE_MODULE(plugin));
 			}
 		}
 
