@@ -665,7 +665,7 @@ void xfdashboard_application_button_set_format_title_description(XfdashboardAppl
 	if(g_strcmp0(priv->formatTitleDescription, inFormat)!=0)
 	{
 		/* Set value */
-		if(priv->formatTitleOnly) g_free(priv->formatTitleDescription);
+		if(priv->formatTitleDescription) g_free(priv->formatTitleDescription);
 		priv->formatTitleDescription=g_strdup(inFormat);
 
 		/* Update actor */
