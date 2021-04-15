@@ -43,6 +43,7 @@
 #include <libxfdashboard/collapse-box.h>
 #include <libxfdashboard/core.h>
 #include <libxfdashboard/css-selector.h>
+#include <libxfdashboard/debug.h>
 #include <libxfdashboard/desktop-app-info.h>
 #include <libxfdashboard/drag-action.h>
 #include <libxfdashboard/drop-action.h>
