@@ -108,6 +108,8 @@ plugins/hot-corner/hot-corner-settings.c
 plugins/hot-corner/plugin.c
 plugins/middle-click-window-close/middle-click-window-close.c
 plugins/middle-click-window-close/plugin.c
+plugins/recently-used-search-provider/plugin.c
+plugins/recently-used-search-provider/recently-used-search-provider.c
 settings/general.c
 settings/main.c
 settings/plugins.c
