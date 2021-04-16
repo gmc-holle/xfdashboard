@@ -565,8 +565,6 @@ static gboolean _xfdashboard_recently_used_search_provider_activate_result(Xfdas
 		}
 	}
 
-	if(appGIcon) g_object_unref(appGIcon);
-
 	/* Build file list to pass to application when launched */
 	files=g_list_prepend(NULL, g_file_new_for_uri(uri));
 
@@ -574,6 +572,7 @@ static gboolean _xfdashboard_recently_used_search_provider_activate_result(Xfdas
 	started=FALSE;
 
 	context=xfdashboard_create_app_context(NULL);
+	if(appIconName) gdk_app_launch_context_set_icon_name(GDK_APP_LAUNCH_CONTEXT(context), appIconName);
 	if(!g_app_info_launch(appInfo, files, context, &error))
 	{
 		/* Show notification about failed application launch */
