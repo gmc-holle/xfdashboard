@@ -962,7 +962,7 @@ void xfdashboard_settings_remove_plugin(XfdashboardSettings *self, XfdashboardPl
 			g_strcmp0(xfdashboard_plugin_get_id(entry->plugin), xfdashboard_plugin_get_id(inPlugin))==0)
 		{
 			/* Remove entry from list */
-			priv->plugins=g_list_remove(priv->plugins, currentIter);
+			priv->plugins=g_list_remove_link(priv->plugins, currentIter);
 
 			/* Call virtual funtion for plugin removed */
 			if(klass->plugin_removed)
