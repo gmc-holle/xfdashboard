@@ -5,10 +5,10 @@
 # 
 # Translators:
 # Masato HASHIMOTO <cabezon.hashimoto@gmail.com>, 2020
-# Nick Schermer <nick@xfce.org>, 2020
 # Ken DEGUCHI <kdeguchi@sz.tokoha-u.ac.jp>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2021
+# Nick Schermer <nick@xfce.org>, 2021
 # UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2021
 # 
 #, fuzzy
@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-05 12:50+0100\n"
+"POT-Creation-Date: 2021-04-16 12:49+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2021\n"
 "Language-Team: Japanese (https://www.transifex.com/xfce/teams/16840/ja/)\n"
@@ -75,17 +75,30 @@ msgstr "アプリケーションを検索"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version completes gradients with linear gradients "
+"for outline and background filling."
+msgstr "この不安定な開発版では、アウトラインと背景塗りつぶしの線形グラデーションでグラデーションを完了します。"
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
+"This unstable development version introduces completes turning "
+"libxfdashboard into a real library and introduces path gradients for "
+"outlines."
+msgstr "この不安定な開発版では、libxfdashboard が実際のライブラリに導入され、アウトラインのパスグラデーションが導入されています。"
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr "この不安定な開発バージョンではユーザーに何も表示されませんが、libxfdashboard を実際のライブラリに移動し始めます。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
 msgstr "この安定バージョンはバグを修正し、 AppInfo を AppStream metainfo に置き換えます。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -93,13 +106,13 @@ msgid ""
 msgstr ""
 "この安定バージョンではアニメーション、ポップアップメニュー、複数のバックエンド、ジャンプリストのサポートなど、多くの新機能が導入されています。また多くの新規および更新された翻訳も含まれています。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr "この安定バージョンは、初回使用時に正しいデフォルトアプリケーションを設定するバグを修正します。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -369,8 +382,8 @@ msgstr "Xfdashboard の赤ワインのテーマ"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "アプリケーション '%s' のアクション '%s' が実行できません: %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:795
-#: ../settings/main.c:76
+#: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
+#: ../settings/plugins.c:794
 msgid "Unknown error"
 msgstr "不明なエラー"
 
@@ -381,87 +394,42 @@ msgstr "アプリケーション '%s' のアクション '%s' を実行しまし
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:751
+#: ../libxfdashboard/applications-search-provider.c:757
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:581
 #, c-format
 msgid "Launching application '%s' failed: %s"
 msgstr "アプリケーション '%s' の起動に失敗しました: %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:336
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:499
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:520
 msgid "No information available for application"
 msgstr "アプリケーションに関する情報がありません"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/application.c:298 ../libxfdashboard/application.c:593
-#: ../libxfdashboard/applications-search-provider.c:753
-#: ../libxfdashboard/applications-view.c:334
+#: ../libxfdashboard/applications-search-provider.c:759
+#: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
 #: ../libxfdashboard/quicklaunch.c:442
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:480
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:583
+#: ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "不明なエラー"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:764
+#: ../libxfdashboard/applications-search-provider.c:770
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:595
 #, c-format
 msgid "Application '%s' launched"
 msgstr "アプリケーション '%s' を起動しました"
 
-#: ../libxfdashboard/application.c:296
-#, c-format
-msgid "Could not load theme '%s': %s"
-msgstr "%s のテーマを読み込めません: %s"
-
-#: ../libxfdashboard/application.c:502
-#, c-format
-msgid "Welcome to %s (%s)!"
-msgstr "%s (%s) へようこそ！"
-
-#: ../libxfdashboard/application.c:504
-#, c-format
-msgid "Welcome to %s!"
-msgstr "%s へようこそ！"
-
-#: ../libxfdashboard/application.c:551
-msgid "Fork to background"
-msgstr "バックグラウンドにフォークする"
-
-#: ../libxfdashboard/application.c:552
-msgid "Quit running instance"
-msgstr "実行中のインスタンスを終了する"
-
-#: ../libxfdashboard/application.c:553
-msgid "Restart running instance"
-msgstr "実行中のインスタンスを再起動する"
-
-#: ../libxfdashboard/application.c:554
-msgid ""
-"Toggles visibility if running instance was started in daemon mode otherwise "
-"it quits running non-daemon instance"
-msgstr "実行中のインスタンスがデーモンモードで開始された場合は可視性を切り替え、それ以外の場合は非デーモンインスタンスの実行を終了します"
-
-#: ../libxfdashboard/application.c:555
-msgid "The ID of view to switch to on startup or resume"
-msgstr "起動時または再開時に切り替えるビューの ID"
-
-#: ../libxfdashboard/application.c:556
-msgid "Show version"
-msgstr "バージョンを表示"
-
-#: ../libxfdashboard/application.c:575
-msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "Xfce4 用の Gnome シェルのようなダッシュボード - version "
-
-#. Show error
-#: ../libxfdashboard/application.c:592
-#, c-format
-msgid "%s\n"
-msgstr "%s\n"
-
-#: ../libxfdashboard/applications-search-provider.c:835
+#: ../libxfdashboard/applications-search-provider.c:841
 #: ../libxfdashboard/applications-view.c:415
 #: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
@@ -469,7 +437,7 @@ msgstr "起動"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1172
+#: ../libxfdashboard/applications-search-provider.c:1183
 #: ../libxfdashboard/applications-view.c:1580
 #: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
@@ -495,6 +463,21 @@ msgstr "全てのアプリケーション"
 #: ../libxfdashboard/applications-view.c:683
 msgid "List of all installed applications"
 msgstr "インストールされた全アプリケーションのリスト"
+
+#: ../libxfdashboard/core.c:371
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr "%s のテーマを読み込めません: %s"
+
+#: ../libxfdashboard/core.c:1261
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr "%s (%s) へようこそ！"
+
+#: ../libxfdashboard/core.c:1263
+#, c-format
+msgid "Welcome to %s!"
+msgstr "%s へようこそ！"
 
 #: ../libxfdashboard/quicklaunch.c:384
 msgid "No windows to activate for application"
@@ -602,7 +585,7 @@ msgstr "秒針の背景色を選択"
 msgid "Adds a new view showing a clock"
 msgstr "時計表示の新規ビューを追加する"
 
-#: ../plugins/example-search-provider/example-search-provider.c:73
+#: ../plugins/example-search-provider/example-search-provider.c:67
 msgid "Example search"
 msgstr "検索例"
 
@@ -673,6 +656,29 @@ msgstr "マウスの中クリックでウィンドウを閉じる"
 msgid "Closes windows in windows view by middle-click"
 msgstr "マウスの中クリックでウィンドウビューのウィンドウを閉じる"
 
+#: ../plugins/recently-used-search-provider/plugin.c:75
+msgid "Recently used search provider"
+msgstr "最近使用した検索プロバイダー"
+
+#: ../plugins/recently-used-search-provider/plugin.c:76
+msgid "A search provider using recently used files as source"
+msgstr "最近使用した検索プロバイダー"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
+msgid "Recently used"
+msgstr "最近開いたファイル"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:475
+#, c-format
+msgid "Launching application for '%s' failed: %s"
+msgstr "'%s' のアプリケーション起動に失敗: %s"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:497
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
+#, c-format
+msgid "Launching application for file '%s' failed: %s"
+msgstr "ファイル '%s' のアプリケーション起動に失敗: %s"
+
 #: ../settings/general.c:84
 msgid "Do nothing"
 msgstr "なにもしない"
@@ -701,31 +707,6 @@ msgstr "低い"
 msgid "seconds"
 msgstr "秒"
 
-#: ../settings/plugins.c:222
-#, c-format
-msgid "Configure plugin: %s"
-msgstr "プラグインを設定: %s"
-
-#. Create error message to store in list
-#: ../settings/plugins.c:794
-#, c-format
-msgid ""
-"<b>Plugin could not be loaded.</b>\n"
-"\n"
-"%s"
-msgstr ""
-"<b>プラグインを読み込めませんでした.</b>\n"
-"\n"
-"%s"
-
-#: ../settings/plugins.c:1006
-msgid "Name"
-msgstr "名前"
-
-#: ../settings/themes.c:731
-msgid "Theme"
-msgstr "テーマ"
-
 #: ../settings/main.c:46
 msgid "Settings manager socket"
 msgstr "設定マネージャーソケット"
@@ -751,3 +732,64 @@ msgid ""
 msgstr ""
 "%s : %s\n"
 "%s --help で使用可能なすべてのコマンドラインオプションが表示されます。\n"
+
+#: ../settings/plugins.c:222
+#, c-format
+msgid "Configure plugin: %s"
+msgstr "プラグインを設定: %s"
+
+#. Create error message to store in list
+#: ../settings/plugins.c:793
+#, c-format
+msgid ""
+"<b>Plugin could not be loaded.</b>\n"
+"\n"
+"%s"
+msgstr ""
+"<b>プラグインを読み込めませんでした.</b>\n"
+"\n"
+"%s"
+
+#: ../settings/plugins.c:1005
+msgid "Name"
+msgstr "名前"
+
+#: ../settings/themes.c:731
+msgid "Theme"
+msgstr "テーマ"
+
+#: ../xfdashboard/application.c:466
+msgid "Fork to background"
+msgstr "バックグラウンドにフォークする"
+
+#: ../xfdashboard/application.c:467
+msgid "Quit running instance"
+msgstr "実行中のインスタンスを終了する"
+
+#: ../xfdashboard/application.c:468
+msgid "Restart running instance"
+msgstr "実行中のインスタンスを再起動する"
+
+#: ../xfdashboard/application.c:469
+msgid ""
+"Toggles visibility if running instance was started in daemon mode otherwise "
+"it quits running non-daemon instance"
+msgstr "実行中のインスタンスがデーモンモードで開始された場合は可視性を切り替え、それ以外の場合は非デーモンインスタンスの実行を終了します"
+
+#: ../xfdashboard/application.c:470
+msgid "The ID of view to switch to on startup or resume"
+msgstr "起動時または再開時に切り替えるビューの ID"
+
+#: ../xfdashboard/application.c:471
+msgid "Show version"
+msgstr "バージョンを表示"
+
+#: ../xfdashboard/application.c:490
+msgid "A Gnome Shell like dashboard for Xfce4 - version "
+msgstr "Xfce4 用の Gnome シェルのようなダッシュボード - version "
+
+#. Show error
+#: ../xfdashboard/application.c:507
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
