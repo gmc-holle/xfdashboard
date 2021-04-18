@@ -797,7 +797,7 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 						G_STRUCT_OFFSET(XfdashboardSettingsClass, changed),
 						NULL,
 						NULL,
-						_xfdashboard_marshal_VOID__STRING_OBJECT,
+						_xfdashboard_marshal_VOID__STRING_PARAM,
 						G_TYPE_NONE,
 						2,
 						G_TYPE_STRING,
