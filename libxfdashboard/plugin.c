@@ -30,6 +30,7 @@
 
 #include <glib/gi18n-lib.h>
 
+#include <libxfdashboard/core.h>
 #include <libxfdashboard/enums.h>
 #include <libxfdashboard/marshal.h>
 #include <libxfdashboard/compat.h>
@@ -68,6 +69,9 @@ struct _XfdashboardPluginPrivate
 
 	gpointer					userData;
 	GDestroyNotify				userDataDestroyCallback;
+
+	gchar						*configPath;
+	gchar						*dataPath;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE(XfdashboardPlugin,
@@ -90,6 +94,8 @@ enum
 	PROP_LICENSE,
 
 	PROP_SETTINGS,
+	PROP_CONFIG_PATH,
+	PROP_DATA_PATH,
 
 	PROP_LAST
 };
@@ -190,12 +196,69 @@ static void _xfdashboard_plugin_set_id(XfdashboardPlugin *self, const gchar *inI
 	/* Set value if changed */
 	if(g_strcmp0(priv->id, inID)!=0)
 	{
+		XfdashboardSettings			*settings;
+		const gchar					*basePath;
+		gchar						*newPath;
+
+		/* Freeze notification */
+		g_object_freeze_notify(G_OBJECT(self));
+
 		/* Set value */
 		if(priv->id) g_free(priv->id);
 		priv->id=g_strdup(inID);
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPluginProperties[PROP_ID]);
+
+		/* Set up new configuration and data base path from plugin ID and notify
+		 * about changes if any.
+		 */
+		settings=xfdashboard_core_get_settings(NULL);
+
+		newPath=NULL;
+		if(settings)
+		{
+			basePath=xfdashboard_settings_get_config_path(settings);
+			newPath=g_build_filename(basePath, "plugins", priv->id, NULL);
+		}
+
+		if(g_strcmp0(newPath, priv->configPath)!=0)
+		{
+			if(priv->configPath)
+			{
+				g_free(priv->configPath);
+				priv->configPath=NULL;
+			}
+
+			if(newPath) priv->configPath=newPath;
+
+			/* Notify about property change */
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPluginProperties[PROP_CONFIG_PATH]);
+		}
+
+		newPath=NULL;
+		if(settings)
+		{
+			basePath=xfdashboard_settings_get_data_path(settings);
+			newPath=g_build_filename(basePath, "plugins", priv->id, NULL);
+		}
+
+		if(g_strcmp0(newPath, priv->dataPath)!=0)
+		{
+			if(priv->dataPath)
+			{
+				g_free(priv->dataPath);
+				priv->dataPath=NULL;
+			}
+
+			if(newPath) priv->dataPath=newPath;
+
+			/* Notify about property change */
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardPluginProperties[PROP_DATA_PATH]);
+		}
+
+		/* Thaw notification */
+		g_object_thaw_notify(G_OBJECT(self));
 	}
 }
 
@@ -770,6 +833,14 @@ static void _xfdashboard_plugin_get_property(GObject *inObject,
 			g_value_set_object(outValue, priv->settings);
 			break;
 
+		case PROP_CONFIG_PATH:
+			g_value_set_string(outValue, priv->configPath);
+			break;
+
+		case PROP_DATA_PATH:
+			g_value_set_string(outValue, priv->dataPath);
+			break;
+
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
 			break;
@@ -904,6 +975,32 @@ static void xfdashboard_plugin_class_init(XfdashboardPluginClass *klass)
 								XFDASHBOARD_TYPE_PLUGIN_SETTINGS,
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * XfdashboardPlugin:config-path:
+	 *
+	 * The base path of configuration files of this plugin or NULL if application
+	 * specific configuration files is disabled.
+	 */
+	XfdashboardPluginProperties[PROP_CONFIG_PATH]=
+		g_param_spec_string("config-path",
+								"Configuration path",
+								"Base path to configuration files of this plugin",
+								NULL,
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * XfdashboardPlugin:data-path:
+	 *
+	 * The base path of data files of this plugin or NULL if application specific
+	 * data files is disabled.
+	 */
+	XfdashboardPluginProperties[PROP_DATA_PATH]=
+		g_param_spec_string("data-path",
+								"Data path",
+								"Base path to data files of this plugin",
+								NULL,
+								G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardPluginProperties);
 
 	/* Define signals */
@@ -983,6 +1080,8 @@ static void xfdashboard_plugin_init(XfdashboardPlugin *self)
 	priv->lastLoadingError=NULL;
 	priv->userData=NULL;
 	priv->userDataDestroyCallback=NULL;
+	priv->configPath=NULL;
+	priv->dataPath=NULL;
 
 	priv->id=NULL;
 	priv->flags=XFDASHBOARD_PLUGIN_FLAG_NONE;
@@ -1355,4 +1454,42 @@ XfdashboardPluginSettings* xfdashboard_plugin_get_settings(XfdashboardPlugin *se
 	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
 
 	return(self->priv->settings);
+}
+
+/**
+ * xfdashboard_plugin_get_config_path:
+ * @self: A #XfdashboardPlugin
+ *
+ * Retrieves the base path of configuration files for plugin at @self.
+ *
+ * NOTE: To retrieve the base path of configuration files for the application,
+ * use xfdashboard_settings_get_config_path() instead.
+ *
+ * Return value: The base path of configuration files for this plugin or %NULL
+ *   if support for configuration files is disabled.
+*/
+const gchar* xfdashboard_plugin_get_config_path(XfdashboardPlugin *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
+
+	return(self->priv->configPath);
+}
+
+/**
+ * xfdashboard_plugin_get_data_path:
+ * @self: A #XfdashboardPlugin
+ *
+ * Retrieves the base path of data files for plugin at @self.
+ *
+ * NOTE: To retrieve the base path of data files for the application, use
+ * xfdashboard_settings_get_data_path() instead.
+ *
+ * Return value: The base path of data files for this plugin or %NULL if
+ *   support for data files is disabled.
+ */
+const gchar* xfdashboard_plugin_get_data_path(XfdashboardPlugin *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_PLUGIN(self), NULL);
+
+	return(self->priv->dataPath);
 }

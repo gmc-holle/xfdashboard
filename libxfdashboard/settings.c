@@ -1049,6 +1049,8 @@ static void xfdashboard_settings_init(XfdashboardSettings *self)
 	priv->bindingFiles=NULL;
 	priv->themeSearchPaths=NULL;
 	priv->pluginSearchPaths=NULL;
+	priv->configPath=NULL;
+	priv->dataPath=NULL;
 
 	/* Set default applications search provider settings */
 	priv->applicationsSearchProviderSortMode=DEFAULT_APPLICATIONS_SEARCH_PROVIDER_SORT_MODE;
@@ -2069,6 +2071,9 @@ const gchar** xfdashboard_settings_get_plugin_search_paths(XfdashboardSettings *
  * Retrieves the base path of configuration files of application in settings
  * at @self.
  *
+ * NOTE: To retrieve the base path of configuration files for a specific plugin,
+ * use xfdashboard_plugin_get_config_path() instead.
+ *
  * Return value: The base path of configuration files or %NULL if support for
  *   configuration files is disabled.
  */
@@ -2085,6 +2090,9 @@ const gchar* xfdashboard_settings_get_config_path(XfdashboardSettings *self)
  *
  * Retrieves the base path of data files of application in settings
  * at @self.
+ *
+ * NOTE: To retrieve the base path of data files for a specific plugin, use
+ * xfdashboard_plugin_get_data_path() instead.
  *
  * Return value: The base path of data files or %NULL if support for
  *   data files is disabled.
