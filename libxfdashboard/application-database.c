@@ -1379,6 +1379,7 @@ static void xfdashboard_application_database_init(XfdashboardApplicationDatabase
 
 	/* Set up search paths but eliminate duplicates */
 	path=g_build_filename(g_get_user_data_dir(), "applications", NULL);
+g_message("USER APPLICATION PATH: %s", path);
 	priv->searchPaths=g_list_append(priv->searchPaths, path);
 	XFDASHBOARD_DEBUG(self, APPLICATIONS,
 						"Added search path '%s' to application database",

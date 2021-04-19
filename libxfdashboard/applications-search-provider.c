@@ -366,11 +366,19 @@ static gboolean _xfdashboard_applications_search_provider_load_statistics(Xfdash
 	/* Get path to statistics file to load statistics from */
 	if(!_xfdashboard_applications_search_provider_statistics.filename)
 	{
-		_xfdashboard_applications_search_provider_statistics.filename=
-			g_build_filename(g_get_user_data_dir(),
-								"xfdashboard",
-								XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE,
-								NULL);
+		XfdashboardSettings									*settings;
+		const gchar											*dataPath;
+
+		settings=xfdashboard_core_get_settings(NULL);
+		dataPath=xfdashboard_settings_get_data_path(settings);
+
+		if(dataPath)
+		{
+			_xfdashboard_applications_search_provider_statistics.filename=
+				g_build_filename(dataPath,
+									XFDASHBOARD_APPLICATIONS_SEARCH_PROVIDER_STATISTICS_FILE,
+									NULL);
+		}
 
 		if(!_xfdashboard_applications_search_provider_statistics.filename)
 		{

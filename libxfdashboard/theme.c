@@ -559,6 +559,8 @@ static void _xfdashboard_theme_set_theme_name(XfdashboardTheme *self, const gcha
 	gchar						*themePath;
 	gchar						*resourceFile;
 	gchar						*userThemeStylesheet;
+	XfdashboardSettings			*settings;
+	const gchar					*configPath;
 
 	g_return_if_fail(XFDASHBOARD_IS_THEME(self));
 	g_return_if_fail(inThemeName && *inThemeName);
@@ -600,34 +602,39 @@ static void _xfdashboard_theme_set_theme_name(XfdashboardTheme *self, const gcha
 	priv->animation=xfdashboard_theme_animation_new();
 
 	/* Check for user resource files */
-	resourceFile=g_build_filename(g_get_user_config_dir(), "xfdashboard", "themes", XFDASHBOARD_USER_GLOBAL_CSS_FILE, NULL);
-	if(g_file_test(resourceFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
+	settings=xfdashboard_core_get_settings(NULL);
+	configPath=xfdashboard_settings_get_config_path(settings);
+	if(configPath)
 	{
-		priv->userGlobalStyleFile=g_strdup(resourceFile);
-	}
-		else
+		resourceFile=g_build_filename(configPath, "themes", XFDASHBOARD_USER_GLOBAL_CSS_FILE, NULL);
+		if(g_file_test(resourceFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
 		{
-			XFDASHBOARD_DEBUG(self, THEME,
-								"No user global stylesheet found at %s for theme %s - skipping",
-								resourceFile,
-								priv->themeName);
+			priv->userGlobalStyleFile=g_strdup(resourceFile);
 		}
-	g_free(resourceFile);
+			else
+			{
+				XFDASHBOARD_DEBUG(self, THEME,
+									"No user global stylesheet found at %s for theme %s - skipping",
+									resourceFile,
+									priv->themeName);
+			}
+		g_free(resourceFile);
 
-	userThemeStylesheet=g_strdup_printf("user-%s.css", priv->themeName);
-	resourceFile=g_build_filename(g_get_user_config_dir(), "xfdashboard", "themes", userThemeStylesheet, NULL);
-	if(g_file_test(resourceFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
-	{
-		priv->userThemeStyleFile=g_strdup(resourceFile);
-	}
-		else
+		userThemeStylesheet=g_strdup_printf("user-%s.css", priv->themeName);
+		resourceFile=g_build_filename(configPath, "themes", userThemeStylesheet, NULL);
+		if(g_file_test(resourceFile, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
 		{
-			XFDASHBOARD_DEBUG(self, THEME,
-								"No user theme stylesheet found at %s for theme %s - skipping",
-								resourceFile,
-								priv->themeName);
+			priv->userThemeStyleFile=g_strdup(resourceFile);
 		}
-	g_free(resourceFile);
+			else
+			{
+				XFDASHBOARD_DEBUG(self, THEME,
+									"No user theme stylesheet found at %s for theme %s - skipping",
+									resourceFile,
+									priv->themeName);
+			}
+		g_free(resourceFile);
+	}
 
 	/* Release allocated resources */
 	if(themePath) g_free(themePath);
