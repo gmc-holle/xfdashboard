@@ -147,6 +147,12 @@ void xfdashboard_settings_set_theme_search_paths(XfdashboardSettings *self, cons
 const gchar** xfdashboard_settings_get_plugin_search_paths(XfdashboardSettings *self);
 void xfdashboard_settings_set_plugin_search_paths(XfdashboardSettings *self, const gchar **inSearchPaths);
 
+const gchar* xfdashboard_settings_get_config_path(XfdashboardSettings *self);
+void xfdashboard_settings_set_config_path(XfdashboardSettings *self, const gchar *inPath);
+
+const gchar* xfdashboard_settings_get_data_path(XfdashboardSettings *self);
+void xfdashboard_settings_set_data_path(XfdashboardSettings *self, const gchar *inPath);
+
 G_END_DECLS
 
 #endif	/* __LIBXFDASHBOARD_SETTINGS__ */

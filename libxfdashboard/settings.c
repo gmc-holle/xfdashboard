@@ -79,6 +79,8 @@ struct _XfdashboardSettingsPrivate
 	gchar											**bindingFiles;
 	gchar											**themeSearchPaths;
 	gchar											**pluginSearchPaths;
+	gchar											*configPath;
+	gchar											*dataPath;
 
 	/* Instance related */
 	GList											*plugins;
@@ -123,6 +125,8 @@ enum
 	PROP_BINDING_FILES,
 	PROP_THEME_SEARCH_PATHS,
 	PROP_PLUGIN_SEARCH_PATHS,
+	PROP_CONFIG_PATH,
+	PROP_DATA_PATH,
 
 	PROP_LAST
 };
@@ -389,6 +393,14 @@ static void _xfdashboard_settings_set_property(GObject *inObject,
 			xfdashboard_settings_set_plugin_search_paths(self, (const gchar**)g_value_get_boxed(inValue));
 			break;
 
+		case PROP_CONFIG_PATH:
+			xfdashboard_settings_set_config_path(self, g_value_get_string(inValue));
+			break;
+
+		case PROP_DATA_PATH:
+			xfdashboard_settings_set_data_path(self, g_value_get_string(inValue));
+			break;
+
 		/* Unknown settings ;) */
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(inObject, inPropID, inSpec);
@@ -485,6 +497,14 @@ static void _xfdashboard_settings_get_property(GObject *inObject,
 
 		case PROP_PLUGIN_SEARCH_PATHS:
 			g_value_set_boxed(outValue, self->priv->pluginSearchPaths);
+			break;
+
+		case PROP_CONFIG_PATH:
+			g_value_set_string(outValue, self->priv->configPath);
+			break;
+
+		case PROP_DATA_PATH:
+			g_value_set_string(outValue, self->priv->dataPath);
 			break;
 
 		/* Unknown settings ;) */
@@ -775,6 +795,30 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 								"Plugin search paths",
 								"An array of paths to look up plugins at",
 								G_TYPE_STRV,
+								G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * XfdashboardSettings:config-path:
+	 *
+	 * The base path of configuration files of application.
+	 */
+	XfdashboardSettingsProperties[PROP_CONFIG_PATH]=
+		g_param_spec_string("config-path",
+								"Configuration path",
+								"Base path to configuration files of application",
+								NULL,
+								G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * XfdashboardSettings:data-path:
+	 *
+	 * The base path of data files of application.
+	 */
+	XfdashboardSettingsProperties[PROP_DATA_PATH]=
+		g_param_spec_string("data-path",
+								"Data path",
+								"Base path to data files of application",
+								NULL,
 								G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties(gobjectClass, PROP_LAST, XfdashboardSettingsProperties);
@@ -1961,5 +2005,114 @@ void xfdashboard_settings_set_plugin_search_paths(XfdashboardSettings *self, con
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_PLUGIN_SEARCH_PATHS]);
+	}
+}
+
+/**
+ * xfdashboard_settings_get_config_path:
+ * @self: A #XfdashboardSettings
+ *
+ * Retrieves the base path of configuration files of application in settings
+ * at @self.
+ *
+ * Return value: The base path of configuration files or %NULL if support for
+ *   configuration files is disabled.
+ */
+const gchar* xfdashboard_settings_get_config_path(XfdashboardSettings *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS(self), NULL);
+
+	return(self->priv->configPath);
+}
+
+/**
+ * xfdashboard_settings_set_config_path:
+ * @self: A #XfdashboardSettings
+ * @inPath: The base path of configuration files
+ *
+ * Sets the base path of configuration files for application to %inPath at
+ * settings at @self.
+*/
+void xfdashboard_settings_set_config_path(XfdashboardSettings *self, const gchar *inPath)
+{
+	XfdashboardSettingsPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(!inPath || *inPath);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->configPath, inPath)!=0)
+	{
+		/* Set value */
+		if(priv->configPath)
+		{
+			g_free(priv->configPath);
+			priv->configPath=NULL;
+		}
+
+		if(inPath)
+		{
+			priv->configPath=g_strdup(inPath);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_CONFIG_PATH]);
+	}
+}
+
+
+/**
+ * xfdashboard_settings_get_data_path:
+ * @self: A #XfdashboardSettings
+ *
+ * Retrieves the base path of data files of application in settings
+ * at @self.
+ *
+ * Return value: The base path of data files or %NULL if support for
+ *   data files is disabled.
+ */
+const gchar* xfdashboard_settings_get_data_path(XfdashboardSettings *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS(self), NULL);
+
+	return(self->priv->dataPath);
+}
+
+/**
+ * xfdashboard_settings_set_data_path:
+ * @self: A #XfdashboardSettings
+ * @inPath: The base path of data files
+ *
+ * Sets the base path of data files for application to %inPath at settings at
+ * @self.
+ */
+void xfdashboard_settings_set_data_path(XfdashboardSettings *self, const gchar *inPath)
+{
+	XfdashboardSettingsPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(!inPath || *inPath);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->dataPath, inPath)!=0)
+	{
+		/* Set value */
+		if(priv->dataPath)
+		{
+			g_free(priv->dataPath);
+			priv->dataPath=NULL;
+		}
+
+		if(inPath)
+		{
+			priv->dataPath=g_strdup(inPath);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_CONFIG_PATH]);
 	}
 }

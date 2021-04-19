@@ -232,6 +232,8 @@ static XfdashboardSettings* _xfdashboard_application_create_settings(Xfdashboard
 	gchar						**bindingFilePaths;
 	gchar						*entry;
 	const gchar					*homeDirectory;
+	gchar						*configPath;
+	gchar						*dataPath;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), NULL);
 
@@ -331,14 +333,24 @@ static XfdashboardSettings* _xfdashboard_application_create_settings(Xfdashboard
 
 	bindingFilePaths=(gchar**)(gpointer)g_array_free(pathFileList, FALSE);
 
+	/* Set up base path to configuration files */
+	configPath=g_build_filename(g_get_user_config_dir(), "xfdashboard", NULL);
+
+	/* Set up base path to data files */
+	dataPath=g_build_filename(g_get_user_data_dir(), "xfdashboard", NULL);
+
 	/* Create settings instance for Xfconf settings storage */
 	settings=g_object_new(XFDASHBOARD_TYPE_XFCONF_SETTINGS,
 							"binding-files", bindingFilePaths,
 							"theme-search-paths", themesSearchPaths,
 							"plugin-search-paths", pluginsSearchPaths,
+							"config-path", configPath,
+							"data-path", dataPath,
 							NULL);
 
 	/* Release allocated resources */
+	if(dataPath) g_free(dataPath);
+	if(configPath) g_free(configPath);
 	if(themesSearchPaths) g_strfreev(themesSearchPaths);
 	if(pluginsSearchPaths) g_strfreev(pluginsSearchPaths);
 	if(bindingFilePaths) g_strfreev(bindingFilePaths);
