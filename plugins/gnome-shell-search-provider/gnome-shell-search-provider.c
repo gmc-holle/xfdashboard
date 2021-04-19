@@ -247,15 +247,16 @@ static gboolean _xfdashboard_gnome_shell_search_provider_update_from_file(Xfdash
 	if(filePath) g_free(filePath);
 
 	/* If we get here we could update from file successfully */
-	g_debug("Updated search provider '%s' of type %s for Gnome-Shell search provider interface version %d using DBUS name '%s' and object path '%s' displayed as '%s' with icon '%s' from desktop ID '%s'",
-				xfdashboard_search_provider_get_id(XFDASHBOARD_SEARCH_PROVIDER(self)),
-				G_OBJECT_TYPE_NAME(self),
-				priv->searchProviderVersion,
-				priv->dbusBusName,
-				priv->dbusObjectPath,
-				priv->providerName,
-				priv->providerIcon,
-				priv->desktopID);
+	XFDASHBOARD_DEBUG(self, PLUGINS,
+						"Updated search provider '%s' of type %s for Gnome-Shell search provider interface version %d using DBUS name '%s' and object path '%s' displayed as '%s' with icon '%s' from desktop ID '%s'",
+						xfdashboard_search_provider_get_id(XFDASHBOARD_SEARCH_PROVIDER(self)),
+						G_OBJECT_TYPE_NAME(self),
+						priv->searchProviderVersion,
+						priv->dbusBusName,
+						priv->dbusObjectPath,
+						priv->providerName,
+						priv->providerIcon,
+						priv->desktopID);
 
 	return(TRUE);
 }
@@ -299,10 +300,11 @@ static void _xfdashboard_gnome_shell_search_provider_on_data_file_changed(Xfdash
 		}
 			else
 			{
-				g_debug("Updated Gnome-Shell search provider '%s' of type %s with ID '%s' from modified data file successfully",
-							priv->gnomeShellID,
-							G_OBJECT_TYPE_NAME(self),
-							xfdashboard_search_provider_get_id(XFDASHBOARD_SEARCH_PROVIDER(self)));
+				XFDASHBOARD_DEBUG(self, PLUGINS,
+									"Updated Gnome-Shell search provider '%s' of type %s with ID '%s' from modified data file successfully",
+									priv->gnomeShellID,
+									G_OBJECT_TYPE_NAME(self),
+									xfdashboard_search_provider_get_id(XFDASHBOARD_SEARCH_PROVIDER(self)));
 			}
 	}
 }
@@ -328,10 +330,11 @@ static void _xfdashboard_gnome_shell_search_provider_initialize(XfdashboardSearc
 		providerID=xfdashboard_search_provider_get_id(inProvider);
 		priv->gnomeShellID=g_strdup(providerID+strlen(PLUGIN_ID)+1);
 	}
-	g_debug("Initializing search provider '%s' of type %s for Gnome-Shell search provider ID '%s'",
-				xfdashboard_search_provider_get_id(inProvider),
-				G_OBJECT_TYPE_NAME(self),
-				priv->gnomeShellID);
+	XFDASHBOARD_DEBUG(self, PLUGINS,
+						"Initializing search provider '%s' of type %s for Gnome-Shell search provider ID '%s'",
+						xfdashboard_search_provider_get_id(inProvider),
+						G_OBJECT_TYPE_NAME(self),
+						priv->gnomeShellID);
 
 	/* Get Gnome-Shell search provider's data file */
 	if(!priv->file)
@@ -360,8 +363,9 @@ static void _xfdashboard_gnome_shell_search_provider_initialize(XfdashboardSearc
 		priv->fileMonitor=g_file_monitor_file(priv->file, 0, NULL, &error);
 		if(priv->fileMonitor)
 		{
-			g_debug("Created file monitor to watch for changes at Gnome-Shell search provider '%s'",
-					priv->gnomeShellID);
+			XFDASHBOARD_DEBUG(self, PLUGINS,
+								"Created file monitor to watch for changes at Gnome-Shell search provider '%s'",
+								priv->gnomeShellID);
 
 			g_signal_connect_swapped(priv->fileMonitor,
 										"changed",
@@ -401,10 +405,11 @@ static void _xfdashboard_gnome_shell_search_provider_initialize(XfdashboardSearc
 	}
 		else
 		{
-			g_debug("Initialized Gnome-Shell search provider '%s' of type %s with ID '%s' successfully",
-						priv->gnomeShellID,
-						G_OBJECT_TYPE_NAME(self),
-						xfdashboard_search_provider_get_id(inProvider));
+			XFDASHBOARD_DEBUG(self, PLUGINS,
+								"Initialized Gnome-Shell search provider '%s' of type %s with ID '%s' successfully",
+								priv->gnomeShellID,
+								G_OBJECT_TYPE_NAME(self),
+								xfdashboard_search_provider_get_id(inProvider));
 		}
 }
 
@@ -494,10 +499,11 @@ static XfdashboardSearchResultSet* _xfdashboard_gnome_shell_search_provider_get_
 											-1,
 											NULL,
 											&error);
-		g_debug("Fetched initial result set at %p for Gnome Shell search provider '%s' of type %s",
-					proxyResult,
-					priv->gnomeShellID,
-					G_OBJECT_TYPE_NAME(self));
+		XFDASHBOARD_DEBUG(self, PLUGINS,
+							"Fetched initial result set at %p for Gnome Shell search provider '%s' of type %s",
+							proxyResult,
+							priv->gnomeShellID,
+							G_OBJECT_TYPE_NAME(self));
 	}
 		else
 		{
@@ -518,10 +524,11 @@ static XfdashboardSearchResultSet* _xfdashboard_gnome_shell_search_provider_get_
 			{
 				g_variant_builder_add(&builder, "s", g_variant_get_string((GVariant*)allPrevIter->data, NULL));
 			}
-			g_debug("Built previous result set with %d entries for Gnome Shell search provider '%s' of type %s",
-						g_list_length(allPrevResults),
-						priv->gnomeShellID,
-						G_OBJECT_TYPE_NAME(self));
+			XFDASHBOARD_DEBUG(self, PLUGINS,
+								"Built previous result set with %d entries for Gnome Shell search provider '%s' of type %s",
+								g_list_length(allPrevResults),
+								priv->gnomeShellID,
+								G_OBJECT_TYPE_NAME(self));
 			g_list_free_full(allPrevResults, (GDestroyNotify)g_variant_unref);
 
 			/* Call search method at search provider to get an update
@@ -534,10 +541,11 @@ static XfdashboardSearchResultSet* _xfdashboard_gnome_shell_search_provider_get_
 												-1,
 												NULL,
 												&error);
-			g_debug("Fetched subset result set at %p for Gnome Shell search provider '%s' of type %s",
-						proxyResult,
-						priv->gnomeShellID,
-						G_OBJECT_TYPE_NAME(self));
+			XFDASHBOARD_DEBUG(self, PLUGINS,
+								"Fetched subset result set at %p for Gnome Shell search provider '%s' of type %s",
+								proxyResult,
+								priv->gnomeShellID,
+								G_OBJECT_TYPE_NAME(self));
 		}
 
 	if(!proxyResult)
@@ -581,10 +589,11 @@ static XfdashboardSearchResultSet* _xfdashboard_gnome_shell_search_provider_get_
 				g_variant_unref(resultItem);
 			}
 		}
-		g_debug("Got result set with %u entries for Gnome Shell search provider '%s' of type %s",
-					xfdashboard_search_result_set_get_size(resultSet),
-					priv->gnomeShellID,
-					G_OBJECT_TYPE_NAME(self));
+		XFDASHBOARD_DEBUG(self, PLUGINS,
+							"Got result set with %u entries for Gnome Shell search provider '%s' of type %s",
+							xfdashboard_search_result_set_get_size(resultSet),
+							priv->gnomeShellID,
+							G_OBJECT_TYPE_NAME(self));
 	}
 
 	/* Release allocated resources */
