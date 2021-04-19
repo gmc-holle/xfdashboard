@@ -230,6 +230,176 @@ static void _xfdashboard_settings_on_plugin_settings_changed(XfdashboardSettings
 	}
 }
 
+/* Set the list of file locations where to load and merge key and mouse bindings
+ * from. The binding files are loaded in given order and the binding from the
+ * latter binding files will override the existing binding of the former ones.
+ * The list of file locations must be a %NULL-terminated list of strings where
+ * each string contains the absolute file path to a binding file. Non-existing
+ * files will be silently skipped and ignored. Set to NULL if not interested in
+ * any binding.
+ */
+static void _xfdashboard_settings_set_binding_files(XfdashboardSettings *self, const gchar **inFileLocations)
+{
+	XfdashboardSettingsPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(inFileLocations==NULL || *inFileLocations);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(!xfdashboard_strv_equal((const gchar**)priv->bindingFiles, inFileLocations))
+	{
+		/* Set value */
+		if(priv->bindingFiles)
+		{
+			g_strfreev(priv->bindingFiles);
+			priv->bindingFiles=NULL;
+		}
+
+		if(inFileLocations)
+		{
+			priv->bindingFiles=g_strdupv((gchar**)inFileLocations);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_BINDING_FILES]);
+	}
+}
+
+/* Set the list of paths where to lookup themes at settings. The themes are
+ * searched in the %NULL-terminated list of paths in given order and the first
+ * path containing the theme will be used. Even if it is possible to set it to
+ * NULL, it is not adviced as no theme can be loaded in this case.
+ */
+static void _xfdashboard_settings_set_theme_search_paths(XfdashboardSettings *self, const gchar **inSearchPaths)
+{
+	XfdashboardSettingsPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(inSearchPaths==NULL || *inSearchPaths);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(!xfdashboard_strv_equal((const gchar**)priv->themeSearchPaths, inSearchPaths))
+	{
+		/* Set value */
+		if(priv->themeSearchPaths)
+		{
+			g_strfreev(priv->themeSearchPaths);
+			priv->themeSearchPaths=NULL;
+		}
+
+		if(inSearchPaths)
+		{
+			priv->themeSearchPaths=g_strdupv((gchar**)inSearchPaths);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_THEME_SEARCH_PATHS]);
+	}
+}
+
+/* Set the list of paths where to lookup plugins at settings. The plugins are
+ * searched in the %NULL-terminated list of paths in given order and the first
+ * path containing the plugin will be used. Even if it is possible to set it to
+ * NULL, it is not adviced as no plugin can be loaded in this case.
+ */
+static void _xfdashboard_settings_set_plugin_search_paths(XfdashboardSettings *self, const gchar **inSearchPaths)
+{
+	XfdashboardSettingsPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(inSearchPaths==NULL || *inSearchPaths);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(!xfdashboard_strv_equal((const gchar**)priv->pluginSearchPaths, inSearchPaths))
+	{
+		/* Set value */
+		if(priv->pluginSearchPaths)
+		{
+			g_strfreev(priv->pluginSearchPaths);
+			priv->pluginSearchPaths=NULL;
+		}
+
+		if(inSearchPaths)
+		{
+			priv->pluginSearchPaths=g_strdupv((gchar**)inSearchPaths);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_PLUGIN_SEARCH_PATHS]);
+	}
+}
+
+/* Set the base path of configuration files for application or NULL to disable
+ * application specific configuration files.
+ */
+static void _xfdashboard_settings_set_config_path(XfdashboardSettings *self, const gchar *inPath)
+{
+	XfdashboardSettingsPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(!inPath || *inPath);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->configPath, inPath)!=0)
+	{
+		/* Set value */
+		if(priv->configPath)
+		{
+			g_free(priv->configPath);
+			priv->configPath=NULL;
+		}
+
+		if(inPath)
+		{
+			priv->configPath=g_strdup(inPath);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_CONFIG_PATH]);
+	}
+}
+
+/* Set the base path of data files for application or NULL to disable application
+ * specific data files.
+ */
+static void _xfdashboard_settings_set_data_path(XfdashboardSettings *self, const gchar *inPath)
+{
+	XfdashboardSettingsPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
+	g_return_if_fail(!inPath || *inPath);
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(g_strcmp0(priv->dataPath, inPath)!=0)
+	{
+		/* Set value */
+		if(priv->dataPath)
+		{
+			g_free(priv->dataPath);
+			priv->dataPath=NULL;
+		}
+
+		if(inPath)
+		{
+			priv->dataPath=g_strdup(inPath);
+		}
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_CONFIG_PATH]);
+	}
+}
+
+
 /* IMPLEMENTATION: GObject */
 
 /* Default nofity signal handler */
@@ -382,23 +552,23 @@ static void _xfdashboard_settings_set_property(GObject *inObject,
 
 		/* Static runtime settings */
 		case PROP_BINDING_FILES:
-			xfdashboard_settings_set_binding_files(self, (const gchar**)g_value_get_boxed(inValue));
+			_xfdashboard_settings_set_binding_files(self, (const gchar**)g_value_get_boxed(inValue));
 			break;
 
 		case PROP_THEME_SEARCH_PATHS:
-			xfdashboard_settings_set_theme_search_paths(self, (const gchar**)g_value_get_boxed(inValue));
+			_xfdashboard_settings_set_theme_search_paths(self, (const gchar**)g_value_get_boxed(inValue));
 			break;
 
 		case PROP_PLUGIN_SEARCH_PATHS:
-			xfdashboard_settings_set_plugin_search_paths(self, (const gchar**)g_value_get_boxed(inValue));
+			_xfdashboard_settings_set_plugin_search_paths(self, (const gchar**)g_value_get_boxed(inValue));
 			break;
 
 		case PROP_CONFIG_PATH:
-			xfdashboard_settings_set_config_path(self, g_value_get_string(inValue));
+			_xfdashboard_settings_set_config_path(self, g_value_get_string(inValue));
 			break;
 
 		case PROP_DATA_PATH:
-			xfdashboard_settings_set_data_path(self, g_value_get_string(inValue));
+			_xfdashboard_settings_set_data_path(self, g_value_get_string(inValue));
 			break;
 
 		/* Unknown settings ;) */
@@ -761,6 +931,7 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 	 * A %NULL-terminated list of strings where each one contains the file location of a binding
 	 * file. The binding files are loaded in the given order and merged wherby the latter bindings
 	 * override the former ones. If a file in this list does not exist, it will be skipped silently.
+	 * Set to %NULL or leave the default value untouched if not interested in any binding.
 	 */
 	XfdashboardSettingsProperties[PROP_BINDING_FILES]=
 		g_param_spec_boxed("binding-files",
@@ -774,7 +945,9 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 	 *
 	 * A %NULL-terminated list of strings where each one contains the path the lookup a requested
 	 * theme at. The theme is looked up in the order given at this search path list and the first
-	 * path containing it will be used.
+	 * path containing it will be used. Even if it is possible to set it to %NULL or to keep the
+	 * default empty value, it is not adviced not to set this property as no theme can be loaded
+	 * in this case.
 	 */
 	XfdashboardSettingsProperties[PROP_THEME_SEARCH_PATHS]=
 		g_param_spec_boxed("theme-search-paths",
@@ -788,7 +961,9 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 	 *
 	 * A %NULL-terminated list of strings where each one contains the path the lookup a requested
 	 * plug-in at. The plug-in is looked up in the order given at this search path list and the first
-	 * path containing it will be used.
+	 * path containing it will be used. Even if it is possible to set it to %NULL or to keep the
+	 * default empty value, it is not adviced not to set this property as as no plugin can be loaded
+	 * in this case.
 	 */
 	XfdashboardSettingsProperties[PROP_PLUGIN_SEARCH_PATHS]=
 		g_param_spec_boxed("plugin-search-paths",
@@ -800,7 +975,8 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 	/**
 	 * XfdashboardSettings:config-path:
 	 *
-	 * The base path of configuration files of application.
+	 * The base path of configuration files of application or NULL to disable application specific
+	 * configuration files.
 	 */
 	XfdashboardSettingsProperties[PROP_CONFIG_PATH]=
 		g_param_spec_string("config-path",
@@ -812,7 +988,7 @@ static void xfdashboard_settings_class_init(XfdashboardSettingsClass *klass)
 	/**
 	 * XfdashboardSettings:data-path:
 	 *
-	 * The base path of data files of application.
+	 * The base path of data files of application or NULL to disable application specific data files.
 	 */
 	XfdashboardSettingsProperties[PROP_DATA_PATH]=
 		g_param_spec_string("data-path",
@@ -1853,48 +2029,6 @@ const gchar** xfdashboard_settings_get_binding_files(XfdashboardSettings *self)
 }
 
 /**
- * xfdashboard_settings_set_binding_files:
- * @self: A #XfdashboardSettings
- * @inFileLocations: The list of file locations for binding files
- *
- * Sets the list of file locations where to load and merge key and mouse bindings
- * from. The binding files are loaded in given order and the binding from the
- * latter binding files will override the existing binding of the former ones.
- * The list of file locations at @inFileLocations must be a %NULL-terminated
- * list of strings where each string contains the absolute file path to a binding
- * file. Non-existing files will be silently skipped and ignored. Set to %NULL
- * if not interested in any binding.
- */
-void xfdashboard_settings_set_binding_files(XfdashboardSettings *self, const gchar **inFileLocations)
-{
-	XfdashboardSettingsPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
-	g_return_if_fail(inFileLocations==NULL || *inFileLocations);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(!xfdashboard_strv_equal((const gchar**)priv->bindingFiles, inFileLocations))
-	{
-		/* Set value */
-		if(priv->bindingFiles)
-		{
-			g_strfreev(priv->bindingFiles);
-			priv->bindingFiles=NULL;
-		}
-
-		if(inFileLocations)
-		{
-			priv->bindingFiles=g_strdupv((gchar**)inFileLocations);
-		}
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_BINDING_FILES]);
-	}
-}
-
-/**
  * xfdashboard_settings_get_theme_search_paths:
  * @self: A #XfdashboardSettings
  *
@@ -1909,46 +2043,6 @@ const gchar** xfdashboard_settings_get_theme_search_paths(XfdashboardSettings *s
 	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS(self), NULL);
 
 	return((const gchar**)self->priv->themeSearchPaths);
-}
-
-/**
- * xfdashboard_settings_set_theme_search_paths:
- * @self: A #XfdashboardSettings
- * @inSearchPaths: The list of paths to lookup themes at
- *
- * Sets the list of paths where to lookup themes at in settings at @self.
- * The themes are search in the %NULL-terminated list of paths at @inSearchPaths
- * in given order and the first paths containing the theme will be used.
- * Even if it is possible to set it to %NULL, it is not adviced as no theme
- * can be loaded in this case.
- */
-void xfdashboard_settings_set_theme_search_paths(XfdashboardSettings *self, const gchar **inSearchPaths)
-{
-	XfdashboardSettingsPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
-	g_return_if_fail(inSearchPaths==NULL || *inSearchPaths);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(!xfdashboard_strv_equal((const gchar**)priv->themeSearchPaths, inSearchPaths))
-	{
-		/* Set value */
-		if(priv->themeSearchPaths)
-		{
-			g_strfreev(priv->themeSearchPaths);
-			priv->themeSearchPaths=NULL;
-		}
-
-		if(inSearchPaths)
-		{
-			priv->themeSearchPaths=g_strdupv((gchar**)inSearchPaths);
-		}
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_THEME_SEARCH_PATHS]);
-	}
 }
 
 /**
@@ -1969,46 +2063,6 @@ const gchar** xfdashboard_settings_get_plugin_search_paths(XfdashboardSettings *
 }
 
 /**
- * xfdashboard_settings_set_plugin_search_paths:
- * @self: A #XfdashboardSettings
- * @inSearchPaths: The list of paths to lookup plugins at
- *
- * Sets the list of paths where to lookup plugins at in settings at @self.
- * The plugins are search in the %NULL-terminated list of paths at @inSearchPaths
- * in given order and the first path containing the plugin will be used.
- * Even if it is possible to set it to %NULL, it is not adviced as no plugin
- * can be loaded in this case.
- */
-void xfdashboard_settings_set_plugin_search_paths(XfdashboardSettings *self, const gchar **inSearchPaths)
-{
-	XfdashboardSettingsPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
-	g_return_if_fail(inSearchPaths==NULL || *inSearchPaths);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(!xfdashboard_strv_equal((const gchar**)priv->pluginSearchPaths, inSearchPaths))
-	{
-		/* Set value */
-		if(priv->pluginSearchPaths)
-		{
-			g_strfreev(priv->pluginSearchPaths);
-			priv->pluginSearchPaths=NULL;
-		}
-
-		if(inSearchPaths)
-		{
-			priv->pluginSearchPaths=g_strdupv((gchar**)inSearchPaths);
-		}
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_PLUGIN_SEARCH_PATHS]);
-	}
-}
-
-/**
  * xfdashboard_settings_get_config_path:
  * @self: A #XfdashboardSettings
  *
@@ -2026,44 +2080,6 @@ const gchar* xfdashboard_settings_get_config_path(XfdashboardSettings *self)
 }
 
 /**
- * xfdashboard_settings_set_config_path:
- * @self: A #XfdashboardSettings
- * @inPath: The base path of configuration files
- *
- * Sets the base path of configuration files for application to %inPath at
- * settings at @self.
-*/
-void xfdashboard_settings_set_config_path(XfdashboardSettings *self, const gchar *inPath)
-{
-	XfdashboardSettingsPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
-	g_return_if_fail(!inPath || *inPath);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(g_strcmp0(priv->configPath, inPath)!=0)
-	{
-		/* Set value */
-		if(priv->configPath)
-		{
-			g_free(priv->configPath);
-			priv->configPath=NULL;
-		}
-
-		if(inPath)
-		{
-			priv->configPath=g_strdup(inPath);
-		}
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_CONFIG_PATH]);
-	}
-}
-
-
-/**
  * xfdashboard_settings_get_data_path:
  * @self: A #XfdashboardSettings
  *
@@ -2078,41 +2094,4 @@ const gchar* xfdashboard_settings_get_data_path(XfdashboardSettings *self)
 	g_return_val_if_fail(XFDASHBOARD_IS_SETTINGS(self), NULL);
 
 	return(self->priv->dataPath);
-}
-
-/**
- * xfdashboard_settings_set_data_path:
- * @self: A #XfdashboardSettings
- * @inPath: The base path of data files
- *
- * Sets the base path of data files for application to %inPath at settings at
- * @self.
- */
-void xfdashboard_settings_set_data_path(XfdashboardSettings *self, const gchar *inPath)
-{
-	XfdashboardSettingsPrivate		*priv;
-
-	g_return_if_fail(XFDASHBOARD_IS_SETTINGS(self));
-	g_return_if_fail(!inPath || *inPath);
-
-	priv=self->priv;
-
-	/* Set value if changed */
-	if(g_strcmp0(priv->dataPath, inPath)!=0)
-	{
-		/* Set value */
-		if(priv->dataPath)
-		{
-			g_free(priv->dataPath);
-			priv->dataPath=NULL;
-		}
-
-		if(inPath)
-		{
-			priv->dataPath=g_strdup(inPath);
-		}
-
-		/* Notify about property change */
-		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardSettingsProperties[PROP_CONFIG_PATH]);
-	}
 }

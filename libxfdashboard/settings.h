@@ -139,19 +139,14 @@ gboolean xfdashboard_settings_get_scroll_event_changes_workspace(XfdashboardSett
 void xfdashboard_settings_set_scroll_event_changes_workspace(XfdashboardSettings *self, gboolean inWindowsViewScrollEventChangesWorkspace);
 
 const gchar** xfdashboard_settings_get_binding_files(XfdashboardSettings *self);
-void xfdashboard_settings_set_binding_files(XfdashboardSettings *self, const gchar **inFileLocations);
 
 const gchar** xfdashboard_settings_get_theme_search_paths(XfdashboardSettings *self);
-void xfdashboard_settings_set_theme_search_paths(XfdashboardSettings *self, const gchar **inSearchPaths);
 
 const gchar** xfdashboard_settings_get_plugin_search_paths(XfdashboardSettings *self);
-void xfdashboard_settings_set_plugin_search_paths(XfdashboardSettings *self, const gchar **inSearchPaths);
 
 const gchar* xfdashboard_settings_get_config_path(XfdashboardSettings *self);
-void xfdashboard_settings_set_config_path(XfdashboardSettings *self, const gchar *inPath);
 
 const gchar* xfdashboard_settings_get_data_path(XfdashboardSettings *self);
-void xfdashboard_settings_set_data_path(XfdashboardSettings *self, const gchar *inPath);
 
 G_END_DECLS
 
