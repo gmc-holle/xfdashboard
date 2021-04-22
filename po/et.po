@@ -524,29 +524,29 @@ msgstr "Kell"
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:203
 msgid "Hour color:"
-msgstr ""
+msgstr "Tundide värv:"
 
 #: ../plugins/clock-view/plugin.c:213
 msgid "Choose color for hour hand"
-msgstr ""
+msgstr "Vali värv tunniosuti jaoks"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:218
 msgid "Minute color:"
-msgstr ""
+msgstr "Minutite värv:"
 
 #: ../plugins/clock-view/plugin.c:228
 msgid "Choose color for minute hand"
-msgstr ""
+msgstr "Vali värv minutiosuti jaoks"
 
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:233
 msgid "Second color:"
-msgstr ""
+msgstr "Sekundite värv:"
 
 #: ../plugins/clock-view/plugin.c:243
 msgid "Choose color for second hand"
-msgstr ""
+msgstr "Vali värv teise osuti jaoks"
 
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:248
@@ -555,19 +555,19 @@ msgstr "Taustavärv:"
 
 #: ../plugins/clock-view/plugin.c:258
 msgid "Choose color for background of second hand"
-msgstr ""
+msgstr "Vali taustavärv teise osuti jaoks"
 
 #: ../plugins/clock-view/plugin.c:312
 msgid "Adds a new view showing a clock"
-msgstr ""
+msgstr "Lisab uue kellaga vaate"
 
 #: ../plugins/example-search-provider/example-search-provider.c:67
 msgid "Example search"
-msgstr ""
+msgstr "Näidisotsing"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "Otsinguteenuse näidis"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
@@ -612,7 +612,7 @@ msgstr ""
 #. Add widget to limit checks to primary monitor only or to all monitors
 #: ../plugins/hot-corner/plugin.c:401
 msgid "Primary monitor only"
-msgstr ""
+msgstr "Vaid esmasel monitoril"
 
 #: ../plugins/hot-corner/plugin.c:457
 msgid "Hot corner"
@@ -662,11 +662,11 @@ msgstr ""
 
 #: ../settings/general.c:85
 msgid "Windows view"
-msgstr ""
+msgstr "Akende vaade"
 
 #: ../settings/general.c:86
 msgid "Applications view"
-msgstr ""
+msgstr "Rakenduste vaade"
 
 #: ../settings/general.c:93
 msgid "High"
@@ -699,7 +699,7 @@ msgstr "Versiooniteave"
 #. Initialize GTK+
 #: ../settings/main.c:70
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../settings/main.c:74
 #, c-format
@@ -734,15 +734,15 @@ msgstr "Teema"
 
 #: ../xfdashboard/application.c:466
 msgid "Fork to background"
-msgstr ""
+msgstr "Muuda taustarakenduseks"
 
 #: ../xfdashboard/application.c:467
 msgid "Quit running instance"
-msgstr ""
+msgstr "Sulge hetkel töötav rakendus"
 
 #: ../xfdashboard/application.c:468
 msgid "Restart running instance"
-msgstr ""
+msgstr "Käivita hetkel töötav rakendus uuesti"
 
 #: ../xfdashboard/application.c:469
 msgid ""
