@@ -6,8 +6,8 @@
 # Translators:
 # Harald H. <haarektrans@gmail.com>, 2020
 # Eirik Dekko <edekko@gmail.com>, 2020
-# Nick Schermer <nick@xfce.org>, 2020
 # Allan Nordhøy <epost@anotheragency.no>, 2020
+# Nick Schermer <nick@xfce.org>, 2021
 # heskjestad <cato@heskjestad.xyz>, 2021
 # 
 #, fuzzy
@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-08 12:48+0200\n"
+"POT-Creation-Date: 2021-04-16 12:49+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: heskjestad <cato@heskjestad.xyz>, 2021\n"
 "Language-Team: Norwegian Bokmål (https://www.transifex.com/xfce/teams/16840/nb/)\n"
@@ -418,19 +418,25 @@ msgstr "Utførte handling «%s» for programmet «%s»"
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:581
 #, c-format
 msgid "Launching application '%s' failed: %s"
 msgstr "Klarte ikke starte programmet «%s»: %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:336
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:499
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:520
 msgid "No information available for application"
 msgstr "Programmet har ikke tilgjengelig informasjon"
 
 #: ../libxfdashboard/application-button.c:763
 #: ../libxfdashboard/applications-search-provider.c:759
 #: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
-#: ../libxfdashboard/quicklaunch.c:442 ../xfdashboard/application.c:508
+#: ../libxfdashboard/quicklaunch.c:442
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:480
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:583
+#: ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "ukjent feil"
 
@@ -438,6 +444,7 @@ msgstr "ukjent feil"
 #: ../libxfdashboard/applications-search-provider.c:770
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:595
 #, c-format
 msgid "Application '%s' launched"
 msgstr "Startet programmet «%s»"
@@ -670,6 +677,29 @@ msgstr "Lukk vindu med midtklikk "
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
 msgstr "Midtklikk lukker vinduer i vinduer"
+
+#: ../plugins/recently-used-search-provider/plugin.c:75
+msgid "Recently used search provider"
+msgstr "Søketilbyder for nylig brukte filer"
+
+#: ../plugins/recently-used-search-provider/plugin.c:76
+msgid "A search provider using recently used files as source"
+msgstr "En søketilbyder som har nylig brukte filer som kilde"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
+msgid "Recently used"
+msgstr "Nylig brukt"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:475
+#, c-format
+msgid "Launching application for '%s' failed: %s"
+msgstr "Klarte ikke starte program for «%s»: %s"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:497
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
+#, c-format
+msgid "Launching application for file '%s' failed: %s"
+msgstr "Klarte ikke starte program for fila «%s»: %s"
 
 #: ../settings/general.c:84
 msgid "Do nothing"
