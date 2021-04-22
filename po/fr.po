@@ -13,15 +13,16 @@
 # roxfr <roxfr@outlook.fr>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # jc1 <jc1.quebecos@gmail.com>, 2021
+# Urien Desterres <urien.desterres@gmail.com>, 2021
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-05 12:50+0100\n"
+"POT-Creation-Date: 2021-04-16 12:49+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: jc1 <jc1.quebecos@gmail.com>, 2021\n"
+"Last-Translator: Urien Desterres <urien.desterres@gmail.com>, 2021\n"
 "Language-Team: French (https://www.transifex.com/xfce/teams/16840/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -83,6 +84,19 @@ msgstr "Applications de recherche"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version completes gradients with linear gradients "
+"for outline and background filling."
+msgstr ""
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
+"This unstable development version introduces completes turning "
+"libxfdashboard into a real library and introduces path gradients for "
+"outlines."
+msgstr ""
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr ""
@@ -90,7 +104,7 @@ msgstr ""
 "l'utilisateur mais commence à déplacer libexfdashboard dans une vraie "
 "bibliothèque."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -98,7 +112,7 @@ msgstr ""
 "Cette version stable corrige un bogue et remplace AppInfo par Appstream "
 "Metainfo."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -109,7 +123,7 @@ msgstr ""
 "support des listes de saut, etc. Il contient également des traductions "
 "nouvelles et mise à jour."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -117,7 +131,7 @@ msgstr ""
 "Cette version stable corrige un bogue définissant les applications par "
 "défaut correctes lors de la première utilisation."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -400,8 +414,8 @@ msgstr "Thème vin rouge pour xfdashboard"
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Impossible d'exécuter l'action '%s' pour l'application '%s' : %s"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/plugins.c:795
-#: ../settings/main.c:76
+#: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
+#: ../settings/plugins.c:794
 msgid "Unknown error"
 msgstr "Erreur inconnue"
 
@@ -412,90 +426,42 @@ msgstr "Action '%s' exécutée pour l'application '%s'"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:751
+#: ../libxfdashboard/applications-search-provider.c:757
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:581
 #, c-format
 msgid "Launching application '%s' failed: %s"
 msgstr "Lancement de l'application « %s » a échoué : %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:336
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:499
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:520
 msgid "No information available for application"
 msgstr "Aucune information disponible pour l'application"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/application.c:298 ../libxfdashboard/application.c:593
-#: ../libxfdashboard/applications-search-provider.c:753
-#: ../libxfdashboard/applications-view.c:334
+#: ../libxfdashboard/applications-search-provider.c:759
+#: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
 #: ../libxfdashboard/quicklaunch.c:442
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:480
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:583
+#: ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "erreur inconnue"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:764
+#: ../libxfdashboard/applications-search-provider.c:770
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:595
 #, c-format
 msgid "Application '%s' launched"
 msgstr "Application « %s »lancée"
 
-#: ../libxfdashboard/application.c:296
-#, c-format
-msgid "Could not load theme '%s': %s"
-msgstr "Impossible de charger le thème « %s » : %s"
-
-#: ../libxfdashboard/application.c:502
-#, c-format
-msgid "Welcome to %s (%s)!"
-msgstr "Bienvenue à %s (%s) !"
-
-#: ../libxfdashboard/application.c:504
-#, c-format
-msgid "Welcome to %s!"
-msgstr "Bienvenue à %s !"
-
-#: ../libxfdashboard/application.c:551
-msgid "Fork to background"
-msgstr "Bifurquer pour le fond"
-
-#: ../libxfdashboard/application.c:552
-msgid "Quit running instance"
-msgstr "Quitter l'instance fonctionnant"
-
-#: ../libxfdashboard/application.c:553
-msgid "Restart running instance"
-msgstr "Redémarrez instance fonctionnant"
-
-#: ../libxfdashboard/application.c:554
-msgid ""
-"Toggles visibility if running instance was started in daemon mode otherwise "
-"it quits running non-daemon instance"
-msgstr ""
-"Active / désactive la visibilité si l'instance en cours d'exécution a été "
-"démarrée en mode démon, sinon elle arrête l'exécution de l'instance non "
-"démon"
-
-#: ../libxfdashboard/application.c:555
-msgid "The ID of view to switch to on startup or resume"
-msgstr "L'ID de la vue pour passer au démarrage ou à la reprise"
-
-#: ../libxfdashboard/application.c:556
-msgid "Show version"
-msgstr "Afficher la version"
-
-#: ../libxfdashboard/application.c:575
-msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "Un tableau de bord façon Gnome Shell pour Xfce4 - version"
-
-#. Show error
-#: ../libxfdashboard/application.c:592
-#, c-format
-msgid "%s\n"
-msgstr "%s\n"
-
-#: ../libxfdashboard/applications-search-provider.c:835
+#: ../libxfdashboard/applications-search-provider.c:841
 #: ../libxfdashboard/applications-view.c:415
 #: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
@@ -503,7 +469,7 @@ msgstr "Lancer"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1172
+#: ../libxfdashboard/applications-search-provider.c:1183
 #: ../libxfdashboard/applications-view.c:1580
 #: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
@@ -529,6 +495,21 @@ msgstr "Toutes les applications"
 #: ../libxfdashboard/applications-view.c:683
 msgid "List of all installed applications"
 msgstr "Liste de toutes les applications installées"
+
+#: ../libxfdashboard/core.c:371
+#, c-format
+msgid "Could not load theme '%s': %s"
+msgstr "Impossible de charger le thème « %s » : %s"
+
+#: ../libxfdashboard/core.c:1261
+#, c-format
+msgid "Welcome to %s (%s)!"
+msgstr "Bienvenue à %s (%s) !"
+
+#: ../libxfdashboard/core.c:1263
+#, c-format
+msgid "Welcome to %s!"
+msgstr "Bienvenue à %s !"
 
 #: ../libxfdashboard/quicklaunch.c:384
 msgid "No windows to activate for application"
@@ -636,7 +617,7 @@ msgstr "Choisissez la couleur pour le fond de la seconde main"
 msgid "Adds a new view showing a clock"
 msgstr "Ajoute une nouvelle vue montrant une horloge"
 
-#: ../plugins/example-search-provider/example-search-provider.c:73
+#: ../plugins/example-search-provider/example-search-provider.c:67
 msgid "Example search"
 msgstr "Exemple de recherche"
 
@@ -712,6 +693,29 @@ msgstr "Clic du milieu ferme la fenêtre"
 msgid "Closes windows in windows view by middle-click"
 msgstr "Ferme les fenêtres dans la vue fenêtre par un clic du milieu"
 
+#: ../plugins/recently-used-search-provider/plugin.c:75
+msgid "Recently used search provider"
+msgstr ""
+
+#: ../plugins/recently-used-search-provider/plugin.c:76
+msgid "A search provider using recently used files as source"
+msgstr ""
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
+msgid "Recently used"
+msgstr "Récemment utilisé"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:475
+#, c-format
+msgid "Launching application for '%s' failed: %s"
+msgstr ""
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:497
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
+#, c-format
+msgid "Launching application for file '%s' failed: %s"
+msgstr ""
+
 #: ../settings/general.c:84
 msgid "Do nothing"
 msgstr "Ne rien faire "
@@ -740,31 +744,6 @@ msgstr "Bas"
 msgid "seconds"
 msgstr "secondes"
 
-#: ../settings/plugins.c:222
-#, c-format
-msgid "Configure plugin: %s"
-msgstr "Configurer le greffon : %s"
-
-#. Create error message to store in list
-#: ../settings/plugins.c:794
-#, c-format
-msgid ""
-"<b>Plugin could not be loaded.</b>\n"
-"\n"
-"%s"
-msgstr ""
-"<b>Le greffon ne peut être chargé.</b>\n"
-"\n"
-"%s"
-
-#: ../settings/plugins.c:1006
-msgid "Name"
-msgstr "Nom"
-
-#: ../settings/themes.c:731
-msgid "Theme"
-msgstr "Thème"
-
 #: ../settings/main.c:46
 msgid "Settings manager socket"
 msgstr "Paramètres du gestionnaire de socket"
@@ -790,3 +769,67 @@ msgid ""
 msgstr ""
 "%s : %s\n"
 "Essayez %s--help pour voir une liste complète des options de ligne de commande.\n"
+
+#: ../settings/plugins.c:222
+#, c-format
+msgid "Configure plugin: %s"
+msgstr "Configurer le greffon : %s"
+
+#. Create error message to store in list
+#: ../settings/plugins.c:793
+#, c-format
+msgid ""
+"<b>Plugin could not be loaded.</b>\n"
+"\n"
+"%s"
+msgstr ""
+"<b>Le greffon ne peut être chargé.</b>\n"
+"\n"
+"%s"
+
+#: ../settings/plugins.c:1005
+msgid "Name"
+msgstr "Nom"
+
+#: ../settings/themes.c:731
+msgid "Theme"
+msgstr "Thème"
+
+#: ../xfdashboard/application.c:466
+msgid "Fork to background"
+msgstr "Bifurquer pour le fond"
+
+#: ../xfdashboard/application.c:467
+msgid "Quit running instance"
+msgstr "Quitter l'instance fonctionnant"
+
+#: ../xfdashboard/application.c:468
+msgid "Restart running instance"
+msgstr "Redémarrez instance fonctionnant"
+
+#: ../xfdashboard/application.c:469
+msgid ""
+"Toggles visibility if running instance was started in daemon mode otherwise "
+"it quits running non-daemon instance"
+msgstr ""
+"Active / désactive la visibilité si l'instance en cours d'exécution a été "
+"démarrée en mode démon, sinon elle arrête l'exécution de l'instance non "
+"démon"
+
+#: ../xfdashboard/application.c:470
+msgid "The ID of view to switch to on startup or resume"
+msgstr "L'ID de la vue pour passer au démarrage ou à la reprise"
+
+#: ../xfdashboard/application.c:471
+msgid "Show version"
+msgstr "Afficher la version"
+
+#: ../xfdashboard/application.c:490
+msgid "A Gnome Shell like dashboard for Xfce4 - version "
+msgstr "Un tableau de bord façon Gnome Shell pour Xfce4 - version"
+
+#. Show error
+#: ../xfdashboard/application.c:507
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
