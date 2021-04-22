@@ -311,7 +311,7 @@ msgstr "El tema predeterminat per a xfdashboard"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-auber"
-msgstr ""
+msgstr "xfdashboard-auber"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:2
 msgid "Aubergine theme for xfdashboard"
@@ -319,7 +319,7 @@ msgstr "Tema albergínia per a xfdashboard"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-blue"
-msgstr ""
+msgstr "xfdashboard-blue"
 
 #: ../data/themes/xfdashboard-blue/xfdashboard.theme.in.in.h:2
 msgid "Blue theme for xfdashboard"
@@ -327,7 +327,7 @@ msgstr "Tema blau per a xfdashboard"
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-dark"
-msgstr ""
+msgstr "xfdashboard-dark"
 
 #: ../data/themes/xfdashboard-dark/xfdashboard.theme.in.in.h:2
 msgid "Dark theme for xfdashboard"
@@ -335,7 +335,7 @@ msgstr "Tema fosc per a xfdashboard"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-mint"
-msgstr ""
+msgstr "xfdashboard-mint"
 
 #: ../data/themes/xfdashboard-mint/xfdashboard.theme.in.in.h:2
 msgid "Fresh-green flavored theme for xfdashboard"
@@ -343,7 +343,7 @@ msgstr ""
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-moranga"
-msgstr ""
+msgstr "xfdashboard-moranga"
 
 #: ../data/themes/xfdashboard-moranga/xfdashboard.theme.in.in.h:2
 msgid "Moranga theme for xfdashboard"
@@ -351,7 +351,7 @@ msgstr "Tema carabassa per a xfdashboard"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-wine"
-msgstr ""
+msgstr "xfdashboard-wine"
 
 #: ../data/themes/xfdashboard-wine/xfdashboard.theme.in.in.h:2
 msgid "Red wine theme for xfdashboard"
@@ -481,7 +481,7 @@ msgstr ""
 
 #: ../libxfdashboard/quicklaunch.c:701
 msgid "Add to favourites"
-msgstr ""
+msgstr "Afegeix als preferits"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
@@ -640,7 +640,7 @@ msgstr ""
 
 #: ../plugins/recently-used-search-provider/plugin.c:75
 msgid "Recently used search provider"
-msgstr ""
+msgstr "Proveïdor de cerques utilitzat recentment"
 
 #: ../plugins/recently-used-search-provider/plugin.c:76
 msgid "A search provider using recently used files as source"
@@ -764,7 +764,7 @@ msgstr ""
 
 #: ../xfdashboard/application.c:471
 msgid "Show version"
-msgstr ""
+msgstr "Mostra la versió"
 
 #: ../xfdashboard/application.c:490
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
