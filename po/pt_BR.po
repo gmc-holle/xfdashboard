@@ -6,21 +6,21 @@
 # Translators:
 # Rafael Fontenelle <rffontenelle@gmail.com>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
-# Nick Schermer <nick@xfce.org>, 2020
 # Wellington Almeida <wsalmeida6@gmail.com>, 2020
 # Andre Miranda <andre42m@gmail.com>, 2020
 # The Cat, 2021
 # Michael Martins <michaelfm21@gmail.com>, 2021
 # Lucas Wilm <lucaswilm@gmail.com>, 2021
+# Nick Schermer <nick@xfce.org>, 2021
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-29 12:48+0200\n"
+"POT-Creation-Date: 2021-04-16 12:49+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Lucas Wilm <lucaswilm@gmail.com>, 2021\n"
+"Last-Translator: Nick Schermer <nick@xfce.org>, 2021\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/xfce/teams/16840/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -81,6 +81,12 @@ msgstr "Procurando aplicativos"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version completes gradients with linear gradients "
+"for outline and background filling."
+msgstr ""
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
@@ -89,7 +95,7 @@ msgstr ""
 " do libxfdashboard em uma biblioteca real e introduz padrão de gradientes "
 "para contornos."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -97,7 +103,7 @@ msgstr ""
 "Esta versão de desenvolvimento instável introduz nada visível para o "
 "usuário, mas começa a transformar libxfdashboard em uma biblioteca real."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -105,7 +111,7 @@ msgstr ""
 "Esta versão estável corrige um bug e substitui o AppInfo com o AppStream "
 "Metainfo."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -115,7 +121,7 @@ msgstr ""
 "pop-up, múltiplo e suporte para jumplists, etc. Também inclui muitas "
 "traduções novas e atualizadas."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -123,7 +129,7 @@ msgstr ""
 "Esta versão estável corrige um problema ao definir os aplicativos padrões "
 "corretos no primeiro uso."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -402,7 +408,7 @@ msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Não foi possível executar a ação '%s' para o aplicativo '%s': %s"
 
 #: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
-#: ../settings/plugins.c:795
+#: ../settings/plugins.c:794
 msgid "Unknown error"
 msgstr "Erro desconhecido"
 
@@ -413,35 +419,42 @@ msgstr "Ação executada '%s' para o aplicativo '%s'"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:751
+#: ../libxfdashboard/applications-search-provider.c:757
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:581
 #, c-format
 msgid "Launching application '%s' failed: %s"
 msgstr "Falha%s ao iniciar o aplicativo '%s'"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:336
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:499
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:520
 msgid "No information available for application"
 msgstr "Nenhuma informação disponível para aplicação"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/applications-search-provider.c:753
+#: ../libxfdashboard/applications-search-provider.c:759
 #: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
-#: ../libxfdashboard/quicklaunch.c:442 ../xfdashboard/application.c:508
+#: ../libxfdashboard/quicklaunch.c:442
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:480
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:583
+#: ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "erro desconhecido"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:764
+#: ../libxfdashboard/applications-search-provider.c:770
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:595
 #, c-format
 msgid "Application '%s' launched"
 msgstr "Aplicação '%s' iniciada"
 
-#: ../libxfdashboard/applications-search-provider.c:835
+#: ../libxfdashboard/applications-search-provider.c:841
 #: ../libxfdashboard/applications-view.c:415
 #: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
@@ -449,7 +462,7 @@ msgstr "Lançador"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1172
+#: ../libxfdashboard/applications-search-provider.c:1183
 #: ../libxfdashboard/applications-view.c:1580
 #: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
@@ -481,12 +494,12 @@ msgstr "Lista de todos os aplicativos instalados"
 msgid "Could not load theme '%s': %s"
 msgstr "Não foi possível carregar o tema '%s': %s"
 
-#: ../libxfdashboard/core.c:1259
+#: ../libxfdashboard/core.c:1261
 #, c-format
 msgid "Welcome to %s (%s)!"
 msgstr "Bem-vindo ao %s (%s)!"
 
-#: ../libxfdashboard/core.c:1261
+#: ../libxfdashboard/core.c:1263
 #, c-format
 msgid "Welcome to %s!"
 msgstr "Bem-vindo ao %s!"
@@ -597,7 +610,7 @@ msgstr "Escolher cor de fundo para o ponteiro dos segundos"
 msgid "Adds a new view showing a clock"
 msgstr "Adiciona uma nova vista mostrando um relógio"
 
-#: ../plugins/example-search-provider/example-search-provider.c:73
+#: ../plugins/example-search-provider/example-search-provider.c:67
 msgid "Example search"
 msgstr "Exemplo de pesquisa"
 
@@ -670,6 +683,29 @@ msgstr "Clique com o botão do meio para fechar a janela"
 msgid "Closes windows in windows view by middle-click"
 msgstr "Fecha as janelas na vista de janelas ao clicar com o botão do meio"
 
+#: ../plugins/recently-used-search-provider/plugin.c:75
+msgid "Recently used search provider"
+msgstr ""
+
+#: ../plugins/recently-used-search-provider/plugin.c:76
+msgid "A search provider using recently used files as source"
+msgstr ""
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
+msgid "Recently used"
+msgstr "Usado recentemente"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:475
+#, c-format
+msgid "Launching application for '%s' failed: %s"
+msgstr ""
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:497
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
+#, c-format
+msgid "Launching application for file '%s' failed: %s"
+msgstr ""
+
 #: ../settings/general.c:84
 msgid "Do nothing"
 msgstr "Não fazer nada"
@@ -730,7 +766,7 @@ msgid "Configure plugin: %s"
 msgstr "Configurar plugin: %s"
 
 #. Create error message to store in list
-#: ../settings/plugins.c:794
+#: ../settings/plugins.c:793
 #, c-format
 msgid ""
 "<b>Plugin could not be loaded.</b>\n"
@@ -741,7 +777,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../settings/plugins.c:1006
+#: ../settings/plugins.c:1005
 msgid "Name"
 msgstr "Nome"
 
