@@ -5,8 +5,8 @@
 # 
 # Translators:
 # Xfce Bot <transifex@xfce.org>, 2020
-# Nick Schermer <nick@xfce.org>, 2020
 # Piarres Beobide <pi@beobide.net>, 2020
+# Nick Schermer <nick@xfce.org>, 2021
 # beriain, 2021
 # 
 #, fuzzy
@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-29 12:48+0200\n"
+"POT-Creation-Date: 2021-04-16 12:49+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: beriain, 2021\n"
 "Language-Team: Basque (https://www.transifex.com/xfce/teams/16840/eu/)\n"
@@ -77,6 +77,14 @@ msgstr "Aplikazioak bilatzen"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version completes gradients with linear gradients "
+"for outline and background filling."
+msgstr ""
+"Garapeneko bertsio ezegonkor honek ingeradetarako bide gradienteak eta "
+"atzealdearen betetzea osatzen ditu."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
@@ -84,7 +92,7 @@ msgstr ""
 "Garapeneko bertsio ezegonkor honek libxfdashboard benetako liburutegi batean"
 " bihurtzen amaitzen du eta bide gradienteak sartzen ditu ingeradetarako."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -92,7 +100,7 @@ msgstr ""
 "Garapeneko bertsio ezegonkor honek ez dakar ikus daitekeen ezer baina "
 "libxfdashboard benetako liburutegi bihurtzen hasten da."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -100,7 +108,7 @@ msgstr ""
 "Bertsio egonkor honek arazo bat konpontzen du eta AppInfo AppStream "
 "metainforekin ordezkatzen du."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -110,7 +118,7 @@ msgstr ""
 "goranzko menuak, hainbat backend eta jauzi zerrendak etab. Itzulpen berri "
 "eta eguneratu asko dakar ere."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -118,7 +126,7 @@ msgstr ""
 "Bertsio egonkor honek akats bat zuzentzen du aplikazio lehenetsi egokia "
 "ezartzerakoan lehen erabileran."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -398,7 +406,7 @@ msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Ezin izan da '%s' ekintza exekutatu '%s' aplikaziorako: %s"
 
 #: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
-#: ../settings/plugins.c:795
+#: ../settings/plugins.c:794
 msgid "Unknown error"
 msgstr "Errore ezezaguna"
 
@@ -409,35 +417,42 @@ msgstr "'%s' ekintza exekutatu da '%s' aplikaziorako"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:751
+#: ../libxfdashboard/applications-search-provider.c:757
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:581
 #, c-format
 msgid "Launching application '%s' failed: %s"
 msgstr "'%s' aplikazioa abiarazteak huts egin du: %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:336
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:499
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:520
 msgid "No information available for application"
 msgstr "Ez dago informaziorik eskuragarri aplikaziorako"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/applications-search-provider.c:753
+#: ../libxfdashboard/applications-search-provider.c:759
 #: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
-#: ../libxfdashboard/quicklaunch.c:442 ../xfdashboard/application.c:508
+#: ../libxfdashboard/quicklaunch.c:442
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:480
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:583
+#: ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "errore ezezaguna"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:764
+#: ../libxfdashboard/applications-search-provider.c:770
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:595
 #, c-format
 msgid "Application '%s' launched"
 msgstr "'%s' aplikazioa abiarazi da"
 
-#: ../libxfdashboard/applications-search-provider.c:835
+#: ../libxfdashboard/applications-search-provider.c:841
 #: ../libxfdashboard/applications-view.c:415
 #: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
@@ -445,7 +460,7 @@ msgstr "Abiarazi"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1172
+#: ../libxfdashboard/applications-search-provider.c:1183
 #: ../libxfdashboard/applications-view.c:1580
 #: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
@@ -477,12 +492,12 @@ msgstr "Instalatutako aplikazio guztien zerrenda"
 msgid "Could not load theme '%s': %s"
 msgstr "Ezin izan da '%s' itxura kargatu: %s"
 
-#: ../libxfdashboard/core.c:1259
+#: ../libxfdashboard/core.c:1261
 #, c-format
 msgid "Welcome to %s (%s)!"
 msgstr "Ongi etorri %s(e)ra (%s)!"
 
-#: ../libxfdashboard/core.c:1261
+#: ../libxfdashboard/core.c:1263
 #, c-format
 msgid "Welcome to %s!"
 msgstr "Ongi etorri %s(e)ra!"
@@ -593,7 +608,7 @@ msgstr "Segundoen orratzaren atzealdeko kolorea hautatu"
 msgid "Adds a new view showing a clock"
 msgstr "Bista berri bat gehitzen du erloju batekin"
 
-#: ../plugins/example-search-provider/example-search-provider.c:73
+#: ../plugins/example-search-provider/example-search-provider.c:67
 msgid "Example search"
 msgstr "Bilaketa eredua"
 
@@ -667,6 +682,31 @@ msgstr "Erdiko klikak leihoa itxi"
 msgid "Closes windows in windows view by middle-click"
 msgstr "Leihoak itxi leihoen ikuspegian erdiko klik eginez"
 
+#: ../plugins/recently-used-search-provider/plugin.c:75
+msgid "Recently used search provider"
+msgstr "Azkenaldian erabilitakoen bilaketa hornitzailea"
+
+#: ../plugins/recently-used-search-provider/plugin.c:76
+msgid "A search provider using recently used files as source"
+msgstr ""
+"Azkenaldian erabilitako fitxategiak iturri bezala dituen bilaketa "
+"hornitzaile bat "
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
+msgid "Recently used"
+msgstr "Azkenaldian erabilia"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:475
+#, c-format
+msgid "Launching application for '%s' failed: %s"
+msgstr "'%s'(e)rako aplikazioa abiarazteak huts egin du: %s"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:497
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
+#, c-format
+msgid "Launching application for file '%s' failed: %s"
+msgstr "'%s' fitxategirako aplikazioa abiarazteak huts egin du: %s"
+
 #: ../settings/general.c:84
 msgid "Do nothing"
 msgstr "Ez egin ezer"
@@ -727,7 +767,7 @@ msgid "Configure plugin: %s"
 msgstr "Plugina konfiguratu: %s"
 
 #. Create error message to store in list
-#: ../settings/plugins.c:794
+#: ../settings/plugins.c:793
 #, c-format
 msgid ""
 "<b>Plugin could not be loaded.</b>\n"
@@ -738,7 +778,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../settings/plugins.c:1006
+#: ../settings/plugins.c:1005
 msgid "Name"
 msgstr "Izena"
 
