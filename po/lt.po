@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-08 12:48+0200\n"
+"POT-Creation-Date: 2021-04-16 12:49+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Moo, 2021\n"
 "Language-Team: Lithuanian (https://www.transifex.com/xfce/teams/16840/lt/)\n"
@@ -418,19 +418,25 @@ msgstr "Įvykdytas veiksmas „%s“, skirtas programai „%s“"
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:581
 #, c-format
 msgid "Launching application '%s' failed: %s"
 msgstr "\"%s programos paleidimas nepavyko: %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:336
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:499
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:520
 msgid "No information available for application"
 msgstr "Nėra apie programą prieinamos informacijos"
 
 #: ../libxfdashboard/application-button.c:763
 #: ../libxfdashboard/applications-search-provider.c:759
 #: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
-#: ../libxfdashboard/quicklaunch.c:442 ../xfdashboard/application.c:508
+#: ../libxfdashboard/quicklaunch.c:442
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:480
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:583
+#: ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "nežinoma klaida"
 
@@ -438,6 +444,7 @@ msgstr "nežinoma klaida"
 #: ../libxfdashboard/applications-search-provider.c:770
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:595
 #, c-format
 msgid "Application '%s' launched"
 msgstr "Paleista programa \"%s\""
@@ -670,6 +677,30 @@ msgstr "Užverti langus viduriniuoju pelės mygtuku"
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
 msgstr "Viduriniuoju pelės mygtuku užveria langų rodinyje esančius langus"
+
+#: ../plugins/recently-used-search-provider/plugin.c:75
+msgid "Recently used search provider"
+msgstr "Paskiausiai naudotas paieškos teikėjas"
+
+#: ../plugins/recently-used-search-provider/plugin.c:76
+msgid "A search provider using recently used files as source"
+msgstr ""
+"Paieškos teikėjas naudojantis paskiausiai naudotus failus kaip šaltinį "
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
+msgid "Recently used"
+msgstr "Paskiausiai naudoti"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:475
+#, c-format
+msgid "Launching application for '%s' failed: %s"
+msgstr "Nepavyko paleisti programos, skirtos „%s“: %s"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:497
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
+#, c-format
+msgid "Launching application for file '%s' failed: %s"
+msgstr "Nepavyko paleisti programos, skirtos failui „%s“: %s"
 
 #: ../settings/general.c:84
 msgid "Do nothing"
