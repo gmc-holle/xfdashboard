@@ -5,19 +5,19 @@
 # 
 # Translators:
 # Leandro Regueiro <leandro.regueiro@gmail.com>, 2020
-# Nick Schermer <nick@xfce.org>, 2020
 # Xosé, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # Daniel Muñiz Fontoira <dani@damufo.com>, 2021
+# Nick Schermer <nick@xfce.org>, 2021
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-29 12:48+0200\n"
+"POT-Creation-Date: 2021-04-16 12:49+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Daniel Muñiz Fontoira <dani@damufo.com>, 2021\n"
+"Last-Translator: Nick Schermer <nick@xfce.org>, 2021\n"
 "Language-Team: Galician (https://www.transifex.com/xfce/teams/16840/gl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -78,6 +78,12 @@ msgstr "Busca de aplicativos"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version completes gradients with linear gradients "
+"for outline and background filling."
+msgstr ""
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
@@ -86,7 +92,7 @@ msgstr ""
 "libxfdashboard nunha biblioteca real e introduce gradientes de camiño para "
 "contornos."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -94,7 +100,7 @@ msgstr ""
 "Esta versión de desenvolvemento inestábel non engade nada visíbel polo "
 "usuario, pero comeza a mover libxfdashboard a unha biblioteca real."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -102,7 +108,7 @@ msgstr ""
 "Esta versión estábel amaña un erro e substitúe a meta información AppInfo "
 "por AppStream."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -112,7 +118,7 @@ msgstr ""
 "emerxentes, infraestrutura múltiple e soporte para listas de xogos, etc. "
 "Tamén inclúe moitas traducións novas e actualizadas."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -120,7 +126,7 @@ msgstr ""
 "Esta versión estábel amaña un erro na configuración dos aplicativos "
 "predeterminados no primeiro uso."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -400,7 +406,7 @@ msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "Non se puido executar a acción «%s» para o aplicativo «%s»: %s"
 
 #: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
-#: ../settings/plugins.c:795
+#: ../settings/plugins.c:794
 msgid "Unknown error"
 msgstr "Erro descoñecido"
 
@@ -411,35 +417,42 @@ msgstr "Executouse a acción «%s» para o aplicativo «%s»"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:751
+#: ../libxfdashboard/applications-search-provider.c:757
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:581
 #, c-format
 msgid "Launching application '%s' failed: %s"
 msgstr "Iniciando o aplicativo «%s» fallou: %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:336
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:499
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:520
 msgid "No information available for application"
 msgstr "Non hai información dispoñíbel para o aplicativo"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/applications-search-provider.c:753
+#: ../libxfdashboard/applications-search-provider.c:759
 #: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
-#: ../libxfdashboard/quicklaunch.c:442 ../xfdashboard/application.c:508
+#: ../libxfdashboard/quicklaunch.c:442
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:480
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:583
+#: ../xfdashboard/application.c:508
 msgid "unknown error"
 msgstr "erro descoñecido"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:764
+#: ../libxfdashboard/applications-search-provider.c:770
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:595
 #, c-format
 msgid "Application '%s' launched"
 msgstr "Iniciouse o aplicativo «%s»"
 
-#: ../libxfdashboard/applications-search-provider.c:835
+#: ../libxfdashboard/applications-search-provider.c:841
 #: ../libxfdashboard/applications-view.c:415
 #: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
@@ -447,7 +460,7 @@ msgstr "Iniciar"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1172
+#: ../libxfdashboard/applications-search-provider.c:1183
 #: ../libxfdashboard/applications-view.c:1580
 #: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
@@ -479,12 +492,12 @@ msgstr "Lista de todos os aplicativos instalados"
 msgid "Could not load theme '%s': %s"
 msgstr "Non se puido cargar o tema «%s»: %s"
 
-#: ../libxfdashboard/core.c:1259
+#: ../libxfdashboard/core.c:1261
 #, c-format
 msgid "Welcome to %s (%s)!"
 msgstr "Dámoslle a benvida a %s (%s)!"
 
-#: ../libxfdashboard/core.c:1261
+#: ../libxfdashboard/core.c:1263
 #, c-format
 msgid "Welcome to %s!"
 msgstr "Dámoslle a benvida a %s!"
@@ -595,7 +608,7 @@ msgstr "Escolla unha cor para o fondo da agulla dos segundos"
 msgid "Adds a new view showing a clock"
 msgstr "Engadir unha nova vista amosando un reloxo"
 
-#: ../plugins/example-search-provider/example-search-provider.c:73
+#: ../plugins/example-search-provider/example-search-provider.c:67
 msgid "Example search"
 msgstr "Exemplo de busca"
 
@@ -668,6 +681,29 @@ msgstr "O botón do medio pecha a xanela"
 msgid "Closes windows in windows view by middle-click"
 msgstr "Pecha as xanelas na vista de xanelas premendo o botón do medio"
 
+#: ../plugins/recently-used-search-provider/plugin.c:75
+msgid "Recently used search provider"
+msgstr ""
+
+#: ../plugins/recently-used-search-provider/plugin.c:76
+msgid "A search provider using recently used files as source"
+msgstr ""
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
+msgid "Recently used"
+msgstr "Usados recentemente"
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:475
+#, c-format
+msgid "Launching application for '%s' failed: %s"
+msgstr ""
+
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:497
+#: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
+#, c-format
+msgid "Launching application for file '%s' failed: %s"
+msgstr ""
+
 #: ../settings/general.c:84
 msgid "Do nothing"
 msgstr "Non facer nada"
@@ -728,7 +764,7 @@ msgid "Configure plugin: %s"
 msgstr "Configurar o engadido: %s"
 
 #. Create error message to store in list
-#: ../settings/plugins.c:794
+#: ../settings/plugins.c:793
 #, c-format
 msgid ""
 "<b>Plugin could not be loaded.</b>\n"
@@ -739,7 +775,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../settings/plugins.c:1006
+#: ../settings/plugins.c:1005
 msgid "Name"
 msgstr "Nome"
 
