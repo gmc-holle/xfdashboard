@@ -61,6 +61,14 @@
 	</keywords>
 
 	<releases>
+		<release version="0.9.3" timestamp="1619428997">
+			<description>
+				<_p>This unstable development version improves window
+				placement and a new search plugin looking for matches
+				against the recently used documents.
+				</_p>
+			</description>
+		</release>
 		<release version="0.9.2" timestamp="1617869265">
 			<description>
 				<_p>This unstable development version completes gradients
