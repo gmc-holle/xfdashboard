@@ -23,6 +23,165 @@
  * 
  */
 
+/**
+ * SECTION:theme-css
+ * @short_description: A theme CSS engine and resource manager
+ * @include: libxfdashboard/theme-css.h
+ *
+ * #XfdashboardThemeCSS is a CSS engine and resource manager to apply property
+ * values to actors derived from #XfdashboardStylable from matching selectors
+ * in CSS resources depending on their state.
+ *
+ * ## Note about resources parser
+ *
+ * Because all resources for CSS and XML are texts, the parser does convert texts
+ * to their needed and native type like booleans, integers etc. The parser can
+ * convert textual representation for most common property types. Boolean textual
+ * representations for FALSE are "FALSE, "f", "no", "n", "0" and for TRUE they are
+ * "TRUE", "t", "yes", "y", "1". Enumeration and flags can be specified either by
+ * their names, their nicks or integer values. Flags can be combined with "|"
+ * additionally.
+ *
+ * # Styling {#XfdashboardThemeCSS.Styling}
+ *
+ * Simply said: Styling is writing a CSS file and describing which properties of
+ * which actor to set to which value at certain conditions.
+ *
+ * The location of the CSS file is specified in theme's index file at the key
+ * `Style` and should be a relative path to theme's path. See <link
+ * linkend="XfdashboardTheme.File-location-and-structure">File location
+ * and structure</link> for further documentation of files and folders.
+ *
+ * The CSS file must follow the CSS 1.1 specification with one known exception:
+ * The keyword `!important` is not supported. Elements in CSS relate to the
+ * class name of the corresponding #GObject in case-sensitive manner, e.g.
+ * #XfdashboardButton. IDs in CSS relate to actor names as set in property `name`
+ * at #ClutterActor or set with clutter_actor_set_name(), e.g. "#quicklaunch"
+ * for quicklaunch actor.. Classes and pseudo-classes are used as expected.
+ *
+ * For a list of actor names which can used as ID in CSS file, see section <link
+ * linkend="XfdashboardThemeLayout.Layout">Layout</link>.
+ *
+ * # @-rules {#XfdashboardThemeCSS.@-rules}
+ *
+ * @-rules are used to define and access constant values or to use any built-in
+ * function, e.g. coloring functions.
+ *
+ * ## @constants {#XfdashboardThemeCSS.@constants}
+ *
+ * Constants will be defined as a `@constants` selector. The property names in
+ * this selector are the constants' names accessible via `@` followed by the name
+ * within the other selectors in the CSS - called @-reference. The constants'
+ * values can either be numbers, colors, strings or functions whereby strings
+ * must be enclosed either by single or double quotation marks. The difference
+ * between these two are, that strings enclosed by double quotation marks can
+ * contain special character sequences like `\n` or `\r` etc. which will be
+ * unescaped to new-lines and so. Strings enclosed in single quotation marks
+ * will not be unescaped and used as-is.
+ *
+ * <warning>
+ *   <para>
+ *     Regardless if strings are enclosed in single or double quotation
+ *     marks, you cannot reference any constant value or use any built-in
+ *     function within the string. You have to break it into two strings
+ *     with the @-reference at the point where the string is broken into
+ *     two parts, e.g.
+ *   </para>
+ *
+ * |[<!-- language="text" -->
+ * "Value of constant-name is: "@constant-name"."
+ * ]|
+ * </warning>
+ *
+ * Instead of fixed values you can use any of the built-in functions to calculate
+ * the property's value. These functions cannot only be used in `@constants`
+ * selectors but in any selector. To call a function, do prefix its name `@`
+ * followed by a comma-seperated list of function parameters enclosed by brackets,
+ * e.g.
+ *
+ * |[<!-- language="text" -->
+ * @rgba(17, 34, 51, 100%)
+ * ]|
+ *
+ * For a list of built-in function and their function paramters, see section
+ * <link linkend="XfdashboardThemeLayout.css-functions">List of built-in CSS
+ * functions</link>.
+ *
+ * The `@constants` selector can be declared repeatedly. The latter block will
+ * overwrite the values of any previously defined constant with the same constant
+ * name. The `@-references` always refer the latest definition parsed so far.
+ *
+ * The following example will define the constants named `color-fixed` and
+ * `color-by-function` and both with value `#112233`.
+ *
+ * |[<!-- language="css" -->
+ * @constants
+ * {
+ *   color-fixed: #112233;
+ *   color-by-function: @rga(17, 34, 51);
+ * }
+ * ]|
+ *
+ * The value of these constants can later be used in any following selector
+ * by their @-references.
+ *
+ * |[<!-- language="css" -->
+ * XfdashboardButton:focus
+ * {
+ *   background-color: @color-fixed;
+ * }
+ *
+ * XfdashboardApplicationButton:focus
+ * {
+ *   background-color: @color-by-function;
+ * }
+ * ]|
+ *
+ * ## CSS function: @import {#XfdashboardThemeCSS.css-function-import}
+ *
+ * The `@import` function allows to import other CSS styles from other files.
+ *
+ * <warning>
+ *   <para>
+ *     This function cannot be used or referenced within any CSS block. It must precede any other rules.
+ *   </para>
+ * </warning>
+ *
+ * <table>
+ *   <thead>
+ *     <row>
+ *       <entry>Syntax</entry>
+ *     </row>
+ *   </thead>
+ *   <tbody>
+ *     <row>
+ *       <entry><code>@</code>import(filename)</entry>
+ *     </row>
+ *   </tbody>
+ * </table>
+ * Imports a CSS files into the current CSS file.
+ * <table>
+ *   <thead>
+ *     <row>
+ *       <entry>Parameter</entry>
+ *       <entry>Description</entry>
+ *     </row>
+ *   </thead>
+ *   <tbody>
+ *     <row>
+ *       <entry>filename</entry>
+ *       <entry>
+ *         An absolute or relative path to the CSS file to import. The filename
+ *         should be quoted with either by single or double quotation marks.
+ *         Relative paths will be looked up first relative to the path of current
+ *         CSS file being parsed. If no such file exists the relative path will
+ *         be used relative the theme's path.
+ *       </entry>
+ *     </row>
+ *   </tbody>
+ * </table>
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -113,7 +272,7 @@ typedef gboolean (*XfdashboardThemeCSSFunctionCallback)(XfdashboardThemeCSS *sel
 /* Forward declarations */
 static void _xfdashboard_theme_css_set_error(XfdashboardThemeCSS *self,
 												GError **outError,
-												XfdashboardThemeCSSErrorEnum inCode,
+												XfdashboardThemeCSSError inCode,
 												const gchar *inFormat,
 												...) G_GNUC_PRINTF (4, 5);
 
@@ -132,7 +291,7 @@ static gchar* _xfdashboard_theme_css_resolve_at_identifier_by_string(Xfdashboard
 /* Helper function to set up GError object in this parser */
 static void _xfdashboard_theme_css_set_error(XfdashboardThemeCSS *self,
 												GError **outError,
-												XfdashboardThemeCSSErrorEnum inCode,
+												XfdashboardThemeCSSError inCode,
 												const gchar *inFormat,
 												...)
 {
@@ -175,7 +334,7 @@ static void _xfdashboard_theme_css_copy_table(gpointer *inKey, gpointer *inValue
 
 	value=_xfdashboard_theme_css_value_new();
 	value->source=inData->name;
-	value->string=(gchar*)inValue;
+	value->value=(gchar*)inValue;
 
 	g_hash_table_insert(inData->table, inKey, value);
 }
@@ -2617,15 +2776,27 @@ void xfdashboard_theme_css_init(XfdashboardThemeCSS *self)
 #undef REGISTER_CSS_FUNC
 }
 
+
 /* IMPLEMENTATION: Errors */
 
-GQuark xfdashboard_theme_css_error_quark(void)
-{
-	return(g_quark_from_static_string("xfdashboard-theme-css-error-quark"));
-}
+G_DEFINE_QUARK(xfdashboard-theme-css-error-quark, xfdashboard_theme_css_error);
+
 
 /* IMPLEMENTATION: Public API */
 
+/**
+ * xfdashboard_theme_css_new:
+ * @inThemePath: The base path of theme
+ *
+ * Creates a new #XfdashboardThemeCSS object with base path as provided at
+ * @inThemePath. The base path is used to resolve relative paths at CSS
+ * functions, e.g. \@try_icons.
+ *
+ * It is neccessary to call xfdashboard_theme_css_add_file() for each CSS
+ * file to load before any style can be applied to actors.
+ *
+ * Return value: An initialized and empty #XfdashboardThemeCSS
+ */
 /* Create new instance */
 XfdashboardThemeCSS* xfdashboard_theme_css_new(const gchar *inThemePath)
 {
@@ -2634,6 +2805,22 @@ XfdashboardThemeCSS* xfdashboard_theme_css_new(const gchar *inThemePath)
 												NULL)));
 }
 
+/**
+ * xfdashboard_theme_css_add_file:
+ * @self: A #XfdashboardThemeCSS
+ * @inPath: The path to CSS file to load
+ * @inPriority: The priority of the entries at this CSS file
+ * @outError: A return location for a #GError or %NULL
+ *
+ * Loads the CSS file at @inPath into theme CSS object at @self with given
+ * priority at @inPriority.
+ *
+ * If loading CSS resource fails, the error message will be placed inside error
+ * at @outError (if not %NULL).
+ *
+ * Return value: %TRUE if CSS file could be loaded or %FALSE if not and error
+ *   is stored at @outError.
+ */
 /* Load a CSS file into theme */
 gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 											const gchar *inPath,
@@ -2729,6 +2916,29 @@ gboolean xfdashboard_theme_css_add_file(XfdashboardThemeCSS *self,
 	return(TRUE);
 }
 
+/***
+ * xfdashboard_theme_css_get_properties:
+ * @self: A #XfdashboardThemeCSS
+ * @inStylable: The actor to find matching CSS styles for
+ *
+ * Collects all properties and their values of all matching selectors for the
+ * actor @inStylable from all loaded CSS files at @self. The actor to find the
+ * styles for must implement the #XfdashboardStylable interface.
+ *
+ * This function will lookup all matching selectors for the actor and collect
+ * the properties and value. If multiple properties with same property will be
+ * found, the best match (best matching selector, priority etc.) will be kept.
+ * The resulting properties will stored in a hash-table. The key of hash-table
+ * will contain the property name as string and the value of hash-table is of
+ * type #XfdashboardThemeCSSValue.
+ *
+ * The caller is responsible to free the returned hash.table with
+ * g_hash_table_destroy().
+ *
+ * Return value: (transfer full): A #GHashtable with all matching properties and
+ *   their values or %NULL in case of errors. The returned hash-table must be
+ *   destroyed with g_hash_table_destroy() after use.
+ */
 /* Return properties for a stylable actor */
 GHashTable* xfdashboard_theme_css_get_properties(XfdashboardThemeCSS *self,
 													XfdashboardStylable *inStylable)

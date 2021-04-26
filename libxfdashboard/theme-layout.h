@@ -35,8 +35,12 @@ G_BEGIN_DECLS
 /* Public definitions */
 /**
  * XfdashboardThemeLayoutBuildGet:
- * @XFDASHBOARD_THEME_LAYOUT_BUILD_GET_FOCUSABLES: Get #GPtrArray of pointer to defined focusable actors. Caller must free returned #GPtrArray with g_ptr_array_unref().
- * @XFDASHBOARD_THEME_LAYOUT_BUILD_GET_SELECTED_FOCUS: Get #ClutterActor which should gain the focus. Caller must unref returned #ClutterActor with g_object_unref().
+ * @XFDASHBOARD_THEME_LAYOUT_BUILD_GET_FOCUSABLES: Get #GPtrArray of pointer to
+ *   defined focusable actors. Caller must free returned #GPtrArray with
+ *   g_ptr_array_unref().
+ * @XFDASHBOARD_THEME_LAYOUT_BUILD_GET_SELECTED_FOCUS: Get #ClutterActor which
+ *   should gain the focus. Caller must unref returned #ClutterActor with
+ *   g_object_unref().
  *
  * The extra data to fetch when building an object from theme layout.
  */
@@ -90,15 +94,28 @@ struct _XfdashboardThemeLayoutClass
 };
 
 /* Errors */
+/**
+ * XFDASHBOARD_THEME_LAYOUT_ERROR:
+ *
+ * Error domain for theme layout errors.
+ * Errors in this domain will be from the #XfdashboardThemeLayoutError enumeration.
+ */
 #define XFDASHBOARD_THEME_LAYOUT_ERROR				(xfdashboard_theme_layout_error_quark())
 
 GQuark xfdashboard_theme_layout_error_quark(void);
 
+/**
+ * XfdashboardThemeLayoutError:
+ * @XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR: A general theme layout error
+ * @XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED: The XML of theme layout is malformed
+ *
+ * Error codes returned by loading theme layout.
+ */
 typedef enum /*< prefix=XFDASHBOARD_THEME_LAYOUT_ERROR >*/
 {
 	XFDASHBOARD_THEME_LAYOUT_ERROR_ERROR,
 	XFDASHBOARD_THEME_LAYOUT_ERROR_MALFORMED,
-} XfdashboardThemeLayoutErrorEnum;
+} XfdashboardThemeLayoutError;
 
 /* Public API */
 GType xfdashboard_theme_layout_get_type(void) G_GNUC_CONST;

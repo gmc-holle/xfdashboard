@@ -47,6 +47,12 @@ typedef struct _XfdashboardThemeCSS					XfdashboardThemeCSS;
 typedef struct _XfdashboardThemeCSSClass			XfdashboardThemeCSSClass;
 typedef struct _XfdashboardThemeCSSPrivate			XfdashboardThemeCSSPrivate;
 
+/**
+ * XfdashboardThemeCSS:
+ *
+ * The #XfdashboardThemeCSS structure contains only private data and
+ * should be accessed using the provided API
+ */
 struct _XfdashboardThemeCSS
 {
 	/*< private >*/
@@ -57,7 +63,11 @@ struct _XfdashboardThemeCSS
 	XfdashboardThemeCSSPrivate		*priv;
 };
 
-struct _XfdashboardThemeCSSClass
+/**
+ * XfdashboardThemeCSSClass:
+ *
+ * The #XfdashboardThemeCSSClass structure contains only private data
+ */struct _XfdashboardThemeCSSClass
 {
 	/*< private >*/
 	/* Parent class */
@@ -68,23 +78,44 @@ struct _XfdashboardThemeCSSClass
 };
 
 /* Errors */
+/**
+ * XFDASHBOARD_THEME_CSS_ERROR:
+ *
+ * Error domain for theme CSS errors.
+ * Errors in this domain will be from the #XfdashboardThemeCSSError enumeration.
+ */
 #define XFDASHBOARD_THEME_CSS_ERROR					(xfdashboard_theme_css_error_quark())
 
 GQuark xfdashboard_theme_css_error_quark(void);
 
+/**
+ * XfdashboardThemeCSSError:
+ * @XFDASHBOARD_THEME_CSS_ERROR_INVALID_ARGUMENT: An invalid argument was given
+ * @XFDASHBOARD_THEME_CSS_ERROR_UNSUPPORTED_STREAM: The source CSS is not a file
+ * @XFDASHBOARD_THEME_CSS_ERROR_PARSER_ERROR: The CSS file could not be parsed
+ * @XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR: A function used in CSS failed
+ *
+ * Error codes returned by theme CSS.
+ */
 typedef enum /*< prefix=XFDASHBOARD_THEME_CSS_ERROR >*/
 {
 	XFDASHBOARD_THEME_CSS_ERROR_INVALID_ARGUMENT,
 	XFDASHBOARD_THEME_CSS_ERROR_UNSUPPORTED_STREAM,
 	XFDASHBOARD_THEME_CSS_ERROR_PARSER_ERROR,
 	XFDASHBOARD_THEME_CSS_ERROR_FUNCTION_ERROR
-} XfdashboardThemeCSSErrorEnum;
+} XfdashboardThemeCSSError;
 
 /* Public declarations */
 typedef struct _XfdashboardThemeCSSValue			XfdashboardThemeCSSValue;
+
+/**
+ * XfdashboardThemeCSSValue:
+ * @value: The textual value (string) of a CSS property
+ * @source: The source CSS file
+ */
 struct _XfdashboardThemeCSSValue
 {
-	const gchar						*string;
+	const gchar						*value;
 	const gchar						*source;
 };
 

@@ -80,15 +80,29 @@ struct _XfdashboardThemeAnimationClass
 };
 
 /* Errors */
+/**
+ * XFDASHBOARD_THEME_ANIMATION_ERROR:
+ *
+ * Error domain for theme animation errors.
+ * Errors in this domain will be from the #XfdashboardThemeAnimationError enumeration.
+ */
 #define XFDASHBOARD_THEME_ANIMATION_ERROR				(xfdashboard_theme_animation_error_quark())
 
 GQuark xfdashboard_theme_animation_error_quark(void);
 
+/**
+ * XfdashboardThemeAnimationError:
+ * @XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR: A general theme animation error
+ * @XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED: The XML of theme animation is
+ *   malformed
+ *
+ * Error codes returned by loading theme animations.
+ */
 typedef enum /*< prefix=XFDASHBOARD_THEME_ANIMATION_ERROR >*/
 {
 	XFDASHBOARD_THEME_ANIMATION_ERROR_ERROR,
 	XFDASHBOARD_THEME_ANIMATION_ERROR_MALFORMED,
-} XfdashboardThemeAnimationErrorEnum;
+} XfdashboardThemeAnimationError;
 
 /* Public API */
 GType xfdashboard_theme_animation_get_type(void) G_GNUC_CONST;

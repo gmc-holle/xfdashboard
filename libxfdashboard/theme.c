@@ -22,6 +22,82 @@
  * 
  */
 
+/**
+ * SECTION:theme
+ * @short_description: A theme
+ * @include: libxfdashboard/theme.h
+ *
+ * #XfdashboardTheme is used to load a named theme searched at the theme
+ * search path as returned by xfdashboard_settings_get_theme_search_paths()
+ * and loads the key file, parses it to retrieve the file locations of all
+ * resources to load for the theme like CSS, animations, effects, layout,
+ * etc.
+ *
+ * # File location and structure {#XfdashboardTheme.File-location-and-structure}
+ *
+ * `xfdashboard` will look up the theme at the paths in the order as returned
+ * by xfdashboard_settings_get_theme_search_paths(). In case of the application
+ * `xfdashboard` this is the following order:
+ *
+ *   * (if environment variable is set) ${XFDASHBOARD_THEME_PATH}/
+ *   * ${XDG_DATA_HOME}/themes/THEME/xfdashboard-1.0/
+ *   * ${HOME}/.themes/THEME/xfdashboard-1.0/
+ *   * ${SYSTEM-WIDE-DATA}/themes/THEME/xfdashboard-1.0/
+ *
+ * `xfdashboard` expects at least the theme index file `xfdashboard.theme` at
+ * the theme's path which contains information about the theme and the resources
+ * to load for styling and layout. The content of the theme file should be
+ * similar to the following:
+ *
+ * |[
+ *   [Xfdashboard Theme]
+ *   Name=<Display name of theme>
+ *   Comment=<A description for the theme>
+ *   Author=<A list of authors of the theme seperated by semicolon>
+ *   Version=<The version of the theme>
+ *   Style=<A list of CSS files for styling separated by semicolon>
+ *   Layout=<A list of XML files for layout separated by semicolon>
+ *   Effects=<A list of XML files for effects separated by semicolon>
+ *   Animation=<A lilst of of XML files for animations seperated by semicolon>
+ *   Screenshot=<A list of paths to screenshot images separated by semicolon>
+ * ]|
+ *
+ * The following keys are required: `Name`, `Comment`, `Style` and `Layout`. All
+ * other keys are optional.
+ *
+ * The key `Style` contains the file name of one CSS file or a semicolon-separated
+ * list of CSS files (without spaces in the list) which describe how actors should
+ * be styled. The files should be located in the theme path or in a sub-folder.
+ * See section <link linkend="XfdashboardThemeCSS.Styling">Styling</link> for
+ * further documentation about styling. <!-- EXTERNAL: There is also a full list
+ * about all [#Elements and stylables properties], [#classes] and [#pseudo-classes].
+ * -->
+ *
+ * The key `Layout` contains the file name of one XML file or a semicolon-separated
+ * list of XML files (without spaces in the list) which describes how the different
+ * stages are to be built. The files should be located in the theme path or in a
+ * sub-folder. See section <link linkend="XfdashboardThemeLayout.Layout">Layout</link>
+ * for further documentation about layouting.
+ *
+ * The key `Effects` contains the file name of one XML file or a semicolon-separated
+ * list of XML files (without spaces in the list) which describes effects which can
+ * be used in actors and how they are built. The files should be located in the
+ * theme path or in a sub-folder. See section<link linkend="XfdashboardThemeEffects.Effects">
+ * Effects</link> for further documentation about creating and using effects.
+ *
+ * The key `Animation` contains the file name of one XML file or a semicolon-separated
+ * list of XML files (without spaces in the list) which describes animations which can
+ * be used in actors and how they are built. The files should be located in the
+ * theme path or in a sub-folder. See section <link linkend="XfdashboardThemeAnimation.Animations">
+ * Animations</link> for further documentation about creating and using animations.
+ *
+ * The key `Screenshot` contains the file name of one image or a semicolon-separated
+ * list of images (without spaces in the list) which can be used as preview images
+ * for the theme, e.g. in settings application. The files should be located in the
+ * theme path or in a sub-folder and given as relative paths.
+ *
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -839,14 +915,21 @@ void xfdashboard_theme_init(XfdashboardTheme *self)
 
 /* IMPLEMENTATION: Errors */
 
-GQuark xfdashboard_theme_error_quark(void)
-{
-	return(g_quark_from_static_string("xfdashboard-theme-error-quark"));
-}
+G_DEFINE_QUARK(xfdashboard-theme-error-quark, xfdashboard_theme_error);
+
 
 /* IMPLEMENTATION: Public API */
 
-/* Create new instance */
+/**
+ * xfdashboard_theme_new:
+ * @inThemeName: The name of theme
+ *
+ * Creates a new #XfdashboardTheme object and initializes the object instance.
+ * It will not load any resources of the theme. It is neccessary to call
+ * xfdashboard_theme_load() to load its resources.
+ *
+ * Return value: An initialized #XfdashboardTheme
+ */
 XfdashboardTheme* xfdashboard_theme_new(const gchar *inThemeName)
 {
 	return(XFDASHBOARD_THEME(g_object_new(XFDASHBOARD_TYPE_THEME,
@@ -854,7 +937,15 @@ XfdashboardTheme* xfdashboard_theme_new(const gchar *inThemeName)
 											NULL)));
 }
 
-/* Get path where this theme was found and loaded from */
+/**
+ * xfdashboard_theme_get_path:
+ * @self: A #XfdashboardTheme
+ *
+ * Returns the base path where the theme at @self was found and will load all
+ * its resources from.
+ *
+ * Return value: The theme's base path
+ */
 const gchar* xfdashboard_theme_get_path(XfdashboardTheme *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);
@@ -862,7 +953,14 @@ const gchar* xfdashboard_theme_get_path(XfdashboardTheme *self)
 	return(self->priv->themePath);
 }
 
-/* Get theme name (as used when loading theme) */
+/**
+ * xfdashboard_theme_get_theme_name:
+ * @self: A #XfdashboardTheme
+ *
+ * Returns the name of theme at @self.
+ *
+ * Return value: The theme's name
+ */
 const gchar* xfdashboard_theme_get_theme_name(XfdashboardTheme *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);
@@ -870,7 +968,14 @@ const gchar* xfdashboard_theme_get_theme_name(XfdashboardTheme *self)
 	return(self->priv->themeName);
 }
 
-/* Get display name of theme */
+/**
+ * xfdashboard_theme_get_display_name:
+ * @self: A #XfdashboardTheme
+ *
+ * Returns the display name of theme at @self.
+ *
+ * Return value: The theme's name to display
+ */
 const gchar* xfdashboard_theme_get_display_name(XfdashboardTheme *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);
@@ -878,7 +983,14 @@ const gchar* xfdashboard_theme_get_display_name(XfdashboardTheme *self)
 	return(self->priv->themeDisplayName);
 }
 
-/* Get comment of theme */
+/**
+ * xfdashboard_theme_get_comment:
+ * @self: A #XfdashboardTheme
+ *
+ * Returns the comment of theme at @self.
+ *
+ * Return value: The theme's comment
+ */
 const gchar* xfdashboard_theme_get_comment(XfdashboardTheme *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);
@@ -886,7 +998,20 @@ const gchar* xfdashboard_theme_get_comment(XfdashboardTheme *self)
 	return(self->priv->themeComment);
 }
 
-/* Lookup named theme and load resources */
+/**
+ * xfdashboard_theme_load:
+ * @self: A #XfdashboardTheme
+ * @outError: A return location for a #GError or %NULL
+ *
+ * Lookups named theme at @self and loads all its resources like CSS, layout,
+ * animation etc.
+ *
+ * If loading theme and its resources fails, the error message will be placed
+ * inside error at @outError (if not %NULL).
+ *
+ * Return value: %TRUE if instance of #XfdashboardTheme could be loaded fully
+ *   or %FALSE if not and error is stored at @outError.
+ */
 gboolean xfdashboard_theme_load(XfdashboardTheme *self,
 								GError **outError)
 {
@@ -931,7 +1056,14 @@ gboolean xfdashboard_theme_load(XfdashboardTheme *self,
 	return(TRUE);
 }
 
-/* Get theme CSS */
+/**
+ * xfdashboard_theme_get_css:
+ * @self: A #XfdashboardTheme
+ *
+ * Returns the CSS resources of type #XfdashboardThemeCSS of theme at @self.
+ *
+ * Return value: The theme's CSS resources of type #XfdashboardThemeCSS
+ */
 XfdashboardThemeCSS* xfdashboard_theme_get_css(XfdashboardTheme *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);
@@ -939,7 +1071,14 @@ XfdashboardThemeCSS* xfdashboard_theme_get_css(XfdashboardTheme *self)
 	return(self->priv->styling);
 }
 
-/* Get theme layout */
+/**
+ * xfdashboard_theme_get_layout:
+ * @self: A #XfdashboardTheme
+ *
+ * Returns the layout resources of type #XfdashboardThemeLayout of theme at @self.
+ *
+ * Return value: The theme's layout resources of type #XfdashboardThemeLayout
+ */
 XfdashboardThemeLayout* xfdashboard_theme_get_layout(XfdashboardTheme *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);
@@ -947,7 +1086,14 @@ XfdashboardThemeLayout* xfdashboard_theme_get_layout(XfdashboardTheme *self)
 	return(self->priv->layout);
 }
 
-/* Get theme effects */
+/**
+ * xfdashboard_theme_get_effects:
+ * @self: A #XfdashboardTheme
+ *
+ * Returns the effect resources of type #XfdashboardThemeEffects of theme at @self.
+ *
+ * Return value: The theme's effect resources of type #XfdashboardThemeEffects
+ */
 XfdashboardThemeEffects* xfdashboard_theme_get_effects(XfdashboardTheme *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);
@@ -955,7 +1101,14 @@ XfdashboardThemeEffects* xfdashboard_theme_get_effects(XfdashboardTheme *self)
 	return(self->priv->effects);
 }
 
-/* Get theme animation */
+/**
+ * xfdashboard_theme_get_animation:
+ * @self: A #XfdashboardTheme
+ *
+ * Returns the animation resources of type #XfdashboardThemeAnimation of theme at @self.
+ *
+ * Return value: The theme's animation resources of type #XfdashboardThemeAnimation
+ */
 XfdashboardThemeAnimation* xfdashboard_theme_get_animation(XfdashboardTheme *self)
 {
 	g_return_val_if_fail(XFDASHBOARD_IS_THEME(self), NULL);

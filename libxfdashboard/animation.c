@@ -658,10 +658,15 @@ void xfdashboard_animation_init(XfdashboardAnimation *self)
  *
  *   theme=xfdashboard_core_get_theme(NULL);
  *   theme_animations=xfdashboard_theme_get_animation(theme);
- *   animation=xfdashboard_theme_animation_create(theme_animations, inSender, inSignal, NULL, NULL);
+ *   animation=xfdashboard_theme_animation_create(theme_animations,
+ *                                                inSender,
+ *                                                inSignal,
+ *                                                NULL,
+ *                                                NULL);
  * ]|
  *
- * Return value: (transfer full): The instance of #XfdashboardAnimation.
+ * Return value: (transfer full): The instance of #XfdashboardAnimation or %NULL
+ *   in case of errors or if no matching sender and signal was found.
  */
 XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, const gchar *inSignal)
 {
@@ -696,13 +701,21 @@ XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, cons
  * A list of default values to set the final values of the properties can be
  * provided at @inDefaultFinalValues. If it is set to %NULL then the current
  * property's value when the animation is started will be used as final value.
- * This list must be %NULL-terminated.
+ * This list must be %NULL-terminated. For convenience the utility function
+ * xfdashboard_animation_defaults_new() can be use to create this list for
+ * initiral and final values.
  *
- * The theme can provide an initial and final values and have higher precedence
- * as the default initial and final values passed to this function.
+ * <note>
+ *   <para>
+ *     The theme can provide initial and final values and have higher precedence
+ *     as the default initial and final values passed to this function.
+ *   </para>
+ * </note>
  *
  * The caller is responsible to free and/or unref the values in the lists
- * provided at @inDefaultInitialValues and @inDefaultFinalValues.
+ * provided at @inDefaultInitialValues and @inDefaultFinalValues. If this list
+ * was built with xfdashboard_animation_defaults_new() use the function
+ * xfdashboard_animation_defaults_free() to free this list accordingly.
  *
  * This function is the logical equivalent of:
  *
@@ -712,10 +725,15 @@ XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, cons
  *
  *   theme=xfdashboard_core_get_theme(NULL);
  *   theme_animations=xfdashboard_theme_get_animation(theme);
- *   animation=xfdashboard_theme_animation_create(theme_animations, inSender, inSignal, inDefaultInitialValues, inDefaultFinalValues);
+ *   animation=xfdashboard_theme_animation_create(theme_animations,
+ *                                                inSender,
+ *                                                inSignal,
+ *                                                inDefaultInitialValues,
+ *                                                inDefaultFinalValues);
  * ]|
  *
- * Return value: (transfer full): The instance of #XfdashboardAnimation.
+ * Return value: (transfer full): The instance of #XfdashboardAnimation or %NULL
+ *   in case of errors or if no matching sender and signal was found.
  */
 XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *inSender,
 															const gchar *inSignal,
@@ -742,8 +760,8 @@ XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *in
  * @inSender: The #XfdashboardActor requesting the animation
  * @inID: A string containing the ID of animation to create for sender
  *
- * Creates a new animation of type #XfdashboardAnimation for the sending
- * actor at @inSender from theme's animation with ID requested at @inID.
+ * Creates a new animation of type #XfdashboardAnimation for the sending actor
+ * at @inSender from theme's animation with ID requested at @inID.
  *
  * This function is the logical equivalent of:
  *
@@ -753,10 +771,15 @@ XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *in
  *
  *   theme=xfdashboard_core_get_theme(NULL);
  *   theme_animations=xfdashboard_theme_get_animation(theme);
- *   animation=xfdashboard_theme_animation_create_by_id(theme_animations, inSender, inSignal, NULL, NULL);
+ *   animation=xfdashboard_theme_animation_create_by_id(theme_animations,
+ *                                                      inSender,
+ *                                                      inID,
+ *                                                      NULL,
+ *                                                      NULL);
  * ]|
  *
- * Return value: (transfer full): The instance of #XfdashboardAnimation.
+ * Return value: (transfer full): The instance of #XfdashboardAnimation or %NULL
+ *   in case of errors or if ID was not found.
  */
 XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender, const gchar *inID)
 {
@@ -781,8 +804,8 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender
  * @inDefaultInitialValues: A %NULL-terminated list of default initial values
  * @inDefaultFinalValues: A %NULL-terminated list of default final values
  *
- * Creates a new animation of type #XfdashboardAnimation for the sending
- * actor at @inSender from theme's animation with ID requested at @inID.
+ * Creates a new animation of type #XfdashboardAnimation for the sending actor
+ * at @inSender from theme's animation with ID requested at @inID.
  *
  * A list of default values to set the initial values of the properties can be
  * provided at @inDefaultInitialValues. If it is set to %NULL then the current
@@ -791,13 +814,21 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender
  * A list of default values to set the final values of the properties can be
  * provided at @inDefaultFinalValues. If it is set to %NULL then the current
  * property's value when the animation is started will be used as final value.
- * This list must be %NULL-terminated.
+ * This list must be %NULL-terminated. For convenience the utility function
+ * xfdashboard_animation_defaults_new() can be use to create this list for
+ * initiral and final values.
  *
- * The theme can provide an initial and final values and have higher precedence
- * as the default initial and final values passed to this function.
+ * <note>
+ *   <para>
+ *     The theme can provide initial and final values and have higher precedence
+ *     as the default initial and final values passed to this function.
+ *   </para>
+ * </note>
  *
  * The caller is responsible to free and/or unref the values in the lists
- * provided at @inDefaultInitialValues and @inDefaultFinalValues.
+ * provided at @inDefaultInitialValues and @inDefaultFinalValues. If this list
+ * was built with xfdashboard_animation_defaults_new() use the function
+ * xfdashboard_animation_defaults_free() to free this list accordingly.
  *
  * This function is the logical equivalent of:
  *
@@ -807,10 +838,15 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender
  *
  *   theme=xfdashboard_core_get_theme(NULL);
  *   theme_animations=xfdashboard_theme_get_animation(theme);
- *   animation=xfdashboard_theme_animation_create_by_id(theme_animations, inSender, inSignal, inDefaultInitialValues, inDefaultFinalValues);
+ *   animation=xfdashboard_theme_animation_create_by_id(theme_animations,
+ *                                                      inSender,
+ *                                                      inID,
+ *                                                      inDefaultInitialValues,
+ *                                                      inDefaultFinalValues);
  * ]|
  *
- * Return value: (transfer full): The instance of #XfdashboardAnimation.
+ * Return value: (transfer full): The instance of #XfdashboardAnimation or %NULL
+ *   in case of errors or if ID was not found.
  */
 XfdashboardAnimation* xfdashboard_animation_new_by_id_with_values(XfdashboardActor *inSender,
 																	const gchar *inID,
@@ -836,8 +872,8 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id_with_values(XfdashboardAct
  * @inSender: A #XfdashboardActor emitting the animation signal
  * @inSignal: A string containing the signal emitted at sending actor
  *
- * Check if an animation is defined at the current theme matching
- * the sending actor at @inSender and the emitted signal at @inSignal.
+ * Check if an animation is defined at the current theme matching the sending
+ * actor at @inSender and the emitted signal at @inSignal.
  *
  * This function is the logical equivalent of:
  *
@@ -852,6 +888,7 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id_with_values(XfdashboardAct
  *   animation_id=xfdashboard_theme_animation_lookup_id(theme_animations, inSender, inSignal);
  *   has_animation=(animation_id!=NULL ? TRUE : FALSE);
  * ]|
+ *
  * * Return value: %TRUE if an animation exists, otherwise %FALSE
  */
 gboolean xfdashboard_animation_has_animation(XfdashboardActor *inSender, const gchar *inSignal)
@@ -915,9 +952,9 @@ gboolean xfdashboard_animation_is_empty(XfdashboardAnimation *self)
  * xfdashboard_animation_run:
  * @self: A #XfdashboardAnimation
  *
- * Starts the animation of @self. It emits the ::done signal
- * when the animation is destroyed, either is has reached the
- * end of its timeline or was stopped before.
+ * Starts the animation of @self. It emits the ::done signal when the animation
+ * is destroyed, either is has reached the end of its timeline or was stopped
+ * before.
  */
 void xfdashboard_animation_run(XfdashboardAnimation *self)
 {
@@ -968,10 +1005,9 @@ void xfdashboard_animation_run(XfdashboardAnimation *self)
  * xfdashboard_animation_ensure_complete:
  * @self: A #XfdashboardAnimation
  *
- * Ensures that the animation at @self has reached the end
- * of its timeline but will not destroy the animation. Its
- * purpose is mainly to ensure the animation has completed
- * before it gets destroyed by other parts of the application.
+ * Ensures that the animation at @self has reached the end of its timeline but
+ * will not destroy the animation. Its purpose is mainly to ensure the animation
+ * has completed before it gets destroyed by other parts of the application.
  */
 void xfdashboard_animation_ensure_complete(XfdashboardAnimation *self)
 {
@@ -1095,12 +1131,10 @@ static void _xfdashboard_animation_dump_transition(ClutterTransition *inTransiti
  * xfdashboard_animation_dump:
  * @self: The #XfdashboardAnimation to dump
  *
- * Dumps a textual representation of animation specified in @self
- * to console. The dump contains all transitions recursively displayed
- * in a tree.
+ * Dumps a textual representation of animation specified in @self to console.
+ * The dump contains all transitions recursively displayed in a tree.
  *
- * This functions is for debugging purposes and should not be used
- * normally.
+ * This functions is for debugging purposes and should not be used normally.
  */
 void xfdashboard_animation_dump(XfdashboardAnimation *self)
 {
@@ -1174,13 +1208,13 @@ void xfdashboard_animation_dump(XfdashboardAnimation *self)
 /**
  * xfdashboard_animation_defaults_new:
  * @inNumberValues: The number of values to follow
- * @...: Tuples of property names as string, a parameter type by #GType and the parameter value of any type
+ * @...: Tuples of property names as string, a parameter type by #GType and the
+ *   parameter value of any type
  *
- * This is a convenience function to create a %NULL-terminated list
- * of #XfdashboardAnimationValue with the definitions of the arguments
- * at @...
+ * This is a convenience function to create a %NULL-terminated list of
+ * #XfdashboardAnimationValue with the definitions of the arguments at @...
  * 
- * The list can be freed by calling xfdashboard_animation_defaults_free()
+ * The list can be freed by calling xfdashboard_animation_defaults_free().
  *
  * Return value: (transfer none): A pointer to start of %NULL-terminated list
  *   or %NULL in case of errors.
@@ -1241,8 +1275,8 @@ XfdashboardAnimationValue** xfdashboard_animation_defaults_new(gint inNumberValu
  * xfdashboard_animation_defaults_free:
  * @inDefaultValues: The list containing #XfdashboardAnimationValue to free
  *
- * This is a convenience function to free all entries in the
- * %NULL-terminated list of #XfdashboardAnimationValue at @inDefaultValues
+ * This is a convenience function to free all entries in the %NULL-terminated
+ * list of #XfdashboardAnimationValue at @inDefaultValues.
  */
 void xfdashboard_animation_defaults_free(XfdashboardAnimationValue **inDefaultValues)
 {

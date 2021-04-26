@@ -83,7 +83,8 @@ struct _XfdashboardAnimationClass
 
 /**
  * XfdashboardAnimationValue:
- * @selector: A #XfdashboardCssSelector to find matchhing actors for the property's value in animation or %NULL to match sender
+ * @selector: A #XfdashboardCssSelector to find matching actors for the property's
+ *   value in animation or %NULL to match sender
  * @property: A string containing the name of the property this value belongs to
  * @value: A #GValue containing the value for the property
  *

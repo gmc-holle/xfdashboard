@@ -706,7 +706,7 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 								++i,
 								styleValue->source,
 								(gchar*)styleName,
-								styleValue->string);
+								styleValue->value);
 		}
 
 		XFDASHBOARD_DEBUG(self, STYLE, "End of styles from theme");
@@ -742,7 +742,7 @@ static void _xfdashboard_actor_stylable_invalidate(XfdashboardStylable *inStylab
 		 * if conversion was successful. Otherwise do nothing.
 		 */
 		g_value_init(&cssValue, G_TYPE_STRING);
-		g_value_set_string(&cssValue, styleValue->string);
+		g_value_set_string(&cssValue, styleValue->value);
 
 		g_value_init(&propertyValue, G_PARAM_SPEC_VALUE_TYPE(realParamSpec));
 

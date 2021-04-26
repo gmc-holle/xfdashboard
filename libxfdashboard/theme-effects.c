@@ -21,6 +21,119 @@
  * 
  */
 
+/**
+ * SECTION:theme-effects
+ * @short_description: A theme effects resource manager
+ * @include: libxfdashboard/theme-effect.h
+ *
+ * #XfdashboardThemeEffects is used to load effect XML files into a theme,
+ * to parse the XML file and to set up a definition how to create effects
+ * for use at actors.
+ *
+ * Effect resources are loaded from a list provided by a theme index file
+ * as describe at <link linkend="XfdashboardTheme.File-location-and-structure">
+ * File location and structure</link>. But additional resources can be
+ * loaded with xfdashboard_theme_effects_add_file().
+ *
+ * To create a effect call xfdashboard_theme_effects_create_effect() with the
+ * ID of the effect to build.
+ *
+ * ## Note about resources parser
+ *
+ * Because all resources for CSS and XML are texts, the parser does convert texts
+ * to their needed and native type like booleans, integers etc. The parser can
+ * convert textual representation for most common property types. Boolean textual
+ * representations for FALSE are "FALSE, "f", "no", "n", "0" and for TRUE they are
+ * "TRUE", "t", "yes", "y", "1". Enumeration and flags can be specified either by
+ * their names, their nicks or integer values. Flags can be combined with "|"
+ * additionally.
+ *
+ * # Effects {#XfdashboardThemeEffects.Effects}
+ *
+ * Effects are described in a XML document.
+ *
+ * The location of the XML file is specified in theme's index file at the key
+ * `Effects` and should be a relative path to theme's path. See
+ * <link linkend="XfdashboardTheme.File-location-and-structure">File location
+ * and structure</link> for further documentation of files and folders.
+ *
+ * The XML document must begin with the top-level element `<effects>` which is
+ * a grouping element for all effects defined. The top-level element does not
+ * expect any attributes set.
+ *
+ * Effects are objects and each object is defined in an `<object>` element under
+ * the top-level element and takes two attributes. The first one is `<id>`
+ * specifying a unique name which is used as reference in actors. The second
+ * attribute is `<class>` attribute to let the builder know what type of object
+ * to create. The class specified must be derived from #ClutterEffect.
+ * `<object>` elements can contain `<property>` elements.
+ *
+ * <warning>
+ *   <para>
+ *     If not otherwise stated, each ID must fulfill the following conditions:
+ *
+ *     <itemizedlist>
+ *       <listitem>
+ *         <para>
+ *           Each ID must be unique among all files
+ *         </para>
+ *       </listitem>
+ *       <listitem>
+ *         <para>
+ *           Each ID must begin with any number of underscores followed by a
+ *           character or it must begin with a character
+ *         </para>
+ *       </listitem>
+ *       <listitem>
+ *         <para>
+ *           Each ID can contain and mix digits, characters and the symbols:
+ *           _ (underscore), - (minus)
+ *         </para>
+ *       </listitem>
+ *       <listitem>
+ *         <para>
+ *           All characters can be upper or lower case but must be from ASCII
+ *           character set
+ *         </para>
+ *       </listitem>
+ *       <listitem>
+ *         <para>
+ *           The matching regular expression is: (_*[a-zA-Z]+[0-9a-zA-Z_-]*)
+ *         </para>
+ *       </listitem>
+ *     </itemizedlist>
+ *   </para>
+ * </warning>
+ *
+ * Properties of an object are easy to set. For each property to set just add a
+ * `<property>` element as a child of the `<object>` element. The `<name>`
+ * attribute must be specified and set to the name of the property to set and
+ * the content of the element is the value.
+ *
+ * The parser can convert textual representation for most common property types.
+ * Boolean textual representations for FALSE are "FALSE, "f", "no", "n", "0"
+ * and for TRUE they are "TRUE", "t", "yes", "y", "1". Enumeration and flags can
+ * be specified either by their names, their nicks or integer value. Flags can be
+ * combined with "|" additionally.
+ *
+ * The format for the XML file can be described with the following simple but not
+ * fully accurate DTD:
+ *
+ * |[<!-- language="xml" -->
+ *   <!ELEMENT effects    (object*)>
+ *
+ *   <!ELEMENT object     (property*)>
+ *   <!ATTLIST object     id             ID           #IMPLIED
+ *                        class          CDATA        #REQUIRED>
+ *
+ *   <!ELEMENT property   (#CDATA)>
+ *   <!ATTLIST property   name           CDATA        #REQUIRED>
+ * ]|
+ *
+ * To apply one or more effects to an actor set the property `effects` at any actor
+ * derived from class #XfdashboardActor.
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -100,7 +213,7 @@ struct _XfdashboardThemeEffectsParserData
 static void _xfdashboard_theme_effects_parse_set_error(XfdashboardThemeEffectsParserData *inParserData,
 														GMarkupParseContext *inContext,
 														GError **outError,
-														XfdashboardThemeEffectsErrorEnum inCode,
+														XfdashboardThemeEffectsError inCode,
 														const gchar *inFormat,
 														...) G_GNUC_PRINTF (5, 6);
 
@@ -151,7 +264,7 @@ static void _xfdashboard_theme_effects_print_parsed_objects(XfdashboardThemeEffe
 static void _xfdashboard_theme_effects_parse_set_error(XfdashboardThemeEffectsParserData *inParserData,
 														GMarkupParseContext *inContext,
 														GError **outError,
-														XfdashboardThemeEffectsErrorEnum inCode,
+														XfdashboardThemeEffectsError inCode,
 														const gchar *inFormat,
 														...)
 {
@@ -1193,20 +1306,40 @@ void xfdashboard_theme_effects_init(XfdashboardThemeEffects *self)
 
 /* IMPLEMENTATION: Errors */
 
-GQuark xfdashboard_theme_effects_error_quark(void)
-{
-	return(g_quark_from_static_string("xfdashboard-theme-effects-error-quark"));
-}
+G_DEFINE_QUARK(xfdashboard-theme-effects-error-quark, xfdashboard_theme_effects_error);
+
 
 /* IMPLEMENTATION: Public API */
 
-/* Create new instance */
+/**
+ * xfdashboard_theme_effects_new:
+ *
+ * Creates a new #XfdashboardThemeEffects object. It is neccessary to call
+ * xfdashboard_theme_effects_add_file() for each effect resource to load
+ * before any effect can be build from effect definition with
+ * xfdashboard_theme_effects_create_effect() for use at an actor.
+ *
+ * Return value: An initialized and empty #XfdashboardThemeEffects
+ */
 XfdashboardThemeEffects* xfdashboard_theme_effects_new(void)
 {
 	return(XFDASHBOARD_THEME_EFFECTS(g_object_new(XFDASHBOARD_TYPE_THEME_EFFECTS, NULL)));
 }
 
-/* Load a XML file into theme */
+/**
+ * xfdashboard_theme_effects_add_file:
+ * @self: A #XfdashboardThemeEffects
+ * @inPath: The path to effect XML file to load
+ * @outError: A return location for a #GError or %NULL
+ *
+ * Loads the effect XML resource from @inPath into theme effects object at @self.
+ *
+ * If loading theme effect resource fails, the error message will be placed
+ * inside error at @outError (if not %NULL).
+ *
+ * Return value: %TRUE if effect XML file could be loaded or %FALSE if not and
+ *   error is stored at @outError.
+ */
 gboolean xfdashboard_theme_effects_add_file(XfdashboardThemeEffects *self,
 											const gchar *inPath,
 											GError **outError)
@@ -1244,7 +1377,17 @@ gboolean xfdashboard_theme_effects_add_file(XfdashboardThemeEffects *self,
 	return(TRUE);
 }
 
-/* Create requested effect */
+/**
+ * xfdashboard_theme_effects_create_effect:
+ * @self: A #XfdashboardThemeEffects
+ * @inID: The ID as set in effect XML file of effect to construct
+ *
+ * Build requested effect from effect layout object at @self with the requested
+ * ID provided at @inID.
+ *
+ * Return value: (transfer full): A constructed effect derived from #ClutterEffect
+ *   or %NULL if building requested effect failed.
+ */
 ClutterEffect* xfdashboard_theme_effects_create_effect(XfdashboardThemeEffects *self,
 														const gchar *inID)
 {

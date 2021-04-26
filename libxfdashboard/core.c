@@ -947,6 +947,13 @@ static void xfdashboard_core_init(XfdashboardCore *self)
 
 /* IMPLEMENTATION: Errors */
 
+/**
+ * xfdashboard_core_error_quark:
+ *
+ * Gets the core error quark.
+ *
+ * Returns: The #GQuark for core errors.
+ */
 GQuark xfdashboard_core_error_quark(void)
 {
 	return(g_quark_from_static_string("xfdashboard-core-error-quark"));

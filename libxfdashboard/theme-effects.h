@@ -43,6 +43,12 @@ typedef struct _XfdashboardThemeEffects				XfdashboardThemeEffects;
 typedef struct _XfdashboardThemeEffectsClass		XfdashboardThemeEffectsClass;
 typedef struct _XfdashboardThemeEffectsPrivate		XfdashboardThemeEffectsPrivate;
 
+/**
+ * XfdashboardThemeEffects:
+ *
+ * The #XfdashboardThemeEffects structure contains only private data and
+ * should be accessed using the provided API
+ */
 struct _XfdashboardThemeEffects
 {
 	/*< private >*/
@@ -53,6 +59,11 @@ struct _XfdashboardThemeEffects
 	XfdashboardThemeEffectsPrivate		*priv;
 };
 
+/**
+ * XfdashboardThemeEffectsClass:
+ *
+ * The #XfdashboardThemeEffectsClass structure contains only private data
+ */
 struct _XfdashboardThemeEffectsClass
 {
 	/*< private >*/
@@ -64,15 +75,28 @@ struct _XfdashboardThemeEffectsClass
 };
 
 /* Errors */
+/**
+ * XFDASHBOARD_THEME_EFFECTS_ERROR:
+ *
+ * Error domain for theme effect errors.
+ * Errors in this domain will be from the #XfdashboardThemeEffectsError enumeration.
+ */
 #define XFDASHBOARD_THEME_EFFECTS_ERROR				(xfdashboard_theme_effects_error_quark())
 
 GQuark xfdashboard_theme_effects_error_quark(void);
 
+/**
+ * XfdashboardThemeEffectsError:
+ * @XFDASHBOARD_THEME_EFFECTS_ERROR_ERROR: A general theme effect error
+ * @XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED: The XML of theme effect is malformed
+ *
+ * Error codes returned by loading theme effects.
+ */
 typedef enum /*< prefix=XFDASHBOARD_THEME_EFFECTS_ERROR >*/
 {
 	XFDASHBOARD_THEME_EFFECTS_ERROR_ERROR,
 	XFDASHBOARD_THEME_EFFECTS_ERROR_MALFORMED,
-} XfdashboardThemeEffectsErrorEnum;
+} XfdashboardThemeEffectsError;
 
 /* Public API */
 GType xfdashboard_theme_effects_get_type(void) G_GNUC_CONST;

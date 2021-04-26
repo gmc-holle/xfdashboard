@@ -21,6 +21,237 @@
  * 
  */
 
+/**
+ * SECTION:theme-layout
+ * @short_description: A theme layout resource manager
+ * @include: libxfdashboard/theme-layout.h
+ *
+ * #XfdashboardThemeLayout is used to load layout XML files into a theme,
+ * to parse the XML file and to set up a definition how to create custom
+ * actors, so called interfaces in layout, with all its children, constraints,
+ * layout manager, static properties values etc.
+ *
+ * Layout resources are loaded from a list provided by a theme index file
+ * as describe at <link linkend="XfdashboardTheme.File-location-and-structure">
+ * File location and structure</link>. But additional resources can be
+ * loaded with xfdashboard_theme_layout_add_file().
+ *
+ * To create a custom actors call xfdashboard_theme_layout_build_interface()
+ * with the ID of the interface to build.
+ *
+ * ## Note about resources parser
+ *
+ * Because all resources for CSS and XML are texts, the parser does convert texts
+ * to their needed and native type like booleans, integers etc. The parser can
+ * convert textual representation for most common property types. Boolean textual
+ * representations for FALSE are "FALSE, "f", "no", "n", "0" and for TRUE they are
+ * "TRUE", "t", "yes", "y", "1". Enumeration and flags can be specified either by
+ * their names, their nicks or integer values. Flags can be combined with "|"
+ * additionally.
+ *
+ * # Layout {#XfdashboardThemeLayout.Layout}
+ *
+ * A layout is described as a XML document.
+ *
+ * The location of the XML file is specified in theme's index file at the key
+ * `Layout` and should be a relative path to theme's path. See
+ * <link linkend="XfdashboardTheme.File-location-and-structure">File location
+ * and structure</link> for further documentation of files and folders.
+ *
+ * The XML document must begin with the top-level element `<interface>` which
+ * takes one attribute `<id>` identifying the purporse of the interface followed
+ * by exactly one object.
+ *
+ * <note>
+ *   <para>
+ *     The identifier of an `&lt;interface&gt;` element must be set either to
+ *     `primary` which is used by the primary monitor or to `secondary` which is
+ *     used by non-primary monitors.
+ *   </para>
+ * </note>
+ *
+ * <warning>
+ *   <para>
+ *     If not otherwise stated, each ID must fulfill the following conditions:
+ *
+ *     <itemizedlist>
+ *       <listitem>
+ *         <para>
+ *           Each ID must be unique among all files
+ *         </para>
+ *       </listitem>
+ *       <listitem>
+ *         <para>
+ *           Each ID must begin with any number of underscores followed by a
+ *           character or it must begin with a character
+ *         </para>
+ *       </listitem>
+ *       <listitem>
+ *         <para>
+ *           Each ID can contain and mix digits, characters and the symbols:
+ *           _ (underscore), - (minus)
+ *         </para>
+ *       </listitem>
+ *       <listitem>
+ *         <para>
+ *           All characters can be upper or lower case but must be from ASCII
+ *           character set
+ *         </para>
+ *       </listitem>
+ *       <listitem>
+ *         <para>
+ *           The matching regular expression is: (_*[a-zA-Z]+[0-9a-zA-Z_-]*)
+ *         </para>
+ *       </listitem>
+ *     </itemizedlist>
+ *   </para>
+ * </warning>
+ *
+ * Objects are described by an `<object>` element which can contain `<property>`
+ * elements, `<constraint>` elements, at most one `<layout>` element and `<child>`
+ * elements. `<constraint>`, `<layout>` and `<child>` contain again exactly one
+ * `<object>` element.
+ *
+ * `<object>` elements must at least specify the `<class>` attribute to let the
+ * builder know what type of object to create. If `<object>` is a child element
+ * of `<constraint>` the class specified must be derived from #ClutterConstraint,
+ * if it is a child element of `<layout>` the class specified must be derived
+ * from #ClutterLayoutManager and if it is a child element of `<child>` the class
+ * specified must be derived from #ClutterActor. The `<id>` attribute is optional
+ * but must be set to a unique identifier within the interface if the object is
+ * referenced in any property, means the object is used as property value, or if
+ * the `<object>` is a child of `<interface>` because each interface must have an
+ * identifier and it must be unique among all interfaces described. The `<id>`
+ * attribute (if set) will also be set as name of an actor if the value of
+ * property `<name>` is not set explicitly.
+ *
+ * Properties of an object are easy to set. For each property to set just add a
+ * `<property>` element as a child of the `<object>` element. The `<name>`
+ * attribute must be specified and set to the name of the property to set and
+ * the content of the element is the value. The `<translatable>` attribute is
+ * optional but has to be set to a boolean value if specified, that means that
+ * the builder tries to the translated text for the content of the element. The
+ * `<ref>` attribute is also optional but if specified it has to contain the ID
+ * of the object it refers to and which should be set as value of property,
+ * therefore the content of the element must be empty. The parser allows forward
+ * references to objects that means that the object in question does not need to
+ * be described and created before first use.
+ *
+ * If any object should be focusable (for keyboard navigation) the property
+ * `can-focus` of that object must be set to true. The order of focuable objects
+ * can be specified by a `<focuables>` element which must be a child of the
+ * element `<interface>` and can only exists once. The `<focuables>` element
+ * contains a `<focus>` element with `<ref>` attribute containing the ID of the
+ * object to refer to for each focuable object. The first `<focus>` element is
+ * the object which gains the focus first but can be changed by setting the
+ * `<selected>` attribute at the `<focus>` element which should gain the focus
+ * first.
+ *
+ * The format for the XML file can be described with the following simple but
+ * not fully accurate DTD:
+ *
+ * |[<!-- language="xml" -->
+ *   <!ELEMENT interface  (object|focusables)>
+ *   <!ATTLIST interface  id             ID           #IMPLIED>
+ *
+ *   <!ELEMENT object     (property*|constraint*|layout|child*)>
+ *   <!ATTLIST object     id             ID           #IMPLIED
+ *                        class          CDATA        #REQUIRED>
+ *
+ *   <!ELEMENT property   (#CDATA)>
+ *   <!ATTLIST property   name           CDATA        #REQUIRED
+ *                        translatable   (yes | no)   'no'
+ *                        ref            IDREF        #IMPLIED>
+ *
+ *   <!ELEMENT constraint (object)>
+ *   <!ELEMENT layout     (object)>
+ *   <!ELEMENT child      (object)>
+ *
+ *   <!ELEMENT focus      (#CDATA)>
+ *   <!ATTLIST focus      ref            IDREF        #REQUIRED
+ *                        selected       #IMPLIED>
+ *
+ *   <!ELEMENT focusables (focus*)>
+ * ]|
+ *
+ * ## Interface 'primary'
+ *
+ * <warning>
+ *   <para>
+ *     An interface with ID *`primary`* *_must_* exist.
+ *   </para>
+ * </warning>
+ *
+ * 	This interface is created only once for use at the primary monitor.
+ * `xfdashboard` expects that it describes at least the child objects with the
+ * following names set in attribute `id`:
+ *
+ *   * `quicklaunch` of class #XfdashboardQuicklaunch
+ *
+ *     The quicklauch
+ *
+ *   * `workspace-selector` of class #XfdashboardWorkspaceSelector
+ *
+ *     The workspace selector
+ *
+ *   * `searchbox` of class #XfdashboardTextBox
+ *
+ *     The text box used to enter keywords for search
+ *
+ *   * `notification` of class #XfdashboardTextBox
+ *
+ *     The text box used for notifications
+ *
+ *   * `tooltip` of class #XfdashboardTextBox
+ *
+ *     The text box used for tooltips.
+ *     <note>
+ *       <para>
+ *         Do not use any `&lt;constraint&gt;` or `&lt;layout&gt;` objects because
+ *         the tooltip needs to float on stage freely.
+ *       </para>
+ *      </note>
+ *
+ * The following child object is optional in an interface with ID `primary`:
+ *
+ *   * `view-selector` of class #XfdashboardViewSelector
+ *
+ *     The view selector to switch between available and enabled views.
+ *
+ * ## Interface 'secondary'
+ *
+ * The interface with ID `secondary` is optional and can be missed. This
+ * interface has no requirements and can be designed freely. It is created for
+ * each non-primary monitor.
+ *
+ * If no interface with an ID `secondary` is defined all non-primary monitor
+ * will be empty and all windows behave as they were located on the primary
+ * monitor.
+ *
+ * <warning>
+ *   <para>
+ *     It is adviced to create an object of type #XfdashboardWindowsView to
+ *     display all windows located at non-primary monitors. Otherwise windows
+ *     on non-primary monitors will not be shown in any other windows view.
+ *   </para>
+ * </warning>
+ *
+ * ## Reserved actor names
+ *
+ * An object of class #XfdashboardQuicklaunch creates the following named actors
+ * by itself:
+ *
+ *   * `applications-button` of class #XfdashboardToggleButton
+ *
+ *     The application button in quicklaunch to switch between windows view
+ *     and applications/search view.
+ *
+ *   * `trash-button` of class #XfdashboardToggleButton
+ *
+ *     The trash button in quicklaunch which will be shown when reordering the
+ *     favourites in quicklaunch.
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -146,7 +377,7 @@ struct _XfdashboardThemeLayoutCheckRefID
 static void _xfdashboard_theme_layout_parse_set_error(XfdashboardThemeLayoutParserData *inParserData,
 														GMarkupParseContext *inContext,
 														GError **outError,
-														XfdashboardThemeLayoutErrorEnum inCode,
+														XfdashboardThemeLayoutError inCode,
 														const gchar *inFormat,
 														...) G_GNUC_PRINTF (5, 6);
 
@@ -242,7 +473,7 @@ static void _xfdashboard_theme_layout_print_parsed_objects(XfdashboardThemeLayou
 static void _xfdashboard_theme_layout_parse_set_error(XfdashboardThemeLayoutParserData *inParserData,
 														GMarkupParseContext *inContext,
 														GError **outError,
-														XfdashboardThemeLayoutErrorEnum inCode,
+														XfdashboardThemeLayoutError inCode,
 														const gchar *inFormat,
 														...)
 {
@@ -2092,21 +2323,40 @@ void xfdashboard_theme_layout_init(XfdashboardThemeLayout *self)
 
 /* IMPLEMENTATION: Errors */
 
-GQuark xfdashboard_theme_layout_error_quark(void)
-{
-	return(g_quark_from_static_string("xfdashboard-theme-layout-error-quark"));
-}
+G_DEFINE_QUARK(xfdashboard-theme-layout-error-quark, xfdashboard_theme_layout_error);
 
 
 /* IMPLEMENTATION: Public API */
 
-/* Create new instance */
+/**
+ * xfdashboard_theme_layout_new:
+ *
+ * Creates a new #XfdashboardThemeLayout object. It is neccessary to call
+ * xfdashboard_theme_layout_add_file() for each layout resource to load
+ * before any actor can be build from layout definition with
+ * xfdashboard_theme_layout_build_interface().
+ *
+ * Return value: An initialized and empty #XfdashboardThemeLayout
+ */
 XfdashboardThemeLayout* xfdashboard_theme_layout_new(void)
 {
 	return(XFDASHBOARD_THEME_LAYOUT(g_object_new(XFDASHBOARD_TYPE_THEME_LAYOUT, NULL)));
 }
 
-/* Load a XML file into theme */
+/**
+ * xfdashboard_theme_layout_add_file:
+ * @self: A #XfdashboardThemeLayout
+ * @inPath: The path to layout XML file to load
+ * @outError: A return location for a #GError or %NULL
+ *
+ * Loads the layout XML resource from @inPath into theme layout object at @self.
+ *
+ * If loading theme layout resource fails, the error message will be placed
+ * inside error at @outError (if not %NULL).
+ *
+ * Return value: %TRUE if layout XML file could be loaded or %FALSE if not and
+ *   error is stored at @outError.
+ */
 gboolean xfdashboard_theme_layout_add_file(XfdashboardThemeLayout *self,
 											const gchar *inPath,
 											GError **outError)
@@ -2144,7 +2394,37 @@ gboolean xfdashboard_theme_layout_add_file(XfdashboardThemeLayout *self,
 	return(TRUE);
 }
 
-/* Build requested interface */
+/**
+ * xfdashboard_theme_layout_build_interface:
+ * @self: A #XfdashboardThemeLayout
+ * @inID: The ID as set in layout XML file of actor to construct
+ * @...: Pair of request type of type #XfdashboardThemeLayoutBuildGet followed
+ *   by pointer where to store the data requested. The pair list must be
+ *   terminated with -1
+ *
+ * Build requested actor from theme layout object at @self with the requested
+ * ID provided at @inID. Additional construct data can be retrieved by setting
+ * @... with pairs of request type of type #XfdashboardThemeLayoutBuildGet and
+ * a pointer to store the requested data at. Even if no additional construct
+ * data is requested this list must be terminated with -1 as request type.
+ *
+ * |[<!-- language="C" -->
+ *   actorNoData=
+ *     xfdashboard_theme_layout_build_interface(themeLayout,
+ *                                              "ID",
+ *                                              -1);
+ *
+ *   actorWithData=
+ *     xfdashboard_theme_layout_build_interface(themeLayout,
+ *                                              "ID",
+ *                                               XFDASHBOARD_THEME_LAYOUT_BUILD_GET_FOCUSABLES, &focusables,
+ *                                               ..., ...,
+ *                                               -1);
+ * ]|
+ *
+ * Return value: (transfer full): A constructed actor derived from #ClutterActor
+ *   or %NULL if building requested actor failed.
+ */
 ClutterActor* xfdashboard_theme_layout_build_interface(XfdashboardThemeLayout *self,
 														const gchar *inID,
 														...)

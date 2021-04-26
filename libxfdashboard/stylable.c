@@ -297,7 +297,7 @@ static void _xfdashboard_stylable_real_invalidate(XfdashboardStylable *self)
 			 * if conversion was successful. Otherwise do nothing.
 			 */
 			g_value_init(&cssValue, G_TYPE_STRING);
-			g_value_set_string(&cssValue, styleValue->string);
+			g_value_set_string(&cssValue, styleValue->value);
 
 			g_value_init(&propertyValue, G_PARAM_SPEC_VALUE_TYPE(propertyValueParamSpec));
 
