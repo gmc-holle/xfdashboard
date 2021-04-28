@@ -9,17 +9,17 @@
 # Mingcong Bai <jeffbai@aosc.xyz>, 2020
 # No Body, 2020
 # YuHeng Chou <wojiushixxx@126.com>, 2020
-# 玉堂白鹤 <yjwork@qq.com>, 2021
 # Nick Schermer <nick@xfce.org>, 2021
+# 玉堂白鹤 <yjwork@qq.com>, 2021
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-16 12:49+0200\n"
+"POT-Creation-Date: 2021-04-26 12:50+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Nick Schermer <nick@xfce.org>, 2021\n"
+"Last-Translator: 玉堂白鹤 <yjwork@qq.com>, 2021\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/xfce/teams/16840/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -75,43 +75,49 @@ msgstr "搜索应用"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version improves window placement and a new search"
+" plugin looking for matches against the recently used documents."
+msgstr "这个不稳定的开发版本改善了窗口位置，并提供一个新的搜索插件，用于根据最近使用的文档查找匹配项。"
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
 msgstr "这个不稳定的开发版本可以通过轮廓和背景填充的线性渐变来完成渐变。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
 msgstr "这个不稳定的开发版本引入了将 libxfdashboard 变成真实库的完整功能，并引入了轮廓的路径渐变。 "
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr "这个不稳定的开发版本没有引入任何用户可见的内容，而是开始将 libxfmdashboard 移至真实库中。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
 msgstr "此稳定版本修复了一个错误，并用 AppStream metainfo 替换 AppInfo。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
 " of new and updated translations."
 msgstr "这个稳定的版本引入了许多新功能，比如动画，弹出菜单，多个后端和支持跳转列表等。它还包括许多新增和更新的翻译。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr "此稳定版本修复了在首次使用时设置正确的默认应用程序的错误。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -388,7 +394,7 @@ msgstr "已处理对应用 ‘%s’ 的动作 '%s'"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:757
+#: ../libxfdashboard/applications-search-provider.c:765
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
@@ -405,17 +411,17 @@ msgid "No information available for application"
 msgstr "此应用没有可获得的介绍"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/applications-search-provider.c:759
+#: ../libxfdashboard/applications-search-provider.c:767
 #: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
 #: ../libxfdashboard/quicklaunch.c:442
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:480
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:583
-#: ../xfdashboard/application.c:508
+#: ../xfdashboard/application.c:520
 msgid "unknown error"
 msgstr "未知错误"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:770
+#: ../libxfdashboard/applications-search-provider.c:778
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:595
@@ -423,7 +429,7 @@ msgstr "未知错误"
 msgid "Application '%s' launched"
 msgstr "应用'%s'已启动"
 
-#: ../libxfdashboard/applications-search-provider.c:841
+#: ../libxfdashboard/applications-search-provider.c:849
 #: ../libxfdashboard/applications-view.c:415
 #: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
@@ -431,7 +437,7 @@ msgstr "启动"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1183
+#: ../libxfdashboard/applications-search-provider.c:1191
 #: ../libxfdashboard/applications-view.c:1580
 #: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
@@ -463,12 +469,12 @@ msgstr "所有已安装的应用列表"
 msgid "Could not load theme '%s': %s"
 msgstr "无法加载主题'%s': %s"
 
-#: ../libxfdashboard/core.c:1261
+#: ../libxfdashboard/core.c:1268
 #, c-format
 msgid "Welcome to %s (%s)!"
 msgstr "欢迎使用 %s (%s)!"
 
-#: ../libxfdashboard/core.c:1263
+#: ../libxfdashboard/core.c:1270
 #, c-format
 msgid "Welcome to %s!"
 msgstr "欢迎使用 %s!"
@@ -507,13 +513,13 @@ msgstr "移除"
 #: ../libxfdashboard/search-result-container.c:1734
 #, c-format
 msgid "Show %d more results..."
-msgstr "显示 %d 更多结果..."
+msgstr "再显示 %d 个结果..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:686
 #, c-format
 msgid "Show all %d results..."
-msgstr "显示全部 %d 结果..."
+msgstr "显示全部 %d 个结果..."
 
 #: ../libxfdashboard/search-view.c:979
 #, c-format
@@ -591,11 +597,11 @@ msgstr "示例搜索提供程序"
 msgid "This is just a useless example search provider plugin"
 msgstr "这只是一个无用的示例搜索提供程序插件"
 
-#: ../plugins/gnome-shell-search-provider/plugin.c:433
+#: ../plugins/gnome-shell-search-provider/plugin.c:464
 msgid "Gnome-Shell search provider"
 msgstr "Gnome-Shell 搜索提供程序"
 
-#: ../plugins/gnome-shell-search-provider/plugin.c:434
+#: ../plugins/gnome-shell-search-provider/plugin.c:465
 msgid "Uses Gnome-Shell search providers as source for searches"
 msgstr "使用 Gnome Shell 搜索提供程序作为搜索源"
 
@@ -652,11 +658,11 @@ msgstr "单击鼠标中键关闭windows视图中的窗口"
 
 #: ../plugins/recently-used-search-provider/plugin.c:75
 msgid "Recently used search provider"
-msgstr ""
+msgstr "最近使用搜索提供程序"
 
 #: ../plugins/recently-used-search-provider/plugin.c:76
 msgid "A search provider using recently used files as source"
-msgstr ""
+msgstr "使用最近使用的文件作为源的搜索提供程序"
 
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
 msgid "Recently used"
@@ -665,13 +671,13 @@ msgstr "最近使用"
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:475
 #, c-format
 msgid "Launching application for '%s' failed: %s"
-msgstr ""
+msgstr "为 '%s' 启动应用失败: %s"
 
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:497
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
 #, c-format
 msgid "Launching application for file '%s' failed: %s"
-msgstr ""
+msgstr "为文件 '%s' 启动应用失败: %s"
 
 #: ../settings/general.c:84
 msgid "Do nothing"
@@ -752,38 +758,38 @@ msgstr "名称"
 msgid "Theme"
 msgstr "主题"
 
-#: ../xfdashboard/application.c:466
+#: ../xfdashboard/application.c:478
 msgid "Fork to background"
 msgstr "分叉到背景"
 
-#: ../xfdashboard/application.c:467
+#: ../xfdashboard/application.c:479
 msgid "Quit running instance"
 msgstr "退出运行中的实例"
 
-#: ../xfdashboard/application.c:468
+#: ../xfdashboard/application.c:480
 msgid "Restart running instance"
 msgstr "重启运行实例"
 
-#: ../xfdashboard/application.c:469
+#: ../xfdashboard/application.c:481
 msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
 msgstr "如果以守护程序模式启动的此正在运行的程序实例，则切换可见性，否则它会退出以非守护程序模式运行中的实例"
 
-#: ../xfdashboard/application.c:470
+#: ../xfdashboard/application.c:482
 msgid "The ID of view to switch to on startup or resume"
 msgstr "在启动或唤醒时切换到的视图的 ID"
 
-#: ../xfdashboard/application.c:471
+#: ../xfdashboard/application.c:483
 msgid "Show version"
 msgstr "显示版本"
 
-#: ../xfdashboard/application.c:490
+#: ../xfdashboard/application.c:502
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
 msgstr "为 Xfce4 - 版本开发的一个类似仪表板的 Gnome Shell"
 
 #. Show error
-#: ../xfdashboard/application.c:507
+#: ../xfdashboard/application.c:519
 #, c-format
 msgid "%s\n"
 msgstr "%s\n"
