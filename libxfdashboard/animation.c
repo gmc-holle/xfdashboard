@@ -507,7 +507,7 @@ static XfdashboardAnimation* _xfdashboard_animation_create(XfdashboardThemeAnima
 														inID,
 														inDefaultInitialValues,
 														inDefaultFinalValues);
-		XFDASHBOARD_DEBUG(self, ANIMATION,
+		XFDASHBOARD_DEBUG(NULL, ANIMATION,
 							"Animation '%s' %s",
 							inID,
 							animation ? "created" : "not found");
@@ -529,7 +529,7 @@ static XfdashboardAnimation* _xfdashboard_animation_create(XfdashboardThemeAnima
 		animation=g_object_new(XFDASHBOARD_TYPE_ANIMATION,
 								"id", id,
 								NULL);
-		XFDASHBOARD_DEBUG(self, ANIMATION,
+		XFDASHBOARD_DEBUG(NULL, ANIMATION,
 							"Animation '%s' not found but created empty animation as requested",
 							id);
 
