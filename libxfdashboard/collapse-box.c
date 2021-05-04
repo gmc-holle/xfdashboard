@@ -738,6 +738,7 @@ void xfdashboard_collapse_box_set_collapsed(XfdashboardCollapseBox *self, gboole
 		finals=xfdashboard_animation_defaults_new(1, "collapse-progress", G_TYPE_FLOAT, inCollapsed ? 0.0 : 1.0);
 		animation=xfdashboard_animation_new_with_values(XFDASHBOARD_ACTOR(self),
 														inCollapsed ? "collapse" : "expand",
+														XFDASHBOARD_ANIMATION_CREATE_FLAG_ALLOW_EMPTY,
 														initials,
 														finals);
 
@@ -762,11 +763,8 @@ void xfdashboard_collapse_box_set_collapsed(XfdashboardCollapseBox *self, gboole
 		g_signal_emit(self, XfdashboardCollapseBoxSignals[SIGNAL_COLLAPSED_CHANGED], 0, priv->isCollapsed);
 
 		/* Start animation */
-		if(priv->expandCollapseAnimation)
-		{
-			g_signal_connect(priv->expandCollapseAnimation, "animation-done", G_CALLBACK(_xfdashboard_collapse_box_animation_done), self);
-			xfdashboard_animation_run(priv->expandCollapseAnimation);
-		}
+		g_signal_connect(priv->expandCollapseAnimation, "animation-done", G_CALLBACK(_xfdashboard_collapse_box_animation_done), self);
+		xfdashboard_animation_run(priv->expandCollapseAnimation);
 
 		/* Free default initial and final values */
 		xfdashboard_animation_defaults_free(initials);

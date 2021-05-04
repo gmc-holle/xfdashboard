@@ -477,6 +477,71 @@ static void _xfdashboard_animation_set_id(XfdashboardAnimation *self, const gcha
 	}
 }
 
+/* Create animation depending on creation flags */
+static XfdashboardAnimation* _xfdashboard_animation_create(XfdashboardThemeAnimation *inThemeAnimation,
+															XfdashboardActor *inSender,
+															const gchar *inID,
+															XfdashboardAnimationCreateFlags inFlags,
+															XfdashboardAnimationValue **inDefaultInitialValues,
+															XfdashboardAnimationValue **inDefaultFinalValues)
+{
+	XfdashboardAnimation			*animation;
+	static guint					emptyIDCounter=0;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(inThemeAnimation), NULL);
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
+	g_return_val_if_fail(!inID || *inID, NULL);
+
+	animation=NULL;
+
+	/* If ID is NULL then most likely the lookup of ID for sender and signal
+	 * failed. Neverthe less if ID is NULL do not create animation which causes
+	 * the animation pointer to stay at NULL. If creation flag to allow empty
+	 * animation is passed it will later create an empty animation because
+	 * the animation pointer is NULL.
+	 */
+	if(inID)
+	{
+		animation=xfdashboard_theme_animation_create(inThemeAnimation,
+														inSender,
+														inID,
+														inDefaultInitialValues,
+														inDefaultFinalValues);
+		XFDASHBOARD_DEBUG(self, ANIMATION,
+							"Animation '%s' %s",
+							inID,
+							animation ? "created" : "not found");
+	}
+
+	/* If animation pointer is NULL but creation of empty animation is allowed
+	 * then create the empty animation now.
+	 */
+	if(!animation &&
+		(inFlags & XFDASHBOARD_ANIMATION_CREATE_FLAG_ALLOW_EMPTY))
+	{
+		gchar						*id;
+
+		/* If no ID was provided, create a dynamic one */
+		if(!inID) id=g_strdup_printf("empty-%u", ++emptyIDCounter);
+			else id=g_strdup(inID);
+
+		/* Create empty animation */
+		animation=g_object_new(XFDASHBOARD_TYPE_ANIMATION,
+								"id", id,
+								NULL);
+		XFDASHBOARD_DEBUG(self, ANIMATION,
+							"Animation '%s' not found but created empty animation as requested",
+							id);
+
+		/* Release allocated resources */
+		g_free(id);
+	}
+
+	/* Return either animation pointer or NULL */
+	return(animation);
+}
+
+
 /* IMPLEMENTATION: GObject */
 
 /* Dispose this object */
@@ -646,32 +711,28 @@ void xfdashboard_animation_init(XfdashboardAnimation *self)
  * xfdashboard_animation_new:
  * @inSender: A #XfdashboardActor emitting the animation signal
  * @inSignal: A string containing the signal emitted at sending actor
+ * @inFlags: Flags used for creation
  *
  * Creates a new animation of type #XfdashboardAnimation matching the sending
  * actor at @inSender and the emitted signal at @inSignal.
  *
- * This function is the logical equivalent of:
- *
- * |[<!-- language="C" -->
- *   XfdashboardTheme          *theme;
- *   XfdashboardThemeAnimation *theme_animations;
- *
- *   theme=xfdashboard_core_get_theme(NULL);
- *   theme_animations=xfdashboard_theme_get_animation(theme);
- *   animation=xfdashboard_theme_animation_create(theme_animations,
- *                                                inSender,
- *                                                inSignal,
- *                                                NULL,
- *                                                NULL);
- * ]|
+ * If %XFDASHBOARD_ANIMATION_CREATE_FLAG_ALLOW_EMPTY flag is set at @inFlags
+ * an empty animation is returned although no matching animation was found.
+ * This behaviour is useful when the ::animation-done signal is connected and
+ * this signal handler does more than simply setting a pointer to this animation
+ * to %NULL. This signal handler is called immediately when the function
+ * xfdashboard_animation_run() is called.
  *
  * Return value: (transfer full): The instance of #XfdashboardAnimation or %NULL
  *   in case of errors or if no matching sender and signal was found.
  */
-XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, const gchar *inSignal)
+XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender,
+												const gchar *inSignal,
+												XfdashboardAnimationCreateFlags inFlags)
 {
 	XfdashboardTheme				*theme;
 	XfdashboardThemeAnimation		*themeAnimation;
+	gchar							*animationID;
 	XfdashboardAnimation			*animation;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
@@ -679,7 +740,14 @@ XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, cons
 
 	theme=xfdashboard_core_get_theme(NULL);
 	themeAnimation=xfdashboard_theme_get_animation(theme);
-	animation=xfdashboard_theme_animation_create(themeAnimation, inSender, inSignal, NULL, NULL);
+	animationID=xfdashboard_theme_animation_lookup_id(themeAnimation, inSender, inSignal);
+	animation=_xfdashboard_animation_create(themeAnimation,
+											inSender,
+											animationID,
+											inFlags,
+											NULL,
+											NULL);
+	if(animationID) g_free(animationID);
 
 	return(animation);
 }
@@ -688,11 +756,19 @@ XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, cons
  * xfdashboard_animation_new_with_values:
  * @inSender: A #XfdashboardActor emitting the animation signal
  * @inSignal: A string containing the signal emitted at sending actor
+ * @inFlags: Flags used for creation
  * @inDefaultInitialValues: A %NULL-terminated list of default initial values
  * @inDefaultFinalValues: A %NULL-terminated list of default final values
  *
  * Creates a new animation of type #XfdashboardAnimation matching the sending
  * actor at @inSender and the emitted signal at @inSignal.
+ *
+ * If %XFDASHBOARD_ANIMATION_CREATE_FLAG_ALLOW_EMPTY flag is set at @inFlags
+ * an empty animation is returned although no matching animation was found.
+ * This behaviour is useful when the ::animation-done signal is connected and
+ * this signal handler does more than simply setting a pointer to this animation
+ * to %NULL. This signal handler is called immediately when the function
+ * xfdashboard_animation_run() is called.
  *
  * A list of default values to set the initial values of the properties can be
  * provided at @inDefaultInitialValues. If it is set to %NULL then the current
@@ -703,7 +779,7 @@ XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, cons
  * property's value when the animation is started will be used as final value.
  * This list must be %NULL-terminated. For convenience the utility function
  * xfdashboard_animation_defaults_new() can be use to create this list for
- * initiral and final values.
+ * initial and final values.
  *
  * <note>
  *   <para>
@@ -717,31 +793,18 @@ XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, cons
  * was built with xfdashboard_animation_defaults_new() use the function
  * xfdashboard_animation_defaults_free() to free this list accordingly.
  *
- * This function is the logical equivalent of:
- *
- * |[<!-- language="C" -->
- *   XfdashboardTheme          *theme;
- *   XfdashboardThemeAnimation *theme_animations;
- *
- *   theme=xfdashboard_core_get_theme(NULL);
- *   theme_animations=xfdashboard_theme_get_animation(theme);
- *   animation=xfdashboard_theme_animation_create(theme_animations,
- *                                                inSender,
- *                                                inSignal,
- *                                                inDefaultInitialValues,
- *                                                inDefaultFinalValues);
- * ]|
- *
  * Return value: (transfer full): The instance of #XfdashboardAnimation or %NULL
  *   in case of errors or if no matching sender and signal was found.
  */
 XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *inSender,
 															const gchar *inSignal,
+															XfdashboardAnimationCreateFlags inFlags,
 															XfdashboardAnimationValue **inDefaultInitialValues,
 															XfdashboardAnimationValue **inDefaultFinalValues)
 {
 	XfdashboardTheme				*theme;
 	XfdashboardThemeAnimation		*themeAnimation;
+	gchar							*animationID;
 	XfdashboardAnimation			*animation;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
@@ -749,7 +812,14 @@ XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *in
 
 	theme=xfdashboard_core_get_theme(NULL);
 	themeAnimation=xfdashboard_theme_get_animation(theme);
-	animation=xfdashboard_theme_animation_create(themeAnimation, inSender, inSignal, inDefaultInitialValues, inDefaultFinalValues);
+	animationID=xfdashboard_theme_animation_lookup_id(themeAnimation, inSender, inSignal);
+	animation=_xfdashboard_animation_create(themeAnimation,
+											inSender,
+											animationID,
+											inFlags,
+											inDefaultInitialValues,
+											inDefaultFinalValues);
+	if(animationID) g_free(animationID);
 
 	return(animation);
 }
@@ -759,29 +829,24 @@ XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *in
  * xfdashboard_animation_new_by_id:
  * @inSender: The #XfdashboardActor requesting the animation
  * @inID: A string containing the ID of animation to create for sender
+ * @inFlags: Flags used for creation
  *
  * Creates a new animation of type #XfdashboardAnimation for the sending actor
  * at @inSender from theme's animation with ID requested at @inID.
  *
- * This function is the logical equivalent of:
- *
- * |[<!-- language="C" -->
- *   XfdashboardTheme          *theme;
- *   XfdashboardThemeAnimation *theme_animations;
- *
- *   theme=xfdashboard_core_get_theme(NULL);
- *   theme_animations=xfdashboard_theme_get_animation(theme);
- *   animation=xfdashboard_theme_animation_create_by_id(theme_animations,
- *                                                      inSender,
- *                                                      inID,
- *                                                      NULL,
- *                                                      NULL);
- * ]|
+ * If %XFDASHBOARD_ANIMATION_CREATE_FLAG_ALLOW_EMPTY flag is set at @inFlags
+ * an empty animation is returned although no matching animation was found.
+ * This behaviour is useful when the ::animation-done signal is connected and
+ * this signal handler does more than simply setting a pointer to this animation
+ * to %NULL. This signal handler is called immediately when the function
+ * xfdashboard_animation_run() is called.
  *
  * Return value: (transfer full): The instance of #XfdashboardAnimation or %NULL
  *   in case of errors or if ID was not found.
  */
-XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender, const gchar *inID)
+XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender,
+														const gchar *inID,
+														XfdashboardAnimationCreateFlags inFlags)
 {
 	XfdashboardTheme				*theme;
 	XfdashboardThemeAnimation		*themeAnimation;
@@ -792,7 +857,12 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender
 
 	theme=xfdashboard_core_get_theme(NULL);
 	themeAnimation=xfdashboard_theme_get_animation(theme);
-	animation=xfdashboard_theme_animation_create_by_id(themeAnimation, inSender, inID, NULL, NULL);
+	animation=_xfdashboard_animation_create(themeAnimation,
+											inSender,
+											inID,
+											inFlags,
+											NULL,
+											NULL);
 
 	return(animation);
 }
@@ -801,11 +871,19 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender
  * xfdashboard_animation_new_by_id_with_values:
  * @inSender: The #XfdashboardActor requesting the animation
  * @inID: A string containing the ID of animation to create for sender
+ * @inFlags: Flags used for creation
  * @inDefaultInitialValues: A %NULL-terminated list of default initial values
  * @inDefaultFinalValues: A %NULL-terminated list of default final values
  *
  * Creates a new animation of type #XfdashboardAnimation for the sending actor
  * at @inSender from theme's animation with ID requested at @inID.
+ *
+ * If %XFDASHBOARD_ANIMATION_CREATE_FLAG_ALLOW_EMPTY flag is set at @inFlags
+ * an empty animation is returned although no matching animation was found.
+ * This behaviour is useful when the ::animation-done signal is connected and
+ * this signal handler does more than simply setting a pointer to this animation
+ * to %NULL. This signal handler is called immediately when the function
+ * xfdashboard_animation_run() is called.
  *
  * A list of default values to set the initial values of the properties can be
  * provided at @inDefaultInitialValues. If it is set to %NULL then the current
@@ -816,7 +894,7 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender
  * property's value when the animation is started will be used as final value.
  * This list must be %NULL-terminated. For convenience the utility function
  * xfdashboard_animation_defaults_new() can be use to create this list for
- * initiral and final values.
+ * initial and final values.
  *
  * <note>
  *   <para>
@@ -830,26 +908,12 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender
  * was built with xfdashboard_animation_defaults_new() use the function
  * xfdashboard_animation_defaults_free() to free this list accordingly.
  *
- * This function is the logical equivalent of:
- *
- * |[<!-- language="C" -->
- *   XfdashboardTheme          *theme;
- *   XfdashboardThemeAnimation *theme_animations;
- *
- *   theme=xfdashboard_core_get_theme(NULL);
- *   theme_animations=xfdashboard_theme_get_animation(theme);
- *   animation=xfdashboard_theme_animation_create_by_id(theme_animations,
- *                                                      inSender,
- *                                                      inID,
- *                                                      inDefaultInitialValues,
- *                                                      inDefaultFinalValues);
- * ]|
- *
  * Return value: (transfer full): The instance of #XfdashboardAnimation or %NULL
  *   in case of errors or if ID was not found.
  */
 XfdashboardAnimation* xfdashboard_animation_new_by_id_with_values(XfdashboardActor *inSender,
 																	const gchar *inID,
+																	XfdashboardAnimationCreateFlags inFlags,
 																	XfdashboardAnimationValue **inDefaultInitialValues,
 																	XfdashboardAnimationValue **inDefaultFinalValues)
 {
@@ -862,7 +926,12 @@ XfdashboardAnimation* xfdashboard_animation_new_by_id_with_values(XfdashboardAct
 
 	theme=xfdashboard_core_get_theme(NULL);
 	themeAnimation=xfdashboard_theme_get_animation(theme);
-	animation=xfdashboard_theme_animation_create_by_id(themeAnimation, inSender, inID, inDefaultInitialValues, inDefaultFinalValues);
+	animation=_xfdashboard_animation_create(themeAnimation,
+											inSender,
+											inID,
+											inFlags,
+											inDefaultInitialValues,
+											inDefaultFinalValues);
 
 	return(animation);
 }

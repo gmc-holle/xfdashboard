@@ -287,7 +287,7 @@ static void _xfdashboard_actor_on_mapped_changed(GObject *inObject,
 															"height", G_TYPE_FLOAT, clutter_actor_box_get_height(&finalBox));
 
 				/* Lookup animation for create signal and set up values for allocation */
-				priv->firstTimeMappedAnimation=xfdashboard_animation_new_with_values(self, "created", initials, finals);
+				priv->firstTimeMappedAnimation=xfdashboard_animation_new_with_values(self, "created", 0, initials, finals);
 
 				/* Free default initial and final values */
 				xfdashboard_animation_defaults_free(initials);
@@ -964,7 +964,7 @@ static XfdashboardAnimation* _xfdashboard_actor_add_animation(XfdashboardActor *
 	/* Lookup animation for signal-(pseudo-)class combination and if any found
 	 * (i.e. has an ID) add it to list of animations of actor and run it.
 	 */
-	animation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), inAnimationSignal);
+	animation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), inAnimationSignal, 0);
 	if(!animation ||
 		xfdashboard_animation_is_empty(animation))
 	{
@@ -1185,6 +1185,7 @@ static void _xfdashboard_actor_on_allocation_changed(ClutterActor *inActor,
 		/* Create and start animation */
 		animation=xfdashboard_animation_new_with_values(self,
 														ALLOCATION_ANIMATION_SIGNAL,
+														0,
 														initials,
 														finals);
 		if(animation)
@@ -2039,7 +2040,7 @@ gboolean xfdashboard_actor_destroy(ClutterActor *self)
 	/* Check if an animation exists but only for actors derived from XfdashboardActor */
 	if(XFDASHBOARD_IS_ACTOR(self))
 	{
-		animation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), "destroy");
+		animation=xfdashboard_animation_new(XFDASHBOARD_ACTOR(self), "destroy", 0);
 	}
 
 	if(animation &&

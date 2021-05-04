@@ -522,7 +522,7 @@ static void _xfdashboard_theme_animation_spec_add_targets(XfdashboardThemeAnimat
 }
 
 /* Find best matching animation specification for sender and signal */
-static XfdashboardThemeAnimationSpec* _xfdashboard_theme_animation_find_matching_animation_spec(XfdashboardThemeAnimation *self,
+static XfdashboardThemeAnimationSpec* _xfdashboard_theme_animation_find_animation_spec_by_sender_signal(XfdashboardThemeAnimation *self,
 																										XfdashboardStylable *inSender,
 																										const gchar *inSignal)
 {
@@ -542,9 +542,9 @@ static XfdashboardThemeAnimationSpec* _xfdashboard_theme_animation_find_matching
 	bestAnimation=NULL;
 
 	/* Iterate through all animation specification and get its score against sender.
-	 * If the iterated specification gets a higher score than the previous one,
-	 * remember this specification for return value.
-	 */
+	* If the iterated specification gets a higher score than the previous one,
+	* remember this specification for return value.
+	*/
 	for(iter=priv->specs; iter; iter=g_slist_next(iter))
 	{
 		/* Get currently iterated specification */
@@ -552,19 +552,19 @@ static XfdashboardThemeAnimationSpec* _xfdashboard_theme_animation_find_matching
 		if(!spec) continue;
 
 		/* Skip animation specification if its signal definition does not match
-		 * the emitted signal.
-		 */
+		* the emitted signal.
+		*/
 		if(g_strcmp0(spec->signal, inSignal)!=0) continue;
 
 		/* Get score of currently iterated specification against sender.
-		 * Skip this iterated specification if score is zero or lower.
-		 */
+		* Skip this iterated specification if score is zero or lower.
+		*/
 		score=xfdashboard_css_selector_score(spec->senderSelector, inSender);
 		if(score<=0) continue;
 
 		/* If score is higher than the previous best matching one, then release
-		 * old specificationr remembered and ref new one.
-		 */
+		* old specificationr remembered and ref new one.
+		*/
 		if(score>bestScore)
 		{
 			/* Release old remembered specification */
@@ -582,7 +582,7 @@ static XfdashboardThemeAnimationSpec* _xfdashboard_theme_animation_find_matching
 
 /* Lookup animation specification for requested ID */
 static XfdashboardThemeAnimationSpec* _xfdashboard_theme_animation_find_animation_spec_by_id(XfdashboardThemeAnimation *self,
-																									const gchar *inID)
+																								const gchar *inID)
 {
 	XfdashboardThemeAnimationPrivate			*priv;
 	GSList										*iter;
@@ -2490,108 +2490,6 @@ gboolean xfdashboard_theme_animation_add_file(XfdashboardThemeAnimation *self,
 /**
  * xfdashboard_theme_animation_create:
  * @self: A #XfdashboardThemeAnimation
- * @inSender: A #XfdashboardActor emitting the animation signal
- * @inSignal: A string containing the signal emitted at sending actor
- * @inDefaultInitialValues: A %NULL-terminated list of default initial values
- * @inDefaultFinalValues: A %NULL-terminated list of default final values
- *
- * Creates a new animation of type #XfdashboardAnimation matching the sending
- * actor at @inSender and the emitted signal at @inSignal as described at
- * theme's animation resource manager at @self.
- *
- * A list of default values to set the initial values of the properties can be
- * provided at @inDefaultInitialValues. If it is set to %NULL then the current
- * property's value is used as initial value. This list must be %NULL-terminated.
- *
- * A list of default values to set the final values of the properties can be
- * provided at @inDefaultFinalValues. If it is set to %NULL then the current
- * property's value when the animation is started will be used as final value.
- * This list must be %NULL-terminated. For convenience the utility function
- * xfdashboard_animation_defaults_new() can be use to create this list for
- * initiral and final values.
- *
- * <note>
- *   <para>
- *     The theme can provide initial and final values and have higher precedence
- *     as the default initial and final values passed to this function.
- *   </para>
- * </note>
- *
- * The caller is responsible to free and/or unref the values in the lists
- * provided at @inDefaultInitialValues and @inDefaultFinalValues. If this list
- * was built with xfdashboard_animation_defaults_new() use the function
- * xfdashboard_animation_defaults_free() to free this list accordingly.
- *
- * Return value: (transfer full): The instance of #XfdashboardAnimation or %NULL
- *   in case of errors or if no matching sender and signal was found.
- */
-XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimation *self,
-															XfdashboardActor *inSender,
-															const gchar *inSignal,
-															XfdashboardAnimationValue **inDefaultInitialValues,
-															XfdashboardAnimationValue **inDefaultFinalValues)
-{
-	XfdashboardThemeAnimationPrivate						*priv;
-	XfdashboardThemeAnimationSpec							*spec;
-	XfdashboardAnimation									*animation;
-	gboolean												animationEnabled;
-
-	g_return_val_if_fail(XFDASHBOARD_IS_THEME_ANIMATION(self), NULL);
-	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(inSender), NULL);
-	g_return_val_if_fail(inSignal && *inSignal, NULL);
-
-	priv=self->priv;
-	animation=NULL;
-
-	/* Check if user wants animation at all. If user does not want any animation,
-	 * return NULL.
-	 */
-	animationEnabled=xfdashboard_settings_get_enable_animations(priv->settings);
-	if(!animationEnabled)
-	{
-		XFDASHBOARD_DEBUG(self, ANIMATION,
-							"User disabled animations so do not lookup animation for sender '%s' and signal '%s'",
-							G_OBJECT_TYPE_NAME(inSender),
-							inSignal);
-
-		/* Return NULL as user does not want any animation */
-		return(NULL);
-	}
-
-	/* Get best matching animation specification for sender and signal.
-	 * If no matching animation specification is found, return the empty one.
-	 */
-	spec=_xfdashboard_theme_animation_find_matching_animation_spec(self, XFDASHBOARD_STYLABLE(inSender), inSignal);
-	if(!spec)
-	{
-		XFDASHBOARD_DEBUG(self, ANIMATION,
-							"Could not find an animation specification for sender '%s' and signal '%s'",
-							G_OBJECT_TYPE_NAME(inSender),
-							inSignal);
-
-		/* Return NULL as no matching animation specification was found */
-		return(NULL);
-	}
-
-	XFDASHBOARD_DEBUG(self, ANIMATION,
-						"Found animation specification '%s' for sender '%s' and signal '%s' with %d targets",
-						spec->id,
-						G_OBJECT_TYPE_NAME(inSender),
-						inSignal,
-						g_slist_length(spec->targets));
-
-	/* Create animation for found animation specification */
-	animation=_xfdashboard_theme_animation_create_by_spec(self, spec, inSender, inDefaultInitialValues, inDefaultFinalValues);
-
-	/* Release allocated resources */
-	if(spec) _xfdashboard_theme_animation_spec_unref(spec);
-
-	return(animation);
-}
-
-/**
- * xfdashboard_theme_animation_create_by_id:
- * @self: A #XfdashboardThemeAnimation
  * @inSender: The #XfdashboardActor requesting the animation
  * @inID: A string containing the ID of animation to create for sender
  * @inDefaultInitialValues: A %NULL-terminated list of default initial values
@@ -2627,11 +2525,11 @@ XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimati
  * Return value: (transfer full): The instance of #XfdashboardAnimation or %NULL
  *   in case of errors or if ID was not found.
  */
-XfdashboardAnimation* xfdashboard_theme_animation_create_by_id(XfdashboardThemeAnimation *self,
-																XfdashboardActor *inSender,
-																const gchar *inID,
-																XfdashboardAnimationValue **inDefaultInitialValues,
-																XfdashboardAnimationValue **inDefaultFinalValues)
+XfdashboardAnimation* xfdashboard_theme_animation_create(XfdashboardThemeAnimation *self,
+															XfdashboardActor *inSender,
+															const gchar *inID,
+															XfdashboardAnimationValue **inDefaultInitialValues,
+															XfdashboardAnimationValue **inDefaultFinalValues)
 {
 	XfdashboardThemeAnimationPrivate						*priv;
 	XfdashboardThemeAnimationSpec							*spec;
@@ -2717,7 +2615,7 @@ gchar* xfdashboard_theme_animation_lookup_id(XfdashboardThemeAnimation *self,
 	/* Get best matching animation specification for sender and signal.
 	 * If no matching animation specification is found, return the empty one.
 	 */
-	spec=_xfdashboard_theme_animation_find_matching_animation_spec(self, XFDASHBOARD_STYLABLE(inSender), inSignal);
+	spec=_xfdashboard_theme_animation_find_animation_spec_by_sender_signal(self, XFDASHBOARD_STYLABLE(inSender), inSignal);
 	if(spec)
 	{
 		/* Get ID of animation specification to return */

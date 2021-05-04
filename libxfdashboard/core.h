@@ -121,14 +121,27 @@ struct _XfdashboardCoreClass
 
 
 /* Errors */
+/**
+ * XFDASHBOARD_CORE_ERROR:
+ *
+ * Error domain for core errors.
+ * Errors in this domain will be from the #XfdashboardCoreError enumeration.
+ */
 #define XFDASHBOARD_CORE_ERROR				(xfdashboard_core_error_quark())
 
 GQuark xfdashboard_core_error_quark(void);
 
+/**
+ * XfdashboardCoreError:
+ * @XFDASHBOARD_CORE_ERROR_INITIALIZATION_FAILED: Initialization of core
+ *   object failed and cannot be used
+ *
+ * Error codes returned by core.
+ */
 typedef enum /*< prefix=XFDASHBOARD_CORE_ERROR >*/
 {
 	XFDASHBOARD_CORE_ERROR_INITIALIZATION_FAILED,
-} XfdashboardCoreErrorEnum;
+} XfdashboardCoreError;
 
 
 /* Public API */

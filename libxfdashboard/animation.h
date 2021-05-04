@@ -98,18 +98,37 @@ struct _XfdashboardAnimationValue
 
 typedef struct _XfdashboardAnimationValue		XfdashboardAnimationValue;
 
+/**
+ * XfdashboardAnimationCreateFlags:
+ * @XFDASHBOARD_ANIMATION_CREATE_FLAG_ALLOW_EMPTY: Return an empty animation
+ *   when no animation for requested signal or ID does not exist
+ *
+ * Flags passed on creation of animations.
+ */
+typedef enum /*< prefix=XFDASHBOARD_ANIMATION_CREATE_FLAG >*/
+{
+	XFDASHBOARD_ANIMATION_CREATE_FLAG_ALLOW_EMPTY = 1 << 0
+} XfdashboardAnimationCreateFlags;
+
+
 /* Public API */
 GType xfdashboard_animation_get_type(void) G_GNUC_CONST;
 
-XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender, const gchar *inSignal);
+XfdashboardAnimation* xfdashboard_animation_new(XfdashboardActor *inSender,
+												const gchar *inSignal,
+												XfdashboardAnimationCreateFlags inFlags);
 XfdashboardAnimation* xfdashboard_animation_new_with_values(XfdashboardActor *inSender,
 															const gchar *inSignal,
+															XfdashboardAnimationCreateFlags inFlags,
 															XfdashboardAnimationValue **inDefaultInitialValues,
 															XfdashboardAnimationValue **inDefaultFinalValues);
 
-XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender, const gchar *inID);
+XfdashboardAnimation* xfdashboard_animation_new_by_id(XfdashboardActor *inSender,
+														const gchar *inID,
+														XfdashboardAnimationCreateFlags inFlags);
 XfdashboardAnimation* xfdashboard_animation_new_by_id_with_values(XfdashboardActor *inSender,
 																	const gchar *inID,
+																	XfdashboardAnimationCreateFlags inFlags,
 																	XfdashboardAnimationValue **inDefaultInitialValues,
 																	XfdashboardAnimationValue **inDefaultFinalValues);
 
