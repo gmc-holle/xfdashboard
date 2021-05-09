@@ -634,7 +634,7 @@ msgstr "Ejemplo de proveedor de búsquedas"
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
 msgstr ""
-"Este es solo un ejemplo inservible de complemento de proveedor de búsquedas"
+"Esto es solo un ejemplo inútil de complemento para proveedores de búsqueda"
 
 #: ../plugins/gnome-shell-search-provider/plugin.c:464
 msgid "Gnome-Shell search provider"
