@@ -63,18 +63,18 @@ msgid ""
 "app finder which makes it convenient to search for and start applications."
 msgstr ""
 "Pode configurarse para se executar con calquera atallo de teclado e cando se"
-" executa fornece unha visión xeral dos aplicativos que están abertos "
-"permitindo ao usuario cambiar entre diferentes aplicativos. A función de "
-"busca funciona como buscador de aplicativos do Xfce o que fai que sexa útil "
-"para buscar e iniciar aplicativos."
+" executa fornece unha visión xeral das aplicacións que están abertas "
+"permitindo ao usuario cambiar entre diferentes aplicacións. A función de "
+"busca funciona como buscador de aplicacións do Xfce o que fai que sexa útil "
+"para buscar e iniciar aplicacións."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:4
 msgid "Browsing applications"
-msgstr "Navegación por aplicativos"
+msgstr "Navegación por aplicacións"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:5
 msgid "Searching applications"
-msgstr "Busca de aplicativos"
+msgstr "Busca de aplicacións"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
@@ -134,8 +134,8 @@ msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
-"Esta versión estábel amaña un erro na configuración dos aplicativos "
-"predeterminados no primeiro uso."
+"Esta versión estábel amaña un erro na configuración das aplicacións "
+"predeterminadas no primeiro uso."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
@@ -144,7 +144,7 @@ msgid ""
 "smaller improvements."
 msgstr ""
 "Esta versión estábel insire moitas funcións novas, como engadidos e "
-"seguimento de aplicativos. Tamén contén unha inxente cantidade de grandes e "
+"seguimento de aplicacións. Tamén contén unha inxente cantidade de grandes e "
 "pequenas melloras."
 
 #: ../data/data/preferences.ui.h:1
@@ -253,7 +253,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:28
 msgid "Always start a new instance for application"
-msgstr "Iniciar sempre unha nova instancia para o aplicativo"
+msgstr "Iniciar sempre unha nova instancia para a aplicación"
 
 #: ../data/data/preferences.ui.h:29
 msgid ""
@@ -261,9 +261,9 @@ msgid ""
 "\n"
 "When not enabled it will select the last known active window of the running application instance. If application is not running, a new instance will be started."
 msgstr ""
-"Se está activado e preme nunha icona no iniciador rápido, sempre iniciará unha nova instancia do aplicativo.\n"
+"Se está activado e preme nunha icona no iniciador rápido, sempre iniciará unha nova instancia da aplicación.\n"
 "\n"
-"Se non está activado, elixirá a última xanela activa coñecida da instancia do aplicativo en execución. Se o aplicativo non está en execución, iniciarase unha nova instancia."
+"Se non está activado, elixirá a última xanela activa coñecida da instancia da aplicación en execución. Se a aplicación non está en execución, iniciarase unha nova instancia."
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
@@ -275,19 +275,19 @@ msgstr "Se está activada mostraranse animacións definidas nos temas."
 
 #: ../data/data/preferences.ui.h:34
 msgid "<b>Applications view:</b>"
-msgstr "<b>Vista de aplicativos:</b>"
+msgstr "<b>Vista de aplicacións:</b>"
 
 #: ../data/data/preferences.ui.h:35
 msgid "Show menu for all installed applications"
-msgstr "Amosar o menú para todos os aplicativos instalados"
+msgstr "Amosar o menú para todas as aplicacións instaladas"
 
 #: ../data/data/preferences.ui.h:36
 msgid ""
 "When enabled an \"all applications\" menu containing all installed "
 "applications will be shown at applications view"
 msgstr ""
-"Cando se activa un menú «todos os aplicativos» que contén todos os "
-"aplicativos instalados amosarase na vista de aplicativos"
+"Cando se activa un menú «todos as aplicacións» que contén todas as "
+"aplicacións instaladas amosarase na vista de aplicacións"
 
 #: ../data/data/preferences.ui.h:37
 msgid "<b>Windows view:</b>"
@@ -414,7 +414,7 @@ msgstr "Tema Red para o xfdashboard"
 #: ../libxfdashboard/application-button.c:262
 #, c-format
 msgid "Could not execute action '%s' for application '%s': %s"
-msgstr "Non se puido executar a acción «%s» para o aplicativo «%s»: %s"
+msgstr "Non se puido executar a acción «%s» para a aplicación «%s»: %s"
 
 #: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
 #: ../settings/plugins.c:794
@@ -424,7 +424,7 @@ msgstr "Erro descoñecido"
 #: ../libxfdashboard/application-button.c:282
 #, c-format
 msgid "Executed action '%s' for application '%s'"
-msgstr "Executouse a acción «%s» para o aplicativo «%s»"
+msgstr "Executouse a acción «%s» para a aplicación «%s»"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
@@ -442,7 +442,7 @@ msgstr "Iniciando a aplicación «%s» fallou: %s"
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:499
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:520
 msgid "No information available for application"
-msgstr "Non hai información dispoñíbel para o aplicativo"
+msgstr "Non hai información dispoñíbel para a aplicación"
 
 #: ../libxfdashboard/application-button.c:763
 #: ../libxfdashboard/applications-search-provider.c:767
@@ -461,7 +461,7 @@ msgstr "erro descoñecido"
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:595
 #, c-format
 msgid "Application '%s' launched"
-msgstr "Iniciouse o aplicativo «%s»"
+msgstr "Iniciouse a aplicación «%s»"
 
 #: ../libxfdashboard/applications-search-provider.c:849
 #: ../libxfdashboard/applications-view.c:415
@@ -475,7 +475,7 @@ msgstr "Iniciar"
 #: ../libxfdashboard/applications-view.c:1580
 #: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
-msgstr "Aplicativos"
+msgstr "Aplicacións"
 
 #: ../libxfdashboard/applications-view.c:543
 #: ../libxfdashboard/applications-view.c:544
@@ -492,11 +492,11 @@ msgstr "Recuar ao menú anterior"
 #: ../libxfdashboard/applications-view.c:683
 #: ../libxfdashboard/applications-view.c:684
 msgid "All applications"
-msgstr "Todos os aplicativos"
+msgstr "Todos as aplicacións"
 
 #: ../libxfdashboard/applications-view.c:683
 msgid "List of all installed applications"
-msgstr "Lista de todos os aplicativos instalados"
+msgstr "Lista de todas as aplicacións instaladas"
 
 #: ../libxfdashboard/core.c:371
 #, c-format
@@ -515,7 +515,7 @@ msgstr "Dámoslle a benvida a %s!"
 
 #: ../libxfdashboard/quicklaunch.c:384
 msgid "No windows to activate for application"
-msgstr "Non hai xanela para activar para o aplicativo"
+msgstr "Non hai xanela para activar para a aplicación"
 
 #: ../libxfdashboard/quicklaunch.c:507 ../libxfdashboard/quicklaunch.c:1243
 #: ../libxfdashboard/quicklaunch.c:2053
@@ -726,7 +726,7 @@ msgstr "Visa de xanelas"
 
 #: ../settings/general.c:86
 msgid "Applications view"
-msgstr "Vista de aplicativos"
+msgstr "Vista de aplicacións"
 
 #: ../settings/general.c:93
 msgid "High"
