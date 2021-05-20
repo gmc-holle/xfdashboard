@@ -81,12 +81,16 @@ msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
 msgstr ""
+"Denne ustabile udviklingsversioner forbedrer vinduesplacering og et nyt "
+"søgeplugin leder efter match i de seneste brugte dokumenter."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
 msgstr ""
+"Denne ustabile udviklingsversioner indfører gradienter med lineære "
+"gradienter til udfyldning af omrids og baggrunde."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
@@ -94,12 +98,16 @@ msgid ""
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
 msgstr ""
+"Denne ustabile udviklingsversioner indfører fuldførelse libxfdashboard som "
+"et ægte bibliotek og intrdocuerer stigradienter til omrids."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr ""
+"Denne ustabile udviklingsversioner indfører ikke noget som er synligt for "
+"brugeren men flytter libxfdashboard ind i et ægte bibliotek."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
@@ -115,9 +123,9 @@ msgid ""
 "menus, multiple backend and support for jumplists etc. It also includes lots"
 " of new and updated translations."
 msgstr ""
-"Denne stabile version introducerer massere af nye funktionaliteter såsom "
+"Denne stabile version indfører massere af nye funktionaliteter såsom "
 "animationer pop op-menuer, adskillige motorer og understøttelse af hoplister"
-" osv. Den indeholder også massaere af nye og opdaterede oversættelser."
+" osv. Den indeholder også massere af nye og opdaterede oversættelser."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
