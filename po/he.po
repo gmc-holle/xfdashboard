@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-16 12:49+0200\n"
+"POT-Creation-Date: 2021-04-26 12:50+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Elishai Eliyahu <elishai@mailfence.com>, 2021\n"
 "Language-Team: Hebrew (https://www.transifex.com/xfce/teams/16840/he/)\n"
@@ -77,18 +77,30 @@ msgstr "חיפוש אפליקציות"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version improves window placement and a new search"
+" plugin looking for matches against the recently used documents."
+msgstr ""
+"גרסת פיתוח לא יציבה זו משפרת מיקום חלון ותוסף חיפוש חדש לאיתור התאמות כנגד "
+"מסמכים בשימוש לאחרונה."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
 msgstr ""
+"גרסת פיתוח לא יציבה זו משלימה גרדיינטים עם גרדיינטים ליניארים לקו חיצון "
+"ומילוי רקע."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
 msgstr ""
+"גרסת פיתוח לא יציבה זו משלימה הפיכת libxfdashboard לספרייה אמיתית ומכניסה "
+"לשימוש גרדיינטים של נתיב עבור קוים חיצוניים."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -96,13 +108,13 @@ msgstr ""
 "גרסת הפיתוח הלא יציבה הזו אינה מציגה שינויים הנראים למשתמש אבל מתחילה מעבר "
 "של libxfdashboard לספריה אמיתית."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
 msgstr "הגרסה היציבה הזו מתקנת באג ומחליפה את AppInfo ב-AppStream metainfo."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -112,14 +124,14 @@ msgstr ""
 "עורפי מרובה ותמיכה ברשימות קופצות ועוד. היא גם כוללת הרבה תרגומים חדשים "
 "ומעודכנים."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
 "הגרסה היציבה הזו מתקנת באג הקובע את ישומי ברירת המחדל הנכונים בשימוש ראשון."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -404,7 +416,7 @@ msgstr "פעולה מבוצעת '%s' עבור ישום '%s'"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:757
+#: ../libxfdashboard/applications-search-provider.c:765
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
@@ -421,17 +433,17 @@ msgid "No information available for application"
 msgstr "אין מידע זמין עבור יישום"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/applications-search-provider.c:759
+#: ../libxfdashboard/applications-search-provider.c:767
 #: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
 #: ../libxfdashboard/quicklaunch.c:442
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:480
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:583
-#: ../xfdashboard/application.c:508
+#: ../xfdashboard/application.c:520
 msgid "unknown error"
 msgstr "שגיאה לא ידועה"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:770
+#: ../libxfdashboard/applications-search-provider.c:778
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:595
@@ -439,7 +451,7 @@ msgstr "שגיאה לא ידועה"
 msgid "Application '%s' launched"
 msgstr "יישום '%s' שוגר"
 
-#: ../libxfdashboard/applications-search-provider.c:841
+#: ../libxfdashboard/applications-search-provider.c:849
 #: ../libxfdashboard/applications-view.c:415
 #: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
@@ -447,7 +459,7 @@ msgstr "הפעל"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1183
+#: ../libxfdashboard/applications-search-provider.c:1191
 #: ../libxfdashboard/applications-view.c:1580
 #: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
@@ -479,12 +491,12 @@ msgstr "רשימה של כל הישומים המותקנים"
 msgid "Could not load theme '%s': %s"
 msgstr "לא יכול לטעון ערכת נושא '%s':%s"
 
-#: ../libxfdashboard/core.c:1261
+#: ../libxfdashboard/core.c:1268
 #, c-format
 msgid "Welcome to %s (%s)!"
 msgstr "ברוכים הבאים אל %s (%s)!"
 
-#: ../libxfdashboard/core.c:1263
+#: ../libxfdashboard/core.c:1270
 #, c-format
 msgid "Welcome to %s!"
 msgstr "ברוכים הבאים אל %s!"
@@ -607,11 +619,11 @@ msgstr "ספק חיפוש דוגמה"
 msgid "This is just a useless example search provider plugin"
 msgstr "זהו רק תוסף ספק חיפוש דוגמה חסר תועלת"
 
-#: ../plugins/gnome-shell-search-provider/plugin.c:433
+#: ../plugins/gnome-shell-search-provider/plugin.c:464
 msgid "Gnome-Shell search provider"
 msgstr "ספק חיפוש של Gnome-Shell"
 
-#: ../plugins/gnome-shell-search-provider/plugin.c:434
+#: ../plugins/gnome-shell-search-provider/plugin.c:465
 msgid "Uses Gnome-Shell search providers as source for searches"
 msgstr "משתמש בספקי חיפוש מעטפת Gnome כמקור לחיפושים"
 
@@ -668,11 +680,11 @@ msgstr "סוגר חלונות בתצוגת חלונות ע\"י קליק אמצע
 
 #: ../plugins/recently-used-search-provider/plugin.c:75
 msgid "Recently used search provider"
-msgstr ""
+msgstr "ספק חיפוש בשימוש לאחרונה"
 
 #: ../plugins/recently-used-search-provider/plugin.c:76
 msgid "A search provider using recently used files as source"
-msgstr ""
+msgstr "ספק חיפוש הפועל עם קבצים בשימוש לאחרונה כמקור"
 
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
 msgid "Recently used"
@@ -681,13 +693,13 @@ msgstr "בשימוש לאחרונה"
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:475
 #, c-format
 msgid "Launching application for '%s' failed: %s"
-msgstr ""
+msgstr "הפעלת ישום עבור '%s' נכשלה:%s"
 
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:497
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
 #, c-format
 msgid "Launching application for file '%s' failed: %s"
-msgstr ""
+msgstr "הפעלת ישום עבור קובץ '%s' נכשלה: %s"
 
 #: ../settings/general.c:84
 msgid "Do nothing"
@@ -769,19 +781,19 @@ msgstr "שם"
 msgid "Theme"
 msgstr "ערכת נושא"
 
-#: ../xfdashboard/application.c:466
+#: ../xfdashboard/application.c:478
 msgid "Fork to background"
 msgstr "הסתעף לרקע"
 
-#: ../xfdashboard/application.c:467
+#: ../xfdashboard/application.c:479
 msgid "Quit running instance"
 msgstr "הפסק להריץ מופע"
 
-#: ../xfdashboard/application.c:468
+#: ../xfdashboard/application.c:480
 msgid "Restart running instance"
 msgstr "אתחל להריץ מופע"
 
-#: ../xfdashboard/application.c:469
+#: ../xfdashboard/application.c:481
 msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
@@ -789,20 +801,20 @@ msgstr ""
 "מחליף ניראות אם מופע פועל התחיל במצב דמון אחרת מפסיק להריץ מופע שלא במצב "
 "דמון"
 
-#: ../xfdashboard/application.c:470
+#: ../xfdashboard/application.c:482
 msgid "The ID of view to switch to on startup or resume"
 msgstr "הזהות של התצוגה אליה יש לעבור בהפעלה או התחלה חוזרת"
 
-#: ../xfdashboard/application.c:471
+#: ../xfdashboard/application.c:483
 msgid "Show version"
 msgstr "הצג גרסה"
 
-#: ../xfdashboard/application.c:490
+#: ../xfdashboard/application.c:502
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
 msgstr "לוח מחוונים דומה למעטפת Gnome עבור Xfce4 - גרסה"
 
 #. Show error
-#: ../xfdashboard/application.c:507
+#: ../xfdashboard/application.c:519
 #, c-format
 msgid "%s\n"
 msgstr "%s\n"
