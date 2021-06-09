@@ -103,6 +103,7 @@ struct _XfdashboardWindowTrackerWindowInterface
 	XfdashboardWindowTrackerWindow* (*get_parent)(XfdashboardWindowTrackerWindow *self);
 
 	XfdashboardWindowTrackerWindowState (*get_state)(XfdashboardWindowTrackerWindow *self);
+	void (*set_state)(XfdashboardWindowTrackerWindow *self, XfdashboardWindowTrackerWindowState inState);
 	XfdashboardWindowTrackerWindowAction (*get_actions)(XfdashboardWindowTrackerWindow *self);
 
 	const gchar* (*get_name)(XfdashboardWindowTrackerWindow *self);
@@ -161,6 +162,8 @@ void xfdashboard_window_tracker_window_hide(XfdashboardWindowTrackerWindow *self
 XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_window_get_parent(XfdashboardWindowTrackerWindow *self);
 
 XfdashboardWindowTrackerWindowState xfdashboard_window_tracker_window_get_state(XfdashboardWindowTrackerWindow *self);
+void xfdashboard_window_tracker_window_set_state(XfdashboardWindowTrackerWindow *self, XfdashboardWindowTrackerWindowState inState);
+
 XfdashboardWindowTrackerWindowAction xfdashboard_window_tracker_window_get_actions(XfdashboardWindowTrackerWindow *self);
 
 const gchar* xfdashboard_window_tracker_window_get_name(XfdashboardWindowTrackerWindow *self);

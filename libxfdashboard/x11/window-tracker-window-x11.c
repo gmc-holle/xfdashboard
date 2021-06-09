@@ -979,6 +979,97 @@ static XfdashboardWindowTrackerWindowState _xfdashboard_window_tracker_window_x1
 	return(priv->state);
 }
 
+/* Set window state */
+static void _xfdashboard_window_tracker_window_x11_window_tracker_window_set_state(XfdashboardWindowTrackerWindow *inWindow, XfdashboardWindowTrackerWindowState inState)
+{
+	XfdashboardWindowTrackerWindowX11			*self;
+	XfdashboardWindowTrackerWindowX11Private	*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW_X11(inWindow));
+
+	self=XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11(inWindow);
+	priv=self->priv;
+
+	/* A wnck window must be wrapped by this object */
+	if(!priv->window)
+	{
+		XFDASHBOARD_WINDOW_TRACKER_WINDOW_X11_WARN_NO_WINDOW(self);
+		return;
+	}
+
+	/* Set state if changed */
+	if(priv->state!=inState)
+	{
+		XfdashboardWindowTrackerWindowState		changedStates;
+
+		/* Get state changed */
+		changedStates=priv->state ^ inState;
+		XFDASHBOARD_DEBUG(self, WINDOWS,
+							"Window '%s' for wnck-window %p changed state from %u to %u (changed-mask=%u)",
+							wnck_window_get_name(priv->window),
+							priv->window,
+							priv->state,
+							inState,
+							changedStates);
+
+		/* Iterate through changed states and update window */
+		if((changedStates & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_HIDDEN) ||
+			(changedStates & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_MINIMIZED))
+		{
+			if((inState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_HIDDEN) ||
+				(inState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_MINIMIZED))
+			{
+				wnck_window_minimize(priv->window);
+			}
+				else wnck_window_unminimize(priv->window, xfdashboard_window_tracker_x11_get_time());
+		}
+
+		if(changedStates & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_MAXIMIZED)
+		{
+			if(inState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_MAXIMIZED) wnck_window_maximize(priv->window);
+				else wnck_window_unmaximize(priv->window);
+		}
+
+		if(changedStates & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_FULLSCREEN)
+		{
+			if(inState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_FULLSCREEN) wnck_window_set_fullscreen(priv->window, TRUE);
+				else wnck_window_set_fullscreen(priv->window, FALSE);
+		}
+
+		if(changedStates & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER)
+		{
+			if(inState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER) wnck_window_set_skip_pager(priv->window, TRUE);
+				else wnck_window_set_skip_pager(priv->window, FALSE);
+		}
+
+		if(changedStates & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST)
+		{
+			if(inState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST) wnck_window_set_skip_tasklist(priv->window, TRUE);
+				else wnck_window_set_skip_tasklist(priv->window, FALSE);
+		}
+
+		if(changedStates & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED)
+		{
+			if(inState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED) wnck_window_pin(priv->window);
+				else wnck_window_unpin(priv->window);
+		}
+
+		// TODO: if(changedStates & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_URGENT)
+		// TODO: {
+			// TODO: if(inState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_URGENT) wnck_window_set_urgent(priv->window);
+				// TODO: else wnck_window_unset_urgent(priv->window);
+		// TODO: }
+
+		/* We do not set the requested window state here and emit a property
+		 * changed signal as we might need to wait until X server updates
+		 * the window state. So the new state will not reflect the current
+		 * or the requested state. But if the window state is update fully
+		 * or just partial the signal handler connected to wnck will update
+		 * the state. So it is safe not to do it here.
+		 */
+	}
+}
+
 /* Get window actions */
 static XfdashboardWindowTrackerWindowAction _xfdashboard_window_tracker_window_x11_window_tracker_window_get_actions(XfdashboardWindowTrackerWindow *inWindow)
 {
@@ -1518,6 +1609,8 @@ static void _xfdashboard_window_tracker_window_x11_window_tracker_window_iface_i
 	iface->get_parent=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_parent;
 
 	iface->get_state=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_state;
+	iface->set_state=_xfdashboard_window_tracker_window_x11_window_tracker_window_set_state;
+
 	iface->get_actions=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_actions;
 
 	iface->get_name=_xfdashboard_window_tracker_window_x11_window_tracker_window_get_name;

@@ -449,6 +449,26 @@ XfdashboardWindowTrackerWindowState xfdashboard_window_tracker_window_get_state(
 	return(0);
 }
 
+/* Set state of window */
+void xfdashboard_window_tracker_window_set_state(XfdashboardWindowTrackerWindow *self, XfdashboardWindowTrackerWindowState inState)
+{
+	XfdashboardWindowTrackerWindowInterface		*iface;
+
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(self));
+
+	iface=XFDASHBOARD_WINDOW_TRACKER_WINDOW_GET_IFACE(self);
+
+	/* Call virtual function */
+	if(iface->set_state)
+	{
+		return(iface->set_state(self, inState));
+	}
+
+	/* If we get here the virtual function was not overridden */
+	XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, "set_state");
+	return(0);
+}
+
 /* Get possible actions for requested window */
 XfdashboardWindowTrackerWindowAction xfdashboard_window_tracker_window_get_actions(XfdashboardWindowTrackerWindow *self)
 {

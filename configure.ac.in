@@ -313,6 +313,7 @@ data/themes/xfdashboard-wine/Makefile
 libxfdashboard/libxfdashboard.pc
 libxfdashboard/Makefile
 plugins/Makefile
+plugins/autopin-windows/Makefile
 plugins/clock-view/Makefile
 plugins/example-search-provider/Makefile
 plugins/gnome-shell-search-provider/Makefile
