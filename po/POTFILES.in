@@ -96,6 +96,9 @@ libxfdashboard/x11/window-tracker-monitor-x11.c
 libxfdashboard/x11/window-tracker-window-x11.c
 libxfdashboard/x11/window-tracker-workspace-x11.c
 libxfdashboard/x11/window-tracker-x11.c
+plugins/autopin-windows/autopin-windows.c
+plugins/autopin-windows/autopin-windows.h
+plugins/autopin-windows/plugin.c
 plugins/clock-view/clock-view.c
 plugins/clock-view/clock-view-settings.c
 plugins/clock-view/plugin.c
