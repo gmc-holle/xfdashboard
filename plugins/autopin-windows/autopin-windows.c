@@ -81,6 +81,21 @@ static void _xfdashboard_autopin_windows_update_window_pin_state(XfdashboardAuto
 						windowState,
 						(windowState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED) ? "pinned" : "unpinned");
 
+	/* Check if window is a "normal" window which could be pinned by user or
+	 * this plugin. This depends on its state and role (meaning it is not a
+	 * stage window).
+	 */
+	if(windowState &
+		(XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER | XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST))
+	{
+		return;
+	}
+
+	if(xfdashboard_window_tracker_window_is_stage(inWindow))
+	{
+		return;
+	}
+
 	/* Pin window if moved to non-primary monitor and is not pinned yet or unpin
 	 * window if moved to primary monitor and is not unpinned yet. Otherwise
 	 * keep window untouched.
