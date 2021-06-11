@@ -1,7 +1,7 @@
 /*
  * window-tracker-window: A window tracked by window tracker.
  * 
- * Copyright 2012-2016 Stephan Haller <nomad@froevel.de>
+ * Copyright 2012-2021 Stephan Haller <nomad@froevel.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
