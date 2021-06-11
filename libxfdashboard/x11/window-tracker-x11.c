@@ -2135,3 +2135,27 @@ XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_x11_get_workspace_
 	workspace=_xfdashboard_window_tracker_x11_get_workspace_for_wnck(self, inWorkspace);
 	return(XFDASHBOARD_WINDOW_TRACKER_WORKSPACE(workspace));
 }
+
+/* Get X server display but returns None if not determinable */
+Display* xfdashboard_window_tracker_x11_get_display(void)
+{
+	Display			*display;
+
+	display=None;
+
+#ifdef CLUTTER_WINDOWING_X11
+	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_X11))
+	{
+		display=clutter_x11_get_default_display();
+	}
+#endif
+
+#ifdef CLUTTER_WINDOWING_GDK
+	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_GDK))
+	{
+		display=gdk_x11_display_get_xdisplay(clutter_gdk_get_default_display());
+	}
+#endif
+
+	return(display);
+}

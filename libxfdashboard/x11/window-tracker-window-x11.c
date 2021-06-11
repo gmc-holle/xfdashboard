@@ -1054,11 +1054,48 @@ static void _xfdashboard_window_tracker_window_x11_window_tracker_window_set_sta
 				else wnck_window_unpin(priv->window);
 		}
 
-		// TODO: if(changedStates & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_URGENT)
-		// TODO: {
-			// TODO: if(inState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_URGENT) wnck_window_set_urgent(priv->window);
-				// TODO: else wnck_window_unset_urgent(priv->window);
-		// TODO: }
+		if(changedStates & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_URGENT)
+		{
+			Display								*display;
+			gulong								windowXID;
+			gint								trapError;
+			XWMHints							*hints;
+
+			display=xfdashboard_window_tracker_x11_get_display();
+			windowXID=wnck_window_get_xid(priv->window);
+
+			/* Get current X window hints */
+			clutter_x11_trap_x_errors();
+			{
+				hints=XGetWMHints(display, windowXID);
+			}
+
+			/* Check if everything went well */
+			trapError=clutter_x11_untrap_x_errors();
+			if(trapError!=0)
+			{
+				XFDASHBOARD_DEBUG(self, WINDOWS,
+									"X error %d occured while getting WM hints window '%s'",
+									trapError,
+									wnck_window_get_name(priv->window));
+
+				/* Ensure hints is a NULL pointer */
+				hints=NULL;
+			}
+
+			/* If we could get the window hints just add the urgency flag */
+			if(hints)
+			{
+				/* Set urgency flag */
+				hints->flags|=XUrgencyHint;
+
+				/* Set new X window hints on window */
+				XSetWMHints(display, windowXID, hints);
+
+				/* Release allocated resources */
+				XFree(hints);
+			}
+		}
 
 		/* We do not set the requested window state here and emit a property
 		 * changed signal as we might need to wait until X server updates

@@ -34,6 +34,7 @@
 #endif
 
 #include <glib-object.h>
+#include <clutter/x11/clutter-x11.h>
 
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE
 #include <libwnck/libwnck.h>

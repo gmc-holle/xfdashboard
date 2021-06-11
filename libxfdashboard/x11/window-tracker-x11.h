@@ -39,6 +39,8 @@
 #include <libxfdashboard/window-tracker-window.h>
 #include <libxfdashboard/window-tracker-workspace.h>
 
+#include <clutter/x11/clutter-x11.h>
+
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE
 #include <libwnck/libwnck.h>
 
@@ -84,6 +86,8 @@ XfdashboardWindowTrackerWindow* xfdashboard_window_tracker_x11_get_window_for_wn
 																					WnckWindow *inWindow);
 XfdashboardWindowTrackerWorkspace* xfdashboard_window_tracker_x11_get_workspace_for_wnck(XfdashboardWindowTrackerX11 *self,
 																							WnckWorkspace *inWorkspace);
+
+Display* xfdashboard_window_tracker_x11_get_display(void);
 
 G_END_DECLS
 

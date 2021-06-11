@@ -466,7 +466,7 @@ void xfdashboard_window_tracker_window_set_state(XfdashboardWindowTrackerWindow 
 
 	/* If we get here the virtual function was not overridden */
 	XFDASHBOARD_WINDOWS_TRACKER_WINDOW_WARN_NOT_IMPLEMENTED(self, "set_state");
-	return(0);
+	return;
 }
 
 /* Get possible actions for requested window */

@@ -45,6 +45,7 @@
 #include <gdk/gdkx.h>
 
 #include <libxfdashboard/window-content.h>
+#include <libxfdashboard/x11/window-tracker-x11.h>
 #include <libxfdashboard/x11/window-tracker-window-x11.h>
 #include <libxfdashboard/core.h>
 #include <libxfdashboard/marshal.h>
@@ -188,34 +189,6 @@ static void _xfdashboard_window_content_x11_suspend(XfdashboardWindowContentX11 
 static void _xfdashboard_window_content_x11_resume(XfdashboardWindowContentX11 *self);
 static gboolean _xfdashboard_window_content_x11_resume_on_idle(gpointer inUserData);
 
-/* Get X server display */
-static Display* _xfdashboard_window_content_x11_get_display(void)
-{
-	Display			*display;
-
-	display=None;
-
-#ifdef CLUTTER_WINDOWING_X11
-	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_X11))
-	{
-		display=clutter_x11_get_default_display();
-	}
-#endif
-
-#ifdef CLUTTER_WINDOWING_GDK
-	if(clutter_check_windowing_backend(CLUTTER_WINDOWING_GDK))
-	{
-		display=gdk_x11_display_get_xdisplay(clutter_gdk_get_default_display());
-	}
-#endif
-
-	if(G_UNLIKELY(display==None))
-	{
-		g_critical("No default X11 display found in GDK to check X extensions");
-	}
-
-	return(display);
-}
 
 /* Remove all entries from resume queue and release all allocated resources */
 static void _xfdashboard_window_content_x11_destroy_resume_queue(void)
@@ -653,7 +626,11 @@ static void _xfdashboard_window_content_x11_check_extension(void)
 	_xfdashboard_window_content_x11_have_checked_extensions=TRUE;
 
 	/* Get display */
-	display=_xfdashboard_window_content_x11_get_display();
+	display=xfdashboard_window_tracker_x11_get_display();
+	if(G_UNLIKELY(display==None))
+	{
+		g_critical("No default X11 display found to check X extensions");
+	}
 
 	/* Check for composite extenstion */
 	_xfdashboard_window_content_x11_have_composite_extension=FALSE;
@@ -827,7 +804,11 @@ static void _xfdashboard_window_content_x11_release_resources(XfdashboardWindowC
 	_xfdashboard_window_content_x11_resume_on_idle_remove(self);
 
 	/* Get display as it used more than once ;) */
-	display=_xfdashboard_window_content_x11_get_display();
+	display=xfdashboard_window_tracker_x11_get_display();
+	if(G_UNLIKELY(display==None))
+	{
+		g_critical("No default X11 display found to release clutter content resources");
+	}
 
 	/* Release resources. It might be important to release them
 	 * in reverse order as they were created.
@@ -907,7 +888,11 @@ static void _xfdashboard_window_content_x11_suspend(XfdashboardWindowContentX11 
 	_xfdashboard_window_content_x11_resume_on_idle_remove(self);
 
 	/* Get display as it used more than once ;) */
-	display=_xfdashboard_window_content_x11_get_display();
+	display=xfdashboard_window_tracker_x11_get_display();
+	if(G_UNLIKELY(display==None))
+	{
+		g_critical("No default X11 display found for suspend");
+	}
 
 	/* Release resources */
 	clutter_x11_trap_x_errors();
@@ -1034,7 +1019,11 @@ static gboolean _xfdashboard_window_content_x11_resume_on_idle(gpointer inUserDa
 	}
 
 	/* Get display as it used more than once ;) */
-	display=_xfdashboard_window_content_x11_get_display();
+	display=xfdashboard_window_tracker_x11_get_display();
+	if(G_UNLIKELY(display==None))
+	{
+		g_critical("No default X11 display found for resume");
+	}
 
 	/* Set up resources */
 	clutter_x11_trap_x_errors();
@@ -1197,7 +1186,11 @@ static void _xfdashboard_window_content_x11_resume(XfdashboardWindowContentX11 *
 	if(!_xfdashboard_window_content_x11_have_composite_extension) return;
 
 	/* Get display as it used more than once ;) */
-	display=_xfdashboard_window_content_x11_get_display();
+	display=xfdashboard_window_tracker_x11_get_display();
+	if(G_UNLIKELY(display==None))
+	{
+		g_critical("No default X11 display found for resume");
+	}
 
 	/* Set up resources */
 	clutter_x11_trap_x_errors();
@@ -1450,7 +1443,11 @@ static void _xfdashboard_window_content_x11_set_window(XfdashboardWindowContentX
 	g_object_freeze_notify(G_OBJECT(self));
 
 	/* Get display as it used more than once ;) */
-	display=_xfdashboard_window_content_x11_get_display();
+	display=xfdashboard_window_tracker_x11_get_display();
+	if(G_UNLIKELY(display==None))
+	{
+		g_critical("No default X11 display found to set window for clutter content");
+	}
 
 	/* Set new value */
 	priv->window=inWindow;
