@@ -43,6 +43,7 @@ struct _XfdashboardAutopinWindowsPrivate
 	guint									windowMonitorChangedSignalID;
 
 	gboolean								unpinOnDispose;
+	GSList									*pinnedWindows;
 };
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED(XfdashboardAutopinWindows,
@@ -60,12 +61,15 @@ XFDASHBOARD_DEFINE_PLUGIN_TYPE(xfdashboard_autopin_windows);
 /* Update pin state of window depending on monitor it is located on */
 static void _xfdashboard_autopin_windows_update_window_pin_state(XfdashboardAutopinWindows *self, XfdashboardWindowTrackerWindow *inWindow)
 {
+	XfdashboardAutopinWindowsPrivate		*priv;
 	XfdashboardWindowTrackerMonitor			*currentMonitor;
 	gboolean								isPrimary;
 	XfdashboardWindowTrackerWindowState		windowState;
 
 	g_return_if_fail(XFDASHBOARD_IS_AUTOPIN_WINDOWS(self));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+
+	priv=self->priv;
 
 	/* Get monitor the window is located on */
 	currentMonitor=xfdashboard_window_tracker_window_get_monitor(inWindow);
@@ -109,6 +113,11 @@ static void _xfdashboard_autopin_windows_update_window_pin_state(XfdashboardAuto
 
 		windowState=windowState & ~XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED;
 		xfdashboard_window_tracker_window_set_state(inWindow, windowState);
+
+		/* Remember that we pinned this window, so we can unpin it on dispose of
+		 * this object instance.
+		 */
+		priv->pinnedWindows=g_slist_prepend(priv->pinnedWindows, inWindow);
 	}
 		else if(!isPrimary &&
 				!(windowState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED))
@@ -119,6 +128,9 @@ static void _xfdashboard_autopin_windows_update_window_pin_state(XfdashboardAuto
 
 			windowState=windowState | XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED;
 			xfdashboard_window_tracker_window_set_state(inWindow, windowState);
+
+			/* Forget this window as it is unpinned if we remebered it */
+			priv->pinnedWindows=g_slist_remove(priv->pinnedWindows, inWindow);
 		}
 }
 
@@ -164,6 +176,27 @@ static void _xfdashboard_autopin_windows_on_window_opened(XfdashboardAutopinWind
 	_xfdashboard_autopin_windows_update_window_pin_state(self, inWindow);
 }
 
+/* Callback for windows closed */
+static void _xfdashboard_autopin_windows_on_window_closed(XfdashboardAutopinWindows *self,
+															XfdashboardWindowTrackerWindow *inWindow,
+															gpointer inUserData)
+{
+	XfdashboardAutopinWindowsPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_AUTOPIN_WINDOWS(self));
+	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
+
+	priv=self->priv;
+
+	/* Forget this window as it was closed so we cannot unping it when this
+	 * object will be destroyed.
+	 */
+	XFDASHBOARD_DEBUG(self, PLUGIN,
+						"Forget window '%s' which was closed",
+						xfdashboard_window_tracker_window_get_name(inWindow));
+	priv->pinnedWindows=g_slist_remove(priv->pinnedWindows, inWindow);
+}
+
 
 /* IMPLEMENTATION: GObject */
 
@@ -172,24 +205,27 @@ static void _xfdashboard_autopin_windows_dispose(GObject *inObject)
 {
 	XfdashboardAutopinWindows				*self=XFDASHBOARD_AUTOPIN_WINDOWS(inObject);
 	XfdashboardAutopinWindowsPrivate		*priv=self->priv;
-	GList									*windowList;
+	GSList									*windowIter;
 	XfdashboardWindowTrackerWindow			*window;
 	XfdashboardWindowTrackerWindowState		windowState;
 
 	/* Iterate through all windows and unpin them as this plugin will be disposed */
-	if(priv->unpinOnDispose)
+	if(priv->unpinOnDispose && priv->pinnedWindows)
 	{
-		windowList=xfdashboard_window_tracker_get_windows(priv->windowTracker);
-		for(; windowList; windowList=g_list_next(windowList))
+		for(windowIter=priv->pinnedWindows; windowIter; windowIter=g_slist_next(windowIter))
 		{
 			/* Get window from iterator */
-			window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windowList->data);
+			window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(windowIter->data);
 			if(!window) continue;
 
 			/* Unpinned window */
 			windowState=xfdashboard_window_tracker_window_get_state(window);
 			xfdashboard_window_tracker_window_set_state(window, windowState & ~XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED);
 		}
+
+		/* Free and release list */
+		g_slist_free(priv->pinnedWindows);
+		priv->pinnedWindows=NULL;
 	}
 
 	/* Release allocated resources */
@@ -250,6 +286,7 @@ void xfdashboard_autopin_windows_init(XfdashboardAutopinWindows *self)
 	priv->windowMonitorChangedSignalID=0;
 	priv->windowOpenedSignaledID=0;
 	priv->unpinOnDispose=FALSE;
+	priv->pinnedWindows=NULL;
 
 	/* Iterate through all windows and pin or unpin them depending on which
 	 * monitor they are located at.
@@ -284,6 +321,12 @@ void xfdashboard_autopin_windows_init(XfdashboardAutopinWindows *self)
 		g_signal_connect_swapped(priv->windowTracker,
 									"window-opened",
 									G_CALLBACK(_xfdashboard_autopin_windows_on_window_opened),
+									self);
+
+	priv->windowOpenedSignaledID=
+		g_signal_connect_swapped(priv->windowTracker,
+									"window-closed",
+									G_CALLBACK(_xfdashboard_autopin_windows_on_window_closed),
 									self);
 }
 
