@@ -43,7 +43,7 @@ static XfdashboardAutopinWindows			*autopinWindows=NULL;
 static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 {
 	/* Create instance of hot corner */
-	if(!autopinWindows)
+	if(G_LIKELY(!autopinWindows))
 	{
 		autopinWindows=xfdashboard_autopin_windows_new();
 	}
@@ -53,7 +53,7 @@ static void plugin_enable(XfdashboardPlugin *self, gpointer inUserData)
 static void plugin_disable(XfdashboardPlugin *self, gpointer inUserData)
 {
 	/* Destroy instance of hot corner */
-	if(autopinWindows)
+	if(G_LIKELY(autopinWindows))
 	{
 		g_object_unref(autopinWindows);
 		autopinWindows=NULL;

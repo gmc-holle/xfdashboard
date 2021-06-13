@@ -73,7 +73,13 @@ static void _xfdashboard_autopin_windows_update_window_pin_state(XfdashboardAuto
 
 	/* Get monitor the window is located on */
 	currentMonitor=xfdashboard_window_tracker_window_get_monitor(inWindow);
-	if(!currentMonitor) return;
+	if(!currentMonitor)
+	{
+		XFDASHBOARD_DEBUG(self, PLUGIN,
+							"Skipping window '%s' because we could not get monitor",
+							xfdashboard_window_tracker_window_get_name(inWindow));
+		return;
+	}
 
 	/* Get primary state of new monitor and window state */
 	isPrimary=xfdashboard_window_tracker_monitor_is_primary(currentMonitor);
@@ -92,11 +98,17 @@ static void _xfdashboard_autopin_windows_update_window_pin_state(XfdashboardAuto
 	if(windowState &
 		(XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER | XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST))
 	{
+		XFDASHBOARD_DEBUG(self, PLUGIN,
+							"Skipping window '%s' because it is skipped from pager and/or tasklist",
+							xfdashboard_window_tracker_window_get_name(inWindow));
 		return;
 	}
 
 	if(xfdashboard_window_tracker_window_is_stage(inWindow))
 	{
+		XFDASHBOARD_DEBUG(self, PLUGIN,
+							"Skipping window '%s' because it is the stage window",
+							xfdashboard_window_tracker_window_get_name(inWindow));
 		return;
 	}
 
@@ -221,6 +233,9 @@ static void _xfdashboard_autopin_windows_dispose(GObject *inObject)
 			/* Unpinned window */
 			windowState=xfdashboard_window_tracker_window_get_state(window);
 			xfdashboard_window_tracker_window_set_state(window, windowState & ~XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED);
+			XFDASHBOARD_DEBUG(self, PLUGIN,
+								"Unpinned window '%s' because it was pinned by us and this plugin is shut down",
+								xfdashboard_window_tracker_window_get_name(inWindow));
 		}
 
 		/* Free and release list */
@@ -285,7 +300,7 @@ void xfdashboard_autopin_windows_init(XfdashboardAutopinWindows *self)
 	priv->windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	priv->windowMonitorChangedSignalID=0;
 	priv->windowOpenedSignaledID=0;
-	priv->unpinOnDispose=FALSE;
+	priv->unpinOnDispose=TRUE;
 	priv->pinnedWindows=NULL;
 
 	/* Iterate through all windows and pin or unpin them depending on which
