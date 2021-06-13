@@ -5,6 +5,7 @@ AM_CPPFLAGS = \
 	-DPACKAGE_DATADIR=\"$(datadir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
 	-DPACKAGE_LIBDIR=\"$(libdir)\" \
+	$(XFDASHBOARD_DEBUG_CFLAGS) \
 	$(PLATFORM_CPPFLAGS)
 
 bin_PROGRAMS = \

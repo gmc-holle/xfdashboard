@@ -75,7 +75,7 @@ static void _xfdashboard_autopin_windows_update_window_pin_state(XfdashboardAuto
 	currentMonitor=xfdashboard_window_tracker_window_get_monitor(inWindow);
 	if(!currentMonitor)
 	{
-		XFDASHBOARD_DEBUG(self, PLUGIN,
+		XFDASHBOARD_DEBUG(self, PLUGINS,
 							"Skipping window '%s' because we could not get monitor",
 							xfdashboard_window_tracker_window_get_name(inWindow));
 		return;
@@ -84,7 +84,7 @@ static void _xfdashboard_autopin_windows_update_window_pin_state(XfdashboardAuto
 	/* Get primary state of new monitor and window state */
 	isPrimary=xfdashboard_window_tracker_monitor_is_primary(currentMonitor);
 	windowState=xfdashboard_window_tracker_window_get_state(inWindow);
-	XFDASHBOARD_DEBUG(self, PLUGIN,
+	XFDASHBOARD_DEBUG(self, PLUGINS,
 						"Window '%s' is on %s monitor with state %u (%s)",
 						xfdashboard_window_tracker_window_get_name(inWindow),
 						isPrimary ? "primary" : "non-primary",
@@ -98,7 +98,7 @@ static void _xfdashboard_autopin_windows_update_window_pin_state(XfdashboardAuto
 	if(windowState &
 		(XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_PAGER | XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_SKIP_TASKLIST))
 	{
-		XFDASHBOARD_DEBUG(self, PLUGIN,
+		XFDASHBOARD_DEBUG(self, PLUGINS,
 							"Skipping window '%s' because it is skipped from pager and/or tasklist",
 							xfdashboard_window_tracker_window_get_name(inWindow));
 		return;
@@ -106,7 +106,7 @@ static void _xfdashboard_autopin_windows_update_window_pin_state(XfdashboardAuto
 
 	if(xfdashboard_window_tracker_window_is_stage(inWindow))
 	{
-		XFDASHBOARD_DEBUG(self, PLUGIN,
+		XFDASHBOARD_DEBUG(self, PLUGINS,
 							"Skipping window '%s' because it is the stage window",
 							xfdashboard_window_tracker_window_get_name(inWindow));
 		return;
@@ -119,30 +119,30 @@ static void _xfdashboard_autopin_windows_update_window_pin_state(XfdashboardAuto
 	if(isPrimary &&
 		(windowState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED))
 	{
-		XFDASHBOARD_DEBUG(self, PLUGIN,
+		XFDASHBOARD_DEBUG(self, PLUGINS,
 							"Unpinning window '%s' as it is located on primary monitor",
 							xfdashboard_window_tracker_window_get_name(inWindow));
 
 		windowState=windowState & ~XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED;
 		xfdashboard_window_tracker_window_set_state(inWindow, windowState);
 
-		/* Remember that we pinned this window, so we can unpin it on dispose of
-		 * this object instance.
-		 */
-		priv->pinnedWindows=g_slist_prepend(priv->pinnedWindows, inWindow);
+		/* Forget this window as it is unpinned if we remebered it */
+		priv->pinnedWindows=g_slist_remove(priv->pinnedWindows, inWindow);
 	}
 		else if(!isPrimary &&
 				!(windowState & XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED))
 		{
-			XFDASHBOARD_DEBUG(self, PLUGIN,
+			XFDASHBOARD_DEBUG(self, PLUGINS,
 								"Pinning window '%s' as it is located on non-primary monitor",
 								xfdashboard_window_tracker_window_get_name(inWindow));
 
 			windowState=windowState | XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED;
 			xfdashboard_window_tracker_window_set_state(inWindow, windowState);
 
-			/* Forget this window as it is unpinned if we remebered it */
-			priv->pinnedWindows=g_slist_remove(priv->pinnedWindows, inWindow);
+			/* Remember that we pinned this window, so we can unpin it on dispose of
+			 * this object instance.
+			 */
+			priv->pinnedWindows=g_slist_prepend(priv->pinnedWindows, inWindow);
 		}
 }
 
@@ -159,7 +159,7 @@ static void _xfdashboard_autopin_windows_on_window_monitor_changed(XfdashboardAu
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_MONITOR(inNewMonitor));
 
 	/* Check moved window if it needs to be pinned or unpinned */
-	XFDASHBOARD_DEBUG(self, PLUGIN,
+	XFDASHBOARD_DEBUG(self, PLUGINS,
 						"Window '%s' with state %u (%s) moved from monitor %d (%s) to %d (%s) and needs to be %s",
 						xfdashboard_window_tracker_window_get_name(inWindow),
 						xfdashboard_window_tracker_window_get_state(inWindow),
@@ -182,7 +182,7 @@ static void _xfdashboard_autopin_windows_on_window_opened(XfdashboardAutopinWind
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inWindow));
 
 	/* Check window if newly opened window needs to be pinned or unpinned */
-	XFDASHBOARD_DEBUG(self, PLUGIN,
+	XFDASHBOARD_DEBUG(self, PLUGINS,
 						"Window '%s' was opened, checking pin state",
 						xfdashboard_window_tracker_window_get_name(inWindow));
 	_xfdashboard_autopin_windows_update_window_pin_state(self, inWindow);
@@ -203,7 +203,7 @@ static void _xfdashboard_autopin_windows_on_window_closed(XfdashboardAutopinWind
 	/* Forget this window as it was closed so we cannot unping it when this
 	 * object will be destroyed.
 	 */
-	XFDASHBOARD_DEBUG(self, PLUGIN,
+	XFDASHBOARD_DEBUG(self, PLUGINS,
 						"Forget window '%s' which was closed",
 						xfdashboard_window_tracker_window_get_name(inWindow));
 	priv->pinnedWindows=g_slist_remove(priv->pinnedWindows, inWindow);
@@ -233,9 +233,9 @@ static void _xfdashboard_autopin_windows_dispose(GObject *inObject)
 			/* Unpinned window */
 			windowState=xfdashboard_window_tracker_window_get_state(window);
 			xfdashboard_window_tracker_window_set_state(window, windowState & ~XFDASHBOARD_WINDOW_TRACKER_WINDOW_STATE_PINNED);
-			XFDASHBOARD_DEBUG(self, PLUGIN,
+			XFDASHBOARD_DEBUG(self, PLUGINS,
 								"Unpinned window '%s' because it was pinned by us and this plugin is shut down",
-								xfdashboard_window_tracker_window_get_name(inWindow));
+								xfdashboard_window_tracker_window_get_name(window));
 		}
 
 		/* Free and release list */
@@ -306,7 +306,7 @@ void xfdashboard_autopin_windows_init(XfdashboardAutopinWindows *self)
 	/* Iterate through all windows and pin or unpin them depending on which
 	 * monitor they are located at.
 	 */
-	XFDASHBOARD_DEBUG(self, PLUGIN,
+	XFDASHBOARD_DEBUG(self, PLUGINS,
 						"Initializing plugin class %s so iterate through active window list",
 						G_OBJECT_TYPE_NAME(self));
 	windowList=xfdashboard_window_tracker_get_windows(priv->windowTracker);
@@ -319,7 +319,7 @@ void xfdashboard_autopin_windows_init(XfdashboardAutopinWindows *self)
 		/* Check window if it needs to be pinned or unpinned */
 		_xfdashboard_autopin_windows_update_window_pin_state(self, window);
 	}
-	XFDASHBOARD_DEBUG(self, PLUGIN,
+	XFDASHBOARD_DEBUG(self, PLUGINS,
 						"Initialization of plugin class %s completed",
 						G_OBJECT_TYPE_NAME(self));
 

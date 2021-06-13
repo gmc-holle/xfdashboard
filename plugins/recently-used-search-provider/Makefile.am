@@ -7,7 +7,8 @@ AM_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"xfdashboard-plugin-recently_used_search_provider\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
-	-DPLUGIN_ID=\"$(PLUGIN_ID)\"
+	-DPLUGIN_ID=\"$(PLUGIN_ID)\" \
+	$(XFDASHBOARD_DEBUG_CFLAGS)
 
 plugin_LTLIBRARIES = \
 	recently-used-search-provider.la

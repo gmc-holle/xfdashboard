@@ -7,7 +7,8 @@ AM_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"xfdashboard-plugin-middle_click_window_close\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
-	-DPLUGIN_ID=\"$(PLUGIN_ID)\"
+	-DPLUGIN_ID=\"$(PLUGIN_ID)\" \
+	$(XFDASHBOARD_DEBUG_CFLAGS)
 
 plugin_LTLIBRARIES = \
 	middle-click-window-close.la

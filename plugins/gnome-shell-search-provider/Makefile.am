@@ -8,7 +8,8 @@ AM_CPPFLAGS = \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
 	-DPLUGIN_ID=\"$(PLUGIN_ID)\" \
-	-DGNOME_SHELL_PROVIDERS_PATH=\"$(prefix)/share/gnome-shell/search-providers\"
+	-DGNOME_SHELL_PROVIDERS_PATH=\"$(prefix)/share/gnome-shell/search-providers\" \
+	$(XFDASHBOARD_DEBUG_CFLAGS)
 
 plugin_LTLIBRARIES = \
 	gnome-shell-search-provider.la
