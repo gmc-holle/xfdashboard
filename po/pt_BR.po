@@ -8,19 +8,19 @@
 # Xfce Bot <transifex@xfce.org>, 2020
 # Wellington Almeida <wsalmeida6@gmail.com>, 2020
 # Andre Miranda <andre42m@gmail.com>, 2020
-# The Cat, 2021
 # Michael Martins <michaelfm21@gmail.com>, 2021
 # Nick Schermer <nick@xfce.org>, 2021
 # Lucas Wilm <lucaswilm@gmail.com>, 2021
+# The Cat, 2021
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-26 12:50+0200\n"
+"POT-Creation-Date: 2021-06-12 00:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Lucas Wilm <lucaswilm@gmail.com>, 2021\n"
+"Last-Translator: The Cat, 2021\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/xfce/teams/16840/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -84,12 +84,17 @@ msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
 msgstr ""
+"Esta versão de desenvolvimento instável melhora a colocação de janelas e um "
+"novo plugin de pesquisa à procura de correspondência com os documentos "
+"recentemente utilizados."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
 msgstr ""
+"Esta versão de desenvolvimento instável completa os gradientes com "
+"gradientes lineares para preenchimento de contornos e fundo."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
@@ -571,6 +576,18 @@ msgstr "Basta digitar para pesquisar ..."
 msgid "Windows"
 msgstr "Janelas"
 
+#: ../plugins/autopin-windows/plugin.c:71
+msgid "Auto-pin windows"
+msgstr "Janelas de fixação automática"
+
+#: ../plugins/autopin-windows/plugin.c:72
+msgid ""
+"Pins windows on secondary windows or unpins windows on primary windows "
+"automatically"
+msgstr ""
+"Bloqueia janelas em janelas secundárias ou as desbloqueia em janelas "
+"principais automaticamente"
+
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311
 msgid "Clock"
@@ -695,7 +712,7 @@ msgstr "Provedor de pesquisa recentemente usado"
 
 #: ../plugins/recently-used-search-provider/plugin.c:76
 msgid "A search provider using recently used files as source"
-msgstr ""
+msgstr "Um provedor de busca usando arquivos usados recentemente como fonte"
 
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
 msgid "Recently used"
@@ -704,13 +721,13 @@ msgstr "Usado recentemente"
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:475
 #, c-format
 msgid "Launching application for '%s' failed: %s"
-msgstr ""
+msgstr "O lançamento da aplicação para '%s' falhou: %s"
 
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:497
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
 #, c-format
 msgid "Launching application for file '%s' failed: %s"
-msgstr ""
+msgstr "O lançamento da aplicação para o arquivo '%s' falhou: %s"
 
 #: ../settings/general.c:84
 msgid "Do nothing"
