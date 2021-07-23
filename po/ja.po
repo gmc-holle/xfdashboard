@@ -7,18 +7,18 @@
 # Masato HASHIMOTO <cabezon.hashimoto@gmail.com>, 2020
 # Ken DEGUCHI <kdeguchi@sz.tokoha-u.ac.jp>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
-# Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2021
 # Nick Schermer <nick@xfce.org>, 2021
 # UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2021
+# Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2021
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-26 12:50+0200\n"
+"POT-Creation-Date: 2021-06-12 00:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2021\n"
+"Last-Translator: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2021\n"
 "Language-Team: Japanese (https://www.transifex.com/xfce/teams/16840/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -545,6 +545,16 @@ msgstr "入力すると検索できます..."
 #: ../libxfdashboard/windows-view.c:2310
 msgid "Windows"
 msgstr "ウィンドウ"
+
+#: ../plugins/autopin-windows/plugin.c:71
+msgid "Auto-pin windows"
+msgstr "自動ピン留めウィンドウ"
+
+#: ../plugins/autopin-windows/plugin.c:72
+msgid ""
+"Pins windows on secondary windows or unpins windows on primary windows "
+"automatically"
+msgstr "セカンダリウィンドウにウィンドウを固定するか、自動的にプライマリウィンドウのウィンドウ固定を解除します"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311
