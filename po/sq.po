@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-16 12:49+0200\n"
+"POT-Creation-Date: 2021-06-12 00:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Besnik Bleta <besnik@programeshqip.org>, 2021\n"
 "Language-Team: Albanian (https://www.transifex.com/xfce/teams/16840/sq/)\n"
@@ -76,13 +76,22 @@ msgstr "Aplikacione kërkimi"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version improves window placement and a new search"
+" plugin looking for matches against the recently used documents."
+msgstr ""
+"Ky mjedis i paqëndrueshëm, zhvillimesh, përmirëson vendosje dritaresh dhe "
+"sjell një shtojcë të re kërkimi që sheh për përputhje kundrejt dokumenteve "
+"të përdorur së fundi."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
 msgstr ""
 "Ky version zhvillimi, jo i qëndrueshëm, plotëson shndërrimin e gradientëve "
 "me gradiente lineare për përvija dhe mbushje sfondi."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
@@ -92,7 +101,7 @@ msgstr ""
 "libxfdashboard-it në një bibliotekë të njëmendtë dhe sjell për herë të parë "
 "gradientë shtigjesh për përvijat."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -101,7 +110,7 @@ msgstr ""
 "përdoruesin, por shënon fillimin e kalimit të libxfdashboard-it në një "
 "bibliotekë të njëmendtë."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -109,7 +118,7 @@ msgstr ""
 "Ky version i qëndrueshëm ndreq një të metë dhe zëvendëson Appinfo me "
 "metainfo AppStream."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -120,7 +129,7 @@ msgstr ""
 "“jumplists”, etj. Përmban gjithashtu plot përkthime të reja dhe të "
 "përditësuara."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -128,7 +137,7 @@ msgstr ""
 "Ky version i qëndrueshëm ndreq një të metë në ujdisjen e aplikacioneve të "
 "sakta parazgjedhje gjatë përdorimit të parë fare."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -419,7 +428,7 @@ msgstr "U krye veprimi '%s' për aplikacionin '%s'"
 
 #: ../libxfdashboard/application-button.c:743
 #: ../libxfdashboard/application-button.c:761
-#: ../libxfdashboard/applications-search-provider.c:757
+#: ../libxfdashboard/applications-search-provider.c:765
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
 #: ../libxfdashboard/quicklaunch.c:440
@@ -436,17 +445,17 @@ msgid "No information available for application"
 msgstr "S’ka të dhëna të gatshme për aplikacionin"
 
 #: ../libxfdashboard/application-button.c:763
-#: ../libxfdashboard/applications-search-provider.c:759
+#: ../libxfdashboard/applications-search-provider.c:767
 #: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
 #: ../libxfdashboard/quicklaunch.c:442
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:480
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:583
-#: ../xfdashboard/application.c:508
+#: ../xfdashboard/application.c:520
 msgid "unknown error"
 msgstr "gabim i panjohur"
 
 #: ../libxfdashboard/application-button.c:774
-#: ../libxfdashboard/applications-search-provider.c:770
+#: ../libxfdashboard/applications-search-provider.c:778
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:595
@@ -454,7 +463,7 @@ msgstr "gabim i panjohur"
 msgid "Application '%s' launched"
 msgstr "Aplikacioni '%s' u nis"
 
-#: ../libxfdashboard/applications-search-provider.c:841
+#: ../libxfdashboard/applications-search-provider.c:849
 #: ../libxfdashboard/applications-view.c:415
 #: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
@@ -462,7 +471,7 @@ msgstr "Nise"
 
 #. Set up view
 #. Add "applications" button
-#: ../libxfdashboard/applications-search-provider.c:1183
+#: ../libxfdashboard/applications-search-provider.c:1191
 #: ../libxfdashboard/applications-view.c:1580
 #: ../libxfdashboard/quicklaunch.c:3218
 msgid "Applications"
@@ -494,12 +503,12 @@ msgstr "Listë e krejt aplikacioneve të instaluara"
 msgid "Could not load theme '%s': %s"
 msgstr "S’u ngarkua dot tema '%s': %s"
 
-#: ../libxfdashboard/core.c:1261
+#: ../libxfdashboard/core.c:1268
 #, c-format
 msgid "Welcome to %s (%s)!"
 msgstr "Mirë se vini te %s (%s)!"
 
-#: ../libxfdashboard/core.c:1263
+#: ../libxfdashboard/core.c:1270
 #, c-format
 msgid "Welcome to %s!"
 msgstr "Mirë se vini te %s!"
@@ -565,6 +574,18 @@ msgstr "Thjesht shtypni, që të kërkohet…"
 msgid "Windows"
 msgstr "Dritare"
 
+#: ../plugins/autopin-windows/plugin.c:71
+msgid "Auto-pin windows"
+msgstr "Vetëfikso dritare"
+
+#: ../plugins/autopin-windows/plugin.c:72
+msgid ""
+"Pins windows on secondary windows or unpins windows on primary windows "
+"automatically"
+msgstr ""
+"Fikson automatikisht dritare në dritare dytësore, ose heq automatikisht "
+"fiksim dritaresh në dritare parësore"
+
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311
 msgid "Clock"
@@ -622,11 +643,11 @@ msgstr "Shembull furnizuesi kërkimesh"
 msgid "This is just a useless example search provider plugin"
 msgstr "Ku është një shembull kot shtojce furnizuesi kërkimesh"
 
-#: ../plugins/gnome-shell-search-provider/plugin.c:433
+#: ../plugins/gnome-shell-search-provider/plugin.c:464
 msgid "Gnome-Shell search provider"
 msgstr "Furnizues Gnome-Shell kërkimesh"
 
-#: ../plugins/gnome-shell-search-provider/plugin.c:434
+#: ../plugins/gnome-shell-search-provider/plugin.c:465
 msgid "Uses Gnome-Shell search providers as source for searches"
 msgstr "Përdor furnizues Gnome-Shell kërkimesh, si burim për kërkime"
 
@@ -786,19 +807,19 @@ msgstr "Emër"
 msgid "Theme"
 msgstr "Temë"
 
-#: ../xfdashboard/application.c:466
+#: ../xfdashboard/application.c:478
 msgid "Fork to background"
 msgstr "Degëzoje në prapaskenë"
 
-#: ../xfdashboard/application.c:467
+#: ../xfdashboard/application.c:479
 msgid "Quit running instance"
 msgstr "Dil nga instanca në xhirim"
 
-#: ../xfdashboard/application.c:468
+#: ../xfdashboard/application.c:480
 msgid "Restart running instance"
 msgstr "Rinise instancën xhiruese"
 
-#: ../xfdashboard/application.c:469
+#: ../xfdashboard/application.c:481
 msgid ""
 "Toggles visibility if running instance was started in daemon mode otherwise "
 "it quits running non-daemon instance"
@@ -806,20 +827,20 @@ msgstr ""
 "Këmben dukshmërinë, nëse instanca xhiruese qe nisur nën mënyrën demon, "
 "përndryshe del nga instanca xhiruese jo-demon"
 
-#: ../xfdashboard/application.c:470
+#: ../xfdashboard/application.c:482
 msgid "The ID of view to switch to on startup or resume"
 msgstr "ID-ja e pamjes te e cila të kalohet gjatë nisjes ose rimarrjes"
 
-#: ../xfdashboard/application.c:471
+#: ../xfdashboard/application.c:483
 msgid "Show version"
 msgstr "Shfaq versionin"
 
-#: ../xfdashboard/application.c:490
+#: ../xfdashboard/application.c:502
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
 msgstr "Një pult për Xfce-në, i ngjashëm me Shellin Gnome - version "
 
 #. Show error
-#: ../xfdashboard/application.c:507
+#: ../xfdashboard/application.c:519
 #, c-format
 msgid "%s\n"
 msgstr "%s\n"
