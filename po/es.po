@@ -5,7 +5,7 @@
 # 
 # Translators:
 # Jaime Marquínez Ferrándiz, 2020
-# Adolfo Jayme-Barrientos, 2020
+# Adolfo Jayme Barrientos, 2020
 # Nick Schermer <nick@xfce.org>, 2020
 # mc <correomc2000-ing@yahoo.es>, 2020
 # 629cf3e396111bb8c5fb6664e2dbc91d, 2020
