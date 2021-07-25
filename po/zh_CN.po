@@ -549,7 +549,7 @@ msgstr "自动固定窗口"
 msgid ""
 "Pins windows on secondary windows or unpins windows on primary windows "
 "automatically"
-msgstr ""
+msgstr "将窗口固定在第二窗口，并且将主窗口的所有窗口取消自动固定"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311
