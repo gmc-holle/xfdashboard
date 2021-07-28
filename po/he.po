@@ -564,13 +564,13 @@ msgstr "חלונות"
 
 #: ../plugins/autopin-windows/plugin.c:71
 msgid "Auto-pin windows"
-msgstr ""
+msgstr "הצמד חלונות אוטומטית"
 
 #: ../plugins/autopin-windows/plugin.c:72
 msgid ""
 "Pins windows on secondary windows or unpins windows on primary windows "
 "automatically"
-msgstr ""
+msgstr "מצמיד חלונות לחלונות משניים או משחרר חלונות מחלונות עיקריים אוטומטית"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311
