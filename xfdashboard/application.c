@@ -149,7 +149,7 @@ static gboolean _xfdashboard_application_on_core_can_suspend(XfdashboardApplicat
 	g_return_val_if_fail(XFDASHBOARD_IS_APPLICATION(self), FALSE);
 	g_return_val_if_fail(XFDASHBOARD_IS_CORE(inUserData), FALSE);
 
-	return(TRUE);
+	return(self->priv->isDaemon ? TRUE : FALSE);
 }
 
 /* The core instance has requested to quit */

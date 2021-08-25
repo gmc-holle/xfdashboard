@@ -298,6 +298,7 @@ void xfdashboard_autopin_windows_class_finalize(XfdashboardAutopinWindowsClass *
 void xfdashboard_autopin_windows_init(XfdashboardAutopinWindows *self)
 {
 	XfdashboardAutopinWindowsPrivate		*priv;
+	XfdashboardCore							*core;
 	GList									*windowList;
 	XfdashboardWindowTrackerWindow			*window;
 
@@ -310,6 +311,14 @@ void xfdashboard_autopin_windows_init(XfdashboardAutopinWindows *self)
 	priv->windowClosedSignaledID=0;
 	priv->unpinOnDispose=TRUE;
 	priv->pinnedWindows=NULL;
+
+	/* Check if application can suspend, i.e. it is running in daemon mode */
+	core=xfdashboard_core_get_default();
+	if(!xfdashboard_core_can_suspend(core))
+	{
+		g_warning("Disabling autopin-windows plugin because core cannot suspend.");
+		return;
+	}
 
 	/* Iterate through all windows and pin or unpin them depending on which
 	 * monitor they are located at.
