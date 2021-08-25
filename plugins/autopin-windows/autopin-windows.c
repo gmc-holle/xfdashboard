@@ -40,6 +40,7 @@ struct _XfdashboardAutopinWindowsPrivate
 	/* Instance related */
 	XfdashboardWindowTracker				*windowTracker;
 	guint									windowOpenedSignaledID;
+	guint									windowClosedSignaledID;
 	guint									windowMonitorChangedSignalID;
 
 	gboolean								unpinOnDispose;
@@ -259,6 +260,12 @@ static void _xfdashboard_autopin_windows_dispose(GObject *inObject)
 			priv->windowOpenedSignaledID=0;
 		}
 
+		if(priv->windowClosedSignaledID)
+		{
+			g_signal_handler_disconnect(priv->windowTracker, priv->windowClosedSignaledID);
+			priv->windowClosedSignaledID=0;
+		}
+
 		/* Release window tracker */
 		g_object_unref(priv->windowTracker);
 		priv->windowTracker=NULL;
@@ -300,6 +307,7 @@ void xfdashboard_autopin_windows_init(XfdashboardAutopinWindows *self)
 	priv->windowTracker=xfdashboard_core_get_window_tracker(NULL);
 	priv->windowMonitorChangedSignalID=0;
 	priv->windowOpenedSignaledID=0;
+	priv->windowClosedSignaledID=0;
 	priv->unpinOnDispose=TRUE;
 	priv->pinnedWindows=NULL;
 
@@ -338,7 +346,7 @@ void xfdashboard_autopin_windows_init(XfdashboardAutopinWindows *self)
 									G_CALLBACK(_xfdashboard_autopin_windows_on_window_opened),
 									self);
 
-	priv->windowOpenedSignaledID=
+	priv->windowClosedSignaledID=
 		g_signal_connect_swapped(priv->windowTracker,
 									"window-closed",
 									G_CALLBACK(_xfdashboard_autopin_windows_on_window_closed),
