@@ -5,7 +5,7 @@
 # 
 # Translators:
 # Jaime Marquínez Ferrándiz, 2020
-# Adolfo Jayme-Barrientos, 2020
+# Adolfo Jayme Barrientos, 2020
 # Nick Schermer <nick@xfce.org>, 2020
 # mc <correomc2000-ing@yahoo.es>, 2020
 # 629cf3e396111bb8c5fb6664e2dbc91d, 2020
@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-26 12:50+0200\n"
+"POT-Creation-Date: 2021-06-12 00:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Toni Estévez <toni.estevez@gmail.com>, 2021\n"
 "Language-Team: Spanish (https://www.transifex.com/xfce/teams/16840/es/)\n"
@@ -577,6 +577,18 @@ msgstr "Solo hay que escribir para buscar..."
 #: ../libxfdashboard/windows-view.c:2310
 msgid "Windows"
 msgstr "Ventanas"
+
+#: ../plugins/autopin-windows/plugin.c:71
+msgid "Auto-pin windows"
+msgstr "Anclar las ventanas automáticamente"
+
+#: ../plugins/autopin-windows/plugin.c:72
+msgid ""
+"Pins windows on secondary windows or unpins windows on primary windows "
+"automatically"
+msgstr ""
+"Anclar o desanclar las ventanas secundarias en las ventanas primarias "
+"automáticamente"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311

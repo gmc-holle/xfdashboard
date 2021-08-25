@@ -11,15 +11,16 @@
 # YuHeng Chou <wojiushixxx@126.com>, 2020
 # Nick Schermer <nick@xfce.org>, 2021
 # 玉堂白鹤 <yjwork@qq.com>, 2021
+# Xiaobo Zhou <zhouxiaobo.500@gmail.com>, 2021
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-26 12:50+0200\n"
+"POT-Creation-Date: 2021-06-12 00:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: 玉堂白鹤 <yjwork@qq.com>, 2021\n"
+"Last-Translator: Xiaobo Zhou <zhouxiaobo.500@gmail.com>, 2021\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/xfce/teams/16840/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -540,6 +541,16 @@ msgstr "只需键入搜索..."
 msgid "Windows"
 msgstr "窗口"
 
+#: ../plugins/autopin-windows/plugin.c:71
+msgid "Auto-pin windows"
+msgstr "自动固定窗口"
+
+#: ../plugins/autopin-windows/plugin.c:72
+msgid ""
+"Pins windows on secondary windows or unpins windows on primary windows "
+"automatically"
+msgstr "将窗口固定在第二窗口，并且将主窗口的所有窗口取消自动固定"
+
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311
 msgid "Clock"
@@ -786,7 +797,7 @@ msgstr "显示版本"
 
 #: ../xfdashboard/application.c:502
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "为 Xfce4 - 版本开发的一个类似仪表板的 Gnome Shell"
+msgstr "为 Xfce4 - 版本开发的一个类似 Gnome Shell 的仪表板"
 
 #. Show error
 #: ../xfdashboard/application.c:519

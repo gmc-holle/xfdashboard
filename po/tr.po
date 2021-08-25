@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-26 12:50+0200\n"
+"POT-Creation-Date: 2021-06-12 00:48+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>, 2021\n"
 "Language-Team: Turkish (https://www.transifex.com/xfce/teams/16840/tr/)\n"
@@ -574,6 +574,18 @@ msgstr "Aramak için yalnızca yazın..."
 #: ../libxfdashboard/windows-view.c:2310
 msgid "Windows"
 msgstr "Pencereler"
+
+#: ../plugins/autopin-windows/plugin.c:71
+msgid "Auto-pin windows"
+msgstr "Pencereleri kendiliğinden tuttur"
+
+#: ../plugins/autopin-windows/plugin.c:72
+msgid ""
+"Pins windows on secondary windows or unpins windows on primary windows "
+"automatically"
+msgstr ""
+"İkincil pencerelerdeki pencereleri tutturur veya birincil pencerelerdeki "
+"pencereleri kendiliğinden serbest bırakır"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311
