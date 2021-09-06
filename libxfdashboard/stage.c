@@ -1232,95 +1232,95 @@ static void _xfdashboard_stage_on_application_theme_changed(XfdashboardStage *se
 				clutter_actor_hide(priv->tooltip);
 				clutter_actor_set_reactive(priv->tooltip, FALSE);
 			}
+		}
 
-			/* Register focusable actors at focus manager */
-			if(interface->focusables)
+		/* Register focusable actors at focus manager */
+		if(interface->focusables)
+		{
+			for(i=0; i<interface->focusables->len; i++)
 			{
-				for(i=0; i<interface->focusables->len; i++)
+				/* Get actor to register at focus manager */
+				focusObject=G_OBJECT(g_ptr_array_index(interface->focusables, i));
+				if(!focusObject) continue;
+
+				/* Check that actor is focusable */
+				if(!XFDASHBOARD_IS_FOCUSABLE(focusObject))
 				{
-					/* Get actor to register at focus manager */
-					focusObject=G_OBJECT(g_ptr_array_index(interface->focusables, i));
-					if(!focusObject) continue;
-
-					/* Check that actor is focusable */
-					if(!XFDASHBOARD_IS_FOCUSABLE(focusObject))
-					{
-						g_warning("Object %s is not focusable and cannot be registered.",
-									G_OBJECT_TYPE_NAME(focusObject));
-						continue;
-					}
-
-					/* Register actor at focus manager */
-					xfdashboard_focus_manager_register(priv->focusManager,
-														XFDASHBOARD_FOCUSABLE(focusObject));
-					XFDASHBOARD_DEBUG(self, ACTOR,
-										"Registering actor %s of interface with ID '%s' at focus manager",
-										G_OBJECT_TYPE_NAME(focusObject),
-										clutter_actor_get_name(interface->actor));
+					g_warning("Object %s is not focusable and cannot be registered.",
+								G_OBJECT_TYPE_NAME(focusObject));
+					continue;
 				}
-			}
 
-			/* Move focus to selected actor or remember actor focus to set it later
-			 * but only if selected actor is a focusable actor and is registered
-			 * to focus manager.
-			 */
-			if(interface->focus &&
-				XFDASHBOARD_IS_FOCUSABLE(interface->focus) &&
-				xfdashboard_focus_manager_is_registered(priv->focusManager, XFDASHBOARD_FOCUSABLE(interface->focus)))
+				/* Register actor at focus manager */
+				xfdashboard_focus_manager_register(priv->focusManager,
+													XFDASHBOARD_FOCUSABLE(focusObject));
+				XFDASHBOARD_DEBUG(self, ACTOR,
+									"Registering actor %s of interface with ID '%s' at focus manager",
+									G_OBJECT_TYPE_NAME(focusObject),
+									clutter_actor_get_name(interface->actor));
+			}
+		}
+
+		/* Move focus to selected actor or remember actor focus to set it later
+		 * but only if selected actor is a focusable actor and is registered
+		 * to focus manager.
+		 */
+		if(interface->focus &&
+			XFDASHBOARD_IS_FOCUSABLE(interface->focus) &&
+			xfdashboard_focus_manager_is_registered(priv->focusManager, XFDASHBOARD_FOCUSABLE(interface->focus)))
+		{
+			/* If actor can be focused then move focus to actor ... */
+			if(xfdashboard_focusable_can_focus(XFDASHBOARD_FOCUSABLE(interface->focus)))
 			{
-				/* If actor can be focused then move focus to actor ... */
-				if(xfdashboard_focusable_can_focus(XFDASHBOARD_FOCUSABLE(interface->focus)))
+				xfdashboard_focus_manager_set_focus(priv->focusManager, XFDASHBOARD_FOCUSABLE(interface->focus));
+				XFDASHBOARD_DEBUG(self, ACTOR,
+									"Moved focus to actor %s of interface with ID '%s'",
+									G_OBJECT_TYPE_NAME(interface->focus),
+									clutter_actor_get_name(interface->actor));
+
+				/* Determine if user (also) requests to reselect focus on resume
+				 * because then remember the actor to focus, to move the focus
+				 * each time the stage window gets shown after it was hidden.
+				 */
+				reselectFocusOnResume=xfdashboard_settings_get_reselect_theme_focus_on_resume(priv->settings);
+				if(reselectFocusOnResume)
 				{
-					xfdashboard_focus_manager_set_focus(priv->focusManager, XFDASHBOARD_FOCUSABLE(interface->focus));
+					priv->focusActorOnShow=XFDASHBOARD_FOCUSABLE(interface->focus);
+					g_object_add_weak_pointer(G_OBJECT(priv->focusActorOnShow), &priv->focusActorOnShow);
+
 					XFDASHBOARD_DEBUG(self, ACTOR,
-										"Moved focus to actor %s of interface with ID '%s'",
+										"Will move focus to actor %s of interface with ID '%s' any time the stage gets visible",
 										G_OBJECT_TYPE_NAME(interface->focus),
 										clutter_actor_get_name(interface->actor));
-
-					/* Determine if user (also) requests to reselect focus on resume
-					 * because then remember the actor to focus, to move the focus
-					 * each time the stage window gets shown after it was hidden.
-					 */
-					reselectFocusOnResume=xfdashboard_settings_get_reselect_theme_focus_on_resume(priv->settings);
-					if(reselectFocusOnResume)
-					{
-						priv->focusActorOnShow=XFDASHBOARD_FOCUSABLE(interface->focus);
-						g_object_add_weak_pointer(G_OBJECT(priv->focusActorOnShow), &priv->focusActorOnShow);
-
-						XFDASHBOARD_DEBUG(self, ACTOR,
-											"Will move focus to actor %s of interface with ID '%s' any time the stage gets visible",
-											G_OBJECT_TYPE_NAME(interface->focus),
-											clutter_actor_get_name(interface->actor));
-					}
 				}
-					/* ... otherwise if stage is not visible, remember the actor
-					 * to focus to move the focus to it as soon as stage is
-					 * visible ...
-					 */
-					else if(!clutter_actor_is_visible(CLUTTER_ACTOR(self)))
-					{
-						priv->focusActorOnShow=XFDASHBOARD_FOCUSABLE(interface->focus);
-						g_object_add_weak_pointer(G_OBJECT(priv->focusActorOnShow), &priv->focusActorOnShow);
-
-						XFDASHBOARD_DEBUG(self, ACTOR,
-											"Cannot move focus to actor %s of interface with ID '%s' but will try again when stage is visible",
-											G_OBJECT_TYPE_NAME(interface->focus),
-											clutter_actor_get_name(interface->actor));
-					}
-					/* ... otherwise just show a debug message */
-					else
-					{
-						XFDASHBOARD_DEBUG(self, ACTOR,
-											"Cannot move focus to actor %s of interface with ID '%s' because actor cannot be focused",
-											G_OBJECT_TYPE_NAME(interface->focus),
-											clutter_actor_get_name(interface->actor));
-					}
 			}
+				/* ... otherwise if stage is not visible, remember the actor
+				 * to focus to move the focus to it as soon as stage is
+				 * visible ...
+				 */
+				else if(!clutter_actor_is_visible(CLUTTER_ACTOR(self)))
+				{
+					priv->focusActorOnShow=XFDASHBOARD_FOCUSABLE(interface->focus);
+					g_object_add_weak_pointer(G_OBJECT(priv->focusActorOnShow), &priv->focusActorOnShow);
+
+					XFDASHBOARD_DEBUG(self, ACTOR,
+										"Cannot move focus to actor %s of interface with ID '%s' but will try again when stage is visible",
+										G_OBJECT_TYPE_NAME(interface->focus),
+										clutter_actor_get_name(interface->actor));
+				}
+				/* ... otherwise just show a debug message */
 				else
 				{
-					XFDASHBOARD_DEBUG(self, ACTOR, "Cannot move focus to any actor because no one was selected in theme");
+					XFDASHBOARD_DEBUG(self, ACTOR,
+										"Cannot move focus to actor %s of interface with ID '%s' because actor cannot be focused",
+										G_OBJECT_TYPE_NAME(interface->focus),
+										clutter_actor_get_name(interface->actor));
 				}
 		}
+			else
+			{
+				XFDASHBOARD_DEBUG(self, ACTOR, "Cannot move focus to any actor because no one was selected in theme");
+			}
 	}
 
 	/* Release allocated resources */
