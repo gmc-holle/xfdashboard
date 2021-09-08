@@ -26,12 +26,12 @@ msgstr ""
 #: ../data/org.xfce.xfdashboard.desktop.in.in.h:1
 #: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:1
 msgid "Xfdashboard"
-msgstr "xf대시보드"
+msgstr "xfdashboard"
 
 #: ../data/org.xfce.xfdashboard.desktop.in.in.h:2
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:1
 msgid "Maybe a Gnome shell like dashboard for Xfce"
-msgstr "Xfce용 그놈 셸 유사 대시보드"
+msgstr "xfce용 그놈 셸 유사 대시보드"
 
 #: ../data/org.xfce.xfdashboard-autostart.desktop.in.in.h:2
 msgid "Start xfdashboard as daemon in background"
@@ -157,6 +157,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode. "
 msgstr ""
+"활성화하면 xfdashboard를 되살렸을 때 검색 보기를 초기화합니다. 최근 검색을 시작하기 전의 마지막 보기 활성 상태로 활성 보기를 되돌리고 검색 상자를 비워둡니다.\n"
+"\n"
+"<b>참고:</b> 이 설정은 xfdashboard를 데몬 모드로 실행할 경우에만 적용합니다."
 
 #: ../data/data/preferences.ui.h:10
 msgid ""
@@ -164,6 +167,9 @@ msgid ""
 "\n"
 "<b>NOTE:</b> This setting only takes effect if xfdashboard is running in daemon mode."
 msgstr ""
+"xfdashboard를 되살리면 선택한 뷰를 띄웁니다.\n"
+"\n"
+"<b>참고:</b> 이 설정은 xfdashboard를 데몬 모드로 실행할 때만 적용합니다."
 
 #: ../data/data/preferences.ui.h:13
 msgid "Switch to view when resumed:"
@@ -459,12 +465,12 @@ msgstr "'%s' 테마를 불러올 수 없습니다: %s"
 #: ../libxfdashboard/core.c:1268
 #, c-format
 msgid "Welcome to %s (%s)!"
-msgstr ""
+msgstr "%s (%s) 사용을 환영합니다!"
 
 #: ../libxfdashboard/core.c:1270
 #, c-format
 msgid "Welcome to %s!"
-msgstr ""
+msgstr "%s 사용을 환영합니다!"
 
 #: ../libxfdashboard/quicklaunch.c:384
 msgid "No windows to activate for application"
@@ -529,13 +535,13 @@ msgstr "윈도우"
 
 #: ../plugins/autopin-windows/plugin.c:71
 msgid "Auto-pin windows"
-msgstr ""
+msgstr "창 자동 고정"
 
 #: ../plugins/autopin-windows/plugin.c:72
 msgid ""
 "Pins windows on secondary windows or unpins windows on primary windows "
 "automatically"
-msgstr ""
+msgstr "자동으로 보조 창의 창을 고정하거나 주 창의 창 고정을 해제합니다"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311
@@ -655,11 +661,11 @@ msgstr "가운데 단추를 누르면 창 보기 상태에서 창을 닫습니�
 
 #: ../plugins/recently-used-search-provider/plugin.c:75
 msgid "Recently used search provider"
-msgstr ""
+msgstr "최근 활용한 검색 제공자"
 
 #: ../plugins/recently-used-search-provider/plugin.c:76
 msgid "A search provider using recently used files as source"
-msgstr ""
+msgstr "최근 파일을 원본으로 활용한 검색 제공자"
 
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
 msgid "Recently used"
