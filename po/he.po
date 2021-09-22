@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-12 00:48+0200\n"
+"POT-Creation-Date: 2021-09-22 12:51+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Elishai Eliyahu <elishai@mailfence.com>, 2021\n"
 "Language-Team: Hebrew (https://www.transifex.com/xfce/teams/16840/he/)\n"
@@ -77,13 +77,19 @@ msgstr "חיפוש אפליקציות"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version introduces a new plugin to pin windows on "
+"secondary monitors automatically."
+msgstr ""
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
 msgstr ""
 "גרסת פיתוח לא יציבה זו משפרת מיקום חלון ותוסף חיפוש חדש לאיתור התאמות כנגד "
 "מסמכים בשימוש לאחרונה."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
@@ -91,7 +97,7 @@ msgstr ""
 "גרסת פיתוח לא יציבה זו משלימה גרדיינטים עם גרדיינטים ליניארים לקו חיצון "
 "ומילוי רקע."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
@@ -100,7 +106,7 @@ msgstr ""
 "גרסת פיתוח לא יציבה זו משלימה הפיכת libxfdashboard לספרייה אמיתית ומכניסה "
 "לשימוש גרדיינטים של נתיב עבור קוים חיצוניים."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -108,13 +114,13 @@ msgstr ""
 "גרסת הפיתוח הלא יציבה הזו אינה מציגה שינויים הנראים למשתמש אבל מתחילה מעבר "
 "של libxfdashboard לספריה אמיתית."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
 msgstr "הגרסה היציבה הזו מתקנת באג ומחליפה את AppInfo ב-AppStream metainfo."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -124,14 +130,14 @@ msgstr ""
 "עורפי מרובה ותמיכה ברשימות קופצות ועוד. היא גם כוללת הרבה תרגומים חדשים "
 "ומעודכנים."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
 "הגרסה היציבה הזו מתקנת באג הקובע את ישומי ברירת המחדל הנכונים בשימוש ראשון."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
