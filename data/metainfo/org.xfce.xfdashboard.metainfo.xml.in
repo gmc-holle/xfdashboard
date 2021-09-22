@@ -61,6 +61,14 @@
 	</keywords>
 
 	<releases>
+		<release version="0.9.4" timestamp="1632293693">
+			<description>
+				<_p>This unstable development version introduces
+				a new plugin to pin windows on secondary monitors
+				automatically.
+				</_p>
+			</description>
+		</release>
 		<release version="0.9.3" timestamp="1619428997">
 			<description>
 				<_p>This unstable development version improves window
