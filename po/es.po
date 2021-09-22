@@ -5,13 +5,13 @@
 # 
 # Translators:
 # Jaime Marquínez Ferrándiz, 2020
-# Adolfo Jayme Barrientos, 2020
+# Adolfo Jayme-Barrientos, 2020
 # Nick Schermer <nick@xfce.org>, 2020
 # mc <correomc2000-ing@yahoo.es>, 2020
 # 629cf3e396111bb8c5fb6664e2dbc91d, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # emiliano casal chiarotti <emiliano.casal.chiarotti@gmail.com>, 2020
-# Casper casper, 2020
+# Casper, 2020
 # Toni Estévez <toni.estevez@gmail.com>, 2021
 # 
 #, fuzzy
@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-12 00:48+0200\n"
+"POT-Creation-Date: 2021-09-22 12:51+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Toni Estévez <toni.estevez@gmail.com>, 2021\n"
 "Language-Team: Spanish (https://www.transifex.com/xfce/teams/16840/es/)\n"
@@ -82,6 +82,14 @@ msgstr "Buscar aplicaciones"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This unstable development version introduces a new plugin to pin windows on "
+"secondary monitors automatically."
+msgstr ""
+"Esta versión inestable en desarrollo introduce un nuevo complemento para "
+"fijar automáticamente ventanas en los monitores secundarios."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
 msgstr ""
@@ -89,15 +97,15 @@ msgstr ""
 "cuenta con un nuevo complemento de búsqueda para encontrar coincidencias en "
 "los documentos usados recientemente."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
 msgstr ""
-"Esta versión en desarrollo inestable completa los gradientes con gradientes "
+"Esta versión inestable en desarrollo completa los gradientes con gradientes "
 "lineales para el contorno y el relleno del fondo."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
@@ -107,7 +115,7 @@ msgstr ""
 " libxfdashboard en una biblioteca real e introduce gradientes de trayectoria"
 " para los contornos."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -115,7 +123,7 @@ msgstr ""
 "Esta versión inestable en desarrollo no introduce nada visible para el "
 "usuario, sino que empieza a convertir libxfdashboard en una biblioteca real."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -123,7 +131,7 @@ msgstr ""
 "Esta versión estable corrige un error y reemplaza la metainformación de "
 "AppInfo por la de AppStream."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -134,7 +142,7 @@ msgstr ""
 " de acciones, etc. También incluye muchas traducciones nuevas y "
 "actualizadas."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -142,7 +150,7 @@ msgstr ""
 "Esta versión estable corrige un error en la configuración de las "
 "aplicaciones por defecto en el primer uso."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
