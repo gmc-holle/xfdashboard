@@ -756,7 +756,11 @@ static gboolean _xfdashboard_css_selector_parse(XfdashboardCssSelector *self, GS
 	 * - Identifiers cannot be single quoted
 	 * - Identifiers cannot be double quoted
 	 */
+#if GLIB_CHECK_VERSION(2, 67, 4)
+	scannerConfig=(GScannerConfig*)g_memdup2(ioScanner->config, sizeof(GScannerConfig));
+#else
 	scannerConfig=(GScannerConfig*)g_memdup(ioScanner->config, sizeof(GScannerConfig));
+#endif
 	scannerConfig->cset_skip_characters=" \n\r\t";
 	scannerConfig->cset_identifier_nth=G_CSET_a_2_z "-_0123456789" G_CSET_A_2_Z G_CSET_LATINS G_CSET_LATINC;
 	scannerConfig->scan_float=FALSE;

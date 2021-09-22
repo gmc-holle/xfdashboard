@@ -1127,7 +1127,11 @@ static gchar* _xfdashboard_theme_css_parse_at_identifier(XfdashboardThemeCSS *se
 		/* Set up scanner config for parsing function arguments */
 		oldScannerConfig=ioScanner->config;
 
+#if GLIB_CHECK_VERSION(2, 67, 4)
+		scannerConfig=(GScannerConfig*)g_memdup2(ioScanner->config, sizeof(GScannerConfig));
+#else
 		scannerConfig=(GScannerConfig*)g_memdup(ioScanner->config, sizeof(GScannerConfig));
+#endif
 		scannerConfig->cset_skip_characters=" \t\n";
 		scannerConfig->char_2_token=TRUE;
 		scannerConfig->scan_string_sq=TRUE;
@@ -1784,7 +1788,11 @@ static GTokenType _xfdashboard_theme_css_parse_css_key_value(XfdashboardThemeCSS
 	}
 
 	/* Set parser option to parse property value and parse them */
+#if GLIB_CHECK_VERSION(2, 67, 4)
+	scannerConfig=(GScannerConfig*)g_memdup2(inScanner->config, sizeof(GScannerConfig));
+#else
 	scannerConfig=(GScannerConfig*)g_memdup(inScanner->config, sizeof(GScannerConfig));
+#endif
 	scannerConfig->cset_identifier_first=G_CSET_a_2_z "#_-0123456789" G_CSET_A_2_Z G_CSET_LATINS G_CSET_LATINC;
 	scannerConfig->cset_identifier_nth=scannerConfig->cset_identifier_first;
 	scannerConfig->scan_identifier_1char=1;
@@ -1974,7 +1982,11 @@ static GTokenType _xfdashboard_theme_css_command_import(XfdashboardThemeCSS *sel
 	error=NULL;
 
 	/* Set parser option to parse property value and parse them */
+#if GLIB_CHECK_VERSION(2, 67, 4)
+	scannerConfig=(GScannerConfig*)g_memdup2(inScanner->config, sizeof(GScannerConfig));
+#else
 	scannerConfig=(GScannerConfig*)g_memdup(inScanner->config, sizeof(GScannerConfig));
+#endif
 	scannerConfig->scan_identifier_1char=1;
 	scannerConfig->char_2_token=FALSE;
 	scannerConfig->scan_string_sq=TRUE;
