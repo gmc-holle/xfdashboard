@@ -79,6 +79,8 @@ msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
+"Ky version mjedisi të paqëndrueshëm sjell për herë të parë një shtojcë të "
+"re, për fiksim vetvetiu dritaresh në ekrane dytësorë."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
