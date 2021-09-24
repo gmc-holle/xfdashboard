@@ -10,8 +10,8 @@
 # No Body, 2020
 # YuHeng Chou <wojiushixxx@126.com>, 2020
 # Nick Schermer <nick@xfce.org>, 2021
-# 玉堂白鹤 <yjwork@qq.com>, 2021
 # Xiaobo Zhou <zhouxiaobo.500@gmail.com>, 2021
+# 玉堂白鹤 <yjwork@qq.com>, 2021
 # 
 #, fuzzy
 msgid ""
@@ -20,7 +20,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-22 12:51+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Xiaobo Zhou <zhouxiaobo.500@gmail.com>, 2021\n"
+"Last-Translator: 玉堂白鹤 <yjwork@qq.com>, 2021\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/xfce/teams/16840/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -78,7 +78,7 @@ msgstr "搜索应用"
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
-msgstr ""
+msgstr "这个不稳定的开发版本引入了一个新插件来自动将窗口固定在辅助显示器上。"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
