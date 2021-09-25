@@ -83,6 +83,8 @@ msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
+"Questa versione instabile di sviluppo introduce una nuova estensione per "
+"agganciare automaticamente le finestre su schermi secondari. "
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
@@ -508,7 +510,7 @@ msgstr "Elenco di tutte le applicazioni installate"
 #: ../libxfdashboard/core.c:371
 #, c-format
 msgid "Could not load theme '%s': %s"
-msgstr "È stato impossibile caricare il tema '%s': %s"
+msgstr "Impossibile caricare il tema '%s': %s"
 
 #: ../libxfdashboard/core.c:1268
 #, c-format
