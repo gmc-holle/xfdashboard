@@ -87,6 +87,9 @@ msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
+"Cette version de développement instable introduit un nouveau greffon pour "
+"épingler automatiquement les fenêtres secondaires sur des moniteurs "
+"secondaires."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
