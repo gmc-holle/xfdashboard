@@ -80,6 +80,8 @@ msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
+"Denne ustabile utviklerversjonen innfører et nytt programtillegg for å feste"
+" vinduer på sekundærskjermer automatisk."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
