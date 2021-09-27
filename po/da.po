@@ -81,6 +81,8 @@ msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
+"Denne ustabile udviklingsversion indfører et nyt plugin til automatisk at "
+"fastgøre vinduer til sekundære skærme."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
@@ -104,15 +106,15 @@ msgid ""
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
 msgstr ""
-"Denne ustabile udviklingsversioner indfører fuldførelse libxfdashboard som "
-"et ægte bibliotek og intrdocuerer stigradienter til omrids."
+"Denne ustabile udviklingsversion indfører fuldførelse libxfdashboard som et "
+"ægte bibliotek og introducerer stigradienter til omrids."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr ""
-"Denne ustabile udviklingsversioner indfører ikke noget som er synligt for "
+"Denne ustabile udviklingsversion indfører ikke noget som er synligt for "
 "brugeren men flytter libxfdashboard ind i et ægte bibliotek."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
