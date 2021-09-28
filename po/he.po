@@ -7,7 +7,7 @@
 # Yaron Shahrabani <sh.yaron@gmail.com>, 2020
 # GenghisKhan <genghiskhan@gmx.ca>, 2020
 # Nick Schermer <nick@xfce.org>, 2020
-# Omer I.S. <omeritzicschwartz@gmail.com>, 2020
+# Omeritzics Games <omeritzicschwartz@gmail.com>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # Elishai Eliyahu <elishai@mailfence.com>, 2021
 # 
@@ -80,6 +80,7 @@ msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
+"גרסת פיתוח לא יציבה זו מציגה תוסף חדש להצמדת חלונות אוטומטית במסכי משנה."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
