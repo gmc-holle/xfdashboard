@@ -743,18 +743,18 @@ static void xfdashboard_core_class_init(XfdashboardCoreClass *klass)
 	 * return %TRUE if suspend and resume is supported and %FALSE if
 	 * it is not suppoerted.
 	 *
-	 * Usually only one signal handler should be connected but if more
-	 * are connected the first one returning %TRUE if tell that suspend
-	 * is supported. If no one is connected the default %FALSE will be
-	 * returned as the only result indicating that by default no suspend
-	 * is supported.
+	 * Usually only one signal handler should be connected, but if more
+	 * are connected the first one returning %TRUE to tell that suspend
+	 * is supported will stop the signal emission. If no one is connected
+	 * the default %FALSE will be returned as the only result indicating
+	 * that by default no suspend is supported.
 	 */
 	XfdashboardCoreSignals[SIGNAL_CAN_SUSPEND]=
 		g_signal_new("can-suspend",
 						G_TYPE_FROM_CLASS(klass),
-						G_SIGNAL_RUN_CLEANUP,
+						G_SIGNAL_RUN_LAST,
 						G_STRUCT_OFFSET(XfdashboardCoreClass, can_suspend),
-						NULL,
+						g_signal_accumulator_true_handled,
 						NULL,
 						_xfdashboard_marshal_BOOLEAN__VOID,
 						G_TYPE_BOOLEAN,
@@ -1427,7 +1427,8 @@ void xfdashboard_core_suspend(XfdashboardCore *self)
 	if(!self) self=_xfdashboard_core;
 
 	/* Send suspend request */
-	if(G_LIKELY(self))
+	if(G_LIKELY(self) &&
+		xfdashboard_core_can_suspend(self))
 	{
 		/* Emit signal */
 		g_signal_emit(self, XfdashboardCoreSignals[SIGNAL_SUSPEND], 0);
@@ -1456,7 +1457,8 @@ void xfdashboard_core_resume(XfdashboardCore *self)
 	if(!self) self=_xfdashboard_core;
 
 	/* Send suspend request */
-	if(G_LIKELY(self))
+	if(G_LIKELY(self) &&
+		xfdashboard_core_can_suspend(self))
 	{
 		/* Emit signal */
 		g_signal_emit(self, XfdashboardCoreSignals[SIGNAL_RESUME], 0);

@@ -559,6 +559,14 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	}
 	XFDASHBOARD_DEBUG(self, MISC, "Handling command-line parameters on primary application instance");
 
+#ifdef DEBUG
+	/* Check if a new instance was forced by checking application ID */
+	if(g_strcmp0(g_application_get_application_id(G_APPLICATION(self)), XFDASHBOARD_APP_ID)!=0)
+	{
+		priv->forcedNewInstance=TRUE;
+	}
+#endif
+
 	/* Handle options: restart
 	 *
 	 * First handle option 'restart' to quit this application early. Also return
@@ -666,6 +674,17 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 	 */
 	if(!priv->initialized)
 	{
+		/* Set daemon mode property if requested which must be done before the core is
+		 * initialized, otherwise the "can-suspend" signal handler will return FALSE
+		 * which causes plugins depending on daemon to be disabled. Setting daemon mode
+		 * does not work if a new instance was forced.
+		 */
+		if(optionDaemonize && !priv->forcedNewInstance)
+		{
+			priv->isDaemon=optionDaemonize;
+			g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_DAEMONIZED]);
+		}
+
 		/* Perform full initialization of this application instance */
 		result=_xfdashboard_application_initialize_full(self);
 		if(result==FALSE) return(XFDASHBOARD_APPLICATION_ERROR_FAILED);
@@ -682,9 +701,6 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 		{
 			if(!priv->forcedNewInstance)
 			{
-				priv->isDaemon=optionDaemonize;
-				g_object_notify_by_pspec(G_OBJECT(self), XfdashboardApplicationProperties[PROP_DAEMONIZED]);
-
 				if(priv->isDaemon)
 				{
 					xfdashboard_core_suspend(priv->core);
@@ -692,7 +708,7 @@ static gint _xfdashboard_application_handle_command_line_arguments(XfdashboardAp
 			}
 				else
 				{
-					g_warning("Cannot daemonized because a temporary new instance of application was forced.");
+					g_warning("Cannot daemonize because a temporary new instance of application was forced.");
 				}
 		}
 
