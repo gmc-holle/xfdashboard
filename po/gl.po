@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-22 12:51+0200\n"
+"POT-Creation-Date: 2021-10-02 12:51+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Daniel Muñiz Fontoira <dani@damufo.eu>, 2021\n"
 "Language-Team: Galician (https://www.transifex.com/xfce/teams/16840/gl/)\n"
@@ -77,12 +77,16 @@ msgid "Searching applications"
 msgstr "Busca de aplicacións"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
+msgid "This unstable development version fixes the mode to run in background."
+msgstr ""
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
@@ -91,7 +95,7 @@ msgstr ""
 "xunto cun novo engadido de busca o cal procura coincidencias cos documentos "
 "usados ​​recentemente."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
@@ -99,7 +103,7 @@ msgstr ""
 "Esta versión de desenvolvemento inestábel completa os gradientes con "
 "gradientes lineais para o contorno e o recheo do fondo."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
@@ -109,7 +113,7 @@ msgstr ""
 "libxfdashboard nunha biblioteca real e introduce gradientes de camiño para "
 "contornos."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -117,7 +121,7 @@ msgstr ""
 "Esta versión de desenvolvemento inestábel non engade nada visíbel polo "
 "usuario, pero comeza a mover libxfdashboard a unha biblioteca real."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -125,7 +129,7 @@ msgstr ""
 "Esta versión estábel amaña un erro e substitúe a meta información AppInfo "
 "por AppStream."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -135,7 +139,7 @@ msgstr ""
 "emerxentes, infraestrutura múltiple e soporte para listas de xogos, etc. "
 "Tamén inclúe moitas traducións novas e actualizadas."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -143,7 +147,7 @@ msgstr ""
 "Esta versión estábel amaña un erro na configuración das aplicacións "
 "predeterminadas no primeiro uso."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
