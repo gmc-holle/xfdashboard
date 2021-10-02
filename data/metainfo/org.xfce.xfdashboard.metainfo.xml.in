@@ -61,6 +61,13 @@
 	</keywords>
 
 	<releases>
+		<release version="0.9.5" timestamp="1633152304">
+			<description>
+				<_p>This unstable development version fixes the
+				mode to run in background.
+				</_p>
+			</description>
+		</release>
 		<release version="0.9.4" timestamp="1632293693">
 			<description>
 				<_p>This unstable development version introduces
