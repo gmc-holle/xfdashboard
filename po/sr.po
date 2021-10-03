@@ -76,7 +76,7 @@ msgstr "Претрага програма"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid "This unstable development version fixes the mode to run in background."
-msgstr ""
+msgstr "Ово нестабилно издање исправља начин рада у позадини."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
