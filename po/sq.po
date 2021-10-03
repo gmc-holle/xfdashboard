@@ -77,6 +77,7 @@ msgstr "Aplikacione kërkimi"
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
+"Ky version i paqëndrueshëm zhvillimi ndreq mënyrën për xhirim në prapaskenë."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
