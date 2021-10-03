@@ -78,6 +78,8 @@ msgstr "Търсене на програми"
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
+"Тази нестабилна версия в процес на разработка, фиксира режима на работа във "
+"фонов режим."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
