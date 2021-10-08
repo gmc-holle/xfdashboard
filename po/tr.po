@@ -4,7 +4,6 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Demiray Muhterem <mdemiray@msn.com>, 2020
 # Recep, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # Necdet Yücel <necdetyucel@gmail.com>, 2020
@@ -12,6 +11,7 @@
 # Yaşar Çiv <yasarciv@protonmail.com>, 2020
 # Serdar Sağlam <teknomobil@msn.com>, 2021
 # Emin Tufan Çetin <etcetin@gmail.com>, 2021
+# Demiray Muhterem <mdemiray@msn.com>, 2021
 # 
 #, fuzzy
 msgid ""
@@ -20,7 +20,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-02 12:51+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>, 2021\n"
+"Last-Translator: Demiray Muhterem <mdemiray@msn.com>, 2021\n"
 "Language-Team: Turkish (https://www.transifex.com/xfce/teams/16840/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -82,12 +82,15 @@ msgstr "Uygulamaları arama"
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
+"Bu kararsız geliştirme sürümü, modu arka planda çalışacak şekilde düzeltir."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
+"Bu kararsız geliştirme sürümü, pencereleri otomatik olarak ikincil "
+"monitörlere sabitlemek için yeni bir eklenti sunar."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
