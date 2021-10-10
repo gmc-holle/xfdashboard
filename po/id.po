@@ -80,12 +80,16 @@ msgstr "Mencari aplikasi"
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
+"Versi pengembangan tak-stabil ini memperbaiki mode untuk berjalan di latar "
+"belakang."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
+"Versi pengembangan tak-stabil ini memperkenalkan sebuah plugin baru untuk "
+"melakukan pin jendela pada monitor kedua secara otomatis."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
