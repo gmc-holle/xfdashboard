@@ -77,13 +77,15 @@ msgstr "Iskanje aplikacij"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid "This unstable development version fixes the mode to run in background."
-msgstr ""
+msgstr "Ta nestavilna razvojna različica popravlja način zagona v ozadju."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
+"Ta nestabilna razvojna različica uvaja nov vtičnik za samodejno pripenjanje "
+"oken na drugi zaslon."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
