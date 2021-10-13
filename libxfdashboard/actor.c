@@ -53,6 +53,7 @@ struct _XfdashboardActorPrivate
 	/* Properties related */
 	gboolean						canFocus;
 	gchar							*effects;
+	gboolean						visibility;
 
 	gchar							*styleClasses;
 	gchar							*stylePseudoClasses;
@@ -77,6 +78,8 @@ struct _XfdashboardActorPrivate
 	XfdashboardAnimation			*allocationAnimation;
 	ClutterActorBox					*allocationInitialBox;
 	ClutterActorBox					*allocationFinalBox;
+
+	gboolean						shouldVisible;
 };
 
 /* Properties */
@@ -86,6 +89,7 @@ enum
 
 	PROP_CAN_FOCUS,
 	PROP_EFFECTS,
+	PROP_VISIBILITY,
 
 	/* Overriden properties of interface: XfdashboardStylable */
 	PROP_STYLE_CLASSES,
@@ -436,6 +440,23 @@ static void _xfdashboard_actor_update_effects(XfdashboardActor *self, const gcha
 	if(effectsList) g_free(effectsList);
 	if(effectIDs) g_strfreev(effectIDs);
 	g_object_unref(themeEffects);
+}
+
+/* Check if actor should be visible */
+static gboolean _xfdashboard_actor_can_be_visible(XfdashboardActor *self)
+{
+	XfdashboardActorPrivate		*priv;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(self), FALSE);
+
+	priv=self->priv;
+
+	/* If actor has requested to be visible and visibility is allowed,
+	 * then return TRUE for actor being visible. Otherwise it should
+	 * not visible but hidden, so return FALSE.
+	 */
+	if(priv->shouldVisible==TRUE && priv->visibility==TRUE) return(TRUE);
+	return(FALSE);
 }
 
 /* IMPLEMENTATION: Interface XfdashboardFocusable */
@@ -1323,7 +1344,7 @@ static void _xfdashboard_actor_parent_set(ClutterActor *inActor, ClutterActor *i
 	_xfdashboard_actor_invalidate_recursive(CLUTTER_ACTOR(self));
 }
 
-/* Actor will be shown */
+/* Replace a running animation for old signal with the one for new signal */
 static XfdashboardAnimation* _xfdashboard_actor_replace_animation(XfdashboardActor *self,
 																	const gchar *inOldSignal,
 																	const gchar *inNewSignal)
@@ -1381,14 +1402,23 @@ static XfdashboardAnimation* _xfdashboard_actor_replace_animation(XfdashboardAct
 	return(newAnimation);
 }
 
+/* Actor will be shown */
 static void _xfdashboard_actor_show(ClutterActor *inActor)
 {
-	XfdashboardActor		*self;
-	ClutterActorClass		*parentClass;
+	XfdashboardActor			*self;
+	XfdashboardActorPrivate		*priv;
+	ClutterActorClass			*parentClass;
 
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inActor));
 
 	self=XFDASHBOARD_ACTOR(inActor);
+	priv=self->priv;
+
+	/* Set flag that actor requests to be shown */
+	priv->shouldVisible=TRUE;
+
+	/* Check if actor should be hidden forcibly */
+	if(!_xfdashboard_actor_can_be_visible(self)) return;
 
 	/* Call parent's virtual function */
 	parentClass=CLUTTER_ACTOR_CLASS(xfdashboard_actor_parent_class);
@@ -1427,12 +1457,17 @@ static void _xfdashboard_actor_hide_on_animation_done(XfdashboardActor *inActor,
 
 static void _xfdashboard_actor_hide(ClutterActor *inActor)
 {
-	XfdashboardActor		*self;
-	XfdashboardAnimation	*animation;
+	XfdashboardActor			*self;
+	XfdashboardActorPrivate		*priv;
+	XfdashboardAnimation		*animation;
 
 	g_return_if_fail(XFDASHBOARD_IS_ACTOR(inActor));
 
 	self=XFDASHBOARD_ACTOR(inActor);
+	priv=self->priv;
+
+	/* Set flag that actor requests to be hidden */
+	priv->shouldVisible=FALSE;
 
 	/* Actor is hidden now so remove pseudo-class ":hover" because pointer cannot
 	 * be in an actor hidden.
@@ -1545,6 +1580,10 @@ static void _xfdashboard_actor_set_property(GObject *inObject,
 			xfdashboard_actor_set_effects(self, g_value_get_string(inValue));
 			break;
 
+		case PROP_VISIBILITY:
+			xfdashboard_actor_set_visibility(self, g_value_get_boolean(inValue));
+			break;
+
 		case PROP_STYLE_CLASSES:
 			_xfdashboard_actor_stylable_set_classes(XFDASHBOARD_STYLABLE(self),
 													g_value_get_string(inValue));
@@ -1577,6 +1616,10 @@ static void _xfdashboard_actor_get_property(GObject *inObject,
 
 		case PROP_EFFECTS:
 			g_value_set_string(outValue, priv->effects);
+			break;
+
+		case PROP_VISIBILITY:
+			g_value_set_boolean(outValue, priv->visibility);
 			break;
 
 		case PROP_STYLE_CLASSES:
@@ -1649,10 +1692,19 @@ void xfdashboard_actor_class_init(XfdashboardActorClass *klass)
 								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 	g_object_class_install_property(G_OBJECT_CLASS(klass), PROP_EFFECTS, XfdashboardActorProperties[PROP_EFFECTS]);
 
+	XfdashboardActorProperties[PROP_VISIBILITY]=
+		g_param_spec_boolean("visibility",
+								"Visibility",
+								"This flag determines if this actor can be visible or should be forcibly hidden",
+								TRUE,
+								G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+	g_object_class_install_property(G_OBJECT_CLASS(klass), PROP_VISIBILITY, XfdashboardActorProperties[PROP_VISIBILITY]);
+
 	g_object_class_override_property(gobjectClass, PROP_STYLE_CLASSES, "style-classes");
 	g_object_class_override_property(gobjectClass, PROP_STYLE_PSEUDO_CLASSES, "style-pseudo-classes");
 
 	/* Define stylable properties */
+	xfdashboard_actor_install_stylable_property_by_name(klass, "visibility");
 	xfdashboard_actor_install_stylable_property_by_name(klass, "effects");
 	xfdashboard_actor_install_stylable_property_by_name(klass, "x-expand");
 	xfdashboard_actor_install_stylable_property_by_name(klass, "y-expand");
@@ -1689,6 +1741,8 @@ void xfdashboard_actor_init(XfdashboardActor *self)
 	priv->allocationAnimation=NULL;
 	priv->allocationInitialBox=NULL;
 	priv->allocationTrackBox=NULL;
+	priv->shouldVisible=TRUE;
+	priv->visibility=TRUE;
 
 	/* Connect signals */
 	g_signal_connect(self, "notify::mapped", G_CALLBACK(_xfdashboard_actor_on_mapped_changed), NULL);
@@ -1843,6 +1897,45 @@ void xfdashboard_actor_set_effects(XfdashboardActor *self, const gchar *inEffect
 
 		/* Notify about property change */
 		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardActorProperties[PROP_EFFECTS]);
+	}
+}
+
+/* Get/set "visibility" flag of actor to determine
+ * if this actor can be shown or should be hidden forcibly.
+ */
+gboolean xfdashboard_actor_get_visibility(XfdashboardActor *self)
+{
+	g_return_val_if_fail(XFDASHBOARD_IS_ACTOR(self), FALSE);
+
+	return(self->priv->visibility);
+}
+
+void xfdashboard_actor_set_visibility(XfdashboardActor *self, gboolean inVisibility)
+{
+	XfdashboardActorPrivate		*priv;
+
+	g_return_if_fail(XFDASHBOARD_IS_ACTOR(self));
+
+	priv=self->priv;
+
+	/* Set value if changed */
+	if(priv->visibility!=inVisibility)
+	{
+		/* Set value */
+		priv->visibility=inVisibility;
+
+		/* Notify about property change */
+		g_object_notify_by_pspec(G_OBJECT(self), XfdashboardActorProperties[PROP_VISIBILITY]);
+
+		/* Update actors visibility */
+		if(!_xfdashboard_actor_can_be_visible(self))
+		{
+			clutter_actor_hide(CLUTTER_ACTOR(self));
+		}
+			else
+			{
+				clutter_actor_show(CLUTTER_ACTOR(self));
+			}
 	}
 }
 

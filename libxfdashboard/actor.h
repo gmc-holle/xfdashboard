@@ -74,6 +74,9 @@ void xfdashboard_actor_set_can_focus(XfdashboardActor *self, gboolean inCanFous)
 const gchar* xfdashboard_actor_get_effects(XfdashboardActor *self);
 void xfdashboard_actor_set_effects(XfdashboardActor *self, const gchar *inEffects);
 
+gboolean xfdashboard_actor_get_visibility(XfdashboardActor *self);
+void xfdashboard_actor_set_visibility(XfdashboardActor *self, gboolean inVisibility);
+
 void xfdashboard_actor_install_stylable_property(XfdashboardActorClass *klass, GParamSpec *inParamSpec);
 void xfdashboard_actor_install_stylable_property_by_name(XfdashboardActorClass *klass, const gchar *inParamName);
 GHashTable* xfdashboard_actor_get_stylable_properties(XfdashboardActorClass *klass);
