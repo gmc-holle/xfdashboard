@@ -79,6 +79,7 @@ msgstr "Søger efter programmer"
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
+"Denne ustabile udviklingsversion retter tilstanden til at køre i baggrunden."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
