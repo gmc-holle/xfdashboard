@@ -76,7 +76,7 @@ msgstr "搜索应用"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid "This unstable development version fixes the mode to run in background."
-msgstr ""
+msgstr "这个不稳定的开发版本修复了在后台运行的模式。 "
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
