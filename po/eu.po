@@ -78,12 +78,16 @@ msgstr "Aplikazioak bilatzen"
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
+"Garapenerako argitalpen ezegonkor honek atzealdean exekutatzeko modua "
+"konpontzen du."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
+"Garapenerako argitalpen ezegonkor honek plugin berri bat sartzen du leihoak "
+"bigarren pantailetara automatikoki lotzeko."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
