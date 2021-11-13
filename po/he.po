@@ -7,7 +7,7 @@
 # Yaron Shahrabani <sh.yaron@gmail.com>, 2020
 # GenghisKhan <genghiskhan@gmx.ca>, 2020
 # Nick Schermer <nick@xfce.org>, 2020
-# Omeritzics Games <omeritzicschwartz@gmail.com>, 2020
+# Omer I.S. <omeritzicschwartz@gmail.com>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # Elishai Eliyahu <elishai@mailfence.com>, 2021
 # 
@@ -77,7 +77,7 @@ msgstr "חיפוש אפליקציות"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid "This unstable development version fixes the mode to run in background."
-msgstr ""
+msgstr "גרסת פיתוח לא יציבה זו מתקנת את המצב להפעלה ברקע."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
