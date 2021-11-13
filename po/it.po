@@ -81,6 +81,8 @@ msgstr "Ricerca delle applicazioni"
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
+"Questa versione instabile di sviluppo corregge la modalità di esecuzione in "
+"background."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid ""
