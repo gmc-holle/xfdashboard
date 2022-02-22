@@ -1210,7 +1210,7 @@ static gboolean _xfdashboard_desktop_app_info_launch_appinfo_internal(Xfdashboar
 		g_free(expanded);
 		g_string_append_c(string, ' ');
 		filename=g_filename_from_uri(inURIs->data, NULL, NULL);
-		xfce_append_quoted(string, filename);
+		xfce_g_string_append_quoted(string, filename);
 		g_free(filename);
 		expanded=g_string_free(string, FALSE);
 	}
