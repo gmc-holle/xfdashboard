@@ -61,6 +61,14 @@
 	</keywords>
 
 	<releases>
+		<release version="0.9.90" timestamp="1646385254">
+			<description>
+				<_p>This release candidate adds anew property
+				"visibility" to all actors and fixes compiler
+				warnings.
+				</_p>
+			</description>
+		</release>
 		<release version="0.9.5" timestamp="1633152304">
 			<description>
 				<_p>This unstable development version fixes the
