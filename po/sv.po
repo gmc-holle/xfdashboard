@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-02 12:51+0200\n"
+"POT-Creation-Date: 2022-03-04 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Luna Jernberg <bittin@cafe8bitar.se>, 2022\n"
 "Language-Team: Swedish (https://www.transifex.com/xfce/teams/16840/sv/)\n"
@@ -75,11 +75,17 @@ msgid "Searching applications"
 msgstr "Sök efter program"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
+msgid ""
+"This release candidate adds anew property \"visibility\" to all actors and "
+"fixes compiler warnings."
+msgstr ""
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
 "Denna instabila utvecklingsversion fixar läget för att köra i bakgrunden."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
@@ -87,7 +93,7 @@ msgstr ""
 "Denna instabila utvecklingsversion introducerar en ny insticksmodul för att "
 "automatiskt fästa fönster på sekundära bildskärmar automatiskt."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
@@ -96,7 +102,7 @@ msgstr ""
 "nytt sökinsticksprogram som letar efter träffar mot nyligen använda "
 "dokument."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
@@ -104,7 +110,7 @@ msgstr ""
 "Den här ostabila utvecklingsversionen fyller i färgtoningar med linjära "
 "färgtoningar för kontur- och bakgrundsfyllning."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
@@ -114,7 +120,7 @@ msgstr ""
 "förutom att börja flytta libxfdashboard till ett riktigt bibliotek och "
 "introducerar stigningar för konturer."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -122,7 +128,7 @@ msgstr ""
 "Den här instabila utvecklingsversionen introducerar ingenting synligt "
 "förutom att börja flytta libxfdashboard till ett riktigt bibliotek."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -130,7 +136,7 @@ msgstr ""
 "Den här stabila versionen fixar ett fel och ersätter AppInfo med AppStream "
 "metainfo."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -140,7 +146,7 @@ msgstr ""
 "popup-menyer, flera backends och stöd för jumplists etc. Den innehåller "
 "också massor av nya och uppdaterade översättningar. "
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -148,7 +154,7 @@ msgstr ""
 "Den här stabila versionen åtgärdar ett fel med att ställa in korrekta "
 "förvalda program vid första uppstart."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
