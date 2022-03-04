@@ -5,16 +5,16 @@
 # 
 # Translators:
 # Nick Schermer <nick@xfce.org>, 2020
-# Pjotr <pjotrvertaalt@gmail.com>, 2021
+# Pjotr <pjotrvertaalt@gmail.com>, 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-02 12:51+0200\n"
+"POT-Creation-Date: 2022-03-04 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Pjotr <pjotrvertaalt@gmail.com>, 2021\n"
+"Last-Translator: Pjotr <pjotrvertaalt@gmail.com>, 2022\n"
 "Language-Team: Dutch (https://www.transifex.com/xfce/teams/16840/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -72,12 +72,20 @@ msgid "Searching applications"
 msgstr "Toepassingen zoeken"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
+msgid ""
+"This release candidate adds anew property \"visibility\" to all actors and "
+"fixes compiler warnings."
+msgstr ""
+"Deze uitgiftekandidaat voegt een nieuwe eigenschap 'zichtbaarheid' toe voor "
+"alle actoren en herstelt compileerwaarschuwingen."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
 "Deze onstabiele ontwikkelingsversie herstelt de modus voor draaien op de "
 "achtergrond."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
@@ -85,7 +93,7 @@ msgstr ""
 "Deze onstabiele ontwikkelversie introduceert een nieuw invoegsel om vensters"
 " automatisch vast te zetten op secundaire beeldschermen."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
@@ -94,7 +102,7 @@ msgstr ""
 "nieuw invoegsel voor het zoeken naar overeenkomsten met onlangs gebruikte "
 "documenten."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
@@ -102,7 +110,7 @@ msgstr ""
 "Deze onstabiele ontwikkelingsversie vult gradiënten aan met lineaire "
 "gradiënten voor het vullen van omtrek en achtergrond."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
@@ -112,7 +120,7 @@ msgstr ""
 " in een echt bibliotheekbestand en introduceert padgradiënten voor "
 "omtrekken."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -121,7 +129,7 @@ msgstr ""
 "gebruiker maar er wordt een begin gemaakt om libxfdashboard te verplaatsen "
 "naar een echt bibliotheekbestand."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -129,7 +137,7 @@ msgstr ""
 "Deze stabiele versie herstelt een fout en vervangt AppInfo door AppStream "
 "metainfo."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -139,7 +147,7 @@ msgstr ""
 "opduikmenu's, meervoudige achtergronddiensten, ondersteuning voor "
 "springlijsten enz. Zij bevat ook veel nieuwe en bijgewerkte vertalingen."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -147,7 +155,7 @@ msgstr ""
 "Deze stabiele versie repareert een fout inzake het instellen van de juiste "
 "standaardtoepassingen bij eerste gebruik."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
