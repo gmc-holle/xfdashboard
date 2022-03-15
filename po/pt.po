@@ -6,7 +6,7 @@
 # Translators:
 # José Vieira <jvieira33@sapo.pt>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
-# Sérgio Marques <smarquespt@gmail.com>, 2020
+# Sérgio Marques <smarques@ikmail.com>, 2020
 # Nuno Miguel <nunomgue@gmail.com>, 2020
 # Nick Schermer <nick@xfce.org>, 2021
 # Hugo Carvalho <hugokarvalho@hotmail.com>, 2022
@@ -82,7 +82,7 @@ msgid ""
 "This release candidate adds anew property \"visibility\" to all actors and "
 "fixes compiler warnings."
 msgstr ""
-"Este candidato ao lançamento adiciona uma nova \"visibilidade\" de "
+"Este candidato a lançamento adiciona uma nova \"visibilidade\" de "
 "propriedade a todos os atores e corrige avisos do compilador."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
