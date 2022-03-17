@@ -8,17 +8,17 @@
 # Ken DEGUCHI <kdeguchi@sz.tokoha-u.ac.jp>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # Nick Schermer <nick@xfce.org>, 2021
+# UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2021
 # Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2021
-# UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-04 12:53+0100\n"
+"POT-Creation-Date: 2022-03-17 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2022\n"
+"Last-Translator: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2021\n"
 "Language-Team: Japanese (https://www.transifex.com/xfce/teams/16840/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -75,9 +75,9 @@ msgstr "アプリケーションを検索"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
-"This release candidate adds anew property \"visibility\" to all actors and "
+"This release candidate adds a new property \"visibility\" to all actors and "
 "fixes compiler warnings."
-msgstr "このリリース候補ではすべてのアクターに新しいプロパティ「可視性」が追加され、コンパイラの警告が修正されます。"
+msgstr ""
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid "This unstable development version fixes the mode to run in background."
