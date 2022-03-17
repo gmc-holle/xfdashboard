@@ -10,7 +10,7 @@
 # No Body, 2020
 # YuHeng Chou <wojiushixxx@126.com>, 2020
 # Nick Schermer <nick@xfce.org>, 2021
-# Xiaobo Zhou <zhouxiaobo.500@gmail.com>, 2021
+# Cally Mal <zhouxiaobo.500@gmail.com>, 2021
 # 玉堂白鹤 <yjwork@qq.com>, 2022
 # 
 #, fuzzy
@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-04 12:53+0100\n"
+"POT-Creation-Date: 2022-03-17 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: 玉堂白鹤 <yjwork@qq.com>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/xfce/teams/16840/zh_CN/)\n"
@@ -76,9 +76,9 @@ msgstr "搜索应用"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
-"This release candidate adds anew property \"visibility\" to all actors and "
+"This release candidate adds a new property \"visibility\" to all actors and "
 "fixes compiler warnings."
-msgstr "此候选版本为所有参与者添加了一个新属性“可见性”，并修复了编译器警告。"
+msgstr ""
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid "This unstable development version fixes the mode to run in background."
