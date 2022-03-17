@@ -7,16 +7,16 @@
 # Xfce Bot <transifex@xfce.org>, 2020
 # Любомир Василев, 2020
 # Nick Schermer <nick@xfce.org>, 2021
-# Kiril Kirilov <cybercop_montana@abv.bg>, 2022
+# Kiril Kirilov <cybercop_montana@abv.bg>, 2021
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-04 12:53+0100\n"
+"POT-Creation-Date: 2022-03-17 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Kiril Kirilov <cybercop_montana@abv.bg>, 2022\n"
+"Last-Translator: Kiril Kirilov <cybercop_montana@abv.bg>, 2021\n"
 "Language-Team: Bulgarian (https://www.transifex.com/xfce/teams/16840/bg/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -77,11 +77,9 @@ msgstr "Търсене на програми"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
-"This release candidate adds anew property \"visibility\" to all actors and "
+"This release candidate adds a new property \"visibility\" to all actors and "
 "fixes compiler warnings."
 msgstr ""
-"Това издание добавя ново свойство \"Видимост\" към всички участници и "
-"фиксира предупреждения на компилатора."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid "This unstable development version fixes the mode to run in background."
