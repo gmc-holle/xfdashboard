@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-04 12:53+0100\n"
+"POT-Creation-Date: 2022-03-17 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Marek Adamski, 2022\n"
 "Language-Team: Polish (https://www.transifex.com/xfce/teams/16840/pl/)\n"
@@ -79,10 +79,10 @@ msgstr "Wyszukiwanie aplikacji"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
-"This release candidate adds anew property \"visibility\" to all actors and "
+"This release candidate adds a new property \"visibility\" to all actors and "
 "fixes compiler warnings."
 msgstr ""
-"To wydanie kandydujące dodaje nową właściwość \"widoczność\" do wszystkich "
+"Ten wydanie kandydujące dodaje nową właściwość „widoczność” do wszystkich "
 "aktorów i naprawia ostrzeżenia kompilatora."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
