@@ -10,16 +10,15 @@
 # Nick Schermer <nick@xfce.org>, 2020
 # Kukuh Syafaat <syafaatkukuh@gmail.com>, 2020
 # Triyan W. Nugroho <triyan.wn@gmail.com>, 2021
-# Faisal Rachmadin <frachmadin@gmail.com>, 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-04 12:53+0100\n"
+"POT-Creation-Date: 2022-03-17 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Faisal Rachmadin <frachmadin@gmail.com>, 2022\n"
+"Last-Translator: Triyan W. Nugroho <triyan.wn@gmail.com>, 2021\n"
 "Language-Team: Indonesian (https://www.transifex.com/xfce/teams/16840/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -80,11 +79,9 @@ msgstr "Mencari aplikasi"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
-"This release candidate adds anew property \"visibility\" to all actors and "
+"This release candidate adds a new property \"visibility\" to all actors and "
 "fixes compiler warnings."
 msgstr ""
-"Kandidat rilis ini menambahkan \"visibilitas\" properti baru ke semua aktor "
-"dan memperbaiki peringatan kompilator."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid "This unstable development version fixes the mode to run in background."
