@@ -5,18 +5,18 @@
 # 
 # Translators:
 # Georgios Zarkadas <georgios.zarkadas@gmail.com>, 2020
-# Ápo. <apostolos.papadimitriu@gmail.com>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # Nick Schermer <nick@xfce.org>, 2021
+# Ápo. <apostolos.papadimitriu@gmail.com>, 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-02 12:51+0200\n"
+"POT-Creation-Date: 2022-03-04 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Nick Schermer <nick@xfce.org>, 2021\n"
+"Last-Translator: Ápo. <apostolos.papadimitriu@gmail.com>, 2022\n"
 "Language-Team: Greek (https://www.transifex.com/xfce/teams/16840/el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -77,60 +77,66 @@ msgid "Searching applications"
 msgstr "Αναζήτηση εφαρμογών"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
-msgid "This unstable development version fixes the mode to run in background."
+msgid ""
+"This release candidate adds anew property \"visibility\" to all actors and "
+"fixes compiler warnings."
 msgstr ""
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid "This unstable development version fixes the mode to run in background."
+msgstr ""
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
 msgstr ""
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
 msgstr ""
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
 msgstr ""
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr ""
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
 msgstr ""
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
 " of new and updated translations."
 msgstr ""
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -243,7 +249,7 @@ msgstr ""
 
 #: ../data/data/preferences.ui.h:32
 msgid "Enable animations"
-msgstr ""
+msgstr "Ενεργοποίηση εφέ"
 
 #: ../data/data/preferences.ui.h:33
 msgid "If enabled theme-defined animations will be shown."
@@ -444,7 +450,7 @@ msgstr "Εκκίνηση εφαρμογής '%s'"
 #: ../libxfdashboard/applications-view.c:415
 #: ../libxfdashboard/quicklaunch.c:664
 msgid "Launch"
-msgstr ""
+msgstr "Εκκίνηση"
 
 #. Set up view
 #. Add "applications" button
@@ -508,11 +514,11 @@ msgstr "Προστέθηκε το αγαπημένο '%s'"
 
 #: ../libxfdashboard/quicklaunch.c:687
 msgid "Remove from favourites"
-msgstr ""
+msgstr "Αφαίρεση από τα αγαπημένα"
 
 #: ../libxfdashboard/quicklaunch.c:701
 msgid "Add to favourites"
-msgstr ""
+msgstr "Προσθήκη στα αγαπημένα"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
@@ -524,7 +530,7 @@ msgstr "Αφαίρεση"
 #: ../libxfdashboard/search-result-container.c:1734
 #, c-format
 msgid "Show %d more results..."
-msgstr ""
+msgstr "Δείξε %d περισσότερα αποτελέσματα..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:686
@@ -569,7 +575,7 @@ msgstr "Ρολόι"
 #. Add widget to choose hour color
 #: ../plugins/clock-view/plugin.c:203
 msgid "Hour color:"
-msgstr ""
+msgstr "Χρώμα ώρας:"
 
 #: ../plugins/clock-view/plugin.c:213
 msgid "Choose color for hour hand"
@@ -578,7 +584,7 @@ msgstr ""
 #. Add widget to choose minute color
 #: ../plugins/clock-view/plugin.c:218
 msgid "Minute color:"
-msgstr ""
+msgstr "Χρώμα λεπτών:"
 
 #: ../plugins/clock-view/plugin.c:228
 msgid "Choose color for minute hand"
@@ -587,7 +593,7 @@ msgstr ""
 #. Add widget to choose second color
 #: ../plugins/clock-view/plugin.c:233
 msgid "Second color:"
-msgstr ""
+msgstr "Χρώμα δευτερολέπτων:"
 
 #: ../plugins/clock-view/plugin.c:243
 msgid "Choose color for second hand"
@@ -608,11 +614,11 @@ msgstr ""
 
 #: ../plugins/example-search-provider/example-search-provider.c:67
 msgid "Example search"
-msgstr ""
+msgstr "Παράδειγμα αναζήτησης"
 
 #: ../plugins/example-search-provider/plugin.c:75
 msgid "Example search provider"
-msgstr ""
+msgstr "Παράδειγμα παρόχου αναζήτησης"
 
 #: ../plugins/example-search-provider/plugin.c:76
 msgid "This is just a useless example search provider plugin"
@@ -642,12 +648,12 @@ msgstr "Αμέσως"
 #. Add widget to choose activation corner
 #: ../plugins/hot-corner/plugin.c:325
 msgid "Activation corner:"
-msgstr ""
+msgstr "Γωνία ενεργοποίησης"
 
 #. Add widget to choose activation radius
 #: ../plugins/hot-corner/plugin.c:361
 msgid "Radius of activation corner:"
-msgstr ""
+msgstr "Ακτίνα γωνίας ενεργοποίησης:"
 
 #. Add widget to choose activation duration
 #: ../plugins/hot-corner/plugin.c:379
@@ -671,7 +677,7 @@ msgstr ""
 
 #: ../plugins/middle-click-window-close/plugin.c:71
 msgid "Middle-click window close"
-msgstr ""
+msgstr "Κλείσιμο παραθύρου με μεσαίο κλικ"
 
 #: ../plugins/middle-click-window-close/plugin.c:72
 msgid "Closes windows in windows view by middle-click"
@@ -800,7 +806,7 @@ msgstr ""
 
 #: ../xfdashboard/application.c:483
 msgid "Show version"
-msgstr ""
+msgstr "Εμφάνιση έκδοσης"
 
 #: ../xfdashboard/application.c:502
 msgid "A Gnome Shell like dashboard for Xfce4 - version "

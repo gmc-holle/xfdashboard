@@ -8,16 +8,16 @@
 # Aputsiak Niels Janussen <aj@isit.gl>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # Nick Schermer <nick@xfce.org>, 2021
-# scootergrisen, 2021
+# scootergrisen, 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-02 12:51+0200\n"
+"POT-Creation-Date: 2022-03-17 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: scootergrisen, 2021\n"
+"Last-Translator: scootergrisen, 2022\n"
 "Language-Team: Danish (https://www.transifex.com/xfce/teams/16840/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -77,11 +77,19 @@ msgid "Searching applications"
 msgstr "Søger efter programmer"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
+msgid ""
+"This release candidate adds a new property \"visibility\" to all actors and "
+"fixes compiler warnings."
+msgstr ""
+"Udgivelseskandidaten tilføjer en ny egenskab til alle actors kaldet "
+"\"visibility\" og retter compileradvarsler."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
 "Denne ustabile udviklingsversion retter tilstanden til at køre i baggrunden."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
@@ -89,7 +97,7 @@ msgstr ""
 "Denne ustabile udviklingsversion indfører et nyt plugin til automatisk at "
 "fastgøre vinduer til sekundære skærme."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
@@ -97,7 +105,7 @@ msgstr ""
 "Denne ustabile udviklingsversioner forbedrer vinduesplacering og et nyt "
 "søgeplugin leder efter match i de seneste brugte dokumenter."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
@@ -105,7 +113,7 @@ msgstr ""
 "Denne ustabile udviklingsversioner indfører gradienter med lineære "
 "gradienter til udfyldning af omrids og baggrunde."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
@@ -114,7 +122,7 @@ msgstr ""
 "Denne ustabile udviklingsversion indfører fuldførelse libxfdashboard som et "
 "ægte bibliotek og introducerer stigradienter til omrids."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -122,7 +130,7 @@ msgstr ""
 "Denne ustabile udviklingsversion indfører ikke noget som er synligt for "
 "brugeren men flytter libxfdashboard ind i et ægte bibliotek."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -130,7 +138,7 @@ msgstr ""
 "Denne stabile version retter en fejl og erstatter AppInfo- med AppStream-"
 "metainfo."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -140,7 +148,7 @@ msgstr ""
 "animationer pop op-menuer, adskillige motorer og understøttelse af hoplister"
 " osv. Den indeholder også massere af nye og opdaterede oversættelser."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -148,7 +156,7 @@ msgstr ""
 "Denne stabile version retter en fejl ved indstilling af de korrekte "
 "standardprogrammer første gang det bruges."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "

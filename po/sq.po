@@ -5,16 +5,16 @@
 # 
 # Translators:
 # Nick Schermer <nick@xfce.org>, 2020
-# Besnik Bleta <besnik@programeshqip.org>, 2021
+# Besnik Bleta <besnik@programeshqip.org>, 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-02 12:51+0200\n"
+"POT-Creation-Date: 2022-03-17 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Besnik Bleta <besnik@programeshqip.org>, 2021\n"
+"Last-Translator: Besnik Bleta <besnik@programeshqip.org>, 2022\n"
 "Language-Team: Albanian (https://www.transifex.com/xfce/teams/16840/sq/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -75,11 +75,19 @@ msgid "Searching applications"
 msgstr "Aplikacione kërkimi"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
+msgid ""
+"This release candidate adds a new property \"visibility\" to all actors and "
+"fixes compiler warnings."
+msgstr ""
+"Kjo hedhje kandidate në qarkullim shton një veti të re “dukshmëri” për krejt"
+" aktorët dhe ndreq sinjalizime përpilimi."
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
 "Ky version i paqëndrueshëm zhvillimi ndreq mënyrën për xhirim në prapaskenë."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
@@ -87,7 +95,7 @@ msgstr ""
 "Ky version mjedisi të paqëndrueshëm sjell për herë të parë një shtojcë të "
 "re, për fiksim vetvetiu dritaresh në ekrane dytësorë."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
@@ -96,7 +104,7 @@ msgstr ""
 "sjell një shtojcë të re kërkimi që sheh për përputhje kundrejt dokumenteve "
 "të përdorur së fundi."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
@@ -104,7 +112,7 @@ msgstr ""
 "Ky version zhvillimi, jo i qëndrueshëm, plotëson shndërrimin e gradientëve "
 "me gradiente lineare për përvija dhe mbushje sfondi."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
@@ -114,7 +122,7 @@ msgstr ""
 "libxfdashboard-it në një bibliotekë të njëmendtë dhe sjell për herë të parë "
 "gradientë shtigjesh për përvijat."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
@@ -123,7 +131,7 @@ msgstr ""
 "përdoruesin, por shënon fillimin e kalimit të libxfdashboard-it në një "
 "bibliotekë të njëmendtë."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
@@ -131,7 +139,7 @@ msgstr ""
 "Ky version i qëndrueshëm ndreq një të metë dhe zëvendëson Appinfo me "
 "metainfo AppStream."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
@@ -142,7 +150,7 @@ msgstr ""
 "“jumplists”, etj. Përmban gjithashtu plot përkthime të reja dhe të "
 "përditësuara."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
@@ -150,7 +158,7 @@ msgstr ""
 "Ky version i qëndrueshëm ndreq një të metë në ujdisjen e aplikacioneve të "
 "sakta parazgjedhje gjatë përdorimit të parë fare."
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:16
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
