@@ -900,8 +900,11 @@ static void _xfdashboard_xfconf_settings_initialize_settings(XfdashboardXfconfSe
 
 	priv=self->priv;
 
-	/* Get list of properties from xfconf */
+	/* Get list of properties from xfconf but return from here and do not
+	 * iterate through properties if we got no property at all.
+	 */
 	xfconfProperties=xfconf_channel_get_properties(priv->channel, NULL);
+	if(!xfconfProperties) return;
 
 	/* Iterate through retrieved properties and set settings but skip plugin settings */
 	g_hash_table_iter_init(&iter, xfconfProperties);
