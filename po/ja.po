@@ -8,8 +8,8 @@
 # Ken DEGUCHI <kdeguchi@sz.tokoha-u.ac.jp>, 2020
 # Xfce Bot <transifex@xfce.org>, 2020
 # Nick Schermer <nick@xfce.org>, 2021
-# Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2021
 # UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2022
+# Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2022
 # 
 #, fuzzy
 msgid ""
@@ -18,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-03-17 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: UTUMI Hirosi <utuhiro78@yahoo.co.jp>, 2022\n"
+"Last-Translator: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, 2022\n"
 "Language-Team: Japanese (https://www.transifex.com/xfce/teams/16840/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -99,7 +99,7 @@ msgstr "この不安定な開発版は、ウィンドウの配置と、最近使
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
-msgstr "この不安定な開発版では、アウトラインと背景塗りつぶしの線形グラデーションでグラデーションを完了します。"
+msgstr "この不安定な開発版では、アウトラインと背景塗りつぶしの線形グラデーションでグラデーションを仕上げています。"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
@@ -535,7 +535,7 @@ msgstr "削除"
 #: ../libxfdashboard/search-result-container.c:1734
 #, c-format
 msgid "Show %d more results..."
-msgstr "%d 以上の結果を表示... "
+msgstr "%d 以上の結果を表示..."
 
 #. Get text to set at "all"-label
 #: ../libxfdashboard/search-result-container.c:686
@@ -778,7 +778,7 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
-"<b>プラグインを読み込めませんでした.</b>\n"
+"<b>プラグインを読み込めませんでした。</b>\n"
 "\n"
 "%s"
 
@@ -818,7 +818,7 @@ msgstr "バージョンを表示"
 
 #: ../xfdashboard/application.c:502
 msgid "A Gnome Shell like dashboard for Xfce4 - version "
-msgstr "Xfce4 用の Gnome シェルのようなダッシュボード - version "
+msgstr "Xfce4 用の Gnome シェルのようなダッシュボード - バージョン"
 
 #. Show error
 #: ../xfdashboard/application.c:519
