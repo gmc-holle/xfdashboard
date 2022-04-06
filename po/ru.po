@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-04 12:53+0100\n"
+"POT-Creation-Date: 2022-03-17 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: Andrei Stepanov, 2022\n"
 "Language-Team: Russian (https://www.transifex.com/xfce/teams/16840/ru/)\n"
@@ -82,7 +82,7 @@ msgstr "Поиск приложений"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
-"This release candidate adds anew property \"visibility\" to all actors and "
+"This release candidate adds a new property \"visibility\" to all actors and "
 "fixes compiler warnings."
 msgstr ""
 
@@ -582,7 +582,7 @@ msgstr "Окна"
 
 #: ../plugins/autopin-windows/plugin.c:71
 msgid "Auto-pin windows"
-msgstr ""
+msgstr "Окна с автоматическим закреплением"
 
 #: ../plugins/autopin-windows/plugin.c:72
 msgid ""
@@ -711,7 +711,7 @@ msgstr "Закрыть окна в окне просмотра средней к
 
 #: ../plugins/recently-used-search-provider/plugin.c:75
 msgid "Recently used search provider"
-msgstr ""
+msgstr "Недавно использованный поисковый поставщик"
 
 #: ../plugins/recently-used-search-provider/plugin.c:76
 msgid "A search provider using recently used files as source"
