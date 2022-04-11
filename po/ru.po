@@ -107,6 +107,8 @@ msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
 msgstr ""
+"Эта нестабильная версия разработки дополняет градиенты линейными градиентами"
+" для заполнения контуров и фона."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
@@ -114,18 +116,25 @@ msgid ""
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
 msgstr ""
+"Эта нестабильная версия разработки представляет завершённое превращение "
+"libxfdashboard в реальную библиотеку и вводит градиенты траектории для "
+"контуров."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr ""
+"Эта нестабильная версия разработки не вводит ничего заметного для "
+"пользователя, но начинает перемещение libxfdashboard в реальную библиотеку."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
 msgstr ""
+"Эта стабильная версия исправляет ошибку и заменяет AppInfo на метаинформацию"
+" AppStream."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
 msgid ""
