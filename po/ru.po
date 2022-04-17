@@ -725,6 +725,8 @@ msgstr "Недавно использованный поисковый пост�
 #: ../plugins/recently-used-search-provider/plugin.c:76
 msgid "A search provider using recently used files as source"
 msgstr ""
+"Поставщик поиска, использующий недавно использованные файлы в качестве "
+"источника"
 
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
 msgid "Recently used"
@@ -739,7 +741,7 @@ msgstr "Запуск приложения для «%s» не удался: %s"
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
 #, c-format
 msgid "Launching application for file '%s' failed: %s"
-msgstr ""
+msgstr "Запуск приложения для файла «%s» не удался: %s"
 
 #: ../settings/general.c:84
 msgid "Do nothing"
