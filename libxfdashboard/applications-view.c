@@ -444,6 +444,15 @@ static void _xfdashboard_applications_view_on_all_applications_menu_parent_menu_
 	priv->currentRootMenuElement=NULL;
 	xfdashboard_applications_menu_model_filter_by_section(priv->apps, NULL);
 	xfdashboard_view_scroll_to(XFDASHBOARD_VIEW(self), -1, 0);
+
+	/* Force signal emission of "filter-changed" signal at application menu
+	 * model. The problem is that the "all applications" menu can only be
+	 * called from root section. Setting the section to root section again
+	 * by calling the model's filtering function with NULL parameter, see
+	 * xfdashboard_applications_menu_model_filter_by_section(..., NULL) above,
+	 * this signal is not emitted as nothing changes. So force it here.
+	 */
+	g_signal_emit_by_name(priv->apps, "filter-changed");
 }
 
 /* Show sub-menu with all installed applications */

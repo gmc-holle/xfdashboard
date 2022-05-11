@@ -185,7 +185,11 @@ static GAppInfo*  _xfdashboard_window_tracker_window_x11_window_tracker_window_r
 			if(!G_IS_APP_INFO(iterApps->data)) continue;
 			globAppInfo=G_APP_INFO(iterApps->data);
 
+#if GLIB_CHECK_VERSION(2,70,0)
+			if(g_pattern_spec_match_string(globPattern, g_app_info_get_id(globAppInfo)))
+#else
 			if(g_pattern_match_string(globPattern, g_app_info_get_id(globAppInfo)))
+#endif
 			{
 				foundSubdirApps=g_list_prepend(foundSubdirApps, globAppInfo);
 				XFDASHBOARD_DEBUG(self, APPLICATIONS,
