@@ -13,15 +13,16 @@
 # Alexander Filёv, 2021
 # Aleksandr P, 2021
 # Andrei Stepanov, 2022
+# Виктор, 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-04 12:53+0100\n"
+"POT-Creation-Date: 2022-03-17 12:53+0100\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
-"Last-Translator: Andrei Stepanov, 2022\n"
+"Last-Translator: Виктор, 2022\n"
 "Language-Team: Russian (https://www.transifex.com/xfce/teams/16840/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -82,31 +83,42 @@ msgstr "Поиск приложений"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
-"This release candidate adds anew property \"visibility\" to all actors and "
+"This release candidate adds a new property \"visibility\" to all actors and "
 "fixes compiler warnings."
 msgstr ""
+"Этот кандидат на выпуск добавляет новое свойство «Видимость» для всех "
+"субъектов и исправляет предупреждения компилятора."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid "This unstable development version fixes the mode to run in background."
 msgstr ""
+"В этой нестабильной версии, находящейся в разработке, исправлен режим работы"
+" в фоновом режиме."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr ""
+"В этой нестабильной версии, находящейся в разработке, представлен новый "
+"плагин для автоматического закрепления окон на дополнительных мониторах."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
 msgstr ""
+"Эта нестабильная версия, находящаяся в разработке, улучшает размещение окон "
+"и новый поисковый плагин, который ищет совпадения с недавно использованными "
+"документами."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
 msgstr ""
+"Эта нестабильная версия разработки дополняет градиенты линейными градиентами"
+" для заполнения контуров и фона."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
@@ -114,18 +126,25 @@ msgid ""
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
 msgstr ""
+"Эта нестабильная версия разработки представляет завершённое превращение "
+"libxfdashboard в реальную библиотеку и вводит градиенты траектории для "
+"контуров."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr ""
+"Эта нестабильная версия разработки не вводит ничего заметного для "
+"пользователя, но начинает перемещение libxfdashboard в реальную библиотеку."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
 msgstr ""
+"Эта стабильная версия исправляет ошибку и заменяет AppInfo на метаинформацию"
+" AppStream."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
 msgid ""
@@ -142,8 +161,8 @@ msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr ""
-"Эта версия исправляет ошибку определения правильных приложений по умолчанию "
-"при первом использовании."
+"Эта стабильная версия исправляет ошибку определения правильных приложений по"
+" умолчанию при первом использовании."
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:16
 msgid ""
@@ -151,9 +170,9 @@ msgid ""
 "application tracker. It also contains a huge collection of other larger and "
 "smaller improvements."
 msgstr ""
-"Эта версия представляет множество новых функций, таких как плагины и трекер "
-"приложений. Он также содержит огромную коллекцию других больших и маленьких "
-"улучшений."
+"Эта стабильная версия представляет множество новых функций, таких как "
+"плагины и трекер приложений. Она также содержит огромную коллекцию других "
+"крупных и незначительных улучшений."
 
 #: ../data/data/preferences.ui.h:1
 msgid "<span size=\"large\"><b>Xfdashboard settings</b></span>"
@@ -367,7 +386,7 @@ msgstr "xfdashboard"
 
 #: ../data/themes/xfdashboard/xfdashboard.theme.in.in.h:2
 msgid "Default theme for xfdashboard"
-msgstr "Тема по умолчанию"
+msgstr "Тема по умолчанию для xfdashboard"
 
 #: ../data/themes/xfdashboard-auber/xfdashboard.theme.in.in.h:1
 msgid "xfdashboard-auber"
@@ -582,13 +601,15 @@ msgstr "Окна"
 
 #: ../plugins/autopin-windows/plugin.c:71
 msgid "Auto-pin windows"
-msgstr ""
+msgstr "Окна с автоматическим закреплением"
 
 #: ../plugins/autopin-windows/plugin.c:72
 msgid ""
 "Pins windows on secondary windows or unpins windows on primary windows "
 "automatically"
 msgstr ""
+"Автоматически закрепляет окошки в дополнительных окнах или открепляет окошки"
+" в основных окнах"
 
 #. Set up view
 #: ../plugins/clock-view/clock-view.c:307 ../plugins/clock-view/plugin.c:311
@@ -711,11 +732,13 @@ msgstr "Закрыть окна в окне просмотра средней к
 
 #: ../plugins/recently-used-search-provider/plugin.c:75
 msgid "Recently used search provider"
-msgstr ""
+msgstr "Недавно использованный поисковый поставщик"
 
 #: ../plugins/recently-used-search-provider/plugin.c:76
 msgid "A search provider using recently used files as source"
 msgstr ""
+"Поставщик поиска, использующий недавно использованные файлы в качестве "
+"источника"
 
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:246
 msgid "Recently used"
@@ -730,7 +753,7 @@ msgstr "Запуск приложения для «%s» не удался: %s"
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:518
 #, c-format
 msgid "Launching application for file '%s' failed: %s"
-msgstr ""
+msgstr "Запуск приложения для файла «%s» не удался: %s"
 
 #: ../settings/general.c:84
 msgid "Do nothing"
@@ -789,7 +812,7 @@ msgstr ""
 #: ../settings/plugins.c:222
 #, c-format
 msgid "Configure plugin: %s"
-msgstr "Настройки плагина:  %s"
+msgstr "Настройка плагина: %s"
 
 #. Create error message to store in list
 #: ../settings/plugins.c:793

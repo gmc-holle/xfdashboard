@@ -78,7 +78,7 @@ msgstr "搜索应用"
 msgid ""
 "This release candidate adds a new property \"visibility\" to all actors and "
 "fixes compiler warnings."
-msgstr ""
+msgstr "此候选版本为所有参与者添加了一个新属性“可见性”，并修复了编译器警告。"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
 msgid "This unstable development version fixes the mode to run in background."
