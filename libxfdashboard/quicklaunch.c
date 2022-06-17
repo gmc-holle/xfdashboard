@@ -2546,7 +2546,14 @@ static void _xfdashboard_quicklaunch_allocate(ClutterActor *inActor,
 	clutter_actor_box_get_size(inBox, &availableWidth, &availableHeight);
 
 	/* Find scaling to get all children fit the allocation */
-	priv->scaleCurrent=_xfdashboard_quicklaunch_get_scale_for_height(self, availableHeight, FALSE);
+	if(priv->orientation==CLUTTER_ORIENTATION_HORIZONTAL)
+	{
+		priv->scaleCurrent=_xfdashboard_quicklaunch_get_scale_for_width(self, availableWidth, FALSE);
+	}
+		else
+		{
+			priv->scaleCurrent=_xfdashboard_quicklaunch_get_scale_for_height(self, availableHeight, FALSE);
+		}
 
 	/* Calculate new position and size of visible children */
 	childAllocation.x1=childAllocation.y1=priv->spacing;
