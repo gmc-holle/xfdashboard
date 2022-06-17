@@ -208,11 +208,16 @@ static void _xfdashboard_application_button_on_popup_menu_item_activate_window(X
 																				gpointer inUserData)
 {
 	XfdashboardWindowTrackerWindow		*window;
+	XfdashboardWindowTrackerWorkspace	*workspace;
 
 	g_return_if_fail(XFDASHBOARD_IS_POPUP_MENU_ITEM(inMenuItem));
 	g_return_if_fail(XFDASHBOARD_IS_WINDOW_TRACKER_WINDOW(inUserData));
 
 	window=XFDASHBOARD_WINDOW_TRACKER_WINDOW(inUserData);
+
+	/* Switch to workspace of window to activate if neccessary */
+	workspace=xfdashboard_window_tracker_window_get_workspace(window);
+	if(workspace) xfdashboard_window_tracker_workspace_activate(workspace);
 
 	/* Activate window */
 	xfdashboard_window_tracker_window_activate(window);
