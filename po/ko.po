@@ -416,7 +416,7 @@ msgstr ""
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:581
 #, c-format
 msgid "Launching application '%s' failed: %s"
-msgstr ""
+msgstr "'%s' 프로그램 실행 실패: %s"
 
 #: ../libxfdashboard/application-button.c:745
 #: ../libxfdashboard/quicklaunch.c:336
