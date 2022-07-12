@@ -6,13 +6,13 @@ EXTRA_DIST = \
 	intltool-extract.in \
 	intltool-merge.in \
 	intltool-update.in \
-        po/.intltool-merge-cache.lock \
 	README.md
 
 DISTCLEANFILES = \
 	intltool-extract \
 	intltool-merge \
-	intltool-update
+	intltool-update \
+	po/.intltool-merge-cache.lock
 
 SUBDIRS = \
 	common \
