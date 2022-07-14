@@ -31,6 +31,8 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxfdashboard/core.h>
+#include <libxfdashboard/marshal.h>
+#include <libxfdashboard/utils.h>
 #include <libxfdashboard/compat.h>
 
 
@@ -50,6 +52,12 @@ enum
 
 	SIGNAL_PSEUDO_CLASS_ADDED,
 	SIGNAL_PSEUDO_CLASS_REMOVED,
+
+	/* Actions */
+	ACTION_ADD_CLASSES,
+	ACTION_REMOVE_CLASSES,
+	ACTION_TOGGLE_CLASSES,
+	ACTION_APPLY_CLASSES,
 
 	SIGNAL_LAST
 };
@@ -349,6 +357,165 @@ static void _xfdashboard_stylable_real_invalidate(XfdashboardStylable *self)
 	g_signal_emit(self, XfdashboardStylableSignals[SIGNAL_STYLE_REVALIDATED], 0);
 }
 
+/* Default implementation of virtual action signal handler "add-classes" */
+static gboolean _xfdashboard_stylable_real_add_classes(XfdashboardStylable *self,
+														XfdashboardFocusable *inSource,
+														const gchar *inAction,
+														const gchar *inDetail,
+														ClutterEvent *inEvent)
+{
+	gchar			**classes;
+	gchar			**iter;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inDetail && *inDetail, CLUTTER_EVENT_PROPAGATE);
+
+	/* Split classes into array of class strings */
+	classes=xfdashboard_split_string(inDetail, ",");
+
+	/* Add classes */
+	iter=classes;
+	while(*iter)
+	{
+		/* Add class */
+		xfdashboard_stylable_add_class(self, *iter);
+
+		/* Move to next class to handle */
+		iter++;
+	}
+
+	/* Release allocated resources */
+	g_strfreev(classes);
+
+	/* Prevent the default handler being called */
+	return(CLUTTER_EVENT_STOP);
+}
+
+/* Default implementation of virtual action signal handler "remove-classes" */
+static gboolean _xfdashboard_stylable_real_remove_classes(XfdashboardStylable *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															const gchar *inDetail,
+															ClutterEvent *inEvent)
+{
+	gchar			**classes;
+	gchar			**iter;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inDetail && *inDetail, CLUTTER_EVENT_PROPAGATE);
+
+	/* Split classes into array of class strings */
+	classes=xfdashboard_split_string(inDetail, ",");
+
+	/* Add classes */
+	iter=classes;
+	while(*iter)
+	{
+		/* Remove class */
+		xfdashboard_stylable_remove_class(self, *iter);
+
+		/* Move to next class to handle */
+		iter++;
+	}
+
+	/* Release allocated resources */
+	g_strfreev(classes);
+
+	/* Prevent the default handler being called */
+	return(CLUTTER_EVENT_STOP);
+}
+
+/* Default implementation of virtual action signal handler "toggle-classes" */
+static gboolean _xfdashboard_stylable_real_toggle_classes(XfdashboardStylable *self,
+															XfdashboardFocusable *inSource,
+															const gchar *inAction,
+															const gchar *inDetail,
+															ClutterEvent *inEvent)
+{
+	gchar			**classes;
+	gchar			**iter;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inDetail && *inDetail, CLUTTER_EVENT_PROPAGATE);
+
+	/* Split classes into array of class strings */
+	classes=xfdashboard_split_string(inDetail, ",");
+
+	/* Toggle classes by adding class if missind and remove class if set */
+	iter=classes;
+	while(*iter)
+	{
+		/* If class is set, remove it */
+		if(xfdashboard_stylable_has_class(self, *iter))
+		{
+			xfdashboard_stylable_remove_class(self, *iter);
+		}
+			/* Otherwise add class */
+			else
+			{
+				xfdashboard_stylable_add_class(self, *iter);
+			}
+
+		/* Move to next class to handle */
+		iter++;
+	}
+
+	/* Release allocated resources */
+	g_strfreev(classes);
+
+	/* Prevent the default handler being called */
+	return(CLUTTER_EVENT_STOP);
+}
+
+/* Default implementation of virtual action signal handler "set-classes" */
+static gboolean _xfdashboard_stylable_real_apply_classes(XfdashboardStylable *self,
+														XfdashboardFocusable *inSource,
+														const gchar *inAction,
+														const gchar *inDetail,
+														ClutterEvent *inEvent)
+{
+	gchar			**classes;
+	gchar			**iter;
+	gchar			*value;
+
+	g_return_val_if_fail(XFDASHBOARD_IS_STYLABLE(self), CLUTTER_EVENT_PROPAGATE);
+	g_return_val_if_fail(inDetail && *inDetail, CLUTTER_EVENT_PROPAGATE);
+
+	/* Split classes into array of class strings */
+	classes=xfdashboard_split_string(inDetail, ",");
+
+	/* Set classes by adding class if class is prefixed with "+" or a prefix is
+	 * missed and remove class if class is prefixed with "-" which is required.
+	 */
+	iter=classes;
+	while(*iter)
+	{
+		value=*iter;
+
+		/* If class is prefixed with "-", remove it */
+		if(*value=='-')
+		{
+			value++;
+			xfdashboard_stylable_remove_class(self, value);
+		}
+			/* Otherwise add class but skip optional prefix "+" */
+			else
+			{
+				if(*value=='+') value++;
+				xfdashboard_stylable_add_class(self, value);
+			}
+
+		/* Move to next class to handle */
+		iter++;
+	}
+
+	/* Release allocated resources */
+	g_strfreev(classes);
+
+	/* Prevent the default handler being called */
+	return(CLUTTER_EVENT_STOP);
+}
+
 
 /* IMPLEMENTATION: GObject */
 
@@ -373,6 +540,10 @@ void xfdashboard_stylable_default_init(XfdashboardStylableInterface *iface)
 	iface->get_name=_xfdashboard_stylable_real_get_name;
 	iface->get_parent=_xfdashboard_stylable_real_get_parent;
 	iface->invalidate=_xfdashboard_stylable_real_invalidate;
+	iface->add_classes=_xfdashboard_stylable_real_add_classes;
+	iface->remove_classes=_xfdashboard_stylable_real_remove_classes;
+	iface->toggle_classes=_xfdashboard_stylable_real_toggle_classes;
+	iface->apply_classes=_xfdashboard_stylable_real_apply_classes;
 
 	/* Define properties, signals and actions */
 	if(!initialized)
@@ -508,6 +679,131 @@ void xfdashboard_stylable_default_init(XfdashboardStylableInterface *iface)
 							G_TYPE_NONE,
 							1,
 							G_TYPE_STRING);
+
+		/**
+		 * XfdashboardStylable::add-classes:
+		 * @self: A #XfdashboardStylable
+		 * @inFocusable: The source #XfdashboardFocusable which send this signal
+		 * @inAction: A string containing the action (that is this signal name)
+		 * @inDetail: A comma-separated list of classes to add
+		 * @inEvent: The #ClutterEvent associated to this signal and action
+		 *
+		 * The ::add-classes signal is an action and when emitted it causes the
+		 * actor at @self implementing the #XfdashboardStylable interface to
+		 * add the classes provided as a comma-separated string from @inDetail.
+		 * This list must not contain spaces.
+		 *
+		 * Note: This action can be used at key bindings.
+		 */
+		XfdashboardStylableSignals[ACTION_ADD_CLASSES]=
+			g_signal_new("add-classes",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION | G_SIGNAL_DETAILED,
+							G_STRUCT_OFFSET(XfdashboardStylableInterface, add_classes),
+							g_signal_accumulator_true_handled,
+							NULL,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_STRING_BOXED,
+							G_TYPE_BOOLEAN,
+							4,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
+							G_TYPE_STRING,
+							CLUTTER_TYPE_EVENT);
+
+		/**
+		 * XfdashboardStylable::remove-classes:
+		 * @self: A #XfdashboardStylable
+		 * @inFocusable: The source #XfdashboardFocusable which send this signal
+		 * @inAction: A string containing the action (that is this signal name)
+		 * @inDetail: A comma-separated list of classes to remove
+		 * @inEvent: The #ClutterEvent associated to this signal and action
+		 *
+		 * The ::remove-classes signal is an action and when emitted it causes
+		 * the actor at @self implementing the #XfdashboardStylable interface to
+		 * remove the classes provided as a comma-separated string from
+		 * @inDetail. This list must not contain spaces.
+		 *
+		 * Note: This action can be used at key bindings.
+		 */
+		XfdashboardStylableSignals[ACTION_REMOVE_CLASSES]=
+			g_signal_new("remove-classes",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION | G_SIGNAL_DETAILED,
+							G_STRUCT_OFFSET(XfdashboardStylableInterface, remove_classes),
+							g_signal_accumulator_true_handled,
+							NULL,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_STRING_BOXED,
+							G_TYPE_BOOLEAN,
+							4,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
+							G_TYPE_STRING,
+							CLUTTER_TYPE_EVENT);
+
+		/**
+		 * XfdashboardStylable::toggle-classes:
+		 * @self: A #XfdashboardStylable
+		 * @inFocusable: The source #XfdashboardFocusable which send this signal
+		 * @inAction: A string containing the action (that is this signal name)
+		 * @inDetail: A comma-separated list of classes to add or remove
+		 * @inEvent: The #ClutterEvent associated to this signal and action
+		 *
+		 * The ::toggle-classes signal is an action and when emitted it causes
+		 * the actor at @self implementing the #XfdashboardStylable interface to
+		 * toggle the classes provided as a comma-separated string from
+		 * @inDetail. Toggling classes means that they are remove if set at
+		 * actor at @self or added if they are not set. This list must not
+		 * contain spaces.
+		 *
+		 * Note: This action can be used at key bindings.
+		 */
+		XfdashboardStylableSignals[ACTION_TOGGLE_CLASSES]=
+			g_signal_new("toggle-classes",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION | G_SIGNAL_DETAILED,
+							G_STRUCT_OFFSET(XfdashboardStylableInterface, toggle_classes),
+							g_signal_accumulator_true_handled,
+							NULL,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_STRING_BOXED,
+							G_TYPE_BOOLEAN,
+							4,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
+							G_TYPE_STRING,
+							CLUTTER_TYPE_EVENT);
+
+		/**
+		 * XfdashboardStylable::apply-classes:
+		 * @self: A #XfdashboardStylable
+		 * @inFocusable: The source #XfdashboardFocusable which send this signal
+		 * @inAction: A string containing the action (that is this signal name)
+		 * @inDetail: A comma-separated list of classes to add or remove
+		 * @inEvent: The #ClutterEvent associated to this signal and action
+		 *
+		 * The ::apply-classes signal is an action and when emitted it causes
+		 * the actor at @self implementing the #XfdashboardStylable interface to
+		 * add or remove the classes provided as a comma-separated string from
+		 * @inDetail. All classes to remove must be prefixed with '-' (minus)
+		 * in this comma-separated string and all classes with add should be
+		 * prefixed with '+' (plus) but this i optional. This list must not
+		 * contain spaces.
+		 *
+		 * Note: This action can be used at key bindings.
+		 */
+		XfdashboardStylableSignals[ACTION_APPLY_CLASSES]=
+			g_signal_new("apply-classes",
+							G_TYPE_FROM_INTERFACE(iface),
+							G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION | G_SIGNAL_DETAILED,
+							G_STRUCT_OFFSET(XfdashboardStylableInterface, apply_classes),
+							g_signal_accumulator_true_handled,
+							NULL,
+							_xfdashboard_marshal_BOOLEAN__OBJECT_STRING_STRING_BOXED,
+							G_TYPE_BOOLEAN,
+							4,
+							XFDASHBOARD_TYPE_FOCUSABLE,
+							G_TYPE_STRING,
+							G_TYPE_STRING,
+							CLUTTER_TYPE_EVENT);
 
 		/* Set flag that base initialization was done for this interface */
 		initialized=TRUE;

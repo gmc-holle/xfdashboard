@@ -1092,7 +1092,7 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 {
 	XfdashboardFocusManagerPrivate	*priv;
 	GSList							*targetFocusables;
-	const gchar						*action;
+	const gchar						*actionFullName;
 
 	g_return_val_if_fail(XFDASHBOARD_IS_FOCUS_MANAGER(self), CLUTTER_EVENT_PROPAGATE);
 	g_return_val_if_fail(inEvent, CLUTTER_EVENT_PROPAGATE);
@@ -1116,14 +1116,34 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 	 * focusable actor
 	 */
 	targetFocusables=NULL;
-	action=NULL;
-	if(xfdashboard_focus_manager_get_event_targets_and_action(self, inEvent, inFocusable, &targetFocusables, &action))
+	actionFullName=NULL;
+	if(xfdashboard_focus_manager_get_event_targets_and_action(self, inEvent, inFocusable, &targetFocusables, &actionFullName))
 	{
 		gboolean				eventStatus;
 		GSList					*iter;
 		GSignalQuery			signalData={ 0, };
+		gchar					**splitAction;
+		const gchar				*action;
+		const gchar				*detail;
 
 		eventStatus=CLUTTER_EVENT_PROPAGATE;
+		action=NULL;
+		detail=NULL;
+
+		/* Split action into action name and detail */
+		splitAction=g_strsplit(actionFullName, "::", 2);
+		if(!splitAction || !splitAction[0])
+		{
+			g_warning("Failed to split action '%s' into name and detail", actionFullName);
+
+			/* Release list of targets to pervent emitting action of binding as
+			 * splitting action into name and (maybe) detail failed.
+			 */
+			g_slist_free_full(targetFocusables, g_object_unref);
+			targetFocusables=NULL;
+		}
+		action=splitAction[0];
+		detail=splitAction[1];
 
 		/* Emit action of binding to each actor in target list just build up */
 		XFDASHBOARD_DEBUG(self, MISC,
@@ -1161,6 +1181,19 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 				continue;
 			}
 
+			/* If detail was provided in action then check if signal supports
+			 * details.
+			 */
+			if(detail &&
+				!(signalData.signal_flags & G_SIGNAL_DETAILED))
+			{
+				g_warning("Action '%s' at object type %s does not support detail '%s' in action name.",
+							action,
+							detail,
+							G_OBJECT_TYPE_NAME(targetObject));
+				continue;
+			}
+
 #ifdef DEBUG
 			/* In debug mode also check if signal has right signature
 			 * to be able to handle this action properly.
@@ -1168,7 +1201,8 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 			if(signalID)
 			{
 				GType				returnValueType=G_TYPE_BOOLEAN;
-				GType				parameterTypes[]={ XFDASHBOARD_TYPE_FOCUSABLE, G_TYPE_STRING, CLUTTER_TYPE_EVENT };
+				GType				parameterTypesSimple[]={ XFDASHBOARD_TYPE_FOCUSABLE, G_TYPE_STRING, CLUTTER_TYPE_EVENT };
+				GType				parameterTypesDetail[]={ XFDASHBOARD_TYPE_FOCUSABLE, G_TYPE_STRING, G_TYPE_STRING, CLUTTER_TYPE_EVENT };
 				guint				parameterCount;
 				guint				i;
 
@@ -1183,7 +1217,8 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 				}
 
 				/* Check if signals wants the right number and types of parameters */
-				parameterCount=sizeof(parameterTypes)/sizeof(GType);
+				if(detail) parameterCount=sizeof(parameterTypesDetail)/sizeof(GType);
+					else parameterCount=sizeof(parameterTypesSimple)/sizeof(GType);
 				if(signalData.n_params!=parameterCount)
 				{
 					g_critical("Action '%s' at object type %s wants %u parameters but expected are %u.",
@@ -1195,33 +1230,57 @@ gboolean xfdashboard_focus_manager_handle_key_event(XfdashboardFocusManager *sel
 
 				for(i=0; i<(parameterCount<signalData.n_params ? parameterCount : signalData.n_params); i++)
 				{
-					if(signalData.param_types[i]!=parameterTypes[i])
+					if((detail && signalData.param_types[i]!=parameterTypesDetail[i]) ||
+						(!detail && signalData.param_types[i]!=parameterTypesSimple[i]))
 					{
 						g_critical("Action '%s' at object type %s wants type %s at parameter %u but type %s is expected.",
 									action,
 									G_OBJECT_TYPE_NAME(targetObject),
 									g_type_name(signalData.param_types[i]),
 									i+1,
-									g_type_name(parameterTypes[i]));
+									(detail ? g_type_name(parameterTypesDetail[i]) : g_type_name(parameterTypesSimple[i])));
 					}
 				}
 			}
 #endif
 
 			/* Emit action signal at target */
-			XFDASHBOARD_DEBUG(self, ACTOR,
-								"Emitting action signal '%s' at focusable actor %s",
-								action,
-								G_OBJECT_TYPE_NAME(targetObject));
-			g_signal_emit_by_name(targetObject, action, inFocusable, action, inEvent, &eventStatus);
-			XFDASHBOARD_DEBUG(self, ACTOR,
-								"Action signal '%s' was %s by focusable actor %s",
-								action,
-								eventStatus==CLUTTER_EVENT_STOP ? "handled" : "not handled",
-								G_OBJECT_TYPE_NAME(targetObject));
+			if(detail)
+			{
+				XFDASHBOARD_DEBUG(self, ACTOR,
+									"Emitting action signal '%s' with detail '%s' at focusable actor %s",
+									action,
+									detail,
+									G_OBJECT_TYPE_NAME(targetObject));
+
+				g_signal_emit_by_name(targetObject, action, inFocusable, action, detail, inEvent, &eventStatus);
+
+				XFDASHBOARD_DEBUG(self, ACTOR,
+									"Action signal '%s' with detail '%s' was %s by focusable actor %s",
+									action,
+									detail,
+									eventStatus==CLUTTER_EVENT_STOP ? "handled" : "not handled",
+									G_OBJECT_TYPE_NAME(targetObject));
+			}
+				else
+				{
+					XFDASHBOARD_DEBUG(self, ACTOR,
+										"Emitting action signal '%s' at focusable actor %s",
+										action,
+										G_OBJECT_TYPE_NAME(targetObject));
+
+					g_signal_emit_by_name(targetObject, action, inFocusable, action, inEvent, &eventStatus);
+
+					XFDASHBOARD_DEBUG(self, ACTOR,
+										"Action signal '%s' was %s by focusable actor %s",
+										action,
+										eventStatus==CLUTTER_EVENT_STOP ? "handled" : "not handled",
+										G_OBJECT_TYPE_NAME(targetObject));
+				}
 		}
 
 		/* Release allocated resources */
+		g_strfreev(splitAction);
 		g_slist_free_full(targetFocusables, g_object_unref);
 
 		if(eventStatus==CLUTTER_EVENT_STOP) return(CLUTTER_EVENT_STOP);

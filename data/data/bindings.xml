@@ -63,6 +63,8 @@
 	<!-- Applications view -->
 	<key code="<Ctrl>-plus" source="XfdashboardApplicationsView" target="XfdashboardQuicklaunch" when="released">selection-add-favourite</key>
 	<key code="<Ctrl>-KP_Add" source="XfdashboardApplicationsView" target="XfdashboardQuicklaunch" when="released">selection-add-favourite</key>
+	<key code="<Ctrl>-i" source="XfdashboardApplicationsView" when="released">apply-classes::+view-icon-mode,-view-list-mode</key>
+	<key code="<Ctrl>-l" source="XfdashboardApplicationsView" when="released">apply-classes::-view-icon-mode,+view-list-mode</key>
 
 	<!-- Quicklaunch -->
 	<key code="<Shift>-BackSpace" source="XfdashboardQuicklaunch" when="released">selection-remove-favourite</key>

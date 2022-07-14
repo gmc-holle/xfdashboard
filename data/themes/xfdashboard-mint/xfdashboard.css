@@ -340,6 +340,17 @@ XfdashboardWorkspaceSelector
 	vertical-scrollbar-policy: automatic;
 }
 
+/* Views */
+XfdashboardView.view-list-mode
+{
+	view-mode: list;
+}
+
+XfdashboardView.view-icon-mode
+{
+	view-mode: icon;
+}
+
 /* Search view */
 XfdashboardSearchView XfdashboardSearchResultContainer
 {

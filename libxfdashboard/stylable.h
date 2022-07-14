@@ -31,6 +31,8 @@
 
 #include <glib-object.h>
 
+#include <libxfdashboard/focusable.h>
+
 G_BEGIN_DECLS
 
 #define XFDASHBOARD_TYPE_STYLABLE				(xfdashboard_stylable_get_type())
@@ -66,6 +68,28 @@ struct _XfdashboardStylableInterface
 	void (*pseudo_class_removed)(XfdashboardStylable *self, const gchar *inClass);
 
 	void (*invalidate)(XfdashboardStylable *self);
+
+	/* Binding actions */
+	gboolean (*add_classes)(XfdashboardStylable *self,
+							XfdashboardFocusable *inSource,
+							const gchar *inAction,
+							const gchar *inDetail,
+							ClutterEvent *inEvent);
+	gboolean (*remove_classes)(XfdashboardStylable *self,
+								XfdashboardFocusable *inSource,
+								const gchar *inAction,
+								const gchar *inDetail,
+								ClutterEvent *inEvent);
+	gboolean (*toggle_classes)(XfdashboardStylable *self,
+								XfdashboardFocusable *inSource,
+								const gchar *inAction,
+								const gchar *inDetail,
+								ClutterEvent *inEvent);
+	gboolean (*apply_classes)(XfdashboardStylable *self,
+								XfdashboardFocusable *inSource,
+								const gchar *inAction,
+								const gchar *inDetail,
+								ClutterEvent *inEvent);
 };
 
 /* Public API */
