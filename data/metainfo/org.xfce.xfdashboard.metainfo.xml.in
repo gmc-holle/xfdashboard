@@ -61,6 +61,14 @@
 	</keywords>
 
 	<releases>
+		<release version="0.9.91" timestamp="1657872321">
+			<description>
+				<_p>This release candidate adds a new last-minute
+				feature with adding new actions for key binding
+				as weill as lots of bug fixes.
+				</_p>
+			</description>
+		</release>
 		<release version="0.9.90" timestamp="1646385254">
 			<description>
 				<_p>This release candidate adds a new property
