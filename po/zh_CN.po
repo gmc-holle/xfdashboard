@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-17 12:53+0100\n"
+"POT-Creation-Date: 2022-07-15 12:52+0200\n"
 "PO-Revision-Date: 2020-10-07 10:59+0000\n"
 "Last-Translator: 玉堂白鹤 <yjwork@qq.com>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/xfce/teams/16840/zh_CN/)\n"
@@ -76,65 +76,71 @@ msgstr "搜索应用"
 
 #: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:6
 msgid ""
+"This release candidate adds a new last-minute feature with adding new "
+"actions for key binding as weill as lots of bug fixes."
+msgstr "这个候选版本在最后一刻添加了一个新的特性，为键绑定添加了新的操作，并修复了许多错误。"
+
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+msgid ""
 "This release candidate adds a new property \"visibility\" to all actors and "
 "fixes compiler warnings."
 msgstr "此候选版本为所有参与者添加了一个新属性“可见性”，并修复了编译器警告。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:7
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
 msgid "This unstable development version fixes the mode to run in background."
 msgstr "这个不稳定的开发版本修复了在后台运行的模式。 "
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:8
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
 msgid ""
 "This unstable development version introduces a new plugin to pin windows on "
 "secondary monitors automatically."
 msgstr "这个不稳定的开发版本引入了一个新插件来自动将窗口固定在辅助显示器上。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:9
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
 msgid ""
 "This unstable development version improves window placement and a new search"
 " plugin looking for matches against the recently used documents."
 msgstr "这个不稳定的开发版本改善了窗口位置，并提供一个新的搜索插件，用于根据最近使用的文档查找匹配项。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:10
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
 msgid ""
 "This unstable development version completes gradients with linear gradients "
 "for outline and background filling."
 msgstr "这个不稳定的开发版本可以通过轮廓和背景填充的线性渐变来完成渐变。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:11
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
 msgid ""
 "This unstable development version introduces completes turning "
 "libxfdashboard into a real library and introduces path gradients for "
 "outlines."
 msgstr "这个不稳定的开发版本引入了将 libxfdashboard 变成真实库的完整功能，并引入了轮廓的路径渐变。 "
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:12
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
 msgid ""
 "This unstable development version introduces nothing user visible but begin "
 "moving libxfdashboard into a real library."
 msgstr "这个不稳定的开发版本没有引入任何用户可见的内容，而是开始将 libxfmdashboard 移至真实库中。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:13
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
 msgid ""
 "This stable version fixes a bug and replaces AppInfo with AppStream "
 "metainfo."
 msgstr "此稳定版本修复了一个错误，并用 AppStream metainfo 替换 AppInfo。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:14
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
 msgid ""
 "This stable version introduces lots of new features like animations, pop-up "
 "menus, multiple backend and support for jumplists etc. It also includes lots"
 " of new and updated translations."
 msgstr "这个稳定的版本引入了许多新功能，比如动画，弹出菜单，多个后端和支持跳转列表等。它还包括许多新增和更新的翻译。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:15
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:16
 msgid ""
 "This stable version fixes a bug setting the correct default applications at "
 "first use."
 msgstr "此稳定版本修复了在首次使用时设置正确的默认应用程序的错误。"
 
-#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:16
+#: ../data/metainfo/org.xfce.xfdashboard.metainfo.xml.in.h:17
 msgid ""
 "This stable version introduces lots of new features like plugins and "
 "application tracker. It also contains a huge collection of other larger and "
@@ -394,23 +400,23 @@ msgstr "xfdashboard-wine"
 msgid "Red wine theme for xfdashboard"
 msgstr "xfdashboard 红色 wine 主题"
 
-#: ../libxfdashboard/application-button.c:262
+#: ../libxfdashboard/application-button.c:267
 #, c-format
 msgid "Could not execute action '%s' for application '%s': %s"
 msgstr "无法对应用 ‘’%s 处理动作 '%s': '%s'"
 
-#: ../libxfdashboard/application-button.c:265 ../settings/main.c:76
+#: ../libxfdashboard/application-button.c:270 ../settings/main.c:76
 #: ../settings/plugins.c:794
 msgid "Unknown error"
 msgstr "未知错误"
 
-#: ../libxfdashboard/application-button.c:282
+#: ../libxfdashboard/application-button.c:287
 #, c-format
 msgid "Executed action '%s' for application '%s'"
 msgstr "已处理对应用 ‘%s’ 的动作 '%s'"
 
-#: ../libxfdashboard/application-button.c:743
-#: ../libxfdashboard/application-button.c:761
+#: ../libxfdashboard/application-button.c:748
+#: ../libxfdashboard/application-button.c:766
 #: ../libxfdashboard/applications-search-provider.c:765
 #: ../libxfdashboard/applications-view.c:332
 #: ../libxfdashboard/quicklaunch.c:334 ../libxfdashboard/quicklaunch.c:382
@@ -420,14 +426,14 @@ msgstr "已处理对应用 ‘%s’ 的动作 '%s'"
 msgid "Launching application '%s' failed: %s"
 msgstr "启动应用'%s'错误:'%s'"
 
-#: ../libxfdashboard/application-button.c:745
+#: ../libxfdashboard/application-button.c:750
 #: ../libxfdashboard/quicklaunch.c:336
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:499
 #: ../plugins/recently-used-search-provider/recently-used-search-provider.c:520
 msgid "No information available for application"
 msgstr "此应用没有可获得的介绍"
 
-#: ../libxfdashboard/application-button.c:763
+#: ../libxfdashboard/application-button.c:768
 #: ../libxfdashboard/applications-search-provider.c:767
 #: ../libxfdashboard/applications-view.c:334 ../libxfdashboard/core.c:373
 #: ../libxfdashboard/quicklaunch.c:442
@@ -437,7 +443,7 @@ msgstr "此应用没有可获得的介绍"
 msgid "unknown error"
 msgstr "未知错误"
 
-#: ../libxfdashboard/application-button.c:774
+#: ../libxfdashboard/application-button.c:779
 #: ../libxfdashboard/applications-search-provider.c:778
 #: ../libxfdashboard/applications-view.c:345
 #: ../libxfdashboard/quicklaunch.c:453
@@ -455,29 +461,29 @@ msgstr "启动"
 #. Set up view
 #. Add "applications" button
 #: ../libxfdashboard/applications-search-provider.c:1191
-#: ../libxfdashboard/applications-view.c:1580
-#: ../libxfdashboard/quicklaunch.c:3218
+#: ../libxfdashboard/applications-view.c:1589
+#: ../libxfdashboard/quicklaunch.c:3225
 msgid "Applications"
 msgstr "应用"
 
-#: ../libxfdashboard/applications-view.c:543
-#: ../libxfdashboard/applications-view.c:544
-#: ../libxfdashboard/applications-view.c:655
-#: ../libxfdashboard/applications-view.c:656
+#: ../libxfdashboard/applications-view.c:552
+#: ../libxfdashboard/applications-view.c:553
+#: ../libxfdashboard/applications-view.c:664
+#: ../libxfdashboard/applications-view.c:665
 msgid "Back"
 msgstr "后退"
 
-#: ../libxfdashboard/applications-view.c:543
-#: ../libxfdashboard/applications-view.c:655
+#: ../libxfdashboard/applications-view.c:552
+#: ../libxfdashboard/applications-view.c:664
 msgid "Go back to previous menu"
 msgstr "返回到上一级菜单"
 
-#: ../libxfdashboard/applications-view.c:683
-#: ../libxfdashboard/applications-view.c:684
+#: ../libxfdashboard/applications-view.c:692
+#: ../libxfdashboard/applications-view.c:693
 msgid "All applications"
 msgstr "所有应用"
 
-#: ../libxfdashboard/applications-view.c:683
+#: ../libxfdashboard/applications-view.c:692
 msgid "List of all installed applications"
 msgstr "所有已安装的应用列表"
 
@@ -522,7 +528,7 @@ msgstr "添加到收藏"
 
 #. Next add trash button to box but initially hidden and register as drop
 #. target
-#: ../libxfdashboard/quicklaunch.c:3225
+#: ../libxfdashboard/quicklaunch.c:3232
 msgid "Remove"
 msgstr "移除"
 
